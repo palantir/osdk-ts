@@ -58,8 +58,7 @@ export interface UseDualScopeAggregationOptions<
  * `isLoading` reflects either query loading. `error` is the primary
  * (narrowed) aggregation's error. If the base aggregation fails in dual-scope
  * mode, ghost rendering silently degrades — the narrowed view is still
- * correct, but base-only values are not surfaced. A `console.warn` fires in
- * non-production builds.
+ * correct, but base-only values are not surfaced.
  *
  * Hooks are called unconditionally regardless of scope; in single-scope mode
  * the second `usePropertyAggregation` uses the same `objectSet` and `where`
@@ -91,18 +90,14 @@ export function useDualScopeAggregation<
   );
 
   const activeValues = useMemo(() => {
-    if (!isDualScope) {
-      return selectedValues.length === 0 ? undefined : selectedValues;
-    }
-    if (baseAggregation.error != null) {
-      // Base failed — ghost rendering silently degrades. The narrowed view
-      // is still correct; base-only values just won't appear as ghosts.
-      return selectedValues.length === 0 ? undefined : selectedValues;
+    const fallback = selectedValues.length === 0 ? undefined : selectedValues;
+    const skipMerge = !isDualScope
+      || baseAggregation.error != null
+      || baseAggregation.data.length === 0;
+    if (skipMerge) {
+      return fallback;
     }
     const baseValues = baseAggregation.data.map((d) => d.value);
-    if (baseValues.length === 0) {
-      return selectedValues.length === 0 ? undefined : selectedValues;
-    }
     return Array.from(new Set([...selectedValues, ...baseValues]));
   }, [
     isDualScope,
@@ -125,18 +120,10 @@ export function useDualScopeAggregation<
   const isLoading = primaryAggregation.isLoading
     || (isDualScope && baseAggregation.isLoading);
 
-  return useMemo(
-    () => ({
-      data: primaryAggregation.data,
-      maxCount: primaryAggregation.maxCount,
-      isLoading,
-      error: primaryAggregation.error,
-    }),
-    [
-      primaryAggregation.data,
-      primaryAggregation.maxCount,
-      isLoading,
-      primaryAggregation.error,
-    ],
-  );
+  return {
+    data: primaryAggregation.data,
+    maxCount: primaryAggregation.maxCount,
+    isLoading,
+    error: primaryAggregation.error,
+  };
 }

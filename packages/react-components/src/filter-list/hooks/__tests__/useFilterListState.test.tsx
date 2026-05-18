@@ -135,7 +135,7 @@ describe("useFilterListState", () => {
     expect(result.current.whereClause).toEqual({ name: "John" });
   });
 
-  it("calls onFilterClauseChanged on mount with initial where clause", () => {
+  it("does not fire onFilterClauseChanged on mount", () => {
     const onFilterClauseChanged = vi.fn();
     const nameDef = createPropertyFilterDef(
       "name",
@@ -146,12 +146,12 @@ describe("useFilterListState", () => {
       filterDefinitions: [nameDef],
       onFilterClauseChanged,
     });
-    renderHook(() => useFilterListState(props));
-    expect(onFilterClauseChanged).toHaveBeenCalledTimes(1);
-    expect(onFilterClauseChanged).toHaveBeenCalledWith({});
+    const { result } = renderHook(() => useFilterListState(props));
+    expect(onFilterClauseChanged).not.toHaveBeenCalled();
+    expect(result.current.whereClause).toEqual({});
   });
 
-  it("calls onFilterClauseChanged on mount when initialFilterStates has active filters", () => {
+  it("does not fire onFilterClauseChanged on mount with initialFilterStates", () => {
     const onFilterClauseChanged = vi.fn();
     const nameDef = createPropertyFilterDef(
       "name",
@@ -166,9 +166,9 @@ describe("useFilterListState", () => {
       onFilterClauseChanged,
       initialFilterStates,
     });
-    renderHook(() => useFilterListState(props));
-    expect(onFilterClauseChanged).toHaveBeenCalledTimes(1);
-    expect(onFilterClauseChanged).toHaveBeenCalledWith({ name: "John" });
+    const { result } = renderHook(() => useFilterListState(props));
+    expect(onFilterClauseChanged).not.toHaveBeenCalled();
+    expect(result.current.whereClause).toEqual({ name: "John" });
   });
 
   it("calls onFilterClauseChanged on setFilterState", () => {
@@ -220,7 +220,7 @@ describe("useFilterListState", () => {
   });
 
   describe("onFilterStatesChanged", () => {
-    it("fires on mount with the seeded states map", () => {
+    it("does not fire onFilterStatesChanged on mount", () => {
       const onFilterStatesChanged = vi.fn();
       const nameDef = createPropertyFilterDef(
         "name",
@@ -232,11 +232,10 @@ describe("useFilterListState", () => {
         onFilterStatesChanged,
       });
 
-      renderHook(() => useFilterListState(props));
+      const { result } = renderHook(() => useFilterListState(props));
 
-      expect(onFilterStatesChanged).toHaveBeenCalledTimes(1);
-      const states = onFilterStatesChanged.mock.calls[0][0];
-      expect(states.get(getFilterKey(nameDef))).toEqual(
+      expect(onFilterStatesChanged).not.toHaveBeenCalled();
+      expect(result.current.filterStates.get(getFilterKey(nameDef))).toEqual(
         createExactMatchState(["Alice"]),
       );
     });

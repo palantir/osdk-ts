@@ -210,7 +210,7 @@ function filterStateToPropertyFilter(
  * object's property.
  */
 export function buildPropertyKeyClause(
-  key: string,
+  key: string | number | symbol,
   state: FilterState,
   propertyType?: string,
 ): Record<string, unknown> | undefined {
@@ -283,7 +283,7 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
         const propertyType = propertyTypes?.get(definition.key as string)
           ?.type;
         const clause = buildPropertyKeyClause(
-          definition.key as string,
+          definition.key,
           state,
           propertyType,
         );

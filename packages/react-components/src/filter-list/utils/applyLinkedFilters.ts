@@ -34,16 +34,14 @@ import { getFilterKey } from "./getFilterKey.js";
 function narrowingPivot<Q extends ObjectTypeDefinition>(
   base: ObjectSet<Q>,
   linkName: LinkNames<Q>,
-  innerWhere: Record<string, unknown>,
-  reverseLinkName: string,
+  innerWhere: WhereClause<ObjectTypeDefinition>,
+  reverseLinkName: string | number | symbol,
 ): ObjectSet<Q> {
-  const linked = base.pivotTo(linkName) as ObjectSet<ObjectTypeDefinition>;
-  const filtered = linked.where(
-    innerWhere as WhereClause<ObjectTypeDefinition>,
-  );
-  return filtered.pivotTo(
-    reverseLinkName as LinkNames<ObjectTypeDefinition>,
-  ) as ObjectSet<Q>;
+  return (base.pivotTo(linkName) as ObjectSet<ObjectTypeDefinition>)
+    .where(innerWhere)
+    .pivotTo(reverseLinkName as LinkNames<ObjectTypeDefinition>) as ObjectSet<
+      Q
+    >;
 }
 
 /**
@@ -57,8 +55,8 @@ function narrowingPivot<Q extends ObjectTypeDefinition>(
  *   )
  *
  * Filters with empty selections are skipped. Filters missing `reverseLinkName`
- * are skipped (with a one-time `console.warn` in non-production builds) since
- * the helper can't invert the pivot without that information. Non-LINKED_PROPERTY
+ * are skipped silently — the contract is documented on
+ * `LinkedPropertyFilterDefinition.reverseLinkName`. Non-LINKED_PROPERTY
  * definitions are ignored — direct property filters are applied via the
  * `filterClause` on the resulting query, not via objectSet narrowing.
  *
@@ -86,28 +84,22 @@ export function applyLinkedFilters<Q extends ObjectTypeDefinition>(
     if (!state || state.type !== "linkedProperty") {
       continue;
     }
-    // PropertyKeys generally narrows to `string`, but in this context the
-    // LinkedQ generic may widen to ObjectTypeDefinition, surfacing the raw
-    // `string | number | symbol` shape. The runtime value is always a string.
     const innerWhere = buildPropertyKeyClause(
-      definition.linkedPropertyKey as string,
+      definition.linkedPropertyKey,
       state.linkedFilterState,
     );
     if (innerWhere === undefined) {
       continue;
     }
     if (definition.reverseLinkName == null) {
-      // Skipped silently — without reverseLinkName the helper cannot invert
-      // the pivot back to Q, so this filter contributes no narrowing. The
-      // contract is documented on LinkedPropertyFilterDefinition.reverseLinkName.
       continue;
     }
 
     const narrowingSet = narrowingPivot(
       baseObjectSet,
       definition.linkName,
-      innerWhere,
-      definition.reverseLinkName as string,
+      innerWhere as WhereClause<ObjectTypeDefinition>,
+      definition.reverseLinkName,
     );
     result = result.intersect(narrowingSet);
   }

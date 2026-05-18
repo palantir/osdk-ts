@@ -16,7 +16,7 @@
 
 import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import { useOsdkMetadata } from "@osdk/react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { assertUnreachable } from "../../shared/assertUnreachable.js";
 import type { FilterListProps } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
@@ -144,13 +144,26 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     return states;
   });
 
+  const filterStatesRef = useRef(filterStates);
+  filterStatesRef.current = filterStates;
+
+  const notifyChange = useCallback(
+    (next: Map<string, FilterState>) => {
+      onFilterClauseChangedRef.current?.(
+        buildWhereClause(filterDefinitions, next, propertyTypes),
+      );
+      onFilterStatesChangedRef.current?.(next);
+    },
+    [filterDefinitions, propertyTypes],
+  );
+
   const setFilterState = useCallback(
     (filterKey: string, state: FilterState) => {
-      setFilterStates((prev) => {
-        const next = new Map(prev);
-        next.set(filterKey, state);
-        return next;
-      });
+      const next = new Map(filterStatesRef.current);
+      next.set(filterKey, state);
+      filterStatesRef.current = next;
+      setFilterStates(next);
+      notifyChange(next);
 
       const definition = filterDefinitions?.find(
         (d) => getFilterKey(d) === filterKey,
@@ -159,21 +172,18 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
         onFilterStateChanged?.(definition, state);
       }
     },
-    [
-      filterDefinitions,
-      onFilterStateChanged,
-    ],
+    [filterDefinitions, onFilterStateChanged, notifyChange],
   );
 
   const clearFilterState = useCallback(
     (filterKey: string) => {
-      setFilterStates((prev) => {
-        const next = new Map(prev);
-        next.delete(filterKey);
-        return next;
-      });
+      const next = new Map(filterStatesRef.current);
+      next.delete(filterKey);
+      filterStatesRef.current = next;
+      setFilterStates(next);
+      notifyChange(next);
     },
-    [],
+    [notifyChange],
   );
 
   const whereClause = useMemo(
@@ -185,14 +195,6 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
       ),
     [filterDefinitions, filterStates, propertyTypes],
   );
-
-  useEffect(() => {
-    onFilterClauseChangedRef.current?.(whereClause);
-  }, [whereClause]);
-
-  useEffect(() => {
-    onFilterStatesChangedRef.current?.(filterStates);
-  }, [filterStates]);
 
   // Preserve per-key clause references when content hasn't changed so
   // FilterInput.memo can hold and aggregations don't refetch unnecessarily.
@@ -226,8 +228,11 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
   }, [filterStates]);
 
   const reset = useCallback(() => {
-    setFilterStates(buildInitialStates(filterDefinitions));
-  }, [filterDefinitions]);
+    const next = buildInitialStates(filterDefinitions);
+    filterStatesRef.current = next;
+    setFilterStates(next);
+    notifyChange(next);
+  }, [filterDefinitions, notifyChange]);
 
   return useMemo(() => ({
     filterStates,
