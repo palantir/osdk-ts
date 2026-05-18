@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
+import type { InterfaceMetadata } from "@osdk/api";
 import { describe, expect, it } from "vitest";
 import type { MinimalClient } from "../../../MinimalClientContext.js";
 import { createOsdkObject } from "../../../object/convertWireToOsdkObjects/createOsdkObject.js";
+import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
 import {
   ClientRef,
+  InterfaceDefRef,
   ObjectDefRef,
   UnderlyingOsdkObject,
 } from "../../../object/convertWireToOsdkObjects/InternalSymbols.js";
@@ -293,6 +296,37 @@ describe("rdpFieldOperations", () => {
     expect(underlying.employeeId).toBe(50030);
     expect(underlying.rdpField1).toBe("source-rdp1");
     expect(underlying.rdpField2).toBeUndefined();
+  });
+});
+
+describe("interface-typed object guard", () => {
+  function makeInterfaceHolder(): InterfaceHolder {
+    return {
+      $apiName: "IEmployee",
+      $objectType: "Employee",
+      $primaryKey: 1,
+      $title: undefined,
+      [UnderlyingOsdkObject]: {} as ObjectHolder,
+      [InterfaceDefRef]: {} as InterfaceMetadata,
+    } as InterfaceHolder;
+  }
+
+  it("mergeObjectFields throws a descriptive error for interface-typed source", () => {
+    const holder = makeInterfaceHolder() as unknown as ObjectHolder;
+    expect(() =>
+      mergeObjectFields(holder, new Set(["rdpField1"]), new Set(), undefined)
+    ).toThrow(
+      `rdp field operations require a concrete-typed ObjectHolder; received interface-typed 'IEmployee'`,
+    );
+  });
+
+  it("mergeSelectFields throws a descriptive error for interface-typed source", () => {
+    const holder = makeInterfaceHolder() as unknown as ObjectHolder;
+    const existing = createTestObject({ employeeId: 1 });
+    expect(() => mergeSelectFields(holder, new Set(["fullName"]), existing))
+      .toThrow(
+        `rdp field operations require a concrete-typed ObjectHolder; received interface-typed 'IEmployee'`,
+      );
   });
 });
 

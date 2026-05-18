@@ -22,6 +22,7 @@ import {
 } from "../../../object/convertWireToOsdkObjects/InternalSymbols.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { SimpleOsdkProperties } from "../../../object/SimpleOsdkProperties.js";
+import type { FetchedObjectTypeDefinition } from "../../../ontology/OntologyProvider.js";
 import type { Canonical } from "../Canonical.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
 
@@ -34,6 +35,16 @@ export function extractRdpFieldNames(
   return new Set(Object.keys(rdpConfig));
 }
 
+function requireObjectDef(value: ObjectHolder): FetchedObjectTypeDefinition {
+  const def = value[ObjectDefRef];
+  if (!def) {
+    throw new Error(
+      `rdp field operations require a concrete-typed ObjectHolder; received interface-typed '${value.$apiName}'`,
+    );
+  }
+  return def;
+}
+
 function stripRdpFields(
   value: ObjectHolder,
   rdpFields: ReadonlySet<string>,
@@ -43,7 +54,7 @@ function stripRdpFields(
   }
 
   const underlying = value[UnderlyingOsdkObject] as SimpleOsdkProperties;
-  const objectDef = value[ObjectDefRef];
+  const objectDef = requireObjectDef(value);
 
   const newProps: SimpleOsdkProperties = {
     $apiName: underlying.$apiName,
@@ -80,7 +91,7 @@ function filterToRdpFields(
   sourceRdpFields: ReadonlySet<string>,
 ): ObjectHolder {
   const underlying = value[UnderlyingOsdkObject] as SimpleOsdkProperties;
-  const objectDef = value[ObjectDefRef];
+  const objectDef = requireObjectDef(value);
 
   const newProps: SimpleOsdkProperties = {
     $apiName: underlying.$apiName,
@@ -111,7 +122,7 @@ export function mergeSelectFields(
     sourceValue[UnderlyingOsdkObject] as SimpleOsdkProperties;
   const existingUnderlying =
     existingValue[UnderlyingOsdkObject] as SimpleOsdkProperties;
-  const objectDef = sourceValue[ObjectDefRef];
+  const objectDef = requireObjectDef(sourceValue);
 
   const newProps: SimpleOsdkProperties = {
     $apiName: sourceUnderlying.$apiName,
@@ -155,7 +166,7 @@ export function mergeObjectFields(
 
   const sourceUnderlying =
     sourceValue[UnderlyingOsdkObject] as SimpleOsdkProperties;
-  const objectDef = sourceValue[ObjectDefRef];
+  const objectDef = requireObjectDef(sourceValue);
 
   const newProps: SimpleOsdkProperties = {
     $apiName: sourceUnderlying.$apiName,
