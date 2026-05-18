@@ -28,6 +28,7 @@ import { DatePickerCellField } from "./components/DatePickerCellField.js";
 import { DropdownCellField } from "./components/DropdownCellField.js";
 import { TextInputCellField } from "./components/TextInputCellField.js";
 import styles from "./EditableCell.module.css";
+import { cellValuesEqual } from "./utils/editableUtils.js";
 import type { CellEditInfo, EditFieldConfig } from "./utils/types.js";
 
 const NUMBER_TYPES: readonly string[] = [
@@ -137,7 +138,7 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
   }, []);
 
   const hasValidationError = validationError != null;
-  const isEdited = (currentValue ?? null) !== (initialValue ?? null);
+  const isEdited = !cellValuesEqual(currentValue, initialValue);
 
   useEffect(() => {
     setInputValue(valueToString(currentValue));
@@ -256,7 +257,11 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
 
   const handleCommit = useCallback(
     (newValue: unknown) => {
-      if ((newValue ?? null) === (currentValue ?? null)) return;
+      // No-op if the value hasn't actually moved from what the cell already
+      // displays. null and undefined are treated as the same empty state so
+      // a dropdown that clears a never-set cell doesn't fire; "" stays
+      // distinct since an empty string can be meaningful data.
+      if (cellValuesEqual(newValue, currentValue)) return;
       commitEdit(newValue as CellValue);
     },
     [commitEdit, currentValue],
@@ -292,6 +297,7 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
             fieldComponentProps={dropdownFieldProps!}
             isRowFocused={isRowFocused}
             inputValue={inputValue}
+            value={currentValue}
             hasValidationError={hasValidationError}
             isEdited={isEdited}
             onChange={handleCommit}

@@ -1,5 +1,30 @@
 # @osdk/react-components
 
+## 0.17.0
+
+### Minor Changes
+
+- 773194c: `ObjectTable` now accepts an optional `renderEmptyState` prop for overriding the default "No Data" indicator with a custom `ReactNode`.
+- 546c673: Fix page scroll being blocked when opening a date picker in an editable ObjectTable
+- 962ede9: prevent height jumps in SingleSelectInput, MultiSelectInput, and TextTagsInput during loading
+- 3548f5e: ObjectTable:
+  - Fix "select all" + scroll: newly-loaded rows are now checked and the header checkbox stays in sync. `onRowSelection` refires in uncontrolled mode with the expanded id list as new pages load.
+  - Add `onRowSelectionChanged(change)` callback that delivers a `RowSelectionChange` payload with `selectedRowIds`, `selectedRows`, `isSelectAll`, and a derived `objectSet` (full underlying set on "select all", otherwise narrowed by `$primaryKey`).
+  - Deprecate `onRowSelection` in favor of `onRowSelectionChanged`. The legacy callback continues to fire for backwards compatibility.
+
+- 6400c8b: Remove DocxViewer. `.docx` files now fall through to the DocumentViewer unsupported-file state. The `docx-preview` dependency, `DocxViewer`/`BaseDocxViewer` exports, `./experimental/docx-viewer` entrypoint, `ViewerType.Docx`, and `docxViewerProps` on `DocumentViewer` are removed. Removed primarily because rendering untrusted `.docx` directly in the browser via `docx-preview` parses arbitrary attacker-controlled Office Open XML in the host page; we'd rather route DOCX through a server-side decode pipeline (e.g. MIO transform → PDF) than ship a client-side parser as an attack surface. Consumers should pre-convert DOCX to PDF and use `PdfViewer`, or supply their own viewer.
+- ddeda7f: Fix custom value rendering in ObjectTable dropdown cells for non-string item types (booleans, numbers, etc.)
+
+## 0.16.0
+
+### Minor Changes
+
+- f62c9e2: Add DocumentViewer with MIME-type routing, ImageViewer, VideoViewer, DocxViewer, ExcelViewer, EmailViewer, XmlViewer components, and OSDK Media wrappers for TiffRenderer and MarkdownRenderer
+- 7ee1fa3: ObjectTable `EditFieldConfig.getFieldComponentProps` now receives a second `edits` argument with the row's pending cell edits (keyed by columnId), so editor configuration can react to other in-progress edits within the same row.
+- cf496ff: filter-list: round number range histogram min/max to integers for integer property types so dragging or clicking a bucket no longer emits fractional values that break downstream filters
+- bfe05b5: Widen `renderValue` return type on FilterList property and static-values filter definitions from `string` to `ReactNode` so callers can render custom React components (e.g. avatars, anchors) for filter values. When `renderValue` returns a non-string `ReactNode`, search matching falls back to the raw value.
+- 11f585d: Histogram date filter: From and To inputs now open independent single-month popovers with Today/Clear actions, replacing the shared two-month range calendar that was confusing users next to the histogram bars
+
 ## 0.15.0
 
 ### Minor Changes

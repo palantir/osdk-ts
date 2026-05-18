@@ -14,20 +14,16 @@
  * limitations under the License.
  */
 
-import type { Media } from "@osdk/api";
-
-export interface BaseDocxViewerProps {
-  /** DOCX file contents as an ArrayBuffer */
-  src: ArrayBuffer;
-  /** Additional CSS class name for the root element
-   * @default undefined */
-  className?: string;
-  /** Callback when rendering fails
-   * @default undefined */
-  onError?: () => void;
+// Minimal types for vite HMR
+// https://vite.dev/guide/api-hmr
+interface ImportMetaHot {
+  on?: (event: "vite:beforeFullReload", cb: (payload: unknown) => void) => void;
+  off?: (
+    event: "vite:beforeFullReload",
+    cb: (payload: unknown) => void,
+  ) => void;
 }
 
-export interface DocxViewerMediaProps extends Omit<BaseDocxViewerProps, "src"> {
-  /** The Media object to fetch DOCX contents from */
-  media: Media;
+interface ImportMeta {
+  hot?: ImportMetaHot;
 }

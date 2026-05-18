@@ -1,5 +1,5 @@
 /*
- * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-// BaseDocxViewer
-export { BaseDocxViewer } from "../../docx-viewer/BaseDocxViewer.js";
-export type {
-  BaseDocxViewerProps,
-  DocxViewerMediaProps,
-} from "../../docx-viewer/DocxViewerApi.js";
+import React from "react";
+import { SkeletonBar } from "../../../base-components/skeleton/SkeletonBar.js";
 
-// DocxViewer (Media wrapper)
-import { DocxViewer as _DocxViewer } from "../../docx-viewer/DocxViewer.js";
-import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
-export const DocxViewer: typeof _DocxViewer = withOsdkMetrics(
-  _DocxViewer,
-  "DocxViewer",
-);
+export function SelectInputSkeleton(): React.ReactElement {
+  return (
+    <div data-testid="select-input-skeleton">
+      <SkeletonBar
+        width="100%"
+        height="var(--osdk-filter-skeleton-input-height)"
+      />
+    </div>
+  );
+}

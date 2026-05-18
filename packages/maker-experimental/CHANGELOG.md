@@ -1,5 +1,41 @@
 # @osdk/maker-experimental
 
+## 0.17.0
+
+### Minor Changes
+
+- 6bca4fd: fix cbac default nullability
+- 5b89f25: Fix IDP packaging
+- b98e084: fix interface resolution for action logic rules
+
+### Patch Changes
+
+- Updated dependencies [1a07c91]
+- Updated dependencies [6bca4fd]
+- Updated dependencies [5b89f25]
+- Updated dependencies [b98e084]
+  - @osdk/api@2.21.0
+  - @osdk/maker@0.27.0
+  - @osdk/generator-converters.ontologyir@2.21.0
+  - @osdk/client.unstable@2.21.0
+  - @osdk/generator-converters.preview@0.11.0
+
+## 0.16.0
+
+### Minor Changes
+
+- b05a5bc: remove jiti
+- be93bc8: Support value types
+
+### Patch Changes
+
+- Updated dependencies [9eb67e4]
+  - @osdk/api@2.20.0
+  - @osdk/maker@0.26.0
+  - @osdk/client.unstable@2.20.0
+  - @osdk/generator-converters.ontologyir@2.20.0
+  - @osdk/generator-converters.preview@0.10.0
+
 ## 0.15.0
 
 ### Minor Changes

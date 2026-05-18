@@ -15,7 +15,7 @@
  */
 
 import type { InterfaceMetadata } from "@osdk/api";
-import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition } from "@osdk/generator-converters";
+import { wireInterfaceTypeV2ToSdkObjectDefinition } from "@osdk/generator-converters";
 import consola from "consola";
 import fastDeepEqual from "fast-deep-equal";
 import invariant from "tiny-invariant";
@@ -35,7 +35,7 @@ import {
 } from "./wireObjectTypeV2ToSdkObjectConstV2.js";
 
 /** @internal */
-export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
+export function wireInterfaceTypeV2ToSdkObjectConst(
   interfaceDef: EnhancedInterfaceType,
   ontology: EnhancedOntologyDefinition,
   v2: boolean = false,
@@ -43,7 +43,7 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
   currentFilePath: string = "",
 ) {
   const definition = deleteUndefineds(
-    __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
+    wireInterfaceTypeV2ToSdkObjectDefinition(
       interfaceDef.raw,
       v2,
     ),
@@ -68,7 +68,7 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
     const parent = ontology.requireInterfaceType(p, true);
     if (parent instanceof EnhancedInterfaceType) {
       const it = deleteUndefineds(
-        __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
+        wireInterfaceTypeV2ToSdkObjectDefinition(
           parent.raw,
           v2,
           consola,

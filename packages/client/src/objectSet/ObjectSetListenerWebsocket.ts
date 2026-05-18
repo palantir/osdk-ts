@@ -535,7 +535,7 @@ export class ObjectSetListenerWebsocket {
     );
     const osdkObjectsWithReferenceUpdates = await Promise.all(
       referenceUpdates.map(async (o) => {
-        const osdkObjectArray = await this.#client.objectFactory2(
+        const osdkObjectArray = await this.#client.objectFactory(
           this.#client,
           [{
             __apiName: o.objectType,
@@ -585,7 +585,7 @@ export class ObjectSetListenerWebsocket {
         delete o.object[key];
       }
 
-      const osdkObjectArray = await this.#client.objectFactory2(
+      const osdkObjectArray = await this.#client.objectFactory(
         this.#client,
         [o.object],
         sub.interfaceApiName,

@@ -446,6 +446,7 @@
   /* Skeleton Loading */
   --osdk-filter-skeleton-text-height: calc(var(--osdk-surface-spacing) * 1.5);
   --osdk-filter-skeleton-count-width: calc(var(--osdk-surface-spacing) * 2.5);
+  --osdk-filter-skeleton-input-height: var(--osdk-combobox-trigger-min-height, 30px);
 
   /* Filter Popover (composable label + popover-trigger primitive) */
   --osdk-filter-popover-gap: calc(var(--osdk-surface-spacing) * 1);
