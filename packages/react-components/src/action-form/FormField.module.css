@@ -45,10 +45,7 @@
   align-items: center;
   gap: var(--osdk-form-label-row-gap);
   /* Reserve the edited pill's block size so showing it does not grow the label row. */
-  min-block-size: calc(
-    var(--osdk-typography-size-body-small) * var(--osdk-typography-line-height-default) +
-      var(--osdk-surface-spacing)
-  );
+  min-block-size: var(--osdk-form-label-row-min-block-size);
 }
 
 .osdkFormFieldEditedTag {
@@ -56,14 +53,14 @@
   align-items: center;
   flex-shrink: 0;
   margin-inline-start: auto;
-  padding-block: calc(var(--osdk-surface-spacing) * 0.5);
-  padding-inline: calc(var(--osdk-surface-spacing) * 1.5);
-  border-radius: var(--osdk-surface-border-radius);
-  background-color: var(--osdk-custom-color-gray-2);
-  color: var(--osdk-typography-color-default-rest);
-  font-size: var(--osdk-typography-size-body-small);
-  font-weight: var(--osdk-typography-weight-bold);
-  line-height: var(--osdk-typography-line-height-default);
+  padding-block: var(--osdk-form-edited-tag-padding-block);
+  padding-inline: var(--osdk-form-edited-tag-padding-inline);
+  border-radius: var(--osdk-form-edited-tag-border-radius);
+  background-color: var(--osdk-form-edited-tag-bg);
+  color: var(--osdk-form-edited-tag-color);
+  font-size: var(--osdk-form-edited-tag-font-size);
+  font-weight: var(--osdk-form-edited-tag-font-weight);
+  line-height: var(--osdk-form-edited-tag-line-height);
 }
 
 .osdkFormFieldInfoIcon {
