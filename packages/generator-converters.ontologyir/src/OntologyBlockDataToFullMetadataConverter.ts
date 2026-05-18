@@ -747,12 +747,56 @@ export class OntologyBlockDataToFullMetadataConverter {
         }
       }
 
+      // Convert propertiesV3 to propertiesV2 (Ontologies.InterfacePropertyType)
+      const propertiesV2: Record<string, Ontologies.InterfacePropertyType> = {};
+      for (
+        const [_propRid, propValue] of Object.entries(
+          interfaceType.propertiesV3 ?? {},
+        )
+      ) {
+        if (propValue.type === "sharedPropertyBasedPropertyType") {
+          const spt = propValue.sharedPropertyBasedPropertyType
+            .sharedPropertyType;
+          const dataType = this.getOsdkPropertyTypeFromBlockData(spt.type);
+          if (dataType) {
+            propertiesV2[spt.apiName] = {
+              type: "interfaceSharedPropertyType",
+              rid: spt.rid,
+              apiName: spt.apiName,
+              displayName: spt.displayMetadata.displayName,
+              description: spt.displayMetadata.description ?? undefined,
+              dataType,
+              required: propValue.sharedPropertyBasedPropertyType
+                .requireImplementation,
+              typeClasses: [],
+            };
+          }
+        } else if (propValue.type === "interfaceDefinedPropertyType") {
+          const idp = propValue.interfaceDefinedPropertyType;
+          const dataType = this.getOsdkPropertyTypeFromBlockData(
+            idp.type as unknown as Type,
+          );
+          if (dataType) {
+            propertiesV2[idp.apiName] = {
+              type: "interfaceDefinedPropertyType",
+              rid: idp.rid,
+              apiName: idp.apiName,
+              displayName: idp.displayMetadata.displayName,
+              description: idp.displayMetadata.description ?? undefined,
+              dataType,
+              requireImplementation: idp.constraints.requireImplementation,
+              typeClasses: idp.constraints.typeClasses ?? [],
+            };
+          }
+        }
+      }
+
       const result_interfaceType: Ontologies.InterfaceType = {
         apiName: interfaceType.apiName,
         rid,
         properties,
         allProperties: properties, // Same as properties for now
-        propertiesV2: {},
+        propertiesV2,
         allPropertiesV2: {},
         extendsInterfaces: interfaceType.extendsInterfaces.map(val =>
           resolveBlockDataApiName(val, interfaceTypeLookup)
