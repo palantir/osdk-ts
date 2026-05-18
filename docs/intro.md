@@ -20,6 +20,7 @@ React hooks for building front-end applications with OSDK.
 - [Advanced Queries](/react/advanced-queries) - useObjectSet, derived properties, aggregations
 - [Cache Management](/react/cache-management) - Cache behavior and invalidation
 - [Platform APIs](/react/platform-apis) - useCurrentFoundryUser, useFoundryUser, useFoundryUsersList
+- [Devtools (Experimental)](/react-devtools/Prerequisites) - In-app monitoring panel and Vite plugin for inspecting, debugging, and tuning OSDK React apps
 
 ### [Components](/react-components/Prerequisites)
 
@@ -30,17 +31,6 @@ Pre-built, Ontology-aware React components with data loading, caching, and state
 - [FilterList](/react-components/FilterList) - Aggregation-based filter UI
 - [PdfViewer](/react-components/PdfViewer) - PDF viewer with annotations and search
 - [CbacPicker](/cbac-components/CbacPicker) - Classification marking picker, dialog, and banner
-
-### [Devtools](/react-devtools/Prerequisites)
-
-In-app monitoring panel and Vite plugin for inspecting, debugging, and tuning OSDK React applications during development.
-
-- [Prerequisites](/react-devtools/Prerequisites) - Installation and Vite plugin setup
-- [Getting Started](/react-devtools/GettingStarted) - Panel tour and tab overview
-- [Performance](/react-devtools/Performance) - Object loads, cache hits, dedupe, and revalidation
-- [Compute](/react-devtools/Compute) - Per-request Foundry compute attribution
-- [Intercept](/react-devtools/Intercept) - Mock OSDK queries and actions inline
-- [Debugging](/react-devtools/Debugging) - Errors, active hooks, and the cache inspector
 
 ### Other Guides
 
