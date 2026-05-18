@@ -1,0 +1,104 @@
+@use 'tokens' as t;
+@use 'mixins' as m;
+
+.debuggingTab {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid t.$border-default;
+  background: t.$bg-raised;
+  flex-shrink: 0;
+}
+
+.searchInput {
+  flex: 1;
+}
+
+.feed {
+  flex: 1;
+  overflow-y: auto;
+  @include m.dt-scrollbar;
+}
+
+.section {
+  border-bottom: 1px solid t.$border-default;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.sectionHeader {
+  @include m.dt-label;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: t.$bg-raised;
+  border-bottom: 1px solid t.$border-subtle;
+  position: sticky;
+  top: 0;
+  z-index: t.$z-sticky;
+}
+
+.sectionHeaderButton {
+  @include m.dt-label;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: t.$bg-raised;
+  border: none;
+  border-bottom: 1px solid t.$border-subtle;
+  width: 100%;
+  cursor: pointer;
+  transition: background-color t.$transition-fast;
+  position: sticky;
+  top: 0;
+  z-index: t.$z-sticky;
+
+  &:hover {
+    background: t.$bg-hover;
+  }
+}
+
+.sectionCount {
+  color: t.$text-tertiary;
+  font-weight: t.$font-weight-normal;
+  font-variant-numeric: tabular-nums;
+}
+
+.sectionChevron {
+  margin-left: auto;
+  color: t.$text-tertiary;
+}
+
+.errorSectionHeader {
+  border-left: 3px solid t.$red;
+}
+
+.clearLink {
+  font-size: t.$font-size-xs;
+  color: t.$text-tertiary;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: color t.$transition-fast;
+
+  &:hover {
+    color: t.$text-secondary;
+  }
+}
+
+.emptyState {
+  @include m.dt-empty-state;
+  font-size: t.$font-size-base;
+  padding: 24px 16px;
+}

@@ -9,7 +9,7 @@ The picker lets users select markings grouped by category. Some categories are *
 Before using CBAC components, make sure you have completed the library setup described in the [README](https://github.com/palantir/osdk-ts/blob/main/packages/cbac-components/README.md#setup), including:
 
 - Installing the required dependencies
-- Wrapping your app with `OsdkProvider2`
+- Wrapping your app with `OsdkProvider`
 - Adding the CSS imports
 
 ## Table of Contents
@@ -457,7 +457,7 @@ The frontend handles **only UI concerns**: toggling selections (respecting conju
 
 ### Picker shows "Loading..." indefinitely
 
-- Ensure your app is wrapped with `OsdkProvider2` with a properly configured OSDK client
+- Ensure your app is wrapped with `OsdkProvider` with a properly configured OSDK client
 - Check that the OSDK client has access to the marking categories and markings APIs
 - Verify network requests in browser DevTools for errors
 

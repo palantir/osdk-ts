@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
+import { Button, Dialog } from "@blueprintjs/core";
 import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
-import type { RendererFieldDefinition } from "@osdk/react-components/experimental";
+import type {
+  FormContentItem,
+  RendererFieldDefinition,
+} from "@osdk/react-components/experimental";
 import { BaseForm } from "@osdk/react-components/experimental";
 import { useOsdkClient } from "@osdk/react/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
@@ -33,12 +37,16 @@ import { Employee } from "../../types/Employee.js";
  */
 interface BaseFormStoryProps {
   formTitle?: string;
-  fieldDefinitions: ReadonlyArray<RendererFieldDefinition>;
+  formContent: ReadonlyArray<FormContentItem>;
   onSubmit: (formState: Record<string, unknown>) => void;
   isSubmitDisabled?: boolean;
   isPending?: boolean;
   isLoading?: boolean;
   className?: string;
+}
+
+function field(definition: RendererFieldDefinition): FormContentItem {
+  return { type: "field", definition };
 }
 
 const DROPDOWN_ITEMS = ["Low", "Medium", "High"];
@@ -54,8 +62,16 @@ const DEPARTMENT_ITEMS = [
 
 const TAG_ITEMS = ["Urgent", "Review", "Follow-up", "Archived", "Pinned"];
 
-const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
-  {
+const USER_ID_ITEMS = ["usr_ada", "usr_grace", "usr_katherine"];
+
+const USER_DIRECTORY: Record<string, { name: string; team: string }> = {
+  usr_ada: { name: "Ada Lovelace", team: "Computation" },
+  usr_grace: { name: "Grace Hopper", team: "Compilers" },
+  usr_katherine: { name: "Katherine Johnson", team: "Flight dynamics" },
+};
+
+const formContent: ReadonlyArray<FormContentItem> = [
+  field({
     fieldKey: "name",
     fieldComponent: "TEXT_INPUT",
     label: "Name",
@@ -63,8 +79,8 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
     fieldComponentProps: {
       placeholder: "Enter a name",
     },
-  },
-  {
+  }),
+  field({
     fieldKey: "description",
     fieldComponent: "TEXT_AREA",
     label: "Description",
@@ -72,8 +88,8 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
       placeholder: "Enter a description",
       rows: 3,
     },
-  },
-  {
+  }),
+  field({
     fieldKey: "quantity",
     fieldComponent: "NUMBER_INPUT",
     label: "Quantity",
@@ -84,8 +100,8 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
       step: 1,
       placeholder: "0",
     },
-  },
-  {
+  }),
+  field({
     fieldKey: "priority",
     fieldComponent: "DROPDOWN",
     label: "Priority",
@@ -93,8 +109,8 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
       items: DROPDOWN_ITEMS,
       placeholder: "Select priority",
     },
-  },
-  {
+  }),
+  field({
     fieldKey: "isActive",
     fieldComponent: "RADIO_BUTTONS",
     label: "Is Active",
@@ -104,24 +120,24 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
         { label: "False", value: false },
       ],
     },
-  },
-  {
+  }),
+  field({
     fieldKey: "startDate",
     fieldComponent: "DATETIME_PICKER",
     label: "Start Date",
     fieldComponentProps: {
       placeholder: "Select a date",
     },
-  },
-  {
+  }),
+  field({
     fieldKey: "document",
     fieldComponent: "FILE_PICKER",
     label: "Document",
     fieldComponentProps: {
       accept: ".pdf,.doc,.docx",
     },
-  },
-  {
+  }),
+  field({
     fieldKey: "notes",
     fieldComponent: "CUSTOM",
     label: "Notes",
@@ -135,10 +151,10 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
         />
       ),
     },
-  },
+  }),
 ];
 
-const EMPTY_FIELD_DEFINITIONS: ReadonlyArray<RendererFieldDefinition> = [];
+const EMPTY_FORM_CONTENT: ReadonlyArray<FormContentItem> = [];
 
 const TOAST_DURATION_MS = 3000;
 
@@ -172,8 +188,7 @@ function SubmitToast(): React.ReactElement | null {
 }
 
 const meta: Meta<BaseFormStoryProps> = {
-  title: "Experimental/BaseForm",
-  tags: ["experimental"],
+  title: "Experimental/ActionForm/Building Blocks/BaseForm",
   component: BaseForm,
   decorators: [
     (Story) => (
@@ -192,15 +207,21 @@ const meta: Meta<BaseFormStoryProps> = {
     controls: {
       expanded: true,
     },
+    docs: {
+      description: {
+        component:
+          "BaseForm is the lower-level form renderer used by ActionForm. Use it directly when you already have form content definitions or need custom form composition.",
+      },
+    },
   },
   argTypes: {
     formTitle: {
       description: "Optional title displayed at the top of the form.",
       control: "text",
     },
-    fieldDefinitions: {
+    formContent: {
       description:
-        "Ordered list of field definitions to render. Each definition specifies the field component type and its props.",
+        "Ordered list of form content items (fields or sections) to render.",
       control: false,
     },
     onSubmit: {
@@ -249,7 +270,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    fieldDefinitions,
+    formContent,
     onSubmit: handleSubmit,
   },
   parameters: {
@@ -257,7 +278,7 @@ export const Default: Story = {
       source: {
         code: `import { BaseForm } from "@osdk/react-components/experimental";
 
-const fieldDefinitions = [
+const formContent = [
   {
     fieldKey: "name",
     fieldComponent: "TEXT_INPUT",
@@ -327,7 +348,7 @@ const fieldDefinitions = [
 ];
 
 <BaseForm
-  fieldDefinitions={fieldDefinitions}
+  formContent={formContent}
   onSubmit={(formState) => console.log("Submitted:", formState)}
 />`,
       },
@@ -352,7 +373,7 @@ return (
       <pre>{JSON.stringify(formState, null, 2)}</pre>
     </div>
     <BaseForm
-      fieldDefinitions={fieldDefinitions}
+      formContent={formContent}
       formState={formState}
       onFieldValueChange={handleFieldValueChange}
       onSubmit={(state) => console.log("Submitted:", state)}
@@ -389,7 +410,7 @@ function ControlledFormStory(): React.ReactElement {
         </pre>
       </div>
       <BaseForm
-        fieldDefinitions={fieldDefinitions}
+        formContent={formContent}
         formState={formState}
         onFieldValueChange={handleFieldValueChange}
         onSubmit={handleSubmit}
@@ -401,7 +422,7 @@ function ControlledFormStory(): React.ReactElement {
 export const WithCustomTitle: Story = {
   args: {
     formTitle: "Create New Order",
-    fieldDefinitions,
+    formContent,
     onSubmit: handleSubmit,
   },
   parameters: {
@@ -409,7 +430,7 @@ export const WithCustomTitle: Story = {
       source: {
         code: `<BaseForm
   formTitle="Create New Order"
-  fieldDefinitions={fieldDefinitions}
+  formContent={formContent}
   onSubmit={(formState) => console.log("Submitted:", formState)}
 />`,
       },
@@ -419,7 +440,7 @@ export const WithCustomTitle: Story = {
 
 export const Loading: Story = {
   args: {
-    fieldDefinitions: EMPTY_FIELD_DEFINITIONS,
+    formContent: EMPTY_FORM_CONTENT,
     isLoading: true,
     onSubmit: handleSubmit,
   },
@@ -427,7 +448,7 @@ export const Loading: Story = {
     docs: {
       source: {
         code: `<BaseForm
-  fieldDefinitions={[]}
+  formContent={[]}
   isLoading={true}
   onSubmit={(formState) => console.log("Submitted:", formState)}
 />`,
@@ -438,7 +459,7 @@ export const Loading: Story = {
 
 export const SubmitDisabled: Story = {
   args: {
-    fieldDefinitions,
+    formContent,
     isSubmitDisabled: true,
     onSubmit: handleSubmit,
   },
@@ -446,7 +467,7 @@ export const SubmitDisabled: Story = {
     docs: {
       source: {
         code: `<BaseForm
-  fieldDefinitions={fieldDefinitions}
+  formContent={formContent}
   isSubmitDisabled={true}
   onSubmit={(formState) => console.log("Submitted:", formState)}
 />`,
@@ -457,7 +478,7 @@ export const SubmitDisabled: Story = {
 
 export const Pending: Story = {
   args: {
-    fieldDefinitions,
+    formContent,
     isPending: true,
     onSubmit: handleSubmit,
   },
@@ -465,7 +486,7 @@ export const Pending: Story = {
     docs: {
       source: {
         code: `<BaseForm
-  fieldDefinitions={fieldDefinitions}
+  formContent={formContent}
   isPending={true}
   onSubmit={(formState) => console.log("Submitted:", formState)}
 />`,
@@ -474,8 +495,99 @@ export const Pending: Story = {
   },
 };
 
-const validationFieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
+const switchFormContent: ReadonlyArray<FormContentItem> = [
+  field({
+    fieldKey: "isRemote",
+    fieldComponent: "SWITCH",
+    label: "Remote employee",
+    helperText: "Use a switch for boolean settings that map to on/off state.",
+    fieldComponentProps: {},
+  }),
+];
+
+export const WithSwitch: Story = {
+  args: {
+    formTitle: "Update employee",
+    formContent: switchFormContent,
+    onSubmit: handleSubmit,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const formContent = [
   {
+    fieldKey: "isRemote",
+    fieldComponent: "SWITCH",
+    label: "Remote employee",
+    fieldComponentProps: {},
+  },
+];
+
+<BaseForm
+  formTitle="Update employee"
+  formContent={formContent}
+  onSubmit={(formState) => console.log("Submitted:", formState)}
+/>`,
+      },
+    },
+  },
+};
+
+const unsupportedFormContent: ReadonlyArray<FormContentItem> = [
+  field({
+    fieldKey: "structPayload",
+    fieldComponent: "UNSUPPORTED",
+    label: "Struct payload",
+    isRequired: true,
+    fieldComponentProps: {},
+  }),
+  field({
+    fieldKey: "geoshape",
+    fieldComponent: "UNSUPPORTED",
+    label: "Geoshape",
+    fieldComponentProps: {},
+  }),
+];
+
+export const WithUnsupportedFields: Story = {
+  args: {
+    formTitle: "Unsupported field types",
+    formContent: unsupportedFormContent,
+    onSubmit: handleSubmit,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const formContent = [
+  {
+    fieldKey: "structPayload",
+    fieldComponent: "UNSUPPORTED",
+    label: "Struct payload",
+    isRequired: true,
+    fieldComponentProps: {},
+  },
+  {
+    fieldKey: "geoshape",
+    fieldComponent: "UNSUPPORTED",
+    label: "Geoshape",
+    fieldComponentProps: {},
+  },
+];
+
+// Unsupported fields render a disabled message.
+// Use fieldComponent: "CUSTOM" when you need to collect a value for these types.
+<BaseForm
+  formTitle="Unsupported field types"
+  formContent={formContent}
+  onSubmit={(formState) => console.log("Submitted:", formState)}
+/>`,
+      },
+    },
+  },
+};
+
+const validationFormContent: ReadonlyArray<FormContentItem> = [
+  field({
     fieldKey: "name",
     fieldComponent: "TEXT_INPUT",
     label: "Name",
@@ -483,8 +595,8 @@ const validationFieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
     fieldComponentProps: {
       placeholder: "Required field",
     },
-  },
-  {
+  }),
+  field({
     fieldKey: "username",
     fieldComponent: "TEXT_INPUT",
     label: "Username",
@@ -493,8 +605,8 @@ const validationFieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
       maxLength: 20,
       placeholder: "3-20 characters",
     },
-  },
-  {
+  }),
+  field({
     fieldKey: "quantity",
     fieldComponent: "NUMBER_INPUT",
     label: "Quantity",
@@ -504,8 +616,8 @@ const validationFieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
       step: 1,
       placeholder: "0-100",
     },
-  },
-  {
+  }),
+  field({
     fieldKey: "startDate",
     fieldComponent: "DATETIME_PICKER",
     label: "Start Date",
@@ -514,26 +626,26 @@ const validationFieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
       max: new Date(2026, 11, 31),
       placeholder: "2024-2026 only",
     },
-  },
-  {
+  }),
+  field({
     fieldKey: "document",
     fieldComponent: "FILE_PICKER",
     label: "Document",
     fieldComponentProps: {
       maxSize: 1048576,
     },
-  },
+  }),
 ];
 
 export const WithValidation: Story = {
   args: {
-    fieldDefinitions: validationFieldDefinitions,
+    formContent: validationFormContent,
     onSubmit: handleSubmit,
   },
   parameters: {
     docs: {
       source: {
-        code: `const fieldDefinitions = [
+        code: `const formContent = [
   {
     fieldKey: "name",
     fieldComponent: "TEXT_INPUT",
@@ -573,7 +685,7 @@ export const WithValidation: Story = {
 // Validation fires on blur, revalidates on change.
 // Submit button shows error summary tooltip when invalid.
 <BaseForm
-  fieldDefinitions={fieldDefinitions}
+  formContent={formContent}
   onSubmit={(formState) => console.log("Submitted:", formState)}
 />`,
       },
@@ -583,8 +695,8 @@ export const WithValidation: Story = {
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-const customValidateFieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
-  {
+const customValidateFormContent: ReadonlyArray<FormContentItem> = [
+  field({
     fieldKey: "email",
     fieldComponent: "TEXT_INPUT",
     label: "Email",
@@ -600,18 +712,18 @@ const customValidateFieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
     fieldComponentProps: {
       placeholder: "user@example.com",
     },
-  },
+  }),
 ];
 
 export const WithCustomValidation: Story = {
   args: {
-    fieldDefinitions: customValidateFieldDefinitions,
+    formContent: customValidateFormContent,
     onSubmit: handleSubmit,
   },
   parameters: {
     docs: {
       source: {
-        code: `const fieldDefinitions = [
+        code: `const formContent = [
   {
     fieldKey: "email",
     fieldComponent: "TEXT_INPUT",
@@ -627,7 +739,7 @@ export const WithCustomValidation: Story = {
 ];
 
 <BaseForm
-  fieldDefinitions={fieldDefinitions}
+  formContent={formContent}
   onSubmit={(formState) => console.log("Submitted:", formState)}
 />`,
       },
@@ -635,8 +747,8 @@ export const WithCustomValidation: Story = {
   },
 };
 
-const customErrorFieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
-  {
+const customErrorFormContent: ReadonlyArray<FormContentItem> = [
+  field({
     fieldKey: "name",
     fieldComponent: "TEXT_INPUT",
     label: "Name",
@@ -650,8 +762,8 @@ const customErrorFieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
     fieldComponentProps: {
       placeholder: "Your name",
     },
-  },
-  {
+  }),
+  field({
     fieldKey: "age",
     fieldComponent: "NUMBER_INPUT",
     label: "Age",
@@ -669,18 +781,18 @@ const customErrorFieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
       max: 120,
       placeholder: "18-120",
     },
-  },
+  }),
 ];
 
 export const WithCustomErrorMessages: Story = {
   args: {
-    fieldDefinitions: customErrorFieldDefinitions,
+    formContent: customErrorFormContent,
     onSubmit: handleSubmit,
   },
   parameters: {
     docs: {
       source: {
-        code: `const fieldDefinitions = [
+        code: `const formContent = [
   {
     fieldKey: "name",
     fieldComponent: "TEXT_INPUT",
@@ -706,7 +818,7 @@ export const WithCustomErrorMessages: Story = {
 ];
 
 <BaseForm
-  fieldDefinitions={fieldDefinitions}
+  formContent={formContent}
   onSubmit={(formState) => console.log("Submitted:", formState)}
 />`,
       },
@@ -721,7 +833,7 @@ export const WithObjectSetField: Story = {
         code: `const client = useOsdkClient();
 const employeeObjectSet = client(Employee);
 
-const fieldDefinitions = [
+const formContent = [
   {
     fieldKey: "name",
     fieldComponent: "TEXT_INPUT",
@@ -738,7 +850,7 @@ const fieldDefinitions = [
 ];
 
 <BaseForm
-  fieldDefinitions={fieldDefinitions}
+  formContent={formContent}
   onSubmit={(formState) => console.log("Submitted:", formState)}
 />`,
       },
@@ -759,87 +871,92 @@ function ObjectSetFieldStory(): React.ReactElement {
     [client],
   );
 
-  const objectSetFieldDefinitions: ReadonlyArray<RendererFieldDefinition> =
-    useMemo(
-      () => [
-        {
-          fieldKey: "name",
-          fieldComponent: "TEXT_INPUT" as const,
-          label: "Name",
-          isRequired: true,
-          fieldComponentProps: {
-            placeholder: "Enter a name",
-          },
+  const objectSetFormContent: ReadonlyArray<FormContentItem> = useMemo(
+    () => [
+      field({
+        fieldKey: "name",
+        fieldComponent: "TEXT_INPUT" as const,
+        label: "Name",
+        isRequired: true,
+        fieldComponentProps: {
+          placeholder: "Enter a name",
         },
-        {
-          fieldKey: "employees",
-          fieldComponent: "OBJECT_SET" as const,
-          label: "Employees",
-          fieldComponentProps: {
-            value: employeeObjectSet,
-          },
+      }),
+      field({
+        fieldKey: "employees",
+        fieldComponent: "OBJECT_SET" as const,
+        label: "Employees",
+        fieldComponentProps: {
+          value: employeeObjectSet,
         },
-      ],
-      [employeeObjectSet],
-    );
+      }),
+    ],
+    [employeeObjectSet],
+  );
 
   return (
     <BaseForm
-      fieldDefinitions={objectSetFieldDefinitions}
+      formContent={objectSetFormContent}
       onSubmit={handleSubmit}
     />
   );
 }
 
-const searchableDropdownFieldDefinitions: ReadonlyArray<
-  RendererFieldDefinition
-> = [
-  {
+const singleSelectDropdownFormContent: ReadonlyArray<FormContentItem> = [
+  field({
     fieldKey: "department",
     fieldComponent: "DROPDOWN",
-    label: "Department",
+    label: "Department (Select)",
+    fieldComponentProps: {
+      items: DEPARTMENT_ITEMS,
+      placeholder: "Select department...",
+    },
+  }),
+  field({
+    fieldKey: "team",
+    fieldComponent: "DROPDOWN",
+    label: "Team (Searchable)",
     fieldComponentProps: {
       items: DEPARTMENT_ITEMS,
       isSearchable: true,
-      placeholder: "Search departments...",
+      placeholder: "Search teams...",
     },
-  },
-  {
-    fieldKey: "name",
-    fieldComponent: "TEXT_INPUT",
-    label: "Name",
-    isRequired: true,
-    fieldComponentProps: {
-      placeholder: "Enter your name",
-    },
-  },
+  }),
 ];
 
-export const WithSearchableDropdown: Story = {
+export const WithDropdown: Story = {
   args: {
-    fieldDefinitions: searchableDropdownFieldDefinitions,
+    formContent: singleSelectDropdownFormContent,
     onSubmit: handleSubmit,
   },
   parameters: {
     docs: {
       source: {
-        code: `const fieldDefinitions = [
+        code: `const formContent = [
   {
     fieldKey: "department",
     fieldComponent: "DROPDOWN",
-    label: "Department",
+    label: "Department (Select)",
+    fieldComponentProps: {
+      items: ["Engineering", "Marketing", "Sales", "Finance", "Operations", "Legal"],
+      placeholder: "Select department...",
+    },
+  },
+  {
+    fieldKey: "team",
+    fieldComponent: "DROPDOWN",
+    label: "Team (Searchable)",
     fieldComponentProps: {
       items: ["Engineering", "Marketing", "Sales", "Finance", "Operations", "Legal"],
       isSearchable: true,
-      placeholder: "Search departments...",
+      placeholder: "Search teams...",
     },
   },
 ];
 
-// isSearchable renders a Combobox with type-ahead filtering
-// instead of a plain Select dropdown.
+// Side-by-side comparison: plain Select vs searchable Combobox.
 <BaseForm
-  fieldDefinitions={fieldDefinitions}
+  formContent={formContent}
   onSubmit={(formState) => console.log("Submitted:", formState)}
 />`,
       },
@@ -847,64 +964,66 @@ export const WithSearchableDropdown: Story = {
   },
 };
 
-const multiSelectDropdownFieldDefinitions: ReadonlyArray<
-  RendererFieldDefinition
-> = [
-  {
-    fieldKey: "title",
-    fieldComponent: "TEXT_INPUT",
-    label: "Title",
+const multiSelectDropdownFormContent: ReadonlyArray<FormContentItem> = [
+  field({
+    fieldKey: "categories",
+    fieldComponent: "DROPDOWN",
+    label: "Categories (Select)",
     isRequired: true,
     fieldComponentProps: {
-      placeholder: "Enter a title",
+      items: TAG_ITEMS,
+      isMultiple: true,
+      placeholder: "Select categories...",
     },
-  },
-  {
+  }),
+  field({
     fieldKey: "tags",
     fieldComponent: "DROPDOWN",
-    label: "Tags",
+    label: "Tags (Searchable)",
     fieldComponentProps: {
       items: TAG_ITEMS,
       isMultiple: true,
       isSearchable: true,
-      placeholder: "Select tags...",
+      placeholder: "Search tags...",
     },
-  },
+  }),
 ];
 
 export const WithMultiSelectDropdown: Story = {
   args: {
-    fieldDefinitions: multiSelectDropdownFieldDefinitions,
+    formContent: multiSelectDropdownFormContent,
     onSubmit: handleSubmit,
   },
   parameters: {
     docs: {
       source: {
-        code: `const fieldDefinitions = [
+        code: `const formContent = [
   {
-    fieldKey: "title",
-    fieldComponent: "TEXT_INPUT",
-    label: "Title",
-    isRequired: true,
-    fieldComponentProps: { placeholder: "Enter a title" },
+    fieldKey: "categories",
+    fieldComponent: "DROPDOWN",
+    label: "Categories (Select)",
+    fieldComponentProps: {
+      items: ["Urgent", "Review", "Follow-up", "Archived", "Pinned"],
+      isMultiple: true,
+      placeholder: "Select categories...",
+    },
   },
   {
     fieldKey: "tags",
     fieldComponent: "DROPDOWN",
-    label: "Tags",
+    label: "Tags (Searchable)",
     fieldComponentProps: {
       items: ["Urgent", "Review", "Follow-up", "Archived", "Pinned"],
       isMultiple: true,
       isSearchable: true,
-      placeholder: "Select tags...",
+      placeholder: "Search tags...",
     },
   },
 ];
 
-// isMultiple + isSearchable renders a multi-select Combobox
-// where users can search and select multiple values.
+// Side-by-side comparison: plain multi-Select vs searchable multi-Combobox.
 <BaseForm
-  fieldDefinitions={fieldDefinitions}
+  formContent={formContent}
   onSubmit={(formState) => console.log("Submitted:", formState)}
 />`,
       },
@@ -912,8 +1031,80 @@ export const WithMultiSelectDropdown: Story = {
   },
 };
 
-const dateTimeFieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
+const richDropdownLabelFormContent: ReadonlyArray<FormContentItem> = [
+  field({
+    fieldKey: "assigneeUserId",
+    fieldComponent: "DROPDOWN",
+    label: "Assignee",
+    fieldComponentProps: {
+      items: USER_ID_ITEMS,
+      itemToStringLabel: getUserIdLabel,
+      renderItemLabel: renderUserIdLabel,
+      isSearchable: true,
+      placeholder: "Search users...",
+    },
+  }),
+  field({
+    fieldKey: "reviewerUserIds",
+    fieldComponent: "DROPDOWN",
+    label: "Reviewers",
+    fieldComponentProps: {
+      items: USER_ID_ITEMS,
+      itemToStringLabel: getUserIdLabel,
+      renderItemLabel: renderUserIdLabel,
+      isMultiple: true,
+      isSearchable: true,
+      placeholder: "Search reviewers...",
+    },
+  }),
+];
+
+export const WithRichDropdownLabels: Story = {
+  args: {
+    formContent: richDropdownLabelFormContent,
+    onSubmit: handleSubmit,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const userIds = ["usr_ada", "usr_grace", "usr_katherine"];
+
+const usersById = {
+  usr_ada: { name: "Ada Lovelace", team: "Computation" },
+  usr_grace: { name: "Grace Hopper", team: "Compilers" },
+  usr_katherine: { name: "Katherine Johnson", team: "Flight dynamics" },
+};
+
+const formContent = [
   {
+    fieldKey: "assigneeUserId",
+    fieldComponent: "DROPDOWN",
+    label: "Assignee",
+    fieldComponentProps: {
+      items: userIds,
+      itemToStringLabel: (userId) => usersById[userId]?.name ?? userId,
+      renderItemLabel: (userId) => (
+        <span>
+          <strong>{usersById[userId]?.name ?? userId}</strong>
+          <span>{usersById[userId]?.team}</span>
+        </span>
+      ),
+      isSearchable: true,
+    },
+  },
+];
+
+<BaseForm
+  formContent={formContent}
+  onSubmit={(formState) => console.log("Submitted:", formState)}
+/>`,
+      },
+    },
+  },
+};
+
+const dateTimeFormContent: ReadonlyArray<FormContentItem> = [
+  field({
     fieldKey: "scheduledAt",
     fieldComponent: "DATETIME_PICKER",
     label: "Scheduled At (date + time)",
@@ -921,26 +1112,26 @@ const dateTimeFieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
       showTime: true,
       placeholder: "Select date and time",
     },
-  },
-  {
+  }),
+  field({
     fieldKey: "deadline",
     fieldComponent: "DATETIME_PICKER",
     label: "Deadline (date only)",
     fieldComponentProps: {
       placeholder: "Select date",
     },
-  },
+  }),
 ];
 
 export const WithDateTimePicker: Story = {
   args: {
-    fieldDefinitions: dateTimeFieldDefinitions,
+    formContent: dateTimeFormContent,
     onSubmit: handleSubmit,
   },
   parameters: {
     docs: {
       source: {
-        code: `const fieldDefinitions = [
+        code: `const formContent = [
   {
     fieldKey: "scheduledAt",
     fieldComponent: "DATETIME_PICKER",
@@ -963,7 +1154,7 @@ export const WithDateTimePicker: Story = {
 // showTime: true adds a time picker alongside the date calendar.
 // Without showTime, only the date is selectable.
 <BaseForm
-  fieldDefinitions={fieldDefinitions}
+  formContent={formContent}
   onSubmit={(formState) => console.log("Submitted:", formState)}
 />`,
       },
@@ -971,8 +1162,235 @@ export const WithDateTimePicker: Story = {
   },
 };
 
-const dateRangeFieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
-  {
+const blueprintDialogFormContent: ReadonlyArray<FormContentItem> = [
+  field({
+    fieldKey: "scheduledAt",
+    fieldComponent: "DATETIME_PICKER",
+    label: "Scheduled At",
+    fieldComponentProps: {
+      showTime: true,
+      placeholder: "Select date and time",
+    },
+  }),
+  field({
+    fieldKey: "deadline",
+    fieldComponent: "DATETIME_PICKER",
+    label: "Deadline",
+    fieldComponentProps: {
+      placeholder: "Select date",
+    },
+  }),
+  field({
+    fieldKey: "meetingWindow",
+    fieldComponent: "DATE_RANGE_INPUT",
+    label: "Meeting Window",
+    fieldComponentProps: {
+      showTime: true,
+      placeholderStart: "Start",
+      placeholderEnd: "End",
+    },
+  }),
+  field({
+    fieldKey: "department",
+    fieldComponent: "DROPDOWN",
+    label: "Department",
+    isRequired: true,
+    fieldComponentProps: {
+      items: DEPARTMENT_ITEMS,
+      placeholder: "Select department...",
+    },
+  }),
+  field({
+    fieldKey: "team",
+    fieldComponent: "DROPDOWN",
+    label: "Team",
+    fieldComponentProps: {
+      items: DEPARTMENT_ITEMS,
+      isSearchable: true,
+      placeholder: "Search teams...",
+    },
+  }),
+];
+
+function BlueprintDialogBaseForm(): React.ReactElement {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleOpen = useCallback(() => {
+    setIsOpen(true);
+  }, []);
+
+  const handleClose = useCallback(() => {
+    setIsOpen(false);
+  }, []);
+
+  return (
+    <>
+      <Button text="Open dialog" onClick={handleOpen} />
+      <Dialog
+        className="osdkBlueprintDialogForm"
+        isOpen={isOpen}
+        onClose={handleClose}
+        title="Action form"
+      >
+        <BaseForm
+          formContent={blueprintDialogFormContent}
+          onSubmit={handleSubmit}
+        />
+      </Dialog>
+    </>
+  );
+}
+
+export const InsideBlueprintDialog: Story = {
+  render: () => <BlueprintDialogBaseForm />,
+  parameters: {
+    docs: {
+      source: {
+        code: `function BlueprintDialogBaseForm() {
+  return (
+    <Dialog isOpen={true} title="Action form">
+      <BaseForm formContent={formContent} onSubmit={handleSubmit} />
+    </Dialog>
+  );
+}`,
+      },
+    },
+  },
+};
+
+const scrollableDialogFormContent: ReadonlyArray<FormContentItem> = [
+  field({
+    fieldKey: "name",
+    fieldComponent: "TEXT_INPUT",
+    label: "Full Name",
+    isRequired: true,
+    fieldComponentProps: { placeholder: "Enter full name" },
+  }),
+  field({
+    fieldKey: "email",
+    fieldComponent: "TEXT_INPUT",
+    label: "Email",
+    isRequired: true,
+    fieldComponentProps: { placeholder: "user@example.com" },
+  }),
+  field({
+    fieldKey: "department",
+    fieldComponent: "DROPDOWN",
+    label: "Department",
+    fieldComponentProps: {
+      items: DEPARTMENT_ITEMS,
+      placeholder: "Select department...",
+    },
+  }),
+  field({
+    fieldKey: "startDate",
+    fieldComponent: "DATETIME_PICKER",
+    label: "Start Date",
+    fieldComponentProps: { placeholder: "Select a date" },
+  }),
+  field({
+    fieldKey: "priority",
+    fieldComponent: "DROPDOWN",
+    label: "Priority",
+    fieldComponentProps: {
+      items: DROPDOWN_ITEMS,
+      placeholder: "Select priority",
+    },
+  }),
+  field({
+    fieldKey: "isActive",
+    fieldComponent: "RADIO_BUTTONS",
+    label: "Status",
+    fieldComponentProps: {
+      options: [
+        { label: "Active", value: true },
+        { label: "Inactive", value: false },
+      ],
+    },
+  }),
+  field({
+    fieldKey: "bio",
+    fieldComponent: "TEXT_AREA",
+    label: "Bio",
+    fieldComponentProps: { placeholder: "Tell us about yourself", rows: 3 },
+  }),
+  field({
+    fieldKey: "tags",
+    fieldComponent: "DROPDOWN",
+    label: "Tags",
+    fieldComponentProps: {
+      items: TAG_ITEMS,
+      isMultiple: true,
+      isSearchable: true,
+      placeholder: "Search tags...",
+    },
+  }),
+  field({
+    fieldKey: "document",
+    fieldComponent: "FILE_PICKER",
+    label: "Resume",
+    fieldComponentProps: { accept: ".pdf,.doc,.docx" },
+  }),
+  field({
+    fieldKey: "notes",
+    fieldComponent: "TEXT_AREA",
+    label: "Additional Notes",
+    fieldComponentProps: { placeholder: "Any extra details", rows: 2 },
+  }),
+];
+
+function ScrollableDialogBaseForm(): React.ReactElement {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleOpen = useCallback(() => {
+    setIsOpen(true);
+  }, []);
+
+  const handleClose = useCallback(() => {
+    setIsOpen(false);
+  }, []);
+
+  return (
+    <>
+      <Button text="Open dialog" onClick={handleOpen} />
+      <Dialog
+        className="osdkBlueprintDialogForm"
+        isOpen={isOpen}
+        onClose={handleClose}
+        title="New employee"
+      >
+        <BaseForm
+          formContent={scrollableDialogFormContent}
+          onSubmit={handleSubmit}
+        />
+      </Dialog>
+    </>
+  );
+}
+
+export const ScrollableDialogForm: Story = {
+  render: () => <ScrollableDialogBaseForm />,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "When the form has many fields inside a height-constrained container like a dialog, the fields area scrolls while the footer stays pinned at the bottom.",
+      },
+      source: {
+        code:
+          `// The footer pins automatically when the form overflows its container.
+// No extra CSS or props needed — just place BaseForm inside a
+// height-constrained parent (dialog, panel, sidebar).
+<Dialog isOpen={true} title="New employee">
+  <BaseForm formContent={manyFields} onSubmit={handleSubmit} />
+</Dialog>`,
+      },
+    },
+  },
+};
+
+const dateRangeFormContent: ReadonlyArray<FormContentItem> = [
+  field({
     fieldKey: "vacationDates",
     fieldComponent: "DATE_RANGE_INPUT",
     label: "Vacation Dates (date only)",
@@ -980,8 +1398,8 @@ const dateRangeFieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
       placeholderStart: "Start date",
       placeholderEnd: "End date",
     },
-  },
-  {
+  }),
+  field({
     fieldKey: "meetingWindow",
     fieldComponent: "DATE_RANGE_INPUT",
     label: "Meeting Window (date + time)",
@@ -990,18 +1408,18 @@ const dateRangeFieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
       placeholderStart: "Start",
       placeholderEnd: "End",
     },
-  },
+  }),
 ];
 
 export const WithDateRangePicker: Story = {
   args: {
-    fieldDefinitions: dateRangeFieldDefinitions,
+    formContent: dateRangeFormContent,
     onSubmit: handleSubmit,
   },
   parameters: {
     docs: {
       source: {
-        code: `const fieldDefinitions = [
+        code: `const formContent = [
   {
     fieldKey: "vacationDates",
     fieldComponent: "DATE_RANGE_INPUT",
@@ -1026,7 +1444,7 @@ export const WithDateRangePicker: Story = {
 // DATE_RANGE_INPUT renders two inputs (start/end) with
 // a shared calendar popover. showTime adds time pickers.
 <BaseForm
-  fieldDefinitions={fieldDefinitions}
+  formContent={formContent}
   onSubmit={(formState) => console.log("Submitted:", formState)}
 />`,
       },
@@ -1034,40 +1452,39 @@ export const WithDateRangePicker: Story = {
   },
 };
 
-const multiFilePickerFieldDefinitions: ReadonlyArray<RendererFieldDefinition> =
-  [
-    {
-      fieldKey: "attachments",
-      fieldComponent: "FILE_PICKER",
-      label: "Attachments",
-      fieldComponentProps: {
-        isMulti: true,
-        accept: [".pdf", ".png", ".jpg"],
-        maxSize: 5242880,
-        text: "No files selected",
-        buttonText: "Choose Files",
-      },
+const multiFilePickerFormContent: ReadonlyArray<FormContentItem> = [
+  field({
+    fieldKey: "attachments",
+    fieldComponent: "FILE_PICKER",
+    label: "Attachments",
+    fieldComponentProps: {
+      isMulti: true,
+      accept: [".pdf", ".png", ".jpg"],
+      maxSize: 5242880,
+      text: "No files selected",
+      buttonText: "Choose Files",
     },
-    {
-      fieldKey: "singleFile",
-      fieldComponent: "FILE_PICKER",
-      label: "Cover Image (single file)",
-      fieldComponentProps: {
-        accept: ".png,.jpg",
-        text: "No file chosen",
-      },
+  }),
+  field({
+    fieldKey: "singleFile",
+    fieldComponent: "FILE_PICKER",
+    label: "Cover Image (single file)",
+    fieldComponentProps: {
+      accept: ".png,.jpg",
+      text: "No file chosen",
     },
-  ];
+  }),
+];
 
 export const WithMultiFilePicker: Story = {
   args: {
-    fieldDefinitions: multiFilePickerFieldDefinitions,
+    formContent: multiFilePickerFormContent,
     onSubmit: handleSubmit,
   },
   parameters: {
     docs: {
       source: {
-        code: `const fieldDefinitions = [
+        code: `const formContent = [
   {
     fieldKey: "attachments",
     fieldComponent: "FILE_PICKER",
@@ -1094,6 +1511,114 @@ export const WithMultiFilePicker: Story = {
 // maxSize validates individual file sizes (in bytes).
 // accept filters file types in the browser file dialog.
 <BaseForm
+  formContent={formContent}
+  onSubmit={(formState) => console.log("Submitted:", formState)}
+/>`,
+      },
+    },
+  },
+};
+
+const helperTextFormContent: ReadonlyArray<FormContentItem> = [
+  field({
+    fieldKey: "email",
+    fieldComponent: "TEXT_INPUT",
+    label: "Email",
+    isRequired: true,
+    helperText: (
+      <span>
+        We'll use this to send you a confirmation.{" "}
+        <a href="#privacy" style={{ color: "inherit" }}>
+          Privacy policy
+        </a>
+      </span>
+    ),
+    helperTextPlacement: "tooltip",
+    fieldComponentProps: {
+      placeholder: "you@example.com",
+    },
+  }),
+  field({
+    fieldKey: "bio",
+    fieldComponent: "TEXT_AREA",
+    label: "Bio",
+    helperText: (
+      <span>
+        Write a short bio. <strong>Markdown</strong> is supported.
+      </span>
+    ),
+    helperTextPlacement: "bottom",
+    fieldComponentProps: {
+      placeholder: "Tell us about yourself",
+      rows: 3,
+    },
+  }),
+  field({
+    fieldKey: "department",
+    fieldComponent: "DROPDOWN",
+    label: "Department",
+    helperText: "Select the department you belong to",
+    helperTextPlacement: "tooltip",
+    fieldComponentProps: {
+      items: DEPARTMENT_ITEMS,
+      placeholder: "Select department",
+    },
+  }),
+];
+
+export const WithHelperText: Story = {
+  args: {
+    formContent: helperTextFormContent,
+    onSubmit: handleSubmit,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const fieldDefinitions = [
+  {
+    fieldKey: "email",
+    fieldComponent: "TEXT_INPUT",
+    label: "Email",
+    isRequired: true,
+    helperText: (
+      <span>
+        We'll use this to send you a confirmation.{" "}
+        <a href="#privacy">Privacy policy</a>
+      </span>
+    ),
+    helperTextPlacement: "tooltip",
+    fieldComponentProps: { placeholder: "you@example.com" },
+  },
+  {
+    fieldKey: "bio",
+    fieldComponent: "TEXT_AREA",
+    label: "Bio",
+    helperText: (
+      <span>
+        Write a short bio. <strong>Markdown</strong> is supported.
+      </span>
+    ),
+    helperTextPlacement: "bottom",
+    fieldComponentProps: { placeholder: "Tell us about yourself", rows: 3 },
+  },
+  {
+    fieldKey: "department",
+    fieldComponent: "DROPDOWN",
+    label: "Department",
+    helperText: "Select the department you belong to",
+    helperTextPlacement: "tooltip",
+    fieldComponentProps: {
+      items: ["Engineering", "Marketing", "Sales"],
+      placeholder: "Select department",
+    },
+  },
+];
+
+// helperText accepts React.ReactNode — plain strings, JSX with links,
+// bold text, or any valid React node.
+// "tooltip" (default) shows an info icon next to the label.
+// "bottom" renders the text below the label, above the input.
+<BaseForm
   fieldDefinitions={fieldDefinitions}
   onSubmit={(formState) => console.log("Submitted:", formState)}
 />`,
@@ -1102,8 +1627,8 @@ export const WithMultiFilePicker: Story = {
   },
 };
 
-const defaultValueFieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
-  {
+const defaultValueFormContent: ReadonlyArray<FormContentItem> = [
+  field({
     fieldKey: "name",
     fieldComponent: "TEXT_INPUT",
     label: "Name",
@@ -1112,8 +1637,8 @@ const defaultValueFieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
       placeholder: "Enter a name",
       defaultValue: "Jane Doe",
     },
-  },
-  {
+  }),
+  field({
     fieldKey: "quantity",
     fieldComponent: "NUMBER_INPUT",
     label: "Quantity",
@@ -1123,8 +1648,8 @@ const defaultValueFieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
       step: 1,
       defaultValue: 42,
     },
-  },
-  {
+  }),
+  field({
     fieldKey: "priority",
     fieldComponent: "DROPDOWN",
     label: "Priority",
@@ -1132,18 +1657,18 @@ const defaultValueFieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
       items: DROPDOWN_ITEMS,
       placeholder: "Select priority",
     },
-  },
+  }),
 ];
 
 export const WithDefaultValues: Story = {
   args: {
-    fieldDefinitions: defaultValueFieldDefinitions,
+    formContent: defaultValueFormContent,
     onSubmit: handleSubmit,
   },
   parameters: {
     docs: {
       source: {
-        code: `const fieldDefinitions = [
+        code: `const formContent = [
   {
     fieldKey: "name",
     fieldComponent: "TEXT_INPUT",
@@ -1178,6 +1703,130 @@ export const WithDefaultValues: Story = {
 // in uncontrolled mode. The "Priority" dropdown has no default
 // for comparison.
 <BaseForm
+  formContent={formContent}
+  onSubmit={(formState) => console.log("Submitted:", formState)}
+/>`,
+      },
+    },
+  },
+};
+
+const objectSelectFormContent: ReadonlyArray<FormContentItem> = [
+  field({
+    fieldKey: "name",
+    fieldComponent: "TEXT_INPUT",
+    label: "Name",
+    isRequired: true,
+    fieldComponentProps: {
+      placeholder: "Enter a name",
+    },
+  }),
+  field({
+    fieldKey: "employee",
+    fieldComponent: "OBJECT_SELECT",
+    label: "Employee",
+    fieldComponentProps: {
+      objectType: { type: "object" as const, apiName: "Employee" },
+      placeholder: "Search employees\u2026",
+    },
+  }),
+];
+
+const sectionFormContent: ReadonlyArray<FormContentItem> = [
+  field({
+    fieldKey: "department",
+    fieldComponent: "DROPDOWN",
+    label: "Department",
+    fieldComponentProps: {
+      items: DEPARTMENT_ITEMS,
+      placeholder: "Select department...",
+    },
+  }),
+  {
+    type: "section",
+    key: "personal",
+    definition: {
+      title: "Personal Information",
+      description: "Basic details about the employee",
+      fields: [
+        {
+          fieldKey: "name",
+          fieldComponent: "TEXT_INPUT",
+          label: "Full Name",
+          isRequired: true,
+          fieldComponentProps: { placeholder: "Enter full name" },
+        },
+        {
+          fieldKey: "email",
+          fieldComponent: "TEXT_INPUT",
+          label: "Email",
+          fieldComponentProps: { placeholder: "user@example.com" },
+        },
+      ],
+    },
+  },
+  {
+    type: "section",
+    key: "settings",
+    definition: {
+      title: "Settings",
+      collapsedByDefault: true,
+      fields: [
+        {
+          fieldKey: "isActive",
+          fieldComponent: "RADIO_BUTTONS",
+          label: "Active",
+          fieldComponentProps: {
+            options: [
+              { label: "Yes", value: true },
+              { label: "No", value: false },
+            ],
+          },
+        },
+        {
+          fieldKey: "priority",
+          fieldComponent: "DROPDOWN",
+          label: "Priority",
+          fieldComponentProps: {
+            items: DROPDOWN_ITEMS,
+            placeholder: "Select priority",
+          },
+        },
+      ],
+    },
+  },
+];
+
+export const WithObjectSelect: Story = {
+  args: {
+    formContent: objectSelectFormContent,
+    onSubmit: handleSubmit,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const fieldDefinitions = [
+  {
+    fieldKey: "name",
+    fieldComponent: "TEXT_INPUT",
+    label: "Name",
+    isRequired: true,
+    fieldComponentProps: { placeholder: "Enter a name" },
+  },
+  {
+    fieldKey: "employee",
+    fieldComponent: "OBJECT_SELECT",
+    label: "Employee",
+    fieldComponentProps: {
+      objectType: { type: "object" as const, apiName: "Employee" },
+      placeholder: "Search employees\u2026",
+    },
+  },
+];
+
+// OBJECT_SELECT renders a searchable dropdown that queries
+// the Foundry ontology for objects matching the search term.
+<BaseForm
   fieldDefinitions={fieldDefinitions}
   onSubmit={(formState) => console.log("Submitted:", formState)}
 />`,
@@ -1185,3 +1834,201 @@ export const WithDefaultValues: Story = {
     },
   },
 };
+
+function ScopedObjectSelectStory(): React.ReactElement {
+  const client = useOsdkClient();
+  const marketingEmployees = useMemo(
+    () =>
+      client(Employee).where({ department: "Marketing" }) as ObjectSet<
+        ObjectTypeDefinition
+      >,
+    [client],
+  );
+  const scopedObjectSelectFormContent = useMemo(
+    (): ReadonlyArray<FormContentItem> => [
+      field({
+        fieldKey: "employee",
+        fieldComponent: "OBJECT_SELECT",
+        label: "Marketing employee",
+        helperText: "This selector is scoped by an ObjectSet.",
+        fieldComponentProps: {
+          objectSet: marketingEmployees,
+          placeholder: "Search Marketing employees…",
+        },
+      }),
+    ],
+    [marketingEmployees],
+  );
+
+  return (
+    <BaseForm
+      formContent={scopedObjectSelectFormContent}
+      onSubmit={handleSubmit}
+    />
+  );
+}
+
+export const WithScopedObjectSelect: Story = {
+  render: () => <ScopedObjectSelectStory />,
+  parameters: {
+    docs: {
+      source: {
+        code: `function ScopedEmployeeForm() {
+  const client = useOsdkClient();
+  const marketingEmployees = useMemo(
+    () => client(Employee).where({ department: "Marketing" }),
+    [client],
+  );
+
+  const formContent = [
+    {
+      type: "field",
+      definition: {
+        fieldKey: "employee",
+        fieldComponent: "OBJECT_SELECT",
+        label: "Marketing employee",
+        helperText: "This selector is scoped by an ObjectSet.",
+        fieldComponentProps: {
+          objectSet: marketingEmployees,
+          placeholder: "Search Marketing employees…",
+        },
+      },
+    },
+  ];
+
+  return <BaseForm formContent={formContent} onSubmit={handleSubmit} />;
+}`,
+      },
+    },
+  },
+};
+
+export const WithSections: Story = {
+  args: {
+    formContent: sectionFormContent,
+    onSubmit: handleSubmit,
+  },
+};
+
+const minimalSectionFormContent: ReadonlyArray<FormContentItem> = [
+  {
+    type: "section",
+    key: "contact",
+    definition: {
+      title: "Contact Details",
+      style: "minimal",
+      description: "How to reach the employee",
+      fields: [
+        {
+          fieldKey: "phone",
+          fieldComponent: "TEXT_INPUT",
+          label: "Phone",
+          fieldComponentProps: { placeholder: "+1 (555) 000-0000" },
+        },
+        {
+          fieldKey: "email",
+          fieldComponent: "TEXT_INPUT",
+          label: "Email",
+          fieldComponentProps: { placeholder: "user@example.com" },
+        },
+      ],
+    },
+  },
+  {
+    type: "section",
+    key: "address",
+    definition: {
+      title: "Address",
+      style: "minimal",
+      fields: [
+        {
+          fieldKey: "street",
+          fieldComponent: "TEXT_INPUT",
+          label: "Street",
+          fieldComponentProps: { placeholder: "123 Main St" },
+        },
+        {
+          fieldKey: "city",
+          fieldComponent: "TEXT_INPUT",
+          label: "City",
+          fieldComponentProps: { placeholder: "Springfield" },
+        },
+      ],
+    },
+  },
+];
+
+export const WithMinimalSections: Story = {
+  args: {
+    formContent: minimalSectionFormContent,
+    onSubmit: handleSubmit,
+  },
+};
+
+const gridSectionFormContent: ReadonlyArray<FormContentItem> = [
+  {
+    type: "section",
+    key: "employee",
+    definition: {
+      title: "Employee Details",
+      columnCount: 2,
+      fields: [
+        {
+          fieldKey: "firstName",
+          fieldComponent: "TEXT_INPUT",
+          label: "First Name",
+          fieldComponentProps: { placeholder: "First" },
+        },
+        {
+          fieldKey: "lastName",
+          fieldComponent: "TEXT_INPUT",
+          label: "Last Name",
+          fieldComponentProps: { placeholder: "Last" },
+        },
+        {
+          fieldKey: "email",
+          fieldComponent: "TEXT_INPUT",
+          label: "Email",
+          fieldComponentProps: { placeholder: "user@example.com" },
+        },
+        {
+          fieldKey: "department",
+          fieldComponent: "DROPDOWN",
+          label: "Department",
+          fieldComponentProps: {
+            items: DEPARTMENT_ITEMS,
+            placeholder: "Select...",
+          },
+        },
+      ],
+    },
+  },
+];
+
+export const WithGridSection: Story = {
+  args: {
+    formContent: gridSectionFormContent,
+    onSubmit: handleSubmit,
+  },
+};
+function getUserIdLabel(item: unknown): string {
+  if (typeof item !== "string") {
+    return String(item);
+  }
+
+  return USER_DIRECTORY[item]?.name ?? item;
+}
+
+function renderUserIdLabel(item: unknown): React.ReactNode {
+  const userId = String(item);
+  const user = USER_DIRECTORY[userId];
+
+  return (
+    <span className="osdkRichDropdownLabel">
+      <strong>{user?.name ?? userId}</strong>
+      {user?.team != null
+        ? <span className="osdkRichDropdownDescription">{user.team}</span>
+        : null}
+    </span>
+  );
+}

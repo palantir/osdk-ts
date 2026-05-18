@@ -51,6 +51,11 @@ export const employee1 = {
   employeeStatus: "TimeSeries<String>",
   employeeSensor: "TimeSeries<>",
   employeeLocation: "GeotimeSeriesReferencePlaceholder",
+  employeeProfile: {
+    bio: "Senior engineer with expertise in distributed systems",
+    yearsExperience: 10,
+  },
+  performanceScores: [95.5, 88.2, 92.1],
 } as const;
 export const employee1_50030_JohnDoe: typeof employee1 = employee1;
 
@@ -68,6 +73,11 @@ export const employee2 = {
   employeeStatus: "TimeSeries<String>",
   employeeSensor: "TimeSeries<>",
   employeeLocation: "GeotimeSeriesReferencePlaceholder",
+  employeeProfile: {
+    bio: "Team lead focused on frontend development",
+    yearsExperience: 8,
+  },
+  performanceScores: [91.0, 89.5, 94.0],
 } as const;
 export const employee2_50031_JaneDoe: typeof employee2 = employee2;
 

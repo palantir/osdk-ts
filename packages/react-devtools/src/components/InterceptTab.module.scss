@@ -1,0 +1,294 @@
+@use 'tokens' as t;
+@use 'mixins' as m;
+
+.interceptTab {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.header {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-bottom: 1px solid t.$border-default;
+}
+
+.info {
+  font-size: t.$font-size-base;
+  color: t.$text-secondary;
+}
+
+.activateButton {
+  width: 100%;
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  @include m.dt-scrollbar;
+}
+
+.error {
+  position: relative;
+  font-size: t.$font-size-base;
+}
+
+.dismissButton {
+  float: right;
+}
+
+.helpIcon {
+  cursor: help;
+  vertical-align: middle;
+}
+
+.mainContent {
+  padding: 12px;
+}
+
+.section {
+  margin-bottom: 20px;
+}
+
+.sectionTitle {
+  @include m.dt-label;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.emptyState {
+  @include m.dt-empty-state;
+  border: 1px solid t.$border-subtle;
+  border-radius: t.$radius-md;
+}
+
+.emptySubtext {
+  font-size: t.$font-size-base;
+  color: t.$text-tertiary;
+}
+
+// Intercept type choice panel
+.interceptTypeChoice {
+  margin: 12px;
+  background: t.$bg-surface;
+  border: 1px solid t.$border-default;
+  border-radius: t.$radius-lg;
+  overflow: hidden;
+}
+
+.choiceGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 16px;
+}
+
+.choiceCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 20px 16px;
+  background: t.$bg-base;
+  border: 1px solid t.$border-subtle;
+  border-radius: t.$radius-md;
+  cursor: pointer;
+  text-align: center;
+  color: t.$text-primary;
+  transition: border-color t.$transition-fast, background-color t.$transition-fast;
+
+  &:hover {
+    border-color: t.$blue;
+    background: t.$bg-hover;
+  }
+}
+
+.choiceTitle {
+  font-size: t.$font-size-md;
+  font-weight: t.$font-weight-semi;
+}
+
+.choiceDescription {
+  font-size: t.$font-size-sm;
+  color: t.$text-tertiary;
+  line-height: 1.4;
+}
+
+// Unified intercept list
+.interceptList {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.interceptItem {
+  @include m.dt-list-item;
+  justify-content: space-between;
+  padding: 10px 12px;
+}
+
+.interceptItemContent {
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.interceptItemHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.interceptItemTitle {
+  font-size: t.$font-size-md;
+  font-weight: t.$font-weight-medium;
+  color: t.$text-primary;
+  font-family: t.$font-mono;
+}
+
+.interceptItemMeta {
+  font-size: t.$font-size-sm;
+  color: t.$text-tertiary;
+  font-family: t.$font-mono;
+}
+
+.interceptItemDetails {
+  display: flex;
+  gap: 12px;
+  font-size: t.$font-size-sm;
+  color: t.$text-tertiary;
+}
+
+.interceptItemActions {
+  display: flex;
+  gap: 4px;
+}
+
+// Type badges
+.interceptBadge {
+  @include m.dt-badge(t.$blue-bg, t.$blue);
+}
+
+.interceptBadgeMock {
+  background: t.$blue-bg;
+  color: t.$blue;
+}
+
+.interceptBadgeOverride {
+  background: t.$green-bg;
+  color: t.$green;
+}
+
+// Override status
+.overrideItemStatus {
+  font-size: t.$font-size-xs;
+  padding: 1px 6px;
+  border-radius: t.$radius-sm;
+  text-transform: uppercase;
+  font-weight: t.$font-weight-semi;
+  letter-spacing: 0.03em;
+}
+
+.statusEnabled {
+  background: t.$green-bg;
+  color: t.$green;
+}
+
+.statusDisabled {
+  background: t.$bg-hover;
+  color: t.$text-tertiary;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+// Editor panels
+.editorPanel {
+  margin: 12px;
+  background: t.$bg-surface;
+  border: 1px solid t.$border-default;
+  border-radius: t.$radius-lg;
+  overflow: hidden;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: t.$bg-raised;
+  border-bottom: 1px solid t.$border-default;
+  color: t.$text-primary;
+  font-weight: t.$font-weight-medium;
+}
+
+.panelTitle {
+  font-size: t.$font-size-md;
+  font-weight: t.$font-weight-semi;
+  color: t.$text-primary;
+  font-family: t.$font-mono;
+}
+
+.panelSubtitle {
+  font-size: t.$font-size-sm;
+  color: t.$text-tertiary;
+}
+
+.editorContent {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.editorActions {
+  display: flex;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid t.$border-subtle;
+}
+
+.detail {
+  font-family: t.$font-mono;
+}
+
+.editorPlaceholder {
+  padding: 12px;
+  text-align: center;
+  color: t.$text-tertiary;
+  font-size: t.$font-size-base;
+}
+
+// Inline mock editor
+.primitiveSignature {
+  padding: 8px 12px;
+  background: t.$bg-base;
+  border-radius: t.$radius-md;
+  border-left: 2px solid t.$blue;
+
+  code {
+    font-size: t.$font-size-base;
+    color: t.$blue;
+    font-family: t.$font-mono;
+  }
+}
+
+.codeEditor {
+  font-family: t.$font-mono;
+  font-size: t.$font-size-base;
+  background: t.$bg-base !important;
+  border: 1px solid t.$border-default !important;
+  color: t.$text-primary !important;
+
+  &:focus {
+    border-color: t.$blue !important;
+    box-shadow: 0 0 0 1px t.$blue !important;
+  }
+}

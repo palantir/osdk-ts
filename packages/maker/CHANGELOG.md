@@ -1,5 +1,81 @@
 # @osdk/maker
 
+## 0.26.0
+
+### Patch Changes
+
+- Updated dependencies [9eb67e4]
+  - @osdk/api@2.20.0
+  - @osdk/generator-converters.ontologyir@2.20.0
+
+## 0.25.0
+
+### Patch Changes
+
+- Updated dependencies [02c796c]
+- Updated dependencies [46c553f]
+- Updated dependencies [d962309]
+  - @osdk/api@2.19.0
+  - @osdk/generator-converters.ontologyir@2.19.0
+
+## 0.24.0
+
+### Minor Changes
+
+- 56c5630: Drop redundant `--config $(find-up dprint.json)` from `lint`, `fix-lint`, and `format` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the substitution was a no-op anyway since `find-up` is an npm package, not a CLI. Also fix the `uploadMediaOntologyEdits` documentation example so its `// @ts-ignore` survives dprint reformatting (the broken `format` step had been masking this).
+- ebc5f0c: Experimental function backed actions in OAC
+
+### Patch Changes
+
+- Updated dependencies [56c5630]
+- Updated dependencies [ebc5f0c]
+- Updated dependencies [17d7ba2]
+  - @osdk/api@2.16.0
+  - @osdk/generator-converters.ontologyir@2.16.0
+  - @osdk/typescript-sdk-docs@0.10.0
+
+## 0.23.0
+
+### Patch Changes
+
+- @osdk/api@2.15.0
+- @osdk/generator-converters.ontologyir@2.15.0
+
+## 0.22.0
+
+### Minor Changes
+
+- 02a5765: fix ts discovery api break
+- 2f40eee: Support edits history
+
+### Patch Changes
+
+- Updated dependencies [02a5765]
+- Updated dependencies [20e9678]
+  - @osdk/generator-converters.ontologyir@2.14.0
+  - @osdk/api@2.14.0
+
+## 0.21.0
+
+### Patch Changes
+
+- Updated dependencies [f522327]
+  - @osdk/typescript-sdk-docs@0.9.0
+  - @osdk/api@2.13.0
+  - @osdk/generator-converters.ontologyir@2.13.0
+
+## 0.20.0
+
+### Minor Changes
+
+- 9225ee3: interface property string analyzers
+
+### Patch Changes
+
+- Updated dependencies [91f34a9]
+  - @osdk/api@2.12.0
+  - @osdk/generator-converters.ontologyir@2.12.0
+
 ## 0.19.0
 
 ### Minor Changes

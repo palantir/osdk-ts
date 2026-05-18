@@ -26,25 +26,130 @@
   opacity: 0.5;
 }
 
-.histogramContainer {
-  display: flex;
-  align-items: flex-end;
-  height: var(--osdk-filter-range-histogram-height);
-  gap: var(--osdk-filter-range-histogram-bar-gap);
-  padding-bottom: var(--osdk-filter-range-histogram-padding-bottom);
-  padding-inline: var(--osdk-filter-range-histogram-padding-inline);
-  overflow: hidden;
+.histogramWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.histogramSvg {
+  display: block;
+  width: 100%;
+  aspect-ratio: 400 / 180;
+  overflow: visible;
+}
+
+.histogramSvg[data-click-to-filter="true"] {
+  cursor: pointer;
+}
+
+.clearButton {
+  align-self: flex-end;
+  font-family: var(--osdk-filter-range-label-font-family);
+  font-size: var(--osdk-filter-range-label-font-size);
+  color: var(--osdk-intent-primary-rest);
+  background: transparent;
+  border: none;
+  padding: calc(var(--osdk-surface-spacing) * 0.5)
+    var(--osdk-surface-spacing);
+  cursor: pointer;
+  border-radius: var(--osdk-surface-border-radius);
+
+  &:hover {
+    background: var(--osdk-filter-range-clear-button-bg-hover);
+  }
+}
+
+.clearButton:not([data-active]) {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.tooltip {
+  position: fixed;
+  transform: translateX(-50%);
+  display: inline-block;
+  background: var(--osdk-typography-color-default-rest);
+  color: var(--osdk-background-primary);
+  padding: calc(var(--osdk-surface-spacing) * 0.5)
+    var(--osdk-surface-spacing);
+  border-radius: var(--osdk-surface-border-radius);
+  font-family: var(--osdk-filter-range-label-font-family);
+  font-size: var(--osdk-typography-size-body-small);
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: var(--osdk-surface-shadow-2);
+  z-index: var(--osdk-surface-z-index-3, 9999);
+}
+
+.tooltip[data-state="hidden"] {
+  visibility: hidden;
+}
+
+/* Empty rules — exist purely so postcss-modules emits matching hashed
+ * class names for the SVG layer groups. The groups themselves don't need
+ * their own visual style; the children (.axisLine / .countLabel / etc.)
+ * carry the actual styling. */
+.axisLines,
+.bars,
+.countLabels,
+.xTicks {}
+
+.selectionBand {
+  fill: var(
+    --osdk-filter-range-histogram-band-bg,
+    color-mix(in srgb, var(--osdk-intent-primary-rest) 12%, transparent)
+  );
+  pointer-events: none;
+  rx: var(--osdk-surface-border-radius);
 }
 
 .histogramBar {
-  flex: 1;
-  background: var(--osdk-filter-range-histogram-bar-color);
-  min-width: var(--osdk-filter-range-histogram-bar-min-width);
-  transition: background-color var(--osdk-filter-range-histogram-bar-transition);
+  fill: var(--osdk-filter-range-histogram-bar-color);
+  transition: fill var(--osdk-filter-range-histogram-bar-transition);
 }
 
 .histogramBar[data-in-range="true"] {
-  background: var(--osdk-filter-range-histogram-bar-active-color);
+  fill: var(--osdk-filter-range-histogram-bar-active-color);
+}
+
+.histogramBar[data-click-to-filter="true"] {
+  cursor: pointer;
+}
+
+.histogramBar[data-click-to-filter="true"]:hover {
+  fill: var(--osdk-filter-range-histogram-bar-active-color);
+}
+
+.axisLine {
+  stroke: var(--osdk-filter-range-histogram-axis-line-color);
+  stroke-width: 1;
+  stroke-dasharray: 2 2;
+}
+
+.yAxisLabel,
+.xTickLabel {
+  fill: var(--osdk-filter-range-histogram-axis-color);
+  font-family: var(--osdk-filter-range-label-font-family);
+  font-size: var(--osdk-filter-range-histogram-axis-font-size);
+}
+
+.countLabel {
+  fill: var(--osdk-filter-range-histogram-label-color);
+  font-family: var(--osdk-filter-range-label-font-family);
+  font-size: var(--osdk-filter-range-histogram-label-font-size);
+}
+
+.countLabel[data-inside-bar="true"] {
+  fill: var(
+    --osdk-filter-range-histogram-label-color-inside,
+    var(--osdk-background-primary)
+  );
+}
+
+.subtitle {
+  fill: var(--osdk-filter-range-histogram-subtitle-color);
+  font-family: var(--osdk-filter-range-label-font-family);
+  font-size: var(--osdk-filter-range-histogram-subtitle-font-size);
 }
 
 .rangeInputs {
@@ -99,7 +204,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .histogramContainer,
   .rangeInput {
     transition: none;
   }

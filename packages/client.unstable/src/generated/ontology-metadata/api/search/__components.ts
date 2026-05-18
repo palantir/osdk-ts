@@ -17,6 +17,8 @@
 import type {
   ActionType as _api_ActionType,
   ActionTypeRid as _api_ActionTypeRid,
+  DatasetRid as _api_DatasetRid,
+  DatasourceRid as _api_DatasourceRid,
   DataType as _api_DataType,
   FunctionRid as _api_FunctionRid,
   InterfaceType as _api_InterfaceType,
@@ -27,9 +29,11 @@ import type {
   OntologyBranchRid as _api_OntologyBranchRid,
   OntologyRid as _api_OntologyRid,
   OntologyVersion as _api_OntologyVersion,
+  PropertySecurityGroupRid as _api_PropertySecurityGroupRid,
   PropertyTypeRid as _api_PropertyTypeRid,
   SharedPropertyType as _api_SharedPropertyType,
   SharedPropertyTypeRid as _api_SharedPropertyTypeRid,
+  StructFieldRid as _api_StructFieldRid,
   TypeGroupRid as _api_TypeGroupRid,
   Visibility as _api_Visibility,
   WebhookRid as _api_WebhookRid,
@@ -308,6 +312,22 @@ export type CombinedEntityTypeTitleClause =
   | CombinedEntityTypeTitleClause_interfaceTypeSupportsObjectSetSearch
   | CombinedEntityTypeTitleClause_status;
 
+/**
+ * Sort order for combined entity type title results.
+ */
+export interface CombinedEntityTypeTitleSort {
+  order: CombinedEntityTypeTitleSortOrder;
+  sortBy: CombinedEntityTypeTitleSortBy;
+}
+/**
+ * Specifies value to be used to sort combined entity type title results.
+ */
+export type CombinedEntityTypeTitleSortBy = "COMBINED_ENTITY_TYPE_DISPLAY_NAME";
+
+/**
+ * Specifies sort order for combined entity type title results.
+ */
+export type CombinedEntityTypeTitleSortOrder = "ASCENDING" | "DESCENDING";
 export interface FullTextStringPredicate_exact {
   type: "exact";
   exact: string;
@@ -471,6 +491,7 @@ export interface InterfaceTypeSearchRequest {
   excludedInterfaceTypeRids: Array<string>;
   fuzziness?: InterfaceTypeFuzziness | null | undefined;
   includedInterfaceTypeRids: Array<string>;
+  ontologyBranchRid?: _api_OntologyBranchRid | null | undefined;
   ontologyRids: Array<_api_OntologyRid>;
   pageSizeLimit: number;
   pageToken?: InterfaceTypeSearchPageToken | null | undefined;
@@ -930,6 +951,41 @@ export interface ObjectTypeClause_objectTypeApiName {
   type: "objectTypeApiName";
   objectTypeApiName: FullTextStringPredicate;
 }
+
+export interface ObjectTypeClause_datasetRid {
+  type: "datasetRid";
+  datasetRid: _api_DatasetRid;
+}
+
+export interface ObjectTypeClause_datasourceRid {
+  type: "datasourceRid";
+  datasourceRid: _api_DatasourceRid;
+}
+
+export interface ObjectTypeClause_propertySecurityGroupRid {
+  type: "propertySecurityGroupRid";
+  propertySecurityGroupRid: _api_PropertySecurityGroupRid;
+}
+
+export interface ObjectTypeClause_mediaSourceRid {
+  type: "mediaSourceRid";
+  mediaSourceRid: string;
+}
+
+export interface ObjectTypeClause_sharedPropertyTypeRid {
+  type: "sharedPropertyTypeRid";
+  sharedPropertyTypeRid: _api_SharedPropertyTypeRid;
+}
+
+export interface ObjectTypeClause_structFieldRid {
+  type: "structFieldRid";
+  structFieldRid: _api_StructFieldRid;
+}
+
+export interface ObjectTypeClause_hasDerivedProperties {
+  type: "hasDerivedProperties";
+  hasDerivedProperties: boolean;
+}
 /**
  * Data structure to represent search query for ObjectTypes. Supports filters for various ObjectType features.
  */
@@ -961,7 +1017,14 @@ export type ObjectTypeClause =
   | ObjectTypeClause_entityProvenanceSource
   | ObjectTypeClause_permissionModel
   | ObjectTypeClause_objectTypeTypeGroupRids
-  | ObjectTypeClause_objectTypeApiName;
+  | ObjectTypeClause_objectTypeApiName
+  | ObjectTypeClause_datasetRid
+  | ObjectTypeClause_datasourceRid
+  | ObjectTypeClause_propertySecurityGroupRid
+  | ObjectTypeClause_mediaSourceRid
+  | ObjectTypeClause_sharedPropertyTypeRid
+  | ObjectTypeClause_structFieldRid
+  | ObjectTypeClause_hasDerivedProperties;
 
 /**
  * Filter by object type entity provenance source
@@ -996,7 +1059,8 @@ export type ObjectTypeFuzziness =
  */
 export type ObjectTypePermissionModelFilter =
   | "DATASOURCE_DERIVED_PERMISSIONS"
-  | "ONTOLOGY_ROLES";
+  | "ONTOLOGY_ROLES"
+  | "COMPASS_PROJECT";
 
 /**
  * Wrapper around single ObjectType contained in ObjectTypeSearchResponse.
@@ -1041,6 +1105,7 @@ export interface ObjectTypeSearchRequestV2 {
   clause: ObjectTypeClause;
   excludedObjectTypeRids: Array<_api_ObjectTypeRid>;
   fuzziness?: ObjectTypeFuzziness | null | undefined;
+  includedObjectTypeRids: Array<_api_ObjectTypeRid>;
   includeObjectTypesWithoutSearchableDatasources?: boolean | null | undefined;
   loadRedacted?: boolean | null | undefined;
   ontologyBranchRid?: _api_OntologyBranchRid | null | undefined;
@@ -1124,6 +1189,7 @@ export interface SearchTitleInCombinedEntityTypeRequest {
   ontologyRids: Array<_api_OntologyRid>;
   pageSizeLimit: number;
   pageToken?: CombinedEntityTypeSearchPageToken | null | undefined;
+  sort?: CombinedEntityTypeTitleSort | null | undefined;
 }
 /**
  * Page response to SearchTitleInCombinedEntityTypeRequest containing specified entity types matching the search query.

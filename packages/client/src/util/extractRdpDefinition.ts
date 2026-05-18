@@ -35,7 +35,7 @@ export async function extractRdpDefinition(
   )).definitions;
 }
 
-function hasWithProperties(objectSet: ObjectSet): boolean {
+export function hasWithProperties(objectSet: ObjectSet): boolean {
   if (objectSet.type === "withProperties") {
     return true;
   }

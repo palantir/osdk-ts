@@ -1,5 +1,174 @@
 # @osdk/react-components
 
+## 0.16.0
+
+### Minor Changes
+
+- f62c9e2: Add DocumentViewer with MIME-type routing, ImageViewer, VideoViewer, DocxViewer, ExcelViewer, EmailViewer, XmlViewer components, and OSDK Media wrappers for TiffRenderer and MarkdownRenderer
+- 7ee1fa3: ObjectTable `EditFieldConfig.getFieldComponentProps` now receives a second `edits` argument with the row's pending cell edits (keyed by columnId), so editor configuration can react to other in-progress edits within the same row.
+- cf496ff: filter-list: round number range histogram min/max to integers for integer property types so dragging or clicking a bucket no longer emits fractional values that break downstream filters
+- bfe05b5: Widen `renderValue` return type on FilterList property and static-values filter definitions from `string` to `ReactNode` so callers can render custom React components (e.g. avatars, anchors) for filter values. When `renderValue` returns a non-string `ReactNode`, search matching falls back to the raw value.
+- 11f585d: Histogram date filter: From and To inputs now open independent single-month popovers with Today/Clear actions, replacing the shared two-month range calendar that was confusing users next to the histogram bars
+
+## 0.15.0
+
+### Minor Changes
+
+- 108ac50: Cap long ActionForm select dropdowns so they scroll inside dialogs.
+- 4bc17cc: Fix editable date field incorrectly showing edited border after click-in/click-out without changes
+- 99ec28c: Fix page scroll being blocked when opening a dropdown in an editable ObjectTable
+- d10ed5e: Add rich item label rendering to ActionForm dropdown fields.
+- 47eb27c: Add object set scoping to ObjectSelectField.
+- 73738dd: Show unsupported ActionForm field types and recommend CUSTOM fields.
+
+## 0.14.0
+
+### Minor Changes
+
+- 69ebc43: Fix function-backed columns and lists with derived properties rendering stale values after an action edits a related object. ObjectTable's `useFunctionColumnsData` now passes the page's row PKs as `dependsOnObjects` to the underlying `useOsdkFunctions`, and function `ColumnDefinition` locators now accept an optional `dependsOn: string[]` for declaring linked object types the function reads server-side. Lists whose `withProperties` traverse linked types now also revalidate when an action edits one of those linked types. The action invalidation path fans out per-type invalidation in a single walk while the optimistic layer is still on top, so fresh values land in truth before the optimistic layer drops.
+- 48d5ed2: Add `AipAgentChat` component — an OSDK-aware chat surface that wraps `useChat` from `@osdk/react/experimental/aip` against a Foundry LMS model. Importing the component is sufficient; consumers do not need to import `useChat` or `foundryModel` themselves. Also exports `BaseAipAgentChat` for advanced use with consumer-managed chat state.
+- 19159ce: Add contrib skill
+- d6a3194: Show selected filter values with count 0 when they are absent from aggregation results
+- 082e4e6: Expose `FilterPopover`, `FilterInput`, and `useFilterListState` as composable primitives so consumers can build custom FilterList layouts (e.g. inline horizontal toolbars). Also exports `getFilterKey`, `getFilterLabel`, `summarizeFilterValue`, and `filterHasActiveState` helpers. See the `Experimental/FilterList/Recipes/Horizontal toolbar` story for a worked example. Also adds a pointer-hover highlight to non-disabled `Combobox` items (matches the existing `[data-highlighted]` keyboard-focus treatment).
+- 85dde6e: Dedupe empty/null aggregation rows across all FilterList property filters. `usePropertyAggregation` now collapses any combination of `null`, `undefined`, and `""` buckets returned by the backend into a single "No value" row, so dropdown, multi-select, and text-tag filters no longer show two or more "No value" entries when the underlying aggregation produces multiple empty groupings. Whitespace-only strings remain as their literal value, matching Workshop. The behavior previously lived in `ListogramInput` only; lifting it into the hook covers every consumer. Adds a shared `dedupeEmptyAggregationRows` helper exported from `utils/filterValues.ts` for downstream reuse.
+- 5165618: Fix layout flash in FilterList multi-select and single-select inputs during sibling-aggregation refetch. Previously, when a listogram checkbox toggled and triggered a refetch in sibling filters, MULTI_SELECT and SINGLE_SELECT inputs briefly stacked "Loading options..." and "Updating..." above the combobox, pushing the panel layout down and snapping back when the fetch completed. Both inputs now use the same useStableData pattern already used by ListogramInput and RangeInput: the last non-loading values are preserved across refetch so the combobox stays mounted with its prior options and chips, with no inline loading hint. The "Loading options..." empty-state still shows on genuine first load; "No options available" still shows when the aggregation resolves to empty.
+- 082e4e6: Date input fields are now shared across action-form, filter-list, and object-table. The new `shared/calendar/` module exports `DatePicker` and `DateRangePicker` (extracted from action-form's `DatetimePickerField` / `DateRangeInputField`). Filter-list date filters render the shared popover calendar instead of native `<input type="date">` so every viewer sees the same `YYYY-MM-DD` regardless of browser locale. Date-range histograms now render as SVG with axis grid lines, count labels above each bar, locale-aware short month tick labels (e.g. `Jan`/`Feb` in English, localized in other browser locales) for monthly buckets and `yyyy` for yearly, plus a period subtitle. New `formatDate` callback on date filter definitions overrides the displayed string everywhere — picker idle text, histogram tooltip, period subtitle, x-tick labels, and chip text — without affecting the underlying ISO value. New `clickToFilter` flag on `DATE_RANGE` and `NUMBER_RANGE` filters enables clicking or dragging across histogram bars to set the range; drag-to-select uses pointer events with `setPointerCapture` for touch support and `pointercancel` cleanup. The previously plumbed-but-unused `parseDate` callback was removed; the shared pickers own input parsing.
+
+  Visual polish from review feedback: the "No value" label now has its own `--osdk-filter-no-value-font-size` CSS variable so the inline empty row in a histogram and the trailing row from `NullValueWrapper` render at the same size in all contexts; the listogram empty row also matches the null-wrapper's checkbox-to-label gap. Listogram bucket counts and null-row counts now use compact number formatting (`1.2K`, `1.5M`) with the full count exposed via `title` for a11y. Filter-list inputs and `FilterPopover` triggers were bumped to body-medium to match the rest of the codebase, and `RangeInput`'s outer Clear button and `ContainsTextInput`'s inline clear-X no longer cause layout shift when toggled (always rendered with `visibility: hidden` when inactive). `DateRangePicker` now exposes a `modal` prop (mirroring `DatePicker`) so callers can nest it inside another popover without the dismiss layer swallowing outer clicks.
+
+- f45ab11: Fix filter list dropdown positioning: flip above trigger when near container bottom, hide when anchor scrolls out of view
+- 662a0c7: Pin form footer in height-constrained containers so fields scroll independently
+- 6344e8b: Strip time to local midnight in DatetimePickerField onChange when showTime is false
+- 53ffbcc: Fix styling of empty dropdown
+- 3943b67: Fix boolean properties rendering as empty in ObjectTable
+- bcf9078: Add auto-size (fit to width) toggle to PDF viewer toolbar
+- 81314f2: Fix dropdown field triggering validation when popover opens
+
+## 0.13.0
+
+### Minor Changes
+
+- 53e5f4f: Cap the Combobox popup at 320px (configurable via `--osdk-combobox-popup-max-height`) with overflow scrolling. Long option lists no longer push other UI off-screen — they scroll inside the popup. A short browser window still gets a smaller cap because the rule resolves to `min(320px, var(--available-height))`.
+- aca2466: Standardize "No value" rendering in FilterList — introduce a shared `NoValueLabel` component (italic, muted) used by listogram buckets, single-select and multi-select dropdown options, multi-select chips, text-tag chips, and the `NullValueWrapper` include-null row. Adds an `isEmptyValue` helper. The `NullValueWrapper` include-null row's default visual flips from upright/default-color to italic/muted so it matches the dropdown and listogram surfaces. Legacy `--osdk-filter-listogram-empty-label-color`, `--osdk-filter-listogram-empty-label-font-style`, `--osdk-filter-null-label-color`, `--osdk-filter-null-label-font-family`, `--osdk-filter-null-label-font-size`, and `--osdk-filter-null-label-line-height` tokens are honored as opt-in overrides on the listogram and null-wrapper containers; consumers who explicitly set them continue to override the new italic-muted defaults.
+- fe39be0: Stabilize per-filter where-clause references inside `useFilterListState` via deep-equality caching, so `FilterInput.memo` holds when the cross-filter context for a given filter is unchanged across selections. Eliminates redundant aggregation requests on every value selection. Internal-only — no public API changes.
+- 76ab0a3: ObjectTable: Fix bug when cell is marked edited on clicking into and out of an empty cell
+- 72e928b: ObjectTable: support per-row edit configuration via `editable: (rowData) => boolean`, add `getRowAttributes` prop for conditional row styling via data attributes, replace `editFieldConfig.fieldComponentProps` with `editFieldConfig.getFieldComponentProps(rowData)` so editor configuration can vary per row, and add a `showEditFooter` prop to opt out of the built-in edit footer.
+- 9be8339: Polish ActionForm date/time controls, boolean switch fields, form submission, popup positioning, component tokens, and FauxFoundry action typings.
+
+## 0.12.0
+
+### Minor Changes
+
+- d15d3cf: Add Blueprint-style design tokens for buttons, inputs, and table rows
+- 56c5630: Drop redundant `--config $(find-up dprint.json)` from `lint`, `fix-lint`, and `format` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the substitution was a no-op anyway since `find-up` is an npm package, not a CLI. Also fix the `uploadMediaOntologyEdits` documentation example so its `// @ts-ignore` survives dprint reformatting (the broken `format` step had been masking this).
+- b187c09: ObjectTable: when a column has both `renderCell` and `editable: true`, use `renderCell` while not in edit mode and the editable cell only after entering edit mode (relevant for `editMode: "manual"`). Previously `renderCell` always took precedence and editable cells never appeared.
+- 7a0c187: add `onFilterVisibilityChange` callback to `FilterList` that fires when filters are reordered, added, or removed, returning all filters in display order with their visibility state. Useful for persisting filter configuration in saved states.
+- 5d0c6b7: Fix Action Form popover dismissal inside dialog portals.
+
+## 0.11.0
+
+### Minor Changes
+
+- 82c7210: update @osdk/react peer dependency range to ^2.8.0 to track its alignment with the @osdk/client fixed group
+- 203331e: GA: promote modern hooks from `@osdk/react/experimental` to the main entry, rename `@osdk/react/experimental/admin` → `@osdk/react/platform-apis`, consolidate to a single `OsdkProvider`. Promote `ObservableClient` and supporting types out of `@osdk/client/unstable-do-not-use` to a new stable `@osdk/client/observable` entry so the GA hooks no longer depend on a "do not use" entry point. The previous import paths and symbol names are kept as `@deprecated` shims so 0.x consumers can upgrade without code changes.
+
+  #### `@osdk/client` (minor)
+  - new stable entry point `@osdk/client/observable` exposes `createObservableClient`, `ObservableClient` (and its `CacheEntry`, `CacheSnapshot`, `CanonicalizedOptions`, `CanonicalizeOptionsInput`, `Observer`, `ObserveLinks`, `ObserveAggregationArgs`, `ObserveFunctionCallbackArgs`, `ObserveFunctionOptions`, `ObserveObjectCallbackArgs`, `ObserveObjectsCallbackArgs`, `ObserveObjectSetArgs`, `Unsubscribable` types), and the supporting `ActionSignatureFromDef`, `QueryParameterType`, `QueryReturnType` types
+  - these symbols are still re-exported from `@osdk/client/unstable-do-not-use` as `@deprecated` shims; new code should import from `@osdk/client/observable`
+
+  #### `@osdk/react` (minor)
+  - `OsdkProvider`, `useOsdkObjects`, `useOsdkObject`, `useOsdkAction`, `useLinks`, `useObjectSet`, `useOsdkAggregation`, `useOsdkFunction`, `useOsdkFunctions`, `useStableObjectSet`, `useRegisterUserAgent`, `useDebouncedCallback`, devtools registry re-exports are now exported directly from `@osdk/react`
+  - admin / CBAC platform hooks (`useFoundryUser`, `useCurrentFoundryUser`, `useFoundryUsersList`, `useMarkings`, `useMarkingCategories`, `useUserViewMarkings`, `useCbacBanner`, `useCbacMarkingRestrictions`) now live at `@osdk/react/platform-apis` and still require the optional `@osdk/foundry.admin` + `@osdk/foundry.core` peers
+  - the previous `OsdkProvider2` is now just `OsdkProvider`. The legacy `OsdkProvider` body is gone, but `useOsdkClient` and `useOsdkMetadata` keep working since the new provider supplies the same `client` shape
+  - `<OsdkProvider>` no longer accepts an `observableClient` prop. The provider always derives its `ObservableClient` from `client` so the two cannot diverge. Tests that need to stub the observable layer should import `TestOsdkProvider` from `@osdk/react/testing`. `OsdkProvider2` (the deprecated alias) inherits this — it also no longer accepts `observableClient`
+  - `useOsdkClient2` is unified into `useOsdkClient`; the unified hook now reads from the modern context (same `client` shape)
+  - `peerDependencies` on `@osdk/api` and `@osdk/client` resolve to `^2.15.0` so `@osdk/react@2.15` cannot install against a `@osdk/client` that lacks the new `./observable` entry
+
+  #### `@osdk/react-components` (patch)
+  - update internal imports for `@osdk/react` GA — `@osdk/react/experimental` → `@osdk/react` and `@osdk/react/experimental/admin` → `@osdk/react/platform-apis`
+  - update `QueryParameterType` import from `@osdk/client/unstable-do-not-use` → `@osdk/client/observable`
+  - bump `@osdk/react` peer range to `^2.15.0`
+
+  #### `@osdk/react-devtools` (patch)
+  - update observable-related imports from `@osdk/client/unstable-do-not-use` → `@osdk/client/observable`
+
+  #### `@osdk/cbac-components` (patch)
+  - update internal imports for `@osdk/react` GA — `@osdk/react/experimental` → `@osdk/react` and `@osdk/react/experimental/admin` → `@osdk/react/platform-apis`
+
+  #### Compatibility shims
+
+  These keep working in `@osdk/react@2.15` and `@osdk/client@2.15`, marked `@deprecated` so editors surface a strikethrough:
+  - `import { ... } from "@osdk/react/experimental"` re-exports everything now exported from `@osdk/react`, plus `OsdkProvider as OsdkProvider2` and `useOsdkClient as useOsdkClient2`
+  - `import { ... } from "@osdk/react/experimental/admin"` re-exports everything now exported from `@osdk/react/platform-apis`
+  - `import { createObservableClient, ObservableClient, ... } from "@osdk/client/unstable-do-not-use"` re-exports the symbols now in `@osdk/client/observable`
+  - `import { ... } from "@osdk/react/experimental/aip"` is unchanged — AIP is still in beta
+
+  These shims will be removed in a future major.
+
+  #### Migration
+
+  For consumers upgrading from `@osdk/react@0.x`:
+  - `import { ... } from "@osdk/react/experimental"` → `import { ... } from "@osdk/react"`
+  - `import { ... } from "@osdk/react/experimental/admin"` → `import { ... } from "@osdk/react/platform-apis"` (still requires the optional `@osdk/foundry.admin` + `@osdk/foundry.core` peers)
+  - `<OsdkProvider2 ...>` → `<OsdkProvider ...>` (the modern provider takes the bare name)
+  - if you were passing `observableClient={...}` to `<OsdkProvider>` or `<OsdkProvider2>` (in tests), import `TestOsdkProvider` from `@osdk/react/testing` and use that instead — production code does not need to change
+  - `useOsdkClient2()` → `useOsdkClient()` (the unified hook reads from the modern context — same `client` shape, no API change at the call site)
+  - bump `@osdk/client` and `@osdk/api` to `^2.15.0` to satisfy the new peer ranges
+
+  For consumers reaching directly into `@osdk/client/unstable-do-not-use` for observable APIs:
+  - `import { createObservableClient, ObservableClient, ... } from "@osdk/client/unstable-do-not-use"` → `import { ... } from "@osdk/client/observable"`
+  - the symbols moved: `createObservableClient`, `ObservableClient`, `CacheEntry`, `CacheSnapshot`, `CanonicalizedOptions`, `CanonicalizeOptionsInput`, `Observer`, `ObserveLinks`, `ObserveAggregationArgs`, `ObserveFunctionCallbackArgs`, `ObserveFunctionOptions`, `ObserveObjectCallbackArgs`, `ObserveObjectsCallbackArgs`, `ObserveObjectSetArgs`, `Unsubscribable`, `ActionSignatureFromDef`, `QueryParameterType`, `QueryReturnType`
+
+## 0.10.0
+
+### Minor Changes
+
+- b355bc3: Add CONTRIBUTING.md for @osdk/react and @osdk/react-components
+- 9b45e7b: Add form section support to BaseForm with collapsible groups, multi-column grid, and custom submit button
+- 3a4528c: Add ObjectSelect field for selecting object instances in action forms
+- 5dc557e: Add helperText tooltip using Popover and widen type to React.ReactNode
+
+### Patch Changes
+
+- Updated dependencies [f747fa3]
+- Updated dependencies [d892397]
+- Updated dependencies [c5a6047]
+- Updated dependencies [45be476]
+- Updated dependencies [b355bc3]
+- Updated dependencies [20e9678]
+  - @osdk/react@0.17.0
+
+## 0.9.0
+
+### Minor Changes
+
+- 4aeb07b: ObjectTable: add `onColumnHeaderClick(columnId)` prop that fires when a user clicks on a column header (excluding the dropdown menu trigger)
+- 7b457a5: Fix function column with derived properties
+
+### Patch Changes
+
+- Updated dependencies [aa78c78]
+- Updated dependencies [7b457a5]
+  - @osdk/react@0.16.0
+
+## 0.8.0
+
+### Minor Changes
+
+- d9b03eb: document @osdk/client version compat and install-time error recovery in AGENTS.md
+- 5a733c0: Improve DropdownField with searchable input, multi-select checkboxes, clear button, and fix Select positioning
+- 52ff28c: simplify conditional objectset aggregation args and add filtered objectset story
+- 3b8decf: Switch vitest pool from forks to threads to fix CI flake
+- a0bbaf9: fix ObjectTable zebra row colors flipping while scrolling — striping is now keyed off the row's data index instead of its DOM position
+- 5835d51: Fix type definitions in FilterList LinkedProperty and ObjectTable function column
+- d40104f: Add error icon to DatePickerCell in ObjectTable
+
+### Patch Changes
+
+- Updated dependencies [d9b03eb]
+- Updated dependencies [d8842f4]
+  - @osdk/react@0.15.0
+
 ## 0.7.0
 
 ### Minor Changes

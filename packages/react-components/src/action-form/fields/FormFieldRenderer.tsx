@@ -14,30 +14,42 @@
  * limitations under the License.
  */
 
+import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
 import React, { memo } from "react";
+import {
+  DatePicker,
+  type DateRange,
+  DateRangePicker,
+  EMPTY_RANGE,
+} from "../../shared/calendar/index.js";
 import { FormField } from "../FormField.js";
 import {
-  type DateRange,
-  EMPTY_RANGE,
+  type PortalContainer,
   type RendererFieldDefinition,
 } from "../FormFieldApi.js";
 import { CustomField } from "./CustomField.js";
-import { DateRangeInputField } from "./DateRangeInputField.js";
-import { DatetimePickerField } from "./DatetimePickerField.js";
 import { DropdownField } from "./DropdownField.js";
 import { FilePickerField } from "./FilePickerField.js";
 import { NumberInputField } from "./NumberInputField.js";
+import { ObjectSelectField } from "./ObjectSelectField.js";
 import { ObjectSetField } from "./ObjectSetField.js";
 import { RadioButtonsField } from "./RadioButtonsField.js";
+import { SwitchField } from "./SwitchField.js";
 import { TextAreaField } from "./TextAreaField.js";
 import { TextInputField } from "./TextInputField.js";
+
+const UNSUPPORTED_FIELD_MESSAGE =
+  "Unsupported field type. Use a CUSTOM field instead";
 
 export interface FormFieldRendererProps {
   fieldDefinition: RendererFieldDefinition;
   value: unknown;
   onFieldValueChange: (value: unknown) => void;
-  onBlur: (e: React.FocusEvent<HTMLDivElement>) => void;
+  onBlur?: (e: React.FocusEvent<HTMLDivElement>) => void;
+  /** Field-level blur for fields that own their touched state (e.g. dropdowns). */
+  onFieldBlur?: () => void;
   error: string | undefined;
+  portalContainer?: PortalContainer;
 }
 
 export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
@@ -46,7 +58,9 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
     value,
     onFieldValueChange,
     onBlur,
+    onFieldBlur,
     error,
+    portalContainer,
   }: FormFieldRendererProps): React.ReactElement {
     const { label, isRequired, helperText, helperTextPlacement } =
       fieldDefinition;
@@ -56,7 +70,8 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
         label={label}
         isRequired={isRequired}
         fieldKey={fieldDefinition.fieldKey}
-        helperText={helperTextPlacement !== "tooltip" ? helperText : undefined}
+        helperText={helperText}
+        helperTextPlacement={helperTextPlacement}
         error={error}
         onBlur={onBlur}
       >
@@ -65,6 +80,8 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
           value,
           onFieldValueChange,
           error,
+          portalContainer,
+          onFieldBlur,
         )}
       </FormField>
     );
@@ -76,16 +93,22 @@ function renderFieldComponent(
   value: unknown,
   onChange: (value: unknown) => void,
   error: string | undefined,
+  portalContainer: PortalContainer | undefined,
+  onFieldBlur: (() => void) | undefined,
 ): React.ReactElement {
   switch (fieldDefinition.fieldComponent) {
     case "DATE_RANGE_INPUT":
       return (
-        <DateRangeInputField
+        <DateRangePicker
           id={fieldDefinition.fieldKey}
           value={coerceToDateRange(value)}
           onChange={onChange}
           placeholderStart={fieldDefinition.placeholder}
           {...fieldDefinition.fieldComponentProps}
+          portalContainer={resolvePortalContainer(
+            fieldDefinition.fieldComponentProps,
+            portalContainer,
+          )}
         />
       );
     case "TEXT_INPUT":
@@ -97,6 +120,16 @@ function renderFieldComponent(
           placeholder={fieldDefinition.placeholder}
           error={error}
           {...fieldDefinition.fieldComponentProps}
+        />
+      );
+    case "UNSUPPORTED":
+      return (
+        <TextInputField
+          {...fieldDefinition.fieldComponentProps}
+          id={fieldDefinition.fieldKey}
+          value={UNSUPPORTED_FIELD_MESSAGE}
+          error={error}
+          disabled={true}
         />
       );
     case "TEXT_AREA":
@@ -119,12 +152,17 @@ function renderFieldComponent(
           placeholder={fieldDefinition.placeholder}
           error={error}
           {...fieldDefinition.fieldComponentProps}
+          portalContainer={resolvePortalContainer(
+            fieldDefinition.fieldComponentProps,
+            portalContainer,
+          )}
+          onBlur={onFieldBlur}
         />
       );
     }
     case "DATETIME_PICKER":
       return (
-        <DatetimePickerField
+        <DatePicker
           id={fieldDefinition.fieldKey}
           placeholder={fieldDefinition.placeholder}
           // TODO: Use coerceFieldValue
@@ -132,6 +170,10 @@ function renderFieldComponent(
           onChange={onChange}
           error={error}
           {...fieldDefinition.fieldComponentProps}
+          portalContainer={resolvePortalContainer(
+            fieldDefinition.fieldComponentProps,
+            portalContainer,
+          )}
         />
       );
     case "RADIO_BUTTONS":
@@ -139,6 +181,17 @@ function renderFieldComponent(
         <RadioButtonsField
           id={fieldDefinition.fieldKey}
           value={value}
+          onChange={onChange}
+          error={error}
+          {...fieldDefinition.fieldComponentProps}
+        />
+      );
+    case "SWITCH":
+      return (
+        <SwitchField
+          id={fieldDefinition.fieldKey}
+          label={fieldDefinition.label}
+          value={!!value}
           onChange={onChange}
           error={error}
           {...fieldDefinition.fieldComponentProps}
@@ -176,6 +229,21 @@ function renderFieldComponent(
           {...fieldDefinition.fieldComponentProps}
         />
       );
+    case "OBJECT_SELECT":
+      return (
+        <ObjectSelectField
+          id={fieldDefinition.fieldKey}
+          value={narrowToOsdkObject(value)}
+          onChange={onChange}
+          placeholder={fieldDefinition.placeholder}
+          error={error}
+          {...fieldDefinition.fieldComponentProps}
+          portalContainer={resolvePortalContainer(
+            fieldDefinition.fieldComponentProps,
+            portalContainer,
+          )}
+        />
+      );
     case "OBJECT_SET":
       return (
         <ObjectSetField
@@ -186,6 +254,17 @@ function renderFieldComponent(
     default:
       return assertUnreachableFieldComponent(fieldDefinition);
   }
+}
+
+function resolvePortalContainer(
+  fieldComponentProps: { portalContainer?: PortalContainer },
+  formPortalContainer: PortalContainer | undefined,
+): PortalContainer | undefined {
+  // A field-level value, including null, is an explicit override. That lets a
+  // single field opt out of a form-level dialog portal when needed.
+  return Object.hasOwn(fieldComponentProps, "portalContainer")
+    ? fieldComponentProps.portalContainer
+    : formPortalContainer;
 }
 
 function coerceToDateRange(value: unknown): DateRange {
@@ -207,6 +286,16 @@ function coerceToFileValue(value: unknown): File | File[] | null {
   }
   if (Array.isArray(value) && isFileArray(value)) {
     return value;
+  }
+  return null;
+}
+
+/** Narrows the untyped form value to an OsdkObject by checking for $primaryKey. */
+function narrowToOsdkObject(
+  value: unknown,
+): Osdk.Instance<ObjectTypeDefinition> | null {
+  if (value != null && typeof value === "object" && "$primaryKey" in value) {
+    return value as Osdk.Instance<ObjectTypeDefinition>;
   }
   return null;
 }

@@ -15,6 +15,14 @@
  */
 
 export type { OntologyIrOntologyBlockDataV2 } from "@osdk/client.unstable";
+export type {
+  IFunctionCustomDataType,
+  IListDataType,
+  IObjectDataType,
+  IObjectSetDataType,
+  IOptionalDataType,
+  ISetDataType,
+} from "./convertDataType.js";
 export {
   type BlockDataApiNameLookup,
   buildBlockDataInterfaceTypeLookup,
@@ -22,4 +30,8 @@ export {
   OntologyBlockDataToFullMetadataConverter,
   resolveBlockDataApiName,
 } from "./OntologyBlockDataToFullMetadataConverter.js";
-export { OntologyIrToFullMetadataConverter } from "./OntologyIrToFullMetadataConverter.js";
+export {
+  type IDataType,
+  type IDiscoveredFunction,
+  OntologyIrToFullMetadataConverter,
+} from "./OntologyIrToFullMetadataConverter.js";

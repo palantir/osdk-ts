@@ -1216,7 +1216,7 @@ versions:
                 const attachmentFile = await fetch("file.json");
                 const attachmentBlob = await attachmentFile.blob();
                 const attachment: AttachmentUpload = createAttachmentUpload(attachmentBlob, "myFile");
-                // alternatively, you can get the Rid from the attachment property on the object type you are modifying 
+                // alternatively, you can get the Rid from the attachment property on the object type you are modifying
                 // const attachmentRid = objectTypeWithAttachment.{attachmentProperty}?.rid;
             {{/hasAttachmentProperty}}
             {{#hasMediaParameter}}
@@ -1335,7 +1335,7 @@ versions:
 
             const myAttachmentUpload: AttachmentUpload = await createAttachmentReference();
             // then pass the attachment to the action in the action parameter.
-            const actionResult = client({{actionApiName}}).applyAction({ 
+            const actionResult = client({{actionApiName}}).applyAction({
                 {{primaryKeyPropertyV2.apiName}}: {{{propertyValueV2}}},
                 {{property}}: myAttachmentUpload
                 });
@@ -1929,7 +1929,7 @@ versions:
             const objectSetB = client({{objectType}}).where({ {{titleProperty}}: { $containsAnyTerm: "b"}})
             const objectSetC = client({{objectType}}).where({ {{titleProperty}}: { $containsAnyTerm: "c"}})
 
-            // Object set operations can be chained. e.g. To find all objects in objectSetA 
+            // Object set operations can be chained. e.g. To find all objects in objectSetA
             // that are present in objectSetB but do not exist in objectSetC:
             const result = objectSetA
               .intersect(objectSetB)
@@ -2049,7 +2049,7 @@ versions:
                             // An object has received an update or an object was added to the object set
                             // Get the object using the $primaryKey from your cache
                             // const currentObject = objects[update.object.$primaryKey];
-                            // use the update.object["<propertyName>"] to update your cache 
+                            // use the update.object["<propertyName>"] to update your cache
                             //currentObject["<propertyName>"] = update.object["<propertyName>"] ?? currentObject["<propertyName>"];
                         }
                         else if (update.state === "REMOVED") {
@@ -2099,7 +2099,7 @@ versions:
                 const attachmentFile = await fetch("file.json");
                 const attachmentBlob = await attachmentFile.blob();
                 const attachment: AttachmentUpload = createAttachmentUpload(attachmentBlob, "myFile");
-                // alternatively, you can get the Rid from the attachment property on the object type you are modifying 
+                // alternatively, you can get the Rid from the attachment property on the object type you are modifying
                 // const attachmentRid = objectTypeWithAttachment.{attachmentProperty}?.rid;
 
             {{/hasAttachmentProperty}}
@@ -2108,7 +2108,7 @@ versions:
                 const mediaFile = await fetch("media.mp4");
                 const mediaBlob = await mediaFile.blob();
                 const mediaUpload: MediaUpload = { data: mediaBlob, fileName: "myMedia" };
-                
+
                 // You can also pass an existing media reference into your Action
                 const objectPage = await client({{objectType}}).fetchPage();
                 const mediaReference: MediaReference = objectPage.data[0].{{property}}!.getMediaReference();
@@ -2157,18 +2157,18 @@ versions:
                 const attachmentFile = await fetch("file.json");
                 const attachmentBlob = await attachmentFile.blob();
                 const attachment: AttachmentUpload = createAttachmentUpload(attachmentBlob, "myFile");
-            
+
             {{/hasAttachmentProperty}}
             {{#hasMediaParameter}}
                 // You can upload media data via your Action
                 const mediaFile = await fetch("media.mp4");
                 const mediaBlob = await mediaFile.blob();
                 const mediaUpload: MediaUpload = { data: mediaBlob, fileName: "myMedia" };
-                
+
                 // You can also pass an existing media reference into your Action
                 const objectPage = await client({{objectType}}).fetchPage();
                 const mediaReference: MediaReference = objectPage.data[0].{{property}}!.getMediaReference();
-                
+
             {{/hasMediaParameter}}
                 const result = await client({{actionApiName}}).batchApplyAction([
                         {
@@ -2203,12 +2203,13 @@ versions:
 
             async function createObject(client: Client): Promise<Edits.Object<{{objectType}}>[]> {
                 const batch = createEditBatch<Edits.Object<{{objectType}}>>(client);
-                
+
                 const blob = new Blob(["Hello, world"], { type: "text/plain" });
                 const mediaReference = await uploadMedia(client, { data: blob, fileName: "foundryFile.txt" });
 
-                // @ts-ignore 
-                batch.create({{objectType}}, { myMediaProperty: mediaReference, /* Other properties... */ });
+                const props = { myMediaProperty: mediaReference /* Other properties... */ };
+                // @ts-ignore
+                batch.create({{objectType}}, props);
 
                 return batch.getEdits();
             }
@@ -2237,9 +2238,9 @@ versions:
                 });
             }
             const mediaReference: MediaReference = await createMediaReference();
-            const actionResult = client({{actionApiName}}).applyAction({ 
+            const actionResult = client({{actionApiName}}).applyAction({
                 {{primaryKeyPropertyV2.apiName}}: {{{propertyValueV2}}},
-                {{mediaParameter}}: mediaReference 
+                {{mediaParameter}}: mediaReference
             });
           computedVariables:
             - propertyValueV2
@@ -2290,7 +2291,7 @@ versions:
 
               const {{objectType}}WithExpression = await client({{objectType}})
                   .withProperties({
-                        {{^isExtractPart}} 
+                        {{^isExtractPart}}
                         "derivedPropertyDatetime_{{operation}}": (baseObjectSet) =>
                         baseObjectSet.pivotTo("{{linkApiName}}")
                             .selectProperty("{{property}}")

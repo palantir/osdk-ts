@@ -111,9 +111,8 @@ export interface DropdownEditConfig<V = unknown> {
 /**
  * User-facing configuration for a date picker editor in a table cell.
  *
- * This is intentionally a standalone interface rather than re-exporting
- * `DatetimePickerFieldProps` from ActionForm, so the table API doesn't break
- * when ActionForm's prop shape changes.
+ * Standalone by design rather than re-exporting `DatePickerProps` so the
+ * table API doesn't break when the picker's prop shape changes.
  */
 export interface DatePickerEditConfig {
   /**
@@ -168,19 +167,17 @@ type EditFieldComponent = keyof EditFieldPropsByType;
 /**
  * Configuration for an editable cell's field component.
  *
- * @example
- * ```ts
- * editFieldConfig: {
- *   fieldComponent: "DROPDOWN",
- *   fieldComponentProps: {
- *     items: ["Active", "Inactive", "Pending"],
- *   },
- * }
- * ```
+ * `getFieldComponentProps` is called with the row's object and a map of any
+ * pending cell edits for the same row, keyed by `columnId`. This lets the
+ * configuration depend on row state or on other in-progress edits within the
+ * row (e.g. dropdown items that change once another column is edited).
  */
-export type EditFieldConfig = {
+export type EditFieldConfig<TData = unknown> = {
   [K in EditFieldComponent]: {
     fieldComponent: K;
-    fieldComponentProps: EditFieldPropsByType[K];
+    getFieldComponentProps: (
+      object: TData,
+      edits?: Record<string, CellEditInfo<TData, unknown>>,
+    ) => EditFieldPropsByType[K];
   };
 }[EditFieldComponent];

@@ -19,12 +19,12 @@
 
 // Example: loadAbsoluteTimeSeriesPointsSnippet
 
-import { type Employee } from "../../../generatedNoCheck/index.js";
 import { type Osdk } from "@osdk/client";
+import { type Employee } from "../../../generatedNoCheck/index.js";
 
 async function getAbsoluteTimeSeriesPoints(obj: Osdk.Instance<Employee>) {
-    return await obj.employeeStatus?.getAllPoints({
-        $startTime: "2022-08-13T12:34:56Z",
-        $endTime: "2022-08-14T12:34:56Z",
-    });
+  return await obj.employeeStatus?.getAllPoints({
+    $startTime: "2022-08-13T12:34:56Z",
+    $endTime: "2022-08-14T12:34:56Z",
+  });
 }

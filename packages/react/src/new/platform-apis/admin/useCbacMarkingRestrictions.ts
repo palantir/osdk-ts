@@ -18,7 +18,7 @@ import type { PalantirApiError } from "@osdk/client";
 import { CbacMarkingRestrictionsObjects } from "@osdk/foundry.admin";
 import React from "react";
 import { usePlatformQuery } from "../../../utils/usePlatformQuery.js";
-import { OsdkContext2 } from "../../OsdkContext2.js";
+import { OsdkContext } from "../../OsdkContext.js";
 
 export interface CbacMarkingRestrictionsData {
   disallowedMarkings: string[];
@@ -85,7 +85,7 @@ export function useCbacMarkingRestrictions(
   { markingIds, enabled: externalEnabled = true }:
     UseCbacMarkingRestrictionsOptions,
 ): UseCbacMarkingRestrictionsResult {
-  const { client } = React.useContext(OsdkContext2);
+  const { client } = React.useContext(OsdkContext);
 
   const stableMarkingIds = React.useMemo(
     () => markingIds,

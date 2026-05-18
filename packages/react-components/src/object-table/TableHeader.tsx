@@ -41,6 +41,7 @@ interface TableHeaderProps<
 > {
   table: Table<TData>;
   headerMenuFeatureFlags?: HeaderMenuFeatureFlags;
+  onColumnHeaderClick?: (columnId: string) => void;
 }
 
 const getHeaderName = <TData,>(
@@ -71,6 +72,7 @@ export function TableHeader<
 >({
   table,
   headerMenuFeatureFlags,
+  onColumnHeaderClick,
 }: TableHeaderProps<TData>): React.ReactElement {
   // TODO: If value is number type, right align header
 
@@ -177,6 +179,7 @@ export function TableHeader<
                         featureFlags={headerMenuFeatureFlags}
                         onOpenColumnConfig={handleOpenColumnConfig}
                         onOpenMultiSort={handleOpenMultiSort}
+                        onColumnHeaderClick={onColumnHeaderClick}
                       />
                     )}
                   {header.column.getCanResize()

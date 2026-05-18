@@ -20,6 +20,7 @@ import {
   createFetch,
   getAnthropicBaseUrl,
   getFoundryToken,
+  getGoogleBaseUrl,
   getOpenAiBaseUrl,
 } from "./utils.js";
 
@@ -62,6 +63,16 @@ describe("getAnthropicBaseUrl", () => {
       "https://example.palantirfoundry.com/api/v2/llm/proxy/anthropic",
     );
   });
+
+  it("returns the Anthropic proxy URL when baseUrl has a trailing slash", () => {
+    const client = createMockClient({
+      baseUrl: "https://example.palantirfoundry.com/",
+    });
+
+    expect(getAnthropicBaseUrl(client)).toBe(
+      "https://example.palantirfoundry.com/api/v2/llm/proxy/anthropic",
+    );
+  });
 });
 
 describe("getOpenAiBaseUrl", () => {
@@ -70,6 +81,36 @@ describe("getOpenAiBaseUrl", () => {
 
     expect(getOpenAiBaseUrl(client)).toBe(
       "https://example.palantirfoundry.com/api/v2/llm/proxy/openai/v1",
+    );
+  });
+
+  it("returns the OpenAI proxy URL when baseUrl has a trailing slash", () => {
+    const client = createMockClient({
+      baseUrl: "https://example.palantirfoundry.com/",
+    });
+
+    expect(getOpenAiBaseUrl(client)).toBe(
+      "https://example.palantirfoundry.com/api/v2/llm/proxy/openai/v1",
+    );
+  });
+});
+
+describe("getGoogleBaseUrl", () => {
+  it("returns the Google proxy URL", () => {
+    const client = createMockClient();
+
+    expect(getGoogleBaseUrl(client)).toBe(
+      "https://example.palantirfoundry.com/api/v2/llm/proxy/google",
+    );
+  });
+
+  it("returns the Google proxy URL when baseUrl has a trailing slash", () => {
+    const client = createMockClient({
+      baseUrl: "https://example.palantirfoundry.com/",
+    });
+
+    expect(getGoogleBaseUrl(client)).toBe(
+      "https://example.palantirfoundry.com/api/v2/llm/proxy/google",
     );
   });
 });

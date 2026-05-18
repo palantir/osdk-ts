@@ -1101,6 +1101,59 @@ describe(Store, () => {
             { isOptimistic: true, status: "loading" },
           );
         });
+
+        it("removes deleted objects via deleteFromStore without leaving undefined slots in the list", async () => {
+          // Regression for the action-driven delete path: tombstone writes
+          // didn't register in changes.deleted, so list watchers kept the
+          // cache key and combineLatest resolved the slot to undefined.
+          const emp = employeesAsServerReturns[0];
+          updateList(cache, { type: Employee, where: {}, orderBy: {} }, [
+            emp,
+          ]);
+
+          const subFn = mockSingleSubCallback();
+          defer(
+            cache.objects.observe({
+              apiName: Employee,
+              pk: emp.$primaryKey,
+              mode: "offline",
+            }, subFn),
+          );
+          expectSingleObjectCallAndClear(subFn, emp);
+
+          const subListFn = mockListSubCallback();
+          defer(
+            cache.lists.observe({
+              type: Employee,
+              mode: "offline",
+            }, subListFn),
+          );
+
+          await waitForCall(subListFn, 1);
+          expectSingleListCallAndClear(
+            subListFn,
+            [emp],
+            { status: "loaded" },
+          );
+
+          testStage("delete via the production path: deleteFromStore");
+
+          cache.batch({}, (batch) => {
+            cache.objects.getQuery({
+              apiName: Employee,
+              pk: emp.$primaryKey,
+            }, undefined).deleteFromStore("loaded", batch);
+          });
+
+          expectSingleObjectCallAndClear(subFn, undefined);
+
+          await waitForCall(subListFn, 1);
+          expectSingleListCallAndClear(
+            subListFn,
+            [],
+            { status: "loaded", isOptimistic: false },
+          );
+        });
       });
     });
 
@@ -1354,6 +1407,89 @@ describe(Store, () => {
           s.next.mockClear();
         }
       });
+    });
+
+    describe(".observeObject (independent variants per cache-key dimension)", () => {
+      const subFn1 = mockSingleSubCallback();
+      const subFn2 = mockSingleSubCallback();
+
+      beforeEach(() => {
+        for (const s of [subFn1, subFn2]) {
+          s.complete.mockClear();
+          s.next.mockClear();
+          s.error.mockClear();
+        }
+      });
+
+      // Two subscribers that share apiName + pk but differ in any cache-key
+      // dimension should observe independent fetches, not share a stale query.
+      // Add a new case here whenever a new dimension is added to ObjectCacheKey
+      // (currently: $select, $loadPropertySecurityMetadata, withProperties/Rdp).
+      // Cache-key uniqueness for dimensions the FauxFoundry can't fetch (e.g.
+      // $loadPropertySecurityMetadata) is unit-tested at the ObjectsHelper
+      // level instead.
+      const cases: Array<{
+        name: string;
+        optionsA: ObserveObjectOptions<typeof Employee>;
+        optionsB: ObserveObjectOptions<typeof Employee>;
+        // Optional dimension-specific assertion on subscriber B's loaded payload.
+        expectLoadedB?: (object: ObjectHolder | undefined) => void;
+      }> = [
+        {
+          name: "$select",
+          optionsA: {
+            apiName: Employee,
+            pk: JOHN_DOE_ID,
+            mode: "force",
+            select: ["fullName"],
+          },
+          optionsB: {
+            apiName: Employee,
+            pk: JOHN_DOE_ID,
+            mode: "force",
+            select: ["employeeId"],
+          },
+          expectLoadedB: (object) =>
+            expect(object).toEqual(
+              expect.objectContaining({
+                $primaryKey: JOHN_DOE_ID,
+                employeeId: JOHN_DOE_ID,
+              }),
+            ),
+        },
+      ];
+
+      it.each(cases)(
+        "subscribers differing in $name observe independent fetches",
+        async ({ optionsA, optionsB, expectLoadedB }) => {
+          // Subscriber A subscribes first and reaches "loaded".
+          defer(cache.objects.observe(optionsA, subFn1));
+          expectSingleObjectCallAndClear(subFn1, undefined!, "loading");
+          await waitForCall(subFn1);
+          const aLoaded = subFn1.next.mock.lastCall?.[0]!;
+          expect(aLoaded.object).toEqual(
+            expect.objectContaining({ $primaryKey: JOHN_DOE_ID }),
+          );
+          expect(aLoaded.status).toBe("loaded");
+          subFn1.next.mockClear();
+
+          // Subscriber B differs only in the cache-key dimension under test.
+          // Pre-fix, B would silently share A's query and its first emission
+          // would be A's already-loaded payload. Post-fix, B has its own
+          // query in init state, so its first emission is loading with no
+          // object yet — proving the queries are independent.
+          defer(cache.objects.observe(optionsB, subFn2));
+          expectSingleObjectCallAndClear(subFn2, undefined!, "loading");
+
+          await waitForCall(subFn2);
+          const bLoaded = subFn2.next.mock.lastCall?.[0]!;
+          expect(bLoaded.status).toBe("loaded");
+          expect(bLoaded.object).toEqual(
+            expect.objectContaining({ $primaryKey: JOHN_DOE_ID }),
+          );
+          expectLoadedB?.(bLoaded.object);
+        },
+      );
     });
 
     describe(".observeObject (offline)", () => {
@@ -2257,7 +2393,7 @@ describe(Store, () => {
           },
         );
 
-        // the optimistic job will call createObject which triggers the `objectFactory2` of the
+        // the optimistic job will call createObject which triggers the `objectFactory` of the
         // cache context.
 
         // Perform something optimistic.
@@ -2695,6 +2831,89 @@ describe(Store, () => {
             ],
           }),
         );
+      });
+
+      it("removes streamed-out objects from object-set without leaving undefined slots", async () => {
+        // Regression for BaseListQuery.onOswRemoved: streaming "REMOVED"
+        // events wrote tombstones via batch.delete without registering
+        // changes.deleted, so ObjectSetQuery emitted an undefined slot
+        // for the removed object.
+        fauxFoundry.getDefaultDataStore().clear();
+
+        fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+          $apiName: "Employee",
+          employeeId: 800,
+          fullName: "Stay",
+        });
+        const empBId = 801;
+        fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+          $apiName: "Employee",
+          employeeId: empBId,
+          fullName: "Goodbye",
+        });
+
+        const baseObjectSet = client(Employee) as ObjectSet<Employee>;
+
+        // Spy on the public subscribe seam invoked by
+        // BaseListQuery.createWebsocketSubscription when streamUpdates
+        // is true. Capturing the listener here lets us drive a real
+        // REMOVED update through onOswChange → onOswRemoved without
+        // reaching protected internals.
+        const subscribeSpy = vi.spyOn(baseObjectSet, "subscribe")
+          .mockReturnValue({ unsubscribe: () => {} });
+
+        const sub = mockObserver<ObjectSetPayload | undefined>();
+        defer(
+          store.objectSets.observe({
+            baseObjectSet,
+            streamUpdates: true,
+          }, sub),
+        );
+
+        await vi.waitFor(
+          () => {
+            expect(sub.next).toHaveBeenLastCalledWith(
+              expect.objectContaining({ status: "loaded" }),
+            );
+          },
+          { timeout: 5000 },
+        );
+
+        expect(sub.next).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            status: "loaded",
+            resolvedList: expect.arrayContaining([
+              expect.objectContaining({ employeeId: 800 }),
+              expect.objectContaining({ employeeId: 801 }),
+            ]),
+          }),
+        );
+
+        await vi.waitFor(() => {
+          expect(subscribeSpy).toHaveBeenCalled();
+        });
+
+        const osdkB = await client(Employee).fetchOne(empBId);
+
+        sub.next.mockClear();
+
+        const listener = subscribeSpy.mock.calls[0]?.[0];
+        if (!listener?.onChange) {
+          throw new Error("expected captured listener to define onChange");
+        }
+        listener.onChange({ object: osdkB, state: "REMOVED" });
+
+        await vi.waitFor(
+          () => {
+            expect(sub.next).toHaveBeenCalled();
+          },
+          { timeout: 5000 },
+        );
+
+        const lastCall = sub.next.mock.calls.at(-1)?.[0];
+        expect(lastCall?.resolvedList).toEqual([
+          expect.objectContaining({ employeeId: 800 }),
+        ]);
       });
 
       it("should trigger revalidation when object is deleted from complex ObjectSet", async () => {

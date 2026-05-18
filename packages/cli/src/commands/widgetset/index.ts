@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { type CliCommonArgs, YargsCheckError } from "@osdk/cli.common";
+import {
+  type CliCommonArgs,
+  ensureTrailingSlash,
+  YargsCheckError,
+} from "@osdk/cli.common";
 import type { CommandModule } from "yargs";
 import type { WidgetSetRid } from "../../net/WidgetSetRid.js";
 import configLoader from "../../util/configLoader.js";
@@ -41,7 +45,7 @@ const command: CommandModule<CliCommonArgs, CommonWidgetSetArgs> = {
         description: "Widget set resource identifier (rid)",
       },
       foundryUrl: {
-        coerce: (foundryUrl) => foundryUrl.replace(/\/$/, ""),
+        coerce: ensureTrailingSlash,
         type: "string",
         ...foundryUrl
           ? { default: foundryUrl }
