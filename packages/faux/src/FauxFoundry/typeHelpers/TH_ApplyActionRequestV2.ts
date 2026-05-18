@@ -35,6 +35,7 @@ type TH_ActionParameterType_Primitive<X extends ActionParameterType> = X extends
       | "interfaceObject"
       | "attachment"
       | "vector"
+      | "scenarioReference"
     >
   >;
 

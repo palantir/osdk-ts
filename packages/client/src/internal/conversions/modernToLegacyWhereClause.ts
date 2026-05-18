@@ -146,9 +146,18 @@ function handleWherePair(
       + `If the value might be undefined, check it before adding to the where clause.`,
   );
 
-  const isRdp = !structFieldSelector && rdpNames?.has(fieldName);
+  const isTitleProperty = fieldName === "$title";
+  const isPrimaryKeyProperty = fieldName === "$primaryKey";
+  const isSpecialProperty = isTitleProperty || isPrimaryKeyProperty;
 
-  const propertyIdentifier: PropertyIdentifier | undefined = isRdp
+  const isRdp = !structFieldSelector && !isSpecialProperty
+    && rdpNames?.has(fieldName);
+
+  const propertyIdentifier: PropertyIdentifier | undefined = isSpecialProperty
+    ? (isTitleProperty
+      ? { type: "titleProperty" } as PropertyIdentifier
+      : { type: "primaryKeyProperty" } as PropertyIdentifier)
+    : isRdp
     ? {
       type: "property",
       apiName: fieldName,
@@ -164,7 +173,7 @@ function handleWherePair(
     }
     : undefined;
 
-  const field = !isRdp && structFieldSelector == null
+  const field = !isRdp && !isSpecialProperty && structFieldSelector == null
     ? fullyQualifyPropName(fieldName, objectOrInterface)
     : undefined;
 

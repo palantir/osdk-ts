@@ -356,6 +356,7 @@ export async function setupFauxFoundry(): Promise<void> {
             objectApiName: "Employee",
             objectTypeApiName: "Employee",
           },
+          required: true,
         },
       },
       output: {
