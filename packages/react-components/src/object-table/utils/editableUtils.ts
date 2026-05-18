@@ -47,3 +47,14 @@ export function isCellEditable<TData extends RowData>(
   }
   return editable === true;
 }
+
+/**
+ * Whether two cell values are equivalent for the purpose of detecting "no
+ * actual edit". Treats `null` and `undefined` as the same "empty" state so
+ * clearing a never-set cell doesn't register as an edit. `""` is kept
+ * distinct because an empty string can be meaningful data (e.g. a data
+ * quality signal) and clearing it to null IS an edit.
+ */
+export function cellValuesEqual(a: unknown, b: unknown): boolean {
+  return (a ?? null) === (b ?? null);
+}

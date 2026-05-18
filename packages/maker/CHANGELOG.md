@@ -1,5 +1,19 @@
 # @osdk/maker
 
+## 0.27.0
+
+### Minor Changes
+
+- 6bca4fd: fix cbac default nullability
+
+### Patch Changes
+
+- Updated dependencies [1a07c91]
+- Updated dependencies [5b89f25]
+- Updated dependencies [b98e084]
+  - @osdk/api@2.21.0
+  - @osdk/generator-converters.ontologyir@2.21.0
+
 ## 0.26.0
 
 ### Patch Changes

@@ -550,6 +550,27 @@ export const employeeMetadata: TH_ObjectTypeFullMetadata<Employee> = {
           },
         ],
       },
+      "isRemote": {
+        "displayName": "Remote",
+        "dataType": {
+          "type": "boolean",
+        },
+        "rid": "ri.ontology.main.property.b5e2c3a1-1234-4d5e-9abc-fedcba987654",
+        "status": {
+          "type": "experimental",
+        },
+        "visibility": "NORMAL",
+        "typeClasses": [
+          {
+            "kind": "render_hint",
+            "name": "SELECTABLE",
+          },
+          {
+            "kind": "render_hint",
+            "name": "SORTABLE",
+          },
+        ],
+      },
     },
     "rid": "ri.ontology.main.object-type.ade16a88-ecc4-4f96-9751-ca1799247d64",
     "titleProperty": "fullName",

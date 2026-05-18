@@ -16,7 +16,6 @@
 
 export * from "./experimental/action-form.js";
 export * from "./experimental/document-viewer.js";
-export * from "./experimental/docx-viewer.js";
 export * from "./experimental/email-viewer.js";
 export * from "./experimental/excel-viewer.js";
 export * from "./experimental/filter-list.js";

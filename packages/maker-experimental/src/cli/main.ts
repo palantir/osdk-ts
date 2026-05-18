@@ -18,7 +18,10 @@ import type {
   LinkTypeBlockDataV2,
   ObjectTypeBlockDataV2,
 } from "@osdk/client.unstable";
-import { OntologyIrToFullMetadataConverter } from "@osdk/generator-converters.ontologyir";
+import {
+  OntologyBlockDataToFullMetadataConverter,
+  OntologyIrToFullMetadataConverter,
+} from "@osdk/generator-converters.ontologyir";
 import { PreviewOntologyIrConverter } from "@osdk/generator-converters.preview";
 import {
   cleanAndValidateLinkTypeId,
@@ -218,6 +221,19 @@ export default async function main(
   const ontologyJson = JSON.stringify(ontologyIr.ontology, null, 2);
   await fs.promises.writeFile(ontologyJsonPath, ontologyJson);
   consola.info(`Wrote ontology.json to ${ontologyJsonPath}`);
+
+  // Write imported entity metadata so generate-osdk can use it via --import-json
+  const importedMetadata = OntologyBlockDataToFullMetadataConverter
+    .getFullMetadataFromBlockData(ontologyIr.importedOntology);
+  const importedMetadataPath = path.join(
+    blockDataDir,
+    "imported-metadata.json",
+  );
+  await fs.promises.writeFile(
+    importedMetadataPath,
+    JSON.stringify(importedMetadata, null, 2),
+  );
+  consola.info(`Wrote imported-metadata.json to ${importedMetadataPath}`);
 
   let valueTypeResults: BlockGeneratorResult[] = [];
   if (ontologyIr.valueTypes.length > 0) {
