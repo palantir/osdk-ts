@@ -40,7 +40,7 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   isLoading = false,
   className,
   submitButtonText = "Submit",
-  submitButtonVariant = "primary",
+  submitButtonVariant = "secondary",
 }: BaseFormProps): React.ReactElement {
   const portalContainerRef = useRef<HTMLFormElement>(null);
   const isControlled = controlledFormState != null;
