@@ -76,6 +76,7 @@ export function ObjectTable<
   onOrderByChanged,
   onColumnsPinnedChanged,
   onColumnResize,
+  // eslint-disable-next-line @typescript-eslint/no-deprecated -- intentional pass-through to fire alongside onRowSelectionChanged for backwards compatibility
   onRowSelection,
   onRowSelectionChanged,
   onColumnHeaderClick,
@@ -146,18 +147,19 @@ export function ObjectTable<
       if (resultingObjectSet) {
         if (primaryKeyApiName) {
           derivedObjectSet =
-            change.isSelectAll && change.selectedRowIds.length > 0
+            change.isSelectAll && change.selectedRows.length > 0
               ? resultingObjectSet
               : resultingObjectSet.where({
-                [primaryKeyApiName]: { $in: change.selectedRowIds },
+                [primaryKeyApiName]: {
+                  $in: change.selectedRows.map(r => r.$primaryKey),
+                },
               } as WhereClause<Q, RDPs>);
-        } else if (change.isSelectAll && change.selectedRowIds.length > 0) {
+        } else if (change.isSelectAll && change.selectedRows.length > 0) {
           derivedObjectSet = resultingObjectSet;
         }
       }
 
       onRowSelectionChanged({
-        selectedRowIds: change.selectedRowIds,
         selectedRows: change.selectedRows,
         isSelectAll: change.isSelectAll,
         objectSet: derivedObjectSet,

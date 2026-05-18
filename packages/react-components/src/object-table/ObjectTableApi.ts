@@ -540,10 +540,9 @@ export interface ObjectTableProps<
    * Called when the row selection changes.
    *
    * @deprecated Use {@link onRowSelectionChanged} instead. The new callback
-   * delivers a {@link RowSelectionChange} object with `selectedRowIds`,
-   * `selectedRows`, `isSelectAll`, and a derived `objectSet`. This legacy
-   * callback continues to fire alongside the new one for backwards
-   * compatibility.
+   * delivers a {@link RowSelectionChange} object with `selectedRows`,
+   * `isSelectAll`, and a derived `objectSet`. This legacy callback
+   * continues to fire alongside the new one for backwards compatibility.
    *
    * @param selectedRowIds The primary keys of currently selected rows
    * @param isSelectAll Whether the change was triggered by a "select all" action. Defaults to false
@@ -597,21 +596,18 @@ export interface ObjectTableProps<
 
 /**
  * Payload for {@link ObjectTableProps.onRowSelectionChanged}. Consolidates
- * the primary-key list, loaded row instances, the `isSelectAll` semantic
- * intent, and an `ObjectSet` covering the selection.
+ * the loaded row instances, the `isSelectAll` semantic intent, and an
+ * `ObjectSet` covering the selection.
  */
 export interface RowSelectionChange<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 > {
-  /** Primary keys of currently selected rows. */
-  selectedRowIds: PrimaryKeyType<Q>[];
-
   /**
-   * Loaded row instances corresponding to `selectedRowIds`. When
-   * `isSelectAll` is true, this reflects only the rows currently in the
-   * table — pages not yet fetched are absent. Use `objectSet` for the
-   * cross-page view.
+   * Loaded row instances currently selected. When `isSelectAll` is true,
+   * this reflects only the rows currently in the table — pages not yet
+   * fetched are absent. Use `objectSet` for the cross-page view, and
+   * `selectedRows.map(r => r.$primaryKey)` if you need the primary keys.
    */
   selectedRows: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[];
 
@@ -619,7 +615,7 @@ export interface RowSelectionChange<
    * True when the user invoked "select all" (header checkbox) or when
    * controlled mode supplies `isAllSelected={true}`. Distinct from "every
    * loaded row happens to be selected" — that condition is reflected by
-   * `selectedRowIds.length` matching the visible row count but does not set
+   * `selectedRows.length` matching the visible row count but does not set
    * this flag.
    */
   isSelectAll: boolean;
@@ -631,7 +627,7 @@ export interface RowSelectionChange<
    *   provided, otherwise derived from `objectType` via `client(...)`).
    *   This includes rows not yet loaded into the table.
    * - Partial selection → the underlying `ObjectSet` narrowed to
-   *   `{ [primaryKeyApiName]: { $in: selectedRowIds } }`.
+   *   `{ [primaryKeyApiName]: { $in: selectedRows.map(r => r.$primaryKey) } }`.
    * - "Deselect all" → an empty `ObjectSet` (`$in: []`).
    *
    * `undefined` for interface types without a resolvable

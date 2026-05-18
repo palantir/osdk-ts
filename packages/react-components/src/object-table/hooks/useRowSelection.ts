@@ -23,6 +23,7 @@ import type {
 } from "@osdk/api";
 import type { RowSelectionState } from "@tanstack/react-table";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEventCallback } from "../../shared/hooks/useEventCallback.js";
 import { getRowId, getRowIdFromPrimaryKey } from "../utils/getRowId.js";
 
 /**
@@ -34,7 +35,6 @@ export interface UseRowSelectionChange<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 > {
-  selectedRowIds: PrimaryKeyType<Q>[];
   selectedRows: Osdk.Instance<
     Q,
     "$allBaseProperties",
@@ -86,6 +86,7 @@ export function useRowSelection<
   selectionMode = "none",
   selectedRows,
   isAllSelected: isAllSelectedProp,
+  // eslint-disable-next-line @typescript-eslint/no-deprecated -- intentional pass-through to fire alongside onRowSelectionChanged for backwards compatibility
   onRowSelection,
   onRowSelectionChanged,
   data,
@@ -145,7 +146,7 @@ export function useRowSelection<
   // Dedupes refires when "select all" is active and data grows.
   const lastFiredAllSelectedIdsRef = useRef<string | null>(null);
 
-  const fireSelectionCallbacks = useCallback(
+  const fireSelectionCallbacks = useEventCallback(
     (ids: PrimaryKeyType<Q>[], isSelectAll: boolean) => {
       onRowSelection?.(ids, isSelectAll);
       if (onRowSelectionChanged) {
@@ -155,13 +156,11 @@ export function useRowSelection<
           selectedKeySet.has(String(item.$primaryKey))
         );
         onRowSelectionChanged({
-          selectedRowIds: ids,
           selectedRows: instances,
           isSelectAll,
         });
       }
     },
-    [onRowSelection, onRowSelectionChanged, data],
   );
 
   const onToggleAll = useCallback(() => {
@@ -237,7 +236,7 @@ export function useRowSelection<
   );
 
   // Refire callbacks when uncontrolled "select all" is active and new rows arrive.
-  useEffect(() => {
+  useEffect(function syncSelectAllOnDataChange() {
     if (isControlled || !internalIsAllSelected || !data) {
       if (!internalIsAllSelected) {
         lastFiredAllSelectedIdsRef.current = null;

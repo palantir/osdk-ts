@@ -1175,7 +1175,6 @@ describe("useRowSelection", () => {
       });
 
       expect(onRowSelectionChanged).toHaveBeenCalledWith({
-        selectedRowIds: [data[0].$primaryKey],
         selectedRows: [data[0]],
         isSelectAll: false,
       });
@@ -1200,7 +1199,6 @@ describe("useRowSelection", () => {
       });
 
       expect(onRowSelectionChanged).toHaveBeenLastCalledWith({
-        selectedRowIds: [],
         selectedRows: [],
         isSelectAll: false,
       });
@@ -1225,7 +1223,6 @@ describe("useRowSelection", () => {
       });
 
       expect(onRowSelectionChanged).toHaveBeenLastCalledWith({
-        selectedRowIds: [data[0].$primaryKey, data[2].$primaryKey],
         selectedRows: [data[0], data[2]],
         isSelectAll: false,
       });
@@ -1250,11 +1247,6 @@ describe("useRowSelection", () => {
       });
 
       expect(onRowSelectionChanged).toHaveBeenLastCalledWith({
-        selectedRowIds: [
-          data[1].$primaryKey,
-          data[2].$primaryKey,
-          data[3].$primaryKey,
-        ],
         selectedRows: [data[1], data[2], data[3]],
         isSelectAll: false,
       });
@@ -1276,7 +1268,6 @@ describe("useRowSelection", () => {
       });
 
       expect(onRowSelectionChanged).toHaveBeenCalledWith({
-        selectedRowIds: data.map(item => item.$primaryKey),
         selectedRows: data,
         isSelectAll: true,
       });
@@ -1301,7 +1292,6 @@ describe("useRowSelection", () => {
       });
 
       expect(onRowSelectionChanged).toHaveBeenLastCalledWith({
-        selectedRowIds: [],
         selectedRows: [],
         isSelectAll: false,
       });
@@ -1333,7 +1323,6 @@ describe("useRowSelection", () => {
       // Both callbacks consistently report isSelectAll=false on deselect
       expect(onRowSelection).toHaveBeenLastCalledWith([], false);
       expect(onRowSelectionChanged).toHaveBeenLastCalledWith({
-        selectedRowIds: [],
         selectedRows: [],
         isSelectAll: false,
       });
@@ -1360,7 +1349,6 @@ describe("useRowSelection", () => {
       rerender({ data: moreData });
 
       expect(onRowSelectionChanged).toHaveBeenLastCalledWith({
-        selectedRowIds: moreData.map(item => item.$primaryKey),
         selectedRows: moreData,
         isSelectAll: true,
       });
@@ -1388,7 +1376,6 @@ describe("useRowSelection", () => {
         false,
       );
       expect(onRowSelectionChanged).toHaveBeenCalledWith({
-        selectedRowIds: [data[0].$primaryKey],
         selectedRows: [data[0]],
         isSelectAll: false,
       });
@@ -1410,7 +1397,6 @@ describe("useRowSelection", () => {
       });
 
       expect(onRowSelectionChanged).toHaveBeenCalledWith({
-        selectedRowIds: data.map(item => item.$primaryKey),
         selectedRows: data,
         isSelectAll: true,
       });
@@ -1433,7 +1419,6 @@ describe("useRowSelection", () => {
       });
 
       expect(onRowSelectionChanged).toHaveBeenCalledWith({
-        selectedRowIds: [data[0].$primaryKey, data[2].$primaryKey],
         selectedRows: [data[0], data[2]],
         isSelectAll: false,
       });
@@ -1456,7 +1441,6 @@ describe("useRowSelection", () => {
       });
 
       expect(onRowSelectionChanged).toHaveBeenCalledWith({
-        selectedRowIds: data.map(item => item.$primaryKey),
         selectedRows: data,
         isSelectAll: true,
       });

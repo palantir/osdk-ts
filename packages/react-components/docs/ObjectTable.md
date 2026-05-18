@@ -128,13 +128,13 @@ Each column header has a menu with items for sorting, filtering, pinning, resizi
 
 ### Row Selection
 
-| Prop                    | Type                                     | Default  | Description                                                                                                                                                                                                                 |
-| ----------------------- | ---------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `selectionMode`         | `"single" \| "multiple" \| "none"`       | `"none"` | Selection mode. "multiple" shows checkboxes                                                                                                                                                                                 |
-| `selectedRows`          | `PrimaryKeyType<Q>[]`                    | -        | Selected rows (controlled mode)                                                                                                                                                                                             |
-| `isAllSelected`         | `boolean`                                | -        | Indicates all rows are selected (controlled mode only)                                                                                                                                                                      |
-| `onRowSelectionChanged` | `(change: RowSelectionChange) => void`   | -        | **Preferred.** Fires with `{ selectedRowIds, selectedRows, isSelectAll, objectSet }`. The `objectSet` is the underlying set when "select all" is active, otherwise narrowed by `$primaryKey`. See [example](#row-selection) |
-| `onRowSelection`        | `(selectedRowIds, isSelectAll?) => void` | -        | **Deprecated** — use `onRowSelectionChanged`. Still fires for backwards compatibility. Refires with the expanded id list after "select all" + scroll                                                                        |
+| Prop                    | Type                                     | Default  | Description                                                                                                                                                                                                 |
+| ----------------------- | ---------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `selectionMode`         | `"single" \| "multiple" \| "none"`       | `"none"` | Selection mode. "multiple" shows checkboxes                                                                                                                                                                 |
+| `selectedRows`          | `PrimaryKeyType<Q>[]`                    | -        | Selected rows (controlled mode)                                                                                                                                                                             |
+| `isAllSelected`         | `boolean`                                | -        | Indicates all rows are selected (controlled mode only)                                                                                                                                                      |
+| `onRowSelectionChanged` | `(change: RowSelectionChange) => void`   | -        | **Preferred.** Fires with `{ selectedRows, isSelectAll, objectSet }`. The `objectSet` is the underlying set when "select all" is active, otherwise narrowed by `$primaryKey`. See [example](#row-selection) |
+| `onRowSelection`        | `(selectedRowIds, isSelectAll?) => void` | -        | **Deprecated** — use `onRowSelectionChanged`. Still fires for backwards compatibility. Refires with the expanded id list after "select all" + scroll                                                        |
 
 ### Interactions
 
@@ -665,14 +665,14 @@ function EmployeesTable() {
   objectType={Employee}
   selectionMode="multiple"
   onRowSelectionChanged={({
-    selectedRowIds,
     selectedRows,
     isSelectAll,
     objectSet,
   }) => {
-    // selectedRowIds: PrimaryKeyType<Employee>[] — current selection
-    // selectedRows:   loaded row instances matching selectedRowIds
-    //                 (pages not yet fetched are absent when isSelectAll)
+    // selectedRows:   loaded row instances currently selected.
+    //                 Pages not yet fetched are absent when isSelectAll.
+    //                 Use selectedRows.map(r => r.$primaryKey) if you
+    //                 need the primary keys.
     // isSelectAll:    true only when the user invoked "select all" (or
     //                 controlled isAllSelected={true}) — NOT just because
     //                 every visible row happens to be checked
@@ -692,12 +692,12 @@ function EmployeesTable() {
 
 The legacy `onRowSelection(selectedRowIds, isSelectAll?)` callback is deprecated but still fires for backwards compatibility. The equivalents in `onRowSelectionChanged` are:
 
-| Legacy parameter           | New payload field |
-| -------------------------- | ----------------- |
-| `selectedRowIds`           | `selectedRowIds`  |
-| `isSelectAll` (second arg) | `isSelectAll`     |
-| _(not previously exposed)_ | `selectedRows`    |
-| _(not previously exposed)_ | `objectSet`       |
+| Legacy parameter           | New payload field                      |
+| -------------------------- | -------------------------------------- |
+| `selectedRowIds`           | `selectedRows.map(r => r.$primaryKey)` |
+| `isSelectAll` (second arg) | `isSelectAll`                          |
+| _(not previously exposed)_ | `selectedRows`                         |
+| _(not previously exposed)_ | `objectSet`                            |
 
 ### Example 12: Custom Column Type
 
