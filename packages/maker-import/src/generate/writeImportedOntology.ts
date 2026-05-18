@@ -24,68 +24,6 @@ import { convertObjectType } from "./convertObjectType.js";
 import { convertSharedPropertyType } from "./convertSharedPropertyType.js";
 import { camel, fullCamel, withoutNamespace } from "./utils.js";
 
-interface OntologyFullMetadata {
-  objectTypes: Record<string, {
-    objectType: {
-      apiName: string;
-      displayName?: string;
-      description?: string;
-      primaryKey: string;
-      titleProperty: string;
-      status: string;
-      visibility?: string;
-      properties: Record<
-        string,
-        {
-          displayName?: string;
-          description?: string;
-          dataType: { type: string; [key: string]: unknown };
-        }
-      >;
-    };
-    sharedPropertyTypeMapping?: Record<string, string>;
-  }>;
-  actionTypes: Record<string, {
-    apiName: string;
-    displayName?: string;
-    description?: string;
-    status: string;
-    parameters: Record<string, {
-      displayName?: string;
-      description?: string;
-      dataType: { type: string; [key: string]: unknown };
-      required: boolean;
-    }>;
-    operations: Array<{ type: string; [key: string]: unknown }>;
-  }>;
-  interfaceTypes: Record<string, {
-    apiName: string;
-    displayName?: string;
-    description?: string;
-    extendsInterfaces: ReadonlyArray<string>;
-    properties: Record<string, {
-      apiName: string;
-      displayName?: string;
-      description?: string;
-      dataType: { type: string; [key: string]: unknown };
-    }>;
-    links: Record<string, {
-      apiName: string;
-      displayName?: string;
-      description?: string;
-      cardinality: string;
-      required: boolean;
-      linkedEntityApiName: { type: string; apiName?: string };
-    }>;
-  }>;
-  sharedPropertyTypes: Record<string, {
-    apiName: string;
-    displayName?: string;
-    description?: string;
-    dataType: { type: string; [key: string]: unknown };
-  }>;
-}
-
 const TYPE_NAME_MAP: Record<string, string> = {
   [OntologyEntityTypeEnum.OBJECT_TYPE]: "ObjectType",
   [OntologyEntityTypeEnum.ACTION_TYPE]: "ActionType",
