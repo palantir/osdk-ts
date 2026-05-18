@@ -14,20 +14,4 @@
  * limitations under the License.
  */
 
-import type { UUID } from "crypto";
-import type { SemverVersion } from "./semver.js";
-
-export interface MarketplaceBundleManifestEntry {
-  blockSetVersionId: UUID;
-
-  blockSetVersion: SemverVersion;
-
-  titleAndDescription: {
-    localizedTitle: {};
-    localizedDescription: {};
-    fallbackTitle: string;
-    fallbackDescription: string;
-  };
-
-  mavenProductId: string | undefined;
-}
+export type SemverVersion = `${number}.${number}.${number}`;
