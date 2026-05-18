@@ -2,4 +2,4 @@
 "@osdk/react-components-storybook": patch
 ---
 
-add missing docx-preview and postal-mime dev deps so storybook dev resolves the docx/email viewer stories
+add missing postal-mime dev dep so storybook dev resolves the email viewer stories
