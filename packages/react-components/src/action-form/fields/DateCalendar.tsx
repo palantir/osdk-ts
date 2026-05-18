@@ -132,11 +132,7 @@ export default function DateCalendar({
           {todayButtonText}
         </ActionButton>
         {onClear != null && (
-          <ActionButton
-            type="button"
-            appearance="minimal"
-            onClick={onClear}
-          >
+          <ActionButton type="button" appearance="minimal" onClick={onClear}>
             {clearButtonText}
           </ActionButton>
         )}
