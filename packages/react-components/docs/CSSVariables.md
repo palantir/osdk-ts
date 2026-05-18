@@ -912,7 +912,7 @@ Canonical "No value" styling used by the shared `NoValueLabel` component across 
 | `--osdk-filter-null-wrapper-gap`       | `var(--osdk-surface-spacing)`               | Null wrapper gap       |
 | `--osdk-filter-null-row-padding`       | `calc(var(--osdk-surface-spacing) * 1) 0`   | Null row padding       |
 | `--osdk-filter-null-row-border-top`    | `none`                                      | Null row top border    |
-| `--osdk-filter-null-label-gap`         | `var(--osdk-surface-spacing)`               | Null label gap         |
+| `--osdk-filter-null-label-gap`         | `calc(var(--osdk-surface-spacing) * 2)`     | Null label gap         |
 | `--osdk-filter-null-label-font-family` | `var(--osdk-typography-family-default)`     | Null label font family |
 | `--osdk-filter-null-label-font-size`   | `var(--osdk-typography-size-body-medium)`   | Null label font size   |
 | `--osdk-filter-null-label-line-height` | `1.4`                                       | Null label line height |
