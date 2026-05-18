@@ -90,6 +90,14 @@ export interface LinkedPropertyFilterDefinition<
    */
   id?: string;
   linkName: L;
+  /**
+   * Name of the link on the linked object type that points back to `Q`.
+   * Emitted as `$reverseLink` on the link-keyed entry the FilterList adds
+   * to `filterClause` so the OSDK can pivot back to the source set when
+   * applying the where clause. Filters without `reverseLinkName` are
+   * skipped — they contribute no narrowing.
+   */
+  reverseLinkName?: LinkNames<LinkedQ>;
   linkedPropertyKey: LinkedK;
   linkedFilterComponent: LinkedC;
   linkedFilterState: FilterStateByComponentType[LinkedC];

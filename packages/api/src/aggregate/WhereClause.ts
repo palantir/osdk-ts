@@ -26,6 +26,7 @@ import type {
 import type { SimplePropertyDef } from "../ontology/SimplePropertyDef.js";
 import type { BaseWirePropertyTypes } from "../ontology/WirePropertyTypes.js";
 import type { IsNever } from "../OsdkObjectFrom.js";
+import type { LinkedType, LinkNames } from "../util/LinkUtils.js";
 import type { ArrayFilter } from "./ArrayFilter.js";
 import type { BaseFilter } from "./BaseFilter.js";
 import type { BooleanFilter } from "./BooleanFilter.js";
@@ -205,6 +206,10 @@ export type PropertyWhereClause<T extends ObjectOrInterfaceDefinition> = {
   >;
 };
 
+export type LinkWhereClause<T extends ObjectOrInterfaceDefinition> = {
+  [L in LinkNames<T>]?: WhereClause<LinkedType<T, L>>;
+};
+
 type MergedPropertyWhereClause<
   T extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
@@ -219,6 +224,7 @@ export type WhereClause<
   | OrWhereClause<T, RDPs>
   | AndWhereClause<T, RDPs>
   | NotWhereClause<T, RDPs>
+  | LinkWhereClause<T>
   | (IsNever<keyof CompileTimeMetadata<T>["properties"]> extends true
     ? Record<string, never>
     : MergedPropertyWhereClause<T, RDPs>);

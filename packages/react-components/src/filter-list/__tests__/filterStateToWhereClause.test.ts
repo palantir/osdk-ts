@@ -26,6 +26,7 @@ import {
   createDateRangeState,
   createHasLinkFilterDef,
   createKeywordSearchFilterDef,
+  createLinkedPropertyFilterDef,
   createNumberRangeState,
   createPropertyFilterDef,
   createSelectState,
@@ -232,6 +233,81 @@ describe("buildWhereClause", () => {
     );
     const result = buildWhereClause([def], filterStates);
     expect(result).toEqual({});
+  });
+
+  describe("LINKED_PROPERTY", () => {
+    it("emits $reverseLink-tagged link entry when reverseLinkName and selection are present", () => {
+      const def = createLinkedPropertyFilterDef("lead", "fullName", "peeps");
+      const filterStates = stateMap(
+        [def, {
+          type: "linkedProperty",
+          linkedFilterState: {
+            type: "EXACT_MATCH",
+            values: ["Alice", "Bob"],
+          },
+        }],
+      );
+      const result = buildWhereClause([def], filterStates);
+      expect(result).toEqual({
+        lead: {
+          $reverseLink: "peeps",
+          fullName: { $in: ["Alice", "Bob"] },
+        },
+      });
+    });
+
+    it("emits no clause when reverseLinkName is missing", () => {
+      const def = createLinkedPropertyFilterDef("lead", "fullName");
+      const filterStates = stateMap(
+        [def, {
+          type: "linkedProperty",
+          linkedFilterState: {
+            type: "EXACT_MATCH",
+            values: ["Alice"],
+          },
+        }],
+      );
+      const result = buildWhereClause([def], filterStates);
+      expect(result).toEqual({});
+    });
+
+    it("emits no clause when linked filter selection is empty", () => {
+      const def = createLinkedPropertyFilterDef("lead", "fullName", "peeps");
+      const filterStates = stateMap(
+        [def, {
+          type: "linkedProperty",
+          linkedFilterState: { type: "EXACT_MATCH", values: [] },
+        }],
+      );
+      const result = buildWhereClause([def], filterStates);
+      expect(result).toEqual({});
+    });
+
+    it("combines linked-filter clause with direct-property clause via $and", () => {
+      const linkedDef = createLinkedPropertyFilterDef(
+        "lead",
+        "fullName",
+        "peeps",
+      );
+      const directDef = createPropertyFilterDef("name", "MULTI_SELECT");
+      const filterStates = stateMap(
+        [linkedDef, {
+          type: "linkedProperty",
+          linkedFilterState: {
+            type: "EXACT_MATCH",
+            values: ["Alice"],
+          },
+        }],
+        [directDef, { type: "SELECT", selectedValues: ["Bob"] }],
+      );
+      const result = buildWhereClause([linkedDef, directDef], filterStates);
+      expect(result).toEqual({
+        $and: [
+          { lead: { $reverseLink: "peeps", fullName: "Alice" } },
+          { name: "Bob" },
+        ],
+      });
+    });
   });
 
   it("builds $containsAllTerms for keywordSearch filter with AND operator", () => {

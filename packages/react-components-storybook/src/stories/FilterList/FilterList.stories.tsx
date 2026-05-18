@@ -1855,6 +1855,125 @@ const filterDefinitions = [
   render: (args) => <WithLinkedPropertyFiltersStory {...args} />,
 };
 
+// ---------------------------------------------------------------------------
+// Combined linked + direct filters via WhereClause link traversal
+// ---------------------------------------------------------------------------
+
+const combinedDepartmentFilter: FilterDefinitionUnion<Employee> = {
+  type: "PROPERTY",
+  id: "combined-department",
+  key: "department",
+  label: "Department",
+  filterComponent: "LISTOGRAM",
+  filterState: { type: "EXACT_MATCH", values: [] },
+};
+
+const combinedLocationCityFilter: FilterDefinitionUnion<Employee> = {
+  type: "PROPERTY",
+  id: "combined-locationCity",
+  key: "locationCity",
+  label: "Location City",
+  filterComponent: "MULTI_SELECT",
+  filterState: { type: "SELECT", selectedValues: [] },
+};
+
+const combinedLeadNameFilter: FilterDefinitionUnion<Employee> = {
+  type: "LINKED_PROPERTY",
+  id: "combined-lead-name",
+  linkName: "lead",
+  reverseLinkName: "peeps",
+  linkedPropertyKey: "fullName",
+  linkedFilterComponent: "MULTI_SELECT",
+  linkedFilterState: { type: "SELECT", selectedValues: [] },
+  filterState: {
+    type: "linkedProperty",
+    linkedFilterState: { type: "SELECT", selectedValues: [] },
+  },
+  label: "Manager Name",
+} as FilterDefinitionUnion<Employee>;
+
+const COMBINED_LINKED_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
+  combinedLeadNameFilter,
+  combinedDepartmentFilter,
+  combinedLocationCityFilter,
+];
+
+function CombinedWithLinkedFilterStory(
+  args: Partial<EmployeeFilterListProps>,
+) {
+  const client = useOsdkClient();
+  const baseObjectSet = useMemo(() => client(Employee), [client]);
+
+  const [filterClause, setFilterClause] = useState<
+    WhereClause<Employee> | undefined
+  >(undefined);
+
+  const argsOnFilterClauseChanged = args.onFilterClauseChanged;
+  const handleFilterClauseChanged = useCallback(
+    (clause: WhereClause<Employee>) => {
+      setFilterClause(clause);
+      argsOnFilterClauseChanged?.(clause);
+    },
+    [argsOnFilterClauseChanged],
+  );
+
+  return (
+    <div style={COMBINED_LAYOUT_STYLE}>
+      <div style={SIDEBAR_FIXED_STYLE}>
+        <FilterList
+          {...args}
+          objectType={Employee}
+          objectSet={baseObjectSet}
+          filterDefinitions={COMBINED_LINKED_FILTER_DEFINITIONS}
+          filterClause={filterClause}
+          onFilterClauseChanged={handleFilterClauseChanged}
+        />
+      </div>
+      <div style={FLEX_FILL_STYLE}>
+        <ObjectTable
+          objectType={Employee}
+          objectSet={baseObjectSet}
+          filter={filterClause}
+        />
+      </div>
+    </div>
+  );
+}
+
+export const CombinedWithLinkedFilter: Story = {
+  name: "Combined linked + direct filters",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "A linked filter (Manager Name) and direct property filters coexist in "
+          + "one FilterList. The FilterList emits a `filterClause` that includes "
+          + "linked-filter conditions via `$reverseLink`-tagged entries; the OSDK "
+          + "expands them to pivot+intersect when applying `where(filterClause)` "
+          + "on the ObjectTable's objectSet. Direct property facet counts reflect "
+          + "linked filter selections automatically.",
+      },
+      source: {
+        code: `const baseObjectSet = useMemo(() => client(Employee), [client]);
+
+<FilterList
+  objectType={Employee}
+  objectSet={baseObjectSet}
+  filterDefinitions={filterDefinitions}
+  filterClause={filterClause}
+  onFilterClauseChanged={setFilterClause}
+/>
+<ObjectTable
+  objectType={Employee}
+  objectSet={baseObjectSet}
+  filter={filterClause}
+/>`,
+      },
+    },
+  },
+  render: (args) => <CombinedWithLinkedFilterStory {...args} />,
+};
+
 function CustomNameContainsFilter({
   filterState,
   onFilterStateChanged,
