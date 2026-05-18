@@ -46,6 +46,21 @@
   gap: var(--osdk-form-label-row-gap);
 }
 
+.osdkFormFieldEditedTag {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-inline-start: auto;
+  padding-block: calc(var(--osdk-surface-spacing) * 0.5);
+  padding-inline: calc(var(--osdk-surface-spacing) * 1.5);
+  border-radius: var(--osdk-surface-border-radius);
+  background-color: var(--osdk-custom-color-gray-2);
+  color: var(--osdk-typography-color-default-rest);
+  font-size: var(--osdk-typography-size-body-small);
+  font-weight: var(--osdk-typography-weight-bold);
+  line-height: var(--osdk-typography-line-height-default);
+}
+
 .osdkFormFieldInfoIcon {
   display: inline-flex;
   align-items: center;

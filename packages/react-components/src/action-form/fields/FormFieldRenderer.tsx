@@ -48,6 +48,7 @@ export interface FormFieldRendererProps {
   onBlur?: (e: React.FocusEvent<HTMLDivElement>) => void;
   /** Field-level blur for fields that own their touched state (e.g. dropdowns). */
   onFieldBlur?: () => void;
+  isEdited: boolean;
   error: string | undefined;
   portalContainer?: PortalContainer;
 }
@@ -59,6 +60,7 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
     onFieldValueChange,
     onBlur,
     onFieldBlur,
+    isEdited,
     error,
     portalContainer,
   }: FormFieldRendererProps): React.ReactElement {
@@ -72,6 +74,7 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
         fieldKey={fieldDefinition.fieldKey}
         helperText={helperText}
         helperTextPlacement={helperTextPlacement}
+        isEdited={isEdited}
         error={error}
         onBlur={onBlur}
       >
