@@ -1,5 +1,20 @@
 # @osdk/client
 
+## 2.21.0
+
+### Minor Changes
+
+- 1a07c91: Clean up unstable interface code: remove the `$__UNSTABLE_useOldInterfaceApis` fetch option and its old `OntologyInterfaces.search`-based code path, consolidate `convertWireToOsdkObjects` / `convertWireToOsdkObjects2` into a single factory backed by `loadMultipleObjectTypes`, and rename `__UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition` / `__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst` (the latter is generator-internal). The unused `v2` parameter on `wireInterfaceTypeV2ToSdkObjectDefinition` is also removed.
+- 2db1450: Fix ObjectSetQuery not revalidating when an action edits a type that the query's RDP traverses. Previously only ListQuery (used by useOsdkObjects) checked the RDP invalidation set; ObjectSetQuery (used by useObjectSet) only matched the base object type, leaving RDP columns stale after actions edited a linked type such as Office.
+
+### Patch Changes
+
+- Updated dependencies [1a07c91]
+  - @osdk/api@2.21.0
+  - @osdk/generator-converters@2.21.0
+  - @osdk/shared.test@2.17.0
+  - @osdk/client.unstable@2.21.0
+
 ## 2.20.0
 
 ### Minor Changes
