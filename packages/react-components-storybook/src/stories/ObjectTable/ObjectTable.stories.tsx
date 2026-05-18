@@ -200,7 +200,7 @@ const meta: Meta<EmployeeTableProps> = {
     },
     onRowSelectionChanged: {
       description:
-        "Called when the row selection changes, with a RowSelectionChange payload (selectedRowIds, selectedRows, isSelectAll, derived objectSet). Preferred over the deprecated onRowSelection callback.",
+        "Called when the row selection changes, with a RowSelectionChange payload (selectedRows, isSelectAll, derived objectSet). Preferred over the deprecated onRowSelection callback.",
       control: false,
       table: {
         category: "Events",
@@ -979,8 +979,7 @@ export const EventListeners: Story = {
     console.log("Column header clicked:", columnId);
   }}
   onRowSelectionChanged={(change) => {
-    console.log("Selection changed:", change.selectedRowIds, change.isSelectAll);
-    console.log("Selected rows:", change.selectedRows);
+    console.log("Selection changed:", change.selectedRows, change.isSelectAll);
     console.log("Derived objectSet:", change.objectSet);
   }}
   onOrderByChanged={(orderBy) => {
@@ -1025,7 +1024,9 @@ export const EventListeners: Story = {
     const handleRowSelectionChanged = useCallback(
       (change: any) => {
         args.onRowSelectionChanged?.(change);
-        setSelectedRows(change.selectedRowIds);
+        setSelectedRows(
+          change.selectedRows.map((r: any) => r.$primaryKey),
+        );
         setIsSelectAll(change.isSelectAll);
         setLastEvent("onRowSelectionChanged");
       },
@@ -1198,7 +1199,7 @@ return (
     selectedRows={selectedRows}
     isAllSelected={isSelectAll}
     onRowSelectionChanged={(change) => {
-      setSelectedRows(change.selectedRowIds);
+      setSelectedRows(change.selectedRows.map((r) => r.$primaryKey));
       setIsSelectAll(change.isSelectAll);
     }}
   />
@@ -1213,10 +1214,13 @@ return (
     const [isSelectAll, setIsSelectAll] = useState<boolean>(false);
     const handleRowSelectionChanged = useCallback(
       (
-        change: { selectedRowIds: any[]; isSelectAll: boolean },
+        change: {
+          selectedRows: Array<{ $primaryKey: any }>;
+          isSelectAll: boolean;
+        },
       ) => {
         args.onRowSelectionChanged?.(change as any);
-        setSelectedRows(change.selectedRowIds);
+        setSelectedRows(change.selectedRows.map((r) => r.$primaryKey));
         setIsSelectAll(change.isSelectAll);
       },
       [args],
