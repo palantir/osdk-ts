@@ -85,6 +85,7 @@ function DatePickerCellFieldInner({
         value={dateValue}
         onChange={handleChange}
         portalRef={portalRef}
+        modal={false}
       />
       {hasValidationError && (
         <span className={styles.errorIconWrapper}>
