@@ -18,13 +18,14 @@ import type {
   LinkTypeBlockDataV2,
   ObjectTypeBlockDataV2,
 } from "@osdk/client.unstable";
-import { OntologyIrToFullMetadataConverter } from "@osdk/generator-converters.ontologyir";
+import {
+  OntologyIrToFullMetadataConverter,
+} from "@osdk/generator-converters.ontologyir";
 import { PreviewOntologyIrConverter } from "@osdk/generator-converters.preview";
 import {
   cleanAndValidateLinkTypeId,
   getImportedTypes,
   getOntologyDefinition,
-  OntologyEntityTypeEnum,
 } from "@osdk/maker";
 import { consola } from "consola";
 import * as fs from "node:fs";
@@ -380,8 +381,8 @@ export default async function main(
     input_mapping_entries: ontologyInputMappingEntries,
     external_recommendations: getExternalRecommendations(
       ontologyIr.importedOntology,
-      ontologyDefinition[OntologyEntityTypeEnum.VALUE_TYPE],
-      importedTypes[OntologyEntityTypeEnum.VALUE_TYPE],
+      ontologyIr.valueTypes,
+      ontologyIr.importedValueTypes,
       shapes.inputShapes,
     ),
     add_on_override: undefined,
