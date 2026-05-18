@@ -394,7 +394,11 @@ function extractImportedInterfaceTypes(
 
       const propReadableId = ridGenerator.getInterfacePropertyTypeRids()
         .inverse().get(propertyRid);
-      if (!propReadableId) continue;
+      if (!propReadableId) {
+        throw new Error(
+          `Missing readable ID for interface-defined property RID ${propertyRid} on interface ${interfaceType.apiName}`,
+        );
+      }
 
       const propInputShape: InterfacePropertyTypeInputShape = {
         about: createLocalizedAbout(
