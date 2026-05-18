@@ -64,13 +64,54 @@ export namespace ObservableClient {
   }
 }
 
+export interface CacheSnapshot {
+  entries: CacheEntry[];
+  stats: {
+    totalEntries: number;
+    totalSize: number;
+    totalHits?: number;
+  };
+}
+
+interface CacheEntryMetadata {
+  timestamp: number;
+  status: "init" | "loading" | "loaded" | "error";
+  hitCount?: number;
+  size: number;
+  isOptimistic?: boolean;
+}
+
+interface CacheEntryBase {
+  key: string;
+  objectType: string;
+  metadata: CacheEntryMetadata;
+  data?: unknown;
+}
+
+export type CacheEntry =
+  | CacheEntryBase & { type: "object" }
+  | CacheEntryBase & {
+    type: "list";
+    where?: unknown;
+    orderBy?: unknown;
+    pageSize?: number;
+  }
+  | CacheEntryBase & { type: "link"; linkName?: string }
+  | CacheEntryBase & { type: "objectSet" };
+
 export interface ObserveObjectOptions<
   T extends ObjectOrInterfaceDefinition,
 > extends ObserveOptions {
   apiName: T["apiName"] | T;
   pk: PrimaryKeyType<T>;
-  select?: PropertyKeys<T>[];
+  select?: readonly PropertyKeys<T>[];
   $loadPropertySecurityMetadata?: boolean;
+
+  /**
+   * When true, includes all properties of the underlying concrete object type
+   * for interface queries. Has no effect for non-interface queries.
+   */
+  $includeAllBaseObjectProperties?: boolean;
 }
 
 export type OrderBy<Q extends ObjectOrInterfaceDefinition> = {
@@ -87,6 +128,18 @@ export interface ObserveListOptions<
   orderBy?: OrderBy<Q>;
   invalidationMode?: InvalidationMode;
   expectedLength?: number;
+
+  /**
+   * Enable streaming updates via websocket subscription.
+   *
+   * Cannot be combined with `pivotTo`. The server does not support
+   * websocket subscriptions for link-traversal queries.
+   *
+   * Cannot be combined with `withProperties`. The server does not support
+   * websocket subscriptions for object sets that include derived properties;
+   * in that case `streamUpdates` is ignored and a warning is logged in
+   * development.
+   */
   streamUpdates?: boolean;
   withProperties?: DerivedProperty.Clause<Q>;
 
@@ -96,16 +149,20 @@ export interface ObserveListOptions<
    * Can be combined with `where` to filter the RID set, and with `orderBy` to sort results.
    *
    * @example
+   * ```ts
    * // Fetch specific objects by RID
-   * observeList({ type: Employee, rids: ['ri.foo.123', 'ri.foo.456'] }, observer)
+   * observeList({ type: Employee, rids: ['ri.foo.123', 'ri.foo.456'] }, observer);
+   * ```
    *
    * @example
+   * ```ts
    * // Fetch specific objects by RID, filtered by status
    * observeList({
    *   type: Employee,
    *   rids: ['ri.foo.123', 'ri.foo.456', 'ri.foo.789'],
-   *   where: { status: 'active' }
-   * }, observer)
+   *   where: { status: 'active' },
+   * }, observer);
+   * ```
    */
   rids?: readonly string[];
 
@@ -124,6 +181,12 @@ export interface ObserveListOptions<
   $loadPropertySecurityMetadata?: boolean;
 
   /**
+   * When true, includes all properties of the underlying concrete object type
+   * for interface queries. Has no effect for non-interface queries.
+   */
+  $includeAllBaseObjectProperties?: boolean;
+
+  /**
    * Automatically fetch additional pages on initial load.
    *
    * - `true`: Fetch all available pages automatically
@@ -131,24 +194,34 @@ export interface ObserveListOptions<
    * - `undefined` (default): Only fetch the first page, user must call fetchMore()
    *
    * @example
+   * ```ts
    * // Fetch all todos at once
-   * observeList({ type: Todo, autoFetchMore: true }, observer)
+   * observeList({ type: Todo, autoFetchMore: true }, observer);
+   * ```
    *
    * @example
+   * ```ts
    * // Fetch at least 100 todos
-   * observeList({ type: Todo, autoFetchMore: 100, pageSize: 25 }, observer)
+   * observeList({ type: Todo, autoFetchMore: 100, pageSize: 25 }, observer);
+   * ```
    */
   autoFetchMore?: boolean | number;
   intersectWith?: Array<{
     where: WhereClause<Q, RDPs>;
   }>;
+
+  /**
+   * Traverse to linked objects. Cannot be combined with `streamUpdates`.
+   * The server does not support websocket subscriptions for link-traversal
+   * queries.
+   */
   pivotTo?: string;
 }
 
 export interface ObserveObjectCallbackArgs<
   T extends ObjectOrInterfaceDefinition,
 > {
-  object: Osdk.Instance<T> | undefined;
+  object: Osdk.Instance<T, "$allBaseProperties"> | undefined;
   isOptimistic: boolean;
   status: Status;
   lastUpdated: number;
@@ -162,9 +235,7 @@ export interface ObserveObjectsCallbackArgs<
   > = {},
 > {
   resolvedList:
-    | Array<
-      Osdk.Instance<T, "$allBaseProperties", PropertyKeys<T>, RDPs>
-    >
+    | Array<Osdk.Instance<T, "$allBaseProperties", PropertyKeys<T>, RDPs>>
     | undefined;
   isOptimistic: boolean;
   lastUpdated: number;
@@ -172,7 +243,7 @@ export interface ObserveObjectsCallbackArgs<
   hasMore: boolean;
   status: Status;
   totalCount?: string;
-  objectSet: ObjectSet<T>;
+  objectSet: ObjectSet<T, RDPs>;
 }
 
 export interface ObserveObjectSetArgs<
@@ -280,10 +351,10 @@ export interface ObserveFunctionCallbackArgs<
 export interface ObserveLinkCallbackArgs<
   T extends ObjectOrInterfaceDefinition,
 > {
-  resolvedList: Osdk.Instance<T>[] | undefined;
+  resolvedList: Osdk.Instance<T, "$allBaseProperties">[] | undefined;
   linkedObjectsBySourcePrimaryKey: ReadonlyMap<
     string | number,
-    ReadonlyArray<Osdk.Instance<T>>
+    ReadonlyArray<Osdk.Instance<T, "$allBaseProperties">>
   >;
   isOptimistic: boolean;
   lastUpdated: number;
@@ -322,7 +393,9 @@ export interface ObservableClient extends ObserveLinks {
   observeObject<T extends ObjectOrInterfaceDefinition>(
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
-    options: ObserveOptions,
+    options:
+      & ObserveOptions
+      & Omit<ObserveObjectOptions<T>, "apiName" | "pk">,
     subFn: Observer<ObserveObjectCallbackArgs<T>>,
   ): Unsubscribable;
 
@@ -534,6 +607,8 @@ export interface ObservableClient extends ObserveLinks {
     primaryKey: string | number,
   ): Promise<void>;
 
+  getCacheSnapshot(): Promise<CacheSnapshot>;
+
   canonicalizeWhereClause: <
     T extends ObjectOrInterfaceDefinition,
     RDPs extends Record<string, SimplePropertyDef> = {},
@@ -570,7 +645,10 @@ export type CanonicalizedOptions<
   [K in keyof T]: T[K];
 };
 
-export function createObservableClient(client: Client): ObservableClient {
+export function createObservableClient(
+  client: Client,
+  extraUserAgents?: () => string[],
+): ObservableClient {
   // First we need a modified client that adds an extra header so we know its
   // an observable client
   const tweakedClient = createClientFromContext({
@@ -584,6 +662,7 @@ export function createObservableClient(client: Client): ObservableClient {
           [
             headers.get("Fetch-User-Agent"),
             OBSERVABLE_USER_AGENT,
+            ...(extraUserAgents?.() ?? []),
           ].filter(x => x && x?.length > 0).join(" "),
         );
         return headers;

@@ -135,12 +135,6 @@ export class ObjectListQuery extends ListQuery {
     return objectSet;
   }
 
-  async revalidateObjectType(apiName: string): Promise<void> {
-    if (this.apiName === apiName) {
-      await this.revalidate(/* force */ true);
-    }
-  }
-
   protected postProcessFetchedData(
     data: Osdk.Instance<any>[],
   ): Promise<Osdk.Instance<any>[]> {

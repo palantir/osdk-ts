@@ -30,7 +30,7 @@
   background: transparent;
 }
 
-.overflowItem:hover:not(:disabled) {
+.overflowItem:hover:not(:disabled):not([aria-disabled="true"]) {
   background: var(--osdk-surface-background-color-default-hover);
 }
 
@@ -48,4 +48,28 @@
   color: var(--osdk-cbac-marking-button-color-disallowed);
   cursor: not-allowed;
   opacity: var(--osdk-cbac-disabled-opacity);
+  text-decoration: line-through;
+}
+
+.tooltip {
+  z-index: var(--osdk-cbac-marking-tooltip-z-index);
+  max-width: var(--osdk-cbac-marking-tooltip-max-width);
+  padding: var(--osdk-cbac-marking-tooltip-padding);
+  background-color: var(--osdk-tooltip-bg);
+  border: 1px solid var(--osdk-tooltip-border-color);
+  border-radius: var(--osdk-surface-border-radius);
+  box-shadow: var(--osdk-tooltip-shadow);
+  font-size: var(--osdk-cbac-marking-tooltip-font-size);
+  line-height: 1.4;
+}
+
+.tooltipDescription {
+  margin: 0;
+  color: var(--osdk-typography-color-muted);
+}
+
+.tooltipHint {
+  margin: calc(var(--osdk-surface-spacing) * 0.25) 0 0;
+  font-style: italic;
+  color: var(--osdk-typography-color-muted);
 }

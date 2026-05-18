@@ -23,8 +23,8 @@
     "swr": "^2.3.6"
   },
   "peerDependencies": {
-    "@osdk/api": "workspace:~",
-    "@osdk/client": "workspace:~"
+    "@osdk/api": "workspace:^",
+    "@osdk/client": "workspace:^"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.15.4",

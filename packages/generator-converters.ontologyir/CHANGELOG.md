@@ -1,5 +1,119 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.21.0
+
+### Minor Changes
+
+- 5b89f25: Fix IDP packaging
+- b98e084: fix interface resolution for action logic rules
+
+### Patch Changes
+
+- @osdk/client.unstable@2.21.0
+
+## 2.20.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.20.0
+
+## 2.19.0
+
+### Minor Changes
+
+- 46c553f: fix interface bugs
+
+### Patch Changes
+
+- @osdk/client.unstable@2.19.0
+
+## 2.18.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.18.0
+
+## 2.17.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.17.0
+
+## 2.16.0
+
+### Minor Changes
+
+- 56c5630: Drop redundant `--config $(find-up dprint.json)` from `lint`, `fix-lint`, and `format` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the substitution was a no-op anyway since `find-up` is an npm package, not a CLI. Also fix the `uploadMediaOntologyEdits` documentation example so its `// @ts-ignore` survives dprint reformatting (the broken `format` step had been masking this).
+- ebc5f0c: Experimental function backed actions in OAC
+
+### Patch Changes
+
+- Updated dependencies [56c5630]
+- Updated dependencies [ebc5f0c]
+  - @osdk/client.unstable@2.16.0
+
+## 2.15.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.15.0
+
+## 2.14.0
+
+### Minor Changes
+
+- 02a5765: fix ts discovery api break
+
+### Patch Changes
+
+- Updated dependencies [bab1421]
+- Updated dependencies [2f40eee]
+  - @osdk/client.unstable@2.14.0
+
+## 2.13.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.13.0
+
+## 2.12.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.12.0
+
+## 2.11.0
+
+### Minor Changes
+
+- a6f4208: configure entity perms in OAC
+
+### Patch Changes
+
+- Updated dependencies [a6f4208]
+  - @osdk/client.unstable@2.11.0
+
+## 2.10.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+  - @osdk/client.unstable@2.10.0
+
+## 2.9.0
+
+### Minor Changes
+
+- 3390ea2: Resolve Python objectSet/object UUID references recursively and detect edit functions via output dataType when ontologyProvenance is absent
+
+### Patch Changes
+
+- @osdk/client.unstable@2.9.0
+
 ## 2.8.0
 
 ### Minor Changes

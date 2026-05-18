@@ -15,7 +15,7 @@ import type {
 } from '@osdk/client';
 
 export namespace Employee {
-  export type PropertyKeys = 'employeeId' | 'class' | 'fullName' | 'office' | 'startDate' | 'employeeStatus';
+  export type PropertyKeys = 'class' | 'employeeId' | 'employeeStatus' | 'fullName' | 'office' | 'startDate';
 
   export interface Links {
     readonly lead: $SingleLinkAccessor<Employee>;

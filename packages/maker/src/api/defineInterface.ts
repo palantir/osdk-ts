@@ -19,6 +19,7 @@ import invariant from "tiny-invariant";
 import { API_NAME_PATTERN, isValidApiName } from "../util/ApiNameValidator.js";
 import { cloneDefinition } from "./cloneDefinition.js";
 import type { BlueprintIcon } from "./common/BlueprintIcons.js";
+import type { EntityPermission } from "./common/EntityPermission.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import {
   namespace,
@@ -63,6 +64,7 @@ export type InterfaceTypeDefinition = {
   >;
   extends?: InterfaceType | InterfaceType[];
   searchable?: boolean;
+  permission?: EntityPermission;
 };
 
 export function defineInterface(
@@ -91,7 +93,7 @@ export function defineInterface(
         sharedPropertyType: (isInterfaceSharedPropertyType(spt)
           ? spt.sharedPropertyType
           : spt) as SharedPropertyType,
-        required: required,
+        required,
       }];
     }),
   );
@@ -138,7 +140,7 @@ export function defineInterface(
       ) {
         // SPT
         return [apiName, {
-          required: required,
+          required,
           sharedPropertyType: propertyBase,
         }];
       } else {
@@ -183,8 +185,9 @@ export function defineInterface(
     extendsInterfaces,
     links: [],
     status,
-    propertiesV2: propertiesV2,
-    propertiesV3: propertiesV3,
+    propertiesV2,
+    propertiesV3,
+    permission: interfaceDef.permission,
     searchable: interfaceDef.searchable ?? true,
     __type: OntologyEntityTypeEnum.INTERFACE_TYPE,
   };

@@ -17,16 +17,21 @@
 import type { Media, MediaMetadata, MediaReference } from "@osdk/api";
 import { MediaSets } from "@osdk/foundry.mediasets";
 import invariant from "tiny-invariant";
+import type { Client } from "./Client.js";
+import { additionalContext } from "./Client.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
 
-/**
- * @internal
- * Creates a Media object from a MediaReference for query results.
- * Unlike MediaReferencePropertyImpl, this doesn't require object context
- * and directly accesses the media set APIs. This is intended for MediaReferences returned
- * from query results or to be used by the functions runtime,
- */
 export function createMediaFromReference(
+  client: Client,
+  mediaReference: MediaReference,
+): Media {
+  return createMediaFromReferenceInternal(
+    client[additionalContext],
+    mediaReference,
+  );
+}
+
+export function createMediaFromReferenceInternal(
   client: MinimalClient,
   mediaReference: MediaReference,
 ): Media {

@@ -1,0 +1,16 @@
+:root {
+  /* Error message */
+  --osdk-async-dropdown-error-color: var(--osdk-intent-danger-rest);
+
+  /* Status message (Loading…, Searching…) */
+  --osdk-async-dropdown-status-padding: calc(var(--osdk-surface-spacing) * 2);
+  --osdk-async-dropdown-status-color: var(--osdk-typography-color-muted);
+
+  /* Skeleton loading bar */
+  --osdk-async-dropdown-skeleton-width: 60%;
+  --osdk-async-dropdown-skeleton-height: calc(var(--osdk-surface-spacing) * 3);
+  --osdk-async-dropdown-skeleton-margin: calc(var(--osdk-surface-spacing) * 2);
+  --osdk-async-dropdown-skeleton-border-radius: calc(
+    var(--osdk-surface-border-radius) * 0.5
+  );
+}

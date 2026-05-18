@@ -343,8 +343,20 @@ export function createDefinition(
       properties: (_value) => (`{
         ${
         stringify(definition.properties, {
-          "*": (propertyDefinition, _, apiName) =>
-            [
+          "*": (propertyDefinition, _, apiName) => {
+            const hasMainValue = propertyDefinition.mainValue?.fields != null;
+            const hasReducers = propertyDefinition.hasReducers === true;
+
+            let extraParams = "";
+            if (hasMainValue || hasReducers) {
+              const mainValueParam = hasMainValue
+                ? JSON.stringify(propertyDefinition.mainValue!.fields)
+                : "undefined";
+              const hasReducersParam = hasReducers ? "true" : "false";
+              extraParams = `, ${mainValueParam}, ${hasReducersParam}`;
+            }
+
+            return [
               `${
                 propertyJsdoc(
                   propertyDefinition,
@@ -358,8 +370,11 @@ export function createDefinition(
               }"${maybeStripNamespace(object, apiName)}"`,
               `$PropertyDef<${JSON.stringify(propertyDefinition.type)}, "${
                 propertyDefinition.nullable ? "nullable" : "non-nullable"
-              }", "${propertyDefinition.multiplicity ? "array" : "single"}">`,
-            ] as [string, string],
+              }", "${
+                propertyDefinition.multiplicity ? "array" : "single"
+              }"${extraParams}>`,
+            ] as [string, string];
+          },
         })
       }
       }`),
@@ -411,7 +426,8 @@ ${
 export function createPropertyKeys(
   type: EnhancedObjectType | EnhancedInterfaceType,
 ) {
-  const properties = Object.keys(type.getCleanedUpDefinition(true).properties);
+  const properties = Object.keys(type.getCleanedUpDefinition(true).properties)
+    .sort((a, b) => a.localeCompare(b));
   return `export type PropertyKeys = ${
     stringUnionFrom(
       properties.map((a) => maybeStripNamespace(type, a)),
@@ -421,9 +437,9 @@ export function createPropertyKeys(
 
 function remapStructType(structType: Record<string, any>): string {
   let output = `{`;
-  Object.entries(structType).map(([key, value]) =>
-    output += `${key}:$PropType[${JSON.stringify(value)}]|undefined;`
-  );
+  Object.entries(structType).sort(([a], [b]) => a.localeCompare(b)).map((
+    [key, value],
+  ) => output += `${key}:$PropType[${JSON.stringify(value)}]|undefined;`);
   output += "}";
   return output;
 }

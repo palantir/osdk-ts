@@ -70,169 +70,173 @@ describe("Action Types", () => {
     });
 
     expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
-          {
-            "importedOntology": {
-              "actionTypes": {},
-              "blockPermissionInformation": {
-                "actionTypes": {},
-                "linkTypes": {},
-                "objectTypes": {},
-              },
-              "interfaceTypes": {},
-              "linkTypes": {},
-              "objectTypes": {},
-              "sharedPropertyTypes": {},
-            },
-            "importedValueTypes": {
-              "valueTypes": [],
-            },
-            "ontology": {
-              "actionTypes": {
-                "com.palantir.foo": {
-                  "actionType": {
-                    "actionTypeLogic": {
-                      "logic": {
-                        "rules": [
-                          {
-                            "addOrModifyObjectRuleV2": {
-                              "objectToModify": "objectToModifyParameter",
-                              "propertyValues": {
-                                "bar": {
-                                  "parameterId": "param1",
-                                  "type": "parameterId",
-                                },
-                              },
-                              "structFieldValues": {},
-                            },
-                            "type": "addOrModifyObjectRuleV2",
-                          },
-                        ],
-                      },
-                      "validation": {
-                        "actionTypeLevelValidation": {
-                          "rules": {
-                            "0": {
-                              "condition": {
-                                "true": {},
-                                "type": "true",
-                              },
-                              "displayMetadata": {
-                                "failureMessage": "",
-                                "typeClasses": [],
-                              },
+      {
+        "importedOntology": {
+          "actionTypes": {},
+          "blockPermissionInformation": {
+            "actionTypes": {},
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {},
+          },
+          "interfaceTypes": {},
+          "linkTypes": {},
+          "objectTypes": {},
+          "sharedPropertyTypes": {},
+        },
+        "importedValueTypes": {
+          "valueTypes": [],
+        },
+        "ontology": {
+          "actionTypes": {
+            "com.palantir.foo": {
+              "actionType": {
+                "actionTypeLogic": {
+                  "logic": {
+                    "rules": [
+                      {
+                        "addOrModifyObjectRuleV2": {
+                          "objectToModify": "objectToModifyParameter",
+                          "propertyValues": {
+                            "bar": {
+                              "parameterId": "param1",
+                              "type": "parameterId",
                             },
                           },
+                          "structFieldValues": {},
                         },
-                        "parameterValidations": {
-                          "param1": {
-                            "conditionalOverrides": [],
-                            "defaultValidation": {
-                              "display": {
-                                "renderHint": {
-                                  "checkbox": {},
-                                  "type": "checkbox",
-                                },
-                                "visibility": {
-                                  "editable": {},
-                                  "type": "editable",
-                                },
-                              },
-                              "validation": {
-                                "allowedValues": {
-                                  "boolean": {
-                                    "boolean": {},
-                                    "type": "boolean",
-                                  },
-                                  "type": "boolean",
-                                },
-                                "required": {
-                                  "required": {},
-                                  "type": "required",
-                                },
-                              },
-                            },
-                          },
-                        },
-                        "sectionValidations": {},
+                        "type": "addOrModifyObjectRuleV2",
                       },
-                    },
-                    "metadata": {
-                      "apiName": "com.palantir.foo",
-                      "displayMetadata": {
-                        "configuration": {
-                          "defaultLayout": "FORM",
-                          "displayAndFormat": {
-                            "table": {
-                              "columnWidthByParameterRid": {},
-                              "enableFileImport": true,
-                              "fitHorizontally": false,
-                              "frozenColumnCount": 0,
-                              "rowHeightInLines": 1,
-                            },
+                    ],
+                  },
+                  "validation": {
+                    "actionTypeLevelValidation": {
+                      "rules": {
+                        "0": {
+                          "condition": {
+                            "true": {},
+                            "type": "true",
                           },
-                          "enableLayoutUserSwitch": false,
-                        },
-                        "description": "",
-                        "displayName": "exampleAction",
-                        "icon": {
-                          "blueprint": {
-                            "color": "#000000",
-                            "locator": "edit",
-                          },
-                          "type": "blueprint",
-                        },
-                        "successMessage": [],
-                        "typeClasses": [],
-                      },
-                      "entities": {
-                        "affectedInterfaceTypes": [],
-                        "affectedLinkTypes": [],
-                        "affectedObjectTypes": [],
-                        "typeGroups": [],
-                      },
-                      "formContentOrdering": [],
-                      "parameterOrdering": [
-                        "param1",
-                      ],
-                      "parameters": {
-                        "param1": {
                           "displayMetadata": {
-                            "description": "",
-                            "displayName": "param1",
+                            "failureMessage": "",
                             "typeClasses": [],
                           },
-                          "id": "param1",
-                          "type": {
-                            "boolean": {},
-                            "type": "boolean",
+                        },
+                      },
+                    },
+                    "parameterValidations": {
+                      "param1": {
+                        "conditionalOverrides": [],
+                        "defaultValidation": {
+                          "display": {
+                            "renderHint": {
+                              "checkbox": {},
+                              "type": "checkbox",
+                            },
+                            "visibility": {
+                              "editable": {},
+                              "type": "editable",
+                            },
+                          },
+                          "validation": {
+                            "allowedValues": {
+                              "boolean": {
+                                "boolean": {},
+                                "type": "boolean",
+                              },
+                              "type": "boolean",
+                            },
+                            "required": {
+                              "required": {},
+                              "type": "required",
+                            },
                           },
                         },
                       },
-                      "sections": {},
-                      "status": {
-                        "active": {},
-                        "type": "active",
+                    },
+                    "sectionValidations": {},
+                  },
+                },
+                "metadata": {
+                  "apiName": "com.palantir.foo",
+                  "displayMetadata": {
+                    "configuration": {
+                      "defaultLayout": "FORM",
+                      "displayAndFormat": {
+                        "table": {
+                          "columnWidthByParameterRid": {},
+                          "enableFileImport": true,
+                          "fitHorizontally": false,
+                          "frozenColumnCount": 0,
+                          "rowHeightInLines": 1,
+                        },
+                      },
+                      "enableLayoutUserSwitch": false,
+                    },
+                    "description": "",
+                    "displayName": "exampleAction",
+                    "icon": {
+                      "blueprint": {
+                        "color": "#000000",
+                        "locator": "edit",
+                      },
+                      "type": "blueprint",
+                    },
+                    "successMessage": [],
+                    "typeClasses": [],
+                  },
+                  "entities": {
+                    "affectedInterfaceTypes": [],
+                    "affectedLinkTypes": [],
+                    "affectedObjectTypes": [],
+                    "typeGroups": [],
+                  },
+                  "formContentOrdering": [],
+                  "parameterOrdering": [
+                    "param1",
+                  ],
+                  "parameters": {
+                    "param1": {
+                      "displayMetadata": {
+                        "description": "",
+                        "displayName": "param1",
+                        "typeClasses": [],
+                      },
+                      "id": "param1",
+                      "type": {
+                        "boolean": {},
+                        "type": "boolean",
                       },
                     },
                   },
+                  "sections": {},
+                  "status": {
+                    "active": {},
+                    "type": "active",
+                  },
                 },
               },
-              "blockPermissionInformation": {
-                "actionTypes": {},
-                "linkTypes": {},
-                "objectTypes": {},
-              },
-              "interfaceTypes": {},
-              "linkTypes": {},
-              "objectTypes": {},
-              "sharedPropertyTypes": {},
             },
-            "randomnessKey": undefined,
-            "valueTypes": {
-              "valueTypes": [],
-            },
-          }
-        `);
+          },
+          "blockPermissionInformation": {
+            "actionTypes": {},
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {},
+          },
+          "interfaceTypes": {},
+          "linkTypes": {},
+          "objectTypes": {},
+          "sharedPropertyTypes": {},
+        },
+        "randomnessKey": undefined,
+        "valueTypes": {
+          "valueTypes": [],
+        },
+      }
+    `);
   });
 
   describe("Interface Actions", () => {
@@ -269,8 +273,10 @@ describe("Action Types", () => {
             "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {},
             "linkTypes": {},
@@ -409,8 +415,10 @@ describe("Action Types", () => {
             },
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {
               "com.palantir.foo": {
@@ -430,6 +438,7 @@ describe("Action Types", () => {
                   "extendsInterfaces": [],
                   "extendsInterfacesMetadata": [],
                   "links": [],
+                  "permission": undefined,
                   "properties": [],
                   "propertiesV2": {},
                   "propertiesV3": {},
@@ -528,8 +537,10 @@ describe("Action Types", () => {
             "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {},
             "linkTypes": {},
@@ -1036,8 +1047,10 @@ describe("Action Types", () => {
             },
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {
               "com.palantir.exampleInterface": {
@@ -1057,6 +1070,7 @@ describe("Action Types", () => {
                   "extendsInterfaces": [],
                   "extendsInterfacesMetadata": [],
                   "links": [],
+                  "permission": undefined,
                   "properties": [],
                   "propertiesV2": {
                     "com.palantir.mySpt": {
@@ -1312,6 +1326,7 @@ describe("Action Types", () => {
                 "entityMetadata": {
                   "aliases": [],
                   "arePatchesEnabled": false,
+                  "editsHistory": undefined,
                 },
                 "objectType": {
                   "allImplementsInterfaces": {},
@@ -1715,8 +1730,10 @@ describe("Action Types", () => {
             "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {},
             "linkTypes": {},
@@ -2829,8 +2846,10 @@ describe("Action Types", () => {
             },
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {
               "com.palantir.exampleInterface": {
@@ -2850,6 +2869,7 @@ describe("Action Types", () => {
                   "extendsInterfaces": [],
                   "extendsInterfacesMetadata": [],
                   "links": [],
+                  "permission": undefined,
                   "properties": [],
                   "propertiesV2": {
                     "com.palantir.spt1": {
@@ -3122,8 +3142,10 @@ describe("Action Types", () => {
             "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {},
             "linkTypes": {},
@@ -3498,8 +3520,10 @@ describe("Action Types", () => {
             },
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {
               "com.palantir.exampleInterface": {
@@ -3519,6 +3543,7 @@ describe("Action Types", () => {
                   "extendsInterfaces": [],
                   "extendsInterfacesMetadata": [],
                   "links": [],
+                  "permission": undefined,
                   "properties": [],
                   "propertiesV2": {},
                   "propertiesV3": {
@@ -3589,8 +3614,10 @@ describe("Action Types", () => {
             "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {},
             "linkTypes": {},
@@ -3730,8 +3757,10 @@ describe("Action Types", () => {
             },
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {
               "com.palantir.exampleInterface": {
@@ -3751,6 +3780,7 @@ describe("Action Types", () => {
                   "extendsInterfaces": [],
                   "extendsInterfacesMetadata": [],
                   "links": [],
+                  "permission": undefined,
                   "properties": [],
                   "propertiesV2": {},
                   "propertiesV3": {
@@ -3824,8 +3854,10 @@ describe("Action Types", () => {
             "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {},
             "linkTypes": {},
@@ -3965,8 +3997,10 @@ describe("Action Types", () => {
             },
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {
               "com.palantir.exampleInterface": {
@@ -3986,6 +4020,7 @@ describe("Action Types", () => {
                   "extendsInterfaces": [],
                   "extendsInterfacesMetadata": [],
                   "links": [],
+                  "permission": undefined,
                   "properties": [],
                   "propertiesV2": {},
                   "propertiesV3": {
@@ -4062,8 +4097,10 @@ describe("Action Types", () => {
             "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {},
             "linkTypes": {},
@@ -4203,8 +4240,10 @@ describe("Action Types", () => {
             },
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {
               "com.palantir.exampleInterface": {
@@ -4224,6 +4263,7 @@ describe("Action Types", () => {
                   "extendsInterfaces": [],
                   "extendsInterfacesMetadata": [],
                   "links": [],
+                  "permission": undefined,
                   "properties": [],
                   "propertiesV2": {},
                   "propertiesV3": {
@@ -4441,8 +4481,10 @@ describe("Action Types", () => {
             "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {},
             "linkTypes": {},
@@ -5160,8 +5202,10 @@ describe("Action Types", () => {
                   },
                 },
               },
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {
               "com.palantir.exampleInterface": {
@@ -5181,6 +5225,7 @@ describe("Action Types", () => {
                   "extendsInterfaces": [],
                   "extendsInterfacesMetadata": [],
                   "links": [],
+                  "permission": undefined,
                   "properties": [],
                   "propertiesV2": {
                     "com.palantir.property1": {
@@ -5522,9 +5567,7 @@ describe("Action Types", () => {
       ).toThrowErrorMatchingInlineSnapshot(
         `[Error: Invariant failed: Shared property type com.palantir.other.invalid.spt does not exist in interface type com.palantir.interfaceType]`,
       );
-      expect(() =>
-        defineCreateInterfaceObjectAction({ interfaceType: interfaceType })
-      ).not
+      expect(() => defineCreateInterfaceObjectAction({ interfaceType })).not
         .toThrow();
     });
 
@@ -5836,8 +5879,10 @@ describe("Action Types", () => {
             "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {},
             "linkTypes": {},
@@ -6382,8 +6427,10 @@ describe("Action Types", () => {
             },
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {
               "com.palantir.sampleInterface": {
@@ -6403,6 +6450,7 @@ describe("Action Types", () => {
                   "extendsInterfaces": [],
                   "extendsInterfacesMetadata": [],
                   "links": [],
+                  "permission": undefined,
                   "properties": [],
                   "propertiesV2": {
                     "com.palantir.property1": {
@@ -6590,8 +6638,10 @@ describe("Action Types", () => {
             "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {},
             "linkTypes": {},
@@ -7270,8 +7320,10 @@ describe("Action Types", () => {
             },
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {},
             "linkTypes": {},
@@ -7317,6 +7369,7 @@ describe("Action Types", () => {
                 "entityMetadata": {
                   "aliases": [],
                   "arePatchesEnabled": false,
+                  "editsHistory": undefined,
                 },
                 "objectType": {
                   "allImplementsInterfaces": {},
@@ -7755,8 +7808,10 @@ describe("Action Types", () => {
             "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {},
             "linkTypes": {},
@@ -8908,8 +8963,10 @@ describe("Action Types", () => {
                   },
                 },
               },
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {},
             "linkTypes": {},
@@ -8951,6 +9008,7 @@ describe("Action Types", () => {
                 "entityMetadata": {
                   "aliases": [],
                   "arePatchesEnabled": false,
+                  "editsHistory": undefined,
                 },
                 "objectType": {
                   "allImplementsInterfaces": {},
@@ -9255,8 +9313,10 @@ describe("Action Types", () => {
             "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {},
             "linkTypes": {},
@@ -9977,8 +10037,10 @@ describe("Action Types", () => {
             },
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {
               "com.palantir.exampleInterface": {
@@ -9998,6 +10060,7 @@ describe("Action Types", () => {
                   "extendsInterfaces": [],
                   "extendsInterfacesMetadata": [],
                   "links": [],
+                  "permission": undefined,
                   "properties": [],
                   "propertiesV2": {
                     "com.palantir.property1": {
@@ -10200,6 +10263,7 @@ describe("Action Types", () => {
                 "entityMetadata": {
                   "aliases": [],
                   "arePatchesEnabled": false,
+                  "editsHistory": undefined,
                 },
                 "objectType": {
                   "allImplementsInterfaces": {},
@@ -10720,8 +10784,10 @@ describe("Action Types", () => {
             "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {},
             "linkTypes": {},
@@ -11899,8 +11965,10 @@ describe("Action Types", () => {
             },
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {
               "com.palantir.exampleInterface": {
@@ -11920,6 +11988,7 @@ describe("Action Types", () => {
                   "extendsInterfaces": [],
                   "extendsInterfacesMetadata": [],
                   "links": [],
+                  "permission": undefined,
                   "properties": [],
                   "propertiesV2": {
                     "com.palantir.property1": {
@@ -12041,6 +12110,7 @@ describe("Action Types", () => {
                 "entityMetadata": {
                   "aliases": [],
                   "arePatchesEnabled": false,
+                  "editsHistory": undefined,
                 },
                 "objectType": {
                   "allImplementsInterfaces": {},
@@ -12254,256 +12324,260 @@ describe("Action Types", () => {
       });
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
-          {
-            "importedOntology": {
+        {
+          "importedOntology": {
+            "actionTypes": {},
+            "blockPermissionInformation": {
               "actionTypes": {},
-              "blockPermissionInformation": {
-                "actionTypes": {},
-                "linkTypes": {},
-                "objectTypes": {},
-              },
               "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
               "sharedPropertyTypes": {},
             },
-            "importedValueTypes": {
-              "valueTypes": [],
-            },
-            "ontology": {
-              "actionTypes": {
-                "com.palantir.foo": {
-                  "actionType": {
-                    "actionTypeLogic": {
-                      "logic": {
-                        "rules": [
-                          {
-                            "modifyObjectRule": {
-                              "objectToModify": "objectToModifyParameter",
-                              "propertyValues": {
-                                "bar": {
-                                  "parameterId": "param1",
-                                  "type": "parameterId",
-                                },
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {},
+          },
+          "importedValueTypes": {
+            "valueTypes": [],
+          },
+          "ontology": {
+            "actionTypes": {
+              "com.palantir.foo": {
+                "actionType": {
+                  "actionTypeLogic": {
+                    "logic": {
+                      "rules": [
+                        {
+                          "modifyObjectRule": {
+                            "objectToModify": "objectToModifyParameter",
+                            "propertyValues": {
+                              "bar": {
+                                "parameterId": "param1",
+                                "type": "parameterId",
                               },
-                              "structFieldValues": {},
                             },
-                            "type": "modifyObjectRule",
+                            "structFieldValues": {},
                           },
-                        ],
-                      },
-                      "validation": {
-                        "actionTypeLevelValidation": {
-                          "rules": {
-                            "0": {
-                              "condition": {
-                                "true": {},
-                                "type": "true",
-                              },
-                              "displayMetadata": {
-                                "failureMessage": "",
-                                "typeClasses": [],
-                              },
+                          "type": "modifyObjectRule",
+                        },
+                      ],
+                    },
+                    "validation": {
+                      "actionTypeLevelValidation": {
+                        "rules": {
+                          "0": {
+                            "condition": {
+                              "true": {},
+                              "type": "true",
+                            },
+                            "displayMetadata": {
+                              "failureMessage": "",
+                              "typeClasses": [],
                             },
                           },
                         },
-                        "parameterValidations": {
-                          "objectToModifyParameter": {
-                            "conditionalOverrides": [],
-                            "defaultValidation": {
-                              "display": {
-                                "renderHint": {
-                                  "dropdown": {},
-                                  "type": "dropdown",
-                                },
-                                "visibility": {
-                                  "editable": {},
-                                  "type": "editable",
-                                },
+                      },
+                      "parameterValidations": {
+                        "objectToModifyParameter": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "dropdown": {},
+                                "type": "dropdown",
                               },
-                              "validation": {
-                                "allowedValues": {
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "objectTypeReference": {
                                   "objectTypeReference": {
-                                    "objectTypeReference": {
-                                      "interfaceTypeRids": [],
-                                    },
-                                    "type": "objectTypeReference",
+                                    "interfaceTypeRids": [],
                                   },
                                   "type": "objectTypeReference",
                                 },
-                                "required": {
-                                  "required": {},
-                                  "type": "required",
-                                },
+                                "type": "objectTypeReference",
+                              },
+                              "required": {
+                                "required": {},
+                                "type": "required",
                               },
                             },
-                          },
-                          "param1": {
-                            "conditionalOverrides": [
-                              {
-                                "condition": {
-                                  "comparison": {
-                                    "left": {
-                                      "type": "userProperty",
-                                      "userProperty": {
-                                        "propertyValue": {
-                                          "groupIds": {},
-                                          "type": "groupIds",
-                                        },
-                                        "userId": {
-                                          "currentUser": {},
-                                          "type": "currentUser",
-                                        },
-                                      },
-                                    },
-                                    "operator": "INTERSECTS",
-                                    "right": {
-                                      "staticValue": {
-                                        "stringList": {
-                                          "strings": [
-                                            "myGroup",
-                                          ],
-                                        },
-                                        "type": "stringList",
-                                      },
-                                      "type": "staticValue",
-                                    },
-                                  },
-                                  "type": "comparison",
-                                },
-                                "parameterBlockOverrides": [
-                                  {
-                                    "type": "visibility",
-                                    "visibility": {
-                                      "visibility": {
-                                        "hidden": {},
-                                        "type": "hidden",
-                                      },
-                                    },
-                                  },
-                                ],
-                              },
-                            ],
-                            "defaultValidation": {
-                              "display": {
-                                "renderHint": {
-                                  "checkbox": {},
-                                  "type": "checkbox",
-                                },
-                                "visibility": {
-                                  "editable": {},
-                                  "type": "editable",
-                                },
-                              },
-                              "validation": {
-                                "allowedValues": {
-                                  "boolean": {
-                                    "boolean": {},
-                                    "type": "boolean",
-                                  },
-                                  "type": "boolean",
-                                },
-                                "required": {
-                                  "required": {},
-                                  "type": "required",
-                                },
-                              },
-                            },
-                          },
-                        },
-                        "sectionValidations": {},
-                      },
-                    },
-                    "metadata": {
-                      "apiName": "com.palantir.foo",
-                      "displayMetadata": {
-                        "configuration": {
-                          "defaultLayout": "FORM",
-                          "displayAndFormat": {
-                            "table": {
-                              "columnWidthByParameterRid": {},
-                              "enableFileImport": true,
-                              "fitHorizontally": false,
-                              "frozenColumnCount": 0,
-                              "rowHeightInLines": 1,
-                            },
-                          },
-                          "enableLayoutUserSwitch": false,
-                        },
-                        "description": "",
-                        "displayName": "exampleAction",
-                        "icon": {
-                          "blueprint": {
-                            "color": "#000000",
-                            "locator": "edit",
-                          },
-                          "type": "blueprint",
-                        },
-                        "successMessage": [],
-                        "typeClasses": [],
-                      },
-                      "entities": {
-                        "affectedInterfaceTypes": [],
-                        "affectedLinkTypes": [],
-                        "affectedObjectTypes": [],
-                        "typeGroups": [],
-                      },
-                      "formContentOrdering": [],
-                      "parameterOrdering": [
-                        "param1",
-                        "objectToModifyParameter",
-                      ],
-                      "parameters": {
-                        "objectToModifyParameter": {
-                          "displayMetadata": {
-                            "description": "",
-                            "displayName": "objectToModifyParameter",
-                            "typeClasses": [],
-                          },
-                          "id": "objectToModifyParameter",
-                          "type": {
-                            "objectTypeReference": {},
-                            "type": "objectTypeReference",
                           },
                         },
                         "param1": {
-                          "displayMetadata": {
-                            "description": "",
-                            "displayName": "param1",
-                            "typeClasses": [],
-                          },
-                          "id": "param1",
-                          "type": {
-                            "boolean": {},
-                            "type": "boolean",
+                          "conditionalOverrides": [
+                            {
+                              "condition": {
+                                "comparison": {
+                                  "left": {
+                                    "type": "userProperty",
+                                    "userProperty": {
+                                      "propertyValue": {
+                                        "groupIds": {},
+                                        "type": "groupIds",
+                                      },
+                                      "userId": {
+                                        "currentUser": {},
+                                        "type": "currentUser",
+                                      },
+                                    },
+                                  },
+                                  "operator": "INTERSECTS",
+                                  "right": {
+                                    "staticValue": {
+                                      "stringList": {
+                                        "strings": [
+                                          "myGroup",
+                                        ],
+                                      },
+                                      "type": "stringList",
+                                    },
+                                    "type": "staticValue",
+                                  },
+                                },
+                                "type": "comparison",
+                              },
+                              "parameterBlockOverrides": [
+                                {
+                                  "type": "visibility",
+                                  "visibility": {
+                                    "visibility": {
+                                      "hidden": {},
+                                      "type": "hidden",
+                                    },
+                                  },
+                                },
+                              ],
+                            },
+                          ],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "checkbox": {},
+                                "type": "checkbox",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "boolean": {
+                                  "boolean": {},
+                                  "type": "boolean",
+                                },
+                                "type": "boolean",
+                              },
+                              "required": {
+                                "required": {},
+                                "type": "required",
+                              },
+                            },
                           },
                         },
                       },
-                      "sections": {},
-                      "status": {
-                        "active": {},
-                        "type": "active",
+                      "sectionValidations": {},
+                    },
+                  },
+                  "metadata": {
+                    "apiName": "com.palantir.foo",
+                    "displayMetadata": {
+                      "configuration": {
+                        "defaultLayout": "FORM",
+                        "displayAndFormat": {
+                          "table": {
+                            "columnWidthByParameterRid": {},
+                            "enableFileImport": true,
+                            "fitHorizontally": false,
+                            "frozenColumnCount": 0,
+                            "rowHeightInLines": 1,
+                          },
+                        },
+                        "enableLayoutUserSwitch": false,
                       },
+                      "description": "",
+                      "displayName": "exampleAction",
+                      "icon": {
+                        "blueprint": {
+                          "color": "#000000",
+                          "locator": "edit",
+                        },
+                        "type": "blueprint",
+                      },
+                      "successMessage": [],
+                      "typeClasses": [],
+                    },
+                    "entities": {
+                      "affectedInterfaceTypes": [],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [],
+                      "typeGroups": [],
+                    },
+                    "formContentOrdering": [],
+                    "parameterOrdering": [
+                      "param1",
+                      "objectToModifyParameter",
+                    ],
+                    "parameters": {
+                      "objectToModifyParameter": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "objectToModifyParameter",
+                          "typeClasses": [],
+                        },
+                        "id": "objectToModifyParameter",
+                        "type": {
+                          "objectTypeReference": {},
+                          "type": "objectTypeReference",
+                        },
+                      },
+                      "param1": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "param1",
+                          "typeClasses": [],
+                        },
+                        "id": "param1",
+                        "type": {
+                          "boolean": {},
+                          "type": "boolean",
+                        },
+                      },
+                    },
+                    "sections": {},
+                    "status": {
+                      "active": {},
+                      "type": "active",
                     },
                   },
                 },
               },
-              "blockPermissionInformation": {
-                "actionTypes": {},
-                "linkTypes": {},
-                "objectTypes": {},
-              },
+            },
+            "blockPermissionInformation": {
+              "actionTypes": {},
               "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
               "sharedPropertyTypes": {},
             },
-            "randomnessKey": undefined,
-            "valueTypes": {
-              "valueTypes": [],
-            },
-          }
-        `);
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {},
+          },
+          "randomnessKey": undefined,
+          "valueTypes": {
+            "valueTypes": [],
+          },
+        }
+      `);
     });
 
     it("OAC defined object references as parameters are properly defined", () => {
@@ -12565,8 +12639,10 @@ describe("Action Types", () => {
             "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {},
             "linkTypes": {},
@@ -12806,8 +12882,10 @@ describe("Action Types", () => {
             },
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {},
             "linkTypes": {},
@@ -12841,6 +12919,7 @@ describe("Action Types", () => {
                 "entityMetadata": {
                   "aliases": [],
                   "arePatchesEnabled": false,
+                  "editsHistory": undefined,
                 },
                 "objectType": {
                   "allImplementsInterfaces": {},
@@ -12982,6 +13061,7 @@ describe("Action Types", () => {
                 "entityMetadata": {
                   "aliases": [],
                   "arePatchesEnabled": true,
+                  "editsHistory": undefined,
                 },
                 "objectType": {
                   "allImplementsInterfaces": {},
@@ -13105,8 +13185,10 @@ describe("Action Types", () => {
             "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {},
             "linkTypes": {},
@@ -13330,8 +13412,10 @@ describe("Action Types", () => {
                   },
                 },
               },
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {},
             "linkTypes": {},
@@ -13365,6 +13449,7 @@ describe("Action Types", () => {
                 "entityMetadata": {
                   "aliases": [],
                   "arePatchesEnabled": false,
+                  "editsHistory": undefined,
                 },
                 "objectType": {
                   "allImplementsInterfaces": {},
@@ -13559,8 +13644,10 @@ describe("Action Types", () => {
             "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {},
             "linkTypes": {},
@@ -13784,8 +13871,10 @@ describe("Action Types", () => {
                   },
                 },
               },
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {},
             "linkTypes": {},
@@ -13819,6 +13908,7 @@ describe("Action Types", () => {
                 "entityMetadata": {
                   "aliases": [],
                   "arePatchesEnabled": false,
+                  "editsHistory": undefined,
                 },
                 "objectType": {
                   "allImplementsInterfaces": {},
@@ -13974,8 +14064,10 @@ describe("Action Types", () => {
             "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {},
             "linkTypes": {},
@@ -14551,8 +14643,10 @@ describe("Action Types", () => {
             },
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {},
             "linkTypes": {},
@@ -14594,6 +14688,7 @@ describe("Action Types", () => {
                 "entityMetadata": {
                   "aliases": [],
                   "arePatchesEnabled": false,
+                  "editsHistory": undefined,
                 },
                 "objectType": {
                   "allImplementsInterfaces": {},
@@ -14846,8 +14941,10 @@ describe("Action Types", () => {
             "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {},
             "linkTypes": {},
@@ -15117,8 +15214,10 @@ describe("Action Types", () => {
             },
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {},
             "linkTypes": {},
@@ -15152,6 +15251,7 @@ describe("Action Types", () => {
                 "entityMetadata": {
                   "aliases": [],
                   "arePatchesEnabled": false,
+                  "editsHistory": undefined,
                 },
                 "objectType": {
                   "allImplementsInterfaces": {},
@@ -15421,8 +15521,10 @@ describe("Action Types", () => {
             "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {},
             "linkTypes": {},
@@ -15688,8 +15790,10 @@ describe("Action Types", () => {
             },
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {},
             "linkTypes": {},
@@ -15727,6 +15831,7 @@ describe("Action Types", () => {
                 "entityMetadata": {
                   "aliases": [],
                   "arePatchesEnabled": false,
+                  "editsHistory": undefined,
                 },
                 "objectType": {
                   "allImplementsInterfaces": {},
@@ -15952,8 +16057,10 @@ describe("Action Types", () => {
             "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {},
             "linkTypes": {},
@@ -16262,8 +16369,10 @@ describe("Action Types", () => {
             },
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {},
             "linkTypes": {},
@@ -16305,6 +16414,7 @@ describe("Action Types", () => {
                 "entityMetadata": {
                   "aliases": [],
                   "arePatchesEnabled": false,
+                  "editsHistory": undefined,
                 },
                 "objectType": {
                   "allImplementsInterfaces": {},
@@ -16511,5 +16621,33 @@ describe("Action Types", () => {
         }
       `);
     });
+  });
+
+  it("serializes publicProject permission on action type", async () => {
+    await defineOntology("com.palantir.", () => {
+      const obj = defineObject({
+        apiName: "bar",
+        displayName: "Bar",
+        pluralDisplayName: "Bars",
+        primaryKeyPropertyApiName: "id",
+        titlePropertyApiName: "id",
+        properties: { "id": { type: "string" } },
+      });
+
+      defineCreateObjectAction({
+        objectType: obj,
+        permission: "publicProject",
+      });
+
+      const bpi = dumpOntologyFullMetadata().ontology
+        .blockPermissionInformation!;
+      const atPerms = Object.values(bpi.actionTypes);
+      expect(atPerms).toHaveLength(1);
+      expect(atPerms[0].restrictionStatus).toEqual({
+        hasRolesApplied: true,
+        publicProject: true,
+        ontologyPackageRid: null,
+      });
+    }, "/tmp/");
   });
 });

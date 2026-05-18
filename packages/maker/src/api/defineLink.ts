@@ -124,6 +124,6 @@ function convertLinkTypeMetadata(
       visibility: metadata.visibility ?? "NORMAL",
       groupDisplayName: metadata.groupDisplayName ?? "",
     },
-    typeClasses: [],
+    typeClasses: metadata.typeClasses ?? [],
   };
 }

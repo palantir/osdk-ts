@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
-import { useOsdkAggregation } from "@osdk/react/experimental";
+import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
+import { useOsdkAggregation, useOsdkMetadata } from "@osdk/react";
 import React, { memo, useCallback, useMemo } from "react";
 import { NullValueWrapper } from "../base/inputs/NullValueWrapper.js";
 import { NumberRangeInput } from "../base/inputs/NumberRangeInput.js";
@@ -28,10 +28,12 @@ import {
 
 interface NumberRangeFilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
-  objectSet: ObjectSet<Q>;
+  objectSet?: ObjectSet<Q>;
   propertyKey: string;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
+  whereClause: WhereClause<Q>;
+  clickToFilter?: boolean;
 }
 
 function NumberRangeFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -40,11 +42,20 @@ function NumberRangeFilterInputInner<Q extends ObjectTypeDefinition>({
   propertyKey,
   filterState,
   onFilterStateChanged,
+  whereClause,
+  clickToFilter,
 }: NumberRangeFilterInputProps<Q>): React.ReactElement {
   const numberRangeState = filterState?.type === "NUMBER_RANGE"
     ? filterState
     : undefined;
   const includeNull = filterState?.includeNull;
+
+  const { metadata } = useOsdkMetadata(objectType);
+  const propertyType = metadata?.properties?.[propertyKey]?.type;
+  const isInteger = propertyType === "integer"
+    || propertyType === "long"
+    || propertyType === "short"
+    || propertyType === "byte";
 
   const handleNullChange = useCallback(
     (includeNull: boolean) => {
@@ -64,14 +75,18 @@ function NumberRangeFilterInputInner<Q extends ObjectTypeDefinition>({
 
   const handleRangeChange = useCallback(
     (minValue: number | undefined, maxValue: number | undefined) => {
+      const coerceMin = (v: number | undefined): number | undefined =>
+        isInteger && v !== undefined ? Math.ceil(v) : v;
+      const coerceMax = (v: number | undefined): number | undefined =>
+        isInteger && v !== undefined ? Math.floor(v) : v;
       onFilterStateChanged({
         type: "NUMBER_RANGE",
-        minValue,
-        maxValue,
+        minValue: coerceMin(minValue),
+        maxValue: coerceMax(maxValue),
         includeNull,
       });
     },
-    [onFilterStateChanged, includeNull],
+    [onFilterStateChanged, includeNull, isInteger],
   );
 
   const aggregateOptions = useMemo(
@@ -80,8 +95,8 @@ function NumberRangeFilterInputInner<Q extends ObjectTypeDefinition>({
   );
 
   const histogramArgs = useMemo(
-    () => ({ aggregate: aggregateOptions, objectSet }),
-    [aggregateOptions, objectSet],
+    () => ({ aggregate: aggregateOptions, objectSet, where: whereClause }),
+    [aggregateOptions, objectSet, whereClause],
   );
 
   const { data: aggregateData, isLoading: histLoading } = useOsdkAggregation(
@@ -116,18 +131,23 @@ function NumberRangeFilterInputInner<Q extends ObjectTypeDefinition>({
     [],
   );
 
-  const nullWhereClause = useMemo(
-    () => createNullWhereClause<Q>(propertyKey),
-    [propertyKey],
+  // Combine null-check with cross-filter where clause so the null count
+  // reflects the filtered dataset, not the full dataset
+  const nullCountWhereClause = useMemo(
+    () =>
+      ({
+        $and: [createNullWhereClause<Q>(propertyKey), whereClause],
+      }) as WhereClause<Q>,
+    [propertyKey, whereClause],
   );
 
   const nullCountArgs = useMemo(
     () => ({
-      where: nullWhereClause,
+      where: nullCountWhereClause,
       aggregate: nullCountAggregateOptions,
       objectSet,
     }),
-    [nullWhereClause, nullCountAggregateOptions, objectSet],
+    [nullCountWhereClause, nullCountAggregateOptions, objectSet],
   );
 
   const {
@@ -164,6 +184,7 @@ function NumberRangeFilterInputInner<Q extends ObjectTypeDefinition>({
         minValue={numberRangeState?.minValue}
         maxValue={numberRangeState?.maxValue}
         onChange={handleRangeChange}
+        clickToFilter={clickToFilter && metadata != null}
       />
     </NullValueWrapper>
   );

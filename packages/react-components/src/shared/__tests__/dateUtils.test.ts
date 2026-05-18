@@ -18,13 +18,14 @@ import { describe, expect, it } from "vitest";
 import {
   formatDateForDisplay,
   formatDateForInput,
-  formatDatetimeForDisplay,
   formatDatetimeForInput,
   formatTime,
+  getTimeValue,
+  isDateInRange,
   parseDateFromInput,
   parseDateFromISO,
-  parseDatetimeFromDisplay,
   parseDatetimeFromInput,
+  parseTimeString,
 } from "../dateUtils.js";
 
 describe("formatDateForInput", () => {
@@ -77,12 +78,12 @@ describe("formatTime", () => {
 });
 
 describe("formatDatetimeForInput", () => {
-  it("formats a date to YYYY-MM-DDTHH:mm", () => {
+  it("formats a date to YYYY-MM-DD HH:mm (space-separated)", () => {
     expect(formatDatetimeForInput(new Date(2024, 5, 15, 14, 30))).toBe(
-      "2024-06-15T14:30",
+      "2024-06-15 14:30",
     );
     expect(formatDatetimeForInput(new Date(2024, 0, 3, 9, 5))).toBe(
-      "2024-01-03T09:05",
+      "2024-01-03 09:05",
     );
   });
 
@@ -93,13 +94,19 @@ describe("formatDatetimeForInput", () => {
 });
 
 describe("parseDatetimeFromInput", () => {
-  it("parses datetime-local string to correct local time", () => {
-    const date = parseDatetimeFromInput("2024-06-15T14:30")!;
+  it("parses space-separated datetime string", () => {
+    const date = parseDatetimeFromInput("2024-06-15 14:30")!;
     expect(date.getFullYear()).toBe(2024);
     expect(date.getMonth()).toBe(5);
     expect(date.getDate()).toBe(15);
     expect(date.getHours()).toBe(14);
     expect(date.getMinutes()).toBe(30);
+  });
+
+  it("parses T-separated datetime string", () => {
+    const date = parseDatetimeFromInput("2024-06-15T14:30")!;
+    expect(date.getFullYear()).toBe(2024);
+    expect(date.getHours()).toBe(14);
   });
 
   it("returns undefined for empty or invalid input", () => {
@@ -110,42 +117,57 @@ describe("parseDatetimeFromInput", () => {
   });
 });
 
-describe("formatDatetimeForDisplay", () => {
-  it("formats a date to YYYY-MM-DD HH:mm (space-separated)", () => {
-    expect(formatDatetimeForDisplay(new Date(2024, 5, 15, 14, 30))).toBe(
-      "2024-06-15 14:30",
-    );
-    expect(formatDatetimeForDisplay(new Date(2024, 0, 3, 9, 5))).toBe(
-      "2024-01-03 09:05",
+describe("isDateInRange", () => {
+  it("returns true when no min/max constraints", () => {
+    expect(isDateInRange(new Date(2024, 5, 15), undefined, undefined)).toBe(
+      true,
     );
   });
 
-  it("returns empty string for null or undefined", () => {
-    expect(formatDatetimeForDisplay(null)).toBe("");
-    expect(formatDatetimeForDisplay(undefined)).toBe("");
+  it("returns true when date is within range", () => {
+    const min = new Date(2024, 0, 1);
+    const max = new Date(2024, 11, 31);
+    expect(isDateInRange(new Date(2024, 5, 15), min, max)).toBe(true);
+  });
+
+  it("returns true when date equals min or max (inclusive)", () => {
+    const min = new Date(2024, 0, 1);
+    const max = new Date(2024, 11, 31);
+    expect(isDateInRange(min, min, max)).toBe(true);
+    expect(isDateInRange(max, min, max)).toBe(true);
+  });
+
+  it("returns false when date is before min", () => {
+    const min = new Date(2024, 5, 1);
+    expect(isDateInRange(new Date(2024, 4, 31), min, undefined)).toBe(false);
+  });
+
+  it("returns false when date is after max", () => {
+    const max = new Date(2024, 5, 30);
+    expect(isDateInRange(new Date(2024, 6, 1), undefined, max)).toBe(false);
   });
 });
 
-describe("parseDatetimeFromDisplay", () => {
-  it("parses space-separated datetime string", () => {
-    const date = parseDatetimeFromDisplay("2024-06-15 14:30")!;
-    expect(date.getFullYear()).toBe(2024);
-    expect(date.getMonth()).toBe(5);
-    expect(date.getDate()).toBe(15);
-    expect(date.getHours()).toBe(14);
-    expect(date.getMinutes()).toBe(30);
+describe("parseTimeString", () => {
+  it("parses HH:mm time string", () => {
+    expect(parseTimeString("14:30")).toEqual({ hours: 14, minutes: 30 });
+    expect(parseTimeString("09:05")).toEqual({ hours: 9, minutes: 5 });
+    expect(parseTimeString("00:00")).toEqual({ hours: 0, minutes: 0 });
   });
 
-  it("parses T-separated datetime string", () => {
-    const date = parseDatetimeFromDisplay("2024-06-15T14:30")!;
-    expect(date.getFullYear()).toBe(2024);
-    expect(date.getHours()).toBe(14);
+  it("defaults to 0 for missing parts", () => {
+    expect(parseTimeString("")).toEqual({ hours: 0, minutes: 0 });
+    expect(parseTimeString("14")).toEqual({ hours: 14, minutes: 0 });
+  });
+});
+
+describe("getTimeValue", () => {
+  it("returns formatted time for a date", () => {
+    expect(getTimeValue(new Date(2024, 0, 1, 14, 30))).toBe("14:30");
+    expect(getTimeValue(new Date(2024, 0, 1, 9, 5))).toBe("09:05");
   });
 
-  it("returns undefined for empty or invalid input", () => {
-    expect(parseDatetimeFromDisplay("")).toBeUndefined();
-    expect(parseDatetimeFromDisplay(null)).toBeUndefined();
-    expect(parseDatetimeFromDisplay(undefined)).toBeUndefined();
-    expect(parseDatetimeFromDisplay("not-a-date")).toBeUndefined();
+  it("returns 00:00 for null", () => {
+    expect(getTimeValue(null)).toBe("00:00");
   });
 });

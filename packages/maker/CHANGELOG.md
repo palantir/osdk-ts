@@ -1,5 +1,138 @@
 # @osdk/maker
 
+## 0.27.0
+
+### Minor Changes
+
+- 6bca4fd: fix cbac default nullability
+
+### Patch Changes
+
+- Updated dependencies [1a07c91]
+- Updated dependencies [5b89f25]
+- Updated dependencies [b98e084]
+  - @osdk/api@2.21.0
+  - @osdk/generator-converters.ontologyir@2.21.0
+
+## 0.26.0
+
+### Patch Changes
+
+- Updated dependencies [9eb67e4]
+  - @osdk/api@2.20.0
+  - @osdk/generator-converters.ontologyir@2.20.0
+
+## 0.25.0
+
+### Patch Changes
+
+- Updated dependencies [02c796c]
+- Updated dependencies [46c553f]
+- Updated dependencies [d962309]
+  - @osdk/api@2.19.0
+  - @osdk/generator-converters.ontologyir@2.19.0
+
+## 0.24.0
+
+### Minor Changes
+
+- 56c5630: Drop redundant `--config $(find-up dprint.json)` from `lint`, `fix-lint`, and `format` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the substitution was a no-op anyway since `find-up` is an npm package, not a CLI. Also fix the `uploadMediaOntologyEdits` documentation example so its `// @ts-ignore` survives dprint reformatting (the broken `format` step had been masking this).
+- ebc5f0c: Experimental function backed actions in OAC
+
+### Patch Changes
+
+- Updated dependencies [56c5630]
+- Updated dependencies [ebc5f0c]
+- Updated dependencies [17d7ba2]
+  - @osdk/api@2.16.0
+  - @osdk/generator-converters.ontologyir@2.16.0
+  - @osdk/typescript-sdk-docs@0.10.0
+
+## 0.23.0
+
+### Patch Changes
+
+- @osdk/api@2.15.0
+- @osdk/generator-converters.ontologyir@2.15.0
+
+## 0.22.0
+
+### Minor Changes
+
+- 02a5765: fix ts discovery api break
+- 2f40eee: Support edits history
+
+### Patch Changes
+
+- Updated dependencies [02a5765]
+- Updated dependencies [20e9678]
+  - @osdk/generator-converters.ontologyir@2.14.0
+  - @osdk/api@2.14.0
+
+## 0.21.0
+
+### Patch Changes
+
+- Updated dependencies [f522327]
+  - @osdk/typescript-sdk-docs@0.9.0
+  - @osdk/api@2.13.0
+  - @osdk/generator-converters.ontologyir@2.13.0
+
+## 0.20.0
+
+### Minor Changes
+
+- 9225ee3: interface property string analyzers
+
+### Patch Changes
+
+- Updated dependencies [91f34a9]
+  - @osdk/api@2.12.0
+  - @osdk/generator-converters.ontologyir@2.12.0
+
+## 0.19.0
+
+### Minor Changes
+
+- a6f4208: configure entity perms in OAC
+
+### Patch Changes
+
+- Updated dependencies [a6f4208]
+  - @osdk/generator-converters.ontologyir@2.11.0
+  - @osdk/api@2.11.0
+
+## 0.18.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+- 151d258: Wire typeclasses to links and actions
+- b1b8a8b: Support string analyzers
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+  - @osdk/generator-converters.ontologyir@2.10.0
+  - @osdk/typescript-sdk-docs@0.8.0
+  - @osdk/api@2.10.0
+
+## 0.17.0
+
+### Minor Changes
+
+- b90fb8e: Fix typo
+- 492db18: Expand the set of types acceptable in references
+
+### Patch Changes
+
+- Updated dependencies [cbc8e9c]
+- Updated dependencies [e8d14a0]
+- Updated dependencies [3390ea2]
+- Updated dependencies [2394ca7]
+  - @osdk/api@2.9.0
+  - @osdk/generator-converters.ontologyir@2.9.0
+
 ## 0.16.0
 
 ### Minor Changes

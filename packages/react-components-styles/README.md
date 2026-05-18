@@ -1,5 +1,23 @@
 # @osdk/react-components-styles
 
+> **Deprecated:** This package has been merged into `@osdk/react-components` and will be removed in a future release.
+>
+> ### Migration steps
+>
+> 1. Remove `@osdk/react-components-styles` from your dependencies
+> 2. Replace your CSS imports:
+>
+>    ```css
+>    /* Before */
+>    @import "@osdk/react-components-styles" layer(osdk.tokens);
+>    @import "@osdk/react-components/styles.css" layer(osdk.components);
+>
+>    /* After */
+>    @import "@osdk/react-components/styles.css" layer(osdk.styles);
+>    ```
+
+---
+
 Default Blueprint-based styling for `@osdk/react-components`.
 
 ## Overview

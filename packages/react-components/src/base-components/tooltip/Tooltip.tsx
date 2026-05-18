@@ -28,15 +28,8 @@ import styles from "./Tooltip.module.css";
 
 export interface TooltipProps extends Omit<TooltipRootProps, "className"> {}
 
-function TooltipRoot({
-  children,
-  ...rest
-}: TooltipProps): React.ReactElement {
-  return (
-    <BaseUITooltip.Root {...rest}>
-      {children}
-    </BaseUITooltip.Root>
-  );
+function TooltipRoot({ children, ...rest }: TooltipProps): React.ReactElement {
+  return <BaseUITooltip.Root {...rest}>{children}</BaseUITooltip.Root>;
 }
 
 interface TooltipProviderComponentProps
@@ -49,13 +42,7 @@ function TooltipProvider({
   children,
   ...rest
 }: TooltipProviderComponentProps): React.ReactElement {
-  return (
-    <BaseUITooltip.Provider
-      {...rest}
-    >
-      {children}
-    </BaseUITooltip.Provider>
-  );
+  return <BaseUITooltip.Provider {...rest}>{children}</BaseUITooltip.Provider>;
 }
 
 interface TooltipTriggerComponentProps
@@ -64,14 +51,19 @@ interface TooltipTriggerComponentProps
   className?: string;
 }
 
+// Base UI defaults to 600ms which feels too slow
+const TOOLTIP_TRIGGER_DELAY_MS = 200;
+
 function TooltipTrigger({
   className,
   children,
+  delay = TOOLTIP_TRIGGER_DELAY_MS,
   ...rest
 }: TooltipTriggerComponentProps): React.ReactElement {
   return (
     <BaseUITooltip.Trigger
       className={classnames(styles.osdkTooltipTrigger, className)}
+      delay={delay}
       {...rest}
     >
       {children}

@@ -19,6 +19,7 @@
   flex-direction: column;
   gap: var(--osdk-cbac-picker-category-gap);
   padding: var(--osdk-cbac-picker-padding);
+  width: 100%;
 }
 
 .categoriesContainer {
@@ -34,9 +35,13 @@
 
 .statusMessage {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: calc(var(--osdk-surface-spacing) * 5);
+  flex-direction: column;
+  gap: calc(var(--osdk-surface-spacing) * 0.5);
+  padding: calc(var(--osdk-surface-spacing) * 3) 0;
   color: var(--osdk-typography-color-muted);
   font-style: italic;
+}
+
+.statusMessage p {
+  margin: 0;
 }

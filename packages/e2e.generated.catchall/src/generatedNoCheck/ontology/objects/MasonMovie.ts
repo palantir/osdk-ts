@@ -15,7 +15,7 @@ import type {
 } from '@osdk/client';
 
 export namespace MasonMovie {
-  export type PropertyKeys = 'classAlt' | 'movie' | 'class' | 'rating' | 'topic' | 'class2';
+  export type PropertyKeys = 'class' | 'class2' | 'classAlt' | 'movie' | 'rating' | 'topic';
 
   export type Links = {};
 

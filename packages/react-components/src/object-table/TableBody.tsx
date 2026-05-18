@@ -20,6 +20,7 @@ import React, { useLayoutEffect } from "react";
 import { LoadingRow } from "./LoadingRow.js";
 import styles from "./TableBody.module.css";
 import { TableRow } from "./TableRow.js";
+import { DEFAULT_ROW_HEIGHT, VIRTUALIZER_OVERSCAN } from "./utils/constants.js";
 
 interface TableBodyProps<TData extends RowData> {
   rows: Array<Row<TData>>;
@@ -35,6 +36,9 @@ interface TableBodyProps<TData extends RowData> {
   focusedRowId?: string | null;
   setFocusedRowId?: (rowId: string | null) => void;
   isInEditMode?: boolean;
+  getRowAttributes?: (
+    object: TData,
+  ) => Record<string, string | undefined>;
 }
 
 export function TableBody<TData extends RowData>({
@@ -42,19 +46,20 @@ export function TableBody<TData extends RowData>({
   tableContainerRef,
   onRowClick,
   renderCellContextMenu,
-  rowHeight = 40,
+  rowHeight = DEFAULT_ROW_HEIGHT,
   isLoadingMore = false,
   headerGroups = [],
   focusedRowId,
   setFocusedRowId,
   isInEditMode,
+  getRowAttributes,
 }: TableBodyProps<TData>): React.ReactElement {
   // Important: Keep the row virtualizer in the lowest component possible to avoid unnecessary re-renders.
   const rowVirtualizer = useVirtualizer<HTMLDivElement, HTMLTableRowElement>({
     count: rows.length,
     estimateSize: () => rowHeight,
     getScrollElement: () => tableContainerRef.current,
-    overscan: 5,
+    overscan: VIRTUALIZER_OVERSCAN,
   });
 
   // Measure the virtualizer after the DOM has been laid out to ensure proper dimensions
@@ -89,6 +94,7 @@ export function TableBody<TData extends RowData>({
             isFocused={focusedRowId === row.id}
             setFocusedRowId={setFocusedRowId}
             isInEditMode={isInEditMode}
+            getRowAttributes={getRowAttributes}
           />
         );
       })}

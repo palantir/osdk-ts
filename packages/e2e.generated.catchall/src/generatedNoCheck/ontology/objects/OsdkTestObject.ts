@@ -15,7 +15,7 @@ import type {
 } from '@osdk/client';
 
 export namespace OsdkTestObject {
-  export type PropertyKeys = 'structArray' | 'description' | 'osdkObjectName' | 'primaryKey_' | 'stringProperty';
+  export type PropertyKeys = 'description' | 'osdkObjectName' | 'primaryKey_' | 'stringProperty' | 'structArray';
 
   export type Links = {};
 
@@ -45,9 +45,9 @@ export namespace OsdkTestObject {
      */
     readonly structArray:
       | {
+          number: $PropType['integer'] | undefined;
           string1: $PropType['string'] | undefined;
           string2: $PropType['string'] | undefined;
-          number: $PropType['integer'] | undefined;
         }[]
       | undefined;
   }

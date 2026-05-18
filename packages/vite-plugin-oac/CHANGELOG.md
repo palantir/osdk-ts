@@ -1,5 +1,188 @@
 # @osdk/vite-plugin-oac
 
+## 0.19.0
+
+### Patch Changes
+
+- Updated dependencies [1a07c91]
+- Updated dependencies [6bca4fd]
+- Updated dependencies [5b89f25]
+- Updated dependencies [b98e084]
+  - @osdk/api@2.21.0
+  - @osdk/maker@0.27.0
+  - @osdk/generator-converters.ontologyir@2.21.0
+  - @osdk/faux@0.18.0
+  - @osdk/cli@0.45.0
+  - @osdk/client.unstable@2.21.0
+
+## 0.18.0
+
+### Patch Changes
+
+- Updated dependencies [9eb67e4]
+  - @osdk/api@2.20.0
+  - @osdk/faux@0.17.0
+  - @osdk/maker@0.26.0
+  - @osdk/cli@0.44.0
+  - @osdk/client.unstable@2.20.0
+  - @osdk/generator-converters.ontologyir@2.20.0
+
+## 0.17.0
+
+### Patch Changes
+
+- Updated dependencies [02c796c]
+- Updated dependencies [46c553f]
+- Updated dependencies [ecc5b36]
+- Updated dependencies [d962309]
+  - @osdk/faux@0.16.0
+  - @osdk/api@2.19.0
+  - @osdk/generator-converters.ontologyir@2.19.0
+  - @osdk/maker@0.25.0
+  - @osdk/cli@0.43.0
+  - @osdk/client.unstable@2.19.0
+
+## 0.16.0
+
+### Patch Changes
+
+- Updated dependencies [2f3271b]
+  - @osdk/faux@0.15.0
+  - @osdk/api@2.18.0
+  - @osdk/client.unstable@2.18.0
+  - @osdk/generator-converters.ontologyir@2.18.0
+  - @osdk/cli@0.42.0
+
+## 0.15.0
+
+### Patch Changes
+
+- Updated dependencies [147166c]
+- Updated dependencies [9be8339]
+  - @osdk/api@2.17.0
+  - @osdk/faux@0.14.0
+  - @osdk/cli@0.41.0
+  - @osdk/client.unstable@2.17.0
+  - @osdk/generator-converters.ontologyir@2.17.0
+
+## 0.14.0
+
+### Minor Changes
+
+- 56c5630: Drop redundant `--config $(find-up dprint.json)` from `lint`, `fix-lint`, and `format` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the substitution was a no-op anyway since `find-up` is an npm package, not a CLI. Also fix the `uploadMediaOntologyEdits` documentation example so its `// @ts-ignore` survives dprint reformatting (the broken `format` step had been masking this).
+
+### Patch Changes
+
+- Updated dependencies [56c5630]
+- Updated dependencies [ebc5f0c]
+- Updated dependencies [17d7ba2]
+  - @osdk/api@2.16.0
+  - @osdk/cli@0.40.0
+  - @osdk/client.unstable@2.16.0
+  - @osdk/faux@0.13.0
+  - @osdk/generator-converters.ontologyir@2.16.0
+  - @osdk/maker@0.24.0
+
+## 0.13.0
+
+### Patch Changes
+
+- @osdk/api@2.15.0
+- @osdk/client.unstable@2.15.0
+- @osdk/generator-converters.ontologyir@2.15.0
+- @osdk/faux@0.12.0
+- @osdk/maker@0.23.0
+- @osdk/cli@0.39.0
+
+## 0.12.0
+
+### Patch Changes
+
+- Updated dependencies [02a5765]
+- Updated dependencies [bab1421]
+- Updated dependencies [2f40eee]
+- Updated dependencies [20e9678]
+  - @osdk/generator-converters.ontologyir@2.14.0
+  - @osdk/maker@0.22.0
+  - @osdk/client.unstable@2.14.0
+  - @osdk/cli@0.38.0
+  - @osdk/api@2.14.0
+  - @osdk/faux@0.11.0
+
+## 0.11.0
+
+### Patch Changes
+
+- @osdk/api@2.13.0
+- @osdk/client.unstable@2.13.0
+- @osdk/generator-converters.ontologyir@2.13.0
+- @osdk/faux@0.10.0
+- @osdk/maker@0.21.0
+- @osdk/cli@0.37.0
+
+## 0.10.0
+
+### Patch Changes
+
+- Updated dependencies [df1a4f8]
+- Updated dependencies [df1a4f8]
+- Updated dependencies [9225ee3]
+- Updated dependencies [91f34a9]
+  - @osdk/cli@0.36.0
+  - @osdk/faux@0.9.0
+  - @osdk/maker@0.20.0
+  - @osdk/api@2.12.0
+  - @osdk/client.unstable@2.12.0
+  - @osdk/generator-converters.ontologyir@2.12.0
+
+## 0.9.0
+
+### Patch Changes
+
+- Updated dependencies [a6f4208]
+  - @osdk/generator-converters.ontologyir@2.11.0
+  - @osdk/client.unstable@2.11.0
+  - @osdk/maker@0.19.0
+  - @osdk/api@2.11.0
+  - @osdk/cli@0.35.0
+
+## 0.8.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+- Updated dependencies [151d258]
+- Updated dependencies [1a0f772]
+- Updated dependencies [b1b8a8b]
+  - @osdk/generator-converters.ontologyir@2.10.0
+  - @osdk/client.unstable@2.10.0
+  - @osdk/maker@0.18.0
+  - @osdk/faux@0.8.0
+  - @osdk/api@2.10.0
+  - @osdk/cli@0.34.0
+
+## 0.7.0
+
+### Patch Changes
+
+- Updated dependencies [b90fb8e]
+- Updated dependencies [cbc8e9c]
+- Updated dependencies [e8d14a0]
+- Updated dependencies [40fe279]
+- Updated dependencies [3390ea2]
+- Updated dependencies [2394ca7]
+- Updated dependencies [492db18]
+  - @osdk/maker@0.17.0
+  - @osdk/api@2.9.0
+  - @osdk/faux@0.7.0
+  - @osdk/cli@0.33.0
+  - @osdk/generator-converters.ontologyir@2.9.0
+  - @osdk/client.unstable@2.9.0
+
 ## 0.6.0
 
 ### Minor Changes

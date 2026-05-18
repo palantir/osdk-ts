@@ -27,6 +27,7 @@ import type { AccessorColumnDef } from "@tanstack/react-table";
 import { useMemo } from "react";
 import { renderDefaultCell } from "../DefaultCellRenderer.js";
 import type { ColumnDefinition } from "../ObjectTableApi.js";
+import { shouldShowEditableCell } from "../utils/shouldShowEditableCell.js";
 
 interface UseColumnDefsResult<
   Q extends ObjectOrInterfaceDefinition,
@@ -112,6 +113,9 @@ function getColumnsFromColumnDefinitions<
       columnName,
     } = col;
 
+    const editFieldConfig = col.editable ? col.editFieldConfig : undefined;
+    const validateEdit = col.editable ? col.validateEdit : undefined;
+
     const propertyMetadata = locator.type === "property"
       ? objectProperties?.[locator.id]
       : undefined;
@@ -134,8 +138,9 @@ function getColumnsFromColumnDefinitions<
         isAsyncColumn: locator.type === "function",
         isVisible: col.isVisible !== false,
         editable,
+        editFieldConfig,
         dataType,
-        validateEdit: col.validateEdit,
+        validateEdit,
       },
       size: width,
       ...(minWidth ? { minSize: minWidth } : {}),
@@ -152,7 +157,16 @@ function getColumnsFromColumnDefinitions<
           RDPs
         > = cellContext.row.original;
 
-        if (renderCell) {
+        const meta = cellContext.table.options.meta;
+        const isEditable = shouldShowEditableCell<
+          Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
+        >(
+          editable,
+          meta?.onCellEdit,
+          meta?.isInEditMode,
+        );
+
+        if (renderCell && !isEditable) {
           return renderCell(object, locator);
         }
 

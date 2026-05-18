@@ -30,3 +30,15 @@ export function getDisplayLabel(
 ): string {
   return isImplied(state) ? `(${label})` : label;
 }
+
+export function getTooltipText(
+  state: MarkingSelectionState,
+): string | undefined {
+  if (state === "DISALLOWED") {
+    return "This marking is not allowed with the current selection";
+  }
+  if (state === "IMPLIED_DISALLOWED") {
+    return "This marking is implied but not allowed";
+  }
+  return undefined;
+}

@@ -4,6 +4,7 @@ consola
 dprint
 Emittery
 execa
+genai
 immer
 jiti
 luxon
@@ -20,3 +21,4 @@ npmjs
 trivago
 tsup
 timecode
+utif

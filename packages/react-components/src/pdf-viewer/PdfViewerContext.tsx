@@ -51,8 +51,11 @@ export interface PdfViewerContextValue {
   scrollToPage: (page: number) => void;
   scale: number;
   setScale: (scale: number) => void;
+  autoSize: boolean;
+  setAutoSize: (autoSize: boolean) => void;
   zoomIn: () => void;
   zoomOut: () => void;
+  toggleAutoSize: () => void;
   rotation: number;
   rotateLeft: () => void;
   rotateRight: () => void;
@@ -134,6 +137,7 @@ export function usePdfViewerInstance(
     src: options.src,
     initialPage: options.initialPage,
     initialScale: options.initialScale,
+    initialAutoSize: options.initialAutoSize,
     initialSidebarOpen: options.initialSidebarOpen,
     sidebarMode: options.sidebarMode,
     onDownload: options.onDownload,

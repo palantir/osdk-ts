@@ -1,5 +1,5 @@
 import type { WhereClause } from "@osdk/client";
-import { useOsdkObjects } from "@osdk/react/experimental";
+import { useOsdkObjects } from "@osdk/react";
 import * as React from "react";
 import "./App.css";
 import { Todo } from "./generatedNoCheck2/index.js";

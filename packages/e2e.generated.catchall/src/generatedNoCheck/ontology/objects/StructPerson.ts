@@ -15,7 +15,7 @@ import type {
 } from '@osdk/client';
 
 export namespace StructPerson {
-  export type PropertyKeys = 'name' | 'address';
+  export type PropertyKeys = 'address' | 'name';
 
   export type Links = {};
 

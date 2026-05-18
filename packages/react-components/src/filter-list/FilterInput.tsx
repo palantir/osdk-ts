@@ -17,21 +17,31 @@
 import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import React, { memo, useCallback } from "react";
 import { ContainsTextInput } from "./base/inputs/ContainsTextInput.js";
+import type { MultiSelectInputLayout } from "./base/inputs/MultiSelectInput.js";
 import { ToggleInput } from "./base/inputs/ToggleInput.js";
 import type { FilterDefinitionUnion } from "./FilterListApi.js";
 import type { FilterState } from "./FilterListItemApi.js";
 import { LinkedPropertyInput } from "./inputs/LinkedPropertyInput.js";
 import { PropertyFilterInput } from "./inputs/PropertyFilterInput.js";
+import { StaticValuesFilterInput } from "./inputs/StaticValuesFilterInput.js";
 
-interface FilterInputProps<Q extends ObjectTypeDefinition> {
+export interface FilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
-  objectSet: ObjectSet<Q>;
+  objectSet?: ObjectSet<Q>;
   definition: FilterDefinitionUnion<Q>;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
   searchQuery?: string;
   excludeRowOpen?: boolean;
+  /**
+   * Layout for `MULTI_SELECT` filter components. Pass `"inline"` when this
+   * input renders inside a popover (or any container where chips would feel
+   * redundant) so the value list is always visible. Defaults to `"dropdown"`,
+   * which renders chips + a portaled Combobox popup. Ignored by other
+   * filter components.
+   */
+  layout?: MultiSelectInputLayout;
 }
 
 function FilterInputInner<Q extends ObjectTypeDefinition>({
@@ -43,32 +53,7 @@ function FilterInputInner<Q extends ObjectTypeDefinition>({
   whereClause,
   searchQuery,
   excludeRowOpen,
-}: FilterInputProps<Q>): React.ReactElement {
-  return (
-    <FilterInputContent
-      objectType={objectType}
-      objectSet={objectSet}
-      definition={definition}
-      filterState={filterState}
-      onFilterStateChanged={onFilterStateChanged}
-      whereClause={whereClause}
-      searchQuery={searchQuery}
-      excludeRowOpen={excludeRowOpen}
-    />
-  );
-}
-
-export const FilterInput = memo(FilterInputInner) as typeof FilterInputInner;
-
-function FilterInputContent<Q extends ObjectTypeDefinition>({
-  objectType,
-  objectSet,
-  definition,
-  filterState,
-  onFilterStateChanged,
-  whereClause,
-  searchQuery,
-  excludeRowOpen,
+  layout,
 }: FilterInputProps<Q>): React.ReactElement {
   switch (definition.type) {
     case "HAS_LINK":
@@ -79,7 +64,10 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
         />
       );
 
-    case "LINKED_PROPERTY":
+    case "LINKED_PROPERTY": {
+      if (objectSet == null) {
+        return <></>;
+      }
       return (
         <LinkedPropertyInput
           objectSet={objectSet}
@@ -87,8 +75,10 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
           searchQuery={searchQuery}
+          layout={layout}
         />
       );
+    }
 
     case "KEYWORD_SEARCH":
       return (
@@ -111,6 +101,7 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
       return (
         <>
           {definition.renderInput({
+            objectType,
             objectSet,
             filterState: customFilterState,
             onFilterStateChanged: (state) => onFilterStateChanged(state),
@@ -130,6 +121,19 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
           whereClause={whereClause}
           searchQuery={searchQuery}
           excludeRowOpen={excludeRowOpen}
+          layout={layout}
+        />
+      );
+
+    case "STATIC_VALUES":
+      return (
+        <StaticValuesFilterInput
+          definition={definition}
+          filterState={filterState}
+          onFilterStateChanged={onFilterStateChanged}
+          searchQuery={searchQuery}
+          excludeRowOpen={excludeRowOpen}
+          layout={layout}
         />
       );
 
@@ -137,6 +141,8 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
       return <div data-unsupported="true">Unsupported filter type</div>;
   }
 }
+
+export const FilterInput = memo(FilterInputInner) as typeof FilterInputInner;
 
 interface HasLinkInputProps {
   filterState: FilterState | undefined;

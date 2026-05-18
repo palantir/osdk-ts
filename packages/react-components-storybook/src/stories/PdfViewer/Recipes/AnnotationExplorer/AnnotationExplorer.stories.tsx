@@ -21,7 +21,7 @@ import type {
   PdfAnnotationRenderProps,
   PdfCustomAnnotation,
   PdfViewerProps,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/pdf-viewer";
 import {
   BasePdfViewer,
   PdfViewerAnnotationLayer,
@@ -30,7 +30,7 @@ import {
   PdfViewerToolbar,
   usePdfViewerContext,
   usePdfViewerInstance,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/pdf-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import React, { useCallback, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
@@ -204,9 +204,12 @@ function ConnectedPdfView(): React.ReactElement {
         currentPage={ctx.currentPage}
         numPages={ctx.numPages}
         scale={ctx.scale}
+        autoSize={ctx.autoSize}
         sidebarOpen={ctx.sidebarOpen}
         onPageChange={ctx.scrollToPage}
-        onScaleChange={ctx.setScale}
+        onZoomIn={ctx.zoomIn}
+        onZoomOut={ctx.zoomOut}
+        onAutoSizeToggle={ctx.toggleAutoSize}
         onSearchOpen={ctx.search.openSearch}
         onSidebarToggle={ctx.toggleSidebar}
         onDownload={handleDownload}

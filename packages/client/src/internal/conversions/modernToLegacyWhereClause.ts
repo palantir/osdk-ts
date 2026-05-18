@@ -276,6 +276,15 @@ function handleWherePair(
     };
   }
 
+  if (firstKey === "$matchesRegex") {
+    return {
+      type: "regex",
+      ...(propertyIdentifier != null && { propertyIdentifier }),
+      field,
+      value: filter[firstKey],
+    };
+  }
+
   if (firstKey === "$interval") {
     return {
       type: "interval",

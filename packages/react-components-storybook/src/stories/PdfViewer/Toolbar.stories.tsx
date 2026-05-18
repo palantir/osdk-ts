@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { PdfViewerToolbarProps } from "@osdk/react-components/experimental";
-import { PdfViewerToolbar } from "@osdk/react-components/experimental";
+import type { PdfViewerToolbarProps } from "@osdk/react-components/experimental/pdf-viewer";
+import { PdfViewerToolbar } from "@osdk/react-components/experimental/pdf-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
 
@@ -26,10 +26,13 @@ const meta: Meta<PdfViewerToolbarProps> = {
     currentPage: 1,
     numPages: 14,
     scale: 1.0,
+    autoSize: false,
     sidebarOpen: false,
     enableDownload: false,
     onPageChange: fn(),
-    onScaleChange: fn(),
+    onZoomIn: fn(),
+    onZoomOut: fn(),
+    onAutoSizeToggle: fn(),
     onSearchOpen: fn(),
     onSidebarToggle: fn(),
     onDownload: fn(),

@@ -37,6 +37,12 @@ export interface ObserveObjectSetOptions<
   union?: ObjectSet<Q>[];
   intersect?: ObjectSet<Q>[];
   subtract?: ObjectSet<Q>[];
+
+  /**
+   * Traverse to linked objects. Cannot be combined with `streamUpdates`.
+   * The server does not support websocket subscriptions for link-traversal
+   * queries.
+   */
   pivotTo?: LinkNames<Q>;
   pageSize?: number;
   orderBy?: { [K in PropertyKeys<Q>]?: "asc" | "desc" };
@@ -61,6 +67,14 @@ export interface ObserveObjectSetOptions<
    * Enable streaming updates via websocket subscription.
    * When true, the object set will automatically update when matching objects are
    * added, updated, or removed.
+   *
+   * Cannot be combined with `pivotTo`. The server does not support
+   * websocket subscriptions for link-traversal queries.
+   *
+   * Cannot be combined with `withProperties` (or a `baseObjectSet` that already
+   * has derived properties applied). The server does not support websocket
+   * subscriptions for object sets that include derived properties; in that
+   * case `streamUpdates` is ignored and a warning is logged in development.
    *
    * @default false
    */

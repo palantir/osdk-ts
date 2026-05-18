@@ -29,12 +29,14 @@ import { coerceToString } from "../utils/coerceFilterValue.js";
 
 interface SingleSelectFilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
-  objectSet: ObjectSet<Q>;
+  objectSet?: ObjectSet<Q>;
   propertyKey: string;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
   excludeRowOpen?: boolean;
+  renderValue?: (value: string) => React.ReactNode;
+  showCount?: boolean;
 }
 
 function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -45,6 +47,8 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
   onFilterStateChanged,
   whereClause,
   excludeRowOpen,
+  renderValue,
+  showCount,
 }: SingleSelectFilterInputProps<Q>): React.ReactElement {
   const selectedValue = useMemo(
     () =>
@@ -75,8 +79,11 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
   );
 
   const aggregationOptions = useMemo(
-    () => ({ where: whereClause }),
-    [whereClause],
+    () => ({
+      where: whereClause,
+      activeValues: selectedValue != null ? [selectedValue] : undefined,
+    }),
+    [whereClause, selectedValue],
   );
 
   const { data, isLoading, error } = usePropertyAggregation(
@@ -100,7 +107,9 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
         error={error}
         selectedValue={selectedValue}
         onChange={handleChange}
+        showCounts={showCount}
         ariaLabel={`Select ${propertyKey}`}
+        renderValue={renderValue}
       />
     </FilterInputExcludeRow>
   );

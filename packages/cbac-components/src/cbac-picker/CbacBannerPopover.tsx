@@ -18,10 +18,11 @@ import {
   useCbacBanner,
   useMarkingCategories,
   useMarkings,
-} from "@osdk/react/experimental/admin";
+} from "@osdk/react/platform-apis";
 import React from "react";
 import { BaseCbacBannerPopover } from "./base/BaseCbacBannerPopover.js";
 import { CbacPickerDialog } from "./CbacPickerDialog.js";
+import type { MaxClassificationConstraint } from "./types.js";
 import {
   groupMarkingsByCategory,
   resolveBannerDisplay,
@@ -30,12 +31,14 @@ import {
 export interface CbacBannerPopoverProps {
   markingIds: string[];
   onChange: (markingIds: string[]) => void;
+  maxClassificationConstraint?: MaxClassificationConstraint;
   className?: string;
 }
 
 export function CbacBannerPopover({
   markingIds,
   onChange,
+  maxClassificationConstraint,
   className,
 }: CbacBannerPopoverProps): React.ReactElement {
   const {
@@ -109,6 +112,7 @@ export function CbacBannerPopover({
           onOpenChange={setIsDialogOpen}
           onConfirm={handleConfirm}
           initialMarkingIds={markingIds}
+          maxClassificationConstraint={maxClassificationConstraint}
         />
       )}
     </>

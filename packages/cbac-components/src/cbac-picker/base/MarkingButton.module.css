@@ -28,42 +28,41 @@
   border-right: 1px solid var(--osdk-cbac-marking-button-border-color-default);
   border-bottom: 1px solid var(--osdk-cbac-marking-button-border-color-default);
   color: var(--osdk-cbac-marking-button-color-default);
-  background: var(--osdk-cbac-marking-button-bg-default);
-  transition: background var(--osdk-emphasis-transition-duration)
-      var(--osdk-emphasis-ease-default),
-    border-color var(--osdk-emphasis-transition-duration)
-      var(--osdk-emphasis-ease-default),
-    color var(--osdk-emphasis-transition-duration)
-      var(--osdk-emphasis-ease-default);
+  background-color: var(--osdk-cbac-marking-button-bg-default, transparent);
 }
 
-.markingButton:hover:not(:disabled):not(.disallowed):not(.impliedDisallowed) {
-  background: var(--osdk-surface-background-color-default-hover);
+.markingButton:hover:not(:disabled):not([aria-disabled="true"]):not(.disallowed):not(.impliedDisallowed):not(.selected):not(.implied) {
+  background-color: var(--osdk-surface-background-color-default-hover);
 }
 
 .selected {
   color: var(--osdk-cbac-marking-button-color-selected);
-  background: var(--osdk-cbac-marking-button-bg-selected);
+  background-color: var(--osdk-cbac-marking-button-bg-selected);
   border-color: var(--osdk-cbac-marking-button-border-color-selected);
 }
 
-.selected:hover:not(:disabled) {
-  background: var(--osdk-intent-primary-hover);
+.selected:hover:not(:disabled):not([aria-disabled="true"]) {
+  background-color: var(
+    --osdk-cbac-marking-button-bg-selected-hover,
+    var(--osdk-cbac-marking-button-bg-selected)
+  );
+  filter: brightness(0.85);
 }
 
 .implied {
   color: var(--osdk-cbac-marking-button-color-implied);
-  background: var(--osdk-cbac-marking-button-bg-implied);
+  background-color: var(--osdk-cbac-marking-button-bg-implied);
   border-color: var(--osdk-cbac-marking-button-border-color-implied);
 }
 
 .disallowed,
 .impliedDisallowed {
   color: var(--osdk-cbac-marking-button-color-disallowed);
-  background: var(--osdk-cbac-marking-button-bg-disallowed);
+  background-color: var(--osdk-cbac-marking-button-bg-disallowed);
   border-color: var(--osdk-cbac-marking-button-border-color-disallowed);
   cursor: not-allowed;
   opacity: var(--osdk-cbac-disabled-opacity);
+  text-decoration: line-through;
 }
 
 .markingButton:focus-visible {
@@ -73,4 +72,33 @@
 
 .markingButton:disabled {
   cursor: not-allowed;
+}
+
+.tooltip {
+  z-index: var(--osdk-cbac-marking-tooltip-z-index);
+  max-width: var(--osdk-cbac-marking-tooltip-max-width);
+  padding: var(--osdk-cbac-marking-tooltip-padding);
+  background-color: var(--osdk-tooltip-bg);
+  border: 1px solid var(--osdk-tooltip-border-color);
+  border-radius: var(--osdk-surface-border-radius);
+  box-shadow: var(--osdk-tooltip-shadow);
+  font-size: var(--osdk-cbac-marking-tooltip-font-size);
+  line-height: 1.4;
+}
+
+.tooltipTitle {
+  margin: 0;
+  font-weight: var(--osdk-typography-weight-bold);
+  color: var(--osdk-typography-color-default-rest);
+}
+
+.tooltipDescription {
+  margin: calc(var(--osdk-surface-spacing) * 0.5) 0 0;
+  color: var(--osdk-typography-color-muted);
+}
+
+.tooltipHint {
+  margin: calc(var(--osdk-surface-spacing) * 0.5) 0 0;
+  font-style: italic;
+  color: var(--osdk-typography-color-muted);
 }

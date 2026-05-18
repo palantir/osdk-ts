@@ -15,7 +15,7 @@ import type {
 } from '@osdk/client';
 
 export namespace BgaoNflPlayer {
-  export type PropertyKeys = 'id' | 'gamesPlayed' | 'name' | 'number' | 'wikiUrl' | 'address';
+  export type PropertyKeys = 'address' | 'gamesPlayed' | 'id' | 'name' | 'number' | 'wikiUrl';
 
   export type Links = {};
 

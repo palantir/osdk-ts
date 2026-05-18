@@ -59,3 +59,128 @@ export interface EditableConfig<
   validationErrors: Map<string, string>;
   clearCellValidationError: (cellId: string) => void;
 }
+
+/**
+ * User-facing configuration for a dropdown editor in a table cell.
+ *
+ * This is intentionally a standalone interface rather than re-exporting
+ * `DropdownFieldProps` from ActionForm, so the table API doesn't break
+ * when ActionForm's prop shape changes (e.g. adding form-specific fields).
+ */
+export interface DropdownEditConfig<V = unknown> {
+  /**
+   * Available items for the dropdown.
+   */
+  items: V[];
+
+  /**
+   * Converts an item to a display string. Defaults to `String()`.
+   *
+   * `item` may be `undefined` when the cell has no value yet — the formatter
+   * is responsible for producing a sensible label in that case.
+   */
+  itemToStringLabel?(item: V | undefined): string;
+
+  /**
+   * Returns a unique string key for a list item. Used as the React `key`.
+   * Falls back to the item's index when not provided.
+   */
+  itemToKey?: (item: V) => string;
+
+  /**
+   * Custom equality check for item values. Defaults to `Object.is`.
+   * Required when items are objects to ensure correct selection matching.
+   */
+  isItemEqual?: (a: V, b: V) => boolean;
+
+  /**
+   * Whether the dropdown allows searching/filtering.
+   * When true, renders a Combobox with a search input.
+   * When false (default), renders a Select dropdown.
+   */
+  isSearchable?: boolean;
+
+  /**
+   * Placeholder text shown when no value is selected.
+   */
+  placeholder?: string;
+
+  /**
+   * Whether multiple values can be selected.
+   */
+  isMultiple?: boolean;
+}
+
+/**
+ * User-facing configuration for a date picker editor in a table cell.
+ *
+ * Standalone by design rather than re-exporting `DatePickerProps` so the
+ * table API doesn't break when the picker's prop shape changes.
+ */
+export interface DatePickerEditConfig {
+  /**
+   * The earliest date the user can select.
+   */
+  min?: Date;
+
+  /**
+   * The latest date the user can select.
+   */
+  max?: Date;
+
+  /**
+   * Whether to show a time picker alongside the calendar.
+   */
+  showTime?: boolean;
+
+  /**
+   * Whether to close the popover after selecting a date.
+   * @default true when `showTime` is false, false when `showTime` is true
+   */
+  closeOnSelection?: boolean;
+
+  /**
+   * Placeholder text shown when no value is selected.
+   */
+  placeholder?: string;
+
+  /**
+   * Formats a Date for display in the input field when not editing.
+   * Provide a matching `parseDate` if using a custom format.
+   */
+  formatDate?: (date: Date) => string;
+
+  /**
+   * Parses a user-typed string back into a Date.
+   * Must be the inverse of `formatDate`.
+   */
+  parseDate?: (text: string) => Date | undefined;
+}
+
+/**
+ * Maps each supported editable field component to its user-facing config.
+ */
+interface EditFieldPropsByType {
+  DROPDOWN: DropdownEditConfig;
+  DATE_PICKER: DatePickerEditConfig;
+}
+
+type EditFieldComponent = keyof EditFieldPropsByType;
+
+/**
+ * Configuration for an editable cell's field component.
+ *
+ * `getFieldComponentProps` is called with the row's object and a map of any
+ * pending cell edits for the same row, keyed by `columnId`. This lets the
+ * configuration depend on row state or on other in-progress edits within the
+ * row (e.g. dropdown items that change once another column is edited).
+ */
+export type EditFieldConfig<TData = unknown> = {
+  [K in EditFieldComponent]: {
+    fieldComponent: K;
+    getFieldComponentProps: (
+      object: TData,
+      edits?: Record<string, CellEditInfo<TData, unknown>>,
+    ) => EditFieldPropsByType[K];
+  };
+}[EditFieldComponent];

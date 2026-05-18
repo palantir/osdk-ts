@@ -1,5 +1,93 @@
 # @osdk/widget.client
 
+## 3.18.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.18.0
+
+## 3.17.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.17.0
+
+## 3.16.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.16.0
+
+## 3.15.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.15.0
+
+## 3.14.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.14.0
+
+## 3.13.0
+
+### Minor Changes
+
+- 56c5630: Drop redundant `--config $(find-up dprint.json)` from `lint`, `fix-lint`, and `format` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the substitution was a no-op anyway since `find-up` is an npm package, not a CLI. Also fix the `uploadMediaOntologyEdits` documentation example so its `// @ts-ignore` survives dprint reformatting (the broken `format` step had been masking this).
+
+### Patch Changes
+
+- Updated dependencies [56c5630]
+  - @osdk/widget.api@3.13.0
+
+## 3.12.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.12.0
+
+## 3.11.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.11.0
+
+## 3.10.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.10.0
+
+## 3.9.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.9.0
+
+## 3.8.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.8.0
+
+## 3.7.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+  - @osdk/widget.api@3.7.0
+
+## 3.6.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.6.0
+
 ## 3.5.0
 
 ### Minor Changes

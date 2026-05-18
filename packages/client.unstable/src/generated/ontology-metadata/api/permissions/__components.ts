@@ -515,6 +515,13 @@ export interface ManyToManyLinkTypeDatasourcePermissions {
   canDelete: boolean;
   canEdit: boolean;
 }
+/**
+ * Indicates all entities migrated to the targetFolder, but we failed to update the markings on one or more of
+ * the entities afterwards.
+ */
+export interface MigrateEntitiesToProjectsFailure {
+  errorMessage: string;
+}
 export interface MigrateEntitiesToProjectsRequest {
   entitiesToMove: Record<_api_CompassFolderRid, Array<_api_ProjectEntityRid>>;
   entitiesToMoveV2: Record<
@@ -523,9 +530,33 @@ export interface MigrateEntitiesToProjectsRequest {
   >;
 }
 /**
- * Response to MoveEntitiesToProjectsRequest. Intentionally left empty for future extensibility.
+ * Response to MoveEntitiesToProjectsRequest. Receiving this response back indicates that all entities were
+ * successfully migrated to their provided folders. However, there may still have been issues with updating
+ * entity markings after the move.
  */
 export interface MigrateEntitiesToProjectsResponse {
+  migrationResults: Record<
+    _api_CompassFolderRid,
+    MigrateEntitiesToProjectsResult
+  >;
+}
+export interface MigrateEntitiesToProjectsResult_success {
+  type: "success";
+  success: MigrateEntitiesToProjectsSuccess;
+}
+
+export interface MigrateEntitiesToProjectsResult_failure {
+  type: "failure";
+  failure: MigrateEntitiesToProjectsFailure;
+}
+export type MigrateEntitiesToProjectsResult =
+  | MigrateEntitiesToProjectsResult_success
+  | MigrateEntitiesToProjectsResult_failure;
+
+/**
+ * Indicates all entities migrated to the targetFolder and successfully updated any markings.
+ */
+export interface MigrateEntitiesToProjectsSuccess {
 }
 export interface MigrateEntityToProjectRequest {
   markings: Array<_api_MarkingId>;

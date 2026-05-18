@@ -15,17 +15,21 @@
  */
 
 import type { ActionDefinition } from "@osdk/api";
-import { useOsdkMetadata } from "@osdk/react";
-import { useOsdkAction } from "@osdk/react/experimental";
+import { useOsdkAction, useOsdkMetadata } from "@osdk/react";
 import React, { useCallback, useEffect, useMemo } from "react";
 import { typedReactMemo } from "../shared/typedMemo.js";
-import type { ActionFormProps, FormState } from "./ActionFormApi.js";
+import type {
+  ActionFormProps,
+  FormContentItem,
+  FormState,
+} from "./ActionFormApi.js";
 import { BaseForm } from "./BaseForm.js";
 import type { RendererFieldDefinition } from "./FormFieldApi.js";
 import { coerceFieldValue } from "./utils/coerceFieldValue.js";
 import { getDefaultFieldDefinitions } from "./utils/getDefaultFieldDefinitions.js";
 
-const EMPTY_FIELD_DEFINITIONS: readonly [] = [];
+const EMPTY_FIELD_DEFINITIONS: ReadonlyArray<RendererFieldDefinition> = [];
+const EMPTY_FORM_CONTENT: ReadonlyArray<FormContentItem> = [];
 
 export const ActionForm: <Q extends ActionDefinition<unknown>>(
   props: ActionFormProps<Q>,
@@ -34,6 +38,7 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
 >({
   actionDefinition,
   formTitle,
+  showFormTitle = false,
   formFieldDefinitions,
   formState: controlledFormState,
   onFormStateChange,
@@ -71,15 +76,17 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
       // RendererFieldDefinition is a discriminated union keyed by fieldComponent.
       // TypeScript can't verify that the spread preserves the fieldComponent ↔
       // fieldComponentProps pairing, but FormFieldDefinition guarantees it.
-      return formFieldDefinitions.map(
-        (def) =>
-          ({
-            ...def,
-            fieldKey: String(def.fieldKey),
-            fieldType: parameters?.[String(def.fieldKey)]?.type,
-            defaultValue: def.defaultValue,
-          }) as RendererFieldDefinition,
-      );
+      return formFieldDefinitions.map((def) => {
+        const { defaultValue, ...fieldDefinition } = def;
+        return {
+          ...fieldDefinition,
+          fieldKey: String(def.fieldKey),
+          fieldType: parameters?.[String(def.fieldKey)]?.type,
+          fieldComponentProps: defaultValue === undefined
+            ? def.fieldComponentProps
+            : { ...def.fieldComponentProps, defaultValue },
+        } as RendererFieldDefinition;
+      });
     }, [formFieldDefinitions, parameters]);
 
   const rendererFieldDefinitions = useMemo(
@@ -89,6 +96,16 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
           ? getDefaultFieldDefinitions(metadata)
           : EMPTY_FIELD_DEFINITIONS),
     [customFieldDefinitions, metadata],
+  );
+
+  const formContent = useMemo(
+    (): ReadonlyArray<FormContentItem> =>
+      rendererFieldDefinitions.length === 0
+        ? EMPTY_FORM_CONTENT
+        : rendererFieldDefinitions.map(
+          (def): FormContentItem => ({ type: "field", definition: def }),
+        ),
+    [rendererFieldDefinitions],
   );
 
   const coerceFormState = useCallback(
@@ -132,14 +149,15 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
     [onFormStateChange],
   );
 
-  const resolvedTitle = formTitle ?? metadata?.displayName
-    ?? actionDefinition.apiName;
+  const resolvedTitle = showFormTitle
+    ? (formTitle ?? metadata?.displayName ?? actionDefinition.apiName)
+    : undefined;
 
   const isControlled = controlledFormState != null;
 
   const commonProps = {
     formTitle: resolvedTitle,
-    fieldDefinitions: rendererFieldDefinitions,
+    formContent,
     onSubmit: handleSubmit,
     isSubmitDisabled,
     isPending,

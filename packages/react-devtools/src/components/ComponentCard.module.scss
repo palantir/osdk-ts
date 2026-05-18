@@ -1,0 +1,161 @@
+@use 'tokens' as t;
+@use 'mixins' as m;
+
+.componentCard {
+  @include m.dt-entrance;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid t.$border-subtle;
+  border-radius: 0;
+  overflow: hidden;
+  transition: border-color t.$transition-fast;
+
+  &:hover {
+    border-color: t.$border-hover;
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  cursor: pointer;
+  user-select: none;
+  border-left: 2px solid transparent;
+  transition: background-color t.$transition-fast, border-left-color t.$transition-fast;
+
+  &:hover {
+    background: t.$bg-hover;
+    border-left-color: t.$blue-muted;
+  }
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.expandIcon {
+  color: t.$text-tertiary;
+  flex-shrink: 0;
+}
+
+.componentName {
+  font-weight: t.$font-weight-bold;
+  font-size: t.$font-size-md;
+  font-family: t.$font-mono;
+  color: t.$text-primary;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.hookCountTag {
+  font-size: t.$font-size-sm;
+  font-weight: t.$font-weight-semi;
+}
+
+.warningTag {
+  background: t.$orange-bg;
+  color: t.$orange;
+}
+
+.renderCount,
+.avgDuration {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: t.$font-size-sm;
+  color: t.$text-tertiary;
+  white-space: nowrap;
+}
+
+.healthDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.health_healthy {
+  background: t.$green;
+}
+
+.health_warning {
+  background: t.$orange;
+}
+
+.health_error {
+  background: t.$red;
+}
+
+.issueCountTag {
+  font-size: t.$font-size-sm;
+  font-weight: t.$font-weight-semi;
+}
+
+.healthyLabel {
+  font-size: t.$font-size-xs;
+  color: t.$green;
+  font-weight: t.$font-weight-medium;
+  text-transform: lowercase;
+}
+
+.body {
+  padding: 0 12px 12px 16px;
+  border-top: 1px solid t.$border-subtle;
+}
+
+.hooks {
+  margin-top: 8px;
+}
+
+.inlineIssues {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid t.$border-subtle;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.inlineIssue {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: t.$radius-md;
+  font-size: t.$font-size-base;
+}
+
+.inlineIssue_error {
+  background: t.$red-bg;
+}
+
+.inlineIssue_warning {
+  background: t.$orange-bg;
+}
+
+.inlineIssue_info {
+  background: t.$blue-bg;
+}
+
+.inlineIssueText {
+  color: t.$text-primary;
+  font-size: t.$font-size-base;
+}
+
+.inlineIssueSuggestion {
+  color: t.$text-tertiary;
+}

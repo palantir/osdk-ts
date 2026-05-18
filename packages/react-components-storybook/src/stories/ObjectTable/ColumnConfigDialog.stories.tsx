@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { ColumnConfigDialogProps } from "@osdk/react-components/experimental";
-import { ColumnConfigDialog } from "@osdk/react-components/experimental";
+import type { ColumnConfigDialogProps } from "@osdk/react-components/experimental/object-table";
+import { ColumnConfigDialog } from "@osdk/react-components/experimental/object-table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useState } from "react";
 import { fn } from "storybook/test";
@@ -95,7 +95,7 @@ export const Default: Story = {
     docs: {
       source: {
         code:
-          `import { ColumnConfigDialog } from "@osdk/react-components/experimental";
+          `import { ColumnConfigDialog } from "@osdk/react-components/experimental/object-table";
 
 const [isOpen, setIsOpen] = useState(false);
 

@@ -61,8 +61,10 @@ describe("SPTs", () => {
         "actionTypes": {},
         "blockPermissionInformation": {
           "actionTypes": {},
+          "interfaceTypes": {},
           "linkTypes": {},
           "objectTypes": {},
+          "sharedPropertyTypes": {},
         },
         "interfaceTypes": {
           "com.palantir.FooInterface": {
@@ -82,6 +84,7 @@ describe("SPTs", () => {
               "extendsInterfaces": [],
               "extendsInterfacesMetadata": [],
               "links": [],
+              "permission": undefined,
               "properties": [],
               "propertiesV2": {
                 "com.palantir.fooSpt": {
@@ -239,8 +242,10 @@ describe("SPTs", () => {
         "actionTypes": {},
         "blockPermissionInformation": {
           "actionTypes": {},
+          "interfaceTypes": {},
           "linkTypes": {},
           "objectTypes": {},
+          "sharedPropertyTypes": {},
         },
         "interfaceTypes": {},
         "linkTypes": {},
@@ -323,8 +328,10 @@ describe("SPTs", () => {
         "actionTypes": {},
         "blockPermissionInformation": {
           "actionTypes": {},
+          "interfaceTypes": {},
           "linkTypes": {},
           "objectTypes": {},
+          "sharedPropertyTypes": {},
         },
         "interfaceTypes": {
           "com.palantir.interface": {
@@ -344,6 +351,7 @@ describe("SPTs", () => {
               "extendsInterfaces": [],
               "extendsInterfacesMetadata": [],
               "links": [],
+              "permission": undefined,
               "properties": [],
               "propertiesV2": {
                 "com.palantir.foo": {
@@ -502,8 +510,10 @@ describe("SPTs", () => {
         "actionTypes": {},
         "blockPermissionInformation": {
           "actionTypes": {},
+          "interfaceTypes": {},
           "linkTypes": {},
           "objectTypes": {},
+          "sharedPropertyTypes": {},
         },
         "interfaceTypes": {},
         "linkTypes": {},
@@ -617,8 +627,10 @@ describe("SPTs", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {},
@@ -632,8 +644,10 @@ describe("SPTs", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {},
@@ -697,8 +711,10 @@ describe("SPTs", () => {
         "actionTypes": {},
         "blockPermissionInformation": {
           "actionTypes": {},
+          "interfaceTypes": {},
           "linkTypes": {},
           "objectTypes": {},
+          "sharedPropertyTypes": {},
         },
         "interfaceTypes": {},
         "linkTypes": {},
@@ -747,5 +763,24 @@ describe("SPTs", () => {
         },
       }
     `);
+  });
+
+  it("serializes publicProject permission on shared property type", async () => {
+    await defineOntology("com.palantir.", () => {
+      defineSharedPropertyType({
+        apiName: "mySpt",
+        type: "string",
+        permission: "publicProject",
+      });
+
+      const bpi = dumpOntologyFullMetadata().ontology
+        .blockPermissionInformation!;
+      const sptPerms = Object.values(bpi.sharedPropertyTypes);
+      expect(sptPerms).toHaveLength(1);
+      expect(sptPerms[0].restrictionStatus).toEqual({
+        publicProject: true,
+        ontologyPackageRid: null,
+      });
+    }, "/tmp/");
   });
 });

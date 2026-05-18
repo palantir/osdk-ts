@@ -44,6 +44,7 @@ import type { ListPayload } from "../ListPayload.js";
 import type { ObjectPayload } from "../ObjectPayload.js";
 import type { ObjectSetPayload } from "../ObjectSetPayload.js";
 import type {
+  CacheSnapshot,
   CanonicalizedOptions,
   CanonicalizeOptionsInput,
   ObservableClient,
@@ -69,6 +70,7 @@ import type { ObserveLinks } from "../ObservableClient/ObserveLink.js";
 import type { AggregationPayloadBase } from "./aggregation/AggregationQuery.js";
 import type { Canonical } from "./Canonical.js";
 import type { ObserveObjectSetOptions } from "./objectset/ObjectSetQueryOptions.js";
+import type { Rdp } from "./RdpCanonicalizer.js";
 import type { Store } from "./Store.js";
 import { UnsubscribableWrapper } from "./UnsubscribableWrapper.js";
 
@@ -332,8 +334,8 @@ export class ObservableClientImpl implements ObservableClient {
     const result = { ...options };
 
     result.where = store.whereCanonicalizer.canonicalize(result.where);
-    result.withProperties = store.genericCanonicalizer.canonicalize(
-      result.withProperties,
+    result.withProperties = store.rdpCanonicalizer.canonicalize(
+      result.withProperties as Rdp | undefined,
     );
     result.orderBy = store.orderByCanonicalizer.canonicalize(result.orderBy);
     result.aggregate = store.genericCanonicalizer.canonicalize(
@@ -400,6 +402,10 @@ export class ObservableClientImpl implements ObservableClient {
       observer,
     );
   }
+
+  public async getCacheSnapshot(): Promise<CacheSnapshot> {
+    return this.__experimentalStore.getCacheSnapshot();
+  }
 }
 
 function observeSingleLink(
@@ -415,7 +421,7 @@ function observeSingleLink(
       linkedObjectsBySourcePrimaryKey: new Map(),
       isOptimistic: false,
       lastUpdated: 0,
-      fetchMore: () => Promise.resolve(),
+      fetchMore: async () => {},
       hasMore: false,
       status: "loaded",
       totalCount: "0",
@@ -513,7 +519,7 @@ function observeMultiLinks(
       lastUpdated: latestUpdated,
       fetchMore: hasMore
         ? () => Promise.all(fetchMores.map(fn => fn())).then(() => {})
-        : () => Promise.resolve(),
+        : async () => {},
       hasMore,
       status: loading
         ? "loading"

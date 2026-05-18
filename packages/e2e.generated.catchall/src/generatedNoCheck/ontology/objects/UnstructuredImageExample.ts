@@ -15,7 +15,7 @@ import type {
 } from '@osdk/client';
 
 export namespace UnstructuredImageExample {
-  export type PropertyKeys = 'mediaItemRid' | 'path' | 'mediaReference';
+  export type PropertyKeys = 'mediaItemRid' | 'mediaReference' | 'path';
 
   export type Links = {};
 

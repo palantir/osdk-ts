@@ -208,6 +208,12 @@ async function main(): Promise<void> {
         type: "string",
         coerce: path.resolve,
       },
+      "import-json": {
+        describe:
+          "Path to the import JSON file (ontology-full-metadata.json) produced by 'foundry import ontology'. Imported entities are merged into the generated SDK.",
+        type: "string",
+        coerce: path.resolve,
+      },
     })
     .parse();
 
@@ -257,6 +263,95 @@ async function main(): Promise<void> {
         typeof PreviewOntologyIrConverter.getPreviewFullMetadataFromBlockData
       >[0],
     );
+
+  // Merge imported entities from the import JSON if provided
+  if (argv.importJson) {
+    try {
+      const importContent = await fs.readFile(argv.importJson, "utf-8");
+      const importData = JSON.parse(importContent);
+
+      // Object types: directly compatible with previewMetadata format
+      if (importData.objectTypes) {
+        for (
+          const [apiName, entry] of Object.entries(importData.objectTypes) as [
+            string,
+            any,
+          ][]
+        ) {
+          if (!previewMetadata.objectTypes[apiName]) {
+            previewMetadata.objectTypes[apiName] = entry;
+          }
+        }
+      }
+
+      // Interface types
+      if (importData.interfaceTypes) {
+        for (
+          const [apiName, entry] of Object.entries(
+            importData.interfaceTypes,
+          ) as [string, any][]
+        ) {
+          if (!previewMetadata.interfaceTypes[apiName]) {
+            previewMetadata.interfaceTypes[apiName] = entry;
+          }
+        }
+      }
+
+      // Action types: import JSON has ActionTypeV2, wrap as ActionTypeFullMetadata
+      if (importData.actionTypes) {
+        for (
+          const [apiName, entry] of Object.entries(importData.actionTypes) as [
+            string,
+            any,
+          ][]
+        ) {
+          if (!previewMetadata.actionTypes[apiName]) {
+            previewMetadata.actionTypes[apiName] = {
+              actionType: entry,
+              fullLogicRules: [],
+            };
+          }
+        }
+      }
+
+      // Query types
+      if (importData.queryTypes) {
+        for (
+          const [apiName, entry] of Object.entries(importData.queryTypes) as [
+            string,
+            any,
+          ][]
+        ) {
+          if (!previewMetadata.queryTypes[apiName]) {
+            previewMetadata.queryTypes[apiName] = entry;
+          }
+        }
+      }
+
+      // Shared property types
+      if (importData.sharedPropertyTypes) {
+        for (
+          const [apiName, entry] of Object.entries(
+            importData.sharedPropertyTypes,
+          ) as [string, any][]
+        ) {
+          if (!previewMetadata.sharedPropertyTypes[apiName]) {
+            previewMetadata.sharedPropertyTypes[apiName] = entry;
+          }
+        }
+      }
+
+      const importedCount = Object.keys(importData.objectTypes ?? {}).length
+        + Object.keys(importData.interfaceTypes ?? {}).length
+        + Object.keys(importData.actionTypes ?? {}).length
+        + Object.keys(importData.queryTypes ?? {}).length;
+      consola.info(
+        `Merged ${importedCount} imported entity type(s) from ${argv.importJson}`,
+      );
+    } catch (e) {
+      consola.warn(`Failed to read import JSON at ${argv.importJson}: ${e}`);
+    }
+  }
 
   // Generate the Python SDK before function discovery so that Python functions
   // that import ontology types (e.g. `from ontology_sdk.ontology.objects import X`)

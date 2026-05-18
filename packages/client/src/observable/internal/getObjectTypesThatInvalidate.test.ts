@@ -200,6 +200,27 @@ describe(getObjectTypesThatInvalidate, () => {
     expect([...invalidationSet]).toEqual(["Employee"]);
   });
 
+  it("supports intersect with reference object set", async () => {
+    const wireObjectSet = {
+      type: "intersect" as const,
+      objectSets: [
+        { type: "base" as const, objectType: "Employee" },
+        {
+          type: "reference" as const,
+          reference:
+            "ri.object-set.main.temporary-object-set.e085bca0-f124-4147-bf56-5eb2b8b14200",
+        },
+      ],
+    };
+
+    const { resultType, invalidationSet } = await getObjectTypesThatInvalidate(
+      client[additionalContext],
+      wireObjectSet as any,
+    );
+    expect(resultType.apiName).toEqual("Employee");
+    expect([...invalidationSet]).toEqual([]);
+  });
+
   it("supports subtract operations", async () => {
     const allEmployees = client(Employee);
     const managers = client(Employee).where({ employeeId: 5 });
@@ -279,8 +300,8 @@ describe(getObjectTypesThatInvalidate, () => {
 
     const { counts } = await helper(osdkObjectSet);
     // Employee should be counted multiple times
-    expect(counts["Employee"]).toBeGreaterThan(1);
-    expect(counts["Office"]).toBeGreaterThan(0);
+    expect(counts.Employee).toBeGreaterThan(1);
+    expect(counts.Office).toBeGreaterThan(0);
   });
 
   it("handles count adjustment for result type", async () => {
@@ -289,7 +310,7 @@ describe(getObjectTypesThatInvalidate, () => {
     const { resultType, counts, invalidationSet } = await helper(osdkObjectSet);
     // Result type should not be in invalidation set even if in counts
     expect(resultType).toEqual("Employee");
-    expect(counts["Employee"]).toBeDefined();
+    expect(counts.Employee).toBeDefined();
     expect([...invalidationSet]).not.toContain("Employee");
   });
 

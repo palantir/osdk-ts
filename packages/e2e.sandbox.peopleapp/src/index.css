@@ -1,12 +1,9 @@
 /**
  * CSS Layer setup
  */
-@layer tailwind, osdk.tokens, osdk.components, custom.theme;
+@layer tailwind, osdk.components, custom.theme;
 
-/* OSDK token defaults (references --bp-* tokens set by Blueprint) */
-@import "@osdk/react-components-styles" layer(osdk.tokens);
-
-/* Import OSDK components styles */
+/* OSDK styles (tokens + components) */
 @import "@osdk/react-components/styles.css" layer(osdk.components);
 
 /* Import theme overrides (e.g., change primary intent to green) */

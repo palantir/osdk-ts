@@ -20,11 +20,11 @@ import type {
   ObjectOrInterfaceDefinition,
 } from "@osdk/api";
 import type { Osdk, PropertyKeys, WhereClause } from "@osdk/client";
-import type { ObserveLinks } from "@osdk/client/unstable-do-not-use";
+import type { ObserveLinks } from "@osdk/client/observable";
 import React from "react";
 import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
-import { makeExternalStore } from "./makeExternalStore.js";
-import { OsdkContext2 } from "./OsdkContext2.js";
+import { devToolsMetadata, makeExternalStore } from "./makeExternalStore.js";
+import { OsdkContext } from "./OsdkContext.js";
 
 export interface UseLinksOptions<
   T extends ObjectOrInterfaceDefinition,
@@ -80,19 +80,26 @@ export interface UseLinksOptions<
    *
    * @default true
    * @example
+   * ```tsx
    * // Dependent query - wait for employee data
    * const { object: employee } = useOsdkObject(Employee, employeeId);
    * const { links: reports } = useLinks(employee, "reports", {
-   *   enabled: !!employee
+   *   enabled: !!employee,
    * });
+   * ```
    */
   enabled?: boolean;
+
+  /**
+   * When true, includes all properties of the underlying concrete object type
+   * for interface link targets. Has no effect when the link target is a plain
+   * object type.
+   */
+  $includeAllBaseObjectProperties?: boolean;
 }
 
-export interface UseLinksResult<
-  Q extends ObjectOrInterfaceDefinition,
-> {
-  links: Osdk.Instance<Q>[] | undefined;
+export interface UseLinksResult<Q extends ObjectOrInterfaceDefinition> {
+  links: Osdk.Instance<Q, "$allBaseProperties">[] | undefined;
 
   /**
    * Maps each source object's primary key to its linked object instances.
@@ -101,7 +108,7 @@ export interface UseLinksResult<
    */
   linkedObjectsBySourcePrimaryKey: ReadonlyMap<
     string | number,
-    ReadonlyArray<Osdk.Instance<Q>>
+    ReadonlyArray<Osdk.Instance<Q, "$allBaseProperties">>
   >;
 
   isLoading: boolean;
@@ -142,9 +149,10 @@ export function useLinks<
   linkName: L,
   options: UseLinksOptions<LinkedType<T, L>> = {},
 ): UseLinksResult<LinkedType<T, L>> {
-  const { observableClient } = React.useContext(OsdkContext2);
+  const { observableClient } = React.useContext(OsdkContext);
 
-  const { enabled = true, ...otherOptions } = options;
+  const { enabled = true, $includeAllBaseObjectProperties, ...otherOptions } =
+    options;
 
   const canonOptions = observableClient.canonicalizeOptions({
     where: otherOptions.where,
@@ -170,14 +178,22 @@ export function useLinks<
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
       if (!enabled) {
-        return makeExternalStore<ObserveLinks.CallbackArgs<T>>(
+        return makeExternalStore<
+          ObserveLinks.CallbackArgs<LinkedType<T, L>>
+        >(
           () => ({ unsubscribe: () => {} }),
-          `links ${linkName} for ${objectsKey} [DISABLED]`,
+          devToolsMetadata({
+            hookType: "useLinks",
+            sourceObjectType: objectsArray[0]?.$apiName,
+            linkName,
+          }),
         );
       }
-      return makeExternalStore<ObserveLinks.CallbackArgs<T>>(
+      return makeExternalStore<
+        ObserveLinks.CallbackArgs<LinkedType<T, L>>
+      >(
         (observer) =>
-          observableClient.observeLinks(
+          observableClient.observeLinks<T, L>(
             objectsArray,
             linkName,
             {
@@ -187,11 +203,16 @@ export function useLinks<
               orderBy: canonOptions.orderBy,
               mode: otherOptions.mode,
               dedupeInterval: otherOptions.dedupeIntervalMs ?? 2_000,
+              $includeAllBaseObjectProperties,
               ...(canonOptions.$select ? { select: canonOptions.$select } : {}),
             },
             observer,
           ),
-        `links ${linkName} for ${objectsKey}`,
+        devToolsMetadata({
+          hookType: "useLinks",
+          sourceObjectType: objectsArray[0]?.$apiName,
+          linkName,
+        }),
       );
     },
     [
@@ -206,6 +227,7 @@ export function useLinks<
       otherOptions.mode,
       otherOptions.dedupeIntervalMs,
       canonOptions.$select,
+      $includeAllBaseObjectProperties,
     ],
   );
 

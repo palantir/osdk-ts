@@ -8,18 +8,13 @@ This guide covers all the ways to fetch data from the server using OSDK React ho
 
 ## useOsdkObjects
 
-*Experimental - import from `@osdk/react/experimental`*
-
 Retrieve and observe collections of objects with automatic cache management.
 
 ### Basic Usage
 
 ```tsx
 import { Todo } from "@my/osdk";
-import {
-  type UseOsdkListResult,
-  useOsdkObjects,
-} from "@osdk/react/experimental";
+import { type UseOsdkListResult, useOsdkObjects } from "@osdk/react";
 
 function TodoList() {
   const {
@@ -45,11 +40,15 @@ function TodoList() {
 
 ### Return Values
 
-- `data` - Array of objects matching the query (undefined while initially loading)
-- `isLoading` - True while fetching data from server (can be true while `data` exists during revalidation)
-- `isOptimistic` - True if the list order is affected by optimistic updates (see note below)
-- `fetchMore` - Function to load next page (undefined when no more pages available)
-- `error` - Error object if fetch failed
+- `data` — Array of objects matching the query (undefined while initially loading)
+- `isLoading` — True while fetching data from server (can be true while `data` exists during revalidation)
+- `isOptimistic` — True if the list order is affected by optimistic updates (see note below)
+- `fetchMore` — Function to load next page (undefined when no more pages available)
+- `hasMore` — True if more pages can be fetched
+- `totalCount` — Total count of matching objects when available from the API. Returned as a string; parse with `Number(totalCount)` if you need arithmetic
+- `objectSet` — The transformed `ObjectSet` after pivots / set ops; useful as input to a subsequent `useObjectSet` or `useOsdkAggregation`
+- `refetch` — Function to manually invalidate this object type and refetch
+- `error` — Error object if fetch failed
 
 :::note About isOptimistic
 `isOptimistic` refers to whether the **ordered list of objects** (considering only primary keys) is optimistic. To check if individual object contents are optimistic, use `useOsdkObject` on each object.
@@ -61,7 +60,7 @@ Fetch specific objects by their RIDs:
 
 ```tsx
 import { Employee } from "@my/osdk";
-import { useOsdkObjects } from "@osdk/react/experimental";
+import { useOsdkObjects } from "@osdk/react";
 
 function SelectedEmployees({ selectedRids }: { selectedRids: string[] }) {
   const { data, isLoading } = useOsdkObjects(Employee, {
@@ -121,7 +120,9 @@ With fuzzy matching enabled, minor typos are tolerated:
 
 ```ts
 const { data } = useOsdkObjects(Article, {
-  where: { content: { $containsAnyTerm: { term: "react", fuzzySearch: true } } },
+  where: {
+    content: { $containsAnyTerm: { term: "react", fuzzySearch: true } },
+  },
 });
 // Fuzzy matching handles common typos automatically
 ```
@@ -143,7 +144,9 @@ With fuzzy matching:
 
 ```ts
 const { data } = useOsdkObjects(Article, {
-  where: { content: { $containsAllTerms: { term: "react hooks", fuzzySearch: true } } },
+  where: {
+    content: { $containsAllTerms: { term: "react hooks", fuzzySearch: true } },
+  },
 });
 ```
 
@@ -161,18 +164,20 @@ const { data } = useOsdkObjects(Document, {
 
 #### Search Filter Comparison
 
-| Filter | Match Requirement | Use Case |
-|--------|-------------------|----------|
-| `$startsWith` | Begins with prefix | Autocomplete, prefix search |
-| `$containsAnyTerm` | Any term present | Broad keyword search |
-| `$containsAllTerms` | All terms present (any order) | Precise multi-keyword search |
-| `$containsAllTermsInOrder` | All terms in exact order | Phrase/exact match search |
+| Filter                     | Match Requirement             | Fuzzy | Use Case                     |
+| -------------------------- | ----------------------------- | ----- | ---------------------------- |
+| `$startsWith`              | Begins with prefix            | no    | Autocomplete, prefix search  |
+| `$containsAnyTerm`         | Any term present              | yes   | Broad keyword search         |
+| `$containsAllTerms`        | All terms present (any order) | yes   | Precise multi-keyword search |
+| `$containsAllTermsInOrder` | All terms in exact order      | no    | Phrase / exact match search  |
+
+Fuzzy search is unavailable for `$containsAllTermsInOrder` because phrase matching requires exact token order.
 
 #### Search Example: Building a Search Box
 
 ```tsx
 import { Article } from "@my/osdk";
-import { useOsdkObjects } from "@osdk/react/experimental";
+import { useOsdkObjects } from "@osdk/react";
 import { useState } from "react";
 
 function ArticleSearch() {
@@ -180,7 +185,9 @@ function ArticleSearch() {
 
   const { data, isLoading } = useOsdkObjects(Article, {
     where: searchQuery
-      ? { title: { $containsAnyTerm: { term: searchQuery, fuzzySearch: true } } }
+      ? {
+        title: { $containsAnyTerm: { term: searchQuery, fuzzySearch: true } },
+      }
       : undefined,
     enabled: searchQuery.length >= 2,
   });
@@ -196,9 +203,8 @@ function ArticleSearch() {
 
       {isLoading && <div>Searching...</div>}
 
-      {data?.map(article => (
-        <div key={article.$primaryKey}>{article.title}</div>
-      ))}
+      {data?.map(article => <div key={article.$primaryKey}>{article.title}
+      </div>)}
     </div>
   );
 }
@@ -263,7 +269,7 @@ Control when a query executes:
 
 ```tsx
 import { Todo } from "@my/osdk";
-import { useOsdkObjects } from "@osdk/react/experimental";
+import { useOsdkObjects } from "@osdk/react";
 import { useState } from "react";
 
 function ConditionalTodoFetch() {
@@ -293,7 +299,7 @@ Enable WebSocket-based real-time updates:
 
 ```tsx
 import { Todo } from "@my/osdk";
-import { useOsdkObjects } from "@osdk/react/experimental";
+import { useOsdkObjects } from "@osdk/react";
 
 function LiveTodoList() {
   const { data, isLoading } = useOsdkObjects(Todo, {
@@ -317,7 +323,11 @@ function LiveTodoList() {
       {data?.map(todo => (
         <div key={todo.$primaryKey}>
           <span>{todo.title}</span>
-          {isLoading && <span style={{ fontSize: "0.8em" }}>(Updating...)</span>}
+          {isLoading && (
+            <span style={{ fontSize: "0.8em" }}>
+              (Updating...)
+            </span>
+          )}
         </div>
       ))}
     </div>
@@ -325,13 +335,17 @@ function LiveTodoList() {
 }
 ```
 
+:::note Limitations
+`streamUpdates` cannot be used together with `pivotTo` or `withProperties`. The server does not support websocket subscriptions for link-traversal or derived-property queries. Those queries still fetch data normally but won't receive real-time updates.
+:::
+
 ### Set Intersections with `intersectWith`
 
 Find objects matching multiple where clauses:
 
 ```tsx
 import { Employee } from "@my/osdk";
-import { useOsdkObjects } from "@osdk/react/experimental";
+import { useOsdkObjects } from "@osdk/react";
 
 function EmployeesIntersection() {
   const { data, isLoading } = useOsdkObjects(Employee, {
@@ -364,7 +378,7 @@ Traverse relationships and return linked objects:
 
 ```tsx
 import { Employee } from "@my/osdk";
-import { useOsdkObjects } from "@osdk/react/experimental";
+import { useOsdkObjects } from "@osdk/react";
 
 function ManagerReports() {
   const { data, isLoading } = useOsdkObjects(Employee, {
@@ -379,9 +393,8 @@ function ManagerReports() {
   return (
     <div>
       <h3>John Smith's Direct Reports ({data?.length})</h3>
-      {data?.map(report => (
-        <div key={report.$primaryKey}>{report.fullName}</div>
-      ))}
+      {data?.map(report => <div key={report.$primaryKey}>{report.fullName}
+      </div>)}
     </div>
   );
 }
@@ -390,29 +403,38 @@ function ManagerReports() {
 ### All Options
 
 ```ts
-const { data, isLoading, isOptimistic, fetchMore, error } = useOsdkObjects(
-  Todo,
-  {
-    rids: ["ri.phonograph2-objects.main.object.abc123", "ri.phonograph2-objects.main.object.def456"],
-    where: { isComplete: false },
-    pageSize: 20,
-    orderBy: { createdAt: "desc" },
-    dedupeIntervalMs: 5000,
-    streamUpdates: true,
-    autoFetchMore: 100,
-    enabled: true,
-    intersectWith: [{ where: { priority: "high" } }],
-    pivotTo: "assignee",
-    withProperties: { /* see advanced-queries */ },
+const result = useOsdkObjects(Todo, {
+  rids: [
+    "ri.phonograph2-objects.main.object.abc123",
+    "ri.phonograph2-objects.main.object.def456",
+  ],
+  where: { isComplete: false },
+  pageSize: 20,
+  orderBy: { createdAt: "desc" },
+  dedupeIntervalMs: 5000,
+  streamUpdates: true,
+  autoFetchMore: 100,
+  enabled: true,
+  intersectWith: [{ where: { priority: "high" } }],
+  $select: ["title", "isComplete"],
+  $loadPropertySecurityMetadata: true,
+  withProperties: {
+    /* see /react/advanced-queries#derived-properties */
   },
-);
+});
 ```
+
+`streamUpdates` and `pivotTo` cannot be combined — see the note above.
+
+:::note
+`streamUpdates` and `pivotTo` cannot be used together. The server does not support
+websocket subscriptions for link-traversal queries. Queries using `pivotTo` will
+still fetch data normally but won't receive real-time updates.
+:::
 
 ---
 
 ## useOsdkObject
-
-*Experimental - import from `@osdk/react/experimental`*
 
 Retrieve and observe a single object.
 
@@ -422,7 +444,7 @@ Pass an object instance to track its loading and optimistic state:
 
 ```tsx
 import { Todo } from "@my/osdk";
-import { useOsdkObject } from "@osdk/react/experimental";
+import { useOsdkObject } from "@osdk/react";
 
 function TodoView({ todo }: { todo: Todo.OsdkInstance }) {
   const { object, isLoading, isOptimistic, error } = useOsdkObject(todo);
@@ -444,7 +466,7 @@ Fetch an object by its type and primary key:
 
 ```tsx
 import { Todo } from "@my/osdk";
-import { useOsdkObject } from "@osdk/react/experimental";
+import { useOsdkObject } from "@osdk/react";
 
 function TodoLoader({ todoId }: { todoId: string }) {
   const { object, isLoading, error } = useOsdkObject(Todo, todoId);
@@ -465,18 +487,33 @@ function TodoLoader({ todoId }: { todoId: string }) {
 }
 ```
 
+### Loading with options
+
+A third argument lets you restrict properties or load per-property security metadata:
+
+```tsx
+const { object } = useOsdkObject(Todo, todoId, {
+  $select: ["title", "isComplete"],
+  $loadPropertySecurityMetadata: true,
+});
+```
+
+Or pass a boolean to disable the query:
+
+```tsx
+const { object } = useOsdkObject(Todo, todoId, false);
+```
+
 ### Return Values
 
-- `object` - The object instance (may be undefined while loading)
-- `isLoading` - True while fetching from server
-- `isOptimistic` - True if object has optimistic updates applied
-- `error` - Error object if fetch failed
+- `object` — The object instance (may be undefined while loading)
+- `isLoading` — True while fetching from server
+- `isOptimistic` — True if object has optimistic updates applied
+- `error` — Error object if fetch failed (cleared once a fresh successful fetch lands)
 
 ---
 
 ## useLinks
-
-*Experimental - import from `@osdk/react/experimental`*
 
 Observe and navigate relationships between objects.
 
@@ -484,7 +521,7 @@ Observe and navigate relationships between objects.
 
 ```tsx
 import { Employee } from "@my/osdk";
-import { useLinks } from "@osdk/react/experimental";
+import { useLinks } from "@osdk/react";
 
 function EmployeeReports({ employee }: { employee: Employee.OsdkInstance }) {
   const { links, isLoading, fetchMore, hasMore } = useLinks(
@@ -537,10 +574,12 @@ function TeamMembers({ employees }: { employees: Employee.OsdkInstance[] }) {
 
 ```tsx
 import { Employee } from "@my/osdk";
-import { useLinks } from "@osdk/react/experimental";
+import { useLinks } from "@osdk/react";
 import { useState } from "react";
 
-function OptionalReportsList({ employee }: { employee: Employee.OsdkInstance }) {
+function OptionalReportsList(
+  { employee }: { employee: Employee.OsdkInstance },
+) {
   const [showReports, setShowReports] = useState(false);
 
   const { links, isLoading } = useLinks(employee, "reports", {
@@ -600,7 +639,7 @@ const { links } = useLinks(employee, "reports", {
 
 ## useOsdkClient
 
-*Stable - available from both `@osdk/react` and `@osdk/react/experimental`*
+_Stable - available from both `@osdk/react` and `@osdk/react`_
 
 Access the OSDK client directly for custom queries.
 
@@ -630,7 +669,7 @@ All hooks return an `error` field. A basic pattern:
 
 ```tsx
 import { Todo } from "@my/osdk";
-import { useOsdkObjects } from "@osdk/react/experimental";
+import { useOsdkObjects } from "@osdk/react";
 
 function TodoList() {
   const { data, isLoading, error } = useOsdkObjects(Todo);
@@ -665,7 +704,7 @@ A common pattern is using multiple hooks together:
 
 ```tsx
 import { Todo } from "@my/osdk";
-import { useLinks, useOsdkObject } from "@osdk/react/experimental";
+import { useLinks, useOsdkObject } from "@osdk/react";
 
 function TodoWithDetails({ todoId }: { todoId: string }) {
   const { object: todo, isLoading: todoLoading } = useOsdkObject(Todo, todoId);

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { Tooltip } from "@base-ui/react/tooltip";
+import { InfoSign } from "@blueprintjs/icons";
 import React from "react";
 import type { MarkingSelectionState } from "../types.js";
 import styles from "./CategoryMarkingGroup.module.css";
@@ -27,7 +29,8 @@ const DEFAULT_MARKING_STATE: MarkingSelectionState = "NONE";
 
 export interface CategoryMarkingGroupProps {
   categoryName: string;
-  markings: ReadonlyArray<{ id: string; name: string }>;
+  categoryDescription?: string;
+  markings: ReadonlyArray<{ id: string; name: string; description?: string }>;
   markingStates: Map<string, MarkingSelectionState>;
   readOnly?: boolean;
   onMarkingToggle: (markingId: string) => void;
@@ -37,6 +40,7 @@ export const CategoryMarkingGroup: React.MemoExoticComponent<
   (props: CategoryMarkingGroupProps) => React.ReactElement
 > = React.memo(function CategoryMarkingGroup({
   categoryName,
+  categoryDescription,
   markings,
   markingStates,
   readOnly,
@@ -49,6 +53,7 @@ export const CategoryMarkingGroup: React.MemoExoticComponent<
       markings.map((marking) => ({
         id: marking.id,
         label: marking.name,
+        description: marking.description,
         selectionState: markingStates.get(marking.id) ?? DEFAULT_MARKING_STATE,
         disabled: readOnly,
       })),
@@ -80,13 +85,37 @@ export const CategoryMarkingGroup: React.MemoExoticComponent<
       role="group"
       aria-labelledby={headingId}
     >
-      <h3 id={headingId} className={styles.categoryName}>{categoryName}</h3>
+      <div className={styles.categoryHeader}>
+        <h3 id={headingId} className={styles.categoryName}>{categoryName}</h3>
+        {categoryDescription != null && categoryDescription.length > 0 && (
+          <Tooltip.Root>
+            <Tooltip.Trigger
+              render={
+                <span
+                  className={styles.infoIcon}
+                  aria-label="Category description"
+                >
+                  <InfoSign size={12} />
+                </span>
+              }
+            />
+            <Tooltip.Portal>
+              <Tooltip.Positioner side="top" sideOffset={4}>
+                <Tooltip.Popup className={styles.infoTooltip}>
+                  {categoryDescription}
+                </Tooltip.Popup>
+              </Tooltip.Positioner>
+            </Tooltip.Portal>
+          </Tooltip.Root>
+        )}
+      </div>
       <div className={styles.markingGrid}>
         {visibleMarkings.map((marking) => (
-          <MarkingButtonItem
+          <MarkingButton
             key={marking.id}
             id={marking.id}
             label={marking.label}
+            description={marking.description}
             selectionState={marking.selectionState}
             disabled={marking.disabled}
             onToggle={onMarkingToggle}
@@ -107,34 +136,5 @@ export const CategoryMarkingGroup: React.MemoExoticComponent<
         ))}
       </div>
     </div>
-  );
-});
-
-interface MarkingButtonItemProps {
-  id: string;
-  label: string;
-  selectionState: MarkingSelectionState;
-  disabled?: boolean;
-  onToggle: (markingId: string) => void;
-}
-
-const MarkingButtonItem = React.memo(function MarkingButtonItem({
-  id,
-  label,
-  selectionState,
-  disabled,
-  onToggle,
-}: MarkingButtonItemProps): React.ReactElement {
-  const handleToggle = React.useCallback(() => {
-    onToggle(id);
-  }, [onToggle, id]);
-
-  return (
-    <MarkingButton
-      label={label}
-      selectionState={selectionState}
-      onToggle={handleToggle}
-      disabled={disabled}
-    />
   );
 });

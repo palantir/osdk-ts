@@ -1,4 +1,4 @@
-import { useLinks, useOsdkAggregation } from "@osdk/react/experimental";
+import { useLinks, useOsdkAggregation } from "@osdk/react";
 import { Employee } from "../generatedNoCheck2/index.js";
 import type { Office } from "../generatedNoCheck2/index.js";
 import {

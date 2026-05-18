@@ -50,6 +50,7 @@ export class ObjectQuery extends Query<
   #defType: DefType;
   #select: readonly string[] | undefined;
   #loadPropertySecurityMetadata: boolean;
+  #includeAllBaseObjectProperties: boolean;
   #implementingTypes: Set<string> | undefined;
 
   constructor(
@@ -62,6 +63,7 @@ export class ObjectQuery extends Query<
     defType: DefType = "object",
     select?: readonly string[],
     loadPropertySecurityMetadata?: boolean,
+    includeAllBaseObjectProperties?: boolean,
   ) {
     super(
       store,
@@ -83,6 +85,8 @@ export class ObjectQuery extends Query<
     this.#defType = defType;
     this.#select = select;
     this.#loadPropertySecurityMetadata = loadPropertySecurityMetadata ?? false;
+    this.#includeAllBaseObjectProperties = includeAllBaseObjectProperties
+      ?? false;
   }
 
   protected _createConnectable(
@@ -145,6 +149,9 @@ export class ObjectQuery extends Query<
               : {}),
             $loadPropertySecurityMetadata: this
               .#loadPropertySecurityMetadata,
+            ...(this.#includeAllBaseObjectProperties
+              ? { $includeAllBaseObjectProperties: true }
+              : {}),
           },
         );
       obj = fetched as ObjectHolder;
@@ -157,6 +164,7 @@ export class ObjectQuery extends Query<
           this.#defType,
           this.#select,
           this.#loadPropertySecurityMetadata,
+          this.#includeAllBaseObjectProperties,
         );
     }
 

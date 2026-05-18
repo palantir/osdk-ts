@@ -18,8 +18,8 @@ import type {
   PdfAnnotation,
   PdfAnnotationRenderProps,
   PdfViewerProps,
-} from "@osdk/react-components/experimental";
-import { BasePdfViewer } from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/pdf-viewer";
+import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
 
@@ -134,8 +134,8 @@ export const CustomAnnotation: Story = {
     docs: {
       source: {
         code:
-          `import type { PdfAnnotationRenderProps } from "@osdk/react-components/experimental";
-import { BasePdfViewer } from "@osdk/react-components/experimental";
+          `import type { PdfAnnotationRenderProps } from "@osdk/react-components/experimental/pdf-viewer";
+import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 
 function TooltipAnnotation({ annotation }: PdfAnnotationRenderProps) {
   return (

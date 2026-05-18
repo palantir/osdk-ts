@@ -122,7 +122,7 @@ describe(createClient, () => {
         undefined,
         fetchFunction,
       );
-      expect(spy.mock.calls[0][0]).toBe("https://mock.com/");
+      expect(spy.mock.results[0].value.baseUrl).toBe("https://mock.com/");
 
       createClient(
         "https://mock1.com/",
@@ -131,7 +131,7 @@ describe(createClient, () => {
         undefined,
         fetchFunction,
       );
-      expect(spy.mock.calls[1][0]).toBe("https://mock1.com/");
+      expect(spy.mock.results[1].value.baseUrl).toBe("https://mock1.com/");
 
       createClient(
         "https://mock2.com/stuff/first/foo",
@@ -140,7 +140,9 @@ describe(createClient, () => {
         undefined,
         fetchFunction,
       );
-      expect(spy.mock.calls[2][0]).toBe("https://mock2.com/stuff/first/foo/");
+      expect(spy.mock.results[2].value.baseUrl).toBe(
+        "https://mock2.com/stuff/first/foo/",
+      );
 
       createClient(
         "https://mock3.com/stuff/first/foo/",
@@ -149,7 +151,9 @@ describe(createClient, () => {
         undefined,
         fetchFunction,
       );
-      expect(spy.mock.calls[3][0]).toBe("https://mock3.com/stuff/first/foo/");
+      expect(spy.mock.results[3].value.baseUrl).toBe(
+        "https://mock3.com/stuff/first/foo/",
+      );
 
       const conjureContextSpy = vi.spyOn(
         MakeConjureContext,
@@ -164,8 +168,8 @@ describe(createClient, () => {
       );
 
       expect(
-        conjureContextSpy.mock.results[0].value["baseUrl"]
-          + conjureContextSpy.mock.results[0].value["servicePath"],
+        conjureContextSpy.mock.results[0].value.baseUrl
+          + conjureContextSpy.mock.results[0].value.servicePath,
       ).toBe("https://mock4.com/ontology-metadata/api");
     });
   });

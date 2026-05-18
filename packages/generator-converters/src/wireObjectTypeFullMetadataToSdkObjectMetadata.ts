@@ -53,7 +53,9 @@ export function wireObjectTypeFullMetadataToSdkObjectMetadata(
 
   const interfaceMap = objectTypeWithLink.implementsInterfaces2
     ? Object.fromEntries(
-      Object.entries(objectTypeWithLink.implementsInterfaces2).map(
+      Object.entries(objectTypeWithLink.implementsInterfaces2).sort(
+        ([a], [b]) => a.localeCompare(b),
+      ).map(
         ([interfaceApiName, impl]) => {
           // prefer V2 if available and non-empty
           if (
@@ -108,7 +110,8 @@ export function wireObjectTypeFullMetadataToSdkObjectMetadata(
           !(v2 && objectTypeWithLink.objectType.primaryKey === key),
           log,
         ),
-      ]).filter(([_, value]) => value != null),
+      ]).filter(([_, value]) => value != null)
+        .sort(([a], [b]) => (a as string).localeCompare(b as string)),
     ),
     implements: objectTypeWithLink.implementsInterfaces
       ? [...objectTypeWithLink.implementsInterfaces].sort((a, b) =>

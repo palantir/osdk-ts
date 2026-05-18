@@ -15,13 +15,12 @@
  */
 
 import { Button } from "@base-ui/react/button";
-import { Input } from "@base-ui/react/input";
 import classnames from "classnames";
 import React, { memo, useCallback } from "react";
+import { DatePicker } from "../../../shared/calendar/index.js";
 import {
   formatDateForDisplay,
   formatDateForInput,
-  parseDateFromInput,
 } from "../../../shared/dateUtils.js";
 import styles from "./MultiDateInput.module.css";
 import sharedStyles from "./shared.module.css";
@@ -34,6 +33,11 @@ interface MultiDateInputProps {
   minDate?: Date;
   maxDate?: Date;
   showClearAll?: boolean;
+  /**
+   * Consumer-provided display formatter for chip text. Falls back to
+   * `formatDateForDisplay` (locale-aware) when omitted.
+   */
+  formatDate?: (date: Date) => string;
 }
 
 function MultiDateInputInner({
@@ -44,9 +48,11 @@ function MultiDateInputInner({
   minDate,
   maxDate,
   showClearAll = true,
+  formatDate,
 }: MultiDateInputProps): React.ReactElement {
   const addDate = useCallback(
-    (date: Date) => {
+    (date: Date | null) => {
+      if (date == null) return;
       const dateStr = formatDateForInput(date);
       const exists = selectedDates.some(
         (d) => formatDateForInput(d) === dateStr,
@@ -74,33 +80,17 @@ function MultiDateInputInner({
     onChange([]);
   }, [onChange]);
 
-  const handleDateChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const date = parseDateFromInput(e.target.value);
-      if (date) {
-        addDate(date);
-        e.target.value = "";
-      }
-    },
-    [addDate],
-  );
-
   return (
     <div className={classnames(styles.multiDate, className)} style={style}>
       {selectedDates.length > 0 && (
         <div className={sharedStyles.tagContainer}>
           {selectedDates.map((date) => (
-            <span key={date.toISOString()} className={sharedStyles.tag}>
-              {formatDateForDisplay(date)}
-              <Button
-                className={sharedStyles.tagRemove}
-                onClick={() =>
-                  removeDate(date)}
-                aria-label={`Remove ${formatDateForDisplay(date)}`}
-              >
-                ×
-              </Button>
-            </span>
+            <DateTag
+              key={date.toISOString()}
+              date={date}
+              formatDate={formatDate}
+              onRemove={removeDate}
+            />
           ))}
           {showClearAll && selectedDates.length > 1 && (
             <Button
@@ -115,13 +105,13 @@ function MultiDateInputInner({
       )}
 
       <div className={styles.calendarContainer}>
-        <Input
-          type="date"
-          className={styles.input}
-          onChange={handleDateChange}
-          min={minDate ? formatDateForInput(minDate) : undefined}
-          max={maxDate ? formatDateForInput(maxDate) : undefined}
-          aria-label="Add date"
+        <DatePicker
+          value={null}
+          onChange={addDate}
+          min={minDate}
+          max={maxDate}
+          ariaLabel="Add date"
+          modal={false}
         />
       </div>
     </div>
@@ -130,3 +120,32 @@ function MultiDateInputInner({
 
 export const MultiDateInput: React.NamedExoticComponent<MultiDateInputProps> =
   memo(MultiDateInputInner);
+
+interface DateTagProps {
+  date: Date;
+  formatDate: ((date: Date) => string) | undefined;
+  onRemove: (date: Date) => void;
+}
+
+function DateTag(
+  { date, formatDate, onRemove }: DateTagProps,
+): React.ReactElement {
+  const handleRemove = useCallback(() => {
+    onRemove(date);
+  }, [onRemove, date]);
+  const label = formatDate != null
+    ? formatDate(date)
+    : formatDateForDisplay(date);
+  return (
+    <span className={sharedStyles.tag}>
+      {label}
+      <Button
+        className={sharedStyles.tagRemove}
+        onClick={handleRemove}
+        aria-label={`Remove ${label}`}
+      >
+        ×
+      </Button>
+    </span>
+  );
+}

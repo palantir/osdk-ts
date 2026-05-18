@@ -170,8 +170,10 @@ describe("Object Types", () => {
         "actionTypes": {},
         "blockPermissionInformation": {
           "actionTypes": {},
+          "interfaceTypes": {},
           "linkTypes": {},
           "objectTypes": {},
+          "sharedPropertyTypes": {},
         },
         "interfaceTypes": {
           "com.palantir.interface": {
@@ -191,6 +193,7 @@ describe("Object Types", () => {
               "extendsInterfaces": [],
               "extendsInterfacesMetadata": [],
               "links": [],
+              "permission": undefined,
               "properties": [],
               "propertiesV2": {
                 "com.palantir.foo": {
@@ -331,6 +334,7 @@ describe("Object Types", () => {
                 "alias2",
               ],
               "arePatchesEnabled": false,
+              "editsHistory": undefined,
             },
             "objectType": {
               "allImplementsInterfaces": {},
@@ -599,8 +603,10 @@ describe("Object Types", () => {
         "actionTypes": {},
         "blockPermissionInformation": {
           "actionTypes": {},
+          "interfaceTypes": {},
           "linkTypes": {},
           "objectTypes": {},
+          "sharedPropertyTypes": {},
         },
         "interfaceTypes": {},
         "linkTypes": {},
@@ -634,6 +640,7 @@ describe("Object Types", () => {
             "entityMetadata": {
               "aliases": [],
               "arePatchesEnabled": false,
+              "editsHistory": undefined,
             },
             "objectType": {
               "allImplementsInterfaces": {},
@@ -738,6 +745,7 @@ describe("Object Types", () => {
             "entityMetadata": {
               "aliases": [],
               "arePatchesEnabled": false,
+              "editsHistory": undefined,
             },
             "objectType": {
               "allImplementsInterfaces": {},
@@ -879,6 +887,7 @@ describe("Object Types", () => {
             "entityMetadata": {
               "aliases": [],
               "arePatchesEnabled": false,
+              "editsHistory": undefined,
             },
             "objectType": {
               "allImplementsInterfaces": {},
@@ -979,8 +988,10 @@ describe("Object Types", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {},
@@ -994,8 +1005,10 @@ describe("Object Types", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {},
@@ -1025,6 +1038,7 @@ describe("Object Types", () => {
               "entityMetadata": {
                 "aliases": [],
                 "arePatchesEnabled": false,
+                "editsHistory": undefined,
               },
               "objectType": {
                 "allImplementsInterfaces": {},
@@ -1135,8 +1149,10 @@ describe("Object Types", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {},
@@ -1150,8 +1166,10 @@ describe("Object Types", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {},
@@ -1185,6 +1203,7 @@ describe("Object Types", () => {
               "entityMetadata": {
                 "aliases": [],
                 "arePatchesEnabled": false,
+                "editsHistory": undefined,
               },
               "objectType": {
                 "allImplementsInterfaces": {},
@@ -1366,8 +1385,10 @@ describe("Object Types", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {},
@@ -1381,8 +1402,10 @@ describe("Object Types", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {},
@@ -1433,6 +1456,7 @@ describe("Object Types", () => {
               "entityMetadata": {
                 "aliases": [],
                 "arePatchesEnabled": false,
+                "editsHistory": undefined,
               },
               "objectType": {
                 "allImplementsInterfaces": {},
@@ -1673,8 +1697,10 @@ describe("Object Types", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {},
@@ -2244,8 +2270,10 @@ describe("Object Types", () => {
           },
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {
@@ -2376,6 +2404,7 @@ describe("Object Types", () => {
               "entityMetadata": {
                 "aliases": [],
                 "arePatchesEnabled": true,
+                "editsHistory": undefined,
               },
               "objectType": {
                 "allImplementsInterfaces": {},
@@ -2527,6 +2556,7 @@ describe("Object Types", () => {
               "entityMetadata": {
                 "aliases": [],
                 "arePatchesEnabled": true,
+                "editsHistory": undefined,
               },
               "objectType": {
                 "allImplementsInterfaces": {},
@@ -2729,8 +2759,10 @@ describe("Object Types", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {},
@@ -2744,8 +2776,10 @@ describe("Object Types", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {
@@ -2890,6 +2924,7 @@ describe("Object Types", () => {
               "entityMetadata": {
                 "aliases": [],
                 "arePatchesEnabled": false,
+                "editsHistory": undefined,
               },
               "objectType": {
                 "allImplementsInterfaces": {},
@@ -3097,8 +3132,10 @@ describe("Object Types", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {},
@@ -3112,8 +3149,10 @@ describe("Object Types", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {},
@@ -3215,6 +3254,7 @@ describe("Object Types", () => {
               "entityMetadata": {
                 "aliases": [],
                 "arePatchesEnabled": false,
+                "editsHistory": undefined,
               },
               "objectType": {
                 "allImplementsInterfaces": {},
@@ -3453,8 +3493,10 @@ describe("Object Types", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {},
@@ -3468,8 +3510,10 @@ describe("Object Types", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {},
@@ -3628,6 +3672,7 @@ describe("Object Types", () => {
               "entityMetadata": {
                 "aliases": [],
                 "arePatchesEnabled": false,
+                "editsHistory": undefined,
               },
               "objectType": {
                 "allImplementsInterfaces": {},
@@ -3737,6 +3782,7 @@ describe("Object Types", () => {
                     "dataConstraints": {
                       "nullability": undefined,
                       "nullabilityV2": {
+                        "noEmptyCollections": true,
                         "noNulls": true,
                       },
                       "propertyTypeConstraints": [],
@@ -3917,8 +3963,10 @@ describe("Object Types", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {},
@@ -3932,8 +3980,10 @@ describe("Object Types", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {},
@@ -3995,6 +4045,7 @@ describe("Object Types", () => {
               "entityMetadata": {
                 "aliases": [],
                 "arePatchesEnabled": false,
+                "editsHistory": undefined,
               },
               "objectType": {
                 "allImplementsInterfaces": {},
@@ -4411,5 +4462,92 @@ describe("Object Types", () => {
         },
       }
     `);
+  });
+
+  it("serializes ontologyPackage permission on object type", async () => {
+    await defineOntology("com.palantir.", () => {
+      defineObject({
+        apiName: "foo",
+        displayName: "Foo",
+        pluralDisplayName: "Foos",
+        primaryKeyPropertyApiName: "id",
+        titlePropertyApiName: "id",
+        properties: { "id": { type: "string" } },
+        permission: {
+          type: "ontologyPackage",
+          ontologyPackageRid:
+            "ri.ontology-package.main.ontology-package.abc-123",
+        },
+      });
+
+      const bpi = dumpOntologyFullMetadata().ontology
+        .blockPermissionInformation!;
+      const otPerms = Object.values(bpi.objectTypes);
+      expect(otPerms).toHaveLength(1);
+      expect(otPerms[0].restrictionStatus).toEqual({
+        restrictedByDatasources: false,
+        editRestrictedByDatasources: false,
+        publicProject: false,
+        ontologyPackageRid: "ri.ontology-package.main.ontology-package.abc-123",
+      });
+    }, "/tmp/");
+  });
+
+  describe("EditsHistoryConfig", () => {
+    it("editsHistory is undefined when no config is provided", () => {
+      defineObject({
+        titlePropertyApiName: "bar",
+        displayName: "Foo",
+        pluralDisplayName: "Foo",
+        apiName: "foo",
+        primaryKeyPropertyApiName: "bar",
+        properties: { "bar": { type: "string" } },
+      });
+
+      const objectData = dumpOntologyFullMetadata().ontology
+        .objectTypes["com.palantir.foo"];
+      expect(objectData.entityMetadata?.editsHistory).toBeUndefined();
+    });
+
+    it("editsHistory is set to config when enabled", () => {
+      defineObject({
+        titlePropertyApiName: "bar",
+        displayName: "Foo",
+        pluralDisplayName: "Foo",
+        apiName: "foo",
+        primaryKeyPropertyApiName: "bar",
+        properties: { "bar": { type: "string" } },
+        editsHistoryConfig: { enabled: true },
+      });
+
+      const objectData = dumpOntologyFullMetadata().ontology
+        .objectTypes["com.palantir.foo"];
+      expect(objectData.entityMetadata?.editsHistory).toEqual({
+        type: "config",
+        config: {
+          store: "com.palantir.foo",
+          storeAllPreviousProperties: undefined,
+        },
+      });
+    });
+
+    it("editsHistory is set to none when disabled", () => {
+      defineObject({
+        titlePropertyApiName: "bar",
+        displayName: "Foo",
+        pluralDisplayName: "Foo",
+        apiName: "foo",
+        primaryKeyPropertyApiName: "bar",
+        properties: { "bar": { type: "string" } },
+        editsHistoryConfig: { enabled: false },
+      });
+
+      const objectData = dumpOntologyFullMetadata().ontology
+        .objectTypes["com.palantir.foo"];
+      expect(objectData.entityMetadata?.editsHistory).toEqual({
+        type: "none",
+        none: {},
+      });
+    });
   });
 });

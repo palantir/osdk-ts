@@ -22,6 +22,7 @@ import type { RenderFilterInput } from "./base/BaseFilterListApi.js";
 import { FilterInput } from "./FilterInput.js";
 import type {
   FilterDefinitionUnion,
+  FilterKey,
   FilterListProps,
 } from "./FilterListApi.js";
 import { useFilterListState } from "./hooks/useFilterListState.js";
@@ -33,6 +34,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
   props: FilterListProps<Q>,
 ): React.ReactElement {
   const {
+    objectType,
     objectSet,
     title,
     titleIcon,
@@ -47,10 +49,9 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     enableSorting,
     onFilterAdded,
     onFilterRemoved,
+    onFilterVisibilityChange,
     renderAddFilterButton,
   } = props;
-
-  const objectType = objectSet.$objectSetInternals.def;
 
   const {
     filterStates,
@@ -63,9 +64,24 @@ export function FilterList<Q extends ObjectTypeDefinition>(
 
   const uncontrolledAddFilterMode = addFilterMode === "uncontrolled";
 
-  const getIsVisible = useCallback(
-    (def: FilterDefinitionUnion<Q>) => def.isVisible !== false,
-    [],
+  const handleVisibilityChange = useCallback(
+    (visibleKeys: string[], hiddenKeys: string[]) => {
+      if (!onFilterVisibilityChange) {
+        return;
+      }
+      const states: Array<{ filterKey: FilterKey<Q>; isVisible: boolean }> = [
+        ...visibleKeys.map((key) => ({
+          filterKey: key as FilterKey<Q>,
+          isVisible: true,
+        })),
+        ...hiddenKeys.map((key) => ({
+          filterKey: key as FilterKey<Q>,
+          isVisible: false,
+        })),
+      ];
+      onFilterVisibilityChange(states);
+    },
+    [onFilterVisibilityChange],
   );
 
   const {
@@ -73,9 +89,13 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     hiddenDefinitions: managedHiddenDefinitions,
     showFilter,
     hideFilter,
+    reorderVisible,
     hasVisibilityChanges,
     resetVisibility,
-  } = useFilterVisibility(filterDefinitions, getFilterKey, getIsVisible);
+  } = useFilterVisibility(
+    filterDefinitions,
+    uncontrolledAddFilterMode ? handleVisibilityChange : undefined,
+  );
 
   const handleReset = useCallback(() => {
     reset();
@@ -113,6 +133,13 @@ export function FilterList<Q extends ObjectTypeDefinition>(
       onFilterAdded?.(filterKey, filterDefinitions ?? []);
     },
     [showFilter, onFilterAdded, filterDefinitions],
+  );
+
+  const handleOrderChange = useCallback(
+    (orderedKeys: string[]) => {
+      reorderVisible(orderedKeys);
+    },
+    [reorderVisible],
   );
 
   const hiddenFilterItems = useMemo(
@@ -195,6 +222,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
       hasVisibilityChanges={hasVisibilityChanges}
       enableSorting={enableSorting}
       onFilterRemoved={effectiveOnFilterRemoved}
+      onOrderChange={handleOrderChange}
       className={className}
       renderAddFilterButton={effectiveRenderAddFilterButton}
     />

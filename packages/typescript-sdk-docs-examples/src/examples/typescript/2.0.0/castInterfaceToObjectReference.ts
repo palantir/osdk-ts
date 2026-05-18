@@ -21,18 +21,18 @@
 
 import { Employee, HasAddress } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
-import { client } from "./client.js";
 import { type Osdk } from "@osdk/client";
-    try {
-        const page = await client(HasAddress).fetchPage();
+import { client } from "./client.js";
+try {
+  const page = await client(HasAddress).fetchPage();
 
-        const interfaces = page.data;
-        const hasAddress: Osdk<HasAddress> = interfaces[0];
+  const interfaces = page.data;
+  const hasAddress: Osdk<HasAddress> = interfaces[0];
 
-        // Cast from interface to object type
-        const employee: Osdk<Employee> = hasAddress.$as(Employee);
-        // Or from object type back to interface
-        const hasAddress2: Osdk<HasAddress> = employee.$as(HasAddress);
-    } catch (e) {
-        throw e;
-    }
+  // Cast from interface to object type
+  const employee: Osdk<Employee> = hasAddress.$as(Employee);
+  // Or from object type back to interface
+  const hasAddress2: Osdk<HasAddress> = employee.$as(HasAddress);
+} catch (e) {
+  throw e;
+}

@@ -1,4 +1,4 @@
-import { useOsdkObjects } from "@osdk/react/experimental";
+import { useOsdkObjects } from "@osdk/react";
 import { useState } from "react";
 import { Button } from "../../components/Button.js";
 import { CreateOfficeForm } from "../../components/CreateOfficeForm.js";

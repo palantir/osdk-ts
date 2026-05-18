@@ -21,14 +21,14 @@ import type {
   Osdk,
   QueryDefinition,
 } from "@osdk/api";
+import { getWireObjectSet } from "@osdk/client";
 import type {
   ObserveFunctionCallbackArgs,
   QueryParameterType,
-} from "@osdk/client/unstable-do-not-use";
-import { getWireObjectSet } from "@osdk/client/unstable-do-not-use";
+} from "@osdk/client/observable";
 import React from "react";
-import { makeExternalStore } from "./makeExternalStore.js";
-import { OsdkContext2 } from "./OsdkContext2.js";
+import { devToolsMetadata, makeExternalStore } from "./makeExternalStore.js";
+import { OsdkContext } from "./OsdkContext.js";
 
 export interface UseOsdkFunctionOptions<Q extends QueryDefinition<unknown>> {
   /**
@@ -130,12 +130,6 @@ export interface UseOsdkFunctionResult<Q extends QueryDefinition<unknown>> {
   refetch: () => Promise<void>;
 }
 
-declare const process: {
-  env: {
-    NODE_ENV: "development" | "production";
-  };
-};
-
 /**
  * React hook for executing and observing OSDK functions.
  *
@@ -173,7 +167,7 @@ export function useOsdkFunction<Q extends QueryDefinition<unknown>>(
   queryDef: Q,
   options: UseOsdkFunctionOptions<Q> = {},
 ): UseOsdkFunctionResult<Q> {
-  const { observableClient } = React.useContext(OsdkContext2);
+  const { observableClient } = React.useContext(OsdkContext);
   const {
     params,
     dependsOn,
@@ -211,11 +205,10 @@ export function useOsdkFunction<Q extends QueryDefinition<unknown>>(
       if (!enabled) {
         return makeExternalStore<ObserveFunctionCallbackArgs<Q>>(
           () => ({ unsubscribe: () => {} }),
-          process.env.NODE_ENV !== "production"
-            ? `function ${queryDef.apiName} ${
-              JSON.stringify(stableParams)
-            } [DISABLED]`
-            : void 0,
+          devToolsMetadata({
+            hookType: "useOsdkFunction",
+            objectType: queryDef.apiName,
+          }),
         );
       }
       return makeExternalStore<ObserveFunctionCallbackArgs<Q>>(
@@ -230,9 +223,10 @@ export function useOsdkFunction<Q extends QueryDefinition<unknown>>(
             },
             observer,
           ),
-        process.env.NODE_ENV !== "production"
-          ? `function ${queryDef.apiName} ${JSON.stringify(stableParams)}`
-          : void 0,
+        devToolsMetadata({
+          hookType: "useOsdkFunction",
+          objectType: queryDef.apiName,
+        }),
       );
     },
     [

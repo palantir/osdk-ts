@@ -16,13 +16,17 @@
 
 import React from "react";
 import { BaseCbacPickerDialog } from "./base/BaseCbacPickerDialog.js";
+import type { MaxClassificationConstraint } from "./types.js";
 import { useCbacSelection } from "./useCbacSelection.js";
+import { useConstraintCallout } from "./useConstraintCallout.js";
+import { getSubmitDisabledReason } from "./utils/validationMessages.js";
 
 export interface CbacPickerDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onConfirm: (markingIds: string[]) => void;
   initialMarkingIds?: string[];
+  maxClassificationConstraint?: MaxClassificationConstraint;
 }
 
 export function CbacPickerDialog({
@@ -30,6 +34,7 @@ export function CbacPickerDialog({
   onOpenChange,
   onConfirm,
   initialMarkingIds,
+  maxClassificationConstraint,
 }: CbacPickerDialogProps): React.ReactElement {
   const {
     selectedIds,
@@ -38,6 +43,8 @@ export function CbacPickerDialog({
     banner,
     requiredMarkingGroups,
     isValid,
+    userSatisfiesMarkings,
+    disallowedMarkingIds,
     isLoading,
     error,
     toggle,
@@ -58,15 +65,25 @@ export function CbacPickerDialog({
   const hasInitialMarkings = initialMarkingIds !== undefined
     && initialMarkingIds.length > 0;
 
-  const submitDisabledReason = React.useMemo((): string | undefined => {
-    if (isValid) {
-      return undefined;
-    }
-    if (requiredMarkingGroups.length > 0) {
-      return "Selected markings do not include all required markings.";
-    }
-    return "Invalid marking selection.";
-  }, [isValid, requiredMarkingGroups.length]);
+  const submitDisabledReason = React.useMemo(
+    () =>
+      getSubmitDisabledReason({
+        isValid,
+        requiredMarkingGroups,
+        selectedIds,
+        disallowedMarkingIds,
+        userSatisfiesMarkings,
+      }),
+    [
+      isValid,
+      requiredMarkingGroups,
+      selectedIds,
+      disallowedMarkingIds,
+      userSatisfiesMarkings,
+    ],
+  );
+
+  const constraintCallout = useConstraintCallout(maxClassificationConstraint);
 
   return (
     <BaseCbacPickerDialog
@@ -83,6 +100,7 @@ export function CbacPickerDialog({
       requiredMarkingGroups={requiredMarkingGroups}
       isValid={isValid}
       submitDisabledReason={submitDisabledReason}
+      validationCallouts={constraintCallout}
       isLoading={isLoading}
       error={error}
     />

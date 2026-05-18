@@ -1,12 +1,13 @@
-import type { DerivedProperty, Osdk } from "@osdk/api";
-import type { ColumnDefinition } from "@osdk/react-components/experimental";
-import { ObjectTable } from "@osdk/react-components/experimental";
-import { useOsdkClient } from "@osdk/react/experimental";
+import type { DerivedProperty, Osdk, PropertyKeys } from "@osdk/api";
+import { useOsdkClient } from "@osdk/react";
+import type { ColumnDefinition } from "@osdk/react-components/experimental/object-table";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import React, { useCallback } from "react";
 import {
   Employee,
   getEmployeeDaysSinceStart,
 } from "../../generatedNoCheck2/index.js";
+import "./EmployeesTable.css";
 
 type RDPs = {
   managerName: "string";
@@ -39,14 +40,14 @@ const columnDefinitions: Array<
   // Function-backed column
   {
     locator: {
-      type: "function" as const,
-      id: "daysSinceStart" as const,
+      type: "function",
+      id: "daysSinceStart",
       queryDefinition: getEmployeeDaysSinceStart,
-      getFunctionParams: (objectSet: any) => ({ employees: objectSet }),
-      getKey: (obj: any) => `${obj.$objectType}:${obj.$primaryKey}`,
-      getValue: (data: { daysSinceStart: any }) => data?.daysSinceStart,
-      dedupeIntervalMs: 10_000, // Short dedupe for sandbox testing
-    } as any,
+      getFunctionParams: (objectSet) => ({ employees: objectSet }),
+      getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
+      getValue: (data) =>
+        (data as { daysSinceStart?: number } | undefined)?.daysSinceStart,
+    },
     columnName: "Days Since Start",
     width: 150,
   },
@@ -111,6 +112,22 @@ export function EmployeesTable() {
     [],
   );
 
+  const getRowAttributes = useCallback(
+    (
+      employee: Osdk.Instance<
+        Employee,
+        "$allBaseProperties",
+        PropertyKeys<Employee>,
+        RDPs
+      >,
+    ): Record<string, string | undefined> => ({
+      "data-highlight-row": employee.jobTitle === "Content Manager"
+        ? "true"
+        : undefined,
+    }),
+    [],
+  );
+
   const client = useOsdkClient();
 
   const os = client(Employee);
@@ -118,7 +135,7 @@ export function EmployeesTable() {
   return (
     <div
       style={{
-        height: "500px",
+        height: "300px",
         overflow: "hidden",
       }}
     >
@@ -132,7 +149,8 @@ export function EmployeesTable() {
           direction: "desc",
         }]}
         onSubmitEdits={handleSubmitEdits}
-        editMode="manual"
+        getRowAttributes={getRowAttributes}
+        className={"customEmployeesTable"}
       />
     </div>
   );

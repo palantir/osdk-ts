@@ -18,9 +18,14 @@ import { configDefaults, defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-    pool: "forks",
+    pool: "threads",
     exclude: [...configDefaults.exclude, "**/build/**/*"],
     environment: "happy-dom",
+    setupFiles: ["./src/test/setupPolyfills.ts"],
+    env: {
+      TZ: "UTC",
+      LANG: "en_US.UTF-8",
+    },
     fakeTimers: {
       toFake: ["setTimeout", "clearTimeout", "Date"],
     },
