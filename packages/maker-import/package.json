@@ -41,6 +41,7 @@
   },
   "dependencies": {
     "@osdk/maker": "workspace:~",
+    "@osdk/foundry.ontologies": "catalog:foundry-platform-typescript",
     "consola": "^3.4.2",
     "yargs": "^17.7.2"
   },

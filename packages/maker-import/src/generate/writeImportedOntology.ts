@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type * as Ontologies from "@osdk/foundry.ontologies";
 import { OntologyEntityTypeEnum } from "@osdk/maker";
 import * as fs from "node:fs";
 import * as path from "node:path";
@@ -150,7 +151,7 @@ export function resolveVarNames(apiNames: string[]): string[] {
  * that re-exports everything.
  */
 export function writeImportedOntology(
-  metadata: OntologyFullMetadata,
+  metadata: Ontologies.OntologyFullMetadata,
   outputDir: string,
 ): void {
   const codegenDir = path.resolve(outputDir, "codegen");

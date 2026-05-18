@@ -4306,6 +4306,9 @@ importers:
 
   packages/maker-import:
     dependencies:
+      '@osdk/foundry.ontologies':
+        specifier: catalog:foundry-platform-typescript
+        version: 2.57.0
       '@osdk/maker':
         specifier: workspace:~
         version: link:../maker
