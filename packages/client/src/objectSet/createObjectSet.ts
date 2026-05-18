@@ -44,7 +44,7 @@ import type {
 } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import { createWithPropertiesObjectSet } from "../derivedProperties/createWithPropertiesObjectSet.js";
-import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
+import { applyWhereClauseToObjectSet } from "../internal/conversions/applyWhereClauseToObjectSet.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { aggregate } from "../object/aggregate.js";
 import {
@@ -131,11 +131,11 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     ) as ObjectSet<Q>["fetchPageWithErrors"],
 
     where: (clause) => {
-      return clientCtx.objectSetFactory(objectType, clientCtx, {
-        type: "filter",
-        objectSet,
-        where: modernToLegacyWhereClause(clause, objectType),
-      });
+      return clientCtx.objectSetFactory(
+        objectType,
+        clientCtx,
+        applyWhereClauseToObjectSet(objectSet, clause, objectType),
+      );
     },
 
     pivotTo<L extends LinkNames<Q>>(
