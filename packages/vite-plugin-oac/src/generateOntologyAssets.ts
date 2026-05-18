@@ -101,7 +101,7 @@ async function ontologyIrToFullMetadata(
       encoding: "utf-8",
     });
     const blockData = JSON.parse(irContent)
-      .blockData as OntologyIrOntologyBlockDataV2;
+      .ontology as OntologyIrOntologyBlockDataV2;
 
     const fullMeta = OntologyIrToFullMetadataConverter.getFullMetadataFromIr(
       blockData,

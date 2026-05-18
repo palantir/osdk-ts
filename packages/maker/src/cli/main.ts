@@ -15,9 +15,9 @@
  */
 
 import { consola } from "consola";
+import { createJiti } from "jiti";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
-import { pathToFileURL } from "node:url";
 import invariant from "tiny-invariant";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
@@ -190,9 +190,15 @@ async function loadOntology(
   codeSnippetDir: string,
   randomnessKey?: string,
 ) {
+  const jiti = createJiti(import.meta.filename, {
+    moduleCache: false,
+    importMeta: import.meta,
+  });
   const q = await defineOntology(
     apiNamespace,
-    async () => await import(pathToFileURL(input).href),
+    async () => {
+      await jiti.import(input);
+    },
     outputDir,
     dependencyFile,
     generateCodeSnippets,

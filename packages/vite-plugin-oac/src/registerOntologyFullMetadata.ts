@@ -121,10 +121,28 @@ function createActionImplementation(
             fullMetadata,
           );
 
-          const primaryKey = extractAndDelete(
-            params,
-            "objectToModifyParameter",
-          );
+          // Canonical modifyObject actions use "objectToModifyParameter".
+          // Custom actions that declare modifiedEntities can name the
+          // object reference parameter anything (e.g. "passenger"), so
+          // fall back to the first parameter whose dataType matches the
+          // operation's objectTypeApiName.
+          let paramKey: string | undefined = "objectToModifyParameter";
+          if (!(paramKey in params)) {
+            paramKey = Object.entries(actionType.parameters).find(
+              ([, p]) => {
+                const dt = p.dataType;
+                return dt.type === "object"
+                  && dt.objectTypeApiName === objectType.apiName;
+              },
+            )?.[0];
+          }
+          if (paramKey == null || !(paramKey in params)) {
+            // Action declared modifiedEntities but no parameter references
+            // this object type — treat as a metadata-only declaration and
+            // skip the auto-impl.
+            break;
+          }
+          const primaryKey = extractAndDelete(params, paramKey);
 
           const targetObject = batch.getObject(
             objectType.apiName,

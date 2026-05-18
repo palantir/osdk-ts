@@ -1,0 +1,4 @@
+.osdk/
+dist/
+node_modules/
+*.tsbuildinfo

@@ -298,6 +298,21 @@ function Dashboard() {
 }
 ```
 
+## Run the example app locally
+
+Want a fully wired-up app to learn from without any Foundry credentials? The
+`examples/example-oac-local` package boots a Vite + React app against a Node-side
+FauxFoundry served by `vite-plugin-oac` — every page exercises a different OSDK
+surface (`ObjectTable`, `useOsdkObject` + `useLinks`, `ActionForm`, `FilterList`,
+interfaces). From the monorepo root:
+
+```bash
+pnpm install
+pnpm --filter=@osdk/examples.oac-local dev
+```
+
+See `examples/example-oac-local/README.md` for the page tour.
+
 ## Next Steps
 
 - [Querying Data](/react/querying-data) - useOsdkObjects, useOsdkObject, useLinks, pagination, real-time updates
