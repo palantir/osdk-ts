@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, ObjectTypeDefinition, PropertyKeys } from "@osdk/api";
+import type {
+  ObjectSet,
+  ObjectTypeDefinition,
+  PropertyKeys,
+  WhereClause,
+} from "@osdk/api";
 import { useMemo } from "react";
+import { applyWhereClauseToObjectSet } from "../utils/applyWhereClauseToObjectSet.js";
+import { stripLinkEntries } from "../utils/stripLinkEntries.js";
 import {
   usePropertyAggregation,
   type UsePropertyAggregationResult,
@@ -24,37 +31,24 @@ import {
 const EMPTY_VALUES: string[] = [];
 
 export interface UseDualScopeAggregationOptions {
-  /** Cap on the number of returned values (forwarded to the narrowed aggregation). */
   limit?: number;
-  /** Sort order for the returned values. */
   sortBy?: "count" | "value";
-  /** Currently-selected values that should always render (even at count=0). */
+  /** Values to always render (count=0 ghosts when absent from the aggregation). */
   selectedValues?: string[];
+  /**
+   * When `true` AND `whereClause` contains link entries, runs a second
+   * aggregation against the link-entries-stripped scope to discover the wider
+   * value universe — values absent from the narrowed scope render as count=0
+   * ghosts.
+   */
+  showFilteredOutValues?: boolean;
 }
 
 /**
- * Aggregates a property under one or two pre-computed object-set scopes.
- *
- * - **Single-scope** (`widerObjectSet` undefined OR same reference as
- *   `scopedObjectSet`): equivalent to a plain `usePropertyAggregation` call
- *   against `scopedObjectSet`. Returns its result directly.
- *
- * - **Dual-scope** (`widerObjectSet` distinct from `scopedObjectSet`): runs two
- *   aggregations — one against `widerObjectSet` to discover the value universe,
- *   one against `scopedObjectSet` for the primary counts. The wider values are
- *   merged into `activeValues` so that values present in the wider scope but
- *   absent in the narrowed scope render as count=0 ghost entries.
- *
- * Callers compute the two scopes externally (typically via
- * `applyWhereClauseToObjectSet`); the hook itself is scope-shape agnostic.
- *
- * `isLoading` reflects either query loading. `error` is the primary
- * aggregation's error. If the wider aggregation fails in dual-scope mode,
- * ghost rendering silently degrades — the narrowed view is still correct.
- *
- * Hooks are called unconditionally regardless of scope; in single-scope mode
- * the second `usePropertyAggregation` uses the same arguments as the first,
- * so the observable client dedupes at the wire layer.
+ * Aggregates a property on `objectSet.where(whereClause)`. When
+ * `showFilteredOutValues` is on AND `whereClause` has link entries, also
+ * aggregates against the link-stripped scope and merges its values into
+ * `activeValues` so they render as ghosts.
  */
 export function useDualScopeAggregation<
   Q extends ObjectTypeDefinition,
@@ -62,13 +56,34 @@ export function useDualScopeAggregation<
 >(
   objectType: Q,
   propertyKey: K,
-  scopedObjectSet: ObjectSet<Q> | undefined,
-  widerObjectSet: ObjectSet<Q> | undefined,
+  objectSet: ObjectSet<Q> | undefined,
+  whereClause: WhereClause<Q>,
   options: UseDualScopeAggregationOptions = {},
 ): UsePropertyAggregationResult {
-  const { sortBy, selectedValues = EMPTY_VALUES, limit } = options;
-  const isDualScope = widerObjectSet != null
-    && widerObjectSet !== scopedObjectSet;
+  const {
+    sortBy,
+    selectedValues = EMPTY_VALUES,
+    limit,
+    showFilteredOutValues,
+  } = options;
+
+  const { scopedObjectSet, widerObjectSet } = useMemo(() => {
+    if (objectSet == null) {
+      return { scopedObjectSet: undefined, widerObjectSet: undefined };
+    }
+    const clause = whereClause as unknown as Record<string, unknown>;
+    const scoped = applyWhereClauseToObjectSet(objectSet, clause);
+    if (!showFilteredOutValues) {
+      return { scopedObjectSet: scoped, widerObjectSet: scoped };
+    }
+    const stripped = stripLinkEntries(clause);
+    const wider = stripped.hadLinkEntries
+      ? applyWhereClauseToObjectSet(objectSet, stripped.clause)
+      : scoped;
+    return { scopedObjectSet: scoped, widerObjectSet: wider };
+  }, [objectSet, whereClause, showFilteredOutValues]);
+
+  const isDualScope = widerObjectSet !== scopedObjectSet;
 
   const widerAggregation = usePropertyAggregation(
     objectType,
@@ -78,14 +93,18 @@ export function useDualScopeAggregation<
 
   const activeValues = useMemo(() => {
     const fallback = selectedValues.length === 0 ? undefined : selectedValues;
-    const skipMerge = !isDualScope
-      || widerAggregation.error != null
-      || widerAggregation.data.length === 0;
-    if (skipMerge) {
+    if (
+      !isDualScope || widerAggregation.error != null
+      || widerAggregation.data.length === 0
+    ) {
       return fallback;
     }
-    const widerValues = widerAggregation.data.map((d) => d.value);
-    return Array.from(new Set([...selectedValues, ...widerValues]));
+    return Array.from(
+      new Set([
+        ...selectedValues,
+        ...widerAggregation.data.map((d) => d.value),
+      ]),
+    );
   }, [
     isDualScope,
     widerAggregation.data,
@@ -97,20 +116,18 @@ export function useDualScopeAggregation<
     () => ({ sortBy, activeValues, limit }),
     [sortBy, activeValues, limit],
   );
-  const primaryAggregation = usePropertyAggregation(
+  const primary = usePropertyAggregation(
     objectType,
     propertyKey,
     scopedObjectSet,
     primaryOptions,
   );
 
-  const isLoading = primaryAggregation.isLoading
-    || (isDualScope && widerAggregation.isLoading);
-
   return {
-    data: primaryAggregation.data,
-    maxCount: primaryAggregation.maxCount,
-    isLoading,
-    error: primaryAggregation.error,
+    data: primary.data,
+    maxCount: primary.maxCount,
+    isLoading: primary.isLoading
+      || (isDualScope && widerAggregation.isLoading),
+    error: primary.error,
   };
 }

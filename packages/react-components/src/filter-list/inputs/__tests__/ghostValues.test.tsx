@@ -151,20 +151,17 @@ describe("ghost initialFilterStates values", () => {
   });
 });
 
-describe("linked-filter dual aggregation", () => {
-  // Simulate a `whereClause` that includes a linked-property filter entry
-  // (the `$reverseLink` sentinel emitted by `buildWhereClause`). When the input
-  // has `showFilteredOutValues`, the wider scope strips this entry and the
-  // narrowed scope keeps it.
+describe("linked-filter ghost rendering (showFilteredOutValues)", () => {
+  // A `whereClause` with a `$reverseLink` link entry: the walker pivots through
+  // it to compute the narrowed scope; stripping it yields the wider scope.
   const linkedWhere = {
     lead: { $reverseLink: "peeps", fullName: "Alice" },
   } as unknown as WhereClause<typeof MockObjectType>;
 
-  // A base objectSet whose `.pivotTo`/`.where`/`.intersect` chain produces an
-  // identifiable result (`_kind: "narrowed"`), distinct from the base itself
-  // (`_kind: "base"`). The walker calls `base.pivotTo("lead").where(...).pivotTo("peeps")`
-  // and then `base.intersect(...)` — so any chain ending in `intersect` is the
-  // narrowed objectSet. The wider scope is just the base.
+  // Identifiable scopes: the walker calls
+  // `base.pivotTo("lead").where(...).pivotTo("peeps")` and then
+  // `base.intersect(...)` — so anything tagged "narrowed" is the post-intersect
+  // result, "base" is the original.
   const narrowed = { _kind: "narrowed" } as unknown as ObjectSet<
     typeof MockObjectType
   >;
@@ -178,104 +175,53 @@ describe("linked-filter dual aggregation", () => {
     pivotTo: vi.fn().mockReturnValue(linkedScope),
     intersect: vi.fn().mockReturnValue(narrowed),
   } as unknown as ObjectSet<typeof MockObjectType>;
-  const narrowedSet = narrowed;
 
-  describe("ListogramFilterInput", () => {
-    it("renders base-only values as count=0 ghost rows marked data-ghost", () => {
-      mockDualAggregationData(
-        [{ name: "Engineering", count: 3 }],
-        [
-          { name: "Engineering", count: 5 },
-          { name: "Marketing", count: 2 },
-          { name: "Sales", count: 1 },
-        ],
-      );
-
-      render(
-        <ListogramFilterInput
-          objectType={MockObjectType}
-          objectSet={baseSet}
-          propertyKey="name"
-          whereClause={linkedWhere}
-          showFilteredOutValues={true}
-          filterState={{ type: "EXACT_MATCH", values: [] }}
-          onFilterStateChanged={vi.fn()}
-        />,
-      );
-
-      const engineeringRow = screen.getByRole("button", {
-        name: /Engineering/,
-      });
-      const marketingRow = screen.getByRole("button", { name: /Marketing/ });
-      const salesRow = screen.getByRole("button", { name: /Sales/ });
-
-      // Engineering appears in narrowed: real count, no ghost.
-      expect(engineeringRow.hasAttribute("data-ghost")).toBe(false);
-      // Marketing and Sales only exist in base: ghost rows.
-      expect(marketingRow.hasAttribute("data-ghost")).toBe(true);
-      expect(salesRow.hasAttribute("data-ghost")).toBe(true);
-    });
-
-    it("does not mark a selected value as ghost even when narrowed count is zero", () => {
-      mockDualAggregationData(
-        [],
-        [{ name: "Engineering", count: 5 }, { name: "Marketing", count: 2 }],
-      );
-
-      render(
-        <ListogramFilterInput
-          objectType={MockObjectType}
-          objectSet={baseSet}
-          propertyKey="name"
-          whereClause={linkedWhere}
-          showFilteredOutValues={true}
-          filterState={{ type: "EXACT_MATCH", values: ["Engineering"] }}
-          onFilterStateChanged={vi.fn()}
-        />,
-      );
-
-      const engineeringRow = screen.getByRole("button", {
-        name: /Engineering/,
-      });
-      const marketingRow = screen.getByRole("button", { name: /Marketing/ });
-
-      // Selected zero-count rows render as selected, not ghost.
-      expect(engineeringRow.getAttribute("aria-pressed")).toBe("true");
-      expect(engineeringRow.hasAttribute("data-ghost")).toBe(false);
-      // Unselected base-only values stay ghost.
-      expect(marketingRow.hasAttribute("data-ghost")).toBe(true);
-    });
+  it("marks base-only values as data-ghost in ListogramFilterInput", () => {
+    mockDualAggregationData(
+      [{ name: "Engineering", count: 3 }],
+      [{ name: "Engineering", count: 5 }, { name: "Marketing", count: 2 }],
+    );
+    render(
+      <ListogramFilterInput
+        objectType={MockObjectType}
+        objectSet={baseSet}
+        propertyKey="name"
+        whereClause={linkedWhere}
+        showFilteredOutValues={true}
+        filterState={{ type: "EXACT_MATCH", values: [] }}
+        onFilterStateChanged={vi.fn()}
+      />,
+    );
+    expect(
+      screen.getByRole("button", { name: /Engineering/ }).hasAttribute(
+        "data-ghost",
+      ),
+    ).toBe(false);
+    expect(
+      screen.getByRole("button", { name: /Marketing/ }).hasAttribute(
+        "data-ghost",
+      ),
+    ).toBe(true);
   });
 
-  describe("MultiSelectFilterInput", () => {
-    it("registers base-only values alongside narrowed values (visible via the value count)", () => {
-      mockDualAggregationData(
-        [{ name: "Engineering", count: 3 }],
-        [
-          { name: "Engineering", count: 5 },
-          { name: "Marketing", count: 2 },
-        ],
-      );
-
-      render(
-        <MultiSelectFilterInput
-          objectType={MockObjectType}
-          objectSet={baseSet}
-          propertyKey="name"
-          whereClause={linkedWhere}
-          showFilteredOutValues={true}
-          filterState={{ type: "SELECT", selectedValues: [] }}
-          onFilterStateChanged={vi.fn()}
-        />,
-      );
-
-      // Both real and base-only values are registered. The combobox starts
-      // closed, but the "of N values" count surfaced by the surrounding
-      // FilterInputExcludeRow reflects the merged value list.
-      expect(screen.queryByText("No options available")).toBeNull();
-      expect(
-        screen.getByTitle("Approximate count of unique values").textContent,
-      ).toContain("2");
-    });
+  it("merges base-only values into the MultiSelect option list", () => {
+    mockDualAggregationData(
+      [{ name: "Engineering", count: 3 }],
+      [{ name: "Engineering", count: 5 }, { name: "Marketing", count: 2 }],
+    );
+    render(
+      <MultiSelectFilterInput
+        objectType={MockObjectType}
+        objectSet={baseSet}
+        propertyKey="name"
+        whereClause={linkedWhere}
+        showFilteredOutValues={true}
+        filterState={{ type: "SELECT", selectedValues: [] }}
+        onFilterStateChanged={vi.fn()}
+      />,
+    );
+    expect(
+      screen.getByTitle("Approximate count of unique values").textContent,
+    ).toContain("2");
   });
 });

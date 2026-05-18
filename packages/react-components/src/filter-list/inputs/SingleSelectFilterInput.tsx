@@ -25,9 +25,7 @@ import { FilterInputExcludeRow } from "../base/FilterInputExcludeRow.js";
 import { SingleSelectInput } from "../base/inputs/SingleSelectInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { useDualScopeAggregation } from "../hooks/useDualScopeAggregation.js";
-import { applyWhereClauseToObjectSet } from "../utils/applyWhereClauseToObjectSet.js";
 import { coerceToString } from "../utils/coerceFilterValue.js";
-import { stripLinkEntries } from "../utils/stripLinkEntries.js";
 
 interface SingleSelectFilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
@@ -87,40 +85,16 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
     [selectedValue],
   );
 
-  const scopedObjectSet = useMemo(
-    () =>
-      objectSet != null
-        ? applyWhereClauseToObjectSet(
-          objectSet,
-          whereClause as unknown as Record<string, unknown>,
-        )
-        : undefined,
-    [objectSet, whereClause],
-  );
-
-  const widerObjectSet = useMemo(() => {
-    if (objectSet == null || !showFilteredOutValues) {
-      return scopedObjectSet;
-    }
-    const stripped = stripLinkEntries(
-      whereClause as unknown as Record<string, unknown>,
-    );
-    if (!stripped.hadLinkEntries) {
-      return scopedObjectSet;
-    }
-    return applyWhereClauseToObjectSet(objectSet, stripped.clause);
-  }, [objectSet, whereClause, showFilteredOutValues, scopedObjectSet]);
-
   const aggregationOptions = useMemo(
-    () => ({ selectedValues }),
-    [selectedValues],
+    () => ({ selectedValues, showFilteredOutValues }),
+    [selectedValues, showFilteredOutValues],
   );
 
   const { data, isLoading, error } = useDualScopeAggregation(
     objectType,
     propertyKey as PropertyKeys<Q>,
-    scopedObjectSet,
-    widerObjectSet,
+    objectSet,
+    whereClause,
     aggregationOptions,
   );
 
