@@ -75,8 +75,11 @@ export interface DropdownEditConfig<V = unknown> {
 
   /**
    * Converts an item to a display string. Defaults to `String()`.
+   *
+   * `item` may be `undefined` when the cell has no value yet — the formatter
+   * is responsible for producing a sensible label in that case.
    */
-  itemToStringLabel?: (item: V) => string;
+  itemToStringLabel?(item: V | undefined): string;
 
   /**
    * Returns a unique string key for a list item. Used as the React `key`.

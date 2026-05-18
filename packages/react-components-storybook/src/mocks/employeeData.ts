@@ -43,6 +43,7 @@ export const employeeData: BaseServerObject[] = [
     "locationRegion": "New York",
     "team": "Content",
     "locationType": "Regional Office",
+    "isRemote": false,
     "__title": "Ahmed Williams",
   },
   {
@@ -105,6 +106,7 @@ export const employeeData: BaseServerObject[] = [
       ],
     },
     "locationType": "Regional Office",
+    "isRemote": true,
     "__title": "Fatima Zhang",
   },
   {
@@ -168,6 +170,7 @@ export const employeeData: BaseServerObject[] = [
       ],
     },
     "locationType": "Regional Office",
+    "isRemote": false,
     "__title": "Charlotte Weber",
   },
   {
@@ -231,6 +234,7 @@ export const employeeData: BaseServerObject[] = [
       ],
     },
     "locationType": "Regional Office",
+    "isRemote": true,
     "__title": "Sandra Brown",
   },
   {

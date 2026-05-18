@@ -259,6 +259,100 @@ const defaultEmployeeColumns: ColumnDefinition<Employee>[] = [
   { locator: { type: "property", id: "mentorEmployeeNumber" } },
 ];
 
+const editableColumnDefinitions: ColumnDefinition<Employee>[] = [
+  {
+    locator: { type: "property", id: "fullName" },
+    editable: true,
+  },
+  {
+    locator: { type: "property", id: "emailPrimaryWork" },
+    editable: true,
+  },
+  {
+    locator: { type: "property", id: "jobTitle" },
+    editable: true,
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      getFieldComponentProps: () => ({
+        items: [
+          "Software Engineer",
+          "Senior Software Engineer",
+          "Staff Engineer",
+          "Engineering Manager",
+          "Product Manager",
+          "Designer",
+        ],
+        isSearchable: true,
+        placeholder: "Search job titles…",
+      }),
+    },
+  },
+  {
+    locator: { type: "property", id: "department" },
+    editable: true,
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      getFieldComponentProps: () => ({
+        items: [
+          "Engineering",
+          "Product",
+          "Design",
+          "Sales",
+          "Marketing",
+          "Finance",
+          "Human Resources",
+        ],
+      }),
+    },
+  },
+  {
+    locator: { type: "property", id: "firstInternStartDate" },
+    editable: true,
+    renderCell: (object: Osdk.Instance<Employee>) => {
+      return (
+        <div>
+          {object.firstInternStartDate
+            ? new Date(object.firstInternStartDate).toISOString()
+            : "No value"}
+        </div>
+      );
+    },
+  },
+  {
+    locator: { type: "property", id: "firstFullTimeStartDate" },
+    editable: true,
+    editFieldConfig: {
+      fieldComponent: "DATE_PICKER",
+      getFieldComponentProps: () => ({
+        showTime: false,
+        placeholder: "Select date...",
+      }),
+    },
+  },
+  {
+    locator: { type: "property", id: "isRemote" },
+    renderCell: (object: Osdk.Instance<Employee>) => {
+      if (object.isRemote == null) {
+        return "No Value";
+      }
+      return object.isRemote ? "Yes" : "No";
+    },
+    editable: true,
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      getFieldComponentProps: () => ({
+        items: [true, false],
+        itemToStringLabel: (item: boolean | undefined) => {
+          if (item == null) {
+            return "No Value";
+          }
+          return item ? "Yes" : "No";
+        },
+      }),
+    },
+  },
+];
+
 // Query definition for the function-backed column
 const getEmployeeSeniority: QueryDefinition<Employee> = {
   type: "query",
@@ -1327,77 +1421,7 @@ export const WithCustomRenderers: Story = {
 export const EditableTable: Story = {
   args: {
     objectType: Employee,
-    columnDefinitions: [
-      {
-        locator: { type: "property", id: "fullName" },
-        editable: true,
-      },
-      {
-        locator: { type: "property", id: "emailPrimaryWork" },
-        editable: true,
-      },
-      {
-        locator: { type: "property", id: "jobTitle" },
-        editable: true,
-        editFieldConfig: {
-          fieldComponent: "DROPDOWN",
-          getFieldComponentProps: () => ({
-            items: [
-              "Software Engineer",
-              "Senior Software Engineer",
-              "Staff Engineer",
-              "Engineering Manager",
-              "Product Manager",
-              "Designer",
-            ],
-            isSearchable: true,
-            placeholder: "Search job titles…",
-          }),
-        },
-      },
-      {
-        locator: { type: "property", id: "department" },
-        editable: true,
-        editFieldConfig: {
-          fieldComponent: "DROPDOWN",
-          getFieldComponentProps: () => ({
-            items: [
-              "Engineering",
-              "Product",
-              "Design",
-              "Sales",
-              "Marketing",
-              "Finance",
-              "Human Resources",
-            ],
-          }),
-        },
-      },
-      {
-        locator: { type: "property", id: "firstInternStartDate" },
-        editable: true,
-        renderCell: (object: Osdk.Instance<Employee>) => {
-          return (
-            <div>
-              {object.firstInternStartDate
-                ? new Date(object.firstInternStartDate).toISOString()
-                : "No value"}
-            </div>
-          );
-        },
-      },
-      {
-        locator: { type: "property", id: "firstFullTimeStartDate" },
-        editable: true,
-        editFieldConfig: {
-          fieldComponent: "DATE_PICKER",
-          getFieldComponentProps: () => ({
-            showTime: false,
-            placeholder: "Select date...",
-          }),
-        },
-      },
-    ],
+    columnDefinitions: editableColumnDefinitions,
     editMode: "manual" as const,
     onCellValueChanged: fn(),
   } as EmployeeTableProps,
@@ -1463,6 +1487,25 @@ export const EditableTable: Story = {
       getFieldComponentProps: () => ({
         showTime: false,
         placeholder: "Select date...",
+      }),
+    },
+  },
+  // Boolean dropdown example
+  {
+    locator: { type: "property", id: "isRemote" },
+    renderCell: (object) => {
+      if (object.isRemote == null) {
+        return "No Value";
+      }
+      return object.isRemote ? "Yes" : "No";
+    },
+    editable: true,
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      getFieldComponentProps: () => ({
+        items: [true, false],
+        itemToStringLabel: (item: boolean | undefined) =>
+          item === false ? "No" : item === true ? "Yes" : "No Value",
       }),
     },
   },
@@ -1534,20 +1577,7 @@ return (
 export const WithSubmitEditsButton: Story = {
   args: {
     objectType: Employee,
-    columnDefinitions: [
-      {
-        locator: { type: "property", id: "fullName" },
-        editable: true,
-      },
-      {
-        locator: { type: "property", id: "emailPrimaryWork" },
-        editable: true,
-      },
-      {
-        locator: { type: "property", id: "jobTitle" },
-        editable: true,
-      },
-    ],
+    columnDefinitions: editableColumnDefinitions,
     editMode: "manual",
     onSubmitEdits: fn(
       async (edits: CellEditInfo<Osdk.Instance<Employee>>[]) => {
@@ -1571,12 +1601,86 @@ export const WithSubmitEditsButton: Story = {
   {
     locator: { type: "property", id: "jobTitle" },
     editable: true,
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      getFieldComponentProps: () => ({
+        items: [
+          "Software Engineer",
+          "Senior Software Engineer",
+          "Staff Engineer",
+          "Engineering Manager",
+          "Product Manager",
+          "Designer",
+        ],
+        isSearchable: true,
+        placeholder: "Search job titles…",
+      }),
+    },
+  },
+  {
+    locator: { type: "property", id: "department" },
+    editable: true,
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      getFieldComponentProps: () => ({
+        items: [
+          "Engineering",
+          "Product",
+          "Design",
+          "Sales",
+          "Marketing",
+          "Finance",
+          "Human Resources",
+        ],
+      }),
+    },
+  },
+  {
+    locator: { type: "property", id: "firstInternStartDate" },
+    editable: true,
+    renderCell: (object) => (
+      <div>
+        {object.firstInternStartDate
+          ? new Date(object.firstInternStartDate).toISOString()
+          : "No value"}
+      </div>
+    ),
+  },
+  {
+    locator: { type: "property", id: "firstFullTimeStartDate" },
+    editable: true,
+    editFieldConfig: {
+      fieldComponent: "DATE_PICKER",
+      getFieldComponentProps: () => ({
+        showTime: false,
+        placeholder: "Select date...",
+      }),
+    },
+  },
+  // Boolean dropdown example
+  {
+    locator: { type: "property", id: "isRemote" },
+    renderCell: (object) => {
+      if (object.isRemote == null) {
+        return "No Value";
+      }
+      return object.isRemote ? "Yes" : "No";
+    },
+    editable: true,
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      getFieldComponentProps: () => ({
+        items: [true, false],
+        itemToStringLabel: (item: boolean | undefined) =>
+          item === false ? "No" : item === true ? "Yes" : "No Value",
+      }),
+    },
   },
 ];
 
 return (
-  <ObjectTable 
-    objectType={Employee} 
+  <ObjectTable
+    objectType={Employee}
     columnDefinitions={columnDefinitions}
     editMode="manual"
     onCellValueChanged={(info) => {
@@ -1816,7 +1920,7 @@ export const PerRowEditableAndFieldConfig: Story = {
       { locator: { type: "property", id: "fullName" } },
       {
         locator: { type: "property", id: "jobTitle" },
-        editable: (rowData) => {
+        editable: (rowData: Osdk.Instance<Employee>) => {
           const jobTitle = rowData.jobTitle ?? "";
           return jobTitle === "Senior Product Manager";
         },
@@ -1826,7 +1930,7 @@ export const PerRowEditableAndFieldConfig: Story = {
         editable: true,
         editFieldConfig: {
           fieldComponent: "DROPDOWN",
-          getFieldComponentProps: (employee) => ({
+          getFieldComponentProps: (employee: Osdk.Instance<Employee>) => ({
             items: employee.department === "Operations"
               ? [
                 "Sales",
