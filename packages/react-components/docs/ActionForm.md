@@ -95,6 +95,65 @@ const fields = [
 <ActionForm actionDefinition={updateEmployee} formFieldDefinitions={fields} />;
 ```
 
+### Rich dropdown labels
+
+Use `itemToStringLabel` for the dropdown's text behavior: search matching, accessibility labels, fallback item keys, and default visual text. Add `renderItemLabel` when the visible label needs richer React content while preserving the same string behavior.
+
+```tsx
+const fields = [
+  {
+    fieldKey: "assigneeUserId",
+    label: "Assignee",
+    fieldComponent: "DROPDOWN",
+    fieldComponentProps: {
+      items: userIds,
+      itemToStringLabel: (userId) => userNames[userId] ?? userId,
+      renderItemLabel: (userId) => (
+        <span>
+          <strong>{userNames[userId] ?? userId}</strong>
+          <span>{userTeams[userId]}</span>
+        </span>
+      ),
+    },
+  },
+] satisfies Array<FormFieldDefinition<typeof updateEmployee>>;
+```
+
+### Scoped object select fields
+
+`OBJECT_SELECT` can load options from either an object type or a pre-scoped object set. Pass `objectType` for an unfiltered selector, or pass `objectSet` to limit selectable options. The two are mutually exclusive. Search text is applied within the object set, and the current value is not automatically cleared when it is outside that set.
+
+```tsx
+import { $, Employee, updateEmployee } from "@YourApp/sdk";
+import { useMemo } from "react";
+
+function UpdateEmployeeForm() {
+  const marketingEmployees = useMemo(
+    () => $(Employee).where({ department: "Marketing" }),
+    [],
+  );
+
+  const fields = [
+    {
+      fieldKey: "manager",
+      label: "Marketing manager",
+      fieldComponent: "OBJECT_SELECT",
+      fieldComponentProps: {
+        objectSet: marketingEmployees,
+        placeholder: "Search Marketing employees…",
+      },
+    },
+  ] satisfies Array<FormFieldDefinition<typeof updateEmployee>>;
+
+  return (
+    <ActionForm
+      actionDefinition={updateEmployee}
+      formFieldDefinitions={fields}
+    />
+  );
+}
+```
+
 For a completely custom field, use `fieldComponent: "CUSTOM"` and provide `customRenderer`:
 
 ```tsx

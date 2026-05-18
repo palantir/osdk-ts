@@ -23,6 +23,7 @@ import {
   filterValuesBySearch,
   isEmptyValue,
 } from "../../utils/filterValues.js";
+import { formatCompactCount } from "./formatCompactCount.js";
 import styles from "./ListogramInput.module.css";
 import { ListogramSkeleton } from "./ListogramSkeleton.js";
 import { NoValueLabel } from "./NoValueLabel.js";
@@ -46,7 +47,7 @@ interface ListogramInputProps {
   style?: React.CSSProperties;
   maxVisibleItems?: number;
   searchQuery?: string;
-  renderValue?: (value: string) => string;
+  renderValue?: (value: string) => React.ReactNode;
 }
 
 function ListogramInputInner({
@@ -88,7 +89,10 @@ function ListogramInputInner({
       return filterValuesBySearch(
         stableValues,
         searchQuery,
-        (v) => renderValue?.(v.value) ?? v.value,
+        (v) => {
+          const rendered = renderValue?.(v.value);
+          return typeof rendered === "string" ? rendered : v.value;
+        },
       );
     }
     return stableValues;
@@ -138,6 +142,7 @@ function ListogramInputInner({
               <Button
                 key={value}
                 className={styles.row}
+                data-empty={isEmpty || undefined}
                 // eslint-disable-next-line react/jsx-no-bind
                 onClick={() => toggleValue(value)}
                 aria-pressed={selectedSet.has(value)}
@@ -173,7 +178,12 @@ function ListogramInputInner({
                     : (renderValue?.(value) ?? value)}
                 </span>
                 {showCount && displayMode !== "minimal" && (
-                  <span className={styles.count}>{count.toLocaleString()}</span>
+                  <span
+                    className={styles.count}
+                    title={count.toLocaleString()}
+                  >
+                    {formatCompactCount(count)}
+                  </span>
                 )}
                 {displayMode === "full" && (
                   <span className={styles.bar}>

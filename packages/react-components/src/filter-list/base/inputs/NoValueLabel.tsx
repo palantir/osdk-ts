@@ -27,8 +27,9 @@ interface NoValueLabelProps {
  * Italic, muted span used in dropdowns, listogram buckets, and
  * NullValueWrapper.
  *
- * Style is configurable via the `--osdk-filter-no-value-color` and
- * `--osdk-filter-no-value-font-style` CSS variables.
+ * Style is configurable via the `--osdk-filter-no-value-color`,
+ * `--osdk-filter-no-value-font-style`, and `--osdk-filter-no-value-font-size`
+ * CSS variables.
  */
 function NoValueLabelInner(
   { className }: NoValueLabelProps,

@@ -24,7 +24,6 @@ export const employeeData: BaseServerObject[] = [
     "fullName": "Ahmed Williams",
     "__primaryKey": 657495071,
     "leadEmployeeNumber": 657495067,
-    "firstFullTimeStartDate": "2024-11-21",
     "preferredNameLast": "Williams",
     "latestVenture": {},
     "jobTitle": "Content Manager",
@@ -44,6 +43,7 @@ export const employeeData: BaseServerObject[] = [
     "locationRegion": "New York",
     "team": "Content",
     "locationType": "Regional Office",
+    "isRemote": false,
     "__title": "Ahmed Williams",
   },
   {
@@ -85,7 +85,6 @@ export const employeeData: BaseServerObject[] = [
     "latestVenture": {},
     "jobTitle": "Program Manager",
     "preferredNameFirst": "Fatima",
-    "firstInternStartDate": "2024-09-20T14:30:00.000Z",
     "locationCity": "New York",
     "workerType": "Employee",
     "employeeNumber": 657495106,
@@ -107,6 +106,7 @@ export const employeeData: BaseServerObject[] = [
       ],
     },
     "locationType": "Regional Office",
+    "isRemote": true,
     "__title": "Fatima Zhang",
   },
   {
@@ -170,6 +170,7 @@ export const employeeData: BaseServerObject[] = [
       ],
     },
     "locationType": "Regional Office",
+    "isRemote": false,
     "__title": "Charlotte Weber",
   },
   {
@@ -233,6 +234,7 @@ export const employeeData: BaseServerObject[] = [
       ],
     },
     "locationType": "Regional Office",
+    "isRemote": true,
     "__title": "Sandra Brown",
   },
   {

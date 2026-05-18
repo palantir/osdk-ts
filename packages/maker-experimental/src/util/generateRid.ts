@@ -127,6 +127,9 @@ export interface OntologyRidGenerator {
     apiName: string,
     interfaceTypeApiName: string,
   ): InterfacePropertyTypeRid;
+  generateIptRidFromSptRid(
+    sptRid: string,
+  ): InterfacePropertyTypeRid;
   generateStructFieldRid(
     propertyApiName: string,
     apiName: string,
@@ -305,6 +308,23 @@ export class ReadableIdGenerator {
     interfacePropertyTypeApiName: string,
   ): ReadableId {
     return `interface-property-type-${interfaceTypeApiName}-${interfacePropertyTypeApiName}` as ReadableId;
+  }
+
+  static getForSptBackedInterfaceProperty(
+    sptApiName: string,
+  ): ReadableId;
+  static getForSptBackedInterfaceProperty(
+    interfaceTypeApiName: string,
+    sptApiName: string,
+  ): ReadableId;
+  static getForSptBackedInterfaceProperty(
+    arg1: string,
+    arg2?: string,
+  ): ReadableId {
+    if (arg2 !== undefined) {
+      return `interface-property-type-${arg1}-${arg2}` as ReadableId;
+    }
+    return `interface-property-type-${arg1}` as ReadableId;
   }
 
   static getForInterfaceLinkType(
@@ -730,6 +750,15 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
       rid,
     );
     return rid;
+  }
+
+  generateIptRidFromSptRid(
+    sptRid: string,
+  ): InterfacePropertyTypeRid {
+    return sptRid.replace(
+      "shared-property-type",
+      "interface-property-type",
+    ) as InterfacePropertyTypeRid;
   }
 
   // Struct Field RIDs

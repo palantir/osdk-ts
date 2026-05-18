@@ -16,17 +16,31 @@
 
 import type { CellContext } from "@tanstack/react-table";
 import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { renderDefaultCell } from "../DefaultCellRenderer.js";
+import type { CellEditInfo, EditFieldConfig } from "../utils/types.js";
 
 function createCellContext(
   value: unknown,
+  overrides?: {
+    rowId?: string;
+    columnId?: string;
+    rowData?: unknown;
+    tableMeta?: Record<string, unknown>;
+    columnMeta?: Record<string, unknown>;
+  },
 ): CellContext<unknown, unknown> {
   return {
     getValue: () => value,
-    table: { options: { meta: undefined } },
-    column: { columnDef: { meta: undefined } },
-    row: { original: {}, id: "row-0" },
+    table: { options: { meta: overrides?.tableMeta } },
+    column: {
+      id: overrides?.columnId ?? "col-0",
+      columnDef: { meta: overrides?.columnMeta },
+    },
+    row: {
+      original: overrides?.rowData ?? {},
+      id: overrides?.rowId ?? "row-0",
+    },
   } as unknown as CellContext<unknown, unknown>;
 }
 
@@ -69,5 +83,55 @@ describe("renderDefaultCell", () => {
     const result = renderDefaultCell(createCellContext(undefined));
     render(<div data-testid="cell">{result}</div>);
     expect(screen.getByTestId("cell").textContent).toBe("");
+  });
+
+  it("should pass only the current row's pending edits to getFieldComponentProps", () => {
+    const getFieldComponentProps = vi.fn().mockReturnValue({ items: [] });
+    const editFieldConfig: EditFieldConfig<unknown> = {
+      fieldComponent: "DROPDOWN",
+      getFieldComponentProps,
+    };
+    const rowData = { id: "row-1" };
+    const otherRowEdit: CellEditInfo<unknown, unknown> = {
+      rowId: "row-2",
+      columnId: "col-other",
+      newValue: "other-row-new",
+      oldValue: "other-row-old",
+      originalRowData: { id: "row-2" },
+    };
+    const sameRowEdit: CellEditInfo<unknown, unknown> = {
+      rowId: "row-1",
+      columnId: "col-sibling",
+      newValue: "sibling-new",
+      oldValue: "sibling-old",
+      originalRowData: rowData,
+    };
+
+    const result = renderDefaultCell(createCellContext("initial", {
+      rowId: "row-1",
+      columnId: "col-1",
+      rowData,
+      tableMeta: {
+        onCellEdit: vi.fn(),
+        isInEditMode: true,
+        focusedRowId: "row-1",
+        cellEdits: {
+          "row-2_col-other": otherRowEdit,
+          "row-1_col-sibling": sameRowEdit,
+        },
+      },
+      columnMeta: {
+        editable: true,
+        editFieldConfig,
+      },
+    }));
+
+    render(<div data-testid="cell">{result}</div>);
+
+    expect(getFieldComponentProps).toHaveBeenCalled();
+    const [forwardedRowData, forwardedEdits] =
+      getFieldComponentProps.mock.calls[0];
+    expect(forwardedRowData).toBe(rowData);
+    expect(forwardedEdits).toEqual({ "col-sibling": sameRowEdit });
   });
 });

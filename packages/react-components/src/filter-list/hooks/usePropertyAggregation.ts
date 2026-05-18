@@ -37,12 +37,17 @@ export interface UsePropertyAggregationResult {
   error: Error | null;
 }
 
+const EMPTY_ACTIVE_VALUES: string[] = [];
+
 export interface UsePropertyAggregationOptions<
   Q extends ObjectTypeDefinition = ObjectTypeDefinition,
 > {
   limit?: number;
   where?: WhereClause<Q>;
   sortBy?: "count" | "value";
+  /** Selected values to include in results even when they have zero matching
+   *  rows (e.g. saved filter selections from initialFilterStates). */
+  activeValues?: string[];
 }
 
 export function usePropertyAggregation<
@@ -79,6 +84,8 @@ export function usePropertyAggregation<
     aggregationArgs,
   );
 
+  const activeValues = options?.activeValues ?? EMPTY_ACTIVE_VALUES;
+
   const result = useMemo(
     (): { data: PropertyAggregationValue[]; maxCount: number } => {
       if (!countData) {
@@ -93,7 +100,24 @@ export function usePropertyAggregation<
       // matches the $groupBy + $count aggregation pattern.
       const dataArray = countData as AggregationGroupResult;
 
+      // Build a set of values present in the aggregation so we can identify
+      // which active selections need to be synthesized as ghost entries.
+      const existingValues = new Set<string>();
       for (const item of dataArray) {
+        const raw = item.$group[propertyKey as string];
+        existingValues.add(raw == null ? "" : String(raw));
+      }
+
+      // Synthesize ghost entries for active selections absent from aggregation
+      // results (e.g. saved filters with zero matching rows). They use the same
+      // shape as real entries so the loop below handles isNull uniformly.
+      const ghostEntries = activeValues.flatMap((v) =>
+        existingValues.has(v)
+          ? []
+          : [{ $group: { [propertyKey as string]: v }, $count: 0 }]
+      );
+
+      for (const item of [...dataArray, ...ghostEntries]) {
         const rawValue = item.$group[propertyKey as string];
         const count = item.$count ?? 0;
 
@@ -122,7 +146,7 @@ export function usePropertyAggregation<
 
       return { data: deduped, maxCount };
     },
-    [countData, propertyKey, options?.limit, options?.sortBy],
+    [countData, propertyKey, options?.limit, options?.sortBy, activeValues],
   );
 
   return {

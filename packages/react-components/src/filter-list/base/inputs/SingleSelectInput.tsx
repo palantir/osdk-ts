@@ -19,9 +19,13 @@ import React, { memo, useCallback, useMemo } from "react";
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
 import { isEmptyValue } from "../../utils/filterValues.js";
+import { useFilterListBoundary } from "../FilterListBoundaryContext.js";
+import { createRenderValueFilter } from "./comboboxFilter.js";
 import { NoValueLabel } from "./NoValueLabel.js";
+import { SelectInputSkeleton } from "./SelectInputSkeleton.js";
 import sharedStyles from "./shared.module.css";
 import styles from "./SingleSelectInput.module.css";
+import { useStableData } from "./useStableData.js";
 
 interface SingleSelectInputProps {
   values: PropertyAggregationValue[];
@@ -35,7 +39,7 @@ interface SingleSelectInputProps {
   showClearButton?: boolean;
   showCounts?: boolean;
   ariaLabel?: string;
-  renderValue?: (value: string) => string;
+  renderValue?: (value: string) => React.ReactNode;
 }
 
 function SingleSelectInputInner({
@@ -52,6 +56,8 @@ function SingleSelectInputInner({
   ariaLabel = "Select value",
   renderValue,
 }: SingleSelectInputProps): React.ReactElement {
+  const collisionBoundary = useFilterListBoundary();
+
   const handleValueChange = useCallback(
     (value: string | null) => {
       onChange(value ?? undefined);
@@ -59,22 +65,20 @@ function SingleSelectInputInner({
     [onChange],
   );
 
+  const stableValues = useStableData(values, isLoading);
+
   const items = useMemo(
-    () => values.map(({ value }) => value),
-    [values],
+    () => stableValues.map(({ value }) => value),
+    [stableValues],
   );
 
   const countByValue = useMemo(
-    () => new Map(values.map(({ value, count }) => [value, count])),
-    [values],
+    () => new Map(stableValues.map(({ value, count }) => [value, count])),
+    [stableValues],
   );
 
   const comboboxFilter = useMemo(
-    () =>
-      renderValue
-        ? (itemValue: string, query: string) =>
-          renderValue(itemValue).toLowerCase().includes(query.toLowerCase())
-        : undefined,
+    () => renderValue ? createRenderValueFilter(renderValue) : undefined,
     [renderValue],
   );
 
@@ -100,17 +104,18 @@ function SingleSelectInputInner({
     [countByValue, showCounts, renderValue],
   );
 
+  const isNoData = !error && stableValues.length === 0;
+  const isReloading = isLoading && stableValues.length > 0;
+
   return (
     <div
       className={classnames(styles.singleSelect, className)}
       style={style}
-      data-loading={isLoading}
+      data-loading={isReloading}
     >
-      {isLoading && (
-        <div className={sharedStyles.loadingMessage}>
-          Loading options...
-        </div>
-      )}
+      <span className={sharedStyles.srOnly} role="status">
+        {isLoading ? "Loading options" : ""}
+      </span>
 
       {error && (
         <div className={sharedStyles.errorMessage}>
@@ -118,13 +123,14 @@ function SingleSelectInputInner({
         </div>
       )}
 
-      {!isLoading && !error && values.length === 0 && (
+      {isNoData && isLoading && <SelectInputSkeleton />}
+      {isNoData && !isLoading && (
         <div className={sharedStyles.emptyMessage}>
           No options available
         </div>
       )}
 
-      {(values.length > 0 || isLoading) && (
+      {stableValues.length > 0 && (
         <div className={styles.selectContainer}>
           <Combobox.Root<string>
             value={selectedValue ?? null}
@@ -140,7 +146,7 @@ function SingleSelectInputInner({
               <Combobox.Clear className={styles.clearButton} />
             )}
             <Combobox.Portal>
-              <Combobox.Positioner>
+              <Combobox.Positioner collisionBoundary={collisionBoundary}>
                 <Combobox.Popup>
                   <Combobox.Empty>No matching options</Combobox.Empty>
                   <Combobox.List>{renderItem}</Combobox.List>

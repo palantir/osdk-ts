@@ -34,6 +34,7 @@ interface SearchableMenuProps {
   searchPlaceholder?: string;
   emptyMessage?: string;
   className?: string;
+  collisionBoundary?: Element | Element[] | "clipping-ancestors";
 }
 
 function SearchableMenuInner({
@@ -45,6 +46,7 @@ function SearchableMenuInner({
   searchPlaceholder = "Search",
   emptyMessage = "No matching items",
   className,
+  collisionBoundary,
 }: SearchableMenuProps): React.ReactElement {
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -86,6 +88,7 @@ function SearchableMenuInner({
         <Menu.Positioner
           className={classnames(styles.positioner, className)}
           sideOffset={4}
+          collisionBoundary={collisionBoundary}
         >
           <Menu.Popup className={styles.popup}>
             <SearchBar

@@ -1122,10 +1122,6 @@ export class OntologyIrToFullMetadataConverter {
             subType: { type: "integer" },
           };
           break;
-        case "interfaceReference":
-          throw new Error("Interface reference type not supported");
-        case "interfaceReferenceList":
-          throw new Error("Interface reference list type not supported");
         case "long":
           dataType = { type: "long" };
           break;
@@ -1153,6 +1149,25 @@ export class OntologyIrToFullMetadataConverter {
             subType: { type: "mediaReference" },
           };
           break;
+        case "interfaceReference": {
+          const t = irParameter.type.interfaceReference;
+          dataType = {
+            type: "interfaceObject",
+            interfaceTypeApiName: t.interfaceTypeRid,
+          };
+          break;
+        }
+        case "interfaceReferenceList": {
+          const t = irParameter.type.interfaceReferenceList;
+          dataType = {
+            type: "array",
+            subType: {
+              type: "interfaceObject",
+              interfaceTypeApiName: t.interfaceTypeRid,
+            },
+          };
+          break;
+        }
         case "objectReference": {
           const t = irParameter.type.objectReference;
           dataType = {
@@ -1414,13 +1429,13 @@ export class OntologyIrToFullMetadataConverter {
       case "marking":
         return { type: "marking" };
       case "cipherText":
-        return null;
+        return { type: "cipherText" };
       case "mediaReference":
-        return null;
+        return { type: "mediaReference" };
       case "vector":
         return null;
       case "geotimeSeriesReference":
-        return null;
+        return { type: "geotimeSeriesReference" };
       case "struct": {
         const value = type.struct;
         const ridBase = `ri.struct.${
