@@ -445,19 +445,32 @@ export async function buildAirlineOntology(): Promise<AirlineOntology> {
 }
 
 /**
+ * Bridge the wire-format ontology produced by `defineOacOntology` into the
+ * IR shape consumed by `OntologyIrToFullMetadataConverter`. Performs a
+ * structural `unknown` cast for the parts where the types diverge cosmetically,
+ * then calls `normalizeLinkFkMappings` to convert one-to-many FK mappings
+ * from the wire `Record<onePkRid, manyFkRid>` to the IR `Array<{from,to}>`
+ * shape. Exported so tests and the faux-register helper share one bridge.
+ */
+export function ontologyToConverterIr(
+  ontology: AirlineOntology,
+): OntologyIrOntologyBlockDataV2 {
+  const ir = JSON.parse(
+    JSON.stringify(ontology._oac.ontologyIr.ontology),
+  ) as unknown as OntologyIrOntologyBlockDataV2;
+  normalizeLinkFkMappings(ir);
+  return ir;
+}
+
+/**
  * Convert the maker-v2 IR to OSDK full metadata and register the result
- * with FauxFoundry. Calls `normalizeLinkFkMappings` to bridge a known
- * wire/IR shape mismatch in one-to-many FK mappings.
+ * with FauxFoundry.
  */
 export function registerAirlineWithFaux(
   faux: FauxFoundry,
   ontology: AirlineOntology,
 ): void {
-  const ir = JSON.parse(
-    JSON.stringify(ontology._oac.ontologyIr.ontology),
-  ) as unknown as OntologyIrOntologyBlockDataV2;
-
-  normalizeLinkFkMappings(ir);
+  const ir = ontologyToConverterIr(ontology);
 
   const fullMeta = OntologyIrToFullMetadataConverter.getFullMetadataFromIr(ir);
 
@@ -484,6 +497,15 @@ function toKebabId(apiName: string): string {
   return apiName.toLowerCase().replace(/\./g, "-");
 }
 
+function asStringPk(value: unknown, paramName: string): string {
+  if (typeof value !== "string") {
+    throw new Error(
+      `expected string primary key on action parameter \`${paramName}\`, got ${typeof value}`,
+    );
+  }
+  return value;
+}
+
 // Mirrors the action impl from vite-plugin-oac's `registerOntologyFullMetadata`,
 // inlined because that helper is not exported. The IR converter emits
 // `objectTypeApiName` in kebab form (`com-airline-flight`); the lookup
@@ -504,20 +526,26 @@ function buildActionImpl(
       switch (op.type) {
         case "createObject": {
           const pkProp = pkByApiName[apiName];
-          const pk = params[pkProp];
+          const pk = asStringPk(params[pkProp], pkProp);
           delete params[pkProp];
-          batch.addObject(apiName, pk as string, params);
+          batch.addObject(apiName, pk, params);
           break;
         }
         case "modifyObject": {
-          const pk = params.objectToModifyParameter;
+          const pk = asStringPk(
+            params.objectToModifyParameter,
+            "objectToModifyParameter",
+          );
           delete params.objectToModifyParameter;
-          batch.modifyObject(apiName, pk as string, params);
+          batch.modifyObject(apiName, pk, params);
           break;
         }
         case "deleteObject": {
-          const pk = params.objectToDeleteParameter;
-          batch.deleteObject(apiName, pk as string);
+          const pk = asStringPk(
+            params.objectToDeleteParameter,
+            "objectToDeleteParameter",
+          );
+          batch.deleteObject(apiName, pk);
           break;
         }
         default:
@@ -531,10 +559,9 @@ function buildActionImpl(
  * Walk the IR's link types and convert each oneToMany link's FK mapping
  * from the wire-format `Record<onePkRid, manyFkRid>` to the IR-format
  * `Array<{from: {apiName, object}, to: {apiName, object}}>` that the
- * converter expects. Exported so the converter integration test can
- * exercise the same normalization without duplicating it.
+ * converter expects.
  */
-export function normalizeLinkFkMappings(
+function normalizeLinkFkMappings(
   ir: OntologyIrOntologyBlockDataV2,
 ): void {
   const objectTypes = ir.objectTypes as unknown as Record<

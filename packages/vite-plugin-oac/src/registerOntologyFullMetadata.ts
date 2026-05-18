@@ -65,12 +65,57 @@ export function registerOntologyFullMetadata(
 // NOTE: The ontology full metadata is not sufficient for doing this properly.
 
 /**
- * Creates a fake implementation for an action type based on its operations
+ * Resolve which action-parameter key points at the object to modify for a
+ * given modifyObject operation. Canonical actions use
+ * `objectToModifyParameter`; custom actions that declare `modifiedEntities`
+ * may name the reference anything (e.g. `passenger`), so we fall back to
+ * the first parameter whose dataType matches the operation's
+ * objectTypeApiName. Returns `undefined` if neither exists — the caller
+ * decides whether to skip or warn.
+ */
+function resolveModifyObjectParamKey(
+  operation: Ontologies.ModifyObjectRule,
+  actionType: Ontologies.ActionTypeV2,
+): string | undefined {
+  const canonical = "objectToModifyParameter";
+  if (canonical in actionType.parameters) {
+    return canonical;
+  }
+  for (const [name, param] of Object.entries(actionType.parameters)) {
+    const dt = param.dataType;
+    if (
+      dt.type === "object"
+      && dt.objectTypeApiName === operation.objectTypeApiName
+    ) {
+      return name;
+    }
+  }
+  return undefined;
+}
+
+/**
+ * Creates a fake implementation for an action type based on its operations.
+ * Per-operation lookups (which parameter key holds the target PK for
+ * modifyObject) are resolved once at registration time and cached, so the
+ * hot path inside the returned impl does no scanning.
  */
 function createActionImplementation(
   actionType: Ontologies.ActionTypeV2,
   fullMetadata: Ontologies.OntologyFullMetadata,
 ): FauxActionImpl {
+  const modifyObjectParamKeys = new Map<
+    Ontologies.ModifyObjectRule,
+    string | undefined
+  >();
+  for (const operation of actionType.operations) {
+    if (operation.type === "modifyObject") {
+      modifyObjectParamKeys.set(
+        operation,
+        resolveModifyObjectParamKey(operation, actionType),
+      );
+    }
+  }
+
   return (
     batch,
     payload: {
@@ -121,21 +166,7 @@ function createActionImplementation(
             fullMetadata,
           );
 
-          // Canonical modifyObject actions use "objectToModifyParameter".
-          // Custom actions that declare modifiedEntities can name the
-          // object reference parameter anything (e.g. "passenger"), so
-          // fall back to the first parameter whose dataType matches the
-          // operation's objectTypeApiName.
-          let paramKey: string | undefined = "objectToModifyParameter";
-          if (!(paramKey in params)) {
-            paramKey = Object.entries(actionType.parameters).find(
-              ([, p]) => {
-                const dt = p.dataType;
-                return dt.type === "object"
-                  && dt.objectTypeApiName === objectType.apiName;
-              },
-            )?.[0];
-          }
+          const paramKey = modifyObjectParamKeys.get(operation);
           if (paramKey == null || !(paramKey in params)) {
             // Action declared modifiedEntities but no parameter references
             // this object type — treat as a metadata-only declaration and

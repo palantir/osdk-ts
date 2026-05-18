@@ -51,8 +51,11 @@
     "yargs": "^17.7.2"
   },
   "devDependencies": {
+    "@osdk/client": "workspace:~",
+    "@osdk/faux": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
+    "@osdk/shared.test": "workspace:~",
     "@types/node": "^20.19.13",
     "@types/yargs": "^17.0.33",
     "typescript": "~5.5.4",

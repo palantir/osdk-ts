@@ -180,7 +180,7 @@ export function convertLink(
     },
   };
 }
-function validateLink(linkDefinition: LinkType) {
+export function validateLink(linkDefinition: LinkType): void {
   if ("one" in linkDefinition) {
     const { apiName: oneObjectApiName, object: oneObject } = getObject(
       linkDefinition.one.object,

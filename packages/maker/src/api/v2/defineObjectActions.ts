@@ -202,6 +202,103 @@ type CreateOrModifyActionConfig<T extends ObjectV2Config> = {
 };
 
 // ---------------------------------------------------------------------------
+// Internal: shared builder for the 4 object action shapes
+// ---------------------------------------------------------------------------
+
+type ObjectActionKind = "create" | "modify" | "delete" | "createOrModify";
+
+interface ObjectActionKindConfig {
+  apiNamePrefix: string;
+  displayNamePrefix: string;
+  /** Reference parameter key, or null if this kind has no object reference. */
+  refParamKey: string | null;
+  /** Whether to include property parameters at all (delete excludes them). */
+  includePropertyParams: boolean;
+  excludePk: boolean;
+  nullable: boolean;
+  modifiedEntity: { created: boolean; modified: boolean; deleted?: boolean };
+}
+
+const OBJECT_ACTION_KINDS: Record<ObjectActionKind, ObjectActionKindConfig> = {
+  create: {
+    apiNamePrefix: "create-object-",
+    displayNamePrefix: "Create ",
+    refParamKey: null,
+    includePropertyParams: true,
+    excludePk: false,
+    nullable: false,
+    modifiedEntity: { created: true, modified: false },
+  },
+  modify: {
+    apiNamePrefix: "modify-object-",
+    displayNamePrefix: "Modify ",
+    refParamKey: "objectToModifyParameter",
+    includePropertyParams: true,
+    excludePk: true,
+    nullable: true,
+    modifiedEntity: { created: false, modified: true },
+  },
+  delete: {
+    apiNamePrefix: "delete-object-",
+    displayNamePrefix: "Delete ",
+    refParamKey: "objectToDeleteParameter",
+    includePropertyParams: false,
+    excludePk: false,
+    nullable: false,
+    modifiedEntity: { created: false, modified: false, deleted: true },
+  },
+  createOrModify: {
+    apiNamePrefix: "create-or-modify-",
+    displayNamePrefix: "Create or Modify ",
+    refParamKey: "objectToCreateOrModifyParameter",
+    includePropertyParams: true,
+    excludePk: true,
+    nullable: true,
+    modifiedEntity: { created: true, modified: true },
+  },
+};
+
+function buildObjectActionV2(
+  objectDef: ObjectV2Def,
+  kind: ObjectActionKind,
+  overrides?: ActionV2Overrides,
+): ActionV2Config {
+  const cfg = OBJECT_ACTION_KINDS[kind];
+  const apiName = overrides?.apiName
+    ?? `${cfg.apiNamePrefix}${kebab(objectDef.apiName)}`;
+  const displayName = overrides?.displayName
+    ?? `${cfg.displayNamePrefix}${objectDef.displayName}`;
+
+  const parameters: Record<string, ActionParameterV2Config> = {};
+  if (cfg.refParamKey != null) {
+    parameters[cfg.refParamKey] = {
+      type: "object",
+      objectType: objectDef,
+      nullable: false,
+    };
+  }
+  if (cfg.includePropertyParams) {
+    Object.assign(
+      parameters,
+      buildPropertyParams(objectDef, {
+        excludePk: cfg.excludePk,
+        nullable: cfg.nullable,
+        excludedProperties: overrides?.excludedProperties,
+      }),
+    );
+  }
+
+  return {
+    apiName,
+    displayName,
+    parameters,
+    modifiedEntities: {
+      [objectDef.apiName]: cfg.modifiedEntity,
+    },
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Public API
 // ---------------------------------------------------------------------------
 
@@ -217,27 +314,9 @@ export function defineCreateObjectActionV2<
   objectDef: ObjectV2Def<T>,
   overrides?: ActionV2Overrides,
 ): ActionV2Def<CreateActionConfig<T>> {
-  const apiName = overrides?.apiName
-    ?? `create-object-${kebab(objectDef.apiName)}`;
-  const displayName = overrides?.displayName
-    ?? `Create ${objectDef.displayName}`;
-
-  const parameters = buildPropertyParams(objectDef, {
-    excludePk: false,
-    nullable: false,
-    excludedProperties: overrides?.excludedProperties,
-  });
-
-  const config: ActionV2Config = {
-    apiName,
-    displayName,
-    parameters,
-    modifiedEntities: {
-      [objectDef.apiName]: { created: true, modified: false },
-    },
-  };
-
-  return defineActionV2(config) as ActionV2Def<CreateActionConfig<T>>;
+  return defineActionV2(
+    buildObjectActionV2(objectDef, "create", overrides),
+  ) as ActionV2Def<CreateActionConfig<T>>;
 }
 
 /**
@@ -252,36 +331,9 @@ export function defineModifyObjectActionV2<
   objectDef: ObjectV2Def<T>,
   overrides?: ActionV2Overrides,
 ): ActionV2Def<ModifyActionConfig<T>> {
-  const apiName = overrides?.apiName
-    ?? `modify-object-${kebab(objectDef.apiName)}`;
-  const displayName = overrides?.displayName
-    ?? `Modify ${objectDef.displayName}`;
-
-  const propertyParams = buildPropertyParams(objectDef, {
-    excludePk: true,
-    nullable: true,
-    excludedProperties: overrides?.excludedProperties,
-  });
-
-  const parameters: Record<string, ActionParameterV2Config> = {
-    objectToModifyParameter: {
-      type: "object",
-      objectType: objectDef,
-      nullable: false,
-    },
-    ...propertyParams,
-  };
-
-  const config: ActionV2Config = {
-    apiName,
-    displayName,
-    parameters,
-    modifiedEntities: {
-      [objectDef.apiName]: { created: false, modified: true },
-    },
-  };
-
-  return defineActionV2(config) as ActionV2Def<ModifyActionConfig<T>>;
+  return defineActionV2(
+    buildObjectActionV2(objectDef, "modify", overrides),
+  ) as ActionV2Def<ModifyActionConfig<T>>;
 }
 
 /**
@@ -295,29 +347,9 @@ export function defineDeleteObjectActionV2<
   objectDef: ObjectV2Def<T>,
   overrides?: ActionV2Overrides,
 ): ActionV2Def<DeleteActionConfig<T>> {
-  const apiName = overrides?.apiName
-    ?? `delete-object-${kebab(objectDef.apiName)}`;
-  const displayName = overrides?.displayName
-    ?? `Delete ${objectDef.displayName}`;
-
-  const parameters: Record<string, ActionParameterV2Config> = {
-    objectToDeleteParameter: {
-      type: "object",
-      objectType: objectDef,
-      nullable: false,
-    },
-  };
-
-  const config: ActionV2Config = {
-    apiName,
-    displayName,
-    parameters,
-    modifiedEntities: {
-      [objectDef.apiName]: { created: false, modified: false, deleted: true },
-    },
-  };
-
-  return defineActionV2(config) as ActionV2Def<DeleteActionConfig<T>>;
+  return defineActionV2(
+    buildObjectActionV2(objectDef, "delete", overrides),
+  ) as ActionV2Def<DeleteActionConfig<T>>;
 }
 
 /**
@@ -333,34 +365,7 @@ export function defineCreateOrModifyObjectActionV2<
   objectDef: ObjectV2Def<T>,
   overrides?: CreateOrModifyV2Overrides,
 ): ActionV2Def<CreateOrModifyActionConfig<T>> {
-  const apiName = overrides?.apiName
-    ?? `create-or-modify-${kebab(objectDef.apiName)}`;
-  const displayName = overrides?.displayName
-    ?? `Create or Modify ${objectDef.displayName}`;
-
-  const propertyParams = buildPropertyParams(objectDef, {
-    excludePk: true,
-    nullable: true,
-    excludedProperties: overrides?.excludedProperties,
-  });
-
-  const parameters: Record<string, ActionParameterV2Config> = {
-    objectToCreateOrModifyParameter: {
-      type: "object",
-      objectType: objectDef,
-      nullable: false,
-    },
-    ...propertyParams,
-  };
-
-  const config: ActionV2Config = {
-    apiName,
-    displayName,
-    parameters,
-    modifiedEntities: {
-      [objectDef.apiName]: { created: true, modified: true },
-    },
-  };
-
-  return defineActionV2(config) as ActionV2Def<CreateOrModifyActionConfig<T>>;
+  return defineActionV2(
+    buildObjectActionV2(objectDef, "createOrModify", overrides),
+  ) as ActionV2Def<CreateOrModifyActionConfig<T>>;
 }

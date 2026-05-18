@@ -15,7 +15,6 @@
  */
 
 import type { ActionStatus } from "../action/ActionStatus.js";
-import type { ActionType } from "../action/ActionType.js";
 import { defineCreateInterfaceObjectAction } from "../defineCreateInterfaceObjectAction.js";
 import { defineDeleteInterfaceObjectAction } from "../defineDeleteInterfaceObjectAction.js";
 import { defineModifyInterfaceObjectAction } from "../defineModifyInterfaceObjectAction.js";
@@ -107,11 +106,10 @@ function buildInterfaceActionParams(
 }
 
 function wrap(
-  v1Action: ActionType,
   config: InterfaceActionV2Config,
 ): ActionV2Def<InterfaceActionV2Config> {
   return {
-    apiName: v1Action.apiName,
+    apiName: config.apiName,
     parameters: config.parameters,
     modifiedEntities: config.modifiedEntities,
     __brand: "ActionV2Def" as const,
@@ -134,7 +132,7 @@ export function defineCreateInterfaceObjectActionV2(
     displayName: overrides?.displayName,
     status: overrides?.status,
   });
-  return wrap(v1Action, {
+  return wrap({
     apiName: v1Action.apiName,
     parameters: buildInterfaceActionParams(
       interfaceDef,
@@ -163,7 +161,7 @@ export function defineModifyInterfaceObjectActionV2(
     displayName: overrides?.displayName,
     status: overrides?.status,
   });
-  return wrap(v1Action, {
+  return wrap({
     apiName: v1Action.apiName,
     parameters: buildInterfaceActionParams(
       interfaceDef,
@@ -190,7 +188,7 @@ export function defineDeleteInterfaceObjectActionV2(
     displayName: overrides?.displayName,
     status: overrides?.status,
   });
-  return wrap(v1Action, {
+  return wrap({
     apiName: v1Action.apiName,
     parameters: { [DELETE_SELECTOR_PARAM]: "string" },
     modifiedEntities: {

@@ -16,18 +16,9 @@
 
 import type { OntologyIrV2 } from "@osdk/client.unstable";
 import type { IDiscoveredFunction } from "@osdk/generator-converters.ontologyir";
-import type { LinkType, ObjectType } from "@osdk/maker";
-import {
-  getOntologyDefinition,
-  initializeOntologyState,
-  OntologyEntityTypeEnum,
-} from "@osdk/maker";
-import * as fs from "fs";
-import { convertOntologyDefinition } from "../conversion/toMarketplace/convertOntologyDefinition.js";
-import { getImportedShapes } from "../conversion/toMarketplace/shapeExtractors/ImportedShapeExtractor.js";
-import { getShapes } from "../conversion/toMarketplace/shapeExtractors/IrShapeExtractor.js";
+import { initializeOntologyState } from "@osdk/maker";
 import type { BlockShapes } from "../util/generateRid.js";
-import { OntologyRidGeneratorImpl } from "../util/generateRid.js";
+import { runOacPipeline } from "./runOacPipeline.js";
 
 export interface OntologyV2Result {
   ontologyIr: OntologyIrV2;
@@ -59,66 +50,5 @@ export async function defineOntologyV2(
     throw e;
   }
 
-  const ontologyDefinition = getOntologyDefinition();
-
-  let functionsIr: FunctionsIr | undefined;
-  if (functionsIrFile) {
-    functionsIr = JSON.parse(
-      fs.readFileSync(functionsIrFile, "utf-8"),
-    );
-  }
-
-  const ridGenerator = new OntologyRidGeneratorImpl(randomnessKey);
-  const ontDef = convertOntologyDefinition(
-    ontologyDefinition,
-    ridGenerator,
-    functionsIr,
-    randomnessKey,
-  );
-
-  const shapes = await getShapes(
-    ontDef.ontology,
-    ridGenerator,
-    functionsIr,
-    randomnessKey,
-  );
-
-  // Generate input shapes for imported entities and merge into main shapes
-  const importedShapes = getImportedShapes(
-    ontDef.importedOntology,
-    ridGenerator,
-  );
-  for (const [key, value] of importedShapes.inputShapes) {
-    shapes.inputShapes.set(key, value);
-  }
-  for (const [key, value] of importedShapes.inputShapeMetadata) {
-    shapes.inputShapeMetadata.set(key, value);
-  }
-
-  const backingDatasourceApiNames = Object.entries(
-    ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE],
-  )
-    .filter(([_, obj]) =>
-      (obj as ObjectType).includeEmptyBackingDatasource === true
-    )
-    .map(([apiName]) => apiName);
-
-  const backingDatasourceLinkApiNames = Object.entries(
-    ontologyDefinition[OntologyEntityTypeEnum.LINK_TYPE],
-  )
-    .filter(([_, link]) => {
-      const lt = link as LinkType;
-      return "many" in lt
-        && !("intermediaryObjectType" in lt)
-        && (lt as LinkType & { includeEmptyBackingDatasource?: boolean })
-            .includeEmptyBackingDatasource === true;
-    })
-    .map(([apiName]) => apiName);
-
-  return {
-    ontologyIr: ontDef,
-    shapes,
-    backingDatasourceApiNames,
-    backingDatasourceLinkApiNames,
-  };
+  return runOacPipeline({ functionsIrFile, randomnessKey });
 }

@@ -19,7 +19,6 @@
 import type { Client } from "@osdk/client";
 import type {
   ActionTypeBlockDataV2,
-  OntologyIrOntologyBlockDataV2,
   PropertyType,
 } from "@osdk/client.unstable";
 import { OntologyIrToFullMetadataConverter } from "@osdk/generator-converters.ontologyir";
@@ -27,7 +26,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import {
   type AirlineOntology,
   buildAirlineOntology,
-  normalizeLinkFkMappings,
+  ontologyToConverterIr,
   setupAirlineE2E,
 } from "./testUtils/airline-ontology.js";
 
@@ -106,11 +105,7 @@ describe("defineOacOntology", () => {
   describe("IR → full-metadata link conversion", () => {
     it("produces correct linkTypes on both sides of a one-to-many link", async () => {
       const ontology = await buildAirlineOntology();
-      const ir = JSON.parse(
-        JSON.stringify(ontology._oac.ontologyIr.ontology),
-      ) as unknown as OntologyIrOntologyBlockDataV2;
-
-      normalizeLinkFkMappings(ir);
+      const ir = ontologyToConverterIr(ontology);
 
       const fullMeta = OntologyIrToFullMetadataConverter.getFullMetadataFromIr(
         ir,
@@ -147,11 +142,7 @@ describe("defineOacOntology", () => {
 
     it("produces correct linkTypes on both sides of a many-to-many link", async () => {
       const ontology = await buildAirlineOntology();
-      const ir = JSON.parse(
-        JSON.stringify(ontology._oac.ontologyIr.ontology),
-      ) as unknown as OntologyIrOntologyBlockDataV2;
-
-      normalizeLinkFkMappings(ir);
+      const ir = ontologyToConverterIr(ontology);
 
       const fullMeta = OntologyIrToFullMetadataConverter.getFullMetadataFromIr(
         ir,

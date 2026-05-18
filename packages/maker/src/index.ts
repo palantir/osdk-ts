@@ -129,6 +129,7 @@ export {
 } from "./api/propertyConversionUtils.js";
 export type { ValueTypeDefinitionVersion } from "./api/values/ValueTypeDefinitionVersion.js";
 export { wrapWithProxy } from "./api/wrapWithProxy.js";
+export { validateLink } from "./conversion/toMarketplace/convertLink.js";
 export { propertyTypeTypeToOntologyIrType as convertType } from "./conversion/toMarketplace/propertyTypeTypeToOntologyIrType.js";
 
 // V2 experimental APIs — client-compatible maker definitions

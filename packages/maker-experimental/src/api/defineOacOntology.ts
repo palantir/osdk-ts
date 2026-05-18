@@ -83,7 +83,17 @@ export async function defineOacOntology<
 ): Promise<OacOntology<O, L, A, NS, I>> {
   initializeOntologyState(config.namespace);
 
-  const bundle = await config.build();
+  let bundle: OacOntologyBundle<O, L, A, I>;
+  try {
+    bundle = await config.build();
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(
+      "Unexpected error while building the OAC ontology bundle",
+      e,
+    );
+    throw e;
+  }
 
   if (
     RESERVED_KEY in bundle.objects
@@ -109,5 +119,5 @@ export async function defineOacOntology<
     randomnessKey: config.randomnessKey,
   });
 
-  return Object.assign(types, { _oac: oac }) as OacOntology<O, L, A, NS, I>;
+  return { ...types, [RESERVED_KEY]: oac };
 }

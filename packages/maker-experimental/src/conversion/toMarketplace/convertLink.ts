@@ -31,6 +31,7 @@ import {
   getImportedTypes,
   getOntologyDefinition,
   OntologyEntityTypeEnum,
+  validateLink,
 } from "@osdk/maker";
 import invariant from "tiny-invariant";
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
@@ -220,84 +221,6 @@ export function convertLink(
     },
   };
 }
-function validateLink(linkDefinition: LinkType) {
-  if ("one" in linkDefinition) {
-    const { apiName: oneObjectApiName, object: oneObject } = getObject(
-      linkDefinition.one.object,
-    );
-    const { apiName: toManyObjectApiName, object: toManyObject } = getObject(
-      linkDefinition.toMany.object,
-    );
-    const foreignKey = toManyObject.properties?.find(p =>
-      p.apiName === linkDefinition.manyForeignKeyProperty
-    );
-    invariant(
-      foreignKey !== undefined,
-      `Foreign key ${linkDefinition.manyForeignKeyProperty} on link ${linkDefinition.apiName} does not exist on object ${toManyObjectApiName}`,
-    );
-
-    invariant(
-      /([a-z][a-z0-9\\-]*)/.test(linkDefinition.apiName),
-      `Top level link api names are expected to match the regex pattern ([a-z][a-z0-9\\-]*) ${linkDefinition.apiName} does not match`,
-    );
-
-    const typesMatch = foreignKey.type
-      === oneObject.properties?.find(p =>
-        p.apiName === oneObject.primaryKeyPropertyApiName
-      )?.type;
-    invariant(
-      typesMatch,
-      `Link ${linkDefinition.apiName} has type mismatch between the one side's primary key and the foreign key on the many side`,
-    );
-  }
-  if ("intermediaryObjectType" in linkDefinition) {
-    const {
-      apiName: intermediaryObjectTypeApiName,
-      object: intermediaryObjectType,
-    } = getObject(linkDefinition.intermediaryObjectType);
-    const { apiName: manyObjectApiName, object: manyObject } = getObject(
-      linkDefinition.many.object,
-    );
-    const { apiName: toManyObjectApiName, object: toManyObject } = getObject(
-      linkDefinition.toMany.object,
-    );
-
-    const {
-      apiName: manyIntermediaryOneObjectApiName,
-      object: manyIntermediaryOneObject,
-    } = getObject((linkDefinition.many.linkToIntermediary as any).one.object);
-    const {
-      apiName: manyIntermediaryToManyObjectApiName,
-      object: manyIntermediaryToManyObject,
-    } = getObject(linkDefinition.many.linkToIntermediary.toMany.object);
-    invariant(
-      "one" in linkDefinition.many.linkToIntermediary
-        && manyIntermediaryOneObjectApiName
-          === manyObject.apiName
-        && manyIntermediaryToManyObjectApiName
-          === intermediaryObjectTypeApiName,
-      `LinkTypeA ${linkDefinition.many.linkToIntermediary.apiName} must be a many to one link from intermediary object ${intermediaryObjectTypeApiName} to objectA ${manyObjectApiName}`,
-    );
-
-    const {
-      apiName: toManyIntermediaryOneObjectApiName,
-      object: toManyIntermediaryOneObject,
-    } = getObject((linkDefinition.toMany.linkToIntermediary as any).one.object);
-    const {
-      apiName: toManyIntermediaryToManyObjectApiName,
-      object: toManyIntermediaryToManyObject,
-    } = getObject(linkDefinition.toMany.linkToIntermediary.toMany.object);
-    invariant(
-      "one" in linkDefinition.toMany.linkToIntermediary
-        && toManyIntermediaryOneObjectApiName
-          === toManyObjectApiName
-        && toManyIntermediaryToManyObjectApiName
-          === intermediaryObjectTypeApiName,
-      `LinkTypeB ${linkDefinition.toMany.linkToIntermediary.apiName} must be a many to one link from intermediary object ${intermediaryObjectTypeApiName} to objectB ${toManyObjectApiName}`,
-    );
-  }
-}
-
 export function getObject(
   object: string | ObjectTypeDefinition | ObjectType,
 ): { apiName: string; object: ObjectType } {

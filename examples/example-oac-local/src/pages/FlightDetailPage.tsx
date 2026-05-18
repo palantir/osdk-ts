@@ -1,9 +1,9 @@
-import { Airplane, Flight, modifyObjectFlight } from "@osdk-local";
+import { Airplane, Flight } from "@osdk-local";
 import type { Osdk } from "@osdk/api";
 import { useLinks, useOsdkObject } from "@osdk/react";
-import { ActionForm } from "@osdk/react-components/experimental/action-form";
 import React from "react";
 import { Link, useParams } from "react-router-dom";
+import { FlightModifyForm } from "./FlightModifyForm.js";
 
 export function FlightDetailPage(): React.ReactElement {
   const { flightNumber } = useParams<{ flightNumber: string }>();
@@ -72,10 +72,7 @@ export function FlightDetailPage(): React.ReactElement {
       <div className="panel">
         <h2>Record landing</h2>
         {flight && (
-          <ActionForm
-            actionDefinition={modifyObjectFlight}
-            formTitle="Modify Flight"
-          />
+          <FlightModifyForm key={flight.flightNumber} flight={flight} />
         )}
       </div>
     </div>
