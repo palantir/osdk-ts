@@ -119,7 +119,7 @@ export class MockDataGenerator {
       addedObjects: [
         {
           primaryKey: actionId,
-          objectType,
+          objectType: objectType,
         },
       ],
       modifiedObjects: [],

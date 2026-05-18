@@ -58,7 +58,7 @@ describe("FiberAccess", () => {
     it("should return fiber from element with __reactFiber$ property", () => {
       const mockFiber = createMockFiber();
       const element = document.createElement("div");
-      (element as unknown as Record<string, unknown>).__reactFiber$abc123 =
+      (element as unknown as Record<string, unknown>)["__reactFiber$abc123"] =
         mockFiber;
 
       const result = getFiberFromElement(element);
@@ -70,7 +70,9 @@ describe("FiberAccess", () => {
       // (set by React's markContainerAsRoot(root.current, container))
       const hostRootFiber = createMockFiber({ tag: 3 });
       const element = document.createElement("div");
-      (element as unknown as Record<string, unknown>).__reactContainer$abc123 = hostRootFiber;
+      (element as unknown as Record<string, unknown>)[
+        "__reactContainer$abc123"
+      ] = hostRootFiber;
 
       const result = getFiberFromElement(element);
       expect(result).toBe(hostRootFiber);
@@ -85,7 +87,7 @@ describe("FiberAccess", () => {
     it("should return null instead of walking up DOM tree", () => {
       const mockFiber = createMockFiber();
       const parent = document.createElement("div");
-      (parent as unknown as Record<string, unknown>).__reactFiber$abc =
+      (parent as unknown as Record<string, unknown>)["__reactFiber$abc"] =
         mockFiber;
 
       const child = document.createElement("span");
@@ -110,7 +112,7 @@ describe("FiberAccess", () => {
 
     it("should reject values that don't look like fibers", () => {
       const element = document.createElement("div");
-      (element as unknown as Record<string, unknown>).__reactFiber$abc = {
+      (element as unknown as Record<string, unknown>)["__reactFiber$abc"] = {
         notAFiber: true,
       };
 
