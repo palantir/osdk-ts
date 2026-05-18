@@ -1,5 +1,16 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.21.0
+
+### Minor Changes
+
+- 5b89f25: Fix IDP packaging
+- b98e084: fix interface resolution for action logic rules
+
+### Patch Changes
+
+- @osdk/client.unstable@2.21.0
+
 ## 2.20.0
 
 ### Patch Changes
