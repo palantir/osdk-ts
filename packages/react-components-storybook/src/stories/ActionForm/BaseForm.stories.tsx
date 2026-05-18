@@ -62,6 +62,14 @@ const DEPARTMENT_ITEMS = [
 
 const TAG_ITEMS = ["Urgent", "Review", "Follow-up", "Archived", "Pinned"];
 
+const USER_ID_ITEMS = ["usr_ada", "usr_grace", "usr_katherine"];
+
+const USER_DIRECTORY: Record<string, { name: string; team: string }> = {
+  usr_ada: { name: "Ada Lovelace", team: "Computation" },
+  usr_grace: { name: "Grace Hopper", team: "Compilers" },
+  usr_katherine: { name: "Katherine Johnson", team: "Flight dynamics" },
+};
+
 const formContent: ReadonlyArray<FormContentItem> = [
   field({
     fieldKey: "name",
@@ -525,6 +533,59 @@ export const WithSwitch: Story = {
   },
 };
 
+const unsupportedFormContent: ReadonlyArray<FormContentItem> = [
+  field({
+    fieldKey: "structPayload",
+    fieldComponent: "UNSUPPORTED",
+    label: "Struct payload",
+    isRequired: true,
+    fieldComponentProps: {},
+  }),
+  field({
+    fieldKey: "geoshape",
+    fieldComponent: "UNSUPPORTED",
+    label: "Geoshape",
+    fieldComponentProps: {},
+  }),
+];
+
+export const WithUnsupportedFields: Story = {
+  args: {
+    formTitle: "Unsupported field types",
+    formContent: unsupportedFormContent,
+    onSubmit: handleSubmit,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const formContent = [
+  {
+    fieldKey: "structPayload",
+    fieldComponent: "UNSUPPORTED",
+    label: "Struct payload",
+    isRequired: true,
+    fieldComponentProps: {},
+  },
+  {
+    fieldKey: "geoshape",
+    fieldComponent: "UNSUPPORTED",
+    label: "Geoshape",
+    fieldComponentProps: {},
+  },
+];
+
+// Unsupported fields render a disabled message.
+// Use fieldComponent: "CUSTOM" when you need to collect a value for these types.
+<BaseForm
+  formTitle="Unsupported field types"
+  formContent={formContent}
+  onSubmit={(formState) => console.log("Submitted:", formState)}
+/>`,
+      },
+    },
+  },
+};
+
 const validationFormContent: ReadonlyArray<FormContentItem> = [
   field({
     fieldKey: "name",
@@ -908,6 +969,7 @@ const multiSelectDropdownFormContent: ReadonlyArray<FormContentItem> = [
     fieldKey: "categories",
     fieldComponent: "DROPDOWN",
     label: "Categories (Select)",
+    isRequired: true,
     fieldComponentProps: {
       items: TAG_ITEMS,
       isMultiple: true,
@@ -960,6 +1022,78 @@ export const WithMultiSelectDropdown: Story = {
 ];
 
 // Side-by-side comparison: plain multi-Select vs searchable multi-Combobox.
+<BaseForm
+  formContent={formContent}
+  onSubmit={(formState) => console.log("Submitted:", formState)}
+/>`,
+      },
+    },
+  },
+};
+
+const richDropdownLabelFormContent: ReadonlyArray<FormContentItem> = [
+  field({
+    fieldKey: "assigneeUserId",
+    fieldComponent: "DROPDOWN",
+    label: "Assignee",
+    fieldComponentProps: {
+      items: USER_ID_ITEMS,
+      itemToStringLabel: getUserIdLabel,
+      renderItemLabel: renderUserIdLabel,
+      isSearchable: true,
+      placeholder: "Search users...",
+    },
+  }),
+  field({
+    fieldKey: "reviewerUserIds",
+    fieldComponent: "DROPDOWN",
+    label: "Reviewers",
+    fieldComponentProps: {
+      items: USER_ID_ITEMS,
+      itemToStringLabel: getUserIdLabel,
+      renderItemLabel: renderUserIdLabel,
+      isMultiple: true,
+      isSearchable: true,
+      placeholder: "Search reviewers...",
+    },
+  }),
+];
+
+export const WithRichDropdownLabels: Story = {
+  args: {
+    formContent: richDropdownLabelFormContent,
+    onSubmit: handleSubmit,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const userIds = ["usr_ada", "usr_grace", "usr_katherine"];
+
+const usersById = {
+  usr_ada: { name: "Ada Lovelace", team: "Computation" },
+  usr_grace: { name: "Grace Hopper", team: "Compilers" },
+  usr_katherine: { name: "Katherine Johnson", team: "Flight dynamics" },
+};
+
+const formContent = [
+  {
+    fieldKey: "assigneeUserId",
+    fieldComponent: "DROPDOWN",
+    label: "Assignee",
+    fieldComponentProps: {
+      items: userIds,
+      itemToStringLabel: (userId) => usersById[userId]?.name ?? userId,
+      renderItemLabel: (userId) => (
+        <span>
+          <strong>{usersById[userId]?.name ?? userId}</strong>
+          <span>{usersById[userId]?.team}</span>
+        </span>
+      ),
+      isSearchable: true,
+    },
+  },
+];
+
 <BaseForm
   formContent={formContent}
   onSubmit={(formState) => console.log("Submitted:", formState)}
@@ -1119,6 +1253,137 @@ export const InsideBlueprintDialog: Story = {
     </Dialog>
   );
 }`,
+      },
+    },
+  },
+};
+
+const scrollableDialogFormContent: ReadonlyArray<FormContentItem> = [
+  field({
+    fieldKey: "name",
+    fieldComponent: "TEXT_INPUT",
+    label: "Full Name",
+    isRequired: true,
+    fieldComponentProps: { placeholder: "Enter full name" },
+  }),
+  field({
+    fieldKey: "email",
+    fieldComponent: "TEXT_INPUT",
+    label: "Email",
+    isRequired: true,
+    fieldComponentProps: { placeholder: "user@example.com" },
+  }),
+  field({
+    fieldKey: "department",
+    fieldComponent: "DROPDOWN",
+    label: "Department",
+    fieldComponentProps: {
+      items: DEPARTMENT_ITEMS,
+      placeholder: "Select department...",
+    },
+  }),
+  field({
+    fieldKey: "startDate",
+    fieldComponent: "DATETIME_PICKER",
+    label: "Start Date",
+    fieldComponentProps: { placeholder: "Select a date" },
+  }),
+  field({
+    fieldKey: "priority",
+    fieldComponent: "DROPDOWN",
+    label: "Priority",
+    fieldComponentProps: {
+      items: DROPDOWN_ITEMS,
+      placeholder: "Select priority",
+    },
+  }),
+  field({
+    fieldKey: "isActive",
+    fieldComponent: "RADIO_BUTTONS",
+    label: "Status",
+    fieldComponentProps: {
+      options: [
+        { label: "Active", value: true },
+        { label: "Inactive", value: false },
+      ],
+    },
+  }),
+  field({
+    fieldKey: "bio",
+    fieldComponent: "TEXT_AREA",
+    label: "Bio",
+    fieldComponentProps: { placeholder: "Tell us about yourself", rows: 3 },
+  }),
+  field({
+    fieldKey: "tags",
+    fieldComponent: "DROPDOWN",
+    label: "Tags",
+    fieldComponentProps: {
+      items: TAG_ITEMS,
+      isMultiple: true,
+      isSearchable: true,
+      placeholder: "Search tags...",
+    },
+  }),
+  field({
+    fieldKey: "document",
+    fieldComponent: "FILE_PICKER",
+    label: "Resume",
+    fieldComponentProps: { accept: ".pdf,.doc,.docx" },
+  }),
+  field({
+    fieldKey: "notes",
+    fieldComponent: "TEXT_AREA",
+    label: "Additional Notes",
+    fieldComponentProps: { placeholder: "Any extra details", rows: 2 },
+  }),
+];
+
+function ScrollableDialogBaseForm(): React.ReactElement {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleOpen = useCallback(() => {
+    setIsOpen(true);
+  }, []);
+
+  const handleClose = useCallback(() => {
+    setIsOpen(false);
+  }, []);
+
+  return (
+    <>
+      <Button text="Open dialog" onClick={handleOpen} />
+      <Dialog
+        className="osdkBlueprintDialogForm"
+        isOpen={isOpen}
+        onClose={handleClose}
+        title="New employee"
+      >
+        <BaseForm
+          formContent={scrollableDialogFormContent}
+          onSubmit={handleSubmit}
+        />
+      </Dialog>
+    </>
+  );
+}
+
+export const ScrollableDialogForm: Story = {
+  render: () => <ScrollableDialogBaseForm />,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "When the form has many fields inside a height-constrained container like a dialog, the fields area scrolls while the footer stays pinned at the bottom.",
+      },
+      source: {
+        code:
+          `// The footer pins automatically when the form overflows its container.
+// No extra CSS or props needed — just place BaseForm inside a
+// height-constrained parent (dialog, panel, sidebar).
+<Dialog isOpen={true} title="New employee">
+  <BaseForm formContent={manyFields} onSubmit={handleSubmit} />
+</Dialog>`,
       },
     },
   },
@@ -1570,6 +1835,74 @@ export const WithObjectSelect: Story = {
   },
 };
 
+function ScopedObjectSelectStory(): React.ReactElement {
+  const client = useOsdkClient();
+  const marketingEmployees = useMemo(
+    () =>
+      client(Employee).where({ department: "Marketing" }) as ObjectSet<
+        ObjectTypeDefinition
+      >,
+    [client],
+  );
+  const scopedObjectSelectFormContent = useMemo(
+    (): ReadonlyArray<FormContentItem> => [
+      field({
+        fieldKey: "employee",
+        fieldComponent: "OBJECT_SELECT",
+        label: "Marketing employee",
+        helperText: "This selector is scoped by an ObjectSet.",
+        fieldComponentProps: {
+          objectSet: marketingEmployees,
+          placeholder: "Search Marketing employees…",
+        },
+      }),
+    ],
+    [marketingEmployees],
+  );
+
+  return (
+    <BaseForm
+      formContent={scopedObjectSelectFormContent}
+      onSubmit={handleSubmit}
+    />
+  );
+}
+
+export const WithScopedObjectSelect: Story = {
+  render: () => <ScopedObjectSelectStory />,
+  parameters: {
+    docs: {
+      source: {
+        code: `function ScopedEmployeeForm() {
+  const client = useOsdkClient();
+  const marketingEmployees = useMemo(
+    () => client(Employee).where({ department: "Marketing" }),
+    [client],
+  );
+
+  const formContent = [
+    {
+      type: "field",
+      definition: {
+        fieldKey: "employee",
+        fieldComponent: "OBJECT_SELECT",
+        label: "Marketing employee",
+        helperText: "This selector is scoped by an ObjectSet.",
+        fieldComponentProps: {
+          objectSet: marketingEmployees,
+          placeholder: "Search Marketing employees…",
+        },
+      },
+    },
+  ];
+
+  return <BaseForm formContent={formContent} onSubmit={handleSubmit} />;
+}`,
+      },
+    },
+  },
+};
+
 export const WithSections: Story = {
   args: {
     formContent: sectionFormContent,
@@ -1678,3 +2011,24 @@ export const WithGridSection: Story = {
     onSubmit: handleSubmit,
   },
 };
+function getUserIdLabel(item: unknown): string {
+  if (typeof item !== "string") {
+    return String(item);
+  }
+
+  return USER_DIRECTORY[item]?.name ?? item;
+}
+
+function renderUserIdLabel(item: unknown): React.ReactNode {
+  const userId = String(item);
+  const user = USER_DIRECTORY[userId];
+
+  return (
+    <span className="osdkRichDropdownLabel">
+      <strong>{user?.name ?? userId}</strong>
+      {user?.team != null
+        ? <span className="osdkRichDropdownDescription">{user.team}</span>
+        : null}
+    </span>
+  );
+}

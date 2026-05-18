@@ -211,6 +211,16 @@ describe("extractValidationRules", () => {
       expect(rules.required).toBe("This field is required");
       expect(rules.validate).toBeUndefined();
     });
+
+    it("returns only required for UNSUPPORTED when isRequired", () => {
+      const rules = extractValidationRules(makeFieldDef({
+        fieldComponent: "UNSUPPORTED",
+        isRequired: true,
+        fieldComponentProps: {},
+      }));
+      expect(rules.required).toBe("This field is required");
+      expect(rules.validate).toBeUndefined();
+    });
   });
 
   describe("custom validate", () => {

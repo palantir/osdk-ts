@@ -66,6 +66,7 @@ const startDateFilter: FilterDefinitionUnion<Employee> = {
   label: "Start Date",
   filterComponent: "DATE_RANGE",
   filterState: { type: "DATE_RANGE" },
+  clickToFilter: true,
 };
 
 const employeeNumberFilter: FilterDefinitionUnion<Employee> = {
@@ -75,6 +76,7 @@ const employeeNumberFilter: FilterDefinitionUnion<Employee> = {
   label: "Employee Number",
   filterComponent: "NUMBER_RANGE",
   filterState: { type: "NUMBER_RANGE" },
+  clickToFilter: true,
 };
 
 const locationCityFilter: FilterDefinitionUnion<Employee> = {
@@ -306,6 +308,36 @@ export const Default: Story = {
   },
 };
 
+export const IntegerNumberRangeRounding: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: "Repro for the integer-typed `NUMBER_RANGE` rounding fix. "
+          + "`employeeNumber` is an `integer` property, so histogram bucket "
+          + "boundaries — `(maxValue - minValue) / 20` — are usually fractional. "
+          + "Click any bar in the histogram. The Min/Max boxes must show whole "
+          + "integers (e.g. `657495073`), not fractional values "
+          + "(e.g. `657495073.4`).",
+      },
+    },
+  },
+  render: ({ objectType: _ot, objectSet: _os, ...args }) => {
+    const filterDefinitions = useMemo(
+      (): FilterDefinitionUnion<Employee>[] => [employeeNumberFilter],
+      [],
+    );
+    return (
+      <div style={SIDEBAR_STYLE}>
+        <FilterList
+          objectType={Employee}
+          filterDefinitions={filterDefinitions}
+          {...args}
+        />
+      </div>
+    );
+  },
+};
+
 function WithObjectSetStory(args: Partial<EmployeeFilterListProps>) {
   const client = useOsdkClient();
   const objectSet = useMemo(
@@ -317,10 +349,7 @@ function WithObjectSetStory(args: Partial<EmployeeFilterListProps>) {
   );
 
   const filterDefinitions = useMemo(
-    (): FilterDefinitionUnion<Employee>[] => [
-      teamFilter,
-      locationCityFilter,
-    ],
+    (): FilterDefinitionUnion<Employee>[] => [teamFilter, locationCityFilter],
     [],
   );
 
@@ -368,18 +397,22 @@ function AddFilterModeStory(args: Partial<EmployeeFilterListProps>) {
     (): FilterDefinitionUnion<Employee>[] => [
       departmentFilter,
       teamFilter,
-      { ...fullNameFilter, isVisible: false } as FilterDefinitionUnion<
-        Employee
-      >,
-      { ...startDateFilter, isVisible: false } as FilterDefinitionUnion<
-        Employee
-      >,
-      { ...employeeNumberFilter, isVisible: false } as FilterDefinitionUnion<
-        Employee
-      >,
-      { ...locationCityFilter, isVisible: false } as FilterDefinitionUnion<
-        Employee
-      >,
+      {
+        ...fullNameFilter,
+        isVisible: false,
+      } as FilterDefinitionUnion<Employee>,
+      {
+        ...startDateFilter,
+        isVisible: false,
+      } as FilterDefinitionUnion<Employee>,
+      {
+        ...employeeNumberFilter,
+        isVisible: false,
+      } as FilterDefinitionUnion<Employee>,
+      {
+        ...locationCityFilter,
+        isVisible: false,
+      } as FilterDefinitionUnion<Employee>,
     ],
     [],
   );
@@ -890,6 +923,110 @@ const filterDefinitions = [
   render: (args) => <WithRenderValueStory {...args} />,
 };
 
+const DEPARTMENT_SWATCHES: Record<string, string> = {
+  Marketing: "#f97316",
+  Operations: "#3b82f6",
+  Finance: "#10b981",
+  Product: "#a855f7",
+};
+
+const SWATCH_ROW_STYLE = {
+  display: "inline-flex",
+  alignItems: "center",
+  gap: 8,
+} as const;
+
+const SWATCH_DOT_BASE_STYLE = {
+  display: "inline-block",
+  width: 10,
+  height: 10,
+  borderRadius: "50%",
+  flexShrink: 0,
+} as const;
+
+function DepartmentSwatch({ value }: { value: string }) {
+  const color = DEPARTMENT_SWATCHES[value] ?? "#94a3b8";
+  return (
+    <span style={SWATCH_ROW_STYLE}>
+      <span style={{ ...SWATCH_DOT_BASE_STYLE, background: color }} />
+      <span>{DEPARTMENT_LABELS[value] ?? value}</span>
+    </span>
+  );
+}
+
+function WithRenderValueReactNodeStory(args: Partial<EmployeeFilterListProps>) {
+  const filterDefinitions = useMemo(
+    (): FilterDefinitionUnion<Employee>[] => [
+      {
+        type: "PROPERTY",
+        id: "department-swatch",
+        key: "department",
+        label: "Department (JSX)",
+        filterComponent: "LISTOGRAM",
+        filterState: { type: "EXACT_MATCH", values: [] },
+        renderValue: (value) => <DepartmentSwatch value={value} />,
+      },
+      {
+        type: "PROPERTY",
+        id: "team-link",
+        key: "team",
+        label: "Team (anchor JSX)",
+        filterComponent: "MULTI_SELECT",
+        filterState: { type: "SELECT", selectedValues: [] },
+        renderValue: (value) => (
+          <a
+            href={`#/team/${encodeURIComponent(value)}`}
+            onClick={(event) => event.preventDefault()}
+            style={{ color: "#2563eb", textDecoration: "underline" }}
+          >
+            {value}
+          </a>
+        ),
+      },
+    ],
+    [],
+  );
+
+  return (
+    <div style={SIDEBAR_STYLE}>
+      <FilterList
+        objectType={Employee}
+        filterDefinitions={filterDefinitions}
+        {...args}
+      />
+    </div>
+  );
+}
+
+export const WithRenderValueAsReactNode: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: "`renderValue` may return any `ReactNode`, not just a string. "
+          + "Use this to render avatars, anchors, status pills, or any "
+          + "custom JSX inside listogram rows, dropdown items, and chips. "
+          + "When the function returns non-string JSX, search matching "
+          + "falls back to the raw value.",
+      },
+      source: {
+        code: `const filterDefinitions = [
+  {
+    type: "PROPERTY",
+    key: "department",
+    label: "Department",
+    filterComponent: "LISTOGRAM",
+    filterState: { type: "EXACT_MATCH", values: [] },
+    renderValue: (value) => <DepartmentSwatch value={value} />,
+  },
+];
+
+<FilterList objectType={Employee} filterDefinitions={filterDefinitions} />`,
+      },
+    },
+  },
+  render: (args) => <WithRenderValueReactNodeStory {...args} />,
+};
+
 function WithListogramDisplayModesStory(
   args: Partial<EmployeeFilterListProps>,
 ) {
@@ -1128,19 +1265,20 @@ export const WithCheckbox: Story = {
   render: (args) => <WithCheckboxStory {...args} />,
 };
 
-function CombinedWithObjectTableStory(
-  args: Partial<EmployeeFilterListProps>,
-) {
+function CombinedWithObjectTableStory(args: Partial<EmployeeFilterListProps>) {
   const [filterClause, setFilterClause] = useState<
     WhereClause<Employee> | undefined
   >(undefined);
 
   const argsOnFilterRemoved = args.onFilterRemoved;
-  const handleFilterRemoved = useCallback((filterKey: string) => {
-    // eslint-disable-next-line no-console
-    console.log("Removed filter:", filterKey);
-    argsOnFilterRemoved?.(filterKey);
-  }, [argsOnFilterRemoved]);
+  const handleFilterRemoved = useCallback(
+    (filterKey: string) => {
+      // eslint-disable-next-line no-console
+      console.log("Removed filter:", filterKey);
+      argsOnFilterRemoved?.(filterKey);
+    },
+    [argsOnFilterRemoved],
+  );
 
   const argsOnFilterClauseChanged = args.onFilterClauseChanged;
   const handleFilterClauseChanged = useCallback(
@@ -1291,17 +1429,20 @@ function WithRemovableFiltersStory(args: Partial<EmployeeFilterListProps>) {
   >(sharedFilterDefinitions);
 
   const argsOnFilterRemoved = args.onFilterRemoved;
-  const handleFilterRemoved = useCallback((filterKey: string) => {
-    setDefinitions((prev) =>
-      prev.filter((def) => {
-        if ("key" in def) {
-          return def.key !== filterKey;
-        }
-        return true;
-      })
-    );
-    argsOnFilterRemoved?.(filterKey);
-  }, [argsOnFilterRemoved]);
+  const handleFilterRemoved = useCallback(
+    (filterKey: string) => {
+      setDefinitions((prev) =>
+        prev.filter((def) => {
+          if ("key" in def) {
+            return def.key !== filterKey;
+          }
+          return true;
+        })
+      );
+      argsOnFilterRemoved?.(filterKey);
+    },
+    [argsOnFilterRemoved],
+  );
 
   return (
     <div style={SIDEBAR_STYLE}>
@@ -1528,17 +1669,20 @@ function FullFeaturedStory(
   >(sharedFilterDefinitions);
 
   const argsOnFilterRemoved = args.onFilterRemoved;
-  const handleFilterRemoved = useCallback((filterKey: string) => {
-    setDefinitions((prev) =>
-      prev.filter((def) => {
-        if ("key" in def) {
-          return def.key !== filterKey;
-        }
-        return true;
-      })
-    );
-    argsOnFilterRemoved?.(filterKey);
-  }, [argsOnFilterRemoved]);
+  const handleFilterRemoved = useCallback(
+    (filterKey: string) => {
+      setDefinitions((prev) =>
+        prev.filter((def) => {
+          if ("key" in def) {
+            return def.key !== filterKey;
+          }
+          return true;
+        })
+      );
+      argsOnFilterRemoved?.(filterKey);
+    },
+    [argsOnFilterRemoved],
+  );
 
   const argsOnReset = args.onReset;
   const handleReset = useCallback(() => {
@@ -1717,9 +1861,10 @@ function CustomNameContainsFilter({
   onFilterStateChanged,
 }: {
   filterState: { type: "custom"; customState: { value: string } };
-  onFilterStateChanged: (
-    state: { type: "custom"; customState: { value: string } },
-  ) => void;
+  onFilterStateChanged: (state: {
+    type: "custom";
+    customState: { value: string };
+  }) => void;
 }) {
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1778,9 +1923,10 @@ function CustomSeniorOnlyFilterItem({
   onFilterStateChanged,
 }: {
   filterState: { type: "custom"; customState: { seniorOnly: boolean } };
-  onFilterStateChanged: (
-    state: { type: "custom"; customState: { seniorOnly: boolean } },
-  ) => void;
+  onFilterStateChanged: (state: {
+    type: "custom";
+    customState: { seniorOnly: boolean };
+  }) => void;
 }) {
   const handleToggle = useCallback(() => {
     onFilterStateChanged({
@@ -1998,4 +2144,165 @@ export const NoValueRendering: Story = {
       />
     </div>
   ),
+};
+
+// ---------------------------------------------------------------------------
+// Hydrating saved filter state via initialFilterStates
+// ---------------------------------------------------------------------------
+
+const locationCitySingleSelectFilter: FilterDefinitionUnion<Employee> = {
+  type: "PROPERTY",
+  id: "locationCity-single",
+  key: "locationCity",
+  label: "Location City (single)",
+  filterComponent: "SINGLE_SELECT",
+  filterState: { type: "SELECT", selectedValues: [] },
+};
+
+const linkedDepartmentMultiSelectFilter: FilterDefinitionUnion<Employee> = {
+  type: "LINKED_PROPERTY",
+  linkName: "lead",
+  linkedPropertyKey: "department",
+  linkedFilterComponent: "MULTI_SELECT",
+  linkedFilterState: { type: "SELECT", selectedValues: [] },
+  filterState: {
+    type: "linkedProperty",
+    linkedFilterState: { type: "SELECT", selectedValues: [] },
+  },
+  label: "Manager Department (linked multi)",
+} as FilterDefinitionUnion<Employee>;
+
+const linkedCitySingleSelectFilter: FilterDefinitionUnion<Employee> = {
+  type: "LINKED_PROPERTY",
+  linkName: "lead",
+  linkedPropertyKey: "locationCity",
+  linkedFilterComponent: "SINGLE_SELECT",
+  linkedFilterState: { type: "SELECT", selectedValues: [] },
+  filterState: {
+    type: "linkedProperty",
+    linkedFilterState: { type: "SELECT", selectedValues: [] },
+  },
+  label: "Manager City (linked single)",
+} as FilterDefinitionUnion<Employee>;
+
+const SAVED_FILTER_STATES = new Map<string, FilterState>([
+  // "Research", "Chief Scientist", and "Berlin" are NOT in the mock employee
+  // dataset — they simulate saved selections that currently have zero matching
+  // rows. Each filter type still renders them so users can see and clear them.
+  // Note: ghost values in one filter cascade into other filters' aggregation
+  // queries, so all counts show 0. This is a known limitation tracked separately.
+  ["department", { type: "EXACT_MATCH", values: ["Marketing", "Research"] }],
+  ["jobTitle-multi", {
+    type: "SELECT",
+    selectedValues: ["Marketing Manager", "Chief Scientist"],
+  }],
+  ["locationCity-single", { type: "SELECT", selectedValues: ["Berlin"] }],
+  // Linked property filters — ghost values are merged via mergeAggregationValues
+  // in LinkedMultiSelectInput, LinkedSingleSelectInput, and LinkedListogramInput.
+  ["linkedProperty:lead:department", {
+    type: "linkedProperty",
+    linkedFilterState: {
+      type: "SELECT",
+      selectedValues: ["Marketing", "Research"],
+    },
+  }],
+  ["linkedProperty:lead:locationCity", {
+    type: "linkedProperty",
+    linkedFilterState: { type: "SELECT", selectedValues: ["Berlin"] },
+  }],
+]);
+
+const INITIAL_STATE_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
+  departmentFilter,
+  jobTitleMultiSelectFilter,
+  locationCitySingleSelectFilter,
+  linkedDepartmentMultiSelectFilter,
+  linkedCitySingleSelectFilter,
+];
+
+function WithInitialFilterStatesStory(
+  args: Partial<EmployeeFilterListProps>,
+) {
+  const client = useOsdkClient();
+  // Linked property filters require an objectSet to call pivotTo() on.
+  const objectSet = useMemo(() => client(Employee), [client]);
+
+  const [filterClause, setFilterClause] = useState<
+    WhereClause<Employee> | undefined
+  >(undefined);
+
+  const handleFilterClauseChanged = useCallback(
+    (clause: WhereClause<Employee>) => {
+      setFilterClause(clause);
+    },
+    [],
+  );
+
+  return (
+    <div style={FLEX_ROW_STYLE}>
+      <div style={SIDEBAR_STYLE}>
+        <FilterList
+          {...args}
+          objectType={Employee}
+          objectSet={objectSet}
+          filterDefinitions={INITIAL_STATE_FILTER_DEFINITIONS}
+          initialFilterStates={SAVED_FILTER_STATES}
+          onFilterClauseChanged={handleFilterClauseChanged}
+        />
+      </div>
+      <div style={FLEX_FILL_STYLE}>
+        <h4>Active where clause</h4>
+        <pre style={PRE_STYLE}>
+          {filterClause
+            ? JSON.stringify(filterClause, null, 2)
+            : "(none)"}
+        </pre>
+      </div>
+    </div>
+  );
+}
+
+export const WithInitialFilterStates: Story = {
+  name: "With initial filter states",
+  parameters: {
+    docs: {
+      description: {
+        story: "Pass `initialFilterStates` to hydrate filters from saved state "
+          + "(e.g. localStorage or URL params). Selections are restored on "
+          + "mount, including values that currently have zero matching rows "
+          + "— they appear with a count of 0 so users can see and clear them. "
+          + "Demonstrated across LISTOGRAM, MULTI_SELECT, SINGLE_SELECT, "
+          + "and LINKED_PROPERTY filters.",
+      },
+      source: {
+        code:
+          `// "Research", "Chief Scientist", and "Berlin" are not in the current
+// dataset — they represent saved selections with zero matching rows
+// today. The filter list still shows them so users can see and clear them.
+const savedStates = new Map([
+  // Direct property filters
+  ["department", { type: "EXACT_MATCH", values: ["Marketing", "Research"] }],
+  ["jobTitle-multi", { type: "SELECT", selectedValues: ["Marketing Manager", "Chief Scientist"] }],
+  ["locationCity-single", { type: "SELECT", selectedValues: ["Berlin"] }],
+  // Linked property filters
+  ["linkedProperty:lead:department", {
+    type: "linkedProperty",
+    linkedFilterState: { type: "SELECT", selectedValues: ["Marketing", "Research"] },
+  }],
+  ["linkedProperty:lead:locationCity", {
+    type: "linkedProperty",
+    linkedFilterState: { type: "SELECT", selectedValues: ["Berlin"] },
+  }],
+]);
+
+<FilterList
+  objectType={Employee}
+  filterDefinitions={filterDefinitions}
+  initialFilterStates={savedStates}
+  onFilterClauseChanged={handleFilterClauseChanged}
+/>`,
+      },
+    },
+  },
+  render: (args) => <WithInitialFilterStatesStory {...args} />,
 };

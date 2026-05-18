@@ -48,6 +48,26 @@ import { objectLocator, parseLocator } from "./ObjectLocator.js";
 import type { JustProps } from "./typeHelpers/JustProps.js";
 import { validateAction } from "./validateAction.js";
 
+function getSelectedProperties(
+  parsedBody:
+    | OntologiesV2.LoadObjectSetV2MultipleObjectTypesRequest
+    | OntologiesV2.LoadObjectSetRequestV2,
+): readonly string[] {
+  if (parsedBody.selectV2 && parsedBody.selectV2.length > 0) {
+    return parsedBody.selectV2.map(entry => {
+      if (entry.type === "property") {
+        return entry.apiName;
+      } else if (entry.type === "propertyWithLoadLevel") {
+        if (entry.propertyIdentifier.type === "property") {
+          return entry.propertyIdentifier.apiName;
+        }
+      }
+      return "";
+    }).filter(Boolean);
+  }
+  return parsedBody.select;
+}
+
 export interface MediaMetadataAndContent {
   content: ArrayBuffer;
   mediaRef: MediaReference;
@@ -867,7 +887,7 @@ export class FauxDataStore {
       | OntologiesV2.LoadObjectSetV2MultipleObjectTypesRequest
       | OntologiesV2.LoadObjectSetRequestV2,
   ): PagedBodyResponseWithTotal<BaseServerObject> {
-    const selected = parsedBody.select;
+    const selected = getSelectedProperties(parsedBody);
     const loadPropertySecurities = parsedBody.loadPropertySecurities ?? false;
     // when we have interfaces in here, we have a little trick for
     // caching off the important properties

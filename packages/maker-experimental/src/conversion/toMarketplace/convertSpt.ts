@@ -62,14 +62,14 @@ export function convertSpt(
             apiName,
             true,
           ),
-          reducers: [{ direction: "DESCENDING_NULLS_LAST", field: null }],
+          reducers: [],
         },
       }
       : propertyTypeTypeToOntologyIrType(type, ridGenerator, apiName, true),
     aliases: aliases ?? [],
     baseFormatter,
     dataConstraints: dataConstraint,
-    gothamMapping: gothamMapping,
+    gothamMapping,
     indexedForSearch: true,
     typeClasses: typeClasses ?? [],
     valueType: valueType === undefined

@@ -34,7 +34,6 @@ export interface FieldBridgeProps {
 const SELECT_LIKE_FIELDS: ReadonlySet<FieldComponent> = new Set<FieldComponent>(
   [
     "RADIO_BUTTONS",
-    "DROPDOWN",
     "SWITCH",
   ],
 );
@@ -61,6 +60,7 @@ export const FieldBridge: React.FC<FieldBridgeProps> = memo(
     });
 
     const isSelectLike = SELECT_LIKE_FIELDS.has(fieldDef.fieldComponent);
+    const isDropdown = fieldDef.fieldComponent === "DROPDOWN";
 
     const handleChange = useCallback(
       (newValue: unknown) => {
@@ -94,7 +94,11 @@ export const FieldBridge: React.FC<FieldBridgeProps> = memo(
         value={value}
         fieldDefinition={fieldDef}
         onFieldValueChange={handleChange}
-        onBlur={handleBlur}
+        // Dropdown fields own their blur signal because their popover renders
+        // in a portal outside the container div — the container-level blur
+        // would fire prematurely when the popover opens.
+        onBlur={isDropdown ? undefined : handleBlur}
+        onFieldBlur={isDropdown ? onBlur : undefined}
         error={fieldError?.message}
         portalContainer={portalContainer}
       />

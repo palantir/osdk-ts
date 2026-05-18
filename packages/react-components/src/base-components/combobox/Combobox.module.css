@@ -312,6 +312,13 @@
      navigation. Keep visible focus on the trigger/input or highlighted option
      instead of drawing a browser-default ring around this wrapper. */
   outline: none;
+
+  /* Hide the popup when its anchor scrolls out of view (e.g. inside a
+     scrollable sidebar). @base-ui/react sets this attribute automatically
+     via floating-ui's hide middleware. */
+  &[data-anchor-hidden] {
+    visibility: hidden;
+  }
 }
 
 .osdkComboboxPopup {
@@ -398,7 +405,8 @@
     )
     var(--osdk-combobox-transition-ease, var(--osdk-emphasis-ease-default));
 
-  &[data-highlighted] {
+  &[data-highlighted],
+  &:not([data-disabled]):hover {
     background-color: var(
       --osdk-combobox-item-bg-highlighted,
       var(--osdk-surface-background-color-default-hover)

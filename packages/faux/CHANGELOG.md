@@ -1,5 +1,38 @@
 # @osdk/shared.test
 
+## 0.17.0
+
+### Patch Changes
+
+- Updated dependencies [9eb67e4]
+  - @osdk/api@2.20.0
+  - @osdk/generator-converters@2.20.0
+
+## 0.16.0
+
+### Minor Changes
+
+- 02c796c: Array Reducers and Struct Main Value support
+- ecc5b36: Adds support for object aggregations in faux foundry
+
+### Patch Changes
+
+- Updated dependencies [02c796c]
+- Updated dependencies [d962309]
+  - @osdk/generator-converters@2.19.0
+  - @osdk/api@2.19.0
+
+## 0.15.0
+
+### Minor Changes
+
+- 2f3271b: Camelizes action type api names
+
+### Patch Changes
+
+- @osdk/api@2.18.0
+- @osdk/generator-converters@2.18.0
+
 ## 0.14.0
 
 ### Minor Changes

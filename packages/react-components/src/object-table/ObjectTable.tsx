@@ -16,10 +16,12 @@
 
 import type {
   ObjectOrInterfaceDefinition,
+  ObjectSet,
   Osdk,
   PropertyKeys,
   QueryDefinition,
   SimplePropertyDef,
+  WhereClause,
 } from "@osdk/api";
 import type { Cell } from "@tanstack/react-table";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
@@ -30,6 +32,7 @@ import { useColumnResize } from "./hooks/useColumnResize.js";
 import { useColumnVisibility } from "./hooks/useColumnVisibility.js";
 import { useEditableTable } from "./hooks/useEditableTable.js";
 import { useObjectTableData } from "./hooks/useObjectTableData.js";
+import type { UseRowSelectionChange } from "./hooks/useRowSelection.js";
 import { useRowSelection } from "./hooks/useRowSelection.js";
 import { useSelectionColumn } from "./hooks/useSelectionColumn.js";
 import { useTableSorting } from "./hooks/useTableSorting.js";
@@ -74,6 +77,7 @@ export function ObjectTable<
   onColumnsPinnedChanged,
   onColumnResize,
   onRowSelection,
+  onRowSelectionChanged,
   onColumnHeaderClick,
   renderCellContextMenu,
   selectionMode = "none",
@@ -105,20 +109,21 @@ export function ObjectTable<
     },
   );
 
-  const { data, fetchMore, isLoading, error } = useObjectTableData<
-    Q,
-    RDPs,
-    FunctionColumns
-  >(
-    objectType,
-    columnDefinitions,
-    filter,
-    sorting,
-    objectSet,
-    objectSetOptions,
-    dedupeIntervalMs,
-    pageSize,
-  );
+  const { data, fetchMore, isLoading, error, objectSet: resultingObjectSet } =
+    useObjectTableData<
+      Q,
+      RDPs,
+      FunctionColumns
+    >(
+      objectType,
+      columnDefinitions,
+      filter,
+      sorting,
+      objectSet,
+      objectSetOptions,
+      dedupeIntervalMs,
+      pageSize,
+    );
 
   const { columns, loading: isColumnsLoading } = useColumnDefs<
     Q,
@@ -127,6 +132,42 @@ export function ObjectTable<
   >(
     objectType,
     columnDefinitions,
+  );
+
+  const primaryKeyApiName = objectType.type === "object"
+    ? objectType.primaryKeyApiName
+    : undefined;
+
+  const handleRowSelectionChanged = useCallback(
+    (change: UseRowSelectionChange<Q, RDPs>) => {
+      if (!onRowSelectionChanged) return;
+
+      let derivedObjectSet: ObjectSet<Q, RDPs> | undefined;
+      if (resultingObjectSet) {
+        if (primaryKeyApiName) {
+          derivedObjectSet =
+            change.isSelectAll && change.selectedRowIds.length > 0
+              ? resultingObjectSet
+              : resultingObjectSet.where({
+                [primaryKeyApiName]: { $in: change.selectedRowIds },
+              } as WhereClause<Q, RDPs>);
+        } else if (change.isSelectAll && change.selectedRowIds.length > 0) {
+          derivedObjectSet = resultingObjectSet;
+        }
+      }
+
+      onRowSelectionChanged({
+        selectedRowIds: change.selectedRowIds,
+        selectedRows: change.selectedRows,
+        isSelectAll: change.isSelectAll,
+        objectSet: derivedObjectSet,
+      });
+    },
+    [
+      onRowSelectionChanged,
+      resultingObjectSet,
+      primaryKeyApiName,
+    ],
   );
 
   const {
@@ -141,6 +182,7 @@ export function ObjectTable<
     selectedRows,
     isAllSelected: isAllSelectedProp,
     onRowSelection,
+    onRowSelectionChanged: handleRowSelectionChanged,
     data,
   });
 
@@ -271,6 +313,7 @@ export function ObjectTable<
       onColumnHeaderClick={handleColumnHeaderClick}
       rowHeight={props.rowHeight}
       renderCellContextMenu={onRenderCellContextMenu}
+      renderEmptyState={props.renderEmptyState}
       className={props.className}
       error={error}
       headerMenuFeatureFlags={headerMenuFeatureFlags}

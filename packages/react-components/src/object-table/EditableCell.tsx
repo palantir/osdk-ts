@@ -64,6 +64,13 @@ export interface EditableCellProps<TData extends RowData, CellValue = unknown> {
   columnId: string;
   validateEdit?: (value: unknown) => Promise<string | undefined>;
   editFieldConfig?: EditFieldConfig<TData>;
+  /**
+   * Pending edits for this row, keyed by `columnId`. Forwarded to
+   * `EditFieldConfig#getFieldComponentProps`. Filtering happens in
+   * `DefaultCellRenderer` so unedited rows receive a stable `undefined`
+   * reference and `React.memo` can skip them.
+   */
+  rowCellEdits?: Record<string, CellEditInfo<TData, unknown>>;
   isRowFocused?: boolean;
 }
 
@@ -113,6 +120,7 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
   validateEdit,
   validationError,
   editFieldConfig,
+  rowCellEdits,
   isRowFocused = false,
 }: EditableCellProps<TData, CellValue>): React.ReactElement {
   const [inputValue, setInputValue] = useState<string>(
@@ -129,7 +137,7 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
   }, []);
 
   const hasValidationError = validationError != null;
-  const isEdited = currentValue !== initialValue;
+  const isEdited = (currentValue ?? null) !== (initialValue ?? null);
 
   useEffect(() => {
     setInputValue(valueToString(currentValue));
@@ -248,31 +256,32 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
 
   const handleCommit = useCallback(
     (newValue: unknown) => {
+      if ((newValue ?? null) === (currentValue ?? null)) return;
       commitEdit(newValue as CellValue);
     },
-    [commitEdit],
+    [commitEdit, currentValue],
   );
 
   const inputType = dataType && NUMBER_TYPES.includes(dataType)
     ? "number"
     : "text";
 
-  // Compute field-component props once per (editFieldConfig, originalRowData).
+  // Compute field-component props once per (editFieldConfig, originalRowData, rowCellEdits).
   // The narrowed return type is preserved in each useMemo
   const dropdownFieldProps = useMemo(
     () =>
       editFieldConfig?.fieldComponent === "DROPDOWN"
-        ? editFieldConfig.getFieldComponentProps(originalRowData)
+        ? editFieldConfig.getFieldComponentProps(originalRowData, rowCellEdits)
         : undefined,
-    [editFieldConfig, originalRowData],
+    [editFieldConfig, originalRowData, rowCellEdits],
   );
 
   const datePickerFieldProps = useMemo(
     () =>
       editFieldConfig?.fieldComponent === "DATE_PICKER"
-        ? editFieldConfig.getFieldComponentProps(originalRowData)
+        ? editFieldConfig.getFieldComponentProps(originalRowData, rowCellEdits)
         : undefined,
-    [editFieldConfig, originalRowData],
+    [editFieldConfig, originalRowData, rowCellEdits],
   );
 
   const renderFieldInput = () => {
@@ -283,6 +292,7 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
             fieldComponentProps={dropdownFieldProps!}
             isRowFocused={isRowFocused}
             inputValue={inputValue}
+            value={currentValue}
             hasValidationError={hasValidationError}
             isEdited={isEdited}
             onChange={handleCommit}

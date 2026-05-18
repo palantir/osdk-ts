@@ -1,5 +1,20 @@
 # @osdk/api
 
+## 2.20.0
+
+### Minor Changes
+
+- 9eb67e4: Add experimental support for streaming queries via the `__EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction` marker.
+
+## 2.19.0
+
+### Minor Changes
+
+- 02c796c: Array Reducers and Struct Main Value support
+- d962309: Add ability to subscribe to an object set RID without a type, experimentally.
+
+## 2.18.0
+
 ## 2.17.0
 
 ### Minor Changes

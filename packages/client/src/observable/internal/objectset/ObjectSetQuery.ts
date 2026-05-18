@@ -59,6 +59,10 @@ export class ObjectSetQuery extends BaseListQuery<
   #requiresServerEvaluation: boolean;
   #resultTypeApiName: string;
 
+  // Object types this query's RDPs traverse; an edit to any of these triggers
+  // revalidation. Lazily populated on first fetch when `withProperties` is set.
+  #rdpInvalidationSet: ReadonlySet<string> | undefined;
+
   constructor(
     store: Store,
     subject: Observable<SubjectPayload<ObjectSetCacheKey>>,
@@ -216,13 +220,25 @@ export class ObjectSetQuery extends BaseListQuery<
       && !(this.sortingStrategy instanceof OrderBySortingStrategy)
     ) {
       const wireObjectSet = getWireObjectSet(this.#composedObjectSet);
-      const { resultType } = await getObjectTypesThatInvalidate(
-        this.store.client[additionalContext],
-        wireObjectSet,
-      );
+      const { resultType, invalidationSet } =
+        await getObjectTypesThatInvalidate(
+          this.store.client[additionalContext],
+          wireObjectSet,
+        );
       this.sortingStrategy = new OrderBySortingStrategy(
         resultType.apiName,
         this.#operations.orderBy,
+      );
+      this.#rdpInvalidationSet = invalidationSet;
+    }
+
+    if (
+      this.#rdpInvalidationSet == null
+      && this.#operations.withProperties != null
+    ) {
+      const wireObjectSet = getWireObjectSet(this.#composedObjectSet);
+      this.#rdpInvalidationSet = await this.#computeInvalidationTypes(
+        wireObjectSet,
       );
     }
 
@@ -445,6 +461,24 @@ export class ObjectSetQuery extends BaseListQuery<
     return { definite, uncertain };
   }
 
+  async #computeInvalidationTypes(
+    wireObjectSet: WireObjectSet,
+  ): Promise<Set<string>> {
+    try {
+      const { invalidationSet } = await getObjectTypesThatInvalidate(
+        this.store.client[additionalContext],
+        wireObjectSet,
+      );
+      return invalidationSet;
+    } catch (error) {
+      this.store.logger?.error(
+        "Failed to compute invalidation types for object set query, falling back to empty set",
+        error,
+      );
+      return new Set();
+    }
+  }
+
   #getObjectCacheKey(
     obj: { $objectType: string; $primaryKey: string | number },
   ): ObjectCacheKey {
@@ -461,7 +495,10 @@ export class ObjectSetQuery extends BaseListQuery<
     objectType: string,
     changes: Changes | undefined,
   ): Promise<void> => {
-    if (this.#objectTypes.has(objectType)) {
+    if (
+      this.#objectTypes.has(objectType)
+      || (this.#rdpInvalidationSet?.has(objectType) ?? false)
+    ) {
       changes?.modified.add(this.cacheKey);
       return this.revalidate(true);
     }

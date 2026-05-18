@@ -31,6 +31,7 @@ import type {
   SyncApplyActionResponseV2,
 } from "@osdk/foundry.ontologies";
 import * as Actions from "@osdk/foundry.ontologies/Action";
+import invariant from "tiny-invariant";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import { augmentRequestContext } from "../util/augmentRequestContext.js";
@@ -129,6 +130,10 @@ export async function applyAction<
     action,
   );
   if (Array.isArray(parameters)) {
+    invariant(
+      client.transactionId == null,
+      "Batch actions are not supported for staged edit functions or when supplying a transaction ID",
+    );
     const response = await Actions.applyBatch(
       clientWithHeaders,
       await client.ontologyRid,

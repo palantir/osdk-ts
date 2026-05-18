@@ -110,18 +110,18 @@ function ContainsTextInputInner({
           placeholder={placeholder}
           aria-label={placeholder}
         />
-        {localValue && (
-          <Button
-            type="button"
-            className={styles.clearButton}
-            onClick={handleClear}
-            aria-label="Clear search"
-          >
-            {renderClearIcon
-              ? renderClearIcon()
-              : <Cross />}
-          </Button>
-        )}
+        <Button
+          type="button"
+          className={styles.clearButton}
+          data-active={!!localValue || undefined}
+          onClick={handleClear}
+          disabled={!localValue}
+          aria-label="Clear search"
+        >
+          {renderClearIcon
+            ? renderClearIcon()
+            : <Cross />}
+        </Button>
       </div>
     </div>
   );

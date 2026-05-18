@@ -45,6 +45,12 @@ Components are imported from their individual entry points under `@osdk/react-co
 - `@osdk/react-components/experimental/tiff-renderer` — TiffRenderer
 - `@osdk/react-components/experimental/markdown-renderer` — MarkdownRenderer
 - `@osdk/react-components/experimental/aip-agent-chat` — AipAgentChat, BaseAipAgentChat
+- `@osdk/react-components/experimental/document-viewer` — DocumentViewer
+- `@osdk/react-components/experimental/email-viewer` — EmailViewer, BaseEmailViewer
+- `@osdk/react-components/experimental/excel-viewer` — ExcelViewer, BaseExcelViewer
+- `@osdk/react-components/experimental/image-viewer` — ImageViewer, BaseImageViewer
+- `@osdk/react-components/experimental/video-viewer` — VideoViewer, BaseVideoViewer
+- `@osdk/react-components/experimental/xml-viewer` — XmlViewer, BaseXmlViewer
 
 | Component              | Description                                                                                                                                 |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -61,6 +67,12 @@ Components are imported from their individual entry points under `@osdk/react-co
 | **MarkdownRenderer**   | Markdown renderer that accepts a markdown string and renders it with styled headings, code blocks, tables, and links.                       |
 | **AipAgentChat**       | Chat surface backed by Foundry LMS via `useChat`. Takes a `PlatformClient` + model API name and renders messages, composer, and streaming.  |
 | **BaseAipAgentChat**   | OSDK-agnostic base chat — accepts `messages`/`status`/`onSendMessage` directly. Use for custom chat-state plumbing.                         |
+| **DocumentViewer**     | Unified media viewer that auto-detects file type (PDF, TIFF, image, video, Excel, email, markdown, XML) and renders the appropriate viewer. |
+| **EmailViewer**        | Email viewer — parses and renders `.eml` files with headers, HTML body (sandboxed iframe), and plain text fallback.                         |
+| **ExcelViewer**        | Excel viewer — parses and renders `.xlsx` spreadsheets with sheet tabs and column/row headers.                                              |
+| **ImageViewer**        | Image viewer — renders images (PNG, JPEG, GIF, SVG, WebP, BMP) with object-fit contain.                                                     |
+| **VideoViewer**        | Video viewer — renders video with native browser controls.                                                                                  |
+| **XmlViewer**          | XML viewer — renders XML content with syntax preservation.                                                                                  |
 
 ## Documentation
 

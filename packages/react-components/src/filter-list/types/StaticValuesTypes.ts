@@ -15,6 +15,7 @@
  */
 
 import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
+import type { ReactNode } from "react";
 import type {
   FilterState,
   FilterStateByComponentType,
@@ -78,8 +79,11 @@ export interface StaticValuesFilterDefinition<
   /**
    * Custom display function for filter values.
    * Replaces the default string display in dropdown items, chips, and listogram rows.
+   * When the function returns a string, that string is also used for search matching
+   * within filter dropdowns. When it returns a non-string `ReactNode`, search falls
+   * back to the raw value.
    */
-  renderValue?: (value: string) => string;
+  renderValue?: (value: string) => ReactNode;
 
   /**
    * Show aggregation counts next to filter option values.

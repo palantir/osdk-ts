@@ -128,12 +128,13 @@ Each column header has a menu with items for sorting, filtering, pinning, resizi
 
 ### Row Selection
 
-| Prop             | Type                                     | Default  | Description                                            |
-| ---------------- | ---------------------------------------- | -------- | ------------------------------------------------------ |
-| `selectionMode`  | `"single" \| "multiple" \| "none"`       | `"none"` | Selection mode. "multiple" shows checkboxes            |
-| `selectedRows`   | `PrimaryKeyType<Q>[]`                    | -        | Selected rows (controlled mode)                        |
-| `isAllSelected`  | `boolean`                                | -        | Indicates all rows are selected (controlled mode only) |
-| `onRowSelection` | `(selectedRowIds, isSelectAll?) => void` | -        | Required when `selectedRows` is provided               |
+| Prop                    | Type                                     | Default  | Description                                                                                                                                                                                                                 |
+| ----------------------- | ---------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `selectionMode`         | `"single" \| "multiple" \| "none"`       | `"none"` | Selection mode. "multiple" shows checkboxes                                                                                                                                                                                 |
+| `selectedRows`          | `PrimaryKeyType<Q>[]`                    | -        | Selected rows (controlled mode)                                                                                                                                                                                             |
+| `isAllSelected`         | `boolean`                                | -        | Indicates all rows are selected (controlled mode only)                                                                                                                                                                      |
+| `onRowSelectionChanged` | `(change: RowSelectionChange) => void`   | -        | **Preferred.** Fires with `{ selectedRowIds, selectedRows, isSelectAll, objectSet }`. The `objectSet` is the underlying set when "select all" is active, otherwise narrowed by `$primaryKey`. See [example](#row-selection) |
+| `onRowSelection`        | `(selectedRowIds, isSelectAll?) => void` | -        | **Deprecated** — use `onRowSelectionChanged`. Still fires for backwards compatibility. Refires with the expanded id list after "select all" + scroll                                                                        |
 
 ### Interactions
 
@@ -141,6 +142,7 @@ Each column header has a menu with items for sorting, filtering, pinning, resizi
 | ----------------------- | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
 | `onRowClick`            | `(object) => void`                                 | Called when a row is clicked                                                                                                         |
 | `renderCellContextMenu` | `(row, cellValue) => ReactNode`                    | Custom context menu for right-click on cells                                                                                         |
+| `renderEmptyState`      | `() => ReactNode`                                  | Render override for the empty state. Called when the table has no rows and no error. Defaults to a "No Data" indicator               |
 | `getRowAttributes`      | `(rowData) => Record<string, string \| undefined>` | Extra HTML attributes (typically `data-*`) applied to each `<tr>`. See [Row Attributes](#row-attributes-and-conditional-row-styling) |
 
 ### Cell Editing
@@ -652,6 +654,50 @@ function EmployeesTable() {
 - When `isAllSelected` is `true`, the table shows all rows as selected regardless of the `selectedRows` array content
 - This allows efficient handling of "select all" without loading all object IDs
 - Individual row selections automatically set `isAllSelected` to `false`
+- After "select all", new rows loaded via scroll (`fetchMore`) stay visually checked and `onRowSelection` refires with the expanded id list so controlled callers stay in sync
+
+### Listening to selection changes
+
+`onRowSelectionChanged` is the preferred callback. It fires with a single payload covering everything you usually need:
+
+```typescript
+<ObjectTable
+  objectType={Employee}
+  selectionMode="multiple"
+  onRowSelectionChanged={({
+    selectedRowIds,
+    selectedRows,
+    isSelectAll,
+    objectSet,
+  }) => {
+    // selectedRowIds: PrimaryKeyType<Employee>[] — current selection
+    // selectedRows:   loaded row instances matching selectedRowIds
+    //                 (pages not yet fetched are absent when isSelectAll)
+    // isSelectAll:    true only when the user invoked "select all" (or
+    //                 controlled isAllSelected={true}) — NOT just because
+    //                 every visible row happens to be checked
+    // objectSet:      ObjectSet covering the selection. Full underlying
+    //                 set when isSelectAll; otherwise narrowed by
+    //                 $primaryKey. `undefined` for interface types
+    //                 without a resolvable primaryKeyApiName on partial
+    //                 or empty selections.
+    if (objectSet) {
+      void applySomeBulkAction({ targets: objectSet });
+    }
+  }}
+/>;
+```
+
+#### Migrating from `onRowSelection`
+
+The legacy `onRowSelection(selectedRowIds, isSelectAll?)` callback is deprecated but still fires for backwards compatibility. The equivalents in `onRowSelectionChanged` are:
+
+| Legacy parameter           | New payload field |
+| -------------------------- | ----------------- |
+| `selectedRowIds`           | `selectedRowIds`  |
+| `isSelectAll` (second arg) | `isSelectAll`     |
+| _(not previously exposed)_ | `selectedRows`    |
+| _(not previously exposed)_ | `objectSet`       |
 
 ### Example 12: Custom Column Type
 

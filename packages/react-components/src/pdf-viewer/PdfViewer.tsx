@@ -48,6 +48,7 @@ export const BasePdfViewer: React.ForwardRefExoticComponent<
     onFormChange,
     initialPage = 1,
     initialScale = 1.0,
+    initialAutoSize = false,
     initialSidebarOpen = false,
     enableDownload = false,
     sidebarMode: sidebarModeProp = "thumbnails",
@@ -58,6 +59,7 @@ export const BasePdfViewer: React.ForwardRefExoticComponent<
       src,
       initialPage,
       initialScale,
+      initialAutoSize,
       initialSidebarOpen,
       sidebarMode: sidebarModeProp,
       onDownload,
@@ -126,9 +128,12 @@ export const BasePdfViewer: React.ForwardRefExoticComponent<
           currentPage={viewer.currentPage}
           numPages={viewer.numPages}
           scale={viewer.scale}
+          autoSize={viewer.autoSize}
           sidebarOpen={viewer.sidebarOpen}
           onPageChange={viewer.scrollToPage}
-          onScaleChange={viewer.setScale}
+          onZoomIn={viewer.zoomIn}
+          onZoomOut={viewer.zoomOut}
+          onAutoSizeToggle={viewer.toggleAutoSize}
           onSearchOpen={viewer.search.openSearch}
           onSidebarToggle={viewer.toggleSidebar}
           onDownload={viewer.download}
