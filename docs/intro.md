@@ -31,6 +31,17 @@ Pre-built, Ontology-aware React components with data loading, caching, and state
 - [PdfViewer](/react-components/PdfViewer) - PDF viewer with annotations and search
 - [CbacPicker](/cbac-components/CbacPicker) - Classification marking picker, dialog, and banner
 
+### [Devtools](/react-devtools/Prerequisites)
+
+In-app monitoring panel and Vite plugin for inspecting, debugging, and tuning OSDK React applications during development.
+
+- [Prerequisites](/react-devtools/Prerequisites) - Installation and Vite plugin setup
+- [Getting Started](/react-devtools/GettingStarted) - Panel tour and tab overview
+- [Performance](/react-devtools/Performance) - Object loads, cache hits, dedupe, and revalidation
+- [Compute](/react-devtools/Compute) - Per-request Foundry compute attribution
+- [Intercept](/react-devtools/Intercept) - Mock OSDK queries and actions inline
+- [Debugging](/react-devtools/Debugging) - Errors, active hooks, and the cache inspector
+
 ### Other Guides
 
 - [Using OSDK with Vite](/guides/vite) - Fixing common Vite configuration issues

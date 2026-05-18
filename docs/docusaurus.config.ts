@@ -67,6 +67,17 @@ const config: Config = {
           "https://github.com/palantir/osdk-ts/tree/main/packages/cbac-components/docs/",
       },
     ],
+    [
+      "@docusaurus/plugin-content-docs",
+      {
+        id: "react-devtools",
+        path: "../packages/react-devtools/docs",
+        routeBasePath: "/react-devtools",
+        sidebarPath: "./sidebarsReactDevtools.ts",
+        editUrl:
+          "https://github.com/palantir/osdk-ts/tree/main/packages/react-devtools/docs/",
+      },
+    ],
   ],
 
   themeConfig: {
@@ -96,6 +107,13 @@ const config: Config = {
           docsPluginId: "react-components",
           position: "left",
           label: "Components",
+        },
+        {
+          type: "docSidebar",
+          sidebarId: "docs",
+          docsPluginId: "react-devtools",
+          position: "left",
+          label: "Devtools",
         },
         {
           href: "https://palantir.github.io/osdk-ts/storybook/",
