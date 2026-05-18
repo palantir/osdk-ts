@@ -89,13 +89,17 @@
 }
 
 .osdkEditableCellDatePicker {
-  /* Override the default borders in date picker */
+  /* Override the default borders/shadow in date picker so the cell wrapper
+     is the only thing painting a border on focus. Without these overrides
+     the date picker's own input-wrapper draws a box-shadow on top of the
+     cell border, masking the cell's :focus-within outline. */
   --osdk-datetime-input-border-width: 0px;
   --osdk-datetime-input-border-color: transparent;
   --osdk-datetime-input-border-color-focus: transparent;
   --osdk-datetime-input-focus-width: 0px;
   --osdk-datetime-input-bg: transparent;
   --osdk-datetime-input-bg-hover: transparent;
+  --osdk-input-shadow: none;
 
   --osdk-datetime-input-padding: var(--osdk-surface-spacing)
     calc(var(--osdk-surface-spacing) * 3);
@@ -104,6 +108,9 @@
   align-items: center;
   justify-content: space-between;
   border-radius: var(--osdk-surface-border-radius);
+  /* Reserve space for the focus border so layout doesn't shift on focus,
+     matching .osdkEditableCell. */
+  border: var(--osdk-surface-border-width) solid transparent;
 
   tr[data-focused="true"] & {
     border: var(--osdk-table-cell-editable-border);
