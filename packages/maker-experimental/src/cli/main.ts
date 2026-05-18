@@ -27,7 +27,6 @@ import {
   cleanAndValidateLinkTypeId,
   getImportedTypes,
   getOntologyDefinition,
-  OntologyEntityTypeEnum,
 } from "@osdk/maker";
 import { consola } from "consola";
 import * as fs from "node:fs";
@@ -226,7 +225,7 @@ export default async function main(
   const importedMetadata = OntologyBlockDataToFullMetadataConverter
     .getFullMetadataFromBlockData(ontologyIr.importedOntology);
   const importedMetadataPath = path.join(
-    blockDataDir,
+    commandLineOpts.buildDir,
     "imported-metadata.json",
   );
   await fs.promises.writeFile(
@@ -396,8 +395,8 @@ export default async function main(
     input_mapping_entries: ontologyInputMappingEntries,
     external_recommendations: getExternalRecommendations(
       ontologyIr.importedOntology,
-      ontologyDefinition[OntologyEntityTypeEnum.VALUE_TYPE],
-      importedTypes[OntologyEntityTypeEnum.VALUE_TYPE],
+      ontologyIr.valueTypes,
+      ontologyIr.importedValueTypes,
       shapes.inputShapes,
     ),
     add_on_override: undefined,

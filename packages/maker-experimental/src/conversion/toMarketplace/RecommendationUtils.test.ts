@@ -33,8 +33,8 @@ function callGetExternalRecommendations(
 ) {
   return getExternalRecommendations(
     result.ontologyIr.importedOntology,
-    {},
-    {},
+    result.ontologyIr.valueTypes,
+    result.ontologyIr.importedValueTypes,
     result.shapes.inputShapes,
   );
 }
