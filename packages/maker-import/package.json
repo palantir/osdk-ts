@@ -40,8 +40,8 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@osdk/maker": "workspace:~",
     "@osdk/foundry.ontologies": "catalog:foundry-platform-typescript",
+    "@osdk/maker": "workspace:~",
     "consola": "^3.4.2",
     "yargs": "^17.7.2"
   },
