@@ -37,11 +37,11 @@ import { ToggleFilterInput } from "./ToggleFilterInput.js";
 interface PropertyFilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
   objectSet?: ObjectSet<Q>;
-  baseObjectSet?: ObjectSet<Q>;
   definition: PropertyFilterDefinition<Q>;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
+  showFilteredOutValues?: boolean;
   searchQuery?: string;
   excludeRowOpen?: boolean;
   layout?: MultiSelectInputLayout;
@@ -50,11 +50,11 @@ interface PropertyFilterInputProps<Q extends ObjectTypeDefinition> {
 function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
   objectType,
   objectSet,
-  baseObjectSet,
   definition,
   filterState,
   onFilterStateChanged,
   whereClause,
+  showFilteredOutValues,
   searchQuery,
   excludeRowOpen,
   layout,
@@ -115,11 +115,11 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
         <SingleSelectFilterInput
           objectType={objectType}
           objectSet={objectSet}
-          baseObjectSet={baseObjectSet}
           propertyKey={definition.key}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
           whereClause={whereClause}
+          showFilteredOutValues={showFilteredOutValues}
           excludeRowOpen={excludeRowOpen}
           renderValue={definition.renderValue}
           showCount={definition.showCount}
@@ -131,11 +131,11 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
         <MultiSelectFilterInput
           objectType={objectType}
           objectSet={objectSet}
-          baseObjectSet={baseObjectSet}
           propertyKey={definition.key}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
           whereClause={whereClause}
+          showFilteredOutValues={showFilteredOutValues}
           excludeRowOpen={excludeRowOpen}
           renderValue={definition.renderValue}
           showCount={definition.showCount}
@@ -165,11 +165,11 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
         <ListogramFilterInput
           objectType={objectType}
           objectSet={objectSet}
-          baseObjectSet={baseObjectSet}
           propertyKey={definition.key}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
           whereClause={whereClause}
+          showFilteredOutValues={showFilteredOutValues}
           colorMap={definition.colorMap}
           displayMode={definition.listogramConfig?.displayMode}
           showCount={definition.showCount}

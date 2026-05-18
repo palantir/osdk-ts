@@ -28,16 +28,18 @@ import {
 } from "../base/inputs/MultiSelectInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { useDualScopeAggregation } from "../hooks/useDualScopeAggregation.js";
+import { applyWhereClauseToObjectSet } from "../utils/applyWhereClauseToObjectSet.js";
 import { coerceToStringArray } from "../utils/coerceFilterValue.js";
+import { stripLinkEntries } from "../utils/stripLinkEntries.js";
 
 interface MultiSelectFilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
   objectSet?: ObjectSet<Q>;
-  baseObjectSet?: ObjectSet<Q>;
   propertyKey: string;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
+  showFilteredOutValues?: boolean;
   excludeRowOpen?: boolean;
   renderValue?: (value: string) => React.ReactNode;
   showCount?: boolean;
@@ -47,11 +49,11 @@ interface MultiSelectFilterInputProps<Q extends ObjectTypeDefinition> {
 function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
   objectType,
   objectSet,
-  baseObjectSet,
   propertyKey,
   filterState,
   onFilterStateChanged,
   whereClause,
+  showFilteredOutValues,
   excludeRowOpen,
   renderValue,
   showCount,
@@ -85,16 +87,40 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
     [onFilterStateChanged, isExcluding],
   );
 
+  const scopedObjectSet = useMemo(
+    () =>
+      objectSet != null
+        ? applyWhereClauseToObjectSet(
+          objectSet,
+          whereClause as unknown as Record<string, unknown>,
+        )
+        : undefined,
+    [objectSet, whereClause],
+  );
+
+  const widerObjectSet = useMemo(() => {
+    if (objectSet == null || !showFilteredOutValues) {
+      return scopedObjectSet;
+    }
+    const stripped = stripLinkEntries(
+      whereClause as unknown as Record<string, unknown>,
+    );
+    if (!stripped.hadLinkEntries) {
+      return scopedObjectSet;
+    }
+    return applyWhereClauseToObjectSet(objectSet, stripped.clause);
+  }, [objectSet, whereClause, showFilteredOutValues, scopedObjectSet]);
+
   const aggregationOptions = useMemo(
-    () => ({ where: whereClause, selectedValues }),
-    [whereClause, selectedValues],
+    () => ({ selectedValues }),
+    [selectedValues],
   );
 
   const { data, isLoading, error } = useDualScopeAggregation(
     objectType,
     propertyKey as PropertyKeys<Q>,
-    objectSet,
-    baseObjectSet,
+    scopedObjectSet,
+    widerObjectSet,
     aggregationOptions,
   );
 

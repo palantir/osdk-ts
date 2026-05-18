@@ -25,16 +25,18 @@ import { FilterInputExcludeRow } from "../base/FilterInputExcludeRow.js";
 import { ListogramInput } from "../base/inputs/ListogramInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { useDualScopeAggregation } from "../hooks/useDualScopeAggregation.js";
+import { applyWhereClauseToObjectSet } from "../utils/applyWhereClauseToObjectSet.js";
 import { coerceToStringArray } from "../utils/coerceFilterValue.js";
+import { stripLinkEntries } from "../utils/stripLinkEntries.js";
 
 interface ListogramFilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
   objectSet?: ObjectSet<Q>;
-  baseObjectSet?: ObjectSet<Q>;
   propertyKey: string;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
+  showFilteredOutValues?: boolean;
   colorMap?: Record<string, string>;
   displayMode?: "full" | "count" | "minimal";
   showCount?: boolean;
@@ -47,11 +49,11 @@ interface ListogramFilterInputProps<Q extends ObjectTypeDefinition> {
 function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
   objectType,
   objectSet,
-  baseObjectSet,
   propertyKey,
   filterState,
   onFilterStateChanged,
   whereClause,
+  showFilteredOutValues,
   colorMap,
   displayMode,
   showCount,
@@ -91,16 +93,41 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
   const sortBy = displayMode === "minimal"
     ? "value" as const
     : "count" as const;
+
+  const scopedObjectSet = useMemo(
+    () =>
+      objectSet != null
+        ? applyWhereClauseToObjectSet(
+          objectSet,
+          whereClause as unknown as Record<string, unknown>,
+        )
+        : undefined,
+    [objectSet, whereClause],
+  );
+
+  const widerObjectSet = useMemo(() => {
+    if (objectSet == null || !showFilteredOutValues) {
+      return scopedObjectSet;
+    }
+    const stripped = stripLinkEntries(
+      whereClause as unknown as Record<string, unknown>,
+    );
+    if (!stripped.hadLinkEntries) {
+      return scopedObjectSet;
+    }
+    return applyWhereClauseToObjectSet(objectSet, stripped.clause);
+  }, [objectSet, whereClause, showFilteredOutValues, scopedObjectSet]);
+
   const aggregationOptions = useMemo(
-    () => ({ where: whereClause, sortBy, selectedValues }),
-    [whereClause, sortBy, selectedValues],
+    () => ({ sortBy, selectedValues }),
+    [sortBy, selectedValues],
   );
 
   const { data, maxCount, isLoading, error } = useDualScopeAggregation(
     objectType,
     propertyKey as PropertyKeys<Q>,
-    objectSet,
-    baseObjectSet,
+    scopedObjectSet,
+    widerObjectSet,
     aggregationOptions,
   );
 

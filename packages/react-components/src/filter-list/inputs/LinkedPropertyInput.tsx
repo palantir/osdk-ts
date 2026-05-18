@@ -19,6 +19,7 @@ import type {
   ObjectSet,
   ObjectTypeDefinition,
   PropertyKeys,
+  WhereClause,
 } from "@osdk/api";
 import { useOsdkAggregation } from "@osdk/react";
 import classnames from "classnames";
@@ -48,6 +49,7 @@ import {
   createNullCountAggregateOptions,
   createNullWhereClause,
 } from "../utils/aggregationHelpers.js";
+import { applyWhereClauseToObjectSet } from "../utils/applyWhereClauseToObjectSet.js";
 import {
   coerceToString,
   coerceToStringArray,
@@ -59,11 +61,11 @@ interface LinkedPropertyInputProps<
 > {
   objectSet: ObjectSet<Q>;
   /**
-   * Optional unfiltered base scope. When provided, the pivot uses this set
-   * instead of `objectSet` so the linked-property value list reflects every
-   * value reachable in the base, not just those still in the narrowed scope.
+   * Per-filter excluding-self where clause. Applied to `objectSet` before
+   * pivoting so the linked-facet's value list narrows under all OTHER
+   * active filters (matching how direct facets behave).
    */
-  baseObjectSet?: ObjectSet<Q>;
+  whereClause: WhereClause<Q>;
   definition: LinkedPropertyFilterDefinition<
     Q,
     L,
@@ -84,7 +86,7 @@ function LinkedPropertyInputInner<
   L extends LinkNames<Q>,
 >({
   objectSet,
-  baseObjectSet,
+  whereClause,
   definition,
   filterState,
   onFilterStateChanged,
@@ -93,7 +95,14 @@ function LinkedPropertyInputInner<
   style,
   layout,
 }: LinkedPropertyInputProps<Q, L>): React.ReactElement {
-  const pivotSource = baseObjectSet ?? objectSet;
+  const pivotSource = useMemo(
+    () =>
+      applyWhereClauseToObjectSet(
+        objectSet,
+        whereClause as unknown as Record<string, unknown>,
+      ),
+    [objectSet, whereClause],
+  );
   const linkedObjectSet = useMemo(
     () => pivotSource.pivotTo(definition.linkName),
     [pivotSource, definition.linkName],

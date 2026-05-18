@@ -97,22 +97,6 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   objectSet?: ObjectSet<Q>;
 
   /**
-   * Optional unfiltered base scope, paired with `objectSet` when a linked-
-   * property filter has been applied externally (see `applyLinkedFilters`).
-   *
-   * - Linked-property facets pivot from `baseObjectSet` so their value lists
-   *   don't collapse when the linked filter is active.
-   * - Direct-property facets render base-only values as count=0 greyed-out
-   *   rows when they fall out of `objectSet`'s narrowed scope.
-   *
-   * Pass the same reference as `objectSet` (or omit entirely) when no
-   * narrowing is active to avoid the dual-aggregation pass.
-   *
-   * @default undefined
-   */
-  baseObjectSet?: ObjectSet<Q>;
-
-  /**
    * Optional title to display in the filter list header
    */
   title?: ReactNode;
@@ -154,22 +138,31 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   ) => void;
 
   /**
-   * Called whenever any filter state changes, with the full map of current
-   * filter states keyed by filter key (see `getFilterKey`).
+   * Called whenever any filter changes, with the `ObjectSet` narrowed by every
+   * active filter — including linked-property filters that `filterClause`
+   * doesn't represent. Pass this directly to downstream consumers (e.g. an
+   * `ObjectTable`'s `objectSet`) to render the fully-filtered data.
    *
-   * Useful when:
-   * - You need a single object that captures all filter state for cache keys
-   *   or persistence. Unlike `filterClause`, this includes linked-property
-   *   filter state, which has no representation in `WhereClause`.
-   * - You want to consume the linked-property selections to build a narrowed
-   *   `ObjectSet` via `applyLinkedFilters` without accumulating per-filter
-   *   updates from `onFilterStateChanged` yourself.
+   * Emitted only when `objectSet` was provided. The emitted set is computed by
+   * composing `pivotTo`/`where`/`intersect`/`union`/`subtract` on the input
+   * `objectSet` via the same `WhereClause` shape the SDK already understands,
+   * augmented with `$reverseLink` entries for linked-property filters.
    *
-   * @param states The full map of filter states keyed by filter key. Entries
-   *   for filters with no active state are present only when the filter was
-   *   seeded with a default state.
+   * @param objectSet The narrowed `ObjectSet`.
    */
-  onFilterStatesChanged?: (states: Map<string, FilterStateType>) => void;
+  onEffectiveObjectSetChanged?: (objectSet: ObjectSet<Q>) => void;
+
+  /**
+   * When `true`, direct-property facets render count=0 greyed-out rows for
+   * values present in the unfiltered scope but excluded by an active
+   * linked-property filter. Helps users see what they've filtered away rather
+   * than the value silently disappearing from the facet.
+   *
+   * Has no effect when no linked-property filter is active.
+   *
+   * @default false
+   */
+  showFilteredOutValues?: boolean;
 
   /**
    * Controls how filter visibility (add/remove) is managed.

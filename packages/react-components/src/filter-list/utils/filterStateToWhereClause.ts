@@ -311,11 +311,31 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
       }
 
       case "LINKED_PROPERTY": {
-        // OSDK WhereClause does not support filtering through links.
-        // Link-based filtering requires ObjectSet operations (pivotTo/intersect).
-        // LinkedProperty filters render UI for selection but cannot be included
-        // in the where clause. Consumers needing linked property filtering must
-        // implement it using ObjectSet.pivotTo() and intersect().
+        if (state.type !== "linkedProperty") {
+          if (process.env.NODE_ENV !== "production") {
+            // eslint-disable-next-line no-console
+            console.warn(
+              `[FilterList] State type mismatch for linkedProperty filter "${definition.linkName}": expected linkedProperty, got ${state.type}`,
+            );
+          }
+          break;
+        }
+        if (definition.reverseLinkName == null) {
+          break;
+        }
+        const innerWhere = buildPropertyKeyClause(
+          definition.linkedPropertyKey,
+          state.linkedFilterState,
+        );
+        if (innerWhere === undefined) {
+          break;
+        }
+        clauses.push({
+          [definition.linkName]: {
+            $reverseLink: definition.reverseLinkName,
+            ...innerWhere,
+          },
+        });
         break;
       }
 

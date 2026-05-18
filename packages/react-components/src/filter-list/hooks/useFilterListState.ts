@@ -21,12 +21,14 @@ import { assertUnreachable } from "../../shared/assertUnreachable.js";
 import type { FilterListProps } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import type { LinkedPropertyFilterState } from "../types/LinkedFilterTypes.js";
+import { applyWhereClauseToObjectSet } from "../utils/applyWhereClauseToObjectSet.js";
 import {
   buildWhereClause,
   type PropertyTypeInfo,
 } from "../utils/filterStateToWhereClause.js";
 import { filterHasActiveState } from "../utils/filterValues.js";
 import { getFilterKey } from "../utils/getFilterKey.js";
+import { stripLinkEntries } from "../utils/stripLinkEntries.js";
 import { useStableMapEntries } from "./useStableMapEntries.js";
 
 export interface UseFilterListStateResult<Q extends ObjectTypeDefinition> {
@@ -105,17 +107,20 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
 ): UseFilterListStateResult<Q> {
   const {
     objectType,
+    objectSet,
     filterDefinitions,
     onFilterStateChanged,
     onFilterClauseChanged,
-    onFilterStatesChanged,
+    onEffectiveObjectSetChanged,
     initialFilterStates,
   } = props;
   const { metadata } = useOsdkMetadata(objectType);
   const onFilterClauseChangedRef = useRef(onFilterClauseChanged);
   onFilterClauseChangedRef.current = onFilterClauseChanged;
-  const onFilterStatesChangedRef = useRef(onFilterStatesChanged);
-  onFilterStatesChangedRef.current = onFilterStatesChanged;
+  const onEffectiveObjectSetChangedRef = useRef(onEffectiveObjectSetChanged);
+  onEffectiveObjectSetChangedRef.current = onEffectiveObjectSetChanged;
+  const objectSetRef = useRef(objectSet);
+  objectSetRef.current = objectSet;
 
   const propertyTypes = useMemo(() => {
     const map = new Map<string, PropertyTypeInfo>();
@@ -149,10 +154,24 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
 
   const notifyChange = useCallback(
     (next: Map<string, FilterState>) => {
-      onFilterClauseChangedRef.current?.(
-        buildWhereClause(filterDefinitions, next, propertyTypes),
+      const extendedClause = buildWhereClause(
+        filterDefinitions,
+        next,
+        propertyTypes,
       );
-      onFilterStatesChangedRef.current?.(next);
+      const propertyOnlyClause = stripLinkEntries(
+        extendedClause as unknown as Record<string, unknown>,
+      ).clause as WhereClause<Q>;
+      onFilterClauseChangedRef.current?.(propertyOnlyClause);
+
+      const currentObjectSet = objectSetRef.current;
+      if (currentObjectSet != null && onEffectiveObjectSetChangedRef.current) {
+        const effective = applyWhereClauseToObjectSet(
+          currentObjectSet,
+          extendedClause as unknown as Record<string, unknown>,
+        );
+        onEffectiveObjectSetChangedRef.current(effective);
+      }
     },
     [filterDefinitions, propertyTypes],
   );
@@ -186,15 +205,16 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     [notifyChange],
   );
 
-  const whereClause = useMemo(
-    () =>
-      buildWhereClause(
-        filterDefinitions,
-        filterStates,
-        propertyTypes,
-      ),
-    [filterDefinitions, filterStates, propertyTypes],
-  );
+  const whereClause = useMemo(() => {
+    const extended = buildWhereClause(
+      filterDefinitions,
+      filterStates,
+      propertyTypes,
+    );
+    return stripLinkEntries(
+      extended as unknown as Record<string, unknown>,
+    ).clause as WhereClause<Q>;
+  }, [filterDefinitions, filterStates, propertyTypes]);
 
   // Preserve per-key clause references when content hasn't changed so
   // FilterInput.memo can hold and aggregations don't refetch unnecessarily.

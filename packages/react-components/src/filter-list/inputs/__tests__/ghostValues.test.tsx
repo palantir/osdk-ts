@@ -151,13 +151,34 @@ describe("ghost initialFilterStates values", () => {
   });
 });
 
-describe("baseObjectSet dual aggregation", () => {
-  const narrowedSet = { _kind: "narrowed" } as unknown as ObjectSet<
+describe("linked-filter dual aggregation", () => {
+  // Simulate a `whereClause` that includes a linked-property filter entry
+  // (the `$reverseLink` sentinel emitted by `buildWhereClause`). When the input
+  // has `showFilteredOutValues`, the wider scope strips this entry and the
+  // narrowed scope keeps it.
+  const linkedWhere = {
+    lead: { $reverseLink: "peeps", fullName: "Alice" },
+  } as unknown as WhereClause<typeof MockObjectType>;
+
+  // A base objectSet whose `.pivotTo`/`.where`/`.intersect` chain produces an
+  // identifiable result (`_kind: "narrowed"`), distinct from the base itself
+  // (`_kind: "base"`). The walker calls `base.pivotTo("lead").where(...).pivotTo("peeps")`
+  // and then `base.intersect(...)` — so any chain ending in `intersect` is the
+  // narrowed objectSet. The wider scope is just the base.
+  const narrowed = { _kind: "narrowed" } as unknown as ObjectSet<
     typeof MockObjectType
   >;
-  const baseSet = { _kind: "base" } as unknown as ObjectSet<
-    typeof MockObjectType
-  >;
+  const linkedScope = {
+    where: vi.fn().mockReturnValue({
+      pivotTo: vi.fn().mockReturnValue({ _kind: "linked" }),
+    }),
+  };
+  const baseSet = {
+    _kind: "base",
+    pivotTo: vi.fn().mockReturnValue(linkedScope),
+    intersect: vi.fn().mockReturnValue(narrowed),
+  } as unknown as ObjectSet<typeof MockObjectType>;
+  const narrowedSet = narrowed;
 
   describe("ListogramFilterInput", () => {
     it("renders base-only values as count=0 ghost rows marked data-ghost", () => {
@@ -173,12 +194,12 @@ describe("baseObjectSet dual aggregation", () => {
       render(
         <ListogramFilterInput
           objectType={MockObjectType}
-          objectSet={narrowedSet}
-          baseObjectSet={baseSet}
+          objectSet={baseSet}
           propertyKey="name"
+          whereClause={linkedWhere}
+          showFilteredOutValues={true}
           filterState={{ type: "EXACT_MATCH", values: [] }}
           onFilterStateChanged={vi.fn()}
-          whereClause={EMPTY_WHERE}
         />,
       );
 
@@ -204,12 +225,12 @@ describe("baseObjectSet dual aggregation", () => {
       render(
         <ListogramFilterInput
           objectType={MockObjectType}
-          objectSet={narrowedSet}
-          baseObjectSet={baseSet}
+          objectSet={baseSet}
           propertyKey="name"
+          whereClause={linkedWhere}
+          showFilteredOutValues={true}
           filterState={{ type: "EXACT_MATCH", values: ["Engineering"] }}
           onFilterStateChanged={vi.fn()}
-          whereClause={EMPTY_WHERE}
         />,
       );
 
@@ -239,12 +260,12 @@ describe("baseObjectSet dual aggregation", () => {
       render(
         <MultiSelectFilterInput
           objectType={MockObjectType}
-          objectSet={narrowedSet}
-          baseObjectSet={baseSet}
+          objectSet={baseSet}
           propertyKey="name"
+          whereClause={linkedWhere}
+          showFilteredOutValues={true}
           filterState={{ type: "SELECT", selectedValues: [] }}
           onFilterStateChanged={vi.fn()}
-          whereClause={EMPTY_WHERE}
         />,
       );
 

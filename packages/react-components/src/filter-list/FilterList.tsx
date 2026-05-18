@@ -36,7 +36,6 @@ export function FilterList<Q extends ObjectTypeDefinition>(
   const {
     objectType,
     objectSet,
-    baseObjectSet,
     title,
     titleIcon,
     collapsed,
@@ -46,6 +45,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     showResetButton = false,
     onReset,
     showActiveFilterCount = false,
+    showFilteredOutValues = false,
     className,
     enableSorting,
     onFilterAdded,
@@ -192,17 +192,17 @@ export function FilterList<Q extends ObjectTypeDefinition>(
       <FilterInput
         objectType={objectType}
         objectSet={objectSet}
-        baseObjectSet={baseObjectSet}
         definition={definition}
         filterState={filterState}
         onFilterStateChanged={onFilterStateChanged}
         whereClause={perFilterWhereClauses.get(filterKey)
           ?? ({} as WhereClause<Q>)}
+        showFilteredOutValues={showFilteredOutValues}
         searchQuery={searchQuery}
         excludeRowOpen={excludeRowOpen}
       />
     ),
-    [objectType, objectSet, baseObjectSet, perFilterWhereClauses],
+    [objectType, objectSet, perFilterWhereClauses, showFilteredOutValues],
   );
 
   return (

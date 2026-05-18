@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, ObjectTypeDefinition, PropertyKeys } from "@osdk/api";
+import type {
+  ObjectSet,
+  ObjectTypeDefinition,
+  PropertyKeys,
+  WhereClause,
+} from "@osdk/api";
 import { useOsdkAggregation } from "@osdk/react";
 import { cleanup, render, screen } from "@testing-library/react";
 import React from "react";
@@ -49,7 +54,7 @@ function createMockObjectSet() {
     },
   };
 
-  return {
+  const mock: ObjectSet<ObjectTypeDefinition> = {
     $objectSetInternals: {
       def: {
         apiName: "Employee",
@@ -57,7 +62,12 @@ function createMockObjectSet() {
       } as ObjectTypeDefinition,
     },
     pivotTo: vi.fn().mockReturnValue(linkedObjectSet),
+    where: vi.fn(),
   } as unknown as ObjectSet<ObjectTypeDefinition>;
+  // Default `where` returns the mock itself so chained calls work; tests that
+  // assert on `.where()` override this.
+  vi.mocked(mock.where).mockReturnValue(mock);
+  return mock;
 }
 
 function createDefinition(
@@ -110,6 +120,7 @@ describe("LinkedPropertyInput", () => {
       render(
         <LinkedPropertyInput
           objectSet={mockObjectSet}
+          whereClause={{} as WhereClause<ObjectTypeDefinition>}
           definition={createDefinition("TOGGLE")}
           filterState={undefined}
           onFilterStateChanged={onFilterStateChanged}
@@ -145,6 +156,7 @@ describe("LinkedPropertyInput", () => {
       render(
         <LinkedPropertyInput
           objectSet={mockObjectSet}
+          whereClause={{} as WhereClause<ObjectTypeDefinition>}
           definition={createDefinition("TOGGLE")}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
@@ -162,6 +174,7 @@ describe("LinkedPropertyInput", () => {
       render(
         <LinkedPropertyInput
           objectSet={mockObjectSet}
+          whereClause={{} as WhereClause<ObjectTypeDefinition>}
           definition={createDefinition("TOGGLE")}
           filterState={undefined}
           onFilterStateChanged={onFilterStateChanged}
@@ -184,6 +197,7 @@ describe("LinkedPropertyInput", () => {
       render(
         <LinkedPropertyInput
           objectSet={mockObjectSet}
+          whereClause={{} as WhereClause<ObjectTypeDefinition>}
           definition={createDefinition("TOGGLE")}
           filterState={wrongState}
           onFilterStateChanged={onFilterStateChanged}
@@ -203,6 +217,7 @@ describe("LinkedPropertyInput", () => {
       render(
         <LinkedPropertyInput
           objectSet={mockObjectSet}
+          whereClause={{} as WhereClause<ObjectTypeDefinition>}
           definition={createDefinition("TOGGLE")}
           filterState={undefined}
           onFilterStateChanged={onFilterStateChanged}
@@ -212,36 +227,41 @@ describe("LinkedPropertyInput", () => {
       expect(mockObjectSet.pivotTo).toHaveBeenCalledWith("primaryOffice");
     });
 
-    it("pivots from baseObjectSet when provided", () => {
-      const narrowed = createMockObjectSet();
-      const base = createMockObjectSet();
+    it("pivots from objectSet directly when whereClause is empty", () => {
+      const objectSet = createMockObjectSet();
 
       render(
         <LinkedPropertyInput
-          objectSet={narrowed}
-          baseObjectSet={base}
+          objectSet={objectSet}
+          whereClause={{} as WhereClause<ObjectTypeDefinition>}
           definition={createDefinition("TOGGLE")}
           filterState={undefined}
           onFilterStateChanged={vi.fn()}
         />,
       );
 
-      expect(base.pivotTo).toHaveBeenCalledWith("primaryOffice");
-      expect(narrowed.pivotTo).not.toHaveBeenCalled();
+      expect(objectSet.pivotTo).toHaveBeenCalledWith("primaryOffice");
+      expect(objectSet.where).not.toHaveBeenCalled();
     });
 
-    it("falls back to objectSet when baseObjectSet is undefined", () => {
+    it("narrows objectSet via where() before pivoting when whereClause has entries", () => {
+      const objectSet = createMockObjectSet();
       const narrowed = createMockObjectSet();
+      vi.mocked(objectSet.where).mockReturnValue(narrowed);
 
       render(
         <LinkedPropertyInput
-          objectSet={narrowed}
+          objectSet={objectSet}
+          whereClause={{ department: "Eng" } as unknown as WhereClause<
+            ObjectTypeDefinition
+          >}
           definition={createDefinition("TOGGLE")}
           filterState={undefined}
           onFilterStateChanged={vi.fn()}
         />,
       );
 
+      expect(objectSet.where).toHaveBeenCalledWith({ department: "Eng" });
       expect(narrowed.pivotTo).toHaveBeenCalledWith("primaryOffice");
     });
   });
@@ -268,6 +288,7 @@ describe("LinkedPropertyInput", () => {
       render(
         <LinkedPropertyInput
           objectSet={mockObjectSet}
+          whereClause={{} as WhereClause<ObjectTypeDefinition>}
           definition={createDefinition("MULTI_SELECT")}
           filterState={{
             type: "linkedProperty",
@@ -293,6 +314,7 @@ describe("LinkedPropertyInput", () => {
       render(
         <LinkedPropertyInput
           objectSet={mockObjectSet}
+          whereClause={{} as WhereClause<ObjectTypeDefinition>}
           definition={createDefinition("SINGLE_SELECT")}
           filterState={{
             type: "linkedProperty",
@@ -336,6 +358,7 @@ describe("LinkedPropertyInput", () => {
       render(
         <LinkedPropertyInput
           objectSet={mockObjectSet}
+          whereClause={{} as WhereClause<ObjectTypeDefinition>}
           definition={definition}
           filterState={{
             type: "linkedProperty",
@@ -365,6 +388,7 @@ describe("LinkedPropertyInput", () => {
       render(
         <LinkedPropertyInput
           objectSet={mockObjectSet}
+          whereClause={{} as WhereClause<ObjectTypeDefinition>}
           definition={createDefinition("TOGGLE")}
           filterState={undefined}
           onFilterStateChanged={vi.fn()}
@@ -380,6 +404,7 @@ describe("LinkedPropertyInput", () => {
       render(
         <LinkedPropertyInput
           objectSet={mockObjectSet}
+          whereClause={{} as WhereClause<ObjectTypeDefinition>}
           definition={createDefinition("CONTAINS_TEXT")}
           filterState={undefined}
           onFilterStateChanged={vi.fn()}
@@ -405,6 +430,7 @@ describe("LinkedPropertyInput", () => {
       render(
         <LinkedPropertyInput
           objectSet={mockObjectSet}
+          whereClause={{} as WhereClause<ObjectTypeDefinition>}
           definition={definition}
           filterState={undefined}
           onFilterStateChanged={vi.fn()}

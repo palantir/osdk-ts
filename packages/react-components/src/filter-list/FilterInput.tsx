@@ -28,17 +28,16 @@ import { StaticValuesFilterInput } from "./inputs/StaticValuesFilterInput.js";
 export interface FilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
   objectSet?: ObjectSet<Q>;
-  /**
-   * Optional unfiltered base object set. See {@link FilterListProps.baseObjectSet}.
-   * When provided, linked-property facets pivot from this set and direct-property
-   * facets dual-aggregate against `objectSet` and `baseObjectSet` so values
-   * present in the base but absent under narrowing render as count=0 ghosts.
-   */
-  baseObjectSet?: ObjectSet<Q>;
   definition: FilterDefinitionUnion<Q>;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
+  /**
+   * When `true`, direct-property facets render greyed-out count=0 rows for
+   * values present in the unfiltered scope but excluded by an active
+   * linked-property filter. Forwarded from `FilterList`.
+   */
+  showFilteredOutValues?: boolean;
   searchQuery?: string;
   excludeRowOpen?: boolean;
   /**
@@ -54,11 +53,11 @@ export interface FilterInputProps<Q extends ObjectTypeDefinition> {
 function FilterInputInner<Q extends ObjectTypeDefinition>({
   objectType,
   objectSet,
-  baseObjectSet,
   definition,
   filterState,
   onFilterStateChanged,
   whereClause,
+  showFilteredOutValues,
   searchQuery,
   excludeRowOpen,
   layout,
@@ -79,10 +78,10 @@ function FilterInputInner<Q extends ObjectTypeDefinition>({
       return (
         <LinkedPropertyInput
           objectSet={objectSet}
-          baseObjectSet={baseObjectSet}
           definition={definition}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
+          whereClause={whereClause}
           searchQuery={searchQuery}
           layout={layout}
         />
@@ -124,11 +123,11 @@ function FilterInputInner<Q extends ObjectTypeDefinition>({
         <PropertyFilterInput
           objectType={objectType}
           objectSet={objectSet}
-          baseObjectSet={baseObjectSet}
           definition={definition}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
           whereClause={whereClause}
+          showFilteredOutValues={showFilteredOutValues}
           searchQuery={searchQuery}
           excludeRowOpen={excludeRowOpen}
           layout={layout}

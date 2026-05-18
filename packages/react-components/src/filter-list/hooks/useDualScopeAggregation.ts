@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectSet,
-  ObjectTypeDefinition,
-  PropertyKeys,
-  WhereClause,
-} from "@osdk/api";
+import type { ObjectSet, ObjectTypeDefinition, PropertyKeys } from "@osdk/api";
 import { useMemo } from "react";
 import {
   usePropertyAggregation,
@@ -28,13 +23,9 @@ import {
 
 const EMPTY_VALUES: string[] = [];
 
-export interface UseDualScopeAggregationOptions<
-  Q extends ObjectTypeDefinition = ObjectTypeDefinition,
-> {
+export interface UseDualScopeAggregationOptions {
   /** Cap on the number of returned values (forwarded to the narrowed aggregation). */
   limit?: number;
-  /** Per-filter where clause excluding this facet's own selection. */
-  where?: WhereClause<Q>;
   /** Sort order for the returned values. */
   sortBy?: "count" | "value";
   /** Currently-selected values that should always render (even at count=0). */
@@ -42,28 +33,28 @@ export interface UseDualScopeAggregationOptions<
 }
 
 /**
- * Aggregates a property under one or two scopes, depending on whether a
- * separate `baseObjectSet` is provided.
+ * Aggregates a property under one or two pre-computed object-set scopes.
  *
- * - **Single-scope** (`baseObjectSet` is undefined OR the same reference as
- *   `objectSet`): equivalent to a plain `usePropertyAggregation(objectType,
- *   propertyKey, objectSet, options)` call. Returns its result directly.
+ * - **Single-scope** (`widerObjectSet` undefined OR same reference as
+ *   `scopedObjectSet`): equivalent to a plain `usePropertyAggregation` call
+ *   against `scopedObjectSet`. Returns its result directly.
  *
- * - **Dual-scope** (`baseObjectSet` provided AND distinct from `objectSet`):
- *   runs two aggregations — one against `baseObjectSet` to discover the
- *   universe of values, and the primary one against `objectSet`. The base
- *   values are merged into `activeValues` so that values present in the base
- *   scope but absent under narrowing render as count=0 ghost entries.
+ * - **Dual-scope** (`widerObjectSet` distinct from `scopedObjectSet`): runs two
+ *   aggregations — one against `widerObjectSet` to discover the value universe,
+ *   one against `scopedObjectSet` for the primary counts. The wider values are
+ *   merged into `activeValues` so that values present in the wider scope but
+ *   absent in the narrowed scope render as count=0 ghost entries.
+ *
+ * Callers compute the two scopes externally (typically via
+ * `applyWhereClauseToObjectSet`); the hook itself is scope-shape agnostic.
  *
  * `isLoading` reflects either query loading. `error` is the primary
- * (narrowed) aggregation's error. If the base aggregation fails in dual-scope
- * mode, ghost rendering silently degrades — the narrowed view is still
- * correct, but base-only values are not surfaced.
+ * aggregation's error. If the wider aggregation fails in dual-scope mode,
+ * ghost rendering silently degrades — the narrowed view is still correct.
  *
  * Hooks are called unconditionally regardless of scope; in single-scope mode
- * the second `usePropertyAggregation` uses the same `objectSet` and `where`
- * as the first, so the observable client dedupes at the wire layer (no extra
- * network traffic) and the React-side cost is one extra result-shaping pass.
+ * the second `usePropertyAggregation` uses the same arguments as the first,
+ * so the observable client dedupes at the wire layer.
  */
 export function useDualScopeAggregation<
   Q extends ObjectTypeDefinition,
@@ -71,54 +62,50 @@ export function useDualScopeAggregation<
 >(
   objectType: Q,
   propertyKey: K,
-  objectSet: ObjectSet<Q> | undefined,
-  baseObjectSet: ObjectSet<Q> | undefined,
-  options: UseDualScopeAggregationOptions<Q> = {},
+  scopedObjectSet: ObjectSet<Q> | undefined,
+  widerObjectSet: ObjectSet<Q> | undefined,
+  options: UseDualScopeAggregationOptions = {},
 ): UsePropertyAggregationResult {
-  const { where, sortBy, selectedValues = EMPTY_VALUES, limit } = options;
-  const isDualScope = baseObjectSet != null && baseObjectSet !== objectSet;
+  const { sortBy, selectedValues = EMPTY_VALUES, limit } = options;
+  const isDualScope = widerObjectSet != null
+    && widerObjectSet !== scopedObjectSet;
 
-  // Base scope discovery. In single-scope mode we still call the hook for
-  // structural stability, but its data is unused; the wire layer dedupes
-  // against the primary call so no extra network request fires.
-  const baseOptions = useMemo(() => ({ where }), [where]);
-  const baseAggregation = usePropertyAggregation(
+  const widerAggregation = usePropertyAggregation(
     objectType,
     propertyKey,
-    isDualScope ? baseObjectSet : objectSet,
-    baseOptions,
+    isDualScope ? widerObjectSet : scopedObjectSet,
   );
 
   const activeValues = useMemo(() => {
     const fallback = selectedValues.length === 0 ? undefined : selectedValues;
     const skipMerge = !isDualScope
-      || baseAggregation.error != null
-      || baseAggregation.data.length === 0;
+      || widerAggregation.error != null
+      || widerAggregation.data.length === 0;
     if (skipMerge) {
       return fallback;
     }
-    const baseValues = baseAggregation.data.map((d) => d.value);
-    return Array.from(new Set([...selectedValues, ...baseValues]));
+    const widerValues = widerAggregation.data.map((d) => d.value);
+    return Array.from(new Set([...selectedValues, ...widerValues]));
   }, [
     isDualScope,
-    baseAggregation.data,
-    baseAggregation.error,
+    widerAggregation.data,
+    widerAggregation.error,
     selectedValues,
   ]);
 
   const primaryOptions = useMemo(
-    () => ({ where, sortBy, activeValues, limit }),
-    [where, sortBy, activeValues, limit],
+    () => ({ sortBy, activeValues, limit }),
+    [sortBy, activeValues, limit],
   );
   const primaryAggregation = usePropertyAggregation(
     objectType,
     propertyKey,
-    objectSet,
+    scopedObjectSet,
     primaryOptions,
   );
 
   const isLoading = primaryAggregation.isLoading
-    || (isDualScope && baseAggregation.isLoading);
+    || (isDualScope && widerAggregation.isLoading);
 
   return {
     data: primaryAggregation.data,

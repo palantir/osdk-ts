@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-import type { WhereClause } from "@osdk/api";
+import type { ObjectSet, WhereClause } from "@osdk/api";
 import { useOsdkClient } from "@osdk/react";
 import type {
   FilterDefinitionUnion,
   FilterListProps,
   FilterState,
 } from "@osdk/react-components/experimental/filter-list";
-import {
-  applyLinkedFilters,
-  FilterList,
-} from "@osdk/react-components/experimental/filter-list";
+import { FilterList } from "@osdk/react-components/experimental/filter-list";
 import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useMemo, useState } from "react";
@@ -1911,19 +1908,9 @@ function CombinedWithLinkedFilterStory(
   const [filterClause, setFilterClause] = useState<
     WhereClause<Employee> | undefined
   >(undefined);
-  const [filterStates, setFilterStates] = useState<Map<string, FilterState>>(
-    () => new Map(),
-  );
-
-  const narrowedObjectSet = useMemo(
-    () =>
-      applyLinkedFilters(
-        baseObjectSet,
-        COMBINED_LINKED_FILTER_DEFINITIONS,
-        filterStates,
-      ),
-    [baseObjectSet, filterStates],
-  );
+  const [effectiveObjectSet, setEffectiveObjectSet] = useState<
+    ObjectSet<Employee>
+  >(baseObjectSet);
 
   const argsOnFilterClauseChanged = args.onFilterClauseChanged;
   const handleFilterClauseChanged = useCallback(
@@ -1940,19 +1927,18 @@ function CombinedWithLinkedFilterStory(
         <FilterList
           {...args}
           objectType={Employee}
-          objectSet={narrowedObjectSet}
-          baseObjectSet={baseObjectSet}
+          objectSet={baseObjectSet}
           filterDefinitions={COMBINED_LINKED_FILTER_DEFINITIONS}
           filterClause={filterClause}
           onFilterClauseChanged={handleFilterClauseChanged}
-          onFilterStatesChanged={setFilterStates}
+          onEffectiveObjectSetChanged={setEffectiveObjectSet}
+          showFilteredOutValues={true}
         />
       </div>
       <div style={FLEX_FILL_STYLE}>
         <ObjectTable
           objectType={Employee}
-          objectSet={narrowedObjectSet}
-          filter={filterClause}
+          objectSet={effectiveObjectSet}
         />
       </div>
     </div>
@@ -1966,37 +1952,26 @@ export const CombinedWithLinkedFilter: Story = {
       description: {
         story:
           "A linked filter (Manager Name) and direct property filters coexist in "
-          + "one FilterList. The caller builds the narrowed objectSet via "
-          + "`applyLinkedFilters` and passes both scopes: `baseObjectSet` for "
-          + "linked-facet pivots (so values don't collapse) and `objectSet` for "
-          + "narrowed direct-facet counts. Direct property values present in the "
-          + "base but absent under narrowing render as greyed-out count=0 ghost "
-          + "rows.",
+          + "one FilterList. Pass the unfiltered scope as `objectSet`; FilterList "
+          + "applies the linked-filter narrowing internally and emits the fully-"
+          + "narrowed `ObjectSet` via `onEffectiveObjectSetChanged` for the table. "
+          + "With `showFilteredOutValues`, direct-facet values absent under the "
+          + "active linked filter render as greyed-out count=0 ghost rows.",
       },
       source: {
         code: `const baseObjectSet = useMemo(() => client(Employee), [client]);
-const [filterStates, setFilterStates] = useState<Map<string, FilterState>>(
-  () => new Map(),
-);
-const narrowedObjectSet = useMemo(
-  () => applyLinkedFilters(baseObjectSet, filterDefinitions, filterStates),
-  [baseObjectSet, filterStates],
-);
+const [effectiveObjectSet, setEffectiveObjectSet] = useState(baseObjectSet);
 
 <FilterList
   objectType={Employee}
-  objectSet={narrowedObjectSet}
-  baseObjectSet={baseObjectSet}
+  objectSet={baseObjectSet}
   filterDefinitions={filterDefinitions}
   filterClause={filterClause}
   onFilterClauseChanged={setFilterClause}
-  onFilterStatesChanged={setFilterStates}
+  onEffectiveObjectSetChanged={setEffectiveObjectSet}
+  showFilteredOutValues
 />
-<ObjectTable
-  objectType={Employee}
-  objectSet={narrowedObjectSet}
-  filter={filterClause}
-/>`,
+<ObjectTable objectType={Employee} objectSet={effectiveObjectSet} />`,
       },
     },
   },

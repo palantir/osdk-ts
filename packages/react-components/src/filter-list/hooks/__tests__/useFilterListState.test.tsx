@@ -219,29 +219,9 @@ describe("useFilterListState", () => {
     expect(onFilterClauseChanged).toHaveBeenCalledWith({});
   });
 
-  describe("onFilterStatesChanged", () => {
-    it("does not fire onFilterStatesChanged on mount", () => {
-      const onFilterStatesChanged = vi.fn();
-      const nameDef = createPropertyFilterDef(
-        "name",
-        "LISTOGRAM",
-        createExactMatchState(["Alice"]),
-      );
-      const props = createProps({
-        filterDefinitions: [nameDef],
-        onFilterStatesChanged,
-      });
-
-      const { result } = renderHook(() => useFilterListState(props));
-
-      expect(onFilterStatesChanged).not.toHaveBeenCalled();
-      expect(result.current.filterStates.get(getFilterKey(nameDef))).toEqual(
-        createExactMatchState(["Alice"]),
-      );
-    });
-
-    it("fires whenever any filter state changes (including LINKED_PROPERTY-style updates)", () => {
-      const onFilterStatesChanged = vi.fn();
+  describe("onEffectiveObjectSetChanged", () => {
+    it("is not invoked when objectSet is omitted", () => {
+      const onEffectiveObjectSetChanged = vi.fn();
       const nameDef = createPropertyFilterDef(
         "name",
         "LISTOGRAM",
@@ -249,10 +229,9 @@ describe("useFilterListState", () => {
       );
       const props = createProps({
         filterDefinitions: [nameDef],
-        onFilterStatesChanged,
+        onEffectiveObjectSetChanged,
       });
       const { result } = renderHook(() => useFilterListState(props));
-      onFilterStatesChanged.mockClear();
 
       act(() => {
         result.current.setFilterState(
@@ -261,15 +240,13 @@ describe("useFilterListState", () => {
         );
       });
 
-      expect(onFilterStatesChanged).toHaveBeenCalledTimes(1);
-      const states = onFilterStatesChanged.mock.calls[0][0];
-      expect(states.get(getFilterKey(nameDef))).toEqual(
-        createExactMatchState(["John"]),
-      );
+      expect(onEffectiveObjectSetChanged).not.toHaveBeenCalled();
     });
 
-    it("emits a fresh Map identity on each change so it is safe to use as a cache key", () => {
-      const onFilterStatesChanged = vi.fn();
+    it("emits a where()-narrowed objectSet on filter changes", () => {
+      const onEffectiveObjectSetChanged = vi.fn();
+      const narrowed = { kind: "narrowed" } as unknown;
+      const objectSet = { where: vi.fn().mockReturnValue(narrowed) };
       const nameDef = createPropertyFilterDef(
         "name",
         "LISTOGRAM",
@@ -277,27 +254,40 @@ describe("useFilterListState", () => {
       );
       const props = createProps({
         filterDefinitions: [nameDef],
-        onFilterStatesChanged,
+        objectSet: objectSet as never,
+        onEffectiveObjectSetChanged,
       });
       const { result } = renderHook(() => useFilterListState(props));
-      onFilterStatesChanged.mockClear();
 
       act(() => {
         result.current.setFilterState(
           getFilterKey(nameDef),
-          createExactMatchState(["A"]),
-        );
-      });
-      act(() => {
-        result.current.setFilterState(
-          getFilterKey(nameDef),
-          createExactMatchState(["B"]),
+          createExactMatchState(["John"]),
         );
       });
 
-      const first = onFilterStatesChanged.mock.calls[0][0];
-      const second = onFilterStatesChanged.mock.calls[1][0];
-      expect(first).not.toBe(second);
+      expect(objectSet.where).toHaveBeenCalledWith({ name: "John" });
+      expect(onEffectiveObjectSetChanged).toHaveBeenCalledTimes(1);
+      expect(onEffectiveObjectSetChanged).toHaveBeenCalledWith(narrowed);
+    });
+
+    it("does not fire on mount", () => {
+      const onEffectiveObjectSetChanged = vi.fn();
+      const objectSet = { where: vi.fn() };
+      const nameDef = createPropertyFilterDef(
+        "name",
+        "LISTOGRAM",
+        createExactMatchState(["seeded"]),
+      );
+      const props = createProps({
+        filterDefinitions: [nameDef],
+        objectSet: objectSet as never,
+        onEffectiveObjectSetChanged,
+      });
+
+      renderHook(() => useFilterListState(props));
+
+      expect(onEffectiveObjectSetChanged).not.toHaveBeenCalled();
     });
   });
 
