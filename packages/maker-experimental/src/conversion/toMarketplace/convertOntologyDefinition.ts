@@ -28,25 +28,22 @@ export function convertOntologyDefinition(
   functionsIr?: FunctionsIr,
   randomnessKey?: string,
 ): OntologyIrV2 {
-  // Convert main ontology first. During conversion, accessing properties on
-  // proxy-wrapped imported entities (e.g. i.apiName in extendsInterfaces)
-  // triggers wrapWithProxy's get-trap, which calls importOntologyEntity()
-  // and populates the global importedTypes. This matches the legacy path's
-  // ordering.
   const importedTypes = getImportedTypes();
+
+  // Convert imported ontology FIRST so that all imported entity RIDs and IDs
+  // are registered in the ridGenerator before the main ontology's
+  // knownIdentifiers is built.
+  const importedOntology = convertOntologyDefinitionToWireBlockData(
+    importedTypes,
+    ridGenerator,
+  );
+
   const allOntologies = [ontology, importedTypes];
   const mainOntology = convertOntologyDefinitionToWireBlockData(
     ontology,
     ridGenerator,
     allOntologies,
     functionsIr,
-  );
-
-  // Convert imported ontology second, now that importedTypes has been
-  // populated by the proxy triggers above.
-  const importedOntology = convertOntologyDefinitionToWireBlockData(
-    importedTypes,
-    ridGenerator,
   );
 
   return {
