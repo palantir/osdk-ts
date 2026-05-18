@@ -93,6 +93,10 @@ export class SlsLogger {
     if (this.traceId) {
       entry.traceId = this.traceId;
     }
+    // SLS log consumers only index entries marked safe:true.
+    // An entry is safe when it carries no user-controlled data — i.e. no unsafeParams.
+    // Entries with unsafeParams are still logged but routed to a separate field,
+    // keeping user data out of the safe log index.
     if (params?.unsafeParams && Object.keys(params.unsafeParams).length > 0) {
       entry.unsafeParams = params.unsafeParams;
     } else {

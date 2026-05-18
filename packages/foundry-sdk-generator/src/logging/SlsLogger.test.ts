@@ -40,6 +40,13 @@ function parseEntries(writes: string[]): Array<Record<string, unknown>> {
     .map(line => JSON.parse(line));
 }
 
+// Strip fields that are non-deterministic across runs before snapshotting.
+// `time` changes every run; `stacktrace` contains absolute file paths.
+function strip(entry: Record<string, unknown>): Record<string, unknown> {
+  const { time: _time, stacktrace: _stacktrace, ...rest } = entry;
+  return rest;
+}
+
 describe("SlsLogger", () => {
   let originalJobId: string | undefined;
   let originalTraceId: string | undefined;
@@ -66,15 +73,18 @@ describe("SlsLogger", () => {
     logger.info("hello world");
 
     const [entry] = parseEntries(writes);
-    expect(entry).toMatchObject({
-      type: "service.1",
-      level: "INFO",
-      message: "hello world",
-      thread: "main",
-      origin: "@osdk/foundry-sdk-generator",
-      params: {},
-    });
     expect(typeof entry.time).toBe("string");
+    expect(strip(entry)).toMatchInlineSnapshot(`
+      {
+        "level": "INFO",
+        "message": "hello world",
+        "origin": "@osdk/foundry-sdk-generator",
+        "params": {},
+        "safe": true,
+        "thread": "main",
+        "type": "service.1",
+      }
+    `);
   });
 
   it("appends a newline after each entry", () => {
@@ -115,12 +125,21 @@ describe("SlsLogger", () => {
     logger.info("msg", { params: { count: 5 } });
 
     const [entry] = parseEntries(writes);
-    expect(entry.params).toEqual({
-      jobId: "job-123",
-      count: 5,
-    });
-    expect(entry.traceId).toBe("trace-abc");
-    expect(entry.params).not.toHaveProperty("traceId");
+    expect(strip(entry)).toMatchInlineSnapshot(`
+      {
+        "level": "INFO",
+        "message": "msg",
+        "origin": "@osdk/foundry-sdk-generator",
+        "params": {
+          "count": 5,
+          "jobId": "job-123",
+        },
+        "safe": true,
+        "thread": "main",
+        "traceId": "trace-abc",
+        "type": "service.1",
+      }
+    `);
   });
 
   it("omits jobId and traceId when env vars are absent", () => {
@@ -130,8 +149,17 @@ describe("SlsLogger", () => {
     logger.info("msg");
 
     const [entry] = parseEntries(writes);
-    expect(entry.params).toEqual({});
-    expect(entry).not.toHaveProperty("traceId");
+    expect(strip(entry)).toMatchInlineSnapshot(`
+      {
+        "level": "INFO",
+        "message": "msg",
+        "origin": "@osdk/foundry-sdk-generator",
+        "params": {},
+        "safe": true,
+        "thread": "main",
+        "type": "service.1",
+      }
+    `);
   });
 
   it("keeps params and unsafeParams in separate fields and omits safe", () => {
@@ -144,9 +172,21 @@ describe("SlsLogger", () => {
     });
 
     const [entry] = parseEntries(writes);
-    expect(entry.params).toEqual({ durationMs: 42 });
-    expect(entry.unsafeParams).toEqual({ apiName: "Employee" });
-    expect(entry).not.toHaveProperty("safe");
+    expect(strip(entry)).toMatchInlineSnapshot(`
+      {
+        "level": "INFO",
+        "message": "msg",
+        "origin": "@osdk/foundry-sdk-generator",
+        "params": {
+          "durationMs": 42,
+        },
+        "thread": "main",
+        "type": "service.1",
+        "unsafeParams": {
+          "apiName": "Employee",
+        },
+      }
+    `);
   });
 
   it("marks records with no unsafeParams as safe:true", () => {
@@ -156,8 +196,19 @@ describe("SlsLogger", () => {
     logger.info("msg", { params: { count: 5 } });
 
     const [entry] = parseEntries(writes);
-    expect(entry.safe).toBe(true);
-    expect(entry).not.toHaveProperty("unsafeParams");
+    expect(strip(entry)).toMatchInlineSnapshot(`
+      {
+        "level": "INFO",
+        "message": "msg",
+        "origin": "@osdk/foundry-sdk-generator",
+        "params": {
+          "count": 5,
+        },
+        "safe": true,
+        "thread": "main",
+        "type": "service.1",
+      }
+    `);
   });
 
   it("treats empty unsafeParams as no unsafe data and marks safe:true", () => {
@@ -167,8 +218,17 @@ describe("SlsLogger", () => {
     logger.info("msg", { unsafeParams: {} });
 
     const [entry] = parseEntries(writes);
-    expect(entry).not.toHaveProperty("unsafeParams");
-    expect(entry.safe).toBe(true);
+    expect(strip(entry)).toMatchInlineSnapshot(`
+      {
+        "level": "INFO",
+        "message": "msg",
+        "origin": "@osdk/foundry-sdk-generator",
+        "params": {},
+        "safe": true,
+        "thread": "main",
+        "type": "service.1",
+      }
+    `);
   });
 
   it("includes stacktrace on error() with an Error", () => {
@@ -179,8 +239,18 @@ describe("SlsLogger", () => {
     logger.error("failure", undefined, err);
 
     const [entry] = parseEntries(writes);
-    expect(entry.level).toBe("ERROR");
     expect(entry.stacktrace).toContain("Error: boom");
+    expect(strip(entry)).toMatchInlineSnapshot(`
+      {
+        "level": "ERROR",
+        "message": "failure",
+        "origin": "@osdk/foundry-sdk-generator",
+        "params": {},
+        "safe": true,
+        "thread": "main",
+        "type": "service.1",
+      }
+    `);
   });
 });
 
@@ -206,15 +276,30 @@ describe("logDuration", () => {
     expect(result).toBe("value");
     const entries = parseEntries(writes);
     expect(entries).toHaveLength(2);
-    expect(entries[0]).toMatchObject({
-      level: "INFO",
-      message: "Loading data...",
-    });
-    expect(entries[1]).toMatchObject({
-      level: "INFO",
-      message: "Loading data complete.",
-      params: { durationMs: 150 },
-    });
+    expect(strip(entries[0])).toMatchInlineSnapshot(`
+      {
+        "level": "INFO",
+        "message": "Loading data...",
+        "origin": "@osdk/foundry-sdk-generator",
+        "params": {},
+        "safe": true,
+        "thread": "main",
+        "type": "service.1",
+      }
+    `);
+    expect(strip(entries[1])).toMatchInlineSnapshot(`
+      {
+        "level": "INFO",
+        "message": "Loading data complete.",
+        "origin": "@osdk/foundry-sdk-generator",
+        "params": {
+          "durationMs": 150,
+        },
+        "safe": true,
+        "thread": "main",
+        "type": "service.1",
+      }
+    `);
   });
 
   it("propagates unsafeParams from errors that carry them", async () => {
@@ -227,8 +312,21 @@ describe("logDuration", () => {
     ).rejects.toBe(err);
 
     const entries = parseEntries(writes);
-    expect(entries[1].unsafeParams).toEqual({ apiName: "MyObject" });
-    expect(entries[1]).not.toHaveProperty("safe");
+    expect(strip(entries[1])).toMatchInlineSnapshot(`
+      {
+        "level": "ERROR",
+        "message": "Loading failed.",
+        "origin": "@osdk/foundry-sdk-generator",
+        "params": {
+          "durationMs": 0,
+        },
+        "thread": "main",
+        "type": "service.1",
+        "unsafeParams": {
+          "apiName": "MyObject",
+        },
+      }
+    `);
   });
 
   it("emits start and failure with durationMs on throw, then re-throws", async () => {
@@ -245,13 +343,31 @@ describe("logDuration", () => {
 
     const entries = parseEntries(writes);
     expect(entries).toHaveLength(2);
-    expect(entries[0]).toMatchObject({ message: "Loading data..." });
-    expect(entries[1]).toMatchObject({
-      level: "ERROR",
-      message: "Loading data failed.",
-      params: { durationMs: 75 },
-    });
     expect(entries[1].stacktrace).toContain("Error: nope");
+    expect(strip(entries[0])).toMatchInlineSnapshot(`
+      {
+        "level": "INFO",
+        "message": "Loading data...",
+        "origin": "@osdk/foundry-sdk-generator",
+        "params": {},
+        "safe": true,
+        "thread": "main",
+        "type": "service.1",
+      }
+    `);
+    expect(strip(entries[1])).toMatchInlineSnapshot(`
+      {
+        "level": "ERROR",
+        "message": "Loading data failed.",
+        "origin": "@osdk/foundry-sdk-generator",
+        "params": {
+          "durationMs": 75,
+        },
+        "safe": true,
+        "thread": "main",
+        "type": "service.1",
+      }
+    `);
   });
 
   it("threads extra params through start/complete/fail records", async () => {
@@ -269,12 +385,36 @@ describe("logDuration", () => {
     );
 
     const entries = parseEntries(writes);
-    expect(entries[0].params).toMatchObject({ ontologyRid: "ri.x" });
-    expect(entries[0].unsafeParams).toEqual({ packageName: "@my/pkg" });
-    expect(entries[1].params).toMatchObject({
-      ontologyRid: "ri.x",
-      durationMs: 0,
-    });
-    expect(entries[1].unsafeParams).toEqual({ packageName: "@my/pkg" });
+    expect(strip(entries[0])).toMatchInlineSnapshot(`
+      {
+        "level": "INFO",
+        "message": "Generating...",
+        "origin": "@osdk/foundry-sdk-generator",
+        "params": {
+          "ontologyRid": "ri.x",
+        },
+        "thread": "main",
+        "type": "service.1",
+        "unsafeParams": {
+          "packageName": "@my/pkg",
+        },
+      }
+    `);
+    expect(strip(entries[1])).toMatchInlineSnapshot(`
+      {
+        "level": "INFO",
+        "message": "Generating complete.",
+        "origin": "@osdk/foundry-sdk-generator",
+        "params": {
+          "durationMs": 0,
+          "ontologyRid": "ri.x",
+        },
+        "thread": "main",
+        "type": "service.1",
+        "unsafeParams": {
+          "packageName": "@my/pkg",
+        },
+      }
+    `);
   });
 });
