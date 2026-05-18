@@ -1,5 +1,15 @@
 # @osdk/react-components-storybook
 
+## 0.15.0
+
+### Minor Changes
+
+- ddeda7f: Fix custom value rendering in ObjectTable dropdown cells for non-string item types (booleans, numbers, etc.)
+
+### Patch Changes
+
+- @osdk/faux@0.18.0
+
 ## 0.14.0
 
 ### Patch Changes

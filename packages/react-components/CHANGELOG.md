@@ -1,5 +1,20 @@
 # @osdk/react-components
 
+## 0.17.0
+
+### Minor Changes
+
+- 773194c: `ObjectTable` now accepts an optional `renderEmptyState` prop for overriding the default "No Data" indicator with a custom `ReactNode`.
+- 546c673: Fix page scroll being blocked when opening a date picker in an editable ObjectTable
+- 962ede9: prevent height jumps in SingleSelectInput, MultiSelectInput, and TextTagsInput during loading
+- 3548f5e: ObjectTable:
+  - Fix "select all" + scroll: newly-loaded rows are now checked and the header checkbox stays in sync. `onRowSelection` refires in uncontrolled mode with the expanded id list as new pages load.
+  - Add `onRowSelectionChanged(change)` callback that delivers a `RowSelectionChange` payload with `selectedRowIds`, `selectedRows`, `isSelectAll`, and a derived `objectSet` (full underlying set on "select all", otherwise narrowed by `$primaryKey`).
+  - Deprecate `onRowSelection` in favor of `onRowSelectionChanged`. The legacy callback continues to fire for backwards compatibility.
+
+- 6400c8b: Remove DocxViewer. `.docx` files now fall through to the DocumentViewer unsupported-file state. The `docx-preview` dependency, `DocxViewer`/`BaseDocxViewer` exports, `./experimental/docx-viewer` entrypoint, `ViewerType.Docx`, and `docxViewerProps` on `DocumentViewer` are removed. Removed primarily because rendering untrusted `.docx` directly in the browser via `docx-preview` parses arbitrary attacker-controlled Office Open XML in the host page; we'd rather route DOCX through a server-side decode pipeline (e.g. MIO transform → PDF) than ship a client-side parser as an attack surface. Consumers should pre-convert DOCX to PDF and use `PdfViewer`, or supply their own viewer.
+- ddeda7f: Fix custom value rendering in ObjectTable dropdown cells for non-string item types (booleans, numbers, etc.)
+
 ## 0.16.0
 
 ### Minor Changes

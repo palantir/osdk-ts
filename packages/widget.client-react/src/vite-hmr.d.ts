@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-// BaseDocxViewer
-export { BaseDocxViewer } from "../../docx-viewer/BaseDocxViewer.js";
-export type {
-  BaseDocxViewerProps,
-  DocxViewerMediaProps,
-} from "../../docx-viewer/DocxViewerApi.js";
+// Minimal types for vite HMR
+// https://vite.dev/guide/api-hmr
+interface ImportMetaHot {
+  on?: (event: "vite:beforeFullReload", cb: (payload: unknown) => void) => void;
+  off?: (
+    event: "vite:beforeFullReload",
+    cb: (payload: unknown) => void,
+  ) => void;
+}
 
-// DocxViewer (Media wrapper)
-import { DocxViewer as _DocxViewer } from "../../docx-viewer/DocxViewer.js";
-import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
-export const DocxViewer: typeof _DocxViewer = withOsdkMetrics(
-  _DocxViewer,
-  "DocxViewer",
-);
+interface ImportMeta {
+  hot?: ImportMetaHot;
+}

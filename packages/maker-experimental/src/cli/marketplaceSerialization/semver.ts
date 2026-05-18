@@ -1,5 +1,5 @@
 /*
- * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,4 @@
  * limitations under the License.
  */
 
-import type { Media } from "@osdk/api";
-
-export interface BaseDocxViewerProps {
-  /** DOCX file contents as an ArrayBuffer */
-  src: ArrayBuffer;
-  /** Additional CSS class name for the root element
-   * @default undefined */
-  className?: string;
-  /** Callback when rendering fails
-   * @default undefined */
-  onError?: () => void;
-}
-
-export interface DocxViewerMediaProps extends Omit<BaseDocxViewerProps, "src"> {
-  /** The Media object to fetch DOCX contents from */
-  media: Media;
-}
+export type SemverVersion = `${number}.${number}.${number}`;

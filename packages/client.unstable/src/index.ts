@@ -46,6 +46,7 @@ export type {
   OntologyIrBaseParameterType_structList,
   OntologyIrBaseParameterType_timestamp,
   OntologyIrBaseParameterType_timestampList,
+  OntologyIrStructFieldBaseParameterType,
   ParameterRenderHint,
   ParameterRequiredConfiguration,
   ParameterVisibility,
