@@ -113,15 +113,15 @@ const PAX_002 = {
 
 const GV001 = {
   __apiName: `${NS}GroundVehicle`,
-  __primaryKey: "1HGCM82633A004352",
-  vin: "1HGCM82633A004352",
+  __primaryKey: "VIN-FORD-001",
+  vin: "VIN-FORD-001",
   brand: "Ford",
   fleetTag: "GRD-001",
 };
 const GV002 = {
   __apiName: `${NS}GroundVehicle`,
-  __primaryKey: "JH4DA9450MS012345",
-  vin: "JH4DA9450MS012345",
+  __primaryKey: "VIN-TOYOTA-002",
+  vin: "VIN-TOYOTA-002",
   brand: "Toyota",
   fleetTag: "GRD-002",
 };

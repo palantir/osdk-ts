@@ -23,7 +23,7 @@ export function InterfacesPage(): React.ReactElement {
           <dd>interface</dd>
           <dt>Note</dt>
           <dd>
-            FauxFoundry doesn&apos;t yet serve interface-typed queries against
+            FauxFoundry does not yet serve interface-typed queries against
             implementing objects. We render the implementing types directly
             below.
           </dd>
