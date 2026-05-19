@@ -137,6 +137,12 @@ describe("DateRangePicker", () => {
 
       expect(startInput.disabled).toBe(true);
       expect(endInput.disabled).toBe(true);
+      expect(startInput.parentElement?.getAttribute("data-disabled")).toBe(
+        "true",
+      );
+      expect(endInput.parentElement?.getAttribute("data-disabled")).toBe(
+        "true",
+      );
       expect(startInput.getAttribute("aria-expanded")).toBe("false");
       expect(endInput.getAttribute("aria-expanded")).toBe("false");
       expect(screen.queryByRole("dialog")).toBeNull();

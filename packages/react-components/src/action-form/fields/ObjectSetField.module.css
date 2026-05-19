@@ -26,7 +26,7 @@
   line-height: var(--osdk-object-set-line-height);
 
   &[data-disabled] {
-    opacity: var(--osdk-input-disabled-opacity);
+    opacity: var(--osdk-disabled-opacity);
   }
 }
 

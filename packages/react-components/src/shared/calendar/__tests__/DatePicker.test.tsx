@@ -135,6 +135,7 @@ describe("DatePicker", () => {
       fireEvent.click(input);
 
       expect(input.disabled).toBe(true);
+      expect(input.parentElement?.getAttribute("data-disabled")).toBe("true");
       expect(input.getAttribute("aria-expanded")).toBe("false");
       expect(screen.queryByRole("dialog")).toBeNull();
     });

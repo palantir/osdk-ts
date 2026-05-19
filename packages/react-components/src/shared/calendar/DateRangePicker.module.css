@@ -8,6 +8,10 @@
   align-items: center;
   gap: calc(var(--osdk-surface-spacing) * 2);
   outline: none;
+
+  &[data-disabled] {
+    cursor: not-allowed;
+  }
 }
 
 /* Each input wrapper gets flex: 1 to split equally */

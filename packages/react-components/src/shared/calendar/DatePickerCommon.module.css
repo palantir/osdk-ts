@@ -80,6 +80,19 @@
     outline-offset: var(--osdk-datetime-input-focus-offset);
     border-color: var(--osdk-datetime-input-border-color-focus);
   }
+
+  &[data-disabled] {
+    cursor: not-allowed;
+    opacity: var(--osdk-disabled-opacity);
+
+    &:hover {
+      background-color: var(--osdk-datetime-input-bg);
+    }
+
+    .osdkDatePickerInput {
+      cursor: not-allowed;
+    }
+  }
 }
 
 .osdkDatePickerInputWrapperError {

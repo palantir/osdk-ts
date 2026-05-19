@@ -78,6 +78,7 @@ describe("RadioButtonsField", () => {
       const radios = screen.getAllByRole("radio");
       for (const radio of radios) {
         expect(radio.getAttribute("aria-disabled")).toBe("true");
+        expect(radio.getAttribute("tabindex")).toBe("-1");
       }
 
       fireEvent.click(radios[2]);

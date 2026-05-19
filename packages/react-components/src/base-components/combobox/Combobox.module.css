@@ -116,7 +116,7 @@
 
   &[data-disabled] {
     cursor: not-allowed;
-    opacity: var(--osdk-disabled-opacity, 0.5);
+    opacity: var(--osdk-disabled-opacity);
   }
 
   &[data-popup-open] {
@@ -427,7 +427,7 @@
 
   &[data-disabled] {
     cursor: not-allowed;
-    opacity: var(--osdk-disabled-opacity, 0.5);
+    opacity: var(--osdk-disabled-opacity);
   }
 }
 
@@ -517,7 +517,7 @@
 
   &[aria-disabled="true"] {
     cursor: not-allowed;
-    opacity: var(--osdk-disabled-opacity, 0.5);
+    opacity: var(--osdk-disabled-opacity);
   }
 
   &[aria-disabled="true"]:hover {
@@ -570,7 +570,7 @@
 
   &[aria-disabled="true"] {
     cursor: not-allowed;
-    opacity: var(--osdk-disabled-opacity, 0.5);
+    opacity: var(--osdk-disabled-opacity);
   }
 
   &[aria-disabled="true"]:hover {

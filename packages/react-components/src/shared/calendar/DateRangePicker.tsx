@@ -553,13 +553,18 @@ export const DateRangePicker: React.NamedExoticComponent<DateRangePickerProps> =
         onOpenChange={handleOpenChange}
         modal={modal}
       >
-        <div ref={triggerRef} className={styles.osdkDateRangeContainer}>
+        <div
+          ref={triggerRef}
+          className={styles.osdkDateRangeContainer}
+          data-disabled={disabled === true || undefined}
+        >
           <div
             className={classnames(
               commonStyles.osdkDatePickerInputWrapper,
               styles.osdkDateRangeInputWrapper,
               startInvalid && commonStyles.osdkDatePickerInputWrapperError,
             )}
+            data-disabled={disabled === true || undefined}
           >
             <Popover.Trigger
               nativeButton={false}
@@ -589,6 +594,7 @@ export const DateRangePicker: React.NamedExoticComponent<DateRangePickerProps> =
               styles.osdkDateRangeInputWrapper,
               endInvalid && commonStyles.osdkDatePickerInputWrapperError,
             )}
+            data-disabled={disabled === true || undefined}
           >
             <Popover.Trigger
               nativeButton={false}

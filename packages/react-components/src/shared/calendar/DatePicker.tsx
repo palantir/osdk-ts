@@ -441,7 +441,11 @@ export const DatePicker: React.NamedExoticComponent<DatePickerProps> = React
         // intercept clicks intended for the parent.
         modal={modal}
       >
-        <div ref={wrapperRef} className={wrapperClassName}>
+        <div
+          ref={wrapperRef}
+          className={wrapperClassName}
+          data-disabled={disabled || undefined}
+        >
           <Popover.Trigger
             nativeButton={false}
             render={

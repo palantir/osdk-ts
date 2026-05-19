@@ -106,7 +106,7 @@
 
   &[data-disabled] {
     cursor: not-allowed;
-    opacity: var(--osdk-disabled-opacity, 0.5);
+    opacity: var(--osdk-disabled-opacity);
   }
 
   &[data-popup-open] {
@@ -209,7 +209,7 @@
 
   &[aria-disabled="true"] {
     cursor: not-allowed;
-    opacity: var(--osdk-disabled-opacity, 0.5);
+    opacity: var(--osdk-disabled-opacity);
   }
 
   &[aria-disabled="true"]:hover {
@@ -312,6 +312,6 @@
 
   &[data-disabled] {
     cursor: not-allowed;
-    opacity: var(--osdk-disabled-opacity, 0.5);
+    opacity: var(--osdk-disabled-opacity);
   }
 }
