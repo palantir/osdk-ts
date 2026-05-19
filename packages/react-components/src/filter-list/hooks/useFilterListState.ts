@@ -39,6 +39,7 @@ export interface UseFilterListStateResult<Q extends ObjectTypeDefinition> {
   ) => void;
   clearFilterState: (filterKey: string) => void;
   whereClause: WhereClause<Q>;
+  /** Per-filter excluding-self clauses keyed by `getFilterKey`. */
   perFilterWhereClauses: Map<string, WhereClause<Q>>;
   activeFilterCount: number;
   reset: () => void;
@@ -121,6 +122,8 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
   onEffectiveObjectSetChangedRef.current = onEffectiveObjectSetChanged;
   const objectSetRef = useRef(objectSet);
   objectSetRef.current = objectSet;
+  const filterDefinitionsRef = useRef(filterDefinitions);
+  filterDefinitionsRef.current = filterDefinitions;
 
   const propertyTypes = useMemo(() => {
     const map = new Map<string, PropertyTypeInfo>();
@@ -136,6 +139,8 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     }
     return map;
   }, [metadata?.properties]);
+  const propertyTypesRef = useRef(propertyTypes);
+  propertyTypesRef.current = propertyTypes;
 
   const [filterStates, setFilterStates] = useState<
     Map<string, FilterState>
@@ -149,31 +154,33 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     return states;
   });
 
+  // Tracks the latest map written by a setter so multiple synchronous setter
+  // calls within one event see the cumulative state. Setters update both the
+  // ref and React state, so the ref never lags behind committed state. It is
+  // NOT written from render — that would clobber optimistic writes.
   const filterStatesRef = useRef(filterStates);
-  filterStatesRef.current = filterStates;
 
   const notifyChange = useCallback(
     (next: Map<string, FilterState>) => {
       const extendedClause = buildWhereClause(
-        filterDefinitions,
+        filterDefinitionsRef.current,
         next,
-        propertyTypes,
+        propertyTypesRef.current,
       );
-      const propertyOnlyClause = stripLinkEntries(
-        extendedClause as unknown as Record<string, unknown>,
-      ).clause as WhereClause<Q>;
+      const propertyOnlyClause = stripLinkEntries(extendedClause)
+        .clause as WhereClause<Q>;
       onFilterClauseChangedRef.current?.(propertyOnlyClause);
 
       const currentObjectSet = objectSetRef.current;
       if (currentObjectSet != null && onEffectiveObjectSetChangedRef.current) {
         const effective = applyWhereClauseToObjectSet(
           currentObjectSet,
-          extendedClause as unknown as Record<string, unknown>,
+          extendedClause,
         );
         onEffectiveObjectSetChangedRef.current(effective);
       }
     },
-    [filterDefinitions, propertyTypes],
+    [],
   );
 
   const setFilterState = useCallback(
@@ -184,14 +191,14 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
       setFilterStates(next);
       notifyChange(next);
 
-      const definition = filterDefinitions?.find(
+      const definition = filterDefinitionsRef.current?.find(
         (d) => getFilterKey(d) === filterKey,
       );
       if (definition) {
         onFilterStateChanged?.(definition, state);
       }
     },
-    [filterDefinitions, onFilterStateChanged, notifyChange],
+    [onFilterStateChanged, notifyChange],
   );
 
   const clearFilterState = useCallback(
@@ -211,9 +218,7 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
       filterStates,
       propertyTypes,
     );
-    return stripLinkEntries(
-      extended as unknown as Record<string, unknown>,
-    ).clause as WhereClause<Q>;
+    return stripLinkEntries(extended).clause as WhereClause<Q>;
   }, [filterDefinitions, filterStates, propertyTypes]);
 
   // Preserve per-key clause references when content hasn't changed so
@@ -230,7 +235,7 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
             filterStates,
             propertyTypes,
             key,
-          ),
+          ) as unknown as WhereClause<Q>,
         );
       }
       return map;
@@ -248,11 +253,11 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
   }, [filterStates]);
 
   const reset = useCallback(() => {
-    const next = buildInitialStates(filterDefinitions);
+    const next = buildInitialStates(filterDefinitionsRef.current);
     filterStatesRef.current = next;
     setFilterStates(next);
     notifyChange(next);
-  }, [filterDefinitions, notifyChange]);
+  }, [notifyChange]);
 
   return useMemo(() => ({
     filterStates,

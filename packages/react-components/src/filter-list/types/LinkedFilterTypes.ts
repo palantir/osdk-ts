@@ -92,9 +92,8 @@ export interface LinkedPropertyFilterDefinition<
   linkName: L;
   /**
    * Name of the link on the linked object type that points back to `Q`.
-   * Required by `applyLinkedFilters` to invert the pivot when building a
-   * narrowed `ObjectSet` from this filter's selection. Optional otherwise;
-   * filters without `reverseLinkName` are skipped by `applyLinkedFilters`.
+   * Required to narrow on this filter's selection; without it, selections
+   * produce no narrowing.
    */
   reverseLinkName?: LinkNames<LinkedQ>;
   linkedPropertyKey: LinkedK;

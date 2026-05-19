@@ -27,7 +27,7 @@ import {
   type MultiSelectInputLayout,
 } from "../base/inputs/MultiSelectInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
-import { useDualScopeAggregation } from "../hooks/useDualScopeAggregation.js";
+import { useFilterPropertyAggregation } from "../hooks/useFilterPropertyAggregation.js";
 import { coerceToStringArray } from "../utils/coerceFilterValue.js";
 
 interface MultiSelectFilterInputProps<Q extends ObjectTypeDefinition> {
@@ -90,7 +90,7 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
     [selectedValues, showFilteredOutValues],
   );
 
-  const { data, isLoading, error } = useDualScopeAggregation(
+  const { data, isLoading, error } = useFilterPropertyAggregation(
     objectType,
     propertyKey as PropertyKeys<Q>,
     objectSet,

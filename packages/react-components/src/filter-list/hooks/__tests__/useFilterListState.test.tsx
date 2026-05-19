@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ObjectSet } from "@osdk/api";
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -245,8 +246,12 @@ describe("useFilterListState", () => {
 
     it("emits a where()-narrowed objectSet on filter changes", () => {
       const onEffectiveObjectSetChanged = vi.fn();
-      const narrowed = { kind: "narrowed" } as unknown;
-      const objectSet = { where: vi.fn().mockReturnValue(narrowed) };
+      const narrowed = { _kind: "narrowed" } as unknown as ObjectSet<
+        typeof MockObjectType
+      >;
+      const objectSet = {
+        where: vi.fn().mockReturnValue(narrowed),
+      } as unknown as ObjectSet<typeof MockObjectType>;
       const nameDef = createPropertyFilterDef(
         "name",
         "LISTOGRAM",
@@ -254,7 +259,7 @@ describe("useFilterListState", () => {
       );
       const props = createProps({
         filterDefinitions: [nameDef],
-        objectSet: objectSet as never,
+        objectSet,
         onEffectiveObjectSetChanged,
       });
       const { result } = renderHook(() => useFilterListState(props));
@@ -273,7 +278,9 @@ describe("useFilterListState", () => {
 
     it("does not fire on mount", () => {
       const onEffectiveObjectSetChanged = vi.fn();
-      const objectSet = { where: vi.fn() };
+      const objectSet = { where: vi.fn() } as unknown as ObjectSet<
+        typeof MockObjectType
+      >;
       const nameDef = createPropertyFilterDef(
         "name",
         "LISTOGRAM",
@@ -281,7 +288,7 @@ describe("useFilterListState", () => {
       );
       const props = createProps({
         filterDefinitions: [nameDef],
-        objectSet: objectSet as never,
+        objectSet,
         onEffectiveObjectSetChanged,
       });
 

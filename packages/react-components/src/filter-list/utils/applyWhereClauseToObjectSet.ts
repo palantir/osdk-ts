@@ -23,39 +23,46 @@ import type {
 
 export const REVERSE_LINK_KEY = "$reverseLink";
 
+const KNOWN_TOP_LEVEL_OPS = new Set(["$and", "$or", "$not"]);
+
 interface LinkEntry {
   [REVERSE_LINK_KEY]: string;
   [key: string]: unknown;
 }
 
-function isLinkEntry(value: unknown): value is LinkEntry {
-  return typeof value === "object"
-    && value != null
-    && REVERSE_LINK_KEY in value
-    && typeof (value as Record<string, unknown>)[REVERSE_LINK_KEY] === "string";
+export function isLinkEntry(value: unknown): value is LinkEntry {
+  if (typeof value !== "object" || value == null) {
+    return false;
+  }
+  if (!(REVERSE_LINK_KEY in value)) {
+    return false;
+  }
+  return typeof (value as { [REVERSE_LINK_KEY]: unknown })[REVERSE_LINK_KEY]
+    === "string";
 }
 
-function isAndClause(
+export function isAndClause(
   value: Record<string, unknown>,
-): value is { $and: unknown[] } {
+): value is { $and: Array<Record<string, unknown>> } {
   return Array.isArray((value as { $and?: unknown }).$and);
 }
 
-function isOrClause(
+export function isOrClause(
   value: Record<string, unknown>,
-): value is { $or: unknown[] } {
+): value is { $or: Array<Record<string, unknown>> } {
   return Array.isArray((value as { $or?: unknown }).$or);
 }
 
-function isNotClause(
+export function isNotClause(
   value: Record<string, unknown>,
 ): value is { $not: Record<string, unknown> } {
-  return "$not" in value;
+  const inner = (value as { $not?: unknown }).$not;
+  return typeof inner === "object" && inner != null;
 }
 
 /**
- * Walks an extended where-clause tree and composes a narrowed `ObjectSet<Q>`
- * from `objectSet`. Recognized clause shapes:
+ * Walks an extended where-clause tree and composes a narrowed `ObjectSet<Q>`.
+ * Recognized clause shapes:
  *
  * - `{ $and: [...] }` → `intersect`
  * - `{ $or: [...] }` → `union`
@@ -63,17 +70,6 @@ function isNotClause(
  * - property entry `{ key: filter }` → `.where({ key: filter })`
  * - link entry `{ [linkName]: { $reverseLink: rev, ...inner } }` →
  *   `.pivotTo(linkName).where(inner).pivotTo(rev)`
- *
- * Multiple property entries at the same level are combined into a single
- * `.where()` call; multiple link entries each produce their own pivot
- * composition; the results are `.intersect()`-ed.
- *
- * Used by FilterList to apply per-filter excluding-self clauses (which may
- * include link entries) to a base `ObjectSet` without requiring SDK changes.
- * Link entries carry the `$reverseLink` sentinel naming the inverse link the
- * helper uses to pivot back to `Q`.
- *
- * @internal
  */
 export function applyWhereClauseToObjectSet<Q extends ObjectTypeDefinition>(
   objectSet: ObjectSet<Q>,
@@ -87,65 +83,81 @@ function applyInner<Q extends ObjectTypeDefinition>(
   whereClause: Record<string, unknown>,
 ): ObjectSet<Q> {
   if (isAndClause(whereClause)) {
-    const children = whereClause.$and as Array<Record<string, unknown>>;
-    if (children.length === 0) {
-      return base;
-    }
-    if (children.length === 1) {
-      return applyInner(base, children[0]);
-    }
-    const composed = children.map((c) => applyInner(base, c));
-    const [first, ...rest] = composed;
-    return first.intersect(...rest);
+    return applyCombinator(
+      base,
+      whereClause.$and,
+      (first, rest) => first.intersect(...rest),
+    );
   }
-
   if (isOrClause(whereClause)) {
-    const children = whereClause.$or as Array<Record<string, unknown>>;
-    if (children.length === 0) {
-      return base;
-    }
-    if (children.length === 1) {
-      return applyInner(base, children[0]);
-    }
-    const composed = children.map((c) => applyInner(base, c));
-    const [first, ...rest] = composed;
-    return first.union(...rest);
+    return applyCombinator(
+      base,
+      whereClause.$or,
+      (first, rest) => first.union(...rest),
+    );
   }
-
   if (isNotClause(whereClause)) {
-    const excluded = applyInner(base, whereClause.$not);
-    return base.subtract(excluded);
+    return base.subtract(applyInner(base, whereClause.$not));
   }
 
-  const propertyEntries: Record<string, unknown> = {};
-  const linkEntries: Array<[string, LinkEntry]> = [];
-
-  for (const [key, value] of Object.entries(whereClause)) {
-    if (isLinkEntry(value)) {
-      linkEntries.push([key, value]);
-    } else {
-      propertyEntries[key] = value;
-    }
-  }
-
+  const { propertyEntries, linkEntries } = splitEntries(whereClause);
   const components: ObjectSet<Q>[] = [];
-
   if (Object.keys(propertyEntries).length > 0) {
     components.push(base.where(propertyEntries as WhereClause<Q>));
   }
-
-  for (const [linkName, value] of linkEntries) {
-    const { [REVERSE_LINK_KEY]: reverseLink, ...innerWhere } = value;
-    const linked = base.pivotTo(linkName as LinkNames<Q>) as ObjectSet<
-      ObjectTypeDefinition
-    >;
-    const filtered = applyInner(linked, innerWhere);
-    const back = filtered.pivotTo(
-      reverseLink as LinkNames<ObjectTypeDefinition>,
-    ) as ObjectSet<Q>;
-    components.push(back);
+  for (const [linkName, entry] of linkEntries) {
+    components.push(buildLinkComponent(base, linkName, entry));
   }
+  return intersectAll(base, components);
+}
 
+function splitEntries(
+  whereClause: Record<string, unknown>,
+): {
+  propertyEntries: Record<string, unknown>;
+  linkEntries: Array<[string, LinkEntry]>;
+} {
+  const propertyEntries: Record<string, unknown> = {};
+  const linkEntries: Array<[string, LinkEntry]> = [];
+  for (const [key, value] of Object.entries(whereClause)) {
+    if (isLinkEntry(value)) {
+      linkEntries.push([key, value]);
+      continue;
+    }
+    if (key.startsWith("$") && !KNOWN_TOP_LEVEL_OPS.has(key)) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `[FilterList] applyWhereClauseToObjectSet ignoring unrecognized top-level operator "${key}"`,
+      );
+      continue;
+    }
+    propertyEntries[key] = value;
+  }
+  return { propertyEntries, linkEntries };
+}
+
+function buildLinkComponent<Q extends ObjectTypeDefinition>(
+  base: ObjectSet<Q>,
+  linkName: string,
+  entry: LinkEntry,
+): ObjectSet<Q> {
+  const { [REVERSE_LINK_KEY]: reverseLink, ...innerWhere } = entry;
+  const linked = base.pivotTo(linkName as LinkNames<Q>) as ObjectSet<
+    ObjectTypeDefinition
+  >;
+  const filtered = applyInner(linked, innerWhere);
+  // Cast assumes reverseLink resolves back to Q. The reverseLinkName type
+  // doesn't constrain the target — misconfiguration errors at SDK runtime,
+  // not compile time.
+  return filtered.pivotTo(
+    reverseLink as LinkNames<ObjectTypeDefinition>,
+  ) as ObjectSet<Q>;
+}
+
+function intersectAll<Q extends ObjectTypeDefinition>(
+  base: ObjectSet<Q>,
+  components: ObjectSet<Q>[],
+): ObjectSet<Q> {
   if (components.length === 0) {
     return base;
   }
@@ -154,4 +166,20 @@ function applyInner<Q extends ObjectTypeDefinition>(
   }
   const [first, ...rest] = components;
   return first.intersect(...rest);
+}
+
+function applyCombinator<Q extends ObjectTypeDefinition>(
+  base: ObjectSet<Q>,
+  children: Array<Record<string, unknown>>,
+  combine: (first: ObjectSet<Q>, rest: ObjectSet<Q>[]) => ObjectSet<Q>,
+): ObjectSet<Q> {
+  if (children.length === 0) {
+    return base;
+  }
+  if (children.length === 1) {
+    return applyInner(base, children[0]);
+  }
+  const composed = children.map((c) => applyInner(base, c));
+  const [first, ...rest] = composed;
+  return combine(first, rest);
 }

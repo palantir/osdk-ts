@@ -30,6 +30,8 @@ import { useFilterVisibility } from "./hooks/useFilterVisibility.js";
 import { getFilterKey } from "./utils/getFilterKey.js";
 import { getFilterLabel } from "./utils/getFilterLabel.js";
 
+const EMPTY_WHERE: Record<string, never> = {};
+
 export function FilterList<Q extends ObjectTypeDefinition>(
   props: FilterListProps<Q>,
 ): React.ReactElement {
@@ -196,7 +198,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
         filterState={filterState}
         onFilterStateChanged={onFilterStateChanged}
         whereClause={perFilterWhereClauses.get(filterKey)
-          ?? ({} as WhereClause<Q>)}
+          ?? (EMPTY_WHERE as WhereClause<Q>)}
         showFilteredOutValues={showFilteredOutValues}
         searchQuery={searchQuery}
         excludeRowOpen={excludeRowOpen}

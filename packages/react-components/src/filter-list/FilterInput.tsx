@@ -31,6 +31,7 @@ export interface FilterInputProps<Q extends ObjectTypeDefinition> {
   definition: FilterDefinitionUnion<Q>;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
+  /** Per-filter excluding-self clause. */
   whereClause: WhereClause<Q>;
   /**
    * When `true`, direct-property facets render greyed-out count=0 rows for

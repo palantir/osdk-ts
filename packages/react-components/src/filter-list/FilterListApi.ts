@@ -138,15 +138,10 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   ) => void;
 
   /**
-   * Called whenever any filter changes, with the `ObjectSet` narrowed by every
-   * active filter — including linked-property filters that `filterClause`
-   * doesn't represent. Pass this directly to downstream consumers (e.g. an
-   * `ObjectTable`'s `objectSet`) to render the fully-filtered data.
-   *
-   * Emitted only when `objectSet` was provided. The emitted set is computed by
-   * composing `pivotTo`/`where`/`intersect`/`union`/`subtract` on the input
-   * `objectSet` via the same `WhereClause` shape the SDK already understands,
-   * augmented with `$reverseLink` entries for linked-property filters.
+   * Called whenever any filter changes, with the `ObjectSet` narrowed by
+   * every active filter — including linked-property filters that
+   * `filterClause` cannot represent. Emitted only when `objectSet` was
+   * provided.
    *
    * @param objectSet The narrowed `ObjectSet`.
    */

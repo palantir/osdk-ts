@@ -24,7 +24,7 @@ import React, { memo, useCallback, useMemo } from "react";
 import { FilterInputExcludeRow } from "../base/FilterInputExcludeRow.js";
 import { SingleSelectInput } from "../base/inputs/SingleSelectInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
-import { useDualScopeAggregation } from "../hooks/useDualScopeAggregation.js";
+import { useFilterPropertyAggregation } from "../hooks/useFilterPropertyAggregation.js";
 import { coerceToString } from "../utils/coerceFilterValue.js";
 
 interface SingleSelectFilterInputProps<Q extends ObjectTypeDefinition> {
@@ -90,7 +90,7 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
     [selectedValues, showFilteredOutValues],
   );
 
-  const { data, isLoading, error } = useDualScopeAggregation(
+  const { data, isLoading, error } = useFilterPropertyAggregation(
     objectType,
     propertyKey as PropertyKeys<Q>,
     objectSet,

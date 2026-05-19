@@ -24,7 +24,7 @@ import React, { memo, useCallback, useMemo } from "react";
 import { FilterInputExcludeRow } from "../base/FilterInputExcludeRow.js";
 import { ListogramInput } from "../base/inputs/ListogramInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
-import { useDualScopeAggregation } from "../hooks/useDualScopeAggregation.js";
+import { useFilterPropertyAggregation } from "../hooks/useFilterPropertyAggregation.js";
 import { coerceToStringArray } from "../utils/coerceFilterValue.js";
 
 interface ListogramFilterInputProps<Q extends ObjectTypeDefinition> {
@@ -97,7 +97,7 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
     [sortBy, selectedValues, showFilteredOutValues],
   );
 
-  const { data, maxCount, isLoading, error } = useDualScopeAggregation(
+  const { data, maxCount, isLoading, error } = useFilterPropertyAggregation(
     objectType,
     propertyKey as PropertyKeys<Q>,
     objectSet,

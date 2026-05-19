@@ -22,9 +22,8 @@
   --osdk-filter-list-empty-text-color: var(--osdk-typography-color-muted);
   --osdk-filter-list-empty-font-size: var(--osdk-typography-size-body-small);
 
-  /* Ghost entries: present in the base scope but absent from the narrowed
-     scope. Used by MULTI_SELECT and LISTOGRAM facets when FilterList renders
-     with `baseObjectSet`. */
+  /* Ghost entries: values present in the wider scope but absent from the
+     narrowed scope. */
   --osdk-filter-ghost-item-opacity: 0.5;
   --osdk-filter-ghost-item-color: var(--osdk-typography-color-muted);
 

@@ -49,10 +49,10 @@ afterEach(() => {
 
 /**
  * Provides scripted responses to two parallel `useOsdkAggregation` calls
- * inside a filter input that uses `baseObjectSet`. The two calls differ in
- * which `objectSet` they target; we discriminate on a `_kind` tag carried on
- * the test fixtures (`baseSet`, `narrowedSet`) rather than on call order, so
- * the mock is robust to hook-order refactors.
+ * inside a filter input running with `showFilteredOutValues`. The two calls
+ * differ in which `objectSet` they target; we discriminate on a `_kind` tag
+ * carried on the test fixtures (`baseSet`, `narrowedSet`) rather than on call
+ * order, so the mock is robust to hook-order refactors.
  */
 function mockDualAggregationData(
   narrowed: Array<{ name: string; count: number }>,

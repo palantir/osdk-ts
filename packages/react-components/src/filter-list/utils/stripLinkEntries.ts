@@ -14,78 +14,55 @@
  * limitations under the License.
  */
 
-import { REVERSE_LINK_KEY } from "./applyWhereClauseToObjectSet.js";
-
-function isLinkEntry(value: unknown): boolean {
-  return typeof value === "object"
-    && value != null
-    && REVERSE_LINK_KEY in value
-    && typeof (value as Record<string, unknown>)[REVERSE_LINK_KEY] === "string";
-}
+import {
+  isAndClause,
+  isLinkEntry,
+  isNotClause,
+  isOrClause,
+} from "./applyWhereClauseToObjectSet.js";
 
 function isEmptyClause(clause: Record<string, unknown>): boolean {
   return Object.keys(clause).length === 0;
 }
 
+interface StripResult {
+  clause: Record<string, unknown>;
+  hadLinkEntries: boolean;
+}
+
 /**
  * Returns a copy of `whereClause` with all link entries (values tagged with
  * `$reverseLink`) removed. Recurses into `$and`/`$or`/`$not` and elides empty
- * children so the resulting clause is shaped exactly like a property-only
- * `buildWhereClause` output. `hadLinkEntries` is `true` when at least one link
- * entry was removed anywhere in the tree.
- *
- * Used by direct-property facets to compute the "wider" scope for ghost-row
- * discovery, and by `useFilterListState` to emit a `WhereClause<Q>` that
- * matches the SDK type via `onFilterClauseChanged`.
- *
- * @internal
+ * children. `hadLinkEntries` is `true` when at least one link entry was
+ * removed anywhere in the tree.
  */
 export function stripLinkEntries(
   whereClause: Record<string, unknown>,
-): { clause: Record<string, unknown>; hadLinkEntries: boolean } {
-  if (Array.isArray((whereClause as { $and?: unknown }).$and)) {
-    const children = (whereClause as { $and: Array<Record<string, unknown>> })
-      .$and.map(stripLinkEntries);
-    const nonEmpty = children
-      .map((c) => c.clause)
-      .filter((c) => !isEmptyClause(c));
-    const hadLinkEntries = children.some((c) => c.hadLinkEntries);
-    if (nonEmpty.length === 0) {
-      return { clause: {}, hadLinkEntries };
-    }
-    if (nonEmpty.length === 1) {
-      return { clause: nonEmpty[0], hadLinkEntries };
-    }
-    return { clause: { $and: nonEmpty }, hadLinkEntries };
+): StripResult {
+  if (isAndClause(whereClause)) {
+    return stripCombinator("$and", whereClause.$and);
   }
-  if (Array.isArray((whereClause as { $or?: unknown }).$or)) {
-    const children = (whereClause as { $or: Array<Record<string, unknown>> })
-      .$or.map(stripLinkEntries);
-    const nonEmpty = children
-      .map((c) => c.clause)
-      .filter((c) => !isEmptyClause(c));
-    const hadLinkEntries = children.some((c) => c.hadLinkEntries);
-    if (nonEmpty.length === 0) {
-      return { clause: {}, hadLinkEntries };
-    }
-    if (nonEmpty.length === 1) {
-      return { clause: nonEmpty[0], hadLinkEntries };
-    }
-    return { clause: { $or: nonEmpty }, hadLinkEntries };
+  if (isOrClause(whereClause)) {
+    return stripCombinator("$or", whereClause.$or);
   }
-  if ("$not" in whereClause) {
-    const inner = stripLinkEntries(
-      (whereClause as { $not: Record<string, unknown> }).$not,
-    );
-    if (isEmptyClause(inner.clause)) {
-      return { clause: {}, hadLinkEntries: inner.hadLinkEntries };
-    }
-    return {
-      clause: { $not: inner.clause },
-      hadLinkEntries: inner.hadLinkEntries,
-    };
+  if (isNotClause(whereClause)) {
+    return stripNotClause(whereClause.$not);
   }
+  return stripLeaf(whereClause);
+}
 
+function stripNotClause(inner: Record<string, unknown>): StripResult {
+  const stripped = stripLinkEntries(inner);
+  if (isEmptyClause(stripped.clause)) {
+    return { clause: {}, hadLinkEntries: stripped.hadLinkEntries };
+  }
+  return {
+    clause: { $not: stripped.clause },
+    hadLinkEntries: stripped.hadLinkEntries,
+  };
+}
+
+function stripLeaf(whereClause: Record<string, unknown>): StripResult {
   let hadLinkEntries = false;
   const filtered: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(whereClause)) {
@@ -96,4 +73,22 @@ export function stripLinkEntries(
     filtered[key] = value;
   }
   return { clause: filtered, hadLinkEntries };
+}
+
+function stripCombinator(
+  op: "$and" | "$or",
+  children: Array<Record<string, unknown>>,
+): StripResult {
+  const stripped = children.map(stripLinkEntries);
+  const nonEmpty = stripped
+    .map((c) => c.clause)
+    .filter((c) => !isEmptyClause(c));
+  const hadLinkEntries = stripped.some((c) => c.hadLinkEntries);
+  if (nonEmpty.length === 0) {
+    return { clause: {}, hadLinkEntries };
+  }
+  if (nonEmpty.length === 1) {
+    return { clause: nonEmpty[0], hadLinkEntries };
+  }
+  return { clause: { [op]: nonEmpty }, hadLinkEntries };
 }

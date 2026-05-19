@@ -30,7 +30,7 @@ import {
 
 const EMPTY_VALUES: string[] = [];
 
-export interface UseDualScopeAggregationOptions {
+export interface UseFilterPropertyAggregationOptions {
   limit?: number;
   sortBy?: "count" | "value";
   /** Values to always render (count=0 ghosts when absent from the aggregation). */
@@ -45,12 +45,12 @@ export interface UseDualScopeAggregationOptions {
 }
 
 /**
- * Aggregates a property on `objectSet.where(whereClause)`. When
+ * Aggregates a property on `objectSet` narrowed by `whereClause`. When
  * `showFilteredOutValues` is on AND `whereClause` has link entries, also
- * aggregates against the link-stripped scope and merges its values into
- * `activeValues` so they render as ghosts.
+ * aggregates against the link-stripped scope and merges its values in so
+ * they render as count=0 ghosts.
  */
-export function useDualScopeAggregation<
+export function useFilterPropertyAggregation<
   Q extends ObjectTypeDefinition,
   K extends PropertyKeys<Q>,
 >(
@@ -58,7 +58,7 @@ export function useDualScopeAggregation<
   propertyKey: K,
   objectSet: ObjectSet<Q> | undefined,
   whereClause: WhereClause<Q>,
-  options: UseDualScopeAggregationOptions = {},
+  options: UseFilterPropertyAggregationOptions = {},
 ): UsePropertyAggregationResult {
   const {
     sortBy,
@@ -71,31 +71,35 @@ export function useDualScopeAggregation<
     if (objectSet == null) {
       return { scopedObjectSet: undefined, widerObjectSet: undefined };
     }
-    const clause = whereClause as unknown as Record<string, unknown>;
-    const scoped = applyWhereClauseToObjectSet(objectSet, clause);
+    const extended = whereClause as unknown as Record<string, unknown>;
+    const scoped = applyWhereClauseToObjectSet(objectSet, extended);
     if (!showFilteredOutValues) {
-      return { scopedObjectSet: scoped, widerObjectSet: scoped };
+      return { scopedObjectSet: scoped, widerObjectSet: undefined };
     }
-    const stripped = stripLinkEntries(clause);
+    const stripped = stripLinkEntries(extended);
     const wider = stripped.hadLinkEntries
       ? applyWhereClauseToObjectSet(objectSet, stripped.clause)
-      : scoped;
+      : undefined;
     return { scopedObjectSet: scoped, widerObjectSet: wider };
   }, [objectSet, whereClause, showFilteredOutValues]);
 
-  const isDualScope = widerObjectSet !== scopedObjectSet;
+  const isDualScope = widerObjectSet !== undefined;
 
+  // Hooks must be called unconditionally, but passing `undefined` lets the
+  // SDK short-circuit the wider aggregation when not in dual scope.
   const widerAggregation = usePropertyAggregation(
     objectType,
     propertyKey,
-    isDualScope ? widerObjectSet : scopedObjectSet,
+    widerObjectSet,
   );
 
   const activeValues = useMemo(() => {
     const fallback = selectedValues.length === 0 ? undefined : selectedValues;
+    if (!isDualScope) {
+      return fallback;
+    }
     if (
-      !isDualScope || widerAggregation.error != null
-      || widerAggregation.data.length === 0
+      widerAggregation.error != null || widerAggregation.data.length === 0
     ) {
       return fallback;
     }
