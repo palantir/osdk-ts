@@ -1227,11 +1227,12 @@ Styling for table components including headers, rows, and cells.
 
 #### Cell Styling
 
-| Variable                     | Default Value                               | Description     |
-| ---------------------------- | ------------------------------------------- | --------------- |
-| `--osdk-table-cell-padding`  | `0 calc(var(--osdk-surface-spacing) * 2)`   | Cell padding    |
-| `--osdk-table-cell-fontSize` | `var(--osdk-typography-size-body-medium)`   | Cell text size  |
-| `--osdk-table-cell-color`    | `var(--osdk-typography-color-default-rest)` | Cell text color |
+| Variable                     | Default Value                               | Description                                                                                                                                                                                                                                                                                        |
+| ---------------------------- | ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--osdk-table-cell-padding`  | `0 calc(var(--osdk-surface-spacing) * 2)`   | Cell padding                                                                                                                                                                                                                                                                                       |
+| `--osdk-table-cell-fontSize` | `var(--osdk-typography-size-body-medium)`   | Cell text size                                                                                                                                                                                                                                                                                     |
+| `--osdk-table-cell-color`    | `var(--osdk-typography-color-default-rest)` | Cell text color                                                                                                                                                                                                                                                                                    |
+| `--osdk-table-cell-bg`       | `inherit`                                   | Cell background color. Each `<td>` also receives a `data-editable="true"` attribute when the cell is editable (column is marked editable, table is in edit mode, and the row passes any predicate), so consumers can scope the variable with `td[data-editable]` to highlight only editable cells. |
 
 #### Editable Cell Styling
 
@@ -1240,7 +1241,7 @@ Styling for table components including headers, rows, and cells.
 | `--osdk-table-cell-editable-border`     | `var(--osdk-surface-border-width) solid var(--osdk-surface-border-color-strong)` | Border for editable cells in edit mode       |
 | `--osdk-table-cell-edited-border`       | `var(--osdk-surface-border-width) solid var(--osdk-intent-primary-rest)`         | Border for edited cells with pending changes |
 | `--osdk-table-cell-edited-border-error` | `var(--osdk-surface-border-width) solid var(--osdk-intent-danger-rest)`          | Border for cells with validation errors      |
-| `--osdk-table-cell-editable-bg`         | `var(--osdk-background-primary)`                                                 | Background for editable cells                |
+| `--osdk-table-cell-input-bg`            | `var(--osdk-background-primary)`                                                 | Background for editable cells                |
 
 #### Edit Container
 
@@ -1432,7 +1433,7 @@ To create a custom theme, override the tokens at the appropriate level. You can 
     --osdk-table-cell-editable-border: 1px solid #3b82f6;
     --osdk-table-cell-edited-border: 2px solid #10b981;
     --osdk-table-cell-edited-border-error: 2px solid #ef4444;
-    --osdk-table-cell-editable-bg: #f0f9ff;
+    --osdk-table-cell-input-bg: #f0f9ff;
 
     /* Customize primary intent colors */
     --osdk-intent-primary-rest: #2563eb;

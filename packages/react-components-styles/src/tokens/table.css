@@ -48,9 +48,7 @@
   --osdk-table-header-menu-color-active: var(
     --osdk-typography-color-default-rest
   );
-  --osdk-table-header-menu-icon-color: var(
-    --osdk-table-header-menu-color
-  );
+  --osdk-table-header-menu-icon-color: var(--osdk-table-header-menu-color);
   --osdk-table-header-menu-bg-hover: var(--osdk-custom-color-gray-1);
   --osdk-table-header-menu-bg-active: var(--osdk-custom-color-gray-2);
 
@@ -76,7 +74,7 @@
     var(--osdk-intent-primary-rest);
   --osdk-table-cell-edited-border-error: var(--osdk-surface-border-width) solid
     var(--osdk-intent-danger-rest);
-  --osdk-table-cell-editable-bg: var(--osdk-background-primary);
+  --osdk-table-cell-input-bg: var(--osdk-background-primary);
   --osdk-table-edit-container-padding: calc(var(--osdk-surface-spacing) * 2)
     calc(var(--osdk-surface-spacing) * 4);
   --osdk-table-edit-container-min-height: calc(
