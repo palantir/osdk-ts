@@ -224,7 +224,9 @@ export type WhereClause<
   | OrWhereClause<T, RDPs>
   | AndWhereClause<T, RDPs>
   | NotWhereClause<T, RDPs>
-  | LinkWhereClause<T>
+  | LinkWhereClause<
+    DerivedObjectOrInterfaceDefinition.WithDerivedProperties<T, RDPs>
+  >
   | (IsNever<keyof CompileTimeMetadata<T>["properties"]> extends true
     ? Record<string, never>
     : MergedPropertyWhereClause<T, RDPs>);
