@@ -1,5 +1,12 @@
 # @osdk/widget.vite-plugin
 
+## 3.19.0
+
+### Patch Changes
+
+- Updated dependencies [2f3aa7b]
+  - @osdk/widget.api@3.19.0
+
 ## 3.18.0
 
 ### Patch Changes
