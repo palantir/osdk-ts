@@ -260,6 +260,8 @@ type osdkInstance_property_securities =
       addressStruct: Array<PropertySecurity>;
       salaryHistory: Array<Array<PropertySecurity>>;
       bonusHistory: Array<Array<PropertySecurity>>;
+      $primaryKey: Array<PropertySecurity>;
+      $title: Array<PropertySecurity>;
     };
   };
 
