@@ -17,7 +17,7 @@
 import fs from "node:fs";
 import https from "node:https";
 import path from "node:path";
-import type { Plugin, ProxyOptions, UserConfig } from "vite";
+import type { Logger, Plugin, ProxyOptions, UserConfig } from "vite";
 import {
   type DiscoveryEntry,
   type DiscoveryService,
@@ -36,7 +36,6 @@ export const PROXY_ROUTES: ReadonlyArray<{
   /** Strip the prefix before forwarding. */
   rewrite: boolean;
 }> = [
-  { prefix: "/api/v2", service: "ontology", rewrite: false },
   { prefix: "/ontology-metadata", service: "ontology", rewrite: false },
   { prefix: "/object-set-service", service: "ontology", rewrite: false },
   {
@@ -49,9 +48,6 @@ export const PROXY_ROUTES: ReadonlyArray<{
     service: "python-functions",
     rewrite: true,
   },
-  // Catch-all platform-API prefix. Must come after the more-specific
-  // `/api/v2` ontology route above, because Vite iterates the proxy map
-  // in insertion order and picks the first `url.startsWith(prefix)` hit.
   { prefix: "/api", service: "platform-api-proxy", rewrite: false },
 ];
 
@@ -63,6 +59,9 @@ export const PROXY_ROUTES: ReadonlyArray<{
  */
 export function smartClientPlugin(): Plugin {
   const pendingWarnings: string[] = [];
+  const setupProxies: Array<{ prefix: string; target: string }> = [];
+  let logger: Logger | undefined;
+  const getLogger = (): Logger | undefined => logger;
 
   return {
     name: "vite-plugin-smart-client",
@@ -89,7 +88,9 @@ export function smartClientPlugin(): Plugin {
             read.entry,
             route,
             pendingWarnings,
+            getLogger,
           );
+          setupProxies.push({ prefix: route.prefix, target: read.entry.url });
           continue;
         }
         switch (read.kind) {
@@ -129,10 +130,21 @@ export function smartClientPlugin(): Plugin {
     },
 
     configResolved(resolvedConfig) {
+      logger = resolvedConfig.logger;
       for (const message of pendingWarnings) {
         resolvedConfig.logger.warn(`[vite-plugin-superrepo] ${message}`);
       }
       pendingWarnings.length = 0;
+
+      if (setupProxies.length > 0) {
+        const width = Math.max(...setupProxies.map((p) => p.prefix.length));
+        resolvedConfig.logger.info("[vite-plugin-superrepo] proxies:");
+        for (const { prefix, target } of setupProxies) {
+          resolvedConfig.logger.info(
+            `  ${prefix.padEnd(width)} → ${target}`,
+          );
+        }
+      }
     },
 
     configureServer(server) {
@@ -205,11 +217,20 @@ function buildProxyOptions(
   entry: DiscoveryEntry,
   route: { prefix: string; rewrite: boolean },
   pendingWarnings: string[],
+  getLogger: () => Logger | undefined,
 ): ProxyOptions {
   const isHttps = entry.url.startsWith("https://");
   const options: ProxyOptions = {
     target: entry.url,
     changeOrigin: true,
+    configure: (proxy) => {
+      proxy.on("proxyReq", (_proxyReq, req) => {
+        getLogger()?.info(
+          `[vite-plugin-superrepo] ${route.prefix} ${req.method} ${req.url}`
+            + ` → ${entry.url}`,
+        );
+      });
+    },
   };
   if (route.rewrite) {
     options.rewrite = (p) =>
