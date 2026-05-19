@@ -86,8 +86,10 @@ export {
   extractNamespace,
   getImportedTypes,
   getNamespace,
+  getOacObjectTypeDefinitions,
   getOntologyDefinition,
   initializeOntologyState,
+  updateOacObjectTypeDefinition,
   withoutNamespace,
 } from "./api/defineOntology.js";
 export { defineSharedPropertyType } from "./api/defineSpt.js";
@@ -106,6 +108,33 @@ export type {
   UserLinkTypeStatus,
 } from "./api/links/LinkType.js";
 export type { EditsHistoryConfig } from "./api/object/EditsHistoryConfig.js";
+export type {
+  DataConstraints,
+  DeprecatedStatus,
+  Icon,
+  KeyOf,
+  MarkingType,
+  ObjectTypeDisplayMetadata,
+  ObjectTypeStatus,
+  OacDatasourceColumnMapping,
+  OacDatasourceConfig,
+  OacDatasourceEditsOnlyMapping,
+  OacDatasourceType,
+  OacMarkingPropertyType,
+  OacObjectTypeDefinition,
+  OacPrimaryKeyDatasourceMapping,
+  OacPropertiesShape,
+  OacPropertyDatasourceMapping,
+  OacPropertyDefinition,
+  OacPropertyDefinitionShape,
+  OacPropertyType,
+  OacSharedPropertyDefinition,
+  OacUnsupportedDatasourceMapping,
+  PropertyDisplay,
+  PropertyTypeStatus,
+  RedactedDatasourceMapping,
+  Type,
+} from "./api/object/OacObjectTypeDefinition.js";
 export type { ObjectPropertyType } from "./api/object/ObjectPropertyType.js";
 export type { ObjectType } from "./api/object/ObjectType.js";
 export type {

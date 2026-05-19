@@ -16,7 +16,7 @@
 
 import type { OntologyIrV2 } from "@osdk/client.unstable";
 import type { OntologyDefinition } from "@osdk/maker";
-import { getImportedTypes } from "@osdk/maker";
+import { getImportedTypes, getOacObjectTypeDefinitions } from "@osdk/maker";
 import type { FunctionsIr } from "../../api/defineOntologyV2.js";
 import type { OntologyRidGeneratorImpl } from "../../util/generateRid.js";
 import { convertOntologyDefinitionToWireBlockData } from "./convertOntologyDefinitionToWireBlockData.js";
@@ -29,6 +29,7 @@ export function convertOntologyDefinition(
   randomnessKey?: string,
 ): OntologyIrV2 {
   const importedTypes = getImportedTypes();
+  const oacObjectTypes = getOacObjectTypeDefinitions();
 
   // Convert imported ontology FIRST so that all imported entity RIDs and IDs
   // are registered in the ridGenerator before the main ontology's
@@ -44,6 +45,8 @@ export function convertOntologyDefinition(
     ridGenerator,
     allOntologies,
     functionsIr,
+    oacObjectTypes,
+    [oacObjectTypes],
   );
 
   return {

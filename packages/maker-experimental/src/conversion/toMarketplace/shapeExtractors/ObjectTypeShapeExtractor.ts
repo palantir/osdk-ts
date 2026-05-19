@@ -606,6 +606,7 @@ export class ObjectTypeShapeExtractor {
       (val: PropertyTypeMappingInfo) => {
         if (val.type === "column") return val.column;
         if (val.type === "struct") return val.struct.column;
+        if (val.type === "editOnly") return undefined;
         throw new Error("Error extracting column shapes");
       },
     );
@@ -679,6 +680,7 @@ export class ObjectTypeShapeExtractor {
       (val: PropertyTypeMappingInfo) => {
         if (val.type === "column") return val.column;
         if (val.type === "struct") return val.struct.column;
+        if (val.type === "editOnly") return undefined;
         throw new Error("Error extracting column shapes");
       },
     );
@@ -714,11 +716,14 @@ export class ObjectTypeShapeExtractor {
     datasourceReadableId: ReadableId,
     columns: Map<PropertyTypeRid, T>,
     ridGenerator: OntologyRidGenerator,
-    columnNameGetter: (val: T) => string,
+    columnNameGetter: (val: T) => string | undefined,
   ): Map<ReadableId, DatasourceColumnShape> {
     const result = new Map<ReadableId, DatasourceColumnShape>();
 
     for (const [propertyTypeRid, value] of Array.from(columns.entries())) {
+      const columnName = columnNameGetter(value);
+      if (columnName == null) continue;
+
       const propertyReadableId = propertyReadableIdsByRid.get(propertyTypeRid);
       if (!propertyReadableId) continue;
 
@@ -729,7 +734,7 @@ export class ObjectTypeShapeExtractor {
 
       const resolvedShape: ResolvedDatasourceColumnShape = {
         datasource: datasourceLocator,
-        name: columnNameGetter(value),
+        name: columnName,
       };
 
       let columnReadableId: ReadableId | undefined;

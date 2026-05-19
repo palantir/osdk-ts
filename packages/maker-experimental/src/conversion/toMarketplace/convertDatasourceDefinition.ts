@@ -46,9 +46,8 @@ export function convertDatasourceDefinition(
     ["dataset", "stream", "restrictedView"].includes(ds.type)
   );
 
-  // Helper to get column names from properties
   const getColumnNames = (props: ObjectPropertyType[]): Set<string> => {
-    return new Set(props.map(p => p.apiName));
+    return new Set(props.flatMap(resolvePropertyColumns));
   };
 
   switch (baseDatasource?.type) {
@@ -74,7 +73,7 @@ export function convertDatasourceDefinition(
             prop.apiName,
             objectType.apiName,
           ),
-          prop.apiName,
+          resolveStreamPropertyColumn(prop),
         ]),
       );
 
@@ -506,23 +505,22 @@ function buildPropertyMapping(
   objectTypeApiName: string,
   ridGenerator: OntologyRidGenerator,
 ): Record<string, PropertyTypeMappingInfo> {
-  // TODO: Convert property mappings to use RIDs as keys
   return Object.fromEntries(
     properties.map((prop) => {
       const propertyRid = ridGenerator.generatePropertyRid(
         prop.apiName,
         objectTypeApiName,
       );
-      // editOnly
-      if (prop.editOnly) {
+
+      if (prop.editOnly || isEditOnlyDatasource(prop.datasource)) {
         return [propertyRid, { type: "editOnly", editOnly: {} }];
       }
-      // structs
+
       if (typeof prop.type === "object" && prop.type?.type === "struct") {
         const structMapping = {
           type: "struct",
           struct: {
-            column: prop.apiName,
+            column: resolveSinglePropertyColumn(prop),
             mapping: Object.fromEntries(
               Object.keys(prop.type.structDefinition).map((fieldName) => [
                 fieldName,
@@ -533,8 +531,73 @@ function buildPropertyMapping(
         };
         return [propertyRid, structMapping];
       }
-      // default: column mapping
-      return [propertyRid, { type: "column", column: prop.apiName }];
+
+      return [propertyRid, {
+        type: "column",
+        column: resolveSinglePropertyColumn(prop),
+      }];
     }),
   );
+}
+
+function resolvePropertyColumns(property: ObjectPropertyType): string[] {
+  const datasource = property.datasource;
+  if (!datasource) {
+    return [property.apiName];
+  }
+
+  switch (datasource.type) {
+    case "primaryKey":
+      return datasource.columns.flatMap(column =>
+        column.type === "redacted" ? [] : [column.column]
+      );
+    case "dataset":
+    case "restrictedView":
+    case "stream":
+    case "table":
+      return "column" in datasource && datasource.column !== undefined
+        ? [datasource.column]
+        : [];
+    case "unsupported":
+    case "redacted":
+      return [];
+  }
+  return [];
+}
+
+function resolveSinglePropertyColumn(property: ObjectPropertyType): string {
+  const columns = resolvePropertyColumns(property);
+  if (columns.length === 0) {
+    if (!property.datasource || isEditOnlyDatasource(property.datasource)) {
+      return property.apiName;
+    }
+    throw new Error(
+      `Property ${property.apiName} does not map to a datasource column`,
+    );
+  }
+  if (columns.length > 1) {
+    throw new Error(
+      `Property ${property.apiName} maps to multiple datasource columns, but OAC block data supports a single column mapping`,
+    );
+  }
+  return columns[0];
+}
+
+function resolveStreamPropertyColumn(property: ObjectPropertyType): string {
+  if (property.editOnly || isEditOnlyDatasource(property.datasource)) {
+    throw new Error(
+      `Property ${property.apiName} is edit-only, but stream datasource block data requires a column mapping`,
+    );
+  }
+  return resolveSinglePropertyColumn(property);
+}
+
+function isEditOnlyDatasource(
+  datasource: ObjectPropertyType["datasource"],
+): boolean {
+  return datasource != null
+    && datasource.type !== "primaryKey"
+    && datasource.type !== "unsupported"
+    && datasource.type !== "redacted"
+    && !("column" in datasource);
 }

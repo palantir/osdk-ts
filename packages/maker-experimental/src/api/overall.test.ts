@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { ActionType, InterfaceType } from "@osdk/maker";
+import type {
+  ActionType,
+  InterfaceType,
+  OacObjectTypeDefinition,
+} from "@osdk/maker";
 import {
   defineCreateObjectAction,
   defineLink,
@@ -22,6 +26,8 @@ import {
   defineOntology,
   defineSharedPropertyType,
   dumpOntologyFullMetadata,
+  getOacObjectTypeDefinitions,
+  getOntologyDefinition,
   importOntologyEntity,
   importSharedPropertyType,
   OntologyEntityTypeEnum,
@@ -719,6 +725,207 @@ describe("Experimental Test Suite", () => {
         }
       `,
       );
+    });
+  });
+
+  describe("DSL-aligned OAC object definitions", () => {
+    it("registers the stripped ontology DSL object shape outside the legacy object registry", async () => {
+      const result = await defineOntologyV2("com.palantir.", () => {
+        defineObject(
+          {
+            apiName: "employee",
+            displayName: "Employee",
+            pluralDisplayName: "Employees",
+            titleProperty: "name",
+            primaryKey: "id",
+            properties: {
+              id: {
+                type: { type: "string" },
+                display: { displayName: "ID" },
+              },
+              name: {
+                type: { type: "string" },
+                display: { displayName: "Name" },
+              },
+            },
+          } satisfies OacObjectTypeDefinition,
+        );
+      });
+
+      expect(
+        Object.keys(getOntologyDefinition()[OntologyEntityTypeEnum.OBJECT_TYPE]),
+      ).toEqual([]);
+      expect(Object.keys(getOacObjectTypeDefinitions())).toEqual([
+        "com.palantir.employee",
+      ]);
+      expect(Object.values(result.ontologyIr.ontology.objectTypes)).toHaveLength(
+        1,
+      );
+    });
+
+    it("compiles the stripped ontology DSL object shape to the same block data as the existing OAC shape", async () => {
+      const oldResult = await defineOntologyV2("com.palantir.", () => {
+        defineObject({
+          apiName: "employee",
+          displayName: "Employee",
+          pluralDisplayName: "Employees",
+          titlePropertyApiName: "name",
+          primaryKeyPropertyApiName: "id",
+          description: "Employee records",
+          icon: { locator: "person", color: "#2D72D2" },
+          visibility: "PROMINENT",
+          editsEnabled: true,
+          properties: {
+            id: {
+              type: "string",
+              displayName: "ID",
+              description: "Employee identifier",
+            },
+            name: {
+              type: "string",
+              displayName: "Name",
+            },
+            startDate: {
+              type: "date",
+              displayName: "Start date",
+            },
+          },
+        });
+      });
+
+      const newResult = await defineOntologyV2("com.palantir.", () => {
+        defineObject(
+          {
+            apiName: "employee",
+            displayName: "Employee",
+            pluralDisplayName: "Employees",
+            titleProperty: "name",
+            primaryKey: "id",
+            displayMetadata: {
+              description: "Employee records",
+              icon: { name: "person", color: "#2D72D2" },
+              visibility: "PROMINENT",
+            },
+            allowEdits: true,
+            properties: {
+              id: {
+                type: { type: "string" },
+                display: {
+                  displayName: "ID",
+                  description: "Employee identifier",
+                },
+              },
+              name: {
+                type: { type: "string" },
+                display: { displayName: "Name" },
+              },
+              startDate: {
+                type: { type: "date" },
+                display: { displayName: "Start date" },
+              },
+            },
+          } satisfies OacObjectTypeDefinition,
+        );
+      });
+
+      expect(newResult.ontologyIr.ontology.objectTypes).toEqual(
+        oldResult.ontologyIr.ontology.objectTypes,
+      );
+    });
+
+    it("uses property datasource columns from the stripped ontology DSL object shape", async () => {
+      const result = await defineOntologyV2("com.palantir.", () => {
+        defineObject(
+          {
+            apiName: "employee",
+            displayName: "Employee",
+            pluralDisplayName: "Employees",
+            titleProperty: "name",
+            primaryKey: "id",
+            properties: {
+              id: {
+                type: { type: "string" },
+                display: { displayName: "ID" },
+                datasource: {
+                  type: "primaryKey",
+                  columns: [{ type: "dataset", column: "employee_id" }],
+                },
+              },
+              name: {
+                type: { type: "string" },
+                display: { displayName: "Name" },
+                datasource: { type: "dataset", column: "full_name" },
+              },
+            },
+          } satisfies OacObjectTypeDefinition,
+        );
+      });
+
+      const objectBlock = Object.values(
+        result.ontologyIr.ontology.objectTypes,
+      )[0]!;
+      const properties = Object.values(objectBlock.objectType.propertyTypes);
+      const idProperty = properties.find(prop => prop.apiName === "id")!;
+      const nameProperty = properties.find(prop => prop.apiName === "name")!;
+      const datasource = objectBlock.datasources[0].datasource;
+
+      expect(datasource.type).toBe("datasetV2");
+      if (datasource.type !== "datasetV2") {
+        throw new Error("Expected datasetV2 datasource");
+      }
+      expect(datasource.datasetV2.propertyMapping[idProperty.rid]).toEqual({
+        type: "column",
+        column: "employee_id",
+      });
+      expect(datasource.datasetV2.propertyMapping[nameProperty.rid]).toEqual({
+        type: "column",
+        column: "full_name",
+      });
+    });
+
+    it("treats omitted property datasource mappings as edit-only when a datasource is declared", async () => {
+      const result = await defineOntologyV2("com.palantir.", () => {
+        defineObject(
+          {
+            apiName: "employee",
+            displayName: "Employee",
+            pluralDisplayName: "Employees",
+            titleProperty: "name",
+            primaryKey: "id",
+            datasources: [{ type: "dataset" }],
+            properties: {
+              id: {
+                type: { type: "string" },
+                display: { displayName: "ID" },
+                datasource: {
+                  type: "primaryKey",
+                  columns: [{ type: "dataset", column: "employee_id" }],
+                },
+              },
+              name: {
+                type: { type: "string" },
+                display: { displayName: "Name" },
+              },
+            },
+          } satisfies OacObjectTypeDefinition,
+        );
+      });
+
+      const objectBlock = Object.values(
+        result.ontologyIr.ontology.objectTypes,
+      )[0]!;
+      const properties = Object.values(objectBlock.objectType.propertyTypes);
+      const nameProperty = properties.find(prop => prop.apiName === "name")!;
+      const datasource = objectBlock.datasources[0].datasource;
+
+      expect(datasource.type).toBe("datasetV2");
+      if (datasource.type !== "datasetV2") {
+        throw new Error("Expected datasetV2 datasource");
+      }
+      expect(datasource.datasetV2.propertyMapping[nameProperty.rid]).toEqual({
+        type: "editOnly",
+        editOnly: {},
+      });
     });
   });
 

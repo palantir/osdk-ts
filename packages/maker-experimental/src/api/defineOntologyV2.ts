@@ -18,6 +18,7 @@ import type { OntologyIrV2 } from "@osdk/client.unstable";
 import type { IDiscoveredFunction } from "@osdk/generator-converters.ontologyir";
 import type { LinkType, ObjectType } from "@osdk/maker";
 import {
+  getOacObjectTypeDefinitions,
   getOntologyDefinition,
   initializeOntologyState,
   OntologyEntityTypeEnum,
@@ -101,7 +102,12 @@ export async function defineOntologyV2(
     .filter(([_, obj]) =>
       (obj as ObjectType).includeEmptyBackingDatasource === true
     )
-    .map(([apiName]) => apiName);
+    .map(([apiName]) => apiName)
+    .concat(
+      Object.entries(getOacObjectTypeDefinitions())
+        .filter(([_, obj]) => obj.includeEmptyBackingDatasource === true)
+        .map(([apiName]) => apiName),
+    );
 
   const backingDatasourceLinkApiNames = Object.entries(
     ontologyDefinition[OntologyEntityTypeEnum.LINK_TYPE],

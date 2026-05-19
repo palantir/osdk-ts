@@ -38,12 +38,14 @@ import {
   cleanAndValidateLinkTypeId,
   OntologyEntityTypeEnum,
 } from "@osdk/maker";
+import type { OacObjectTypeDefinition } from "@osdk/maker";
 import type { FunctionsIr } from "../../api/defineOntologyV2.js";
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { ReadableIdGenerator } from "../../util/generateRid.js";
 import { convertAction } from "./convertActionHelpers.js";
 import { convertInterface } from "./convertInterface.js";
 import { convertLink } from "./convertLink.js";
+import { convertOacObject } from "./convertOacObject.js";
 import { convertObject } from "./convertObject.js";
 import { convertSpt } from "./convertSpt.js";
 import { MIGRATION_SHAPE_READABLE_ID } from "./shapeExtractors/IrShapeExtractor.js";
@@ -103,20 +105,36 @@ export function convertOntologyDefinitionToWireBlockData(
   ridGenerator: OntologyRidGenerator,
   allOntologies?: OntologyDefinition[],
   functionsIr?: FunctionsIr,
+  oacObjectTypes: Record<string, OacObjectTypeDefinition> = {},
+  allOacObjectTypes: Array<Record<string, OacObjectTypeDefinition>> = [
+    oacObjectTypes,
+  ],
 ): OntologyBlockDataV2 {
   const ontologiesToScan = allOntologies ?? [ontology];
 
   // Convert all entity types first to populate ridGenerator's BiMaps
-  const objectTypes = Object.fromEntries(
-    Object.entries(ontology[OntologyEntityTypeEnum.OBJECT_TYPE]).map<
-      [string, ObjectTypeBlockDataV2]
-    >(([apiName, objectType]) => {
-      return [
-        ridGenerator.generateRidForObjectType(apiName),
-        convertObject(objectType, ridGenerator),
-      ];
-    }),
-  );
+  const legacyObjectTypes = Object.entries(
+    ontology[OntologyEntityTypeEnum.OBJECT_TYPE],
+  ).map<
+    [string, ObjectTypeBlockDataV2]
+  >(([apiName, objectType]) => {
+    return [
+      ridGenerator.generateRidForObjectType(apiName),
+      convertObject(objectType, ridGenerator),
+    ];
+  });
+  const directOacObjectTypes = Object.entries(oacObjectTypes).map<
+    [string, ObjectTypeBlockDataV2]
+  >(([apiName, objectType]) => {
+    return [
+      ridGenerator.generateRidForObjectType(apiName),
+      convertOacObject(objectType, ridGenerator),
+    ];
+  });
+  const objectTypes = Object.fromEntries([
+    ...legacyObjectTypes,
+    ...directOacObjectTypes,
+  ]);
 
   const sharedPropertyTypes = Object.fromEntries(
     Object.entries(
@@ -173,6 +191,8 @@ export function convertOntologyDefinitionToWireBlockData(
     ontology,
     ridGenerator,
     ontologiesToScan,
+    oacObjectTypes,
+    allOacObjectTypes,
   );
 
   return ({
@@ -188,7 +208,7 @@ export function convertOntologyDefinitionToWireBlockData(
     blockPermissionInformation: {
       actionTypes: Object.fromEntries(
         ontologiesToScan.flatMap(ont =>
-          Object.entries(ontology[OntologyEntityTypeEnum.ACTION_TYPE])
+          Object.entries(ont[OntologyEntityTypeEnum.ACTION_TYPE])
             .filter(([_, action]) => action.validation || action.permission)
             .map<
               [string, ActionTypePermissionInformation]
@@ -202,23 +222,38 @@ export function convertOntologyDefinitionToWireBlockData(
         ),
       ),
       objectTypes: Object.fromEntries(
-        ontologiesToScan.flatMap(ont =>
-          Object.entries(ontology[OntologyEntityTypeEnum.OBJECT_TYPE])
-            .filter(([_, objectType]) => objectType.permission != null)
-            .map<
-              [string, ObjectTypePermissionInformation]
-            >(([apiName, objectType]) => {
-              return [ridGenerator.generateRidForObjectType(apiName), {
-                restrictionStatus: toObjectTypeRestrictionStatus(
-                  objectType.permission!,
-                ),
-              }];
-            })
-        ),
+        [
+          ...ontologiesToScan.flatMap(ont =>
+            Object.entries(ont[OntologyEntityTypeEnum.OBJECT_TYPE])
+              .filter(([_, objectType]) => objectType.permission != null)
+              .map<
+                [string, ObjectTypePermissionInformation]
+              >(([apiName, objectType]) => {
+                return [ridGenerator.generateRidForObjectType(apiName), {
+                  restrictionStatus: toObjectTypeRestrictionStatus(
+                    objectType.permission!,
+                  ),
+                }];
+              })
+          ),
+          ...allOacObjectTypes.flatMap(objects =>
+            Object.entries(objects)
+              .filter(([_, objectType]) => objectType.permission != null)
+              .map<
+                [string, ObjectTypePermissionInformation]
+              >(([apiName, objectType]) => {
+                return [ridGenerator.generateRidForObjectType(apiName), {
+                  restrictionStatus: toObjectTypeRestrictionStatus(
+                    objectType.permission!,
+                  ),
+                }];
+              })
+          ),
+        ],
       ),
       linkTypes: Object.fromEntries(
         ontologiesToScan.flatMap(ont =>
-          Object.entries(ontology[OntologyEntityTypeEnum.LINK_TYPE])
+          Object.entries(ont[OntologyEntityTypeEnum.LINK_TYPE])
             .filter(([_, link]) => link.permission != null)
             .map<
               [string, LinkTypePermissionInformation]
@@ -238,7 +273,7 @@ export function convertOntologyDefinitionToWireBlockData(
       ),
       interfaceTypes: Object.fromEntries(
         ontologiesToScan.flatMap(ont =>
-          Object.entries(ontology[OntologyEntityTypeEnum.INTERFACE_TYPE])
+          Object.entries(ont[OntologyEntityTypeEnum.INTERFACE_TYPE])
             .filter(([_, iface]) => iface.permission != null)
             .map<
               [string, InterfaceTypePermissionInformation]
@@ -253,7 +288,7 @@ export function convertOntologyDefinitionToWireBlockData(
       ),
       sharedPropertyTypes: Object.fromEntries(
         ontologiesToScan.flatMap(ont =>
-          Object.entries(ontology[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE])
+          Object.entries(ont[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE])
             .filter(([_, spt]) => spt.permission != null)
             .map<
               [string, SharedPropertyTypePermissionInformation]
@@ -274,6 +309,8 @@ function buildKnownIdentifiers(
   ontology: OntologyDefinition,
   ridGenerator: OntologyRidGenerator,
   ontologiesToScan: OntologyDefinition[],
+  oacObjectTypes: Record<string, OacObjectTypeDefinition>,
+  oacObjectTypesToScan: Array<Record<string, OacObjectTypeDefinition>>,
 ): KnownMarketplaceIdentifiers {
   // Interface types: InterfaceTypeRid -> BlockInternalId
   const interfaceMappings = Object.fromEntries(
@@ -324,18 +361,30 @@ function buildKnownIdentifiers(
   // Object type IDs: ObjectTypeId -> BlockInternalId
   // Scan all ontologies so cross-references to imported objects resolve.
   const objectTypeIds = Object.fromEntries(
-    ontologiesToScan.flatMap(ont =>
-      Object.entries(ont[OntologyEntityTypeEnum.OBJECT_TYPE]).map((
-        [objectTypeApiName, objectType],
-      ) => [
-        ridGenerator.getObjectTypeIds().get(
-          ReadableIdGenerator.getForObjectType(objectTypeApiName),
-        ),
-        ridGenerator.toBlockInternalId(
-          ReadableIdGenerator.getForObjectType(objectTypeApiName),
-        ),
-      ])
-    ),
+    [
+      ...ontologiesToScan.flatMap(ont =>
+        Object.keys(ont[OntologyEntityTypeEnum.OBJECT_TYPE]).map((
+          objectTypeApiName,
+        ) => [
+          ridGenerator.getObjectTypeIds().get(
+            ReadableIdGenerator.getForObjectType(objectTypeApiName),
+          ),
+          ridGenerator.toBlockInternalId(
+            ReadableIdGenerator.getForObjectType(objectTypeApiName),
+          ),
+        ])
+      ),
+      ...oacObjectTypesToScan.flatMap(objects =>
+        Object.keys(objects).map((objectTypeApiName) => [
+          ridGenerator.getObjectTypeIds().get(
+            ReadableIdGenerator.getForObjectType(objectTypeApiName),
+          ),
+          ridGenerator.toBlockInternalId(
+            ReadableIdGenerator.getForObjectType(objectTypeApiName),
+          ),
+        ])
+      ),
+    ],
   );
 
   // Property type IDs: ObjectTypeId -> (PropertyTypeId -> BlockInternalId)
@@ -351,6 +400,23 @@ function buildKnownIdentifiers(
           ReadableIdGenerator.getForObjectProperty(
             objectTypeApiName,
             property.apiName,
+          ),
+        );
+      });
+      const objTypeId = ridGenerator.getObjectTypeIds().get(
+        ReadableIdGenerator.getForObjectType(objectTypeApiName),
+      )!;
+      propertyTypeIds[objTypeId] = propMap;
+    });
+  });
+  oacObjectTypesToScan.forEach(objects => {
+    Object.entries(objects).forEach(([objectTypeApiName, objectType]) => {
+      const propMap: Record<string, string> = {};
+      Object.keys(objectType.properties).forEach(propertyApiName => {
+        propMap[propertyApiName] = ridGenerator.toBlockInternalId(
+          ReadableIdGenerator.getForObjectProperty(
+            objectTypeApiName,
+            propertyApiName,
           ),
         );
       });
@@ -526,6 +592,21 @@ function buildKnownIdentifiers(
       });
     },
   );
+  Object.entries(oacObjectTypes).forEach(([_objectTypeApiName, objectType]) => {
+    Object.values(objectType.properties).forEach((prop) => {
+      if (
+        "type" in prop && prop.type.type === "marking"
+        && prop.type.markingInputGroupName
+      ) {
+        markingEntries.push({
+          markingId: prop.type.markingInputGroupName,
+          markingType: prop.type.markingType === "mandatory"
+            ? "MANDATORY"
+            : "CBAC",
+        });
+      }
+    });
+  });
 
   // Deduplicate and build mapping
   const markingsMappings: Record<string, string[]> = {};

@@ -28,7 +28,9 @@ import {
   addNamespaceIfNone,
   importedTypes,
   namespace,
+  oacObjectTypeDefinitions,
   ontologyDefinition,
+  updateOacObjectTypeDefinition,
   updateOntology,
   withoutNamespace,
 } from "./defineOntology.js";
@@ -38,6 +40,13 @@ import {
   type InterfacePropertyType,
   isInterfaceSharedPropertyType,
 } from "./interface/InterfacePropertyType.js";
+import type {
+  OacDatasourceConfig,
+  OacObjectTypeDefinition,
+  OacPropertiesShape,
+  OacPropertyDatasourceMapping,
+  OacPropertyDefinitionShape,
+} from "./object/OacObjectTypeDefinition.js";
 import type { ObjectPropertyType } from "./object/ObjectPropertyType.js";
 import type { ObjectPropertyTypeUserDefinition } from "./object/ObjectPropertyTypeUserDefinition.js";
 import type { ObjectType } from "./object/ObjectType.js";
@@ -58,9 +67,109 @@ const ISO_8601_DURATION =
 const ISO_8601_DATETIME =
   /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})?)?$/;
 
+type OacObjectTypeDefinitionForValidation =
+  & Omit<OacObjectTypeDefinition, "primaryKey" | "properties" | "titleProperty">
+  & {
+    primaryKey: string;
+    properties: OacPropertiesShape;
+    titleProperty: string;
+  };
+
+function isOacObjectTypeDefinition(
+  value: ObjectTypeDefinition | OacObjectTypeDefinition,
+): value is OacObjectTypeDefinition {
+  return "primaryKey" in value || "titleProperty" in value;
+}
+
+function defineOacObject<const Properties extends OacPropertiesShape>(
+  objectDefInput: OacObjectTypeDefinition<Properties>,
+): OacObjectTypeDefinition<Properties> {
+  const objectDef = cloneDefinition(objectDefInput);
+  const apiName = namespace + objectDef.apiName;
+  const propertyApiNames = Object.keys(objectDef.properties);
+
+  if (
+    ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE][apiName]
+      !== undefined
+    || oacObjectTypeDefinitions[apiName] !== undefined
+  ) {
+    throw new Error(
+      `Object type with apiName ${objectDef.apiName} is already defined`,
+    );
+  }
+
+  invariant(
+    isValidObjectApiName(objectDef.apiName),
+    `Invalid API name ${objectDef.apiName}. API names must match the regex ${OBJECT_API_NAME_PATTERN}.`,
+  );
+  propertyApiNames.forEach(apiName => {
+    invariant(
+      isValidApiName(apiName),
+      `Invalid API name ${apiName} for property on object ${objectDef.apiName}. API names must match the regex ${API_NAME_PATTERN}.`,
+    );
+  });
+  invariant(
+    propertyApiNames.includes(objectDef.titleProperty),
+    `Title property ${objectDef.titleProperty} is not defined on object ${objectDef.apiName}`,
+  );
+  invariant(
+    propertyApiNames.includes(objectDef.primaryKey),
+    `Primary key property ${objectDef.primaryKey} does not exist on object ${objectDef.apiName}`,
+  );
+
+  const datasourceInfo = getOacBackingDatasourceInfo(objectDef);
+  const primaryKeyProperty = objectDef.properties[objectDef.primaryKey];
+  invariant(
+    !isOacPropertyEditOnly(
+      primaryKeyProperty,
+      datasourceInfo.hasBackingDatasource,
+    ),
+    `Primary key property ${objectDef.primaryKey} on object ${objectDef.apiName} cannot be edit-only`,
+  );
+
+  if (objectDef.includeEmptyBackingDatasource && objectDef.datasources) {
+    const nonDatasetDatasources = objectDef.datasources.filter(
+      ds => ds.type !== "dataset",
+    );
+    invariant(
+      nonDatasetDatasources.length === 0,
+      `Object type "${objectDef.apiName}" has non-dataset datasources (${
+        nonDatasetDatasources.map(ds => ds.type).join(", ")
+      }) and cannot use includeEmptyBackingDatasource. `
+        + `Empty backing datasources are only supported for object types with dataset datasources.`,
+    );
+  }
+
+  objectDef.datasources?.filter(ds => ds.type === "stream").forEach(ds => {
+    invariant(
+      ds.retentionPeriod === undefined
+        || ISO_8601_DURATION.test(ds.retentionPeriod),
+      `Retention period "${ds.retentionPeriod}" on object "${objectDef.apiName}" is not a valid ISO 8601 duration string`,
+    );
+  });
+
+  validateOacStatuses(objectDef);
+  validateOacTitleAndPrimaryKeyTypes(objectDef);
+
+  const finalObject = { ...objectDef, apiName };
+  updateOacObjectTypeDefinition(finalObject);
+  objectDef.apiName = apiName;
+  return objectDef;
+}
+
 export function defineObject(
   objectDefInput: ObjectTypeDefinition,
-): ObjectTypeDefinition {
+): ObjectTypeDefinition;
+export function defineObject(
+  objectDefInput: OacObjectTypeDefinition,
+): OacObjectTypeDefinition;
+export function defineObject(
+  objectDefInput: ObjectTypeDefinition | OacObjectTypeDefinition,
+): ObjectTypeDefinition | OacObjectTypeDefinition {
+  if (isOacObjectTypeDefinition(objectDefInput)) {
+    return defineOacObject(objectDefInput);
+  }
+
   const objectDef = cloneDefinition(objectDefInput);
   const apiName = namespace + objectDef.apiName;
   const propertyApiNames = objectDef.properties
@@ -265,6 +374,208 @@ export function defineObject(
   updateOntology(finalObject);
   objectDef.apiName = apiName;
   return objectDef;
+}
+
+function validateOacStatuses(
+  objectDef: OacObjectTypeDefinitionForValidation,
+): void {
+  const objectStatusType = getOacStatusType(objectDef.status);
+  if (
+    objectStatusType === "experimental" || objectStatusType === "deprecated"
+    || objectStatusType === "example"
+  ) {
+    const mismatchedProperties: string[] = [];
+    Object.entries(objectDef.properties).forEach(
+      ([apiName, property]) => {
+        if (property.status !== undefined) {
+          const propertyStatusType = getOacStatusType(property.status);
+          if (propertyStatusType !== objectStatusType) {
+            mismatchedProperties.push(apiName);
+          }
+        }
+      },
+    );
+    invariant(
+      mismatchedProperties.length === 0,
+      `Object "${objectDef.apiName}" has "${objectStatusType}" status, but the following properties have a different status: ${
+        mismatchedProperties.join(", ")
+      }`,
+    );
+  }
+
+  if (objectDef.status && typeof objectDef.status === "object") {
+    const deadline = objectDef.status.deprecationDeadline;
+    invariant(
+      deadline !== undefined && ISO_8601_DATETIME.test(deadline),
+      `Deprecated status deadline "${deadline}" on object "${objectDef.apiName}" is not a valid ISO 8601 datetime string`,
+    );
+  }
+}
+
+function validateOacTitleAndPrimaryKeyTypes(
+  objectDef: OacObjectTypeDefinitionForValidation,
+): void {
+  const titleProperty = objectDef.properties[objectDef.titleProperty];
+  const primaryKeyProperty = objectDef.properties[objectDef.primaryKey];
+
+  invariant(
+    !isOacSharedPropertyDefinition(primaryKeyProperty),
+    `Primary key property ${objectDef.primaryKey} can only be primitive types`,
+  );
+  invariant(
+    isOacPrimaryKeyType(primaryKeyProperty.type),
+    `Primary key property ${objectDef.primaryKey} can only be primitive types`,
+  );
+
+  if (isOacSharedPropertyDefinition(titleProperty)) {
+    return;
+  }
+
+  invariant(
+    isOacTitleType(titleProperty.type),
+    `Title property ${objectDef.titleProperty} must be a primitive type`,
+  );
+}
+
+function isOacSharedPropertyDefinition(
+  property: OacPropertyDefinitionShape,
+): property is Extract<
+  OacPropertyDefinitionShape,
+  { sharedPropertyTypeApiName: string }
+> {
+  return "sharedPropertyTypeApiName" in property;
+}
+
+function isOacPrimaryKeyType(
+  type: Exclude<
+    OacPropertyDefinitionShape,
+    { sharedPropertyTypeApiName: string }
+  >["type"],
+): boolean {
+  return [
+    "string",
+    "boolean",
+    "integer",
+    "long",
+    "short",
+    "byte",
+    "double",
+    "float",
+    "decimal",
+    "date",
+    "timestamp",
+  ].includes(type.type);
+}
+
+function isOacTitleType(
+  type: Exclude<
+    OacPropertyDefinitionShape,
+    { sharedPropertyTypeApiName: string }
+  >["type"],
+): boolean {
+  if (type.type === "struct") {
+    return type.mainValues != null && type.mainValues.length > 0;
+  }
+  return isOacPrimaryKeyType(type);
+}
+
+function getOacStatusType(
+  status:
+    | OacObjectTypeDefinition["status"]
+    | OacPropertyDefinitionShape["status"]
+    | undefined,
+): string {
+  if (status === undefined) {
+    return "active";
+  }
+  if (typeof status === "string") {
+    return status;
+  }
+  return "deprecated";
+}
+
+function getOacBackingDatasourceInfo(
+  objectDef: OacObjectTypeDefinitionForValidation,
+): { type?: OacDatasourceConfig["type"]; hasBackingDatasource: boolean } {
+  const explicitTypes = new Set(
+    objectDef.datasources?.map(datasource => datasource.type) ?? [],
+  );
+  invariant(
+    explicitTypes.size <= 1,
+    `Object ${objectDef.apiName} has more than one base datasource (got: [${
+      Array.from(explicitTypes).join(", ")
+    }])`,
+  );
+
+  const inferredTypes = inferOacDatasourceTypes(
+    Object.values(objectDef.properties),
+  );
+  invariant(
+    inferredTypes.size <= 1,
+    `OAC block data only supports one base datasource per object type`,
+  );
+
+  const explicitType = Array.from(explicitTypes)[0];
+  const inferredType = Array.from(inferredTypes)[0];
+  invariant(
+    explicitType == null || inferredType == null
+      || explicitType === inferredType,
+    `Property datasource mappings use ${inferredType}, but the object type declares ${explicitType}`,
+  );
+
+  return {
+    type: explicitType ?? inferredType,
+    hasBackingDatasource: explicitType != null || inferredType != null,
+  };
+}
+
+function inferOacDatasourceTypes(
+  properties: OacPropertyDefinitionShape[],
+): Set<OacDatasourceConfig["type"]> {
+  const types = new Set<OacDatasourceConfig["type"]>();
+  for (const property of properties) {
+    collectOacDatasourceTypes(property.datasource, types);
+  }
+  return types;
+}
+
+function collectOacDatasourceTypes(
+  datasource: OacPropertyDatasourceMapping | undefined,
+  types: Set<OacDatasourceConfig["type"]>,
+): void {
+  if (!datasource) {
+    return;
+  }
+  if (datasource.type === "primaryKey") {
+    datasource.columns.forEach(column => {
+      if (column.type !== "redacted") {
+        types.add(column.type);
+      }
+    });
+    return;
+  }
+  if (datasource.type !== "unsupported" && datasource.type !== "redacted") {
+    types.add(datasource.type);
+  }
+}
+
+function isOacPropertyEditOnly(
+  property: OacPropertyDefinitionShape,
+  editOnlyWhenDatasourceOmitted: boolean,
+): boolean {
+  return property.editOnly === true
+    || (property.datasource == null && editOnlyWhenDatasourceOmitted)
+    || isOacEditOnlyDatasource(property.datasource);
+}
+
+function isOacEditOnlyDatasource(
+  datasource: OacPropertyDatasourceMapping | undefined,
+): boolean {
+  return datasource != null
+    && datasource.type !== "primaryKey"
+    && datasource.type !== "unsupported"
+    && datasource.type !== "redacted"
+    && !("column" in datasource);
 }
 
 type ValidationResult = { type: "valid" } | { type: "invalid"; reason: string };

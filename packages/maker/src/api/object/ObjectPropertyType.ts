@@ -24,6 +24,7 @@ import type { PropertyTypeType } from "../properties/PropertyTypeType.js";
 import type { ReducerType } from "../properties/ReducerType.js";
 import type { SharedPropertyType } from "../properties/SharedPropertyType.js";
 import type { ValueTypeDefinitionVersion } from "../values/ValueTypeDefinitionVersion.js";
+import type { OacPropertyDatasourceMapping } from "./OacObjectTypeDefinition.js";
 import type { ObjectTypeStatus } from "./ObjectTypeStatus.js";
 
 export type ObjectPropertyType = RequiredFields<
@@ -54,4 +55,5 @@ export interface ObjectPropertyTypeInner {
   nullability?: Nullability;
   status?: ObjectTypeStatus;
   editOnly?: boolean;
+  datasource?: OacPropertyDatasourceMapping;
 }

@@ -46,6 +46,7 @@ import { createCodeSnippets } from "./code-snippets/createCodeSnippets.js";
 import type { OntologyDefinition } from "./common/OntologyDefinition.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import type { OntologyEntityType } from "./common/OntologyEntityTypeMapping.js";
+import type { OacObjectTypeDefinition } from "./object/OacObjectTypeDefinition.js";
 
 // type -> apiName -> entity
 /** @internal */
@@ -61,6 +62,9 @@ export let dependencies: Record<string, string>;
 
 /** @internal */
 export let namespace: string;
+
+/** @internal */
+export let oacObjectTypeDefinitions: Record<string, OacObjectTypeDefinition>;
 
 export function updateOntology<
   T extends OntologyEntityType,
@@ -102,6 +106,7 @@ export async function defineOntology(
     SHARED_PROPERTY_TYPE: {},
     VALUE_TYPE: {},
   };
+  oacObjectTypeDefinitions = {};
   importedTypes = {
     SHARED_PROPERTY_TYPE: {},
     OBJECT_TYPE: {},
@@ -306,13 +311,20 @@ export function convertObjectStatus(status: any): any {
     };
   }
 
+  if (status === "endorsed") {
+    return {
+      type: "endorsed",
+      endorsed: {},
+    };
+  }
+
   if (typeof status === "object" && status.type === "deprecated") {
     return {
       type: "deprecated",
       deprecated: {
         message: status.message,
         deadline: status.deadline,
-        replacedBy: undefined,
+        replacedBy: status.replacedBy,
       },
     };
   }
@@ -659,6 +671,12 @@ export function addNamespaceIfNone(apiName: string): string {
   return apiName.includes(".") ? apiName : namespace + apiName;
 }
 
+export function updateOacObjectTypeDefinition(
+  objectType: OacObjectTypeDefinition,
+): void {
+  oacObjectTypeDefinitions[objectType.apiName] = objectType;
+}
+
 export function initializeOntologyState(ns: string): void {
   namespace = ns;
   dependencies = {};
@@ -670,6 +688,7 @@ export function initializeOntologyState(ns: string): void {
     SHARED_PROPERTY_TYPE: {},
     VALUE_TYPE: {},
   };
+  oacObjectTypeDefinitions = {};
   importedTypes = {
     SHARED_PROPERTY_TYPE: {},
     OBJECT_TYPE: {},
@@ -682,6 +701,13 @@ export function initializeOntologyState(ns: string): void {
 
 export function getOntologyDefinition(): OntologyDefinition {
   return ontologyDefinition;
+}
+
+export function getOacObjectTypeDefinitions(): Record<
+  string,
+  OacObjectTypeDefinition
+> {
+  return oacObjectTypeDefinitions;
 }
 
 export function getImportedTypes(): OntologyDefinition {

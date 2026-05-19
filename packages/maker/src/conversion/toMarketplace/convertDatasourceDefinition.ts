@@ -49,7 +49,7 @@ export function convertDatasourceDefinition(
       const propertyMapping = Object.fromEntries(
         properties.map((
           prop,
-        ) => [prop.apiName, prop.apiName]),
+        ) => [prop.apiName, resolveStreamPropertyColumn(prop)]),
       );
       return {
         type: "streamV2",
@@ -344,16 +344,15 @@ function buildPropertyMapping(
 ): Record<string, PropertyTypeMappingInfo> {
   return Object.fromEntries(
     properties.map((prop) => {
-      // editOnly
-      if (prop.editOnly) {
+      if (prop.editOnly || isEditOnlyDatasource(prop.datasource)) {
         return [prop.apiName, { type: "editOnly", editOnly: {} }];
       }
-      // structs
+
       if (typeof prop.type === "object" && prop.type?.type === "struct") {
         const structMapping = {
           type: "struct",
           struct: {
-            column: prop.apiName,
+            column: resolveSinglePropertyColumn(prop),
             mapping: Object.fromEntries(
               Object.keys(prop.type.structDefinition).map((fieldName) => [
                 fieldName,
@@ -364,8 +363,73 @@ function buildPropertyMapping(
         };
         return [prop.apiName, structMapping];
       }
-      // default: column mapping
-      return [prop.apiName, { type: "column", column: prop.apiName }];
+
+      return [prop.apiName, {
+        type: "column",
+        column: resolveSinglePropertyColumn(prop),
+      }];
     }),
   );
+}
+
+function resolvePropertyColumns(property: ObjectPropertyType): string[] {
+  const datasource = property.datasource;
+  if (!datasource) {
+    return [property.apiName];
+  }
+
+  switch (datasource.type) {
+    case "primaryKey":
+      return datasource.columns.flatMap(column =>
+        column.type === "redacted" ? [] : [column.column]
+      );
+    case "dataset":
+    case "restrictedView":
+    case "stream":
+    case "table":
+      return "column" in datasource && datasource.column !== undefined
+        ? [datasource.column]
+        : [];
+    case "unsupported":
+    case "redacted":
+      return [];
+  }
+  return [];
+}
+
+function resolveSinglePropertyColumn(property: ObjectPropertyType): string {
+  const columns = resolvePropertyColumns(property);
+  if (columns.length === 0) {
+    if (!property.datasource || isEditOnlyDatasource(property.datasource)) {
+      return property.apiName;
+    }
+    throw new Error(
+      `Property ${property.apiName} does not map to a datasource column`,
+    );
+  }
+  if (columns.length > 1) {
+    throw new Error(
+      `Property ${property.apiName} maps to multiple datasource columns, but OAC block data supports a single column mapping`,
+    );
+  }
+  return columns[0];
+}
+
+function resolveStreamPropertyColumn(property: ObjectPropertyType): string {
+  if (property.editOnly || isEditOnlyDatasource(property.datasource)) {
+    throw new Error(
+      `Property ${property.apiName} is edit-only, but stream datasource block data requires a column mapping`,
+    );
+  }
+  return resolveSinglePropertyColumn(property);
+}
+
+function isEditOnlyDatasource(
+  datasource: ObjectPropertyType["datasource"],
+): boolean {
+  return datasource != null
+    && datasource.type !== "primaryKey"
+    && datasource.type !== "unsupported"
+    && datasource.type !== "redacted"
+    && !("column" in datasource);
 }

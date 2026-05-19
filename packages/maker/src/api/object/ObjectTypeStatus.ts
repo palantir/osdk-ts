@@ -18,8 +18,10 @@ export type ObjectTypeStatus =
   | "active"
   | "experimental"
   | "example"
+  | "endorsed"
   | {
     type: "deprecated";
     message: string;
     deadline: string;
+    replacedBy?: string;
   };
