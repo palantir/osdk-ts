@@ -88,6 +88,7 @@ export {
   getOntologyDefinition,
   initializeOntologyState,
   withoutNamespace,
+  writeStaticObjects,
 } from "./api/defineOntology.js";
 export { defineSharedPropertyType } from "./api/defineSpt.js";
 export { defineValueType } from "./api/defineValueType.js";

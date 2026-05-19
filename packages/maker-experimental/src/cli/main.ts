@@ -194,6 +194,7 @@ export default async function main(
   } = await loadOntology(
     commandLineOpts.input,
     apiNamespace,
+    commandLineOpts.buildDir,
     functionsIrFile,
     commandLineOpts.randomnessKey,
   );
@@ -412,12 +413,14 @@ export default async function main(
 async function loadOntology(
   input: string,
   apiNamespace: string,
+  outputDir?: string,
   functionsIrFile?: string,
   randomnessKey?: string,
 ) {
   const result = await defineOntologyV2(
     apiNamespace,
     async () => await import(pathToFileURL(input).href),
+    outputDir,
     functionsIrFile,
     randomnessKey,
   );
