@@ -272,6 +272,36 @@ describe(applyWhereClauseToObjectSet, () => {
     `);
   });
 
+  it("$or with empty children emits an always-false filter (empty set)", () => {
+    const result = applyWhereClauseToObjectSet(
+      employeeBase,
+      { $or: [] },
+      Employee,
+    );
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "objectSet": {
+          "objectType": "Employee",
+          "type": "base",
+        },
+        "type": "filter",
+        "where": {
+          "type": "or",
+          "value": [],
+        },
+      }
+    `);
+  });
+
+  it("$and with empty children returns the base set (always true)", () => {
+    const result = applyWhereClauseToObjectSet(
+      employeeBase,
+      { $and: [] },
+      Employee,
+    );
+    expect(result).toBe(employeeBase);
+  });
+
   it("$not composes via subtract", () => {
     const result = applyWhereClauseToObjectSet(
       employeeBase,

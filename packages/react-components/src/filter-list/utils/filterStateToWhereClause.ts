@@ -321,9 +321,12 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
           break;
         }
         if (definition.reverseLinkName == null) {
-          // Without reverseLinkName the OSDK cannot pivot back to the source
-          // object type. The filter contributes no narrowing; documented on
-          // LinkedPropertyFilterDefinition.reverseLinkName.
+          if (process.env.NODE_ENV !== "production") {
+            // eslint-disable-next-line no-console
+            console.warn(
+              `[FilterList] LINKED_PROPERTY filter "${definition.linkName}" is missing reverseLinkName; filter will be skipped`,
+            );
+          }
           break;
         }
         const innerWhere = buildPropertyKeyClause(

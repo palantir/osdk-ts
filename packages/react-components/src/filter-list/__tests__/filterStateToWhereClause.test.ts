@@ -289,7 +289,11 @@ describe("buildWhereClause", () => {
         "fullName",
         "peeps",
       );
-      const directDef = createPropertyFilterDef("name", "MULTI_SELECT");
+      const directDef = createPropertyFilterDef(
+        "name",
+        "MULTI_SELECT",
+        { type: "SELECT", selectedValues: [] },
+      );
       const filterStates = stateMap(
         [linkedDef, {
           type: "linkedProperty",
