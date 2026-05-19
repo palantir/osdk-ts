@@ -206,6 +206,16 @@
       var(--osdk-surface-background-color-default-hover)
     );
   }
+
+  &[aria-disabled="true"] {
+    cursor: not-allowed;
+    opacity: var(--osdk-disabled-opacity, 0.5);
+  }
+
+  &[aria-disabled="true"]:hover {
+    color: var(--osdk-select-clear-color, var(--osdk-iconography-color-muted));
+    background-color: transparent;
+  }
 }
 
 .osdkSelectPositioner {

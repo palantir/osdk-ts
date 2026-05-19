@@ -63,6 +63,27 @@ describe("RadioButtonsField", () => {
 
       expect(onChange).toHaveBeenCalledWith("blue");
     });
+
+    it("marks radios disabled and blocks selection when disabled", () => {
+      const onChange = vi.fn();
+      render(
+        <RadioButtonsField
+          value="red"
+          options={STRING_OPTIONS}
+          onChange={onChange}
+          disabled={true}
+        />,
+      );
+
+      const radios = screen.getAllByRole("radio");
+      for (const radio of radios) {
+        expect(radio.getAttribute("aria-disabled")).toBe("true");
+      }
+
+      fireEvent.click(radios[2]);
+
+      expect(onChange).not.toHaveBeenCalled();
+    });
   });
 
   describe("null value", () => {

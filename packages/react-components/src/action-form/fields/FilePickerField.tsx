@@ -36,6 +36,7 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
     maxSize: _maxSize,
     text = "No file chosen",
     buttonText = "Browse",
+    disabled,
   }): React.ReactElement {
     const inputRef = useRef<HTMLInputElement>(null);
     const fileTriggerRef = useRef<HTMLButtonElement>(null);
@@ -124,6 +125,7 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
           accept={acceptString}
           onChange={handleInputChange}
           tabIndex={-1}
+          disabled={disabled}
         />
         <Button
           ref={fileTriggerRef}
@@ -137,6 +139,7 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
           onKeyDown={handleKeyDown}
           aria-label="Choose file"
           aria-invalid={error != null || undefined}
+          disabled={disabled}
         >
           {displayText ?? text}
         </Button>
@@ -146,6 +149,7 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
             className={styles.osdkFilePickerClear}
             onClick={handleClear}
             aria-label="Clear selection"
+            disabled={disabled}
           >
             <Cross />
           </Button>
@@ -156,6 +160,7 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
           className={styles.osdkFilePickerBrowse}
           onPointerDown={handleBrowsePointerDown}
           onClick={handleBrowseClick}
+          disabled={disabled}
         >
           {buttonText}
         </ActionButton>

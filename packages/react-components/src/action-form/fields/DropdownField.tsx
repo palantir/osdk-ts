@@ -144,8 +144,11 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
   portalContainer,
   onBlur,
   modal = true,
+  disabled,
 }: InnerSelectProps<V, Multiple>): React.ReactElement {
   const [open, setOpen] = useState(false);
+  const fieldDisabled = disabled === true;
+  const isOpen = !fieldDisabled && open;
 
   const hasValue = value != null;
 
@@ -157,6 +160,9 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
 
   const handleOpenChange = useCallback(
     (nextOpen: boolean) => {
+      if (fieldDisabled) {
+        return;
+      }
       setOpen(nextOpen);
       // Mark the field as touched when the popover closes so RHF validates.
       // Opening the popover does not trigger validation.
@@ -164,7 +170,7 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
         onBlur?.();
       }
     },
-    [onBlur],
+    [fieldDisabled, onBlur],
   );
 
   const handleClear = useCallback(() => {
@@ -182,13 +188,19 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
       <Select.Root
         value={value}
         onValueChange={onChange}
-        open={open}
+        open={isOpen}
         onOpenChange={handleOpenChange}
         isItemEqualToValue={isItemEqual}
         itemToStringLabel={itemToStringLabel}
         modal={modal}
+        disabled={disabled}
       >
-        <Select.Trigger id={id} placeholder={placeholder}>
+        <Select.Trigger
+          id={id}
+          placeholder={placeholder}
+          disabled={disabled}
+          aria-disabled={fieldDisabled || undefined}
+        >
           <div className={selectStyles.osdkSelectValueContainer}>
             <Select.Value>{renderSingleSelectedItemLabel}</Select.Value>
             {placeholder != null && (
@@ -202,8 +214,9 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
               role="button"
               aria-label="Clear"
               className={selectStyles.osdkSelectClear}
-              onMouseDown={preventTriggerOpen}
-              onClick={handleClear}
+              aria-disabled={fieldDisabled || undefined}
+              onMouseDown={fieldDisabled ? undefined : preventTriggerOpen}
+              onClick={fieldDisabled ? undefined : handleClear}
             >
               <SmallCross />
             </span>
@@ -213,7 +226,7 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
           </span>
         </Select.Trigger>
         <Select.Portal ref={portalRef} container={portalContainer}>
-          {open && modal && (
+          {isOpen && modal && (
             <PortalDismissLayer
               className={dropdownStyles.osdkSelectDismissLayer}
               onDismiss={handleDismiss}
@@ -266,8 +279,11 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   trailingItem,
   onBlur,
   modal = true,
+  disabled,
 }: InnerComboboxProps<V, Multiple>): React.ReactElement {
   const [open, setOpen] = useState(false);
+  const fieldDisabled = disabled === true;
+  const isOpen = !fieldDisabled && open;
 
   const hasValue = isMultiple
     ? Array.isArray(value) && value.length > 0
@@ -357,7 +373,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
       <Combobox.Root
         value={value}
         onValueChange={handleValueChange}
-        open={open}
+        open={isOpen}
         onOpenChange={handleOpenChange}
         multiple={isMultiple}
         itemToStringLabel={itemToStringLabel}
@@ -366,9 +382,12 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
         inputValue={query}
         onInputValueChange={onQueryChange}
         filter={disableClientSideFiltering ? null : undefined}
+        disabled={disabled}
       >
         <Combobox.Trigger
           id={id}
+          disabled={disabled}
+          aria-disabled={fieldDisabled || undefined}
           className={isMultiple
             ? comboboxStyles.osdkComboboxTriggerMulti
             : undefined}
@@ -387,8 +406,13 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
                         role="button"
                         aria-label={`Remove ${itemToStringLabel(item)}`}
                         className={comboboxStyles.osdkComboboxTriggerChipRemove}
-                        onMouseDown={preventTriggerOpen}
-                        onClick={() => handleRemoveItem(item)}
+                        aria-disabled={fieldDisabled || undefined}
+                        onMouseDown={fieldDisabled
+                          ? undefined
+                          : preventTriggerOpen}
+                        onClick={fieldDisabled
+                          ? undefined
+                          : () => handleRemoveItem(item)}
                       >
                         <Cross size={12} />
                       </span>
@@ -414,8 +438,9 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
               role="button"
               aria-label="Clear"
               className={comboboxStyles.osdkComboboxClear}
-              onMouseDown={preventTriggerOpen}
-              onClick={handleClear}
+              aria-disabled={fieldDisabled || undefined}
+              onMouseDown={fieldDisabled ? undefined : preventTriggerOpen}
+              onClick={fieldDisabled ? undefined : handleClear}
             >
               <SmallCross />
             </span>
@@ -425,7 +450,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
           </Combobox.Icon>
         </Combobox.Trigger>
         <Combobox.Portal ref={portalRef} container={portalContainer}>
-          {open && modal && (
+          {isOpen && modal && (
             <PortalDismissLayer
               className={dropdownStyles.osdkComboboxDismissLayer}
               onDismiss={handleDismiss}

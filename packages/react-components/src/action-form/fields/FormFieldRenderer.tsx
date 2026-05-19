@@ -96,6 +96,7 @@ function renderFieldComponent(
   portalContainer: PortalContainer | undefined,
   onFieldBlur: (() => void) | undefined,
 ): React.ReactElement {
+  const disabled = fieldDefinition.disabled === true;
   switch (fieldDefinition.fieldComponent) {
     case "DATE_RANGE_INPUT":
       return (
@@ -105,6 +106,7 @@ function renderFieldComponent(
           onChange={onChange}
           placeholderStart={fieldDefinition.placeholder}
           {...fieldDefinition.fieldComponentProps}
+          disabled={disabled}
           portalContainer={resolvePortalContainer(
             fieldDefinition.fieldComponentProps,
             portalContainer,
@@ -120,6 +122,7 @@ function renderFieldComponent(
           placeholder={fieldDefinition.placeholder}
           error={error}
           {...fieldDefinition.fieldComponentProps}
+          disabled={disabled}
         />
       );
     case "UNSUPPORTED":
@@ -141,6 +144,7 @@ function renderFieldComponent(
           placeholder={fieldDefinition.placeholder}
           error={error}
           {...fieldDefinition.fieldComponentProps}
+          disabled={disabled}
         />
       );
     case "DROPDOWN": {
@@ -152,6 +156,7 @@ function renderFieldComponent(
           placeholder={fieldDefinition.placeholder}
           error={error}
           {...fieldDefinition.fieldComponentProps}
+          disabled={disabled}
           portalContainer={resolvePortalContainer(
             fieldDefinition.fieldComponentProps,
             portalContainer,
@@ -170,6 +175,7 @@ function renderFieldComponent(
           onChange={onChange}
           error={error}
           {...fieldDefinition.fieldComponentProps}
+          disabled={disabled}
           portalContainer={resolvePortalContainer(
             fieldDefinition.fieldComponentProps,
             portalContainer,
@@ -184,6 +190,7 @@ function renderFieldComponent(
           onChange={onChange}
           error={error}
           {...fieldDefinition.fieldComponentProps}
+          disabled={disabled}
         />
       );
     case "SWITCH":
@@ -195,6 +202,7 @@ function renderFieldComponent(
           onChange={onChange}
           error={error}
           {...fieldDefinition.fieldComponentProps}
+          disabled={disabled}
         />
       );
     case "CUSTOM":
@@ -205,6 +213,7 @@ function renderFieldComponent(
           onChange={onChange}
           error={error}
           {...fieldDefinition.fieldComponentProps}
+          disabled={disabled}
         />
       );
     case "NUMBER_INPUT":
@@ -217,6 +226,7 @@ function renderFieldComponent(
           placeholder={fieldDefinition.placeholder}
           error={error}
           {...fieldDefinition.fieldComponentProps}
+          disabled={disabled}
         />
       );
     case "FILE_PICKER":
@@ -227,6 +237,7 @@ function renderFieldComponent(
           onChange={onChange}
           error={error}
           {...fieldDefinition.fieldComponentProps}
+          disabled={disabled}
         />
       );
     case "OBJECT_SELECT":
@@ -238,6 +249,7 @@ function renderFieldComponent(
           placeholder={fieldDefinition.placeholder}
           error={error}
           {...fieldDefinition.fieldComponentProps}
+          disabled={disabled}
           portalContainer={resolvePortalContainer(
             fieldDefinition.fieldComponentProps,
             portalContainer,
@@ -249,6 +261,7 @@ function renderFieldComponent(
         <ObjectSetField
           id={fieldDefinition.fieldKey}
           {...fieldDefinition.fieldComponentProps}
+          disabled={disabled}
         />
       );
     default:

@@ -29,6 +29,7 @@ export const RadioButtonsField: <V>(
   onChange,
   options,
   orientation,
+  disabled,
 }: RadioButtonsFieldProps<V>): React.ReactElement {
   const selectedLabel = useMemo(
     () =>
@@ -53,9 +54,10 @@ export const RadioButtonsField: <V>(
       data-orientation={orientation ?? "vertical"}
       value={selectedLabel}
       onValueChange={handleValueChange}
+      disabled={disabled}
     >
       {options.map((option) => (
-        <RadioItem key={option.label} option={option} />
+        <RadioItem key={option.label} option={option} disabled={disabled} />
       ))}
     </RadioGroup>
   );
@@ -63,14 +65,18 @@ export const RadioButtonsField: <V>(
 
 const RadioItem = memo(function RadioItemFn({
   option,
+  disabled,
 }: {
   option: Option<unknown>;
+  disabled: boolean | undefined;
 }): React.ReactElement {
   return (
     <label className={styles.osdkRadioItem}>
       <Radio.Root
         value={option.label}
         className={styles.osdkRadioRoot}
+        disabled={disabled}
+        aria-disabled={disabled === true || undefined}
       >
         <Radio.Indicator className={styles.osdkRadioIndicator} />
       </Radio.Root>

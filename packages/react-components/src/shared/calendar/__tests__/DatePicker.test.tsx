@@ -126,6 +126,19 @@ describe("DatePicker", () => {
       expect(screen.getByRole("dialog")).toBeDefined();
     });
 
+    it("keeps the input disabled and does not open the calendar when disabled", () => {
+      render(<DatePicker value={null} onChange={vi.fn()} disabled={true} />);
+      const input = screen.getByRole("combobox") as HTMLInputElement;
+
+      fireEvent.focus(input);
+      fireEvent.pointerDown(input);
+      fireEvent.click(input);
+
+      expect(input.disabled).toBe(true);
+      expect(input.getAttribute("aria-expanded")).toBe("false");
+      expect(screen.queryByRole("dialog")).toBeNull();
+    });
+
     it("selects local today from the calendar action bar", () => {
       vi.useFakeTimers();
       vi.setSystemTime(new Date(2024, 6, 4, 9, 30));
