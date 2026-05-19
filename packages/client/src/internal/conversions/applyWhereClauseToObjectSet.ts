@@ -23,43 +23,46 @@ import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
 import { modernToLegacyWhereClause } from "./modernToLegacyWhereClause.js";
 
 const REVERSE_LINK_KEY = "$reverseLink";
-const SYNTHETIC_OBJECT_TYPE: ObjectOrInterfaceDefinition = {
+
+// fullyQualifyPropName (the only consumer of objectType inside
+// modernToLegacyWhereClause) is a no-op for type === "object", so an empty
+// apiName is safe for the linked-inner-clause recursion.
+const SYNTHETIC_OBJECT_TYPE = {
   type: "object",
   apiName: "",
 } as ObjectOrInterfaceDefinition;
 
-function isAndClause(value: unknown): value is { $and: unknown[] } {
-  return typeof value === "object" && value != null && "$and" in value
-    && Array.isArray((value as { $and: unknown }).$and);
+function hasKey<K extends string>(
+  v: unknown,
+  k: K,
+): v is Record<K, unknown> {
+  return typeof v === "object" && v != null && k in v;
 }
 
-function isOrClause(value: unknown): value is { $or: unknown[] } {
-  return typeof value === "object" && value != null && "$or" in value
-    && Array.isArray((value as { $or: unknown }).$or);
+function isAndClause(v: unknown): v is { $and: unknown[] } {
+  return hasKey(v, "$and") && Array.isArray(v.$and);
 }
 
-function isNotClause(value: unknown): value is { $not: unknown } {
-  return typeof value === "object" && value != null && "$not" in value;
+function isOrClause(v: unknown): v is { $or: unknown[] } {
+  return hasKey(v, "$or") && Array.isArray(v.$or);
 }
 
-function isLinkTraversal(value: unknown): value is { $reverseLink: string } {
-  return typeof value === "object" && value != null
-    && REVERSE_LINK_KEY in value
-    && typeof (value as { $reverseLink: unknown }).$reverseLink === "string";
+function isNotClause(v: unknown): v is { $not: Record<string, unknown> } {
+  return hasKey(v, "$not") && v.$not !== undefined;
+}
+
+function isLinkTraversal(v: unknown): v is Record<string, unknown> & {
+  $reverseLink: string;
+} {
+  return hasKey(v, REVERSE_LINK_KEY)
+    && typeof v[REVERSE_LINK_KEY] === "string";
 }
 
 /**
- * Converts a user-facing WhereClause into a wire ObjectSet composition,
- * applying the clause to `baseObjectSet`. Pure-property clauses produce
- * a `filter` wrap (identical to the previous direct path). Link-traversed
- * entries (recognized by the `$reverseLink` sentinel on the inner value)
- * expand to `pivotTo(linkName) → where(inner) → pivotTo(reverseLink) → intersect`
- * compositions. `$and`/`$or`/`$not` compose via `intersect`/`union`/`subtract`.
- *
- * Link traversal requires the caller to supply `$reverseLink` on the inner
- * value; the OSDK does not auto-resolve it because object metadata is async-
- * only. Filter-list integrations populate `$reverseLink` from
- * `LinkedPropertyFilterDefinition.reverseLinkName`.
+ * Expands a user-facing WhereClause into a wire ObjectSet composition:
+ * pure-property clauses use a `filter` wrap; `$reverseLink`-tagged link
+ * entries become `pivotTo → where → pivotTo → intersect` compositions;
+ * `$and`/`$or`/`$not` compose via `intersect`/`union`/`subtract`.
  *
  * @internal
  */
@@ -74,7 +77,7 @@ export function applyWhereClauseToObjectSet<
 ): WireObjectSet {
   return applyInner(
     baseObjectSet,
-    whereClause as unknown as Record<string, unknown>,
+    whereClause as Record<string, unknown>,
     objectType,
     rdpNames,
   );
@@ -87,70 +90,52 @@ function applyInner(
   rdpNames: Set<string> | undefined,
 ): WireObjectSet {
   if (isAndClause(whereClause)) {
-    if (whereClause.$and.length === 0) {
-      return baseObjectSet;
-    }
-    if (whereClause.$and.length === 1) {
-      return applyInner(
-        baseObjectSet,
-        whereClause.$and[0] as Record<string, unknown>,
-        objectType,
-        rdpNames,
-      );
-    }
-    return {
-      type: "intersect",
-      objectSets: whereClause.$and.map((child) =>
-        applyInner(
-          baseObjectSet,
-          child as Record<string, unknown>,
-          objectType,
-          rdpNames,
-        )
-      ),
-    };
+    // Empty AND is TRUE — unfiltered base.
+    return composeChildren(
+      baseObjectSet,
+      whereClause.$and,
+      "intersect",
+      objectType,
+      rdpNames,
+    );
   }
 
   if (isOrClause(whereClause)) {
     if (whereClause.$or.length === 0) {
-      return baseObjectSet;
+      // Empty OR is FALSE — emit an always-false filter so the wire shape
+      // represents an empty set rather than the unfiltered base.
+      return {
+        type: "filter",
+        objectSet: baseObjectSet,
+        where: { type: "or", value: [] },
+      };
     }
-    if (whereClause.$or.length === 1) {
-      return applyInner(
-        baseObjectSet,
-        whereClause.$or[0] as Record<string, unknown>,
-        objectType,
-        rdpNames,
-      );
-    }
-    return {
-      type: "union",
-      objectSets: whereClause.$or.map((child) =>
-        applyInner(
-          baseObjectSet,
-          child as Record<string, unknown>,
-          objectType,
-          rdpNames,
-        )
-      ),
-    };
-  }
-
-  if (isNotClause(whereClause)) {
-    const excluded = applyInner(
+    return composeChildren(
       baseObjectSet,
-      whereClause.$not as Record<string, unknown>,
+      whereClause.$or,
+      "union",
       objectType,
       rdpNames,
     );
+  }
+
+  if (isNotClause(whereClause)) {
     return {
       type: "subtract",
-      objectSets: [baseObjectSet, excluded],
+      objectSets: [
+        baseObjectSet,
+        applyInner(baseObjectSet, whereClause.$not, objectType, rdpNames),
+      ],
     };
   }
 
   const propertyEntries: Array<[string, unknown]> = [];
-  const linkEntries: Array<[string, { $reverseLink: string }]> = [];
+  const linkEntries: Array<[
+    string,
+    Record<string, unknown> & {
+      $reverseLink: string;
+    },
+  ]> = [];
 
   for (const [key, value] of Object.entries(whereClause)) {
     if (isLinkTraversal(value)) {
@@ -184,7 +169,7 @@ function applyInner(
     };
     const filteredLinked = applyInner(
       linkedBase,
-      innerWhere as Record<string, unknown>,
+      innerWhere,
       SYNTHETIC_OBJECT_TYPE,
       undefined,
     );
@@ -204,5 +189,36 @@ function applyInner(
   return {
     type: "intersect",
     objectSets: components,
+  };
+}
+
+function composeChildren(
+  baseObjectSet: WireObjectSet,
+  children: unknown[],
+  composeType: "intersect" | "union",
+  objectType: ObjectOrInterfaceDefinition,
+  rdpNames: Set<string> | undefined,
+): WireObjectSet {
+  if (children.length === 0) {
+    return baseObjectSet;
+  }
+  if (children.length === 1) {
+    return applyInner(
+      baseObjectSet,
+      children[0] as Record<string, unknown>,
+      objectType,
+      rdpNames,
+    );
+  }
+  return {
+    type: composeType,
+    objectSets: children.map((child) =>
+      applyInner(
+        baseObjectSet,
+        child as Record<string, unknown>,
+        objectType,
+        rdpNames,
+      )
+    ),
   };
 }

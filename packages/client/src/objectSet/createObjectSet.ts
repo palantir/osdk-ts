@@ -57,23 +57,6 @@ import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
 import { isWireObjectSet } from "../util/WireObjectSet.js";
 import { fetchLinksPage } from "./fetchLinksPage.js";
 
-const a: WireObjectSet = {
-  "type": "interfaceLinkSearchAround",
-  "interfaceLink": "lead",
-  "objectSet": {
-    "type": "asType",
-    "entityType": "Person",
-    "objectSet": {
-      "type": "filter",
-      "objectSet": { "type": "base", "objectType": "Employee" },
-      "where": {
-        "type": "eq",
-        "field": "employeeNumber",
-        "value": "657495107",
-      },
-    },
-  },
-};
 function isObjectTypeDefinition(
   def: ObjectOrInterfaceDefinition,
 ): def is ObjectTypeDefinition {
