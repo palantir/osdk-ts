@@ -1,5 +1,22 @@
 # @osdk/maker-experimental
 
+## 0.18.0
+
+### Minor Changes
+
+- dea392c: Fix maker experimental imports
+- d8f3dfd: fix imported interface shapes
+
+### Patch Changes
+
+- Updated dependencies [dea392c]
+- Updated dependencies [d8f3dfd]
+  - @osdk/generator-converters.ontologyir@2.22.0
+  - @osdk/generator-converters.preview@0.12.0
+  - @osdk/maker@0.28.0
+  - @osdk/api@2.22.0
+  - @osdk/client.unstable@2.22.0
+
 ## 0.17.0
 
 ### Minor Changes

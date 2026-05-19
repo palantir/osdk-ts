@@ -1,5 +1,19 @@
 # @osdk/generator-converters.preview
 
+## 0.12.0
+
+### Minor Changes
+
+- dea392c: Fix maker experimental imports
+
+### Patch Changes
+
+- Updated dependencies [dea392c]
+- Updated dependencies [d8f3dfd]
+  - @osdk/generator-converters.ontologyir@2.22.0
+  - @osdk/client.unstable@2.22.0
+  - @osdk/generator@2.22.0
+
 ## 0.11.0
 
 ### Patch Changes

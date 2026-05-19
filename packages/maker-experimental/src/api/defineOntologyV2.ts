@@ -22,6 +22,7 @@ import {
   getOntologyDefinition,
   initializeOntologyState,
   OntologyEntityTypeEnum,
+  writeStaticObjects,
 } from "@osdk/maker";
 import * as fs from "fs";
 import { convertOntologyDefinition } from "../conversion/toMarketplace/convertOntologyDefinition.js";
@@ -44,6 +45,7 @@ export interface FunctionsIr {
 export async function defineOntologyV2(
   ns: string,
   body: () => void | Promise<void>,
+  outputDir?: string,
   functionsIrFile?: string,
   randomnessKey?: string,
 ): Promise<OntologyV2Result> {
@@ -118,6 +120,10 @@ export async function defineOntologyV2(
             .includeEmptyBackingDatasource === true;
     })
     .map(([apiName]) => apiName);
+
+  if (outputDir) {
+    writeStaticObjects(outputDir);
+  }
 
   return {
     ontologyIr: ontDef,

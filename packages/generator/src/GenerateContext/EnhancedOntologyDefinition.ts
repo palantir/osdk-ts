@@ -15,6 +15,7 @@
  */
 
 import type { OntologyV2 } from "@osdk/foundry.ontologies";
+import { GeneratorError } from "@osdk/generator-converters";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
 import type { EnhanceCommon } from "./EnhanceCommon.js";
 import { EnhancedAction } from "./EnhancedAction.js";
@@ -118,9 +119,9 @@ export class EnhancedOntologyDefinition {
       if (!ret) {
         const [apiNamespace, shortApiName] = extractNamespace(fullApiName);
 
-        throw new Error(
-          `Unable to find ${type}: No entry for '${fullApiName}`,
-        );
+        throw new GeneratorError("Unable to find entity", { fullApiName }, {
+          entityType: type,
+        });
       }
       return ret as this[K][string] as L extends true ? this[K][string]
         : ForeignType;

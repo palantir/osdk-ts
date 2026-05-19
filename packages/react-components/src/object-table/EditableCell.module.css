@@ -12,7 +12,7 @@
 
   tr[data-focused="true"] & {
     border: var(--osdk-table-cell-editable-border);
-    background: var(--osdk-table-cell-editable-bg);
+    background: var(--osdk-table-cell-input-bg);
 
     &.osdkEditedInput {
       border: var(--osdk-table-cell-edited-border);
@@ -35,7 +35,7 @@
   }
 
   &.error {
-    background: var(--osdk-table-cell-editable-bg);
+    background: var(--osdk-table-cell-input-bg);
     border: var(--osdk-table-cell-edited-border-error);
   }
 }
@@ -50,6 +50,11 @@
   --osdk-combobox-border-color: transparent;
   --osdk-combobox-focus-border-color: transparent;
 
+  /* Match the text-input editable cell background so the row reads as a
+     single field strip instead of mixed surface colors. */
+  --osdk-select-trigger-bg: var(--osdk-table-cell-editable-bg);
+  --osdk-combobox-trigger-bg: var(--osdk-table-cell-editable-bg);
+
   --osdk-combobox-input-padding: var(--osdk-surface-spacing)
     calc(var(--osdk-surface-spacing) * 3);
 
@@ -60,7 +65,7 @@
 
   tr[data-focused="true"] & {
     border: var(--osdk-table-cell-editable-border);
-    background: var(--osdk-table-cell-editable-bg);
+    background: var(--osdk-table-cell-input-bg);
 
     &.osdkEditedInput {
       border: var(--osdk-table-cell-edited-border);
@@ -83,7 +88,7 @@
   }
 
   &.error {
-    background: var(--osdk-table-cell-editable-bg);
+    background: var(--osdk-table-cell-input-bg);
     border: var(--osdk-table-cell-edited-border-error);
   }
 }
@@ -114,7 +119,7 @@
 
   tr[data-focused="true"] & {
     border: var(--osdk-table-cell-editable-border);
-    background: var(--osdk-table-cell-editable-bg);
+    background: var(--osdk-table-cell-input-bg);
 
     &.osdkEditedInput {
       border: var(--osdk-table-cell-edited-border);
@@ -137,7 +142,7 @@
   }
 
   &.error {
-    background: var(--osdk-table-cell-editable-bg);
+    background: var(--osdk-table-cell-input-bg);
     border: var(--osdk-table-cell-edited-border-error);
   }
 }
@@ -158,6 +163,7 @@
   white-space: nowrap;
   text-align: left;
   background: inherit;
+  color: var(--osdk-typography-color-default-rest);
   border: none;
 
   &:focus {
@@ -168,7 +174,7 @@
 .osdkEditedInput {
   border-radius: var(--osdk-surface-border-radius);
   border: var(--osdk-table-cell-edited-border);
-  background: var(--osdk-table-cell-editable-bg);
+  background: var(--osdk-table-cell-input-bg);
 }
 
 .validationError {

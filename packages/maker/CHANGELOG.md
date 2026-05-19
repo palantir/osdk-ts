@@ -1,5 +1,18 @@
 # @osdk/maker
 
+## 0.28.0
+
+### Minor Changes
+
+- dea392c: Fix maker experimental imports
+
+### Patch Changes
+
+- Updated dependencies [dea392c]
+- Updated dependencies [d8f3dfd]
+  - @osdk/generator-converters.ontologyir@2.22.0
+  - @osdk/api@2.22.0
+
 ## 0.27.0
 
 ### Minor Changes

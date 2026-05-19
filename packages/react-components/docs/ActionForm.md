@@ -22,9 +22,13 @@ import type { FormFieldDefinition } from "@osdk/react-components/experimental";
 
 ## Basic Usage
 
+:::note About `@my/osdk` and `./client`
+`@my/osdk` is a placeholder for **your generated SDK package** (e.g. `@your-app/sdk`). `./client` (used in scoped object-select examples below) is the file in your app where you exported the OSDK client returned by `createClient(...)`. Replace both with the actual paths in your project.
+:::
+
 ```tsx
+import { updateEmployee } from "@my/osdk";
 import { ActionForm } from "@osdk/react-components/experimental";
-import { updateEmployee } from "@YourApp/sdk";
 
 function UpdateEmployeeForm() {
   return <ActionForm actionDefinition={updateEmployee} />;
@@ -124,12 +128,13 @@ const fields = [
 `OBJECT_SELECT` can load options from either an object type or a pre-scoped object set. Pass `objectType` for an unfiltered selector, or pass `objectSet` to limit selectable options. The two are mutually exclusive. Search text is applied within the object set, and the current value is not automatically cleared when it is outside that set.
 
 ```tsx
-import { $, Employee, updateEmployee } from "@YourApp/sdk";
+import { Employee, updateEmployee } from "@my/osdk";
 import { useMemo } from "react";
+import client from "./client";
 
 function UpdateEmployeeForm() {
   const marketingEmployees = useMemo(
-    () => $(Employee).where({ department: "Marketing" }),
+    () => client(Employee).where({ department: "Marketing" }),
     [],
   );
 
