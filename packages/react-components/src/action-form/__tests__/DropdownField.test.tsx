@@ -202,7 +202,7 @@ describe("DropdownField", () => {
       );
 
       const trigger = screen.getByRole("combobox");
-      expect(trigger.getAttribute("aria-disabled")).toBe("true");
+      expect(trigger.hasAttribute("disabled")).toBe(true);
 
       fireEvent.click(trigger);
 

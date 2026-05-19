@@ -79,7 +79,6 @@ const RadioItem = memo(function RadioItemFn({
         className={styles.osdkRadioRoot}
         disabled={disabled}
         aria-labelledby={labelId}
-        aria-disabled={disabled === true || undefined}
         tabIndex={disabled === true ? -1 : undefined}
       >
         <Radio.Indicator className={styles.osdkRadioIndicator} />

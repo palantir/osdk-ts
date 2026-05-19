@@ -147,8 +147,7 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
   disabled,
 }: InnerSelectProps<V, Multiple>): React.ReactElement {
   const [open, setOpen] = useState(false);
-  const fieldDisabled = disabled === true;
-  const isOpen = !fieldDisabled && open;
+  const isOpen = !disabled && open;
 
   const hasValue = value != null;
 
@@ -160,7 +159,7 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
 
   const handleOpenChange = useCallback(
     (nextOpen: boolean) => {
-      if (fieldDisabled) {
+      if (disabled) {
         return;
       }
       setOpen(nextOpen);
@@ -170,7 +169,7 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
         onBlur?.();
       }
     },
-    [fieldDisabled, onBlur],
+    [disabled, onBlur],
   );
 
   const handleClear = useCallback(() => {
@@ -195,12 +194,7 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
         modal={modal}
         disabled={disabled}
       >
-        <Select.Trigger
-          id={id}
-          placeholder={placeholder}
-          disabled={disabled}
-          aria-disabled={fieldDisabled || undefined}
-        >
+        <Select.Trigger id={id} placeholder={placeholder} disabled={disabled}>
           <div className={selectStyles.osdkSelectValueContainer}>
             <Select.Value>{renderSingleSelectedItemLabel}</Select.Value>
             {placeholder != null && (
@@ -214,9 +208,9 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
               role="button"
               aria-label="Clear"
               className={selectStyles.osdkSelectClear}
-              aria-disabled={fieldDisabled || undefined}
-              onMouseDown={fieldDisabled ? undefined : preventTriggerOpen}
-              onClick={fieldDisabled ? undefined : handleClear}
+              aria-disabled={disabled || undefined}
+              onMouseDown={disabled ? undefined : preventTriggerOpen}
+              onClick={disabled ? undefined : handleClear}
             >
               <SmallCross />
             </span>
@@ -282,8 +276,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   disabled,
 }: InnerComboboxProps<V, Multiple>): React.ReactElement {
   const [open, setOpen] = useState(false);
-  const fieldDisabled = disabled === true;
-  const isOpen = !fieldDisabled && open;
+  const isOpen = !disabled && open;
 
   const hasValue = isMultiple
     ? Array.isArray(value) && value.length > 0
@@ -387,7 +380,6 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
         <Combobox.Trigger
           id={id}
           disabled={disabled}
-          aria-disabled={fieldDisabled || undefined}
           className={isMultiple
             ? comboboxStyles.osdkComboboxTriggerMulti
             : undefined}
@@ -406,11 +398,9 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
                         role="button"
                         aria-label={`Remove ${itemToStringLabel(item)}`}
                         className={comboboxStyles.osdkComboboxTriggerChipRemove}
-                        aria-disabled={fieldDisabled || undefined}
-                        onMouseDown={fieldDisabled
-                          ? undefined
-                          : preventTriggerOpen}
-                        onClick={fieldDisabled
+                        aria-disabled={disabled || undefined}
+                        onMouseDown={disabled ? undefined : preventTriggerOpen}
+                        onClick={disabled
                           ? undefined
                           : () => handleRemoveItem(item)}
                       >
@@ -438,9 +428,9 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
               role="button"
               aria-label="Clear"
               className={comboboxStyles.osdkComboboxClear}
-              aria-disabled={fieldDisabled || undefined}
-              onMouseDown={fieldDisabled ? undefined : preventTriggerOpen}
-              onClick={fieldDisabled ? undefined : handleClear}
+              aria-disabled={disabled || undefined}
+              onMouseDown={disabled ? undefined : preventTriggerOpen}
+              onClick={disabled ? undefined : handleClear}
             >
               <SmallCross />
             </span>
