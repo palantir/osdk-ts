@@ -38,10 +38,6 @@
 
 .osdkDatePickerPopover {
   background: var(--osdk-datetime-popover-bg);
-  /* Popover renders in a portal so it doesn't inherit body color reliably;
-     the calendar's month/year dropdown and nav buttons use `color: inherit`,
-     so they need an explicit color set here to avoid falling through to the
-     browser default (black) on a dark popover. */
   color: var(--osdk-typography-color-default-rest);
   padding: var(--osdk-datetime-popover-padding);
   z-index: var(--osdk-datetime-popover-z-index);
