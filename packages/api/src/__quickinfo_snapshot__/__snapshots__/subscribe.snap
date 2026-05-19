@@ -6,38 +6,8 @@
 /** The argument of listener.onChange — emitted when an object enters or leaves the set. */
 type subscribe_listener_onChange_objectUpdate_param = {
   object:
-    | Osdk.Instance<
-      {
-        __DefinitionMetadata?:
-          | { properties: {}; props?: {} | undefined }
-          | undefined;
-      } & EmployeeApiTest,
-      never,
-      PropertyKeys<
-        {
-          __DefinitionMetadata?:
-            | { properties: {}; props?: {} | undefined }
-            | undefined;
-        } & EmployeeApiTest
-      >,
-      {}
-    >
-    | Osdk.Instance<
-      {
-        __DefinitionMetadata?:
-          | { properties: {}; props?: {} | undefined }
-          | undefined;
-      } & EmployeeApiTest,
-      "$rid",
-      PropertyKeys<
-        {
-          __DefinitionMetadata?:
-            | { properties: {}; props?: {} | undefined }
-            | undefined;
-        } & EmployeeApiTest
-      >,
-      {}
-    >;
+    | Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>, {}>
+    | Osdk.Instance<EmployeeApiTest, "$rid", PropertyKeys<EmployeeApiTest>, {}>;
   state: "ADDED_OR_UPDATED" | "REMOVED";
 };
 
@@ -61,13 +31,5 @@ type subscribe_opts_narrow_includeRid = true | undefined;
 
 /** The `properties` field of subscribe options — restricts which property keys updates may carry. */
 type subscribe_opts_properties =
-  | Array<
-    PropertyKeys<
-      {
-        __DefinitionMetadata?:
-          | { properties: {}; props?: {} | undefined }
-          | undefined;
-      } & EmployeeApiTest
-    >
-  >
+  | Array<PropertyKeys<EmployeeApiTest>>
   | undefined;
