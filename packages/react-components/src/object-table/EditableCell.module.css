@@ -50,6 +50,11 @@
   --osdk-combobox-border-color: transparent;
   --osdk-combobox-focus-border-color: transparent;
 
+  /* Match the text-input editable cell background so the row reads as a
+     single field strip instead of mixed surface colors. */
+  --osdk-select-trigger-bg: var(--osdk-table-cell-editable-bg);
+  --osdk-combobox-trigger-bg: var(--osdk-table-cell-editable-bg);
+
   --osdk-combobox-input-padding: var(--osdk-surface-spacing)
     calc(var(--osdk-surface-spacing) * 3);
 
@@ -158,6 +163,7 @@
   white-space: nowrap;
   text-align: left;
   background: inherit;
+  color: var(--osdk-typography-color-default-rest);
   border: none;
 
   &:focus {

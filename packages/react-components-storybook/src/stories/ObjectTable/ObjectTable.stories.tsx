@@ -2099,7 +2099,7 @@ export const CustomEmptyState: Story = {
     renderEmptyState: () => (
       <NonIdealState
         icon="folder-close"
-        title="No saved PTL views found."
+        title="No saved views found."
       />
     ),
   },
@@ -2124,7 +2124,7 @@ return (
     renderEmptyState={() => (
       <NonIdealState
         icon="folder-close"
-        title="No saved PTL views found."
+        title="No saved views found."
       />
     )}
   />
