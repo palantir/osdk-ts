@@ -1,5 +1,16 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.22.0
+
+### Minor Changes
+
+- dea392c: Fix maker experimental imports
+- d8f3dfd: fix imported interface shapes
+
+### Patch Changes
+
+- @osdk/client.unstable@2.22.0
+
 ## 2.21.0
 
 ### Minor Changes

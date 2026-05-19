@@ -1,5 +1,11 @@
 # @osdk/react-components-storybook
 
+## 0.16.0
+
+### Minor Changes
+
+- 7945245: add missing postal-mime dev dep so storybook dev resolves the email viewer stories
+
 ## 0.15.0
 
 ### Minor Changes
