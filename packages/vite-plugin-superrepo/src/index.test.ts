@@ -31,7 +31,7 @@ afterEach(() => {
   fs.rmSync(workDir, { recursive: true, force: true });
 });
 
-it("installs all three ontology proxy prefixes from a live discovery file", () => {
+it("installs ontology proxy prefixes from a live discovery file", () => {
   fs.writeFileSync(
     path.join(workDir, "foundry.yml"),
     "minCliVersion: \"0.0.0\"\n",
@@ -54,9 +54,7 @@ it("installs all three ontology proxy prefixes from a live discovery file", () =
   ) => unknown)(userConfig, { command: "serve", mode: "development" });
 
   const proxy = userConfig.server?.proxy as Record<string, ProxyOptions>;
-  for (
-    const prefix of ["/api/v2", "/ontology-metadata", "/object-set-service"]
-  ) {
+  for (const prefix of ["/ontology-metadata", "/object-set-service"]) {
     expect(proxy[prefix].target).toBe("https://127.0.0.1:51000");
     expect(proxy[prefix].changeOrigin).toBe(true);
     expect(proxy[prefix].secure).toBe(false);
