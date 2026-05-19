@@ -68,6 +68,7 @@
 
   &:hover {
     background-color: var(--osdk-table-header-menu-bg-hover);
+    /* color: var(--osdk-typography-color-default-hover); */
   }
 
   &[data-popup-open] {

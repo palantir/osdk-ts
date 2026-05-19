@@ -19,4 +19,5 @@
   position: relative;
   width: max-content;
   min-width: 100%;
+  background-color: var(--osdk-table-row-bg-default);
 }

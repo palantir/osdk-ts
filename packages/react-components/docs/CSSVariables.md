@@ -1481,3 +1481,41 @@ For more comprehensive theming, override the Blueprint tokens that the OSDK toke
    - Override Blueprint tokens (`--bp-*`) for system-wide design changes
 
 3. **Leverage the mapping**: Since OSDK tokens map to Blueprint tokens, changing a Blueprint token will automatically affect all OSDK tokens that reference it.
+
+## Dark Mode
+
+`@osdk/react-components` ships built-in dark-theme overrides. They activate automatically in either of two ways:
+
+1. **`prefers-color-scheme: dark`** — matches the [Foundry custom widgets dark theme guidance](https://www.palantir.com/docs/foundry/custom-widgets/dark-theme). When a parent application (Foundry, the OS) declares dark color scheme, the widget switches without any host configuration.
+2. **`[data-bp-color-scheme="dark"]` or `.bp6-dark`** — matches the Blueprint convention. Set this attribute / class on any ancestor (often `<html>`) to force dark explicitly. Useful when the OS preference doesn't reflect what the host wants, or when previewing dark mode in isolation.
+
+The attribute path wins over the media query when both apply, giving hosts an explicit override.
+
+### Adding your own dark overrides
+
+To customize dark-mode tokens beyond the defaults, declare your overrides in a higher layer using the same selectors:
+
+```css
+@layer osdk.styles, user.theme;
+
+@import "@osdk/react-components/styles.css" layer(osdk.styles);
+
+@layer user.theme {
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --osdk-background-primary: #0a0a0a;
+      --osdk-table-row-bg-alternate: #161616;
+    }
+  }
+
+  [data-bp-color-scheme="dark"],
+  .bp6-dark {
+    --osdk-background-primary: #0a0a0a;
+    --osdk-table-row-bg-alternate: #161616;
+  }
+}
+```
+
+### Tokens flipped in dark mode
+
+The package overrides only `--osdk-*` tokens in dark mode. `--bp-*` tokens flip independently via Blueprint's own dark block. Tokens with identical light/dark values (primary/danger/success intents, sizes, weights, spacing, focus width) are not overridden. See `src/tokens/base-tokens/dark.css` for the full list.

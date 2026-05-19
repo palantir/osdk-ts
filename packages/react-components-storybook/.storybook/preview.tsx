@@ -79,6 +79,7 @@ const preview: Preview = {
     withThemeByDataAttribute({
       themes: {
         light: "light",
+        dark: "dark",
         modern: "modern",
         devcon: "devcon",
       },

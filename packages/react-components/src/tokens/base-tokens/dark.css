@@ -1,0 +1,167 @@
+/*
+ * Dark theme overrides for OSDK semantic tokens.
+ *
+ * Activated by any of:
+ *   - The host / OS declaring `prefers-color-scheme: dark`
+ *     (matches the Foundry custom-widgets dark theme guidance).
+ *   - A host setting `data-bp-color-scheme="dark"` or `.bp6-dark`
+ *     on an ancestor (matches Blueprint's existing convention; see
+ *     blueprint-design-tokens.css).
+ *   - A host setting `data-theme="dark"` on an ancestor (matches the
+ *     convention used by Tailwind, GitHub Primer, MDN, and the OSDK
+ *     Storybook theme toolbar).
+ *
+ * Two sources flip tokens in dark mode:
+ *   1. Blueprint's own dark block flips --bp-* tokens, but only under
+ *      `[data-bp-color-scheme=dark]` / `.bp6-dark`. We re-flip the same
+ *      --bp-* values ourselves so OS-level dark mode and `data-theme=dark`
+ *      also get the cascade. Under the Blueprint-aware selectors the
+ *      re-flip is redundant but harmless (identical values).
+ *   2. --osdk-* tokens that have no --bp-* counterpart or that intentionally
+ *      diverge from Blueprint.
+ *
+ * The @media and attribute-selector blocks duplicate the same overrides;
+ * keep them in sync. Palette source: workshop_dark.css.
+ */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* --bp-* flips mirroring Blueprint's [data-bp-color-scheme=dark] */
+    --bp-surface-border-color-default: #ffffff33;
+    --bp-surface-border-color-strong: #ffffff4d;
+    --bp-surface-shadow-0:
+      inset 0px 0px 0px 1px rgba(255, 255, 255, 0.2),
+      0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+    --bp-surface-shadow-1:
+      inset 0px 0px 0px 1px rgba(255, 255, 255, 0.2),
+      0px 1px 10px 0px rgba(0, 0, 0, 0.2),
+      0px 1px 10px -1px rgba(0, 0, 0, 0.2);
+    --bp-surface-shadow-2:
+      inset 0px 0px 0px 1px rgba(255, 255, 255, 0.2),
+      0px 4px 6px -4px rgba(0, 0, 0, 0.5),
+      0px 10px 30px -5px rgba(0, 0, 0, 0.5);
+    --bp-surface-shadow-3:
+      inset 0px 0px 0px 1px rgba(255, 255, 255, 0.2),
+      0px 20px 25px -5px rgba(0, 0, 0, 0.3),
+      0px 10px 30px -5px rgba(0, 0, 0, 0.3);
+    --bp-surface-shadow-4:
+      inset 0px 0px 0px 1px rgba(255, 255, 255, 0.2),
+      0px 25px 60px -12px rgba(0, 0, 0, 0.85);
+    --bp-surface-color-code: #1114184d;
+    --bp-surface-background-color-default-rest: #111418;
+    --bp-surface-background-color-default-hover: #1c2127;
+    --bp-surface-background-color-default-active: #252a31;
+    --bp-surface-background-color-default-disabled: #111418;
+    --bp-typography-color-default-rest: #a5aab3;
+    --bp-typography-color-default-hover: #646970;
+    --bp-typography-color-default-active: #54575d;
+
+    /* OSDK-specific overrides (no --bp-* counterpart or intentional divergence) */
+    --osdk-background-primary: #111418;
+    --osdk-background-secondary: #1c2127;
+    --osdk-background-tertiary: #1c2127;
+    --osdk-typography-color-muted: #8f99a8;
+    --osdk-intent-default-rest: #8f99a8;
+    --osdk-intent-default-foreground: #f6f7f9;
+    --osdk-button-secondary-bg: #252a31;
+    --osdk-button-secondary-color: #f6f7f9;
+    --osdk-table-row-bg-default: #111418;
+    --osdk-table-header-bg: #1c2127;
+    --osdk-table-header-color: #a5aab3;
+    --osdk-table-cell-color: #a5aab3;
+    --osdk-table-header-menu-color: #8f99a8;
+    /* Brighter than --osdk-surface-border-color-default so header bottom
+       and column gridlines remain legible on the #111418 body. */
+    --osdk-table-border-color: #ffffff52;
+    --osdk-table-cell-divider: var(--osdk-table-border-width) solid
+      var(--osdk-table-border-color);
+    /* Boost the intent mix from the default 10% — on a #111418 base, 10%
+       of #2d72d2 yields ~#131e2b which is visually indistinguishable from
+       the default row background. */
+    --osdk-table-row-bg-hover: color-mix(
+      in srgb,
+      var(--osdk-intent-primary-rest) 25%,
+      var(--osdk-background-primary)
+    );
+    --osdk-table-row-bg-active: color-mix(
+      in srgb,
+      var(--osdk-intent-primary-rest) 25%,
+      var(--osdk-background-primary)
+    );
+    --osdk-input-shadow:
+      inset 0 0 0 1px oklch(1 0 0 / 0.2),
+      0 4px 6px -4px oklch(0 0 0 / 0.5),
+      0 10px 30px -5px oklch(0 0 0 / 0.5);
+  }
+}
+
+[data-bp-color-scheme="dark"],
+.bp6-dark,
+[data-theme="dark"] {
+  /* --bp-* flips mirroring Blueprint's [data-bp-color-scheme=dark]. Necessary
+     for `data-theme="dark"` (Blueprint doesn't respond to it); redundant but
+     harmless under the Blueprint-aware selectors. */
+  --bp-surface-border-color-default: #ffffff33;
+  --bp-surface-border-color-strong: #ffffff4d;
+  --bp-surface-shadow-0:
+    inset 0px 0px 0px 1px rgba(255, 255, 255, 0.2),
+    0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+  --bp-surface-shadow-1:
+    inset 0px 0px 0px 1px rgba(255, 255, 255, 0.2),
+    0px 1px 10px 0px rgba(0, 0, 0, 0.2),
+    0px 1px 10px -1px rgba(0, 0, 0, 0.2);
+  --bp-surface-shadow-2:
+    inset 0px 0px 0px 1px rgba(255, 255, 255, 0.2),
+    0px 4px 6px -4px rgba(0, 0, 0, 0.5),
+    0px 10px 30px -5px rgba(0, 0, 0, 0.5);
+  --bp-surface-shadow-3:
+    inset 0px 0px 0px 1px rgba(255, 255, 255, 0.2),
+    0px 20px 25px -5px rgba(0, 0, 0, 0.3),
+    0px 10px 30px -5px rgba(0, 0, 0, 0.3);
+  --bp-surface-shadow-4:
+    inset 0px 0px 0px 1px rgba(255, 255, 255, 0.2),
+    0px 25px 60px -12px rgba(0, 0, 0, 0.85);
+  --bp-surface-color-code: #1114184d;
+  --bp-surface-background-color-default-rest: #111418;
+  --bp-surface-background-color-default-hover: #1c2127;
+  --bp-surface-background-color-default-active: #252a31;
+  --bp-surface-background-color-default-disabled: #111418;
+  --bp-typography-color-default-rest: #a5aab3;
+  --bp-typography-color-default-hover: #646970;
+  --bp-typography-color-default-active: #54575d;
+
+  /* OSDK-specific overrides (no --bp-* counterpart or intentional divergence) */
+  --osdk-background-primary: #111418;
+  --osdk-background-secondary: #1c2127;
+  --osdk-background-tertiary: #1c2127;
+  --osdk-typography-color-muted: #8f99a8;
+  --osdk-intent-default-rest: #8f99a8;
+  --osdk-intent-default-foreground: #f6f7f9;
+  --osdk-button-secondary-bg: #252a31;
+  --osdk-button-secondary-color: #f6f7f9;
+  --osdk-table-row-bg-default: #111418;
+  --osdk-table-header-bg: #1c2127;
+  --osdk-table-header-color: #a5aab3;
+  --osdk-table-cell-color: #a5aab3;
+  --osdk-table-header-menu-color: #8f99a8;
+  --osdk-table-border-color: #ffffff52;
+  --osdk-table-cell-divider: var(--osdk-table-border-width) solid
+    var(--osdk-table-border-color);
+  /* Boost the intent mix from the default 10% — on a #111418 base, 10%
+     of #2d72d2 yields ~#131e2b which is visually indistinguishable from
+     the default row background. */
+  --osdk-table-row-bg-hover: color-mix(
+    in srgb,
+    var(--osdk-intent-primary-rest) 25%,
+    var(--osdk-background-primary)
+  );
+  --osdk-table-row-bg-active: color-mix(
+    in srgb,
+    var(--osdk-intent-primary-rest) 25%,
+    var(--osdk-background-primary)
+  );
+  --osdk-input-shadow:
+    inset 0 0 0 1px oklch(1 0 0 / 0.2),
+    0 4px 6px -4px oklch(0 0 0 / 0.5),
+    0 10px 30px -5px oklch(0 0 0 / 0.5);
+}
