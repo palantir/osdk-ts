@@ -9,57 +9,28 @@ type aggregate_result_count_only = { $count: number };
 /** Aggregation grouped by a single property — result becomes an array of $group plus aggregations. */
 type aggregate_result_groupBy_basic = Array<
   & { $group: { class: string } }
-  & AggregationResultsWithoutGroups<
-    {
-      __DefinitionMetadata?:
-        | { properties: {}; props?: {} | undefined }
-        | undefined;
-    } & EmployeeApiTest,
-    { $count: "unordered" }
-  >
+  & AggregationResultsWithoutGroups<EmployeeApiTest, { $count: "unordered" }>
 >;
 
 /** GroupBy a numeric property by $fixedWidth — group is the bucket's numeric value. */
 type aggregate_result_groupBy_fixedWidth = Array<
   & { $group: { employeeId: number } }
-  & AggregationResultsWithoutGroups<
-    {
-      __DefinitionMetadata?:
-        | { properties: {}; props?: {} | undefined }
-        | undefined;
-    } & EmployeeApiTest,
-    { $count: "unordered" }
-  >
+  & AggregationResultsWithoutGroups<EmployeeApiTest, { $count: "unordered" }>
 >;
 
 /** GroupBy with $includeNullValue: true — the group key becomes nullable. */
 type aggregate_result_groupBy_includeNullValue = Array<
   & { $group: { class: string | null } }
-  & AggregationResultsWithoutGroups<
-    {
-      __DefinitionMetadata?:
-        | { properties: {}; props?: {} | undefined }
-        | undefined;
-    } & EmployeeApiTest,
-    { $count: "unordered" }
-  >
+  & AggregationResultsWithoutGroups<EmployeeApiTest, { $count: "unordered" }>
 >;
 
 /** GroupBy a numeric property by $ranges — group becomes a startValue/endValue pair. */
 type aggregate_result_groupBy_ranges = Array<
-  & {
+  {
     $group: {
       employeeId: { startValue: 0 | 100 | 200; endValue: 0 | 100 | 200 };
     };
-  }
-  & AggregationResultsWithoutGroups<
-    {
-      __DefinitionMetadata?:
-        | { properties: {}; props?: {} | undefined }
-        | undefined;
-    } & EmployeeApiTest,
-    { $count: "unordered" }
-  >
+  } & AggregationResultsWithoutGroups<EmployeeApiTest, { $count: "unordered" }>
 >;
 
 /** Aggregation across multiple properties, including $count. */
