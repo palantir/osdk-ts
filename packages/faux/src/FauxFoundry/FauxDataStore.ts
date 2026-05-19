@@ -308,14 +308,14 @@ export class FauxDataStore {
 
   registerObjectWithPropertySecurities(
     regularObject: BaseServerObject,
-    securedObject: BaseServerObject,
+    securedObject: OntologiesV2.OntologyObjectV2,
     propertySecurities: OntologiesV2.PropertySecurities[],
   ): BaseServerObject {
     const registeredObj = this.registerObject(regularObject);
 
     this.#objectsWithSecurities.get(registeredObj.__apiName).set(
       String(registeredObj.__primaryKey),
-      Object.freeze({ ...securedObject }),
+      Object.freeze({ ...securedObject }) as BaseServerObject,
     );
     this.#propertySecurities.set(
       objectLocator(registeredObj),
@@ -893,12 +893,14 @@ export class FauxDataStore {
     // caching off the important properties
     let objects = getObjectsFromSet(this, parsedBody.objectSet, undefined);
 
+    let propertySecuritiesLocator: ObjectLocator | undefined;
     if (loadPropertySecurities) {
       invariant(
         objects.length === 1,
         "Loading property securities is only supported when loading a single object",
       );
 
+      propertySecuritiesLocator = objectLocator(objects[0]);
       objects = [
         this.getObjectWithSecurities(
           objects[0].__apiName,
@@ -926,10 +928,8 @@ export class FauxDataStore {
       objects,
       getPaginationParamsFromRequest(parsedBody),
       true,
-      loadPropertySecurities
-        ? this.#propertySecurities.get(
-          objectLocator(objects[0]),
-        )
+      propertySecuritiesLocator != null
+        ? this.#propertySecurities.get(propertySecuritiesLocator)
         : undefined,
     );
 

@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-import { MasonHeavyEquipment, MasonMovie } from "@osdk/e2e.generated.catchall";
-import { dsClient, dsmtClient } from "./client.js";
+import { MasonHeavyEquipment } from "@osdk/e2e.generated.catchall";
+import { dsmtClient } from "./client.js";
 
 export async function runPropertySecuritiesTest(): Promise<void> {
-  const objects = await dsClient(MasonMovie).fetchPage({
-    $loadPropertySecurityMetadata: true,
-  });
-  const movieObject1 = objects.data[0];
-  console.log("Unsupported View Securities for MasonMovie object:");
-  console.log(
-    JSON.stringify(
-      movieObject1.$propertySecurities,
-      null,
-      2,
-    ),
-  );
+  // const objects = await dsClient(MasonMovie).fetchPage({
+  //   $loadPropertySecurityMetadata: true,
+  // });
+  // const movieObject1 = objects.data[0];
+  // console.log("Unsupported View Securities for MasonMovie object:");
+  // console.log(
+  //   JSON.stringify(
+  //     movieObject1.$propertySecurities,
+  //     null,
+  //     2,
+  //   ),
+  // );
 
   const heavyEquipmentObject1 = await dsmtClient(MasonHeavyEquipment).fetchOne(
     "equipment_34968",
@@ -41,7 +41,7 @@ export async function runPropertySecuritiesTest(): Promise<void> {
   console.log("Securities for MasonHeavyEquipment object:");
   console.log(
     JSON.stringify(
-      heavyEquipmentObject1.$propertySecurities,
+      heavyEquipmentObject1.$propertySecurities.$primaryKey,
       null,
       2,
     ),
