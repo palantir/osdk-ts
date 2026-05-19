@@ -98,20 +98,23 @@ Control layout, spacing, shadows, and z-index layering.
 
 Control text appearance.
 
-| Variable                                | Maps to Blueprint Token               | Description                  |
-| --------------------------------------- | ------------------------------------- | ---------------------------- |
-| `--osdk-typography-family-default`      | `--bp-typography-family-default`      | Default font family          |
-| `--osdk-typography-color-muted`         | `--bp-typography-color-muted`         | Muted/subtle text color      |
-| `--osdk-typography-color-default-rest`  | `--bp-typography-color-default-rest`  | Default text color           |
-| `--osdk-typography-color-danger-rest`   | `--bp-typography-color-danger-rest`   | Danger text color            |
-| `--osdk-typography-color-danger-active` | `--bp-typography-color-danger-active` | Danger active text color     |
-| `--osdk-typography-size-body-x-small`   | `--bp-typography-size-body-x-small`   | Extra-small body text size   |
-| `--osdk-typography-size-body-small`     | `--bp-typography-size-body-small`     | Small body text size         |
-| `--osdk-typography-size-body-medium`    | `--bp-typography-size-body-medium`    | Medium body text size (13px) |
-| `--osdk-typography-size-body-large`     | `--bp-typography-size-body-large`     | Large body text size         |
-| `--osdk-typography-line-height-default` | `--bp-typography-line-height-default` | Default line height          |
-| `--osdk-typography-weight-default`      | `--bp-typography-weight-default`      | Default font weight          |
-| `--osdk-typography-weight-bold`         | `--bp-typography-weight-bold`         | Bold font weight             |
+| Variable                                   | Maps to Blueprint Token                  | Description                  |
+| ------------------------------------------ | ---------------------------------------- | ---------------------------- |
+| `--osdk-typography-family-default`         | `--bp-typography-family-default`         | Default font family          |
+| `--osdk-typography-color-muted`            | `--bp-typography-color-muted`            | Muted/subtle text color      |
+| `--osdk-typography-color-default-rest`     | `--bp-typography-color-default-rest`     | Default text color           |
+| `--osdk-typography-color-default-hover`    | `--bp-typography-color-default-hover`    | Default hover text color     |
+| `--osdk-typography-color-default-active`   | `--bp-typography-color-default-active`   | Default active text color    |
+| `--osdk-typography-color-default-disabled` | `--bp-typography-color-default-disabled` | Default disabled text color  |
+| `--osdk-typography-color-danger-rest`      | `--bp-typography-color-danger-rest`      | Danger text color            |
+| `--osdk-typography-color-danger-active`    | `--bp-typography-color-danger-active`    | Danger active text color     |
+| `--osdk-typography-size-body-x-small`      | `--bp-typography-size-body-x-small`      | Extra-small body text size   |
+| `--osdk-typography-size-body-small`        | `--bp-typography-size-body-small`        | Small body text size         |
+| `--osdk-typography-size-body-medium`       | `--bp-typography-size-body-medium`       | Medium body text size (13px) |
+| `--osdk-typography-size-body-large`        | `--bp-typography-size-body-large`        | Large body text size         |
+| `--osdk-typography-line-height-default`    | `--bp-typography-line-height-default`    | Default line height          |
+| `--osdk-typography-weight-default`         | `--bp-typography-weight-default`         | Default font weight          |
+| `--osdk-typography-weight-bold`            | `--bp-typography-weight-bold`            | Bold font weight             |
 
 ### Intent Tokens
 
@@ -1211,12 +1214,12 @@ Styling for table components including headers, rows, and cells.
 
 #### Row Backgrounds
 
-| Variable                        | Default Value                                                                              | Description                           |
-| ------------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------- |
-| `--osdk-table-row-bg-default`   | `var(--osdk-background-primary)`                                                           | Default row background                |
-| `--osdk-table-row-bg-alternate` | `var(--osdk-background-tertiary)`                                                          | Alternate row background for striping |
-| `--osdk-table-row-bg-hover`     | `color-mix(in srgb, var(--osdk-intent-primary-hover) 10%, var(--osdk-background-primary))` | Row hover background                  |
-| `--osdk-table-row-bg-active`    | `color-mix(in srgb, var(--osdk-intent-primary-hover) 10%, var(--osdk-background-primary))` | Active/selected row background        |
+| Variable                        | Default Value                                                                             | Description                           |
+| ------------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------- |
+| `--osdk-table-row-bg-default`   | `var(--osdk-background-primary)`                                                          | Default row background                |
+| `--osdk-table-row-bg-alternate` | `var(--osdk-background-tertiary)`                                                         | Alternate row background for striping |
+| `--osdk-table-row-bg-hover`     | `color-mix(in srgb, var(--osdk-intent-primary-rest) 10%, var(--osdk-background-primary))` | Row hover background                  |
+| `--osdk-table-row-bg-active`    | `color-mix(in srgb, var(--osdk-intent-primary-rest) 10%, var(--osdk-background-primary))` | Active/selected row background        |
 
 #### Row Border Colors (Hover/Active States)
 
@@ -1253,16 +1256,16 @@ Styling for table components including headers, rows, and cells.
 
 Styling for the column header dropdown menu.
 
-| Variable                                | Default Value                                                            | Description                   |
-| --------------------------------------- | ------------------------------------------------------------------------ | ----------------------------- |
-| `--osdk-table-header-menu-padding`      | `calc(var(--osdk-surface-spacing) * 0.25)`                               | Menu button padding           |
-| `--osdk-table-header-menu-bg`           | `var(--osdk-custom-color-light-gray-2)`                                  | Menu button background        |
-| `--osdk-table-header-menu-border`       | `var(--osdk-surface-border-width) solid var(--osdk-custom-color-gray-4)` | Menu button border            |
-| `--osdk-table-header-menu-color`        | `var(--osdk-typography-color-muted)`                                     | Menu icon color               |
-| `--osdk-table-header-menu-color-active` | `var(--osdk-typography-color-default-rest)`                              | Menu icon active color        |
-| `--osdk-table-header-menu-icon-color`   | `var(--osdk-table-header-menu-color)`                                    | Menu icon color (chevron)     |
-| `--osdk-table-header-menu-bg-hover`     | `var(--osdk-custom-color-gray-1)`                                        | Menu button hover background  |
-| `--osdk-table-header-menu-bg-active`    | `var(--osdk-custom-color-gray-2)`                                        | Menu button active background |
+| Variable                                | Default Value                                                                     | Description                   |
+| --------------------------------------- | --------------------------------------------------------------------------------- | ----------------------------- |
+| `--osdk-table-header-menu-padding`      | `calc(var(--osdk-surface-spacing) * 0.25)`                                        | Menu button padding           |
+| `--osdk-table-header-menu-bg`           | `transparent`                                                                     | Menu button background        |
+| `--osdk-table-header-menu-border`       | `var(--osdk-surface-border-width) solid var(--osdk-surface-border-color-default)` | Menu button border            |
+| `--osdk-table-header-menu-color`        | `var(--osdk-typography-color-muted)`                                              | Menu icon color               |
+| `--osdk-table-header-menu-color-active` | `var(--osdk-typography-color-default-rest)`                                       | Menu icon active color        |
+| `--osdk-table-header-menu-icon-color`   | `var(--osdk-table-header-menu-color)`                                             | Menu icon color (chevron)     |
+| `--osdk-table-header-menu-bg-hover`     | `var(--osdk-surface-background-color-default-hover)`                              | Menu button hover background  |
+| `--osdk-table-header-menu-bg-active`    | `var(--osdk-surface-background-color-default-active)`                             | Menu button active background |
 
 #### Resizer
 
@@ -1318,6 +1321,7 @@ Styling for tooltip components.
 | `--osdk-tooltip-z-index`      | `var(--osdk-surface-z-index-4)`                                               | Tooltip z-index      |
 | `--osdk-tooltip-padding`      | `calc(var(--osdk-surface-spacing) * 2) calc(var(--osdk-surface-spacing) * 4)` | Tooltip padding      |
 | `--osdk-tooltip-bg`           | `var(--osdk-background-primary)`                                              | Tooltip background   |
+| `--osdk-tooltip-color`        | `var(--osdk-typography-color-default-rest)`                                   | Tooltip text color   |
 | `--osdk-tooltip-border-color` | `var(--osdk-palette-gray-4)`                                                  | Tooltip border color |
 | `--osdk-tooltip-shadow`       | `var(--osdk-surface-shadow-2)`                                                | Tooltip shadow       |
 | `--osdk-tooltip-max-width`    | `300px`                                                                       | Tooltip max width    |
@@ -1484,12 +1488,13 @@ For more comprehensive theming, override the Blueprint tokens that the OSDK toke
 
 ## Dark Mode
 
-`@osdk/react-components` ships built-in dark-theme overrides. They activate automatically in either of two ways:
+`@osdk/react-components` ships built-in dark-theme overrides. They activate automatically in any of three ways:
 
 1. **`prefers-color-scheme: dark`** — matches the [Foundry custom widgets dark theme guidance](https://www.palantir.com/docs/foundry/custom-widgets/dark-theme). When a parent application (Foundry, the OS) declares dark color scheme, the widget switches without any host configuration.
 2. **`[data-bp-color-scheme="dark"]` or `.bp6-dark`** — matches the Blueprint convention. Set this attribute / class on any ancestor (often `<html>`) to force dark explicitly. Useful when the OS preference doesn't reflect what the host wants, or when previewing dark mode in isolation.
+3. **`[data-theme="dark"]`** — matches the Tailwind/Primer/Storybook toolbar convention. Lets Storybook (and other hosts that already use this attribute) opt into dark without duplicating overrides.
 
-The attribute path wins over the media query when both apply, giving hosts an explicit override.
+The attribute paths win over the media query when both apply, giving hosts an explicit override. Under `[data-bp-color-scheme="dark"]` / `.bp6-dark`, Blueprint flips `--bp-*` itself, so `dark.css` only re-maps `--osdk-*` tokens. The other two selectors also flip the relevant `--bp-*` tokens because Blueprint doesn't fire there.
 
 ### Adding your own dark overrides
 
