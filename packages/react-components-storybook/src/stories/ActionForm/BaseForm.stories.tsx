@@ -27,6 +27,11 @@ import React, { useCallback, useMemo, useState } from "react";
 import { fn } from "storybook/test";
 import { fauxFoundry } from "../../mocks/fauxFoundry.js";
 import { Employee } from "../../types/Employee.js";
+import {
+  FormStoryLayout,
+  type StorySubmissionSnapshot,
+  SubmissionOutputPanel,
+} from "./SubmissionOutputPanel.js";
 
 /**
  * Flattened (non-union) props type for Storybook Meta.
@@ -38,11 +43,13 @@ import { Employee } from "../../types/Employee.js";
 interface BaseFormStoryProps {
   formTitle?: string;
   formContent: ReadonlyArray<FormContentItem>;
-  onSubmit: (formState: Record<string, unknown>) => void;
+  onSubmit: (formState: Record<string, unknown>) => Promise<void> | void;
   isSubmitDisabled?: boolean;
   isPending?: boolean;
   isLoading?: boolean;
   className?: string;
+  submitButtonText?: string;
+  submitButtonVariant?: "primary" | "secondary";
 }
 
 function field(definition: RendererFieldDefinition): FormContentItem {
@@ -156,48 +163,49 @@ const formContent: ReadonlyArray<FormContentItem> = [
 
 const EMPTY_FORM_CONTENT: ReadonlyArray<FormContentItem> = [];
 
-const TOAST_DURATION_MS = 3000;
-
-// Module-level ref so handleSubmit can trigger the toast rendered by SubmitToast.
-const toastRef: { current: ((msg: string) => void) | undefined } = {
+// Most BaseForm stories share handleSubmit through CSF args, while the output
+// panel is mounted by a decorator. This bridge lets the shared submit handler
+// update the panel without rewriting every story with a custom render function.
+const submitOutputRef: {
+  current: ((snapshot: StorySubmissionSnapshot) => void) | undefined;
+} = {
   current: undefined,
 };
 
 // Spy that logs submissions to the Storybook Actions panel
-// and shows a brief success toast in the story canvas.
+// while the canvas shows the submitted values in the JSON panel.
 const submitSpy = fn().mockName("onSubmit");
 function handleSubmit(formState: Record<string, unknown>): void {
   submitSpy(formState);
-  toastRef.current?.("Submitted successfully");
+  submitOutputRef.current?.({
+    status: "success",
+    submittedValues: formState,
+    response: { message: "onSubmit completed" },
+  });
 }
 
-function SubmitToast(): React.ReactElement | null {
-  const [message, setMessage] = useState<string>();
+function BaseFormSubmissionOutput(): React.ReactElement {
+  const [snapshot, setSnapshot] = useState<StorySubmissionSnapshot>({
+    status: "idle",
+  });
+  submitOutputRef.current = setSnapshot;
 
-  const showToast = useCallback((msg: string) => {
-    setMessage(msg);
-    setTimeout(() => setMessage(undefined), TOAST_DURATION_MS);
-  }, []);
-
-  toastRef.current = showToast;
-
-  if (message == null) {
-    return null;
-  }
-  return <div className="osdkSubmitToast">{message}</div>;
+  return (
+    <SubmissionOutputPanel
+      idleMessage="Submit the form to see submitted values."
+      snapshot={snapshot}
+    />
+  );
 }
 
 const meta: Meta<BaseFormStoryProps> = {
-  title: "Experimental/ActionForm/Building Blocks/BaseForm",
+  title: "Experimental/ActionForm/BaseForm",
   component: BaseForm,
   decorators: [
     (Story) => (
-      <>
-        <SubmitToast />
-        <div className="osdkFormCard">
-          <Story />
-        </div>
-      </>
+      <FormStoryLayout output={<BaseFormSubmissionOutput />}>
+        <Story />
+      </FormStoryLayout>
     ),
   ],
   parameters: {
@@ -261,6 +269,21 @@ const meta: Meta<BaseFormStoryProps> = {
     className: {
       description: "Additional CSS class name for the form.",
       control: "text",
+    },
+    submitButtonText: {
+      description: "Text displayed in the submit button.",
+      control: "text",
+      table: {
+        defaultValue: { summary: "Submit" },
+      },
+    },
+    submitButtonVariant: {
+      description: "Visual variant of the submit button.",
+      control: "select",
+      options: ["primary", "secondary"],
+      table: {
+        defaultValue: { summary: "primary" },
+      },
     },
   },
 };
@@ -489,6 +512,27 @@ export const Pending: Story = {
   formContent={formContent}
   isPending={true}
   onSubmit={(formState) => console.log("Submitted:", formState)}
+/>`,
+      },
+    },
+  },
+};
+
+export const WithCustomSubmitButton: Story = {
+  args: {
+    formContent,
+    onSubmit: handleSubmit,
+    submitButtonText: "Save employee",
+    submitButtonVariant: "secondary",
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `<BaseForm
+  formContent={formContent}
+  onSubmit={(formState) => console.log("Submitted:", formState)}
+  submitButtonText="Save employee"
+  submitButtonVariant="secondary"
 />`,
       },
     },
@@ -1090,6 +1134,7 @@ const formContent = [
         </span>
       ),
       isSearchable: true,
+      placeholder: "Search users...",
     },
   },
 ];
@@ -1574,7 +1619,7 @@ export const WithHelperText: Story = {
   parameters: {
     docs: {
       source: {
-        code: `const fieldDefinitions = [
+        code: `const formContent = [
   {
     fieldKey: "email",
     fieldComponent: "TEXT_INPUT",
@@ -1619,7 +1664,7 @@ export const WithHelperText: Story = {
 // "tooltip" (default) shows an info icon next to the label.
 // "bottom" renders the text below the label, above the input.
 <BaseForm
-  fieldDefinitions={fieldDefinitions}
+  formContent={formContent}
   onSubmit={(formState) => console.log("Submitted:", formState)}
 />`,
       },
@@ -1805,7 +1850,7 @@ export const WithObjectSelect: Story = {
   parameters: {
     docs: {
       source: {
-        code: `const fieldDefinitions = [
+        code: `const formContent = [
   {
     fieldKey: "name",
     fieldComponent: "TEXT_INPUT",
@@ -1827,7 +1872,7 @@ export const WithObjectSelect: Story = {
 // OBJECT_SELECT renders a searchable dropdown that queries
 // the Foundry ontology for objects matching the search term.
 <BaseForm
-  fieldDefinitions={fieldDefinitions}
+  formContent={formContent}
   onSubmit={(formState) => console.log("Submitted:", formState)}
 />`,
       },
