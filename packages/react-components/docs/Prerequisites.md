@@ -40,9 +40,21 @@ All component packages require an `OsdkProvider` wrapping your app. Without it, 
 
 ## CSS setup
 
-Components use CSS [`@layer`](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer) for predictable theming. Add these imports to your application's entry CSS file (e.g., `index.css`).
+### IMPORTANT: Portal isolation (required)
+
+Components use [Base UI](https://base-ui.com) portals, which require stacking context isolation:
+
+```css
+.root {
+  isolation: isolate;
+}
+```
+
+Apply this to your root element. See the [Base UI docs](https://base-ui.com/react/overview/quick-start#portals) for details.
 
 ### Layers
+
+Components use CSS [`@layer`](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer) for predictable theming. Add these imports to your application's entry CSS file (e.g., `index.css`).
 
 | Layer             | Purpose                                                    |
 | ----------------- | ---------------------------------------------------------- |
@@ -51,7 +63,7 @@ Components use CSS [`@layer`](https://developer.mozilla.org/en-US/docs/Web/CSS/@
 
 Later layers always win when styles conflict, regardless of selector specificity.
 
-### Without Tailwind
+#### Without Tailwind
 
 ```css
 /* index.css */
@@ -61,7 +73,7 @@ Later layers always win when styles conflict, regardless of selector specificity
 @import "@osdk/cbac-components/styles.css" layer(cbac.components); /* only needed if using CBAC components */
 ```
 
-### With Tailwind CSS v4
+#### With Tailwind CSS v4
 
 ```css
 /* index.css */
@@ -73,7 +85,7 @@ Later layers always win when styles conflict, regardless of selector specificity
 @import "@osdk/cbac-components/styles.css" layer(cbac.components); /* only needed if using CBAC components */
 ```
 
-### Custom theme overrides
+#### Custom theme overrides
 
 Add a custom layer after the OSDK layers to override any token:
 
@@ -85,14 +97,18 @@ Add a custom layer after the OSDK layers to override any token:
 @import "./user-brand.css" layer(user.brand);
 ```
 
-### Portal isolation (required)
+### Token scopes
 
-Components use [Base UI](https://base-ui.com) portals, which require stacking context isolation:
+All components resolve their visual properties through CSS custom properties. There are two scopes of tokens you can target when theming:
 
-```css
-.root {
-  isolation: isolate;
-}
-```
+- **OSDK tokens (`--osdk-*`)** — every visual property used inside OSDK components resolves through a token prefixed with `--osdk-` (e.g. `--osdk-table-header-bg`, `--osdk-form-section-padding`). Override these to theme **OSDK components only**, leaving other Blueprint components in your app untouched.
+- **Blueprint tokens (`--bp-*`)** — the underlying Blueprint design tokens that `--osdk-*` tokens map to. Override these for consistent theming across **both Blueprint and OSDK components**.
 
-Apply this to your root element. See the [Base UI docs](https://base-ui.com/react/overview/quick-start#portals) for details.
+Per-component references list the `--osdk-*` variables each component exposes — see, for example, [ObjectTable › Theming](./ObjectTable.md#theming). The full catalog of variables lives in [CSSVariables.md](./CSSVariables.md).
+
+### Accessibility
+
+When overriding theme tokens, keep the result accessible:
+
+- **Color contrast (WCAG AA):** 4.5:1 for normal text, 3:1 for large text.
+- **Distinct interactive states:** rest, hover, active, selected, and focused should each be visually distinguishable — the default `--osdk-table-row-bg-*` and `--osdk-table-row-border-color-*` tokens are designed to meet WCAG AA; preserve that intent in custom themes.
