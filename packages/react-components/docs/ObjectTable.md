@@ -4,11 +4,11 @@ A comprehensive guide for using the ObjectTable component from `@osdk/react-comp
 
 ## Prerequisites
 
-Before using ObjectTable, make sure you have completed the library setup described in the [README](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/README.md#setup), including:
+Before using ObjectTable, make sure you have completed the library setup described in [Prerequisites](./Prerequisites.md), including:
 
 - Installing the required dependencies
 - Wrapping your app with `OsdkProvider`
-- Adding the CSS imports
+- Adding the CSS imports and configuring `@layer` order
 
 ## Table of Contents
 
@@ -1270,7 +1270,6 @@ Notes:
 
 - Combine multiple attribute selectors to express priority (the most specific selector wins, per normal CSS rules).
 - The table sets its own attributes (`data-selected`, `data-focused`, `data-row-parity`, `data-pinned`) on rows and cells. Avoid using these names in `getRowAttributes` since they would override the built-in behavior.
-- `getRowAttributes` runs for every visible row, so memoize it with `useCallback` to keep referential equality across renders.
 
 ### Loading and Empty States
 
@@ -1358,153 +1357,240 @@ type EmployeeProps = PropertyKeys<typeof Employee>;
 
 ## Theming
 
-The ObjectTable (and all OSDK components) can be themed using CSS custom properties included in `@osdk/react-components/styles.css`.
+The ObjectTable emits a stable set of `data-*` attributes on its rendered DOM, and exposes every visual property through `--osdk-table-*` CSS variables. Together they let you override appearance via the table's `className` (or any parent wrapper) without forking the component or relying on internal class names. See [Prerequisites › Token scopes](./Prerequisites.md#token-scopes) for the underlying `--osdk-*` / `--bp-*` token model.
 
-### Understanding Token Scopes
+The sub-sections below list the attributes and variables available on each rendered element, followed by [override examples](#override-examples). CSS variables cascade, so you can override them on a parent element to affect every nested cell or row.
 
-**OSDK Tokens (`--osdk-*`)**
+### `<thead>` — Table header row container
 
-- All tokens used in OSDK components are prefixed with `--osdk-`
-- Any Blueprint token used in OSDK components is mapped to an `--osdk-*` token
-- Override these to theme **OSDK components only**
-- Safe to customize without affecting other Blueprint components in your app
+**Data attributes**
 
-**Blueprint Tokens (`--bp-*`)**
+| Attribute       | Values            | Meaning                                           |
+| --------------- | ----------------- | ------------------------------------------------- |
+| `data-resizing` | `true` \| `false` | Set while the user is actively resizing a column. |
 
-- Core design tokens from Blueprint design system
-- Override these to theme **both Blueprint and OSDK components**
-- Use this for consistent theming across your entire application
+**CSS variables**
 
-### Customization Strategies
+| Variable                            | Default                                  | Description                            |
+| ----------------------------------- | ---------------------------------------- | -------------------------------------- |
+| `--osdk-table-header-height`        | `50px`                                   | Header row height.                     |
+| `--osdk-table-header-bg`            | `var(--osdk-background-secondary)`       | Header background color.               |
+| `--osdk-table-header-fontWeight`    | `var(--osdk-typography-weight-bold)`     | Header text weight.                    |
+| `--osdk-table-header-fontSize`      | `var(--osdk-typography-size-body-small)` | Header text size.                      |
+| `--osdk-table-header-color`         | `var(--osdk-typography-color-muted)`     | Header text color.                     |
+| `--osdk-table-header-divider`       | `var(--osdk-table-border)`               | Vertical divider between header cells. |
+| `--osdk-table-resizer-color-hover`  | `var(--osdk-custom-color-primary-1)`     | Resize handle hover color.             |
+| `--osdk-table-resizer-color-active` | `var(--osdk-intent-primary-rest)`        | Resize handle active color.            |
 
-#### 1. Override OSDK Tokens Only
+### `<th>` — Header cell
 
-Change OSDK component styling without affecting other Blueprint components in your app:
+**Data attributes**
 
-```css
-@layer osdk.styles, user.theme;
+| Attribute     | Values                       | Meaning               |
+| ------------- | ---------------------------- | --------------------- |
+| `data-pinned` | `left` \| `right` \| `false` | Column pinning state. |
 
-@import "@osdk/react-components/styles.css" layer(osdk.styles);
+**CSS variables**
 
-@layer user.theme {
-  :root {
-    /* Only affects OSDK table headers */
-    --osdk-table-header-bg: #f0f0f0;
-    --osdk-table-border-color: #e0e0e0;
-    --osdk-table-row-hover-bg: #f9fafb;
+| Variable                                | Default                                                                  | Description                    |
+| --------------------------------------- | ------------------------------------------------------------------------ | ------------------------------ |
+| `--osdk-table-pinned-column-border`     | `var(--osdk-table-border)`                                               | Border for pinned columns.     |
+| `--osdk-table-header-menu-padding`      | `calc(var(--osdk-surface-spacing) * 0.25)`                               | Menu button padding.           |
+| `--osdk-table-header-menu-bg`           | `var(--osdk-custom-color-light-gray-2)`                                  | Menu button background.        |
+| `--osdk-table-header-menu-border`       | `var(--osdk-surface-border-width) solid var(--osdk-custom-color-gray-4)` | Menu button border.            |
+| `--osdk-table-header-menu-color`        | `var(--osdk-typography-color-muted)`                                     | Menu icon color.               |
+| `--osdk-table-header-menu-color-active` | `var(--osdk-typography-color-default-rest)`                              | Menu icon color when active.   |
+| `--osdk-table-header-menu-icon-color`   | `var(--osdk-table-header-menu-color)`                                    | Menu chevron color.            |
+| `--osdk-table-header-menu-bg-hover`     | `var(--osdk-custom-color-gray-1)`                                        | Menu button hover background.  |
+| `--osdk-table-header-menu-bg-active`    | `var(--osdk-custom-color-gray-2)`                                        | Menu button active background. |
 
-    /* Only affects OSDK components using primary intent */
-    --osdk-intent-primary-rest: #2563eb;
-    --osdk-intent-primary-hover: #1d4ed8;
-  }
-}
-```
+### `<tr>` — Body row
 
-#### 2. Override Blueprint Tokens
+**Data attributes**
 
-Change both Blueprint and OSDK components for consistent theming:
+| Attribute         | Values            | Meaning                                                 |
+| ----------------- | ----------------- | ------------------------------------------------------- |
+| `data-selected`   | `true` \| `false` | Whether the row is selected.                            |
+| `data-focused`    | `true` \| `false` | Whether the row currently has focus (last-clicked row). |
+| `data-row-parity` | `even` \| `odd`   | Row index parity, for striping.                         |
 
-```css
-@layer osdk.styles, user.theme;
+You can also attach custom `data-*` attributes per row with the `getRowAttributes` prop — see [Row Attributes and Conditional Row Styling](#row-attributes-and-conditional-row-styling).
 
-@import "@osdk/react-components/styles.css" layer(osdk.styles);
+**CSS variables**
 
-@layer user.theme {
-  :root {
-    /* Affects ALL components (Blueprint + OSDK) using primary intent */
-    --bp-intent-primary-rest: #2563eb;
-    --bp-intent-primary-hover: #1d4ed8;
-    --bp-intent-primary-active: #1e40af;
+| Variable                               | Default                                                                                    | Description                      |
+| -------------------------------------- | ------------------------------------------------------------------------------------------ | -------------------------------- |
+| `--osdk-table-row-bg-default`          | `var(--osdk-background-primary)`                                                           | Default row background.          |
+| `--osdk-table-row-bg-alternate`        | `var(--osdk-background-tertiary)`                                                          | Alternate (odd) row background.  |
+| `--osdk-table-row-bg-hover`            | `color-mix(in srgb, var(--osdk-intent-primary-hover) 10%, var(--osdk-background-primary))` | Row hover background.            |
+| `--osdk-table-row-bg-active`           | `color-mix(in srgb, var(--osdk-intent-primary-hover) 10%, var(--osdk-background-primary))` | Active/selected row background.  |
+| `--osdk-table-row-border-color-hover`  | `var(--osdk-intent-primary-rest)`                                                          | Border color for hovered rows.   |
+| `--osdk-table-row-border-color-active` | `var(--osdk-intent-primary-rest)`                                                          | Border color for selected rows.  |
+| `--osdk-table-row-divider`             | `var(--osdk-table-border)`                                                                 | Horizontal divider between rows. |
 
-    /* Affects all spacing and borders across the design system */
-    --bp-surface-spacing: 8px;
-    --bp-surface-border-radius: 8px;
-  }
-}
-```
+### `<td>` — Body cell
 
-#### 3. Scoped Overrides for Specific Tables
+**Data attributes**
 
-Apply custom styles to specific ObjectTable instances using the `className` prop:
+| Attribute       | Values                       | Meaning                                                |
+| --------------- | ---------------------------- | ------------------------------------------------------ |
+| `data-pinned`   | `left` \| `right` \| `false` | Mirrors the column's pinning state.                    |
+| `data-editable` | `true` \| (absent)           | Present when the cell is editable in the current mode. |
 
-```typescript
-// Component
+**CSS variables**
+
+| Variable                                | Default                                                                          | Description                                   |
+| --------------------------------------- | -------------------------------------------------------------------------------- | --------------------------------------------- |
+| `--osdk-table-cell-padding`             | `0 calc(var(--osdk-surface-spacing) * 2)`                                        | Cell padding.                                 |
+| `--osdk-table-cell-fontSize`            | `var(--osdk-typography-size-body-medium)`                                        | Cell text size.                               |
+| `--osdk-table-cell-color`               | `var(--osdk-typography-color-default-rest)`                                      | Cell text color.                              |
+| `--osdk-table-cell-bg`                  | `inherit`                                                                        | Cell background color.                        |
+| `--osdk-table-cell-divider`             | `var(--osdk-table-border-width) solid transparent`                               | Vertical divider between row cells.           |
+| `--osdk-table-cell-editable-border`     | `var(--osdk-surface-border-width) solid var(--osdk-surface-border-color-strong)` | Border for editable cells in edit mode.       |
+| `--osdk-table-cell-edited-border`       | `var(--osdk-surface-border-width) solid var(--osdk-intent-primary-rest)`         | Border for edited cells with pending changes. |
+| `--osdk-table-cell-edited-border-error` | `var(--osdk-surface-border-width) solid var(--osdk-intent-danger-rest)`          | Border for cells with validation errors.      |
+| `--osdk-table-cell-input-bg`            | `var(--osdk-background-primary)`                                                 | Background for editable inputs.               |
+
+Scope `--osdk-table-cell-*` overrides with `td[data-editable]` to target only editable cells.
+
+### Edit footer container
+
+Rendered when `editMode` is `manual` or when `onSubmitEdits` is provided.
+
+| Variable                                 | Default                                                                       | Description                                     |
+| ---------------------------------------- | ----------------------------------------------------------------------------- | ----------------------------------------------- |
+| `--osdk-table-edit-container-padding`    | `calc(var(--osdk-surface-spacing) * 2) calc(var(--osdk-surface-spacing) * 4)` | Padding for the edit controls container.        |
+| `--osdk-table-edit-container-min-height` | `calc(var(--osdk-surface-spacing) * 12)`                                      | Minimum height for the edit controls container. |
+
+### Column config dialog
+
+Rendered when `enableColumnConfig` is `true` and the user opens the dialog.
+
+| Variable                                        | Default                            | Description                                  |
+| ----------------------------------------------- | ---------------------------------- | -------------------------------------------- |
+| `--osdk-table-column-config-dialog-min-width`   | `800px`                            | Minimum width for the column config dialog.  |
+| `--osdk-table-column-config-dialog-min-height`  | `400px`                            | Minimum height for the column config dialog. |
+| `--osdk-table-column-config-visible-columns-bg` | `var(--osdk-background-secondary)` | Background for the visible columns section.  |
+
+### Skeleton loading rows
+
+Shown while data is loading.
+
+| Variable                           | Default                                | Description                     |
+| ---------------------------------- | -------------------------------------- | ------------------------------- |
+| `--osdk-table-skeleton-color-from` | `var(--osdk-background-skeleton-from)` | Skeleton animation start color. |
+| `--osdk-table-skeleton-color-to`   | `var(--osdk-background-skeleton-to)`   | Skeleton animation end color.   |
+
+### Shared border tokens
+
+These feed into the per-element border variables above.
+
+| Variable                    | Default                                                               | Description                          |
+| --------------------------- | --------------------------------------------------------------------- | ------------------------------------ |
+| `--osdk-table-border-color` | `var(--osdk-surface-border-color-default)`                            | Base color for all table borders.    |
+| `--osdk-table-border-width` | `var(--osdk-surface-border-width)`                                    | Base width for all table borders.    |
+| `--osdk-table-border`       | `var(--osdk-table-border-width) solid var(--osdk-table-border-color)` | Base table border (outermost edges). |
+
+See [CSSVariables.md](./CSSVariables.md) for the canonical reference of every `--osdk-table-*` token.
+
+### Override examples
+
+Each example below scopes overrides under a `className` passed to `<ObjectTable className="my-table" />` so other tables on the page are unaffected. Drop the class selector to apply globally via `:root` in the `user.theme` layer.
+
+#### Editable cell background
+
+Use the `data-editable` attribute that the table sets on every editable `<td>` to highlight only the cells the user can actually change. Pair it with `--osdk-table-cell-editable-border` to outline the cell in edit mode and `--osdk-table-cell-edited-border` to mark cells with pending changes.
+
+```tsx
 <ObjectTable
   objectType={Employee}
-  className="custom-employee-table"
+  columnDefinitions={editableColumns}
+  editMode="manual"
+  className="my-table"
 />;
 ```
 
 ```css
-/* Styles */
-.custom-employee-table {
-  --osdk-table-header-bg: #1e40af;
-  --osdk-table-header-text-color: white;
-  --osdk-table-row-hover-bg: #dbeafe;
+/* Editable cells get a soft yellow background to signal they're interactive. */
+.my-table td[data-editable="true"] {
+  --osdk-table-cell-bg: #fffbeb;
 }
 ```
 
-### Common Theming Examples
+#### Row attributes for conditional row styling
 
-#### Dark Mode
+Attach custom `data-*` attributes per row with the `getRowAttributes` prop and drive row styling in CSS using attribute selectors. Row background comes from `--osdk-table-row-bg-default` and `--osdk-table-row-bg-alternate` — overriding both ensures the override wins regardless of zebra parity.
+
+```tsx
+import { useCallback } from "react";
+
+const getRowAttributes = useCallback(
+  (employee: Osdk.Instance<typeof Employee>) => ({
+    "data-status": employee.status,
+    "data-overdue": employee.daysOverdue > 0 ? "true" : undefined,
+  }),
+  [],
+);
+
+<ObjectTable
+  objectType={Employee}
+  className="my-table"
+  getRowAttributes={getRowAttributes}
+/>;
+```
 
 ```css
-@layer user.theme {
-  [data-theme="dark"] {
-    --osdk-table-header-bg: #1f2937;
-    --osdk-table-border-color: #374151;
-    --osdk-table-row-hover-bg: #374151;
-    --osdk-surface-bg: #111827;
-    --osdk-text-primary: #f9fafb;
-  }
+.my-table tr[data-status="Inactive"] {
+  --osdk-table-row-bg-default: #f3f4f6;
+  --osdk-table-row-bg-alternate: #f3f4f6;
+  color: #6b7280;
+}
+
+.my-table tr[data-overdue="true"] {
+  --osdk-table-row-bg-default: #fef2f2;
+  --osdk-table-row-bg-alternate: #fef2f2;
+}
+
+/* Combine selectors to express priority — most specific wins. */
+.my-table tr[data-status="Active"][data-overdue="true"] {
+  --osdk-table-row-bg-default: #fffbeb;
+  --osdk-table-row-bg-alternate: #fffbeb;
 }
 ```
 
-#### Compact Table
+Notes:
+
+- Entries whose value is `undefined` are skipped, so attributes can be conditional without emitting empty values.
+- The table reserves `data-selected`, `data-focused`, `data-row-parity`, and `data-pinned` on rows and cells — don't return those names from `getRowAttributes`.
+
+See [Row Attributes and Conditional Row Styling](#row-attributes-and-conditional-row-styling) for the full pattern walkthrough.
+
+#### Scoped overrides for a specific table
+
+```tsx
+<ObjectTable objectType={Employee} className="custom-employee-table" />;
+```
+
+```css
+.custom-employee-table {
+  --osdk-table-header-bg: #1e40af;
+  --osdk-table-header-color: #ffffff;
+  --osdk-table-row-bg-hover: #dbeafe;
+}
+```
+
+#### Compact density
+
+```tsx
+<ObjectTable objectType={Employee} className="compact-table" rowHeight={32} />;
+```
 
 ```css
 .compact-table {
-  --osdk-surface-spacing: 4px;
-  --osdk-table-cell-padding: 8px;
+  --osdk-table-header-height: 36px;
+  --osdk-table-cell-padding: 0 8px;
 }
 ```
-
-```typescript
-<ObjectTable
-  objectType={Employee}
-  className="compact-table"
-  rowHeight={32}
-/>;
-```
-
-#### Custom Brand Colors
-
-```css
-@layer user.theme {
-  :root {
-    /* Use your brand's primary color */
-    --bp-intent-primary-rest: #7c3aed;
-    --bp-intent-primary-hover: #6d28d9;
-    --bp-intent-primary-active: #5b21b6;
-  }
-}
-```
-
-### Available CSS Variables
-
-For a complete reference of all available CSS tokens for theming, see:
-
-- [CSS Variables Documentation](./CSSVariables.md)
-
-### Accessibility Note
-
-When overriding theme tokens, ensure your custom colors meet accessibility standards:
-
-- **Color contrast ratios** (WCAG AA): 4.5:1 for normal text, 3:1 for large text
-- **Readable text** on all background colors
-- **Clear visual distinction** between interactive states (rest, hover, active, disabled)
-
-The default tokens are designed to meet WCAG AA standards.
 
 ## Additional Resources
 

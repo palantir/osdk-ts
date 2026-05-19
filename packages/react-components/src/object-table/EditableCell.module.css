@@ -12,7 +12,7 @@
 
   tr[data-focused="true"] & {
     border: var(--osdk-table-cell-editable-border);
-    background: var(--osdk-table-cell-editable-bg);
+    background: var(--osdk-table-cell-input-bg);
 
     &.osdkEditedInput {
       border: var(--osdk-table-cell-edited-border);
@@ -35,7 +35,7 @@
   }
 
   &.error {
-    background: var(--osdk-table-cell-editable-bg);
+    background: var(--osdk-table-cell-input-bg);
     border: var(--osdk-table-cell-edited-border-error);
   }
 }
@@ -60,7 +60,7 @@
 
   tr[data-focused="true"] & {
     border: var(--osdk-table-cell-editable-border);
-    background: var(--osdk-table-cell-editable-bg);
+    background: var(--osdk-table-cell-input-bg);
 
     &.osdkEditedInput {
       border: var(--osdk-table-cell-edited-border);
@@ -83,7 +83,7 @@
   }
 
   &.error {
-    background: var(--osdk-table-cell-editable-bg);
+    background: var(--osdk-table-cell-input-bg);
     border: var(--osdk-table-cell-edited-border-error);
   }
 }
@@ -114,7 +114,7 @@
 
   tr[data-focused="true"] & {
     border: var(--osdk-table-cell-editable-border);
-    background: var(--osdk-table-cell-editable-bg);
+    background: var(--osdk-table-cell-input-bg);
 
     &.osdkEditedInput {
       border: var(--osdk-table-cell-edited-border);
@@ -137,7 +137,7 @@
   }
 
   &.error {
-    background: var(--osdk-table-cell-editable-bg);
+    background: var(--osdk-table-cell-input-bg);
     border: var(--osdk-table-cell-edited-border-error);
   }
 }
@@ -168,7 +168,7 @@
 .osdkEditedInput {
   border-radius: var(--osdk-surface-border-radius);
   border: var(--osdk-table-cell-edited-border);
-  background: var(--osdk-table-cell-editable-bg);
+  background: var(--osdk-table-cell-input-bg);
 }
 
 .validationError {
