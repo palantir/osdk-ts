@@ -16,7 +16,7 @@
 
 import { Radio } from "@base-ui/react/radio";
 import { RadioGroup } from "@base-ui/react/radio-group";
-import React, { memo, useCallback, useMemo } from "react";
+import React, { memo, useCallback, useId, useMemo } from "react";
 import { typedReactMemo } from "../../shared/typedMemo.js";
 import type { Option, RadioButtonsFieldProps } from "../FormFieldApi.js";
 import styles from "./RadioButtonsField.module.css";
@@ -70,18 +70,21 @@ const RadioItem = memo(function RadioItemFn({
   option: Option<unknown>;
   disabled: boolean | undefined;
 }): React.ReactElement {
+  const labelId = useId();
+
   return (
     <label className={styles.osdkRadioItem}>
       <Radio.Root
         value={option.label}
         className={styles.osdkRadioRoot}
         disabled={disabled}
+        aria-labelledby={labelId}
         aria-disabled={disabled === true || undefined}
         tabIndex={disabled === true ? -1 : undefined}
       >
         <Radio.Indicator className={styles.osdkRadioIndicator} />
       </Radio.Root>
-      <span className={styles.osdkRadioLabel}>{option.label}</span>
+      <span id={labelId} className={styles.osdkRadioLabel}>{option.label}</span>
     </label>
   );
 });

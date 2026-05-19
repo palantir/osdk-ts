@@ -33,7 +33,7 @@ describe("RadioButtonsField", () => {
 
       expect(screen.getAllByRole("radio")).toHaveLength(3);
       for (const option of STRING_OPTIONS) {
-        expect(screen.getByText(option.label)).toBeDefined();
+        expect(screen.getByRole("radio", { name: option.label })).toBeDefined();
       }
     });
   });

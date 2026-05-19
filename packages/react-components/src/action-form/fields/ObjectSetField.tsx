@@ -48,7 +48,7 @@ export const ObjectSetField: <T extends ObjectTypeDefinition>(
           styles.osdkObjectSetField,
           styles.osdkObjectSetFieldEmpty,
         )}
-        data-disabled={disabled === true || undefined}
+        aria-disabled={disabled === true || undefined}
       >
         {emptyMessage}
       </div>
@@ -99,7 +99,7 @@ const ObjectSetFieldContent = React.memo(function ObjectSetFieldContentFn({
   return (
     <div
       className={styles.osdkObjectSetField}
-      data-disabled={disabled === true || undefined}
+      aria-disabled={disabled === true || undefined}
     >
       {showLoadingState
         ? (
