@@ -144,6 +144,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
         <SingleDateFilterInput
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
+          formatDate={definition.formatDate}
         />
       );
 
