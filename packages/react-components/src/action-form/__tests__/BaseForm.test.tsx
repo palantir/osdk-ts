@@ -224,6 +224,35 @@ describe("BaseForm", () => {
         );
       });
     });
+
+    it("resets field values to their defaults", () => {
+      render(
+        <BaseForm
+          formContent={[
+            field(
+              makeDef("name", {
+                fieldComponentProps: { defaultValue: "Default Name" },
+              }),
+            ),
+            field(makeDef("email")),
+          ]}
+          onSubmit={vi.fn()}
+        />,
+      );
+
+      const resetButton = screen.getByRole("button", { name: /reset/i });
+      expect(resetButton.querySelector("svg")).not.toBeNull();
+
+      const nameInput = screen.getByRole("textbox", { name: /name/ });
+      const emailInput = screen.getByRole("textbox", { name: /email/ });
+      fireEvent.change(nameInput, { target: { value: "Typed Name" } });
+      fireEvent.change(emailInput, { target: { value: "typed@test.com" } });
+
+      fireEvent.click(resetButton);
+
+      expect(nameInput).toHaveProperty("value", "Default Name");
+      expect(emailInput).toHaveProperty("value", "");
+    });
   });
 
   // TODO: expand this test to cover all field types
@@ -494,6 +523,58 @@ describe("BaseForm", () => {
         );
       });
     });
+
+    it("resets controlled state to the initial values", async () => {
+      const onSubmit = vi.fn();
+
+      function ControlledWrapper() {
+        const [formState, setFormState] = useState<Record<string, unknown>>({
+          name: "Initial",
+          email: "initial@test.com",
+        });
+
+        const handleFieldChange = useCallback(
+          (fieldKey: string, value: unknown) => {
+            setFormState((prev) => ({ ...prev, [fieldKey]: value }));
+          },
+          [],
+        );
+
+        return (
+          <BaseForm
+            formContent={[field(makeDef("name")), field(makeDef("email"))]}
+            formState={formState}
+            onFieldValueChange={handleFieldChange}
+            onSubmit={onSubmit}
+          />
+        );
+      }
+
+      render(<ControlledWrapper />);
+
+      const nameInput = screen.getByRole("textbox", { name: /name/ });
+      const emailInput = screen.getByRole("textbox", { name: /email/ });
+      fireEvent.change(nameInput, { target: { value: "Updated" } });
+      fireEvent.change(emailInput, { target: { value: "updated@test.com" } });
+
+      fireEvent.click(screen.getByRole("button", { name: /reset/i }));
+
+      await waitFor(() => {
+        expect(nameInput).toHaveProperty("value", "Initial");
+        expect(emailInput).toHaveProperty("value", "initial@test.com");
+      });
+
+      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+
+      await vi.waitFor(() => {
+        expect(onSubmit).toHaveBeenCalledWith(
+          expect.objectContaining({
+            name: "Initial",
+            email: "initial@test.com",
+          }),
+        );
+      });
+    });
   });
 
   describe("validation", () => {
@@ -592,14 +673,14 @@ describe("BaseForm", () => {
       );
 
       const getSubmitButton = () =>
-        screen.getByRole("button", { name: /submit/i }) as HTMLButtonElement;
+        screen.getByRole("button", { name: /submit/i });
 
-      expect(getSubmitButton().disabled).toBe(false);
+      expect(getSubmitButton()).toHaveProperty("disabled", false);
 
       fireEvent.click(getSubmitButton());
 
       await waitFor(() => {
-        expect(getSubmitButton().disabled).toBe(true);
+        expect(getSubmitButton()).toHaveProperty("disabled", true);
       });
     });
 
@@ -612,7 +693,7 @@ describe("BaseForm", () => {
       );
 
       const getSubmitButton = () =>
-        screen.getByRole("button", { name: /submit/i }) as HTMLButtonElement;
+        screen.getByRole("button", { name: /submit/i });
 
       // Touch the field first so RHF tracks it for revalidation
       const input = screen.getByRole("textbox", { name: /name/ });
@@ -627,7 +708,7 @@ describe("BaseForm", () => {
       fireEvent.click(getSubmitButton());
 
       await waitFor(() => {
-        expect(getSubmitButton().disabled).toBe(true);
+        expect(getSubmitButton()).toHaveProperty("disabled", true);
       });
 
       // Fix the error — RHF revalidates because the field is touched
@@ -637,7 +718,7 @@ describe("BaseForm", () => {
         expect(screen.queryByRole("alert")).toBeNull();
       });
 
-      expect(getSubmitButton().disabled).toBe(false);
+      expect(getSubmitButton()).toHaveProperty("disabled", false);
     });
 
     it("shows submission error on button when onSubmit rejects", async () => {
@@ -667,6 +748,50 @@ describe("BaseForm", () => {
 
       const input = screen.getByRole("textbox", { name: /name/ });
       fireEvent.change(input, { target: { value: "Alice" } });
+
+      await waitFor(() => {
+        expect(screen.queryByText("Server error")).toBeNull();
+      });
+    });
+
+    it("clears validation state and submission errors when reset", async () => {
+      const onSubmit = vi.fn().mockRejectedValue(new Error("Server error"));
+      render(
+        <BaseForm
+          formContent={[field(makeDef("name", { isRequired: true }))]}
+          onSubmit={onSubmit}
+        />,
+      );
+
+      const getSubmitButton = () =>
+        screen.getByRole("button", { name: /submit/i });
+      const resetButton = screen.getByRole("button", { name: /reset/i });
+
+      fireEvent.click(getSubmitButton());
+
+      await waitFor(() => {
+        expect(screen.getByRole("alert")).toBeDefined();
+        expect(screen.getByText("1 issue")).toBeDefined();
+        expect(getSubmitButton()).toHaveProperty("disabled", true);
+      });
+
+      fireEvent.click(resetButton);
+
+      await waitFor(() => {
+        expect(screen.queryByRole("alert")).toBeNull();
+        expect(screen.queryByText("1 issue")).toBeNull();
+        expect(getSubmitButton()).toHaveProperty("disabled", false);
+      });
+
+      const input = screen.getByRole("textbox", { name: /name/ });
+      fireEvent.change(input, { target: { value: "Alice" } });
+      fireEvent.click(getSubmitButton());
+
+      await waitFor(() => {
+        expect(screen.getByText("Server error")).toBeDefined();
+      });
+
+      fireEvent.click(resetButton);
 
       await waitFor(() => {
         expect(screen.queryByText("Server error")).toBeNull();

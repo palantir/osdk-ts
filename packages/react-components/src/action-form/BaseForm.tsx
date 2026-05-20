@@ -28,6 +28,7 @@ import { FieldBridge } from "./fields/FieldBridge.js";
 import type { RendererFieldDefinition } from "./FormFieldApi.js";
 import { FormHeader } from "./FormHeader.js";
 import { FormSection } from "./FormSection.js";
+import { ResetButton } from "./ResetButton.js";
 
 export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   formTitle,
@@ -44,6 +45,9 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
 }: BaseFormProps): React.ReactElement {
   const portalContainerRef = useRef<HTMLFormElement>(null);
   const isControlled = controlledFormState != null;
+  // Reset should return controlled forms to the values they mounted with,
+  // not to later edits flowing through `formState`.
+  const initialControlledFormStateRef = useRef(controlledFormState);
 
   const allFieldDefinitions = useMemo(
     () => flattenFieldDefinitions(formContent),
@@ -59,6 +63,7 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
     control,
     trigger,
     getValues,
+    reset,
     formState: { errors },
   } = useForm<Record<string, unknown>>({
     // Validate on blur first, then revalidate on change after the first
@@ -98,6 +103,28 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
     // guarantee that controlled mode submits the parent's state.
     await executeSubmit(controlledFormState ?? getValues());
   }, [trigger, executeSubmit, controlledFormState, getValues]);
+
+  const resetForm = useCallback(() => {
+    clearError();
+    setHasAttemptedSubmit(false);
+    const resetValues = initialControlledFormStateRef.current ?? defaultValues;
+    reset(resetValues);
+
+    // Controlled callers own the submitted state, so mirror the RHF reset
+    // through the existing field-change callback for every rendered field.
+    if (isControlled) {
+      for (const fieldDef of allFieldDefinitions) {
+        onFieldValueChange?.(fieldDef.fieldKey, resetValues[fieldDef.fieldKey]);
+      }
+    }
+  }, [
+    clearError,
+    reset,
+    defaultValues,
+    isControlled,
+    allFieldDefinitions,
+    onFieldValueChange,
+  ]);
 
   const handleFieldChange = useCallback(
     (fieldKey: string, value: unknown) => {
@@ -182,7 +209,8 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
       </div>
       <div className={styles.osdkFormFooter}>
         <ErrorIndicator errorEntries={errorEntries} />
-        <div className={styles.osdkFormSubmitButton}>
+        <div className={styles.osdkFormFooterActions}>
+          <ResetButton isPending={isFormPending} onClick={resetForm} />
           <SubmitButton
             isPending={isFormPending}
             isSubmitDisabled={isSubmitButtonDisabled}
