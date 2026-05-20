@@ -1,5 +1,6 @@
 /* Base tokens: Blueprint design tokens → OSDK semantic tokens */
 @import "./tokens/base-tokens/base.css";
+@import "./tokens/base-tokens/dark.css";
 
 /* Component tokens: component-specific tokens that reference base tokens */
 @import "./tokens/component-tokens/aip-agent-chat.css";

@@ -53,6 +53,12 @@
 - This updates the API report in `etc/<package>.report.api.md` — commit the updated report
 - API extractor requires transpiled types, so `transpileTypes` runs automatically as a dependency
 
+## Quickinfo Snapshot Tests
+
+- `@osdk/api` has a quickinfo snapshot harness at `packages/api/src/__quickinfo_snapshot__/` that pins the hover-tooltip type strings for high-traffic SDK surfaces (ObjectSet methods, Osdk.Instance, AggregationsResults, Actions, Queries, …)
+- If a snapshot test fails after a type-graph refactor: run `pnpm updateSnapshots --filter=@osdk/api`, inspect the resulting `__snapshots__/*.snap` diff, and confirm the change is intentional before committing
+- Read `packages/api/src/__quickinfo_snapshot__/README.md` before adding new probes — the "Philosophy" section spells out the load-bearing rule (probes must render the same string TS shows on hover; no `Expand<T>`/`Force<T>`-style helpers)
+
 ## Pre-Push Verification
 
 - Before pushing to a PR, run `pnpm turbo transpile` globally to ensure all packages compile

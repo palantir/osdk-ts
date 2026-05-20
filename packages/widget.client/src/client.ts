@@ -30,6 +30,11 @@ export interface FoundryWidgetClient<C extends WidgetConfig<C["parameters"]>> {
   ready: () => void;
 
   /**
+   * Notifies the host that the widget should reload
+   */
+  reload: () => void;
+
+  /**
    * Notifies the host that the widget has resized
    */
   resize: (payload: WidgetMessage.Payload.Resize) => void;
@@ -128,6 +133,12 @@ export function createFoundryWidgetClient<
         payload: {
           apiVersion: HostMessage.Version,
         },
+      });
+    },
+    reload: () => {
+      sendMessageToHost({
+        type: "widget.reload",
+        payload: {},
       });
     },
     resize: (payload) => {

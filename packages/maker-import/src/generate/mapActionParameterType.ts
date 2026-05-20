@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
+import type { OntologyIrStructFieldBaseParameterType } from "@osdk/client.unstable";
+import type * as Ontologies from "@osdk/foundry.ontologies";
+import type { ActionParameter, ActionParameterType } from "@osdk/maker";
 import { consola } from "consola";
 
-// ActionParameterType from maker is not exported, so we use structural typing.
-// The generated JSON will have the correct shape at runtime.
-type ActionParameterType = string | { type: string; [key: string]: unknown };
-
-const SIMPLE_PARAM_TYPES: Record<string, ActionParameterType> = {
+const SIMPLE_PARAM_TYPES: Record<string, ActionParameter["type"]> = {
   string: "string",
   integer: "integer",
   boolean: "boolean",
@@ -36,7 +35,7 @@ const SIMPLE_PARAM_TYPES: Record<string, ActionParameterType> = {
   decimal: "decimal",
 };
 
-const LIST_VARIANT_MAP: Record<string, ActionParameterType> = {
+const LIST_VARIANT_MAP: Record<string, ActionParameter["type"]> = {
   string: "stringList",
   integer: "integerList",
   boolean: "booleanList",
@@ -52,56 +51,53 @@ const LIST_VARIANT_MAP: Record<string, ActionParameterType> = {
   decimal: "decimalList",
 };
 
-// Maps gateway struct field types to OntologyIrStructFieldBaseParameterType format
-const STRUCT_FIELD_IR_TYPES: Record<string, string> = {
-  boolean: "boolean",
-  integer: "integer",
-  long: "long",
-  double: "double",
-  string: "string",
-  geohash: "geohash",
-  geoshape: "geoshape",
-  timestamp: "timestamp",
-  date: "date",
-};
+function mapStructFieldType(
+  fieldType: Ontologies.OntologyDataType,
+): OntologyIrStructFieldBaseParameterType | undefined {
+  switch (fieldType.type) {
+    case "boolean":
+      return { type: "boolean", boolean: {} };
+    case "integer":
+      return { type: "integer", integer: {} };
+    case "long":
+      return { type: "long", long: {} };
+    case "double":
+      return { type: "double", double: {} };
+    case "string":
+      return { type: "string", string: {} };
+    case "timestamp":
+      return { type: "timestamp", timestamp: {} };
+    case "date":
+      return { type: "date", date: {} };
+    case "object":
+      return {
+        type: "objectReference",
+        objectReference: { objectTypeId: fieldType.objectTypeApiName },
+      };
+    default:
+      return undefined;
+  }
+}
 
-/**
- * Converts gateway struct field types to the IR structFieldTypes record.
- * Returns undefined if structFieldTypes is missing.
- */
 function mapGatewayStructFieldsToIr(
-  dataType: { type: string; [key: string]: unknown },
-): Record<string, { type: string; [key: string]: unknown }> | undefined {
-  const fields = (dataType as {
-    structFieldTypes?: Array<{
-      apiName: string;
-      dataType: { type: string; [key: string]: unknown };
-    }>;
-  }).structFieldTypes;
+  dataType: Ontologies.OntologyStructType,
+): Record<string, OntologyIrStructFieldBaseParameterType> | undefined {
+  const fields = dataType.fields;
   if (!fields) {
     consola.warn("Struct parameter type missing structFieldTypes, skipping");
     return undefined;
   }
   const structFieldTypes: Record<
     string,
-    { type: string; [key: string]: unknown }
+    OntologyIrStructFieldBaseParameterType
   > = {};
   for (const field of fields) {
-    const fieldType = field.dataType.type;
-    const irType = STRUCT_FIELD_IR_TYPES[fieldType];
+    const irType = mapStructFieldType(field.fieldType);
     if (irType) {
-      structFieldTypes[field.apiName] = { type: irType, [irType]: {} };
-    } else if (fieldType === "object") {
-      const objectTypeApiName =
-        (field.dataType as { objectTypeApiName?: string }).objectTypeApiName
-          ?? "";
-      structFieldTypes[field.apiName] = {
-        type: "objectReference",
-        objectReference: { objectTypeId: objectTypeApiName },
-      };
+      structFieldTypes[field.name] = irType;
     } else {
       consola.warn(
-        `Skipping struct param field "${field.apiName}": unsupported type "${fieldType}"`,
+        `Skipping struct param field "${field.name}": unsupported type "${field.fieldType.type}"`,
       );
     }
   }
@@ -115,7 +111,7 @@ function mapGatewayStructFieldsToIr(
  * Returns undefined for unsupported types (with a warning).
  */
 export function mapActionParameterType(
-  dataType: { type: string; [key: string]: unknown },
+  dataType: Ontologies.ActionParameterType,
 ): ActionParameterType | undefined {
   const simpleType = SIMPLE_PARAM_TYPES[dataType.type];
   if (simpleType !== undefined) {
@@ -123,67 +119,53 @@ export function mapActionParameterType(
   }
 
   switch (dataType.type) {
-    case "object": {
-      const objectTypeApiName =
-        (dataType as { objectTypeApiName?: string }).objectTypeApiName ?? "";
+    case "object":
       return {
         type: "objectReference",
-        objectReference: { objectTypeId: objectTypeApiName },
+        objectReference: { objectTypeId: dataType.objectTypeApiName },
       };
-    }
-    case "objectSet": {
-      const objectTypeApiName =
-        (dataType as { objectTypeApiName?: string }).objectTypeApiName ?? "";
+    case "objectSet":
       return {
         type: "objectSetRid",
-        objectSetRid: { objectTypeId: objectTypeApiName },
+        objectSetRid: { objectTypeId: dataType.objectTypeApiName ?? "" },
       };
-    }
-    case "interfaceObject": {
-      const interfaceApiName =
-        (dataType as { interfaceApiName?: string }).interfaceApiName ?? "";
+    case "interfaceObject":
       return {
         type: "interfaceReference",
-        interfaceReference: { interfaceTypeRid: interfaceApiName },
+        interfaceReference: {
+          interfaceTypeRid: dataType.interfaceTypeApiName ?? "",
+        },
       };
-    }
     case "array": {
-      const subType = (dataType as { subType?: { type: string } }).subType;
+      const subType = dataType.subType;
       if (!subType) {
         consola.warn("Array parameter type missing subType, skipping");
         return undefined;
       }
 
-      // For simple types, use the list variant
       const listVariant = LIST_VARIANT_MAP[subType.type];
       if (listVariant !== undefined) {
         return listVariant;
       }
 
-      // For object references, use objectReferenceList
       if (subType.type === "object") {
-        const objectTypeApiName =
-          (subType as { objectTypeApiName?: string }).objectTypeApiName ?? "";
         return {
           type: "objectReferenceList",
-          objectReferenceList: { objectTypeId: objectTypeApiName },
+          objectReferenceList: { objectTypeId: subType.objectTypeApiName },
         };
       }
 
-      // For interface references, use interfaceReferenceList
       if (subType.type === "interfaceObject") {
-        const interfaceApiName =
-          (subType as { interfaceApiName?: string }).interfaceApiName ?? "";
         return {
           type: "interfaceReferenceList",
-          interfaceReferenceList: { interfaceTypeRid: interfaceApiName },
+          interfaceReferenceList: {
+            interfaceTypeRid: subType.interfaceTypeApiName ?? "",
+          },
         };
       }
 
       if (subType.type === "struct") {
-        const structFields = mapGatewayStructFieldsToIr(
-          subType as { type: string; [key: string]: unknown },
-        );
+        const structFields = mapGatewayStructFieldsToIr(subType);
         if (!structFields) return undefined;
         return {
           type: "structList",

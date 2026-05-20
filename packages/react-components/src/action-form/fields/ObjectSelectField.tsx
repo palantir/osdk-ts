@@ -65,6 +65,7 @@ const ObjectSelectInner: React.NamedExoticComponent<
   isMultiple,
   portalRef,
   portalContainer,
+  disabled,
 }): React.ReactElement {
   // Tracks the user's search text. Cleared on selection so the selected
   // label (managed by base-ui) doesn't trigger a server-side search.
@@ -138,6 +139,7 @@ const ObjectSelectInner: React.NamedExoticComponent<
       isMultiple={isMultiple}
       portalRef={portalRef}
       portalContainer={portalContainer}
+      disabled={disabled}
       onQueryChange={setQuery}
       isLoading={isLoading}
       isSearching={debouncedQuery.trim() !== "" && isLoading}

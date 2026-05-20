@@ -1,5 +1,15 @@
 # @osdk/widget.api
 
+## 3.19.0
+
+### Minor Changes
+
+- 2f3aa7b: Support reloading widget on vite HMR full reload
+
+### Patch Changes
+
+- @osdk/api@2.22.0
+
 ## 3.18.0
 
 ### Patch Changes

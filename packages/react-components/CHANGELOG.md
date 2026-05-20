@@ -1,5 +1,43 @@
 # @osdk/react-components
 
+## 0.18.0
+
+### Minor Changes
+
+- b0de21b: ActionForm fields now show an `Edited` tag after users edit them.
+- 1f63510: Add built-in dark mode token overrides. Components now react automatically to `prefers-color-scheme: dark` and to the `[data-bp-color-scheme="dark"]` / `.bp6-dark` attribute selectors, matching the Foundry custom widgets dark theme guidance.
+- aad8d52: filter-list: match "No value" row gap to regular row gap so it doesn't look visually tighter than its neighbors
+- f6f92fb: Fix broken CSS custom property references that used non-existent token names
+- 19d5612: Fix two ObjectTable editable-cell visual issues:
+  - Dropdown cell no longer shows a phantom "edited" outline after clearing a
+    never-set cell. `EditableCell` and `useEditableTable` now treat `null` and
+    `undefined` as the same empty state when deciding whether an edit is a
+    revert, so clearing a cell whose value was `undefined` removes the edit
+    entry instead of leaving a stale "edited" indicator. `""` remains a
+    distinct value — clearing an empty string still registers as an edit.
+  - Date picker cell now shows the same focus outline as the text input cell,
+    and no longer renders the date picker's own box-shadow on top of the cell
+    border. The cell wrapper also reserves a transparent border so focusing
+    the picker doesn't shift layout.
+
+- 5c20aba: Add `--osdk-table-cell-bg` CSS variable on `ObjectTable` / `BaseTable`
+  cells, and tag each `<td>` with `data-editable="true"` when the cell renders
+  as editable. The variable defaults to `inherit`, preserving current visuals.
+
+  Renamed `--osdk-table-cell-editable-bg` to `--osdk-table-cell-input-bg`.
+
+  Combine the two to highlight editable cells before any row is clicked into,
+  without altering component logic:
+
+  ```css
+  .my-table td[data-editable] {
+    --osdk-table-cell-bg: var(--my-editable-tint);
+  }
+  ```
+
+- ca8ef7c: ObjectTable: drop the redundant `selectedRowIds` field from the `RowSelectionChange` payload delivered to `onRowSelectionChanged`. The primary keys are still available via `selectedRows.map(r => r.$primaryKey)`. `selectedRowIds` was redundant with `selectedRows` and was kept only as a transitional alias.
+- 5ca0da3: Replace hardcoded table header menu colors with surface tokens and align table row hover/active to `--osdk-intent-primary-rest` for better dark theme compatibility.
+
 ## 0.17.0
 
 ### Minor Changes

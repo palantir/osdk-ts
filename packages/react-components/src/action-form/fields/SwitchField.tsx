@@ -23,21 +23,22 @@ interface InternalSwitchFieldProps extends SwitchFieldProps {
 }
 
 export const SwitchField: React.NamedExoticComponent<InternalSwitchFieldProps> =
-  React
-    .memo(function SwitchFieldFn({
-      id,
-      label,
-      value,
-      onChange,
-      error,
-    }: InternalSwitchFieldProps): React.ReactElement {
-      return (
-        <Switch
-          id={id}
-          checked={value ?? false}
-          onCheckedChange={onChange}
-          aria-invalid={error != null || undefined}
-          aria-label={label}
-        />
-      );
-    });
+  React.memo(function SwitchFieldFn({
+    id,
+    label,
+    value,
+    onChange,
+    error,
+    disabled,
+  }: InternalSwitchFieldProps): React.ReactElement {
+    return (
+      <Switch
+        id={id}
+        checked={value ?? false}
+        onCheckedChange={onChange}
+        aria-invalid={error != null || undefined}
+        aria-label={label}
+        disabled={disabled}
+      />
+    );
+  });
