@@ -21,14 +21,20 @@ import type {
   DraggableSyntheticListeners,
 } from "@dnd-kit/core";
 import classnames from "classnames";
-import React, { memo, useCallback, useState } from "react";
+import React, { memo, useCallback, useMemo, useState } from "react";
 import { ErrorBoundary } from "../../shared/ErrorBoundary.js";
-import type { FilterState } from "../FilterListItemApi.js";
-import { supportsExcluding, supportsSearch } from "../utils/filterValues.js";
+import type { FilterActionsConfig, FilterState } from "../FilterListItemApi.js";
+import {
+  clearFilterState,
+  getEffectiveFilterState,
+  supportsExcluding,
+  supportsSearch,
+} from "../utils/filterValues.js";
 import type { RenderFilterInput } from "./BaseFilterListApi.js";
 import { DragHandleIcon } from "./DragHandleIcon.js";
-import { OverflowMenuIcon, RemoveIcon, SearchIcon } from "./FilterIcons.js";
+import { RemoveIcon, SearchIcon } from "./FilterIcons.js";
 import styles from "./FilterListItem.module.css";
+import { ItemOverflowMenu } from "./ItemOverflowMenu.js";
 
 function hasActiveSelection(filterState: FilterState | undefined): boolean {
   if (filterState == null) {
@@ -62,6 +68,29 @@ function hasActiveSelection(filterState: FilterState | undefined): boolean {
   }
 }
 
+/**
+ * Resolves whether the header monocle should render given the effective
+ * (post-unwrap) filter state and the per-definition opt-out flags. `actions`
+ * takes precedence over `searchField` when both are set.
+ */
+function resolveShowSearch(
+  effectiveState: FilterState | undefined,
+  searchField: boolean | undefined,
+  actions: FilterActionsConfig | undefined,
+): boolean {
+  if (!supportsSearch(effectiveState)) {
+    return false;
+  }
+  const action = actions?.search;
+  if (action !== undefined) {
+    if (action === false || action === "menu") {
+      return false;
+    }
+    return true;
+  }
+  return searchField !== false;
+}
+
 interface FilterListItemProps<D> {
   definition: D;
   filterKey: string;
@@ -73,6 +102,8 @@ interface FilterListItemProps<D> {
   ) => void;
   onFilterRemoved?: (filterKey: string) => void;
   renderInput: RenderFilterInput<D>;
+  searchField?: boolean;
+  actions?: FilterActionsConfig;
   dragHandleAttributes?: DraggableAttributes;
   dragHandleListeners?: DraggableSyntheticListeners;
   className?: string;
@@ -87,6 +118,8 @@ function FilterListItemInner<D>({
   onFilterStateChanged,
   onFilterRemoved,
   renderInput,
+  searchField,
+  actions,
   dragHandleAttributes,
   dragHandleListeners,
   className,
@@ -95,7 +128,6 @@ function FilterListItemInner<D>({
   const [searchState, setSearchState] = useState<
     { type: "closed" } | { type: "open"; query: string }
   >({ type: "closed" });
-  const [excludeRowOpen, setExcludeRowOpen] = useState(false);
 
   const handleFilterStateChanged = useCallback(
     (newState: FilterState) => {
@@ -125,17 +157,52 @@ function FilterListItemInner<D>({
     onFilterRemoved?.(filterKey);
   }, [filterKey, onFilterRemoved]);
 
-  const handleToggleExcludeRow = useCallback(() => {
-    setExcludeRowOpen((prev) => !prev);
-  }, []);
+  const effectiveState = useMemo(
+    () => getEffectiveFilterState(filterState),
+    [filterState],
+  );
+
+  const isExcluding = effectiveState?.isExcluding ?? false;
+
+  const handleToggleExclude = useCallback(() => {
+    if (filterState == null) {
+      return;
+    }
+    if (filterState.type === "linkedProperty") {
+      const inner = filterState.linkedFilterState;
+      onFilterStateChanged(filterKey, {
+        type: "linkedProperty",
+        linkedFilterState: { ...inner, isExcluding: !inner.isExcluding },
+      });
+      return;
+    }
+    onFilterStateChanged(filterKey, {
+      ...filterState,
+      isExcluding: !filterState.isExcluding,
+    });
+  }, [filterKey, filterState, onFilterStateChanged]);
+
+  const handleClearAll = useCallback(() => {
+    const cleared = clearFilterState(filterState);
+    if (cleared != null) {
+      onFilterStateChanged(filterKey, cleared);
+    }
+  }, [filterKey, filterState, onFilterStateChanged]);
 
   const searchInputRef = useCallback((element: HTMLInputElement | null) => {
     element?.focus({ preventScroll: true });
   }, []);
 
-  const showExcludeDropdown = supportsExcluding(filterState);
-  const showSearch = supportsSearch(filterState);
-  const hasOverflowActions = showExcludeDropdown;
+  const showSearch = resolveShowSearch(effectiveState, searchField, actions);
+  const showOverflow = actions?.overflow !== false;
+
+  const showKeepExclude = showOverflow && supportsExcluding(effectiveState);
+  const hasSelection = hasActiveSelection(filterState);
+  const showClearAll = showOverflow && hasSelection
+    && clearFilterState(filterState) != null;
+  const showRemove = showOverflow
+    && onFilterRemoved != null
+    && actions?.remove !== false;
 
   const searchOpen = searchState.type === "open";
   const searchQuery = searchState.type === "open" ? searchState.query : "";
@@ -147,7 +214,7 @@ function FilterListItemInner<D>({
     <div
       className={classnames(styles.filterItem, className)}
       style={style}
-      data-has-selection={hasActiveSelection(filterState) || undefined}
+      data-has-selection={hasSelection || undefined}
     >
       <div className={styles.itemHeader}>
         {dragHandleAttributes && (
@@ -175,25 +242,18 @@ function FilterListItemInner<D>({
             <SearchIcon />
           </Button>
         )}
-        {onFilterRemoved && (
-          <Button
-            className={styles.headerActionButton}
-            onClick={handleRemove}
-            aria-label={`Remove ${label} filter`}
-          >
-            <RemoveIcon />
-          </Button>
-        )}
-        {hasOverflowActions && (
-          <Button
-            className={styles.headerActionButton}
-            onClick={handleToggleExcludeRow}
-            aria-label="More actions"
-            aria-pressed={excludeRowOpen}
-          >
-            <OverflowMenuIcon />
-          </Button>
-        )}
+        <ItemOverflowMenu
+          triggerClassName={styles.headerActionButton}
+          triggerAriaLabel="More actions"
+          filterLabel={label}
+          showKeepExclude={showKeepExclude}
+          isExcluding={isExcluding}
+          onToggleExclude={handleToggleExclude}
+          showClearAll={showClearAll}
+          onClearAll={handleClearAll}
+          showRemove={showRemove}
+          onRemove={handleRemove}
+        />
       </div>
 
       {searchOpen && (
@@ -228,7 +288,7 @@ function FilterListItemInner<D>({
             filterState,
             onFilterStateChanged: handleFilterStateChanged,
             searchQuery: searchQueryForInput,
-            excludeRowOpen,
+            excludeRowOpen: false,
           })}
         </ErrorBoundary>
       </div>
