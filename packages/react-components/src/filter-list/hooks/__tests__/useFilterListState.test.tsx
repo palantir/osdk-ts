@@ -578,4 +578,128 @@ describe("useFilterListState", () => {
       expect(afterActive).toBe(beforeActive);
     });
   });
+
+  describe("hasChangesFromInitial", () => {
+    it("is false when filterDefinitions is empty", () => {
+      const props = createProps({ filterDefinitions: undefined });
+      const { result } = renderHook(() => useFilterListState(props));
+      expect(result.current.hasChangesFromInitial).toBe(false);
+    });
+
+    it(
+      "is false on mount when definitions carry a populated initial filterState",
+      () => {
+        const nameDef = createPropertyFilterDef(
+          "name",
+          "LISTOGRAM",
+          createExactMatchState(["John"]),
+        );
+        const props = createProps({
+          filterDefinitions: [nameDef],
+        });
+        const { result } = renderHook(() => useFilterListState(props));
+        expect(result.current.hasChangesFromInitial).toBe(false);
+      },
+    );
+
+    it(
+      "becomes true after setFilterState writes a structurally different value",
+      () => {
+        const nameDef = createPropertyFilterDef(
+          "name",
+          "LISTOGRAM",
+          createExactMatchState(["John"]),
+        );
+        const props = createProps({
+          filterDefinitions: [nameDef],
+        });
+        const { result } = renderHook(() => useFilterListState(props));
+        const filterKey = getFilterKey(nameDef);
+
+        act(() => {
+          result.current.setFilterState(
+            filterKey,
+            createExactMatchState(["Jane"]),
+          );
+        });
+        expect(result.current.hasChangesFromInitial).toBe(true);
+      },
+    );
+
+    it(
+      "returns to false after setFilterState writes back the snapshot value",
+      () => {
+        const nameDef = createPropertyFilterDef(
+          "name",
+          "LISTOGRAM",
+          createExactMatchState(["John"]),
+        );
+        const props = createProps({
+          filterDefinitions: [nameDef],
+        });
+        const { result } = renderHook(() => useFilterListState(props));
+        const filterKey = getFilterKey(nameDef);
+
+        act(() => {
+          result.current.setFilterState(
+            filterKey,
+            createExactMatchState(["Jane"]),
+          );
+        });
+        expect(result.current.hasChangesFromInitial).toBe(true);
+
+        act(() => {
+          result.current.setFilterState(
+            filterKey,
+            createExactMatchState(["John"]),
+          );
+        });
+        expect(result.current.hasChangesFromInitial).toBe(false);
+      },
+    );
+
+    it("becomes true after clearFilterState removes a key from the snapshot", () => {
+      const nameDef = createPropertyFilterDef(
+        "name",
+        "LISTOGRAM",
+        createExactMatchState(["John"]),
+      );
+      const props = createProps({
+        filterDefinitions: [nameDef],
+      });
+      const { result } = renderHook(() => useFilterListState(props));
+      const filterKey = getFilterKey(nameDef);
+
+      act(() => {
+        result.current.clearFilterState(filterKey);
+      });
+      expect(result.current.hasChangesFromInitial).toBe(true);
+    });
+
+    it("returns to false after reset()", () => {
+      const nameDef = createPropertyFilterDef(
+        "name",
+        "LISTOGRAM",
+        createExactMatchState(["John"]),
+      );
+      const props = createProps({
+        filterDefinitions: [nameDef],
+      });
+      const { result } = renderHook(() => useFilterListState(props));
+      const filterKey = getFilterKey(nameDef);
+
+      act(() => {
+        result.current.setFilterState(
+          filterKey,
+          createExactMatchState(["Jane"]),
+        );
+      });
+      expect(result.current.hasChangesFromInitial).toBe(true);
+
+      act(() => {
+        result.current.reset();
+      });
+      expect(result.current.hasChangesFromInitial).toBe(false);
+    });
+  });
 });
