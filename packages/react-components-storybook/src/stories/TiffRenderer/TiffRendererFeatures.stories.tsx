@@ -133,7 +133,7 @@ const meta: Meta<TiffRendererProps> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
+export const WithContent: Story = {
   parameters: {
     docs: {
       source: {

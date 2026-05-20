@@ -128,7 +128,7 @@ export const WithMedia: StoryObj<XmlViewerMediaProps> = {
   },
 };
 
-export const Default: Story = {
+export const WithContent: Story = {
   parameters: {
     docs: {
       source: {
