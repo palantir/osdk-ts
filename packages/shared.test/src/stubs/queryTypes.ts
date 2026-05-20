@@ -578,7 +578,6 @@ export const queryTypeReturnsMap: QueryTypeV2 = {
           type: "string",
         },
       },
-
       "required": true,
     },
   },
