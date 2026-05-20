@@ -33,9 +33,9 @@ interface TimelineInputProps {
   minDate?: Date;
   maxDate?: Date;
   /**
-   * Optional callback used for the period labels above the date inputs.
-   * The HTML `<input type="date">` value attribute is unaffected and stays
-   * ISO `YYYY-MM-DD`.
+   * Applies to the period labels above the brush only. The native HTML
+   * `<input type="date">` value attribute stays ISO `YYYY-MM-DD` because
+   * browsers do not permit reformatting it.
    */
   formatDate?: (date: Date) => string;
 }
