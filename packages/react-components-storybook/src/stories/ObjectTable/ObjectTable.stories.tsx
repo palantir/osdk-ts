@@ -40,8 +40,8 @@ import { WorkerInterface } from "../../types/WorkerInterface.js";
 type EmployeeTableProps = ObjectTableProps<typeof Employee>;
 
 const meta: Meta<EmployeeTableProps> = {
-  title: "Experimental/ObjectTable/Features",
-  tags: ["experimental"],
+  title: "Beta/ObjectTable/Features",
+  tags: ["beta"],
   component: ObjectTable,
   parameters: {
     msw: {

@@ -29,7 +29,8 @@ const SAMPLE_COLUMNS: MultiColumnSortDialogProps["columnOptions"] = [
 ];
 
 const meta: Meta<MultiColumnSortDialogProps> = {
-  title: "Experimental/ObjectTable/Building Blocks/MultiColumnSortDialog",
+  title: "Beta/ObjectTable/Building Blocks/MultiColumnSortDialog",
+  tags: ["beta"],
   component: MultiColumnSortDialog,
   args: {
     isOpen: true,

@@ -53,7 +53,8 @@ const MIXED_ANNOTATIONS: PdfAnnotation[] = [
 ];
 
 const meta: Meta<PdfViewerAnnotationLayerProps> = {
-  title: "Experimental/PdfViewer/Building Blocks/AnnotationLayer",
+  title: "Beta/PdfViewer/Building Blocks/AnnotationLayer",
+  tags: ["beta"],
   component: PdfViewerAnnotationLayer,
   args: {
     annotations: MIXED_ANNOTATIONS,

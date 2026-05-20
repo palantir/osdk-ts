@@ -71,8 +71,8 @@ const mockBookmarkedMedia = createMockMedia(
 );
 
 const meta: Meta<PdfViewerMediaProps> = {
-  title: "Experimental/PdfViewer/Features",
-  tags: ["experimental"],
+  title: "Beta/PdfViewer/Features",
+  tags: ["beta"],
   component: PdfViewer,
   args: {
     media: mockMedia,

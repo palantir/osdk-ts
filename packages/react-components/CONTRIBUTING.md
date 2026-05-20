@@ -226,17 +226,17 @@ Storybook runs on `http://localhost:6006`.
 
 - Story files live in `packages/react-components-storybook/src/stories/<Name>/<Name>.stories.tsx`. Folders match the component name; sub-stories live alongside, optionally under a `Recipes/` or `Features/` subfolder
 - Follow the [Component Story Format (CSF)](https://storybook.js.org/docs/api/csf)
-- **Tier placement is via the meta `title:`, not the folder path.** New components belong under the `Experimental/` category:
+- **Tier placement is via the meta `title:`, not the folder path.** New components belong under the `Beta/` category:
 
   ```ts
   const meta: Meta<typeof MyComponent> = {
-    title: "Experimental/<Name>", // or "Experimental/<Parent>/<Subfeature>"
-    tags: ["experimental"],
+    title: "Beta/<Name>", // or "Beta/<Parent>/<Subfeature>"
+    tags: ["beta"],
     component: MyComponent,
   };
   ```
 
-  This produces URLs like `experimental-myname--default`, matching the existing pattern (`experimental-baseform--default`, `experimental-objecttable-building-blocks-basetable--default`)
+  This produces URLs like `beta-myname--default`, matching the existing pattern (`beta-baseform--default`, `beta-objecttable-building-blocks-basetable--default`)
 - Include stories that demonstrate the component's key states: default, loading, error, empty, and edge cases
 - **OSDK-aware components must accept mocked data via props in stories** — Storybook runs without a Foundry stack. Either expose a `data` / `objects` / `value` prop the story can populate, or render the `Base<Name>` component (not the OSDK wrapper) in the story. Use the MSW addon for stories that exercise hook-level fetch paths against a fake server
 
