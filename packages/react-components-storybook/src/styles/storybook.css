@@ -78,6 +78,32 @@ body {
   font-family: inherit;
 }
 
+.osdkCustomChoiceGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--osdk-surface-spacing) * 2);
+}
+
+.osdkCustomChoiceButton {
+  padding: var(--osdk-surface-spacing) calc(var(--osdk-surface-spacing) * 2);
+  border: var(--osdk-surface-border-width) solid
+    var(--osdk-surface-border-color-default);
+  border-radius: var(--osdk-surface-border-radius);
+  background: var(--osdk-surface-background-color-default-rest);
+  color: var(--osdk-typography-color-default-rest);
+  font: inherit;
+}
+
+.osdkCustomChoiceButtonSelected {
+  background: var(--osdk-background-secondary);
+  border-color: var(--osdk-typography-color-muted);
+}
+
+.osdkCustomChoiceButton:disabled {
+  cursor: not-allowed;
+  opacity: var(--osdk-disabled-opacity);
+}
+
 /* Row highlight for RowAttributesForStyling story */
 .customTableStyling {
   tr[data-highlight-row="true"] {

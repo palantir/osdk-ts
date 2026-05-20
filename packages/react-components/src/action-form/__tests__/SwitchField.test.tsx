@@ -16,17 +16,23 @@
 
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { TextInputField } from "../fields/TextInputField.js";
+import { SwitchField } from "../fields/SwitchField.js";
 
-describe("TextInputField", () => {
-  afterEach(cleanup);
+afterEach(cleanup);
 
-  it("marks the input as disabled", () => {
+describe("SwitchField", () => {
+  it("marks the switch disabled", () => {
+    const onChange = vi.fn();
     render(
-      <TextInputField value="locked" onChange={vi.fn()} disabled={true} />,
+      <SwitchField
+        value={false}
+        onChange={onChange}
+        label="Enabled"
+        disabled={true}
+      />,
     );
 
-    const input = screen.getByRole("textbox") as HTMLInputElement;
-    expect(input.disabled).toBe(true);
+    const toggle = screen.getByRole("switch", { name: "Enabled" });
+    expect(toggle.getAttribute("aria-disabled")).toBe("true");
   });
 });

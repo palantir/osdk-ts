@@ -205,6 +205,37 @@ describe("ActionForm", () => {
 
       expect(screen.getByText("Full Name")).toBeDefined();
     });
+
+    it("wires disabled from custom field definitions to the rendered field", async () => {
+      const customDefs: Array<FormFieldDefinition<TestActionDef>> = [
+        {
+          fieldKey: "name",
+          label: "Full Name",
+          defaultValue: "Alice",
+          disabled: true,
+          fieldComponent: "TEXT_INPUT",
+          fieldComponentProps: {},
+        },
+      ];
+
+      render(
+        <ActionForm
+          actionDefinition={TestAction}
+          formFieldDefinitions={customDefs}
+        />,
+      );
+
+      const input = screen.getByRole("textbox", { name: "Full Name" });
+      expect(input).toHaveProperty("disabled", true);
+
+      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+
+      await vi.waitFor(() => {
+        expect(mockApplyAction).toHaveBeenCalledWith(
+          expect.objectContaining({ name: "Alice" }),
+        );
+      });
+    });
   });
 
   describe("submit button", () => {

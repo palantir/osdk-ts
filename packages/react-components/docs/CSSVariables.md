@@ -21,6 +21,7 @@ Complete reference of all CSS custom properties (variables) used in `@osdk/react
   - [Drag Handle](#drag-handle)
   - [Button](#button)
   - [Checkbox](#checkbox)
+  - [Combobox](#combobox)
   - [CBAC Picker](#cbac-picker)
   - [DateTime Picker](#datetime-picker)
   - [Dialog](#dialog)
@@ -33,6 +34,7 @@ Complete reference of all CSS custom properties (variables) used in `@osdk/react
   - [Object Set](#object-set)
   - [PDF Viewer](#pdf-viewer)
   - [Radio](#radio)
+  - [Select](#select)
   - [Switch](#switch)
   - [Table](#table)
   - [Time Picker](#time-picker)
@@ -227,6 +229,7 @@ Component-specific semantic tokens that may reference Blueprint tokens or define
 | `--osdk-focus-outline`                | `var(--osdk-emphasis-focus-width) solid var(--osdk-emphasis-focus-color)`         | Focus ring style               |
 | `--osdk-focus-visible-outline-offset` | `var(--osdk-emphasis-focus-offset)`                                               | Focus ring offset from element |
 | `--osdk-surface-border`               | `var(--osdk-surface-border-width) solid var(--osdk-surface-border-color-default)` | Reusable border shorthand      |
+| `--osdk-disabled-opacity`             | `0.5`                                                                             | Disabled state opacity         |
 
 ### AIP Agent Chat
 
@@ -321,6 +324,14 @@ Styling for checkbox components.
 | `--osdk-checkbox-bg-checked-hover`   | `var(--osdk-intent-primary-hover)`                    | Checked hover background    |
 | `--osdk-checkbox-bg-checked-active`  | `var(--osdk-intent-primary-active)`                   | Checked active background   |
 | `--osdk-checkbox-checked-foreground` | `var(--osdk-intent-primary-foreground)`               | Checkmark color             |
+
+### Combobox
+
+Styling for combobox components.
+
+| Variable                           | Default Value | Description          |
+| ---------------------------------- | ------------- | -------------------- |
+| `--osdk-combobox-popup-max-height` | `320px`       | Popup maximum height |
 
 ### CBAC Picker
 
@@ -1040,7 +1051,7 @@ Shared styling for input components.
 | `--osdk-input-focus-width`         | `var(--osdk-emphasis-focus-width)`                                                | Focus ring width        |
 | `--osdk-input-focus-color`         | `var(--osdk-emphasis-focus-color)`                                                | Focus ring color        |
 | `--osdk-input-focus-offset`        | `var(--osdk-emphasis-focus-offset)`                                               | Focus ring offset       |
-| `--osdk-input-disabled-opacity`    | `0.5`                                                                             | Disabled opacity        |
+| `--osdk-input-disabled-opacity`    | `var(--osdk-disabled-opacity)`                                                    | Input disabled opacity  |
 
 ### Markdown Renderer
 
@@ -1151,6 +1162,14 @@ Styling for radio button components.
 | `--osdk-radio-bg-checked-hover`  | `var(--osdk-intent-primary-hover)`                   | Checked hover background    |
 | `--osdk-radio-bg-checked-active` | `var(--osdk-intent-primary-active)`                  | Checked active background   |
 | `--osdk-radio-indicator-color`   | `var(--osdk-intent-primary-foreground)`              | Indicator dot color         |
+
+### Select
+
+Styling for select components.
+
+| Variable                         | Default Value | Description          |
+| -------------------------------- | ------------- | -------------------- |
+| `--osdk-select-popup-max-height` | `320px`       | Popup maximum height |
 
 ### Switch
 
