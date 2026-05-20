@@ -124,7 +124,7 @@ const meta: Meta<BaseEmailViewerProps> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const WithMedia: StoryObj<EmailViewerMediaProps> = {
+export const Default: StoryObj<EmailViewerMediaProps> = {
   args: {
     media: createMockEmailMedia(SAMPLE_EML_CONTENT),
   },

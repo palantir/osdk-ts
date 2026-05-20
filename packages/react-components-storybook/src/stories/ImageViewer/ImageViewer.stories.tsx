@@ -99,7 +99,7 @@ const meta: Meta<ImageViewerMediaProps> = {
 
 export default meta;
 
-export const WithMedia: StoryObj<ImageViewerMediaProps> = {
+export const Default: StoryObj<ImageViewerMediaProps> = {
   args: {
     media: createMockImageMedia(
       sampleImageDataUrl,

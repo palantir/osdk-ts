@@ -189,7 +189,7 @@ const meta: Meta<BaseExcelViewerProps> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const WithMedia: StoryObj<ExcelViewerMediaProps> = {
+export const Default: StoryObj<ExcelViewerMediaProps> = {
   args: {
     media: createMockExcelMedia(),
   },
@@ -210,7 +210,7 @@ export const WithMedia: StoryObj<ExcelViewerMediaProps> = {
   },
 };
 
-export const Default: Story = {
+export const WithSpreadsheet: Story = {
   parameters: {
     docs: {
       source: {

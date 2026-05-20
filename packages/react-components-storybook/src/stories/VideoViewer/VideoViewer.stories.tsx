@@ -87,7 +87,7 @@ const meta: Meta<VideoViewerMediaProps> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const WithMedia: Story = {
+export const Default: Story = {
   parameters: {
     docs: {
       source: {

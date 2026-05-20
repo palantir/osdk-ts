@@ -107,7 +107,7 @@ const meta: Meta<BaseXmlViewerProps> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const WithMedia: StoryObj<XmlViewerMediaProps> = {
+export const Default: StoryObj<XmlViewerMediaProps> = {
   args: {
     media: createMockXmlMedia(SAMPLE_XML),
   },

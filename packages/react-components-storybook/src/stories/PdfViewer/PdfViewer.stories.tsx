@@ -32,7 +32,7 @@ const meta: Meta<PdfViewerMediaProps> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const WithOsdkMedia: Story = {
+export const Default: Story = {
   render: () => {
     const { object: employee, isLoading } = useOsdkObject(
       Employee,
