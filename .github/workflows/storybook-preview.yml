@@ -12,10 +12,6 @@ permissions:
   issues: write
   pull-requests: write
 
-concurrency:
-  group: gh-pages-publish
-  cancel-in-progress: false
-
 jobs:
   build-and-deploy:
     name: Build and deploy preview
