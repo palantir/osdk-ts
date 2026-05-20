@@ -1,15 +1,11 @@
 /*
- * Dark theme overrides for OSDK semantic tokens. Activated by either of:
- *   - `[data-bp-color-scheme="dark"]` — written by `<OsdkThemeProvider>`
- *     onto the document root, matching Blueprint's own convention so the
- *     theme also applies to portaled overlays
- *   - `.bp6-dark` — Blueprint's class-based variant of the same convention
+ * Dark theme overrides for OSDK semantic tokens. Activated by `[data-bp-color-scheme="dark"]` 
+ * written by `<OsdkThemeProvider>` onto the document root, matching Blueprint's own convention so the
+ * theme also applies to portaled overlays. Keeping `.bp6-dark` as well to match Blueprint's class-based 
+ * variant of the same convention.
  *
  * Source-of-truth dark values live in `--osdk-dark-*` helpers at `:root`
- * (private — do not consume directly). The activation block below maps
- * those helpers onto the public `--osdk-*` tokens; Blueprint flips its
- * own `--bp-*` tokens under the same selectors so the OSDK tokens that
- * derive from `--bp-*` (see `base.css`) cascade correctly.
+ * (private — do not consume directly).
  */
 
 :root {
@@ -87,4 +83,3 @@
   --osdk-table-row-bg-hover: var(--osdk-dark-table-row-bg-hover);
   --osdk-table-row-bg-active: var(--osdk-dark-table-row-bg-hover);
 }
-
