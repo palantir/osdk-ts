@@ -39,7 +39,7 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   isPending = false,
   isLoading = false,
   className,
-  submitButtonText = "Submit 2",
+  submitButtonText = "Submit",
   submitButtonVariant = "primary",
 }: BaseFormProps): React.ReactElement {
   const portalContainerRef = useRef<HTMLFormElement>(null);
