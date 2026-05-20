@@ -23,10 +23,15 @@ import type {
 import { BaseForm } from "@osdk/react-components/experimental";
 import { useOsdkClient } from "@osdk/react/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { fn } from "storybook/test";
 import { fauxFoundry } from "../../mocks/fauxFoundry.js";
 import { Employee } from "../../types/Employee.js";
+import {
+  FormStoryLayout,
+  type StorySubmissionSnapshot,
+  SubmissionOutputPanel,
+} from "./SubmissionOutputPanel.js";
 
 /**
  * Flattened (non-union) props type for Storybook Meta.
@@ -38,11 +43,13 @@ import { Employee } from "../../types/Employee.js";
 interface BaseFormStoryProps {
   formTitle?: string;
   formContent: ReadonlyArray<FormContentItem>;
-  onSubmit: (formState: Record<string, unknown>) => void;
+  onSubmit: (formState: Record<string, unknown>) => Promise<void> | void;
   isSubmitDisabled?: boolean;
   isPending?: boolean;
   isLoading?: boolean;
   className?: string;
+  submitButtonText?: string;
+  submitButtonVariant?: "primary" | "secondary";
 }
 
 function field(definition: RendererFieldDefinition): FormContentItem {
@@ -61,6 +68,14 @@ const DEPARTMENT_ITEMS = [
 ];
 
 const TAG_ITEMS = ["Urgent", "Review", "Follow-up", "Archived", "Pinned"];
+
+const USER_ID_ITEMS = ["usr_ada", "usr_grace", "usr_katherine"];
+
+const USER_DIRECTORY: Record<string, { name: string; team: string }> = {
+  usr_ada: { name: "Ada Lovelace", team: "Computation" },
+  usr_grace: { name: "Grace Hopper", team: "Compilers" },
+  usr_katherine: { name: "Katherine Johnson", team: "Flight dynamics" },
+};
 
 const formContent: ReadonlyArray<FormContentItem> = [
   field({
@@ -148,49 +163,49 @@ const formContent: ReadonlyArray<FormContentItem> = [
 
 const EMPTY_FORM_CONTENT: ReadonlyArray<FormContentItem> = [];
 
-const TOAST_DURATION_MS = 3000;
-
-// Module-level ref so handleSubmit can trigger the toast rendered by SubmitToast.
-const toastRef: { current: ((msg: string) => void) | undefined } = {
+// Most BaseForm stories share handleSubmit through CSF args, while the output
+// panel is mounted by a decorator. This bridge lets the shared submit handler
+// update the panel without rewriting every story with a custom render function.
+const submitOutputRef: {
+  current: ((snapshot: StorySubmissionSnapshot) => void) | undefined;
+} = {
   current: undefined,
 };
 
 // Spy that logs submissions to the Storybook Actions panel
-// and shows a brief success toast in the story canvas.
+// while the canvas shows the submitted values in the JSON panel.
 const submitSpy = fn().mockName("onSubmit");
 function handleSubmit(formState: Record<string, unknown>): void {
   submitSpy(formState);
-  toastRef.current?.("Submitted successfully");
+  submitOutputRef.current?.({
+    status: "success",
+    submittedValues: formState,
+    response: { message: "onSubmit completed" },
+  });
 }
 
-function SubmitToast(): React.ReactElement | null {
-  const [message, setMessage] = useState<string>();
+function BaseFormSubmissionOutput(): React.ReactElement {
+  const [snapshot, setSnapshot] = useState<StorySubmissionSnapshot>({
+    status: "idle",
+  });
+  submitOutputRef.current = setSnapshot;
 
-  const showToast = useCallback((msg: string) => {
-    setMessage(msg);
-    setTimeout(() => setMessage(undefined), TOAST_DURATION_MS);
-  }, []);
-
-  toastRef.current = showToast;
-
-  if (message == null) {
-    return null;
-  }
-  return <div className="osdkSubmitToast">{message}</div>;
+  return (
+    <SubmissionOutputPanel
+      idleMessage="Submit the form to see submitted values."
+      snapshot={snapshot}
+    />
+  );
 }
 
 const meta: Meta<BaseFormStoryProps> = {
-  title: "Experimental/BaseForm",
-  tags: ["experimental"],
+  title: "Experimental/ActionForm/BaseForm",
   component: BaseForm,
   decorators: [
     (Story) => (
-      <>
-        <SubmitToast />
-        <div className="osdkFormCard">
-          <Story />
-        </div>
-      </>
+      <FormStoryLayout output={<BaseFormSubmissionOutput />}>
+        <Story />
+      </FormStoryLayout>
     ),
   ],
   parameters: {
@@ -199,6 +214,12 @@ const meta: Meta<BaseFormStoryProps> = {
     },
     controls: {
       expanded: true,
+    },
+    docs: {
+      description: {
+        component:
+          "BaseForm is the lower-level form renderer used by ActionForm. Use it directly when you already have form content definitions or need custom form composition.",
+      },
     },
   },
   argTypes: {
@@ -248,6 +269,21 @@ const meta: Meta<BaseFormStoryProps> = {
     className: {
       description: "Additional CSS class name for the form.",
       control: "text",
+    },
+    submitButtonText: {
+      description: "Text displayed in the submit button.",
+      control: "text",
+      table: {
+        defaultValue: { summary: "Submit" },
+      },
+    },
+    submitButtonVariant: {
+      description: "Visual variant of the submit button.",
+      control: "select",
+      options: ["primary", "secondary"],
+      table: {
+        defaultValue: { summary: "primary" },
+      },
     },
   },
 };
@@ -475,6 +511,118 @@ export const Pending: Story = {
         code: `<BaseForm
   formContent={formContent}
   isPending={true}
+  onSubmit={(formState) => console.log("Submitted:", formState)}
+/>`,
+      },
+    },
+  },
+};
+
+export const WithCustomSubmitButton: Story = {
+  args: {
+    formContent,
+    onSubmit: handleSubmit,
+    submitButtonText: "Save employee",
+    submitButtonVariant: "secondary",
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `<BaseForm
+  formContent={formContent}
+  onSubmit={(formState) => console.log("Submitted:", formState)}
+  submitButtonText="Save employee"
+  submitButtonVariant="secondary"
+/>`,
+      },
+    },
+  },
+};
+
+const switchFormContent: ReadonlyArray<FormContentItem> = [
+  field({
+    fieldKey: "isRemote",
+    fieldComponent: "SWITCH",
+    label: "Remote employee",
+    helperText: "Use a switch for boolean settings that map to on/off state.",
+    fieldComponentProps: {},
+  }),
+];
+
+export const WithSwitch: Story = {
+  args: {
+    formTitle: "Update employee",
+    formContent: switchFormContent,
+    onSubmit: handleSubmit,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const formContent = [
+  {
+    fieldKey: "isRemote",
+    fieldComponent: "SWITCH",
+    label: "Remote employee",
+    fieldComponentProps: {},
+  },
+];
+
+<BaseForm
+  formTitle="Update employee"
+  formContent={formContent}
+  onSubmit={(formState) => console.log("Submitted:", formState)}
+/>`,
+      },
+    },
+  },
+};
+
+const unsupportedFormContent: ReadonlyArray<FormContentItem> = [
+  field({
+    fieldKey: "structPayload",
+    fieldComponent: "UNSUPPORTED",
+    label: "Struct payload",
+    isRequired: true,
+    fieldComponentProps: {},
+  }),
+  field({
+    fieldKey: "geoshape",
+    fieldComponent: "UNSUPPORTED",
+    label: "Geoshape",
+    fieldComponentProps: {},
+  }),
+];
+
+export const WithUnsupportedFields: Story = {
+  args: {
+    formTitle: "Unsupported field types",
+    formContent: unsupportedFormContent,
+    onSubmit: handleSubmit,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const formContent = [
+  {
+    fieldKey: "structPayload",
+    fieldComponent: "UNSUPPORTED",
+    label: "Struct payload",
+    isRequired: true,
+    fieldComponentProps: {},
+  },
+  {
+    fieldKey: "geoshape",
+    fieldComponent: "UNSUPPORTED",
+    label: "Geoshape",
+    fieldComponentProps: {},
+  },
+];
+
+// Unsupported fields render a disabled message.
+// Use fieldComponent: "CUSTOM" when you need to collect a value for these types.
+<BaseForm
+  formTitle="Unsupported field types"
+  formContent={formContent}
   onSubmit={(formState) => console.log("Submitted:", formState)}
 />`,
       },
@@ -865,6 +1013,7 @@ const multiSelectDropdownFormContent: ReadonlyArray<FormContentItem> = [
     fieldKey: "categories",
     fieldComponent: "DROPDOWN",
     label: "Categories (Select)",
+    isRequired: true,
     fieldComponentProps: {
       items: TAG_ITEMS,
       isMultiple: true,
@@ -917,6 +1066,79 @@ export const WithMultiSelectDropdown: Story = {
 ];
 
 // Side-by-side comparison: plain multi-Select vs searchable multi-Combobox.
+<BaseForm
+  formContent={formContent}
+  onSubmit={(formState) => console.log("Submitted:", formState)}
+/>`,
+      },
+    },
+  },
+};
+
+const richDropdownLabelFormContent: ReadonlyArray<FormContentItem> = [
+  field({
+    fieldKey: "assigneeUserId",
+    fieldComponent: "DROPDOWN",
+    label: "Assignee",
+    fieldComponentProps: {
+      items: USER_ID_ITEMS,
+      itemToStringLabel: getUserIdLabel,
+      renderItemLabel: renderUserIdLabel,
+      isSearchable: true,
+      placeholder: "Search users...",
+    },
+  }),
+  field({
+    fieldKey: "reviewerUserIds",
+    fieldComponent: "DROPDOWN",
+    label: "Reviewers",
+    fieldComponentProps: {
+      items: USER_ID_ITEMS,
+      itemToStringLabel: getUserIdLabel,
+      renderItemLabel: renderUserIdLabel,
+      isMultiple: true,
+      isSearchable: true,
+      placeholder: "Search reviewers...",
+    },
+  }),
+];
+
+export const WithRichDropdownLabels: Story = {
+  args: {
+    formContent: richDropdownLabelFormContent,
+    onSubmit: handleSubmit,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const userIds = ["usr_ada", "usr_grace", "usr_katherine"];
+
+const usersById = {
+  usr_ada: { name: "Ada Lovelace", team: "Computation" },
+  usr_grace: { name: "Grace Hopper", team: "Compilers" },
+  usr_katherine: { name: "Katherine Johnson", team: "Flight dynamics" },
+};
+
+const formContent = [
+  {
+    fieldKey: "assigneeUserId",
+    fieldComponent: "DROPDOWN",
+    label: "Assignee",
+    fieldComponentProps: {
+      items: userIds,
+      itemToStringLabel: (userId) => usersById[userId]?.name ?? userId,
+      renderItemLabel: (userId) => (
+        <span>
+          <strong>{usersById[userId]?.name ?? userId}</strong>
+          <span>{usersById[userId]?.team}</span>
+        </span>
+      ),
+      isSearchable: true,
+      placeholder: "Search users...",
+    },
+  },
+];
+
 <BaseForm
   formContent={formContent}
   onSubmit={(formState) => console.log("Submitted:", formState)}
@@ -1037,7 +1259,6 @@ const blueprintDialogFormContent: ReadonlyArray<FormContentItem> = [
 
 function BlueprintDialogBaseForm(): React.ReactElement {
   const [isOpen, setIsOpen] = useState(false);
-  const portalContainerRef = useRef<HTMLDivElement>(null);
 
   const handleOpen = useCallback(() => {
     setIsOpen(true);
@@ -1056,13 +1277,10 @@ function BlueprintDialogBaseForm(): React.ReactElement {
         onClose={handleClose}
         title="Action form"
       >
-        <div ref={portalContainerRef}>
-          <BaseForm
-            formContent={blueprintDialogFormContent}
-            onSubmit={handleSubmit}
-            portalContainer={portalContainerRef}
-          />
-        </div>
+        <BaseForm
+          formContent={blueprintDialogFormContent}
+          onSubmit={handleSubmit}
+        />
       </Dialog>
     </>
   );
@@ -1074,20 +1292,143 @@ export const InsideBlueprintDialog: Story = {
     docs: {
       source: {
         code: `function BlueprintDialogBaseForm() {
-  const portalContainerRef = useRef(null);
-
   return (
     <Dialog isOpen={true} title="Action form">
-      <div ref={portalContainerRef}>
-        <BaseForm
-          formContent={formContent}
-          onSubmit={handleSubmit}
-          portalContainer={portalContainerRef}
-        />
-      </div>
+      <BaseForm formContent={formContent} onSubmit={handleSubmit} />
     </Dialog>
   );
 }`,
+      },
+    },
+  },
+};
+
+const scrollableDialogFormContent: ReadonlyArray<FormContentItem> = [
+  field({
+    fieldKey: "name",
+    fieldComponent: "TEXT_INPUT",
+    label: "Full Name",
+    isRequired: true,
+    fieldComponentProps: { placeholder: "Enter full name" },
+  }),
+  field({
+    fieldKey: "email",
+    fieldComponent: "TEXT_INPUT",
+    label: "Email",
+    isRequired: true,
+    fieldComponentProps: { placeholder: "user@example.com" },
+  }),
+  field({
+    fieldKey: "department",
+    fieldComponent: "DROPDOWN",
+    label: "Department",
+    fieldComponentProps: {
+      items: DEPARTMENT_ITEMS,
+      placeholder: "Select department...",
+    },
+  }),
+  field({
+    fieldKey: "startDate",
+    fieldComponent: "DATETIME_PICKER",
+    label: "Start Date",
+    fieldComponentProps: { placeholder: "Select a date" },
+  }),
+  field({
+    fieldKey: "priority",
+    fieldComponent: "DROPDOWN",
+    label: "Priority",
+    fieldComponentProps: {
+      items: DROPDOWN_ITEMS,
+      placeholder: "Select priority",
+    },
+  }),
+  field({
+    fieldKey: "isActive",
+    fieldComponent: "RADIO_BUTTONS",
+    label: "Status",
+    fieldComponentProps: {
+      options: [
+        { label: "Active", value: true },
+        { label: "Inactive", value: false },
+      ],
+    },
+  }),
+  field({
+    fieldKey: "bio",
+    fieldComponent: "TEXT_AREA",
+    label: "Bio",
+    fieldComponentProps: { placeholder: "Tell us about yourself", rows: 3 },
+  }),
+  field({
+    fieldKey: "tags",
+    fieldComponent: "DROPDOWN",
+    label: "Tags",
+    fieldComponentProps: {
+      items: TAG_ITEMS,
+      isMultiple: true,
+      isSearchable: true,
+      placeholder: "Search tags...",
+    },
+  }),
+  field({
+    fieldKey: "document",
+    fieldComponent: "FILE_PICKER",
+    label: "Resume",
+    fieldComponentProps: { accept: ".pdf,.doc,.docx" },
+  }),
+  field({
+    fieldKey: "notes",
+    fieldComponent: "TEXT_AREA",
+    label: "Additional Notes",
+    fieldComponentProps: { placeholder: "Any extra details", rows: 2 },
+  }),
+];
+
+function ScrollableDialogBaseForm(): React.ReactElement {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleOpen = useCallback(() => {
+    setIsOpen(true);
+  }, []);
+
+  const handleClose = useCallback(() => {
+    setIsOpen(false);
+  }, []);
+
+  return (
+    <>
+      <Button text="Open dialog" onClick={handleOpen} />
+      <Dialog
+        className="osdkBlueprintDialogForm"
+        isOpen={isOpen}
+        onClose={handleClose}
+        title="New employee"
+      >
+        <BaseForm
+          formContent={scrollableDialogFormContent}
+          onSubmit={handleSubmit}
+        />
+      </Dialog>
+    </>
+  );
+}
+
+export const ScrollableDialogForm: Story = {
+  render: () => <ScrollableDialogBaseForm />,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "When the form has many fields inside a height-constrained container like a dialog, the fields area scrolls while the footer stays pinned at the bottom.",
+      },
+      source: {
+        code:
+          `// The footer pins automatically when the form overflows its container.
+// No extra CSS or props needed — just place BaseForm inside a
+// height-constrained parent (dialog, panel, sidebar).
+<Dialog isOpen={true} title="New employee">
+  <BaseForm formContent={manyFields} onSubmit={handleSubmit} />
+</Dialog>`,
       },
     },
   },
@@ -1278,7 +1619,7 @@ export const WithHelperText: Story = {
   parameters: {
     docs: {
       source: {
-        code: `const fieldDefinitions = [
+        code: `const formContent = [
   {
     fieldKey: "email",
     fieldComponent: "TEXT_INPUT",
@@ -1323,7 +1664,7 @@ export const WithHelperText: Story = {
 // "tooltip" (default) shows an info icon next to the label.
 // "bottom" renders the text below the label, above the input.
 <BaseForm
-  fieldDefinitions={fieldDefinitions}
+  formContent={formContent}
   onSubmit={(formState) => console.log("Submitted:", formState)}
 />`,
       },
@@ -1509,7 +1850,7 @@ export const WithObjectSelect: Story = {
   parameters: {
     docs: {
       source: {
-        code: `const fieldDefinitions = [
+        code: `const formContent = [
   {
     fieldKey: "name",
     fieldComponent: "TEXT_INPUT",
@@ -1531,9 +1872,77 @@ export const WithObjectSelect: Story = {
 // OBJECT_SELECT renders a searchable dropdown that queries
 // the Foundry ontology for objects matching the search term.
 <BaseForm
-  fieldDefinitions={fieldDefinitions}
+  formContent={formContent}
   onSubmit={(formState) => console.log("Submitted:", formState)}
 />`,
+      },
+    },
+  },
+};
+
+function ScopedObjectSelectStory(): React.ReactElement {
+  const client = useOsdkClient();
+  const marketingEmployees = useMemo(
+    () =>
+      client(Employee).where({ department: "Marketing" }) as ObjectSet<
+        ObjectTypeDefinition
+      >,
+    [client],
+  );
+  const scopedObjectSelectFormContent = useMemo(
+    (): ReadonlyArray<FormContentItem> => [
+      field({
+        fieldKey: "employee",
+        fieldComponent: "OBJECT_SELECT",
+        label: "Marketing employee",
+        helperText: "This selector is scoped by an ObjectSet.",
+        fieldComponentProps: {
+          objectSet: marketingEmployees,
+          placeholder: "Search Marketing employees…",
+        },
+      }),
+    ],
+    [marketingEmployees],
+  );
+
+  return (
+    <BaseForm
+      formContent={scopedObjectSelectFormContent}
+      onSubmit={handleSubmit}
+    />
+  );
+}
+
+export const WithScopedObjectSelect: Story = {
+  render: () => <ScopedObjectSelectStory />,
+  parameters: {
+    docs: {
+      source: {
+        code: `function ScopedEmployeeForm() {
+  const client = useOsdkClient();
+  const marketingEmployees = useMemo(
+    () => client(Employee).where({ department: "Marketing" }),
+    [client],
+  );
+
+  const formContent = [
+    {
+      type: "field",
+      definition: {
+        fieldKey: "employee",
+        fieldComponent: "OBJECT_SELECT",
+        label: "Marketing employee",
+        helperText: "This selector is scoped by an ObjectSet.",
+        fieldComponentProps: {
+          objectSet: marketingEmployees,
+          placeholder: "Search Marketing employees…",
+        },
+      },
+    },
+  ];
+
+  return <BaseForm formContent={formContent} onSubmit={handleSubmit} />;
+}`,
       },
     },
   },
@@ -1647,3 +2056,24 @@ export const WithGridSection: Story = {
     onSubmit: handleSubmit,
   },
 };
+function getUserIdLabel(item: unknown): string {
+  if (typeof item !== "string") {
+    return String(item);
+  }
+
+  return USER_DIRECTORY[item]?.name ?? item;
+}
+
+function renderUserIdLabel(item: unknown): React.ReactNode {
+  const userId = String(item);
+  const user = USER_DIRECTORY[userId];
+
+  return (
+    <span className="osdkRichDropdownLabel">
+      <strong>{user?.name ?? userId}</strong>
+      {user?.team != null
+        ? <span className="osdkRichDropdownDescription">{user.team}</span>
+        : null}
+    </span>
+  );
+}

@@ -36,11 +36,19 @@ import type { ApiName } from "./ApiName.js";
 export class OntologyBlockDataToFullMetadataConverter {
   static getFullMetadataFromBlockData(
     blockData: OntologyBlockDataV2,
+    importedTypes?: Ontologies.OntologyFullMetadata,
   ): Ontologies.OntologyFullMetadata {
-    const objectTypeLookup = buildBlockDataObjectTypeLookup(blockData);
-    const interfaceTypeLookup = buildBlockDataInterfaceTypeLookup(blockData);
+    const objectTypeLookup = buildBlockDataObjectTypeLookup(
+      blockData,
+      importedTypes,
+    );
+    const interfaceTypeLookup = buildBlockDataInterfaceTypeLookup(
+      blockData,
+      importedTypes,
+    );
     const interfaceTypes = this.getOsdkInterfaceTypesFromBlockData(
       blockData.interfaceTypes,
+      interfaceTypeLookup,
     );
     const sharedPropertyTypes = this.getOsdkSharedPropertyTypesFromBlockData(
       blockData.sharedPropertyTypes,
@@ -57,11 +65,19 @@ export class OntologyBlockDataToFullMetadataConverter {
     );
 
     return {
-      interfaceTypes,
-      sharedPropertyTypes,
-      objectTypes,
+      interfaceTypes: importedTypes
+        ? { ...interfaceTypes, ...importedTypes.interfaceTypes }
+        : interfaceTypes,
+      sharedPropertyTypes: importedTypes
+        ? { ...sharedPropertyTypes, ...importedTypes.sharedPropertyTypes }
+        : sharedPropertyTypes,
+      objectTypes: importedTypes
+        ? { ...objectTypes, ...importedTypes.objectTypes }
+        : objectTypes,
       queryTypes: {},
-      actionTypes,
+      actionTypes: importedTypes
+        ? { ...actionTypes, ...importedTypes.actionTypes }
+        : actionTypes,
       ontology: {
         apiName: "ontology",
         rid: `ri.00000`,
@@ -342,6 +358,7 @@ export class OntologyBlockDataToFullMetadataConverter {
         parameters: this.getOsdkActionParametersFromBlockData(
           action,
           objectTypeLookup,
+          interfaceTypeLookup,
         ),
         operations: this.getOsdkActionOperationsFromBlockData(
           action,
@@ -485,6 +502,7 @@ export class OntologyBlockDataToFullMetadataConverter {
   static getOsdkActionParametersFromBlockData(
     action: ActionTypeBlockDataV2,
     objectTypeLookup: BlockDataApiNameLookup | undefined,
+    interfaceTypeLookup: BlockDataApiNameLookup | undefined,
   ): Record<string, Ontologies.ActionParameterV2> {
     const result: Record<string, Ontologies.ActionParameterV2> = {};
 
@@ -566,10 +584,6 @@ export class OntologyBlockDataToFullMetadataConverter {
             subType: { type: "integer" },
           };
           break;
-        case "interfaceReference":
-          throw new Error("Interface reference type not supported");
-        case "interfaceReferenceList":
-          throw new Error("Interface reference list type not supported");
         case "long":
           dataType = { type: "long" };
           break;
@@ -597,6 +611,31 @@ export class OntologyBlockDataToFullMetadataConverter {
             subType: { type: "mediaReference" },
           };
           break;
+        case "interfaceReference": {
+          const t = irParameter.type.interfaceReference;
+          dataType = {
+            type: "interfaceObject",
+            interfaceTypeApiName: resolveBlockDataApiName(
+              t.interfaceTypeRid,
+              interfaceTypeLookup,
+            ),
+          };
+          break;
+        }
+        case "interfaceReferenceList": {
+          const t = irParameter.type.interfaceReferenceList;
+          dataType = {
+            type: "array",
+            subType: {
+              type: "interfaceObject",
+              interfaceTypeApiName: resolveBlockDataApiName(
+                t.interfaceTypeRid,
+                interfaceTypeLookup,
+              ),
+            },
+          };
+          break;
+        }
         case "objectReference": {
           const t = irParameter.type.objectReference;
           dataType = {
@@ -678,6 +717,7 @@ export class OntologyBlockDataToFullMetadataConverter {
 
   static getOsdkInterfaceTypesFromBlockData(
     interfaceBlockData: Record<string, InterfaceTypeBlockDataV2>,
+    interfaceTypeLookup: BlockDataApiNameLookup | undefined,
   ): Record<ApiName, Ontologies.InterfaceType> {
     const result: Record<ApiName, Ontologies.InterfaceType> = {};
 
@@ -696,7 +736,7 @@ export class OntologyBlockDataToFullMetadataConverter {
         const dataType = this.getOsdkPropertyTypeFromBlockData(spt.type);
         if (dataType) {
           properties[propKey] = {
-            rid,
+            rid: spt.rid,
             apiName: spt.apiName,
             displayName: spt.displayMetadata.displayName,
             description: spt.displayMetadata.description ?? undefined,
@@ -714,14 +754,22 @@ export class OntologyBlockDataToFullMetadataConverter {
         allProperties: properties, // Same as properties for now
         propertiesV2: {},
         allPropertiesV2: {},
-        extendsInterfaces: interfaceType.extendsInterfaces.map(val => val),
-        allExtendsInterfaces: interfaceType.extendsInterfaces.map(val => val), // Same as extendsInterfaces for now
+        extendsInterfaces: interfaceType.extendsInterfaces.map(val =>
+          resolveBlockDataApiName(val, interfaceTypeLookup)
+        ),
+        allExtendsInterfaces: interfaceType.extendsInterfaces.map(val =>
+          resolveBlockDataApiName(val, interfaceTypeLookup)
+        ),
         implementedByObjectTypes: [], // Empty for now
         displayName: interfaceType.displayMetadata.displayName,
         description: interfaceType.displayMetadata.description ?? undefined,
-        links: this.getOsdkInterfaceLinkTypesFromBlockData(interfaceType.links),
+        links: this.getOsdkInterfaceLinkTypesFromBlockData(
+          interfaceType.links,
+          interfaceTypeLookup,
+        ),
         allLinks: this.getOsdkInterfaceLinkTypesFromBlockData(
           interfaceType.links,
+          interfaceTypeLookup,
         ), // Same as links for now
       };
 
@@ -733,6 +781,7 @@ export class OntologyBlockDataToFullMetadataConverter {
 
   static getOsdkInterfaceLinkTypesFromBlockData(
     ilts: MarketplaceInterfaceLinkType[],
+    interfaceTypeLookup: BlockDataApiNameLookup | undefined,
   ): Record<ApiName, Ontologies.InterfaceLinkType> {
     const result: Record<ApiName, Ontologies.InterfaceLinkType> = {};
 
@@ -746,7 +795,10 @@ export class OntologyBlockDataToFullMetadataConverter {
           const interfaceType = ilt.linkedEntityTypeId.interfaceType;
           linkedEntityApiName = {
             type: "interfaceTypeApiName" as const,
-            apiName: interfaceType,
+            apiName: resolveBlockDataApiName(
+              interfaceType,
+              interfaceTypeLookup,
+            ),
           };
           break;
         }
@@ -862,13 +914,15 @@ export class OntologyBlockDataToFullMetadataConverter {
       case "marking":
         return { type: "marking" };
       case "cipherText":
-        return null;
+        return { type: "cipherText" };
       case "mediaReference":
-        return null;
+        return { type: "mediaReference" };
       case "vector":
         return null;
       case "geotimeSeriesReference":
-        return null;
+        return { type: "geotimeSeriesReference" };
+      case "timestamp":
+        return { type: "timestamp" };
       case "struct": {
         const value = type.struct;
         const ridBase = `ri.struct.${
@@ -968,6 +1022,7 @@ export interface BlockDataApiNameLookup {
 
 export function buildBlockDataObjectTypeLookup(
   blockdata: OntologyBlockDataV2 | undefined,
+  importedTypes?: Ontologies.OntologyFullMetadata,
 ): BlockDataApiNameLookup | undefined {
   if (!blockdata?.objectTypes) {
     return undefined;
@@ -977,13 +1032,23 @@ export function buildBlockDataObjectTypeLookup(
   for (const [key, value] of Object.entries(blockdata.objectTypes)) {
     const apiName = value.objectType.apiName!;
     byRid.set(key, apiName);
-    byHyphenated.set(apiName.replace(/\./g, "-").toLowerCase(), apiName);
+    byHyphenated.set(hyphenateApiName(apiName), apiName);
+  }
+  if (importedTypes) {
+    for (const [key, value] of Object.entries(importedTypes.objectTypes)) {
+      byRid.set(value.objectType.rid, value.objectType.apiName);
+      byHyphenated.set(
+        hyphenateApiName(value.objectType.apiName),
+        value.objectType.apiName,
+      );
+    }
   }
   return { byRid, byHyphenated };
 }
 
 export function buildBlockDataInterfaceTypeLookup(
   blockdata: OntologyBlockDataV2 | undefined,
+  importedTypes?: Ontologies.OntologyFullMetadata,
 ): BlockDataApiNameLookup | undefined {
   if (!blockdata?.interfaceTypes) {
     return undefined;
@@ -993,9 +1058,22 @@ export function buildBlockDataInterfaceTypeLookup(
   for (const [key, value] of Object.entries(blockdata.interfaceTypes)) {
     const apiName = value.interfaceType.apiName!;
     byRid.set(key, apiName);
-    byHyphenated.set(apiName.replace(/\./g, "-"), apiName);
+    byHyphenated.set(hyphenateApiName(apiName), apiName);
+  }
+  if (importedTypes) {
+    for (const [key, value] of Object.entries(importedTypes.interfaceTypes)) {
+      byRid.set(value.rid, value.apiName);
+      byHyphenated.set(
+        hyphenateApiName(value.apiName),
+        value.apiName,
+      );
+    }
   }
   return { byRid, byHyphenated };
+}
+
+function hyphenateApiName(apiName: string): string {
+  return apiName.replace(/\./g, "-").toLowerCase();
 }
 
 export function resolveBlockDataApiName(

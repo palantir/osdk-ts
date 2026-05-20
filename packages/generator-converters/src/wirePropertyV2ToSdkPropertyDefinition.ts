@@ -81,7 +81,6 @@ export function wirePropertyV2ToSdkPropertyDefinition(
     case "timeseries":
     case "marking":
     case "geotimeSeriesReference":
-    case "struct":
     case "vector":
       return {
         displayName: input.displayName,
@@ -95,6 +94,21 @@ export function wirePropertyV2ToSdkPropertyDefinition(
           ? wirePropertyFormattingToSdkFormatting(input.valueFormatting, log)
           : undefined,
       };
+    case "struct": {
+      const mainValue = extractMainValue(input.dataType);
+      return {
+        displayName: input.displayName,
+        multiplicity: false,
+        description: input.description,
+        type: sdkPropDefinition,
+        nullable: input.nullable == null ? isNullable : input.nullable,
+        valueTypeApiName: input.valueTypeApiName,
+        valueFormatting: input.valueFormatting != null
+          ? wirePropertyFormattingToSdkFormatting(input.valueFormatting, log)
+          : undefined,
+        mainValue,
+      };
+    }
     case "array": {
       return {
         displayName: input.displayName,
@@ -107,6 +121,7 @@ export function wirePropertyV2ToSdkPropertyDefinition(
         valueFormatting: input.valueFormatting != null
           ? wirePropertyFormattingToSdkFormatting(input.valueFormatting, log)
           : undefined,
+        hasReducers: hasReducers(input.dataType),
       };
     }
     case "cipherText": {

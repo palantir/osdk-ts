@@ -20,8 +20,9 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { FormContentItem } from "../ActionFormApi.js";
 import { BaseForm } from "../BaseForm.js";
@@ -49,7 +50,51 @@ function field(definition: RendererFieldDefinition): FormContentItem {
 describe("BaseForm", () => {
   afterEach(cleanup);
 
+  describe("form title", () => {
+    it("does not render a form title when formTitle is omitted", () => {
+      render(
+        <BaseForm formContent={[field(makeDef("name"))]} onSubmit={vi.fn()} />,
+      );
+
+      expect(screen.queryByRole("heading")).toBeNull();
+    });
+
+    it("renders a form title when formTitle is provided", () => {
+      render(
+        <BaseForm
+          formTitle="Create employee"
+          formContent={[field(makeDef("name"))]}
+          onSubmit={vi.fn()}
+        />,
+      );
+
+      expect(screen.getByRole("heading").textContent).toBe("Create employee");
+    });
+  });
+
   describe("uncontrolled mode", () => {
+    it("keeps edited state after a blank field is restored", async () => {
+      render(
+        <BaseForm formContent={[field(makeDef("name"))]} onSubmit={vi.fn()} />,
+      );
+
+      expect(screen.queryByText("Edited")).toBeNull();
+
+      const nameInput = screen.getByRole("textbox", { name: "name" });
+      fireEvent.change(nameInput, { target: { value: "Alice" } });
+
+      await waitFor(() => {
+        expect(screen.getByText("Edited")).toBeDefined();
+      });
+      expect(screen.getByRole("textbox", { name: "name" })).toBeDefined();
+
+      fireEvent.change(nameInput, { target: { value: "" } });
+
+      await waitFor(() => {
+        expect(screen.getByText("Edited")).toBeDefined();
+      });
+    });
+
     it("submits entered field values", async () => {
       const onSubmit = vi.fn();
 
@@ -69,6 +114,26 @@ describe("BaseForm", () => {
         expect(onSubmit).toHaveBeenCalledWith(
           expect.objectContaining({ name: "Alice" }),
         );
+      });
+    });
+
+    it("submits from the button click instead of the form submit event", async () => {
+      const onSubmit = vi.fn();
+
+      render(
+        <BaseForm formContent={[field(makeDef("name"))]} onSubmit={onSubmit} />,
+      );
+
+      const form = document.querySelector("form");
+      expect(form).not.toBeNull();
+
+      fireEvent.submit(form!);
+      expect(onSubmit).not.toHaveBeenCalled();
+
+      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+
+      await vi.waitFor(() => {
+        expect(onSubmit).toHaveBeenCalledTimes(1);
       });
     });
 
@@ -97,12 +162,16 @@ describe("BaseForm", () => {
       render(
         <BaseForm
           formContent={[
-            field(makeDef("name", {
-              fieldComponentProps: { defaultValue: "Default Name" },
-            })),
-            field(makeDef("email", {
-              fieldComponentProps: { defaultValue: "default@test.com" },
-            })),
+            field(
+              makeDef("name", {
+                fieldComponentProps: { defaultValue: "Default Name" },
+              }),
+            ),
+            field(
+              makeDef("email", {
+                fieldComponentProps: { defaultValue: "default@test.com" },
+              }),
+            ),
           ]}
           onSubmit={onSubmit}
         />,
@@ -129,12 +198,16 @@ describe("BaseForm", () => {
       render(
         <BaseForm
           formContent={[
-            field(makeDef("name", {
-              fieldComponentProps: { defaultValue: "Bob" },
-            })),
-            field(makeDef("email", {
-              fieldComponentProps: { defaultValue: "bob@test.com" },
-            })),
+            field(
+              makeDef("name", {
+                fieldComponentProps: { defaultValue: "Bob" },
+              }),
+            ),
+            field(
+              makeDef("email", {
+                fieldComponentProps: { defaultValue: "bob@test.com" },
+              }),
+            ),
           ]}
           onSubmit={onSubmit}
         />,
@@ -175,40 +248,31 @@ describe("BaseForm", () => {
       expect(screen.getByRole("combobox")).toBeDefined();
     });
 
-    it("renders dropdown portals inside the form-level portal container", async () => {
-      const portalContainer = document.createElement("div");
-      document.body.append(portalContainer);
+    it("renders dropdown portals inside the form element", async () => {
+      render(
+        <BaseForm
+          formContent={[
+            field({
+              fieldKey: "color",
+              label: "Color",
+              fieldComponent: "DROPDOWN" as const,
+              fieldComponentProps: {
+                items: ["Red", "Blue", "Green"],
+              },
+            }),
+          ]}
+          onSubmit={vi.fn()}
+        />,
+      );
 
-      try {
-        render(
-          <BaseForm
-            formContent={[
-              field({
-                fieldKey: "color",
-                label: "Color",
-                fieldComponent: "DROPDOWN" as const,
-                fieldComponentProps: {
-                  items: ["Red", "Blue", "Green"],
-                },
-              }),
-            ]}
-            portalContainer={portalContainer}
-            onSubmit={vi.fn()}
-          />,
-        );
+      fireEvent.click(screen.getByRole("combobox"));
 
-        fireEvent.click(screen.getByRole("combobox"));
-
-        await waitFor(() => {
-          expect(
-            portalContainer.contains(screen.getByRole("option", {
-              name: "Red",
-            })),
-          ).toBe(true);
-        });
-      } finally {
-        portalContainer.remove();
-      }
+      const form = document.querySelector("form");
+      await waitFor(() => {
+        expect(
+          within(form!).getByRole("option", { name: "Red" }),
+        ).toBeDefined();
+      });
     });
   });
 
@@ -217,10 +281,12 @@ describe("BaseForm", () => {
       render(
         <BaseForm
           formContent={[
-            field(makeDef("name", {
-              helperText: "Enter your full name",
-              helperTextPlacement: "bottom",
-            })),
+            field(
+              makeDef("name", {
+                helperText: "Enter your full name",
+                helperTextPlacement: "bottom",
+              }),
+            ),
           ]}
           onSubmit={vi.fn()}
         />,
@@ -233,10 +299,12 @@ describe("BaseForm", () => {
       render(
         <BaseForm
           formContent={[
-            field(makeDef("name", {
-              helperText: "Enter your full name",
-              helperTextPlacement: "tooltip",
-            })),
+            field(
+              makeDef("name", {
+                helperText: "Enter your full name",
+                helperTextPlacement: "tooltip",
+              }),
+            ),
           ]}
           onSubmit={vi.fn()}
         />,
@@ -250,9 +318,11 @@ describe("BaseForm", () => {
       render(
         <BaseForm
           formContent={[
-            field(makeDef("name", {
-              helperText: "Enter your full name",
-            })),
+            field(
+              makeDef("name", {
+                helperText: "Enter your full name",
+              }),
+            ),
           ]}
           onSubmit={vi.fn()}
         />,
@@ -264,10 +334,7 @@ describe("BaseForm", () => {
 
     it("does not render helper text or icon when helperText is absent", () => {
       render(
-        <BaseForm
-          formContent={[field(makeDef("name"))]}
-          onSubmit={vi.fn()}
-        />,
+        <BaseForm formContent={[field(makeDef("name"))]} onSubmit={vi.fn()} />,
       );
 
       expect(screen.queryByLabelText("Info about name")).toBeNull();
@@ -275,6 +342,50 @@ describe("BaseForm", () => {
   });
 
   describe("controlled mode", () => {
+    it("keeps edited state after parent state updates and value is restored", async () => {
+      const content: ReadonlyArray<FormContentItem> = [field(makeDef("name"))];
+
+      function ControlledWrapper() {
+        const [formState, setFormState] = useState<Record<string, unknown>>({
+          name: "Initial",
+        });
+
+        const handleFieldChange = useCallback(
+          (fieldKey: string, value: unknown) => {
+            setFormState((prev) => ({ ...prev, [fieldKey]: value }));
+          },
+          [],
+        );
+
+        return (
+          <BaseForm
+            formContent={content}
+            formState={formState}
+            onFieldValueChange={handleFieldChange}
+            onSubmit={vi.fn()}
+          />
+        );
+      }
+
+      render(<ControlledWrapper />);
+
+      expect(screen.queryByText("Edited")).toBeNull();
+
+      const nameInput = screen.getByRole("textbox", { name: "name" });
+      fireEvent.change(nameInput, { target: { value: "Updated" } });
+
+      await waitFor(() => {
+        expect(screen.getByText("Edited")).toBeDefined();
+      });
+      expect(screen.getByRole("textbox", { name: "name" })).toBeDefined();
+
+      fireEvent.change(nameInput, { target: { value: "Initial" } });
+
+      await waitFor(() => {
+        expect(screen.getByText("Edited")).toBeDefined();
+      });
+    });
+
     it("calls onFieldValueChange when a field is edited", () => {
       const onFieldValueChange = vi.fn();
 
@@ -410,9 +521,11 @@ describe("BaseForm", () => {
       render(
         <BaseForm
           formContent={[
-            field(makeDef("name", {
-              fieldComponentProps: { minLength: 3 },
-            })),
+            field(
+              makeDef("name", {
+                fieldComponentProps: { minLength: 3 },
+              }),
+            ),
           ]}
           onSubmit={vi.fn()}
         />,
@@ -479,9 +592,7 @@ describe("BaseForm", () => {
       );
 
       const getSubmitButton = () =>
-        document.querySelector(
-          "button[type='submit']",
-        ) as HTMLButtonElement;
+        screen.getByRole("button", { name: /submit/i }) as HTMLButtonElement;
 
       expect(getSubmitButton().disabled).toBe(false);
 
@@ -501,9 +612,7 @@ describe("BaseForm", () => {
       );
 
       const getSubmitButton = () =>
-        document.querySelector(
-          "button[type='submit']",
-        ) as HTMLButtonElement;
+        screen.getByRole("button", { name: /submit/i }) as HTMLButtonElement;
 
       // Touch the field first so RHF tracks it for revalidation
       const input = screen.getByRole("textbox", { name: /name/ });
@@ -532,14 +641,9 @@ describe("BaseForm", () => {
     });
 
     it("shows submission error on button when onSubmit rejects", async () => {
-      const onSubmit = vi.fn().mockRejectedValue(
-        new Error("Server error"),
-      );
+      const onSubmit = vi.fn().mockRejectedValue(new Error("Server error"));
       render(
-        <BaseForm
-          formContent={[field(makeDef("name"))]}
-          onSubmit={onSubmit}
-        />,
+        <BaseForm formContent={[field(makeDef("name"))]} onSubmit={onSubmit} />,
       );
 
       fireEvent.click(screen.getByRole("button", { name: /submit/i }));
@@ -550,14 +654,9 @@ describe("BaseForm", () => {
     });
 
     it("clears submission error when a field is edited", async () => {
-      const onSubmit = vi.fn().mockRejectedValue(
-        new Error("Server error"),
-      );
+      const onSubmit = vi.fn().mockRejectedValue(new Error("Server error"));
       render(
-        <BaseForm
-          formContent={[field(makeDef("name"))]}
-          onSubmit={onSubmit}
-        />,
+        <BaseForm formContent={[field(makeDef("name"))]} onSubmit={onSubmit} />,
       );
 
       fireEvent.click(screen.getByRole("button", { name: /submit/i }));
@@ -598,10 +697,7 @@ describe("BaseForm", () => {
           }),
       );
       render(
-        <BaseForm
-          formContent={[field(makeDef("name"))]}
-          onSubmit={onSubmit}
-        />,
+        <BaseForm formContent={[field(makeDef("name"))]} onSubmit={onSubmit} />,
       );
 
       fireEvent.click(screen.getByRole("button", { name: /submit/i }));
@@ -615,9 +711,7 @@ describe("BaseForm", () => {
       resolveSubmit!();
 
       await waitFor(() => {
-        expect(
-          screen.getByRole("button", { name: /^submit$/i }),
-        ).toBeDefined();
+        expect(screen.getByRole("button", { name: /^submit$/i })).toBeDefined();
       });
     });
 
@@ -659,16 +753,10 @@ describe("BaseForm", () => {
       );
 
       const sectionTitle = screen.getByText("Personal Info");
-      const sectionRoot = sectionTitle.closest(
-        "[class*='osdkFormSectionBox']",
-      );
+      const sectionRoot = sectionTitle.closest("[class*='osdkFormSectionBox']");
       expect(sectionRoot).not.toBeNull();
-      expect(
-        sectionRoot!.querySelector("input[id='name']"),
-      ).not.toBeNull();
-      expect(
-        sectionRoot!.querySelector("input[id='email']"),
-      ).not.toBeNull();
+      expect(sectionRoot!.querySelector("input[id='name']")).not.toBeNull();
+      expect(sectionRoot!.querySelector("input[id='email']")).not.toBeNull();
     });
 
     it("shows section error badge for required fields after submit", async () => {
@@ -712,10 +800,7 @@ describe("BaseForm", () => {
 
     it("defaults to Submit when no custom text is provided", () => {
       render(
-        <BaseForm
-          formContent={[field(makeDef("name"))]}
-          onSubmit={vi.fn()}
-        />,
+        <BaseForm formContent={[field(makeDef("name"))]} onSubmit={vi.fn()} />,
       );
 
       expect(screen.getByRole("button", { name: /^submit$/i })).toBeDefined();
@@ -750,6 +835,96 @@ describe("BaseForm", () => {
         expect(onSubmit).toHaveBeenCalledWith(
           expect.objectContaining({ name: "Alice" }),
         );
+      });
+    });
+  });
+
+  describe("unsupported fields", () => {
+    it("renders a disabled text input with the unsupported field message", () => {
+      render(
+        <BaseForm
+          formContent={[
+            field({
+              fieldKey: "unsupported",
+              label: "Unsupported",
+              fieldComponent: "UNSUPPORTED",
+              fieldComponentProps: {},
+            }),
+          ]}
+          onSubmit={vi.fn()}
+        />,
+      );
+
+      const input = screen.getByRole("textbox", { name: "Unsupported" });
+      expect(input).toHaveProperty(
+        "value",
+        "Unsupported field type. Use a CUSTOM field instead",
+      );
+      expect(input).toHaveProperty("disabled", true);
+    });
+
+    it("uses the required validation message for required unsupported fields", async () => {
+      const onSubmit = vi.fn();
+
+      render(
+        <BaseForm
+          formContent={[
+            field({
+              fieldKey: "unsupported",
+              label: "Unsupported",
+              fieldComponent: "UNSUPPORTED",
+              isRequired: true,
+              fieldComponentProps: {},
+            }),
+          ]}
+          onSubmit={onSubmit}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+
+      await waitFor(() => {
+        expect(screen.getByRole("alert").textContent).toBe(
+          "This field is required",
+        );
+      });
+      expect(onSubmit).not.toHaveBeenCalled();
+    });
+
+    it("submits controlled form state without displaying it in unsupported fields", async () => {
+      const onSubmit = vi.fn();
+
+      render(
+        <BaseForm
+          formContent={[
+            field({
+              fieldKey: "unsupported",
+              label: "Unsupported",
+              fieldComponent: "UNSUPPORTED",
+              isRequired: true,
+              fieldComponentProps: {},
+            }),
+          ]}
+          formState={{ unsupported: "sensitive value" }}
+          onFieldValueChange={vi.fn()}
+          onSubmit={onSubmit}
+        />,
+      );
+
+      expect(screen.queryByDisplayValue("sensitive value")).toBeNull();
+      expect(
+        screen.getByRole("textbox", { name: /Unsupported/ }),
+      ).toHaveProperty(
+        "value",
+        "Unsupported field type. Use a CUSTOM field instead",
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+
+      await waitFor(() => {
+        expect(onSubmit).toHaveBeenCalledWith({
+          unsupported: "sensitive value",
+        });
       });
     });
   });

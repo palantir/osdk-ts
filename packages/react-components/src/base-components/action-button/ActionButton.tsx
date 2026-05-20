@@ -23,6 +23,7 @@ export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>
 {
   variant?: "primary" | "secondary";
+  appearance?: "default" | "minimal";
 }
 
 export const ActionButton: React.MemoExoticComponent<
@@ -30,21 +31,21 @@ export const ActionButton: React.MemoExoticComponent<
     ButtonProps & React.RefAttributes<HTMLButtonElement>
   >
 > = React.memo(
-  React.forwardRef<HTMLButtonElement, ButtonProps>(
-    function ActionButton({ variant = "secondary", className, ...rest }, ref) {
-      return (
-        <Button
-          ref={ref}
-          className={classNames(
-            styles.button,
-            variant === "primary"
-              ? styles.primaryButton
-              : styles.secondaryButton,
-            className,
-          )}
-          {...rest}
-        />
-      );
-    },
-  ),
+  React.forwardRef<HTMLButtonElement, ButtonProps>(function ActionButton(
+    { variant = "secondary", appearance = "default", className, ...rest },
+    ref,
+  ) {
+    return (
+      <Button
+        ref={ref}
+        className={classNames(
+          styles.button,
+          variant === "primary" ? styles.primaryButton : styles.secondaryButton,
+          appearance === "minimal" && styles.minimalButton,
+          className,
+        )}
+        {...rest}
+      />
+    );
+  }),
 );

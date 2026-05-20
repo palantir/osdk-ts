@@ -21,7 +21,7 @@ import { PLUGIN_NAME } from "./constants.js";
 import { generateHookInstallationScript } from "./hookInstaller.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const CSS_PATH = resolvePath(__dirname, "../index.css");
+const CSS_PATH = resolvePath(__dirname, "../styles.css");
 
 export interface OsdkDevToolsOptions {
   /**

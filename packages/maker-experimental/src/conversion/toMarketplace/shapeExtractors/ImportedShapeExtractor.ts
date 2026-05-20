@@ -44,6 +44,7 @@ import type {
 } from "../../../util/generateRid.js";
 import { ReadableIdGenerator } from "../../../util/generateRid.js";
 import { typeToMarketplaceObjectPropertyType } from "../typeVisitors.js";
+import { extractValueTypeInputShapeIfPresent } from "./IrShapeExtractor.js";
 
 function createLocalizedAbout(
   fallbackTitle: string,
@@ -318,25 +319,16 @@ function extractImportedInterfaceTypes(
       interfaceType.apiName,
     );
 
-    // Build properties list (SPT references)
-    const properties: string[] = (interfaceType.properties ?? []).map(
-      (spt: any) => {
-        const sptId = knownIdentifiers.sharedPropertyTypes?.[spt.rid];
-        return sptId ?? spt.rid;
-      },
+    // Build properties list from propertiesV2 (SPT references as BlockInternalIds)
+    const properties: string[] = Object.values(
+      interfaceType.propertiesV2 ?? {},
+    ).map(propEntry =>
+      ridGenerator.toBlockInternalId(
+        ReadableIdGenerator.getForSpt(
+          propEntry.sharedPropertyType.apiName,
+        ),
+      )
     );
-
-    // Build propertiesV2 list (interface property references)
-    const propertiesV2: string[] = [];
-    for (
-      const [propertyRid] of Object.entries(interfaceType.propertiesV3 ?? {})
-    ) {
-      const propReadableId = ridGenerator.getInterfacePropertyTypeRids()
-        .inverse().get(propertyRid);
-      if (propReadableId) {
-        propertiesV2.push(ridGenerator.toBlockInternalId(propReadableId));
-      }
-    }
 
     // Build links list
     const links: string[] = (interfaceType.links ?? []).map(
@@ -352,7 +344,7 @@ function extractImportedInterfaceTypes(
         interfaceType.displayMetadata.description ?? "",
       ),
       properties,
-      propertiesV2,
+      propertiesV2: [],
       links,
     };
 
@@ -361,42 +353,19 @@ function extractImportedInterfaceTypes(
       interfaceType: inputShape,
     });
 
-    // Generate interface property type input shapes
+    // Generate SPT input shapes
     for (
-      const [propertyRid, property] of Object.entries(
-        interfaceType.propertiesV3 ?? {},
+      const [_sptRid, propEntry] of Object.entries(
+        interfaceType.propertiesV2 ?? {},
       )
     ) {
-      const propReadableId = ridGenerator.getInterfacePropertyTypeRids()
-        .inverse().get(propertyRid);
-      if (!propReadableId) continue;
+      const spt = propEntry.sharedPropertyType;
+      const sptReadableId = ReadableIdGenerator.getForSpt(spt.apiName);
+      if (blockShapes.inputShapes.has(sptReadableId)) continue;
 
-      if (property.type === "interfaceDefinedPropertyType") {
-        const propInputShape: InterfacePropertyTypeInputShape = {
-          about: createLocalizedAbout(
-            property.interfaceDefinedPropertyType.displayMetadata.displayName,
-            property.interfaceDefinedPropertyType.displayMetadata.description
-              ?? "",
-          ),
-          type: {
-            type: "objectPropertyType",
-            objectPropertyType: typeToMarketplaceObjectPropertyType(
-              property.interfaceDefinedPropertyType.type,
-            ),
-          },
-          interfaceType: ridGenerator.toBlockInternalId(interfaceReadableId),
-          requireImplementation:
-            property.interfaceDefinedPropertyType.constraints
-              .requireImplementation,
-        };
-        blockShapes.inputShapes.set(propReadableId, {
-          type: "interfacePropertyType",
-          interfacePropertyType: propInputShape,
-        });
-      } else if (property.type === "sharedPropertyBasedPropertyType") {
-        const spt = property.sharedPropertyBasedPropertyType.sharedPropertyType;
-        const sptReadableId = ReadableIdGenerator.getForSpt(spt.apiName);
-        const sharedPropInputShape: SharedPropertyTypeInputShape = {
+      blockShapes.inputShapes.set(sptReadableId, {
+        type: "sharedPropertyType",
+        sharedPropertyType: {
           about: createLocalizedAbout(
             spt.displayMetadata.displayName,
             spt.displayMetadata.description ?? "",
@@ -405,12 +374,52 @@ function extractImportedInterfaceTypes(
             type: "objectPropertyType",
             objectPropertyType: typeToMarketplaceObjectPropertyType(spt.type),
           },
-        };
-        blockShapes.inputShapes.set(sptReadableId, {
-          type: "sharedPropertyType",
-          sharedPropertyType: sharedPropInputShape,
-        });
+        },
+      });
+      blockShapes.inputShapeMetadata.set(sptReadableId, {
+        isOptional: false,
+        isAccessedInReconcile: true,
+        reconcileAccessRequirements: "RESOURCE_EXISTENCE_REQUIRED",
+        preallocateAccessRequirements: "RESOURCE_PREALLOCATION_REQUIRED",
+      });
+    }
+
+    // Generate interface-defined property type input shapes
+    for (
+      const [propertyRid, property] of Object.entries(
+        interfaceType.propertiesV3 ?? {},
+      )
+    ) {
+      if (property.type !== "interfaceDefinedPropertyType") continue;
+
+      const propReadableId = ridGenerator.getInterfacePropertyTypeRids()
+        .inverse().get(propertyRid);
+      if (!propReadableId) {
+        throw new Error(
+          `Missing readable ID for interface-defined property RID ${propertyRid} on interface ${interfaceType.apiName}`,
+        );
       }
+
+      const propInputShape: InterfacePropertyTypeInputShape = {
+        about: createLocalizedAbout(
+          property.interfaceDefinedPropertyType.displayMetadata.displayName,
+          property.interfaceDefinedPropertyType.displayMetadata.description
+            ?? "",
+        ),
+        type: {
+          type: "objectPropertyType",
+          objectPropertyType: typeToMarketplaceObjectPropertyType(
+            property.interfaceDefinedPropertyType.type,
+          ),
+        },
+        interfaceType: ridGenerator.toBlockInternalId(interfaceReadableId),
+        requireImplementation: property.interfaceDefinedPropertyType.constraints
+          .requireImplementation,
+      };
+      blockShapes.inputShapes.set(propReadableId, {
+        type: "interfacePropertyType",
+        interfacePropertyType: propInputShape,
+      });
     }
 
     // Generate interface link type input shapes
@@ -420,24 +429,19 @@ function extractImportedInterfaceTypes(
         interfaceLinkType.metadata.apiName,
       );
 
-      const linkedEntityTypeRef = interfaceLinkType.linkedEntityTypeId.type
-          === "interfaceType"
+      const linkedInterfaceRid =
+        interfaceLinkType.linkedEntityTypeId.type === "interfaceType"
+          ? interfaceLinkType.linkedEntityTypeId.interfaceType
+          : undefined;
+
+      const linkedReadableId = linkedInterfaceRid
+        ? ridGenerator.getInterfaceRids().inverse().get(linkedInterfaceRid)
+        : undefined;
+
+      const linkedEntityTypeRef = linkedReadableId
         ? {
           type: "interfaceType" as const,
-          interfaceType: ridGenerator.toBlockInternalId(
-            ReadableIdGenerator.getForInterface(
-              // resolve interface RID to apiName
-              ridGenerator.getInterfaceRids().inverse().get(
-                  interfaceLinkType.linkedEntityTypeId.interfaceType,
-                )
-                ? ridGenerator.toBlockInternalId(
-                  ridGenerator.getInterfaceRids().inverse().get(
-                    interfaceLinkType.linkedEntityTypeId.interfaceType,
-                  )!,
-                )
-                : interfaceLinkType.linkedEntityTypeId.interfaceType,
-            ),
-          ),
+          interfaceType: ridGenerator.toBlockInternalId(linkedReadableId),
         }
         : undefined;
 
@@ -499,6 +503,14 @@ function extractImportedSharedPropertyTypes(
       reconcileAccessRequirements: "RESOURCE_EXISTENCE_REQUIRED",
       preallocateAccessRequirements: "RESOURCE_PREALLOCATION_REQUIRED",
     });
+
+    extractValueTypeInputShapeIfPresent(
+      spt.valueType ?? undefined,
+      spt.displayMetadata.displayName,
+      spt.type,
+      blockShapes,
+      ridGenerator,
+    );
   }
 }
 

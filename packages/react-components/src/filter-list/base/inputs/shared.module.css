@@ -15,7 +15,6 @@
  */
 
 /* Shared message styles for filter inputs */
-.loadingMessage,
 .errorMessage,
 .emptyMessage {
   font-family: var(--osdk-filter-message-font-family);
@@ -23,13 +22,24 @@
   padding: var(--osdk-filter-message-padding);
 }
 
-.loadingMessage,
 .emptyMessage {
   color: var(--osdk-filter-message-color-muted);
 }
 
 .errorMessage {
   color: var(--osdk-filter-message-color-danger);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
 
 /* Shared tag styles */

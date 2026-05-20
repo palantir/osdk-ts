@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-export { default as default } from "./cli/main.js";
-
 export type { ActionLevelValidationDefinition } from "./api/action/ActionLevelValidationDefinition.js";
 export type {
   ActionParameter,
@@ -29,6 +27,7 @@ export type {
   ActionParameterConfiguration,
   ActionParameterRequirementConstraint,
 } from "./api/action/ActionParameterConfiguration.js";
+export type { ActionParameterType } from "./api/action/ActionParameterType.js";
 export {
   isActionParameterTypePrimitive,
 } from "./api/action/ActionParameterType.js";
@@ -89,6 +88,7 @@ export {
   getOntologyDefinition,
   initializeOntologyState,
   withoutNamespace,
+  writeStaticObjects,
 } from "./api/defineOntology.js";
 export { defineSharedPropertyType } from "./api/defineSpt.js";
 export { defineValueType } from "./api/defineValueType.js";

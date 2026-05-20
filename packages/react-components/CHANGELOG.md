@@ -1,5 +1,123 @@
 # @osdk/react-components
 
+## 0.18.0
+
+### Minor Changes
+
+- b0de21b: ActionForm fields now show an `Edited` tag after users edit them.
+- 1f63510: Add built-in dark mode token overrides. Components now react automatically to `prefers-color-scheme: dark` and to the `[data-bp-color-scheme="dark"]` / `.bp6-dark` attribute selectors, matching the Foundry custom widgets dark theme guidance.
+- aad8d52: filter-list: match "No value" row gap to regular row gap so it doesn't look visually tighter than its neighbors
+- f6f92fb: Fix broken CSS custom property references that used non-existent token names
+- 19d5612: Fix two ObjectTable editable-cell visual issues:
+  - Dropdown cell no longer shows a phantom "edited" outline after clearing a
+    never-set cell. `EditableCell` and `useEditableTable` now treat `null` and
+    `undefined` as the same empty state when deciding whether an edit is a
+    revert, so clearing a cell whose value was `undefined` removes the edit
+    entry instead of leaving a stale "edited" indicator. `""` remains a
+    distinct value — clearing an empty string still registers as an edit.
+  - Date picker cell now shows the same focus outline as the text input cell,
+    and no longer renders the date picker's own box-shadow on top of the cell
+    border. The cell wrapper also reserves a transparent border so focusing
+    the picker doesn't shift layout.
+
+- 5c20aba: Add `--osdk-table-cell-bg` CSS variable on `ObjectTable` / `BaseTable`
+  cells, and tag each `<td>` with `data-editable="true"` when the cell renders
+  as editable. The variable defaults to `inherit`, preserving current visuals.
+
+  Renamed `--osdk-table-cell-editable-bg` to `--osdk-table-cell-input-bg`.
+
+  Combine the two to highlight editable cells before any row is clicked into,
+  without altering component logic:
+
+  ```css
+  .my-table td[data-editable] {
+    --osdk-table-cell-bg: var(--my-editable-tint);
+  }
+  ```
+
+- ca8ef7c: ObjectTable: drop the redundant `selectedRowIds` field from the `RowSelectionChange` payload delivered to `onRowSelectionChanged`. The primary keys are still available via `selectedRows.map(r => r.$primaryKey)`. `selectedRowIds` was redundant with `selectedRows` and was kept only as a transitional alias.
+- 5ca0da3: Replace hardcoded table header menu colors with surface tokens and align table row hover/active to `--osdk-intent-primary-rest` for better dark theme compatibility.
+
+## 0.17.0
+
+### Minor Changes
+
+- 773194c: `ObjectTable` now accepts an optional `renderEmptyState` prop for overriding the default "No Data" indicator with a custom `ReactNode`.
+- 546c673: Fix page scroll being blocked when opening a date picker in an editable ObjectTable
+- 962ede9: prevent height jumps in SingleSelectInput, MultiSelectInput, and TextTagsInput during loading
+- 3548f5e: ObjectTable:
+  - Fix "select all" + scroll: newly-loaded rows are now checked and the header checkbox stays in sync. `onRowSelection` refires in uncontrolled mode with the expanded id list as new pages load.
+  - Add `onRowSelectionChanged(change)` callback that delivers a `RowSelectionChange` payload with `selectedRowIds`, `selectedRows`, `isSelectAll`, and a derived `objectSet` (full underlying set on "select all", otherwise narrowed by `$primaryKey`).
+  - Deprecate `onRowSelection` in favor of `onRowSelectionChanged`. The legacy callback continues to fire for backwards compatibility.
+
+- 6400c8b: Remove DocxViewer. `.docx` files now fall through to the DocumentViewer unsupported-file state. The `docx-preview` dependency, `DocxViewer`/`BaseDocxViewer` exports, `./experimental/docx-viewer` entrypoint, `ViewerType.Docx`, and `docxViewerProps` on `DocumentViewer` are removed. Removed primarily because rendering untrusted `.docx` directly in the browser via `docx-preview` parses arbitrary attacker-controlled Office Open XML in the host page; we'd rather route DOCX through a server-side decode pipeline (e.g. MIO transform → PDF) than ship a client-side parser as an attack surface. Consumers should pre-convert DOCX to PDF and use `PdfViewer`, or supply their own viewer.
+- ddeda7f: Fix custom value rendering in ObjectTable dropdown cells for non-string item types (booleans, numbers, etc.)
+
+## 0.16.0
+
+### Minor Changes
+
+- f62c9e2: Add DocumentViewer with MIME-type routing, ImageViewer, VideoViewer, DocxViewer, ExcelViewer, EmailViewer, XmlViewer components, and OSDK Media wrappers for TiffRenderer and MarkdownRenderer
+- 7ee1fa3: ObjectTable `EditFieldConfig.getFieldComponentProps` now receives a second `edits` argument with the row's pending cell edits (keyed by columnId), so editor configuration can react to other in-progress edits within the same row.
+- cf496ff: filter-list: round number range histogram min/max to integers for integer property types so dragging or clicking a bucket no longer emits fractional values that break downstream filters
+- bfe05b5: Widen `renderValue` return type on FilterList property and static-values filter definitions from `string` to `ReactNode` so callers can render custom React components (e.g. avatars, anchors) for filter values. When `renderValue` returns a non-string `ReactNode`, search matching falls back to the raw value.
+- 11f585d: Histogram date filter: From and To inputs now open independent single-month popovers with Today/Clear actions, replacing the shared two-month range calendar that was confusing users next to the histogram bars
+
+## 0.15.0
+
+### Minor Changes
+
+- 108ac50: Cap long ActionForm select dropdowns so they scroll inside dialogs.
+- 4bc17cc: Fix editable date field incorrectly showing edited border after click-in/click-out without changes
+- 99ec28c: Fix page scroll being blocked when opening a dropdown in an editable ObjectTable
+- d10ed5e: Add rich item label rendering to ActionForm dropdown fields.
+- 47eb27c: Add object set scoping to ObjectSelectField.
+- 73738dd: Show unsupported ActionForm field types and recommend CUSTOM fields.
+
+## 0.14.0
+
+### Minor Changes
+
+- 69ebc43: Fix function-backed columns and lists with derived properties rendering stale values after an action edits a related object. ObjectTable's `useFunctionColumnsData` now passes the page's row PKs as `dependsOnObjects` to the underlying `useOsdkFunctions`, and function `ColumnDefinition` locators now accept an optional `dependsOn: string[]` for declaring linked object types the function reads server-side. Lists whose `withProperties` traverse linked types now also revalidate when an action edits one of those linked types. The action invalidation path fans out per-type invalidation in a single walk while the optimistic layer is still on top, so fresh values land in truth before the optimistic layer drops.
+- 48d5ed2: Add `AipAgentChat` component — an OSDK-aware chat surface that wraps `useChat` from `@osdk/react/experimental/aip` against a Foundry LMS model. Importing the component is sufficient; consumers do not need to import `useChat` or `foundryModel` themselves. Also exports `BaseAipAgentChat` for advanced use with consumer-managed chat state.
+- 19159ce: Add contrib skill
+- d6a3194: Show selected filter values with count 0 when they are absent from aggregation results
+- 082e4e6: Expose `FilterPopover`, `FilterInput`, and `useFilterListState` as composable primitives so consumers can build custom FilterList layouts (e.g. inline horizontal toolbars). Also exports `getFilterKey`, `getFilterLabel`, `summarizeFilterValue`, and `filterHasActiveState` helpers. See the `Experimental/FilterList/Recipes/Horizontal toolbar` story for a worked example. Also adds a pointer-hover highlight to non-disabled `Combobox` items (matches the existing `[data-highlighted]` keyboard-focus treatment).
+- 85dde6e: Dedupe empty/null aggregation rows across all FilterList property filters. `usePropertyAggregation` now collapses any combination of `null`, `undefined`, and `""` buckets returned by the backend into a single "No value" row, so dropdown, multi-select, and text-tag filters no longer show two or more "No value" entries when the underlying aggregation produces multiple empty groupings. Whitespace-only strings remain as their literal value, matching Workshop. The behavior previously lived in `ListogramInput` only; lifting it into the hook covers every consumer. Adds a shared `dedupeEmptyAggregationRows` helper exported from `utils/filterValues.ts` for downstream reuse.
+- 5165618: Fix layout flash in FilterList multi-select and single-select inputs during sibling-aggregation refetch. Previously, when a listogram checkbox toggled and triggered a refetch in sibling filters, MULTI_SELECT and SINGLE_SELECT inputs briefly stacked "Loading options..." and "Updating..." above the combobox, pushing the panel layout down and snapping back when the fetch completed. Both inputs now use the same useStableData pattern already used by ListogramInput and RangeInput: the last non-loading values are preserved across refetch so the combobox stays mounted with its prior options and chips, with no inline loading hint. The "Loading options..." empty-state still shows on genuine first load; "No options available" still shows when the aggregation resolves to empty.
+- 082e4e6: Date input fields are now shared across action-form, filter-list, and object-table. The new `shared/calendar/` module exports `DatePicker` and `DateRangePicker` (extracted from action-form's `DatetimePickerField` / `DateRangeInputField`). Filter-list date filters render the shared popover calendar instead of native `<input type="date">` so every viewer sees the same `YYYY-MM-DD` regardless of browser locale. Date-range histograms now render as SVG with axis grid lines, count labels above each bar, locale-aware short month tick labels (e.g. `Jan`/`Feb` in English, localized in other browser locales) for monthly buckets and `yyyy` for yearly, plus a period subtitle. New `formatDate` callback on date filter definitions overrides the displayed string everywhere — picker idle text, histogram tooltip, period subtitle, x-tick labels, and chip text — without affecting the underlying ISO value. New `clickToFilter` flag on `DATE_RANGE` and `NUMBER_RANGE` filters enables clicking or dragging across histogram bars to set the range; drag-to-select uses pointer events with `setPointerCapture` for touch support and `pointercancel` cleanup. The previously plumbed-but-unused `parseDate` callback was removed; the shared pickers own input parsing.
+
+  Visual polish from review feedback: the "No value" label now has its own `--osdk-filter-no-value-font-size` CSS variable so the inline empty row in a histogram and the trailing row from `NullValueWrapper` render at the same size in all contexts; the listogram empty row also matches the null-wrapper's checkbox-to-label gap. Listogram bucket counts and null-row counts now use compact number formatting (`1.2K`, `1.5M`) with the full count exposed via `title` for a11y. Filter-list inputs and `FilterPopover` triggers were bumped to body-medium to match the rest of the codebase, and `RangeInput`'s outer Clear button and `ContainsTextInput`'s inline clear-X no longer cause layout shift when toggled (always rendered with `visibility: hidden` when inactive). `DateRangePicker` now exposes a `modal` prop (mirroring `DatePicker`) so callers can nest it inside another popover without the dismiss layer swallowing outer clicks.
+
+- f45ab11: Fix filter list dropdown positioning: flip above trigger when near container bottom, hide when anchor scrolls out of view
+- 662a0c7: Pin form footer in height-constrained containers so fields scroll independently
+- 6344e8b: Strip time to local midnight in DatetimePickerField onChange when showTime is false
+- 53ffbcc: Fix styling of empty dropdown
+- 3943b67: Fix boolean properties rendering as empty in ObjectTable
+- bcf9078: Add auto-size (fit to width) toggle to PDF viewer toolbar
+- 81314f2: Fix dropdown field triggering validation when popover opens
+
+## 0.13.0
+
+### Minor Changes
+
+- 53e5f4f: Cap the Combobox popup at 320px (configurable via `--osdk-combobox-popup-max-height`) with overflow scrolling. Long option lists no longer push other UI off-screen — they scroll inside the popup. A short browser window still gets a smaller cap because the rule resolves to `min(320px, var(--available-height))`.
+- aca2466: Standardize "No value" rendering in FilterList — introduce a shared `NoValueLabel` component (italic, muted) used by listogram buckets, single-select and multi-select dropdown options, multi-select chips, text-tag chips, and the `NullValueWrapper` include-null row. Adds an `isEmptyValue` helper. The `NullValueWrapper` include-null row's default visual flips from upright/default-color to italic/muted so it matches the dropdown and listogram surfaces. Legacy `--osdk-filter-listogram-empty-label-color`, `--osdk-filter-listogram-empty-label-font-style`, `--osdk-filter-null-label-color`, `--osdk-filter-null-label-font-family`, `--osdk-filter-null-label-font-size`, and `--osdk-filter-null-label-line-height` tokens are honored as opt-in overrides on the listogram and null-wrapper containers; consumers who explicitly set them continue to override the new italic-muted defaults.
+- fe39be0: Stabilize per-filter where-clause references inside `useFilterListState` via deep-equality caching, so `FilterInput.memo` holds when the cross-filter context for a given filter is unchanged across selections. Eliminates redundant aggregation requests on every value selection. Internal-only — no public API changes.
+- 76ab0a3: ObjectTable: Fix bug when cell is marked edited on clicking into and out of an empty cell
+- 72e928b: ObjectTable: support per-row edit configuration via `editable: (rowData) => boolean`, add `getRowAttributes` prop for conditional row styling via data attributes, replace `editFieldConfig.fieldComponentProps` with `editFieldConfig.getFieldComponentProps(rowData)` so editor configuration can vary per row, and add a `showEditFooter` prop to opt out of the built-in edit footer.
+- 9be8339: Polish ActionForm date/time controls, boolean switch fields, form submission, popup positioning, component tokens, and FauxFoundry action typings.
+
+## 0.12.0
+
+### Minor Changes
+
+- d15d3cf: Add Blueprint-style design tokens for buttons, inputs, and table rows
+- 56c5630: Drop redundant `--config $(find-up dprint.json)` from `lint`, `fix-lint`, and `format` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the substitution was a no-op anyway since `find-up` is an npm package, not a CLI. Also fix the `uploadMediaOntologyEdits` documentation example so its `// @ts-ignore` survives dprint reformatting (the broken `format` step had been masking this).
+- b187c09: ObjectTable: when a column has both `renderCell` and `editable: true`, use `renderCell` while not in edit mode and the editable cell only after entering edit mode (relevant for `editMode: "manual"`). Previously `renderCell` always took precedence and editable cells never appeared.
+- 7a0c187: add `onFilterVisibilityChange` callback to `FilterList` that fires when filters are reordered, added, or removed, returning all filters in display order with their visibility state. Useful for persisting filter configuration in saved states.
+- 5d0c6b7: Fix Action Form popover dismissal inside dialog portals.
+
 ## 0.11.0
 
 ### Minor Changes

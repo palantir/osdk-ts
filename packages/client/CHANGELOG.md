@@ -1,5 +1,112 @@
 # @osdk/client
 
+## 2.22.0
+
+### Patch Changes
+
+- @osdk/api@2.22.0
+- @osdk/client.unstable@2.22.0
+- @osdk/generator-converters@2.22.0
+
+## 2.21.0
+
+### Minor Changes
+
+- 1a07c91: Clean up unstable interface code: remove the `$__UNSTABLE_useOldInterfaceApis` fetch option and its old `OntologyInterfaces.search`-based code path, consolidate `convertWireToOsdkObjects` / `convertWireToOsdkObjects2` into a single factory backed by `loadMultipleObjectTypes`, and rename `__UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition` / `__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst` (the latter is generator-internal). The unused `v2` parameter on `wireInterfaceTypeV2ToSdkObjectDefinition` is also removed.
+- 2db1450: Fix ObjectSetQuery not revalidating when an action edits a type that the query's RDP traverses. Previously only ListQuery (used by useOsdkObjects) checked the RDP invalidation set; ObjectSetQuery (used by useObjectSet) only matched the base object type, leaving RDP columns stale after actions edited a linked type such as Office.
+
+### Patch Changes
+
+- Updated dependencies [1a07c91]
+  - @osdk/api@2.21.0
+  - @osdk/generator-converters@2.21.0
+  - @osdk/shared.test@2.17.0
+  - @osdk/client.unstable@2.21.0
+
+## 2.20.0
+
+### Minor Changes
+
+- f90a2da: fix $as on objects fetched with $loadPropertySecurityMetadata
+- 9eb67e4: Add experimental support for streaming queries via the `__EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction` marker.
+- 51b3bce: Modify uploadMedia to return a Media object
+- 75f877f: `createClientFromWriteableClient` now accepts an optional `options` argument to override `transactionId`, `baseUrl`, `ontologyRid`, or `tokenProvider` from the source client. `applyAction` also now throws when batch actions are invoked on a client with an active transaction id, since batch actions are not supported for staged edit functions.
+
+### Patch Changes
+
+- Updated dependencies [9eb67e4]
+  - @osdk/api@2.20.0
+  - @osdk/generator-converters@2.20.0
+  - @osdk/shared.test@2.16.0
+  - @osdk/client.unstable@2.20.0
+
+## 2.19.0
+
+### Minor Changes
+
+- 02c796c: Array Reducers and Struct Main Value support
+- 2a2b672: Add `@osdk/client/experimental` entry point exposing `createClientWithTransaction` and a new `createClientFromWriteableClient` that clones a writeable client's base URL, ontology, token provider, and transaction id while discarding its fetch implementation.
+- d962309: Add ability to subscribe to an object set RID without a type, experimentally.
+
+### Patch Changes
+
+- Updated dependencies [02c796c]
+- Updated dependencies [d962309]
+  - @osdk/generator-converters@2.19.0
+  - @osdk/shared.test@2.15.0
+  - @osdk/api@2.19.0
+  - @osdk/client.unstable@2.19.0
+
+## 2.18.0
+
+### Minor Changes
+
+- 69ebc43: Fix function-backed columns and lists with derived properties rendering stale values after an action edits a related object. ObjectTable's `useFunctionColumnsData` now passes the page's row PKs as `dependsOnObjects` to the underlying `useOsdkFunctions`, and function `ColumnDefinition` locators now accept an optional `dependsOn: string[]` for declaring linked object types the function reads server-side. Lists whose `withProperties` traverse linked types now also revalidate when an action edits one of those linked types. The action invalidation path fans out per-type invalidation in a single walk while the optimistic layer is still on top, so fresh values land in truth before the optimistic layer drops.
+- 85a248d: fix list hooks emitting undefined entries during deletes
+
+  • register `changes.deleted` when `propagateWrite` writes a tombstone, so list/objectset queries drop the cache key in the same batch (fixes `useOsdkObjects` + `applyAction(delete)` and optimistic deletes)
+  • same fix applied to streaming-driven removals in `BaseListQuery.onOswRemoved`
+
+### Patch Changes
+
+- @osdk/shared.test@2.14.0
+- @osdk/api@2.18.0
+- @osdk/client.unstable@2.18.0
+- @osdk/generator-converters@2.18.0
+
+## 2.17.0
+
+### Minor Changes
+
+- 147166c: fix typing so `$loadPropertySecurityMetadata: true` is accepted on the experimental `fetchPageByRid` client method, and `$propertySecurities` is properly typed on returned objects.
+
+### Patch Changes
+
+- Updated dependencies [147166c]
+  - @osdk/api@2.17.0
+  - @osdk/client.unstable@2.17.0
+  - @osdk/generator-converters@2.17.0
+
+## 2.16.0
+
+### Minor Changes
+
+- 56c5630: Drop redundant `--config $(find-up dprint.json)` from `lint`, `fix-lint`, and `format` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the substitution was a no-op anyway since `find-up` is an npm package, not a CLI. Also fix the `uploadMediaOntologyEdits` documentation example so its `// @ts-ignore` survives dprint reformatting (the broken `format` step had been masking this).
+- 17d7ba2: Fill in missing `@param`, `@example`, and `@returns` tags on JSDoc across the public surface of `@osdk/api` and `@osdk/client`: `ObjectSet` methods, the derived-property `Builder` chain and `NumericExpressions` / `DatetimeExpressions` chains, the `Logger` interface, `Attachment` and `Media` accessors, `TimeSeriesProperty` / `GeotimeSeriesProperty` single-point methods, the top-level `Client` callable and `fetchMetadata`, and the `createClient` factory.
+
+### Patch Changes
+
+- Updated dependencies [56c5630]
+- Updated dependencies [ebc5f0c]
+- Updated dependencies [17d7ba2]
+  - @osdk/api@2.16.0
+  - @osdk/client.unstable@2.16.0
+  - @osdk/generator-converters@2.16.0
+  - @osdk/shared.client.impl@1.12.0
+  - @osdk/shared.net.errors@2.10.0
+  - @osdk/shared.net.fetch@1.10.0
+  - @osdk/shared.test@2.14.0
+
 ## 2.15.0
 
 ### Minor Changes

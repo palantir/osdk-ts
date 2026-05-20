@@ -24,6 +24,7 @@ import type {
 import { useOsdkAggregation } from "@osdk/react";
 import { useMemo } from "react";
 import type { AggregationGroupResult } from "../utils/aggregationHelpers.js";
+import { dedupeEmptyAggregationRows } from "../utils/filterValues.js";
 
 export type { PropertyAggregationValue } from "../types/AggregationTypes.js";
 
@@ -36,12 +37,17 @@ export interface UsePropertyAggregationResult {
   error: Error | null;
 }
 
+const EMPTY_ACTIVE_VALUES: string[] = [];
+
 export interface UsePropertyAggregationOptions<
   Q extends ObjectTypeDefinition = ObjectTypeDefinition,
 > {
   limit?: number;
   where?: WhereClause<Q>;
   sortBy?: "count" | "value";
+  /** Selected values to include in results even when they have zero matching
+   *  rows (e.g. saved filter selections from initialFilterStates). */
+  activeValues?: string[];
 }
 
 export function usePropertyAggregation<
@@ -78,6 +84,8 @@ export function usePropertyAggregation<
     aggregationArgs,
   );
 
+  const activeValues = options?.activeValues ?? EMPTY_ACTIVE_VALUES;
+
   const result = useMemo(
     (): { data: PropertyAggregationValue[]; maxCount: number } => {
       if (!countData) {
@@ -92,7 +100,24 @@ export function usePropertyAggregation<
       // matches the $groupBy + $count aggregation pattern.
       const dataArray = countData as AggregationGroupResult;
 
+      // Build a set of values present in the aggregation so we can identify
+      // which active selections need to be synthesized as ghost entries.
+      const existingValues = new Set<string>();
       for (const item of dataArray) {
+        const raw = item.$group[propertyKey as string];
+        existingValues.add(raw == null ? "" : String(raw));
+      }
+
+      // Synthesize ghost entries for active selections absent from aggregation
+      // results (e.g. saved filters with zero matching rows). They use the same
+      // shape as real entries so the loop below handles isNull uniformly.
+      const ghostEntries = activeValues.flatMap((v) =>
+        existingValues.has(v)
+          ? []
+          : [{ $group: { [propertyKey as string]: v }, $count: 0 }]
+      );
+
+      for (const item of [...dataArray, ...ghostEntries]) {
         const rawValue = item.$group[propertyKey as string];
         const count = item.$count ?? 0;
 
@@ -104,22 +129,24 @@ export function usePropertyAggregation<
         maxCount = Math.max(maxCount, count);
       }
 
+      const deduped = dedupeEmptyAggregationRows(values);
+
       const sortBy = options?.sortBy ?? "count";
       if (sortBy === "count") {
-        values.sort((a, b) =>
+        deduped.sort((a, b) =>
           b.count - a.count || a.value.localeCompare(b.value)
         );
       } else {
-        values.sort((a, b) => a.value.localeCompare(b.value));
+        deduped.sort((a, b) => a.value.localeCompare(b.value));
       }
 
-      if (options?.limit && values.length > options.limit) {
-        return { data: values.slice(0, options.limit), maxCount };
+      if (options?.limit && deduped.length > options.limit) {
+        return { data: deduped.slice(0, options.limit), maxCount };
       }
 
-      return { data: values, maxCount };
+      return { data: deduped, maxCount };
     },
-    [countData, propertyKey, options?.limit, options?.sortBy],
+    [countData, propertyKey, options?.limit, options?.sortBy, activeValues],
   );
 
   return {

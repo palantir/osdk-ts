@@ -1,5 +1,63 @@
 # @osdk/generator-converters.preview
 
+## 0.12.0
+
+### Minor Changes
+
+- dea392c: Fix maker experimental imports
+
+### Patch Changes
+
+- Updated dependencies [dea392c]
+- Updated dependencies [d8f3dfd]
+  - @osdk/generator-converters.ontologyir@2.22.0
+  - @osdk/client.unstable@2.22.0
+  - @osdk/generator@2.22.0
+
+## 0.11.0
+
+### Patch Changes
+
+- Updated dependencies [1a07c91]
+- Updated dependencies [5b89f25]
+- Updated dependencies [b98e084]
+  - @osdk/generator@2.21.0
+  - @osdk/generator-converters.ontologyir@2.21.0
+  - @osdk/client.unstable@2.21.0
+
+## 0.10.0
+
+### Patch Changes
+
+- @osdk/generator@2.20.0
+- @osdk/client.unstable@2.20.0
+- @osdk/generator-converters.ontologyir@2.20.0
+
+## 0.9.0
+
+### Patch Changes
+
+- Updated dependencies [02c796c]
+- Updated dependencies [46c553f]
+  - @osdk/generator@2.19.0
+  - @osdk/generator-converters.ontologyir@2.19.0
+  - @osdk/client.unstable@2.19.0
+
+## 0.8.0
+
+### Minor Changes
+
+- 56c5630: Drop redundant `--config $(find-up dprint.json)` from `lint`, `fix-lint`, and `format` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the substitution was a no-op anyway since `find-up` is an npm package, not a CLI. Also fix the `uploadMediaOntologyEdits` documentation example so its `// @ts-ignore` survives dprint reformatting (the broken `format` step had been masking this).
+- ebc5f0c: Experimental function backed actions in OAC
+
+### Patch Changes
+
+- Updated dependencies [56c5630]
+- Updated dependencies [ebc5f0c]
+  - @osdk/client.unstable@2.16.0
+  - @osdk/generator@2.16.0
+  - @osdk/generator-converters.ontologyir@2.16.0
+
 ## 0.7.0
 
 ### Patch Changes

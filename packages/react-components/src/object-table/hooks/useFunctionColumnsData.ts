@@ -208,6 +208,15 @@ function extractFunctionLocators<
     );
 }
 
+/** A page's filtered ObjectSet paired with the row objects it covers. */
+interface PagedObjects<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+> {
+  objectSet: ObjectSet<Q, RDPs>;
+  objects: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[];
+}
+
 /** Chunks objects into pages and creates a filtered ObjectSet per page. */
 function buildPagedObjectSets<
   Q extends ObjectOrInterfaceDefinition,
@@ -217,9 +226,9 @@ function buildPagedObjectSets<
   objects: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[],
   primaryKeyApiName: string | undefined,
   pageSize: number,
-): unknown[] {
+): PagedObjects<Q, RDPs>[] {
   if (!primaryKeyApiName) {
-    return [objectSet];
+    return [{ objectSet, objects }];
   }
 
   return chunk(objects, pageSize).map(page => {
@@ -239,6 +248,10 @@ function buildPagedObjectSets<
  * Layout: [page0_col0, page0_col1, ..., page1_col0, page1_col1, ...]
  * Page-first ordering ensures first concurrent queries prioritizes the first page,
  * so visible rows get all their columns populated before later pages.
+ *
+ * Each query carries `dependsOnObjects` (the page's row instances) so that
+ * editing any of those rows fans out to invalidate this function query, and
+ * `dependsOn` from the locator so that linked-type edits also invalidate.
  */
 function buildQueryGrid<
   Q extends ObjectOrInterfaceDefinition,
@@ -248,21 +261,23 @@ function buildQueryGrid<
     never
   >,
 >(
-  pagedObjectSets: unknown[],
+  pagedObjects: PagedObjects<Q, RDPs>[],
   functionColDefs: FunctionColumnLocator<Q, RDPs, FunctionColumns>[],
 ): QueryGrid {
   const queries: FunctionQueryParams<QueryDefinition<unknown>>[] = [];
 
-  for (const pagedObjectSet of pagedObjectSets) {
+  for (
+    const { objectSet: pagedObjectSet, objects: pageObjects } of pagedObjects
+  ) {
     for (const locator of functionColDefs) {
       queries.push({
         queryDefinition: locator.queryDefinition,
         options: {
-          params: locator.getFunctionParams(
-            pagedObjectSet as ObjectSet<Q, RDPs>,
-          ),
+          params: locator.getFunctionParams(pagedObjectSet),
           dedupeIntervalMs: locator.dedupeIntervalMs
             ?? DEFAULT_FUNCTION_COLUMN_DEDUPE_INTERVAL_MS,
+          dependsOn: locator.dependsOn,
+          dependsOnObjects: pageObjects,
         } as FunctionQueryParams<QueryDefinition<unknown>>["options"],
       });
     }

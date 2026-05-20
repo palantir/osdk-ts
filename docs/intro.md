@@ -20,6 +20,7 @@ React hooks for building front-end applications with OSDK.
 - [Advanced Queries](/react/advanced-queries) - useObjectSet, derived properties, aggregations
 - [Cache Management](/react/cache-management) - Cache behavior and invalidation
 - [Platform APIs](/react/platform-apis) - useCurrentFoundryUser, useFoundryUser, useFoundryUsersList
+- [Devtools (Experimental)](/react-devtools/Prerequisites) - In-app monitoring panel and Vite plugin for inspecting, debugging, and tuning OSDK React apps
 
 ### [Components](/react-components/Prerequisites)
 

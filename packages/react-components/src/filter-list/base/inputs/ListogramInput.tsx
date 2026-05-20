@@ -19,9 +19,14 @@ import classnames from "classnames";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import { Checkbox } from "../../../base-components/checkbox/Checkbox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
-import { filterValuesBySearch } from "../../utils/filterValues.js";
+import {
+  filterValuesBySearch,
+  isEmptyValue,
+} from "../../utils/filterValues.js";
+import { formatCompactCount } from "./formatCompactCount.js";
 import styles from "./ListogramInput.module.css";
 import { ListogramSkeleton } from "./ListogramSkeleton.js";
+import { NoValueLabel } from "./NoValueLabel.js";
 import sharedStyles from "./shared.module.css";
 import { useStableData } from "./useStableData.js";
 
@@ -42,7 +47,7 @@ interface ListogramInputProps {
   style?: React.CSSProperties;
   maxVisibleItems?: number;
   searchQuery?: string;
-  renderValue?: (value: string) => string;
+  renderValue?: (value: string) => React.ReactNode;
 }
 
 function ListogramInputInner({
@@ -84,7 +89,10 @@ function ListogramInputInner({
       return filterValuesBySearch(
         stableValues,
         searchQuery,
-        (v) => renderValue?.(v.value) ?? v.value,
+        (v) => {
+          const rendered = renderValue?.(v.value);
+          return typeof rendered === "string" ? rendered : v.value;
+        },
       );
     }
     return stableValues;
@@ -128,15 +136,13 @@ function ListogramInputInner({
           {displayValues.map(({ value, count }) => {
             const percentage = maxCount > 0 ? (count / maxCount) * 100 : 0;
             const perRowColor = colorMap?.[value];
-            const isEmpty = value === "";
-            const displayLabel = isEmpty
-              ? "No value"
-              : (renderValue?.(value) ?? value);
+            const isEmpty = isEmptyValue(value);
 
             return (
               <Button
                 key={value}
                 className={styles.row}
+                data-empty={isEmpty || undefined}
                 // eslint-disable-next-line react/jsx-no-bind
                 onClick={() => toggleValue(value)}
                 aria-pressed={selectedSet.has(value)}
@@ -163,17 +169,21 @@ function ListogramInputInner({
                   />
                 </span>
                 <span
-                  className={classnames(
-                    styles.label,
-                    isEmpty && styles.emptyLabel,
-                  )}
+                  className={styles.label}
                   data-excluding={(isExcluding && selectedSet.has(value))
                     || undefined}
                 >
-                  {displayLabel}
+                  {isEmpty
+                    ? <NoValueLabel className={styles.noValueLabel} />
+                    : (renderValue?.(value) ?? value)}
                 </span>
                 {showCount && displayMode !== "minimal" && (
-                  <span className={styles.count}>{count.toLocaleString()}</span>
+                  <span
+                    className={styles.count}
+                    title={count.toLocaleString()}
+                  >
+                    {formatCompactCount(count)}
+                  </span>
                 )}
                 {displayMode === "full" && (
                   <span className={styles.bar}>

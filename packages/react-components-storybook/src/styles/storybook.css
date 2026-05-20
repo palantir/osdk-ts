@@ -43,35 +43,10 @@ body {
   color: #2563eb;
 }
 
-/* Submit toast — auto-dismissing success banner */
-.osdkSubmitToast {
-  max-width: 480px;
-  width: 100%;
-  margin-bottom: calc(var(--osdk-surface-spacing) * 2);
-  padding: calc(var(--osdk-surface-spacing) * 2)
-    calc(var(--osdk-surface-spacing) * 3);
-  background: var(--osdk-intent-success-rest);
-  color: var(--osdk-intent-success-foreground);
-  border-radius: var(--osdk-surface-border-radius);
-  font-size: var(--osdk-typography-size-body-small);
-  font-weight: 500;
-  animation: osdkToastFadeIn 0.2s ease-out;
-}
-
-@keyframes osdkToastFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 .osdkFormCard {
   --osdk-form-label-font-size: var(--osdk-typography-size-body-small);
+  --osdk-form-content-padding-inline: calc(var(--osdk-surface-spacing) * 4);
+  --osdk-form-content-padding-block: calc(var(--osdk-surface-spacing) * 4);
 
   max-width: 480px;
   width: 100%;
@@ -86,7 +61,11 @@ body {
 }
 
 .osdkBlueprintDialogForm {
+  --osdk-form-content-padding-inline: calc(var(--osdk-surface-spacing) * 4);
+  --osdk-form-content-padding-block: calc(var(--osdk-surface-spacing) * 4);
+
   width: min(480px, calc(100vw - calc(var(--osdk-surface-spacing) * 8)));
+  max-height: calc(100vh - calc(var(--osdk-surface-spacing) * 16));
 }
 
 .osdkCustomTextarea {
@@ -99,6 +78,15 @@ body {
   font-family: inherit;
 }
 
+/* Row highlight for RowAttributesForStyling story */
+.customTableStyling {
+  tr[data-highlight-row="true"] {
+    --osdk-table-row-bg-default: #f0f8ff;
+    --osdk-table-row-bg-alternate: #e8f4ff;
+    --osdk-table-row-bg-hover: #e0f0ff;
+  }
+}
+
 .osdkCodeOutput {
   margin: 0;
   padding: calc(var(--osdk-surface-spacing) * 3);
@@ -107,4 +95,16 @@ body {
   overflow: auto;
   font-size: var(--osdk-typography-size-body-small);
   max-height: 300px;
+}
+
+.osdkRichDropdownLabel {
+  display: inline-flex;
+  flex-direction: column;
+  gap: calc(var(--osdk-surface-spacing) * 0.5);
+  min-width: 0;
+}
+
+.osdkRichDropdownDescription {
+  color: var(--osdk-typography-color-muted);
+  font-size: var(--osdk-typography-size-body-small);
 }

@@ -22,7 +22,8 @@
   height: var(--osdk-file-picker-trigger-height);
   border: var(--osdk-file-picker-trigger-border);
   border-radius: var(--osdk-file-picker-trigger-border-radius);
-  background: var(--osdk-file-picker-trigger-bg);
+  box-shadow: var(--osdk-input-shadow);
+  background-color: var(--osdk-file-picker-trigger-bg);
   font-family: var(--osdk-file-picker-trigger-font-family);
   font-size: var(--osdk-file-picker-trigger-font-size);
   box-sizing: border-box;
@@ -32,21 +33,18 @@
       var(--osdk-file-picker-transition-ease),
     border-color var(--osdk-file-picker-transition-duration)
       var(--osdk-file-picker-transition-ease);
+}
 
-  &:hover {
-    background: var(--osdk-file-picker-trigger-bg-hover);
-  }
+.osdkFilePickerTrigger:has(.osdkFilePickerText:focus-visible),
+.osdkFilePickerTrigger:has(.osdkFilePickerClear:focus-visible) {
+  border-color: var(--osdk-file-picker-trigger-border-color-focus);
+  outline: var(--osdk-file-picker-trigger-focus-width) solid
+    var(--osdk-file-picker-trigger-focus-color);
+  outline-offset: var(--osdk-file-picker-trigger-focus-offset);
+}
 
-  &:focus-visible {
-    border-color: var(--osdk-file-picker-trigger-border-color-focus);
-    outline: var(--osdk-file-picker-trigger-focus-width) solid
-      var(--osdk-file-picker-trigger-focus-color);
-    outline-offset: var(--osdk-file-picker-trigger-focus-offset);
-  }
-
-  &[aria-invalid] {
-    border-color: var(--osdk-file-picker-trigger-border-color-error);
-  }
+.osdkFilePickerTrigger[aria-invalid] {
+  border-color: var(--osdk-file-picker-trigger-border-color-error);
 }
 
 /* display: none fully removes the input from the a11y tree, avoiding
@@ -59,6 +57,8 @@
 /* File name text (left section) */
 .osdkFilePickerText {
   flex: 1;
+  align-self: stretch;
+  min-width: 0;
   padding: var(--osdk-file-picker-trigger-padding);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -66,10 +66,23 @@
   text-align: left;
   color: var(--osdk-file-picker-trigger-color);
   cursor: pointer;
-  background: none;
+  background-color: transparent;
   border: none;
   font-family: inherit;
   font-size: inherit;
+  line-height: inherit;
+
+  &:hover {
+    background-color: var(--osdk-file-picker-trigger-bg-hover);
+  }
+
+  &:active {
+    background-color: var(--osdk-surface-background-color-default-active);
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
 }
 
 .osdkFilePickerPlaceholder {
@@ -104,27 +117,28 @@
   }
 }
 
-/* Browse label (right section) */
+/* Browse button (right section) */
 .osdkFilePickerBrowse {
-  flex-shrink: 0;
-  align-self: stretch;
+  --osdk-button-min-height: 0;
+
   display: flex;
   align-items: center;
-  padding: var(--osdk-file-picker-browse-padding);
-  border-left: var(--osdk-file-picker-browse-border-left);
-  background: var(--osdk-file-picker-browse-bg);
-  color: var(--osdk-file-picker-browse-color);
+  justify-content: center;
+  flex-shrink: 0;
+  min-height: 0;
+  margin-block-start: calc(var(--osdk-surface-spacing) * 0.5);
+  margin-block-end: calc(var(--osdk-surface-spacing) * 0.5);
+  margin-inline-start: calc(var(--osdk-surface-spacing) * 0.5);
+  margin-inline-end: calc(var(--osdk-surface-spacing) * 0.5);
   font-family: var(--osdk-file-picker-trigger-font-family);
   font-size: var(--osdk-file-picker-trigger-font-size);
-  pointer-events: none;
-  transition: background-color var(--osdk-file-picker-transition-duration)
-    var(--osdk-file-picker-transition-ease);
+
+  &:focus {
+    outline: none;
+  }
 }
 
-.osdkFilePickerTrigger:hover .osdkFilePickerBrowse {
-  background-color: var(--osdk-file-picker-browse-bg-hover);
-}
-
-.osdkFilePickerTrigger:active .osdkFilePickerBrowse {
-  background-color: var(--osdk-file-picker-browse-bg-active);
+.osdkFilePickerBrowse.osdkFilePickerBrowse {
+  padding-block: calc(var(--osdk-surface-spacing) * 0.5);
+  padding-inline: calc(var(--osdk-surface-spacing) * 3);
 }

@@ -20,6 +20,7 @@ import {
   createCompositeExternalStore,
   EMPTY_STORE,
 } from "./createCompositeExternalStore.js";
+import { getStableQueriesKey } from "./getStableQueriesKey.js";
 import { OsdkContext } from "./OsdkContext.js";
 import type {
   UseOsdkFunctionOptions,
@@ -81,10 +82,7 @@ export function useOsdkFunctions(
 ): UseOsdkFunctionsResult {
   const { observableClient } = React.useContext(OsdkContext);
 
-  const stableQueriesKey = JSON.stringify(queries.map(q => ({
-    apiName: q.queryDefinition.apiName,
-    ...q.options,
-  })));
+  const stableQueriesKey = getStableQueriesKey(queries);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const stableQueries = React.useMemo(() => queries, [stableQueriesKey]);

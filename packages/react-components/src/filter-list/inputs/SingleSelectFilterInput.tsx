@@ -35,7 +35,7 @@ interface SingleSelectFilterInputProps<Q extends ObjectTypeDefinition> {
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
   excludeRowOpen?: boolean;
-  renderValue?: (value: string) => string;
+  renderValue?: (value: string) => React.ReactNode;
   showCount?: boolean;
 }
 
@@ -79,8 +79,11 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
   );
 
   const aggregationOptions = useMemo(
-    () => ({ where: whereClause }),
-    [whereClause],
+    () => ({
+      where: whereClause,
+      activeValues: selectedValue != null ? [selectedValue] : undefined,
+    }),
+    [whereClause, selectedValue],
   );
 
   const { data, isLoading, error } = usePropertyAggregation(

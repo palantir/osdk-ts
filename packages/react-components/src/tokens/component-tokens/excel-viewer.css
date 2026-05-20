@@ -1,0 +1,23 @@
+:root {
+  /* Excel Viewer - Container */
+  --osdk-excel-viewer-bg: var(--osdk-background-primary);
+  --osdk-excel-viewer-border: var(--osdk-surface-border);
+
+  /* Excel Viewer - Table */
+  --osdk-excel-viewer-header-bg: var(--osdk-background-secondary);
+  --osdk-excel-viewer-header-color: var(--osdk-typography-color-muted);
+  --osdk-excel-viewer-cell-border: var(--osdk-surface-border-color-default);
+  --osdk-excel-viewer-cell-padding: 2px 6px;
+  --osdk-excel-viewer-col-min-width: 80px;
+  --osdk-excel-viewer-row-header-width: 40px;
+
+  /* Excel Viewer - Sheet Tabs */
+  --osdk-excel-viewer-tab-bg: var(--osdk-background-secondary);
+  --osdk-excel-viewer-tab-hover-bg: var(--osdk-background-tertiary);
+  --osdk-excel-viewer-tab-active-bg: var(--osdk-background-primary);
+  --osdk-excel-viewer-tab-border: var(--osdk-surface-border);
+  --osdk-excel-viewer-tab-border-radius: 4px;
+  --osdk-excel-viewer-tab-padding: 4px 12px;
+  --osdk-excel-viewer-tab-bar-padding: 4px;
+  --osdk-excel-viewer-tab-gap: 2px;
+}

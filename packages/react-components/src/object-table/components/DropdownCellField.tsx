@@ -25,7 +25,14 @@ import { ReadonlyDisplayCell } from "./ReadonlyDisplayCell.js";
 interface DropdownCellFieldProps {
   fieldComponentProps: DropdownEditConfig;
   isRowFocused: boolean;
+  /**
+   * Stringified value for the readonly (non-focused) cell display.
+   */
   inputValue: string;
+  /**
+   * The actual typed cell value.
+   */
+  value: unknown;
   hasValidationError: boolean;
   isEdited: boolean;
   onChange: (newValue: unknown) => void;
@@ -35,16 +42,20 @@ function DropdownCellFieldInner({
   fieldComponentProps,
   isRowFocused,
   inputValue,
+  value,
   hasValidationError,
   isEdited,
   onChange,
 }: DropdownCellFieldProps): React.ReactElement {
   const portalRef = useRegisterPortal();
+  const { itemToStringLabel } = fieldComponentProps;
 
   if (!isRowFocused) {
     return (
       <ReadonlyDisplayCell
-        inputValue={inputValue}
+        inputValue={itemToStringLabel
+          ? itemToStringLabel(value)
+          : inputValue}
         hasValidationError={hasValidationError}
         isEdited={isEdited}
       />
@@ -63,8 +74,9 @@ function DropdownCellFieldInner({
       <DropdownField
         {...fieldComponentProps}
         portalRef={portalRef}
-        value={inputValue}
+        value={value}
         onChange={onChange}
+        modal={false}
       />
     </div>
   );

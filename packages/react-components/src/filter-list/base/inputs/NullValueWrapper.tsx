@@ -17,6 +17,8 @@
 import classnames from "classnames";
 import React, { memo, useCallback } from "react";
 import { Checkbox } from "../../../base-components/checkbox/Checkbox.js";
+import { formatCompactCount } from "./formatCompactCount.js";
+import { NoValueLabel } from "./NoValueLabel.js";
 import styles from "./NullValueWrapper.module.css";
 import sharedStyles from "./shared.module.css";
 
@@ -58,11 +60,14 @@ function NullValueWrapperInner({
       >
         <label className={styles.nullLabel}>
           <Checkbox checked={includeNull} onCheckedChange={handleToggle} />
-          <span className={styles.nullLabelText}>No value</span>
+          <NoValueLabel className={styles.noValueLabel} />
         </label>
         {showNullCount && !error && (
-          <span className={styles.count}>
-            {nullCount.toLocaleString()}
+          <span
+            className={styles.count}
+            title={nullCount.toLocaleString()}
+          >
+            {formatCompactCount(nullCount)}
           </span>
         )}
       </div>

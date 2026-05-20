@@ -69,6 +69,19 @@ interface SharedColumnDefinition<
   orderable?: boolean;
   filterable?: boolean;
 
+  /**
+   * Custom renderer for the cell value.
+   *
+   * Interaction with `editable` columns:
+   * - When `editMode: "manual"` (default), `renderCell` is used while the
+   *   table is read-only (Edit Table button visible) and the editable cell
+   *   takes over once the user enters edit mode.
+   * - When `editMode: "always"`, the editable cell always wins on editable
+   *   columns and `renderCell` is ignored — `editMode: "always"` opts the
+   *   column into a permanently-editable surface, leaving no read-only
+   *   state for `renderCell` to render. Use `editMode: "manual"` if you
+   *   need a custom display alongside editing.
+   */
   renderCell?: (
     object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
     locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>,
@@ -92,10 +105,6 @@ interface SharedColumnDefinition<
   renderHeader?: () => React.ReactNode;
 }
 
-/**
- * Column definition for an editable column. Setting `editable: true`
- * unlocks `editFieldConfig` and `validateEdit`.
- */
 interface EditableColumnDefinition<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
@@ -104,15 +113,30 @@ interface EditableColumnDefinition<
     never
   >,
 > extends SharedColumnDefinition<Q, RDPs, FunctionColumns> {
-  editable: true;
+  /**
+   * `editable` can be a boolean or a predicate that receives the row's object
+   * and returns whether the cell is editable
+   */
+  editable:
+    | true
+    | ((
+      object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+    ) => boolean);
 
   /**
    * Configuration for the cell editor component.
    *
    * When provided, the column uses the specified field component
    * (e.g. dropdown) instead of the default auto-detected text/number input.
+   *
+   * `getFieldComponentProps` receives the row's object and a map of any
+   * pending edits for that row (keyed by column id), and returns the props to
+   * pass to the field component. Editor configuration can depend on the
+   * current row or on other in-progress edits within the row.
    */
-  editFieldConfig?: EditFieldConfig;
+  editFieldConfig?: EditFieldConfig<
+    Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
+  >;
 
   /**
    * Additional function to validate the cell value during edit.
@@ -203,6 +227,14 @@ interface FunctionColumnLocatorForKey<
    * @default 300_000 (5 minutes)
    */
   dedupeIntervalMs?: number;
+
+  /**
+   * Object type apiNames the function reads but doesn't take as a parameter (e.g.
+   * linked object types the function traverses internally). The column auto-revalidates
+   * when an action edits an object of any of these types. Param-derived types are
+   * tracked automatically and don't need to be listed here.
+   */
+  dependsOn?: string[];
 }
 
 /**
@@ -353,6 +385,17 @@ export interface ObjectTableProps<
   editMode?: "always" | "manual";
 
   /**
+   * Whether to render the bottom edit footer that hosts the
+   * "Edit Table" / "Cancel" / "Submit Edits" buttons and the edit-state
+   * indicators (modification count, validation errors).
+   *
+   * @default true whenever the table has at least one column declared
+   * editable (i.e. any column with `editable: true` or `editable: (object) => boolean`).
+   * When `false`, the "Edit Table" and "Submit Edits" buttons will not be shown.
+   */
+  showEditFooter?: boolean;
+
+  /**
    * The default order by clause to sort the objects in the table.
    * If provided without orderBy prop, the sorting is uncontrolled.
    * If both orderBy and defaultOrderBy are provided, orderBy takes precedence.
@@ -399,7 +442,7 @@ export interface ObjectTableProps<
   ) => void;
 
   /**
-   * If provided, the button Submit Edits will be shown in the table
+   * If provided, the "Submit Edits" button will be shown in the edit footer.
    *
    * @param edits an array of edit info containing details about the edited cells
    * including the rowId, columnId, new and old values, and the row data before the edit
@@ -495,7 +538,11 @@ export interface ObjectTableProps<
 
   /**
    * Called when the row selection changes.
-   * Required when row selection is controlled.
+   *
+   * @deprecated Use {@link onRowSelectionChanged} instead. The new callback
+   * delivers a {@link RowSelectionChange} object with `selectedRows`,
+   * `isSelectAll`, and a derived `objectSet`. This legacy callback
+   * continues to fire alongside the new one for backwards compatibility.
    *
    * @param selectedRowIds The primary keys of currently selected rows
    * @param isSelectAll Whether the change was triggered by a "select all" action. Defaults to false
@@ -503,6 +550,16 @@ export interface ObjectTableProps<
   onRowSelection?: (
     selectedRowIds: PrimaryKeyType<Q>[],
     isSelectAll?: boolean,
+  ) => void;
+
+  /**
+   * Called when the row selection changes, with a {@link RowSelectionChange}
+   * payload describing the new state.
+   *
+   * @param change The new selection state. See {@link RowSelectionChange}.
+   */
+  onRowSelectionChanged?: (
+    change: RowSelectionChange<Q, RDPs>,
   ) => void;
   /**
    * If provided, will render this context menu when right clicking on a cell
@@ -513,13 +570,72 @@ export interface ObjectTableProps<
   ) => React.ReactNode;
 
   /**
+   * Render override for the empty state. Called when the table has no
+   * rows and no error. When omitted, a default "No Data" indicator is
+   * rendered.
+   */
+  renderEmptyState?: () => React.ReactNode;
+
+  /**
    * The height of each row in pixels.
    *
    * @default 40
    */
   rowHeight?: number;
 
+  /**
+   * Returns extra HTML attributes (typically `data-*`) to apply to each
+   * row element. Use this to drive conditional row styling
+   */
+  getRowAttributes?: (
+    object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+  ) => Record<string, string | undefined>;
+
   className?: string;
+}
+
+/**
+ * Payload for {@link ObjectTableProps.onRowSelectionChanged}. Consolidates
+ * the loaded row instances, the `isSelectAll` semantic intent, and an
+ * `ObjectSet` covering the selection.
+ */
+export interface RowSelectionChange<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+> {
+  /**
+   * Loaded row instances currently selected. When `isSelectAll` is true,
+   * this reflects only the rows currently in the table — pages not yet
+   * fetched are absent. Use `objectSet` for the cross-page view, and
+   * `selectedRows.map(r => r.$primaryKey)` if you need the primary keys.
+   */
+  selectedRows: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[];
+
+  /**
+   * True when the user invoked "select all" (header checkbox) or when
+   * controlled mode supplies `isAllSelected={true}`. Distinct from "every
+   * loaded row happens to be selected" — that condition is reflected by
+   * `selectedRows.length` matching the visible row count but does not set
+   * this flag.
+   */
+  isSelectAll: boolean;
+
+  /**
+   * An `ObjectSet` representing the selection.
+   *
+   * - "Select all" → the underlying `ObjectSet` (`objectSet` prop if
+   *   provided, otherwise derived from `objectType` via `client(...)`).
+   *   This includes rows not yet loaded into the table.
+   * - Partial selection → the underlying `ObjectSet` narrowed to
+   *   `{ [primaryKeyApiName]: { $in: selectedRows.map(r => r.$primaryKey) } }`.
+   * - "Deselect all" → an empty `ObjectSet` (`$in: []`).
+   *
+   * `undefined` for interface types without a resolvable
+   * `primaryKeyApiName` when the selection is partial or empty (a
+   * `$primaryKey`-style filter can't be expressed). For "select all" on
+   * those types the underlying `ObjectSet` is still emitted.
+   */
+  objectSet: ObjectSet<Q, RDPs> | undefined;
 }
 
 export interface ObjectSetOptions<

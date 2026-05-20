@@ -1,5 +1,41 @@
 # @osdk/api
 
+## 2.22.0
+
+## 2.21.0
+
+### Minor Changes
+
+- 1a07c91: Clean up unstable interface code: remove the `$__UNSTABLE_useOldInterfaceApis` fetch option and its old `OntologyInterfaces.search`-based code path, consolidate `convertWireToOsdkObjects` / `convertWireToOsdkObjects2` into a single factory backed by `loadMultipleObjectTypes`, and rename `__UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition` / `__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst` (the latter is generator-internal). The unused `v2` parameter on `wireInterfaceTypeV2ToSdkObjectDefinition` is also removed.
+
+## 2.20.0
+
+### Minor Changes
+
+- 9eb67e4: Add experimental support for streaming queries via the `__EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction` marker.
+
+## 2.19.0
+
+### Minor Changes
+
+- 02c796c: Array Reducers and Struct Main Value support
+- d962309: Add ability to subscribe to an object set RID without a type, experimentally.
+
+## 2.18.0
+
+## 2.17.0
+
+### Minor Changes
+
+- 147166c: fix typing so `$loadPropertySecurityMetadata: true` is accepted on the experimental `fetchPageByRid` client method, and `$propertySecurities` is properly typed on returned objects.
+
+## 2.16.0
+
+### Minor Changes
+
+- 56c5630: Drop redundant `--config $(find-up dprint.json)` from `lint`, `fix-lint`, and `format` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the substitution was a no-op anyway since `find-up` is an npm package, not a CLI. Also fix the `uploadMediaOntologyEdits` documentation example so its `// @ts-ignore` survives dprint reformatting (the broken `format` step had been masking this).
+- 17d7ba2: Fill in missing `@param`, `@example`, and `@returns` tags on JSDoc across the public surface of `@osdk/api` and `@osdk/client`: `ObjectSet` methods, the derived-property `Builder` chain and `NumericExpressions` / `DatetimeExpressions` chains, the `Logger` interface, `Attachment` and `Media` accessors, `TimeSeriesProperty` / `GeotimeSeriesProperty` single-point methods, the top-level `Client` callable and `fetchMetadata`, and the `createClient` factory.
+
 ## 2.15.0
 
 ## 2.14.0

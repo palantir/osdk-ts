@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { FauxFoundry } from "@osdk/faux";
+import { FauxFoundry, TypeHelpers } from "@osdk/faux";
 import type { Employee } from "../types/Employee.js";
 import { employeeData } from "./employeeData.js";
 import { employeeMetadata } from "./employeeMetadata.js";
@@ -34,6 +34,144 @@ const SAMPLE_PDF_PATH =
 
 export const MEDIA_EMPLOYEE_PK = 657495071;
 
+export const updateEmployeeStoryAction = TypeHelpers
+  .actionTypeBuilder(
+    TypeHelpers.createActionType({
+      apiName: "updateEmployeeStoryAction",
+      displayName: "Update employee",
+      parameters: {},
+    }),
+  )
+  .addParameter("fullName", "string", true)
+  .addParameter("yearsExperience", "integer", false)
+  .addParameter("isRemote", "boolean", false)
+  .addParameter("isFullTime", "boolean", false)
+  .build();
+
+export const toggleRemoteStoryAction = TypeHelpers
+  .actionTypeBuilder(
+    TypeHelpers.createActionType({
+      apiName: "toggleRemoteStoryAction",
+      displayName: "Toggle remote status",
+      parameters: {},
+    }),
+  )
+  .addParameter("isRemote", "boolean", false)
+  .build();
+
+type ActionParameterMap = Parameters<
+  typeof TypeHelpers.createActionType
+>[0]["parameters"];
+
+const generatedFieldsActionParameters = {
+  fullName: {
+    displayName: "Full name",
+    dataType: { type: "string" },
+    required: true,
+    typeClasses: [],
+  },
+  yearsExperience: {
+    displayName: "Years of experience",
+    dataType: { type: "integer" },
+    required: false,
+    typeClasses: [],
+  },
+  isRemote: {
+    displayName: "Remote employee",
+    dataType: { type: "boolean" },
+    required: false,
+    typeClasses: [],
+  },
+  startDate: {
+    displayName: "Start date",
+    dataType: { type: "timestamp" },
+    required: false,
+    typeClasses: [],
+  },
+  document: {
+    displayName: "Document",
+    dataType: { type: "attachment" },
+    required: false,
+    typeClasses: [],
+  },
+  manager: {
+    displayName: "Manager",
+    dataType: {
+      type: "object",
+      objectApiName: "Employee",
+      objectTypeApiName: "Employee",
+    },
+    required: false,
+    typeClasses: [],
+  },
+  reviewPool: {
+    displayName: "Review pool",
+    dataType: {
+      type: "objectSet",
+      objectApiName: "Employee",
+      objectTypeApiName: "Employee",
+    },
+    required: false,
+    typeClasses: [],
+  },
+} satisfies ActionParameterMap;
+
+export const generatedFieldsStoryAction = TypeHelpers
+  .actionTypeBuilder(
+    TypeHelpers.createActionType({
+      apiName: "generatedFieldsStoryAction",
+      displayName: "Create employee profile",
+      parameters: generatedFieldsActionParameters,
+    }),
+  )
+  .build();
+
+const unsupportedFieldsActionParameters = {
+  structPayload: {
+    displayName: "Struct payload",
+    dataType: {
+      type: "struct",
+      fields: [
+        {
+          name: "externalId",
+          fieldType: { type: "string" },
+          required: true,
+        },
+      ],
+    },
+    required: true,
+    typeClasses: [],
+  },
+  geoshape: {
+    displayName: "Geoshape",
+    dataType: { type: "geoshape" },
+    required: false,
+    typeClasses: [],
+  },
+  classification: {
+    displayName: "Classification",
+    dataType: { type: "marking" },
+    required: false,
+    typeClasses: [],
+  },
+  objectKind: {
+    displayName: "Object type",
+    dataType: { type: "objectType" },
+    required: false,
+    typeClasses: [],
+  },
+} satisfies ActionParameterMap;
+
+export const unsupportedFieldsStoryAction = TypeHelpers
+  .actionTypeBuilder(
+    TypeHelpers.createActionType({
+      apiName: "unsupportedFieldsStoryAction",
+      displayName: "Review unsupported fields",
+      parameters: unsupportedFieldsActionParameters,
+    }),
+  )
+  .build();
+
 let isInitialized = false;
 
 export async function setupFauxFoundry(): Promise<void> {
@@ -49,6 +187,23 @@ export async function setupFauxFoundry(): Promise<void> {
   // Register Employee object type using metadata from JSON
   fauxFoundry.getDefaultOntology().registerObjectType<Employee>(
     employeeMetadata,
+  );
+
+  fauxFoundry.getDefaultOntology().registerActionType(
+    updateEmployeeStoryAction.actionTypeV2,
+    () => undefined,
+  );
+  fauxFoundry.getDefaultOntology().registerActionType(
+    toggleRemoteStoryAction.actionTypeV2,
+    () => undefined,
+  );
+  fauxFoundry.getDefaultOntology().registerActionType(
+    generatedFieldsStoryAction.actionTypeV2,
+    () => undefined,
+  );
+  fauxFoundry.getDefaultOntology().registerActionType(
+    unsupportedFieldsStoryAction.actionTypeV2,
+    () => undefined,
   );
 
   // Add mock data from JSON file

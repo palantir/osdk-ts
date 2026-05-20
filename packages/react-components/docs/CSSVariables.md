@@ -37,6 +37,12 @@ Complete reference of all CSS custom properties (variables) used in `@osdk/react
   - [Table](#table)
   - [Time Picker](#time-picker)
   - [Tooltip](#tooltip)
+  - [Document Viewer](#document-viewer)
+  - [Email Viewer](#email-viewer)
+  - [Excel Viewer](#excel-viewer)
+  - [Image Viewer](#image-viewer)
+  - [Video Viewer](#video-viewer)
+  - [XML Viewer](#xml-viewer)
 - [Creating a Custom Theme](#creating-a-custom-theme)
 
 ## Overview
@@ -92,20 +98,23 @@ Control layout, spacing, shadows, and z-index layering.
 
 Control text appearance.
 
-| Variable                                | Maps to Blueprint Token               | Description                  |
-| --------------------------------------- | ------------------------------------- | ---------------------------- |
-| `--osdk-typography-family-default`      | `--bp-typography-family-default`      | Default font family          |
-| `--osdk-typography-color-muted`         | `--bp-typography-color-muted`         | Muted/subtle text color      |
-| `--osdk-typography-color-default-rest`  | `--bp-typography-color-default-rest`  | Default text color           |
-| `--osdk-typography-color-danger-rest`   | `--bp-typography-color-danger-rest`   | Danger text color            |
-| `--osdk-typography-color-danger-active` | `--bp-typography-color-danger-active` | Danger active text color     |
-| `--osdk-typography-size-body-x-small`   | `--bp-typography-size-body-x-small`   | Extra-small body text size   |
-| `--osdk-typography-size-body-small`     | `--bp-typography-size-body-small`     | Small body text size         |
-| `--osdk-typography-size-body-medium`    | `--bp-typography-size-body-medium`    | Medium body text size (13px) |
-| `--osdk-typography-size-body-large`     | `--bp-typography-size-body-large`     | Large body text size         |
-| `--osdk-typography-line-height-default` | `--bp-typography-line-height-default` | Default line height          |
-| `--osdk-typography-weight-default`      | `--bp-typography-weight-default`      | Default font weight          |
-| `--osdk-typography-weight-bold`         | `--bp-typography-weight-bold`         | Bold font weight             |
+| Variable                                   | Maps to Blueprint Token                  | Description                  |
+| ------------------------------------------ | ---------------------------------------- | ---------------------------- |
+| `--osdk-typography-family-default`         | `--bp-typography-family-default`         | Default font family          |
+| `--osdk-typography-color-muted`            | `--bp-typography-color-muted`            | Muted/subtle text color      |
+| `--osdk-typography-color-default-rest`     | `--bp-typography-color-default-rest`     | Default text color           |
+| `--osdk-typography-color-default-hover`    | `--bp-typography-color-default-hover`    | Default hover text color     |
+| `--osdk-typography-color-default-active`   | `--bp-typography-color-default-active`   | Default active text color    |
+| `--osdk-typography-color-default-disabled` | `--bp-typography-color-default-disabled` | Default disabled text color  |
+| `--osdk-typography-color-danger-rest`      | `--bp-typography-color-danger-rest`      | Danger text color            |
+| `--osdk-typography-color-danger-active`    | `--bp-typography-color-danger-active`    | Danger active text color     |
+| `--osdk-typography-size-body-x-small`      | `--bp-typography-size-body-x-small`      | Extra-small body text size   |
+| `--osdk-typography-size-body-small`        | `--bp-typography-size-body-small`        | Small body text size         |
+| `--osdk-typography-size-body-medium`       | `--bp-typography-size-body-medium`       | Medium body text size (13px) |
+| `--osdk-typography-size-body-large`        | `--bp-typography-size-body-large`        | Large body text size         |
+| `--osdk-typography-line-height-default`    | `--bp-typography-line-height-default`    | Default line height          |
+| `--osdk-typography-weight-default`         | `--bp-typography-weight-default`         | Default font weight          |
+| `--osdk-typography-weight-bold`            | `--bp-typography-weight-bold`            | Bold font weight             |
 
 ### Intent Tokens
 
@@ -219,6 +228,38 @@ Component-specific semantic tokens that may reference Blueprint tokens or define
 | `--osdk-focus-visible-outline-offset` | `var(--osdk-emphasis-focus-offset)`                                               | Focus ring offset from element |
 | `--osdk-surface-border`               | `var(--osdk-surface-border-width) solid var(--osdk-surface-border-color-default)` | Reusable border shorthand      |
 
+### AIP Agent Chat
+
+Tokens for the `AipAgentChat` chat surface (container, message bubbles, composer, empty state, loader, error banner).
+
+| Variable                                             | Default Value                                       | Description                                 |
+| ---------------------------------------------------- | --------------------------------------------------- | ------------------------------------------- |
+| `--osdk-aip-agent-chat-background`                   | `var(--osdk-background-primary)`                    | Chat container background                   |
+| `--osdk-aip-agent-chat-border-color`                 | `var(--osdk-surface-border-color-default)`          | Container, error, composer separator color  |
+| `--osdk-aip-agent-chat-border-radius`                | `var(--osdk-surface-border-radius)`                 | Container and bubble corner radius          |
+| `--osdk-aip-agent-chat-padding`                      | `calc(var(--osdk-surface-spacing) * 5)`             | Outer padding for message list and composer |
+| `--osdk-aip-agent-chat-message-gap`                  | `calc(var(--osdk-surface-spacing) * 5)`             | Vertical gap between messages               |
+| `--osdk-aip-agent-chat-section-gap`                  | `calc(var(--osdk-surface-spacing) * 2.5)`           | Gap between composer rows / footer items    |
+| `--osdk-aip-agent-chat-bubble-padding`               | `calc(var(--osdk-surface-spacing) * 3)`             | Padding inside each message bubble          |
+| `--osdk-aip-agent-chat-bubble-border-radius`         | `var(--osdk-surface-border-radius)`                 | Bubble corner radius                        |
+| `--osdk-aip-agent-chat-bubble-max-width`             | `80%`                                               | Maximum bubble width                        |
+| `--osdk-aip-agent-chat-user-bubble-background`       | `var(--osdk-intent-primary-rest)`                   | User-message bubble background              |
+| `--osdk-aip-agent-chat-user-bubble-color`            | `var(--osdk-intent-primary-foreground)`             | User-message text color                     |
+| `--osdk-aip-agent-chat-assistant-bubble-background`  | `var(--osdk-background-secondary)`                  | Assistant-message bubble background         |
+| `--osdk-aip-agent-chat-assistant-bubble-color`       | `var(--osdk-typography-color-default-rest)`         | Assistant-message text color                |
+| `--osdk-aip-agent-chat-composer-background`          | `var(--osdk-surface-background-color-default-rest)` | Composer background                         |
+| `--osdk-aip-agent-chat-composer-border-color`        | `var(--osdk-surface-border-color-default)`          | Composer top-border color                   |
+| `--osdk-aip-agent-chat-composer-textarea-min-height` | `calc(var(--osdk-surface-spacing) * 14)`            | Textarea minimum height                     |
+| `--osdk-aip-agent-chat-composer-textarea-max-height` | `200px`                                             | Textarea maximum height                     |
+| `--osdk-aip-agent-chat-empty-color`                  | `var(--osdk-typography-color-muted)`                | Empty-state subtext color                   |
+| `--osdk-aip-agent-chat-empty-icon-color`             | `var(--osdk-intent-primary-rest)`                   | Empty-state icon color                      |
+| `--osdk-aip-agent-chat-empty-icon-size`              | `calc(var(--osdk-surface-spacing) * 12)`            | Empty-state icon size                       |
+| `--osdk-aip-agent-chat-loader-color`                 | `var(--osdk-typography-color-muted)`                | 3-dot streaming loader color                |
+| `--osdk-aip-agent-chat-loader-dot-size`              | `calc(var(--osdk-surface-spacing) * 1.5)`           | Loader dot diameter                         |
+| `--osdk-aip-agent-chat-loader-dot-gap`               | `calc(var(--osdk-surface-spacing) * 0.5)`           | Loader dot gap                              |
+| `--osdk-aip-agent-chat-error-color`                  | `var(--osdk-typography-color-danger-rest)`          | Error banner text color                     |
+| `--osdk-aip-agent-chat-error-background`             | `var(--osdk-surface-background-color-danger-rest)`  | Error banner background                     |
+
 ### Drag Handle
 
 Shared tokens for drag handle styling across components.
@@ -251,6 +292,18 @@ Styling for button components.
 | `--osdk-button-secondary-bg`        | `var(--osdk-background-secondary)`                    | Secondary button background        |
 | `--osdk-button-secondary-bg-hover`  | `var(--osdk-surface-background-color-default-hover)`  | Secondary button hover background  |
 | `--osdk-button-secondary-bg-active` | `var(--osdk-surface-background-color-default-active)` | Secondary button active background |
+
+#### Minimal Button
+
+| Variable                                | Default Value                                         | Description                         |
+| --------------------------------------- | ----------------------------------------------------- | ----------------------------------- |
+| `--osdk-button-minimal-bg`              | `transparent`                                         | Minimal button background           |
+| `--osdk-button-minimal-bg-hover`        | `var(--osdk-surface-background-color-default-hover)`  | Minimal button hover background     |
+| `--osdk-button-minimal-bg-active`       | `var(--osdk-surface-background-color-default-active)` | Minimal button active background    |
+| `--osdk-button-minimal-border`          | `none`                                                | Minimal button border               |
+| `--osdk-button-minimal-shadow`          | `none`                                                | Minimal button shadow               |
+| `--osdk-button-secondary-minimal-color` | `var(--osdk-typography-color-default-rest)`           | Secondary minimal button text color |
+| `--osdk-button-primary-minimal-color`   | `var(--osdk-button-primary-bg)`                       | Primary minimal button text color   |
 
 ### Checkbox
 
@@ -546,17 +599,6 @@ Styling for file picker components.
 | `--osdk-file-picker-clear-margin`      | `0 calc(var(--osdk-surface-spacing) * 1)`   | Clear button margin      |
 | `--osdk-file-picker-clear-color`       | `var(--osdk-typography-color-muted)`        | Clear button color       |
 | `--osdk-file-picker-clear-color-hover` | `var(--osdk-typography-color-default-rest)` | Clear button hover color |
-
-#### Browse Button
-
-| Variable                                | Default Value                                                                   | Description                     |
-| --------------------------------------- | ------------------------------------------------------------------------------- | ------------------------------- |
-| `--osdk-file-picker-browse-bg`          | `var(--osdk-button-secondary-bg)`                                               | Browse button background        |
-| `--osdk-file-picker-browse-bg-hover`    | `var(--osdk-button-secondary-bg-hover)`                                         | Browse button hover background  |
-| `--osdk-file-picker-browse-bg-active`   | `var(--osdk-button-secondary-bg-active)`                                        | Browse button active background |
-| `--osdk-file-picker-browse-color`       | `var(--osdk-button-secondary-color)`                                            | Browse button text color        |
-| `--osdk-file-picker-browse-padding`     | `calc(var(--osdk-surface-spacing) * 1.5) calc(var(--osdk-surface-spacing) * 3)` | Browse button padding           |
-| `--osdk-file-picker-browse-border-left` | `var(--osdk-input-border-width) solid var(--osdk-input-border-color)`           | Browse button left border       |
 
 ### Filter List
 
@@ -856,6 +898,16 @@ Styling for filter list components including search, checkboxes, listogram, and 
 | `--osdk-filter-timeline-brush-color`          | `var(--osdk-typography-color-muted)`                 | Timeline brush color             |
 | `--osdk-filter-timeline-input-font-size`      | `var(--osdk-typography-size-body-medium)`            | Timeline input font size         |
 
+#### No Value Tokens
+
+Canonical "No value" styling used by the shared `NoValueLabel` component across listogram buckets, null-value wrappers, and dropdown empty states.
+
+| Variable                            | Default Value                             | Description                     |
+| ----------------------------------- | ----------------------------------------- | ------------------------------- |
+| `--osdk-filter-no-value-color`      | `var(--osdk-typography-color-muted)`      | Canonical "No value" text color |
+| `--osdk-filter-no-value-font-style` | `italic`                                  | Canonical "No value" font style |
+| `--osdk-filter-no-value-font-size`  | `var(--osdk-typography-size-body-medium)` | Canonical "No value" font size  |
+
 #### Null Value Wrapper Tokens
 
 | Variable                               | Default Value                               | Description            |
@@ -863,7 +915,7 @@ Styling for filter list components including search, checkboxes, listogram, and 
 | `--osdk-filter-null-wrapper-gap`       | `var(--osdk-surface-spacing)`               | Null wrapper gap       |
 | `--osdk-filter-null-row-padding`       | `calc(var(--osdk-surface-spacing) * 1) 0`   | Null row padding       |
 | `--osdk-filter-null-row-border-top`    | `none`                                      | Null row top border    |
-| `--osdk-filter-null-label-gap`         | `var(--osdk-surface-spacing)`               | Null label gap         |
+| `--osdk-filter-null-label-gap`         | `calc(var(--osdk-surface-spacing) * 2)`     | Null label gap         |
 | `--osdk-filter-null-label-font-family` | `var(--osdk-typography-family-default)`     | Null label font family |
 | `--osdk-filter-null-label-font-size`   | `var(--osdk-typography-size-body-medium)`   | Null label font size   |
 | `--osdk-filter-null-label-line-height` | `1.4`                                       | Null label line height |
@@ -923,21 +975,21 @@ Styling for form components.
 
 #### Layout
 
-| Variable                      | Default Value                           | Description          |
-| ----------------------------- | --------------------------------------- | -------------------- |
-| `--osdk-form-content-padding` | `calc(var(--osdk-surface-spacing) * 4)` | Form content padding |
-| `--osdk-form-field-gap`       | `calc(var(--osdk-surface-spacing) * 4)` | Gap between fields   |
+| Variable                             | Default Value                             | Description                                      |
+| ------------------------------------ | ----------------------------------------- | ------------------------------------------------ |
+| `--osdk-form-fields-gap`             | `calc(var(--osdk-surface-spacing) * 1.5)` | Gap between fields                               |
+| `--osdk-form-content-padding-inline` | `0`                                       | Shared inline padding for form regions           |
+| `--osdk-form-content-padding-block`  | `0`                                       | Content block padding for the form fields region |
 
 #### Header
 
-| Variable                            | Default Value                               | Description           |
-| ----------------------------------- | ------------------------------------------- | --------------------- |
-| `--osdk-form-header-border-color`   | `var(--osdk-surface-border-color-default)`  | Header border color   |
-| `--osdk-form-header-font-size`      | `var(--osdk-typography-size-body-large)`    | Header font size      |
-| `--osdk-form-header-font-weight`    | `var(--osdk-typography-weight-bold)`        | Header font weight    |
-| `--osdk-form-header-color`          | `var(--osdk-typography-color-default-rest)` | Header text color     |
-| `--osdk-form-header-block-padding`  | `calc(var(--osdk-surface-spacing) * 3)`     | Header block padding  |
-| `--osdk-form-header-inline-padding` | `var(--osdk-form-content-padding)`          | Header inline padding |
+| Variable                           | Default Value                               | Description          |
+| ---------------------------------- | ------------------------------------------- | -------------------- |
+| `--osdk-form-header-border-color`  | `var(--osdk-surface-border-color-default)`  | Header border color  |
+| `--osdk-form-header-font-size`     | `var(--osdk-typography-size-body-large)`    | Header font size     |
+| `--osdk-form-header-font-weight`   | `var(--osdk-typography-weight-bold)`        | Header font weight   |
+| `--osdk-form-header-color`         | `var(--osdk-typography-color-default-rest)` | Header text color    |
+| `--osdk-form-header-block-padding` | `calc(var(--osdk-surface-spacing) * 2)`     | Header block padding |
 
 #### Footer
 
@@ -949,12 +1001,12 @@ Styling for form components.
 
 #### Labels
 
-| Variable                        | Default Value                               | Description                 |
-| ------------------------------- | ------------------------------------------- | --------------------------- |
-| `--osdk-form-label-font-size`   | `var(--osdk-typography-size-body-medium)`   | Label font size             |
-| `--osdk-form-label-font-weight` | `var(--osdk-typography-weight-bold)`        | Label font weight           |
-| `--osdk-form-label-color`       | `var(--osdk-typography-color-default-rest)` | Label text color            |
-| `--osdk-form-label-field-gap`   | `calc(var(--osdk-surface-spacing) * 1.5)`   | Gap between label and field |
+| Variable                        | Default Value                               | Description                  |
+| ------------------------------- | ------------------------------------------- | ---------------------------- |
+| `--osdk-form-label-font-size`   | `var(--osdk-typography-size-body-medium)`   | Label font size              |
+| `--osdk-form-label-font-weight` | `var(--osdk-typography-weight-bold)`        | Label font weight            |
+| `--osdk-form-label-color`       | `var(--osdk-typography-color-default-rest)` | Label text color             |
+| `--osdk-form-field-gap`         | `var(--osdk-surface-spacing)`               | Gap between items in a field |
 
 #### Validation
 
@@ -1162,12 +1214,12 @@ Styling for table components including headers, rows, and cells.
 
 #### Row Backgrounds
 
-| Variable                        | Default Value                                                                              | Description                           |
-| ------------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------- |
-| `--osdk-table-row-bg-default`   | `var(--osdk-background-primary)`                                                           | Default row background                |
-| `--osdk-table-row-bg-alternate` | `var(--osdk-background-tertiary)`                                                          | Alternate row background for striping |
-| `--osdk-table-row-bg-hover`     | `color-mix(in srgb, var(--osdk-intent-primary-hover) 10%, var(--osdk-background-primary))` | Row hover background                  |
-| `--osdk-table-row-bg-active`    | `color-mix(in srgb, var(--osdk-intent-primary-hover) 10%, var(--osdk-background-primary))` | Active/selected row background        |
+| Variable                        | Default Value                                                                             | Description                           |
+| ------------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------- |
+| `--osdk-table-row-bg-default`   | `var(--osdk-background-primary)`                                                          | Default row background                |
+| `--osdk-table-row-bg-alternate` | `var(--osdk-background-tertiary)`                                                         | Alternate row background for striping |
+| `--osdk-table-row-bg-hover`     | `color-mix(in srgb, var(--osdk-intent-primary-rest) 10%, var(--osdk-background-primary))` | Row hover background                  |
+| `--osdk-table-row-bg-active`    | `color-mix(in srgb, var(--osdk-intent-primary-rest) 10%, var(--osdk-background-primary))` | Active/selected row background        |
 
 #### Row Border Colors (Hover/Active States)
 
@@ -1178,20 +1230,21 @@ Styling for table components including headers, rows, and cells.
 
 #### Cell Styling
 
-| Variable                     | Default Value                               | Description     |
-| ---------------------------- | ------------------------------------------- | --------------- |
-| `--osdk-table-cell-padding`  | `0 calc(var(--osdk-surface-spacing) * 2)`   | Cell padding    |
-| `--osdk-table-cell-fontSize` | `var(--osdk-typography-size-body-medium)`   | Cell text size  |
-| `--osdk-table-cell-color`    | `var(--osdk-typography-color-default-rest)` | Cell text color |
+| Variable                     | Default Value                               | Description                                                                                                                                                  |
+| ---------------------------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `--osdk-table-cell-padding`  | `0 calc(var(--osdk-surface-spacing) * 2)`   | Cell padding                                                                                                                                                 |
+| `--osdk-table-cell-fontSize` | `var(--osdk-typography-size-body-medium)`   | Cell text size                                                                                                                                               |
+| `--osdk-table-cell-color`    | `var(--osdk-typography-color-default-rest)` | Cell text color                                                                                                                                              |
+| `--osdk-table-cell-bg`       | `inherit`                                   | Background color of the entire `<td>` cell, including the cell padding. Pair with `--osdk-table-cell-input-bg` to also color the inner editable input field. |
 
 #### Editable Cell Styling
 
-| Variable                                | Default Value                                                                    | Description                                  |
-| --------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------- |
-| `--osdk-table-cell-editable-border`     | `var(--osdk-surface-border-width) solid var(--osdk-surface-border-color-strong)` | Border for editable cells in edit mode       |
-| `--osdk-table-cell-edited-border`       | `var(--osdk-surface-border-width) solid var(--osdk-intent-primary-rest)`         | Border for edited cells with pending changes |
-| `--osdk-table-cell-edited-border-error` | `var(--osdk-surface-border-width) solid var(--osdk-intent-danger-rest)`          | Border for cells with validation errors      |
-| `--osdk-table-cell-editable-bg`         | `var(--osdk-background-primary)`                                                 | Background for editable cells                |
+| Variable                                | Default Value                                                                    | Description                                                                                                                                                                   |
+| --------------------------------------- | -------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--osdk-table-cell-editable-border`     | `var(--osdk-surface-border-width) solid var(--osdk-surface-border-color-strong)` | Border for editable cells in edit mode                                                                                                                                        |
+| `--osdk-table-cell-edited-border`       | `var(--osdk-surface-border-width) solid var(--osdk-intent-primary-rest)`         | Border for edited cells with pending changes                                                                                                                                  |
+| `--osdk-table-cell-edited-border-error` | `var(--osdk-surface-border-width) solid var(--osdk-intent-danger-rest)`          | Border for cells with validation errors                                                                                                                                       |
+| `--osdk-table-cell-input-bg`            | `var(--osdk-background-primary)`                                                 | Background of the input field inside an editable cell. Sits inside the cell padding, so `--osdk-table-cell-bg` (or any cell-level background) stays visible around the input. |
 
 #### Edit Container
 
@@ -1204,16 +1257,16 @@ Styling for table components including headers, rows, and cells.
 
 Styling for the column header dropdown menu.
 
-| Variable                                | Default Value                                                            | Description                   |
-| --------------------------------------- | ------------------------------------------------------------------------ | ----------------------------- |
-| `--osdk-table-header-menu-padding`      | `calc(var(--osdk-surface-spacing) * 0.25)`                               | Menu button padding           |
-| `--osdk-table-header-menu-bg`           | `var(--osdk-custom-color-light-gray-2)`                                  | Menu button background        |
-| `--osdk-table-header-menu-border`       | `var(--osdk-surface-border-width) solid var(--osdk-custom-color-gray-4)` | Menu button border            |
-| `--osdk-table-header-menu-color`        | `var(--osdk-typography-color-muted)`                                     | Menu icon color               |
-| `--osdk-table-header-menu-color-active` | `var(--osdk-typography-color-default-rest)`                              | Menu icon active color        |
-| `--osdk-table-header-menu-icon-color`   | `var(--osdk-table-header-menu-color)`                                    | Menu icon color (chevron)     |
-| `--osdk-table-header-menu-bg-hover`     | `var(--osdk-custom-color-gray-1)`                                        | Menu button hover background  |
-| `--osdk-table-header-menu-bg-active`    | `var(--osdk-custom-color-gray-2)`                                        | Menu button active background |
+| Variable                                | Default Value                                                                     | Description                   |
+| --------------------------------------- | --------------------------------------------------------------------------------- | ----------------------------- |
+| `--osdk-table-header-menu-padding`      | `calc(var(--osdk-surface-spacing) * 0.25)`                                        | Menu button padding           |
+| `--osdk-table-header-menu-bg`           | `transparent`                                                                     | Menu button background        |
+| `--osdk-table-header-menu-border`       | `var(--osdk-surface-border-width) solid var(--osdk-surface-border-color-default)` | Menu button border            |
+| `--osdk-table-header-menu-color`        | `var(--osdk-typography-color-muted)`                                              | Menu icon color               |
+| `--osdk-table-header-menu-color-active` | `var(--osdk-typography-color-default-rest)`                                       | Menu icon active color        |
+| `--osdk-table-header-menu-icon-color`   | `var(--osdk-table-header-menu-color)`                                             | Menu icon color (chevron)     |
+| `--osdk-table-header-menu-bg-hover`     | `var(--osdk-surface-background-color-default-hover)`                              | Menu button hover background  |
+| `--osdk-table-header-menu-bg-active`    | `var(--osdk-surface-background-color-default-active)`                             | Menu button active background |
 
 #### Resizer
 
@@ -1269,9 +1322,95 @@ Styling for tooltip components.
 | `--osdk-tooltip-z-index`      | `var(--osdk-surface-z-index-4)`                                               | Tooltip z-index      |
 | `--osdk-tooltip-padding`      | `calc(var(--osdk-surface-spacing) * 2) calc(var(--osdk-surface-spacing) * 4)` | Tooltip padding      |
 | `--osdk-tooltip-bg`           | `var(--osdk-background-primary)`                                              | Tooltip background   |
+| `--osdk-tooltip-color`        | `var(--osdk-typography-color-default-rest)`                                   | Tooltip text color   |
 | `--osdk-tooltip-border-color` | `var(--osdk-palette-gray-4)`                                                  | Tooltip border color |
 | `--osdk-tooltip-shadow`       | `var(--osdk-surface-shadow-2)`                                                | Tooltip shadow       |
 | `--osdk-tooltip-max-width`    | `300px`                                                                       | Tooltip max width    |
+
+### Document Viewer
+
+Styling for the document viewer container.
+
+| Variable                        | Default Value                    | Description       |
+| ------------------------------- | -------------------------------- | ----------------- |
+| `--osdk-document-viewer-bg`     | `var(--osdk-background-primary)` | Viewer background |
+| `--osdk-document-viewer-border` | `var(--osdk-surface-border)`     | Viewer border     |
+
+### Email Viewer
+
+Styling for the email viewer.
+
+| Variable                            | Default Value                      | Description       |
+| ----------------------------------- | ---------------------------------- | ----------------- |
+| `--osdk-email-viewer-bg`            | `var(--osdk-background-primary)`   | Viewer background |
+| `--osdk-email-viewer-border`        | `var(--osdk-surface-border)`       | Viewer border     |
+| `--osdk-email-viewer-header-bg`     | `var(--osdk-background-secondary)` | Header background |
+| `--osdk-email-viewer-header-border` | `var(--osdk-surface-border)`       | Header border     |
+
+### Excel Viewer
+
+Styling for the Excel viewer.
+
+#### Container
+
+| Variable                     | Default Value                    | Description       |
+| ---------------------------- | -------------------------------- | ----------------- |
+| `--osdk-excel-viewer-bg`     | `var(--osdk-background-primary)` | Viewer background |
+| `--osdk-excel-viewer-border` | `var(--osdk-surface-border)`     | Viewer border     |
+
+#### Table
+
+| Variable                               | Default Value                              | Description       |
+| -------------------------------------- | ------------------------------------------ | ----------------- |
+| `--osdk-excel-viewer-header-bg`        | `var(--osdk-background-secondary)`         | Header background |
+| `--osdk-excel-viewer-header-color`     | `var(--osdk-typography-color-muted)`       | Header text color |
+| `--osdk-excel-viewer-cell-border`      | `var(--osdk-surface-border-color-default)` | Cell border color |
+| `--osdk-excel-viewer-cell-padding`     | `2px 6px`                                  | Cell padding      |
+| `--osdk-excel-viewer-col-min-width`    | `80px`                                     | Minimum col width |
+| `--osdk-excel-viewer-row-header-width` | `40px`                                     | Row header width  |
+
+#### Sheet Tabs
+
+| Variable                                | Default Value                      | Description          |
+| --------------------------------------- | ---------------------------------- | -------------------- |
+| `--osdk-excel-viewer-tab-bg`            | `var(--osdk-background-secondary)` | Tab background       |
+| `--osdk-excel-viewer-tab-hover-bg`      | `var(--osdk-background-tertiary)`  | Tab hover background |
+| `--osdk-excel-viewer-tab-active-bg`     | `var(--osdk-background-primary)`   | Active tab bg        |
+| `--osdk-excel-viewer-tab-border`        | `var(--osdk-surface-border)`       | Tab border           |
+| `--osdk-excel-viewer-tab-border-radius` | `4px`                              | Tab border radius    |
+| `--osdk-excel-viewer-tab-padding`       | `4px 12px`                         | Tab padding          |
+| `--osdk-excel-viewer-tab-bar-padding`   | `4px`                              | Tab bar padding      |
+| `--osdk-excel-viewer-tab-gap`           | `2px`                              | Gap between tabs     |
+
+### Image Viewer
+
+Styling for the image viewer.
+
+| Variable                     | Default Value                    | Description       |
+| ---------------------------- | -------------------------------- | ----------------- |
+| `--osdk-image-viewer-bg`     | `var(--osdk-background-primary)` | Viewer background |
+| `--osdk-image-viewer-border` | `var(--osdk-surface-border)`     | Viewer border     |
+
+### Video Viewer
+
+Styling for the video viewer.
+
+| Variable                     | Default Value                    | Description       |
+| ---------------------------- | -------------------------------- | ----------------- |
+| `--osdk-video-viewer-bg`     | `var(--osdk-background-primary)` | Viewer background |
+| `--osdk-video-viewer-border` | `var(--osdk-surface-border)`     | Viewer border     |
+
+### XML Viewer
+
+Styling for the XML viewer.
+
+| Variable                        | Default Value                            | Description       |
+| ------------------------------- | ---------------------------------------- | ----------------- |
+| `--osdk-xml-viewer-bg`          | `var(--osdk-background-primary)`         | Viewer background |
+| `--osdk-xml-viewer-border`      | `var(--osdk-surface-border)`             | Viewer border     |
+| `--osdk-xml-viewer-font-family` | `monospace`                              | Code font family  |
+| `--osdk-xml-viewer-font-size`   | `var(--osdk-typography-size-body-small)` | Code font size    |
+| `--osdk-xml-viewer-line-height` | `1.5`                                    | Code line height  |
 
 ## Creating a Custom Theme
 
@@ -1293,12 +1432,12 @@ To create a custom theme, override the tokens at the appropriate level. You can 
     --osdk-table-header-bg: #f0f0f0;
     --osdk-table-row-bg-default: white;
     --osdk-table-border-color: #e0e0e0;
-    
+
     /* Customize editable table styling */
     --osdk-table-cell-editable-border: 1px solid #3b82f6;
     --osdk-table-cell-edited-border: 2px solid #10b981;
     --osdk-table-cell-edited-border-error: 2px solid #ef4444;
-    --osdk-table-cell-editable-bg: #f0f9ff;
+    --osdk-table-cell-input-bg: #f0f9ff;
 
     /* Customize primary intent colors */
     --osdk-intent-primary-rest: #2563eb;
@@ -1347,3 +1486,42 @@ For more comprehensive theming, override the Blueprint tokens that the OSDK toke
    - Override Blueprint tokens (`--bp-*`) for system-wide design changes
 
 3. **Leverage the mapping**: Since OSDK tokens map to Blueprint tokens, changing a Blueprint token will automatically affect all OSDK tokens that reference it.
+
+## Dark Mode
+
+`@osdk/react-components` ships built-in dark-theme overrides. They activate automatically in any of three ways:
+
+1. **`prefers-color-scheme: dark`** — matches the [Foundry custom widgets dark theme guidance](https://www.palantir.com/docs/foundry/custom-widgets/dark-theme). When a parent application (Foundry, the OS) declares dark color scheme, the widget switches without any host configuration.
+2. **`[data-bp-color-scheme="dark"]` or `.bp6-dark`** — matches the Blueprint convention. Set this attribute / class on any ancestor (often `<html>`) to force dark explicitly. Useful when the OS preference doesn't reflect what the host wants, or when previewing dark mode in isolation.
+3. **`[data-theme="dark"]`** — matches the Tailwind/Primer/Storybook toolbar convention. Lets Storybook (and other hosts that already use this attribute) opt into dark without duplicating overrides.
+
+The attribute paths win over the media query when both apply, giving hosts an explicit override. Under `[data-bp-color-scheme="dark"]` / `.bp6-dark`, Blueprint flips `--bp-*` itself, so `dark.css` only re-maps `--osdk-*` tokens. The other two selectors also flip the relevant `--bp-*` tokens because Blueprint doesn't fire there.
+
+### Adding your own dark overrides
+
+To customize dark-mode tokens beyond the defaults, declare your overrides in a higher layer using the same selectors:
+
+```css
+@layer osdk.styles, user.theme;
+
+@import "@osdk/react-components/styles.css" layer(osdk.styles);
+
+@layer user.theme {
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --osdk-background-primary: #0a0a0a;
+      --osdk-table-row-bg-alternate: #161616;
+    }
+  }
+
+  [data-bp-color-scheme="dark"],
+  .bp6-dark {
+    --osdk-background-primary: #0a0a0a;
+    --osdk-table-row-bg-alternate: #161616;
+  }
+}
+```
+
+### Tokens flipped in dark mode
+
+The package overrides only `--osdk-*` tokens in dark mode. `--bp-*` tokens flip independently via Blueprint's own dark block. Tokens with identical light/dark values (primary/danger/success intents, sizes, weights, spacing, focus width) are not overridden. See `src/tokens/base-tokens/dark.css` for the full list.

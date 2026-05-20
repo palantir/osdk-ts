@@ -89,3 +89,8 @@
     transition: none;
   }
 }
+
+.clearButton:not([data-active]) {
+  visibility: hidden;
+  pointer-events: none;
+}

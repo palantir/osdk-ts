@@ -197,7 +197,9 @@ export class ObjectsHelper extends AbstractHelper<
 
     batch.write(sourceCacheKey, valueToWrite, status);
 
-    if (value !== tombstone) {
+    if (value === tombstone) {
+      batch.changes.deleteObject(sourceCacheKey);
+    } else {
       batch.changes.registerObject(sourceCacheKey, value, !existing);
     }
 
@@ -219,6 +221,7 @@ export class ObjectsHelper extends AbstractHelper<
 
       if (value === tombstone) {
         batch.write(targetKey, tombstone, status);
+        batch.changes.deleteObject(targetKey);
         continue;
       }
 
