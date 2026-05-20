@@ -19,6 +19,10 @@ import type { ImageViewerMediaProps } from "@osdk/react-components/experimental/
 import { ImageViewer } from "@osdk/react-components/experimental/image-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
+/**
+ * Creates a sample PNG image as a data URL.
+ * Generates a 200x200 canvas with a gradient.
+ */
 function createSampleImageDataUrl(): string {
   const canvas = document.createElement("canvas");
   canvas.width = 200;
