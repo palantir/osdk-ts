@@ -15,6 +15,9 @@ permissions:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    concurrency:
+      group: storybook-gh-pages
+      cancel-in-progress: false
     steps:
       - name: Checkout
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
@@ -37,7 +40,7 @@ jobs:
         run: pnpm --filter react-components-storybook build
 
       - name: Deploy to gh-pages branch
-        run: |          
+        run: |
           # Clone existing gh-pages to preserve other content
           git clone --branch gh-pages --single-branch --depth 1 https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git gh-pages-temp
 
@@ -55,11 +58,11 @@ jobs:
           find "$previews_temp" -mindepth 1 -maxdepth 1 -type d -exec cp -R {} gh-pages-temp/storybook/ \;
           rm -rf "$previews_temp"
           touch gh-pages-temp/storybook/.nojekyll
-          
+
           # Commit and push changes
           cd gh-pages-temp
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -A
           git commit -m "Deploy Storybook" || echo "No changes to commit"
-          git push -f https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git gh-pages
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git gh-pages
