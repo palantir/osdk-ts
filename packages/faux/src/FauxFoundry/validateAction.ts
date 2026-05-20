@@ -273,6 +273,14 @@ function validateActionParameterType(
       return;
     }
 
+    case "scenarioReference": {
+      ret.result = "INVALID";
+      ret.parameters[paramKey] = {
+        ...baseParam,
+      };
+      return;
+    }
+
     default: {
       const _assertNever: never = dataType;
       throw new Error(

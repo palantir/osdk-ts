@@ -178,6 +178,22 @@ type WhereClauseNumberPropertyTypes =
   | "decimal"
   | "byte";
 
+type SpecialPropertyFilter =
+  | StringFilter
+  | NumberFilter
+  | DatetimeFilter;
+
+type PrimaryKeyFilterFor<T extends ObjectOrInterfaceDefinition> =
+  CompileTimeMetadata<T> extends { primaryKeyType: infer PKT extends string }
+    ? BaseFilterFor<PKT>
+    : SpecialPropertyFilter;
+
+export type SpecialPropertyWhereClause<T extends ObjectOrInterfaceDefinition> =
+  {
+    $title?: SpecialPropertyFilter;
+    $primaryKey?: PrimaryKeyFilterFor<T>;
+  };
+
 export type AndWhereClause<
   T extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
@@ -208,9 +224,11 @@ export type PropertyWhereClause<T extends ObjectOrInterfaceDefinition> = {
 type MergedPropertyWhereClause<
   T extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
-> = PropertyWhereClause<
-  DerivedObjectOrInterfaceDefinition.WithDerivedProperties<T, RDPs>
->;
+> =
+  | PropertyWhereClause<
+    DerivedObjectOrInterfaceDefinition.WithDerivedProperties<T, RDPs>
+  >
+  | SpecialPropertyWhereClause<T>;
 
 export type WhereClause<
   T extends ObjectOrInterfaceDefinition,

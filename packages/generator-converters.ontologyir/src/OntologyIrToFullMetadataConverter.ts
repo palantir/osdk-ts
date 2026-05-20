@@ -464,6 +464,7 @@ export class OntologyIrToFullMetadataConverter {
         >((acc, input) => {
           acc[input.name] = {
             dataType: convertDataType(input.dataType, func.customTypes),
+            required: false,
           };
           return acc;
         }, {}),
@@ -606,6 +607,7 @@ export class OntologyIrToFullMetadataConverter {
               customTypes,
               input.required,
             ),
+            required: input.required ?? false,
           };
           return acc;
         }, {}),
