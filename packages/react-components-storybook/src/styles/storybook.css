@@ -54,6 +54,7 @@ body {
   border: var(--osdk-surface-border-width) solid
     var(--osdk-surface-border-color-default);
   border-radius: var(--osdk-surface-border-radius);
+  color: var(--osdk-typography-color-default-rest);
 }
 
 .osdkFormStorySpacing {
@@ -66,16 +67,6 @@ body {
 
   width: min(480px, calc(100vw - calc(var(--osdk-surface-spacing) * 8)));
   max-height: calc(100vh - calc(var(--osdk-surface-spacing) * 16));
-}
-
-.osdkCustomTextarea {
-  width: 100%;
-  min-height: calc(var(--osdk-surface-spacing) * 15);
-  padding: calc(var(--osdk-surface-spacing) * 2);
-  border: var(--osdk-surface-border-width) solid
-    var(--osdk-surface-border-color-default);
-  border-radius: var(--osdk-surface-border-radius);
-  font-family: inherit;
 }
 
 .osdkCustomChoiceGroup {
@@ -118,6 +109,7 @@ body {
   padding: calc(var(--osdk-surface-spacing) * 3);
   border-radius: var(--osdk-surface-border-radius);
   background: var(--osdk-background-secondary);
+  color: var(--osdk-typography-color-default-rest);
   overflow: auto;
   font-size: var(--osdk-typography-size-body-small);
   max-height: 300px;
