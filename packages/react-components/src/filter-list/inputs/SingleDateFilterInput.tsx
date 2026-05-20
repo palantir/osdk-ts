@@ -15,17 +15,21 @@
  */
 
 import React, { memo, useCallback, useMemo } from "react";
+import type { RelativeDatePeriod } from "../../shared/dateUtils.js";
+import { resolveDateShortcuts } from "../base/inputs/ShortcutBar.js";
 import { SingleDateInput } from "../base/inputs/SingleDateInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
 
 interface SingleDateFilterInputProps {
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
+  dateShortcuts?: RelativeDatePeriod[] | boolean;
 }
 
 function SingleDateFilterInputInner({
   filterState,
   onFilterStateChanged,
+  dateShortcuts,
 }: SingleDateFilterInputProps): React.ReactElement {
   const selectedDate = useMemo(
     () =>
@@ -49,10 +53,16 @@ function SingleDateFilterInputInner({
     [onFilterStateChanged, isExcluding],
   );
 
+  const shortcutPeriods = useMemo(
+    () => resolveDateShortcuts(dateShortcuts),
+    [dateShortcuts],
+  );
+
   return (
     <SingleDateInput
       selectedDate={selectedDate}
       onChange={handleChange}
+      shortcutPeriods={shortcutPeriods}
     />
   );
 }

@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
-import React, { memo, useMemo } from "react";
-import { formatDateForInput } from "../../../shared/dateUtils.js";
+import classnames from "classnames";
+import React, { memo, useCallback, useMemo } from "react";
+import {
+  formatDateForInput,
+  type RelativeDatePeriod,
+} from "../../../shared/dateUtils.js";
 import { createDateHistogramBuckets } from "./createDateHistogramBuckets.js";
+import styles from "./DateRangeHistogramInput.module.css";
 import { RangeInput, type RangeInputConfig } from "./RangeInput.js";
+import { ShortcutBar } from "./ShortcutBar.js";
 
 const defaultDateConfig: RangeInputConfig<Date> = {
   inputType: "date",
@@ -50,11 +56,22 @@ interface DateRangeHistogramInputProps {
    */
   formatDate?: (date: Date) => string;
   clickToFilter?: boolean;
+  /**
+   * When provided, renders a vertical rail of relative-range shortcuts
+   * beside the histogram. Clicking a shortcut emits an absolute
+   * `{ min, max }` range via `onChange`. Resolved upstream from the
+   * `dateShortcuts` prop on the filter definition.
+   */
+  shortcutPeriods?: readonly RelativeDatePeriod[];
 }
 
 function DateRangeHistogramInputInner({
   formatDate,
   valueCountPairs,
+  shortcutPeriods,
+  onChange,
+  className,
+  style,
   ...rest
 }: DateRangeHistogramInputProps): React.ReactElement {
   const config = useMemo<RangeInputConfig<Date>>(
@@ -98,13 +115,39 @@ function DateRangeHistogramInputInner({
     return { buckets, subtitle };
   }, [valueCountPairs, formatDate]);
 
-  return (
+  const handleShortcutSelect = useCallback(
+    (range: { min: Date; max: Date }) => {
+      onChange(range.min, range.max);
+    },
+    [onChange],
+  );
+
+  const rangeInput = (
     <RangeInput
       {...rest}
+      onChange={onChange}
       valueCountPairs={valueCountPairs}
       config={config}
       histogramData={histogramData}
     />
+  );
+
+  if (shortcutPeriods == null) {
+    return rangeInput;
+  }
+
+  return (
+    <div
+      className={classnames(styles.shortcutsRow, className)}
+      style={style}
+    >
+      <ShortcutBar
+        periods={shortcutPeriods}
+        onSelect={handleShortcutSelect}
+        className={styles.shortcuts}
+      />
+      <div className={styles.rangeArea}>{rangeInput}</div>
+    </div>
   );
 }
 

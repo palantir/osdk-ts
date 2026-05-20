@@ -16,16 +16,20 @@
 
 import { describe, expect, it } from "vitest";
 import {
+  DEFAULT_RELATIVE_DATE_PERIODS,
   formatDateForDisplay,
   formatDateForInput,
   formatDatetimeForInput,
   formatTime,
+  getRelativeDatePeriodLabel,
+  getRelativeDateRange,
   getTimeValue,
   isDateInRange,
   parseDateFromInput,
   parseDateFromISO,
   parseDatetimeFromInput,
   parseTimeString,
+  type RelativeDatePeriod,
 } from "../dateUtils.js";
 
 describe("formatDateForInput", () => {
@@ -169,5 +173,114 @@ describe("getTimeValue", () => {
 
   it("returns 00:00 for null", () => {
     expect(getTimeValue(null)).toBe("00:00");
+  });
+});
+
+describe("getRelativeDateRange", () => {
+  it("subtracts exactly one hour for past-hour", () => {
+    const now = new Date(2024, 5, 15, 12, 0, 0, 0);
+    const { min, max } = getRelativeDateRange("past-hour", now);
+    expect(max.getTime()).toBe(now.getTime());
+    expect(max.getTime() - min.getTime()).toBe(60 * 60 * 1000);
+  });
+
+  it("subtracts 24 hours for past-day", () => {
+    const now = new Date(2024, 5, 15, 12, 0, 0, 0);
+    const { min, max } = getRelativeDateRange("past-day", now);
+    expect(max.getTime() - min.getTime()).toBe(24 * 60 * 60 * 1000);
+  });
+
+  it("subtracts 7 days for past-week", () => {
+    const now = new Date(2024, 5, 15, 12, 0, 0, 0);
+    const { min, max } = getRelativeDateRange("past-week", now);
+    expect(max.getTime() - min.getTime()).toBe(7 * 24 * 60 * 60 * 1000);
+  });
+
+  it("uses calendar-aware month math at month-end (Mar 31 → Feb 28/29)", () => {
+    // 2023 is not a leap year — Mar 31, 2023 minus one month should be Feb 28
+    const marchEnd2023 = new Date(2023, 2, 31, 9, 30, 0, 0);
+    const { min } = getRelativeDateRange("past-month", marchEnd2023);
+    expect(min.getFullYear()).toBe(2023);
+    expect(min.getMonth()).toBe(1); // February
+    expect(min.getDate()).toBe(28);
+
+    // 2024 IS a leap year — Mar 31, 2024 minus one month should be Feb 29
+    const marchEnd2024 = new Date(2024, 2, 31, 9, 30, 0, 0);
+    const { min: min2024 } = getRelativeDateRange("past-month", marchEnd2024);
+    expect(min2024.getMonth()).toBe(1);
+    expect(min2024.getDate()).toBe(29);
+  });
+
+  it("subtracts 3 months calendar-aware", () => {
+    const may15 = new Date(2024, 4, 15, 0, 0, 0, 0);
+    const { min } = getRelativeDateRange("past-3-months", may15);
+    expect(min.getFullYear()).toBe(2024);
+    expect(min.getMonth()).toBe(1); // February
+    expect(min.getDate()).toBe(15);
+  });
+
+  it("subtracts 6 months calendar-aware crossing year boundary", () => {
+    const feb15 = new Date(2024, 1, 15, 0, 0, 0, 0);
+    const { min } = getRelativeDateRange("past-6-months", feb15);
+    expect(min.getFullYear()).toBe(2023);
+    expect(min.getMonth()).toBe(7); // August
+    expect(min.getDate()).toBe(15);
+  });
+
+  it("subtracts a calendar year (Feb 29 → Feb 28 on non-leap)", () => {
+    const feb29Leap = new Date(2024, 1, 29, 0, 0, 0, 0);
+    const { min } = getRelativeDateRange("past-year", feb29Leap);
+    expect(min.getFullYear()).toBe(2023);
+    expect(min.getMonth()).toBe(1);
+    expect(min.getDate()).toBe(28);
+  });
+
+  it("subtracts 2 calendar years", () => {
+    const jun15 = new Date(2024, 5, 15, 0, 0, 0, 0);
+    const { min } = getRelativeDateRange("past-2-years", jun15);
+    expect(min.getFullYear()).toBe(2022);
+    expect(min.getMonth()).toBe(5);
+    expect(min.getDate()).toBe(15);
+  });
+
+  it("defaults `now` to the current Date when omitted", () => {
+    const before = Date.now();
+    const { max } = getRelativeDateRange("past-hour");
+    const after = Date.now();
+    expect(max.getTime()).toBeGreaterThanOrEqual(before);
+    expect(max.getTime()).toBeLessThanOrEqual(after);
+  });
+});
+
+describe("getRelativeDatePeriodLabel", () => {
+  it("returns the English label for each period", () => {
+    const expectations: Record<RelativeDatePeriod, string> = {
+      "past-hour": "Past hour",
+      "past-day": "Past day",
+      "past-week": "Past week",
+      "past-month": "Past month",
+      "past-3-months": "Past 3 months",
+      "past-6-months": "Past 6 months",
+      "past-year": "Past year",
+      "past-2-years": "Past 2 years",
+    };
+    for (const period of Object.keys(expectations) as RelativeDatePeriod[]) {
+      expect(getRelativeDatePeriodLabel(period)).toBe(expectations[period]);
+    }
+  });
+});
+
+describe("DEFAULT_RELATIVE_DATE_PERIODS", () => {
+  it("lists the eight periods in the documented order", () => {
+    expect(DEFAULT_RELATIVE_DATE_PERIODS).toEqual([
+      "past-hour",
+      "past-day",
+      "past-week",
+      "past-month",
+      "past-3-months",
+      "past-6-months",
+      "past-year",
+      "past-2-years",
+    ]);
   });
 });
