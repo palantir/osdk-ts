@@ -331,6 +331,51 @@ interface PropertyFilterDefinitionBase<
    * @default true
    */
   isVisible?: boolean;
+
+  /**
+   * Per-filter configuration for the header action cluster (search monocle,
+   * overflow `...` menu, and remove). See {@link FilterActionsConfig}.
+   */
+  actions?: FilterActionsConfig;
+}
+
+/**
+ * Configuration for the action cluster that renders alongside the filter
+ * title (search monocle, overflow menu, remove).
+ *
+ * Every field is optional; defaults are picked to match the post-refactor
+ * behavior — overflow `...` always shows, remove lives inside the overflow
+ * menu, search renders in the header for filter types that support it, and
+ * actions sit at the end of the header.
+ */
+export interface FilterActionsConfig {
+  /**
+   * Show or hide the search (monocle) action in the header. When `false`, the
+   * monocle never renders. Useful for `MULTI_SELECT` filters whose combobox
+   * already exposes inline search, so the monocle would be redundant.
+   * @default true (renders in header when the filter type supports search)
+   */
+  search?: boolean;
+
+  /**
+   * Show or hide the overflow `...` action in the header.
+   * @default true
+   */
+  overflow?: boolean;
+
+  /**
+   * Where the remove action lives. `true` renders a standalone remove button
+   * in the header; `false` hides removal entirely; `"menu"` keeps removal but
+   * exposes it as an item inside the overflow `...` menu.
+   * @default "menu"
+   */
+  remove?: boolean | "menu";
+
+  /**
+   * Placement of the action cluster relative to the title/value area.
+   * @default "header-end"
+   */
+  placement?: "header-end";
 }
 
 /**

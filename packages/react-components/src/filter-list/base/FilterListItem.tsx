@@ -21,45 +21,50 @@ import type {
   DraggableSyntheticListeners,
 } from "@dnd-kit/core";
 import classnames from "classnames";
-import React, { memo, useCallback, useState } from "react";
+import React, { memo, useCallback, useMemo, useState } from "react";
 import { ErrorBoundary } from "../../shared/ErrorBoundary.js";
-import type { FilterState } from "../FilterListItemApi.js";
-import { supportsExcluding, supportsSearch } from "../utils/filterValues.js";
+import type { FilterActionsConfig, FilterState } from "../FilterListItemApi.js";
+import {
+  clearFilterStateSelections,
+  filterHasActiveState,
+  supportsExcluding,
+  supportsSearch,
+} from "../utils/filterValues.js";
 import type { RenderFilterInput } from "./BaseFilterListApi.js";
 import { DragHandleIcon } from "./DragHandleIcon.js";
-import { OverflowMenuIcon, RemoveIcon, SearchIcon } from "./FilterIcons.js";
+import { RemoveIcon, SearchIcon } from "./FilterIcons.js";
 import styles from "./FilterListItem.module.css";
+import { FilterOverflowMenu } from "./FilterOverflowMenu.js";
 
-function hasActiveSelection(filterState: FilterState | undefined): boolean {
-  if (filterState == null) {
-    return false;
+function getEffectiveFilterState(
+  filterState: FilterState | undefined,
+): FilterState | undefined {
+  if (filterState?.type === "linkedProperty") {
+    return filterState.linkedFilterState;
   }
-  switch (filterState.type) {
-    case "EXACT_MATCH":
-      return filterState.values.length > 0;
-    case "SELECT":
-      return filterState.selectedValues.length > 0;
-    case "CONTAINS_TEXT":
-      return filterState.value != null && filterState.value.length > 0;
-    case "NUMBER_RANGE":
-      return filterState.minValue != null || filterState.maxValue != null;
-    case "DATE_RANGE":
-      return filterState.minValue != null || filterState.maxValue != null;
-    case "TIMELINE":
-      return filterState.startDate != null || filterState.endDate != null;
-    case "TOGGLE":
-      return filterState.enabled;
-    case "keywordSearch":
-      return filterState.searchTerm.length > 0;
-    case "hasLink":
-      return filterState.hasLink;
-    case "linkedProperty":
-      return hasActiveSelection(filterState.linkedFilterState);
-    case "custom":
-      return true;
-    default:
-      return false;
+  return filterState;
+}
+
+function withInnerExcludingToggled(
+  filterState: FilterState | undefined,
+): FilterState | undefined {
+  if (!filterState) {
+    return undefined;
   }
+  if (filterState.type === "linkedProperty") {
+    const inner = filterState.linkedFilterState;
+    return {
+      ...filterState,
+      linkedFilterState: {
+        ...inner,
+        isExcluding: !inner.isExcluding,
+      },
+    };
+  }
+  return {
+    ...filterState,
+    isExcluding: !filterState.isExcluding,
+  };
 }
 
 interface FilterListItemProps<D> {
@@ -77,6 +82,7 @@ interface FilterListItemProps<D> {
   dragHandleListeners?: DraggableSyntheticListeners;
   className?: string;
   style?: React.CSSProperties;
+  actions?: FilterActionsConfig;
 }
 
 function FilterListItemInner<D>({
@@ -91,11 +97,11 @@ function FilterListItemInner<D>({
   dragHandleListeners,
   className,
   style,
+  actions,
 }: FilterListItemProps<D>): React.ReactElement {
   const [searchState, setSearchState] = useState<
     { type: "closed" } | { type: "open"; query: string }
   >({ type: "closed" });
-  const [excludeRowOpen, setExcludeRowOpen] = useState(false);
 
   const handleFilterStateChanged = useCallback(
     (newState: FilterState) => {
@@ -125,17 +131,40 @@ function FilterListItemInner<D>({
     onFilterRemoved?.(filterKey);
   }, [filterKey, onFilterRemoved]);
 
-  const handleToggleExcludeRow = useCallback(() => {
-    setExcludeRowOpen((prev) => !prev);
-  }, []);
+  const handleToggleExclude = useCallback(() => {
+    const next = withInnerExcludingToggled(filterState);
+    if (next) {
+      onFilterStateChanged(filterKey, next);
+    }
+  }, [filterState, filterKey, onFilterStateChanged]);
+
+  const handleClearSelection = useCallback(() => {
+    if (filterState) {
+      onFilterStateChanged(filterKey, clearFilterStateSelections(filterState));
+    }
+  }, [filterState, filterKey, onFilterStateChanged]);
 
   const searchInputRef = useCallback((element: HTMLInputElement | null) => {
     element?.focus({ preventScroll: true });
   }, []);
 
-  const showExcludeDropdown = supportsExcluding(filterState);
-  const showSearch = supportsSearch(filterState);
-  const hasOverflowActions = showExcludeDropdown;
+  const effectiveState = useMemo(
+    () => getEffectiveFilterState(filterState),
+    [filterState],
+  );
+
+  const supportsExcludeAction = supportsExcluding(effectiveState);
+  const supportsSearchAction = supportsSearch(effectiveState);
+  const hasSelection = filterHasActiveState(filterState);
+
+  const searchEnabled = actions?.search ?? true;
+  const overflowEnabled = actions?.overflow ?? true;
+  const removeMode = actions?.remove ?? "menu";
+
+  const showSearchInHeader = searchEnabled && supportsSearchAction;
+  const showHeaderRemove = removeMode === true && onFilterRemoved != null;
+  const showMenuRemove = removeMode === "menu" && onFilterRemoved != null;
+  const isExcluding = effectiveState?.isExcluding ?? false;
 
   const searchOpen = searchState.type === "open";
   const searchQuery = searchState.type === "open" ? searchState.query : "";
@@ -147,7 +176,7 @@ function FilterListItemInner<D>({
     <div
       className={classnames(styles.filterItem, className)}
       style={style}
-      data-has-selection={hasActiveSelection(filterState) || undefined}
+      data-has-selection={hasSelection || undefined}
     >
       <div className={styles.itemHeader}>
         {dragHandleAttributes && (
@@ -165,7 +194,7 @@ function FilterListItemInner<D>({
         >
           {label}
         </span>
-        {showSearch && (
+        {showSearchInHeader && (
           <Button
             className={styles.headerActionButton}
             onClick={handleToggleSearch}
@@ -175,7 +204,7 @@ function FilterListItemInner<D>({
             <SearchIcon />
           </Button>
         )}
-        {onFilterRemoved && (
+        {showHeaderRemove && (
           <Button
             className={styles.headerActionButton}
             onClick={handleRemove}
@@ -184,15 +213,15 @@ function FilterListItemInner<D>({
             <RemoveIcon />
           </Button>
         )}
-        {hasOverflowActions && (
-          <Button
-            className={styles.headerActionButton}
-            onClick={handleToggleExcludeRow}
-            aria-label="More actions"
-            aria-pressed={excludeRowOpen}
-          >
-            <OverflowMenuIcon />
-          </Button>
+        {overflowEnabled && (
+          <FilterOverflowMenu
+            supportsExcluding={supportsExcludeAction}
+            isExcluding={isExcluding}
+            onToggleExclude={handleToggleExclude}
+            hasSelection={hasSelection}
+            onClearSelection={hasSelection ? handleClearSelection : undefined}
+            onRemove={showMenuRemove ? handleRemove : undefined}
+          />
         )}
       </div>
 
@@ -228,7 +257,6 @@ function FilterListItemInner<D>({
             filterState,
             onFilterStateChanged: handleFilterStateChanged,
             searchQuery: searchQueryForInput,
-            excludeRowOpen,
           })}
         </ErrorBoundary>
       </div>

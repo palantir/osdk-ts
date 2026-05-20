@@ -22,10 +22,20 @@ import { supportsExcluding } from "../utils/filterValues.js";
 import { ExcludeDropdown } from "./ExcludeDropdown.js";
 import styles from "./FilterListItem.module.css";
 
+function getEffectiveState(
+  filterState: FilterState | undefined,
+): FilterState | undefined {
+  if (filterState?.type === "linkedProperty") {
+    return filterState.linkedFilterState;
+  }
+  return filterState;
+}
+
 function getSelectedCount(filterState: FilterState | undefined): number {
-  if (!filterState) return 0;
-  if (filterState.type === "EXACT_MATCH") return filterState.values.length;
-  if (filterState.type === "SELECT") return filterState.selectedValues.length;
+  const effective = getEffectiveState(filterState);
+  if (!effective) return 0;
+  if (effective.type === "EXACT_MATCH") return effective.values.length;
+  if (effective.type === "SELECT") return effective.selectedValues.length;
   return 0;
 }
 
@@ -47,22 +57,35 @@ function FilterInputExcludeRowInner({
   children,
 }: FilterInputExcludeRowProps): React.ReactElement {
   const handleToggleExclude = useCallback(() => {
-    if (filterState) {
+    if (!filterState) {
+      return;
+    }
+    if (filterState.type === "linkedProperty") {
+      const inner = filterState.linkedFilterState;
       onFilterStateChanged({
         ...filterState,
-        isExcluding: !filterState.isExcluding,
+        linkedFilterState: {
+          ...inner,
+          isExcluding: !inner.isExcluding,
+        },
       });
+      return;
     }
+    onFilterStateChanged({
+      ...filterState,
+      isExcluding: !filterState.isExcluding,
+    });
   }, [filterState, onFilterStateChanged]);
 
-  const isExcluding = filterState?.isExcluding ?? false;
+  const effectiveState = getEffectiveState(filterState);
+  const isExcluding = effectiveState?.isExcluding ?? false;
   const isOpen = excludeRowOpen ?? false;
   const selectedCount = useMemo(
     () => getSelectedCount(filterState),
     [filterState],
   );
 
-  if (!supportsExcluding(filterState)) {
+  if (!supportsExcluding(effectiveState)) {
     return <>{children}</>;
   }
 
