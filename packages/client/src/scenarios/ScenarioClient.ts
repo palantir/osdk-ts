@@ -174,6 +174,21 @@ export interface ScenarioClient extends Client {
 }
 
 /**
+ * Runtime predicate for {@link ScenarioClient}. Returns `true` when `value` exposes a `getScenarioReference()`
+ * method — i.e. when it was built by {@link withScenario} or {@link createScenario}. Used by action parameter
+ * serialization to accept a `ScenarioClient` directly for `scenarioReference`-typed parameters.
+ *
+ * @internal
+ */
+export function isScenarioClient(value: unknown): value is ScenarioClient {
+  return (
+    typeof value === "function"
+    && typeof (value as { getScenarioReference?: unknown })
+        .getScenarioReference === "function"
+  );
+}
+
+/**
  * Shared internal builder used by both {@link withScenario} and {@link createScenario}. Validates the parent client
  * is not already inside a scenario or transaction, then constructs a fresh {@link Client} via
  * `createClientWithScenario` and decorates it with {@link ScenarioClient}-only methods.
