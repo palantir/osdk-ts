@@ -64,6 +64,18 @@ describe("FetchMetadata", () => {
         "implements": [
           "FooInterface",
         ],
+        "interfaceImplementations": {
+          "FooInterface": {
+            "fooIdp": {
+              "propertyApiName": "office",
+              "type": "localProperty",
+            },
+            "fooSpt": {
+              "propertyApiName": "fullName",
+              "type": "localProperty",
+            },
+          },
+        },
         "interfaceMap": {
           "FooInterface": {
             "fooIdp": "office",

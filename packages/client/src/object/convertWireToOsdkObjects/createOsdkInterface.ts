@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { InterfaceMetadata, PropertySecurity } from "@osdk/api";
+import type {
+  InterfaceMetadata,
+  ObjectMetadata,
+  PropertySecurity,
+} from "@osdk/api";
 import { extractNamespace } from "../../internal/conversions/extractNamespace.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
 import { get$linkForInterface } from "./getDollarLink.js";
@@ -30,6 +34,41 @@ type PropertySecuritiesMap = {
   [propName: string]: PropertySecurity[] | PropertySecurity[][];
 };
 
+function extractValueByImplementation(
+  underlying: Record<string, unknown>,
+  impl: ObjectMetadata.InterfacePropertyImplementation,
+): unknown {
+  switch (impl.type) {
+    case "localProperty":
+      return underlying[impl.propertyApiName];
+    case "structField": {
+      const struct = underlying[impl.propertyApiName] as
+        | Record<string, unknown>
+        | null
+        | undefined;
+      return struct == null ? undefined : struct[impl.structFieldApiName];
+    }
+    case "struct":
+      return Object.fromEntries(
+        Object.entries(impl.mapping).map(([fieldName, entry]) => {
+          if (entry.type === "structFieldOfProperty") {
+            const struct = underlying[entry.propertyApiName] as
+              | Record<string, unknown>
+              | null
+              | undefined;
+            return [
+              fieldName,
+              struct == null ? undefined : struct[entry.structFieldApiName],
+            ];
+          }
+          return [fieldName, underlying[entry.propertyApiName]];
+        }),
+      );
+    case "reduced":
+      return extractValueByImplementation(underlying, impl.implementation);
+  }
+}
+
 /** @internal */
 export function createOsdkInterface<
   Q extends FetchedObjectTypeDefinition,
@@ -38,6 +77,7 @@ export function createOsdkInterface<
   interfaceDef: InterfaceMetadata,
 ): InterfaceHolder {
   const [objApiNamespace] = extractNamespace(interfaceDef.apiName);
+  const objDef = underlying[ObjectDefRef];
 
   return Object.freeze(
     Object.defineProperties({}, {
@@ -106,14 +146,26 @@ export function createOsdkInterface<
 
       ...Object.fromEntries(
         Object.keys(interfaceDef.properties).map(p => {
-          const objDef = underlying[ObjectDefRef];
-
           const [apiNamespace, apiName] = extractNamespace(p);
+          const exposedName = apiNamespace === objApiNamespace ? apiName : p;
+          const impl = objDef
+            .interfaceImplementations?.[interfaceDef.apiName]?.[p];
+
+          if (impl != null) {
+            const value = extractValueByImplementation(
+              underlying as unknown as Record<string, unknown>,
+              impl,
+            );
+            return [exposedName, {
+              enumerable: value !== undefined,
+              value,
+            }];
+          }
 
           const targetPropName = objDef
             .interfaceMap![interfaceDef.apiName][p];
 
-          return [apiNamespace === objApiNamespace ? apiName : p, {
+          return [exposedName, {
             enumerable: targetPropName in underlying,
             value: underlying[targetPropName as keyof typeof underlying],
           }];

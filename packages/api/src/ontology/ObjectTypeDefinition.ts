@@ -88,6 +88,13 @@ export interface ObjectMetadata extends ObjectInterfaceBaseMetadata {
       /* InterfaceType property api name */ string
     >
   >;
+  interfaceImplementations?: Record<
+    /* InterfaceType api name */ string,
+    Record<
+      /* InterfaceType property api name */ string,
+      ObjectMetadata.InterfacePropertyImplementation
+    >
+  >;
 }
 
 export namespace ObjectMetadata {
@@ -113,6 +120,44 @@ export namespace ObjectMetadata {
     __OsdkLinkTargetType?: Q;
     targetType: Q["apiName"];
     multiplicity: M;
+  }
+
+  export type InterfacePropertyImplementation =
+    | InterfacePropertyLocalImplementation
+    | InterfacePropertyStructFieldImplementation
+    | InterfacePropertyStructImplementation
+    | InterfacePropertyReducedImplementation;
+
+  export interface InterfacePropertyLocalImplementation {
+    type: "localProperty";
+    propertyApiName: string;
+  }
+
+  export interface InterfacePropertyStructFieldImplementation {
+    type: "structField";
+    propertyApiName: string;
+    structFieldApiName: string;
+  }
+
+  export interface InterfacePropertyStructImplementation {
+    type: "struct";
+    mapping: Record<
+      /* struct field api name */ string,
+      | { type: "property"; propertyApiName: string }
+      | {
+        type: "structFieldOfProperty";
+        propertyApiName: string;
+        structFieldApiName: string;
+      }
+    >;
+  }
+
+  export interface InterfacePropertyReducedImplementation {
+    type: "reduced";
+    implementation:
+      | InterfacePropertyLocalImplementation
+      | InterfacePropertyStructFieldImplementation
+      | InterfacePropertyStructImplementation;
   }
 }
 

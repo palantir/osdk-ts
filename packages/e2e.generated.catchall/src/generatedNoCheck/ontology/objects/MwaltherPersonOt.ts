@@ -86,6 +86,48 @@ export interface MwaltherPersonOt extends $ObjectTypeDefinition {
       'MwaltherPersonV2',
       'MwaltherTestUpgrade',
     ];
+    interfaceImplementations: {
+      'com.palantirfoundry.swirl.esong.MwaltherTest': {
+        mwaltherVtInputTest: {
+          type: 'localProperty';
+          propertyApiName: 'name';
+        };
+        'com.palantirfoundry.swirl.esong.mwaltherName': {
+          type: 'localProperty';
+          propertyApiName: 'name';
+        };
+      };
+      'com.palantirfoundry.swirl.esong.MwaltherTestIdp': {
+        newProperty1: {
+          type: 'localProperty';
+          propertyApiName: 'name';
+        };
+        idpAge: {
+          type: 'localProperty';
+          propertyApiName: 'age';
+        };
+        mwaltherNam: {
+          type: 'localProperty';
+          propertyApiName: 'id';
+        };
+        'com.palantirfoundry.swirl.esong.mwaltherName': {
+          type: 'localProperty';
+          propertyApiName: 'name';
+        };
+      };
+      MwaltherPersonV2: {
+        mwaltherNam: {
+          type: 'localProperty';
+          propertyApiName: 'id';
+        };
+      };
+      MwaltherTestUpgrade: {
+        'com.palantirfoundry.swirl.esong.mwaltherName': {
+          type: 'localProperty';
+          propertyApiName: 'name';
+        };
+      };
+    };
     interfaceMap: {
       'com.palantirfoundry.swirl.esong.MwaltherTest': {
         mwaltherVtInputTest: 'name';
