@@ -22,6 +22,7 @@ import type {
 } from "@osdk/api";
 import type {
   BaseFilterState,
+  FilterActionsConfig,
   FilterState,
   FilterStateByComponentType,
   PropertyTypeFromKey,
@@ -70,6 +71,12 @@ export interface HasLinkFilterDefinition<
    * @default true
    */
   isVisible?: boolean;
+
+  /**
+   * Per-filter configuration for the header action cluster (search monocle,
+   * overflow `...` menu, and remove). See {@link FilterActionsConfig}.
+   */
+  actions?: FilterActionsConfig;
 }
 
 /**
@@ -110,4 +117,10 @@ export interface LinkedPropertyFilterDefinition<
    * @default true
    */
   isVisible?: boolean;
+
+  /**
+   * Per-filter configuration for the header action cluster (search monocle,
+   * overflow `...` menu, and remove). See {@link FilterActionsConfig}.
+   */
+  actions?: FilterActionsConfig;
 }

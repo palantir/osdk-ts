@@ -125,6 +125,51 @@ export function filterValuesBySearch<T>(
   return values.filter((v) => getValue(v).toLowerCase().includes(lowerSearch));
 }
 
+/**
+ * Returns a copy of the filter state with all selectable values cleared.
+ * Used by the overflow menu's "Clear all selections" action so the action
+ * works uniformly across every filter type (including linked filters, which
+ * recurse into their inner state).
+ *
+ * `includeNull` is preserved on range filters — clearing the value range
+ * shouldn't reset the unrelated "include nulls" choice.
+ */
+export function clearFilterStateSelections(
+  state: FilterState,
+): FilterState {
+  switch (state.type) {
+    case "EXACT_MATCH":
+      return { ...state, values: [] };
+    case "SELECT":
+      return { ...state, selectedValues: [] };
+    case "CONTAINS_TEXT":
+      return { ...state, value: undefined };
+    case "NUMBER_RANGE":
+      return { ...state, minValue: undefined, maxValue: undefined };
+    case "DATE_RANGE":
+      return { ...state, minValue: undefined, maxValue: undefined };
+    case "TIMELINE":
+      return { ...state, startDate: undefined, endDate: undefined };
+    case "TOGGLE":
+      return { ...state, enabled: false };
+    case "hasLink":
+      return { ...state, hasLink: false };
+    case "linkedProperty":
+      return {
+        ...state,
+        linkedFilterState: clearFilterStateSelections(state.linkedFilterState),
+      };
+    case "keywordSearch":
+      return { ...state, searchTerm: "" };
+    case "custom":
+      return state;
+    default: {
+      const _exhaustive: never = state;
+      return state;
+    }
+  }
+}
+
 /** Check if a filter state has an active (non-empty) value. */
 export function filterHasActiveState(state: FilterState | undefined): boolean {
   if (!state) return false;

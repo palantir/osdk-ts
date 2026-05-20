@@ -15,7 +15,7 @@
  */
 
 import type React from "react";
-import type { FilterState } from "../FilterListItemApi.js";
+import type { FilterActionsConfig, FilterState } from "../FilterListItemApi.js";
 
 export type RenderFilterInput<D> = (props: {
   definition: D;
@@ -33,6 +33,11 @@ export interface BaseFilterListProps<D> {
   renderInput: RenderFilterInput<D>;
   getFilterKey: (definition: D) => string;
   getFilterLabel: (definition: D) => string;
+  /**
+   * Resolve per-filter action visibility/placement config from a definition.
+   * When omitted, every filter falls back to default action behavior.
+   */
+  getFilterActions?: (definition: D) => FilterActionsConfig | undefined;
   activeFilterCount: number;
   onReset?: () => void;
   onFilterAdded?: () => void;

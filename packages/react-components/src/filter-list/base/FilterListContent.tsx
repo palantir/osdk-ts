@@ -39,7 +39,7 @@ import {
 } from "@dnd-kit/sortable";
 import classnames from "classnames";
 import React, { useCallback, useMemo, useState } from "react";
-import type { FilterState } from "../FilterListItemApi.js";
+import type { FilterActionsConfig, FilterState } from "../FilterListItemApi.js";
 import type { RenderFilterInput } from "./BaseFilterListApi.js";
 import styles from "./FilterListContent.module.css";
 import { FilterListItem } from "./FilterListItem.js";
@@ -74,6 +74,7 @@ interface FilterListContentProps<D> {
   renderInput: RenderFilterInput<D>;
   getFilterKey: (definition: D) => string;
   getFilterLabel: (definition: D) => string;
+  getFilterActions?: (definition: D) => FilterActionsConfig | undefined;
   enableSorting?: boolean;
   className?: string;
   style?: React.CSSProperties;
@@ -88,6 +89,7 @@ export function FilterListContent<D>({
   renderInput,
   getFilterKey,
   getFilterLabel,
+  getFilterActions,
   enableSorting,
   className,
   style,
@@ -227,6 +229,7 @@ export function FilterListContent<D>({
               const filterKey = getFilterKey(definition);
               const label = getFilterLabel(definition);
               const state = filterStates.get(filterKey);
+              const actions = getFilterActions?.(definition);
 
               return (
                 <SortableFilterListItem
@@ -239,6 +242,7 @@ export function FilterListContent<D>({
                   onFilterStateChanged={onFilterStateChanged}
                   onFilterRemoved={onFilterRemoved}
                   renderInput={renderInput}
+                  actions={actions}
                 />
               );
             })}
@@ -258,6 +262,7 @@ export function FilterListContent<D>({
                 onFilterRemoved={onFilterRemoved}
                 renderInput={renderInput}
                 dragHandleAttributes={DRAG_OVERLAY_HANDLE_ATTRIBUTES}
+                actions={getFilterActions?.(activeDefinition)}
               />
             )}
           </DragOverlay>
@@ -274,6 +279,7 @@ export function FilterListContent<D>({
       {filterDefinitions.map((definition) => {
         const filterKey = getFilterKey(definition);
         const state = filterStates.get(filterKey);
+        const actions = getFilterActions?.(definition);
 
         return (
           <FilterListItem
@@ -285,6 +291,7 @@ export function FilterListContent<D>({
             onFilterStateChanged={onFilterStateChanged}
             onFilterRemoved={onFilterRemoved}
             renderInput={renderInput}
+            actions={actions}
           />
         );
       })}

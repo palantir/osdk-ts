@@ -25,10 +25,20 @@ import type {
   FilterKey,
   FilterListProps,
 } from "./FilterListApi.js";
+import type { FilterActionsConfig } from "./FilterListItemApi.js";
 import { useFilterListState } from "./hooks/useFilterListState.js";
 import { useFilterVisibility } from "./hooks/useFilterVisibility.js";
 import { getFilterKey } from "./utils/getFilterKey.js";
 import { getFilterLabel } from "./utils/getFilterLabel.js";
+
+function getFilterActions<Q extends ObjectTypeDefinition>(
+  definition: FilterDefinitionUnion<Q>,
+): FilterActionsConfig | undefined {
+  if ("actions" in definition) {
+    return definition.actions;
+  }
+  return undefined;
+}
 
 export function FilterList<Q extends ObjectTypeDefinition>(
   props: FilterListProps<Q>,
@@ -215,6 +225,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
       renderInput={renderInput}
       getFilterKey={getFilterKey}
       getFilterLabel={getFilterLabel}
+      getFilterActions={getFilterActions}
       activeFilterCount={activeFilterCount}
       onReset={handleReset}
       showResetButton={showResetButton}
