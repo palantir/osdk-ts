@@ -107,6 +107,7 @@ export const THEME_PRESETS: ThemePreset[] = [
       colorAssignment("border", "#dce0e5"),
       colorAssignment("danger", "#cd4246"),
       colorAssignment("success", "#238551"),
+      colorAssignment("warning", "#c87619"),
       ...baseDefaults({
         shadow: "inset 0 1px 1px oklch(0 0 0 / 0.15)",
       }),
@@ -131,6 +132,7 @@ export const THEME_PRESETS: ThemePreset[] = [
       colorAssignment("border", "#ffffff33"),
       colorAssignment("danger", "#cd4246"),
       colorAssignment("success", "#238551"),
+      colorAssignment("warning", "#c87619"),
       ...baseDefaults({
         shadow:
           "inset 0 0 0 1px oklch(1 0 0 / 0.2), 0 4px 6px -4px oklch(0 0 0 / 0.5), 0 10px 30px -5px oklch(0 0 0 / 0.5)",
@@ -156,6 +158,7 @@ export const THEME_PRESETS: ThemePreset[] = [
       colorAssignment("border", "#15803d"),
       colorAssignment("danger", "#ef4444"),
       colorAssignment("success", "#4ade80"),
+      colorAssignment("warning", "#f59e0b"),
       ...baseDefaults({
         shadow: "0 1px 3px oklch(0 0 0 / 0.4), 0 1px 2px oklch(0 0 0 / 0.3)",
       }),
@@ -180,6 +183,7 @@ export const THEME_PRESETS: ThemePreset[] = [
       colorAssignment("border", "#334155"),
       colorAssignment("danger", "#ef4444"),
       colorAssignment("success", "#22c55e"),
+      colorAssignment("warning", "#f59e0b"),
       ...baseDefaults({
         radius: "6",
         shadow: "0 1px 3px oklch(0 0 0 / 0.4), 0 1px 2px oklch(0 0 0 / 0.3)",
@@ -204,6 +208,7 @@ export const THEME_PRESETS: ThemePreset[] = [
       colorAssignment("border", "#d6d3d1"),
       colorAssignment("danger", "#dc2626"),
       colorAssignment("success", "#15803d"),
+      colorAssignment("warning", "#d97706"),
       ...baseDefaults({ radius: "8" }),
     ],
   },
@@ -226,6 +231,7 @@ export const THEME_PRESETS: ThemePreset[] = [
       colorAssignment("border", "#4c1d95"),
       colorAssignment("danger", "#f43f5e"),
       colorAssignment("success", "#34d399"),
+      colorAssignment("warning", "#f59e0b"),
       ...baseDefaults({
         radius: "6",
         shadow: "0 1px 3px oklch(0 0 0 / 0.4), 0 1px 2px oklch(0 0 0 / 0.3)",

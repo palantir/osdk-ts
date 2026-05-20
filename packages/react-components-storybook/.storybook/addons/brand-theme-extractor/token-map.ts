@@ -41,9 +41,10 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
       // Table row backgrounds (both default and alternate use the same color)
       "--osdk-table-row-bg-default",
       "--osdk-table-row-bg-alternate",
-      // Surface default rest
+      // Surface default rest / disabled
       "--osdk-surface-background-color-default-rest",
       "--bp-surface-background-color-default-rest",
+      "--bp-surface-background-color-default-disabled",
     ],
   },
   {
@@ -76,6 +77,8 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
       // to preserve oklch derivation chains)
       "--osdk-typography-color-default-rest",
       "--bp-typography-color-default-rest",
+      // Tooltip text
+      "--osdk-tooltip-color",
       // Table text
       "--osdk-table-header-color",
       "--osdk-table-cell-color",
@@ -162,10 +165,11 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     category: "color",
     inputType: "color",
     cssProperties: [
-      // Surface border (default only — strong derives from default
-      // via oklch with higher opacity)
+      // Surface border (default + strong)
       "--osdk-surface-border-color-default",
       "--bp-surface-border-color-default",
+      "--osdk-surface-border-color-strong",
+      "--bp-surface-border-color-strong",
       // Table border
       "--osdk-table-border-color",
       // Checkbox border color
@@ -320,6 +324,8 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     category: "surface",
     inputType: "shadow",
     cssProperties: [
+      // Only override shadow-2 (primary level) — other depths (0/1/3/4)
+      // are derived by the component library's own depth hierarchy
       "--osdk-surface-shadow-2",
       "--bp-surface-shadow-2",
       // Input shadow
