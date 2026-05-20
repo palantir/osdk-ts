@@ -124,6 +124,29 @@ All components resolve their visual properties through CSS custom properties. Th
 
 Per-component references list the `--osdk-*` variables each component exposes — see, for example, [ObjectTable › Theming](./ObjectTable.md#theming). The full catalog of variables lives in [CSSVariables.md](./CSSVariables.md).
 
+### Light and dark mode
+
+OSDK components ship a built-in dark theme. Wrap your app in `<OsdkThemeProvider>` to activate it and to let users override the OS preference at runtime:
+
+```tsx
+import { OsdkThemeProvider } from "@osdk/react-components/experimental/theme";
+
+function App() {
+  return (
+    <OsdkProvider client={client}>
+      <OsdkThemeProvider>
+        {/* defaults to "system" */}
+        {/* your app */}
+      </OsdkThemeProvider>
+    </OsdkProvider>
+  );
+}
+```
+
+By default the provider follows `prefers-color-scheme` and writes the resolved value to `data-bp-color-scheme` on `<html>` — matching [Blueprint's convention](https://blueprintjs.com/docs/#core/colors) so the theme also applies to portaled overlays (popovers, dialogs, tooltips).
+
+See [OsdkThemeProvider](./OsdkThemeProvider.md) for the full reference, including the `defaultTheme` modes, the `useOsdkTheme` hook, persisting the user's choice, and skipping the provider entirely if your host app already manages theme.
+
 ### Accessibility
 
 When overriding theme tokens, keep the result accessible:
