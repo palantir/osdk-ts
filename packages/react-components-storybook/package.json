@@ -22,7 +22,6 @@
   },
   "devDependencies": {
     "@blueprintjs/core": "^6.10.0",
-    "@osdk/aip-core": "workspace:*",
     "@osdk/api": "workspace:*",
     "@osdk/cbac-components": "workspace:*",
     "@osdk/client": "workspace:*",
