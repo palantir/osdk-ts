@@ -337,6 +337,39 @@ export const IntegerNumberRangeRounding: Story = {
   },
 };
 
+export const WithDateShortcuts: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: "Set `dateShortcuts: true` on a `datetime` / `timestamp` "
+          + "property filter to opt into the relative-range shortcut rail. "
+          + "Clicking a shortcut emits an absolute `{ min, max }` range. "
+          + "The default list of eight periods is rendered; pass a "
+          + "`RelativeDatePeriod[]` to render an explicit subset in your "
+          + "preferred order.",
+      },
+    },
+  },
+  render: ({ objectType: _ot, objectSet: _os, ...args }) => {
+    const filterDefinitions = useMemo(
+      (): FilterDefinitionUnion<Employee>[] => [{
+        ...startDateFilter,
+        dateShortcuts: true,
+      }],
+      [],
+    );
+    return (
+      <div style={SIDEBAR_STYLE}>
+        <FilterList
+          objectType={Employee}
+          filterDefinitions={filterDefinitions}
+          {...args}
+        />
+      </div>
+    );
+  },
+};
+
 function WithObjectSetStory(args: Partial<EmployeeFilterListProps>) {
   const client = useOsdkClient();
   const objectSet = useMemo(

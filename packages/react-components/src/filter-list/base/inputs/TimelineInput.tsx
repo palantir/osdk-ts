@@ -22,7 +22,9 @@ import {
   formatDateForDisplay,
   formatDateForInput,
   parseDateFromInput,
+  type RelativeDatePeriod,
 } from "../../../shared/dateUtils.js";
+import { ShortcutBar } from "./ShortcutBar.js";
 import styles from "./TimelineInput.module.css";
 
 interface TimelineInputProps {
@@ -38,6 +40,12 @@ interface TimelineInputProps {
    * ISO `YYYY-MM-DD`.
    */
   formatDate?: (date: Date) => string;
+  /**
+   * When provided, renders a vertical rail of relative-range shortcuts
+   * above the timeline labels. Clicking a shortcut emits an absolute
+   * `{ startDate, endDate }` via `onChange`.
+   */
+  shortcutPeriods?: readonly RelativeDatePeriod[];
 }
 
 function TimelineInputInner({
@@ -48,6 +56,7 @@ function TimelineInputInner({
   minDate,
   maxDate,
   formatDate,
+  shortcutPeriods,
 }: TimelineInputProps): React.ReactElement {
   const renderDate = (date: Date | undefined, fallback: string): string =>
     date == null
@@ -75,6 +84,13 @@ function TimelineInputInner({
     onChange(undefined, undefined);
   }, [onChange]);
 
+  const handleShortcutSelect = useCallback(
+    (range: { min: Date; max: Date }) => {
+      onChange(range.min, range.max);
+    },
+    [onChange],
+  );
+
   const startInputMax = useMemo(
     () => endDate ?? maxDate,
     [endDate, maxDate],
@@ -86,6 +102,13 @@ function TimelineInputInner({
 
   return (
     <div className={classnames(styles.timeline, className)}>
+      {shortcutPeriods != null && (
+        <ShortcutBar
+          periods={shortcutPeriods}
+          onSelect={handleShortcutSelect}
+          className={styles.shortcuts}
+        />
+      )}
       <div className={styles.labels}>
         <span>{renderDate(startDate, "—")}</span>
         <span>to</span>

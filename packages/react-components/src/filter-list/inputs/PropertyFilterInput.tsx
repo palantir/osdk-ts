@@ -105,6 +105,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           whereClause={whereClause}
           formatDate={definition.formatDate}
           clickToFilter={definition.clickToFilter}
+          dateShortcuts={definition.dateShortcuts}
         />
       );
 
@@ -144,6 +145,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
         <SingleDateFilterInput
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
+          dateShortcuts={definition.dateShortcuts}
         />
       );
 
@@ -199,6 +201,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
             filterState={filterState}
             onFilterStateChanged={onFilterStateChanged}
             formatDate={definition.formatDate}
+            dateShortcuts={definition.dateShortcuts}
           />
         </FilterInputExcludeRow>
       );

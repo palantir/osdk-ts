@@ -123,3 +123,138 @@ export function parseTimeString(
 export function getTimeValue(date: Date | null): string {
   return date != null ? formatTime(date) : "00:00";
 }
+
+/**
+ * Identifier for an opt-in relative date range — the period the user wants
+ * the filter to span, anchored at "now". Consumed by the date filter
+ * shortcuts rail; emitting code converts the identifier into an absolute
+ * `{ min, max }` Date pair via {@link getRelativeDateRange}.
+ */
+export type RelativeDatePeriod =
+  | "past-hour"
+  | "past-day"
+  | "past-week"
+  | "past-month"
+  | "past-3-months"
+  | "past-6-months"
+  | "past-year"
+  | "past-2-years";
+
+const MS_IN_HOUR = 60 * 60 * 1000;
+const MS_IN_DAY = 24 * MS_IN_HOUR;
+const MS_IN_WEEK = 7 * MS_IN_DAY;
+
+/**
+ * Calendar-aware "subtract N months from `from`" that prevents month-end
+ * rollover. For example, subtracting one month from Mar 31 returns the last
+ * day of February (Feb 28 or Feb 29), not Mar 3 — which is what
+ * `setMonth(month - 1)` would produce.
+ */
+function subtractCalendarMonths(from: Date, months: number): Date {
+  const year = from.getFullYear();
+  const month = from.getMonth();
+  const day = from.getDate();
+  const targetYear = year + Math.floor((month - months) / 12);
+  const targetMonth = ((month - months) % 12 + 12) % 12;
+  const lastDayOfTargetMonth = new Date(
+    targetYear,
+    targetMonth + 1,
+    0,
+  ).getDate();
+  const clampedDay = Math.min(day, lastDayOfTargetMonth);
+  return new Date(
+    targetYear,
+    targetMonth,
+    clampedDay,
+    from.getHours(),
+    from.getMinutes(),
+    from.getSeconds(),
+    from.getMilliseconds(),
+  );
+}
+
+/** Calendar-aware "subtract N years from `from`" preserving month-end. */
+function subtractCalendarYears(from: Date, years: number): Date {
+  return subtractCalendarMonths(from, years * 12);
+}
+
+/**
+ * Returns an absolute `{ min, max }` Date range for the given relative
+ * period, anchored at `now` (default: `new Date()`).
+ *
+ * Short periods (`past-hour`, `past-day`, `past-week`) subtract a fixed
+ * number of milliseconds. Longer periods use calendar-aware arithmetic so
+ * month-end and DST edges don't roll over (e.g. Mar 31 minus one month
+ * stays in February).
+ */
+export function getRelativeDateRange(
+  period: RelativeDatePeriod,
+  now: Date = new Date(),
+): { min: Date; max: Date } {
+  const max = new Date(now.getTime());
+  let min: Date;
+  switch (period) {
+    case "past-hour":
+      min = new Date(max.getTime() - MS_IN_HOUR);
+      break;
+    case "past-day":
+      min = new Date(max.getTime() - MS_IN_DAY);
+      break;
+    case "past-week":
+      min = new Date(max.getTime() - MS_IN_WEEK);
+      break;
+    case "past-month":
+      min = subtractCalendarMonths(max, 1);
+      break;
+    case "past-3-months":
+      min = subtractCalendarMonths(max, 3);
+      break;
+    case "past-6-months":
+      min = subtractCalendarMonths(max, 6);
+      break;
+    case "past-year":
+      min = subtractCalendarYears(max, 1);
+      break;
+    case "past-2-years":
+      min = subtractCalendarYears(max, 2);
+      break;
+  }
+  return { min, max };
+}
+
+/** Human-readable label for a {@link RelativeDatePeriod} (English only). */
+export function getRelativeDatePeriodLabel(p: RelativeDatePeriod): string {
+  switch (p) {
+    case "past-hour":
+      return "Past hour";
+    case "past-day":
+      return "Past day";
+    case "past-week":
+      return "Past week";
+    case "past-month":
+      return "Past month";
+    case "past-3-months":
+      return "Past 3 months";
+    case "past-6-months":
+      return "Past 6 months";
+    case "past-year":
+      return "Past year";
+    case "past-2-years":
+      return "Past 2 years";
+  }
+}
+
+/**
+ * Default ordered list of relative date periods surfaced by the shortcut
+ * rail when a consumer opts in with `dateShortcuts: true`.
+ */
+export const DEFAULT_RELATIVE_DATE_PERIODS: readonly RelativeDatePeriod[] = [
+  "past-hour",
+  "past-day",
+  "past-week",
+  "past-month",
+  "past-3-months",
+  "past-6-months",
+  "past-year",
+  "past-2-years",
+];

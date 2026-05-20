@@ -16,7 +16,7 @@
 
 import type { WhereClause } from "@osdk/api";
 import { useOsdkAggregation } from "@osdk/react";
-import { cleanup, render } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { DateRangeFilterInput } from "../inputs/DateRangeFilterInput.js";
@@ -59,6 +59,66 @@ describe("DateRangeFilterInput", () => {
     );
     expect(histogramCall).toBeDefined();
     expect(histogramCall![1]).toHaveProperty("where", whereClause);
+  });
+
+  describe("dateShortcuts", () => {
+    it("renders no shortcut rail when dateShortcuts is undefined", () => {
+      const whereClause = {} as WhereClause<typeof MockObjectType>;
+      render(
+        <DateRangeFilterInput
+          objectType={MockObjectType}
+          propertyKey="createdAt"
+          filterState={undefined}
+          onFilterStateChanged={vi.fn()}
+          whereClause={whereClause}
+        />,
+      );
+      expect(
+        screen.queryByRole("group", { name: "Relative date shortcuts" }),
+      ).toBeNull();
+    });
+
+    it("renders the rail when dateShortcuts is true", () => {
+      const whereClause = {} as WhereClause<typeof MockObjectType>;
+      render(
+        <DateRangeFilterInput
+          objectType={MockObjectType}
+          propertyKey="createdAt"
+          filterState={undefined}
+          onFilterStateChanged={vi.fn()}
+          whereClause={whereClause}
+          dateShortcuts={true}
+        />,
+      );
+      const rail = screen.getByRole("group", {
+        name: "Relative date shortcuts",
+      });
+      expect(rail.querySelectorAll("button").length).toBe(8);
+    });
+
+    it("emits a DATE_RANGE filter state with absolute min/max on click", () => {
+      const whereClause = {} as WhereClause<typeof MockObjectType>;
+      const onFilterStateChanged = vi.fn();
+      render(
+        <DateRangeFilterInput
+          objectType={MockObjectType}
+          propertyKey="createdAt"
+          filterState={undefined}
+          onFilterStateChanged={onFilterStateChanged}
+          whereClause={whereClause}
+          dateShortcuts={["past-day"]}
+        />,
+      );
+      fireEvent.click(screen.getByRole("button", { name: "Past day" }));
+      expect(onFilterStateChanged).toHaveBeenCalledTimes(1);
+      const state = onFilterStateChanged.mock.calls[0][0];
+      expect(state.type).toBe("DATE_RANGE");
+      expect(state.minValue).toBeInstanceOf(Date);
+      expect(state.maxValue).toBeInstanceOf(Date);
+      expect(
+        (state.maxValue as Date).getTime() - (state.minValue as Date).getTime(),
+      ).toBe(24 * 60 * 60 * 1000);
+    });
   });
 
   it("combines whereClause with null-check in the null count query", () => {
