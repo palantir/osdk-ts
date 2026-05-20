@@ -16,7 +16,11 @@
 
 import { describe, expect, it } from "vitest";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
-import { dedupeEmptyAggregationRows, isEmptyValue } from "../filterValues.js";
+import {
+  clearFilterStateSelections,
+  dedupeEmptyAggregationRows,
+  isEmptyValue,
+} from "../filterValues.js";
 
 describe("filterValues", () => {
   describe("isEmptyValue", () => {
@@ -94,6 +98,102 @@ describe("filterValues", () => {
       expect(dedupeEmptyAggregationRows(input)).toEqual([
         { value: "alpha", count: 5 },
       ]);
+    });
+  });
+
+  describe("clearFilterStateSelections", () => {
+    it("empties SELECT selectedValues but keeps isExcluding", () => {
+      expect(
+        clearFilterStateSelections({
+          type: "SELECT",
+          selectedValues: ["a", "b"],
+          isExcluding: true,
+        }),
+      ).toEqual({
+        type: "SELECT",
+        selectedValues: [],
+        isExcluding: true,
+      });
+    });
+
+    it("empties EXACT_MATCH values", () => {
+      expect(
+        clearFilterStateSelections({
+          type: "EXACT_MATCH",
+          values: ["alpha", "beta"],
+        }),
+      ).toEqual({
+        type: "EXACT_MATCH",
+        values: [],
+      });
+    });
+
+    it("clears CONTAINS_TEXT value", () => {
+      expect(
+        clearFilterStateSelections({
+          type: "CONTAINS_TEXT",
+          value: "needle",
+        }),
+      ).toEqual({
+        type: "CONTAINS_TEXT",
+        value: undefined,
+      });
+    });
+
+    it("clears NUMBER_RANGE min/max but preserves includeNull", () => {
+      expect(
+        clearFilterStateSelections({
+          type: "NUMBER_RANGE",
+          minValue: 1,
+          maxValue: 5,
+          includeNull: true,
+        }),
+      ).toEqual({
+        type: "NUMBER_RANGE",
+        minValue: undefined,
+        maxValue: undefined,
+        includeNull: true,
+      });
+    });
+
+    it("recursively clears linkedProperty inner state", () => {
+      expect(
+        clearFilterStateSelections({
+          type: "linkedProperty",
+          linkedFilterState: {
+            type: "EXACT_MATCH",
+            values: ["x", "y"],
+          },
+        }),
+      ).toEqual({
+        type: "linkedProperty",
+        linkedFilterState: {
+          type: "EXACT_MATCH",
+          values: [],
+        },
+      });
+    });
+
+    it("resets TOGGLE to false", () => {
+      expect(
+        clearFilterStateSelections({ type: "TOGGLE", enabled: true }),
+      ).toEqual({ type: "TOGGLE", enabled: false });
+    });
+
+    it("clears TIMELINE start/end", () => {
+      const start = new Date("2024-01-01");
+      const end = new Date("2024-02-01");
+      expect(
+        clearFilterStateSelections({
+          type: "TIMELINE",
+          startDate: start,
+          endDate: end,
+        }),
+      ).toEqual({
+        type: "TIMELINE",
+        startDate: undefined,
+        endDate: undefined,
+      });
     });
   });
 });

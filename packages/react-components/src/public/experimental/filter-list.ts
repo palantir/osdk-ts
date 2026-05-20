@@ -31,6 +31,7 @@ export type {
   FilterListProps,
 } from "../../filter-list/FilterListApi.js";
 export type {
+  FilterActionsConfig,
   FilterComponentType,
   FilterListItemProps,
   FilterState,
