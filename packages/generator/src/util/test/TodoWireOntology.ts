@@ -191,7 +191,7 @@ export const TodoWireOntology: WireOntologyDefinition = {
         type: "integer",
       },
       parameters: {
-        completed: { dataType: { type: "boolean" } },
+        completed: { dataType: { type: "boolean" }, required: true },
       },
       rid: "rid.query.1",
       version: "1.1.0",
@@ -212,6 +212,7 @@ export const TodoWireOntology: WireOntologyDefinition = {
             objectApiName: "Todo",
             objectTypeApiName: "Todo",
           },
+          required: true,
         },
       },
       rid: "rid.query.2",
