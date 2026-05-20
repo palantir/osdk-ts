@@ -210,7 +210,7 @@ export const WithMedia: StoryObj<ExcelViewerMediaProps> = {
   },
 };
 
-export const WithSpreadsheet: Story = {
+export const Default: Story = {
   parameters: {
     docs: {
       source: {
