@@ -38,6 +38,75 @@ export type PropertyTypeFromKey<
 > = CompileTimeMetadata<Q>["properties"][K]["type"];
 
 /**
+ * Where a filter action can be placed within a filter list item.
+ *
+ * - `"header-start"` — left side of the header (next to the label). Reserved
+ *   for future use; not yet rendered.
+ * - `"header-end"` — right side of the header (where the monocle and overflow
+ *   menu live today).
+ * - `"menu"` — inside the overflow (`...`) menu.
+ */
+export type FilterActionPlacement = "header-start" | "header-end" | "menu";
+
+/**
+ * Per-filter configuration for which action controls render on a filter
+ * list item and where they appear.
+ *
+ * Defaults preserve the built-in behavior: the search monocle renders in the
+ * header for filter components that support search, the overflow (`...`) menu
+ * always renders, and "Remove filter" appears inside that menu whenever
+ * `onFilterRemoved` is wired.
+ */
+export interface FilterActionsConfig {
+  /**
+   * Search affordance for filter values.
+   *
+   * - `true` / `"header-end"` — header monocle button (default for filter
+   *   components that support search; ignored otherwise).
+   * - `false` — hidden.
+   * - `"menu"` — reserved for future in-menu search; treated as hidden today.
+   *
+   * Takes precedence over the shorthand `searchField` flag when both are set.
+   *
+   * @default true
+   */
+  search?: boolean | FilterActionPlacement;
+
+  /**
+   * Overflow (`...`) menu button.
+   *
+   * - `true` — visible whenever the menu has at least one action to show
+   *   (default).
+   * - `false` — hidden. Keep / Exclude, Clear all selections, and Remove
+   *   filter — all of which live inside the menu — are also hidden when this
+   *   is `false`.
+   *
+   * @default true
+   */
+  overflow?: boolean;
+
+  /**
+   * Remove filter affordance.
+   *
+   * - `true` / `"menu"` — rendered as a menu item when `onFilterRemoved` is
+   *   provided (default).
+   * - `false` — hidden.
+   *
+   * @default true
+   */
+  remove?: boolean | "menu";
+
+  /**
+   * Default placement for actions when not individually specified.
+   * Currently only `"header-end"` is honored; the field is reserved for
+   * future use.
+   *
+   * @default "header-end"
+   */
+  placement?: FilterActionPlacement;
+}
+
+/**
  * All available filter component types
  */
 export type FilterComponentType =
@@ -331,6 +400,29 @@ interface PropertyFilterDefinitionBase<
    * @default true
    */
   isVisible?: boolean;
+
+  /**
+   * When `false`, the header monocle (search-values icon) is hidden even for
+   * filter components that ordinarily support in-filter search.
+   *
+   * Useful for filters whose own UI already exposes a search field (for
+   * example, the MULTI_SELECT combobox) where the extra monocle would be
+   * redundant.
+   *
+   * Shorthand for `actions: { search: false }`. If both are set,
+   * `actions.search` wins.
+   *
+   * @default true
+   */
+  searchField?: boolean;
+
+  /**
+   * Fine-grained control over which action controls render in the filter
+   * header and overflow menu, and where they appear.
+   *
+   * See {@link FilterActionsConfig} for the supported fields and defaults.
+   */
+  actions?: FilterActionsConfig;
 }
 
 /**
