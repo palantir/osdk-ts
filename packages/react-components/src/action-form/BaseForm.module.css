@@ -49,7 +49,10 @@
   flex-shrink: 0;
 }
 
-.osdkFormSubmitButton {
+.osdkFormFooterActions {
+  display: flex;
+  align-items: center;
+  column-gap: calc(var(--osdk-surface-spacing) * 2);
   margin-inline-start: auto;
 }
 

@@ -382,5 +382,46 @@ describe("ActionForm", () => {
         );
       });
     });
+
+    it("resets controlled state to the initial values", async () => {
+      type FormState = { name?: string; email?: string };
+
+      function ControlledWrapper() {
+        const [formState, setFormState] = useState<FormState>({
+          name: "Initial",
+          email: "initial@test.com",
+        });
+
+        return (
+          <ActionForm
+            actionDefinition={TestAction}
+            formState={formState}
+            onFormStateChange={setFormState}
+          />
+        );
+      }
+
+      render(<ControlledWrapper />);
+
+      const nameInput = screen.getByRole("textbox", { name: /^name/ });
+      fireEvent.change(nameInput, { target: { value: "Updated" } });
+
+      fireEvent.click(screen.getByRole("button", { name: /reset/i }));
+
+      await vi.waitFor(() => {
+        expect(nameInput).toHaveProperty("value", "Initial");
+      });
+
+      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+
+      await vi.waitFor(() => {
+        expect(mockApplyAction).toHaveBeenCalledWith(
+          expect.objectContaining({
+            name: "Initial",
+            email: "initial@test.com",
+          }),
+        );
+      });
+    });
   });
 });
