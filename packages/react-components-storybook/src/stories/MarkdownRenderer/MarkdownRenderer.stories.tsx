@@ -99,7 +99,6 @@ You can also use explicit links like [GitHub](https://github.com).
 
 const meta: Meta<MarkdownRendererProps> = {
   title: "Beta/MarkdownRenderer",
-  tags: ["beta"],
   component: MarkdownRenderer,
   args: {
     content: SAMPLE_MARKDOWN,

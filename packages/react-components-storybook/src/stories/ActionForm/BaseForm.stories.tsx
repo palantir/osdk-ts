@@ -201,7 +201,6 @@ function BaseFormSubmissionOutput(): React.ReactElement {
 
 const meta: Meta<BaseFormStoryProps> = {
   title: "Beta/ActionForm/BaseForm",
-  tags: ["beta"],
   component: BaseForm,
   decorators: [
     (Story) => (

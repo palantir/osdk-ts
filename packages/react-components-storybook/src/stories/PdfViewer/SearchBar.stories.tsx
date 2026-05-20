@@ -21,7 +21,6 @@ import { fn } from "storybook/test";
 
 const meta: Meta<PdfViewerSearchBarProps> = {
   title: "Beta/PdfViewer/Building Blocks/SearchBar",
-  tags: ["beta"],
   component: PdfViewerSearchBar,
   args: {
     query: "",

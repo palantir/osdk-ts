@@ -31,7 +31,6 @@ type EmployeeTableProps = ObjectTableProps<typeof Employee>;
 
 const meta: Meta<EmployeeTableProps> = {
   title: "Beta/ObjectTable/Recipes",
-  tags: ["beta"],
   component: ObjectTable,
   parameters: {
     msw: {

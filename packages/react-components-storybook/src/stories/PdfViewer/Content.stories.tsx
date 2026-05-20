@@ -25,7 +25,6 @@ const SAMPLE_PDF_URL =
 
 const meta: Meta<PdfViewerContentProps> = {
   title: "Beta/PdfViewer/Building Blocks/Content",
-  tags: ["beta"],
   component: PdfViewerContent,
   args: {
     src: SAMPLE_PDF_URL,

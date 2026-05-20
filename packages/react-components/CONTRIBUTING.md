@@ -231,10 +231,11 @@ Storybook runs on `http://localhost:6006`.
   ```ts
   const meta: Meta<typeof MyComponent> = {
     title: "Beta/<Name>", // or "Beta/<Parent>/<Subfeature>"
-    tags: ["beta"],
     component: MyComponent,
   };
   ```
+
+  The `beta` tag (and resulting tag badge) is injected automatically by the indexer in `.storybook/main.ts` for any title starting with `Beta/` — do **not** add `tags: ["beta"]` manually.
 
   This produces URLs like `beta-myname--default`, matching the existing pattern (`beta-baseform--default`, `beta-objecttable-building-blocks-basetable--default`)
 - Include stories that demonstrate the component's key states: default, loading, error, empty, and edge cases

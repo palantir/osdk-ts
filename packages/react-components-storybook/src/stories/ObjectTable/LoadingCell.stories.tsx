@@ -19,7 +19,6 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 
 const meta: Meta<typeof LoadingCell> = {
   title: "Beta/ObjectTable/Building Blocks/LoadingCell",
-  tags: ["beta"],
   component: LoadingCell,
   args: {
     width: 200,

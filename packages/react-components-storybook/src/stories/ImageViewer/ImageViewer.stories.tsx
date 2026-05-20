@@ -86,7 +86,6 @@ function createMockImageMedia(
 
 const baseMeta: Meta<BaseImageViewerProps> = {
   title: "Beta/ImageViewer/BaseImageViewer",
-  tags: ["beta"],
   component: BaseImageViewer,
   args: {
     src: sampleImageDataUrl,

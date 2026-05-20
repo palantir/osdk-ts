@@ -21,7 +21,6 @@ import { fn } from "storybook/test";
 
 const meta: Meta<PdfViewerToolbarProps> = {
   title: "Beta/PdfViewer/Building Blocks/Toolbar",
-  tags: ["beta"],
   component: PdfViewerToolbar,
   args: {
     currentPage: 1,

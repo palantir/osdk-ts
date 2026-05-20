@@ -97,7 +97,6 @@ function createMockEmailMedia(emlContent: string): Media {
 
 const meta: Meta<BaseEmailViewerProps> = {
   title: "Beta/EmailViewer",
-  tags: ["beta"],
   component: BaseEmailViewer,
   args: {
     email: SAMPLE_EMAIL,

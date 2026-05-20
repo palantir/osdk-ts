@@ -101,10 +101,11 @@ For every state change with a built-in default behavior (sort, filter, select, e
   ```ts
   const meta: Meta<typeof MyComponent> = {
     title: "Beta/<Name>", // or "Beta/<Parent>/<Subfeature>"
-    tags: ["beta"],
     component: MyComponent,
   };
   ```
+
+  The `beta` tag (and resulting tag badge) is injected automatically by the indexer in `.storybook/main.ts` for any title starting with `Beta/` — do **not** add `tags: ["beta"]` manually.
 
   Produces URLs like `beta-myname--default`, matching `beta-baseform--default`, `beta-objecttable-building-blocks-basetable--default`
 - **OSDK-aware components must accept mocked data via props in stories.** Storybook runs without a Foundry stack, so the OSDK wrapper cannot fetch real data there. Either expose a `data` / `objects` / `value` prop the story can populate, or render the `Base<Name>` component directly. Use the MSW addon for stories that exercise hook-level fetch paths
