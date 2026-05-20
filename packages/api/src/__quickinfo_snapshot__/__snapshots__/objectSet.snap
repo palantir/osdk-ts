@@ -81,29 +81,7 @@ type objectSet_fetchPageWithErrors_result =
   | ErrorResult
   | OkResult<
     PageResult<
-      | Osdk.Instance<
-        EmployeeApiTest,
-        never,
-        | "employeeId"
-        | "fullName"
-        | "class"
-        | "mediaReference"
-        | "attachment"
-        | "geopoint"
-        | "geotimeSeriesReference"
-        | "timeseries"
-        | "isActive"
-        | "yearsOfExperience"
-        | "rank"
-        | "performanceScore"
-        | "hourlyRate"
-        | "dateOfJoining"
-        | "lastUpdated"
-        | "skillSet"
-        | "skillSetEmbedding"
-        | undefined,
-        {}
-      >
+      | Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>, {}>
       | (
         & ObjectIdentifiers<EmployeeApiTest>
         & {
@@ -126,24 +104,7 @@ type objectSet_fetchPageWithErrors_result =
             ConvertProps<
               EmployeeApiTest,
               NEW_Q,
-              | "employeeId"
-              | "fullName"
-              | "class"
-              | "mediaReference"
-              | "attachment"
-              | "geopoint"
-              | "geotimeSeriesReference"
-              | "timeseries"
-              | "isActive"
-              | "yearsOfExperience"
-              | "rank"
-              | "performanceScore"
-              | "hourlyRate"
-              | "dateOfJoining"
-              | "lastUpdated"
-              | "skillSet"
-              | "skillSetEmbedding"
-              | undefined,
+              PropertyKeys<EmployeeApiTest>,
               never
             >,
             {}
@@ -156,25 +117,7 @@ type objectSet_fetchPageWithErrors_result =
           ) => Osdk.Instance<
             EmployeeApiTest,
             never,
-            | "employeeId"
-            | "fullName"
-            | "class"
-            | "mediaReference"
-            | "attachment"
-            | "geopoint"
-            | "geotimeSeriesReference"
-            | "timeseries"
-            | "isActive"
-            | "yearsOfExperience"
-            | "rank"
-            | "performanceScore"
-            | "hourlyRate"
-            | "dateOfJoining"
-            | "lastUpdated"
-            | "skillSet"
-            | "skillSetEmbedding"
-            | NEW_PROPS
-            | undefined,
+            PropertyKeys<EmployeeApiTest> | NEW_PROPS,
             {}
           >;
           readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: {
@@ -194,29 +137,7 @@ type objectSet_fetchPageWithErrors_result =
 
 /** The awaited result of objectSet.fetchPage(). */
 type objectSet_fetchPage_result = PageResult<
-  | Osdk.Instance<
-    EmployeeApiTest,
-    never,
-    | "employeeId"
-    | "fullName"
-    | "class"
-    | "mediaReference"
-    | "attachment"
-    | "geopoint"
-    | "geotimeSeriesReference"
-    | "timeseries"
-    | "isActive"
-    | "yearsOfExperience"
-    | "rank"
-    | "performanceScore"
-    | "hourlyRate"
-    | "dateOfJoining"
-    | "lastUpdated"
-    | "skillSet"
-    | "skillSetEmbedding"
-    | undefined,
-    {}
-  >
+  | Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>, {}>
   | (
     & ObjectIdentifiers<EmployeeApiTest>
     & {
@@ -239,24 +160,7 @@ type objectSet_fetchPage_result = PageResult<
         ConvertProps<
           EmployeeApiTest,
           NEW_Q,
-          | "employeeId"
-          | "fullName"
-          | "class"
-          | "mediaReference"
-          | "attachment"
-          | "geopoint"
-          | "geotimeSeriesReference"
-          | "timeseries"
-          | "isActive"
-          | "yearsOfExperience"
-          | "rank"
-          | "performanceScore"
-          | "hourlyRate"
-          | "dateOfJoining"
-          | "lastUpdated"
-          | "skillSet"
-          | "skillSetEmbedding"
-          | undefined,
+          PropertyKeys<EmployeeApiTest>,
           never
         >,
         {}
@@ -269,25 +173,7 @@ type objectSet_fetchPage_result = PageResult<
       ) => Osdk.Instance<
         EmployeeApiTest,
         never,
-        | "employeeId"
-        | "fullName"
-        | "class"
-        | "mediaReference"
-        | "attachment"
-        | "geopoint"
-        | "geotimeSeriesReference"
-        | "timeseries"
-        | "isActive"
-        | "yearsOfExperience"
-        | "rank"
-        | "performanceScore"
-        | "hourlyRate"
-        | "dateOfJoining"
-        | "lastUpdated"
-        | "skillSet"
-        | "skillSetEmbedding"
-        | NEW_PROPS
-        | undefined,
+        PropertyKeys<EmployeeApiTest> | NEW_PROPS,
         {}
       >;
       readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: {

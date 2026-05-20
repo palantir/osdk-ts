@@ -194,6 +194,54 @@ interface FetchPageSignature<
   RDPs extends Record<string, SimplePropertyDef> = {},
 > {
   /**
+   * Gets a page of objects of this type, applying property modifiers to
+   * selected fields (e.g., reducing array properties or extracting main
+   * values from struct properties).
+   * @param args - Args including a `$applyModifiers` map keyed by property name
+   */
+  <
+    L extends PropertyKeys<Q> | (string & keyof RDPs),
+    R extends boolean,
+    const A extends Augments,
+    S extends NullabilityAdherence = NullabilityAdherence.Default,
+    T extends boolean = false,
+    ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
+    PROPERTY_SECURITIES extends boolean = false,
+    MODIFIERS extends ApplyModifiersArg<Q> = {},
+  >(
+    args:
+      & FetchPageArgs<
+        Q,
+        L,
+        R,
+        A,
+        S,
+        T,
+        never,
+        ORDER_BY_OPTIONS,
+        PROPERTY_SECURITIES,
+        MODIFIERS
+      >
+      & { $applyModifiers: MODIFIERS },
+  ): Promise<
+    PageResult<
+      MaybeScore<
+        Osdk.Instance<
+          Q,
+          ExtractOptions<R, S, T, PROPERTY_SECURITIES>,
+          | Exclude<
+            NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
+            keyof MODIFIERS
+          >
+          | ModifiersToSelectStrings<MODIFIERS>,
+          SubSelectRDPs<RDPs, NonNullable<typeof args>>
+        >,
+        ORDER_BY_OPTIONS
+      >
+    >
+  >;
+
+  /**
    * Gets a page of objects of this type, with a result wrapper
    * @param args - Args to specify next page token and page size, if applicable
    * @example
@@ -214,31 +262,27 @@ interface FetchPageSignature<
     T extends boolean = false,
     ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
     PROPERTY_SECURITIES extends boolean = false,
-    MODIFIERS extends ApplyModifiersArg<Q> = {},
   >(
-    args?: FetchPageArgs<
-      Q,
-      L,
-      R,
-      A,
-      S,
-      T,
-      never,
-      ORDER_BY_OPTIONS,
-      PROPERTY_SECURITIES,
-      MODIFIERS
-    >,
+    args?:
+      & FetchPageArgs<
+        Q,
+        L,
+        R,
+        A,
+        S,
+        T,
+        never,
+        ORDER_BY_OPTIONS,
+        PROPERTY_SECURITIES
+      >
+      & { $applyModifiers?: never },
   ): Promise<
     PageResult<
       MaybeScore<
         Osdk.Instance<
           Q,
           ExtractOptions<R, S, T, PROPERTY_SECURITIES>,
-          | Exclude<
-            NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
-            keyof MODIFIERS
-          >
-          | ModifiersToSelectStrings<MODIFIERS>,
+          NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
           SubSelectRDPs<RDPs, NonNullable<typeof args>>
         >,
         ORDER_BY_OPTIONS
@@ -278,6 +322,55 @@ interface FetchPageWithErrorsSignature<
   PROPERTY_SECURITIES extends boolean = false,
 > {
   /**
+   * Gets a page of objects of this type with a Result wrapper, applying
+   * property modifiers to selected fields (e.g., reducing array properties
+   * or extracting main values from struct properties).
+   * @param args - Args including a `$applyModifiers` map keyed by property name
+   */
+  <
+    L extends PropertyKeys<Q> | (string & keyof RDPs),
+    R extends boolean,
+    const A extends Augments,
+    S extends NullabilityAdherence = NullabilityAdherence.Default,
+    T extends boolean = false,
+    ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
+    const MODIFIERS extends ApplyModifiersArg<Q> = {},
+  >(
+    args:
+      & FetchPageArgs<
+        Q,
+        L,
+        R,
+        A,
+        S,
+        T,
+        never,
+        ORDER_BY_OPTIONS,
+        PROPERTY_SECURITIES,
+        MODIFIERS
+      >
+      & { $applyModifiers: MODIFIERS },
+  ): Promise<
+    Result<
+      PageResult<
+        MaybeScore<
+          Osdk.Instance<
+            Q,
+            ExtractOptions<R, S, T, PROPERTY_SECURITIES>,
+            | Exclude<
+              NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
+              keyof MODIFIERS
+            >
+            | ModifiersToSelectStrings<MODIFIERS>,
+            SubSelectRDPs<RDPs, NonNullable<typeof args>>
+          >,
+          ORDER_BY_OPTIONS
+        >
+      >
+    >
+  >;
+
+  /**
    * Gets a page of objects of this type, with a result wrapper
    * @param args - Args to specify next page token and page size, if applicable
    * @example
@@ -300,20 +393,20 @@ interface FetchPageWithErrorsSignature<
     S extends NullabilityAdherence = NullabilityAdherence.Default,
     T extends boolean = false,
     ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
-    const MODIFIERS extends ApplyModifiersArg<Q> = {},
   >(
-    args?: FetchPageArgs<
-      Q,
-      L,
-      R,
-      A,
-      S,
-      T,
-      never,
-      ORDER_BY_OPTIONS,
-      PROPERTY_SECURITIES,
-      MODIFIERS
-    >,
+    args?:
+      & FetchPageArgs<
+        Q,
+        L,
+        R,
+        A,
+        S,
+        T,
+        never,
+        ORDER_BY_OPTIONS,
+        PROPERTY_SECURITIES
+      >
+      & { $applyModifiers?: never },
   ): Promise<
     Result<
       PageResult<
@@ -321,11 +414,7 @@ interface FetchPageWithErrorsSignature<
           Osdk.Instance<
             Q,
             ExtractOptions<R, S, T, PROPERTY_SECURITIES>,
-            | Exclude<
-              NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
-              keyof MODIFIERS
-            >
-            | ModifiersToSelectStrings<MODIFIERS>,
+            NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
             SubSelectRDPs<RDPs, NonNullable<typeof args>>
           >,
           ORDER_BY_OPTIONS
