@@ -71,7 +71,11 @@ export async function aggregate<
       groupBy: body.groupBy,
       aggregation: body.aggregation,
     },
-    { branch: clientCtx.branch, transactionId: clientCtx.transactionId },
+    {
+      branch: clientCtx.branch,
+      transactionId: clientCtx.transactionId,
+      scenarioRid: clientCtx.scenarioRid,
+    },
   );
 
   if (!result.data || !Array.isArray(result.data)) {
