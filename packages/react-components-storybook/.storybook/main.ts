@@ -40,6 +40,21 @@ const config: StorybookConfig = {
     reactDocgen: "react-docgen-typescript",
   },
   staticDirs: ["../public"],
+  // Auto-inject the "beta" tag for any story whose title starts with "Beta/".
+  // Keeps the per-file meta to just `title:` — the tag (and the resulting tag
+  // badge) is derived automatically, so contributors can't forget to set it.
+  experimental_indexers: async (existingIndexers) =>
+    (existingIndexers ?? []).map((indexer) => ({
+      ...indexer,
+      createIndex: async (fileName, options) => {
+        const entries = await indexer.createIndex(fileName, options);
+        return entries.map((entry) =>
+          entry.title?.startsWith("Beta/")
+            ? { ...entry, tags: [...new Set([...(entry.tags ?? []), "beta"])] }
+            : entry
+        );
+      },
+    })),
   async viteFinal(config) {
     // Set base path for GitHub Pages deployment
     if (config.mode === "production") {

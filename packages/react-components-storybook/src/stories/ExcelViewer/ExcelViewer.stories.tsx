@@ -161,8 +161,7 @@ function createMockExcelMedia(): Media {
 }
 
 const meta: Meta<BaseExcelViewerProps> = {
-  title: "Experimental/ExcelViewer",
-  tags: ["experimental"],
+  title: "Beta/ExcelViewer",
   component: BaseExcelViewer,
   args: {
     spreadsheet: SAMPLE_SPREADSHEET,
