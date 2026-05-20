@@ -29,10 +29,12 @@ import {
   isMediaUpload,
 } from "../object/mediaUpload.js";
 import { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
+import { isScenarioClient } from "../scenarios/ScenarioClient.js";
 import { isInterfaceActionParam } from "./interfaceUtils.js";
 import { isObjectSpecifiersObject } from "./isObjectSpecifiersObject.js";
 import { isOntologyObjectV2 } from "./isOntologyObjectV2.js";
 import { isPoint } from "./isPoint.js";
+import { isScenarioReferenceParam } from "./isScenarioReferenceParam.js";
 import { isWireObjectSet } from "./WireObjectSet.js";
 
 /**
@@ -147,6 +149,14 @@ export async function toDataValue(
       objectTypeApiName: value.$objectType,
       primaryKeyValue: value.$primaryKey,
     };
+  }
+
+  if (isScenarioClient(value)) {
+    return value.getScenarioReference().scenarioRid;
+  }
+
+  if (isScenarioReferenceParam(value)) {
+    return value.scenarioRid;
   }
 
   // TODO (during queries implementation)
