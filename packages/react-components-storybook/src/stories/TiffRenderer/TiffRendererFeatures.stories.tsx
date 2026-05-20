@@ -102,8 +102,7 @@ function createSampleTiffBytes(): Uint8Array {
 const sampleTiffBytes = createSampleTiffBytes();
 
 const meta: Meta<TiffRendererProps> = {
-  title: "Experimental/TiffRenderer",
-  tags: ["experimental"],
+  title: "Beta/TiffRenderer",
   component: TiffRenderer,
   args: {
     content: sampleTiffBytes,
