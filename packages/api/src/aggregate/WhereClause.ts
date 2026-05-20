@@ -18,6 +18,7 @@ import type { BBox, Point, Polygon } from "geojson";
 import type {
   DerivedObjectOrInterfaceDefinition,
   ObjectOrInterfaceDefinition,
+  PropertyKeys,
 } from "../ontology/ObjectOrInterface.js";
 import type {
   CompileTimeMetadata,
@@ -200,7 +201,7 @@ export type NotWhereClause<
 };
 
 export type PropertyWhereClause<T extends ObjectOrInterfaceDefinition> = {
-  [P in keyof CompileTimeMetadata<T>["properties"]]?: FilterFor<
+  [P in PropertyKeys.Filterable<T>]?: FilterFor<
     CompileTimeMetadata<T>["properties"][P]
   >;
 };

@@ -27,30 +27,21 @@ import type {
 } from "@osdk/foundry.ontologies";
 import { wirePropertyFormattingToSdkFormatting } from "./wirePropertyFormattingToSdkFormatting.js";
 
-/**
- * Extracts main value metadata from a struct property type.
- * Returns the fields array that comprise the main value.
- */
-function extractMainValue(
-  dataType: ObjectPropertyType,
-): { fields: readonly string[] } | undefined {
-  if (dataType.type === "struct" && dataType.mainValue) {
-    const fields = dataType.mainValue.fields;
-    if (fields && fields.length > 0) {
-      return { fields };
-    }
-  }
-  return undefined;
-}
+type RenderHint = {
+  kind?: string;
+  name?: string;
+};
 
-/**
- * Checks if an array property type has reducers.
- */
-function hasReducers(
-  dataType: ObjectPropertyType,
-): boolean {
-  return dataType.type === "array" && dataType.reducers != null
-    && dataType.reducers.length > 0;
+function resolveSelectable(
+  typeClasses: ReadonlyArray<RenderHint> | undefined,
+): boolean | undefined {
+  if (!typeClasses || typeClasses.length === 0) {
+    return undefined;
+  }
+  return typeClasses.some((typeClass) =>
+    typeClass.kind?.toLowerCase() === "render_hint"
+    && typeClass.name === "SELECTABLE"
+  );
 }
 
 export function wirePropertyV2ToSdkPropertyDefinition(
@@ -67,6 +58,10 @@ export function wirePropertyV2ToSdkPropertyDefinition(
   if (sdkPropDefinition == null) {
     return undefined;
   }
+  const selectable = resolveSelectable(
+    (input as { typeClasses?: RenderHint[] })
+      .typeClasses,
+  );
   switch (input.dataType.type) {
     case "integer":
     case "string":
@@ -93,6 +88,7 @@ export function wirePropertyV2ToSdkPropertyDefinition(
         description: input.description,
         type: sdkPropDefinition,
         nullable: input.nullable == null ? isNullable : input.nullable,
+        selectable,
         valueTypeApiName: input.valueTypeApiName,
         valueFormatting: input.valueFormatting != null
           ? wirePropertyFormattingToSdkFormatting(input.valueFormatting, log)
@@ -120,6 +116,7 @@ export function wirePropertyV2ToSdkPropertyDefinition(
         description: input.description,
         type: sdkPropDefinition,
         nullable: true,
+        selectable,
         valueTypeApiName: input.valueTypeApiName,
         valueFormatting: input.valueFormatting != null
           ? wirePropertyFormattingToSdkFormatting(input.valueFormatting, log)

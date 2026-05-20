@@ -62,13 +62,13 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
     }, true);
 
     // PK is never nullable
-    expect(result.properties["primaryKey"].nullable).toBe(false);
+    expect(result.properties.primaryKey.nullable).toBe(false);
 
     // was specified above
-    expect(result.properties["otherKey"].nullable).toBe(false);
+    expect(result.properties.otherKey.nullable).toBe(false);
 
     // was unspecified, so should be nullable
-    expect(result.properties["defaulted"].nullable).toBe(true);
+    expect(result.properties.defaulted.nullable).toBe(true);
   });
 
   it("Is up to date with the enums from API", () => {
@@ -144,6 +144,41 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
     expect(result.status).toBeUndefined();
     expect(result.visibility).toBeUndefined();
     expect(result.icon).toBeUndefined();
+  });
+
+  it("captures selectable render hints", () => {
+    const result = wireObjectTypeFullMetadataToSdkObjectMetadata({
+      implementsInterfaces: [],
+      implementsInterfaces2: {},
+      linkTypes: [],
+      objectType: {
+        apiName: "apiName",
+        description: "description",
+        displayName: "displayName",
+        pluralDisplayName: "displayNames",
+        icon: { type: "blueprint", name: "blueprint", color: "blue" },
+        primaryKey: "primaryKey",
+        properties: {
+          primaryKey: {
+            dataType: { type: "string" },
+            rid: "rid",
+            typeClasses: [{ kind: "render_hint", name: "SELECTABLE" }],
+          },
+          otherKey: {
+            dataType: { type: "string" },
+            rid: "rid",
+            typeClasses: [{ kind: "render_hint", name: "SORTABLE" }],
+          },
+        },
+        rid: "rid",
+        status: "ACTIVE",
+        titleProperty: "primaryKey",
+      },
+      sharedPropertyTypeMapping: {},
+    }, true);
+
+    expect(result.properties.primaryKey.selectable).toBe(true);
+    expect(result.properties.otherKey.selectable).toBe(false);
   });
 
   it("sorts the implements array for stable output", () => {

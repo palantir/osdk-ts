@@ -57,4 +57,11 @@ export namespace PropertyKeys {
     CompileTimeMetadata<Q>["properties"],
     { type: T }
   >;
+
+  export type Filterable<
+    Q extends ObjectOrInterfaceDefinition,
+  > = keyof IncludeValuesExtending<
+    CompileTimeMetadata<Q>["properties"],
+    { selectable?: true }
+  >;
 }

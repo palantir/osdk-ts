@@ -95,6 +95,7 @@ export namespace ObjectMetadata {
     readonly?: boolean;
     displayName?: string;
     description?: string;
+    selectable?: boolean;
     type: WirePropertyTypes;
     multiplicity?: boolean;
     nullable?: boolean;
