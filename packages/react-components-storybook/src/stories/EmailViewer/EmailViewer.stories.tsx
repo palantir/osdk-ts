@@ -96,7 +96,7 @@ function createMockEmailMedia(emlContent: string): Media {
 }
 
 const meta: Meta<BaseEmailViewerProps> = {
-  title: "Beta/EmailViewer",
+  title: "Beta/DocumentViewer/Renderers/EmailViewer",
   component: BaseEmailViewer,
   args: {
     email: SAMPLE_EMAIL,
@@ -124,25 +124,6 @@ const meta: Meta<BaseEmailViewerProps> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const HtmlEmail: Story = {
-  parameters: {
-    docs: {
-      source: {
-        code:
-          `import { BaseEmailViewer } from "@osdk/react-components/experimental/email-viewer";
-
-<BaseEmailViewer email={parsedEmail} />`,
-      },
-    },
-  },
-};
-
-export const PlainTextEmail: Story = {
-  args: {
-    email: SAMPLE_TEXT_EMAIL,
-  },
-};
-
 export const WithMedia: StoryObj<EmailViewerMediaProps> = {
   args: {
     media: createMockEmailMedia(SAMPLE_EML_CONTENT),
@@ -161,5 +142,24 @@ export const WithMedia: StoryObj<EmailViewerMediaProps> = {
 <EmailViewer media={myOsdkMedia} />`,
       },
     },
+  },
+};
+
+export const HtmlEmail: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code:
+          `import { BaseEmailViewer } from "@osdk/react-components/experimental/email-viewer";
+
+<BaseEmailViewer email={parsedEmail} />`,
+      },
+    },
+  },
+};
+
+export const PlainTextEmail: Story = {
+  args: {
+    email: SAMPLE_TEXT_EMAIL,
   },
 };

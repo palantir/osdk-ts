@@ -20,7 +20,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
 
 const meta: Meta<PdfViewerSearchBarProps> = {
-  title: "Beta/PdfViewer/Building Blocks/SearchBar",
+  title:
+    "Experimental/DocumentViewer/Renderers/PdfViewer/Building Blocks/SearchBar",
   component: PdfViewerSearchBar,
   args: {
     query: "",

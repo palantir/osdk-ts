@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-import type { Media } from "@osdk/api";
-import type { ImageViewerMediaProps } from "@osdk/react-components/experimental/image-viewer";
-import { ImageViewer } from "@osdk/react-components/experimental/image-viewer";
+import type { BaseImageViewerProps } from "@osdk/react-components/experimental/image-viewer";
+import { BaseImageViewer } from "@osdk/react-components/experimental/image-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { fn } from "storybook/test";
 
+/**
+ * Creates a sample PNG image as a data URL.
+ * Generates a 200x200 canvas with a gradient.
+ */
 function createSampleImageDataUrl(): string {
   const canvas = document.createElement("canvas");
   canvas.width = 200;
@@ -41,45 +45,24 @@ function createSampleImageDataUrl(): string {
 
 const sampleImageDataUrl = createSampleImageDataUrl();
 
-function createMockImageMedia(
-  dataUrl: string,
-  mimeType: string,
-  filename: string,
-): Media {
-  return {
-    fetchContents: async () => {
-      const response = await fetch(dataUrl);
-      return response;
-    },
-    fetchMetadata: () =>
-      Promise.resolve({
-        path: filename,
-        sizeBytes: 1024,
-        mediaType: mimeType,
-      }),
-    getMediaReference: () => ({
-      mimeType,
-      reference: {
-        type: "mediaSetViewItem" as const,
-        mediaSetViewItem: {
-          mediaItemRid: "ri.mio.main.media-item.mock-image",
-          mediaSetRid: "ri.mio.main.media-set.mock-set",
-          mediaSetViewRid: "ri.mio.main.media-set-view.mock-view",
-        },
-      },
-    }),
-  };
-}
-
-const meta: Meta<ImageViewerMediaProps> = {
-  title: "Beta/DocumentViewer/Renderers/ImageViewer",
-  component: ImageViewer,
+const baseMeta: Meta<BaseImageViewerProps> = {
+  title: "Beta/DocumentViewer/Renderers/ImageViewer/BaseImageViewer",
+  component: BaseImageViewer,
+  args: {
+    src: sampleImageDataUrl,
+    alt: "Sample image",
+  },
+  render: (args: BaseImageViewerProps) => (
+    <div style={{ height: "400px", width: "400px" }}>
+      <BaseImageViewer {...args} />
+    </div>
+  ),
   parameters: {
     controls: { expanded: true },
   },
   argTypes: {
-    media: {
-      description: "The Media object to fetch image contents from",
+    src: {
+      description: "Object URL or data URL pointing to the image",
       control: false,
     },
     alt: {
@@ -90,33 +73,32 @@ const meta: Meta<ImageViewerMediaProps> = {
       description: "Additional CSS class name for the root element",
       control: "text",
     },
+    onError: {
+      description: "Callback when the image fails to load",
+      control: false,
+      table: { category: "Events" },
+    },
   },
 };
 
-export default meta;
+export default baseMeta;
+type Story = StoryObj<typeof baseMeta>;
 
-export const WithMedia: StoryObj<ImageViewerMediaProps> = {
-  args: {
-    media: createMockImageMedia(
-      sampleImageDataUrl,
-      "image/png",
-      "sample.png",
-    ),
-    alt: "Sample image loaded from Media",
-  },
-  render: (args: ImageViewerMediaProps) => (
-    <div style={{ height: "400px", width: "400px" }}>
-      <ImageViewer {...args} />
-    </div>
-  ),
+export const Default: Story = {
   parameters: {
     docs: {
       source: {
         code:
-          `import { ImageViewer } from "@osdk/react-components/experimental/image-viewer";
+          `import { BaseImageViewer } from "@osdk/react-components/experimental/image-viewer";
 
-<ImageViewer media={myOsdkMedia} alt="My image" />`,
+<BaseImageViewer src={imageUrl} alt="My image" />`,
       },
     },
+  },
+};
+
+export const WithErrorCallback: Story = {
+  args: {
+    onError: fn(),
   },
 };
