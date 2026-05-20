@@ -25,6 +25,9 @@ export type { OsdkConfig } from "../public-utils/osdkConfig.js";
 
 export { createClientWithTransaction } from "../createClient.js";
 
+export { createScenario, withScenario } from "../scenarioClient.js";
+export type { NonScenarioClient, ScenarioClient } from "../scenarioClient.js";
+
 export {
   applyShapeTransformations,
   applyShapeTransformationsToArray,
