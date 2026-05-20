@@ -52,7 +52,8 @@ export type ColorTokenRole =
   | "icon-color"
   | "border"
   | "danger"
-  | "success";
+  | "success"
+  | "warning";
 
 export type TypographyTokenRole =
   | "font-family"
