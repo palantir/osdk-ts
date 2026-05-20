@@ -1,10 +1,15 @@
 /*
- * Dark theme overrides for OSDK semantic tokens. Activated by `[data-bp-color-scheme="dark"]` 
- * set using OsdkThemeProvider.
- * 
+ * Dark theme overrides for OSDK semantic tokens. Activated by either of:
+ *   - `[data-bp-color-scheme="dark"]` — written by `<OsdkThemeProvider>`
+ *     onto the document root, matching Blueprint's own convention so the
+ *     theme also applies to portaled overlays
+ *   - `.bp6-dark` — Blueprint's class-based variant of the same convention
+ *
  * Source-of-truth dark values live in `--osdk-dark-*` helpers at `:root`
- * (private — do not consume directly). The three activation blocks below
- * map those helpers onto the public `--bp-*` / `--osdk-*` tokens.
+ * (private — do not consume directly). The activation block below maps
+ * those helpers onto the public `--osdk-*` tokens; Blueprint flips its
+ * own `--bp-*` tokens under the same selectors so the OSDK tokens that
+ * derive from `--bp-*` (see `base.css`) cascade correctly.
  */
 
 :root {
@@ -83,62 +88,3 @@
   --osdk-table-row-bg-active: var(--osdk-dark-table-row-bg-hover);
 }
 
-/* Note: data-theme attribute is added to work with storybook themes
- * It also flips `--bp-*` because Blueprint doesn't fire there.
- */
-[data-theme="dark"] {
-  /* --bp-* flips (Blueprint doesn't respond to data-theme). */
-  --bp-surface-border-color-default: var(
-    --osdk-dark-bp-surface-border-color-default
-  );
-  --bp-surface-border-color-strong: var(
-    --osdk-dark-bp-surface-border-color-strong
-  );
-  --bp-surface-shadow-0: var(--osdk-dark-bp-surface-shadow-0);
-  --bp-surface-shadow-1: var(--osdk-dark-bp-surface-shadow-1);
-  --bp-surface-shadow-2: var(--osdk-dark-bp-surface-shadow-2);
-  --bp-surface-shadow-3: var(--osdk-dark-bp-surface-shadow-3);
-  --bp-surface-shadow-4: var(--osdk-dark-bp-surface-shadow-4);
-  --bp-surface-color-code: var(--osdk-dark-bp-surface-color-code);
-  --bp-surface-background-color-default-rest: var(
-    --osdk-dark-bp-surface-background-color-default-rest
-  );
-  --bp-surface-background-color-default-hover: var(
-    --osdk-dark-bp-surface-background-color-default-hover
-  );
-  --bp-surface-background-color-default-active: var(
-    --osdk-dark-bp-surface-background-color-default-active
-  );
-  --bp-surface-background-color-default-disabled: var(
-    --osdk-dark-bp-surface-background-color-default-disabled
-  );
-  --bp-typography-color-default-rest: var(
-    --osdk-dark-bp-typography-color-default-rest
-  );
-  --bp-typography-color-default-hover: var(
-    --osdk-dark-bp-typography-color-default-hover
-  );
-  --bp-typography-color-default-active: var(
-    --osdk-dark-bp-typography-color-default-active
-  );
-
-  /* --osdk-* overrides */
-  --osdk-background-primary: var(--osdk-dark-background-primary);
-  --osdk-background-secondary: var(--osdk-dark-background-secondary);
-  --osdk-background-tertiary: var(--osdk-dark-background-tertiary);
-  --osdk-typography-color-muted: var(--osdk-dark-typography-color-muted);
-  --osdk-intent-default-rest: var(--osdk-dark-intent-default-rest);
-  --osdk-intent-default-foreground: var(--osdk-dark-intent-default-foreground);
-  --osdk-button-secondary-bg: var(--osdk-dark-button-secondary-bg);
-  --osdk-button-secondary-color: var(--osdk-dark-button-secondary-color);
-  --osdk-table-row-bg-default: var(--osdk-dark-table-row-bg-default);
-  --osdk-table-header-bg: var(--osdk-dark-table-header-bg);
-  --osdk-table-header-color: var(--osdk-dark-table-header-color);
-  --osdk-table-cell-color: var(--osdk-dark-table-cell-color);
-  --osdk-table-header-menu-color: var(--osdk-dark-table-header-menu-color);
-  --osdk-table-border-color: var(--osdk-dark-table-border-color);
-  --osdk-table-cell-divider: var(--osdk-table-border-width) solid
-    var(--osdk-table-border-color);
-  --osdk-table-row-bg-hover: var(--osdk-dark-table-row-bg-hover);
-  --osdk-table-row-bg-active: var(--osdk-dark-table-row-bg-hover);
-}

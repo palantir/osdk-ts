@@ -16,6 +16,7 @@
 
 import { createClient } from "@osdk/client";
 import { OsdkProvider } from "@osdk/react";
+import { OsdkThemeProvider } from "@osdk/react-components/experimental/theme";
 import { withThemeByDataAttribute } from "@storybook/addon-themes";
 import type { Preview } from "@storybook/react-vite";
 import { initialize, mswLoader } from "msw-storybook-addon";
@@ -69,13 +70,24 @@ const preview: Preview = {
     await fauxFoundryReady;
   }, mswLoader],
   decorators: [
-    (Story) => (
-      <div className="root">
-        <OsdkProvider client={mockClient}>
-          <Story />
-        </OsdkProvider>
-      </div>
-    ),
+    (Story, context) => {
+      // The OSDK light/dark color scheme is now driven by
+      // `<OsdkThemeProvider>` instead of a `[data-theme="dark"]` CSS block,
+      // matching what consumers do in their own apps. `key` remounts the
+      // provider when the toolbar switches between `light` and `dark` so
+      // the seeded `defaultTheme` reflects the new selection.
+      const themeName = context.globals.theme as string | undefined;
+      const colorScheme = themeName === "dark" ? "dark" : "light";
+      return (
+        <div className="root">
+          <OsdkProvider client={mockClient}>
+            <OsdkThemeProvider key={colorScheme} defaultTheme={colorScheme}>
+              <Story />
+            </OsdkThemeProvider>
+          </OsdkProvider>
+        </div>
+      );
+    },
     withThemeByDataAttribute({
       themes: {
         light: "light",
