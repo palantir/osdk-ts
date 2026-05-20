@@ -65,4 +65,4 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -A
           git commit -m "Deploy Storybook" || echo "No changes to commit"
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git gh-pages
+          git push -f https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git gh-pages
