@@ -185,6 +185,21 @@ export type NonScenarioClient = Client & {
   readonly [scenarioBrand]?: never;
 };
 
+/**
+ * Runtime predicate for {@link ScenarioClient}. Returns `true` when `value` exposes a `getScenarioReference()`
+ * method — i.e. when it was built by {@link withScenario} or {@link createScenario}. Used by action parameter
+ * serialization to accept a `ScenarioClient` directly for `scenarioReference`-typed parameters.
+ *
+ * @internal
+ */
+export function isScenarioClient(value: unknown): value is ScenarioClient {
+  return (
+    typeof value === "function"
+    && typeof (value as { getScenarioReference?: unknown })
+        .getScenarioReference === "function"
+  );
+}
+
 async function convertSparseEditedObjects<Q extends ObjectTypeDefinition>(
   innerCtx: MinimalClient,
   data: OntologyObjectV2[],
