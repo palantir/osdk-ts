@@ -64,6 +64,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     perFilterWhereClauses,
     perFilterLinkedFilters,
     activeFilterCount,
+    hasChangesFromInitial,
     reset,
   } = useFilterListState(props);
 
@@ -233,6 +234,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
       showResetButton={showResetButton}
       showActiveFilterCount={showActiveFilterCount}
       hasVisibilityChanges={hasVisibilityChanges}
+      hasChangesFromInitial={hasChangesFromInitial}
       enableSorting={enableSorting}
       onFilterRemoved={effectiveOnFilterRemoved}
       onOrderChange={handleOrderChange}
