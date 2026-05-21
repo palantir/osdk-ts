@@ -181,7 +181,8 @@ export interface EXPERIMENTAL_ScenarioClient extends Client {
  */
 export function isScenarioClient(value: unknown): value is ScenarioClient {
   return (
-    typeof value === "function"
+    value != null
+    && (typeof value === "object" || typeof value === "function")
     && typeof (value as { getScenarioReference?: unknown })
         .getScenarioReference === "function"
   );
