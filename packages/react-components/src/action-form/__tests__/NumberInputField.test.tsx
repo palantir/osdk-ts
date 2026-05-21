@@ -246,6 +246,17 @@ describe("NumberInputField", () => {
       fireEvent.keyDown(screen.getByRole("textbox"), { key: "Enter" });
       expect(onChange).not.toHaveBeenCalled();
     });
+
+    it("disables the text input when disabled", () => {
+      const onChange = vi.fn();
+      render(
+        <NumberInputField value={10} onChange={onChange} disabled={true} />,
+      );
+      const input = screen.getByRole("textbox") as HTMLInputElement;
+
+      expect(input.disabled).toBe(true);
+      expect(input.value).toBe("10");
+    });
   });
 
   describe("stepper buttons", () => {
@@ -281,6 +292,23 @@ describe("NumberInputField", () => {
       render(<NumberInputField value={null} onChange={onChange} />);
       fireEvent.click(screen.getByLabelText("Decrement"));
       expect(onChange).toHaveBeenCalledWith(-1);
+    });
+
+    it("shows disabled stepper buttons and blocks clicks when disabled", () => {
+      const onChange = vi.fn();
+      render(
+        <NumberInputField value={10} onChange={onChange} disabled={true} />,
+      );
+
+      const increment = screen.getByLabelText("Increment") as HTMLButtonElement;
+      const decrement = screen.getByLabelText("Decrement") as HTMLButtonElement;
+      expect(increment.disabled).toBe(true);
+      expect(decrement.disabled).toBe(true);
+
+      fireEvent.click(increment);
+      fireEvent.click(decrement);
+
+      expect(onChange).not.toHaveBeenCalled();
     });
   });
 

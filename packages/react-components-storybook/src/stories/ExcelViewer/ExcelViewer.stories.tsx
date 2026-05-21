@@ -161,8 +161,7 @@ function createMockExcelMedia(): Media {
 }
 
 const meta: Meta<BaseExcelViewerProps> = {
-  title: "Experimental/ExcelViewer",
-  tags: ["experimental"],
+  title: "Beta/DocumentViewer/Renderers/ExcelViewer",
   component: BaseExcelViewer,
   args: {
     spreadsheet: SAMPLE_SPREADSHEET,
@@ -190,28 +189,7 @@ const meta: Meta<BaseExcelViewerProps> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
-  parameters: {
-    docs: {
-      source: {
-        code:
-          `import { BaseExcelViewer } from "@osdk/react-components/experimental/excel-viewer";
-
-<BaseExcelViewer spreadsheet={parsedSpreadsheet} />`,
-      },
-    },
-  },
-};
-
-export const SingleSheet: Story = {
-  args: {
-    spreadsheet: {
-      sheets: [SAMPLE_SPREADSHEET.sheets[0]!],
-    },
-  },
-};
-
-export const WithMedia: StoryObj<ExcelViewerMediaProps> = {
+export const Default: StoryObj<ExcelViewerMediaProps> = {
   args: {
     media: createMockExcelMedia(),
   },
@@ -228,6 +206,27 @@ export const WithMedia: StoryObj<ExcelViewerMediaProps> = {
 
 <ExcelViewer media={myOsdkMedia} />`,
       },
+    },
+  },
+};
+
+export const WithSpreadsheet: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code:
+          `import { BaseExcelViewer } from "@osdk/react-components/experimental/excel-viewer";
+
+<BaseExcelViewer spreadsheet={parsedSpreadsheet} />`,
+      },
+    },
+  },
+};
+
+export const SingleSheet: Story = {
+  args: {
+    spreadsheet: {
+      sheets: [SAMPLE_SPREADSHEET.sheets[0]!],
     },
   },
 };

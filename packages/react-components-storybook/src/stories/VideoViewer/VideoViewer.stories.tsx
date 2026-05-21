@@ -49,8 +49,7 @@ function createMockMedia(url: string, filename: string): Media {
 const mockMedia = createMockMedia(SAMPLE_VIDEO_URL, "example.mp4");
 
 const meta: Meta<VideoViewerMediaProps> = {
-  title: "Experimental/VideoViewer",
-  tags: ["experimental"],
+  title: "Beta/DocumentViewer/Renderers/VideoViewer",
   component: VideoViewer,
   args: {
     media: mockMedia,

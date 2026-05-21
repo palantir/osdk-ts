@@ -380,7 +380,11 @@ type ObjectPropertySecurities<
   Q extends ObjectOrInterfaceDefinition,
   T extends PropertyKeys<Q>,
 > = {
-  [K in T]: CompileTimeMetadata<Q>["properties"][K]["multiplicity"] extends true
-    ? PropertySecurity[][]
-    : PropertySecurity[];
+  [K in T | "$primaryKey" | "$title"]: K extends "$primaryKey" | "$title"
+    ? PropertySecurity[]
+    : K extends PropertyKeys<Q>
+      ? CompileTimeMetadata<Q>["properties"][K]["multiplicity"] extends true
+        ? PropertySecurity[][]
+      : PropertySecurity[]
+    : never;
 };

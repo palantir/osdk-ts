@@ -64,6 +64,9 @@ export interface DatePickerProps {
   /** Called when the user selects or types a new date. */
   onChange?: (value: Date | null) => void;
 
+  /** Whether the picker is disabled. */
+  disabled?: boolean;
+
   /** The earliest date the user can select. */
   min?: Date;
 
@@ -146,6 +149,7 @@ export const DatePicker: React.NamedExoticComponent<
   portalContainer,
   ariaLabel,
   modal = "trap-focus",
+  disabled = false,
 }: DatePickerProps) {
   const isModal = modal !== false;
   const shouldCloseOnSelection = closeOnSelection ?? !showTime;
@@ -422,13 +426,14 @@ export const DatePicker: React.NamedExoticComponent<
     styles.osdkDatetimeInputWrapper,
     inputError != null && commonStyles.osdkDatePickerInputWrapperError,
   );
+  const isPopoverOpen = !disabled && isOpen;
 
   // Keep Popover.Trigger on the input itself. Moving it to the wrapper would
   // make click handling simpler, but it would also nest an interactive combobox
   // inside an interactive trigger and reintroduce the axe violation.
   return (
     <Popover.Root
-      open={isOpen}
+      open={isPopoverOpen}
       onOpenChange={handleOpenChange}
       // When `modal === "trap-focus"`, base-ui traps Tab cycling and we render
       // a transparent dismiss layer for outside-click. When `false`, we rely
@@ -437,7 +442,11 @@ export const DatePicker: React.NamedExoticComponent<
       // intercept clicks intended for the parent.
       modal={modal}
     >
-      <div ref={wrapperRef} className={wrapperClassName}>
+      <div
+        ref={wrapperRef}
+        className={wrapperClassName}
+        data-disabled={disabled || undefined}
+      >
         <Popover.Trigger
           nativeButton={false}
           render={
@@ -448,6 +457,7 @@ export const DatePicker: React.NamedExoticComponent<
               type="text"
               value={displayedValue}
               onValueChange={handleInputValueChange}
+              disabled={disabled}
               onFocus={handleFocus}
               onPointerDown={handlePointerDown}
               onBlur={handleBlur}
@@ -456,7 +466,7 @@ export const DatePicker: React.NamedExoticComponent<
               placeholder={placeholder}
               autoComplete="off"
               role="combobox"
-              aria-expanded={isOpen}
+              aria-expanded={isPopoverOpen}
               aria-controls={popoverId}
               aria-haspopup="dialog"
               aria-label={ariaLabel}
