@@ -43,7 +43,9 @@ describe("ScenarioClient methods", () => {
       const scenario = withScenario(client, "ri.actions..scenario.abc");
       mockFetchResponse(fetchFunction, {
         objectTypes: ["Employee", "Office"],
-        linkTypes: [{ objectType: "Employee", linkType: "manages" }],
+        linkTypes: [
+          { objectTypeApiName: "Employee", linkTypes: ["manages", "lead"] },
+        ],
       });
 
       const result = await scenario.getEditedEntityTypes();
@@ -58,7 +60,7 @@ describe("ScenarioClient methods", () => {
       );
       expect(result.objectTypes).toEqual(["Employee", "Office"]);
       expect(result.linkTypes).toEqual([
-        { objectType: "Employee", linkType: "manages" },
+        { objectTypeApiName: "Employee", linkTypes: ["manages", "lead"] },
       ]);
     });
   });
