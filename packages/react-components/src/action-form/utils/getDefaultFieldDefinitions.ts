@@ -75,7 +75,6 @@ function buildFieldDefinition(
         };
       case "interface":
       case "struct":
-      case "scenarioReference":
         return {
           ...base,
           fieldComponent: "UNSUPPORTED",
@@ -95,6 +94,7 @@ function buildFieldDefinition(
     case "geohash":
     case "geoshape":
     case "objectType":
+    case "scenarioReference":
       return {
         ...base,
         fieldComponent: "UNSUPPORTED",

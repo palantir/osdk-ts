@@ -50,6 +50,7 @@ export interface DataValueWireToClient {
   objectType: string;
   geohash: GeoJSON.Point;
   geoshape: GeoJSON.GeoJSON;
+  scenarioReference: { scenarioRid: string };
 }
 
 /**
@@ -73,6 +74,7 @@ export interface DataValueClientToWire {
   timestamp: string;
   set: Set<any>;
   mediaReference: MediaReference | MediaUpload | Media;
+  scenarioReference: ScenarioClient;
   twoDimensionalAggregation: {
     key: AllowedBucketKeyTypes;
     value: AllowedBucketTypes;
@@ -86,6 +88,14 @@ export interface DataValueClientToWire {
   geohash: GeoJSON.Point;
   geoshape: GeoJSON.GeoJSON;
 }
+
+/**
+ * Helper type for an action parameter of type `scenarioReference`. Structurally typed as
+ * the object that exposes `getScenarioReference()` to avoid a circular dependency on `@osdk/client`.
+ */
+export type ScenarioClient = {
+  getScenarioReference(): { scenarioRid: string };
+};
 
 export type AllowedBucketTypes = string | number | boolean;
 export type AllowedBucketKeyTypes =

@@ -64,7 +64,7 @@ export namespace ActionMetadata {
     	// (undocumented)
     export namespace DataType {
         		// (undocumented)
-        export type BaseActionParameterTypes = "boolean" | "string" | "integer" | "long" | "double" | "datetime" | "timestamp" | "attachment" | "marking" | "mediaReference" | "objectType" | "geoshape" | "geohash";
+        export type BaseActionParameterTypes = "boolean" | "string" | "integer" | "long" | "double" | "datetime" | "timestamp" | "attachment" | "marking" | "mediaReference" | "scenarioReference" | "objectType" | "geoshape" | "geohash";
         		// (undocumented)
         export interface Interface<T_Target extends InterfaceDefinition = never> {
             			// (undocumented)
@@ -93,11 +93,6 @@ export namespace ActionMetadata {
             type: "objectSet";
             		}
         		// (undocumented)
-        export interface ScenarioReference {
-            			// (undocumented)
-            type: "scenarioReference";
-            		}
-        		// (undocumented)
         export interface Struct<T extends Record<string, DataType.BaseActionParameterTypes>> {
             			// (undocumented)
             struct: T;
@@ -114,7 +109,7 @@ export namespace ActionMetadata {
         		// (undocumented)
         nullable?: boolean;
         		// (undocumented)
-        type: DataType.BaseActionParameterTypes | DataType.Object<any> | DataType.ObjectSet<any> | DataType.Interface<any> | DataType.Struct<any> | DataType.ScenarioReference;
+        type: DataType.BaseActionParameterTypes | DataType.Object<any> | DataType.ObjectSet<any> | DataType.Interface<any> | DataType.Struct<any>;
         	}
 }
 
@@ -139,12 +134,6 @@ export namespace ActionParam {
     export type ObjectType<T extends ObjectTypeDefinition> = ObjectIdentifiers<T> | OsdkObjectPrimaryKeyType<T>;
     	// (undocumented)
     export type PrimitiveType<T extends keyof DataValueClientToWire> = DataValueClientToWire[T];
-    	// (undocumented)
-    export type ScenarioReference = {
-        		getScenarioReference(): {
-            			scenarioRid: string
-            		}
-        	};
     	// (undocumented)
     export type StructType<T extends Record<string, keyof DataValueClientToWire>> = { [K in keyof T] : DataValueClientToWire[T[K]] };
 }
@@ -385,6 +374,8 @@ export interface DataValueClientToWire {
     	// (undocumented)
     objectType: string;
     	// (undocumented)
+    scenarioReference: ScenarioClient;
+    	// (undocumented)
     set: Set<any>;
     	// (undocumented)
     short: number;
@@ -443,6 +434,10 @@ export interface DataValueWireToClient {
     null: null;
     	// (undocumented)
     objectType: string;
+    	// (undocumented)
+    scenarioReference: {
+        		scenarioRid: string
+        	};
     	// (undocumented)
     set: Set<any>;
     	// (undocumented)
@@ -1769,6 +1764,13 @@ export { Range_2 as Range }
 //
 // @public (undocumented)
 export type Result<V> = OkResult<V> | ErrorResult;
+
+// @public
+export type ScenarioClient = {
+    	getScenarioReference(): {
+        		scenarioRid: string
+        	}
+};
 
 // @public (undocumented)
 export interface SelectArg<
