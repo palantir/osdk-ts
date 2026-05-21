@@ -1,0 +1,62 @@
+{/* Copyright 2026 Palantir Technologies, Inc. All rights reserved. */}
+
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Docs/Versions" />
+
+# Versions and Compatibility
+
+## Current Version
+
+`@osdk/react-components` is currently at **v0.18.0** (beta).
+
+## Peer Dependencies
+
+| Package | Required Version |
+|---------|-----------------|
+| `react` | `^17 \|\| ^18 \|\| ^19` |
+| `react-dom` | `^17 \|\| ^18 \|\| ^19` |
+| `@types/react` | `^17 \|\| ^18 \|\| ^19` |
+| `@osdk/api` | `^2.8.0` |
+| `@osdk/client` | `^2.8.0` |
+| `@osdk/react` | `^2.8.0` |
+| `classnames` | `^2.0.0` |
+
+## React Version Support
+
+Components are tested against React 17, 18, and 19. The package uses no
+APIs exclusive to React 18+ (e.g. `useId`, `useSyncExternalStore`) in a way
+that would break React 17 consumers.
+
+## OSDK Version Alignment
+
+`@osdk/react-components` depends on `@osdk/react`, which in turn depends on
+`@osdk/client` and `@osdk/api`. All three OSDK packages are released in
+lockstep. When upgrading, bump them together:
+
+```bash
+npm install @osdk/api@latest @osdk/client@latest @osdk/react@latest @osdk/react-components@latest
+```
+
+## Import Paths
+
+All components are exported under `experimental/` sub-paths:
+
+| Component | Import Path |
+|-----------|-------------|
+| `ObjectTable` | `@osdk/react-components/experimental/object-table` |
+| `FilterList` | `@osdk/react-components/experimental/filter-list` |
+| `PdfViewer` | `@osdk/react-components/experimental/pdf-viewer` |
+| `ActionForm` | `@osdk/react-components/experimental/action-form` |
+| `AipAgentChat` | `@osdk/react-components/experimental/aip-agent-chat` |
+| `DocumentViewer` | `@osdk/react-components/experimental/document-viewer` |
+| `EmailViewer` | `@osdk/react-components/experimental/email-viewer` |
+| `ExcelViewer` | `@osdk/react-components/experimental/excel-viewer` |
+| `ImageViewer` | `@osdk/react-components/experimental/image-viewer` |
+| `VideoViewer` | `@osdk/react-components/experimental/video-viewer` |
+| `XmlViewer` | `@osdk/react-components/experimental/xml-viewer` |
+| `MarkdownRenderer` | `@osdk/react-components/experimental/markdown-renderer` |
+| `TiffRenderer` | `@osdk/react-components/experimental/tiff-renderer` |
+
+A barrel export at `@osdk/react-components/experimental` re-exports everything
+from all sub-paths above.
