@@ -1569,13 +1569,13 @@ export const WithRealFile: StoryObj&lt;ExcelViewerMediaProps&gt; = {
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;BaseForm&quot; component.
-  200 | }
-  201 |
-&gt; 202 | const meta: Meta&lt;BaseFormStoryProps&gt; = {
+  198 | }
+  199 |
+&gt; 200 | const meta: Meta&lt;BaseFormStoryProps&gt; = {
       | ^
-  203 |   title: &quot;Beta/ActionForm/BaseForm&quot;,
-  204 |   component: BaseForm,
-  205 |   decorators: [
+  201 |   title: &quot;Beta/ActionForm/BaseForm&quot;,
+  202 |   component: BaseForm,
+  203 |   decorators: [
 
 ./src/stories/ActionForm/BaseForm.stories.tsx:
 /*
@@ -1613,6 +1613,10 @@ import {
   type StorySubmissionSnapshot,
   SubmissionOutputPanel,
 } from &quot;./SubmissionOutputPanel.js&quot;;
+import {
+  THEMED_SLIDER_DEFAULT_VALUE,
+  ThemedSliderField,
+} from &quot;./ThemedSliderField.js&quot;;
 
 /**
  * Flattened (non-union) props type for Storybook Meta.
@@ -1726,18 +1730,12 @@ const formContent: ReadonlyArray&lt;FormContentItem&gt; = [
     },
   }),
   field({
-    fieldKey: &quot;notes&quot;,
+    fieldKey: &quot;completion&quot;,
     fieldComponent: &quot;CUSTOM&quot;,
-    label: &quot;Notes&quot;,
+    label: &quot;Completion&quot;,
     fieldComponentProps: {
-      customRenderer: (props) =&gt; (
-        &lt;textarea
-          value={props.value != null ? String(props.value) : &quot;&quot;}
-          onChange={(e) =&gt; props.onChange?.(e.target.value)}
-          className=&quot;osdkCustomTextarea&quot;
-          placeholder=&quot;Custom rendered notes field&quot;
-        /&gt;
-      ),
+      defaultValue: THEMED_SLIDER_DEFAULT_VALUE,
+      customRenderer: (props) =&gt; &lt;ThemedSliderField {...props} /&gt;,
     },
   }),
 ];
@@ -1881,6 +1879,10 @@ export const Default: Story = {
     docs: {
       source: {
         code: `import { BaseForm } from &quot;@osdk/react-components/experimental&quot;;
+import {
+  THEMED_SLIDER_DEFAULT_VALUE,
+  ThemedSliderField,
+} from &quot;./ThemedSliderField&quot;;
 
 const formContent = [
   {
@@ -1936,17 +1938,12 @@ const formContent = [
     fieldComponentProps: { accept: &quot;.pdf,.doc,.docx&quot; },
   },
   {
-    fieldKey: &quot;notes&quot;,
+    fieldKey: &quot;completion&quot;,
     fieldComponent: &quot;CUSTOM&quot;,
-    label: &quot;Notes&quot;,
+    label: &quot;Completion&quot;,
     fieldComponentProps: {
-      customRenderer: (props) =&gt; (
-        &lt;textarea
-          value={props.value ?? &quot;&quot;}
-          onChange={(e) =&gt; props.onChange?.(e.target.value)}
-          placeholder=&quot;Custom rendered notes field&quot;
-        /&gt;
-      ),
+      defaultValue: THEMED_SLIDER_DEFAULT_VALUE,
+      customRenderer: (props) =&gt; &lt;ThemedSliderField {...props} /&gt;,
     },
   },
 ];
@@ -1964,7 +1961,9 @@ export const Controlled: Story = {
   parameters: {
     docs: {
       source: {
-        code: `const [formState, setFormState] = useState({});
+        code: `const [formState, setFormState] = useState({
+  completion: THEMED_SLIDER_DEFAULT_VALUE,
+});
 
 const handleFieldValueChange = (fieldKey, value) =&gt; {
   setFormState((prev) =&gt; ({ ...prev, [fieldKey]: value }));
@@ -1991,7 +1990,9 @@ return (
 };
 
 function ControlledFormStory(): React.ReactElement {
-  const [formState, setFormState] = useState&lt;Record&lt;string, unknown&gt;&gt;({});
+  const [formState, setFormState] = useState&lt;Record&lt;string, unknown&gt;&gt;({
+    completion: THEMED_SLIDER_DEFAULT_VALUE,
+  });
 
   const handleFieldValueChange = useCallback(
     (fieldKey: string, value: unknown) =&gt; {
@@ -3930,7 +3931,7 @@ function renderUserIdLabel(item: unknown): React.ReactNode {
                 <div class="row">
                   <span class="ex-name">Imports</span>
                 </div>
-                <pre><code>import { BaseForm, FormStoryLayout, SubmissionOutputPanel } from "@osdk/react-components-storybook";
+                <pre><code>import { BaseForm, FormStoryLayout, SubmissionOutputPanel, ThemedSliderField } from "@osdk/react-components-storybook";
 import { Button, Dialog } from "@blueprintjs/core";</code></pre>
               </div>
           
@@ -19798,13 +19799,13 @@ export const WithRealFile: StoryObj&lt;ExcelViewerMediaProps&gt; = {
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;BaseForm&quot; component.
-  200 | }
-  201 |
-&gt; 202 | const meta: Meta&lt;BaseFormStoryProps&gt; = {
+  198 | }
+  199 |
+&gt; 200 | const meta: Meta&lt;BaseFormStoryProps&gt; = {
       | ^
-  203 |   title: &quot;Beta/ActionForm/BaseForm&quot;,
-  204 |   component: BaseForm,
-  205 |   decorators: [
+  201 |   title: &quot;Beta/ActionForm/BaseForm&quot;,
+  202 |   component: BaseForm,
+  203 |   decorators: [
 
 ./src/stories/ActionForm/BaseForm.stories.tsx:
 /*
@@ -19842,6 +19843,10 @@ import {
   type StorySubmissionSnapshot,
   SubmissionOutputPanel,
 } from &quot;./SubmissionOutputPanel.js&quot;;
+import {
+  THEMED_SLIDER_DEFAULT_VALUE,
+  ThemedSliderField,
+} from &quot;./ThemedSliderField.js&quot;;
 
 /**
  * Flattened (non-union) props type for Storybook Meta.
@@ -19955,18 +19960,12 @@ const formContent: ReadonlyArray&lt;FormContentItem&gt; = [
     },
   }),
   field({
-    fieldKey: &quot;notes&quot;,
+    fieldKey: &quot;completion&quot;,
     fieldComponent: &quot;CUSTOM&quot;,
-    label: &quot;Notes&quot;,
+    label: &quot;Completion&quot;,
     fieldComponentProps: {
-      customRenderer: (props) =&gt; (
-        &lt;textarea
-          value={props.value != null ? String(props.value) : &quot;&quot;}
-          onChange={(e) =&gt; props.onChange?.(e.target.value)}
-          className=&quot;osdkCustomTextarea&quot;
-          placeholder=&quot;Custom rendered notes field&quot;
-        /&gt;
-      ),
+      defaultValue: THEMED_SLIDER_DEFAULT_VALUE,
+      customRenderer: (props) =&gt; &lt;ThemedSliderField {...props} /&gt;,
     },
   }),
 ];
@@ -20110,6 +20109,10 @@ export const Default: Story = {
     docs: {
       source: {
         code: `import { BaseForm } from &quot;@osdk/react-components/experimental&quot;;
+import {
+  THEMED_SLIDER_DEFAULT_VALUE,
+  ThemedSliderField,
+} from &quot;./ThemedSliderField&quot;;
 
 const formContent = [
   {
@@ -20165,17 +20168,12 @@ const formContent = [
     fieldComponentProps: { accept: &quot;.pdf,.doc,.docx&quot; },
   },
   {
-    fieldKey: &quot;notes&quot;,
+    fieldKey: &quot;completion&quot;,
     fieldComponent: &quot;CUSTOM&quot;,
-    label: &quot;Notes&quot;,
+    label: &quot;Completion&quot;,
     fieldComponentProps: {
-      customRenderer: (props) =&gt; (
-        &lt;textarea
-          value={props.value ?? &quot;&quot;}
-          onChange={(e) =&gt; props.onChange?.(e.target.value)}
-          placeholder=&quot;Custom rendered notes field&quot;
-        /&gt;
-      ),
+      defaultValue: THEMED_SLIDER_DEFAULT_VALUE,
+      customRenderer: (props) =&gt; &lt;ThemedSliderField {...props} /&gt;,
     },
   },
 ];
@@ -20193,7 +20191,9 @@ export const Controlled: Story = {
   parameters: {
     docs: {
       source: {
-        code: `const [formState, setFormState] = useState({});
+        code: `const [formState, setFormState] = useState({
+  completion: THEMED_SLIDER_DEFAULT_VALUE,
+});
 
 const handleFieldValueChange = (fieldKey, value) =&gt; {
   setFormState((prev) =&gt; ({ ...prev, [fieldKey]: value }));
@@ -20220,7 +20220,9 @@ return (
 };
 
 function ControlledFormStory(): React.ReactElement {
-  const [formState, setFormState] = useState&lt;Record&lt;string, unknown&gt;&gt;({});
+  const [formState, setFormState] = useState&lt;Record&lt;string, unknown&gt;&gt;({
+    completion: THEMED_SLIDER_DEFAULT_VALUE,
+  });
 
   const handleFieldValueChange = useCallback(
     (fieldKey: string, value: unknown) =&gt; {
@@ -22159,7 +22161,7 @@ function renderUserIdLabel(item: unknown): React.ReactNode {
                 <div class="row">
                   <span class="ex-name">Imports</span>
                 </div>
-                <pre><code>import { BaseForm, FormStoryLayout, SubmissionOutputPanel } from "@osdk/react-components-storybook";
+                <pre><code>import { BaseForm, FormStoryLayout, SubmissionOutputPanel, ThemedSliderField } from "@osdk/react-components-storybook";
 import { Button, Dialog } from "@blueprintjs/core";</code></pre>
               </div>
           
