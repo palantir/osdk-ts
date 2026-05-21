@@ -21,6 +21,7 @@
   /* Override min-height:auto so the form can shrink inside flex parents
      with constrained height (e.g. dialogs with max-height). */
   min-height: 0;
+  background-color: red;
 }
 
 .osdkFormFields {
