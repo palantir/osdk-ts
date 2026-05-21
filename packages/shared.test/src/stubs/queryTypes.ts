@@ -518,7 +518,7 @@ export const queryTypeReturnsArray: QueryTypeV2 = {
         "type": "array",
         "subType": { "type": "string" },
       },
-      required: true,
+      "required": true,
     },
   },
   "rid":
@@ -543,7 +543,7 @@ export const queryTypeReturnsArrayOfObjects: QueryTypeV2 = {
         "type": "array",
         "subType": { "type": "string" },
       },
-      required: true,
+      "required": true,
     },
   },
   "rid":
@@ -578,7 +578,8 @@ export const queryTypeReturnsMap: QueryTypeV2 = {
           type: "string",
         },
       },
-      required: true,
+
+      "required": true,
     },
   },
   "rid":

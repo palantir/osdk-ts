@@ -274,10 +274,16 @@ function validateActionParameterType(
     }
 
     case "scenarioReference": {
-      ret.result = "INVALID";
-      ret.parameters[paramKey] = {
-        ...baseParam,
-      };
+      if (
+        !value
+        || typeof value !== "object"
+        || typeof (value as { scenarioRid?: unknown }).scenarioRid !== "string"
+      ) {
+        ret.result = "INVALID";
+        ret.parameters[paramKey] = {
+          ...baseParam,
+        };
+      }
       return;
     }
 
