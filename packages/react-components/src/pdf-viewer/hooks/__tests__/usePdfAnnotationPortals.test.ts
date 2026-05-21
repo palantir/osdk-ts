@@ -321,21 +321,9 @@ describe("usePdfAnnotationPortals", () => {
     expect(result.current).toEqual([]);
   });
 
-  it("should re-measure when the page div's ResizeObserver fires", () => {
-    const observerCallbacks: ResizeObserverCallback[] = [];
-    const originalResizeObserver = globalThis.ResizeObserver;
-    class MockResizeObserver implements ResizeObserver {
-      observe = vi.fn();
-      unobserve = vi.fn();
-      disconnect = vi.fn();
-      constructor(cb: ResizeObserverCallback) {
-        observerCallbacks.push(cb);
-      }
-    }
-    globalThis.ResizeObserver =
-      MockResizeObserver as unknown as typeof ResizeObserver;
-
-    try {
+  it.each(["scalechanging", "rotationchanging"])(
+    "should re-measure all targets when %s fires",
+    (event) => {
       const eventBus = createMockEventBus();
       const container = createMockContainer();
       const div = createPageDiv({ left: 10, top: 20, width: 612, height: 792 });
@@ -367,21 +355,15 @@ describe("usePdfAnnotationPortals", () => {
       currentScale = 2.0;
       mockRect(div, { left: 10, top: 20, width: 1224, height: 1584 });
 
-      const pageObserverCallback = observerCallbacks.at(-1)!;
       act(() => {
-        pageObserverCallback(
-          [] as unknown as ResizeObserverEntry[],
-          {} as ResizeObserver,
-        );
+        eventBus._emit(event, {});
       });
 
       expect(result.current).toHaveLength(1);
       expect(result.current[0].scale).toBe(2.0);
       expect(result.current[0].width).toBe(1224);
-    } finally {
-      globalThis.ResizeObserver = originalResizeObserver;
-    }
-  });
+    },
+  );
 
   it("should handle null refs gracefully", () => {
     const pdfViewerRef = { current: null } as RefObject<PDFViewer | null>;

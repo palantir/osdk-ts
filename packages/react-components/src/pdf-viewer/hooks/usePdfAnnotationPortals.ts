@@ -89,40 +89,19 @@ export function usePdfAnnotationPortals(
       };
     };
 
-    const pageObservers = new Map<number, ResizeObserver>();
-
-    const remeasurePage = (pageNumber: number) => {
+    const handlePageRendered = (evt: { pageNumber: number }) => {
       const container = readContainer();
       if (container == null) {
         return;
       }
-      const next = measurePage(pageNumber, container.rect, container.el);
+      const next = measurePage(evt.pageNumber, container.rect, container.el);
       setPortalTargets((prev) => {
-        const filtered = prev.filter((t) => t.pageNumber !== pageNumber);
+        const filtered = prev.filter((t) => t.pageNumber !== evt.pageNumber);
         if (next == null) {
           return filtered;
         }
         return [...filtered, next].sort((a, b) => a.pageNumber - b.pageNumber);
       });
-    };
-
-    const observePage = (pageNumber: number, div: HTMLElement) => {
-      pageObservers.get(pageNumber)?.disconnect();
-      if (typeof ResizeObserver === "undefined") {
-        return;
-      }
-      const observer = new ResizeObserver(() => remeasurePage(pageNumber));
-      observer.observe(div);
-      pageObservers.set(pageNumber, observer);
-    };
-
-    const handlePageRendered = (evt: { pageNumber: number }) => {
-      const pageView = pdfViewer.getPageView(evt.pageNumber - 1);
-      if (pageView?.div == null) {
-        return;
-      }
-      remeasurePage(evt.pageNumber);
-      observePage(evt.pageNumber, pageView.div as HTMLElement);
     };
 
     const remeasureAll = () => {
@@ -150,6 +129,8 @@ export function usePdfAnnotationPortals(
     };
 
     eventBus.on(PAGE_RENDERED_EVENT, handlePageRendered);
+    eventBus.on("scalechanging", remeasureAll);
+    eventBus.on("rotationchanging", remeasureAll);
 
     const scrollContainer = pdfViewer.container as HTMLElement | null;
     let containerObserver: ResizeObserver | undefined;
@@ -160,10 +141,8 @@ export function usePdfAnnotationPortals(
 
     return () => {
       eventBus.off(PAGE_RENDERED_EVENT, handlePageRendered);
-      for (const observer of pageObservers.values()) {
-        observer.disconnect();
-      }
-      pageObservers.clear();
+      eventBus.off("scalechanging", remeasureAll);
+      eventBus.off("rotationchanging", remeasureAll);
       containerObserver?.disconnect();
       setPortalTargets([]);
     };
