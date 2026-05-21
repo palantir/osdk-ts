@@ -41,6 +41,7 @@ import styles from "./FilterListItem.module.css";
 import { ItemOverflowMenu } from "./ItemOverflowMenu.js";
 
 type SearchPlacement = "header-start" | "header-end" | "menu" | "hidden";
+type OverflowPlacement = "header-start" | "header-end" | "hidden";
 
 /**
  * `controls.search` takes precedence over `searchField` when both are set.
@@ -61,6 +62,20 @@ function resolveSearchPlacement(
     return search;
   }
   return controls?.placement ?? "header-end";
+}
+
+function resolveOverflowPlacement(
+  controls: FilterControlsConfig | undefined,
+): OverflowPlacement {
+  const overflow = controls?.overflow;
+  if (overflow === false) {
+    return "hidden";
+  }
+  if (typeof overflow === "string") {
+    return overflow;
+  }
+  const placement = controls?.placement;
+  return placement === "header-start" ? "header-start" : "header-end";
 }
 
 interface FilterListItemProps<D> {
@@ -174,7 +189,8 @@ function FilterListItemInner<D>({
     searchField,
     controls,
   );
-  const showOverflow = controls?.overflow !== false;
+  const overflowPlacement = resolveOverflowPlacement(controls);
+  const showOverflow = overflowPlacement !== "hidden";
 
   const showKeepExclude = showOverflow && supportsExcluding(effectiveState);
   const hasSelection = filterHasActiveState(filterState);
@@ -206,6 +222,28 @@ function FilterListItemInner<D>({
     )
     : null;
 
+  const headerOverflowMenu = showOverflow
+    ? (
+      <ItemOverflowMenu
+        triggerClassName={classnames(styles.headerActionButton, {
+          [styles.headerActionButtonStart]:
+            overflowPlacement === "header-start",
+        })}
+        triggerAriaLabel="More actions"
+        filterLabel={label}
+        showSearchInMenu={showSearchInMenu}
+        onSearchInMenu={handleToggleSearch}
+        showKeepExclude={showKeepExclude}
+        isExcluding={isExcluding}
+        onToggleExclude={handleToggleExclude}
+        showClearAll={showClearAll}
+        onClearAll={handleClearAll}
+        showRemove={showRemove}
+        onRemove={handleRemove}
+      />
+    )
+    : null;
+
   return (
     <div
       className={classnames(styles.filterItem, className)}
@@ -224,26 +262,14 @@ function FilterListItemInner<D>({
           </Button>
         )}
         {searchPlacement === "header-start" && headerSearchButton}
+        {overflowPlacement === "header-start" && headerOverflowMenu}
         <span
           className={styles.itemLabel}
         >
           {label}
         </span>
         {searchPlacement === "header-end" && headerSearchButton}
-        <ItemOverflowMenu
-          triggerClassName={styles.headerActionButton}
-          triggerAriaLabel="More actions"
-          filterLabel={label}
-          showSearchInMenu={showSearchInMenu}
-          onSearchInMenu={handleToggleSearch}
-          showKeepExclude={showKeepExclude}
-          isExcluding={isExcluding}
-          onToggleExclude={handleToggleExclude}
-          showClearAll={showClearAll}
-          onClearAll={handleClearAll}
-          showRemove={showRemove}
-          onRemove={handleRemove}
-        />
+        {overflowPlacement === "header-end" && headerOverflowMenu}
       </div>
 
       {searchOpen && (

@@ -78,16 +78,18 @@ export interface FilterControlsConfig {
   /**
    * Overflow (`...`) menu button.
    *
-   * - `true` — visible whenever the menu has at least one action to show
-   *   (default).
+   * - `true` — visible at the default placement (see `placement`, which itself
+   *   defaults to `"header-end"`).
    * - `false` — hidden. Keep / Exclude, Clear all selections, and Remove
    *   filter — all of which live inside the menu — are also hidden when this
    *   is `false`. If `search` resolves to `"menu"`, the search item is hidden
    *   too.
+   * - `"header-start"` — `...` trigger on the left side of the header.
+   * - `"header-end"` — `...` trigger on the right side of the header.
    *
    * @default true
    */
-  overflow?: boolean;
+  overflow?: boolean | "header-start" | "header-end";
 
   /**
    * Remove filter affordance.
@@ -102,8 +104,10 @@ export interface FilterControlsConfig {
 
   /**
    * Default placement for controls that accept a placement but do not specify
-   * one. Today only `search` (when set to `true` or left unset) consults this
-   * value.
+   * one. Consulted by `search` and `overflow` when they are `true` or unset.
+   * `"menu"` only applies to controls that can render inside the overflow menu
+   * (currently `search`); for the overflow trigger itself, `"menu"` falls back
+   * to `"header-end"` since the trigger is what opens the menu.
    *
    * @default "header-end"
    */

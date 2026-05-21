@@ -407,4 +407,87 @@ describe("FilterListItem", () => {
       ).toBeNull();
     });
   });
+
+  describe("overflow placement", () => {
+    it("renders the overflow trigger after the label by default", () => {
+      renderItem({
+        filterState: { type: "SELECT", selectedValues: ["x"] },
+        onFilterRemoved: vi.fn(),
+      });
+      const overflowButton = screen.getByRole("button", {
+        name: /more actions/i,
+      });
+      const labelEl = screen.getByText("Department");
+      expectInDomOrder(labelEl, overflowButton);
+    });
+
+    it("renders the overflow trigger before the label when controls.overflow is 'header-start'", () => {
+      renderItem({
+        filterState: { type: "SELECT", selectedValues: ["x"] },
+        onFilterRemoved: vi.fn(),
+        controls: { overflow: "header-start" },
+      });
+      const overflowButton = screen.getByRole("button", {
+        name: /more actions/i,
+      });
+      const labelEl = screen.getByText("Department");
+      expectInDomOrder(overflowButton, labelEl);
+    });
+
+    it("renders the overflow trigger after the label when controls.overflow is 'header-end'", () => {
+      renderItem({
+        filterState: { type: "SELECT", selectedValues: ["x"] },
+        onFilterRemoved: vi.fn(),
+        controls: { overflow: "header-end" },
+      });
+      const overflowButton = screen.getByRole("button", {
+        name: /more actions/i,
+      });
+      const labelEl = screen.getByText("Department");
+      expectInDomOrder(labelEl, overflowButton);
+    });
+
+    it("places the overflow trigger at controls.placement when controls.overflow is omitted", () => {
+      renderItem({
+        filterState: { type: "SELECT", selectedValues: ["x"] },
+        onFilterRemoved: vi.fn(),
+        controls: { placement: "header-start" },
+      });
+      const overflowButton = screen.getByRole("button", {
+        name: /more actions/i,
+      });
+      const labelEl = screen.getByText("Department");
+      expectInDomOrder(overflowButton, labelEl);
+    });
+
+    it("keeps the overflow trigger at header-end when controls.placement is 'menu'", () => {
+      renderItem({
+        filterState: { type: "SELECT", selectedValues: ["x"] },
+        onFilterRemoved: vi.fn(),
+        controls: { placement: "menu" },
+      });
+      const overflowButton = screen.getByRole("button", {
+        name: /more actions/i,
+      });
+      const labelEl = screen.getByText("Department");
+      expectInDomOrder(labelEl, overflowButton);
+    });
+
+    it("renders search then overflow at header-start when both are placed there", () => {
+      renderItem({
+        filterState: { type: "SELECT", selectedValues: ["x"] },
+        onFilterRemoved: vi.fn(),
+        controls: { search: "header-start", overflow: "header-start" },
+      });
+      const searchButton = screen.getByRole("button", {
+        name: /search values/i,
+      });
+      const overflowButton = screen.getByRole("button", {
+        name: /more actions/i,
+      });
+      const labelEl = screen.getByText("Department");
+      expectInDomOrder(searchButton, overflowButton);
+      expectInDomOrder(overflowButton, labelEl);
+    });
+  });
 });
