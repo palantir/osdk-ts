@@ -69,7 +69,10 @@ describe("ScenarioClient methods", () => {
     it("calls the listScenarioEditedObjects endpoint with pageSize/pageToken", async () => {
       const scenario = withScenario(client, "ri.actions..scenario.abc");
       mockFetchResponse(fetchFunction, {
-        data: [],
+        data: [
+          { __apiName: "Employee", __primaryKey: 50030 },
+          { __apiName: "Employee", __primaryKey: 50031 },
+        ],
         nextPageToken: "tok-2",
       });
 
@@ -89,22 +92,30 @@ describe("ScenarioClient methods", () => {
       expect(url.searchParams.get("pageSize")).toBe("100");
       expect(url.searchParams.get("pageToken")).toBe("tok-1");
       expect(result.nextPageToken).toBe("tok-2");
-      expect(result.data).toEqual([]);
+      expect(result.data).toEqual([
+        { $apiName: "Employee", $primaryKey: 50030 },
+        { $apiName: "Employee", $primaryKey: 50031 },
+      ]);
     });
   });
 
   describe("editedEntitiesAsyncIter", () => {
-    it("walks pages until nextPageToken is absent", async () => {
+    it("paginates and dedupes by $primaryKey across pages", async () => {
       const scenario = withScenario(client, "ri.actions..scenario.abc");
 
-      // Page 1: token present
       mockFetchResponse(fetchFunction, {
-        data: [],
+        data: [
+          { __apiName: "Employee", __primaryKey: 1 },
+          { __apiName: "Employee", __primaryKey: 2 },
+          { __apiName: "Employee", __primaryKey: 2 }, // intra-page dupe
+        ],
         nextPageToken: "tok-2",
       });
-      // Page 2: token absent → iter terminates
       mockFetchResponse(fetchFunction, {
-        data: [],
+        data: [
+          { __apiName: "Employee", __primaryKey: 2 }, // cross-page dupe
+          { __apiName: "Employee", __primaryKey: 3 },
+        ],
       });
 
       const keys: unknown[] = [];
@@ -112,9 +123,8 @@ describe("ScenarioClient methods", () => {
         keys.push(obj.$primaryKey);
       }
 
-      expect(keys).toEqual([]);
+      expect(keys).toEqual([1, 2, 3]);
       expect(fetchFunction).toHaveBeenCalledTimes(2);
-      // Second call carries the pageToken from the first response
       const secondUrl = new URL(
         fetchFunction.mock.calls[1][0] as string,
         "https://mock.com",
@@ -125,7 +135,7 @@ describe("ScenarioClient methods", () => {
     it("terminates when nextPageToken is absent on the first response", async () => {
       const scenario = withScenario(client, "ri.actions..scenario.abc");
       mockFetchResponse(fetchFunction, {
-        data: [],
+        data: [{ __apiName: "Employee", __primaryKey: 42 }],
       });
 
       const keys: unknown[] = [];
@@ -133,7 +143,7 @@ describe("ScenarioClient methods", () => {
         keys.push(obj.$primaryKey);
       }
 
-      expect(keys).toEqual([]);
+      expect(keys).toEqual([42]);
       expect(fetchFunction).toHaveBeenCalledTimes(1);
     });
   });
