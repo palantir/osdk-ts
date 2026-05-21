@@ -19,7 +19,10 @@ import type { StorybookConfig } from "@storybook/react-vite";
 const storybookBasePath = process.env.STORYBOOK_BASE_PATH;
 
 const config: StorybookConfig = {
-  stories: ["../src/**/*.stories.@(js|jsx|ts|tsx|mdx)"],
+  stories: [
+    "../src/**/*.stories.@(js|jsx|ts|tsx|mdx)",
+    "../src/docs/**/*.mdx",
+  ],
   addons: [
     "@storybook/addon-a11y",
     "@storybook/addon-docs",
@@ -71,6 +74,12 @@ const config: StorybookConfig = {
       ...config.resolve,
       alias: {
         ...config.resolve?.alias,
+        // Resolve @docs/ and @rc/ to the react-components package so MDX
+        // wrappers can import .md files without fragile relative paths.
+        "@docs": new URL("../../react-components/docs", import.meta.url)
+          .pathname,
+        "@rc-root": new URL("../../react-components", import.meta.url)
+          .pathname,
         // Polyfill Node.js modules for browser
         // This is necessary because MSW (Mock Service Worker) and other dependencies
         // use Node.js built-in modules like crypto.randomUUID() which aren't available
