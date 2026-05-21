@@ -15,15 +15,19 @@
  */
 
 import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
-import type {
-  ObjectTypeApiName,
-  ObjectTypeLinkTypeApiNameMapping,
-  OntologyObjectV2,
-} from "@osdk/foundry.ontologies";
 import { OntologyScenarios } from "@osdk/foundry.ontologies";
 import { additionalContext, type Client } from "../Client.js";
 import { createClientWithScenario } from "../createClient.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
+
+/**
+ * The set of many-to-many link types modified within a scenario for one source object type. Returned as part of
+ * {@link ScenarioEditedEntityTypes.linkTypes}.
+ */
+export interface EditedLinkTypeMapping {
+  objectTypeApiName: string;
+  linkTypes: string[];
+}
 
 /**
  * The object types and link types that have been modified within a scenario. Returned by
@@ -31,8 +35,8 @@ import type { MinimalClient } from "../MinimalClientContext.js";
  * `linkTypes`; one-to-many edits surface as object edits on the object type that owns the foreign key property.
  */
 export interface ScenarioEditedEntityTypes {
-  objectTypes: ObjectTypeApiName[];
-  linkTypes: ObjectTypeLinkTypeApiNameMapping[];
+  objectTypes: string[];
+  linkTypes: EditedLinkTypeMapping[];
 }
 
 /**
@@ -101,22 +105,6 @@ export interface EXPERIMENTAL_ScenarioClient extends Client {
   ): AsyncIterableIterator<Osdk.Instance<Q>>;
 }
 
-async function convertSparseEditedObjects<Q extends ObjectTypeDefinition>(
-  innerCtx: MinimalClient,
-  data: OntologyObjectV2[],
-): Promise<Osdk.Instance<Q>[]> {
-  if (data.length === 0) return [];
-  const converted = await innerCtx.objectFactory(
-    innerCtx,
-    data,
-    undefined,
-    {},
-    undefined,
-    true,
-  );
-  return converted as unknown as Osdk.Instance<Q>[];
-}
-
 /**
  * Shared internal builder used by both {@link withScenario} and {@link createScenario}. Validates the parent client
  * is not already inside a scenario or transaction, then constructs a fresh {@link Client} via
@@ -163,8 +151,8 @@ export function buildScenarioClient(
       scenarioRid,
     );
     return {
-      objectTypes: response.objectTypes as ObjectTypeApiName[],
-      linkTypes: response.linkTypes as ObjectTypeLinkTypeApiNameMapping[],
+      objectTypes: response.objectTypes,
+      linkTypes: response.linkTypes,
     };
   }
 
@@ -180,8 +168,18 @@ export function buildScenarioClient(
       objectType.apiName,
       { pageSize: options?.pageSize, pageToken: options?.pageToken },
     );
+    const data = response.data.length === 0
+      ? []
+      : (await innerCtx.objectFactory(
+        innerCtx,
+        response.data,
+        undefined,
+        {},
+        undefined,
+        true,
+      )) as unknown as Osdk.Instance<Q>[];
     return {
-      data: await convertSparseEditedObjects<Q>(innerCtx, response.data),
+      data,
       nextPageToken: response.nextPageToken,
     };
   }
