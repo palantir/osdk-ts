@@ -57,7 +57,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      issues: write
+      pull-requests: write
     concurrency:
       # Serialize gh-pages writers so force-push deploys do not clobber each other.
       # queue: max keeps every pending preview deploy instead of replacing older pending runs.
@@ -121,7 +121,7 @@ jobs:
     if: ${{ always() && github.event.action != 'closed' && github.event.pull_request.head.repo.full_name == github.repository && (needs.build-preview.result == 'failure' || needs.deploy-preview.result == 'failure') }}
     runs-on: ubuntu-latest
     permissions:
-      issues: write
+      pull-requests: write
     steps:
       - name: Comment on preview failure
         env:
@@ -152,7 +152,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      issues: write
+      pull-requests: write
     concurrency:
       # Serialize gh-pages writers so force-push deploys do not clobber each other.
       # queue: max keeps every pending preview deploy instead of replacing older pending runs.
