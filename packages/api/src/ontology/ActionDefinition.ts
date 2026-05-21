@@ -47,7 +47,8 @@ export namespace ActionMetadata {
       | DataType.Object<any>
       | DataType.ObjectSet<any>
       | DataType.Interface<any>
-      | DataType.Struct<any>;
+      | DataType.Struct<any>
+      | DataType.ScenarioReference;
     description?: string;
     multiplicity?: boolean;
     nullable?: boolean;
@@ -96,6 +97,10 @@ export namespace ActionMetadata {
     > {
       type: "struct";
       struct: T;
+    }
+
+    export interface ScenarioReference {
+      type: "scenarioReference";
     }
   }
 }

@@ -75,6 +75,7 @@ function buildFieldDefinition(
         };
       case "interface":
       case "struct":
+      case "scenarioReference":
         return {
           ...base,
           fieldComponent: "UNSUPPORTED",
