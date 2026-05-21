@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import type { StorybookTheme } from "storybook/theming";
-
-/**
- * Storybook v10 exports `Theme` as an empty interface meant to be
- * augmented. Extend it with StorybookTheme so `styled()` callbacks
- * can access `theme.color`, `theme.background`, etc.
- */
-declare module "storybook/theming" {
-  interface Theme extends StorybookTheme {}
-}
+export {
+  OsdkThemeProvider,
+  type OsdkThemeProviderProps,
+} from "../../theme/OsdkThemeProvider.js";
+export type {
+  OsdkThemeContextValue,
+  OsdkThemeMode,
+  ResolvedOsdkTheme,
+} from "../../theme/types.js";
+export { useOsdkTheme } from "../../theme/useOsdkTheme.js";

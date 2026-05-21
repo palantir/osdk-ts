@@ -33,6 +33,10 @@ import {
   type StorySubmissionSnapshot,
   SubmissionOutputPanel,
 } from "./SubmissionOutputPanel.js";
+import {
+  THEMED_SLIDER_DEFAULT_VALUE,
+  ThemedSliderField,
+} from "./ThemedSliderField.js";
 
 /**
  * Flattened (non-union) props type for Storybook Meta.
@@ -146,18 +150,12 @@ const formContent: ReadonlyArray<FormContentItem> = [
     },
   }),
   field({
-    fieldKey: "notes",
+    fieldKey: "completion",
     fieldComponent: "CUSTOM",
-    label: "Notes",
+    label: "Completion",
     fieldComponentProps: {
-      customRenderer: (props) => (
-        <textarea
-          value={props.value != null ? String(props.value) : ""}
-          onChange={(e) => props.onChange?.(e.target.value)}
-          className="osdkCustomTextarea"
-          placeholder="Custom rendered notes field"
-        />
-      ),
+      defaultValue: THEMED_SLIDER_DEFAULT_VALUE,
+      customRenderer: (props) => <ThemedSliderField {...props} />,
     },
   }),
 ];
@@ -200,7 +198,7 @@ function BaseFormSubmissionOutput(): React.ReactElement {
 }
 
 const meta: Meta<BaseFormStoryProps> = {
-  title: "Experimental/ActionForm/BaseForm",
+  title: "Beta/ActionForm/BaseForm",
   component: BaseForm,
   decorators: [
     (Story) => (
@@ -301,6 +299,10 @@ export const Default: Story = {
     docs: {
       source: {
         code: `import { BaseForm } from "@osdk/react-components/experimental";
+import {
+  THEMED_SLIDER_DEFAULT_VALUE,
+  ThemedSliderField,
+} from "./ThemedSliderField";
 
 const formContent = [
   {
@@ -356,17 +358,12 @@ const formContent = [
     fieldComponentProps: { accept: ".pdf,.doc,.docx" },
   },
   {
-    fieldKey: "notes",
+    fieldKey: "completion",
     fieldComponent: "CUSTOM",
-    label: "Notes",
+    label: "Completion",
     fieldComponentProps: {
-      customRenderer: (props) => (
-        <textarea
-          value={props.value ?? ""}
-          onChange={(e) => props.onChange?.(e.target.value)}
-          placeholder="Custom rendered notes field"
-        />
-      ),
+      defaultValue: THEMED_SLIDER_DEFAULT_VALUE,
+      customRenderer: (props) => <ThemedSliderField {...props} />,
     },
   },
 ];
@@ -384,7 +381,9 @@ export const Controlled: Story = {
   parameters: {
     docs: {
       source: {
-        code: `const [formState, setFormState] = useState({});
+        code: `const [formState, setFormState] = useState({
+  completion: THEMED_SLIDER_DEFAULT_VALUE,
+});
 
 const handleFieldValueChange = (fieldKey, value) => {
   setFormState((prev) => ({ ...prev, [fieldKey]: value }));
@@ -411,7 +410,9 @@ return (
 };
 
 function ControlledFormStory(): React.ReactElement {
-  const [formState, setFormState] = useState<Record<string, unknown>>({});
+  const [formState, setFormState] = useState<Record<string, unknown>>({
+    completion: THEMED_SLIDER_DEFAULT_VALUE,
+  });
 
   const handleFieldValueChange = useCallback(
     (fieldKey: string, value: unknown) => {

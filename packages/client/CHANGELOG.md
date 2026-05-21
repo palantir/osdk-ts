@@ -1,5 +1,22 @@
 # @osdk/client
 
+## 2.23.0
+
+### Minor Changes
+
+- 8290dd7: Unwrap `$primaryKey` and `$title` when they are returned as secured property values, and include them as keys in `$propertySecurities` (both at the type level and at runtime, including interface views).
+
+### Patch Changes
+
+- Updated dependencies [9fb5afb]
+- Updated dependencies [198f219]
+- Updated dependencies [ef156b6]
+- Updated dependencies [8290dd7]
+  - @osdk/generator-converters@2.23.0
+  - @osdk/api@2.23.0
+  - @osdk/client.unstable@2.23.0
+  - @osdk/shared.test@2.18.0
+
 ## 2.22.0
 
 ### Patch Changes

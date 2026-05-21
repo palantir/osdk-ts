@@ -16,15 +16,20 @@
 
 import { createClient } from "@osdk/client";
 import { OsdkProvider } from "@osdk/react";
+import { OsdkThemeProvider } from "@osdk/react-components/experimental/theme";
 import type { Preview } from "@storybook/react-vite";
 import { initialize, mswLoader } from "msw-storybook-addon";
 import { fauxFoundry, setupFauxFoundry } from "../src/mocks/fauxFoundry.js";
-import { GLOBALS_KEY } from "./addons/brand-theme-extractor/constants.js";
-import { BrandThemeDecorator } from "./addons/brand-theme-extractor/decorator.js";
+import { withBrandThemeDecorator } from "./addons/brand-theme-extractor/BrandThemeDecorator.js";
 import {
-  getDefaultBrandThemeState,
-  stringifyBrandThemeState,
-} from "./addons/brand-theme-extractor/state.js";
+  brandThemeGlobalTypes,
+  initialBrandThemeGlobals,
+} from "./addons/brand-theme-extractor/brandThemeGlobalTypes.js";
+import {
+  BRAND_THEME_PRESET_GLOBAL_KEY,
+  parseBrandThemePresetGlobal,
+  resolveBrandThemePreset,
+} from "./addons/brand-theme-extractor/brandThemeState.js";
 import "./styles.css";
 
 // Initialize MSW with proper options
@@ -52,9 +57,8 @@ const mockClient = createClient(
 );
 
 const preview: Preview = {
-  initialGlobals: {
-    [GLOBALS_KEY]: stringifyBrandThemeState(getDefaultBrandThemeState()),
-  },
+  globalTypes: brandThemeGlobalTypes,
+  initialGlobals: initialBrandThemeGlobals,
   parameters: {
     controls: {
       matchers: {
@@ -77,14 +81,23 @@ const preview: Preview = {
     await fauxFoundryReady;
   }, mswLoader],
   decorators: [
-    (Story) => (
-      <div className="root">
-        <OsdkProvider client={mockClient}>
-          <Story />
-        </OsdkProvider>
-      </div>
-    ),
-    BrandThemeDecorator,
+    (Story, context) => {
+      const themePreset = resolveBrandThemePreset(
+        parseBrandThemePresetGlobal(
+          context.globals[BRAND_THEME_PRESET_GLOBAL_KEY],
+        ),
+      );
+      return (
+        <div className="root">
+          <OsdkProvider client={mockClient}>
+            <OsdkThemeProvider theme={themePreset.colorMode}>
+              <Story />
+            </OsdkThemeProvider>
+          </OsdkProvider>
+        </div>
+      );
+    },
+    withBrandThemeDecorator,
   ],
 };
 

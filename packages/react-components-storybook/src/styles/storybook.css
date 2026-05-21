@@ -54,6 +54,7 @@ body {
   border: var(--osdk-surface-border-width) solid
     var(--osdk-surface-border-color-default);
   border-radius: var(--osdk-surface-border-radius);
+  color: var(--osdk-typography-color-default-rest);
 }
 
 .osdkFormStorySpacing {
@@ -65,16 +66,6 @@ body {
   --osdk-form-content-padding-block: calc(var(--osdk-surface-spacing) * 4);
 
   width: min(480px, calc(100vw - calc(var(--osdk-surface-spacing) * 8)));
-}
-
-.osdkCustomTextarea {
-  width: 100%;
-  min-height: calc(var(--osdk-surface-spacing) * 15);
-  padding: calc(var(--osdk-surface-spacing) * 2);
-  border: var(--osdk-surface-border-width) solid
-    var(--osdk-surface-border-color-default);
-  border-radius: var(--osdk-surface-border-radius);
-  font-family: inherit;
 }
 
 .osdkCustomChoiceGroup {
@@ -112,11 +103,23 @@ body {
   }
 }
 
+/* Dark-mode highlight values for the same rows. Activated by the
+   `data-bp-color-scheme="dark"` attribute that `<OsdkThemeProvider>`
+   writes onto the document root. */
+[data-bp-color-scheme="dark"] .customTableStyling {
+  tr[data-highlight-row="true"] {
+    --osdk-table-row-bg-default: #1c2a3a;
+    --osdk-table-row-bg-alternate: #182230;
+    --osdk-table-row-bg-hover: #213548;
+  }
+}
+
 .osdkCodeOutput {
   margin: 0;
   padding: calc(var(--osdk-surface-spacing) * 3);
   border-radius: var(--osdk-surface-border-radius);
   background: var(--osdk-background-secondary);
+  color: var(--osdk-typography-color-default-rest);
   overflow: auto;
   font-size: var(--osdk-typography-size-body-small);
   max-height: 300px;

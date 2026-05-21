@@ -23,6 +23,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { PortalContainerProvider } from "../shared/PortalContainerContext.js";
 import { LoadingStateTable } from "./LoadingStateTable.js";
 import { NonIdealState } from "./NonIdealState.js";
 import styles from "./Table.module.css";
@@ -134,6 +135,7 @@ function BaseTableInner<
   }: BaseTableProps<TData>,
 ): ReactElement {
   const tableContainerRef = useRef<HTMLDivElement>(null);
+  const objectTablePortalRef = useRef<HTMLDivElement>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [focusedRowId, setFocusedRowId] = useState<string | null>(null);
   const portalTracker = usePortalTracker();
@@ -220,60 +222,65 @@ function BaseTableInner<
   }, [portalTracker]);
 
   return (
-    <div className={classNames(styles.osdkTableWrapper, className)}>
+    <PortalContainerProvider container={objectTablePortalRef}>
       <div
-        ref={tableContainerRef}
-        className={styles.osdkTableContainer}
-        onScroll={handleScroll}
+        ref={objectTablePortalRef}
+        className={classNames(styles.osdkTableWrapper, className)}
       >
-        <table>
-          {isLoading && !hasData
-            ? (
-              <LoadingStateTable
-                table={table}
-                headerGroups={headerGroups}
-                rowHeight={rowHeight}
-                tableContainerRef={tableContainerRef}
-              />
-            )
-            : (
-              <>
-                <TableHeader
+        <div
+          ref={tableContainerRef}
+          className={styles.osdkTableContainer}
+          onScroll={handleScroll}
+        >
+          <table>
+            {isLoading && !hasData
+              ? (
+                <LoadingStateTable
                   table={table}
-                  headerMenuFeatureFlags={headerMenuFeatureFlags}
-                  onColumnHeaderClick={onColumnHeaderClick}
-                />
-                <TableBody
-                  rows={rows}
-                  tableContainerRef={tableContainerRef}
-                  onRowClick={onRowClick}
-                  rowHeight={rowHeight}
-                  renderCellContextMenu={renderCellContextMenu}
-                  isLoadingMore={isLoadingMore}
                   headerGroups={headerGroups}
-                  focusedRowId={focusedRowId}
-                  setFocusedRowId={setFocusedRowId}
-                  isInEditMode={editableConfig?.editModeState.isActive}
-                  getRowAttributes={getRowAttributes}
+                  rowHeight={rowHeight}
+                  tableContainerRef={tableContainerRef}
                 />
-              </>
-            )}
-        </table>
-        {!hasData && error == null && (
-          renderEmptyState != null
-            ? renderEmptyState()
-            : <NonIdealState message={"No Data"} />
-        )}
-        {error != null && (
-          <NonIdealState message={`Error Loading Data: ${error.message}`} />
+              )
+              : (
+                <>
+                  <TableHeader
+                    table={table}
+                    headerMenuFeatureFlags={headerMenuFeatureFlags}
+                    onColumnHeaderClick={onColumnHeaderClick}
+                  />
+                  <TableBody
+                    rows={rows}
+                    tableContainerRef={tableContainerRef}
+                    onRowClick={onRowClick}
+                    rowHeight={rowHeight}
+                    renderCellContextMenu={renderCellContextMenu}
+                    isLoadingMore={isLoadingMore}
+                    headerGroups={headerGroups}
+                    focusedRowId={focusedRowId}
+                    setFocusedRowId={setFocusedRowId}
+                    isInEditMode={editableConfig?.editModeState.isActive}
+                    getRowAttributes={getRowAttributes}
+                  />
+                </>
+              )}
+          </table>
+          {!hasData && error == null && (
+            renderEmptyState != null
+              ? renderEmptyState()
+              : <NonIdealState message={"No Data"} />
+          )}
+          {error != null && (
+            <NonIdealState message={`Error Loading Data: ${error.message}`} />
+          )}
+        </div>
+        {showEditFooter && hasEditableColumns && editableConfig && (
+          <TableEditContainer
+            editableConfig={editableConfig}
+            focusedRowId={focusedRowId}
+          />
         )}
       </div>
-      {showEditFooter && hasEditableColumns && editableConfig && (
-        <TableEditContainer
-          editableConfig={editableConfig}
-          focusedRowId={focusedRowId}
-        />
-      )}
-    </div>
+    </PortalContainerProvider>
   );
 }

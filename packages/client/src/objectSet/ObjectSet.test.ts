@@ -308,6 +308,8 @@ describe("ObjectSet", () => {
 
     expectTypeOf(employees.data[0].$propertySecurities).toMatchObjectType<
       {
+        $primaryKey: PropertySecurity[];
+        $title: PropertySecurity[];
         class: PropertySecurity[];
         employeeId: PropertySecurity[];
         fullName: PropertySecurity[];

@@ -384,7 +384,7 @@ function UnsupportedFieldsActionFormStory(): React.ReactElement {
 }
 
 const meta = {
-  title: "Experimental/ActionForm/Usage",
+  title: "Beta/ActionForm/Usage",
   component: UpdateEmployeeActionFormStory,
   parameters: {
     controls: {

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
-export const ADDON_ID = "osdk/brand-theme-extractor";
-export const PANEL_ID = `${ADDON_ID}/panel`;
-export const GLOBALS_KEY = "brandTheme";
+import { type Context, createContext } from "react";
+import type { OsdkThemeContextValue } from "./types.js";
+
+export const OsdkThemeContext: Context<OsdkThemeContextValue | null> =
+  createContext<OsdkThemeContextValue | null>(null);
