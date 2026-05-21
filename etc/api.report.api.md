@@ -373,8 +373,11 @@ export interface DataValueClientToWire {
     null: null;
     	// (undocumented)
     objectType: string;
-    	// (undocumented)
-    scenarioReference: ScenarioClient;
+    	scenarioReference: {
+        		getScenarioReference(): {
+            			scenarioRid: string
+            		}
+        	};
     	// (undocumented)
     set: Set<any>;
     	// (undocumented)
@@ -1764,13 +1767,6 @@ export { Range_2 as Range }
 //
 // @public (undocumented)
 export type Result<V> = OkResult<V> | ErrorResult;
-
-// @public
-export type ScenarioClient = {
-    	getScenarioReference(): {
-        		scenarioRid: string
-        	}
-};
 
 // @public (undocumented)
 export interface SelectArg<

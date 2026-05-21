@@ -74,7 +74,12 @@ export interface DataValueClientToWire {
   timestamp: string;
   set: Set<any>;
   mediaReference: MediaReference | MediaUpload | Media;
-  scenarioReference: ScenarioClient;
+  /**
+   * Structurally typed as the object that exposes `getScenarioReference()` — matches the `ScenarioClient`
+   * returned by `withScenario` / `createScenario` in `@osdk/client/unstable-do-not-use`. Defined inline to
+   * avoid a circular dependency on `@osdk/client`.
+   */
+  scenarioReference: { getScenarioReference(): { scenarioRid: string } };
   twoDimensionalAggregation: {
     key: AllowedBucketKeyTypes;
     value: AllowedBucketTypes;
@@ -88,14 +93,6 @@ export interface DataValueClientToWire {
   geohash: GeoJSON.Point;
   geoshape: GeoJSON.GeoJSON;
 }
-
-/**
- * Helper type for an action parameter of type `scenarioReference`. Structurally typed as
- * the object that exposes `getScenarioReference()` to avoid a circular dependency on `@osdk/client`.
- */
-export type ScenarioClient = {
-  getScenarioReference(): { scenarioRid: string };
-};
 
 export type AllowedBucketTypes = string | number | boolean;
 export type AllowedBucketKeyTypes =
