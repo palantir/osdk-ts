@@ -64,7 +64,6 @@ function resolveSearchPlacement(
   ) {
     return search;
   }
-  // search is undefined or true
   if (search === undefined && searchField === false) {
     return "hidden";
   }

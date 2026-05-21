@@ -60,9 +60,10 @@ function openOverflowMenu() {
   fireEvent.click(button);
 }
 
-// Node.DOCUMENT_POSITION_FOLLOWING === 4
 function expectInDomOrder(first: Element, second: Element) {
-  expect(first.compareDocumentPosition(second) & 4).toBeGreaterThan(0);
+  expect(
+    first.compareDocumentPosition(second) & Node.DOCUMENT_POSITION_FOLLOWING,
+  ).toBeGreaterThan(0);
 }
 
 describe("FilterListItem", () => {

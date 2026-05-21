@@ -65,7 +65,7 @@ const DRAG_OVERLAY_HANDLE_ATTRIBUTES: DraggableAttributes = {
   "aria-describedby": "",
 };
 
-interface FilterListContentProps<D> {
+interface FilterListContentProps<D extends FilterDefinitionControls> {
   filterDefinitions?: Array<D>;
   filterStates: Map<string, FilterState>;
   onFilterStateChanged: (
@@ -77,15 +77,12 @@ interface FilterListContentProps<D> {
   renderInput: RenderFilterInput<D>;
   getFilterKey: (definition: D) => string;
   getFilterLabel: (definition: D) => string;
-  getFilterControls?: (definition: D) => FilterDefinitionControls;
   enableSorting?: boolean;
   className?: string;
   style?: React.CSSProperties;
 }
 
-const EMPTY_ITEM_CONTROLS: FilterDefinitionControls = {};
-
-export function FilterListContent<D>({
+export function FilterListContent<D extends FilterDefinitionControls>({
   filterDefinitions,
   filterStates,
   onFilterStateChanged,
@@ -94,7 +91,6 @@ export function FilterListContent<D>({
   renderInput,
   getFilterKey,
   getFilterLabel,
-  getFilterControls,
   enableSorting,
   className,
   style,
@@ -234,9 +230,6 @@ export function FilterListContent<D>({
               const filterKey = getFilterKey(definition);
               const label = getFilterLabel(definition);
               const state = filterStates.get(filterKey);
-              const itemControls = getFilterControls
-                ? getFilterControls(definition)
-                : EMPTY_ITEM_CONTROLS;
 
               return (
                 <SortableFilterListItem
@@ -249,8 +242,8 @@ export function FilterListContent<D>({
                   onFilterStateChanged={onFilterStateChanged}
                   onFilterRemoved={onFilterRemoved}
                   renderInput={renderInput}
-                  searchField={itemControls.searchField}
-                  controls={itemControls.controls}
+                  searchField={definition.searchField}
+                  controls={definition.controls}
                 />
               );
             })}
@@ -260,25 +253,20 @@ export function FilterListContent<D>({
             dropAnimation={null}
             className={styles.dragOverlay}
           >
-            {activeDefinition && activeFilterKey && (() => {
-              const overlayControls = getFilterControls
-                ? getFilterControls(activeDefinition)
-                : EMPTY_ITEM_CONTROLS;
-              return (
-                <FilterListItem
-                  definition={activeDefinition}
-                  filterKey={activeFilterKey}
-                  label={getFilterLabel(activeDefinition)}
-                  filterState={filterStates.get(activeFilterKey)}
-                  onFilterStateChanged={onFilterStateChanged}
-                  onFilterRemoved={onFilterRemoved}
-                  renderInput={renderInput}
-                  searchField={overlayControls.searchField}
-                  controls={overlayControls.controls}
-                  dragHandleAttributes={DRAG_OVERLAY_HANDLE_ATTRIBUTES}
-                />
-              );
-            })()}
+            {activeDefinition && activeFilterKey && (
+              <FilterListItem
+                definition={activeDefinition}
+                filterKey={activeFilterKey}
+                label={getFilterLabel(activeDefinition)}
+                filterState={filterStates.get(activeFilterKey)}
+                onFilterStateChanged={onFilterStateChanged}
+                onFilterRemoved={onFilterRemoved}
+                renderInput={renderInput}
+                searchField={activeDefinition.searchField}
+                controls={activeDefinition.controls}
+                dragHandleAttributes={DRAG_OVERLAY_HANDLE_ATTRIBUTES}
+              />
+            )}
           </DragOverlay>
         </DndContext>
       </div>
@@ -293,9 +281,6 @@ export function FilterListContent<D>({
       {filterDefinitions.map((definition) => {
         const filterKey = getFilterKey(definition);
         const state = filterStates.get(filterKey);
-        const itemControls = getFilterControls
-          ? getFilterControls(definition)
-          : EMPTY_ITEM_CONTROLS;
 
         return (
           <FilterListItem
@@ -307,8 +292,8 @@ export function FilterListContent<D>({
             onFilterStateChanged={onFilterStateChanged}
             onFilterRemoved={onFilterRemoved}
             renderInput={renderInput}
-            searchField={itemControls.searchField}
-            controls={itemControls.controls}
+            searchField={definition.searchField}
+            controls={definition.controls}
           />
         );
       })}
