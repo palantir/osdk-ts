@@ -16,7 +16,7 @@
 
 import type { WhereClause } from "@osdk/api";
 import { useOsdkAggregation } from "@osdk/react";
-import { cleanup, render } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { DateRangeFilterInput } from "../inputs/DateRangeFilterInput.js";
@@ -59,6 +59,28 @@ describe("DateRangeFilterInput", () => {
     );
     expect(histogramCall).toBeDefined();
     expect(histogramCall![1]).toHaveProperty("where", whereClause);
+  });
+
+  it("emits a DATE_RANGE filter state with absolute min/max on shortcut click", () => {
+    const whereClause = {} as WhereClause<typeof MockObjectType>;
+    const onFilterStateChanged = vi.fn();
+    render(
+      <DateRangeFilterInput
+        objectType={MockObjectType}
+        propertyKey="createdAt"
+        filterState={undefined}
+        onFilterStateChanged={onFilterStateChanged}
+        whereClause={whereClause}
+        dateShortcuts={["past-day"]}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Past day" }));
+    expect(onFilterStateChanged).toHaveBeenCalledTimes(1);
+    const state = onFilterStateChanged.mock.calls[0][0];
+    expect(state.type).toBe("DATE_RANGE");
+    expect(
+      (state.maxValue as Date).getTime() - (state.minValue as Date).getTime(),
+    ).toBe(24 * 60 * 60 * 1000);
   });
 
   it("combines whereClause with null-check in the null count query", () => {

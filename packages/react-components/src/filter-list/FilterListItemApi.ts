@@ -22,12 +22,18 @@ import type {
   WirePropertyTypes,
 } from "@osdk/api";
 import type { ReactNode } from "react";
+import {
+  DEFAULT_RELATIVE_DATE_PERIODS,
+  type RelativeDatePeriod,
+} from "../shared/dateUtils.js";
 import type { CustomFilterState } from "./types/CustomRendererTypes.js";
 import type { KeywordSearchFilterState } from "./types/KeywordSearchTypes.js";
 import type {
   HasLinkFilterState,
   LinkedPropertyFilterState,
 } from "./types/LinkedFilterTypes.js";
+
+export { DEFAULT_RELATIVE_DATE_PERIODS, type RelativeDatePeriod };
 
 /**
  * Helper type to extract the property type from an ObjectTypeDefinition given a property key
@@ -229,13 +235,38 @@ export interface DateFormattingProps {
 }
 
 /**
- * Conditionally adds `formatDate` to a property filter definition only for
- * `datetime` / `timestamp` properties. For other property types this field
- * is typed as `never` so attempting to set it is a TypeScript error.
+ * Opt-in relative-range shortcuts shown as a vertical rail beside a date
+ * filter input. Mixed into `PropertyFilterDefinition` only when the
+ * property is `datetime` or `timestamp` — see
+ * {@link PropertyFilterDateExtras}.
+ */
+export interface DateShortcutsProps {
+  /**
+   * Opt-in relative-range shortcuts shown as a rail beside the date
+   * filter input.
+   *
+   * - undefined (default): hidden. No behavior change.
+   * - true: render the full {@link DEFAULT_RELATIVE_DATE_PERIODS} list.
+   * - `RelativeDatePeriod[]`: render exactly these in the given order.
+   *
+   * Clicking a shortcut emits an absolute `{ min, max }` Date range — the
+   * stored `FilterState` remains absolute. For `SINGLE_DATE`, shortcut
+   * clicks set the selected date to the period's start (e.g. "Past day" →
+   * 24 hours ago). Persisting the relative label across refreshes is
+   * intentionally deferred (would require a new `FilterState` variant).
+   */
+  dateShortcuts?: RelativeDatePeriod[] | boolean;
+}
+
+/**
+ * Conditionally adds date-only extras (`formatDate`, `dateShortcuts`) to a
+ * property filter definition only for `datetime` / `timestamp` properties.
+ * For other property types these fields are typed as `never` so attempting
+ * to set them is a TypeScript error.
  */
 export type PropertyFilterDateExtras<P extends WirePropertyTypes> = P extends
-  "datetime" | "timestamp" ? DateFormattingProps
-  : { formatDate?: never };
+  "datetime" | "timestamp" ? DateFormattingProps & DateShortcutsProps
+  : { formatDate?: never; dateShortcuts?: never };
 
 interface PropertyFilterDefinitionBase<
   Q extends ObjectTypeDefinition,
@@ -340,8 +371,8 @@ interface PropertyFilterDefinitionBase<
  * For example, boolean properties can only use LISTOGRAM or SINGLE_SELECT,
  * while string properties can use LISTOGRAM, TEXT_TAGS, CONTAINS_TEXT, SINGLE_SELECT, or MULTI_SELECT.
  *
- * Date and datetime properties may additionally specify `formatDate` — see
- * {@link PropertyFilterDateExtras}.
+ * Date and datetime properties may additionally specify `formatDate` and
+ * `dateShortcuts` — see {@link PropertyFilterDateExtras}.
  */
 export type PropertyFilterDefinition<
   Q extends ObjectTypeDefinition,

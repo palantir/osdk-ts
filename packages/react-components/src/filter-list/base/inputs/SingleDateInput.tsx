@@ -18,6 +18,8 @@ import { Button } from "@base-ui/react/button";
 import classnames from "classnames";
 import React, { memo, useCallback } from "react";
 import { DatePicker } from "../../../shared/calendar/index.js";
+import type { RelativeDatePeriod } from "../../../shared/dateUtils.js";
+import { resolveDateShortcuts, ShortcutBar } from "./ShortcutBar.js";
 import styles from "./SingleDateInput.module.css";
 
 interface SingleDateInputProps {
@@ -29,6 +31,13 @@ interface SingleDateInputProps {
   maxDate?: Date;
   placeholder?: string;
   showClearButton?: boolean;
+  /**
+   * Renders a vertical rail of relative-range shortcuts to the left of the
+   * picker when set. Clicking a shortcut sets the picker's value to the
+   * period's start (e.g. "Past day" → 24 hours ago). `true` uses
+   * `DEFAULT_RELATIVE_DATE_PERIODS`; pass an array to customize.
+   */
+  dateShortcuts?: RelativeDatePeriod[] | boolean;
   /** Display formatter for picker idle text. Editing format stays ISO. */
   formatDate?: (date: Date) => string;
 }
@@ -42,8 +51,10 @@ function SingleDateInputInner({
   maxDate,
   placeholder,
   showClearButton = true,
+  dateShortcuts,
   formatDate,
 }: SingleDateInputProps): React.ReactElement {
+  const shortcutPeriods = resolveDateShortcuts(dateShortcuts);
   const handleClear = useCallback(() => {
     onChange(undefined);
   }, [onChange]);
@@ -55,28 +66,44 @@ function SingleDateInputInner({
     [onChange],
   );
 
+  const handleShortcutSelect = useCallback(
+    (range: { min: Date; max: Date }) => {
+      onChange(range.min);
+    },
+    [onChange],
+  );
+
   return (
     <div className={classnames(styles.singleDate, className)} style={style}>
-      <div className={styles.dateContainer}>
-        <DatePicker
-          value={selectedDate ?? null}
-          onChange={handleChange}
-          min={minDate}
-          max={maxDate}
-          placeholder={placeholder}
-          ariaLabel="Select date"
-          modal={false}
-          formatDate={formatDate}
-        />
-        {showClearButton && selectedDate !== undefined && (
-          <Button
-            className={styles.clearButton}
-            onClick={handleClear}
-            aria-label="Clear date"
-          >
-            ×
-          </Button>
+      <div className={styles.row}>
+        {shortcutPeriods != null && (
+          <ShortcutBar
+            periods={shortcutPeriods}
+            onSelect={handleShortcutSelect}
+            className={styles.shortcuts}
+          />
         )}
+        <div className={styles.dateContainer}>
+          <DatePicker
+            value={selectedDate ?? null}
+            onChange={handleChange}
+            min={minDate}
+            max={maxDate}
+            placeholder={placeholder}
+            ariaLabel="Select date"
+            modal={false}
+            formatDate={formatDate}
+          />
+          {showClearButton && selectedDate !== undefined && (
+            <Button
+              className={styles.clearButton}
+              onClick={handleClear}
+              aria-label="Clear date"
+            >
+              ×
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );
