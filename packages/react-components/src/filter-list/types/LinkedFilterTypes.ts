@@ -30,9 +30,9 @@ import type {
 } from "../FilterListItemApi.js";
 
 /**
- * Distributive form keeps `linkName`, `reverseLinkName`, and `innerWhere`
- * correlated per link, so `narrowObjectSet` can apply the pivot without
- * casting away the link-side generic.
+ * Runtime representation of an active linked-property filter. Each entry
+ * binds a `linkName` to its `reverseLinkName` and an `innerWhere` typed
+ * against the linked object type, so `narrowObjectSet` can pivot type-safely.
  */
 export type LinkedFilter<Q extends ObjectTypeDefinition> = {
   [L in LinkNames<Q>]: {
@@ -108,15 +108,12 @@ export interface LinkedPropertyFilterDefinition<
   id?: string;
   linkName: L;
   /**
-   * Set this to make the filter narrow `objectSet`. The narrowed result
-   * is emitted via `onEffectiveObjectSet`.
+   * Set this to make the filter narrow `objectSet`; the result is emitted
+   * via `onEffectiveObjectSet`. The value names the link on the linked
+   * object type that points back to `Q` (the inverse of `linkName`).
    *
-   * The value is the link on the linked object type that points back to `Q`.
-   * For example, if `linkName: "manager"` traverses Employee → Manager, set
-   * `reverseLinkName` to the link on Manager that returns Employees.
-   *
-   * Leave unset to make the filter UI-only. It still renders and reports
-   * state via `onFilterStateChanged`; FilterList won't narrow on it.
+   * Leave unset to keep the filter UI-only. It still renders and fires
+   * `onFilterStateChanged`, but FilterList won't narrow on it.
    */
   reverseLinkName?: LinkNames<LinkedQ>;
   linkedPropertyKey: LinkedK;
