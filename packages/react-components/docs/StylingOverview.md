@@ -66,11 +66,11 @@ configuration is needed.
 
 ## Token Scopes
 
-| Scope | Prefix | Use when you want to... |
-|-------|--------|------------------------|
-| Blueprint | `--bp-*` | Theme both Blueprint and OSDK components consistently |
-| OSDK | `--osdk-*` | Theme only OSDK components, leave Blueprint unchanged |
-| Component | `--osdk-<component>-*` | Customize a single component |
+| Scope     | Prefix                 | Use when you want to...                               |
+| --------- | ---------------------- | ----------------------------------------------------- |
+| Blueprint | `--bp-*`               | Theme both Blueprint and OSDK components consistently |
+| OSDK      | `--osdk-*`             | Theme only OSDK components, leave Blueprint unchanged |
+| Component | `--osdk-<component>-*` | Customize a single component                          |
 
 ## Custom Themes
 

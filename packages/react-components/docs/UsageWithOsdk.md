@@ -71,7 +71,7 @@ const columns: ColumnDefinition<typeof Employee>[] = [
   { id: "startDate", header: "Start Date" },
 ];
 
-<ObjectTable objectType={Employee} columnDefinitions={columns} />
+<ObjectTable objectType={Employee} columnDefinitions={columns} />;
 ```
 
 ## FilterList + ObjectTable
@@ -91,9 +91,14 @@ function FilteredDirectory() {
       <FilterList
         objectType={Employee}
         filterDefinitions={[
-          { type: "PROPERTY", id: "dept", key: "department",
-            label: "Department", filterComponent: "LISTOGRAM",
-            filterState: { type: "EXACT_MATCH", values: [] } },
+          {
+            type: "PROPERTY",
+            id: "dept",
+            key: "department",
+            label: "Department",
+            filterComponent: "LISTOGRAM",
+            filterState: { type: "EXACT_MATCH", values: [] },
+          },
         ]}
         onFilterChanged={setFilter}
       />
