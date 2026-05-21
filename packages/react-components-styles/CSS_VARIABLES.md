@@ -21,6 +21,7 @@ Complete reference of all CSS custom properties (variables) used in `@osdk/react
   - [Drag Handle](#drag-handle)
   - [Button](#button)
   - [Checkbox](#checkbox)
+  - [Combobox](#combobox)
   - [CBAC Picker](#cbac-picker)
   - [DateTime Picker](#datetime-picker)
   - [Dialog](#dialog)
@@ -33,6 +34,7 @@ Complete reference of all CSS custom properties (variables) used in `@osdk/react
   - [Object Set](#object-set)
   - [PDF Viewer](#pdf-viewer)
   - [Radio](#radio)
+  - [Select](#select)
   - [Switch](#switch)
   - [Table](#table)
   - [Time Picker](#time-picker)
@@ -227,6 +229,7 @@ Component-specific semantic tokens that may reference Blueprint tokens or define
 | `--osdk-focus-outline`                | `var(--osdk-emphasis-focus-width) solid var(--osdk-emphasis-focus-color)`         | Focus ring style               |
 | `--osdk-focus-visible-outline-offset` | `var(--osdk-emphasis-focus-offset)`                                               | Focus ring offset from element |
 | `--osdk-surface-border`               | `var(--osdk-surface-border-width) solid var(--osdk-surface-border-color-default)` | Reusable border shorthand      |
+| `--osdk-disabled-opacity`             | `0.5`                                                                             | Disabled state opacity         |
 
 ### AIP Agent Chat
 
@@ -321,6 +324,14 @@ Styling for checkbox components.
 | `--osdk-checkbox-bg-checked-hover`   | `var(--osdk-intent-primary-hover)`                    | Checked hover background    |
 | `--osdk-checkbox-bg-checked-active`  | `var(--osdk-intent-primary-active)`                   | Checked active background   |
 | `--osdk-checkbox-checked-foreground` | `var(--osdk-intent-primary-foreground)`               | Checkmark color             |
+
+### Combobox
+
+Styling for combobox components.
+
+| Variable                           | Default Value | Description          |
+| ---------------------------------- | ------------- | -------------------- |
+| `--osdk-combobox-popup-max-height` | `320px`       | Popup maximum height |
 
 ### CBAC Picker
 
@@ -1040,7 +1051,7 @@ Shared styling for input components.
 | `--osdk-input-focus-width`         | `var(--osdk-emphasis-focus-width)`                                                | Focus ring width        |
 | `--osdk-input-focus-color`         | `var(--osdk-emphasis-focus-color)`                                                | Focus ring color        |
 | `--osdk-input-focus-offset`        | `var(--osdk-emphasis-focus-offset)`                                               | Focus ring offset       |
-| `--osdk-input-disabled-opacity`    | `0.5`                                                                             | Disabled opacity        |
+| `--osdk-input-disabled-opacity`    | `var(--osdk-disabled-opacity)`                                                    | Input disabled opacity  |
 
 ### Markdown Renderer
 
@@ -1151,6 +1162,14 @@ Styling for radio button components.
 | `--osdk-radio-bg-checked-hover`  | `var(--osdk-intent-primary-hover)`                   | Checked hover background    |
 | `--osdk-radio-bg-checked-active` | `var(--osdk-intent-primary-active)`                  | Checked active background   |
 | `--osdk-radio-indicator-color`   | `var(--osdk-intent-primary-foreground)`              | Indicator dot color         |
+
+### Select
+
+Styling for select components.
+
+| Variable                         | Default Value | Description          |
+| -------------------------------- | ------------- | -------------------- |
+| `--osdk-select-popup-max-height` | `320px`       | Popup maximum height |
 
 ### Switch
 
@@ -1489,17 +1508,13 @@ For more comprehensive theming, override the Blueprint tokens that the OSDK toke
 
 ## Dark Mode
 
-`@osdk/react-components` ships built-in dark-theme overrides. They activate automatically in any of three ways:
+`@osdk/react-components` ships built-in dark-theme overrides that activate when `[data-bp-color-scheme="dark"]` is set on an ancestor element (typically `<html>`) — matching Blueprint's own convention so the OSDK + Blueprint tokens flip together. The recommended way to set the attribute is `<OsdkThemeProvider>` from `@osdk/react-components/experimental/theme`; see [OsdkThemeProvider](./OsdkThemeProvider.md) for the full reference, including `defaultTheme="system"` (the default, follows `prefers-color-scheme`), runtime toggles via `useOsdkTheme`, and the attribute-only path for hosts that already manage theme themselves.
 
-1. **`prefers-color-scheme: dark`** — matches the [Foundry custom widgets dark theme guidance](https://www.palantir.com/docs/foundry/custom-widgets/dark-theme). When a parent application (Foundry, the OS) declares dark color scheme, the widget switches without any host configuration.
-2. **`[data-bp-color-scheme="dark"]` or `.bp6-dark`** — matches the Blueprint convention. Set this attribute / class on any ancestor (often `<html>`) to force dark explicitly. Useful when the OS preference doesn't reflect what the host wants, or when previewing dark mode in isolation.
-3. **`[data-theme="dark"]`** — matches the Tailwind/Primer/Storybook toolbar convention. Lets Storybook (and other hosts that already use this attribute) opt into dark without duplicating overrides.
-
-The attribute paths win over the media query when both apply, giving hosts an explicit override. Under `[data-bp-color-scheme="dark"]` / `.bp6-dark`, Blueprint flips `--bp-*` itself, so `dark.css` only re-maps `--osdk-*` tokens. The other two selectors also flip the relevant `--bp-*` tokens because Blueprint doesn't fire there.
+Under `[data-bp-color-scheme="dark"]` Blueprint flips its own `--bp-*` tokens, so `dark.css` only re-maps the subset of `--osdk-*` tokens that have no `--bp-*` counterpart or that intentionally diverge from Blueprint's value.
 
 ### Adding your own dark overrides
 
-To customize dark-mode tokens beyond the defaults, declare your overrides in a higher layer using the same selectors:
+To customize dark-mode tokens beyond the defaults, declare your overrides in a higher layer using the same selector:
 
 ```css
 @layer osdk.styles, user.theme;
@@ -1507,15 +1522,7 @@ To customize dark-mode tokens beyond the defaults, declare your overrides in a h
 @import "@osdk/react-components/styles.css" layer(osdk.styles);
 
 @layer user.theme {
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --osdk-background-primary: #0a0a0a;
-      --osdk-table-row-bg-alternate: #161616;
-    }
-  }
-
-  [data-bp-color-scheme="dark"],
-  .bp6-dark {
+  [data-bp-color-scheme="dark"] {
     --osdk-background-primary: #0a0a0a;
     --osdk-table-row-bg-alternate: #161616;
   }

@@ -1508,17 +1508,13 @@ For more comprehensive theming, override the Blueprint tokens that the OSDK toke
 
 ## Dark Mode
 
-`@osdk/react-components` ships built-in dark-theme overrides. They activate automatically in any of three ways:
+`@osdk/react-components` ships built-in dark-theme overrides that activate when `[data-bp-color-scheme="dark"]` is set on an ancestor element (typically `<html>`) — matching Blueprint's own convention so the OSDK + Blueprint tokens flip together. The supported way to set the attribute is `<OsdkThemeProvider>` from `@osdk/react-components/experimental/theme`; see [OsdkThemeProvider](./OsdkThemeProvider.md) for the full reference, including `defaultTheme="system"` (the default, follows `prefers-color-scheme`), runtime toggles via `useOsdkTheme`, and controlled mode for integrating with an external theme store.
 
-1. **`prefers-color-scheme: dark`** — matches the [Foundry custom widgets dark theme guidance](https://www.palantir.com/docs/foundry/custom-widgets/dark-theme). When a parent application (Foundry, the OS) declares dark color scheme, the widget switches without any host configuration.
-2. **`[data-bp-color-scheme="dark"]` or `.bp6-dark`** — matches the Blueprint convention. Set this attribute / class on any ancestor (often `<html>`) to force dark explicitly. Useful when the OS preference doesn't reflect what the host wants, or when previewing dark mode in isolation.
-3. **`[data-theme="dark"]`** — matches the Tailwind/Primer/Storybook toolbar convention. Lets Storybook (and other hosts that already use this attribute) opt into dark without duplicating overrides.
-
-The attribute paths win over the media query when both apply, giving hosts an explicit override. Under `[data-bp-color-scheme="dark"]` / `.bp6-dark`, Blueprint flips `--bp-*` itself, so `dark.css` only re-maps `--osdk-*` tokens. The other two selectors also flip the relevant `--bp-*` tokens because Blueprint doesn't fire there.
+Under `[data-bp-color-scheme="dark"]` Blueprint flips its own `--bp-*` tokens, so `dark.css` only re-maps the subset of `--osdk-*` tokens that have no `--bp-*` counterpart or that intentionally diverge from Blueprint's value.
 
 ### Adding your own dark overrides
 
-To customize dark-mode tokens beyond the defaults, declare your overrides in a higher layer using the same selectors:
+To customize dark-mode tokens beyond the defaults, declare your overrides in a higher layer using the same selector:
 
 ```css
 @layer osdk.styles, user.theme;
@@ -1526,15 +1522,7 @@ To customize dark-mode tokens beyond the defaults, declare your overrides in a h
 @import "@osdk/react-components/styles.css" layer(osdk.styles);
 
 @layer user.theme {
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --osdk-background-primary: #0a0a0a;
-      --osdk-table-row-bg-alternate: #161616;
-    }
-  }
-
-  [data-bp-color-scheme="dark"],
-  .bp6-dark {
+  [data-bp-color-scheme="dark"] {
     --osdk-background-primary: #0a0a0a;
     --osdk-table-row-bg-alternate: #161616;
   }
