@@ -100,6 +100,8 @@ function actionPropertyToSdkPropertyDefinition(
         type: "interface",
         interface: parameterType.interfaceTypeApiName,
       };
+    case "scenarioReference":
+      return { type: "scenarioReference" };
     case "struct":
       return {
         type: "struct",

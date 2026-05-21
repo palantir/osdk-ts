@@ -108,6 +108,8 @@ export async function generatePerActionDataFiles(
                     return `ActionMetadata.DataType.Struct<${
                       JSON.stringify(type.struct)
                     }>`;
+                  } else if (type.type === "scenarioReference") {
+                    return `ActionMetadata.DataType.ScenarioReference`;
                   }
                   return undefined;
                 },
@@ -142,6 +144,8 @@ export async function generatePerActionDataFiles(
           }>`;
         } else if (input.type === "struct") {
           return `ActionParam.StructType<${JSON.stringify(input.struct)}>`;
+        } else if (input.type === "scenarioReference") {
+          return `ActionParam.ScenarioReference`;
         }
       }
 
