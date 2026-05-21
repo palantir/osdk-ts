@@ -22,7 +22,6 @@ const config: StorybookConfig = {
     "@storybook/addon-a11y",
     "@storybook/addon-docs",
     "@storybook/addon-links",
-    "@storybook/addon-themes",
     "@storybook/addon-mcp",
     "msw-storybook-addon",
     "storybook-addon-tag-badges",
