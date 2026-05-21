@@ -620,7 +620,7 @@ describe("useFilterListState", () => {
       const uiOnlyDef = createLinkedPropertyFilterDef(
         "office",
         "city",
-        { omitReverseLinkName: true },
+        { reverseLinkName: null },
       );
       const props = createProps({
         filterDefinitions: [narrowingDef, uiOnlyDef],
@@ -639,7 +639,7 @@ describe("useFilterListState", () => {
       const uiOnlyDef = createLinkedPropertyFilterDef(
         "office",
         "city",
-        { omitReverseLinkName: true },
+        { reverseLinkName: null },
       );
       const onFilterStateChanged = vi.fn();
       const props = createProps({

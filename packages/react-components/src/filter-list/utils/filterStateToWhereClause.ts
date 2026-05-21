@@ -14,12 +14,21 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
+import type {
+  LinkedType,
+  LinkNames,
+  ObjectTypeDefinition,
+  WhereClause,
+} from "@osdk/api";
 import { assertUnreachable } from "../../shared/assertUnreachable.js";
 import { formatDateForInput } from "../../shared/dateUtils.js";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
-import type { LinkedFilter } from "../types/LinkedFilterTypes.js";
+import type {
+  LinkedFilter,
+  LinkedPropertyFilterDefinition,
+  LinkedPropertyFilterState,
+} from "../types/LinkedFilterTypes.js";
 import { getFilterKey } from "./getFilterKey.js";
 
 type PropertyFilter = Record<string, unknown> | boolean | string | number;
@@ -423,6 +432,28 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
 }
 
 /**
+ * Builds the inner `WhereClause` for a linked-property filter, typed against
+ * the linked object type. Returns `undefined` when the state doesn't yield a
+ * predicate (e.g. empty selection).
+ */
+export function buildLinkedInnerWhere<
+  Q extends ObjectTypeDefinition,
+  L extends LinkNames<Q>,
+>(
+  definition: LinkedPropertyFilterDefinition<Q, L>,
+  state: LinkedPropertyFilterState,
+): WhereClause<LinkedType<Q, L>> | undefined {
+  const record = buildPropertyKeyClause(
+    definition.linkedPropertyKey,
+    state.linkedFilterState,
+  );
+  if (record === undefined) {
+    return undefined;
+  }
+  return record as WhereClause<LinkedType<Q, L>>;
+}
+
+/**
  * Returns the active LINKED_PROPERTY filters as `LinkedFilter<Q>` records.
  */
 export function getActiveLinkedFilters<Q extends ObjectTypeDefinition>(
@@ -449,18 +480,15 @@ export function getActiveLinkedFilters<Q extends ObjectTypeDefinition>(
     if (definition.reverseLinkName == null) {
       continue;
     }
-    const innerLeaf = buildPropertyKeyClause(
-      definition.linkedPropertyKey,
-      state.linkedFilterState,
-    );
-    if (innerLeaf === undefined) {
+    const innerWhere = buildLinkedInnerWhere(definition, state);
+    if (innerWhere === undefined) {
       continue;
     }
     result.push({
       linkName: definition.linkName,
       reverseLinkName: definition.reverseLinkName,
-      innerWhere: innerLeaf as LinkedFilter<Q>["innerWhere"],
-    });
+      innerWhere,
+    } as LinkedFilter<Q>);
   }
   return result;
 }

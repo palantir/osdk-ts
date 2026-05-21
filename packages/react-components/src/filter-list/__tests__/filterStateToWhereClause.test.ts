@@ -17,7 +17,10 @@
 import { describe, expect, it } from "vitest";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
-import { buildWhereClause } from "../utils/filterStateToWhereClause.js";
+import {
+  buildWhereClause,
+  getActiveLinkedFilters,
+} from "../utils/filterStateToWhereClause.js";
 import { getFilterKey } from "../utils/getFilterKey.js";
 import type { MockObjectType } from "./testUtils.js";
 import {
@@ -26,6 +29,7 @@ import {
   createDateRangeState,
   createHasLinkFilterDef,
   createKeywordSearchFilterDef,
+  createLinkedPropertyFilterDef,
   createNumberRangeState,
   createPropertyFilterDef,
   createSelectState,
@@ -621,5 +625,124 @@ describe("buildWhereClause", () => {
     expect(result2).toEqual({
       $and: [{ active: true }, { name: "John" }],
     });
+  });
+});
+
+describe("getActiveLinkedFilters", () => {
+  function linkedState(
+    values: (string | boolean)[],
+    isExcluding = false,
+  ): FilterState {
+    return {
+      type: "linkedProperty",
+      linkedFilterState: {
+        type: "EXACT_MATCH",
+        values,
+        ...(isExcluding ? { isExcluding } : {}),
+      },
+    };
+  }
+
+  it("returns empty array for undefined definitions", () => {
+    expect(
+      getActiveLinkedFilters(undefined, new Map<string, FilterState>()),
+    ).toEqual([]);
+  });
+
+  it("returns empty array when no linked definitions are active", () => {
+    const def = createPropertyFilterDef(
+      "name",
+      "LISTOGRAM",
+      { type: "EXACT_MATCH", values: ["a"] },
+    );
+    const filterStates = stateMap(
+      [def, { type: "EXACT_MATCH", values: ["a"] }],
+    );
+    expect(getActiveLinkedFilters([def], filterStates)).toEqual([]);
+  });
+
+  it("builds an entry for an active linked filter with reverseLinkName", () => {
+    const def = createLinkedPropertyFilterDef("manager", "fullName");
+    const filterStates = stateMap([def, linkedState(["Alice"])]);
+
+    const result = getActiveLinkedFilters([def], filterStates);
+
+    expect(result).toEqual([{
+      linkName: "manager",
+      reverseLinkName: "reverseLink",
+      innerWhere: { fullName: "Alice" },
+    }]);
+  });
+
+  it("builds $in clause for multi-value linked selection", () => {
+    const def = createLinkedPropertyFilterDef("manager", "fullName");
+    const filterStates = stateMap([def, linkedState(["Alice", "Bob"])]);
+
+    const result = getActiveLinkedFilters([def], filterStates);
+
+    expect(result).toHaveLength(1);
+    expect(result[0].innerWhere).toEqual({
+      fullName: { $in: ["Alice", "Bob"] },
+    });
+  });
+
+  it("wraps innerWhere with $not when isExcluding", () => {
+    const def = createLinkedPropertyFilterDef("manager", "fullName");
+    const filterStates = stateMap([def, linkedState(["Alice"], true)]);
+
+    const result = getActiveLinkedFilters([def], filterStates);
+
+    expect(result).toHaveLength(1);
+    expect(result[0].innerWhere).toEqual({ $not: { fullName: "Alice" } });
+  });
+
+  it("excludes linked filters without reverseLinkName", () => {
+    const def = createLinkedPropertyFilterDef(
+      "manager",
+      "fullName",
+      { reverseLinkName: null },
+    );
+    const filterStates = stateMap([def, linkedState(["Alice"])]);
+
+    expect(getActiveLinkedFilters([def], filterStates)).toEqual([]);
+  });
+
+  it("excludes linked filters with empty values", () => {
+    const def = createLinkedPropertyFilterDef("manager", "fullName");
+    const filterStates = stateMap([def, linkedState([])]);
+
+    expect(getActiveLinkedFilters([def], filterStates)).toEqual([]);
+  });
+
+  it("skips filter matching excludeFilterKey", () => {
+    const def1 = createLinkedPropertyFilterDef("manager", "fullName");
+    const def2 = createLinkedPropertyFilterDef("office", "city");
+    const filterStates = stateMap(
+      [def1, linkedState(["Alice"])],
+      [def2, linkedState(["Berlin"])],
+    );
+
+    const result = getActiveLinkedFilters(
+      [def1, def2],
+      filterStates,
+      getFilterKey(def1),
+    );
+
+    expect(result).toHaveLength(1);
+    expect(result[0].linkName).toBe("office");
+  });
+
+  it("returns multiple entries when multiple linked filters are active", () => {
+    const def1 = createLinkedPropertyFilterDef("manager", "fullName");
+    const def2 = createLinkedPropertyFilterDef("office", "city");
+    const filterStates = stateMap(
+      [def1, linkedState(["Alice"])],
+      [def2, linkedState(["Berlin"])],
+    );
+
+    const result = getActiveLinkedFilters([def1, def2], filterStates);
+
+    expect(result).toHaveLength(2);
+    expect(result.map(r => r.linkName)).toEqual(["manager", "office"]);
   });
 });
