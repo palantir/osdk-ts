@@ -27,9 +27,7 @@ import styles from "./ShortcutBar.module.css";
 
 export interface ShortcutBarProps {
   periods: readonly RelativeDatePeriod[];
-  onSelect: (
-    range: { min: Date; max: Date; period: RelativeDatePeriod },
-  ) => void;
+  onSelect: (range: { min: Date; max: Date }) => void;
   className?: string;
 }
 
@@ -43,19 +41,16 @@ function ShortcutButtonInner({
   onSelect,
 }: ShortcutButtonProps): React.ReactElement {
   const handleClick = useCallback(() => {
-    const { min, max } = getRelativeDateRange(period);
-    onSelect({ min, max, period });
+    onSelect(getRelativeDateRange(period));
   }, [period, onSelect]);
-  const label = getRelativeDatePeriodLabel(period);
   return (
     <ActionButton
       type="button"
       appearance="minimal"
       className={styles.shortcut}
       onClick={handleClick}
-      aria-label={label}
     >
-      {label}
+      {getRelativeDatePeriodLabel(period)}
     </ActionButton>
   );
 }

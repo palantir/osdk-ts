@@ -70,8 +70,6 @@ function DateRangeHistogramInputInner({
   valueCountPairs,
   dateShortcuts,
   onChange,
-  className,
-  style,
   ...rest
 }: DateRangeHistogramInputProps): React.ReactElement {
   const shortcutPeriods = resolveDateShortcuts(dateShortcuts);
@@ -123,20 +121,19 @@ function DateRangeHistogramInputInner({
     [onChange],
   );
 
-  const rangeInput = (
-    <RangeInput
-      {...rest}
-      onChange={onChange}
-      valueCountPairs={valueCountPairs}
-      config={config}
-      histogramData={histogramData}
-    />
-  );
-
   if (shortcutPeriods == null) {
-    return rangeInput;
+    return (
+      <RangeInput
+        {...rest}
+        onChange={onChange}
+        valueCountPairs={valueCountPairs}
+        config={config}
+        histogramData={histogramData}
+      />
+    );
   }
 
+  const { className, style, ...innerRest } = rest;
   return (
     <div
       className={classnames(styles.shortcutsRow, className)}
@@ -147,7 +144,15 @@ function DateRangeHistogramInputInner({
         onSelect={handleShortcutSelect}
         className={styles.shortcuts}
       />
-      <div className={styles.rangeArea}>{rangeInput}</div>
+      <div className={styles.rangeArea}>
+        <RangeInput
+          {...innerRest}
+          onChange={onChange}
+          valueCountPairs={valueCountPairs}
+          config={config}
+          histogramData={histogramData}
+        />
+      </div>
     </div>
   );
 }
