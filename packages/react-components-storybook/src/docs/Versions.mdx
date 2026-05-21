@@ -1,8 +1,62 @@
 {/* Copyright 2026 Palantir Technologies, Inc. All rights reserved. */}
 
 import { Meta, Markdown } from "@storybook/addon-docs/blocks";
-import content from "@docs/Versions.md?raw";
+import pkg from "@rc-root/package.json";
+
+export const peerDeps = Object.entries(pkg.peerDependencies || {})
+  .map(([name, version]) => `| \`${name}\` | \`${version}\` |`)
+  .join("\n");
+
+export const exports = Object.keys(pkg.exports || {})
+  .filter((p) => p.startsWith("./experimental/") && p !== "./experimental")
+  .map((p) => {
+    const name = p
+      .replace("./experimental/", "")
+      .split("-")
+      .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+      .join("");
+    return `| \`${name}\` | \`@osdk/react-components/${p.slice(2)}\` |`;
+  })
+  .join("\n");
 
 <Meta title="Docs/Versions" />
 
-<Markdown>{content}</Markdown>
+<Markdown>{`# Versions and Compatibility
+
+## Current Version
+
+\`@osdk/react-components\` is currently at **v${pkg.version}** (beta).
+
+## Peer Dependencies
+
+| Package | Required Version |
+|---------|-----------------|
+${peerDeps}
+
+## React Version Support
+
+Components are tested against React 17, 18, and 19. The package uses no
+APIs exclusive to React 18+ (e.g. \`useId\`, \`useSyncExternalStore\`) in a way
+that would break React 17 consumers.
+
+## OSDK Version Alignment
+
+\`@osdk/react-components\` depends on \`@osdk/react\`, which in turn depends on
+\`@osdk/client\` and \`@osdk/api\`. All three OSDK packages are released in
+lockstep. When upgrading, bump them together:
+
+\`\`\`bash
+npm install @osdk/api@latest @osdk/client@latest @osdk/react@latest @osdk/react-components@latest
+\`\`\`
+
+## Import Paths
+
+All components are exported under \`experimental/\` sub-paths:
+
+| Component | Import Path |
+|-----------|-------------|
+${exports}
+
+A barrel export at \`@osdk/react-components/experimental\` re-exports everything
+from all sub-paths above.
+`}</Markdown>
