@@ -438,10 +438,6 @@ export interface DataValueWireToClient {
     	// (undocumented)
     objectType: string;
     	// (undocumented)
-    scenarioReference: {
-        		scenarioRid: string
-        	};
-    	// (undocumented)
     set: Set<any>;
     	// (undocumented)
     short: number;
@@ -1731,7 +1727,7 @@ export namespace QueryResult {
     	// (undocumented)
     export type ObjectType<T extends ObjectOrInterfaceDefinition> = OsdkBase<T>;
     	// (undocumented)
-    export type PrimitiveType<T extends keyof DataValueClientToWire> = DataValueWireToClient[T];
+    export type PrimitiveType<T extends keyof DataValueWireToClient> = DataValueWireToClient[T];
     	// Warning: (ae-forgotten-export) The symbol "AggKeyWireToClient" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
