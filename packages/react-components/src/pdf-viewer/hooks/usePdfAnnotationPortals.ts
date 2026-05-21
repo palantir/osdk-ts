@@ -104,7 +104,9 @@ export function usePdfAnnotationPortals(
       });
     };
 
-    const remeasureAll = () => {
+    let rafHandle: number | null = null;
+    const flushRemeasure = () => {
+      rafHandle = null;
       setPortalTargets((prev) => {
         if (prev.length === 0) {
           return prev;
@@ -127,6 +129,12 @@ export function usePdfAnnotationPortals(
         return next;
       });
     };
+    const remeasureAll = () => {
+      if (rafHandle != null) {
+        return;
+      }
+      rafHandle = requestAnimationFrame(flushRemeasure);
+    };
 
     eventBus.on(PAGE_RENDERED_EVENT, handlePageRendered);
     eventBus.on("scalechanging", remeasureAll);
@@ -144,9 +152,13 @@ export function usePdfAnnotationPortals(
       eventBus.off("scalechanging", remeasureAll);
       eventBus.off("rotationchanging", remeasureAll);
       containerObserver?.disconnect();
+      if (rafHandle != null) {
+        cancelAnimationFrame(rafHandle);
+        rafHandle = null;
+      }
       setPortalTargets([]);
     };
-  }, [eventBusRef, pdfViewerRef, document]);
+  }, [document]);
 
   return portalTargets;
 }

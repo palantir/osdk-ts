@@ -48,6 +48,12 @@ function createMockEventBus() {
 // to avoid infinite useEffect re-runs.
 const MOCK_DOCUMENT = {} as PDFDocumentProxy;
 
+function flushRaf(): Promise<void> {
+  return new Promise<void>((resolve) => {
+    requestAnimationFrame(() => resolve());
+  });
+}
+
 function mockRect(el: Element, rect: Partial<DOMRect>): void {
   vi.spyOn(el, "getBoundingClientRect").mockReturnValue({
     x: 0,
@@ -323,7 +329,7 @@ describe("usePdfAnnotationPortals", () => {
 
   it.each(["scalechanging", "rotationchanging"])(
     "should re-measure all targets when %s fires",
-    (event) => {
+    async (event) => {
       const eventBus = createMockEventBus();
       const container = createMockContainer();
       const div = createPageDiv({ left: 10, top: 20, width: 612, height: 792 });
@@ -355,8 +361,9 @@ describe("usePdfAnnotationPortals", () => {
       currentScale = 2.0;
       mockRect(div, { left: 10, top: 20, width: 1224, height: 1584 });
 
-      act(() => {
+      await act(async () => {
         eventBus._emit(event, {});
+        await flushRaf();
       });
 
       expect(result.current).toHaveLength(1);
@@ -364,6 +371,97 @@ describe("usePdfAnnotationPortals", () => {
       expect(result.current[0].width).toBe(1224);
     },
   );
+
+  it("should coalesce repeated scalechanging events into one remeasure", async () => {
+    const eventBus = createMockEventBus();
+    const container = createMockContainer();
+    const div = createPageDiv({ left: 10, top: 20, width: 612, height: 792 });
+    const getPageView = vi.fn(() => ({
+      div,
+      viewport: {
+        viewBox: [0, 0, 612, 792],
+        scale: 1.0,
+        transform: pageTransform(1.0, 792),
+      },
+    }));
+    const pdfViewer = {
+      container,
+      getPageView,
+    } as unknown as PDFViewer;
+
+    const pdfViewerRef = { current: pdfViewer } as RefObject<PDFViewer>;
+    const eventBusRef = { current: eventBus } as RefObject<EventBus>;
+
+    renderHook(() =>
+      usePdfAnnotationPortals(pdfViewerRef, eventBusRef, MOCK_DOCUMENT)
+    );
+
+    act(() => {
+      eventBus._emit("pagerendered", { pageNumber: 1 });
+    });
+    const callsAfterRender = getPageView.mock.calls.length;
+
+    await act(async () => {
+      for (let i = 0; i < 10; i++) {
+        eventBus._emit("scalechanging", {});
+      }
+      await flushRaf();
+    });
+
+    expect(getPageView.mock.calls.length - callsAfterRender).toBe(1);
+  });
+
+  it("should cancel pending remeasure RAF on unmount", () => {
+    const rafSpy = vi.spyOn(globalThis, "requestAnimationFrame")
+      .mockImplementation(() => 42 as unknown as number);
+    const cancelSpy = vi.spyOn(globalThis, "cancelAnimationFrame")
+      .mockImplementation(() => {});
+
+    try {
+      const eventBus = createMockEventBus();
+      const container = createMockContainer();
+      const div = createPageDiv({
+        left: 10,
+        top: 20,
+        width: 612,
+        height: 792,
+      });
+      const pdfViewer = {
+        container,
+        getPageView: vi.fn(() => ({
+          div,
+          viewport: {
+            viewBox: [0, 0, 612, 792],
+            scale: 1.0,
+            transform: pageTransform(1.0, 792),
+          },
+        })),
+      } as unknown as PDFViewer;
+
+      const pdfViewerRef = { current: pdfViewer } as RefObject<PDFViewer>;
+      const eventBusRef = { current: eventBus } as RefObject<EventBus>;
+
+      const { unmount } = renderHook(() =>
+        usePdfAnnotationPortals(pdfViewerRef, eventBusRef, MOCK_DOCUMENT)
+      );
+
+      act(() => {
+        eventBus._emit("pagerendered", { pageNumber: 1 });
+      });
+
+      act(() => {
+        eventBus._emit("scalechanging", {});
+      });
+      expect(rafSpy).toHaveBeenCalledTimes(1);
+
+      unmount();
+
+      expect(cancelSpy).toHaveBeenCalledWith(42);
+    } finally {
+      rafSpy.mockRestore();
+      cancelSpy.mockRestore();
+    }
+  });
 
   it("should handle null refs gracefully", () => {
     const pdfViewerRef = { current: null } as RefObject<PDFViewer | null>;
