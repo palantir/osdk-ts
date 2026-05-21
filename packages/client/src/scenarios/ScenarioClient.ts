@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
+import type {
+  ObjectIdentifiers,
+  ObjectTypeDefinition,
+  PrimaryKeyType,
+} from "@osdk/api";
 import { OntologyScenarios } from "@osdk/foundry.ontologies";
 import { additionalContext, type Client } from "../Client.js";
 import { createClientWithScenario } from "../createClient.js";
@@ -40,13 +44,13 @@ export interface ScenarioEditedEntityTypes {
 }
 
 /**
- * A page of objects edited within a scenario for a given object type. Returned by
- * {@link ScenarioClient.getEditedEntities}. The instances are sparse: only `$primaryKey` and `$apiName` are
- * populated. Use {@link Client.call} (e.g. `scenario(MyObject).where({ $primaryKey: { $in: keys } }).fetchPage()`)
- * to load full objects under the scenario context.
+ * A page of edited object identifiers ({@link ObjectIdentifiers} — `$primaryKey` + `$apiName`) within a scenario
+ * for a given object type. Returned by {@link ScenarioClient.getEditedEntities}. To load full property values,
+ * pass the primary keys back through the scenario client, e.g.
+ * `scenario(MyObject).where({ $primaryKey: { $in: keys } }).fetchPage()`.
  */
 export interface EditedEntitiesPage<Q extends ObjectTypeDefinition> {
-  data: Osdk.Instance<Q>[];
+  data: ObjectIdentifiers<Q>[];
   nextPageToken?: string;
 }
 
@@ -71,16 +75,17 @@ export interface ScenarioClient extends Client {
   getEditedEntityTypes(): Promise<ScenarioEditedEntityTypes>;
 
   /**
-   * Get a page of objects that have been edited within this scenario for a given object type. Each instance only
-   * carries `$primaryKey` and `$apiName`; load full objects via the scenario client itself.
+   * Get a page of object identifiers ({@link ObjectIdentifiers} — `$primaryKey` + `$apiName` only) that have been
+   * edited within this scenario for the given object type. Use the scenario client to fetch full property values
+   * if needed.
    *
    * @example
    * ```ts
    * let pageToken: string | undefined;
-   * const keys: string[] = [];
+   * const keys: unknown[] = [];
    * do {
    *   const page = await scenario.getEditedEntities(Doctor, { pageSize: 500, pageToken });
-   *   keys.push(...page.data.map(o => o.$primaryKey as string));
+   *   keys.push(...page.data.map(o => o.$primaryKey));
    *   pageToken = page.nextPageToken;
    * } while (pageToken);
    * ```
@@ -91,8 +96,9 @@ export interface ScenarioClient extends Client {
   ): Promise<EditedEntitiesPage<Q>>;
 
   /**
-   * Stream the objects edited within this scenario for a given object type. Pages are fetched lazily and
-   * deduplicated by `$primaryKey` across pages (Funnel may return duplicates).
+   * Stream object identifiers ({@link ObjectIdentifiers}) for the objects edited within this scenario for the
+   * given object type. Pages are fetched lazily and deduplicated by `$primaryKey` across pages (Funnel may return
+   * duplicates).
    *
    * @example
    * ```ts
@@ -104,7 +110,7 @@ export interface ScenarioClient extends Client {
   editedEntitiesAsyncIter<Q extends ObjectTypeDefinition>(
     objectType: Q,
     options?: { pageSize?: number },
-  ): AsyncIterableIterator<Osdk.Instance<Q>>;
+  ): AsyncIterableIterator<ObjectIdentifiers<Q>>;
 }
 
 /**
@@ -170,16 +176,13 @@ export function buildScenarioClient(
       objectType.apiName,
       { pageSize: options?.pageSize, pageToken: options?.pageToken },
     );
-    const data = response.data.length === 0
-      ? []
-      : (await innerCtx.objectFactory(
-        innerCtx,
-        response.data,
-        undefined,
-        {},
-        undefined,
-        true,
-      )) as unknown as Osdk.Instance<Q>[];
+    const data: ObjectIdentifiers<Q>[] = response.data.map((entry) => {
+      const wire = entry as { __apiName?: unknown; __primaryKey?: unknown };
+      return {
+        $apiName: wire.__apiName as Q["apiName"],
+        $primaryKey: wire.__primaryKey as PrimaryKeyType<Q>,
+      };
+    });
     return {
       data,
       nextPageToken: response.nextPageToken,
@@ -189,7 +192,7 @@ export function buildScenarioClient(
   async function* editedEntitiesAsyncIter<Q extends ObjectTypeDefinition>(
     objectType: Q,
     options?: { pageSize?: number },
-  ): AsyncIterableIterator<Osdk.Instance<Q>> {
+  ): AsyncIterableIterator<ObjectIdentifiers<Q>> {
     const seen = new Set<unknown>();
     let pageToken: string | undefined;
     do {
