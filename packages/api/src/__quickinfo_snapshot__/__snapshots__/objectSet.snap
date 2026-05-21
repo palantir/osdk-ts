@@ -316,6 +316,12 @@ type objectSet_where_clause_param =
   | OrWhereClause<EmployeeApiTest, {}>
   | AndWhereClause<EmployeeApiTest, {}>
   | NotWhereClause<EmployeeApiTest, {}>
+  | LinkWhereClause<
+    DerivedObjectOrInterfaceDefinition.WithDerivedProperties<
+      EmployeeApiTest,
+      {}
+    >
+  >
   | {
     class?: StringFilter | undefined;
     fullName?: StringFilter | undefined;
@@ -402,6 +408,15 @@ type objectSet_with_rdp_where_clause_param =
       { mom: "integer" }
     >,
     {}
+  >
+  | LinkWhereClause<
+    DerivedObjectOrInterfaceDefinition.WithDerivedProperties<
+      DerivedObjectOrInterfaceDefinition.WithDerivedProperties<
+        EmployeeApiTest,
+        { mom: "integer" }
+      >,
+      {}
+    >
   >
   | {
     mom?: NumberFilter | undefined;
