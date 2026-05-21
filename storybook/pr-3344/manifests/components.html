@@ -14932,9 +14932,169 @@ return (
     <div class="title">
       <h2><span class="status-dot dot-err"></span> PdfViewer</h2>
       <div class="badges">
-        <label for="c-19-beta-documentviewer-renderers-pdfviewer-features-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-19-beta-documentviewer-renderers-pdfviewer-features-info" class="badge info as-toggle">1 info</label>
-        <label for="c-19-beta-documentviewer-renderers-pdfviewer-features-stories" class="badge ok as-toggle">12 stories</label>
+        <label for="c-19-beta-documentviewer-renderers-pdfviewer-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-19-beta-documentviewer-renderers-pdfviewer-info" class="badge info as-toggle">1 info</label>
+        <label for="c-19-beta-documentviewer-renderers-pdfviewer-stories" class="badge ok as-toggle">1 story</label>
+      </div>
+    </div>
+    <div class="meta" title="./src/stories/PdfViewer/PdfViewer.stories.tsx">beta-documentviewer-renderers-pdfviewer · ./src/stories/PdfViewer/PdfViewer.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  <input id="c-19-beta-documentviewer-renderers-pdfviewer-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-19-beta-documentviewer-renderers-pdfviewer-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-19-beta-documentviewer-renderers-pdfviewer-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+
+  <div class="panels">
+    
+        <div class="panel panel-err">
+          
+    <div class="note err">
+      <div class="note-title">Prop type error</div>
+      <div class="note-body"><pre><code>No component file found for the &quot;PdfViewer&quot; component.
+  22 | import { Employee } from &quot;../../types/Employee.js&quot;;
+  23 |
+&gt; 24 | const meta: Meta&lt;PdfViewerMediaProps&gt; = {
+     | ^
+  25 |   title: &quot;Beta/DocumentViewer/Renderers/PdfViewer&quot;,
+  26 |   component: PdfViewer,
+  27 |   parameters: {
+
+./src/stories/PdfViewer/PdfViewer.stories.tsx:
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { useOsdkObject } from &quot;@osdk/react&quot;;
+import type { PdfViewerMediaProps } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
+import { PdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
+import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
+import { MEDIA_EMPLOYEE_PK } from &quot;../../mocks/fauxFoundry.js&quot;;
+import { Employee } from &quot;../../types/Employee.js&quot;;
+
+const meta: Meta&lt;PdfViewerMediaProps&gt; = {
+  title: &quot;Beta/DocumentViewer/Renderers/PdfViewer&quot;,
+  component: PdfViewer,
+  parameters: {
+    controls: { expanded: true },
+  },
+};
+
+export default meta;
+type Story = StoryObj&lt;typeof meta&gt;;
+
+export const Default: Story = {
+  render: () =&gt; {
+    const { object: employee, isLoading } = useOsdkObject(
+      Employee,
+      MEDIA_EMPLOYEE_PK,
+    );
+
+    if (isLoading || !employee?.employeeDocuments) {
+      return &lt;div style={{ height: &quot;600px&quot; }}&gt;Loading OSDK media…&lt;/div&gt;;
+    }
+
+    return (
+      &lt;div style={{ height: &quot;600px&quot; }}&gt;
+        &lt;PdfViewer media={employee.employeeDocuments} /&gt;
+      &lt;/div&gt;
+    );
+  },
+  parameters: {
+    docs: {
+      source: {
+        code:
+          `import { PdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
+
+// Access media from an OSDK object&#39;s media reference property
+const employee = useOsdkObject(Employee, employeePk);
+&lt;PdfViewer media={employee.employeeDocuments} /&gt;`,
+      },
+    },
+  },
+};
+</code></pre></div>
+    </div>
+        </div>
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { PdfViewer } from "@osdk/react-components-storybook";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Default = () =&gt; {
+  const { object: employee, isLoading } = useOsdkObject(
+    Employee,
+    MEDIA_EMPLOYEE_PK,
+  );
+
+  if (isLoading || !employee?.employeeDocuments) {
+    return &lt;div style={{ height: &quot;600px&quot; }}&gt;Loading OSDK media…&lt;/div&gt;;
+  }
+
+  return (
+    &lt;div style={{ height: &quot;600px&quot; }}&gt;
+      &lt;PdfViewer media={employee.employeeDocuments} /&gt;
+    &lt;/div&gt;
+  );
+};</code></pre>
+            </div>
+        </div>
+  </div>
+</article>
+<article
+  class="card 
+  has-error 
+  has-info 
+  no-story-error"
+  role="listitem"
+  aria-label="PdfViewer">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-err"></span> PdfViewer</h2>
+      <div class="badges">
+        <label for="c-20-beta-documentviewer-renderers-pdfviewer-features-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-20-beta-documentviewer-renderers-pdfviewer-features-info" class="badge info as-toggle">1 info</label>
+        <label for="c-20-beta-documentviewer-renderers-pdfviewer-features-stories" class="badge ok as-toggle">12 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/PdfViewer/Features/PdfViewerFeatures.stories.tsx">beta-documentviewer-renderers-pdfviewer-features · ./src/stories/PdfViewer/Features/PdfViewerFeatures.stories.tsx</div>
@@ -14944,9 +15104,9 @@ return (
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-19-beta-documentviewer-renderers-pdfviewer-features-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-19-beta-documentviewer-renderers-pdfviewer-features-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-19-beta-documentviewer-renderers-pdfviewer-features-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-20-beta-documentviewer-renderers-pdfviewer-features-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-20-beta-documentviewer-renderers-pdfviewer-features-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-20-beta-documentviewer-renderers-pdfviewer-features-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -15599,166 +15759,6 @@ export const InteractiveForm: StoryObj&lt;PdfViewerProps&gt; = {
         onFormSubmit={fn()}
         onFormChange={fn()} /&gt;
 &lt;/div&gt;;</code></pre>
-            </div>
-        </div>
-  </div>
-</article>
-<article
-  class="card 
-  has-error 
-  has-info 
-  no-story-error"
-  role="listitem"
-  aria-label="PdfViewer">
-  <div class="head">
-    <div class="title">
-      <h2><span class="status-dot dot-err"></span> PdfViewer</h2>
-      <div class="badges">
-        <label for="c-20-beta-documentviewer-renderers-pdfviewer-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-20-beta-documentviewer-renderers-pdfviewer-info" class="badge info as-toggle">1 info</label>
-        <label for="c-20-beta-documentviewer-renderers-pdfviewer-stories" class="badge ok as-toggle">1 story</label>
-      </div>
-    </div>
-    <div class="meta" title="./src/stories/PdfViewer/PdfViewer.stories.tsx">beta-documentviewer-renderers-pdfviewer · ./src/stories/PdfViewer/PdfViewer.stories.tsx</div>
-    
-    
-    
-  </div>
-
-  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-20-beta-documentviewer-renderers-pdfviewer-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-20-beta-documentviewer-renderers-pdfviewer-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-20-beta-documentviewer-renderers-pdfviewer-stories" class="tg tg-stories" type="checkbox" hidden />
-  
-
-  <div class="panels">
-    
-        <div class="panel panel-err">
-          
-    <div class="note err">
-      <div class="note-title">Prop type error</div>
-      <div class="note-body"><pre><code>No component file found for the &quot;PdfViewer&quot; component.
-  22 | import { Employee } from &quot;../../types/Employee.js&quot;;
-  23 |
-&gt; 24 | const meta: Meta&lt;PdfViewerMediaProps&gt; = {
-     | ^
-  25 |   title: &quot;Beta/DocumentViewer/Renderers/PdfViewer&quot;,
-  26 |   component: PdfViewer,
-  27 |   parameters: {
-
-./src/stories/PdfViewer/PdfViewer.stories.tsx:
-/*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-import { useOsdkObject } from &quot;@osdk/react&quot;;
-import type { PdfViewerMediaProps } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-import { PdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
-import { MEDIA_EMPLOYEE_PK } from &quot;../../mocks/fauxFoundry.js&quot;;
-import { Employee } from &quot;../../types/Employee.js&quot;;
-
-const meta: Meta&lt;PdfViewerMediaProps&gt; = {
-  title: &quot;Beta/DocumentViewer/Renderers/PdfViewer&quot;,
-  component: PdfViewer,
-  parameters: {
-    controls: { expanded: true },
-  },
-};
-
-export default meta;
-type Story = StoryObj&lt;typeof meta&gt;;
-
-export const Default: Story = {
-  render: () =&gt; {
-    const { object: employee, isLoading } = useOsdkObject(
-      Employee,
-      MEDIA_EMPLOYEE_PK,
-    );
-
-    if (isLoading || !employee?.employeeDocuments) {
-      return &lt;div style={{ height: &quot;600px&quot; }}&gt;Loading OSDK media…&lt;/div&gt;;
-    }
-
-    return (
-      &lt;div style={{ height: &quot;600px&quot; }}&gt;
-        &lt;PdfViewer media={employee.employeeDocuments} /&gt;
-      &lt;/div&gt;
-    );
-  },
-  parameters: {
-    docs: {
-      source: {
-        code:
-          `import { PdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-
-// Access media from an OSDK object&#39;s media reference property
-const employee = useOsdkObject(Employee, employeePk);
-&lt;PdfViewer media={employee.employeeDocuments} /&gt;`,
-      },
-    },
-  },
-};
-</code></pre></div>
-    </div>
-        </div>
-    
-        <div class="panel panel-info">
-          
-    <div class="note info">
-      <div class="note-title">Info</div>
-      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
-    </div>
-        </div>
-    
-    
-        <div class="panel panel-stories">
-          
-          
-          
-          <div class="note ok">
-                <div class="row">
-                  <span class="ex-name">Imports</span>
-                </div>
-                <pre><code>import { PdfViewer } from "@osdk/react-components-storybook";</code></pre>
-              </div>
-          
-          
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">Default</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const Default = () =&gt; {
-  const { object: employee, isLoading } = useOsdkObject(
-    Employee,
-    MEDIA_EMPLOYEE_PK,
-  );
-
-  if (isLoading || !employee?.employeeDocuments) {
-    return &lt;div style={{ height: &quot;600px&quot; }}&gt;Loading OSDK media…&lt;/div&gt;;
-  }
-
-  return (
-    &lt;div style={{ height: &quot;600px&quot; }}&gt;
-      &lt;PdfViewer media={employee.employeeDocuments} /&gt;
-    &lt;/div&gt;
-  );
-};</code></pre>
             </div>
         </div>
   </div>
@@ -33161,9 +33161,169 @@ return (
     <div class="title">
       <h2><span class="status-dot dot-err"></span> PdfViewer</h2>
       <div class="badges">
-        <label for="c-error-19-beta-documentviewer-renderers-pdfviewer-features-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-19-beta-documentviewer-renderers-pdfviewer-features-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-19-beta-documentviewer-renderers-pdfviewer-features-stories" class="badge ok as-toggle">12 stories</label>
+        <label for="c-error-19-beta-documentviewer-renderers-pdfviewer-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-19-beta-documentviewer-renderers-pdfviewer-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-19-beta-documentviewer-renderers-pdfviewer-stories" class="badge ok as-toggle">1 story</label>
+      </div>
+    </div>
+    <div class="meta" title="./src/stories/PdfViewer/PdfViewer.stories.tsx">beta-documentviewer-renderers-pdfviewer · ./src/stories/PdfViewer/PdfViewer.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  <input id="c-error-19-beta-documentviewer-renderers-pdfviewer-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-19-beta-documentviewer-renderers-pdfviewer-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-19-beta-documentviewer-renderers-pdfviewer-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+
+  <div class="panels">
+    
+        <div class="panel panel-err">
+          
+    <div class="note err">
+      <div class="note-title">Prop type error</div>
+      <div class="note-body"><pre><code>No component file found for the &quot;PdfViewer&quot; component.
+  22 | import { Employee } from &quot;../../types/Employee.js&quot;;
+  23 |
+&gt; 24 | const meta: Meta&lt;PdfViewerMediaProps&gt; = {
+     | ^
+  25 |   title: &quot;Beta/DocumentViewer/Renderers/PdfViewer&quot;,
+  26 |   component: PdfViewer,
+  27 |   parameters: {
+
+./src/stories/PdfViewer/PdfViewer.stories.tsx:
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { useOsdkObject } from &quot;@osdk/react&quot;;
+import type { PdfViewerMediaProps } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
+import { PdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
+import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
+import { MEDIA_EMPLOYEE_PK } from &quot;../../mocks/fauxFoundry.js&quot;;
+import { Employee } from &quot;../../types/Employee.js&quot;;
+
+const meta: Meta&lt;PdfViewerMediaProps&gt; = {
+  title: &quot;Beta/DocumentViewer/Renderers/PdfViewer&quot;,
+  component: PdfViewer,
+  parameters: {
+    controls: { expanded: true },
+  },
+};
+
+export default meta;
+type Story = StoryObj&lt;typeof meta&gt;;
+
+export const Default: Story = {
+  render: () =&gt; {
+    const { object: employee, isLoading } = useOsdkObject(
+      Employee,
+      MEDIA_EMPLOYEE_PK,
+    );
+
+    if (isLoading || !employee?.employeeDocuments) {
+      return &lt;div style={{ height: &quot;600px&quot; }}&gt;Loading OSDK media…&lt;/div&gt;;
+    }
+
+    return (
+      &lt;div style={{ height: &quot;600px&quot; }}&gt;
+        &lt;PdfViewer media={employee.employeeDocuments} /&gt;
+      &lt;/div&gt;
+    );
+  },
+  parameters: {
+    docs: {
+      source: {
+        code:
+          `import { PdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
+
+// Access media from an OSDK object&#39;s media reference property
+const employee = useOsdkObject(Employee, employeePk);
+&lt;PdfViewer media={employee.employeeDocuments} /&gt;`,
+      },
+    },
+  },
+};
+</code></pre></div>
+    </div>
+        </div>
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { PdfViewer } from "@osdk/react-components-storybook";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Default = () =&gt; {
+  const { object: employee, isLoading } = useOsdkObject(
+    Employee,
+    MEDIA_EMPLOYEE_PK,
+  );
+
+  if (isLoading || !employee?.employeeDocuments) {
+    return &lt;div style={{ height: &quot;600px&quot; }}&gt;Loading OSDK media…&lt;/div&gt;;
+  }
+
+  return (
+    &lt;div style={{ height: &quot;600px&quot; }}&gt;
+      &lt;PdfViewer media={employee.employeeDocuments} /&gt;
+    &lt;/div&gt;
+  );
+};</code></pre>
+            </div>
+        </div>
+  </div>
+</article>
+<article
+  class="card 
+  has-error 
+  has-info 
+  no-story-error"
+  role="listitem"
+  aria-label="PdfViewer">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-err"></span> PdfViewer</h2>
+      <div class="badges">
+        <label for="c-error-20-beta-documentviewer-renderers-pdfviewer-features-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-20-beta-documentviewer-renderers-pdfviewer-features-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-20-beta-documentviewer-renderers-pdfviewer-features-stories" class="badge ok as-toggle">12 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/PdfViewer/Features/PdfViewerFeatures.stories.tsx">beta-documentviewer-renderers-pdfviewer-features · ./src/stories/PdfViewer/Features/PdfViewerFeatures.stories.tsx</div>
@@ -33173,9 +33333,9 @@ return (
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-19-beta-documentviewer-renderers-pdfviewer-features-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-19-beta-documentviewer-renderers-pdfviewer-features-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-19-beta-documentviewer-renderers-pdfviewer-features-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-20-beta-documentviewer-renderers-pdfviewer-features-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-20-beta-documentviewer-renderers-pdfviewer-features-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-20-beta-documentviewer-renderers-pdfviewer-features-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -33828,166 +33988,6 @@ export const InteractiveForm: StoryObj&lt;PdfViewerProps&gt; = {
         onFormSubmit={fn()}
         onFormChange={fn()} /&gt;
 &lt;/div&gt;;</code></pre>
-            </div>
-        </div>
-  </div>
-</article>
-<article
-  class="card 
-  has-error 
-  has-info 
-  no-story-error"
-  role="listitem"
-  aria-label="PdfViewer">
-  <div class="head">
-    <div class="title">
-      <h2><span class="status-dot dot-err"></span> PdfViewer</h2>
-      <div class="badges">
-        <label for="c-error-20-beta-documentviewer-renderers-pdfviewer-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-20-beta-documentviewer-renderers-pdfviewer-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-20-beta-documentviewer-renderers-pdfviewer-stories" class="badge ok as-toggle">1 story</label>
-      </div>
-    </div>
-    <div class="meta" title="./src/stories/PdfViewer/PdfViewer.stories.tsx">beta-documentviewer-renderers-pdfviewer · ./src/stories/PdfViewer/PdfViewer.stories.tsx</div>
-    
-    
-    
-  </div>
-
-  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-20-beta-documentviewer-renderers-pdfviewer-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-20-beta-documentviewer-renderers-pdfviewer-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-20-beta-documentviewer-renderers-pdfviewer-stories" class="tg tg-stories" type="checkbox" hidden />
-  
-
-  <div class="panels">
-    
-        <div class="panel panel-err">
-          
-    <div class="note err">
-      <div class="note-title">Prop type error</div>
-      <div class="note-body"><pre><code>No component file found for the &quot;PdfViewer&quot; component.
-  22 | import { Employee } from &quot;../../types/Employee.js&quot;;
-  23 |
-&gt; 24 | const meta: Meta&lt;PdfViewerMediaProps&gt; = {
-     | ^
-  25 |   title: &quot;Beta/DocumentViewer/Renderers/PdfViewer&quot;,
-  26 |   component: PdfViewer,
-  27 |   parameters: {
-
-./src/stories/PdfViewer/PdfViewer.stories.tsx:
-/*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-import { useOsdkObject } from &quot;@osdk/react&quot;;
-import type { PdfViewerMediaProps } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-import { PdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
-import { MEDIA_EMPLOYEE_PK } from &quot;../../mocks/fauxFoundry.js&quot;;
-import { Employee } from &quot;../../types/Employee.js&quot;;
-
-const meta: Meta&lt;PdfViewerMediaProps&gt; = {
-  title: &quot;Beta/DocumentViewer/Renderers/PdfViewer&quot;,
-  component: PdfViewer,
-  parameters: {
-    controls: { expanded: true },
-  },
-};
-
-export default meta;
-type Story = StoryObj&lt;typeof meta&gt;;
-
-export const Default: Story = {
-  render: () =&gt; {
-    const { object: employee, isLoading } = useOsdkObject(
-      Employee,
-      MEDIA_EMPLOYEE_PK,
-    );
-
-    if (isLoading || !employee?.employeeDocuments) {
-      return &lt;div style={{ height: &quot;600px&quot; }}&gt;Loading OSDK media…&lt;/div&gt;;
-    }
-
-    return (
-      &lt;div style={{ height: &quot;600px&quot; }}&gt;
-        &lt;PdfViewer media={employee.employeeDocuments} /&gt;
-      &lt;/div&gt;
-    );
-  },
-  parameters: {
-    docs: {
-      source: {
-        code:
-          `import { PdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-
-// Access media from an OSDK object&#39;s media reference property
-const employee = useOsdkObject(Employee, employeePk);
-&lt;PdfViewer media={employee.employeeDocuments} /&gt;`,
-      },
-    },
-  },
-};
-</code></pre></div>
-    </div>
-        </div>
-    
-        <div class="panel panel-info">
-          
-    <div class="note info">
-      <div class="note-title">Info</div>
-      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
-    </div>
-        </div>
-    
-    
-        <div class="panel panel-stories">
-          
-          
-          
-          <div class="note ok">
-                <div class="row">
-                  <span class="ex-name">Imports</span>
-                </div>
-                <pre><code>import { PdfViewer } from "@osdk/react-components-storybook";</code></pre>
-              </div>
-          
-          
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">Default</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const Default = () =&gt; {
-  const { object: employee, isLoading } = useOsdkObject(
-    Employee,
-    MEDIA_EMPLOYEE_PK,
-  );
-
-  if (isLoading || !employee?.employeeDocuments) {
-    return &lt;div style={{ height: &quot;600px&quot; }}&gt;Loading OSDK media…&lt;/div&gt;;
-  }
-
-  return (
-    &lt;div style={{ height: &quot;600px&quot; }}&gt;
-      &lt;PdfViewer media={employee.employeeDocuments} /&gt;
-    &lt;/div&gt;
-  );
-};</code></pre>
             </div>
         </div>
   </div>

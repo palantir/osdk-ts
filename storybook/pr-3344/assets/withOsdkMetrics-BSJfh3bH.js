@@ -1,0 +1,1 @@
+import{R as n}from"./iframe-B0UM4nsx.js";import{u as o}from"./useRegisterUserAgent-DV2K7Bzt.js";const c="osdk-react-components/0.18.0";function i(t){return`${c}/${t}`}function m(t,e){const r=s=>(o(i(e)),n.createElement(t,s));return r.displayName=`withOsdkMetrics(${e})`,r}export{m as w};
