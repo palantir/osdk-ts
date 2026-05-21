@@ -509,7 +509,7 @@
 <header>
   <div class="wrap">
     <h1>Components Manifest</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">30/30 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">30/30 infos</a><a class="filter-pill err" data-k="story-errors" href="#filter-story-errors">12/180 story errors</a></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">28/28 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">28/28 infos</a><a class="filter-pill err" data-k="story-errors" href="#filter-story-errors">12/177 story errors</a></div>
   </div>
 </header>
 <main>
@@ -899,21 +899,21 @@ export const BannerOnly: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> BaseEmailViewer</h2>
       <div class="badges">
-        <label for="c-1-beta-documentviewer-renderers-emailviewer-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-1-beta-documentviewer-renderers-emailviewer-info" class="badge info as-toggle">1 info</label>
-        <label for="c-1-beta-documentviewer-renderers-emailviewer-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-1-beta-emailviewer-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-1-beta-emailviewer-info" class="badge info as-toggle">1 info</label>
+        <label for="c-1-beta-emailviewer-stories" class="badge ok as-toggle">3 stories</label>
       </div>
     </div>
-    <div class="meta" title="./src/stories/EmailViewer/EmailViewer.stories.tsx">beta-documentviewer-renderers-emailviewer · ./src/stories/EmailViewer/EmailViewer.stories.tsx</div>
+    <div class="meta" title="./src/stories/EmailViewer/EmailViewer.stories.tsx">beta-emailviewer · ./src/stories/EmailViewer/EmailViewer.stories.tsx</div>
     
     
     
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-1-beta-documentviewer-renderers-emailviewer-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-1-beta-documentviewer-renderers-emailviewer-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-1-beta-documentviewer-renderers-emailviewer-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-1-beta-emailviewer-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-1-beta-emailviewer-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-1-beta-emailviewer-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -927,7 +927,7 @@ export const BannerOnly: Story = {
    97 |
 &gt;  98 | const meta: Meta&lt;BaseEmailViewerProps&gt; = {
       | ^
-   99 |   title: &quot;Beta/DocumentViewer/Renderers/EmailViewer&quot;,
+   99 |   title: &quot;Beta/EmailViewer&quot;,
   100 |   component: BaseEmailViewer,
   101 |   args: {
 
@@ -1030,7 +1030,7 @@ function createMockEmailMedia(emlContent: string): Media {
 }
 
 const meta: Meta&lt;BaseEmailViewerProps&gt; = {
-  title: &quot;Beta/DocumentViewer/Renderers/EmailViewer&quot;,
+  title: &quot;Beta/EmailViewer&quot;,
   component: BaseEmailViewer,
   args: {
     email: SAMPLE_EMAIL,
@@ -1058,7 +1058,26 @@ const meta: Meta&lt;BaseEmailViewerProps&gt; = {
 export default meta;
 type Story = StoryObj&lt;typeof meta&gt;;
 
-export const Default: StoryObj&lt;EmailViewerMediaProps&gt; = {
+export const HtmlEmail: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code:
+          `import { BaseEmailViewer } from &quot;@osdk/react-components/experimental/email-viewer&quot;;
+
+&lt;BaseEmailViewer email={parsedEmail} /&gt;`,
+      },
+    },
+  },
+};
+
+export const PlainTextEmail: Story = {
+  args: {
+    email: SAMPLE_TEXT_EMAIL,
+  },
+};
+
+export const WithMedia: StoryObj&lt;EmailViewerMediaProps&gt; = {
   args: {
     media: createMockEmailMedia(SAMPLE_EML_CONTENT),
   },
@@ -1076,25 +1095,6 @@ export const Default: StoryObj&lt;EmailViewerMediaProps&gt; = {
 &lt;EmailViewer media={myOsdkMedia} /&gt;`,
       },
     },
-  },
-};
-
-export const HtmlEmail: Story = {
-  parameters: {
-    docs: {
-      source: {
-        code:
-          `import { BaseEmailViewer } from &quot;@osdk/react-components/experimental/email-viewer&quot;;
-
-&lt;BaseEmailViewer email={parsedEmail} /&gt;`,
-      },
-    },
-  },
-};
-
-export const PlainTextEmail: Story = {
-  args: {
-    email: SAMPLE_TEXT_EMAIL,
   },
 };
 </code></pre></div>
@@ -1124,17 +1124,6 @@ export const PlainTextEmail: Story = {
           
             <div class="note ok">
               <div class="row">
-                <span class="ex-name">Default</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const Default = () =&gt; &lt;div style={{ height: &quot;500px&quot; }}&gt;
-    &lt;EmailViewer email={SAMPLE_EMAIL} media={createMockEmailMedia(SAMPLE_EML_CONTENT)} /&gt;
-&lt;/div&gt;;</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
                 <span class="ex-name">Html Email</span>
                 <span class="badge ok">story ok</span>
               </div>
@@ -1155,6 +1144,17 @@ export const PlainTextEmail: Story = {
     &lt;BaseEmailViewer email={SAMPLE_TEXT_EMAIL} /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Media</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithMedia = () =&gt; &lt;div style={{ height: &quot;500px&quot; }}&gt;
+    &lt;EmailViewer email={SAMPLE_EMAIL} media={createMockEmailMedia(SAMPLE_EML_CONTENT)} /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
         </div>
   </div>
 </article>
@@ -1169,21 +1169,21 @@ export const PlainTextEmail: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> BaseExcelViewer</h2>
       <div class="badges">
-        <label for="c-2-beta-documentviewer-renderers-excelviewer-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-2-beta-documentviewer-renderers-excelviewer-info" class="badge info as-toggle">1 info</label>
-        <label for="c-2-beta-documentviewer-renderers-excelviewer-stories" class="badge ok as-toggle">4 stories</label>
+        <label for="c-2-beta-excelviewer-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-2-beta-excelviewer-info" class="badge info as-toggle">1 info</label>
+        <label for="c-2-beta-excelviewer-stories" class="badge ok as-toggle">4 stories</label>
       </div>
     </div>
-    <div class="meta" title="./src/stories/ExcelViewer/ExcelViewer.stories.tsx">beta-documentviewer-renderers-excelviewer · ./src/stories/ExcelViewer/ExcelViewer.stories.tsx</div>
+    <div class="meta" title="./src/stories/ExcelViewer/ExcelViewer.stories.tsx">beta-excelviewer · ./src/stories/ExcelViewer/ExcelViewer.stories.tsx</div>
     
     
     
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-2-beta-documentviewer-renderers-excelviewer-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-2-beta-documentviewer-renderers-excelviewer-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-2-beta-documentviewer-renderers-excelviewer-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-2-beta-excelviewer-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-2-beta-excelviewer-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-2-beta-excelviewer-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -1197,7 +1197,7 @@ export const PlainTextEmail: Story = {
   162 |
 &gt; 163 | const meta: Meta&lt;BaseExcelViewerProps&gt; = {
       | ^
-  164 |   title: &quot;Beta/DocumentViewer/Renderers/ExcelViewer&quot;,
+  164 |   title: &quot;Beta/ExcelViewer&quot;,
   165 |   component: BaseExcelViewer,
   166 |   args: {
 
@@ -1365,7 +1365,7 @@ function createMockExcelMedia(): Media {
 }
 
 const meta: Meta&lt;BaseExcelViewerProps&gt; = {
-  title: &quot;Beta/DocumentViewer/Renderers/ExcelViewer&quot;,
+  title: &quot;Beta/ExcelViewer&quot;,
   component: BaseExcelViewer,
   args: {
     spreadsheet: SAMPLE_SPREADSHEET,
@@ -1393,28 +1393,7 @@ const meta: Meta&lt;BaseExcelViewerProps&gt; = {
 export default meta;
 type Story = StoryObj&lt;typeof meta&gt;;
 
-export const Default: StoryObj&lt;ExcelViewerMediaProps&gt; = {
-  args: {
-    media: createMockExcelMedia(),
-  },
-  render: (args: ExcelViewerMediaProps) =&gt; (
-    &lt;div style={{ height: &quot;500px&quot; }}&gt;
-      &lt;ExcelViewer media={args.media} /&gt;
-    &lt;/div&gt;
-  ),
-  parameters: {
-    docs: {
-      source: {
-        code:
-          `import { ExcelViewer } from &quot;@osdk/react-components/experimental/excel-viewer&quot;;
-
-&lt;ExcelViewer media={myOsdkMedia} /&gt;`,
-      },
-    },
-  },
-};
-
-export const WithSpreadsheet: Story = {
+export const Default: Story = {
   parameters: {
     docs: {
       source: {
@@ -1431,6 +1410,27 @@ export const SingleSheet: Story = {
   args: {
     spreadsheet: {
       sheets: [SAMPLE_SPREADSHEET.sheets[0]!],
+    },
+  },
+};
+
+export const WithMedia: StoryObj&lt;ExcelViewerMediaProps&gt; = {
+  args: {
+    media: createMockExcelMedia(),
+  },
+  render: (args: ExcelViewerMediaProps) =&gt; (
+    &lt;div style={{ height: &quot;500px&quot; }}&gt;
+      &lt;ExcelViewer media={args.media} /&gt;
+    &lt;/div&gt;
+  ),
+  parameters: {
+    docs: {
+      source: {
+        code:
+          `import { ExcelViewer } from &quot;@osdk/react-components/experimental/excel-viewer&quot;;
+
+&lt;ExcelViewer media={myOsdkMedia} /&gt;`,
+      },
     },
   },
 };
@@ -1488,17 +1488,6 @@ export const WithRealFile: StoryObj&lt;ExcelViewerMediaProps&gt; = {
               
               
               <pre><code>const Default = () =&gt; &lt;div style={{ height: &quot;500px&quot; }}&gt;
-    &lt;ExcelViewer media={createMockExcelMedia()} /&gt;
-&lt;/div&gt;;</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">With Spreadsheet</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const WithSpreadsheet = () =&gt; &lt;div style={{ height: &quot;500px&quot; }}&gt;
     &lt;BaseExcelViewer spreadsheet={SAMPLE_SPREADSHEET} /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
@@ -1514,6 +1503,17 @@ export const WithRealFile: StoryObj&lt;ExcelViewerMediaProps&gt; = {
         spreadsheet={{
           sheets: [SAMPLE_SPREADSHEET.sheets[0]!],
         }} /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Media</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithMedia = () =&gt; &lt;div style={{ height: &quot;500px&quot; }}&gt;
+    &lt;ExcelViewer media={createMockExcelMedia()} /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
             <div class="note ok">
@@ -1569,13 +1569,13 @@ export const WithRealFile: StoryObj&lt;ExcelViewerMediaProps&gt; = {
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;BaseForm&quot; component.
-  198 | }
-  199 |
-&gt; 200 | const meta: Meta&lt;BaseFormStoryProps&gt; = {
+  200 | }
+  201 |
+&gt; 202 | const meta: Meta&lt;BaseFormStoryProps&gt; = {
       | ^
-  201 |   title: &quot;Beta/ActionForm/BaseForm&quot;,
-  202 |   component: BaseForm,
-  203 |   decorators: [
+  203 |   title: &quot;Beta/ActionForm/BaseForm&quot;,
+  204 |   component: BaseForm,
+  205 |   decorators: [
 
 ./src/stories/ActionForm/BaseForm.stories.tsx:
 /*
@@ -1613,10 +1613,6 @@ import {
   type StorySubmissionSnapshot,
   SubmissionOutputPanel,
 } from &quot;./SubmissionOutputPanel.js&quot;;
-import {
-  THEMED_SLIDER_DEFAULT_VALUE,
-  ThemedSliderField,
-} from &quot;./ThemedSliderField.js&quot;;
 
 /**
  * Flattened (non-union) props type for Storybook Meta.
@@ -1730,12 +1726,18 @@ const formContent: ReadonlyArray&lt;FormContentItem&gt; = [
     },
   }),
   field({
-    fieldKey: &quot;completion&quot;,
+    fieldKey: &quot;notes&quot;,
     fieldComponent: &quot;CUSTOM&quot;,
-    label: &quot;Completion&quot;,
+    label: &quot;Notes&quot;,
     fieldComponentProps: {
-      defaultValue: THEMED_SLIDER_DEFAULT_VALUE,
-      customRenderer: (props) =&gt; &lt;ThemedSliderField {...props} /&gt;,
+      customRenderer: (props) =&gt; (
+        &lt;textarea
+          value={props.value != null ? String(props.value) : &quot;&quot;}
+          onChange={(e) =&gt; props.onChange?.(e.target.value)}
+          className=&quot;osdkCustomTextarea&quot;
+          placeholder=&quot;Custom rendered notes field&quot;
+        /&gt;
+      ),
     },
   }),
 ];
@@ -1879,10 +1881,6 @@ export const Default: Story = {
     docs: {
       source: {
         code: `import { BaseForm } from &quot;@osdk/react-components/experimental&quot;;
-import {
-  THEMED_SLIDER_DEFAULT_VALUE,
-  ThemedSliderField,
-} from &quot;./ThemedSliderField&quot;;
 
 const formContent = [
   {
@@ -1938,12 +1936,17 @@ const formContent = [
     fieldComponentProps: { accept: &quot;.pdf,.doc,.docx&quot; },
   },
   {
-    fieldKey: &quot;completion&quot;,
+    fieldKey: &quot;notes&quot;,
     fieldComponent: &quot;CUSTOM&quot;,
-    label: &quot;Completion&quot;,
+    label: &quot;Notes&quot;,
     fieldComponentProps: {
-      defaultValue: THEMED_SLIDER_DEFAULT_VALUE,
-      customRenderer: (props) =&gt; &lt;ThemedSliderField {...props} /&gt;,
+      customRenderer: (props) =&gt; (
+        &lt;textarea
+          value={props.value ?? &quot;&quot;}
+          onChange={(e) =&gt; props.onChange?.(e.target.value)}
+          placeholder=&quot;Custom rendered notes field&quot;
+        /&gt;
+      ),
     },
   },
 ];
@@ -1961,9 +1964,7 @@ export const Controlled: Story = {
   parameters: {
     docs: {
       source: {
-        code: `const [formState, setFormState] = useState({
-  completion: THEMED_SLIDER_DEFAULT_VALUE,
-});
+        code: `const [formState, setFormState] = useState({});
 
 const handleFieldValueChange = (fieldKey, value) =&gt; {
   setFormState((prev) =&gt; ({ ...prev, [fieldKey]: value }));
@@ -1990,9 +1991,7 @@ return (
 };
 
 function ControlledFormStory(): React.ReactElement {
-  const [formState, setFormState] = useState&lt;Record&lt;string, unknown&gt;&gt;({
-    completion: THEMED_SLIDER_DEFAULT_VALUE,
-  });
+  const [formState, setFormState] = useState&lt;Record&lt;string, unknown&gt;&gt;({});
 
   const handleFieldValueChange = useCallback(
     (fieldKey: string, value: unknown) =&gt; {
@@ -3931,7 +3930,7 @@ function renderUserIdLabel(item: unknown): React.ReactNode {
                 <div class="row">
                   <span class="ex-name">Imports</span>
                 </div>
-                <pre><code>import { BaseForm, FormStoryLayout, SubmissionOutputPanel, ThemedSliderField } from "@osdk/react-components-storybook";
+                <pre><code>import { BaseForm, FormStoryLayout, SubmissionOutputPanel } from "@osdk/react-components-storybook";
 import { Button, Dialog } from "@blueprintjs/core";</code></pre>
               </div>
           
@@ -4224,21 +4223,21 @@ import { Button, Dialog } from "@blueprintjs/core";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-err"></span> BaseImageViewer</h2>
       <div class="badges">
-        <label for="c-4-beta-documentviewer-renderers-imageviewer-baseimageviewer-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-4-beta-documentviewer-renderers-imageviewer-baseimageviewer-info" class="badge info as-toggle">1 info</label>
-        <label for="c-4-beta-documentviewer-renderers-imageviewer-baseimageviewer-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-4-beta-imageviewer-baseimageviewer-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-4-beta-imageviewer-baseimageviewer-info" class="badge info as-toggle">1 info</label>
+        <label for="c-4-beta-imageviewer-baseimageviewer-stories" class="badge ok as-toggle">3 stories</label>
       </div>
     </div>
-    <div class="meta" title="./src/stories/ImageViewer/BaseImageViewer.stories.tsx">beta-documentviewer-renderers-imageviewer-baseimageviewer · ./src/stories/ImageViewer/BaseImageViewer.stories.tsx</div>
+    <div class="meta" title="./src/stories/ImageViewer/ImageViewer.stories.tsx">beta-imageviewer-baseimageviewer · ./src/stories/ImageViewer/ImageViewer.stories.tsx</div>
     
     
     
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-4-beta-documentviewer-renderers-imageviewer-baseimageviewer-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-4-beta-documentviewer-renderers-imageviewer-baseimageviewer-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-4-beta-documentviewer-renderers-imageviewer-baseimageviewer-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-4-beta-imageviewer-baseimageviewer-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-4-beta-imageviewer-baseimageviewer-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-4-beta-imageviewer-baseimageviewer-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -4248,15 +4247,15 @@ import { Button, Dialog } from "@blueprintjs/core";</code></pre>
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;BaseImageViewer&quot; component.
-  46 | const sampleImageDataUrl = createSampleImageDataUrl();
-  47 |
-&gt; 48 | const baseMeta: Meta&lt;BaseImageViewerProps&gt; = {
+  85 | // --- BaseImageViewer stories ---
+  86 |
+&gt; 87 | const baseMeta: Meta&lt;BaseImageViewerProps&gt; = {
      | ^
-  49 |   title: &quot;Beta/DocumentViewer/Renderers/ImageViewer/BaseImageViewer&quot;,
-  50 |   component: BaseImageViewer,
-  51 |   args: {
+  88 |   title: &quot;Beta/ImageViewer/BaseImageViewer&quot;,
+  89 |   component: BaseImageViewer,
+  90 |   args: {
 
-./src/stories/ImageViewer/BaseImageViewer.stories.tsx:
+./src/stories/ImageViewer/ImageViewer.stories.tsx:
 /*
  * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
@@ -4273,8 +4272,15 @@ import { Button, Dialog } from "@blueprintjs/core";</code></pre>
  * limitations under the License.
  */
 
-import type { BaseImageViewerProps } from &quot;@osdk/react-components/experimental/image-viewer&quot;;
-import { BaseImageViewer } from &quot;@osdk/react-components/experimental/image-viewer&quot;;
+import type { Media } from &quot;@osdk/api&quot;;
+import type {
+  BaseImageViewerProps,
+  ImageViewerMediaProps,
+} from &quot;@osdk/react-components/experimental/image-viewer&quot;;
+import {
+  BaseImageViewer,
+  ImageViewer,
+} from &quot;@osdk/react-components/experimental/image-viewer&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { fn } from &quot;storybook/test&quot;;
 
@@ -4304,8 +4310,40 @@ function createSampleImageDataUrl(): string {
 
 const sampleImageDataUrl = createSampleImageDataUrl();
 
+function createMockImageMedia(
+  dataUrl: string,
+  mimeType: string,
+  filename: string,
+): Media {
+  return {
+    fetchContents: async () =&gt; {
+      const response = await fetch(dataUrl);
+      return response;
+    },
+    fetchMetadata: () =&gt;
+      Promise.resolve({
+        path: filename,
+        sizeBytes: 1024,
+        mediaType: mimeType,
+      }),
+    getMediaReference: () =&gt; ({
+      mimeType,
+      reference: {
+        type: &quot;mediaSetViewItem&quot; as const,
+        mediaSetViewItem: {
+          mediaItemRid: &quot;ri.mio.main.media-item.mock-image&quot;,
+          mediaSetRid: &quot;ri.mio.main.media-set.mock-set&quot;,
+          mediaSetViewRid: &quot;ri.mio.main.media-set-view.mock-view&quot;,
+        },
+      },
+    }),
+  };
+}
+
+// --- BaseImageViewer stories ---
+
 const baseMeta: Meta&lt;BaseImageViewerProps&gt; = {
-  title: &quot;Beta/DocumentViewer/Renderers/ImageViewer/BaseImageViewer&quot;,
+  title: &quot;Beta/ImageViewer/BaseImageViewer&quot;,
   component: BaseImageViewer,
   args: {
     src: sampleImageDataUrl,
@@ -4361,6 +4399,32 @@ export const WithErrorCallback: Story = {
     onError: fn(),
   },
 };
+
+export const WithMedia: StoryObj&lt;ImageViewerMediaProps&gt; = {
+  args: {
+    media: createMockImageMedia(
+      sampleImageDataUrl,
+      &quot;image/png&quot;,
+      &quot;sample.png&quot;,
+    ),
+    alt: &quot;Sample image loaded from Media&quot;,
+  },
+  render: (args: ImageViewerMediaProps) =&gt; (
+    &lt;div style={{ height: &quot;400px&quot;, width: &quot;400px&quot; }}&gt;
+      &lt;ImageViewer {...args} /&gt;
+    &lt;/div&gt;
+  ),
+  parameters: {
+    docs: {
+      source: {
+        code:
+          `import { ImageViewer } from &quot;@osdk/react-components/experimental/image-viewer&quot;;
+
+&lt;ImageViewer media={myOsdkMedia} alt=&quot;My image&quot; /&gt;`,
+      },
+    },
+  },
+};
 </code></pre></div>
     </div>
         </div>
@@ -4382,7 +4446,7 @@ export const WithErrorCallback: Story = {
                 <div class="row">
                   <span class="ex-name">Imports</span>
                 </div>
-                <pre><code>import { BaseImageViewer } from "@osdk/react-components-storybook";</code></pre>
+                <pre><code>import { BaseImageViewer, ImageViewer } from "@osdk/react-components-storybook";</code></pre>
               </div>
           
           
@@ -4408,6 +4472,24 @@ export const WithErrorCallback: Story = {
     &lt;BaseImageViewer src={sampleImageDataUrl} alt=&quot;Sample image&quot; onError={fn()} /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Media</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithMedia = () =&gt; &lt;div style={{ height: &quot;400px&quot;, width: &quot;400px&quot; }}&gt;
+    &lt;ImageViewer
+        src={sampleImageDataUrl}
+        alt=&quot;Sample image loaded from Media&quot;
+        media={createMockImageMedia(
+          sampleImageDataUrl,
+          &quot;image/png&quot;,
+          &quot;sample.png&quot;,
+        )} /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
         </div>
   </div>
 </article>
@@ -4422,21 +4504,21 @@ export const WithErrorCallback: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> BasePdfViewer</h2>
       <div class="badges">
-        <label for="c-5-beta-documentviewer-renderers-pdfviewer-recipes-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-5-beta-documentviewer-renderers-pdfviewer-recipes-info" class="badge info as-toggle">1 info</label>
-        <label for="c-5-beta-documentviewer-renderers-pdfviewer-recipes-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-5-beta-pdfviewer-recipes-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-5-beta-pdfviewer-recipes-info" class="badge info as-toggle">1 info</label>
+        <label for="c-5-beta-pdfviewer-recipes-stories" class="badge ok as-toggle">1 story</label>
       </div>
     </div>
-    <div class="meta" title="./src/stories/PdfViewer/Recipes/AnnotationCreator/AnnotationCreator.stories.tsx">beta-documentviewer-renderers-pdfviewer-recipes · ./src/stories/PdfViewer/Recipes/AnnotationCreator/AnnotationCreator.stories.tsx</div>
+    <div class="meta" title="./src/stories/PdfViewer/Recipes/AnnotationCreator/AnnotationCreator.stories.tsx">beta-pdfviewer-recipes · ./src/stories/PdfViewer/Recipes/AnnotationCreator/AnnotationCreator.stories.tsx</div>
     
     
     
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-5-beta-documentviewer-renderers-pdfviewer-recipes-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-5-beta-documentviewer-renderers-pdfviewer-recipes-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-5-beta-documentviewer-renderers-pdfviewer-recipes-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-5-beta-pdfviewer-recipes-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-5-beta-pdfviewer-recipes-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-5-beta-pdfviewer-recipes-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -4450,7 +4532,7 @@ export const WithErrorCallback: Story = {
   334 |
 &gt; 335 | const meta: Meta&lt;PdfViewerProps&gt; = {
       | ^
-  336 |   title: &quot;Beta/DocumentViewer/Renderers/PdfViewer/Recipes&quot;,
+  336 |   title: &quot;Beta/PdfViewer/Recipes&quot;,
   337 |   component: BasePdfViewer,
   338 | };
 
@@ -4790,7 +4872,7 @@ function AnnotationCreatorDemo(
 }
 
 const meta: Meta&lt;PdfViewerProps&gt; = {
-  title: &quot;Beta/DocumentViewer/Renderers/PdfViewer/Recipes&quot;,
+  title: &quot;Beta/PdfViewer/Recipes&quot;,
   component: BasePdfViewer,
 };
 
@@ -5765,21 +5847,21 @@ export const ErrorState: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> BaseXmlViewer</h2>
       <div class="badges">
-        <label for="c-7-beta-documentviewer-renderers-xmlviewer-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-7-beta-documentviewer-renderers-xmlviewer-info" class="badge info as-toggle">1 info</label>
-        <label for="c-7-beta-documentviewer-renderers-xmlviewer-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-7-beta-xmlviewer-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-7-beta-xmlviewer-info" class="badge info as-toggle">1 info</label>
+        <label for="c-7-beta-xmlviewer-stories" class="badge ok as-toggle">2 stories</label>
       </div>
     </div>
-    <div class="meta" title="./src/stories/XmlViewer/XmlViewer.stories.tsx">beta-documentviewer-renderers-xmlviewer · ./src/stories/XmlViewer/XmlViewer.stories.tsx</div>
+    <div class="meta" title="./src/stories/XmlViewer/XmlViewer.stories.tsx">beta-xmlviewer · ./src/stories/XmlViewer/XmlViewer.stories.tsx</div>
     
     
     
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-7-beta-documentviewer-renderers-xmlviewer-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-7-beta-documentviewer-renderers-xmlviewer-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-7-beta-documentviewer-renderers-xmlviewer-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-7-beta-xmlviewer-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-7-beta-xmlviewer-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-7-beta-xmlviewer-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -5793,7 +5875,7 @@ export const ErrorState: Story = {
   80 |
 &gt; 81 | const meta: Meta&lt;BaseXmlViewerProps&gt; = {
      | ^
-  82 |   title: &quot;Beta/DocumentViewer/Renderers/XmlViewer&quot;,
+  82 |   title: &quot;Beta/XmlViewer&quot;,
   83 |   component: BaseXmlViewer,
   84 |   args: {
 
@@ -5879,7 +5961,7 @@ function createMockXmlMedia(xmlContent: string): Media {
 }
 
 const meta: Meta&lt;BaseXmlViewerProps&gt; = {
-  title: &quot;Beta/DocumentViewer/Renderers/XmlViewer&quot;,
+  title: &quot;Beta/XmlViewer&quot;,
   component: BaseXmlViewer,
   args: {
     content: SAMPLE_XML,
@@ -5907,7 +5989,20 @@ const meta: Meta&lt;BaseXmlViewerProps&gt; = {
 export default meta;
 type Story = StoryObj&lt;typeof meta&gt;;
 
-export const Default: StoryObj&lt;XmlViewerMediaProps&gt; = {
+export const Default: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code:
+          `import { BaseXmlViewer } from &quot;@osdk/react-components/experimental/xml-viewer&quot;;
+
+&lt;BaseXmlViewer content={xmlString} /&gt;`,
+      },
+    },
+  },
+};
+
+export const WithMedia: StoryObj&lt;XmlViewerMediaProps&gt; = {
   args: {
     media: createMockXmlMedia(SAMPLE_XML),
   },
@@ -5923,19 +6018,6 @@ export const Default: StoryObj&lt;XmlViewerMediaProps&gt; = {
           `import { XmlViewer } from &quot;@osdk/react-components/experimental/xml-viewer&quot;;
 
 &lt;XmlViewer media={myOsdkMedia} /&gt;`,
-      },
-    },
-  },
-};
-
-export const WithContent: Story = {
-  parameters: {
-    docs: {
-      source: {
-        code:
-          `import { BaseXmlViewer } from &quot;@osdk/react-components/experimental/xml-viewer&quot;;
-
-&lt;BaseXmlViewer content={xmlString} /&gt;`,
       },
     },
   },
@@ -5973,18 +6055,18 @@ export const WithContent: Story = {
               
               
               <pre><code>const Default = () =&gt; &lt;div style={{ height: &quot;500px&quot; }}&gt;
-    &lt;XmlViewer content={SAMPLE_XML} media={createMockXmlMedia(SAMPLE_XML)} /&gt;
+    &lt;BaseXmlViewer content={SAMPLE_XML} /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
-                <span class="ex-name">With Content</span>
+                <span class="ex-name">With Media</span>
                 <span class="badge ok">story ok</span>
               </div>
               
               
-              <pre><code>const WithContent = () =&gt; &lt;div style={{ height: &quot;500px&quot; }}&gt;
-    &lt;BaseXmlViewer content={SAMPLE_XML} /&gt;
+              <pre><code>const WithMedia = () =&gt; &lt;div style={{ height: &quot;500px&quot; }}&gt;
+    &lt;XmlViewer content={SAMPLE_XML} media={createMockXmlMedia(SAMPLE_XML)} /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
         </div>
@@ -10379,229 +10461,14 @@ export const HorizontalToolbar: Story = {
   has-info 
   no-story-error"
   role="listitem"
-  aria-label="ImageViewer">
-  <div class="head">
-    <div class="title">
-      <h2><span class="status-dot dot-err"></span> ImageViewer</h2>
-      <div class="badges">
-        <label for="c-12-beta-documentviewer-renderers-imageviewer-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-12-beta-documentviewer-renderers-imageviewer-info" class="badge info as-toggle">1 info</label>
-        <label for="c-12-beta-documentviewer-renderers-imageviewer-stories" class="badge ok as-toggle">1 story</label>
-      </div>
-    </div>
-    <div class="meta" title="./src/stories/ImageViewer/ImageViewer.stories.tsx">beta-documentviewer-renderers-imageviewer · ./src/stories/ImageViewer/ImageViewer.stories.tsx</div>
-    
-    
-    
-  </div>
-
-  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-12-beta-documentviewer-renderers-imageviewer-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-12-beta-documentviewer-renderers-imageviewer-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-12-beta-documentviewer-renderers-imageviewer-stories" class="tg tg-stories" type="checkbox" hidden />
-  
-
-  <div class="panels">
-    
-        <div class="panel panel-err">
-          
-    <div class="note err">
-      <div class="note-title">Prop type error</div>
-      <div class="note-body"><pre><code>No component file found for the &quot;ImageViewer&quot; component.
-  76 | }
-  77 |
-&gt; 78 | const meta: Meta&lt;ImageViewerMediaProps&gt; = {
-     | ^
-  79 |   title: &quot;Beta/DocumentViewer/Renderers/ImageViewer&quot;,
-  80 |   component: ImageViewer,
-  81 |   parameters: {
-
-./src/stories/ImageViewer/ImageViewer.stories.tsx:
-/*
- * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-import type { Media } from &quot;@osdk/api&quot;;
-import type { ImageViewerMediaProps } from &quot;@osdk/react-components/experimental/image-viewer&quot;;
-import { ImageViewer } from &quot;@osdk/react-components/experimental/image-viewer&quot;;
-import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
-
-/**
- * Creates a sample PNG image as a data URL.
- * Generates a 200x200 canvas with a gradient.
- */
-function createSampleImageDataUrl(): string {
-  const canvas = document.createElement(&quot;canvas&quot;);
-  canvas.width = 200;
-  canvas.height = 200;
-  const ctx = canvas.getContext(&quot;2d&quot;)!;
-  const gradient = ctx.createLinearGradient(0, 0, 200, 200);
-  gradient.addColorStop(0, &quot;#3b82f6&quot;);
-  gradient.addColorStop(0.5, &quot;#8b5cf6&quot;);
-  gradient.addColorStop(1, &quot;#ec4899&quot;);
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, 200, 200);
-  ctx.fillStyle = &quot;white&quot;;
-  ctx.font = &quot;bold 24px sans-serif&quot;;
-  ctx.textAlign = &quot;center&quot;;
-  ctx.textBaseline = &quot;middle&quot;;
-  ctx.fillText(&quot;Sample&quot;, 100, 90);
-  ctx.fillText(&quot;Image&quot;, 100, 120);
-  return canvas.toDataURL(&quot;image/png&quot;);
-}
-
-const sampleImageDataUrl = createSampleImageDataUrl();
-
-function createMockImageMedia(
-  dataUrl: string,
-  mimeType: string,
-  filename: string,
-): Media {
-  return {
-    fetchContents: async () =&gt; {
-      const response = await fetch(dataUrl);
-      return response;
-    },
-    fetchMetadata: () =&gt;
-      Promise.resolve({
-        path: filename,
-        sizeBytes: 1024,
-        mediaType: mimeType,
-      }),
-    getMediaReference: () =&gt; ({
-      mimeType,
-      reference: {
-        type: &quot;mediaSetViewItem&quot; as const,
-        mediaSetViewItem: {
-          mediaItemRid: &quot;ri.mio.main.media-item.mock-image&quot;,
-          mediaSetRid: &quot;ri.mio.main.media-set.mock-set&quot;,
-          mediaSetViewRid: &quot;ri.mio.main.media-set-view.mock-view&quot;,
-        },
-      },
-    }),
-  };
-}
-
-const meta: Meta&lt;ImageViewerMediaProps&gt; = {
-  title: &quot;Beta/DocumentViewer/Renderers/ImageViewer&quot;,
-  component: ImageViewer,
-  parameters: {
-    controls: { expanded: true },
-  },
-  argTypes: {
-    media: {
-      description: &quot;The Media object to fetch image contents from&quot;,
-      control: false,
-    },
-    alt: {
-      description: &quot;Alt text for accessibility&quot;,
-      control: &quot;text&quot;,
-    },
-    className: {
-      description: &quot;Additional CSS class name for the root element&quot;,
-      control: &quot;text&quot;,
-    },
-  },
-};
-
-export default meta;
-
-export const Default: StoryObj&lt;ImageViewerMediaProps&gt; = {
-  args: {
-    media: createMockImageMedia(
-      sampleImageDataUrl,
-      &quot;image/png&quot;,
-      &quot;sample.png&quot;,
-    ),
-    alt: &quot;Sample image loaded from Media&quot;,
-  },
-  render: (args: ImageViewerMediaProps) =&gt; (
-    &lt;div style={{ height: &quot;400px&quot;, width: &quot;400px&quot; }}&gt;
-      &lt;ImageViewer {...args} /&gt;
-    &lt;/div&gt;
-  ),
-  parameters: {
-    docs: {
-      source: {
-        code:
-          `import { ImageViewer } from &quot;@osdk/react-components/experimental/image-viewer&quot;;
-
-&lt;ImageViewer media={myOsdkMedia} alt=&quot;My image&quot; /&gt;`,
-      },
-    },
-  },
-};
-</code></pre></div>
-    </div>
-        </div>
-    
-        <div class="panel panel-info">
-          
-    <div class="note info">
-      <div class="note-title">Info</div>
-      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
-    </div>
-        </div>
-    
-    
-        <div class="panel panel-stories">
-          
-          
-          
-          <div class="note ok">
-                <div class="row">
-                  <span class="ex-name">Imports</span>
-                </div>
-                <pre><code>import { ImageViewer } from "@osdk/react-components-storybook";</code></pre>
-              </div>
-          
-          
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">Default</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const Default = () =&gt; &lt;div style={{ height: &quot;400px&quot;, width: &quot;400px&quot; }}&gt;
-    &lt;ImageViewer
-        media={createMockImageMedia(
-          sampleImageDataUrl,
-          &quot;image/png&quot;,
-          &quot;sample.png&quot;,
-        )}
-        alt=&quot;Sample image loaded from Media&quot; /&gt;
-&lt;/div&gt;;</code></pre>
-            </div>
-        </div>
-  </div>
-</article>
-<article
-  class="card 
-  has-error 
-  has-info 
-  no-story-error"
-  role="listitem"
   aria-label="LoadingCell">
   <div class="head">
     <div class="title">
       <h2><span class="status-dot dot-err"></span> LoadingCell</h2>
       <div class="badges">
-        <label for="c-13-beta-objecttable-building-blocks-loadingcell-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-13-beta-objecttable-building-blocks-loadingcell-info" class="badge info as-toggle">1 info</label>
-        <label for="c-13-beta-objecttable-building-blocks-loadingcell-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-12-beta-objecttable-building-blocks-loadingcell-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-12-beta-objecttable-building-blocks-loadingcell-info" class="badge info as-toggle">1 info</label>
+        <label for="c-12-beta-objecttable-building-blocks-loadingcell-stories" class="badge ok as-toggle">1 story</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/ObjectTable/LoadingCell.stories.tsx">beta-objecttable-building-blocks-loadingcell · ./src/stories/ObjectTable/LoadingCell.stories.tsx</div>
@@ -10611,9 +10478,9 @@ export const Default: StoryObj&lt;ImageViewerMediaProps&gt; = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-13-beta-objecttable-building-blocks-loadingcell-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-13-beta-objecttable-building-blocks-loadingcell-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-13-beta-objecttable-building-blocks-loadingcell-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-12-beta-objecttable-building-blocks-loadingcell-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-12-beta-objecttable-building-blocks-loadingcell-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-12-beta-objecttable-building-blocks-loadingcell-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -10753,9 +10620,9 @@ export const Default: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> LoadingCellContent</h2>
       <div class="badges">
-        <label for="c-14-beta-objecttable-building-blocks-loadingcellcontent-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-14-beta-objecttable-building-blocks-loadingcellcontent-info" class="badge info as-toggle">1 info</label>
-        <label for="c-14-beta-objecttable-building-blocks-loadingcellcontent-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-13-beta-objecttable-building-blocks-loadingcellcontent-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-13-beta-objecttable-building-blocks-loadingcellcontent-info" class="badge info as-toggle">1 info</label>
+        <label for="c-13-beta-objecttable-building-blocks-loadingcellcontent-stories" class="badge ok as-toggle">1 story</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/ObjectTable/LoadingCellContent.stories.tsx">beta-objecttable-building-blocks-loadingcellcontent · ./src/stories/ObjectTable/LoadingCellContent.stories.tsx</div>
@@ -10765,9 +10632,9 @@ export const Default: Story = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-14-beta-objecttable-building-blocks-loadingcellcontent-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-14-beta-objecttable-building-blocks-loadingcellcontent-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-14-beta-objecttable-building-blocks-loadingcellcontent-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-13-beta-objecttable-building-blocks-loadingcellcontent-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-13-beta-objecttable-building-blocks-loadingcellcontent-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-13-beta-objecttable-building-blocks-loadingcellcontent-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -10890,21 +10757,21 @@ export const Default: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> MarkdownRenderer</h2>
       <div class="badges">
-        <label for="c-15-beta-documentviewer-renderers-markdownrenderer-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-15-beta-documentviewer-renderers-markdownrenderer-info" class="badge info as-toggle">1 info</label>
-        <label for="c-15-beta-documentviewer-renderers-markdownrenderer-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-14-beta-markdownrenderer-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-14-beta-markdownrenderer-info" class="badge info as-toggle">1 info</label>
+        <label for="c-14-beta-markdownrenderer-stories" class="badge ok as-toggle">2 stories</label>
       </div>
     </div>
-    <div class="meta" title="./src/stories/MarkdownRenderer/MarkdownRenderer.stories.tsx">beta-documentviewer-renderers-markdownrenderer · ./src/stories/MarkdownRenderer/MarkdownRenderer.stories.tsx</div>
+    <div class="meta" title="./src/stories/MarkdownRenderer/MarkdownRenderer.stories.tsx">beta-markdownrenderer · ./src/stories/MarkdownRenderer/MarkdownRenderer.stories.tsx</div>
     
     
     
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-15-beta-documentviewer-renderers-markdownrenderer-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-15-beta-documentviewer-renderers-markdownrenderer-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-15-beta-documentviewer-renderers-markdownrenderer-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-14-beta-markdownrenderer-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-14-beta-markdownrenderer-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-14-beta-markdownrenderer-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -10918,7 +10785,7 @@ export const Default: Story = {
    99 |
 &gt; 100 | const meta: Meta&lt;MarkdownRendererProps&gt; = {
       | ^
-  101 |   title: &quot;Beta/DocumentViewer/Renderers/MarkdownRenderer&quot;,
+  101 |   title: &quot;Beta/MarkdownRenderer&quot;,
   102 |   component: MarkdownRenderer,
   103 |   args: {
 
@@ -11023,7 +10890,7 @@ You can also use explicit links like [GitHub](https://github.com).
 `;
 
 const meta: Meta&lt;MarkdownRendererProps&gt; = {
-  title: &quot;Beta/DocumentViewer/Renderers/MarkdownRenderer&quot;,
+  title: &quot;Beta/MarkdownRenderer&quot;,
   component: MarkdownRenderer,
   args: {
     content: SAMPLE_MARKDOWN,
@@ -11053,7 +10920,7 @@ const meta: Meta&lt;MarkdownRendererProps&gt; = {
 export default meta;
 type Story = StoryObj&lt;typeof meta&gt;;
 
-export const WithContent: Story = {};
+export const Default: Story = {};
 
 export const MinimalContent: Story = {
   args: {
@@ -11102,12 +10969,12 @@ export const MinimalContent: Story = {
           
             <div class="note ok">
               <div class="row">
-                <span class="ex-name">With Content</span>
+                <span class="ex-name">Default</span>
                 <span class="badge ok">story ok</span>
               </div>
               
               
-              <pre><code>const WithContent = () =&gt; &lt;div style={{ height: &quot;600px&quot; }}&gt;
+              <pre><code>const Default = () =&gt; &lt;div style={{ height: &quot;600px&quot; }}&gt;
     &lt;MarkdownRenderer content={SAMPLE_MARKDOWN} /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
@@ -11136,9 +11003,9 @@ export const MinimalContent: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> MultiColumnSortDialog</h2>
       <div class="badges">
-        <label for="c-16-beta-objecttable-building-blocks-multicolumnsortdialog-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-16-beta-objecttable-building-blocks-multicolumnsortdialog-info" class="badge info as-toggle">1 info</label>
-        <label for="c-16-beta-objecttable-building-blocks-multicolumnsortdialog-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-15-beta-objecttable-building-blocks-multicolumnsortdialog-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-15-beta-objecttable-building-blocks-multicolumnsortdialog-info" class="badge info as-toggle">1 info</label>
+        <label for="c-15-beta-objecttable-building-blocks-multicolumnsortdialog-stories" class="badge ok as-toggle">1 story</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/ObjectTable/MultiColumnSortDialog.stories.tsx">beta-objecttable-building-blocks-multicolumnsortdialog · ./src/stories/ObjectTable/MultiColumnSortDialog.stories.tsx</div>
@@ -11148,9 +11015,9 @@ export const MinimalContent: Story = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-16-beta-objecttable-building-blocks-multicolumnsortdialog-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-16-beta-objecttable-building-blocks-multicolumnsortdialog-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-16-beta-objecttable-building-blocks-multicolumnsortdialog-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-15-beta-objecttable-building-blocks-multicolumnsortdialog-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-15-beta-objecttable-building-blocks-multicolumnsortdialog-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-15-beta-objecttable-building-blocks-multicolumnsortdialog-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -11334,9 +11201,9 @@ const [isOpen, setIsOpen] = useState(false);
     <div class="title">
       <h2><span class="status-dot dot-err"></span> ObjectTable</h2>
       <div class="badges">
-        <label for="c-17-beta-objecttable-features-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-17-beta-objecttable-features-info" class="badge info as-toggle">1 info</label>
-        <label for="c-17-beta-objecttable-features-stories" class="badge ok as-toggle">27 stories</label>
+        <label for="c-16-beta-objecttable-features-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-16-beta-objecttable-features-info" class="badge info as-toggle">1 info</label>
+        <label for="c-16-beta-objecttable-features-stories" class="badge ok as-toggle">24 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/ObjectTable/ObjectTable.stories.tsx">beta-objecttable-features · ./src/stories/ObjectTable/ObjectTable.stories.tsx</div>
@@ -11346,9 +11213,9 @@ const [isOpen, setIsOpen] = useState(false);
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-17-beta-objecttable-features-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-17-beta-objecttable-features-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-17-beta-objecttable-features-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-16-beta-objecttable-features-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-16-beta-objecttable-features-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-16-beta-objecttable-features-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -11358,13 +11225,13 @@ const [isOpen, setIsOpen] = useState(false);
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;ObjectTable&quot; component.
-  45 | type EmployeeTableProps = ObjectTableProps&lt;typeof Employee&gt;;
-  46 |
-&gt; 47 | const meta: Meta&lt;EmployeeTableProps&gt; = {
+  40 | type EmployeeTableProps = ObjectTableProps&lt;typeof Employee&gt;;
+  41 |
+&gt; 42 | const meta: Meta&lt;EmployeeTableProps&gt; = {
      | ^
-  48 |   title: &quot;Beta/ObjectTable/Features&quot;,
-  49 |   component: ObjectTable,
-  50 |   parameters: {
+  43 |   title: &quot;Beta/ObjectTable/Features&quot;,
+  44 |   component: ObjectTable,
+  45 |   parameters: {
 
 ./src/stories/ObjectTable/ObjectTable.stories.tsx:
 /*
@@ -11404,11 +11271,6 @@ import { fn } from &quot;storybook/test&quot;;
 import { fauxFoundry } from &quot;../../mocks/fauxFoundry.js&quot;;
 import { Employee } from &quot;../../types/Employee.js&quot;;
 import { WorkerInterface } from &quot;../../types/WorkerInterface.js&quot;;
-import {
-  ObjectTableInBaseUIDialog,
-  ObjectTableInBlueprintDialog,
-  ObjectTableInBlueprintDrawer,
-} from &quot;./overlays/ObjectTableOverlayStories.js&quot;;
 
 // Create a concrete type for Storybook to parse more easily
 type EmployeeTableProps = ObjectTableProps&lt;typeof Employee&gt;;
@@ -12666,73 +12528,6 @@ export const DisableAllHeaderMenuFeatures: Story = {
   ),
 };
 
-export const HeaderMenuInsideBlueprintDrawer: Story = {
-  args: {
-    objectType: Employee,
-    columnDefinitions: defaultEmployeeColumns,
-  },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          &quot;Scenario for the header menu dropdown when ObjectTable is rendered inside a Blueprint Drawer. &quot;
-          + &quot;Open the drawer and click any column header chevron; the menu should appear above the drawer.&quot;,
-      },
-      source: {
-        code: `&lt;Drawer isOpen={true} title=&quot;ObjectTable in Blueprint Drawer&quot;&gt;
-  &lt;ObjectTable objectType={Employee} columnDefinitions={defaultEmployeeColumns} /&gt;
-&lt;/Drawer&gt;`,
-      },
-    },
-  },
-  render: (args) =&gt; &lt;ObjectTableInBlueprintDrawer tableProps={args} /&gt;,
-};
-
-export const HeaderMenuInsideBlueprintDialog: Story = {
-  args: {
-    objectType: Employee,
-    columnDefinitions: defaultEmployeeColumns,
-  },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          &quot;Scenario for the header menu dropdown when ObjectTable is rendered inside a Blueprint Dialog. &quot;
-          + &quot;Open the dialog and click any column header chevron; the menu should appear above the dialog.&quot;,
-      },
-      source: {
-        code: `&lt;Dialog isOpen={true} title=&quot;ObjectTable in Blueprint Dialog&quot;&gt;
-  &lt;ObjectTable objectType={Employee} columnDefinitions={defaultEmployeeColumns} /&gt;
-&lt;/Dialog&gt;`,
-      },
-    },
-  },
-  render: (args) =&gt; &lt;ObjectTableInBlueprintDialog tableProps={args} /&gt;,
-};
-
-export const HeaderMenuInsideBaseUIDialog: Story = {
-  args: {
-    objectType: Employee,
-    columnDefinitions: defaultEmployeeColumns,
-  },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          &quot;Scenario for the header menu dropdown when ObjectTable is rendered inside the OSDK Base UI Dialog primitive. &quot;
-          + &quot;Open the dialog and click any column header chevron; the menu should appear above the dialog.&quot;,
-      },
-      source: {
-        code:
-          `&lt;Dialog isOpen={true} title=&quot;ObjectTable in Base UI Dialog&quot; onOpenChange={setIsOpen}&gt;
-  &lt;ObjectTable objectType={Employee} columnDefinitions={defaultEmployeeColumns} /&gt;
-&lt;/Dialog&gt;`,
-      },
-    },
-  },
-  render: (args) =&gt; &lt;ObjectTableInBaseUIDialog tableProps={args} /&gt;,
-};
-
 export const CustomRowHeight: Story = {
   args: {
     objectType: Employee,
@@ -13611,12 +13406,7 @@ return (
                   <span class="ex-name">Imports</span>
                 </div>
                 <pre><code>import { NonIdealState } from "@blueprintjs/core";
-import {
-    ObjectTable,
-    ObjectTableInBaseUIDialog,
-    ObjectTableInBlueprintDialog,
-    ObjectTableInBlueprintDrawer,
-} from "@osdk/react-components-storybook";</code></pre>
+import { ObjectTable } from "@osdk/react-components-storybook";</code></pre>
               </div>
           
           
@@ -14164,33 +13954,6 @@ import {
             </div>
             <div class="note ok">
               <div class="row">
-                <span class="ex-name">Header Menu Inside Blueprint Drawer</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const HeaderMenuInsideBlueprintDrawer = (args) =&gt; &lt;ObjectTableInBlueprintDrawer tableProps={args} /&gt;;</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">Header Menu Inside Blueprint Dialog</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const HeaderMenuInsideBlueprintDialog = (args) =&gt; &lt;ObjectTableInBlueprintDialog tableProps={args} /&gt;;</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">Header Menu Inside Base UI Dialog</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const HeaderMenuInsideBaseUIDialog = (args) =&gt; &lt;ObjectTableInBaseUIDialog tableProps={args} /&gt;;</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
                 <span class="ex-name">Custom Row Height</span>
                 <span class="badge ok">story ok</span>
               </div>
@@ -14550,9 +14313,9 @@ import {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> ObjectTable</h2>
       <div class="badges">
-        <label for="c-18-beta-objecttable-recipes-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-18-beta-objecttable-recipes-info" class="badge info as-toggle">1 info</label>
-        <label for="c-18-beta-objecttable-recipes-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-17-beta-objecttable-recipes-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-17-beta-objecttable-recipes-info" class="badge info as-toggle">1 info</label>
+        <label for="c-17-beta-objecttable-recipes-stories" class="badge ok as-toggle">1 story</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/ObjectTable/Recipes/WithConfigureColumnsButton.stories.tsx">beta-objecttable-recipes · ./src/stories/ObjectTable/Recipes/WithConfigureColumnsButton.stories.tsx</div>
@@ -14562,9 +14325,9 @@ import {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-18-beta-objecttable-recipes-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-18-beta-objecttable-recipes-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-18-beta-objecttable-recipes-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-17-beta-objecttable-recipes-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-17-beta-objecttable-recipes-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-17-beta-objecttable-recipes-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -14933,21 +14696,21 @@ return (
     <div class="title">
       <h2><span class="status-dot dot-err"></span> PdfViewer</h2>
       <div class="badges">
-        <label for="c-19-beta-documentviewer-renderers-pdfviewer-features-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-19-beta-documentviewer-renderers-pdfviewer-features-info" class="badge info as-toggle">1 info</label>
-        <label for="c-19-beta-documentviewer-renderers-pdfviewer-features-stories" class="badge ok as-toggle">12 stories</label>
+        <label for="c-18-beta-pdfviewer-features-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-18-beta-pdfviewer-features-info" class="badge info as-toggle">1 info</label>
+        <label for="c-18-beta-pdfviewer-features-stories" class="badge ok as-toggle">13 stories</label>
       </div>
     </div>
-    <div class="meta" title="./src/stories/PdfViewer/Features/PdfViewerFeatures.stories.tsx">beta-documentviewer-renderers-pdfviewer-features · ./src/stories/PdfViewer/Features/PdfViewerFeatures.stories.tsx</div>
+    <div class="meta" title="./src/stories/PdfViewer/Features/PdfViewerFeatures.stories.tsx">beta-pdfviewer-features · ./src/stories/PdfViewer/Features/PdfViewerFeatures.stories.tsx</div>
     
     
     
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-19-beta-documentviewer-renderers-pdfviewer-features-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-19-beta-documentviewer-renderers-pdfviewer-features-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-19-beta-documentviewer-renderers-pdfviewer-features-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-18-beta-pdfviewer-features-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-18-beta-pdfviewer-features-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-18-beta-pdfviewer-features-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -14957,13 +14720,13 @@ return (
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;PdfViewer&quot; component.
-  68 | );
-  69 |
-&gt; 70 | const meta: Meta&lt;PdfViewerMediaProps&gt; = {
+  71 | );
+  72 |
+&gt; 73 | const meta: Meta&lt;PdfViewerMediaProps&gt; = {
      | ^
-  71 |   title: &quot;Beta/DocumentViewer/Renderers/PdfViewer/Features&quot;,
-  72 |   component: PdfViewer,
-  73 |   args: {
+  74 |   title: &quot;Beta/PdfViewer/Features&quot;,
+  75 |   component: PdfViewer,
+  76 |   args: {
 
 ./src/stories/PdfViewer/Features/PdfViewerFeatures.stories.tsx:
 /*
@@ -14985,6 +14748,7 @@ return (
 /* cspell:disable */
 
 import type { Media } from &quot;@osdk/api&quot;;
+import { useOsdkObject } from &quot;@osdk/react&quot;;
 import type {
   PdfTextHighlightEvent,
   PdfViewerMediaProps,
@@ -14997,6 +14761,8 @@ import {
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { delay, http } from &quot;msw&quot;;
 import { fn } from &quot;storybook/test&quot;;
+import { MEDIA_EMPLOYEE_PK } from &quot;../../../mocks/fauxFoundry.js&quot;;
+import { Employee } from &quot;../../../types/Employee.js&quot;;
 
 const SAMPLE_PDF_URL =
   `${import.meta.env.BASE_URL}compressed.tracemonkey-pldi-09.pdf`;
@@ -15036,7 +14802,7 @@ const mockBookmarkedMedia = createMockMedia(
 );
 
 const meta: Meta&lt;PdfViewerMediaProps&gt; = {
-  title: &quot;Beta/DocumentViewer/Renderers/PdfViewer/Features&quot;,
+  title: &quot;Beta/PdfViewer/Features&quot;,
   component: PdfViewer,
   args: {
     media: mockMedia,
@@ -15411,6 +15177,37 @@ export const InteractiveForm: StoryObj&lt;PdfViewerProps&gt; = {
     },
   },
 };
+
+export const WithOsdkMedia: Story = {
+  render: () =&gt; {
+    const { object: employee, isLoading } = useOsdkObject(
+      Employee,
+      MEDIA_EMPLOYEE_PK,
+    );
+
+    if (isLoading || !employee?.employeeDocuments) {
+      return &lt;div style={{ height: &quot;600px&quot; }}&gt;Loading OSDK media…&lt;/div&gt;;
+    }
+
+    return (
+      &lt;div style={{ height: &quot;600px&quot; }}&gt;
+        &lt;PdfViewer media={employee.employeeDocuments} /&gt;
+      &lt;/div&gt;
+    );
+  },
+  parameters: {
+    docs: {
+      source: {
+        code:
+          `import { PdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
+
+// Access media from an OSDK object&#39;s media reference property
+const employee = useOsdkObject(Employee, employeePk);
+&lt;PdfViewer media={employee.employeeDocuments} /&gt;`,
+      },
+    },
+  },
+};
 </code></pre></div>
     </div>
         </div>
@@ -15601,150 +15398,14 @@ export const InteractiveForm: StoryObj&lt;PdfViewerProps&gt; = {
         onFormChange={fn()} /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
-        </div>
-  </div>
-</article>
-<article
-  class="card 
-  has-error 
-  has-info 
-  no-story-error"
-  role="listitem"
-  aria-label="PdfViewer">
-  <div class="head">
-    <div class="title">
-      <h2><span class="status-dot dot-err"></span> PdfViewer</h2>
-      <div class="badges">
-        <label for="c-20-beta-documentviewer-renderers-pdfviewer-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-20-beta-documentviewer-renderers-pdfviewer-info" class="badge info as-toggle">1 info</label>
-        <label for="c-20-beta-documentviewer-renderers-pdfviewer-stories" class="badge ok as-toggle">1 story</label>
-      </div>
-    </div>
-    <div class="meta" title="./src/stories/PdfViewer/PdfViewer.stories.tsx">beta-documentviewer-renderers-pdfviewer · ./src/stories/PdfViewer/PdfViewer.stories.tsx</div>
-    
-    
-    
-  </div>
-
-  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-20-beta-documentviewer-renderers-pdfviewer-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-20-beta-documentviewer-renderers-pdfviewer-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-20-beta-documentviewer-renderers-pdfviewer-stories" class="tg tg-stories" type="checkbox" hidden />
-  
-
-  <div class="panels">
-    
-        <div class="panel panel-err">
-          
-    <div class="note err">
-      <div class="note-title">Prop type error</div>
-      <div class="note-body"><pre><code>No component file found for the &quot;PdfViewer&quot; component.
-  22 | import { Employee } from &quot;../../types/Employee.js&quot;;
-  23 |
-&gt; 24 | const meta: Meta&lt;PdfViewerMediaProps&gt; = {
-     | ^
-  25 |   title: &quot;Beta/DocumentViewer/Renderers/PdfViewer&quot;,
-  26 |   component: PdfViewer,
-  27 |   parameters: {
-
-./src/stories/PdfViewer/PdfViewer.stories.tsx:
-/*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-import { useOsdkObject } from &quot;@osdk/react&quot;;
-import type { PdfViewerMediaProps } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-import { PdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
-import { MEDIA_EMPLOYEE_PK } from &quot;../../mocks/fauxFoundry.js&quot;;
-import { Employee } from &quot;../../types/Employee.js&quot;;
-
-const meta: Meta&lt;PdfViewerMediaProps&gt; = {
-  title: &quot;Beta/DocumentViewer/Renderers/PdfViewer&quot;,
-  component: PdfViewer,
-  parameters: {
-    controls: { expanded: true },
-  },
-};
-
-export default meta;
-type Story = StoryObj&lt;typeof meta&gt;;
-
-export const Default: Story = {
-  render: () =&gt; {
-    const { object: employee, isLoading } = useOsdkObject(
-      Employee,
-      MEDIA_EMPLOYEE_PK,
-    );
-
-    if (isLoading || !employee?.employeeDocuments) {
-      return &lt;div style={{ height: &quot;600px&quot; }}&gt;Loading OSDK media…&lt;/div&gt;;
-    }
-
-    return (
-      &lt;div style={{ height: &quot;600px&quot; }}&gt;
-        &lt;PdfViewer media={employee.employeeDocuments} /&gt;
-      &lt;/div&gt;
-    );
-  },
-  parameters: {
-    docs: {
-      source: {
-        code:
-          `import { PdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-
-// Access media from an OSDK object&#39;s media reference property
-const employee = useOsdkObject(Employee, employeePk);
-&lt;PdfViewer media={employee.employeeDocuments} /&gt;`,
-      },
-    },
-  },
-};
-</code></pre></div>
-    </div>
-        </div>
-    
-        <div class="panel panel-info">
-          
-    <div class="note info">
-      <div class="note-title">Info</div>
-      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
-    </div>
-        </div>
-    
-    
-        <div class="panel panel-stories">
-          
-          
-          
-          <div class="note ok">
-                <div class="row">
-                  <span class="ex-name">Imports</span>
-                </div>
-                <pre><code>import { PdfViewer } from "@osdk/react-components-storybook";</code></pre>
-              </div>
-          
-          
             <div class="note ok">
               <div class="row">
-                <span class="ex-name">Default</span>
+                <span class="ex-name">With Osdk Media</span>
                 <span class="badge ok">story ok</span>
               </div>
               
               
-              <pre><code>const Default = () =&gt; {
+              <pre><code>const WithOsdkMedia = () =&gt; {
   const { object: employee, isLoading } = useOsdkObject(
     Employee,
     MEDIA_EMPLOYEE_PK,
@@ -15775,21 +15436,21 @@ const employee = useOsdkObject(Employee, employeePk);
     <div class="title">
       <h2><span class="status-dot dot-err"></span> PdfViewerAnnotationLayer</h2>
       <div class="badges">
-        <label for="c-21-beta-documentviewer-renderers-pdfviewer-building-blocks-annotationlayer-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-21-beta-documentviewer-renderers-pdfviewer-building-blocks-annotationlayer-info" class="badge info as-toggle">1 info</label>
-        <label for="c-21-beta-documentviewer-renderers-pdfviewer-building-blocks-annotationlayer-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-19-beta-pdfviewer-building-blocks-annotationlayer-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-19-beta-pdfviewer-building-blocks-annotationlayer-info" class="badge info as-toggle">1 info</label>
+        <label for="c-19-beta-pdfviewer-building-blocks-annotationlayer-stories" class="badge ok as-toggle">3 stories</label>
       </div>
     </div>
-    <div class="meta" title="./src/stories/PdfViewer/AnnotationLayer.stories.tsx">beta-documentviewer-renderers-pdfviewer-building-blocks-annotationlayer · ./src/stories/PdfViewer/AnnotationLayer.stories.tsx</div>
+    <div class="meta" title="./src/stories/PdfViewer/AnnotationLayer.stories.tsx">beta-pdfviewer-building-blocks-annotationlayer · ./src/stories/PdfViewer/AnnotationLayer.stories.tsx</div>
     
     
     
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-21-beta-documentviewer-renderers-pdfviewer-building-blocks-annotationlayer-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-21-beta-documentviewer-renderers-pdfviewer-building-blocks-annotationlayer-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-21-beta-documentviewer-renderers-pdfviewer-building-blocks-annotationlayer-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-19-beta-pdfviewer-building-blocks-annotationlayer-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-19-beta-pdfviewer-building-blocks-annotationlayer-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-19-beta-pdfviewer-building-blocks-annotationlayer-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -15803,9 +15464,9 @@ const employee = useOsdkObject(Employee, employeePk);
   54 |
 &gt; 55 | const meta: Meta&lt;PdfViewerAnnotationLayerProps&gt; = {
      | ^
-  56 |   title:
-  57 |     &quot;Beta/DocumentViewer/Renderers/PdfViewer/Building Blocks/AnnotationLayer&quot;,
-  58 |   component: PdfViewerAnnotationLayer,
+  56 |   title: &quot;Beta/PdfViewer/Building Blocks/AnnotationLayer&quot;,
+  57 |   component: PdfViewerAnnotationLayer,
+  58 |   args: {
 
 ./src/stories/PdfViewer/AnnotationLayer.stories.tsx:
 /*
@@ -15863,8 +15524,7 @@ const MIXED_ANNOTATIONS: PdfAnnotation[] = [
 ];
 
 const meta: Meta&lt;PdfViewerAnnotationLayerProps&gt; = {
-  title:
-    &quot;Beta/DocumentViewer/Renderers/PdfViewer/Building Blocks/AnnotationLayer&quot;,
+  title: &quot;Beta/PdfViewer/Building Blocks/AnnotationLayer&quot;,
   component: PdfViewerAnnotationLayer,
   args: {
     annotations: MIXED_ANNOTATIONS,
@@ -16069,21 +15729,21 @@ export const ZoomedIn: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> PdfViewerContent</h2>
       <div class="badges">
-        <label for="c-22-beta-documentviewer-renderers-pdfviewer-building-blocks-content-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-22-beta-documentviewer-renderers-pdfviewer-building-blocks-content-info" class="badge info as-toggle">1 info</label>
-        <label for="c-22-beta-documentviewer-renderers-pdfviewer-building-blocks-content-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-20-beta-pdfviewer-building-blocks-content-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-20-beta-pdfviewer-building-blocks-content-info" class="badge info as-toggle">1 info</label>
+        <label for="c-20-beta-pdfviewer-building-blocks-content-stories" class="badge ok as-toggle">3 stories</label>
       </div>
     </div>
-    <div class="meta" title="./src/stories/PdfViewer/Content.stories.tsx">beta-documentviewer-renderers-pdfviewer-building-blocks-content · ./src/stories/PdfViewer/Content.stories.tsx</div>
+    <div class="meta" title="./src/stories/PdfViewer/Content.stories.tsx">beta-pdfviewer-building-blocks-content · ./src/stories/PdfViewer/Content.stories.tsx</div>
     
     
     
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-22-beta-documentviewer-renderers-pdfviewer-building-blocks-content-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-22-beta-documentviewer-renderers-pdfviewer-building-blocks-content-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-22-beta-documentviewer-renderers-pdfviewer-building-blocks-content-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-20-beta-pdfviewer-building-blocks-content-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-20-beta-pdfviewer-building-blocks-content-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-20-beta-pdfviewer-building-blocks-content-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -16097,7 +15757,7 @@ export const ZoomedIn: Story = {
   25 |
 &gt; 26 | const meta: Meta&lt;PdfViewerContentProps&gt; = {
      | ^
-  27 |   title: &quot;Beta/DocumentViewer/Renderers/PdfViewer/Building Blocks/Content&quot;,
+  27 |   title: &quot;Beta/PdfViewer/Building Blocks/Content&quot;,
   28 |   component: PdfViewerContent,
   29 |   args: {
 
@@ -16128,7 +15788,7 @@ const SAMPLE_PDF_URL =
   &quot;https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf&quot;;
 
 const meta: Meta&lt;PdfViewerContentProps&gt; = {
-  title: &quot;Beta/DocumentViewer/Renderers/PdfViewer/Building Blocks/Content&quot;,
+  title: &quot;Beta/PdfViewer/Building Blocks/Content&quot;,
   component: PdfViewerContent,
   args: {
     src: SAMPLE_PDF_URL,
@@ -16252,21 +15912,21 @@ export const StartOnPage5: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> PdfViewerOutlineSidebar</h2>
       <div class="badges">
-        <label for="c-23-beta-documentviewer-renderers-pdfviewer-building-blocks-outlinesidebar-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-23-beta-documentviewer-renderers-pdfviewer-building-blocks-outlinesidebar-info" class="badge info as-toggle">1 info</label>
-        <label for="c-23-beta-documentviewer-renderers-pdfviewer-building-blocks-outlinesidebar-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-21-beta-pdfviewer-building-blocks-outlinesidebar-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-21-beta-pdfviewer-building-blocks-outlinesidebar-info" class="badge info as-toggle">1 info</label>
+        <label for="c-21-beta-pdfviewer-building-blocks-outlinesidebar-stories" class="badge ok as-toggle">3 stories</label>
       </div>
     </div>
-    <div class="meta" title="./src/stories/PdfViewer/OutlineSidebar.stories.tsx">beta-documentviewer-renderers-pdfviewer-building-blocks-outlinesidebar · ./src/stories/PdfViewer/OutlineSidebar.stories.tsx</div>
+    <div class="meta" title="./src/stories/PdfViewer/OutlineSidebar.stories.tsx">beta-pdfviewer-building-blocks-outlinesidebar · ./src/stories/PdfViewer/OutlineSidebar.stories.tsx</div>
     
     
     
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-23-beta-documentviewer-renderers-pdfviewer-building-blocks-outlinesidebar-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-23-beta-documentviewer-renderers-pdfviewer-building-blocks-outlinesidebar-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-23-beta-documentviewer-renderers-pdfviewer-building-blocks-outlinesidebar-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-21-beta-pdfviewer-building-blocks-outlinesidebar-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-21-beta-pdfviewer-building-blocks-outlinesidebar-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-21-beta-pdfviewer-building-blocks-outlinesidebar-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -16280,9 +15940,9 @@ export const StartOnPage5: Story = {
   79 |
 &gt; 80 | const meta: Meta&lt;PdfViewerOutlineSidebarProps&gt; = {
      | ^
-  81 |   title:
-  82 |     &quot;Beta/DocumentViewer/Renderers/PdfViewer/Building Blocks/OutlineSidebar&quot;,
-  83 |   component: PdfViewerOutlineSidebar,
+  81 |   title: &quot;Beta/PdfViewer/Building Blocks/OutlineSidebar&quot;,
+  82 |   component: PdfViewerOutlineSidebar,
+  83 |   args: {
 
 ./src/stories/PdfViewer/OutlineSidebar.stories.tsx:
 /*
@@ -16365,8 +16025,7 @@ const SAMPLE_OUTLINE: OutlineItem[] = [
 ];
 
 const meta: Meta&lt;PdfViewerOutlineSidebarProps&gt; = {
-  title:
-    &quot;Beta/DocumentViewer/Renderers/PdfViewer/Building Blocks/OutlineSidebar&quot;,
+  title: &quot;Beta/PdfViewer/Building Blocks/OutlineSidebar&quot;,
   component: PdfViewerOutlineSidebar,
   args: {
     outlineItems: SAMPLE_OUTLINE,
@@ -16495,21 +16154,21 @@ export const Empty: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> PdfViewerSearchBar</h2>
       <div class="badges">
-        <label for="c-24-beta-documentviewer-renderers-pdfviewer-building-blocks-searchbar-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-24-beta-documentviewer-renderers-pdfviewer-building-blocks-searchbar-info" class="badge info as-toggle">1 info</label>
-        <label for="c-24-beta-documentviewer-renderers-pdfviewer-building-blocks-searchbar-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-22-beta-pdfviewer-building-blocks-searchbar-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-22-beta-pdfviewer-building-blocks-searchbar-info" class="badge info as-toggle">1 info</label>
+        <label for="c-22-beta-pdfviewer-building-blocks-searchbar-stories" class="badge ok as-toggle">3 stories</label>
       </div>
     </div>
-    <div class="meta" title="./src/stories/PdfViewer/SearchBar.stories.tsx">beta-documentviewer-renderers-pdfviewer-building-blocks-searchbar · ./src/stories/PdfViewer/SearchBar.stories.tsx</div>
+    <div class="meta" title="./src/stories/PdfViewer/SearchBar.stories.tsx">beta-pdfviewer-building-blocks-searchbar · ./src/stories/PdfViewer/SearchBar.stories.tsx</div>
     
     
     
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-24-beta-documentviewer-renderers-pdfviewer-building-blocks-searchbar-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-24-beta-documentviewer-renderers-pdfviewer-building-blocks-searchbar-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-24-beta-documentviewer-renderers-pdfviewer-building-blocks-searchbar-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-22-beta-pdfviewer-building-blocks-searchbar-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-22-beta-pdfviewer-building-blocks-searchbar-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-22-beta-pdfviewer-building-blocks-searchbar-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -16523,7 +16182,7 @@ export const Empty: Story = {
   21 |
 &gt; 22 | const meta: Meta&lt;PdfViewerSearchBarProps&gt; = {
      | ^
-  23 |   title: &quot;Beta/DocumentViewer/Renderers/PdfViewer/Building Blocks/SearchBar&quot;,
+  23 |   title: &quot;Beta/PdfViewer/Building Blocks/SearchBar&quot;,
   24 |   component: PdfViewerSearchBar,
   25 |   args: {
 
@@ -16550,7 +16209,7 @@ import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { fn } from &quot;storybook/test&quot;;
 
 const meta: Meta&lt;PdfViewerSearchBarProps&gt; = {
-  title: &quot;Beta/DocumentViewer/Renderers/PdfViewer/Building Blocks/SearchBar&quot;,
+  title: &quot;Beta/PdfViewer/Building Blocks/SearchBar&quot;,
   component: PdfViewerSearchBar,
   args: {
     query: &quot;&quot;,
@@ -16685,21 +16344,21 @@ export const NoResults: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> PdfViewerToolbar</h2>
       <div class="badges">
-        <label for="c-25-beta-documentviewer-renderers-pdfviewer-building-blocks-toolbar-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-25-beta-documentviewer-renderers-pdfviewer-building-blocks-toolbar-info" class="badge info as-toggle">1 info</label>
-        <label for="c-25-beta-documentviewer-renderers-pdfviewer-building-blocks-toolbar-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-23-beta-pdfviewer-building-blocks-toolbar-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-23-beta-pdfviewer-building-blocks-toolbar-info" class="badge info as-toggle">1 info</label>
+        <label for="c-23-beta-pdfviewer-building-blocks-toolbar-stories" class="badge ok as-toggle">3 stories</label>
       </div>
     </div>
-    <div class="meta" title="./src/stories/PdfViewer/Toolbar.stories.tsx">beta-documentviewer-renderers-pdfviewer-building-blocks-toolbar · ./src/stories/PdfViewer/Toolbar.stories.tsx</div>
+    <div class="meta" title="./src/stories/PdfViewer/Toolbar.stories.tsx">beta-pdfviewer-building-blocks-toolbar · ./src/stories/PdfViewer/Toolbar.stories.tsx</div>
     
     
     
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-25-beta-documentviewer-renderers-pdfviewer-building-blocks-toolbar-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-25-beta-documentviewer-renderers-pdfviewer-building-blocks-toolbar-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-25-beta-documentviewer-renderers-pdfviewer-building-blocks-toolbar-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-23-beta-pdfviewer-building-blocks-toolbar-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-23-beta-pdfviewer-building-blocks-toolbar-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-23-beta-pdfviewer-building-blocks-toolbar-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -16713,7 +16372,7 @@ export const NoResults: Story = {
   21 |
 &gt; 22 | const meta: Meta&lt;PdfViewerToolbarProps&gt; = {
      | ^
-  23 |   title: &quot;Beta/DocumentViewer/Renderers/PdfViewer/Building Blocks/Toolbar&quot;,
+  23 |   title: &quot;Beta/PdfViewer/Building Blocks/Toolbar&quot;,
   24 |   component: PdfViewerToolbar,
   25 |   args: {
 
@@ -16740,7 +16399,7 @@ import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { fn } from &quot;storybook/test&quot;;
 
 const meta: Meta&lt;PdfViewerToolbarProps&gt; = {
-  title: &quot;Beta/DocumentViewer/Renderers/PdfViewer/Building Blocks/Toolbar&quot;,
+  title: &quot;Beta/PdfViewer/Building Blocks/Toolbar&quot;,
   component: PdfViewerToolbar,
   args: {
     currentPage: 1,
@@ -16913,21 +16572,21 @@ export const MidDocument: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> ThumbnailSidebarWrapper</h2>
       <div class="badges">
-        <label for="c-26-beta-documentviewer-renderers-pdfviewer-building-blocks-thumbnailsidebar-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-26-beta-documentviewer-renderers-pdfviewer-building-blocks-thumbnailsidebar-info" class="badge info as-toggle">1 info</label>
-        <label for="c-26-beta-documentviewer-renderers-pdfviewer-building-blocks-thumbnailsidebar-stories" class="badge err as-toggle">2/2 story errors</label>
+        <label for="c-24-beta-pdfviewer-building-blocks-thumbnailsidebar-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-24-beta-pdfviewer-building-blocks-thumbnailsidebar-info" class="badge info as-toggle">1 info</label>
+        <label for="c-24-beta-pdfviewer-building-blocks-thumbnailsidebar-stories" class="badge err as-toggle">2/2 story errors</label>
       </div>
     </div>
-    <div class="meta" title="./src/stories/PdfViewer/ThumbnailSidebar.stories.tsx">beta-documentviewer-renderers-pdfviewer-building-blocks-thumbnailsidebar · ./src/stories/PdfViewer/ThumbnailSidebar.stories.tsx</div>
+    <div class="meta" title="./src/stories/PdfViewer/ThumbnailSidebar.stories.tsx">beta-pdfviewer-building-blocks-thumbnailsidebar · ./src/stories/PdfViewer/ThumbnailSidebar.stories.tsx</div>
     
     
     
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-26-beta-documentviewer-renderers-pdfviewer-building-blocks-thumbnailsidebar-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-26-beta-documentviewer-renderers-pdfviewer-building-blocks-thumbnailsidebar-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-26-beta-documentviewer-renderers-pdfviewer-building-blocks-thumbnailsidebar-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-24-beta-pdfviewer-building-blocks-thumbnailsidebar-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-24-beta-pdfviewer-building-blocks-thumbnailsidebar-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-24-beta-pdfviewer-building-blocks-thumbnailsidebar-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -16941,9 +16600,9 @@ export const MidDocument: Story = {
   63 |
 &gt; 64 | const meta: Meta&lt;ThumbnailSidebarStoryProps&gt; = {
      | ^
-  65 |   title:
-  66 |     &quot;Beta/DocumentViewer/Renderers/PdfViewer/Building Blocks/ThumbnailSidebar&quot;,
-  67 |   component: ThumbnailSidebarWrapper,
+  65 |   title: &quot;Beta/PdfViewer/Building Blocks/ThumbnailSidebar&quot;,
+  66 |   component: ThumbnailSidebarWrapper,
+  67 |   args: {
 
 ./src/stories/PdfViewer/ThumbnailSidebar.stories.tsx:
 /*
@@ -17010,8 +16669,7 @@ function ThumbnailSidebarWrapper({
 }
 
 const meta: Meta&lt;ThumbnailSidebarStoryProps&gt; = {
-  title:
-    &quot;Beta/DocumentViewer/Renderers/PdfViewer/Building Blocks/ThumbnailSidebar&quot;,
+  title: &quot;Beta/PdfViewer/Building Blocks/ThumbnailSidebar&quot;,
   component: ThumbnailSidebarWrapper,
   args: {
     src: SAMPLE_PDF_URL,
@@ -17099,21 +16757,21 @@ export const ActivePage: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> TiffRenderer</h2>
       <div class="badges">
-        <label for="c-27-beta-documentviewer-renderers-tiffrenderer-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-27-beta-documentviewer-renderers-tiffrenderer-info" class="badge info as-toggle">1 info</label>
-        <label for="c-27-beta-documentviewer-renderers-tiffrenderer-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-25-beta-tiffrenderer-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-25-beta-tiffrenderer-info" class="badge info as-toggle">1 info</label>
+        <label for="c-25-beta-tiffrenderer-stories" class="badge ok as-toggle">2 stories</label>
       </div>
     </div>
-    <div class="meta" title="./src/stories/TiffRenderer/TiffRendererFeatures.stories.tsx">beta-documentviewer-renderers-tiffrenderer · ./src/stories/TiffRenderer/TiffRendererFeatures.stories.tsx</div>
+    <div class="meta" title="./src/stories/TiffRenderer/TiffRendererFeatures.stories.tsx">beta-tiffrenderer · ./src/stories/TiffRenderer/TiffRendererFeatures.stories.tsx</div>
     
     
     
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-27-beta-documentviewer-renderers-tiffrenderer-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-27-beta-documentviewer-renderers-tiffrenderer-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-27-beta-documentviewer-renderers-tiffrenderer-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-25-beta-tiffrenderer-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-25-beta-tiffrenderer-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-25-beta-tiffrenderer-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -17127,7 +16785,7 @@ export const ActivePage: Story = {
   103 |
 &gt; 104 | const meta: Meta&lt;TiffRendererProps&gt; = {
       | ^
-  105 |   title: &quot;Beta/DocumentViewer/Renderers/TiffRenderer&quot;,
+  105 |   title: &quot;Beta/TiffRenderer&quot;,
   106 |   component: TiffRenderer,
   107 |   args: {
 
@@ -17236,7 +16894,7 @@ function createSampleTiffBytes(): Uint8Array {
 const sampleTiffBytes = createSampleTiffBytes();
 
 const meta: Meta&lt;TiffRendererProps&gt; = {
-  title: &quot;Beta/DocumentViewer/Renderers/TiffRenderer&quot;,
+  title: &quot;Beta/TiffRenderer&quot;,
   component: TiffRenderer,
   args: {
     content: sampleTiffBytes,
@@ -17267,7 +16925,7 @@ const meta: Meta&lt;TiffRendererProps&gt; = {
 export default meta;
 type Story = StoryObj&lt;typeof meta&gt;;
 
-export const WithContent: Story = {
+export const Default: Story = {
   parameters: {
     docs: {
       source: {
@@ -17322,12 +16980,12 @@ export const WithErrorCallback: Story = {
           
             <div class="note ok">
               <div class="row">
-                <span class="ex-name">With Content</span>
+                <span class="ex-name">Default</span>
                 <span class="badge ok">story ok</span>
               </div>
               
               
-              <pre><code>const WithContent = () =&gt; &lt;div style={{ height: &quot;400px&quot; }}&gt;
+              <pre><code>const Default = () =&gt; &lt;div style={{ height: &quot;400px&quot; }}&gt;
     &lt;TiffRenderer content={sampleTiffBytes} /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
@@ -17356,9 +17014,9 @@ export const WithErrorCallback: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> UpdateEmployeeActionFormStory</h2>
       <div class="badges">
-        <label for="c-28-beta-actionform-usage-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-28-beta-actionform-usage-info" class="badge info as-toggle">1 info</label>
-        <label for="c-28-beta-actionform-usage-stories" class="badge err as-toggle">10/13 story errors</label>
+        <label for="c-26-beta-actionform-usage-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-26-beta-actionform-usage-info" class="badge info as-toggle">1 info</label>
+        <label for="c-26-beta-actionform-usage-stories" class="badge err as-toggle">10/13 story errors</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/ActionForm/ActionForm.stories.tsx">beta-actionform-usage · ./src/stories/ActionForm/ActionForm.stories.tsx</div>
@@ -17368,9 +17026,9 @@ export const WithErrorCallback: Story = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-28-beta-actionform-usage-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-28-beta-actionform-usage-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-28-beta-actionform-usage-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-26-beta-actionform-usage-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-26-beta-actionform-usage-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-26-beta-actionform-usage-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -18505,21 +18163,21 @@ function ControlledActionFormStory(): React.ReactElement {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> VideoViewer</h2>
       <div class="badges">
-        <label for="c-29-beta-documentviewer-renderers-videoviewer-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-29-beta-documentviewer-renderers-videoviewer-info" class="badge info as-toggle">1 info</label>
-        <label for="c-29-beta-documentviewer-renderers-videoviewer-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-27-beta-videoviewer-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-27-beta-videoviewer-info" class="badge info as-toggle">1 info</label>
+        <label for="c-27-beta-videoviewer-stories" class="badge ok as-toggle">2 stories</label>
       </div>
     </div>
-    <div class="meta" title="./src/stories/VideoViewer/VideoViewer.stories.tsx">beta-documentviewer-renderers-videoviewer · ./src/stories/VideoViewer/VideoViewer.stories.tsx</div>
+    <div class="meta" title="./src/stories/VideoViewer/VideoViewer.stories.tsx">beta-videoviewer · ./src/stories/VideoViewer/VideoViewer.stories.tsx</div>
     
     
     
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-29-beta-documentviewer-renderers-videoviewer-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-29-beta-documentviewer-renderers-videoviewer-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-29-beta-documentviewer-renderers-videoviewer-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-27-beta-videoviewer-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-27-beta-videoviewer-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-27-beta-videoviewer-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -18533,7 +18191,7 @@ function ControlledActionFormStory(): React.ReactElement {
   50 |
 &gt; 51 | const meta: Meta&lt;VideoViewerMediaProps&gt; = {
      | ^
-  52 |   title: &quot;Beta/DocumentViewer/Renderers/VideoViewer&quot;,
+  52 |   title: &quot;Beta/VideoViewer&quot;,
   53 |   component: VideoViewer,
   54 |   args: {
 
@@ -18589,7 +18247,7 @@ function createMockMedia(url: string, filename: string): Media {
 const mockMedia = createMockMedia(SAMPLE_VIDEO_URL, &quot;example.mp4&quot;);
 
 const meta: Meta&lt;VideoViewerMediaProps&gt; = {
-  title: &quot;Beta/DocumentViewer/Renderers/VideoViewer&quot;,
+  title: &quot;Beta/VideoViewer&quot;,
   component: VideoViewer,
   args: {
     media: mockMedia,
@@ -18743,7 +18401,7 @@ export const WithErrorCallback: Story = {
           <label for="no-component-import-found-toggle" class="group-header">
             <span class="caret">▸</span>
             <span class="group-title">No component import found</span>
-            <span class="group-count">30</span>
+            <span class="group-count">28</span>
           </label>
           <div class="group-cards">
 <article
@@ -19129,21 +18787,21 @@ export const BannerOnly: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> BaseEmailViewer</h2>
       <div class="badges">
-        <label for="c-error-1-beta-documentviewer-renderers-emailviewer-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-1-beta-documentviewer-renderers-emailviewer-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-1-beta-documentviewer-renderers-emailviewer-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-error-1-beta-emailviewer-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-1-beta-emailviewer-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-1-beta-emailviewer-stories" class="badge ok as-toggle">3 stories</label>
       </div>
     </div>
-    <div class="meta" title="./src/stories/EmailViewer/EmailViewer.stories.tsx">beta-documentviewer-renderers-emailviewer · ./src/stories/EmailViewer/EmailViewer.stories.tsx</div>
+    <div class="meta" title="./src/stories/EmailViewer/EmailViewer.stories.tsx">beta-emailviewer · ./src/stories/EmailViewer/EmailViewer.stories.tsx</div>
     
     
     
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-1-beta-documentviewer-renderers-emailviewer-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-1-beta-documentviewer-renderers-emailviewer-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-1-beta-documentviewer-renderers-emailviewer-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-1-beta-emailviewer-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-1-beta-emailviewer-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-1-beta-emailviewer-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -19157,7 +18815,7 @@ export const BannerOnly: Story = {
    97 |
 &gt;  98 | const meta: Meta&lt;BaseEmailViewerProps&gt; = {
       | ^
-   99 |   title: &quot;Beta/DocumentViewer/Renderers/EmailViewer&quot;,
+   99 |   title: &quot;Beta/EmailViewer&quot;,
   100 |   component: BaseEmailViewer,
   101 |   args: {
 
@@ -19260,7 +18918,7 @@ function createMockEmailMedia(emlContent: string): Media {
 }
 
 const meta: Meta&lt;BaseEmailViewerProps&gt; = {
-  title: &quot;Beta/DocumentViewer/Renderers/EmailViewer&quot;,
+  title: &quot;Beta/EmailViewer&quot;,
   component: BaseEmailViewer,
   args: {
     email: SAMPLE_EMAIL,
@@ -19288,7 +18946,26 @@ const meta: Meta&lt;BaseEmailViewerProps&gt; = {
 export default meta;
 type Story = StoryObj&lt;typeof meta&gt;;
 
-export const Default: StoryObj&lt;EmailViewerMediaProps&gt; = {
+export const HtmlEmail: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code:
+          `import { BaseEmailViewer } from &quot;@osdk/react-components/experimental/email-viewer&quot;;
+
+&lt;BaseEmailViewer email={parsedEmail} /&gt;`,
+      },
+    },
+  },
+};
+
+export const PlainTextEmail: Story = {
+  args: {
+    email: SAMPLE_TEXT_EMAIL,
+  },
+};
+
+export const WithMedia: StoryObj&lt;EmailViewerMediaProps&gt; = {
   args: {
     media: createMockEmailMedia(SAMPLE_EML_CONTENT),
   },
@@ -19306,25 +18983,6 @@ export const Default: StoryObj&lt;EmailViewerMediaProps&gt; = {
 &lt;EmailViewer media={myOsdkMedia} /&gt;`,
       },
     },
-  },
-};
-
-export const HtmlEmail: Story = {
-  parameters: {
-    docs: {
-      source: {
-        code:
-          `import { BaseEmailViewer } from &quot;@osdk/react-components/experimental/email-viewer&quot;;
-
-&lt;BaseEmailViewer email={parsedEmail} /&gt;`,
-      },
-    },
-  },
-};
-
-export const PlainTextEmail: Story = {
-  args: {
-    email: SAMPLE_TEXT_EMAIL,
   },
 };
 </code></pre></div>
@@ -19354,17 +19012,6 @@ export const PlainTextEmail: Story = {
           
             <div class="note ok">
               <div class="row">
-                <span class="ex-name">Default</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const Default = () =&gt; &lt;div style={{ height: &quot;500px&quot; }}&gt;
-    &lt;EmailViewer email={SAMPLE_EMAIL} media={createMockEmailMedia(SAMPLE_EML_CONTENT)} /&gt;
-&lt;/div&gt;;</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
                 <span class="ex-name">Html Email</span>
                 <span class="badge ok">story ok</span>
               </div>
@@ -19385,6 +19032,17 @@ export const PlainTextEmail: Story = {
     &lt;BaseEmailViewer email={SAMPLE_TEXT_EMAIL} /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Media</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithMedia = () =&gt; &lt;div style={{ height: &quot;500px&quot; }}&gt;
+    &lt;EmailViewer email={SAMPLE_EMAIL} media={createMockEmailMedia(SAMPLE_EML_CONTENT)} /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
         </div>
   </div>
 </article>
@@ -19399,21 +19057,21 @@ export const PlainTextEmail: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> BaseExcelViewer</h2>
       <div class="badges">
-        <label for="c-error-2-beta-documentviewer-renderers-excelviewer-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-2-beta-documentviewer-renderers-excelviewer-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-2-beta-documentviewer-renderers-excelviewer-stories" class="badge ok as-toggle">4 stories</label>
+        <label for="c-error-2-beta-excelviewer-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-2-beta-excelviewer-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-2-beta-excelviewer-stories" class="badge ok as-toggle">4 stories</label>
       </div>
     </div>
-    <div class="meta" title="./src/stories/ExcelViewer/ExcelViewer.stories.tsx">beta-documentviewer-renderers-excelviewer · ./src/stories/ExcelViewer/ExcelViewer.stories.tsx</div>
+    <div class="meta" title="./src/stories/ExcelViewer/ExcelViewer.stories.tsx">beta-excelviewer · ./src/stories/ExcelViewer/ExcelViewer.stories.tsx</div>
     
     
     
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-2-beta-documentviewer-renderers-excelviewer-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-2-beta-documentviewer-renderers-excelviewer-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-2-beta-documentviewer-renderers-excelviewer-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-2-beta-excelviewer-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-2-beta-excelviewer-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-2-beta-excelviewer-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -19427,7 +19085,7 @@ export const PlainTextEmail: Story = {
   162 |
 &gt; 163 | const meta: Meta&lt;BaseExcelViewerProps&gt; = {
       | ^
-  164 |   title: &quot;Beta/DocumentViewer/Renderers/ExcelViewer&quot;,
+  164 |   title: &quot;Beta/ExcelViewer&quot;,
   165 |   component: BaseExcelViewer,
   166 |   args: {
 
@@ -19595,7 +19253,7 @@ function createMockExcelMedia(): Media {
 }
 
 const meta: Meta&lt;BaseExcelViewerProps&gt; = {
-  title: &quot;Beta/DocumentViewer/Renderers/ExcelViewer&quot;,
+  title: &quot;Beta/ExcelViewer&quot;,
   component: BaseExcelViewer,
   args: {
     spreadsheet: SAMPLE_SPREADSHEET,
@@ -19623,28 +19281,7 @@ const meta: Meta&lt;BaseExcelViewerProps&gt; = {
 export default meta;
 type Story = StoryObj&lt;typeof meta&gt;;
 
-export const Default: StoryObj&lt;ExcelViewerMediaProps&gt; = {
-  args: {
-    media: createMockExcelMedia(),
-  },
-  render: (args: ExcelViewerMediaProps) =&gt; (
-    &lt;div style={{ height: &quot;500px&quot; }}&gt;
-      &lt;ExcelViewer media={args.media} /&gt;
-    &lt;/div&gt;
-  ),
-  parameters: {
-    docs: {
-      source: {
-        code:
-          `import { ExcelViewer } from &quot;@osdk/react-components/experimental/excel-viewer&quot;;
-
-&lt;ExcelViewer media={myOsdkMedia} /&gt;`,
-      },
-    },
-  },
-};
-
-export const WithSpreadsheet: Story = {
+export const Default: Story = {
   parameters: {
     docs: {
       source: {
@@ -19661,6 +19298,27 @@ export const SingleSheet: Story = {
   args: {
     spreadsheet: {
       sheets: [SAMPLE_SPREADSHEET.sheets[0]!],
+    },
+  },
+};
+
+export const WithMedia: StoryObj&lt;ExcelViewerMediaProps&gt; = {
+  args: {
+    media: createMockExcelMedia(),
+  },
+  render: (args: ExcelViewerMediaProps) =&gt; (
+    &lt;div style={{ height: &quot;500px&quot; }}&gt;
+      &lt;ExcelViewer media={args.media} /&gt;
+    &lt;/div&gt;
+  ),
+  parameters: {
+    docs: {
+      source: {
+        code:
+          `import { ExcelViewer } from &quot;@osdk/react-components/experimental/excel-viewer&quot;;
+
+&lt;ExcelViewer media={myOsdkMedia} /&gt;`,
+      },
     },
   },
 };
@@ -19718,17 +19376,6 @@ export const WithRealFile: StoryObj&lt;ExcelViewerMediaProps&gt; = {
               
               
               <pre><code>const Default = () =&gt; &lt;div style={{ height: &quot;500px&quot; }}&gt;
-    &lt;ExcelViewer media={createMockExcelMedia()} /&gt;
-&lt;/div&gt;;</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">With Spreadsheet</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const WithSpreadsheet = () =&gt; &lt;div style={{ height: &quot;500px&quot; }}&gt;
     &lt;BaseExcelViewer spreadsheet={SAMPLE_SPREADSHEET} /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
@@ -19744,6 +19391,17 @@ export const WithRealFile: StoryObj&lt;ExcelViewerMediaProps&gt; = {
         spreadsheet={{
           sheets: [SAMPLE_SPREADSHEET.sheets[0]!],
         }} /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Media</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithMedia = () =&gt; &lt;div style={{ height: &quot;500px&quot; }}&gt;
+    &lt;ExcelViewer media={createMockExcelMedia()} /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
             <div class="note ok">
@@ -19799,13 +19457,13 @@ export const WithRealFile: StoryObj&lt;ExcelViewerMediaProps&gt; = {
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;BaseForm&quot; component.
-  198 | }
-  199 |
-&gt; 200 | const meta: Meta&lt;BaseFormStoryProps&gt; = {
+  200 | }
+  201 |
+&gt; 202 | const meta: Meta&lt;BaseFormStoryProps&gt; = {
       | ^
-  201 |   title: &quot;Beta/ActionForm/BaseForm&quot;,
-  202 |   component: BaseForm,
-  203 |   decorators: [
+  203 |   title: &quot;Beta/ActionForm/BaseForm&quot;,
+  204 |   component: BaseForm,
+  205 |   decorators: [
 
 ./src/stories/ActionForm/BaseForm.stories.tsx:
 /*
@@ -19843,10 +19501,6 @@ import {
   type StorySubmissionSnapshot,
   SubmissionOutputPanel,
 } from &quot;./SubmissionOutputPanel.js&quot;;
-import {
-  THEMED_SLIDER_DEFAULT_VALUE,
-  ThemedSliderField,
-} from &quot;./ThemedSliderField.js&quot;;
 
 /**
  * Flattened (non-union) props type for Storybook Meta.
@@ -19960,12 +19614,18 @@ const formContent: ReadonlyArray&lt;FormContentItem&gt; = [
     },
   }),
   field({
-    fieldKey: &quot;completion&quot;,
+    fieldKey: &quot;notes&quot;,
     fieldComponent: &quot;CUSTOM&quot;,
-    label: &quot;Completion&quot;,
+    label: &quot;Notes&quot;,
     fieldComponentProps: {
-      defaultValue: THEMED_SLIDER_DEFAULT_VALUE,
-      customRenderer: (props) =&gt; &lt;ThemedSliderField {...props} /&gt;,
+      customRenderer: (props) =&gt; (
+        &lt;textarea
+          value={props.value != null ? String(props.value) : &quot;&quot;}
+          onChange={(e) =&gt; props.onChange?.(e.target.value)}
+          className=&quot;osdkCustomTextarea&quot;
+          placeholder=&quot;Custom rendered notes field&quot;
+        /&gt;
+      ),
     },
   }),
 ];
@@ -20109,10 +19769,6 @@ export const Default: Story = {
     docs: {
       source: {
         code: `import { BaseForm } from &quot;@osdk/react-components/experimental&quot;;
-import {
-  THEMED_SLIDER_DEFAULT_VALUE,
-  ThemedSliderField,
-} from &quot;./ThemedSliderField&quot;;
 
 const formContent = [
   {
@@ -20168,12 +19824,17 @@ const formContent = [
     fieldComponentProps: { accept: &quot;.pdf,.doc,.docx&quot; },
   },
   {
-    fieldKey: &quot;completion&quot;,
+    fieldKey: &quot;notes&quot;,
     fieldComponent: &quot;CUSTOM&quot;,
-    label: &quot;Completion&quot;,
+    label: &quot;Notes&quot;,
     fieldComponentProps: {
-      defaultValue: THEMED_SLIDER_DEFAULT_VALUE,
-      customRenderer: (props) =&gt; &lt;ThemedSliderField {...props} /&gt;,
+      customRenderer: (props) =&gt; (
+        &lt;textarea
+          value={props.value ?? &quot;&quot;}
+          onChange={(e) =&gt; props.onChange?.(e.target.value)}
+          placeholder=&quot;Custom rendered notes field&quot;
+        /&gt;
+      ),
     },
   },
 ];
@@ -20191,9 +19852,7 @@ export const Controlled: Story = {
   parameters: {
     docs: {
       source: {
-        code: `const [formState, setFormState] = useState({
-  completion: THEMED_SLIDER_DEFAULT_VALUE,
-});
+        code: `const [formState, setFormState] = useState({});
 
 const handleFieldValueChange = (fieldKey, value) =&gt; {
   setFormState((prev) =&gt; ({ ...prev, [fieldKey]: value }));
@@ -20220,9 +19879,7 @@ return (
 };
 
 function ControlledFormStory(): React.ReactElement {
-  const [formState, setFormState] = useState&lt;Record&lt;string, unknown&gt;&gt;({
-    completion: THEMED_SLIDER_DEFAULT_VALUE,
-  });
+  const [formState, setFormState] = useState&lt;Record&lt;string, unknown&gt;&gt;({});
 
   const handleFieldValueChange = useCallback(
     (fieldKey: string, value: unknown) =&gt; {
@@ -22161,7 +21818,7 @@ function renderUserIdLabel(item: unknown): React.ReactNode {
                 <div class="row">
                   <span class="ex-name">Imports</span>
                 </div>
-                <pre><code>import { BaseForm, FormStoryLayout, SubmissionOutputPanel, ThemedSliderField } from "@osdk/react-components-storybook";
+                <pre><code>import { BaseForm, FormStoryLayout, SubmissionOutputPanel } from "@osdk/react-components-storybook";
 import { Button, Dialog } from "@blueprintjs/core";</code></pre>
               </div>
           
@@ -22454,21 +22111,21 @@ import { Button, Dialog } from "@blueprintjs/core";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-err"></span> BaseImageViewer</h2>
       <div class="badges">
-        <label for="c-error-4-beta-documentviewer-renderers-imageviewer-baseimageviewer-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-4-beta-documentviewer-renderers-imageviewer-baseimageviewer-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-4-beta-documentviewer-renderers-imageviewer-baseimageviewer-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-error-4-beta-imageviewer-baseimageviewer-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-4-beta-imageviewer-baseimageviewer-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-4-beta-imageviewer-baseimageviewer-stories" class="badge ok as-toggle">3 stories</label>
       </div>
     </div>
-    <div class="meta" title="./src/stories/ImageViewer/BaseImageViewer.stories.tsx">beta-documentviewer-renderers-imageviewer-baseimageviewer · ./src/stories/ImageViewer/BaseImageViewer.stories.tsx</div>
+    <div class="meta" title="./src/stories/ImageViewer/ImageViewer.stories.tsx">beta-imageviewer-baseimageviewer · ./src/stories/ImageViewer/ImageViewer.stories.tsx</div>
     
     
     
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-4-beta-documentviewer-renderers-imageviewer-baseimageviewer-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-4-beta-documentviewer-renderers-imageviewer-baseimageviewer-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-4-beta-documentviewer-renderers-imageviewer-baseimageviewer-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-4-beta-imageviewer-baseimageviewer-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-4-beta-imageviewer-baseimageviewer-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-4-beta-imageviewer-baseimageviewer-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -22478,15 +22135,15 @@ import { Button, Dialog } from "@blueprintjs/core";</code></pre>
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;BaseImageViewer&quot; component.
-  46 | const sampleImageDataUrl = createSampleImageDataUrl();
-  47 |
-&gt; 48 | const baseMeta: Meta&lt;BaseImageViewerProps&gt; = {
+  85 | // --- BaseImageViewer stories ---
+  86 |
+&gt; 87 | const baseMeta: Meta&lt;BaseImageViewerProps&gt; = {
      | ^
-  49 |   title: &quot;Beta/DocumentViewer/Renderers/ImageViewer/BaseImageViewer&quot;,
-  50 |   component: BaseImageViewer,
-  51 |   args: {
+  88 |   title: &quot;Beta/ImageViewer/BaseImageViewer&quot;,
+  89 |   component: BaseImageViewer,
+  90 |   args: {
 
-./src/stories/ImageViewer/BaseImageViewer.stories.tsx:
+./src/stories/ImageViewer/ImageViewer.stories.tsx:
 /*
  * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
@@ -22503,8 +22160,15 @@ import { Button, Dialog } from "@blueprintjs/core";</code></pre>
  * limitations under the License.
  */
 
-import type { BaseImageViewerProps } from &quot;@osdk/react-components/experimental/image-viewer&quot;;
-import { BaseImageViewer } from &quot;@osdk/react-components/experimental/image-viewer&quot;;
+import type { Media } from &quot;@osdk/api&quot;;
+import type {
+  BaseImageViewerProps,
+  ImageViewerMediaProps,
+} from &quot;@osdk/react-components/experimental/image-viewer&quot;;
+import {
+  BaseImageViewer,
+  ImageViewer,
+} from &quot;@osdk/react-components/experimental/image-viewer&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { fn } from &quot;storybook/test&quot;;
 
@@ -22534,8 +22198,40 @@ function createSampleImageDataUrl(): string {
 
 const sampleImageDataUrl = createSampleImageDataUrl();
 
+function createMockImageMedia(
+  dataUrl: string,
+  mimeType: string,
+  filename: string,
+): Media {
+  return {
+    fetchContents: async () =&gt; {
+      const response = await fetch(dataUrl);
+      return response;
+    },
+    fetchMetadata: () =&gt;
+      Promise.resolve({
+        path: filename,
+        sizeBytes: 1024,
+        mediaType: mimeType,
+      }),
+    getMediaReference: () =&gt; ({
+      mimeType,
+      reference: {
+        type: &quot;mediaSetViewItem&quot; as const,
+        mediaSetViewItem: {
+          mediaItemRid: &quot;ri.mio.main.media-item.mock-image&quot;,
+          mediaSetRid: &quot;ri.mio.main.media-set.mock-set&quot;,
+          mediaSetViewRid: &quot;ri.mio.main.media-set-view.mock-view&quot;,
+        },
+      },
+    }),
+  };
+}
+
+// --- BaseImageViewer stories ---
+
 const baseMeta: Meta&lt;BaseImageViewerProps&gt; = {
-  title: &quot;Beta/DocumentViewer/Renderers/ImageViewer/BaseImageViewer&quot;,
+  title: &quot;Beta/ImageViewer/BaseImageViewer&quot;,
   component: BaseImageViewer,
   args: {
     src: sampleImageDataUrl,
@@ -22591,6 +22287,32 @@ export const WithErrorCallback: Story = {
     onError: fn(),
   },
 };
+
+export const WithMedia: StoryObj&lt;ImageViewerMediaProps&gt; = {
+  args: {
+    media: createMockImageMedia(
+      sampleImageDataUrl,
+      &quot;image/png&quot;,
+      &quot;sample.png&quot;,
+    ),
+    alt: &quot;Sample image loaded from Media&quot;,
+  },
+  render: (args: ImageViewerMediaProps) =&gt; (
+    &lt;div style={{ height: &quot;400px&quot;, width: &quot;400px&quot; }}&gt;
+      &lt;ImageViewer {...args} /&gt;
+    &lt;/div&gt;
+  ),
+  parameters: {
+    docs: {
+      source: {
+        code:
+          `import { ImageViewer } from &quot;@osdk/react-components/experimental/image-viewer&quot;;
+
+&lt;ImageViewer media={myOsdkMedia} alt=&quot;My image&quot; /&gt;`,
+      },
+    },
+  },
+};
 </code></pre></div>
     </div>
         </div>
@@ -22612,7 +22334,7 @@ export const WithErrorCallback: Story = {
                 <div class="row">
                   <span class="ex-name">Imports</span>
                 </div>
-                <pre><code>import { BaseImageViewer } from "@osdk/react-components-storybook";</code></pre>
+                <pre><code>import { BaseImageViewer, ImageViewer } from "@osdk/react-components-storybook";</code></pre>
               </div>
           
           
@@ -22638,6 +22360,24 @@ export const WithErrorCallback: Story = {
     &lt;BaseImageViewer src={sampleImageDataUrl} alt=&quot;Sample image&quot; onError={fn()} /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Media</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithMedia = () =&gt; &lt;div style={{ height: &quot;400px&quot;, width: &quot;400px&quot; }}&gt;
+    &lt;ImageViewer
+        src={sampleImageDataUrl}
+        alt=&quot;Sample image loaded from Media&quot;
+        media={createMockImageMedia(
+          sampleImageDataUrl,
+          &quot;image/png&quot;,
+          &quot;sample.png&quot;,
+        )} /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
         </div>
   </div>
 </article>
@@ -22652,21 +22392,21 @@ export const WithErrorCallback: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> BasePdfViewer</h2>
       <div class="badges">
-        <label for="c-error-5-beta-documentviewer-renderers-pdfviewer-recipes-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-5-beta-documentviewer-renderers-pdfviewer-recipes-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-5-beta-documentviewer-renderers-pdfviewer-recipes-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-error-5-beta-pdfviewer-recipes-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-5-beta-pdfviewer-recipes-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-5-beta-pdfviewer-recipes-stories" class="badge ok as-toggle">1 story</label>
       </div>
     </div>
-    <div class="meta" title="./src/stories/PdfViewer/Recipes/AnnotationCreator/AnnotationCreator.stories.tsx">beta-documentviewer-renderers-pdfviewer-recipes · ./src/stories/PdfViewer/Recipes/AnnotationCreator/AnnotationCreator.stories.tsx</div>
+    <div class="meta" title="./src/stories/PdfViewer/Recipes/AnnotationCreator/AnnotationCreator.stories.tsx">beta-pdfviewer-recipes · ./src/stories/PdfViewer/Recipes/AnnotationCreator/AnnotationCreator.stories.tsx</div>
     
     
     
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-5-beta-documentviewer-renderers-pdfviewer-recipes-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-5-beta-documentviewer-renderers-pdfviewer-recipes-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-5-beta-documentviewer-renderers-pdfviewer-recipes-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-5-beta-pdfviewer-recipes-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-5-beta-pdfviewer-recipes-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-5-beta-pdfviewer-recipes-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -22680,7 +22420,7 @@ export const WithErrorCallback: Story = {
   334 |
 &gt; 335 | const meta: Meta&lt;PdfViewerProps&gt; = {
       | ^
-  336 |   title: &quot;Beta/DocumentViewer/Renderers/PdfViewer/Recipes&quot;,
+  336 |   title: &quot;Beta/PdfViewer/Recipes&quot;,
   337 |   component: BasePdfViewer,
   338 | };
 
@@ -23020,7 +22760,7 @@ function AnnotationCreatorDemo(
 }
 
 const meta: Meta&lt;PdfViewerProps&gt; = {
-  title: &quot;Beta/DocumentViewer/Renderers/PdfViewer/Recipes&quot;,
+  title: &quot;Beta/PdfViewer/Recipes&quot;,
   component: BasePdfViewer,
 };
 
@@ -23995,21 +23735,21 @@ export const ErrorState: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> BaseXmlViewer</h2>
       <div class="badges">
-        <label for="c-error-7-beta-documentviewer-renderers-xmlviewer-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-7-beta-documentviewer-renderers-xmlviewer-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-7-beta-documentviewer-renderers-xmlviewer-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-error-7-beta-xmlviewer-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-7-beta-xmlviewer-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-7-beta-xmlviewer-stories" class="badge ok as-toggle">2 stories</label>
       </div>
     </div>
-    <div class="meta" title="./src/stories/XmlViewer/XmlViewer.stories.tsx">beta-documentviewer-renderers-xmlviewer · ./src/stories/XmlViewer/XmlViewer.stories.tsx</div>
+    <div class="meta" title="./src/stories/XmlViewer/XmlViewer.stories.tsx">beta-xmlviewer · ./src/stories/XmlViewer/XmlViewer.stories.tsx</div>
     
     
     
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-7-beta-documentviewer-renderers-xmlviewer-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-7-beta-documentviewer-renderers-xmlviewer-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-7-beta-documentviewer-renderers-xmlviewer-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-7-beta-xmlviewer-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-7-beta-xmlviewer-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-7-beta-xmlviewer-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -24023,7 +23763,7 @@ export const ErrorState: Story = {
   80 |
 &gt; 81 | const meta: Meta&lt;BaseXmlViewerProps&gt; = {
      | ^
-  82 |   title: &quot;Beta/DocumentViewer/Renderers/XmlViewer&quot;,
+  82 |   title: &quot;Beta/XmlViewer&quot;,
   83 |   component: BaseXmlViewer,
   84 |   args: {
 
@@ -24109,7 +23849,7 @@ function createMockXmlMedia(xmlContent: string): Media {
 }
 
 const meta: Meta&lt;BaseXmlViewerProps&gt; = {
-  title: &quot;Beta/DocumentViewer/Renderers/XmlViewer&quot;,
+  title: &quot;Beta/XmlViewer&quot;,
   component: BaseXmlViewer,
   args: {
     content: SAMPLE_XML,
@@ -24137,7 +23877,20 @@ const meta: Meta&lt;BaseXmlViewerProps&gt; = {
 export default meta;
 type Story = StoryObj&lt;typeof meta&gt;;
 
-export const Default: StoryObj&lt;XmlViewerMediaProps&gt; = {
+export const Default: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code:
+          `import { BaseXmlViewer } from &quot;@osdk/react-components/experimental/xml-viewer&quot;;
+
+&lt;BaseXmlViewer content={xmlString} /&gt;`,
+      },
+    },
+  },
+};
+
+export const WithMedia: StoryObj&lt;XmlViewerMediaProps&gt; = {
   args: {
     media: createMockXmlMedia(SAMPLE_XML),
   },
@@ -24153,19 +23906,6 @@ export const Default: StoryObj&lt;XmlViewerMediaProps&gt; = {
           `import { XmlViewer } from &quot;@osdk/react-components/experimental/xml-viewer&quot;;
 
 &lt;XmlViewer media={myOsdkMedia} /&gt;`,
-      },
-    },
-  },
-};
-
-export const WithContent: Story = {
-  parameters: {
-    docs: {
-      source: {
-        code:
-          `import { BaseXmlViewer } from &quot;@osdk/react-components/experimental/xml-viewer&quot;;
-
-&lt;BaseXmlViewer content={xmlString} /&gt;`,
       },
     },
   },
@@ -24203,18 +23943,18 @@ export const WithContent: Story = {
               
               
               <pre><code>const Default = () =&gt; &lt;div style={{ height: &quot;500px&quot; }}&gt;
-    &lt;XmlViewer content={SAMPLE_XML} media={createMockXmlMedia(SAMPLE_XML)} /&gt;
+    &lt;BaseXmlViewer content={SAMPLE_XML} /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
-                <span class="ex-name">With Content</span>
+                <span class="ex-name">With Media</span>
                 <span class="badge ok">story ok</span>
               </div>
               
               
-              <pre><code>const WithContent = () =&gt; &lt;div style={{ height: &quot;500px&quot; }}&gt;
-    &lt;BaseXmlViewer content={SAMPLE_XML} /&gt;
+              <pre><code>const WithMedia = () =&gt; &lt;div style={{ height: &quot;500px&quot; }}&gt;
+    &lt;XmlViewer content={SAMPLE_XML} media={createMockXmlMedia(SAMPLE_XML)} /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
         </div>
@@ -28609,229 +28349,14 @@ export const HorizontalToolbar: Story = {
   has-info 
   no-story-error"
   role="listitem"
-  aria-label="ImageViewer">
-  <div class="head">
-    <div class="title">
-      <h2><span class="status-dot dot-err"></span> ImageViewer</h2>
-      <div class="badges">
-        <label for="c-error-12-beta-documentviewer-renderers-imageviewer-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-12-beta-documentviewer-renderers-imageviewer-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-12-beta-documentviewer-renderers-imageviewer-stories" class="badge ok as-toggle">1 story</label>
-      </div>
-    </div>
-    <div class="meta" title="./src/stories/ImageViewer/ImageViewer.stories.tsx">beta-documentviewer-renderers-imageviewer · ./src/stories/ImageViewer/ImageViewer.stories.tsx</div>
-    
-    
-    
-  </div>
-
-  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-12-beta-documentviewer-renderers-imageviewer-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-12-beta-documentviewer-renderers-imageviewer-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-12-beta-documentviewer-renderers-imageviewer-stories" class="tg tg-stories" type="checkbox" hidden />
-  
-
-  <div class="panels">
-    
-        <div class="panel panel-err">
-          
-    <div class="note err">
-      <div class="note-title">Prop type error</div>
-      <div class="note-body"><pre><code>No component file found for the &quot;ImageViewer&quot; component.
-  76 | }
-  77 |
-&gt; 78 | const meta: Meta&lt;ImageViewerMediaProps&gt; = {
-     | ^
-  79 |   title: &quot;Beta/DocumentViewer/Renderers/ImageViewer&quot;,
-  80 |   component: ImageViewer,
-  81 |   parameters: {
-
-./src/stories/ImageViewer/ImageViewer.stories.tsx:
-/*
- * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-import type { Media } from &quot;@osdk/api&quot;;
-import type { ImageViewerMediaProps } from &quot;@osdk/react-components/experimental/image-viewer&quot;;
-import { ImageViewer } from &quot;@osdk/react-components/experimental/image-viewer&quot;;
-import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
-
-/**
- * Creates a sample PNG image as a data URL.
- * Generates a 200x200 canvas with a gradient.
- */
-function createSampleImageDataUrl(): string {
-  const canvas = document.createElement(&quot;canvas&quot;);
-  canvas.width = 200;
-  canvas.height = 200;
-  const ctx = canvas.getContext(&quot;2d&quot;)!;
-  const gradient = ctx.createLinearGradient(0, 0, 200, 200);
-  gradient.addColorStop(0, &quot;#3b82f6&quot;);
-  gradient.addColorStop(0.5, &quot;#8b5cf6&quot;);
-  gradient.addColorStop(1, &quot;#ec4899&quot;);
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, 200, 200);
-  ctx.fillStyle = &quot;white&quot;;
-  ctx.font = &quot;bold 24px sans-serif&quot;;
-  ctx.textAlign = &quot;center&quot;;
-  ctx.textBaseline = &quot;middle&quot;;
-  ctx.fillText(&quot;Sample&quot;, 100, 90);
-  ctx.fillText(&quot;Image&quot;, 100, 120);
-  return canvas.toDataURL(&quot;image/png&quot;);
-}
-
-const sampleImageDataUrl = createSampleImageDataUrl();
-
-function createMockImageMedia(
-  dataUrl: string,
-  mimeType: string,
-  filename: string,
-): Media {
-  return {
-    fetchContents: async () =&gt; {
-      const response = await fetch(dataUrl);
-      return response;
-    },
-    fetchMetadata: () =&gt;
-      Promise.resolve({
-        path: filename,
-        sizeBytes: 1024,
-        mediaType: mimeType,
-      }),
-    getMediaReference: () =&gt; ({
-      mimeType,
-      reference: {
-        type: &quot;mediaSetViewItem&quot; as const,
-        mediaSetViewItem: {
-          mediaItemRid: &quot;ri.mio.main.media-item.mock-image&quot;,
-          mediaSetRid: &quot;ri.mio.main.media-set.mock-set&quot;,
-          mediaSetViewRid: &quot;ri.mio.main.media-set-view.mock-view&quot;,
-        },
-      },
-    }),
-  };
-}
-
-const meta: Meta&lt;ImageViewerMediaProps&gt; = {
-  title: &quot;Beta/DocumentViewer/Renderers/ImageViewer&quot;,
-  component: ImageViewer,
-  parameters: {
-    controls: { expanded: true },
-  },
-  argTypes: {
-    media: {
-      description: &quot;The Media object to fetch image contents from&quot;,
-      control: false,
-    },
-    alt: {
-      description: &quot;Alt text for accessibility&quot;,
-      control: &quot;text&quot;,
-    },
-    className: {
-      description: &quot;Additional CSS class name for the root element&quot;,
-      control: &quot;text&quot;,
-    },
-  },
-};
-
-export default meta;
-
-export const Default: StoryObj&lt;ImageViewerMediaProps&gt; = {
-  args: {
-    media: createMockImageMedia(
-      sampleImageDataUrl,
-      &quot;image/png&quot;,
-      &quot;sample.png&quot;,
-    ),
-    alt: &quot;Sample image loaded from Media&quot;,
-  },
-  render: (args: ImageViewerMediaProps) =&gt; (
-    &lt;div style={{ height: &quot;400px&quot;, width: &quot;400px&quot; }}&gt;
-      &lt;ImageViewer {...args} /&gt;
-    &lt;/div&gt;
-  ),
-  parameters: {
-    docs: {
-      source: {
-        code:
-          `import { ImageViewer } from &quot;@osdk/react-components/experimental/image-viewer&quot;;
-
-&lt;ImageViewer media={myOsdkMedia} alt=&quot;My image&quot; /&gt;`,
-      },
-    },
-  },
-};
-</code></pre></div>
-    </div>
-        </div>
-    
-        <div class="panel panel-info">
-          
-    <div class="note info">
-      <div class="note-title">Info</div>
-      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
-    </div>
-        </div>
-    
-    
-        <div class="panel panel-stories">
-          
-          
-          
-          <div class="note ok">
-                <div class="row">
-                  <span class="ex-name">Imports</span>
-                </div>
-                <pre><code>import { ImageViewer } from "@osdk/react-components-storybook";</code></pre>
-              </div>
-          
-          
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">Default</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const Default = () =&gt; &lt;div style={{ height: &quot;400px&quot;, width: &quot;400px&quot; }}&gt;
-    &lt;ImageViewer
-        media={createMockImageMedia(
-          sampleImageDataUrl,
-          &quot;image/png&quot;,
-          &quot;sample.png&quot;,
-        )}
-        alt=&quot;Sample image loaded from Media&quot; /&gt;
-&lt;/div&gt;;</code></pre>
-            </div>
-        </div>
-  </div>
-</article>
-<article
-  class="card 
-  has-error 
-  has-info 
-  no-story-error"
-  role="listitem"
   aria-label="LoadingCell">
   <div class="head">
     <div class="title">
       <h2><span class="status-dot dot-err"></span> LoadingCell</h2>
       <div class="badges">
-        <label for="c-error-13-beta-objecttable-building-blocks-loadingcell-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-13-beta-objecttable-building-blocks-loadingcell-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-13-beta-objecttable-building-blocks-loadingcell-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-error-12-beta-objecttable-building-blocks-loadingcell-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-12-beta-objecttable-building-blocks-loadingcell-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-12-beta-objecttable-building-blocks-loadingcell-stories" class="badge ok as-toggle">1 story</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/ObjectTable/LoadingCell.stories.tsx">beta-objecttable-building-blocks-loadingcell · ./src/stories/ObjectTable/LoadingCell.stories.tsx</div>
@@ -28841,9 +28366,9 @@ export const Default: StoryObj&lt;ImageViewerMediaProps&gt; = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-13-beta-objecttable-building-blocks-loadingcell-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-13-beta-objecttable-building-blocks-loadingcell-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-13-beta-objecttable-building-blocks-loadingcell-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-12-beta-objecttable-building-blocks-loadingcell-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-12-beta-objecttable-building-blocks-loadingcell-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-12-beta-objecttable-building-blocks-loadingcell-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -28983,9 +28508,9 @@ export const Default: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> LoadingCellContent</h2>
       <div class="badges">
-        <label for="c-error-14-beta-objecttable-building-blocks-loadingcellcontent-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-14-beta-objecttable-building-blocks-loadingcellcontent-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-14-beta-objecttable-building-blocks-loadingcellcontent-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-error-13-beta-objecttable-building-blocks-loadingcellcontent-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-13-beta-objecttable-building-blocks-loadingcellcontent-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-13-beta-objecttable-building-blocks-loadingcellcontent-stories" class="badge ok as-toggle">1 story</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/ObjectTable/LoadingCellContent.stories.tsx">beta-objecttable-building-blocks-loadingcellcontent · ./src/stories/ObjectTable/LoadingCellContent.stories.tsx</div>
@@ -28995,9 +28520,9 @@ export const Default: Story = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-14-beta-objecttable-building-blocks-loadingcellcontent-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-14-beta-objecttable-building-blocks-loadingcellcontent-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-14-beta-objecttable-building-blocks-loadingcellcontent-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-13-beta-objecttable-building-blocks-loadingcellcontent-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-13-beta-objecttable-building-blocks-loadingcellcontent-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-13-beta-objecttable-building-blocks-loadingcellcontent-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -29120,21 +28645,21 @@ export const Default: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> MarkdownRenderer</h2>
       <div class="badges">
-        <label for="c-error-15-beta-documentviewer-renderers-markdownrenderer-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-15-beta-documentviewer-renderers-markdownrenderer-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-15-beta-documentviewer-renderers-markdownrenderer-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-error-14-beta-markdownrenderer-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-14-beta-markdownrenderer-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-14-beta-markdownrenderer-stories" class="badge ok as-toggle">2 stories</label>
       </div>
     </div>
-    <div class="meta" title="./src/stories/MarkdownRenderer/MarkdownRenderer.stories.tsx">beta-documentviewer-renderers-markdownrenderer · ./src/stories/MarkdownRenderer/MarkdownRenderer.stories.tsx</div>
+    <div class="meta" title="./src/stories/MarkdownRenderer/MarkdownRenderer.stories.tsx">beta-markdownrenderer · ./src/stories/MarkdownRenderer/MarkdownRenderer.stories.tsx</div>
     
     
     
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-15-beta-documentviewer-renderers-markdownrenderer-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-15-beta-documentviewer-renderers-markdownrenderer-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-15-beta-documentviewer-renderers-markdownrenderer-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-14-beta-markdownrenderer-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-14-beta-markdownrenderer-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-14-beta-markdownrenderer-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -29148,7 +28673,7 @@ export const Default: Story = {
    99 |
 &gt; 100 | const meta: Meta&lt;MarkdownRendererProps&gt; = {
       | ^
-  101 |   title: &quot;Beta/DocumentViewer/Renderers/MarkdownRenderer&quot;,
+  101 |   title: &quot;Beta/MarkdownRenderer&quot;,
   102 |   component: MarkdownRenderer,
   103 |   args: {
 
@@ -29253,7 +28778,7 @@ You can also use explicit links like [GitHub](https://github.com).
 `;
 
 const meta: Meta&lt;MarkdownRendererProps&gt; = {
-  title: &quot;Beta/DocumentViewer/Renderers/MarkdownRenderer&quot;,
+  title: &quot;Beta/MarkdownRenderer&quot;,
   component: MarkdownRenderer,
   args: {
     content: SAMPLE_MARKDOWN,
@@ -29283,7 +28808,7 @@ const meta: Meta&lt;MarkdownRendererProps&gt; = {
 export default meta;
 type Story = StoryObj&lt;typeof meta&gt;;
 
-export const WithContent: Story = {};
+export const Default: Story = {};
 
 export const MinimalContent: Story = {
   args: {
@@ -29332,12 +28857,12 @@ export const MinimalContent: Story = {
           
             <div class="note ok">
               <div class="row">
-                <span class="ex-name">With Content</span>
+                <span class="ex-name">Default</span>
                 <span class="badge ok">story ok</span>
               </div>
               
               
-              <pre><code>const WithContent = () =&gt; &lt;div style={{ height: &quot;600px&quot; }}&gt;
+              <pre><code>const Default = () =&gt; &lt;div style={{ height: &quot;600px&quot; }}&gt;
     &lt;MarkdownRenderer content={SAMPLE_MARKDOWN} /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
@@ -29366,9 +28891,9 @@ export const MinimalContent: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> MultiColumnSortDialog</h2>
       <div class="badges">
-        <label for="c-error-16-beta-objecttable-building-blocks-multicolumnsortdialog-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-16-beta-objecttable-building-blocks-multicolumnsortdialog-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-16-beta-objecttable-building-blocks-multicolumnsortdialog-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-error-15-beta-objecttable-building-blocks-multicolumnsortdialog-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-15-beta-objecttable-building-blocks-multicolumnsortdialog-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-15-beta-objecttable-building-blocks-multicolumnsortdialog-stories" class="badge ok as-toggle">1 story</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/ObjectTable/MultiColumnSortDialog.stories.tsx">beta-objecttable-building-blocks-multicolumnsortdialog · ./src/stories/ObjectTable/MultiColumnSortDialog.stories.tsx</div>
@@ -29378,9 +28903,9 @@ export const MinimalContent: Story = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-16-beta-objecttable-building-blocks-multicolumnsortdialog-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-16-beta-objecttable-building-blocks-multicolumnsortdialog-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-16-beta-objecttable-building-blocks-multicolumnsortdialog-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-15-beta-objecttable-building-blocks-multicolumnsortdialog-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-15-beta-objecttable-building-blocks-multicolumnsortdialog-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-15-beta-objecttable-building-blocks-multicolumnsortdialog-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -29564,9 +29089,9 @@ const [isOpen, setIsOpen] = useState(false);
     <div class="title">
       <h2><span class="status-dot dot-err"></span> ObjectTable</h2>
       <div class="badges">
-        <label for="c-error-17-beta-objecttable-features-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-17-beta-objecttable-features-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-17-beta-objecttable-features-stories" class="badge ok as-toggle">27 stories</label>
+        <label for="c-error-16-beta-objecttable-features-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-16-beta-objecttable-features-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-16-beta-objecttable-features-stories" class="badge ok as-toggle">24 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/ObjectTable/ObjectTable.stories.tsx">beta-objecttable-features · ./src/stories/ObjectTable/ObjectTable.stories.tsx</div>
@@ -29576,9 +29101,9 @@ const [isOpen, setIsOpen] = useState(false);
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-17-beta-objecttable-features-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-17-beta-objecttable-features-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-17-beta-objecttable-features-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-16-beta-objecttable-features-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-16-beta-objecttable-features-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-16-beta-objecttable-features-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -29588,13 +29113,13 @@ const [isOpen, setIsOpen] = useState(false);
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;ObjectTable&quot; component.
-  45 | type EmployeeTableProps = ObjectTableProps&lt;typeof Employee&gt;;
-  46 |
-&gt; 47 | const meta: Meta&lt;EmployeeTableProps&gt; = {
+  40 | type EmployeeTableProps = ObjectTableProps&lt;typeof Employee&gt;;
+  41 |
+&gt; 42 | const meta: Meta&lt;EmployeeTableProps&gt; = {
      | ^
-  48 |   title: &quot;Beta/ObjectTable/Features&quot;,
-  49 |   component: ObjectTable,
-  50 |   parameters: {
+  43 |   title: &quot;Beta/ObjectTable/Features&quot;,
+  44 |   component: ObjectTable,
+  45 |   parameters: {
 
 ./src/stories/ObjectTable/ObjectTable.stories.tsx:
 /*
@@ -29634,11 +29159,6 @@ import { fn } from &quot;storybook/test&quot;;
 import { fauxFoundry } from &quot;../../mocks/fauxFoundry.js&quot;;
 import { Employee } from &quot;../../types/Employee.js&quot;;
 import { WorkerInterface } from &quot;../../types/WorkerInterface.js&quot;;
-import {
-  ObjectTableInBaseUIDialog,
-  ObjectTableInBlueprintDialog,
-  ObjectTableInBlueprintDrawer,
-} from &quot;./overlays/ObjectTableOverlayStories.js&quot;;
 
 // Create a concrete type for Storybook to parse more easily
 type EmployeeTableProps = ObjectTableProps&lt;typeof Employee&gt;;
@@ -30896,73 +30416,6 @@ export const DisableAllHeaderMenuFeatures: Story = {
   ),
 };
 
-export const HeaderMenuInsideBlueprintDrawer: Story = {
-  args: {
-    objectType: Employee,
-    columnDefinitions: defaultEmployeeColumns,
-  },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          &quot;Scenario for the header menu dropdown when ObjectTable is rendered inside a Blueprint Drawer. &quot;
-          + &quot;Open the drawer and click any column header chevron; the menu should appear above the drawer.&quot;,
-      },
-      source: {
-        code: `&lt;Drawer isOpen={true} title=&quot;ObjectTable in Blueprint Drawer&quot;&gt;
-  &lt;ObjectTable objectType={Employee} columnDefinitions={defaultEmployeeColumns} /&gt;
-&lt;/Drawer&gt;`,
-      },
-    },
-  },
-  render: (args) =&gt; &lt;ObjectTableInBlueprintDrawer tableProps={args} /&gt;,
-};
-
-export const HeaderMenuInsideBlueprintDialog: Story = {
-  args: {
-    objectType: Employee,
-    columnDefinitions: defaultEmployeeColumns,
-  },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          &quot;Scenario for the header menu dropdown when ObjectTable is rendered inside a Blueprint Dialog. &quot;
-          + &quot;Open the dialog and click any column header chevron; the menu should appear above the dialog.&quot;,
-      },
-      source: {
-        code: `&lt;Dialog isOpen={true} title=&quot;ObjectTable in Blueprint Dialog&quot;&gt;
-  &lt;ObjectTable objectType={Employee} columnDefinitions={defaultEmployeeColumns} /&gt;
-&lt;/Dialog&gt;`,
-      },
-    },
-  },
-  render: (args) =&gt; &lt;ObjectTableInBlueprintDialog tableProps={args} /&gt;,
-};
-
-export const HeaderMenuInsideBaseUIDialog: Story = {
-  args: {
-    objectType: Employee,
-    columnDefinitions: defaultEmployeeColumns,
-  },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          &quot;Scenario for the header menu dropdown when ObjectTable is rendered inside the OSDK Base UI Dialog primitive. &quot;
-          + &quot;Open the dialog and click any column header chevron; the menu should appear above the dialog.&quot;,
-      },
-      source: {
-        code:
-          `&lt;Dialog isOpen={true} title=&quot;ObjectTable in Base UI Dialog&quot; onOpenChange={setIsOpen}&gt;
-  &lt;ObjectTable objectType={Employee} columnDefinitions={defaultEmployeeColumns} /&gt;
-&lt;/Dialog&gt;`,
-      },
-    },
-  },
-  render: (args) =&gt; &lt;ObjectTableInBaseUIDialog tableProps={args} /&gt;,
-};
-
 export const CustomRowHeight: Story = {
   args: {
     objectType: Employee,
@@ -31841,12 +31294,7 @@ return (
                   <span class="ex-name">Imports</span>
                 </div>
                 <pre><code>import { NonIdealState } from "@blueprintjs/core";
-import {
-    ObjectTable,
-    ObjectTableInBaseUIDialog,
-    ObjectTableInBlueprintDialog,
-    ObjectTableInBlueprintDrawer,
-} from "@osdk/react-components-storybook";</code></pre>
+import { ObjectTable } from "@osdk/react-components-storybook";</code></pre>
               </div>
           
           
@@ -32394,33 +31842,6 @@ import {
             </div>
             <div class="note ok">
               <div class="row">
-                <span class="ex-name">Header Menu Inside Blueprint Drawer</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const HeaderMenuInsideBlueprintDrawer = (args) =&gt; &lt;ObjectTableInBlueprintDrawer tableProps={args} /&gt;;</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">Header Menu Inside Blueprint Dialog</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const HeaderMenuInsideBlueprintDialog = (args) =&gt; &lt;ObjectTableInBlueprintDialog tableProps={args} /&gt;;</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">Header Menu Inside Base UI Dialog</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const HeaderMenuInsideBaseUIDialog = (args) =&gt; &lt;ObjectTableInBaseUIDialog tableProps={args} /&gt;;</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
                 <span class="ex-name">Custom Row Height</span>
                 <span class="badge ok">story ok</span>
               </div>
@@ -32780,9 +32201,9 @@ import {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> ObjectTable</h2>
       <div class="badges">
-        <label for="c-error-18-beta-objecttable-recipes-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-18-beta-objecttable-recipes-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-18-beta-objecttable-recipes-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-error-17-beta-objecttable-recipes-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-17-beta-objecttable-recipes-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-17-beta-objecttable-recipes-stories" class="badge ok as-toggle">1 story</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/ObjectTable/Recipes/WithConfigureColumnsButton.stories.tsx">beta-objecttable-recipes · ./src/stories/ObjectTable/Recipes/WithConfigureColumnsButton.stories.tsx</div>
@@ -32792,9 +32213,9 @@ import {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-18-beta-objecttable-recipes-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-18-beta-objecttable-recipes-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-18-beta-objecttable-recipes-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-17-beta-objecttable-recipes-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-17-beta-objecttable-recipes-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-17-beta-objecttable-recipes-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -33163,21 +32584,21 @@ return (
     <div class="title">
       <h2><span class="status-dot dot-err"></span> PdfViewer</h2>
       <div class="badges">
-        <label for="c-error-19-beta-documentviewer-renderers-pdfviewer-features-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-19-beta-documentviewer-renderers-pdfviewer-features-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-19-beta-documentviewer-renderers-pdfviewer-features-stories" class="badge ok as-toggle">12 stories</label>
+        <label for="c-error-18-beta-pdfviewer-features-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-18-beta-pdfviewer-features-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-18-beta-pdfviewer-features-stories" class="badge ok as-toggle">13 stories</label>
       </div>
     </div>
-    <div class="meta" title="./src/stories/PdfViewer/Features/PdfViewerFeatures.stories.tsx">beta-documentviewer-renderers-pdfviewer-features · ./src/stories/PdfViewer/Features/PdfViewerFeatures.stories.tsx</div>
+    <div class="meta" title="./src/stories/PdfViewer/Features/PdfViewerFeatures.stories.tsx">beta-pdfviewer-features · ./src/stories/PdfViewer/Features/PdfViewerFeatures.stories.tsx</div>
     
     
     
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-19-beta-documentviewer-renderers-pdfviewer-features-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-19-beta-documentviewer-renderers-pdfviewer-features-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-19-beta-documentviewer-renderers-pdfviewer-features-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-18-beta-pdfviewer-features-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-18-beta-pdfviewer-features-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-18-beta-pdfviewer-features-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -33187,13 +32608,13 @@ return (
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;PdfViewer&quot; component.
-  68 | );
-  69 |
-&gt; 70 | const meta: Meta&lt;PdfViewerMediaProps&gt; = {
+  71 | );
+  72 |
+&gt; 73 | const meta: Meta&lt;PdfViewerMediaProps&gt; = {
      | ^
-  71 |   title: &quot;Beta/DocumentViewer/Renderers/PdfViewer/Features&quot;,
-  72 |   component: PdfViewer,
-  73 |   args: {
+  74 |   title: &quot;Beta/PdfViewer/Features&quot;,
+  75 |   component: PdfViewer,
+  76 |   args: {
 
 ./src/stories/PdfViewer/Features/PdfViewerFeatures.stories.tsx:
 /*
@@ -33215,6 +32636,7 @@ return (
 /* cspell:disable */
 
 import type { Media } from &quot;@osdk/api&quot;;
+import { useOsdkObject } from &quot;@osdk/react&quot;;
 import type {
   PdfTextHighlightEvent,
   PdfViewerMediaProps,
@@ -33227,6 +32649,8 @@ import {
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { delay, http } from &quot;msw&quot;;
 import { fn } from &quot;storybook/test&quot;;
+import { MEDIA_EMPLOYEE_PK } from &quot;../../../mocks/fauxFoundry.js&quot;;
+import { Employee } from &quot;../../../types/Employee.js&quot;;
 
 const SAMPLE_PDF_URL =
   `${import.meta.env.BASE_URL}compressed.tracemonkey-pldi-09.pdf`;
@@ -33266,7 +32690,7 @@ const mockBookmarkedMedia = createMockMedia(
 );
 
 const meta: Meta&lt;PdfViewerMediaProps&gt; = {
-  title: &quot;Beta/DocumentViewer/Renderers/PdfViewer/Features&quot;,
+  title: &quot;Beta/PdfViewer/Features&quot;,
   component: PdfViewer,
   args: {
     media: mockMedia,
@@ -33641,6 +33065,37 @@ export const InteractiveForm: StoryObj&lt;PdfViewerProps&gt; = {
     },
   },
 };
+
+export const WithOsdkMedia: Story = {
+  render: () =&gt; {
+    const { object: employee, isLoading } = useOsdkObject(
+      Employee,
+      MEDIA_EMPLOYEE_PK,
+    );
+
+    if (isLoading || !employee?.employeeDocuments) {
+      return &lt;div style={{ height: &quot;600px&quot; }}&gt;Loading OSDK media…&lt;/div&gt;;
+    }
+
+    return (
+      &lt;div style={{ height: &quot;600px&quot; }}&gt;
+        &lt;PdfViewer media={employee.employeeDocuments} /&gt;
+      &lt;/div&gt;
+    );
+  },
+  parameters: {
+    docs: {
+      source: {
+        code:
+          `import { PdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
+
+// Access media from an OSDK object&#39;s media reference property
+const employee = useOsdkObject(Employee, employeePk);
+&lt;PdfViewer media={employee.employeeDocuments} /&gt;`,
+      },
+    },
+  },
+};
 </code></pre></div>
     </div>
         </div>
@@ -33831,150 +33286,14 @@ export const InteractiveForm: StoryObj&lt;PdfViewerProps&gt; = {
         onFormChange={fn()} /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
-        </div>
-  </div>
-</article>
-<article
-  class="card 
-  has-error 
-  has-info 
-  no-story-error"
-  role="listitem"
-  aria-label="PdfViewer">
-  <div class="head">
-    <div class="title">
-      <h2><span class="status-dot dot-err"></span> PdfViewer</h2>
-      <div class="badges">
-        <label for="c-error-20-beta-documentviewer-renderers-pdfviewer-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-20-beta-documentviewer-renderers-pdfviewer-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-20-beta-documentviewer-renderers-pdfviewer-stories" class="badge ok as-toggle">1 story</label>
-      </div>
-    </div>
-    <div class="meta" title="./src/stories/PdfViewer/PdfViewer.stories.tsx">beta-documentviewer-renderers-pdfviewer · ./src/stories/PdfViewer/PdfViewer.stories.tsx</div>
-    
-    
-    
-  </div>
-
-  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-20-beta-documentviewer-renderers-pdfviewer-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-20-beta-documentviewer-renderers-pdfviewer-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-20-beta-documentviewer-renderers-pdfviewer-stories" class="tg tg-stories" type="checkbox" hidden />
-  
-
-  <div class="panels">
-    
-        <div class="panel panel-err">
-          
-    <div class="note err">
-      <div class="note-title">Prop type error</div>
-      <div class="note-body"><pre><code>No component file found for the &quot;PdfViewer&quot; component.
-  22 | import { Employee } from &quot;../../types/Employee.js&quot;;
-  23 |
-&gt; 24 | const meta: Meta&lt;PdfViewerMediaProps&gt; = {
-     | ^
-  25 |   title: &quot;Beta/DocumentViewer/Renderers/PdfViewer&quot;,
-  26 |   component: PdfViewer,
-  27 |   parameters: {
-
-./src/stories/PdfViewer/PdfViewer.stories.tsx:
-/*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-import { useOsdkObject } from &quot;@osdk/react&quot;;
-import type { PdfViewerMediaProps } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-import { PdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
-import { MEDIA_EMPLOYEE_PK } from &quot;../../mocks/fauxFoundry.js&quot;;
-import { Employee } from &quot;../../types/Employee.js&quot;;
-
-const meta: Meta&lt;PdfViewerMediaProps&gt; = {
-  title: &quot;Beta/DocumentViewer/Renderers/PdfViewer&quot;,
-  component: PdfViewer,
-  parameters: {
-    controls: { expanded: true },
-  },
-};
-
-export default meta;
-type Story = StoryObj&lt;typeof meta&gt;;
-
-export const Default: Story = {
-  render: () =&gt; {
-    const { object: employee, isLoading } = useOsdkObject(
-      Employee,
-      MEDIA_EMPLOYEE_PK,
-    );
-
-    if (isLoading || !employee?.employeeDocuments) {
-      return &lt;div style={{ height: &quot;600px&quot; }}&gt;Loading OSDK media…&lt;/div&gt;;
-    }
-
-    return (
-      &lt;div style={{ height: &quot;600px&quot; }}&gt;
-        &lt;PdfViewer media={employee.employeeDocuments} /&gt;
-      &lt;/div&gt;
-    );
-  },
-  parameters: {
-    docs: {
-      source: {
-        code:
-          `import { PdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
-
-// Access media from an OSDK object&#39;s media reference property
-const employee = useOsdkObject(Employee, employeePk);
-&lt;PdfViewer media={employee.employeeDocuments} /&gt;`,
-      },
-    },
-  },
-};
-</code></pre></div>
-    </div>
-        </div>
-    
-        <div class="panel panel-info">
-          
-    <div class="note info">
-      <div class="note-title">Info</div>
-      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
-    </div>
-        </div>
-    
-    
-        <div class="panel panel-stories">
-          
-          
-          
-          <div class="note ok">
-                <div class="row">
-                  <span class="ex-name">Imports</span>
-                </div>
-                <pre><code>import { PdfViewer } from "@osdk/react-components-storybook";</code></pre>
-              </div>
-          
-          
             <div class="note ok">
               <div class="row">
-                <span class="ex-name">Default</span>
+                <span class="ex-name">With Osdk Media</span>
                 <span class="badge ok">story ok</span>
               </div>
               
               
-              <pre><code>const Default = () =&gt; {
+              <pre><code>const WithOsdkMedia = () =&gt; {
   const { object: employee, isLoading } = useOsdkObject(
     Employee,
     MEDIA_EMPLOYEE_PK,
@@ -34005,21 +33324,21 @@ const employee = useOsdkObject(Employee, employeePk);
     <div class="title">
       <h2><span class="status-dot dot-err"></span> PdfViewerAnnotationLayer</h2>
       <div class="badges">
-        <label for="c-error-21-beta-documentviewer-renderers-pdfviewer-building-blocks-annotationlayer-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-21-beta-documentviewer-renderers-pdfviewer-building-blocks-annotationlayer-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-21-beta-documentviewer-renderers-pdfviewer-building-blocks-annotationlayer-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-error-19-beta-pdfviewer-building-blocks-annotationlayer-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-19-beta-pdfviewer-building-blocks-annotationlayer-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-19-beta-pdfviewer-building-blocks-annotationlayer-stories" class="badge ok as-toggle">3 stories</label>
       </div>
     </div>
-    <div class="meta" title="./src/stories/PdfViewer/AnnotationLayer.stories.tsx">beta-documentviewer-renderers-pdfviewer-building-blocks-annotationlayer · ./src/stories/PdfViewer/AnnotationLayer.stories.tsx</div>
+    <div class="meta" title="./src/stories/PdfViewer/AnnotationLayer.stories.tsx">beta-pdfviewer-building-blocks-annotationlayer · ./src/stories/PdfViewer/AnnotationLayer.stories.tsx</div>
     
     
     
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-21-beta-documentviewer-renderers-pdfviewer-building-blocks-annotationlayer-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-21-beta-documentviewer-renderers-pdfviewer-building-blocks-annotationlayer-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-21-beta-documentviewer-renderers-pdfviewer-building-blocks-annotationlayer-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-19-beta-pdfviewer-building-blocks-annotationlayer-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-19-beta-pdfviewer-building-blocks-annotationlayer-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-19-beta-pdfviewer-building-blocks-annotationlayer-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -34033,9 +33352,9 @@ const employee = useOsdkObject(Employee, employeePk);
   54 |
 &gt; 55 | const meta: Meta&lt;PdfViewerAnnotationLayerProps&gt; = {
      | ^
-  56 |   title:
-  57 |     &quot;Beta/DocumentViewer/Renderers/PdfViewer/Building Blocks/AnnotationLayer&quot;,
-  58 |   component: PdfViewerAnnotationLayer,
+  56 |   title: &quot;Beta/PdfViewer/Building Blocks/AnnotationLayer&quot;,
+  57 |   component: PdfViewerAnnotationLayer,
+  58 |   args: {
 
 ./src/stories/PdfViewer/AnnotationLayer.stories.tsx:
 /*
@@ -34093,8 +33412,7 @@ const MIXED_ANNOTATIONS: PdfAnnotation[] = [
 ];
 
 const meta: Meta&lt;PdfViewerAnnotationLayerProps&gt; = {
-  title:
-    &quot;Beta/DocumentViewer/Renderers/PdfViewer/Building Blocks/AnnotationLayer&quot;,
+  title: &quot;Beta/PdfViewer/Building Blocks/AnnotationLayer&quot;,
   component: PdfViewerAnnotationLayer,
   args: {
     annotations: MIXED_ANNOTATIONS,
@@ -34299,21 +33617,21 @@ export const ZoomedIn: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> PdfViewerContent</h2>
       <div class="badges">
-        <label for="c-error-22-beta-documentviewer-renderers-pdfviewer-building-blocks-content-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-22-beta-documentviewer-renderers-pdfviewer-building-blocks-content-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-22-beta-documentviewer-renderers-pdfviewer-building-blocks-content-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-error-20-beta-pdfviewer-building-blocks-content-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-20-beta-pdfviewer-building-blocks-content-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-20-beta-pdfviewer-building-blocks-content-stories" class="badge ok as-toggle">3 stories</label>
       </div>
     </div>
-    <div class="meta" title="./src/stories/PdfViewer/Content.stories.tsx">beta-documentviewer-renderers-pdfviewer-building-blocks-content · ./src/stories/PdfViewer/Content.stories.tsx</div>
+    <div class="meta" title="./src/stories/PdfViewer/Content.stories.tsx">beta-pdfviewer-building-blocks-content · ./src/stories/PdfViewer/Content.stories.tsx</div>
     
     
     
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-22-beta-documentviewer-renderers-pdfviewer-building-blocks-content-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-22-beta-documentviewer-renderers-pdfviewer-building-blocks-content-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-22-beta-documentviewer-renderers-pdfviewer-building-blocks-content-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-20-beta-pdfviewer-building-blocks-content-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-20-beta-pdfviewer-building-blocks-content-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-20-beta-pdfviewer-building-blocks-content-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -34327,7 +33645,7 @@ export const ZoomedIn: Story = {
   25 |
 &gt; 26 | const meta: Meta&lt;PdfViewerContentProps&gt; = {
      | ^
-  27 |   title: &quot;Beta/DocumentViewer/Renderers/PdfViewer/Building Blocks/Content&quot;,
+  27 |   title: &quot;Beta/PdfViewer/Building Blocks/Content&quot;,
   28 |   component: PdfViewerContent,
   29 |   args: {
 
@@ -34358,7 +33676,7 @@ const SAMPLE_PDF_URL =
   &quot;https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf&quot;;
 
 const meta: Meta&lt;PdfViewerContentProps&gt; = {
-  title: &quot;Beta/DocumentViewer/Renderers/PdfViewer/Building Blocks/Content&quot;,
+  title: &quot;Beta/PdfViewer/Building Blocks/Content&quot;,
   component: PdfViewerContent,
   args: {
     src: SAMPLE_PDF_URL,
@@ -34482,21 +33800,21 @@ export const StartOnPage5: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> PdfViewerOutlineSidebar</h2>
       <div class="badges">
-        <label for="c-error-23-beta-documentviewer-renderers-pdfviewer-building-blocks-outlinesidebar-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-23-beta-documentviewer-renderers-pdfviewer-building-blocks-outlinesidebar-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-23-beta-documentviewer-renderers-pdfviewer-building-blocks-outlinesidebar-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-error-21-beta-pdfviewer-building-blocks-outlinesidebar-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-21-beta-pdfviewer-building-blocks-outlinesidebar-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-21-beta-pdfviewer-building-blocks-outlinesidebar-stories" class="badge ok as-toggle">3 stories</label>
       </div>
     </div>
-    <div class="meta" title="./src/stories/PdfViewer/OutlineSidebar.stories.tsx">beta-documentviewer-renderers-pdfviewer-building-blocks-outlinesidebar · ./src/stories/PdfViewer/OutlineSidebar.stories.tsx</div>
+    <div class="meta" title="./src/stories/PdfViewer/OutlineSidebar.stories.tsx">beta-pdfviewer-building-blocks-outlinesidebar · ./src/stories/PdfViewer/OutlineSidebar.stories.tsx</div>
     
     
     
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-23-beta-documentviewer-renderers-pdfviewer-building-blocks-outlinesidebar-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-23-beta-documentviewer-renderers-pdfviewer-building-blocks-outlinesidebar-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-23-beta-documentviewer-renderers-pdfviewer-building-blocks-outlinesidebar-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-21-beta-pdfviewer-building-blocks-outlinesidebar-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-21-beta-pdfviewer-building-blocks-outlinesidebar-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-21-beta-pdfviewer-building-blocks-outlinesidebar-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -34510,9 +33828,9 @@ export const StartOnPage5: Story = {
   79 |
 &gt; 80 | const meta: Meta&lt;PdfViewerOutlineSidebarProps&gt; = {
      | ^
-  81 |   title:
-  82 |     &quot;Beta/DocumentViewer/Renderers/PdfViewer/Building Blocks/OutlineSidebar&quot;,
-  83 |   component: PdfViewerOutlineSidebar,
+  81 |   title: &quot;Beta/PdfViewer/Building Blocks/OutlineSidebar&quot;,
+  82 |   component: PdfViewerOutlineSidebar,
+  83 |   args: {
 
 ./src/stories/PdfViewer/OutlineSidebar.stories.tsx:
 /*
@@ -34595,8 +33913,7 @@ const SAMPLE_OUTLINE: OutlineItem[] = [
 ];
 
 const meta: Meta&lt;PdfViewerOutlineSidebarProps&gt; = {
-  title:
-    &quot;Beta/DocumentViewer/Renderers/PdfViewer/Building Blocks/OutlineSidebar&quot;,
+  title: &quot;Beta/PdfViewer/Building Blocks/OutlineSidebar&quot;,
   component: PdfViewerOutlineSidebar,
   args: {
     outlineItems: SAMPLE_OUTLINE,
@@ -34725,21 +34042,21 @@ export const Empty: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> PdfViewerSearchBar</h2>
       <div class="badges">
-        <label for="c-error-24-beta-documentviewer-renderers-pdfviewer-building-blocks-searchbar-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-24-beta-documentviewer-renderers-pdfviewer-building-blocks-searchbar-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-24-beta-documentviewer-renderers-pdfviewer-building-blocks-searchbar-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-error-22-beta-pdfviewer-building-blocks-searchbar-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-22-beta-pdfviewer-building-blocks-searchbar-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-22-beta-pdfviewer-building-blocks-searchbar-stories" class="badge ok as-toggle">3 stories</label>
       </div>
     </div>
-    <div class="meta" title="./src/stories/PdfViewer/SearchBar.stories.tsx">beta-documentviewer-renderers-pdfviewer-building-blocks-searchbar · ./src/stories/PdfViewer/SearchBar.stories.tsx</div>
+    <div class="meta" title="./src/stories/PdfViewer/SearchBar.stories.tsx">beta-pdfviewer-building-blocks-searchbar · ./src/stories/PdfViewer/SearchBar.stories.tsx</div>
     
     
     
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-24-beta-documentviewer-renderers-pdfviewer-building-blocks-searchbar-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-24-beta-documentviewer-renderers-pdfviewer-building-blocks-searchbar-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-24-beta-documentviewer-renderers-pdfviewer-building-blocks-searchbar-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-22-beta-pdfviewer-building-blocks-searchbar-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-22-beta-pdfviewer-building-blocks-searchbar-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-22-beta-pdfviewer-building-blocks-searchbar-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -34753,7 +34070,7 @@ export const Empty: Story = {
   21 |
 &gt; 22 | const meta: Meta&lt;PdfViewerSearchBarProps&gt; = {
      | ^
-  23 |   title: &quot;Beta/DocumentViewer/Renderers/PdfViewer/Building Blocks/SearchBar&quot;,
+  23 |   title: &quot;Beta/PdfViewer/Building Blocks/SearchBar&quot;,
   24 |   component: PdfViewerSearchBar,
   25 |   args: {
 
@@ -34780,7 +34097,7 @@ import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { fn } from &quot;storybook/test&quot;;
 
 const meta: Meta&lt;PdfViewerSearchBarProps&gt; = {
-  title: &quot;Beta/DocumentViewer/Renderers/PdfViewer/Building Blocks/SearchBar&quot;,
+  title: &quot;Beta/PdfViewer/Building Blocks/SearchBar&quot;,
   component: PdfViewerSearchBar,
   args: {
     query: &quot;&quot;,
@@ -34915,21 +34232,21 @@ export const NoResults: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> PdfViewerToolbar</h2>
       <div class="badges">
-        <label for="c-error-25-beta-documentviewer-renderers-pdfviewer-building-blocks-toolbar-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-25-beta-documentviewer-renderers-pdfviewer-building-blocks-toolbar-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-25-beta-documentviewer-renderers-pdfviewer-building-blocks-toolbar-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-error-23-beta-pdfviewer-building-blocks-toolbar-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-23-beta-pdfviewer-building-blocks-toolbar-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-23-beta-pdfviewer-building-blocks-toolbar-stories" class="badge ok as-toggle">3 stories</label>
       </div>
     </div>
-    <div class="meta" title="./src/stories/PdfViewer/Toolbar.stories.tsx">beta-documentviewer-renderers-pdfviewer-building-blocks-toolbar · ./src/stories/PdfViewer/Toolbar.stories.tsx</div>
+    <div class="meta" title="./src/stories/PdfViewer/Toolbar.stories.tsx">beta-pdfviewer-building-blocks-toolbar · ./src/stories/PdfViewer/Toolbar.stories.tsx</div>
     
     
     
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-25-beta-documentviewer-renderers-pdfviewer-building-blocks-toolbar-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-25-beta-documentviewer-renderers-pdfviewer-building-blocks-toolbar-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-25-beta-documentviewer-renderers-pdfviewer-building-blocks-toolbar-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-23-beta-pdfviewer-building-blocks-toolbar-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-23-beta-pdfviewer-building-blocks-toolbar-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-23-beta-pdfviewer-building-blocks-toolbar-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -34943,7 +34260,7 @@ export const NoResults: Story = {
   21 |
 &gt; 22 | const meta: Meta&lt;PdfViewerToolbarProps&gt; = {
      | ^
-  23 |   title: &quot;Beta/DocumentViewer/Renderers/PdfViewer/Building Blocks/Toolbar&quot;,
+  23 |   title: &quot;Beta/PdfViewer/Building Blocks/Toolbar&quot;,
   24 |   component: PdfViewerToolbar,
   25 |   args: {
 
@@ -34970,7 +34287,7 @@ import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { fn } from &quot;storybook/test&quot;;
 
 const meta: Meta&lt;PdfViewerToolbarProps&gt; = {
-  title: &quot;Beta/DocumentViewer/Renderers/PdfViewer/Building Blocks/Toolbar&quot;,
+  title: &quot;Beta/PdfViewer/Building Blocks/Toolbar&quot;,
   component: PdfViewerToolbar,
   args: {
     currentPage: 1,
@@ -35143,21 +34460,21 @@ export const MidDocument: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> ThumbnailSidebarWrapper</h2>
       <div class="badges">
-        <label for="c-error-26-beta-documentviewer-renderers-pdfviewer-building-blocks-thumbnailsidebar-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-26-beta-documentviewer-renderers-pdfviewer-building-blocks-thumbnailsidebar-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-26-beta-documentviewer-renderers-pdfviewer-building-blocks-thumbnailsidebar-stories" class="badge err as-toggle">2/2 story errors</label>
+        <label for="c-error-24-beta-pdfviewer-building-blocks-thumbnailsidebar-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-24-beta-pdfviewer-building-blocks-thumbnailsidebar-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-24-beta-pdfviewer-building-blocks-thumbnailsidebar-stories" class="badge err as-toggle">2/2 story errors</label>
       </div>
     </div>
-    <div class="meta" title="./src/stories/PdfViewer/ThumbnailSidebar.stories.tsx">beta-documentviewer-renderers-pdfviewer-building-blocks-thumbnailsidebar · ./src/stories/PdfViewer/ThumbnailSidebar.stories.tsx</div>
+    <div class="meta" title="./src/stories/PdfViewer/ThumbnailSidebar.stories.tsx">beta-pdfviewer-building-blocks-thumbnailsidebar · ./src/stories/PdfViewer/ThumbnailSidebar.stories.tsx</div>
     
     
     
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-26-beta-documentviewer-renderers-pdfviewer-building-blocks-thumbnailsidebar-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-26-beta-documentviewer-renderers-pdfviewer-building-blocks-thumbnailsidebar-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-26-beta-documentviewer-renderers-pdfviewer-building-blocks-thumbnailsidebar-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-24-beta-pdfviewer-building-blocks-thumbnailsidebar-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-24-beta-pdfviewer-building-blocks-thumbnailsidebar-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-24-beta-pdfviewer-building-blocks-thumbnailsidebar-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -35171,9 +34488,9 @@ export const MidDocument: Story = {
   63 |
 &gt; 64 | const meta: Meta&lt;ThumbnailSidebarStoryProps&gt; = {
      | ^
-  65 |   title:
-  66 |     &quot;Beta/DocumentViewer/Renderers/PdfViewer/Building Blocks/ThumbnailSidebar&quot;,
-  67 |   component: ThumbnailSidebarWrapper,
+  65 |   title: &quot;Beta/PdfViewer/Building Blocks/ThumbnailSidebar&quot;,
+  66 |   component: ThumbnailSidebarWrapper,
+  67 |   args: {
 
 ./src/stories/PdfViewer/ThumbnailSidebar.stories.tsx:
 /*
@@ -35240,8 +34557,7 @@ function ThumbnailSidebarWrapper({
 }
 
 const meta: Meta&lt;ThumbnailSidebarStoryProps&gt; = {
-  title:
-    &quot;Beta/DocumentViewer/Renderers/PdfViewer/Building Blocks/ThumbnailSidebar&quot;,
+  title: &quot;Beta/PdfViewer/Building Blocks/ThumbnailSidebar&quot;,
   component: ThumbnailSidebarWrapper,
   args: {
     src: SAMPLE_PDF_URL,
@@ -35329,21 +34645,21 @@ export const ActivePage: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> TiffRenderer</h2>
       <div class="badges">
-        <label for="c-error-27-beta-documentviewer-renderers-tiffrenderer-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-27-beta-documentviewer-renderers-tiffrenderer-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-27-beta-documentviewer-renderers-tiffrenderer-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-error-25-beta-tiffrenderer-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-25-beta-tiffrenderer-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-25-beta-tiffrenderer-stories" class="badge ok as-toggle">2 stories</label>
       </div>
     </div>
-    <div class="meta" title="./src/stories/TiffRenderer/TiffRendererFeatures.stories.tsx">beta-documentviewer-renderers-tiffrenderer · ./src/stories/TiffRenderer/TiffRendererFeatures.stories.tsx</div>
+    <div class="meta" title="./src/stories/TiffRenderer/TiffRendererFeatures.stories.tsx">beta-tiffrenderer · ./src/stories/TiffRenderer/TiffRendererFeatures.stories.tsx</div>
     
     
     
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-27-beta-documentviewer-renderers-tiffrenderer-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-27-beta-documentviewer-renderers-tiffrenderer-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-27-beta-documentviewer-renderers-tiffrenderer-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-25-beta-tiffrenderer-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-25-beta-tiffrenderer-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-25-beta-tiffrenderer-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -35357,7 +34673,7 @@ export const ActivePage: Story = {
   103 |
 &gt; 104 | const meta: Meta&lt;TiffRendererProps&gt; = {
       | ^
-  105 |   title: &quot;Beta/DocumentViewer/Renderers/TiffRenderer&quot;,
+  105 |   title: &quot;Beta/TiffRenderer&quot;,
   106 |   component: TiffRenderer,
   107 |   args: {
 
@@ -35466,7 +34782,7 @@ function createSampleTiffBytes(): Uint8Array {
 const sampleTiffBytes = createSampleTiffBytes();
 
 const meta: Meta&lt;TiffRendererProps&gt; = {
-  title: &quot;Beta/DocumentViewer/Renderers/TiffRenderer&quot;,
+  title: &quot;Beta/TiffRenderer&quot;,
   component: TiffRenderer,
   args: {
     content: sampleTiffBytes,
@@ -35497,7 +34813,7 @@ const meta: Meta&lt;TiffRendererProps&gt; = {
 export default meta;
 type Story = StoryObj&lt;typeof meta&gt;;
 
-export const WithContent: Story = {
+export const Default: Story = {
   parameters: {
     docs: {
       source: {
@@ -35552,12 +34868,12 @@ export const WithErrorCallback: Story = {
           
             <div class="note ok">
               <div class="row">
-                <span class="ex-name">With Content</span>
+                <span class="ex-name">Default</span>
                 <span class="badge ok">story ok</span>
               </div>
               
               
-              <pre><code>const WithContent = () =&gt; &lt;div style={{ height: &quot;400px&quot; }}&gt;
+              <pre><code>const Default = () =&gt; &lt;div style={{ height: &quot;400px&quot; }}&gt;
     &lt;TiffRenderer content={sampleTiffBytes} /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
@@ -35586,9 +34902,9 @@ export const WithErrorCallback: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> UpdateEmployeeActionFormStory</h2>
       <div class="badges">
-        <label for="c-error-28-beta-actionform-usage-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-28-beta-actionform-usage-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-28-beta-actionform-usage-stories" class="badge err as-toggle">10/13 story errors</label>
+        <label for="c-error-26-beta-actionform-usage-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-26-beta-actionform-usage-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-26-beta-actionform-usage-stories" class="badge err as-toggle">10/13 story errors</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/ActionForm/ActionForm.stories.tsx">beta-actionform-usage · ./src/stories/ActionForm/ActionForm.stories.tsx</div>
@@ -35598,9 +34914,9 @@ export const WithErrorCallback: Story = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-28-beta-actionform-usage-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-28-beta-actionform-usage-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-28-beta-actionform-usage-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-26-beta-actionform-usage-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-26-beta-actionform-usage-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-26-beta-actionform-usage-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -36735,21 +36051,21 @@ function ControlledActionFormStory(): React.ReactElement {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> VideoViewer</h2>
       <div class="badges">
-        <label for="c-error-29-beta-documentviewer-renderers-videoviewer-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-29-beta-documentviewer-renderers-videoviewer-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-29-beta-documentviewer-renderers-videoviewer-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-error-27-beta-videoviewer-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-27-beta-videoviewer-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-27-beta-videoviewer-stories" class="badge ok as-toggle">2 stories</label>
       </div>
     </div>
-    <div class="meta" title="./src/stories/VideoViewer/VideoViewer.stories.tsx">beta-documentviewer-renderers-videoviewer · ./src/stories/VideoViewer/VideoViewer.stories.tsx</div>
+    <div class="meta" title="./src/stories/VideoViewer/VideoViewer.stories.tsx">beta-videoviewer · ./src/stories/VideoViewer/VideoViewer.stories.tsx</div>
     
     
     
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-29-beta-documentviewer-renderers-videoviewer-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-29-beta-documentviewer-renderers-videoviewer-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-29-beta-documentviewer-renderers-videoviewer-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-27-beta-videoviewer-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-27-beta-videoviewer-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-27-beta-videoviewer-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -36763,7 +36079,7 @@ function ControlledActionFormStory(): React.ReactElement {
   50 |
 &gt; 51 | const meta: Meta&lt;VideoViewerMediaProps&gt; = {
      | ^
-  52 |   title: &quot;Beta/DocumentViewer/Renderers/VideoViewer&quot;,
+  52 |   title: &quot;Beta/VideoViewer&quot;,
   53 |   component: VideoViewer,
   54 |   args: {
 
@@ -36819,7 +36135,7 @@ function createMockMedia(url: string, filename: string): Media {
 const mockMedia = createMockMedia(SAMPLE_VIDEO_URL, &quot;example.mp4&quot;);
 
 const meta: Meta&lt;VideoViewerMediaProps&gt; = {
-  title: &quot;Beta/DocumentViewer/Renderers/VideoViewer&quot;,
+  title: &quot;Beta/VideoViewer&quot;,
   component: VideoViewer,
   args: {
     media: mockMedia,
