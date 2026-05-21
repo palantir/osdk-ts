@@ -62,7 +62,6 @@ export type {
   AllowedBucketTypes,
   DataValueClientToWire,
   DataValueWireToClient,
-  ScenarioClient,
 } from "./mapping/DataValueMapping.js";
 export type {
   PropertyValueWireToClient,
