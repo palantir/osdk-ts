@@ -169,6 +169,17 @@
   }
 }
 
+.valueCountRow {
+  display: flex;
+  align-items: center;
+}
+
+.valueCountLabel {
+  font-family: var(--osdk-filter-item-exclude-dropdown-font-family);
+  font-size: var(--osdk-filter-item-exclude-dropdown-font-size);
+  color: var(--osdk-filter-item-exclude-dropdown-color);
+}
+
 .dragging {
   opacity: var(--osdk-filter-item-dragging-opacity);
 }

@@ -219,6 +219,46 @@ export function clearFilterState(
   }
 }
 
+/**
+ * Returns the state with `isExcluding` flipped, preserving the discriminator
+ * and unwrapping/re-wrapping any `linkedProperty` wrapper. Returns `undefined`
+ * if the wrapped state is one that does not support excluding.
+ */
+export function toggleIsExcluding(
+  state: FilterState,
+): FilterState | undefined {
+  if (state.type === "linkedProperty") {
+    const inner = state.linkedFilterState;
+    return {
+      type: "linkedProperty",
+      linkedFilterState: { ...inner, isExcluding: !inner.isExcluding },
+    };
+  }
+  if (!supportsExcluding(state)) {
+    return undefined;
+  }
+  return { ...state, isExcluding: !state.isExcluding };
+}
+
+/**
+ * Returns the number of values the user has actively selected for filters
+ * whose UI surfaces a selected-of-total count (LISTOGRAM, SINGLE_SELECT,
+ * MULTI_SELECT, TEXT_TAGS). Returns 0 for state shapes that don't have a
+ * discrete list of selected values.
+ */
+export function getSelectedCount(state: FilterState | undefined): number {
+  if (!state) {
+    return 0;
+  }
+  if (state.type === "EXACT_MATCH") {
+    return state.values.length;
+  }
+  if (state.type === "SELECT") {
+    return state.selectedValues.length;
+  }
+  return 0;
+}
+
 /** Check if a filter state has an active (non-empty) value. */
 export function filterHasActiveState(state: FilterState | undefined): boolean {
   if (!state) {

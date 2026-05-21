@@ -16,32 +16,45 @@
 
 import React, { memo } from "react";
 import type { FilterState } from "../FilterListItemApi.js";
+import { getSelectedCount } from "../utils/filterValues.js";
+import styles from "./FilterListItem.module.css";
 
 interface FilterInputExcludeRowProps {
-  /**
-   * Retained for backward compatibility. Keep / Exclude now lives in the
-   * filter item's overflow menu rendered by `FilterListItem`, so this prop
-   * is ignored.
-   */
-  excludeRowOpen?: boolean;
   filterState: FilterState | undefined;
-  onFilterStateChanged: (state: FilterState) => void;
   totalValueCount?: number;
-  onClearAll?: () => void;
   children: React.ReactNode;
 }
 
 /**
- * Thin pass-through wrapper retained so existing filter input call sites keep
- * compiling. Keep / Exclude, Clear all selections, and the selected-of-total
- * count have all moved into the item-level overflow menu (`ItemOverflowMenu`)
- * rendered by `FilterListItem`. This component renders only its children;
- * its remaining props are intentionally unused.
+ * Renders the "N of M values" count summary above the filter input.
+ * Keep / Exclude, Clear all, and Remove now live in the item-level overflow
+ * (`...`) menu rendered by `FilterListItem`; this wrapper preserves the count
+ * badge that previously rendered alongside them.
  */
 function FilterInputExcludeRowInner({
+  filterState,
+  totalValueCount,
   children,
 }: FilterInputExcludeRowProps): React.ReactElement {
-  return <>{children}</>;
+  const selectedCount = getSelectedCount(filterState);
+  const showCount = totalValueCount != null && totalValueCount > 0;
+
+  return (
+    <>
+      {showCount && (
+        <div className={styles.valueCountRow}>
+          <span
+            className={styles.valueCountLabel}
+            title="Approximate count of unique values"
+          >
+            {selectedCount.toLocaleString()} of{" "}
+            {totalValueCount.toLocaleString()} values
+          </span>
+        </div>
+      )}
+      {children}
+    </>
+  );
 }
 
 export const FilterInputExcludeRow: React.MemoExoticComponent<

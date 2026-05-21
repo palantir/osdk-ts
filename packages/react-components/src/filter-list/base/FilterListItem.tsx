@@ -33,49 +33,58 @@ import {
   getEffectiveFilterState,
   supportsExcluding,
   supportsSearch,
+  toggleIsExcluding,
 } from "../utils/filterValues.js";
 import type { RenderFilterInput } from "./BaseFilterListApi.js";
 import { DragHandleIcon } from "./DragHandleIcon.js";
-import { RemoveIcon, SearchIcon } from "./FilterIcons.js";
+import { RemoveIcon } from "./FilterIcons.js";
 import styles from "./FilterListItem.module.css";
+import { HeaderSearchButton } from "./HeaderSearchButton.js";
 import { ItemOverflowMenu } from "./ItemOverflowMenu.js";
 
 type SearchPlacement = "header-start" | "header-end" | "menu" | "hidden";
 type OverflowPlacement = "header-start" | "header-end" | "hidden";
 
+interface ResolvedPlacements {
+  search: SearchPlacement;
+  overflow: OverflowPlacement;
+}
+
 /**
  * `controls.search` takes precedence over `searchField` when both are set.
+ * `controls.overflow` accepts boolean or `"header-start"`/`"header-end"`;
+ * `"menu"` is not a legal value for the trigger that opens the menu.
  */
-function resolveSearchPlacement(
+function resolveControlPlacements(
   effectiveState: FilterState | undefined,
   searchField: boolean | undefined,
   controls: FilterControlsConfig | undefined,
-): SearchPlacement {
+): ResolvedPlacements {
+  let search: SearchPlacement;
   if (!supportsSearch(effectiveState)) {
-    return "hidden";
+    search = "hidden";
+  } else {
+    const value = controls?.search;
+    if (value === false || (value === undefined && searchField === false)) {
+      search = "hidden";
+    } else if (typeof value === "string") {
+      search = value;
+    } else {
+      search = "header-end";
+    }
   }
-  const search = controls?.search;
-  if (search === false || (search === undefined && searchField === false)) {
-    return "hidden";
-  }
-  if (typeof search === "string") {
-    return search;
-  }
-  return controls?.placement ?? "header-end";
-}
 
-function resolveOverflowPlacement(
-  controls: FilterControlsConfig | undefined,
-): OverflowPlacement {
-  const overflow = controls?.overflow;
-  if (overflow === false) {
-    return "hidden";
+  let overflow: OverflowPlacement;
+  const overflowValue = controls?.overflow;
+  if (overflowValue === false) {
+    overflow = "hidden";
+  } else if (typeof overflowValue === "string") {
+    overflow = overflowValue;
+  } else {
+    overflow = "header-end";
   }
-  if (typeof overflow === "string") {
-    return overflow;
-  }
-  const placement = controls?.placement;
-  return placement === "header-start" ? "header-start" : "header-end";
+
+  return { search, overflow };
 }
 
 interface FilterListItemProps<D> {
@@ -155,18 +164,10 @@ function FilterListItemInner<D>({
     if (filterState == null) {
       return;
     }
-    if (filterState.type === "linkedProperty") {
-      const inner = filterState.linkedFilterState;
-      onFilterStateChanged(filterKey, {
-        type: "linkedProperty",
-        linkedFilterState: { ...inner, isExcluding: !inner.isExcluding },
-      });
-      return;
+    const next = toggleIsExcluding(filterState);
+    if (next != null) {
+      onFilterStateChanged(filterKey, next);
     }
-    onFilterStateChanged(filterKey, {
-      ...filterState,
-      isExcluding: !filterState.isExcluding,
-    });
   }, [filterKey, filterState, onFilterStateChanged]);
 
   const clearedState = useMemo(
@@ -184,14 +185,10 @@ function FilterListItemInner<D>({
     element?.focus({ preventScroll: true });
   }, []);
 
-  const searchPlacement = resolveSearchPlacement(
-    effectiveState,
-    searchField,
-    controls,
-  );
-  const overflowPlacement = resolveOverflowPlacement(controls);
-  const showOverflow = overflowPlacement !== "hidden";
+  const { search: searchPlacement, overflow: overflowPlacement } =
+    resolveControlPlacements(effectiveState, searchField, controls);
 
+  const showOverflow = overflowPlacement !== "hidden";
   const showKeepExclude = showOverflow && supportsExcluding(effectiveState);
   const hasSelection = filterHasActiveState(filterState);
   const showClearAll = showOverflow && hasSelection && clearedState != null;
@@ -200,29 +197,23 @@ function FilterListItemInner<D>({
     && controls?.remove !== false;
   const showSearchInMenu = showOverflow && searchPlacement === "menu";
 
-  const searchOpen = searchState.type === "open";
-  const searchQuery = searchState.type === "open" ? searchState.query : "";
-  const searchQueryForInput = searchState.type === "open"
+  const searchQuery = searchState.type === "open"
     ? searchState.query
     : undefined;
+  const searchOpen = searchQuery !== undefined;
 
-  const headerSearchButton = (searchPlacement === "header-start"
-      || searchPlacement === "header-end")
+  const headerSearch = searchPlacement === "header-start"
+      || searchPlacement === "header-end"
     ? (
-      <Button
-        className={classnames(styles.headerActionButton, {
-          [styles.headerActionButtonStart]: searchPlacement === "header-start",
-        })}
-        onClick={handleToggleSearch}
-        aria-label="Search values"
-        aria-pressed={searchOpen}
-      >
-        <SearchIcon />
-      </Button>
+      <HeaderSearchButton
+        placement={searchPlacement}
+        pressed={searchOpen}
+        onToggle={handleToggleSearch}
+      />
     )
     : null;
 
-  const headerOverflowMenu = showOverflow
+  const headerOverflow = showOverflow
     ? (
       <ItemOverflowMenu
         triggerClassName={classnames(styles.headerActionButton, {
@@ -261,15 +252,15 @@ function FilterListItemInner<D>({
             <DragHandleIcon />
           </Button>
         )}
-        {searchPlacement === "header-start" && headerSearchButton}
-        {overflowPlacement === "header-start" && headerOverflowMenu}
+        {searchPlacement === "header-start" && headerSearch}
+        {overflowPlacement === "header-start" && headerOverflow}
         <span
           className={styles.itemLabel}
         >
           {label}
         </span>
-        {searchPlacement === "header-end" && headerSearchButton}
-        {overflowPlacement === "header-end" && headerOverflowMenu}
+        {searchPlacement === "header-end" && headerSearch}
+        {overflowPlacement === "header-end" && headerOverflow}
       </div>
 
       {searchOpen && (
@@ -303,8 +294,7 @@ function FilterListItemInner<D>({
             filterKey,
             filterState,
             onFilterStateChanged: handleFilterStateChanged,
-            searchQuery: searchQueryForInput,
-            excludeRowOpen: false,
+            searchQuery,
           })}
         </ErrorBoundary>
       </div>

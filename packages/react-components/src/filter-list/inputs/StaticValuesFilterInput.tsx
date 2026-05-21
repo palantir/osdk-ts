@@ -42,8 +42,6 @@ interface StaticValuesFilterInputProps<Q extends ObjectTypeDefinition> {
   onFilterStateChanged: (state: FilterState) => void;
   /** Search term for filtering displayed values within the filter input */
   searchQuery?: string;
-  /** Whether the exclude/include toggle row is expanded */
-  excludeRowOpen?: boolean;
   /** Layout for `MULTI_SELECT` rendering. Forwarded to `MultiSelectInput`. */
   layout?: MultiSelectInputLayout;
 }
@@ -64,14 +62,6 @@ function useExactMatchState(
     [filterState],
   );
 
-  const handleClearAll = useCallback(() => {
-    onFilterStateChanged({
-      type: "EXACT_MATCH",
-      values: [],
-      isExcluding,
-    });
-  }, [onFilterStateChanged, isExcluding]);
-
   const handleChange = useCallback(
     (values: string[]) => {
       onFilterStateChanged({
@@ -83,7 +73,7 @@ function useExactMatchState(
     [onFilterStateChanged, isExcluding],
   );
 
-  return { selectedValues, handleClearAll, handleChange };
+  return { selectedValues, handleChange };
 }
 
 /**
@@ -110,14 +100,6 @@ function useSelectState(
     [filterState],
   );
 
-  const handleClearAll = useCallback(() => {
-    onFilterStateChanged({
-      type: "SELECT",
-      selectedValues: [],
-      isExcluding,
-    });
-  }, [onFilterStateChanged, isExcluding]);
-
   const handleSingleChange = useCallback(
     (value: string | undefined) => {
       onFilterStateChanged({
@@ -143,7 +125,6 @@ function useSelectState(
   return {
     selectedValue,
     selectedValues,
-    handleClearAll,
     handleSingleChange,
     handleMultiChange,
   };
@@ -154,7 +135,6 @@ function StaticValuesFilterInputInner<Q extends ObjectTypeDefinition>({
   filterState,
   onFilterStateChanged,
   searchQuery,
-  excludeRowOpen,
   layout,
 }: StaticValuesFilterInputProps<Q>): React.ReactElement {
   const aggregationValues: PropertyAggregationValue[] = useMemo(
@@ -179,11 +159,8 @@ function StaticValuesFilterInputInner<Q extends ObjectTypeDefinition>({
     case "LISTOGRAM":
       return (
         <FilterInputExcludeRow
-          excludeRowOpen={excludeRowOpen}
           filterState={filterState}
-          onFilterStateChanged={onFilterStateChanged}
           totalValueCount={aggregationValues.length}
-          onClearAll={exactMatch.handleClearAll}
         >
           <ListogramInput
             values={aggregationValues}
@@ -206,11 +183,8 @@ function StaticValuesFilterInputInner<Q extends ObjectTypeDefinition>({
     case "SINGLE_SELECT":
       return (
         <FilterInputExcludeRow
-          excludeRowOpen={excludeRowOpen}
           filterState={filterState}
-          onFilterStateChanged={onFilterStateChanged}
           totalValueCount={aggregationValues.length}
-          onClearAll={select.handleClearAll}
         >
           <SingleSelectInput
             values={aggregationValues}
@@ -228,11 +202,8 @@ function StaticValuesFilterInputInner<Q extends ObjectTypeDefinition>({
     case "MULTI_SELECT":
       return (
         <FilterInputExcludeRow
-          excludeRowOpen={excludeRowOpen}
           filterState={filterState}
-          onFilterStateChanged={onFilterStateChanged}
           totalValueCount={aggregationValues.length}
-          onClearAll={select.handleClearAll}
         >
           <MultiSelectInput
             values={aggregationValues}
@@ -251,11 +222,8 @@ function StaticValuesFilterInputInner<Q extends ObjectTypeDefinition>({
     case "TEXT_TAGS":
       return (
         <FilterInputExcludeRow
-          excludeRowOpen={excludeRowOpen}
           filterState={filterState}
-          onFilterStateChanged={onFilterStateChanged}
           totalValueCount={aggregationValues.length}
-          onClearAll={exactMatch.handleClearAll}
         >
           <TextTagsInput
             suggestions={aggregationValues}

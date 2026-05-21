@@ -21,7 +21,9 @@ import {
   clearFilterState,
   dedupeEmptyAggregationRows,
   getEffectiveFilterState,
+  getSelectedCount,
   isEmptyValue,
+  toggleIsExcluding,
 } from "../filterValues.js";
 
 describe("filterValues", () => {
@@ -284,6 +286,101 @@ describe("filterValues", () => {
           linkedFilterState: { type: "custom", customState: {} },
         }),
       ).toBeUndefined();
+    });
+  });
+
+  describe("toggleIsExcluding", () => {
+    it("flips isExcluding on a SELECT state", () => {
+      expect(
+        toggleIsExcluding({
+          type: "SELECT",
+          selectedValues: ["a"],
+          isExcluding: false,
+        }),
+      ).toEqual({
+        type: "SELECT",
+        selectedValues: ["a"],
+        isExcluding: true,
+      });
+    });
+
+    it("flips isExcluding back from true to false", () => {
+      expect(
+        toggleIsExcluding({
+          type: "EXACT_MATCH",
+          values: ["x"],
+          isExcluding: true,
+        }),
+      ).toEqual({
+        type: "EXACT_MATCH",
+        values: ["x"],
+        isExcluding: false,
+      });
+    });
+
+    it("re-wraps the inner state for linkedProperty", () => {
+      expect(
+        toggleIsExcluding({
+          type: "linkedProperty",
+          linkedFilterState: {
+            type: "SELECT",
+            selectedValues: ["a"],
+            isExcluding: false,
+          },
+        }),
+      ).toEqual({
+        type: "linkedProperty",
+        linkedFilterState: {
+          type: "SELECT",
+          selectedValues: ["a"],
+          isExcluding: true,
+        },
+      });
+    });
+
+    it("returns undefined for state shapes that do not support excluding", () => {
+      expect(
+        toggleIsExcluding({ type: "NUMBER_RANGE", minValue: 1, maxValue: 5 }),
+      ).toBeUndefined();
+      expect(
+        toggleIsExcluding({ type: "TOGGLE", enabled: true }),
+      ).toBeUndefined();
+      expect(
+        toggleIsExcluding({ type: "hasLink", hasLink: true }),
+      ).toBeUndefined();
+    });
+  });
+
+  describe("getSelectedCount", () => {
+    it("returns 0 for undefined", () => {
+      expect(getSelectedCount(undefined)).toBe(0);
+    });
+
+    it("returns the length of SELECT.selectedValues", () => {
+      expect(
+        getSelectedCount({
+          type: "SELECT",
+          selectedValues: ["a", "b", "c"],
+        }),
+      ).toBe(3);
+    });
+
+    it("returns the length of EXACT_MATCH.values", () => {
+      expect(
+        getSelectedCount({ type: "EXACT_MATCH", values: ["x", "y"] }),
+      ).toBe(2);
+    });
+
+    it("returns 0 for state shapes without a discrete selection list", () => {
+      expect(
+        getSelectedCount({ type: "NUMBER_RANGE", minValue: 1, maxValue: 10 }),
+      ).toBe(0);
+      expect(
+        getSelectedCount({ type: "CONTAINS_TEXT", value: "foo" }),
+      ).toBe(0);
+      expect(
+        getSelectedCount({ type: "TOGGLE", enabled: true }),
+      ).toBe(0);
     });
   });
 });

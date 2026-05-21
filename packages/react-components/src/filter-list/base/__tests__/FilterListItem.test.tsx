@@ -24,7 +24,7 @@ import type {
 import type { RenderFilterInput } from "../BaseFilterListApi.js";
 import { FilterListItem } from "../FilterListItem.js";
 
-interface TestDef {}
+type TestDef = Record<string, never>;
 
 const renderInputStub: RenderFilterInput<TestDef> = ({ filterState }) => (
   <div data-testid="filter-input">{JSON.stringify(filterState ?? null)}</div>
@@ -228,6 +228,19 @@ describe("FilterListItem", () => {
       openOverflowMenu();
       expect(screen.queryByLabelText(/Remove Department filter/i)).toBeNull();
     });
+
+    it("hides the overflow trigger entirely when Remove is the only action and controls.remove is false", () => {
+      renderItem({
+        // NUMBER_RANGE doesn't support Keep/Exclude, and an empty state has
+        // no selection to clear, so Remove is the only candidate menu item.
+        filterState: { type: "NUMBER_RANGE" },
+        onFilterRemoved: vi.fn(),
+        controls: { remove: false },
+      });
+      expect(
+        screen.queryByRole("button", { name: /more actions/i }),
+      ).toBeNull();
+    });
   });
 
   describe("linkedProperty Keep / Exclude routes through inner state", () => {
@@ -340,30 +353,6 @@ describe("FilterListItem", () => {
       expectInDomOrder(labelEl, searchButton);
     });
 
-    it("places the monocle at controls.placement when controls.search is true", () => {
-      renderItem({
-        filterState: { type: "SELECT", selectedValues: [] },
-        controls: { search: true, placement: "header-start" },
-      });
-      const searchButton = screen.getByRole("button", {
-        name: /search values/i,
-      });
-      const labelEl = screen.getByText("Department");
-      expectInDomOrder(searchButton, labelEl);
-    });
-
-    it("places the monocle at controls.placement when controls.search is omitted", () => {
-      renderItem({
-        filterState: { type: "SELECT", selectedValues: [] },
-        controls: { placement: "header-start" },
-      });
-      const searchButton = screen.getByRole("button", {
-        name: /search values/i,
-      });
-      const labelEl = screen.getByText("Department");
-      expectInDomOrder(searchButton, labelEl);
-    });
-
     it("hides the header monocle and surfaces a 'Search values' menu item when controls.search is 'menu'", () => {
       renderItem({
         filterState: { type: "SELECT", selectedValues: [] },
@@ -439,32 +428,6 @@ describe("FilterListItem", () => {
         filterState: { type: "SELECT", selectedValues: ["x"] },
         onFilterRemoved: vi.fn(),
         controls: { overflow: "header-end" },
-      });
-      const overflowButton = screen.getByRole("button", {
-        name: /more actions/i,
-      });
-      const labelEl = screen.getByText("Department");
-      expectInDomOrder(labelEl, overflowButton);
-    });
-
-    it("places the overflow trigger at controls.placement when controls.overflow is omitted", () => {
-      renderItem({
-        filterState: { type: "SELECT", selectedValues: ["x"] },
-        onFilterRemoved: vi.fn(),
-        controls: { placement: "header-start" },
-      });
-      const overflowButton = screen.getByRole("button", {
-        name: /more actions/i,
-      });
-      const labelEl = screen.getByText("Department");
-      expectInDomOrder(overflowButton, labelEl);
-    });
-
-    it("keeps the overflow trigger at header-end when controls.placement is 'menu'", () => {
-      renderItem({
-        filterState: { type: "SELECT", selectedValues: ["x"] },
-        onFilterRemoved: vi.fn(),
-        controls: { placement: "menu" },
       });
       const overflowButton = screen.getByRole("button", {
         name: /more actions/i,

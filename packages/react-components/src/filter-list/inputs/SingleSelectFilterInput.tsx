@@ -34,7 +34,6 @@ interface SingleSelectFilterInputProps<Q extends ObjectTypeDefinition> {
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
-  excludeRowOpen?: boolean;
   renderValue?: (value: string) => React.ReactNode;
   showCount?: boolean;
 }
@@ -46,7 +45,6 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
   filterState,
   onFilterStateChanged,
   whereClause,
-  excludeRowOpen,
   renderValue,
   showCount,
 }: SingleSelectFilterInputProps<Q>): React.ReactElement {
@@ -58,14 +56,6 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
     [filterState],
   );
   const isExcluding = filterState?.isExcluding ?? false;
-
-  const handleClearAll = useCallback(() => {
-    onFilterStateChanged({
-      type: "SELECT",
-      selectedValues: [],
-      isExcluding,
-    });
-  }, [onFilterStateChanged, isExcluding]);
 
   const handleChange = useCallback(
     (value: string | undefined) => {
@@ -95,11 +85,8 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
 
   return (
     <FilterInputExcludeRow
-      excludeRowOpen={excludeRowOpen}
       filterState={filterState}
-      onFilterStateChanged={onFilterStateChanged}
       totalValueCount={data.length}
-      onClearAll={handleClearAll}
     >
       <SingleSelectInput
         values={data}

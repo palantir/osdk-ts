@@ -150,15 +150,15 @@ export function FilterListContent<D extends FilterDefinitionControls>({
     setActiveId(null);
   }, []);
 
-  const announcements = useMemo<Announcements>(
-    () => ({
+  const announcements = useMemo<Announcements>(() => {
+    const labelForId = (id: UniqueIdentifier) => {
+      const idx = sortableIds.indexOf(String(id));
+      const def = idx >= 0 ? filterDefinitions?.[idx] : undefined;
+      return def ? getFilterLabel(def) : "filter";
+    };
+    return {
       onDragStart({ active }) {
-        const idx = sortableIds.indexOf(String(active.id));
-        const def = idx >= 0 && filterDefinitions
-          ? filterDefinitions[idx]
-          : undefined;
-        const label = def ? getFilterLabel(def) : "filter";
-        return `Picked up ${label} filter`;
+        return `Picked up ${labelForId(active.id)} filter`;
       },
       onDragOver({ over }) {
         if (!over) {
@@ -168,11 +168,7 @@ export function FilterListContent<D extends FilterDefinitionControls>({
         return `Moved to position ${overIdx + 1} of ${sortableIds.length}`;
       },
       onDragEnd({ active, over }) {
-        const idx = sortableIds.indexOf(String(active.id));
-        const def = idx >= 0 && filterDefinitions
-          ? filterDefinitions[idx]
-          : undefined;
-        const label = def ? getFilterLabel(def) : "filter";
+        const label = labelForId(active.id);
         if (over && active.id !== over.id) {
           const overIdx = sortableIds.indexOf(String(over.id));
           return `Dropped ${label} filter at position ${overIdx + 1}`;
@@ -180,16 +176,10 @@ export function FilterListContent<D extends FilterDefinitionControls>({
         return `Dropped ${label} filter back in its original position`;
       },
       onDragCancel({ active }) {
-        const idx = sortableIds.indexOf(String(active.id));
-        const def = idx >= 0 && filterDefinitions
-          ? filterDefinitions[idx]
-          : undefined;
-        const label = def ? getFilterLabel(def) : "filter";
-        return `Cancelled dragging ${label} filter`;
+        return `Cancelled dragging ${labelForId(active.id)} filter`;
       },
-    }),
-    [filterDefinitions, sortableIds, getFilterLabel],
-  );
+    };
+  }, [filterDefinitions, sortableIds, getFilterLabel]);
 
   const accessibility = useMemo(
     () => ({ announcements }),
@@ -242,6 +232,7 @@ export function FilterListContent<D extends FilterDefinitionControls>({
                   onFilterStateChanged={onFilterStateChanged}
                   onFilterRemoved={onFilterRemoved}
                   renderInput={renderInput}
+                  // eslint-disable-next-line @typescript-eslint/no-deprecated -- forwarding the deprecated shorthand to preserve back-compat
                   searchField={definition.searchField}
                   controls={definition.controls}
                 />
@@ -262,6 +253,7 @@ export function FilterListContent<D extends FilterDefinitionControls>({
                 onFilterStateChanged={onFilterStateChanged}
                 onFilterRemoved={onFilterRemoved}
                 renderInput={renderInput}
+                // eslint-disable-next-line @typescript-eslint/no-deprecated -- forwarding the deprecated shorthand to preserve back-compat
                 searchField={activeDefinition.searchField}
                 controls={activeDefinition.controls}
                 dragHandleAttributes={DRAG_OVERLAY_HANDLE_ATTRIBUTES}
@@ -292,6 +284,7 @@ export function FilterListContent<D extends FilterDefinitionControls>({
             onFilterStateChanged={onFilterStateChanged}
             onFilterRemoved={onFilterRemoved}
             renderInput={renderInput}
+            // eslint-disable-next-line @typescript-eslint/no-deprecated -- forwarding the deprecated shorthand to preserve back-compat
             searchField={definition.searchField}
             controls={definition.controls}
           />

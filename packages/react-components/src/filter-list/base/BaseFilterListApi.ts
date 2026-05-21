@@ -26,7 +26,6 @@ export type RenderFilterInput<D> = (props: {
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
   searchQuery?: string;
-  excludeRowOpen?: boolean;
 }) => React.ReactNode;
 
 export interface BaseFilterListProps<D extends FilterDefinitionControls> {

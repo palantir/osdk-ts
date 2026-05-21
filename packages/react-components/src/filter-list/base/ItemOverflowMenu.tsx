@@ -60,9 +60,90 @@ function ItemOverflowMenuInner({
 }: ItemOverflowMenuProps): React.ReactElement | null {
   const collisionBoundary = useFilterListBoundary();
 
-  if (!showSearchInMenu && !showKeepExclude && !showClearAll && !showRemove) {
+  const sections: React.ReactNode[][] = [];
+
+  if (showSearchInMenu) {
+    sections.push([
+      <Menu.Item
+        key="search"
+        className={styles.menuItem}
+        onClick={onSearchInMenu}
+      >
+        <span className={styles.menuItemIcon}>
+          <SearchIcon />
+        </span>
+        Search values
+      </Menu.Item>,
+    ]);
+  }
+
+  if (showKeepExclude) {
+    sections.push([
+      <Menu.Item
+        key="keep"
+        className={styles.menuItem}
+        onClick={isExcluding ? onToggleExclude : undefined}
+        data-active={!isExcluding || undefined}
+      >
+        <span className={styles.menuItemIcon}>
+          {!isExcluding && <CheckIcon />}
+        </span>
+        Keep matching values
+      </Menu.Item>,
+      <Menu.Item
+        key="exclude"
+        className={styles.menuItem}
+        onClick={isExcluding ? undefined : onToggleExclude}
+        data-active={isExcluding || undefined}
+      >
+        <span className={styles.menuItemIcon}>
+          {isExcluding ? <CheckIcon /> : <ExcludeIcon />}
+        </span>
+        Exclude matching values
+      </Menu.Item>,
+    ]);
+  }
+
+  if (showClearAll) {
+    sections.push([
+      <Menu.Item
+        key="clear-all"
+        className={classnames(styles.menuItem, styles.menuItemAction)}
+        onClick={onClearAll}
+      >
+        <span className={styles.menuItemIcon}>
+          <ResetIcon />
+        </span>
+        Clear all selections
+      </Menu.Item>,
+    ]);
+  }
+
+  if (showRemove) {
+    sections.push([
+      <Menu.Item
+        key="remove"
+        className={classnames(styles.menuItem, styles.menuItemAction)}
+        onClick={onRemove}
+        aria-label={`Remove ${filterLabel} filter`}
+      >
+        <span className={styles.menuItemIcon}>
+          <RemoveIcon />
+        </span>
+        Remove filter
+      </Menu.Item>,
+    ]);
+  }
+
+  if (sections.length === 0) {
     return null;
   }
+
+  const items = sections.flatMap((section, index) =>
+    index === 0
+      ? section
+      : [<div key={`sep-${index}`} className={styles.separator} />, ...section]
+  );
 
   return (
     <Menu.Root>
@@ -80,74 +161,7 @@ function ItemOverflowMenuInner({
           collisionBoundary={collisionBoundary}
         >
           <Menu.Popup className={styles.popup}>
-            {showSearchInMenu && (
-              <>
-                <Menu.Item
-                  className={styles.menuItem}
-                  onClick={onSearchInMenu}
-                >
-                  <span className={styles.menuItemIcon}>
-                    <SearchIcon />
-                  </span>
-                  Search values
-                </Menu.Item>
-                {(showKeepExclude || showClearAll || showRemove) && (
-                  <div className={styles.separator} />
-                )}
-              </>
-            )}
-            {showKeepExclude && (
-              <>
-                <Menu.Item
-                  className={styles.menuItem}
-                  onClick={isExcluding ? onToggleExclude : undefined}
-                  data-active={!isExcluding || undefined}
-                >
-                  <span className={styles.menuItemIcon}>
-                    {!isExcluding && <CheckIcon />}
-                  </span>
-                  Keep matching values
-                </Menu.Item>
-                <Menu.Item
-                  className={styles.menuItem}
-                  onClick={isExcluding ? undefined : onToggleExclude}
-                  data-active={isExcluding || undefined}
-                >
-                  <span className={styles.menuItemIcon}>
-                    {isExcluding
-                      ? <CheckIcon />
-                      : <ExcludeIcon />}
-                  </span>
-                  Exclude matching values
-                </Menu.Item>
-                {(showClearAll || showRemove) && (
-                  <div className={styles.separator} />
-                )}
-              </>
-            )}
-            {showClearAll && (
-              <Menu.Item
-                className={classnames(styles.menuItem, styles.menuItemAction)}
-                onClick={onClearAll}
-              >
-                <span className={styles.menuItemIcon}>
-                  <ResetIcon />
-                </span>
-                Clear all selections
-              </Menu.Item>
-            )}
-            {showRemove && (
-              <Menu.Item
-                className={classnames(styles.menuItem, styles.menuItemAction)}
-                onClick={onRemove}
-                aria-label={`Remove ${filterLabel} filter`}
-              >
-                <span className={styles.menuItemIcon}>
-                  <RemoveIcon />
-                </span>
-                Remove filter
-              </Menu.Item>
-            )}
+            {items}
           </Menu.Popup>
         </Menu.Positioner>
       </Menu.Portal>
