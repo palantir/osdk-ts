@@ -80,6 +80,7 @@ IDPS
 pagechanging
 pagerendered
 pagesloaded
+rotationchanging
 scalechanging
 updatefindcontrolstate
 updatefindmatchescount
