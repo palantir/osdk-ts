@@ -113,13 +113,13 @@ describe("ScenarioClient methods", () => {
         data: [
           { __apiName: "Employee", __primaryKey: 1 },
           { __apiName: "Employee", __primaryKey: 2 },
-          { __apiName: "Employee", __primaryKey: 2 }, // intra-page dupe
+          { __apiName: "Employee", __primaryKey: 2 },
         ],
         nextPageToken: "tok-2",
       };
       const page2: ListScenarioEditedObjectsResponse = {
         data: [
-          { __apiName: "Employee", __primaryKey: 2 }, // cross-page dupe
+          { __apiName: "Employee", __primaryKey: 2 },
           { __apiName: "Employee", __primaryKey: 3 },
         ],
       };
