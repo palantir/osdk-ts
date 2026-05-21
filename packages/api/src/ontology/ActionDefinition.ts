@@ -47,8 +47,7 @@ export namespace ActionMetadata {
       | DataType.Object<any>
       | DataType.ObjectSet<any>
       | DataType.Interface<any>
-      | DataType.Struct<any>
-      | DataType.ScenarioReference;
+      | DataType.Struct<any>;
     description?: string;
     multiplicity?: boolean;
     nullable?: boolean;
@@ -66,6 +65,7 @@ export namespace ActionMetadata {
       | "attachment"
       | "marking"
       | "mediaReference"
+      | "scenarioReference"
       | "objectType"
       | "geoshape"
       | "geohash";
@@ -97,10 +97,6 @@ export namespace ActionMetadata {
     > {
       type: "struct";
       struct: T;
-    }
-
-    export interface ScenarioReference {
-      type: "scenarioReference";
     }
   }
 }
