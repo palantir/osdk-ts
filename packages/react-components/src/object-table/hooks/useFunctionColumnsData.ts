@@ -22,7 +22,6 @@ import type {
   PropertyKeys,
   QueryDefinition,
   SimplePropertyDef,
-  WhereClause,
 } from "@osdk/api";
 import {
   type FunctionQueryParams,
@@ -236,7 +235,7 @@ function buildPagedObjectSets<
       [primaryKeyApiName]: {
         $in: page.map(obj => obj.$primaryKey),
       },
-    } as WhereClause<Q, RDPs>;
+    } as unknown as Parameters<typeof objectSet["where"]>[0];
 
     return { objectSet: objectSet.where(whereClause), objects: page };
   });

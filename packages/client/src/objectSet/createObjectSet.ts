@@ -44,7 +44,7 @@ import type {
 } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import { createWithPropertiesObjectSet } from "../derivedProperties/createWithPropertiesObjectSet.js";
-import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
+import { applyWhereClauseToObjectSet } from "../internal/conversions/applyWhereClauseToObjectSet.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { aggregate } from "../object/aggregate.js";
 import {
@@ -57,23 +57,6 @@ import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
 import { isWireObjectSet } from "../util/WireObjectSet.js";
 import { fetchLinksPage } from "./fetchLinksPage.js";
 
-const a: WireObjectSet = {
-  "type": "interfaceLinkSearchAround",
-  "interfaceLink": "lead",
-  "objectSet": {
-    "type": "asType",
-    "entityType": "Person",
-    "objectSet": {
-      "type": "filter",
-      "objectSet": { "type": "base", "objectType": "Employee" },
-      "where": {
-        "type": "eq",
-        "field": "employeeNumber",
-        "value": "657495107",
-      },
-    },
-  },
-};
 function isObjectTypeDefinition(
   def: ObjectOrInterfaceDefinition,
 ): def is ObjectTypeDefinition {
@@ -131,11 +114,11 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     ) as ObjectSet<Q>["fetchPageWithErrors"],
 
     where: (clause) => {
-      return clientCtx.objectSetFactory(objectType, clientCtx, {
-        type: "filter",
-        objectSet,
-        where: modernToLegacyWhereClause(clause, objectType),
-      });
+      return clientCtx.objectSetFactory(
+        objectType,
+        clientCtx,
+        applyWhereClauseToObjectSet(objectSet, clause, objectType),
+      );
     },
 
     pivotTo<L extends LinkNames<Q>>(

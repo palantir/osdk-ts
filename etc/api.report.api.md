@@ -874,6 +874,9 @@ export type LinkNames<Q extends ObjectOrInterfaceDefinition> = Q extends Interfa
 export type LinkTypeApiNamesFor<Q extends ObjectOrInterfaceDefinition> = Extract<keyof CompileTimeMetadata<Q>["links"], string>;
 
 // @public (undocumented)
+export type LinkWhereClause<T extends ObjectOrInterfaceDefinition> = { [L in LinkNames<T>]? : WhereClause<LinkedType<T, L>> };
+
+// @public (undocumented)
 export interface Logger {
     	child(bindings: Record<string, any>, options?: {
         		level?: string
@@ -1960,13 +1963,14 @@ export interface VersionBound<V extends VersionString<any, any, any>> {
     __expectedClientVersion?: V;
 }
 
+// Warning: (ae-forgotten-export) The symbol "DerivedObjectOrInterfaceDefinition" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "MergedPropertyWhereClause" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
 export type WhereClause<
 	T extends ObjectOrInterfaceDefinition,
 	RDPs extends Record<string, SimplePropertyDef> = {}
-> = OrWhereClause<T, RDPs> | AndWhereClause<T, RDPs> | NotWhereClause<T, RDPs> | (IsNever<keyof CompileTimeMetadata<T>["properties"]> extends true ? Record<string, never> : MergedPropertyWhereClause<T, RDPs>);
+> = OrWhereClause<T, RDPs> | AndWhereClause<T, RDPs> | NotWhereClause<T, RDPs> | LinkWhereClause<DerivedObjectOrInterfaceDefinition.WithDerivedProperties<T, RDPs>> | (IsNever<keyof CompileTimeMetadata<T>["properties"]> extends true ? Record<string, never> : MergedPropertyWhereClause<T, RDPs>);
 
 // @public (undocumented)
 export type WirePropertyTypes = BaseWirePropertyTypes | Record<string, BaseWirePropertyTypes>;
