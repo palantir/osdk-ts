@@ -55,3 +55,55 @@ const numberEmpty: PropertyFilterDateExtras<"integer"> = {};
 void numberEmpty;
 const stringEmpty: PropertyFilterDateExtras<"string"> = {};
 void stringEmpty;
+
+// For datetime / timestamp, `dateShortcuts` is allowed as a boolean or array.
+const dateShortcutsBool: PropertyFilterDateExtras<"timestamp"> = {
+  dateShortcuts: true,
+};
+void dateShortcutsBool;
+const dateShortcutsArr: PropertyFilterDateExtras<"datetime"> = {
+  dateShortcuts: ["past-day", "past-month"],
+};
+void dateShortcutsArr;
+
+// For non-date property types, `dateShortcuts` is `never` — setting it must
+// be a TS error.
+const numberShortcuts: PropertyFilterDateExtras<"integer"> = {
+  // @ts-expect-error dateShortcuts is `never` for number-typed properties
+  dateShortcuts: true,
+};
+void numberShortcuts;
+const stringShortcuts: PropertyFilterDateExtras<"string"> = {
+  // @ts-expect-error dateShortcuts is `never` for string-typed properties
+  dateShortcuts: ["past-day"],
+};
+void stringShortcuts;
+
+// `dateShortcuts` is gated by filter component type: only DATE_RANGE,
+// SINGLE_DATE, and TIMELINE accept it. MULTI_DATE rejects it even on a
+// date-typed property because its picker emits discrete dates, not a range.
+const multiDateShortcuts: PropertyFilterDateExtras<"timestamp", "MULTI_DATE"> =
+  {
+    // @ts-expect-error dateShortcuts is `never` for MULTI_DATE filter component
+    dateShortcuts: true,
+  };
+void multiDateShortcuts;
+
+const dateRangeShortcuts: PropertyFilterDateExtras<"timestamp", "DATE_RANGE"> =
+  {
+    dateShortcuts: ["past-day"],
+  };
+void dateRangeShortcuts;
+
+const singleDateShortcuts: PropertyFilterDateExtras<
+  "datetime",
+  "SINGLE_DATE"
+> = {
+  dateShortcuts: true,
+};
+void singleDateShortcuts;
+
+const timelineShortcuts: PropertyFilterDateExtras<"timestamp", "TIMELINE"> = {
+  dateShortcuts: ["past-week"],
+};
+void timelineShortcuts;

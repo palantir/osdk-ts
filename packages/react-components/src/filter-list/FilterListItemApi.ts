@@ -22,12 +22,18 @@ import type {
   WirePropertyTypes,
 } from "@osdk/api";
 import type { ReactNode } from "react";
+import {
+  DEFAULT_RELATIVE_DATE_PERIODS,
+  type RelativeDatePeriod,
+} from "../shared/dateUtils.js";
 import type { CustomFilterState } from "./types/CustomRendererTypes.js";
 import type { KeywordSearchFilterState } from "./types/KeywordSearchTypes.js";
 import type {
   HasLinkFilterState,
   LinkedPropertyFilterState,
 } from "./types/LinkedFilterTypes.js";
+
+export { DEFAULT_RELATIVE_DATE_PERIODS, type RelativeDatePeriod };
 
 /**
  * Helper type to extract the property type from an ObjectTypeDefinition given a property key
@@ -229,13 +235,57 @@ export interface DateFormattingProps {
 }
 
 /**
- * Conditionally adds `formatDate` to a property filter definition only for
- * `datetime` / `timestamp` properties. For other property types this field
- * is typed as `never` so attempting to set it is a TypeScript error.
+ * Opt-in relative-range shortcuts shown as a vertical rail beside a date
+ * filter input. Mixed into `PropertyFilterDefinition` only when the
+ * property is `datetime` or `timestamp` — see
+ * {@link PropertyFilterDateExtras}.
  */
-export type PropertyFilterDateExtras<P extends WirePropertyTypes> = P extends
-  "datetime" | "timestamp" ? DateFormattingProps
-  : { formatDate?: never };
+export interface DateShortcutsProps {
+  /**
+   * Opt-in relative-range shortcuts shown as a rail beside the date
+   * filter input.
+   *
+   * - undefined (default): hidden. No behavior change.
+   * - true: render the full {@link DEFAULT_RELATIVE_DATE_PERIODS} list.
+   * - `RelativeDatePeriod[]`: render exactly these in the given order.
+   *
+   * Clicking a shortcut emits an absolute `{ min, max }` Date range — the
+   * stored `FilterState` remains absolute. For `SINGLE_DATE`, shortcut
+   * clicks set the selected date to the period's start (e.g. "Past day" →
+   * 24 hours ago). Persisting the relative label across refreshes is
+   * intentionally deferred (would require a new `FilterState` variant).
+   */
+  dateShortcuts?: RelativeDatePeriod[] | boolean;
+}
+
+/**
+ * Filter components that support the {@link DateShortcutsProps.dateShortcuts}
+ * rail. `MULTI_DATE` is excluded because its picker emits a list of discrete
+ * dates, not a range.
+ */
+export type FilterComponentsSupportingDateShortcuts =
+  | "DATE_RANGE"
+  | "SINGLE_DATE"
+  | "TIMELINE";
+
+/**
+ * Conditionally adds date-only extras (`formatDate`, `dateShortcuts`) to a
+ * property filter definition only for `datetime` / `timestamp` properties.
+ * For other property types these fields are typed as `never` so attempting
+ * to set them is a TypeScript error.
+ *
+ * `dateShortcuts` is further gated on the filter component type — only
+ * `DATE_RANGE`, `SINGLE_DATE`, and `TIMELINE` accept it. `MULTI_DATE`
+ * filters get `dateShortcuts?: never`.
+ */
+export type PropertyFilterDateExtras<
+  P extends WirePropertyTypes,
+  C extends FilterComponentType = FilterComponentType,
+> = P extends "datetime" | "timestamp" ?
+    & DateFormattingProps
+    & (C extends FilterComponentsSupportingDateShortcuts ? DateShortcutsProps
+      : { dateShortcuts?: never })
+  : { formatDate?: never; dateShortcuts?: never };
 
 interface PropertyFilterDefinitionBase<
   Q extends ObjectTypeDefinition,
@@ -340,8 +390,8 @@ interface PropertyFilterDefinitionBase<
  * For example, boolean properties can only use LISTOGRAM or SINGLE_SELECT,
  * while string properties can use LISTOGRAM, TEXT_TAGS, CONTAINS_TEXT, SINGLE_SELECT, or MULTI_SELECT.
  *
- * Date and datetime properties may additionally specify `formatDate` — see
- * {@link PropertyFilterDateExtras}.
+ * Date and datetime properties may additionally specify `formatDate` and
+ * `dateShortcuts` — see {@link PropertyFilterDateExtras}.
  */
 export type PropertyFilterDefinition<
   Q extends ObjectTypeDefinition,
@@ -351,7 +401,7 @@ export type PropertyFilterDefinition<
   > = ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>>,
 > =
   & PropertyFilterDefinitionBase<Q, K, C>
-  & PropertyFilterDateExtras<PropertyTypeFromKey<Q, K>>;
+  & PropertyFilterDateExtras<PropertyTypeFromKey<Q, K>, C>;
 
 /**
  * Props for a single filter list item component.

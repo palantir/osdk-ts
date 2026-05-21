@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
-import React, { memo, useMemo } from "react";
-import { formatDateForInput } from "../../../shared/dateUtils.js";
+import classnames from "classnames";
+import React, { memo, useCallback, useMemo } from "react";
+import {
+  formatDateForInput,
+  type RelativeDatePeriod,
+} from "../../../shared/dateUtils.js";
 import { createDateHistogramBuckets } from "./createDateHistogramBuckets.js";
+import styles from "./DateRangeHistogramInput.module.css";
 import { RangeInput, type RangeInputConfig } from "./RangeInput.js";
+import { resolveDateShortcuts, ShortcutBar } from "./ShortcutBar.js";
 
 const defaultDateConfig: RangeInputConfig<Date> = {
   inputType: "date",
@@ -50,13 +56,23 @@ interface DateRangeHistogramInputProps {
    */
   formatDate?: (date: Date) => string;
   clickToFilter?: boolean;
+  /**
+   * Renders a vertical rail of relative-range shortcuts beside the
+   * histogram when set. Clicking a shortcut emits an absolute
+   * `{ min, max }` range via `onChange`. `true` uses
+   * `DEFAULT_RELATIVE_DATE_PERIODS`; pass an array to customize.
+   */
+  dateShortcuts?: RelativeDatePeriod[] | boolean;
 }
 
 function DateRangeHistogramInputInner({
   formatDate,
   valueCountPairs,
+  dateShortcuts,
+  onChange,
   ...rest
 }: DateRangeHistogramInputProps): React.ReactElement {
+  const shortcutPeriods = resolveDateShortcuts(dateShortcuts);
   const config = useMemo<RangeInputConfig<Date>>(
     () =>
       formatDate != null
@@ -98,13 +114,46 @@ function DateRangeHistogramInputInner({
     return { buckets, subtitle };
   }, [valueCountPairs, formatDate]);
 
+  const handleShortcutSelect = useCallback(
+    (range: { min: Date; max: Date }) => {
+      onChange(range.min, range.max);
+    },
+    [onChange],
+  );
+
+  if (shortcutPeriods == null) {
+    return (
+      <RangeInput
+        {...rest}
+        onChange={onChange}
+        valueCountPairs={valueCountPairs}
+        config={config}
+        histogramData={histogramData}
+      />
+    );
+  }
+
+  const { className, style, ...innerRest } = rest;
   return (
-    <RangeInput
-      {...rest}
-      valueCountPairs={valueCountPairs}
-      config={config}
-      histogramData={histogramData}
-    />
+    <div
+      className={classnames(styles.shortcutsRow, className)}
+      style={style}
+    >
+      <ShortcutBar
+        periods={shortcutPeriods}
+        onSelect={handleShortcutSelect}
+        className={styles.shortcuts}
+      />
+      <div className={styles.rangeArea}>
+        <RangeInput
+          {...innerRest}
+          onChange={onChange}
+          valueCountPairs={valueCountPairs}
+          config={config}
+          histogramData={histogramData}
+        />
+      </div>
+    </div>
   );
 }
 

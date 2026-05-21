@@ -28,6 +28,8 @@
  * UTC-to-local conversion before passing values to these functions.
  */
 
+import { subDays, subHours, subMonths, subWeeks, subYears } from "date-fns";
+
 export function formatDateForInput(date: Date | undefined | null): string {
   if (date == null) return "";
   const year = date.getFullYear();
@@ -123,3 +125,80 @@ export function parseTimeString(
 export function getTimeValue(date: Date | null): string {
   return date != null ? formatTime(date) : "00:00";
 }
+
+/**
+ * Identifier for an opt-in relative date range — the period the user wants
+ * the filter to span, anchored at "now". Consumed by the date filter
+ * shortcuts rail; emitting code converts the identifier into an absolute
+ * `{ min, max }` Date pair via {@link getRelativeDateRange}.
+ */
+export type RelativeDatePeriod = keyof typeof RELATIVE_DATE_PERIODS;
+
+const RELATIVE_DATE_PERIODS = {
+  "past-hour": {
+    label: "Past hour",
+    subtract: (d: Date): Date => subHours(d, 1),
+  },
+  "past-day": {
+    label: "Past day",
+    subtract: (d: Date): Date => subDays(d, 1),
+  },
+  "past-week": {
+    label: "Past week",
+    subtract: (d: Date): Date => subWeeks(d, 1),
+  },
+  "past-month": {
+    label: "Past month",
+    subtract: (d: Date): Date => subMonths(d, 1),
+  },
+  "past-3-months": {
+    label: "Past 3 months",
+    subtract: (d: Date): Date => subMonths(d, 3),
+  },
+  "past-6-months": {
+    label: "Past 6 months",
+    subtract: (d: Date): Date => subMonths(d, 6),
+  },
+  "past-year": {
+    label: "Past year",
+    subtract: (d: Date): Date => subYears(d, 1),
+  },
+  "past-2-years": {
+    label: "Past 2 years",
+    subtract: (d: Date): Date => subYears(d, 2),
+  },
+} as const;
+
+/**
+ * Returns an absolute `{ min, max }` Date range for the given relative
+ * period, anchored at `now` (default: `new Date()`). `date-fns` handles
+ * calendar-aware month/year math so month-end stays in the target month
+ * (e.g. Mar 31 minus one month → Feb 28/29).
+ */
+export function getRelativeDateRange(
+  period: RelativeDatePeriod,
+  now: Date = new Date(),
+): { min: Date; max: Date } {
+  const max = new Date(now.getTime());
+  return { min: RELATIVE_DATE_PERIODS[period].subtract(max), max };
+}
+
+/** Human-readable label for a {@link RelativeDatePeriod} (English only). */
+export function getRelativeDatePeriodLabel(p: RelativeDatePeriod): string {
+  return RELATIVE_DATE_PERIODS[p].label;
+}
+
+/**
+ * Default ordered list of relative date periods surfaced by the shortcut
+ * rail when a consumer opts in with `dateShortcuts: true`.
+ */
+export const DEFAULT_RELATIVE_DATE_PERIODS = [
+  "past-hour",
+  "past-day",
+  "past-week",
+  "past-month",
+  "past-3-months",
+  "past-6-months",
+  "past-year",
+  "past-2-years",
+] as const satisfies readonly RelativeDatePeriod[];
