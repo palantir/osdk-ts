@@ -60,10 +60,6 @@ export interface EditedEntitiesPage<Q extends ObjectTypeDefinition> {
 /**
  * A page of directed link instances edited within a scenario for a given source object type and link api name.
  * Returned by {@link EXPERIMENTAL_ScenarioClient.getEditedLinks}. Source and target carry only `$primaryKey` + `$apiName`.
- *
- * `pageSize` is honored on the backend per *source object*. The flattened representation here may therefore
- * contain more items than `pageSize` would suggest. The associated `nextPageToken` still maps to the backend's
- * source-object page boundary.
  */
 export interface EditedLinksPage<
   Q extends ObjectOrInterfaceDefinition,
