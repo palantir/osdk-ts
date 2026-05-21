@@ -16,7 +16,6 @@ Before using `OsdkThemeProvider`, complete the library setup described in [Prere
   - [Default: follow the OS preference](#default-follow-the-os-preference)
   - [Force light or dark with `defaultTheme`](#force-light-or-dark-with-defaulttheme)
   - [Build a `ThemeToggle`](#build-a-themetoggle)
-  - [Persist the user's choice to `localStorage`](#persist-the-users-choice-to-localstorage)
   - [Drive the theme from an external store (controlled mode)](#drive-the-theme-from-an-external-store-controlled-mode)
   - [Scope theming to a subtree](#scope-theming-to-a-subtree)
 - [Branching on the resolved theme in JS](#branching-on-the-resolved-theme-in-js)
@@ -167,7 +166,7 @@ Render it anywhere inside the provider:
 
 ### Drive the theme from an external store (controlled mode)
 
-If the theme value already lives outside the OSDK tree (e.g. in a parent design-system provider), pass it in via the `theme` prop. The provider stops owning state; you re-render it with the new value when the store changes, and the provider rewrites `data-bp-color-scheme` accordingly. 
+If the theme value already lives outside the OSDK tree (e.g. in a parent design-system provider), pass it in via the `theme` prop. The provider stops owning state; you re-render it with the new value when the store changes, and the provider rewrites `data-bp-color-scheme` accordingly.
 
 ```tsx
 import {

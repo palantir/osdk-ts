@@ -88,7 +88,7 @@ export function OsdkThemeProvider({
     ? systemTheme
     : theme;
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     const element = target
       ?? (typeof document !== "undefined" ? document.documentElement : null);
     if (element == null) return;
