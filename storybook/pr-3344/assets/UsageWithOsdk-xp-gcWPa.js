@@ -1,0 +1,151 @@
+import{j as n}from"./iframe-Be_ym5-I.js";import{useMDXComponents as r}from"./index-DP2A9OTX.js";import{b as a,c as i}from"./blocks-BFXDE1D0.js";import"./preload-helper-Dp1pzeXC.js";import"./index-CprYy9VH.js";import"./index-B9PoFSjN.js";import"./index-D5gPeocU.js";const s=`# Usage with OSDK
+
+\`@osdk/react-components\` is built on top of
+[\`@osdk/react\`](https://github.com/palantir/osdk-ts/tree/main/packages/react),
+which provides hooks for fetching Ontology data. Components accept OSDK types
+directly and handle data loading, caching, and state management automatically.
+
+## How it works
+
+Every OSDK-aware component follows a two-layer architecture:
+
+1. **OSDK layer** — fetches data via \`@osdk/react\` hooks, converts OSDK
+   entities into primitives, and passes them down.
+2. **Base layer** — a pure React component with no OSDK imports. It receives
+   primitives and handles all UI interactions and styling.
+
+This means you can always drop down to the \`Base*\` variant and bring your own
+data source.
+
+## OsdkProvider
+
+All components require an \`OsdkProvider\` wrapping your app. The provider
+supplies the OSDK client that hooks use for network requests.
+
+\`\`\`tsx
+import { createClient } from "@osdk/client";
+import { OsdkProvider } from "@osdk/react";
+
+const client = createClient(
+  "https://your-stack.palantirfoundry.com",
+  "ri.ontology.main.ontology.{UUID}",
+  async () => "your-auth-token",
+);
+
+function App() {
+  return (
+    <OsdkProvider client={client}>
+      {/* All @osdk/react-components go inside here */}
+    </OsdkProvider>
+  );
+}
+\`\`\`
+
+## ObjectTable
+
+Pass an OSDK object type and the table handles everything:
+
+\`\`\`tsx
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
+import { Employee } from "@your-osdk-package";
+
+function EmployeeDirectory() {
+  return (
+    <ObjectTable
+      objectType={Employee}
+      enableOrdering
+      enableColumnResize
+    />
+  );
+}
+\`\`\`
+
+### With column definitions
+
+\`\`\`tsx
+import type { ColumnDefinition } from "@osdk/react-components/experimental/object-table";
+
+const columns: ColumnDefinition<typeof Employee>[] = [
+  { id: "fullName", header: "Name" },
+  { id: "department", header: "Department" },
+  { id: "startDate", header: "Start Date" },
+];
+
+<ObjectTable objectType={Employee} columnDefinitions={columns} />;
+\`\`\`
+
+## FilterList + ObjectTable
+
+Combine \`FilterList\` with \`ObjectTable\` to add interactive filtering:
+
+\`\`\`tsx
+import { FilterList } from "@osdk/react-components/experimental/filter-list";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
+import { Employee } from "@your-osdk-package";
+
+function FilteredDirectory() {
+  const [filter, setFilter] = useState(undefined);
+
+  return (
+    <div style={{ display: "flex", gap: 16 }}>
+      <FilterList
+        objectType={Employee}
+        filterDefinitions={[
+          {
+            type: "PROPERTY",
+            id: "dept",
+            key: "department",
+            label: "Department",
+            filterComponent: "LISTOGRAM",
+            filterState: { type: "EXACT_MATCH", values: [] },
+          },
+        ]}
+        onFilterChanged={setFilter}
+      />
+      <ObjectTable objectType={Employee} filter={filter} />
+    </div>
+  );
+}
+\`\`\`
+
+## ActionForm
+
+Render a form for executing an Ontology Action:
+
+\`\`\`tsx
+import { ActionForm } from "@osdk/react-components/experimental/action-form";
+import { createEmployee } from "@your-osdk-package";
+
+function NewEmployeeForm() {
+  return (
+    <ActionForm
+      actionType={createEmployee}
+      onSubmitSuccess={() => console.log("Employee created!")}
+    />
+  );
+}
+\`\`\`
+
+## Using Base components
+
+If you have your own data source, use the \`Base*\` variants directly:
+
+\`\`\`tsx
+import { BaseTable } from "@osdk/react-components/experimental/object-table";
+
+function CustomTable({ data }) {
+  return (
+    <BaseTable
+      rows={data}
+      columns={[
+        { id: "name", header: "Name", accessorKey: "name" },
+        { id: "email", header: "Email", accessorKey: "email" },
+      ]}
+    />
+  );
+}
+\`\`\`
+`;function o(e){return n.jsxs(n.Fragment,{children:[`
+`,`
+`,n.jsx(a,{title:"Docs/Guides/Usage with OSDK"}),`
+`,n.jsx(i,{children:s})]})}function f(e={}){const{wrapper:t}={...r(),...e.components};return t?n.jsx(t,{...e,children:n.jsx(o,{...e})}):o()}export{f as default};
