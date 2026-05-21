@@ -48,6 +48,29 @@ const mockClient = createClient(
 
 const preview: Preview = {
   parameters: {
+    // Storybook 10 reads storySort from parameters.options (statically parsed)
+    options: {
+      storySort: {
+        order: [
+          "Docs",
+          [
+            "Welcome",
+            "Changelog",
+            "Versions",
+            "Guides",
+            ["Getting Started", "Installation", "Usage with OSDK"],
+            "Styling",
+            ["Overview", "CSS Variables"],
+            "Tokens",
+            ["Colors", "Typography", "Spacing"],
+            "Hooks and Utilities",
+          ],
+          "Beta",
+          ["*"],
+          "*",
+        ],
+      },
+    },
     controls: {
       matchers: {
         color: /(background|color)$/i,

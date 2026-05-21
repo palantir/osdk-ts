@@ -46,11 +46,12 @@ function redirectToObjectTableIfAtRoot() {
     !url.searchParams.has("path")
     && window.location.pathname === "/"
   ) {
-    window.location.href = "/?path=/story/beta-objecttable-features--default";
+    // Must match <Meta title="Docs/Welcome" /> in src/docs/Welcome.mdx
+    window.location.href = "/?path=/docs/docs-welcome--docs";
   }
 }
 
-// Redirect to the object table story if we're at the root
+// Redirect to the Welcome docs page if we're at the root
 addons.register(
   "redirect-to-first-story",
   (api: { on: (arg0: string, arg1: () => void) => void }) => {

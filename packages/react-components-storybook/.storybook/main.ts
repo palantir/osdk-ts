@@ -69,6 +69,12 @@ const config: StorybookConfig = {
       ...config.resolve,
       alias: {
         ...config.resolve?.alias,
+        // Resolve @docs/ and @rc/ to the react-components package so MDX
+        // wrappers can import .md files without fragile relative paths.
+        "@docs": new URL("../../react-components/docs", import.meta.url)
+          .pathname,
+        "@rc-root": new URL("../../react-components", import.meta.url)
+          .pathname,
         // Polyfill Node.js modules for browser
         // This is necessary because MSW (Mock Service Worker) and other dependencies
         // use Node.js built-in modules like crypto.randomUUID() which aren't available
