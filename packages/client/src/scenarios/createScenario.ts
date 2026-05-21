@@ -24,8 +24,7 @@ import {
 } from "./ScenarioClient.js";
 
 /**
- * Mint a fresh ontology scenario and return a client scoped to it. Calls
- * `POST /v2/ontologies/{ontology}/scenarios/create` under the hood.
+ * Mint a fresh ontology scenario and return a client scoped to it.
  *
  * @param client - The base {@link Client} to derive context (`baseUrl`, `ontologyRid`, `tokenProvider`, `branch`, …)
  *   from. Must not already be a {@link ScenarioClient} or a transactional client. When the base client has a branch
