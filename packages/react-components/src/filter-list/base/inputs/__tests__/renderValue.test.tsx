@@ -29,7 +29,6 @@ import { SingleSelectInput } from "../SingleSelectInput.js";
 
 vi.mock("@osdk/react", () => ({
   useOsdkAggregation: vi.fn(),
-  useRegisterUserAgent: vi.fn(),
 }));
 
 afterEach(cleanup);
@@ -456,5 +455,33 @@ describe("LinkedPropertyInput renderValue", () => {
 
     expect(screen.getByTestId("linked-anchor-abc-123")).toBeDefined();
     expect(screen.queryByTestId("linked-anchor-def-456")).toBeNull();
+  });
+
+  it("mounts SINGLE_SELECT with renderValue without error", () => {
+    // LinkedSingleSelectInput renders dropdown items inside a Combobox portal
+    // that jsdom can't mount — see the SingleSelectInput renderValue block
+    // above. Smoke-check that LinkedPropertyInput accepts renderValue on the
+    // SINGLE_SELECT path without throwing.
+    mockLinkedAggregationData([
+      { name: "abc-123", count: 4 },
+      { name: "def-456", count: 2 },
+    ]);
+
+    const { container } = render(
+      <LinkedPropertyInput
+        objectSet={createMockLinkedObjectSet()}
+        definition={createLinkedDefinition("SINGLE_SELECT", renderValueAsNode)}
+        filterState={{
+          type: "linkedProperty",
+          linkedFilterState: {
+            type: "SELECT",
+            selectedValues: [],
+          },
+        }}
+        onFilterStateChanged={vi.fn()}
+      />,
+    );
+
+    expect(container.querySelector("input")).toBeDefined();
   });
 });
