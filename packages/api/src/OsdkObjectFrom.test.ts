@@ -838,16 +838,16 @@ describe("ExtractOptions", () => {
       it("disallows invalid modifiers in fetchPage args", async () => {
         const objectSet = createMockObjectSet<EmployeeApiTest>();
 
+        // @ts-expect-error invalid modifier value
         await objectSet.fetchPage({
           $applyModifiers: {
-            // @ts-expect-error invalid modifier value
             addressStruct: "invalidModifier",
           },
         });
 
+        // @ts-expect-error invalid modifier key
         await objectSet.fetchPage({
           $applyModifiers: {
-            // @ts-expect-error invalid modifier key
             invalidProp: "applyMainValue",
           },
         });
