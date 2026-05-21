@@ -134,6 +134,36 @@ export function modernToLegacyWhereClauseInner<
   return handleWherePair(parts[0], objectOrInterface, undefined, rdpNames);
 }
 
+function resolvePropertyIdentifier(
+  fieldName: string,
+  objectOrInterface: ObjectOrInterfaceDefinition,
+  isTitleProperty: boolean,
+  isPrimaryKeyProperty: boolean,
+  isRdp: boolean | undefined,
+  structFieldSelector?: { propertyApiName: string; structFieldApiName: string },
+): PropertyIdentifier | undefined {
+  if (isTitleProperty) {
+    return { type: "titleProperty" } as PropertyIdentifier;
+  } else if (isPrimaryKeyProperty) {
+    return { type: "primaryKeyProperty" } as PropertyIdentifier;
+  } else if (isRdp) {
+    return {
+      type: "property",
+      apiName: fieldName,
+    };
+  } else if (structFieldSelector != null) {
+    return {
+      type: "structField",
+      ...structFieldSelector,
+      propertyApiName: fullyQualifyPropName(
+        structFieldSelector.propertyApiName,
+        objectOrInterface,
+      ),
+    };
+  }
+  return undefined;
+}
+
 function handleWherePair(
   [fieldName, filter]: [string, any],
   objectOrInterface: ObjectOrInterfaceDefinition,
@@ -153,25 +183,14 @@ function handleWherePair(
   const isRdp = !structFieldSelector && !isSpecialProperty
     && rdpNames?.has(fieldName);
 
-  const propertyIdentifier: PropertyIdentifier | undefined = isSpecialProperty
-    ? (isTitleProperty
-      ? { type: "titleProperty" } as PropertyIdentifier
-      : { type: "primaryKeyProperty" } as PropertyIdentifier)
-    : isRdp
-    ? {
-      type: "property",
-      apiName: fieldName,
-    }
-    : structFieldSelector != null
-    ? {
-      type: "structField",
-      ...structFieldSelector,
-      propertyApiName: fullyQualifyPropName(
-        structFieldSelector.propertyApiName,
-        objectOrInterface,
-      ),
-    }
-    : undefined;
+  const propertyIdentifier = resolvePropertyIdentifier(
+    fieldName,
+    objectOrInterface,
+    isTitleProperty,
+    isPrimaryKeyProperty,
+    isRdp,
+    structFieldSelector,
+  );
 
   const field = !isRdp && !isSpecialProperty && structFieldSelector == null
     ? fullyQualifyPropName(fieldName, objectOrInterface)
