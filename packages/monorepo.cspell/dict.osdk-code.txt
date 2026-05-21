@@ -78,7 +78,6 @@ Zhang
 zipcode
 IDPS
 pagechanging
-pagecleanup
 pagerendered
 pagesloaded
 rotationchanging
