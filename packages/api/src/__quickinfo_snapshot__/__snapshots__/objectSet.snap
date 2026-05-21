@@ -383,60 +383,25 @@ type objectSet_where_clause_param =
     } & EmployeeApiTest,
     {}
   >
-  | {
-    class?: StringFilter | undefined;
-    fullName?: StringFilter | undefined;
-    employeeId?: NumberFilter | undefined;
-    attachment?: BaseFilter<string> | undefined;
-    geopoint?: GeoFilter | undefined;
-    timeseries?: BaseFilter<string> | undefined;
-    mediaReference?: BaseFilter<string> | undefined;
-    geotimeSeriesReference?: BaseFilter<string> | undefined;
-    isActive?: BooleanFilter | undefined;
-    yearsOfExperience?: NumberFilter | undefined;
-    rank?: BaseFilter<string> | undefined;
-    performanceScore?: NumberFilter | undefined;
-    hourlyRate?: NumberFilter | undefined;
-    dateOfJoining?: DatetimeFilter | undefined;
-    lastUpdated?: DatetimeFilter | undefined;
-    skillSet?: StringFilter | undefined;
-    skillSetEmbedding?: BaseFilter<string> | undefined;
-    addressStruct?:
-      | BaseFilter.$isNull<string>
-      | (
-        | Just<
-          "street",
-          {
-            street?: StringFilter | undefined;
-            city?: StringFilter | undefined;
-            zipCode?: StringFilter | undefined;
-          }
-        >
-        | Just<
-          "city",
-          {
-            street?: StringFilter | undefined;
-            city?: StringFilter | undefined;
-            zipCode?: StringFilter | undefined;
-          }
-        >
-        | Just<
-          "zipCode",
-          {
-            street?: StringFilter | undefined;
-            city?: StringFilter | undefined;
-            zipCode?: StringFilter | undefined;
-          }
-        >
-      )
-      | undefined;
-    salaryHistory?: ArrayFilter<NumberFilter> | undefined;
-    bonusHistory?:
-      | ArrayFilter<
-        { year?: NumberFilter | undefined; amount?: NumberFilter | undefined }
+  | (
+    | PropertyWhereClause<
+      DerivedObjectOrInterfaceDefinition.WithDerivedProperties<
+        {
+          __DefinitionMetadata?:
+            | { properties: {}; props?: {} | undefined }
+            | undefined;
+        } & EmployeeApiTest,
+        {}
       >
-      | undefined;
-  };
+    >
+    | SpecialPropertyWhereClause<
+      {
+        __DefinitionMetadata?:
+          | { properties: {}; props?: {} | undefined }
+          | undefined;
+      } & EmployeeApiTest
+    >
+  );
 
 /** The result of objectSet.withProperties({ mom: ..., dad: ... }). */
 type objectSet_withProperties_result = ObjectSet<
@@ -476,58 +441,24 @@ type objectSet_with_rdp_where_clause_param =
     } & EmployeeApiTest,
     {}
   >
-  | {
-    mom?: NumberFilter | undefined;
-    class?: StringFilter | undefined;
-    fullName?: StringFilter | undefined;
-    employeeId?: NumberFilter | undefined;
-    attachment?: BaseFilter<string> | undefined;
-    geopoint?: GeoFilter | undefined;
-    timeseries?: BaseFilter<string> | undefined;
-    mediaReference?: BaseFilter<string> | undefined;
-    geotimeSeriesReference?: BaseFilter<string> | undefined;
-    isActive?: BooleanFilter | undefined;
-    yearsOfExperience?: NumberFilter | undefined;
-    rank?: BaseFilter<string> | undefined;
-    performanceScore?: NumberFilter | undefined;
-    hourlyRate?: NumberFilter | undefined;
-    dateOfJoining?: DatetimeFilter | undefined;
-    lastUpdated?: DatetimeFilter | undefined;
-    skillSet?: StringFilter | undefined;
-    skillSetEmbedding?: BaseFilter<string> | undefined;
-    addressStruct?:
-      | BaseFilter.$isNull<string>
-      | (
-        | Just<
-          "street",
-          {
-            street?: StringFilter | undefined;
-            city?: StringFilter | undefined;
-            zipCode?: StringFilter | undefined;
-          }
-        >
-        | Just<
-          "city",
-          {
-            street?: StringFilter | undefined;
-            city?: StringFilter | undefined;
-            zipCode?: StringFilter | undefined;
-          }
-        >
-        | Just<
-          "zipCode",
-          {
-            street?: StringFilter | undefined;
-            city?: StringFilter | undefined;
-            zipCode?: StringFilter | undefined;
-          }
-        >
-      )
-      | undefined;
-    salaryHistory?: ArrayFilter<NumberFilter> | undefined;
-    bonusHistory?:
-      | ArrayFilter<
-        { year?: NumberFilter | undefined; amount?: NumberFilter | undefined }
+  | (
+    | PropertyWhereClause<
+      DerivedObjectOrInterfaceDefinition.WithDerivedProperties<
+        {
+          __DefinitionMetadata?: {
+            properties: { mom: SimplePropertyDef.ToPropertyDef<"integer"> };
+            props?: { mom: number } | undefined;
+          } | undefined;
+        } & EmployeeApiTest,
+        {}
       >
-      | undefined;
-  };
+    >
+    | SpecialPropertyWhereClause<
+      {
+        __DefinitionMetadata?: {
+          properties: { mom: SimplePropertyDef.ToPropertyDef<"integer"> };
+          props?: { mom: number } | undefined;
+        } | undefined;
+      } & EmployeeApiTest
+    >
+  );
