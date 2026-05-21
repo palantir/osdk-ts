@@ -29,20 +29,13 @@ export type RenderFilterInput<D> = (props: {
   excludeRowOpen?: boolean;
 }) => React.ReactNode;
 
-export interface BaseFilterListProps<D> {
+export interface BaseFilterListProps<D extends FilterDefinitionControls> {
   filterDefinitions?: Array<D>;
   filterStates: Map<string, FilterState>;
   onFilterStateChanged: (filterKey: string, state: FilterState) => void;
   renderInput: RenderFilterInput<D>;
   getFilterKey: (definition: D) => string;
   getFilterLabel: (definition: D) => string;
-  /**
-   * Optional projection from a definition to its header control configuration.
-   * When provided, the returned `searchField` and `controls` are forwarded to
-   * the per-item header so the overflow menu and search affordance match the
-   * definition's settings.
-   */
-  getFilterControls?: (definition: D) => FilterDefinitionControls;
   activeFilterCount: number;
   onReset?: () => void;
   onFilterAdded?: () => void;

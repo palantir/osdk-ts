@@ -112,8 +112,7 @@ export interface FilterControlsConfig {
 
 /**
  * Common mix-in for filter definitions: opt-out flag for the header monocle
- * and fine-grained header/menu control configuration. Mixed into every
- * filter definition variant via interface extension.
+ * and fine-grained header/menu control configuration.
  */
 export interface FilterDefinitionControls {
   /**
