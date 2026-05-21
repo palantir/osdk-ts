@@ -1,5 +1,29 @@
 # @osdk/react-components
 
+## 0.19.0
+
+### Minor Changes
+
+- cffbe7c: Add ActionForm guide links and document unsupported ActionForm features.
+- a218b1a: right-align Clear all in FilterList exclude row
+- b5d7e7b: fix filter-list "no value" baseline and range hyphen vertical alignment
+- bb0817b: Fix misleading patterns in @osdk/react and @osdk/react-components docs that were confusing downstream coding agents and humans alike.
+
+  • react-sdk-docs `reactProviderSetup` and `clientSetup` snippets now pass a real ontology RID placeholder to `createClient` instead of `{{{packageName}}}` (which resolves to the npm SDK package name, not the ontology RID)
+  • Stop pretending `$` is exported from the user's SDK — `$` is a local alias users sometimes create; docs now use `client(Type)` directly, matching the pattern already used in getting-started.md / cache-management.md
+  • Standardize the SDK placeholder on `@my/osdk` across all docs (was a mix of `@my/osdk`, `@YourApp/sdk`, `@your-app/sdk`) and add a `:::note About @my/osdk` callout to each react-components doc that imports from it
+  • Fix several broken/missing imports in code snippets: `cache-management.md` setup block was using `createClient` / `createObservableClient` / `authProvider` without importing or defining any of them; `advanced-queries.md` derived-property fragments were missing `Employee` and `useOsdkObjects` imports
+  • Fix `querying-data.md` self-referential typo "_Stable - available from both `@osdk/react` and `@osdk/react`_" → second should be `@osdk/react/experimental`
+  • Fix `advanced-queries.md` duplicate `const { data }` declaration that would not compile
+  • Remove unused `useOsdkObject` import from one `advanced-queries.md` snippet
+  • Install commands now show npm / pnpm / yarn alternatives with a tip block recommending users skip the step if their tooling already installs dependencies — fixes Pilot running `pnpm` in npm-managed projects and the install-race-with-harness issue
+
+- b3229eb: Fix ObjectTable overlay menus and dialogs inside drawers and dialogs.
+- 1760597: Change experimental labels to beta
+- 64652ed: Fix `ObjectTable` pinned columns rendering with a transparent background, causing scrolled cells from non-pinned columns to bleed through and overlap pinned text. Regression introduced in v0.18.0 by the `--osdk-table-cell-bg` token — declaring `--osdk-table-cell-bg: inherit` at `:root` silently resolved to the guaranteed-invalid value (no parent to inherit from), so `var(--osdk-table-cell-bg)` fell back to `transparent`. The default is now expressed as a `var()` fallback (`var(--osdk-table-cell-bg, inherit)`) so unset cells inherit the row background while consumer overrides still apply.
+- 4c0bdaf: Add `<OsdkThemeProvider>` and `useOsdkTheme` (from `@osdk/react-components/experimental/theme`) for opt-in theming.
+- dad4c44: Support disabled fields in ActionForm field definitions.
+
 ## 0.18.0
 
 ### Minor Changes
