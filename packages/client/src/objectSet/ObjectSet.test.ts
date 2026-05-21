@@ -49,6 +49,7 @@ import {
 import { beforeAll, describe, expect, expectTypeOf, it } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
+import { getWireObjectSet } from "./createObjectSet.js";
 
 type ApiNameAsString<
   T extends ObjectOrInterfaceDefinition,
@@ -489,6 +490,11 @@ describe("ObjectSet", () => {
       employeeId: { $in: ids },
     });
     expect(objectSet).toBeDefined();
+  });
+
+  it(".where({}) is a no-op (no empty-AND filter on the wire)", () => {
+    const base = client(Employee);
+    expect(getWireObjectSet(base.where({}))).toEqual(getWireObjectSet(base));
   });
 
   it("does not allow arbitrary keys when no properties", () => {
