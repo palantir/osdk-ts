@@ -28,13 +28,20 @@ vi.mock("../../shared/calendar/LazyDateCalendar.js", async () => {
   return { LazyDateCalendar: DateCalendar };
 });
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.useRealTimers();
+});
 
 describe("SingleDateFilterInput", () => {
   it("sets the selected date to the period's start on shortcut click", () => {
+    // Anchor `now` to a mid-year, non-DST-boundary date so subWeeks(now, 1) is
+    // exactly 7×24h earlier. Without this, `date-fns`'s wall-clock-aware
+    // subtraction can produce ±1h diffs on spring-forward / fall-back days.
+    const now = new Date(2024, 5, 15, 12, 0, 0, 0);
+    vi.useFakeTimers({ now });
     const onFilterStateChanged = vi.fn();
     const MS_IN_WEEK = 7 * 24 * 60 * 60 * 1000;
-    const before = Date.now();
     render(
       <SingleDateFilterInput
         filterState={undefined}
@@ -43,12 +50,13 @@ describe("SingleDateFilterInput", () => {
       />,
     );
     fireEvent.click(screen.getByRole("button", { name: "Past week" }));
-    const after = Date.now();
     expect(onFilterStateChanged).toHaveBeenCalledTimes(1);
     const state = onFilterStateChanged.mock.calls[0][0];
     expect(state.type).toBe("SELECT");
-    const picked = state.selectedValues[0] as Date;
-    expect(picked.getTime()).toBeGreaterThanOrEqual(before - MS_IN_WEEK);
-    expect(picked.getTime()).toBeLessThanOrEqual(after - MS_IN_WEEK);
+    const picked = state.selectedValues[0];
+    if (!(picked instanceof Date)) {
+      throw new Error("expected selectedValues[0] to be a Date");
+    }
+    expect(picked.getTime()).toBe(now.getTime() - MS_IN_WEEK);
   });
 });

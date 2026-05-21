@@ -30,11 +30,15 @@ export type {
   FilterDefinitionUnion,
   FilterListProps,
 } from "../../filter-list/FilterListApi.js";
+export {
+  DEFAULT_RELATIVE_DATE_PERIODS,
+} from "../../filter-list/FilterListItemApi.js";
 export type {
   FilterComponentType,
   FilterListItemProps,
   FilterState,
   PropertyFilterDefinition,
+  RelativeDatePeriod,
 } from "../../filter-list/FilterListItemApi.js";
 export {
   deserializeFilterStates,

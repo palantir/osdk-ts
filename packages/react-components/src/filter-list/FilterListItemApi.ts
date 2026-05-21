@@ -259,13 +259,32 @@ export interface DateShortcutsProps {
 }
 
 /**
+ * Filter components that support the {@link DateShortcutsProps.dateShortcuts}
+ * rail. `MULTI_DATE` is excluded because its picker emits a list of discrete
+ * dates, not a range.
+ */
+export type FilterComponentsSupportingDateShortcuts =
+  | "DATE_RANGE"
+  | "SINGLE_DATE"
+  | "TIMELINE";
+
+/**
  * Conditionally adds date-only extras (`formatDate`, `dateShortcuts`) to a
  * property filter definition only for `datetime` / `timestamp` properties.
  * For other property types these fields are typed as `never` so attempting
  * to set them is a TypeScript error.
+ *
+ * `dateShortcuts` is further gated on the filter component type — only
+ * `DATE_RANGE`, `SINGLE_DATE`, and `TIMELINE` accept it. `MULTI_DATE`
+ * filters get `dateShortcuts?: never`.
  */
-export type PropertyFilterDateExtras<P extends WirePropertyTypes> = P extends
-  "datetime" | "timestamp" ? DateFormattingProps & DateShortcutsProps
+export type PropertyFilterDateExtras<
+  P extends WirePropertyTypes,
+  C extends FilterComponentType = FilterComponentType,
+> = P extends "datetime" | "timestamp" ?
+    & DateFormattingProps
+    & (C extends FilterComponentsSupportingDateShortcuts ? DateShortcutsProps
+      : { dateShortcuts?: never })
   : { formatDate?: never; dateShortcuts?: never };
 
 interface PropertyFilterDefinitionBase<
@@ -382,7 +401,7 @@ export type PropertyFilterDefinition<
   > = ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>>,
 > =
   & PropertyFilterDefinitionBase<Q, K, C>
-  & PropertyFilterDateExtras<PropertyTypeFromKey<Q, K>>;
+  & PropertyFilterDateExtras<PropertyTypeFromKey<Q, K>, C>;
 
 /**
  * Props for a single filter list item component.

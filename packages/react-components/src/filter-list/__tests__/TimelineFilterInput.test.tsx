@@ -19,10 +19,17 @@ import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { TimelineFilterInput } from "../inputs/TimelineFilterInput.js";
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.useRealTimers();
+});
 
 describe("TimelineFilterInput", () => {
   it("emits a TIMELINE filter state with absolute startDate/endDate on shortcut click", () => {
+    // Anchor `now` to a mid-year, non-DST-boundary date so subDays(now, 1) is
+    // exactly 24h earlier — `date-fns` is wall-clock aware and would otherwise
+    // produce ±1h diffs on spring-forward / fall-back days.
+    vi.useFakeTimers({ now: new Date(2024, 5, 15, 12, 0, 0, 0) });
     const onFilterStateChanged = vi.fn();
     render(
       <TimelineFilterInput
@@ -35,8 +42,13 @@ describe("TimelineFilterInput", () => {
     expect(onFilterStateChanged).toHaveBeenCalledTimes(1);
     const state = onFilterStateChanged.mock.calls[0][0];
     expect(state.type).toBe("TIMELINE");
-    const start = state.startDate as Date;
-    const end = state.endDate as Date;
-    expect(end.getTime() - start.getTime()).toBe(24 * 60 * 60 * 1000);
+    if (
+      !(state.startDate instanceof Date) || !(state.endDate instanceof Date)
+    ) {
+      throw new Error("expected startDate and endDate to be Dates");
+    }
+    expect(state.endDate.getTime() - state.startDate.getTime()).toBe(
+      24 * 60 * 60 * 1000,
+    );
   });
 });

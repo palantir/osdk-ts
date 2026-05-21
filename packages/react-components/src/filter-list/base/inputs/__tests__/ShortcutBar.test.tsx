@@ -34,13 +34,12 @@ describe("ShortcutBar", () => {
     expect(labels).toEqual(["Past day", "Past week", "Past month"]);
   });
 
-  it("emits an absolute { min, max, period } range on click", () => {
+  it("emits an absolute { min, max } range on click", () => {
     const onSelect = vi.fn();
     render(<ShortcutBar periods={["past-hour"]} onSelect={onSelect} />);
     fireEvent.click(screen.getByRole("button", { name: "Past hour" }));
     expect(onSelect).toHaveBeenCalledTimes(1);
     const call = onSelect.mock.calls[0][0];
-    expect(call.period).toBe("past-hour");
     expect(call.max).toBeInstanceOf(Date);
     expect(call.min).toBeInstanceOf(Date);
     expect(call.max.getTime() - call.min.getTime()).toBe(60 * 60 * 1000);
