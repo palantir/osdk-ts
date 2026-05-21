@@ -28,7 +28,10 @@ import type {
   PropertyTypeRid as _api_PropertyTypeRid,
 } from "../__components.js";
 import type { ObjectTypeGothamMapping as _api_typemapping_ObjectTypeGothamMapping } from "../typemapping/__components.js";
-import type { EntityProvenance as _api_entitymetadata_provenance_EntityProvenance } from "./provenance/__components.js";
+import type {
+  EntityProvenance as _api_entitymetadata_provenance_EntityProvenance,
+  OwningDirectWriter as _api_entitymetadata_provenance_OwningDirectWriter,
+} from "./provenance/__components.js";
 
 /**
  * Action Log is not required for this ObjectType.
@@ -565,6 +568,7 @@ export interface ObjectTypeEntityMetadata {
   gothamMapping?: _api_typemapping_ObjectTypeGothamMapping | null | undefined;
   interfaceSettings: InterfaceSettings;
   objectTypeIndexingSettings?: ObjectTypeIndexingSettings | null | undefined;
+  owningDirectWriters: Record<_api_DatasourceRid, OwningDirectWriters>;
   patchApplicationStrategy: PatchApplicationStrategy;
   provenance?:
     | _api_entitymetadata_provenance_EntityProvenance
@@ -678,6 +682,12 @@ export interface OntologyIrLinkTypeEntityMetadata {
  */
 export interface OntologyIrTimestampPropertyStrategy {
   timestampPropertyRid: _api_ObjectTypeFieldApiName;
+}
+/**
+ * The set of owning direct writers for a single direct datasource.
+ */
+export interface OwningDirectWriters {
+  writers: Array<_api_entitymetadata_provenance_OwningDirectWriter>;
 }
 export interface PatchApplicationStrategy_datasourceScopedLiveness {
   type: "datasourceScopedLiveness";

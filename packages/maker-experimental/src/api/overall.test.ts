@@ -255,6 +255,7 @@ describe("Experimental Test Suite", () => {
                 "metadata": {
                   "apiName": "com.palantir.create-object-foo",
                   "displayMetadata": {
+                    "applyingMessage": [],
                     "configuration": {
                       "defaultLayout": "FORM",
                       "displayAndFormat": {
@@ -983,6 +984,7 @@ describe("Experimental Test Suite", () => {
             },
           },
           extendsInterfaces: [],
+          actionTypeConstraints: [],
           status: { type: "active", active: {} },
           links: [],
           __type: OntologyEntityTypeEnum.INTERFACE_TYPE,

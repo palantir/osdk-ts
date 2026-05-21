@@ -202,6 +202,7 @@ import type {
   TransitionWindows as _api_entitymetadata_TransitionWindows,
 } from "../entitymetadata/__components.js";
 import type {
+  BuilderDirectWriter as _api_entitymetadata_provenance_BuilderDirectWriter,
   BuilderEntityProvenance
     as _api_entitymetadata_provenance_BuilderEntityProvenance,
   EditsHistoryProvenance
@@ -1460,7 +1461,7 @@ export interface ObjectTypeDatasourceModificationDefinitionInternal_geotimeSerie
 
 export interface ObjectTypeDatasourceModificationDefinitionInternal_table {
   type: "table";
-  table: ObjectTypeTableDatasourceModification;
+  table: ObjectTypeTableDatasourceModificationInternal;
 }
 
 export interface ObjectTypeDatasourceModificationDefinitionInternal_editsOnly {
@@ -1479,7 +1480,7 @@ export interface ObjectTypeDatasourceModificationDefinitionInternal_derived {
 }
 /**
  * Wrapper type for all supported object type datasource types. We use this internal type to ensure we properly
- * translate the propertySecurityGroupPatches from streamV2, streamV3, datasetV3, editsOnly, and direct
+ * translate the propertySecurityGroupPatches from streamV2, streamV3, datasetV3, table, editsOnly, and direct
  * datasources. Internally we should always use this type and only use ObjectTypeDatasourceModificationDefinition
  * in out api.
  */
@@ -1590,6 +1591,10 @@ export interface ObjectTypeEntityMetadataModifyRequest {
   interfaceSettings?: _api_entitymetadata_InterfaceSettings | null | undefined;
   objectTypeIndexingSettings?:
     | ObjectTypeIndexingSettingsModification
+    | null
+    | undefined;
+  owningDirectWriters?:
+    | Record<_api_DatasourceRid, OwningDirectWritersModification>
     | null
     | undefined;
   patchApplicationStrategy?:
@@ -1763,6 +1768,19 @@ export interface ObjectTypeStreamDatasourceV3ModificationInternal {
  */
 export interface ObjectTypeTableDatasourceModification {
   propertyMapping: Record<_api_PropertyTypeId, _api_PropertyTypeMappingInfo>;
+  propertySecurityGroupPatches: Array<_api_PropertySecurityGroupPatch>;
+  tableRid: _api_TableRid;
+}
+/**
+ * Internal table datasource modification type. Used after translating propertySecurityGroupPatches
+ * into propertySecurityGroups.
+ */
+export interface ObjectTypeTableDatasourceModificationInternal {
+  propertyMapping: Record<_api_PropertyTypeId, _api_PropertyTypeMappingInfo>;
+  propertySecurityGroups?:
+    | _api_PropertySecurityGroupsModification
+    | null
+    | undefined;
   tableRid: _api_TableRid;
 }
 export interface ObjectTypeTimeSeriesDatasourceModification {
@@ -2112,6 +2130,22 @@ export interface OntologyUpdateRequest {
  * Response for an OntologyUpdateRequest.
  */
 export interface OntologyUpdateResponse {
+}
+export interface OwningDirectWriterModification_builder {
+  type: "builder";
+  builder: _api_entitymetadata_provenance_BuilderDirectWriter;
+}
+/**
+ * Information describing the owning direct writer for a direct datasource, modeled as an extensible union.
+ */
+export type OwningDirectWriterModification =
+  OwningDirectWriterModification_builder;
+
+/**
+ * The updated set of owning direct writers for a single direct datasource.
+ */
+export interface OwningDirectWritersModification {
+  writers: Array<OwningDirectWriterModification>;
 }
 export interface PartialPropertyTypeModification {
   apiName?: _api_ObjectTypeFieldApiName | null | undefined;

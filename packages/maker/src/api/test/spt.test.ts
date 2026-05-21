@@ -69,6 +69,7 @@ describe("SPTs", () => {
         "interfaceTypes": {
           "com.palantir.FooInterface": {
             "interfaceType": {
+              "actionTypeConstraints": [],
               "apiName": "com.palantir.FooInterface",
               "displayMetadata": {
                 "description": "Foo Interface",
@@ -336,6 +337,7 @@ describe("SPTs", () => {
         "interfaceTypes": {
           "com.palantir.interface": {
             "interfaceType": {
+              "actionTypeConstraints": [],
               "apiName": "com.palantir.interface",
               "displayMetadata": {
                 "description": "interface",

@@ -41,6 +41,26 @@ export interface AggregatedPropertiesDefinitionModification {
     DerivedPropertyAggregationModification
   >;
 }
+/**
+ * Special variant indicating that a link type backing this derived datasource has been
+ * hard-deleted, so the datasource definition is no longer valid. Properties that use a
+ * deleted derived datasource resolve to their own declared type. This variant is created
+ * internally by OMS during link-type deletion cascades and cannot be authored through normal
+ * modification requests.
+ */
+export interface DeletedPropertiesDefinition {
+  propertyTypes: Array<_api_PropertyTypeRid>;
+}
+/**
+ * Special variant indicating that a link type backing this derived datasource has been
+ * hard-deleted, so the datasource definition is no longer valid. Properties that use a
+ * deleted derived datasource resolve to their own declared type. This variant is created
+ * internally by OMS during link-type deletion cascades and cannot be authored through normal
+ * modification requests.
+ */
+export interface DeletedPropertiesDefinitionModification {
+  propertyTypes: Array<_api_PropertyTypeId>;
+}
 export interface DerivedPropertiesDefinition_linkedProperties {
   type: "linkedProperties";
   linkedProperties: LinkedPropertiesDefinition;
@@ -50,9 +70,15 @@ export interface DerivedPropertiesDefinition_aggregatedProperties {
   type: "aggregatedProperties";
   aggregatedProperties: AggregatedPropertiesDefinition;
 }
+
+export interface DerivedPropertiesDefinition_deleted {
+  type: "deleted";
+  deleted: DeletedPropertiesDefinition;
+}
 export type DerivedPropertiesDefinition =
   | DerivedPropertiesDefinition_linkedProperties
-  | DerivedPropertiesDefinition_aggregatedProperties;
+  | DerivedPropertiesDefinition_aggregatedProperties
+  | DerivedPropertiesDefinition_deleted;
 
 export interface DerivedPropertiesDefinitionModification_linkedProperties {
   type: "linkedProperties";
@@ -63,9 +89,15 @@ export interface DerivedPropertiesDefinitionModification_aggregatedProperties {
   type: "aggregatedProperties";
   aggregatedProperties: AggregatedPropertiesDefinitionModification;
 }
+
+export interface DerivedPropertiesDefinitionModification_deleted {
+  type: "deleted";
+  deleted: DeletedPropertiesDefinitionModification;
+}
 export type DerivedPropertiesDefinitionModification =
   | DerivedPropertiesDefinitionModification_linkedProperties
-  | DerivedPropertiesDefinitionModification_aggregatedProperties;
+  | DerivedPropertiesDefinitionModification_aggregatedProperties
+  | DerivedPropertiesDefinitionModification_deleted;
 
 export interface DerivedPropertyAggregation_count {
   type: "count";
@@ -327,6 +359,16 @@ export interface OntologyIrAggregatedPropertiesDefinition {
     OntologyIrDerivedPropertyAggregation
   >;
 }
+/**
+ * Special variant indicating that a link type backing this derived datasource has been
+ * hard-deleted, so the datasource definition is no longer valid. Properties that use a
+ * deleted derived datasource resolve to their own declared type. This variant is created
+ * internally by OMS during link-type deletion cascades and cannot be authored through normal
+ * modification requests.
+ */
+export interface OntologyIrDeletedPropertiesDefinition {
+  propertyTypes: Array<_api_ObjectTypeFieldApiName>;
+}
 export interface OntologyIrDerivedPropertiesDefinition_linkedProperties {
   type: "linkedProperties";
   linkedProperties: OntologyIrLinkedPropertiesDefinition;
@@ -336,9 +378,15 @@ export interface OntologyIrDerivedPropertiesDefinition_aggregatedProperties {
   type: "aggregatedProperties";
   aggregatedProperties: OntologyIrAggregatedPropertiesDefinition;
 }
+
+export interface OntologyIrDerivedPropertiesDefinition_deleted {
+  type: "deleted";
+  deleted: OntologyIrDeletedPropertiesDefinition;
+}
 export type OntologyIrDerivedPropertiesDefinition =
   | OntologyIrDerivedPropertiesDefinition_linkedProperties
-  | OntologyIrDerivedPropertiesDefinition_aggregatedProperties;
+  | OntologyIrDerivedPropertiesDefinition_aggregatedProperties
+  | OntologyIrDerivedPropertiesDefinition_deleted;
 
 export interface OntologyIrDerivedPropertyAggregation_count {
   type: "count";
@@ -498,6 +546,16 @@ export interface StorageAggregatedPropertiesDefinition {
     StorageDerivedPropertyAggregation
   >;
 }
+/**
+ * Special variant indicating that a link type backing this derived datasource has been
+ * hard-deleted, so the datasource definition is no longer valid. Properties that use a
+ * deleted derived datasource resolve to their own declared type. This variant is created
+ * internally by OMS during link-type deletion cascades and cannot be authored through normal
+ * modification requests.
+ */
+export interface StorageDeletedPropertiesDefinition {
+  propertyTypes: Array<_api_PropertyTypeRid>;
+}
 export interface StorageDerivedPropertiesDefinition_linkedProperties {
   type: "linkedProperties";
   linkedProperties: StorageLinkedPropertiesDefinition;
@@ -507,9 +565,15 @@ export interface StorageDerivedPropertiesDefinition_aggregatedProperties {
   type: "aggregatedProperties";
   aggregatedProperties: StorageAggregatedPropertiesDefinition;
 }
+
+export interface StorageDerivedPropertiesDefinition_deleted {
+  type: "deleted";
+  deleted: StorageDeletedPropertiesDefinition;
+}
 export type StorageDerivedPropertiesDefinition =
   | StorageDerivedPropertiesDefinition_linkedProperties
-  | StorageDerivedPropertiesDefinition_aggregatedProperties;
+  | StorageDerivedPropertiesDefinition_aggregatedProperties
+  | StorageDerivedPropertiesDefinition_deleted;
 
 export interface StorageDerivedPropertyAggregation_count {
   type: "count";

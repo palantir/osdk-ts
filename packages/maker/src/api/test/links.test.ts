@@ -2045,6 +2045,7 @@ describe("Link Types", () => {
           "interfaceTypes": {
             "com.palantir.A": {
               "interfaceType": {
+                "actionTypeConstraints": [],
                 "apiName": "com.palantir.A",
                 "displayMetadata": {
                   "description": "A",
@@ -2087,6 +2088,7 @@ describe("Link Types", () => {
             },
             "com.palantir.B": {
               "interfaceType": {
+                "actionTypeConstraints": [],
                 "apiName": "com.palantir.B",
                 "displayMetadata": {
                   "description": "B",
@@ -2141,6 +2143,7 @@ describe("Link Types", () => {
           "interfaceTypes": {
             "com.palantir.A": {
               "interfaceType": {
+                "actionTypeConstraints": [],
                 "apiName": "com.palantir.A",
                 "displayMetadata": {
                   "description": "A",
@@ -2183,6 +2186,7 @@ describe("Link Types", () => {
             },
             "com.palantir.B": {
               "interfaceType": {
+                "actionTypeConstraints": [],
                 "apiName": "com.palantir.B",
                 "displayMetadata": {
                   "description": "B",

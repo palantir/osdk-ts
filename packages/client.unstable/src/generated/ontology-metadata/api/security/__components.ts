@@ -17,6 +17,7 @@
 import type {
   DatasetRid as _api_DatasetRid,
   DirectSourceRid as _api_DirectSourceRid,
+  MarkingType as _api_MarkingType,
   ObjectRid as _api_ObjectRid,
   ObjectTypeRid as _api_ObjectTypeRid,
   OntologyBranchRid as _api_OntologyBranchRid,
@@ -49,6 +50,11 @@ export interface BackingResourceRid_tableRid {
   type: "tableRid";
   tableRid: _api_TableRid;
 }
+
+export interface BackingResourceRid_editsOnlyNoRid {
+  type: "editsOnlyNoRid";
+  editsOnlyNoRid: EditsOnlyNoRid;
+}
 /**
  * The resource identifier of the backing resource for the object type's datasource. This is restricted to
  * backing resources that support PSGs.
@@ -57,9 +63,15 @@ export type BackingResourceRid =
   | BackingResourceRid_datasetRid
   | BackingResourceRid_streamLocatorRid
   | BackingResourceRid_directSourceRid
-  | BackingResourceRid_tableRid;
+  | BackingResourceRid_tableRid
+  | BackingResourceRid_editsOnlyNoRid;
 
 export interface CannotViewObjectTypeError {
+}
+/**
+ * The object type is an edits-only object type and does not have a backing resource.
+ */
+export interface EditsOnlyNoRid {
 }
 /**
  * Request to evaluate Property Security Group (PSG) visibility for object instances
@@ -69,6 +81,7 @@ export interface CannotViewObjectTypeError {
 export interface EvaluatePsgForObjectInstancesRequest {
   backingResource: BackingResourceRid;
   derivedPropertyIds: Array<_api_PropertyTypeId>;
+  markingPropertyMarkingTypes: Record<_api_PropertyTypeId, _api_MarkingType>;
   objectInstances: Array<ObjectInstance>;
   objectTypeRid: _api_ObjectTypeRid;
   ontologyBranchRid: _api_OntologyBranchRid;

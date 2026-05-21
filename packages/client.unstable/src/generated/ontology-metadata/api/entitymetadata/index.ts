@@ -85,6 +85,7 @@ export type {
   OntologyIrEditsResolutionStrategy,
   OntologyIrLinkTypeEntityMetadata,
   OntologyIrTimestampPropertyStrategy,
+  OwningDirectWriters,
   PatchApplicationStrategy,
   ReadOnlyV1V2,
   RestorationState,

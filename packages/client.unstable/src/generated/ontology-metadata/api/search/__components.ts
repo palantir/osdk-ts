@@ -29,8 +29,10 @@ import type {
   OntologyBranchRid as _api_OntologyBranchRid,
   OntologyRid as _api_OntologyRid,
   OntologyVersion as _api_OntologyVersion,
+  ParameterRid as _api_ParameterRid,
   PropertySecurityGroupRid as _api_PropertySecurityGroupRid,
   PropertyTypeRid as _api_PropertyTypeRid,
+  SectionRid as _api_SectionRid,
   SharedPropertyType as _api_SharedPropertyType,
   SharedPropertyTypeRid as _api_SharedPropertyTypeRid,
   StructFieldRid as _api_StructFieldRid,
@@ -122,6 +124,36 @@ export interface ActionTypeClause_functionRid {
   type: "functionRid";
   functionRid: _api_FunctionRid;
 }
+
+export interface ActionTypeClause_affectedInterfaceTypeRid {
+  type: "affectedInterfaceTypeRid";
+  affectedInterfaceTypeRid: _api_InterfaceTypeRid;
+}
+
+export interface ActionTypeClause_affectedLinkTypeRid {
+  type: "affectedLinkTypeRid";
+  affectedLinkTypeRid: _api_LinkTypeRid;
+}
+
+export interface ActionTypeClause_parameterName {
+  type: "parameterName";
+  parameterName: FullTextStringPredicate;
+}
+
+export interface ActionTypeClause_parameterRid {
+  type: "parameterRid";
+  parameterRid: _api_ParameterRid;
+}
+
+export interface ActionTypeClause_sectionRid {
+  type: "sectionRid";
+  sectionRid: _api_SectionRid;
+}
+
+export interface ActionTypeClause_revertActionEnabled {
+  type: "revertActionEnabled";
+  revertActionEnabled: boolean;
+}
 /**
  * Data structure to represent search query for ActionTypes. Supports filters for various ActionType features.
  */
@@ -142,7 +174,13 @@ export type ActionTypeClause =
   | ActionTypeClause_hasWebhook
   | ActionTypeClause_hasNotification
   | ActionTypeClause_permissionModel
-  | ActionTypeClause_functionRid;
+  | ActionTypeClause_functionRid
+  | ActionTypeClause_affectedInterfaceTypeRid
+  | ActionTypeClause_affectedLinkTypeRid
+  | ActionTypeClause_parameterName
+  | ActionTypeClause_parameterRid
+  | ActionTypeClause_sectionRid
+  | ActionTypeClause_revertActionEnabled;
 
 export interface ActionTypeFuzziness_off {
   type: "off";
@@ -165,7 +203,8 @@ export type ActionTypeFuzziness =
  */
 export type ActionTypePermissionModelFilter =
   | "DATASOURCE_DERIVED_PERMISSIONS"
-  | "ONTOLOGY_ROLES";
+  | "ONTOLOGY_ROLES"
+  | "COMPASS_PROJECT";
 
 /**
  * Wrapper around single ActionType contained in ActionTypeSearchResponse.
@@ -1066,6 +1105,7 @@ export type ObjectTypePermissionModelFilter =
  * Wrapper around single ObjectType contained in ObjectTypeSearchResponse.
  */
 export interface ObjectTypeSearchHit {
+  lastIndexedUniqueUsersCount?: number | null | undefined;
   objectType: _api_ObjectType;
   ontologyRid: _api_OntologyRid;
   ontologyVersion: _api_OntologyVersion;
