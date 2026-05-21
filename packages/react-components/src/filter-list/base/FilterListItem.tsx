@@ -23,9 +23,13 @@ import type {
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import { ErrorBoundary } from "../../shared/ErrorBoundary.js";
-import type { FilterActionsConfig, FilterState } from "../FilterListItemApi.js";
+import type {
+  FilterControlsConfig,
+  FilterState,
+} from "../FilterListItemApi.js";
 import {
   clearFilterState,
+  filterHasActiveState,
   getEffectiveFilterState,
   supportsExcluding,
   supportsSearch,
@@ -36,67 +40,35 @@ import { RemoveIcon, SearchIcon } from "./FilterIcons.js";
 import styles from "./FilterListItem.module.css";
 import { ItemOverflowMenu } from "./ItemOverflowMenu.js";
 
-function hasActiveSelection(filterState: FilterState | undefined): boolean {
-  if (filterState == null) {
-    return false;
-  }
-  switch (filterState.type) {
-    case "EXACT_MATCH":
-      return filterState.values.length > 0;
-    case "SELECT":
-      return filterState.selectedValues.length > 0;
-    case "CONTAINS_TEXT":
-      return filterState.value != null && filterState.value.length > 0;
-    case "NUMBER_RANGE":
-      return filterState.minValue != null || filterState.maxValue != null;
-    case "DATE_RANGE":
-      return filterState.minValue != null || filterState.maxValue != null;
-    case "TIMELINE":
-      return filterState.startDate != null || filterState.endDate != null;
-    case "TOGGLE":
-      return filterState.enabled;
-    case "keywordSearch":
-      return filterState.searchTerm.length > 0;
-    case "hasLink":
-      return filterState.hasLink;
-    case "linkedProperty":
-      return hasActiveSelection(filterState.linkedFilterState);
-    case "custom":
-      return true;
-    default:
-      return false;
-  }
-}
-
 type SearchPlacement = "header-start" | "header-end" | "menu" | "hidden";
 
 /**
  * Resolves where the search affordance should appear given the effective
- * (post-unwrap) filter state and the per-definition opt-out flags. `actions`
- * takes precedence over `searchField` when both are set.
+ * (post-unwrap) filter state and the per-definition opt-out flags.
+ * `controls.search` takes precedence over `searchField` when both are set.
  */
 function resolveSearchPlacement(
   effectiveState: FilterState | undefined,
   searchField: boolean | undefined,
-  actions: FilterActionsConfig | undefined,
+  controls: FilterControlsConfig | undefined,
 ): SearchPlacement {
   if (!supportsSearch(effectiveState)) {
     return "hidden";
   }
-  const action = actions?.search;
-  if (action === false) {
+  const search = controls?.search;
+  if (search === false) {
     return "hidden";
   }
   if (
-    action === "header-start" || action === "header-end" || action === "menu"
+    search === "header-start" || search === "header-end" || search === "menu"
   ) {
-    return action;
+    return search;
   }
-  // action is undefined or true
-  if (action === undefined && searchField === false) {
+  // search is undefined or true
+  if (search === undefined && searchField === false) {
     return "hidden";
   }
-  return actions?.placement ?? "header-end";
+  return controls?.placement ?? "header-end";
 }
 
 interface FilterListItemProps<D> {
@@ -111,7 +83,7 @@ interface FilterListItemProps<D> {
   onFilterRemoved?: (filterKey: string) => void;
   renderInput: RenderFilterInput<D>;
   searchField?: boolean;
-  actions?: FilterActionsConfig;
+  controls?: FilterControlsConfig;
   dragHandleAttributes?: DraggableAttributes;
   dragHandleListeners?: DraggableSyntheticListeners;
   className?: string;
@@ -127,7 +99,7 @@ function FilterListItemInner<D>({
   onFilterRemoved,
   renderInput,
   searchField,
-  actions,
+  controls,
   dragHandleAttributes,
   dragHandleListeners,
   className,
@@ -204,17 +176,17 @@ function FilterListItemInner<D>({
   const searchPlacement = resolveSearchPlacement(
     effectiveState,
     searchField,
-    actions,
+    controls,
   );
-  const showOverflow = actions?.overflow !== false;
+  const showOverflow = controls?.overflow !== false;
 
   const showKeepExclude = showOverflow && supportsExcluding(effectiveState);
-  const hasSelection = hasActiveSelection(filterState);
+  const hasSelection = filterHasActiveState(filterState);
   const showClearAll = showOverflow && hasSelection
     && clearFilterState(filterState) != null;
   const showRemove = showOverflow
     && onFilterRemoved != null
-    && actions?.remove !== false;
+    && controls?.remove !== false;
   const showSearchInMenu = showOverflow && searchPlacement === "menu";
 
   const searchOpen = searchState.type === "open";

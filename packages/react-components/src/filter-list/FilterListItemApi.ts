@@ -38,7 +38,7 @@ export type PropertyTypeFromKey<
 > = CompileTimeMetadata<Q>["properties"][K]["type"];
 
 /**
- * Where a filter action can be placed within a filter list item.
+ * Where a filter header control can be placed within a filter list item.
  *
  * - `"header-start"` — left side of the header (between the drag handle and
  *   the label).
@@ -46,10 +46,10 @@ export type PropertyTypeFromKey<
  *   menu live by default).
  * - `"menu"` — inside the overflow (`...`) menu.
  */
-export type FilterActionPlacement = "header-start" | "header-end" | "menu";
+export type FilterControlPlacement = "header-start" | "header-end" | "menu";
 
 /**
- * Per-filter configuration for which action controls render on a filter
+ * Per-filter configuration for which header controls render on a filter
  * list item and where they appear.
  *
  * Defaults preserve the built-in behavior: the search monocle renders at the
@@ -57,7 +57,7 @@ export type FilterActionPlacement = "header-start" | "header-end" | "menu";
  * (`...`) menu always renders, and "Remove filter" appears inside that menu
  * whenever `onFilterRemoved` is wired.
  */
-export interface FilterActionsConfig {
+export interface FilterControlsConfig {
   /**
    * Search affordance for filter values.
    *
@@ -73,7 +73,7 @@ export interface FilterActionsConfig {
    *
    * @default true
    */
-  search?: boolean | FilterActionPlacement;
+  search?: boolean | FilterControlPlacement;
 
   /**
    * Overflow (`...`) menu button.
@@ -101,13 +101,39 @@ export interface FilterActionsConfig {
   remove?: boolean | "menu";
 
   /**
-   * Default placement for actions that accept a placement but do not specify
+   * Default placement for controls that accept a placement but do not specify
    * one. Today only `search` (when set to `true` or left unset) consults this
    * value.
    *
    * @default "header-end"
    */
-  placement?: FilterActionPlacement;
+  placement?: FilterControlPlacement;
+}
+
+/**
+ * Common mix-in for filter definitions: opt-out flag for the header monocle
+ * and fine-grained header/menu control configuration. Mixed into every
+ * filter definition variant via interface extension.
+ */
+export interface FilterDefinitionControls {
+  /**
+   * When `false`, the header monocle (search-values icon) is hidden even for
+   * filter components that ordinarily support in-filter search.
+   *
+   * Shorthand for `controls: { search: false }`. If both are set,
+   * `controls.search` wins.
+   *
+   * @default true
+   */
+  searchField?: boolean;
+
+  /**
+   * Fine-grained control over which controls render in the filter
+   * header and overflow menu, and where they appear.
+   *
+   * See {@link FilterControlsConfig} for the supported fields and defaults.
+   */
+  controls?: FilterControlsConfig;
 }
 
 /**
@@ -316,7 +342,7 @@ interface PropertyFilterDefinitionBase<
   C extends ValidComponentsForPropertyType<
     PropertyTypeFromKey<Q, K>
   > = ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>>,
-> {
+> extends FilterDefinitionControls {
   /**
    * Discriminator for filter definition type
    */
@@ -404,29 +430,6 @@ interface PropertyFilterDefinitionBase<
    * @default true
    */
   isVisible?: boolean;
-
-  /**
-   * When `false`, the header monocle (search-values icon) is hidden even for
-   * filter components that ordinarily support in-filter search.
-   *
-   * Useful for filters whose own UI already exposes a search field (for
-   * example, the MULTI_SELECT combobox) where the extra monocle would be
-   * redundant.
-   *
-   * Shorthand for `actions: { search: false }`. If both are set,
-   * `actions.search` wins.
-   *
-   * @default true
-   */
-  searchField?: boolean;
-
-  /**
-   * Fine-grained control over which action controls render in the filter
-   * header and overflow menu, and where they appear.
-   *
-   * See {@link FilterActionsConfig} for the supported fields and defaults.
-   */
-  actions?: FilterActionsConfig;
 }
 
 /**

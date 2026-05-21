@@ -18,27 +18,25 @@ import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import React, { useCallback, useMemo } from "react";
 import { AddFilterPopover } from "./base/AddFilterPopover.js";
 import { BaseFilterList } from "./base/BaseFilterList.js";
-import type {
-  FilterItemActions,
-  RenderFilterInput,
-} from "./base/BaseFilterListApi.js";
+import type { RenderFilterInput } from "./base/BaseFilterListApi.js";
 import { FilterInput } from "./FilterInput.js";
 import type {
   FilterDefinitionUnion,
   FilterKey,
   FilterListProps,
 } from "./FilterListApi.js";
+import type { FilterDefinitionControls } from "./FilterListItemApi.js";
 import { useFilterListState } from "./hooks/useFilterListState.js";
 import { useFilterVisibility } from "./hooks/useFilterVisibility.js";
 import { getFilterKey } from "./utils/getFilterKey.js";
 import { getFilterLabel } from "./utils/getFilterLabel.js";
 
-function getFilterActions<Q extends ObjectTypeDefinition>(
+function getFilterControls<Q extends ObjectTypeDefinition>(
   definition: FilterDefinitionUnion<Q>,
-): FilterItemActions {
+): FilterDefinitionControls {
   return {
     searchField: definition.searchField,
-    actions: definition.actions,
+    controls: definition.controls,
   };
 }
 
@@ -227,7 +225,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
       renderInput={renderInput}
       getFilterKey={getFilterKey}
       getFilterLabel={getFilterLabel}
-      getFilterActions={getFilterActions}
+      getFilterControls={getFilterControls}
       activeFilterCount={activeFilterCount}
       onReset={handleReset}
       showResetButton={showResetButton}

@@ -18,7 +18,7 @@ import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import type { ReactNode } from "react";
 import type {
   BaseFilterState,
-  FilterActionsConfig,
+  FilterDefinitionControls,
 } from "../FilterListItemApi.js";
 
 /**
@@ -63,7 +63,7 @@ export interface CustomFilterItemRendererProps<
 export interface CustomFilterDefinition<
   Q extends ObjectTypeDefinition,
   State extends BaseFilterState = CustomFilterState,
-> {
+> extends FilterDefinitionControls {
   type: "CUSTOM";
   /**
    * Optional unique identifier for stable keying across filter reorders.
@@ -103,24 +103,4 @@ export interface CustomFilterDefinition<
    * @default true
    */
   isVisible?: boolean;
-
-  /**
-   * When `false`, the header monocle (search-values icon) is hidden. Custom
-   * filters do not render a header monocle by default — this flag exists for
-   * parity with other filter definitions.
-   *
-   * Shorthand for `actions: { search: false }`. If both are set,
-   * `actions.search` wins.
-   *
-   * @default true
-   */
-  searchField?: boolean;
-
-  /**
-   * Fine-grained control over which action controls render in the filter
-   * header and overflow menu, and where they appear.
-   *
-   * See {@link FilterActionsConfig} for the supported fields and defaults.
-   */
-  actions?: FilterActionsConfig;
 }

@@ -18,7 +18,10 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import classnames from "classnames";
 import React, { memo, useMemo } from "react";
-import type { FilterActionsConfig, FilterState } from "../FilterListItemApi.js";
+import type {
+  FilterControlsConfig,
+  FilterState,
+} from "../FilterListItemApi.js";
 import type { RenderFilterInput } from "./BaseFilterListApi.js";
 import { FilterListItem } from "./FilterListItem.js";
 import styles from "./FilterListItem.module.css";
@@ -36,7 +39,7 @@ interface SortableFilterListItemProps<D> {
   onFilterRemoved?: (filterKey: string) => void;
   renderInput: RenderFilterInput<D>;
   searchField?: boolean;
-  actions?: FilterActionsConfig;
+  controls?: FilterControlsConfig;
 }
 
 function SortableFilterListItemInner<D>({
@@ -49,7 +52,7 @@ function SortableFilterListItemInner<D>({
   onFilterRemoved,
   renderInput,
   searchField,
-  actions,
+  controls,
 }: SortableFilterListItemProps<D>): React.ReactElement {
   const {
     attributes,
@@ -80,7 +83,7 @@ function SortableFilterListItemInner<D>({
         onFilterRemoved={onFilterRemoved}
         renderInput={renderInput}
         searchField={searchField}
-        actions={actions}
+        controls={controls}
         dragHandleAttributes={attributes}
         dragHandleListeners={listeners}
       />
