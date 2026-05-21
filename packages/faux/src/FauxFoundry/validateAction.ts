@@ -273,6 +273,20 @@ function validateActionParameterType(
       return;
     }
 
+    case "scenarioReference": {
+      if (
+        !value
+        || typeof value !== "object"
+        || typeof (value as { scenarioRid?: unknown }).scenarioRid !== "string"
+      ) {
+        ret.result = "INVALID";
+        ret.parameters[paramKey] = {
+          ...baseParam,
+        };
+      }
+      return;
+    }
+
     default: {
       const _assertNever: never = dataType;
       throw new Error(
