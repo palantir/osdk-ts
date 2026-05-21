@@ -28,23 +28,22 @@ import type { MinimalClient } from "../MinimalClientContext.js";
  * The set of many-to-many link types modified within a scenario for one source object type. Returned as part of
  * {@link ScenarioEditedEntityTypes.linkTypes}.
  */
-export interface EditedLinkTypeMapping {
+export interface EditedLinksForObjectType {
   objectTypeApiName: string;
   linkTypes: string[];
 }
 
 /**
- * The object types and link types that have been modified within a scenario. Returned by
- * {@link ScenarioClient.getEditedEntityTypes}. Only many-to-many link type edits are surfaced via `linkTypes`;
+ * The object types and link types that have been modified within a scenario. Only many-to-many link type edits are surfaced via `linkTypes`;
  * one-to-many edits surface as object edits on the object type that owns the foreign key property.
  */
 export interface ScenarioEditedEntityTypes {
   objectTypes: string[];
-  linkTypes: EditedLinkTypeMapping[];
+  linkTypes: EditedLinksForObjectType[];
 }
 
 /**
- * A page of edited object identifiers ({@link ObjectIdentifiers} — `$primaryKey` + `$apiName`) within a scenario
+ * A page of edited object identifiers within a scenario
  * for a given object type. Returned by {@link ScenarioClient.getEditedEntities}. To load full property values,
  * pass the primary keys back through the scenario client, e.g.
  * `scenario(MyObject).where({ $primaryKey: { $in: keys } }).fetchPage()`.
@@ -75,14 +74,14 @@ export interface ScenarioClient extends Client {
   getEditedEntityTypes(): Promise<ScenarioEditedEntityTypes>;
 
   /**
-   * Get a page of object identifiers ({@link ObjectIdentifiers} — `$primaryKey` + `$apiName` only) that have been
+   * Get a page of object identifiers that have been
    * edited within this scenario for the given object type. Use the scenario client to fetch full property values
    * if needed.
    *
    * @example
    * ```ts
    * let pageToken: string | undefined;
-   * const keys: unknown[] = [];
+   * const keys: string[] = [];
    * do {
    *   const page = await scenario.getEditedEntities(Doctor, { pageSize: 500, pageToken });
    *   keys.push(...page.data.map(o => o.$primaryKey));
@@ -96,7 +95,7 @@ export interface ScenarioClient extends Client {
   ): Promise<EditedEntitiesPage<Q>>;
 
   /**
-   * Stream object identifiers ({@link ObjectIdentifiers}) for the objects edited within this scenario for the
+   * Stream object identifiers for the objects edited within this scenario for the
    * given object type. Pages are fetched lazily and deduplicated by `$primaryKey` across pages (Funnel may return
    * duplicates).
    *
