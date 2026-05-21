@@ -15,8 +15,25 @@
  */
 
 import type { StorybookConfig } from "@storybook/react-vite";
+import { createRequire } from "node:module";
+import path from "node:path";
 
 const storybookBasePath = process.env.STORYBOOK_BASE_PATH;
+
+// Pin date-fns to the v4 install (the one @osdk/faux requires for
+// `constructNow`). Two date-fns versions are hoisted into the workspace
+// (v2 via react-day-picker, v4 via faux); without this alias Vite's deps
+// optimizer picks v2 and faux modules crash at runtime.
+const dateFnsV4 = path.dirname(
+  createRequire(import.meta.url).resolve(
+    "date-fns/package.json",
+    {
+      paths: [
+        path.resolve(import.meta.dirname ?? "", "../../faux"),
+      ],
+    },
+  ),
+);
 
 const config: StorybookConfig = {
   stories: ["../src/**/*.stories.@(js|jsx|ts|tsx|mdx)"],
@@ -69,6 +86,7 @@ const config: StorybookConfig = {
     // Ensure proper resolution of workspace packages
     config.resolve = {
       ...config.resolve,
+      dedupe: [...(config.resolve?.dedupe ?? []), "date-fns"],
       alias: {
         ...config.resolve?.alias,
         // Polyfill Node.js modules for browser
@@ -79,6 +97,7 @@ const config: StorybookConfig = {
         "node:crypto": new URL("./crypto-polyfill.ts", import.meta.url)
           .pathname,
         "node:util": new URL("./util-polyfill.ts", import.meta.url).pathname,
+        "date-fns": dateFnsV4,
       },
     };
 
