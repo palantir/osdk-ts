@@ -22,7 +22,7 @@ import type {
 } from "@osdk/api";
 import type {
   BaseFilterState,
-  FilterActionsConfig,
+  FilterDefinitionControls,
   FilterState,
   FilterStateByComponentType,
   PropertyTypeFromKey,
@@ -55,7 +55,7 @@ export interface LinkedPropertyFilterState<S extends FilterState = FilterState>
 export interface HasLinkFilterDefinition<
   Q extends ObjectTypeDefinition,
   L extends LinkNames<Q> = LinkNames<Q>,
-> {
+> extends FilterDefinitionControls {
   type: "HAS_LINK";
   /**
    * Optional unique identifier for stable keying across filter reorders.
@@ -71,26 +71,6 @@ export interface HasLinkFilterDefinition<
    * @default true
    */
   isVisible?: boolean;
-
-  /**
-   * When `false`, the header monocle (search-values icon) is hidden. HAS_LINK
-   * filters do not support search by default, so this flag has no visible
-   * effect unless a future filter component renders search.
-   *
-   * Shorthand for `actions: { search: false }`. If both are set,
-   * `actions.search` wins.
-   *
-   * @default true
-   */
-  searchField?: boolean;
-
-  /**
-   * Fine-grained control over which action controls render in the filter
-   * header and overflow menu, and where they appear.
-   *
-   * See {@link FilterActionsConfig} for the supported fields and defaults.
-   */
-  actions?: FilterActionsConfig;
 }
 
 /**
@@ -104,7 +84,7 @@ export interface LinkedPropertyFilterDefinition<
   LinkedC extends ValidComponentsForPropertyType<
     PropertyTypeFromKey<LinkedQ, LinkedK>
   > = ValidComponentsForPropertyType<PropertyTypeFromKey<LinkedQ, LinkedK>>,
-> {
+> extends FilterDefinitionControls {
   type: "LINKED_PROPERTY";
   /**
    * Optional unique identifier for stable keying across filter reorders.
@@ -131,27 +111,4 @@ export interface LinkedPropertyFilterDefinition<
    * @default true
    */
   isVisible?: boolean;
-
-  /**
-   * When `false`, the header monocle (search-values icon) is hidden even for
-   * filter components that ordinarily support in-filter search.
-   *
-   * Useful for filters whose own UI already exposes a search field (for
-   * example, the MULTI_SELECT combobox) where the extra monocle would be
-   * redundant.
-   *
-   * Shorthand for `actions: { search: false }`. If both are set,
-   * `actions.search` wins.
-   *
-   * @default true
-   */
-  searchField?: boolean;
-
-  /**
-   * Fine-grained control over which action controls render in the filter
-   * header and overflow menu, and where they appear.
-   *
-   * See {@link FilterActionsConfig} for the supported fields and defaults.
-   */
-  actions?: FilterActionsConfig;
 }
