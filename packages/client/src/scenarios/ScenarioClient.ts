@@ -150,7 +150,7 @@ export interface ScenarioClient extends Client {
 
   /**
    * Stream directed link instances edited within this scenario for a given source object type and link api name.
-   * Pages are fetched lazily; items are deduplicated by `(source.$primaryKey, target.$primaryKey)` across pages.
+   * Pages are fetched lazily.
    *
    * @example
    * ```ts
@@ -348,7 +348,6 @@ export function buildScenarioClient(
   ): AsyncIterableIterator<
     MinimalDirectedObjectLinkInstance<Q, LINK_TYPE_API_NAME>
   > {
-    const seen = new Set<string>();
     let pageToken: string | undefined;
     do {
       const page = await getEditedLinks(sourceObjectType, linkType, {
@@ -356,11 +355,6 @@ export function buildScenarioClient(
         pageToken,
       });
       for (const link of page.data) {
-        const dedupKey = `${String(link.source.$primaryKey)}|${
-          String(link.target.$primaryKey)
-        }|${link.linkType as string}`;
-        if (seen.has(dedupKey)) continue;
-        seen.add(dedupKey);
         yield link;
       }
       pageToken = page.nextPageToken;
