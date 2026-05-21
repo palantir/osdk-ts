@@ -34,8 +34,10 @@ interface MultiDateInputProps {
   maxDate?: Date;
   showClearAll?: boolean;
   /**
-   * Consumer-provided display formatter for chip text. Falls back to
-   * `formatDateForDisplay` (locale-aware) when omitted.
+   * Consumer-provided display formatter for chip text and the embedded
+   * `DatePicker`'s idle text. Falls back to `formatDateForDisplay`
+   * (locale-aware) for chips, and the picker's default ISO `YYYY-MM-DD`
+   * format when omitted.
    */
   formatDate?: (date: Date) => string;
 }
@@ -112,6 +114,7 @@ function MultiDateInputInner({
           max={maxDate}
           ariaLabel="Add date"
           modal={false}
+          formatDate={formatDate}
         />
       </div>
     </div>

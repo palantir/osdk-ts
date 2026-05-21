@@ -24,12 +24,19 @@ interface SingleDateFilterInputProps {
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
   dateShortcuts?: RelativeDatePeriod[] | boolean;
+  /**
+   * Consumer-provided display formatter forwarded to the underlying
+   * `SingleDateInput` / `DatePicker`. Falls back to ISO `YYYY-MM-DD` when
+   * omitted.
+   */
+  formatDate?: (date: Date) => string;
 }
 
 function SingleDateFilterInputInner({
   filterState,
   onFilterStateChanged,
   dateShortcuts,
+  formatDate,
 }: SingleDateFilterInputProps): React.ReactElement {
   const selectedDate = useMemo(
     () =>
@@ -63,6 +70,7 @@ function SingleDateFilterInputInner({
       selectedDate={selectedDate}
       onChange={handleChange}
       shortcutPeriods={shortcutPeriods}
+      formatDate={formatDate}
     />
   );
 }

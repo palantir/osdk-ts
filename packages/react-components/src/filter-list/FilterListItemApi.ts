@@ -219,12 +219,19 @@ export interface ToggleFilterState extends BaseFilterState {
  * only when the property is `datetime` or `timestamp` — see
  * {@link PropertyFilterDateExtras}.
  *
- * `formatDate` overrides the displayed string everywhere the filter
- * surfaces a date: the shared `DateRangePicker` / `DatePicker` idle text,
- * the date-range histogram tooltip and period subtitle, the histogram
- * x-tick labels (when no `formatTickLabel` is provided), the multi-date
- * chip text, and timeline labels. The picker's internal value remains ISO
- * `YYYY-MM-DD` so cross-locale viewers see a consistent input format
+ * Applies to every date-typed filter component: `DATE_RANGE`,
+ * `SINGLE_DATE`, `MULTI_DATE`, and `TIMELINE`. Within each component it
+ * overrides the displayed string on every surface that renders a date:
+ * the shared `DateRangePicker` / `DatePicker` idle text, the date-range
+ * histogram tooltip and period subtitle, the histogram x-tick labels
+ * (when no `formatTickLabel` is provided), and the multi-date chip text.
+ *
+ * For `TIMELINE`, `formatDate` reformats the period labels above the
+ * brush; the native HTML date input value attribute remains ISO
+ * `YYYY-MM-DD` because browsers do not permit reformatting it.
+ *
+ * The `DatePicker`'s editing format (the string shown while the user is
+ * typing) also stays ISO `YYYY-MM-DD` so typed input remains parsable
  * regardless of `formatDate`.
  *
  * Receives a `Date` in local time. If the property is a UTC ISO string and

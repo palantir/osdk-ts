@@ -38,6 +38,13 @@ interface SingleDateInputProps {
    * most recent moment of the requested span.
    */
   shortcutPeriods?: readonly RelativeDatePeriod[];
+  /**
+   * Consumer-provided display formatter for the picker's idle text. Falls
+   * back to the `DatePicker`'s default ISO `YYYY-MM-DD` format when omitted.
+   * The picker's editing format stays ISO regardless so typed input is
+   * parsable across locales.
+   */
+  formatDate?: (date: Date) => string;
 }
 
 function SingleDateInputInner({
@@ -50,6 +57,7 @@ function SingleDateInputInner({
   placeholder,
   showClearButton = true,
   shortcutPeriods,
+  formatDate,
 }: SingleDateInputProps): React.ReactElement {
   const handleClear = useCallback(() => {
     onChange(undefined);
@@ -88,6 +96,7 @@ function SingleDateInputInner({
             placeholder={placeholder}
             ariaLabel="Select date"
             modal={false}
+            formatDate={formatDate}
           />
           {showClearButton && selectedDate !== undefined && (
             <Button
