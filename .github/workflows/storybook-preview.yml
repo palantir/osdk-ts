@@ -59,6 +59,8 @@ jobs:
       contents: write
       issues: write
     concurrency:
+      # Serialize gh-pages writers so force-push deploys do not clobber each other.
+      # queue: max keeps every pending preview deploy instead of replacing older pending runs.
       group: storybook-gh-pages
       queue: max
     steps:
@@ -152,6 +154,8 @@ jobs:
       contents: write
       issues: write
     concurrency:
+      # Serialize gh-pages writers so force-push deploys do not clobber each other.
+      # queue: max keeps every pending preview deploy instead of replacing older pending runs.
       group: storybook-gh-pages
       queue: max
     steps:
