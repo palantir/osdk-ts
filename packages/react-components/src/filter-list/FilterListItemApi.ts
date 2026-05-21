@@ -38,96 +38,18 @@ export type PropertyTypeFromKey<
 > = CompileTimeMetadata<Q>["properties"][K]["type"];
 
 /**
- * Where a filter header control can be placed within a filter list item.
- *
- * - `"header-start"` — left side of the header (between the drag handle and
- *   the label).
- * - `"header-end"` — right side of the header (where the monocle and overflow
- *   menu live by default).
- * - `"menu"` — inside the overflow (`...`) menu.
- */
-export type FilterControlPlacement = "header-start" | "header-end" | "menu";
-
-/**
- * Per-filter configuration for which header controls render on a filter
- * list item and where they appear.
- *
- * Defaults preserve the built-in behavior: the search monocle renders at
- * `"header-end"` for filter components that support search, the overflow
- * (`...`) menu trigger renders at `"header-end"`, and "Remove filter"
- * appears inside that menu whenever `onFilterRemoved` is wired.
- */
-export interface FilterControlsConfig {
-  /**
-   * Search affordance for filter values.
-   *
-   * - `true` — visible at `"header-end"` (default).
-   * - `false` — hidden.
-   * - `"header-start"` — header monocle on the left side of the header.
-   * - `"header-end"` — header monocle on the right side of the header.
-   * - `"menu"` — rendered as a "Search values" item inside the overflow
-   *   (`...`) menu; selecting it opens the search row below the header.
-   *
-   * Takes precedence over the deprecated `searchField` flag when both are set.
-   *
-   * @default "header-end"
-   */
-  search?: boolean | FilterControlPlacement;
-
-  /**
-   * Overflow (`...`) menu button.
-   *
-   * - `true` — visible at `"header-end"` (default).
-   * - `false` — hidden. Keep / Exclude, Clear all selections, and Remove
-   *   filter — all of which live inside the menu — are also hidden when this
-   *   is `false`. If `search` resolves to `"menu"`, the search item is hidden
-   *   too.
-   * - `"header-start"` — `...` trigger on the left side of the header.
-   * - `"header-end"` — `...` trigger on the right side of the header.
-   *
-   * The trigger itself cannot live inside the menu it opens, so `"menu"` is
-   * not a legal value here.
-   *
-   * @default "header-end"
-   */
-  overflow?: boolean | "header-start" | "header-end";
-
-  /**
-   * Remove filter affordance.
-   *
-   * - `true` — rendered as a menu item when `onFilterRemoved` is provided
-   *   (default).
-   * - `false` — hidden.
-   *
-   * @default true
-   */
-  remove?: boolean;
-}
-
-/**
- * Common mix-in for filter definitions: fine-grained header/menu control
- * configuration plus a deprecated shorthand for opting out of the header
- * search monocle.
+ * Common mix-in for filter definitions: opt-out flag for the header search
+ * monocle.
  */
 export interface FilterDefinitionControls {
   /**
-   * @deprecated Use `controls.search` instead.
-   *
    * When `false`, the header monocle (search-values icon) is hidden even for
-   * filter components that ordinarily support in-filter search.
+   * filter components that ordinarily support in-filter search. Useful for
+   * `MULTI_SELECT`, which already has its own inline search field.
    *
-   * Shorthand for `controls: { search: false }`. If both are set,
-   * `controls.search` wins.
+   * @default true
    */
   searchField?: boolean;
-
-  /**
-   * Fine-grained control over which controls render in the filter
-   * header and overflow menu, and where they appear.
-   *
-   * See {@link FilterControlsConfig} for the supported fields and defaults.
-   */
-  controls?: FilterControlsConfig;
 }
 
 /**

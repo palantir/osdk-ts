@@ -16,6 +16,7 @@
 
 import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import React, { memo } from "react";
+import { FilterInputExcludeRow } from "../base/FilterInputExcludeRow.js";
 import type { MultiSelectInputLayout } from "../base/inputs/MultiSelectInput.js";
 import type {
   FilterState,
@@ -41,6 +42,7 @@ interface PropertyFilterInputProps<Q extends ObjectTypeDefinition> {
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
   searchQuery?: string;
+  excludeRowOpen?: boolean;
   layout?: MultiSelectInputLayout;
 }
 
@@ -52,16 +54,23 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
   onFilterStateChanged,
   whereClause,
   searchQuery,
+  excludeRowOpen,
   layout,
 }: PropertyFilterInputProps<Q>): React.ReactElement {
   switch (definition.filterComponent) {
     case "CONTAINS_TEXT":
       return (
-        <ContainsTextFilterInput
-          propertyKey={definition.key}
+        <FilterInputExcludeRow
+          excludeRowOpen={excludeRowOpen}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
-        />
+        >
+          <ContainsTextFilterInput
+            propertyKey={definition.key}
+            filterState={filterState}
+            onFilterStateChanged={onFilterStateChanged}
+          />
+        </FilterInputExcludeRow>
       );
 
     case "TOGGLE":
@@ -108,6 +117,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
           whereClause={whereClause}
+          excludeRowOpen={excludeRowOpen}
           renderValue={definition.renderValue}
           showCount={definition.showCount}
         />
@@ -122,6 +132,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
           whereClause={whereClause}
+          excludeRowOpen={excludeRowOpen}
           renderValue={definition.renderValue}
           showCount={definition.showCount}
           layout={layout}
@@ -159,6 +170,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           showCount={definition.showCount}
           maxVisibleItems={definition.listogramConfig?.maxVisibleItems ?? 5}
           searchQuery={searchQuery}
+          excludeRowOpen={excludeRowOpen}
           renderValue={definition.renderValue}
         />
       );
@@ -172,16 +184,23 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
           whereClause={whereClause}
+          excludeRowOpen={excludeRowOpen}
         />
       );
 
     case "TIMELINE":
       return (
-        <TimelineFilterInput
+        <FilterInputExcludeRow
+          excludeRowOpen={excludeRowOpen}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
-          formatDate={definition.formatDate}
-        />
+        >
+          <TimelineFilterInput
+            filterState={filterState}
+            onFilterStateChanged={onFilterStateChanged}
+            formatDate={definition.formatDate}
+          />
+        </FilterInputExcludeRow>
       );
 
     default:

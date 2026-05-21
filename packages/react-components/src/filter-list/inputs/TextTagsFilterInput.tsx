@@ -34,6 +34,7 @@ interface TextTagsFilterInputProps<Q extends ObjectTypeDefinition> {
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
+  excludeRowOpen?: boolean;
 }
 
 function TextTagsFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -43,6 +44,7 @@ function TextTagsFilterInputInner<Q extends ObjectTypeDefinition>({
   filterState,
   onFilterStateChanged,
   whereClause,
+  excludeRowOpen,
 }: TextTagsFilterInputProps<Q>): React.ReactElement {
   const tags = useMemo(
     () =>
@@ -52,6 +54,14 @@ function TextTagsFilterInputInner<Q extends ObjectTypeDefinition>({
     [filterState],
   );
   const isExcluding = filterState?.isExcluding ?? false;
+
+  const handleClearAll = useCallback(() => {
+    onFilterStateChanged({
+      type: "EXACT_MATCH",
+      values: [],
+      isExcluding,
+    });
+  }, [onFilterStateChanged, isExcluding]);
 
   const handleChange = useCallback(
     (values: string[]) => {
@@ -78,8 +88,11 @@ function TextTagsFilterInputInner<Q extends ObjectTypeDefinition>({
 
   return (
     <FilterInputExcludeRow
+      excludeRowOpen={excludeRowOpen}
       filterState={filterState}
+      onFilterStateChanged={onFilterStateChanged}
       totalValueCount={data.length}
+      onClearAll={handleClearAll}
     >
       <TextTagsInput
         suggestions={data}

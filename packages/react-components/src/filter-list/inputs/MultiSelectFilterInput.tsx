@@ -37,6 +37,7 @@ interface MultiSelectFilterInputProps<Q extends ObjectTypeDefinition> {
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
+  excludeRowOpen?: boolean;
   renderValue?: (value: string) => React.ReactNode;
   showCount?: boolean;
   layout?: MultiSelectInputLayout;
@@ -49,6 +50,7 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
   filterState,
   onFilterStateChanged,
   whereClause,
+  excludeRowOpen,
   renderValue,
   showCount,
   layout,
@@ -61,6 +63,14 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
     [filterState],
   );
   const isExcluding = filterState?.isExcluding ?? false;
+
+  const handleClearAll = useCallback(() => {
+    onFilterStateChanged({
+      type: "SELECT",
+      selectedValues: [],
+      isExcluding,
+    });
+  }, [onFilterStateChanged, isExcluding]);
 
   const handleChange = useCallback(
     (selectedValues: string[]) => {
@@ -87,8 +97,11 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
 
   return (
     <FilterInputExcludeRow
+      excludeRowOpen={excludeRowOpen}
       filterState={filterState}
+      onFilterStateChanged={onFilterStateChanged}
       totalValueCount={data.length}
+      onClearAll={handleClearAll}
     >
       <MultiSelectInput
         values={data}

@@ -23,69 +23,17 @@ import type {
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import { ErrorBoundary } from "../../shared/ErrorBoundary.js";
-import type {
-  FilterControlsConfig,
-  FilterState,
-} from "../FilterListItemApi.js";
+import type { FilterState } from "../FilterListItemApi.js";
 import {
-  clearFilterState,
   filterHasActiveState,
   getEffectiveFilterState,
   supportsExcluding,
   supportsSearch,
-  toggleIsExcluding,
 } from "../utils/filterValues.js";
 import type { RenderFilterInput } from "./BaseFilterListApi.js";
 import { DragHandleIcon } from "./DragHandleIcon.js";
-import { RemoveIcon } from "./FilterIcons.js";
+import { OverflowMenuIcon, RemoveIcon, SearchIcon } from "./FilterIcons.js";
 import styles from "./FilterListItem.module.css";
-import { HeaderSearchButton } from "./HeaderSearchButton.js";
-import { ItemOverflowMenu } from "./ItemOverflowMenu.js";
-
-type SearchPlacement = "header-start" | "header-end" | "menu" | "hidden";
-type OverflowPlacement = "header-start" | "header-end" | "hidden";
-
-interface ResolvedPlacements {
-  search: SearchPlacement;
-  overflow: OverflowPlacement;
-}
-
-/**
- * `controls.search` takes precedence over `searchField` when both are set.
- * `controls.overflow` accepts boolean or `"header-start"`/`"header-end"`;
- * `"menu"` is not a legal value for the trigger that opens the menu.
- */
-function resolveControlPlacements(
-  effectiveState: FilterState | undefined,
-  searchField: boolean | undefined,
-  controls: FilterControlsConfig | undefined,
-): ResolvedPlacements {
-  let search: SearchPlacement;
-  if (!supportsSearch(effectiveState)) {
-    search = "hidden";
-  } else {
-    const value = controls?.search;
-    if (value === false || (value === undefined && searchField === false)) {
-      search = "hidden";
-    } else if (typeof value === "string") {
-      search = value;
-    } else {
-      search = "header-end";
-    }
-  }
-
-  let overflow: OverflowPlacement;
-  const overflowValue = controls?.overflow;
-  if (overflowValue === false) {
-    overflow = "hidden";
-  } else if (typeof overflowValue === "string") {
-    overflow = overflowValue;
-  } else {
-    overflow = "header-end";
-  }
-
-  return { search, overflow };
-}
 
 interface FilterListItemProps<D> {
   definition: D;
@@ -99,7 +47,6 @@ interface FilterListItemProps<D> {
   onFilterRemoved?: (filterKey: string) => void;
   renderInput: RenderFilterInput<D>;
   searchField?: boolean;
-  controls?: FilterControlsConfig;
   dragHandleAttributes?: DraggableAttributes;
   dragHandleListeners?: DraggableSyntheticListeners;
   className?: string;
@@ -115,7 +62,6 @@ function FilterListItemInner<D>({
   onFilterRemoved,
   renderInput,
   searchField,
-  controls,
   dragHandleAttributes,
   dragHandleListeners,
   className,
@@ -124,6 +70,7 @@ function FilterListItemInner<D>({
   const [searchState, setSearchState] = useState<
     { type: "closed" } | { type: "open"; query: string }
   >({ type: "closed" });
+  const [excludeRowOpen, setExcludeRowOpen] = useState(false);
 
   const handleFilterStateChanged = useCallback(
     (newState: FilterState) => {
@@ -153,87 +100,29 @@ function FilterListItemInner<D>({
     onFilterRemoved?.(filterKey);
   }, [filterKey, onFilterRemoved]);
 
-  const effectiveState = useMemo(
-    () => getEffectiveFilterState(filterState),
-    [filterState],
-  );
-
-  const isExcluding = effectiveState?.isExcluding ?? false;
-
-  const handleToggleExclude = useCallback(() => {
-    if (filterState == null) {
-      return;
-    }
-    const next = toggleIsExcluding(filterState);
-    if (next != null) {
-      onFilterStateChanged(filterKey, next);
-    }
-  }, [filterKey, filterState, onFilterStateChanged]);
-
-  const clearedState = useMemo(
-    () => clearFilterState(filterState),
-    [filterState],
-  );
-
-  const handleClearAll = useCallback(() => {
-    if (clearedState != null) {
-      onFilterStateChanged(filterKey, clearedState);
-    }
-  }, [filterKey, clearedState, onFilterStateChanged]);
+  const handleToggleExcludeRow = useCallback(() => {
+    setExcludeRowOpen((prev) => !prev);
+  }, []);
 
   const searchInputRef = useCallback((element: HTMLInputElement | null) => {
     element?.focus({ preventScroll: true });
   }, []);
 
-  const { search: searchPlacement, overflow: overflowPlacement } =
-    resolveControlPlacements(effectiveState, searchField, controls);
+  const effectiveState = useMemo(
+    () => getEffectiveFilterState(filterState),
+    [filterState],
+  );
 
-  const showOverflow = overflowPlacement !== "hidden";
-  const showKeepExclude = showOverflow && supportsExcluding(effectiveState);
+  const showExcludeDropdown = supportsExcluding(effectiveState);
+  const showSearch = supportsSearch(effectiveState) && searchField !== false;
+  const hasOverflowActions = showExcludeDropdown;
   const hasSelection = filterHasActiveState(filterState);
-  const showClearAll = showOverflow && hasSelection && clearedState != null;
-  const showRemove = showOverflow
-    && onFilterRemoved != null
-    && controls?.remove !== false;
-  const showSearchInMenu = showOverflow && searchPlacement === "menu";
 
-  const searchQuery = searchState.type === "open"
+  const searchOpen = searchState.type === "open";
+  const searchQuery = searchState.type === "open" ? searchState.query : "";
+  const searchQueryForInput = searchState.type === "open"
     ? searchState.query
     : undefined;
-  const searchOpen = searchQuery !== undefined;
-
-  const headerSearch = searchPlacement === "header-start"
-      || searchPlacement === "header-end"
-    ? (
-      <HeaderSearchButton
-        placement={searchPlacement}
-        pressed={searchOpen}
-        onToggle={handleToggleSearch}
-      />
-    )
-    : null;
-
-  const headerOverflow = showOverflow
-    ? (
-      <ItemOverflowMenu
-        triggerClassName={classnames(styles.headerActionButton, {
-          [styles.headerActionButtonStart]:
-            overflowPlacement === "header-start",
-        })}
-        triggerAriaLabel="More actions"
-        filterLabel={label}
-        showSearchInMenu={showSearchInMenu}
-        onSearchInMenu={handleToggleSearch}
-        showKeepExclude={showKeepExclude}
-        isExcluding={isExcluding}
-        onToggleExclude={handleToggleExclude}
-        showClearAll={showClearAll}
-        onClearAll={handleClearAll}
-        showRemove={showRemove}
-        onRemove={handleRemove}
-      />
-    )
-    : null;
 
   return (
     <div
@@ -252,15 +141,40 @@ function FilterListItemInner<D>({
             <DragHandleIcon />
           </Button>
         )}
-        {searchPlacement === "header-start" && headerSearch}
-        {overflowPlacement === "header-start" && headerOverflow}
         <span
           className={styles.itemLabel}
         >
           {label}
         </span>
-        {searchPlacement === "header-end" && headerSearch}
-        {overflowPlacement === "header-end" && headerOverflow}
+        {showSearch && (
+          <Button
+            className={styles.headerActionButton}
+            onClick={handleToggleSearch}
+            aria-label="Search values"
+            aria-pressed={searchOpen}
+          >
+            <SearchIcon />
+          </Button>
+        )}
+        {onFilterRemoved && (
+          <Button
+            className={styles.headerActionButton}
+            onClick={handleRemove}
+            aria-label={`Remove ${label} filter`}
+          >
+            <RemoveIcon />
+          </Button>
+        )}
+        {hasOverflowActions && (
+          <Button
+            className={styles.headerActionButton}
+            onClick={handleToggleExcludeRow}
+            aria-label="More actions"
+            aria-pressed={excludeRowOpen}
+          >
+            <OverflowMenuIcon />
+          </Button>
+        )}
       </div>
 
       {searchOpen && (
@@ -294,7 +208,8 @@ function FilterListItemInner<D>({
             filterKey,
             filterState,
             onFilterStateChanged: handleFilterStateChanged,
-            searchQuery,
+            searchQuery: searchQueryForInput,
+            excludeRowOpen,
           })}
         </ErrorBoundary>
       </div>

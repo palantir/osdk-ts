@@ -232,9 +232,7 @@ export function FilterListContent<D extends FilterDefinitionControls>({
                   onFilterStateChanged={onFilterStateChanged}
                   onFilterRemoved={onFilterRemoved}
                   renderInput={renderInput}
-                  // eslint-disable-next-line @typescript-eslint/no-deprecated -- forwarding the deprecated shorthand to preserve back-compat
                   searchField={definition.searchField}
-                  controls={definition.controls}
                 />
               );
             })}
@@ -253,9 +251,7 @@ export function FilterListContent<D extends FilterDefinitionControls>({
                 onFilterStateChanged={onFilterStateChanged}
                 onFilterRemoved={onFilterRemoved}
                 renderInput={renderInput}
-                // eslint-disable-next-line @typescript-eslint/no-deprecated -- forwarding the deprecated shorthand to preserve back-compat
                 searchField={activeDefinition.searchField}
-                controls={activeDefinition.controls}
                 dragHandleAttributes={DRAG_OVERLAY_HANDLE_ATTRIBUTES}
               />
             )}
@@ -284,9 +280,7 @@ export function FilterListContent<D extends FilterDefinitionControls>({
             onFilterStateChanged={onFilterStateChanged}
             onFilterRemoved={onFilterRemoved}
             renderInput={renderInput}
-            // eslint-disable-next-line @typescript-eslint/no-deprecated -- forwarding the deprecated shorthand to preserve back-compat
             searchField={definition.searchField}
-            controls={definition.controls}
           />
         );
       })}

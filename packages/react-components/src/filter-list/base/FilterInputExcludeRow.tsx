@@ -14,44 +14,85 @@
  * limitations under the License.
  */
 
-import React, { memo } from "react";
+import { Button } from "@base-ui/react/button";
+import classnames from "classnames";
+import React, { memo, useCallback } from "react";
 import type { FilterState } from "../FilterListItemApi.js";
-import { getSelectedCount } from "../utils/filterValues.js";
+import {
+  getEffectiveFilterState,
+  getSelectedCount,
+  supportsExcluding,
+  toggleIsExcluding,
+} from "../utils/filterValues.js";
+import { ExcludeDropdown } from "./ExcludeDropdown.js";
 import styles from "./FilterListItem.module.css";
 
 interface FilterInputExcludeRowProps {
+  excludeRowOpen?: boolean;
   filterState: FilterState | undefined;
+  onFilterStateChanged: (state: FilterState) => void;
   totalValueCount?: number;
+  onClearAll?: () => void;
   children: React.ReactNode;
 }
 
-/**
- * Renders the "N of M values" count summary above the filter input.
- * Keep / Exclude, Clear all, and Remove now live in the item-level overflow
- * (`...`) menu rendered by `FilterListItem`; this wrapper preserves the count
- * badge that previously rendered alongside them.
- */
 function FilterInputExcludeRowInner({
+  excludeRowOpen,
   filterState,
+  onFilterStateChanged,
   totalValueCount,
+  onClearAll,
   children,
 }: FilterInputExcludeRowProps): React.ReactElement {
-  const selectedCount = getSelectedCount(filterState);
-  const showCount = totalValueCount != null && totalValueCount > 0;
+  const handleToggleExclude = useCallback(() => {
+    if (filterState == null) {
+      return;
+    }
+    const next = toggleIsExcluding(filterState);
+    if (next != null) {
+      onFilterStateChanged(next);
+    }
+  }, [filterState, onFilterStateChanged]);
+
+  const effectiveState = getEffectiveFilterState(filterState);
+  const isExcluding = effectiveState?.isExcluding ?? false;
+  const isOpen = excludeRowOpen ?? false;
+  const selectedCount = getSelectedCount(effectiveState);
+
+  if (!supportsExcluding(effectiveState)) {
+    return <>{children}</>;
+  }
 
   return (
     <>
-      {showCount && (
-        <div className={styles.valueCountRow}>
+      <div
+        data-exclude-row={true}
+        className={classnames(styles.excludeRow, {
+          [styles.excludeRowVisible]: isOpen,
+        })}
+      >
+        <ExcludeDropdown
+          isExcluding={isExcluding}
+          onToggleExclude={handleToggleExclude}
+        />
+        {totalValueCount != null && totalValueCount > 0 && (
           <span
-            className={styles.valueCountLabel}
+            className={styles.excludeCountLabel}
             title="Approximate count of unique values"
           >
             {selectedCount.toLocaleString()} of{" "}
             {totalValueCount.toLocaleString()} values
           </span>
-        </div>
-      )}
+        )}
+        {onClearAll && selectedCount > 0 && (
+          <Button
+            className={styles.clearAllButton}
+            onClick={onClearAll}
+          >
+            Clear all
+          </Button>
+        )}
+      </div>
       {children}
     </>
   );

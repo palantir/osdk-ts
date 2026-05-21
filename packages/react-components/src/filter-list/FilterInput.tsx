@@ -33,6 +33,7 @@ export interface FilterInputProps<Q extends ObjectTypeDefinition> {
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
   searchQuery?: string;
+  excludeRowOpen?: boolean;
   /**
    * Layout for `MULTI_SELECT` filter components. Pass `"inline"` when this
    * input renders inside a popover (or any container where chips would feel
@@ -51,6 +52,7 @@ function FilterInputInner<Q extends ObjectTypeDefinition>({
   onFilterStateChanged,
   whereClause,
   searchQuery,
+  excludeRowOpen,
   layout,
 }: FilterInputProps<Q>): React.ReactElement {
   switch (definition.type) {
@@ -118,6 +120,7 @@ function FilterInputInner<Q extends ObjectTypeDefinition>({
           onFilterStateChanged={onFilterStateChanged}
           whereClause={whereClause}
           searchQuery={searchQuery}
+          excludeRowOpen={excludeRowOpen}
           layout={layout}
         />
       );
@@ -129,6 +132,7 @@ function FilterInputInner<Q extends ObjectTypeDefinition>({
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
           searchQuery={searchQuery}
+          excludeRowOpen={excludeRowOpen}
           layout={layout}
         />
       );
