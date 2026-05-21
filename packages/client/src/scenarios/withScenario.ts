@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-import {
-  buildScenarioClient,
-  type NonScenarioClient,
-  type ScenarioClient,
-} from "./ScenarioClient.js";
+import type { Client } from "../Client.js";
+import { buildScenarioClient, type ScenarioClient } from "./ScenarioClient.js";
 
 /**
  * Attach to an existing ontology scenario. Synchronous — no network call is made. The returned client scopes all
  * subsequent operations (`fetchPage`, `applyAction`, `executeFunction`, etc.) to the given `scenarioRid`.
  *
  * @param client - The base {@link Client} to derive context (`baseUrl`, `ontologyRid`, `tokenProvider`, `branch`, …)
- *   from. Must not already be a {@link ScenarioClient} or a transactional client.
+ *   from. Throws at runtime if the client is already scoped to a scenario or transaction.
  * @param scenarioRid - The RID of the scenario to attach to.
  * @returns a {@link ScenarioClient} bound to `scenarioRid`.
  *
@@ -41,7 +38,7 @@ import {
  * ```
  */
 export function withScenario(
-  client: NonScenarioClient,
+  client: Client,
   scenarioRid: string,
 ): ScenarioClient {
   return buildScenarioClient(client, scenarioRid);

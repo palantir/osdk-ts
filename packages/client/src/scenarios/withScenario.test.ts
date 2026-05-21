@@ -77,17 +77,15 @@ describe("withScenario", () => {
       {},
       fetchFunction,
     );
-    expect(() =>
-      // @ts-expect-error — runtime check too; the type also rejects transactional clients via shape
-      withScenario(txClient, "ri.actions..scenario.abc")
-    ).toThrow(/transaction/);
+    expect(() => withScenario(txClient, "ri.actions..scenario.abc")).toThrow(
+      /transaction/,
+    );
   });
 
-  it("rejects already-branded ScenarioClient inputs at compile time", () => {
+  it("rejects a client already scoped to a scenario at runtime", () => {
     const scenario = withScenario(client, "ri.actions..scenario.abc");
-    expect(() =>
-      // @ts-expect-error — ScenarioClient is not assignable to NonScenarioClient
-      withScenario(scenario, "ri.actions..scenario.def")
-    ).toThrow(/scenario/);
+    expect(() => withScenario(scenario, "ri.actions..scenario.def")).toThrow(
+      /scenario/,
+    );
   });
 });
