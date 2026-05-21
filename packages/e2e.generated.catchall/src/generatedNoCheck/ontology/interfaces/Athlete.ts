@@ -97,5 +97,11 @@ export const Athlete = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.interface-type.1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b',
+    namespaceStrippedProperties: {},
   },
-} satisfies Athlete & { internalDoNotUseMetadata: { rid: string } } as Athlete;
+} satisfies Athlete & {
+  internalDoNotUseMetadata: {
+    rid: string;
+    namespaceStrippedProperties?: Partial<{ [NamespaceStrippedProperty in keyof Athlete.Props]: string }>;
+  };
+} as Athlete;

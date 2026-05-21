@@ -59,5 +59,11 @@ export const InterfaceNoProps = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.interface-type.1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b',
+    namespaceStrippedProperties: {},
   },
-} satisfies InterfaceNoProps & { internalDoNotUseMetadata: { rid: string } } as InterfaceNoProps;
+} satisfies InterfaceNoProps & {
+  internalDoNotUseMetadata: {
+    rid: string;
+    namespaceStrippedProperties?: Partial<{ [NamespaceStrippedProperty in keyof InterfaceNoProps.Props]: string }>;
+  };
+} as InterfaceNoProps;

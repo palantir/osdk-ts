@@ -77,5 +77,11 @@ export const TodoLike = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.interface.fe6b2917-915d-4952-b89d-1231dad224e0',
+    namespaceStrippedProperties: {},
   },
-} satisfies TodoLike & { internalDoNotUseMetadata: { rid: string } } as TodoLike;
+} satisfies TodoLike & {
+  internalDoNotUseMetadata: {
+    rid: string;
+    namespaceStrippedProperties?: Partial<{ [NamespaceStrippedProperty in keyof TodoLike.Props]: string }>;
+  };
+} as TodoLike;

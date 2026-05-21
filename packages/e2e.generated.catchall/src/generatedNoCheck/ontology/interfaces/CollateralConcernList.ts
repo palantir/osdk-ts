@@ -92,5 +92,11 @@ export const CollateralConcernList = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.interface.7d459ce8-bb84-4ea5-9039-71560d82b53f',
+    namespaceStrippedProperties: {},
   },
-} satisfies CollateralConcernList & { internalDoNotUseMetadata: { rid: string } } as CollateralConcernList;
+} satisfies CollateralConcernList & {
+  internalDoNotUseMetadata: {
+    rid: string;
+    namespaceStrippedProperties?: Partial<{ [NamespaceStrippedProperty in keyof CollateralConcernList.Props]: string }>;
+  };
+} as CollateralConcernList;

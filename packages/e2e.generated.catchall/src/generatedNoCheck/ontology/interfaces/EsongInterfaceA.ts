@@ -73,5 +73,11 @@ export const EsongInterfaceA = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.interface.3f52b54b-dab9-41f1-b02c-4eba39846673',
+    namespaceStrippedProperties: {},
   },
-} satisfies EsongInterfaceA & { internalDoNotUseMetadata: { rid: string } } as EsongInterfaceA;
+} satisfies EsongInterfaceA & {
+  internalDoNotUseMetadata: {
+    rid: string;
+    namespaceStrippedProperties?: Partial<{ [NamespaceStrippedProperty in keyof EsongInterfaceA.Props]: string }>;
+  };
+} as EsongInterfaceA;

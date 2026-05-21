@@ -175,5 +175,11 @@ export const FooInterface = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.interface-type.1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b',
+    namespaceStrippedProperties: {},
   },
-} satisfies FooInterface & { internalDoNotUseMetadata: { rid: string } } as FooInterface;
+} satisfies FooInterface & {
+  internalDoNotUseMetadata: {
+    rid: string;
+    namespaceStrippedProperties?: Partial<{ [NamespaceStrippedProperty in keyof FooInterface.Props]: string }>;
+  };
+} as FooInterface;

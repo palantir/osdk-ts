@@ -69,5 +69,11 @@ export const SomeInterface = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'idk2',
+    namespaceStrippedProperties: {},
   },
-} satisfies SomeInterface & { internalDoNotUseMetadata: { rid: string } } as SomeInterface;
+} satisfies SomeInterface & {
+  internalDoNotUseMetadata: {
+    rid: string;
+    namespaceStrippedProperties?: Partial<{ [NamespaceStrippedProperty in keyof SomeInterface.Props]: string }>;
+  };
+} as SomeInterface;

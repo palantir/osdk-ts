@@ -73,5 +73,13 @@ export const TestAsTypeIltInterface = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.interface.93463b40-940d-430d-9283-9eca82fa9aa4',
+    namespaceStrippedProperties: {},
   },
-} satisfies TestAsTypeIltInterface & { internalDoNotUseMetadata: { rid: string } } as TestAsTypeIltInterface;
+} satisfies TestAsTypeIltInterface & {
+  internalDoNotUseMetadata: {
+    rid: string;
+    namespaceStrippedProperties?: Partial<{
+      [NamespaceStrippedProperty in keyof TestAsTypeIltInterface.Props]: string;
+    }>;
+  };
+} as TestAsTypeIltInterface;

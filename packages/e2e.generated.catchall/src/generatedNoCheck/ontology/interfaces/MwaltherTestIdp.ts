@@ -97,5 +97,11 @@ export const MwaltherTestIdp = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.interface.19fcaed0-457d-4e4c-82b1-7e3933a61df3',
+    namespaceStrippedProperties: {},
   },
-} satisfies MwaltherTestIdp & { internalDoNotUseMetadata: { rid: string } } as MwaltherTestIdp;
+} satisfies MwaltherTestIdp & {
+  internalDoNotUseMetadata: {
+    rid: string;
+    namespaceStrippedProperties?: Partial<{ [NamespaceStrippedProperty in keyof MwaltherTestIdp.Props]: string }>;
+  };
+} as MwaltherTestIdp;

@@ -73,5 +73,13 @@ export const NihalbCastingInterfaceTypeA = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.interface.daed91f9-ee83-4e6c-bfc7-a17c8ff9433c',
+    namespaceStrippedProperties: {},
   },
-} satisfies NihalbCastingInterfaceTypeA & { internalDoNotUseMetadata: { rid: string } } as NihalbCastingInterfaceTypeA;
+} satisfies NihalbCastingInterfaceTypeA & {
+  internalDoNotUseMetadata: {
+    rid: string;
+    namespaceStrippedProperties?: Partial<{
+      [NamespaceStrippedProperty in keyof NihalbCastingInterfaceTypeA.Props]: string;
+    }>;
+  };
+} as NihalbCastingInterfaceTypeA;

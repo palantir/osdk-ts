@@ -223,8 +223,14 @@ ${
       osdkMetadata: $osdkMetadata,
       internalDoNotUseMetadata: {
         rid: "${definition.rid}",
+        namespaceStrippedProperties: {},
       },
-    } satisfies ${interfaceDef.shortApiName} & { internalDoNotUseMetadata: { rid: string } } as ${interfaceDef.shortApiName};`;
+    } satisfies ${interfaceDef.shortApiName} & { 
+      internalDoNotUseMetadata: { 
+        rid: string,
+        namespaceStrippedProperties?: Partial<{ [NamespaceStrippedProperty in keyof ${interfaceDef.shortApiName}.Props]: string }>
+      } 
+    } as ${interfaceDef.shortApiName};`;
 }
 /** @internal */
 export function getInvalidInterfaceProperties(

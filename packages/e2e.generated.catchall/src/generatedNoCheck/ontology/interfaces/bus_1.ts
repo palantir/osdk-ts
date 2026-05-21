@@ -69,5 +69,11 @@ export const bus_1 = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.interface.13ac66ef-d94e-4020-ac20-3285557149dd',
+    namespaceStrippedProperties: {},
   },
-} satisfies bus_1 & { internalDoNotUseMetadata: { rid: string } } as bus_1;
+} satisfies bus_1 & {
+  internalDoNotUseMetadata: {
+    rid: string;
+    namespaceStrippedProperties?: Partial<{ [NamespaceStrippedProperty in keyof bus_1.Props]: string }>;
+  };
+} as bus_1;

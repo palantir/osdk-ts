@@ -69,5 +69,11 @@ export const OsdkTestInterface = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.interface.06c534fd-4f68-44d9-b268-72729a47eaab',
+    namespaceStrippedProperties: {},
   },
-} satisfies OsdkTestInterface & { internalDoNotUseMetadata: { rid: string } } as OsdkTestInterface;
+} satisfies OsdkTestInterface & {
+  internalDoNotUseMetadata: {
+    rid: string;
+    namespaceStrippedProperties?: Partial<{ [NamespaceStrippedProperty in keyof OsdkTestInterface.Props]: string }>;
+  };
+} as OsdkTestInterface;

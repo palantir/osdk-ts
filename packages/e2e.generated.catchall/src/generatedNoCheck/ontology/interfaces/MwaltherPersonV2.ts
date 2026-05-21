@@ -69,5 +69,11 @@ export const MwaltherPersonV2 = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.interface.2fc1336c-6d4d-428f-9a4f-4f3ebfaf860e',
+    namespaceStrippedProperties: {},
   },
-} satisfies MwaltherPersonV2 & { internalDoNotUseMetadata: { rid: string } } as MwaltherPersonV2;
+} satisfies MwaltherPersonV2 & {
+  internalDoNotUseMetadata: {
+    rid: string;
+    namespaceStrippedProperties?: Partial<{ [NamespaceStrippedProperty in keyof MwaltherPersonV2.Props]: string }>;
+  };
+} as MwaltherPersonV2;
