@@ -76,6 +76,11 @@ export function modernToLegacyWhereClause<
   const parts = Object.entries(whereClause).map(([key, value]) => ({
     [key]: value,
   })) as WhereClause<T, RDPs>[];
+  invariant(
+    parts.length > 0,
+    "Cannot convert an empty where clause to a filter. "
+      + "Skip the .where() call entirely when no conditions are provided.",
+  );
   if (parts.length === 1) {
     return modernToLegacyWhereClauseInner(
       whereClause,
