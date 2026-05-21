@@ -50,6 +50,7 @@ export interface DataValueWireToClient {
   objectType: string;
   geohash: GeoJSON.Point;
   geoshape: GeoJSON.GeoJSON;
+  scenarioReference: never;
 }
 
 /**
