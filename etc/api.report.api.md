@@ -1727,7 +1727,7 @@ export namespace QueryResult {
     	// (undocumented)
     export type ObjectType<T extends ObjectOrInterfaceDefinition> = OsdkBase<T>;
     	// (undocumented)
-    export type PrimitiveType<T extends keyof DataValueWireToClient> = DataValueWireToClient[T];
+    export type PrimitiveType<T extends keyof DataValueClientToWire> = T extends keyof DataValueWireToClient ? DataValueWireToClient[T] : never;
     	// Warning: (ae-forgotten-export) The symbol "AggKeyWireToClient" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
