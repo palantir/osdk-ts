@@ -16,16 +16,20 @@
 
 import { describe, expect, it } from "vitest";
 import {
+  DEFAULT_RELATIVE_DATE_PERIODS,
   formatDateForDisplay,
   formatDateForInput,
   formatDatetimeForInput,
   formatTime,
+  getRelativeDatePeriodLabel,
+  getRelativeDateRange,
   getTimeValue,
   isDateInRange,
   parseDateFromInput,
   parseDateFromISO,
   parseDatetimeFromInput,
   parseTimeString,
+  type RelativeDatePeriod,
 } from "../dateUtils.js";
 
 describe("formatDateForInput", () => {
@@ -169,5 +173,55 @@ describe("getTimeValue", () => {
 
   it("returns 00:00 for null", () => {
     expect(getTimeValue(null)).toBe("00:00");
+  });
+});
+
+describe("getRelativeDateRange", () => {
+  it("subtracts 7 days for past-week (wiring through to date-fns)", () => {
+    const now = new Date(2024, 5, 15, 12, 0, 0, 0);
+    const { min, max } = getRelativeDateRange("past-week", now);
+    expect(max.getTime()).toBe(now.getTime());
+    expect(max.getTime() - min.getTime()).toBe(7 * 24 * 60 * 60 * 1000);
+  });
+
+  it("defaults `now` to the current Date when omitted", () => {
+    const before = Date.now();
+    const { max } = getRelativeDateRange("past-hour");
+    const after = Date.now();
+    expect(max.getTime()).toBeGreaterThanOrEqual(before);
+    expect(max.getTime()).toBeLessThanOrEqual(after);
+  });
+});
+
+describe("getRelativeDatePeriodLabel", () => {
+  it("returns the English label for each period", () => {
+    const expectations: Record<RelativeDatePeriod, string> = {
+      "past-hour": "Past hour",
+      "past-day": "Past day",
+      "past-week": "Past week",
+      "past-month": "Past month",
+      "past-3-months": "Past 3 months",
+      "past-6-months": "Past 6 months",
+      "past-year": "Past year",
+      "past-2-years": "Past 2 years",
+    };
+    for (const period of Object.keys(expectations) as RelativeDatePeriod[]) {
+      expect(getRelativeDatePeriodLabel(period)).toBe(expectations[period]);
+    }
+  });
+});
+
+describe("DEFAULT_RELATIVE_DATE_PERIODS", () => {
+  it("lists the eight periods in the documented order", () => {
+    expect(DEFAULT_RELATIVE_DATE_PERIODS).toEqual([
+      "past-hour",
+      "past-day",
+      "past-week",
+      "past-month",
+      "past-3-months",
+      "past-6-months",
+      "past-year",
+      "past-2-years",
+    ]);
   });
 });

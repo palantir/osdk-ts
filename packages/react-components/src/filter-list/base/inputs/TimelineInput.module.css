@@ -20,6 +20,10 @@
   gap: var(--osdk-filter-range-gap);
 }
 
+.shortcuts {
+  align-self: stretch;
+}
+
 .labels {
   display: flex;
   align-items: center;

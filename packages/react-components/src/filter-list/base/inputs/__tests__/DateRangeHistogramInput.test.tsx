@@ -167,6 +167,38 @@ describe("DateRangeHistogramInput", () => {
     });
   });
 
+  describe("dateShortcuts rail", () => {
+    it("renders no shortcuts when dateShortcuts is omitted", () => {
+      renderInput();
+      expect(
+        screen.queryByRole("group", { name: "Relative date shortcuts" }),
+      ).toBeNull();
+    });
+
+    it("renders the configured periods as a shortcut rail", () => {
+      renderInput({ dateShortcuts: ["past-day", "past-week"] });
+      const rail = screen.getByRole("group", {
+        name: "Relative date shortcuts",
+      });
+      const labels = Array.from(rail.querySelectorAll("button")).map((b) =>
+        b.textContent
+      );
+      expect(labels).toEqual(["Past day", "Past week"]);
+    });
+
+    it("emits an absolute (min, max) range when a shortcut is clicked", () => {
+      const onChange = vi.fn();
+      renderInput({ dateShortcuts: ["past-hour"], onChange });
+      fireEvent.click(screen.getByRole("button", { name: "Past hour" }));
+      expect(onChange).toHaveBeenCalledTimes(1);
+      const [min, max] = onChange.mock.calls[0];
+      if (!(min instanceof Date) || !(max instanceof Date)) {
+        throw new Error("expected both args to be Dates");
+      }
+      expect(max.getTime() - min.getTime()).toBe(60 * 60 * 1000);
+    });
+  });
+
   describe("formatDate plumbing", () => {
     it("uses formatDate for the histogram bar tooltip when provided", () => {
       const { container } = renderInput({ formatDate: slashFormat });

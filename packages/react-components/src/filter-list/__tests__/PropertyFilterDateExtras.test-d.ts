@@ -55,3 +55,26 @@ const numberEmpty: PropertyFilterDateExtras<"integer"> = {};
 void numberEmpty;
 const stringEmpty: PropertyFilterDateExtras<"string"> = {};
 void stringEmpty;
+
+// For datetime / timestamp, `dateShortcuts` is allowed as a boolean or array.
+const dateShortcutsBool: PropertyFilterDateExtras<"timestamp"> = {
+  dateShortcuts: true,
+};
+void dateShortcutsBool;
+const dateShortcutsArr: PropertyFilterDateExtras<"datetime"> = {
+  dateShortcuts: ["past-day", "past-month"],
+};
+void dateShortcutsArr;
+
+// For non-date property types, `dateShortcuts` is `never` — setting it must
+// be a TS error.
+const numberShortcuts: PropertyFilterDateExtras<"integer"> = {
+  // @ts-expect-error dateShortcuts is `never` for number-typed properties
+  dateShortcuts: true,
+};
+void numberShortcuts;
+const stringShortcuts: PropertyFilterDateExtras<"string"> = {
+  // @ts-expect-error dateShortcuts is `never` for string-typed properties
+  dateShortcuts: ["past-day"],
+};
+void stringShortcuts;
