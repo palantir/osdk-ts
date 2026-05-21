@@ -22,6 +22,7 @@ import type {
 } from "@osdk/api";
 import type {
   BaseFilterState,
+  FilterDefinitionControls,
   FilterState,
   FilterStateByComponentType,
   PropertyTypeFromKey,
@@ -54,7 +55,7 @@ export interface LinkedPropertyFilterState<S extends FilterState = FilterState>
 export interface HasLinkFilterDefinition<
   Q extends ObjectTypeDefinition,
   L extends LinkNames<Q> = LinkNames<Q>,
-> {
+> extends FilterDefinitionControls {
   type: "HAS_LINK";
   /**
    * Optional unique identifier for stable keying across filter reorders.
@@ -83,7 +84,7 @@ export interface LinkedPropertyFilterDefinition<
   LinkedC extends ValidComponentsForPropertyType<
     PropertyTypeFromKey<LinkedQ, LinkedK>
   > = ValidComponentsForPropertyType<PropertyTypeFromKey<LinkedQ, LinkedK>>,
-> {
+> extends FilterDefinitionControls {
   type: "LINKED_PROPERTY";
   /**
    * Optional unique identifier for stable keying across filter reorders.

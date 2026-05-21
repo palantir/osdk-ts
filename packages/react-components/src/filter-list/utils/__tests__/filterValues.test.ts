@@ -15,8 +15,15 @@
  */
 
 import { describe, expect, it } from "vitest";
+import type { FilterState } from "../../FilterListItemApi.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
-import { dedupeEmptyAggregationRows, isEmptyValue } from "../filterValues.js";
+import {
+  clearFilterState,
+  dedupeEmptyAggregationRows,
+  getEffectiveFilterState,
+  getSelectedValueCount,
+  isEmptyValue,
+} from "../filterValues.js";
 
 describe("filterValues", () => {
   describe("isEmptyValue", () => {
@@ -94,6 +101,206 @@ describe("filterValues", () => {
       expect(dedupeEmptyAggregationRows(input)).toEqual([
         { value: "alpha", count: 5 },
       ]);
+    });
+  });
+
+  describe("getEffectiveFilterState", () => {
+    it("returns undefined when given undefined", () => {
+      expect(getEffectiveFilterState(undefined)).toBeUndefined();
+    });
+
+    it("unwraps linkedProperty wrappers", () => {
+      const inner: FilterState = {
+        type: "SELECT",
+        selectedValues: ["x"],
+        isExcluding: true,
+      };
+      const outer: FilterState = {
+        type: "linkedProperty",
+        linkedFilterState: inner,
+      };
+      expect(getEffectiveFilterState(outer)).toBe(inner);
+    });
+
+    it("returns non-linked states unchanged", () => {
+      const state: FilterState = {
+        type: "CONTAINS_TEXT",
+        value: "foo",
+      };
+      expect(getEffectiveFilterState(state)).toBe(state);
+    });
+  });
+
+  describe("getSelectedValueCount", () => {
+    it("returns 0 for undefined", () => {
+      expect(getSelectedValueCount(undefined)).toBe(0);
+    });
+
+    it("counts SELECT selectedValues", () => {
+      expect(
+        getSelectedValueCount({
+          type: "SELECT",
+          selectedValues: ["a", "b", "c"],
+        }),
+      ).toBe(3);
+    });
+
+    it("counts EXACT_MATCH values", () => {
+      expect(
+        getSelectedValueCount({
+          type: "EXACT_MATCH",
+          values: ["a"],
+        }),
+      ).toBe(1);
+    });
+
+    it("unwraps linkedProperty before counting", () => {
+      expect(
+        getSelectedValueCount({
+          type: "linkedProperty",
+          linkedFilterState: {
+            type: "SELECT",
+            selectedValues: ["a", "b"],
+          },
+        }),
+      ).toBe(2);
+    });
+
+    it("returns 0 for non-selection states", () => {
+      expect(
+        getSelectedValueCount({ type: "TOGGLE", enabled: true }),
+      ).toBe(0);
+    });
+  });
+
+  describe("clearFilterState", () => {
+    it("returns undefined when given undefined", () => {
+      expect(clearFilterState(undefined)).toBeUndefined();
+    });
+
+    it("preserves isExcluding when clearing SELECT", () => {
+      expect(
+        clearFilterState({
+          type: "SELECT",
+          selectedValues: ["a", "b"],
+          isExcluding: true,
+        }),
+      ).toEqual({
+        type: "SELECT",
+        selectedValues: [],
+        isExcluding: true,
+      });
+    });
+
+    it("clears EXACT_MATCH values while preserving isExcluding", () => {
+      expect(
+        clearFilterState({
+          type: "EXACT_MATCH",
+          values: ["x"],
+          isExcluding: false,
+        }),
+      ).toEqual({
+        type: "EXACT_MATCH",
+        values: [],
+        isExcluding: false,
+      });
+    });
+
+    it("clears NUMBER_RANGE bounds", () => {
+      expect(
+        clearFilterState({
+          type: "NUMBER_RANGE",
+          minValue: 1,
+          maxValue: 10,
+          includeNull: true,
+        }),
+      ).toEqual({
+        type: "NUMBER_RANGE",
+        minValue: undefined,
+        maxValue: undefined,
+        includeNull: false,
+      });
+    });
+
+    it("clears DATE_RANGE bounds", () => {
+      const min = new Date("2020-01-01");
+      const max = new Date("2020-12-31");
+      expect(
+        clearFilterState({
+          type: "DATE_RANGE",
+          minValue: min,
+          maxValue: max,
+        }),
+      ).toEqual({
+        type: "DATE_RANGE",
+        minValue: undefined,
+        maxValue: undefined,
+        includeNull: false,
+      });
+    });
+
+    it("clears TIMELINE preserving isExcluding", () => {
+      expect(
+        clearFilterState({
+          type: "TIMELINE",
+          startDate: new Date("2020-01-01"),
+          endDate: new Date("2020-12-31"),
+          isExcluding: true,
+        }),
+      ).toEqual({
+        type: "TIMELINE",
+        startDate: undefined,
+        endDate: undefined,
+        isExcluding: true,
+      });
+    });
+
+    it("recursively clears linkedProperty inner state", () => {
+      const cleared = clearFilterState({
+        type: "linkedProperty",
+        linkedFilterState: {
+          type: "SELECT",
+          selectedValues: ["a", "b"],
+          isExcluding: true,
+        },
+      });
+      expect(cleared).toEqual({
+        type: "linkedProperty",
+        linkedFilterState: {
+          type: "SELECT",
+          selectedValues: [],
+          isExcluding: true,
+        },
+      });
+    });
+
+    it("clears keywordSearch term but keeps operator", () => {
+      expect(
+        clearFilterState({
+          type: "keywordSearch",
+          searchTerm: "foo",
+          operator: "OR",
+        }),
+      ).toEqual({
+        type: "keywordSearch",
+        searchTerm: "",
+        operator: "OR",
+      });
+    });
+
+    it("returns undefined for custom state (no generic cleared form)", () => {
+      expect(
+        clearFilterState({ type: "custom", customState: { foo: "bar" } }),
+      ).toBeUndefined();
+    });
+
+    it("returns undefined for linkedProperty wrapping custom inner", () => {
+      expect(
+        clearFilterState({
+          type: "linkedProperty",
+          linkedFilterState: { type: "custom", customState: {} },
+        }),
+      ).toBeUndefined();
     });
   });
 });

@@ -39,7 +39,10 @@ import {
 } from "@dnd-kit/sortable";
 import classnames from "classnames";
 import React, { useCallback, useMemo, useState } from "react";
-import type { FilterState } from "../FilterListItemApi.js";
+import type {
+  FilterDefinitionControls,
+  FilterState,
+} from "../FilterListItemApi.js";
 import type { RenderFilterInput } from "./BaseFilterListApi.js";
 import styles from "./FilterListContent.module.css";
 import { FilterListItem } from "./FilterListItem.js";
@@ -62,7 +65,7 @@ const DRAG_OVERLAY_HANDLE_ATTRIBUTES: DraggableAttributes = {
   "aria-describedby": "",
 };
 
-interface FilterListContentProps<D> {
+interface FilterListContentProps<D extends FilterDefinitionControls> {
   filterDefinitions?: Array<D>;
   filterStates: Map<string, FilterState>;
   onFilterStateChanged: (
@@ -79,7 +82,7 @@ interface FilterListContentProps<D> {
   style?: React.CSSProperties;
 }
 
-export function FilterListContent<D>({
+export function FilterListContent<D extends FilterDefinitionControls>({
   filterDefinitions,
   filterStates,
   onFilterStateChanged,
@@ -239,6 +242,8 @@ export function FilterListContent<D>({
                   onFilterStateChanged={onFilterStateChanged}
                   onFilterRemoved={onFilterRemoved}
                   renderInput={renderInput}
+                  searchField={definition.searchField}
+                  controls={definition.controls}
                 />
               );
             })}
@@ -257,6 +262,8 @@ export function FilterListContent<D>({
                 onFilterStateChanged={onFilterStateChanged}
                 onFilterRemoved={onFilterRemoved}
                 renderInput={renderInput}
+                searchField={activeDefinition.searchField}
+                controls={activeDefinition.controls}
                 dragHandleAttributes={DRAG_OVERLAY_HANDLE_ATTRIBUTES}
               />
             )}
@@ -285,6 +292,8 @@ export function FilterListContent<D>({
             onFilterStateChanged={onFilterStateChanged}
             onFilterRemoved={onFilterRemoved}
             renderInput={renderInput}
+            searchField={definition.searchField}
+            controls={definition.controls}
           />
         );
       })}
