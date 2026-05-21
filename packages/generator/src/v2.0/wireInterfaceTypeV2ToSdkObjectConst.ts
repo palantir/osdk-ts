@@ -214,7 +214,6 @@ ${
     currentFilePath,
     true,
   );
-  definition;
   return `${imports}
     ${v2 ? getV2Types(forInternalUse) : ""}
 
