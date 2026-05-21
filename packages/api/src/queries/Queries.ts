@@ -111,7 +111,7 @@ export namespace QueryResult {
   /**
    * Helper type to convert action definition parameter primitives to typescript types
    */
-  export type PrimitiveType<T extends keyof DataValueClientToWire> =
+  export type PrimitiveType<T extends keyof DataValueWireToClient> =
     DataValueWireToClient[T];
 
   /**
