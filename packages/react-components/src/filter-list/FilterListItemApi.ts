@@ -92,13 +92,13 @@ export interface FilterControlsConfig {
   /**
    * Remove filter affordance.
    *
-   * - `true` / `"menu"` — rendered as a menu item when `onFilterRemoved` is
-   *   provided (default).
+   * - `true` — rendered as a menu item when `onFilterRemoved` is provided
+   *   (default).
    * - `false` — hidden.
    *
    * @default true
    */
-  remove?: boolean | "menu";
+  remove?: boolean;
 
   /**
    * Default placement for controls that accept a placement but do not specify

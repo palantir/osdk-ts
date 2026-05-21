@@ -21,7 +21,6 @@ import {
   clearFilterState,
   dedupeEmptyAggregationRows,
   getEffectiveFilterState,
-  getSelectedValueCount,
   isEmptyValue,
 } from "../filterValues.js";
 
@@ -131,48 +130,6 @@ describe("filterValues", () => {
     });
   });
 
-  describe("getSelectedValueCount", () => {
-    it("returns 0 for undefined", () => {
-      expect(getSelectedValueCount(undefined)).toBe(0);
-    });
-
-    it("counts SELECT selectedValues", () => {
-      expect(
-        getSelectedValueCount({
-          type: "SELECT",
-          selectedValues: ["a", "b", "c"],
-        }),
-      ).toBe(3);
-    });
-
-    it("counts EXACT_MATCH values", () => {
-      expect(
-        getSelectedValueCount({
-          type: "EXACT_MATCH",
-          values: ["a"],
-        }),
-      ).toBe(1);
-    });
-
-    it("unwraps linkedProperty before counting", () => {
-      expect(
-        getSelectedValueCount({
-          type: "linkedProperty",
-          linkedFilterState: {
-            type: "SELECT",
-            selectedValues: ["a", "b"],
-          },
-        }),
-      ).toBe(2);
-    });
-
-    it("returns 0 for non-selection states", () => {
-      expect(
-        getSelectedValueCount({ type: "TOGGLE", enabled: true }),
-      ).toBe(0);
-    });
-  });
-
   describe("clearFilterState", () => {
     it("returns undefined when given undefined", () => {
       expect(clearFilterState(undefined)).toBeUndefined();
@@ -204,6 +161,32 @@ describe("filterValues", () => {
         values: [],
         isExcluding: false,
       });
+    });
+
+    it("clears CONTAINS_TEXT value while preserving isExcluding", () => {
+      expect(
+        clearFilterState({
+          type: "CONTAINS_TEXT",
+          value: "foo",
+          isExcluding: true,
+        }),
+      ).toEqual({
+        type: "CONTAINS_TEXT",
+        value: undefined,
+        isExcluding: true,
+      });
+    });
+
+    it("clears TOGGLE to disabled", () => {
+      expect(
+        clearFilterState({ type: "TOGGLE", enabled: true }),
+      ).toEqual({ type: "TOGGLE", enabled: false });
+    });
+
+    it("clears hasLink to false", () => {
+      expect(
+        clearFilterState({ type: "hasLink", hasLink: true }),
+      ).toEqual({ type: "hasLink", hasLink: false });
     });
 
     it("clears NUMBER_RANGE bounds", () => {

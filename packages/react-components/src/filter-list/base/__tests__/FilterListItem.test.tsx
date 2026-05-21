@@ -17,11 +17,16 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { FilterState } from "../../FilterListItemApi.js";
+import type {
+  FilterControlsConfig,
+  FilterState,
+} from "../../FilterListItemApi.js";
 import type { RenderFilterInput } from "../BaseFilterListApi.js";
 import { FilterListItem } from "../FilterListItem.js";
 
-const renderInputStub: RenderFilterInput<unknown> = ({ filterState }) => (
+interface TestDef {}
+
+const renderInputStub: RenderFilterInput<TestDef> = ({ filterState }) => (
   <div data-testid="filter-input">{JSON.stringify(filterState ?? null)}</div>
 );
 
@@ -30,7 +35,7 @@ interface RenderOptions {
   onFilterStateChanged?: (filterKey: string, state: FilterState) => void;
   onFilterRemoved?: (filterKey: string) => void;
   searchField?: boolean;
-  controls?: Parameters<typeof FilterListItem>[0]["controls"];
+  controls?: FilterControlsConfig;
 }
 
 function renderItem({

@@ -134,31 +134,11 @@ export function filterValuesBySearch<T>(
   getValue: (item: T) => string,
 ): T[] {
   const trimmed = searchValue.trim();
-  if (!trimmed) return values;
+  if (!trimmed) {
+    return values;
+  }
   const lowerSearch = trimmed.toLowerCase();
   return values.filter((v) => getValue(v).toLowerCase().includes(lowerSearch));
-}
-
-/**
- * Returns the number of discrete values currently selected for filter states
- * that support multi-value selection (SELECT, EXACT_MATCH), unwrapping
- * `linkedProperty` once so the count reflects the inner filter. Returns 0 for
- * everything else.
- */
-export function getSelectedValueCount(
-  state: FilterState | undefined,
-): number {
-  const effective = getEffectiveFilterState(state);
-  if (!effective) {
-    return 0;
-  }
-  if (effective.type === "EXACT_MATCH") {
-    return effective.values.length;
-  }
-  if (effective.type === "SELECT") {
-    return effective.selectedValues.length;
-  }
-  return 0;
 }
 
 /**
@@ -187,7 +167,11 @@ export function clearFilterState(
         isExcluding: state.isExcluding,
       };
     case "CONTAINS_TEXT":
-      return { type: "CONTAINS_TEXT", value: undefined };
+      return {
+        type: "CONTAINS_TEXT",
+        value: undefined,
+        isExcluding: state.isExcluding,
+      };
     case "NUMBER_RANGE":
       return {
         type: "NUMBER_RANGE",
@@ -237,7 +221,9 @@ export function clearFilterState(
 
 /** Check if a filter state has an active (non-empty) value. */
 export function filterHasActiveState(state: FilterState | undefined): boolean {
-  if (!state) return false;
+  if (!state) {
+    return false;
+  }
 
   switch (state.type) {
     case "SELECT":
