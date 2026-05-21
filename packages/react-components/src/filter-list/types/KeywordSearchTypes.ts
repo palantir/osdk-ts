@@ -15,7 +15,10 @@
  */
 
 import type { ObjectTypeDefinition, PropertyKeys } from "@osdk/api";
-import type { BaseFilterState } from "../FilterListItemApi.js";
+import type {
+  BaseFilterState,
+  FilterActionsConfig,
+} from "../FilterListItemApi.js";
 
 /**
  * Keys of string properties on an object type
@@ -73,4 +76,24 @@ export interface KeywordSearchFilterDefinition<
    * @default true
    */
   isVisible?: boolean;
+
+  /**
+   * When `false`, the header monocle (search-values icon) is hidden. Keyword
+   * search filters do not render a header monocle by default, so this flag
+   * has no visible effect unless future filter behavior changes.
+   *
+   * Shorthand for `actions: { search: false }`. If both are set,
+   * `actions.search` wins.
+   *
+   * @default true
+   */
+  searchField?: boolean;
+
+  /**
+   * Fine-grained control over which action controls render in the filter
+   * header and overflow menu, and where they appear.
+   *
+   * See {@link FilterActionsConfig} for the supported fields and defaults.
+   */
+  actions?: FilterActionsConfig;
 }

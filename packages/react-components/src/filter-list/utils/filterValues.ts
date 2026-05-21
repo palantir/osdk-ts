@@ -17,6 +17,20 @@
 import type { FilterState } from "../FilterListItemApi.js";
 import type { PropertyAggregationValue } from "../types/AggregationTypes.js";
 
+/**
+ * Unwraps a `linkedProperty` wrapper one level so callers can reason about the
+ * underlying filter state directly (e.g. for header controls that should
+ * follow the inner filter's capabilities).
+ */
+export function getEffectiveFilterState(
+  state: FilterState | undefined,
+): FilterState | undefined {
+  if (state?.type === "linkedProperty") {
+    return state.linkedFilterState;
+  }
+  return state;
+}
+
 /** Returns true for filter state types that support in-filter search. */
 export function supportsSearch(state: FilterState | undefined): boolean {
   if (!state) {
@@ -123,6 +137,102 @@ export function filterValuesBySearch<T>(
   if (!trimmed) return values;
   const lowerSearch = trimmed.toLowerCase();
   return values.filter((v) => getValue(v).toLowerCase().includes(lowerSearch));
+}
+
+/**
+ * Returns the number of discrete values currently selected for filter states
+ * that support multi-value selection (SELECT, EXACT_MATCH), unwrapping
+ * `linkedProperty` once so the count reflects the inner filter. Returns 0 for
+ * everything else.
+ */
+export function getSelectedValueCount(
+  state: FilterState | undefined,
+): number {
+  const effective = getEffectiveFilterState(state);
+  if (!effective) {
+    return 0;
+  }
+  if (effective.type === "EXACT_MATCH") {
+    return effective.values.length;
+  }
+  if (effective.type === "SELECT") {
+    return effective.selectedValues.length;
+  }
+  return 0;
+}
+
+/**
+ * Returns a "cleared" version of the given filter state, preserving the
+ * discriminator and `isExcluding` flag so the UI doesn't snap between filter
+ * modes when a user clicks "Clear all selections". Returns `undefined` if no
+ * cleared form is meaningful for the state shape.
+ */
+export function clearFilterState(
+  state: FilterState | undefined,
+): FilterState | undefined {
+  if (!state) {
+    return undefined;
+  }
+  switch (state.type) {
+    case "SELECT":
+      return {
+        type: "SELECT",
+        selectedValues: [],
+        isExcluding: state.isExcluding,
+      };
+    case "EXACT_MATCH":
+      return {
+        type: "EXACT_MATCH",
+        values: [],
+        isExcluding: state.isExcluding,
+      };
+    case "CONTAINS_TEXT":
+      return { type: "CONTAINS_TEXT", value: undefined };
+    case "NUMBER_RANGE":
+      return {
+        type: "NUMBER_RANGE",
+        minValue: undefined,
+        maxValue: undefined,
+        includeNull: false,
+      };
+    case "DATE_RANGE":
+      return {
+        type: "DATE_RANGE",
+        minValue: undefined,
+        maxValue: undefined,
+        includeNull: false,
+      };
+    case "TIMELINE":
+      return {
+        type: "TIMELINE",
+        startDate: undefined,
+        endDate: undefined,
+        isExcluding: state.isExcluding,
+      };
+    case "TOGGLE":
+      return { type: "TOGGLE", enabled: false };
+    case "hasLink":
+      return { type: "hasLink", hasLink: false };
+    case "keywordSearch":
+      return {
+        type: "keywordSearch",
+        searchTerm: "",
+        operator: state.operator,
+      };
+    case "linkedProperty": {
+      const innerCleared = clearFilterState(state.linkedFilterState);
+      if (!innerCleared) {
+        return undefined;
+      }
+      return { type: "linkedProperty", linkedFilterState: innerCleared };
+    }
+    case "custom":
+      return undefined;
+    default: {
+      const _exhaustive: never = state;
+      return undefined;
+    }
+  }
 }
 
 /** Check if a filter state has an active (non-empty) value. */

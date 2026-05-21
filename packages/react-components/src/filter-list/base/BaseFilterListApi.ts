@@ -15,7 +15,7 @@
  */
 
 import type React from "react";
-import type { FilterState } from "../FilterListItemApi.js";
+import type { FilterActionsConfig, FilterState } from "../FilterListItemApi.js";
 
 export type RenderFilterInput<D> = (props: {
   definition: D;
@@ -26,6 +26,18 @@ export type RenderFilterInput<D> = (props: {
   excludeRowOpen?: boolean;
 }) => React.ReactNode;
 
+/**
+ * Resolved per-item header action configuration derived from a filter
+ * definition.
+ *
+ * Returning `undefined` for either field is equivalent to leaving the
+ * corresponding setting at its default.
+ */
+export interface FilterItemActions {
+  searchField?: boolean;
+  actions?: FilterActionsConfig;
+}
+
 export interface BaseFilterListProps<D> {
   filterDefinitions?: Array<D>;
   filterStates: Map<string, FilterState>;
@@ -33,6 +45,13 @@ export interface BaseFilterListProps<D> {
   renderInput: RenderFilterInput<D>;
   getFilterKey: (definition: D) => string;
   getFilterLabel: (definition: D) => string;
+  /**
+   * Optional projection from a definition to its header action configuration.
+   * When provided, the returned `searchField` and `actions` are forwarded to
+   * the per-item header so the overflow menu and search affordance match the
+   * definition's settings.
+   */
+  getFilterActions?: (definition: D) => FilterItemActions;
   activeFilterCount: number;
   onReset?: () => void;
   onFilterAdded?: () => void;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,40 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-.excludeDropdownContainer {
-  display: flex;
-  align-items: center;
-}
-
-.trigger {
-  display: inline-flex;
-  align-items: center;
-  gap: calc(var(--osdk-surface-spacing) * 0.5);
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  font-family: var(--osdk-filter-item-exclude-dropdown-font-family);
-  font-size: var(--osdk-filter-item-exclude-dropdown-font-size);
-  color: var(--osdk-filter-item-exclude-dropdown-trigger-color);
-  padding: calc(var(--osdk-surface-spacing) * 1)
-    calc(var(--osdk-surface-spacing) * 1);
-  border-radius: var(--osdk-filter-item-exclude-dropdown-trigger-border-radius);
-
-  &:hover {
-    background: var(--osdk-filter-item-header-action-bg-hover);
-  }
-
-  &:focus-visible {
-    outline: var(--osdk-filter-input-focus-outline-width) solid
-      var(--osdk-filter-input-focus-outline-color);
-    outline-offset: var(--osdk-filter-input-focus-outline-offset);
-  }
-}
-
-.triggerLabel {
-  white-space: nowrap;
-}
 
 .positioner {
   z-index: var(--osdk-surface-z-index-3);
@@ -79,6 +45,7 @@
   background: transparent;
   width: 100%;
   text-align: left;
+  white-space: nowrap;
 
   &:hover,
   &[data-highlighted] {
@@ -92,9 +59,21 @@
   }
 }
 
-.menuItemCheck {
+.menuItemAction {
+  color: var(--osdk-filter-item-menu-item-color);
+}
+
+.menuItemIcon {
   display: flex;
   align-items: center;
+  justify-content: center;
   width: var(--osdk-filter-item-menu-check-size);
   flex-shrink: 0;
+  color: var(--osdk-filter-item-menu-item-color);
+}
+
+.separator {
+  height: var(--osdk-filter-input-focus-outline-width);
+  background: var(--osdk-filter-item-menu-separator-color);
+  margin: calc(var(--osdk-surface-spacing) * 0.5) 0;
 }
