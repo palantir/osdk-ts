@@ -252,9 +252,11 @@ describe("generatePerQueryDataFiles", () => {
                 parameters: {
                   foo: {
                     dataType: { type: "string" },
+                    required: true,
                   },
                   listField: {
                     dataType: { type: "array", "subType": { "type": "float" } },
+                    required: true,
                   },
                   nestedListField: {
                     dataType: {
@@ -264,6 +266,7 @@ describe("generatePerQueryDataFiles", () => {
                         "subType": { "type": "float" },
                       },
                     },
+                    required: true,
                   },
                   paramStruct: {
                     dataType: {
@@ -291,6 +294,7 @@ describe("generatePerQueryDataFiles", () => {
                         },
                       ],
                     },
+                    required: true,
                   },
                 },
                 output: {
@@ -560,6 +564,7 @@ describe("generatePerQueryDataFiles", () => {
                       type: "typeReference",
                       typeId: "tree-node-type-id",
                     },
+                    required: true,
                   },
                 },
                 output: {
@@ -715,6 +720,7 @@ describe("generatePerQueryDataFiles", () => {
                       type: "typeReference",
                       typeId: "binary-tree-id",
                     },
+                    required: true,
                   },
                   linkedList: {
                     description: "A linked list parameter",
@@ -722,6 +728,7 @@ describe("generatePerQueryDataFiles", () => {
                       type: "typeReference",
                       typeId: "linked-list-id",
                     },
+                    required: true,
                   },
                 },
                 output: {
