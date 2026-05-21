@@ -170,6 +170,7 @@ describe("OsdkThemeProvider", () => {
     expect(screen.getByTestId("resolved").textContent).toBe("dark");
 
     act(() => {
+      // Calls setTheme
       screen.getByTestId("set-light").click();
     });
 
@@ -192,6 +193,7 @@ describe("OsdkThemeProvider", () => {
     expect(screen.getByTestId("resolved").textContent).toBe("light");
 
     act(() => {
+      // Calls setTheme
       screen.getByTestId("set-dark").click();
     });
 
@@ -220,6 +222,7 @@ describe("OsdkThemeProvider", () => {
     );
 
     act(() => {
+      // Calls setTheme
       screen.getByTestId("set-dark").click();
     });
 
