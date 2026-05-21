@@ -15,6 +15,7 @@
  */
 
 import { BarInterface } from "@osdk/client.test.ontology";
+import type { LoadObjectSetV2MultipleObjectTypesResponse } from "@osdk/foundry.ontologies";
 import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Client } from "../Client.js";
@@ -53,7 +54,8 @@ describe("withScenario", () => {
 
   it("forwards scenarioRid as a query param on fetchPage", async () => {
     const scenario = withScenario(client, "ri.actions..scenario.abc");
-    mockFetchResponse(fetchFunction, { data: [] });
+    const mock: LoadObjectSetV2MultipleObjectTypesResponse = { data: [] };
+    mockFetchResponse(fetchFunction, mock);
 
     await scenario(BarInterface).fetchPage();
 

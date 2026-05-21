@@ -15,6 +15,10 @@
  */
 
 import { Employee } from "@osdk/client.test.ontology";
+import type {
+  ListScenarioEditedEntityTypesResponse,
+  ListScenarioEditedObjectsResponse,
+} from "@osdk/foundry.ontologies";
 import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Client } from "../Client.js";
@@ -41,12 +45,13 @@ describe("ScenarioClient methods", () => {
   describe("getEditedEntityTypes", () => {
     it("calls the editedEntityTypes endpoint and returns the response shape", async () => {
       const scenario = withScenario(client, "ri.actions..scenario.abc");
-      mockFetchResponse(fetchFunction, {
+      const mock: ListScenarioEditedEntityTypesResponse = {
         objectTypes: ["Employee", "Office"],
         linkTypes: [
           { objectTypeApiName: "Employee", linkTypes: ["manages", "lead"] },
         ],
-      });
+      };
+      mockFetchResponse(fetchFunction, mock);
 
       const result = await scenario.getEditedEntityTypes();
 
@@ -68,13 +73,14 @@ describe("ScenarioClient methods", () => {
   describe("getEditedEntities (page form)", () => {
     it("calls the listScenarioEditedObjects endpoint with pageSize/pageToken", async () => {
       const scenario = withScenario(client, "ri.actions..scenario.abc");
-      mockFetchResponse(fetchFunction, {
+      const mock: ListScenarioEditedObjectsResponse = {
         data: [
           { __apiName: "Employee", __primaryKey: 50030 },
           { __apiName: "Employee", __primaryKey: 50031 },
         ],
         nextPageToken: "tok-2",
-      });
+      };
+      mockFetchResponse(fetchFunction, mock);
 
       const result = await scenario.getEditedEntities(Employee, {
         pageSize: 100,
@@ -103,20 +109,22 @@ describe("ScenarioClient methods", () => {
     it("paginates and dedupes by $primaryKey across pages", async () => {
       const scenario = withScenario(client, "ri.actions..scenario.abc");
 
-      mockFetchResponse(fetchFunction, {
+      const page1: ListScenarioEditedObjectsResponse = {
         data: [
           { __apiName: "Employee", __primaryKey: 1 },
           { __apiName: "Employee", __primaryKey: 2 },
           { __apiName: "Employee", __primaryKey: 2 }, // intra-page dupe
         ],
         nextPageToken: "tok-2",
-      });
-      mockFetchResponse(fetchFunction, {
+      };
+      const page2: ListScenarioEditedObjectsResponse = {
         data: [
           { __apiName: "Employee", __primaryKey: 2 }, // cross-page dupe
           { __apiName: "Employee", __primaryKey: 3 },
         ],
-      });
+      };
+      mockFetchResponse(fetchFunction, page1);
+      mockFetchResponse(fetchFunction, page2);
 
       const keys: unknown[] = [];
       for await (const obj of scenario.editedEntitiesAsyncIter(Employee)) {
@@ -134,9 +142,10 @@ describe("ScenarioClient methods", () => {
 
     it("terminates when nextPageToken is absent on the first response", async () => {
       const scenario = withScenario(client, "ri.actions..scenario.abc");
-      mockFetchResponse(fetchFunction, {
+      const mock: ListScenarioEditedObjectsResponse = {
         data: [{ __apiName: "Employee", __primaryKey: 42 }],
-      });
+      };
+      mockFetchResponse(fetchFunction, mock);
 
       const keys: unknown[] = [];
       for await (const obj of scenario.editedEntitiesAsyncIter(Employee)) {

@@ -15,6 +15,10 @@
  */
 
 import { BarInterface } from "@osdk/client.test.ontology";
+import type {
+  CreateOntologyScenarioResponse,
+  LoadObjectSetV2MultipleObjectTypesResponse,
+} from "@osdk/foundry.ontologies";
 import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Client } from "../Client.js";
@@ -41,7 +45,10 @@ describe("createScenario", () => {
 
   it("calls the create endpoint and threads the returned rid", async () => {
     const newScenarioRid = "ri.actions..scenario.new";
-    mockFetchResponse(fetchFunction, { scenarioRid: newScenarioRid });
+    const createResponse: CreateOntologyScenarioResponse = {
+      scenarioRid: newScenarioRid,
+    };
+    mockFetchResponse(fetchFunction, createResponse);
 
     const scenario = await createScenario(client);
 
@@ -57,7 +64,10 @@ describe("createScenario", () => {
     });
 
     // Subsequent requests carry the new rid
-    mockFetchResponse(fetchFunction, { data: [] });
+    const loadResponse: LoadObjectSetV2MultipleObjectTypesResponse = {
+      data: [],
+    };
+    mockFetchResponse(fetchFunction, loadResponse);
     await scenario(BarInterface).fetchPage();
     const url = new URL(
       fetchFunction.mock.calls[1][0] as string,
