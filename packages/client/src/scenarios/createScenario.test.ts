@@ -76,17 +76,11 @@ describe("createScenario", () => {
       {},
       fetchFunction,
     );
-    await expect(
-      // @ts-expect-error — runtime check too
-      createScenario(txClient),
-    ).rejects.toThrow(/transaction/);
+    await expect(createScenario(txClient)).rejects.toThrow(/transaction/);
   });
 
-  it("rejects already-branded ScenarioClient inputs at compile time", async () => {
+  it("rejects a client already scoped to a scenario at runtime", async () => {
     const scenario = withScenario(client, "ri.actions..scenario.abc");
-    await expect(
-      // @ts-expect-error — ScenarioClient is not assignable to NonScenarioClient
-      createScenario(scenario),
-    ).rejects.toThrow(/scenario/);
+    await expect(createScenario(scenario)).rejects.toThrow(/scenario/);
   });
 });

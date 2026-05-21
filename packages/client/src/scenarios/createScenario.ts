@@ -15,20 +15,16 @@
  */
 
 import { OntologyScenarios } from "@osdk/foundry.ontologies";
-import { additionalContext } from "../Client.js";
+import { additionalContext, type Client } from "../Client.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import {
-  buildScenarioClient,
-  type NonScenarioClient,
-  type ScenarioClient,
-} from "./ScenarioClient.js";
+import { buildScenarioClient, type ScenarioClient } from "./ScenarioClient.js";
 
 /**
  * Mint a fresh ontology scenario and return a client scoped to it.
  *
  * @param client - The base {@link Client} to derive context (`baseUrl`, `ontologyRid`, `tokenProvider`, `branch`, …)
- *   from. Must not already be a {@link ScenarioClient} or a transactional client. When the base client has a branch
- *   set, the newly minted scenario uses that branch as its base.
+ *   from. Throws at runtime if the client is already scoped to a scenario or transaction. When the base client has a
+ *   branch set, the newly minted scenario uses that branch as its base.
  * @returns a {@link ScenarioClient} bound to the freshly minted scenario RID.
  *
  * @beta This is an experimental, unstable feature subject to change.
@@ -42,7 +38,7 @@ import {
  * ```
  */
 export async function createScenario(
-  client: NonScenarioClient,
+  client: Client,
 ): Promise<ScenarioClient> {
   const ctx: MinimalClient = client[additionalContext];
 
