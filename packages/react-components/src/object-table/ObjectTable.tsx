@@ -21,7 +21,6 @@ import type {
   PropertyKeys,
   QueryDefinition,
   SimplePropertyDef,
-  WhereClause,
 } from "@osdk/api";
 import type { Cell } from "@tanstack/react-table";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
@@ -149,11 +148,15 @@ export function ObjectTable<
           derivedObjectSet =
             change.isSelectAll && change.selectedRows.length > 0
               ? resultingObjectSet
-              : resultingObjectSet.where({
-                [primaryKeyApiName]: {
-                  $in: change.selectedRows.map(r => r.$primaryKey),
-                },
-              } as WhereClause<Q, RDPs>);
+              : resultingObjectSet.where(
+                {
+                  [primaryKeyApiName]: {
+                    $in: change.selectedRows.map(r => r.$primaryKey),
+                  },
+                } as unknown as Parameters<
+                  typeof resultingObjectSet["where"]
+                >[0],
+              );
         } else if (change.isSelectAll && change.selectedRows.length > 0) {
           derivedObjectSet = resultingObjectSet;
         }
