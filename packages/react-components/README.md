@@ -130,7 +130,7 @@ The components that this package will provide are:
 | `ObjectTable`    | Displays an Object Set as a sortable, paginated table with inline editing support               | [Guide](./docs/ObjectTable.md)    |
 | `PdfViewer`      | Renders PDF documents with annotations, search, sidebar navigation, and zoom                    | [Guide](./docs/PdfViewer.md)      |
 | `FilterList`     | Visualize a high-level summary of objects data to allow users to filter that data.              | [Guide](./docs/FilterList.md)     |
-| `ActionForm`     | Auto-generated form for executing Ontology Actions                                              | -                                 |
+| `ActionForm`     | Auto-generated form for executing Ontology Actions                                              | [Guide](./docs/ActionForm.md)     |
 | `AipAgentChat`   | Chat surface backed by Foundry LMS via `useChat` — takes a `PlatformClient` and model API name. | [Guide](./docs/AipAgentChat.md)   |
 | `DocumentViewer` | Unified media viewer that auto-detects file type and renders the appropriate viewer             | [Guide](./docs/DocumentViewer.md) |
 | `EmailViewer`    | Parses and renders EML files with headers and sandboxed HTML body                               | [Guide](./docs/EmailViewer.md)    |
