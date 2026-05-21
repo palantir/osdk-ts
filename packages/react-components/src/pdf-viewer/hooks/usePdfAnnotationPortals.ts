@@ -89,19 +89,40 @@ export function usePdfAnnotationPortals(
       };
     };
 
-    const handlePageRendered = (evt: { pageNumber: number }) => {
+    const pageObservers = new Map<number, ResizeObserver>();
+
+    const remeasurePage = (pageNumber: number) => {
       const container = readContainer();
       if (container == null) {
         return;
       }
-      const next = measurePage(evt.pageNumber, container.rect, container.el);
+      const next = measurePage(pageNumber, container.rect, container.el);
       setPortalTargets((prev) => {
-        const filtered = prev.filter((t) => t.pageNumber !== evt.pageNumber);
+        const filtered = prev.filter((t) => t.pageNumber !== pageNumber);
         if (next == null) {
           return filtered;
         }
         return [...filtered, next].sort((a, b) => a.pageNumber - b.pageNumber);
       });
+    };
+
+    const observePage = (pageNumber: number, div: HTMLElement) => {
+      pageObservers.get(pageNumber)?.disconnect();
+      if (typeof ResizeObserver === "undefined") {
+        return;
+      }
+      const observer = new ResizeObserver(() => remeasurePage(pageNumber));
+      observer.observe(div);
+      pageObservers.set(pageNumber, observer);
+    };
+
+    const handlePageRendered = (evt: { pageNumber: number }) => {
+      const pageView = pdfViewer.getPageView(evt.pageNumber - 1);
+      if (pageView?.div == null) {
+        return;
+      }
+      remeasurePage(evt.pageNumber);
+      observePage(evt.pageNumber, pageView.div as HTMLElement);
     };
 
     const remeasureAll = () => {
@@ -128,24 +149,22 @@ export function usePdfAnnotationPortals(
       });
     };
 
-    const clearAll = () => setPortalTargets([]);
-
     eventBus.on(PAGE_RENDERED_EVENT, handlePageRendered);
-    eventBus.on("scalechanging", clearAll);
-    eventBus.on("rotationchanging", clearAll);
 
     const scrollContainer = pdfViewer.container as HTMLElement | null;
-    let resizeObserver: ResizeObserver | undefined;
+    let containerObserver: ResizeObserver | undefined;
     if (scrollContainer != null && typeof ResizeObserver !== "undefined") {
-      resizeObserver = new ResizeObserver(remeasureAll);
-      resizeObserver.observe(scrollContainer);
+      containerObserver = new ResizeObserver(remeasureAll);
+      containerObserver.observe(scrollContainer);
     }
 
     return () => {
       eventBus.off(PAGE_RENDERED_EVENT, handlePageRendered);
-      eventBus.off("scalechanging", clearAll);
-      eventBus.off("rotationchanging", clearAll);
-      resizeObserver?.disconnect();
+      for (const observer of pageObservers.values()) {
+        observer.disconnect();
+      }
+      pageObservers.clear();
+      containerObserver?.disconnect();
       setPortalTargets([]);
     };
   }, [eventBusRef, pdfViewerRef, document]);
