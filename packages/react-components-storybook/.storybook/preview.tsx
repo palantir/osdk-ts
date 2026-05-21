@@ -71,7 +71,7 @@ const preview: Preview = {
   }, mswLoader],
   decorators: [
     (Story, context) => {
-      // The OSDK light/dark color scheme is now driven by `<OsdkThemeProvider>`
+      // The OSDK light/dark color scheme is driven by `<OsdkThemeProvider>`
       const themeName = context.globals.theme as string | undefined;
       const colorScheme = themeName === "dark" ? "dark" : "light";
       return (
