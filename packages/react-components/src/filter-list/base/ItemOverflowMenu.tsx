@@ -23,6 +23,7 @@ import {
   OverflowMenuIcon,
   RemoveIcon,
   ResetIcon,
+  SearchIcon,
 } from "./FilterIcons.js";
 import { useFilterListBoundary } from "./FilterListBoundaryContext.js";
 import styles from "./ItemOverflowMenu.module.css";
@@ -32,6 +33,8 @@ interface ItemOverflowMenuProps {
   triggerAriaLabel: string;
   /** Label used in the `Remove <label> filter` menu item aria-label. */
   filterLabel: string;
+  showSearchInMenu: boolean;
+  onSearchInMenu: () => void;
   showKeepExclude: boolean;
   isExcluding: boolean;
   onToggleExclude: () => void;
@@ -45,6 +48,8 @@ function ItemOverflowMenuInner({
   triggerClassName,
   triggerAriaLabel,
   filterLabel,
+  showSearchInMenu,
+  onSearchInMenu,
   showKeepExclude,
   isExcluding,
   onToggleExclude,
@@ -55,7 +60,7 @@ function ItemOverflowMenuInner({
 }: ItemOverflowMenuProps): React.ReactElement | null {
   const collisionBoundary = useFilterListBoundary();
 
-  if (!showKeepExclude && !showClearAll && !showRemove) {
+  if (!showSearchInMenu && !showKeepExclude && !showClearAll && !showRemove) {
     return null;
   }
 
@@ -75,6 +80,22 @@ function ItemOverflowMenuInner({
           collisionBoundary={collisionBoundary}
         >
           <Menu.Popup className={styles.popup}>
+            {showSearchInMenu && (
+              <>
+                <Menu.Item
+                  className={styles.menuItem}
+                  onClick={onSearchInMenu}
+                >
+                  <span className={styles.menuItemIcon}>
+                    <SearchIcon />
+                  </span>
+                  Search values
+                </Menu.Item>
+                {(showKeepExclude || showClearAll || showRemove) && (
+                  <div className={styles.separator} />
+                )}
+              </>
+            )}
             {showKeepExclude && (
               <>
                 <Menu.Item

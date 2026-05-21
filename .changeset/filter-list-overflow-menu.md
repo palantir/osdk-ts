@@ -9,3 +9,4 @@ FilterList: consolidate per-item actions into a header overflow menu.
 - Keep / Exclude on linked-property filters now toggles `isExcluding` on the inner linked filter state.
 - New `searchField` flag on `FilterDefinition` hides the header monocle (useful for MULTI_SELECT, which already has its own search field).
 - New `actions` config on `FilterDefinition` (`search`, `overflow`, `remove`, `placement`) for fine-grained control over which header controls render. `actions.search` takes precedence over `searchField`.
+- `actions.search` now accepts `"header-start"` (monocle on the left of the header) and `"menu"` (rendered as a "Search values" item inside the overflow menu); `actions.placement` is honored as the default placement when `search` is `true` or omitted.

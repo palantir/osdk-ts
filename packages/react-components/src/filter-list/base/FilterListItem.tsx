@@ -68,27 +68,35 @@ function hasActiveSelection(filterState: FilterState | undefined): boolean {
   }
 }
 
+type SearchPlacement = "header-start" | "header-end" | "menu" | "hidden";
+
 /**
- * Resolves whether the header monocle should render given the effective
+ * Resolves where the search affordance should appear given the effective
  * (post-unwrap) filter state and the per-definition opt-out flags. `actions`
  * takes precedence over `searchField` when both are set.
  */
-function resolveShowSearch(
+function resolveSearchPlacement(
   effectiveState: FilterState | undefined,
   searchField: boolean | undefined,
   actions: FilterActionsConfig | undefined,
-): boolean {
+): SearchPlacement {
   if (!supportsSearch(effectiveState)) {
-    return false;
+    return "hidden";
   }
   const action = actions?.search;
-  if (action !== undefined) {
-    if (action === false || action === "menu") {
-      return false;
-    }
-    return true;
+  if (action === false) {
+    return "hidden";
   }
-  return searchField !== false;
+  if (
+    action === "header-start" || action === "header-end" || action === "menu"
+  ) {
+    return action;
+  }
+  // action is undefined or true
+  if (action === undefined && searchField === false) {
+    return "hidden";
+  }
+  return actions?.placement ?? "header-end";
 }
 
 interface FilterListItemProps<D> {
@@ -193,7 +201,11 @@ function FilterListItemInner<D>({
     element?.focus({ preventScroll: true });
   }, []);
 
-  const showSearch = resolveShowSearch(effectiveState, searchField, actions);
+  const searchPlacement = resolveSearchPlacement(
+    effectiveState,
+    searchField,
+    actions,
+  );
   const showOverflow = actions?.overflow !== false;
 
   const showKeepExclude = showOverflow && supportsExcluding(effectiveState);
@@ -203,6 +215,7 @@ function FilterListItemInner<D>({
   const showRemove = showOverflow
     && onFilterRemoved != null
     && actions?.remove !== false;
+  const showSearchInMenu = showOverflow && searchPlacement === "menu";
 
   const searchOpen = searchState.type === "open";
   const searchQuery = searchState.type === "open" ? searchState.query : "";
@@ -227,12 +240,25 @@ function FilterListItemInner<D>({
             <DragHandleIcon />
           </Button>
         )}
+        {searchPlacement === "header-start" && (
+          <Button
+            className={classnames(
+              styles.headerActionButton,
+              styles.headerActionButtonStart,
+            )}
+            onClick={handleToggleSearch}
+            aria-label="Search values"
+            aria-pressed={searchOpen}
+          >
+            <SearchIcon />
+          </Button>
+        )}
         <span
           className={styles.itemLabel}
         >
           {label}
         </span>
-        {showSearch && (
+        {searchPlacement === "header-end" && (
           <Button
             className={styles.headerActionButton}
             onClick={handleToggleSearch}
@@ -246,6 +272,8 @@ function FilterListItemInner<D>({
           triggerClassName={styles.headerActionButton}
           triggerAriaLabel="More actions"
           filterLabel={label}
+          showSearchInMenu={showSearchInMenu}
+          onSearchInMenu={handleToggleSearch}
           showKeepExclude={showKeepExclude}
           isExcluding={isExcluding}
           onToggleExclude={handleToggleExclude}

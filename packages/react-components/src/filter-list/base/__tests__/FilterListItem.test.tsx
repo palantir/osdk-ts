@@ -359,4 +359,108 @@ describe("FilterListItem", () => {
       expect(within(input).getByText(/alpha/)).toBeDefined();
     });
   });
+
+  describe("search placement", () => {
+    it("renders the monocle before the label when actions.search is 'header-start'", () => {
+      renderItem({
+        filterState: { type: "SELECT", selectedValues: [] },
+        actions: { search: "header-start" },
+      });
+      const buttons = screen.getAllByRole("button");
+      const searchIdx = buttons.findIndex(
+        (b) => b.getAttribute("aria-label") === "Search values",
+      );
+      const labelEl = screen.getByText("Department");
+      // The search button must appear in the DOM before the label span.
+      const comparison = buttons[searchIdx].compareDocumentPosition(labelEl);
+      // Node.DOCUMENT_POSITION_FOLLOWING === 4
+      expect(comparison & 4).toBeGreaterThan(0);
+    });
+
+    it("renders the monocle after the label when actions.search is 'header-end'", () => {
+      renderItem({
+        filterState: { type: "SELECT", selectedValues: [] },
+        actions: { search: "header-end" },
+      });
+      const searchButton = screen.getByRole("button", {
+        name: /search values/i,
+      });
+      const labelEl = screen.getByText("Department");
+      // Search button comes AFTER the label.
+      const comparison = labelEl.compareDocumentPosition(searchButton);
+      expect(comparison & 4).toBeGreaterThan(0);
+    });
+
+    it("places the monocle at actions.placement when actions.search is true", () => {
+      renderItem({
+        filterState: { type: "SELECT", selectedValues: [] },
+        actions: { search: true, placement: "header-start" },
+      });
+      const searchButton = screen.getByRole("button", {
+        name: /search values/i,
+      });
+      const labelEl = screen.getByText("Department");
+      const comparison = searchButton.compareDocumentPosition(labelEl);
+      expect(comparison & 4).toBeGreaterThan(0);
+    });
+
+    it("places the monocle at actions.placement when actions.search is omitted", () => {
+      renderItem({
+        filterState: { type: "SELECT", selectedValues: [] },
+        actions: { placement: "header-start" },
+      });
+      const searchButton = screen.getByRole("button", {
+        name: /search values/i,
+      });
+      const labelEl = screen.getByText("Department");
+      const comparison = searchButton.compareDocumentPosition(labelEl);
+      expect(comparison & 4).toBeGreaterThan(0);
+    });
+
+    it("hides the header monocle and surfaces a 'Search values' menu item when actions.search is 'menu'", () => {
+      renderItem({
+        filterState: { type: "SELECT", selectedValues: [] },
+        actions: { search: "menu" },
+      });
+      // No header monocle button.
+      expect(
+        screen.queryByRole("button", { name: /search values/i }),
+      ).toBeNull();
+      // But there is a "Search values" item inside the overflow menu.
+      openOverflowMenu();
+      expect(screen.getByText(/Search values/i)).toBeDefined();
+    });
+
+    it("opens the inline search row when the 'Search values' menu item is clicked", () => {
+      renderItem({
+        filterState: { type: "SELECT", selectedValues: [] },
+        actions: { search: "menu" },
+      });
+      // Search input is not present yet.
+      expect(
+        screen.queryByPlaceholderText(/search property values/i),
+      ).toBeNull();
+      openOverflowMenu();
+      const menuItem = screen.getByText(/Search values/i);
+      fireEvent.click(menuItem);
+      expect(
+        screen.getByPlaceholderText(/search property values/i),
+      ).toBeDefined();
+    });
+
+    it("hides the in-menu search item when actions.overflow is false", () => {
+      renderItem({
+        filterState: { type: "SELECT", selectedValues: [] },
+        actions: { search: "menu", overflow: false },
+      });
+      // No overflow trigger at all because there's nothing in the menu.
+      expect(
+        screen.queryByRole("button", { name: /more actions/i }),
+      ).toBeNull();
+      // Also no header monocle.
+      expect(
+        screen.queryByRole("button", { name: /search values/i }),
+      ).toBeNull();
+    });
+  });
 });

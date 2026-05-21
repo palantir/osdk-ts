@@ -40,10 +40,10 @@ export type PropertyTypeFromKey<
 /**
  * Where a filter action can be placed within a filter list item.
  *
- * - `"header-start"` — left side of the header (next to the label). Reserved
- *   for future use; not yet rendered.
+ * - `"header-start"` — left side of the header (between the drag handle and
+ *   the label).
  * - `"header-end"` — right side of the header (where the monocle and overflow
- *   menu live today).
+ *   menu live by default).
  * - `"menu"` — inside the overflow (`...`) menu.
  */
 export type FilterActionPlacement = "header-start" | "header-end" | "menu";
@@ -52,19 +52,22 @@ export type FilterActionPlacement = "header-start" | "header-end" | "menu";
  * Per-filter configuration for which action controls render on a filter
  * list item and where they appear.
  *
- * Defaults preserve the built-in behavior: the search monocle renders in the
- * header for filter components that support search, the overflow (`...`) menu
- * always renders, and "Remove filter" appears inside that menu whenever
- * `onFilterRemoved` is wired.
+ * Defaults preserve the built-in behavior: the search monocle renders at the
+ * end of the header for filter components that support search, the overflow
+ * (`...`) menu always renders, and "Remove filter" appears inside that menu
+ * whenever `onFilterRemoved` is wired.
  */
 export interface FilterActionsConfig {
   /**
    * Search affordance for filter values.
    *
-   * - `true` / `"header-end"` — header monocle button (default for filter
-   *   components that support search; ignored otherwise).
+   * - `true` — visible at the default placement (see `placement`, which itself
+   *   defaults to `"header-end"`).
    * - `false` — hidden.
-   * - `"menu"` — reserved for future in-menu search; treated as hidden today.
+   * - `"header-start"` — header monocle button on the left side of the header.
+   * - `"header-end"` — header monocle button on the right side of the header.
+   * - `"menu"` — rendered as a "Search values" item inside the overflow
+   *   (`...`) menu; selecting it opens the search row below the header.
    *
    * Takes precedence over the shorthand `searchField` flag when both are set.
    *
@@ -79,7 +82,8 @@ export interface FilterActionsConfig {
    *   (default).
    * - `false` — hidden. Keep / Exclude, Clear all selections, and Remove
    *   filter — all of which live inside the menu — are also hidden when this
-   *   is `false`.
+   *   is `false`. If `search` resolves to `"menu"`, the search item is hidden
+   *   too.
    *
    * @default true
    */
@@ -97,9 +101,9 @@ export interface FilterActionsConfig {
   remove?: boolean | "menu";
 
   /**
-   * Default placement for actions when not individually specified.
-   * Currently only `"header-end"` is honored; the field is reserved for
-   * future use.
+   * Default placement for actions that accept a placement but do not specify
+   * one. Today only `search` (when set to `true` or left unset) consults this
+   * value.
    *
    * @default "header-end"
    */

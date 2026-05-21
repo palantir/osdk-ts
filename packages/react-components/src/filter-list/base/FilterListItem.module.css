@@ -101,6 +101,11 @@
   }
 }
 
+.headerActionButtonStart {
+  margin-left: 0;
+  margin-right: calc(var(--osdk-surface-spacing) * 0.5);
+}
+
 .filterItem:hover .headerActionButton {
   opacity: 1;
 }
