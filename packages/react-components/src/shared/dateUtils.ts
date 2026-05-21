@@ -192,7 +192,7 @@ export function getRelativeDatePeriodLabel(p: RelativeDatePeriod): string {
  * Default ordered list of relative date periods surfaced by the shortcut
  * rail when a consumer opts in with `dateShortcuts: true`.
  */
-export const DEFAULT_RELATIVE_DATE_PERIODS = [
+export const DEFAULT_RELATIVE_DATE_PERIODS: readonly RelativeDatePeriod[] = [
   "past-hour",
   "past-day",
   "past-week",
@@ -201,4 +201,4 @@ export const DEFAULT_RELATIVE_DATE_PERIODS = [
   "past-6-months",
   "past-year",
   "past-2-years",
-] as const satisfies readonly RelativeDatePeriod[];
+];
