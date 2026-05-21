@@ -63,6 +63,7 @@ export function usePdfAnnotationPortals(
       }
       return {
         pageNumber,
+        // Assumes scrollContainer has zero border/padding; otherwise overlays will be offset.
         left: divRect.left - containerRect.left + scrollContainer.scrollLeft,
         top: divRect.top - containerRect.top + scrollContainer.scrollTop,
         width: divRect.width,
@@ -103,12 +104,6 @@ export function usePdfAnnotationPortals(
       });
     };
 
-    const handlePageCleanup = (evt: { pageNumber: number }) => {
-      setPortalTargets((prev) =>
-        prev.filter((t) => t.pageNumber !== evt.pageNumber)
-      );
-    };
-
     const remeasureAll = () => {
       setPortalTargets((prev) => {
         if (prev.length === 0) {
@@ -133,10 +128,11 @@ export function usePdfAnnotationPortals(
       });
     };
 
+    const clearAll = () => setPortalTargets([]);
+
     eventBus.on(PAGE_RENDERED_EVENT, handlePageRendered);
-    eventBus.on("scalechanging", remeasureAll);
-    eventBus.on("rotationchanging", remeasureAll);
-    eventBus.on("pagecleanup", handlePageCleanup);
+    eventBus.on("scalechanging", clearAll);
+    eventBus.on("rotationchanging", clearAll);
 
     const scrollContainer = pdfViewer.container as HTMLElement | null;
     let resizeObserver: ResizeObserver | undefined;
@@ -147,9 +143,8 @@ export function usePdfAnnotationPortals(
 
     return () => {
       eventBus.off(PAGE_RENDERED_EVENT, handlePageRendered);
-      eventBus.off("scalechanging", remeasureAll);
-      eventBus.off("rotationchanging", remeasureAll);
-      eventBus.off("pagecleanup", handlePageCleanup);
+      eventBus.off("scalechanging", clearAll);
+      eventBus.off("rotationchanging", clearAll);
       resizeObserver?.disconnect();
       setPortalTargets([]);
     };

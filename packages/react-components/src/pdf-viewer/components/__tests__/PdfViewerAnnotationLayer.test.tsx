@@ -103,6 +103,33 @@ describe("PdfViewerAnnotationLayer", () => {
     expect(item.style.height).toBe("20px");
   });
 
+  it("should handle 90° rotation transform by swapping axes", () => {
+    const annotation = createAnnotation({
+      rect: { x: 100, y: 500, width: 200, height: 20 },
+    });
+    const scale = 1.0;
+    const pageWidth = 612;
+    const pageHeight = 792;
+    const rotatedTransform = [0, scale, -scale, 0, pageWidth * scale, 0];
+
+    const { container } = render(
+      <PdfViewerAnnotationLayer
+        annotations={[annotation]}
+        pageHeight={pageHeight}
+        scale={scale}
+        transform={rotatedTransform}
+      />,
+    );
+
+    const item = container.querySelector(
+      "[data-annotation-id]",
+    ) as HTMLElement;
+    expect(item.style.left).toBe("92px");
+    expect(item.style.top).toBe("100px");
+    expect(item.style.width).toBe("20px");
+    expect(item.style.height).toBe("200px");
+  });
+
   it("should apply scale to coordinates", () => {
     const annotation = createAnnotation({
       rect: { x: 100, y: 500, width: 200, height: 20 },

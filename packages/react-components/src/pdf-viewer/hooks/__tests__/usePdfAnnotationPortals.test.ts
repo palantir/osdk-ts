@@ -239,40 +239,6 @@ describe("usePdfAnnotationPortals", () => {
     expect(result.current[0].transform).toEqual(pageTransform(2.0, 792));
   });
 
-  it("should drop entry when pagecleanup fires", () => {
-    const eventBus = createMockEventBus();
-    const container = createMockContainer();
-    const div = createPageDiv({});
-    const pdfViewer = {
-      container,
-      getPageView: vi.fn(() => ({
-        div,
-        viewport: {
-          viewBox: [0, 0, 612, 792],
-          scale: 1.0,
-          transform: pageTransform(1.0, 792),
-        },
-      })),
-    } as unknown as PDFViewer;
-
-    const pdfViewerRef = { current: pdfViewer } as RefObject<PDFViewer>;
-    const eventBusRef = { current: eventBus } as RefObject<EventBus>;
-
-    const { result } = renderHook(() =>
-      usePdfAnnotationPortals(pdfViewerRef, eventBusRef, MOCK_DOCUMENT)
-    );
-
-    act(() => {
-      eventBus._emit("pagerendered", { pageNumber: 1 });
-    });
-    expect(result.current).toHaveLength(1);
-
-    act(() => {
-      eventBus._emit("pagecleanup", { pageNumber: 1 });
-    });
-    expect(result.current).toEqual([]);
-  });
-
   it("should skip if page view has no div", () => {
     const eventBus = createMockEventBus();
     const pdfViewer = {
@@ -354,6 +320,43 @@ describe("usePdfAnnotationPortals", () => {
 
     expect(result.current).toEqual([]);
   });
+
+  it.each(["scalechanging", "rotationchanging"])(
+    "should clear all targets when %s fires",
+    (event) => {
+      const eventBus = createMockEventBus();
+      const container = createMockContainer();
+      const div = createPageDiv({});
+      const pdfViewer = {
+        container,
+        getPageView: vi.fn(() => ({
+          div,
+          viewport: {
+            viewBox: [0, 0, 612, 792],
+            scale: 1.0,
+            transform: pageTransform(1.0, 792),
+          },
+        })),
+      } as unknown as PDFViewer;
+
+      const pdfViewerRef = { current: pdfViewer } as RefObject<PDFViewer>;
+      const eventBusRef = { current: eventBus } as RefObject<EventBus>;
+
+      const { result } = renderHook(() =>
+        usePdfAnnotationPortals(pdfViewerRef, eventBusRef, MOCK_DOCUMENT)
+      );
+
+      act(() => {
+        eventBus._emit("pagerendered", { pageNumber: 1 });
+      });
+      expect(result.current).toHaveLength(1);
+
+      act(() => {
+        eventBus._emit(event, {});
+      });
+      expect(result.current).toEqual([]);
+    },
+  );
 
   it("should handle null refs gracefully", () => {
     const pdfViewerRef = { current: null } as RefObject<PDFViewer | null>;
