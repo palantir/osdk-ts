@@ -593,7 +593,8 @@ export type FieldType =
   | { type: "object"; object: string }
   | { type: "objectSet"; objectSet: string }
   | { type: "interface"; interface: string }
-  | { type: "struct"; struct: Record<string, string> };
+  | { type: "struct"; struct: Record<string, string> }
+  | { type: "scenarioReference" };
 
 /**
  * Props managed by form state infrastructure (FieldBridge / RHF).

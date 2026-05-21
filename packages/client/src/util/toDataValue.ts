@@ -34,7 +34,6 @@ import { isInterfaceActionParam } from "./interfaceUtils.js";
 import { isObjectSpecifiersObject } from "./isObjectSpecifiersObject.js";
 import { isOntologyObjectV2 } from "./isOntologyObjectV2.js";
 import { isPoint } from "./isPoint.js";
-import { isScenarioReferenceParam } from "./isScenarioReferenceParam.js";
 import { isWireObjectSet } from "./WireObjectSet.js";
 
 /**
@@ -153,10 +152,6 @@ export async function toDataValue(
 
   if (isScenarioClient(value)) {
     return value.getScenarioReference().scenarioRid;
-  }
-
-  if (isScenarioReferenceParam(value)) {
-    return value.scenarioRid;
   }
 
   // TODO (during queries implementation)

@@ -93,6 +93,11 @@ export namespace ActionMetadata {
             type: "objectSet";
             		}
         		// (undocumented)
+        export interface ScenarioReference {
+            			// (undocumented)
+            type: "scenarioReference";
+            		}
+        		// (undocumented)
         export interface Struct<T extends Record<string, DataType.BaseActionParameterTypes>> {
             			// (undocumented)
             struct: T;
@@ -109,7 +114,7 @@ export namespace ActionMetadata {
         		// (undocumented)
         nullable?: boolean;
         		// (undocumented)
-        type: DataType.BaseActionParameterTypes | DataType.Object<any> | DataType.ObjectSet<any> | DataType.Interface<any> | DataType.Struct<any>;
+        type: DataType.BaseActionParameterTypes | DataType.Object<any> | DataType.ObjectSet<any> | DataType.Interface<any> | DataType.Struct<any> | DataType.ScenarioReference;
         	}
 }
 
@@ -134,6 +139,12 @@ export namespace ActionParam {
     export type ObjectType<T extends ObjectTypeDefinition> = ObjectIdentifiers<T> | OsdkObjectPrimaryKeyType<T>;
     	// (undocumented)
     export type PrimitiveType<T extends keyof DataValueClientToWire> = DataValueClientToWire[T];
+    	// (undocumented)
+    export type ScenarioReference = {
+        		getScenarioReference(): {
+            			scenarioRid: string
+            		}
+        	};
     	// (undocumented)
     export type StructType<T extends Record<string, keyof DataValueClientToWire>> = { [K in keyof T] : DataValueClientToWire[T[K]] };
 }

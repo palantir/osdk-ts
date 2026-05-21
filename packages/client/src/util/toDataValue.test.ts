@@ -308,15 +308,6 @@ describe(toDataValue, () => {
     expect(isMediaReference(converted)).toBe(true);
   });
 
-  it("converts a raw { scenarioRid } object into the rid string", async () => {
-    const converted = await toDataValue(
-      { scenarioRid: "ri.actions..scenario.abc" },
-      clientCtx,
-      mockActionMetadata,
-    );
-    expect(converted).toBe("ri.actions..scenario.abc");
-  });
-
   it("converts a ScenarioClient into the rid string", async () => {
     const { withScenario } = await import("../scenarios/withScenario.js");
     const scenario = withScenario(client, "ri.actions..scenario.abc");
