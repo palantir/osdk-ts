@@ -25,6 +25,10 @@ import { FilterInputExcludeRow } from "../base/FilterInputExcludeRow.js";
 import { SingleSelectInput } from "../base/inputs/SingleSelectInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { useFilterPropertyAggregation } from "../hooks/useFilterPropertyAggregation.js";
+import {
+  EMPTY_LINKED_FILTERS,
+  type LinkedFilter,
+} from "../types/LinkedFilterTypes.js";
 import { coerceToString } from "../utils/coerceFilterValue.js";
 
 interface SingleSelectFilterInputProps<Q extends ObjectTypeDefinition> {
@@ -34,6 +38,7 @@ interface SingleSelectFilterInputProps<Q extends ObjectTypeDefinition> {
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
+  linkedFilters?: ReadonlyArray<LinkedFilter<Q>>;
   showFilteredOutValues?: boolean;
   excludeRowOpen?: boolean;
   renderValue?: (value: string) => React.ReactNode;
@@ -47,6 +52,7 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
   filterState,
   onFilterStateChanged,
   whereClause,
+  linkedFilters = EMPTY_LINKED_FILTERS,
   showFilteredOutValues,
   excludeRowOpen,
   renderValue,
@@ -85,17 +91,13 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
     [selectedValue],
   );
 
-  const aggregationOptions = useMemo(
-    () => ({ selectedValues, showFilteredOutValues }),
-    [selectedValues, showFilteredOutValues],
-  );
-
   const { data, isLoading, error } = useFilterPropertyAggregation(
     objectType,
     propertyKey as PropertyKeys<Q>,
     objectSet,
     whereClause,
-    aggregationOptions,
+    linkedFilters,
+    { selectedValues, showFilteredOutValues },
   );
 
   return (

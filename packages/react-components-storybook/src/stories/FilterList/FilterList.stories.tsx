@@ -1931,7 +1931,7 @@ function CombinedWithLinkedFilterStory(
           filterDefinitions={COMBINED_LINKED_FILTER_DEFINITIONS}
           filterClause={filterClause}
           onFilterClauseChanged={handleFilterClauseChanged}
-          onEffectiveObjectSetChanged={setEffectiveObjectSet}
+          onEffectiveObjectSet={setEffectiveObjectSet}
           showFilteredOutValues={true}
         />
       </div>
@@ -1954,7 +1954,7 @@ export const CombinedWithLinkedFilter: Story = {
           "A linked filter (Manager Name) and direct property filters coexist in "
           + "one FilterList. Pass the unfiltered scope as `objectSet`; FilterList "
           + "applies the linked-filter narrowing internally and emits the fully-"
-          + "narrowed `ObjectSet` via `onEffectiveObjectSetChanged` for the table. "
+          + "narrowed `ObjectSet` via `onEffectiveObjectSet` for the table. "
           + "With `showFilteredOutValues`, direct-facet values absent under the "
           + "active linked filter render as greyed-out count=0 ghost rows.",
       },
@@ -1968,7 +1968,7 @@ const [effectiveObjectSet, setEffectiveObjectSet] = useState(baseObjectSet);
   filterDefinitions={filterDefinitions}
   filterClause={filterClause}
   onFilterClauseChanged={setFilterClause}
-  onEffectiveObjectSetChanged={setEffectiveObjectSet}
+  onEffectiveObjectSet={setEffectiveObjectSet}
   showFilteredOutValues
 />
 <ObjectTable objectType={Employee} objectSet={effectiveObjectSet} />`,
@@ -2284,6 +2284,7 @@ const locationCitySingleSelectFilter: FilterDefinitionUnion<Employee> = {
 const linkedDepartmentMultiSelectFilter: FilterDefinitionUnion<Employee> = {
   type: "LINKED_PROPERTY",
   linkName: "lead",
+  reverseLinkName: "peeps",
   linkedPropertyKey: "department",
   linkedFilterComponent: "MULTI_SELECT",
   linkedFilterState: { type: "SELECT", selectedValues: [] },
@@ -2297,6 +2298,7 @@ const linkedDepartmentMultiSelectFilter: FilterDefinitionUnion<Employee> = {
 const linkedCitySingleSelectFilter: FilterDefinitionUnion<Employee> = {
   type: "LINKED_PROPERTY",
   linkName: "lead",
+  reverseLinkName: "peeps",
   linkedPropertyKey: "locationCity",
   linkedFilterComponent: "SINGLE_SELECT",
   linkedFilterState: { type: "SELECT", selectedValues: [] },

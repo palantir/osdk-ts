@@ -97,6 +97,21 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   objectSet?: ObjectSet<Q>;
 
   /**
+   * The current where clause to filter the objectSet.
+   * If provided, the filter clause is controlled.
+   * LINKED_PROPERTY filters are not included; use `onEffectiveObjectSet`.
+   */
+  filterClause?: WhereClause<Q>;
+
+  /**
+   * Called when the filter clause changes.
+   * Required in controlled mode.
+   *
+   * @param newClause The updated filter clause
+   */
+  onFilterClauseChanged?: (newClause: WhereClause<Q>) => void;
+
+  /**
    * Optional title to display in the filter list header
    */
   title?: ReactNode;
@@ -113,20 +128,6 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   filterDefinitions?: Array<FilterDefinitionUnion<Q>>;
 
   /**
-   * The current where clause to filter the objectSet.
-   * If provided, the filter clause is controlled.
-   */
-  filterClause?: WhereClause<Q>;
-
-  /**
-   * Called when the filter clause changes.
-   * Required in controlled mode.
-   *
-   * @param newClause The updated filter clause
-   */
-  onFilterClauseChanged?: (newClause: WhereClause<Q>) => void;
-
-  /**
    * Called when filter state changes
    *
    * @param definition The filter definition whose state changed
@@ -138,23 +139,18 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   ) => void;
 
   /**
-   * Called whenever any filter changes, with the `ObjectSet` narrowed by
-   * every active filter — including linked-property filters that
-   * `filterClause` cannot represent. Emitted only when `objectSet` was
-   * provided.
-   *
-   * @param objectSet The narrowed `ObjectSet`.
+   * Called with the `ObjectSet` narrowed by every active filter (direct +
+   * linked). Fires on each filter change. Only emitted when `objectSet` is set.
    */
-  onEffectiveObjectSetChanged?: (objectSet: ObjectSet<Q>) => void;
+  onEffectiveObjectSet?: (objectSet: ObjectSet<Q>) => void;
 
   /**
-   * When `true`, direct-property facets render count=0 greyed-out rows for
-   * values present in the unfiltered scope but excluded by an active
-   * linked-property filter. Helps users see what they've filtered away rather
-   * than the value silently disappearing from the facet.
-   *
-   * Has no effect when no linked-property filter is active.
-   *
+   * When `true`, facets render count=0 greyed-out rows for values present in
+   * the unfiltered scope but excluded by the currently active filters. For
+   * direct-property facets the comparison scope keeps direct filters applied
+   * and strips linked-property filters. For linked-property facets the
+   * comparison scope is the raw `objectSet` pivoted to the linked type, so
+   * any value removed by direct or linked filters renders as a ghost row.
    * @default false
    */
   showFilteredOutValues?: boolean;

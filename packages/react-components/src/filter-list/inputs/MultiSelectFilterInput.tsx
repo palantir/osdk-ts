@@ -28,6 +28,10 @@ import {
 } from "../base/inputs/MultiSelectInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { useFilterPropertyAggregation } from "../hooks/useFilterPropertyAggregation.js";
+import {
+  EMPTY_LINKED_FILTERS,
+  type LinkedFilter,
+} from "../types/LinkedFilterTypes.js";
 import { coerceToStringArray } from "../utils/coerceFilterValue.js";
 
 interface MultiSelectFilterInputProps<Q extends ObjectTypeDefinition> {
@@ -37,6 +41,7 @@ interface MultiSelectFilterInputProps<Q extends ObjectTypeDefinition> {
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
+  linkedFilters?: ReadonlyArray<LinkedFilter<Q>>;
   showFilteredOutValues?: boolean;
   excludeRowOpen?: boolean;
   renderValue?: (value: string) => React.ReactNode;
@@ -51,6 +56,7 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
   filterState,
   onFilterStateChanged,
   whereClause,
+  linkedFilters = EMPTY_LINKED_FILTERS,
   showFilteredOutValues,
   excludeRowOpen,
   renderValue,
@@ -85,17 +91,13 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
     [onFilterStateChanged, isExcluding],
   );
 
-  const aggregationOptions = useMemo(
-    () => ({ selectedValues, showFilteredOutValues }),
-    [selectedValues, showFilteredOutValues],
-  );
-
   const { data, isLoading, error } = useFilterPropertyAggregation(
     objectType,
     propertyKey as PropertyKeys<Q>,
     objectSet,
     whereClause,
-    aggregationOptions,
+    linkedFilters,
+    { selectedValues, showFilteredOutValues },
   );
 
   return (

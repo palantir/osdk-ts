@@ -25,6 +25,10 @@ import { FilterInputExcludeRow } from "../base/FilterInputExcludeRow.js";
 import { ListogramInput } from "../base/inputs/ListogramInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { useFilterPropertyAggregation } from "../hooks/useFilterPropertyAggregation.js";
+import {
+  EMPTY_LINKED_FILTERS,
+  type LinkedFilter,
+} from "../types/LinkedFilterTypes.js";
 import { coerceToStringArray } from "../utils/coerceFilterValue.js";
 
 interface ListogramFilterInputProps<Q extends ObjectTypeDefinition> {
@@ -34,6 +38,7 @@ interface ListogramFilterInputProps<Q extends ObjectTypeDefinition> {
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
+  linkedFilters?: ReadonlyArray<LinkedFilter<Q>>;
   showFilteredOutValues?: boolean;
   colorMap?: Record<string, string>;
   displayMode?: "full" | "count" | "minimal";
@@ -51,6 +56,7 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
   filterState,
   onFilterStateChanged,
   whereClause,
+  linkedFilters = EMPTY_LINKED_FILTERS,
   showFilteredOutValues,
   colorMap,
   displayMode,
@@ -92,17 +98,13 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
     ? "value" as const
     : "count" as const;
 
-  const aggregationOptions = useMemo(
-    () => ({ sortBy, selectedValues, showFilteredOutValues }),
-    [sortBy, selectedValues, showFilteredOutValues],
-  );
-
   const { data, maxCount, isLoading, error } = useFilterPropertyAggregation(
     objectType,
     propertyKey as PropertyKeys<Q>,
     objectSet,
     whereClause,
-    aggregationOptions,
+    linkedFilters,
+    { sortBy, selectedValues, showFilteredOutValues },
   );
 
   return (

@@ -21,35 +21,18 @@ import type {
   WhereClause,
 } from "@osdk/api";
 import { useMemo } from "react";
-import { applyWhereClauseToObjectSet } from "../utils/applyWhereClauseToObjectSet.js";
-import { stripLinkEntries } from "../utils/stripLinkEntries.js";
-import {
-  usePropertyAggregation,
-  type UsePropertyAggregationResult,
-} from "./usePropertyAggregation.js";
-
-const EMPTY_VALUES: string[] = [];
+import type { LinkedFilter } from "../types/LinkedFilterTypes.js";
+import { computeDualScopes } from "../utils/narrowObjectSet.js";
+import { useDualScopeAggregation } from "./useDualScopeAggregation.js";
+import type { UsePropertyAggregationResult } from "./usePropertyAggregation.js";
 
 export interface UseFilterPropertyAggregationOptions {
   limit?: number;
   sortBy?: "count" | "value";
-  /** Values to always render (count=0 ghosts when absent from the aggregation). */
   selectedValues?: string[];
-  /**
-   * When `true` AND `whereClause` contains link entries, runs a second
-   * aggregation against the link-entries-stripped scope to discover the wider
-   * value universe — values absent from the narrowed scope render as count=0
-   * ghosts.
-   */
   showFilteredOutValues?: boolean;
 }
 
-/**
- * Aggregates a property on `objectSet` narrowed by `whereClause`. When
- * `showFilteredOutValues` is on AND `whereClause` has link entries, also
- * aggregates against the link-stripped scope and merges its values in so
- * they render as count=0 ghosts.
- */
 export function useFilterPropertyAggregation<
   Q extends ObjectTypeDefinition,
   K extends PropertyKeys<Q>,
@@ -58,80 +41,27 @@ export function useFilterPropertyAggregation<
   propertyKey: K,
   objectSet: ObjectSet<Q> | undefined,
   whereClause: WhereClause<Q>,
+  linkedFilters: ReadonlyArray<LinkedFilter<Q>>,
   options: UseFilterPropertyAggregationOptions = {},
 ): UsePropertyAggregationResult {
-  const {
-    sortBy,
-    selectedValues = EMPTY_VALUES,
-    limit,
-    showFilteredOutValues,
-  } = options;
+  const { sortBy, selectedValues, limit, showFilteredOutValues } = options;
 
-  const { scopedObjectSet, widerObjectSet } = useMemo(() => {
-    if (objectSet == null) {
-      return { scopedObjectSet: undefined, widerObjectSet: undefined };
-    }
-    const extended = whereClause as unknown as Record<string, unknown>;
-    const scoped = applyWhereClauseToObjectSet(objectSet, extended);
-    if (!showFilteredOutValues) {
-      return { scopedObjectSet: scoped, widerObjectSet: undefined };
-    }
-    const stripped = stripLinkEntries(extended);
-    const wider = stripped.hadLinkEntries
-      ? applyWhereClauseToObjectSet(objectSet, stripped.clause)
-      : undefined;
-    return { scopedObjectSet: scoped, widerObjectSet: wider };
-  }, [objectSet, whereClause, showFilteredOutValues]);
+  const { scoped, emptySource } = useMemo(
+    () =>
+      computeDualScopes(
+        objectSet,
+        whereClause,
+        linkedFilters,
+        showFilteredOutValues,
+      ),
+    [objectSet, whereClause, linkedFilters, showFilteredOutValues],
+  );
 
-  const isDualScope = widerObjectSet !== undefined;
-
-  // Hooks must be called unconditionally, but passing `undefined` lets the
-  // SDK short-circuit the wider aggregation when not in dual scope.
-  const widerAggregation = usePropertyAggregation(
+  return useDualScopeAggregation(
     objectType,
     propertyKey,
-    widerObjectSet,
+    scoped,
+    emptySource,
+    { sortBy, selectedValues, limit },
   );
-
-  const activeValues = useMemo(() => {
-    const fallback = selectedValues.length === 0 ? undefined : selectedValues;
-    if (!isDualScope) {
-      return fallback;
-    }
-    if (
-      widerAggregation.error != null || widerAggregation.data.length === 0
-    ) {
-      return fallback;
-    }
-    return Array.from(
-      new Set([
-        ...selectedValues,
-        ...widerAggregation.data.map((d) => d.value),
-      ]),
-    );
-  }, [
-    isDualScope,
-    widerAggregation.data,
-    widerAggregation.error,
-    selectedValues,
-  ]);
-
-  const primaryOptions = useMemo(
-    () => ({ sortBy, activeValues, limit }),
-    [sortBy, activeValues, limit],
-  );
-  const primary = usePropertyAggregation(
-    objectType,
-    propertyKey,
-    scopedObjectSet,
-    primaryOptions,
-  );
-
-  return {
-    data: primary.data,
-    maxCount: primary.maxCount,
-    isLoading: primary.isLoading
-      || (isDualScope && widerAggregation.isLoading),
-    error: primary.error,
-  };
 }

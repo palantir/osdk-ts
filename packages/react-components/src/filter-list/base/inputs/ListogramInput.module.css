@@ -81,9 +81,7 @@
   gap: var(--osdk-filter-null-label-gap);
 }
 
-/* Ghost row: present in the base scope but absent from the narrowed scope.
-   Rendered muted so the user can see the option exists in principle but is
-   filtered out by the current selection. */
+/* Muted styling for filtered-out (count=0) rows. */
 .row[data-ghost] {
   opacity: var(--osdk-filter-ghost-item-opacity);
   color: var(--osdk-filter-ghost-item-color);

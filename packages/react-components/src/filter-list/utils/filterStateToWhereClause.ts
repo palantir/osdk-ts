@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "@osdk/api";
+import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import { assertUnreachable } from "../../shared/assertUnreachable.js";
 import { formatDateForInput } from "../../shared/dateUtils.js";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
+import type { LinkedFilter } from "../types/LinkedFilterTypes.js";
 import { getFilterKey } from "./getFilterKey.js";
 
 type PropertyFilter = Record<string, unknown> | boolean | string | number;
@@ -241,18 +242,18 @@ export interface PropertyTypeInfo {
 }
 
 /**
- * Builds a where-clause record from filter definitions and current states.
- * Linked-property filters produce `$reverseLink` link entries; direct filters
- * produce plain SDK-shaped property clauses.
+ * Builds a `WhereClause<Q>` from direct (non-link-traversing) filter
+ * definitions and current states. LINKED_PROPERTY filters are excluded —
+ * use `getActiveLinkedFilters` for those and apply via `narrowObjectSet`.
  */
 export function buildWhereClause<Q extends ObjectTypeDefinition>(
   definitions: Array<FilterDefinitionUnion<Q>> | undefined,
   filterStates: Map<string, FilterState>,
   propertyTypes?: Map<string, PropertyTypeInfo>,
   excludeFilterKey?: string,
-): Record<string, unknown> {
+): WhereClause<Q> {
   if (!definitions || definitions.length === 0) {
-    return {};
+    return {} as WhereClause<Q>;
   }
 
   const clauses: Array<Record<string, unknown>> = [];
@@ -300,40 +301,10 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
         break;
       }
 
-      case "LINKED_PROPERTY": {
-        if (state.type !== "linkedProperty") {
-          if (process.env.NODE_ENV !== "production") {
-            // eslint-disable-next-line no-console
-            console.warn(
-              `[FilterList] State type mismatch for linkedProperty filter "${definition.linkName}": expected linkedProperty, got ${state.type}`,
-            );
-          }
-          break;
-        }
-        const innerWhere = buildPropertyKeyClause(
-          definition.linkedPropertyKey,
-          state.linkedFilterState,
-        );
-        if (innerWhere === undefined) {
-          break;
-        }
-        if (definition.reverseLinkName == null) {
-          if (process.env.NODE_ENV !== "production") {
-            // eslint-disable-next-line no-console
-            console.warn(
-              `[FilterList] linkedProperty filter "${definition.linkName}" has active selections but no reverseLinkName; selections will not narrow the object set.`,
-            );
-          }
-          break;
-        }
-        clauses.push({
-          [definition.linkName]: {
-            $reverseLink: definition.reverseLinkName,
-            ...innerWhere,
-          },
-        });
+      case "LINKED_PROPERTY":
+        // Handled by getActiveLinkedFilters — can't be expressed as a
+        // WhereClause<Q>.
         break;
-      }
 
       case "KEYWORD_SEARCH": {
         if (state.type !== "keywordSearch") {
@@ -441,14 +412,54 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
   }
 
   if (clauses.length === 0) {
-    return {};
+    return {} as WhereClause<Q>;
   }
 
   if (clauses.length === 1) {
-    return clauses[0];
+    return clauses[0] as WhereClause<Q>;
   }
 
-  return { $and: clauses };
+  return { $and: clauses } as WhereClause<Q>;
+}
+
+/**
+ * Returns the active LINKED_PROPERTY filters as `LinkedFilter<Q>` records.
+ */
+export function getActiveLinkedFilters<Q extends ObjectTypeDefinition>(
+  definitions: Array<FilterDefinitionUnion<Q>> | undefined,
+  filterStates: Map<string, FilterState>,
+  excludeFilterKey?: string,
+): Array<LinkedFilter<Q>> {
+  if (!definitions || definitions.length === 0) {
+    return [];
+  }
+  const result: Array<LinkedFilter<Q>> = [];
+  for (const definition of definitions) {
+    if (definition.type !== "LINKED_PROPERTY") {
+      continue;
+    }
+    const key = getFilterKey(definition);
+    if (key === excludeFilterKey) {
+      continue;
+    }
+    const state = filterStates.get(key);
+    if (!state || state.type !== "linkedProperty") {
+      continue;
+    }
+    const innerLeaf = buildPropertyKeyClause(
+      definition.linkedPropertyKey,
+      state.linkedFilterState,
+    );
+    if (innerLeaf === undefined) {
+      continue;
+    }
+    result.push({
+      linkName: definition.linkName,
+      reverseLinkName: definition.reverseLinkName,
+      innerWhere: innerLeaf as LinkedFilter<Q>["innerWhere"],
+    });
+  }
+  return result;
 }
 
 /** Splits values into non-empty and empty, returning $isNull for empty strings. */
