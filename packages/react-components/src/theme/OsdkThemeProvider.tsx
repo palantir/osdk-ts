@@ -27,12 +27,23 @@ export const DATA_THEME_ATTR = "data-bp-color-scheme";
 
 export interface OsdkThemeProviderProps {
   /**
-   * Initial theme. The provider owns the state from then on; call
-   * `setTheme` from {@link useOsdkTheme} to change it at runtime.
+   * Controlled theme. When provided, the provider does not maintain its
+   * own state — the parent must respond to `onThemeChanged` (or update its
+   * own external store) and re-render with the new value. Use this when an
+   * external store already owns the theme value (e.g. Redux/Zustand, a
+   * parent design-system provider, or a Storybook toolbar).
+   */
+  theme?: OsdkThemeMode;
+
+  /**
+   * Initial theme when uncontrolled. Ignored when `theme` is provided.
    *
    * @default "system"
    */
   defaultTheme?: OsdkThemeMode;
+
+  /** Fires whenever `setTheme` is called from a descendant. */
+  onThemeChanged?: (theme: OsdkThemeMode) => void;
 
   /**
    * Element to write `data-bp-color-scheme` onto.
@@ -57,16 +68,20 @@ export interface OsdkThemeProviderProps {
  * preference. Call {@link useOsdkTheme}().setTheme from a descendant to
  * switch modes at runtime.
  *
- * For consumers whose host app already owns theme state in its own store,
- * skip this provider and write `data-bp-color-scheme` onto the document
- * yourself — the CSS picks it up the same way.
+ * To integrate with an external theme store, pass `theme` (controlled
+ * mode)
  */
 export function OsdkThemeProvider({
+  theme: controlledTheme,
   defaultTheme = "system",
+  onThemeChanged,
   target,
   children,
 }: OsdkThemeProviderProps): React.ReactElement {
-  const [theme, setTheme] = React.useState<OsdkThemeMode>(defaultTheme);
+  const [internalTheme, setInternalTheme] = React.useState<OsdkThemeMode>(
+    defaultTheme,
+  );
+  const theme = controlledTheme ?? internalTheme;
 
   const systemTheme = useSystemTheme();
   const resolvedTheme: ResolvedOsdkTheme = theme === "system"
@@ -88,6 +103,16 @@ export function OsdkThemeProvider({
       }
     };
   }, [resolvedTheme, target]);
+
+  const setTheme = React.useCallback(
+    (next: OsdkThemeMode) => {
+      if (controlledTheme === undefined) {
+        setInternalTheme(next);
+      }
+      onThemeChanged?.(next);
+    },
+    [controlledTheme, onThemeChanged],
+  );
 
   const value = React.useMemo<OsdkThemeContextValue>(
     () => ({ theme, resolvedTheme, setTheme }),

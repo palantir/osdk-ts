@@ -17,9 +17,9 @@ Before using `OsdkThemeProvider`, complete the library setup described in [Prere
   - [Force light or dark with `defaultTheme`](#force-light-or-dark-with-defaulttheme)
   - [Build a `ThemeToggle`](#build-a-themetoggle)
   - [Persist the user's choice to `localStorage`](#persist-the-users-choice-to-localstorage)
+  - [Drive the theme from an external store (controlled mode)](#drive-the-theme-from-an-external-store-controlled-mode)
   - [Scope theming to a subtree](#scope-theming-to-a-subtree)
 - [Branching on the resolved theme in JS](#branching-on-the-resolved-theme-in-js)
-- [Skipping the provider](#skipping-the-provider)
 
 ## Import
 
@@ -50,15 +50,17 @@ function App() {
 
 With no props the provider follows `prefers-color-scheme` and re-renders when the OS preference changes. To override the OS at runtime, descendants call `setTheme` from [`useOsdkTheme`](#useosdktheme-hook).
 
-> **If you don't render this provider**, OSDK components stay in light mode regardless of the OS preference. The CSS only flips on an explicit `data-bp-color-scheme` selector — the provider is the supported way to add one. If you'd rather not pull React state into your theming, see [Skipping the provider](#skipping-the-provider) for the attribute-only path.
+> **Always render the provider somewhere above OSDK components.** OSDK components stay in light mode without it — the CSS only flips when `data-bp-color-scheme="dark"` is on an ancestor, and the provider is the supported way to manage that attribute. If an external store already owns your theme value, use [controlled mode](#drive-the-theme-from-an-external-store-controlled-mode) instead of skipping the provider — that way descendants can still call `useOsdkTheme`.
 
 ## Props reference
 
-| Prop           | Type                               | Default                    | Description                                                                                                                                                                                                                                          |
-| -------------- | ---------------------------------- | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `defaultTheme` | `"light" \| "dark" \| "system"`    | `"system"`                 | Initial theme. The provider owns the state from then on; descendants change it at runtime via `useOsdkTheme().setTheme`.                                                                                                                             |
-| `target`       | `HTMLElement \| null` _(optional)_ | `document.documentElement` | Element to write `data-bp-color-scheme` onto. Defaults to `<html>` so Blueprint portals (popovers, dialogs, tooltips) — which render outside the React tree — also receive the theme. See [Scope theming to a subtree](#scope-theming-to-a-subtree). |
-| `children`     | `React.ReactNode`                  | —                          | Subtree that should resolve the theme via `useOsdkTheme`.                                                                                                                                                                                            |
+| Prop             | Type                                          | Default                    | Description                                                                                                                                                                                                                                                                                             |
+| ---------------- | --------------------------------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `theme`          | `"light" \| "dark" \| "system"` _(optional)_  | —                          | Controlled theme. When provided, the provider does not maintain its own state — the parent must respond to `onThemeChanged` (or update its own external store) and re-render with the new value. See [Drive the theme from an external store](#drive-the-theme-from-an-external-store-controlled-mode). |
+| `defaultTheme`   | `"light" \| "dark" \| "system"`               | `"system"`                 | Initial theme when uncontrolled. Ignored when `theme` is provided. The provider owns the state from then on; descendants change it at runtime via `useOsdkTheme().setTheme`.                                                                                                                            |
+| `onThemeChanged` | `(theme: OsdkThemeMode) => void` _(optional)_ | —                          | Fires whenever a descendant calls `setTheme`. Use this to layer side effects (persistence, analytics) on top of the default state update, or to drive an external store in controlled mode.                                                                                                             |
+| `target`         | `HTMLElement \| null` _(optional)_            | `document.documentElement` | Element to write `data-bp-color-scheme` onto. Defaults to `<html>` so Blueprint portals (popovers, dialogs, tooltips) — which render outside the React tree — also receive the theme. See [Scope theming to a subtree](#scope-theming-to-a-subtree).                                                    |
+| `children`       | `React.ReactNode`                             | —                          | Subtree that should resolve the theme via `useOsdkTheme`.                                                                                                                                                                                                                                               |
 
 ### `defaultTheme` modes
 
@@ -163,6 +165,43 @@ Render it anywhere inside the provider:
 </OsdkThemeProvider>;
 ```
 
+### Drive the theme from an external store (controlled mode)
+
+If the theme value already lives outside the OSDK tree (e.g. in a parent design-system provider), pass it in via the `theme` prop. The provider stops owning state; you re-render it with the new value when the store changes, and the provider rewrites `data-bp-color-scheme` accordingly. 
+
+```tsx
+import {
+  type OsdkThemeMode,
+  OsdkThemeProvider,
+} from "@osdk/react-components/experimental/theme";
+import { useAppTheme } from "../store/theme.js"; // your own store hook
+
+export function AppRoot() {
+  // `theme` is owned by the app's store, not by the provider.
+  const theme = useAppTheme();
+  return (
+    <OsdkProvider client={client}>
+      <OsdkThemeProvider theme={theme}>
+        <App />
+      </OsdkThemeProvider>
+    </OsdkProvider>
+  );
+}
+```
+
+If descendants call `setTheme` from `useOsdkTheme()`, controlled mode does **not** update the provider's state — it fires `onThemeChanged` so you can route the change back into your store.
+
+```tsx
+<OsdkThemeProvider
+  theme={theme}
+  onThemeChanged={(next) => dispatch(setTheme(next))}
+>
+  <App />
+</OsdkThemeProvider>;
+```
+
+Use controlled mode whenever an external source of truth exists. Use uncontrolled (just `defaultTheme`) when the provider can own the state itself.
+
 ### Scope theming to a subtree
 
 By default the provider writes `data-bp-color-scheme` onto `<html>` so portaled overlays (popovers, dialogs, tooltips) inherit the theme. To theme only a slice of the page — for example, embedding an OSDK dashboard inside a host app that already manages its own theme — pass a `target`:
@@ -199,9 +238,3 @@ function LogoMark() {
   );
 }
 ```
-
-## Skipping the provider
-
-If your host app already owns theme state in its own store (Redux, Zustand, a parent design-system provider), you don't need this provider at all. The OSDK tokens activate from `data-bp-color-scheme="dark"` on any ancestor element.
-
-For example, write `data-bp-color-scheme` onto `<html>` from your existing theme reducer — and OSDK tokens flip via CSS only, with no React provider needed.

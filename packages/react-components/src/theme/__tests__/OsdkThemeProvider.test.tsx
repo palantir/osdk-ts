@@ -18,6 +18,7 @@ import { act, cleanup, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { DATA_THEME_ATTR, OsdkThemeProvider } from "../OsdkThemeProvider.js";
+import type { OsdkThemeMode } from "../types.js";
 import { useOsdkTheme } from "../useOsdkTheme.js";
 
 type MediaQueryListener = (event: { matches: boolean }) => void;
@@ -177,6 +178,53 @@ describe("OsdkThemeProvider", () => {
     expect(document.documentElement.getAttribute(DATA_THEME_ATTR)).toBe(
       "light",
     );
+  });
+
+  it("controlled mode ignores setTheme and fires onThemeChanged", () => {
+    const onThemeChanged = vi.fn();
+    render(
+      <OsdkThemeProvider theme="light" onThemeChanged={onThemeChanged}>
+        <ThemeProbe />
+        <ThemeToggle />
+      </OsdkThemeProvider>,
+    );
+
+    expect(screen.getByTestId("resolved").textContent).toBe("light");
+
+    act(() => {
+      screen.getByTestId("set-dark").click();
+    });
+
+    expect(onThemeChanged).toHaveBeenCalledWith("dark");
+    // controlled mode: still light because parent didn't re-render
+    expect(screen.getByTestId("theme").textContent).toBe("light");
+    expect(document.documentElement.getAttribute(DATA_THEME_ATTR)).toBe(
+      "light",
+    );
+  });
+
+  it("controlled theme re-renders propagate to the DOM", () => {
+    function Harness(): React.ReactElement {
+      const [theme, setTheme] = React.useState<OsdkThemeMode>("light");
+      return (
+        <OsdkThemeProvider theme={theme} onThemeChanged={setTheme}>
+          <ThemeProbe />
+          <ThemeToggle />
+        </OsdkThemeProvider>
+      );
+    }
+    render(<Harness />);
+
+    expect(document.documentElement.getAttribute(DATA_THEME_ATTR)).toBe(
+      "light",
+    );
+
+    act(() => {
+      screen.getByTestId("set-dark").click();
+    });
+
+    expect(screen.getByTestId("theme").textContent).toBe("dark");
+    expect(document.documentElement.getAttribute(DATA_THEME_ATTR)).toBe("dark");
   });
 
   it("restores the previous data theme attribute on unmount", () => {

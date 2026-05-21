@@ -71,17 +71,13 @@ const preview: Preview = {
   }, mswLoader],
   decorators: [
     (Story, context) => {
-      // The OSDK light/dark color scheme is now driven by
-      // `<OsdkThemeProvider>` instead of a `[data-theme="dark"]` CSS block,
-      // matching what consumers do in their own apps. `key` remounts the
-      // provider when the toolbar switches between `light` and `dark` so
-      // the seeded `defaultTheme` reflects the new selection.
+      // The OSDK light/dark color scheme is now driven by `<OsdkThemeProvider>`
       const themeName = context.globals.theme as string | undefined;
       const colorScheme = themeName === "dark" ? "dark" : "light";
       return (
         <div className="root">
           <OsdkProvider client={mockClient}>
-            <OsdkThemeProvider key={colorScheme} defaultTheme={colorScheme}>
+            <OsdkThemeProvider theme={colorScheme}>
               <Story />
             </OsdkThemeProvider>
           </OsdkProvider>
