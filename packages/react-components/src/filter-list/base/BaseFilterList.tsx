@@ -46,6 +46,7 @@ export function BaseFilterList<D>(
     showResetButton = false,
     showActiveFilterCount = false,
     hasVisibilityChanges,
+    hasChangesFromInitial,
     enableSorting,
     className,
     renderAddFilterButton,
@@ -103,6 +104,7 @@ export function BaseFilterList<D>(
               showActiveFilterCount={showActiveFilterCount}
               activeFilterCount={activeFilterCount}
               hasVisibilityChanges={hasVisibilityChanges}
+              hasChangesFromInitial={hasChangesFromInitial}
             />
           )}
 

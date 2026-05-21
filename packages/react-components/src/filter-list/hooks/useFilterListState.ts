@@ -39,7 +39,86 @@ export interface UseFilterListStateResult<Q extends ObjectTypeDefinition> {
   whereClause: WhereClause<Q>;
   perFilterWhereClauses: Map<string, WhereClause<Q>>;
   activeFilterCount: number;
+  hasChangesFromInitial: boolean;
   reset: () => void;
+}
+
+function isPlainRecord(value: unknown): value is Record<string, unknown> {
+  return (
+    typeof value === "object"
+    && value != null
+    && !Array.isArray(value)
+    && !(value instanceof Date)
+  );
+}
+
+/**
+ * Recursive structural equality for the JSON-shaped FilterState union.
+ * Avoids JSON.stringify so key ordering doesn't produce false negatives.
+ *
+ * FilterState must remain plain JSON-shaped (primitives, Date, arrays, plain
+ * records). Class instances like Map/Set fall through to `Object.is` and will
+ * always compare unequal — if a future filter variant needs to carry one,
+ * extend the cases here.
+ */
+function areValuesEqual(a: unknown, b: unknown): boolean {
+  if (Object.is(a, b)) {
+    return true;
+  }
+  if (a instanceof Date || b instanceof Date) {
+    if (!(a instanceof Date) || !(b instanceof Date)) {
+      return false;
+    }
+    return a.getTime() === b.getTime();
+  }
+  if (Array.isArray(a) || Array.isArray(b)) {
+    if (!Array.isArray(a) || !Array.isArray(b)) {
+      return false;
+    }
+    if (a.length !== b.length) {
+      return false;
+    }
+    for (let i = 0; i < a.length; i++) {
+      if (!areValuesEqual(a[i], b[i])) {
+        return false;
+      }
+    }
+    return true;
+  }
+  if (!isPlainRecord(a) || !isPlainRecord(b)) {
+    return false;
+  }
+  const aKeys = Object.keys(a);
+  if (aKeys.length !== Object.keys(b).length) {
+    return false;
+  }
+  for (const key of aKeys) {
+    if (!Object.prototype.hasOwnProperty.call(b, key)) {
+      return false;
+    }
+    if (!areValuesEqual(a[key], b[key])) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function areFilterStatesEqual(
+  a: Map<string, FilterState>,
+  b: Map<string, FilterState>,
+): boolean {
+  if (a.size !== b.size) {
+    return false;
+  }
+  for (const [key, value] of a) {
+    if (!b.has(key)) {
+      return false;
+    }
+    if (!areValuesEqual(value, b.get(key))) {
+      return false;
+    }
+  }
+  return true;
 }
 
 /**
@@ -129,17 +208,21 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     return map;
   }, [metadata?.properties]);
 
-  const [filterStates, setFilterStates] = useState<
-    Map<string, FilterState>
-  >(() => {
-    const states = buildInitialStates(filterDefinitions);
-    if (initialFilterStates) {
-      for (const [key, state] of initialFilterStates) {
-        states.set(key, state);
+  const [initialFilterStatesSnapshot] = useState<Map<string, FilterState>>(
+    () => {
+      const snapshot = buildInitialStates(filterDefinitions);
+      if (initialFilterStates) {
+        for (const [key, state] of initialFilterStates) {
+          snapshot.set(key, state);
+        }
       }
-    }
-    return states;
-  });
+      return snapshot;
+    },
+  );
+
+  const [filterStates, setFilterStates] = useState<Map<string, FilterState>>(
+    () => new Map(initialFilterStatesSnapshot),
+  );
 
   const setFilterState = useCallback(
     (filterKey: string, state: FilterState) => {
@@ -218,9 +301,14 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     return count;
   }, [filterStates]);
 
+  const hasChangesFromInitial = useMemo(
+    () => !areFilterStatesEqual(filterStates, initialFilterStatesSnapshot),
+    [filterStates, initialFilterStatesSnapshot],
+  );
+
   const reset = useCallback(() => {
-    setFilterStates(buildInitialStates(filterDefinitions));
-  }, [filterDefinitions]);
+    setFilterStates(new Map(initialFilterStatesSnapshot));
+  }, [initialFilterStatesSnapshot]);
 
   return useMemo(() => ({
     filterStates,
@@ -229,6 +317,7 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     whereClause,
     perFilterWhereClauses,
     activeFilterCount,
+    hasChangesFromInitial,
     reset,
   }), [
     filterStates,
@@ -237,6 +326,7 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     whereClause,
     perFilterWhereClauses,
     activeFilterCount,
+    hasChangesFromInitial,
     reset,
   ]);
 }

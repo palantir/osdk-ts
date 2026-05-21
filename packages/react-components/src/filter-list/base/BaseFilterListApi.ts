@@ -46,6 +46,7 @@ export interface BaseFilterListProps<D> {
   showResetButton?: boolean;
   showActiveFilterCount?: boolean;
   hasVisibilityChanges?: boolean;
+  hasChangesFromInitial?: boolean;
   enableSorting?: boolean;
   className?: string;
   renderAddFilterButton?: () => React.ReactNode;
