@@ -37,9 +37,9 @@
 }
 
 /* Muted styling for filtered-out (count=0) entries. */
-.ghostItem {
-  opacity: var(--osdk-filter-ghost-item-opacity);
-  color: var(--osdk-filter-ghost-item-color);
+.filteredOutItem {
+  opacity: var(--osdk-filter-filtered-out-item-opacity);
+  color: var(--osdk-filter-filtered-out-item-color);
 }
 
 .inlineInput {

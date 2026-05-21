@@ -22,11 +22,13 @@ vi.mock("@osdk/react", () => ({
   useOsdkMetadata: vi.fn(() => ({ loading: false, metadata: undefined })),
 }));
 import {
+  createLinkedPropertyFilterDef,
   createPropertyFilterDef,
   createToggleState,
   MockObjectType,
 } from "../../__tests__/testUtils.js";
 import type { ExactMatchFilterState } from "../../FilterListItemApi.js";
+import type { LinkedPropertyFilterState } from "../../types/LinkedFilterTypes.js";
 
 function createExactMatchState(
   values: string[],
@@ -599,6 +601,60 @@ describe("useFilterListState", () => {
       const afterActive = result.current.perFilterWhereClauses.get(activeKey);
       expect(afterName).toBe(beforeName);
       expect(afterActive).toBe(beforeActive);
+    });
+  });
+
+  describe("LINKED_PROPERTY filters without reverseLinkName", () => {
+    function createLinkedState(values: string[]): LinkedPropertyFilterState {
+      return {
+        type: "linkedProperty",
+        linkedFilterState: { type: "EXACT_MATCH", values },
+      };
+    }
+
+    it("excludes definitions missing reverseLinkName from linkedFilters", () => {
+      const narrowingDef = createLinkedPropertyFilterDef(
+        "manager",
+        "fullName",
+      );
+      const uiOnlyDef = createLinkedPropertyFilterDef(
+        "office",
+        "city",
+        { omitReverseLinkName: true },
+      );
+      const props = createProps({
+        filterDefinitions: [narrowingDef, uiOnlyDef],
+        initialFilterStates: new Map([
+          [getFilterKey(narrowingDef), createLinkedState(["Alice"])],
+          [getFilterKey(uiOnlyDef), createLinkedState(["Berlin"])],
+        ]),
+      });
+      const { result } = renderHook(() => useFilterListState(props));
+
+      expect(result.current.linkedFilters).toHaveLength(1);
+      expect(result.current.linkedFilters[0].linkName).toBe("manager");
+    });
+
+    it("still reports state changes for UI-only linked filters", () => {
+      const uiOnlyDef = createLinkedPropertyFilterDef(
+        "office",
+        "city",
+        { omitReverseLinkName: true },
+      );
+      const onFilterStateChanged = vi.fn();
+      const props = createProps({
+        filterDefinitions: [uiOnlyDef],
+        onFilterStateChanged,
+      });
+      const { result } = renderHook(() => useFilterListState(props));
+
+      const nextState = createLinkedState(["Berlin"]);
+      act(() => {
+        result.current.setFilterState(getFilterKey(uiOnlyDef), nextState);
+      });
+
+      expect(onFilterStateChanged).toHaveBeenCalledWith(uiOnlyDef, nextState);
+      expect(result.current.linkedFilters).toHaveLength(0);
     });
   });
 });

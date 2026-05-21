@@ -141,6 +141,10 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   /**
    * Called with the `ObjectSet` narrowed by every active filter (direct +
    * linked). Fires on each filter change. Only emitted when `objectSet` is set.
+   *
+   * Linked filters contribute to the emitted set only when their definition
+   * supplies `reverseLinkName`. Filters without it are reported through
+   * `onFilterStateChanged` only — wire downstream narrowing yourself.
    */
   onEffectiveObjectSet?: (objectSet: ObjectSet<Q>) => void;
 
@@ -150,7 +154,8 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    * direct-property facets the comparison scope keeps direct filters applied
    * and strips linked-property filters. For linked-property facets the
    * comparison scope is the raw `objectSet` pivoted to the linked type, so
-   * any value removed by direct or linked filters renders as a ghost row.
+   * any value removed by direct or linked filters renders as a filtered-out
+   * row.
    * @default false
    */
   showFilteredOutValues?: boolean;

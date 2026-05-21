@@ -85,11 +85,15 @@ export function createHasLinkFilterDef(
 export function createLinkedPropertyFilterDef(
   linkName: string,
   linkedPropertyKey: string,
+  options: { reverseLinkName?: string; omitReverseLinkName?: boolean } = {},
 ): FilterDefinitionUnion<typeof MockObjectType> {
+  const reverseLinkName = options.omitReverseLinkName
+    ? undefined
+    : options.reverseLinkName ?? "reverseLink";
   return {
     type: "LINKED_PROPERTY",
     linkName,
-    reverseLinkName: "reverseLink",
+    ...(reverseLinkName !== undefined ? { reverseLinkName } : {}),
     linkedPropertyKey,
     linkedFilterComponent: "LISTOGRAM",
     linkedFilterState: { type: "EXACT_MATCH", values: [] },

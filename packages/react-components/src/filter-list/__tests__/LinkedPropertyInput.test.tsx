@@ -277,7 +277,7 @@ describe("LinkedPropertyInput", () => {
     });
   });
 
-  describe("ghost initialFilterStates values", () => {
+  describe("filtered-out initialFilterStates values", () => {
     function mockAggregationData(
       groups: Array<{ name: string; count: number }>,
     ): void {
@@ -292,7 +292,7 @@ describe("LinkedPropertyInput", () => {
       } as unknown as ReturnType<typeof useOsdkAggregation>);
     }
 
-    it("renders ghost selected value as a chip in MULTI_SELECT", () => {
+    it("renders filtered-out selected value as a chip in MULTI_SELECT", () => {
       mockAggregationData([]);
       const mockObjectSet = createMockObjectSet();
 
@@ -318,7 +318,7 @@ describe("LinkedPropertyInput", () => {
       expect(screen.getByText("Research")).toBeDefined();
     });
 
-    it("mounts combobox for ghost selected value in SINGLE_SELECT", () => {
+    it("mounts combobox for filtered-out selected value in SINGLE_SELECT", () => {
       mockAggregationData([]);
       const mockObjectSet = createMockObjectSet();
 
@@ -339,13 +339,13 @@ describe("LinkedPropertyInput", () => {
       );
 
       // Without the fix, values.length === 0 renders "No options available"
-      // and the Combobox never mounts. With the fix, the ghost value makes
-      // values.length > 0, so the search input renders instead.
+      // and the Combobox never mounts. With the fix, the filtered-out value
+      // makes values.length > 0, so the search input renders instead.
       expect(screen.queryByText("No options available")).toBeNull();
       expect(screen.getByLabelText("Select name")).toBeDefined();
     });
 
-    it("renders ghost selected value as a checked row with count 0 in LISTOGRAM", () => {
+    it("renders filtered-out selected value as a checked row with count 0 in LISTOGRAM", () => {
       mockAggregationData([{ name: "Marketing", count: 5 }]);
       const mockObjectSet = createMockObjectSet();
 
@@ -454,7 +454,7 @@ describe("LinkedPropertyInput", () => {
     });
   });
 
-  describe("showFilteredOutValues (linked ghosts)", () => {
+  describe("showFilteredOutValues (linked filtered-out rows)", () => {
     function mockDualLinkedAggregation(
       scoped: Array<{ name: string; count: number }>,
       emptySource: Array<{ name: string; count: number }>,
@@ -497,7 +497,7 @@ describe("LinkedPropertyInput", () => {
       return base;
     }
 
-    it("merges emptySource linked-facet values into LISTOGRAM as count=0 ghosts when showFilteredOutValues + linkedFilters", () => {
+    it("merges emptySource linked-facet values into LISTOGRAM as count=0 filtered-out rows when showFilteredOutValues + linkedFilters", () => {
       mockDualLinkedAggregation(
         [{ name: "Alice", count: 2 }],
         [{ name: "Alice", count: 5 }, { name: "Bob", count: 3 }],
@@ -523,11 +523,11 @@ describe("LinkedPropertyInput", () => {
         />,
       );
 
-      // Both rows render — "Alice" from scoped, "Bob" synthesized from emptySource
-      // as a count=0 ghost.
+      // Both rows render — "Alice" from scoped, "Bob" synthesized from
+      // emptySource as a count=0 filtered-out row.
       expect(screen.getByRole("button", { name: /Alice/ })).toBeTruthy();
       const bobRow = screen.getByRole("button", { name: /Bob/ });
-      expect(bobRow.hasAttribute("data-ghost")).toBe(true);
+      expect(bobRow.hasAttribute("data-filtered-out")).toBe(true);
     });
   });
 });

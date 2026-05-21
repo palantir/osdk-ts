@@ -862,23 +862,31 @@ Styling for filter list components including search, checkboxes, listogram, and 
 
 #### Range Input Tokens
 
-| Variable                                         | Default Value                                                                | Description                 |
-| ------------------------------------------------ | ---------------------------------------------------------------------------- | --------------------------- |
-| `--osdk-filter-range-gap`                        | `calc(var(--osdk-surface-spacing) * 2.5)`                                    | Range gap                   |
-| `--osdk-filter-range-histogram-padding-bottom`   | `calc(var(--osdk-surface-spacing) * 1)`                                      | Histogram bottom padding    |
-| `--osdk-filter-range-histogram-padding-inline`   | `calc(var(--osdk-surface-spacing) * 2)`                                      | Histogram inline padding    |
-| `--osdk-filter-range-histogram-height`           | `calc(var(--osdk-surface-spacing) * 15)`                                     | Histogram height            |
-| `--osdk-filter-range-histogram-bar-gap`          | `calc(var(--osdk-surface-spacing) * 0.5)`                                    | Histogram bar gap           |
-| `--osdk-filter-range-histogram-bar-min-width`    | `var(--osdk-surface-spacing)`                                                | Histogram bar minimum width |
-| `--osdk-filter-range-histogram-bar-color`        | `var(--osdk-palette-gray-200)`                                               | Histogram bar color         |
-| `--osdk-filter-range-histogram-bar-active-color` | `var(--osdk-intent-primary-rest)`                                            | Histogram active bar color  |
-| `--osdk-filter-range-histogram-bar-transition`   | `var(--osdk-emphasis-transition-duration) var(--osdk-emphasis-ease-default)` | Histogram bar transition    |
-| `--osdk-filter-range-inputs-gap`                 | `calc(var(--osdk-surface-spacing) * 0.5)`                                    | Range inputs gap            |
-| `--osdk-filter-range-input-wrapper-gap`          | `var(--osdk-surface-spacing)`                                                | Input wrapper gap           |
-| `--osdk-filter-range-label-font-family`          | `var(--osdk-typography-family-default)`                                      | Range label font family     |
-| `--osdk-filter-range-label-font-size`            | `var(--osdk-typography-size-body-small)`                                     | Range label font size       |
-| `--osdk-filter-range-label-color`                | `var(--osdk-typography-color-muted)`                                         | Range label color           |
-| `--osdk-filter-range-separator-color`            | `var(--osdk-typography-color-muted)`                                         | Range separator color       |
+| Variable                                           | Default Value                                                                | Description                  |
+| -------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------- |
+| `--osdk-filter-range-gap`                          | `calc(var(--osdk-surface-spacing) * 2.5)`                                    | Range gap                    |
+| `--osdk-filter-range-histogram-padding-bottom`     | `calc(var(--osdk-surface-spacing) * 1)`                                      | Histogram bottom padding     |
+| `--osdk-filter-range-histogram-padding-inline`     | `calc(var(--osdk-surface-spacing) * 2)`                                      | Histogram inline padding     |
+| `--osdk-filter-range-histogram-height`             | `calc(var(--osdk-surface-spacing) * 15)`                                     | Histogram height             |
+| `--osdk-filter-range-histogram-bar-gap`            | `calc(var(--osdk-surface-spacing) * 0.5)`                                    | Histogram bar gap            |
+| `--osdk-filter-range-histogram-bar-min-width`      | `var(--osdk-surface-spacing)`                                                | Histogram bar minimum width  |
+| `--osdk-filter-range-histogram-bar-color`          | `var(--osdk-palette-gray-200)`                                               | Histogram bar color          |
+| `--osdk-filter-range-histogram-bar-active-color`   | `var(--osdk-intent-primary-rest)`                                            | Histogram active bar color   |
+| `--osdk-filter-range-histogram-bar-transition`     | `var(--osdk-emphasis-transition-duration) var(--osdk-emphasis-ease-default)` | Histogram bar transition     |
+| `--osdk-filter-range-inputs-gap`                   | `calc(var(--osdk-surface-spacing) * 0.5)`                                    | Range inputs gap             |
+| `--osdk-filter-range-input-wrapper-gap`            | `var(--osdk-surface-spacing)`                                                | Input wrapper gap            |
+| `--osdk-filter-range-label-font-family`            | `var(--osdk-typography-family-default)`                                      | Range label font family      |
+| `--osdk-filter-range-label-font-size`              | `var(--osdk-typography-size-body-small)`                                     | Range label font size        |
+| `--osdk-filter-range-label-color`                  | `var(--osdk-typography-color-muted)`                                         | Range label color            |
+| `--osdk-filter-range-separator-color`              | `var(--osdk-typography-color-muted)`                                         | Range separator color        |
+| `--osdk-filter-range-clear-button-bg-hover`        | `var(--osdk-custom-color-gray-1)`                                            | Range clear button hover bg  |
+| `--osdk-filter-range-histogram-axis-color`         | `var(--osdk-typography-color-muted)`                                         | Histogram axis text color    |
+| `--osdk-filter-range-histogram-axis-font-size`     | `var(--osdk-typography-size-body-large)`                                     | Histogram axis font size     |
+| `--osdk-filter-range-histogram-axis-line-color`    | `var(--osdk-palette-gray-1)`                                                 | Histogram axis line color    |
+| `--osdk-filter-range-histogram-label-color`        | `var(--osdk-typography-color-muted)`                                         | Histogram label color        |
+| `--osdk-filter-range-histogram-label-font-size`    | `var(--osdk-typography-size-body-large)`                                     | Histogram label font size    |
+| `--osdk-filter-range-histogram-subtitle-color`     | `var(--osdk-typography-color-default-rest)`                                  | Histogram subtitle color     |
+| `--osdk-filter-range-histogram-subtitle-font-size` | `var(--osdk-typography-size-body-large)`                                     | Histogram subtitle font size |
 
 #### Timeline Input Tokens
 
@@ -966,6 +974,59 @@ Canonical "No value" styling used by the shared `NoValueLabel` component across 
 | `--osdk-filter-skeleton-text-height`  | `calc(var(--osdk-surface-spacing) * 1.5)`  | Skeleton text height             |
 | `--osdk-filter-skeleton-count-width`  | `calc(var(--osdk-surface-spacing) * 2.5)`  | Skeleton count width             |
 | `--osdk-filter-content-fade-duration` | `var(--osdk-emphasis-transition-duration)` | Content fade transition duration |
+
+#### Filtered-Out Item Tokens
+
+Styling for count=0 muted rows surfaced by `showFilteredOutValues`. Applied to listogram rows via `[data-filtered-out]` and to multi-select items via the `filteredOutItem` class.
+
+| Variable                                  | Default Value                        | Description                         |
+| ----------------------------------------- | ------------------------------------ | ----------------------------------- |
+| `--osdk-filter-filtered-out-item-opacity` | `0.5`                                | Opacity for filtered-out facet rows |
+| `--osdk-filter-filtered-out-item-color`   | `var(--osdk-typography-color-muted)` | Text color for filtered-out rows    |
+
+#### Filter Popover Tokens
+
+Used by the composable label + popover-trigger primitive that wraps single-select / multi-select dropdown filters.
+
+| Variable                                             | Default Value                                                                     | Description                                 |
+| ---------------------------------------------------- | --------------------------------------------------------------------------------- | ------------------------------------------- |
+| `--osdk-filter-popover-gap`                          | `calc(var(--osdk-surface-spacing) * 1)`                                           | Gap between label and trigger               |
+| `--osdk-filter-popover-stack-gap`                    | `calc(var(--osdk-surface-spacing) * 0.5)`                                         | Stack gap inside the trigger                |
+| `--osdk-filter-popover-label-font-family`            | `var(--osdk-typography-family-default)`                                           | Trigger label font family                   |
+| `--osdk-filter-popover-label-font-size`              | `var(--osdk-typography-size-body-small)`                                          | Trigger label font size                     |
+| `--osdk-filter-popover-label-color`                  | `var(--osdk-typography-color-muted)`                                              | Trigger label color                         |
+| `--osdk-filter-popover-trigger-width`                | `calc(var(--osdk-surface-spacing) * 40)`                                          | Trigger element width                       |
+| `--osdk-filter-popover-trigger-min-height`           | `calc(var(--osdk-surface-spacing) * 7)`                                           | Trigger element minimum height              |
+| `--osdk-filter-popover-trigger-padding`              | `0 calc(var(--osdk-surface-spacing) * 6) 0 calc(var(--osdk-surface-spacing) * 2)` | Trigger padding (right reserves remove btn) |
+| `--osdk-filter-popover-trigger-border-radius`        | `var(--osdk-surface-border-radius)`                                               | Trigger border radius                       |
+| `--osdk-filter-popover-trigger-border-width`         | `var(--osdk-surface-border-width)`                                                | Trigger border width                        |
+| `--osdk-filter-popover-trigger-border-color`         | `var(--osdk-surface-border-color-default)`                                        | Trigger border color (rest)                 |
+| `--osdk-filter-popover-trigger-border-color-hover`   | `var(--osdk-typography-color-muted)`                                              | Trigger border color on hover               |
+| `--osdk-filter-popover-trigger-border-color-active`  | `var(--osdk-intent-primary-rest)`                                                 | Trigger border color when open/active       |
+| `--osdk-filter-popover-trigger-bg`                   | `transparent`                                                                     | Trigger background                          |
+| `--osdk-filter-popover-trigger-color`                | `var(--osdk-typography-color-default-rest)`                                       | Trigger text color                          |
+| `--osdk-filter-popover-trigger-font-family`          | `var(--osdk-typography-family-default)`                                           | Trigger font family                         |
+| `--osdk-filter-popover-trigger-font-size`            | `var(--osdk-typography-size-body-medium)`                                         | Trigger font size                           |
+| `--osdk-filter-popover-trigger-transition`           | `var(--osdk-emphasis-transition-duration) var(--osdk-emphasis-ease-default)`      | Trigger transition                          |
+| `--osdk-filter-popover-trigger-focus-outline-width`  | `var(--osdk-emphasis-focus-width)`                                                | Trigger focus outline width                 |
+| `--osdk-filter-popover-trigger-focus-outline-color`  | `var(--osdk-emphasis-focus-color)`                                                | Trigger focus outline color                 |
+| `--osdk-filter-popover-trigger-focus-outline-offset` | `var(--osdk-emphasis-focus-offset)`                                               | Trigger focus outline offset                |
+| `--osdk-filter-popover-placeholder-color`            | `var(--osdk-typography-color-muted)`                                              | Trigger placeholder text color              |
+| `--osdk-filter-popover-remove-right`                 | `calc(var(--osdk-surface-spacing) * 0.75)`                                        | Remove-button right offset within trigger   |
+| `--osdk-filter-popover-remove-size`                  | `calc(var(--osdk-surface-spacing) * 4)`                                           | Remove button hit size                      |
+| `--osdk-filter-popover-remove-color`                 | `var(--osdk-typography-color-muted)`                                              | Remove button color (rest)                  |
+| `--osdk-filter-popover-remove-border-radius`         | `var(--osdk-surface-border-radius)`                                               | Remove button border radius                 |
+| `--osdk-filter-popover-remove-transition`            | `var(--osdk-emphasis-transition-duration) var(--osdk-emphasis-ease-default)`      | Remove button transition                    |
+| `--osdk-filter-popover-remove-color-hover`           | `var(--osdk-typography-color-default-rest)`                                       | Remove button hover color                   |
+| `--osdk-filter-popover-remove-bg-hover`              | `var(--osdk-custom-color-gray-1)`                                                 | Remove button hover background              |
+| `--osdk-filter-popover-popup-bg`                     | `var(--osdk-background-primary)`                                                  | Popup background                            |
+| `--osdk-filter-popover-popup-border`                 | `var(--osdk-surface-border)`                                                      | Popup border                                |
+| `--osdk-filter-popover-popup-border-radius`          | `var(--osdk-surface-border-radius)`                                               | Popup border radius                         |
+| `--osdk-filter-popover-popup-shadow`                 | `var(--osdk-surface-shadow-2)`                                                    | Popup shadow                                |
+| `--osdk-filter-popover-popup-padding`                | `calc(var(--osdk-surface-spacing) * 2)`                                           | Popup padding                               |
+| `--osdk-filter-popover-popup-min-width`              | `calc(var(--osdk-surface-spacing) * 70)`                                          | Popup minimum width                         |
+| `--osdk-filter-popover-popup-max-width`              | `calc(var(--osdk-surface-spacing) * 120)`                                         | Popup maximum width                         |
+| `--osdk-filter-popover-popup-z-index`                | `var(--osdk-surface-z-index-3)`                                                   | Popup stacking context                      |
 
 ### Form
 

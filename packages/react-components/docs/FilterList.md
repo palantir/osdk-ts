@@ -132,6 +132,51 @@ When using `type: "PROPERTY"`, the definition supports:
 | `displayMode`     | `"full" \| "count" \| "minimal"` | `"full"` | `full`: bar + count, `count`: count only, `minimal`: label only |
 | `maxVisibleItems` | `number`                         | `5`      | Number of items shown before "View all" link appears            |
 
+### Linked Property Filter Definition
+
+When using `type: "LINKED_PROPERTY"`, the definition supports:
+
+| Field                   | Type                            | Description                                                                                                                                                                                                                             |
+| ----------------------- | ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `linkName`              | `LinkNames<Q>`                  | Link on `Q` that traverses to the related object type                                                                                                                                                                                   |
+| `linkedPropertyKey`     | `PropertyKeys<LinkedQ>`         | Property on the linked type to filter by                                                                                                                                                                                                |
+| `linkedFilterComponent` | `FilterComponentType`           | Which UI component to render (see Filter Components table)                                                                                                                                                                              |
+| `linkedFilterState`     | `FilterState`                   | Initial state for the linked filter                                                                                                                                                                                                     |
+| `filterState`           | `LinkedPropertyFilterState`     | Wrapped filter state                                                                                                                                                                                                                    |
+| `reverseLinkName`       | `LinkNames<LinkedQ>` (optional) | **Opt-in for FilterList-managed narrowing.** When set, the linked filter narrows `objectSet` and emits via `onEffectiveObjectSet`. Names the link on the linked type that points back to `Q`. Omit to keep the filter as UI state only. |
+| `label`                 | `string`                        | Display label for the filter                                                                                                                                                                                                            |
+| `isVisible`             | `boolean`                       | Whether the filter is initially visible (default: `true`)                                                                                                                                                                               |
+
+#### Two modes for LINKED_PROPERTY
+
+**Auto-narrowing** — set `reverseLinkName`. FilterList composes `pivotTo(linkName).where(...).pivotTo(reverseLinkName)` and emits the narrowed set via `onEffectiveObjectSet`:
+
+```typescript
+{
+  type: "LINKED_PROPERTY",
+  linkName: "manager",          // Employee → Manager
+  reverseLinkName: "directReports", // Manager → Employee (back-link)
+  linkedPropertyKey: "fullName",
+  linkedFilterComponent: "MULTI_SELECT",
+  linkedFilterState: { type: "SELECT", selectedValues: [] },
+  filterState: { type: "linkedProperty", linkedFilterState: { type: "SELECT", selectedValues: [] } },
+}
+```
+
+**UI-only** — omit `reverseLinkName`. The filter still renders and fires `onFilterStateChanged`; downstream narrowing is up to the consumer:
+
+```typescript
+{
+  type: "LINKED_PROPERTY",
+  linkName: "manager",
+  // no reverseLinkName — FilterList won't narrow objectSet on this filter
+  linkedPropertyKey: "fullName",
+  linkedFilterComponent: "MULTI_SELECT",
+  linkedFilterState: { type: "SELECT", selectedValues: [] },
+  filterState: { type: "linkedProperty", linkedFilterState: { type: "SELECT", selectedValues: [] } },
+}
+```
+
 ### Filter Components
 
 When using `type: "PROPERTY"` or `type: "LINKED_PROPERTY"`, specify a `filterComponent`:

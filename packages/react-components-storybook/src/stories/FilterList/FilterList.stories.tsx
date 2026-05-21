@@ -1946,7 +1946,7 @@ function CombinedWithLinkedFilterStory(
 }
 
 export const CombinedWithLinkedFilter: Story = {
-  name: "Combined linked + direct filters (zero-count ghosts)",
+  name: "Combined linked + direct filters (zero-count filtered-out rows)",
   parameters: {
     docs: {
       description: {
@@ -1956,7 +1956,7 @@ export const CombinedWithLinkedFilter: Story = {
           + "applies the linked-filter narrowing internally and emits the fully-"
           + "narrowed `ObjectSet` via `onEffectiveObjectSet` for the table. "
           + "With `showFilteredOutValues`, direct-facet values absent under the "
-          + "active linked filter render as greyed-out count=0 ghost rows.",
+          + "active linked filter render as greyed-out count=0 filtered-out rows.",
       },
       source: {
         code: `const baseObjectSet = useMemo(() => client(Employee), [client]);
@@ -2313,16 +2313,18 @@ const SAVED_FILTER_STATES = new Map<string, FilterState>([
   // "Research", "Chief Scientist", and "Berlin" are NOT in the mock employee
   // dataset — they simulate saved selections that currently have zero matching
   // rows. Each filter type still renders them so users can see and clear them.
-  // Note: ghost values in one filter cascade into other filters' aggregation
-  // queries, so all counts show 0. This is a known limitation tracked separately.
+  // Note: filtered-out values in one filter cascade into other filters'
+  // aggregation queries, so all counts show 0. This is a known limitation
+  // tracked separately.
   ["department", { type: "EXACT_MATCH", values: ["Marketing", "Research"] }],
   ["jobTitle-multi", {
     type: "SELECT",
     selectedValues: ["Marketing Manager", "Chief Scientist"],
   }],
   ["locationCity-single", { type: "SELECT", selectedValues: ["Berlin"] }],
-  // Linked property filters — ghost values are merged via mergeAggregationValues
-  // in LinkedMultiSelectInput, LinkedSingleSelectInput, and LinkedListogramInput.
+  // Linked property filters — filtered-out values are merged via
+  // mergeAggregationValues in LinkedMultiSelectInput, LinkedSingleSelectInput,
+  // and LinkedListogramInput.
   ["linkedProperty:lead:department", {
     type: "linkedProperty",
     linkedFilterState: {

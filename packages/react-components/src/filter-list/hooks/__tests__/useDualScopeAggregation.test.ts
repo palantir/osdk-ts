@@ -53,7 +53,7 @@ describe("useDualScopeAggregation", () => {
       .toBe(3);
   });
 
-  it("merges emptySource-only values into the result as count=0 ghosts", () => {
+  it("merges emptySource-only values into the result as count=0 filtered-out rows", () => {
     mockAggregationByObjectSetKind({
       scoped: [{ name: "Engineering", count: 3 }],
       emptySource: [

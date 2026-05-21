@@ -82,9 +82,9 @@
 }
 
 /* Muted styling for filtered-out (count=0) rows. */
-.row[data-ghost] {
-  opacity: var(--osdk-filter-ghost-item-opacity);
-  color: var(--osdk-filter-ghost-item-color);
+.row[data-filtered-out] {
+  opacity: var(--osdk-filter-filtered-out-item-opacity);
+  color: var(--osdk-filter-filtered-out-item-color);
 }
 
 .label {

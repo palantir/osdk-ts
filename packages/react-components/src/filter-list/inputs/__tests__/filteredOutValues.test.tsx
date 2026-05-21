@@ -65,9 +65,9 @@ function mockDualAggregationData(
   mockAggregationByObjectSetKind({ narrowed, base, linked: narrowed });
 }
 
-describe("ghost initialFilterStates values", () => {
+describe("filtered-out initialFilterStates values", () => {
   describe("ListogramFilterInput", () => {
-    it("renders ghost selected value as a checked row with count 0", () => {
+    it("renders filtered-out selected value as a checked row with count 0", () => {
       mockAggregationData([{ name: "Marketing", count: 5 }]);
       render(
         <ListogramFilterInput
@@ -96,7 +96,7 @@ describe("ghost initialFilterStates values", () => {
   });
 
   describe("MultiSelectFilterInput", () => {
-    it("renders ghost selected value as a chip when aggregation returns empty", () => {
+    it("renders filtered-out selected value as a chip when aggregation returns empty", () => {
       mockAggregationData([]);
 
       render(
@@ -120,7 +120,7 @@ describe("ghost initialFilterStates values", () => {
   });
 
   describe("SingleSelectFilterInput", () => {
-    it("mounts combobox for ghost selected value instead of showing empty message", () => {
+    it("mounts combobox for filtered-out selected value instead of showing empty message", () => {
       mockAggregationData([]);
 
       render(
@@ -137,15 +137,15 @@ describe("ghost initialFilterStates values", () => {
       );
 
       // Without the fix, values.length === 0 renders "No options available"
-      // and the Combobox never mounts. With the fix, the ghost value makes
-      // values.length > 0, so the search input renders instead.
+      // and the Combobox never mounts. With the fix, the filtered-out value
+      // makes values.length > 0, so the search input renders instead.
       expect(screen.queryByText("No options available")).toBeNull();
       expect(screen.getByLabelText("Select name")).toBeDefined();
     });
   });
 });
 
-describe("linked-filter ghost rendering (showFilteredOutValues)", () => {
+describe("linked-filter filtered-out rendering (showFilteredOutValues)", () => {
   const linkedFilters: ReadonlyArray<LinkedFilter<typeof MockObjectType>> = [
     {
       linkName: "lead",
@@ -172,7 +172,7 @@ describe("linked-filter ghost rendering (showFilteredOutValues)", () => {
 
   const EMPTY = {} as WhereClause<typeof MockObjectType>;
 
-  it("marks base-only values as data-ghost in ListogramFilterInput", () => {
+  it("marks base-only values as data-filtered-out in ListogramFilterInput", () => {
     mockDualAggregationData(
       [{ name: "Engineering", count: 3 }],
       [{ name: "Engineering", count: 5 }, { name: "Marketing", count: 2 }],
@@ -191,12 +191,12 @@ describe("linked-filter ghost rendering (showFilteredOutValues)", () => {
     );
     expect(
       screen.getByRole("button", { name: /Engineering/ }).hasAttribute(
-        "data-ghost",
+        "data-filtered-out",
       ),
     ).toBe(false);
     expect(
       screen.getByRole("button", { name: /Marketing/ }).hasAttribute(
-        "data-ghost",
+        "data-filtered-out",
       ),
     ).toBe(true);
   });
@@ -271,7 +271,7 @@ describe("linked-filter ghost rendering (showFilteredOutValues)", () => {
       return source;
     }
 
-    it("ghosts linked values whose source rows were filtered out", () => {
+    it("marks linked values whose source rows were filtered out as filtered-out", () => {
       mockDualAggregationData(
         [{ name: "Alice", count: 4 }, { name: "Bob", count: 2 }],
         [
@@ -297,18 +297,20 @@ describe("linked-filter ghost rendering (showFilteredOutValues)", () => {
 
       expect(
         screen.getByRole("button", { name: /Alice/ }).hasAttribute(
-          "data-ghost",
+          "data-filtered-out",
         ),
       ).toBe(false);
       expect(
-        screen.getByRole("button", { name: /Bob/ }).hasAttribute("data-ghost"),
+        screen.getByRole("button", { name: /Bob/ }).hasAttribute(
+          "data-filtered-out",
+        ),
       ).toBe(false);
       const carolRow = screen.getByRole("button", { name: /Carol/ });
-      expect(carolRow.hasAttribute("data-ghost")).toBe(true);
+      expect(carolRow.hasAttribute("data-filtered-out")).toBe(true);
       expect(carolRow.textContent).toContain("0");
     });
 
-    it("does not ghost when showFilteredOutValues is false", () => {
+    it("does not mark rows as filtered-out when showFilteredOutValues is false", () => {
       mockDualAggregationData(
         [{ name: "Alice", count: 4 }, { name: "Bob", count: 2 }],
         [

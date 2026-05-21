@@ -446,6 +446,9 @@ export function getActiveLinkedFilters<Q extends ObjectTypeDefinition>(
     if (!state || state.type !== "linkedProperty") {
       continue;
     }
+    if (definition.reverseLinkName == null) {
+      continue;
+    }
     const innerLeaf = buildPropertyKeyClause(
       definition.linkedPropertyKey,
       state.linkedFilterState,

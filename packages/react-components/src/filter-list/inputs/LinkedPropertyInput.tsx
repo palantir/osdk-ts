@@ -106,8 +106,8 @@ function LinkedPropertyInputInner<
     () => scoped.pivotTo(definition.linkName),
     [scoped, definition.linkName],
   );
-  // Ghost rows on a linked facet compare against the raw source so direct
-  // filters surface as count=0 entries on the linked side.
+  // Filtered-out rows on a linked facet compare against the raw source so
+  // direct filters surface as count=0 entries on the linked side.
   const emptySourceLinkedObjectSet = useMemo(
     () =>
       showFilteredOutValues

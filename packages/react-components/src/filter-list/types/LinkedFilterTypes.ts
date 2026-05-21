@@ -108,11 +108,17 @@ export interface LinkedPropertyFilterDefinition<
   id?: string;
   linkName: L;
   /**
-   * Name of the link on the linked object type that points back to `Q`. Used
-   * to invert the pivot when applying the filter's narrowing to the source
-   * object set. Required.
+   * Set this to make the filter narrow `objectSet`. The narrowed result
+   * is emitted via `onEffectiveObjectSet`.
+   *
+   * The value is the link on the linked object type that points back to `Q`.
+   * For example, if `linkName: "manager"` traverses Employee → Manager, set
+   * `reverseLinkName` to the link on Manager that returns Employees.
+   *
+   * Leave unset to make the filter UI-only. It still renders and reports
+   * state via `onFilterStateChanged`; FilterList won't narrow on it.
    */
-  reverseLinkName: LinkNames<LinkedQ>;
+  reverseLinkName?: LinkNames<LinkedQ>;
   linkedPropertyKey: LinkedK;
   linkedFilterComponent: LinkedC;
   linkedFilterState: FilterStateByComponentType[LinkedC];

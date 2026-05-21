@@ -102,12 +102,12 @@ function MultiSelectInputInner({
     (value: string) => {
       const isEmpty = isEmptyValue(value);
       const count = countByValue.get(value) ?? 0;
-      const isGhost = count === 0 && !selectedSet.has(value);
+      const isFilteredOut = count === 0 && !selectedSet.has(value);
       return (
         <Combobox.Item
           key={value}
           value={value}
-          className={isGhost ? styles.ghostItem : undefined}
+          className={isFilteredOut ? styles.filteredOutItem : undefined}
         >
           <Combobox.ItemIndicator />
           <span className={styles.itemLabel}>
