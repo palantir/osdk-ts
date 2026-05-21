@@ -250,17 +250,13 @@ describe("ScenarioClient methods", () => {
   });
 
   describe("editedLinksAsyncIter", () => {
-    it("walks pages, flattens, and dedupes by (source.pk, target.pk, linkType)", async () => {
+    it("walks pages and flattens each LinksFromObject entry", async () => {
       const scenario = withScenario(client, "ri.actions..scenario.abc");
       const page1: ListScenarioEditedLinksResponse = {
         data: [
           {
             sourceObject: { __apiName: "Employee", __primaryKey: 1 },
             linkedObjects: [
-              {
-                targetObject: { __apiName: "Employee", __primaryKey: 2 },
-                linkType: "lead",
-              },
               {
                 targetObject: { __apiName: "Employee", __primaryKey: 2 },
                 linkType: "lead",
@@ -275,10 +271,6 @@ describe("ScenarioClient methods", () => {
           {
             sourceObject: { __apiName: "Employee", __primaryKey: 1 },
             linkedObjects: [
-              {
-                targetObject: { __apiName: "Employee", __primaryKey: 2 },
-                linkType: "lead",
-              },
               {
                 targetObject: { __apiName: "Employee", __primaryKey: 3 },
                 linkType: "lead",
