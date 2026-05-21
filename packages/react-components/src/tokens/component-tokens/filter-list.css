@@ -22,6 +22,11 @@
   --osdk-filter-list-empty-text-color: var(--osdk-typography-color-muted);
   --osdk-filter-list-empty-font-size: var(--osdk-typography-size-body-small);
 
+  /* Ghost entries: values present in the wider scope but absent from the
+     narrowed scope. */
+  --osdk-filter-ghost-item-opacity: 0.5;
+  --osdk-filter-ghost-item-color: var(--osdk-typography-color-muted);
+
   /* Filter List Header */
   --osdk-filter-header-padding: calc(var(--osdk-surface-spacing) * 2)
     calc(var(--osdk-surface-spacing) * 3);

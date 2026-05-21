@@ -71,12 +71,13 @@ function EmployeeFilters() {
 
 ### Filter Management
 
-| Prop                    | Type                             | Default | Description                                                    |
-| ----------------------- | -------------------------------- | ------- | -------------------------------------------------------------- |
-| `filterClause`          | `WhereClause<Q>`                 | -       | Current where clause (controlled mode)                         |
-| `onFilterClauseChanged` | `(newClause) => void`            | -       | Called when filter clause changes. Required in controlled mode |
-| `onFilterStateChanged`  | `(definition, newState) => void` | -       | Called when any filter's state changes                         |
-| `initialFilterStates`   | `Map<string, FilterState>`       | -       | Initial states for hydrating from external storage             |
+| Prop                    | Type                             | Default | Description                                                                                                                                                               |
+| ----------------------- | -------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `filterClause`          | `WhereClause<Q>`                 | -       | Current where clause covering direct filters (controlled mode). LINKED_PROPERTY narrowing surfaces only through `onEffectiveObjectSet`.                                   |
+| `onFilterClauseChanged` | `(newClause) => void`            | -       | Called when the direct-filter where clause changes. Required in controlled mode.                                                                                          |
+| `onEffectiveObjectSet`  | `(objectSet) => void`            | -       | Observer invoked with the fully-narrowed `ObjectSet` (direct + linked filters applied) on every filter change. Requires `objectSet`. Use when LINKED filters are present. |
+| `onFilterStateChanged`  | `(definition, newState) => void` | -       | Called when any filter's state changes                                                                                                                                    |
+| `initialFilterStates`   | `Map<string, FilterState>`       | -       | Initial states for hydrating from external storage                                                                                                                        |
 
 ### UI Features
 

@@ -14,12 +14,23 @@
  * limitations under the License.
  */
 
-import type { WhereClause } from "@osdk/api";
+import type {
+  ObjectSet,
+  ObjectTypeDefinition,
+  PropertyKeys,
+  WhereClause,
+} from "@osdk/api";
 import { useOsdkAggregation } from "@osdk/react";
 import { cleanup, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { mockAggregationByObjectSetKind } from "../../__tests__/aggregationMocks.js";
 import { MockObjectType } from "../../__tests__/testUtils.js";
+import type {
+  LinkedFilter,
+  LinkedPropertyFilterDefinition,
+} from "../../types/LinkedFilterTypes.js";
+import { LinkedPropertyInput } from "../LinkedPropertyInput.js";
 import { ListogramFilterInput } from "../ListogramFilterInput.js";
 import { MultiSelectFilterInput } from "../MultiSelectFilterInput.js";
 import { SingleSelectFilterInput } from "../SingleSelectFilterInput.js";
@@ -46,6 +57,13 @@ afterEach(() => {
   cleanup();
   vi.clearAllMocks();
 });
+
+function mockDualAggregationData(
+  narrowed: Array<{ name: string; count: number }>,
+  base: Array<{ name: string; count: number }>,
+): void {
+  mockAggregationByObjectSetKind({ narrowed, base, linked: narrowed });
+}
 
 describe("ghost initialFilterStates values", () => {
   describe("ListogramFilterInput", () => {
@@ -123,6 +141,198 @@ describe("ghost initialFilterStates values", () => {
       // values.length > 0, so the search input renders instead.
       expect(screen.queryByText("No options available")).toBeNull();
       expect(screen.getByLabelText("Select name")).toBeDefined();
+    });
+  });
+});
+
+describe("linked-filter ghost rendering (showFilteredOutValues)", () => {
+  const linkedFilters: ReadonlyArray<LinkedFilter<typeof MockObjectType>> = [
+    {
+      linkName: "lead",
+      reverseLinkName: "peeps",
+      innerWhere: { fullName: "Alice" } as unknown as WhereClause<
+        typeof MockObjectType
+      >,
+    },
+  ] as unknown as ReadonlyArray<LinkedFilter<typeof MockObjectType>>;
+
+  const narrowed = { _kind: "narrowed" } as unknown as ObjectSet<
+    typeof MockObjectType
+  >;
+  const linkedScope = {
+    where: vi.fn().mockReturnValue({
+      pivotTo: vi.fn().mockReturnValue({ _kind: "linked" }),
+    }),
+  };
+  const baseSet = {
+    _kind: "base",
+    pivotTo: vi.fn().mockReturnValue(linkedScope),
+    intersect: vi.fn().mockReturnValue(narrowed),
+  } as unknown as ObjectSet<typeof MockObjectType>;
+
+  const EMPTY = {} as WhereClause<typeof MockObjectType>;
+
+  it("marks base-only values as data-ghost in ListogramFilterInput", () => {
+    mockDualAggregationData(
+      [{ name: "Engineering", count: 3 }],
+      [{ name: "Engineering", count: 5 }, { name: "Marketing", count: 2 }],
+    );
+    render(
+      <ListogramFilterInput
+        objectType={MockObjectType}
+        objectSet={baseSet}
+        propertyKey="name"
+        whereClause={EMPTY}
+        linkedFilters={linkedFilters}
+        showFilteredOutValues={true}
+        filterState={{ type: "EXACT_MATCH", values: [] }}
+        onFilterStateChanged={vi.fn()}
+      />,
+    );
+    expect(
+      screen.getByRole("button", { name: /Engineering/ }).hasAttribute(
+        "data-ghost",
+      ),
+    ).toBe(false);
+    expect(
+      screen.getByRole("button", { name: /Marketing/ }).hasAttribute(
+        "data-ghost",
+      ),
+    ).toBe(true);
+  });
+
+  it("merges base-only values into the MultiSelect option list", () => {
+    mockDualAggregationData(
+      [{ name: "Engineering", count: 3 }],
+      [{ name: "Engineering", count: 5 }, { name: "Marketing", count: 2 }],
+    );
+    render(
+      <MultiSelectFilterInput
+        objectType={MockObjectType}
+        objectSet={baseSet}
+        propertyKey="name"
+        whereClause={EMPTY}
+        linkedFilters={linkedFilters}
+        showFilteredOutValues={true}
+        filterState={{ type: "SELECT", selectedValues: [] }}
+        onFilterStateChanged={vi.fn()}
+      />,
+    );
+    expect(
+      screen.getByTitle("Approximate count of unique values").textContent,
+    ).toContain("2");
+  });
+
+  describe("linked-property facet (direct-filter narrowing)", () => {
+    const LinkedManagerObjectType = {
+      apiName: "Manager",
+      type: "object",
+      __DefinitionMetadata: {
+        primaryKeyApiName: "id",
+        primaryKeyType: "string",
+        properties: { name: { type: "string", multiplicity: false } },
+      },
+    } as unknown as ObjectTypeDefinition;
+
+    const linkedListogramDefinition = {
+      type: "LINKED_PROPERTY",
+      linkName: "manager",
+      reverseLinkName: "peeps",
+      linkedPropertyKey: "name" as PropertyKeys<ObjectTypeDefinition>,
+      linkedFilterComponent: "LISTOGRAM",
+      linkedFilterState: { type: "EXACT_MATCH", values: [] },
+      filterState: {
+        type: "linkedProperty",
+        linkedFilterState: { type: "EXACT_MATCH", values: [] },
+      },
+    } as unknown as LinkedPropertyFilterDefinition<
+      typeof MockObjectType,
+      string,
+      ObjectTypeDefinition,
+      PropertyKeys<ObjectTypeDefinition>
+    >;
+
+    function makeMockSource() {
+      const basePivot = {
+        _kind: "base",
+        $objectSetInternals: { def: LinkedManagerObjectType },
+      };
+      const scopedPivot = {
+        _kind: "narrowed",
+        $objectSetInternals: { def: LinkedManagerObjectType },
+      };
+      const scopedSourceSet = {
+        pivotTo: vi.fn().mockReturnValue(scopedPivot),
+      };
+      const source = {
+        pivotTo: vi.fn().mockReturnValue(basePivot),
+        where: vi.fn().mockReturnValue(scopedSourceSet),
+      } as unknown as ObjectSet<typeof MockObjectType>;
+      return source;
+    }
+
+    it("ghosts linked values whose source rows were filtered out", () => {
+      mockDualAggregationData(
+        [{ name: "Alice", count: 4 }, { name: "Bob", count: 2 }],
+        [
+          { name: "Alice", count: 5 },
+          { name: "Bob", count: 3 },
+          { name: "Carol", count: 1 },
+        ],
+      );
+
+      render(
+        <LinkedPropertyInput
+          objectSet={makeMockSource()}
+          whereClause={{ department: "Engineering" } as unknown as WhereClause<
+            typeof MockObjectType
+          >}
+          linkedFilters={[]}
+          definition={linkedListogramDefinition}
+          filterState={undefined}
+          onFilterStateChanged={vi.fn()}
+          showFilteredOutValues={true}
+        />,
+      );
+
+      expect(
+        screen.getByRole("button", { name: /Alice/ }).hasAttribute(
+          "data-ghost",
+        ),
+      ).toBe(false);
+      expect(
+        screen.getByRole("button", { name: /Bob/ }).hasAttribute("data-ghost"),
+      ).toBe(false);
+      const carolRow = screen.getByRole("button", { name: /Carol/ });
+      expect(carolRow.hasAttribute("data-ghost")).toBe(true);
+      expect(carolRow.textContent).toContain("0");
+    });
+
+    it("does not ghost when showFilteredOutValues is false", () => {
+      mockDualAggregationData(
+        [{ name: "Alice", count: 4 }, { name: "Bob", count: 2 }],
+        [
+          { name: "Alice", count: 5 },
+          { name: "Bob", count: 3 },
+          { name: "Carol", count: 1 },
+        ],
+      );
+
+      render(
+        <LinkedPropertyInput
+          objectSet={makeMockSource()}
+          whereClause={{ department: "Engineering" } as unknown as WhereClause<
+            typeof MockObjectType
+          >}
+          linkedFilters={[]}
+          definition={linkedListogramDefinition}
+          filterState={undefined}
+          onFilterStateChanged={vi.fn()}
+          showFilteredOutValues={false}
+        />,
+      );
+
+      expect(screen.queryByRole("button", { name: /Carol/ })).toBeNull();
     });
   });
 });

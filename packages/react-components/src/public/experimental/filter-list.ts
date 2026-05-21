@@ -54,3 +54,6 @@ export { filterHasActiveState } from "../../filter-list/utils/filterValues.js";
 export { getFilterKey } from "../../filter-list/utils/getFilterKey.js";
 export { getFilterLabel } from "../../filter-list/utils/getFilterLabel.js";
 export { summarizeFilterValue } from "../../filter-list/utils/summarizeFilterValue.js";
+
+export type { LinkedFilter } from "../../filter-list/types/LinkedFilterTypes.js";
+export { narrowObjectSet } from "../../filter-list/utils/narrowObjectSet.js";

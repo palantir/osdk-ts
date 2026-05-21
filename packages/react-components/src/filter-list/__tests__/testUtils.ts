@@ -89,6 +89,7 @@ export function createLinkedPropertyFilterDef(
   return {
     type: "LINKED_PROPERTY",
     linkName,
+    reverseLinkName: "reverseLink",
     linkedPropertyKey,
     linkedFilterComponent: "LISTOGRAM",
     linkedFilterState: { type: "EXACT_MATCH", values: [] },

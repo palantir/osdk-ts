@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
+import type { ObjectTypeDefinition } from "@osdk/api";
 import React, { useCallback, useMemo } from "react";
 import { AddFilterPopover } from "./base/AddFilterPopover.js";
 import { BaseFilterList } from "./base/BaseFilterList.js";
@@ -27,8 +27,11 @@ import type {
 } from "./FilterListApi.js";
 import { useFilterListState } from "./hooks/useFilterListState.js";
 import { useFilterVisibility } from "./hooks/useFilterVisibility.js";
+import { EMPTY_LINKED_FILTERS } from "./types/LinkedFilterTypes.js";
 import { getFilterKey } from "./utils/getFilterKey.js";
 import { getFilterLabel } from "./utils/getFilterLabel.js";
+
+const EMPTY_WHERE = {};
 
 export function FilterList<Q extends ObjectTypeDefinition>(
   props: FilterListProps<Q>,
@@ -45,6 +48,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     showResetButton = false,
     onReset,
     showActiveFilterCount = false,
+    showFilteredOutValues = false,
     className,
     enableSorting,
     onFilterAdded,
@@ -58,6 +62,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     setFilterState,
     clearFilterState,
     perFilterWhereClauses,
+    perFilterLinkedFilters,
     activeFilterCount,
     reset,
   } = useFilterListState(props);
@@ -194,13 +199,21 @@ export function FilterList<Q extends ObjectTypeDefinition>(
         definition={definition}
         filterState={filterState}
         onFilterStateChanged={onFilterStateChanged}
-        whereClause={perFilterWhereClauses.get(filterKey)
-          ?? ({} as WhereClause<Q>)}
+        whereClause={perFilterWhereClauses.get(filterKey) ?? EMPTY_WHERE}
+        linkedFilters={perFilterLinkedFilters.get(filterKey)
+          ?? EMPTY_LINKED_FILTERS}
+        showFilteredOutValues={showFilteredOutValues}
         searchQuery={searchQuery}
         excludeRowOpen={excludeRowOpen}
       />
     ),
-    [objectType, objectSet, perFilterWhereClauses],
+    [
+      objectType,
+      objectSet,
+      perFilterWhereClauses,
+      perFilterLinkedFilters,
+      showFilteredOutValues,
+    ],
   );
 
   return (

@@ -89,6 +89,11 @@ function MultiSelectInputInner({
     [stableValues],
   );
 
+  const selectedSet = useMemo(
+    () => new Set(selectedValues),
+    [selectedValues],
+  );
+
   const comboboxFilter = useMemo(
     () => renderValue ? createRenderValueFilter(renderValue) : undefined,
     [renderValue],
@@ -97,8 +102,14 @@ function MultiSelectInputInner({
   const renderItem = useCallback(
     (value: string) => {
       const isEmpty = isEmptyValue(value);
+      const count = countByValue.get(value) ?? 0;
+      const isGhost = count === 0 && !selectedSet.has(value);
       return (
-        <Combobox.Item key={value} value={value}>
+        <Combobox.Item
+          key={value}
+          value={value}
+          className={isGhost ? styles.ghostItem : undefined}
+        >
           <Combobox.ItemIndicator />
           <span className={styles.itemLabel}>
             {isEmpty
@@ -107,13 +118,13 @@ function MultiSelectInputInner({
           </span>
           {showCounts && (
             <span className={styles.itemCount}>
-              ({(countByValue.get(value) ?? 0).toLocaleString()})
+              ({count.toLocaleString()})
             </span>
           )}
         </Combobox.Item>
       );
     },
-    [countByValue, showCounts, renderValue],
+    [countByValue, selectedSet, showCounts, renderValue],
   );
 
   const renderChips = useCallback(

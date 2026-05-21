@@ -19,6 +19,7 @@ import type {
   LinkNames,
   ObjectTypeDefinition,
   PropertyKeys,
+  WhereClause,
 } from "@osdk/api";
 import type {
   BaseFilterState,
@@ -27,6 +28,22 @@ import type {
   PropertyTypeFromKey,
   ValidComponentsForPropertyType,
 } from "../FilterListItemApi.js";
+
+/**
+ * Distributive form keeps `linkName`, `reverseLinkName`, and `innerWhere`
+ * correlated per link, so `narrowObjectSet` can apply the pivot without
+ * casting away the link-side generic.
+ */
+export type LinkedFilter<Q extends ObjectTypeDefinition> = {
+  [L in LinkNames<Q>]: {
+    linkName: L;
+    reverseLinkName: LinkNames<LinkedType<Q, L>>;
+    innerWhere: WhereClause<LinkedType<Q, L>>;
+  };
+}[LinkNames<Q>];
+
+/** Shared empty default for `LinkedFilter` arrays — avoids new-array-per-render. */
+export const EMPTY_LINKED_FILTERS: readonly never[] = [];
 
 /**
  * State for "has link" filter
@@ -90,6 +107,12 @@ export interface LinkedPropertyFilterDefinition<
    */
   id?: string;
   linkName: L;
+  /**
+   * Name of the link on the linked object type that points back to `Q`. Used
+   * to invert the pivot when applying the filter's narrowing to the source
+   * object set. Required.
+   */
+  reverseLinkName: LinkNames<LinkedQ>;
   linkedPropertyKey: LinkedK;
   linkedFilterComponent: LinkedC;
   linkedFilterState: FilterStateByComponentType[LinkedC];

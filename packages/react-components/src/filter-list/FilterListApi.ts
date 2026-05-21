@@ -91,11 +91,25 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
 
   /**
-   * Optional object set to scope aggregation queries.
-   * When provided, filter aggregations (e.g. listogram counts) are scoped to this set.
-   * When omitted, aggregations run against the full object type.
+   * Optional object set to scope aggregation queries. When omitted,
+   * aggregations run against the full object type.
    */
   objectSet?: ObjectSet<Q>;
+
+  /**
+   * The current where clause to filter the objectSet.
+   * If provided, the filter clause is controlled.
+   * LINKED_PROPERTY filters are not included; use `onEffectiveObjectSet`.
+   */
+  filterClause?: WhereClause<Q>;
+
+  /**
+   * Called when the filter clause changes.
+   * Required in controlled mode.
+   *
+   * @param newClause The updated filter clause
+   */
+  onFilterClauseChanged?: (newClause: WhereClause<Q>) => void;
 
   /**
    * Optional title to display in the filter list header
@@ -114,20 +128,6 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   filterDefinitions?: Array<FilterDefinitionUnion<Q>>;
 
   /**
-   * The current where clause to filter the objectSet.
-   * If provided, the filter clause is controlled.
-   */
-  filterClause?: WhereClause<Q>;
-
-  /**
-   * Called when the filter clause changes.
-   * Required in controlled mode.
-   *
-   * @param newClause The updated filter clause
-   */
-  onFilterClauseChanged?: (newClause: WhereClause<Q>) => void;
-
-  /**
    * Called when filter state changes
    *
    * @param definition The filter definition whose state changed
@@ -137,6 +137,23 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
     definition: FilterDefinitionUnion<Q>,
     newState: FilterStateType,
   ) => void;
+
+  /**
+   * Called with the `ObjectSet` narrowed by every active filter (direct +
+   * linked). Fires on each filter change. Only emitted when `objectSet` is set.
+   */
+  onEffectiveObjectSet?: (objectSet: ObjectSet<Q>) => void;
+
+  /**
+   * When `true`, facets render count=0 greyed-out rows for values present in
+   * the unfiltered scope but excluded by the currently active filters. For
+   * direct-property facets the comparison scope keeps direct filters applied
+   * and strips linked-property filters. For linked-property facets the
+   * comparison scope is the raw `objectSet` pivoted to the linked type, so
+   * any value removed by direct or linked filters renders as a ghost row.
+   * @default false
+   */
+  showFilteredOutValues?: boolean;
 
   /**
    * Controls how filter visibility (add/remove) is managed.
