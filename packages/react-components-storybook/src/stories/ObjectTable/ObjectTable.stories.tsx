@@ -35,6 +35,11 @@ import { fn } from "storybook/test";
 import { fauxFoundry } from "../../mocks/fauxFoundry.js";
 import { Employee } from "../../types/Employee.js";
 import { WorkerInterface } from "../../types/WorkerInterface.js";
+import {
+  ObjectTableInBaseUIDialog,
+  ObjectTableInBlueprintDialog,
+  ObjectTableInBlueprintDrawer,
+} from "./overlays/ObjectTableOverlayStories.js";
 
 // Create a concrete type for Storybook to parse more easily
 type EmployeeTableProps = ObjectTableProps<typeof Employee>;
@@ -1290,6 +1295,73 @@ export const DisableAllHeaderMenuFeatures: Story = {
       <ObjectTable {...args} />
     </div>
   ),
+};
+
+export const HeaderMenuInsideBlueprintDrawer: Story = {
+  args: {
+    objectType: Employee,
+    columnDefinitions: defaultEmployeeColumns,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Scenario for the header menu dropdown when ObjectTable is rendered inside a Blueprint Drawer. "
+          + "Open the drawer and click any column header chevron; the menu should appear above the drawer.",
+      },
+      source: {
+        code: `<Drawer isOpen={true} title="ObjectTable in Blueprint Drawer">
+  <ObjectTable objectType={Employee} columnDefinitions={defaultEmployeeColumns} />
+</Drawer>`,
+      },
+    },
+  },
+  render: (args) => <ObjectTableInBlueprintDrawer tableProps={args} />,
+};
+
+export const HeaderMenuInsideBlueprintDialog: Story = {
+  args: {
+    objectType: Employee,
+    columnDefinitions: defaultEmployeeColumns,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Scenario for the header menu dropdown when ObjectTable is rendered inside a Blueprint Dialog. "
+          + "Open the dialog and click any column header chevron; the menu should appear above the dialog.",
+      },
+      source: {
+        code: `<Dialog isOpen={true} title="ObjectTable in Blueprint Dialog">
+  <ObjectTable objectType={Employee} columnDefinitions={defaultEmployeeColumns} />
+</Dialog>`,
+      },
+    },
+  },
+  render: (args) => <ObjectTableInBlueprintDialog tableProps={args} />,
+};
+
+export const HeaderMenuInsideBaseUIDialog: Story = {
+  args: {
+    objectType: Employee,
+    columnDefinitions: defaultEmployeeColumns,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Scenario for the header menu dropdown when ObjectTable is rendered inside the OSDK Base UI Dialog primitive. "
+          + "Open the dialog and click any column header chevron; the menu should appear above the dialog.",
+      },
+      source: {
+        code:
+          `<Dialog isOpen={true} title="ObjectTable in Base UI Dialog" onOpenChange={setIsOpen}>
+  <ObjectTable objectType={Employee} columnDefinitions={defaultEmployeeColumns} />
+</Dialog>`,
+      },
+    },
+  },
+  render: (args) => <ObjectTableInBaseUIDialog tableProps={args} />,
 };
 
 export const CustomRowHeight: Story = {

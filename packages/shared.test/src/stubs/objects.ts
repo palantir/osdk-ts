@@ -408,9 +408,15 @@ export const unsecuredEmployee = {
 
 export const securedEmployee = {
   __rid: "ri.phonograph2-objects.main.object.88a6fccb-f333-46d6-a07e-as3der",
-  __primaryKey: 20003,
+  __primaryKey: {
+    value: 20003,
+    propertySecurityIndex: 0,
+  },
   __apiName: "Employee",
-  __title: "Bruce Banner",
+  __title: {
+    value: "Bruce Banner",
+    propertySecurityIndex: 0,
+  },
   employeeId: {
     value: 20003,
     propertySecurityIndex: 0,

@@ -98,7 +98,7 @@ You can also use explicit links like [GitHub](https://github.com).
 `;
 
 const meta: Meta<MarkdownRendererProps> = {
-  title: "Beta/MarkdownRenderer",
+  title: "Beta/DocumentViewer/Renderers/MarkdownRenderer",
   component: MarkdownRenderer,
   args: {
     content: SAMPLE_MARKDOWN,
@@ -128,7 +128,7 @@ const meta: Meta<MarkdownRendererProps> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+export const WithContent: Story = {};
 
 export const MinimalContent: Story = {
   args: {
