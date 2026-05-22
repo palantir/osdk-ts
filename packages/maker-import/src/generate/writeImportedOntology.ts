@@ -196,6 +196,6 @@ export const ${varName}: ${typeName} = wrapWithProxy(${varName}_base);
   fs.writeFileSync(filePath, content, { flag: "w" });
 
   topLevelExports.push(
-    `export { ${varName} } from "./codegen/${dirName}/${varName}.js";`,
+    `export { ${varName} } from "./codegen/${dirName}/${varName}.ts";`,
   );
 }
