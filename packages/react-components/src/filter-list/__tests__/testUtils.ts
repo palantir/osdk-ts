@@ -79,16 +79,23 @@ export function createHasLinkFilterDef(
 
 /**
  * Create a linkedProperty filter definition for testing.
+ * Pass `reverseLinkName: null` to omit it (UI-only filter); otherwise it
+ * defaults to `"reverseLink"`.
  * Cast required because LinkedPropertyFilterDefinition has complex generic constraints
  * that can't be satisfied with literal link names.
  */
 export function createLinkedPropertyFilterDef(
   linkName: string,
   linkedPropertyKey: string,
+  options: { reverseLinkName?: string | null } = {},
 ): FilterDefinitionUnion<typeof MockObjectType> {
+  const reverseLinkName: string | undefined = "reverseLinkName" in options
+    ? options.reverseLinkName ?? undefined
+    : "reverseLink";
   return {
     type: "LINKED_PROPERTY",
     linkName,
+    ...(reverseLinkName !== undefined ? { reverseLinkName } : {}),
     linkedPropertyKey,
     linkedFilterComponent: "LISTOGRAM",
     linkedFilterState: { type: "EXACT_MATCH", values: [] },

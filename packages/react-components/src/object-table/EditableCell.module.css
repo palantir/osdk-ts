@@ -52,8 +52,8 @@
 
   /* Match the text-input editable cell background so the row reads as a
      single field strip instead of mixed surface colors. */
-  --osdk-select-trigger-bg: var(--osdk-table-cell-editable-bg);
-  --osdk-combobox-trigger-bg: var(--osdk-table-cell-editable-bg);
+  --osdk-select-trigger-bg: var(--osdk-table-cell-input-bg);
+  --osdk-combobox-trigger-bg: var(--osdk-table-cell-input-bg);
 
   --osdk-combobox-input-padding: var(--osdk-surface-spacing)
     calc(var(--osdk-surface-spacing) * 3);
