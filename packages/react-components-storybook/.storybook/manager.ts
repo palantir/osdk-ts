@@ -15,6 +15,7 @@
  */
 
 import type { TagBadgeParameters } from "storybook-addon-tag-badges/manager-helpers";
+import type { API } from "storybook/manager-api";
 import { addons } from "storybook/manager-api";
 
 addons.setConfig({
@@ -40,11 +41,14 @@ addons.setConfig({
   ] satisfies TagBadgeParameters,
 });
 
+// Must match <Meta title="Docs/Welcome" /> in src/docs/Welcome.mdx
+const WELCOME_DOCS_PATH = "/docs/docs-welcome--docs";
+
 function redirectToWelcomeIfNoStorySelected() {
   const url = new URL(window.location.href);
 
   if (!url.searchParams.has("path")) {
-    url.searchParams.set("path", "/docs/docs-welcome--docs");
+    url.searchParams.set("path", WELCOME_DOCS_PATH);
     window.location.replace(url);
   }
 }
@@ -52,13 +56,12 @@ function redirectToWelcomeIfNoStorySelected() {
 // Redirect to the Welcome docs page if we're at the root
 addons.register(
   "redirect-to-first-story",
-  (api: { on: (arg0: string, arg1: () => void) => void }) => {
-    // Check if we're at the root path (no story selected)
+  (api: Pick<API, "on">) => {
     api.on("STORY_RENDERED", () => {
       redirectToWelcomeIfNoStorySelected();
     });
 
-    // Also check immediately when Storybook loads
+    // Allow Storybook's initial render cycle to complete
     setTimeout(() => {
       redirectToWelcomeIfNoStorySelected();
     }, 100);

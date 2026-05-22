@@ -47,6 +47,7 @@ const LABELS: Record<string, string> = {
   "abc-123": "Alice Smith",
   "def-456": "Bob Jones",
 };
+
 const mockRenderValue = (value: string): string => LABELS[value] ?? value;
 
 describe("ListogramInput renderValue", () => {
