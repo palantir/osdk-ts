@@ -126,12 +126,7 @@ export function getTimeValue(date: Date | null): string {
   return date != null ? formatTime(date) : "00:00";
 }
 
-/**
- * Identifier for an opt-in relative date range — the period the user wants
- * the filter to span, anchored at "now". Consumed by the date filter
- * shortcuts rail; emitting code converts the identifier into an absolute
- * `{ min, max }` Date pair via {@link getRelativeDateRange}.
- */
+/** Relative date range identifier; resolve via {@link getRelativeDateRange}. */
 export type RelativeDatePeriod = keyof typeof RELATIVE_DATE_PERIODS;
 
 const RELATIVE_DATE_PERIODS = {
@@ -169,12 +164,7 @@ const RELATIVE_DATE_PERIODS = {
   },
 } as const;
 
-/**
- * Returns an absolute `{ min, max }` Date range for the given relative
- * period, anchored at `now` (default: `new Date()`). `date-fns` handles
- * calendar-aware month/year math so month-end stays in the target month
- * (e.g. Mar 31 minus one month → Feb 28/29).
- */
+/** Returns { min, max } for the given period, anchored at now. */
 export function getRelativeDateRange(
   period: RelativeDatePeriod,
   now: Date = new Date(),
@@ -183,15 +173,11 @@ export function getRelativeDateRange(
   return { min: RELATIVE_DATE_PERIODS[period].subtract(max), max };
 }
 
-/** Human-readable label for a {@link RelativeDatePeriod} (English only). */
 export function getRelativeDatePeriodLabel(p: RelativeDatePeriod): string {
   return RELATIVE_DATE_PERIODS[p].label;
 }
 
-/**
- * Default ordered list of relative date periods surfaced by the shortcut
- * rail when a consumer opts in with `dateShortcuts: true`.
- */
+/** Default ordered period list for `dateShortcuts: true`. */
 export const DEFAULT_RELATIVE_DATE_PERIODS: readonly RelativeDatePeriod[] = [
   "past-hour",
   "past-day",

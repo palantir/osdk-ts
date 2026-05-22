@@ -249,50 +249,24 @@ export interface DateFormattingProps {
   formatDate?: (date: Date) => string;
 }
 
-/**
- * Opt-in relative-range shortcuts shown as a vertical rail beside a date
- * filter input. Mixed into `PropertyFilterDefinition` only when the
- * property is `datetime` or `timestamp` — see
- * {@link PropertyFilterDateExtras}.
- */
 export interface DateShortcutsProps {
   /**
-   * Opt-in relative-range shortcuts rendered inside the date picker
-   * popover as a left rail next to the calendar.
-   *
-   * - undefined (default): hidden. No behavior change.
-   * - true: render the full {@link DEFAULT_RELATIVE_DATE_PERIODS} list.
-   * - `RelativeDatePeriod[]`: render exactly these in the given order.
-   *
-   * Clicking a shortcut emits an absolute `{ min, max }` Date range — the
-   * stored `FilterState` remains absolute. For `SINGLE_DATE`, shortcut
-   * clicks set the selected date to the period's start (e.g. "Past day" →
-   * 24 hours ago). Persisting the relative label across refreshes is
-   * intentionally deferred (would require a new `FilterState` variant).
+   * Opt-in relative-range shortcut rail in the date picker popover.
+   * `true` renders {@link DEFAULT_RELATIVE_DATE_PERIODS}; an array
+   * renders exactly those periods in order. Stored `FilterState`
+   * remains absolute.
    */
   dateShortcuts?: RelativeDatePeriod[] | boolean;
 }
 
-/**
- * Filter components that support the {@link DateShortcutsProps.dateShortcuts}
- * rail. Only popover-based pickers are supported: `MULTI_DATE` is excluded
- * because its picker emits a list of discrete dates (not a range), and
- * `TIMELINE` is excluded because it renders native `<input type="date">`
- * fields with no popover to host the rail.
- */
+/** Filter components that support the shortcuts rail. */
 export type FilterComponentsSupportingDateShortcuts =
   | "DATE_RANGE"
   | "SINGLE_DATE";
 
 /**
- * Conditionally adds date-only extras (`formatDate`, `dateShortcuts`) to a
- * property filter definition only for `datetime` / `timestamp` properties.
- * For other property types these fields are typed as `never` so attempting
- * to set them is a TypeScript error.
- *
- * `dateShortcuts` is further gated on the filter component type — only
- * `DATE_RANGE` and `SINGLE_DATE` accept it. `MULTI_DATE` and `TIMELINE`
- * filters get `dateShortcuts?: never`.
+ * Adds `formatDate` / `dateShortcuts` only for date-typed properties.
+ * `dateShortcuts` is further gated to DATE_RANGE / SINGLE_DATE.
  */
 export type PropertyFilterDateExtras<
   P extends WirePropertyTypes,

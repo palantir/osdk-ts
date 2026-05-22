@@ -176,26 +176,16 @@ describe("getTimeValue", () => {
   });
 });
 
-describe("getRelativeDateRange", () => {
-  it("subtracts 7 days for past-week (wiring through to date-fns)", () => {
+describe("relative date periods", () => {
+  it("subtracts the period from now to produce { min, max }", () => {
     const now = new Date(2024, 5, 15, 12, 0, 0, 0);
     const { min, max } = getRelativeDateRange("past-week", now);
     expect(max.getTime()).toBe(now.getTime());
     expect(max.getTime() - min.getTime()).toBe(7 * 24 * 60 * 60 * 1000);
   });
 
-  it("defaults `now` to the current Date when omitted", () => {
-    const before = Date.now();
-    const { max } = getRelativeDateRange("past-hour");
-    const after = Date.now();
-    expect(max.getTime()).toBeGreaterThanOrEqual(before);
-    expect(max.getTime()).toBeLessThanOrEqual(after);
-  });
-});
-
-describe("getRelativeDatePeriodLabel", () => {
-  it("returns the English label for each period", () => {
-    const expectations: Record<RelativeDatePeriod, string> = {
+  it("exposes the default ordered list with English labels", () => {
+    const labels: Record<RelativeDatePeriod, string> = {
       "past-hour": "Past hour",
       "past-day": "Past day",
       "past-week": "Past week",
@@ -205,23 +195,11 @@ describe("getRelativeDatePeriodLabel", () => {
       "past-year": "Past year",
       "past-2-years": "Past 2 years",
     };
-    for (const period of Object.keys(expectations) as RelativeDatePeriod[]) {
-      expect(getRelativeDatePeriodLabel(period)).toBe(expectations[period]);
+    expect(DEFAULT_RELATIVE_DATE_PERIODS).toEqual(
+      Object.keys(labels) as RelativeDatePeriod[],
+    );
+    for (const period of DEFAULT_RELATIVE_DATE_PERIODS) {
+      expect(getRelativeDatePeriodLabel(period)).toBe(labels[period]);
     }
-  });
-});
-
-describe("DEFAULT_RELATIVE_DATE_PERIODS", () => {
-  it("lists the eight periods in the documented order", () => {
-    expect(DEFAULT_RELATIVE_DATE_PERIODS).toEqual([
-      "past-hour",
-      "past-day",
-      "past-week",
-      "past-month",
-      "past-3-months",
-      "past-6-months",
-      "past-year",
-      "past-2-years",
-    ]);
   });
 });

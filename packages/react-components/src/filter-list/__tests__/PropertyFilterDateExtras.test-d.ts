@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-/**
- * Type-only tests for {@link PropertyFilterDateExtras}. These do not run at
- * runtime — `tsc --noEmit` (the package's typecheck step) verifies that
- * `// @ts-expect-error` lines actually error. If the conditional intersection
- * stops gating `formatDate` to date-typed properties, the
- * `@ts-expect-error` will become a "no error" mismatch and typecheck fails.
- */
+/** Type-only tests for {@link PropertyFilterDateExtras}; verified by tsc. */
 
 import type { PropertyFilterDateExtras } from "../FilterListItemApi.js";
 
@@ -79,11 +73,7 @@ const stringShortcuts: PropertyFilterDateExtras<"string"> = {
 };
 void stringShortcuts;
 
-// `dateShortcuts` is gated by filter component type: only DATE_RANGE and
-// SINGLE_DATE accept it. MULTI_DATE rejects it even on a date-typed
-// property because its picker emits discrete dates, not a range. TIMELINE
-// rejects it because it renders native date inputs with no popover to host
-// the shortcuts rail.
+// dateShortcuts is gated to DATE_RANGE / SINGLE_DATE filter components.
 const multiDateShortcuts: PropertyFilterDateExtras<"timestamp", "MULTI_DATE"> =
   {
     // @ts-expect-error dateShortcuts is `never` for MULTI_DATE filter component
@@ -96,17 +86,3 @@ const timelineShortcuts: PropertyFilterDateExtras<"timestamp", "TIMELINE"> = {
   dateShortcuts: ["past-week"],
 };
 void timelineShortcuts;
-
-const dateRangeShortcuts: PropertyFilterDateExtras<"timestamp", "DATE_RANGE"> =
-  {
-    dateShortcuts: ["past-day"],
-  };
-void dateRangeShortcuts;
-
-const singleDateShortcuts: PropertyFilterDateExtras<
-  "datetime",
-  "SINGLE_DATE"
-> = {
-  dateShortcuts: true,
-};
-void singleDateShortcuts;

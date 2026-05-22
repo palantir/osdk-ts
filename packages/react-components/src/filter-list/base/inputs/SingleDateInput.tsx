@@ -31,12 +31,7 @@ interface SingleDateInputProps {
   maxDate?: Date;
   placeholder?: string;
   showClearButton?: boolean;
-  /**
-   * Renders a vertical rail of relative-range shortcuts to the left of the
-   * picker when set. Clicking a shortcut sets the picker's value to the
-   * period's start (e.g. "Past day" → 24 hours ago). `true` uses
-   * `DEFAULT_RELATIVE_DATE_PERIODS`; pass an array to customize.
-   */
+  /** Optional relative-range shortcut rail. */
   dateShortcuts?: RelativeDatePeriod[] | boolean;
   /** Display formatter for picker idle text. Editing format stays ISO. */
   formatDate?: (date: Date) => string;

@@ -54,12 +54,7 @@ interface DateRangeHistogramInputProps {
    */
   formatDate?: (date: Date) => string;
   clickToFilter?: boolean;
-  /**
-   * Renders a vertical rail of relative-range shortcuts beside the
-   * histogram when set. Clicking a shortcut emits an absolute
-   * `{ min, max }` range via `onChange`. `true` uses
-   * `DEFAULT_RELATIVE_DATE_PERIODS`; pass an array to customize.
-   */
+  /** Optional relative-range shortcut rail. */
   dateShortcuts?: RelativeDatePeriod[] | boolean;
 }
 

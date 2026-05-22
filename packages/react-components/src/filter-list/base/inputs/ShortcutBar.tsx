@@ -83,26 +83,15 @@ export const ShortcutBar: React.NamedExoticComponent<ShortcutBarProps> = memo(
   ShortcutBarInner,
 );
 
-/**
- * Resolves the user-facing `dateShortcuts` prop into the periods list the
- * `ShortcutBar` should render, or `undefined` when no bar should appear.
- *
- * - `undefined` → `undefined` (hidden)
- * - `true`      → {@link DEFAULT_RELATIVE_DATE_PERIODS}
- * - empty array → `undefined`
- * - non-empty array → the array itself
- */
+/** Resolves the `dateShortcuts` prop to a period list, or undefined to hide. */
 export function resolveDateShortcuts(
   prop: RelativeDatePeriod[] | boolean | undefined,
 ): readonly RelativeDatePeriod[] | undefined {
-  if (prop == null || prop === false) {
-    return undefined;
-  }
   if (prop === true) {
     return DEFAULT_RELATIVE_DATE_PERIODS;
   }
-  if (prop.length === 0) {
-    return undefined;
+  if (Array.isArray(prop) && prop.length > 0) {
+    return prop;
   }
-  return prop;
+  return undefined;
 }

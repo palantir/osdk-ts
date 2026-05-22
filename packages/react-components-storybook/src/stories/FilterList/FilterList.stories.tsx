@@ -311,13 +311,8 @@ export const WithDateShortcuts: Story = {
   parameters: {
     docs: {
       description: {
-        story: "Demonstrates the opt-in `dateShortcuts` prop on the two "
-          + "popover-based date filter components: DATE_RANGE and "
-          + "SINGLE_DATE. Click a From/To input (DATE_RANGE) or the date "
-          + "input (SINGLE_DATE) to open the popover — shortcuts render as "
-          + "a left rail next to the calendar. Pass `dateShortcuts: true` "
-          + "to render the full default period list, or pass an array to "
-          + "pick specific periods.",
+        story:
+          "Opt-in `dateShortcuts` rail for DATE_RANGE and SINGLE_DATE filters.",
       },
     },
   },

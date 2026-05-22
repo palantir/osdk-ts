@@ -130,12 +130,7 @@ export interface DatePickerProps {
    */
   modal?: "trap-focus" | false;
 
-  /**
-   * Optional content rendered as a vertical rail on the left side of the
-   * calendar popover. Use this for preset/shortcut buttons (e.g. "Past
-   * day", "Past week") that emit a date when clicked. When omitted the
-   * popover renders only the calendar at its standard width.
-   */
+  /** Optional content rendered as a left rail in the popover. */
   leftRail?: React.ReactNode;
 }
 

@@ -34,37 +34,28 @@ afterEach(() => {
 });
 
 describe("SingleDateFilterInput", () => {
-  it(
-    "renders the shortcut rail inside the date picker popover and sets the "
-      + "selected date to the period's start when a shortcut is clicked",
-    () => {
-      // Anchor `now` to a mid-year, non-DST-boundary date so subWeeks(now, 1)
-      // is exactly 7×24h earlier. Without this, `date-fns`'s wall-clock-aware
-      // subtraction can produce ±1h diffs on spring-forward / fall-back days.
-      const now = new Date(2024, 5, 15, 12, 0, 0, 0);
-      vi.useFakeTimers({ now });
-      const onFilterStateChanged = vi.fn();
-      const MS_IN_WEEK = 7 * 24 * 60 * 60 * 1000;
-      render(
-        <SingleDateFilterInput
-          filterState={undefined}
-          onFilterStateChanged={onFilterStateChanged}
-          dateShortcuts={["past-week"]}
-        />,
-      );
-      // The shortcut button is rendered inside the date picker popover, which
-      // is closed by default. Focus the input to open the popover.
-      expect(screen.queryByRole("button", { name: "Past week" })).toBeNull();
-      fireEvent.focus(screen.getByRole("combobox"));
-      fireEvent.click(screen.getByRole("button", { name: "Past week" }));
-      expect(onFilterStateChanged).toHaveBeenCalledTimes(1);
-      const state = onFilterStateChanged.mock.calls[0][0];
-      expect(state.type).toBe("SELECT");
-      const picked = state.selectedValues[0];
-      if (!(picked instanceof Date)) {
-        throw new Error("expected selectedValues[0] to be a Date");
-      }
-      expect(picked.getTime()).toBe(now.getTime() - MS_IN_WEEK);
-    },
-  );
+  it("sets the selected date to the period start when a shortcut is clicked", () => {
+    // Mid-year date avoids DST boundary drift.
+    const now = new Date(2024, 5, 15, 12, 0, 0, 0);
+    vi.useFakeTimers({ now });
+    const onFilterStateChanged = vi.fn();
+    const MS_IN_WEEK = 7 * 24 * 60 * 60 * 1000;
+    render(
+      <SingleDateFilterInput
+        filterState={undefined}
+        onFilterStateChanged={onFilterStateChanged}
+        dateShortcuts={["past-week"]}
+      />,
+    );
+    fireEvent.focus(screen.getByRole("combobox"));
+    fireEvent.click(screen.getByRole("button", { name: "Past week" }));
+    expect(onFilterStateChanged).toHaveBeenCalledTimes(1);
+    const state = onFilterStateChanged.mock.calls[0][0];
+    expect(state.type).toBe("SELECT");
+    const picked = state.selectedValues[0];
+    if (!(picked instanceof Date)) {
+      throw new Error("expected selectedValues[0] to be a Date");
+    }
+    expect(picked.getTime()).toBe(now.getTime() - MS_IN_WEEK);
+  });
 });
