@@ -1,6 +1,6 @@
 ---
-"@osdk/api": minor
-"@osdk/client": minor
+"@osdk/api": patch
+"@osdk/client": patch
 "@osdk/generator-converters": patch
 "@osdk/react-components": patch
 ---
