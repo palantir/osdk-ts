@@ -9,10 +9,12 @@ directly and handle data loading, caching, and state management automatically.
 
 Every OSDK-aware component follows a two-layer architecture:
 
-1. **OSDK layer** — fetches data via `@osdk/react` hooks, converts OSDK
-   entities into primitives, and passes them down.
-2. **Base layer** — a pure React component with no OSDK imports. It receives
-   primitives and handles all UI interactions and styling.
+1. **OSDK layer** (e.g. `ObjectTable`, `FilterList`, `ActionForm`) — fetches
+   data via `@osdk/react` hooks, converts OSDK entities into primitives, and
+   passes them down.
+2. **Base layer** (e.g. `BaseTable`, `BaseFilterList`) — a pure React
+   component with no OSDK imports. It receives primitives and handles all UI
+   interactions and styling.
 
 This means you can always drop down to the `Base*` variant and bring your own
 data source.
@@ -90,17 +92,7 @@ function FilteredDirectory() {
     <div style={{ display: "flex", gap: 16 }}>
       <FilterList
         objectType={Employee}
-        filterDefinitions={[
-          {
-            type: "PROPERTY",
-            id: "dept",
-            key: "department",
-            label: "Department",
-            filterComponent: "LISTOGRAM",
-            filterState: { type: "EXACT_MATCH", values: [] },
-          },
-        ]}
-        onFilterChanged={setFilter}
+        onFilterClauseChanged={setFilter}
       />
       <ObjectTable objectType={Employee} filter={filter} />
     </div>
@@ -121,26 +113,6 @@ function NewEmployeeForm() {
     <ActionForm
       actionType={createEmployee}
       onSubmitSuccess={() => console.log("Employee created!")}
-    />
-  );
-}
-```
-
-## Using Base components
-
-If you have your own data source, use the `Base*` variants directly:
-
-```tsx
-import { BaseTable } from "@osdk/react-components/experimental/object-table";
-
-function CustomTable({ data }) {
-  return (
-    <BaseTable
-      rows={data}
-      columns={[
-        { id: "name", header: "Name", accessorKey: "name" },
-        { id: "email", header: "Email", accessorKey: "email" },
-      ]}
     />
   );
 }

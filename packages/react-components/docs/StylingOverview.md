@@ -15,6 +15,11 @@ Blueprint Core (@blueprintjs/core)
    Component Styles
 ```
 
+[Blueprint](https://blueprintjs.com) is a React UI toolkit built by Palantir.
+OSDK components use Blueprint's design tokens as the foundation layer so they
+integrate seamlessly with other Palantir applications and components that
+already use Blueprint.
+
 ### Layer 1: Blueprint Tokens
 
 The foundation. Blueprint design tokens (`--bp-*`) define the raw visual
@@ -55,14 +60,15 @@ brand overrides will always take precedence over OSDK defaults.
 
 ## Dark Mode
 
-Components react automatically to dark mode via:
+Components react automatically to dark mode via any of these selectors:
 
-- `prefers-color-scheme: dark` media query
-- `[data-bp-color-scheme="dark"]` attribute selector
-- `.bp6-dark` class selector
+- `prefers-color-scheme: dark` media query (OS-level preference)
+- `[data-bp-color-scheme="dark"]` attribute selector (Blueprint convention)
+- `.bp6-dark` class selector (Blueprint convention)
+- `[data-theme="dark"]` attribute selector (Tailwind / Storybook convention)
 
-This matches the Foundry custom widgets dark theme guidance. No extra
-configuration is needed.
+No extra configuration is needed — the token layer detects whichever
+selector is active and flips both `--bp-*` and `--osdk-*` tokens.
 
 ## Token Scopes
 

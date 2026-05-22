@@ -1,7 +1,9 @@
 # Spacing Tokens
 
 Spacing, border, shadow, and z-index tokens used across
-`@osdk/react-components`.
+`@osdk/react-components`. These tokens are a subset of the full
+[CSS Variables reference](./CSSVariables.md), which documents every
+custom property including per-component tokens.
 
 ## Surface Spacing
 

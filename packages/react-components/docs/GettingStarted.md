@@ -1,7 +1,5 @@
 # Getting Started
 
-Get up and running with `@osdk/react-components` in under five minutes.
-
 ## 1. Install
 
 ```bash

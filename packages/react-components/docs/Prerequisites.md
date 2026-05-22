@@ -1,15 +1,10 @@
----
-sidebar_position: 1
----
-
 # Prerequisites
 
 Setup required before using `@osdk/react-components` or `@osdk/cbac-components`.
 
 ## Install dependencies
 
-:::tip If your tooling already installs dependencies, skip this step.
-:::
+> **Tip:** If your tooling already installs dependencies, skip this step.
 
 Use whichever package manager your project uses (`# if using CBAC components` lines are optional):
 

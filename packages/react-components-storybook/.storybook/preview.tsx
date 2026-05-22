@@ -56,10 +56,11 @@ const preview: Preview = {
           "Docs",
           [
             "Welcome",
+            "Installation",
             "Changelog",
             "Versions",
             "Guides",
-            ["Getting Started", "Installation", "Usage with OSDK"],
+            ["Getting Started", "Usage with OSDK"],
             "Styling",
             ["Overview", "CSS Variables"],
             "Tokens",

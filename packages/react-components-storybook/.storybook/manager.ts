@@ -40,14 +40,12 @@ addons.setConfig({
   ] satisfies TagBadgeParameters,
 });
 
-function redirectToObjectTableIfAtRoot() {
+function redirectToWelcomeIfNoStorySelected() {
   const url = new URL(window.location.href);
-  if (
-    !url.searchParams.has("path")
-    && window.location.pathname === "/"
-  ) {
-    // Must match <Meta title="Docs/Welcome" /> in src/docs/Welcome.mdx
-    window.location.href = "/?path=/docs/docs-welcome--docs";
+
+  if (!url.searchParams.has("path")) {
+    url.searchParams.set("path", "/docs/docs-welcome--docs");
+    window.location.replace(url);
   }
 }
 
@@ -57,12 +55,12 @@ addons.register(
   (api: { on: (arg0: string, arg1: () => void) => void }) => {
     // Check if we're at the root path (no story selected)
     api.on("STORY_RENDERED", () => {
-      redirectToObjectTableIfAtRoot();
+      redirectToWelcomeIfNoStorySelected();
     });
 
     // Also check immediately when Storybook loads
     setTimeout(() => {
-      redirectToObjectTableIfAtRoot();
+      redirectToWelcomeIfNoStorySelected();
     }, 100);
   },
 );
