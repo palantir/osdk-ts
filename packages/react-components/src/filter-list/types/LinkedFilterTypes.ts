@@ -20,6 +20,7 @@ import type {
   ObjectTypeDefinition,
   PropertyKeys,
 } from "@osdk/api";
+import type { ReactNode } from "react";
 import type {
   BaseFilterState,
   FilterState,
@@ -103,6 +104,15 @@ export interface LinkedPropertyFilterDefinition<
    * @default true for LISTOGRAM and MULTI_SELECT, false for SINGLE_SELECT
    */
   showCount?: boolean;
+
+  /**
+   * Custom display function for filter values.
+   * Replaces the default string display in dropdown items, chips, and listogram rows.
+   * When the function returns a string, that string is also used for search matching
+   * within filter dropdowns. When it returns a non-string `ReactNode`, search falls
+   * back to the raw value.
+   */
+  renderValue?: (value: string) => ReactNode;
 
   /**
    * Controls whether this filter is rendered.
