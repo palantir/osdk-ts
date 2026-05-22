@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, ObjectTypeDefinition, PropertyKeys } from "@osdk/api";
+import type {
+  ObjectSet,
+  ObjectTypeDefinition,
+  PropertyKeys,
+  WhereClause,
+} from "@osdk/api";
 import { useOsdkAggregation } from "@osdk/react";
 import { cleanup, render, screen } from "@testing-library/react";
 import React from "react";
@@ -344,6 +349,7 @@ function createLinkedDefinition(
   return {
     type: "LINKED_PROPERTY",
     linkName: "primaryOffice",
+    reverseLinkName: "occupants",
     linkedPropertyKey: "name" as PropertyKeys<ObjectTypeDefinition>,
     linkedFilterComponent,
     linkedFilterState: innerStateType,
@@ -399,6 +405,7 @@ describe("LinkedPropertyInput renderValue", () => {
           },
         }}
         onFilterStateChanged={vi.fn()}
+        whereClause={{} as WhereClause<ObjectTypeDefinition>}
       />,
     );
 
@@ -424,6 +431,7 @@ describe("LinkedPropertyInput renderValue", () => {
           },
         }}
         onFilterStateChanged={vi.fn()}
+        whereClause={{} as WhereClause<ObjectTypeDefinition>}
       />,
     );
 
@@ -450,6 +458,7 @@ describe("LinkedPropertyInput renderValue", () => {
         }}
         onFilterStateChanged={vi.fn()}
         searchQuery="abc"
+        whereClause={{} as WhereClause<ObjectTypeDefinition>}
       />,
     );
 
@@ -479,6 +488,7 @@ describe("LinkedPropertyInput renderValue", () => {
           },
         }}
         onFilterStateChanged={vi.fn()}
+        whereClause={{} as WhereClause<ObjectTypeDefinition>}
       />,
     );
 
