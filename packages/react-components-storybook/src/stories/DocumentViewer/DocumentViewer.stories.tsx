@@ -183,7 +183,7 @@ const mockUnsupportedMedia = createMockMedia(
 );
 
 const meta: Meta<DocumentViewerProps> = {
-  title: "Beta/DocumentViewer",
+  title: "Components/DocumentViewer",
   component: DocumentViewer,
   args: {
     media: mockPdfMedia,

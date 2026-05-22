@@ -8,7 +8,10 @@ export const peerDeps = Object.entries(pkg.peerDependencies || {})
   .join("\n");
 
 export const exports = Object.keys(pkg.exports || {})
-  .filter((p) => p.startsWith("./experimental/") && p !== "./experimental")
+  .filter((p) =>
+    p.startsWith("./experimental/") && p !== "./experimental"
+    && p !== "./experimental/theme"
+  )
   .map((p) => {
     const name = p
       .replace("./experimental/", "")

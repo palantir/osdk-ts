@@ -45,7 +45,7 @@ const config: StorybookConfig = {
     reactDocgen: "react-docgen-typescript",
   },
   staticDirs: ["../public"],
-  // Auto-inject the "beta" tag for any story whose title starts with "Beta/".
+  // Auto-inject the "beta" tag for any story whose title starts with "Components/".
   // Keeps the per-file meta to just `title:` — the tag (and the resulting tag
   // badge) is derived automatically, so contributors can't forget to set it.
   experimental_indexers: async (existingIndexers) =>
@@ -54,7 +54,7 @@ const config: StorybookConfig = {
       createIndex: async (fileName, options) => {
         const entries = await indexer.createIndex(fileName, options);
         return entries.map((entry) =>
-          entry.title?.startsWith("Beta/")
+          entry.title?.startsWith("Components/")
             ? { ...entry, tags: [...new Set([...(entry.tags ?? []), "beta"])] }
             : entry
         );

@@ -76,7 +76,7 @@ function createMockImageMedia(
 }
 
 const meta: Meta<ImageViewerMediaProps> = {
-  title: "Beta/DocumentViewer/Renderers/ImageViewer",
+  title: "Components/DocumentViewer/Renderers/ImageViewer",
   component: ImageViewer,
   parameters: {
     controls: { expanded: true },
