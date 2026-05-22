@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, ObjectTypeDefinition, PropertyKeys } from "@osdk/api";
+import type {
+  ObjectSet,
+  ObjectTypeDefinition,
+  PropertyKeys,
+  WhereClause,
+} from "@osdk/api";
 import { useOsdkAggregation } from "@osdk/react";
 import { cleanup, render, screen } from "@testing-library/react";
 import React from "react";
@@ -390,6 +395,7 @@ describe("LinkedPropertyInput renderValue", () => {
     render(
       <LinkedPropertyInput
         objectSet={createMockLinkedObjectSet()}
+        whereClause={{} as WhereClause<ObjectTypeDefinition>}
         definition={createLinkedDefinition("MULTI_SELECT", renderValueAsNode)}
         filterState={{
           type: "linkedProperty",
@@ -415,6 +421,7 @@ describe("LinkedPropertyInput renderValue", () => {
     render(
       <LinkedPropertyInput
         objectSet={createMockLinkedObjectSet()}
+        whereClause={{} as WhereClause<ObjectTypeDefinition>}
         definition={createLinkedDefinition("LISTOGRAM", renderValueAsNode)}
         filterState={{
           type: "linkedProperty",
@@ -440,6 +447,7 @@ describe("LinkedPropertyInput renderValue", () => {
     render(
       <LinkedPropertyInput
         objectSet={createMockLinkedObjectSet()}
+        whereClause={{} as WhereClause<ObjectTypeDefinition>}
         definition={createLinkedDefinition("LISTOGRAM", renderValueAsNode)}
         filterState={{
           type: "linkedProperty",
@@ -470,6 +478,7 @@ describe("LinkedPropertyInput renderValue", () => {
     const { container } = render(
       <LinkedPropertyInput
         objectSet={createMockLinkedObjectSet()}
+        whereClause={{} as WhereClause<ObjectTypeDefinition>}
         definition={createLinkedDefinition("SINGLE_SELECT", renderValueAsNode)}
         filterState={{
           type: "linkedProperty",
