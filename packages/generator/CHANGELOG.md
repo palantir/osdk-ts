@@ -1,5 +1,18 @@
 # @osdk/generator
 
+## 2.22.1
+
+### Patch Changes
+
+- 8dfc576: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+- 9fb5afb: Emit structured `service.1` JSON logs to stdout for log forwarders, with timing for ontology metadata loading and OSDK package generation phases. Reads `JOB_ID` and `TRACE_ID` from env and threads them into every record's params for cross-process correlation. The previous human-readable console output (via consola) has been removed; the CLI now exits with a non-zero status code on failure.
+- Updated dependencies [8dfc576]
+- Updated dependencies [9fb5afb]
+- Updated dependencies [198f219]
+- Updated dependencies [e0ea2db]
+  - @osdk/generator-converters@2.22.1
+  - @osdk/api@2.22.1
+
 ## 2.22.0
 
 ### Patch Changes

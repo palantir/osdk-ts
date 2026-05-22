@@ -1,5 +1,17 @@
 # @osdk/maker
 
+## 0.28.1
+
+### Patch Changes
+
+- 56c2c9f: write static object file
+- Updated dependencies [8dfc576]
+- Updated dependencies [198f219]
+- Updated dependencies [e0ea2db]
+  - @osdk/generator-converters.ontologyir@2.22.1
+  - @osdk/typescript-sdk-docs@0.10.1
+  - @osdk/api@2.22.1
+
 ## 0.28.0
 
 ### Minor Changes

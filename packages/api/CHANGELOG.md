@@ -1,5 +1,19 @@
 # @osdk/api
 
+## 2.22.1
+
+### Patch Changes
+
+- 198f219: add quickinfo snapshot tests for high-traffic SDK surfaces (`ObjectSet`, `Osdk.Instance`, `AggregationsResults`, `Actions`, `Queries`, `DerivedProperty` builder, per-property `WhereClause` filter unions, subscribe message variants). internal-only — exercises `checker.typeToString` against curated probes and snapshots the formatted output, so future type-graph changes surface as snapshot diffs in code review. no published surface affected.
+- e0ea2db: Add end-to-end support for `scenarioReference` action parameters:
+  - `@osdk/api` adds `"scenarioReference"` to `ActionMetadata.DataType.BaseActionParameterTypes` and a matching `scenarioReference: ScenarioClient` entry in `DataValueClientToWire` (structurally typed as `{ getScenarioReference(): { scenarioRid } }` to avoid a circular dep on `@osdk/client`).
+  - `@osdk/generator-converters` maps the wire `scenarioReference` variant into the primitive type.
+  - Generated SDKs now emit `ActionParam.PrimitiveType<"scenarioReference">` (resolves to `ScenarioClient`) for scenarioReference parameters, instead of throwing at SDK build time.
+  - `@osdk/client`'s `toDataValue` accepts a `ScenarioClient` and serializes it to the rid string the platform expects.
+  - `@osdk/react-components`'s ActionForm renders scenarioReference parameters as `UNSUPPORTED` for now.
+
+  Enables `client(ScenarioMerge).applyAction({ scenario })` end-to-end in generated SDKs.
+
 ## 2.22.0
 
 ## 2.21.0

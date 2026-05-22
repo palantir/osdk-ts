@@ -1,5 +1,20 @@
 # @osdk/maker-experimental
 
+## 0.18.1
+
+### Patch Changes
+
+- 56c2c9f: write static object file
+- Updated dependencies [8dfc576]
+- Updated dependencies [198f219]
+- Updated dependencies [e0ea2db]
+- Updated dependencies [56c2c9f]
+  - @osdk/generator-converters.ontologyir@2.22.1
+  - @osdk/generator-converters.preview@0.12.1
+  - @osdk/api@2.22.1
+  - @osdk/maker@0.28.1
+  - @osdk/client.unstable@2.22.1
+
 ## 0.18.0
 
 ### Minor Changes

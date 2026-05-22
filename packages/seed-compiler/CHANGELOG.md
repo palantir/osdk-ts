@@ -1,5 +1,11 @@
 # @osdk/seed-compiler
 
+## 0.2.1
+
+### Patch Changes
+
+- 8dfc576: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+
 ## 0.2.0
 
 ### Minor Changes

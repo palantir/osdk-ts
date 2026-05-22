@@ -1,5 +1,30 @@
 # @osdk/client
 
+## 2.22.1
+
+### Patch Changes
+
+- 8dfc576: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+- 9d8b6b3: Add `withScenario(client, scenarioRid)` and `createScenario(client)` helpers in `@osdk/client/unstable-do-not-use` for attaching to or minting an ontology scenario, and plumb `scenarioRid` through the client to `applyAction`, `fetchPage`, `aggregate`, and `applyQuery`. Beta — surface may change.
+- e0ea2db: Add end-to-end support for `scenarioReference` action parameters:
+  - `@osdk/api` adds `"scenarioReference"` to `ActionMetadata.DataType.BaseActionParameterTypes` and a matching `scenarioReference: ScenarioClient` entry in `DataValueClientToWire` (structurally typed as `{ getScenarioReference(): { scenarioRid } }` to avoid a circular dep on `@osdk/client`).
+  - `@osdk/generator-converters` maps the wire `scenarioReference` variant into the primitive type.
+  - Generated SDKs now emit `ActionParam.PrimitiveType<"scenarioReference">` (resolves to `ScenarioClient`) for scenarioReference parameters, instead of throwing at SDK build time.
+  - `@osdk/client`'s `toDataValue` accepts a `ScenarioClient` and serializes it to the rid string the platform expects.
+  - `@osdk/react-components`'s ActionForm renders scenarioReference parameters as `UNSUPPORTED` for now.
+
+  Enables `client(ScenarioMerge).applyAction({ scenario })` end-to-end in generated SDKs.
+
+- 8f68992: Add `getEditedEntityTypes`, `getEditedEntities` (paginated), and `editedEntitiesAsyncIter` (auto-paginating, deduped) methods to `ScenarioClient`. Lets consumers discover which object types and primary keys have been edited within a scenario for diff and merge workflows. Beta — surface may change.
+- 58b2b71: Add `getEditedLinkTypes`, `getEditedLinks` (paginated, flattened to directed link triples), and `editedLinksAsyncIter` (auto-paginating, deduped by source/target pk) methods to `ScenarioClient`. Mirrors the existing `experimental_asyncIterLinks` shape on ObjectSet. Many-to-many only — one-to-many edits surface via `getEditedEntities` on the FK-owning object type. Beta — surface may change.
+- Updated dependencies [8dfc576]
+- Updated dependencies [9fb5afb]
+- Updated dependencies [198f219]
+- Updated dependencies [e0ea2db]
+  - @osdk/generator-converters@2.22.1
+  - @osdk/api@2.22.1
+  - @osdk/client.unstable@2.22.1
+
 ## 2.22.0
 
 ### Patch Changes

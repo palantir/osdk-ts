@@ -1,5 +1,13 @@
 # @osdk/widget.api
 
+## 3.19.1
+
+### Patch Changes
+
+- Updated dependencies [198f219]
+- Updated dependencies [e0ea2db]
+  - @osdk/api@2.22.1
+
 ## 3.19.0
 
 ### Minor Changes

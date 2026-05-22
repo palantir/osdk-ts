@@ -1,5 +1,19 @@
 # @osdk/unit-testing
 
+## 0.10.1
+
+### Patch Changes
+
+- 8dfc576: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+- Updated dependencies [8dfc576]
+- Updated dependencies [198f219]
+- Updated dependencies [9d8b6b3]
+- Updated dependencies [e0ea2db]
+- Updated dependencies [8f68992]
+- Updated dependencies [58b2b71]
+  - @osdk/client@2.22.1
+  - @osdk/api@2.22.1
+
 ## 0.10.0
 
 ### Minor Changes

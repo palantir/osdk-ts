@@ -1,5 +1,14 @@
 # @osdk/maker-import
 
+## 0.3.1
+
+### Patch Changes
+
+- 8dfc576: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+- Updated dependencies [56c2c9f]
+  - @osdk/maker@0.28.1
+  - @osdk/client.unstable@2.22.1
+
 ## 0.3.0
 
 ### Minor Changes
