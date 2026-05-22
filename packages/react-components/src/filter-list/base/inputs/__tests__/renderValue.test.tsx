@@ -349,6 +349,7 @@ function createLinkedDefinition(
   return {
     type: "LINKED_PROPERTY",
     linkName: "primaryOffice",
+    reverseLinkName: "occupants",
     linkedPropertyKey: "name" as PropertyKeys<ObjectTypeDefinition>,
     linkedFilterComponent,
     linkedFilterState: innerStateType,
@@ -405,6 +406,7 @@ describe("LinkedPropertyInput renderValue", () => {
           },
         }}
         onFilterStateChanged={vi.fn()}
+        whereClause={{} as WhereClause<ObjectTypeDefinition>}
       />,
     );
 
@@ -431,6 +433,7 @@ describe("LinkedPropertyInput renderValue", () => {
           },
         }}
         onFilterStateChanged={vi.fn()}
+        whereClause={{} as WhereClause<ObjectTypeDefinition>}
       />,
     );
 
@@ -458,6 +461,7 @@ describe("LinkedPropertyInput renderValue", () => {
         }}
         onFilterStateChanged={vi.fn()}
         searchQuery="abc"
+        whereClause={{} as WhereClause<ObjectTypeDefinition>}
       />,
     );
 
@@ -488,6 +492,7 @@ describe("LinkedPropertyInput renderValue", () => {
           },
         }}
         onFilterStateChanged={vi.fn()}
+        whereClause={{} as WhereClause<ObjectTypeDefinition>}
       />,
     );
 
