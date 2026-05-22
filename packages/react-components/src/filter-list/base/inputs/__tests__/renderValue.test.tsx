@@ -47,8 +47,6 @@ const LABELS: Record<string, string> = {
   "abc-123": "Alice Smith",
   "def-456": "Bob Jones",
 };
-const EMPTY_WHERE_CLAUSE: WhereClause<ObjectTypeDefinition> = {};
-
 const mockRenderValue = (value: string): string => LABELS[value] ?? value;
 
 describe("ListogramInput renderValue", () => {
@@ -350,6 +348,7 @@ function createLinkedDefinition(
   return {
     type: "LINKED_PROPERTY",
     linkName: "primaryOffice",
+    reverseLinkName: "occupants",
     linkedPropertyKey: "name" as PropertyKeys<ObjectTypeDefinition>,
     linkedFilterComponent,
     linkedFilterState: innerStateType,
@@ -396,7 +395,7 @@ describe("LinkedPropertyInput renderValue", () => {
     render(
       <LinkedPropertyInput
         objectSet={createMockLinkedObjectSet()}
-        whereClause={EMPTY_WHERE_CLAUSE}
+        whereClause={{} as WhereClause<ObjectTypeDefinition>}
         definition={createLinkedDefinition("MULTI_SELECT", renderValueAsNode)}
         filterState={{
           type: "linkedProperty",
@@ -422,7 +421,7 @@ describe("LinkedPropertyInput renderValue", () => {
     render(
       <LinkedPropertyInput
         objectSet={createMockLinkedObjectSet()}
-        whereClause={EMPTY_WHERE_CLAUSE}
+        whereClause={{} as WhereClause<ObjectTypeDefinition>}
         definition={createLinkedDefinition("LISTOGRAM", renderValueAsNode)}
         filterState={{
           type: "linkedProperty",
@@ -448,7 +447,7 @@ describe("LinkedPropertyInput renderValue", () => {
     render(
       <LinkedPropertyInput
         objectSet={createMockLinkedObjectSet()}
-        whereClause={EMPTY_WHERE_CLAUSE}
+        whereClause={{} as WhereClause<ObjectTypeDefinition>}
         definition={createLinkedDefinition("LISTOGRAM", renderValueAsNode)}
         filterState={{
           type: "linkedProperty",
@@ -479,7 +478,7 @@ describe("LinkedPropertyInput renderValue", () => {
     const { container } = render(
       <LinkedPropertyInput
         objectSet={createMockLinkedObjectSet()}
-        whereClause={EMPTY_WHERE_CLAUSE}
+        whereClause={{} as WhereClause<ObjectTypeDefinition>}
         definition={createLinkedDefinition("SINGLE_SELECT", renderValueAsNode)}
         filterState={{
           type: "linkedProperty",
