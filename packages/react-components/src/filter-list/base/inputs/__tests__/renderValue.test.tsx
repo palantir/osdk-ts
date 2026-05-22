@@ -406,7 +406,6 @@ describe("LinkedPropertyInput renderValue", () => {
           },
         }}
         onFilterStateChanged={vi.fn()}
-        whereClause={{} as WhereClause<ObjectTypeDefinition>}
       />,
     );
 
@@ -433,7 +432,6 @@ describe("LinkedPropertyInput renderValue", () => {
           },
         }}
         onFilterStateChanged={vi.fn()}
-        whereClause={{} as WhereClause<ObjectTypeDefinition>}
       />,
     );
 
@@ -461,7 +459,6 @@ describe("LinkedPropertyInput renderValue", () => {
         }}
         onFilterStateChanged={vi.fn()}
         searchQuery="abc"
-        whereClause={{} as WhereClause<ObjectTypeDefinition>}
       />,
     );
 
@@ -492,7 +489,6 @@ describe("LinkedPropertyInput renderValue", () => {
           },
         }}
         onFilterStateChanged={vi.fn()}
-        whereClause={{} as WhereClause<ObjectTypeDefinition>}
       />,
     );
 
