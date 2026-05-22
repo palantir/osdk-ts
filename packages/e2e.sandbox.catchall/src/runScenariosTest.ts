@@ -20,6 +20,7 @@ import {
 } from "@osdk/client/unstable-do-not-use";
 import {
   createScenarioTestOsdk,
+  scenarioOsdkTestAction,
   ScenarioTestOsdk,
 } from "@osdk/e2e.generated.catchall";
 import { client } from "./client.js";
@@ -49,6 +50,11 @@ export async function runScenariosTest(): Promise<void> {
     },
     "scenario edited ScenarioTestOsdk entities",
   );
+
+  const res = await client(scenarioOsdkTestAction).applyAction({ scenario }, {
+    $returnEdits: true,
+  });
+  logger.info(res);
 }
 
 void runScenariosTest();
