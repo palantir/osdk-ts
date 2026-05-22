@@ -65,6 +65,26 @@ export function createMinimalClient(
       throw new Error(`Invalid stack URL: ${baseUrl}${hint}`);
     }
   }
+  fetchFn = async (
+    input: string | Request | URL,
+    init?: RequestInit | undefined,
+  ) => {
+    const url = new URL(
+      (typeof input === "string")
+        ? input
+        : (input instanceof URL)
+        ? input.toString()
+        : input.url,
+    );
+
+    if (
+      /\/scenarios(\/|$)/.test(url.pathname) && !url.searchParams.has("preview")
+    ) {
+      url.searchParams.set("preview", "true");
+    }
+
+    return fetch(url, init);
+  };
   const minimalClient: MinimalClient = {
     ...createSharedClientContext(
       baseUrl,
