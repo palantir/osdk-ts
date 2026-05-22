@@ -17,33 +17,45 @@
 import React from "react";
 import { OsdkThemeContext } from "./OsdkThemeContext.js";
 import type {
+  OsdkColorScheme,
+  OsdkTheme,
   OsdkThemeContextValue,
-  OsdkThemeMode,
-  ResolvedOsdkTheme,
+  ResolvedOsdkColorScheme,
 } from "./types.js";
 import { useSystemTheme } from "./useSystemTheme.js";
 
 export const DATA_THEME_ATTR = "data-bp-color-scheme";
 
+interface PreviousCssVariableValue {
+  priority: string;
+  value: string;
+}
+
 export interface OsdkThemeProviderProps {
   /**
-   * Controlled theme. When provided, the provider does not maintain its
-   * own state — the parent must respond to `onThemeChanged` (or update its
-   * own external store) and re-render with the new value. Use this when an
-   * external store already owns the theme value (e.g. Redux/Zustand, a
-   * parent design-system provider, or a Storybook toolbar).
+   * Controlled color scheme. When provided, the provider does not maintain
+   * its own state — the parent must respond to `onColorSchemeChanged` (or
+   * update its own external store) and re-render with the new value.
    */
-  theme?: OsdkThemeMode;
+  colorScheme?: OsdkColorScheme;
 
   /**
-   * Initial theme when uncontrolled. Ignored when `theme` is provided.
+   * Initial color scheme when uncontrolled. Ignored when `colorScheme` is
+   * provided.
    *
    * @default "system"
    */
-  defaultTheme?: OsdkThemeMode;
+  defaultColorScheme?: OsdkColorScheme;
 
-  /** Fires whenever `setTheme` is called from a descendant. */
-  onThemeChanged?: (theme: OsdkThemeMode) => void;
+  /** Fires whenever `setColorScheme` is called from a descendant. */
+  onColorSchemeChanged?: (colorScheme: OsdkColorScheme) => void;
+
+  /**
+   * Custom design-token theme created with {@link createTheme}. Color scheme
+   * state remains separate so runtime light/dark toggles do not need to
+   * recreate brand-token objects.
+   */
+  theme?: OsdkTheme;
 
   /**
    * Element to write `data-bp-color-scheme` onto.
@@ -62,39 +74,43 @@ export interface OsdkThemeProviderProps {
  * `data-bp-color-scheme` attribute onto the document so the CSS in
  * `tokens/base-tokens/dark.css` activates the right theme.
  *
- * `defaultTheme="system"` (default) follows the OS `prefers-color-scheme`
- * setting and re-renders when it changes. `defaultTheme="light"` /
- * `defaultTheme="dark"` start in the given theme regardless of the OS
- * preference. Call {@link useOsdkTheme}().setTheme from a descendant to
- * switch modes at runtime.
+ * `defaultColorScheme="system"` (default) follows the OS
+ * `prefers-color-scheme` setting and re-renders when it changes.
+ * `defaultColorScheme="light"` / `defaultColorScheme="dark"` start in the
+ * given color scheme regardless of the OS preference. Call
+ * {@link useOsdkTheme}().setColorScheme from a descendant to switch modes at
+ * runtime.
  *
- * To integrate with an external theme store, pass `theme` (controlled
- * mode)
+ * To integrate with an external color-scheme store, pass `colorScheme`
+ * (controlled mode). Pass `theme` for custom design tokens created with
+ * {@link createTheme}.
  */
 export function OsdkThemeProvider({
-  theme: controlledTheme,
-  defaultTheme = "system",
-  onThemeChanged,
+  colorScheme: controlledColorScheme,
+  defaultColorScheme = "system",
+  onColorSchemeChanged,
+  theme,
   target,
   children,
 }: OsdkThemeProviderProps): React.ReactElement {
-  const [internalTheme, setInternalTheme] = React.useState<OsdkThemeMode>(
-    defaultTheme,
+  const [internalColorScheme, setInternalColorScheme] = React.useState<
+    OsdkColorScheme
+  >(
+    defaultColorScheme,
   );
-  const theme = controlledTheme ?? internalTheme;
+  const colorScheme = controlledColorScheme ?? internalColorScheme;
 
   const systemTheme = useSystemTheme();
-  const resolvedTheme: ResolvedOsdkTheme = theme === "system"
+  const resolvedColorScheme: ResolvedOsdkColorScheme = colorScheme === "system"
     ? systemTheme
-    : theme;
+    : colorScheme;
 
-  React.useLayoutEffect(() => {
-    const element = target
-      ?? (typeof document !== "undefined" ? document.documentElement : null);
+  React.useLayoutEffect(function applyColorSchemeAttribute() {
+    const element = getThemeTarget(target);
     if (element == null) return;
 
     const previous = element.getAttribute(DATA_THEME_ATTR);
-    element.setAttribute(DATA_THEME_ATTR, resolvedTheme);
+    element.setAttribute(DATA_THEME_ATTR, resolvedColorScheme);
     return () => {
       if (previous == null) {
         element.removeAttribute(DATA_THEME_ATTR);
@@ -102,21 +118,57 @@ export function OsdkThemeProvider({
         element.setAttribute(DATA_THEME_ATTR, previous);
       }
     };
-  }, [resolvedTheme, target]);
+  }, [resolvedColorScheme, target]);
 
-  const setTheme = React.useCallback(
-    (next: OsdkThemeMode) => {
-      if (controlledTheme === undefined) {
-        setInternalTheme(next);
+  React.useLayoutEffect(function applyThemeCssVariables() {
+    const element = getThemeTarget(target);
+    if (element == null || theme == null || theme.cssVariables.size === 0) {
+      return;
+    }
+
+    const previousValues = new Map<string, PreviousCssVariableValue>();
+
+    for (const [cssVariableName, cssVariableValue] of theme.cssVariables) {
+      previousValues.set(cssVariableName, {
+        priority: element.style.getPropertyPriority(cssVariableName),
+        value: element.style.getPropertyValue(cssVariableName),
+      });
+      element.style.setProperty(cssVariableName, cssVariableValue);
+    }
+
+    return () => {
+      for (const [cssVariableName, previousValue] of previousValues) {
+        if (previousValue.value === "") {
+          element.style.removeProperty(cssVariableName);
+        } else {
+          element.style.setProperty(
+            cssVariableName,
+            previousValue.value,
+            previousValue.priority,
+          );
+        }
       }
-      onThemeChanged?.(next);
+    };
+  }, [target, theme]);
+
+  const setColorScheme = React.useCallback(
+    (next: OsdkColorScheme) => {
+      if (controlledColorScheme === undefined) {
+        setInternalColorScheme(next);
+      }
+      onColorSchemeChanged?.(next);
     },
-    [controlledTheme, onThemeChanged],
+    [controlledColorScheme, onColorSchemeChanged],
   );
 
   const value = React.useMemo<OsdkThemeContextValue>(
-    () => ({ theme, resolvedTheme, setTheme }),
-    [theme, resolvedTheme, setTheme],
+    () => ({
+      colorScheme,
+      resolvedColorScheme,
+      setColorScheme,
+      theme,
+    }),
+    [colorScheme, resolvedColorScheme, setColorScheme, theme],
   );
 
   return (
@@ -124,4 +176,9 @@ export function OsdkThemeProvider({
       {children}
     </OsdkThemeContext.Provider>
   );
+}
+
+function getThemeTarget(target: HTMLElement | null | undefined) {
+  return target
+    ?? (typeof document !== "undefined" ? document.documentElement : null);
 }

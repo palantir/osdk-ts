@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
+import { OsdkThemeProvider } from "@osdk/react-components/experimental/theme";
 import type { Decorator } from "@storybook/react-vite";
-import React, { useLayoutEffect, useMemo } from "react";
-import { resolveThemeCssVariables } from "./brandThemeCssVariables.js";
+import React, { useMemo } from "react";
+import { resolveBrandTheme } from "./brandThemeCssVariables.js";
 import {
   BRAND_THEME_PRESET_GLOBAL_KEY,
   parseBrandThemePresetGlobal,
+  resolveBrandThemePreset,
 } from "./brandThemeState.js";
 
 interface BrandThemeDecoratorProps {
@@ -27,54 +29,28 @@ interface BrandThemeDecoratorProps {
   globals: Record<string, unknown>;
 }
 
-interface PreviousCssVariableValue {
-  value: string;
-  priority: string;
-}
-
 export const BrandThemeDecorator = React.memo(function BrandThemeDecoratorFn(
   { Story, globals }: BrandThemeDecoratorProps,
 ) {
   const selectedPresetGlobal = globals[BRAND_THEME_PRESET_GLOBAL_KEY];
-  const cssVariables = useMemo(
-    () =>
-      resolveThemeCssVariables(
-        parseBrandThemePresetGlobal(selectedPresetGlobal),
-      ),
+  const selectedPreset = useMemo(
+    () => parseBrandThemePresetGlobal(selectedPresetGlobal),
     [selectedPresetGlobal],
   );
+  const themePreset = useMemo(
+    () => resolveBrandThemePreset(selectedPreset),
+    [selectedPreset],
+  );
+  const theme = useMemo(
+    () => resolveBrandTheme(selectedPreset),
+    [selectedPreset],
+  );
 
-  useLayoutEffect(function applyBrandThemeCssVariables() {
-    const rootStyle = document.documentElement.style;
-    const previousValues = new Map<string, PreviousCssVariableValue>();
-
-    for (const [cssPropertyName, cssPropertyValue] of cssVariables) {
-      previousValues.set(
-        cssPropertyName,
-        {
-          priority: rootStyle.getPropertyPriority(cssPropertyName),
-          value: rootStyle.getPropertyValue(cssPropertyName),
-        },
-      );
-      rootStyle.setProperty(cssPropertyName, cssPropertyValue);
-    }
-
-    return () => {
-      for (const [cssPropertyName, previous] of previousValues) {
-        if (previous.value === "") {
-          rootStyle.removeProperty(cssPropertyName);
-        } else {
-          rootStyle.setProperty(
-            cssPropertyName,
-            previous.value,
-            previous.priority,
-          );
-        }
-      }
-    };
-  }, [cssVariables]);
-
-  return <Story />;
+  return (
+    <OsdkThemeProvider colorScheme={themePreset.colorMode} theme={theme}>
+      <Story />
+    </OsdkThemeProvider>
+  );
 });
 
 export const withBrandThemeDecorator: Decorator = (Story, context) => (

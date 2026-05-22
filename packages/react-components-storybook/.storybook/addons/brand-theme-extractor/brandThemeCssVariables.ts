@@ -15,6 +15,10 @@
  */
 
 import {
+  createTheme,
+  type OsdkTheme,
+} from "@osdk/react-components/experimental/theme";
+import {
   type BrandThemePresetSelection,
   resolveBrandThemePreset,
 } from "./brandThemeState.js";
@@ -22,9 +26,9 @@ import { SEMANTIC_TOKEN_MAP } from "./semanticTokenMap.js";
 
 export function resolveThemeCssVariables(
   selection: BrandThemePresetSelection,
-): Map<string, string> {
+): Map<`--${string}`, string> {
   const preset = resolveBrandThemePreset(selection);
-  const variables = new Map<string, string>();
+  const variables = new Map<`--${string}`, string>();
 
   for (const assignment of preset.assignments) {
     const cssPropertyNames = SEMANTIC_TOKEN_MAP[assignment.role];
@@ -50,6 +54,16 @@ export function resolveThemeCssVariables(
   }
 
   return variables;
+}
+
+export function resolveBrandTheme(
+  selection: BrandThemePresetSelection,
+): OsdkTheme {
+  return createTheme({
+    cssVariables: Object.fromEntries(
+      resolveThemeCssVariables(selection),
+    ) as Partial<Record<`--${string}`, string>>,
+  });
 }
 
 function formatTokenValue(

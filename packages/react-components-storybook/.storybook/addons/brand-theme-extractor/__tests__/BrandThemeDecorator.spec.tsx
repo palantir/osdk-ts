@@ -58,6 +58,7 @@ function renderDecorator(element: React.ReactElement) {
 describe("BrandThemeDecorator", () => {
   afterEach(() => {
     document.documentElement.removeAttribute("style");
+    document.documentElement.removeAttribute("data-bp-color-scheme");
     document.body.replaceChildren();
   });
 
@@ -74,6 +75,9 @@ describe("BrandThemeDecorator", () => {
         "--osdk-intent-primary-rest",
       ),
     ).toBe("#16a34a");
+    expect(
+      document.documentElement.getAttribute("data-bp-color-scheme"),
+    ).toBe("dark");
   });
 
   it("removes stale preset variables when the selected preset changes", () => {

@@ -15,7 +15,7 @@
  */
 
 import { useSyncExternalStore } from "react";
-import type { ResolvedOsdkTheme } from "./types.js";
+import type { ResolvedOsdkColorScheme } from "./types.js";
 
 const DARK_QUERY = "(prefers-color-scheme: dark)";
 
@@ -30,7 +30,7 @@ function subscribe(callback: () => void): () => void {
   return () => mql.removeEventListener("change", callback);
 }
 
-function getSnapshot(): ResolvedOsdkTheme {
+function getSnapshot(): ResolvedOsdkColorScheme {
   if (
     typeof window === "undefined" || typeof window.matchMedia !== "function"
   ) {
@@ -39,7 +39,7 @@ function getSnapshot(): ResolvedOsdkTheme {
   return window.matchMedia(DARK_QUERY).matches ? "dark" : "light";
 }
 
-function getServerSnapshot(): ResolvedOsdkTheme {
+function getServerSnapshot(): ResolvedOsdkColorScheme {
   return "light";
 }
 
@@ -48,6 +48,6 @@ function getServerSnapshot(): ResolvedOsdkTheme {
  * the current resolved value. Re-renders the consumer when the OS preference
  * changes. SSR-safe: returns `"light"` on the server.
  */
-export function useSystemTheme(): ResolvedOsdkTheme {
+export function useSystemTheme(): ResolvedOsdkColorScheme {
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }

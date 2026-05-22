@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
+// @vitest-environment happy-dom
+
 import { act, cleanup, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { createTheme } from "../createTheme.js";
 import { DATA_THEME_ATTR, OsdkThemeProvider } from "../OsdkThemeProvider.js";
-import type { OsdkThemeMode } from "../types.js";
+import type { OsdkColorScheme } from "../types.js";
 import { useOsdkTheme } from "../useOsdkTheme.js";
 
 type MediaQueryListener = (event: { matches: boolean }) => void;
@@ -65,33 +68,33 @@ function installMatchMediaMock(initialMatches: boolean): {
 }
 
 function ThemeProbe(): React.ReactElement {
-  const { theme, resolvedTheme } = useOsdkTheme();
+  const { colorScheme, resolvedColorScheme } = useOsdkTheme();
   return (
     <div>
-      <span data-testid="theme">{theme}</span>
-      <span data-testid="resolved">{resolvedTheme}</span>
+      <span data-testid="color-scheme">{colorScheme}</span>
+      <span data-testid="resolved">{resolvedColorScheme}</span>
     </div>
   );
 }
 
 function ThemeToggle(): React.ReactElement {
-  const { setTheme } = useOsdkTheme();
+  const { setColorScheme } = useOsdkTheme();
   return (
     <>
       <button
         type="button"
         data-testid="set-light"
-        onClick={() => setTheme("light")}
+        onClick={() => setColorScheme("light")}
       />
       <button
         type="button"
         data-testid="set-dark"
-        onClick={() => setTheme("dark")}
+        onClick={() => setColorScheme("dark")}
       />
       <button
         type="button"
         data-testid="set-system"
-        onClick={() => setTheme("system")}
+        onClick={() => setColorScheme("system")}
       />
     </>
   );
@@ -107,6 +110,7 @@ describe("OsdkThemeProvider", () => {
   afterEach(() => {
     cleanup();
     document.documentElement.removeAttribute(DATA_THEME_ATTR);
+    document.documentElement.removeAttribute("style");
     media.cleanup();
   });
 
@@ -118,7 +122,7 @@ describe("OsdkThemeProvider", () => {
       </OsdkThemeProvider>,
     );
 
-    expect(screen.getByTestId("theme").textContent).toBe("system");
+    expect(screen.getByTestId("color-scheme").textContent).toBe("system");
     expect(screen.getByTestId("resolved").textContent).toBe("dark");
     expect(document.documentElement.getAttribute(DATA_THEME_ATTR)).toBe("dark");
   });
@@ -127,7 +131,7 @@ describe("OsdkThemeProvider", () => {
     // Set (prefers-color-scheme: dark) to true
     media.setMatches(true);
     render(
-      <OsdkThemeProvider defaultTheme="light">
+      <OsdkThemeProvider defaultColorScheme="light">
         <ThemeProbe />
       </OsdkThemeProvider>,
     );
@@ -158,7 +162,7 @@ describe("OsdkThemeProvider", () => {
     expect(document.documentElement.getAttribute(DATA_THEME_ATTR)).toBe("dark");
   });
 
-  it("setTheme updates the active theme in uncontrolled mode", () => {
+  it("setColorScheme updates the active color scheme in uncontrolled mode", () => {
     media.setMatches(true);
     render(
       <OsdkThemeProvider>
@@ -170,21 +174,24 @@ describe("OsdkThemeProvider", () => {
     expect(screen.getByTestId("resolved").textContent).toBe("dark");
 
     act(() => {
-      // Calls setTheme
+      // Calls setColorScheme
       screen.getByTestId("set-light").click();
     });
 
-    expect(screen.getByTestId("theme").textContent).toBe("light");
+    expect(screen.getByTestId("color-scheme").textContent).toBe("light");
     expect(screen.getByTestId("resolved").textContent).toBe("light");
     expect(document.documentElement.getAttribute(DATA_THEME_ATTR)).toBe(
       "light",
     );
   });
 
-  it("controlled mode ignores setTheme and fires onThemeChanged", () => {
-    const onThemeChanged = vi.fn();
+  it("controlled mode ignores setColorScheme and fires onColorSchemeChanged", () => {
+    const onColorSchemeChanged = vi.fn();
     render(
-      <OsdkThemeProvider theme="light" onThemeChanged={onThemeChanged}>
+      <OsdkThemeProvider
+        colorScheme="light"
+        onColorSchemeChanged={onColorSchemeChanged}
+      >
         <ThemeProbe />
         <ThemeToggle />
       </OsdkThemeProvider>,
@@ -193,13 +200,13 @@ describe("OsdkThemeProvider", () => {
     expect(screen.getByTestId("resolved").textContent).toBe("light");
 
     act(() => {
-      // Calls setTheme
+      // Calls setColorScheme
       screen.getByTestId("set-dark").click();
     });
 
-    expect(onThemeChanged).toHaveBeenCalledWith("dark");
+    expect(onColorSchemeChanged).toHaveBeenCalledWith("dark");
     // controlled mode: still light because parent didn't re-render
-    expect(screen.getByTestId("theme").textContent).toBe("light");
+    expect(screen.getByTestId("color-scheme").textContent).toBe("light");
     expect(document.documentElement.getAttribute(DATA_THEME_ATTR)).toBe(
       "light",
     );
@@ -207,9 +214,14 @@ describe("OsdkThemeProvider", () => {
 
   it("controlled theme re-renders propagate to the DOM", () => {
     function Harness(): React.ReactElement {
-      const [theme, setTheme] = React.useState<OsdkThemeMode>("light");
+      const [colorScheme, setColorScheme] = React.useState<OsdkColorScheme>(
+        "light",
+      );
       return (
-        <OsdkThemeProvider theme={theme} onThemeChanged={setTheme}>
+        <OsdkThemeProvider
+          colorScheme={colorScheme}
+          onColorSchemeChanged={setColorScheme}
+        >
           <ThemeProbe />
           <ThemeToggle />
         </OsdkThemeProvider>
@@ -222,18 +234,18 @@ describe("OsdkThemeProvider", () => {
     );
 
     act(() => {
-      // Calls setTheme
+      // Calls setColorScheme
       screen.getByTestId("set-dark").click();
     });
 
-    expect(screen.getByTestId("theme").textContent).toBe("dark");
+    expect(screen.getByTestId("color-scheme").textContent).toBe("dark");
     expect(document.documentElement.getAttribute(DATA_THEME_ATTR)).toBe("dark");
   });
 
   it("restores the previous data theme attribute on unmount", () => {
     document.documentElement.setAttribute(DATA_THEME_ATTR, "light");
     const { unmount } = render(
-      <OsdkThemeProvider defaultTheme="dark">
+      <OsdkThemeProvider defaultColorScheme="dark">
         <ThemeProbe />
       </OsdkThemeProvider>,
     );
@@ -250,7 +262,7 @@ describe("OsdkThemeProvider", () => {
   it("removes the data theme attribute on unmount when there was none", () => {
     expect(document.documentElement.getAttribute(DATA_THEME_ATTR)).toBeNull();
     const { unmount } = render(
-      <OsdkThemeProvider defaultTheme="dark">
+      <OsdkThemeProvider defaultColorScheme="dark">
         <ThemeProbe />
       </OsdkThemeProvider>,
     );
@@ -267,13 +279,134 @@ describe("OsdkThemeProvider", () => {
     document.body.appendChild(custom);
     try {
       render(
-        <OsdkThemeProvider defaultTheme="dark" target={custom}>
+        <OsdkThemeProvider defaultColorScheme="dark" target={custom}>
           <ThemeProbe />
         </OsdkThemeProvider>,
       );
 
       expect(custom.getAttribute(DATA_THEME_ATTR)).toBe("dark");
       expect(document.documentElement.getAttribute(DATA_THEME_ATTR)).toBeNull();
+    } finally {
+      document.body.removeChild(custom);
+    }
+  });
+
+  it("applies custom theme CSS variables to the default target", () => {
+    const theme = createTheme({
+      colors: {
+        primary: "#7c3aed",
+      },
+    });
+
+    render(
+      <OsdkThemeProvider theme={theme}>
+        <ThemeProbe />
+      </OsdkThemeProvider>,
+    );
+
+    expect(
+      document.documentElement.style.getPropertyValue(
+        "--osdk-intent-primary-rest",
+      ),
+    ).toBe("#7c3aed");
+  });
+
+  it("removes stale theme CSS variables when the theme changes", () => {
+    const firstTheme = createTheme({
+      colors: {
+        primary: "#7c3aed",
+      },
+      cssVariables: {
+        "--osdk-custom-token": "first",
+      },
+    });
+    const secondTheme = createTheme({
+      colors: {
+        primary: "#16a34a",
+      },
+    });
+
+    const { rerender } = render(
+      <OsdkThemeProvider theme={firstTheme}>
+        <ThemeProbe />
+      </OsdkThemeProvider>,
+    );
+
+    expect(
+      document.documentElement.style.getPropertyValue("--osdk-custom-token"),
+    ).toBe("first");
+
+    rerender(
+      <OsdkThemeProvider theme={secondTheme}>
+        <ThemeProbe />
+      </OsdkThemeProvider>,
+    );
+
+    expect(
+      document.documentElement.style.getPropertyValue(
+        "--osdk-intent-primary-rest",
+      ),
+    ).toBe("#16a34a");
+    expect(
+      document.documentElement.style.getPropertyValue("--osdk-custom-token"),
+    ).toBe("");
+  });
+
+  it("restores previous inline theme CSS variable values and priorities", () => {
+    document.documentElement.style.setProperty(
+      "--osdk-intent-primary-rest",
+      "rebeccapurple",
+      "important",
+    );
+    const theme = createTheme({
+      colors: {
+        primary: "#7c3aed",
+      },
+    });
+
+    const { unmount } = render(
+      <OsdkThemeProvider theme={theme}>
+        <ThemeProbe />
+      </OsdkThemeProvider>,
+    );
+
+    unmount();
+
+    expect(
+      document.documentElement.style.getPropertyValue(
+        "--osdk-intent-primary-rest",
+      ),
+    ).toBe("rebeccapurple");
+    expect(
+      document.documentElement.style.getPropertyPriority(
+        "--osdk-intent-primary-rest",
+      ),
+    ).toBe("important");
+  });
+  it("writes custom theme CSS variables to a custom target element", () => {
+    const custom = document.createElement("div");
+    document.body.appendChild(custom);
+    const theme = createTheme({
+      colors: {
+        primary: "#7c3aed",
+      },
+    });
+
+    try {
+      render(
+        <OsdkThemeProvider theme={theme} target={custom}>
+          <ThemeProbe />
+        </OsdkThemeProvider>,
+      );
+
+      expect(
+        custom.style.getPropertyValue("--osdk-intent-primary-rest"),
+      ).toBe("#7c3aed");
+      expect(
+        document.documentElement.style.getPropertyValue(
+          "--osdk-intent-primary-rest",
+        ),
+      ).toBe("");
     } finally {
       document.body.removeChild(custom);
     }
