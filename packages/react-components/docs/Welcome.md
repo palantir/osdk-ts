@@ -12,14 +12,13 @@ forms, and filters.
 
 ## Available Components
 
-| Component        | Description                                                               |
-| ---------------- | ------------------------------------------------------------------------- |
-| `ObjectTable`    | Displays an Object Set as a sortable, paginated table with inline editing |
-| `FilterList`     | Interactive filter panel with histogram filters, date ranges, and search  |
-| `ActionForm`     | Auto-generated form for executing Ontology Actions                        |
-| `PdfViewer`      | PDF viewer with annotations, search, sidebar navigation, and zoom         |
-| `AipAgentChat`   | Chat surface backed by Foundry LMS                                        |
-| `DocumentViewer` | Unified media viewer that auto-detects file type                          |
+| Component        | Description                                                                  |
+| ---------------- | ---------------------------------------------------------------------------- |
+| `ObjectTable`    | Displays an Object Set as a sortable, paginated table with inline editing    |
+| `FilterList`     | Interactive filter panel with histogram filters, date ranges, and search     |
+| `ActionForm`     | Auto-generated form for executing Ontology Actions                           |
+| `DocumentViewer` | Unified media viewer that auto-detects file type (PDF, Excel, images, video) |
+| `AipAgentChat`   | Chat surface backed by Foundry LMS                                           |
 
 All components are exported under `@osdk/react-components/experimental/*`
 sub-paths (e.g. `@osdk/react-components/experimental/object-table`).
