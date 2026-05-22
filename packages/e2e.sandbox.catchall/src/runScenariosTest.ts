@@ -30,12 +30,11 @@ export async function runScenariosTest(): Promise<void> {
   const { scenarioRid } = scenario.getScenarioReference();
   logger.info({ scenarioRid }, "createScenario minted a fresh scenario");
 
-  const primaryKey = `scenarios-runtime-test-${Date.now()}`;
   await scenario(createScenarioTestOsdk).applyAction({
     string: "applied under scenario context",
     scenarioRidCreatedOn: scenarioRid,
   });
-  logger.info({ primaryKey }, "applied createScenarioTestOsdk on scenario");
+  logger.info("applied createScenarioTestOsdk under scenario context");
 
   const editedTypes = await scenario.getEditedEntityTypes();
   logger.info(editedTypes, "scenario edited entity types after action");
