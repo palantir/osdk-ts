@@ -24,7 +24,11 @@ import React, { memo, useCallback, useMemo } from "react";
 import { FilterInputExcludeRow } from "../base/FilterInputExcludeRow.js";
 import { SingleSelectInput } from "../base/inputs/SingleSelectInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
-import { usePropertyAggregation } from "../hooks/usePropertyAggregation.js";
+import { useFilterPropertyAggregation } from "../hooks/useFilterPropertyAggregation.js";
+import {
+  EMPTY_LINKED_FILTERS,
+  type LinkedFilter,
+} from "../types/LinkedFilterTypes.js";
 import { coerceToString } from "../utils/coerceFilterValue.js";
 
 interface SingleSelectFilterInputProps<Q extends ObjectTypeDefinition> {
@@ -34,6 +38,8 @@ interface SingleSelectFilterInputProps<Q extends ObjectTypeDefinition> {
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
+  linkedFilters?: ReadonlyArray<LinkedFilter<Q>>;
+  showFilteredOutValues?: boolean;
   excludeRowOpen?: boolean;
   renderValue?: (value: string) => React.ReactNode;
   showCount?: boolean;
@@ -46,6 +52,8 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
   filterState,
   onFilterStateChanged,
   whereClause,
+  linkedFilters = EMPTY_LINKED_FILTERS,
+  showFilteredOutValues,
   excludeRowOpen,
   renderValue,
   showCount,
@@ -78,19 +86,18 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
     [onFilterStateChanged, isExcluding],
   );
 
-  const aggregationOptions = useMemo(
-    () => ({
-      where: whereClause,
-      activeValues: selectedValue != null ? [selectedValue] : undefined,
-    }),
-    [whereClause, selectedValue],
+  const selectedValues = useMemo(
+    () => selectedValue != null ? [selectedValue] : [],
+    [selectedValue],
   );
 
-  const { data, isLoading, error } = usePropertyAggregation(
+  const { data, isLoading, error } = useFilterPropertyAggregation(
     objectType,
     propertyKey as PropertyKeys<Q>,
     objectSet,
-    aggregationOptions,
+    whereClause,
+    linkedFilters,
+    { selectedValues, showFilteredOutValues },
   );
 
   return (

@@ -42,7 +42,7 @@ interface StaticValuesFilterInputProps<Q extends ObjectTypeDefinition> {
   onFilterStateChanged: (state: FilterState) => void;
   /** Search term for filtering displayed values within the filter input */
   searchQuery?: string;
-  /** Whether the exclude/include toggle row is expanded */
+  /** Whether the inline exclude row is currently open */
   excludeRowOpen?: boolean;
   /** Layout for `MULTI_SELECT` rendering. Forwarded to `MultiSelectInput`. */
   layout?: MultiSelectInputLayout;

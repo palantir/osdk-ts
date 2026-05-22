@@ -39,7 +39,7 @@ jobs:
 
       - name: Build Storybook
         env:
-          STORYBOOK_BASE_PATH: /osdk-ts/storybook/pr-${{ github.event.pull_request.number }}/
+          STORYBOOK_BASE_PATH: /osdk-ts/storybook/pr-${{ github.event.pull_request.number }}/${{ github.event.pull_request.head.sha }}/
         run: pnpm --filter @osdk/react-components-storybook build
 
       - name: Upload Storybook build
@@ -57,7 +57,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      issues: write
+      pull-requests: write
     concurrency:
       # Serialize gh-pages writers so force-push deploys do not clobber each other.
       # queue: max keeps every pending preview deploy instead of replacing older pending runs.
@@ -73,12 +73,14 @@ jobs:
       - name: Deploy preview to gh-pages
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
+          COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-          preview_path="storybook/pr-${PR_NUMBER}"
+          preview_path="storybook/pr-${PR_NUMBER}/${COMMIT_SHA}"
 
           git clone --branch gh-pages --single-branch --depth 1 https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git gh-pages-temp
 
-          rm -rf "gh-pages-temp/${preview_path}"
+          # Remove old previews for this PR, then deploy the new one
+          rm -rf "gh-pages-temp/storybook/pr-${PR_NUMBER}"
           mkdir -p "gh-pages-temp/${preview_path}"
           cp -R storybook-static/. "gh-pages-temp/${preview_path}/"
           touch gh-pages-temp/storybook/.nojekyll
@@ -94,7 +96,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
-          PREVIEW_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/storybook/pr-${{ github.event.pull_request.number }}/
+          PREVIEW_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/storybook/pr-${{ github.event.pull_request.number }}/${{ github.event.pull_request.head.sha }}/
           PR_NUMBER: ${{ github.event.pull_request.number }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
@@ -121,7 +123,7 @@ jobs:
     if: ${{ always() && github.event.action != 'closed' && github.event.pull_request.head.repo.full_name == github.repository && (needs.build-preview.result == 'failure' || needs.deploy-preview.result == 'failure') }}
     runs-on: ubuntu-latest
     permissions:
-      issues: write
+      pull-requests: write
     steps:
       - name: Comment on preview failure
         env:
@@ -152,7 +154,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      issues: write
+      pull-requests: write
     concurrency:
       # Serialize gh-pages writers so force-push deploys do not clobber each other.
       # queue: max keeps every pending preview deploy instead of replacing older pending runs.

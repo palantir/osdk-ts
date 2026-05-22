@@ -47,6 +47,12 @@
   flex-shrink: 0;
 }
 
+/* Muted styling for filtered-out (count=0) entries. */
+.filteredOutItem {
+  opacity: var(--osdk-filter-filtered-out-item-opacity);
+  color: var(--osdk-filter-filtered-out-item-color);
+}
+
 .inlineInput {
   font-family: var(--osdk-filter-input-font-family);
   font-size: var(--osdk-filter-input-font-size);

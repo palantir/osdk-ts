@@ -19,14 +19,33 @@ import type {
   LinkNames,
   ObjectTypeDefinition,
   PropertyKeys,
+  WhereClause,
 } from "@osdk/api";
+import type { ReactNode } from "react";
 import type {
   BaseFilterState,
+  FilterDefinitionControls,
   FilterState,
   FilterStateByComponentType,
   PropertyTypeFromKey,
   ValidComponentsForPropertyType,
 } from "../FilterListItemApi.js";
+
+/**
+ * Runtime representation of an active linked-property filter. Each entry
+ * binds a `linkName` to its `reverseLinkName` and an `innerWhere` typed
+ * against the linked object type, so `narrowObjectSet` can pivot type-safely.
+ */
+export type LinkedFilter<Q extends ObjectTypeDefinition> = {
+  [L in LinkNames<Q>]: {
+    linkName: L;
+    reverseLinkName: LinkNames<LinkedType<Q, L>>;
+    innerWhere: WhereClause<LinkedType<Q, L>>;
+  };
+}[LinkNames<Q>];
+
+/** Shared empty default for `LinkedFilter` arrays — avoids new-array-per-render. */
+export const EMPTY_LINKED_FILTERS: readonly never[] = [];
 
 /**
  * State for "has link" filter
@@ -54,7 +73,7 @@ export interface LinkedPropertyFilterState<S extends FilterState = FilterState>
 export interface HasLinkFilterDefinition<
   Q extends ObjectTypeDefinition,
   L extends LinkNames<Q> = LinkNames<Q>,
-> {
+> extends FilterDefinitionControls {
   type: "HAS_LINK";
   /**
    * Optional unique identifier for stable keying across filter reorders.
@@ -83,13 +102,22 @@ export interface LinkedPropertyFilterDefinition<
   LinkedC extends ValidComponentsForPropertyType<
     PropertyTypeFromKey<LinkedQ, LinkedK>
   > = ValidComponentsForPropertyType<PropertyTypeFromKey<LinkedQ, LinkedK>>,
-> {
+> extends FilterDefinitionControls {
   type: "LINKED_PROPERTY";
   /**
    * Optional unique identifier for stable keying across filter reorders.
    */
   id?: string;
   linkName: L;
+  /**
+   * Set this to make the filter narrow `objectSet`; the result is emitted
+   * via `onEffectiveObjectSet`. The value names the link on the linked
+   * object type that points back to `Q` (the inverse of `linkName`).
+   *
+   * Leave unset to keep the filter UI-only. It still renders and fires
+   * `onFilterStateChanged`, but FilterList won't narrow on it.
+   */
+  reverseLinkName?: LinkNames<LinkedQ>;
   linkedPropertyKey: LinkedK;
   linkedFilterComponent: LinkedC;
   linkedFilterState: FilterStateByComponentType[LinkedC];
@@ -103,6 +131,15 @@ export interface LinkedPropertyFilterDefinition<
    * @default true for LISTOGRAM and MULTI_SELECT, false for SINGLE_SELECT
    */
   showCount?: boolean;
+
+  /**
+   * Custom display function for filter values.
+   * Replaces the default string display in dropdown items, chips, and listogram rows.
+   * When the function returns a string, that string is also used for search matching
+   * within filter dropdowns. When it returns a non-string `ReactNode`, search falls
+   * back to the raw value.
+   */
+  renderValue?: (value: string) => ReactNode;
 
   /**
    * Controls whether this filter is rendered.

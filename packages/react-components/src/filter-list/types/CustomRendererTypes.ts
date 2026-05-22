@@ -16,7 +16,10 @@
 
 import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import type { ReactNode } from "react";
-import type { BaseFilterState } from "../FilterListItemApi.js";
+import type {
+  BaseFilterState,
+  FilterDefinitionControls,
+} from "../FilterListItemApi.js";
 
 /**
  * State for custom filter
@@ -60,7 +63,7 @@ export interface CustomFilterItemRendererProps<
 export interface CustomFilterDefinition<
   Q extends ObjectTypeDefinition,
   State extends BaseFilterState = CustomFilterState,
-> {
+> extends FilterDefinitionControls {
   type: "CUSTOM";
   /**
    * Optional unique identifier for stable keying across filter reorders.
