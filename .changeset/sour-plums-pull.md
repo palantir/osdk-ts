@@ -1,5 +1,5 @@
 ---
-"@osdk/client": minor
+"@osdk/client": patch
 ---
 
 Fix empty filter case
