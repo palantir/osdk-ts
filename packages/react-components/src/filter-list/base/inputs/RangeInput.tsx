@@ -175,6 +175,13 @@ export interface RangeInputProps<T> {
    * that bucket's `[min, max]`. Default `false` (no behavior change).
    */
   clickToFilter?: boolean;
+  /**
+   * Only used when `config.inputType === "date"`: optional content
+   * rendered inside both the From and the To `DatePicker` popovers as a
+   * left rail (e.g. relative-range shortcut buttons). Ignored for number
+   * ranges.
+   */
+  dateLeftRail?: React.ReactNode;
 }
 
 function RangeInputInner<T>({
@@ -189,6 +196,7 @@ function RangeInputInner<T>({
   config,
   histogramData,
   clickToFilter = false,
+  dateLeftRail,
 }: RangeInputProps<T>): React.ReactElement {
   const minInputId = useId();
   const maxInputId = useId();
@@ -876,6 +884,7 @@ function RangeInputInner<T>({
             formatDate={config.formatDate}
             minLabel={config.minLabel}
             maxLabel={config.maxLabel}
+            leftRail={dateLeftRail}
           />
         )
         : (
@@ -936,6 +945,7 @@ interface DateRangeInputsProps {
   formatDate: ((date: Date) => string) | undefined;
   minLabel: string;
   maxLabel: string;
+  leftRail?: React.ReactNode;
 }
 
 function DateRangeInputs({
@@ -946,6 +956,7 @@ function DateRangeInputs({
   formatDate,
   minLabel,
   maxLabel,
+  leftRail,
 }: DateRangeInputsProps): React.ReactElement {
   return (
     <div className={styles.rangeInputs}>
@@ -956,6 +967,7 @@ function DateRangeInputs({
         placeholder={minLabel}
         ariaLabel={minLabel}
         formatDate={formatDate}
+        leftRail={leftRail}
       />
       <DatePicker
         value={maxValue ?? null}
@@ -964,6 +976,7 @@ function DateRangeInputs({
         placeholder={maxLabel}
         ariaLabel={maxLabel}
         formatDate={formatDate}
+        leftRail={leftRail}
       />
     </div>
   );

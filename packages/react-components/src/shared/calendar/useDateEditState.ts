@@ -92,14 +92,18 @@ export function useDateEditState({
   const [isEditing, setIsEditing] = useState(false);
   const [inputValue, setInputValue] = useState("");
 
-  // Sync inputValue when external value changes (e.g. parent resets)
+  // Sync inputValue when external value changes (e.g. parent resets, or a
+  // shortcut button inside the popover commits a new range). Syncing while
+  // editing is safe because this block only runs when value.getTime() has
+  // actually changed — and the parent only commits a new value on blur /
+  // Enter / explicit external action, never per-keystroke during editing,
+  // so the user's in-progress typing is never overwritten by their own
+  // input.
   const prevValueTimeRef = useRef<number | null>(value?.getTime() ?? null);
   const currentValueTime = value?.getTime() ?? null;
   if (prevValueTimeRef.current !== currentValueTime) {
     prevValueTimeRef.current = currentValueTime;
-    if (!isEditing) {
-      setInputValue(value != null ? editFormatFn(value) : "");
-    }
+    setInputValue(value != null ? editFormatFn(value) : "");
   }
 
   // During editing the user needs parsable text they can modify and that

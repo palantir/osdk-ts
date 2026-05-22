@@ -129,6 +129,14 @@ export interface DatePickerProps {
    * instead.
    */
   modal?: "trap-focus" | false;
+
+  /**
+   * Optional content rendered as a vertical rail on the left side of the
+   * calendar popover. Use this for preset/shortcut buttons (e.g. "Past
+   * day", "Past week") that emit a date when clicked. When omitted the
+   * popover renders only the calendar at its standard width.
+   */
+  leftRail?: React.ReactNode;
 }
 
 export const DatePicker: React.NamedExoticComponent<
@@ -150,6 +158,7 @@ export const DatePicker: React.NamedExoticComponent<
   ariaLabel,
   modal = "trap-focus",
   disabled = false,
+  leftRail,
 }: DatePickerProps) {
   const isModal = modal !== false;
   const shouldCloseOnSelection = closeOnSelection ?? !showTime;
@@ -506,16 +515,23 @@ export const DatePicker: React.NamedExoticComponent<
                 className={commonStyles.osdkDatePickerFocusBoundary}
               />
             )}
-            <LazyDateCalendar
-              dateSelected={activeDateValue}
-              onSelect={handleCalendarSelect}
-              onClear={handleCalendarClear}
-              month={visibleCalendarMonth}
-              onMonthChange={setVisibleCalendarMonth}
-              min={min}
-              max={max}
-              footer={timeFooter}
-            />
+            {leftRail != null && (
+              <div className={commonStyles.osdkDatePickerPopoverLeftRail}>
+                {leftRail}
+              </div>
+            )}
+            <div className={commonStyles.osdkDatePickerPopoverCalendar}>
+              <LazyDateCalendar
+                dateSelected={activeDateValue}
+                onSelect={handleCalendarSelect}
+                onClear={handleCalendarClear}
+                month={visibleCalendarMonth}
+                onMonthChange={setVisibleCalendarMonth}
+                min={min}
+                max={max}
+                footer={timeFooter}
+              />
+            </div>
             {isModal && (
               <div
                 onFocus={handleEndFocusBoundary}

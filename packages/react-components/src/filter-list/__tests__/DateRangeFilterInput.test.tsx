@@ -62,36 +62,45 @@ describe("DateRangeFilterInput", () => {
     expect(histogramCall![1]).toHaveProperty("where", whereClause);
   });
 
-  it("emits a DATE_RANGE filter state with absolute min/max on shortcut click", () => {
-    // Anchor `now` to a mid-year, non-DST-boundary date so subDays(now, 1) is
-    // exactly 24h earlier — `date-fns` is wall-clock aware and would otherwise
-    // produce ±1h diffs on spring-forward / fall-back days.
-    vi.useFakeTimers({ now: new Date(2024, 5, 15, 12, 0, 0, 0) });
-    const whereClause = {} as WhereClause<typeof MockObjectType>;
-    const onFilterStateChanged = vi.fn();
-    render(
-      <DateRangeFilterInput
-        objectType={MockObjectType}
-        propertyKey="createdAt"
-        filterState={undefined}
-        onFilterStateChanged={onFilterStateChanged}
-        whereClause={whereClause}
-        dateShortcuts={["past-day"]}
-      />,
-    );
-    fireEvent.click(screen.getByRole("button", { name: "Past day" }));
-    expect(onFilterStateChanged).toHaveBeenCalledTimes(1);
-    const state = onFilterStateChanged.mock.calls[0][0];
-    expect(state.type).toBe("DATE_RANGE");
-    if (
-      !(state.minValue instanceof Date) || !(state.maxValue instanceof Date)
-    ) {
-      throw new Error("expected minValue and maxValue to be Dates");
-    }
-    expect(state.maxValue.getTime() - state.minValue.getTime()).toBe(
-      24 * 60 * 60 * 1000,
-    );
-  });
+  it(
+    "renders the shortcut rail inside each From/To popover and emits a "
+      + "DATE_RANGE filter state with absolute min/max on shortcut click",
+    () => {
+      // Anchor `now` to a mid-year, non-DST-boundary date so subDays(now, 1)
+      // is exactly 24h earlier — `date-fns` is wall-clock aware and would
+      // otherwise produce ±1h diffs on spring-forward / fall-back days.
+      vi.useFakeTimers({ now: new Date(2024, 5, 15, 12, 0, 0, 0) });
+      const whereClause = {} as WhereClause<typeof MockObjectType>;
+      const onFilterStateChanged = vi.fn();
+      render(
+        <DateRangeFilterInput
+          objectType={MockObjectType}
+          propertyKey="createdAt"
+          filterState={undefined}
+          onFilterStateChanged={onFilterStateChanged}
+          whereClause={whereClause}
+          dateShortcuts={["past-day"]}
+        />,
+      );
+      // DATE_RANGE uses two DatePicker instances (From, To). The shortcut
+      // rail lives inside each popover; focus the From input to open one.
+      expect(screen.queryByRole("button", { name: "Past day" })).toBeNull();
+      const [fromCombobox] = screen.getAllByRole("combobox");
+      fireEvent.focus(fromCombobox);
+      fireEvent.click(screen.getByRole("button", { name: "Past day" }));
+      expect(onFilterStateChanged).toHaveBeenCalledTimes(1);
+      const state = onFilterStateChanged.mock.calls[0][0];
+      expect(state.type).toBe("DATE_RANGE");
+      if (
+        !(state.minValue instanceof Date) || !(state.maxValue instanceof Date)
+      ) {
+        throw new Error("expected minValue and maxValue to be Dates");
+      }
+      expect(state.maxValue.getTime() - state.minValue.getTime()).toBe(
+        24 * 60 * 60 * 1000,
+      );
+    },
+  );
 
   it("combines whereClause with null-check in the null count query", () => {
     const whereClause = { name: "Engineering" } as WhereClause<

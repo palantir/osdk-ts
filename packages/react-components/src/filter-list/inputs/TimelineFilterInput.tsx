@@ -15,7 +15,6 @@
  */
 
 import React, { memo, useCallback, useMemo } from "react";
-import type { RelativeDatePeriod } from "../../shared/dateUtils.js";
 import { TimelineInput } from "../base/inputs/TimelineInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
 
@@ -23,14 +22,12 @@ interface TimelineFilterInputProps {
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
   formatDate?: (date: Date) => string;
-  dateShortcuts?: RelativeDatePeriod[] | boolean;
 }
 
 function TimelineFilterInputInner({
   filterState,
   onFilterStateChanged,
   formatDate,
-  dateShortcuts,
 }: TimelineFilterInputProps): React.ReactElement {
   const { startDate, endDate } = useMemo(
     () =>
@@ -59,7 +56,6 @@ function TimelineFilterInputInner({
       endDate={endDate}
       onChange={handleChange}
       formatDate={formatDate}
-      dateShortcuts={dateShortcuts}
     />
   );
 }

@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-import classnames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
 import {
   formatDateForInput,
   type RelativeDatePeriod,
 } from "../../../shared/dateUtils.js";
 import { createDateHistogramBuckets } from "./createDateHistogramBuckets.js";
-import styles from "./DateRangeHistogramInput.module.css";
 import { RangeInput, type RangeInputConfig } from "./RangeInput.js";
 import { resolveDateShortcuts, ShortcutBar } from "./ShortcutBar.js";
 
@@ -121,39 +119,24 @@ function DateRangeHistogramInputInner({
     [onChange],
   );
 
-  if (shortcutPeriods == null) {
-    return (
-      <RangeInput
-        {...rest}
-        onChange={onChange}
-        valueCountPairs={valueCountPairs}
-        config={config}
-        histogramData={histogramData}
-      />
-    );
-  }
-
-  const { className, style, ...innerRest } = rest;
-  return (
-    <div
-      className={classnames(styles.shortcutsRow, className)}
-      style={style}
-    >
+  const dateLeftRail = shortcutPeriods != null
+    ? (
       <ShortcutBar
         periods={shortcutPeriods}
         onSelect={handleShortcutSelect}
-        className={styles.shortcuts}
       />
-      <div className={styles.rangeArea}>
-        <RangeInput
-          {...innerRest}
-          onChange={onChange}
-          valueCountPairs={valueCountPairs}
-          config={config}
-          histogramData={histogramData}
-        />
-      </div>
-    </div>
+    )
+    : undefined;
+
+  return (
+    <RangeInput
+      {...rest}
+      onChange={onChange}
+      valueCountPairs={valueCountPairs}
+      config={config}
+      histogramData={histogramData}
+      dateLeftRail={dateLeftRail}
+    />
   );
 }
 

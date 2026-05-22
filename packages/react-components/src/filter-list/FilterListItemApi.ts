@@ -257,8 +257,8 @@ export interface DateFormattingProps {
  */
 export interface DateShortcutsProps {
   /**
-   * Opt-in relative-range shortcuts shown as a rail beside the date
-   * filter input.
+   * Opt-in relative-range shortcuts rendered inside the date picker
+   * popover as a left rail next to the calendar.
    *
    * - undefined (default): hidden. No behavior change.
    * - true: render the full {@link DEFAULT_RELATIVE_DATE_PERIODS} list.
@@ -275,13 +275,14 @@ export interface DateShortcutsProps {
 
 /**
  * Filter components that support the {@link DateShortcutsProps.dateShortcuts}
- * rail. `MULTI_DATE` is excluded because its picker emits a list of discrete
- * dates, not a range.
+ * rail. Only popover-based pickers are supported: `MULTI_DATE` is excluded
+ * because its picker emits a list of discrete dates (not a range), and
+ * `TIMELINE` is excluded because it renders native `<input type="date">`
+ * fields with no popover to host the rail.
  */
 export type FilterComponentsSupportingDateShortcuts =
   | "DATE_RANGE"
-  | "SINGLE_DATE"
-  | "TIMELINE";
+  | "SINGLE_DATE";
 
 /**
  * Conditionally adds date-only extras (`formatDate`, `dateShortcuts`) to a
@@ -290,7 +291,7 @@ export type FilterComponentsSupportingDateShortcuts =
  * to set them is a TypeScript error.
  *
  * `dateShortcuts` is further gated on the filter component type — only
- * `DATE_RANGE`, `SINGLE_DATE`, and `TIMELINE` accept it. `MULTI_DATE`
+ * `DATE_RANGE` and `SINGLE_DATE` accept it. `MULTI_DATE` and `TIMELINE`
  * filters get `dateShortcuts?: never`.
  */
 export type PropertyFilterDateExtras<

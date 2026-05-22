@@ -73,37 +73,38 @@ function SingleDateInputInner({
     [onChange],
   );
 
+  const leftRail = shortcutPeriods != null
+    ? (
+      <ShortcutBar
+        periods={shortcutPeriods}
+        onSelect={handleShortcutSelect}
+      />
+    )
+    : undefined;
+
   return (
     <div className={classnames(styles.singleDate, className)} style={style}>
-      <div className={styles.row}>
-        {shortcutPeriods != null && (
-          <ShortcutBar
-            periods={shortcutPeriods}
-            onSelect={handleShortcutSelect}
-            className={styles.shortcuts}
-          />
+      <div className={styles.dateContainer}>
+        <DatePicker
+          value={selectedDate ?? null}
+          onChange={handleChange}
+          min={minDate}
+          max={maxDate}
+          placeholder={placeholder}
+          ariaLabel="Select date"
+          modal={false}
+          formatDate={formatDate}
+          leftRail={leftRail}
+        />
+        {showClearButton && selectedDate !== undefined && (
+          <Button
+            className={styles.clearButton}
+            onClick={handleClear}
+            aria-label="Clear date"
+          >
+            ×
+          </Button>
         )}
-        <div className={styles.dateContainer}>
-          <DatePicker
-            value={selectedDate ?? null}
-            onChange={handleChange}
-            min={minDate}
-            max={maxDate}
-            placeholder={placeholder}
-            ariaLabel="Select date"
-            modal={false}
-            formatDate={formatDate}
-          />
-          {showClearButton && selectedDate !== undefined && (
-            <Button
-              className={styles.clearButton}
-              onClick={handleClear}
-              aria-label="Clear date"
-            >
-              ×
-            </Button>
-          )}
-        </div>
       </div>
     </div>
   );

@@ -307,6 +307,56 @@ export const Default: Story = {
   },
 };
 
+export const WithDateShortcuts: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: "Demonstrates the opt-in `dateShortcuts` prop on the two "
+          + "popover-based date filter components: DATE_RANGE and "
+          + "SINGLE_DATE. Click a From/To input (DATE_RANGE) or the date "
+          + "input (SINGLE_DATE) to open the popover — shortcuts render as "
+          + "a left rail next to the calendar. Pass `dateShortcuts: true` "
+          + "to render the full default period list, or pass an array to "
+          + "pick specific periods.",
+      },
+    },
+  },
+  render: ({ objectType: _ot, objectSet: _os, ...args }) => {
+    const filterDefinitions = useMemo(
+      (): FilterDefinitionUnion<Employee>[] => [
+        {
+          type: "PROPERTY",
+          id: "startDate-range-shortcuts",
+          key: "firstFullTimeStartDate",
+          label: "Start Date (DATE_RANGE, all shortcuts)",
+          filterComponent: "DATE_RANGE",
+          filterState: { type: "DATE_RANGE" },
+          dateShortcuts: true,
+        },
+        {
+          type: "PROPERTY",
+          id: "startDate-single-shortcuts",
+          key: "firstFullTimeStartDate",
+          label: "Start Date (SINGLE_DATE, subset)",
+          filterComponent: "SINGLE_DATE",
+          filterState: { type: "DATE_RANGE" },
+          dateShortcuts: ["past-day", "past-week", "past-month"],
+        },
+      ],
+      [],
+    );
+    return (
+      <div style={SIDEBAR_STYLE}>
+        <FilterList
+          objectType={Employee}
+          filterDefinitions={filterDefinitions}
+          {...args}
+        />
+      </div>
+    );
+  },
+};
+
 export const IntegerNumberRangeRounding: Story = {
   parameters: {
     docs: {

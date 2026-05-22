@@ -79,15 +79,23 @@ const stringShortcuts: PropertyFilterDateExtras<"string"> = {
 };
 void stringShortcuts;
 
-// `dateShortcuts` is gated by filter component type: only DATE_RANGE,
-// SINGLE_DATE, and TIMELINE accept it. MULTI_DATE rejects it even on a
-// date-typed property because its picker emits discrete dates, not a range.
+// `dateShortcuts` is gated by filter component type: only DATE_RANGE and
+// SINGLE_DATE accept it. MULTI_DATE rejects it even on a date-typed
+// property because its picker emits discrete dates, not a range. TIMELINE
+// rejects it because it renders native date inputs with no popover to host
+// the shortcuts rail.
 const multiDateShortcuts: PropertyFilterDateExtras<"timestamp", "MULTI_DATE"> =
   {
     // @ts-expect-error dateShortcuts is `never` for MULTI_DATE filter component
     dateShortcuts: true,
   };
 void multiDateShortcuts;
+
+const timelineShortcuts: PropertyFilterDateExtras<"timestamp", "TIMELINE"> = {
+  // @ts-expect-error dateShortcuts is `never` for TIMELINE filter component
+  dateShortcuts: ["past-week"],
+};
+void timelineShortcuts;
 
 const dateRangeShortcuts: PropertyFilterDateExtras<"timestamp", "DATE_RANGE"> =
   {
@@ -102,8 +110,3 @@ const singleDateShortcuts: PropertyFilterDateExtras<
   dateShortcuts: true,
 };
 void singleDateShortcuts;
-
-const timelineShortcuts: PropertyFilterDateExtras<"timestamp", "TIMELINE"> = {
-  dateShortcuts: ["past-week"],
-};
-void timelineShortcuts;

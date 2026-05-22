@@ -170,33 +170,49 @@ describe("DateRangeHistogramInput", () => {
   describe("dateShortcuts rail", () => {
     it("renders no shortcuts when dateShortcuts is omitted", () => {
       renderInput();
+      // Opening either popover should reveal a calendar but no shortcut rail.
+      fireEvent.focus(screen.getByLabelText("From"));
       expect(
         screen.queryByRole("group", { name: "Relative date shortcuts" }),
       ).toBeNull();
     });
 
-    it("renders the configured periods as a shortcut rail", () => {
-      renderInput({ dateShortcuts: ["past-day", "past-week"] });
-      const rail = screen.getByRole("group", {
-        name: "Relative date shortcuts",
-      });
-      const labels = Array.from(rail.querySelectorAll("button")).map((b) =>
-        b.textContent
-      );
-      expect(labels).toEqual(["Past day", "Past week"]);
-    });
+    it(
+      "renders the configured periods as a rail inside the picker popover",
+      () => {
+        renderInput({ dateShortcuts: ["past-day", "past-week"] });
+        // Rail is inside the popover, which is closed by default — focus the
+        // From input to open it.
+        expect(
+          screen.queryByRole("group", { name: "Relative date shortcuts" }),
+        ).toBeNull();
+        fireEvent.focus(screen.getByLabelText("From"));
+        const rail = screen.getByRole("group", {
+          name: "Relative date shortcuts",
+        });
+        const labels = Array.from(rail.querySelectorAll("button")).map((b) =>
+          b.textContent
+        );
+        expect(labels).toEqual(["Past day", "Past week"]);
+      },
+    );
 
-    it("emits an absolute (min, max) range when a shortcut is clicked", () => {
-      const onChange = vi.fn();
-      renderInput({ dateShortcuts: ["past-hour"], onChange });
-      fireEvent.click(screen.getByRole("button", { name: "Past hour" }));
-      expect(onChange).toHaveBeenCalledTimes(1);
-      const [min, max] = onChange.mock.calls[0];
-      if (!(min instanceof Date) || !(max instanceof Date)) {
-        throw new Error("expected both args to be Dates");
-      }
-      expect(max.getTime() - min.getTime()).toBe(60 * 60 * 1000);
-    });
+    it(
+      "emits an absolute (min, max) range when a shortcut inside the popover "
+        + "is clicked",
+      () => {
+        const onChange = vi.fn();
+        renderInput({ dateShortcuts: ["past-hour"], onChange });
+        fireEvent.focus(screen.getByLabelText("From"));
+        fireEvent.click(screen.getByRole("button", { name: "Past hour" }));
+        expect(onChange).toHaveBeenCalledTimes(1);
+        const [min, max] = onChange.mock.calls[0];
+        if (!(min instanceof Date) || !(max instanceof Date)) {
+          throw new Error("expected both args to be Dates");
+        }
+        expect(max.getTime() - min.getTime()).toBe(60 * 60 * 1000);
+      },
+    );
   });
 
   describe("formatDate plumbing", () => {

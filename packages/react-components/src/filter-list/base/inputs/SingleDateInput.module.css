@@ -19,17 +19,6 @@
   flex-direction: column;
 }
 
-.row {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  gap: var(--osdk-filter-input-gap);
-}
-
-.shortcuts {
-  flex: 0 0 auto;
-}
-
 .dateContainer {
   display: flex;
   align-items: center;
