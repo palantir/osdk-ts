@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
+export { createTheme } from "../../theme/createTheme.js";
 export {
   OsdkThemeProvider,
   type OsdkThemeProviderProps,
 } from "../../theme/OsdkThemeProvider.js";
 export type {
+  OsdkColorScheme,
+  OsdkTheme,
+  OsdkThemeColors,
   OsdkThemeContextValue,
-  OsdkThemeMode,
-  ResolvedOsdkTheme,
+  OsdkThemeOverride,
+  OsdkThemeTokenValue,
+  OsdkThemeTypography,
+  ResolvedOsdkColorScheme,
 } from "../../theme/types.js";
 export { useOsdkTheme } from "../../theme/useOsdkTheme.js";

@@ -20,24 +20,71 @@
  * - `"light"` / `"dark"` — force the given theme regardless of OS preference.
  * - `"system"` — follow `prefers-color-scheme` and react to changes at runtime.
  */
-export type OsdkThemeMode = "light" | "dark" | "system";
+export type OsdkColorScheme = "light" | "dark" | "system";
 
 /**
- * The concrete theme actually applied to the DOM. `OsdkThemeMode` of
+ * The concrete color scheme actually applied to the DOM. `OsdkColorScheme` of
  * `"system"` resolves to either `"light"` or `"dark"` depending on the
  * current value of `prefers-color-scheme`.
  */
-export type ResolvedOsdkTheme = "light" | "dark";
+export type ResolvedOsdkColorScheme = "light" | "dark";
+
+export type OsdkThemeTokenValue = string | number;
+
+export interface OsdkThemeColors {
+  background: string;
+  surface: string;
+  text: string;
+  textMuted: string;
+  primary: string;
+  primaryForeground: string;
+  secondary: string;
+  secondaryForeground: string;
+  icon: string;
+  border: string;
+  danger: string;
+  success: string;
+  warning: string;
+}
+
+export interface OsdkThemeTypography {
+  fontFamily: string;
+  bodySmall: OsdkThemeTokenValue;
+  bodyMedium: OsdkThemeTokenValue;
+  bodyLarge: OsdkThemeTokenValue;
+  fontWeightDefault: OsdkThemeTokenValue;
+  fontWeightBold: OsdkThemeTokenValue;
+  lineHeight: OsdkThemeTokenValue;
+}
+
+export interface OsdkThemeOverride {
+  colors?: Partial<OsdkThemeColors>;
+  typography?: Partial<OsdkThemeTypography>;
+  radius?: OsdkThemeTokenValue;
+  spacing?: OsdkThemeTokenValue;
+  borderWidth?: OsdkThemeTokenValue;
+  shadow?: string;
+  focusWidth?: OsdkThemeTokenValue;
+  focusOffset?: OsdkThemeTokenValue;
+  transitionDuration?: OsdkThemeTokenValue;
+  cssVariables?: Partial<Record<`--${string}`, string>>;
+}
+
+export interface OsdkTheme {
+  cssVariables: ReadonlyMap<`--${string}`, string>;
+}
 
 export interface OsdkThemeContextValue {
-  /** The requested mode, including `"system"`. */
-  theme: OsdkThemeMode;
-  /** The concrete theme currently applied to the DOM. */
-  resolvedTheme: ResolvedOsdkTheme;
+  /** The requested color scheme, including `"system"`. */
+  colorScheme: OsdkColorScheme;
+  /** The concrete color scheme currently applied to the DOM. */
+  resolvedColorScheme: ResolvedOsdkColorScheme;
+  /** The custom design-token theme currently applied to the DOM. */
+  theme: OsdkTheme | undefined;
   /**
-   * Update the requested mode. In controlled mode (`theme` prop on the
-   * provider) this only invokes `onThemeChanged`; the consumer is expected
-   * to re-render the provider with the new value.
+   * Update the requested color scheme. In controlled mode (`colorScheme` prop
+   * on the provider) this only invokes `onColorSchemeChanged`; the consumer is
+   * expected to re-render the provider with the new value.
    */
-  setTheme: (theme: OsdkThemeMode) => void;
+  setColorScheme: (colorScheme: OsdkColorScheme) => void;
 }

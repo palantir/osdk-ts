@@ -145,7 +145,7 @@ function App() {
 
 By default the provider follows `prefers-color-scheme` and writes the resolved value to `data-bp-color-scheme` on `<html>` — matching [Blueprint's convention](https://blueprintjs.com/docs/#core/colors) so the theme also applies to portaled overlays (popovers, dialogs, tooltips).
 
-See [OsdkThemeProvider](./OsdkThemeProvider.md) for the full reference, including the `defaultTheme` modes, the `useOsdkTheme` hook, persisting the user's choice, and integrating with an external theme store via controlled mode.
+See [OsdkThemeProvider](./OsdkThemeProvider.md) for the full reference, including the `defaultColorScheme` modes, the `useOsdkTheme` hook, persisting the user's choice, and integrating with an external color-scheme store via controlled mode.
 
 ### Accessibility
 

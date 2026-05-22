@@ -19,18 +19,20 @@ import { OsdkThemeContext } from "./OsdkThemeContext.js";
 import type { OsdkThemeContextValue } from "./types.js";
 
 /**
- * Read the active OSDK theme and update it imperatively.
+ * Read the active OSDK color scheme/theme and update the color scheme
+ * imperatively.
  *
  * Must be called from a descendant of `<OsdkThemeProvider>`; throws otherwise.
  *
  * @returns
- * - `theme` — the requested mode (`"light" | "dark" | "system"`).
- * - `resolvedTheme` — the concrete theme on the DOM (`"light" | "dark"`).
- *   When `theme === "system"`, this tracks `prefers-color-scheme` and
- *   updates as the OS preference changes.
- * - `setTheme(next)` — update the mode. In controlled mode this only
- *   invokes the provider's `onThemeChanged`; the consumer must re-render
- *   the provider with the new value.
+ * - `colorScheme` — the requested mode (`"light" | "dark" | "system"`).
+ * - `resolvedColorScheme` — the concrete scheme on the DOM (`"light" |
+ *   "dark"`). When `colorScheme === "system"`, this tracks
+ *   `prefers-color-scheme` and updates as the OS preference changes.
+ * - `theme` — the design-token theme applied to the provider target.
+ * - `setColorScheme(next)` — update the mode. In controlled mode this only
+ *   invokes the provider's `onColorSchemeChanged`; the consumer must
+ *   re-render the provider with the new value.
  */
 export function useOsdkTheme(): OsdkThemeContextValue {
   const ctx = useContext(OsdkThemeContext);

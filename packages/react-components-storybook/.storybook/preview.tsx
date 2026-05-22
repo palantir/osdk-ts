@@ -16,7 +16,6 @@
 
 import { createClient } from "@osdk/client";
 import { OsdkProvider } from "@osdk/react";
-import { OsdkThemeProvider } from "@osdk/react-components/experimental/theme";
 import type { Preview } from "@storybook/react-vite";
 import { initialize, mswLoader } from "msw-storybook-addon";
 import { fauxFoundry, setupFauxFoundry } from "../src/mocks/fauxFoundry.js";
@@ -25,11 +24,6 @@ import {
   brandThemeGlobalTypes,
   initialBrandThemeGlobals,
 } from "./addons/brand-theme-extractor/brandThemeGlobalTypes.js";
-import {
-  BRAND_THEME_PRESET_GLOBAL_KEY,
-  parseBrandThemePresetGlobal,
-  resolveBrandThemePreset,
-} from "./addons/brand-theme-extractor/brandThemeState.js";
 import "./styles.css";
 
 // Initialize MSW with proper options
@@ -81,18 +75,11 @@ const preview: Preview = {
     await fauxFoundryReady;
   }, mswLoader],
   decorators: [
-    (Story, context) => {
-      const themePreset = resolveBrandThemePreset(
-        parseBrandThemePresetGlobal(
-          context.globals[BRAND_THEME_PRESET_GLOBAL_KEY],
-        ),
-      );
+    (Story) => {
       return (
         <div className="root">
           <OsdkProvider client={mockClient}>
-            <OsdkThemeProvider theme={themePreset.colorMode}>
-              <Story />
-            </OsdkThemeProvider>
+            <Story />
           </OsdkProvider>
         </div>
       );
