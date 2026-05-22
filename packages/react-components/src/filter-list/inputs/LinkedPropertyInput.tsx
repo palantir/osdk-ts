@@ -19,6 +19,7 @@ import type {
   ObjectSet,
   ObjectTypeDefinition,
   PropertyKeys,
+  WhereClause,
 } from "@osdk/api";
 import { useOsdkAggregation } from "@osdk/react";
 import classnames from "classnames";
@@ -41,8 +42,13 @@ import { TextTagsInput } from "../base/inputs/TextTagsInput.js";
 import { TimelineInput } from "../base/inputs/TimelineInput.js";
 import { ToggleInput } from "../base/inputs/ToggleInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
+import { useDualScopeAggregation } from "../hooks/useDualScopeAggregation.js";
 import { usePropertyAggregation } from "../hooks/usePropertyAggregation.js";
-import type { LinkedPropertyFilterDefinition } from "../types/LinkedFilterTypes.js";
+import {
+  EMPTY_LINKED_FILTERS,
+  type LinkedFilter,
+  type LinkedPropertyFilterDefinition,
+} from "../types/LinkedFilterTypes.js";
 import {
   createGroupByAggregateOptions,
   createNullCountAggregateOptions,
@@ -52,12 +58,15 @@ import {
   coerceToString,
   coerceToStringArray,
 } from "../utils/coerceFilterValue.js";
+import { narrowObjectSet } from "../utils/narrowObjectSet.js";
 
 interface LinkedPropertyInputProps<
   Q extends ObjectTypeDefinition,
   L extends LinkNames<Q>,
 > {
   objectSet: ObjectSet<Q>;
+  whereClause: WhereClause<Q>;
+  linkedFilters?: ReadonlyArray<LinkedFilter<Q>>;
   definition: LinkedPropertyFilterDefinition<
     Q,
     L,
@@ -66,10 +75,10 @@ interface LinkedPropertyInputProps<
   >;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
+  showFilteredOutValues?: boolean;
   searchQuery?: string;
   className?: string;
   style?: React.CSSProperties;
-  /** Layout for `MULTI_SELECT` rendering. Forwarded to `MultiSelectInput`. */
   layout?: MultiSelectInputLayout;
 }
 
@@ -78,17 +87,33 @@ function LinkedPropertyInputInner<
   L extends LinkNames<Q>,
 >({
   objectSet,
+  whereClause,
+  linkedFilters = EMPTY_LINKED_FILTERS,
   definition,
   filterState,
   onFilterStateChanged,
+  showFilteredOutValues,
   searchQuery,
   className,
   style,
   layout,
 }: LinkedPropertyInputProps<Q, L>): React.ReactElement {
+  const scoped = useMemo(
+    () => narrowObjectSet(objectSet, whereClause, linkedFilters),
+    [objectSet, whereClause, linkedFilters],
+  );
   const linkedObjectSet = useMemo(
-    () => objectSet.pivotTo(definition.linkName),
-    [objectSet, definition.linkName],
+    () => scoped.pivotTo(definition.linkName),
+    [scoped, definition.linkName],
+  );
+  // Filtered-out rows on a linked facet compare against the raw source so
+  // direct filters surface as count=0 entries on the linked side.
+  const emptySourceLinkedObjectSet = useMemo(
+    () =>
+      showFilteredOutValues
+        ? objectSet.pivotTo(definition.linkName)
+        : undefined,
+    [showFilteredOutValues, objectSet, definition.linkName],
   );
 
   const linkedObjectType = linkedObjectSet.$objectSetInternals.def;
@@ -246,6 +271,7 @@ function LinkedPropertyInputInner<
           <LinkedMultiSelectInput
             objectType={linkedObjectType}
             objectSet={linkedObjectSet}
+            emptySourceObjectSet={emptySourceLinkedObjectSet}
             propertyKey={linkedPropertyKey}
             selectedValues={values}
             onChange={onSelectChange}
@@ -264,6 +290,7 @@ function LinkedPropertyInputInner<
           <LinkedSingleSelectInput
             objectType={linkedObjectType}
             objectSet={linkedObjectSet}
+            emptySourceObjectSet={emptySourceLinkedObjectSet}
             propertyKey={linkedPropertyKey}
             selectedValue={value}
             onChange={onSingleSelectChange}
@@ -341,6 +368,7 @@ function LinkedPropertyInputInner<
           <LinkedListogramInput
             objectType={linkedObjectType}
             objectSet={linkedObjectSet}
+            emptySourceObjectSet={emptySourceLinkedObjectSet}
             propertyKey={linkedPropertyKey}
             selectedValues={selectedValues}
             onChange={onExactMatchChange}
@@ -427,6 +455,7 @@ export const LinkedPropertyInput: typeof LinkedPropertyInputInner = memo(
 interface LinkedAggregationInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
   objectSet: ObjectSet<Q>;
+  emptySourceObjectSet?: ObjectSet<Q>;
   propertyKey: PropertyKeys<Q>;
 }
 
@@ -443,6 +472,7 @@ interface LinkedMultiSelectInputProps<Q extends ObjectTypeDefinition>
 function LinkedMultiSelectInput<Q extends ObjectTypeDefinition>({
   objectType,
   objectSet,
+  emptySourceObjectSet,
   propertyKey,
   selectedValues,
   onChange,
@@ -450,15 +480,12 @@ function LinkedMultiSelectInput<Q extends ObjectTypeDefinition>({
   renderValue,
   layout,
 }: LinkedMultiSelectInputProps<Q>): React.ReactElement {
-  const aggregationOptions = useMemo(
-    () => ({ activeValues: selectedValues }),
-    [selectedValues],
-  );
-  const { data, isLoading, error } = usePropertyAggregation(
+  const { data, isLoading, error } = useDualScopeAggregation(
     objectType,
     propertyKey,
     objectSet,
-    aggregationOptions,
+    emptySourceObjectSet,
+    { selectedValues },
   );
 
   return (
@@ -487,23 +514,23 @@ interface LinkedSingleSelectInputProps<Q extends ObjectTypeDefinition>
 function LinkedSingleSelectInput<Q extends ObjectTypeDefinition>({
   objectType,
   objectSet,
+  emptySourceObjectSet,
   propertyKey,
   selectedValue,
   onChange,
   showCount,
   renderValue,
 }: LinkedSingleSelectInputProps<Q>): React.ReactElement {
-  const aggregationOptions = useMemo(
-    () => ({
-      activeValues: selectedValue != null ? [selectedValue] : undefined,
-    }),
+  const selectedValues = useMemo(
+    () => selectedValue != null ? [selectedValue] : [],
     [selectedValue],
   );
-  const { data, isLoading, error } = usePropertyAggregation(
+  const { data, isLoading, error } = useDualScopeAggregation(
     objectType,
     propertyKey,
     objectSet,
-    aggregationOptions,
+    emptySourceObjectSet,
+    { selectedValues },
   );
 
   return (
@@ -533,6 +560,7 @@ interface LinkedListogramInputProps<Q extends ObjectTypeDefinition>
 function LinkedListogramInput<Q extends ObjectTypeDefinition>({
   objectType,
   objectSet,
+  emptySourceObjectSet,
   propertyKey,
   selectedValues,
   onChange,
@@ -540,15 +568,12 @@ function LinkedListogramInput<Q extends ObjectTypeDefinition>({
   showCount,
   renderValue,
 }: LinkedListogramInputProps<Q>): React.ReactElement {
-  const aggregationOptions = useMemo(
-    () => ({ activeValues: selectedValues }),
-    [selectedValues],
-  );
-  const { data, maxCount, isLoading, error } = usePropertyAggregation(
+  const { data, maxCount, isLoading, error } = useDualScopeAggregation(
     objectType,
     propertyKey,
     objectSet,
-    aggregationOptions,
+    emptySourceObjectSet,
+    { selectedValues },
   );
 
   return (
@@ -573,6 +598,8 @@ interface LinkedTextTagsInputProps<Q extends ObjectTypeDefinition>
   onChange: (values: string[]) => void;
 }
 
+const TEXT_TAGS_OPTIONS = { limit: 50 } as const;
+
 function LinkedTextTagsInput<Q extends ObjectTypeDefinition>({
   objectType,
   objectSet,
@@ -580,12 +607,11 @@ function LinkedTextTagsInput<Q extends ObjectTypeDefinition>({
   tags,
   onChange,
 }: LinkedTextTagsInputProps<Q>): React.ReactElement {
-  const aggregationOptions = useMemo(() => ({ limit: 50 }), []);
   const { data, isLoading, error } = usePropertyAggregation(
     objectType,
     propertyKey,
     objectSet,
-    aggregationOptions,
+    TEXT_TAGS_OPTIONS,
   );
   return (
     <TextTagsInput

@@ -138,11 +138,13 @@ function ListogramInputInner({
             const perRowColor = colorMap?.[value];
             const isEmpty = isEmptyValue(value);
 
+            const isFilteredOut = count === 0 && !selectedSet.has(value);
             return (
               <Button
                 key={value}
                 className={styles.row}
                 data-empty={isEmpty || undefined}
+                data-filtered-out={isFilteredOut || undefined}
                 // eslint-disable-next-line react/jsx-no-bind
                 onClick={() => toggleValue(value)}
                 aria-pressed={selectedSet.has(value)}

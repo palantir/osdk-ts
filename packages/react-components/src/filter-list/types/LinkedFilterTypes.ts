@@ -19,6 +19,7 @@ import type {
   LinkNames,
   ObjectTypeDefinition,
   PropertyKeys,
+  WhereClause,
 } from "@osdk/api";
 import type { ReactNode } from "react";
 import type {
@@ -29,6 +30,22 @@ import type {
   PropertyTypeFromKey,
   ValidComponentsForPropertyType,
 } from "../FilterListItemApi.js";
+
+/**
+ * Runtime representation of an active linked-property filter. Each entry
+ * binds a `linkName` to its `reverseLinkName` and an `innerWhere` typed
+ * against the linked object type, so `narrowObjectSet` can pivot type-safely.
+ */
+export type LinkedFilter<Q extends ObjectTypeDefinition> = {
+  [L in LinkNames<Q>]: {
+    linkName: L;
+    reverseLinkName: LinkNames<LinkedType<Q, L>>;
+    innerWhere: WhereClause<LinkedType<Q, L>>;
+  };
+}[LinkNames<Q>];
+
+/** Shared empty default for `LinkedFilter` arrays — avoids new-array-per-render. */
+export const EMPTY_LINKED_FILTERS: readonly never[] = [];
 
 /**
  * State for "has link" filter
@@ -92,6 +109,15 @@ export interface LinkedPropertyFilterDefinition<
    */
   id?: string;
   linkName: L;
+  /**
+   * Set this to make the filter narrow `objectSet`; the result is emitted
+   * via `onEffectiveObjectSet`. The value names the link on the linked
+   * object type that points back to `Q` (the inverse of `linkName`).
+   *
+   * Leave unset to keep the filter UI-only. It still renders and fires
+   * `onFilterStateChanged`, but FilterList won't narrow on it.
+   */
+  reverseLinkName?: LinkNames<LinkedQ>;
   linkedPropertyKey: LinkedK;
   linkedFilterComponent: LinkedC;
   linkedFilterState: FilterStateByComponentType[LinkedC];
