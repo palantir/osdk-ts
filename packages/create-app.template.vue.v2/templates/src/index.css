@@ -1,5 +1,6 @@
 :root {
   color: #1c2127;
+  font-family: "Source Sans 3", "Source Sans Pro", system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 18px;
   font-size: 14px;
   font-synthesis: none;
@@ -24,7 +25,6 @@
 body {
   display: flex;
   flex-direction: column;
-  font-family: "Source Sans 3", "Source Sans Pro", system-ui, Avenir, Helvetica, Arial, sans-serif;
   margin: 0;
   min-height: 100vh;
 }
