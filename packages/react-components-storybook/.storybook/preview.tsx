@@ -17,16 +17,25 @@
 import { createClient } from "@osdk/client";
 import { OsdkProvider } from "@osdk/react";
 import { OsdkThemeProvider } from "@osdk/react-components/experimental/theme";
-import { withThemeByDataAttribute } from "@storybook/addon-themes";
 import type { Preview } from "@storybook/react-vite";
 import { initialize, mswLoader } from "msw-storybook-addon";
 import { fauxFoundry, setupFauxFoundry } from "../src/mocks/fauxFoundry.js";
+import { withBrandThemeDecorator } from "./addons/brand-theme-extractor/BrandThemeDecorator.js";
+import {
+  brandThemeGlobalTypes,
+  initialBrandThemeGlobals,
+} from "./addons/brand-theme-extractor/brandThemeGlobalTypes.js";
+import {
+  BRAND_THEME_PRESET_GLOBAL_KEY,
+  parseBrandThemePresetGlobal,
+  resolveBrandThemePreset,
+} from "./addons/brand-theme-extractor/brandThemeState.js";
 import "./styles.css";
 
 // Initialize MSW with proper options
 // This is synchronous, it only configures MSW
 // The actual service worker registration happens in the mswLoader, which runs before each story
-const basePath = (import.meta as any).env?.BASE_URL ?? "/";
+const basePath = import.meta.env.BASE_URL ?? "/";
 const serviceWorkerUrl = `${basePath}${
   basePath.endsWith("/") ? "" : "/"
 }mockServiceWorker.js`;
@@ -48,6 +57,8 @@ const mockClient = createClient(
 );
 
 const preview: Preview = {
+  globalTypes: brandThemeGlobalTypes,
+  initialGlobals: initialBrandThemeGlobals,
   parameters: {
     controls: {
       matchers: {
@@ -71,29 +82,22 @@ const preview: Preview = {
   }, mswLoader],
   decorators: [
     (Story, context) => {
-      // The OSDK light/dark color scheme is driven by `<OsdkThemeProvider>`
-      const themeName = context.globals.theme as string | undefined;
-      const colorScheme = themeName === "dark" ? "dark" : "light";
+      const themePreset = resolveBrandThemePreset(
+        parseBrandThemePresetGlobal(
+          context.globals[BRAND_THEME_PRESET_GLOBAL_KEY],
+        ),
+      );
       return (
         <div className="root">
           <OsdkProvider client={mockClient}>
-            <OsdkThemeProvider theme={colorScheme}>
+            <OsdkThemeProvider theme={themePreset.colorMode}>
               <Story />
             </OsdkThemeProvider>
           </OsdkProvider>
         </div>
       );
     },
-    withThemeByDataAttribute({
-      themes: {
-        light: "light",
-        dark: "dark",
-        modern: "modern",
-        devcon: "devcon",
-      },
-      defaultTheme: "light",
-      attributeName: "data-theme",
-    }),
+    withBrandThemeDecorator,
   ],
 };
 
