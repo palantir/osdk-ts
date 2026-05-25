@@ -79,7 +79,7 @@ const SAMPLE_OUTLINE: OutlineItem[] = [
 
 const meta: Meta<PdfViewerOutlineSidebarProps> = {
   title:
-    "Beta/DocumentViewer/Renderers/PdfViewer/Building Blocks/OutlineSidebar",
+    "Components/DocumentViewer/Renderers/PdfViewer/Building Blocks/OutlineSidebar",
   component: PdfViewerOutlineSidebar,
   args: {
     outlineItems: SAMPLE_OUTLINE,
