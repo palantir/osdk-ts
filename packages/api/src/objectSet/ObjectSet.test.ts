@@ -807,14 +807,19 @@ describe("ObjectSet", () => {
               >
             >;
 
-            selectedInteger.add(1);
-            selectedInteger.subtract(1);
-            selectedInteger.multiply(1);
-            selectedInteger.divide(1);
+            selectedInteger.add(selectedInteger);
+            selectedInteger.subtract(selectedInteger);
+            selectedInteger.multiply(selectedInteger);
+            selectedInteger.divide(selectedInteger);
             selectedInteger.abs();
             selectedInteger.negate();
+            selectedInteger.max(selectedInteger);
+            selectedInteger.min(selectedInteger);
+
+            // @ts-expect-error -- numeric literals are not supported at runtime
+            selectedInteger.add(1);
+            // @ts-expect-error -- numeric literals are not supported at runtime
             selectedInteger.max(1);
-            selectedInteger.min(1);
 
             // @ts-expect-error
             selectedInteger.extractPart("1");
@@ -879,14 +884,14 @@ describe("ObjectSet", () => {
               >
             >;
 
-            selectedInteger.add(1);
-            selectedInteger.subtract(1);
-            selectedInteger.multiply(1);
-            selectedInteger.divide(1);
+            selectedInteger.add(selectedInteger);
+            selectedInteger.subtract(selectedInteger);
+            selectedInteger.multiply(selectedInteger);
+            selectedInteger.divide(selectedInteger);
             selectedInteger.abs();
             selectedInteger.negate();
-            selectedInteger.max(1);
-            selectedInteger.min(1);
+            selectedInteger.max(selectedInteger);
+            selectedInteger.min(selectedInteger);
 
             // @ts-expect-error
             selectedInteger.extractPart("1");
@@ -951,14 +956,14 @@ describe("ObjectSet", () => {
               >
             >;
 
-            maxAggregation.add(1);
-            maxAggregation.subtract(1);
-            maxAggregation.multiply(1);
-            maxAggregation.divide(1);
+            maxAggregation.add(maxAggregation);
+            maxAggregation.subtract(maxAggregation);
+            maxAggregation.multiply(maxAggregation);
+            maxAggregation.divide(maxAggregation);
             maxAggregation.abs();
             maxAggregation.negate();
-            maxAggregation.max(1);
-            maxAggregation.min(1);
+            maxAggregation.max(maxAggregation);
+            maxAggregation.min(maxAggregation);
 
             expectTypeOf(
               base.pivotTo("peeps").aggregate("employeeId:sum"),
@@ -1112,19 +1117,23 @@ describe("ObjectSet", () => {
         });
       });
 
-      it("allows adding number literals as a double", () => {
-        const objectSet = fauxObjectSet.withProperties({
+      it("rejects number literals on numeric expressions", () => {
+        fauxObjectSet.withProperties({
           "myProp1": (base) => {
-            const plus = base.pivotTo("lead").selectProperty("employeeId")
-              .add(1);
-            expectTypeOf(plus).toEqualTypeOf<
-              DerivedProperty.NumericPropertyDefinition<
-                "double",
-                EmployeeApiTest
-              >
-            >();
-
-            return plus;
+            const selected = base.pivotTo("lead").selectProperty("employeeId");
+            // @ts-expect-error -- numeric literals are not supported at runtime
+            selected.add(1);
+            // @ts-expect-error -- numeric literals are not supported at runtime
+            selected.subtract(1);
+            // @ts-expect-error -- numeric literals are not supported at runtime
+            selected.multiply(1);
+            // @ts-expect-error -- numeric literals are not supported at runtime
+            selected.divide(1);
+            // @ts-expect-error -- numeric literals are not supported at runtime
+            selected.max(1);
+            // @ts-expect-error -- numeric literals are not supported at runtime
+            selected.min(1);
+            return selected;
           },
         });
       });

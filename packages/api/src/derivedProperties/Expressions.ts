@@ -46,8 +46,7 @@ export type DefinitionForType<
   : DerivedProperty.Definition<T, Q>;
 
 type NumericExpressionArg<Q extends ObjectOrInterfaceDefinition> =
-  | number
-  | DerivedProperty.NumericPropertyDefinition<any, Q>;
+  DerivedProperty.NumericPropertyDefinition<any, Q>;
 
 type ReturnTypeForNumericMethod<
   Q extends ObjectOrInterfaceDefinition,
@@ -87,18 +86,16 @@ type ReturnTypeForDatetimeMethod<
 type ExtractWirePropertyTypeFromNumericArg<
   Q extends ObjectOrInterfaceDefinition,
   ARG extends NumericExpressionArg<Q>,
-> = ARG extends number ? "double"
-  : ARG extends DerivedProperty.NumericPropertyDefinition<infer T, Q>
-    ? T extends SimplePropertyDef ? SimplePropertyDef.ExtractWirePropertyType<T>
-    : never
-  : ARG extends PropertyKeys.Filtered<Q, WithPropertiesNumerics>
-    ? NonNullable<CompileTimeMetadata<Q>["properties"][ARG]["type"]>
+> = ARG extends DerivedProperty.NumericPropertyDefinition<infer T, Q>
+  ? T extends SimplePropertyDef ? SimplePropertyDef.ExtractWirePropertyType<T>
+  : never
   : never;
 
 /**
  * Numeric expression methods chainable off a numeric derived property.
- * Each binary method accepts either a numeric literal or another numeric derived
- * property as its right-hand side; unary methods (`abs`, `negate`) take no argument.
+ * Each binary method accepts another numeric derived property as its right-hand
+ * side; unary methods (`abs`, `negate`) take no argument. Numeric literals are
+ * not supported.
  * @example
  * ```ts
  * await client(Employee).withProperties({
@@ -113,7 +110,7 @@ export type NumericExpressions<
   Q extends ObjectOrInterfaceDefinition,
   LEFT_PROPERTY_TYPE extends SimplePropertyDef,
 > = {
-  /** Adds a numeric value or another numeric derived property. */
+  /** Adds another numeric derived property. */
   readonly add: <A extends NumericExpressionArg<Q>>(
     value: A,
   ) => ReturnTypeForNumericMethod<
@@ -122,7 +119,7 @@ export type NumericExpressions<
     ExtractWirePropertyTypeFromNumericArg<Q, A>
   >;
 
-  /** Subtracts a numeric value or another numeric derived property. */
+  /** Subtracts another numeric derived property. */
   readonly subtract: <A extends NumericExpressionArg<Q>>(
     value: A,
   ) => ReturnTypeForNumericMethod<
@@ -131,7 +128,7 @@ export type NumericExpressions<
     ExtractWirePropertyTypeFromNumericArg<Q, A>
   >;
 
-  /** Multiplies by a numeric value or another numeric derived property. */
+  /** Multiplies by another numeric derived property. */
   readonly multiply: <A extends NumericExpressionArg<Q>>(
     value: A,
   ) => ReturnTypeForNumericMethod<
@@ -140,7 +137,7 @@ export type NumericExpressions<
     ExtractWirePropertyTypeFromNumericArg<Q, A>
   >;
 
-  /** Divides by a numeric value or another numeric derived property. */
+  /** Divides by another numeric derived property. */
   readonly divide: <A extends NumericExpressionArg<Q>>(
     value: A,
   ) => ReturnTypeForNumericMethod<
@@ -161,7 +158,7 @@ export type NumericExpressions<
     Q
   >;
 
-  /** Takes the larger of this value and another numeric value or derived property. */
+  /** Takes the larger of this value and another numeric derived property. */
   readonly max: <A extends NumericExpressionArg<Q>>(
     value: A,
   ) => ReturnTypeForNumericMethod<
@@ -170,7 +167,7 @@ export type NumericExpressions<
     ExtractWirePropertyTypeFromNumericArg<Q, A>
   >;
 
-  /** Takes the smaller of this value and another numeric value or derived property. */
+  /** Takes the smaller of this value and another numeric derived property. */
   readonly min: <A extends NumericExpressionArg<Q>>(
     value: A,
   ) => ReturnTypeForNumericMethod<
