@@ -87,6 +87,23 @@ function deferredPromise(): {
   };
 }
 
+async function hasSettled(promise: Promise<unknown>): Promise<boolean> {
+  let settled = false;
+  promise.then(
+    () => {
+      settled = true;
+    },
+    () => {
+      settled = true;
+    },
+  );
+
+  // Let already-settled promises run their queued continuation without waiting
+  // on clocks. If the promise is still blocked, this remains false.
+  await Promise.resolve();
+  return settled;
+}
+
 describe("ActionApplication invalidation", () => {
   let client: Client;
   let store: Store;
@@ -292,6 +309,9 @@ describe("ActionApplication invalidation", () => {
 
     const [, functionQuery] = functionQueryEntry;
     const delayedInvalidation = deferredPromise();
+
+    // Simulate slow broad invalidation by making the touched query return a
+    // promise that this test intentionally does not resolve yet.
     const invalidateObjectType = vi.fn(() => delayedInvalidation.promise);
     functionQuery.invalidateObjectType = invalidateObjectType;
 
@@ -309,15 +329,13 @@ describe("ActionApplication invalidation", () => {
       );
     });
 
-    const actionResolvedBeforeInvalidation = await Promise.race([
-      actionPromise.then(() => true),
-      new Promise<boolean>((resolve) => {
-        setTimeout(() => resolve(false), 50);
-      }),
-    ]);
+    // Broad invalidation has started and is still blocked on
+    // delayedInvalidation.promise. If applyAction awaited that fan-out,
+    // actionPromise would still be unsettled here.
+    await expect(hasSettled(actionPromise)).resolves.toBe(true);
 
-    expect(actionResolvedBeforeInvalidation).toBe(true);
-
+    // Finish the blocked background invalidation so the test leaves no
+    // intentionally pending promise behind.
     delayedInvalidation.resolve();
     await delayedInvalidation.promise;
     subscription.unsubscribe();
