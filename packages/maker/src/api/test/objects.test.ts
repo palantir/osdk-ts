@@ -192,6 +192,7 @@ describe("Object Types", () => {
               },
               "extendsInterfaces": [],
               "extendsInterfacesMetadata": [],
+              "linkedInterfaces": [],
               "links": [],
               "permission": undefined,
               "properties": [],
