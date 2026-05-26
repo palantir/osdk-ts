@@ -15,7 +15,10 @@
  */
 
 import type React from "react";
-import type { FilterState } from "../FilterListItemApi.js";
+import type {
+  FilterDefinitionControls,
+  FilterState,
+} from "../FilterListItemApi.js";
 
 export type RenderFilterInput<D> = (props: {
   definition: D;
@@ -26,7 +29,7 @@ export type RenderFilterInput<D> = (props: {
   excludeRowOpen?: boolean;
 }) => React.ReactNode;
 
-export interface BaseFilterListProps<D> {
+export interface BaseFilterListProps<D extends FilterDefinitionControls> {
   filterDefinitions?: Array<D>;
   filterStates: Map<string, FilterState>;
   onFilterStateChanged: (filterKey: string, state: FilterState) => void;
@@ -37,6 +40,7 @@ export interface BaseFilterListProps<D> {
   onReset?: () => void;
   onFilterAdded?: () => void;
   onFilterRemoved?: (filterKey: string) => void;
+  onOrderChange?: (orderedKeys: string[]) => void;
 
   collapsed?: boolean;
   onCollapsedChange?: (collapsed: boolean) => void;

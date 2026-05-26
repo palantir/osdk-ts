@@ -1,4 +1,4 @@
-import { useOsdkAction } from "@osdk/react/experimental";
+import { useOsdkAction } from "@osdk/react";
 import { useRef, useState } from "react";
 import { $Actions } from "../generatedNoCheck2/index.js";
 import { useOfficeFormAction } from "../hooks/useOfficeFormAction.js";
@@ -54,7 +54,7 @@ export function CreateOfficeForm() {
             placeholder="Enter office name"
             disabled={isPending}
             error={formState.errors.name}
-            required
+            required={true}
           />
 
           <LocationInput

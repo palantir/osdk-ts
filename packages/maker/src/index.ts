@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-export { default as default } from "./cli/main.js";
-
+export type { ActionLevelValidationDefinition } from "./api/action/ActionLevelValidationDefinition.js";
 export type {
   ActionParameter,
   ActionParameterValidation,
@@ -28,9 +27,15 @@ export type {
   ActionParameterConfiguration,
   ActionParameterRequirementConstraint,
 } from "./api/action/ActionParameterConfiguration.js";
+export type { ActionParameterType } from "./api/action/ActionParameterType.js";
+export {
+  isActionParameterTypePrimitive,
+} from "./api/action/ActionParameterType.js";
 export type { ActionSection } from "./api/action/ActionSection.js";
+export type { ActionStatus } from "./api/action/ActionStatus.js";
 export type { ActionType } from "./api/action/ActionType.js";
 export type { ConditionDefinition } from "./api/action/ConditionDefinition.js";
+export type { DefaultFormat } from "./api/action/DefaultFormat.js";
 export type {
   CurrentTimeMappingValue,
   CurrentUserMappingValue,
@@ -40,7 +45,10 @@ export type {
 } from "./api/action/MappingValue.js";
 export type { SectionConditionalOverride } from "./api/action/SectionConditionalOverride.js";
 export type { SubmissionMetadata } from "./api/action/SubmissionMetadata.js";
+export type { TableConfiguration } from "./api/action/TableConfiguration.js";
 export { addDependency } from "./api/addDependency.js";
+export type { BlueprintIcon } from "./api/common/BlueprintIcons.js";
+export type { EntityPermission } from "./api/common/EntityPermission.js";
 export type { OntologyDefinition } from "./api/common/OntologyDefinition.js";
 export { OntologyEntityTypeEnum } from "./api/common/OntologyEntityTypeEnum.js";
 export {
@@ -48,6 +56,7 @@ export {
   CREATE_OR_MODIFY_OBJECT_PARAMETER,
   defineAction,
   DELETE_OBJECT_PARAMETER,
+  kebab,
   MODIFY_INTERFACE_OBJECT_PARAMETER,
   MODIFY_OBJECT_PARAMETER,
 } from "./api/defineAction.js";
@@ -79,6 +88,7 @@ export {
   getOntologyDefinition,
   initializeOntologyState,
   withoutNamespace,
+  writeStaticObjects,
 } from "./api/defineOntology.js";
 export { defineSharedPropertyType } from "./api/defineSpt.js";
 export { defineValueType } from "./api/defineValueType.js";
@@ -95,6 +105,7 @@ export type {
   OneToManyLinkTypeDefinition,
   UserLinkTypeStatus,
 } from "./api/links/LinkType.js";
+export type { EditsHistoryConfig } from "./api/object/EditsHistoryConfig.js";
 export type { ObjectPropertyType } from "./api/object/ObjectPropertyType.js";
 export type { ObjectType } from "./api/object/ObjectType.js";
 export type {

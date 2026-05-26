@@ -15,13 +15,9 @@
  */
 
 import { Button } from "@base-ui/react/button";
-import { Input } from "@base-ui/react/input";
 import classnames from "classnames";
 import React, { memo, useCallback } from "react";
-import {
-  formatDateForInput,
-  parseDateFromInput,
-} from "../../../shared/dateUtils.js";
+import { DatePicker } from "../../../shared/calendar/index.js";
 import styles from "./SingleDateInput.module.css";
 
 interface SingleDateInputProps {
@@ -33,6 +29,8 @@ interface SingleDateInputProps {
   maxDate?: Date;
   placeholder?: string;
   showClearButton?: boolean;
+  /** Display formatter for picker idle text. Editing format stays ISO. */
+  formatDate?: (date: Date) => string;
 }
 
 function SingleDateInputInner({
@@ -42,33 +40,33 @@ function SingleDateInputInner({
   style,
   minDate,
   maxDate,
-  placeholder = "Select a date...",
+  placeholder,
   showClearButton = true,
+  formatDate,
 }: SingleDateInputProps): React.ReactElement {
-  const handleChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const date = parseDateFromInput(e.target.value);
-      onChange(date);
-    },
-    [onChange],
-  );
-
   const handleClear = useCallback(() => {
     onChange(undefined);
   }, [onChange]);
 
+  const handleChange = useCallback(
+    (value: Date | null) => {
+      onChange(value ?? undefined);
+    },
+    [onChange],
+  );
+
   return (
     <div className={classnames(styles.singleDate, className)} style={style}>
       <div className={styles.dateContainer}>
-        <Input
-          type="date"
-          className={styles.input}
-          value={formatDateForInput(selectedDate)}
+        <DatePicker
+          value={selectedDate ?? null}
           onChange={handleChange}
-          min={minDate ? formatDateForInput(minDate) : undefined}
-          max={maxDate ? formatDateForInput(maxDate) : undefined}
+          min={minDate}
+          max={maxDate}
           placeholder={placeholder}
-          aria-label="Select date"
+          ariaLabel="Select date"
+          modal={false}
+          formatDate={formatDate}
         />
         {showClearButton && selectedDate !== undefined && (
           <Button

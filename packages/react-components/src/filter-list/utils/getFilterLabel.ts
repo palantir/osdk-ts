@@ -35,6 +35,8 @@ export function getFilterLabel<Q extends ObjectTypeDefinition>(
       return "Search";
     case "CUSTOM":
       return definition.key;
+    case "STATIC_VALUES":
+      return definition.key;
     default:
       return assertUnreachable(definition);
   }

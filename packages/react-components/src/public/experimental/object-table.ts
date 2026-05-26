@@ -15,13 +15,16 @@
  */
 
 // ObjectTable that loads and displays data for a given objectSet
-export { ObjectTable } from "../../object-table/ObjectTable.js";
+import { ObjectTable as _ObjectTable } from "../../object-table/ObjectTable.js";
+import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
+export const ObjectTable: typeof _ObjectTable = withOsdkMetrics(
+  _ObjectTable,
+  "ObjectTable",
+);
 export type {
   ColumnDefinition,
   ColumnDefinitionLocator,
   CustomColumnLocator,
-  DatePickerEditConfig,
-  DropdownEditConfig,
   EditFieldConfig,
   FunctionColumnLocator,
   ObjectTableProps,
@@ -45,3 +48,11 @@ export type {
   MultiColumnSortDialogProps,
   SortColumnItem,
 } from "../../object-table/MultiColumnSortDialog.js";
+
+// Loading cell components for custom column renderers.
+// Use `LoadingCell` when rendering a full `<td>` element (e.g. in a custom row renderer).
+// Use `LoadingCellContent` when rendering just the skeleton content inside an existing cell.
+export {
+  LoadingCell,
+  LoadingCellContent,
+} from "../../object-table/LoadingCell.js";

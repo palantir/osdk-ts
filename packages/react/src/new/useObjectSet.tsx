@@ -25,10 +25,8 @@ import type {
   WhereClause,
 } from "@osdk/api";
 
-import {
-  getWireObjectSet,
-  type ObserveObjectSetArgs,
-} from "@osdk/client/unstable-do-not-use";
+import { getWireObjectSet } from "@osdk/client";
+import type { ObserveObjectSetArgs } from "@osdk/client/observable";
 import React from "react";
 import { extractPayloadError } from "./hookUtils.js";
 import {
@@ -36,7 +34,7 @@ import {
   makeExternalStore,
   type Snapshot,
 } from "./makeExternalStore.js";
-import { OsdkContext2 } from "./OsdkContext2.js";
+import { OsdkContext } from "./OsdkContext.js";
 
 export interface UseObjectSetOptions<
   Q extends ObjectOrInterfaceDefinition,
@@ -133,11 +131,13 @@ export interface UseObjectSetOptions<
    *
    * @default true
    * @example
+   * ```tsx
    * // Dependent query - wait for filter selection
    * const { data: filteredObjects } = useObjectSet(MyObject.all(), {
    *   where: { status: selectedStatus },
-   *   enabled: !!selectedStatus
+   *   enabled: !!selectedStatus,
    * });
+   * ```
    */
   enabled?: boolean;
 }
@@ -229,7 +229,7 @@ export function useObjectSet<
   baseObjectSet: ObjectSet<Q, BaseRDPs> | undefined,
   options: UseObjectSetOptions<Q, RDPs> = {},
 ): UseObjectSetResult<Q, RDPs> {
-  const { observableClient } = React.useContext(OsdkContext2);
+  const { observableClient } = React.useContext(OsdkContext);
 
   const { enabled: enabledOption = true, streamUpdates, ...otherOptions } =
     options;
@@ -244,7 +244,8 @@ export function useObjectSet<
   const previousCompletedPayloadRef = React.useRef<
     Snapshot<ObserveObjectSetArgs<Q, RDPs>> | undefined
   >();
-
+  // TODO: Is it expected to only clear the previousCompletedPayloadRef when the object type changes?
+  // What if the same object type is queried with different filters, should we also clear the cache?
   const objectTypeChanged = previousObjectTypeRef.current !== objectTypeKey;
   if (objectTypeChanged) {
     previousObjectTypeRef.current = objectTypeKey;

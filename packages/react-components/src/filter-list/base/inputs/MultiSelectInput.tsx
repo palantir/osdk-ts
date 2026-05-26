@@ -18,8 +18,26 @@ import classnames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
+import { isEmptyValue } from "../../utils/filterValues.js";
+import { useFilterListBoundary } from "../FilterListBoundaryContext.js";
+import { createRenderValueFilter } from "./comboboxFilter.js";
+import { MultiSelectDropdownLayout } from "./MultiSelectDropdownLayout.js";
+import { MultiSelectInlineLayout } from "./MultiSelectInlineLayout.js";
 import styles from "./MultiSelectInput.module.css";
+import { NoValueLabel } from "./NoValueLabel.js";
+import { SelectInputSkeleton } from "./SelectInputSkeleton.js";
 import sharedStyles from "./shared.module.css";
+import { useStableData } from "./useStableData.js";
+
+/**
+ * Layout for the value list:
+ * - `"dropdown"` (default): chips inline + portaled Combobox popup. Use when
+ *   the input drives its own surface (e.g. standalone in a row).
+ * - `"inline"`: search input + always-visible value list rendered in flow.
+ *   Use when wrapping the input in your own popover so the values are
+ *   immediately visible without an extra inner trigger.
+ */
+export type MultiSelectInputLayout = "dropdown" | "inline";
 
 interface MultiSelectInputProps {
   values: PropertyAggregationValue[];
@@ -30,7 +48,10 @@ interface MultiSelectInputProps {
   className?: string;
   style?: React.CSSProperties;
   placeholder?: string;
+  showCounts?: boolean;
   ariaLabel?: string;
+  renderValue?: (value: string) => React.ReactNode;
+  layout?: MultiSelectInputLayout;
 }
 
 function MultiSelectInputInner({
@@ -42,8 +63,13 @@ function MultiSelectInputInner({
   className,
   style,
   placeholder = "Select values...",
+  showCounts = true,
   ariaLabel = "Search values",
+  renderValue,
+  layout = "dropdown",
 }: MultiSelectInputProps): React.ReactElement {
+  const collisionBoundary = useFilterListBoundary();
+
   const handleValueChange = useCallback(
     (newValues: string[] | null) => {
       onChange(newValues ?? []);
@@ -51,93 +77,131 @@ function MultiSelectInputInner({
     [onChange],
   );
 
+  const stableValues = useStableData(values, isLoading);
+
   const items = useMemo(
-    () => values.map(({ value }) => value),
-    [values],
+    () => stableValues.map(({ value }) => value),
+    [stableValues],
   );
 
   const countByValue = useMemo(
-    () => new Map(values.map(({ value, count }) => [value, count])),
-    [values],
+    () => new Map(stableValues.map(({ value, count }) => [value, count])),
+    [stableValues],
+  );
+
+  const selectedSet = useMemo(
+    () => new Set(selectedValues),
+    [selectedValues],
+  );
+
+  const comboboxFilter = useMemo(
+    () => renderValue ? createRenderValueFilter(renderValue) : undefined,
+    [renderValue],
   );
 
   const renderItem = useCallback(
-    (value: string) => (
-      <Combobox.Item key={value} value={value}>
-        <Combobox.ItemIndicator />
-        <span className={styles.itemLabel}>{value}</span>
-        <span className={styles.itemCount}>
-          ({(countByValue.get(value) ?? 0).toLocaleString()})
-        </span>
-      </Combobox.Item>
-    ),
-    [countByValue],
+    (value: string) => {
+      const isEmpty = isEmptyValue(value);
+      const count = countByValue.get(value) ?? 0;
+      const isFilteredOut = count === 0 && !selectedSet.has(value);
+      return (
+        <Combobox.Item
+          key={value}
+          value={value}
+          className={isFilteredOut ? styles.filteredOutItem : undefined}
+        >
+          <Combobox.ItemIndicator />
+          <span className={styles.itemLabel}>
+            {isEmpty
+              ? <NoValueLabel />
+              : (renderValue ? renderValue(value) : value)}
+          </span>
+          {showCounts && (
+            <span className={styles.itemCount}>
+              ({count.toLocaleString()})
+            </span>
+          )}
+        </Combobox.Item>
+      );
+    },
+    [countByValue, selectedSet, showCounts, renderValue],
   );
 
   const renderChips = useCallback(
     (selectedItems: string[]) => (
       <>
-        {selectedItems.map((value) => (
-          <Combobox.Chip
-            key={value}
-            aria-label={value}
-          >
-            {value}
-            <Combobox.ChipRemove />
-          </Combobox.Chip>
-        ))}
+        {selectedItems.map((value) => {
+          const isEmpty = isEmptyValue(value);
+          return (
+            <Combobox.Chip
+              key={value}
+              aria-label={isEmpty ? "No value" : value}
+            >
+              {isEmpty
+                ? <NoValueLabel />
+                : (renderValue ? renderValue(value) : value)}
+              <Combobox.ChipRemove />
+            </Combobox.Chip>
+          );
+        })}
         <Combobox.Input
           placeholder={selectedItems.length > 0 ? "" : placeholder}
           aria-label={ariaLabel}
         />
       </>
     ),
-    [placeholder, ariaLabel],
+    [placeholder, ariaLabel, renderValue],
   );
+
+  const isNoData = !error && stableValues.length === 0;
+  const isReloading = isLoading && stableValues.length > 0;
 
   return (
     <div
       className={classnames(styles.multiSelect, className)}
       style={style}
-      data-loading={isLoading}
+      data-loading={isReloading}
     >
+      <span className={sharedStyles.srOnly} role="status">
+        {isLoading ? "Loading options" : ""}
+      </span>
+
       {error && (
         <div className={sharedStyles.errorMessage}>
           Error loading options: {error.message}
         </div>
       )}
 
-      {!error && values.length === 0 && (
+      {isNoData && isLoading && <SelectInputSkeleton />}
+      {isNoData && !isLoading && (
         <div className={sharedStyles.emptyMessage}>
-          {isLoading ? "Loading options..." : "No options available"}
+          No options available
         </div>
       )}
 
-      {(values.length > 0 || isLoading) && (
+      {stableValues.length > 0 && (
         <Combobox.Root<string, true>
           multiple={true}
           value={selectedValues}
           onValueChange={handleValueChange}
           items={items}
+          filter={comboboxFilter}
         >
-          {isLoading && (
-            <div className={sharedStyles.loadingMessage}>
-              Updating...
-            </div>
-          )}
-
-          <Combobox.Chips>
-            <Combobox.Value>{renderChips}</Combobox.Value>
-          </Combobox.Chips>
-
-          <Combobox.Portal>
-            <Combobox.Positioner>
-              <Combobox.Popup>
-                <Combobox.Empty>No matching options</Combobox.Empty>
-                <Combobox.List>{renderItem}</Combobox.List>
-              </Combobox.Popup>
-            </Combobox.Positioner>
-          </Combobox.Portal>
+          {layout === "inline"
+            ? (
+              <MultiSelectInlineLayout
+                placeholder={placeholder}
+                ariaLabel={ariaLabel}
+                renderItem={renderItem}
+              />
+            )
+            : (
+              <MultiSelectDropdownLayout
+                renderChips={renderChips}
+                renderItem={renderItem}
+                collisionBoundary={collisionBoundary}
+              />
+            )}
         </Combobox.Root>
       )}
     </div>

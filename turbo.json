@@ -42,8 +42,15 @@
       "inputs": ["build/{esm,cjs,browser,types}", "package.json", "*.d.ts"]
     },
 
+    "check-bundle": {
+      "outputLogs": "new-only",
+      "dependsOn": ["transpileEsm"],
+      "inputs": ["build/esm/**", "bin/**", "package.json"]
+    },
+
     "check-spelling": {
       "outputLogs": "new-only",
+      "dependsOn": ["codegen"],
       "inputs": ["**/*.{ts,tsx,cts,mts,md,json,js,mjs,cjs}"]
     },
 
@@ -230,6 +237,12 @@
       "dependsOn": ["^transpileEsm"]
     },
 
+    "updateSnapshots": {
+      "cache": false,
+      "env": ["FORCE_COLOR"],
+      "dependsOn": ["^transpileEsm"]
+    },
+
     "//#check-mrl": {
       "inputs": [
         "package.json",
@@ -252,6 +265,7 @@
         "typecheck",
         "test",
         "check-attw",
+        "check-bundle",
         "check-api",
         "check-spelling"
       ]

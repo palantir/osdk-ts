@@ -18,6 +18,7 @@ import type {
   InterfaceTypeStatus,
   OntologyIrMarketplaceInterfaceType,
 } from "@osdk/client.unstable";
+import type { EntityPermission } from "../common/EntityPermission.js";
 import type { OntologyEntityBase } from "../common/OntologyEntityBase.js";
 import type { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";
 import type {
@@ -41,6 +42,7 @@ export interface InterfaceType extends
   propertiesV2: Record<string, InterfaceSharedPropertyType>;
   propertiesV3: Record<string, InterfacePropertyType>;
   extendsInterfaces: Array<InterfaceType>;
+  permission?: EntityPermission;
   status: InterfaceTypeStatus;
   __type: OntologyEntityTypeEnum.INTERFACE_TYPE;
 }

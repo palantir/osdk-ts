@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { PdfViewerContentProps } from "@osdk/react-components/experimental";
-import { PdfViewerContent } from "@osdk/react-components/experimental";
+import type { PdfViewerContentProps } from "@osdk/react-components/experimental/pdf-viewer";
+import { PdfViewerContent } from "@osdk/react-components/experimental/pdf-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
 
@@ -24,7 +24,7 @@ const SAMPLE_PDF_URL =
   "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf";
 
 const meta: Meta<PdfViewerContentProps> = {
-  title: "Experimental/PdfViewer/Building Blocks/Content",
+  title: "Beta/DocumentViewer/Renderers/PdfViewer/Building Blocks/Content",
   component: PdfViewerContent,
   args: {
     src: SAMPLE_PDF_URL,

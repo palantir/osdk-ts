@@ -21,14 +21,14 @@ import type {
   PdfTextHighlightEvent,
   PdfViewerMediaProps,
   PdfViewerProps,
-} from "@osdk/react-components/experimental";
-import { BasePdfViewer, PdfViewer } from "@osdk/react-components/experimental";
-import { useOsdkObject } from "@osdk/react/experimental";
+} from "@osdk/react-components/experimental/pdf-viewer";
+import {
+  BasePdfViewer,
+  PdfViewer,
+} from "@osdk/react-components/experimental/pdf-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { delay, http } from "msw";
 import { fn } from "storybook/test";
-import { MEDIA_EMPLOYEE_PK } from "../../../mocks/fauxFoundry.js";
-import { Employee } from "../../../types/Employee.js";
 
 const SAMPLE_PDF_URL =
   `${import.meta.env.BASE_URL}compressed.tracemonkey-pldi-09.pdf`;
@@ -68,8 +68,7 @@ const mockBookmarkedMedia = createMockMedia(
 );
 
 const meta: Meta<PdfViewerMediaProps> = {
-  title: "Experimental/PdfViewer/Features",
-  tags: ["experimental"],
+  title: "Beta/DocumentViewer/Renderers/PdfViewer/Features",
   component: PdfViewer,
   args: {
     media: mockMedia,
@@ -152,7 +151,7 @@ export const WithPdfUrl: StoryObj<PdfViewerProps> = {
     docs: {
       source: {
         code:
-          `import { BasePdfViewer } from "@osdk/react-components/experimental";
+          `import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 
 <BasePdfViewer src="/compressed.tracemonkey-pldi-09.pdf" />`,
       },
@@ -196,7 +195,8 @@ export const WithAnnotations: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewer } from "@osdk/react-components/experimental";
+        code:
+          `import { PdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 
 <PdfViewer
   media={myMediaObject}
@@ -220,7 +220,8 @@ export const WithSidebar: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewer } from "@osdk/react-components/experimental";
+        code:
+          `import { PdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 
 <PdfViewer media={myMediaObject} initialSidebarOpen />`,
       },
@@ -235,9 +236,26 @@ export const CustomScale: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewer } from "@osdk/react-components/experimental";
+        code:
+          `import { PdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 
 <PdfViewer media={myMediaObject} initialScale={1.5} />`,
+      },
+    },
+  },
+};
+
+export const WithAutoSize: Story = {
+  args: {
+    initialAutoSize: true,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code:
+          `import { PdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
+
+<PdfViewer media={myMediaObject} initialAutoSize />`,
       },
     },
   },
@@ -250,7 +268,8 @@ export const WithDownload: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewer } from "@osdk/react-components/experimental";
+        code:
+          `import { PdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 
 <PdfViewer media={myMediaObject} enableDownload />`,
       },
@@ -266,7 +285,8 @@ export const WithOutlineSidebar: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewer } from "@osdk/react-components/experimental";
+        code:
+          `import { PdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 
 <PdfViewer media={myMediaObject} initialSidebarOpen sidebarMode="outline" />`,
       },
@@ -351,8 +371,8 @@ export const WithHighlightMode: StoryObj<PdfViewerProps> = {
     docs: {
       source: {
         code: `import { useState, useCallback } from "react";
-import { BasePdfViewer } from "@osdk/react-components/experimental";
-import type { PdfAnnotation, PdfTextHighlightEvent } from "@osdk/react-components/experimental";
+import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
+import type { PdfAnnotation, PdfTextHighlightEvent } from "@osdk/react-components/experimental/pdf-viewer";
 
 function MyPdfViewer({ src }: { src: string }) {
   const [annotations, setAnnotations] = useState<PdfAnnotation[]>([]);
@@ -412,43 +432,13 @@ export const InteractiveForm: StoryObj<PdfViewerProps> = {
     docs: {
       source: {
         code:
-          `import { BasePdfViewer } from "@osdk/react-components/experimental";
+          `import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 
 <BasePdfViewer
   src="https://example.com/interactive-form.pdf"
   onFormChange={(fieldName, value) => console.log(fieldName, value)}
   onFormSubmit={(data) => console.log("Form submitted:", data)}
 />`,
-      },
-    },
-  },
-};
-
-export const WithOsdkMedia: Story = {
-  render: () => {
-    const { object: employee, isLoading } = useOsdkObject(
-      Employee,
-      MEDIA_EMPLOYEE_PK,
-    );
-
-    if (isLoading || !employee?.employeeDocuments) {
-      return <div style={{ height: "600px" }}>Loading OSDK media…</div>;
-    }
-
-    return (
-      <div style={{ height: "600px" }}>
-        <PdfViewer media={employee.employeeDocuments} />
-      </div>
-    );
-  },
-  parameters: {
-    docs: {
-      source: {
-        code: `import { PdfViewer } from "@osdk/react-components/experimental";
-
-// Access media from an OSDK object's media reference property
-const employee = useOsdkObject(Employee, employeePk);
-<PdfViewer media={employee.employeeDocuments} />`,
       },
     },
   },

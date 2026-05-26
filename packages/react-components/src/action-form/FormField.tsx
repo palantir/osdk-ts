@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { Popover } from "@base-ui/react/popover";
+import { InfoSign } from "@blueprintjs/icons";
 import React, { memo } from "react";
 import styles from "./FormField.module.css";
 
@@ -21,47 +23,102 @@ interface FormFieldProps {
   fieldKey: string;
   label?: string;
   isRequired?: boolean;
-  helperText?: string;
+  helperText?: React.ReactNode;
+  helperTextPlacement?: "bottom" | "tooltip";
+  isEdited?: boolean;
   error?: string;
   onBlur?: (e: React.FocusEvent<HTMLDivElement>) => void;
   children: React.ReactNode;
 }
 
-export const FormField: React.FC<FormFieldProps> = memo(
-  function FormFieldFn({
-    fieldKey,
-    label,
-    isRequired,
-    helperText,
-    error,
-    onBlur,
-    children,
-  }: FormFieldProps): React.ReactElement {
-    return (
-      <div className={styles.osdkFormField} onBlur={onBlur}>
-        {label != null && (
-          <label className={styles.osdkFormFieldLabel} htmlFor={fieldKey}>
-            {label}
-            {isRequired === true && (
-              <span
-                className={styles.osdkFormFieldRequired}
-                aria-label="required"
-              >
-                {" "}*
-              </span>
-            )}
-          </label>
+export const FormField: React.FC<FormFieldProps> = memo(function FormFieldFn({
+  fieldKey,
+  label,
+  isRequired,
+  helperText,
+  helperTextPlacement = "tooltip",
+  isEdited,
+  error,
+  onBlur,
+  children,
+}: FormFieldProps): React.ReactElement {
+  const hasHelperText = helperText != null && helperText !== "";
+  const showTooltip = hasHelperText && helperTextPlacement === "tooltip";
+  const showBottomText = hasHelperText && helperTextPlacement === "bottom";
+  const showEditedTag = isEdited === true;
+
+  const labelElement = label != null
+    ? (
+      <label className={styles.osdkFormFieldLabel} htmlFor={fieldKey}>
+        {label}
+        {isRequired === true && (
+          <span className={styles.osdkFormFieldRequired} aria-label="required">
+            {" "}
+            *
+          </span>
         )}
-        {children}
+      </label>
+    )
+    : null;
+  const labelRow = labelElement != null || showTooltip || showEditedTag
+    ? (
+      <div className={styles.osdkFormFieldLabelRow}>
+        {labelElement}
+        {showTooltip && <InfoTip label={label}>{helperText}</InfoTip>}
+        {showEditedTag && (
+          <span className={styles.osdkFormFieldEditedTag}>Edited</span>
+        )}
+      </div>
+    )
+    : null;
+
+  return (
+    <div className={styles.osdkFormField} onBlur={onBlur}>
+      {labelRow}
+      {showBottomText && (
+        <div className={styles.osdkFormFieldHelperText}>{helperText}</div>
+      )}
+      {children}
+      <div
+        className={styles.osdkFormFieldErrorSlot}
+        data-osdk-form-field-error-slot=""
+      >
         {error != null && (
           <div className={styles.osdkFormFieldError} role="alert">
             {error}
           </div>
         )}
-        {helperText != null && (
-          <div className={styles.osdkFormFieldHelperText}>{helperText}</div>
-        )}
       </div>
-    );
-  },
-);
+    </div>
+  );
+});
+
+interface InfoTipProps {
+  label?: string;
+  children: React.ReactNode;
+}
+
+// Uses Popover (not Tooltip) because helper text may contain interactive
+// content like links that need focus management and keyboard navigation.
+// See https://base-ui.com/react/components/tooltip#infotips
+function InfoTip({ label, children }: InfoTipProps): React.ReactElement {
+  return (
+    <Popover.Root>
+      <Popover.Trigger
+        render={<span className={styles.osdkFormFieldInfoIcon} />}
+        nativeButton={false}
+        openOnHover={true}
+        aria-label={label != null ? `Info about ${label}` : "More information"}
+      >
+        <InfoSign size={12} />
+      </Popover.Trigger>
+      <Popover.Portal>
+        <Popover.Positioner sideOffset={4}>
+          <Popover.Popup className={styles.osdkFormFieldInfoPopup}>
+            {children}
+          </Popover.Popup>
+        </Popover.Positioner>
+      </Popover.Portal>
+    </Popover.Root>
+  );
+}

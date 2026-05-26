@@ -15,10 +15,22 @@
  */
 
 .osdkSwitchRoot {
-  --osdk-switch-track-width: var(--osdk-switch-track-width-override, 28px);
-  --osdk-switch-track-height: var(--osdk-switch-track-height-override, 16px);
-  --osdk-switch-thumb-size: var(--osdk-switch-thumb-size-override, 12px);
-  --osdk-switch-thumb-offset: var(--osdk-switch-thumb-offset-override, 2px);
+  --osdk-switch-track-width: var(
+    --osdk-switch-track-width-override,
+    calc(var(--osdk-surface-spacing) * 9)
+  );
+  --osdk-switch-track-height: var(
+    --osdk-switch-track-height-override,
+    calc(var(--osdk-surface-spacing) * 5)
+  );
+  --osdk-switch-thumb-size: var(
+    --osdk-switch-thumb-size-override,
+    calc(var(--osdk-surface-spacing) * 4)
+  );
+  --osdk-switch-thumb-offset: var(
+    --osdk-switch-thumb-offset-override,
+    calc(var(--osdk-surface-spacing) * 0.5)
+  );
 
   display: inline-flex;
   align-items: center;
@@ -26,7 +38,7 @@
   height: var(--osdk-switch-track-height);
   padding: 0;
   cursor: pointer;
-  border-radius: var(--osdk-switch-border-radius, var(--osdk-surface-border-radius));
+  border-radius: var(--osdk-switch-border-radius, 9999px);
   position: relative;
   border: none;
   transition: background-color var(--osdk-switch-transition-duration, var(--osdk-emphasis-transition-duration))
@@ -58,7 +70,7 @@
 
   &[data-disabled] {
     cursor: not-allowed;
-    opacity: 0.5;
+    opacity: var(--osdk-disabled-opacity);
   }
 
   &:focus-visible {

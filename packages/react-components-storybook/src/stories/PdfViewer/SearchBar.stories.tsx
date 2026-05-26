@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import type { PdfViewerSearchBarProps } from "@osdk/react-components/experimental";
-import { PdfViewerSearchBar } from "@osdk/react-components/experimental";
+import type { PdfViewerSearchBarProps } from "@osdk/react-components/experimental/pdf-viewer";
+import { PdfViewerSearchBar } from "@osdk/react-components/experimental/pdf-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
 
 const meta: Meta<PdfViewerSearchBarProps> = {
-  title: "Experimental/PdfViewer/Building Blocks/SearchBar",
+  title: "Beta/DocumentViewer/Renderers/PdfViewer/Building Blocks/SearchBar",
   component: PdfViewerSearchBar,
   args: {
     query: "",

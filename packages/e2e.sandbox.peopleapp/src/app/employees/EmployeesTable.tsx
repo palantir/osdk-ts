@@ -1,12 +1,19 @@
 import type { DerivedProperty, Osdk } from "@osdk/api";
-import type { ColumnDefinition } from "@osdk/react-components/experimental";
-import { ObjectTable } from "@osdk/react-components/experimental";
-import { useOsdkClient } from "@osdk/react/experimental";
+import { useOsdkClient } from "@osdk/react";
+import type { ColumnDefinition } from "@osdk/react-components/experimental/object-table";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
+import {
+  type OsdkThemeMode,
+  OsdkThemeProvider,
+  useOsdkTheme,
+} from "@osdk/react-components/experimental/theme";
 import React, { useCallback } from "react";
 import {
   Employee,
   getEmployeeDaysSinceStart,
 } from "../../generatedNoCheck2/index.js";
+import "./EmployeesTable.css";
+import { Button } from "../../components/Button.js";
 
 type RDPs = {
   managerName: "string";
@@ -39,13 +46,14 @@ const columnDefinitions: Array<
   // Function-backed column
   {
     locator: {
-      type: "function" as const,
-      id: "daysSinceStart" as const,
+      type: "function",
+      id: "daysSinceStart",
       queryDefinition: getEmployeeDaysSinceStart,
-      getFunctionParams: (objectSet: any) => ({ employees: objectSet }),
-      getKey: (obj: any) => `${obj.$objectType}:${obj.$primaryKey}`,
-      getValue: (data: { daysSinceStart: any }) => data?.daysSinceStart,
-    } as any,
+      getFunctionParams: (objectSet) => ({ employees: objectSet }),
+      getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
+      getValue: (data) =>
+        (data as { daysSinceStart?: number } | undefined)?.daysSinceStart,
+    },
     columnName: "Days Since Start",
     width: 150,
   },
@@ -101,7 +109,39 @@ const columnDefinitions: Array<
   },
 ];
 
-export function EmployeesTable() {
+const THEME_MODES: readonly OsdkThemeMode[] = ["light", "dark", "system"];
+
+function ThemeToggle(): React.ReactElement {
+  const { theme, resolvedTheme, setTheme } = useOsdkTheme();
+  return (
+    <div
+      style={{
+        display: "flex",
+        gap: 8,
+        alignItems: "center",
+        marginBottom: 8,
+        fontSize: 12,
+      }}
+    >
+      <span style={{ color: "#666" }}>
+        Theme: <strong>{theme}</strong>
+        {theme === "system" ? ` (resolved: ${resolvedTheme})` : ""}
+      </span>
+      {THEME_MODES.map((mode) => (
+        <Button
+          key={mode}
+          type="button"
+          onClick={() => setTheme(mode)}
+          disabled={theme === mode}
+        >
+          {mode}
+        </Button>
+      ))}
+    </div>
+  );
+}
+
+export function EmployeesTable(): React.ReactElement {
   const handleSubmitEdits = useCallback(
     async () => {
       alert(`Submitting edits...`);
@@ -115,25 +155,34 @@ export function EmployeesTable() {
   const os = client(Employee);
 
   return (
-    <div
-      style={{
-        height: "300px",
-        overflow: "hidden",
-      }}
-    >
-      <ObjectTable<Employee, RDPs, FunctionColumns>
-        objectSet={os}
-        objectType={Employee}
-        columnDefinitions={columnDefinitions}
-        selectionMode={"multiple"}
-        defaultOrderBy={[{
-          property: "firstFullTimeStartDate",
-          direction: "desc",
-        }]}
-        onSubmitEdits={handleSubmitEdits}
-        editMode="manual"
-        pageSize={5}
-      />
-    </div>
+    <OsdkThemeProvider>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          width: "100%",
+        }}
+      >
+        <ThemeToggle />
+        <div
+          style={{
+            height: "300px",
+            overflow: "hidden",
+          }}
+        >
+          <ObjectTable<Employee, RDPs, FunctionColumns>
+            objectSet={os}
+            objectType={Employee}
+            columnDefinitions={columnDefinitions}
+            selectionMode={"multiple"}
+            defaultOrderBy={[{
+              property: "firstFullTimeStartDate",
+              direction: "desc",
+            }]}
+            onSubmitEdits={handleSubmitEdits}
+          />
+        </div>
+      </div>
+    </OsdkThemeProvider>
   );
 }

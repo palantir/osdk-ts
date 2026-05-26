@@ -8,58 +8,56 @@ This guide covers advanced querying patterns including useObjectSet, derived pro
 
 ## useObjectSet
 
-*Experimental - import from `@osdk/react/experimental`*
-
 Advanced querying with set operations, derived properties, and link traversal.
 
 ### When to Use useObjectSet vs useOsdkObjects
 
-Both hooks support where, orderBy, pagination, withProperties, pivotTo, autoFetchMore, and streamUpdates. Note that `pivotTo` and `streamUpdates` cannot be combined, see the note below.
+Prefer `useOsdkObjects` when both hooks would work. Both support filtering, sorting, pagination, derived properties, pivoting, and streaming updates — they differ in their **starting point**.
 
-**Use useOsdkObjects when:**
-- Passing an ObjectType or Interface directly (`Todo`)
+**Use `useOsdkObjects(Type, options)`** when your query starts from an object type or interface.
 
-**Use useObjectSet when:**
-- Starting from an ObjectSet instance (`$(Todo)`)
-- Need set operations (`union`, `intersect`, `subtract`) with other ObjectSets
+**Use `useObjectSet(objectSet, options)`** when you already hold an `ObjectSet` instance you want to observe — typically because:
 
-:::note
-`useOsdkObjects` is in active development to reach full OSDK TypeScript client parity as it has more performance enhancements. `useObjectSet` currently supports everything and should be used if a feature you need isn't present in `useOsdkObjects`. Check the JSDoc for current feature support.
-:::
+- You composed sets with `union` / `intersect` / `subtract`
+- You received an `ObjectSet` from another hook (e.g. `useOsdkObjects(...).objectSet`) and want to observe a transformation of it
+
+Note that `pivotTo` and `streamUpdates` cannot be combined — see the note below.
 
 ```tsx
-import { $, Todo } from "@my/osdk";
-import { useObjectSet, useOsdkObjects } from "@osdk/react/experimental";
+import { Todo } from "@my/osdk";
+import { useObjectSet, useOsdkObjects } from "@osdk/react";
+import client from "./client";
 
 // Simple query - use useOsdkObjects
-const { data } = useOsdkObjects(Todo, {
+const { data: simpleData } = useOsdkObjects(Todo, {
   where: { isComplete: false },
   orderBy: { createdAt: "desc" },
 });
 
 // Set operations - use useObjectSet
-const urgentTodos = $(Todo).where({ isUrgent: true });
-const completedTodos = $(Todo).where({ isComplete: true });
+const urgentTodos = client(Todo).where({ isUrgent: true });
+const completedTodos = client(Todo).where({ isComplete: true });
 
-const { data } = useObjectSet($(Todo), {
+const { data: setData } = useObjectSet(client(Todo), {
   union: [urgentTodos],
   subtract: [completedTodos],
 });
 ```
 
-:::note The `$` function
-The `$` function from your generated SDK creates an ObjectSet from an object type. `$(Todo)` creates an ObjectSet containing all Todo objects that you can then filter, union, intersect, or subtract with other ObjectSets.
+:::note Building ObjectSets
+Call your OSDK client with an object type — `client(Todo)` — to create an `ObjectSet`. You can then filter, union, intersect, or subtract it before passing it to `useObjectSet`. The `client` here is whatever you exported from `createClient(...)` in your app (`./client` in these examples).
 :::
 
 ### Basic Usage
 
 ```tsx
-import { $, Todo } from "@my/osdk";
-import { useObjectSet } from "@osdk/react/experimental";
+import { Todo } from "@my/osdk";
+import { useObjectSet } from "@osdk/react";
+import client from "./client";
 
 function TodosWithSetOperations() {
-  const allTodos = $(Todo);
-  const completedTodos = $(Todo).where({ isComplete: true });
+  const allTodos = client(Todo);
+  const completedTodos = client(Todo).where({ isComplete: true });
 
   const { data, isLoading, fetchMore } = useObjectSet(allTodos, {
     subtract: [completedTodos],
@@ -87,12 +85,13 @@ function TodosWithSetOperations() {
 Combine multiple object sets:
 
 ```tsx
-import { $, Todo } from "@my/osdk";
-import { useObjectSet } from "@osdk/react/experimental";
+import { Todo } from "@my/osdk";
+import { useObjectSet } from "@osdk/react";
+import client from "./client";
 
 function CombinedTodoQuery() {
-  const highPriorityTodos = $(Todo).where({ priority: "high" });
-  const urgentTodos = $(Todo).where({ isUrgent: true });
+  const highPriorityTodos = client(Todo).where({ priority: "high" });
+  const urgentTodos = client(Todo).where({ isUrgent: true });
 
   const { data } = useObjectSet(highPriorityTodos, {
     union: [urgentTodos], // High priority OR urgent
@@ -107,27 +106,22 @@ function CombinedTodoQuery() {
 Find objects that exist in all sets:
 
 ```tsx
-import { $, Employee } from "@my/osdk";
-import { useObjectSet } from "@osdk/react/experimental";
+import { Todo } from "@my/osdk";
+import { useObjectSet } from "@osdk/react";
+import client from "./client";
 
-function SharedProjects({ employee1, employee2 }: {
-  employee1: Employee.OsdkInstance;
-  employee2: Employee.OsdkInstance;
-}) {
-  const set1 = $(Employee).where({ id: employee1.id });
-  const set2 = $(Employee).where({ id: employee2.id });
+function StarredAndIncompleteTodos() {
+  const starred = client(Todo).where({ isStarred: true });
+  const incomplete = client(Todo).where({ isComplete: false });
 
-  const { data } = useObjectSet(set1, {
-    pivotTo: "projects",
-    intersect: [set2.$pivotTo("projects")],
+  const { data } = useObjectSet(starred, {
+    intersect: [incomplete],
   });
 
   return (
     <div>
-      <h3>Shared Projects</h3>
-      {data?.map(project => (
-        <div key={project.$primaryKey}>{project.name}</div>
-      ))}
+      <h3>Starred todos that are still open</h3>
+      {data?.map(todo => <div key={todo.$primaryKey}>{todo.title}</div>)}
     </div>
   );
 }
@@ -138,12 +132,13 @@ function SharedProjects({ employee1, employee2 }: {
 Remove objects that exist in another set:
 
 ```tsx
-import { $, Todo } from "@my/osdk";
-import { useObjectSet } from "@osdk/react/experimental";
+import { Todo } from "@my/osdk";
+import { useObjectSet } from "@osdk/react";
+import client from "./client";
 
 function ActiveTodos() {
-  const allTodos = $(Todo);
-  const completedTodos = $(Todo).where({ isComplete: true });
+  const allTodos = client(Todo);
+  const completedTodos = client(Todo).where({ isComplete: true });
 
   const { data } = useObjectSet(allTodos, {
     subtract: [completedTodos],
@@ -156,17 +151,18 @@ function ActiveTodos() {
 #### Combined Operations
 
 ```tsx
-import { $, Todo } from "@my/osdk";
-import { useObjectSet } from "@osdk/react/experimental";
+import { Todo } from "@my/osdk";
+import { useObjectSet } from "@osdk/react";
+import client from "./client";
 
 function ComplexTodoQuery() {
-  const highPriorityTodos = $(Todo).where({ priority: "high" });
-  const urgentTodos = $(Todo).where({ isUrgent: true });
-  const completedTodos = $(Todo).where({ isComplete: true });
+  const highPriorityTodos = client(Todo).where({ priority: "high" });
+  const urgentTodos = client(Todo).where({ isUrgent: true });
+  const completedTodos = client(Todo).where({ isComplete: true });
 
   const { data } = useObjectSet(highPriorityTodos, {
-    union: [urgentTodos],        // High priority OR urgent
-    subtract: [completedTodos],  // But not completed
+    union: [urgentTodos], // High priority OR urgent
+    subtract: [completedTodos], // But not completed
   });
 
   return <div>High priority or urgent (but not completed): {data?.length}</div>;
@@ -178,11 +174,14 @@ function ComplexTodoQuery() {
 Navigate to linked objects:
 
 ```tsx
-import { $, Employee } from "@my/osdk";
-import { useObjectSet } from "@osdk/react/experimental";
+import { Employee } from "@my/osdk";
+import { useObjectSet } from "@osdk/react";
+import client from "./client";
 
-function EmployeeDepartments({ employee }: { employee: Employee.OsdkInstance }) {
-  const employeeSet = $(Employee).where({ id: employee.id });
+function EmployeeDepartments(
+  { employee }: { employee: Employee.OsdkInstance },
+) {
+  const employeeSet = client(Employee).where({ id: employee.id });
 
   const { data } = useObjectSet(employeeSet, {
     pivotTo: "department",
@@ -199,13 +198,14 @@ function EmployeeDepartments({ employee }: { employee: Employee.OsdkInstance }) 
 ### Auto-Fetching and Streaming
 
 ```tsx
-import { $, Todo } from "@my/osdk";
-import { useObjectSet } from "@osdk/react/experimental";
+import { Todo } from "@my/osdk";
+import { useObjectSet } from "@osdk/react";
+import client from "./client";
 
-const { data, isLoading } = useObjectSet($(Todo), {
+const { data, isLoading } = useObjectSet(client(Todo), {
   where: { isComplete: false },
-  autoFetchMore: 200,     // Fetch at least 200 items
-  streamUpdates: true,    // Real-time WebSocket updates
+  autoFetchMore: 200, // Fetch at least 200 items
+  streamUpdates: true, // Real-time WebSocket updates
 });
 ```
 
@@ -217,18 +217,19 @@ still fetch data normally but won't receive real-time updates.
 
 ### All Options
 
-- `where` - Filter objects
-- `withProperties` - Add derived/computed properties
-- `union` - Combine with other ObjectSets
-- `intersect` - Find common objects with other ObjectSets
-- `subtract` - Remove objects that exist in other ObjectSets
-- `pivotTo` - Traverse to linked objects (changes result type). Cannot be combined with `streamUpdates`.
-- `pageSize` - Number of objects per page
-- `orderBy` - Sort order
-- `dedupeIntervalMs` - Minimum time between re-fetches (default: 2000ms)
-- `streamUpdates` - Enable real-time websocket updates (default: false). Cannot be combined with `pivotTo`.
-- `autoFetchMore` - Auto-fetch additional pages
-- `enabled` - Enable/disable the query
+- `where` — Filter objects
+- `withProperties` — Add derived/computed properties
+- `$select` — Restrict which properties are returned for each object
+- `union` — Combine with other ObjectSets
+- `intersect` — Find common objects with other ObjectSets
+- `subtract` — Remove objects that exist in other ObjectSets
+- `pivotTo` — Traverse to linked objects (changes result type). Cannot be combined with `streamUpdates`.
+- `pageSize` — Number of objects per page
+- `orderBy` — Sort order
+- `dedupeIntervalMs` — Minimum time between re-fetches (default: 2000ms)
+- `streamUpdates` — Enable real-time websocket updates (default: false). Cannot be combined with `pivotTo` or `withProperties`.
+- `autoFetchMore` — Auto-fetch additional pages
+- `enabled` — Enable/disable the query
 
 ### Return Values
 
@@ -242,7 +243,7 @@ still fetch data normally but won't receive real-time updates.
 
 ## Derived Properties
 
-*Available in both useOsdkObjects and useObjectSet*
+_Available in both useOsdkObjects and useObjectSet_
 
 Add computed properties calculated server-side using the builder pattern.
 
@@ -251,9 +252,9 @@ Add computed properties calculated server-side using the builder pattern.
 Derived properties use a builder function that receives a `DerivedProperty.Builder`:
 
 ```tsx
-import type { DerivedProperty } from "@osdk/client";
 import { Employee } from "@my/osdk";
-import { useOsdkObjects } from "@osdk/react/experimental";
+import type { DerivedProperty } from "@osdk/client";
+import { useOsdkObjects } from "@osdk/react";
 
 const { data } = useOsdkObjects(Employee, {
   where: { department: "Engineering" },
@@ -273,15 +274,26 @@ const { data } = useOsdkObjects(Employee, {
 
 The builder provides these methods:
 
-- `.pivotTo(linkName)` - Navigate to linked objects
-- `.selectProperty(propertyName)` - Select a property value
-- `.aggregate(aggregation)` - Aggregate values (`"$count"`, `"propertyName:$avg"`, etc.)
-- `.where(clause)` - Filter before aggregating
+- `.pivotTo(linkName)` — Navigate to linked objects
+- `.selectProperty(propertyName)` — Select a property value
+- `.aggregate(specifier)` — Aggregate values; specifier is `"$count"` or `"propertyName:metric"` (see [Aggregation Syntax](#aggregation-syntax) for the full list)
+- `.where(clause)` — Filter before aggregating
+- `.constant.{double|integer|long|datetime|timestamp}(value)` — Lift a literal into the builder
+
+#### What does `DerivedProperty.Builder<Employee, false>` mean?
+
+You usually don't need this annotation — TypeScript infers it. The flag flips from `false` to `true` after pivoting through a one-to-many link, where you must call `.aggregate()` instead of `.selectProperty()` because there's no single value to select.
+
+#### When an aggregate has no data
+
+For numeric aggregates (`sum`, `avg`, `min`, `max`) over an empty result set, the property resolves to `null` rather than a number. `$count` resolves to `0`. Plan your UI for these cases when filtering can produce empty groups.
 
 ### Advanced Examples
 
 ```tsx
+import { Employee } from "@my/osdk";
 import type { DerivedProperty } from "@osdk/client";
+import { useOsdkObjects } from "@osdk/react";
 
 const { data } = useOsdkObjects(Employee, {
   where: { department: "Engineering" },
@@ -292,11 +304,9 @@ const { data } = useOsdkObjects(Employee, {
         .pivotTo("reports")
         .aggregate("$count"),
 
-    // Aggregate a specific property
+    // Aggregate a specific property — `propertyName:metric` keys
     avgReportSalary: (base: DerivedProperty.Builder<Employee, false>) =>
-      base.pivotTo("reports")
-        .selectProperty("salary")
-        .aggregate("$avg"),
+      base.pivotTo("reports").aggregate("salary:avg"),
   },
 });
 ```
@@ -306,7 +316,9 @@ const { data } = useOsdkObjects(Employee, {
 You can filter on derived properties in your where clause:
 
 ```tsx
+import { Employee } from "@my/osdk";
 import type { DerivedProperty } from "@osdk/client";
+import { useOsdkObjects } from "@osdk/react";
 
 const { data } = useOsdkObjects(Employee, {
   withProperties: {
@@ -324,15 +336,13 @@ const { data } = useOsdkObjects(Employee, {
 
 ## useOsdkFunction
 
-*Experimental - import from `@osdk/react/experimental`*
-
 Execute and observe functions with request deduplication and configurable dependency tracking for automatic refetching.
 
 ### Basic Usage
 
 ```tsx
 import { addOne } from "@my/osdk";
-import { useOsdkFunction } from "@osdk/react/experimental";
+import { useOsdkFunction } from "@osdk/react";
 
 function AddOneDemo() {
   const { data, isLoading, error } = useOsdkFunction(addOne, {
@@ -355,7 +365,7 @@ function AddOneDemo() {
 
 ```tsx
 import { getTodoCount } from "@my/osdk";
-import { useOsdkFunction } from "@osdk/react/experimental";
+import { useOsdkFunction } from "@osdk/react";
 
 function TodoCount() {
   const { data, isLoading } = useOsdkFunction(getTodoCount);
@@ -375,7 +385,7 @@ Automatically refetch when actions modify objects of specified types:
 
 ```tsx
 import { Employee, getEmployeeMetrics } from "@my/osdk";
-import { useOsdkFunction } from "@osdk/react/experimental";
+import { useOsdkFunction } from "@osdk/react";
 
 function EmployeeMetrics({ departmentId }: { departmentId: string }) {
   const { data, isLoading, refetch } = useOsdkFunction(getEmployeeMetrics, {
@@ -399,7 +409,7 @@ For finer-grained control, depend on specific object instances:
 
 ```tsx
 import { Employee, getEmployeeReport } from "@my/osdk";
-import { useOsdkFunction, useOsdkObject } from "@osdk/react/experimental";
+import { useOsdkFunction } from "@osdk/react";
 
 function EmployeeReport({ employee }: { employee: Employee.OsdkInstance }) {
   const { data, isLoading } = useOsdkFunction(getEmployeeReport, {
@@ -422,7 +432,7 @@ Use `enabled` to control when the function executes:
 
 ```tsx
 import { Employee, getEmployeeReport } from "@my/osdk";
-import { useOsdkFunction, useOsdkObject } from "@osdk/react/experimental";
+import { useOsdkFunction, useOsdkObject } from "@osdk/react";
 
 function ConditionalReport({ employeeId }: { employeeId: string }) {
   const { object: employee } = useOsdkObject(Employee, employeeId);
@@ -466,15 +476,13 @@ function ConditionalReport({ employeeId }: { employeeId: string }) {
 
 ## useOsdkAggregation
 
-*Experimental - import from `@osdk/react/experimental`*
-
 Server-side grouping and aggregation.
 
 ### Simple Aggregation
 
 ```tsx
 import { Todo } from "@my/osdk";
-import { useOsdkAggregation } from "@osdk/react/experimental";
+import { useOsdkAggregation } from "@osdk/react";
 
 function TodoStats() {
   const { data, isLoading, error } = useOsdkAggregation(Todo, {
@@ -510,7 +518,7 @@ function TodoStats() {
 
 ```tsx
 import { Todo } from "@my/osdk";
-import { useOsdkAggregation } from "@osdk/react/experimental";
+import { useOsdkAggregation } from "@osdk/react";
 
 function TodosByStatus() {
   const { data, isLoading } = useOsdkAggregation(Todo, {
@@ -545,7 +553,7 @@ function TodosByStatus() {
 
 ```tsx
 import { Todo } from "@my/osdk";
-import { useOsdkAggregation } from "@osdk/react/experimental";
+import { useOsdkAggregation } from "@osdk/react";
 
 function HighPriorityStats() {
   const { data, isLoading } = useOsdkAggregation(Todo, {
@@ -574,6 +582,7 @@ function HighPriorityStats() {
 The `$select` object uses a special key format where each key is a metric and each value is an ordering directive (`"unordered"`, `"asc"`, or `"desc"`). When using `$groupBy`, the ordering determines the order results are returned.
 
 **Key formats:**
+
 - `$count` - Count of objects
 - `"propertyName:sum"` - Sum of a numeric property
 - `"propertyName:avg"` - Average of a numeric property
@@ -602,7 +611,7 @@ The `$select` object uses a special key format where each key is a metric and ea
 
 ## useOsdkMetadata
 
-*Stable - import from `@osdk/react`*
+_Stable - import from `@osdk/react`_
 
 Fetch metadata about object types or interfaces.
 

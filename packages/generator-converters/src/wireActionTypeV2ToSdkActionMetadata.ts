@@ -20,6 +20,7 @@ import type {
   ActionParameterV2,
   ActionTypeV2,
 } from "@osdk/foundry.ontologies";
+import { GeneratorError } from "./GeneratorError.js";
 import { getModifiedEntityTypes } from "./getEditedEntities.js";
 import {
   ensureStringEnumSupportedOrUndefined,
@@ -119,9 +120,9 @@ function actionPropertyToSdkPropertyDefinition(
         ),
       };
     default:
-      throw new Error(
-        `Unsupported action parameter type: ${JSON.stringify(parameterType)}`,
-      );
+      throw new GeneratorError("Unsupported action parameter type", {
+        parameterType: JSON.stringify(parameterType),
+      });
   }
 }
 

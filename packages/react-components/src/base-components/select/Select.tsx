@@ -105,6 +105,11 @@ function SelectPositioner({
     <BaseUISelect.Positioner
       className={classnames(styles.osdkSelectPositioner, className)}
       sideOffset={4}
+      /* Disable Base UI's default behavior of aligning the selected item in
+         the popup with the trigger. This causes layout jumps when the popup
+         opens because the list scrolls to center the selected item. A static
+         dropdown position below the trigger is more predictable. */
+      alignItemWithTrigger={false}
       {...rest}
     >
       {children}

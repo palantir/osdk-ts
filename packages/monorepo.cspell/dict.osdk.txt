@@ -23,6 +23,7 @@ Pressable
 psdk
 siteasset
 superrepo
+superrepos
 Tamagui
 themabiltiy
 timecode
@@ -31,3 +32,5 @@ widgetregistry
 widgetset
 dsmtClient
 sidc
+Summarise
+chatcmpl

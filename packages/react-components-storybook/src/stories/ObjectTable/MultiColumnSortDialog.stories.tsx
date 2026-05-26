@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { MultiColumnSortDialogProps } from "@osdk/react-components/experimental";
-import { MultiColumnSortDialog } from "@osdk/react-components/experimental";
+import type { MultiColumnSortDialogProps } from "@osdk/react-components/experimental/object-table";
+import { MultiColumnSortDialog } from "@osdk/react-components/experimental/object-table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
 
@@ -29,7 +29,7 @@ const SAMPLE_COLUMNS: MultiColumnSortDialogProps["columnOptions"] = [
 ];
 
 const meta: Meta<MultiColumnSortDialogProps> = {
-  title: "Experimental/ObjectTable/Building Blocks/MultiColumnSortDialog",
+  title: "Beta/ObjectTable/Building Blocks/MultiColumnSortDialog",
   component: MultiColumnSortDialog,
   args: {
     isOpen: true,
@@ -85,7 +85,7 @@ export const Default: Story = {
     docs: {
       source: {
         code:
-          `import { MultiColumnSortDialog } from "@osdk/react-components/experimental";
+          `import { MultiColumnSortDialog } from "@osdk/react-components/experimental/object-table";
 
 const [isOpen, setIsOpen] = useState(false);
 

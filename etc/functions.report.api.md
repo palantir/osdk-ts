@@ -10,6 +10,7 @@ import type { CompileTimeMetadata } from '@osdk/client';
 import { Geometry } from 'geojson';
 import type { GroupId as GroupId_2 } from '@osdk/foundry.core';
 import type { InterfaceDefinition } from '@osdk/client';
+import type { Media } from '@osdk/client';
 import { MediaReference } from '@osdk/client';
 import { MediaUpload } from '@osdk/client';
 import type { ObjectMetadata } from '@osdk/client';
@@ -28,7 +29,9 @@ declare namespace Aliases {
         custom,
         Custom,
         model,
-        Model
+        Model,
+        source,
+        Source
     }
 }
 
@@ -233,6 +236,15 @@ export interface RidLinkTarget {
     type: "rid";
 }
 
+// @public (undocumented)
+interface Source {
+    	// (undocumented)
+    rid: string;
+}
+
+// @public (undocumented)
+function source(alias: string): Source;
+
 export { ThreeDimensionalAggregation }
 
 // @public (undocumented)
@@ -243,7 +255,7 @@ export type TimestampISOString<T extends string = string> = T & {
 export { TwoDimensionalAggregation }
 
 // @public (undocumented)
-export function uploadMedia(client: Client, mediaUpload: MediaUpload): Promise<MediaReference>;
+export function uploadMedia(client: Client, mediaUpload: MediaUpload): Promise<Media>;
 
 // @public (undocumented)
 export interface UrlLinkTarget {

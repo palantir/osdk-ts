@@ -33,7 +33,7 @@ describe("RadioButtonsField", () => {
 
       expect(screen.getAllByRole("radio")).toHaveLength(3);
       for (const option of STRING_OPTIONS) {
-        expect(screen.getByText(option.label)).toBeDefined();
+        expect(screen.getByRole("radio", { name: option.label })).toBeDefined();
       }
     });
   });
@@ -63,6 +63,28 @@ describe("RadioButtonsField", () => {
 
       expect(onChange).toHaveBeenCalledWith("blue");
     });
+
+    it("marks radios disabled and blocks selection when disabled", () => {
+      const onChange = vi.fn();
+      render(
+        <RadioButtonsField
+          value="red"
+          options={STRING_OPTIONS}
+          onChange={onChange}
+          disabled={true}
+        />,
+      );
+
+      const radios = screen.getAllByRole("radio");
+      for (const radio of radios) {
+        expect(radio.getAttribute("aria-disabled")).toBe("true");
+        expect(radio.getAttribute("tabindex")).toBe("-1");
+      }
+
+      fireEvent.click(radios[2]);
+
+      expect(onChange).not.toHaveBeenCalled();
+    });
   });
 
   describe("null value", () => {
@@ -73,6 +95,28 @@ describe("RadioButtonsField", () => {
       for (const radio of radios) {
         expect(radio.getAttribute("aria-checked")).toBe("false");
       }
+    });
+  });
+
+  describe("orientation", () => {
+    it("sets horizontal orientation when specified", () => {
+      render(
+        <RadioButtonsField
+          value="red"
+          options={STRING_OPTIONS}
+          orientation="horizontal"
+        />,
+      );
+
+      const radioGroup = screen.getByRole("radiogroup");
+      expect(radioGroup.getAttribute("data-orientation")).toBe("horizontal");
+    });
+
+    it("defaults to vertical orientation", () => {
+      render(<RadioButtonsField value="red" options={STRING_OPTIONS} />);
+
+      const radioGroup = screen.getByRole("radiogroup");
+      expect(radioGroup.getAttribute("data-orientation")).toBe("vertical");
     });
   });
 

@@ -20,11 +20,13 @@
 import { promises as fs } from "fs";
 import path from "path";
 import postcss from "postcss";
+import postcssImport from "postcss-import";
 import postcssModules from "postcss-modules";
 import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const buildDir = path.join(__dirname, "..", "build", "browser");
+const srcDir = path.join(__dirname, "..", "src");
 
 async function findCssModules(dir) {
   const entries = await fs.readdir(dir, { withFileTypes: true });
@@ -75,9 +77,22 @@ async function rewriteCssImports() {
   }
 }
 
+async function buildTokenCss() {
+  const tokensEntry = path.join(srcDir, "tokens.css");
+  const content = await fs.readFile(tokensEntry, "utf8");
+  const result = await postcss([postcssImport()]).process(content, {
+    from: tokensEntry,
+  });
+  return result.css;
+}
+
 async function processCssModules() {
+  // Build token CSS from src/tokens.css (resolves all @import chains)
+  const tokenCss = await buildTokenCss();
+
+  // Process component CSS modules
   const cssFiles = await findCssModules(buildDir);
-  let combinedCss = "/* @osdk/react-components - Combined styles */\n\n";
+  let componentCss = "/* @osdk/react-components - Component styles */\n\n";
 
   for (const cssFile of cssFiles) {
     const content = await fs.readFile(cssFile, "utf8");
@@ -102,10 +117,24 @@ export default styles;
     await fs.writeFile(cssFile + ".js", jsContent, "utf8");
 
     // Add to combined CSS
-    combinedCss += `/* ${relativePath} */\n${result.css}\n\n`;
+    componentCss += `/* ${relativePath} */\n${result.css}\n\n`;
   }
 
-  // Write combined CSS file
+  // Write combined styles.css with CSS layers
+  const combinedCss =
+    `/* @osdk/react-components - Combined styles with design tokens */
+
+@layer osdk.tokens, osdk.components;
+
+@layer osdk.tokens {
+${tokenCss}
+}
+
+@layer osdk.components {
+${componentCss}
+}
+`;
+
   await fs.writeFile(path.join(buildDir, "styles.css"), combinedCss, "utf8");
 
   // Rewrite imports in JS files

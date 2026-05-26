@@ -17,21 +17,36 @@
 import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import React, { memo, useCallback } from "react";
 import { ContainsTextInput } from "./base/inputs/ContainsTextInput.js";
+import type { MultiSelectInputLayout } from "./base/inputs/MultiSelectInput.js";
 import { ToggleInput } from "./base/inputs/ToggleInput.js";
 import type { FilterDefinitionUnion } from "./FilterListApi.js";
 import type { FilterState } from "./FilterListItemApi.js";
 import { LinkedPropertyInput } from "./inputs/LinkedPropertyInput.js";
 import { PropertyFilterInput } from "./inputs/PropertyFilterInput.js";
+import { StaticValuesFilterInput } from "./inputs/StaticValuesFilterInput.js";
+import type { LinkedFilter } from "./types/LinkedFilterTypes.js";
 
-interface FilterInputProps<Q extends ObjectTypeDefinition> {
+export interface FilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
   objectSet?: ObjectSet<Q>;
   definition: FilterDefinitionUnion<Q>;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
+  /** Per-filter excluding-self where clause (direct filters only). */
   whereClause: WhereClause<Q>;
+  /** Per-filter excluding-self linked-filter records. */
+  linkedFilters?: ReadonlyArray<LinkedFilter<Q>>;
+  showFilteredOutValues?: boolean;
   searchQuery?: string;
   excludeRowOpen?: boolean;
+  /**
+   * Layout for `MULTI_SELECT` filter components. Pass `"inline"` when this
+   * input renders inside a popover (or any container where chips would feel
+   * redundant) so the value list is always visible. Defaults to `"dropdown"`,
+   * which renders chips + a portaled Combobox popup. Ignored by other
+   * filter components.
+   */
+  layout?: MultiSelectInputLayout;
 }
 
 function FilterInputInner<Q extends ObjectTypeDefinition>({
@@ -41,34 +56,11 @@ function FilterInputInner<Q extends ObjectTypeDefinition>({
   filterState,
   onFilterStateChanged,
   whereClause,
+  linkedFilters,
+  showFilteredOutValues,
   searchQuery,
   excludeRowOpen,
-}: FilterInputProps<Q>): React.ReactElement {
-  return (
-    <FilterInputContent
-      objectType={objectType}
-      objectSet={objectSet}
-      definition={definition}
-      filterState={filterState}
-      onFilterStateChanged={onFilterStateChanged}
-      whereClause={whereClause}
-      searchQuery={searchQuery}
-      excludeRowOpen={excludeRowOpen}
-    />
-  );
-}
-
-export const FilterInput = memo(FilterInputInner) as typeof FilterInputInner;
-
-function FilterInputContent<Q extends ObjectTypeDefinition>({
-  objectType,
-  objectSet,
-  definition,
-  filterState,
-  onFilterStateChanged,
-  whereClause,
-  searchQuery,
-  excludeRowOpen,
+  layout,
 }: FilterInputProps<Q>): React.ReactElement {
   switch (definition.type) {
     case "HAS_LINK":
@@ -89,7 +81,11 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
           definition={definition}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
+          whereClause={whereClause}
+          linkedFilters={linkedFilters}
+          showFilteredOutValues={showFilteredOutValues}
           searchQuery={searchQuery}
+          layout={layout}
         />
       );
     }
@@ -133,8 +129,23 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
           whereClause={whereClause}
+          linkedFilters={linkedFilters}
+          showFilteredOutValues={showFilteredOutValues}
           searchQuery={searchQuery}
           excludeRowOpen={excludeRowOpen}
+          layout={layout}
+        />
+      );
+
+    case "STATIC_VALUES":
+      return (
+        <StaticValuesFilterInput
+          definition={definition}
+          filterState={filterState}
+          onFilterStateChanged={onFilterStateChanged}
+          searchQuery={searchQuery}
+          excludeRowOpen={excludeRowOpen}
+          layout={layout}
         />
       );
 
@@ -142,6 +153,8 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
       return <div data-unsupported="true">Unsupported filter type</div>;
   }
 }
+
+export const FilterInput = memo(FilterInputInner) as typeof FilterInputInner;
 
 interface HasLinkInputProps {
   filterState: FilterState | undefined;

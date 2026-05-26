@@ -26,7 +26,14 @@ const sidebars: SidebarsConfig = {
       items: [
         "ObjectTable",
         "FilterList",
+        "ActionForm",
         "PdfViewer",
+        "DocumentViewer",
+        "EmailViewer",
+        "ExcelViewer",
+        "ImageViewer",
+        "VideoViewer",
+        "XmlViewer",
       ],
     },
     {

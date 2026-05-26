@@ -8,14 +8,32 @@ These components are OSDK-aware — pass in marking IDs, and they handle data lo
 
 ## Installation
 
+> If your tooling already installs dependencies, skip this section.
+
+Use whichever package manager your project uses:
+
 ```sh
+# npm
 npm install @osdk/cbac-components@beta
+
+# pnpm
+pnpm add @osdk/cbac-components@beta
+
+# yarn
+yarn add @osdk/cbac-components@beta
 ```
 
 **Peer Dependencies:**
 
 ```sh
+# npm
 npm install react react-dom classnames @osdk/react @osdk/react-components
+
+# pnpm
+pnpm add react react-dom classnames @osdk/react @osdk/react-components
+
+# yarn
+yarn add react react-dom classnames @osdk/react @osdk/react-components
 ```
 
 - `react`, `@types/react`, `react-dom` - React 17, 18, or 19
@@ -26,22 +44,22 @@ npm install react react-dom classnames @osdk/react @osdk/react-components
 **Prerequisites:**
 
 - A configured OSDK client
-- An OsdkProvider2 wrapping your application
+- An OsdkProvider wrapping your application
 
 ## Setup
 
 ### App Setup
 
-**REQUIRED:** Wrap app with OsdkProvider2:
+**REQUIRED:** Wrap app with OsdkProvider:
 
 ```tsx
 import { createClient } from "@osdk/client";
-import { OsdkProvider2 } from "@osdk/react/experimental";
+import { OsdkProvider } from "@osdk/react";
 
 const client = createClient(/* config */);
 
 function App() {
-  return <OsdkProvider2 client={client}>{/* components */}</OsdkProvider2>;
+  return <OsdkProvider client={client}>{/* components */}</OsdkProvider>;
 }
 ```
 
@@ -56,11 +74,10 @@ Add the CBAC component styles to your application's entry CSS file:
 If using CSS layers with `@osdk/react-components`:
 
 ```css
-@layer osdk.tokens, osdk.components;
+@layer osdk.styles;
 
-@import "@osdk/react-components-styles" layer(osdk.tokens);
-@import "@osdk/react-components/styles.css" layer(osdk.components);
-@import "@osdk/cbac-components/styles.css" layer(osdk.components);
+@import "@osdk/react-components/styles.css" layer(osdk.styles);
+@import "@osdk/cbac-components/styles.css" layer(osdk.styles);
 ```
 
 ## Components

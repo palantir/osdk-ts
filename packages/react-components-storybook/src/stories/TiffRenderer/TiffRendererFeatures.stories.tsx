@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { TiffRendererProps } from "@osdk/react-components/experimental";
-import { TiffRenderer } from "@osdk/react-components/experimental";
+import type { TiffRendererProps } from "@osdk/react-components/experimental/tiff-renderer";
+import { TiffRenderer } from "@osdk/react-components/experimental/tiff-renderer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
 
@@ -102,8 +102,7 @@ function createSampleTiffBytes(): Uint8Array {
 const sampleTiffBytes = createSampleTiffBytes();
 
 const meta: Meta<TiffRendererProps> = {
-  title: "Experimental/TiffRenderer",
-  tags: ["experimental"],
+  title: "Beta/DocumentViewer/Renderers/TiffRenderer",
   component: TiffRenderer,
   args: {
     content: sampleTiffBytes,
@@ -134,12 +133,12 @@ const meta: Meta<TiffRendererProps> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
+export const WithContent: Story = {
   parameters: {
     docs: {
       source: {
         code:
-          `import { TiffRenderer } from "@osdk/react-components/experimental";
+          `import { TiffRenderer } from "@osdk/react-components/experimental/tiff-renderer";
 
 <TiffRenderer content={tiffBytes} />`,
       },
@@ -155,7 +154,7 @@ export const WithErrorCallback: Story = {
     docs: {
       source: {
         code:
-          `import { TiffRenderer } from "@osdk/react-components/experimental";
+          `import { TiffRenderer } from "@osdk/react-components/experimental/tiff-renderer";
 
 <TiffRenderer content={tiffBytes} onError={() => console.error("TIFF render failed")} />`,
       },

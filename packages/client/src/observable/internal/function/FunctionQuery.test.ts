@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { addOne, Employee } from "@osdk/client.test.ontology";
+import { addOne, Employee, Todo } from "@osdk/client.test.ontology";
 import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
 import type { MockedObject } from "vitest";
 import {
@@ -361,5 +361,91 @@ describe("FunctionQuery", () => {
     expect(revalidatePromise).toBeInstanceOf(Promise);
 
     subscription.unsubscribe();
+  });
+
+  describe("per-PK and per-type invalidation reaches function caches", () => {
+    it("invalidateObject fires functions with dependsOnObjects on that PK", async () => {
+      const subFn = mockFunctionSubCallback();
+
+      const subscription = store.functions.observe(
+        {
+          queryDef: addOne,
+          params: { n: 2 },
+          dependsOnObjects: [{ $apiName: Todo.apiName, $primaryKey: 0 }],
+          dedupeInterval: 0,
+        },
+        subFn,
+      );
+
+      await waitForCall(subFn, 2);
+      expect(subFn.next).toHaveBeenLastCalledWith(
+        expect.objectContaining({ status: "loaded", result: 3 }),
+      );
+
+      subFn.next.mockClear();
+
+      await store.invalidateObject(Todo, 0);
+
+      await vi.waitFor(() => {
+        expect(subFn.next).toHaveBeenCalled();
+      });
+
+      subscription.unsubscribe();
+    });
+
+    it("invalidateObjectType fires functions with dependsOn on that type", async () => {
+      const subFn = mockFunctionSubCallback();
+
+      const subscription = store.functions.observe(
+        {
+          queryDef: addOne,
+          params: { n: 2 },
+          dependsOn: [Todo.apiName],
+          dedupeInterval: 0,
+        },
+        subFn,
+      );
+
+      await waitForCall(subFn, 2);
+      expect(subFn.next).toHaveBeenLastCalledWith(
+        expect.objectContaining({ status: "loaded", result: 3 }),
+      );
+
+      subFn.next.mockClear();
+
+      await store.invalidateObjectType(Todo, undefined);
+
+      await vi.waitFor(() => {
+        expect(subFn.next).toHaveBeenCalled();
+      });
+
+      subscription.unsubscribe();
+    });
+
+    it("invalidateObject for an unrelated PK does not fire dependsOnObjects functions", async () => {
+      const subFn = mockFunctionSubCallback();
+
+      const subscription = store.functions.observe(
+        {
+          queryDef: addOne,
+          params: { n: 2 },
+          dependsOnObjects: [{ $apiName: Todo.apiName, $primaryKey: 0 }],
+          dedupeInterval: 0,
+        },
+        subFn,
+      );
+
+      await waitForCall(subFn, 2);
+      subFn.next.mockClear();
+
+      // Different PK on the same type — should not match dependsOnObjects.
+      await store.invalidateObject(Todo, 999);
+
+      // invalidateObject awaits all fan-out; the unrelated PK triggers no
+      // revalidate on this sub, so no notification can be in flight.
+      expect(subFn.next).not.toHaveBeenCalled();
+
+      subscription.unsubscribe();
+    });
   });
 });

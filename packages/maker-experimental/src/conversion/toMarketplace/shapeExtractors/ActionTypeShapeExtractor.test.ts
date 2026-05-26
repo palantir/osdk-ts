@@ -36,6 +36,9 @@ class MockBiMap<K, V> implements BiMap<K, V> {
     this.forward = new Map(entries);
     this.backward = new Map(entries.map(([k, v]) => [v, k]));
   }
+  includes(key: K): boolean {
+    return this.forward.has(key);
+  }
   asMap(): Map<K, V> {
     return this.forward;
   }
@@ -111,6 +114,8 @@ function createMockRidGenerator(
       apiName: string,
       interfaceTypeApiName: string,
     ) => `interface-prop.${interfaceTypeApiName}.${apiName}` as any,
+    generateIptRidFromSptRid: (sptRid: string) =>
+      sptRid.replace("shared-property-type", "interface-property-type") as any,
     generateStructFieldRid: (propertyApiName: string, apiName: string) =>
       `struct-field.${propertyApiName}.${apiName}` as any,
     generateDatasetLocator: (
@@ -208,6 +213,11 @@ describe("ActionTypeShapeExtractor", () => {
                 },
                 required: false,
               },
+            },
+          },
+          actionTypeLogic: {
+            logic: {
+              rules: [],
             },
           },
         } as any,
@@ -319,6 +329,11 @@ describe("ActionTypeShapeExtractor", () => {
             status: { type: "active", active: {} },
             parameters: {},
           },
+          actionTypeLogic: {
+            logic: {
+              rules: [],
+            },
+          },
         } as any,
         parameterIds: {},
       };
@@ -399,6 +414,11 @@ describe("ActionTypeShapeExtractor", () => {
             },
             status: { type: "active", active: {} },
             parameters: {},
+          },
+          actionTypeLogic: {
+            logic: {
+              rules: [],
+            },
           },
         } as any,
         parameterIds: {},
@@ -497,6 +517,11 @@ describe("ActionTypeShapeExtractor", () => {
                 },
                 required: false,
               },
+            },
+          },
+          actionTypeLogic: {
+            logic: {
+              rules: [],
             },
           },
         } as any,
@@ -608,6 +633,11 @@ describe("ActionTypeShapeExtractor", () => {
                 },
                 required: true,
               },
+            },
+          },
+          actionTypeLogic: {
+            logic: {
+              rules: [],
             },
           },
         } as any,

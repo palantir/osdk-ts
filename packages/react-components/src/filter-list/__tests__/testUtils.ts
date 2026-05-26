@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "@osdk/api";
+import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type {
   ContainsTextFilterState,
@@ -25,6 +25,7 @@ import type {
   SelectFilterState,
   ToggleFilterState,
 } from "../FilterListItemApi.js";
+import type { StaticValuesComponentType } from "../types/StaticValuesTypes.js";
 
 export const MockObjectType = {
   apiName: "TestObject",
@@ -78,16 +79,23 @@ export function createHasLinkFilterDef(
 
 /**
  * Create a linkedProperty filter definition for testing.
+ * Pass `reverseLinkName: null` to omit it (UI-only filter); otherwise it
+ * defaults to `"reverseLink"`.
  * Cast required because LinkedPropertyFilterDefinition has complex generic constraints
  * that can't be satisfied with literal link names.
  */
 export function createLinkedPropertyFilterDef(
   linkName: string,
   linkedPropertyKey: string,
+  options: { reverseLinkName?: string | null } = {},
 ): FilterDefinitionUnion<typeof MockObjectType> {
+  const reverseLinkName: string | undefined = "reverseLinkName" in options
+    ? options.reverseLinkName ?? undefined
+    : "reverseLink";
   return {
     type: "LINKED_PROPERTY",
     linkName,
+    ...(reverseLinkName !== undefined ? { reverseLinkName } : {}),
     linkedPropertyKey,
     linkedFilterComponent: "LISTOGRAM",
     linkedFilterState: { type: "EXACT_MATCH", values: [] },
@@ -202,4 +210,28 @@ export function createDateRangeState(
     includeNull: options?.includeNull,
     isExcluding: options?.isExcluding,
   };
+}
+
+/**
+ * Create a static values filter definition for testing
+ */
+export function createStaticValuesFilterDef(
+  key: string,
+  filterComponent: StaticValuesComponentType,
+  values: string[],
+  filterState: FilterState,
+  options?: {
+    toWhereClause?: (
+      state: FilterState,
+    ) => WhereClause<typeof MockObjectType> | undefined;
+  },
+): FilterDefinitionUnion<typeof MockObjectType> {
+  return {
+    type: "STATIC_VALUES",
+    key,
+    filterComponent,
+    values,
+    filterState,
+    toWhereClause: options?.toWhereClause,
+  } as FilterDefinitionUnion<typeof MockObjectType>;
 }

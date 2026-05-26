@@ -17,7 +17,10 @@
 import { describe, expect, it } from "vitest";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
-import { buildWhereClause } from "../utils/filterStateToWhereClause.js";
+import {
+  buildWhereClause,
+  getActiveLinkedFilters,
+} from "../utils/filterStateToWhereClause.js";
 import { getFilterKey } from "../utils/getFilterKey.js";
 import type { MockObjectType } from "./testUtils.js";
 import {
@@ -26,9 +29,11 @@ import {
   createDateRangeState,
   createHasLinkFilterDef,
   createKeywordSearchFilterDef,
+  createLinkedPropertyFilterDef,
   createNumberRangeState,
   createPropertyFilterDef,
   createSelectState,
+  createStaticValuesFilterDef,
   createToggleState,
 } from "./testUtils.js";
 
@@ -453,6 +458,148 @@ describe("buildWhereClause", () => {
     expect(result).toEqual({ name: { $isNull: true } });
   });
 
+  // --- STATIC_VALUES filter tests ---
+
+  it("builds $in clause for STATIC_VALUES with EXACT_MATCH", () => {
+    const def = createStaticValuesFilterDef(
+      "status",
+      "LISTOGRAM",
+      ["Active", "Inactive"],
+      { type: "EXACT_MATCH", values: [] },
+    );
+    const filterStates = stateMap(
+      [def, { type: "EXACT_MATCH", values: ["Active", "Inactive"] }],
+    );
+    const result = buildWhereClause([def], filterStates);
+    expect(result).toEqual({ status: { $in: ["Active", "Inactive"] } });
+  });
+
+  it("builds single value clause for STATIC_VALUES with one selected", () => {
+    const def = createStaticValuesFilterDef(
+      "status",
+      "LISTOGRAM",
+      ["Active", "Inactive"],
+      { type: "EXACT_MATCH", values: [] },
+    );
+    const filterStates = stateMap(
+      [def, { type: "EXACT_MATCH", values: ["Active"] }],
+    );
+    const result = buildWhereClause([def], filterStates);
+    expect(result).toEqual({ status: "Active" });
+  });
+
+  it("returns empty object for STATIC_VALUES with no selections", () => {
+    const def = createStaticValuesFilterDef(
+      "status",
+      "LISTOGRAM",
+      ["Active", "Inactive"],
+      { type: "EXACT_MATCH", values: [] },
+    );
+    const filterStates = stateMap(
+      [def, { type: "EXACT_MATCH", values: [] }],
+    );
+    const result = buildWhereClause([def], filterStates);
+    expect(result).toEqual({});
+  });
+
+  it("wraps with $not for STATIC_VALUES with isExcluding", () => {
+    const def = createStaticValuesFilterDef(
+      "status",
+      "LISTOGRAM",
+      ["Active", "Inactive"],
+      { type: "EXACT_MATCH", values: [] },
+    );
+    const filterStates = stateMap(
+      [def, { type: "EXACT_MATCH", values: ["Active"], isExcluding: true }],
+    );
+    const result = buildWhereClause([def], filterStates);
+    expect(result).toEqual({ $not: { status: "Active" } });
+  });
+
+  it("builds SELECT clause for STATIC_VALUES SINGLE_SELECT", () => {
+    const def = createStaticValuesFilterDef(
+      "priority",
+      "SINGLE_SELECT",
+      ["High", "Medium", "Low"],
+      { type: "SELECT", selectedValues: [] },
+    );
+    const filterStates = stateMap(
+      [def, createSelectState(["High"])],
+    );
+    const result = buildWhereClause([def], filterStates);
+    expect(result).toEqual({ priority: "High" });
+  });
+
+  it("builds $in for STATIC_VALUES MULTI_SELECT", () => {
+    const def = createStaticValuesFilterDef(
+      "team",
+      "MULTI_SELECT",
+      ["Alpha", "Beta", "Gamma"],
+      { type: "SELECT", selectedValues: [] },
+    );
+    const filterStates = stateMap(
+      [def, createSelectState(["Alpha", "Beta"])],
+    );
+    const result = buildWhereClause([def], filterStates);
+    expect(result).toEqual({ team: { $in: ["Alpha", "Beta"] } });
+  });
+
+  it("builds $in for STATIC_VALUES TEXT_TAGS", () => {
+    const def = createStaticValuesFilterDef(
+      "tags",
+      "TEXT_TAGS",
+      ["urgent", "blocked", "ready"],
+      { type: "EXACT_MATCH", values: [] },
+    );
+    const filterStates = stateMap(
+      [def, { type: "EXACT_MATCH", values: ["urgent", "blocked"] }],
+    );
+    const result = buildWhereClause([def], filterStates);
+    expect(result).toEqual({ tags: { $in: ["urgent", "blocked"] } });
+  });
+
+  it("calls toWhereClause for STATIC_VALUES when provided", () => {
+    const def = createStaticValuesFilterDef(
+      "status",
+      "LISTOGRAM",
+      ["Yes", "No"],
+      { type: "EXACT_MATCH", values: [] },
+      {
+        toWhereClause: (state) => {
+          if (
+            state.type === "EXACT_MATCH"
+            && (state.values as string[]).includes("Yes")
+          ) {
+            return { active: true };
+          }
+          return undefined;
+        },
+      },
+    );
+    const filterStates = stateMap(
+      [def, { type: "EXACT_MATCH", values: ["Yes"] }],
+    );
+    const result = buildWhereClause([def], filterStates);
+    expect(result).toEqual({ active: true });
+  });
+
+  it("returns empty for STATIC_VALUES toWhereClause returning undefined", () => {
+    const def = createStaticValuesFilterDef(
+      "status",
+      "LISTOGRAM",
+      ["Yes", "No"],
+      { type: "EXACT_MATCH", values: [] },
+      {
+        toWhereClause: () => undefined,
+      },
+    );
+    const filterStates = stateMap(
+      [def, { type: "EXACT_MATCH", values: ["Yes"] }],
+    );
+    const result = buildWhereClause([def], filterStates);
+    expect(result).toEqual({});
+  });
+
   it("preserves state when filters are reordered", () => {
     const nameDef = createPropertyFilterDef(
       "name",
@@ -478,5 +625,124 @@ describe("buildWhereClause", () => {
     expect(result2).toEqual({
       $and: [{ active: true }, { name: "John" }],
     });
+  });
+});
+
+describe("getActiveLinkedFilters", () => {
+  function linkedState(
+    values: (string | boolean)[],
+    isExcluding = false,
+  ): FilterState {
+    return {
+      type: "linkedProperty",
+      linkedFilterState: {
+        type: "EXACT_MATCH",
+        values,
+        ...(isExcluding ? { isExcluding } : {}),
+      },
+    };
+  }
+
+  it("returns empty array for undefined definitions", () => {
+    expect(
+      getActiveLinkedFilters(undefined, new Map<string, FilterState>()),
+    ).toEqual([]);
+  });
+
+  it("returns empty array when no linked definitions are active", () => {
+    const def = createPropertyFilterDef(
+      "name",
+      "LISTOGRAM",
+      { type: "EXACT_MATCH", values: ["a"] },
+    );
+    const filterStates = stateMap(
+      [def, { type: "EXACT_MATCH", values: ["a"] }],
+    );
+    expect(getActiveLinkedFilters([def], filterStates)).toEqual([]);
+  });
+
+  it("builds an entry for an active linked filter with reverseLinkName", () => {
+    const def = createLinkedPropertyFilterDef("manager", "fullName");
+    const filterStates = stateMap([def, linkedState(["Alice"])]);
+
+    const result = getActiveLinkedFilters([def], filterStates);
+
+    expect(result).toEqual([{
+      linkName: "manager",
+      reverseLinkName: "reverseLink",
+      innerWhere: { fullName: "Alice" },
+    }]);
+  });
+
+  it("builds $in clause for multi-value linked selection", () => {
+    const def = createLinkedPropertyFilterDef("manager", "fullName");
+    const filterStates = stateMap([def, linkedState(["Alice", "Bob"])]);
+
+    const result = getActiveLinkedFilters([def], filterStates);
+
+    expect(result).toHaveLength(1);
+    expect(result[0].innerWhere).toEqual({
+      fullName: { $in: ["Alice", "Bob"] },
+    });
+  });
+
+  it("wraps innerWhere with $not when isExcluding", () => {
+    const def = createLinkedPropertyFilterDef("manager", "fullName");
+    const filterStates = stateMap([def, linkedState(["Alice"], true)]);
+
+    const result = getActiveLinkedFilters([def], filterStates);
+
+    expect(result).toHaveLength(1);
+    expect(result[0].innerWhere).toEqual({ $not: { fullName: "Alice" } });
+  });
+
+  it("excludes linked filters without reverseLinkName", () => {
+    const def = createLinkedPropertyFilterDef(
+      "manager",
+      "fullName",
+      { reverseLinkName: null },
+    );
+    const filterStates = stateMap([def, linkedState(["Alice"])]);
+
+    expect(getActiveLinkedFilters([def], filterStates)).toEqual([]);
+  });
+
+  it("excludes linked filters with empty values", () => {
+    const def = createLinkedPropertyFilterDef("manager", "fullName");
+    const filterStates = stateMap([def, linkedState([])]);
+
+    expect(getActiveLinkedFilters([def], filterStates)).toEqual([]);
+  });
+
+  it("skips filter matching excludeFilterKey", () => {
+    const def1 = createLinkedPropertyFilterDef("manager", "fullName");
+    const def2 = createLinkedPropertyFilterDef("office", "city");
+    const filterStates = stateMap(
+      [def1, linkedState(["Alice"])],
+      [def2, linkedState(["Berlin"])],
+    );
+
+    const result = getActiveLinkedFilters(
+      [def1, def2],
+      filterStates,
+      getFilterKey(def1),
+    );
+
+    expect(result).toHaveLength(1);
+    expect(result[0].linkName).toBe("office");
+  });
+
+  it("returns multiple entries when multiple linked filters are active", () => {
+    const def1 = createLinkedPropertyFilterDef("manager", "fullName");
+    const def2 = createLinkedPropertyFilterDef("office", "city");
+    const filterStates = stateMap(
+      [def1, linkedState(["Alice"])],
+      [def2, linkedState(["Berlin"])],
+    );
+
+    const result = getActiveLinkedFilters([def1, def2], filterStates);
+
+    expect(result).toHaveLength(2);
+    expect(result.map(r => r.linkName)).toEqual(["manager", "office"]);
   });
 });

@@ -14,11 +14,18 @@
  * limitations under the License.
  */
 
-export { ActionForm } from "../../action-form/ActionForm.js";
+import { ActionForm as _ActionForm } from "../../action-form/ActionForm.js";
+import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
+export const ActionForm: typeof _ActionForm = withOsdkMetrics(
+  _ActionForm,
+  "ActionForm",
+);
 export type {
   ActionFormProps,
   BaseFormProps,
+  FormContentItem,
   FormError,
+  FormSectionDefinition,
   FormState,
 } from "../../action-form/ActionFormApi.js";
 export { BaseForm } from "../../action-form/BaseForm.js";
@@ -26,9 +33,6 @@ export type {
   ActionParameters,
   BaseFormFieldProps,
   CustomFieldProps,
-  DateRange,
-  DateRangeInputFieldProps,
-  DatetimePickerFieldProps,
   DropdownFieldProps,
   FieldComponent,
   FieldValueType,
@@ -36,11 +40,14 @@ export type {
   FormFieldDefinition,
   FormFieldPropsByType,
   NumberInputFieldProps,
+  ObjectSelectFieldProps,
   ObjectSetFieldProps,
   Option,
+  PortalContainer,
   RadioButtonsFieldProps,
   RendererFieldDefinition,
   TextAreaFieldProps,
   TextInputFieldProps,
+  UnsupportedFieldProps,
   ValidationError,
 } from "../../action-form/FormFieldApi.js";

@@ -24,6 +24,10 @@
   font-family: var(--osdk-object-set-font-family);
   font-size: var(--osdk-object-set-font-size);
   line-height: var(--osdk-object-set-line-height);
+
+  &[aria-disabled="true"] {
+    opacity: var(--osdk-disabled-opacity);
+  }
 }
 
 .osdkObjectSetFieldEmpty {

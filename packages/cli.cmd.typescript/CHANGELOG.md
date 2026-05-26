@@ -1,5 +1,123 @@
 # @osdk/cli.cmd.typescript
 
+## 0.47.0
+
+### Patch Changes
+
+- Updated dependencies [9fb5afb]
+  - @osdk/generator@2.23.0
+  - @osdk/cli.common@0.47.0
+
+## 0.46.0
+
+### Patch Changes
+
+- @osdk/generator@2.22.0
+- @osdk/cli.common@0.46.0
+
+## 0.45.0
+
+### Patch Changes
+
+- Updated dependencies [1a07c91]
+  - @osdk/generator@2.21.0
+  - @osdk/cli.common@0.45.0
+
+## 0.44.0
+
+### Patch Changes
+
+- @osdk/generator@2.20.0
+- @osdk/cli.common@0.44.0
+
+## 0.43.0
+
+### Patch Changes
+
+- Updated dependencies [02c796c]
+  - @osdk/generator@2.19.0
+  - @osdk/cli.common@0.43.0
+
+## 0.42.0
+
+### Patch Changes
+
+- @osdk/generator@2.18.0
+- @osdk/cli.common@0.42.0
+
+## 0.41.0
+
+### Patch Changes
+
+- @osdk/generator@2.17.0
+- @osdk/cli.common@0.41.0
+
+## 0.40.0
+
+### Minor Changes
+
+- 56c5630: Drop redundant `--config $(find-up dprint.json)` from `lint`, `fix-lint`, and `format` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the substitution was a no-op anyway since `find-up` is an npm package, not a CLI. Also fix the `uploadMediaOntologyEdits` documentation example so its `// @ts-ignore` survives dprint reformatting (the broken `format` step had been masking this).
+
+### Patch Changes
+
+- Updated dependencies [56c5630]
+  - @osdk/cli.common@0.40.0
+  - @osdk/generator@2.16.0
+  - @osdk/shared.client.impl@1.12.0
+
+## 0.39.0
+
+### Patch Changes
+
+- @osdk/generator@2.15.0
+- @osdk/cli.common@0.39.0
+
+## 0.38.0
+
+### Patch Changes
+
+- @osdk/generator@2.14.0
+- @osdk/cli.common@0.38.0
+
+## 0.37.0
+
+### Patch Changes
+
+- @osdk/generator@2.13.0
+- @osdk/cli.common@0.37.0
+
+## 0.36.0
+
+### Patch Changes
+
+- Updated dependencies [df1a4f8]
+- Updated dependencies [df1a4f8]
+  - @osdk/cli.common@0.36.0
+  - @osdk/shared.client.impl@1.11.0
+  - @osdk/generator@2.12.0
+
+## 0.35.0
+
+### Patch Changes
+
+- @osdk/generator@2.11.0
+- @osdk/cli.common@0.35.0
+
+## 0.34.0
+
+### Minor Changes
+
+- 29ab35a: Use workspace:^ for peer dependencies to prevent changesets from propagating major bumps when a peer dep receives a minor version change. The internal codegen (`osdk-unstable-typescript generate --internal`) now emits `workspace:^` for peer deps while keeping `workspace:~` for regular/dev deps.
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [29ab35a]
+- Updated dependencies [f01a8f4]
+  - @osdk/generator@2.10.0
+  - @osdk/shared.client.impl@1.10.0
+  - @osdk/cli.common@0.34.0
+
 ## 0.33.0
 
 ### Minor Changes

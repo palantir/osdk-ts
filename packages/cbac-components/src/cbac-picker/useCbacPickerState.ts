@@ -19,7 +19,7 @@ import {
   useCbacMarkingRestrictions,
   useMarkingCategories,
   useMarkings,
-} from "@osdk/react/experimental/admin";
+} from "@osdk/react/platform-apis";
 import React from "react";
 import type {
   CategoryMarkingGroup,

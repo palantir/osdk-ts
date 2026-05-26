@@ -14,23 +14,20 @@
  * limitations under the License.
  */
 
-import {
-  defaultConfig,
-  type TagBadgeParameters,
-} from "storybook-addon-tag-badges/manager-helpers";
+import type { TagBadgeParameters } from "storybook-addon-tag-badges/manager-helpers";
 import { addons } from "storybook/manager-api";
 
 addons.setConfig({
   tagBadges: [
     {
-      tags: "experimental",
+      tags: "beta",
       badge: {
-        text: "Experimental",
+        text: "Beta",
         style: {
           backgroundColor: "rgba(143, 153, 168, .15)",
           color: "#1c2127",
         },
-        tooltip: "This component is experimental and may change",
+        tooltip: "This component is in beta and may change",
       },
       display: {
         sidebar: [
@@ -40,7 +37,6 @@ addons.setConfig({
         toolbar: true,
       },
     },
-    ...defaultConfig,
   ] satisfies TagBadgeParameters,
 });
 
@@ -50,8 +46,7 @@ function redirectToObjectTableIfAtRoot() {
     !url.searchParams.has("path")
     && window.location.pathname === "/"
   ) {
-    window.location.href =
-      "/?path=/story/experimental-objecttable-features--default";
+    window.location.href = "/?path=/story/beta-objecttable-features--default";
   }
 }
 

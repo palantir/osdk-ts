@@ -25,6 +25,7 @@ import type {
   ObjectTypeDefinition,
   Osdk,
   PropertyKeys,
+  PropertySecurity,
   Result,
 } from "@osdk/api";
 import { isOk } from "@osdk/api";
@@ -48,6 +49,7 @@ import {
 import { beforeAll, describe, expect, expectTypeOf, it } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
+import { getWireObjectSet } from "./createObjectSet.js";
 
 type ApiNameAsString<
   T extends ObjectOrInterfaceDefinition,
@@ -296,6 +298,43 @@ describe("ObjectSet", () => {
     expect(employees.data[1].$primaryKey).toBe(stubData.employee3.employeeId);
   });
 
+  it("allows fetchPageByRid with $loadPropertySecurityMetadata", async () => {
+    const employees = await client(
+      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
+    ).fetchPageByRid(
+      Employee,
+      [stubData.unsecuredEmployee.__rid],
+      { $loadPropertySecurityMetadata: true },
+    );
+
+    expectTypeOf(employees.data[0].$propertySecurities).toMatchObjectType<
+      {
+        $primaryKey: PropertySecurity[];
+        $title: PropertySecurity[];
+        class: PropertySecurity[];
+        employeeId: PropertySecurity[];
+        fullName: PropertySecurity[];
+        office: PropertySecurity[];
+        startDate: PropertySecurity[];
+        employeeLocation: PropertySecurity[];
+        employeeSensor: PropertySecurity[];
+        employeeStatus: PropertySecurity[];
+        skillSet: PropertySecurity[];
+        skillSetEmbedding: PropertySecurity[];
+      }
+    >();
+
+    expectTypeOf(employees.data[0].$propertySecurities.class)
+      .toMatchTypeOf<PropertySecurity[]>();
+
+    expectTypeOf(employees.data[0].$propertySecurities.favoriteRestaurants)
+      .toMatchTypeOf<PropertySecurity[][]>();
+
+    expect(employees.data[0].$primaryKey).toBe(
+      stubData.unsecuredEmployee.__primaryKey,
+    );
+  });
+
   it("check struct parsing", async () => {
     const player = await client(BgaoNflPlayer).fetchOne(
       "tkelce",
@@ -451,6 +490,11 @@ describe("ObjectSet", () => {
       employeeId: { $in: ids },
     });
     expect(objectSet).toBeDefined();
+  });
+
+  it(".where({}) is a no-op (no empty-AND filter on the wire)", () => {
+    const base = client(Employee);
+    expect(getWireObjectSet(base.where({}))).toEqual(getWireObjectSet(base));
   });
 
   it("does not allow arbitrary keys when no properties", () => {
@@ -1200,6 +1244,8 @@ describe("ObjectSet", () => {
             | "skillSet"
             | "skillSetEmbedding"
             | "favoriteRestaurants"
+            | "employeeProfile"
+            | "performanceScores"
           >();
 
         expectTypeOf<
@@ -1232,6 +1278,8 @@ describe("ObjectSet", () => {
             | "skillSet"
             | "skillSetEmbedding"
             | "favoriteRestaurants"
+            | "employeeProfile"
+            | "performanceScores"
           >();
 
         // We don't have a proper definition that has

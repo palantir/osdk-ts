@@ -37,8 +37,10 @@ import type {
 } from "@osdk/client.unstable/api";
 // ParameterRid is defined in ontology-metadata but may not be re-exported through the main API
 type ParameterRid = string;
+import type { OntologyDefinition } from "@osdk/maker";
 import { createHash } from "crypto";
 import { toBlockShapeId } from "../cli/marketplaceSerialization/CodeBlockSpec.js";
+import type { InputMappingEntry } from "../cli/marketplaceSerialization/index.js";
 
 // Given a unique key generates a rid deterministically (from a lock file eventually)
 export type ReadableId = string & { __brand: "ReadableId" };
@@ -126,6 +128,9 @@ export interface OntologyRidGenerator {
     apiName: string,
     interfaceTypeApiName: string,
   ): InterfacePropertyTypeRid;
+  generateIptRidFromSptRid(
+    sptRid: string,
+  ): InterfacePropertyTypeRid;
   generateStructFieldRid(
     propertyApiName: string,
     apiName: string,
@@ -163,6 +168,7 @@ export interface BiMap<K, V> {
   asMap(): Map<K, V>;
   inverse(): BiMap<V, K>;
   entries(): IterableIterator<[K, V]>;
+  includes(key: K): boolean;
 }
 
 /**
@@ -172,6 +178,7 @@ export interface BlockShapes {
   inputShapes: Map<ReadableId, InputShape>;
   outputShapes: Map<ReadableId, OutputShape>;
   inputShapeMetadata: Map<ReadableId, InputShapeMetadata>;
+  inputMappings: InputMappingEntry[];
 }
 
 /**
@@ -305,6 +312,23 @@ export class ReadableIdGenerator {
     return `interface-property-type-${interfaceTypeApiName}-${interfacePropertyTypeApiName}` as ReadableId;
   }
 
+  static getForSptBackedInterfaceProperty(
+    sptApiName: string,
+  ): ReadableId;
+  static getForSptBackedInterfaceProperty(
+    interfaceTypeApiName: string,
+    sptApiName: string,
+  ): ReadableId;
+  static getForSptBackedInterfaceProperty(
+    arg1: string,
+    arg2?: string,
+  ): ReadableId {
+    if (arg2 !== undefined) {
+      return `interface-property-type-${arg1}-${arg2}` as ReadableId;
+    }
+    return `interface-property-type-${arg1}` as ReadableId;
+  }
+
   static getForInterfaceLinkType(
     interfaceApiName: string,
     interfaceLinkTypeApiName: string,
@@ -318,6 +342,18 @@ export class ReadableIdGenerator {
   ): ReadableId {
     return `marking-${markingId}-${supportedMarkingsType}` as ReadableId;
   }
+
+  static getForFunction(
+    functionApiName: string,
+  ): ReadableId {
+    return `function-${functionApiName}` as ReadableId;
+  }
+
+  static getForConsumedFunction(
+    functionApiName: string,
+  ): ReadableId {
+    return `consumed-function-${functionApiName}` as ReadableId;
+  }
 }
 
 export class BiMapImpl<K, V> implements BiMap<K, V> {
@@ -330,6 +366,9 @@ export class BiMapImpl<K, V> implements BiMap<K, V> {
   private constructor(forward: Map<K, V>, backward: Map<V, K>) {
     this.forward = forward;
     this.backward = backward;
+  }
+  includes(key: K): boolean {
+    return this.forward.has(key);
   }
   asMap(): Map<K, V> {
     return this.forward;
@@ -400,7 +439,17 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
   private readonly objectTypeIds: BiMap<ReadableId, string>;
   private readonly randomnessUuid?: string;
 
-  constructor(randomnessUuid?: string) {
+  constructor(importedTypes: OntologyDefinition, randomnessUuid?: string) {
+    this.objectTypeRids = BiMapImpl.create();
+
+    Object.entries(importedTypes.OBJECT_TYPE).filter(([_apiName, object]) =>
+      object.ridHint !== undefined
+    ).map(([apiName, object]) =>
+      this.objectTypeRids.put(
+        ReadableIdGenerator.getForObjectType(object.apiName),
+        object.ridHint!,
+      )
+    );
     this.randomnessUuid = randomnessUuid;
     this.geotimeSeriesIntegrationRids = BiMapImpl.create();
     this.interfaceLinkTypeRids = BiMapImpl.create();
@@ -411,7 +460,6 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
     this.sharedPropertyTypeRids = BiMapImpl.create();
     this.consumedValueTypeReferences = BiMapImpl.create();
     this.producedValueTypeReferences = new Map();
-    this.objectTypeRids = BiMapImpl.create();
     this.datasourceLocators = BiMapImpl.create();
     this.filesDatasourceLocators = BiMapImpl.create();
     this.columnShapes = BiMapImpl.create();
@@ -574,10 +622,14 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
 
   // Object Types
   generateRidForObjectType(apiName: string): ObjectTypeRid {
+    const readableId = ReadableIdGenerator.getForObjectType(apiName);
+    if (this.objectTypeRids.includes(readableId)) {
+      return this.objectTypeRids.get(readableId)!;
+    }
     const rid = `ri.ontology-metadata.temp.object-type.${
       this.hashString(apiName)
     }` as ObjectTypeRid;
-    this.objectTypeRids.put(ReadableIdGenerator.getForObjectType(apiName), rid);
+    this.objectTypeRids.put(readableId, rid);
     return rid;
   }
 
@@ -716,6 +768,15 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
       rid,
     );
     return rid;
+  }
+
+  generateIptRidFromSptRid(
+    sptRid: string,
+  ): InterfacePropertyTypeRid {
+    return sptRid.replace(
+      "shared-property-type",
+      "interface-property-type",
+    ) as InterfacePropertyTypeRid;
   }
 
   // Struct Field RIDs

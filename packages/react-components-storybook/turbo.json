@@ -6,16 +6,14 @@
   "tasks": {
     "dev": {
       "dependsOn": [
-        "@osdk/react-components#transpileBrowser",
-        "@osdk/react-components-styles#build"
+        "@osdk/react-components#transpileBrowser"
       ],
       "cache": false,
       "persistent": true
     },
     "build": {
       "dependsOn": [
-        "@osdk/react-components#transpileBrowser",
-        "@osdk/react-components-styles#build"
+        "@osdk/react-components#transpileBrowser"
       ],
       "outputs": [
         "storybook-static/**"

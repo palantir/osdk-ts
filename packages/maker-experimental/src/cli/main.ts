@@ -18,11 +18,13 @@ import type {
   LinkTypeBlockDataV2,
   ObjectTypeBlockDataV2,
 } from "@osdk/client.unstable";
+import { OntologyIrToFullMetadataConverter } from "@osdk/generator-converters.ontologyir";
+import { PreviewOntologyIrConverter } from "@osdk/generator-converters.preview";
 import { cleanAndValidateLinkTypeId } from "@osdk/maker";
 import { consola } from "consola";
-import { createJiti } from "jiti";
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { pathToFileURL } from "node:url";
 import invariant from "tiny-invariant";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
@@ -33,6 +35,10 @@ import {
   generateBackingDatasetBlockResultForLink,
   getNonEditOnlyProperties,
 } from "./generateBackingDataset.js";
+import {
+  generateValueTypeBlockResults,
+  getValueTypeInternalMappings,
+} from "./generateValueTypeBlockResults.js";
 import type { BlockGeneratorResult } from "./marketplaceSerialization/BlockGeneratorResult.js";
 import type { InputMappingEntry } from "./marketplaceSerialization/supportingTypes.js";
 
@@ -48,8 +54,13 @@ export default async function main(
   const commandLineOpts: {
     input: string;
     output: string;
+    valueTypesOutput: string;
     apiNamespace: string;
     buildDir: string;
+    temporaryBlockDataFile?: string;
+    functionsDir?: string;
+    nodeModulesDir?: string;
+    functionsIrOutputFile?: string;
     randomnessKey?: string;
   } = await yargs(hideBin(args))
     .version(process.env.PACKAGE_VERSION ?? "")
@@ -66,9 +77,15 @@ export default async function main(
       },
       output: {
         alias: "o",
-        describe: "Output file for BlockGeneratorResult JSON",
+        describe: "Output file for ontology BlockGeneratorResult JSON",
         type: "string",
         default: "build/block_generator_result.json",
+        coerce: path.resolve,
+      },
+      valueTypesOutput: {
+        describe: "Output file for value types BlockGeneratorResult JSON",
+        type: "string",
+        default: "build/value_types_block_generator_result.json",
         coerce: path.resolve,
       },
       apiNamespace: {
@@ -81,6 +98,25 @@ export default async function main(
         describe: "Directory for build files",
         type: "string",
         default: "build/",
+        coerce: path.resolve,
+      },
+      temporaryBlockDataFile: {
+        alias: "f",
+        describe:
+          "Path to a previously generated block data file. Supplying this field indicates that function backed actions should be generated",
+        type: "string",
+        coerce: path.resolve,
+      },
+      functionsDir: {
+        type: "string",
+        coerce: path.resolve,
+      },
+      nodeModulesDir: {
+        type: "string",
+        coerce: path.resolve,
+      },
+      functionsIrOutputFile: {
+        type: "string",
         coerce: path.resolve,
       },
       randomnessKey: {
@@ -110,6 +146,46 @@ export default async function main(
     );
   }
 
+  let functionsIrFile;
+  if (commandLineOpts.temporaryBlockDataFile) {
+    consola.info(
+      `Loading temporary block data from ${commandLineOpts.temporaryBlockDataFile}`,
+    );
+    const fileContent = await fs.promises.readFile(
+      commandLineOpts.temporaryBlockDataFile,
+      "utf-8",
+    );
+    let blockDataJson: unknown;
+    try {
+      blockDataJson = JSON.parse(fileContent);
+    } catch {
+      consola.error(
+        `Failed to parse JSON from ${commandLineOpts.temporaryBlockDataFile}`,
+      );
+      process.exit(1);
+    }
+    const previewMetadata = PreviewOntologyIrConverter
+      .getPreviewFullMetadataFromBlockData(
+        blockDataJson as Parameters<
+          typeof PreviewOntologyIrConverter.getPreviewFullMetadataFromBlockData
+        >[0],
+      );
+    invariant(
+      commandLineOpts.functionsDir && commandLineOpts.nodeModulesDir,
+      "functionsDir and nodeModulesDir must be supplied when using temporaryBlockDataFile",
+    );
+    await OntologyIrToFullMetadataConverter.discoverTypeScriptFunctions(
+      commandLineOpts.functionsDir,
+      commandLineOpts.nodeModulesDir,
+      commandLineOpts.functionsIrOutputFile,
+      previewMetadata,
+    );
+    functionsIrFile = commandLineOpts.functionsIrOutputFile;
+    consola.info(
+      `Discovered functions during block data generation at ${commandLineOpts.functionsIrOutputFile}`,
+    );
+  }
+
   const {
     ontologyIr,
     shapes,
@@ -118,6 +194,8 @@ export default async function main(
   } = await loadOntology(
     commandLineOpts.input,
     apiNamespace,
+    commandLineOpts.buildDir,
+    functionsIrFile,
     commandLineOpts.randomnessKey,
   );
 
@@ -133,9 +211,17 @@ export default async function main(
   await fs.promises.writeFile(ontologyJsonPath, ontologyJson);
   consola.info(`Wrote ontology.json to ${ontologyJsonPath}`);
 
+  let valueTypeResults: BlockGeneratorResult[] = [];
+  if (ontologyIr.valueTypes.length > 0) {
+    valueTypeResults = await generateValueTypeBlockResults(
+      ontologyIr.valueTypes,
+      commandLineOpts.buildDir,
+    );
+  }
+
   // Collect input_mapping_entries for the ontology block
   // These map ontology inputs to datasource block outputs for objects with includeEmptyBackingDatasource
-  const ontologyInputMappingEntries: InputMappingEntry[] = [];
+  const ontologyInputMappingEntries: InputMappingEntry[] = shapes.inputMappings;
 
   for (const apiName of backingDatasourceApiNames) {
     const objectTypeBlockData = findObjectTypeByApiName(
@@ -221,6 +307,10 @@ export default async function main(
     }
   }
 
+  ontologyInputMappingEntries.push(
+    ...getValueTypeInternalMappings(ontologyIr.valueTypes, shapes.inputShapes),
+  );
+
   // Generate backing datasource BlockGeneratorResults for objects with includeEmptyBackingDatasource
   const backingDsGeneratorResults = await Promise.all(
     backingDatasourceApiNames.filter(apiName => {
@@ -292,6 +382,7 @@ export default async function main(
       blockGeneratorResult,
       ...backingDsGeneratorResults,
       ...backingDsLinkGeneratorResults,
+      ...valueTypeResults,
     ],
     null,
     2,
@@ -306,23 +397,31 @@ export default async function main(
   consola.info(
     `Block data directory: ${blockDataDir}`,
   );
+
+  if (valueTypeResults.length > 0) {
+    const valueTypeResultsJson = JSON.stringify(valueTypeResults, null, 2);
+    await fs.promises.writeFile(
+      commandLineOpts.valueTypesOutput,
+      valueTypeResultsJson,
+    );
+    consola.success(
+      `Value type BlockGeneratorResult written to ${commandLineOpts.valueTypesOutput}`,
+    );
+  }
 }
 
 async function loadOntology(
   input: string,
   apiNamespace: string,
+  outputDir?: string,
+  functionsIrFile?: string,
   randomnessKey?: string,
 ) {
   const result = await defineOntologyV2(
     apiNamespace,
-    async () => {
-      const jiti = createJiti(import.meta.filename, {
-        moduleCache: true,
-        debug: false,
-        importMeta: import.meta,
-      });
-      const module = await jiti.import(input);
-    },
+    async () => await import(pathToFileURL(input).href),
+    outputDir,
+    functionsIrFile,
     randomnessKey,
   );
   return result;

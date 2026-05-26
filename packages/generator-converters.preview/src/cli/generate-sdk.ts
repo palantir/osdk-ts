@@ -208,6 +208,12 @@ async function main(): Promise<void> {
         type: "string",
         coerce: path.resolve,
       },
+      "import-json": {
+        describe:
+          "Path to the import JSON file (ontology-full-metadata.json) produced by 'foundry import ontology'. Imported entities are merged into the generated SDK.",
+        type: "string",
+        coerce: path.resolve,
+      },
     })
     .parse();
 
@@ -251,11 +257,16 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
+  const importJson = argv.importJson
+    ? JSON.parse(await fs.readFile(argv.importJson, "utf-8"))
+    : undefined;
+
   const previewMetadata = PreviewOntologyIrConverter
     .getPreviewFullMetadataFromBlockData(
       blockDataJson as Parameters<
         typeof PreviewOntologyIrConverter.getPreviewFullMetadataFromBlockData
       >[0],
+      importJson,
     );
 
   // Generate the Python SDK before function discovery so that Python functions

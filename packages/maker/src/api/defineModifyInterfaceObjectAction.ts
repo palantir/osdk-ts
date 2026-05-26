@@ -131,7 +131,7 @@ export function defineModifyInterfaceObjectAction(
     apiName: actionApiName,
     displayName: def.displayName
       ?? `Modify ${def.interfaceType.displayMetadata.displayName}`,
-    parameters: parameters,
+    parameters,
     status: def.status ?? (def.interfaceType.status.type !== "deprecated"
       ? def.interfaceType.status.type
       : def.interfaceType.status),
@@ -212,6 +212,7 @@ export function defineModifyInterfaceObjectAction(
       }),
     ...(def.submissionMetadata
       && { submissionMetadata: def.submissionMetadata }),
+    ...(def.permission && { permission: def.permission }),
     ...(def.icon && { icon: def.icon }),
   });
 }

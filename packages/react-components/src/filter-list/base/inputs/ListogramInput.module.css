@@ -20,6 +20,17 @@
   transition: opacity var(--osdk-filter-content-fade-duration);
 }
 
+.noValueLabel {
+  color: var(
+    --osdk-filter-listogram-empty-label-color,
+    var(--osdk-filter-no-value-color)
+  );
+  font-style: var(
+    --osdk-filter-listogram-empty-label-font-style,
+    var(--osdk-filter-no-value-font-style)
+  );
+}
+
 .listogram[data-loading="true"] {
   opacity: 0.5;
 }
@@ -63,6 +74,19 @@
   background: var(--osdk-filter-listogram-row-bg-active);
 }
 
+/* Empty/null bucket. Match NullValueWrapper's checkbox-to-label gap so an
+ * inline "No value" row in a histogram is visually consistent with the
+ * trailing "No value" row used by non-histogram filters. */
+.row[data-empty] {
+  gap: var(--osdk-filter-null-label-gap);
+}
+
+/* Muted styling for filtered-out (count=0) rows. */
+.row[data-filtered-out] {
+  opacity: var(--osdk-filter-filtered-out-item-opacity);
+  color: var(--osdk-filter-filtered-out-item-color);
+}
+
 .label {
   flex: 1;
   font-family: var(--osdk-filter-listogram-label-font-family);
@@ -75,11 +99,6 @@
 
 .label[data-excluding] {
   text-decoration: line-through;
-}
-
-.emptyLabel {
-  color: var(--osdk-filter-listogram-empty-label-color);
-  font-style: var(--osdk-filter-listogram-empty-label-font-style);
 }
 
 .bar {

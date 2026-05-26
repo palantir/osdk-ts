@@ -15,9 +15,9 @@
  */
 
 import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
-import { useOsdkAggregation } from "@osdk/react/experimental";
+import { useOsdkAggregation } from "@osdk/react";
 import React, { memo, useCallback, useMemo } from "react";
-import { DateRangeInput } from "../base/inputs/DateRangeInput.js";
+import { DateRangeHistogramInput } from "../base/inputs/DateRangeHistogramInput.js";
 import { NullValueWrapper } from "../base/inputs/NullValueWrapper.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import {
@@ -33,6 +33,8 @@ interface DateRangeFilterInputProps<Q extends ObjectTypeDefinition> {
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
+  formatDate?: (date: Date) => string;
+  clickToFilter?: boolean;
 }
 
 function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -42,6 +44,8 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
   filterState,
   onFilterStateChanged,
   whereClause,
+  formatDate,
+  clickToFilter,
 }: DateRangeFilterInputProps<Q>): React.ReactElement {
   const dateRangeState = filterState?.type === "DATE_RANGE"
     ? filterState
@@ -78,10 +82,7 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
   );
 
   const histogramArgs = useMemo(
-    () =>
-      objectSet != null
-        ? { aggregate: aggregateOptions, objectSet, where: whereClause }
-        : { aggregate: aggregateOptions, where: whereClause },
+    () => ({ aggregate: aggregateOptions, objectSet, where: whereClause }),
     [aggregateOptions, objectSet, whereClause],
   );
 
@@ -128,17 +129,11 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
   );
 
   const nullCountArgs = useMemo(
-    () =>
-      objectSet != null
-        ? {
-          where: nullCountWhereClause,
-          aggregate: nullCountAggregateOptions,
-          objectSet,
-        }
-        : {
-          where: nullCountWhereClause,
-          aggregate: nullCountAggregateOptions,
-        },
+    () => ({
+      where: nullCountWhereClause,
+      aggregate: nullCountAggregateOptions,
+      objectSet,
+    }),
     [nullCountWhereClause, nullCountAggregateOptions, objectSet],
   );
 
@@ -170,12 +165,14 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
       includeNull={includeNull}
       onIncludeNullChange={handleNullChange}
     >
-      <DateRangeInput
+      <DateRangeHistogramInput
         valueCountPairs={valueCountPairs}
         isLoading={isLoading}
         minValue={dateRangeState?.minValue}
         maxValue={dateRangeState?.maxValue}
         onChange={handleRangeChange}
+        formatDate={formatDate}
+        clickToFilter={clickToFilter}
       />
     </NullValueWrapper>
   );

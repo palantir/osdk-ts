@@ -50,11 +50,13 @@ import {
 import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "../objectMatchesWhereClause.js";
 import type { OptimisticId } from "../OptimisticId.js";
 import type { PivotInfo } from "../PivotCanonicalizer.js";
+import type { Rdp } from "../RdpCanonicalizer.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import { OrderBySortingStrategy } from "../sorting/SortingStrategy.js";
 import type { Store } from "../Store.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
 import {
+  INCLUDE_ALL_BASE_PROPERTIES_IDX,
   INTERSECT_IDX,
   type ListCacheKey,
   ORDER_BY_IDX,
@@ -65,6 +67,7 @@ import {
 } from "./ListCacheKey.js";
 export {
   API_NAME_IDX,
+  INCLUDE_ALL_BASE_PROPERTIES_IDX,
   INTERSECT_IDX,
   PIVOT_IDX,
   RDP_IDX,
@@ -109,6 +112,14 @@ export abstract class ListQuery extends BaseListQuery<
   // Employee.pivotTo(Office) has apiName "Employee" but fetches Office objects.
   #fetchedObjectType: string | undefined;
   #objectTypesCache: ReadonlySet<string> | undefined;
+
+  // Object types this query's RDPs traverse; an edit to any of these triggers
+  // revalidation. Undefined for ObjectSets the walker doesn't support.
+  #rdpInvalidationSet: ReadonlySet<string> | undefined;
+
+  public override get rdpConfig(): Canonical<Rdp> | undefined {
+    return this.cacheKey.otherKeys[RDP_IDX];
+  }
 
   /**
    * Register changes to the cache specific to ListQuery
@@ -184,6 +195,10 @@ export abstract class ListQuery extends BaseListQuery<
     return this.#pivotInfo;
   }
 
+  public override get includeAllBaseObjectProperties(): boolean {
+    return this.cacheKey.otherKeys[INCLUDE_ALL_BASE_PROPERTIES_IDX] === true;
+  }
+
   get objectTypes(): ReadonlySet<string> {
     return this.#objectTypesCache ?? new Set([this.apiName]);
   }
@@ -222,12 +237,14 @@ export abstract class ListQuery extends BaseListQuery<
 
     if (needsResultType) {
       const wireObjectSet = getWireObjectSet(this.#objectSet);
-      const { resultType } = await getObjectTypesThatInvalidate(
-        this.store.client[additionalContext],
-        wireObjectSet,
-      );
+      const { resultType, invalidationSet } =
+        await getObjectTypesThatInvalidate(
+          this.store.client[additionalContext],
+          wireObjectSet,
+        );
 
       this.#updateFetchedObjectType(resultType.apiName);
+      this.#rdpInvalidationSet = invalidationSet;
 
       if (
         Object.keys(this.#orderBy).length > 0
@@ -283,11 +300,13 @@ export abstract class ListQuery extends BaseListQuery<
     if (this.#fetchedObjectType == null) {
       try {
         const wireObjectSet = getWireObjectSet(this.#objectSet);
-        const { resultType } = await getObjectTypesThatInvalidate(
-          this.store.client[additionalContext],
-          wireObjectSet,
-        );
+        const { resultType, invalidationSet } =
+          await getObjectTypesThatInvalidate(
+            this.store.client[additionalContext],
+            wireObjectSet,
+          );
         this.#updateFetchedObjectType(resultType.apiName);
+        this.#rdpInvalidationSet = invalidationSet;
       } catch {
         this.#updateFetchedObjectType(this.apiName);
       }
@@ -308,6 +327,9 @@ export abstract class ListQuery extends BaseListQuery<
         : {}),
       ...(this.options.$loadPropertySecurityMetadata
         ? { $loadPropertySecurityMetadata: true }
+        : {}),
+      ...(this.includeAllBaseObjectProperties
+        ? { $includeAllBaseObjectProperties: true }
         : {}),
     });
 
@@ -355,7 +377,8 @@ export abstract class ListQuery extends BaseListQuery<
   async revalidateObjectType(objectType: string): Promise<boolean> {
     return this.apiName === objectType
       || (this.#fetchedObjectType != null
-        && this.#fetchedObjectType === objectType);
+        && this.#fetchedObjectType === objectType)
+      || (this.#rdpInvalidationSet?.has(objectType) ?? false);
   }
 
   /**
@@ -584,6 +607,8 @@ export abstract class ListQuery extends BaseListQuery<
           [object as Osdk.Instance<any>],
           batch,
           this.rdpConfig,
+          undefined,
+          this.includeAllBaseObjectProperties,
         );
       });
     } else if (state === "REMOVED") {
@@ -652,9 +677,6 @@ export abstract class ListQuery extends BaseListQuery<
     });
   }
 
-  /**
-   * Get cache key for object.
-   */
   private getObjectCacheKey(
     obj: { $objectType: string; $primaryKey: string | number },
   ): ObjectCacheKey {

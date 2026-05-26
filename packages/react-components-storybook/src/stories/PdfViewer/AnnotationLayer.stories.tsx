@@ -17,8 +17,8 @@
 import type {
   PdfAnnotation,
   PdfViewerAnnotationLayerProps,
-} from "@osdk/react-components/experimental";
-import { PdfViewerAnnotationLayer } from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/pdf-viewer";
+import { PdfViewerAnnotationLayer } from "@osdk/react-components/experimental/pdf-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
 
@@ -53,7 +53,8 @@ const MIXED_ANNOTATIONS: PdfAnnotation[] = [
 ];
 
 const meta: Meta<PdfViewerAnnotationLayerProps> = {
-  title: "Experimental/PdfViewer/Building Blocks/AnnotationLayer",
+  title:
+    "Beta/DocumentViewer/Renderers/PdfViewer/Building Blocks/AnnotationLayer",
   component: PdfViewerAnnotationLayer,
   args: {
     annotations: MIXED_ANNOTATIONS,

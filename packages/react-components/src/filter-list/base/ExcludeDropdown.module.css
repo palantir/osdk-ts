@@ -50,6 +50,10 @@
 
 .positioner {
   z-index: var(--osdk-surface-z-index-3);
+
+  &[data-anchor-hidden] {
+    visibility: hidden;
+  }
 }
 
 .popup {
