@@ -1,0 +1,220 @@
+{/*
+  ObjectTable.mdx — POC single-page docs structure.
+
+  Pattern (loosely follows Mantine + base-ui):
+    1. Title + import
+    2. Description / when to use
+    3. Demo  (linked to the Default story)
+    4. Usage  (minimal example, prereqs)
+    5. Examples  (one or two Canvas embeds + link to Stories sidebar for the rest)
+    6. API Reference
+         - Props          → auto-generated from <Name>Api.ts via <Controls />
+         - CSS Variables  → hand-authored, sourced from src/tokens/<name>.css
+         - Data attributes → hand-authored, sourced from <Name>.dataAttrs.ts
+         - Selectors      → guidance only (CSS modules are hashed; target data-attrs)
+    7. Accessibility
+
+  Once doc generation tooling lands (§4.1 of the RFC), the CSS Variables and
+  Data Attributes tables become generated blocks instead of hand-authored
+  Markdown.
+*/}
+
+import { Canvas, Controls, Meta, Source, Title } from "@storybook/addon-docs/blocks";
+import * as ObjectTableStories from "./ObjectTable.stories";
+
+<Meta title="Beta/ObjectTable/Docs" />
+
+# ObjectTable
+
+An OSDK-aware data table for ontology objects. Renders rows from an
+`ObjectType`, `ObjectSet`, or interface, and ships with column configuration,
+selection, sorting, pinning, resizing, inline editing, and an integrated
+filter surface.
+
+<Source
+  language="tsx"
+  code={`import { ObjectTable } from "@osdk/react-components/experimental/object-table";`}
+/>
+
+## Demo
+
+<Canvas of={ObjectTableStories.Default} />
+
+## Usage
+
+Pass an OSDK object type. ObjectTable will fetch rows, infer columns, and
+wire up sort / filter / selection out of the box.
+
+<Source
+  language="tsx"
+  code={`import { Employee } from "@my/osdk";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
+
+export function EmployeesTable() {
+  return <ObjectTable objectType={Employee} />;
+}`}
+/>
+
+### Prerequisites
+
+- Wrap your app in `OsdkProvider` (see [Prerequisites](?path=/docs/prerequisites--docs)).
+- Import the package CSS and configure `@layer` order — see the
+  [CSS Setup](?path=/docs/css-setup--docs) doc.
+
+## Examples
+
+A few common variations. The full set is in the **Stories** sidebar.
+
+### Selection
+
+<Canvas of={ObjectTableStories.MultipleSelection} />
+
+### Inline editing
+
+<Canvas of={ObjectTableStories.WithCustomColumn} />
+
+
+## API Reference
+
+### Props
+
+The full prop reference is auto-extracted from
+[`ObjectTableApi.ts`](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/src/object-table/ObjectTableApi.ts).
+
+<Controls of={ObjectTableStories.Default} />
+
+### CSS Variables
+
+Override these on `OsdkThemeProvider` (or any ancestor) to retheme the table.
+Token defaults come from `src/tokens/base-tokens/base.css`.
+
+#### Outer border
+
+| Variable | Controls |
+| :--- | :--- |
+| `--osdk-table-border` | Outer border shorthand |
+| `--osdk-table-border-color` | Outer border color |
+| `--osdk-table-border-width` | Outer border width |
+
+#### Cells
+
+| Variable | Controls |
+| :--- | :--- |
+| `--osdk-table-cell-color` | Cell text color |
+| `--osdk-table-cell-divider` | Vertical divider between cells |
+| `--osdk-table-cell-font` | Cell font shorthand |
+| `--osdk-table-cell-padding` | Cell padding |
+
+#### Editable cells
+
+| Variable | Controls |
+| :--- | :--- |
+| `--osdk-table-cell-editable-border` | Border on editable cells (read mode) |
+| `--osdk-table-cell-edited-border` | Border on cells with pending edits |
+| `--osdk-table-cell-edited-border-error` | Border on cells with edit errors |
+| `--osdk-table-cell-input-bg` | Background of an editing input |
+| `--osdk-table-edit-container-padding` | Padding of the inline edit container |
+| `--osdk-table-edit-container-min-height` | Min height of the inline edit container |
+
+#### Header row
+
+| Variable | Controls |
+| :--- | :--- |
+| `--osdk-table-header-bg` | Header row background |
+| `--osdk-table-header-color` | Header text color |
+| `--osdk-table-header-font` | Header font shorthand |
+| `--osdk-table-header-height` | Header row height |
+| `--osdk-table-header-divider` | Vertical divider between header cells |
+
+#### Header menu button
+
+| Variable | Controls |
+| :--- | :--- |
+| `--osdk-table-header-menu-bg` | Background (rest) |
+| `--osdk-table-header-menu-bg-hover` | Background (hover) |
+| `--osdk-table-header-menu-bg-active` | Background (active) |
+| `--osdk-table-header-menu-border` | Border |
+| `--osdk-table-header-menu-color` | Icon/text color (rest) |
+| `--osdk-table-header-menu-color-active` | Icon/text color (active) |
+| `--osdk-table-header-menu-icon-color` | Icon color |
+| `--osdk-table-header-menu-padding` | Padding |
+
+#### Rows
+
+| Variable | Controls |
+| :--- | :--- |
+| `--osdk-table-row-bg-default` | Background (default state) |
+| `--osdk-table-row-bg-alternate` | Background (zebra stripe) |
+| `--osdk-table-row-bg-hover` | Background on hover |
+| `--osdk-table-row-bg-active` | Background when selected/focused |
+| `--osdk-table-row-border-color-hover` | Border color on hover |
+| `--osdk-table-row-border-color-active` | Border color when active |
+| `--osdk-table-row-divider` | Horizontal divider between rows |
+
+#### Pinned columns and resizer
+
+| Variable | Controls |
+| :--- | :--- |
+| `--osdk-table-pinned-column-border` | Border separating pinned columns |
+| `--osdk-table-resizer-color-hover` | Column resizer handle (hover) |
+| `--osdk-table-resizer-color-active` | Column resizer handle (active) |
+
+#### Loading state
+
+| Variable | Controls |
+| :--- | :--- |
+| `--osdk-table-skeleton-color-from` | Skeleton shimmer gradient start |
+| `--osdk-table-skeleton-color-to` | Skeleton shimmer gradient end |
+
+#### Column config dialog
+
+| Variable | Controls |
+| :--- | :--- |
+| `--osdk-table-column-config-dialog-min-width` | Min width |
+| `--osdk-table-column-config-dialog-min-height` | Min height |
+| `--osdk-table-column-config-visible-columns-bg` | Background of the "Visible columns" list |
+
+### Data Attributes
+
+Stateful attributes you can target with CSS selectors. Prefer these over CSS
+class names — class names are CSS-module-hashed and not stable.
+
+| Attribute | Element | Values | When applied |
+|---|---|---|---|
+| `data-resizing` | `<thead>` | `"true"` &#124; `"false"` | Set while the user is dragging a column resizer |
+| `data-pinned` | `<th>`, `<td>` | `"left"` &#124; `"right"` &#124; `"false"` | Reflects each column's pin state |
+| `data-selected` | `<tr>` | `"true"` &#124; `"false"` | Set on selected rows |
+| `data-focused` | `<tr>` | `"true"` &#124; `"false"` | Set on the row currently focused by keyboard navigation |
+| `data-row-parity` | `<tr>` | `"even"` &#124; `"odd"` | Row striping; useful for zebra patterns at the consumer level |
+| `data-editable` | `<td>` | `"true"` &#124; (absent) | Set when a cell can be edited in the current `editMode` |
+
+### Selectors
+
+ObjectTable uses CSS Modules internally, so class names are hashed at build
+time and **not** part of the public API. To style states or variants from a
+consuming app, target the documented data attributes instead.
+
+<Source
+  language="css"
+  code={`/* Highlight selected rows with a custom accent */
+[data-selected="true"] {
+  background: var(--my-app-selected-row-bg);
+}
+
+/* Style the divider between pinned and unpinned columns */
+[data-pinned="left"] + [data-pinned="false"] {
+  border-left: 2px solid var(--my-app-pinned-divider);
+}
+
+/* Visually mark editable cells */
+[data-editable="true"] {
+  background: var(--my-app-editable-tint);
+}`}
+/>
+
+## Accessibility
+
+- The table renders as a native `<table>` with `<thead>` / `<tbody>` / `<tr>` / `<th>` / `<td>` for screen reader support.
+- Row focus is exposed via `data-focused` so keyboard navigation has a stable styling hook.
+- Editable cells use focusable form controls from `@base-ui/react`; tab order follows visual order.
+- When customizing colors via CSS variables, verify contrast against the active theme (light + dark).
