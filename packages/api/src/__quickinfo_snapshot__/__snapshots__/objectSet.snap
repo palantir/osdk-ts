@@ -316,60 +316,15 @@ type objectSet_where_clause_param =
   | OrWhereClause<EmployeeApiTest, {}>
   | AndWhereClause<EmployeeApiTest, {}>
   | NotWhereClause<EmployeeApiTest, {}>
-  | {
-    class?: StringFilter | undefined;
-    fullName?: StringFilter | undefined;
-    employeeId?: NumberFilter | undefined;
-    attachment?: BaseFilter<string> | undefined;
-    geopoint?: GeoFilter | undefined;
-    timeseries?: BaseFilter<string> | undefined;
-    mediaReference?: BaseFilter<string> | undefined;
-    geotimeSeriesReference?: BaseFilter<string> | undefined;
-    isActive?: BooleanFilter | undefined;
-    yearsOfExperience?: NumberFilter | undefined;
-    rank?: BaseFilter<string> | undefined;
-    performanceScore?: NumberFilter | undefined;
-    hourlyRate?: NumberFilter | undefined;
-    dateOfJoining?: DatetimeFilter | undefined;
-    lastUpdated?: DatetimeFilter | undefined;
-    skillSet?: StringFilter | undefined;
-    skillSetEmbedding?: BaseFilter<string> | undefined;
-    addressStruct?:
-      | BaseFilter.$isNull<string>
-      | (
-        | Just<
-          "street",
-          {
-            street?: StringFilter | undefined;
-            city?: StringFilter | undefined;
-            zipCode?: StringFilter | undefined;
-          }
-        >
-        | Just<
-          "city",
-          {
-            street?: StringFilter | undefined;
-            city?: StringFilter | undefined;
-            zipCode?: StringFilter | undefined;
-          }
-        >
-        | Just<
-          "zipCode",
-          {
-            street?: StringFilter | undefined;
-            city?: StringFilter | undefined;
-            zipCode?: StringFilter | undefined;
-          }
-        >
-      )
-      | undefined;
-    salaryHistory?: ArrayFilter<NumberFilter> | undefined;
-    bonusHistory?:
-      | ArrayFilter<
-        { year?: NumberFilter | undefined; amount?: NumberFilter | undefined }
+  | (
+    | PropertyWhereClause<
+      DerivedObjectOrInterfaceDefinition.WithDerivedProperties<
+        EmployeeApiTest,
+        {}
       >
-      | undefined;
-  };
+    >
+    | SpecialPropertyWhereClause<EmployeeApiTest>
+  );
 
 /** The result of objectSet.withProperties({ mom: ..., dad: ... }). */
 type objectSet_withProperties_result = ObjectSet<
@@ -403,58 +358,20 @@ type objectSet_with_rdp_where_clause_param =
     >,
     {}
   >
-  | {
-    mom?: NumberFilter | undefined;
-    class?: StringFilter | undefined;
-    fullName?: StringFilter | undefined;
-    employeeId?: NumberFilter | undefined;
-    attachment?: BaseFilter<string> | undefined;
-    geopoint?: GeoFilter | undefined;
-    timeseries?: BaseFilter<string> | undefined;
-    mediaReference?: BaseFilter<string> | undefined;
-    geotimeSeriesReference?: BaseFilter<string> | undefined;
-    isActive?: BooleanFilter | undefined;
-    yearsOfExperience?: NumberFilter | undefined;
-    rank?: BaseFilter<string> | undefined;
-    performanceScore?: NumberFilter | undefined;
-    hourlyRate?: NumberFilter | undefined;
-    dateOfJoining?: DatetimeFilter | undefined;
-    lastUpdated?: DatetimeFilter | undefined;
-    skillSet?: StringFilter | undefined;
-    skillSetEmbedding?: BaseFilter<string> | undefined;
-    addressStruct?:
-      | BaseFilter.$isNull<string>
-      | (
-        | Just<
-          "street",
-          {
-            street?: StringFilter | undefined;
-            city?: StringFilter | undefined;
-            zipCode?: StringFilter | undefined;
-          }
-        >
-        | Just<
-          "city",
-          {
-            street?: StringFilter | undefined;
-            city?: StringFilter | undefined;
-            zipCode?: StringFilter | undefined;
-          }
-        >
-        | Just<
-          "zipCode",
-          {
-            street?: StringFilter | undefined;
-            city?: StringFilter | undefined;
-            zipCode?: StringFilter | undefined;
-          }
-        >
-      )
-      | undefined;
-    salaryHistory?: ArrayFilter<NumberFilter> | undefined;
-    bonusHistory?:
-      | ArrayFilter<
-        { year?: NumberFilter | undefined; amount?: NumberFilter | undefined }
+  | (
+    | PropertyWhereClause<
+      DerivedObjectOrInterfaceDefinition.WithDerivedProperties<
+        DerivedObjectOrInterfaceDefinition.WithDerivedProperties<
+          EmployeeApiTest,
+          { mom: "integer" }
+        >,
+        {}
       >
-      | undefined;
-  };
+    >
+    | SpecialPropertyWhereClause<
+      DerivedObjectOrInterfaceDefinition.WithDerivedProperties<
+        EmployeeApiTest,
+        { mom: "integer" }
+      >
+    >
+  );
