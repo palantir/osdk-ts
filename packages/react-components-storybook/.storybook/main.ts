@@ -45,6 +45,29 @@ const config: StorybookConfig = {
     reactDocgen: "react-docgen-typescript",
   },
   staticDirs: ["../public"],
+  // Auto-inject the "beta" tag for top-level component entries
+  // (e.g. "Components/ActionForm") so the badge appears on the parent
+  // folder in the sidebar. Deeper paths like "Components/ActionForm/Usage"
+  // inherit the tag from their per-story meta instead.
+  experimental_indexers: async (existingIndexers) =>
+    (existingIndexers ?? []).map((indexer) => ({
+      ...indexer,
+      createIndex: async (fileName, options) => {
+        const entries = await indexer.createIndex(fileName, options);
+        return entries.map((entry) => {
+          const storyPaths = entry.title?.split("/");
+          if (
+            entry.title?.startsWith("Components/") && storyPaths?.length === 2
+          ) {
+            return {
+              ...entry,
+              tags: [...new Set([...(entry.tags ?? []), "beta"])],
+            };
+          }
+          return entry;
+        });
+      },
+    })),
   async viteFinal(config) {
     // Set base path for GitHub Pages deployment. PR previews are published
     // under /storybook/pr-<number>/, so CI can override the default path.
