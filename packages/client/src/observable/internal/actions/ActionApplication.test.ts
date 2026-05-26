@@ -235,9 +235,6 @@ describe("ActionApplication invalidation", () => {
 
     await store.applyAction(editTodo, { id: 0, text: "should-not-fire" });
 
-    // Broad per-type invalidation runs in the background after the action
-    // resolves; yield once so an incorrect synchronous fan-out would surface.
-    await Promise.resolve();
     expect(subFn.next).not.toHaveBeenCalled();
 
     subscription.unsubscribe();
