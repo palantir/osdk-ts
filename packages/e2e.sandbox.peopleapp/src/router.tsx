@@ -1,6 +1,5 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import PeopleApp from "./App.js";
-import { EmployeeActionFormFilterListReproPage } from "./app/action-form-filter-list-repro/page.js";
 import { AipAgentChatPage } from "./app/aip-agent-chat/page.js";
 import { AuthCallbackPage } from "./app/auth/callback/page.js";
 import { EmployeesFilterListPage } from "./app/employees/filterListPage.js";
@@ -30,10 +29,6 @@ const router = createBrowserRouter([
       {
         path: "/employees/filter-list",
         element: <EmployeesFilterListPage />,
-      },
-      {
-        path: "/employees/action-form-filter-list-repro",
-        element: <EmployeeActionFormFilterListReproPage />,
       },
       {
         path: "/offices",
