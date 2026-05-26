@@ -5,7 +5,7 @@
     1. Title + import
     2. Description / when to use
     3. Demo  (linked to the Default story)
-    4. Usage  (minimal example, prereqs)
+    4. Usage  (minimal example, prerequisites)
     5. Examples  (one or two Canvas embeds + link to Stories sidebar for the rest)
     6. API Reference
          - Props          → auto-generated from <Name>Api.ts via <Controls />
@@ -85,108 +85,184 @@ The full prop reference is auto-extracted from
 
 ### CSS Variables
 
-Override these on `OsdkThemeProvider` (or any ancestor) to retheme the table.
+Override these on `OsdkThemeProvider` (or any ancestor) to customize the table.
 Token defaults come from `src/tokens/base-tokens/base.css`.
 
-#### Outer border
+export const cssVariableGroups = [
+  {
+    title: "Outer border",
+    vars: [
+      ["--osdk-table-border", "Outer border shorthand"],
+      ["--osdk-table-border-color", "Outer border color"],
+      ["--osdk-table-border-width", "Outer border width"],
+    ],
+  },
+  {
+    title: "Cells",
+    vars: [
+      ["--osdk-table-cell-color", "Cell text color"],
+      ["--osdk-table-cell-divider", "Vertical divider between cells"],
+      ["--osdk-table-cell-font", "Cell font shorthand"],
+      ["--osdk-table-cell-padding", "Cell padding"],
+    ],
+  },
+  {
+    title: "Editable cells",
+    vars: [
+      ["--osdk-table-cell-editable-border", "Border on editable cells (read mode)"],
+      ["--osdk-table-cell-edited-border", "Border on cells with pending edits"],
+      ["--osdk-table-cell-edited-border-error", "Border on cells with edit errors"],
+      ["--osdk-table-cell-input-bg", "Background of an editing input"],
+      ["--osdk-table-edit-container-padding", "Padding of the inline edit container"],
+      ["--osdk-table-edit-container-min-height", "Min height of the inline edit container"],
+    ],
+  },
+  {
+    title: "Header row",
+    vars: [
+      ["--osdk-table-header-bg", "Header row background"],
+      ["--osdk-table-header-color", "Header text color"],
+      ["--osdk-table-header-font", "Header font shorthand"],
+      ["--osdk-table-header-height", "Header row height"],
+      ["--osdk-table-header-divider", "Vertical divider between header cells"],
+    ],
+  },
+  {
+    title: "Header menu button",
+    vars: [
+      ["--osdk-table-header-menu-bg", "Background (rest)"],
+      ["--osdk-table-header-menu-bg-hover", "Background (hover)"],
+      ["--osdk-table-header-menu-bg-active", "Background (active)"],
+      ["--osdk-table-header-menu-border", "Border"],
+      ["--osdk-table-header-menu-color", "Icon/text color (rest)"],
+      ["--osdk-table-header-menu-color-active", "Icon/text color (active)"],
+      ["--osdk-table-header-menu-icon-color", "Icon color"],
+      ["--osdk-table-header-menu-padding", "Padding"],
+    ],
+  },
+  {
+    title: "Rows",
+    vars: [
+      ["--osdk-table-row-bg-default", "Background (default state)"],
+      ["--osdk-table-row-bg-alternate", "Background (zebra stripe)"],
+      ["--osdk-table-row-bg-hover", "Background on hover"],
+      ["--osdk-table-row-bg-active", "Background when selected/focused"],
+      ["--osdk-table-row-border-color-hover", "Border color on hover"],
+      ["--osdk-table-row-border-color-active", "Border color when active"],
+      ["--osdk-table-row-divider", "Horizontal divider between rows"],
+    ],
+  },
+  {
+    title: "Pinned columns and resizer",
+    vars: [
+      ["--osdk-table-pinned-column-border", "Border separating pinned columns"],
+      ["--osdk-table-resizer-color-hover", "Column resizer handle (hover)"],
+      ["--osdk-table-resizer-color-active", "Column resizer handle (active)"],
+    ],
+  },
+  {
+    title: "Loading state",
+    vars: [
+      ["--osdk-table-skeleton-color-from", "Skeleton shimmer gradient start"],
+      ["--osdk-table-skeleton-color-to", "Skeleton shimmer gradient end"],
+    ],
+  },
+  {
+    title: "Column config dialog",
+    vars: [
+      ["--osdk-table-column-config-dialog-min-width", "Min width"],
+      ["--osdk-table-column-config-dialog-min-height", "Min height"],
+      ["--osdk-table-column-config-visible-columns-bg", `Background of the "Visible columns" list`],
+    ],
+  },
+];
 
-| Variable | Controls |
-| :--- | :--- |
-| `--osdk-table-border` | Outer border shorthand |
-| `--osdk-table-border-color` | Outer border color |
-| `--osdk-table-border-width` | Outer border width |
-
-#### Cells
-
-| Variable | Controls |
-| :--- | :--- |
-| `--osdk-table-cell-color` | Cell text color |
-| `--osdk-table-cell-divider` | Vertical divider between cells |
-| `--osdk-table-cell-font` | Cell font shorthand |
-| `--osdk-table-cell-padding` | Cell padding |
-
-#### Editable cells
-
-| Variable | Controls |
-| :--- | :--- |
-| `--osdk-table-cell-editable-border` | Border on editable cells (read mode) |
-| `--osdk-table-cell-edited-border` | Border on cells with pending edits |
-| `--osdk-table-cell-edited-border-error` | Border on cells with edit errors |
-| `--osdk-table-cell-input-bg` | Background of an editing input |
-| `--osdk-table-edit-container-padding` | Padding of the inline edit container |
-| `--osdk-table-edit-container-min-height` | Min height of the inline edit container |
-
-#### Header row
-
-| Variable | Controls |
-| :--- | :--- |
-| `--osdk-table-header-bg` | Header row background |
-| `--osdk-table-header-color` | Header text color |
-| `--osdk-table-header-font` | Header font shorthand |
-| `--osdk-table-header-height` | Header row height |
-| `--osdk-table-header-divider` | Vertical divider between header cells |
-
-#### Header menu button
-
-| Variable | Controls |
-| :--- | :--- |
-| `--osdk-table-header-menu-bg` | Background (rest) |
-| `--osdk-table-header-menu-bg-hover` | Background (hover) |
-| `--osdk-table-header-menu-bg-active` | Background (active) |
-| `--osdk-table-header-menu-border` | Border |
-| `--osdk-table-header-menu-color` | Icon/text color (rest) |
-| `--osdk-table-header-menu-color-active` | Icon/text color (active) |
-| `--osdk-table-header-menu-icon-color` | Icon color |
-| `--osdk-table-header-menu-padding` | Padding |
-
-#### Rows
-
-| Variable | Controls |
-| :--- | :--- |
-| `--osdk-table-row-bg-default` | Background (default state) |
-| `--osdk-table-row-bg-alternate` | Background (zebra stripe) |
-| `--osdk-table-row-bg-hover` | Background on hover |
-| `--osdk-table-row-bg-active` | Background when selected/focused |
-| `--osdk-table-row-border-color-hover` | Border color on hover |
-| `--osdk-table-row-border-color-active` | Border color when active |
-| `--osdk-table-row-divider` | Horizontal divider between rows |
-
-#### Pinned columns and resizer
-
-| Variable | Controls |
-| :--- | :--- |
-| `--osdk-table-pinned-column-border` | Border separating pinned columns |
-| `--osdk-table-resizer-color-hover` | Column resizer handle (hover) |
-| `--osdk-table-resizer-color-active` | Column resizer handle (active) |
-
-#### Loading state
-
-| Variable | Controls |
-| :--- | :--- |
-| `--osdk-table-skeleton-color-from` | Skeleton shimmer gradient start |
-| `--osdk-table-skeleton-color-to` | Skeleton shimmer gradient end |
-
-#### Column config dialog
-
-| Variable | Controls |
-| :--- | :--- |
-| `--osdk-table-column-config-dialog-min-width` | Min width |
-| `--osdk-table-column-config-dialog-min-height` | Min height |
-| `--osdk-table-column-config-visible-columns-bg` | Background of the "Visible columns" list |
+{cssVariableGroups.map(({ title, vars }) => (
+  <div key={title}>
+    <h4>{title}</h4>
+    <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 16 }}>
+      <thead>
+        <tr>
+          <th style={{ textAlign: "left", padding: "6px 8px", borderBottom: "1px solid var(--osdk-table-border-color, #ccc)" }}>Variable</th>
+          <th style={{ textAlign: "left", padding: "6px 8px", borderBottom: "1px solid var(--osdk-table-border-color, #ccc)" }}>Controls</th>
+        </tr>
+      </thead>
+      <tbody>
+        {vars.map(([name, desc]) => (
+          <tr key={name}>
+            <td style={{ padding: "6px 8px", verticalAlign: "top" }}><code>{name}</code></td>
+            <td style={{ padding: "6px 8px", verticalAlign: "top" }}>{desc}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+))}
 
 ### Data Attributes
 
 Stateful attributes you can target with CSS selectors. Prefer these over CSS
 class names — class names are CSS-module-hashed and not stable.
 
-| Attribute | Element | Values | When applied |
-|---|---|---|---|
-| `data-resizing` | `<thead>` | `"true"` &#124; `"false"` | Set while the user is dragging a column resizer |
-| `data-pinned` | `<th>`, `<td>` | `"left"` &#124; `"right"` &#124; `"false"` | Reflects each column's pin state |
-| `data-selected` | `<tr>` | `"true"` &#124; `"false"` | Set on selected rows |
-| `data-focused` | `<tr>` | `"true"` &#124; `"false"` | Set on the row currently focused by keyboard navigation |
-| `data-row-parity` | `<tr>` | `"even"` &#124; `"odd"` | Row striping; useful for zebra patterns at the consumer level |
-| `data-editable` | `<td>` | `"true"` &#124; (absent) | Set when a cell can be edited in the current `editMode` |
+export const dataAttrs = [
+  {
+    name: "data-resizing",
+    element: "<thead>",
+    values: `"true" | "false"`,
+    when: "Set while the user is dragging a column resizer",
+  },
+  {
+    name: "data-pinned",
+    element: "<th>, <td>",
+    values: `"left" | "right" | "false"`,
+    when: "Reflects each column's pin state",
+  },
+  {
+    name: "data-selected",
+    element: "<tr>",
+    values: `"true" | "false"`,
+    when: "Set on selected rows",
+  },
+  {
+    name: "data-focused",
+    element: "<tr>",
+    values: `"true" | "false"`,
+    when: "Set on the row currently focused by keyboard navigation",
+  },
+  {
+    name: "data-row-parity",
+    element: "<tr>",
+    values: `"even" | "odd"`,
+    when: "Row striping; useful for zebra patterns at the consumer level",
+  },
+  {
+    name: "data-editable",
+    element: "<td>",
+    values: `"true" | (absent)`,
+    when: "Set when a cell can be edited in the current editMode",
+  },
+];
+
+<table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 16 }}>
+  <thead>
+    <tr>
+      <th style={{ textAlign: "left", padding: "6px 8px", borderBottom: "1px solid var(--osdk-table-border-color, #ccc)" }}>Attribute</th>
+      <th style={{ textAlign: "left", padding: "6px 8px", borderBottom: "1px solid var(--osdk-table-border-color, #ccc)" }}>Element</th>
+      <th style={{ textAlign: "left", padding: "6px 8px", borderBottom: "1px solid var(--osdk-table-border-color, #ccc)" }}>Values</th>
+      <th style={{ textAlign: "left", padding: "6px 8px", borderBottom: "1px solid var(--osdk-table-border-color, #ccc)" }}>When applied</th>
+    </tr>
+  </thead>
+  <tbody>
+    {dataAttrs.map(({ name, element, values, when }) => (
+      <tr key={name}>
+        <td style={{ padding: "6px 8px", verticalAlign: "top" }}><code>{name}</code></td>
+        <td style={{ padding: "6px 8px", verticalAlign: "top" }}><code>{element}</code></td>
+        <td style={{ padding: "6px 8px", verticalAlign: "top" }}><code>{values}</code></td>
+        <td style={{ padding: "6px 8px", verticalAlign: "top" }}>{when}</td>
+      </tr>
+    ))}
+  </tbody>
+</table>
 
 ### Selectors
 
