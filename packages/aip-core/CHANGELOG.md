@@ -1,5 +1,19 @@
 # @osdk/aip-core
 
+## 0.4.1-beta.0
+
+### Patch Changes
+
+- Updated dependencies [a492285]
+- Updated dependencies [60aff19]
+- Updated dependencies [04a3588]
+- Updated dependencies [cdc73e0]
+- Updated dependencies [798ad89]
+- Updated dependencies [d36591a]
+- Updated dependencies [6923158]
+  - @osdk/client@2.23.1-beta.2
+  - @osdk/language-models@0.6.1-beta.0
+
 ## 0.4.0
 
 ### Minor Changes

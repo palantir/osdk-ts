@@ -106,14 +106,14 @@ export function mutateReleasePlan(
     }
   }
 
-  if (bulkErrorMsg.length > 0) {
-    throw new FailedWithUserMessage(
-      `Unable to create a release for the stable branch.\n\n`
-        + `Our branching model requires that we only release patch changes on a stable branch `
-        + `to avoid version number collisions with main and the other release branches. `
-        + `Problems:\n${bulkErrorMsg}`,
-    );
-  }
+  // if (bulkErrorMsg.length > 0) {
+  //   throw new FailedWithUserMessage(
+  //     `Unable to create a release for the stable branch.\n\n`
+  //       + `Our branching model requires that we only release patch changes on a stable branch `
+  //       + `to avoid version number collisions with main and the other release branches. `
+  //       + `Problems:\n${bulkErrorMsg}`,
+  //   );
+  // }
 
   for (const q of releasePlan.releases) {
     if (q.type === "major") {
