@@ -62,7 +62,7 @@ const preview: Preview = {
             "Guides",
             ["Getting Started", "Usage with OSDK"],
             "Styling",
-            ["Overview", "CSS Variables"],
+            ["Overview"],
             "Tokens",
             ["Colors", "Typography", "Spacing"],
           ],

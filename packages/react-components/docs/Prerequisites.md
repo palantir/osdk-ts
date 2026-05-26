@@ -1,3 +1,7 @@
+---
+sidebar_position: 1
+---
+
 # Prerequisites
 
 Setup required before using `@osdk/react-components` or `@osdk/cbac-components`.
