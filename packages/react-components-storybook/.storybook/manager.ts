@@ -32,6 +32,7 @@ addons.setConfig({
       },
       display: {
         sidebar: [
+          { type: "root", skipInherited: false },
           { type: "component", skipInherited: false },
           { type: "group", skipInherited: false },
         ],
