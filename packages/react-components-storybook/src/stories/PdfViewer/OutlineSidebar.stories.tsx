@@ -81,6 +81,7 @@ const meta: Meta<PdfViewerOutlineSidebarProps> = {
   title:
     "Components/DocumentViewer/Renderers/PdfViewer/Building Blocks/OutlineSidebar",
   component: PdfViewerOutlineSidebar,
+  tags: ["beta"],
   args: {
     outlineItems: SAMPLE_OUTLINE,
     currentPage: 1,

@@ -47,6 +47,7 @@ type EmployeeTableProps = ObjectTableProps<typeof Employee>;
 const meta: Meta<EmployeeTableProps> = {
   title: "Components/ObjectTable/Features",
   component: ObjectTable,
+  tags: ["beta"],
   parameters: {
     msw: {
       handlers: [...fauxFoundry.handlers],

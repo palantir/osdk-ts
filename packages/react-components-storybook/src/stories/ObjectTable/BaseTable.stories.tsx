@@ -80,6 +80,7 @@ const mockData: Person[] = [
 const meta: Meta<BaseTableProps<Person>> = {
   title: "Components/ObjectTable/Building Blocks/BaseTable",
   component: BaseTable,
+  tags: ["beta"],
   parameters: {
     msw: {
       handlers: [...fauxFoundry.handlers],

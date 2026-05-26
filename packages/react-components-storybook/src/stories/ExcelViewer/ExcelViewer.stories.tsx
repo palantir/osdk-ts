@@ -163,6 +163,7 @@ function createMockExcelMedia(): Media {
 const meta: Meta<BaseExcelViewerProps> = {
   title: "Components/DocumentViewer/Renderers/ExcelViewer",
   component: BaseExcelViewer,
+  tags: ["beta"],
   args: {
     spreadsheet: SAMPLE_SPREADSHEET,
   },

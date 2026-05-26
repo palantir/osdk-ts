@@ -43,6 +43,7 @@ const DEFAULT_COLUMN_ORDER = ["fullName", "email", "jobTitle", "department"];
 const meta: Meta<ColumnConfigDialogProps> = {
   title: "Components/ObjectTable/Building Blocks/ColumnConfigDialog",
   component: ColumnConfigDialog,
+  tags: ["beta"],
   args: {
     isOpen: true,
     onClose: fn(),

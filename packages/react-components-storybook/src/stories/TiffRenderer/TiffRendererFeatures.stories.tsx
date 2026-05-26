@@ -104,6 +104,7 @@ const sampleTiffBytes = createSampleTiffBytes();
 const meta: Meta<TiffRendererProps> = {
   title: "Components/DocumentViewer/Renderers/TiffRenderer",
   component: TiffRenderer,
+  tags: ["beta"],
   args: {
     content: sampleTiffBytes,
   },

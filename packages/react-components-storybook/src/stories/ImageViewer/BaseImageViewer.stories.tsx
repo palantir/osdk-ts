@@ -48,6 +48,7 @@ const sampleImageDataUrl = createSampleImageDataUrl();
 const baseMeta: Meta<BaseImageViewerProps> = {
   title: "Components/DocumentViewer/Renderers/ImageViewer/BaseImageViewer",
   component: BaseImageViewer,
+  tags: ["beta"],
   args: {
     src: sampleImageDataUrl,
     alt: "Sample image",

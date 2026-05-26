@@ -256,6 +256,7 @@ function HorizontalFilterToolbar(
 const meta: Meta<typeof HorizontalFilterToolbar> = {
   title: "Components/FilterList/Recipes",
   component: HorizontalFilterToolbar,
+  tags: ["beta"],
 };
 export default meta;
 type Story = StoryObj<typeof meta>;

@@ -24,6 +24,7 @@ import { Employee } from "../../types/Employee.js";
 const meta: Meta<PdfViewerMediaProps> = {
   title: "Components/DocumentViewer/Renderers/PdfViewer",
   component: PdfViewer,
+  tags: ["beta"],
   parameters: {
     controls: { expanded: true },
   },

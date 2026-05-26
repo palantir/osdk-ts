@@ -23,6 +23,7 @@ const meta: Meta<PdfViewerToolbarProps> = {
   title:
     "Components/DocumentViewer/Renderers/PdfViewer/Building Blocks/Toolbar",
   component: PdfViewerToolbar,
+  tags: ["beta"],
   args: {
     currentPage: 1,
     numPages: 14,

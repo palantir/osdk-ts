@@ -27,6 +27,7 @@ const meta: Meta<PdfViewerContentProps> = {
   title:
     "Components/DocumentViewer/Renderers/PdfViewer/Building Blocks/Content",
   component: PdfViewerContent,
+  tags: ["beta"],
   args: {
     src: SAMPLE_PDF_URL,
     onPageChange: fn(),

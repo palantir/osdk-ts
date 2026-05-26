@@ -23,6 +23,7 @@ const meta: Meta<PdfViewerSearchBarProps> = {
   title:
     "Components/DocumentViewer/Renderers/PdfViewer/Building Blocks/SearchBar",
   component: PdfViewerSearchBar,
+  tags: ["beta"],
   args: {
     query: "",
     totalMatches: 0,

@@ -34,6 +34,7 @@ import {
 const meta: Meta<typeof BaseCbacPicker> = {
   title: "Components/CbacPicker",
   component: BaseCbacPicker,
+  tags: ["beta"],
   parameters: {
     controls: {
       expanded: true,
