@@ -60,23 +60,71 @@ brand overrides will always take precedence over OSDK defaults.
 
 ## Dark Mode
 
-Components react automatically to dark mode via any of these selectors:
+Wrap your app with `OsdkThemeProvider` to control the color scheme:
 
-- `prefers-color-scheme: dark` media query (OS-level preference)
-- `[data-bp-color-scheme="dark"]` attribute selector (Blueprint convention)
-- `.bp6-dark` class selector (Blueprint convention)
-- `[data-theme="dark"]` attribute selector (Tailwind / Storybook convention)
+```tsx
+import { OsdkThemeProvider } from "@osdk/react-components/experimental/theme";
 
-No extra configuration is needed — the token layer detects whichever
-selector is active and flips both `--bp-*` and `--osdk-*` tokens.
+function App() {
+  return (
+    <OsdkThemeProvider defaultTheme="system">
+      {/* your app */}
+    </OsdkThemeProvider>
+  );
+}
+```
 
-## Token Scopes
+### Theme modes
 
-| Scope     | Prefix                 | Use when you want to...                               |
-| --------- | ---------------------- | ----------------------------------------------------- |
-| Blueprint | `--bp-*`               | Theme both Blueprint and OSDK components consistently |
-| OSDK      | `--osdk-*`             | Theme only OSDK components, leave Blueprint unchanged |
-| Component | `--osdk-<component>-*` | Customize a single component                          |
+| Mode       | Behavior                                                    |
+| ---------- | ----------------------------------------------------------- |
+| `"system"` | Follows the OS `prefers-color-scheme` and updates on change |
+| `"light"`  | Forces light theme regardless of OS setting                 |
+| `"dark"`   | Forces dark theme regardless of OS setting                  |
+
+The provider sets `data-bp-color-scheme` on the document element, which
+the CSS token layer uses to flip both `--bp-*` and `--osdk-*` tokens.
+
+### Switching at runtime
+
+Use the `useOsdkTheme` hook from a descendant to switch modes:
+
+```tsx
+import { useOsdkTheme } from "@osdk/react-components/experimental/theme";
+
+function ThemeToggle() {
+  const { resolvedTheme, setTheme } = useOsdkTheme();
+  return (
+    <button
+      onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+    >
+      Toggle theme
+    </button>
+  );
+}
+```
+
+### Controlled mode
+
+If an external store already owns the theme (e.g. Redux, a parent
+design-system provider), pass `theme` instead of `defaultTheme`:
+
+```tsx
+<OsdkThemeProvider theme={externalTheme} onThemeChanged={setExternalTheme}>
+```
+
+## When to Override `--bp-*` vs `--osdk-*`
+
+| Prefix                 | Override when you want to...                          |
+| ---------------------- | ----------------------------------------------------- |
+| `--bp-*`               | Theme both Blueprint and OSDK components consistently |
+| `--osdk-*`             | Theme only OSDK components, leave Blueprint unchanged |
+| `--osdk-<component>-*` | Customize a single component                          |
+
+Every `--osdk-*` token maps to a `--bp-*` token by default. If your app
+uses Blueprint components alongside OSDK components and you want a
+consistent look, override the `--bp-*` tokens. If you only want to restyle
+OSDK components without affecting Blueprint, override the `--osdk-*` tokens.
 
 ## Custom Themes
 
