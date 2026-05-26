@@ -46,6 +46,7 @@ import { createCodeSnippets } from "./code-snippets/createCodeSnippets.js";
 import type { OntologyDefinition } from "./common/OntologyDefinition.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import type { OntologyEntityType } from "./common/OntologyEntityTypeMapping.js";
+import type { InterfaceType } from "./interface/InterfaceType.js";
 
 // type -> apiName -> entity
 /** @internal */
@@ -179,7 +180,11 @@ export function writeStaticObjects(outputDir: string): void {
               : "");
           const filePath = path.join(typeDirPath, `${entityFileNameBase}.ts`);
           const entityTypeName = getEntityTypeName(ontologyTypeEnumKey);
-          const entityJSON = JSON.stringify(entity, null, 2).replace(
+          const entityJSON = JSON.stringify(
+            explodeInterfaceType(entity),
+            null,
+            2,
+          ).replace(
             /("__type"\s*:\s*)"([^"]*)"/g,
             (_, prefix, value) => `${prefix}OntologyEntityTypeEnum.${value}`,
           );
@@ -249,6 +254,60 @@ export function buildDatasource(
     redacted: false,
     ...((securityConfig !== undefined) && { dataSecurity: securityConfig }),
   });
+}
+
+// convert linked interface api name references to full type before codegen
+export function explodeInterfaceType(
+  entity: OntologyEntityType,
+): OntologyEntityType {
+  if (entity.__type === OntologyEntityTypeEnum.INTERFACE_TYPE) {
+    return filterCyclicReferences({
+      ...entity,
+      linkedInterfaces: (entity.linkedInterfaces ?? []).map(
+        interfaceTypeOrApiName =>
+          typeof interfaceTypeOrApiName === "string"
+            ? ontologyDefinition[OntologyEntityTypeEnum.INTERFACE_TYPE][
+              interfaceTypeOrApiName
+            ]
+            : interfaceTypeOrApiName,
+      ),
+    });
+  } else {
+    return entity;
+  }
+}
+
+function filterCyclicReferences(
+  iface: InterfaceType,
+  ancestors = new Set<string>(),
+  expanded = new Set<string>(),
+): InterfaceType {
+  ancestors.add(iface.apiName);
+
+  const processLinked = (
+    linked: InterfaceType | string,
+  ): InterfaceType | string => {
+    if (typeof linked === "string") return linked;
+    if (ancestors.has(linked.apiName)) return linked.apiName;
+    if (expanded.has(linked.apiName)) {
+      const { linkedInterfaces: _, extendsInterfaces: __, ...shallow } = linked;
+      return {
+        ...shallow,
+        linkedInterfaces: [],
+        extendsInterfaces: [],
+      } as InterfaceType;
+    }
+    return filterCyclicReferences(linked, new Set(ancestors), expanded);
+  };
+
+  expanded.add(iface.apiName);
+  return {
+    ...iface,
+    linkedInterfaces: (iface.linkedInterfaces ?? []).map(processLinked),
+    extendsInterfaces: iface.extendsInterfaces.map(
+      parent => processLinked(parent) as InterfaceType,
+    ),
+  };
 }
 
 export function cleanAndValidateLinkTypeId(apiName: string): string {
@@ -378,7 +437,7 @@ export function convertAction(
                 action.submissionMetadata.undoButtonConfiguration,
             }),
         },
-        parameterOrdering: parameterOrdering,
+        parameterOrdering,
         formContentOrdering: getFormContentOrdering(action, parameterOrdering),
         parameters: actionParameters,
         sections: actionSections,
@@ -437,13 +496,13 @@ export function extractAllowedValues(
           text: {
             ...(minLength === undefined
               ? {}
-              : { minLength: minLength }),
+              : { minLength }),
             ...(maxLength === undefined
               ? {}
-              : { maxLength: maxLength }),
+              : { maxLength }),
             ...(regex === undefined
               ? {}
-              : { regex: { regex: regex, failureMessage: "Invalid input" } }),
+              : { regex: { regex, failureMessage: "Invalid input" } }),
           },
         },
       };

@@ -42,6 +42,7 @@ export interface InterfaceType extends
   propertiesV2: Record<string, InterfaceSharedPropertyType>;
   propertiesV3: Record<string, InterfacePropertyType>;
   extendsInterfaces: Array<InterfaceType>;
+  linkedInterfaces?: Array<InterfaceType | string>; // full metadata of linked entities used for X-OAC imports
   permission?: EntityPermission;
   status: InterfaceTypeStatus;
   __type: OntologyEntityTypeEnum.INTERFACE_TYPE;

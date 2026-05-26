@@ -37,17 +37,23 @@ export class OntologyBlockDataToFullMetadataConverter {
   static getFullMetadataFromBlockData(
     blockData: OntologyBlockDataV2,
     importedTypes?: Ontologies.OntologyFullMetadata,
+    transitiveImportedBlockData?: OntologyBlockDataV2,
   ): Ontologies.OntologyFullMetadata {
     const objectTypeLookup = buildBlockDataObjectTypeLookup(
       blockData,
       importedTypes,
+      transitiveImportedBlockData,
     );
     const interfaceTypeLookup = buildBlockDataInterfaceTypeLookup(
       blockData,
       importedTypes,
+      transitiveImportedBlockData,
     );
     const interfaceTypes = this.getOsdkInterfaceTypesFromBlockData(
-      blockData.interfaceTypes,
+      {
+        ...blockData.interfaceTypes,
+        ...transitiveImportedBlockData?.interfaceTypes,
+      },
       interfaceTypeLookup,
     );
     const sharedPropertyTypes = this.getOsdkSharedPropertyTypesFromBlockData(
@@ -1034,6 +1040,7 @@ export interface BlockDataApiNameLookup {
 export function buildBlockDataObjectTypeLookup(
   blockdata: OntologyBlockDataV2 | undefined,
   importedTypes?: Ontologies.OntologyFullMetadata,
+  transitiveImportedBlockData?: OntologyBlockDataV2,
 ): BlockDataApiNameLookup | undefined {
   if (!blockdata?.objectTypes) {
     return undefined;
@@ -1054,12 +1061,24 @@ export function buildBlockDataObjectTypeLookup(
       );
     }
   }
+  if (transitiveImportedBlockData) {
+    for (
+      const [key, value] of Object.entries(
+        transitiveImportedBlockData.objectTypes,
+      )
+    ) {
+      const apiName = value.objectType.apiName!;
+      byRid.set(key, apiName);
+      byHyphenated.set(hyphenateApiName(apiName), apiName);
+    }
+  }
   return { byRid, byHyphenated };
 }
 
 export function buildBlockDataInterfaceTypeLookup(
   blockdata: OntologyBlockDataV2 | undefined,
   importedTypes?: Ontologies.OntologyFullMetadata,
+  transitiveImportedBlockData?: OntologyBlockDataV2,
 ): BlockDataApiNameLookup | undefined {
   if (!blockdata?.interfaceTypes) {
     return undefined;
@@ -1078,6 +1097,17 @@ export function buildBlockDataInterfaceTypeLookup(
         hyphenateApiName(value.apiName),
         value.apiName,
       );
+    }
+  }
+  if (transitiveImportedBlockData) {
+    for (
+      const [key, value] of Object.entries(
+        transitiveImportedBlockData.interfaceTypes,
+      )
+    ) {
+      const apiName = value.interfaceType.apiName!;
+      byRid.set(key, apiName);
+      byHyphenated.set(hyphenateApiName(apiName), apiName);
     }
   }
   return { byRid, byHyphenated };
