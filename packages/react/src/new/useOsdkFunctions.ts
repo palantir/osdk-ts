@@ -16,11 +16,11 @@
 
 import type { QueryDefinition } from "@osdk/api";
 import React from "react";
+import { stableSerialize } from "./core/stableSerialize.js";
 import {
   createCompositeExternalStore,
   EMPTY_STORE,
 } from "./createCompositeExternalStore.js";
-import { getStableQueriesKey } from "./getStableQueriesKey.js";
 import { OsdkContext } from "./OsdkContext.js";
 import type {
   UseOsdkFunctionOptions,
@@ -82,7 +82,10 @@ export function useOsdkFunctions(
 ): UseOsdkFunctionsResult {
   const { observableClient } = React.useContext(OsdkContext);
 
-  const stableQueriesKey = getStableQueriesKey(queries);
+  const stableQueriesKey = stableSerialize(queries.map(q => ({
+    apiName: q.queryDefinition.apiName,
+    ...q.options,
+  })));
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const stableQueries = React.useMemo(() => queries, [stableQueriesKey]);

@@ -19,8 +19,8 @@ import type {
   ObjectSet,
   SimplePropertyDef,
 } from "@osdk/api";
-import { getWireObjectSet } from "@osdk/client";
 import { useMemo } from "react";
+import { stableSerialize } from "./stableSerialize.js";
 
 /**
  * Returns a referentially stable ObjectSet that only changes when the
@@ -34,9 +34,6 @@ export function useStableObjectSet<
 >(
   objectSet: ObjectSet<Q, RDPs> | undefined,
 ): ObjectSet<Q, RDPs> | undefined {
-  const wireKey = objectSet
-    ? JSON.stringify(getWireObjectSet(objectSet as ObjectSet<Q>))
-    : undefined;
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  return useMemo(() => objectSet, [wireKey]);
+  return useMemo(() => objectSet, [stableSerialize(objectSet)]);
 }
