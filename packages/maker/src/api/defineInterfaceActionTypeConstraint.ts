@@ -32,6 +32,7 @@ import type { InterfaceType } from "./interface/InterfaceType.js";
 import { combineApiNamespaceIfMissing } from "./namespace/combineApiNamespaceIfMissing.js";
 
 interface ParameterConstraintDefinition {
+  apiName?: string;
   displayName: string;
   type: OntologyIrBaseParameterConstraintType;
   requireImplementation?: boolean;
@@ -87,9 +88,11 @@ export function defineInterfaceActionTypeConstraint(
   > = {};
   for (const param of def.parameters ?? []) {
     const paramRid = generateParameterConstraintRid();
+    const paramApiName = param.apiName ?? param.displayName;
     parameters[paramRid] = {
       displayMetadata: {
         displayName: param.displayName,
+        apiName: paramApiName,
       },
       type: param.type,
       requireImplementation: param.requireImplementation ?? true,
