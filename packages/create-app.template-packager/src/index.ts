@@ -102,8 +102,11 @@ export async function cli(
             }
             Object.assign(packageJson[d], sourceDeps);
             delete packageJson[d]["@osdk/create-app.template-packager"];
-            for (const key of Object.keys(packageJson[d])) {
-              if (key.startsWith("@osdk/monorepo.")) {
+            for (const [key, value] of Object.entries(packageJson[d])) {
+              if (
+                key.startsWith("@osdk/monorepo.")
+                || (typeof value === "string" && value.startsWith("workspace:"))
+              ) {
                 delete packageJson[d][key];
               }
             }
