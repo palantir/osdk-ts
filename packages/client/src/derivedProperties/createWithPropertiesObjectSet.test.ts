@@ -15,7 +15,7 @@
  */
 
 import type { DerivedProperty } from "@osdk/api";
-import { Employee } from "@osdk/client.test.ontology";
+import { BarInterface, Employee } from "@osdk/client.test.ontology";
 import type { DerivedPropertyDefinition } from "@osdk/foundry.ontologies";
 import { describe, expect, it } from "vitest";
 import { createWithPropertiesObjectSet } from "./createWithPropertiesObjectSet.js";
@@ -50,6 +50,45 @@ describe(createWithPropertiesObjectSet, () => {
           "type": "selection",
         }
       `);
+  });
+
+  it("correctly creates interface link search around for interface types", () => {
+    const map = new Map<any, DerivedPropertyDefinition>();
+    const deriveObjectSet = createWithPropertiesObjectSet(
+      BarInterface,
+      {
+        type: "methodInput",
+      },
+      map,
+    );
+
+    const clause = {
+      "derivedPropertyName": (base) =>
+        base.pivotTo("toFoo").aggregate("fooIdp:collectList"),
+    } satisfies DerivedProperty.Clause<
+      BarInterface
+    >;
+
+    const result = clause["derivedPropertyName"](deriveObjectSet);
+    const definition = map.get(result);
+
+    expect(definition).toMatchInlineSnapshot(`
+      {
+        "objectSet": {
+          "interfaceLink": "toFoo",
+          "objectSet": {
+            "type": "methodInput",
+          },
+          "type": "interfaceLinkSearchAround",
+        },
+        "operation": {
+          "limit": 100,
+          "selectedPropertyApiName": "fooIdp",
+          "type": "collectList",
+        },
+        "type": "selection",
+      }
+    `);
   });
 
   it("correctly allows select property off the base object set", () => {

@@ -26,6 +26,7 @@ describe("extractRdpDefinition", () => {
       getObjectDefinition: (objectType: string) => {
         if (objectType === "BaseType") {
           return {
+            type: "object",
             links: {
               testLink1: {
                 targetType: "SecondType",
@@ -35,6 +36,7 @@ describe("extractRdpDefinition", () => {
           };
         } else if (objectType === "SecondType") {
           return {
+            type: "object",
             links: {
               testLink2: {
                 targetType: "ThirdType",
@@ -44,6 +46,7 @@ describe("extractRdpDefinition", () => {
           };
         } else if (objectType === "ThirdType") {
           return {
+            type: "object",
             properties: {
               testProperty: {
                 type: "attachment",
@@ -52,6 +55,24 @@ describe("extractRdpDefinition", () => {
           };
         } else {
           throw new Error(`Missing definition for '${objectType}'`);
+        }
+      },
+      getInterfaceDefinition: (interfaceType: string) => {
+        if (interfaceType === "TestInterface") {
+          return {
+            type: "interface",
+            apiName: "TestInterface",
+            links: {
+              testInterfaceLink: {
+                targetTypeApiName: "SecondType",
+                "multiplicity": false,
+              },
+            },
+          };
+        } else {
+          throw new Error(
+            `Missing interface definition for '${interfaceType}'`,
+          );
         }
       },
     } as any,
@@ -331,6 +352,126 @@ describe("extractRdpDefinition", () => {
       extractRdpDefinition(mockClientCtx, RdpWithIntersectionBaseObjectSet),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `[Error: Invariant failed: All object sets in an intersect, subtract, or union must have the same child object type]`,
+    );
+  });
+
+  it("handles interfaceLinkSearchAround object set type", async () => {
+    const interfaceLinkObjectSet: ObjectSet = {
+      type: "withProperties",
+      objectSet: {
+        type: "interfaceLinkSearchAround",
+        objectSet: { type: "base", objectType: "TestInterface" },
+        interfaceLink: "testInterfaceLink",
+      },
+      derivedProperties: {
+        myRdp: {
+          type: "selection",
+          objectSet: {
+            type: "searchAround",
+            objectSet: { type: "methodInput" },
+            link: "testLink2",
+          },
+          operation: { type: "get", selectedPropertyApiName: "testProperty" },
+        },
+      },
+    };
+
+    const result = await extractRdpDefinition(
+      mockClientCtx,
+      interfaceLinkObjectSet,
+    );
+
+    expect(result).toMatchInlineSnapshot(
+      `
+      {
+        "myRdp": {
+          "definition": {
+            "objectSet": {
+              "link": "testLink2",
+              "objectSet": {
+                "type": "methodInput",
+              },
+              "type": "searchAround",
+            },
+            "operation": {
+              "selectedPropertyApiName": "testProperty",
+              "type": "get",
+            },
+            "type": "selection",
+          },
+          "selectedOrCollectedPropertyType": {
+            "type": "attachment",
+          },
+        },
+      }
+    `,
+    );
+  });
+
+  it("handles nested interfaceLinkSearchAround with object definitions", async () => {
+    const nestedInterfaceObjectSet: ObjectSet = {
+      type: "withProperties",
+      objectSet: {
+        type: "searchAround",
+        objectSet: {
+          type: "interfaceLinkSearchAround",
+          objectSet: { type: "base", objectType: "TestInterface" },
+          interfaceLink: "testInterfaceLink",
+        },
+        link: "testLink2",
+      },
+      derivedProperties: {
+        myRdp: {
+          type: "selection",
+          objectSet: { type: "methodInput" },
+          operation: { type: "get", selectedPropertyApiName: "testProperty" },
+        },
+      },
+    };
+
+    const result = await extractRdpDefinition(
+      mockClientCtx,
+      nestedInterfaceObjectSet,
+    );
+
+    expect(result).toMatchInlineSnapshot(
+      `
+      {
+        "myRdp": {
+          "definition": {
+            "objectSet": {
+              "type": "methodInput",
+            },
+            "operation": {
+              "selectedPropertyApiName": "testProperty",
+              "type": "get",
+            },
+            "type": "selection",
+          },
+          "selectedOrCollectedPropertyType": {
+            "type": "attachment",
+          },
+        },
+      }
+    `,
+    );
+  });
+
+  it("throws when interfaceLink is missing from interface definition", async () => {
+    const invalidInterfaceLinkObjectSet: ObjectSet = {
+      type: "interfaceLinkSearchAround",
+      objectSet: { type: "base", objectType: "TestInterface" },
+      interfaceLink: "nonExistentLink",
+    };
+
+    await expect(
+      extractRdpDefinition(mockClientCtx, {
+        type: "withProperties",
+        objectSet: invalidInterfaceLinkObjectSet,
+        derivedProperties: {},
+      }),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `[Error: Invariant failed: Missing link definition for 'nonExistentLink']`,
     );
   });
 });

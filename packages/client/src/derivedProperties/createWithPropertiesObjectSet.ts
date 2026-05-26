@@ -36,9 +36,17 @@ export function createWithPropertiesObjectSet<
   return {
     pivotTo: (link) => {
       return createWithPropertiesObjectSet(objectType, {
-        type: "searchAround",
-        objectSet,
-        link,
+        ...(objectType.type === "object"
+          ? {
+            type: "searchAround",
+            objectSet,
+            link,
+          }
+          : {
+            type: "interfaceLinkSearchAround",
+            objectSet,
+            interfaceLink: link,
+          }),
       }, definitionMap);
     },
     where: (clause) => {

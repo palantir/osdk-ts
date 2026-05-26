@@ -83,6 +83,40 @@ async function extractRdpDefinitionInternal(
         childObjectType: objDef.links[objectSet.link].targetType,
       };
     }
+    case "interfaceLinkSearchAround": {
+      const { definitions, childObjectType } =
+        await extractRdpDefinitionInternal(
+          clientCtx,
+          objectSet.objectSet,
+          methodInputObjectType,
+        );
+
+      if (childObjectType === undefined || childObjectType === "") {
+        return { definitions: {} };
+      }
+
+      let objOrInterfaceDef;
+      try {
+        objOrInterfaceDef = await clientCtx.ontologyProvider
+          .getObjectDefinition(childObjectType);
+      } catch {
+        objOrInterfaceDef = await clientCtx.ontologyProvider
+          .getInterfaceDefinition(childObjectType);
+      }
+
+      const linkDef = objOrInterfaceDef.links[objectSet.interfaceLink];
+      invariant(
+        linkDef,
+        `Missing link definition for '${objectSet.interfaceLink}'`,
+      );
+
+      return {
+        definitions,
+        childObjectType: objOrInterfaceDef.type === "object"
+          ? objOrInterfaceDef.links[objectSet.interfaceLink].targetType
+          : objOrInterfaceDef.links[objectSet.interfaceLink].targetTypeApiName,
+      };
+    }
     case "withProperties": {
       // These are the definitions and current object type for all object set operations prior to the definition (e.g. filter, pivotTo, etc.)
       const { definitions, childObjectType } =
@@ -203,11 +237,6 @@ async function extractRdpDefinitionInternal(
       // Static and reference object sets are always intersected with a base object set, so we can just return no child object type.
       return { definitions: {} };
     // We don't have to worry about new object sets being added and doing a runtime break and breaking people since the OSDK is always constructing these.
-    case "interfaceLinkSearchAround":
-      invariant(
-        false,
-        `Unsupported object set type for Runtime Derived Properties`,
-      );
     default:
       const _: never = objectSet;
       invariant(
