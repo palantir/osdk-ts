@@ -1,7 +1,0 @@
-.home {
-  display: flex;
-  flex-direction: column;
-  gap: calc(var(--bp-surface-spacing) * 15);
-  max-width: 800px;
-  width: 100%;
-}
