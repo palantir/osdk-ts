@@ -214,9 +214,6 @@ export default async function main(
   await fs.promises.writeFile(ontologyJsonPath, ontologyJson);
   consola.info(`Wrote ontology.json to ${ontologyJsonPath}`);
 
-  // const additionalLookups = buildImportedBlockDataInterfaceTypeLookup(
-  //   ontologyIr.importedOntology,
-  // );
   const importedMetadata = OntologyBlockDataToFullMetadataConverter
     .getFullMetadataFromBlockData(
       ontologyIr.importedOntology,
