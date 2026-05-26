@@ -423,7 +423,7 @@ describe("useDateEditState", () => {
       expect(result.current.displayedValue).toBe("Jul 20, 2024");
     });
 
-    it("does not overwrite user edits when external value changes during editing", () => {
+    it("syncs inputValue when external value changes during editing", () => {
       const { result, rerender } = renderHook(
         (config: UseDateEditStateConfig) => useDateEditState(config),
         { initialProps: makeConfig({ value: new Date(2024, 0, 15) }) },
@@ -436,11 +436,12 @@ describe("useDateEditState", () => {
         result.current.setInputValue("2024-03-20");
       });
 
-      // Intentional: user's unsaved edits are preserved when the parent
-      // value changes. The hook only syncs when not editing.
+      // External value changes during editing (e.g. a shortcut button inside
+      // the picker popover commits a new range) must flow into the input so
+      // the user sees the committed value.
       rerender(makeConfig({ value: new Date(2024, 6, 20) }));
 
-      expect(result.current.displayedValue).toBe("2024-03-20");
+      expect(result.current.displayedValue).toBe("2024-07-20");
     });
   });
 });
