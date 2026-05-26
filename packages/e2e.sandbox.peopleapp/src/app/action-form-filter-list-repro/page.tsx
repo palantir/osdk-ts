@@ -22,7 +22,7 @@ import { Employee, modifyEmployee } from "../../generatedNoCheck2/index.js";
 import "./page.css";
 
 interface ModifyEmployeeDepartmentAction
-  extends ActionDefinition<ModifyEmployeeDepartmentAction.Signatures>
+  extends ActionDefinition<ModifyEmployeeDepartmentSignatures>
 {
   apiName: "modifyEmployee";
   type: "action";
@@ -30,23 +30,21 @@ interface ModifyEmployeeDepartmentAction
   osdkMetadata: typeof modifyEmployee.osdkMetadata;
 }
 
-namespace ModifyEmployeeDepartmentAction {
-  export interface Params {
-    readonly employee: ActionParam.ObjectType<Employee>;
-    readonly department: ActionParam.PrimitiveType<"string">;
-  }
+interface ModifyEmployeeDepartmentParams {
+  readonly employee: ActionParam.ObjectType<Employee>;
+  readonly department: ActionParam.PrimitiveType<"string">;
+}
 
-  export interface Signatures {
-    applyAction<OP extends ApplyActionOptions>(
-      args: Params,
-      options?: OP,
-    ): Promise<ActionReturnTypeForOptions<OP>>;
+interface ModifyEmployeeDepartmentSignatures {
+  applyAction<OP extends ApplyActionOptions>(
+    args: ModifyEmployeeDepartmentParams,
+    options?: OP,
+  ): Promise<ActionReturnTypeForOptions<OP>>;
 
-    batchApplyAction<OP extends ApplyBatchActionOptions>(
-      args: ReadonlyArray<Params>,
-      options?: OP,
-    ): Promise<ActionReturnTypeForOptions<OP>>;
-  }
+  batchApplyAction<OP extends ApplyBatchActionOptions>(
+    args: ReadonlyArray<ModifyEmployeeDepartmentParams>,
+    options?: OP,
+  ): Promise<ActionReturnTypeForOptions<OP>>;
 }
 
 // Local repro only: the generated sandbox SDK still models modifyEmployee with
