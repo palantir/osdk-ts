@@ -76,10 +76,15 @@ export class ActionApplication {
       }
 
       await this.#invalidatePerObjectEdits(actionResults);
-      // Inside the try so refetches land in truth while the optimistic layer
-      // is still on top; the removal below then drops to fresh truth in one
-      // visible transition.
-      await this.#invalidatePerTypeEdits(actionResults);
+      // Per-type invalidation can fan out into expensive list/object-set
+      // aggregation refetches. Start it after the precise per-object updates,
+      // but do not block the action result on those background refreshes.
+      void this.#invalidatePerTypeEdits(actionResults).catch((e: unknown) => {
+        logger?.warn(
+          { err: e },
+          "Error while invalidating action edits by object type",
+        );
+      });
     } finally {
       if (process.env.NODE_ENV !== "production") {
         logger?.debug(

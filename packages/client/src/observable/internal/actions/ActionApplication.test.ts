@@ -67,6 +67,26 @@ async function waitForCall(
   });
 }
 
+function deferredPromise(): {
+  promise: Promise<void>;
+  resolve: () => void;
+} {
+  let resolvePromise: (() => void) | undefined;
+  const promise = new Promise<void>((resolve) => {
+    resolvePromise = resolve;
+  });
+
+  return {
+    promise,
+    resolve: () => {
+      if (resolvePromise == null) {
+        throw new Error("Deferred promise resolve was not initialized");
+      }
+      resolvePromise();
+    },
+  };
+}
+
 describe("ActionApplication invalidation", () => {
   let client: Client;
   let store: Store;
@@ -215,8 +235,9 @@ describe("ActionApplication invalidation", () => {
 
     await store.applyAction(editTodo, { id: 0, text: "should-not-fire" });
 
-    // applyAction awaits all per-PK and per-type fan-out; the unrelated sub
-    // triggers no revalidate, so no notification can be in flight.
+    // Broad per-type invalidation runs in the background after the action
+    // resolves; yield once so an incorrect synchronous fan-out would surface.
+    await Promise.resolve();
     expect(subFn.next).not.toHaveBeenCalled();
 
     subscription.unsubscribe();
@@ -247,6 +268,61 @@ describe("ActionApplication invalidation", () => {
       expect(subFn.next).toHaveBeenCalled();
     });
 
+    subscription.unsubscribe();
+  });
+
+  it("does not wait for broad per-type invalidation before resolving an action", async () => {
+    const subFn = mockFunctionSubCallback();
+
+    const subscription = store.functions.observe(
+      {
+        queryDef: addOne,
+        params: { n: 2 },
+        dependsOn: [Todo.apiName],
+        dedupeInterval: 0,
+      },
+      subFn,
+    );
+
+    await waitForCall(subFn, 2);
+
+    const functionQueryEntry = Array.from(store.queries.map.entries()).find(
+      ([cacheKey]) => cacheKey.type === "function",
+    );
+    if (functionQueryEntry == null) {
+      throw new Error("Expected a function query to be registered");
+    }
+
+    const [, functionQuery] = functionQueryEntry;
+    const delayedInvalidation = deferredPromise();
+    const invalidateObjectType = vi.fn(() => delayedInvalidation.promise);
+    functionQuery.invalidateObjectType = invalidateObjectType;
+
+    // Batch apply avoids the dev-only single-action delay, keeping this test
+    // focused on whether invalidation blocks action resolution.
+    const actionPromise = store.applyAction(editTodo, [
+      { id: 0, text: "batch-first" },
+      { id: 1, text: "batch-second" },
+    ]);
+
+    await vi.waitFor(() => {
+      expect(invalidateObjectType).toHaveBeenCalledWith(
+        Todo.apiName,
+        undefined,
+      );
+    });
+
+    const actionResolvedBeforeInvalidation = await Promise.race([
+      actionPromise.then(() => true),
+      new Promise<boolean>((resolve) => {
+        setTimeout(() => resolve(false), 50);
+      }),
+    ]);
+
+    expect(actionResolvedBeforeInvalidation).toBe(true);
+
+    delayedInvalidation.resolve();
+    await delayedInvalidation.promise;
     subscription.unsubscribe();
   });
 
