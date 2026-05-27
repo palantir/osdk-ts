@@ -151,7 +151,7 @@ export async function toDataValue(
   }
 
   if (isScenarioClient(value)) {
-    return value.getScenarioReference().scenarioRid;
+    return value.getScenarioReference();
   }
 
   // TODO (during queries implementation)

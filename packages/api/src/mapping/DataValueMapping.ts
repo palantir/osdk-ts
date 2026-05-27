@@ -75,11 +75,11 @@ export interface DataValueClientToWire {
   set: Set<any>;
   mediaReference: MediaReference | MediaUpload | Media;
   /**
-   * Structurally typed as the object that exposes `getScenarioReference()` — matches the `ScenarioClient`
+   * Structurally typed as the object that exposes `getScenarioReference()` — matches the `EXPERIMENTAL_ScenarioClient`
    * returned by `withScenario` / `createScenario` in `@osdk/client/unstable-do-not-use`. Defined inline to
    * avoid a circular dependency on `@osdk/client`.
    */
-  scenarioReference: { getScenarioReference(): { scenarioRid: string } };
+  scenarioReference: { getScenarioReference(): string };
   twoDimensionalAggregation: {
     key: AllowedBucketKeyTypes;
     value: AllowedBucketTypes;

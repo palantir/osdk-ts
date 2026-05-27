@@ -173,13 +173,15 @@ export interface EXPERIMENTAL_ScenarioClient extends Client {
 }
 
 /**
- * Runtime predicate for {@link ScenarioClient}. Returns `true` when `value` exposes a `getScenarioReference()`
- * method — i.e. when it was built by {@link withScenario} or {@link createScenario}. Used by action parameter
- * serialization to accept a `ScenarioClient` directly for `scenarioReference`-typed parameters.
+ * Runtime predicate for {@link EXPERIMENTAL_ScenarioClient}. Returns `true` when `value` exposes a
+ * `getScenarioReference()` method — i.e. when it was built by {@link withScenario} or {@link createScenario}. Used
+ * by action parameter serialization to accept a scenario client directly for `scenarioReference`-typed parameters.
  *
  * @internal
  */
-export function isScenarioClient(value: unknown): value is ScenarioClient {
+export function isScenarioClient(
+  value: unknown,
+): value is EXPERIMENTAL_ScenarioClient {
   return (
     value != null
     && (typeof value === "object" || typeof value === "function")

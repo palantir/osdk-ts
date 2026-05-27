@@ -374,9 +374,7 @@ export interface DataValueClientToWire {
     	// (undocumented)
     objectType: string;
     	scenarioReference: {
-        		getScenarioReference(): {
-            			scenarioRid: string
-            		}
+        		getScenarioReference(): string
         	};
     	// (undocumented)
     set: Set<any>;
