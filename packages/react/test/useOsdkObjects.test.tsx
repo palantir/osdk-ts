@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "@osdk/api";
+import type { InterfaceDefinition, ObjectTypeDefinition } from "@osdk/api";
 import { act, renderHook } from "@testing-library/react";
 import * as React from "react";
 import { beforeEach, describe, expect, it, vitest } from "vitest";
@@ -23,6 +23,17 @@ import { useOsdkObjects } from "../src/new/useOsdkObjects.js";
 
 const MockObjectType = {
   apiName: "MockObject",
+  primaryKeyType: "string",
+} as unknown as ObjectTypeDefinition;
+
+const MockInterface = {
+  apiName: "MockInterface",
+  type: "interface",
+} as unknown as InterfaceDefinition;
+
+const MockConcreteType = {
+  apiName: "ConcreteType",
+  type: "object",
   primaryKeyType: "string",
 } as unknown as ObjectTypeDefinition;
 
@@ -282,5 +293,83 @@ describe("useOsdkObjects enabled option", () => {
     rerender({ withProperties: { leadName: () => "a" } });
 
     expect(mockObserveList).toHaveBeenCalledTimes(1);
+  });
+
+  describe("resolveToObjectType", () => {
+    it("should pass resolveToObjectType: true to observeList when true", () => {
+      const wrapper = createWrapper();
+
+      renderHook(
+        () =>
+          useOsdkObjects(MockInterface, {
+            pivotTo: "linkedItems",
+            resolveToObjectType: true,
+          }),
+        { wrapper },
+      );
+
+      expect(mockObserveList).toHaveBeenCalledTimes(1);
+      expect(mockObserveList).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: MockInterface,
+          pivotTo: "linkedItems",
+          resolveToObjectType: true,
+        }),
+        expect.any(Object),
+      );
+    });
+
+    it("should pass resolveToObjectType: true to observeList when an ObjectTypeDefinition is provided", () => {
+      const wrapper = createWrapper();
+
+      renderHook(
+        () =>
+          useOsdkObjects(MockInterface, {
+            resolveToObjectType: MockConcreteType,
+          }),
+        { wrapper },
+      );
+
+      expect(mockObserveList).toHaveBeenCalledTimes(1);
+      const callArgs = mockObserveList.mock.calls[0][0];
+      expect(callArgs.resolveToObjectType).toBe(true);
+    });
+
+    it("should not include resolveToObjectType when not set", () => {
+      const wrapper = createWrapper();
+
+      renderHook(
+        () =>
+          useOsdkObjects(MockInterface, {
+            pivotTo: "linkedItems",
+          }),
+        { wrapper },
+      );
+
+      const callArgs = mockObserveList.mock.calls[0][0];
+      expect(callArgs.resolveToObjectType).toBeUndefined();
+    });
+
+    it("should not resubscribe when an inline ObjectTypeDefinition reference changes but its identity is the same", () => {
+      const wrapper = createWrapper();
+
+      const { rerender } = renderHook(
+        ({ resolve }) =>
+          useOsdkObjects(MockInterface, {
+            resolveToObjectType: resolve,
+          }),
+        {
+          wrapper,
+          initialProps: { resolve: true as boolean | ObjectTypeDefinition },
+        },
+      );
+
+      expect(mockObserveList).toHaveBeenCalledTimes(1);
+
+      rerender({ resolve: MockConcreteType });
+
+      // both are truthy so dep array entry !!resolveToObjectType is stable
+      expect(mockObserveList).toHaveBeenCalledTimes(1);
+    });
   });
 });
