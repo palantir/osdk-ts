@@ -107,17 +107,19 @@ export class ObjectsHelper extends AbstractHelper<
    * @internal
    */
   public storeOsdkInstances(
-    values: Array<ObjectHolder> | Array<Osdk.Instance<any, any, any>>,
+    values:
+      | Array<ObjectHolder>
+      | Array<InterfaceHolder>
+      | Array<Osdk.Instance<any, any, any>>,
     batch: BatchContext,
     rdpConfig?: Canonical<Rdp> | null,
     selectFields?: ReadonlySet<string>,
     includeAllBaseObjectProperties?: boolean,
   ): ObjectCacheKey[] {
-    const holders = values as Array<ObjectHolder | InterfaceHolder>;
-    return holders.map(v => {
+    return values.map(v => {
       const concreteHolder: ObjectHolder = InterfaceDefRef in v
         ? v[UnderlyingOsdkObject]
-        : v;
+        : (v as ObjectHolder);
 
       return this.getQuery({
         apiName: v.$objectType ?? v.$apiName,

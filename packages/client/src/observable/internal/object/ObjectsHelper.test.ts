@@ -15,11 +15,15 @@
  */
 
 import type { Osdk } from "@osdk/api";
-import { Employee } from "@osdk/client.test.ontology";
+import { Employee, FooInterface } from "@osdk/client.test.ontology";
 import { FauxFoundry, ontologies, startNodeApiServer } from "@osdk/shared.test";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import type { Client } from "../../../Client.js";
 import { createClient } from "../../../createClient.js";
+import {
+  InterfaceDefRef,
+  ObjectDefRef,
+} from "../../../object/convertWireToOsdkObjects/InternalSymbols.js";
 import type { Canonical } from "../Canonical.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
 import { Store } from "../Store.js";
@@ -652,5 +656,67 @@ describe("ObjectsHelper variant cache keys", () => {
 
     store.cacheKeys.release(queryA.cacheKey);
     store.cacheKeys.release(queryB.cacheKey);
+  });
+});
+
+describe("ObjectsHelper.storeOsdkInstances interface unwrap", () => {
+  let client: Client;
+  let store: Store;
+  let emp: Osdk.Instance<Employee>;
+
+  beforeAll(async () => {
+    const testSetup = startNodeApiServer(
+      new FauxFoundry("https://stack.palantir.com/"),
+      createClient,
+    );
+    client = testSetup.client;
+
+    const fauxOntology = testSetup.fauxFoundry.getDefaultOntology();
+    ontologies.addEmployeeOntology(fauxOntology);
+
+    testSetup.fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+      employeeId: 1,
+      fullName: "Alice",
+    });
+
+    emp = await client(Employee).fetchOne(1, { $includeRid: true });
+
+    return () => {
+      testSetup.apiServer.close();
+    };
+  });
+
+  beforeEach(() => {
+    store = new Store(client);
+    return () => {
+      store = undefined!;
+    };
+  });
+
+  it("unwraps an InterfaceHolder to the underlying ObjectHolder when storing", () => {
+    const ifaceInstance = emp.$as(FooInterface);
+
+    expect(ifaceInstance.$apiName).toBe("FooInterface");
+    expect(ifaceInstance.$objectType).toBe("Employee");
+    expect(InterfaceDefRef in ifaceInstance).toBe(true);
+
+    const cacheKeys = store.batch({}, (batch) => {
+      return store.objects.storeOsdkInstances(
+        [ifaceInstance],
+        batch,
+      );
+    }).retVal;
+
+    expect(cacheKeys).toHaveLength(1);
+
+    const cached = store.getValue(cacheKeys[0])?.value;
+    expect(cached).toBeDefined();
+    if (!cached) {
+      return;
+    }
+    expect(cached.$apiName).toBe("Employee");
+    expect(cached.$objectType).toBe("Employee");
+    expect(cached[ObjectDefRef]).toBeDefined();
+    expect(InterfaceDefRef in cached).toBe(false);
   });
 });
