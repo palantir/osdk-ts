@@ -85,7 +85,7 @@ const archetypeRules = archetypes(
     [
       "@osdk/api",
       "@osdk/functions",
-      "@osdk/functions-testing.experimental",
+      "@osdk/unit-testing",
     ],
     {
       ...LIBRARY_RULES,
@@ -144,6 +144,8 @@ const archetypeRules = archetypes(
       "@osdk/maker",
       "@osdk/maker-experimental",
       "@osdk/maker-import",
+      "@osdk/seed-compiler",
+      "@osdk/seed-helpers",
       "@osdk/oauth",
       "@osdk/shared.client.impl",
       "@osdk/shared.net.errors",
@@ -376,11 +378,18 @@ const archetypeRules = archetypes(
       attwExcludeEntrypoints: [
         "./experimental/action-form",
         "./experimental/aip-agent-chat",
+        "./experimental/document-viewer",
+        "./experimental/email-viewer",
+        "./experimental/excel-viewer",
         "./experimental/filter-list",
+        "./experimental/image-viewer",
         "./experimental/markdown-renderer",
         "./experimental/object-table",
         "./experimental/pdf-viewer",
+        "./experimental/theme",
         "./experimental/tiff-renderer",
+        "./experimental/video-viewer",
+        "./experimental/xml-viewer",
       ],
       setupFiles: ["./src/test/setupPolyfills.ts"],
       vitestEnv: {

@@ -1,0 +1,21 @@
+/* DateRangeInputField — two separate bordered inputs + shared popover */
+
+/* Outer container that holds both inputs side by side.
+   Acts as Popover.Trigger — suppress the focus ring when
+   focus returns here after the popover closes. */
+.osdkDateRangeContainer {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--osdk-surface-spacing) * 2);
+  outline: none;
+
+  &[data-disabled] {
+    cursor: not-allowed;
+  }
+}
+
+/* Each input wrapper gets flex: 1 to split equally */
+.osdkDateRangeInputWrapper {
+  flex: 1;
+  min-width: 0;
+}

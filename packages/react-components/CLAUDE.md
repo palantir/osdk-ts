@@ -96,17 +96,18 @@ For every state change with a built-in default behavior (sort, filter, select, e
 ## Storybook
 
 - Stories live in `packages/react-components-storybook/src/stories/<Name>/<Name>.stories.tsx`
-- **Tier placement is via `title:`, not folder path.** New components belong under the `Experimental/` category:
+- **Tier placement is via `title:`, not folder path.** New components belong under the `Beta/` category:
 
   ```ts
   const meta: Meta<typeof MyComponent> = {
-    title: "Experimental/<Name>", // or "Experimental/<Parent>/<Subfeature>"
-    tags: ["experimental"],
+    title: "Beta/<Name>", // or "Beta/<Parent>/<Subfeature>"
     component: MyComponent,
   };
   ```
 
-  Produces URLs like `experimental-myname--default`, matching `experimental-baseform--default`, `experimental-objecttable-building-blocks-basetable--default`
+  The `beta` tag (and resulting tag badge) is injected automatically by the indexer in `.storybook/main.ts` for any title starting with `Beta/` — do **not** add `tags: ["beta"]` manually.
+
+  Produces URLs like `beta-myname--default`, matching `beta-baseform--default`, `beta-objecttable-building-blocks-basetable--default`
 - **OSDK-aware components must accept mocked data via props in stories.** Storybook runs without a Foundry stack, so the OSDK wrapper cannot fetch real data there. Either expose a `data` / `objects` / `value` prop the story can populate, or render the `Base<Name>` component directly. Use the MSW addon for stories that exercise hook-level fetch paths
 
 ## Metrics

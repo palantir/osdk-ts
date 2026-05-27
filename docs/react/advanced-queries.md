@@ -24,38 +24,40 @@ Prefer `useOsdkObjects` when both hooks would work. Both support filtering, sort
 Note that `pivotTo` and `streamUpdates` cannot be combined — see the note below.
 
 ```tsx
-import { $, Todo } from "@my/osdk";
+import { Todo } from "@my/osdk";
 import { useObjectSet, useOsdkObjects } from "@osdk/react";
+import client from "./client";
 
 // Simple query - use useOsdkObjects
-const { data } = useOsdkObjects(Todo, {
+const { data: simpleData } = useOsdkObjects(Todo, {
   where: { isComplete: false },
   orderBy: { createdAt: "desc" },
 });
 
 // Set operations - use useObjectSet
-const urgentTodos = $(Todo).where({ isUrgent: true });
-const completedTodos = $(Todo).where({ isComplete: true });
+const urgentTodos = client(Todo).where({ isUrgent: true });
+const completedTodos = client(Todo).where({ isComplete: true });
 
-const { data } = useObjectSet($(Todo), {
+const { data: setData } = useObjectSet(client(Todo), {
   union: [urgentTodos],
   subtract: [completedTodos],
 });
 ```
 
-:::note The `$` function
-The `$` function from your generated SDK creates an ObjectSet from an object type. `$(Todo)` creates an ObjectSet containing all Todo objects that you can then filter, union, intersect, or subtract with other ObjectSets.
+:::note Building ObjectSets
+Call your OSDK client with an object type — `client(Todo)` — to create an `ObjectSet`. You can then filter, union, intersect, or subtract it before passing it to `useObjectSet`. The `client` here is whatever you exported from `createClient(...)` in your app (`./client` in these examples).
 :::
 
 ### Basic Usage
 
 ```tsx
-import { $, Todo } from "@my/osdk";
+import { Todo } from "@my/osdk";
 import { useObjectSet } from "@osdk/react";
+import client from "./client";
 
 function TodosWithSetOperations() {
-  const allTodos = $(Todo);
-  const completedTodos = $(Todo).where({ isComplete: true });
+  const allTodos = client(Todo);
+  const completedTodos = client(Todo).where({ isComplete: true });
 
   const { data, isLoading, fetchMore } = useObjectSet(allTodos, {
     subtract: [completedTodos],
@@ -83,12 +85,13 @@ function TodosWithSetOperations() {
 Combine multiple object sets:
 
 ```tsx
-import { $, Todo } from "@my/osdk";
+import { Todo } from "@my/osdk";
 import { useObjectSet } from "@osdk/react";
+import client from "./client";
 
 function CombinedTodoQuery() {
-  const highPriorityTodos = $(Todo).where({ priority: "high" });
-  const urgentTodos = $(Todo).where({ isUrgent: true });
+  const highPriorityTodos = client(Todo).where({ priority: "high" });
+  const urgentTodos = client(Todo).where({ isUrgent: true });
 
   const { data } = useObjectSet(highPriorityTodos, {
     union: [urgentTodos], // High priority OR urgent
@@ -103,12 +106,13 @@ function CombinedTodoQuery() {
 Find objects that exist in all sets:
 
 ```tsx
-import { $, Todo } from "@my/osdk";
+import { Todo } from "@my/osdk";
 import { useObjectSet } from "@osdk/react";
+import client from "./client";
 
 function StarredAndIncompleteTodos() {
-  const starred = $(Todo).where({ isStarred: true });
-  const incomplete = $(Todo).where({ isComplete: false });
+  const starred = client(Todo).where({ isStarred: true });
+  const incomplete = client(Todo).where({ isComplete: false });
 
   const { data } = useObjectSet(starred, {
     intersect: [incomplete],
@@ -128,12 +132,13 @@ function StarredAndIncompleteTodos() {
 Remove objects that exist in another set:
 
 ```tsx
-import { $, Todo } from "@my/osdk";
+import { Todo } from "@my/osdk";
 import { useObjectSet } from "@osdk/react";
+import client from "./client";
 
 function ActiveTodos() {
-  const allTodos = $(Todo);
-  const completedTodos = $(Todo).where({ isComplete: true });
+  const allTodos = client(Todo);
+  const completedTodos = client(Todo).where({ isComplete: true });
 
   const { data } = useObjectSet(allTodos, {
     subtract: [completedTodos],
@@ -146,13 +151,14 @@ function ActiveTodos() {
 #### Combined Operations
 
 ```tsx
-import { $, Todo } from "@my/osdk";
+import { Todo } from "@my/osdk";
 import { useObjectSet } from "@osdk/react";
+import client from "./client";
 
 function ComplexTodoQuery() {
-  const highPriorityTodos = $(Todo).where({ priority: "high" });
-  const urgentTodos = $(Todo).where({ isUrgent: true });
-  const completedTodos = $(Todo).where({ isComplete: true });
+  const highPriorityTodos = client(Todo).where({ priority: "high" });
+  const urgentTodos = client(Todo).where({ isUrgent: true });
+  const completedTodos = client(Todo).where({ isComplete: true });
 
   const { data } = useObjectSet(highPriorityTodos, {
     union: [urgentTodos], // High priority OR urgent
@@ -168,13 +174,14 @@ function ComplexTodoQuery() {
 Navigate to linked objects:
 
 ```tsx
-import { $, Employee } from "@my/osdk";
+import { Employee } from "@my/osdk";
 import { useObjectSet } from "@osdk/react";
+import client from "./client";
 
 function EmployeeDepartments(
   { employee }: { employee: Employee.OsdkInstance },
 ) {
-  const employeeSet = $(Employee).where({ id: employee.id });
+  const employeeSet = client(Employee).where({ id: employee.id });
 
   const { data } = useObjectSet(employeeSet, {
     pivotTo: "department",
@@ -191,10 +198,11 @@ function EmployeeDepartments(
 ### Auto-Fetching and Streaming
 
 ```tsx
-import { $, Todo } from "@my/osdk";
+import { Todo } from "@my/osdk";
 import { useObjectSet } from "@osdk/react";
+import client from "./client";
 
-const { data, isLoading } = useObjectSet($(Todo), {
+const { data, isLoading } = useObjectSet(client(Todo), {
   where: { isComplete: false },
   autoFetchMore: 200, // Fetch at least 200 items
   streamUpdates: true, // Real-time WebSocket updates
@@ -283,7 +291,9 @@ For numeric aggregates (`sum`, `avg`, `min`, `max`) over an empty result set, th
 ### Advanced Examples
 
 ```tsx
+import { Employee } from "@my/osdk";
 import type { DerivedProperty } from "@osdk/client";
+import { useOsdkObjects } from "@osdk/react";
 
 const { data } = useOsdkObjects(Employee, {
   where: { department: "Engineering" },
@@ -306,7 +316,9 @@ const { data } = useOsdkObjects(Employee, {
 You can filter on derived properties in your where clause:
 
 ```tsx
+import { Employee } from "@my/osdk";
 import type { DerivedProperty } from "@osdk/client";
+import { useOsdkObjects } from "@osdk/react";
 
 const { data } = useOsdkObjects(Employee, {
   withProperties: {
@@ -397,7 +409,7 @@ For finer-grained control, depend on specific object instances:
 
 ```tsx
 import { Employee, getEmployeeReport } from "@my/osdk";
-import { useOsdkFunction, useOsdkObject } from "@osdk/react";
+import { useOsdkFunction } from "@osdk/react";
 
 function EmployeeReport({ employee }: { employee: Employee.OsdkInstance }) {
   const { data, isLoading } = useOsdkFunction(getEmployeeReport, {

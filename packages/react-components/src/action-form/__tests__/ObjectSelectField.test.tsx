@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ObjectSet } from "@osdk/api";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ObjectSelectField } from "../fields/ObjectSelectField.js";
@@ -62,11 +63,15 @@ vi.stubGlobal(
 );
 
 vi.mock("@osdk/react", () => ({
+  useObjectSet: vi.fn(),
   useOsdkMetadata: vi.fn(),
   useOsdkObjects: vi.fn(),
 }));
 
-const { useOsdkMetadata, useOsdkObjects } = await import("@osdk/react");
+const { useObjectSet, useOsdkMetadata, useOsdkObjects } = await import(
+  "@osdk/react"
+);
+const mockUseObjectSet = vi.mocked(useObjectSet);
 const mockUseOsdkMetadata = vi.mocked(useOsdkMetadata);
 const mockUseOsdkObjects = vi.mocked(useOsdkObjects);
 
@@ -94,7 +99,7 @@ function mockLoadedState(
 ) {
   // The mock return must satisfy UseOsdkListResult which has complex generics.
   // We construct the minimal shape needed by the component at runtime.
-  mockUseOsdkObjects.mockReturnValue({
+  const loadedState = {
     data,
     isLoading: false,
     isOptimistic: false,
@@ -104,14 +109,104 @@ function mockLoadedState(
     refetch: vi.fn(),
     objectSet: undefined,
     ...overrides,
-  } as never);
+  } as never;
+  mockUseOsdkObjects.mockReturnValue(loadedState);
+  mockUseObjectSet.mockReturnValue(loadedState);
 }
 
 describe("ObjectSelectField", () => {
   beforeEach(() => {
+    mockUseObjectSet.mockReset();
     mockUseOsdkObjects.mockReset();
     mockUseOsdkMetadata.mockReset();
     mockMetadataLoaded();
+  });
+
+  it("uses the object type data source by default", () => {
+    mockLoadedState();
+    renderObjectSelect();
+
+    expect(mockUseOsdkObjects).toHaveBeenCalledWith(
+      EMPLOYEE_TYPE,
+      expect.objectContaining({
+        enabled: true,
+        pageSize: 50,
+      }),
+    );
+    expect(mockUseObjectSet).toHaveBeenCalledWith(
+      undefined,
+      expect.objectContaining({
+        enabled: false,
+        pageSize: 50,
+      }),
+    );
+  });
+
+  it("uses an object set data source when provided", () => {
+    const objectSet = createMockObjectSet();
+    mockLoadedState();
+    renderObjectSelect({ objectSet });
+
+    expect(mockUseObjectSet).toHaveBeenCalledWith(
+      objectSet,
+      expect.objectContaining({
+        enabled: true,
+        pageSize: 50,
+      }),
+    );
+    expect(mockUseOsdkObjects).toHaveBeenCalledWith(
+      EMPLOYEE_TYPE,
+      expect.objectContaining({
+        enabled: false,
+        pageSize: 50,
+      }),
+    );
+    expect(mockUseOsdkMetadata).toHaveBeenCalledWith(EMPLOYEE_TYPE);
+  });
+
+  it("applies debounced search within an object set data source", async () => {
+    vi.useFakeTimers();
+    try {
+      const objectSet = createMockObjectSet();
+      mockLoadedState();
+      renderObjectSelect({ objectSet });
+      await openCombobox();
+
+      const searchInput = screen.getByPlaceholderText("Search…");
+      fireEvent.change(searchInput, { target: { value: "Ali" } });
+
+      const firstCall = mockUseObjectSet.mock.calls.at(-1);
+      expect(firstCall?.[1]?.where).toBeUndefined();
+
+      vi.advanceTimersByTime(300);
+
+      await vi.waitFor(() => {
+        const latestCall = mockUseObjectSet.mock.calls.at(-1);
+        expect(latestCall?.[1]?.where).toEqual({
+          fullName: { $containsAllTermsInOrder: "Ali" },
+        });
+      });
+      expect(mockUseOsdkObjects).toHaveBeenLastCalledWith(
+        EMPLOYEE_TYPE,
+        expect.objectContaining({
+          enabled: false,
+        }),
+      );
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("does not clear a current value outside the object set results", () => {
+    const onChange = vi.fn();
+    mockLoadedState(MOCK_EMPLOYEES);
+    renderObjectSelect({
+      objectSet: createMockObjectSet(),
+      value: makeMockObject(999, "Outside Scope") as never,
+      onChange,
+    });
+
+    expect(onChange).not.toHaveBeenCalled();
   });
 
   it("displays object titles as dropdown items", async () => {
@@ -213,6 +308,20 @@ describe("ObjectSelectField", () => {
     });
   });
 
+  it("disables the dropdown trigger and prevents opening when disabled", async () => {
+    mockLoadedState();
+    renderObjectSelect({ disabled: true });
+
+    const trigger = screen.getByRole("combobox") as HTMLButtonElement;
+    expect(trigger.disabled).toBe(true);
+    fireEvent.click(trigger);
+    fireEvent.keyDown(trigger, { key: "ArrowDown" });
+
+    await vi.waitFor(() => {
+      expect(getPopup()).toBeNull();
+    });
+  });
+
   it("renders custom placeholder text", () => {
     mockLoadedState();
     renderObjectSelect({ placeholder: "Find an employee…" });
@@ -255,15 +364,31 @@ function makeMockObject(primaryKey: number, title?: string) {
 /** Minimal ObjectTypeDefinition shape — useOsdkObjects only reads type + apiName at runtime. */
 const EMPLOYEE_TYPE = { type: "object" as const, apiName: "Employee" };
 
+function createMockObjectSet(): ObjectSet<typeof EMPLOYEE_TYPE> {
+  return {
+    $objectSetInternals: { def: EMPLOYEE_TYPE },
+  } as ObjectSet<typeof EMPLOYEE_TYPE>;
+}
+
 function renderObjectSelect(
   overrides: Partial<Parameters<typeof ObjectSelectField>[0]> = {},
 ) {
+  const props = ("objectSet" in overrides && overrides.objectSet != null)
+    ? {
+      value: null,
+      onChange: vi.fn(),
+      ...overrides,
+    }
+    : {
+      objectType: EMPLOYEE_TYPE,
+      value: null,
+      onChange: vi.fn(),
+      ...overrides,
+    };
+
   return render(
     <ObjectSelectField
-      objectType={EMPLOYEE_TYPE}
-      value={null}
-      onChange={vi.fn()}
-      {...overrides}
+      {...(props as Parameters<typeof ObjectSelectField>[0])}
     />,
   );
 }

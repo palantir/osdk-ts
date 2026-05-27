@@ -1,5 +1,110 @@
 # @osdk/maker-experimental
 
+## 0.20.0
+
+### Minor Changes
+
+- 466aa8a: fix value type block gen
+
+### Patch Changes
+
+- Updated dependencies [a492285]
+- Updated dependencies [60aff19]
+- Updated dependencies [d087189]
+  - @osdk/api@2.24.0
+  - @osdk/generator-converters.ontologyir@2.24.0
+  - @osdk/generator-converters.preview@0.14.0
+  - @osdk/maker@0.30.0
+  - @osdk/client.unstable@2.24.0
+
+## 0.19.0
+
+### Minor Changes
+
+- 56c2c9f: write static object file
+
+### Patch Changes
+
+- Updated dependencies [198f219]
+- Updated dependencies [56c2c9f]
+- Updated dependencies [ef156b6]
+- Updated dependencies [8290dd7]
+  - @osdk/api@2.23.0
+  - @osdk/maker@0.29.0
+  - @osdk/client.unstable@2.23.0
+  - @osdk/generator-converters.ontologyir@2.23.0
+  - @osdk/generator-converters.preview@0.13.0
+
+## 0.18.0
+
+### Minor Changes
+
+- dea392c: Fix maker experimental imports
+- d8f3dfd: fix imported interface shapes
+
+### Patch Changes
+
+- Updated dependencies [dea392c]
+- Updated dependencies [d8f3dfd]
+  - @osdk/generator-converters.ontologyir@2.22.0
+  - @osdk/generator-converters.preview@0.12.0
+  - @osdk/maker@0.28.0
+  - @osdk/api@2.22.0
+  - @osdk/client.unstable@2.22.0
+
+## 0.17.0
+
+### Minor Changes
+
+- 6bca4fd: fix cbac default nullability
+- 5b89f25: Fix IDP packaging
+- b98e084: fix interface resolution for action logic rules
+
+### Patch Changes
+
+- Updated dependencies [1a07c91]
+- Updated dependencies [6bca4fd]
+- Updated dependencies [5b89f25]
+- Updated dependencies [b98e084]
+  - @osdk/api@2.21.0
+  - @osdk/maker@0.27.0
+  - @osdk/generator-converters.ontologyir@2.21.0
+  - @osdk/client.unstable@2.21.0
+  - @osdk/generator-converters.preview@0.11.0
+
+## 0.16.0
+
+### Minor Changes
+
+- b05a5bc: remove jiti
+- be93bc8: Support value types
+
+### Patch Changes
+
+- Updated dependencies [9eb67e4]
+  - @osdk/api@2.20.0
+  - @osdk/maker@0.26.0
+  - @osdk/client.unstable@2.20.0
+  - @osdk/generator-converters.ontologyir@2.20.0
+  - @osdk/generator-converters.preview@0.10.0
+
+## 0.15.0
+
+### Minor Changes
+
+- 46c553f: fix interface bugs
+
+### Patch Changes
+
+- Updated dependencies [02c796c]
+- Updated dependencies [46c553f]
+- Updated dependencies [d962309]
+  - @osdk/api@2.19.0
+  - @osdk/generator-converters.ontologyir@2.19.0
+  - @osdk/maker@0.25.0
+  - @osdk/client.unstable@2.19.0
+  - @osdk/generator-converters.preview@0.9.0
+
 ## 0.14.0
 
 ### Minor Changes

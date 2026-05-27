@@ -203,9 +203,12 @@ function ConnectedPdfView(): React.ReactElement {
         currentPage={ctx.currentPage}
         numPages={ctx.numPages}
         scale={ctx.scale}
+        autoSize={ctx.autoSize}
         sidebarOpen={ctx.sidebarOpen}
         onPageChange={ctx.scrollToPage}
-        onScaleChange={ctx.setScale}
+        onZoomIn={ctx.zoomIn}
+        onZoomOut={ctx.zoomOut}
+        onAutoSizeToggle={ctx.toggleAutoSize}
         onSearchOpen={ctx.search.openSearch}
         onSidebarToggle={ctx.toggleSidebar}
         onDownload={handleDownload}
@@ -383,8 +386,9 @@ function AnnotationExplorerDemo(
 }
 
 const meta: Meta<PdfViewerProps> = {
-  title: "Experimental/PdfViewer/Recipes",
+  title: "Components/DocumentViewer/Renderers/PdfViewer/Recipes",
   component: BasePdfViewer,
+  tags: ["beta"],
 };
 
 export default meta;

@@ -22,12 +22,12 @@
   --osdk-table-row-bg-alternate: var(--osdk-background-tertiary);
   --osdk-table-row-bg-hover: color-mix(
     in srgb,
-    var(--osdk-intent-primary-hover) 10%,
+    var(--osdk-intent-primary-rest) 10%,
     var(--osdk-background-primary)
   );
   --osdk-table-row-bg-active: color-mix(
     in srgb,
-    var(--osdk-intent-primary-hover) 10%,
+    var(--osdk-intent-primary-rest) 10%,
     var(--osdk-background-primary)
   );
   --osdk-table-row-border-color-hover: var(--osdk-intent-primary-rest);
@@ -40,17 +40,22 @@
 
   /* Table Header Menu */
   --osdk-table-header-menu-padding: calc(var(--osdk-surface-spacing) * 0.25);
-  /* Try to use surface for backgrounds */
-  --osdk-table-header-menu-bg: var(--osdk-custom-color-light-gray-2);
+  --osdk-table-header-menu-bg: transparent;
   --osdk-table-header-menu-border: var(--osdk-surface-border-width) solid
-    var(--osdk-custom-color-gray-4);
+    var(--osdk-surface-border-color-default);
   --osdk-table-header-menu-color: var(--osdk-typography-color-muted);
   --osdk-table-header-menu-color-active: var(
     --osdk-typography-color-default-rest
   );
-  --osdk-table-header-menu-icon-color: var(--osdk-table-header-menu-color);
-  --osdk-table-header-menu-bg-hover: var(--osdk-custom-color-gray-1);
-  --osdk-table-header-menu-bg-active: var(--osdk-custom-color-gray-2);
+  --osdk-table-header-menu-icon-color: var(
+    --osdk-table-header-menu-color
+  );
+  --osdk-table-header-menu-bg-hover: var(
+    --osdk-surface-background-color-default-hover
+  );
+  --osdk-table-header-menu-bg-active: var(
+    --osdk-surface-background-color-default-active
+  );
 
   /* Resizer */
   --osdk-table-resizer-color-hover: var(--osdk-custom-color-primary-1);
@@ -74,7 +79,7 @@
     var(--osdk-intent-primary-rest);
   --osdk-table-cell-edited-border-error: var(--osdk-surface-border-width) solid
     var(--osdk-intent-danger-rest);
-  --osdk-table-cell-editable-bg: var(--osdk-background-primary);
+  --osdk-table-cell-input-bg: var(--osdk-background-primary);
   --osdk-table-edit-container-padding: calc(var(--osdk-surface-spacing) * 2)
     calc(var(--osdk-surface-spacing) * 4);
   --osdk-table-edit-container-min-height: calc(

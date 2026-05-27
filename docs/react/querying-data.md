@@ -639,7 +639,7 @@ const { links } = useLinks(employee, "reports", {
 
 ## useOsdkClient
 
-_Stable - available from both `@osdk/react` and `@osdk/react`_
+_Stable - available from both `@osdk/react` and `@osdk/react/experimental`_
 
 Access the OSDK client directly for custom queries.
 

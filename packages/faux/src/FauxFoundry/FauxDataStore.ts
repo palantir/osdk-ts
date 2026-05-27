@@ -48,6 +48,26 @@ import { objectLocator, parseLocator } from "./ObjectLocator.js";
 import type { JustProps } from "./typeHelpers/JustProps.js";
 import { validateAction } from "./validateAction.js";
 
+function getSelectedProperties(
+  parsedBody:
+    | OntologiesV2.LoadObjectSetV2MultipleObjectTypesRequest
+    | OntologiesV2.LoadObjectSetRequestV2,
+): readonly string[] {
+  if (parsedBody.selectV2 && parsedBody.selectV2.length > 0) {
+    return parsedBody.selectV2.map(entry => {
+      if (entry.type === "property") {
+        return entry.apiName;
+      } else if (entry.type === "propertyWithLoadLevel") {
+        if (entry.propertyIdentifier.type === "property") {
+          return entry.propertyIdentifier.apiName;
+        }
+      }
+      return "";
+    }).filter(Boolean);
+  }
+  return parsedBody.select;
+}
+
 export interface MediaMetadataAndContent {
   content: ArrayBuffer;
   mediaRef: MediaReference;
@@ -288,14 +308,14 @@ export class FauxDataStore {
 
   registerObjectWithPropertySecurities(
     regularObject: BaseServerObject,
-    securedObject: BaseServerObject,
+    securedObject: OntologiesV2.OntologyObjectV2,
     propertySecurities: OntologiesV2.PropertySecurities[],
   ): BaseServerObject {
     const registeredObj = this.registerObject(regularObject);
 
     this.#objectsWithSecurities.get(registeredObj.__apiName).set(
       String(registeredObj.__primaryKey),
-      Object.freeze({ ...securedObject }),
+      Object.freeze({ ...securedObject }) as BaseServerObject,
     );
     this.#propertySecurities.set(
       objectLocator(registeredObj),
@@ -867,18 +887,20 @@ export class FauxDataStore {
       | OntologiesV2.LoadObjectSetV2MultipleObjectTypesRequest
       | OntologiesV2.LoadObjectSetRequestV2,
   ): PagedBodyResponseWithTotal<BaseServerObject> {
-    const selected = parsedBody.select;
+    const selected = getSelectedProperties(parsedBody);
     const loadPropertySecurities = parsedBody.loadPropertySecurities ?? false;
     // when we have interfaces in here, we have a little trick for
     // caching off the important properties
     let objects = getObjectsFromSet(this, parsedBody.objectSet, undefined);
 
+    let propertySecuritiesLocator: ObjectLocator | undefined;
     if (loadPropertySecurities) {
       invariant(
         objects.length === 1,
         "Loading property securities is only supported when loading a single object",
       );
 
+      propertySecuritiesLocator = objectLocator(objects[0]);
       objects = [
         this.getObjectWithSecurities(
           objects[0].__apiName,
@@ -906,10 +928,8 @@ export class FauxDataStore {
       objects,
       getPaginationParamsFromRequest(parsedBody),
       true,
-      loadPropertySecurities
-        ? this.#propertySecurities.get(
-          objectLocator(objects[0]),
-        )
+      propertySecuritiesLocator != null
+        ? this.#propertySecurities.get(propertySecuritiesLocator)
         : undefined,
     );
 

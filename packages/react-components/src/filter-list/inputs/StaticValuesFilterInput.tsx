@@ -19,7 +19,10 @@ import React, { memo, useCallback, useMemo } from "react";
 import { assertUnreachable } from "../../shared/assertUnreachable.js";
 import { FilterInputExcludeRow } from "../base/FilterInputExcludeRow.js";
 import { ListogramInput } from "../base/inputs/ListogramInput.js";
-import { MultiSelectInput } from "../base/inputs/MultiSelectInput.js";
+import {
+  MultiSelectInput,
+  type MultiSelectInputLayout,
+} from "../base/inputs/MultiSelectInput.js";
 import { SingleSelectInput } from "../base/inputs/SingleSelectInput.js";
 import { TextTagsInput } from "../base/inputs/TextTagsInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
@@ -39,8 +42,10 @@ interface StaticValuesFilterInputProps<Q extends ObjectTypeDefinition> {
   onFilterStateChanged: (state: FilterState) => void;
   /** Search term for filtering displayed values within the filter input */
   searchQuery?: string;
-  /** Whether the exclude/include toggle row is expanded */
+  /** Whether the inline exclude row is currently open */
   excludeRowOpen?: boolean;
+  /** Layout for `MULTI_SELECT` rendering. Forwarded to `MultiSelectInput`. */
+  layout?: MultiSelectInputLayout;
 }
 
 /**
@@ -150,6 +155,7 @@ function StaticValuesFilterInputInner<Q extends ObjectTypeDefinition>({
   onFilterStateChanged,
   searchQuery,
   excludeRowOpen,
+  layout,
 }: StaticValuesFilterInputProps<Q>): React.ReactElement {
   const aggregationValues: PropertyAggregationValue[] = useMemo(
     () => definition.values.map((value) => ({ value, count: 0 })),
@@ -237,6 +243,7 @@ function StaticValuesFilterInputInner<Q extends ObjectTypeDefinition>({
             showCounts={definition.showCount}
             ariaLabel={`Search ${definition.key} values`}
             renderValue={definition.renderValue}
+            layout={layout}
           />
         </FilterInputExcludeRow>
       );

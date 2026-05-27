@@ -65,7 +65,7 @@ export interface MockClientHelper {
     >
   >;
 
-  mockObjectFactory2Once: () => DeferredPromise<
+  mockObjectFactoryOnce: () => DeferredPromise<
     Array<
       | Osdk.Instance<ObjectOrInterfaceDefinition, never, any, {}>
       | ObjectHolder
@@ -206,7 +206,6 @@ export function createClientMockHelper(): MockClientHelper {
     baseUrl: "http://localhost:8080",
     ontologyRid: "ri.something",
     objectFactory: vitest.fn(),
-    objectFactory2: vitest.fn(),
     ontologyProvider: {
       getActionDefinition: vitest.fn(),
       getInterfaceDefinition: vitest.fn(),
@@ -223,14 +222,14 @@ export function createClientMockHelper(): MockClientHelper {
   };
   client.fetchMetadata = vitest.fn();
 
-  function mockObjectFactory2Once() {
+  function mockObjectFactoryOnce() {
     const d = pDefer<
       (
         | Osdk.Instance<ObjectOrInterfaceDefinition, never, any, {}>
         | ObjectHolder
       )[]
     >();
-    vi.mocked(client[additionalContext].objectFactory2).mockReturnValueOnce(
+    vi.mocked(client[additionalContext].objectFactory).mockReturnValueOnce(
       d.promise as Promise<ObjectHolder[]>,
     );
     return d;
@@ -322,7 +321,7 @@ export function createClientMockHelper(): MockClientHelper {
     client,
     mockApplyActionOnce,
     mockFetchOneOnce,
-    mockObjectFactory2Once,
+    mockObjectFactoryOnce,
     mockFetchPageOnce,
   };
 }

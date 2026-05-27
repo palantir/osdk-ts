@@ -1,5 +1,63 @@
 # @osdk/benchmarks.primary
 
+## 0.17.0
+
+### Patch Changes
+
+- Updated dependencies [a492285]
+- Updated dependencies [60aff19]
+- Updated dependencies [35ad6d1]
+- Updated dependencies [6923158]
+  - @osdk/client@2.24.0
+
+## 0.16.0
+
+### Patch Changes
+
+- Updated dependencies [8290dd7]
+  - @osdk/client@2.23.0
+
+## 0.15.0
+
+### Patch Changes
+
+- @osdk/client@2.22.0
+
+## 0.14.0
+
+### Patch Changes
+
+- Updated dependencies [1a07c91]
+- Updated dependencies [2db1450]
+  - @osdk/client@2.21.0
+
+## 0.13.0
+
+### Patch Changes
+
+- Updated dependencies [f90a2da]
+- Updated dependencies [9eb67e4]
+- Updated dependencies [51b3bce]
+- Updated dependencies [75f877f]
+  - @osdk/client@2.20.0
+
+## 0.12.0
+
+### Patch Changes
+
+- Updated dependencies [02c796c]
+- Updated dependencies [2a2b672]
+- Updated dependencies [d962309]
+  - @osdk/client@2.19.0
+
+## 0.11.0
+
+### Patch Changes
+
+- Updated dependencies [69ebc43]
+- Updated dependencies [85a248d]
+  - @osdk/client@2.18.0
+
 ## 0.10.0
 
 ### Patch Changes

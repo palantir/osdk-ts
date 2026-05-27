@@ -1101,6 +1101,59 @@ describe(Store, () => {
             { isOptimistic: true, status: "loading" },
           );
         });
+
+        it("removes deleted objects via deleteFromStore without leaving undefined slots in the list", async () => {
+          // Regression for the action-driven delete path: tombstone writes
+          // didn't register in changes.deleted, so list watchers kept the
+          // cache key and combineLatest resolved the slot to undefined.
+          const emp = employeesAsServerReturns[0];
+          updateList(cache, { type: Employee, where: {}, orderBy: {} }, [
+            emp,
+          ]);
+
+          const subFn = mockSingleSubCallback();
+          defer(
+            cache.objects.observe({
+              apiName: Employee,
+              pk: emp.$primaryKey,
+              mode: "offline",
+            }, subFn),
+          );
+          expectSingleObjectCallAndClear(subFn, emp);
+
+          const subListFn = mockListSubCallback();
+          defer(
+            cache.lists.observe({
+              type: Employee,
+              mode: "offline",
+            }, subListFn),
+          );
+
+          await waitForCall(subListFn, 1);
+          expectSingleListCallAndClear(
+            subListFn,
+            [emp],
+            { status: "loaded" },
+          );
+
+          testStage("delete via the production path: deleteFromStore");
+
+          cache.batch({}, (batch) => {
+            cache.objects.getQuery({
+              apiName: Employee,
+              pk: emp.$primaryKey,
+            }, undefined).deleteFromStore("loaded", batch);
+          });
+
+          expectSingleObjectCallAndClear(subFn, undefined);
+
+          await waitForCall(subListFn, 1);
+          expectSingleListCallAndClear(
+            subListFn,
+            [],
+            { status: "loaded", isOptimistic: false },
+          );
+        });
       });
     });
 
@@ -2340,7 +2393,7 @@ describe(Store, () => {
           },
         );
 
-        // the optimistic job will call createObject which triggers the `objectFactory2` of the
+        // the optimistic job will call createObject which triggers the `objectFactory` of the
         // cache context.
 
         // Perform something optimistic.
@@ -2778,6 +2831,89 @@ describe(Store, () => {
             ],
           }),
         );
+      });
+
+      it("removes streamed-out objects from object-set without leaving undefined slots", async () => {
+        // Regression for BaseListQuery.onOswRemoved: streaming "REMOVED"
+        // events wrote tombstones via batch.delete without registering
+        // changes.deleted, so ObjectSetQuery emitted an undefined slot
+        // for the removed object.
+        fauxFoundry.getDefaultDataStore().clear();
+
+        fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+          $apiName: "Employee",
+          employeeId: 800,
+          fullName: "Stay",
+        });
+        const empBId = 801;
+        fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+          $apiName: "Employee",
+          employeeId: empBId,
+          fullName: "Goodbye",
+        });
+
+        const baseObjectSet = client(Employee) as ObjectSet<Employee>;
+
+        // Spy on the public subscribe seam invoked by
+        // BaseListQuery.createWebsocketSubscription when streamUpdates
+        // is true. Capturing the listener here lets us drive a real
+        // REMOVED update through onOswChange → onOswRemoved without
+        // reaching protected internals.
+        const subscribeSpy = vi.spyOn(baseObjectSet, "subscribe")
+          .mockReturnValue({ unsubscribe: () => {} });
+
+        const sub = mockObserver<ObjectSetPayload | undefined>();
+        defer(
+          store.objectSets.observe({
+            baseObjectSet,
+            streamUpdates: true,
+          }, sub),
+        );
+
+        await vi.waitFor(
+          () => {
+            expect(sub.next).toHaveBeenLastCalledWith(
+              expect.objectContaining({ status: "loaded" }),
+            );
+          },
+          { timeout: 5000 },
+        );
+
+        expect(sub.next).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            status: "loaded",
+            resolvedList: expect.arrayContaining([
+              expect.objectContaining({ employeeId: 800 }),
+              expect.objectContaining({ employeeId: 801 }),
+            ]),
+          }),
+        );
+
+        await vi.waitFor(() => {
+          expect(subscribeSpy).toHaveBeenCalled();
+        });
+
+        const osdkB = await client(Employee).fetchOne(empBId);
+
+        sub.next.mockClear();
+
+        const listener = subscribeSpy.mock.calls[0]?.[0];
+        if (!listener?.onChange) {
+          throw new Error("expected captured listener to define onChange");
+        }
+        listener.onChange({ object: osdkB, state: "REMOVED" });
+
+        await vi.waitFor(
+          () => {
+            expect(sub.next).toHaveBeenCalled();
+          },
+          { timeout: 5000 },
+        );
+
+        const lastCall = sub.next.mock.calls.at(-1)?.[0];
+        expect(lastCall?.resolvedList).toEqual([
+          expect.objectContaining({ employeeId: 800 }),
+        ]);
       });
 
       it("should trigger revalidation when object is deleted from complex ObjectSet", async () => {

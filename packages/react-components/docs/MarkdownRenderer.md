@@ -1,14 +1,30 @@
 # MarkdownRenderer
 
-A React component for rendering markdown content using [react-markdown](https://github.com/remarkjs/react-markdown). Supports headings, code blocks, tables, links, images, blockquotes, and lists with themeable styling via CSS custom properties.
+A React component for rendering markdown content using [react-markdown](https://github.com/remarkjs/react-markdown). Supports headings, code blocks, tables, links, images, blockquotes, and lists with themeable styling via CSS custom properties. Also provides an OSDK Media wrapper for fetching markdown contents directly from Foundry.
 
 ## Import
 
 ```tsx
-import { MarkdownRenderer } from "@osdk/react-components/experimental/markdown-renderer";
+import {
+  MarkdownRenderer,
+  MarkdownViewerMedia,
+} from "@osdk/react-components/experimental/markdown-renderer";
 ```
 
+- **`MarkdownViewerMedia`** — Primary component for OSDK usage. Accepts an OSDK `Media` object, handles fetching the markdown text, and renders via `MarkdownRenderer`.
+- **`MarkdownRenderer`** — Lower-level component that accepts a markdown string directly.
+
 ## Usage
+
+### With OSDK Media
+
+```tsx
+import { MarkdownViewerMedia } from "@osdk/react-components/experimental/markdown-renderer";
+
+<MarkdownViewerMedia media={document.readme} />;
+```
+
+### With a string
 
 ```tsx
 import { MarkdownRenderer } from "@osdk/react-components/experimental/markdown-renderer";
@@ -24,6 +40,13 @@ import { MarkdownRenderer } from "@osdk/react-components/experimental/markdown-r
 | ----------- | -------- | -------- | ------------------------------------- |
 | `content`   | `string` | Yes      | Markdown text to render               |
 | `className` | `string` | No       | CSS class applied to the root element |
+
+### MarkdownViewerMediaProps
+
+| Prop        | Type     | Required | Description                                  |
+| ----------- | -------- | -------- | -------------------------------------------- |
+| `media`     | `Media`  | Yes      | The OSDK Media object to fetch markdown from |
+| `className` | `string` | No       | CSS class applied to the root element        |
 
 ## Features
 

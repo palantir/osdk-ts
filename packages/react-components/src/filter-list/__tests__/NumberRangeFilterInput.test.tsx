@@ -28,6 +28,7 @@ vi.mock("@osdk/react", () => ({
     isLoading: false,
     error: null,
   }),
+  useOsdkMetadata: vi.fn().mockReturnValue({ loading: false }),
   useRegisterUserAgent: vi.fn(),
 }));
 

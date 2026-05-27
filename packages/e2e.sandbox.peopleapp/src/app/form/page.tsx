@@ -218,10 +218,27 @@ export function FormPage() {
     () => $(Employee) as ObjectSet<ObjectTypeDefinition>,
     [],
   );
+  const marketingEmployees = useMemo(
+    () =>
+      $(Employee).where({ department: "Marketing" }) as ObjectSet<
+        ObjectTypeDefinition
+      >,
+    [],
+  );
 
   const allFormContent = useMemo(
     (): ReadonlyArray<FormContentItem> => [
       ...formContent,
+      field({
+        fieldKey: "marketingManager",
+        fieldComponent: "OBJECT_SELECT",
+        label: "Marketing manager",
+        placeholder: "Search Marketing employees…",
+        helperText: "This selector is scoped by an ObjectSet.",
+        fieldComponentProps: {
+          objectSet: marketingEmployees,
+        },
+      }),
       field({
         fieldKey: "team",
         fieldComponent: "OBJECT_SET",
@@ -231,7 +248,7 @@ export function FormPage() {
         },
       }),
     ],
-    [employeeObjectSet],
+    [employeeObjectSet, marketingEmployees],
   );
 
   return (

@@ -21,6 +21,7 @@ import type {
   PropertyKeys,
   WirePropertyTypes,
 } from "@osdk/api";
+import type { ReactNode } from "react";
 import type { CustomFilterState } from "./types/CustomRendererTypes.js";
 import type { KeywordSearchFilterState } from "./types/KeywordSearchTypes.js";
 import type {
@@ -35,6 +36,21 @@ export type PropertyTypeFromKey<
   Q extends ObjectTypeDefinition,
   K extends PropertyKeys<Q>,
 > = CompileTimeMetadata<Q>["properties"][K]["type"];
+
+/**
+ * Common mix-in for filter definitions: opt-out flag for the header search
+ * monocle.
+ */
+export interface FilterDefinitionControls {
+  /**
+   * When `false`, the header monocle (search-values icon) is hidden even for
+   * filter components that ordinarily support in-filter search. Useful for
+   * `MULTI_SELECT`, which already has its own inline search field.
+   *
+   * @default true
+   */
+  searchField?: boolean;
+}
 
 /**
  * All available filter component types
@@ -208,19 +224,41 @@ export interface ToggleFilterState extends BaseFilterState {
 }
 
 /**
- * A property filter definition specifies configuration for filtering on a single property
+ * Optional date display formatter. Mixed into `PropertyFilterDefinition`
+ * only when the property is `datetime` or `timestamp` — see
+ * {@link PropertyFilterDateExtras}.
  *
- * The component type C must be compatible with the property type derived from the key.
- * For example, boolean properties can only use LISTOGRAM or SINGLE_SELECT,
- * while string properties can use LISTOGRAM, TEXT_TAGS, CONTAINS_TEXT, SINGLE_SELECT, or MULTI_SELECT.
+ * `formatDate` overrides the displayed string everywhere the filter
+ * surfaces a date: the shared `DateRangePicker` / `DatePicker` idle text,
+ * the date-range histogram tooltip and period subtitle, the histogram
+ * x-tick labels (when no `formatTickLabel` is provided), the multi-date
+ * chip text, and timeline labels. The picker's internal value remains ISO
+ * `YYYY-MM-DD` so cross-locale viewers see a consistent input format
+ * regardless of `formatDate`.
+ *
+ * Receives a `Date` in local time. If the property is a UTC ISO string and
+ * you want a different timezone, do that conversion inside your callback.
  */
-export interface PropertyFilterDefinition<
+export interface DateFormattingProps {
+  formatDate?: (date: Date) => string;
+}
+
+/**
+ * Conditionally adds `formatDate` to a property filter definition only for
+ * `datetime` / `timestamp` properties. For other property types this field
+ * is typed as `never` so attempting to set it is a TypeScript error.
+ */
+export type PropertyFilterDateExtras<P extends WirePropertyTypes> = P extends
+  "datetime" | "timestamp" ? DateFormattingProps
+  : { formatDate?: never };
+
+interface PropertyFilterDefinitionBase<
   Q extends ObjectTypeDefinition,
   K extends PropertyKeys<Q> = PropertyKeys<Q>,
   C extends ValidComponentsForPropertyType<
     PropertyTypeFromKey<Q, K>
   > = ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>>,
-> {
+> extends FilterDefinitionControls {
   /**
    * Discriminator for filter definition type
    */
@@ -275,9 +313,11 @@ export interface PropertyFilterDefinition<
   /**
    * Custom display function for filter values.
    * Replaces the default string display in dropdown items, chips, and listogram rows.
-   * The returned string is also used for search matching within filter dropdowns.
+   * When the function returns a string, that string is also used for search matching
+   * within filter dropdowns. When it returns a non-string `ReactNode`, search falls
+   * back to the raw value.
    */
-  renderValue?: (value: string) => string;
+  renderValue?: (value: string) => ReactNode;
 
   /**
    * Show aggregation counts next to filter option values.
@@ -285,6 +325,20 @@ export interface PropertyFilterDefinition<
    * @default true for LISTOGRAM and MULTI_SELECT, false for SINGLE_SELECT
    */
   showCount?: boolean;
+
+  /**
+   * When true, clicking a bar in the histogram replaces the filter range
+   * with that bucket's `[min, max]`. Only applies to histogram-rendering
+   * filter components (`NUMBER_RANGE` and `DATE_RANGE`); ignored on other
+   * component types.
+   *
+   * Click replaces the current range — clicking a second bar discards the
+   * previous selection. Multi-bucket selection / shift+click union is NOT
+   * supported in v1.
+   *
+   * @default false
+   */
+  clickToFilter?: boolean;
 
   /**
    * Controls whether this filter is rendered.
@@ -295,16 +349,36 @@ export interface PropertyFilterDefinition<
 }
 
 /**
- * Props for a single filter list item component.
- * Extends PropertyFilterDefinition with runtime props for rendering.
+ * A property filter definition specifies configuration for filtering on a single property
+ *
+ * The component type C must be compatible with the property type derived from the key.
+ * For example, boolean properties can only use LISTOGRAM or SINGLE_SELECT,
+ * while string properties can use LISTOGRAM, TEXT_TAGS, CONTAINS_TEXT, SINGLE_SELECT, or MULTI_SELECT.
+ *
+ * Date and datetime properties may additionally specify `formatDate` — see
+ * {@link PropertyFilterDateExtras}.
  */
-export interface FilterListItemProps<
+export type PropertyFilterDefinition<
   Q extends ObjectTypeDefinition,
   K extends PropertyKeys<Q> = PropertyKeys<Q>,
   C extends ValidComponentsForPropertyType<
     PropertyTypeFromKey<Q, K>
   > = ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>>,
-> extends PropertyFilterDefinition<Q, K, C> {
+> =
+  & PropertyFilterDefinitionBase<Q, K, C>
+  & PropertyFilterDateExtras<PropertyTypeFromKey<Q, K>>;
+
+/**
+ * Props for a single filter list item component.
+ * Extends PropertyFilterDefinition with runtime props for rendering.
+ */
+export type FilterListItemProps<
+  Q extends ObjectTypeDefinition,
+  K extends PropertyKeys<Q> = PropertyKeys<Q>,
+  C extends ValidComponentsForPropertyType<
+    PropertyTypeFromKey<Q, K>
+  > = ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>>,
+> = PropertyFilterDefinition<Q, K, C> & {
   objectSet: ObjectSet<Q>;
 
   /**
@@ -314,4 +388,4 @@ export interface FilterListItemProps<
   onFilterStateChanged: (state: FilterStateByComponentType[C]) => void;
 
   onFilterRemoved?: (key: PropertyKeys<Q>) => void;
-}
+};

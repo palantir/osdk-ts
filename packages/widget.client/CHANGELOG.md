@@ -1,5 +1,52 @@
 # @osdk/widget.client
 
+## 3.21.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.21.0
+
+## 3.20.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.20.0
+
+## 3.19.0
+
+### Minor Changes
+
+- 2f3aa7b: Support reloading widget on vite HMR full reload
+
+### Patch Changes
+
+- Updated dependencies [2f3aa7b]
+  - @osdk/widget.api@3.19.0
+
+## 3.18.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.18.0
+
+## 3.17.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.17.0
+
+## 3.16.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.16.0
+
+## 3.15.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.15.0
+
 ## 3.14.0
 
 ### Patch Changes

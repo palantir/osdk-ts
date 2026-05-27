@@ -1,0 +1,200 @@
+name: Storybook Preview
+
+env:
+  DO_NOT_TRACK: 1
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+
+permissions: {}
+
+jobs:
+  build-preview:
+    name: Build preview
+    if: ${{ github.event.action != 'closed' && github.event.pull_request.head.repo.full_name == github.repository }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out code
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4.3.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build dependencies for Storybook
+        run: pnpm --filter "@osdk/*" transpileBrowser
+
+      - name: Build Storybook
+        env:
+          STORYBOOK_BASE_PATH: /osdk-ts/storybook/pr-${{ github.event.pull_request.number }}/${{ github.event.pull_request.head.sha }}/
+        run: pnpm --filter @osdk/react-components-storybook build
+
+      - name: Upload Storybook build
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: storybook-static
+          path: packages/react-components-storybook/storybook-static
+          if-no-files-found: error
+          retention-days: 7
+
+  deploy-preview:
+    name: Deploy preview
+    needs: build-preview
+    if: ${{ github.event.action != 'closed' && github.event.pull_request.head.repo.full_name == github.repository }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    concurrency:
+      # Serialize gh-pages writers so force-push deploys do not clobber each other.
+      # queue: max keeps every pending preview deploy instead of replacing older pending runs.
+      group: storybook-gh-pages
+      queue: max
+    steps:
+      - name: Download Storybook build
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: storybook-static
+          path: storybook-static
+
+      - name: Deploy preview to gh-pages
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          preview_path="storybook/pr-${PR_NUMBER}/${COMMIT_SHA}"
+
+          git clone --branch gh-pages --single-branch --depth 1 https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git gh-pages-temp
+
+          # Remove old previews for this PR, then deploy the new one
+          rm -rf "gh-pages-temp/storybook/pr-${PR_NUMBER}"
+          mkdir -p "gh-pages-temp/${preview_path}"
+          cp -R storybook-static/. "gh-pages-temp/${preview_path}/"
+          touch gh-pages-temp/storybook/.nojekyll
+
+          cd gh-pages-temp
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Deploy Storybook preview for PR #${PR_NUMBER}" || echo "No changes to commit"
+          git push -f https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git gh-pages
+
+      - name: Comment with preview link
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          PREVIEW_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/storybook/pr-${{ github.event.pull_request.number }}/${{ github.event.pull_request.head.sha }}/
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          commit_sha_short="${COMMIT_SHA:0:7}"
+          {
+            echo "## Storybook Preview"
+            echo
+            echo "📚 [Open Storybook preview](${PREVIEW_URL})"
+            echo
+            echo "Built from commit \`${commit_sha_short}\`."
+            echo "[Workflow run](${RUN_URL})"
+          } > /tmp/storybook-preview.md
+
+          comment_id=$(gh api --paginate "repos/${{ github.repository }}/issues/${PR_NUMBER}/comments" --jq '.[] | select(.user.login == "github-actions[bot]") | select(.body | startswith("## Storybook Preview")) | .id' | head -1)
+          if [ -n "$comment_id" ]; then
+            gh api "repos/${{ github.repository }}/issues/comments/${comment_id}" -X PATCH -f body="$(cat /tmp/storybook-preview.md)"
+          else
+            gh api "repos/${{ github.repository }}/issues/${PR_NUMBER}/comments" -f body="$(cat /tmp/storybook-preview.md)"
+          fi
+
+  comment-preview-failure:
+    name: Comment on preview failure
+    needs: [build-preview, deploy-preview]
+    if: ${{ always() && github.event.action != 'closed' && github.event.pull_request.head.repo.full_name == github.repository && (needs.build-preview.result == 'failure' || needs.deploy-preview.result == 'failure') }}
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Comment on preview failure
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          commit_sha_short="${COMMIT_SHA:0:7}"
+          {
+            echo "## Storybook Preview"
+            echo
+            echo "❌ Storybook preview failed to build or deploy for commit \`${commit_sha_short}\`."
+            echo
+            echo "[Workflow run](${RUN_URL})"
+          } > /tmp/storybook-preview.md
+
+          comment_id=$(gh api --paginate "repos/${{ github.repository }}/issues/${PR_NUMBER}/comments" --jq '.[] | select(.user.login == "github-actions[bot]") | select(.body | startswith("## Storybook Preview")) | .id' | head -1)
+          if [ -n "$comment_id" ]; then
+            gh api "repos/${{ github.repository }}/issues/comments/${comment_id}" -X PATCH -f body="$(cat /tmp/storybook-preview.md)"
+          else
+            gh api "repos/${{ github.repository }}/issues/${PR_NUMBER}/comments" -f body="$(cat /tmp/storybook-preview.md)"
+          fi
+
+  cleanup:
+    name: Remove preview
+    if: ${{ github.event.action == 'closed' && github.event.pull_request.head.repo.full_name == github.repository }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    concurrency:
+      # Serialize gh-pages writers so force-push deploys do not clobber each other.
+      # queue: max keeps every pending preview deploy instead of replacing older pending runs.
+      group: storybook-gh-pages
+      queue: max
+    steps:
+      - name: Remove preview from gh-pages
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          preview_path="storybook/pr-${PR_NUMBER}"
+
+          git clone --branch gh-pages --single-branch --depth 1 https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git gh-pages-temp
+
+          rm -rf "gh-pages-temp/${preview_path}"
+
+          cd gh-pages-temp
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Remove Storybook preview for PR #${PR_NUMBER}" || echo "No changes to commit"
+          git push -f https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git gh-pages
+
+      - name: Comment that preview was removed
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          {
+            echo "## Storybook Preview"
+            echo
+            echo "🧹 Preview removed because this PR was closed."
+            echo
+            echo "[Workflow run](${RUN_URL})"
+          } > /tmp/storybook-preview.md
+
+          comment_id=$(gh api --paginate "repos/${{ github.repository }}/issues/${PR_NUMBER}/comments" --jq '.[] | select(.user.login == "github-actions[bot]") | select(.body | startswith("## Storybook Preview")) | .id' | head -1)
+          if [ -n "$comment_id" ]; then
+            gh api "repos/${{ github.repository }}/issues/comments/${comment_id}" -X PATCH -f body="$(cat /tmp/storybook-preview.md)"
+          else
+            echo "No existing Storybook preview comment to update."
+          fi
