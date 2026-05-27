@@ -20,11 +20,11 @@ import type { MinimalClient } from "../MinimalClientContext.js";
 
 /**
  * A {@link Client} attached to an ontology scenario. All read and write operations performed via this client are
- * scoped to that scenario. `ScenarioClient` is a superset of {@link Client}.
+ * scoped to that scenario. `EXPERIMENTAL_ScenarioClient` is a superset of {@link Client}.
  *
  * @beta This is an experimental, unstable feature subject to change.
  */
-export interface ScenarioClient extends Client {
+export interface EXPERIMENTAL_ScenarioClient extends Client {
   /**
    * The scenario RID this client is scoped to.
    */
@@ -34,14 +34,14 @@ export interface ScenarioClient extends Client {
 /**
  * Shared internal builder used by both {@link withScenario} and {@link createScenario}. Validates the parent client
  * is not already inside a scenario or transaction, then constructs a fresh {@link Client} via
- * `createClientWithScenario` and decorates it with {@link ScenarioClient}-only methods.
+ * `createClientWithScenario` and decorates it with {@link EXPERIMENTAL_ScenarioClient}-only methods.
  *
  * @internal
  */
 export function buildScenarioClient(
   parent: Client,
   scenarioRid: string,
-): ScenarioClient {
+): EXPERIMENTAL_ScenarioClient {
   const ctx: MinimalClient = parent[additionalContext];
 
   if (ctx.transactionId != null) {
@@ -71,5 +71,5 @@ export function buildScenarioClient(
     getScenarioReference: {
       value: () => scenarioRid,
     },
-  }) as ScenarioClient;
+  }) as EXPERIMENTAL_ScenarioClient;
 }
