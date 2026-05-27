@@ -166,7 +166,9 @@ export function useRowSelection<
   const onToggleAll = useCallback(() => {
     if (!enableRowSelection || !data) return;
 
-    const newIsAllSelected = !isAllSelected;
+    // Any existing selection (full or partial/indeterminate) clears on click;
+    // only an empty selection promotes to "select all".
+    const newIsAllSelected = !hasSelection;
     const newSelectedRows: PrimaryKeyType<Q>[] = newIsAllSelected
       ? data.map(item => item.$primaryKey)
       : [];
@@ -182,7 +184,7 @@ export function useRowSelection<
   }, [
     enableRowSelection,
     data,
-    isAllSelected,
+    hasSelection,
     isControlled,
     fireSelectionCallbacks,
   ]);
