@@ -91,17 +91,16 @@ export function AipAgentChatComposer({
 
   return (
     <div className={classNames(styles.composer, className)}>
-      <Input
-        aria-label="Message input"
-        className={styles.textarea}
-        onValueChange={setDraft}
-        placeholder={placeholder}
-        value={draft}
-        render={renderTextarea}
-      />
-      <div className={styles.composerActions}>
-        <div className={styles.composerFooterLeft}>{footerLeft}</div>
-        <div className={styles.composerFooterRight}>
+      <div className={styles.inputWrapper}>
+        <Input
+          aria-label="Message input"
+          className={styles.textarea}
+          onValueChange={setDraft}
+          placeholder={placeholder}
+          value={draft}
+          render={renderTextarea}
+        />
+        <div className={styles.inputActions}>
           {isInFlight && onStop != null
             ? (
               <ActionButton onClick={onStop} type="button">
@@ -120,6 +119,9 @@ export function AipAgentChatComposer({
             )}
         </div>
       </div>
+      {footerLeft != null && (
+        <div className={styles.composerFooterLeft}>{footerLeft}</div>
+      )}
     </div>
   );
 }

@@ -19,6 +19,7 @@ import type { ChatStatus } from "@osdk/react/experimental/aip";
 import classNames from "classnames";
 import * as React from "react";
 import { ActionButton } from "../base-components/action-button/ActionButton.js";
+import { Callout } from "../base-components/callout/Callout.js";
 import styles from "./AipAgentChat.module.css";
 import { AipAgentChatComposer } from "./components/AipAgentChatComposer.js";
 import { AipAgentChatMessageList } from "./components/AipAgentChatMessageList.js";
@@ -106,21 +107,19 @@ export const BaseAipAgentChat: React.NamedExoticComponent<
   return (
     <div className={classNames(styles.chat, className)}>
       {error != null && (
-        <div aria-live="polite" className={styles.error} role="alert">
-          <div className={styles.errorBody}>
-            <div className={styles.errorTitle}>Something went wrong</div>
-            <div className={styles.errorMessage}>
-              {error.message.length > 0
-                ? error.message
-                : "An unknown error occurred. Try again, or dismiss to keep the conversation."}
-            </div>
-          </div>
-          <div className={styles.errorActions}>
+        <Callout
+          actions={
             <ActionButton onClick={onClearError} type="button">
               Dismiss
             </ActionButton>
-          </div>
-        </div>
+          }
+          intent="error"
+          title="Something went wrong"
+        >
+          {error.message.length > 0
+            ? error.message
+            : "An unknown error occurred. Try again, or dismiss to keep the conversation."}
+        </Callout>
       )}
       <AipAgentChatMessageList
         enableAutoScroll={enableAutoScroll}
