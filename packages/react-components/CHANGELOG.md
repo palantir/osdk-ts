@@ -1,5 +1,44 @@
 # @osdk/react-components
 
+## 0.19.1-beta.0
+
+### Patch Changes
+
+- 2c491f4: filter-list: forward formatDate to single-date, multi-date, and timeline inputs so date formatting is consistent across all date-typed filters
+- dfc4226: `FilterList` now supports combining linked-property and direct-property filters via a single objectSet. Pass the unfiltered scope as `objectSet` and the new `onEffectiveObjectSet` observer receives the fully-narrowed `ObjectSet` (direct + linked filters applied) on every filter change. Adds optional `LinkedPropertyFilterDefinition.reverseLinkName` (opt-in: set it to make the filter narrow `objectSet` via a pivot round-trip; omit it for UI-only behavior) and `showFilteredOutValues`, which renders count=0 greyed-out rows for values present in the unfiltered scope but absent under an active filter. Filtered-out rows apply symmetrically to both direct-property facets (Listogram, MultiSelect, SingleSelect) and linked-property facets configured with `MULTI_SELECT` / `SINGLE_SELECT` / `LISTOGRAM` sub-components.
+
+  Existing `filterClause` / `onFilterClauseChanged` props still work and continue to emit a `WhereClause<Q>` covering direct filters (LINKED_PROPERTY narrowing cannot be expressed as a `WhereClause<Q>` and surfaces only through `onEffectiveObjectSet`). Linked filters are composed via the new exported `narrowObjectSet(objectSet, whereClause, linkedFilters)` helper for consumers building their own headless pipelines.
+
+  Linked-property facets compare against the raw unfiltered `objectSet` when computing filtered-out rows, so a value whose source rows were filtered out by either direct or linked sibling filters still renders as a count=0 row.
+
+- 7c1c639: FilterList: extend per-item actions to every filter type and fix linkedProperty exclude toggle.
+
+  • every filter type that supports excluding renders the `...` toggle for the inline Keep / Exclude row, including linked-property filters (toggle now flips `isExcluding` on the inner wrapped state)
+  • new `searchField` flag on `FilterDefinition` hides the header monocle for filters that already have their own inline search (e.g. `MULTI_SELECT`)
+  • extracted reusable helpers `toggleIsExcluding`, `clearFilterState`, `filterHasActiveState`, `getEffectiveFilterState`, and `getSelectedCount` from inline component logic into `filterValues.ts`
+
+- cdc73e0: Add end-to-end support for `scenarioReference` action parameters:
+  - `@osdk/api` adds `"scenarioReference"` to `ActionMetadata.DataType.BaseActionParameterTypes` and a matching `scenarioReference: ScenarioClient` entry in `DataValueClientToWire` (structurally typed as `{ getScenarioReference(): { scenarioRid } }` to avoid a circular dep on `@osdk/client`).
+  - `@osdk/generator-converters` maps the wire `scenarioReference` variant into the primitive type.
+  - Generated SDKs now emit `ActionParam.PrimitiveType<"scenarioReference">` (resolves to `ScenarioClient`) for scenarioReference parameters, instead of throwing at SDK build time.
+  - `@osdk/client`'s `toDataValue` accepts a `ScenarioClient` and serializes it to the rid string the platform expects.
+  - `@osdk/react-components`'s ActionForm renders scenarioReference parameters as `UNSUPPORTED` for now.
+
+  Enables `client(ScenarioMerge).applyAction({ scenario })` end-to-end in generated SDKs.
+
+- 7f8e93b: thread `renderValue` through `LinkedPropertyFilter` inputs
+- Updated dependencies [a492285]
+- Updated dependencies [60aff19]
+- Updated dependencies [04a3588]
+- Updated dependencies [cdc73e0]
+- Updated dependencies [798ad89]
+- Updated dependencies [d36591a]
+- Updated dependencies [6923158]
+  - @osdk/api@2.23.1-beta.2
+  - @osdk/client@2.23.1-beta.2
+  - @osdk/react@2.23.1-beta.2
+  - @osdk/aip-core@0.4.1-beta.0
+
 ## 0.19.0
 
 ### Minor Changes

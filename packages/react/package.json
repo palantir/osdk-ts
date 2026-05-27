@@ -1,6 +1,6 @@
 {
   "name": "@osdk/react",
-  "version": "2.23.0",
+  "version": "2.23.1-beta.2",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -100,8 +100,8 @@
   },
   "peerDependencies": {
     "@osdk/aip-core": "workspace:^",
-    "@osdk/api": "^2.15.0",
-    "@osdk/client": "^2.15.0",
+    "@osdk/api": "^2.15.0 || >=2.23.1-beta.0",
+    "@osdk/client": "^2.15.0 || >=2.23.1-beta.0",
     "@osdk/foundry.admin": "*",
     "@osdk/foundry.core": "*",
     "@types/react": "^17 || ^18 || ^19",

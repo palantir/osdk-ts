@@ -307,4 +307,16 @@ describe(toDataValue, () => {
     expect(converted).toEqual(expectedMediaReference);
     expect(isMediaReference(converted)).toBe(true);
   });
+
+  it("converts a ScenarioClient into the rid string", async () => {
+    const { withScenario } = await import("../scenarios/withScenario.js");
+    const scenario = withScenario(client, "ri.actions..scenario.abc");
+
+    const converted = await toDataValue(
+      scenario,
+      clientCtx,
+      mockActionMetadata,
+    );
+    expect(converted).toBe("ri.actions..scenario.abc");
+  });
 });

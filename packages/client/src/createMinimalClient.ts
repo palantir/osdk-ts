@@ -40,6 +40,7 @@ export function createMinimalClient(
     logger?: Logger;
     transactionId?: string;
     flushEdits?: () => Promise<void>;
+    scenarioRid?: string;
     branch?: string;
     headers?: Record<string, string>;
   } = {},
@@ -64,6 +65,28 @@ export function createMinimalClient(
       throw new Error(`Invalid stack URL: ${baseUrl}${hint}`);
     }
   }
+  const originalFetchFn = fetchFn;
+  fetchFn = async (
+    input: string | Request | URL,
+    init?: RequestInit | undefined,
+  ) => {
+    const url = new URL(
+      (typeof input === "string")
+        ? input
+        : (input instanceof URL)
+        ? input.toString()
+        : input.url,
+    );
+
+    if (
+      /\/scenarios(\/|$)/.test(url.pathname) && !url.searchParams.has("preview")
+    ) {
+      url.searchParams.set("preview", "true");
+      return originalFetchFn(url, init);
+    }
+
+    return originalFetchFn(input, init);
+  };
   const minimalClient: MinimalClient = {
     ...createSharedClientContext(
       baseUrl,
@@ -77,6 +100,7 @@ export function createMinimalClient(
     ontologyRid: metadata.ontologyRid,
     logger: options.logger,
     transactionId: options.transactionId,
+    scenarioRid: options.scenarioRid,
     clientCacheKey: {} as ClientCacheKey,
     requestContext: {},
     branch: options.branch,

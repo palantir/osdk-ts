@@ -1,5 +1,5 @@
 ---
-"@osdk/react-components": minor
+"@osdk/react-components": patch
 ---
 
 FilterList: extend per-item actions to every filter type and fix linkedProperty exclude toggle.

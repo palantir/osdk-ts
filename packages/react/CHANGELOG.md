@@ -1,5 +1,21 @@
 # @osdkkit/react
 
+## 2.23.1-beta.2
+
+### Patch Changes
+
+- 60aff19: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+- Updated dependencies [a492285]
+- Updated dependencies [60aff19]
+- Updated dependencies [04a3588]
+- Updated dependencies [cdc73e0]
+- Updated dependencies [798ad89]
+- Updated dependencies [d36591a]
+- Updated dependencies [6923158]
+  - @osdk/api@2.23.1-beta.2
+  - @osdk/client@2.23.1-beta.2
+  - @osdk/aip-core@0.4.1-beta.0
+
 ## 2.23.0
 
 ## 2.22.0
