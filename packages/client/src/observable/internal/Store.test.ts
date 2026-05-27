@@ -1678,6 +1678,22 @@ describe(Store, () => {
           expect(cached?.$apiName).toBe("Employee");
         });
 
+        it("interface queries return raw object instances when resolveToObjectType is set", async () => {
+          defer(
+            cache.lists.observe({
+              type: FooInterface,
+              orderBy: {},
+              mode: "force",
+              resolveToObjectType: true,
+            }, ifaceSub),
+          );
+          await waitForCall(ifaceSub, 2);
+
+          const ifacePayload = ifaceSub.next.mock.calls[1][0];
+          expect(ifacePayload?.resolvedList?.[0]?.$apiName).toBe("Employee");
+          expect(ifacePayload?.resolvedList?.[0]?.$objectType).toBe("Employee");
+        });
+
         it("direct query after interface query preserves interface $apiName", async () => {
           const objSub = mockSingleSubCallback();
 

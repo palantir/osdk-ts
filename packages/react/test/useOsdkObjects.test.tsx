@@ -371,5 +371,30 @@ describe("useOsdkObjects enabled option", () => {
       // both are truthy so dep array entry !!resolveToObjectType is stable
       expect(mockObserveList).toHaveBeenCalledTimes(1);
     });
+
+    it("should resubscribe when resolveToObjectType toggles between truthy and falsy", () => {
+      const wrapper = createWrapper();
+
+      const { rerender } = renderHook(
+        ({ resolve }) =>
+          useOsdkObjects(MockInterface, {
+            resolveToObjectType: resolve,
+          }),
+        {
+          wrapper,
+          initialProps: {
+            resolve: true as boolean | ObjectTypeDefinition | undefined,
+          },
+        },
+      );
+
+      expect(mockObserveList).toHaveBeenCalledTimes(1);
+
+      rerender({ resolve: undefined });
+
+      expect(mockObserveList).toHaveBeenCalledTimes(2);
+      const lastCallArgs = mockObserveList.mock.calls[1][0];
+      expect(lastCallArgs.resolveToObjectType).toBeUndefined();
+    });
   });
 });

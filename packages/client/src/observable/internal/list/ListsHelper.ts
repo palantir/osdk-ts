@@ -123,6 +123,9 @@ export class ListsHelper extends AbstractHelper<
       type === "interface" && options.$includeAllBaseObjectProperties
         ? true
         : undefined;
+    const canonResolveToObjectType = type === "interface" && resolveToObjectType
+      ? true
+      : undefined;
 
     const canonWhere = this.whereCanonicalizer.canonicalize(where ?? {});
     const canonOrderBy = this.orderByCanonicalizer.canonicalize(orderBy ?? {});
@@ -159,7 +162,7 @@ export class ListsHelper extends AbstractHelper<
       canonSelect,
       $loadPropertySecurityMetadata ? true : undefined,
       $includeAllBaseObjectProperties,
-      resolveToObjectType ? true : undefined,
+      canonResolveToObjectType,
     );
 
     return this.store.queries.get(listCacheKey, () => {
