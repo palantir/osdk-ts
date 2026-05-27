@@ -1,0 +1,205 @@
+{/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */}
+
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as CbacPickerStories from "./CbacPicker.stories";
+
+<Meta title="Beta/CbacPicker/Docs" />
+
+# CbacPicker
+
+Components for managing classification-based access control (CBAC) markings.
+CBAC markings control who can access data. Each piece of data can be tagged
+with markings from different categories, and the combination determines its
+access restrictions.
+
+The picker lets users select markings grouped by category. Some categories are
+**disjunctive** (pick exactly one, like a sensitivity level) and others are
+**conjunctive** (pick any combination, like access groups). The server enforces
+which combinations are valid, which markings are implied by others, and which
+are disallowed.
+
+## Demo
+
+<Canvas of={CbacPickerStories.Default} />
+
+## Usage
+
+```tsx
+import { CbacPicker } from "@osdk/cbac-components/experimental";
+import { useState } from "react";
+
+function ClassificationForm() {
+  const [markingIds, setMarkingIds] = useState<string[]>([]);
+
+  return (
+    <CbacPicker
+      initialMarkingIds={markingIds}
+      onChange={setMarkingIds}
+    />
+  );
+}
+```
+
+### Prerequisites
+
+- Install `@osdk/cbac-components` and its peer dependencies
+- Wrap your app with `OsdkProvider`
+- Import `@osdk/cbac-components/styles.css`
+
+See the [README](https://github.com/palantir/osdk-ts/blob/main/packages/cbac-components/README.md#setup)
+for full setup instructions.
+
+## Examples
+
+### Read-only display
+
+Disable all marking interactions by setting `readOnly` to `true`.
+
+<Canvas of={CbacPickerStories.ReadOnly} />
+
+### With initial selection
+
+Pre-populate the picker with an existing set of marking IDs.
+
+<Canvas of={CbacPickerStories.WithInitialSelection} />
+
+### Picker in a dialog
+
+For modal workflows, use `CbacPickerDialog` to present the picker in a dialog
+with confirm and cancel actions.
+
+<Canvas of={CbacPickerStories.InDialog} />
+
+### With implied and disallowed markings
+
+Use `BaseCbacPicker` with `computeMarkingStates` to display markings that are
+automatically implied or restricted by the current selection.
+
+<Canvas of={CbacPickerStories.WithImpliedAndDisallowed} />
+
+### Banner only
+
+Display a standalone classification banner without the picker.
+
+<Canvas of={CbacPickerStories.BannerOnly} />
+
+## API Reference
+
+### CbacPicker Props
+
+| Prop | Type | Required | Default | Description |
+|---|---|---|---|---|
+| `initialMarkingIds` | `string[]` | No | `[]` | Initial set of selected marking IDs |
+| `onChange` | `(markingIds: string[]) => void` | Yes | - | Called when the selection changes |
+| `maxClassificationConstraint` | `MaxClassificationConstraint` | No | - | Upper bound on the classification level |
+| `readOnly` | `boolean` | No | `false` | Disables marking toggle interactions |
+| `className` | `string` | No | - | CSS class for the picker container |
+
+### CbacPickerDialog Props
+
+| Prop | Type | Required | Default | Description |
+|---|---|---|---|---|
+| `isOpen` | `boolean` | Yes | - | Controls dialog visibility |
+| `onOpenChange` | `(open: boolean) => void` | Yes | - | Called when dialog open state changes |
+| `onConfirm` | `(markingIds: string[]) => void` | Yes | - | Called with the selected marking IDs on confirm |
+| `initialMarkingIds` | `string[]` | No | `[]` | Initial set of selected marking IDs |
+| `maxClassificationConstraint` | `MaxClassificationConstraint` | No | - | Upper bound on the classification level |
+
+The dialog title automatically adjusts: "Add classification" when no initial
+markings are provided, "Edit classification" when editing existing markings.
+The confirm button is disabled with a tooltip when the selection is invalid.
+
+### BaseCbacPicker Props
+
+For advanced use cases where you supply your own marking data instead of
+fetching from the OSDK.
+
+| Prop | Type | Required | Default | Description |
+|---|---|---|---|---|
+| `categories` | `CategoryMarkingGroup[]` | Yes | - | Marking categories with their markings |
+| `markingStates` | `Map<string, MarkingSelectionState>` | Yes | - | State for each marking (SELECTED, IMPLIED, etc.) |
+| `banner` | `CbacBannerData` | No | - | Banner data (classification string, colors) |
+| `onMarkingToggle` | `(markingId: string) => void` | Yes | - | Called when a marking button is clicked |
+| `onDismissBanner` | `() => void` | No | - | Called when the banner dismiss button is clicked |
+| `showInfoBanner` | `boolean` | No | - | Show the "implied markings" info banner |
+| `requiredMarkingGroups` | `ReadonlyArray<RequiredMarkingGroup>` | No | - | Groups of markings that must be selected together |
+| `isValid` | `boolean` | No | - | Whether the current selection is valid |
+| `readOnly` | `boolean` | No | - | Disable marking interactions |
+| `isLoading` | `boolean` | No | - | Show loading state |
+| `error` | `Error` | No | - | Show error message |
+| `className` | `string` | No | - | CSS class for the container |
+
+### BaseCbacBanner Props
+
+| Prop | Type | Required | Default | Description |
+|---|---|---|---|---|
+| `classificationString` | `string` | Yes | - | Text displayed in the banner |
+| `textColor` | `string` | Yes | - | Banner text color |
+| `backgroundColors` | `string[]` | Yes | - | Background colors (rendered as gradient if multiple) |
+| `onClick` | `() => void` | No | - | Makes banner clickable |
+| `onDismiss` | `() => void` | No | - | Shows a dismiss button |
+| `className` | `string` | No | - | CSS class for the banner |
+
+### Types
+
+#### MarkingSelectionState
+
+| State | Description |
+|---|---|
+| `"NONE"` | Default state, marking is available but not selected |
+| `"SELECTED"` | Marking is explicitly selected by the user |
+| `"IMPLIED"` | Marking is automatically included due to other selected markings |
+| `"DISALLOWED"` | Marking cannot be selected due to restrictions |
+| `"IMPLIED_DISALLOWED"` | Marking is both implied and disallowed by the current selection |
+
+#### CategoryMarkingGroup
+
+A category paired with all markings that belong to it. Each category has a
+`categoryType` (`"CONJUNCTIVE"` for checkbox-style or `"DISJUNCTIVE"` for
+radio-style) and a `markingType` (`"MANDATORY"` or `"CBAC"`).
+
+### Utilities
+
+The `@osdk/cbac-components/experimental` barrel exports these selection logic
+utilities alongside the components:
+
+| Export | Description |
+|---|---|
+| `computeMarkingStates` | Compute display state for each marking given selected, implied, and disallowed IDs |
+| `toggleMarking` | Toggle a marking in the selection, respecting conjunctive/disjunctive category rules |
+| `groupMarkingsByCategory` | Group a flat list of markings into `CategoryMarkingGroup` arrays |
+
+## Architecture
+
+`@osdk/cbac-components` follows a two-layer architecture:
+
+- **OSDK layer** (`CbacPicker`, `CbacPickerDialog`) fetches data using
+  `@osdk/react` hooks, converts it to primitive props, and passes it to the
+  base layer.
+- **Base layer** (`BaseCbacPicker`, `BaseCbacBanner`, `BaseCbacPickerDialog`)
+  provides pure UI with no OSDK dependency, accepting primitive data directly.
+
+Most users should use the OSDK-layer components. The base components are for
+advanced use cases where you already have marking data from a different source.
+
+## Accessibility
+
+- Marking buttons are keyboard navigable via `Tab`
+- Each marking button supports `Enter`/`Space` to toggle selection
+- The classification banner dismiss button has an `aria-label`
+- Loading and error states use appropriate `role` attributes (`status`, `alert`)
+- Disallowed markings have `aria-disabled` to communicate state to screen readers
