@@ -1694,6 +1694,28 @@ describe(Store, () => {
           expect(ifacePayload?.resolvedList?.[0]?.$objectType).toBe("Employee");
         });
 
+        it("object-type queries collapse cache key regardless of resolveToObjectType", () => {
+          // resolveToObjectType is interface-only on the server. For object-type
+          // queries the flag must be dropped during canonicalization so the
+          // cache key is identical whether or not it is set, and both callers
+          // share the same underlying ListQuery (and therefore the same fetch).
+          const baseOpts = {
+            type: Employee,
+            where: {},
+            orderBy: {},
+            mode: "force",
+          } as const satisfies ObserveListOptions<Employee>;
+
+          const queryWithoutFlag = cache.lists.getQuery(baseOpts);
+          const queryWithFlag = cache.lists.getQuery({
+            ...baseOpts,
+            resolveToObjectType: true,
+          });
+
+          expect(queryWithFlag).toBe(queryWithoutFlag);
+          expect(queryWithFlag.cacheKey).toBe(queryWithoutFlag.cacheKey);
+        });
+
         it("direct query after interface query preserves interface $apiName", async () => {
           const objSub = mockSingleSubCallback();
 
