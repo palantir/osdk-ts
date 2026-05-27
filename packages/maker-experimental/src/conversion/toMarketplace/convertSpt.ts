@@ -19,7 +19,6 @@ import type {
   SharedPropertyType as SharedPropertyTypeWire,
 } from "@osdk/client.unstable";
 import type { SharedPropertyType } from "@osdk/maker";
-import { importOntologyEntity, OntologyEntityTypeEnum } from "@osdk/maker";
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { convertNullabilityToDataConstraint } from "./convertNullabilityToDataConstraint.js";
 import { propertyTypeTypeToOntologyIrType } from "./propertyTypeTypeToOntologyIrType.js";
@@ -75,18 +74,9 @@ export function convertSpt(
     typeClasses: typeClasses ?? [],
     valueType: valueType === undefined
       ? undefined
-      : (() => {
-        // Register used imported value type
-        if (valueType.packageNamespace) {
-          importOntologyEntity({
-            ...valueType,
-            __type: OntologyEntityTypeEnum.VALUE_TYPE,
-          });
-        }
-        return ridGenerator.generateRidForValueType(
-          valueType.apiName,
-          valueType.version,
-        );
-      })(),
+      : ridGenerator.generateRidForValueType(
+        valueType.apiName,
+        valueType.version,
+      ),
   };
 }

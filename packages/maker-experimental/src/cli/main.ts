@@ -24,8 +24,6 @@ import {
 import { PreviewOntologyIrConverter } from "@osdk/generator-converters.preview";
 import {
   cleanAndValidateLinkTypeId,
-  getImportedTypes,
-  getOntologyDefinition,
 } from "@osdk/maker";
 import { consola } from "consola";
 import * as fs from "node:fs";
@@ -204,9 +202,6 @@ export default async function main(
     functionsIrFile,
     commandLineOpts.randomnessKey,
   );
-
-  const ontologyDefinition = getOntologyDefinition();
-  const importedTypes = getImportedTypes();
 
   // Create temp directory for block data
   const blockDataDir = path.join(commandLineOpts.buildDir, "temp_block_data");
