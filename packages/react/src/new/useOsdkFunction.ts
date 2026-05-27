@@ -191,7 +191,13 @@ export function useOsdkFunction<Q extends QueryDefinition<unknown>>(
   const stableDependsOnObjects = React.useMemo(
     () => dependsOnObjects,
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [stableSerialize(dependsOnObjects)],
+    [stableSerialize(
+      dependsOnObjects?.map(item =>
+        "$apiName" in item
+          ? { $apiName: item.$apiName, $primaryKey: item.$primaryKey }
+          : item
+      ),
+    )],
   );
 
   // Record<string, unknown> required as typing is figured out at runtime

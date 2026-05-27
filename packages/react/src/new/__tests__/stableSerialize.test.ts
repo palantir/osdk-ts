@@ -128,68 +128,6 @@ describe("stableSerialize", () => {
       expect(stableSerialize(os)).not.toBe(stableSerialize(plainLookalike));
     });
   });
-
-  describe("Osdk.Instance handling", () => {
-    it(
-      "normalizes Osdk.Instance to just {$apiName, $primaryKey}, dropping "
-        + "other fields",
-      () => {
-        const instanceA = {
-          $apiName: "Employee",
-          $primaryKey: 42,
-          $title: "Alice",
-          cachedDerivedField: "v1",
-        };
-        const instanceB = {
-          $apiName: "Employee",
-          $primaryKey: 42,
-          $title: "Alice — updated",
-          cachedDerivedField: "v2",
-        };
-
-        expect(stableSerialize(instanceA)).toBe(stableSerialize(instanceB));
-        expect(stableSerialize(instanceA)).toBe(
-          `{"$apiName":"Employee","$primaryKey":42}`,
-        );
-      },
-    );
-
-    it("returns a different key when the primary key changes", () => {
-      const a = { $apiName: "Employee", $primaryKey: 1 };
-      const b = { $apiName: "Employee", $primaryKey: 2 };
-      expect(stableSerialize(a)).not.toBe(stableSerialize(b));
-    });
-
-    it("returns a different key when the apiName changes", () => {
-      const a = { $apiName: "Employee", $primaryKey: 1 };
-      const b = { $apiName: "Project", $primaryKey: 1 };
-      expect(stableSerialize(a)).not.toBe(stableSerialize(b));
-    });
-
-    it("normalizes Osdk.Instance nested inside an array", () => {
-      const instance = {
-        $apiName: "Employee",
-        $primaryKey: 42,
-        $title: "Alice",
-      };
-      expect(stableSerialize([instance])).toBe(
-        `[{"$apiName":"Employee","$primaryKey":42}]`,
-      );
-    });
-
-    it(
-      "does not treat objects with only one of $apiName/$primaryKey as instances",
-      () => {
-        const onlyApiName = { $apiName: "Employee", other: "x" };
-        expect(stableSerialize(onlyApiName)).toBe(
-          `{"$apiName":"Employee","other":"x"}`,
-        );
-
-        const onlyPk = { $primaryKey: 42, other: "y" };
-        expect(stableSerialize(onlyPk)).toBe(`{"$primaryKey":42,"other":"y"}`);
-      },
-    );
-  });
 });
 
 describe("stableSerializeReplacer", () => {

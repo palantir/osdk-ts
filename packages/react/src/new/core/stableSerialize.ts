@@ -18,39 +18,25 @@ import { getWireObjectSet, isObjectSet } from "@osdk/client";
 
 /**
  * Serialize a value to a stable string for React.useMemo dependency arrays.
- * Uses {@link stableSerializeReplacer} so OSDK `ObjectSet`s and
- * `Osdk.Instance`s normalize to a discriminative wire form before
- * stringification.
+ * Uses {@link stableSerializeReplacer} so OSDK `ObjectSet`s normalize to a
+ * discriminative wire form before stringification.
  */
 export function stableSerialize(value: unknown): string | undefined {
   return JSON.stringify(value, stableSerializeReplacer);
 }
 
 /**
- * `JSON.stringify` replacer that normalizes OSDK runtime values to a stable
- * wire form, suitable for use as a React.useMemo dependency-array key.
- *
- * - `ObjectSet` instances are replaced with their wire-form definition
- *   (via `getWireObjectSet`) wrapped in `{ __objectSet: ... }`, so composed
- *   operations (`.where`, `.union`, `.intersect`, ...) participate in the
- *   key.
- * - `Osdk.Instance`-shaped values (any object with both `$apiName` and
- *   `$primaryKey`) are reduced to just identity, so unrelated instance
- *   fields (cached link data, computed properties, ...) don't cause
- *   spurious memo invalidations.
+ * `JSON.stringify` replacer that normalizes OSDK `ObjectSet` instances to
+ * their wire-form definition (via `getWireObjectSet`) wrapped in
+ * `{ __objectSet: ... }`, so composed operations (`.where`, `.union`,
+ * `.intersect`, ...) participate in the key.
  */
 export function stableSerializeReplacer(
   _key: string,
   value: unknown,
 ): unknown {
-  if (value != null && typeof value === "object") {
-    if (isObjectSet(value)) {
-      return { __objectSet: getWireObjectSet(value) };
-    }
-    if ("$apiName" in value && "$primaryKey" in value) {
-      const { $apiName, $primaryKey } = value;
-      return { $apiName, $primaryKey };
-    }
+  if (value != null && typeof value === "object" && isObjectSet(value)) {
+    return { __objectSet: getWireObjectSet(value) };
   }
   return value;
 }
