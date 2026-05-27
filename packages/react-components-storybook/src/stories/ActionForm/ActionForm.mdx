@@ -1,0 +1,291 @@
+{/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */}
+
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as ActionFormStories from "./ActionForm.stories";
+
+<Meta title="Beta/ActionForm/Docs" />
+
+# ActionForm
+
+An OSDK-aware form component that reads action metadata through `@osdk/react`,
+renders fields for each action parameter, validates user input, and submits
+through `useOsdkAction`. Field components are generated automatically from the
+action definition, or can be overridden with custom field definitions.
+
+## Demo
+
+<Canvas of={ActionFormStories.Default} />
+
+## Usage
+
+```tsx
+import { updateEmployee } from "@my/osdk";
+import { ActionForm } from "@osdk/react-components/experimental";
+
+function EmployeeForm() {
+  return (
+    <ActionForm
+      actionDefinition={updateEmployee}
+      showFormTitle={true}
+      onSuccess={(result) => console.log("Saved", result)}
+      onError={(error) => console.error("Failed", error)}
+    />
+  );
+}
+```
+
+> `@my/osdk` is a placeholder for your generated SDK package.
+
+### Prerequisites
+
+- Install `@osdk/react-components` and its peer dependencies
+- Wrap your app with `OsdkProvider`
+- Import `@osdk/react-components/styles.css`
+
+See the [README](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/README.md#setup)
+for full setup instructions.
+
+## Examples
+
+### Validation errors
+
+Submits the form without filling required fields to show the built-in
+validation summary. The action is not applied until all required fields pass.
+
+<Canvas of={ActionFormStories.ValidationErrors} />
+
+### Submit disabled
+
+Disables the submit button before validation runs, useful when external
+conditions must be met before submission is allowed.
+
+<Canvas of={ActionFormStories.SubmitDisabled} />
+
+### Custom submit wrapper
+
+Wraps the default `applyAction` call with custom logic. Use this pattern to
+inspect, log, confirm, or transform submitted values before applying the
+action.
+
+<Canvas of={ActionFormStories.CustomSubmitHandler} />
+
+### Slow custom submit
+
+Uses a delayed custom submit handler so users can see the pending button
+state without needing a real backend slowdown.
+
+<Canvas of={ActionFormStories.SlowCustomSubmit} />
+
+### Submit failure
+
+Uses a failing custom submit handler so the story shows the error state and
+serialized error response.
+
+<Canvas of={ActionFormStories.SubmitFailure} />
+
+### With title
+
+Shows the form title derived from the action display name.
+
+<Canvas of={ActionFormStories.WithTitle} />
+
+### With custom title
+
+Provides a custom title string instead of the action display name.
+
+<Canvas of={ActionFormStories.WithCustomTitle} />
+
+### With default values
+
+Pre-populates fields with default values via `formFieldDefinitions`.
+
+<Canvas of={ActionFormStories.WithDefaultValues} />
+
+### With field overrides
+
+Overrides the generated fields with custom labels, helper text, and
+component types.
+
+<Canvas of={ActionFormStories.WithFieldOverrides} />
+
+### With unsupported fields
+
+Shows how ActionForm handles action parameters with types that do not have
+built-in field components (structs, geoshapes, markings, object types).
+
+<Canvas of={ActionFormStories.WithUnsupportedFields} />
+
+### Controlled form state
+
+Manages form state externally via `formState` and `onFormStateChange` for
+full control over field values.
+
+<Canvas of={ActionFormStories.ControlledFormState} />
+
+## API Reference
+
+### Props
+
+<Controls of={ActionFormStories.Default} />
+
+### ActionFormProps
+
+| Prop | Type | Description |
+|---|---|---|
+| `actionDefinition` | `ActionDefinition` | The OSDK action definition to render a form for (required) |
+| `showFormTitle` | `boolean` | Whether to show the form title. Default `false` |
+| `formTitle` | `string` | Optional title used when `showFormTitle` is `true`. Falls back to the action display name |
+| `formFieldDefinitions` | `FormFieldDefinition[]` | Complete replacement for generated fields. Include every action parameter that should appear |
+| `isSubmitDisabled` | `boolean` | Disables the submit button before validation runs |
+| `formState` | `FormState` | Controlled form state. When provided, `onFormStateChange` is required |
+| `onFormStateChange` | `(updater) => void` | Called when any field value changes. Required in controlled mode |
+| `onSubmit` | `(formState, applyAction) => Promise` | Custom submit handler. Receives the form state and the `applyAction` callback |
+| `onValidationResponse` | `(results) => void` | Called when a validation-only submission returns results |
+| `onSuccess` | `(results) => void` | Called when the action is successfully applied |
+| `onError` | `(error: FormError) => void` | Called when a submission or validation error occurs |
+
+### FormFieldDefinition
+
+| Field | Type | Description |
+|---|---|---|
+| `fieldKey` | `FieldKey` | The action parameter key this field maps to |
+| `label` | `string` | Display label for the field |
+| `fieldComponent` | `FieldComponent` | UI component to render (see field component types below) |
+| `fieldComponentProps` | `object` | Props passed to the field component (type narrows based on `fieldComponent`) |
+| `defaultValue` | `FieldValueType` | Default value for the field |
+| `isRequired` | `boolean` | Whether the field is required |
+| `placeholder` | `string` | Placeholder text |
+| `helperText` | `ReactNode` | Additional information displayed via tooltip or below the label |
+| `helperTextPlacement` | `"bottom" \| "tooltip"` | Where to display helper text. Default `"tooltip"` |
+| `disabled` | `boolean` | Whether the field is disabled |
+| `validate` | `(value) => Promise<string \| undefined>` | Custom validation function. Return an error message or `undefined` |
+| `onValidationError` | `(error) => string \| undefined` | Customize built-in validation error messages |
+
+### Field Component Types
+
+| Component | Data Types | Description |
+|---|---|---|
+| `TEXT_INPUT` | `string` | Single-line text input |
+| `TEXT_AREA` | `string` | Multi-line text area |
+| `NUMBER_INPUT` | `integer`, `long`, `double` | Numeric input with stepper |
+| `DROPDOWN` | `boolean`, any | Dropdown select with optional search |
+| `RADIO_BUTTONS` | `boolean` | Radio button group |
+| `SWITCH` | `boolean` | Toggle switch |
+| `DATETIME_PICKER` | `datetime`, `timestamp` | Date and time picker |
+| `FILE_PICKER` | `attachment` | File upload picker |
+| `OBJECT_SELECT` | `object` | Object instance picker from the ontology |
+| `OBJECT_SET` | `objectSet` | Object set summary display |
+| `CUSTOM` | any | Custom renderer via `customRenderer` callback |
+| `UNSUPPORTED` | marking, geoshape, etc. | Placeholder for unsupported parameter types |
+
+### FormError
+
+| Variant | Description |
+|---|---|
+| `{ type: "validation", error }` | Action validation failed |
+| `{ type: "submission", error }` | Action submission threw an error |
+| `{ type: "unknown", error }` | An unexpected error occurred |
+
+### CSS Variables
+
+#### Form Layout
+
+| Variable | Default | Description |
+|---|---|---|
+| `--osdk-form-fields-gap` | `1.5 * spacing` | Gap between form fields |
+| `--osdk-form-content-padding-inline` | `0` | Inline padding of the form content area |
+| `--osdk-form-content-padding-block` | `0` | Block padding of the form content area |
+
+#### Form Header
+
+| Variable | Default | Description |
+|---|---|---|
+| `--osdk-form-header-border-color` | `--osdk-surface-border-color-default` | Header bottom border color |
+| `--osdk-form-header-font-size` | `--osdk-typography-size-body-large` | Header title font size |
+| `--osdk-form-header-font-weight` | `--osdk-typography-weight-bold` | Header title font weight |
+| `--osdk-form-header-color` | `--osdk-typography-color-default-rest` | Header title text color |
+| `--osdk-form-header-block-padding` | `2 * spacing` | Header block padding |
+
+#### Form Footer
+
+| Variable | Default | Description |
+|---|---|---|
+| `--osdk-form-footer-border-color` | `--osdk-surface-border-color-default` | Footer top border color |
+| `--osdk-form-footer-error-color` | `--osdk-form-error-color` | Footer error indicator color |
+| `--osdk-form-footer-error-font-size` | `--osdk-typography-size-body-medium` | Footer error text font size |
+
+#### Form Labels
+
+| Variable | Default | Description |
+|---|---|---|
+| `--osdk-form-label-font-size` | `--osdk-typography-size-body-medium` | Label font size |
+| `--osdk-form-label-font-weight` | `--osdk-typography-weight-bold` | Label font weight |
+| `--osdk-form-label-color` | `--osdk-typography-color-default-rest` | Label text color |
+| `--osdk-form-field-gap` | `--osdk-surface-spacing` | Gap within a form field |
+| `--osdk-form-label-row-gap` | `1 * spacing` | Gap between label and info icon |
+| `--osdk-form-info-icon-color` | `--osdk-typography-color-muted` | Info icon color |
+| `--osdk-form-required-color` | `--osdk-intent-danger-rest` | Required indicator color |
+
+#### Validation Errors
+
+| Variable | Default | Description |
+|---|---|---|
+| `--osdk-form-error-font-size` | `--osdk-typography-size-body-small` | Error message font size |
+| `--osdk-form-error-color` | `--osdk-typography-color-danger-rest` | Error message text color |
+
+#### Edited Tag
+
+| Variable | Default | Description |
+|---|---|---|
+| `--osdk-form-edited-tag-bg` | `--osdk-custom-color-gray-2` | Edited tag background |
+| `--osdk-form-edited-tag-color` | `--osdk-typography-color-default-rest` | Edited tag text color |
+| `--osdk-form-edited-tag-font-size` | `--osdk-typography-size-body-small` | Edited tag font size |
+| `--osdk-form-edited-tag-border-radius` | `--osdk-surface-border-radius` | Edited tag border radius |
+
+#### Form Section
+
+| Variable | Default | Description |
+|---|---|---|
+| `--osdk-form-section-border-color` | `--osdk-surface-border-color-default` | Section border color |
+| `--osdk-form-section-border-radius` | `--osdk-surface-border-radius` | Section border radius |
+| `--osdk-form-section-background` | `--osdk-surface-background-color-default-rest` | Section background |
+| `--osdk-form-section-title-font-size` | `--osdk-typography-size-body-medium` | Section title font size |
+| `--osdk-form-section-title-font-weight` | `--osdk-typography-weight-bold` | Section title font weight |
+| `--osdk-form-section-title-color` | `--osdk-typography-color-default-rest` | Section title text color |
+| `--osdk-form-section-description-font-size` | `--osdk-typography-size-body-small` | Section description font size |
+| `--osdk-form-section-description-color` | `--osdk-typography-color-muted` | Section description text color |
+
+### Data Attributes
+
+| Attribute | Applied to | Description |
+|---|---|---|
+| `data-osdk-form-field-error-slot` | Error container | Marks the error message container for a form field |
+| `data-orientation` | Radio button group | Layout direction: `"horizontal"` or `"vertical"` |
+
+## Accessibility
+
+- All form fields are associated with labels via `htmlFor` and `id` attributes
+- Required fields display a visual indicator and include validation messages
+  when left empty
+- Validation error messages are rendered in an `alert` role container so
+  screen readers announce them immediately
+- The submit button reflects the current form state: enabled, disabled, or
+  pending with appropriate label changes
+- Field helper text is available via a tooltip triggered by a focusable info
+  icon next to the label
+- Keyboard navigation supports `Tab` to move between fields, `Enter` or
+  `Space` to interact with controls, and `Escape` to dismiss dropdowns
