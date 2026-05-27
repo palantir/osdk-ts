@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.24.0
+
+### Minor Changes
+
+- a492285: Add $title and $primaryKey special property filters to where clauses
+
 ## 2.23.0
 
 ### Minor Changes
