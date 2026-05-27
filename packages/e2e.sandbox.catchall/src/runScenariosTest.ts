@@ -16,7 +16,7 @@
 
 import {
   createScenario,
-  type ScenarioClient,
+  type EXPERIMENTAL_ScenarioClient,
 } from "@osdk/client/unstable-do-not-use";
 import {
   createScenarioTestOsdk,
@@ -27,8 +27,8 @@ import { client } from "./client.js";
 import { logger } from "./logger.js";
 
 export async function runScenariosTest(): Promise<void> {
-  const scenario: ScenarioClient = await createScenario(client);
-  const { scenarioRid } = scenario.getScenarioReference();
+  const scenario: EXPERIMENTAL_ScenarioClient = await createScenario(client);
+  const scenarioRid = scenario.getScenarioReference();
   logger.info({ scenarioRid }, "createScenario minted a fresh scenario");
 
   await scenario(createScenarioTestOsdk).applyAction({
