@@ -102,7 +102,7 @@
 .composer {
   align-items: center;
   background: var(--osdk-aip-agent-chat-composer-background);
-  border-top: 1px solid var(--osdk-aip-agent-chat-composer-border-color);
+
   display: flex;
   flex: 0 0 auto;
   flex-direction: column;

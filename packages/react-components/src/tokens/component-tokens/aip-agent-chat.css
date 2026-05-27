@@ -37,9 +37,6 @@
   --osdk-aip-agent-chat-composer-background: var(
     --osdk-surface-background-color-default-rest
   );
-  --osdk-aip-agent-chat-composer-border-color: var(
-    --osdk-surface-border-color-default
-  );
   --osdk-aip-agent-chat-composer-textarea-min-height: calc(
     var(--osdk-surface-spacing) * 14
   );
