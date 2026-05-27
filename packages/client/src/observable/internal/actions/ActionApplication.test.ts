@@ -67,43 +67,6 @@ async function waitForCall(
   });
 }
 
-function deferredPromise(): {
-  promise: Promise<void>;
-  resolve: () => void;
-} {
-  let resolvePromise: (() => void) | undefined;
-  const promise = new Promise<void>((resolve) => {
-    resolvePromise = resolve;
-  });
-
-  return {
-    promise,
-    resolve: () => {
-      if (resolvePromise == null) {
-        throw new Error("Deferred promise resolve was not initialized");
-      }
-      resolvePromise();
-    },
-  };
-}
-
-async function hasSettled(promise: Promise<unknown>): Promise<boolean> {
-  let settled = false;
-  promise.then(
-    () => {
-      settled = true;
-    },
-    () => {
-      settled = true;
-    },
-  );
-
-  // Let already-settled promises run their queued continuation without waiting
-  // on clocks. If the promise is still blocked, this remains false.
-  await Promise.resolve();
-  return settled;
-}
-
 describe("ActionApplication invalidation", () => {
   let client: Client;
   let store: Store;
@@ -285,7 +248,7 @@ describe("ActionApplication invalidation", () => {
     subscription.unsubscribe();
   });
 
-  it("does not wait for broad per-type invalidation before resolving an action", async () => {
+  it("waits for per-type invalidation before resolving an action", async () => {
     const subFn = mockFunctionSubCallback();
 
     const subscription = store.functions.observe(
@@ -308,36 +271,25 @@ describe("ActionApplication invalidation", () => {
     }
 
     const [, functionQuery] = functionQueryEntry;
-    const delayedInvalidation = deferredPromise();
+    const revalidatedFromInvalidate = vi.fn(async () => {
+      // Yield a couple of microtasks so the action would have a chance to
+      // resolve early if it weren't actually awaiting this.
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    functionQuery.invalidateObjectType = revalidatedFromInvalidate;
 
-    // Simulate slow broad invalidation by making the touched query return a
-    // promise that this test intentionally does not resolve yet.
-    const invalidateObjectType = vi.fn(() => delayedInvalidation.promise);
-    functionQuery.invalidateObjectType = invalidateObjectType;
-
-    // Batch apply avoids the dev-only single-action delay, keeping this test
-    // focused on whether invalidation blocks action resolution.
-    const actionPromise = store.applyAction(editTodo, [
+    // Batch apply avoids the dev-only single-action delay, keeping the test
+    // focused on the awaited fan-out path.
+    await store.applyAction(editTodo, [
       { id: 0, text: "batch-first" },
       { id: 1, text: "batch-second" },
     ]);
 
-    await vi.waitFor(() => {
-      expect(invalidateObjectType).toHaveBeenCalledWith(
-        Todo.apiName,
-        undefined,
-      );
-    });
-
-    // Broad invalidation has started and is still blocked on
-    // delayedInvalidation.promise. If applyAction awaited that fan-out,
-    // actionPromise would still be unsettled here.
-    await expect(hasSettled(actionPromise)).resolves.toBe(true);
-
-    // Finish the blocked background invalidation so the test leaves no
-    // intentionally pending promise behind.
-    delayedInvalidation.resolve();
-    await delayedInvalidation.promise;
+    // By the time the action resolves, the dependent function's broad
+    // invalidation must have already run — we observe it as the mock having
+    // been invoked at least once.
+    expect(revalidatedFromInvalidate).toHaveBeenCalled();
     subscription.unsubscribe();
   });
 

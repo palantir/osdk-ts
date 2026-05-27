@@ -16,11 +16,22 @@
 
 import type { ActionDefinition, ActionEditResponse } from "@osdk/api";
 import type { ActionSignatureFromDef } from "../../../actions/applyAction.js";
+import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import { API_NAME_IDX } from "../list/ListCacheKey.js";
+import type { ObjectCacheKey } from "../object/ObjectCacheKey.js";
 import type { Store } from "../Store.js";
+import { computePropertyDiff } from "./computePropertyDiff.js";
 import { runOptimisticJob } from "./OptimisticJob.js";
 
 const ACTION_DELAY = process.env.NODE_ENV === "production" ? 0 : 1000;
+
+/**
+ * Per-type edited-property tracking. `undefined` value means "conservative —
+ * invalidate any query that depends on this type regardless of which
+ * properties it cares about." A `Set` lists exactly which properties were
+ * observed to change; queries with disjoint property dependencies can skip.
+ */
+type EditedPropertiesByType = Map<string, ReadonlySet<string> | undefined>;
 
 export class ActionApplication {
   constructor(private store: Store) {}
@@ -75,16 +86,15 @@ export class ActionApplication {
         }
       }
 
-      await this.#invalidatePerObjectEdits(actionResults);
-      // Per-type invalidation can fan out into expensive list/object-set
-      // aggregation refetches. Start it after the precise per-object updates,
-      // but do not block the action result on those background refreshes.
-      void this.#invalidatePerTypeEdits(actionResults).catch((e: unknown) => {
-        logger?.warn(
-          { err: e },
-          "Error while invalidating action edits by object type",
-        );
-      });
+      const editedPropertiesByType = await this.#invalidatePerObjectEdits(
+        actionResults,
+      );
+      // Per-type invalidation fans out only to queries whose property
+      // dependencies overlap with what actually changed; for the common
+      // FilterList case that means most aggregations skip their server
+      // round-trip entirely. We await the pass so the cache is consistent
+      // by the time the action promise resolves.
+      await this.#invalidatePerTypeEdits(actionResults, editedPropertiesByType);
     } finally {
       if (process.env.NODE_ENV !== "production") {
         logger?.debug(
@@ -100,12 +110,37 @@ export class ActionApplication {
 
   #invalidatePerObjectEdits = async (
     actionEditResponse: ActionEditResponse | undefined,
-  ): Promise<void> => {
+  ): Promise<EditedPropertiesByType> => {
+    const editedPropertiesByType: EditedPropertiesByType = new Map();
     if (actionEditResponse == null || actionEditResponse.type !== "edits") {
-      return;
+      return editedPropertiesByType;
     }
     const { deletedObjects, modifiedObjects, addedObjects } =
       actionEditResponse;
+
+    // Snapshot truth-layer values for every variant of each modified object
+    // BEFORE the per-PK refetches land. We compare these against the post-
+    // refetch values to compute which properties actually changed, so the
+    // per-type pass can skip queries that don't depend on those properties.
+    const oldValueByVariant = new Map<
+      ObjectCacheKey,
+      ObjectHolder | undefined
+    >();
+    for (const obj of modifiedObjects ?? []) {
+      for (
+        const variant of this.store.objectCacheKeyRegistry.getVariants(
+          obj.objectType,
+          obj.primaryKey,
+        )
+      ) {
+        const entry = this.store.layers.truth.get(variant);
+        const value = entry?.value;
+        oldValueByVariant.set(
+          variant,
+          isObjectHolder(value) ? value : undefined,
+        );
+      }
+    }
 
     const promisesToWait: Promise<unknown>[] = [];
     for (const list of [deletedObjects, modifiedObjects, addedObjects]) {
@@ -133,10 +168,54 @@ export class ActionApplication {
       }
     });
     await Promise.all(promisesToWait);
+
+    // Added/deleted objects shift counts and list membership for any query
+    // on that type; we don't have a meaningful property diff for them, so
+    // mark the type as conservative.
+    for (const obj of addedObjects ?? []) {
+      markConservative(editedPropertiesByType, obj.objectType);
+    }
+    for (const obj of deletedObjects ?? []) {
+      markConservative(editedPropertiesByType, obj.objectType);
+    }
+
+    // Diff modified objects: every variant we snapshotted gets compared
+    // against its post-refetch truth-layer value. If either snapshot is
+    // missing (uncached, or refetch didn't land an ObjectHolder), fall back
+    // to conservative for that type.
+    for (const obj of modifiedObjects ?? []) {
+      for (
+        const variant of this.store.objectCacheKeyRegistry.getVariants(
+          obj.objectType,
+          obj.primaryKey,
+        )
+      ) {
+        const oldValue = oldValueByVariant.get(variant);
+        const newEntry = this.store.layers.truth.get(variant);
+        const newValue = isObjectHolder(newEntry?.value)
+          ? newEntry?.value
+          : undefined;
+
+        if (!oldValue || !newValue) {
+          markConservative(editedPropertiesByType, obj.objectType);
+          continue;
+        }
+
+        const diff = computePropertyDiff(oldValue, newValue);
+        mergeEditedProperties(
+          editedPropertiesByType,
+          obj.objectType,
+          diff,
+        );
+      }
+    }
+
+    return editedPropertiesByType;
   };
 
   #invalidatePerTypeEdits = async (
     actionEditResponse: ActionEditResponse | undefined,
+    editedPropertiesByType: EditedPropertiesByType,
   ): Promise<void> => {
     if (actionEditResponse == null) {
       return;
@@ -154,6 +233,9 @@ export class ActionApplication {
     } else {
       for (const apiName of actionEditResponse.editedObjectTypes) {
         editedObjectTypeSet.add(apiName as string);
+        // largeScaleEdits don't tell us which properties changed, so fall
+        // back to conservative invalidation for every reported type.
+        markConservative(editedPropertiesByType, apiName as string);
       }
     }
 
@@ -184,9 +266,49 @@ export class ActionApplication {
         ) {
           continue;
         }
-        promises.push(query.invalidateObjectType(apiName, undefined));
+        const editedProperties = editedPropertiesByType.has(apiName)
+          ? editedPropertiesByType.get(apiName)
+          : undefined;
+        promises.push(
+          query.invalidateObjectType(apiName, undefined, editedProperties),
+        );
       }
     }
     await Promise.allSettled(promises);
   };
+}
+
+function isObjectHolder(value: unknown): value is ObjectHolder {
+  return value != null
+    && typeof value === "object"
+    && "$apiName" in value
+    && "$primaryKey" in value;
+}
+
+function markConservative(
+  map: EditedPropertiesByType,
+  apiName: string,
+): void {
+  map.set(apiName, undefined);
+}
+
+function mergeEditedProperties(
+  map: EditedPropertiesByType,
+  apiName: string,
+  properties: ReadonlySet<string>,
+): void {
+  if (map.has(apiName)) {
+    const existing = map.get(apiName);
+    if (existing === undefined) {
+      // Already conservative; cannot become more specific.
+      return;
+    }
+    const merged = new Set<string>(existing);
+    for (const p of properties) {
+      merged.add(p);
+    }
+    map.set(apiName, merged);
+  } else {
+    map.set(apiName, new Set(properties));
+  }
 }

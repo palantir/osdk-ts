@@ -294,8 +294,17 @@ export abstract class Query<
     optimisticId: OptimisticId | undefined,
   ) => Promise<void> | undefined;
 
+  /**
+   * @param objectType The api name of the edited object type.
+   * @param changes Optional change set to record cache-key modifications onto.
+   * @param editedProperties Optional set of property names that were edited on
+   *   the type. When provided, subclasses that track per-property dependencies
+   *   may skip revalidation if the set doesn't intersect their dependencies.
+   *   When `undefined`, callers signal "unknown — be conservative."
+   */
   abstract invalidateObjectType(
     objectType: string,
     changes: Changes | undefined,
+    editedProperties?: ReadonlySet<string>,
   ): Promise<void>;
 }

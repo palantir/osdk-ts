@@ -199,6 +199,7 @@ export class FunctionQuery extends Query<
   invalidateObjectType = (
     objectType: string,
     changes: Changes | undefined,
+    _editedProperties?: ReadonlySet<string>,
   ): Promise<void> => {
     // Check if this function depends on the given object type
     if (this.#dependsOn?.includes(objectType)) {

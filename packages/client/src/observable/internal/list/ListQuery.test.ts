@@ -28,7 +28,7 @@ import {
   stubData,
 } from "@osdk/shared.test";
 import chalk from "chalk";
-import { beforeAll, beforeEach, describe, expect, it } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Client } from "../../../Client.js";
 import { createClient } from "../../../createClient.js";
 import { TestLogger } from "../../../logger/TestLogger.js";
@@ -1249,5 +1249,100 @@ describe("ListQuery shared query autoFetchMore tests", () => {
     expect(lastPayload?.resolvedList?.length).toBe(60);
     expect(lastPayload?.hasMore).toBe(false);
     expect(lastPayload?.status).toBe("loaded");
+  });
+});
+
+describe("ListQuery property-aware invalidation", () => {
+  let client: Client;
+  let apiServer: SetupServer;
+  let fauxFoundry: FauxFoundry;
+  let store: Store;
+
+  beforeAll(() => {
+    const testSetup = startNodeApiServer(
+      new FauxFoundry("https://stack.palantir.com/", undefined, { logger }),
+      createClient,
+      { logger },
+    );
+    ({ client, apiServer, fauxFoundry } = testSetup);
+    setupOntology(fauxFoundry);
+
+    return () => {
+      testSetup.apiServer.close();
+    };
+  });
+
+  beforeEach(() => {
+    apiServer.resetHandlers();
+    store = new Store(client);
+  });
+
+  it("skips revalidate when edited properties don't intersect where/orderBy", async () => {
+    const query = store.lists.getQuery({
+      type: Employee,
+      where: { class: { $eq: "engineering" } },
+      orderBy: {},
+    });
+
+    const revalidateSpy = vi.spyOn(query, "revalidate")
+      .mockResolvedValue(undefined);
+
+    await query.invalidateObjectType(
+      "Employee",
+      undefined,
+      new Set(["fullName"]),
+    );
+    expect(revalidateSpy).not.toHaveBeenCalled();
+  });
+
+  it("revalidates when edited properties match the where clause", async () => {
+    const query = store.lists.getQuery({
+      type: Employee,
+      where: { class: { $eq: "engineering" } },
+      orderBy: {},
+    });
+
+    const revalidateSpy = vi.spyOn(query, "revalidate")
+      .mockResolvedValue(undefined);
+
+    await query.invalidateObjectType(
+      "Employee",
+      undefined,
+      new Set(["class"]),
+    );
+    expect(revalidateSpy).toHaveBeenCalledWith(true);
+  });
+
+  it("revalidates conservatively when editedProperties is undefined", async () => {
+    const query = store.lists.getQuery({
+      type: Employee,
+      where: { class: { $eq: "engineering" } },
+      orderBy: {},
+    });
+
+    const revalidateSpy = vi.spyOn(query, "revalidate")
+      .mockResolvedValue(undefined);
+
+    // Mirrors the action-time added/deleted path where we have no diff.
+    await query.invalidateObjectType("Employee", undefined, undefined);
+    expect(revalidateSpy).toHaveBeenCalledWith(true);
+  });
+
+  it("revalidates when edited properties match orderBy keys", async () => {
+    const query = store.lists.getQuery({
+      type: Employee,
+      where: {},
+      orderBy: { fullName: "asc" },
+    });
+
+    const revalidateSpy = vi.spyOn(query, "revalidate")
+      .mockResolvedValue(undefined);
+
+    await query.invalidateObjectType(
+      "Employee",
+      undefined,
+      new Set(["fullName"]),
+    );
+    expect(revalidateSpy).toHaveBeenCalledWith(true);
   });
 });

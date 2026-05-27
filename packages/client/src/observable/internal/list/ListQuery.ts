@@ -41,6 +41,7 @@ import type { BatchContext } from "../BatchContext.js";
 import { type CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
 import { type Changes, DEBUG_ONLY__changesToString } from "../Changes.js";
+import { collectWhereClauseProperties } from "../collectWhereClauseProperties.js";
 import { getObjectTypesThatInvalidate } from "../getObjectTypesThatInvalidate.js";
 import type { Entry } from "../Layer.js";
 import {
@@ -117,6 +118,15 @@ export abstract class ListQuery extends BaseListQuery<
   // revalidation. Undefined for ObjectSets the walker doesn't support.
   #rdpInvalidationSet: ReadonlySet<string> | undefined;
 
+  /**
+   * Property names of `apiName` whose values affect this list's membership or
+   * ordering. `undefined` means "could not statically determine" (e.g. the
+   * where clause referenced `$title`) and callers must invalidate
+   * conservatively. Only consulted when the edited type equals `apiName`;
+   * RDP-traversed and pivoted-through types always invalidate conservatively.
+   */
+  #dependentProperties: ReadonlySet<string> | undefined;
+
   public override get rdpConfig(): Canonical<Rdp> | undefined {
     return this.cacheKey.otherKeys[RDP_IDX];
   }
@@ -160,6 +170,12 @@ export abstract class ListQuery extends BaseListQuery<
 
     this.#objectSet = this.createObjectSet(store);
     this.#objectTypesCache = new Set([this.apiName]);
+
+    this.#dependentProperties = computeListDependentProperties(
+      this.#whereClause,
+      this.#orderBy,
+      this.#intersectWith,
+    );
 
     // Only initialize the sorting strategy here if there's no pivotTo.
     // When pivotTo is used, the target type differs from apiName, so we
@@ -391,11 +407,30 @@ export abstract class ListQuery extends BaseListQuery<
   invalidateObjectType = async (
     objectType: string,
     changes: Changes | undefined,
+    editedProperties?: ReadonlySet<string>,
   ): Promise<void> => {
-    if (await this.revalidateObjectType(objectType)) {
-      changes?.modified.add(this.cacheKey);
-      return this.revalidate(true);
+    if (!(await this.revalidateObjectType(objectType))) {
+      return;
     }
+
+    // Property-aware skip only applies when the edited type is the list's
+    // primary or fetched type. For RDP-traversed pivot types we don't know
+    // which properties on the pivot type the list cares about — stay
+    // conservative.
+    const isPrimary = this.apiName === objectType
+      || (this.#fetchedObjectType != null
+        && this.#fetchedObjectType === objectType);
+    if (
+      isPrimary
+      && editedProperties != null
+      && this.#dependentProperties != null
+      && !setsIntersect(editedProperties, this.#dependentProperties)
+    ) {
+      return;
+    }
+
+    changes?.modified.add(this.cacheKey);
+    return this.revalidate(true);
   };
 
   /**
@@ -694,6 +729,51 @@ export function isListCacheKey(
   cacheKey: CacheKey,
 ): cacheKey is ListCacheKey {
   return cacheKey.type === "list";
+}
+
+function setsIntersect(
+  a: ReadonlySet<string>,
+  b: ReadonlySet<string>,
+): boolean {
+  const [small, large] = a.size <= b.size ? [a, b] : [b, a];
+  for (const v of small) {
+    if (large.has(v)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function computeListDependentProperties(
+  canonicalWhere: Canonical<SimpleWhereClause>,
+  orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>,
+  intersectWith:
+    | Canonical<Array<Canonical<SimpleWhereClause>>>
+    | undefined,
+): ReadonlySet<string> | undefined {
+  const fromWhere = collectWhereClauseProperties(canonicalWhere);
+  if (fromWhere === undefined) {
+    return undefined;
+  }
+  const deps = new Set<string>(fromWhere);
+
+  for (const propertyKey of Object.keys(orderBy)) {
+    deps.add(propertyKey);
+  }
+
+  if (intersectWith) {
+    for (const clause of intersectWith) {
+      const collected = collectWhereClauseProperties(clause);
+      if (collected === undefined) {
+        return undefined;
+      }
+      for (const p of collected) {
+        deps.add(p);
+      }
+    }
+  }
+
+  return deps;
 }
 
 /**

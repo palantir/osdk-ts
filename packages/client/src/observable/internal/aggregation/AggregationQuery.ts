@@ -33,6 +33,7 @@ import type {
 import type { BatchContext } from "../BatchContext.js";
 import type { Canonical } from "../Canonical.js";
 import type { Changes } from "../Changes.js";
+import { collectWhereClauseProperties } from "../collectWhereClauseProperties.js";
 import { getObjectTypesThatInvalidate } from "../getObjectTypesThatInvalidate.js";
 import type { Entry } from "../Layer.js";
 import { Query } from "../Query.js";
@@ -44,6 +45,7 @@ import {
   AGGREGATE_IDX,
   type AggregationCacheKey,
   API_NAME_IDX,
+  INTERSECT_IDX,
   RDP_IDX,
   WHERE_IDX,
   WIRE_OBJECT_SET_IDX,
@@ -96,6 +98,14 @@ export abstract class AggregationQuery extends Query<
   protected parsedWireObjectSet: WireObjectSet | undefined;
   #invalidationTypes: Set<string>;
   #invalidationTypesPromise: Promise<Set<string>> | undefined;
+  /**
+   * Property names of `apiName` that this aggregation's bucketing/result
+   * depends on. `undefined` means "could not statically determine" (e.g. the
+   * where clause referenced `$title`) — callers must invalidate
+   * conservatively. Only consulted when the edited type equals `apiName`;
+   * RDP-traversed types always invalidate conservatively.
+   */
+  #dependentProperties: ReadonlySet<string> | undefined;
 
   constructor(
     store: Store,
@@ -133,6 +143,12 @@ export abstract class AggregationQuery extends Query<
         this.parsedWireObjectSet,
       );
     }
+
+    this.#dependentProperties = computeAggregationDependentProperties(
+      this.canonicalWhere,
+      this.canonicalAggregate,
+      cacheKey.otherKeys[INTERSECT_IDX],
+    );
   }
 
   async #computeInvalidationTypes(
@@ -224,11 +240,97 @@ export abstract class AggregationQuery extends Query<
   invalidateObjectType = (
     objectType: string,
     changes: Changes | undefined,
+    editedProperties?: ReadonlySet<string>,
   ): Promise<void> => {
-    if (this.#invalidationTypes.has(objectType)) {
-      changes?.modified.add(this.cacheKey);
-      return this.revalidate(true);
+    if (!this.#invalidationTypes.has(objectType)) {
+      return Promise.resolve();
     }
-    return Promise.resolve();
+
+    // Property-aware skip only applies when the edited type is the
+    // aggregation's primary type. For RDP-traversed types we don't know
+    // which properties of the pivot type the result depends on — stay
+    // conservative.
+    if (
+      objectType === this.apiName
+      && editedProperties != null
+      && this.#dependentProperties != null
+      && !setsIntersect(editedProperties, this.#dependentProperties)
+    ) {
+      return Promise.resolve();
+    }
+
+    changes?.modified.add(this.cacheKey);
+    return this.revalidate(true);
   };
+}
+
+function setsIntersect(
+  a: ReadonlySet<string>,
+  b: ReadonlySet<string>,
+): boolean {
+  const [small, large] = a.size <= b.size ? [a, b] : [b, a];
+  for (const v of small) {
+    if (large.has(v)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function computeAggregationDependentProperties(
+  canonicalWhere: Canonical<SimpleWhereClause>,
+  canonicalAggregate: Canonical<AggregateOpts<ObjectOrInterfaceDefinition>>,
+  intersectWith:
+    | Canonical<Array<Canonical<SimpleWhereClause>>>
+    | undefined,
+): ReadonlySet<string> | undefined {
+  const fromWhere = collectWhereClauseProperties(canonicalWhere);
+  if (fromWhere === undefined) {
+    return undefined;
+  }
+  const deps = new Set<string>(fromWhere);
+
+  if (intersectWith) {
+    for (const clause of intersectWith) {
+      const collected = collectWhereClauseProperties(clause);
+      if (collected === undefined) {
+        return undefined;
+      }
+      for (const p of collected) {
+        deps.add(p);
+      }
+    }
+  }
+
+  const aggregate = canonicalAggregate as AggregateOpts<
+    ObjectOrInterfaceDefinition
+  >;
+
+  const groupBy = aggregate.$groupBy;
+  if (groupBy) {
+    for (const propertyKey of Object.keys(groupBy)) {
+      deps.add(propertyKey);
+    }
+  }
+
+  const select = aggregate.$select as
+    | Record<string, unknown>
+    | undefined;
+  if (select) {
+    for (const key of Object.keys(select)) {
+      if (key === "$count") {
+        continue;
+      }
+      // Keys are formatted as `${propertyName}:${aggregationType}`.
+      const colonIdx = key.indexOf(":");
+      if (colonIdx > 0) {
+        deps.add(key.slice(0, colonIdx));
+      } else {
+        // Defensive: unrecognized select key — be conservative.
+        return undefined;
+      }
+    }
+  }
+
+  return deps;
 }

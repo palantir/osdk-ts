@@ -328,6 +328,7 @@ export class SpecificLinkQuery extends BaseListQuery<
   invalidateObjectType = (
     objectType: string,
     changes: Changes | undefined,
+    _editedProperties?: ReadonlySet<string>,
   ): Promise<void> => {
     // We need to invalidate links in multiple cases:
     // 1. When the source object type matches the apiName (direct invalidation)

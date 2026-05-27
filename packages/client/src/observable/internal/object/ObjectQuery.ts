@@ -231,6 +231,7 @@ export class ObjectQuery extends Query<
   invalidateObjectType = async (
     objectType: string,
     changes: Changes | undefined,
+    _editedProperties?: ReadonlySet<string>,
   ): Promise<void> => {
     if (this.#defType === "object") {
       if (this.#apiName === objectType) {
