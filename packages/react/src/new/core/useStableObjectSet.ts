@@ -24,9 +24,9 @@ import { stableSerialize } from "./stableSerialize.js";
 
 /**
  * Returns a referentially stable ObjectSet that only changes when the
- * wire representation changes. This uses `getWireObjectSet` which includes
- * composed operations (where, union, intersect, etc.) in the serialized
- * form, unlike plain `JSON.stringify(objectSet)` which may not capture them.
+ * wire representation changes. This uses {@link stableSerialize} which
+ * includes composed operations (where, union, intersect, etc.) in the
+ * serialized form
  */
 export function useStableObjectSet<
   Q extends ObjectOrInterfaceDefinition,

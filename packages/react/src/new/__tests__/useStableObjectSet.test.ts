@@ -19,7 +19,7 @@ import { createClient, isObjectSet } from "@osdk/client";
 import { Employee } from "@osdk/client.test.ontology";
 import { renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { useStableObjectSet } from "../useStableObjectSet.js";
+import { useStableObjectSet } from "../core/useStableObjectSet.js";
 
 const client = createClient(
   "https://stack.palantir.com/",

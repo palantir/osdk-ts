@@ -596,8 +596,6 @@ describe("useOsdkFunctions", () => {
   });
 
   describe("params memoization", () => {
-    // const MOCK_WIRE_FORM = Symbol.for("test.mockWireForm");
-
     function makeMockObjectSet(wireForm: object): object {
       const o: Record<PropertyKey, unknown> = {};
       Object.defineProperty(o, MOCK_WIRE_FORM, {

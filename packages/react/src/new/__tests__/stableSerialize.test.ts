@@ -18,7 +18,7 @@ import { describe, expect, it, vi } from "vitest";
 import {
   stableSerialize,
   stableSerializeReplacer,
-} from "../stableSerialize.js";
+} from "../core/stableSerialize.js";
 
 vi.mock("@osdk/client", async (importOriginal) => {
   const actual = await importOriginal<{}>();

@@ -22,7 +22,7 @@ import { getWireObjectSet, isObjectSet } from "@osdk/client";
  * `Osdk.Instance`s normalize to a discriminative wire form before
  * stringification.
  */
-export function stableSerialize(value: unknown): string {
+export function stableSerialize(value: unknown): string | undefined {
   return JSON.stringify(value, stableSerializeReplacer);
 }
 
@@ -48,10 +48,8 @@ export function stableSerializeReplacer(
       return { __objectSet: getWireObjectSet(value) };
     }
     if ("$apiName" in value && "$primaryKey" in value) {
-      return {
-        $apiName: (value as { $apiName: unknown }).$apiName,
-        $primaryKey: (value as { $primaryKey: unknown }).$primaryKey,
-      };
+      const { $apiName, $primaryKey } = value;
+      return { $apiName, $primaryKey };
     }
   }
   return value;
