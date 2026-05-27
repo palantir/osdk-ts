@@ -41,7 +41,6 @@ import type { BatchContext } from "../BatchContext.js";
 import { type CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
 import { type Changes, DEBUG_ONLY__changesToString } from "../Changes.js";
-import { collectWhereClauseProperties } from "../collectWhereClauseProperties.js";
 import { getObjectTypesThatInvalidate } from "../getObjectTypesThatInvalidate.js";
 import type { Entry } from "../Layer.js";
 import {
@@ -51,6 +50,10 @@ import {
 import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "../objectMatchesWhereClause.js";
 import type { OptimisticId } from "../OptimisticId.js";
 import type { PivotInfo } from "../PivotCanonicalizer.js";
+import {
+  computeBaseDependencies,
+  setsIntersect,
+} from "../propertyDependencies.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import { OrderBySortingStrategy } from "../sorting/SortingStrategy.js";
@@ -172,6 +175,7 @@ export abstract class ListQuery extends BaseListQuery<
     this.#objectTypesCache = new Set([this.apiName]);
 
     this.#dependentProperties = computeListDependentProperties(
+      this.rdpConfig,
       this.#whereClause,
       this.#orderBy,
       this.#intersectWith,
@@ -391,10 +395,18 @@ export abstract class ListQuery extends BaseListQuery<
    * implementation checks).
    */
   async revalidateObjectType(objectType: string): Promise<boolean> {
+    return this.isPrimaryType(objectType)
+      || (this.#rdpInvalidationSet?.has(objectType) ?? false);
+  }
+
+  /**
+   * `objectType` is the list's source `apiName` or — for pivot/link queries —
+   * the type it ultimately fetches. RDP-traversed types are excluded.
+   */
+  protected isPrimaryType(objectType: string): boolean {
     return this.apiName === objectType
       || (this.#fetchedObjectType != null
-        && this.#fetchedObjectType === objectType)
-      || (this.#rdpInvalidationSet?.has(objectType) ?? false);
+        && this.#fetchedObjectType === objectType);
   }
 
   /**
@@ -413,15 +425,11 @@ export abstract class ListQuery extends BaseListQuery<
       return;
     }
 
-    // Property-aware skip only applies when the edited type is the list's
-    // primary or fetched type. For RDP-traversed pivot types we don't know
-    // which properties on the pivot type the list cares about — stay
-    // conservative.
-    const isPrimary = this.apiName === objectType
-      || (this.#fetchedObjectType != null
-        && this.#fetchedObjectType === objectType);
+    // For RDP-traversed pivot types we don't know which properties on the
+    // pivot type the list cares about — only apply the property-aware skip
+    // for the list's primary/fetched type.
     if (
-      isPrimary
+      this.isPrimaryType(objectType)
       && editedProperties != null
       && this.#dependentProperties != null
       && !setsIntersect(editedProperties, this.#dependentProperties)
@@ -731,48 +739,25 @@ export function isListCacheKey(
   return cacheKey.type === "list";
 }
 
-function setsIntersect(
-  a: ReadonlySet<string>,
-  b: ReadonlySet<string>,
-): boolean {
-  const [small, large] = a.size <= b.size ? [a, b] : [b, a];
-  for (const v of small) {
-    if (large.has(v)) {
-      return true;
-    }
-  }
-  return false;
-}
-
 function computeListDependentProperties(
+  rdpConfig: Canonical<Rdp> | undefined,
   canonicalWhere: Canonical<SimpleWhereClause>,
   orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>,
   intersectWith:
     | Canonical<Array<Canonical<SimpleWhereClause>>>
     | undefined,
 ): ReadonlySet<string> | undefined {
-  const fromWhere = collectWhereClauseProperties(canonicalWhere);
-  if (fromWhere === undefined) {
+  const deps = computeBaseDependencies(
+    rdpConfig,
+    canonicalWhere,
+    intersectWith,
+  );
+  if (deps === undefined) {
     return undefined;
   }
-  const deps = new Set<string>(fromWhere);
-
   for (const propertyKey of Object.keys(orderBy)) {
     deps.add(propertyKey);
   }
-
-  if (intersectWith) {
-    for (const clause of intersectWith) {
-      const collected = collectWhereClauseProperties(clause);
-      if (collected === undefined) {
-        return undefined;
-      }
-      for (const p of collected) {
-        deps.add(p);
-      }
-    }
-  }
-
   return deps;
 }
 

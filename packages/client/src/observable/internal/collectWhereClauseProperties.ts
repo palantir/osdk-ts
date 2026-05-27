@@ -72,7 +72,10 @@ function walk(
     if (key === "$primaryKey") {
       continue;
     }
-    if (key === "$title") {
+    // Any other `$`-prefixed key (today: `$title`; tomorrow: anything new in
+    // SpecialPropertyWhereClause) doesn't map to a single backing property we
+    // can name, so bail to conservative.
+    if (key.startsWith("$")) {
       return false;
     }
     collected.add(key);

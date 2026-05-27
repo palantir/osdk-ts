@@ -58,4 +58,14 @@ describe("collectWhereClauseProperties", () => {
       collectWhereClauseProperties({ $title: { $eq: "Boss" } }),
     ).toBeUndefined();
   });
+
+  it("returns undefined for any other unrecognized $-prefixed key", () => {
+    // Future special keys we don't know about must fall to conservative,
+    // not be silently treated as ontology property names.
+    expect(
+      collectWhereClauseProperties(
+        { $futureSpecialKey: { $eq: 1 } } as unknown as SimpleWhereClause,
+      ),
+    ).toBeUndefined();
+  });
 });

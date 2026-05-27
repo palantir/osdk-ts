@@ -28,10 +28,9 @@ const ACTION_DELAY = process.env.NODE_ENV === "production" ? 0 : 1000;
 /**
  * Per-type edited-property tracking. `undefined` value means "conservative —
  * invalidate any query that depends on this type regardless of which
- * properties it cares about." A `Set` lists exactly which properties were
- * observed to change; queries with disjoint property dependencies can skip.
+ * properties it cares about."
  */
-type EditedPropertiesByType = Map<string, ReadonlySet<string> | undefined>;
+type EditedPropertiesByType = Map<string, Set<string> | undefined>;
 
 export class ActionApplication {
   constructor(private store: Store) {}
@@ -89,11 +88,8 @@ export class ActionApplication {
       const editedPropertiesByType = await this.#invalidatePerObjectEdits(
         actionResults,
       );
-      // Per-type invalidation fans out only to queries whose property
-      // dependencies overlap with what actually changed; for the common
-      // FilterList case that means most aggregations skip their server
-      // round-trip entirely. We await the pass so the cache is consistent
-      // by the time the action promise resolves.
+      // Awaited so the cache is consistent before applyAction resolves; the
+      // per-property skip in the dispatch loop keeps the fan-out cheap.
       await this.#invalidatePerTypeEdits(actionResults, editedPropertiesByType);
     } finally {
       if (process.env.NODE_ENV !== "production") {
@@ -118,10 +114,8 @@ export class ActionApplication {
     const { deletedObjects, modifiedObjects, addedObjects } =
       actionEditResponse;
 
-    // Snapshot truth-layer values for every variant of each modified object
-    // BEFORE the per-PK refetches land. We compare these against the post-
-    // refetch values to compute which properties actually changed, so the
-    // per-type pass can skip queries that don't depend on those properties.
+    // Snapshot truth-layer values BEFORE the per-PK refetches land — we diff
+    // them against the post-refetch values to learn what actually changed.
     const oldValueByVariant = new Map<
       ObjectCacheKey,
       ObjectHolder | undefined
@@ -169,20 +163,15 @@ export class ActionApplication {
     });
     await Promise.all(promisesToWait);
 
-    // Added/deleted objects shift counts and list membership for any query
-    // on that type; we don't have a meaningful property diff for them, so
-    // mark the type as conservative.
+    // Adds/deletes shift counts and list membership; we have no diff for
+    // them, so they're always conservative.
     for (const obj of addedObjects ?? []) {
-      markConservative(editedPropertiesByType, obj.objectType);
+      editedPropertiesByType.set(obj.objectType, undefined);
     }
     for (const obj of deletedObjects ?? []) {
-      markConservative(editedPropertiesByType, obj.objectType);
+      editedPropertiesByType.set(obj.objectType, undefined);
     }
 
-    // Diff modified objects: every variant we snapshotted gets compared
-    // against its post-refetch truth-layer value. If either snapshot is
-    // missing (uncached, or refetch didn't land an ObjectHolder), fall back
-    // to conservative for that type.
     for (const obj of modifiedObjects ?? []) {
       for (
         const variant of this.store.objectCacheKeyRegistry.getVariants(
@@ -197,15 +186,14 @@ export class ActionApplication {
           : undefined;
 
         if (!oldValue || !newValue) {
-          markConservative(editedPropertiesByType, obj.objectType);
+          editedPropertiesByType.set(obj.objectType, undefined);
           continue;
         }
 
-        const diff = computePropertyDiff(oldValue, newValue);
         mergeEditedProperties(
           editedPropertiesByType,
           obj.objectType,
-          diff,
+          computePropertyDiff(oldValue, newValue),
         );
       }
     }
@@ -231,11 +219,12 @@ export class ActionApplication {
         }
       }
     } else {
+      // largeScaleEdits don't carry per-property info — every reported type
+      // is conservative.
       for (const apiName of actionEditResponse.editedObjectTypes) {
-        editedObjectTypeSet.add(apiName as string);
-        // largeScaleEdits don't tell us which properties changed, so fall
-        // back to conservative invalidation for every reported type.
-        markConservative(editedPropertiesByType, apiName as string);
+        const name = apiName as string;
+        editedObjectTypeSet.add(name);
+        editedPropertiesByType.set(name, undefined);
       }
     }
 
@@ -243,11 +232,10 @@ export class ActionApplication {
       return;
     }
 
-    // Walk the cache once and dispatch per (query, editedType) pair. The two
-    // skips below mean each query is touched at most once on the path that's
-    // right for it: ObjectQueries via the per-PK pass, primary-type lists via
-    // Subject reactions from that refetch, and everything else (RDP-traversed
-    // lists, FunctionQueries with dependsOn) via this walk.
+    // Each query is touched on at most one path: ObjectQueries via the
+    // per-PK pass, primary-type lists via Subject reactions from that
+    // refetch, everything else (RDP-traversed lists, FunctionQueries with
+    // dependsOn, aggregations) via this walk.
     const isEditsBranch = actionEditResponse.type === "edits";
     const promises: Promise<unknown>[] = [];
     for (const cacheKey of this.store.queries.keys()) {
@@ -266,11 +254,12 @@ export class ActionApplication {
         ) {
           continue;
         }
-        const editedProperties = editedPropertiesByType.has(apiName)
-          ? editedPropertiesByType.get(apiName)
-          : undefined;
         promises.push(
-          query.invalidateObjectType(apiName, undefined, editedProperties),
+          query.invalidateObjectType(
+            apiName,
+            undefined,
+            editedPropertiesByType.get(apiName),
+          ),
         );
       }
     }
@@ -285,30 +274,21 @@ function isObjectHolder(value: unknown): value is ObjectHolder {
     && "$primaryKey" in value;
 }
 
-function markConservative(
-  map: EditedPropertiesByType,
-  apiName: string,
-): void {
-  map.set(apiName, undefined);
-}
-
 function mergeEditedProperties(
   map: EditedPropertiesByType,
   apiName: string,
   properties: ReadonlySet<string>,
 ): void {
-  if (map.has(apiName)) {
-    const existing = map.get(apiName);
-    if (existing === undefined) {
-      // Already conservative; cannot become more specific.
-      return;
-    }
-    const merged = new Set<string>(existing);
-    for (const p of properties) {
-      merged.add(p);
-    }
-    map.set(apiName, merged);
-  } else {
+  if (!map.has(apiName)) {
     map.set(apiName, new Set(properties));
+    return;
+  }
+  const existing = map.get(apiName);
+  // Already conservative — adding more specific entries can't shrink it.
+  if (existing === undefined) {
+    return;
+  }
+  for (const p of properties) {
+    existing.add(p);
   }
 }

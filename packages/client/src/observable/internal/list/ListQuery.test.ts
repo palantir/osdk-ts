@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { DerivedProperty } from "@osdk/api";
 import {
   Employee,
   FooInterface,
@@ -1342,6 +1343,32 @@ describe("ListQuery property-aware invalidation", () => {
       "Employee",
       undefined,
       new Set(["fullName"]),
+    );
+    expect(revalidateSpy).toHaveBeenCalledWith(true);
+  });
+
+  it("revalidates conservatively when the list has same-type RDPs", async () => {
+    // withProperties pins an RDP on the cache key. The where clause could
+    // reference the derived name, but the per-action diff only sees
+    // underlying-property changes — so we must invalidate even when no
+    // edited property overlaps the statically collected set.
+    const withProperties: DerivedProperty.Clause<typeof Employee> = {
+      officeName: (b) => b.pivotTo("officeLink").selectProperty("name"),
+    };
+    const query = store.lists.getQuery({
+      type: Employee,
+      where: {},
+      orderBy: {},
+      withProperties,
+    });
+
+    const revalidateSpy = vi.spyOn(query, "revalidate")
+      .mockResolvedValue(undefined);
+
+    await query.invalidateObjectType(
+      "Employee",
+      undefined,
+      new Set(["unrelated"]),
     );
     expect(revalidateSpy).toHaveBeenCalledWith(true);
   });

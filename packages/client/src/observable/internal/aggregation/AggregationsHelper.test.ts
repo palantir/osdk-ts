@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { DerivedProperty } from "@osdk/api";
 import { Employee, Office } from "@osdk/client.test.ontology";
 import type { SetupServer } from "@osdk/shared.test";
 import { FauxFoundry, ontologies, startNodeApiServer } from "@osdk/shared.test";
@@ -192,6 +193,35 @@ describe("aggregation ObjectSet support", () => {
           "Employee",
           undefined,
           new Set(["class"]),
+        );
+        expect(revalidateSpy).toHaveBeenCalledWith(true);
+      },
+    );
+
+    it(
+      "revalidates conservatively when the aggregation has same-type RDPs",
+      async () => {
+        // withProperties pins an RDP on the query's cache key. The where
+        // clause could reference the derived name, but the per-action diff
+        // only sees underlying-property changes — so we must invalidate even
+        // when no edited property overlaps the statically collected set.
+        const withProperties: DerivedProperty.Clause<typeof Employee> = {
+          officeName: (b) => b.pivotTo("officeLink").selectProperty("name"),
+        };
+        const query = store.aggregations.getQuery({
+          type: Employee,
+          where: {},
+          withProperties,
+          aggregate: { $select: { $count: "unordered" } },
+        });
+
+        const revalidateSpy = vi.spyOn(query, "revalidate")
+          .mockResolvedValue(undefined);
+
+        await query.invalidateObjectType(
+          "Employee",
+          undefined,
+          new Set(["unrelated"]),
         );
         expect(revalidateSpy).toHaveBeenCalledWith(true);
       },

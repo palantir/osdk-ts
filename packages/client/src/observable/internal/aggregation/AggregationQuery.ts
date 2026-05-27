@@ -33,9 +33,12 @@ import type {
 import type { BatchContext } from "../BatchContext.js";
 import type { Canonical } from "../Canonical.js";
 import type { Changes } from "../Changes.js";
-import { collectWhereClauseProperties } from "../collectWhereClauseProperties.js";
 import { getObjectTypesThatInvalidate } from "../getObjectTypesThatInvalidate.js";
 import type { Entry } from "../Layer.js";
+import {
+  computeBaseDependencies,
+  setsIntersect,
+} from "../propertyDependencies.js";
 import { Query } from "../Query.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
@@ -145,6 +148,7 @@ export abstract class AggregationQuery extends Query<
     }
 
     this.#dependentProperties = computeAggregationDependentProperties(
+      this.rdpConfig,
       this.canonicalWhere,
       this.canonicalAggregate,
       cacheKey.otherKeys[INTERSECT_IDX],
@@ -264,72 +268,41 @@ export abstract class AggregationQuery extends Query<
   };
 }
 
-function setsIntersect(
-  a: ReadonlySet<string>,
-  b: ReadonlySet<string>,
-): boolean {
-  const [small, large] = a.size <= b.size ? [a, b] : [b, a];
-  for (const v of small) {
-    if (large.has(v)) {
-      return true;
-    }
-  }
-  return false;
-}
-
 function computeAggregationDependentProperties(
+  rdpConfig: Canonical<Rdp> | undefined,
   canonicalWhere: Canonical<SimpleWhereClause>,
   canonicalAggregate: Canonical<AggregateOpts<ObjectOrInterfaceDefinition>>,
   intersectWith:
     | Canonical<Array<Canonical<SimpleWhereClause>>>
     | undefined,
 ): ReadonlySet<string> | undefined {
-  const fromWhere = collectWhereClauseProperties(canonicalWhere);
-  if (fromWhere === undefined) {
+  const deps = computeBaseDependencies(
+    rdpConfig,
+    canonicalWhere,
+    intersectWith,
+  );
+  if (deps === undefined) {
     return undefined;
   }
-  const deps = new Set<string>(fromWhere);
 
-  if (intersectWith) {
-    for (const clause of intersectWith) {
-      const collected = collectWhereClauseProperties(clause);
-      if (collected === undefined) {
-        return undefined;
-      }
-      for (const p of collected) {
-        deps.add(p);
-      }
-    }
-  }
-
-  const aggregate = canonicalAggregate as AggregateOpts<
-    ObjectOrInterfaceDefinition
-  >;
-
-  const groupBy = aggregate.$groupBy;
+  const groupBy = canonicalAggregate.$groupBy;
   if (groupBy) {
     for (const propertyKey of Object.keys(groupBy)) {
       deps.add(propertyKey);
     }
   }
 
-  const select = aggregate.$select as
-    | Record<string, unknown>
-    | undefined;
-  if (select) {
-    for (const key of Object.keys(select)) {
-      if (key === "$count") {
-        continue;
-      }
-      // Keys are formatted as `${propertyName}:${aggregationType}`.
-      const colonIdx = key.indexOf(":");
-      if (colonIdx > 0) {
-        deps.add(key.slice(0, colonIdx));
-      } else {
-        // Defensive: unrecognized select key — be conservative.
-        return undefined;
-      }
+  for (const key of Object.keys(canonicalAggregate.$select)) {
+    if (key === "$count") {
+      continue;
     }
+    // Keys are formatted as `${propertyName}:${aggregationType}`. Bail
+    // conservative if we see anything we don't recognize.
+    const colonIdx = key.indexOf(":");
+    if (colonIdx <= 0) {
+      return undefined;
+    }
+    deps.add(key.slice(0, colonIdx));
   }
 
   return deps;
