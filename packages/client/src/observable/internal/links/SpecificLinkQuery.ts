@@ -286,7 +286,6 @@ export class SpecificLinkQuery extends BaseListQuery<
     if (
       this.#resolveToObjectType
       && target?.kind === "interface"
-      && response.data.length > 0
     ) {
       const fullData = await reloadDataAsFullObjects(client, response.data);
       return { ...response, data: fullData };

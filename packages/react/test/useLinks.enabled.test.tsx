@@ -264,5 +264,30 @@ describe("useLinks enabled option", () => {
       // both are truthy so dep array entry !!resolveToObjectType is stable
       expect(mockObserveLinks).toHaveBeenCalledTimes(1);
     });
+
+    it("should resubscribe when resolveToObjectType toggles between truthy and falsy", () => {
+      const wrapper = createWrapper();
+
+      const { rerender } = renderHook(
+        ({ resolve }) =>
+          useLinks(mockObject, "relatedObjects", {
+            resolveToObjectType: resolve,
+          }),
+        {
+          wrapper,
+          initialProps: {
+            resolve: true as boolean | ObjectTypeDefinition | undefined,
+          },
+        },
+      );
+
+      expect(mockObserveLinks).toHaveBeenCalledTimes(1);
+
+      rerender({ resolve: undefined });
+
+      expect(mockObserveLinks).toHaveBeenCalledTimes(2);
+      const lastCallOptions = mockObserveLinks.mock.calls[1][2];
+      expect(lastCallOptions.resolveToObjectType).toBeUndefined();
+    });
   });
 });
