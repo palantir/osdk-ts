@@ -18,13 +18,9 @@ import type {
   LinkTypeBlockDataV2,
   ObjectTypeBlockDataV2,
 } from "@osdk/client.unstable";
-import {
-  OntologyIrToFullMetadataConverter,
-} from "@osdk/generator-converters.ontologyir";
+import { OntologyIrToFullMetadataConverter } from "@osdk/generator-converters.ontologyir";
 import { PreviewOntologyIrConverter } from "@osdk/generator-converters.preview";
-import {
-  cleanAndValidateLinkTypeId,
-} from "@osdk/maker";
+import { cleanAndValidateLinkTypeId } from "@osdk/maker";
 import { consola } from "consola";
 import * as fs from "node:fs";
 import * as path from "node:path";
