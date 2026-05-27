@@ -21,7 +21,7 @@ const storybookBasePath = process.env.STORYBOOK_BASE_PATH;
 const config: StorybookConfig = {
   stories: [
     "../src/**/*.stories.@(js|jsx|ts|tsx|mdx)",
-    "../src/docs/**/*.mdx",
+    "../src/**/*.mdx",
   ],
   addons: [
     "@storybook/addon-a11y",

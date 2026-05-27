@@ -1,0 +1,247 @@
+{/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */}
+
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as ObjectTableStories from "./ObjectTable.stories";
+
+<Meta title="Beta/ObjectTable/Docs" />
+
+# ObjectTable
+
+An OSDK-aware data table for ontology objects. Displays paginated, sortable,
+filterable rows driven by an object type or object set, with support for
+column pinning, resizing, row selection, cell editing, custom renderers,
+function-backed columns, and derived properties.
+
+## Demo
+
+<Canvas of={ObjectTableStories.Default} />
+
+## Usage
+
+```tsx
+import { Employee } from "@my/osdk";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
+
+function EmployeesPage() {
+  return <ObjectTable objectType={Employee} />;
+}
+```
+
+> `@my/osdk` is a placeholder for your generated SDK package.
+
+### Prerequisites
+
+- Install `@osdk/react-components` and its peer dependencies
+- Wrap your app with `OsdkProvider`
+- Import `@osdk/react-components/styles.css`
+
+See the [README](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/README.md#setup)
+for full setup instructions.
+
+## Examples
+
+### Row Selection
+
+Enable single or multiple row selection with checkboxes and a select-all header.
+
+<Canvas of={ObjectTableStories.MultipleSelection} />
+
+### Editable Table
+
+Columns can be marked `editable` to allow inline cell editing. The edit footer
+provides "Edit Table", "Cancel", and "Submit Edits" controls.
+
+<Canvas of={ObjectTableStories.EditableTable} />
+
+### Custom Renderers
+
+Override how individual cells or headers render via `renderCell` and
+`renderHeader` on column definitions.
+
+<Canvas of={ObjectTableStories.WithCustomRenderers} />
+
+### Controlled Sorting
+
+Control the sort order externally via `orderBy` and `onOrderByChanged`.
+
+<Canvas of={ObjectTableStories.ControlledSorting} />
+
+### Row Attributes for Styling
+
+Use `getRowAttributes` to apply `data-*` attributes to rows for conditional
+CSS styling.
+
+<Canvas of={ObjectTableStories.RowAttributesForStyling} />
+
+## API Reference
+
+### Props
+
+<Controls of={ObjectTableStories.Default} />
+
+### Column Definition
+
+| Field | Type | Description |
+|---|---|---|
+| `locator` | `ColumnDefinitionLocator` | Identifies the column source (property, function, derived, or custom) |
+| `isVisible` | `boolean` | Whether the column is visible (default: `true`) |
+| `pinned` | `"left" \| "right" \| "none"` | Pin the column to a side |
+| `width` | `number` | Fixed width in pixels |
+| `minWidth` | `number` | Minimum column width |
+| `maxWidth` | `number` | Maximum column width |
+| `resizable` | `boolean` | Whether the column can be resized |
+| `orderable` | `boolean` | Whether the column can be sorted |
+| `filterable` | `boolean` | Whether the column can be filtered |
+| `columnName` | `string` | Display name for the column header |
+| `renderHeader` | `() => ReactNode` | Custom header renderer |
+| `renderCell` | `(object, locator) => ReactNode` | Custom cell renderer |
+| `editable` | `boolean \| (object) => boolean` | Whether cells in this column are editable |
+| `editFieldConfig` | `EditFieldConfig` | Configuration for the cell editor component |
+| `validateEdit` | `(value) => Promise<string \| undefined>` | Async validation for edited cell values |
+
+### Column Locator Types
+
+| Type | Description |
+|---|---|
+| `property` | A direct property of the object type. `id` is a `PropertyKeys<Q>` value |
+| `function` | A function-backed column. Requires `queryDefinition`, `getFunctionParams`, and `getKey` |
+| `rdp` | A derived property column. Requires a `creator` function |
+| `custom` | A custom column with a string `id`. Requires `renderCell` |
+
+### CSS Variables
+
+#### Border
+
+| Variable | Default | Description |
+|---|---|---|
+| `--osdk-table-border-color` | `--osdk-surface-border-color-default` | Table border color |
+| `--osdk-table-border-width` | `--osdk-surface-border-width` | Table border width |
+| `--osdk-table-border` | computed | Shorthand table border |
+| `--osdk-table-header-divider` | `--osdk-table-border` | Divider below header |
+| `--osdk-table-cell-divider` | transparent | Vertical cell divider |
+| `--osdk-table-row-divider` | `--osdk-table-border` | Horizontal row divider |
+| `--osdk-table-pinned-column-border` | `--osdk-table-border` | Border on pinned columns |
+
+#### Header
+
+| Variable | Default | Description |
+|---|---|---|
+| `--osdk-table-header-height` | `50px` | Header row height |
+| `--osdk-table-header-bg` | `--osdk-background-secondary` | Header background |
+| `--osdk-table-header-fontWeight` | `--osdk-typography-weight-bold` | Header font weight |
+| `--osdk-table-header-fontSize` | `--osdk-typography-size-body-small` | Header font size |
+| `--osdk-table-header-color` | `--osdk-typography-color-muted` | Header text color |
+
+#### Row
+
+| Variable | Default | Description |
+|---|---|---|
+| `--osdk-table-row-bg-default` | `--osdk-background-primary` | Default row background |
+| `--osdk-table-row-bg-alternate` | `--osdk-background-tertiary` | Alternating row background |
+| `--osdk-table-row-bg-hover` | primary tint | Row hover background |
+| `--osdk-table-row-bg-active` | primary tint | Active row background |
+| `--osdk-table-row-border-color-hover` | `--osdk-intent-primary-rest` | Row hover border |
+| `--osdk-table-row-border-color-active` | `--osdk-intent-primary-rest` | Active row border |
+
+#### Cell
+
+| Variable | Default | Description |
+|---|---|---|
+| `--osdk-table-cell-padding` | `0 2 * spacing` | Cell padding |
+| `--osdk-table-cell-fontSize` | `--osdk-typography-size-body-medium` | Cell font size |
+| `--osdk-table-cell-color` | `--osdk-typography-color-default-rest` | Cell text color |
+
+#### Header Menu
+
+| Variable | Default | Description |
+|---|---|---|
+| `--osdk-table-header-menu-padding` | `0.25 * spacing` | Menu padding |
+| `--osdk-table-header-menu-bg` | `transparent` | Menu background |
+| `--osdk-table-header-menu-border` | `--osdk-surface-border` | Menu border |
+| `--osdk-table-header-menu-color` | `--osdk-typography-color-muted` | Menu text color |
+| `--osdk-table-header-menu-color-active` | `--osdk-typography-color-default-rest` | Active menu text |
+| `--osdk-table-header-menu-icon-color` | `--osdk-table-header-menu-color` | Menu icon color |
+| `--osdk-table-header-menu-bg-hover` | `--osdk-surface-background-color-default-hover` | Menu hover background |
+| `--osdk-table-header-menu-bg-active` | `--osdk-surface-background-color-default-active` | Menu active background |
+
+#### Resizer
+
+| Variable | Default | Description |
+|---|---|---|
+| `--osdk-table-resizer-color-hover` | `--osdk-custom-color-primary-1` | Resize handle hover color |
+| `--osdk-table-resizer-color-active` | `--osdk-intent-primary-rest` | Resize handle active color |
+
+#### Skeleton Loading
+
+| Variable | Default | Description |
+|---|---|---|
+| `--osdk-table-skeleton-color-from` | `--osdk-background-skeleton-from` | Skeleton gradient start |
+| `--osdk-table-skeleton-color-to` | `--osdk-background-skeleton-to` | Skeleton gradient end |
+
+#### Column Config Dialog
+
+| Variable | Default | Description |
+|---|---|---|
+| `--osdk-table-column-config-dialog-min-width` | `800px` | Dialog minimum width |
+| `--osdk-table-column-config-dialog-min-height` | `400px` | Dialog minimum height |
+| `--osdk-table-column-config-visible-columns-bg` | `--osdk-background-secondary` | Visible columns area background |
+
+#### Editable Table
+
+| Variable | Default | Description |
+|---|---|---|
+| `--osdk-table-cell-editable-border` | `--osdk-surface-border-color-strong` | Editable cell border |
+| `--osdk-table-cell-edited-border` | `--osdk-intent-primary-rest` | Edited cell border |
+| `--osdk-table-cell-edited-border-error` | `--osdk-intent-danger-rest` | Cell validation error border |
+| `--osdk-table-cell-input-bg` | `--osdk-background-primary` | Cell input background |
+| `--osdk-table-edit-container-padding` | `2 * spacing, 4 * spacing` | Edit footer padding |
+| `--osdk-table-edit-container-min-height` | `12 * spacing` | Edit footer minimum height |
+
+### Data Attributes
+
+| Attribute | Applied to | Description |
+|---|---|---|
+| `data-pinned` | Header cell, body cell | `"left"` or `"right"` when the column is pinned |
+| `data-editable` | Body cell | `"true"` when the cell is editable |
+| `data-resizing` | `thead` | `"true"` while a column is being resized |
+| `data-selected` | Table row | `"true"` when the row is selected |
+| `data-focused` | Table row | `"true"` when the row has focus |
+| `data-row-parity` | Table row | `"even"` or `"odd"` for alternating row styles |
+| `data-popup-open` | Header menu trigger | Present when the column header menu is open |
+
+## Utilities
+
+The `@osdk/react-components/experimental/object-table` barrel exports these
+alongside the main component:
+
+| Export | Description |
+|---|---|
+| `BaseTable` | OSDK-agnostic base table for custom data sources |
+| `ColumnConfigDialog` | Standalone column visibility and ordering dialog |
+| `MultiColumnSortDialog` | Standalone multi-column sort configuration dialog |
+| `LoadingCell` | Loading skeleton as a full `<td>` element for custom row renderers |
+| `LoadingCellContent` | Loading skeleton content for use inside an existing cell |
+
+## Accessibility
+
+- The table uses semantic `<table>`, `<thead>`, `<tbody>`, `<tr>`, `<th>`, and `<td>` elements
+- Column headers are keyboard navigable and sortable via `Enter`
+- Row selection supports keyboard activation with `Space` and `Enter`
+- Multi-select mode includes accessible checkboxes with appropriate labels
+- Column resize handles are keyboard operable
+- The edit footer buttons are focusable and labeled
+- Column configuration and sort dialogs follow standard dialog accessibility patterns
