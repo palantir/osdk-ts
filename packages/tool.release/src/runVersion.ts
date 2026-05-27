@@ -112,11 +112,13 @@ export async function runVersion({
     );
   }
 
-  const isMainBranch = false;
+  const isMainBranch =
+    (process.env.PRETEND_BRANCH ?? context.branch) === "main";
 
-  const isReleaseBranch = true;
+  const isReleaseBranch = (process.env.PRETEND_BRANCH ?? context.branch)
+    .startsWith("release/");
 
-  const runGitCommands = false;
+  const runGitCommands = !process.env.PRETEND_BRANCH;
 
   if (!isMainBranch && !isReleaseBranch) {
     throw new FailedWithUserMessage(
