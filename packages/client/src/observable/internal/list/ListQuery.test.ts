@@ -28,7 +28,7 @@ import {
   stubData,
 } from "@osdk/shared.test";
 import chalk from "chalk";
-import { beforeAll, beforeEach, describe, expect, it } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Client } from "../../../Client.js";
 import { createClient } from "../../../createClient.js";
 import { TestLogger } from "../../../logger/TestLogger.js";
@@ -1107,17 +1107,16 @@ describe("ListQuery pivotTo tests", () => {
           { status: "loading" },
         );
 
-        testStage("Allow time for the wire request to be sent");
-        await new Promise((r) => setTimeout(r, 100));
-
         testStage(
           "Verify the wire request uses interfaceLinkSearchAround, not searchAround",
         );
-        const ilt = wireBodies.find((b) => {
-          const os = (b as { objectSet?: { type?: string } })?.objectSet;
-          return os?.type === "interfaceLinkSearchAround";
+        await vi.waitFor(() => {
+          const ilt = wireBodies.find((b) => {
+            const os = (b as { objectSet?: { type?: string } })?.objectSet;
+            return os?.type === "interfaceLinkSearchAround";
+          });
+          expect(ilt).toBeDefined();
         });
-        expect(ilt).toBeDefined();
         const searchAroundOnly = wireBodies.find((b) => {
           const os = (b as { objectSet?: { type?: string } })?.objectSet;
           return os?.type === "searchAround";
@@ -1169,15 +1168,16 @@ describe("ListQuery pivotTo tests", () => {
           { status: "loading" },
         );
 
-        await new Promise((r) => setTimeout(r, 100));
+        await vi.waitFor(() => {
+          expect(requestCount).toBeGreaterThan(0);
+        });
         const initialRequests = requestCount;
-        expect(initialRequests).toBeGreaterThan(0);
 
         testStage("Invalidate Employee type and expect a fresh fetch");
         await store.invalidateObjectType(Employee, undefined);
-        await new Promise((r) => setTimeout(r, 100));
-
-        expect(requestCount).toBeGreaterThan(initialRequests);
+        await vi.waitFor(() => {
+          expect(requestCount).toBeGreaterThan(initialRequests);
+        });
       } finally {
         apiServer.events.removeListener("request:start", handler);
       }

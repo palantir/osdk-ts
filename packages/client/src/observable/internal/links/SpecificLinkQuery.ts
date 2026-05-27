@@ -29,6 +29,7 @@ import { type Subject } from "rxjs";
 import { additionalContext } from "../../../Client.js";
 import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
 import {
+  buildIltSearchAroundObjectSet,
   resolveLinkOnObject,
   resolveLinkOnObjectOrThrow,
 } from "../../../ontology/findIltLinkDef.js";
@@ -253,11 +254,7 @@ export class SpecificLinkQuery extends BaseListQuery<
               apiName: this.#sourceApiName,
             } as ObjectTypeDefinition,
             mc,
-            {
-              type: "interfaceLinkSearchAround",
-              objectSet: sourceWire,
-              interfaceLink: this.#linkName,
-            },
+            buildIltSearchAroundObjectSet(sourceWire, this.#linkName),
           ) as ObjectSet<ObjectOrInterfaceDefinition>;
           break;
         }

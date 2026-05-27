@@ -33,7 +33,10 @@ import type {
   ObjectHolder,
 } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
-import { resolveLinkOnObject } from "../../../ontology/findIltLinkDef.js";
+import {
+  buildIltSearchAroundObjectSet,
+  resolveLinkOnObject,
+} from "../../../ontology/findIltLinkDef.js";
 import type { ListPayload } from "../../ListPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
 import type { CollectionConnectableParams } from "../base-list/BaseCollectionQuery.js";
@@ -292,11 +295,7 @@ export abstract class ListQuery extends BaseListQuery<
     this.#objectSet = mc.objectSetFactory(
       { type: "object", apiName: this.apiName } as ObjectTypeDefinition,
       mc,
-      {
-        type: "interfaceLinkSearchAround",
-        objectSet: filteredSourceWire,
-        interfaceLink: pivotInfo.linkName,
-      },
+      buildIltSearchAroundObjectSet(filteredSourceWire, pivotInfo.linkName),
     ) as ObjectSet<ObjectTypeDefinition>;
 
     const rdpConfig = this.cacheKey.otherKeys[RDP_IDX];

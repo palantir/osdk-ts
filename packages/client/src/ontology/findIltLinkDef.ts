@@ -15,6 +15,7 @@
  */
 
 import type { InterfaceMetadata } from "@osdk/api";
+import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
 import {
   type FetchedObjectTypeDefinition,
   InterfaceDefinitions,
@@ -136,4 +137,19 @@ export function resolveLinkOnObjectOrThrow(
     );
   }
   return resolved;
+}
+
+/**
+ * Builds the wire `interfaceLinkSearchAround` object set used to traverse from
+ * a source object set to objects on the other side of an interface link type.
+ */
+export function buildIltSearchAroundObjectSet(
+  sourceObjectSet: WireObjectSet,
+  interfaceLink: string,
+): WireObjectSet {
+  return {
+    type: "interfaceLinkSearchAround",
+    objectSet: sourceObjectSet,
+    interfaceLink,
+  };
 }
