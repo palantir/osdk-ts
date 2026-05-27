@@ -34,7 +34,7 @@ import { buildScenarioClient, type ScenarioClient } from "./ScenarioClient.js";
  * import { createScenario } from "@osdk/client/unstable-do-not-use";
  *
  * const scenario = await createScenario(client);
- * const { scenarioRid } = scenario.getScenarioReference();
+ * const scenarioRid = scenario.getScenarioReference();
  * ```
  */
 export async function createScenario(

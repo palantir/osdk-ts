@@ -46,9 +46,7 @@ describe("withScenario", () => {
 
   it("getScenarioReference returns the scenario rid", () => {
     const scenario = withScenario(client, "ri.actions..scenario.abc");
-    expect(scenario.getScenarioReference()).toEqual({
-      scenarioRid: "ri.actions..scenario.abc",
-    });
+    expect(scenario.getScenarioReference()).toBe("ri.actions..scenario.abc");
   });
 
   it("forwards scenarioRid as a query param on fetchPage", async () => {

@@ -20,17 +20,15 @@ import type { MinimalClient } from "../MinimalClientContext.js";
 
 /**
  * A {@link Client} attached to an ontology scenario. All read and write operations performed via this client are
- * scoped to that scenario. `ScenarioClient` is a superset of {@link Client}: it is usable anywhere a `Client` is
- * accepted (e.g. as the `scenarioReference` parameter on a scenario-merge action).
+ * scoped to that scenario. `ScenarioClient` is a superset of {@link Client}.
  *
  * @beta This is an experimental, unstable feature subject to change.
  */
 export interface ScenarioClient extends Client {
   /**
-   * Returns the scenario reference for this client. Pass directly to an action whose parameter is typed as
-   * `scenarioReference`, or use to inspect the underlying scenario RID.
+   * The scenario RID this client is scoped to.
    */
-  getScenarioReference(): { scenarioRid: string };
+  getScenarioReference(): string;
 }
 
 /**
@@ -71,7 +69,7 @@ export function buildScenarioClient(
 
   return Object.defineProperties(inner, {
     getScenarioReference: {
-      value: () => ({ scenarioRid }),
+      value: () => scenarioRid,
     },
   }) as ScenarioClient;
 }

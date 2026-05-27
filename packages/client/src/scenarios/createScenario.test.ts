@@ -52,9 +52,7 @@ describe("createScenario", () => {
     );
     expect(createUrl.pathname).toMatch(/\/scenarios\/create$/);
 
-    expect(scenario.getScenarioReference()).toEqual({
-      scenarioRid: newScenarioRid,
-    });
+    expect(scenario.getScenarioReference()).toBe(newScenarioRid);
 
     // Subsequent requests carry the new rid
     mockFetchResponse(fetchFunction, { data: [] });
