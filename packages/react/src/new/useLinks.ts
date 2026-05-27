@@ -18,6 +18,7 @@ import type {
   LinkedType,
   LinkNames,
   ObjectOrInterfaceDefinition,
+  ObjectTypeDefinition,
 } from "@osdk/api";
 import type { Osdk, PropertyKeys, WhereClause } from "@osdk/client";
 import type { ObserveLinks } from "@osdk/client/observable";
@@ -96,6 +97,21 @@ export interface UseLinksOptions<
    * object type.
    */
   $includeAllBaseObjectProperties?: boolean;
+
+  /**
+   * When traversing to linked objects via an interface link target, return
+   * the full concrete object type instances instead of interface views.
+   *
+   * Pass an ObjectTypeDefinition to narrow the return type to
+   * `Osdk.Instance<R>`. This is an unchecked assertion — the runtime does
+   * not filter by type.
+   *
+   * Only has an effect when the link target is an interface; for concrete
+   * object link targets this option is a no-op.
+   *
+   * @default false
+   */
+  resolveToObjectType?: boolean | ObjectTypeDefinition;
 }
 
 export interface UseLinksResult<Q extends ObjectOrInterfaceDefinition> {
@@ -133,6 +149,29 @@ export interface UseLinksResult<Q extends ObjectOrInterfaceDefinition> {
 const emptyArray = Object.freeze([]);
 const emptyMap: ReadonlyMap<string | number, ReadonlyArray<never>> = new Map();
 
+// resolveToObjectType overload: when an ObjectTypeDefinition is passed,
+// narrow the return type to Osdk.Instance<R>.
+export function useLinks<
+  T extends ObjectOrInterfaceDefinition,
+  L extends LinkNames<T>,
+  R extends ObjectTypeDefinition,
+>(
+  objects: Osdk.Instance<T> | Array<Osdk.Instance<T>> | undefined,
+  linkName: L,
+  options: UseLinksOptions<LinkedType<T, L>> & {
+    resolveToObjectType: R;
+  },
+): UseLinksResult<R>;
+
+export function useLinks<
+  T extends ObjectOrInterfaceDefinition,
+  L extends LinkNames<T>,
+>(
+  objects: Osdk.Instance<T> | Array<Osdk.Instance<T>> | undefined,
+  linkName: L,
+  options?: UseLinksOptions<LinkedType<T, L>>,
+): UseLinksResult<LinkedType<T, L>>;
+
 /**
  * Hook to observe links from an object or array of objects.
  *
@@ -151,8 +190,12 @@ export function useLinks<
 ): UseLinksResult<LinkedType<T, L>> {
   const { observableClient } = React.useContext(OsdkContext);
 
-  const { enabled = true, $includeAllBaseObjectProperties, ...otherOptions } =
-    options;
+  const {
+    enabled = true,
+    $includeAllBaseObjectProperties,
+    resolveToObjectType,
+    ...otherOptions
+  } = options;
 
   const canonOptions = observableClient.canonicalizeOptions({
     where: otherOptions.where,
@@ -204,6 +247,7 @@ export function useLinks<
               mode: otherOptions.mode,
               dedupeInterval: otherOptions.dedupeIntervalMs ?? 2_000,
               $includeAllBaseObjectProperties,
+              ...(resolveToObjectType ? { resolveToObjectType: true } : {}),
               ...(canonOptions.$select ? { select: canonOptions.$select } : {}),
             },
             observer,
@@ -228,6 +272,7 @@ export function useLinks<
       otherOptions.dedupeIntervalMs,
       canonOptions.$select,
       $includeAllBaseObjectProperties,
+      !!resolveToObjectType,
     ],
   );
 
