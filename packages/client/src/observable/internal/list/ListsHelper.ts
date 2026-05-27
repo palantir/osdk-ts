@@ -114,6 +114,7 @@ export class ListsHelper extends AbstractHelper<
       rids,
       select,
       $loadPropertySecurityMetadata,
+      resolveToObjectType,
     } = options;
     const { apiName, type } = typeDefinition;
     // The flag is interface-only on the server. Drop it for object queries so
@@ -158,6 +159,7 @@ export class ListsHelper extends AbstractHelper<
       canonSelect,
       $loadPropertySecurityMetadata ? true : undefined,
       $includeAllBaseObjectProperties,
+      resolveToObjectType ? true : undefined,
     );
 
     return this.store.queries.get(listCacheKey, () => {
