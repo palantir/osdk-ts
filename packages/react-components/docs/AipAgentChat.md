@@ -102,6 +102,14 @@ passing the current `messages`, `status`, `error`, and an `onSendMessage`
 callback that resolves once the user's message has been forwarded.
 Use it for non-OSDK backends, custom transports, or unit tests.
 
+In addition to the shared props (`className`, `placeholder`,
+`enableAutoScroll`, `renderEmptyState`, `renderMessage`),
+`BaseAipAgentChat` accepts:
+
+- `composerFooter` — optional content rendered in the composer footer,
+  to the left of the send button (e.g. a model picker or disclaimer).
+  Only available on `BaseAipAgentChat`, not `AipAgentChat`.
+
 ```tsx
 import {
   BaseAipAgentChat,
@@ -190,14 +198,20 @@ optional; if neither is supplied the chat falls back to the first
 entry of `availableModels` (when provided), or to `"gpt-4o"`. Notable
 optional props:
 
+- `className` — additional CSS class applied to the root chat container.
 - `availableModels` + `onModelChange` — render a model picker in the
   composer footer.
 - `system` — system prompt prepended to every request.
 - `initialMessages` — seed conversation snapshot.
+- `placeholder` (default `"Type a message..."`) — placeholder text for the
+  message composer input.
 - `enableAutoScroll` (default `true`) — auto-pin to the bottom of the
   message list as new tokens arrive.
 - `renderEmptyState` / `renderMessage` — render overrides.
-- `onError`, `onFinish` — listeners forwarded to `useChat`.
+- `onError` — listener fired when the chat hook surfaces an error (failed
+  send, dropped stream). Forwarded to `useChat`'s `onError`.
+- `onFinish` — listener fired once after a stream completes successfully.
+  Receives `{ message, messages }`. Forwarded to `useChat`'s `onFinish`.
 
 ## Theming
 

@@ -64,10 +64,11 @@ function EmployeeFilters() {
 
 ### Core Props
 
-| Prop                | Type                              | Required | Default | Description                                                           |
-| ------------------- | --------------------------------- | -------- | ------- | --------------------------------------------------------------------- |
-| `objectSet`         | `ObjectSet<Q>`                    | Yes      | -       | The object set to filter. Supports prefiltered sets (e.g. `.where()`) |
-| `filterDefinitions` | `Array<FilterDefinitionUnion<Q>>` | No       | -       | Filter items to display. If omitted, all filterable properties shown  |
+| Prop                | Type                              | Required | Default | Description                                                                                   |
+| ------------------- | --------------------------------- | -------- | ------- | --------------------------------------------------------------------------------------------- |
+| `objectType`        | `Q`                               | Yes      | -       | The object type definition. Used for metadata resolution (property types, display names)      |
+| `objectSet`         | `ObjectSet<Q>`                    | No       | -       | Optional object set to scope aggregation queries. Supports prefiltered sets (e.g. `.where()`) |
+| `filterDefinitions` | `Array<FilterDefinitionUnion<Q>>` | No       | -       | Filter items to display. If omitted, all filterable properties shown                          |
 
 ### Filter Management
 
@@ -78,6 +79,7 @@ function EmployeeFilters() {
 | `onEffectiveObjectSet`  | `(objectSet) => void`            | -       | Observer invoked with the fully-narrowed `ObjectSet` (direct + linked filters applied) on every filter change. Requires `objectSet`. Use when LINKED filters are present. |
 | `onFilterStateChanged`  | `(definition, newState) => void` | -       | Called when any filter's state changes                                                                                                                                    |
 | `initialFilterStates`   | `Map<string, FilterState>`       | -       | Initial states for hydrating from external storage                                                                                                                        |
+| `showFilteredOutValues` | `boolean`                        | `false` | When `true`, facets render greyed-out count=0 rows for values present in the unfiltered data but excluded by other active filters                                         |
 
 ### UI Features
 
@@ -94,13 +96,14 @@ function EmployeeFilters() {
 
 ### Advanced
 
-| Prop                    | Type                               | Default          | Description                                                                                                                                                                            |
-| ----------------------- | ---------------------------------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `addFilterMode`         | `"controlled" \| "uncontrolled"`   | `"uncontrolled"` | How filter visibility (add/remove) is managed. In uncontrolled mode, an "Add filter" popover is rendered. In controlled mode, the consumer manages visibility via `filterDefinitions`. |
-| `onFilterAdded`         | `(filterKey, definitions) => void` | -                | Called when a filter is added (shown). In uncontrolled mode, fires when a user selects a hidden filter from the "Add filter" popover.                                                  |
-| `onFilterRemoved`       | `(filterKey) => void`              | -                | Called when a filter is removed (hidden). In uncontrolled mode, fires as a notification after the filter is hidden internally.                                                         |
-| `enableSorting`         | `boolean`                          | `false`          | Enable drag-and-drop reordering of filters. Drag handles are rendered and filters can be reordered.                                                                                    |
-| `renderAddFilterButton` | `() => React.ReactNode`            | -                | Custom trigger for the add-filter button. In uncontrolled mode, customizes the popover trigger; in controlled mode, replaces the entire button area.                                   |
+| Prop                       | Type                                                 | Default          | Description                                                                                                                                                                            |
+| -------------------------- | ---------------------------------------------------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `addFilterMode`            | `"controlled" \| "uncontrolled"`                     | `"uncontrolled"` | How filter visibility (add/remove) is managed. In uncontrolled mode, an "Add filter" popover is rendered. In controlled mode, the consumer manages visibility via `filterDefinitions`. |
+| `onFilterAdded`            | `(filterKey, definitions) => void`                   | -                | Called when a filter is added (shown). In uncontrolled mode, fires when a user selects a hidden filter from the "Add filter" popover.                                                  |
+| `onFilterRemoved`          | `(filterKey) => void`                                | -                | Called when a filter is removed (hidden). In uncontrolled mode, fires as a notification after the filter is hidden internally.                                                         |
+| `enableSorting`            | `boolean`                                            | `false`          | Enable drag-and-drop reordering of filters. Drag handles are rendered and filters can be reordered.                                                                                    |
+| `onFilterVisibilityChange` | `(newStates: Array<{filterKey, isVisible}>) => void` | -                | Called when filter visibility or ordering changes (reorder, add, remove). Use to persist filter layout.                                                                                |
+| `renderAddFilterButton`    | `() => React.ReactNode`                              | -                | Custom trigger for the add-filter button. In uncontrolled mode, customizes the popover trigger; in controlled mode, replaces the entire button area.                                   |
 
 ## Filter Definitions
 
@@ -118,16 +121,21 @@ function EmployeeFilters() {
 
 When using `type: "PROPERTY"`, the definition supports:
 
-| Field             | Type                        | Description                                                                                   |
-| ----------------- | --------------------------- | --------------------------------------------------------------------------------------------- |
-| `key`             | `string`                    | Property key on the object type                                                               |
-| `label`           | `string`                    | Display label for the filter                                                                  |
-| `filterComponent` | `FilterComponentType`       | Which UI component to render (see table below)                                                |
-| `filterState`     | `FilterState`               | Initial state for the filter                                                                  |
-| `isVisible`       | `boolean`                   | Whether the filter is initially visible (default: `true`)                                     |
-| `colorMap`        | `Record<string, string>`    | Custom colors for LISTOGRAM bar values                                                        |
-| `listogramConfig` | `ListogramConfig`           | Configuration for LISTOGRAM display (see below)                                               |
-| `renderValue`     | `(value: string) => string` | Custom display and search text for filter values in dropdown items, chips, and listogram rows |
+| Field             | Type                           | Description                                                                                                                                                                                                                     |
+| ----------------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `key`             | `string`                       | Property key on the object type                                                                                                                                                                                                 |
+| `id`              | `string`                       | Optional unique identifier for stable keying across filter reorders                                                                                                                                                             |
+| `label`           | `string`                       | Display label for the filter                                                                                                                                                                                                    |
+| `filterComponent` | `FilterComponentType`          | Which UI component to render (see table below)                                                                                                                                                                                  |
+| `filterState`     | `FilterState`                  | Initial state for the filter                                                                                                                                                                                                    |
+| `isVisible`       | `boolean`                      | Whether the filter is initially visible (default: `true`)                                                                                                                                                                       |
+| `colorMap`        | `Record<string, string>`       | Custom colors for LISTOGRAM bar values                                                                                                                                                                                          |
+| `listogramConfig` | `ListogramConfig`              | Configuration for LISTOGRAM display (see below)                                                                                                                                                                                 |
+| `renderValue`     | `(value: string) => ReactNode` | Custom display for filter values in dropdown items, chips, and listogram rows. When the return is a `string`, it is also used for search matching; when it returns a non-string `ReactNode`, search falls back to the raw value |
+| `showCount`       | `boolean`                      | Show aggregation counts next to values. Default: `true` for LISTOGRAM and MULTI_SELECT, `false` for SINGLE_SELECT                                                                                                               |
+| `clickToFilter`   | `boolean`                      | When `true`, clicking a histogram bar replaces the range with that bucket. Applies to NUMBER_RANGE and DATE_RANGE only. Default: `false`                                                                                        |
+| `searchField`     | `boolean`                      | When `false`, hides the header search monocle. Useful for MULTI_SELECT which has inline search. Default: `true`                                                                                                                 |
+| `formatDate`      | `(date: Date) => string`       | Custom date formatter for `datetime`/`timestamp` properties. Overrides displayed dates in pickers, histogram tooltips, tick labels, chips, and timelines                                                                        |
 
 #### Listogram Configuration
 
@@ -397,7 +405,7 @@ Assign colors to specific values in a listogram:
 
 ### Custom Value Rendering
 
-Use `renderValue` to customize how filter values are displayed and searched. The returned string replaces the raw value for both display and search matching. This is useful for showing human-readable names instead of IDs:
+Use `renderValue` to customize how filter values are displayed and searched. When the return value is a `string`, it replaces the raw value for both display and search matching. When it returns a non-string `ReactNode`, the node is rendered but search falls back to the raw value. This is useful for showing human-readable names instead of IDs:
 
 ```typescript
 const USER_NAMES: Record<string, string> = {
@@ -547,6 +555,49 @@ Use the `className` prop for scoped styling:
 ```
 
 For a full reference of CSS tokens, see the [CSS Variables documentation](./CSSVariables.md).
+
+## Utilities
+
+The filter-list barrel exports several utility functions and a headless hook:
+
+### State Serialization
+
+Persist and restore filter states across sessions:
+
+```typescript
+import {
+  deserializeFilterStates,
+  serializeFilterStates,
+} from "@osdk/react-components/experimental/filter-list";
+
+// Save to localStorage
+const serialized = serializeFilterStates(filterStatesMap);
+localStorage.setItem("filters", JSON.stringify(serialized));
+
+// Restore
+const stored = JSON.parse(localStorage.getItem("filters") ?? "null");
+const restored = stored ? deserializeFilterStates(stored) : undefined;
+```
+
+### Headless Hook
+
+`useFilterListState` provides filter state management without any UI, useful for building custom filter layouts:
+
+```typescript
+import { useFilterListState } from "@osdk/react-components/experimental/filter-list";
+```
+
+### Other Exports
+
+| Export                 | Description                                                           |
+| ---------------------- | --------------------------------------------------------------------- |
+| `filterHasActiveState` | Returns `true` when a filter definition has non-empty state           |
+| `getFilterKey`         | Extracts the string key from any filter definition union              |
+| `getFilterLabel`       | Extracts the display label from any filter definition                 |
+| `summarizeFilterValue` | Produces a human-readable summary string for a filter's current state |
+| `narrowObjectSet`      | Applies linked-filter narrowing to an `ObjectSet`                     |
+| `FilterPopover`        | Standalone filter popover component                                   |
+| `FilterInput`          | Standalone filter input component                                     |
 
 ## Best Practices
 
