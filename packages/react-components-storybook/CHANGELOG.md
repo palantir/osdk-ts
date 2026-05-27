@@ -1,5 +1,11 @@
 # @osdk/react-components-storybook
 
+## 0.19.0
+
+### Minor Changes
+
+- 4c53e48: Hide the DatePicker popover when its anchor scrolls out of view. Fixes an issue where the date picker in `ObjectTable` cells continued to render outside the table bounds after the cell scrolled out of the visible area.
+
 ## 0.18.0
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @osdk/react-components
 
+## 0.21.0
+
+### Minor Changes
+
+- 44c5f57: Add documentation MDX pages to Storybook sidebar (Welcome, Guides, Styling, Tokens, Hooks)
+- 837ea03: ObjectTable: expose `streamUpdates` prop that opts the table into websocket-driven live updates when matching objects are added, updated, or removed in Foundry. Forwarded to both `useObjectSet` and `useOsdkObjects`.
+- 0907d00: Fix `NotFoundError: removeChild` crashes when zooming or switching documents in `PdfViewer`. Annotation overlays are now rendered as siblings of pdfjs content (using measured page coordinates) instead of portaled into pdfjs-owned DOM. `AnnotationPortalTarget` now exposes `left`/`top`/`width`/`height`/`transform` in place of `container`. Annotation remeasures triggered by zoom, rotation, and container resize are now coalesced to one `requestAnimationFrame` tick, eliminating O(annotated pages) `getBoundingClientRect` reads on every pinch-zoom event.
+- 4c53e48: Hide the DatePicker popover when its anchor scrolls out of view. Fixes an issue where the date picker in `ObjectTable` cells continued to render outside the table bounds after the cell scrolled out of the visible area.
+
 ## 0.20.0
 
 ### Minor Changes
