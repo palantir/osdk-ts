@@ -17,10 +17,8 @@
 import type { ObjectOrInterfaceDefinition, Osdk } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
 import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
-import {
-  InterfaceDefRef,
-  UnderlyingOsdkObject,
-} from "../../../object/convertWireToOsdkObjects/InternalSymbols.js";
+import { isInterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
+import { UnderlyingOsdkObject } from "../../../object/convertWireToOsdkObjects/InternalSymbols.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import { getDefType } from "../../../util/interfaceUtils.js";
 import type { ObjectPayload } from "../../ObjectPayload.js";
@@ -116,10 +114,10 @@ export class ObjectsHelper extends AbstractHelper<
     selectFields?: ReadonlySet<string>,
     includeAllBaseObjectProperties?: boolean,
   ): ObjectCacheKey[] {
-    return values.map(v => {
-      const concreteHolder: ObjectHolder = InterfaceDefRef in v
-        ? v[UnderlyingOsdkObject]
-        : (v as ObjectHolder);
+    const holders: ReadonlyArray<ObjectHolder | InterfaceHolder> =
+      values as ReadonlyArray<ObjectHolder | InterfaceHolder>;
+    return holders.map(v => {
+      const concreteHolder = isInterfaceHolder(v) ? v[UnderlyingOsdkObject] : v;
 
       return this.getQuery({
         apiName: v.$objectType ?? v.$apiName,

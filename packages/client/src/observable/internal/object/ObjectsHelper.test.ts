@@ -719,4 +719,49 @@ describe("ObjectsHelper.storeOsdkInstances interface unwrap", () => {
     expect(cached[ObjectDefRef]).toBeDefined();
     expect(InterfaceDefRef in cached).toBe(false);
   });
+
+  it("unwraps an InterfaceHolder when storing through the rdpConfig merge path", () => {
+    // Use an RDP field that is NOT present on the Employee object so the
+    // propagateWrite merge branch runs (actualRdpFields < expectedRdpFields).
+    // The merge path reads objectDef.properties from the incoming holder; if
+    // an InterfaceHolder slips through unwrapped, ObjectDefRef is undefined
+    // and the merge crashes. This test would FAIL on the pre-PR code.
+    const rdpConfig = createFakeRdpConfig("derivedAddress");
+
+    // Seed the cache key for (Employee, pk=1, rdpConfig) with a concrete
+    // Employee value so that the second write goes through the merge branch.
+    const queryEmp = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+    }, rdpConfig);
+    store.batch({}, (batch) => {
+      queryEmp.writeToStore(emp as any, "loaded", batch);
+    });
+
+    const ifaceInstance = emp.$as(FooInterface);
+    expect(InterfaceDefRef in ifaceInstance).toBe(true);
+
+    // Now write the same object via the InterfaceHolder through
+    // storeOsdkInstances with a NON-NULL rdpConfig. This must not throw.
+    const cacheKeys = store.batch({}, (batch) => {
+      return store.objects.storeOsdkInstances(
+        [ifaceInstance],
+        batch,
+        rdpConfig,
+      );
+    }).retVal;
+
+    expect(cacheKeys).toHaveLength(1);
+    expect(cacheKeys[0]).toBe(queryEmp.cacheKey);
+
+    const cached = store.getValue(cacheKeys[0])?.value;
+    expect(cached).toBeDefined();
+    if (!cached) {
+      return;
+    }
+    expect(cached.$apiName).toBe("Employee");
+    expect(cached.$objectType).toBe("Employee");
+    expect(cached[ObjectDefRef]).toBeDefined();
+    expect(InterfaceDefRef in cached).toBe(false);
+  });
 });
