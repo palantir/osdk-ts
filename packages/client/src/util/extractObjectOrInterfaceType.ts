@@ -18,7 +18,7 @@ import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { ObjectSet } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import { findIltLinkDef } from "../ontology/findIltLinkDef.js";
+import { resolveLinkOnObject } from "../ontology/findIltLinkDef.js";
 
 /* @internal
 * Returns the resultant interface or object type of the object set
@@ -158,21 +158,17 @@ export async function extractObjectOrInterfaceType(
       const objDef = await clientCtx.ontologyProvider
         .getObjectDefinition(def.apiName);
 
-      if (objectSet.interfaceLink in objDef.links) {
-        return {
-          apiName: objDef.links[objectSet.interfaceLink].targetType,
-          type: "object",
-        };
-      }
-
-      const iltDef = findIltLinkDef(objDef, objectSet.interfaceLink);
+      const resolved = resolveLinkOnObject(objDef, objectSet.interfaceLink);
       invariant(
-        iltDef,
+        resolved,
         `Missing ILT '${objectSet.interfaceLink}' on '${def.apiName}'`,
       );
+      if (resolved.kind === "concrete") {
+        return { apiName: resolved.targetTypeApiName, type: "object" };
+      }
       return {
-        apiName: iltDef.targetTypeApiName,
-        type: iltDef.targetType,
+        apiName: resolved.targetTypeApiName,
+        type: resolved.targetType,
       };
     }
     // We don't have to worry about new object sets being added and doing a runtime break and breaking people since the OSDK is always constructing these.

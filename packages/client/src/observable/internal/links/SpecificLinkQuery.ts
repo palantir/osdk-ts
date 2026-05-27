@@ -28,7 +28,10 @@ import deepEqual from "fast-deep-equal";
 import { type Subject } from "rxjs";
 import { additionalContext } from "../../../Client.js";
 import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
-import { findIltLinkDef } from "../../../ontology/findIltLinkDef.js";
+import {
+  resolveLinkOnObject,
+  resolveLinkOnObjectOrThrow,
+} from "../../../ontology/findIltLinkDef.js";
 import type { SpecificLinkPayload } from "../../LinkPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
 import type { ObserveLinks } from "../../ObservableClient/ObserveLink.js";
@@ -177,23 +180,16 @@ export class SpecificLinkQuery extends BaseListQuery<
         const objectMetadata = await ontologyProvider.getObjectDefinition(
           this.#sourceApiName,
         );
-        const linkDef = objectMetadata.links?.[this.#linkName];
-        if (linkDef?.targetType) {
-          // Object link defs always target an object type.
-          target = { apiName: linkDef.targetType, kind: "object" };
-        } else {
-          // ILT — search implemented interfaces for the link definition
-          const iltDef = findIltLinkDef(objectMetadata, this.#linkName);
-          if (!iltDef) {
-            throw new Error(
-              `Missing link definition for link '${this.#linkName}' on object type '${this.#sourceApiName}'`,
-            );
-          }
-          target = {
-            apiName: iltDef.targetTypeApiName,
-            kind: iltDef.targetType,
+        const resolved = resolveLinkOnObjectOrThrow(
+          objectMetadata,
+          this.#linkName,
+        );
+        target = resolved.kind === "concrete"
+          ? { apiName: resolved.targetTypeApiName, kind: "object" }
+          : {
+            apiName: resolved.targetTypeApiName,
+            kind: resolved.targetType,
           };
-        }
       }
     }
 
@@ -240,29 +236,31 @@ export class SpecificLinkQuery extends BaseListQuery<
         [objectMetadata.primaryKeyApiName]: this.#sourcePk,
       } as WhereClause<any>);
 
-      if (this.#linkName in objectMetadata.links) {
-        linkQuery = sourceQuery.pivotTo(this.#linkName);
-      } else {
-        const iltDef = findIltLinkDef(objectMetadata, this.#linkName);
-        if (!iltDef) {
-          throw new Error(
-            `Link '${this.#linkName}' is not a concrete link or ILT on '${this.#sourceApiName}'`,
-          );
+      const resolved = resolveLinkOnObjectOrThrow(
+        objectMetadata,
+        this.#linkName,
+      );
+      switch (resolved.kind) {
+        case "concrete":
+          linkQuery = sourceQuery.pivotTo(this.#linkName);
+          break;
+        case "ilt": {
+          const mc = client[additionalContext];
+          const sourceWire = getWireObjectSet(sourceQuery);
+          linkQuery = mc.objectSetFactory(
+            {
+              type: "object",
+              apiName: this.#sourceApiName,
+            } as ObjectTypeDefinition,
+            mc,
+            {
+              type: "interfaceLinkSearchAround",
+              objectSet: sourceWire,
+              interfaceLink: this.#linkName,
+            },
+          ) as ObjectSet<ObjectOrInterfaceDefinition>;
+          break;
         }
-        const mc = client[additionalContext];
-        const sourceWire = getWireObjectSet(sourceQuery);
-        linkQuery = mc.objectSetFactory(
-          {
-            type: "object",
-            apiName: this.#sourceApiName,
-          } as ObjectTypeDefinition,
-          mc,
-          {
-            type: "interfaceLinkSearchAround",
-            objectSet: sourceWire,
-            interfaceLink: this.#linkName,
-          },
-        ) as ObjectSet<ObjectOrInterfaceDefinition>;
       }
     }
 
@@ -403,16 +401,12 @@ export class SpecificLinkQuery extends BaseListQuery<
         } else {
           const objectMetadata = await ontologyProvider
             .getObjectDefinition(this.#sourceApiName);
-          const linkDef = objectMetadata.links?.[this.#linkName];
-          if (linkDef) {
-            targetTypeApiName = linkDef.targetType;
-            targetTypeKind = "object";
-          } else {
-            const iltDef = findIltLinkDef(objectMetadata, this.#linkName);
-            if (iltDef) {
-              targetTypeApiName = iltDef.targetTypeApiName;
-              targetTypeKind = iltDef.targetType;
-            }
+          const resolved = resolveLinkOnObject(objectMetadata, this.#linkName);
+          if (resolved !== undefined) {
+            targetTypeApiName = resolved.targetTypeApiName;
+            targetTypeKind = resolved.kind === "concrete"
+              ? "object"
+              : resolved.targetType;
           }
         }
 
