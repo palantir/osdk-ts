@@ -1063,6 +1063,126 @@ describe("ListQuery pivotTo tests", () => {
 
     expectNoMoreCalls(listSub);
   });
+
+  it(
+    "pivotTo with ILT name on object source sends interfaceLinkSearchAround",
+    async () => {
+      fauxFoundry.getDefaultDataStore().clear();
+      fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+        $apiName: "Employee",
+        employeeId: 1,
+        fullName: "Employee 1",
+      });
+
+      const wireBodies: unknown[] = [];
+      const handler = ({ request }: { request: Request }) => {
+        if (request.url.includes("/objectSets/loadObjects")) {
+          void request.clone().json().then((body) => wireBodies.push(body));
+        }
+      };
+      apiServer.events.on("request:start", handler);
+
+      try {
+        testStage("Observe Employee with pivotTo using ILT name 'toBar'");
+        const listSub = mockListSubCallback();
+        defer(
+          store.lists.observe<typeof Employee>(
+            {
+              type: Employee,
+              where: {},
+              orderBy: {},
+              pivotTo: "toBar",
+            },
+            listSub,
+          ),
+        );
+
+        testStage(
+          "Initial loading state verifies query construction succeeded",
+        );
+        await waitForCall(listSub.next, 1);
+        expectSingleListCallAndClear(
+          listSub,
+          undefined,
+          { status: "loading" },
+        );
+
+        testStage("Allow time for the wire request to be sent");
+        await new Promise((r) => setTimeout(r, 100));
+
+        testStage(
+          "Verify the wire request uses interfaceLinkSearchAround, not searchAround",
+        );
+        const ilt = wireBodies.find((b) => {
+          const os = (b as { objectSet?: { type?: string } })?.objectSet;
+          return os?.type === "interfaceLinkSearchAround";
+        });
+        expect(ilt).toBeDefined();
+        const searchAroundOnly = wireBodies.find((b) => {
+          const os = (b as { objectSet?: { type?: string } })?.objectSet;
+          return os?.type === "searchAround";
+        });
+        expect(searchAroundOnly).toBeUndefined();
+      } finally {
+        apiServer.events.removeListener("request:start", handler);
+      }
+    },
+  );
+
+  it(
+    "ILT pivot invalidation: invalidating source object type revalidates the list",
+    async () => {
+      fauxFoundry.getDefaultDataStore().clear();
+      fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+        $apiName: "Employee",
+        employeeId: 1,
+        fullName: "Employee 1",
+      });
+
+      let requestCount = 0;
+      const handler = ({ request }: { request: Request }) => {
+        if (request.url.includes("/objectSets/loadObjects")) {
+          requestCount += 1;
+        }
+      };
+      apiServer.events.on("request:start", handler);
+
+      try {
+        testStage("Observe Employee with pivotTo using ILT name 'toBar'");
+        const listSub = mockListSubCallback();
+        defer(
+          store.lists.observe<typeof Employee>(
+            {
+              type: Employee,
+              where: {},
+              orderBy: {},
+              pivotTo: "toBar",
+            },
+            listSub,
+          ),
+        );
+
+        await waitForCall(listSub.next, 1);
+        expectSingleListCallAndClear(
+          listSub,
+          undefined,
+          { status: "loading" },
+        );
+
+        await new Promise((r) => setTimeout(r, 100));
+        const initialRequests = requestCount;
+        expect(initialRequests).toBeGreaterThan(0);
+
+        testStage("Invalidate Employee type and expect a fresh fetch");
+        await store.invalidateObjectType(Employee, undefined);
+        await new Promise((r) => setTimeout(r, 100));
+
+        expect(requestCount).toBeGreaterThan(initialRequests);
+      } finally {
+        apiServer.events.removeListener("request:start", handler);
+      }
+    },
+  );
 });
 
 describe("ListQuery shared query autoFetchMore tests", () => {
