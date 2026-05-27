@@ -1,0 +1,166 @@
+{/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */}
+
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as AipAgentChatStories from "./AipAgentChat.stories";
+
+<Meta title="Beta/AipAgentChat/Docs" />
+
+# AipAgentChat
+
+A React component for rendering an AI chat surface backed by Foundry's Language
+Model Service (LMS). Importing the component is sufficient -- consumers do not
+need to wire up `useChat` or `foundryModel` themselves.
+
+Two variants are exported:
+
+- **`AipAgentChat`** -- Primary component for OSDK usage. Accepts a Foundry
+  `PlatformClient` and an optional LMS model API name; constructs the model
+  handle, drives `useChat`, and renders the full chat UI.
+- **`BaseAipAgentChat`** -- Lower-level, OSDK-agnostic component that accepts
+  `messages`, `status`, and `onSendMessage` directly. Use this when you already
+  manage chat state yourself (a custom hook, a non-OSDK backend, etc.).
+
+## Demo
+
+<Canvas of={AipAgentChatStories.Default} />
+
+## Usage
+
+```tsx
+import { AipAgentChat } from "@osdk/react-components/experimental/aip-agent-chat";
+import { platformClient } from "./foundryClient.js";
+
+function MyChat() {
+  return <AipAgentChat client={platformClient} />;
+}
+```
+
+`client` is the only required prop. When neither `model` nor `defaultModel` is
+supplied, the chat falls back to the first entry of `availableModels` (when
+provided), or to `"gpt-4o"`.
+
+### Prerequisites
+
+- Install `@osdk/react-components` and its peer dependencies
+- Wrap your app with `OsdkProvider`
+- Import `@osdk/react-components/styles.css`
+
+See the [README](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/README.md#setup)
+for full setup instructions.
+
+## Examples
+
+### Pre-populated conversation
+
+A chat initialized with an existing message history via `initialMessages`.
+
+<Canvas of={AipAgentChatStories.WithConversation} />
+
+### Error state
+
+Displays an error banner at the top of the chat with a dismiss button.
+
+<Canvas of={AipAgentChatStories.WithError} />
+
+### Custom placeholder
+
+Override the default composer placeholder text.
+
+<Canvas of={AipAgentChatStories.CustomPlaceholder} />
+
+## API Reference
+
+### Props
+
+<Controls of={AipAgentChatStories.Default} />
+
+### CSS Variables
+
+#### Container
+
+| Variable | Default | Description |
+|---|---|---|
+| `--osdk-aip-agent-chat-background` | `--osdk-background-primary` | Chat background |
+| `--osdk-aip-agent-chat-border-color` | `--osdk-surface-border-color-default` | Chat border color |
+| `--osdk-aip-agent-chat-border-radius` | `--osdk-surface-border-radius` | Chat border radius |
+
+#### Spacing
+
+| Variable | Default | Description |
+|---|---|---|
+| `--osdk-aip-agent-chat-padding` | `5 * spacing` | Container padding |
+| `--osdk-aip-agent-chat-message-gap` | `5 * spacing` | Gap between messages |
+| `--osdk-aip-agent-chat-section-gap` | `2.5 * spacing` | Gap between sections |
+
+#### Message bubble
+
+| Variable | Default | Description |
+|---|---|---|
+| `--osdk-aip-agent-chat-bubble-padding` | `3 * spacing` | Bubble padding |
+| `--osdk-aip-agent-chat-bubble-border-radius` | `--osdk-surface-border-radius` | Bubble border radius |
+| `--osdk-aip-agent-chat-bubble-max-width` | `80%` | Maximum bubble width |
+| `--osdk-aip-agent-chat-user-bubble-background` | `--osdk-intent-primary-rest` | User bubble background |
+| `--osdk-aip-agent-chat-user-bubble-color` | `--osdk-intent-primary-foreground` | User bubble text color |
+| `--osdk-aip-agent-chat-assistant-bubble-background` | `--osdk-background-secondary` | Assistant bubble background |
+| `--osdk-aip-agent-chat-assistant-bubble-color` | `--osdk-typography-color-default-rest` | Assistant bubble text color |
+
+#### Composer
+
+| Variable | Default | Description |
+|---|---|---|
+| `--osdk-aip-agent-chat-composer-background` | `--osdk-surface-background-color-default-rest` | Composer background |
+| `--osdk-aip-agent-chat-composer-border-color` | `--osdk-surface-border-color-default` | Composer border color |
+| `--osdk-aip-agent-chat-composer-textarea-min-height` | `14 * spacing` | Textarea minimum height |
+| `--osdk-aip-agent-chat-composer-textarea-max-height` | `200px` | Textarea maximum height |
+
+#### Empty state
+
+| Variable | Default | Description |
+|---|---|---|
+| `--osdk-aip-agent-chat-empty-color` | `--osdk-typography-color-muted` | Empty state text color |
+| `--osdk-aip-agent-chat-empty-icon-color` | `--osdk-intent-primary-rest` | Empty state icon color |
+| `--osdk-aip-agent-chat-empty-icon-size` | `12 * spacing` | Empty state icon size |
+
+#### Loader
+
+| Variable | Default | Description |
+|---|---|---|
+| `--osdk-aip-agent-chat-loader-color` | `--osdk-typography-color-muted` | Loader dot color |
+| `--osdk-aip-agent-chat-loader-dot-size` | `1.5 * spacing` | Individual dot size |
+| `--osdk-aip-agent-chat-loader-dot-gap` | `0.5 * spacing` | Gap between dots |
+
+#### Error banner
+
+| Variable | Default | Description |
+|---|---|---|
+| `--osdk-aip-agent-chat-error-color` | `--osdk-intent-danger-foreground` | Error text color |
+| `--osdk-aip-agent-chat-error-background` | `--osdk-intent-danger-rest` | Error banner background |
+
+### Data Attributes
+
+The component uses CSS module class names. Target elements via the CSS variables
+above rather than relying on internal class names.
+
+## Accessibility
+
+- The composer textarea is keyboard-accessible; press **Enter** to send and
+  **Shift+Enter** for a new line.
+- The message list is scrollable and supports auto-scroll to the latest message.
+- Error banners include a dismiss button so users can clear transient errors
+  without losing context.
+- All interactive controls (send button, stop button, model picker) are rendered
+  as native HTML elements with appropriate semantics.
