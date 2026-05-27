@@ -227,7 +227,7 @@ export class ObservableClientImpl implements ObservableClient {
     L extends keyof CompileTimeMetadata<T>["links"] & string,
   >(
     objects: Osdk.Instance<T> | Array<Osdk.Instance<T>>,
-    linkName: L,
+    linkName: L | (string & {}),
     options: ObserveLinks.Options<T, L>,
     subFn: Observer<
       ObserveLinks.CallbackArgs<
