@@ -15,6 +15,7 @@
  */
 
 import { Input } from "@base-ui/react/input";
+import { isEqual } from "lodash-es";
 import React, { useCallback, useMemo, useState } from "react";
 import styles from "./TimePicker.module.css";
 
@@ -50,7 +51,7 @@ export const TimePicker: React.NamedExoticComponent<TimePickerProps> = React
     // Date is the source of truth once an edit is committed or discarded.
     const [draftSegments, setDraftSegments] = useState(valueSegments);
     const [prevSegments, setPrevSegments] = useState(valueSegments);
-    if (prevSegments !== valueSegments) {
+    if (!isEqual(prevSegments, valueSegments)) {
       setPrevSegments(valueSegments);
       setDraftSegments(valueSegments);
     }
