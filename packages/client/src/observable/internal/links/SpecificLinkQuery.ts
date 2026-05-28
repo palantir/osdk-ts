@@ -26,13 +26,10 @@ import type {
 } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
 import { type Subject } from "rxjs";
+import invariant from "tiny-invariant";
 import { additionalContext } from "../../../Client.js";
 import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
-import {
-  buildIltSearchAroundObjectSet,
-  resolveLinkOnObject,
-  resolveLinkOnObjectOrThrow,
-} from "../../../ontology/findIltLinkDef.js";
+import { resolveLinkOnObject } from "../../../ontology/findIltLinkDef.js";
 import type { SpecificLinkPayload } from "../../LinkPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
 import type { ObserveLinks } from "../../ObservableClient/ObserveLink.js";
@@ -162,8 +159,11 @@ export class SpecificLinkQuery extends BaseListQuery<
     const hasOrderBy = this.#orderBy
       && Object.keys(this.#orderBy).length > 0;
     let target: { apiName: string; kind: "object" | "interface" } | undefined;
-    if (hasOrderBy || this.includeAllBaseObjectProperties) {
-      if (isInterface) {
+
+    let linkQuery: ObjectSet<ObjectOrInterfaceDefinition>;
+
+    if (isInterface) {
+      if (hasOrderBy || this.includeAllBaseObjectProperties) {
         const interfaceMetadata = await ontologyProvider.getInterfaceDefinition(
           this.#sourceApiName,
         );
@@ -177,33 +177,8 @@ export class SpecificLinkQuery extends BaseListQuery<
           apiName: linkDef.targetTypeApiName,
           kind: linkDef.targetType,
         };
-      } else {
-        const objectMetadata = await ontologyProvider.getObjectDefinition(
-          this.#sourceApiName,
-        );
-        const resolved = resolveLinkOnObjectOrThrow(
-          objectMetadata,
-          this.#linkName,
-        );
-        target = resolved.kind === "concrete"
-          ? { apiName: resolved.targetTypeApiName, kind: "object" }
-          : {
-            apiName: resolved.targetTypeApiName,
-            kind: resolved.targetType,
-          };
       }
-    }
 
-    if (target && hasOrderBy) {
-      this.sortingStrategy = new OrderBySortingStrategy(
-        target.apiName,
-        this.#orderBy,
-      );
-    }
-
-    let linkQuery: ObjectSet<ObjectOrInterfaceDefinition>;
-
-    if (isInterface) {
       const objectMetadata = await ontologyProvider.getObjectDefinition(
         this.#sourceUnderlyingObjectType,
       );
@@ -228,6 +203,19 @@ export class SpecificLinkQuery extends BaseListQuery<
         this.#sourceApiName,
       );
 
+      const resolved = resolveLinkOnObject(objectMetadata, this.#linkName);
+      invariant(
+        resolved,
+        `Could not resolve link '${this.#linkName}' on object type '${this.#sourceApiName}'`,
+      );
+
+      if (hasOrderBy || this.includeAllBaseObjectProperties) {
+        target = {
+          apiName: resolved.targetTypeApiName,
+          kind: resolved.targetType,
+        };
+      }
+
       const sourceSet = client({
         type: "object",
         apiName: this.#sourceApiName,
@@ -237,10 +225,6 @@ export class SpecificLinkQuery extends BaseListQuery<
         [objectMetadata.primaryKeyApiName]: this.#sourcePk,
       } as WhereClause<any>);
 
-      const resolved = resolveLinkOnObjectOrThrow(
-        objectMetadata,
-        this.#linkName,
-      );
       switch (resolved.kind) {
         case "concrete":
           linkQuery = sourceQuery.pivotTo(this.#linkName);
@@ -254,11 +238,22 @@ export class SpecificLinkQuery extends BaseListQuery<
               apiName: this.#sourceApiName,
             } as ObjectTypeDefinition,
             mc,
-            buildIltSearchAroundObjectSet(sourceWire, this.#linkName),
+            {
+              type: "interfaceLinkSearchAround",
+              objectSet: sourceWire,
+              interfaceLink: this.#linkName,
+            },
           ) as ObjectSet<ObjectOrInterfaceDefinition>;
           break;
         }
       }
+    }
+
+    if (target && hasOrderBy) {
+      this.sortingStrategy = new OrderBySortingStrategy(
+        target.apiName,
+        this.#orderBy,
+      );
     }
 
     if (signal?.aborted) {
@@ -401,9 +396,7 @@ export class SpecificLinkQuery extends BaseListQuery<
           const resolved = resolveLinkOnObject(objectMetadata, this.#linkName);
           if (resolved !== undefined) {
             targetTypeApiName = resolved.targetTypeApiName;
-            targetTypeKind = resolved.kind === "concrete"
-              ? "object"
-              : resolved.targetType;
+            targetTypeKind = resolved.targetType;
           }
         }
 

@@ -22,8 +22,6 @@
 import { Employee } from "@osdk/client.test.ontology";
 import { useOsdkObjects } from "@osdk/react/experimental";
 
-declare const MyComponent: () => void;
-
 // ILT pivot: pass an interface link type name (string) to pivotTo on a concrete OT
 function TestIltPivot() {
   const iltName: string = "com.example.interface.linkedManager";

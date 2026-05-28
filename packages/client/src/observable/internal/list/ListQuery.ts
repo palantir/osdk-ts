@@ -33,10 +33,7 @@ import type {
   ObjectHolder,
 } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
-import {
-  buildIltSearchAroundObjectSet,
-  resolveLinkOnObject,
-} from "../../../ontology/findIltLinkDef.js";
+import { resolveLinkOnObject } from "../../../ontology/findIltLinkDef.js";
 import type { ListPayload } from "../../ListPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
 import type { CollectionConnectableParams } from "../base-list/BaseCollectionQuery.js";
@@ -111,7 +108,6 @@ export abstract class ListQuery extends BaseListQuery<
   #objectSet: ObjectSet<ObjectTypeDefinition>;
   #pivotIntersectApplied = false;
   #iltResolved = false;
-  #streamSub: Subscription | undefined;
 
   // The actual type of objects this query returns, resolved on first fetch
   // via getObjectTypesThatInvalidate. For simple queries this equals apiName.
@@ -260,13 +256,6 @@ export abstract class ListQuery extends BaseListQuery<
     );
 
     if (resolved.kind === "concrete") {
-      if (this.#streamSub) {
-        this.createWebsocketSubscription(
-          this.#objectSet,
-          this.#streamSub,
-          "observeList",
-        );
-      }
       this.#iltResolved = true;
       return;
     }
@@ -295,21 +284,17 @@ export abstract class ListQuery extends BaseListQuery<
     this.#objectSet = mc.objectSetFactory(
       { type: "object", apiName: this.apiName } as ObjectTypeDefinition,
       mc,
-      buildIltSearchAroundObjectSet(filteredSourceWire, pivotInfo.linkName),
+      {
+        type: "interfaceLinkSearchAround",
+        objectSet: filteredSourceWire,
+        interfaceLink: pivotInfo.linkName,
+      },
     ) as ObjectSet<ObjectTypeDefinition>;
 
     const rdpConfig = this.cacheKey.otherKeys[RDP_IDX];
     if (rdpConfig != null) {
       this.#objectSet = this.#objectSet.withProperties(
         rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
-      );
-    }
-
-    if (this.#streamSub) {
-      this.createWebsocketSubscription(
-        this.#objectSet,
-        this.#streamSub,
-        "observeList",
       );
     }
 
@@ -670,13 +655,7 @@ export abstract class ListQuery extends BaseListQuery<
   ): ExtractRelevantObjectsResult;
 
   registerStreamUpdates(sub: Subscription): void {
-    this.#streamSub = sub;
-    const iltPending = this.#pivotInfo
-      && this.#pivotInfo.sourceTypeKind === "object"
-      && !this.#iltResolved;
-    if (!iltPending) {
-      this.createWebsocketSubscription(this.#objectSet, sub, "observeList");
-    }
+    this.createWebsocketSubscription(this.#objectSet, sub, "observeList");
   }
 
   protected onOswChange(

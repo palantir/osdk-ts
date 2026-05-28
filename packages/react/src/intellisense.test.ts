@@ -150,7 +150,7 @@ describe("intellisense", () => {
     // ILT string pivot: completions at the pivotTo field should still show concrete links
     const { resp: completionsResp } = await tsServer.sendCompletionsRequest({
       file: intellisenseFilePath,
-      line: 42,
+      line: 40,
       offset: 15,
       triggerKind: ts.CompletionTriggerKind.Invoked,
     });
@@ -161,7 +161,7 @@ describe("intellisense", () => {
     // ILT pivot: TypeScript accepts the string — verify data resolves to an Osdk instance type
     const { resp: iltTypeResp } = await tsServer.sendQuickInfoRequest({
       file: intellisenseFilePath,
-      line: 34,
+      line: 32,
       offset: 10,
     });
 
@@ -171,7 +171,7 @@ describe("intellisense", () => {
     // Concrete pivot: data type should still be Employee (specific linked type)
     const { resp: concreteTypeResp } = await tsServer.sendQuickInfoRequest({
       file: intellisenseFilePath,
-      line: 45,
+      line: 43,
       offset: 10,
     });
 

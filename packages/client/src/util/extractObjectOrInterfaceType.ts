@@ -163,9 +163,6 @@ export async function extractObjectOrInterfaceType(
         resolved,
         `Missing ILT '${objectSet.interfaceLink}' on '${def.apiName}'`,
       );
-      if (resolved.kind === "concrete") {
-        return { apiName: resolved.targetTypeApiName, type: "object" };
-      }
       return {
         apiName: resolved.targetTypeApiName,
         type: resolved.targetType,
