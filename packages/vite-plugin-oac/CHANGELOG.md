@@ -1,5 +1,22 @@
 # @osdk/vite-plugin-oac
 
+## 0.23.0
+
+### Minor Changes
+
+- 8965bdf: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+
+### Patch Changes
+
+- Updated dependencies [8965bdf]
+- Updated dependencies [bd90dba]
+  - @osdk/faux@0.21.0
+  - @osdk/generator-converters.ontologyir@2.25.0
+  - @osdk/api@2.25.0
+  - @osdk/maker@0.31.0
+  - @osdk/cli@0.49.0
+  - @osdk/client.unstable@2.25.0
+
 ## 0.22.0
 
 ### Minor Changes
