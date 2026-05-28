@@ -377,7 +377,6 @@ const archetypeRules = archetypes(
       extraPublishFiles: ["AGENTS.md", "docs"],
       attwExcludeEntrypoints: [
         "./experimental/action-form",
-        "./experimental/aip-agent-chat",
         "./experimental/document-viewer",
         "./experimental/email-viewer",
         "./experimental/excel-viewer",
