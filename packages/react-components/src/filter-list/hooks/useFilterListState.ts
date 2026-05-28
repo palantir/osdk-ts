@@ -144,7 +144,10 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     return map;
   }, [metadata?.properties]);
 
-  const initialFilterStatesSnapshot = useMemo<Map<string, FilterState>>(
+  // Captured once on first render to provide a stable baseline for the reset
+  // button's enabled state. `useState`'s lazy initializer pins the value for
+  // the lifetime of the component (unlike `useMemo`, which React may discard).
+  const [initialFilterStatesSnapshot] = useState<Map<string, FilterState>>(
     () => {
       const snapshot = buildInitialStates(filterDefinitions);
       if (initialFilterStates) {
@@ -154,8 +157,6 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
       }
       return snapshot;
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
   );
 
   const [filterStates, setFilterStates] = useState<Map<string, FilterState>>(
@@ -189,8 +190,8 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
   }, []);
 
   const reset = useCallback(() => {
-    setFilterStates(buildInitialStates(filterDefinitionsRef.current));
-  }, []);
+    setFilterStates(new Map(initialFilterStatesSnapshot));
+  }, [initialFilterStatesSnapshot]);
 
   const whereClause = useMemo(
     () => buildWhereClause(filterDefinitions, filterStates, propertyTypes),

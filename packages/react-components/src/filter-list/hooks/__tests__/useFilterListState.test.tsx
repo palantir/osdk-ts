@@ -170,15 +170,20 @@ describe("useFilterListState", () => {
       expect(onEffectiveObjectSet).toHaveBeenLastCalledWith(narrowed);
     });
 
-    it("fires on reset() with the definition-default objectSet", () => {
+    it("fires on reset() with the snapshot's effectiveObjectSet", () => {
       const onEffectiveObjectSet = vi.fn();
-      const narrowed = { _kind: "narrowed-john" } as unknown as ObjectSet<
+      const narrowedJohn = { _kind: "narrowed-john" } as unknown as ObjectSet<
+        typeof MockObjectType
+      >;
+      const narrowedJane = { _kind: "narrowed-jane" } as unknown as ObjectSet<
         typeof MockObjectType
       >;
       const objectSet = {
-        where: vi.fn().mockImplementation((w: Record<string, unknown>) =>
-          w.name === "John" ? narrowed : objectSet
-        ),
+        where: vi.fn().mockImplementation((w: Record<string, unknown>) => {
+          if (w.name === "John") return narrowedJohn;
+          if (w.name === "Jane") return narrowedJane;
+          return objectSet;
+        }),
       } as unknown as ObjectSet<typeof MockObjectType>;
       const nameDef = createPropertyFilterDef(
         "name",
@@ -196,14 +201,21 @@ describe("useFilterListState", () => {
       });
       const { result } = renderHook(() => useFilterListState(props));
 
+      act(() => {
+        result.current.setFilterState(
+          getFilterKey(nameDef),
+          createExactMatchState(["Jane"]),
+        );
+      });
+
       onEffectiveObjectSet.mockClear();
 
       act(() => {
         result.current.reset();
       });
 
-      expect(result.current.whereClause).toEqual({});
-      expect(onEffectiveObjectSet).toHaveBeenLastCalledWith(objectSet);
+      expect(result.current.whereClause).toEqual({ name: "John" });
+      expect(onEffectiveObjectSet).toHaveBeenLastCalledWith(narrowedJohn);
     });
   });
 
@@ -250,7 +262,7 @@ describe("useFilterListState", () => {
   });
 
   describe("reset()", () => {
-    it("rebuilds from current filterDefinitions, not the mount snapshot", () => {
+    it("restores the mount snapshot of initialFilterStates", () => {
       const nameDef = createPropertyFilterDef(
         "name",
         "LISTOGRAM",
@@ -267,9 +279,17 @@ describe("useFilterListState", () => {
       expect(result.current.whereClause).toEqual({ name: "Seed" });
 
       act(() => {
+        result.current.setFilterState(
+          getFilterKey(nameDef),
+          createExactMatchState(["Other"]),
+        );
+      });
+      expect(result.current.whereClause).toEqual({ name: "Other" });
+
+      act(() => {
         result.current.reset();
       });
-      expect(result.current.whereClause).toEqual({});
+      expect(result.current.whereClause).toEqual({ name: "Seed" });
     });
   });
 
@@ -771,6 +791,36 @@ describe("useFilterListState", () => {
         result.current.setFilterState(
           filterKey,
           createExactMatchState(["Jane"]),
+        );
+      });
+      expect(result.current.hasChangesFromInitial).toBe(true);
+
+      act(() => {
+        result.current.reset();
+      });
+      expect(result.current.hasChangesFromInitial).toBe(false);
+    });
+
+    it("returns to false after reset() when mounted with initialFilterStates", () => {
+      const nameDef = createPropertyFilterDef(
+        "name",
+        "LISTOGRAM",
+        createExactMatchState([]),
+      );
+      const filterKey = getFilterKey(nameDef);
+      const props = createProps({
+        filterDefinitions: [nameDef],
+        initialFilterStates: new Map([
+          [filterKey, createExactMatchState(["Seed"])],
+        ]),
+      });
+      const { result } = renderHook(() => useFilterListState(props));
+      expect(result.current.hasChangesFromInitial).toBe(false);
+
+      act(() => {
+        result.current.setFilterState(
+          filterKey,
+          createExactMatchState(["Other"]),
         );
       });
       expect(result.current.hasChangesFromInitial).toBe(true);
