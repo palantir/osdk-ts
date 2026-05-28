@@ -1,0 +1,365 @@
+{/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */}
+
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as FilterListStories from "./FilterList.stories";
+
+<Meta title="Components/FilterList/Docs"/>
+
+
+# FilterList
+
+An OSDK-aware faceted filter panel for ontology objects. Renders a configurable
+list of filter controls (bar charts, ranges, dropdowns, toggles, keyword search)
+driven by an object type's properties, with built-in aggregation queries and
+drag-and-drop reordering.
+
+## Demo
+
+<Canvas of={FilterListStories.Default} />
+
+## Usage
+
+```tsx
+import { Employee } from "@my/osdk";
+import { FilterList } from "@osdk/react-components/experimental/filter-list";
+import client from "./client";
+
+function EmployeeFilters() {
+  return (
+    <FilterList
+      objectSet={client(Employee)}
+      filterDefinitions={[
+        { type: "PROPERTY", key: "department", filterComponent: "LISTOGRAM" },
+        { type: "PROPERTY", key: "jobTitle", filterComponent: "LISTOGRAM" },
+      ]}
+    />
+  );
+}
+```
+
+> `@my/osdk` is a placeholder for your generated SDK package. `./client`
+> exports the OSDK client returned by `createClient(...)`.
+
+### Prerequisites
+
+- Install `@osdk/react-components` and its peer dependencies
+- Wrap your app with `OsdkProvider`
+- Import `@osdk/react-components/styles.css`
+
+See the [README](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/README.md#setup)
+for full setup instructions.
+
+## Examples
+
+### Combined with ObjectTable
+
+Use controlled `filterClause` to connect FilterList with ObjectTable in a
+dashboard layout.
+
+<Canvas of={FilterListStories.CombinedWithObjectTable} />
+
+### Add / remove filters
+
+In uncontrolled mode, filters with `isVisible: false` appear in an "Add filter"
+popover. Users can add them at runtime and remove visible filters via the close
+button.
+
+<Canvas of={FilterListStories.AddFilterMode} />
+
+### Keyword search
+
+A full-text search filter that searches across multiple properties.
+
+<Canvas of={FilterListStories.KeywordSearch} />
+
+### Linked property filter
+
+Filter on properties of a linked object type. When `reverseLinkName` is set,
+the filter automatically narrows the object set via `onEffectiveObjectSet`.
+
+<Canvas of={FilterListStories.CombinedWithLinkedFilter} />
+
+### Custom filters
+
+Provide a fully custom render function for specialized filter UIs that don't
+fit the built-in component types.
+
+<Canvas of={FilterListStories.WithCustomFilters} />
+
+## API Reference
+
+### Props
+
+<Controls of={FilterListStories.Default} />
+
+### Filter Definition Types
+
+| Type | Description |
+|---|---|
+| `PROPERTY` | Filter on a direct property of the object type |
+| `KEYWORD_SEARCH` | Full-text keyword search across objects |
+| `CUSTOM` | Custom filter with user-provided render function |
+| `HAS_LINK` | Toggle filter for whether a link exists |
+| `LINKED_PROPERTY` | Filter on a property of a linked object type |
+| `STATIC_VALUES` | Filter with a predefined set of static values |
+
+### Property Filter Definition
+
+| Field | Type | Description |
+|---|---|---|
+| `key` | `PropertyKeys<Q>` | Property key on the object type |
+| `id` | `string` | Optional unique identifier for stable keying across reorders |
+| `label` | `string` | Display label for the filter |
+| `filterComponent` | `FilterComponentType` | UI component to render (`LISTOGRAM`, `SINGLE_SELECT`, `MULTI_SELECT`, `TEXT_TAGS`, `CONTAINS_TEXT`, `NUMBER_RANGE`, `DATE_RANGE`, `TOGGLE`, `SINGLE_DATE`, `MULTI_DATE`, `TIMELINE`) |
+| `filterState` | `FilterState` | Initial state for the filter |
+| `isVisible` | `boolean` | Whether the filter is initially visible (default: `true`) |
+| `colorMap` | `Record<string, string>` | Custom colors for LISTOGRAM bar values |
+| `listogramConfig` | `{ displayMode?, maxVisibleItems? }` | LISTOGRAM display options |
+| `renderValue` | `(value: string) => ReactNode` | Custom display for filter values in dropdowns, chips, and listogram rows |
+| `showCount` | `boolean` | Show aggregation counts next to values |
+| `clickToFilter` | `boolean` | Clicking a histogram bar replaces the range with that bucket |
+| `searchField` | `boolean` | Show/hide the header search monocle (default: `true`) |
+| `formatDate` | `(date: Date) => string` | Custom date formatter for datetime/timestamp properties |
+
+### Linked Property Filter Definition
+
+| Field | Type | Description |
+|---|---|---|
+| `linkName` | `LinkNames<Q>` | Link that traverses to the related object type |
+| `linkedPropertyKey` | `PropertyKeys<LinkedQ>` | Property on the linked type to filter by |
+| `linkedFilterComponent` | `FilterComponentType` | UI component to render |
+| `linkedFilterState` | `FilterState` | Initial state for the linked filter |
+| `reverseLinkName` | `LinkNames<LinkedQ>` | Back-link for auto-narrowing via `onEffectiveObjectSet` |
+| `label` | `string` | Display label |
+| `isVisible` | `boolean` | Whether the filter is initially visible |
+
+### CSS Variables
+
+#### Container
+
+| Variable | Default | Description |
+|---|---|---|
+| `--osdk-filter-list-bg` | `--osdk-background-primary` | Panel background |
+| `--osdk-filter-list-border` | `--osdk-surface-border` | Panel border |
+| `--osdk-filter-list-border-radius` | `--osdk-surface-border-radius` | Panel border radius |
+| `--osdk-filter-list-padding` | `0` | Panel padding |
+| `--osdk-filter-list-gap` | `0` | Gap between filter items |
+| `--osdk-filter-list-shadow` | box-shadow value | Panel shadow |
+| `--osdk-filter-list-content-gap` | `0` | Gap within content area |
+| `--osdk-filter-list-empty-text-color` | `--osdk-typography-color-muted` | Empty state text color |
+| `--osdk-filter-list-collapsed-width` | `10 * spacing` | Width when collapsed |
+
+#### Add Filter Button
+
+| Variable | Default | Description |
+|---|---|---|
+| `--osdk-filter-list-addButton-padding-top` | `0` | Top padding above button |
+| `--osdk-filter-list-addButton-container-bg` | `--osdk-background-primary` | Button container background |
+| `--osdk-filter-list-addButton-container-padding` | computed | Button container padding |
+| `--osdk-filter-list-addButton-container-border-top` | `--osdk-surface-border` | Separator above button |
+| `--osdk-filter-list-addButton-border` | `--osdk-surface-border` | Button border |
+| `--osdk-filter-list-addButton-height` | `7.5 * spacing` | Button height |
+
+#### Header
+
+| Variable | Default | Description |
+|---|---|---|
+| `--osdk-filter-header-padding` | computed | Header padding |
+| `--osdk-filter-header-border-bottom` | `--osdk-surface-border` | Header bottom border |
+| `--osdk-filter-header-gap` | `2 * spacing` | Header gap |
+| `--osdk-filter-header-font-size` | `--osdk-typography-size-body-medium` | Title font size |
+| `--osdk-filter-header-font-weight` | `--osdk-typography-weight-bold` | Title font weight |
+| `--osdk-filter-header-color` | `--osdk-typography-color-default-rest` | Title color |
+| `--osdk-filter-header-icon-color` | `--osdk-typography-color-muted` | Title icon color |
+| `--osdk-filter-header-activeCount-color` | `--osdk-typography-color-muted` | Active count color |
+| `--osdk-filter-header-reset-color` | `--osdk-intent-primary-rest` | Reset button color |
+
+#### Filter Item
+
+| Variable | Default | Description |
+|---|---|---|
+| `--osdk-filter-item-gap` | `1 * spacing` | Gap within a filter item |
+| `--osdk-filter-item-padding` | `3 * spacing` | Filter item padding |
+| `--osdk-filter-item-border-radius` | `--osdk-surface-border-radius` | Filter item border radius |
+| `--osdk-filter-item-label-font-size` | `--osdk-typography-size-body-small` | Label font size |
+| `--osdk-filter-item-label-font-weight` | `--osdk-typography-weight-bold` | Label font weight |
+| `--osdk-filter-item-label-color` | `--osdk-typography-color-muted` | Label color |
+| `--osdk-filter-item-drag-handle-color` | `--osdk-drag-handle-color` | Drag handle color |
+| `--osdk-filter-item-dragging-opacity` | `0.5` | Opacity while dragging |
+
+#### Input
+
+| Variable | Default | Description |
+|---|---|---|
+| `--osdk-filter-input-bg` | `--osdk-background-primary` | Input background |
+| `--osdk-filter-input-border` | `--osdk-surface-border` | Input border |
+| `--osdk-filter-input-border-radius` | `--osdk-surface-border-radius` | Input border radius |
+| `--osdk-filter-input-padding` | computed | Input padding |
+| `--osdk-filter-input-focus-border` | `--osdk-intent-primary-rest` | Focus border color |
+| `--osdk-filter-input-font-size` | `--osdk-typography-size-body-medium` | Input font size |
+| `--osdk-filter-input-color` | `--osdk-typography-color-default-rest` | Input text color |
+| `--osdk-filter-input-placeholder-color` | `--osdk-typography-color-muted` | Placeholder color |
+
+#### Listogram
+
+| Variable | Default | Description |
+|---|---|---|
+| `--osdk-filter-listogram-gap` | `--osdk-surface-spacing` | Gap between rows |
+| `--osdk-filter-listogram-row-padding` | `--osdk-surface-spacing` | Row padding |
+| `--osdk-filter-listogram-row-border-radius` | `--osdk-surface-border-radius` | Row border radius |
+| `--osdk-filter-listogram-row-bg-hover` | hover color | Row hover background |
+| `--osdk-filter-listogram-label-font-size` | `--osdk-typography-size-body-medium` | Label font size |
+| `--osdk-filter-listogram-label-color` | `--osdk-typography-color-default-rest` | Label color |
+| `--osdk-filter-listogram-bar-height` | `2 * spacing` | Bar height |
+| `--osdk-filter-listogram-bar-color` | `--osdk-intent-primary-rest` | Bar fill color |
+| `--osdk-filter-listogram-count-color` | `--osdk-typography-color-muted` | Count text color |
+| `--osdk-filter-listogram-selected-color` | `--osdk-intent-primary-rest` | Selected row accent |
+| `--osdk-filter-listogram-view-all-color` | `--osdk-typography-color-muted` | "View all" link color |
+
+#### Range / Histogram
+
+| Variable | Default | Description |
+|---|---|---|
+| `--osdk-filter-range-gap` | `2.5 * spacing` | Range section gap |
+| `--osdk-filter-range-histogram-height` | `15 * spacing` | Histogram height |
+| `--osdk-filter-range-histogram-bar-color` | `--osdk-palette-gray-2` | Inactive bar color |
+| `--osdk-filter-range-histogram-bar-active-color` | `--osdk-intent-primary-rest` | Active bar color |
+| `--osdk-filter-range-histogram-axis-color` | `--osdk-typography-color-muted` | Axis text color |
+| `--osdk-filter-range-label-color` | `--osdk-typography-color-muted` | Range label color |
+| `--osdk-filter-range-separator-color` | `--osdk-typography-color-muted` | "–" separator color |
+
+#### Timeline
+
+| Variable | Default | Description |
+|---|---|---|
+| `--osdk-filter-timeline-labels-color` | `--osdk-typography-color-muted` | Label color |
+| `--osdk-filter-timeline-button-color` | `--osdk-iconography-color-muted` | Button icon color |
+| `--osdk-filter-timeline-button-bg-hover` | hover color | Button hover background |
+| `--osdk-filter-timeline-brush-color` | `--osdk-typography-color-muted` | Brush handle color |
+| `--osdk-filter-timeline-input-font-size` | `--osdk-typography-size-body-medium` | Input font size |
+
+#### Checkbox
+
+| Variable | Default | Description |
+|---|---|---|
+| `--osdk-filter-checkbox-list-gap` | `0.5 * spacing` | List gap |
+| `--osdk-filter-checkbox-row-padding` | computed | Row padding |
+| `--osdk-filter-checkbox-label-gap` | `--osdk-surface-spacing` | Label gap |
+| `--osdk-filter-checkbox-value-font-size` | `--osdk-typography-size-body-medium` | Value font size |
+| `--osdk-filter-checkbox-value-color` | `--osdk-typography-color-default-rest` | Value text color |
+| `--osdk-filter-checkbox-row-bg-hover` | hover color | Row hover background |
+| `--osdk-filter-checkbox-color-dot-size` | `2 * spacing` | Color dot size |
+
+#### Toggle
+
+| Variable | Default | Description |
+|---|---|---|
+| `--osdk-filter-toggle-label-gap` | `--osdk-surface-spacing` | Gap between toggle and label |
+| `--osdk-filter-toggle-label-font-size` | `--osdk-typography-size-body-medium` | Label font size |
+| `--osdk-filter-toggle-label-color` | `--osdk-typography-color-default-rest` | Label text color |
+
+#### Tag
+
+| Variable | Default | Description |
+|---|---|---|
+| `--osdk-filter-tag-container-gap` | `1 * spacing` | Tag container gap |
+| `--osdk-filter-tag-padding` | computed | Tag padding |
+| `--osdk-filter-tag-border-radius` | `--osdk-surface-border-radius` | Tag border radius |
+| `--osdk-filter-tag-bg` | `--osdk-custom-color-gray-1` | Tag background |
+| `--osdk-filter-tag-color` | `--osdk-typography-color-default-rest` | Tag text color |
+| `--osdk-filter-tag-remove-color` | `--osdk-typography-color-muted` | Remove icon color |
+
+#### Multi-Select
+
+| Variable | Default | Description |
+|---|---|---|
+| `--osdk-filter-multiselect-gap` | `2 * spacing` | Section gap |
+| `--osdk-filter-multiselect-inputRow-gap` | `--osdk-surface-spacing` | Input row gap |
+| `--osdk-filter-multiselect-count-color` | `--osdk-typography-color-muted` | Count text color |
+
+#### Popover
+
+| Variable | Default | Description |
+|---|---|---|
+| `--osdk-filter-popover-gap` | `1 * spacing` | Popover internal gap |
+| `--osdk-filter-popover-label-color` | `--osdk-typography-color-muted` | Label color |
+| `--osdk-filter-popover-trigger-width` | `40 * spacing` | Trigger width |
+| `--osdk-filter-popover-trigger-min-height` | `7 * spacing` | Trigger min height |
+| `--osdk-filter-popover-trigger-border-color` | `--osdk-surface-border-color-default` | Trigger border |
+| `--osdk-filter-popover-trigger-color` | `--osdk-typography-color-default-rest` | Trigger text color |
+| `--osdk-filter-popover-popup-bg` | `--osdk-background-primary` | Popup background |
+| `--osdk-filter-popover-popup-border` | `--osdk-surface-border` | Popup border |
+| `--osdk-filter-popover-popup-shadow` | `--osdk-surface-shadow-2` | Popup shadow |
+| `--osdk-filter-popover-popup-min-width` | `70 * spacing` | Popup min width |
+
+#### Overflow Menu
+
+| Variable | Default | Description |
+|---|---|---|
+| `--osdk-filter-item-menu-bg` | `--osdk-background-primary` | Menu background |
+| `--osdk-filter-item-menu-shadow` | `--osdk-surface-shadow-2` | Menu shadow |
+| `--osdk-filter-item-menu-border` | `--osdk-surface-border` | Menu border |
+| `--osdk-filter-item-menu-item-color` | `--osdk-typography-color-default-rest` | Item text color |
+| `--osdk-filter-item-menu-item-bg-hover` | `--osdk-custom-color-gray-1` | Item hover background |
+
+### Data Attributes
+
+| Attribute | Applied to | Description |
+|---|---|---|
+| `data-collapsed` | Root container | Present when the filter panel is collapsed |
+| `data-active-count` | Header | Number of active filters |
+| `data-has-selection` | Filter item | Filter has selected values |
+| `data-excluding` | Filter item | Filter is in exclude mode |
+| `data-empty` | Filter item | Filter has no available values |
+| `data-filtered-out` | Listogram row | Value exists in unfiltered data but excluded by other filters |
+| `data-active` | Filter item | Filter has non-default state |
+| `data-loading` | Filter item | Filter is loading aggregation data |
+| `data-dragging` | Filter item | Item is being dragged |
+| `data-highlighted` | Listogram row | Row is keyboard-highlighted |
+| `data-in-range` | Histogram bar | Bar falls within the selected range |
+| `data-click-to-filter` | Histogram bar | Bar supports click-to-filter |
+| `data-popup-open` | Popover trigger | Popover is currently open |
+| `data-unsupported` | Filter item | Property type is not supported |
+
+## Utilities
+
+The `@osdk/react-components/experimental/filter-list` barrel exports these
+utilities alongside the main component:
+
+| Export | Description |
+|---|---|
+| `serializeFilterStates` | Serialize a `FilterStatesMap` to a JSON-safe format for persistence |
+| `deserializeFilterStates` | Restore a `FilterStatesMap` from serialized data |
+| `useFilterListState` | Headless hook for filter state management without UI |
+| `filterHasActiveState` | Returns `true` when a filter definition has non-empty state |
+| `getFilterKey` | Extracts the string key from any filter definition union |
+| `getFilterLabel` | Extracts the display label from any filter definition |
+| `summarizeFilterValue` | Produces a human-readable summary of a filter's current state |
+| `narrowObjectSet` | Applies linked-filter narrowing to an `ObjectSet` |
+| `FilterPopover` | Standalone filter popover component for custom layouts |
+| `FilterInput` | Standalone filter input component |
+| `BaseFilterList` | OSDK-agnostic base component for custom data sources |
+
+## Accessibility
+
+- All filter controls are keyboard navigable via `Tab` and arrow keys
+- Listogram rows support `Enter`/`Space` to toggle selection
+- Drag-and-drop reordering supports keyboard via `Space` to pick up, arrow
+  keys to move, `Space` to drop, and `Escape` to cancel
+- The collapse/expand toggle is a focusable button with appropriate `aria-expanded`
+- Filter labels use semantic markup for screen reader compatibility
+- Exclude/include toggle is announced via dropdown menu with keyboard support
