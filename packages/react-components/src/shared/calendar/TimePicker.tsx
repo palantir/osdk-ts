@@ -15,7 +15,6 @@
  */
 
 import { Input } from "@base-ui/react/input";
-import { isEqual } from "lodash-es";
 import React, { useCallback, useMemo, useState } from "react";
 import styles from "./TimePicker.module.css";
 
@@ -51,7 +50,10 @@ export const TimePicker: React.NamedExoticComponent<TimePickerProps> = React
     // Date is the source of truth once an edit is committed or discarded.
     const [draftSegments, setDraftSegments] = useState(valueSegments);
     const [prevSegments, setPrevSegments] = useState(valueSegments);
-    if (!isEqual(prevSegments, valueSegments)) {
+    if (
+      prevSegments.hours !== valueSegments.hours
+      || prevSegments.minutes !== valueSegments.minutes
+    ) {
       setPrevSegments(valueSegments);
       setDraftSegments(valueSegments);
     }
@@ -63,11 +65,11 @@ export const TimePicker: React.NamedExoticComponent<TimePickerProps> = React
 
     const handleSegmentChange = useCallback(
       (segment: TimeSegment, nextText: string) => {
-        setDraftSegments(
-          replaceSegmentText(draftSegments, { segment, nextText }),
+        setDraftSegments((prev) =>
+          replaceSegmentText(prev, { segment, nextText })
         );
       },
-      [draftSegments],
+      [],
     );
 
     const emitChange = useCallback(
@@ -80,8 +82,7 @@ export const TimePicker: React.NamedExoticComponent<TimePickerProps> = React
     );
 
     const handleSegmentBlur = useCallback(
-      (segment: TimeSegment) => {
-        const text = draftSegments[segment];
+      (segment: TimeSegment, text: string) => {
         const parsedSegment = parseNumber(text);
         if (parsedSegment == null) {
           // Non-numeric text cannot be converted into a valid time segment, so
@@ -91,28 +92,24 @@ export const TimePicker: React.NamedExoticComponent<TimePickerProps> = React
         }
 
         const clampedSegment = clampSegment(parsedSegment, segment);
-        const nextSegments = replaceSegmentText(
-          draftSegments,
-          { segment, nextText: formatSegment(clampedSegment, segment) },
+        setDraftSegments((prev) =>
+          replaceSegmentText(prev, {
+            segment,
+            nextText: formatSegment(clampedSegment, segment),
+          })
         );
-        // Only the blurred segment should commit. If the other segment is
-        // currently invalid, preserve the committed value for that segment.
-        const nextHours = parseSegment(nextSegments.hours, "hours")
-          ?? Number(valueSegments.hours);
-        const nextMinutes = parseSegment(nextSegments.minutes, "minutes")
-          ?? Number(valueSegments.minutes);
 
         const currentHours = Number(valueSegments.hours);
         const currentMinutes = Number(valueSegments.minutes);
+        const nextHours = segment === "hours" ? clampedSegment : currentHours;
+        const nextMinutes = segment === "minutes"
+          ? clampedSegment
+          : currentMinutes;
         if (nextHours !== currentHours || nextMinutes !== currentMinutes) {
           emitChange(nextHours, nextMinutes);
         }
       },
-      [
-        draftSegments,
-        emitChange,
-        valueSegments,
-      ],
+      [emitChange, valueSegments],
     );
 
     const handleHourChange = useCallback(
@@ -124,12 +121,12 @@ export const TimePicker: React.NamedExoticComponent<TimePickerProps> = React
       [handleSegmentChange],
     );
     const handleHourBlur = useCallback(
-      () => handleSegmentBlur("hours"),
-      [handleSegmentBlur],
+      () => handleSegmentBlur("hours", hourText),
+      [handleSegmentBlur, hourText],
     );
     const handleMinuteBlur = useCallback(
-      () => handleSegmentBlur("minutes"),
-      [handleSegmentBlur],
+      () => handleSegmentBlur("minutes", minuteText),
+      [handleSegmentBlur, minuteText],
     );
 
     return (
