@@ -31,12 +31,6 @@ const MockInterface = {
   type: "interface",
 } as unknown as InterfaceDefinition;
 
-const MockConcreteType = {
-  apiName: "ConcreteType",
-  type: "object",
-  primaryKeyType: "string",
-} as unknown as ObjectTypeDefinition;
-
 describe("useOsdkObjects enabled option", () => {
   const mockObserveList = vitest.fn();
   const mockInvalidateObjectType = vitest.fn().mockResolvedValue(undefined);
@@ -319,22 +313,6 @@ describe("useOsdkObjects enabled option", () => {
       );
     });
 
-    it("should pass resolveToObjectType: true to observeList when an ObjectTypeDefinition is provided", () => {
-      const wrapper = createWrapper();
-
-      renderHook(
-        () =>
-          useOsdkObjects(MockInterface, {
-            resolveToObjectType: MockConcreteType,
-          }),
-        { wrapper },
-      );
-
-      expect(mockObserveList).toHaveBeenCalledTimes(1);
-      const callArgs = mockObserveList.mock.calls[0][0];
-      expect(callArgs.resolveToObjectType).toBe(true);
-    });
-
     it("should not include resolveToObjectType when not set", () => {
       const wrapper = createWrapper();
 
@@ -350,28 +328,6 @@ describe("useOsdkObjects enabled option", () => {
       expect(callArgs.resolveToObjectType).toBeUndefined();
     });
 
-    it("should not resubscribe when an inline ObjectTypeDefinition reference changes but its identity is the same", () => {
-      const wrapper = createWrapper();
-
-      const { rerender } = renderHook(
-        ({ resolve }) =>
-          useOsdkObjects(MockInterface, {
-            resolveToObjectType: resolve,
-          }),
-        {
-          wrapper,
-          initialProps: { resolve: true as boolean | ObjectTypeDefinition },
-        },
-      );
-
-      expect(mockObserveList).toHaveBeenCalledTimes(1);
-
-      rerender({ resolve: MockConcreteType });
-
-      // both are truthy so dep array entry !!resolveToObjectType is stable
-      expect(mockObserveList).toHaveBeenCalledTimes(1);
-    });
-
     it("should resubscribe when resolveToObjectType toggles between truthy and falsy", () => {
       const wrapper = createWrapper();
 
@@ -383,7 +339,7 @@ describe("useOsdkObjects enabled option", () => {
         {
           wrapper,
           initialProps: {
-            resolve: true as boolean | ObjectTypeDefinition | undefined,
+            resolve: true as boolean | undefined,
           },
         },
       );

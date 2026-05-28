@@ -20,7 +20,6 @@ import type {
   LinkNames,
   ObjectOrInterfaceDefinition,
   ObjectSet,
-  ObjectTypeDefinition,
   Osdk,
   PropertyKeys,
   SimplePropertyDef,
@@ -32,7 +31,22 @@ import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
 import { devToolsMetadata, makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext } from "./OsdkContext.js";
 
-export interface UseOsdkObjectsOptions<
+/**
+ * Restricts `resolveToObjectType` to interface queries only.
+ * Object-type queries cannot pass this option.
+ */
+export type ResolveToObjectTypeOption<T extends ObjectOrInterfaceDefinition> =
+  T extends { type: "interface" } ? { resolveToObjectType?: boolean }
+    : { resolveToObjectType?: never };
+
+export type UseOsdkObjectsOptions<
+  T extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> =
+  & UseOsdkObjectsBaseOptions<T, RDPs>
+  & ResolveToObjectTypeOption<T>;
+
+interface UseOsdkObjectsBaseOptions<
   T extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
 > {
@@ -163,31 +177,6 @@ export interface UseOsdkObjectsOptions<
    * for interface queries. Has no effect for non-interface queries.
    */
   $includeAllBaseObjectProperties?: boolean;
-
-  /**
-   * When loading objects via an interface type, return the full concrete
-   * object type instances instead of interface views.
-   *
-   * By default, interface queries return objects narrowed to interface
-   * properties only. With `resolveToObjectType: true`, returned objects
-   * include all properties from the implementing object type (e.g. `$title`,
-   * custom properties not on the interface).
-   *
-   * Only has an effect when the type parameter is an interface.
-   *
-   * Pass an ObjectTypeDefinition to narrow the return type:
-   * `resolveToObjectType: Laptop` types results as `Osdk.Instance<Laptop>`.
-   * This is an unchecked assertion — the runtime does not filter by type.
-   *
-   * @default false
-   *
-   * @example
-   * useOsdkObjects(MyInterface, {
-   *   pivotTo: "linkedItems",
-   *   resolveToObjectType: true,
-   * })
-   */
-  resolveToObjectType?: boolean | ObjectTypeDefinition;
 }
 
 export interface UseOsdkListResult<
@@ -242,58 +231,6 @@ export interface UseOsdkListResult<
 
   refetch: () => Promise<void>;
 }
-
-// resolveToObjectType overloads: when an ObjectTypeDefinition is passed,
-// narrow the return type to Osdk.Instance<R>.
-export function useOsdkObjects<
-  Q extends ObjectOrInterfaceDefinition,
-  L extends LinkNames<Q>,
-  R extends ObjectTypeDefinition,
->(
-  type: Q,
-  options: UseOsdkObjectsOptions<Q, {}> & {
-    pivotTo: L;
-    resolveToObjectType: R;
-    rids: readonly string[];
-    streamUpdates?: never;
-  },
-): UseOsdkListResult<R, {}, "$rid">;
-
-export function useOsdkObjects<
-  Q extends ObjectOrInterfaceDefinition,
-  R extends ObjectTypeDefinition,
->(
-  type: Q,
-  options: UseOsdkObjectsOptions<Q, {}> & {
-    resolveToObjectType: R;
-    rids: readonly string[];
-    pivotTo?: never;
-  },
-): UseOsdkListResult<R, {}, "$rid">;
-
-export function useOsdkObjects<
-  Q extends ObjectOrInterfaceDefinition,
-  L extends LinkNames<Q>,
-  R extends ObjectTypeDefinition,
->(
-  type: Q,
-  options: UseOsdkObjectsOptions<Q, {}> & {
-    pivotTo: L;
-    resolveToObjectType: R;
-    streamUpdates?: never;
-  },
-): UseOsdkListResult<R, {}>;
-
-export function useOsdkObjects<
-  Q extends ObjectOrInterfaceDefinition,
-  R extends ObjectTypeDefinition,
->(
-  type: Q,
-  options: UseOsdkObjectsOptions<Q, {}> & {
-    resolveToObjectType: R;
-    pivotTo?: never;
-  },
-): UseOsdkListResult<R, {}>;
 
 // pivotTo overloads: streamUpdates is forbidden (the server does not support
 // websocket subscriptions for link-traversal queries).
@@ -354,8 +291,6 @@ export function useOsdkObjects<
   | UseOsdkListResult<Q, RDPs, "$rid">
   | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>, {}>
   | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>, {}, "$rid">
-  | UseOsdkListResult<ObjectTypeDefinition>
-  | UseOsdkListResult<ObjectTypeDefinition, {}, "$rid">
 {
   const { observableClient } = React.useContext(OsdkContext);
 
