@@ -83,6 +83,7 @@ export async function applyQuery<
     {
       version: query.isFixedVersion ? query.version : undefined,
       transactionId: client.transactionId,
+      scenarioRid: client.scenarioRid,
       branch: client.branch,
     },
   );
