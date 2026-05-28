@@ -33,6 +33,7 @@ import type { MinimalClient } from "../MinimalClientContext.js";
 import { createAttachmentUpload } from "../object/AttachmentUpload.js";
 import { isMediaReference } from "../object/mediaUpload.js";
 import { getWireObjectSet } from "../objectSet/createObjectSet.js";
+import { withScenario } from "../scenarios/withScenario.js";
 import { toDataValue } from "./toDataValue.js";
 
 describe(toDataValue, () => {
@@ -309,7 +310,6 @@ describe(toDataValue, () => {
   });
 
   it("converts a ScenarioClient into the rid string", async () => {
-    const { withScenario } = await import("../scenarios/withScenario.js");
     const scenario = withScenario(client, "ri.actions..scenario.abc");
 
     const converted = await toDataValue(
