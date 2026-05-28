@@ -90,6 +90,11 @@
     background: var(--osdk-filter-item-header-action-bg-hover);
   }
 
+  &:active {
+    color: var(--osdk-filter-item-header-action-color-active);
+    background: var(--osdk-filter-item-header-action-bg-active);
+  }
+
   &:focus-visible {
     opacity: 1;
     outline: var(--osdk-filter-input-focus-outline-width) solid var(--osdk-filter-input-focus-outline-color);
@@ -108,6 +113,8 @@
 .headerActionButton[data-popup-open],
 .headerActionButton[aria-pressed="true"] {
   opacity: 1;
+  color: var(--osdk-filter-item-header-action-color-active);
+  background: var(--osdk-filter-item-header-action-bg-hover);
 }
 
 .searchRow {

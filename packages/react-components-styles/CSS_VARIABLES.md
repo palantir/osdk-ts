@@ -712,12 +712,14 @@ Styling for filter list components including search, checkboxes, listogram, and 
 
 #### Filter Item Header Actions
 
-| Variable                                         | Default Value                             | Description                    |
-| ------------------------------------------------ | ----------------------------------------- | ------------------------------ |
-| `--osdk-filter-item-header-action-padding`       | `calc(var(--osdk-surface-spacing) * 0.5)` | Action button padding          |
-| `--osdk-filter-item-header-action-color`         | `var(--osdk-typography-color-muted)`      | Action button color            |
-| `--osdk-filter-item-header-action-bg-hover`      | `var(--osdk-custom-color-gray-1)`         | Action button hover background |
-| `--osdk-filter-item-header-action-border-radius` | `var(--osdk-surface-border-radius)`       | Action button border radius    |
+| Variable                                         | Default Value                               | Description                                    |
+| ------------------------------------------------ | ------------------------------------------- | ---------------------------------------------- |
+| `--osdk-filter-item-header-action-padding`       | `calc(var(--osdk-surface-spacing) * 0.5)`   | Action button padding                          |
+| `--osdk-filter-item-header-action-color`         | `var(--osdk-typography-color-muted)`        | Action button color                            |
+| `--osdk-filter-item-header-action-color-active`  | `var(--osdk-typography-color-default-rest)` | Action button color when pressed or toggled on |
+| `--osdk-filter-item-header-action-bg-hover`      | `var(--osdk-custom-color-gray-1)`           | Action button hover/toggled background         |
+| `--osdk-filter-item-header-action-bg-active`     | `var(--osdk-custom-color-gray-2)`           | Action button active (mouse-down) background   |
+| `--osdk-filter-item-header-action-border-radius` | `var(--osdk-surface-border-radius)`         | Action button border radius                    |
 
 #### Exclude Dropdown
 
