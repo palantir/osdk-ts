@@ -333,7 +333,7 @@ function AnnotationCreatorDemo(
 }
 
 const meta: Meta<PdfViewerProps> = {
-  title: "Beta/DocumentViewer/Renderers/PdfViewer/Recipes",
+  title: "Components/DocumentViewer/Renderers/PdfViewer/Recipes",
   component: BasePdfViewer,
 };
 

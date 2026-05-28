@@ -226,16 +226,16 @@ Storybook runs on `http://localhost:6006`.
 
 - Story files live in `packages/react-components-storybook/src/stories/<Name>/<Name>.stories.tsx`. Folders match the component name; sub-stories live alongside, optionally under a `Recipes/` or `Features/` subfolder
 - Follow the [Component Story Format (CSF)](https://storybook.js.org/docs/api/csf)
-- **Tier placement is via the meta `title:`, not the folder path.** New components belong under the `Beta/` category:
+- **Tier placement is via the meta `title:`, not the folder path.** New components belong under the `Components/` category:
 
   ```ts
   const meta: Meta<typeof MyComponent> = {
-    title: "Beta/<Name>", // or "Beta/<Parent>/<Subfeature>"
+    title: "Components/<Name>", // or "Components/<Parent>/<Subfeature>"
     component: MyComponent,
   };
   ```
 
-  The `beta` tag (and resulting tag badge) is injected automatically by the indexer in `.storybook/main.ts` for any title starting with `Beta/` — do **not** add `tags: ["beta"]` manually.
+  The `beta` tag (and resulting tag badge) is injected automatically by the indexer in `.storybook/main.ts` for any title starting with `Components/` — do **not** add `tags: ["beta"]` manually.
 
   This produces URLs like `beta-myname--default`, matching the existing pattern (`beta-baseform--default`, `beta-objecttable-building-blocks-basetable--default`)
 - Include stories that demonstrate the component's key states: default, loading, error, empty, and edge cases

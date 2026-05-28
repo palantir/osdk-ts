@@ -24,7 +24,8 @@ const SAMPLE_PDF_URL =
   "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf";
 
 const meta: Meta<PdfViewerContentProps> = {
-  title: "Beta/DocumentViewer/Renderers/PdfViewer/Building Blocks/Content",
+  title:
+    "Components/DocumentViewer/Renderers/PdfViewer/Building Blocks/Content",
   component: PdfViewerContent,
   args: {
     src: SAMPLE_PDF_URL,

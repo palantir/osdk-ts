@@ -45,7 +45,7 @@ import {
 type EmployeeTableProps = ObjectTableProps<typeof Employee>;
 
 const meta: Meta<EmployeeTableProps> = {
-  title: "Beta/ObjectTable/Features",
+  title: "Components/ObjectTable/Features",
   component: ObjectTable,
   parameters: {
     msw: {

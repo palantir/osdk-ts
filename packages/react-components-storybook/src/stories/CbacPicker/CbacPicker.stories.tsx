@@ -32,7 +32,7 @@ import {
 } from "./mockData.js";
 
 const meta: Meta<typeof BaseCbacPicker> = {
-  title: "Beta/CbacPicker",
+  title: "Components/CbacPicker",
   component: BaseCbacPicker,
   parameters: {
     controls: {

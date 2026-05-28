@@ -79,7 +79,7 @@ function createMockXmlMedia(xmlContent: string): Media {
 }
 
 const meta: Meta<BaseXmlViewerProps> = {
-  title: "Beta/DocumentViewer/Renderers/XmlViewer",
+  title: "Components/DocumentViewer/Renderers/XmlViewer",
   component: BaseXmlViewer,
   args: {
     content: SAMPLE_XML,
