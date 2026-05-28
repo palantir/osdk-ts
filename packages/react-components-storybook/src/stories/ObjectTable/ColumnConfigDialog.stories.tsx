@@ -41,8 +41,9 @@ const DEFAULT_VISIBILITY: Record<string, boolean> = {
 const DEFAULT_COLUMN_ORDER = ["fullName", "email", "jobTitle", "department"];
 
 const meta: Meta<ColumnConfigDialogProps> = {
-  title: "Experimental/ObjectTable/Building Blocks/ColumnConfigDialog",
+  title: "Components/ObjectTable/Building Blocks/ColumnConfigDialog",
   component: ColumnConfigDialog,
+  tags: ["beta"],
   args: {
     isOpen: true,
     onClose: fn(),

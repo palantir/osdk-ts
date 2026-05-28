@@ -385,6 +385,7 @@ const archetypeRules = archetypes(
         "./experimental/markdown-renderer",
         "./experimental/object-table",
         "./experimental/pdf-viewer",
+        "./experimental/theme",
         "./experimental/tiff-renderer",
         "./experimental/video-viewer",
         "./experimental/xml-viewer",

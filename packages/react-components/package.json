@@ -1,6 +1,6 @@
 {
   "name": "@osdk/react-components",
-  "version": "0.18.0",
+  "version": "0.21.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -115,6 +115,15 @@
       "require": "./build/cjs/public/experimental/pdf-viewer.cjs",
       "default": "./build/browser/public/experimental/pdf-viewer.js"
     },
+    "./experimental/theme": {
+      "browser": "./build/browser/public/experimental/theme.js",
+      "import": {
+        "types": "./build/types/public/experimental/theme.d.ts",
+        "default": "./build/esm/public/experimental/theme.js"
+      },
+      "require": "./build/cjs/public/experimental/theme.cjs",
+      "default": "./build/browser/public/experimental/theme.js"
+    },
     "./experimental/tiff-renderer": {
       "browser": "./build/browser/public/experimental/tiff-renderer.js",
       "import": {
@@ -154,7 +163,7 @@
     }
   },
   "scripts": {
-    "check-attw": "attw --pack . --exclude-entrypoints ./styles.css ./experimental/action-form ./experimental/document-viewer ./experimental/email-viewer ./experimental/excel-viewer ./experimental/filter-list ./experimental/image-viewer ./experimental/markdown-renderer ./experimental/object-table ./experimental/pdf-viewer ./experimental/tiff-renderer ./experimental/video-viewer ./experimental/xml-viewer",
+    "check-attw": "attw --pack . --exclude-entrypoints ./styles.css ./experimental/action-form ./experimental/document-viewer ./experimental/email-viewer ./experimental/excel-viewer ./experimental/filter-list ./experimental/image-viewer ./experimental/markdown-renderer ./experimental/object-table ./experimental/pdf-viewer ./experimental/theme ./experimental/tiff-renderer ./experimental/video-viewer ./experimental/xml-viewer",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt",

@@ -71,6 +71,7 @@ export function ObjectTable<
   objectSetOptions,
   dedupeIntervalMs,
   pageSize,
+  streamUpdates,
   orderBy,
   defaultOrderBy,
   onOrderByChanged,
@@ -124,6 +125,7 @@ export function ObjectTable<
       objectSetOptions,
       dedupeIntervalMs,
       pageSize,
+      streamUpdates,
     );
 
   const { columns, loading: isColumnsLoading } = useColumnDefs<

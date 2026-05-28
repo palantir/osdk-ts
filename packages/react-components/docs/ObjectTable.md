@@ -72,11 +72,12 @@ Add selection mode to enable row selection:
 
 ### Core Props
 
-| Prop         | Type     | Required | Default | Description                     |
-| ------------ | -------- | -------- | ------- | ------------------------------- |
-| `objectType` | `Q`      | ✅       | -       | The OSDK object type to display |
-| `className`  | `string` | ❌       | -       | CSS class for custom styling    |
-| `rowHeight`  | `number` | ❌       | `40`    | Height of each row in pixels    |
+| Prop            | Type      | Required | Default | Description                                                                                                                                                                                                                                                                                                                                                                         |
+| --------------- | --------- | -------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `objectType`    | `Q`       | ✅       | -       | The OSDK object type to display                                                                                                                                                                                                                                                                                                                                                     |
+| `className`     | `string`  | ❌       | -       | CSS class for custom styling                                                                                                                                                                                                                                                                                                                                                        |
+| `rowHeight`     | `number`  | ❌       | `40`    | Height of each row in pixels                                                                                                                                                                                                                                                                                                                                                        |
+| `streamUpdates` | `boolean` | ❌       | `false` | When `true`, subscribes via websocket so the table automatically updates as matching objects are added, updated, or removed in Foundry. Cannot be used together with `pivotTo` or `withProperties` — the server does not support websocket subscriptions for link-traversal or derived-property queries, so those queries still fetch normally but won't receive real-time updates. |
 
 ### Column Management
 

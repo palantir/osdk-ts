@@ -1,5 +1,29 @@
 # @osdk/shared.test
 
+## 0.20.0
+
+### Minor Changes
+
+- 60aff19: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+
+### Patch Changes
+
+- Updated dependencies [a492285]
+- Updated dependencies [60aff19]
+  - @osdk/api@2.24.0
+  - @osdk/generator-converters@2.24.0
+
+## 0.19.0
+
+### Patch Changes
+
+- Updated dependencies [9fb5afb]
+- Updated dependencies [198f219]
+- Updated dependencies [ef156b6]
+- Updated dependencies [8290dd7]
+  - @osdk/generator-converters@2.23.0
+  - @osdk/api@2.23.0
+
 ## 0.18.0
 
 ### Patch Changes

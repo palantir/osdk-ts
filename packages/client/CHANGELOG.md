@@ -1,5 +1,40 @@
 # @osdk/client
 
+## 2.24.0
+
+### Minor Changes
+
+- a492285: Add $title and $primaryKey special property filters to where clauses
+- 60aff19: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+- 35ad6d1: Resolve action applications before broad cache invalidation refreshes complete.
+- 6923158: Fix empty filter case
+
+### Patch Changes
+
+- Updated dependencies [a492285]
+- Updated dependencies [60aff19]
+  - @osdk/api@2.24.0
+  - @osdk/generator-converters@2.24.0
+  - @osdk/shared.test@2.19.0
+  - @osdk/client.unstable@2.24.0
+
+## 2.23.0
+
+### Minor Changes
+
+- 8290dd7: Unwrap `$primaryKey` and `$title` when they are returned as secured property values, and include them as keys in `$propertySecurities` (both at the type level and at runtime, including interface views).
+
+### Patch Changes
+
+- Updated dependencies [9fb5afb]
+- Updated dependencies [198f219]
+- Updated dependencies [ef156b6]
+- Updated dependencies [8290dd7]
+  - @osdk/generator-converters@2.23.0
+  - @osdk/api@2.23.0
+  - @osdk/client.unstable@2.23.0
+  - @osdk/shared.test@2.18.0
+
 ## 2.22.0
 
 ### Patch Changes

@@ -8,8 +8,7 @@ Setup required before using `@osdk/react-components` or `@osdk/cbac-components`.
 
 ## Install dependencies
 
-:::tip If your tooling already installs dependencies, skip this step.
-:::
+> **Tip:** If your tooling already installs dependencies, skip this step.
 
 Use whichever package manager your project uses (`# if using CBAC components` lines are optional):
 
@@ -123,6 +122,29 @@ All components resolve their visual properties through CSS custom properties. Th
 - **Blueprint tokens (`--bp-*`)** — the underlying Blueprint design tokens that `--osdk-*` tokens map to. Override these for consistent theming across **both Blueprint and OSDK components**.
 
 Per-component references list the `--osdk-*` variables each component exposes — see, for example, [ObjectTable › Theming](./ObjectTable.md#theming). The full catalog of variables lives in [CSSVariables.md](./CSSVariables.md).
+
+### Light and dark mode
+
+OSDK components ship a built-in dark theme. Wrap your app in `<OsdkThemeProvider>` to activate it and to let users override the OS preference at runtime:
+
+```tsx
+import { OsdkThemeProvider } from "@osdk/react-components/experimental/theme";
+
+function App() {
+  return (
+    <OsdkProvider client={client}>
+      <OsdkThemeProvider>
+        {/* defaults to "system" */}
+        {/* your app */}
+      </OsdkThemeProvider>
+    </OsdkProvider>
+  );
+}
+```
+
+By default the provider follows `prefers-color-scheme` and writes the resolved value to `data-bp-color-scheme` on `<html>` — matching [Blueprint's convention](https://blueprintjs.com/docs/#core/colors) so the theme also applies to portaled overlays (popovers, dialogs, tooltips).
+
+See [OsdkThemeProvider](./OsdkThemeProvider.md) for the full reference, including the `defaultTheme` modes, the `useOsdkTheme` hook, persisting the user's choice, and integrating with an external theme store via controlled mode.
 
 ### Accessibility
 

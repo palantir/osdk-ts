@@ -17,6 +17,7 @@
 import { Menu } from "@base-ui/react/menu";
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo, useState } from "react";
+import { usePortalContainer } from "../../shared/PortalContainerContext.js";
 import { SearchBar } from "../search-bar/SearchBar.js";
 import styles from "./SearchableMenu.module.css";
 
@@ -49,6 +50,7 @@ function SearchableMenuInner({
   collisionBoundary,
 }: SearchableMenuProps): React.ReactElement {
   const [searchQuery, setSearchQuery] = useState("");
+  const portalContainer = usePortalContainer();
 
   const filteredItems = useMemo(() => {
     const query = searchQuery.toLowerCase().trim();
@@ -84,7 +86,7 @@ function SearchableMenuInner({
       >
         {trigger}
       </Menu.Trigger>
-      <Menu.Portal>
+      <Menu.Portal container={portalContainer}>
         <Menu.Positioner
           className={classnames(styles.positioner, className)}
           sideOffset={4}

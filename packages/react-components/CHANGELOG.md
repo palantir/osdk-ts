@@ -1,5 +1,57 @@
 # @osdk/react-components
 
+## 0.21.0
+
+### Minor Changes
+
+- 44c5f57: Add documentation MDX pages to Storybook sidebar (Welcome, Guides, Styling, Tokens, Hooks)
+- 837ea03: ObjectTable: expose `streamUpdates` prop that opts the table into websocket-driven live updates when matching objects are added, updated, or removed in Foundry. Forwarded to both `useObjectSet` and `useOsdkObjects`.
+- 0907d00: Fix `NotFoundError: removeChild` crashes when zooming or switching documents in `PdfViewer`. Annotation overlays are now rendered as siblings of pdfjs content (using measured page coordinates) instead of portaled into pdfjs-owned DOM. `AnnotationPortalTarget` now exposes `left`/`top`/`width`/`height`/`transform` in place of `container`. Annotation remeasures triggered by zoom, rotation, and container resize are now coalesced to one `requestAnimationFrame` tick, eliminating O(annotated pages) `getBoundingClientRect` reads on every pinch-zoom event.
+- 4c53e48: Hide the DatePicker popover when its anchor scrolls out of view. Fixes an issue where the date picker in `ObjectTable` cells continued to render outside the table bounds after the cell scrolled out of the visible area.
+
+## 0.20.0
+
+### Minor Changes
+
+- 2c491f4: filter-list: forward formatDate to single-date, multi-date, and timeline inputs so date formatting is consistent across all date-typed filters
+- dfc4226: `FilterList` now supports combining linked-property and direct-property filters via a single objectSet. Pass the unfiltered scope as `objectSet` and the new `onEffectiveObjectSet` observer receives the fully-narrowed `ObjectSet` (direct + linked filters applied) on every filter change. Adds optional `LinkedPropertyFilterDefinition.reverseLinkName` (opt-in: set it to make the filter narrow `objectSet` via a pivot round-trip; omit it for UI-only behavior) and `showFilteredOutValues`, which renders count=0 greyed-out rows for values present in the unfiltered scope but absent under an active filter. Filtered-out rows apply symmetrically to both direct-property facets (Listogram, MultiSelect, SingleSelect) and linked-property facets configured with `MULTI_SELECT` / `SINGLE_SELECT` / `LISTOGRAM` sub-components.
+
+  Existing `filterClause` / `onFilterClauseChanged` props still work and continue to emit a `WhereClause<Q>` covering direct filters (LINKED_PROPERTY narrowing cannot be expressed as a `WhereClause<Q>` and surfaces only through `onEffectiveObjectSet`). Linked filters are composed via the new exported `narrowObjectSet(objectSet, whereClause, linkedFilters)` helper for consumers building their own headless pipelines.
+
+  Linked-property facets compare against the raw unfiltered `objectSet` when computing filtered-out rows, so a value whose source rows were filtered out by either direct or linked sibling filters still renders as a count=0 row.
+
+- 7c1c639: FilterList: extend per-item actions to every filter type and fix linkedProperty exclude toggle.
+
+  • every filter type that supports excluding renders the `...` toggle for the inline Keep / Exclude row, including linked-property filters (toggle now flips `isExcluding` on the inner wrapped state)
+  • new `searchField` flag on `FilterDefinition` hides the header monocle for filters that already have their own inline search (e.g. `MULTI_SELECT`)
+  • extracted reusable helpers `toggleIsExcluding`, `clearFilterState`, `filterHasActiveState`, `getEffectiveFilterState`, and `getSelectedCount` from inline component logic into `filterValues.ts`
+
+- 7f8e93b: thread `renderValue` through `LinkedPropertyFilter` inputs
+
+## 0.19.0
+
+### Minor Changes
+
+- cffbe7c: Add ActionForm guide links and document unsupported ActionForm features.
+- a218b1a: right-align Clear all in FilterList exclude row
+- b5d7e7b: fix filter-list "no value" baseline and range hyphen vertical alignment
+- bb0817b: Fix misleading patterns in @osdk/react and @osdk/react-components docs that were confusing downstream coding agents and humans alike.
+
+  • react-sdk-docs `reactProviderSetup` and `clientSetup` snippets now pass a real ontology RID placeholder to `createClient` instead of `{{{packageName}}}` (which resolves to the npm SDK package name, not the ontology RID)
+  • Stop pretending `$` is exported from the user's SDK — `$` is a local alias users sometimes create; docs now use `client(Type)` directly, matching the pattern already used in getting-started.md / cache-management.md
+  • Standardize the SDK placeholder on `@my/osdk` across all docs (was a mix of `@my/osdk`, `@YourApp/sdk`, `@your-app/sdk`) and add a `:::note About @my/osdk` callout to each react-components doc that imports from it
+  • Fix several broken/missing imports in code snippets: `cache-management.md` setup block was using `createClient` / `createObservableClient` / `authProvider` without importing or defining any of them; `advanced-queries.md` derived-property fragments were missing `Employee` and `useOsdkObjects` imports
+  • Fix `querying-data.md` self-referential typo "_Stable - available from both `@osdk/react` and `@osdk/react`_" → second should be `@osdk/react/experimental`
+  • Fix `advanced-queries.md` duplicate `const { data }` declaration that would not compile
+  • Remove unused `useOsdkObject` import from one `advanced-queries.md` snippet
+  • Install commands now show npm / pnpm / yarn alternatives with a tip block recommending users skip the step if their tooling already installs dependencies — fixes Pilot running `pnpm` in npm-managed projects and the install-race-with-harness issue
+
+- b3229eb: Fix ObjectTable overlay menus and dialogs inside drawers and dialogs.
+- 1760597: Change experimental labels to beta
+- 64652ed: Fix `ObjectTable` pinned columns rendering with a transparent background, causing scrolled cells from non-pinned columns to bleed through and overlap pinned text. Regression introduced in v0.18.0 by the `--osdk-table-cell-bg` token — declaring `--osdk-table-cell-bg: inherit` at `:root` silently resolved to the guaranteed-invalid value (no parent to inherit from), so `var(--osdk-table-cell-bg)` fell back to `transparent`. The default is now expressed as a `var()` fallback (`var(--osdk-table-cell-bg, inherit)`) so unset cells inherit the row background while consumer overrides still apply.
+- 4c0bdaf: Add `<OsdkThemeProvider>` and `useOsdkTheme` (from `@osdk/react-components/experimental/theme`) for opt-in theming.
+- dad4c44: Support disabled fields in ActionForm field definitions.
+
 ## 0.18.0
 
 ### Minor Changes

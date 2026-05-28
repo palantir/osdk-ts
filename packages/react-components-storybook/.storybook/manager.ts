@@ -15,19 +15,20 @@
  */
 
 import type { TagBadgeParameters } from "storybook-addon-tag-badges/manager-helpers";
+import type { API } from "storybook/manager-api";
 import { addons } from "storybook/manager-api";
 
 addons.setConfig({
   tagBadges: [
     {
-      tags: "experimental",
+      tags: "beta",
       badge: {
-        text: "Experimental",
+        text: "Beta",
         style: {
           backgroundColor: "rgba(143, 153, 168, .15)",
           color: "#1c2127",
         },
-        tooltip: "This component is experimental and may change",
+        tooltip: "This component is in beta and may change",
       },
       display: {
         sidebar: [
@@ -40,29 +41,29 @@ addons.setConfig({
   ] satisfies TagBadgeParameters,
 });
 
-function redirectToObjectTableIfAtRoot() {
+// Must match <Meta title="Docs/Welcome" /> in src/docs/Welcome.mdx
+const WELCOME_DOCS_PATH = "/docs/docs-welcome--docs";
+
+function redirectToWelcomeIfNoStorySelected() {
   const url = new URL(window.location.href);
-  if (
-    !url.searchParams.has("path")
-    && window.location.pathname === "/"
-  ) {
-    window.location.href =
-      "/?path=/story/experimental-objecttable-features--default";
+
+  if (!url.searchParams.has("path")) {
+    url.searchParams.set("path", WELCOME_DOCS_PATH);
+    window.location.replace(url);
   }
 }
 
-// Redirect to the object table story if we're at the root
+// Redirect to the Welcome docs page if we're at the root
 addons.register(
   "redirect-to-first-story",
-  (api: { on: (arg0: string, arg1: () => void) => void }) => {
-    // Check if we're at the root path (no story selected)
+  (api: Pick<API, "on">) => {
     api.on("STORY_RENDERED", () => {
-      redirectToObjectTableIfAtRoot();
+      redirectToWelcomeIfNoStorySelected();
     });
 
-    // Also check immediately when Storybook loads
+    // Allow Storybook's initial render cycle to complete
     setTimeout(() => {
-      redirectToObjectTableIfAtRoot();
+      redirectToWelcomeIfNoStorySelected();
     }, 100);
   },
 );

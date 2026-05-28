@@ -39,7 +39,10 @@ import {
 } from "@dnd-kit/sortable";
 import classnames from "classnames";
 import React, { useCallback, useMemo, useState } from "react";
-import type { FilterState } from "../FilterListItemApi.js";
+import type {
+  FilterDefinitionControls,
+  FilterState,
+} from "../FilterListItemApi.js";
 import type { RenderFilterInput } from "./BaseFilterListApi.js";
 import styles from "./FilterListContent.module.css";
 import { FilterListItem } from "./FilterListItem.js";
@@ -62,7 +65,7 @@ const DRAG_OVERLAY_HANDLE_ATTRIBUTES: DraggableAttributes = {
   "aria-describedby": "",
 };
 
-interface FilterListContentProps<D> {
+interface FilterListContentProps<D extends FilterDefinitionControls> {
   filterDefinitions?: Array<D>;
   filterStates: Map<string, FilterState>;
   onFilterStateChanged: (
@@ -79,7 +82,7 @@ interface FilterListContentProps<D> {
   style?: React.CSSProperties;
 }
 
-export function FilterListContent<D>({
+export function FilterListContent<D extends FilterDefinitionControls>({
   filterDefinitions,
   filterStates,
   onFilterStateChanged,
@@ -147,15 +150,15 @@ export function FilterListContent<D>({
     setActiveId(null);
   }, []);
 
-  const announcements = useMemo<Announcements>(
-    () => ({
+  const announcements = useMemo<Announcements>(() => {
+    const labelForId = (id: UniqueIdentifier) => {
+      const idx = sortableIds.indexOf(String(id));
+      const def = idx >= 0 ? filterDefinitions?.[idx] : undefined;
+      return def ? getFilterLabel(def) : "filter";
+    };
+    return {
       onDragStart({ active }) {
-        const idx = sortableIds.indexOf(String(active.id));
-        const def = idx >= 0 && filterDefinitions
-          ? filterDefinitions[idx]
-          : undefined;
-        const label = def ? getFilterLabel(def) : "filter";
-        return `Picked up ${label} filter`;
+        return `Picked up ${labelForId(active.id)} filter`;
       },
       onDragOver({ over }) {
         if (!over) {
@@ -165,11 +168,7 @@ export function FilterListContent<D>({
         return `Moved to position ${overIdx + 1} of ${sortableIds.length}`;
       },
       onDragEnd({ active, over }) {
-        const idx = sortableIds.indexOf(String(active.id));
-        const def = idx >= 0 && filterDefinitions
-          ? filterDefinitions[idx]
-          : undefined;
-        const label = def ? getFilterLabel(def) : "filter";
+        const label = labelForId(active.id);
         if (over && active.id !== over.id) {
           const overIdx = sortableIds.indexOf(String(over.id));
           return `Dropped ${label} filter at position ${overIdx + 1}`;
@@ -177,16 +176,10 @@ export function FilterListContent<D>({
         return `Dropped ${label} filter back in its original position`;
       },
       onDragCancel({ active }) {
-        const idx = sortableIds.indexOf(String(active.id));
-        const def = idx >= 0 && filterDefinitions
-          ? filterDefinitions[idx]
-          : undefined;
-        const label = def ? getFilterLabel(def) : "filter";
-        return `Cancelled dragging ${label} filter`;
+        return `Cancelled dragging ${labelForId(active.id)} filter`;
       },
-    }),
-    [filterDefinitions, sortableIds, getFilterLabel],
-  );
+    };
+  }, [filterDefinitions, sortableIds, getFilterLabel]);
 
   const accessibility = useMemo(
     () => ({ announcements }),
@@ -239,6 +232,7 @@ export function FilterListContent<D>({
                   onFilterStateChanged={onFilterStateChanged}
                   onFilterRemoved={onFilterRemoved}
                   renderInput={renderInput}
+                  searchField={definition.searchField}
                 />
               );
             })}
@@ -257,6 +251,7 @@ export function FilterListContent<D>({
                 onFilterStateChanged={onFilterStateChanged}
                 onFilterRemoved={onFilterRemoved}
                 renderInput={renderInput}
+                searchField={activeDefinition.searchField}
                 dragHandleAttributes={DRAG_OVERLAY_HANDLE_ATTRIBUTES}
               />
             )}
@@ -285,6 +280,7 @@ export function FilterListContent<D>({
             onFilterStateChanged={onFilterStateChanged}
             onFilterRemoved={onFilterRemoved}
             renderInput={renderInput}
+            searchField={definition.searchField}
           />
         );
       })}

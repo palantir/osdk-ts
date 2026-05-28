@@ -1,7 +1,7 @@
 {
   "name": "@osdk/cli.common",
   "private": true,
-  "version": "0.46.0",
+  "version": "0.48.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",

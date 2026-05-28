@@ -33,7 +33,6 @@ import {
 } from "@osdk/react-components/experimental/pdf-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import React, { useCallback, useMemo, useState } from "react";
-import { createPortal } from "react-dom";
 
 // cspell:ignore tracemonkey pldi
 const SAMPLE_PDF_URL =
@@ -243,15 +242,27 @@ function ConnectedPdfView(): React.ReactElement {
               if (pageAnnotations.length === 0) {
                 return null;
               }
-              return createPortal(
-                <PdfViewerAnnotationLayer
+              return (
+                <div
                   key={target.pageNumber}
-                  annotations={pageAnnotations}
-                  pageHeight={target.pageHeight}
-                  scale={target.scale}
-                  onAnnotationClick={ctx.onAnnotationClick}
-                />,
-                target.container,
+                  style={{
+                    position: "absolute",
+                    left: target.left,
+                    top: target.top,
+                    width: target.width,
+                    height: target.height,
+                    pointerEvents: "none",
+                    zIndex: 1,
+                  }}
+                >
+                  <PdfViewerAnnotationLayer
+                    annotations={pageAnnotations}
+                    pageHeight={target.pageHeight}
+                    scale={target.scale}
+                    transform={target.transform}
+                    onAnnotationClick={ctx.onAnnotationClick}
+                  />
+                </div>
               );
             })}
           </div>
@@ -375,8 +386,9 @@ function AnnotationExplorerDemo(
 }
 
 const meta: Meta<PdfViewerProps> = {
-  title: "Experimental/PdfViewer/Recipes",
+  title: "Components/DocumentViewer/Renderers/PdfViewer/Recipes",
   component: BasePdfViewer,
+  tags: ["beta"],
 };
 
 export default meta;

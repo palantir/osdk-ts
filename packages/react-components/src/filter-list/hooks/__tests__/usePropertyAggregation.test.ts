@@ -38,7 +38,7 @@ function mockAggregationData(
 }
 
 describe("usePropertyAggregation activeValues", () => {
-  it("appends ghost values with count 0 when absent from aggregation", () => {
+  it("appends filtered-out values with count 0 when absent from aggregation", () => {
     mockAggregationData([{ name: "Marketing", count: 5 }]);
 
     const { result } = renderHook(() =>
@@ -57,7 +57,7 @@ describe("usePropertyAggregation activeValues", () => {
     ]);
   });
 
-  it("sorts ghost values together with real values by value", () => {
+  it("sorts filtered-out values together with real values by value", () => {
     mockAggregationData([
       { name: "Charlie", count: 3 },
       { name: "Alpha", count: 1 },
@@ -79,7 +79,7 @@ describe("usePropertyAggregation activeValues", () => {
     ]);
   });
 
-  it("sorts ghost values together with real values by count", () => {
+  it("sorts filtered-out values together with real values by count", () => {
     mockAggregationData([
       { name: "Alpha", count: 10 },
       { name: "Charlie", count: 2 },
@@ -127,7 +127,7 @@ describe("usePropertyAggregation activeValues", () => {
   it("treats null, undefined, and empty string aggregation values as equivalent to empty string activeValue", () => {
     // Aggregation results represent missing property values as null. The hook
     // coerces them to { value: "", isNull: true }. An activeValue of "" should
-    // be recognized as already present and not create a duplicate ghost entry.
+    // be recognized as already present and not create a duplicate filtered-out entry.
     vi.mocked(useOsdkAggregation).mockReturnValue({
       data: [
         { $group: { name: null }, $count: 3 },
@@ -150,7 +150,7 @@ describe("usePropertyAggregation activeValues", () => {
     );
 
     // All three null-ish values map to "" in existingValues, so "" activeValue
-    // should not produce a ghost entry. dedupeEmptyAggregationRows merges the
+    // should not produce a filtered-out entry. dedupeEmptyAggregationRows merges the
     // three null-ish rows into one isNull entry.
     const emptyEntries = result.current.data.filter((d) => d.value === "");
     expect(emptyEntries).toHaveLength(1);

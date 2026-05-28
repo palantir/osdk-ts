@@ -11,6 +11,8 @@ function PeopleApp() {
     ? "employees"
     : path === "/employees/filter-list"
     ? "filter-list"
+    : path === "/employees/action-form-filter-list-repro"
+    ? "action-form-filter-list-repro"
     : path === "/form"
     ? "form"
     : path === "/aip-agent-chat"
@@ -35,6 +37,13 @@ function PeopleApp() {
           onClick={() => navigate("/employees/filter-list")}
         >
           Filter List
+        </Button>
+        <Button
+          variant="tab"
+          active={activeTab === "action-form-filter-list-repro"}
+          onClick={() => navigate("/employees/action-form-filter-list-repro")}
+        >
+          ActionForm Repro
         </Button>
         <Button
           variant="tab"

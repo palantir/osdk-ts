@@ -79,9 +79,9 @@ function createMockXmlMedia(xmlContent: string): Media {
 }
 
 const meta: Meta<BaseXmlViewerProps> = {
-  title: "Experimental/XmlViewer",
-  tags: ["experimental"],
+  title: "Components/DocumentViewer/Renderers/XmlViewer",
   component: BaseXmlViewer,
+  tags: ["beta"],
   args: {
     content: SAMPLE_XML,
   },
@@ -108,20 +108,7 @@ const meta: Meta<BaseXmlViewerProps> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
-  parameters: {
-    docs: {
-      source: {
-        code:
-          `import { BaseXmlViewer } from "@osdk/react-components/experimental/xml-viewer";
-
-<BaseXmlViewer content={xmlString} />`,
-      },
-    },
-  },
-};
-
-export const WithMedia: StoryObj<XmlViewerMediaProps> = {
+export const Default: StoryObj<XmlViewerMediaProps> = {
   args: {
     media: createMockXmlMedia(SAMPLE_XML),
   },
@@ -137,6 +124,19 @@ export const WithMedia: StoryObj<XmlViewerMediaProps> = {
           `import { XmlViewer } from "@osdk/react-components/experimental/xml-viewer";
 
 <XmlViewer media={myOsdkMedia} />`,
+      },
+    },
+  },
+};
+
+export const WithContent: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code:
+          `import { BaseXmlViewer } from "@osdk/react-components/experimental/xml-viewer";
+
+<BaseXmlViewer content={xmlString} />`,
       },
     },
   },

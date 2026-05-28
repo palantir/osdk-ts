@@ -1,5 +1,40 @@
 # @osdk/maker-experimental
 
+## 0.20.0
+
+### Minor Changes
+
+- 466aa8a: fix value type block gen
+
+### Patch Changes
+
+- Updated dependencies [a492285]
+- Updated dependencies [60aff19]
+- Updated dependencies [d087189]
+  - @osdk/api@2.24.0
+  - @osdk/generator-converters.ontologyir@2.24.0
+  - @osdk/generator-converters.preview@0.14.0
+  - @osdk/maker@0.30.0
+  - @osdk/client.unstable@2.24.0
+
+## 0.19.0
+
+### Minor Changes
+
+- 56c2c9f: write static object file
+
+### Patch Changes
+
+- Updated dependencies [198f219]
+- Updated dependencies [56c2c9f]
+- Updated dependencies [ef156b6]
+- Updated dependencies [8290dd7]
+  - @osdk/api@2.23.0
+  - @osdk/maker@0.29.0
+  - @osdk/client.unstable@2.23.0
+  - @osdk/generator-converters.ontologyir@2.23.0
+  - @osdk/generator-converters.preview@0.13.0
+
 ## 0.18.0
 
 ### Minor Changes

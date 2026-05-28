@@ -101,23 +101,24 @@ export function usePropertyAggregation<
       const dataArray = countData as AggregationGroupResult;
 
       // Build a set of values present in the aggregation so we can identify
-      // which active selections need to be synthesized as ghost entries.
+      // which active selections need to be synthesized as filtered-out entries.
       const existingValues = new Set<string>();
       for (const item of dataArray) {
         const raw = item.$group[propertyKey as string];
         existingValues.add(raw == null ? "" : String(raw));
       }
 
-      // Synthesize ghost entries for active selections absent from aggregation
-      // results (e.g. saved filters with zero matching rows). They use the same
-      // shape as real entries so the loop below handles isNull uniformly.
-      const ghostEntries = activeValues.flatMap((v) =>
+      // Synthesize filtered-out entries for active selections absent from
+      // aggregation results (e.g. saved filters with zero matching rows). They
+      // use the same shape as real entries so the loop below handles isNull
+      // uniformly.
+      const filteredOutEntries = activeValues.flatMap((v) =>
         existingValues.has(v)
           ? []
           : [{ $group: { [propertyKey as string]: v }, $count: 0 }]
       );
 
-      for (const item of [...dataArray, ...ghostEntries]) {
+      for (const item of [...dataArray, ...filteredOutEntries]) {
         const rawValue = item.$group[propertyKey as string];
         const count = item.$count ?? 0;
 
