@@ -64,7 +64,7 @@ describe(useOsdkMetadata, () => {
 
   it("returns loading without fetching when type is undefined", () => {
     const fetchMetadata = vitest.fn();
-    const fakeClient = { fetchMetadata } as any as Client;
+    const fakeClient = { fetchMetadata } as unknown as Client;
 
     const wrapper = ({ children }: React.PropsWithChildren) => (
       <TestOsdkProvider

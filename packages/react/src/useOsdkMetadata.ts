@@ -51,11 +51,7 @@ export function useOsdkMetadata<T extends MetadataFetchableDefinition>(
   >(undefined);
   const [error, setError] = React.useState<UseOsdkMetadataResult<T>["error"]>();
 
-  if (type === undefined) {
-    return { loading: true };
-  }
-
-  if (!metadata && !error) {
+  if (type !== undefined && !metadata && !error) {
     client.fetchMetadata(type).then((fetchedMetadata) => {
       setMetadata(fetchedMetadata as MetadataFor<T>);
     }).catch((error: unknown) => {
@@ -64,6 +60,9 @@ export function useOsdkMetadata<T extends MetadataFetchableDefinition>(
         : String(error);
       setError(errorMessage);
     });
+  }
+
+  if (type === undefined || (!metadata && !error)) {
     return { loading: true };
   }
 
