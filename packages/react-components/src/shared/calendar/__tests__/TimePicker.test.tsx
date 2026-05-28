@@ -115,6 +115,28 @@ describe("TimePicker", () => {
     ).toBe("45");
   });
 
+  it("discards draft text when parent value changes mid-edit", () => {
+    const { rerender } = render(
+      <TimePicker value={new Date(2024, 0, 15, 9, 5)} onChange={vi.fn()} />,
+    );
+    const hourInput = screen.getByLabelText("Time hours") as HTMLInputElement;
+
+    // Start typing but do NOT blur — draft is active
+    fireEvent.change(hourInput, { target: { value: "1" } });
+    expect(hourInput.value).toBe("1");
+
+    // Parent pushes a completely different value while draft is active
+    rerender(
+      <TimePicker value={new Date(2024, 0, 15, 20, 0)} onChange={vi.fn()} />,
+    );
+
+    // New parent value should win over stale draft
+    expect(hourInput.value).toBe("20");
+    expect(
+      (screen.getByLabelText("Time minutes") as HTMLInputElement).value,
+    ).toBe("00");
+  });
+
   it("seeds emitted dates from today when a null value is committed", () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date(2024, 6, 4, 12, 34));

@@ -408,6 +408,20 @@ describe("DatePicker", () => {
       expect(calledDate.getMinutes()).toBe(30);
     });
 
+    it("defaults to midnight when selecting a day with showTime and no prior value", () => {
+      const onChange = vi.fn();
+      render(<DatePicker value={null} onChange={onChange} showTime={true} />);
+      fireEvent.focus(screen.getByRole("combobox"));
+
+      const dayButton = screen.getByText("20");
+      fireEvent.click(dayButton);
+
+      expect(onChange).toHaveBeenCalledTimes(1);
+      const calledDate: Date = onChange.mock.calls[0][0];
+      expect(calledDate.getHours()).toBe(0);
+      expect(calledDate.getMinutes()).toBe(0);
+    });
+
     it("uses the visible edited time when selecting a calendar day with showTime", () => {
       const onChange = vi.fn();
       render(

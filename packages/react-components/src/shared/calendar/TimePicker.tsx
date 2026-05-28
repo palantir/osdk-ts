@@ -41,43 +41,51 @@ export const TimePicker: React.NamedExoticComponent<TimePickerProps> = React
     label = "Time",
   }: TimePickerProps): React.ReactElement {
     const valueTimestamp = value?.getTime() ?? null;
-    // Keep only in-progress text edits locally. Once a segment blurs, the
-    // controlled Date value becomes the source of truth for rendered time text.
-    const [draftSegments, setDraftSegments] = useState<TimeSegments | null>(
-      null,
-    );
     const valueSegments = useMemo(
       () => segmentsFromTimestamp(valueTimestamp),
       [valueTimestamp],
     );
-    const displayedSegments = draftSegments ?? valueSegments;
+    // draftSegments always holds the displayed text. It is reset to
+    // valueSegments whenever the controlled value changes, so the parent
+    // Date is the source of truth once an edit is committed or discarded.
+    const [draftSegments, setDraftSegments] = useState(valueSegments);
+    const [prevSegments, setPrevSegments] = useState(valueSegments);
+    if (prevSegments !== valueSegments) {
+      setPrevSegments(valueSegments);
+      setDraftSegments(valueSegments);
+    }
 
-    const hourText = displayedSegments.hours;
-    const minuteText = displayedSegments.minutes;
+    const hourText = draftSegments.hours;
+    const minuteText = draftSegments.minutes;
     const hourInvalid = isSegmentInvalid(hourText, "hours");
     const minuteInvalid = isSegmentInvalid(minuteText, "minutes");
 
     const handleSegmentChange = useCallback(
       (segment: TimeSegment, nextText: string) => {
         setDraftSegments(
-          replaceSegmentText(displayedSegments, { segment, nextText }),
+          replaceSegmentText(draftSegments, { segment, nextText }),
         );
       },
-      [displayedSegments],
+      [draftSegments],
+    );
+
+    const emitChange = useCallback(
+      (hours: number, minutes: number) => {
+        const nextDate = value != null ? new Date(value.getTime()) : new Date();
+        nextDate.setHours(hours, minutes, 0, 0);
+        onChange?.(nextDate);
+      },
+      [onChange, value],
     );
 
     const handleSegmentBlur = useCallback(
       (segment: TimeSegment) => {
-        if (draftSegments == null) {
-          return;
-        }
-
         const text = draftSegments[segment];
         const parsedSegment = parseNumber(text);
         if (parsedSegment == null) {
           // Non-numeric text cannot be converted into a valid time segment, so
-          // restore the displayed value instead of emitting an arbitrary Date.
-          setDraftSegments(null);
+          // restore the controlled value instead of emitting an arbitrary Date.
+          setDraftSegments(valueSegments);
           return;
         }
 
@@ -93,22 +101,15 @@ export const TimePicker: React.NamedExoticComponent<TimePickerProps> = React
         const nextMinutes = parseSegment(nextSegments.minutes, "minutes")
           ?? Number(valueSegments.minutes);
 
-        setDraftSegments(null);
-
         const currentHours = Number(valueSegments.hours);
         const currentMinutes = Number(valueSegments.minutes);
-        if (nextHours === currentHours && nextMinutes === currentMinutes) {
-          return;
+        if (nextHours !== currentHours || nextMinutes !== currentMinutes) {
+          emitChange(nextHours, nextMinutes);
         }
-
-        const nextDate = value != null ? new Date(value.getTime()) : new Date();
-        nextDate.setHours(nextHours, nextMinutes, 0, 0);
-        onChange?.(nextDate);
       },
       [
         draftSegments,
-        onChange,
-        value,
+        emitChange,
         valueSegments,
       ],
     );
