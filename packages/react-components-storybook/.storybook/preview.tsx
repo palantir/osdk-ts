@@ -66,7 +66,7 @@ const preview: Preview = {
             ["Colors", "Typography", "Spacing"],
           ],
           "Components",
-          ["*"],
+          ["*", ["Docs", "*"]],
           "*",
         ],
       },
