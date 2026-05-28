@@ -202,4 +202,33 @@ describe("relative date periods", () => {
       expect(getRelativeDatePeriodLabel(period)).toBe(labels[period]);
     }
   });
+
+  it("clamps past-month from a 31st to the last day of the prior shorter month", () => {
+    // Mar 31 - 1 month should land on Feb 29 in a leap year (date-fns clamps).
+    const now = new Date(2024, 2, 31, 12, 0, 0, 0);
+    const { min, max } = getRelativeDateRange("past-month", now);
+    expect(max.getTime()).toBe(now.getTime());
+    expect(min.getFullYear()).toBe(2024);
+    expect(min.getMonth()).toBe(1);
+    expect(min.getDate()).toBe(29);
+  });
+
+  it("clamps past-year from Feb 29 to Feb 28 of the prior non-leap year", () => {
+    // Feb 29 2024 - 1 year should land on Feb 28 2023.
+    const now = new Date(2024, 1, 29, 12, 0, 0, 0);
+    const { min, max } = getRelativeDateRange("past-year", now);
+    expect(max.getTime()).toBe(now.getTime());
+    expect(min.getFullYear()).toBe(2023);
+    expect(min.getMonth()).toBe(1);
+    expect(min.getDate()).toBe(28);
+  });
+
+  it("crosses the year boundary cleanly for past-3-months", () => {
+    // Feb 15 2024 - 3 months → Nov 15 2023.
+    const now = new Date(2024, 1, 15, 12, 0, 0, 0);
+    const { min } = getRelativeDateRange("past-3-months", now);
+    expect(min.getFullYear()).toBe(2023);
+    expect(min.getMonth()).toBe(10);
+    expect(min.getDate()).toBe(15);
+  });
 });

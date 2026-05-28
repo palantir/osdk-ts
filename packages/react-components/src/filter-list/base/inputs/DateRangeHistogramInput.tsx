@@ -108,20 +108,26 @@ function DateRangeHistogramInputInner({
   }, [valueCountPairs, formatDate]);
 
   const handleShortcutSelect = useCallback(
-    (range: { min: Date; max: Date }) => {
+    (range: { min: Date; max: Date }, closePopover: () => void) => {
+      // Close the open picker first so it exits edit mode before the
+      // value-sync path runs on the next render of either bound's input.
+      closePopover();
       onChange(range.min, range.max);
     },
     [onChange],
   );
 
-  const dateLeftRail = shortcutPeriods != null
-    ? (
+  const renderLeftRail = useCallback(
+    (closePopover: () => void) => (
       <ShortcutBar
-        periods={shortcutPeriods}
-        onSelect={handleShortcutSelect}
+        periods={shortcutPeriods ?? []}
+        onSelect={(range) => handleShortcutSelect(range, closePopover)}
       />
-    )
-    : undefined;
+    ),
+    [shortcutPeriods, handleShortcutSelect],
+  );
+
+  const dateLeftRail = shortcutPeriods != null ? renderLeftRail : undefined;
 
   return (
     <RangeInput

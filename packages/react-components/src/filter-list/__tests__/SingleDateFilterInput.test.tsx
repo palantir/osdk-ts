@@ -34,12 +34,11 @@ afterEach(() => {
 });
 
 describe("SingleDateFilterInput", () => {
-  it("sets the selected date to the period start when a shortcut is clicked", () => {
+  it("sets the selected date to the period start (midnight) when a shortcut is clicked", () => {
     // Mid-year date avoids DST boundary drift.
     const now = new Date(2024, 5, 15, 12, 0, 0, 0);
     vi.useFakeTimers({ now });
     const onFilterStateChanged = vi.fn();
-    const MS_IN_WEEK = 7 * 24 * 60 * 60 * 1000;
     render(
       <SingleDateFilterInput
         filterState={undefined}
@@ -56,6 +55,15 @@ describe("SingleDateFilterInput", () => {
     if (!(picked instanceof Date)) {
       throw new Error("expected selectedValues[0] to be a Date");
     }
-    expect(picked.getTime()).toBe(now.getTime() - MS_IN_WEEK);
+    // SingleDateInput is date-only, so wall-clock time is stripped: the
+    // shortcut commits midnight of the period-start day rather than the
+    // exact hh:mm carried by range.min.
+    const periodStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const expected = new Date(
+      periodStart.getFullYear(),
+      periodStart.getMonth(),
+      periodStart.getDate(),
+    );
+    expect(picked.getTime()).toBe(expected.getTime());
   });
 });

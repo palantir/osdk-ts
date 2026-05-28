@@ -130,8 +130,14 @@ export interface DatePickerProps {
    */
   modal?: "trap-focus" | false;
 
-  /** Optional content rendered as a left rail in the popover. */
-  leftRail?: React.ReactNode;
+  /**
+   * Optional content rendered as a left rail in the popover. Receives a
+   * `closePopover` callback so left-rail interactions (e.g. shortcut buttons
+   * committing a new value) can exit the picker's edit mode before firing
+   * `onChange`. Without that, the value-sync inside `useDateEditState` skips
+   * the update to preserve any in-progress typing.
+   */
+  leftRail?: (closePopover: () => void) => React.ReactNode;
 }
 
 export const DatePicker: React.NamedExoticComponent<
@@ -512,7 +518,7 @@ export const DatePicker: React.NamedExoticComponent<
             )}
             {leftRail != null && (
               <div className={commonStyles.osdkDatePickerPopoverLeftRail}>
-                {leftRail}
+                {leftRail(closePopover)}
               </div>
             )}
             <div className={commonStyles.osdkDatePickerPopoverCalendar}>

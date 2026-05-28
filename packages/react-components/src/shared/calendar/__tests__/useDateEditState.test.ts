@@ -423,7 +423,7 @@ describe("useDateEditState", () => {
       expect(result.current.displayedValue).toBe("Jul 20, 2024");
     });
 
-    it("syncs inputValue when external value changes during editing", () => {
+    it("preserves user's unsaved edits when external value changes during editing", () => {
       const { result, rerender } = renderHook(
         (config: UseDateEditStateConfig) => useDateEditState(config),
         { initialProps: makeConfig({ value: new Date(2024, 0, 15) }) },
@@ -436,12 +436,12 @@ describe("useDateEditState", () => {
         result.current.setInputValue("2024-03-20");
       });
 
-      // External value changes during editing (e.g. a shortcut button inside
-      // the picker popover commits a new range) must flow into the input so
-      // the user sees the committed value.
+      // External value changes during editing must NOT clobber the user's
+      // in-progress text. Shortcut callers close the popover first (which
+      // exits editing) so the value-sync path runs cleanly.
       rerender(makeConfig({ value: new Date(2024, 6, 20) }));
 
-      expect(result.current.displayedValue).toBe("2024-07-20");
+      expect(result.current.displayedValue).toBe("2024-03-20");
     });
   });
 });

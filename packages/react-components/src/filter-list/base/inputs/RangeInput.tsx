@@ -181,7 +181,7 @@ export interface RangeInputProps<T> {
    * left rail (e.g. relative-range shortcut buttons). Ignored for number
    * ranges.
    */
-  dateLeftRail?: React.ReactNode;
+  dateLeftRail?: (closePopover: () => void) => React.ReactNode;
 }
 
 function RangeInputInner<T>({
@@ -945,7 +945,7 @@ interface DateRangeInputsProps {
   formatDate: ((date: Date) => string) | undefined;
   minLabel: string;
   maxLabel: string;
-  leftRail?: React.ReactNode;
+  leftRail?: (closePopover: () => void) => React.ReactNode;
 }
 
 function DateRangeInputs({
