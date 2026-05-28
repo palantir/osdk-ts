@@ -15,7 +15,10 @@
  */
 
 import type {
+  LinkTypeApiNamesFor,
+  MinimalDirectedObjectLinkInstance,
   ObjectIdentifiers,
+  ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
   PrimaryKeyType,
 } from "@osdk/api";
@@ -51,6 +54,18 @@ export interface ScenarioEditedEntityTypes {
  */
 export interface EditedEntitiesPage<Q extends ObjectTypeDefinition> {
   data: ObjectIdentifiers<Q>[];
+  nextPageToken?: string;
+}
+
+/**
+ * A page of directed link instances edited within a scenario for a given source object type and link api name.
+ * Returned by {@link EXPERIMENTAL_ScenarioClient.getEditedLinks}. Source and target carry only `$primaryKey` + `$apiName`.
+ */
+export interface EditedLinksPage<
+  Q extends ObjectOrInterfaceDefinition,
+  LINK_TYPE_API_NAME extends LinkTypeApiNamesFor<Q>,
+> {
+  data: MinimalDirectedObjectLinkInstance<Q, LINK_TYPE_API_NAME>[];
   nextPageToken?: string;
 }
 
@@ -109,6 +124,52 @@ export interface EXPERIMENTAL_ScenarioClient extends Client {
     objectType: Q,
     options?: { pageSize?: number },
   ): AsyncIterableIterator<ObjectIdentifiers<Q>>;
+
+  /**
+   * List the outgoing many-to-many link API names that have been modified within this scenario for the given
+   * source object type. One-to-many link edits surface as object edits on the FK-owning side and are not returned
+   * here.
+   */
+  getEditedLinkTypes<Q extends ObjectOrInterfaceDefinition>(
+    sourceObjectType: Q,
+  ): Promise<LinkTypeApiNamesFor<Q>[]>;
+
+  /**
+   * Get a page of directed link instances edited within this scenario for a given source object type and link
+   * api name. The page form returns a flattened array of `{ source, target, linkType }` triples.
+   */
+  getEditedLinks<
+    Q extends ObjectOrInterfaceDefinition,
+    LINK_TYPE_API_NAME extends LinkTypeApiNamesFor<Q>,
+  >(
+    sourceObjectType: Q,
+    linkType: LINK_TYPE_API_NAME,
+    options?: { pageSize?: number; pageToken?: string },
+  ): Promise<EditedLinksPage<Q, LINK_TYPE_API_NAME>>;
+
+  /**
+   * Stream directed link instances edited within this scenario for a given source object type and link api name.
+   * Pages are fetched lazily.
+   *
+   * @example
+   * ```ts
+   * for await (
+   *   const { source, target, linkType } of scenario.editedLinksAsyncIter(Doctor, "treats")
+   * ) {
+   *   graph.addEdge(source, target, linkType);
+   * }
+   * ```
+   */
+  editedLinksAsyncIter<
+    Q extends ObjectOrInterfaceDefinition,
+    LINK_TYPE_API_NAME extends LinkTypeApiNamesFor<Q>,
+  >(
+    sourceObjectType: Q,
+    linkType: LINK_TYPE_API_NAME,
+    options?: { pageSize?: number },
+  ): AsyncIterableIterator<
+    MinimalDirectedObjectLinkInstance<Q, LINK_TYPE_API_NAME>
+  >;
 }
 
 /**
@@ -208,6 +269,97 @@ export function buildScenarioClient(
     } while (pageToken != null);
   }
 
+  async function getEditedLinkTypes<Q extends ObjectOrInterfaceDefinition>(
+    sourceObjectType: Q,
+  ): Promise<LinkTypeApiNamesFor<Q>[]> {
+    const ontologyRid = await innerCtx.ontologyRid;
+    const response = await OntologyScenarios.listScenarioEditedLinkTypes(
+      innerCtx,
+      ontologyRid,
+      scenarioRid,
+      sourceObjectType.apiName,
+    );
+    return response.data as LinkTypeApiNamesFor<Q>[];
+  }
+
+  async function getEditedLinks<
+    Q extends ObjectOrInterfaceDefinition,
+    LINK_TYPE_API_NAME extends LinkTypeApiNamesFor<Q>,
+  >(
+    sourceObjectType: Q,
+    linkType: LINK_TYPE_API_NAME,
+    options?: { pageSize?: number; pageToken?: string },
+  ): Promise<EditedLinksPage<Q, LINK_TYPE_API_NAME>> {
+    const ontologyRid = await innerCtx.ontologyRid;
+    const response = await OntologyScenarios.listScenarioEditedLinks(
+      innerCtx,
+      ontologyRid,
+      scenarioRid,
+      sourceObjectType.apiName,
+      linkType as string,
+      { pageSize: options?.pageSize, pageToken: options?.pageToken },
+    );
+
+    const data: MinimalDirectedObjectLinkInstance<Q, LINK_TYPE_API_NAME>[] = [];
+    for (const entry of response.data) {
+      const sourceWire = entry.sourceObject as
+        | { __apiName?: unknown; __primaryKey?: unknown }
+        | undefined;
+      if (sourceWire?.__apiName == null || sourceWire.__primaryKey == null) {
+        continue;
+      }
+      const source = {
+        $apiName: sourceWire.__apiName,
+        $primaryKey: sourceWire.__primaryKey,
+      } as MinimalDirectedObjectLinkInstance<Q, LINK_TYPE_API_NAME>["source"];
+
+      for (const linked of entry.linkedObjects) {
+        const targetWire = linked.targetObject as
+          | { __apiName?: unknown; __primaryKey?: unknown }
+          | undefined;
+        if (targetWire?.__apiName == null || targetWire.__primaryKey == null) {
+          continue;
+        }
+        const target = {
+          $apiName: targetWire.__apiName,
+          $primaryKey: targetWire.__primaryKey,
+        } as MinimalDirectedObjectLinkInstance<Q, LINK_TYPE_API_NAME>["target"];
+
+        data.push({
+          source,
+          target,
+          linkType: ((linked.linkType as string | undefined)
+            ?? linkType) as LINK_TYPE_API_NAME,
+        });
+      }
+    }
+
+    return { data, nextPageToken: response.nextPageToken };
+  }
+
+  async function* editedLinksAsyncIter<
+    Q extends ObjectOrInterfaceDefinition,
+    LINK_TYPE_API_NAME extends LinkTypeApiNamesFor<Q>,
+  >(
+    sourceObjectType: Q,
+    linkType: LINK_TYPE_API_NAME,
+    options?: { pageSize?: number },
+  ): AsyncIterableIterator<
+    MinimalDirectedObjectLinkInstance<Q, LINK_TYPE_API_NAME>
+  > {
+    let pageToken: string | undefined;
+    do {
+      const page = await getEditedLinks(sourceObjectType, linkType, {
+        pageSize: options?.pageSize,
+        pageToken,
+      });
+      for (const link of page.data) {
+        yield link;
+      }
+      pageToken = page.nextPageToken;
+    } while (pageToken != null);
+  }
+
   return Object.defineProperties(inner, {
     getScenarioReference: {
       value: () => scenarioRid,
@@ -220,6 +372,15 @@ export function buildScenarioClient(
     },
     editedEntitiesAsyncIter: {
       value: editedEntitiesAsyncIter,
+    },
+    getEditedLinkTypes: {
+      value: getEditedLinkTypes,
+    },
+    getEditedLinks: {
+      value: getEditedLinks,
+    },
+    editedLinksAsyncIter: {
+      value: editedLinksAsyncIter,
     },
   }) as EXPERIMENTAL_ScenarioClient;
 }

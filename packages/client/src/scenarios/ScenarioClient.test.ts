@@ -17,6 +17,8 @@
 import { Employee } from "@osdk/client.test.ontology";
 import type {
   ListScenarioEditedEntityTypesResponse,
+  ListScenarioEditedLinksResponse,
+  ListScenarioEditedLinkTypesResponse,
   ListScenarioEditedObjectsResponse,
 } from "@osdk/foundry.ontologies";
 import type { MockedFunction } from "vitest";
@@ -154,6 +156,148 @@ describe("ScenarioClient methods", () => {
 
       expect(keys).toEqual([42]);
       expect(fetchFunction).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe("getEditedLinkTypes", () => {
+    it("calls listScenarioEditedLinkTypes scoped to the source object type", async () => {
+      const scenario = withScenario(client, "ri.actions..scenario.abc");
+      const mock: ListScenarioEditedLinkTypesResponse = {
+        data: ["lead", "peeps"],
+      };
+      mockFetchResponse(fetchFunction, mock);
+
+      const result = await scenario.getEditedLinkTypes(Employee);
+
+      expect(fetchFunction).toHaveBeenCalledTimes(1);
+      const url = new URL(
+        fetchFunction.mock.calls[0][0] as string,
+        "https://mock.com",
+      );
+      expect(url.pathname).toMatch(
+        /\/scenarios\/ri\.actions\.\.scenario\.abc\/objectTypes\/Employee\/outgoingLinkTypes\/edited$/,
+      );
+      expect(result).toEqual(["lead", "peeps"]);
+    });
+  });
+
+  describe("getEditedLinks (page form)", () => {
+    it("hits the listScenarioEditedLinks endpoint and flattens the response", async () => {
+      const scenario = withScenario(client, "ri.actions..scenario.abc");
+      const mock: ListScenarioEditedLinksResponse = {
+        data: [
+          {
+            sourceObject: { __apiName: "Employee", __primaryKey: 1 },
+            linkedObjects: [
+              {
+                targetObject: { __apiName: "Employee", __primaryKey: 2 },
+                linkType: "lead",
+              },
+              {
+                targetObject: { __apiName: "Employee", __primaryKey: 3 },
+                linkType: "lead",
+              },
+            ],
+          },
+          {
+            sourceObject: { __apiName: "Employee", __primaryKey: 4 },
+            linkedObjects: [
+              {
+                targetObject: { __apiName: "Employee", __primaryKey: 5 },
+                linkType: "lead",
+              },
+            ],
+          },
+        ],
+        nextPageToken: "tok-2",
+      };
+      mockFetchResponse(fetchFunction, mock);
+
+      const result = await scenario.getEditedLinks(Employee, "lead", {
+        pageSize: 100,
+        pageToken: "tok-1",
+      });
+
+      expect(fetchFunction).toHaveBeenCalledTimes(1);
+      const url = new URL(
+        fetchFunction.mock.calls[0][0] as string,
+        "https://mock.com",
+      );
+      expect(url.pathname).toMatch(
+        /\/scenarios\/ri\.actions\.\.scenario\.abc\/objects\/Employee\/links\/lead\/edited$/,
+      );
+      expect(url.searchParams.get("pageSize")).toBe("100");
+      expect(url.searchParams.get("pageToken")).toBe("tok-1");
+      expect(result.nextPageToken).toBe("tok-2");
+      expect(result.data).toEqual([
+        {
+          source: { $apiName: "Employee", $primaryKey: 1 },
+          target: { $apiName: "Employee", $primaryKey: 2 },
+          linkType: "lead",
+        },
+        {
+          source: { $apiName: "Employee", $primaryKey: 1 },
+          target: { $apiName: "Employee", $primaryKey: 3 },
+          linkType: "lead",
+        },
+        {
+          source: { $apiName: "Employee", $primaryKey: 4 },
+          target: { $apiName: "Employee", $primaryKey: 5 },
+          linkType: "lead",
+        },
+      ]);
+    });
+  });
+
+  describe("editedLinksAsyncIter", () => {
+    it("walks pages and flattens each LinksFromObject entry", async () => {
+      const scenario = withScenario(client, "ri.actions..scenario.abc");
+      const page1: ListScenarioEditedLinksResponse = {
+        data: [
+          {
+            sourceObject: { __apiName: "Employee", __primaryKey: 1 },
+            linkedObjects: [
+              {
+                targetObject: { __apiName: "Employee", __primaryKey: 2 },
+                linkType: "lead",
+              },
+            ],
+          },
+        ],
+        nextPageToken: "tok-2",
+      };
+      const page2: ListScenarioEditedLinksResponse = {
+        data: [
+          {
+            sourceObject: { __apiName: "Employee", __primaryKey: 1 },
+            linkedObjects: [
+              {
+                targetObject: { __apiName: "Employee", __primaryKey: 3 },
+                linkType: "lead",
+              },
+            ],
+          },
+        ],
+      };
+      mockFetchResponse(fetchFunction, page1);
+      mockFetchResponse(fetchFunction, page2);
+
+      const pairs: string[] = [];
+      for await (
+        const { source, target, linkType } of scenario.editedLinksAsyncIter(
+          Employee,
+          "lead",
+        )
+      ) {
+        pairs.push(
+          `${String(source.$primaryKey)}-${
+            String(target.$primaryKey)
+          }-${linkType as string}`,
+        );
+      }
+
+      expect(pairs).toEqual(["1-2-lead", "1-3-lead"]);
+      expect(fetchFunction).toHaveBeenCalledTimes(2);
     });
   });
 });
