@@ -1,0 +1,198 @@
+{/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */}
+
+{/* cspell:words openxmlformats officedocument spreadsheetml */}
+
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as DocumentViewerStories from "./DocumentViewer.stories";
+
+<Meta of={DocumentViewerStories} />
+
+# DocumentViewer
+
+A React component that automatically selects the correct viewer for an OSDK
+`Media` object based on its MIME type. Supports PDF, TIFF, common image
+formats, video, markdown, Excel, email, and XML.
+
+## Demo
+
+<Canvas of={DocumentViewerStories.Pdf} />
+
+## Usage
+
+```tsx
+import { DocumentViewer } from "@osdk/react-components/experimental/document-viewer";
+
+<DocumentViewer media={employee.trainingMaterial} />;
+```
+
+> `employee.trainingMaterial` is an OSDK `Media` property. `./client` exports
+> the OSDK client returned by `createClient(...)`.
+
+### Prerequisites
+
+- Install `@osdk/react-components` and its peer dependencies
+- Wrap your app with `OsdkProvider`
+- Import `@osdk/react-components/styles.css`
+
+See the [README](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/README.md#setup)
+for full setup instructions.
+
+## Examples
+
+### Image
+
+Renders common image formats (`image/png`, `image/jpeg`, `image/gif`,
+`image/svg+xml`, `image/webp`, `image/bmp`) with the built-in image viewer.
+
+<Canvas of={DocumentViewerStories.Image} />
+
+### Markdown
+
+Renders `text/markdown` and `text/x-markdown` content.
+
+<Canvas of={DocumentViewerStories.Markdown} />
+
+### Video
+
+Renders any `video/*` MIME type with native video controls.
+
+<Canvas of={DocumentViewerStories.Video} />
+
+### Excel
+
+Renders `.xlsx` spreadsheets with tabbed sheet navigation.
+
+<Canvas of={DocumentViewerStories.Excel} />
+
+### Email
+
+Renders `.eml` (RFC 822) email messages.
+
+<Canvas of={DocumentViewerStories.Email} />
+
+### XML
+
+Renders `application/xml` and `text/xml` content with syntax highlighting.
+
+<Canvas of={DocumentViewerStories.Xml} />
+
+### TIFF
+
+Renders TIFF images, including multi-page files.
+
+<Canvas of={DocumentViewerStories.Tiff} />
+
+### TIFF with PDF conversion
+
+Multi-page TIFFs can be converted to PDF via the MIO transform API for a
+better viewing experience. Falls back to the TIFF renderer if the transform
+fails or for single-page TIFFs.
+
+<Canvas of={DocumentViewerStories.TiffWithPdfConversion} />
+
+### MIME type override
+
+Override the auto-detected MIME type when the media metadata is inaccurate.
+
+<Canvas of={DocumentViewerStories.WithMimeTypeOverride} />
+
+### PDF viewer options
+
+Forward props to the underlying PDF viewer for features like an initial
+sidebar or download support.
+
+<Canvas of={DocumentViewerStories.WithPdfViewerProps} />
+
+### Unsupported type
+
+Unsupported MIME types display a fallback message.
+
+<Canvas of={DocumentViewerStories.UnsupportedType} />
+
+## API Reference
+
+### Props
+
+<Controls of={DocumentViewerStories.Pdf} />
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `media` | `Media` | Yes | The OSDK Media object to render |
+| `className` | `string` | No | CSS class applied to the root element |
+| `mimeTypeOverride` | `string` | No | Override the auto-detected MIME type |
+| `fileName` | `string` | No | File name hint for MIME type detection (e.g. `"scan.tif"`) |
+| `enableTiffToPdf` | `boolean` | No | When true, multi-page TIFFs are converted to PDF via MIO transform API |
+| `pdfViewerProps` | `Partial<Omit<PdfViewerProps, "src">>` | No | Props forwarded to the PDF viewer |
+| `imageViewerProps` | `Partial<Omit<BaseImageViewerProps, "src">>` | No | Props forwarded to the image viewer |
+| `videoViewerProps` | `Partial<Omit<BaseVideoViewerProps, "src">>` | No | Props forwarded to the video viewer |
+| `tiffRendererProps` | `Partial<Omit<TiffRendererProps, "content">>` | No | Props forwarded to the TIFF renderer |
+| `markdownRendererProps` | `Partial<Omit<MarkdownRendererProps, "content">>` | No | Props forwarded to the markdown renderer |
+| `excelViewerProps` | `Partial<Omit<BaseExcelViewerProps, "spreadsheet">>` | No | Props forwarded to the Excel viewer |
+| `emailViewerProps` | `Partial<Omit<BaseEmailViewerProps, "email">>` | No | Props forwarded to the email viewer |
+| `xmlViewerProps` | `Partial<Omit<BaseXmlViewerProps, "content">>` | No | Props forwarded to the XML viewer |
+
+### ViewerType enum
+
+| Value | Description |
+|---|---|
+| `Pdf` | PDF documents |
+| `Tiff` | TIFF images |
+| `Image` | Common image formats (PNG, JPEG, GIF, SVG, WebP, BMP) |
+| `Video` | Video files |
+| `Markdown` | Markdown text |
+| `Excel` | Excel spreadsheets (`.xlsx`) |
+| `Email` | Email messages (`.eml`) |
+| `Xml` | XML documents |
+| `Unsupported` | Unrecognized MIME types |
+
+### Supported MIME types
+
+| MIME type | Viewer |
+|---|---|
+| `application/pdf` | PDF viewer |
+| `image/tiff` | TIFF renderer |
+| `image/png`, `image/jpeg`, `image/gif`, `image/svg+xml`, `image/webp`, `image/bmp` | Image viewer |
+| `video/*` | Video viewer |
+| `text/markdown`, `text/x-markdown` | Markdown renderer |
+| `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet` | Excel viewer |
+| `message/rfc822` | Email viewer |
+| `application/xml`, `text/xml` | XML viewer |
+
+## CSS Variables
+
+| Variable | Default | Description |
+|---|---|---|
+| `--osdk-document-viewer-bg` | `--osdk-background-primary` | Container background |
+| `--osdk-document-viewer-border` | `--osdk-surface-border` | Container border |
+
+Individual sub-viewer theming is documented in each viewer's respective
+documentation.
+
+## Data Attributes
+
+The DocumentViewer does not expose custom data attributes. Styling hooks are
+available via CSS variables and the `className` prop.
+
+## Accessibility
+
+- The PDF viewer provides keyboard navigation for pages and toolbar controls
+- Image content uses semantic `<img>` elements; pass `alt` text via
+  `imageViewerProps`
+- Video content uses the native `<video>` element with built-in browser
+  controls for keyboard and screen reader support
+- The unsupported-type fallback message is rendered as visible text for
+  screen readers
