@@ -15,6 +15,7 @@
  */
 
 import type { StorybookConfig } from "@storybook/react-vite";
+import remarkGfm from "remark-gfm";
 
 const storybookBasePath = process.env.STORYBOOK_BASE_PATH;
 
@@ -25,7 +26,16 @@ const config: StorybookConfig = {
   ],
   addons: [
     "@storybook/addon-a11y",
-    "@storybook/addon-docs",
+    {
+      name: "@storybook/addon-docs",
+      options: {
+        mdxPluginOptions: {
+          mdxCompileOptions: {
+            remarkPlugins: [remarkGfm],
+          },
+        },
+      },
+    },
     "@storybook/addon-links",
     "@storybook/addon-themes",
     "@storybook/addon-mcp",
