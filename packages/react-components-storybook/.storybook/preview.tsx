@@ -49,26 +49,46 @@ const mockClient = createClient(
 
 const preview: Preview = {
   parameters: {
-    // Storybook 10 reads storySort from parameters.options (statically parsed)
     options: {
-      storySort: {
-        order: [
-          "Docs",
-          [
-            "Welcome",
-            "Installation",
-            "Changelog",
-            "Guides",
-            ["Getting Started", "Usage with OSDK"],
-            "Styling",
-            ["Overview"],
-            "Tokens",
-            ["Colors", "Typography", "Spacing"],
-          ],
-          "Components",
-          ["*"],
-          "*",
-        ],
+      storySort: (a, b) => {
+        // Top-level category ordering
+        const categoryOrder = ["Docs", "Components"];
+        const aCat = a.title.split("/")[0];
+        const bCat = b.title.split("/")[0];
+        const aIdx = categoryOrder.indexOf(aCat);
+        const bIdx = categoryOrder.indexOf(bCat);
+        const aOrder = aIdx === -1 ? categoryOrder.length : aIdx;
+        const bOrder = bIdx === -1 ? categoryOrder.length : bIdx;
+        if (aOrder !== bOrder) return aOrder - bOrder;
+
+        // Sub-ordering within the top-level "Docs" category
+        if (aCat === "Docs" && bCat === "Docs") {
+          const docsOrder = [
+            "Docs/Welcome",
+            "Docs/Installation",
+            "Docs/Changelog",
+            "Docs/Guides/Getting Started",
+            "Docs/Guides/Usage with OSDK",
+            "Docs/Styling/Overview",
+            "Docs/Tokens/Colors",
+            "Docs/Tokens/Typography",
+            "Docs/Tokens/Spacing",
+          ];
+          const aDocIdx = docsOrder.indexOf(a.title);
+          const bDocIdx = docsOrder.indexOf(b.title);
+          const aDocOrder = aDocIdx === -1 ? docsOrder.length : aDocIdx;
+          const bDocOrder = bDocIdx === -1 ? docsOrder.length : bDocIdx;
+          if (aDocOrder !== bDocOrder) return aDocOrder - bDocOrder;
+        }
+
+        // Within the same component, put docs entries first
+        if (a.title === b.title && a.type !== b.type) {
+          if (a.type === "docs") return -1;
+          if (b.type === "docs") return 1;
+        }
+
+        // Default: alphabetical by id
+        return a.id.localeCompare(b.id, undefined, { numeric: true });
       },
     },
     controls: {
