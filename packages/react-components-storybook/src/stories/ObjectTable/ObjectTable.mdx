@@ -1,0 +1,57 @@
+{/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */}
+
+import { Meta, Markdown, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as ObjectTableStories from "./ObjectTable.stories";
+import objectTableDocs from "@docs/ObjectTable.md?raw";
+
+<Meta title="Components/ObjectTable/Docs" tags={["beta"]}/>
+
+<Markdown>{objectTableDocs}</Markdown>
+
+## Interactive Demos
+
+### Default
+
+<Canvas of={ObjectTableStories.Default} />
+
+### Single Selection
+
+<Canvas of={ObjectTableStories.SingleSelection} />
+
+### Multiple Selection
+
+<Canvas of={ObjectTableStories.MultipleSelection} />
+
+### With Context Menu
+
+<Canvas of={ObjectTableStories.WithContextMenu} />
+
+### Custom Column Widths
+
+<Canvas of={ObjectTableStories.CustomColumnWidths} />
+
+### With Default Sorting
+
+<Canvas of={ObjectTableStories.WithDefaultSorting} />
+
+### With Custom Column
+
+<Canvas of={ObjectTableStories.WithCustomColumn} />
+
+### Props
+
+<Controls of={ObjectTableStories.Default} />
