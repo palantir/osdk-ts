@@ -54,9 +54,8 @@ export function createNullWhereClause<
  * property null-check with the cross-filter where clause.
  *
  * The cross-filter clause is only included when it is non-empty. An empty
- * `{}` clause inside an `$and` is rejected by the aggregation API ("Cannot
- * convert an empty where clause to a filter"), so when no cross-filter is
- * active we return the bare null-check predicate.
+ * `{}` clause inside an `$and` is rejected by the aggregation API, so when no
+ * cross-filter is active we return the bare null-check predicate.
  */
 export function createNullCountWhereClause<
   Q extends ObjectTypeDefinition,
