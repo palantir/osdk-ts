@@ -36,8 +36,8 @@ import type { Changes } from "../Changes.js";
 import { getObjectTypesThatInvalidate } from "../getObjectTypesThatInvalidate.js";
 import type { Entry } from "../Layer.js";
 import {
-  computeBaseDependencies,
-  setsIntersect,
+  canSkipForProperties,
+  computeDependentProperties,
 } from "../propertyDependencies.js";
 import { Query } from "../Query.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
@@ -101,13 +101,8 @@ export abstract class AggregationQuery extends Query<
   protected parsedWireObjectSet: WireObjectSet | undefined;
   #invalidationTypes: Set<string>;
   #invalidationTypesPromise: Promise<Set<string>> | undefined;
-  /**
-   * Property names of `apiName` that this aggregation's bucketing/result
-   * depends on. `undefined` means "could not statically determine" (e.g. the
-   * where clause referenced `$title`) — callers must invalidate
-   * conservatively. Only consulted when the edited type equals `apiName`;
-   * RDP-traversed types always invalidate conservatively.
-   */
+  // See `computeDependentProperties`. Only consulted when the edited type
+  // equals `apiName`; RDP-traversed types always invalidate conservatively.
   #dependentProperties: ReadonlySet<string> | undefined;
 
   constructor(
@@ -150,8 +145,8 @@ export abstract class AggregationQuery extends Query<
     this.#dependentProperties = computeAggregationDependentProperties(
       this.rdpConfig,
       this.canonicalWhere,
-      this.canonicalAggregate,
       cacheKey.otherKeys[INTERSECT_IDX],
+      this.canonicalAggregate,
     );
   }
 
@@ -250,15 +245,12 @@ export abstract class AggregationQuery extends Query<
       return Promise.resolve();
     }
 
-    // Property-aware skip only applies when the edited type is the
-    // aggregation's primary type. For RDP-traversed types we don't know
-    // which properties of the pivot type the result depends on — stay
-    // conservative.
+    // Property-aware skip applies only to the aggregation's primary type —
+    // for RDP-traversed types we don't know which pivot properties affect
+    // the result.
     if (
       objectType === this.apiName
-      && editedProperties != null
-      && this.#dependentProperties != null
-      && !setsIntersect(editedProperties, this.#dependentProperties)
+      && canSkipForProperties(editedProperties, this.#dependentProperties)
     ) {
       return Promise.resolve();
     }
@@ -271,27 +263,12 @@ export abstract class AggregationQuery extends Query<
 function computeAggregationDependentProperties(
   rdpConfig: Canonical<Rdp> | undefined,
   canonicalWhere: Canonical<SimpleWhereClause>,
-  canonicalAggregate: Canonical<AggregateOpts<ObjectOrInterfaceDefinition>>,
   intersectWith:
     | Canonical<Array<Canonical<SimpleWhereClause>>>
     | undefined,
+  canonicalAggregate: Canonical<AggregateOpts<ObjectOrInterfaceDefinition>>,
 ): ReadonlySet<string> | undefined {
-  const deps = computeBaseDependencies(
-    rdpConfig,
-    canonicalWhere,
-    intersectWith,
-  );
-  if (deps === undefined) {
-    return undefined;
-  }
-
-  const groupBy = canonicalAggregate.$groupBy;
-  if (groupBy) {
-    for (const propertyKey of Object.keys(groupBy)) {
-      deps.add(propertyKey);
-    }
-  }
-
+  const selectKeys: string[] = [];
   for (const key of Object.keys(canonicalAggregate.$select)) {
     if (key === "$count") {
       continue;
@@ -302,8 +279,14 @@ function computeAggregationDependentProperties(
     if (colonIdx <= 0) {
       return undefined;
     }
-    deps.add(key.slice(0, colonIdx));
+    selectKeys.push(key.slice(0, colonIdx));
   }
 
-  return deps;
+  return computeDependentProperties(
+    rdpConfig,
+    canonicalWhere,
+    intersectWith,
+    Object.keys(canonicalAggregate.$groupBy ?? {}),
+    selectKeys,
+  );
 }

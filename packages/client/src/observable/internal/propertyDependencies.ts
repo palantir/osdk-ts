@@ -19,10 +19,7 @@ import { collectWhereClauseProperties } from "./collectWhereClauseProperties.js"
 import type { Rdp } from "./RdpCanonicalizer.js";
 import type { SimpleWhereClause } from "./SimpleWhereClause.js";
 
-/**
- * @internal
- */
-export function setsIntersect(
+function setsIntersect(
   a: ReadonlySet<string>,
   b: ReadonlySet<string>,
 ): boolean {
@@ -36,10 +33,26 @@ export function setsIntersect(
 }
 
 /**
+ * True when a query can skip revalidation: the caller knows which properties
+ * were edited AND knows which properties the query depends on AND the two
+ * sets are disjoint. Either set being `undefined` means "unknown — be
+ * conservative" and forces revalidation.
+ *
+ * @internal
+ */
+export function canSkipForProperties(
+  editedProperties: ReadonlySet<string> | undefined,
+  dependentProperties: ReadonlySet<string> | undefined,
+): boolean {
+  return editedProperties != null
+    && dependentProperties != null
+    && !setsIntersect(editedProperties, dependentProperties);
+}
+
+/**
  * Build the base set of property names a query depends on from its where
- * clause and intersectWith clauses. Callers (e.g. ListQuery, AggregationQuery)
- * mutate the returned set to add their own contributions (orderBy keys,
- * groupBy keys, select properties).
+ * clause and intersectWith clauses, plus any caller-supplied `extras`
+ * (orderBy keys, groupBy keys, aggregation property names).
  *
  * Returns `undefined` when the dependencies cannot be determined statically
  * and the caller must invalidate conservatively. This happens when:
@@ -52,13 +65,14 @@ export function setsIntersect(
  *
  * @internal
  */
-export function computeBaseDependencies(
+export function computeDependentProperties(
   rdpConfig: Canonical<Rdp> | undefined,
   canonicalWhere: Canonical<SimpleWhereClause>,
   intersectWith:
     | Canonical<Array<Canonical<SimpleWhereClause>>>
     | undefined,
-): Set<string> | undefined {
+  ...extras: Iterable<string>[]
+): ReadonlySet<string> | undefined {
   if (rdpConfig != null) {
     return undefined;
   }
@@ -78,6 +92,12 @@ export function computeBaseDependencies(
       for (const p of collected) {
         deps.add(p);
       }
+    }
+  }
+
+  for (const extra of extras) {
+    for (const p of extra) {
+      deps.add(p);
     }
   }
 

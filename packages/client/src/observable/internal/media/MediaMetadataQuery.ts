@@ -240,11 +240,7 @@ export class MediaMetadataQuery extends Query<
     return undefined;
   };
 
-  invalidateObjectType = (
-    _objectType: string,
-    _changes: Changes | undefined,
-    _editedProperties?: ReadonlySet<string>,
-  ): Promise<void> => {
+  invalidateObjectType = (): Promise<void> => {
     return this.revalidate(true);
   };
 

@@ -29,17 +29,19 @@ export function computePropertyDiff(
   newHolder: ObjectHolder,
 ): Set<string> {
   const diff = new Set<string>();
-  const keys = new Set<string>([
-    ...Object.keys(oldHolder),
-    ...Object.keys(newHolder),
-  ]);
-  for (const key of keys) {
+  for (const key of Object.keys(newHolder)) {
     if (key.startsWith("$")) {
       continue;
     }
     if (!deepEqual(oldHolder[key], newHolder[key])) {
       diff.add(key);
     }
+  }
+  for (const key of Object.keys(oldHolder)) {
+    if (key.startsWith("$") || key in newHolder) {
+      continue;
+    }
+    diff.add(key);
   }
   return diff;
 }

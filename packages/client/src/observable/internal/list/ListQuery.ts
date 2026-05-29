@@ -51,8 +51,8 @@ import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "../ob
 import type { OptimisticId } from "../OptimisticId.js";
 import type { PivotInfo } from "../PivotCanonicalizer.js";
 import {
-  computeBaseDependencies,
-  setsIntersect,
+  canSkipForProperties,
+  computeDependentProperties,
 } from "../propertyDependencies.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
@@ -121,13 +121,9 @@ export abstract class ListQuery extends BaseListQuery<
   // revalidation. Undefined for ObjectSets the walker doesn't support.
   #rdpInvalidationSet: ReadonlySet<string> | undefined;
 
-  /**
-   * Property names of `apiName` whose values affect this list's membership or
-   * ordering. `undefined` means "could not statically determine" (e.g. the
-   * where clause referenced `$title`) and callers must invalidate
-   * conservatively. Only consulted when the edited type equals `apiName`;
-   * RDP-traversed and pivoted-through types always invalidate conservatively.
-   */
+  // See `computeDependentProperties`. Only consulted when the edited type
+  // equals `apiName`; RDP-traversed and pivoted-through types always
+  // invalidate conservatively.
   #dependentProperties: ReadonlySet<string> | undefined;
 
   public override get rdpConfig(): Canonical<Rdp> | undefined {
@@ -174,11 +170,11 @@ export abstract class ListQuery extends BaseListQuery<
     this.#objectSet = this.createObjectSet(store);
     this.#objectTypesCache = new Set([this.apiName]);
 
-    this.#dependentProperties = computeListDependentProperties(
+    this.#dependentProperties = computeDependentProperties(
       this.rdpConfig,
       this.#whereClause,
-      this.#orderBy,
       this.#intersectWith,
+      Object.keys(this.#orderBy),
     );
 
     // Only initialize the sorting strategy here if there's no pivotTo.
@@ -425,14 +421,12 @@ export abstract class ListQuery extends BaseListQuery<
       return;
     }
 
-    // For RDP-traversed pivot types we don't know which properties on the
-    // pivot type the list cares about — only apply the property-aware skip
-    // for the list's primary/fetched type.
+    // Property-aware skip applies only to the list's primary/fetched type —
+    // for RDP-traversed pivot types we don't know which pivot properties the
+    // list cares about.
     if (
       this.isPrimaryType(objectType)
-      && editedProperties != null
-      && this.#dependentProperties != null
-      && !setsIntersect(editedProperties, this.#dependentProperties)
+      && canSkipForProperties(editedProperties, this.#dependentProperties)
     ) {
       return;
     }
@@ -737,28 +731,6 @@ export function isListCacheKey(
   cacheKey: CacheKey,
 ): cacheKey is ListCacheKey {
   return cacheKey.type === "list";
-}
-
-function computeListDependentProperties(
-  rdpConfig: Canonical<Rdp> | undefined,
-  canonicalWhere: Canonical<SimpleWhereClause>,
-  orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>,
-  intersectWith:
-    | Canonical<Array<Canonical<SimpleWhereClause>>>
-    | undefined,
-): ReadonlySet<string> | undefined {
-  const deps = computeBaseDependencies(
-    rdpConfig,
-    canonicalWhere,
-    intersectWith,
-  );
-  if (deps === undefined) {
-    return undefined;
-  }
-  for (const propertyKey of Object.keys(orderBy)) {
-    deps.add(propertyKey);
-  }
-  return deps;
 }
 
 /**

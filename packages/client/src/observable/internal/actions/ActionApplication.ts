@@ -17,6 +17,7 @@
 import type { ActionDefinition, ActionEditResponse } from "@osdk/api";
 import type { ActionSignatureFromDef } from "../../../actions/applyAction.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import { isObjectHolder } from "../isObjectHolder.js";
 import { API_NAME_IDX } from "../list/ListCacheKey.js";
 import type { ObjectCacheKey } from "../object/ObjectCacheKey.js";
 import type { Store } from "../Store.js";
@@ -114,12 +115,14 @@ export class ActionApplication {
     const { deletedObjects, modifiedObjects, addedObjects } =
       actionEditResponse;
 
-    // Snapshot truth-layer values BEFORE the per-PK refetches land — we diff
-    // them against the post-refetch values to learn what actually changed.
-    const oldValueByVariant = new Map<
-      ObjectCacheKey,
-      ObjectHolder | undefined
-    >();
+    // Snapshot truth-layer values BEFORE the per-PK refetches land. We hold
+    // onto the variants too so the post-refetch diff doesn't need a second
+    // registry lookup.
+    const modifiedSnapshots: Array<{
+      apiName: string;
+      variant: ObjectCacheKey;
+      oldValue: ObjectHolder | undefined;
+    }> = [];
     for (const obj of modifiedObjects ?? []) {
       for (
         const variant of this.store.objectCacheKeyRegistry.getVariants(
@@ -127,12 +130,11 @@ export class ActionApplication {
           obj.primaryKey,
         )
       ) {
-        const entry = this.store.layers.truth.get(variant);
-        const value = entry?.value;
-        oldValueByVariant.set(
+        modifiedSnapshots.push({
+          apiName: obj.objectType,
           variant,
-          isObjectHolder(value) ? value : undefined,
-        );
+          oldValue: this.#readTruthHolder(variant),
+        });
       }
     }
 
@@ -172,33 +174,27 @@ export class ActionApplication {
       editedPropertiesByType.set(obj.objectType, undefined);
     }
 
-    for (const obj of modifiedObjects ?? []) {
-      for (
-        const variant of this.store.objectCacheKeyRegistry.getVariants(
-          obj.objectType,
-          obj.primaryKey,
-        )
-      ) {
-        const oldValue = oldValueByVariant.get(variant);
-        const newEntry = this.store.layers.truth.get(variant);
-        const newValue = isObjectHolder(newEntry?.value)
-          ? newEntry?.value
-          : undefined;
+    for (const { apiName, variant, oldValue } of modifiedSnapshots) {
+      const newValue = this.#readTruthHolder(variant);
 
-        if (!oldValue || !newValue) {
-          editedPropertiesByType.set(obj.objectType, undefined);
-          continue;
-        }
-
-        mergeEditedProperties(
-          editedPropertiesByType,
-          obj.objectType,
-          computePropertyDiff(oldValue, newValue),
-        );
+      if (!oldValue || !newValue) {
+        editedPropertiesByType.set(apiName, undefined);
+        continue;
       }
+
+      mergeEditedProperties(
+        editedPropertiesByType,
+        apiName,
+        computePropertyDiff(oldValue, newValue),
+      );
     }
 
     return editedPropertiesByType;
+  };
+
+  #readTruthHolder = (key: ObjectCacheKey): ObjectHolder | undefined => {
+    const value = this.store.layers.truth.get(key)?.value;
+    return isObjectHolder(value) ? value : undefined;
   };
 
   #invalidatePerTypeEdits = async (
@@ -209,8 +205,9 @@ export class ActionApplication {
       return;
     }
 
+    const isEditsBranch = actionEditResponse.type === "edits";
     const editedObjectTypeSet = new Set<string>();
-    if (actionEditResponse.type === "edits") {
+    if (isEditsBranch) {
       const { deletedObjects, modifiedObjects, addedObjects } =
         actionEditResponse;
       for (const list of [deletedObjects, modifiedObjects, addedObjects]) {
@@ -219,12 +216,8 @@ export class ActionApplication {
         }
       }
     } else {
-      // largeScaleEdits don't carry per-property info — every reported type
-      // is conservative.
       for (const apiName of actionEditResponse.editedObjectTypes) {
-        const name = apiName as string;
-        editedObjectTypeSet.add(name);
-        editedPropertiesByType.set(name, undefined);
+        editedObjectTypeSet.add(apiName as string);
       }
     }
 
@@ -232,11 +225,16 @@ export class ActionApplication {
       return;
     }
 
+    // largeScaleEdits don't carry per-property info, so they're always
+    // conservative (undefined). For the edits branch we read the precomputed
+    // diff out of editedPropertiesByType.
+    const editedPropertiesFor = (apiName: string): Set<string> | undefined =>
+      isEditsBranch ? editedPropertiesByType.get(apiName) : undefined;
+
     // Each query is touched on at most one path: ObjectQueries via the
     // per-PK pass, primary-type lists via Subject reactions from that
     // refetch, everything else (RDP-traversed lists, FunctionQueries with
     // dependsOn, aggregations) via this walk.
-    const isEditsBranch = actionEditResponse.type === "edits";
     const promises: Promise<unknown>[] = [];
     for (const cacheKey of this.store.queries.keys()) {
       if (isEditsBranch && cacheKey.type === "object") {
@@ -258,7 +256,7 @@ export class ActionApplication {
           query.invalidateObjectType(
             apiName,
             undefined,
-            editedPropertiesByType.get(apiName),
+            editedPropertiesFor(apiName),
           ),
         );
       }
@@ -267,28 +265,22 @@ export class ActionApplication {
   };
 }
 
-function isObjectHolder(value: unknown): value is ObjectHolder {
-  return value != null
-    && typeof value === "object"
-    && "$apiName" in value
-    && "$primaryKey" in value;
-}
-
 function mergeEditedProperties(
   map: EditedPropertiesByType,
   apiName: string,
   properties: ReadonlySet<string>,
 ): void {
-  if (!map.has(apiName)) {
-    map.set(apiName, new Set(properties));
-    return;
-  }
   const existing = map.get(apiName);
-  // Already conservative — adding more specific entries can't shrink it.
-  if (existing === undefined) {
+  if (existing !== undefined) {
+    for (const p of properties) {
+      existing.add(p);
+    }
     return;
   }
-  for (const p of properties) {
-    existing.add(p);
+  // `undefined` is the conservative sentinel — distinct from "missing".
+  // Once set, adding specifics can't shrink it.
+  if (map.has(apiName)) {
+    return;
   }
+  map.set(apiName, new Set(properties));
 }

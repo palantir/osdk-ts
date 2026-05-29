@@ -494,7 +494,6 @@ export class ObjectSetQuery extends BaseListQuery<
   invalidateObjectType = async (
     objectType: string,
     changes: Changes | undefined,
-    _editedProperties?: ReadonlySet<string>,
   ): Promise<void> => {
     if (
       this.#objectTypes.has(objectType)
