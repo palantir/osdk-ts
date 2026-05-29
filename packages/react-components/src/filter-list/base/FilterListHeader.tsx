@@ -50,6 +50,10 @@ function FilterListHeaderInner({
     onCollapsedChange?.(!collapsed);
   }, [onCollapsedChange, collapsed]);
 
+  const resetDisabled = canReset !== undefined
+    ? !canReset
+    : activeFilterCount === 0 && !hasVisibilityChanges;
+
   return (
     <div className={styles.header}>
       <div className={styles.titleContainer}>
@@ -75,9 +79,7 @@ function FilterListHeaderInner({
           <Button
             className={styles.resetButton}
             onClick={onReset}
-            disabled={canReset !== undefined
-              ? !canReset
-              : activeFilterCount === 0 && !hasVisibilityChanges}
+            disabled={resetDisabled}
           >
             <ResetIcon /> Reset filters
           </Button>
