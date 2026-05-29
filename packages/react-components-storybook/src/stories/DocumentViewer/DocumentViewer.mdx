@@ -129,55 +129,75 @@ Unsupported MIME types display a fallback message.
 
 <Controls of={DocumentViewerStories.Pdf} />
 
-| Prop | Type | Required | Description |
-|---|---|---|---|
-| `media` | `Media` | Yes | The OSDK Media object to render |
-| `className` | `string` | No | CSS class applied to the root element |
-| `mimeTypeOverride` | `string` | No | Override the auto-detected MIME type |
-| `fileName` | `string` | No | File name hint for MIME type detection (e.g. `"scan.tif"`) |
-| `enableTiffToPdf` | `boolean` | No | When true, multi-page TIFFs are converted to PDF via MIO transform API |
-| `pdfViewerProps` | `Partial<Omit<PdfViewerProps, "src">>` | No | Props forwarded to the PDF viewer |
-| `imageViewerProps` | `Partial<Omit<BaseImageViewerProps, "src">>` | No | Props forwarded to the image viewer |
-| `videoViewerProps` | `Partial<Omit<BaseVideoViewerProps, "src">>` | No | Props forwarded to the video viewer |
-| `tiffRendererProps` | `Partial<Omit<TiffRendererProps, "content">>` | No | Props forwarded to the TIFF renderer |
-| `markdownRendererProps` | `Partial<Omit<MarkdownRendererProps, "content">>` | No | Props forwarded to the markdown renderer |
-| `excelViewerProps` | `Partial<Omit<BaseExcelViewerProps, "spreadsheet">>` | No | Props forwarded to the Excel viewer |
-| `emailViewerProps` | `Partial<Omit<BaseEmailViewerProps, "email">>` | No | Props forwarded to the email viewer |
-| `xmlViewerProps` | `Partial<Omit<BaseXmlViewerProps, "content">>` | No | Props forwarded to the XML viewer |
+<table>
+  <thead>
+    <tr><th>Prop</th><th>Type</th><th>Required</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>media</code></td><td><code>Media</code></td><td>Yes</td><td>The OSDK Media object to render</td></tr>
+    <tr><td><code>className</code></td><td><code>string</code></td><td>No</td><td>CSS class applied to the root element</td></tr>
+    <tr><td><code>mimeTypeOverride</code></td><td><code>string</code></td><td>No</td><td>Override the auto-detected MIME type</td></tr>
+    <tr><td><code>fileName</code></td><td><code>string</code></td><td>No</td><td>{"File name hint for MIME type detection (e.g. \"scan.tif\")"}</td></tr>
+    <tr><td><code>enableTiffToPdf</code></td><td><code>boolean</code></td><td>No</td><td>When true, multi-page TIFFs are converted to PDF via MIO transform API</td></tr>
+    <tr><td><code>pdfViewerProps</code></td><td><code>{"Partial<Omit<PdfViewerProps, \"src\">>"}</code></td><td>No</td><td>Props forwarded to the PDF viewer</td></tr>
+    <tr><td><code>imageViewerProps</code></td><td><code>{"Partial<Omit<BaseImageViewerProps, \"src\">>"}</code></td><td>No</td><td>Props forwarded to the image viewer</td></tr>
+    <tr><td><code>videoViewerProps</code></td><td><code>{"Partial<Omit<BaseVideoViewerProps, \"src\">>"}</code></td><td>No</td><td>Props forwarded to the video viewer</td></tr>
+    <tr><td><code>tiffRendererProps</code></td><td><code>{"Partial<Omit<TiffRendererProps, \"content\">>"}</code></td><td>No</td><td>Props forwarded to the TIFF renderer</td></tr>
+    <tr><td><code>markdownRendererProps</code></td><td><code>{"Partial<Omit<MarkdownRendererProps, \"content\">>"}</code></td><td>No</td><td>Props forwarded to the markdown renderer</td></tr>
+    <tr><td><code>excelViewerProps</code></td><td><code>{"Partial<Omit<BaseExcelViewerProps, \"spreadsheet\">>"}</code></td><td>No</td><td>Props forwarded to the Excel viewer</td></tr>
+    <tr><td><code>emailViewerProps</code></td><td><code>{"Partial<Omit<BaseEmailViewerProps, \"email\">>"}</code></td><td>No</td><td>Props forwarded to the email viewer</td></tr>
+    <tr><td><code>xmlViewerProps</code></td><td><code>{"Partial<Omit<BaseXmlViewerProps, \"content\">>"}</code></td><td>No</td><td>Props forwarded to the XML viewer</td></tr>
+  </tbody>
+</table>
 
 ### ViewerType enum
 
-| Value | Description |
-|---|---|
-| `Pdf` | PDF documents |
-| `Tiff` | TIFF images |
-| `Image` | Common image formats (PNG, JPEG, GIF, SVG, WebP, BMP) |
-| `Video` | Video files |
-| `Markdown` | Markdown text |
-| `Excel` | Excel spreadsheets (`.xlsx`) |
-| `Email` | Email messages (`.eml`) |
-| `Xml` | XML documents |
-| `Unsupported` | Unrecognized MIME types |
+<table>
+  <thead>
+    <tr><th>Value</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>Pdf</code></td><td>PDF documents</td></tr>
+    <tr><td><code>Tiff</code></td><td>TIFF images</td></tr>
+    <tr><td><code>Image</code></td><td>Common image formats (PNG, JPEG, GIF, SVG, WebP, BMP)</td></tr>
+    <tr><td><code>Video</code></td><td>Video files</td></tr>
+    <tr><td><code>Markdown</code></td><td>Markdown text</td></tr>
+    <tr><td><code>Excel</code></td><td>{"Excel spreadsheets (.xlsx)"}</td></tr>
+    <tr><td><code>Email</code></td><td>{"Email messages (.eml)"}</td></tr>
+    <tr><td><code>Xml</code></td><td>XML documents</td></tr>
+    <tr><td><code>Unsupported</code></td><td>Unrecognized MIME types</td></tr>
+  </tbody>
+</table>
 
 ### Supported MIME types
 
-| MIME type | Viewer |
-|---|---|
-| `application/pdf` | PDF viewer |
-| `image/tiff` | TIFF renderer |
-| `image/png`, `image/jpeg`, `image/gif`, `image/svg+xml`, `image/webp`, `image/bmp` | Image viewer |
-| `video/*` | Video viewer |
-| `text/markdown`, `text/x-markdown` | Markdown renderer |
-| `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet` | Excel viewer |
-| `message/rfc822` | Email viewer |
-| `application/xml`, `text/xml` | XML viewer |
+<table>
+  <thead>
+    <tr><th>MIME type</th><th>Viewer</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>application/pdf</code></td><td>PDF viewer</td></tr>
+    <tr><td><code>image/tiff</code></td><td>TIFF renderer</td></tr>
+    <tr><td><code>image/png</code>, <code>image/jpeg</code>, <code>image/gif</code>, <code>image/svg+xml</code>, <code>image/webp</code>, <code>image/bmp</code></td><td>Image viewer</td></tr>
+    <tr><td><code>{"video/*"}</code></td><td>Video viewer</td></tr>
+    <tr><td><code>text/markdown</code>, <code>text/x-markdown</code></td><td>Markdown renderer</td></tr>
+    <tr><td><code>{"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}</code></td><td>Excel viewer</td></tr>
+    <tr><td><code>message/rfc822</code></td><td>Email viewer</td></tr>
+    <tr><td><code>application/xml</code>, <code>text/xml</code></td><td>XML viewer</td></tr>
+  </tbody>
+</table>
 
 ## CSS Variables
 
-| Variable | Default | Description |
-|---|---|---|
-| `--osdk-document-viewer-bg` | `--osdk-background-primary` | Container background |
-| `--osdk-document-viewer-border` | `--osdk-surface-border` | Container border |
+<table>
+  <thead>
+    <tr><th>Variable</th><th>Default</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>--osdk-document-viewer-bg</code></td><td><code>--osdk-background-primary</code></td><td>Container background</td></tr>
+    <tr><td><code>--osdk-document-viewer-border</code></td><td><code>--osdk-surface-border</code></td><td>Container border</td></tr>
+  </tbody>
+</table>
 
 Individual sub-viewer theming is documented in each viewer's respective
 documentation.
@@ -190,9 +210,9 @@ available via CSS variables and the `className` prop.
 ## Accessibility
 
 - The PDF viewer provides keyboard navigation for pages and toolbar controls
-- Image content uses semantic `<img>` elements; pass `alt` text via
+- Image content uses semantic `img` elements; pass `alt` text via
   `imageViewerProps`
-- Video content uses the native `<video>` element with built-in browser
+- Video content uses the native `video` element with built-in browser
   controls for keyboard and screen reader support
 - The unsupported-type fallback message is rendered as visible text for
   screen readers
