@@ -108,251 +108,346 @@ fit the built-in component types.
 
 ### Filter Definition Types
 
-| Type | Description |
-|---|---|
-| `PROPERTY` | Filter on a direct property of the object type |
-| `KEYWORD_SEARCH` | Full-text keyword search across objects |
-| `CUSTOM` | Custom filter with user-provided render function |
-| `HAS_LINK` | Toggle filter for whether a link exists |
-| `LINKED_PROPERTY` | Filter on a property of a linked object type |
-| `STATIC_VALUES` | Filter with a predefined set of static values |
+<table>
+  <thead>
+    <tr><th>Type</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>PROPERTY</code></td><td>Filter on a direct property of the object type</td></tr>
+    <tr><td><code>KEYWORD_SEARCH</code></td><td>Full-text keyword search across objects</td></tr>
+    <tr><td><code>CUSTOM</code></td><td>Custom filter with user-provided render function</td></tr>
+    <tr><td><code>HAS_LINK</code></td><td>Toggle filter for whether a link exists</td></tr>
+    <tr><td><code>LINKED_PROPERTY</code></td><td>Filter on a property of a linked object type</td></tr>
+    <tr><td><code>STATIC_VALUES</code></td><td>Filter with a predefined set of static values</td></tr>
+  </tbody>
+</table>
 
 ### Property Filter Definition
 
-| Field | Type | Description |
-|---|---|---|
-| `key` | `PropertyKeys<Q>` | Property key on the object type |
-| `id` | `string` | Optional unique identifier for stable keying across reorders |
-| `label` | `string` | Display label for the filter |
-| `filterComponent` | `FilterComponentType` | UI component to render (`LISTOGRAM`, `SINGLE_SELECT`, `MULTI_SELECT`, `TEXT_TAGS`, `CONTAINS_TEXT`, `NUMBER_RANGE`, `DATE_RANGE`, `TOGGLE`, `SINGLE_DATE`, `MULTI_DATE`, `TIMELINE`) |
-| `filterState` | `FilterState` | Initial state for the filter |
-| `isVisible` | `boolean` | Whether the filter is initially visible (default: `true`) |
-| `colorMap` | `Record<string, string>` | Custom colors for LISTOGRAM bar values |
-| `listogramConfig` | `{ displayMode?, maxVisibleItems? }` | LISTOGRAM display options |
-| `renderValue` | `(value: string) => ReactNode` | Custom display for filter values in dropdowns, chips, and listogram rows |
-| `showCount` | `boolean` | Show aggregation counts next to values |
-| `clickToFilter` | `boolean` | Clicking a histogram bar replaces the range with that bucket |
-| `searchField` | `boolean` | Show/hide the header search monocle (default: `true`) |
-| `formatDate` | `(date: Date) => string` | Custom date formatter for datetime/timestamp properties |
+<table>
+  <thead>
+    <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>key</code></td><td><code>{"PropertyKeys<Q>"}</code></td><td>Property key on the object type</td></tr>
+    <tr><td><code>id</code></td><td><code>string</code></td><td>Optional unique identifier for stable keying across reorders</td></tr>
+    <tr><td><code>label</code></td><td><code>string</code></td><td>Display label for the filter</td></tr>
+    <tr><td><code>filterComponent</code></td><td><code>FilterComponentType</code></td><td>{"UI component to render (LISTOGRAM, SINGLE_SELECT, MULTI_SELECT, TEXT_TAGS, CONTAINS_TEXT, NUMBER_RANGE, DATE_RANGE, TOGGLE, SINGLE_DATE, MULTI_DATE, TIMELINE)"}</td></tr>
+    <tr><td><code>filterState</code></td><td><code>FilterState</code></td><td>Initial state for the filter</td></tr>
+    <tr><td><code>isVisible</code></td><td><code>boolean</code></td><td>{"Whether the filter is initially visible (default: true)"}</td></tr>
+    <tr><td><code>colorMap</code></td><td><code>{"Record<string, string>"}</code></td><td>Custom colors for LISTOGRAM bar values</td></tr>
+    <tr><td><code>listogramConfig</code></td><td><code>{"{ displayMode?, maxVisibleItems? }"}</code></td><td>LISTOGRAM display options</td></tr>
+    <tr><td><code>renderValue</code></td><td><code>{"(value: string) => ReactNode"}</code></td><td>Custom display for filter values in dropdowns, chips, and listogram rows</td></tr>
+    <tr><td><code>showCount</code></td><td><code>boolean</code></td><td>Show aggregation counts next to values</td></tr>
+    <tr><td><code>clickToFilter</code></td><td><code>boolean</code></td><td>Clicking a histogram bar replaces the range with that bucket</td></tr>
+    <tr><td><code>searchField</code></td><td><code>boolean</code></td><td>{"Show/hide the header search monocle (default: true)"}</td></tr>
+    <tr><td><code>formatDate</code></td><td><code>{"(date: Date) => string"}</code></td><td>Custom date formatter for datetime/timestamp properties</td></tr>
+  </tbody>
+</table>
 
 ### Linked Property Filter Definition
 
-| Field | Type | Description |
-|---|---|---|
-| `linkName` | `LinkNames<Q>` | Link that traverses to the related object type |
-| `linkedPropertyKey` | `PropertyKeys<LinkedQ>` | Property on the linked type to filter by |
-| `linkedFilterComponent` | `FilterComponentType` | UI component to render |
-| `linkedFilterState` | `FilterState` | Initial state for the linked filter |
-| `reverseLinkName` | `LinkNames<LinkedQ>` | Back-link for auto-narrowing via `onEffectiveObjectSet` |
-| `label` | `string` | Display label |
-| `isVisible` | `boolean` | Whether the filter is initially visible |
+<table>
+  <thead>
+    <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>linkName</code></td><td><code>{"LinkNames<Q>"}</code></td><td>Link that traverses to the related object type</td></tr>
+    <tr><td><code>linkedPropertyKey</code></td><td><code>{"PropertyKeys<LinkedQ>"}</code></td><td>Property on the linked type to filter by</td></tr>
+    <tr><td><code>linkedFilterComponent</code></td><td><code>FilterComponentType</code></td><td>UI component to render</td></tr>
+    <tr><td><code>linkedFilterState</code></td><td><code>FilterState</code></td><td>Initial state for the linked filter</td></tr>
+    <tr><td><code>reverseLinkName</code></td><td><code>{"LinkNames<LinkedQ>"}</code></td><td>{"Back-link for auto-narrowing via onEffectiveObjectSet"}</td></tr>
+    <tr><td><code>label</code></td><td><code>string</code></td><td>Display label</td></tr>
+    <tr><td><code>isVisible</code></td><td><code>boolean</code></td><td>Whether the filter is initially visible</td></tr>
+  </tbody>
+</table>
 
 ### CSS Variables
 
 #### Container
 
-| Variable | Default | Description |
-|---|---|---|
-| `--osdk-filter-list-bg` | `--osdk-background-primary` | Panel background |
-| `--osdk-filter-list-border` | `--osdk-surface-border` | Panel border |
-| `--osdk-filter-list-border-radius` | `--osdk-surface-border-radius` | Panel border radius |
-| `--osdk-filter-list-padding` | `0` | Panel padding |
-| `--osdk-filter-list-gap` | `0` | Gap between filter items |
-| `--osdk-filter-list-shadow` | box-shadow value | Panel shadow |
-| `--osdk-filter-list-content-gap` | `0` | Gap within content area |
-| `--osdk-filter-list-empty-text-color` | `--osdk-typography-color-muted` | Empty state text color |
-| `--osdk-filter-list-collapsed-width` | `10 * spacing` | Width when collapsed |
+<table>
+  <thead>
+    <tr><th>Variable</th><th>Default</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>--osdk-filter-list-bg</code></td><td><code>--osdk-background-primary</code></td><td>Panel background</td></tr>
+    <tr><td><code>--osdk-filter-list-border</code></td><td><code>--osdk-surface-border</code></td><td>Panel border</td></tr>
+    <tr><td><code>--osdk-filter-list-border-radius</code></td><td><code>--osdk-surface-border-radius</code></td><td>Panel border radius</td></tr>
+    <tr><td><code>--osdk-filter-list-padding</code></td><td><code>0</code></td><td>Panel padding</td></tr>
+    <tr><td><code>--osdk-filter-list-gap</code></td><td><code>0</code></td><td>Gap between filter items</td></tr>
+    <tr><td><code>--osdk-filter-list-shadow</code></td><td>box-shadow value</td><td>Panel shadow</td></tr>
+    <tr><td><code>--osdk-filter-list-content-gap</code></td><td><code>0</code></td><td>Gap within content area</td></tr>
+    <tr><td><code>--osdk-filter-list-empty-text-color</code></td><td><code>--osdk-typography-color-muted</code></td><td>Empty state text color</td></tr>
+    <tr><td><code>--osdk-filter-list-collapsed-width</code></td><td>10 * spacing</td><td>Width when collapsed</td></tr>
+  </tbody>
+</table>
 
 #### Add Filter Button
 
-| Variable | Default | Description |
-|---|---|---|
-| `--osdk-filter-list-addButton-padding-top` | `0` | Top padding above button |
-| `--osdk-filter-list-addButton-container-bg` | `--osdk-background-primary` | Button container background |
-| `--osdk-filter-list-addButton-container-padding` | computed | Button container padding |
-| `--osdk-filter-list-addButton-container-border-top` | `--osdk-surface-border` | Separator above button |
-| `--osdk-filter-list-addButton-border` | `--osdk-surface-border` | Button border |
-| `--osdk-filter-list-addButton-height` | `7.5 * spacing` | Button height |
+<table>
+  <thead>
+    <tr><th>Variable</th><th>Default</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>--osdk-filter-list-addButton-padding-top</code></td><td><code>0</code></td><td>Top padding above button</td></tr>
+    <tr><td><code>--osdk-filter-list-addButton-container-bg</code></td><td><code>--osdk-background-primary</code></td><td>Button container background</td></tr>
+    <tr><td><code>--osdk-filter-list-addButton-container-padding</code></td><td>computed</td><td>Button container padding</td></tr>
+    <tr><td><code>--osdk-filter-list-addButton-container-border-top</code></td><td><code>--osdk-surface-border</code></td><td>Separator above button</td></tr>
+    <tr><td><code>--osdk-filter-list-addButton-border</code></td><td><code>--osdk-surface-border</code></td><td>Button border</td></tr>
+    <tr><td><code>--osdk-filter-list-addButton-height</code></td><td>7.5 * spacing</td><td>Button height</td></tr>
+  </tbody>
+</table>
 
 #### Header
 
-| Variable | Default | Description |
-|---|---|---|
-| `--osdk-filter-header-padding` | computed | Header padding |
-| `--osdk-filter-header-border-bottom` | `--osdk-surface-border` | Header bottom border |
-| `--osdk-filter-header-gap` | `2 * spacing` | Header gap |
-| `--osdk-filter-header-font-size` | `--osdk-typography-size-body-medium` | Title font size |
-| `--osdk-filter-header-font-weight` | `--osdk-typography-weight-bold` | Title font weight |
-| `--osdk-filter-header-color` | `--osdk-typography-color-default-rest` | Title color |
-| `--osdk-filter-header-icon-color` | `--osdk-typography-color-muted` | Title icon color |
-| `--osdk-filter-header-activeCount-color` | `--osdk-typography-color-muted` | Active count color |
-| `--osdk-filter-header-reset-color` | `--osdk-intent-primary-rest` | Reset button color |
+<table>
+  <thead>
+    <tr><th>Variable</th><th>Default</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>--osdk-filter-header-padding</code></td><td>computed</td><td>Header padding</td></tr>
+    <tr><td><code>--osdk-filter-header-border-bottom</code></td><td><code>--osdk-surface-border</code></td><td>Header bottom border</td></tr>
+    <tr><td><code>--osdk-filter-header-gap</code></td><td>2 * spacing</td><td>Header gap</td></tr>
+    <tr><td><code>--osdk-filter-header-font-size</code></td><td><code>--osdk-typography-size-body-medium</code></td><td>Title font size</td></tr>
+    <tr><td><code>--osdk-filter-header-font-weight</code></td><td><code>--osdk-typography-weight-bold</code></td><td>Title font weight</td></tr>
+    <tr><td><code>--osdk-filter-header-color</code></td><td><code>--osdk-typography-color-default-rest</code></td><td>Title color</td></tr>
+    <tr><td><code>--osdk-filter-header-icon-color</code></td><td><code>--osdk-typography-color-muted</code></td><td>Title icon color</td></tr>
+    <tr><td><code>--osdk-filter-header-activeCount-color</code></td><td><code>--osdk-typography-color-muted</code></td><td>Active count color</td></tr>
+    <tr><td><code>--osdk-filter-header-reset-color</code></td><td><code>--osdk-intent-primary-rest</code></td><td>Reset button color</td></tr>
+  </tbody>
+</table>
 
 #### Filter Item
 
-| Variable | Default | Description |
-|---|---|---|
-| `--osdk-filter-item-gap` | `1 * spacing` | Gap within a filter item |
-| `--osdk-filter-item-padding` | `3 * spacing` | Filter item padding |
-| `--osdk-filter-item-border-radius` | `--osdk-surface-border-radius` | Filter item border radius |
-| `--osdk-filter-item-label-font-size` | `--osdk-typography-size-body-small` | Label font size |
-| `--osdk-filter-item-label-font-weight` | `--osdk-typography-weight-bold` | Label font weight |
-| `--osdk-filter-item-label-color` | `--osdk-typography-color-muted` | Label color |
-| `--osdk-filter-item-drag-handle-color` | `--osdk-drag-handle-color` | Drag handle color |
-| `--osdk-filter-item-dragging-opacity` | `0.5` | Opacity while dragging |
+<table>
+  <thead>
+    <tr><th>Variable</th><th>Default</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>--osdk-filter-item-gap</code></td><td>1 * spacing</td><td>Gap within a filter item</td></tr>
+    <tr><td><code>--osdk-filter-item-padding</code></td><td>3 * spacing</td><td>Filter item padding</td></tr>
+    <tr><td><code>--osdk-filter-item-border-radius</code></td><td><code>--osdk-surface-border-radius</code></td><td>Filter item border radius</td></tr>
+    <tr><td><code>--osdk-filter-item-label-font-size</code></td><td><code>--osdk-typography-size-body-small</code></td><td>Label font size</td></tr>
+    <tr><td><code>--osdk-filter-item-label-font-weight</code></td><td><code>--osdk-typography-weight-bold</code></td><td>Label font weight</td></tr>
+    <tr><td><code>--osdk-filter-item-label-color</code></td><td><code>--osdk-typography-color-muted</code></td><td>Label color</td></tr>
+    <tr><td><code>--osdk-filter-item-drag-handle-color</code></td><td><code>--osdk-drag-handle-color</code></td><td>Drag handle color</td></tr>
+    <tr><td><code>--osdk-filter-item-dragging-opacity</code></td><td><code>0.5</code></td><td>Opacity while dragging</td></tr>
+  </tbody>
+</table>
 
 #### Input
 
-| Variable | Default | Description |
-|---|---|---|
-| `--osdk-filter-input-bg` | `--osdk-background-primary` | Input background |
-| `--osdk-filter-input-border` | `--osdk-surface-border` | Input border |
-| `--osdk-filter-input-border-radius` | `--osdk-surface-border-radius` | Input border radius |
-| `--osdk-filter-input-padding` | computed | Input padding |
-| `--osdk-filter-input-focus-border` | `--osdk-intent-primary-rest` | Focus border color |
-| `--osdk-filter-input-font-size` | `--osdk-typography-size-body-medium` | Input font size |
-| `--osdk-filter-input-color` | `--osdk-typography-color-default-rest` | Input text color |
-| `--osdk-filter-input-placeholder-color` | `--osdk-typography-color-muted` | Placeholder color |
+<table>
+  <thead>
+    <tr><th>Variable</th><th>Default</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>--osdk-filter-input-bg</code></td><td><code>--osdk-background-primary</code></td><td>Input background</td></tr>
+    <tr><td><code>--osdk-filter-input-border</code></td><td><code>--osdk-surface-border</code></td><td>Input border</td></tr>
+    <tr><td><code>--osdk-filter-input-border-radius</code></td><td><code>--osdk-surface-border-radius</code></td><td>Input border radius</td></tr>
+    <tr><td><code>--osdk-filter-input-padding</code></td><td>computed</td><td>Input padding</td></tr>
+    <tr><td><code>--osdk-filter-input-focus-border</code></td><td><code>--osdk-intent-primary-rest</code></td><td>Focus border color</td></tr>
+    <tr><td><code>--osdk-filter-input-font-size</code></td><td><code>--osdk-typography-size-body-medium</code></td><td>Input font size</td></tr>
+    <tr><td><code>--osdk-filter-input-color</code></td><td><code>--osdk-typography-color-default-rest</code></td><td>Input text color</td></tr>
+    <tr><td><code>--osdk-filter-input-placeholder-color</code></td><td><code>--osdk-typography-color-muted</code></td><td>Placeholder color</td></tr>
+  </tbody>
+</table>
 
 #### Listogram
 
-| Variable | Default | Description |
-|---|---|---|
-| `--osdk-filter-listogram-gap` | `--osdk-surface-spacing` | Gap between rows |
-| `--osdk-filter-listogram-row-padding` | `--osdk-surface-spacing` | Row padding |
-| `--osdk-filter-listogram-row-border-radius` | `--osdk-surface-border-radius` | Row border radius |
-| `--osdk-filter-listogram-row-bg-hover` | hover color | Row hover background |
-| `--osdk-filter-listogram-label-font-size` | `--osdk-typography-size-body-medium` | Label font size |
-| `--osdk-filter-listogram-label-color` | `--osdk-typography-color-default-rest` | Label color |
-| `--osdk-filter-listogram-bar-height` | `2 * spacing` | Bar height |
-| `--osdk-filter-listogram-bar-color` | `--osdk-intent-primary-rest` | Bar fill color |
-| `--osdk-filter-listogram-count-color` | `--osdk-typography-color-muted` | Count text color |
-| `--osdk-filter-listogram-selected-color` | `--osdk-intent-primary-rest` | Selected row accent |
-| `--osdk-filter-listogram-view-all-color` | `--osdk-typography-color-muted` | "View all" link color |
+<table>
+  <thead>
+    <tr><th>Variable</th><th>Default</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>--osdk-filter-listogram-gap</code></td><td><code>--osdk-surface-spacing</code></td><td>Gap between rows</td></tr>
+    <tr><td><code>--osdk-filter-listogram-row-padding</code></td><td><code>--osdk-surface-spacing</code></td><td>Row padding</td></tr>
+    <tr><td><code>--osdk-filter-listogram-row-border-radius</code></td><td><code>--osdk-surface-border-radius</code></td><td>Row border radius</td></tr>
+    <tr><td><code>--osdk-filter-listogram-row-bg-hover</code></td><td>hover color</td><td>Row hover background</td></tr>
+    <tr><td><code>--osdk-filter-listogram-label-font-size</code></td><td><code>--osdk-typography-size-body-medium</code></td><td>Label font size</td></tr>
+    <tr><td><code>--osdk-filter-listogram-label-color</code></td><td><code>--osdk-typography-color-default-rest</code></td><td>Label color</td></tr>
+    <tr><td><code>--osdk-filter-listogram-bar-height</code></td><td>2 * spacing</td><td>Bar height</td></tr>
+    <tr><td><code>--osdk-filter-listogram-bar-color</code></td><td><code>--osdk-intent-primary-rest</code></td><td>Bar fill color</td></tr>
+    <tr><td><code>--osdk-filter-listogram-count-color</code></td><td><code>--osdk-typography-color-muted</code></td><td>Count text color</td></tr>
+    <tr><td><code>--osdk-filter-listogram-selected-color</code></td><td><code>--osdk-intent-primary-rest</code></td><td>Selected row accent</td></tr>
+    <tr><td><code>--osdk-filter-listogram-view-all-color</code></td><td><code>--osdk-typography-color-muted</code></td><td>"View all" link color</td></tr>
+  </tbody>
+</table>
 
 #### Range / Histogram
 
-| Variable | Default | Description |
-|---|---|---|
-| `--osdk-filter-range-gap` | `2.5 * spacing` | Range section gap |
-| `--osdk-filter-range-histogram-height` | `15 * spacing` | Histogram height |
-| `--osdk-filter-range-histogram-bar-color` | `--osdk-palette-gray-2` | Inactive bar color |
-| `--osdk-filter-range-histogram-bar-active-color` | `--osdk-intent-primary-rest` | Active bar color |
-| `--osdk-filter-range-histogram-axis-color` | `--osdk-typography-color-muted` | Axis text color |
-| `--osdk-filter-range-label-color` | `--osdk-typography-color-muted` | Range label color |
-| `--osdk-filter-range-separator-color` | `--osdk-typography-color-muted` | "–" separator color |
+<table>
+  <thead>
+    <tr><th>Variable</th><th>Default</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>--osdk-filter-range-gap</code></td><td>2.5 * spacing</td><td>Range section gap</td></tr>
+    <tr><td><code>--osdk-filter-range-histogram-height</code></td><td>15 * spacing</td><td>Histogram height</td></tr>
+    <tr><td><code>--osdk-filter-range-histogram-bar-color</code></td><td><code>--osdk-palette-gray-2</code></td><td>Inactive bar color</td></tr>
+    <tr><td><code>--osdk-filter-range-histogram-bar-active-color</code></td><td><code>--osdk-intent-primary-rest</code></td><td>Active bar color</td></tr>
+    <tr><td><code>--osdk-filter-range-histogram-axis-color</code></td><td><code>--osdk-typography-color-muted</code></td><td>Axis text color</td></tr>
+    <tr><td><code>--osdk-filter-range-label-color</code></td><td><code>--osdk-typography-color-muted</code></td><td>Range label color</td></tr>
+    <tr><td><code>--osdk-filter-range-separator-color</code></td><td><code>--osdk-typography-color-muted</code></td><td>"–" separator color</td></tr>
+  </tbody>
+</table>
 
 #### Timeline
 
-| Variable | Default | Description |
-|---|---|---|
-| `--osdk-filter-timeline-labels-color` | `--osdk-typography-color-muted` | Label color |
-| `--osdk-filter-timeline-button-color` | `--osdk-iconography-color-muted` | Button icon color |
-| `--osdk-filter-timeline-button-bg-hover` | hover color | Button hover background |
-| `--osdk-filter-timeline-brush-color` | `--osdk-typography-color-muted` | Brush handle color |
-| `--osdk-filter-timeline-input-font-size` | `--osdk-typography-size-body-medium` | Input font size |
+<table>
+  <thead>
+    <tr><th>Variable</th><th>Default</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>--osdk-filter-timeline-labels-color</code></td><td><code>--osdk-typography-color-muted</code></td><td>Label color</td></tr>
+    <tr><td><code>--osdk-filter-timeline-button-color</code></td><td><code>--osdk-iconography-color-muted</code></td><td>Button icon color</td></tr>
+    <tr><td><code>--osdk-filter-timeline-button-bg-hover</code></td><td>hover color</td><td>Button hover background</td></tr>
+    <tr><td><code>--osdk-filter-timeline-brush-color</code></td><td><code>--osdk-typography-color-muted</code></td><td>Brush handle color</td></tr>
+    <tr><td><code>--osdk-filter-timeline-input-font-size</code></td><td><code>--osdk-typography-size-body-medium</code></td><td>Input font size</td></tr>
+  </tbody>
+</table>
 
 #### Checkbox
 
-| Variable | Default | Description |
-|---|---|---|
-| `--osdk-filter-checkbox-list-gap` | `0.5 * spacing` | List gap |
-| `--osdk-filter-checkbox-row-padding` | computed | Row padding |
-| `--osdk-filter-checkbox-label-gap` | `--osdk-surface-spacing` | Label gap |
-| `--osdk-filter-checkbox-value-font-size` | `--osdk-typography-size-body-medium` | Value font size |
-| `--osdk-filter-checkbox-value-color` | `--osdk-typography-color-default-rest` | Value text color |
-| `--osdk-filter-checkbox-row-bg-hover` | hover color | Row hover background |
-| `--osdk-filter-checkbox-color-dot-size` | `2 * spacing` | Color dot size |
+<table>
+  <thead>
+    <tr><th>Variable</th><th>Default</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>--osdk-filter-checkbox-list-gap</code></td><td>0.5 * spacing</td><td>List gap</td></tr>
+    <tr><td><code>--osdk-filter-checkbox-row-padding</code></td><td>computed</td><td>Row padding</td></tr>
+    <tr><td><code>--osdk-filter-checkbox-label-gap</code></td><td><code>--osdk-surface-spacing</code></td><td>Label gap</td></tr>
+    <tr><td><code>--osdk-filter-checkbox-value-font-size</code></td><td><code>--osdk-typography-size-body-medium</code></td><td>Value font size</td></tr>
+    <tr><td><code>--osdk-filter-checkbox-value-color</code></td><td><code>--osdk-typography-color-default-rest</code></td><td>Value text color</td></tr>
+    <tr><td><code>--osdk-filter-checkbox-row-bg-hover</code></td><td>hover color</td><td>Row hover background</td></tr>
+    <tr><td><code>--osdk-filter-checkbox-color-dot-size</code></td><td>2 * spacing</td><td>Color dot size</td></tr>
+  </tbody>
+</table>
 
 #### Toggle
 
-| Variable | Default | Description |
-|---|---|---|
-| `--osdk-filter-toggle-label-gap` | `--osdk-surface-spacing` | Gap between toggle and label |
-| `--osdk-filter-toggle-label-font-size` | `--osdk-typography-size-body-medium` | Label font size |
-| `--osdk-filter-toggle-label-color` | `--osdk-typography-color-default-rest` | Label text color |
+<table>
+  <thead>
+    <tr><th>Variable</th><th>Default</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>--osdk-filter-toggle-label-gap</code></td><td><code>--osdk-surface-spacing</code></td><td>Gap between toggle and label</td></tr>
+    <tr><td><code>--osdk-filter-toggle-label-font-size</code></td><td><code>--osdk-typography-size-body-medium</code></td><td>Label font size</td></tr>
+    <tr><td><code>--osdk-filter-toggle-label-color</code></td><td><code>--osdk-typography-color-default-rest</code></td><td>Label text color</td></tr>
+  </tbody>
+</table>
 
 #### Tag
 
-| Variable | Default | Description |
-|---|---|---|
-| `--osdk-filter-tag-container-gap` | `1 * spacing` | Tag container gap |
-| `--osdk-filter-tag-padding` | computed | Tag padding |
-| `--osdk-filter-tag-border-radius` | `--osdk-surface-border-radius` | Tag border radius |
-| `--osdk-filter-tag-bg` | `--osdk-custom-color-gray-1` | Tag background |
-| `--osdk-filter-tag-color` | `--osdk-typography-color-default-rest` | Tag text color |
-| `--osdk-filter-tag-remove-color` | `--osdk-typography-color-muted` | Remove icon color |
+<table>
+  <thead>
+    <tr><th>Variable</th><th>Default</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>--osdk-filter-tag-container-gap</code></td><td>1 * spacing</td><td>Tag container gap</td></tr>
+    <tr><td><code>--osdk-filter-tag-padding</code></td><td>computed</td><td>Tag padding</td></tr>
+    <tr><td><code>--osdk-filter-tag-border-radius</code></td><td><code>--osdk-surface-border-radius</code></td><td>Tag border radius</td></tr>
+    <tr><td><code>--osdk-filter-tag-bg</code></td><td><code>--osdk-custom-color-gray-1</code></td><td>Tag background</td></tr>
+    <tr><td><code>--osdk-filter-tag-color</code></td><td><code>--osdk-typography-color-default-rest</code></td><td>Tag text color</td></tr>
+    <tr><td><code>--osdk-filter-tag-remove-color</code></td><td><code>--osdk-typography-color-muted</code></td><td>Remove icon color</td></tr>
+  </tbody>
+</table>
 
 #### Multi-Select
 
-| Variable | Default | Description |
-|---|---|---|
-| `--osdk-filter-multiselect-gap` | `2 * spacing` | Section gap |
-| `--osdk-filter-multiselect-inputRow-gap` | `--osdk-surface-spacing` | Input row gap |
-| `--osdk-filter-multiselect-count-color` | `--osdk-typography-color-muted` | Count text color |
+<table>
+  <thead>
+    <tr><th>Variable</th><th>Default</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>--osdk-filter-multiselect-gap</code></td><td>2 * spacing</td><td>Section gap</td></tr>
+    <tr><td><code>--osdk-filter-multiselect-inputRow-gap</code></td><td><code>--osdk-surface-spacing</code></td><td>Input row gap</td></tr>
+    <tr><td><code>--osdk-filter-multiselect-count-color</code></td><td><code>--osdk-typography-color-muted</code></td><td>Count text color</td></tr>
+  </tbody>
+</table>
 
 #### Popover
 
-| Variable | Default | Description |
-|---|---|---|
-| `--osdk-filter-popover-gap` | `1 * spacing` | Popover internal gap |
-| `--osdk-filter-popover-label-color` | `--osdk-typography-color-muted` | Label color |
-| `--osdk-filter-popover-trigger-width` | `40 * spacing` | Trigger width |
-| `--osdk-filter-popover-trigger-min-height` | `7 * spacing` | Trigger min height |
-| `--osdk-filter-popover-trigger-border-color` | `--osdk-surface-border-color-default` | Trigger border |
-| `--osdk-filter-popover-trigger-color` | `--osdk-typography-color-default-rest` | Trigger text color |
-| `--osdk-filter-popover-popup-bg` | `--osdk-background-primary` | Popup background |
-| `--osdk-filter-popover-popup-border` | `--osdk-surface-border` | Popup border |
-| `--osdk-filter-popover-popup-shadow` | `--osdk-surface-shadow-2` | Popup shadow |
-| `--osdk-filter-popover-popup-min-width` | `70 * spacing` | Popup min width |
+<table>
+  <thead>
+    <tr><th>Variable</th><th>Default</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>--osdk-filter-popover-gap</code></td><td>1 * spacing</td><td>Popover internal gap</td></tr>
+    <tr><td><code>--osdk-filter-popover-label-color</code></td><td><code>--osdk-typography-color-muted</code></td><td>Label color</td></tr>
+    <tr><td><code>--osdk-filter-popover-trigger-width</code></td><td>40 * spacing</td><td>Trigger width</td></tr>
+    <tr><td><code>--osdk-filter-popover-trigger-min-height</code></td><td>7 * spacing</td><td>Trigger min height</td></tr>
+    <tr><td><code>--osdk-filter-popover-trigger-border-color</code></td><td><code>--osdk-surface-border-color-default</code></td><td>Trigger border</td></tr>
+    <tr><td><code>--osdk-filter-popover-trigger-color</code></td><td><code>--osdk-typography-color-default-rest</code></td><td>Trigger text color</td></tr>
+    <tr><td><code>--osdk-filter-popover-popup-bg</code></td><td><code>--osdk-background-primary</code></td><td>Popup background</td></tr>
+    <tr><td><code>--osdk-filter-popover-popup-border</code></td><td><code>--osdk-surface-border</code></td><td>Popup border</td></tr>
+    <tr><td><code>--osdk-filter-popover-popup-shadow</code></td><td><code>--osdk-surface-shadow-2</code></td><td>Popup shadow</td></tr>
+    <tr><td><code>--osdk-filter-popover-popup-min-width</code></td><td>70 * spacing</td><td>Popup min width</td></tr>
+  </tbody>
+</table>
 
 #### Overflow Menu
 
-| Variable | Default | Description |
-|---|---|---|
-| `--osdk-filter-item-menu-bg` | `--osdk-background-primary` | Menu background |
-| `--osdk-filter-item-menu-shadow` | `--osdk-surface-shadow-2` | Menu shadow |
-| `--osdk-filter-item-menu-border` | `--osdk-surface-border` | Menu border |
-| `--osdk-filter-item-menu-item-color` | `--osdk-typography-color-default-rest` | Item text color |
-| `--osdk-filter-item-menu-item-bg-hover` | `--osdk-custom-color-gray-1` | Item hover background |
+<table>
+  <thead>
+    <tr><th>Variable</th><th>Default</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>--osdk-filter-item-menu-bg</code></td><td><code>--osdk-background-primary</code></td><td>Menu background</td></tr>
+    <tr><td><code>--osdk-filter-item-menu-shadow</code></td><td><code>--osdk-surface-shadow-2</code></td><td>Menu shadow</td></tr>
+    <tr><td><code>--osdk-filter-item-menu-border</code></td><td><code>--osdk-surface-border</code></td><td>Menu border</td></tr>
+    <tr><td><code>--osdk-filter-item-menu-item-color</code></td><td><code>--osdk-typography-color-default-rest</code></td><td>Item text color</td></tr>
+    <tr><td><code>--osdk-filter-item-menu-item-bg-hover</code></td><td><code>--osdk-custom-color-gray-1</code></td><td>Item hover background</td></tr>
+  </tbody>
+</table>
 
 ### Data Attributes
 
-| Attribute | Applied to | Description |
-|---|---|---|
-| `data-collapsed` | Root container | Present when the filter panel is collapsed |
-| `data-active-count` | Header | Number of active filters |
-| `data-has-selection` | Filter item | Filter has selected values |
-| `data-excluding` | Filter item | Filter is in exclude mode |
-| `data-empty` | Filter item | Filter has no available values |
-| `data-filtered-out` | Listogram row | Value exists in unfiltered data but excluded by other filters |
-| `data-active` | Filter item | Filter has non-default state |
-| `data-loading` | Filter item | Filter is loading aggregation data |
-| `data-dragging` | Filter item | Item is being dragged |
-| `data-highlighted` | Listogram row | Row is keyboard-highlighted |
-| `data-in-range` | Histogram bar | Bar falls within the selected range |
-| `data-click-to-filter` | Histogram bar | Bar supports click-to-filter |
-| `data-popup-open` | Popover trigger | Popover is currently open |
-| `data-unsupported` | Filter item | Property type is not supported |
+<table>
+  <thead>
+    <tr><th>Attribute</th><th>Applied to</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>data-collapsed</code></td><td>Root container</td><td>Present when the filter panel is collapsed</td></tr>
+    <tr><td><code>data-active-count</code></td><td>Header</td><td>Number of active filters</td></tr>
+    <tr><td><code>data-has-selection</code></td><td>Filter item</td><td>Filter has selected values</td></tr>
+    <tr><td><code>data-excluding</code></td><td>Filter item</td><td>Filter is in exclude mode</td></tr>
+    <tr><td><code>data-empty</code></td><td>Filter item</td><td>Filter has no available values</td></tr>
+    <tr><td><code>data-filtered-out</code></td><td>Listogram row</td><td>Value exists in unfiltered data but excluded by other filters</td></tr>
+    <tr><td><code>data-active</code></td><td>Filter item</td><td>Filter has non-default state</td></tr>
+    <tr><td><code>data-loading</code></td><td>Filter item</td><td>Filter is loading aggregation data</td></tr>
+    <tr><td><code>data-dragging</code></td><td>Filter item</td><td>Item is being dragged</td></tr>
+    <tr><td><code>data-highlighted</code></td><td>Listogram row</td><td>Row is keyboard-highlighted</td></tr>
+    <tr><td><code>data-in-range</code></td><td>Histogram bar</td><td>Bar falls within the selected range</td></tr>
+    <tr><td><code>data-click-to-filter</code></td><td>Histogram bar</td><td>Bar supports click-to-filter</td></tr>
+    <tr><td><code>data-popup-open</code></td><td>Popover trigger</td><td>Popover is currently open</td></tr>
+    <tr><td><code>data-unsupported</code></td><td>Filter item</td><td>Property type is not supported</td></tr>
+  </tbody>
+</table>
 
 ## Utilities
 
 The `@osdk/react-components/experimental/filter-list` barrel exports these
 utilities alongside the main component:
 
-| Export | Description |
-|---|---|
-| `serializeFilterStates` | Serialize a `FilterStatesMap` to a JSON-safe format for persistence |
-| `deserializeFilterStates` | Restore a `FilterStatesMap` from serialized data |
-| `useFilterListState` | Headless hook for filter state management without UI |
-| `filterHasActiveState` | Returns `true` when a filter definition has non-empty state |
-| `getFilterKey` | Extracts the string key from any filter definition union |
-| `getFilterLabel` | Extracts the display label from any filter definition |
-| `summarizeFilterValue` | Produces a human-readable summary of a filter's current state |
-| `narrowObjectSet` | Applies linked-filter narrowing to an `ObjectSet` |
-| `FilterPopover` | Standalone filter popover component for custom layouts |
-| `FilterInput` | Standalone filter input component |
-| `BaseFilterList` | OSDK-agnostic base component for custom data sources |
+<table>
+  <thead>
+    <tr><th>Export</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>serializeFilterStates</code></td><td>{"Serialize a FilterStatesMap to a JSON-safe format for persistence"}</td></tr>
+    <tr><td><code>deserializeFilterStates</code></td><td>{"Restore a FilterStatesMap from serialized data"}</td></tr>
+    <tr><td><code>useFilterListState</code></td><td>Headless hook for filter state management without UI</td></tr>
+    <tr><td><code>filterHasActiveState</code></td><td>Returns true when a filter definition has non-empty state</td></tr>
+    <tr><td><code>getFilterKey</code></td><td>Extracts the string key from any filter definition union</td></tr>
+    <tr><td><code>getFilterLabel</code></td><td>Extracts the display label from any filter definition</td></tr>
+    <tr><td><code>summarizeFilterValue</code></td><td>{"Produces a human-readable summary of a filter's current state"}</td></tr>
+    <tr><td><code>narrowObjectSet</code></td><td>{"Applies linked-filter narrowing to an ObjectSet"}</td></tr>
+    <tr><td><code>FilterPopover</code></td><td>Standalone filter popover component for custom layouts</td></tr>
+    <tr><td><code>FilterInput</code></td><td>Standalone filter input component</td></tr>
+    <tr><td><code>BaseFilterList</code></td><td>OSDK-agnostic base component for custom data sources</td></tr>
+  </tbody>
+</table>
 
 ## Accessibility
 
