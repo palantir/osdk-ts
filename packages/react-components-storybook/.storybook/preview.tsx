@@ -58,13 +58,11 @@ const preview: Preview = {
 
         // Top-level category order
         const categoryOrder = ["Docs", "Components"];
-        const catIdx = (p) => {
-          const i = categoryOrder.indexOf(p[0]);
-          return i === -1 ? categoryOrder.length : i;
-        };
-        if (catIdx(aParts) !== catIdx(bParts)) {
-          return catIdx(aParts) - catIdx(bParts);
-        }
+        const aOrder = categoryOrder.indexOf(aParts[0]);
+        const bOrder = categoryOrder.indexOf(bParts[0]);
+        const aCat = aOrder === -1 ? categoryOrder.length : aOrder;
+        const bCat = bOrder === -1 ? categoryOrder.length : bOrder;
+        if (aCat !== bCat) return aCat - bCat;
 
         // Within "Docs" — fixed order
         if (aParts[0] === "Docs" && bParts[0] === "Docs") {
