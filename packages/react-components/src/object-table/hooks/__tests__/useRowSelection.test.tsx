@@ -528,7 +528,11 @@ describe("useRowSelection", () => {
           result.current.onToggleRow("item-1", 1);
         });
 
-        // Select all then deselect all
+        // Partial selection → deselect; empty → select all; all → deselect.
+        // After this cycle, selection is empty but lastSelectedRowIndex is still 1.
+        act(() => {
+          result.current.onToggleAll();
+        });
         act(() => {
           result.current.onToggleAll();
         });
@@ -546,6 +550,63 @@ describe("useRowSelection", () => {
           [data[1].$primaryKey, data[2].$primaryKey, data[3].$primaryKey],
           false,
         );
+      });
+    });
+
+    describe("onToggleAll from indeterminate state", () => {
+      it("deselects all when some rows are selected (uncontrolled)", () => {
+        const data = createMockData(5);
+        const onRowSelection = vi.fn();
+        const { result } = renderHook(() =>
+          useRowSelection({
+            selectionMode: "multiple",
+            onRowSelection,
+            data,
+          })
+        );
+
+        // Select two of five rows → indeterminate
+        act(() => {
+          result.current.onToggleRow("item-0", 0);
+        });
+        act(() => {
+          result.current.onToggleRow("item-2", 2);
+        });
+
+        expect(result.current.isAllSelected).toBe(false);
+        expect(result.current.hasSelection).toBe(true);
+
+        // Click header checkbox: clears the selection rather than promoting to "select all"
+        act(() => {
+          result.current.onToggleAll();
+        });
+
+        expect(result.current.rowSelection).toEqual({});
+        expect(result.current.isAllSelected).toBe(false);
+        expect(result.current.hasSelection).toBe(false);
+        expect(onRowSelection).toHaveBeenLastCalledWith([], false);
+      });
+
+      it("deselects all when controlled selectedRows is non-empty but not all", () => {
+        const data = createMockData(5);
+        const onRowSelection = vi.fn();
+        const { result } = renderHook(() =>
+          useRowSelection({
+            selectionMode: "multiple",
+            selectedRows: [data[0].$primaryKey, data[2].$primaryKey],
+            onRowSelection,
+            data,
+          })
+        );
+
+        expect(result.current.isAllSelected).toBe(false);
+        expect(result.current.hasSelection).toBe(true);
+
+        act(() => {
+          result.current.onToggleAll();
+        });
+
+        expect(onRowSelection).toHaveBeenCalledWith([], false);
       });
     });
 

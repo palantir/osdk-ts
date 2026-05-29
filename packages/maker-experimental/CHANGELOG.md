@@ -1,5 +1,34 @@
 # @osdk/maker-experimental
 
+## 0.21.0
+
+### Patch Changes
+
+- Updated dependencies [8965bdf]
+- Updated dependencies [bd90dba]
+  - @osdk/generator-converters.ontologyir@2.25.0
+  - @osdk/generator-converters.preview@0.15.0
+  - @osdk/api@2.25.0
+  - @osdk/maker@0.31.0
+  - @osdk/client.unstable@2.25.0
+
+## 0.20.0
+
+### Minor Changes
+
+- 466aa8a: fix value type block gen
+
+### Patch Changes
+
+- Updated dependencies [a492285]
+- Updated dependencies [60aff19]
+- Updated dependencies [d087189]
+  - @osdk/api@2.24.0
+  - @osdk/generator-converters.ontologyir@2.24.0
+  - @osdk/generator-converters.preview@0.14.0
+  - @osdk/maker@0.30.0
+  - @osdk/client.unstable@2.24.0
+
 ## 0.19.0
 
 ### Minor Changes

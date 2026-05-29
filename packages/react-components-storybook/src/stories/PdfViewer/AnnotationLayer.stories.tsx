@@ -54,8 +54,9 @@ const MIXED_ANNOTATIONS: PdfAnnotation[] = [
 
 const meta: Meta<PdfViewerAnnotationLayerProps> = {
   title:
-    "Beta/DocumentViewer/Renderers/PdfViewer/Building Blocks/AnnotationLayer",
+    "Components/DocumentViewer/Renderers/PdfViewer/Building Blocks/AnnotationLayer",
   component: PdfViewerAnnotationLayer,
+  tags: ["beta"],
   args: {
     annotations: MIXED_ANNOTATIONS,
     pageHeight: 792,

@@ -19,14 +19,14 @@ import type {
   ObjectSet,
   SimplePropertyDef,
 } from "@osdk/api";
-import { getWireObjectSet } from "@osdk/client";
 import { useMemo } from "react";
+import { stableSerialize } from "./stableSerialize.js";
 
 /**
  * Returns a referentially stable ObjectSet that only changes when the
- * wire representation changes. This uses `getWireObjectSet` which includes
- * composed operations (where, union, intersect, etc.) in the serialized
- * form, unlike plain `JSON.stringify(objectSet)` which may not capture them.
+ * wire representation changes. This uses {@link stableSerialize} which
+ * includes composed operations (where, union, intersect, etc.) in the
+ * serialized form
  */
 export function useStableObjectSet<
   Q extends ObjectOrInterfaceDefinition,
@@ -34,9 +34,6 @@ export function useStableObjectSet<
 >(
   objectSet: ObjectSet<Q, RDPs> | undefined,
 ): ObjectSet<Q, RDPs> | undefined {
-  const wireKey = objectSet
-    ? JSON.stringify(getWireObjectSet(objectSet as ObjectSet<Q>))
-    : undefined;
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  return useMemo(() => objectSet, [wireKey]);
+  return useMemo(() => objectSet, [stableSerialize(objectSet)]);
 }

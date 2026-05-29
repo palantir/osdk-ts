@@ -975,15 +975,24 @@ export class OntologyIrToFullMetadataConverter {
           const r = irLogic.deleteObjectRule;
           const ontologyIrParameter =
             action.actionType.metadata.parameters[r.objectToDelete];
-          if (ontologyIrParameter.type.type !== "objectReference") {
-            throw new Error("invalid parameter type");
+          switch (ontologyIrParameter.type.type) {
+            case "objectReference": {
+              return {
+                type: "deleteObject",
+                objectTypeApiName:
+                  ontologyIrParameter.type.objectReference.objectTypeId,
+              } satisfies Ontologies.LogicRule;
+            }
+            case "interfaceReference": {
+              return {
+                type: "deleteInterfaceObject",
+                interfaceTypeApiName:
+                  ontologyIrParameter.type.interfaceReference.interfaceTypeRid,
+              } satisfies Ontologies.LogicRule;
+            }
+            default:
+              throw new Error("invalid objectToDelete parameter type");
           }
-
-          return {
-            type: "deleteObject",
-            objectTypeApiName:
-              ontologyIrParameter.type.objectReference.objectTypeId,
-          } satisfies Ontologies.LogicRule;
         }
         case "modifyInterfaceRule": {
           const r = irLogic.modifyInterfaceRule;

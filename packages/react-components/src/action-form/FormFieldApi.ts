@@ -590,6 +590,7 @@ export type FieldType =
   | "objectType"
   | "geoshape"
   | "geohash"
+  | "scenarioReference"
   | { type: "object"; object: string }
   | { type: "objectSet"; objectSet: string }
   | { type: "interface"; interface: string }

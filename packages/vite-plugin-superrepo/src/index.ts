@@ -151,20 +151,54 @@ export function smartClientPlugin(): Plugin {
       const superrepoRoot = findSuperrepoRoot(server.config.root);
       if (!superrepoRoot) return;
 
+      const ownWatcher = server.watcher;
+
       const palantirDir = path.join(superrepoRoot, ".palantir");
       const expectedFiles = PROXY_ROUTES.map((r) =>
         path.join(palantirDir, `.${r.service}-discovery.json`)
       );
       const expectedFileSet = new Set(expectedFiles);
 
+      // Fingerprint of the current set of live discovery files. We compare
+      // against this after every restart to detect changes that vite swallowed
+      // via its `_restartPromise` dedup, and on every poll tick to detect
+      // chokidar events the watcher never delivered.
+      const snapshot = (): string =>
+        PROXY_ROUTES.map((r) => {
+          const read = inspectDiscovery(superrepoRoot, r.service);
+          return read.kind === "ok"
+            ? `${r.service}:${read.entry.url}`
+            : `${r.service}:${read.kind}`;
+        }).join("|");
+
+      let lastObserved = snapshot();
+      let restartChain: Promise<void> | undefined;
       let restartTimer: ReturnType<typeof setTimeout> | undefined;
+
+      // Restart in a loop until the discovery fingerprint is stable across a
+      // full restart cycle
+      const doRestart = (): Promise<void> => {
+        if (restartChain) return restartChain;
+        restartChain = (async () => {
+          let before: string;
+          do {
+            before = snapshot();
+            await server.restart();
+          } while (snapshot() !== before);
+          lastObserved = before;
+        })().finally(() => {
+          restartChain = undefined;
+        });
+        return restartChain;
+      };
+
       const scheduleRestart = (): void => {
         if (restartTimer) clearTimeout(restartTimer);
         // Coalesce rename+write bursts that commonly emit multiple events
         // for a single discovery file update.
         restartTimer = setTimeout(() => {
           restartTimer = undefined;
-          void server.restart();
+          void doRestart();
         }, 100);
       };
 
@@ -177,7 +211,25 @@ export function smartClientPlugin(): Plugin {
       server.watcher.on("change", onPathChange);
       server.watcher.on("unlink", onPathChange);
 
+      // Polling fallback. Chokidar on Linux can drop the `add` event for a
+      // path that did not exist when `server.watcher.add()` ran (vite passes
+      // `ignoreInitial: true`
+      const pollInterval = setInterval(() => {
+        // Vite restart swaps `server.watcher` for a fresh instance; stop
+        // polling once that happens so we don't leak a timer per restart.
+        if (server.watcher !== ownWatcher) {
+          clearInterval(pollInterval);
+          return;
+        }
+        const current = snapshot();
+        if (current !== lastObserved) {
+          lastObserved = current;
+          scheduleRestart();
+        }
+      }, 1000);
+
       const cleanup = (): void => {
+        clearInterval(pollInterval);
         if (restartTimer) clearTimeout(restartTimer);
         server.watcher.off("add", onPathChange);
         server.watcher.off("change", onPathChange);
