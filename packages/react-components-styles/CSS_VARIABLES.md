@@ -714,7 +714,7 @@ Styling for filter list components including search, checkboxes, listogram, and 
 
 | Variable                                         | Default Value                               | Description                                    |
 | ------------------------------------------------ | ------------------------------------------- | ---------------------------------------------- |
-| `--osdk-filter-item-header-action-padding`       | `calc(var(--osdk-surface-spacing) * 0.5)`   | Action button padding                          |
+| `--osdk-filter-item-header-action-padding`       | `calc(var(--osdk-surface-spacing) * 0.75)`  | Action button padding                          |
 | `--osdk-filter-item-header-action-color`         | `var(--osdk-typography-color-muted)`        | Action button color                            |
 | `--osdk-filter-item-header-action-color-active`  | `var(--osdk-typography-color-default-rest)` | Action button color when pressed or toggled on |
 | `--osdk-filter-item-header-action-bg-hover`      | `var(--osdk-custom-color-gray-1)`           | Action button hover/toggled background         |
