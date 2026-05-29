@@ -50,7 +50,10 @@ const mockClient = createClient(
 const preview: Preview = {
   parameters: {
     options: {
-      storySort: (a, b) => {
+      storySort: (
+        a: { title: string; type: string; id: string },
+        b: { title: string; type: string; id: string },
+      ) => {
         // Top-level category ordering
         const categoryOrder = ["Docs", "Components"];
         const aCat = a.title.split("/")[0];
