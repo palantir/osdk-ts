@@ -22,8 +22,9 @@ import { MEDIA_EMPLOYEE_PK } from "../../mocks/fauxFoundry.js";
 import { Employee } from "../../types/Employee.js";
 
 const meta: Meta<PdfViewerMediaProps> = {
-  title: "Beta/DocumentViewer/Renderers/PdfViewer",
+  title: "Components/DocumentViewer/Renderers/PdfViewer",
   component: PdfViewer,
+  tags: ["beta"],
   parameters: {
     controls: { expanded: true },
   },

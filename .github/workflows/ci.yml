@@ -214,7 +214,7 @@ jobs:
 
   bundle-size:
     name: Bundle Size
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false
     timeout-minutes: 15
     runs-on: ubuntu-latest
     permissions:
@@ -313,10 +313,91 @@ jobs:
             gh pr comment "${{ github.event.pull_request.number }}" -F /tmp/comment.md
           fi
 
+  fork-guard:
+    name: Fork sensitive-paths guard
+    # Only fork PRs need this check; for in-repo PRs and push events we trust the author
+    # and the job becomes a no-op success.
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - name: Check out code
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == true
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - name: Guard install-time config from fork PRs
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == true
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          BYPASS_LABEL: safe-to-test
+          PR_LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
+        run: |
+          set -euo pipefail
+
+          # Maintainer override: if the PR carries the bypass label, accept.
+          if echo "$PR_LABELS" | grep -q "\"$BYPASS_LABEL\""; then
+            echo "Bypass label '$BYPASS_LABEL' is set; skipping sensitive-paths check."
+            exit 0
+          fi
+
+          git fetch origin "$BASE_SHA" --depth=1
+          CHANGED=$(git diff --name-only "$BASE_SHA" "$HEAD_SHA")
+          echo "Changed files:"
+          echo "$CHANGED"
+          echo "---"
+
+          violations=()
+
+          # Direct sensitive paths
+          while IFS= read -r f; do
+            case "$f" in
+              .npmrc|pnpm-workspace.yaml)
+                violations+=("$f (install-time config)")
+                ;;
+              .github/workflows/*)
+                violations+=("$f (CI workflow)")
+                ;;
+            esac
+          done <<< "$CHANGED"
+
+          # Lockfile changed without any package.json change: classic tampering signal
+          if echo "$CHANGED" | grep -qx "pnpm-lock.yaml"; then
+            if ! echo "$CHANGED" | grep -q "package.json$"; then
+              violations+=("pnpm-lock.yaml changed without any package.json change")
+            fi
+          fi
+
+          # Root package.json pnpm field changed (overrides, onlyBuiltDependencies, etc.)
+          if echo "$CHANGED" | grep -qx "package.json"; then
+            base_pnpm=$(git show "$BASE_SHA:package.json" | jq -c '.pnpm // {}')
+            head_pnpm=$(git show "$HEAD_SHA:package.json" | jq -c '.pnpm // {}')
+            if [ "$base_pnpm" != "$head_pnpm" ]; then
+              violations+=("package.json 'pnpm' field changed (overrides/onlyBuiltDependencies)")
+            fi
+          fi
+
+          if [ "${#violations[@]}" -gt 0 ]; then
+            echo "::error::This fork PR modifies install-time or CI configuration."
+            echo "::error::Maintainer review required. Apply the '$BYPASS_LABEL' label to bypass after review."
+            echo ""
+            echo "Violations:"
+            for v in "${violations[@]}"; do
+              echo "  - $v"
+            done
+            exit 1
+          fi
+
+          echo "No sensitive-path modifications detected."
+
   ci-build:
     name: ci-build
     if: ${{ always() }}
-    needs: [build, e2e, cspell]
+    needs: [build, e2e, cspell, fork-guard]
     runs-on: ubuntu-latest
     steps:
       - name: Verify dependent jobs succeeded
@@ -331,5 +412,9 @@ jobs:
           fi
           if [[ "${{ needs.cspell.result }}" != "success" ]]; then
             echo "cspell did not succeed: ${{ needs.cspell.result }}"
+            exit 1
+          fi
+          if [[ "${{ needs.fork-guard.result }}" != "success" ]]; then
+            echo "fork-guard did not succeed: ${{ needs.fork-guard.result }}"
             exit 1
           fi

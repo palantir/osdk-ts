@@ -26,7 +26,7 @@ import "./styles.css";
 // Initialize MSW with proper options
 // This is synchronous, it only configures MSW
 // The actual service worker registration happens in the mswLoader, which runs before each story
-const basePath = (import.meta as any).env?.BASE_URL ?? "/";
+const basePath = import.meta.env?.BASE_URL ?? "/";
 const serviceWorkerUrl = `${basePath}${
   basePath.endsWith("/") ? "" : "/"
 }mockServiceWorker.js`;
@@ -49,6 +49,28 @@ const mockClient = createClient(
 
 const preview: Preview = {
   parameters: {
+    // Storybook 10 reads storySort from parameters.options (statically parsed)
+    options: {
+      storySort: {
+        order: [
+          "Docs",
+          [
+            "Welcome",
+            "Installation",
+            "Changelog",
+            "Guides",
+            ["Getting Started", "Usage with OSDK"],
+            "Styling",
+            ["Overview"],
+            "Tokens",
+            ["Colors", "Typography", "Spacing"],
+          ],
+          "Components",
+          ["*"],
+          "*",
+        ],
+      },
+    },
     controls: {
       matchers: {
         color: /(background|color)$/i,
