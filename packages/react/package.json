@@ -61,7 +61,6 @@
       "require": "./build/cjs/public/experimental/admin.cjs",
       "default": "./build/browser/public/experimental/admin.js"
     },
-    "./experimental/aip": null,
     "./*": {
       "browser": "./build/browser/public/*.js",
       "import": {

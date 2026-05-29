@@ -43,7 +43,6 @@
       "require": "./build/cjs/public/experimental/action-form.cjs",
       "default": "./build/browser/public/experimental/action-form.js"
     },
-    "./experimental/aip-agent-chat": null,
     "./experimental/document-viewer": {
       "browser": "./build/browser/public/experimental/document-viewer.js",
       "import": {
@@ -164,7 +163,7 @@
     }
   },
   "scripts": {
-    "check-attw": "attw --pack . --exclude-entrypoints ./styles.css ./experimental/action-form ./experimental/document-viewer ./experimental/email-viewer ./experimental/excel-viewer ./experimental/filter-list ./experimental/image-viewer ./experimental/markdown-renderer ./experimental/object-table ./experimental/pdf-viewer ./experimental/theme ./experimental/tiff-renderer ./experimental/video-viewer ./experimental/xml-viewer",
+    "check-attw": "attw --pack . --exclude-entrypoints ./styles.css ./experimental/action-form ./experimental/aip-agent-chat ./experimental/document-viewer ./experimental/email-viewer ./experimental/excel-viewer ./experimental/filter-list ./experimental/image-viewer ./experimental/markdown-renderer ./experimental/object-table ./experimental/pdf-viewer ./experimental/theme ./experimental/tiff-renderer ./experimental/video-viewer ./experimental/xml-viewer",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt",
