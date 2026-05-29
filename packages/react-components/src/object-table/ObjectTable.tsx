@@ -25,7 +25,7 @@ import type {
 } from "@osdk/api";
 import type { Cell } from "@tanstack/react-table";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useImperativeHandle, useMemo } from "react";
 import { useColumnDefs } from "./hooks/useColumnDefs.js";
 import { useColumnPinning } from "./hooks/useColumnPinning.js";
 import { useColumnResize } from "./hooks/useColumnResize.js";
@@ -39,6 +39,7 @@ import { useTableSorting } from "./hooks/useTableSorting.js";
 import type { ObjectTableProps } from "./ObjectTableApi.js";
 import { BaseTable } from "./Table.js";
 import type { HeaderMenuFeatureFlags } from "./TableHeaderWithPopover.js";
+import { createObjectTableSnapshot } from "./utils/createObjectTableSnapshot.js";
 import { getRowId } from "./utils/getRowId.js";
 
 const EMPTY_ARRAY: [] = [];
@@ -93,6 +94,7 @@ export function ObjectTable<
   enableColumnResizing = true,
   enableColumnConfig = true,
   editMode = "manual",
+  tableRef,
   ...props
 }: ObjectTableProps<Q, RDPs, FunctionColumns>): React.ReactElement {
   const { columnSizing, onColumnSizingChange } = useColumnResize({
@@ -111,22 +113,28 @@ export function ObjectTable<
     },
   );
 
-  const { data, fetchMore, isLoading, error, objectSet: resultingObjectSet } =
-    useObjectTableData<
-      Q,
-      RDPs,
-      FunctionColumns
-    >(
-      objectType,
-      columnDefinitions,
-      filter,
-      sorting,
-      objectSet,
-      objectSetOptions,
-      dedupeIntervalMs,
-      pageSize,
-      streamUpdates,
-    );
+  const {
+    data,
+    fetchMore,
+    hasMore,
+    isLoading,
+    error,
+    objectSet: resultingObjectSet,
+  } = useObjectTableData<
+    Q,
+    RDPs,
+    FunctionColumns
+  >(
+    objectType,
+    columnDefinitions,
+    filter,
+    sorting,
+    objectSet,
+    objectSetOptions,
+    dedupeIntervalMs,
+    pageSize,
+    streamUpdates,
+  );
 
   const { columns, loading: isColumnsLoading } = useColumnDefs<
     Q,
@@ -295,6 +303,16 @@ export function ObjectTable<
   );
 
   const isTableLoading = isLoading || isColumnsLoading;
+
+  useImperativeHandle(tableRef, () => ({
+    getSnapshot: () =>
+      createObjectTableSnapshot({
+        table,
+        hasNextPage: hasMore,
+        fetchNextPage: fetchMore,
+        isLoading: isTableLoading,
+      }),
+  }), [fetchMore, hasMore, isTableLoading, table]);
 
   const headerMenuFeatureFlags: HeaderMenuFeatureFlags = useMemo(() => ({
     showSortingItems: enableOrdering,

@@ -32,6 +32,57 @@ import type { CellEditInfo, EditFieldConfig } from "./utils/types.js";
 
 export type { EditFieldConfig } from "./utils/types.js";
 
+export interface ObjectTableHandle<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+> {
+  /**
+   * Returns a fresh snapshot of ObjectTable's currently loaded data and
+   * pagination state.
+   *
+   * The snapshot includes visible data columns only, excludes internal control
+   * columns such as row selection, and does not fetch additional pages.
+   */
+  getSnapshot: () => ObjectTableSnapshot<Q, RDPs>;
+}
+
+export interface ObjectTableSnapshot<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+> {
+  columns: readonly ObjectTableDataColumn[];
+  rows: readonly ObjectTableDataRow<Q, RDPs>[];
+  hasNextPage: boolean;
+  /**
+   * Fetches the next page using ObjectTable's existing pagination mechanism.
+   *
+   * This function is always safe to call. It resolves immediately when no next
+   * page is available. Use `hasNextPage` to decide whether calling it can load
+   * additional rows.
+   */
+  fetchNextPage: () => Promise<void>;
+  isLoading: boolean;
+}
+
+export interface ObjectTableDataColumn {
+  id: string;
+  name: string;
+}
+
+export interface ObjectTableDataRow<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+> {
+  id: string;
+  original: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>;
+  getValue: (columnId: string) => ObjectTableDataCell | undefined;
+}
+
+export type ObjectTableDataCell =
+  | { status: "ready"; value: unknown }
+  | { status: "loading"; value?: unknown }
+  | { status: "error"; error: unknown; value?: unknown };
+
 export type ColumnDefinition<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
@@ -294,6 +345,15 @@ export interface ObjectTableProps<
    * If objectSet is not provided, objects will be fetched based on this type.
    */
   objectType: Q;
+
+  /**
+   * Ref-like handle for reading a fresh snapshot of the currently loaded table
+   * data and pagination state.
+   *
+   * The handle is exposed as a named prop rather than React's reserved `ref`
+   * prop so ObjectTable can preserve its generic component signature.
+   */
+  tableRef?: React.Ref<ObjectTableHandle<Q, RDPs>>;
 
   /**
    * The set of objects to show in the table.
