@@ -18,7 +18,6 @@ import type {
   LinkedType,
   LinkNames,
   ObjectOrInterfaceDefinition,
-  ObjectTypeDefinition,
 } from "@osdk/api";
 import type { Osdk, PropertyKeys, WhereClause } from "@osdk/client";
 import type { ObserveLinks } from "@osdk/client/observable";
@@ -26,8 +25,15 @@ import React from "react";
 import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
 import { devToolsMetadata, makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext } from "./OsdkContext.js";
+import type { ResolveToObjectTypeOption } from "./useOsdkObjects.js";
 
-export interface UseLinksOptions<
+export type UseLinksOptions<
+  T extends ObjectOrInterfaceDefinition,
+> =
+  & UseLinksBaseOptions<T>
+  & ResolveToObjectTypeOption<T>;
+
+interface UseLinksBaseOptions<
   T extends ObjectOrInterfaceDefinition,
 > {
   /**
@@ -97,21 +103,6 @@ export interface UseLinksOptions<
    * object type.
    */
   $includeAllBaseObjectProperties?: boolean;
-
-  /**
-   * When traversing to linked objects via an interface link target, return
-   * the full concrete object type instances instead of interface views.
-   *
-   * Pass an ObjectTypeDefinition to narrow the return type to
-   * `Osdk.Instance<R>`. This is an unchecked assertion — the runtime does
-   * not filter by type.
-   *
-   * Only has an effect when the link target is an interface; for concrete
-   * object link targets this option is a no-op.
-   *
-   * @default false
-   */
-  resolveToObjectType?: boolean | ObjectTypeDefinition;
 }
 
 export interface UseLinksResult<Q extends ObjectOrInterfaceDefinition> {
@@ -148,29 +139,6 @@ export interface UseLinksResult<Q extends ObjectOrInterfaceDefinition> {
 
 const emptyArray = Object.freeze([]);
 const emptyMap: ReadonlyMap<string | number, ReadonlyArray<never>> = new Map();
-
-// resolveToObjectType overload: when an ObjectTypeDefinition is passed,
-// narrow the return type to Osdk.Instance<R>.
-export function useLinks<
-  T extends ObjectOrInterfaceDefinition,
-  L extends LinkNames<T>,
-  R extends ObjectTypeDefinition,
->(
-  objects: Osdk.Instance<T> | Array<Osdk.Instance<T>> | undefined,
-  linkName: L,
-  options: UseLinksOptions<LinkedType<T, L>> & {
-    resolveToObjectType: R;
-  },
-): UseLinksResult<R>;
-
-export function useLinks<
-  T extends ObjectOrInterfaceDefinition,
-  L extends LinkNames<T>,
->(
-  objects: Osdk.Instance<T> | Array<Osdk.Instance<T>> | undefined,
-  linkName: L,
-  options?: UseLinksOptions<LinkedType<T, L>>,
-): UseLinksResult<LinkedType<T, L>>;
 
 /**
  * Hook to observe links from an object or array of objects.

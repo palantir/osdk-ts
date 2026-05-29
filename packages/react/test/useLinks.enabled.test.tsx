@@ -26,12 +26,6 @@ const MockObjectType = {
   primaryKeyType: "string",
 } as unknown as ObjectTypeDefinition;
 
-const ConcreteTargetType = {
-  apiName: "ConcreteTarget",
-  type: "object",
-  primaryKeyType: "string",
-} as unknown as ObjectTypeDefinition;
-
 const mockObject: Osdk.Instance<typeof MockObjectType> = {
   $objectType: "MockObject",
   $primaryKey: "obj-123",
@@ -212,22 +206,6 @@ describe("useLinks enabled option", () => {
       expect(options.resolveToObjectType).toBe(true);
     });
 
-    it("should pass resolveToObjectType: true to observeLinks when an ObjectTypeDefinition is provided", () => {
-      const wrapper = createWrapper();
-
-      renderHook(
-        () =>
-          useLinks(mockObject, "relatedObjects", {
-            resolveToObjectType: ConcreteTargetType,
-          }),
-        { wrapper },
-      );
-
-      expect(mockObserveLinks).toHaveBeenCalledTimes(1);
-      const options = mockObserveLinks.mock.calls[0][2];
-      expect(options.resolveToObjectType).toBe(true);
-    });
-
     it("should not include resolveToObjectType when not set", () => {
       const wrapper = createWrapper();
 
@@ -241,30 +219,6 @@ describe("useLinks enabled option", () => {
       expect(options.resolveToObjectType).toBeUndefined();
     });
 
-    it("should not resubscribe when resolveToObjectType reference changes but its truthiness is stable", () => {
-      const wrapper = createWrapper();
-
-      const { rerender } = renderHook(
-        ({ resolve }) =>
-          useLinks(mockObject, "relatedObjects", {
-            resolveToObjectType: resolve,
-          }),
-        {
-          wrapper,
-          initialProps: {
-            resolve: true as boolean | ObjectTypeDefinition,
-          },
-        },
-      );
-
-      expect(mockObserveLinks).toHaveBeenCalledTimes(1);
-
-      rerender({ resolve: ConcreteTargetType });
-
-      // both are truthy so dep array entry !!resolveToObjectType is stable
-      expect(mockObserveLinks).toHaveBeenCalledTimes(1);
-    });
-
     it("should resubscribe when resolveToObjectType toggles between truthy and falsy", () => {
       const wrapper = createWrapper();
 
@@ -276,7 +230,7 @@ describe("useLinks enabled option", () => {
         {
           wrapper,
           initialProps: {
-            resolve: true as boolean | ObjectTypeDefinition | undefined,
+            resolve: true as boolean | undefined,
           },
         },
       );
