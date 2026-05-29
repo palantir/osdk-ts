@@ -44,10 +44,10 @@
     background-color: var(--osdk-input-bg-hover);
   }
 
-  &:focus-visible {
-    outline: var(--osdk-input-focus-width) solid var(--osdk-input-focus-color);
-    outline-offset: var(--osdk-input-focus-offset);
+  &:focus {
+    outline: none;
     border-color: var(--osdk-input-border-color-focus);
+    box-shadow: var(--osdk-input-shadow-focus);
   }
 
   &:disabled {
@@ -57,5 +57,11 @@
 
   &[aria-invalid] {
     border-color: var(--osdk-input-border-color-error);
+    box-shadow: var(--osdk-input-shadow-error);
+  }
+
+  &[aria-invalid]:focus {
+    border-color: var(--osdk-input-border-color-error);
+    box-shadow: var(--osdk-input-shadow-error-focus);
   }
 }

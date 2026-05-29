@@ -24,12 +24,18 @@
 
   &:focus {
     border-color: var(--osdk-time-picker-input-border-color-focus);
-    outline: var(--osdk-time-picker-input-focus-outline);
-    outline-offset: var(--osdk-time-picker-input-focus-offset);
+    outline: none;
+    box-shadow: var(--osdk-input-shadow-focus);
   }
 
   &[aria-invalid] {
     border-color: var(--osdk-input-border-color-error);
+    box-shadow: var(--osdk-input-shadow-error);
+  }
+
+  &[aria-invalid]:focus {
+    border-color: var(--osdk-input-border-color-error);
+    box-shadow: var(--osdk-input-shadow-error-focus);
   }
 }
 

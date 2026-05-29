@@ -81,10 +81,9 @@
   }
 
   &:focus-within {
-    outline: var(--osdk-datetime-input-focus-width) solid
-      var(--osdk-datetime-input-focus-color);
-    outline-offset: var(--osdk-datetime-input-focus-offset);
+    outline: none;
     border-color: var(--osdk-datetime-input-border-color-focus);
+    box-shadow: var(--osdk-input-shadow-focus);
   }
 
   &[data-disabled] {
@@ -103,9 +102,11 @@
 
 .osdkDatePickerInputWrapperError {
   border-color: var(--osdk-datetime-input-error-border-color);
+  box-shadow: var(--osdk-input-shadow-error);
 
   &:focus-within {
     border-color: var(--osdk-datetime-input-error-border-color);
+    box-shadow: var(--osdk-input-shadow-error-focus);
   }
 }
 
