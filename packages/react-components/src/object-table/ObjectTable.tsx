@@ -39,11 +39,12 @@ import { useTableSorting } from "./hooks/useTableSorting.js";
 import type { ObjectTableProps } from "./ObjectTableApi.js";
 import { BaseTable } from "./Table.js";
 import type { HeaderMenuFeatureFlags } from "./TableHeaderWithPopover.js";
-import { createObjectTableSnapshot } from "./utils/createObjectTableSnapshot.js";
+import { createObjectTableLoadedData } from "./utils/createObjectTableLoadedData.js";
 import { getRowId } from "./utils/getRowId.js";
+import type { EditableConfig } from "./utils/types.js";
 
 const EMPTY_ARRAY: [] = [];
-import type { EditableConfig } from "./utils/types.js";
+const RESOLVED_NOOP_LOAD_NEXT_PAGE = async (): Promise<void> => {};
 
 /**
  * ObjectTable - A headless table component for displaying OSDK object sets
@@ -119,6 +120,7 @@ export function ObjectTable<
     hasMore,
     isLoading,
     error,
+    totalCount,
     objectSet: resultingObjectSet,
   } = useObjectTableData<
     Q,
@@ -305,14 +307,18 @@ export function ObjectTable<
   const isTableLoading = isLoading || isColumnsLoading;
 
   useImperativeHandle(tableRef, () => ({
-    getSnapshot: () =>
-      createObjectTableSnapshot({
+    getLoadedData: () =>
+      createObjectTableLoadedData({
         table,
         hasNextPage: hasMore,
-        fetchNextPage: fetchMore,
         isLoading: isTableLoading,
+        error,
+        totalCount,
       }),
-  }), [fetchMore, hasMore, isTableLoading, table]);
+    loadNextPage: hasMore && fetchMore != null
+      ? fetchMore
+      : RESOLVED_NOOP_LOAD_NEXT_PAGE,
+  }), [error, fetchMore, hasMore, isTableLoading, table, totalCount]);
 
   const headerMenuFeatureFlags: HeaderMenuFeatureFlags = useMemo(() => ({
     showSortingItems: enableOrdering,

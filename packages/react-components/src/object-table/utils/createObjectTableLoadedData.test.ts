@@ -19,7 +19,7 @@ import type { Row, Table } from "@tanstack/react-table";
 import { describe, expect, it, vi } from "vitest";
 import { createAsyncCellData } from "./AsyncCellData.js";
 import { SELECTION_COLUMN_ID } from "./constants.js";
-import { createObjectTableSnapshot } from "./createObjectTableSnapshot.js";
+import { createObjectTableLoadedData } from "./createObjectTableLoadedData.js";
 
 const TestObjectType = {
   type: "object",
@@ -44,7 +44,7 @@ interface TestRowValues {
   hidden: string;
 }
 
-describe(createObjectTableSnapshot, () => {
+describe(createObjectTableLoadedData, () => {
   it("returns visible data columns and row values while excluding control columns", () => {
     const firstRow = createOriginalRow({
       id: "1",
@@ -66,40 +66,41 @@ describe(createObjectTableSnapshot, () => {
         createColumn("status", "Status"),
       ],
       rows: [
-        createRow({ id: "row-1", original: firstRow }),
-        createRow({ id: "row-2", original: secondRow }),
+        createRow({ id: "row-1", object: firstRow }),
+        createRow({ id: "row-2", object: secondRow }),
       ],
     });
 
-    const fetchNextPage = vi.fn(async () => {});
-    const snapshot = createObjectTableSnapshot<TestObject, TestRDPs>({
+    const loadedData = createObjectTableLoadedData<TestObject, TestRDPs>({
       table,
       hasNextPage: true,
-      fetchNextPage,
       isLoading: false,
+      error: undefined,
+      totalCount: "2",
     });
 
-    expect(snapshot.columns).toEqual([
+    expect(loadedData.columns).toEqual([
       { id: "name", name: "Name" },
       { id: "status", name: "Status" },
     ]);
-    expect(snapshot.hasNextPage).toBe(true);
-    expect(snapshot.fetchNextPage).toBe(fetchNextPage);
-    expect(snapshot.isLoading).toBe(false);
+    expect(loadedData.hasNextPage).toBe(true);
+    expect(loadedData.isLoading).toBe(false);
+    expect(loadedData.error).toBeUndefined();
+    expect(loadedData.totalCount).toBe("2");
 
-    expect(snapshot.rows).toHaveLength(2);
-    expect(snapshot.rows[0].id).toBe("row-1");
-    expect(snapshot.rows[0].original).toBe(firstRow);
-    expect(snapshot.rows[0].getValue("name")).toEqual({
+    expect(loadedData.rows).toHaveLength(2);
+    expect(loadedData.rows[0].id).toBe("row-1");
+    expect(loadedData.rows[0].object).toBe(firstRow);
+    expect(loadedData.rows[0].getValue("name")).toEqual({
       status: "ready",
       value: "Ada",
     });
-    expect(snapshot.rows[0].getValue("status")).toEqual({
+    expect(loadedData.rows[0].getValue("status")).toEqual({
       status: "ready",
       value: "Active",
     });
-    expect(snapshot.rows[0].getValue(SELECTION_COLUMN_ID)).toBeUndefined();
-    expect(snapshot.rows[0].getValue("hidden")).toBeUndefined();
+    expect(loadedData.rows[0].getValue(SELECTION_COLUMN_ID)).toBeUndefined();
+    expect(loadedData.rows[0].getValue("hidden")).toBeUndefined();
   });
 
   it("uses a string column name fallback when the rendered header is not a string", () => {
@@ -108,39 +109,70 @@ describe(createObjectTableSnapshot, () => {
         createColumn("withMeta", { label: "Rendered" }, "Meta Header"),
         createColumn("withoutMeta", { label: "Rendered" }),
       ],
-      rows: [createRow({ id: "row-1", original: createOriginalRow() })],
+      rows: [createRow({ id: "row-1", object: createOriginalRow() })],
     });
 
-    const snapshot = createObjectTableSnapshot<TestObject, TestRDPs>({
+    const loadedData = createObjectTableLoadedData<TestObject, TestRDPs>({
       table,
       hasNextPage: false,
       isLoading: false,
+      error: undefined,
+      totalCount: undefined,
     });
 
-    expect(snapshot.hasNextPage).toBe(false);
-    expect(snapshot.columns).toEqual([
+    expect(loadedData.hasNextPage).toBe(false);
+    expect(loadedData.columns).toEqual([
       { id: "withMeta", name: "Meta Header" },
       { id: "withoutMeta", name: "withoutMeta" },
     ]);
   });
 
-  it("does not expose fetchNextPage when hasNextPage is false", async () => {
-    const fetchNextPage = vi.fn(async () => {});
+  it("reads accessor values instead of rendered cell content", () => {
+    const renderedCellText = "rendered cell content";
     const table = createTable({
-      columns: [createColumn("name", "Name")],
-      rows: [createRow({ id: "row-1", original: createOriginalRow() })],
+      columns: [
+        createColumn("name", "Name", undefined, () => renderedCellText),
+      ],
+      rows: [
+        createRow({
+          id: "row-1",
+          object: createOriginalRow({ name: "Ada" }),
+          values: { name: "Ada" },
+        }),
+      ],
     });
 
-    const snapshot = createObjectTableSnapshot<TestObject, TestRDPs>({
+    const loadedData = createObjectTableLoadedData<TestObject, TestRDPs>({
       table,
       hasNextPage: false,
-      fetchNextPage,
       isLoading: false,
+      error: undefined,
+      totalCount: undefined,
     });
 
-    expect(snapshot.hasNextPage).toBe(false);
-    await snapshot.fetchNextPage();
-    expect(fetchNextPage).not.toHaveBeenCalled();
+    expect(loadedData.rows[0].getValue("name")).toEqual({
+      status: "ready",
+      value: "Ada",
+    });
+  });
+
+  it("exposes table-level error and total count metadata", () => {
+    const error = new Error("failed");
+    const table = createTable({
+      columns: [createColumn("name", "Name")],
+      rows: [createRow({ id: "row-1", object: createOriginalRow() })],
+    });
+
+    const loadedData = createObjectTableLoadedData<TestObject, TestRDPs>({
+      table,
+      hasNextPage: false,
+      isLoading: false,
+      error,
+      totalCount: "1",
+    });
+
+    expect(loadedData.error).toBe(error);
+    expect(loadedData.totalCount).toBe("1");
   });
 
   it("wraps async cell values without exposing the internal async cell shape", () => {
@@ -168,7 +200,7 @@ describe(createObjectTableSnapshot, () => {
       rows: [
         createRow({
           id: "row-1",
-          original: createOriginalRow(),
+          object: createOriginalRow(),
           values: {
             loading: loadingValue,
             error: errorValue,
@@ -178,22 +210,24 @@ describe(createObjectTableSnapshot, () => {
       ],
     });
 
-    const snapshot = createObjectTableSnapshot<TestObject, TestRDPs>({
+    const loadedData = createObjectTableLoadedData<TestObject, TestRDPs>({
       table,
       hasNextPage: false,
       isLoading: true,
+      error: undefined,
+      totalCount: undefined,
     });
 
-    expect(snapshot.rows[0].getValue("loading")).toEqual({
+    expect(loadedData.rows[0].getValue("loading")).toEqual({
       status: "loading",
       value: "previous comment",
     });
-    expect(snapshot.rows[0].getValue("error")).toEqual({
+    expect(loadedData.rows[0].getValue("error")).toEqual({
       status: "error",
       error,
       value: "stale status",
     });
-    expect(snapshot.rows[0].getValue("loaded")).toEqual({
+    expect(loadedData.rows[0].getValue("loaded")).toEqual({
       status: "ready",
       value: "loaded status",
     });
@@ -217,11 +251,13 @@ function createColumn(
   id: string,
   header: unknown,
   columnName?: string,
+  cell?: () => unknown,
 ): ReturnType<Table<TestRow>["getVisibleLeafColumns"]>[number] {
   return {
     id,
     columnDef: {
       header,
+      cell,
       meta: { columnName },
     },
   } as ReturnType<Table<TestRow>["getVisibleLeafColumns"]>[number];
@@ -229,16 +265,16 @@ function createColumn(
 
 function createRow({
   id,
-  original,
+  object,
   values,
 }: {
   id: string;
-  original: TestRow;
+  object: TestRow;
   values?: Record<string, unknown>;
 }): Row<TestRow> {
   return {
     id,
-    original,
+    original: object,
     getValue: vi.fn((columnId: string) => {
       const rowValues = values ?? getDefaultRowValues();
       if (columnId in rowValues) {

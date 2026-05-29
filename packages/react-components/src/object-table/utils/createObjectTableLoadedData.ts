@@ -23,15 +23,14 @@ import type {
 import type { Column, Table } from "@tanstack/react-table";
 import type {
   ObjectTableDataCell,
-  ObjectTableSnapshot,
+  ObjectTableLoadedData,
 } from "../ObjectTableApi.js";
 import { isAsyncCellData } from "./AsyncCellData.js";
 import { SELECTION_COLUMN_ID } from "./constants.js";
 
 const CONTROL_COLUMN_IDS: ReadonlySet<string> = new Set([SELECTION_COLUMN_ID]);
-const RESOLVED_NOOP_FETCH_NEXT_PAGE = async (): Promise<void> => {};
 
-interface CreateObjectTableSnapshotParams<
+interface CreateObjectTableLoadedDataParams<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 > {
@@ -39,19 +38,21 @@ interface CreateObjectTableSnapshotParams<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
   >;
   hasNextPage: boolean;
-  fetchNextPage?: () => Promise<void>;
   isLoading: boolean;
+  error: unknown | undefined;
+  totalCount: string | undefined;
 }
 
-export function createObjectTableSnapshot<
+export function createObjectTableLoadedData<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 >({
   table,
   hasNextPage,
-  fetchNextPage,
   isLoading,
-}: CreateObjectTableSnapshotParams<Q, RDPs>): ObjectTableSnapshot<
+  error,
+  totalCount,
+}: CreateObjectTableLoadedDataParams<Q, RDPs>): ObjectTableLoadedData<
   Q,
   RDPs
 > {
@@ -62,25 +63,24 @@ export function createObjectTableSnapshot<
       name: getColumnName(column),
     }));
 
-  const snapshotColumnIds = new Set(columns.map(column => column.id));
+  const loadedDataColumnIds = new Set(columns.map(column => column.id));
 
   return {
     columns,
     rows: table.getRowModel().rows.map(row => ({
       id: row.id,
-      original: row.original,
+      object: row.original,
       getValue: (columnId: string) => {
-        if (!snapshotColumnIds.has(columnId)) {
+        if (!loadedDataColumnIds.has(columnId)) {
           return undefined;
         }
         return createObjectTableDataCell(row.getValue(columnId));
       },
     })),
     hasNextPage,
-    fetchNextPage: hasNextPage && fetchNextPage != null
-      ? fetchNextPage
-      : RESOLVED_NOOP_FETCH_NEXT_PAGE,
     isLoading,
+    error,
+    totalCount,
   };
 }
 
@@ -88,7 +88,7 @@ function getColumnName<TData>(
   column: Column<TData, unknown>,
 ): string {
   const columnName = column.columnDef.meta?.columnName;
-  if (columnName) {
+  if (columnName != null) {
     return columnName;
   }
 

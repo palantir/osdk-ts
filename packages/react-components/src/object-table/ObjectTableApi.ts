@@ -37,31 +37,36 @@ export interface ObjectTableHandle<
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 > {
   /**
-   * Returns a fresh snapshot of ObjectTable's currently loaded data and
-   * pagination state.
+   * Returns a fresh read of ObjectTable's currently loaded data and pagination
+   * state.
    *
-   * The snapshot includes visible data columns only, excludes internal control
+   * The result includes visible data columns only, excludes internal control
    * columns such as row selection, and does not fetch additional pages.
+   * Cell values come from the table's accessor values, not from rendered React
+   * content supplied by `renderCell`.
    */
-  getSnapshot: () => ObjectTableSnapshot<Q, RDPs>;
-}
+  getLoadedData: () => ObjectTableLoadedData<Q, RDPs>;
 
-export interface ObjectTableSnapshot<
-  Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
-> {
-  columns: readonly ObjectTableDataColumn[];
-  rows: readonly ObjectTableDataRow<Q, RDPs>[];
-  hasNextPage: boolean;
   /**
    * Fetches the next page using ObjectTable's existing pagination mechanism.
    *
    * This function is always safe to call. It resolves immediately when no next
-   * page is available. Use `hasNextPage` to decide whether calling it can load
-   * additional rows.
+   * page is available. Use `getLoadedData().hasNextPage` to decide whether
+   * calling it can load additional rows.
    */
-  fetchNextPage: () => Promise<void>;
+  loadNextPage: () => Promise<void>;
+}
+
+export interface ObjectTableLoadedData<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+> {
+  columns: ObjectTableDataColumn[];
+  rows: ObjectTableDataRow<Q, RDPs>[];
+  hasNextPage: boolean;
   isLoading: boolean;
+  error: unknown | undefined;
+  totalCount: string | undefined;
 }
 
 export interface ObjectTableDataColumn {
@@ -74,14 +79,14 @@ export interface ObjectTableDataRow<
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 > {
   id: string;
-  original: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>;
+  object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>;
   getValue: (columnId: string) => ObjectTableDataCell | undefined;
 }
 
 export type ObjectTableDataCell =
   | { status: "ready"; value: unknown }
-  | { status: "loading"; value?: unknown }
-  | { status: "error"; error: unknown; value?: unknown };
+  | { status: "loading"; value: unknown | undefined }
+  | { status: "error"; error: unknown; value: unknown | undefined };
 
 export type ColumnDefinition<
   Q extends ObjectOrInterfaceDefinition,

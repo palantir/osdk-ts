@@ -76,25 +76,27 @@ describe(ObjectTable, () => {
     const ref = React.createRef<ObjectTableHandle<TestObject>>();
     render(<ObjectTable tableRef={ref} objectType={TestObjectType} />);
 
-    const snapshot = ref.current?.getSnapshot();
+    const loadedData = ref.current?.getLoadedData();
 
     expect(fetchMore).not.toHaveBeenCalled();
-    expect(snapshot?.columns).toEqual([
+    expect(loadedData?.columns).toEqual([
       { id: "name", name: "Name" },
       { id: "status", name: "Status" },
     ]);
-    expect(snapshot?.hasNextPage).toBe(true);
-    expect(snapshot?.isLoading).toBe(false);
-    expect(snapshot?.rows).toHaveLength(1);
-    expect(snapshot?.rows[0].id).toBe("1");
-    expect(snapshot?.rows[0].original).toBe(row);
-    expect(snapshot?.rows[0].getValue("name")).toEqual({
+    expect(loadedData?.hasNextPage).toBe(true);
+    expect(loadedData?.isLoading).toBe(false);
+    expect(loadedData?.error).toBeUndefined();
+    expect(loadedData?.totalCount).toBeUndefined();
+    expect(loadedData?.rows).toHaveLength(1);
+    expect(loadedData?.rows[0].id).toBe("1");
+    expect(loadedData?.rows[0].object).toBe(row);
+    expect(loadedData?.rows[0].getValue("name")).toEqual({
       status: "ready",
       value: "Ada",
     });
   });
 
-  it("excludes selection columns from the row snapshot", () => {
+  it("excludes selection columns from the row loadedData", () => {
     const row = createRow({ id: "1", name: "Ada", status: "Active" });
     mockColumns([
       createColumn(SELECTION_COLUMN_ID, "Select"),
@@ -105,10 +107,10 @@ describe(ObjectTable, () => {
     const ref = React.createRef<ObjectTableHandle<TestObject>>();
     render(<ObjectTable tableRef={ref} objectType={TestObjectType} />);
 
-    const snapshot = ref.current?.getSnapshot();
+    const loadedData = ref.current?.getLoadedData();
 
-    expect(snapshot?.columns).toEqual([{ id: "name", name: "Name" }]);
-    expect(snapshot?.rows[0].getValue(SELECTION_COLUMN_ID)).toBeUndefined();
+    expect(loadedData?.columns).toEqual([{ id: "name", name: "Name" }]);
+    expect(loadedData?.rows[0].getValue(SELECTION_COLUMN_ID)).toBeUndefined();
   });
 
   it("wraps function-backed async cell values", () => {
@@ -132,26 +134,45 @@ describe(ObjectTable, () => {
     const ref = React.createRef<ObjectTableHandle<TestObject>>();
     render(<ObjectTable tableRef={ref} objectType={TestObjectType} />);
 
-    const snapshot = ref.current?.getSnapshot();
+    const loadedData = ref.current?.getLoadedData();
 
-    expect(snapshot?.isLoading).toBe(true);
-    expect(snapshot?.rows[0].getValue("latestComment")).toEqual({
+    expect(loadedData?.isLoading).toBe(true);
+    expect(loadedData?.rows[0].getValue("latestComment")).toEqual({
       status: "loading",
       value: "previous comment",
     });
   });
 
-  it("fetches the next page when one is available", async () => {
+  it("exposes table-level error and total count metadata", () => {
+    const error = new Error("Failed to load rows");
+    mockTableData({
+      data: [],
+      hasMore: false,
+      isLoading: false,
+      error,
+      totalCount: "42",
+    });
+
+    const ref = React.createRef<ObjectTableHandle<TestObject>>();
+    render(<ObjectTable tableRef={ref} objectType={TestObjectType} />);
+
+    const loadedData = ref.current?.getLoadedData();
+
+    expect(loadedData?.error).toBe(error);
+    expect(loadedData?.totalCount).toBe("42");
+  });
+
+  it("loads the next page when one is available", async () => {
     const fetchMore = vi.fn(async () => {});
     mockTableData({ data: [], fetchMore, hasMore: true });
 
     const ref = React.createRef<ObjectTableHandle<TestObject>>();
     render(<ObjectTable tableRef={ref} objectType={TestObjectType} />);
 
-    expect(ref.current?.getSnapshot().hasNextPage).toBe(true);
+    expect(ref.current?.getLoadedData().hasNextPage).toBe(true);
 
     await act(async () => {
-      await ref.current?.getSnapshot().fetchNextPage();
+      await ref.current?.loadNextPage();
     });
 
     expect(fetchMore).toHaveBeenCalledTimes(1);
@@ -164,16 +185,16 @@ describe(ObjectTable, () => {
     const ref = React.createRef<ObjectTableHandle<TestObject>>();
     render(<ObjectTable tableRef={ref} objectType={TestObjectType} />);
 
-    expect(ref.current?.getSnapshot().hasNextPage).toBe(false);
+    expect(ref.current?.getLoadedData().hasNextPage).toBe(false);
 
     await act(async () => {
-      await ref.current?.getSnapshot().fetchNextPage();
+      await ref.current?.loadNextPage();
     });
 
     expect(fetchMore).not.toHaveBeenCalled();
   });
 
-  it("returns a fresh snapshot after the table data changes", () => {
+  it("returns a fresh loadedData after the table data changes", () => {
     const firstRow = createRow({ id: "1", name: "Ada", status: "Active" });
     const secondRow = createRow({ id: "2", name: "Grace", status: "Active" });
     mockTableData({ data: [firstRow], hasMore: true });
@@ -183,40 +204,44 @@ describe(ObjectTable, () => {
       <ObjectTable tableRef={ref} objectType={TestObjectType} />,
     );
 
-    const firstSnapshot = ref.current?.getSnapshot();
+    const firstLoadedData = ref.current?.getLoadedData();
 
     mockTableData({ data: [firstRow, secondRow], hasMore: false });
     rerender(<ObjectTable tableRef={ref} objectType={TestObjectType} />);
 
-    const secondSnapshot = ref.current?.getSnapshot();
+    const secondLoadedData = ref.current?.getLoadedData();
 
-    expect(firstSnapshot).not.toBe(secondSnapshot);
-    expect(firstSnapshot?.rows).toHaveLength(1);
-    expect(secondSnapshot?.rows).toHaveLength(2);
-    expect(secondSnapshot?.hasNextPage).toBe(false);
+    expect(firstLoadedData).not.toBe(secondLoadedData);
+    expect(firstLoadedData?.rows).toHaveLength(1);
+    expect(secondLoadedData?.rows).toHaveLength(2);
+    expect(secondLoadedData?.hasNextPage).toBe(false);
   });
 });
 
 function mockTableData({
   data,
+  error,
   fetchMore,
   hasMore,
   isLoading = false,
+  totalCount,
 }: {
   data: TestRow[];
+  error?: Error;
   fetchMore?: () => Promise<void>;
   hasMore: boolean;
   isLoading?: boolean;
+  totalCount?: string;
 }): void {
   mockedUseObjectTableData.mockReturnValue({
     data,
     fetchMore,
     hasMore,
     isLoading,
-    error: undefined,
+    error,
     objectSet: undefined,
     refetch: vi.fn(),
-    totalCount: undefined,
+    totalCount,
   });
 }
 

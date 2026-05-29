@@ -87,7 +87,7 @@ describe("public experimental ObjectTable", () => {
 
     render(<ObjectTable tableRef={ref} objectType={TestObjectType} />);
 
-    expect(ref.current?.getSnapshot().rows[0].getValue("name")).toEqual({
+    expect(ref.current?.getLoadedData().rows[0].getValue("name")).toEqual({
       status: "ready",
       value: "Ada",
     });
