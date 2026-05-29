@@ -118,6 +118,36 @@ describe("DateRangePicker", () => {
       expect(screen.getByRole("dialog")).toBeDefined();
     });
 
+    it("keeps both inputs disabled and does not open the popover when disabled", () => {
+      render(
+        <DateRangePicker
+          value={[null, null]}
+          onChange={vi.fn()}
+          disabled={true}
+        />,
+      );
+      const startInput = screen.getByLabelText(
+        "Start date",
+      ) as HTMLInputElement;
+      const endInput = screen.getByLabelText("End date") as HTMLInputElement;
+
+      fireEvent.focus(startInput);
+      fireEvent.pointerDown(endInput);
+      fireEvent.click(endInput);
+
+      expect(startInput.disabled).toBe(true);
+      expect(endInput.disabled).toBe(true);
+      expect(startInput.parentElement?.getAttribute("data-disabled")).toBe(
+        "true",
+      );
+      expect(endInput.parentElement?.getAttribute("data-disabled")).toBe(
+        "true",
+      );
+      expect(startInput.getAttribute("aria-expanded")).toBe("false");
+      expect(endInput.getAttribute("aria-expanded")).toBe("false");
+      expect(screen.queryByRole("dialog")).toBeNull();
+    });
+
     it("closes when clicking inside the portal container but outside the popover", async () => {
       const portalContainer = document.createElement("div");
       const outsideButton = document.createElement("button");

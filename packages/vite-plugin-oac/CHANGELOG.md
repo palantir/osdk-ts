@@ -1,5 +1,109 @@
 # @osdk/vite-plugin-oac
 
+## 0.23.0
+
+### Minor Changes
+
+- 8965bdf: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+
+### Patch Changes
+
+- Updated dependencies [8965bdf]
+- Updated dependencies [bd90dba]
+  - @osdk/faux@0.21.0
+  - @osdk/generator-converters.ontologyir@2.25.0
+  - @osdk/api@2.25.0
+  - @osdk/maker@0.31.0
+  - @osdk/cli@0.49.0
+  - @osdk/client.unstable@2.25.0
+
+## 0.22.0
+
+### Minor Changes
+
+- 60aff19: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+
+### Patch Changes
+
+- Updated dependencies [a492285]
+- Updated dependencies [60aff19]
+- Updated dependencies [d087189]
+  - @osdk/api@2.24.0
+  - @osdk/faux@0.20.0
+  - @osdk/generator-converters.ontologyir@2.24.0
+  - @osdk/maker@0.30.0
+  - @osdk/cli@0.48.0
+  - @osdk/client.unstable@2.24.0
+
+## 0.21.0
+
+### Patch Changes
+
+- Updated dependencies [198f219]
+- Updated dependencies [56c2c9f]
+- Updated dependencies [ef156b6]
+- Updated dependencies [8290dd7]
+  - @osdk/api@2.23.0
+  - @osdk/maker@0.29.0
+  - @osdk/cli@0.47.0
+  - @osdk/client.unstable@2.23.0
+  - @osdk/generator-converters.ontologyir@2.23.0
+  - @osdk/faux@0.19.0
+
+## 0.20.0
+
+### Patch Changes
+
+- Updated dependencies [dea392c]
+- Updated dependencies [d8f3dfd]
+  - @osdk/generator-converters.ontologyir@2.22.0
+  - @osdk/maker@0.28.0
+  - @osdk/cli@0.46.0
+  - @osdk/api@2.22.0
+  - @osdk/client.unstable@2.22.0
+
+## 0.19.0
+
+### Patch Changes
+
+- Updated dependencies [1a07c91]
+- Updated dependencies [6bca4fd]
+- Updated dependencies [5b89f25]
+- Updated dependencies [b98e084]
+  - @osdk/api@2.21.0
+  - @osdk/maker@0.27.0
+  - @osdk/generator-converters.ontologyir@2.21.0
+  - @osdk/faux@0.18.0
+  - @osdk/cli@0.45.0
+  - @osdk/client.unstable@2.21.0
+
+## 0.18.0
+
+### Patch Changes
+
+- Updated dependencies [9eb67e4]
+  - @osdk/api@2.20.0
+  - @osdk/faux@0.17.0
+  - @osdk/maker@0.26.0
+  - @osdk/cli@0.44.0
+  - @osdk/client.unstable@2.20.0
+  - @osdk/generator-converters.ontologyir@2.20.0
+
+## 0.17.0
+
+### Patch Changes
+
+- Updated dependencies [02c796c]
+- Updated dependencies [46c553f]
+- Updated dependencies [ecc5b36]
+- Updated dependencies [d962309]
+  - @osdk/faux@0.16.0
+  - @osdk/api@2.19.0
+  - @osdk/generator-converters.ontologyir@2.19.0
+  - @osdk/maker@0.25.0
+  - @osdk/cli@0.43.0
+  - @osdk/client.unstable@2.19.0
+
 ## 0.16.0
 
 ### Patch Changes

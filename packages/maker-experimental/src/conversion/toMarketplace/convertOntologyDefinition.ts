@@ -20,7 +20,7 @@ import { getImportedTypes } from "@osdk/maker";
 import type { FunctionsIr } from "../../api/defineOntologyV2.js";
 import type { OntologyRidGeneratorImpl } from "../../util/generateRid.js";
 import { convertOntologyDefinitionToWireBlockData } from "./convertOntologyDefinitionToWireBlockData.js";
-import { convertOntologyToValueTypeIr } from "./convertOntologyToValueTypeIr.js";
+import { convertValueTypeToWireBlockData } from "./convertValueTypeToWireBlockData.js";
 
 export function convertOntologyDefinition(
   ontology: OntologyDefinition,
@@ -49,8 +49,8 @@ export function convertOntologyDefinition(
   return {
     ontology: mainOntology,
     importedOntology,
-    valueTypes: convertOntologyToValueTypeIr(ontology),
-    importedValueTypes: convertOntologyToValueTypeIr(importedTypes),
+    valueTypes: convertValueTypeToWireBlockData(ontology),
+    importedValueTypes: convertValueTypeToWireBlockData(importedTypes),
     randomnessKey,
   };
 }

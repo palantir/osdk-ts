@@ -834,6 +834,7 @@ export class OntologyMetadataResolver {
       case "marking":
       case "geohash":
       case "geoshape":
+      case "scenarioReference":
         return Result.ok({});
 
       case "vector":

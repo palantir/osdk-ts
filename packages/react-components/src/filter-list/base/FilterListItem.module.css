@@ -167,6 +167,7 @@
 .excludeRow {
   display: flex;
   align-items: center;
+  width: 100%;
   opacity: 0;
   height: 0;
   overflow: hidden;

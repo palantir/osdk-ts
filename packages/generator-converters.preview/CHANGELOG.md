@@ -1,5 +1,84 @@
 # @osdk/generator-converters.preview
 
+## 0.15.0
+
+### Minor Changes
+
+- 8965bdf: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+
+### Patch Changes
+
+- Updated dependencies [8965bdf]
+  - @osdk/generator@2.25.0
+  - @osdk/generator-converters.ontologyir@2.25.0
+  - @osdk/client.unstable@2.25.0
+
+## 0.14.0
+
+### Minor Changes
+
+- 60aff19: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+
+### Patch Changes
+
+- Updated dependencies [60aff19]
+- Updated dependencies [d087189]
+  - @osdk/generator@2.24.0
+  - @osdk/generator-converters.ontologyir@2.24.0
+  - @osdk/client.unstable@2.24.0
+
+## 0.13.0
+
+### Patch Changes
+
+- Updated dependencies [9fb5afb]
+  - @osdk/generator@2.23.0
+  - @osdk/client.unstable@2.23.0
+  - @osdk/generator-converters.ontologyir@2.23.0
+
+## 0.12.0
+
+### Minor Changes
+
+- dea392c: Fix maker experimental imports
+
+### Patch Changes
+
+- Updated dependencies [dea392c]
+- Updated dependencies [d8f3dfd]
+  - @osdk/generator-converters.ontologyir@2.22.0
+  - @osdk/client.unstable@2.22.0
+  - @osdk/generator@2.22.0
+
+## 0.11.0
+
+### Patch Changes
+
+- Updated dependencies [1a07c91]
+- Updated dependencies [5b89f25]
+- Updated dependencies [b98e084]
+  - @osdk/generator@2.21.0
+  - @osdk/generator-converters.ontologyir@2.21.0
+  - @osdk/client.unstable@2.21.0
+
+## 0.10.0
+
+### Patch Changes
+
+- @osdk/generator@2.20.0
+- @osdk/client.unstable@2.20.0
+- @osdk/generator-converters.ontologyir@2.20.0
+
+## 0.9.0
+
+### Patch Changes
+
+- Updated dependencies [02c796c]
+- Updated dependencies [46c553f]
+  - @osdk/generator@2.19.0
+  - @osdk/generator-converters.ontologyir@2.19.0
+  - @osdk/client.unstable@2.19.0
+
 ## 0.8.0
 
 ### Minor Changes

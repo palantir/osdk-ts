@@ -12,7 +12,7 @@ export const snippets: SdkSnippets<typeof OSDK_SNIPPETS_SPEC> = {
       "snippets": {
         "reactProviderSetup": [
           {
-            "template": "import { OsdkProvider } from \"@osdk/react\";\nimport { createClient } from \"@osdk/client\";\n\nconst client = createClient(\n  \"https://your-stack.palantirfoundry.com\",\n  \"{{{packageName}}}\",\n  async () => \"your-token\"\n);\n\nfunction App() {\n  return (\n    <OsdkProvider client={client}>\n      <YourApp />\n    </OsdkProvider>\n  );\n}"
+            "template": "import { OsdkProvider } from \"@osdk/react\";\nimport { createClient } from \"@osdk/client\";\n\nconst client = createClient(\n  \"https://your-stack.palantirfoundry.com\",\n  \"ri.ontology.main.ontology.{UUID}\",\n  async () => \"your-token\"\n);\n\nfunction App() {\n  return (\n    <OsdkProvider client={client}>\n      <YourApp />\n    </OsdkProvider>\n  );\n}"
           }
         ],
         "reactUseOsdkObjectsBasic": [
@@ -174,7 +174,7 @@ export const snippets: SdkSnippets<typeof OSDK_SNIPPETS_SPEC> = {
         ],
         "clientSetup": [
           {
-            "template": "import { OsdkProvider } from \"@osdk/react\";\nimport { createClient } from \"@osdk/client\";\n\nconst client = createClient(\n  \"https://your-stack.palantirfoundry.com\",\n  \"{{{packageName}}}\",\n  async () => \"your-token\"\n);\n\nfunction App() {\n  return (\n    <OsdkProvider client={client}>\n      <YourApp />\n    </OsdkProvider>\n  );\n}"
+            "template": "import { OsdkProvider } from \"@osdk/react\";\nimport { createClient } from \"@osdk/client\";\n\nconst client = createClient(\n  \"https://your-stack.palantirfoundry.com\",\n  \"ri.ontology.main.ontology.{UUID}\",\n  async () => \"your-token\"\n);\n\nfunction App() {\n  return (\n    <OsdkProvider client={client}>\n      <YourApp />\n    </OsdkProvider>\n  );\n}"
           }
         ],
         "callFunction": [

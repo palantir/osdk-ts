@@ -308,6 +308,20 @@ describe("ObjectSelectField", () => {
     });
   });
 
+  it("disables the dropdown trigger and prevents opening when disabled", async () => {
+    mockLoadedState();
+    renderObjectSelect({ disabled: true });
+
+    const trigger = screen.getByRole("combobox") as HTMLButtonElement;
+    expect(trigger.disabled).toBe(true);
+    fireEvent.click(trigger);
+    fireEvent.keyDown(trigger, { key: "ArrowDown" });
+
+    await vi.waitFor(() => {
+      expect(getPopup()).toBeNull();
+    });
+  });
+
   it("renders custom placeholder text", () => {
     mockLoadedState();
     renderObjectSelect({ placeholder: "Find an employee…" });

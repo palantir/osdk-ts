@@ -32,7 +32,7 @@
 
 .nullValueRow {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: space-between;
   padding: var(--osdk-filter-null-row-padding);
   border-top: var(--osdk-filter-null-row-border-top);

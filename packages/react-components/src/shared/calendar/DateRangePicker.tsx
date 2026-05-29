@@ -72,6 +72,9 @@ export interface DateRangePickerProps {
   /** Called when the user selects or types a new range. */
   onChange?: (value: DateRange | null) => void;
 
+  /** Whether the picker is disabled. */
+  disabled?: boolean;
+
   /** The earliest selectable date. */
   min?: Date;
 
@@ -144,6 +147,7 @@ export const DateRangePicker: React.NamedExoticComponent<
   parseDate,
   portalContainer,
   modal = "trap-focus",
+  disabled = false,
 }: DateRangePickerProps) {
   const shouldCloseOnSelection = !showTime;
   const popoverId = useId();
@@ -253,6 +257,13 @@ export const DateRangePicker: React.NamedExoticComponent<
 
   const startInvalid = startInputError != null || hasOverlapError;
   const endInvalid = endInputError != null || hasOverlapError;
+  const activeStartDateValue =
+    startInputError == null && startParsedValue != null
+      ? startParsedValue
+      : (startDate ?? undefined);
+  const activeEndDateValue = endInputError == null && endParsedValue != null
+    ? endParsedValue
+    : (endDate ?? undefined);
 
   // --- Focus handlers ---
 
@@ -517,12 +528,12 @@ export const DateRangePicker: React.NamedExoticComponent<
     ? (
       <>
         <TimePicker
-          value={startDate}
+          value={activeStartDateValue ?? null}
           onChange={handleStartTimeChange}
           label="Start time"
         />
         <TimePicker
-          value={endDate}
+          value={activeEndDateValue ?? null}
           onChange={handleEndTimeChange}
           label="End time"
         />
@@ -534,19 +545,21 @@ export const DateRangePicker: React.NamedExoticComponent<
     ...SHARED_INPUT_PROPS,
     "aria-controls": popoverId,
   };
+  const isPopoverOpen = !disabled && isOpen;
 
   // Keep Popover.Trigger on each input itself. Moving it to the range wrapper
   // would make click handling simpler, but it would also nest interactive
   // comboboxes inside an interactive trigger and reintroduce the axe violation.
   return (
     <Popover.Root
-      open={isOpen}
+      open={isPopoverOpen}
       onOpenChange={handleOpenChange}
       modal={modal}
     >
       <div
         ref={triggerRef}
         className={styles.osdkDateRangeContainer}
+        data-disabled={disabled || undefined}
       >
         <div
           className={classnames(
@@ -554,6 +567,7 @@ export const DateRangePicker: React.NamedExoticComponent<
             styles.osdkDateRangeInputWrapper,
             startInvalid && commonStyles.osdkDatePickerInputWrapperError,
           )}
+          data-disabled={disabled || undefined}
         >
           <Popover.Trigger
             nativeButton={false}
@@ -563,12 +577,13 @@ export const DateRangePicker: React.NamedExoticComponent<
                 id={id != null ? `${id}-start` : undefined}
                 value={displayedStart}
                 onValueChange={setStartInputValue}
+                disabled={disabled}
                 onFocus={handleStartFocus}
                 onPointerDown={handleStartPointerDown}
                 onBlur={handleStartBlur}
                 onKeyDown={handleStartKeyDown}
                 placeholder={placeholderStart}
-                aria-expanded={isOpen && activeBoundary === "start"}
+                aria-expanded={isPopoverOpen && activeBoundary === "start"}
                 aria-label="Start date"
                 aria-invalid={startInvalid || undefined}
                 {...sharedInputProps}
@@ -582,6 +597,7 @@ export const DateRangePicker: React.NamedExoticComponent<
             styles.osdkDateRangeInputWrapper,
             endInvalid && commonStyles.osdkDatePickerInputWrapperError,
           )}
+          data-disabled={disabled || undefined}
         >
           <Popover.Trigger
             nativeButton={false}
@@ -591,12 +607,13 @@ export const DateRangePicker: React.NamedExoticComponent<
                 id={id != null ? `${id}-end` : undefined}
                 value={displayedEnd}
                 onValueChange={setEndInputValue}
+                disabled={disabled}
                 onBlur={handleEndBlur}
                 onKeyDown={handleEndKeyDown}
                 onFocus={handleEndFocus}
                 onPointerDown={handleEndPointerDown}
                 placeholder={placeholderEnd}
-                aria-expanded={isOpen && activeBoundary === "end"}
+                aria-expanded={isPopoverOpen && activeBoundary === "end"}
                 aria-label="End date"
                 aria-invalid={endInvalid || undefined}
                 {...sharedInputProps}

@@ -1,0 +1,85 @@
+/*
+ * Dark theme overrides for OSDK semantic tokens. Activated by `[data-bp-color-scheme="dark"]` 
+ * written by `<OsdkThemeProvider>` onto the document root, matching Blueprint's own convention so the
+ * theme also applies to portaled overlays. Keeping `.bp6-dark` as well to match Blueprint's class-based 
+ * variant of the same convention.
+ *
+ * Source-of-truth dark values live in `--osdk-dark-*` helpers at `:root`
+ * (private — do not consume directly).
+ */
+
+:root {
+  /* --bp-* dark values (single source of truth) */
+  --osdk-dark-bp-surface-border-color-default: #ffffff33;
+  --osdk-dark-bp-surface-border-color-strong: #ffffff4d;
+  --osdk-dark-bp-surface-shadow-0:
+    inset 0px 0px 0px 1px rgba(255, 255, 255, 0.2),
+    0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+  --osdk-dark-bp-surface-shadow-1:
+    inset 0px 0px 0px 1px rgba(255, 255, 255, 0.2),
+    0px 1px 10px 0px rgba(0, 0, 0, 0.2), 0px 1px 10px -1px rgba(0, 0, 0, 0.2);
+  --osdk-dark-bp-surface-shadow-2:
+    inset 0px 0px 0px 1px rgba(255, 255, 255, 0.2),
+    0px 4px 6px -4px rgba(0, 0, 0, 0.5), 0px 10px 30px -5px rgba(0, 0, 0, 0.5);
+  --osdk-dark-bp-surface-shadow-3:
+    inset 0px 0px 0px 1px rgba(255, 255, 255, 0.2),
+    0px 20px 25px -5px rgba(0, 0, 0, 0.3), 0px 10px 30px -5px rgba(0, 0, 0, 0.3);
+  --osdk-dark-bp-surface-shadow-4:
+    inset 0px 0px 0px 1px rgba(255, 255, 255, 0.2),
+    0px 25px 60px -12px rgba(0, 0, 0, 0.85);
+  --osdk-dark-bp-surface-color-code: #1114184d;
+  --osdk-dark-bp-surface-background-color-default-rest: #111418;
+  --osdk-dark-bp-surface-background-color-default-hover: #1c2127;
+  --osdk-dark-bp-surface-background-color-default-active: #252a31;
+  --osdk-dark-bp-surface-background-color-default-disabled: #111418;
+  --osdk-dark-bp-typography-color-default-rest: #a5aab3;
+  --osdk-dark-bp-typography-color-default-hover: #646970;
+  --osdk-dark-bp-typography-color-default-active: #54575d;
+
+  /* --osdk-* dark values (single source of truth) */
+  --osdk-dark-background-primary: #111418;
+  --osdk-dark-background-secondary: #1c2127;
+  --osdk-dark-background-tertiary: #1c2127;
+  --osdk-dark-typography-color-muted: #8f99a8;
+  --osdk-dark-intent-default-rest: #8f99a8;
+  --osdk-dark-intent-default-foreground: #f6f7f9;
+  --osdk-dark-button-secondary-bg: #252a31;
+  --osdk-dark-button-secondary-color: #f6f7f9;
+  --osdk-dark-table-row-bg-default: #111418;
+  --osdk-dark-table-header-bg: #1c2127;
+  --osdk-dark-table-header-color: #a5aab3;
+  --osdk-dark-table-cell-color: #a5aab3;
+  --osdk-dark-table-header-menu-color: #8f99a8;
+  --osdk-dark-table-border-color: #ffffff52;
+  --osdk-dark-table-row-bg-hover: color-mix(
+    in srgb,
+    var(--osdk-intent-primary-rest) 25%,
+    var(--osdk-background-primary)
+  );
+}
+
+[data-bp-color-scheme="dark"],
+.bp6-dark {
+  /* Blueprint already flips --bp-* under these selectors, so any --osdk-*
+     token derived from --bp-* (see base.css) cascades correctly. We only
+     set --osdk-* tokens that have no --bp-* counterpart or that
+     intentionally diverge from Blueprint's value. */
+  --osdk-background-primary: var(--osdk-dark-background-primary);
+  --osdk-background-secondary: var(--osdk-dark-background-secondary);
+  --osdk-background-tertiary: var(--osdk-dark-background-tertiary);
+  --osdk-typography-color-muted: var(--osdk-dark-typography-color-muted);
+  --osdk-intent-default-rest: var(--osdk-dark-intent-default-rest);
+  --osdk-intent-default-foreground: var(--osdk-dark-intent-default-foreground);
+  --osdk-button-secondary-bg: var(--osdk-dark-button-secondary-bg);
+  --osdk-button-secondary-color: var(--osdk-dark-button-secondary-color);
+  --osdk-table-row-bg-default: var(--osdk-dark-table-row-bg-default);
+  --osdk-table-header-bg: var(--osdk-dark-table-header-bg);
+  --osdk-table-header-color: var(--osdk-dark-table-header-color);
+  --osdk-table-cell-color: var(--osdk-dark-table-cell-color);
+  --osdk-table-header-menu-color: var(--osdk-dark-table-header-menu-color);
+  --osdk-table-border-color: var(--osdk-dark-table-border-color);
+  --osdk-table-cell-divider: var(--osdk-table-border-width) solid
+    var(--osdk-table-border-color);
+  --osdk-table-row-bg-hover: var(--osdk-dark-table-row-bg-hover);
+  --osdk-table-row-bg-active: var(--osdk-dark-table-row-bg-hover);
+}

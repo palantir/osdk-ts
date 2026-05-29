@@ -137,12 +137,30 @@ export function convertAction(
     for (const [apiName, value] of Object.entries(interfacePropertyValues)) {
       const parentInterface = allParentInterfaces.find(maybeSourceParent =>
         maybeSourceParent.propertiesV3[apiName] !== undefined
-      )!;
-      const rid = ridGenerator.generateInterfacePropertyTypeRid(
-        apiName,
-        parentInterface.apiName,
       );
-      result[rid] = value;
+      if (parentInterface) {
+        // check for IDP first
+        const rid = ridGenerator.generateInterfacePropertyTypeRid(
+          apiName,
+          parentInterface.apiName,
+        );
+        result[rid] = value;
+      } else {
+        // fall back to SPT
+        const sptReadableId = ReadableIdGenerator.getForSpt(apiName);
+        const sptRid = ridGenerator.getSharedPropertyTypeRids().get(
+          sptReadableId,
+        );
+        invariant(
+          sptRid,
+          `Could not find SPT RID for property "${apiName}" used in action logic rule`,
+        );
+        const iptRid = sptRid.replace(
+          "shared-property-type",
+          "interface-property-type",
+        );
+        result[iptRid] = value;
+      }
     }
     return result;
   };
@@ -622,7 +640,9 @@ export function extractAllowedValues(
         objectTypeReference: {
           type: "objectTypeReference",
           objectTypeReference: {
-            interfaceTypeRids: allowedValues.interfaceTypes,
+            interfaceTypeRids: allowedValues.interfaceTypes.map(
+              apiName => ridGenerator.generateRidForInterface(apiName),
+            ),
           },
         },
       };

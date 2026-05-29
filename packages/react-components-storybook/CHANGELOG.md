@@ -1,5 +1,67 @@
 # @osdk/react-components-storybook
 
+## 0.20.0
+
+### Patch Changes
+
+- Updated dependencies [8965bdf]
+  - @osdk/faux@0.21.0
+
+## 0.19.0
+
+### Minor Changes
+
+- 4c53e48: Hide the DatePicker popover when its anchor scrolls out of view. Fixes an issue where the date picker in `ObjectTable` cells continued to render outside the table bounds after the cell scrolled out of the visible area.
+
+## 0.18.0
+
+### Patch Changes
+
+- Updated dependencies [60aff19]
+  - @osdk/faux@0.20.0
+
+## 0.17.0
+
+### Minor Changes
+
+- b3229eb: Fix ObjectTable overlay menus and dialogs inside drawers and dialogs.
+- 1760597: Change experimental labels to beta
+- bde8026: group viewer/renderer storybook entries under DocumentViewer/Renderers, reorder WithMedia stories to appear first, and split out top-level ImageViewer/PdfViewer media stories
+
+### Patch Changes
+
+- @osdk/faux@0.19.0
+
+## 0.16.0
+
+### Minor Changes
+
+- 7945245: add missing postal-mime dev dep so storybook dev resolves the email viewer stories
+
+## 0.15.0
+
+### Minor Changes
+
+- ddeda7f: Fix custom value rendering in ObjectTable dropdown cells for non-string item types (booleans, numbers, etc.)
+
+### Patch Changes
+
+- @osdk/faux@0.18.0
+
+## 0.14.0
+
+### Patch Changes
+
+- @osdk/faux@0.17.0
+
+## 0.13.0
+
+### Patch Changes
+
+- Updated dependencies [02c796c]
+- Updated dependencies [ecc5b36]
+  - @osdk/faux@0.16.0
+
 ## 0.12.0
 
 ### Patch Changes

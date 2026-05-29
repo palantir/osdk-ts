@@ -129,9 +129,10 @@ interface EditableColumnDefinition<
    * When provided, the column uses the specified field component
    * (e.g. dropdown) instead of the default auto-detected text/number input.
    *
-   * `getFieldComponentProps` receives the row's object and returns the props
-   * to pass to the field component, so editor configuration can depend on the
-   * current row.
+   * `getFieldComponentProps` receives the row's object and a map of any
+   * pending edits for that row (keyed by column id), and returns the props to
+   * pass to the field component. Editor configuration can depend on the
+   * current row or on other in-progress edits within the row.
    */
   editFieldConfig?: EditFieldConfig<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
@@ -310,6 +311,20 @@ export interface ObjectTableProps<
    * @default 60_000 1 minute
    */
   dedupeIntervalMs?: number;
+
+  /**
+   * Enable streaming updates via websocket subscription.
+   * When true, the table will automatically update when matching
+   * objects are added, updated, or removed in Foundry.
+   *
+   * Limitations: `streamUpdates` cannot be used together with `pivotTo` or
+   * `withProperties`. The server does not support websocket subscriptions
+   * for link-traversal or derived-property queries. Those queries still
+   * fetch data normally but won't receive real-time updates.
+   *
+   * @default false
+   */
+  streamUpdates?: boolean;
 
   /**
    * Number of objects to fetch per page.
@@ -537,7 +552,11 @@ export interface ObjectTableProps<
 
   /**
    * Called when the row selection changes.
-   * Required when row selection is controlled.
+   *
+   * @deprecated Use {@link onRowSelectionChanged} instead. The new callback
+   * delivers a {@link RowSelectionChange} object with `selectedRows`,
+   * `isSelectAll`, and a derived `objectSet`. This legacy callback
+   * continues to fire alongside the new one for backwards compatibility.
    *
    * @param selectedRowIds The primary keys of currently selected rows
    * @param isSelectAll Whether the change was triggered by a "select all" action. Defaults to false
@@ -546,6 +565,16 @@ export interface ObjectTableProps<
     selectedRowIds: PrimaryKeyType<Q>[],
     isSelectAll?: boolean,
   ) => void;
+
+  /**
+   * Called when the row selection changes, with a {@link RowSelectionChange}
+   * payload describing the new state.
+   *
+   * @param change The new selection state. See {@link RowSelectionChange}.
+   */
+  onRowSelectionChanged?: (
+    change: RowSelectionChange<Q, RDPs>,
+  ) => void;
   /**
    * If provided, will render this context menu when right clicking on a cell
    */
@@ -553,6 +582,13 @@ export interface ObjectTableProps<
     row: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
     cellValue: unknown,
   ) => React.ReactNode;
+
+  /**
+   * Render override for the empty state. Called when the table has no
+   * rows and no error. When omitted, a default "No Data" indicator is
+   * rendered.
+   */
+  renderEmptyState?: () => React.ReactNode;
 
   /**
    * The height of each row in pixels.
@@ -570,6 +606,50 @@ export interface ObjectTableProps<
   ) => Record<string, string | undefined>;
 
   className?: string;
+}
+
+/**
+ * Payload for {@link ObjectTableProps.onRowSelectionChanged}. Consolidates
+ * the loaded row instances, the `isSelectAll` semantic intent, and an
+ * `ObjectSet` covering the selection.
+ */
+export interface RowSelectionChange<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+> {
+  /**
+   * Loaded row instances currently selected. When `isSelectAll` is true,
+   * this reflects only the rows currently in the table — pages not yet
+   * fetched are absent. Use `objectSet` for the cross-page view, and
+   * `selectedRows.map(r => r.$primaryKey)` if you need the primary keys.
+   */
+  selectedRows: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[];
+
+  /**
+   * True when the user invoked "select all" (header checkbox) or when
+   * controlled mode supplies `isAllSelected={true}`. Distinct from "every
+   * loaded row happens to be selected" — that condition is reflected by
+   * `selectedRows.length` matching the visible row count but does not set
+   * this flag.
+   */
+  isSelectAll: boolean;
+
+  /**
+   * An `ObjectSet` representing the selection.
+   *
+   * - "Select all" → the underlying `ObjectSet` (`objectSet` prop if
+   *   provided, otherwise derived from `objectType` via `client(...)`).
+   *   This includes rows not yet loaded into the table.
+   * - Partial selection → the underlying `ObjectSet` narrowed to
+   *   `{ [primaryKeyApiName]: { $in: selectedRows.map(r => r.$primaryKey) } }`.
+   * - "Deselect all" → an empty `ObjectSet` (`$in: []`).
+   *
+   * `undefined` for interface types without a resolvable
+   * `primaryKeyApiName` when the selection is partial or empty (a
+   * `$primaryKey`-style filter can't be expressed). For "select all" on
+   * those types the underlying `ObjectSet` is still emitted.
+   */
+  objectSet: ObjectSet<Q, RDPs> | undefined;
 }
 
 export interface ObjectSetOptions<

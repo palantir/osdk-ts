@@ -1,5 +1,116 @@
 # @osdk/foundry-sdk-generator
 
+## 2.25.0
+
+### Minor Changes
+
+- 8965bdf: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+
+### Patch Changes
+
+- Updated dependencies [8965bdf]
+- Updated dependencies [8965bdf]
+- Updated dependencies [bd90dba]
+- Updated dependencies [643c450]
+- Updated dependencies [d0845dd]
+  - @osdk/client@2.25.0
+  - @osdk/generator@2.25.0
+  - @osdk/generator-converters@2.25.0
+  - @osdk/api@2.25.0
+  - @osdk/client.unstable@2.25.0
+  - @osdk/generator-utils@2.25.0
+
+## 2.24.0
+
+### Minor Changes
+
+- 60aff19: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+
+### Patch Changes
+
+- Updated dependencies [a492285]
+- Updated dependencies [60aff19]
+- Updated dependencies [35ad6d1]
+- Updated dependencies [6923158]
+  - @osdk/api@2.24.0
+  - @osdk/client@2.24.0
+  - @osdk/generator@2.24.0
+  - @osdk/generator-converters@2.24.0
+  - @osdk/client.unstable@2.24.0
+  - @osdk/generator-utils@2.24.0
+
+## 2.23.0
+
+### Minor Changes
+
+- 9fb5afb: Emit structured `service.1` JSON logs to stdout for log forwarders, with timing for ontology metadata loading and OSDK package generation phases. Reads `JOB_ID` and `TRACE_ID` from env and threads them into every record's params for cross-process correlation. The previous human-readable console output (via consola) has been removed; the CLI now exits with a non-zero status code on failure.
+
+### Patch Changes
+
+- Updated dependencies [9fb5afb]
+- Updated dependencies [198f219]
+- Updated dependencies [ef156b6]
+- Updated dependencies [8290dd7]
+  - @osdk/generator@2.23.0
+  - @osdk/generator-converters@2.23.0
+  - @osdk/api@2.23.0
+  - @osdk/client@2.23.0
+  - @osdk/client.unstable@2.23.0
+  - @osdk/generator-utils@2.23.0
+
+## 2.22.0
+
+### Patch Changes
+
+- @osdk/api@2.22.0
+- @osdk/client.unstable@2.22.0
+- @osdk/client@2.22.0
+- @osdk/generator-utils@2.22.0
+- @osdk/generator@2.22.0
+
+## 2.21.0
+
+### Patch Changes
+
+- Updated dependencies [1a07c91]
+- Updated dependencies [2db1450]
+  - @osdk/api@2.21.0
+  - @osdk/client@2.21.0
+  - @osdk/generator@2.21.0
+  - @osdk/client.unstable@2.21.0
+  - @osdk/generator-utils@2.21.0
+
+## 2.20.0
+
+### Patch Changes
+
+- Updated dependencies [f90a2da]
+- Updated dependencies [9eb67e4]
+- Updated dependencies [51b3bce]
+- Updated dependencies [75f877f]
+  - @osdk/client@2.20.0
+  - @osdk/api@2.20.0
+  - @osdk/generator@2.20.0
+  - @osdk/client.unstable@2.20.0
+  - @osdk/generator-utils@2.20.0
+
+## 2.19.0
+
+### Minor Changes
+
+- 02c796c: Array Reducers and Struct Main Value support
+
+### Patch Changes
+
+- Updated dependencies [02c796c]
+- Updated dependencies [2a2b672]
+- Updated dependencies [d962309]
+  - @osdk/generator@2.19.0
+  - @osdk/client@2.19.0
+  - @osdk/api@2.19.0
+  - @osdk/client.unstable@2.19.0
+  - @osdk/generator-utils@2.19.0
+
 ## 2.18.0
 
 ### Patch Changes

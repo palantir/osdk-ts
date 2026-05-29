@@ -47,7 +47,7 @@ interface ListogramInputProps {
   style?: React.CSSProperties;
   maxVisibleItems?: number;
   searchQuery?: string;
-  renderValue?: (value: string) => string;
+  renderValue?: (value: string) => React.ReactNode;
 }
 
 function ListogramInputInner({
@@ -89,7 +89,10 @@ function ListogramInputInner({
       return filterValuesBySearch(
         stableValues,
         searchQuery,
-        (v) => renderValue?.(v.value) ?? v.value,
+        (v) => {
+          const rendered = renderValue?.(v.value);
+          return typeof rendered === "string" ? rendered : v.value;
+        },
       );
     }
     return stableValues;
@@ -135,11 +138,13 @@ function ListogramInputInner({
             const perRowColor = colorMap?.[value];
             const isEmpty = isEmptyValue(value);
 
+            const isFilteredOut = count === 0 && !selectedSet.has(value);
             return (
               <Button
                 key={value}
                 className={styles.row}
                 data-empty={isEmpty || undefined}
+                data-filtered-out={isFilteredOut || undefined}
                 // eslint-disable-next-line react/jsx-no-bind
                 onClick={() => toggleValue(value)}
                 aria-pressed={selectedSet.has(value)}

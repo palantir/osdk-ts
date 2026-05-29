@@ -89,7 +89,7 @@ export type FormFieldDefinition<
       /**
        * Whether the field is disabled
        */
-      isDisabled?: boolean;
+      disabled?: boolean;
 
       /**
        * A callback to customize error messages when a built-in validation rule fails.
@@ -155,6 +155,7 @@ export interface FormFieldPropsByType {
   TEXT_AREA: TextAreaFieldProps;
   TEXT_INPUT: TextInputFieldProps;
   CUSTOM: CustomFieldProps<unknown>;
+  UNSUPPORTED: UnsupportedFieldProps;
 }
 
 /**
@@ -169,9 +170,16 @@ export interface DropdownFieldProps<V, Multiple extends boolean = false>
   items: V[];
 
   /**
-   * Converts an item to a display string. Defaults to `String()`.
+   * Converts an item to searchable text and the default visual label. Defaults to `String()`.
+   * Use `renderItemLabel` when the visible label needs rich React content.
    */
   itemToStringLabel?: (item: V) => string;
+
+  /**
+   * Renders an item label with custom React content.
+   * `itemToStringLabel` is still used for search, accessibility, and fallback keys.
+   */
+  renderItemLabel?: (item: V) => React.ReactNode;
 
   /**
    * Returns a unique string key for a list item. Used as the React `key`.
@@ -393,7 +401,7 @@ export interface Option<V> {
  * Object set field displays the summary of the count of the given object set
  */
 export interface ObjectSetFieldProps<T extends ObjectTypeDefinition>
-  extends Pick<BaseFormFieldProps<ObjectSet<T>>, "id" | "value">
+  extends Pick<BaseFormFieldProps<ObjectSet<T>>, "id" | "value" | "disabled">
 {
   /**
    * Message displayed when no object set is provided.
@@ -456,6 +464,10 @@ export interface CustomFieldProps<V> extends BaseFormFieldProps<V> {
   customRenderer: (props: BaseFormFieldProps<V>) => React.ReactNode;
 }
 
+export interface UnsupportedFieldProps
+  extends Pick<BaseFormFieldProps<string>, "id" | "error">
+{}
+
 export interface BaseFormFieldProps<V> {
   /**
    * The HTML `id` attribute for the field input element.
@@ -478,6 +490,15 @@ export interface BaseFormFieldProps<V> {
    * The default value of the form field.
    */
   defaultValue?: V;
+
+  /**
+   * Whether the field is disabled.
+   *
+   * Disabled fields keep their current value in form state and submit payloads,
+   * but built-in renderers block user edits and remove disabled controls from
+   * keyboard navigation.
+   */
+  disabled?: boolean;
 
   /**
    * Called when the field value changes.
@@ -506,8 +527,6 @@ export type ActionParameters<Q extends ActionDefinition<unknown>> =
 
 /**
  * Extracts the value type for a specific parameter
- *
- * TODO: Re-use `BaseType`
  */
 export type FieldValueType<
   Q extends ActionDefinition<unknown>,
@@ -517,6 +536,9 @@ export type FieldValueType<
   : ActionParameters<Q>[K]["type"] extends ActionMetadata.DataType.ObjectSet<
     infer T
   > ? ActionParam.ObjectSetType<T>
+  : ActionParameters<Q>[K]["type"] extends ActionMetadata.DataType.Interface<
+    infer T
+  > ? ActionParam.InterfaceType<T>
   : ActionParameters<Q>[K]["type"] extends ActionMetadata.DataType.Struct<
     infer T
   > ? ActionParam.StructType<T>
@@ -547,7 +569,8 @@ export type FieldComponent =
   | "SWITCH"
   | "TEXT_AREA"
   | "TEXT_INPUT"
-  | "CUSTOM";
+  | "CUSTOM"
+  | "UNSUPPORTED";
 
 /**
  * Describes the data type of a form field, independent of OSDK.
@@ -567,6 +590,7 @@ export type FieldType =
   | "objectType"
   | "geoshape"
   | "geohash"
+  | "scenarioReference"
   | { type: "object"; object: string }
   | { type: "objectSet"; objectSet: string }
   | { type: "interface"; interface: string }
@@ -579,8 +603,8 @@ export type FieldType =
  * fieldComponentProps so it bypasses form state cloning.
  */
 type FormManagedProps<K extends FieldComponent> = "onChange" extends
-  keyof FormFieldPropsByType[K] ? "value" | "onChange"
-  : "onChange";
+  keyof FormFieldPropsByType[K] ? "value" | "onChange" | "disabled"
+  : "onChange" | "disabled";
 
 type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<
     T,
@@ -606,6 +630,7 @@ export type RendererFieldDefinition = {
     placeholder?: string;
     helperText?: React.ReactNode;
     helperTextPlacement?: "bottom" | "tooltip";
+    disabled?: boolean;
     validate?: (value: unknown) => Promise<string | undefined>;
     onValidationError?: (error: ValidationError) => string | undefined;
     fieldComponentProps: DistributiveOmit<
@@ -622,10 +647,14 @@ export type ValidFormFieldForPropertyType<P extends FieldDescriptorType> =
   | "CUSTOM"
   | (P extends { type: "objectSet" } ? "OBJECT_SET"
     : P extends { type: "object" } ? "OBJECT_SELECT"
+    : P extends { type: "interface" } ? "UNSUPPORTED"
+    : P extends { type: "struct" } ? "UNSUPPORTED"
     : P extends "mediaReference" | "attachment" ? "FILE_PICKER"
     : P extends "boolean" ? "RADIO_BUTTONS" | "DROPDOWN" | "SWITCH"
     : P extends "string" ? "TEXT_INPUT" | "TEXT_AREA"
     : P extends "datetime" | "timestamp" ? "DATETIME_PICKER"
+    : P extends "marking" | "geohash" | "geoshape" | "objectType"
+      ? "UNSUPPORTED"
     : P extends
       | "double"
       | "integer"
