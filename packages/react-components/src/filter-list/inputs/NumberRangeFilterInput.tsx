@@ -23,7 +23,7 @@ import type { FilterState } from "../FilterListItemApi.js";
 import {
   createGroupByAggregateOptions,
   createNullCountAggregateOptions,
-  createNullWhereClause,
+  createNullCountWhereClause,
 } from "../utils/aggregationHelpers.js";
 
 interface NumberRangeFilterInputProps<Q extends ObjectTypeDefinition> {
@@ -134,10 +134,7 @@ function NumberRangeFilterInputInner<Q extends ObjectTypeDefinition>({
   // Combine null-check with cross-filter where clause so the null count
   // reflects the filtered dataset, not the full dataset
   const nullCountWhereClause = useMemo(
-    () =>
-      ({
-        $and: [createNullWhereClause<Q>(propertyKey), whereClause],
-      }) as WhereClause<Q>,
+    () => createNullCountWhereClause<Q>(propertyKey, whereClause),
     [propertyKey, whereClause],
   );
 
