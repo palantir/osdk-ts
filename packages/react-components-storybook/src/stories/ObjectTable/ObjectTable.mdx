@@ -14,44 +14,9 @@
  * limitations under the License.
  */}
 
-import { Meta, Markdown, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import * as ObjectTableStories from "./ObjectTable.stories";
+import { Meta, Markdown } from "@storybook/addon-docs/blocks";
 import objectTableDocs from "@docs/ObjectTable.md?raw";
 
 <Meta title="Components/ObjectTable/Docs" tags={["beta"]}/>
 
 <Markdown>{objectTableDocs}</Markdown>
-
-## Interactive Demos
-
-### Default
-
-<Canvas of={ObjectTableStories.Default} />
-
-### Single Selection
-
-<Canvas of={ObjectTableStories.SingleSelection} />
-
-### Multiple Selection
-
-<Canvas of={ObjectTableStories.MultipleSelection} />
-
-### With Context Menu
-
-<Canvas of={ObjectTableStories.WithContextMenu} />
-
-### Custom Column Widths
-
-<Canvas of={ObjectTableStories.CustomColumnWidths} />
-
-### With Default Sorting
-
-<Canvas of={ObjectTableStories.WithDefaultSorting} />
-
-### With Custom Column
-
-<Canvas of={ObjectTableStories.WithCustomColumn} />
-
-### Props
-
-<Controls of={ObjectTableStories.Default} />

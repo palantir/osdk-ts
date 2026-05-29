@@ -14,40 +14,9 @@
  * limitations under the License.
  */}
 
-import { Meta, Markdown, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import * as ActionFormStories from "./ActionForm.stories";
+import { Meta, Markdown } from "@storybook/addon-docs/blocks";
 import actionFormDocs from "@docs/ActionForm.md?raw";
 
 <Meta title="Components/ActionForm/Docs" tags={["beta"]}/>
 
 <Markdown>{actionFormDocs}</Markdown>
-
-## Interactive Demos
-
-### Default
-
-<Canvas of={ActionFormStories.Default} />
-
-### Submit Success
-
-<Canvas of={ActionFormStories.SubmitSuccess} />
-
-### Submit Failure
-
-<Canvas of={ActionFormStories.SubmitFailure} />
-
-### Validation Errors
-
-<Canvas of={ActionFormStories.ValidationErrors} />
-
-### Custom Submit Handler
-
-<Canvas of={ActionFormStories.CustomSubmitHandler} />
-
-### With Title
-
-<Canvas of={ActionFormStories.WithTitle} />
-
-### Props
-
-<Controls of={ActionFormStories.Default} />

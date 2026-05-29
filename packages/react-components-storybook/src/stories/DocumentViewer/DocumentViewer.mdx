@@ -14,52 +14,9 @@
  * limitations under the License.
  */}
 
-import { Meta, Markdown, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import * as DocumentViewerStories from "./DocumentViewer.stories";
+import { Meta, Markdown } from "@storybook/addon-docs/blocks";
 import documentViewerDocs from "@docs/DocumentViewer.md?raw";
 
 <Meta title="Components/DocumentViewer/Docs" tags={["beta"]}/>
 
 <Markdown>{documentViewerDocs}</Markdown>
-
-## Interactive Demos
-
-### PDF
-
-<Canvas of={DocumentViewerStories.Pdf} />
-
-### Image
-
-<Canvas of={DocumentViewerStories.Image} />
-
-### Markdown
-
-<Canvas of={DocumentViewerStories.Markdown} />
-
-### Video
-
-<Canvas of={DocumentViewerStories.Video} />
-
-### Excel
-
-<Canvas of={DocumentViewerStories.Excel} />
-
-### Email
-
-<Canvas of={DocumentViewerStories.Email} />
-
-### XML
-
-<Canvas of={DocumentViewerStories.Xml} />
-
-### TIFF
-
-<Canvas of={DocumentViewerStories.Tiff} />
-
-### Unsupported Type
-
-<Canvas of={DocumentViewerStories.UnsupportedType} />
-
-### Props
-
-<Controls of={DocumentViewerStories.Pdf} />

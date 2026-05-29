@@ -14,40 +14,9 @@
  * limitations under the License.
  */}
 
-import { Meta, Markdown, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import * as FilterListStories from "./FilterList.stories";
+import { Meta, Markdown } from "@storybook/addon-docs/blocks";
 import filterListDocs from "@docs/FilterList.md?raw";
 
 <Meta title="Components/FilterList/Docs" tags={["beta"]}/>
 
 <Markdown>{filterListDocs}</Markdown>
-
-## Interactive Demos
-
-### Default
-
-<Canvas of={FilterListStories.Default} />
-
-### Combined with ObjectTable
-
-<Canvas of={FilterListStories.CombinedWithObjectTable} />
-
-### Add / Remove Filters
-
-<Canvas of={FilterListStories.AddFilterMode} />
-
-### Keyword Search
-
-<Canvas of={FilterListStories.KeywordSearch} />
-
-### Linked Property Filter
-
-<Canvas of={FilterListStories.CombinedWithLinkedFilter} />
-
-### Custom Filters
-
-<Canvas of={FilterListStories.WithCustomFilters} />
-
-### Props
-
-<Controls of={FilterListStories.Default} />

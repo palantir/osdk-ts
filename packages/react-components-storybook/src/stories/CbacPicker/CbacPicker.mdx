@@ -16,8 +16,7 @@
 
 {/* cspell:words cbac */}
 
-import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
-import * as CbacPickerStories from "./CbacPicker.stories";
+import { Meta } from "@storybook/addon-docs/blocks";
 
 <Meta title="Components/CbacPicker/Docs" tags={["beta"]}/>
 
@@ -33,29 +32,3 @@ The picker lets users select markings grouped by category. Some categories are
 **conjunctive** (pick any combination, like access groups). The server enforces
 which combinations are valid, which markings are implied by others, and which
 are disallowed.
-
-## Interactive Demos
-
-### Default
-
-<Canvas of={CbacPickerStories.Default} />
-
-### Read-Only
-
-<Canvas of={CbacPickerStories.ReadOnly} />
-
-### With Initial Selection
-
-<Canvas of={CbacPickerStories.WithInitialSelection} />
-
-### With Implied and Disallowed
-
-<Canvas of={CbacPickerStories.WithImpliedAndDisallowed} />
-
-### Banner Only
-
-<Canvas of={CbacPickerStories.BannerOnly} />
-
-### Props
-
-<Controls of={CbacPickerStories.Default} />
