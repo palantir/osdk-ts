@@ -37,7 +37,7 @@ export function useFilterPropertyAggregation<
   Q extends ObjectTypeDefinition,
   K extends PropertyKeys<Q>,
 >(
-  objectType: Q,
+  objectType: Q | undefined,
   propertyKey: K,
   objectSet: ObjectSet<Q> | undefined,
   whereClause: WhereClause<Q>,
