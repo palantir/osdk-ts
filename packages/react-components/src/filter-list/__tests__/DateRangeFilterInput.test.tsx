@@ -89,4 +89,27 @@ describe("DateRangeFilterInput", () => {
     expect(andClauses).toContainEqual({ createdAt: { $isNull: true } });
     expect(andClauses).toContainEqual(whereClause);
   });
+
+  it("uses the bare null-check when whereClause is empty", () => {
+    const whereClause = {} as WhereClause<typeof MockObjectType>;
+
+    render(
+      <DateRangeFilterInput
+        objectType={MockObjectType}
+        propertyKey="createdAt"
+        filterState={undefined}
+        onFilterStateChanged={vi.fn()}
+        whereClause={whereClause}
+      />,
+    );
+
+    const calls = vi.mocked(useOsdkAggregation).mock.calls;
+    const nullCountCall = calls.find(
+      (c) => (c[1].aggregate as Record<string, unknown>).$groupBy == null,
+    );
+    expect(nullCountCall).toBeDefined();
+    // An empty {} inside $and is rejected by the aggregation API, so the
+    // null count query must fall back to the bare null-check predicate.
+    expect(nullCountCall![1].where).toEqual({ createdAt: { $isNull: true } });
+  });
 });
