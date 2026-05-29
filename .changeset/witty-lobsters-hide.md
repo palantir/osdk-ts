@@ -3,4 +3,4 @@
 "@osdk/react-components": patch
 ---
 
-Reset datetime picker Today handling and temporarily remove the AIP chat entry points and AIP dependencies.
+Temporarily remove the AIP chat entry points and AIP dependencies.
