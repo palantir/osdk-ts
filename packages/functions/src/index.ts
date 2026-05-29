@@ -53,7 +53,7 @@ export type {
 export type { ClassificationMarking, MandatoryMarking } from "./Markings.js";
 export type { GroupId, Principal, UserId } from "./UserGroup.js";
 
-export type { 
+export type {
   Geometry,
   GeometryCollection,
   LineString,
@@ -61,4 +61,5 @@ export type {
   MultiPoint,
   MultiPolygon,
   Point,
-  Polygon } from "geojson";
+  Polygon,
+} from "geojson";
