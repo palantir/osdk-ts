@@ -28,8 +28,8 @@ interface FilterListHeaderProps {
   onReset?: () => void;
   showActiveFilterCount?: boolean;
   activeFilterCount?: number;
+  canReset?: boolean;
   hasVisibilityChanges?: boolean;
-  hasChangesFromInitial?: boolean;
 }
 
 function FilterListHeaderInner({
@@ -41,8 +41,8 @@ function FilterListHeaderInner({
   onReset,
   showActiveFilterCount,
   activeFilterCount = 0,
+  canReset,
   hasVisibilityChanges = false,
-  hasChangesFromInitial = false,
 }: FilterListHeaderProps): React.ReactElement {
   const showCollapseButton = onCollapsedChange != null;
 
@@ -75,7 +75,9 @@ function FilterListHeaderInner({
           <Button
             className={styles.resetButton}
             onClick={onReset}
-            disabled={!hasChangesFromInitial && !hasVisibilityChanges}
+            disabled={canReset !== undefined
+              ? !canReset
+              : activeFilterCount === 0 && !hasVisibilityChanges}
           >
             <ResetIcon /> Reset filters
           </Button>

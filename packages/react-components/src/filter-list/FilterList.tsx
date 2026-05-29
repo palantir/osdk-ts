@@ -103,6 +103,8 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     uncontrolledAddFilterMode ? handleVisibilityChange : undefined,
   );
 
+  const canReset = hasChangesFromInitial || hasVisibilityChanges;
+
   const handleReset = useCallback(() => {
     reset();
     resetVisibility();
@@ -233,8 +235,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
       onReset={handleReset}
       showResetButton={showResetButton}
       showActiveFilterCount={showActiveFilterCount}
-      hasVisibilityChanges={hasVisibilityChanges}
-      hasChangesFromInitial={hasChangesFromInitial}
+      canReset={canReset}
       enableSorting={enableSorting}
       onFilterRemoved={effectiveOnFilterRemoved}
       onOrderChange={handleOrderChange}
