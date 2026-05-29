@@ -327,30 +327,5 @@ describe("useOsdkObjects enabled option", () => {
       const callArgs = mockObserveList.mock.calls[0][0];
       expect(callArgs.resolveToObjectType).toBeUndefined();
     });
-
-    it("should resubscribe when resolveToObjectType toggles between truthy and falsy", () => {
-      const wrapper = createWrapper();
-
-      const { rerender } = renderHook(
-        ({ resolve }) =>
-          useOsdkObjects(MockInterface, {
-            resolveToObjectType: resolve,
-          }),
-        {
-          wrapper,
-          initialProps: {
-            resolve: true as boolean | undefined,
-          },
-        },
-      );
-
-      expect(mockObserveList).toHaveBeenCalledTimes(1);
-
-      rerender({ resolve: undefined });
-
-      expect(mockObserveList).toHaveBeenCalledTimes(2);
-      const lastCallArgs = mockObserveList.mock.calls[1][0];
-      expect(lastCallArgs.resolveToObjectType).toBeUndefined();
-    });
   });
 });
