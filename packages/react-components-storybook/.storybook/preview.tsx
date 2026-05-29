@@ -50,10 +50,8 @@ const mockClient = createClient(
 const preview: Preview = {
   parameters: {
     options: {
-      storySort: (
-        a: { title: string; type: string; id: string },
-        b: { title: string; type: string; id: string },
-      ) => {
+      // @ts-expect-error — Storybook eval()s storySort at build time; TS types break it
+      storySort: (a, b) => {
         // Top-level category ordering
         const categoryOrder = ["Docs", "Components"];
         const aCat = a.title.split("/")[0];
