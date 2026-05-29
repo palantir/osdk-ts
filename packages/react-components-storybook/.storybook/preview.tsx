@@ -50,20 +50,24 @@ const mockClient = createClient(
 const preview: Preview = {
   parameters: {
     options: {
-      // @ts-expect-error — Storybook eval()s storySort at build time; TS types break it
+      // @ts-expect-error — Storybook eval()s storySort at build time
       storySort: (a, b) => {
-        // Top-level category ordering
-        const categoryOrder = ["Docs", "Components"];
-        const aCat = a.title.split("/")[0];
-        const bCat = b.title.split("/")[0];
-        const aIdx = categoryOrder.indexOf(aCat);
-        const bIdx = categoryOrder.indexOf(bCat);
-        const aOrder = aIdx === -1 ? categoryOrder.length : aIdx;
-        const bOrder = bIdx === -1 ? categoryOrder.length : bIdx;
-        if (aOrder !== bOrder) return aOrder - bOrder;
+        // --- helpers ---
+        const aParts = a.title.split("/");
+        const bParts = b.title.split("/");
 
-        // Sub-ordering within the top-level "Docs" category
-        if (aCat === "Docs" && bCat === "Docs") {
+        // Top-level category order
+        const categoryOrder = ["Docs", "Components"];
+        const catIdx = (p) => {
+          const i = categoryOrder.indexOf(p[0]);
+          return i === -1 ? categoryOrder.length : i;
+        };
+        if (catIdx(aParts) !== catIdx(bParts)) {
+          return catIdx(aParts) - catIdx(bParts);
+        }
+
+        // Within "Docs" — fixed order
+        if (aParts[0] === "Docs" && bParts[0] === "Docs") {
           const docsOrder = [
             "Docs/Welcome",
             "Docs/Installation",
@@ -75,20 +79,24 @@ const preview: Preview = {
             "Docs/Tokens/Typography",
             "Docs/Tokens/Spacing",
           ];
-          const aDocIdx = docsOrder.indexOf(a.title);
-          const bDocIdx = docsOrder.indexOf(b.title);
-          const aDocOrder = aDocIdx === -1 ? docsOrder.length : aDocIdx;
-          const bDocOrder = bDocIdx === -1 ? docsOrder.length : bDocIdx;
-          if (aDocOrder !== bDocOrder) return aDocOrder - bDocOrder;
+          const ai = docsOrder.indexOf(a.title);
+          const bi = docsOrder.indexOf(b.title);
+          const ao = ai === -1 ? docsOrder.length : ai;
+          const bo = bi === -1 ? docsOrder.length : bi;
+          if (ao !== bo) return ao - bo;
         }
 
-        // Within the same component, put docs entries first
-        if (a.title === b.title && a.type !== b.type) {
-          if (a.type === "docs") return -1;
-          if (b.type === "docs") return 1;
+        // Within "Components" — same component folder: "Docs" entry first
+        if (
+          aParts[0] === "Components" && bParts[0] === "Components"
+          && aParts[1] === bParts[1]
+        ) {
+          const aIsDoc = aParts[2] === "Docs";
+          const bIsDoc = bParts[2] === "Docs";
+          if (aIsDoc !== bIsDoc) return aIsDoc ? -1 : 1;
         }
 
-        // Default: alphabetical by id
+        // Default: alphabetical
         return a.id.localeCompare(b.id, undefined, { numeric: true });
       },
     },
