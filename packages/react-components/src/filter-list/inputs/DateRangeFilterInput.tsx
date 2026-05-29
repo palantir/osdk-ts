@@ -118,8 +118,6 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
     [],
   );
 
-  // Combine null-check with cross-filter where clause so the null count
-  // reflects the filtered dataset, not the full dataset
   const nullCountWhereClause = useMemo(
     () => createNullCountWhereClause<Q>(propertyKey, whereClause),
     [propertyKey, whereClause],
