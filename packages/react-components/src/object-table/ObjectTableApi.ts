@@ -641,13 +641,13 @@ export interface RowSelectionChange<
    *   provided, otherwise derived from `objectType` via `client(...)`).
    *   This includes rows not yet loaded into the table.
    * - Partial selection → the underlying `ObjectSet` narrowed to
-   *   `{ [primaryKeyApiName]: { $in: selectedRows.map(r => r.$primaryKey) } }`.
+   *   `{ $primaryKey: { $in: selectedRows.map(r => r.$primaryKey) } }`.
    * - "Deselect all" → an empty `ObjectSet` (`$in: []`).
    *
-   * `undefined` for interface types without a resolvable
-   * `primaryKeyApiName` when the selection is partial or empty (a
-   * `$primaryKey`-style filter can't be expressed). For "select all" on
-   * those types the underlying `ObjectSet` is still emitted.
+   * Works for both object and interface types, since the `$primaryKey`
+   * special property does not require resolving the underlying primary key
+   * property name. `undefined` only when there is no underlying `ObjectSet`
+   * to derive from.
    */
   objectSet: ObjectSet<Q, RDPs> | undefined;
 }
