@@ -277,6 +277,7 @@ const archetypeRules = archetypes(
   .addArchetype(
     "viteSandboxes",
     [
+      "@osdk/e2e.sandbox.officeassignment",
       "@osdk/e2e.sandbox.officenetwork",
       "@osdk/e2e.sandbox.todowidget",
       "@osdk/e2e.sandbox.todoapp",

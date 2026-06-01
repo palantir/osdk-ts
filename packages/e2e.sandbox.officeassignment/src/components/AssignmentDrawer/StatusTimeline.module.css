@@ -1,0 +1,86 @@
+.container {
+  margin-top: 4px;
+}
+
+.empty {
+  color: var(--oa-text-muted);
+  font-size: 12px;
+  padding: 8px 0;
+}
+
+.list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  border-left: 2px solid var(--oa-border);
+}
+
+.row {
+  position: relative;
+  padding: 6px 0 10px 16px;
+}
+
+.dot {
+  position: absolute;
+  left: -5px;
+  top: 9px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--oa-accent);
+}
+
+.rowBody {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rowTop {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.label {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.labelExcluded {
+  font-weight: 600;
+  font-size: 13px;
+  text-decoration: line-through;
+  color: var(--oa-text-muted);
+}
+
+.excludedTag {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--oa-warning);
+  border: 1px solid var(--oa-warning);
+  border-radius: 999px;
+  padding: 0 6px;
+}
+
+.timestamp {
+  font-size: 11px;
+  color: var(--oa-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.toggle {
+  margin-left: auto;
+}
+
+.comment {
+  font-size: 12px;
+  color: var(--oa-text);
+}
+
+.recordedBy {
+  font-size: 11px;
+  color: var(--oa-text-muted);
+}

@@ -1,0 +1,108 @@
+.container {
+  padding: 12px 14px;
+  background: var(--oa-surface);
+  border: 1px solid var(--oa-border);
+  border-radius: var(--oa-radius);
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.heading {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--oa-text-secondary);
+}
+
+.composeToggle {
+  display: flex;
+  gap: 2px;
+}
+
+.composeButton,
+.composeActive {
+  border: 1px solid var(--oa-border);
+  background: var(--oa-surface);
+  color: var(--oa-text-secondary);
+  font-size: 11px;
+  font-family: inherit;
+  padding: 3px 8px;
+  cursor: pointer;
+}
+
+.composeButton:first-child,
+.composeActive:first-child {
+  border-radius: var(--oa-radius) 0 0 var(--oa-radius);
+}
+
+.composeButton:last-child,
+.composeActive:last-child {
+  border-radius: 0 var(--oa-radius) var(--oa-radius) 0;
+}
+
+.composeActive {
+  background: var(--oa-accent);
+  border-color: var(--oa-accent);
+  color: #fff;
+}
+
+.clearButton {
+  margin-left: auto;
+  border: none;
+  background: transparent;
+  color: var(--oa-text-link);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.groups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.groupLabel {
+  font-size: 11px;
+  color: var(--oa-text-muted);
+  font-family: var(--oa-font-mono);
+}
+
+.chips {
+  display: flex;
+  gap: 4px;
+}
+
+.chip,
+.chipActive {
+  border: 1px solid var(--oa-border);
+  background: var(--oa-surface);
+  color: var(--oa-text);
+  font-size: 12px;
+  font-family: inherit;
+  padding: 3px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.chip:hover {
+  border-color: var(--oa-accent);
+}
+
+.chipActive {
+  background: var(--oa-accent-soft);
+  border-color: var(--oa-accent);
+  color: var(--oa-accent);
+  font-weight: 600;
+}
