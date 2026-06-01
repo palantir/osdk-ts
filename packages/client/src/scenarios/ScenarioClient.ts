@@ -227,6 +227,7 @@ export function buildScenarioClient(
       innerCtx,
       ontologyRid,
       scenarioRid,
+      { preview: true },
     );
     return {
       objectTypes: response.objectTypes,
@@ -244,7 +245,11 @@ export function buildScenarioClient(
       ontologyRid,
       scenarioRid,
       objectType.apiName,
-      { pageSize: options?.pageSize, pageToken: options?.pageToken },
+      {
+        pageSize: options?.pageSize,
+        pageToken: options?.pageToken,
+        preview: true,
+      },
     );
     const data: ObjectIdentifiers<Q>[] = response.data.map((entry) => {
       const wire = entry as { __apiName?: unknown; __primaryKey?: unknown };
@@ -289,6 +294,7 @@ export function buildScenarioClient(
       ontologyRid,
       scenarioRid,
       sourceObjectType.apiName,
+      { preview: true },
     );
     return response.data as LinkTypeApiNamesFor<Q>[];
   }
@@ -308,7 +314,11 @@ export function buildScenarioClient(
       scenarioRid,
       sourceObjectType.apiName,
       linkType as string,
-      { pageSize: options?.pageSize, pageToken: options?.pageToken },
+      {
+        pageSize: options?.pageSize,
+        pageToken: options?.pageToken,
+        preview: true,
+      },
     );
 
     const data: MinimalDirectedObjectLinkInstance<Q, LINK_TYPE_API_NAME>[] = [];

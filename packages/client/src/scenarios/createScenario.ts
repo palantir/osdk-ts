@@ -62,6 +62,7 @@ export async function createScenario(
     ctx.branch != null
       ? { base: { type: "branch", branch: ctx.branch } }
       : {},
+    { preview: true },
   );
 
   return buildScenarioClient(client, response.scenarioRid);
