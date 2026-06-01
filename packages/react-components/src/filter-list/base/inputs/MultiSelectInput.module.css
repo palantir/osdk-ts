@@ -43,15 +43,13 @@
   font-family: var(--osdk-filter-multiselect-count-font-family);
   font-size: var(--osdk-filter-multiselect-count-font-size);
   font-variant-numeric: tabular-nums;
-  color: var(
-    --osdk-filter-multiselect-item-count-color,
-    var(--osdk-filter-multiselect-count-color)
-  );
+  color: var(--osdk-filter-multiselect-count-color);
   flex-shrink: 0;
 }
 
+/* Muted styling for filtered-out (count=0) entries. */
 .filteredOutItem {
-  --osdk-filter-multiselect-item-count-color: var(
+  --osdk-filter-multiselect-count-color: var(
     --osdk-filter-filtered-out-item-color
   );
 
