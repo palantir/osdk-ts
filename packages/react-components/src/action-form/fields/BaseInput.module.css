@@ -45,7 +45,6 @@
   }
 
   &:focus-visible {
-    outline: none;
     border-color: var(--osdk-input-border-color-focus);
   }
 

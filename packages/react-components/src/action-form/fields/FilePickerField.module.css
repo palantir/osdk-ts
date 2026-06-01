@@ -38,7 +38,6 @@
 .osdkFilePickerTrigger:has(.osdkFilePickerText:focus-visible),
 .osdkFilePickerTrigger:has(.osdkFilePickerClear:focus-visible) {
   border-color: var(--osdk-file-picker-trigger-border-color-focus);
-  outline: none;
 }
 
 .osdkFilePickerTrigger[aria-invalid] {
@@ -148,6 +147,10 @@
   &:focus {
     outline: none;
   }
+}
+
+.osdkFilePickerBrowse.osdkFilePickerBrowse:focus-visible {
+  outline: none;
 }
 
 .osdkFilePickerBrowse.osdkFilePickerBrowse {

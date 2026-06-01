@@ -446,9 +446,9 @@ Styling for date and time picker components.
 | `--osdk-datetime-input-border-width`        | `var(--osdk-input-border-width)`                                            | Input border width         |
 | `--osdk-datetime-input-border-color`        | `var(--osdk-input-border-color)`                                            | Input border color         |
 | `--osdk-datetime-input-border-color-focus`  | `var(--osdk-input-border-color-focus)`                                      | Input focused border color |
-| `--osdk-datetime-input-focus-width`         | `var(--osdk-input-focus-width)`                                             | Input focus ring width     |
-| `--osdk-datetime-input-focus-color`         | `var(--osdk-input-focus-color)`                                             | Input focus ring color     |
-| `--osdk-datetime-input-focus-offset`        | `var(--osdk-input-focus-offset)`                                            | Input focus ring offset    |
+| `--osdk-datetime-input-focus-width`         | `var(--osdk-input-focus-width)`                                             | Deprecated                 |
+| `--osdk-datetime-input-focus-color`         | `var(--osdk-input-focus-color)`                                             | Deprecated                 |
+| `--osdk-datetime-input-focus-offset`        | `var(--osdk-input-focus-offset)`                                            | Deprecated                 |
 | `--osdk-datetime-input-transition-duration` | `var(--osdk-input-transition-duration)`                                     | Input transition duration  |
 | `--osdk-datetime-input-transition-ease`     | `var(--osdk-input-transition-ease)`                                         | Input transition easing    |
 
@@ -1358,8 +1358,8 @@ Styling for time picker components.
 | `--osdk-time-picker-input-bg`                 | `var(--osdk-input-bg)`                                                | Input background     |
 | `--osdk-time-picker-input-color`              | `var(--osdk-input-color)`                                             | Input text color     |
 | `--osdk-time-picker-input-border-color-focus` | `var(--osdk-input-border-color-focus)`                                | Focused border color |
-| `--osdk-time-picker-input-focus-outline`      | `var(--osdk-input-focus-width) solid var(--osdk-input-focus-color)`   | Focus outline        |
-| `--osdk-time-picker-input-focus-offset`       | `var(--osdk-input-focus-offset)`                                      | Focus offset         |
+| `--osdk-time-picker-input-focus-outline`      | `var(--osdk-input-focus-width) solid var(--osdk-input-focus-color)`   | Deprecated           |
+| `--osdk-time-picker-input-focus-offset`       | `var(--osdk-input-focus-offset)`                                      | Deprecated           |
 
 ### Tooltip
 

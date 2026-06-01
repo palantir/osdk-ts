@@ -31,7 +31,6 @@
   }
 
   &:focus-within {
-    outline: none;
     border-color: var(--osdk-input-border-color-focus);
   }
 

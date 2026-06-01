@@ -81,7 +81,6 @@
   }
 
   &:focus-within {
-    outline: none;
     border-color: var(--osdk-datetime-input-border-color-focus);
   }
 

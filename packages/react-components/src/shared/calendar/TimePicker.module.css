@@ -24,7 +24,6 @@
 
   &:focus {
     border-color: var(--osdk-time-picker-input-border-color-focus);
-    outline: none;
   }
 
   &[aria-invalid] {
