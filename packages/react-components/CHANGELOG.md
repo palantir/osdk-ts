@@ -1,5 +1,15 @@
 # @osdk/react-components
 
+## 0.23.0
+
+### Minor Changes
+
+- 4a2110e: Make the filter-list exclude row Clear all button reliably right-align against consumer CSS resets.
+- 8c8038e: Fix "Failed to load null count" error on date and number range filters when no cross-filter is active. The null-count aggregation no longer wraps an empty where clause inside `$and`, which the aggregation API rejects.
+- 5b87e4a: ObjectTable: clicking the header select-all checkbox now deselects all rows whenever any rows are selected (including the indeterminate state). Previously a partial selection promoted to "select all" on click, requiring a second click to clear.
+- ceeabb5: Fix static FilterList values rendering as filtered out and keep filtered-out values accessible.
+- c3752ce: Temporarily remove the AIP chat entry points and AIP dependencies.
+
 ## 0.22.0
 
 ### Minor Changes

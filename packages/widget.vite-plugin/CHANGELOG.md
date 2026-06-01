@@ -1,5 +1,15 @@
 # @osdk/widget.vite-plugin
 
+## 3.23.0
+
+### Minor Changes
+
+- f8d5ce5: use dev mode v2
+
+### Patch Changes
+
+- @osdk/widget.api@3.23.0
+
 ## 3.22.0
 
 ### Patch Changes
