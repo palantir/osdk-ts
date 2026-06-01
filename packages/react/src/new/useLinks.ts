@@ -215,7 +215,7 @@ export function useLinks<
               mode: otherOptions.mode,
               dedupeInterval: otherOptions.dedupeIntervalMs ?? 2_000,
               $includeAllBaseObjectProperties,
-              ...(resolveToObjectType ? { resolveToObjectType: true } : {}),
+              resolveToObjectType,
               ...(canonOptions.$select ? { select: canonOptions.$select } : {}),
             },
             observer,
