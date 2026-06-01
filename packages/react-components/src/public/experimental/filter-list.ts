@@ -57,4 +57,5 @@ export { getFilterLabel } from "../../filter-list/utils/getFilterLabel.js";
 export { summarizeFilterValue } from "../../filter-list/utils/summarizeFilterValue.js";
 
 export type { LinkedFilter } from "../../filter-list/types/LinkedFilterTypes.js";
+export type { DerivedNarrowing } from "../../filter-list/utils/narrowObjectSet.js";
 export { narrowObjectSet } from "../../filter-list/utils/narrowObjectSet.js";

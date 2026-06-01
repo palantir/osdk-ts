@@ -17,19 +17,34 @@
 import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import { describe, expect, it, vi } from "vitest";
 import type { LinkedFilter } from "../../types/LinkedFilterTypes.js";
-import { narrowObjectSet } from "../narrowObjectSet.js";
+import { type DerivedNarrowing, narrowObjectSet } from "../narrowObjectSet.js";
 
 function createMockSet(): ObjectSet<ObjectTypeDefinition> {
   const set = {
     where: vi.fn(),
     pivotTo: vi.fn(),
     intersect: vi.fn(),
+    withProperties: vi.fn(),
   } as unknown as ObjectSet<ObjectTypeDefinition>;
   const chain = (): ObjectSet<ObjectTypeDefinition> => createMockSet();
   vi.mocked(set.where).mockImplementation(chain);
   vi.mocked(set.pivotTo).mockImplementation(chain);
   vi.mocked(set.intersect).mockImplementation(chain);
+  vi.mocked(set.withProperties).mockImplementation(chain);
   return set;
+}
+
+function derivedNarrowing(
+  name: string,
+): DerivedNarrowing<ObjectTypeDefinition> {
+  return {
+    withProperties: {
+      [name]: ((b: unknown) => b),
+    } as unknown as DerivedNarrowing<ObjectTypeDefinition>["withProperties"],
+    where: { [name]: { $gte: 0 } } as unknown as DerivedNarrowing<
+      ObjectTypeDefinition
+    >["where"],
+  };
 }
 
 describe("narrowObjectSet", () => {
@@ -106,5 +121,65 @@ describe("narrowObjectSet", () => {
     const afterFirstIntersect = vi.mocked(afterWhere.intersect).mock.results[0]
       .value as ObjectSet<ObjectTypeDefinition>;
     expect(afterFirstIntersect.pivotTo).toHaveBeenCalledWith("manager");
+  });
+
+  describe("derived narrowings", () => {
+    it("does not call withProperties when there are no derived narrowings", () => {
+      const base = createMockSet();
+      narrowObjectSet(base, {} as WhereClause<ObjectTypeDefinition>, [], []);
+      expect(base.withProperties).not.toHaveBeenCalled();
+    });
+
+    it("applies a single derived narrowing as withProperties then where", () => {
+      const base = createMockSet();
+      narrowObjectSet(base, {} as WhereClause<ObjectTypeDefinition>, [], [
+        derivedNarrowing("_d0"),
+      ]);
+
+      expect(base.withProperties).toHaveBeenCalledTimes(1);
+      expect(base.withProperties).toHaveBeenCalledWith({
+        _d0: expect.any(Function),
+      });
+      const withProps = vi.mocked(base.withProperties).mock.results[0]
+        .value as ObjectSet<ObjectTypeDefinition>;
+      // single narrowing → the where is applied directly (not wrapped in $and)
+      expect(withProps.where).toHaveBeenCalledWith({ _d0: { $gte: 0 } });
+    });
+
+    it("merges multiple derived narrowings and combines their wheres with $and", () => {
+      const base = createMockSet();
+      narrowObjectSet(base, {} as WhereClause<ObjectTypeDefinition>, [], [
+        derivedNarrowing("_d0"),
+        derivedNarrowing("_d1"),
+      ]);
+
+      expect(base.withProperties).toHaveBeenCalledTimes(1);
+      expect(base.withProperties).toHaveBeenCalledWith({
+        _d0: expect.any(Function),
+        _d1: expect.any(Function),
+      });
+      const withProps = vi.mocked(base.withProperties).mock.results[0]
+        .value as ObjectSet<ObjectTypeDefinition>;
+      expect(withProps.where).toHaveBeenCalledWith({
+        $and: [{ _d0: { $gte: 0 } }, { _d1: { $gte: 0 } }],
+      });
+    });
+
+    it("applies derived narrowings on top of the property where clause", () => {
+      const base = createMockSet();
+      narrowObjectSet(
+        base,
+        { active: true } as unknown as WhereClause<ObjectTypeDefinition>,
+        [],
+        [derivedNarrowing("_d0")],
+      );
+      // property where runs first on the base; the derived narrowing's
+      // withProperties is applied to that result, not the original base.
+      expect(base.where).toHaveBeenCalledWith({ active: true });
+      const afterWhere = vi.mocked(base.where).mock.results[0]
+        .value as ObjectSet<ObjectTypeDefinition>;
+      expect(afterWhere.withProperties).toHaveBeenCalledTimes(1);
+      expect(base.withProperties).not.toHaveBeenCalled();
+    });
   });
 });

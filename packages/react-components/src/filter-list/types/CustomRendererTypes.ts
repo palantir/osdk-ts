@@ -20,6 +20,7 @@ import type {
   BaseFilterState,
   FilterDefinitionControls,
 } from "../FilterListItemApi.js";
+import type { DerivedNarrowing } from "../utils/narrowObjectSet.js";
 
 /**
  * State for custom filter
@@ -93,10 +94,20 @@ export interface CustomFilterDefinition<
     props: CustomFilterItemRendererProps<Q, State>,
   ) => ReactNode;
   /**
-   * Convert filter state to a WhereClause for filtering
-   * Required for the filter to affect the object set
+   * Convert filter state to a WhereClause for filtering.
+   * Supply this for predicates expressible over the object's own properties.
+   * A custom filter must supply either `toWhereClause` or `toDerivedNarrowing`.
    */
-  toWhereClause: (state: State) => WhereClause<Q> | undefined;
+  toWhereClause?: (state: State) => WhereClause<Q> | undefined;
+  /**
+   * Convert filter state to a derived-property narrowing — a `withProperties`
+   * clause plus a `where` that references the introduced derived property
+   * names. Use this (instead of `toWhereClause`) for predicates that require an
+   * aggregation over a link, e.g. "the latest linked row of a given kind has
+   * value X". Applied via `objectSet.withProperties(...).where(...)`, so it
+   * composes with the other filters' narrowing.
+   */
+  toDerivedNarrowing?: (state: State) => DerivedNarrowing<Q> | undefined;
   /**
    * Controls whether this filter is rendered.
    * When false, the filter is hidden but its state is preserved.
