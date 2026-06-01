@@ -34,6 +34,10 @@ import {
   API_NAME_IDX as OBJECT_API_NAME_IDX,
   type ObjectCacheKey,
 } from "../object/ObjectCacheKey.js";
+import {
+  getObjectSetRdpCacheKey,
+  type ObjectCacheRdpKey,
+} from "../object/ObjectCacheRdpKey.js";
 import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "../objectMatchesWhereClause.js";
 import type { OptimisticId } from "../OptimisticId.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
@@ -58,6 +62,7 @@ export class ObjectSetQuery extends BaseListQuery<
   #objectTypes: Set<string>;
   #requiresServerEvaluation: boolean;
   #resultTypeApiName: string;
+  #baseRdpCacheKey: ObjectCacheRdpKey | undefined;
 
   // Object types this query's RDPs traverse; an edit to any of these triggers
   // revalidation. Lazily populated on first fetch when `withProperties` is set.
@@ -92,6 +97,7 @@ export class ObjectSetQuery extends BaseListQuery<
     this.#composedObjectSet = this.#composeObjectSet(opts);
 
     const baseWire: WireObjectSet = JSON.parse(baseObjectSetWire);
+    this.#baseRdpCacheKey = getObjectSetRdpCacheKey(baseWire);
     this.#objectTypes = this.#extractObjectTypes(baseWire, opts);
 
     this.#requiresServerEvaluation = !!(
@@ -119,6 +125,11 @@ export class ObjectSetQuery extends BaseListQuery<
 
   public override get rdpConfig(): Canonical<Rdp> | undefined {
     return this.#operations.withProperties;
+  }
+
+  public override get rdpCacheKey(): ObjectCacheRdpKey | undefined {
+    return this.#operations.withProperties
+      ?? this.#baseRdpCacheKey;
   }
 
   public get selectFields(): Canonical<readonly string[]> | undefined {

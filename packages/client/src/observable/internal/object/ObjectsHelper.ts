@@ -33,6 +33,7 @@ import {
   mergeSelectFields,
 } from "../utils/rdpFieldOperations.js";
 import { type ObjectCacheKey } from "./ObjectCacheKey.js";
+import type { ObjectCacheRdpKey } from "./ObjectCacheRdpKey.js";
 import { ObjectQuery } from "./ObjectQuery.js";
 
 export class ObjectsHelper extends AbstractHelper<
@@ -49,6 +50,7 @@ export class ObjectsHelper extends AbstractHelper<
   getQuery<T extends ObjectOrInterfaceDefinition>(
     options: ObserveObjectOptions<T>,
     rdpConfig?: Canonical<Rdp> | null,
+    rdpCacheKey: ObjectCacheRdpKey | undefined = rdpConfig ?? undefined,
   ): ObjectQuery {
     const apiName = typeof options.apiName === "string"
       ? options.apiName
@@ -75,7 +77,7 @@ export class ObjectsHelper extends AbstractHelper<
       "object",
       apiName,
       pk,
-      rdpConfig ?? undefined,
+      rdpCacheKey,
       canonSelect,
       $loadPropertySecurityMetadata ? true : undefined,
       $includeAllBaseObjectProperties,
@@ -89,6 +91,7 @@ export class ObjectsHelper extends AbstractHelper<
         pk,
         objectCacheKey,
         { dedupeInterval: 0 },
+        rdpConfig ?? undefined,
         defType,
         select,
         $loadPropertySecurityMetadata,
@@ -108,13 +111,18 @@ export class ObjectsHelper extends AbstractHelper<
     rdpConfig?: Canonical<Rdp> | null,
     selectFields?: ReadonlySet<string>,
     includeAllBaseObjectProperties?: boolean,
+    rdpCacheKey: ObjectCacheRdpKey | undefined = rdpConfig ?? undefined,
   ): ObjectCacheKey[] {
     return values.map(v =>
-      this.getQuery({
-        apiName: v.$objectType ?? v.$apiName,
-        pk: v.$primaryKey,
-        $includeAllBaseObjectProperties: includeAllBaseObjectProperties,
-      }, rdpConfig).writeToStore(
+      this.getQuery(
+        {
+          apiName: v.$objectType ?? v.$apiName,
+          pk: v.$primaryKey,
+          $includeAllBaseObjectProperties: includeAllBaseObjectProperties,
+        },
+        rdpConfig,
+        rdpCacheKey,
+      ).writeToStore(
         v as ObjectHolder,
         "loaded",
         batch,

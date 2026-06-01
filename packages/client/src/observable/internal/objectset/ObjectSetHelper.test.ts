@@ -14,19 +14,23 @@
  * limitations under the License.
  */
 
-import type { DerivedProperty, ObjectSet } from "@osdk/api";
+import type { DerivedProperty, ObjectSet, Osdk } from "@osdk/api";
 import { Employee } from "@osdk/client.test.ontology";
 import { FauxFoundry, ontologies, startNodeApiServer } from "@osdk/shared.test";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import type { Client } from "../../../Client.js";
 import { createClient } from "../../../createClient.js";
+import { UnderlyingOsdkObject } from "../../../object/convertWireToOsdkObjects/InternalSymbols.js";
+import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import type { SimpleOsdkProperties } from "../../../object/SimpleOsdkProperties.js";
 import { Store } from "../Store.js";
 
 describe("ObjectSetHelper RDP canonicalization", () => {
   let client: Client;
   let store: Store;
+  let emp: Osdk.Instance<Employee>;
 
-  beforeAll(() => {
+  beforeAll(async () => {
     const testSetup = startNodeApiServer(
       new FauxFoundry("https://stack.palantir.com/"),
       createClient,
@@ -35,6 +39,13 @@ describe("ObjectSetHelper RDP canonicalization", () => {
 
     const fauxOntology = testSetup.fauxFoundry.getDefaultOntology();
     ontologies.addEmployeeOntology(fauxOntology);
+
+    testSetup.fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+      employeeId: 1,
+      fullName: "Alice",
+    });
+
+    emp = await client(Employee).fetchOne(1, { $includeRid: true });
 
     return () => {
       testSetup.apiServer.close();
@@ -110,5 +121,54 @@ describe("ObjectSetHelper RDP canonicalization", () => {
     });
 
     expect(query.rdpConfig).toBeUndefined();
+  });
+
+  it("keeps base ObjectSet withProperties in a separate object-cache variant", () => {
+    const queryWithBaseRdp = store.objectSets.getQuery({
+      baseObjectSet: client(Employee).withProperties({
+        derivedName: (base) => base.pivotTo("lead").selectProperty("fullName"),
+      }),
+      mode: "offline",
+    });
+    const plainQuery = store.objectSets.getQuery({
+      baseObjectSet: client(Employee),
+      mode: "offline",
+    });
+
+    // Generated Employee types do not include ad hoc RDP fields, so seed the
+    // cache through ObjectHolder to mirror a server response with withProperties.
+    const employeeWithDerived = (emp as unknown as ObjectHolder).$clone({
+      derivedName: "Lead Alice",
+    }) as unknown as Osdk.Instance<Employee>;
+
+    store.batch({}, (batch) => {
+      queryWithBaseRdp._updateList(
+        [employeeWithDerived],
+        "loaded",
+        batch,
+      );
+    });
+
+    const rdpObjectKey = store.getValue(queryWithBaseRdp.cacheKey)
+      ?.value?.data[0];
+    if (rdpObjectKey == null) {
+      throw new Error("Expected the RDP object-set query to cache an object");
+    }
+    expect(store.objectCacheKeyRegistry.getRdpFieldSet(rdpObjectKey))
+      .toEqual(new Set(["derivedName"]));
+
+    store.batch({}, (batch) => {
+      plainQuery._updateList([emp], "loaded", batch);
+    });
+
+    const plainObjectKey = store.getValue(plainQuery.cacheKey)?.value?.data[0];
+    expect(plainObjectKey).not.toBe(rdpObjectKey);
+
+    // Inspect the internal normalized payload so the test catches cache-entry
+    // corruption even if the public object wrapper shape changes.
+    const rdpUnderlying = store.getValue(rdpObjectKey)?.value?.[
+      UnderlyingOsdkObject
+    ] as SimpleOsdkProperties | undefined;
+    expect(rdpUnderlying?.derivedName).toBe("Lead Alice");
   });
 });

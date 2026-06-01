@@ -32,6 +32,7 @@ import type { Canonical } from "../Canonical.js";
 import { isObjectInstance } from "../isObjectInstance.js";
 import type { Entry } from "../Layer.js";
 import { type ObjectCacheKey } from "../object/ObjectCacheKey.js";
+import type { ObjectCacheRdpKey } from "../object/ObjectCacheRdpKey.js";
 import { Query } from "../Query.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
 import type { SortingStrategy } from "../sorting/SortingStrategy.js";
@@ -85,6 +86,16 @@ export abstract class BaseListQuery<
 
   /** RDP configuration for this collection. */
   public abstract get rdpConfig(): Canonical<Rdp> | undefined;
+
+  /**
+   * Object-cache discriminator for result objects with derived fields.
+   * Usually this is the fetchable RDP config, but ObjectSet instances can
+   * already contain wire-only withProperties definitions whose creator
+   * functions are no longer available.
+   */
+  public get rdpCacheKey(): ObjectCacheRdpKey | undefined {
+    return this.rdpConfig;
+  }
 
   /**
    * Whether this query requests all properties of underlying concrete object
@@ -167,6 +178,7 @@ export abstract class BaseListQuery<
         this.rdpConfig,
         this.selectFieldSet,
         this.includeAllBaseObjectProperties,
+        this.rdpCacheKey,
       );
     } else {
       // Items are already cache keys
@@ -521,6 +533,7 @@ export abstract class BaseListQuery<
           this.rdpConfig,
           this.selectFieldSet,
           this.includeAllBaseObjectProperties,
+          this.rdpCacheKey,
         );
 
         return this._updateList(
@@ -641,6 +654,7 @@ export abstract class BaseListQuery<
         this.rdpConfig,
         this.selectFieldSet,
         this.includeAllBaseObjectProperties,
+        this.rdpCacheKey,
       );
     } else {
       // Items are already cache keys
@@ -778,6 +792,7 @@ export abstract class BaseListQuery<
           this.rdpConfig, // Safe - null for queries without RDPs
           undefined,
           this.includeAllBaseObjectProperties,
+          this.rdpCacheKey,
         );
       });
     } else if (state === "REMOVED") {

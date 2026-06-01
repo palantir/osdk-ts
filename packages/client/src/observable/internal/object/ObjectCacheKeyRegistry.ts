@@ -16,13 +16,17 @@
 
 import type { Canonical } from "../Canonical.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
-import { extractRdpFieldNames } from "../utils/rdpFieldOperations.js";
 import type { ObjectCacheKey } from "./ObjectCacheKey.js";
+import {
+  getObjectCacheRdpFieldNames,
+  isObjectSetRdpCacheKey,
+  type ObjectCacheRdpKey,
+} from "./ObjectCacheRdpKey.js";
 
 interface CacheKeyMetadata {
   apiName: string;
   primaryKey: string;
-  rdpConfig?: Canonical<Rdp>;
+  rdpConfig?: ObjectCacheRdpKey;
   rdpFieldSet?: ReadonlySet<string>;
 }
 
@@ -54,7 +58,7 @@ export class ObjectCacheKeyRegistry {
     cacheKey: ObjectCacheKey,
     apiName: string,
     primaryKey: string | number | boolean,
-    rdpConfig?: Canonical<Rdp>,
+    rdpConfig?: ObjectCacheRdpKey,
   ): void {
     const baseKey = this.makeBaseKey(apiName, primaryKey);
     const primaryKeyStr = String(primaryKey);
@@ -63,7 +67,7 @@ export class ObjectCacheKeyRegistry {
       apiName,
       primaryKey: primaryKeyStr,
       rdpConfig,
-      rdpFieldSet: rdpConfig ? extractRdpFieldNames(rdpConfig) : undefined,
+      rdpFieldSet: getObjectCacheRdpFieldNames(rdpConfig),
     });
 
     let entry = this.baseToVariants.get(baseKey);
@@ -149,7 +153,8 @@ export class ObjectCacheKeyRegistry {
    * Get the RDP configuration for a cache key
    */
   getRdpConfig(cacheKey: ObjectCacheKey): Canonical<Rdp> | undefined {
-    return this.keyMetadata.get(cacheKey)?.rdpConfig;
+    const rdpConfig = this.keyMetadata.get(cacheKey)?.rdpConfig;
+    return isObjectSetRdpCacheKey(rdpConfig) ? undefined : rdpConfig;
   }
 
   /**
