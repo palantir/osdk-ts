@@ -81,9 +81,7 @@
   gap: var(--osdk-filter-null-label-gap);
 }
 
-/* Muted styling for filtered-out (count=0) rows. */
 .row[data-filtered-out] {
-  opacity: var(--osdk-filter-filtered-out-item-opacity);
   color: var(--osdk-filter-filtered-out-item-color);
 }
 
