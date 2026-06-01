@@ -1,5 +1,18 @@
 # @osdk/generator-converters.preview
 
+## 0.16.0
+
+### Minor Changes
+
+- 5ff7aa5: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.61.0` to `2.63.0`. The OntologyScenarios endpoints now expose a `preview` query-param slot, so `createScenario` and the `EXPERIMENTAL_ScenarioClient` read methods pass `{ preview: true }` directly instead of relying on a fetch-level URL rewrite.
+
+### Patch Changes
+
+- Updated dependencies [5ff7aa5]
+  - @osdk/generator@2.27.0
+  - @osdk/generator-converters.ontologyir@2.27.0
+  - @osdk/client.unstable@2.27.0
+
 ## 0.15.0
 
 ### Minor Changes
