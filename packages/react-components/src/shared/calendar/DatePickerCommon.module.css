@@ -83,7 +83,6 @@
   &:focus-within {
     outline: none;
     border-color: var(--osdk-datetime-input-border-color-focus);
-    box-shadow: var(--osdk-input-shadow-focus);
   }
 
   &[data-disabled] {
@@ -102,11 +101,9 @@
 
 .osdkDatePickerInputWrapperError {
   border-color: var(--osdk-datetime-input-error-border-color);
-  box-shadow: var(--osdk-input-shadow-error);
 
   &:focus-within {
     border-color: var(--osdk-datetime-input-error-border-color);
-    box-shadow: var(--osdk-input-shadow-error-focus);
   }
 }
 

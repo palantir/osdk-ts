@@ -9,22 +9,7 @@
   --osdk-input-border-width: var(--osdk-surface-border-width);
   --osdk-input-border-color: var(--osdk-surface-border-color-default);
   --osdk-input-border-color-focus: var(--osdk-intent-primary-rest);
-  --osdk-input-shadow: none;
-  --osdk-input-shadow-focus: none;
-  --osdk-input-shadow-error: inset 0 0 0 var(--osdk-input-border-width)
-    var(--osdk-input-border-color-error);
-  --osdk-input-shadow-error-focus: inset 0 0 0 var(--osdk-input-border-width)
-      color-mix(
-        in srgb,
-        var(--osdk-input-border-color-error) 75%,
-        transparent
-      ),
-    0 0 0 calc(var(--osdk-input-border-width) * 2)
-      color-mix(
-        in srgb,
-        var(--osdk-input-border-color-error) 30%,
-        transparent
-      );
+  --osdk-input-shadow: inset 0 1px 1px var(--osdk-surface-border-color-default);
 
   /* Input backgrounds */
   --osdk-input-bg: var(--osdk-surface-background-color-default-rest);

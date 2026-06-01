@@ -35,20 +35,14 @@
       var(--osdk-file-picker-transition-ease);
 }
 
-.osdkFilePickerTrigger:focus-within {
+.osdkFilePickerTrigger:has(.osdkFilePickerText:focus-visible),
+.osdkFilePickerTrigger:has(.osdkFilePickerClear:focus-visible) {
   border-color: var(--osdk-file-picker-trigger-border-color-focus);
   outline: none;
-  box-shadow: var(--osdk-input-shadow-focus);
 }
 
 .osdkFilePickerTrigger[aria-invalid] {
   border-color: var(--osdk-file-picker-trigger-border-color-error);
-  box-shadow: var(--osdk-input-shadow-error);
-}
-
-.osdkFilePickerTrigger[aria-invalid]:focus-within {
-  border-color: var(--osdk-file-picker-trigger-border-color-error);
-  box-shadow: var(--osdk-input-shadow-error-focus);
 }
 
 /* display: none fully removes the input from the a11y tree, avoiding
