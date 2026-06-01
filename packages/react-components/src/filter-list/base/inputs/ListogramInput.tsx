@@ -43,6 +43,7 @@ interface ListogramInputProps {
   displayMode?: ListogramDisplayMode;
   showCount?: boolean;
   isExcluding?: boolean;
+  showFilteredOutValues?: boolean;
   className?: string;
   style?: React.CSSProperties;
   maxVisibleItems?: number;
@@ -61,6 +62,7 @@ function ListogramInputInner({
   displayMode = "full",
   showCount = true,
   isExcluding,
+  showFilteredOutValues = true,
   className,
   style,
   maxVisibleItems,
@@ -138,7 +140,9 @@ function ListogramInputInner({
             const perRowColor = colorMap?.[value];
             const isEmpty = isEmptyValue(value);
 
-            const isFilteredOut = count === 0 && !selectedSet.has(value);
+            const isFilteredOut = showFilteredOutValues
+              && count === 0
+              && !selectedSet.has(value);
             return (
               <Button
                 key={value}
