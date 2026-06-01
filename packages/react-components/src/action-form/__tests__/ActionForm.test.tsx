@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import type { ActionDefinition, ActionMetadata } from "@osdk/api";
+import type {
+  ActionDefinition,
+  ActionMetadata,
+  ActionValidationResponse,
+} from "@osdk/api";
+import type * as OsdkReact from "@osdk/react";
 import { useOsdkAction, useOsdkMetadata } from "@osdk/react";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { useState } from "react";
@@ -22,11 +27,15 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ActionForm } from "../ActionForm.js";
 import type { FormFieldDefinition } from "../FormFieldApi.js";
 
-vi.mock("@osdk/react", () => ({
-  useOsdkAction: vi.fn(),
-  useRegisterUserAgent: vi.fn(),
-  useOsdkMetadata: vi.fn(),
-}));
+vi.mock("@osdk/react", async (importOriginal) => {
+  const actual = await importOriginal<typeof OsdkReact>();
+  return {
+    ...actual,
+    useOsdkAction: vi.fn(),
+    useRegisterUserAgent: vi.fn(),
+    useOsdkMetadata: vi.fn(),
+  };
+});
 
 /**
  * Test action type with compile-time metadata so FieldKey resolves properly.
@@ -76,11 +85,35 @@ const BooleanAction: BooleanActionDef = {
 const mockApplyAction = vi.fn().mockResolvedValue({
   editedObjectTypes: [],
 });
+const mockValidateAction = vi.fn();
+const VALID_RESPONSE: ActionValidationResponse = {
+  result: "VALID",
+  submissionCriteria: [],
+  parameters: {},
+};
+
+function createDeferred<T>() {
+  let resolvePromise: (value: T | PromiseLike<T>) => void = () => {
+    throw new Error("Deferred promise was resolved before initialization");
+  };
+  let rejectPromise: (reason?: unknown) => void = () => {
+    throw new Error("Deferred promise was rejected before initialization");
+  };
+  const promise = new Promise<T>((resolve, reject) => {
+    resolvePromise = resolve;
+    rejectPromise = reject;
+  });
+  return {
+    promise,
+    resolve: resolvePromise,
+    reject: rejectPromise,
+  };
+}
 
 function defaultMockActionResult() {
   return {
     applyAction: mockApplyAction,
-    validateAction: vi.fn(),
+    validateAction: mockValidateAction,
     error: undefined,
     data: undefined,
     isPending: false,
@@ -121,6 +154,7 @@ describe("ActionForm", () => {
     vi.mocked(useOsdkAction).mockReturnValue(defaultMockActionResult());
     vi.mocked(useOsdkMetadata).mockReturnValue(defaultMockMetadataResult());
     mockApplyAction.mockReset().mockResolvedValue({ editedObjectTypes: [] });
+    mockValidateAction.mockReset().mockResolvedValue(VALID_RESPONSE);
   });
 
   describe("form title", () => {
@@ -375,6 +409,190 @@ describe("ActionForm", () => {
           expect.objectContaining({ name: "Ada Lovelace" }),
         );
       });
+    });
+  });
+
+  describe("server validation", () => {
+    it("debounces validateAction calls and reports validation responses", async () => {
+      vi.useFakeTimers();
+      const onValidationResponse = vi.fn();
+
+      try {
+        render(
+          <ActionForm
+            actionDefinition={TestAction}
+            onValidationResponse={onValidationResponse}
+          />,
+        );
+
+        fireEvent.input(screen.getByRole("textbox", { name: /^name/ }), {
+          target: { value: "Alice" },
+        });
+
+        await vi.advanceTimersByTimeAsync(499);
+        expect(mockValidateAction).not.toHaveBeenCalled();
+
+        await vi.advanceTimersByTimeAsync(1);
+
+        await vi.waitFor(() => {
+          expect(mockValidateAction).toHaveBeenCalledWith({ name: "Alice" });
+          expect(onValidationResponse).toHaveBeenCalledWith(VALID_RESPONSE);
+        });
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
+    it("ignores in-flight validation responses after a newer field change", async () => {
+      vi.useFakeTimers();
+      const onValidationResponse = vi.fn();
+      const firstValidation = createDeferred<ActionValidationResponse>();
+      const secondValidation = createDeferred<ActionValidationResponse>();
+      const staleResponse: ActionValidationResponse = {
+        result: "VALID",
+        submissionCriteria: [],
+        parameters: {
+          name: {
+            result: "VALID",
+            required: false,
+            evaluatedConstraints: [{
+              type: "oneOf",
+              options: [{ displayName: "Alice A.", value: "alice" }],
+              otherValuesAllowed: false,
+            }],
+          },
+        },
+      };
+
+      mockValidateAction
+        .mockReturnValueOnce(firstValidation.promise)
+        .mockReturnValueOnce(secondValidation.promise);
+
+      try {
+        render(
+          <ActionForm
+            actionDefinition={TestAction}
+            onValidationResponse={onValidationResponse}
+          />,
+        );
+
+        fireEvent.input(screen.getByRole("textbox", { name: /^name/ }), {
+          target: { value: "Alice" },
+        });
+        await vi.advanceTimersByTimeAsync(500);
+        expect(mockValidateAction).toHaveBeenCalledWith({ name: "Alice" });
+
+        fireEvent.input(screen.getByRole("textbox", { name: /^name/ }), {
+          target: { value: "Bob" },
+        });
+        firstValidation.resolve(staleResponse);
+        await vi.advanceTimersByTimeAsync(0);
+
+        expect(onValidationResponse).not.toHaveBeenCalled();
+        expect(screen.getByRole("textbox", { name: /^name/ })).toBeDefined();
+
+        await vi.advanceTimersByTimeAsync(500);
+        expect(mockValidateAction).toHaveBeenCalledWith({ name: "Bob" });
+
+        secondValidation.resolve(VALID_RESPONSE);
+        await vi.advanceTimersByTimeAsync(0);
+
+        expect(onValidationResponse).toHaveBeenCalledWith(VALID_RESPONSE);
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
+    it("renders generated fields with server oneOf constraints as dropdowns", async () => {
+      vi.useFakeTimers();
+      const validationResponse: ActionValidationResponse = {
+        result: "VALID",
+        submissionCriteria: [],
+        parameters: {
+          name: {
+            result: "VALID",
+            required: false,
+            evaluatedConstraints: [{
+              type: "oneOf",
+              options: [
+                { displayName: "Alice A.", value: "alice" },
+                { displayName: "Bob B.", value: "bob" },
+              ],
+              otherValuesAllowed: false,
+            }],
+          },
+        },
+      };
+      mockValidateAction.mockResolvedValue(validationResponse);
+
+      try {
+        render(<ActionForm actionDefinition={TestAction} />);
+
+        fireEvent.input(screen.getByRole("textbox", { name: /^name/ }), {
+          target: { value: "Alice" },
+        });
+
+        await vi.advanceTimersByTimeAsync(500);
+
+        await vi.waitFor(() => {
+          expect(screen.queryByRole("textbox", { name: /^name/ })).toBeNull();
+          expect(screen.getByRole("combobox", { name: /^name/ })).toBeDefined();
+        });
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
+    it("does not change custom non-select fields for server oneOf constraints", async () => {
+      vi.useFakeTimers();
+      mockValidateAction.mockResolvedValue(
+        {
+          result: "VALID",
+          submissionCriteria: [],
+          parameters: {
+            name: {
+              result: "VALID",
+              required: false,
+              evaluatedConstraints: [{
+                type: "oneOf",
+                options: [{ displayName: "Alice A.", value: "alice" }],
+                otherValuesAllowed: false,
+              }],
+            },
+          },
+        } satisfies ActionValidationResponse,
+      );
+      const customDefs: Array<FormFieldDefinition<TestActionDef>> = [
+        {
+          fieldKey: "name",
+          label: "Full Name",
+          fieldComponent: "TEXT_INPUT",
+          fieldComponentProps: {},
+        },
+      ];
+
+      try {
+        render(
+          <ActionForm
+            actionDefinition={TestAction}
+            formFieldDefinitions={customDefs}
+          />,
+        );
+
+        fireEvent.input(screen.getByRole("textbox", { name: /^Full Name/ }), {
+          target: { value: "Alice" },
+        });
+
+        await vi.advanceTimersByTimeAsync(500);
+
+        await vi.waitFor(() => {
+          expect(
+            screen.getByRole("textbox", { name: /^Full Name/ }),
+          ).toBeDefined();
+        });
+      } finally {
+        vi.useRealTimers();
+      }
     });
   });
 
