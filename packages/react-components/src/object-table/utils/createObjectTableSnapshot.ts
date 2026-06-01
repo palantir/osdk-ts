@@ -23,14 +23,14 @@ import type {
 import type { Column, Table } from "@tanstack/react-table";
 import type {
   ObjectTableDataCell,
-  ObjectTableLoadedData,
+  ObjectTableSnapshot,
 } from "../ObjectTableApi.js";
 import { isAsyncCellData } from "./AsyncCellData.js";
 import { SELECTION_COLUMN_ID } from "./constants.js";
 
 const CONTROL_COLUMN_IDS: ReadonlySet<string> = new Set([SELECTION_COLUMN_ID]);
 
-interface CreateObjectTableLoadedDataParams<
+interface CreateObjectTableSnapshotParams<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 > {
@@ -43,7 +43,7 @@ interface CreateObjectTableLoadedDataParams<
   totalCount: string | undefined;
 }
 
-export function createObjectTableLoadedData<
+export function createObjectTableSnapshot<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 >({
@@ -52,7 +52,7 @@ export function createObjectTableLoadedData<
   isLoading,
   error,
   totalCount,
-}: CreateObjectTableLoadedDataParams<Q, RDPs>): ObjectTableLoadedData<
+}: CreateObjectTableSnapshotParams<Q, RDPs>): ObjectTableSnapshot<
   Q,
   RDPs
 > {

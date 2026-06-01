@@ -39,7 +39,7 @@ import { useTableSorting } from "./hooks/useTableSorting.js";
 import type { ObjectTableProps } from "./ObjectTableApi.js";
 import { BaseTable } from "./Table.js";
 import type { HeaderMenuFeatureFlags } from "./TableHeaderWithPopover.js";
-import { createObjectTableLoadedData } from "./utils/createObjectTableLoadedData.js";
+import { createObjectTableSnapshot } from "./utils/createObjectTableSnapshot.js";
 import { getRowId } from "./utils/getRowId.js";
 import type { EditableConfig } from "./utils/types.js";
 
@@ -307,8 +307,8 @@ export function ObjectTable<
   const isTableLoading = isLoading || isColumnsLoading;
 
   useImperativeHandle(tableRef, () => ({
-    getLoadedData: () =>
-      createObjectTableLoadedData({
+    getSnapshot: () =>
+      createObjectTableSnapshot({
         table,
         hasNextPage: hasMore,
         isLoading: isTableLoading,

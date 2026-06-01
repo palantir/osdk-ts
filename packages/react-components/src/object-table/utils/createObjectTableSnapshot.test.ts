@@ -25,7 +25,7 @@ import React from "react";
 import { describe, expect, it } from "vitest";
 import { createAsyncCellData } from "./AsyncCellData.js";
 import { SELECTION_COLUMN_ID } from "./constants.js";
-import { createObjectTableLoadedData } from "./createObjectTableLoadedData.js";
+import { createObjectTableSnapshot } from "./createObjectTableSnapshot.js";
 
 const TestObjectType = {
   type: "object",
@@ -43,7 +43,7 @@ type TestRow = Osdk.Instance<
   TestRDPs
 >;
 
-describe(createObjectTableLoadedData, () => {
+describe(createObjectTableSnapshot, () => {
   it("returns visible data columns and row values while excluding control columns", () => {
     const firstRow = buildRow({ id: "1", name: "Ada", status: "Active" });
     const secondRow = buildRow({ id: "2", name: "Grace", status: "Inactive" });
@@ -59,7 +59,7 @@ describe(createObjectTableLoadedData, () => {
       data: [firstRow, secondRow],
     });
 
-    const loadedData = createObjectTableLoadedData<TestObject, TestRDPs>({
+    const snapshot = createObjectTableSnapshot<TestObject, TestRDPs>({
       table,
       hasNextPage: true,
       isLoading: false,
@@ -67,28 +67,28 @@ describe(createObjectTableLoadedData, () => {
       totalCount: "2",
     });
 
-    expect(loadedData.columns).toEqual([
+    expect(snapshot.columns).toEqual([
       { id: "name", name: "Name" },
       { id: "status", name: "Status" },
     ]);
-    expect(loadedData.hasNextPage).toBe(true);
-    expect(loadedData.isLoading).toBe(false);
-    expect(loadedData.error).toBeUndefined();
-    expect(loadedData.totalCount).toBe("2");
+    expect(snapshot.hasNextPage).toBe(true);
+    expect(snapshot.isLoading).toBe(false);
+    expect(snapshot.error).toBeUndefined();
+    expect(snapshot.totalCount).toBe("2");
 
-    expect(loadedData.rows).toHaveLength(2);
-    expect(loadedData.rows[0].id).toBe("0");
-    expect(loadedData.rows[0].object).toBe(firstRow);
-    expect(loadedData.rows[0].getValue("name")).toEqual({
+    expect(snapshot.rows).toHaveLength(2);
+    expect(snapshot.rows[0].id).toBe("0");
+    expect(snapshot.rows[0].object).toBe(firstRow);
+    expect(snapshot.rows[0].getValue("name")).toEqual({
       status: "ready",
       value: "Ada",
     });
-    expect(loadedData.rows[0].getValue("status")).toEqual({
+    expect(snapshot.rows[0].getValue("status")).toEqual({
       status: "ready",
       value: "Active",
     });
-    expect(loadedData.rows[0].getValue(SELECTION_COLUMN_ID)).toBeUndefined();
-    expect(loadedData.rows[0].getValue("hidden")).toBeUndefined();
+    expect(snapshot.rows[0].getValue(SELECTION_COLUMN_ID)).toBeUndefined();
+    expect(snapshot.rows[0].getValue("hidden")).toBeUndefined();
   });
 
   it("uses meta columnName before falling back to column id for non-string headers", () => {
@@ -112,7 +112,7 @@ describe(createObjectTableLoadedData, () => {
       data: [buildRow({ id: "1" })],
     });
 
-    const loadedData = createObjectTableLoadedData<TestObject, TestRDPs>({
+    const snapshot = createObjectTableSnapshot<TestObject, TestRDPs>({
       table,
       hasNextPage: false,
       isLoading: false,
@@ -120,8 +120,8 @@ describe(createObjectTableLoadedData, () => {
       totalCount: undefined,
     });
 
-    expect(loadedData.hasNextPage).toBe(false);
-    expect(loadedData.columns).toEqual([
+    expect(snapshot.hasNextPage).toBe(false);
+    expect(snapshot.columns).toEqual([
       { id: "withMeta", name: "Meta Header" },
       { id: "withoutMeta", name: "withoutMeta" },
     ]);
@@ -139,7 +139,7 @@ describe(createObjectTableLoadedData, () => {
       data: [buildRow({ id: "1", name: "Ada" })],
     });
 
-    const loadedData = createObjectTableLoadedData<TestObject, TestRDPs>({
+    const snapshot = createObjectTableSnapshot<TestObject, TestRDPs>({
       table,
       hasNextPage: false,
       isLoading: false,
@@ -147,7 +147,7 @@ describe(createObjectTableLoadedData, () => {
       totalCount: undefined,
     });
 
-    expect(loadedData.rows[0].getValue("name")).toEqual({
+    expect(snapshot.rows[0].getValue("name")).toEqual({
       status: "ready",
       value: "Ada",
     });
@@ -160,7 +160,7 @@ describe(createObjectTableLoadedData, () => {
       data: [buildRow({ id: "1" })],
     });
 
-    const loadedData = createObjectTableLoadedData<TestObject, TestRDPs>({
+    const snapshot = createObjectTableSnapshot<TestObject, TestRDPs>({
       table,
       hasNextPage: false,
       isLoading: false,
@@ -168,8 +168,8 @@ describe(createObjectTableLoadedData, () => {
       totalCount: "1",
     });
 
-    expect(loadedData.error).toBe(error);
-    expect(loadedData.totalCount).toBe("1");
+    expect(snapshot.error).toBe(error);
+    expect(snapshot.totalCount).toBe("1");
   });
 
   it("wraps async cell values without exposing the internal async cell shape", () => {
@@ -204,7 +204,7 @@ describe(createObjectTableLoadedData, () => {
       ],
     });
 
-    const loadedData = createObjectTableLoadedData<TestObject, TestRDPs>({
+    const snapshot = createObjectTableSnapshot<TestObject, TestRDPs>({
       table,
       hasNextPage: false,
       isLoading: true,
@@ -212,16 +212,16 @@ describe(createObjectTableLoadedData, () => {
       totalCount: undefined,
     });
 
-    expect(loadedData.rows[0].getValue("loading")).toEqual({
+    expect(snapshot.rows[0].getValue("loading")).toEqual({
       status: "loading",
       value: "previous comment",
     });
-    expect(loadedData.rows[0].getValue("error")).toEqual({
+    expect(snapshot.rows[0].getValue("error")).toEqual({
       status: "error",
       error,
       value: "stale status",
     });
-    expect(loadedData.rows[0].getValue("loaded")).toEqual({
+    expect(snapshot.rows[0].getValue("loaded")).toEqual({
       status: "ready",
       value: "loaded status",
     });

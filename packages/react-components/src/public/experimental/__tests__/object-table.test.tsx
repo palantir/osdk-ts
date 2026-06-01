@@ -88,7 +88,7 @@ describe("public experimental ObjectTable", () => {
     render(<ObjectTable tableRef={ref} objectType={TestObjectType} />);
 
     expect(ref.current).not.toBeNull();
-    expect(ref.current?.getLoadedData).toBeTypeOf("function");
+    expect(ref.current?.getSnapshot).toBeTypeOf("function");
     expect(ref.current?.loadNextPage).toBeTypeOf("function");
   });
 });

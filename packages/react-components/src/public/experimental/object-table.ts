@@ -31,8 +31,8 @@ export type {
   ObjectTableDataColumn,
   ObjectTableDataRow,
   ObjectTableHandle,
-  ObjectTableLoadedData,
   ObjectTableProps,
+  ObjectTableSnapshot,
   PropertyColumnLocator,
   RdpColumnLocator,
 } from "../../object-table/ObjectTableApi.js";

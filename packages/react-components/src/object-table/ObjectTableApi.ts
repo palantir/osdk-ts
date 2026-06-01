@@ -37,27 +37,27 @@ export interface ObjectTableHandle<
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 > {
   /**
-   * Returns a fresh read of ObjectTable's currently loaded data and pagination
-   * state.
+   * Returns a point-in-time snapshot of ObjectTable's currently loaded data
+   * and pagination state.
    *
-   * The result includes visible data columns only, excludes internal control
+   * The snapshot includes visible data columns only, excludes internal control
    * columns such as row selection, and does not fetch additional pages.
    * Cell values come from the table's accessor values, not from rendered React
    * content supplied by `renderCell`.
    */
-  getLoadedData: () => ObjectTableLoadedData<Q, RDPs>;
+  getSnapshot: () => ObjectTableSnapshot<Q, RDPs>;
 
   /**
    * Fetches the next page using ObjectTable's existing pagination mechanism.
    *
    * This function is always safe to call. It resolves immediately when no next
-   * page is available. Use `getLoadedData().hasNextPage` to decide whether
+   * page is available. Use `getSnapshot().hasNextPage` to decide whether
    * calling it can load additional rows.
    */
   loadNextPage: () => Promise<void>;
 }
 
-export interface ObjectTableLoadedData<
+export interface ObjectTableSnapshot<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 > {
@@ -352,8 +352,8 @@ export interface ObjectTableProps<
   objectType: Q;
 
   /**
-   * Ref-like handle for reading a fresh snapshot of the currently loaded table
-   * data and pagination state.
+   * Ref-like handle for reading a point-in-time snapshot of the currently
+   * loaded table data and pagination state.
    *
    * The handle is exposed as a named prop rather than React's reserved `ref`
    * prop so ObjectTable can preserve its generic component signature.

@@ -66,7 +66,7 @@ describe(ObjectTable, () => {
     ]);
   });
 
-  it("exposes loaded data shape without fetching more data", () => {
+  it("exposes snapshot shape without fetching more data", () => {
     const fetchMore = vi.fn(async () => {});
     const row = createRow({ id: "1", name: "Ada", status: "Active" });
     mockTableData({ data: [row], fetchMore, hasMore: true });
@@ -74,12 +74,12 @@ describe(ObjectTable, () => {
     const ref = React.createRef<ObjectTableHandle<TestObject>>();
     render(<ObjectTable tableRef={ref} objectType={TestObjectType} />);
 
-    const loadedData = ref.current?.getLoadedData();
+    const snapshot = ref.current?.getSnapshot();
 
     expect(fetchMore).not.toHaveBeenCalled();
-    expect(loadedData?.columns).toHaveLength(2);
-    expect(loadedData?.rows).toHaveLength(1);
-    expect(loadedData?.hasNextPage).toBe(true);
+    expect(snapshot?.columns).toHaveLength(2);
+    expect(snapshot?.rows).toHaveLength(1);
+    expect(snapshot?.hasNextPage).toBe(true);
   });
 
   it("loads the next page when one is available", async () => {
@@ -89,7 +89,7 @@ describe(ObjectTable, () => {
     const ref = React.createRef<ObjectTableHandle<TestObject>>();
     render(<ObjectTable tableRef={ref} objectType={TestObjectType} />);
 
-    expect(ref.current?.getLoadedData().hasNextPage).toBe(true);
+    expect(ref.current?.getSnapshot().hasNextPage).toBe(true);
 
     await act(async () => {
       await ref.current?.loadNextPage();
@@ -105,7 +105,7 @@ describe(ObjectTable, () => {
     const ref = React.createRef<ObjectTableHandle<TestObject>>();
     render(<ObjectTable tableRef={ref} objectType={TestObjectType} />);
 
-    expect(ref.current?.getLoadedData().hasNextPage).toBe(false);
+    expect(ref.current?.getSnapshot().hasNextPage).toBe(false);
 
     await act(async () => {
       await ref.current?.loadNextPage();
@@ -114,7 +114,7 @@ describe(ObjectTable, () => {
     expect(fetchMore).not.toHaveBeenCalled();
   });
 
-  it("returns a fresh loadedData snapshot after ObjectTable receives new data", () => {
+  it("returns a fresh snapshot after ObjectTable receives new data", () => {
     const firstRow = createRow({ id: "1", name: "Ada", status: "Active" });
     const secondRow = createRow({ id: "2", name: "Grace", status: "Active" });
     mockTableData({ data: [firstRow], hasMore: true });
@@ -124,17 +124,17 @@ describe(ObjectTable, () => {
       <ObjectTable tableRef={ref} objectType={TestObjectType} />,
     );
 
-    const firstLoadedData = ref.current?.getLoadedData();
+    const firstSnapshot = ref.current?.getSnapshot();
 
     mockTableData({ data: [firstRow, secondRow], hasMore: false });
     rerender(<ObjectTable tableRef={ref} objectType={TestObjectType} />);
 
-    const secondLoadedData = ref.current?.getLoadedData();
+    const secondSnapshot = ref.current?.getSnapshot();
 
-    expect(firstLoadedData).not.toBe(secondLoadedData);
-    expect(firstLoadedData?.rows).toHaveLength(1);
-    expect(secondLoadedData?.rows).toHaveLength(2);
-    expect(secondLoadedData?.hasNextPage).toBe(false);
+    expect(firstSnapshot).not.toBe(secondSnapshot);
+    expect(firstSnapshot?.rows).toHaveLength(1);
+    expect(secondSnapshot?.rows).toHaveLength(2);
+    expect(secondSnapshot?.hasNextPage).toBe(false);
   });
 
   it("renders column headers in the table", () => {
