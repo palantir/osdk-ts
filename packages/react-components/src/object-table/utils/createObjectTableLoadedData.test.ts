@@ -15,8 +15,14 @@
  */
 
 import type { ObjectTypeDefinition, Osdk, PropertyKeys } from "@osdk/api";
-import type { Row, Table } from "@tanstack/react-table";
-import { describe, expect, it, vi } from "vitest";
+import type {
+  AccessorColumnDef,
+  ColumnDef,
+  Table,
+} from "@tanstack/react-table";
+import { createTable, getCoreRowModel } from "@tanstack/react-table";
+import React from "react";
+import { describe, expect, it } from "vitest";
 import { createAsyncCellData } from "./AsyncCellData.js";
 import { SELECTION_COLUMN_ID } from "./constants.js";
 import { createObjectTableLoadedData } from "./createObjectTableLoadedData.js";
@@ -37,38 +43,20 @@ type TestRow = Osdk.Instance<
   TestRDPs
 >;
 
-interface TestRowValues {
-  id: string;
-  name: string;
-  status: string;
-  hidden: string;
-}
-
 describe(createObjectTableLoadedData, () => {
   it("returns visible data columns and row values while excluding control columns", () => {
-    const firstRow = createOriginalRow({
-      id: "1",
-      name: "Ada",
-      status: "Active",
-      hidden: "x",
-    });
-    const secondRow = createOriginalRow({
-      id: "2",
-      name: "Grace",
-      status: "Inactive",
-      hidden: "y",
-    });
+    const firstRow = buildRow({ id: "1", name: "Ada", status: "Active" });
+    const secondRow = buildRow({ id: "2", name: "Grace", status: "Inactive" });
 
-    const table = createTable({
+    const table = buildTable({
       columns: [
-        createColumn(SELECTION_COLUMN_ID, "Select"),
-        createColumn("name", "Name"),
-        createColumn("status", "Status"),
+        // Selection column is a control column — should be excluded from output
+        buildColumn({ id: SELECTION_COLUMN_ID, header: "Select" }),
+        buildColumn({ id: "name", header: "Name" }),
+        buildColumn({ id: "status", header: "Status" }),
+        // "hidden" is on the row data but has no column def — should not appear
       ],
-      rows: [
-        createRow({ id: "row-1", object: firstRow }),
-        createRow({ id: "row-2", object: secondRow }),
-      ],
+      data: [firstRow, secondRow],
     });
 
     const loadedData = createObjectTableLoadedData<TestObject, TestRDPs>({
@@ -89,7 +77,7 @@ describe(createObjectTableLoadedData, () => {
     expect(loadedData.totalCount).toBe("2");
 
     expect(loadedData.rows).toHaveLength(2);
-    expect(loadedData.rows[0].id).toBe("row-1");
+    expect(loadedData.rows[0].id).toBe("0");
     expect(loadedData.rows[0].object).toBe(firstRow);
     expect(loadedData.rows[0].getValue("name")).toEqual({
       status: "ready",
@@ -103,13 +91,25 @@ describe(createObjectTableLoadedData, () => {
     expect(loadedData.rows[0].getValue("hidden")).toBeUndefined();
   });
 
-  it("uses a string column name fallback when the rendered header is not a string", () => {
-    const table = createTable({
+  it("uses meta columnName before falling back to column id for non-string headers", () => {
+    // TanStack Table's header type is string | ((props) => ReactNode).
+    // When header is a function, getColumnName falls through to meta.columnName
+    // or column.id — it only extracts text from string headers.
+    const renderHeader = () =>
+      React.createElement("span", null, "Rendered header");
+    const table = buildTable({
       columns: [
-        createColumn("withMeta", { label: "Rendered" }, "Meta Header"),
-        createColumn("withoutMeta", { label: "Rendered" }),
+        buildColumn({
+          id: "withMeta",
+          header: renderHeader,
+          columnName: "Meta Header",
+        }),
+        buildColumn({
+          id: "withoutMeta",
+          header: renderHeader,
+        }),
       ],
-      rows: [createRow({ id: "row-1", object: createOriginalRow() })],
+      data: [buildRow({ id: "1" })],
     });
 
     const loadedData = createObjectTableLoadedData<TestObject, TestRDPs>({
@@ -127,19 +127,16 @@ describe(createObjectTableLoadedData, () => {
     ]);
   });
 
-  it("reads accessor values instead of rendered cell content", () => {
-    const renderedCellText = "rendered cell content";
-    const table = createTable({
+  it("returns raw accessor values instead of custom rendered cell output", () => {
+    const table = buildTable({
       columns: [
-        createColumn("name", "Name", undefined, () => renderedCellText),
-      ],
-      rows: [
-        createRow({
-          id: "row-1",
-          object: createOriginalRow({ name: "Ada" }),
-          values: { name: "Ada" },
+        buildColumn({
+          id: "name",
+          header: "Name",
+          cell: () => "rendered cell content",
         }),
       ],
+      data: [buildRow({ id: "1", name: "Ada" })],
     });
 
     const loadedData = createObjectTableLoadedData<TestObject, TestRDPs>({
@@ -158,9 +155,9 @@ describe(createObjectTableLoadedData, () => {
 
   it("exposes table-level error and total count metadata", () => {
     const error = new Error("failed");
-    const table = createTable({
-      columns: [createColumn("name", "Name")],
-      rows: [createRow({ id: "row-1", object: createOriginalRow() })],
+    const table = buildTable({
+      columns: [buildColumn({ id: "name", header: "Name" })],
+      data: [buildRow({ id: "1" })],
     });
 
     const loadedData = createObjectTableLoadedData<TestObject, TestRDPs>({
@@ -191,21 +188,18 @@ describe(createObjectTableLoadedData, () => {
       data: "loaded status",
     });
 
-    const table = createTable({
+    const table = buildTable({
       columns: [
-        createColumn("loading", "Loading"),
-        createColumn("error", "Error"),
-        createColumn("loaded", "Loaded"),
+        buildColumn({ id: "loading", header: "Loading" }),
+        buildColumn({ id: "error", header: "Error" }),
+        buildColumn({ id: "loaded", header: "Loaded" }),
       ],
-      rows: [
-        createRow({
-          id: "row-1",
-          object: createOriginalRow(),
-          values: {
-            loading: loadingValue,
-            error: errorValue,
-            loaded: loadedValue,
-          },
+      data: [
+        buildRow({
+          id: "1",
+          loading: loadingValue,
+          error: errorValue,
+          loaded: loadedValue,
         }),
       ],
     });
@@ -234,75 +228,51 @@ describe(createObjectTableLoadedData, () => {
   });
 });
 
-function createOriginalRow(overrides: Partial<TestRowValues> = {}): TestRow {
+// Osdk.Instance is too complex to construct directly — the cast is scoped to
+// this single helper so tests work with real TanStack Table accessors.
+function buildRow(fields: Record<string, unknown> & { id: string }): TestRow {
   return {
     $apiName: TestObjectType.apiName,
     $objectType: TestObjectType,
-    $primaryKey: overrides.id ?? "1",
-    id: "1",
-    name: "Ada",
-    status: "Active",
-    hidden: "x",
-    ...overrides,
+    $primaryKey: fields.id,
+    ...fields,
   } as unknown as TestRow;
 }
 
-function createColumn(
-  id: string,
-  header: unknown,
-  columnName?: string,
-  cell?: () => unknown,
-): ReturnType<Table<TestRow>["getVisibleLeafColumns"]>[number] {
-  return {
-    id,
-    columnDef: {
-      header,
-      cell,
-      meta: { columnName },
-    },
-  } as ReturnType<Table<TestRow>["getVisibleLeafColumns"]>[number];
-}
-
-function createRow({
-  id,
-  object,
-  values,
-}: {
+function buildColumn(options: {
   id: string;
-  object: TestRow;
-  values?: Record<string, unknown>;
-}): Row<TestRow> {
-  return {
-    id,
-    original: object,
-    getValue: vi.fn((columnId: string) => {
-      const rowValues = values ?? getDefaultRowValues();
-      if (columnId in rowValues) {
-        return rowValues[columnId];
-      }
-      return undefined;
-    }),
-  } as unknown as Row<TestRow>;
-}
-
-function getDefaultRowValues(): Record<string, unknown> {
-  return {
-    id: "1",
-    name: "Ada",
-    status: "Active",
-    hidden: "x",
+  header?: AccessorColumnDef<TestRow>["header"];
+  columnName?: string;
+  cell?: () => unknown;
+}): ColumnDef<TestRow, unknown> {
+  const col: AccessorColumnDef<TestRow> = {
+    id: options.id,
+    accessorKey: options.id as keyof TestRow & string,
+    header: options.header ?? options.id,
+    meta: options.columnName != null
+      ? { columnName: options.columnName }
+      : undefined,
   };
+  if (options.cell != null) {
+    col.cell = options.cell;
+  }
+  return col;
 }
 
-function createTable({
-  columns,
-  rows,
-}: {
-  columns: ReturnType<Table<TestRow>["getVisibleLeafColumns"]>;
-  rows: Array<Row<TestRow>>;
+// Creates a real TanStack Table — row.getValue() uses real accessor logic
+// rather than test-controlled vi.fn() stubs.
+function buildTable(options: {
+  columns: ColumnDef<TestRow, unknown>[];
+  data: TestRow[];
 }): Table<TestRow> {
-  return {
-    getVisibleLeafColumns: () => columns,
-    getRowModel: () => ({ rows }),
-  } as unknown as Table<TestRow>;
+  // No-op onStateChange and empty state are safe because these tests don't
+  // exercise table state mutations — they only read column/row data.
+  return createTable<TestRow>({
+    columns: options.columns,
+    data: options.data,
+    getCoreRowModel: getCoreRowModel(),
+    state: {},
+    onStateChange: () => {},
+    renderFallbackValue: undefined,
+  });
 }
