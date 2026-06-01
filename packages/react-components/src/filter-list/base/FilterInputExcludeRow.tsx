@@ -71,19 +71,21 @@ function FilterInputExcludeRowInner({
           [styles.excludeRowVisible]: isOpen,
         })}
       >
-        <ExcludeDropdown
-          isExcluding={isExcluding}
-          onToggleExclude={handleToggleExclude}
-        />
-        {totalValueCount != null && totalValueCount > 0 && (
-          <span
-            className={styles.excludeCountLabel}
-            title="Approximate count of unique values"
-          >
-            {selectedCount.toLocaleString()} of{" "}
-            {totalValueCount.toLocaleString()} values
-          </span>
-        )}
+        <div className={styles.excludeRowLeading}>
+          <ExcludeDropdown
+            isExcluding={isExcluding}
+            onToggleExclude={handleToggleExclude}
+          />
+          {totalValueCount != null && totalValueCount > 0 && (
+            <span
+              className={styles.excludeCountLabel}
+              title="Approximate count of unique values"
+            >
+              {selectedCount.toLocaleString()} of{" "}
+              {totalValueCount.toLocaleString()} values
+            </span>
+          )}
+        </div>
         {onClearAll && selectedCount > 0 && (
           <Button
             className={styles.clearAllButton}

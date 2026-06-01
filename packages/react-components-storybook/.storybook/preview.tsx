@@ -49,26 +49,53 @@ const mockClient = createClient(
 
 const preview: Preview = {
   parameters: {
-    // Storybook 10 reads storySort from parameters.options (statically parsed)
     options: {
-      storySort: {
-        order: [
-          "Docs",
-          [
-            "Welcome",
-            "Installation",
-            "Changelog",
-            "Guides",
-            ["Getting Started", "Usage with OSDK"],
-            "Styling",
-            ["Overview"],
-            "Tokens",
-            ["Colors", "Typography", "Spacing"],
-          ],
-          "Components",
-          ["*"],
-          "*",
-        ],
+      // @ts-expect-error — Storybook eval()s storySort at build time
+      storySort: (a, b) => {
+        // --- helpers ---
+        const aParts = a.title.split("/");
+        const bParts = b.title.split("/");
+
+        // Top-level category order
+        const categoryOrder = ["Docs", "Components"];
+        const aOrder = categoryOrder.indexOf(aParts[0]);
+        const bOrder = categoryOrder.indexOf(bParts[0]);
+        const aCat = aOrder === -1 ? categoryOrder.length : aOrder;
+        const bCat = bOrder === -1 ? categoryOrder.length : bOrder;
+        if (aCat !== bCat) return aCat - bCat;
+
+        // Within "Docs" — fixed order
+        if (aParts[0] === "Docs" && bParts[0] === "Docs") {
+          const docsOrder = [
+            "Docs/Welcome",
+            "Docs/Installation",
+            "Docs/Changelog",
+            "Docs/Guides/Getting Started",
+            "Docs/Guides/Usage with OSDK",
+            "Docs/Styling/Overview",
+            "Docs/Tokens/Colors",
+            "Docs/Tokens/Typography",
+            "Docs/Tokens/Spacing",
+          ];
+          const ai = docsOrder.indexOf(a.title);
+          const bi = docsOrder.indexOf(b.title);
+          const ao = ai === -1 ? docsOrder.length : ai;
+          const bo = bi === -1 ? docsOrder.length : bi;
+          if (ao !== bo) return ao - bo;
+        }
+
+        // Within "Components" — same component folder: "Docs" entry first
+        if (
+          aParts[0] === "Components" && bParts[0] === "Components"
+          && aParts[1] === bParts[1]
+        ) {
+          const aIsDoc = aParts[2] === "Docs";
+          const bIsDoc = bParts[2] === "Docs";
+          if (aIsDoc !== bIsDoc) return aIsDoc ? -1 : 1;
+        }
+
+        // Default: alphabetical
+        return a.id.localeCompare(b.id, undefined, { numeric: true });
       },
     },
     controls: {

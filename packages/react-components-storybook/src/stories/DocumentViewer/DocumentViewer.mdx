@@ -1,4 +1,4 @@
-/*
+{/*
  * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,14 +12,11 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ */}
 
-export type { ChatStatus } from "../../aip/chatStore.js";
-export { useChat } from "../../aip/useChat.js";
-export type {
-  SendMessageInput,
-  UseChatOptions,
-  UseChatReturn,
-} from "../../aip/useChat.js";
+import { Meta, Markdown } from "@storybook/addon-docs/blocks";
+import documentViewerDocs from "@docs/DocumentViewer.md?raw";
 
-export type { UIMessage, UIMessageChunk } from "@osdk/aip-core";
+<Meta title="Components/DocumentViewer/Docs" tags={["beta"]}/>
+
+<Markdown>{documentViewerDocs}</Markdown>

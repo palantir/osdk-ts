@@ -21,7 +21,7 @@ const storybookBasePath = process.env.STORYBOOK_BASE_PATH;
 const config: StorybookConfig = {
   stories: [
     "../src/**/*.stories.@(js|jsx|ts|tsx|mdx)",
-    "../src/docs/**/*.mdx",
+    "../src/**/*.mdx",
   ],
   addons: [
     "@storybook/addon-a11y",
@@ -50,11 +50,14 @@ const config: StorybookConfig = {
   // in the manager config. When a component graduates to GA, remove
   // tags: ["beta"] from its story meta — the indexer only adds the tag,
   // it does not override an explicit empty tags array.
+  // MDX files are skipped because wrapping their index entries breaks
+  // attached-docs sidebar placement in Storybook 10.
   experimental_indexers: async (existingIndexers) =>
     (existingIndexers ?? []).map((indexer) => ({
       ...indexer,
       createIndex: async (fileName, options) => {
         const entries = await indexer.createIndex(fileName, options);
+        if (fileName.endsWith(".mdx")) return entries;
         return entries.map((entry) =>
           entry.title?.startsWith("Components/")
             ? { ...entry, tags: [...new Set([...(entry.tags ?? []), "beta"])] }

@@ -1,5 +1,24 @@
 # @osdk/generator-converters
 
+## 2.25.0
+
+### Minor Changes
+
+- 8965bdf: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+- bd90dba: Add end-to-end support for `scenarioReference` action parameters:
+  - `@osdk/api` adds `"scenarioReference"` to `ActionMetadata.DataType.BaseActionParameterTypes` and a matching `scenarioReference: ScenarioClient` entry in `DataValueClientToWire` (structurally typed as `{ getScenarioReference(): { scenarioRid } }` to avoid a circular dep on `@osdk/client`).
+  - `@osdk/generator-converters` maps the wire `scenarioReference` variant into the primitive type.
+  - Generated SDKs now emit `ActionParam.PrimitiveType<"scenarioReference">` (resolves to `ScenarioClient`) for scenarioReference parameters, instead of throwing at SDK build time.
+  - `@osdk/client`'s `toDataValue` accepts a `ScenarioClient` and serializes it to the rid string the platform expects.
+  - `@osdk/react-components`'s ActionForm renders scenarioReference parameters as `UNSUPPORTED` for now.
+
+  Enables `client(ScenarioMerge).applyAction({ scenario })` end-to-end in generated SDKs.
+
+### Patch Changes
+
+- Updated dependencies [bd90dba]
+  - @osdk/api@2.25.0
+
 ## 2.24.0
 
 ### Minor Changes
