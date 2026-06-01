@@ -48,6 +48,10 @@
 }
 
 .row {
+  --osdk-filter-listogram-row-count-color: var(
+    --osdk-filter-listogram-count-color
+  );
+
   display: flex;
   align-items: center;
   gap: var(--osdk-filter-listogram-row-gap);
@@ -56,6 +60,7 @@
   background: transparent;
   cursor: pointer;
   border-radius: var(--osdk-filter-listogram-row-border-radius);
+  color: var(--osdk-filter-listogram-label-color);
   text-align: left;
   width: 100%;
   transition: background-color var(--osdk-filter-listogram-row-transition);
@@ -82,6 +87,10 @@
 }
 
 .row[data-filtered-out] {
+  --osdk-filter-listogram-row-count-color: var(
+    --osdk-filter-filtered-out-item-color
+  );
+
   color: var(--osdk-filter-filtered-out-item-color);
 }
 
@@ -89,7 +98,7 @@
   flex: 1;
   font-family: var(--osdk-filter-listogram-label-font-family);
   font-size: var(--osdk-filter-listogram-label-font-size);
-  color: var(--osdk-filter-listogram-label-color);
+  color: currentColor;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -153,7 +162,7 @@
   font-family: var(--osdk-filter-listogram-count-font-family);
   font-size: var(--osdk-filter-listogram-count-font-size);
   font-variant-numeric: tabular-nums;
-  color: var(--osdk-filter-listogram-count-color);
+  color: var(--osdk-filter-listogram-row-count-color);
   min-width: 3ch;
   text-align: right;
 }
