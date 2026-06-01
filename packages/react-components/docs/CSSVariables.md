@@ -723,15 +723,21 @@ Styling for filter list components including search, checkboxes, listogram, and 
 
 #### Exclude Dropdown
 
-| Variable                                                    | Default Value                               | Description                    |
-| ----------------------------------------------------------- | ------------------------------------------- | ------------------------------ |
-| `--osdk-filter-item-exclude-dropdown-font-family`           | `var(--osdk-typography-family-default)`     | Dropdown font family           |
-| `--osdk-filter-item-exclude-dropdown-font-size`             | `var(--osdk-typography-size-body-small)`    | Dropdown font size             |
-| `--osdk-filter-item-exclude-dropdown-color`                 | `var(--osdk-typography-color-default-rest)` | Dropdown text color            |
-| `--osdk-filter-item-exclude-dropdown-trigger-color`         | `var(--osdk-intent-primary-rest)`           | Dropdown trigger color         |
-| `--osdk-filter-item-exclude-dropdown-trigger-border-radius` | `var(--osdk-surface-border-radius)`         | Dropdown trigger border radius |
-| `--osdk-filter-item-exclude-dropdown-separator-color`       | `var(--osdk-surface-border-color)`          | Dropdown separator color       |
-| `--osdk-filter-item-exclude-dropdown-min-width`             | `calc(var(--osdk-surface-spacing) * 30)`    | Dropdown minimum width         |
+| Variable                                                         | Default Value                                                                                                  | Description                                                          |
+| ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `--osdk-filter-item-exclude-dropdown-font-family`                | `var(--osdk-typography-family-default)`                                                                        | Dropdown font family                                                 |
+| `--osdk-filter-item-exclude-dropdown-font-size`                  | `var(--osdk-typography-size-body-small)`                                                                       | Dropdown font size                                                   |
+| `--osdk-filter-item-exclude-dropdown-color`                      | `var(--osdk-typography-color-default-rest)`                                                                    | Dropdown text color                                                  |
+| `--osdk-filter-item-exclude-dropdown-trigger-color`              | `var(--osdk-intent-primary-rest)`                                                                              | Dropdown trigger color in default (Keeping) state                    |
+| `--osdk-filter-item-exclude-dropdown-trigger-font-weight`        | `var(--osdk-typography-weight-default)`                                                                        | Dropdown trigger font weight in default (Keeping) state              |
+| `--osdk-filter-item-exclude-dropdown-trigger-indicator`          | `none`                                                                                                         | Dropdown trigger inset indicator in default (Keeping) state          |
+| `--osdk-filter-item-exclude-dropdown-trigger-color-active`       | `var(--osdk-filter-item-exclude-dropdown-trigger-color)`                                                       | Dropdown trigger color in selected (Excluding) state                 |
+| `--osdk-filter-item-exclude-dropdown-trigger-font-weight-active` | `var(--osdk-typography-weight-bold)`                                                                           | Dropdown trigger font weight in selected (Excluding) state           |
+| `--osdk-filter-item-exclude-dropdown-trigger-bg-active`          | `var(--osdk-custom-color-gray-2)`                                                                              | Dropdown trigger background in selected (Excluding) state            |
+| `--osdk-filter-item-exclude-dropdown-trigger-indicator-active`   | `inset 0 calc(var(--osdk-surface-border-width) * -2) 0 var(--osdk-filter-item-exclude-dropdown-trigger-color)` | Dropdown trigger inset underline shown in selected (Excluding) state |
+| `--osdk-filter-item-exclude-dropdown-trigger-border-radius`      | `var(--osdk-surface-border-radius)`                                                                            | Dropdown trigger border radius                                       |
+| `--osdk-filter-item-exclude-dropdown-separator-color`            | `var(--osdk-surface-border-color)`                                                                             | Dropdown separator color                                             |
+| `--osdk-filter-item-exclude-dropdown-min-width`                  | `calc(var(--osdk-surface-spacing) * 30)`                                                                       | Dropdown minimum width                                               |
 
 #### Overflow / Dropdown Menu
 
