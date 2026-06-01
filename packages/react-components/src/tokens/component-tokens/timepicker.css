@@ -16,8 +16,6 @@
     --osdk-input-border-color-focus
   );
 
-  /* Deprecated: no longer used by OSDK React components; retained for external compatibility. */
-  --osdk-time-picker-input-focus-outline: var(--osdk-input-focus-width) solid
-    var(--osdk-input-focus-color);
+  --osdk-time-picker-input-focus-outline: var(--osdk-input-focus-outline);
   --osdk-time-picker-input-focus-offset: var(--osdk-input-focus-offset);
 }

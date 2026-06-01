@@ -25,9 +25,10 @@
   --osdk-input-transition-ease: var(--osdk-emphasis-ease-default);
 
   /* Input focus ring */
+  --osdk-input-focus-outline: none;
   --osdk-input-focus-width: var(--osdk-emphasis-focus-width);
   --osdk-input-focus-color: var(--osdk-emphasis-focus-color);
-  --osdk-input-focus-offset: var(--osdk-emphasis-focus-offset);
+  --osdk-input-focus-offset: 0px;
 
   /* Input disabled */
   --osdk-input-disabled-opacity: var(--osdk-disabled-opacity);

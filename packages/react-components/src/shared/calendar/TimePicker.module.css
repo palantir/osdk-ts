@@ -24,6 +24,8 @@
 
   &:focus {
     border-color: var(--osdk-time-picker-input-border-color-focus);
+    outline: var(--osdk-time-picker-input-focus-outline);
+    outline-offset: var(--osdk-time-picker-input-focus-offset);
   }
 
   &[aria-invalid] {

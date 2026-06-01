@@ -21,7 +21,8 @@
   }
 
   &:focus-visible {
-    outline: none;
+    outline: var(--osdk-datetime-input-focus-outline);
+    outline-offset: var(--osdk-datetime-input-focus-offset);
   }
 }
 
