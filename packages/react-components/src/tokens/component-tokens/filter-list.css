@@ -389,6 +389,22 @@
   --osdk-filter-item-exclude-dropdown-trigger-color: var(
     --osdk-intent-primary-rest
   );
+  --osdk-filter-item-exclude-dropdown-trigger-font-weight: var(
+    --osdk-typography-weight-default
+  );
+  --osdk-filter-item-exclude-dropdown-trigger-indicator: none;
+  --osdk-filter-item-exclude-dropdown-trigger-color-active: var(
+    --osdk-filter-item-exclude-dropdown-trigger-color
+  );
+  --osdk-filter-item-exclude-dropdown-trigger-font-weight-active: var(
+    --osdk-typography-weight-bold
+  );
+  --osdk-filter-item-exclude-dropdown-trigger-bg-active: var(
+    --osdk-custom-color-gray-2
+  );
+  --osdk-filter-item-exclude-dropdown-trigger-indicator-active: inset 0
+    calc(var(--osdk-surface-border-width) * -2) 0
+    var(--osdk-filter-item-exclude-dropdown-trigger-color);
   --osdk-filter-item-exclude-dropdown-trigger-border-radius: var(
     --osdk-surface-border-radius
   );
