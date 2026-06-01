@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import type { Media, MediaMetadata, MediaReference } from "@osdk/api";
+import type {
+  Media,
+  MediaFullMetadata,
+  MediaItemMetadata,
+  MediaMetadata,
+  MediaReference,
+} from "@osdk/api";
 import { MediaSets } from "@osdk/foundry.mediasets";
 import invariant from "tiny-invariant";
 import type { MinimalClient } from "./MinimalClientContext.js";
@@ -61,6 +67,17 @@ export function createMediaFromReference(
         sizeBytes: info.sizeBytes,
         mediaType: info.mimeType,
       };
+    },
+
+    async fetchFullMetadata(): Promise<MediaFullMetadata> {
+      const itemMetadata: MediaItemMetadata = await MediaSets.metadata(
+        client,
+        mediaSetRid,
+        mediaItemRid,
+        { preview: true },
+        token ? { ReadToken: token } : undefined,
+      );
+      return { itemMetadata };
     },
 
     getMediaReference(): MediaReference {

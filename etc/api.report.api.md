@@ -297,6 +297,14 @@ export interface AttachmentUpload {
     readonly name: string;
 }
 
+// @public
+export interface AudioMediaItemMetadata {
+    	// (undocumented)
+    sizeBytes: number;
+    	// (undocumented)
+    type: "audio";
+}
+
 // @public (undocumented)
 export type Augment<
 	X extends ObjectOrInterfaceDefinition,
@@ -560,6 +568,14 @@ export namespace DerivedProperty {
     	{};
 }
 
+// @public
+export interface DicomMediaItemMetadata {
+    	// (undocumented)
+    sizeBytes: number;
+    	// (undocumented)
+    type: "dicom";
+}
+
 // @public (undocumented)
 export const DistanceUnitMapping: {
     	centimeter: "CENTIMETERS"
@@ -583,6 +599,14 @@ export const DistanceUnitMapping: {
     	nauticalMile: "NAUTICAL_MILES"
     	"nautical miles": "NAUTICAL_MILES"
 };
+
+// @public
+export interface DocumentMediaItemMetadata {
+    	// (undocumented)
+    sizeBytes: number;
+    	// (undocumented)
+    type: "document";
+}
 
 // @public (undocumented)
 export type DurationBaseValue = "SECONDS" | "MILLISECONDS";
@@ -618,6 +642,14 @@ export const DurationMapping: {
 
 // @public (undocumented)
 export type DurationPrecision = "DAYS" | "HOURS" | "MINUTES" | "SECONDS" | "AUTO";
+
+// @public
+export interface EmailMediaItemMetadata {
+    	// (undocumented)
+    sizeBytes: number;
+    	// (undocumented)
+    type: "email";
+}
 
 // @public (undocumented)
 export type FetchLinksPageResult<
@@ -750,6 +782,12 @@ export interface HumanReadableFormat {
     type: "humanReadable";
 }
 
+// @public
+export interface ImageryMediaItemMetadata {
+    	// (undocumented)
+    type: "imagery";
+}
+
 // @public (undocumented)
 export interface InterfaceDefinition {
     	// Warning: (ae-forgotten-export) The symbol "ObjectInterfaceCompileDefinition" needs to be exported by the entry point index.d.ts
@@ -852,10 +890,37 @@ export type IntervalRule = {
     	$ordered?: never
 };
 
+// @public (undocumented)
+export function isAudioMediaItemMetadata(metadata: MediaItemMetadata): metadata is AudioMediaItemMetadata;
+
+// @public (undocumented)
+export function isDicomMediaItemMetadata(metadata: MediaItemMetadata): metadata is DicomMediaItemMetadata;
+
+// @public
+export function isDocumentMediaItemMetadata(metadata: MediaItemMetadata): metadata is DocumentMediaItemMetadata;
+
+// @public (undocumented)
+export function isEmailMediaItemMetadata(metadata: MediaItemMetadata): metadata is EmailMediaItemMetadata;
+
+// @public (undocumented)
+export function isImageryMediaItemMetadata(metadata: MediaItemMetadata): metadata is ImageryMediaItemMetadata;
+
+// @public (undocumented)
+export function isModel3dMediaItemMetadata(metadata: MediaItemMetadata): metadata is Model3dMediaItemMetadata;
+
 // Warning: (ae-forgotten-export) The symbol "OkResult" needs to be exported by the entry point index.d.ts
 //
 // @public
 export function isOk<X>(a: Result<X>): a is OkResult<X>;
+
+// @public (undocumented)
+export function isSpreadsheetMediaItemMetadata(metadata: MediaItemMetadata): metadata is SpreadsheetMediaItemMetadata;
+
+// @public (undocumented)
+export function isUntypedMediaItemMetadata(metadata: MediaItemMetadata): metadata is UntypedMediaItemMetadata;
+
+// @public (undocumented)
+export function isVideoMediaItemMetadata(metadata: MediaItemMetadata): metadata is VideoMediaItemMetadata;
 
 // @public
 export type KnownType = "USER_OR_GROUP_ID" | "RESOURCE_RID" | "ARTIFACT_GID";
@@ -917,10 +982,19 @@ export type MaybeScore<
 // @public (undocumented)
 export interface Media {
     	fetchContents(): Promise<Response>;
+    	fetchFullMetadata?(): Promise<MediaFullMetadata>;
     	fetchMetadata(): Promise<MediaMetadata_2>;
     	getMediaReference(): MediaReference;
     	getMediaSourceLocation?(): MediaPropertyLocation;
 }
+
+// @public
+export interface MediaFullMetadata {
+    	itemMetadata: MediaItemMetadata;
+}
+
+// @public
+export type MediaItemMetadata = DocumentMediaItemMetadata | ImageryMediaItemMetadata | AudioMediaItemMetadata | VideoMediaItemMetadata | DicomMediaItemMetadata | EmailMediaItemMetadata | Model3dMediaItemMetadata | SpreadsheetMediaItemMetadata | UntypedMediaItemMetadata;
 
 // @public
 interface MediaMetadata_2 {
@@ -977,6 +1051,14 @@ export type MinimalDirectedObjectLinkInstance<
     	target: ObjectIdentifiers<LinkedObjectType<Q, LINK_TYPE_API_NAME>>
     	linkType: LINK_TYPE_API_NAME
 };
+
+// @public
+export interface Model3dMediaItemMetadata {
+    	// (undocumented)
+    sizeBytes: number;
+    	// (undocumented)
+    type: "model3d";
+}
 
 // @public (undocumented)
 export type NotWhereClause<
@@ -1829,6 +1911,14 @@ export type SingleOsdkResult<
 	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {}
 > = MaybeScore<Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L, { [K in Extract<keyof RDPs, L>] : RDPs[K] }>, ORDER_BY_OPTIONS>;
 
+// @public
+export interface SpreadsheetMediaItemMetadata {
+    	// (undocumented)
+    sizeBytes: number;
+    	// (undocumented)
+    type: "spreadsheet";
+}
+
 // @public (undocumented)
 export interface StringConstant {
     	// (undocumented)
@@ -1950,6 +2040,14 @@ export type TwoDimensionalAggregation<
 // @public (undocumented)
 export type TwoDimensionalQueryAggregationDefinition = AggregationKeyDataType<AggregationValueTypes>;
 
+// @public (undocumented)
+export interface UntypedMediaItemMetadata {
+    	// (undocumented)
+    sizeBytes: number;
+    	// (undocumented)
+    type: "untyped";
+}
+
 // Warning: (ae-forgotten-export) The symbol "AGG_FOR_TYPE" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "WITH_PROPERTIES_AGG_FOR_TYPE" needs to be exported by the entry point index.d.ts
 //
@@ -1967,6 +2065,14 @@ export type ValidAggregationKeys<
 export interface VersionBound<V extends VersionString<any, any, any>> {
     	// (undocumented)
     __expectedClientVersion?: V;
+}
+
+// @public
+export interface VideoMediaItemMetadata {
+    	// (undocumented)
+    sizeBytes: number;
+    	// (undocumented)
+    type: "video";
 }
 
 // Warning: (ae-forgotten-export) The symbol "MergedPropertyWhereClause" needs to be exported by the entry point index.d.ts

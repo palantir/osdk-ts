@@ -20,6 +20,7 @@ import {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait,
   type MediaTransformation,
 } from "@osdk/api/unstable";
+import { isImageryMediaItemMetadata } from "@osdk/client";
 import {
   $Actions,
   $Queries,
@@ -55,6 +56,21 @@ async function runReadMediaTest(ref: Media): Promise<Blob> {
   }
 
   return mediaContents.blob();
+}
+
+async function runReadMediaFullMetadataTest(ref: Media): Promise<void> {
+  if (ref.fetchFullMetadata == null) {
+    throw new Error(
+      "Media implementation does not expose fetchFullMetadata; backing OSDK build is too old",
+    );
+  }
+  const fullMetadata = await ref.fetchFullMetadata();
+  if (!isImageryMediaItemMetadata(fullMetadata.itemMetadata)) {
+    throw new Error(
+      `Full media metadata variant was incorrect: expected "imagery" and got "${fullMetadata.itemMetadata.type}"`,
+    );
+  }
+  console.log("Full metadata variant:", fullMetadata.itemMetadata.type);
 }
 
 async function runCreateMediaReferenceTest(
@@ -251,6 +267,10 @@ export async function runMediaTest(): Promise<void> {
   console.log("Reading Media Reference");
   const testImage: Blob = await runReadMediaTest(result.mediaReference);
   console.log("SUCCESS: Reading Media Reference");
+
+  console.log("Reading Full Media Metadata");
+  await runReadMediaFullMetadataTest(result.mediaReference);
+  console.log("SUCCESS: Reading Full Media Metadata");
 
   console.log("Creating Media Reference");
   const mediaRef: MediaReference = await runCreateMediaReferenceTest(testImage);

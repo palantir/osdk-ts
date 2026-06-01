@@ -86,12 +86,34 @@ export type {
   SingleOsdkResult,
 } from "./object/FetchPageResult.js";
 export type {
+  AudioMediaItemMetadata,
+  DicomMediaItemMetadata,
+  DocumentMediaItemMetadata,
+  EmailMediaItemMetadata,
+  ImageryMediaItemMetadata,
   Media,
+  MediaFullMetadata,
+  MediaItemMetadata,
   MediaMetadata,
   MediaPropertyLocation,
   MediaReference,
   MediaUpload,
+  Model3dMediaItemMetadata,
+  SpreadsheetMediaItemMetadata,
+  UntypedMediaItemMetadata,
+  VideoMediaItemMetadata,
 } from "./object/Media.js";
+export {
+  isAudioMediaItemMetadata,
+  isDicomMediaItemMetadata,
+  isDocumentMediaItemMetadata,
+  isEmailMediaItemMetadata,
+  isImageryMediaItemMetadata,
+  isModel3dMediaItemMetadata,
+  isSpreadsheetMediaItemMetadata,
+  isUntypedMediaItemMetadata,
+  isVideoMediaItemMetadata,
+} from "./object/mediaTypeGuards.js";
 export type {
   PropertyMarkings,
   PropertySecurity,
