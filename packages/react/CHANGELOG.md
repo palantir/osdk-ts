@@ -1,5 +1,12 @@
 # @osdkkit/react
 
+## 2.26.0
+
+### Minor Changes
+
+- 90f7fb6: Fix useOsdkFunction objectSet param not serialized correctly. Updated useStableObjectSet and useOsdkFunctions to use the same stableSerialize function
+- c3752ce: Temporarily remove the AIP chat entry points and AIP dependencies.
+
 ## 2.25.0
 
 ### Minor Changes
