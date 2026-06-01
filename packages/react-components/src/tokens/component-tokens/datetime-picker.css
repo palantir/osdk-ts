@@ -119,9 +119,11 @@
   --osdk-datetime-input-border-color-focus: var(--osdk-input-border-color-focus);
 
   --osdk-datetime-input-focus-outline: var(--osdk-input-focus-outline);
+  --osdk-datetime-input-focus-offset: var(--osdk-input-focus-offset);
+
+  /* Deprecated: use --osdk-datetime-input-focus-outline instead; retained for external compatibility. */
   --osdk-datetime-input-focus-width: var(--osdk-input-focus-width);
   --osdk-datetime-input-focus-color: var(--osdk-input-focus-color);
-  --osdk-datetime-input-focus-offset: var(--osdk-input-focus-offset);
 
   --osdk-datetime-input-transition-duration: var(--osdk-input-transition-duration);
   --osdk-datetime-input-transition-ease: var(--osdk-input-transition-ease);

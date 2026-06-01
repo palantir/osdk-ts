@@ -462,28 +462,28 @@ Styling for date and time picker components.
 
 #### Input
 
-| Variable                                    | Default Value                                                               | Description                |
-| ------------------------------------------- | --------------------------------------------------------------------------- | -------------------------- |
-| `--osdk-datetime-input-error-border-color`  | `var(--osdk-intent-danger-rest)`                                            | Input error border color   |
-| `--osdk-datetime-input-min-height`          | `var(--osdk-input-min-height)`                                              | Input minimum height       |
-| `--osdk-datetime-input-padding`             | `var(--osdk-input-padding)`                                                 | Input padding              |
-| `--osdk-datetime-input-border-radius`       | `var(--osdk-input-border-radius)`                                           | Input border radius        |
-| `--osdk-datetime-input-bg`                  | `var(--osdk-input-bg)`                                                      | Input background           |
-| `--osdk-datetime-input-bg-hover`            | `var(--osdk-input-bg-hover)`                                                | Input hover background     |
-| `--osdk-datetime-input-color`               | `var(--osdk-input-color)`                                                   | Input text color           |
-| `--osdk-datetime-input-font-family`         | `var(--osdk-input-font-family)`                                             | Input font family          |
-| `--osdk-datetime-input-font-size`           | `var(--osdk-input-font-size)`                                               | Input font size            |
-| `--osdk-datetime-input-line-height`         | `var(--osdk-input-line-height, var(--osdk-typography-line-height-default))` | Input line height          |
-| `--osdk-datetime-input-placeholder-color`   | `var(--osdk-input-placeholder-color)`                                       | Input placeholder color    |
-| `--osdk-datetime-input-border-width`        | `var(--osdk-input-border-width)`                                            | Input border width         |
-| `--osdk-datetime-input-border-color`        | `var(--osdk-input-border-color)`                                            | Input border color         |
-| `--osdk-datetime-input-border-color-focus`  | `var(--osdk-input-border-color-focus)`                                      | Input focused border color |
-| `--osdk-datetime-input-focus-outline`       | `var(--osdk-input-focus-outline)`                                           | Input focus outline        |
-| `--osdk-datetime-input-focus-width`         | `var(--osdk-input-focus-width)`                                             | Focus ring width           |
-| `--osdk-datetime-input-focus-color`         | `var(--osdk-input-focus-color)`                                             | Focus ring color           |
-| `--osdk-datetime-input-focus-offset`        | `var(--osdk-input-focus-offset)`                                            | Focus ring offset          |
-| `--osdk-datetime-input-transition-duration` | `var(--osdk-input-transition-duration)`                                     | Input transition duration  |
-| `--osdk-datetime-input-transition-ease`     | `var(--osdk-input-transition-ease)`                                         | Input transition easing    |
+| Variable                                    | Default Value                                                               | Description                                           |
+| ------------------------------------------- | --------------------------------------------------------------------------- | ----------------------------------------------------- |
+| `--osdk-datetime-input-error-border-color`  | `var(--osdk-intent-danger-rest)`                                            | Input error border color                              |
+| `--osdk-datetime-input-min-height`          | `var(--osdk-input-min-height)`                                              | Input minimum height                                  |
+| `--osdk-datetime-input-padding`             | `var(--osdk-input-padding)`                                                 | Input padding                                         |
+| `--osdk-datetime-input-border-radius`       | `var(--osdk-input-border-radius)`                                           | Input border radius                                   |
+| `--osdk-datetime-input-bg`                  | `var(--osdk-input-bg)`                                                      | Input background                                      |
+| `--osdk-datetime-input-bg-hover`            | `var(--osdk-input-bg-hover)`                                                | Input hover background                                |
+| `--osdk-datetime-input-color`               | `var(--osdk-input-color)`                                                   | Input text color                                      |
+| `--osdk-datetime-input-font-family`         | `var(--osdk-input-font-family)`                                             | Input font family                                     |
+| `--osdk-datetime-input-font-size`           | `var(--osdk-input-font-size)`                                               | Input font size                                       |
+| `--osdk-datetime-input-line-height`         | `var(--osdk-input-line-height, var(--osdk-typography-line-height-default))` | Input line height                                     |
+| `--osdk-datetime-input-placeholder-color`   | `var(--osdk-input-placeholder-color)`                                       | Input placeholder color                               |
+| `--osdk-datetime-input-border-width`        | `var(--osdk-input-border-width)`                                            | Input border width                                    |
+| `--osdk-datetime-input-border-color`        | `var(--osdk-input-border-color)`                                            | Input border color                                    |
+| `--osdk-datetime-input-border-color-focus`  | `var(--osdk-input-border-color-focus)`                                      | Input focused border color                            |
+| `--osdk-datetime-input-focus-outline`       | `var(--osdk-input-focus-outline)`                                           | Input focus outline                                   |
+| `--osdk-datetime-input-focus-width`         | `var(--osdk-input-focus-width)`                                             | Deprecated; use `--osdk-datetime-input-focus-outline` |
+| `--osdk-datetime-input-focus-color`         | `var(--osdk-input-focus-color)`                                             | Deprecated; use `--osdk-datetime-input-focus-outline` |
+| `--osdk-datetime-input-focus-offset`        | `var(--osdk-input-focus-offset)`                                            | Focus ring offset                                     |
+| `--osdk-datetime-input-transition-duration` | `var(--osdk-input-transition-duration)`                                     | Input transition duration                             |
+| `--osdk-datetime-input-transition-ease`     | `var(--osdk-input-transition-ease)`                                         | Input transition easing                               |
 
 #### Popover
 
@@ -590,11 +590,11 @@ Styling for file picker components.
 
 #### Focus Ring
 
-| Variable                                  | Default Value                    | Description       |
-| ----------------------------------------- | -------------------------------- | ----------------- |
-| `--osdk-file-picker-trigger-focus-width`  | `var(--osdk-input-focus-width)`  | Focus ring width  |
-| `--osdk-file-picker-trigger-focus-color`  | `var(--osdk-input-focus-color)`  | Focus ring color  |
-| `--osdk-file-picker-trigger-focus-offset` | `var(--osdk-input-focus-offset)` | Focus ring offset |
+| Variable                                  | Default Value                    | Description                                                     |
+| ----------------------------------------- | -------------------------------- | --------------------------------------------------------------- |
+| `--osdk-file-picker-trigger-focus-width`  | `var(--osdk-input-focus-width)`  | Focus ring width                                                |
+| `--osdk-file-picker-trigger-focus-color`  | `var(--osdk-input-focus-color)`  | Focus ring color                                                |
+| `--osdk-file-picker-trigger-focus-offset` | `var(--osdk-input-focus-offset)` | Deprecated; use `--osdk-file-picker-trigger-border-color-focus` |
 
 #### Transitions
 

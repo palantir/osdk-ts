@@ -24,6 +24,8 @@
   /* Focus ring */
   --osdk-file-picker-trigger-focus-width: var(--osdk-input-focus-width);
   --osdk-file-picker-trigger-focus-color: var(--osdk-input-focus-color);
+
+  /* Deprecated: use --osdk-file-picker-trigger-border-color-focus for trigger focus styling; retained for external compatibility. */
   --osdk-file-picker-trigger-focus-offset: var(--osdk-input-focus-offset);
 
   /* Clear button */
