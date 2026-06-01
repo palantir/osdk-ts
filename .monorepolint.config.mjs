@@ -421,7 +421,6 @@ const archetypeRules = archetypes(
       react: true,
       output: OUTPUT_ESM_ONLY,
       cssExport: ["styles.css"],
-      private: true,
     },
   )
   .addArchetype(
