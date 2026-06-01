@@ -3,4 +3,4 @@
 "@osdk/react-components-styles": patch
 ---
 
-Reset datetime picker time to the current wall-clock time when clicking Today, and use Blueprint-like focus and danger styling for inputs.
+Use Blueprint-like focus and error styling for React component inputs.
