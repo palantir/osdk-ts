@@ -1307,4 +1307,23 @@ export const employeeData: BaseServerObject[] = [
     "isRemote": true,
     "__title": "Liam Carter",
   },
+  // Null-title employee used by matcher-hardening scenarios. The faux data
+  // store reads $title from the title property (fullName), and falsy values
+  // are normalized to undefined — so this row lands in the cache with
+  // $title === undefined, exercising the $startsWith null-safety path in
+  // evaluateFilter.
+  {
+    "fullName": "",
+    "__primaryKey": 657495999,
+    "employeeNumber": 657495999,
+    "department": "Engineering",
+    "jobTitle": "Engineer",
+    "businessTitle": "Engineer",
+    "adUsername": "null.title",
+    "emailPrimaryWork": "null.title999@example.com",
+    "__apiName": "Employee",
+    "team": "Platform",
+    "workerType": "Employee",
+    "isRemote": false,
+  },
 ];

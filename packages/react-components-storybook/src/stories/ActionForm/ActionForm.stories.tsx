@@ -949,3 +949,81 @@ function ControlledActionFormStory(): React.ReactElement {
     </FormStoryLayout>
   );
 }
+
+// ---------------------------------------------------------------------------
+// PR #3408 — ObjectSelectField search-by-$title coverage.
+//
+// ObjectSelectField is only exported as a type; the component mounts through
+// ActionForm whenever an action declares an `object`-typed parameter. The
+// `generatedFieldsStoryAction` has `manager: { type: "object", "Employee" }`,
+// so rendering ActionForm against it surfaces an ObjectSelectField for that
+// field. These stories drive the field via that path.
+// ---------------------------------------------------------------------------
+
+// Trick storybook into picking up a different name in the URL so the
+// existing `Default` story id is not affected.
+function ManagerActionFormStory(): React.ReactElement {
+  const { handleStoryError, handleStorySubmit, submission } =
+    useActionFormSubmission({
+      applyStoryAction: applyGeneratedFieldsStoryAction,
+    });
+
+  return (
+    <FormStoryLayout
+      output={
+        <SubmissionOutputPanel
+          idleMessage="Open the Manager dropdown to exercise ObjectSelectField."
+          snapshot={submission}
+        />
+      }
+    >
+      <ActionForm
+        actionDefinition={generatedFieldsActionDefinition}
+        onError={handleStoryError}
+        onSubmit={handleStorySubmit}
+        showFormTitle={true}
+      />
+    </FormStoryLayout>
+  );
+}
+
+export const ObjectSelectFieldSearch: Story = {
+  render: () => <ManagerActionFormStory />,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Drives ObjectSelectField (mounted by ActionForm for the `manager` "
+          + "field of generatedFieldsStoryAction). Typing a substring of an "
+          + "employee's title (e.g. \"Liam\") must filter the dropdown using "
+          + "the special `$title` filter introduced in PR #3408.",
+      },
+    },
+  },
+};
+
+export const ObjectSelectFieldEmptyQuery: Story = {
+  render: () => <ManagerActionFormStory />,
+  parameters: {
+    docs: {
+      description: {
+        story: "Verifies the regression behavior: an empty or whitespace-only "
+          + "search produces `undefined` for the where clause and the "
+          + "dropdown returns the unfiltered list.",
+      },
+    },
+  },
+};
+
+export const ObjectSelectFieldSearchNoGate: Story = {
+  render: () => <ManagerActionFormStory />,
+  parameters: {
+    docs: {
+      description: {
+        story: "Regression guard for the removed `useOsdkMetadata` gate. The "
+          + "search where clause must be produced immediately after the "
+          + "debounce, with no wait on a separate metadata fetch.",
+      },
+    },
+  },
+};
