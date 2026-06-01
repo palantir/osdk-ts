@@ -96,7 +96,6 @@ export function computeDualScopes<Q extends ObjectTypeDefinition>(
   whereClause: WhereClause<Q>,
   linkedFilters: ReadonlyArray<LinkedFilter<Q>>,
   showFilteredOutValues: boolean | undefined,
-  derivedNarrowings?: ReadonlyArray<DerivedNarrowing<Q>>,
 ): {
   scoped: ObjectSet<Q> | undefined;
   emptySource: ObjectSet<Q> | undefined;
@@ -104,16 +103,11 @@ export function computeDualScopes<Q extends ObjectTypeDefinition>(
   if (objectSet == null) {
     return { scoped: undefined, emptySource: undefined };
   }
-  const scoped = narrowObjectSet(
-    objectSet,
-    whereClause,
-    linkedFilters,
-    derivedNarrowings,
-  );
+  const scoped = narrowObjectSet(objectSet, whereClause, linkedFilters);
   if (!showFilteredOutValues || linkedFilters.length === 0) {
     return { scoped, emptySource: undefined };
   }
-  // emptySource intentionally drops the linked + derived narrowings so the
-  // facet can surface values that the current narrowings filter out.
+  // emptySource intentionally drops the linked narrowings so the facet can
+  // surface values that the current narrowings filter out.
   return { scoped, emptySource: narrowObjectSet(objectSet, whereClause, []) };
 }
