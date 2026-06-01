@@ -960,10 +960,9 @@ Canonical "No value" styling used by the shared `NoValueLabel` component across 
 
 Styling for count=0 muted rows surfaced by `showFilteredOutValues`. Applied to listogram rows via `[data-filtered-out]` and to multi-select items via the `filteredOutItem` class.
 
-| Variable                                  | Default Value                        | Description                         |
-| ----------------------------------------- | ------------------------------------ | ----------------------------------- |
-| `--osdk-filter-filtered-out-item-opacity` | `0.5`                                | Opacity for filtered-out facet rows |
-| `--osdk-filter-filtered-out-item-color`   | `var(--osdk-typography-color-muted)` | Text color for filtered-out rows    |
+| Variable                                | Default Value                        | Description                      |
+| --------------------------------------- | ------------------------------------ | -------------------------------- |
+| `--osdk-filter-filtered-out-item-color` | `var(--osdk-typography-color-muted)` | Text color for filtered-out rows |
 
 #### Filter Popover Tokens
 
