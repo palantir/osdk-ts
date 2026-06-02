@@ -382,7 +382,7 @@
     --osdk-custom-color-gray-2
   );
   --osdk-filter-item-exclude-dropdown-trigger-indicator-active: inset 0
-    calc(var(--osdk-surface-border-width) * -2) 0
+    calc(var(--osdk-surface-border-width) * -4) 0
     var(--osdk-filter-item-exclude-dropdown-trigger-color);
   --osdk-filter-item-exclude-dropdown-trigger-border-radius: var(
     --osdk-surface-border-radius
