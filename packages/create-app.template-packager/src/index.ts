@@ -16,7 +16,6 @@
 
 import { findUp } from "find-up";
 import * as fs from "node:fs/promises";
-import { createRequire } from "node:module";
 import * as path from "node:path";
 import serialize from "serialize-javascript";
 
@@ -42,7 +41,10 @@ export async function cli(
   const entries = new Map<string, Entry>();
 
   for (const pkgName of sharedPackages) {
-    const sharedDir = resolveSharedTemplatesDir(pkgName, sourcePackageJsonPath);
+    const sharedDir = await resolveSharedTemplatesDir(
+      pkgName,
+      sourcePackageJsonPath,
+    );
     await collectFiles(sharedDir, sharedDir, entries, sourcePackageJson);
   }
   await collectFiles(templatesDir, templatesDir, entries, sourcePackageJson);
@@ -143,13 +145,27 @@ function parseSharedFlags(argv: string[]): string[] {
   return shared;
 }
 
-function resolveSharedTemplatesDir(
+async function resolveSharedTemplatesDir(
   pkgName: string,
   sourcePackageJsonPath: string,
-): string {
-  const require = createRequire(sourcePackageJsonPath);
-  const resolved = require.resolve(`${pkgName}/package.json`);
-  return path.join(path.dirname(resolved), "templates");
+): Promise<string> {
+  let dir = path.dirname(sourcePackageJsonPath);
+  while (true) {
+    const candidate = path.join(dir, "node_modules", pkgName, "package.json");
+    try {
+      await fs.access(candidate);
+      return path.join(path.dirname(candidate), "templates");
+    } catch {
+      // keep walking up
+    }
+    const parent = path.dirname(dir);
+    if (parent === dir) {
+      throw new Error(
+        `Could not resolve shared template package "${pkgName}" from ${sourcePackageJsonPath}`,
+      );
+    }
+    dir = parent;
+  }
 }
 
 function safeRaw(q: string): string {

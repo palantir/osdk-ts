@@ -15,7 +15,6 @@
       },
       "default": "./build/esm/index.js"
     },
-    "./package.json": "./package.json",
     "./*": {
       "import": {
         "types": "./build/types/public/*.d.ts",
