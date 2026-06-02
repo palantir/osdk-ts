@@ -73,7 +73,18 @@ const meta: Meta<PdfViewerAnnotationLayerProps> = {
         background: "#fff",
       }}
     >
-      <PdfViewerAnnotationLayer {...args} />
+      <PdfViewerAnnotationLayer
+        {...args}
+        // pdf.js viewport.transform for a non-rotated page: scales and flips y.
+        transform={[
+          args.scale,
+          0,
+          0,
+          -args.scale,
+          0,
+          args.pageHeight * args.scale,
+        ]}
+      />
     </div>
   ),
   argTypes: {
