@@ -22,7 +22,7 @@
   height: var(--osdk-file-picker-trigger-height);
   border: var(--osdk-file-picker-trigger-border);
   border-radius: var(--osdk-file-picker-trigger-border-radius);
-  box-shadow: var(--osdk-input-shadow);
+  box-shadow: var(--osdk-file-picker-trigger-shadow);
   background-color: var(--osdk-file-picker-trigger-bg);
   font-family: var(--osdk-file-picker-trigger-font-family);
   font-size: var(--osdk-file-picker-trigger-font-size);
@@ -47,7 +47,7 @@
 .osdkFilePickerTrigger[aria-invalid]:has(.osdkFilePickerText:focus-visible),
 .osdkFilePickerTrigger[aria-invalid]:has(.osdkFilePickerClear:focus-visible) {
   border-color: var(--osdk-file-picker-trigger-border-color-error);
-  box-shadow: var(--osdk-input-focus-shadow-error);
+  box-shadow: var(--osdk-file-picker-trigger-focus-shadow-error);
 }
 
 /* display: none fully removes the input from the a11y tree, avoiding

@@ -478,10 +478,12 @@ Styling for date and time picker components.
 | `--osdk-datetime-input-border-width`        | `var(--osdk-input-border-width)`                                            | Input border width                                    |
 | `--osdk-datetime-input-border-color`        | `var(--osdk-input-border-color)`                                            | Input border color                                    |
 | `--osdk-datetime-input-border-color-focus`  | `var(--osdk-input-border-color-focus)`                                      | Input focused border color                            |
+| `--osdk-datetime-input-shadow`              | `var(--osdk-input-shadow)`                                                  | Input inset shadow                                    |
 | `--osdk-datetime-input-focus-outline`       | `var(--osdk-input-focus-outline)`                                           | Input focus outline                                   |
 | `--osdk-datetime-input-focus-width`         | `var(--osdk-input-focus-width)`                                             | Deprecated; use `--osdk-datetime-input-focus-outline` |
 | `--osdk-datetime-input-focus-color`         | `var(--osdk-input-focus-color)`                                             | Deprecated; use `--osdk-datetime-input-focus-outline` |
 | `--osdk-datetime-input-focus-offset`        | `var(--osdk-input-focus-offset)`                                            | Focus ring offset                                     |
+| `--osdk-datetime-input-focus-shadow-error`  | `var(--osdk-input-focus-shadow-error)`                                      | Danger focus shadow                                   |
 | `--osdk-datetime-input-transition-duration` | `var(--osdk-input-transition-duration)`                                     | Input transition duration                             |
 | `--osdk-datetime-input-transition-ease`     | `var(--osdk-input-transition-ease)`                                         | Input transition easing                               |
 
@@ -581,6 +583,8 @@ Styling for file picker components.
 | `--osdk-file-picker-trigger-border`             | `var(--osdk-input-border-width) solid var(--osdk-input-border-color)` | Trigger border               |
 | `--osdk-file-picker-trigger-border-color-focus` | `var(--osdk-input-border-color-focus)`                                | Trigger focused border color |
 | `--osdk-file-picker-trigger-border-color-error` | `var(--osdk-input-border-color-error)`                                | Trigger error border color   |
+| `--osdk-file-picker-trigger-shadow`             | `var(--osdk-input-shadow)`                                            | Trigger inset shadow         |
+| `--osdk-file-picker-trigger-focus-shadow-error` | `var(--osdk-input-focus-shadow-error)`                                | Danger focus shadow          |
 | `--osdk-file-picker-trigger-bg`                 | `var(--osdk-input-bg)`                                                | Trigger background           |
 | `--osdk-file-picker-trigger-bg-hover`           | `var(--osdk-input-bg-hover)`                                          | Trigger hover background     |
 | `--osdk-file-picker-trigger-color`              | `var(--osdk-input-color)`                                             | Trigger text color           |
@@ -1335,6 +1339,8 @@ Styling for time picker components.
 | `--osdk-time-picker-input-border-color-focus` | `var(--osdk-input-border-color-focus)`                                | Focused border color |
 | `--osdk-time-picker-input-focus-outline`      | `var(--osdk-input-focus-outline)`                                     | Input focus outline  |
 | `--osdk-time-picker-input-focus-offset`       | `var(--osdk-input-focus-offset)`                                      | Focus ring offset    |
+| `--osdk-time-picker-input-border-color-error` | `var(--osdk-input-border-color-error)`                                | Error border color   |
+| `--osdk-time-picker-input-focus-shadow-error` | `var(--osdk-input-focus-shadow-error)`                                | Danger focus shadow  |
 
 ### Tooltip
 
