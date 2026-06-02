@@ -26,8 +26,23 @@ import { CachingCanonicalizer } from "./Canonicalizer.js";
 
 export type Rdp = DerivedProperty.Clause<ObjectOrInterfaceDefinition>;
 
+export type WireDerivedProperties = Record<string, DerivedPropertyDefinition>;
+
 export class RdpCanonicalizer extends CachingCanonicalizer<Rdp, Rdp> {
   private structuralCache = new Map<string, Canonical<Rdp>>();
+  private wireCache: WeakMap<Canonical<Rdp>, WireDerivedProperties> =
+    new WeakMap();
+
+  /**
+   * Returns the wire-form `derivedProperties` map (keyed by RDP name) for a
+   * previously canonicalized RDP clause. Returns undefined if the canonical
+   * was produced by a different canonicalizer instance.
+   */
+  getWireDerivedProperties(
+    canonical: Canonical<Rdp>,
+  ): WireDerivedProperties | undefined {
+    return this.wireCache.get(canonical);
+  }
 
   protected lookupOrCreate(rdp: Rdp): Canonical<Rdp> {
     // Map from builder result symbols to their definitions
@@ -66,7 +81,7 @@ export class RdpCanonicalizer extends CachingCanonicalizer<Rdp, Rdp> {
     const sortedKeys = Object.keys(computedProperties).sort();
 
     // Create a serialized key for the computed definitions
-    const sortedDefinitions: Record<string, DerivedPropertyDefinition> = {};
+    const sortedDefinitions: WireDerivedProperties = {};
     for (const key of sortedKeys) {
       sortedDefinitions[key] = computedProperties[key];
     }
@@ -83,6 +98,7 @@ export class RdpCanonicalizer extends CachingCanonicalizer<Rdp, Rdp> {
       }
       canonical = sortedRdp as Canonical<Rdp>;
       this.structuralCache.set(definitionsKey, canonical);
+      this.wireCache.set(canonical, sortedDefinitions);
     }
 
     return canonical;
