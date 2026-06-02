@@ -63,19 +63,21 @@ describe.each(TEMPLATES)("template $id", (template) => {
       });
     });
 
-    test(`CLI creates ${template.id} with CORS proxy`, async () => {
-      await runTest({
-        project: `expected-${template.id}-cors-proxy`,
-        template,
-        corsProxy: true,
-        sdkVersion,
-        skipOsdk: false,
-        ontology: "ri.ontology.main.ontology.fake",
-        osdkPackage: "@fake/sdk",
-        osdkRegistryUrl:
-          "https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",
+    if (!(template.authless ?? false)) {
+      test(`CLI creates ${template.id} with CORS proxy`, async () => {
+        await runTest({
+          project: `expected-${template.id}-cors-proxy`,
+          template,
+          corsProxy: true,
+          sdkVersion,
+          skipOsdk: false,
+          ontology: "ri.ontology.main.ontology.fake",
+          osdkPackage: "@fake/sdk",
+          osdkRegistryUrl:
+            "https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",
+        });
       });
-    });
+    }
   });
 });
 
@@ -136,6 +138,8 @@ async function runTest({
       osdkRegistryUrl: string;
     }
 )): Promise<void> {
+  const authless = template.authless ?? false;
+
   const args = [
     "npx",
     "@osdk/create-app",
@@ -149,15 +153,20 @@ async function runTest({
     "https://app.example.palantirfoundry.com",
     "--application",
     "ri.third-party-applications.main.application.fake",
-    "--clientId",
-    "123",
-    "--corsProxy",
-    corsProxy.toString(),
     "--sdkVersion",
     sdkVersion,
-    "--scopes",
-    "api:read-data",
   ];
+
+  if (!authless) {
+    args.push(
+      "--clientId",
+      "123",
+      "--corsProxy",
+      corsProxy.toString(),
+      "--scopes",
+      "api:read-data",
+    );
+  }
 
   if (!skipOsdk) {
     args.push("--ontology", ontology);
@@ -210,5 +219,29 @@ async function runTest({
     }
   } else {
     expect(packageJson.dependencies["@osdk/client"]).toBe(undefined);
+  }
+
+  if (authless) {
+    // AuthCallback should not exist in authless mode
+    expect(
+      fs.existsSync(
+        path.join(process.cwd(), project, "src", "AuthCallback.tsx"),
+      ),
+    ).toBe(false);
+
+    // .env.development should use api-proxy and not contain CLIENT_ID
+    const envDev = fs.readFileSync(
+      path.join(process.cwd(), project, ".env.development"),
+      "utf-8",
+    );
+    expect(envDev).toContain("api-proxy");
+    expect(envDev).not.toContain("CLIENT_ID");
+
+    // client.ts should use createAuthlessClient
+    const clientTs = fs.readFileSync(
+      path.join(process.cwd(), project, "src", "client.ts"),
+      "utf-8",
+    );
+    expect(clientTs).toContain("createAuthlessClient");
   }
 }
