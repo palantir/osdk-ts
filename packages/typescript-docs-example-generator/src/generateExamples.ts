@@ -370,7 +370,9 @@ function generateAllExamplesForVersion(
         if (!blockVarsByName[varName]) {
           blockVarsByName[varName] = [];
         }
-        blockVarsByName[varName].push(prefix);
+        if (!blockVarsByName[varName].includes(prefix)) {
+          blockVarsByName[varName].push(prefix);
+        }
       }
 
       for (const [varName, prefixes] of Object.entries(blockVarsByName)) {
