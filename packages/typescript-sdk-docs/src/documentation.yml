@@ -1410,12 +1410,17 @@ versions:
 
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
+                    {{#arrayContains}}
+                    {{property}}: { $contains: { $startsWith: "foo" } }
+                    {{/arrayContains}}
+                    {{^arrayContains}}
                     {{#structSubPropertyApiName}}
                     {{property}}: { {{structSubPropertyApiName}}: { $startsWith: "foo" }}
                     {{/structSubPropertyApiName}}
                     {{^structSubPropertyApiName}}
                     {{property}}: { $startsWith: "foo" }
                     {{/structSubPropertyApiName}}
+                    {{/arrayContains}}
                 })
       containsAllTermsInOrderTemplate:
         - template: |-
@@ -1425,12 +1430,17 @@ versions:
 
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
+                    {{#arrayContains}}
+                    {{property}}: { $contains: { $containsAllTermsInOrder: "foo bar" } }
+                    {{/arrayContains}}
+                    {{^arrayContains}}
                     {{#structSubPropertyApiName}}
                     {{property}}: { {{structSubPropertyApiName}}: { $containsAllTermsInOrder: "foo bar" }}
                     {{/structSubPropertyApiName}}
                     {{^structSubPropertyApiName}}
                     {{property}}: { $containsAllTermsInOrder: "foo bar" }
                     {{/structSubPropertyApiName}}
+                    {{/arrayContains}}
                 })
       containsAnyTermTemplate:
         - template: |-
@@ -1440,12 +1450,17 @@ versions:
 
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
+                    {{#arrayContains}}
+                    {{property}}: { $contains: { $containsAnyTerm: "foo bar" } }
+                    {{/arrayContains}}
+                    {{^arrayContains}}
                     {{#structSubPropertyApiName}}
                     {{property}}: { {{structSubPropertyApiName}}: { $containsAnyTerm: "foo bar" }}
                     {{/structSubPropertyApiName}}
                     {{^structSubPropertyApiName}}
                     {{property}}: { $containsAnyTerm: "foo bar" }
                     {{/structSubPropertyApiName}}
+                    {{/arrayContains}}
                 })
       containsAllTermsTemplate:
         - template: |-
@@ -1455,12 +1470,17 @@ versions:
 
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
+                    {{#arrayContains}}
+                    {{property}}: { $contains: { $containsAllTerms: "foo bar" } }
+                    {{/arrayContains}}
+                    {{^arrayContains}}
                     {{#structSubPropertyApiName}}
                     {{property}}: { {{structSubPropertyApiName}}: { $containsAllTerms: "foo bar" }}
                     {{/structSubPropertyApiName}}
                     {{^structSubPropertyApiName}}
                     {{property}}: { $containsAllTerms: "foo bar" }
                     {{/structSubPropertyApiName}}
+                    {{/arrayContains}}
                 })
       equalityTemplate:
         - template: |-
@@ -1470,12 +1490,17 @@ versions:
 
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
+                    {{#arrayContains}}
+                    {{property}}: { $contains: { $eq: {{{propertyValueV2}}} } }
+                    {{/arrayContains}}
+                    {{^arrayContains}}
                     {{#structSubPropertyApiName}}
                     {{property}}: { {{structSubPropertyApiName}}: { $eq: {{{propertyValueV2}}} }}
                     {{/structSubPropertyApiName}}
                     {{^structSubPropertyApiName}}
                     {{property}}: { $eq: {{{propertyValueV2}}} }
                     {{/structSubPropertyApiName}}
+                    {{/arrayContains}}
                 });
           computedVariables:
             - propertyValueV2
@@ -1487,12 +1512,17 @@ versions:
 
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
+                    {{#arrayContains}}
+                    {{property}}: { $contains: { $in: [{{{propertyValueV2}}}] } }
+                    {{/arrayContains}}
+                    {{^arrayContains}}
                     {{#structSubPropertyApiName}}
                     {{property}}: { {{structSubPropertyApiName}}: { $in: [{{{propertyValueV2}}}] }}
                     {{/structSubPropertyApiName}}
                     {{^structSubPropertyApiName}}
                     {{property}}: { $in: [{{{propertyValueV2}}}] }
                     {{/structSubPropertyApiName}}
+                    {{/arrayContains}}
                 });
           computedVariables:
             - propertyValueV2
@@ -1519,12 +1549,17 @@ versions:
 
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
+                    {{#arrayContains}}
+                    {{property}}: { $contains: { ${{operation}}: {{{propertyValueV2}}} } }
+                    {{/arrayContains}}
+                    {{^arrayContains}}
                     {{#structSubPropertyApiName}}
                     {{property}}: { {{structSubPropertyApiName}}: { ${{operation}}: {{{propertyValueV2}}} }}
                     {{/structSubPropertyApiName}}
                     {{^structSubPropertyApiName}}
                     {{property}}: { ${{operation}}: {{{propertyValueV2}}} }
                     {{/structSubPropertyApiName}}
+                    {{/arrayContains}}
                 });
           computedVariables:
             - propertyValueV2
