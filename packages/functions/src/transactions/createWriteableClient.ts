@@ -48,11 +48,6 @@ export function createWriteableClient<
 ): WriteableClient<X> {
   const ontologyRid = args[1];
 
-  // Read operations (fetchPage, aggregate, applyQuery, ...) call
-  // `client.flushEdits()` before hitting the wire so staged edits are visible
-  // to the read. The arrow defers resolving `editRequestManager` until call
-  // time; flushEdits is only invoked during a read, which always happens after
-  // construction, so the reference is assigned by then.
   let editRequestManager: EditRequestManager;
   const client = createClientWithTransaction(
     transactionId,
