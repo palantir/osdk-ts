@@ -57,6 +57,7 @@ const baseContext: BaseTemplateContext = {
   // For block variables
   isLinkManySided: false,
   durationText: false,
+  arrayContains: false,
 
   // For interface templates
   interfaceApiName: "HasAddress",

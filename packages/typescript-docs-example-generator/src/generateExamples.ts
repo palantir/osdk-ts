@@ -319,7 +319,9 @@ function generateAllExamplesForVersion(
     }
 
     // Extract blocks using TemplateAnalyzer
-    const blocks = analysis.value.blocks;
+    const blocks = analysis.value.blocks.filter(
+      block => block.name.replace(/^[#^]/, "") !== "arrayContains",
+    );
 
     if (blocks.length > 0) {
       // For block templates, only generate variations, not base files
