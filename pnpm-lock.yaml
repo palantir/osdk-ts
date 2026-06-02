@@ -258,7 +258,7 @@ importers:
         version: 6.0.0
       isomorphic-ws:
         specifier: '*'
-        version: 5.0.0(ws@8.18.3)
+        version: 5.0.0(ws@8.21.0)
     devDependencies:
       '@types/node':
         specifier: ^18.19.124
@@ -1949,7 +1949,7 @@ importers:
         version: 3.1.3
       isomorphic-ws:
         specifier: ^5.0.0
-        version: 5.0.0(ws@8.18.3)
+        version: 5.0.0(ws@8.21.0)
       p-defer:
         specifier: ^4.0.1
         version: 4.0.1
@@ -1963,8 +1963,8 @@ importers:
         specifier: ^4.41.0
         version: 4.41.0
       ws:
-        specifier: ^8.18.3
-        version: 8.18.3
+        specifier: ^8.20.1
+        version: 8.21.0
     devDependencies:
       '@microsoft/api-documenter':
         specifier: ^7.26.32
@@ -21354,8 +21354,8 @@ packages:
       utf-8-validate:
         optional: true
 
-  ws@8.18.3:
-    resolution: {integrity: sha512-PEIGCY5tSlUt50cqyMXfCzX+oOPqN0vuGqWzbcJ2xvnkzkq46oOpz7dQaTDBdfICb4N14+GARUDw2XV2N4tvzg==}
+  ws@8.21.0:
+    resolution: {integrity: sha512-Vsp28b7DRcimFQvrqu2Wek3z1iYxDCWqHYB8Qsnk/S4RfaCQzPGPyBNuVjJV3cd6UiKtUtp6sNM77gWvzcCH+g==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
       bufferutil: ^4.0.1
@@ -24687,7 +24687,7 @@ snapshots:
       undici: 6.24.1
       unique-string: 2.0.0
       wrap-ansi: 7.0.0
-      ws: 8.18.3
+      ws: 8.21.0
     transitivePeerDependencies:
       - bufferutil
       - encoding
@@ -25958,14 +25958,14 @@ snapshots:
       fast-deep-equal: 3.1.3
       fetch-retry: 6.0.0
       find-up: 7.0.0
-      isomorphic-ws: 5.0.0(ws@8.18.3)
+      isomorphic-ws: 5.0.0(ws@8.21.0)
       mnemonist: 0.40.3
       object.groupby: 1.0.3
       p-defer: 4.0.1
       rxjs: 7.8.2
       tiny-invariant: 1.3.3
       type-fest: 4.41.0
-      ws: 8.18.3
+      ws: 8.21.0
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -33679,7 +33679,7 @@ snapshots:
       '@types/ws': 8.18.1
       entities: 7.0.1
       whatwg-mimetype: 3.0.0
-      ws: 8.18.3
+      ws: 8.21.0
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -34384,9 +34384,9 @@ snapshots:
 
   isobject@3.0.1: {}
 
-  isomorphic-ws@5.0.0(ws@8.18.3):
+  isomorphic-ws@5.0.0(ws@8.21.0):
     dependencies:
-      ws: 8.18.3
+      ws: 8.21.0
 
   istanbul-lib-coverage@3.2.2: {}
 
@@ -34960,7 +34960,7 @@ snapshots:
       whatwg-encoding: 2.0.0
       whatwg-mimetype: 3.0.0
       whatwg-url: 11.0.0
-      ws: 8.18.3
+      ws: 8.21.0
       xml-name-validator: 4.0.0
     optionalDependencies:
       canvas: 2.11.2
@@ -39730,7 +39730,7 @@ snapshots:
       recast: 0.23.11
       semver: 7.7.4
       use-sync-external-store: 1.6.0(react@18.3.1)
-      ws: 8.18.3
+      ws: 8.21.0
     optionalDependencies:
       prettier: 3.6.2
     transitivePeerDependencies:
@@ -41606,7 +41606,7 @@ snapshots:
       sockjs: 0.3.24
       spdy: 4.0.2
       webpack-dev-middleware: 5.3.4(webpack@5.106.1(@swc/core@1.7.39)(esbuild@0.27.3))
-      ws: 8.18.3
+      ws: 8.21.0
     optionalDependencies:
       webpack: 5.106.1(@swc/core@1.7.39)(esbuild@0.27.3)
     transitivePeerDependencies:
@@ -41915,7 +41915,7 @@ snapshots:
 
   ws@7.5.10: {}
 
-  ws@8.18.3: {}
+  ws@8.21.0: {}
 
   wsl-utils@0.1.0:
     dependencies:
