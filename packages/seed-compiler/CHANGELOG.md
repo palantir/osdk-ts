@@ -1,5 +1,31 @@
 # @osdk/seed-compiler
 
+## 0.5.0
+
+### Minor Changes
+
+- 5ff7aa5: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.61.0` to `2.63.0`. The OntologyScenarios endpoints now expose a `preview` query-param slot, so `createScenario` and the `EXPERIMENTAL_ScenarioClient` read methods pass `{ preview: true }` directly instead of relying on a fetch-level URL rewrite.
+
+## 0.4.0
+
+### Minor Changes
+
+- 8965bdf: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+
+### Patch Changes
+
+- @osdk/seed-helpers@0.8.0
+
+## 0.3.0
+
+### Minor Changes
+
+- 60aff19: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+
+### Patch Changes
+
+- @osdk/seed-helpers@0.7.0
+
 ## 0.2.0
 
 ### Minor Changes

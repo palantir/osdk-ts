@@ -1,5 +1,15 @@
 # @osdk/functions
 
+## 1.11.0
+
+### Minor Changes
+
+- 21003f1: Export additional GeoJSON subtypes (GeometryCollection, LineString, MultiLineString, MultiPoint, MultiPolygon, Polygon) alongside Geometry and Point.
+
+### Patch Changes
+
+- @osdk/client@2.26.0
+
 ## 1.10.0
 
 ### Minor Changes

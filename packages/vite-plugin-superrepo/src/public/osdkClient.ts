@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+/// <reference types="vite/client" />
+
 import { createClient as __real } from "@osdk/client";
 import { smartClient } from "./smartClient.js";
 
@@ -25,9 +27,11 @@ export * from "@osdk/client";
  * Drop-in replacement for `createClient` from `@osdk/client` that does
  * two things on top of the real one, both dev-only:
  *
- *  1. Forces the base URL to `window.location.origin` so every OSDK
- *     request flows through the proxies that `vite-plugin-superrepo`
- *     installs on the Vite dev server.
+ *  1. Forces the base URL to the dev server's origin and base path
+ *     (`import.meta.env.BASE_URL`) so every OSDK request flows through the
+ *     proxies that `vite-plugin-superrepo` installs on the Vite dev server,
+ *     even when Vite is served under a path prefix (e.g. behind the Foundry
+ *     Container Service proxy).
  *  2. Wraps the returned client with `smartClient`, which intercepts
  *     `executeFunction` calls and routes them to the local foundry-cli
  *     typescript/python function runtimes.
@@ -44,7 +48,7 @@ export const createClient: typeof __real = (
   fetchFn,
 ) =>
   smartClient(__real(
-    window.location.origin,
+    new URL(import.meta.env.BASE_URL, window.location.origin).href,
     ontologyRid,
     tokenProvider,
     options,

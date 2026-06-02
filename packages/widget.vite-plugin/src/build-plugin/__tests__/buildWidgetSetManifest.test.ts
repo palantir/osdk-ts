@@ -14,164 +14,133 @@
  * limitations under the License.
  */
 
-import type { ParameterDefinition, WidgetSetInputSpec } from "@osdk/widget.api";
+import type {
+  ParameterConfig,
+  ParameterDefinition,
+  WidgetConfig,
+  WidgetSetInputSpec,
+} from "@osdk/widget.api";
 import { describe, expect, test } from "vitest";
-import { buildWidgetSetManifest } from "../buildWidgetSetManifest.js";
+import {
+  buildWidgetManifestConfig,
+  buildWidgetSetManifest,
+} from "../buildWidgetSetManifest.js";
 import type { WidgetBuildOutputs } from "../getWidgetBuildOutputs.js";
 
-describe("buildWidgetSetManifest", () => {
-  const WIDGET_SET_RID = "ri.widgetregistry..widget-set.test-widget-set";
-  const WIDGET_SET_VERSION = "1.0.0";
+const MOCK_WIDGET_CONFIG: WidgetConfig<ParameterConfig> = {
+  id: "widget",
+  name: "Widget Name",
+  description: "Widget Description",
+  type: "workshop",
+  parameters: {
+    stringParam: { type: "string", displayName: "String Parameter" },
+  },
+  events: {
+    updateParameters: {
+      displayName: "Update Parameters",
+      parameterUpdateIds: ["stringParam"],
+    },
+  },
+  permissions: ["camera"],
+};
 
-  test("builds a valid manifest with multiple widgets", () => {
-    const widgetBuilds: WidgetBuildOutputs[] = [
-      createMockWidgetBuild("widgetOne"),
-      createMockWidgetBuild("widgetTwo"),
-    ];
+describe("buildWidgetManifestConfig", () => {
+  const ENTRYPOINT_JS = [{
+    path: "scripts/widget.js",
+    type: "module" as const,
+  }];
+  const ENTRYPOINT_CSS = [{ path: "styles/widget.css" }];
 
-    const widgetSetInputSpec: WidgetSetInputSpec = {
-      discovered: {
-        sdks: [
-          {
-            rid: "ri.foundry.main.sdk.test-sdk",
-            version: "2.0.0",
-          },
-        ],
-      },
-    };
-
-    const manifest = buildWidgetSetManifest(
-      WIDGET_SET_RID,
-      WIDGET_SET_VERSION,
-      widgetBuilds,
-      widgetSetInputSpec,
+  test("maps config fields to manifest format", () => {
+    const result = buildWidgetManifestConfig(
+      MOCK_WIDGET_CONFIG,
+      ENTRYPOINT_JS,
+      ENTRYPOINT_CSS,
     );
 
-    expect(manifest).toEqual({
-      manifestVersion: "1.0.0",
-      widgetSet: {
-        rid: WIDGET_SET_RID,
-        version: WIDGET_SET_VERSION,
-        widgets: {
-          widgetOne: {
-            id: "widgetOne",
-            name: "Widget widgetOne",
-            description: "Widget widgetOne Description",
-            type: "workshopWidgetV1",
-            entrypointJs: [
-              { path: "scripts/widgetOne.js", type: "module" },
-            ],
-            entrypointCss: [
-              { path: "styles/widgetOne.css" },
-            ],
-            parameters: {
-              stringParam: {
-                type: "string",
-                displayName: "String Parameter",
-              },
-            },
-            events: {
-              updateParameters: {
-                displayName: "Update Parameters",
-                parameterUpdateIds: ["stringParam"],
-              },
-            },
-            permissions: ["camera"],
-          },
-          widgetTwo: {
-            id: "widgetTwo",
-            name: "Widget widgetTwo",
-            description: "Widget widgetTwo Description",
-            type: "workshopWidgetV1",
-            entrypointJs: [
-              { path: "scripts/widgetTwo.js", type: "module" },
-            ],
-            entrypointCss: [
-              { path: "styles/widgetTwo.css" },
-            ],
-            parameters: {
-              stringParam: {
-                type: "string",
-                displayName: "String Parameter",
-              },
-            },
-            events: {
-              updateParameters: {
-                displayName: "Update Parameters",
-                parameterUpdateIds: ["stringParam"],
-              },
-            },
-            permissions: ["camera"],
-          },
-        },
-        inputSpec: widgetSetInputSpec,
+    expect(result).toEqual({
+      id: "widget",
+      name: "Widget Name",
+      description: "Widget Description",
+      type: "workshopWidgetV1",
+      entrypointJs: ENTRYPOINT_JS,
+      entrypointCss: ENTRYPOINT_CSS,
+      parameters: {
+        stringParam: { type: "string", displayName: "String Parameter" },
       },
+      events: {
+        updateParameters: {
+          displayName: "Update Parameters",
+          parameterUpdateIds: ["stringParam"],
+        },
+      },
+      permissions: ["camera"],
     });
   });
 
-  test("converts object set parameters correctly", () => {
-    const widgetBuild = createMockWidgetBuild("widget", {
-      objectSetParam: {
-        type: "objectSet",
-        displayName: "Object Set Parameter",
-        allowedType: {
-          type: "object",
-          apiName: "employee",
-          internalDoNotUseMetadata: {
-            rid: "ri.ontology.main.object-type.employee",
-          },
-        },
-      },
-    });
-
-    const widgetBuilds: WidgetBuildOutputs[] = [widgetBuild];
-    const widgetSetInputSpec: WidgetSetInputSpec = {};
-
-    const manifest = buildWidgetSetManifest(
-      WIDGET_SET_RID,
-      WIDGET_SET_VERSION,
-      widgetBuilds,
-      widgetSetInputSpec,
+  test("handles optional description", () => {
+    const result = buildWidgetManifestConfig(
+      { ...MOCK_WIDGET_CONFIG, description: undefined },
+      ENTRYPOINT_JS,
+      ENTRYPOINT_CSS,
     );
 
-    expect(manifest.widgetSet.widgets.widget.parameters.objectSetParam).toEqual(
+    expect(result.description).toBeUndefined();
+  });
+
+  test("converts object set parameters", () => {
+    const result = buildWidgetManifestConfig(
       {
-        type: "objectSet",
-        displayName: "Object Set Parameter",
-        objectTypeRids: ["ri.ontology.main.object-type.employee"],
-        allowedType: "ri.ontology.main.object-type.employee",
-      },
-    );
-  });
-
-  test("converts interface set parameters correctly", () => {
-    const widgetBuild = createMockWidgetBuild("widget", {
-      interfaceSetParam: {
-        type: "objectSet",
-        displayName: "Interface Set Parameter",
-        allowedType: {
-          type: "interface",
-          apiName: "MyInterface",
-          internalDoNotUseMetadata: {
-            rid: "ri.ontology.main.interface.my-interface",
+        ...MOCK_WIDGET_CONFIG,
+        parameters: {
+          objectSetParam: {
+            type: "objectSet",
+            displayName: "Object Set Parameter",
+            allowedType: {
+              type: "object",
+              apiName: "employee",
+              internalDoNotUseMetadata: {
+                rid: "ri.ontology.main.object-type.employee",
+              },
+            },
           },
         },
       },
-    });
-
-    const widgetBuilds: WidgetBuildOutputs[] = [widgetBuild];
-    const widgetSetInputSpec: WidgetSetInputSpec = {};
-
-    const manifest = buildWidgetSetManifest(
-      WIDGET_SET_RID,
-      WIDGET_SET_VERSION,
-      widgetBuilds,
-      widgetSetInputSpec,
+      ENTRYPOINT_JS,
+      ENTRYPOINT_CSS,
     );
 
-    expect(
-      manifest.widgetSet.widgets.widget.parameters.interfaceSetParam,
-    ).toEqual({
+    expect(result.parameters.objectSetParam).toEqual({
+      type: "objectSet",
+      displayName: "Object Set Parameter",
+      objectTypeRids: ["ri.ontology.main.object-type.employee"],
+      allowedType: "ri.ontology.main.object-type.employee",
+    });
+  });
+
+  test("converts interface set parameters with empty objectTypeRids", () => {
+    const result = buildWidgetManifestConfig(
+      {
+        ...MOCK_WIDGET_CONFIG,
+        parameters: {
+          interfaceSetParam: {
+            type: "objectSet",
+            displayName: "Interface Set Parameter",
+            allowedType: {
+              type: "interface",
+              apiName: "MyInterface",
+              internalDoNotUseMetadata: {
+                rid: "ri.ontology.main.interface.my-interface",
+              },
+            },
+          },
+        },
+      },
+      ENTRYPOINT_JS,
+      ENTRYPOINT_CSS,
+    );
+
+    expect(result.parameters.interfaceSetParam).toEqual({
       type: "objectSet",
       displayName: "Interface Set Parameter",
       objectTypeRids: [],
@@ -179,22 +148,65 @@ describe("buildWidgetSetManifest", () => {
     });
   });
 
-  test("trims leading slashes from paths", () => {
-    const widgetBuild = createMockWidgetBuild(
-      "widget",
-      undefined,
-      ["/scripts/widget.js"],
-      ["/styles/widget.css"],
+  test("applies refreshHostDataOnAction default from pluginOptions", () => {
+    const result = buildWidgetManifestConfig(
+      MOCK_WIDGET_CONFIG,
+      ENTRYPOINT_JS,
+      ENTRYPOINT_CSS,
+      { defaults: { refreshHostDataOnAction: true } },
     );
 
-    const widgetBuilds: WidgetBuildOutputs[] = [widgetBuild];
-    const widgetSetInputSpec: WidgetSetInputSpec = {};
+    expect(result.refreshHostDataOnAction).toBe(true);
+  });
+
+  test("widget-level refreshHostDataOnAction overrides plugin default", () => {
+    const result = buildWidgetManifestConfig(
+      { ...MOCK_WIDGET_CONFIG, refreshHostDataOnAction: false },
+      ENTRYPOINT_JS,
+      ENTRYPOINT_CSS,
+      { defaults: { refreshHostDataOnAction: true } },
+    );
+
+    expect(result.refreshHostDataOnAction).toBe(false);
+  });
+});
+
+describe("buildWidgetSetManifest", () => {
+  const WIDGET_SET_RID = "ri.widgetregistry..widget-set.test-widget-set";
+  const WIDGET_SET_VERSION = "1.0.0";
+
+  test("wraps widgets in manifest structure with rid, version, and inputSpec", () => {
+    const widgetSetInputSpec: WidgetSetInputSpec = {
+      discovered: {
+        sdks: [{ rid: "ri.foundry.main.sdk.test-sdk", version: "2.0.0" }],
+      },
+    };
 
     const manifest = buildWidgetSetManifest(
       WIDGET_SET_RID,
       WIDGET_SET_VERSION,
-      widgetBuilds,
+      [createMockWidgetBuild("widgetOne"), createMockWidgetBuild("widgetTwo")],
       widgetSetInputSpec,
+    );
+
+    expect(manifest.manifestVersion).toBe("1.0.0");
+    expect(manifest.widgetSet.rid).toBe(WIDGET_SET_RID);
+    expect(manifest.widgetSet.version).toBe(WIDGET_SET_VERSION);
+    expect(manifest.widgetSet.inputSpec).toBe(widgetSetInputSpec);
+    expect(Object.keys(manifest.widgetSet.widgets)).toEqual([
+      "widgetOne",
+      "widgetTwo",
+    ]);
+  });
+
+  test("trims leading slashes from entrypoint paths", () => {
+    const manifest = buildWidgetSetManifest(
+      WIDGET_SET_RID,
+      WIDGET_SET_VERSION,
+      [createMockWidgetBuild("widget", undefined, ["/scripts/widget.js"], [
+        "/styles/widget.css",
+      ])],
+      {},
     );
 
     expect(manifest.widgetSet.widgets.widget.entrypointJs[0].path).toBe(
@@ -205,57 +217,14 @@ describe("buildWidgetSetManifest", () => {
     );
   });
 
-  test("uses plugin-level refreshHostDataOnAction as default", () => {
-    const widgetBuild = createMockWidgetBuild("widget");
-    const widgetSetInputSpec: WidgetSetInputSpec = {};
-
-    const manifest = buildWidgetSetManifest(
-      WIDGET_SET_RID,
-      WIDGET_SET_VERSION,
-      [widgetBuild],
-      widgetSetInputSpec,
-      { defaults: { refreshHostDataOnAction: true } },
-    );
-
-    expect(manifest.widgetSet.widgets.widget.refreshHostDataOnAction).toBe(
-      true,
-    );
-  });
-
-  test("widget-level refreshHostDataOnAction overrides plugin-level default", () => {
-    const widgetBuild = createMockWidgetBuild("widget");
-    widgetBuild.widgetConfig.refreshHostDataOnAction = false;
-    const widgetSetInputSpec: WidgetSetInputSpec = {};
-
-    const manifest = buildWidgetSetManifest(
-      WIDGET_SET_RID,
-      WIDGET_SET_VERSION,
-      [widgetBuild],
-      widgetSetInputSpec,
-      { defaults: { refreshHostDataOnAction: true } },
-    );
-
-    expect(manifest.widgetSet.widgets.widget.refreshHostDataOnAction).toBe(
-      false,
-    );
-  });
-
   test("handles paths without leading slashes", () => {
-    const widgetBuild = createMockWidgetBuild(
-      "widget",
-      undefined,
-      ["scripts/widget.js"],
-      ["styles/widget.css"],
-    );
-
-    const widgetBuilds: WidgetBuildOutputs[] = [widgetBuild];
-    const widgetSetInputSpec: WidgetSetInputSpec = {};
-
     const manifest = buildWidgetSetManifest(
       WIDGET_SET_RID,
       WIDGET_SET_VERSION,
-      widgetBuilds,
-      widgetSetInputSpec,
+      [createMockWidgetBuild("widget", undefined, ["scripts/widget.js"], [
+        "styles/widget.css",
+      ])],
+      {},
     );
 
     expect(manifest.widgetSet.widgets.widget.entrypointJs[0].path).toBe(

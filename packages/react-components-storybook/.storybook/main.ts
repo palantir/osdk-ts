@@ -19,7 +19,10 @@ import type { StorybookConfig } from "@storybook/react-vite";
 const storybookBasePath = process.env.STORYBOOK_BASE_PATH;
 
 const config: StorybookConfig = {
-  stories: ["../src/**/*.stories.@(js|jsx|ts|tsx|mdx)"],
+  stories: [
+    "../src/**/*.stories.@(js|jsx|ts|tsx|mdx)",
+    "../src/**/*.mdx",
+  ],
   addons: [
     "@storybook/addon-a11y",
     "@storybook/addon-docs",
@@ -42,16 +45,21 @@ const config: StorybookConfig = {
     reactDocgen: "react-docgen-typescript",
   },
   staticDirs: ["../public"],
-  // Auto-inject the "beta" tag for any story whose title starts with "Beta/".
-  // Keeps the per-file meta to just `title:` — the tag (and the resulting tag
-  // badge) is derived automatically, so contributors can't forget to set it.
+  // Auto-inject the "beta" tag for all stories under Components/.
+  // The tag badge propagates to parent folders via skipInherited: false
+  // in the manager config. When a component graduates to GA, remove
+  // tags: ["beta"] from its story meta — the indexer only adds the tag,
+  // it does not override an explicit empty tags array.
+  // MDX files are skipped because wrapping their index entries breaks
+  // attached-docs sidebar placement in Storybook 10.
   experimental_indexers: async (existingIndexers) =>
     (existingIndexers ?? []).map((indexer) => ({
       ...indexer,
       createIndex: async (fileName, options) => {
         const entries = await indexer.createIndex(fileName, options);
+        if (fileName.endsWith(".mdx")) return entries;
         return entries.map((entry) =>
-          entry.title?.startsWith("Beta/")
+          entry.title?.startsWith("Components/")
             ? { ...entry, tags: [...new Set([...(entry.tags ?? []), "beta"])] }
             : entry
         );
@@ -71,6 +79,14 @@ const config: StorybookConfig = {
       ...config.resolve,
       alias: {
         ...config.resolve?.alias,
+        // Resolve @docs/ and @rc/ to the react-components package so MDX
+        // wrappers can import .md files without fragile relative paths.
+        "@docs": new URL("../../react-components/docs", import.meta.url)
+          .pathname,
+        "@cbac-docs": new URL("../../cbac-components/docs", import.meta.url)
+          .pathname,
+        "@rc-root": new URL("../../react-components", import.meta.url)
+          .pathname,
         // Polyfill Node.js modules for browser
         // This is necessary because MSW (Mock Service Worker) and other dependencies
         // use Node.js built-in modules like crypto.randomUUID() which aren't available

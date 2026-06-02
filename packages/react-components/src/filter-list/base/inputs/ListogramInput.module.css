@@ -83,7 +83,13 @@
 
 /* Muted styling for filtered-out (count=0) rows. */
 .row[data-filtered-out] {
-  opacity: var(--osdk-filter-filtered-out-item-opacity);
+  --osdk-filter-listogram-count-color: var(
+    --osdk-filter-filtered-out-item-color
+  );
+  --osdk-filter-listogram-label-color: var(
+    --osdk-filter-filtered-out-item-color
+  );
+
   color: var(--osdk-filter-filtered-out-item-color);
 }
 

@@ -1,5 +1,57 @@
 # @osdk/react-components
 
+## 0.23.0
+
+### Minor Changes
+
+- 4a2110e: Make the filter-list exclude row Clear all button reliably right-align against consumer CSS resets.
+- 8c8038e: Fix "Failed to load null count" error on date and number range filters when no cross-filter is active. The null-count aggregation no longer wraps an empty where clause inside `$and`, which the aggregation API rejects.
+- 5b87e4a: ObjectTable: clicking the header select-all checkbox now deselects all rows whenever any rows are selected (including the indeterminate state). Previously a partial selection promoted to "select all" on click, requiring a second click to clear.
+- ceeabb5: Fix static FilterList values rendering as filtered out and keep filtered-out values accessible.
+- c3752ce: Temporarily remove the AIP chat entry points and AIP dependencies.
+
+## 0.22.0
+
+### Minor Changes
+
+- d209762: Reset datetime picker time to the current wall-clock time when clicking Today.
+- bd90dba: Add end-to-end support for `scenarioReference` action parameters:
+  - `@osdk/api` adds `"scenarioReference"` to `ActionMetadata.DataType.BaseActionParameterTypes` and a matching `scenarioReference: ScenarioClient` entry in `DataValueClientToWire` (structurally typed as `{ getScenarioReference(): { scenarioRid } }` to avoid a circular dep on `@osdk/client`).
+  - `@osdk/generator-converters` maps the wire `scenarioReference` variant into the primitive type.
+  - Generated SDKs now emit `ActionParam.PrimitiveType<"scenarioReference">` (resolves to `ScenarioClient`) for scenarioReference parameters, instead of throwing at SDK build time.
+  - `@osdk/client`'s `toDataValue` accepts a `ScenarioClient` and serializes it to the rid string the platform expects.
+  - `@osdk/react-components`'s ActionForm renders scenarioReference parameters as `UNSUPPORTED` for now.
+
+  Enables `client(ScenarioMerge).applyAction({ scenario })` end-to-end in generated SDKs.
+
+## 0.21.0
+
+### Minor Changes
+
+- 44c5f57: Add documentation MDX pages to Storybook sidebar (Welcome, Guides, Styling, Tokens, Hooks)
+- 837ea03: ObjectTable: expose `streamUpdates` prop that opts the table into websocket-driven live updates when matching objects are added, updated, or removed in Foundry. Forwarded to both `useObjectSet` and `useOsdkObjects`.
+- 0907d00: Fix `NotFoundError: removeChild` crashes when zooming or switching documents in `PdfViewer`. Annotation overlays are now rendered as siblings of pdfjs content (using measured page coordinates) instead of portaled into pdfjs-owned DOM. `AnnotationPortalTarget` now exposes `left`/`top`/`width`/`height`/`transform` in place of `container`. Annotation remeasures triggered by zoom, rotation, and container resize are now coalesced to one `requestAnimationFrame` tick, eliminating O(annotated pages) `getBoundingClientRect` reads on every pinch-zoom event.
+- 4c53e48: Hide the DatePicker popover when its anchor scrolls out of view. Fixes an issue where the date picker in `ObjectTable` cells continued to render outside the table bounds after the cell scrolled out of the visible area.
+
+## 0.20.0
+
+### Minor Changes
+
+- 2c491f4: filter-list: forward formatDate to single-date, multi-date, and timeline inputs so date formatting is consistent across all date-typed filters
+- dfc4226: `FilterList` now supports combining linked-property and direct-property filters via a single objectSet. Pass the unfiltered scope as `objectSet` and the new `onEffectiveObjectSet` observer receives the fully-narrowed `ObjectSet` (direct + linked filters applied) on every filter change. Adds optional `LinkedPropertyFilterDefinition.reverseLinkName` (opt-in: set it to make the filter narrow `objectSet` via a pivot round-trip; omit it for UI-only behavior) and `showFilteredOutValues`, which renders count=0 greyed-out rows for values present in the unfiltered scope but absent under an active filter. Filtered-out rows apply symmetrically to both direct-property facets (Listogram, MultiSelect, SingleSelect) and linked-property facets configured with `MULTI_SELECT` / `SINGLE_SELECT` / `LISTOGRAM` sub-components.
+
+  Existing `filterClause` / `onFilterClauseChanged` props still work and continue to emit a `WhereClause<Q>` covering direct filters (LINKED_PROPERTY narrowing cannot be expressed as a `WhereClause<Q>` and surfaces only through `onEffectiveObjectSet`). Linked filters are composed via the new exported `narrowObjectSet(objectSet, whereClause, linkedFilters)` helper for consumers building their own headless pipelines.
+
+  Linked-property facets compare against the raw unfiltered `objectSet` when computing filtered-out rows, so a value whose source rows were filtered out by either direct or linked sibling filters still renders as a count=0 row.
+
+- 7c1c639: FilterList: extend per-item actions to every filter type and fix linkedProperty exclude toggle.
+
+  • every filter type that supports excluding renders the `...` toggle for the inline Keep / Exclude row, including linked-property filters (toggle now flips `isExcluding` on the inner wrapped state)
+  • new `searchField` flag on `FilterDefinition` hides the header monocle for filters that already have their own inline search (e.g. `MULTI_SELECT`)
+  • extracted reusable helpers `toggleIsExcluding`, `clearFilterState`, `filterHasActiveState`, `getEffectiveFilterState`, and `getSelectedCount` from inline component logic into `filterValues.ts`
+
+- 7f8e93b: thread `renderValue` through `LinkedPropertyFilter` inputs
+
 ## 0.19.0
 
 ### Minor Changes

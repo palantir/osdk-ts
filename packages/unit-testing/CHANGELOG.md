@@ -1,5 +1,48 @@
 # @osdk/unit-testing
 
+## 0.13.0
+
+### Minor Changes
+
+- 5ff7aa5: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.61.0` to `2.63.0`. The OntologyScenarios endpoints now expose a `preview` query-param slot, so `createScenario` and the `EXPERIMENTAL_ScenarioClient` read methods pass `{ preview: true }` directly instead of relying on a fetch-level URL rewrite.
+
+### Patch Changes
+
+- Updated dependencies [5ff7aa5]
+  - @osdk/client@2.27.0
+  - @osdk/api@2.27.0
+
+## 0.12.0
+
+### Minor Changes
+
+- 8965bdf: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+
+### Patch Changes
+
+- Updated dependencies [8965bdf]
+- Updated dependencies [8965bdf]
+- Updated dependencies [bd90dba]
+- Updated dependencies [643c450]
+- Updated dependencies [d0845dd]
+  - @osdk/client@2.25.0
+  - @osdk/api@2.25.0
+
+## 0.11.0
+
+### Minor Changes
+
+- 60aff19: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+
+### Patch Changes
+
+- Updated dependencies [a492285]
+- Updated dependencies [60aff19]
+- Updated dependencies [35ad6d1]
+- Updated dependencies [6923158]
+  - @osdk/api@2.24.0
+  - @osdk/client@2.24.0
+
 ## 0.10.0
 
 ### Minor Changes

@@ -21,12 +21,12 @@ import type {
   Osdk,
   QueryDefinition,
 } from "@osdk/api";
-import { getWireObjectSet } from "@osdk/client";
 import type {
   ObserveFunctionCallbackArgs,
   QueryParameterType,
 } from "@osdk/client/observable";
 import React from "react";
+import { stableSerialize } from "./core/stableSerialize.js";
 import { devToolsMetadata, makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext } from "./OsdkContext.js";
 
@@ -178,21 +178,24 @@ export function useOsdkFunction<Q extends QueryDefinition<unknown>>(
 
   const stableParams = React.useMemo(
     () => params,
-    [JSON.stringify(params)],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [stableSerialize(params)],
   );
   const stableDependsOn = React.useMemo(
     () => dependsOn,
-    [JSON.stringify(
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [stableSerialize(
       dependsOn?.map(d => typeof d === "string" ? d : d.apiName),
     )],
   );
   const stableDependsOnObjects = React.useMemo(
     () => dependsOnObjects,
-    [JSON.stringify(
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [stableSerialize(
       dependsOnObjects?.map(item =>
         "$apiName" in item
           ? { $apiName: item.$apiName, $primaryKey: item.$primaryKey }
-          : { __objectSet: getWireObjectSet(item) }
+          : item
       ),
     )],
   );

@@ -49,6 +49,7 @@ interface MultiSelectInputProps {
   style?: React.CSSProperties;
   placeholder?: string;
   showCounts?: boolean;
+  showFilteredOutValues?: boolean;
   ariaLabel?: string;
   renderValue?: (value: string) => React.ReactNode;
   layout?: MultiSelectInputLayout;
@@ -64,6 +65,7 @@ function MultiSelectInputInner({
   style,
   placeholder = "Select values...",
   showCounts = true,
+  showFilteredOutValues = true,
   ariaLabel = "Search values",
   renderValue,
   layout = "dropdown",
@@ -103,7 +105,9 @@ function MultiSelectInputInner({
     (value: string) => {
       const isEmpty = isEmptyValue(value);
       const count = countByValue.get(value) ?? 0;
-      const isFilteredOut = count === 0 && !selectedSet.has(value);
+      const isFilteredOut = showFilteredOutValues
+        && count === 0
+        && !selectedSet.has(value);
       return (
         <Combobox.Item
           key={value}
@@ -124,7 +128,7 @@ function MultiSelectInputInner({
         </Combobox.Item>
       );
     },
-    [countByValue, selectedSet, showCounts, renderValue],
+    [countByValue, selectedSet, showCounts, showFilteredOutValues, renderValue],
   );
 
   const renderChips = useCallback(

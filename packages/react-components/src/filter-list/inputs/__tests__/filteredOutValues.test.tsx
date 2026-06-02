@@ -30,10 +30,12 @@ import type {
   LinkedFilter,
   LinkedPropertyFilterDefinition,
 } from "../../types/LinkedFilterTypes.js";
+import type { StaticValuesFilterDefinition } from "../../types/StaticValuesTypes.js";
 import { LinkedPropertyInput } from "../LinkedPropertyInput.js";
 import { ListogramFilterInput } from "../ListogramFilterInput.js";
 import { MultiSelectFilterInput } from "../MultiSelectFilterInput.js";
 import { SingleSelectFilterInput } from "../SingleSelectFilterInput.js";
+import { StaticValuesFilterInput } from "../StaticValuesFilterInput.js";
 
 vi.mock("@osdk/react", () => ({
   useOsdkAggregation: vi.fn(),
@@ -142,6 +144,67 @@ describe("filtered-out initialFilterStates values", () => {
       expect(screen.queryByText("No options available")).toBeNull();
       expect(screen.getByLabelText("Select name")).toBeDefined();
     });
+  });
+});
+
+describe("STATIC_VALUES filters", () => {
+  it("does not mark unselected static listogram values as filtered out", () => {
+    const definition = {
+      type: "STATIC_VALUES",
+      key: "department",
+      filterComponent: "LISTOGRAM",
+      values: ["Marketing", "Operations"],
+      filterState: { type: "EXACT_MATCH", values: [] },
+    } satisfies StaticValuesFilterDefinition<
+      typeof MockObjectType,
+      "LISTOGRAM"
+    >;
+
+    render(
+      <StaticValuesFilterInput
+        definition={definition}
+        filterState={definition.filterState}
+        onFilterStateChanged={vi.fn()}
+      />,
+    );
+
+    expect(
+      screen.getByRole("button", { name: /Marketing/ }).hasAttribute(
+        "data-filtered-out",
+      ),
+    ).toBe(false);
+    expect(
+      screen.getByRole("button", { name: /Operations/ }).hasAttribute(
+        "data-filtered-out",
+      ),
+    ).toBe(false);
+  });
+
+  it("does not style unselected static multi-select values as filtered out", () => {
+    const definition = {
+      type: "STATIC_VALUES",
+      key: "team",
+      filterComponent: "MULTI_SELECT",
+      values: ["Alpha", "Beta"],
+      filterState: { type: "SELECT", selectedValues: [] },
+    } satisfies StaticValuesFilterDefinition<
+      typeof MockObjectType,
+      "MULTI_SELECT"
+    >;
+
+    render(
+      <StaticValuesFilterInput
+        definition={definition}
+        filterState={definition.filterState}
+        onFilterStateChanged={vi.fn()}
+        layout="inline"
+      />,
+    );
+
+    expect(screen.getByRole("option", { name: /Alpha/ }).className).not
+      .toContain("filteredOutItem");
+    expect(screen.getByRole("option", { name: /Beta/ }).className).not
+      .toContain("filteredOutItem");
   });
 });
 

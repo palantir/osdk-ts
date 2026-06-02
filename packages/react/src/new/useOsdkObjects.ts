@@ -31,7 +31,22 @@ import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
 import { devToolsMetadata, makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext } from "./OsdkContext.js";
 
-export interface UseOsdkObjectsOptions<
+/**
+ * Restricts `resolveToObjectType` to interface queries only.
+ * Object-type queries cannot pass this option.
+ */
+export type ResolveToObjectTypeOption<T extends ObjectOrInterfaceDefinition> =
+  T extends { type: "interface" } ? { resolveToObjectType?: boolean }
+    : { resolveToObjectType?: never };
+
+export type UseOsdkObjectsOptions<
+  T extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> =
+  & UseOsdkObjectsBaseOptions<T, RDPs>
+  & ResolveToObjectTypeOption<T>;
+
+interface UseOsdkObjectsBaseOptions<
   T extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
 > {
@@ -294,6 +309,7 @@ export function useOsdkObjects<
     $select,
     $loadPropertySecurityMetadata,
     $includeAllBaseObjectProperties,
+    resolveToObjectType,
   } = options ?? {};
 
   const canonOptions = observableClient.canonicalizeOptions({
@@ -342,6 +358,7 @@ export function useOsdkObjects<
             ...($loadPropertySecurityMetadata
               ? { $loadPropertySecurityMetadata }
               : {}),
+            ...(resolveToObjectType ? { resolveToObjectType: true } : {}),
           }, observer),
         devToolsMetadata({
           hookType: "useOsdkObjects",
@@ -370,6 +387,7 @@ export function useOsdkObjects<
       canonOptions.$select,
       $loadPropertySecurityMetadata,
       $includeAllBaseObjectProperties,
+      !!resolveToObjectType,
     ],
   );
 

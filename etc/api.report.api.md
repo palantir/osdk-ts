@@ -64,7 +64,7 @@ export namespace ActionMetadata {
     	// (undocumented)
     export namespace DataType {
         		// (undocumented)
-        export type BaseActionParameterTypes = "boolean" | "string" | "integer" | "long" | "double" | "datetime" | "timestamp" | "attachment" | "marking" | "mediaReference" | "objectType" | "geoshape" | "geohash";
+        export type BaseActionParameterTypes = "boolean" | "string" | "integer" | "long" | "double" | "datetime" | "timestamp" | "attachment" | "marking" | "mediaReference" | "scenarioReference" | "objectType" | "geoshape" | "geohash";
         		// (undocumented)
         export interface Interface<T_Target extends InterfaceDefinition = never> {
             			// (undocumented)
@@ -373,6 +373,9 @@ export interface DataValueClientToWire {
     null: null;
     	// (undocumented)
     objectType: string;
+    	scenarioReference: {
+        		getScenarioReference(): string
+        	};
     	// (undocumented)
     set: Set<any>;
     	// (undocumented)
@@ -432,6 +435,8 @@ export interface DataValueWireToClient {
     null: null;
     	// (undocumented)
     objectType: string;
+    	// (undocumented)
+    scenarioReference: never;
     	// (undocumented)
     set: Set<any>;
     	// (undocumented)

@@ -34,6 +34,11 @@
   /* Match the dismiss layer's dialog stack level so the later positioner stays
      clickable above it without escalating z-index values. */
   z-index: var(--osdk-datetime-popover-z-index);
+
+  /* Hide the popover when its anchor scrolls out of view */
+  &[data-anchor-hidden] {
+    visibility: hidden;
+  }
 }
 
 .osdkDatePickerPopover {
