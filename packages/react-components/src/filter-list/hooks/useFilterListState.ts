@@ -16,6 +16,7 @@
 
 import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import { useOsdkMetadata } from "@osdk/react";
+import { isEqual } from "lodash-es";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { assertUnreachable } from "../../shared/assertUnreachable.js";
 import type { FilterListProps } from "../FilterListApi.js";
@@ -50,6 +51,7 @@ export interface UseFilterListStateResult<Q extends ObjectTypeDefinition> {
   /** Per-filter excluding-self linked filters keyed by `getFilterKey`. */
   perFilterLinkedFilters: Map<string, ReadonlyArray<LinkedFilter<Q>>>;
   activeFilterCount: number;
+  hasChangesFromInitial: boolean;
   reset: () => void;
 }
 
@@ -142,16 +144,23 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     return map;
   }, [metadata?.properties]);
 
-  const [filterStates, setFilterStates] = useState<Map<string, FilterState>>(
+  // Captured once on first render to provide a stable baseline for the reset
+  // button's enabled state. `useState`'s lazy initializer pins the value for
+  // the lifetime of the component (unlike `useMemo`, which React may discard).
+  const [initialFilterStatesSnapshot] = useState<Map<string, FilterState>>(
     () => {
-      const initial = buildInitialStates(filterDefinitions);
+      const snapshot = buildInitialStates(filterDefinitions);
       if (initialFilterStates) {
         for (const [key, state] of initialFilterStates) {
-          initial.set(key, state);
+          snapshot.set(key, state);
         }
       }
-      return initial;
+      return snapshot;
     },
+  );
+
+  const [filterStates, setFilterStates] = useState<Map<string, FilterState>>(
+    () => new Map(initialFilterStatesSnapshot),
   );
 
   const setFilterState = useCallback(
@@ -181,8 +190,8 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
   }, []);
 
   const reset = useCallback(() => {
-    setFilterStates(buildInitialStates(filterDefinitionsRef.current));
-  }, []);
+    setFilterStates(new Map(initialFilterStatesSnapshot));
+  }, [initialFilterStatesSnapshot]);
 
   const whereClause = useMemo(
     () => buildWhereClause(filterDefinitions, filterStates, propertyTypes),
@@ -251,6 +260,11 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     return count;
   }, [filterStates]);
 
+  const hasChangesFromInitial = useMemo(
+    () => !isEqual(filterStates, initialFilterStatesSnapshot),
+    [filterStates, initialFilterStatesSnapshot],
+  );
+
   return useMemo(() => ({
     filterStates,
     setFilterState,
@@ -260,6 +274,7 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     perFilterWhereClauses,
     perFilterLinkedFilters,
     activeFilterCount,
+    hasChangesFromInitial,
     reset,
   }), [
     filterStates,
@@ -270,6 +285,7 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     perFilterWhereClauses,
     perFilterLinkedFilters,
     activeFilterCount,
+    hasChangesFromInitial,
     reset,
   ]);
 }
