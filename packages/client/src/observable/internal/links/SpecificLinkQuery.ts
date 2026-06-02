@@ -26,7 +26,10 @@ import type {
 } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
 import { type Subject } from "rxjs";
+import invariant from "tiny-invariant";
 import { additionalContext } from "../../../Client.js";
+import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
+import { resolveLinkOnObject } from "../../../ontology/findIltLinkDef.js";
 import type { SpecificLinkPayload } from "../../LinkPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
 import type { ObserveLinks } from "../../ObservableClient/ObserveLink.js";
@@ -156,8 +159,11 @@ export class SpecificLinkQuery extends BaseListQuery<
     const hasOrderBy = this.#orderBy
       && Object.keys(this.#orderBy).length > 0;
     let target: { apiName: string; kind: "object" | "interface" } | undefined;
-    if (hasOrderBy || this.includeAllBaseObjectProperties) {
-      if (isInterface) {
+
+    let linkQuery: ObjectSet<ObjectOrInterfaceDefinition>;
+
+    if (isInterface) {
+      if (hasOrderBy || this.includeAllBaseObjectProperties) {
         const interfaceMetadata = await ontologyProvider.getInterfaceDefinition(
           this.#sourceApiName,
         );
@@ -171,31 +177,8 @@ export class SpecificLinkQuery extends BaseListQuery<
           apiName: linkDef.targetTypeApiName,
           kind: linkDef.targetType,
         };
-      } else {
-        const objectMetadata = await ontologyProvider.getObjectDefinition(
-          this.#sourceApiName,
-        );
-        const linkDef = objectMetadata.links?.[this.#linkName];
-        if (!linkDef?.targetType) {
-          throw new Error(
-            `Missing link definition or targetType for link '${this.#linkName}' on object type '${this.#sourceApiName}'`,
-          );
-        }
-        // Object link defs always target an object type.
-        target = { apiName: linkDef.targetType, kind: "object" };
       }
-    }
 
-    if (target && hasOrderBy) {
-      this.sortingStrategy = new OrderBySortingStrategy(
-        target.apiName,
-        this.#orderBy,
-      );
-    }
-
-    let linkQuery: ObjectSet<ObjectOrInterfaceDefinition>;
-
-    if (isInterface) {
       const objectMetadata = await ontologyProvider.getObjectDefinition(
         this.#sourceUnderlyingObjectType,
       );
@@ -220,6 +203,19 @@ export class SpecificLinkQuery extends BaseListQuery<
         this.#sourceApiName,
       );
 
+      const resolved = resolveLinkOnObject(objectMetadata, this.#linkName);
+      invariant(
+        resolved,
+        `Could not resolve link '${this.#linkName}' on object type '${this.#sourceApiName}'`,
+      );
+
+      if (hasOrderBy || this.includeAllBaseObjectProperties) {
+        target = {
+          apiName: resolved.targetTypeApiName,
+          kind: resolved.targetType,
+        };
+      }
+
       const sourceSet = client({
         type: "object",
         apiName: this.#sourceApiName,
@@ -229,7 +225,35 @@ export class SpecificLinkQuery extends BaseListQuery<
         [objectMetadata.primaryKeyApiName]: this.#sourcePk,
       } as WhereClause<any>);
 
-      linkQuery = sourceQuery.pivotTo(this.#linkName);
+      switch (resolved.kind) {
+        case "concrete":
+          linkQuery = sourceQuery.pivotTo(this.#linkName);
+          break;
+        case "ilt": {
+          const mc = client[additionalContext];
+          const sourceWire = getWireObjectSet(sourceQuery);
+          linkQuery = mc.objectSetFactory(
+            {
+              type: "object",
+              apiName: this.#sourceApiName,
+            } as ObjectTypeDefinition,
+            mc,
+            {
+              type: "interfaceLinkSearchAround",
+              objectSet: sourceWire,
+              interfaceLink: this.#linkName,
+            },
+          ) as ObjectSet<ObjectOrInterfaceDefinition>;
+          break;
+        }
+      }
+    }
+
+    if (target && hasOrderBy) {
+      this.sortingStrategy = new OrderBySortingStrategy(
+        target.apiName,
+        this.#orderBy,
+      );
     }
 
     if (signal?.aborted) {
@@ -358,19 +382,22 @@ export class SpecificLinkQuery extends BaseListQuery<
         }
 
         let targetTypeApiName: string | undefined;
+        let targetTypeKind: "object" | "interface" | undefined;
 
         if (this.#sourceTypeKind === "interface") {
           const interfaceMetadata = await ontologyProvider
             .getInterfaceDefinition(this.#sourceApiName);
-          targetTypeApiName = interfaceMetadata.links?.[this.#linkName]
-            ?.targetTypeApiName;
+          const linkDef = interfaceMetadata.links?.[this.#linkName];
+          targetTypeApiName = linkDef?.targetTypeApiName;
+          targetTypeKind = linkDef?.targetType;
         } else {
           const objectMetadata = await ontologyProvider
             .getObjectDefinition(this.#sourceApiName);
-          // Object link def's `targetType` is the target API name; it can be
-          // either an object type or an interface name.
-          targetTypeApiName = objectMetadata.links?.[this.#linkName]
-            ?.targetType;
+          const resolved = resolveLinkOnObject(objectMetadata, this.#linkName);
+          if (resolved !== undefined) {
+            targetTypeApiName = resolved.targetTypeApiName;
+            targetTypeKind = resolved.targetType;
+          }
         }
 
         if (!targetTypeApiName) return;
@@ -380,15 +407,14 @@ export class SpecificLinkQuery extends BaseListQuery<
           return void await this.revalidate(true);
         }
 
-        // If the target is an interface, revalidate when objectType implements
-        // it. For object-typed targets, interfaceMap[objectTypeName] is always
-        // false, so this is a safe no-op.
-        const objectMetadata = await ontologyProvider.getObjectDefinition(
-          objectType,
-        );
-        if (targetTypeApiName in objectMetadata.interfaceMap) {
-          changes?.modified.add(this.cacheKey);
-          return void await this.revalidate(true);
+        if (targetTypeKind === "interface") {
+          const objectMetadata = await ontologyProvider.getObjectDefinition(
+            objectType,
+          );
+          if (targetTypeApiName in objectMetadata.interfaceMap) {
+            changes?.modified.add(this.cacheKey);
+            return void await this.revalidate(true);
+          }
         }
       } catch (e) {
         if (process.env.NODE_ENV !== "production") {
