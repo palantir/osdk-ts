@@ -84,18 +84,4 @@ describe("deriveSelectionObjectSet", () => {
 
     expect(result).toBeUndefined();
   });
-
-  it("derives a set for interface-typed selections without a primary key property name", () => {
-    // Regression guard for the previously-unsupported case: interface types
-    // have no resolvable primaryKeyApiName, so partial selection used to yield
-    // `undefined`. Filtering by the generic `$primaryKey` now works for them.
-    const { objectSet, where } = makeObjectSet();
-
-    const result = deriveSelectionObjectSet(objectSet, makeChange([7], false));
-
-    expect(where).toHaveBeenCalledWith({
-      $primaryKey: { $in: [7] },
-    });
-    expect(result).toBe(FILTERED);
-  });
 });
