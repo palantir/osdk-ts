@@ -2205,6 +2205,18 @@ importers:
         specifier: ~5.5.4
         version: 5.5.4
 
+  packages/create-app.react.beta.common:
+    devDependencies:
+      '@osdk/monorepo.api-extractor':
+        specifier: workspace:~
+        version: link:../monorepo.api-extractor
+      '@osdk/monorepo.tsconfig':
+        specifier: workspace:~
+        version: link:../monorepo.tsconfig
+      typescript:
+        specifier: ~5.5.4
+        version: 5.5.4
+
   packages/create-app.template-packager:
     dependencies:
       consola:
@@ -2532,6 +2544,9 @@ importers:
       '@eslint/js':
         specifier: ^9.35.0
         version: 9.35.0
+      '@osdk/create-app.react.beta.common':
+        specifier: workspace:~
+        version: link:../create-app.react.beta.common
       '@osdk/create-app.template-packager':
         specifier: workspace:~
         version: link:../create-app.template-packager

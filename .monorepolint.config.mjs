@@ -223,6 +223,7 @@ const archetypeRules = archetypes(
     [
       "@osdk/cli.*",
       "@osdk/client.test.ontology",
+      "@osdk/create-app.react.beta.common",
       "@osdk/create-app.template.*",
       "@osdk/create-widget.template.*",
       // @osdk/shared.test and its companion @osdk/shared.test.intellisense are
