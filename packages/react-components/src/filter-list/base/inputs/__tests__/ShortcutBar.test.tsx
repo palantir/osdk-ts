@@ -28,6 +28,7 @@ describe("ShortcutBar", () => {
       <ShortcutBar
         periods={["past-day", "past-week", "past-month"]}
         onSelect={vi.fn()}
+        closePopover={vi.fn()}
       />,
     );
     const labels = screen.getAllByRole("button").map((b) => b.textContent);
@@ -36,7 +37,13 @@ describe("ShortcutBar", () => {
 
   it("emits an absolute { min, max } range on click", () => {
     const onSelect = vi.fn();
-    render(<ShortcutBar periods={["past-hour"]} onSelect={onSelect} />);
+    render(
+      <ShortcutBar
+        periods={["past-hour"]}
+        onSelect={onSelect}
+        closePopover={vi.fn()}
+      />,
+    );
     fireEvent.click(screen.getByRole("button", { name: "Past hour" }));
     expect(onSelect).toHaveBeenCalledTimes(1);
     const call = onSelect.mock.calls[0][0];
@@ -45,8 +52,25 @@ describe("ShortcutBar", () => {
     expect(call.max.getTime() - call.min.getTime()).toBe(60 * 60 * 1000);
   });
 
+  it("forwards closePopover to onSelect on click", () => {
+    const onSelect = vi.fn();
+    const closePopover = vi.fn();
+    render(
+      <ShortcutBar
+        periods={["past-hour"]}
+        onSelect={onSelect}
+        closePopover={closePopover}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Past hour" }));
+    expect(onSelect).toHaveBeenCalledTimes(1);
+    expect(onSelect.mock.calls[0][1]).toBe(closePopover);
+  });
+
   it("renders nothing visible when no periods supplied", () => {
-    render(<ShortcutBar periods={[]} onSelect={vi.fn()} />);
+    render(
+      <ShortcutBar periods={[]} onSelect={vi.fn()} closePopover={vi.fn()} />,
+    );
     expect(screen.queryAllByRole("button")).toHaveLength(0);
   });
 });

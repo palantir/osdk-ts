@@ -27,22 +27,30 @@ import styles from "./ShortcutBar.module.css";
 
 export interface ShortcutBarProps {
   periods: readonly RelativeDatePeriod[];
-  onSelect: (range: { min: Date; max: Date }) => void;
+  onSelect: (range: { min: Date; max: Date }, closePopover: () => void) => void;
+  /**
+   * Passed through to `onSelect` so the handler can dismiss the picker. Kept
+   * as a separate prop (rather than closing over it in `onSelect`) so callers
+   * can pass a stable `onSelect` and let the `memo` on the bar/buttons skip.
+   */
+  closePopover: () => void;
   className?: string;
 }
 
 interface ShortcutButtonProps {
   period: RelativeDatePeriod;
   onSelect: ShortcutBarProps["onSelect"];
+  closePopover: () => void;
 }
 
 function ShortcutButtonInner({
   period,
   onSelect,
+  closePopover,
 }: ShortcutButtonProps): React.ReactElement {
   const handleClick = useCallback(() => {
-    onSelect(getRelativeDateRange(period));
-  }, [period, onSelect]);
+    onSelect(getRelativeDateRange(period), closePopover);
+  }, [period, onSelect, closePopover]);
   return (
     <ActionButton
       type="button"
@@ -60,6 +68,7 @@ const ShortcutButton = memo(ShortcutButtonInner);
 function ShortcutBarInner({
   periods,
   onSelect,
+  closePopover,
   className,
 }: ShortcutBarProps): React.ReactElement {
   return (
@@ -73,6 +82,7 @@ function ShortcutBarInner({
           key={period}
           period={period}
           onSelect={onSelect}
+          closePopover={closePopover}
         />
       ))}
     </div>

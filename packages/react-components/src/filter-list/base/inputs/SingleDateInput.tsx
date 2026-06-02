@@ -82,7 +82,8 @@ function SingleDateInputInner({
     (closePopover: () => void) => (
       <ShortcutBar
         periods={shortcutPeriods ?? []}
-        onSelect={(range) => handleShortcutSelect(range, closePopover)}
+        onSelect={handleShortcutSelect}
+        closePopover={closePopover}
       />
     ),
     [shortcutPeriods, handleShortcutSelect],

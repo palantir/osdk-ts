@@ -338,6 +338,14 @@ export const WithDateShortcuts: Story = {
           filterState: { type: "DATE_RANGE" },
           dateShortcuts: ["past-day", "past-week", "past-month"],
         },
+        {
+          type: "PROPERTY",
+          id: "startDate-single-plain",
+          key: "firstFullTimeStartDate",
+          label: "Start Date (SINGLE_DATE, no shortcuts)",
+          filterComponent: "SINGLE_DATE",
+          filterState: { type: "DATE_RANGE" },
+        },
       ],
       [],
     );
