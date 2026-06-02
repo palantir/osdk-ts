@@ -3,4 +3,4 @@
 "@osdk/react-components-styles": patch
 ---
 
-Disable custom focus outlines for input-like React components and deprecate unused legacy focus tokens.
+Disable custom focus outlines for input-like React components while preserving danger focus treatment.

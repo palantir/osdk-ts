@@ -44,6 +44,12 @@
   border-color: var(--osdk-file-picker-trigger-border-color-error);
 }
 
+.osdkFilePickerTrigger[aria-invalid]:has(.osdkFilePickerText:focus-visible),
+.osdkFilePickerTrigger[aria-invalid]:has(.osdkFilePickerClear:focus-visible) {
+  border-color: var(--osdk-file-picker-trigger-border-color-error);
+  box-shadow: var(--osdk-input-focus-shadow-error);
+}
+
 /* display: none fully removes the input from the a11y tree, avoiding
    nested-interactive inside the role="button" trigger. Programmatic
    .click() still opens the file dialog. */

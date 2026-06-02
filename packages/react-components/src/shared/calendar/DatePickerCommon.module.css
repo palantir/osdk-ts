@@ -104,6 +104,7 @@
 
   &:focus-within {
     border-color: var(--osdk-datetime-input-error-border-color);
+    box-shadow: var(--osdk-input-focus-shadow-error);
   }
 }
 
