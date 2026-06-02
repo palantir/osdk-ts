@@ -5,10 +5,6 @@ node_modules/
 storybook-static/
 build/
 
-# Playwright artifacts
-test-results/
-playwright-report/
-
 # IDE
 .vscode/
 .idea/
