@@ -151,6 +151,22 @@ export type ActionReturnTypeForOptions<Op extends ApplyActionOptions | ApplyBatc
 export type ActionValidationResponse = ValidateActionResponseV2;
 
 // @public (undocumented)
+export interface AffineTransform {
+    	// (undocumented)
+    xScale?: number;
+    	// (undocumented)
+    xShear?: number;
+    	// (undocumented)
+    xTranslate?: number;
+    	// (undocumented)
+    yScale?: number;
+    	// (undocumented)
+    yShear?: number;
+    	// (undocumented)
+    yTranslate?: number;
+}
+
+// @public (undocumented)
 export interface Affix {
     	// (undocumented)
     postfix?: PropertyTypeReferenceOrStringConstant;
@@ -297,12 +313,27 @@ export interface AttachmentUpload {
     readonly name: string;
 }
 
-// @public
+// @public (undocumented)
+export type AudioDecodeFormat = "FLAC" | "MP2" | "MP3" | "MP4" | "NIST_SPHERE" | "OGG" | "WAV" | "WEBM";
+
+// @public (undocumented)
 export interface AudioMediaItemMetadata {
+    	// (undocumented)
+    format: AudioDecodeFormat;
     	// (undocumented)
     sizeBytes: number;
     	// (undocumented)
-    type: "audio";
+    specification: AudioSpecification;
+}
+
+// @public (undocumented)
+export interface AudioSpecification {
+    	// (undocumented)
+    bitRate: number;
+    	// (undocumented)
+    durationSeconds: number;
+    	// (undocumented)
+    numberOfChannels?: number;
 }
 
 // @public (undocumented)
@@ -315,6 +346,18 @@ export type Augment<
 export type Augments = Record<string, string[]>;
 
 // @public (undocumented)
+export interface BandInfo {
+    	// (undocumented)
+    colorInterpretation?: ColorInterpretation;
+    	// (undocumented)
+    dataType?: DataType;
+    	// (undocumented)
+    paletteInterpretation?: PaletteInterpretation;
+    	// (undocumented)
+    unitInterpretation?: UnitInterpretation;
+}
+
+// @public (undocumented)
 export interface BaseObjectSet<Q extends ObjectOrInterfaceDefinition> {
     	// (undocumented)
     readonly $objectSetInternals: {
@@ -324,6 +367,29 @@ export interface BaseObjectSet<Q extends ObjectOrInterfaceDefinition> {
 
 // @public (undocumented)
 export type BaseWirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "mediaReference" | "numericTimeseries" | "stringTimeseries" | "sensorTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference" | "vector";
+
+// @public (undocumented)
+export type ColorInterpretation = "UNDEFINED" | "GRAY" | "PALETTE_INDEX" | "RED" | "GREEN" | "BLUE" | "ALPHA" | "HUE" | "SATURATION" | "LIGHTNESS" | "CYAN" | "MAGENTA" | "YELLOW" | "BLACK" | "Y_CB_CR_SPACE_Y" | "Y_CB_CR_SPACE_CB" | "Y_CB_CR_SPACE_CR";
+
+// @public (undocumented)
+export interface CommonDicomDataElements {
+    	// (undocumented)
+    modality?: Modality;
+    	// (undocumented)
+    numberFrames?: number;
+    	// (undocumented)
+    patientId?: string;
+    	// (undocumented)
+    seriesTime?: string;
+    	// (undocumented)
+    seriesUid?: string;
+    	// (undocumented)
+    studyId?: string;
+    	// (undocumented)
+    studyTime?: string;
+    	// (undocumented)
+    studyUid?: string;
+}
 
 // @public (undocumented)
 export type CompileTimeMetadata<T extends {
@@ -343,6 +409,15 @@ export type ConvertProps<
 	P extends ValidOsdkPropParams<FROM>,
 	OPTIONS extends never | "$rid" | "$allBaseProperties" | "$propertySecurities" = never
 > = TO extends FROM ? P : TO extends ObjectTypeDefinition ? (UnionIfTrue<MapPropNamesToObjectType<FROM, TO, P, OPTIONS>, P extends "$rid" ? true : false, "$rid">) : TO extends InterfaceDefinition ? FROM extends ObjectTypeDefinition ? (UnionIfTrue<MapPropNamesToInterface<FROM, TO, P>, P extends "$rid" ? true : false, "$rid">) : never : never;
+
+// @public (undocumented)
+export interface CoordinateReferenceSystem {
+    	// (undocumented)
+    wkt?: string;
+}
+
+// @public (undocumented)
+export type DataType = "UNDEFINED" | "BYTE" | "UINT16" | "INT16" | "UINT32" | "INT32" | "FLOAT32" | "FLOAT64" | "COMPLEX_INT16" | "COMPLEX_INT32" | "COMPLEX_FLOAT32" | "COMPLEX_FLOAT64" | "UINT64" | "INT64" | "INT8";
 
 // @public
 export interface DataValueClientToWire {
@@ -568,12 +643,47 @@ export namespace DerivedProperty {
     	{};
 }
 
-// @public
+// @public (undocumented)
+export type DicomDataElementKey = LooselyBrandedString<"DicomDataElementKey">;
+
+// @public (undocumented)
 export interface DicomMediaItemMetadata {
     	// (undocumented)
-    sizeBytes: number;
+    commonDataElements: CommonDicomDataElements;
     	// (undocumented)
-    type: "dicom";
+    mediaType: DicomMediaType;
+    	// (undocumented)
+    metaInformation: DicomMetaInformation;
+    	// (undocumented)
+    otherDataElements: Record<DicomDataElementKey, any>;
+    	// (undocumented)
+    sizeBytes: number;
+}
+
+// @public (undocumented)
+export type DicomMediaType = "IMAGE" | "MULTI_FRAME_IMAGE" | "VIDEO" | "STRUCTURED_REPORT";
+
+// @public (undocumented)
+export type DicomMetaInformation = {
+    	type: "v1"
+} & DicomMetaInformationV1;
+
+// @public (undocumented)
+export interface DicomMetaInformationV1 {
+    	// (undocumented)
+    mediaStorageSop: string;
+    	// (undocumented)
+    mediaStorageSopInstance: string;
+    	// (undocumented)
+    transferSyntax: string;
+}
+
+// @public (undocumented)
+export interface Dimensions {
+    	// (undocumented)
+    height: number;
+    	// (undocumented)
+    width: number;
 }
 
 // @public (undocumented)
@@ -600,12 +710,21 @@ export const DistanceUnitMapping: {
     	"nautical miles": "NAUTICAL_MILES"
 };
 
-// @public
+// @public (undocumented)
+export type DocumentDecodeFormat = "PDF" | "DOC" | "DOCX" | "TXT" | "PPTX" | "RTF";
+
+// @public (undocumented)
 export interface DocumentMediaItemMetadata {
+    	// (undocumented)
+    author?: string;
+    	// (undocumented)
+    format: DocumentDecodeFormat;
+    	// (undocumented)
+    pages?: number;
     	// (undocumented)
     sizeBytes: number;
     	// (undocumented)
-    type: "document";
+    title?: string;
 }
 
 // @public (undocumented)
@@ -643,12 +762,39 @@ export const DurationMapping: {
 // @public (undocumented)
 export type DurationPrecision = "DAYS" | "HOURS" | "MINUTES" | "SECONDS" | "AUTO";
 
-// @public
+// @public (undocumented)
+export interface EmailAttachment {
+    	// (undocumented)
+    attachmentIndex: number;
+    	// (undocumented)
+    fileName?: string;
+    	// (undocumented)
+    mimeType: string;
+}
+
+// @public (undocumented)
+export type EmailDecodeFormat = "EML";
+
+// @public (undocumented)
 export interface EmailMediaItemMetadata {
+    	// (undocumented)
+    attachmentCount: number;
+    	// (undocumented)
+    attachments: Array<EmailAttachment>;
+    	// (undocumented)
+    cc: Array<MailboxOrGroup>;
+    	// (undocumented)
+    date: string;
+    	// (undocumented)
+    format: EmailDecodeFormat;
+    	// (undocumented)
+    sender: Array<Mailbox>;
     	// (undocumented)
     sizeBytes: number;
     	// (undocumented)
-    type: "email";
+    subject?: string;
+    	// (undocumented)
+    to: Array<MailboxOrGroup>;
 }
 
 // @public (undocumented)
@@ -689,6 +835,15 @@ export type FetchPageResult<
 	T extends boolean = false,
 	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {}
 > = PageResult<MaybeScore<Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q> extends L ? never : L>, ORDER_BY_OPTIONS>>;
+
+// @public (undocumented)
+export type FlipAxis = "HORIZONTAL" | "VERTICAL" | "UNKNOWN";
+
+// @public (undocumented)
+export interface GcpList {
+    	// (undocumented)
+    gcps: Array<GroundControlPoint>;
+}
 
 // @public (undocumented)
 export type GeoFilter_Intersects = {
@@ -753,6 +908,18 @@ export interface GeoFilterOptions {
 }
 
 // @public (undocumented)
+export interface GeoMetadata {
+    	// (undocumented)
+    crs?: CoordinateReferenceSystem;
+    	// (undocumented)
+    gcpInfo?: GcpList;
+    	// (undocumented)
+    geotransform?: AffineTransform;
+    	// (undocumented)
+    gpsData?: GpsMetadata;
+}
+
+// @public (undocumented)
 export interface GeotimeSeriesProperty<T extends GeoJSON.Point> {
     	// Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
     // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
@@ -766,6 +933,38 @@ export interface GeotimeSeriesProperty<T extends GeoJSON.Point> {
     	readonly lastFetchedValue: TimeSeriesPoint<T> | undefined;
 }
 
+// @public (undocumented)
+export interface GpsMetadata {
+    	// (undocumented)
+    altitude?: number;
+    	// (undocumented)
+    latitude?: number;
+    	// (undocumented)
+    longitude?: number;
+}
+
+// @public (undocumented)
+export interface GroundControlPoint {
+    	// (undocumented)
+    pixX?: number;
+    	// (undocumented)
+    pixY?: number;
+    	// (undocumented)
+    projX?: number;
+    	// (undocumented)
+    projY?: number;
+    	// (undocumented)
+    projZ?: number;
+}
+
+// @public (undocumented)
+export interface Group {
+    	// (undocumented)
+    groupName: string;
+    	// (undocumented)
+    mailboxes: Array<Mailbox>;
+}
+
 // Warning: (ae-forgotten-export) The symbol "GroupByEntry" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -775,6 +974,12 @@ export type GroupByClause<Q extends ObjectOrInterfaceDefinition> = { [P in Aggre
 export type GroupByRange<T> = [T, T];
 
 // @public (undocumented)
+export interface GroupWrapper {
+    	// (undocumented)
+    group: Group;
+}
+
+// @public (undocumented)
 export interface HumanReadableFormat {
     	// (undocumented)
     showFullUnits?: boolean;
@@ -782,10 +987,35 @@ export interface HumanReadableFormat {
     type: "humanReadable";
 }
 
-// @public
+// @public (undocumented)
+export type ImageAttributeDomain = LooselyBrandedString<"ImageAttributeDomain">;
+
+// @public (undocumented)
+export type ImageAttributeKey = LooselyBrandedString<"ImageAttributeKey">;
+
+// @public (undocumented)
+export type ImageryDecodeFormat = "BMP" | "TIFF" | "NITF" | "JP2K" | "JPG" | "PNG" | "WEBP";
+
+// @public (undocumented)
 export interface ImageryMediaItemMetadata {
     	// (undocumented)
-    type: "imagery";
+    attributes: Record<ImageAttributeDomain, Record<ImageAttributeKey, string>>;
+    	// (undocumented)
+    bands: Array<BandInfo>;
+    	// (undocumented)
+    dimensions?: Dimensions;
+    	// (undocumented)
+    format: ImageryDecodeFormat;
+    	// (undocumented)
+    geo?: GeoMetadata;
+    	// (undocumented)
+    iccProfile?: string;
+    	// (undocumented)
+    orientation?: Orientation;
+    	// (undocumented)
+    pages?: number;
+    	// (undocumented)
+    sizeBytes: number;
 }
 
 // @public (undocumented)
@@ -891,22 +1121,34 @@ export type IntervalRule = {
 };
 
 // @public (undocumented)
-export function isAudioMediaItemMetadata(metadata: MediaItemMetadata): metadata is AudioMediaItemMetadata;
+export function isAudioMediaItemMetadata(metadata: MediaItemMetadata): metadata is Extract<MediaItemMetadata, {
+    	type: "audio"
+}>;
 
 // @public (undocumented)
-export function isDicomMediaItemMetadata(metadata: MediaItemMetadata): metadata is DicomMediaItemMetadata;
+export function isDicomMediaItemMetadata(metadata: MediaItemMetadata): metadata is Extract<MediaItemMetadata, {
+    	type: "dicom"
+}>;
 
 // @public
-export function isDocumentMediaItemMetadata(metadata: MediaItemMetadata): metadata is DocumentMediaItemMetadata;
+export function isDocumentMediaItemMetadata(metadata: MediaItemMetadata): metadata is Extract<MediaItemMetadata, {
+    	type: "document"
+}>;
 
 // @public (undocumented)
-export function isEmailMediaItemMetadata(metadata: MediaItemMetadata): metadata is EmailMediaItemMetadata;
+export function isEmailMediaItemMetadata(metadata: MediaItemMetadata): metadata is Extract<MediaItemMetadata, {
+    	type: "email"
+}>;
 
 // @public (undocumented)
-export function isImageryMediaItemMetadata(metadata: MediaItemMetadata): metadata is ImageryMediaItemMetadata;
+export function isImageryMediaItemMetadata(metadata: MediaItemMetadata): metadata is Extract<MediaItemMetadata, {
+    	type: "imagery"
+}>;
 
 // @public (undocumented)
-export function isModel3dMediaItemMetadata(metadata: MediaItemMetadata): metadata is Model3dMediaItemMetadata;
+export function isModel3dMediaItemMetadata(metadata: MediaItemMetadata): metadata is Extract<MediaItemMetadata, {
+    	type: "model3d"
+}>;
 
 // Warning: (ae-forgotten-export) The symbol "OkResult" needs to be exported by the entry point index.d.ts
 //
@@ -914,13 +1156,19 @@ export function isModel3dMediaItemMetadata(metadata: MediaItemMetadata): metadat
 export function isOk<X>(a: Result<X>): a is OkResult<X>;
 
 // @public (undocumented)
-export function isSpreadsheetMediaItemMetadata(metadata: MediaItemMetadata): metadata is SpreadsheetMediaItemMetadata;
+export function isSpreadsheetMediaItemMetadata(metadata: MediaItemMetadata): metadata is Extract<MediaItemMetadata, {
+    	type: "spreadsheet"
+}>;
 
 // @public (undocumented)
-export function isUntypedMediaItemMetadata(metadata: MediaItemMetadata): metadata is UntypedMediaItemMetadata;
+export function isUntypedMediaItemMetadata(metadata: MediaItemMetadata): metadata is Extract<MediaItemMetadata, {
+    	type: "untyped"
+}>;
 
 // @public (undocumented)
-export function isVideoMediaItemMetadata(metadata: MediaItemMetadata): metadata is VideoMediaItemMetadata;
+export function isVideoMediaItemMetadata(metadata: MediaItemMetadata): metadata is Extract<MediaItemMetadata, {
+    	type: "video"
+}>;
 
 // @public
 export type KnownType = "USER_OR_GROUP_ID" | "RESOURCE_RID" | "ARTIFACT_GID";
@@ -971,6 +1219,32 @@ export namespace Logger {
         	}
 }
 
+// @public
+export type LooselyBrandedString<T extends string> = string & {
+    	__LOOSE_BRAND?: T
+};
+
+// @public (undocumented)
+export interface Mailbox {
+    	// (undocumented)
+    displayName?: string;
+    	// (undocumented)
+    emailAddress: string;
+}
+
+// @public (undocumented)
+export type MailboxOrGroup = ({
+    	type: "mailbox"
+} & MailboxWrapper) | ({
+    	type: "group"
+} & GroupWrapper);
+
+// @public (undocumented)
+export interface MailboxWrapper {
+    	// (undocumented)
+    mailbox: Mailbox;
+}
+
 // @public (undocumented)
 export type MaybeScore<
 	T extends Osdk.Instance<any>,
@@ -994,7 +1268,25 @@ export interface MediaFullMetadata {
 }
 
 // @public
-export type MediaItemMetadata = DocumentMediaItemMetadata | ImageryMediaItemMetadata | AudioMediaItemMetadata | VideoMediaItemMetadata | DicomMediaItemMetadata | EmailMediaItemMetadata | Model3dMediaItemMetadata | SpreadsheetMediaItemMetadata | UntypedMediaItemMetadata;
+export type MediaItemMetadata = ({
+    	type: "document"
+} & DocumentMediaItemMetadata) | ({
+    	type: "imagery"
+} & ImageryMediaItemMetadata) | ({
+    	type: "audio"
+} & AudioMediaItemMetadata) | ({
+    	type: "video"
+} & VideoMediaItemMetadata) | ({
+    	type: "dicom"
+} & DicomMediaItemMetadata) | ({
+    	type: "email"
+} & EmailMediaItemMetadata) | ({
+    	type: "model3d"
+} & Model3dMediaItemMetadata) | ({
+    	type: "spreadsheet"
+} & SpreadsheetMediaItemMetadata) | ({
+    	type: "untyped"
+} & UntypedMediaItemMetadata);
 
 // @public
 interface MediaMetadata_2 {
@@ -1052,13 +1344,24 @@ export type MinimalDirectedObjectLinkInstance<
     	linkType: LINK_TYPE_API_NAME
 };
 
-// @public
+// @public (undocumented)
+export type Modality = "AR" | "ASMT" | "AU" | "BDUS" | "BI" | "BMD" | "CR" | "CT" | "CTPROTOCOL" | "DG" | "DOC" | "DX" | "ECG" | "EPS" | "ES" | "FID" | "GM" | "HC" | "HD" | "IO" | "IOL" | "IVOCT" | "IVUS" | "KER" | "KO" | "LEN" | "LS" | "MG" | "MR" | "M3D" | "NM" | "OAM" | "OCT" | "OP" | "OPM" | "OPT" | "OPTBSV" | "OPTENF" | "OPV" | "OSS" | "OT" | "PLAN" | "PR" | "PT" | "PX" | "REG" | "RESP" | "RF" | "RG" | "RTDOSE" | "RTIMAGE" | "RTINTENT" | "RTPLAN" | "RTRAD" | "RTRECORD" | "RTSEGANN" | "RTSTRUCT" | "RWV" | "SEG" | "SM" | "SMR" | "SR" | "SRF" | "STAIN" | "TEXTUREMAP" | "TG" | "US" | "VA" | "XA" | "XC" | "AS" | "CD" | "CF" | "CP" | "CS" | "DD" | "DF" | "DM" | "DS" | "EC" | "FA" | "FS" | "LP" | "MA" | "MS" | "OPR" | "ST" | "VF";
+
+// @public (undocumented)
+export type Model3dDecodeFormat = "LAS" | "PLY" | "OBJ";
+
+// @public (undocumented)
 export interface Model3dMediaItemMetadata {
     	// (undocumented)
-    sizeBytes: number;
+    format: Model3dDecodeFormat;
     	// (undocumented)
-    type: "model3d";
+    modelType: Model3dType;
+    	// (undocumented)
+    sizeBytes: number;
 }
+
+// @public (undocumented)
+export type Model3dType = "POINT_CLOUD" | "MESH";
 
 // @public (undocumented)
 export type NotWhereClause<
@@ -1418,6 +1721,14 @@ export interface OntologyMetadata<_NEVER_USED_KEPT_FOR_BACKCOMPAT = any> {
 }
 
 // @public (undocumented)
+export interface Orientation {
+    	// (undocumented)
+    flipAxis?: FlipAxis;
+    	// (undocumented)
+    rotationAngle?: RotationAngle;
+}
+
+// @public (undocumented)
 export type OrWhereClause<
 	T extends ObjectOrInterfaceDefinition,
 	RDPs extends Record<string, SimplePropertyDef> = {}
@@ -1528,6 +1839,9 @@ export interface PageResult<T> {
     	// (undocumented)
     totalCount: string;
 }
+
+// @public (undocumented)
+export type PaletteInterpretation = "GRAY" | "RGB" | "RGBA" | "CMYK" | "HLS";
 
 // @public (undocumented)
 export type PossibleWhereClauseFilters = "$gt" | "$eq" | "$ne" | "$isNull" | "$contains" | "$gte" | "$lt" | "$lte" | "$within" | "$in" | "$intersects" | "$startsWith" | "$containsAllTermsInOrder" | "$containsAnyTerm" | "$containsAllTerms" | "$interval" | "$matchesRegex";
@@ -1845,6 +2159,9 @@ export { Range_2 as Range }
 export type Result<V> = OkResult<V> | ErrorResult;
 
 // @public (undocumented)
+export type RotationAngle = "DEGREE_90" | "DEGREE_180" | "DEGREE_270" | "UNKNOWN";
+
+// @public (undocumented)
 export interface SelectArg<
 	Q extends ObjectOrInterfaceDefinition,
 	L extends string = PropertyKeys<Q>,
@@ -1911,12 +2228,21 @@ export type SingleOsdkResult<
 	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {}
 > = MaybeScore<Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L, { [K in Extract<keyof RDPs, L>] : RDPs[K] }>, ORDER_BY_OPTIONS>;
 
-// @public
+// @public (undocumented)
+export type SpreadsheetDecodeFormat = "XLSX";
+
+// @public (undocumented)
 export interface SpreadsheetMediaItemMetadata {
+    	// (undocumented)
+    author?: string;
+    	// (undocumented)
+    format: SpreadsheetDecodeFormat;
+    	// (undocumented)
+    sheetNames: Array<string>;
     	// (undocumented)
     sizeBytes: number;
     	// (undocumented)
-    type: "spreadsheet";
+    title?: string;
 }
 
 // @public (undocumented)
@@ -2041,11 +2367,19 @@ export type TwoDimensionalAggregation<
 export type TwoDimensionalQueryAggregationDefinition = AggregationKeyDataType<AggregationValueTypes>;
 
 // @public (undocumented)
+export interface UnitInterpretation {
+    	// (undocumented)
+    offset?: number;
+    	// (undocumented)
+    scale?: number;
+    	// (undocumented)
+    unit?: string;
+}
+
+// @public (undocumented)
 export interface UntypedMediaItemMetadata {
     	// (undocumented)
     sizeBytes: number;
-    	// (undocumented)
-    type: "untyped";
 }
 
 // Warning: (ae-forgotten-export) The symbol "AGG_FOR_TYPE" needs to be exported by the entry point index.d.ts
@@ -2067,12 +2401,25 @@ export interface VersionBound<V extends VersionString<any, any, any>> {
     __expectedClientVersion?: V;
 }
 
-// @public
+// @public (undocumented)
+export type VideoDecodeFormat = "MP4" | "MKV" | "MOV" | "TS";
+
+// @public (undocumented)
 export interface VideoMediaItemMetadata {
+    	// (undocumented)
+    format: VideoDecodeFormat;
     	// (undocumented)
     sizeBytes: number;
     	// (undocumented)
-    type: "video";
+    specification: VideoSpecification;
+}
+
+// @public (undocumented)
+export interface VideoSpecification {
+    	// (undocumented)
+    bitRate: number;
+    	// (undocumented)
+    durationSeconds: number;
 }
 
 // Warning: (ae-forgotten-export) The symbol "MergedPropertyWhereClause" needs to be exported by the entry point index.d.ts

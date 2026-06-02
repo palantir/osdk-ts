@@ -113,116 +113,422 @@ export interface MediaFullMetadata {
 /**
  * Type-specific metadata for a media item, discriminated by `type`.
  *
- * **Discriminator-trimmed mirror.** This type intentionally surfaces only the `type`
- * discriminator and `sizeBytes` (where it is required on the platform schema). Variant-specific
- * fields — page counts, dimensions, audio specifications, DICOM data elements, email
- * attachments, model3d format, etc. — are NOT mirrored here. To access them, import the
- * per-variant interface from `@osdk/foundry.mediasets` (e.g. `AudioMediaItemMetadata`) and cast
- * the narrowed value:
+ * **Full structural mirror of `MediaItemMetadata` from `@osdk/foundry.mediasets`.** Every
+ * variant interface and every nested type is duplicated here so `@osdk/api` doesn't take a
+ * direct dependency on `@osdk/foundry.*` (matches the established pattern for `MediaReference`
+ * and `ActionResults`). A compile-time equality assertion in
+ * `@osdk/client/src/object/__type-tests__/mediaItemMetadataMirror.test-d.ts` fails the build if
+ * the platform schema drifts from this mirror.
  *
- * ```ts
- * import type { AudioMediaItemMetadata as PlatformAudio } from "@osdk/foundry.mediasets";
- * const { itemMetadata } = await media.fetchFullMetadata!();
- * if (isAudioMediaItemMetadata(itemMetadata)) {
- *   const audio = itemMetadata as PlatformAudio;
- *   audio.specification.durationSeconds;
- * }
- * ```
- *
- * The trimmed mirror exists so `@osdk/api` doesn't take a direct dependency on
- * `@osdk/foundry.mediasets` (matches the established pattern for `MediaReference` and
- * `ActionResults`). Trimming, rather than full-mirroring, keeps the maintenance burden bounded
- * as the platform schema evolves.
+ * Narrow on `result.itemMetadata.type` (or use the `is*MediaItemMetadata` helpers) to access
+ * variant-specific fields with full IntelliSense — no cast required.
  *
  * Note: mio currently supports a `streamingVideo` variant internally, but it is not yet exposed
  * on the platform API and is therefore absent here. When the platform API adds it, the variant
- * will be appended here as a non-breaking change.
+ * will be appended here as a non-breaking change (the verify test will fail until done).
  */
 export type MediaItemMetadata =
-  | DocumentMediaItemMetadata
-  | ImageryMediaItemMetadata
-  | AudioMediaItemMetadata
-  | VideoMediaItemMetadata
-  | DicomMediaItemMetadata
-  | EmailMediaItemMetadata
-  | Model3dMediaItemMetadata
-  | SpreadsheetMediaItemMetadata
-  | UntypedMediaItemMetadata;
+  | ({ type: "document" } & DocumentMediaItemMetadata)
+  | ({ type: "imagery" } & ImageryMediaItemMetadata)
+  | ({ type: "audio" } & AudioMediaItemMetadata)
+  | ({ type: "video" } & VideoMediaItemMetadata)
+  | ({ type: "dicom" } & DicomMediaItemMetadata)
+  | ({ type: "email" } & EmailMediaItemMetadata)
+  | ({ type: "model3d" } & Model3dMediaItemMetadata)
+  | ({ type: "spreadsheet" } & SpreadsheetMediaItemMetadata)
+  | ({ type: "untyped" } & UntypedMediaItemMetadata);
 
-/**
- * Discriminator-trimmed mirror. Variant-specific fields (e.g. `format`, `pages`, `title`,
- * `author`) live on the corresponding interface in `@osdk/foundry.mediasets`.
- */
+// ─── Variant interfaces ──────────────────────────────────────────────────────
+
 export interface DocumentMediaItemMetadata {
-  type: "document";
+  format: DocumentDecodeFormat;
+  pages?: number;
   sizeBytes: number;
+  title?: string;
+  author?: string;
 }
 
-/**
- * Discriminator-trimmed mirror. Variant-specific fields (e.g. `format`, `dimensions`, `bands`,
- * `attributes`, `geo`) live on the corresponding interface in `@osdk/foundry.mediasets`. Note:
- * the platform schema does not require `sizeBytes` on imagery; the field is absent here.
- */
 export interface ImageryMediaItemMetadata {
-  type: "imagery";
+  format: ImageryDecodeFormat;
+  dimensions?: Dimensions;
+  bands: Array<BandInfo>;
+  attributes: Record<ImageAttributeDomain, Record<ImageAttributeKey, string>>;
+  iccProfile?: string;
+  geo?: GeoMetadata;
+  pages?: number;
+  orientation?: Orientation;
+  sizeBytes: number;
 }
 
-/**
- * Discriminator-trimmed mirror. Variant-specific fields (e.g. `format`, `specification`) live on
- * the corresponding interface in `@osdk/foundry.mediasets`.
- */
 export interface AudioMediaItemMetadata {
-  type: "audio";
+  format: AudioDecodeFormat;
+  specification: AudioSpecification;
   sizeBytes: number;
 }
 
-/**
- * Discriminator-trimmed mirror. Variant-specific fields (e.g. `format`, `specification`) live on
- * the corresponding interface in `@osdk/foundry.mediasets`.
- */
 export interface VideoMediaItemMetadata {
-  type: "video";
+  format: VideoDecodeFormat;
+  specification: VideoSpecification;
   sizeBytes: number;
 }
 
-/**
- * Discriminator-trimmed mirror. Variant-specific fields (e.g. `metaInformation`, `mediaType`,
- * `commonDataElements`, `otherDataElements`) live on the corresponding interface in
- * `@osdk/foundry.mediasets`.
- */
 export interface DicomMediaItemMetadata {
-  type: "dicom";
+  metaInformation: DicomMetaInformation;
+  mediaType: DicomMediaType;
+  commonDataElements: CommonDicomDataElements;
+  otherDataElements: Record<DicomDataElementKey, any>;
   sizeBytes: number;
 }
 
-/**
- * Discriminator-trimmed mirror. Variant-specific fields (e.g. `format`, `sender`, `to`, `cc`,
- * `attachments`) live on the corresponding interface in `@osdk/foundry.mediasets`.
- */
 export interface EmailMediaItemMetadata {
-  type: "email";
+  format: EmailDecodeFormat;
   sizeBytes: number;
+  sender: Array<Mailbox>;
+  date: string;
+  attachmentCount: number;
+  to: Array<MailboxOrGroup>;
+  cc: Array<MailboxOrGroup>;
+  subject?: string;
+  attachments: Array<EmailAttachment>;
 }
 
-/**
- * Discriminator-trimmed mirror. Variant-specific fields (e.g. `format`, `modelType`) live on the
- * corresponding interface in `@osdk/foundry.mediasets`.
- */
 export interface Model3dMediaItemMetadata {
-  type: "model3d";
+  format: Model3dDecodeFormat;
+  modelType: Model3dType;
   sizeBytes: number;
 }
 
-/**
- * Discriminator-trimmed mirror. Variant-specific fields (e.g. `format`, `sheetNames`, `title`,
- * `author`) live on the corresponding interface in `@osdk/foundry.mediasets`.
- */
 export interface SpreadsheetMediaItemMetadata {
-  type: "spreadsheet";
+  format: SpreadsheetDecodeFormat;
+  sheetNames: Array<string>;
   sizeBytes: number;
+  title?: string;
+  author?: string;
 }
 
 export interface UntypedMediaItemMetadata {
-  type: "untyped";
   sizeBytes: number;
 }
+
+// ─── Format enums ────────────────────────────────────────────────────────────
+
+export type AudioDecodeFormat =
+  | "FLAC"
+  | "MP2"
+  | "MP3"
+  | "MP4"
+  | "NIST_SPHERE"
+  | "OGG"
+  | "WAV"
+  | "WEBM";
+
+export type VideoDecodeFormat = "MP4" | "MKV" | "MOV" | "TS";
+
+export type DocumentDecodeFormat =
+  | "PDF"
+  | "DOC"
+  | "DOCX"
+  | "TXT"
+  | "PPTX"
+  | "RTF";
+
+export type SpreadsheetDecodeFormat = "XLSX";
+
+export type ImageryDecodeFormat =
+  | "BMP"
+  | "TIFF"
+  | "NITF"
+  | "JP2K"
+  | "JPG"
+  | "PNG"
+  | "WEBP";
+
+export type EmailDecodeFormat = "EML";
+
+export type DicomMediaType =
+  | "IMAGE"
+  | "MULTI_FRAME_IMAGE"
+  | "VIDEO"
+  | "STRUCTURED_REPORT";
+
+export type Model3dDecodeFormat = "LAS" | "PLY" | "OBJ";
+
+export type Model3dType = "POINT_CLOUD" | "MESH";
+
+// ─── Audio / video specification ─────────────────────────────────────────────
+
+export interface AudioSpecification {
+  bitRate: number;
+  durationSeconds: number;
+  numberOfChannels?: number;
+}
+
+export interface VideoSpecification {
+  bitRate: number;
+  durationSeconds: number;
+}
+
+// ─── Imagery support types ───────────────────────────────────────────────────
+
+export interface Dimensions {
+  width: number;
+  height: number;
+}
+
+export interface BandInfo {
+  dataType?: DataType;
+  colorInterpretation?: ColorInterpretation;
+  paletteInterpretation?: PaletteInterpretation;
+  unitInterpretation?: UnitInterpretation;
+}
+
+export type DataType =
+  | "UNDEFINED"
+  | "BYTE"
+  | "UINT16"
+  | "INT16"
+  | "UINT32"
+  | "INT32"
+  | "FLOAT32"
+  | "FLOAT64"
+  | "COMPLEX_INT16"
+  | "COMPLEX_INT32"
+  | "COMPLEX_FLOAT32"
+  | "COMPLEX_FLOAT64"
+  | "UINT64"
+  | "INT64"
+  | "INT8";
+
+export type ColorInterpretation =
+  | "UNDEFINED"
+  | "GRAY"
+  | "PALETTE_INDEX"
+  | "RED"
+  | "GREEN"
+  | "BLUE"
+  | "ALPHA"
+  | "HUE"
+  | "SATURATION"
+  | "LIGHTNESS"
+  | "CYAN"
+  | "MAGENTA"
+  | "YELLOW"
+  | "BLACK"
+  | "Y_CB_CR_SPACE_Y"
+  | "Y_CB_CR_SPACE_CB"
+  | "Y_CB_CR_SPACE_CR";
+
+export type PaletteInterpretation = "GRAY" | "RGB" | "RGBA" | "CMYK" | "HLS";
+
+export interface UnitInterpretation {
+  unit?: string;
+  scale?: number;
+  offset?: number;
+}
+
+export type ImageAttributeDomain = LooselyBrandedString<"ImageAttributeDomain">;
+export type ImageAttributeKey = LooselyBrandedString<"ImageAttributeKey">;
+
+export interface GeoMetadata {
+  crs?: CoordinateReferenceSystem;
+  geotransform?: AffineTransform;
+  gcpInfo?: GcpList;
+  gpsData?: GpsMetadata;
+}
+
+export interface CoordinateReferenceSystem {
+  wkt?: string;
+}
+
+export interface AffineTransform {
+  xTranslate?: number;
+  xScale?: number;
+  xShear?: number;
+  yTranslate?: number;
+  yShear?: number;
+  yScale?: number;
+}
+
+export interface GcpList {
+  gcps: Array<GroundControlPoint>;
+}
+
+export interface GroundControlPoint {
+  pixX?: number;
+  pixY?: number;
+  projX?: number;
+  projY?: number;
+  projZ?: number;
+}
+
+export interface GpsMetadata {
+  latitude?: number;
+  longitude?: number;
+  altitude?: number;
+}
+
+export interface Orientation {
+  rotationAngle?: RotationAngle;
+  flipAxis?: FlipAxis;
+}
+
+export type RotationAngle =
+  | "DEGREE_90"
+  | "DEGREE_180"
+  | "DEGREE_270"
+  | "UNKNOWN";
+
+export type FlipAxis = "HORIZONTAL" | "VERTICAL" | "UNKNOWN";
+
+// ─── DICOM support types ─────────────────────────────────────────────────────
+
+export type DicomMetaInformation = { type: "v1" } & DicomMetaInformationV1;
+
+export interface DicomMetaInformationV1 {
+  mediaStorageSop: string;
+  mediaStorageSopInstance: string;
+  transferSyntax: string;
+}
+
+export interface CommonDicomDataElements {
+  numberFrames?: number;
+  modality?: Modality;
+  patientId?: string;
+  studyId?: string;
+  studyUid?: string;
+  seriesUid?: string;
+  studyTime?: string;
+  seriesTime?: string;
+}
+
+export type DicomDataElementKey = LooselyBrandedString<"DicomDataElementKey">;
+
+export type Modality =
+  | "AR"
+  | "ASMT"
+  | "AU"
+  | "BDUS"
+  | "BI"
+  | "BMD"
+  | "CR"
+  | "CT"
+  | "CTPROTOCOL"
+  | "DG"
+  | "DOC"
+  | "DX"
+  | "ECG"
+  | "EPS"
+  | "ES"
+  | "FID"
+  | "GM"
+  | "HC"
+  | "HD"
+  | "IO"
+  | "IOL"
+  | "IVOCT"
+  | "IVUS"
+  | "KER"
+  | "KO"
+  | "LEN"
+  | "LS"
+  | "MG"
+  | "MR"
+  | "M3D"
+  | "NM"
+  | "OAM"
+  | "OCT"
+  | "OP"
+  | "OPM"
+  | "OPT"
+  | "OPTBSV"
+  | "OPTENF"
+  | "OPV"
+  | "OSS"
+  | "OT"
+  | "PLAN"
+  | "PR"
+  | "PT"
+  | "PX"
+  | "REG"
+  | "RESP"
+  | "RF"
+  | "RG"
+  | "RTDOSE"
+  | "RTIMAGE"
+  | "RTINTENT"
+  | "RTPLAN"
+  | "RTRAD"
+  | "RTRECORD"
+  | "RTSEGANN"
+  | "RTSTRUCT"
+  | "RWV"
+  | "SEG"
+  | "SM"
+  | "SMR"
+  | "SR"
+  | "SRF"
+  | "STAIN"
+  | "TEXTUREMAP"
+  | "TG"
+  | "US"
+  | "VA"
+  | "XA"
+  | "XC"
+  | "AS"
+  | "CD"
+  | "CF"
+  | "CP"
+  | "CS"
+  | "DD"
+  | "DF"
+  | "DM"
+  | "DS"
+  | "EC"
+  | "FA"
+  | "FS"
+  | "LP"
+  | "MA"
+  | "MS"
+  | "OPR"
+  | "ST"
+  | "VF";
+
+// ─── Email support types ─────────────────────────────────────────────────────
+
+export interface Mailbox {
+  displayName?: string;
+  emailAddress: string;
+}
+
+export interface MailboxWrapper {
+  mailbox: Mailbox;
+}
+
+export interface Group {
+  groupName: string;
+  mailboxes: Array<Mailbox>;
+}
+
+export interface GroupWrapper {
+  group: Group;
+}
+
+export type MailboxOrGroup =
+  | ({ type: "mailbox" } & MailboxWrapper)
+  | ({ type: "group" } & GroupWrapper);
+
+export interface EmailAttachment {
+  attachmentIndex: number;
+  fileName?: string;
+  mimeType: string;
+}
+
+// ─── Brand utility ───────────────────────────────────────────────────────────
+
+/**
+ * Loose brand: structurally a string, with an optional phantom field for IntelliSense.
+ * Matches the `@osdk/foundry.mediasets` definition so brand-bearing types unify across packages.
+ */
+export type LooselyBrandedString<T extends string> = string & {
+  __LOOSE_BRAND?: T;
+};

@@ -14,75 +14,65 @@
  * limitations under the License.
  */
 
-import type {
-  AudioMediaItemMetadata,
-  DicomMediaItemMetadata,
-  DocumentMediaItemMetadata,
-  EmailMediaItemMetadata,
-  ImageryMediaItemMetadata,
-  MediaItemMetadata,
-  Model3dMediaItemMetadata,
-  SpreadsheetMediaItemMetadata,
-  UntypedMediaItemMetadata,
-  VideoMediaItemMetadata,
-} from "./Media.js";
+import type { MediaItemMetadata } from "./Media.js";
 
 /**
  * Type-guard helpers for narrowing `MediaItemMetadata`. Mirrors the tsv1 `is*` guards
  * (`isDocumentMetadata`, `isImageryMetadata`, etc.) from the functions-typescript-runtime
- * `MediaReference` family.
+ * `MediaReference` family. After narrowing, all variant-specific fields are accessible with
+ * full IntelliSense — no cast required.
  */
 
 export function isDocumentMediaItemMetadata(
   metadata: MediaItemMetadata,
-): metadata is DocumentMediaItemMetadata {
+): metadata is Extract<MediaItemMetadata, { type: "document" }> {
   return metadata.type === "document";
 }
 
 export function isImageryMediaItemMetadata(
   metadata: MediaItemMetadata,
-): metadata is ImageryMediaItemMetadata {
+): metadata is Extract<MediaItemMetadata, { type: "imagery" }> {
   return metadata.type === "imagery";
 }
 
 export function isAudioMediaItemMetadata(
   metadata: MediaItemMetadata,
-): metadata is AudioMediaItemMetadata {
+): metadata is Extract<MediaItemMetadata, { type: "audio" }> {
   return metadata.type === "audio";
 }
 
 export function isVideoMediaItemMetadata(
   metadata: MediaItemMetadata,
-): metadata is VideoMediaItemMetadata {
+): metadata is Extract<MediaItemMetadata, { type: "video" }> {
   return metadata.type === "video";
 }
 
 export function isDicomMediaItemMetadata(
   metadata: MediaItemMetadata,
-): metadata is DicomMediaItemMetadata {
+): metadata is Extract<MediaItemMetadata, { type: "dicom" }> {
   return metadata.type === "dicom";
 }
 
 export function isEmailMediaItemMetadata(
   metadata: MediaItemMetadata,
-): metadata is EmailMediaItemMetadata {
+): metadata is Extract<MediaItemMetadata, { type: "email" }> {
   return metadata.type === "email";
 }
 
 export function isModel3dMediaItemMetadata(
   metadata: MediaItemMetadata,
-): metadata is Model3dMediaItemMetadata {
+): metadata is Extract<MediaItemMetadata, { type: "model3d" }> {
   return metadata.type === "model3d";
 }
 
 export function isSpreadsheetMediaItemMetadata(
   metadata: MediaItemMetadata,
-): metadata is SpreadsheetMediaItemMetadata {
+): metadata is Extract<MediaItemMetadata, { type: "spreadsheet" }> {
   return metadata.type === "spreadsheet";
 }
 
 export function isUntypedMediaItemMetadata(
   metadata: MediaItemMetadata,
-): metadata is UntypedMediaItemMetadata {
+): metadata is Extract<MediaItemMetadata, { type: "untyped" }> {
   return metadata.type === "untyped";
 }
