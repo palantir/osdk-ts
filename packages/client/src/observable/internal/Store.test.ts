@@ -1678,6 +1678,40 @@ describe(Store, () => {
           expect(cached?.$apiName).toBe("Employee");
         });
 
+        it("interface queries return raw object instances when resolveToObjectType is set", async () => {
+          defer(
+            cache.lists.observe({
+              type: FooInterface,
+              orderBy: {},
+              mode: "force",
+              resolveToObjectType: true,
+            }, ifaceSub),
+          );
+          await waitForCall(ifaceSub, 2);
+
+          const ifacePayload = ifaceSub.next.mock.calls[1][0];
+          expect(ifacePayload?.resolvedList?.[0]?.$apiName).toBe("Employee");
+          expect(ifacePayload?.resolvedList?.[0]?.$objectType).toBe("Employee");
+        });
+
+        it("object-type queries collapse cache key regardless of resolveToObjectType", () => {
+          const baseOpts = {
+            type: Employee,
+            where: {},
+            orderBy: {},
+            mode: "force",
+          } as const satisfies ObserveListOptions<Employee>;
+
+          const queryWithoutFlag = cache.lists.getQuery(baseOpts);
+          const queryWithFlag = cache.lists.getQuery({
+            ...baseOpts,
+            resolveToObjectType: true,
+          });
+
+          expect(queryWithFlag).toBe(queryWithoutFlag);
+          expect(queryWithFlag.cacheKey).toBe(queryWithoutFlag.cacheKey);
+        });
+
         it("direct query after interface query preserves interface $apiName", async () => {
           const objSub = mockSingleSubCallback();
 
