@@ -120,8 +120,8 @@ import { describe, expectTypeOf, it } from "vitest";
 
 /**
  * Pins the `@osdk/api` `MediaItemMetadata` mirror to the platform shape exposed by
- * `@osdk/foundry.mediasets`. If the platform schema changes — a field added, removed, made
- * optional, an enum value added, a nested type restructured — these assertions fail at
+ * `@osdk/foundry.mediasets`. If the platform schema changes (a field added, removed, made
+ * optional, an enum value added, a nested type restructured), these assertions fail at
  * `typecheck` time and the mirror must be updated.
  *
  * The mirror exists so `@osdk/api` doesn't take a runtime / declaration dep on

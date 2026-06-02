@@ -28,7 +28,7 @@ export interface Media {
    * variant-specific fields. The full per-variant shape matches `MediaItemMetadata` from
    * `@osdk/foundry.mediasets`.
    *
-   * Backed by the `@beta` `MediaSets.metadata` platform endpoint — the variant union and
+   * Backed by the `@beta` `MediaSets.metadata` platform endpoint: the variant union and
    * per-variant fields may evolve. The endpoint is per-media-item and does not accept a media set
    * view RID, so view-level metadata overrides are not reachable through this method.
    *
@@ -117,11 +117,11 @@ export interface MediaFullMetadata {
  * variant interface and every nested type is duplicated here so `@osdk/api` doesn't take a
  * direct dependency on `@osdk/foundry.*` (matches the established pattern for `MediaReference`
  * and `ActionResults`). A compile-time equality assertion in
- * `@osdk/client/src/object/__type-tests__/mediaItemMetadataMirror.test-d.ts` fails the build if
- * the platform schema drifts from this mirror.
+ * `@osdk/client/src/object/mediaItemMetadataMirror.test.ts` fails the build if the platform
+ * schema drifts from this mirror.
  *
  * Narrow on `result.itemMetadata.type` (or use the `is*MediaItemMetadata` helpers) to access
- * variant-specific fields with full IntelliSense — no cast required.
+ * variant-specific fields with full IntelliSense (no cast required).
  *
  * Note: mio currently supports a `streamingVideo` variant internally, but it is not yet exposed
  * on the platform API and is therefore absent here. When the platform API adds it, the variant

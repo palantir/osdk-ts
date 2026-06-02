@@ -20,7 +20,7 @@ import type { MediaItemMetadata } from "./Media.js";
  * Type-guard helpers for narrowing `MediaItemMetadata`. Mirrors the tsv1 `is*` guards
  * (`isDocumentMetadata`, `isImageryMetadata`, etc.) from the functions-typescript-runtime
  * `MediaReference` family. After narrowing, all variant-specific fields are accessible with
- * full IntelliSense — no cast required.
+ * full IntelliSense (no cast required).
  */
 
 export function isDocumentMediaItemMetadata(
