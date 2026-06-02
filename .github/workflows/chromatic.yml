@@ -6,8 +6,16 @@ env:
 on:
   push:
     branches: [main]
+    paths:
+      - 'packages/react-components/**'
+      - 'packages/react-components-storybook/**'
+      - '.github/workflows/chromatic.yml'
   pull_request:
     types: [opened, synchronize, reopened]
+    paths:
+      - 'packages/react-components/**'
+      - 'packages/react-components-storybook/**'
+      - '.github/workflows/chromatic.yml'
 
 permissions: {}
 
