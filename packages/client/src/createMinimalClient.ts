@@ -78,6 +78,7 @@ export function createMinimalClient(
     ontologyRid: metadata.ontologyRid,
     logger: options.logger,
     transactionId: options.transactionId,
+    flushEdits: options.flushEdits,
     scenarioRid: options.scenarioRid,
     clientCacheKey: {} as ClientCacheKey,
     requestContext: {},
