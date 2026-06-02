@@ -50,7 +50,7 @@ function FilterListHeaderInner({
     onCollapsedChange?.(!collapsed);
   }, [onCollapsedChange, collapsed]);
 
-  const resetDisabled = canReset !== undefined
+  const resetDisabled = canReset != null
     ? !canReset
     : activeFilterCount === 0 && !hasVisibilityChanges;
 
