@@ -133,7 +133,7 @@ function installDevToolsHook(
     Object.defineProperty(window, "hasOwnProperty", {
       configurable: true,
       writable: true,
-      value: function(
+      value(
         this: unknown,
         prop: PropertyKey,
       ): boolean | number {

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { PalantirApiError } from "@osdk/client";
 import { CbacBanners } from "@osdk/foundry.admin";
 import React from "react";
 import { usePlatformQuery } from "../../../utils/usePlatformQuery.js";
@@ -47,13 +48,44 @@ export interface UseCbacBannerResult {
   banner: CbacBannerData | undefined;
   isLoading: boolean;
 
-  error: Error | undefined;
+  /**
+   * Error thrown by the platform API, or a generic Error on network failure.
+   *
+   * Narrow to `PalantirApiError` (re-exported from `@osdk/client`) to read
+   * `errorName`, `errorCode`, `statusCode`, `errorInstanceId`, and `parameters`.
+   * `errorInstanceId` is the trace ID to share with platform support.
+   *
+   * @example
+   * ```ts
+   * import { PalantirApiError } from "@osdk/client";
+   *
+   * if (error instanceof PalantirApiError) {
+   *   console.log(error.errorName, error.statusCode, error.errorInstanceId);
+   *   if (error.errorName === "GetCbacBannerPermissionDenied") {
+   *     const params = error.parameters as
+   *       | { markingIds?: string[] }
+   *       | undefined;
+   *     console.log("denied markingIds:", params?.markingIds);
+   *   }
+   * }
+   * ```
+   */
+  error: PalantirApiError | Error | undefined;
 
   refetch: () => void;
 }
 
 /**
  * Get the CBAC banner data for the given marking IDs.
+ *
+ * Requires `api:admin-read` on the token. For third-party application (3PA)
+ * OAuth2 clients, the downstream Multipass operation must also be in the
+ * gateway's `admin-read` scope expansion. A 403 with `errorName:
+ * "GetCbacBannerPermissionDenied"` whose underlying cause is Multipass's
+ * `Default:PermissionDenied` typically indicates a scope-expansion gap, not a
+ * per-marking permission failure — share the `errorInstanceId` with platform
+ * support.
+ *
  * @param options Options to control the query.
  */
 export function useCbacBanner(
