@@ -85,6 +85,7 @@ function FilterInputInner<Q extends ObjectTypeDefinition>({
           linkedFilters={linkedFilters}
           showFilteredOutValues={showFilteredOutValues}
           searchQuery={searchQuery}
+          excludeRowOpen={excludeRowOpen}
           layout={layout}
         />
       );

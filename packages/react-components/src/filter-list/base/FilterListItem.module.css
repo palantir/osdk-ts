@@ -108,6 +108,8 @@
 .headerActionButton[data-popup-open],
 .headerActionButton[aria-pressed="true"] {
   opacity: 1;
+  background: var(--osdk-filter-item-header-action-bg-active);
+  color: var(--osdk-typography-color-default-rest);
 }
 
 .searchRow {
