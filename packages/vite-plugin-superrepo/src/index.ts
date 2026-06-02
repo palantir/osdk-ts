@@ -78,19 +78,26 @@ export function smartClientPlugin(): Plugin {
         return undefined;
       }
 
+      // Vite's proxy middleware runs before `base` is stripped from the URL,
+      // so each context must carry the base prefix and each rewrite must strip
+      // it back off before forwarding to the foundry-cli service.
+      const basePrefix = normalizeBasePrefix(userConfig.base);
+
       const proxy: Record<string, ProxyOptions> = {};
       const palantirDir = path.join(superrepoRoot, ".palantir");
 
       for (const route of PROXY_ROUTES) {
         const read = inspectDiscovery(superrepoRoot, route.service);
         if (read.kind === "ok") {
-          proxy[route.prefix] = buildProxyOptions(
+          const context = `${basePrefix}${route.prefix}`;
+          proxy[context] = buildProxyOptions(
             read.entry,
             route,
+            basePrefix,
             pendingWarnings,
             getLogger,
           );
-          setupProxies.push({ prefix: route.prefix, target: read.entry.url });
+          setupProxies.push({ prefix: context, target: read.entry.url });
           continue;
         }
         switch (read.kind) {
@@ -252,8 +259,8 @@ export function smartClientPlugin(): Plugin {
 
       // Redirect the `@osdk/client` import to our shim. The shim
       // re-exports the real module but replaces `createClient` with one
-      // that (a) forces `window.location.origin` as the base URL so
-      // every OSDK request flows through Vite's proxy, and (b) wraps
+      // that (a) forces the dev server's origin and base path as the base
+      // URL so every OSDK request flows through Vite's proxy, and (b) wraps
       // the resulting client with `smartClient` so `executeFunction`
       // calls are routed to the local function runtimes. `@osdk/oauth`
       // and any other imports are untouched.
@@ -268,6 +275,7 @@ export function smartClientPlugin(): Plugin {
 function buildProxyOptions(
   entry: DiscoveryEntry,
   route: { prefix: string; rewrite: boolean },
+  basePrefix: string,
   pendingWarnings: string[],
   getLogger: () => Logger | undefined,
 ): ProxyOptions {
@@ -284,9 +292,14 @@ function buildProxyOptions(
       });
     },
   };
-  if (route.rewrite) {
+  // Always strip the base prefix; additionally strip the route prefix for
+  // routes whose backend is not mounted under it.
+  const stripPrefix = route.rewrite
+    ? `${basePrefix}${route.prefix}`
+    : basePrefix;
+  if (stripPrefix) {
     options.rewrite = (p) =>
-      p.replace(new RegExp(`^${escapeRegExp(route.prefix)}`), "");
+      p.replace(new RegExp(`^${escapeRegExp(stripPrefix)}`), "");
   }
   if (isHttps) {
     if (entry.caCertPath !== undefined && fs.existsSync(entry.caCertPath)) {
@@ -307,4 +320,15 @@ function buildProxyOptions(
 
 function escapeRegExp(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/**
+ * Reduce a Vite `base` to a bare path prefix with no trailing slash, so
+ * `${basePrefix}${route.prefix}` reads as a clean path (`/base/api`). The root
+ * base (`/`, the default) yields an empty prefix, leaving proxy contexts
+ * identical to a non-prefixed dev server.
+ */
+function normalizeBasePrefix(base: string | undefined): string {
+  if (base == null || base === "/" || base === "") return "";
+  return base.endsWith("/") ? base.slice(0, -1) : base;
 }
