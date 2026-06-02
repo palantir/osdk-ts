@@ -104,6 +104,13 @@ export namespace ObjectMetadata {
       fields: readonly string[];
     };
     hasReducers?: boolean;
+    /**
+     * For properties of type `"marking"`, indicates whether the marking is
+     * classification-based access control (`"CBAC"`) or mandatory (`"MANDATORY"`).
+     * Absent for non-marking properties and for marking properties whose subtype
+     * is not exposed by the platform.
+     */
+    markingType?: "CBAC" | "MANDATORY";
   }
 
   export interface Link<

@@ -51,7 +51,7 @@ export interface IDataType {
 
 export interface IDiscoveredFunction {
   locator: { type: string; typescript?: { functionName: string } };
-  inputs: Array<{ name: string; dataType: IDataType }>;
+  inputs: Array<{ name: string; dataType: IDataType; required?: boolean }>;
   output: { single: { dataType: IDataType } };
   customTypes: Record<string, unknown>;
   ontologyProvenance?: {
@@ -464,7 +464,7 @@ export class OntologyIrToFullMetadataConverter {
         >((acc, input) => {
           acc[input.name] = {
             dataType: convertDataType(input.dataType, func.customTypes),
-            required: true,
+            required: input.required ?? false,
           };
           return acc;
         }, {}),

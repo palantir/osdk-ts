@@ -1183,6 +1183,7 @@ export namespace ObjectMetadata {
         mainValue?: {
             			fields: readonly string[]
             		};
+        		markingType?: "CBAC" | "MANDATORY";
         		// (undocumented)
         multiplicity?: boolean;
         		// (undocumented)

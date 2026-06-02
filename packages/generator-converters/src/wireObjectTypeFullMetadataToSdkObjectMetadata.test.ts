@@ -62,13 +62,13 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
     }, true);
 
     // PK is never nullable
-    expect(result.properties["primaryKey"].nullable).toBe(false);
+    expect(result.properties.primaryKey.nullable).toBe(false);
 
     // was specified above
-    expect(result.properties["otherKey"].nullable).toBe(false);
+    expect(result.properties.otherKey.nullable).toBe(false);
 
     // was unspecified, so should be nullable
-    expect(result.properties["defaulted"].nullable).toBe(true);
+    expect(result.properties.defaulted.nullable).toBe(true);
   });
 
   it("Is up to date with the enums from API", () => {
@@ -240,6 +240,64 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
 
     // Check that the links are sorted alphabetically by apiName
     expect(linkKeys).toEqual(["linkA", "linkC", "linkZ"]);
+  });
+
+  it("forwards markingType subtype on marking properties", () => {
+    const result = wireObjectTypeFullMetadataToSdkObjectMetadata({
+      implementsInterfaces: [],
+      implementsInterfaces2: {},
+      linkTypes: [],
+      objectType: {
+        apiName: "apiName",
+        description: "description",
+        displayName: "displayName",
+        pluralDisplayName: "displayNames",
+        icon: { type: "blueprint", name: "blueprint", color: "blue" },
+        primaryKey: "primaryKey",
+        properties: {
+          primaryKey: {
+            dataType: { type: "string" },
+            rid: "rid",
+            typeClasses: [],
+          },
+          cbacMarking: {
+            dataType: { type: "marking", markingType: "CBAC" },
+            rid: "rid",
+            typeClasses: [],
+          },
+          mandatoryMarking: {
+            dataType: { type: "marking", markingType: "MANDATORY" },
+            rid: "rid",
+            typeClasses: [],
+          },
+          unspecifiedMarking: {
+            dataType: { type: "marking" },
+            rid: "rid",
+            typeClasses: [],
+          },
+          arrayOfMandatoryMarkings: {
+            dataType: {
+              type: "array",
+              subType: { type: "marking", markingType: "MANDATORY" },
+              reducers: [],
+            },
+            rid: "rid",
+            typeClasses: [],
+          },
+        },
+        rid: "rid",
+        status: "ACTIVE",
+        titleProperty: "primaryKey",
+      },
+      sharedPropertyTypeMapping: {},
+    }, true);
+
+    expect(result.properties.cbacMarking.markingType).toBe("CBAC");
+    expect(result.properties.mandatoryMarking.markingType).toBe("MANDATORY");
+    expect(result.properties.unspecifiedMarking.markingType).toBeUndefined();
+    expect(result.properties.arrayOfMandatoryMarkings.markingType).toBe(
+      "MANDATORY",
+    );
   });
 
   it("preserves empty arrays", () => {

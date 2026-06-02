@@ -84,7 +84,6 @@ export function wirePropertyV2ToSdkPropertyDefinition(
     case "geoshape":
     case "timestamp":
     case "timeseries":
-    case "marking":
     case "geotimeSeriesReference":
     case "vector":
       return {
@@ -97,6 +96,21 @@ export function wirePropertyV2ToSdkPropertyDefinition(
         valueFormatting: input.valueFormatting != null
           ? wirePropertyFormattingToSdkFormatting(input.valueFormatting, log)
           : undefined,
+      };
+    case "marking":
+      return {
+        displayName: input.displayName,
+        multiplicity: false,
+        description: input.description,
+        type: sdkPropDefinition,
+        nullable: input.nullable == null ? isNullable : input.nullable,
+        valueTypeApiName: input.valueTypeApiName,
+        valueFormatting: input.valueFormatting != null
+          ? wirePropertyFormattingToSdkFormatting(input.valueFormatting, log)
+          : undefined,
+        ...(input.dataType.markingType != null
+          ? { markingType: input.dataType.markingType }
+          : {}),
       };
     case "struct": {
       const mainValue = extractMainValue(input.dataType);
@@ -114,6 +128,7 @@ export function wirePropertyV2ToSdkPropertyDefinition(
       };
     }
     case "array": {
+      const subType = input.dataType.subType;
       return {
         displayName: input.displayName,
         multiplicity: true,
@@ -125,6 +140,9 @@ export function wirePropertyV2ToSdkPropertyDefinition(
           ? wirePropertyFormattingToSdkFormatting(input.valueFormatting, log)
           : undefined,
         hasReducers: hasReducers(input.dataType),
+        ...(subType.type === "marking" && subType.markingType != null
+          ? { markingType: subType.markingType }
+          : {}),
       };
     }
     case "cipherText": {
