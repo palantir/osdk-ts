@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-export { ScopeAuthorization, ScopeResources } from "../scope/types.js";
-export type {
-  Scope,
-  ScopeReadAuthorization,
-  ScopeReadWriteAuthorization,
-} from "../scope/types.js";
-export type { WriteableClient } from "../transactions/WriteableClient.js";
+import type { Scope } from "./scope/types.js";
+
+export interface FunctionConfig {
+  apiName?: string;
+  sources?: string[];
+  /**
+   * @experimental
+   */
+  scope?: Scope;
+}
