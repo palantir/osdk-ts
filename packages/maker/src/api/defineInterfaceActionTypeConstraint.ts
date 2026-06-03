@@ -16,7 +16,6 @@
 
 import type {
   InterfaceParameterConstraintApiName,
-  OntologyIrBaseParameterConstraintType,
   OntologyIrInterfaceParameterConstraint,
 } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
@@ -27,24 +26,8 @@ import {
   namespace,
   withoutNamespace,
 } from "./defineOntology.js";
-import type { InterfaceType } from "./interface/InterfaceType.js";
+import type { InterfaceActionTypeConstraintDefinition } from "./InterfaceActionTypeConstraintDefinition.js";
 import { combineApiNamespaceIfMissing } from "./namespace/combineApiNamespaceIfMissing.js";
-
-interface ParameterConstraintDefinition {
-  apiName?: string;
-  displayName: string;
-  type: OntologyIrBaseParameterConstraintType;
-  requireImplementation?: boolean;
-}
-
-interface InterfaceActionTypeConstraintDefinition {
-  from: InterfaceType;
-  apiName: string;
-  displayName?: string;
-  description?: string;
-  requireImplementation?: boolean;
-  parameters?: Array<ParameterConstraintDefinition>;
-}
 
 export function defineInterfaceActionTypeConstraint(
   input: InterfaceActionTypeConstraintDefinition,
@@ -52,9 +35,11 @@ export function defineInterfaceActionTypeConstraint(
   const def = cloneDefinition(input);
 
   invariant(
-    importedTypes[OntologyEntityTypeEnum.INTERFACE_TYPE][def.from.apiName]
+    importedTypes[OntologyEntityTypeEnum.INTERFACE_TYPE][
+      def.interfaceType.apiName
+    ]
       == null,
-    `Cannot define an action type constraint on imported interface ${def.from.apiName}. The "from" side must be a locally defined interface.`,
+    `Cannot define an action type constraint on imported interface ${def.interfaceType.apiName}. The "from" side must be a locally defined interface.`,
   );
 
   const apiNameWithNamespace = combineApiNamespaceIfMissing(
@@ -64,10 +49,10 @@ export function defineInterfaceActionTypeConstraint(
   const apiNameWithoutNamespace = withoutNamespace(apiNameWithNamespace);
 
   invariant(
-    def.from.actionTypeConstraints.find(
+    def.interfaceType.actionTypeConstraints.find(
       a => a.metadata.apiName === apiNameWithNamespace,
     ) == null,
-    `Action type constraint with apiName ${apiNameWithNamespace} already exists on interface ${def.from.apiName}`,
+    `Action type constraint with apiName ${apiNameWithNamespace} already exists on interface ${def.interfaceType.apiName}`,
   );
 
   const parameters: Record<
@@ -92,7 +77,7 @@ export function defineInterfaceActionTypeConstraint(
     };
   }
 
-  def.from.actionTypeConstraints.push({
+  def.interfaceType.actionTypeConstraints.push({
     metadata: {
       apiName: apiNameWithNamespace,
       displayName: def.displayName ?? apiNameWithoutNamespace,

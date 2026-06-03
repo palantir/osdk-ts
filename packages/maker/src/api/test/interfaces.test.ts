@@ -1292,7 +1292,7 @@ describe("Interfaces", () => {
       const iface = defineInterface({ apiName: "MyInterface" });
 
       defineInterfaceActionTypeConstraint({
-        from: iface,
+        interfaceType: iface,
         apiName: "myConstraint",
         displayName: "My Constraint",
         description: "A test constraint",
@@ -1329,13 +1329,13 @@ describe("Interfaces", () => {
       const iface = defineInterface({ apiName: "MyInterface" });
 
       defineInterfaceActionTypeConstraint({
-        from: iface,
+        interfaceType: iface,
         apiName: "myConstraint",
       });
 
       expect(() => {
         defineInterfaceActionTypeConstraint({
-          from: iface,
+          interfaceType: iface,
           apiName: "myConstraint",
         });
       }).toThrowErrorMatchingInlineSnapshot(
@@ -1347,7 +1347,7 @@ describe("Interfaces", () => {
       const iface = defineInterface({ apiName: "MyInterface" });
 
       defineInterfaceActionTypeConstraint({
-        from: iface,
+        interfaceType: iface,
         apiName: "myConstraint",
       });
 
@@ -1361,7 +1361,7 @@ describe("Interfaces", () => {
       const iface = defineInterface({ apiName: "MyInterface" });
 
       defineInterfaceActionTypeConstraint({
-        from: iface,
+        interfaceType: iface,
         apiName: "myConstraint",
         parameters: [
           {
@@ -1385,7 +1385,7 @@ describe("Interfaces", () => {
 
       expect(() => {
         defineInterfaceActionTypeConstraint({
-          from: iface,
+          interfaceType: iface,
           apiName: "myConstraint",
           parameters: [
             {
