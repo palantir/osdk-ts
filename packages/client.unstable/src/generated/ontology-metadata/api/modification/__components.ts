@@ -144,6 +144,7 @@ import type {
   PropertySecurityGroupsModification as _api_PropertySecurityGroupsModification,
   PropertyTypeDisplayMetadata as _api_PropertyTypeDisplayMetadata,
   PropertyTypeId as _api_PropertyTypeId,
+  PropertyTypeIdentifier as _api_PropertyTypeIdentifier,
   PropertyTypeMappingInfo as _api_PropertyTypeMappingInfo,
   PropertyTypeRid as _api_PropertyTypeRid,
   PutParameterRequest as _api_PutParameterRequest,
@@ -461,6 +462,15 @@ export interface DeprecatedPropertyTypeStatusModification {
   message: string;
   replacedBy?: _api_PropertyTypeRid | null | undefined;
   replacedById?: _api_PropertyTypeId | null | undefined;
+}
+/**
+ * Modification for direct datasource configuration.
+ */
+export interface DirectDatasourceConfigurationModification {
+  sourceTimestampProperties: Record<
+    _api_DatasourceRid,
+    SourceTimestampPropertyModification
+  >;
 }
 export interface DropLinkTypePeeringMetadata {
 }
@@ -1578,6 +1588,10 @@ export interface ObjectTypeEntityMetadataModifyRequest {
   aliases?: Array<_api_entitymetadata_ObjectTypeAlias> | null | undefined;
   arePatchesEnabled?: boolean | null | undefined;
   diffEdits?: boolean | null | undefined;
+  directDatasourceConfiguration?:
+    | DirectDatasourceConfigurationModification
+    | null
+    | undefined;
   editsHistory?: EditsHistoryModification | null | undefined;
   editsResolutionStrategies?:
     | EditsResolutionStrategyModification
@@ -2333,6 +2347,13 @@ export interface SharedPropertyTypeModification {
   type: TypeForModification;
   typeClasses: Array<_api_TypeClass>;
   valueType?: ValueTypeReferenceModification | null | undefined;
+}
+/**
+ * Modification for a source timestamp property. Accepts a PropertyTypeIdentifier to identify the
+ * timestamp property by either PropertyTypeId or PropertyTypeRid.
+ */
+export interface SourceTimestampPropertyModification {
+  timestampProperty: _api_PropertyTypeIdentifier;
 }
 export interface StorageBackendModification_objectStorageV1 {
   type: "objectStorageV1";

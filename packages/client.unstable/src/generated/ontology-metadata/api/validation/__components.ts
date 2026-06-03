@@ -1397,6 +1397,18 @@ export interface ErrorType_interfaceActionTypeConstraintApiNameConflict {
     InterfaceActionTypeConstraintApiNameConflict;
 }
 
+export interface ErrorType_interfaceParameterConstraintApiNameConflict {
+  type: "interfaceParameterConstraintApiNameConflict";
+  interfaceParameterConstraintApiNameConflict:
+    InterfaceParameterConstraintApiNameConflict;
+}
+
+export interface ErrorType_interfaceParameterConstraintApiNameRequired {
+  type: "interfaceParameterConstraintApiNameRequired";
+  interfaceParameterConstraintApiNameRequired:
+    InterfaceParameterConstraintApiNameRequired;
+}
+
 export interface ErrorType_interfacePropertyTypeApiNameConflict {
   type: "interfacePropertyTypeApiNameConflict";
   interfacePropertyTypeApiNameConflict: InterfacePropertyTypeApiNameConflict;
@@ -2644,6 +2656,12 @@ export interface ErrorType_objectTypeToDeleteIsReferencedByExistingInterfaceLink
   type: "objectTypeToDeleteIsReferencedByExistingInterfaceLinkTypes";
   objectTypeToDeleteIsReferencedByExistingInterfaceLinkTypes:
     ObjectTypeToDeleteIsReferencedByExistingInterfaceLinkTypes;
+}
+
+export interface ErrorType_objectTypeToDeleteHasWritebackDatasets {
+  type: "objectTypeToDeleteHasWritebackDatasets";
+  objectTypeToDeleteHasWritebackDatasets:
+    ObjectTypeToDeleteHasWritebackDatasets;
 }
 
 export interface ErrorType_objectTypeImplementsTooManyInterfaces {
@@ -4532,6 +4550,11 @@ export interface ErrorType_objectTypeArchivedObjectTypeCannotBeModified {
     ObjectTypeArchivedObjectTypeCannotBeModified;
 }
 
+export interface ErrorType_objectTypeCannotBeArchivedOnBranch {
+  type: "objectTypeCannotBeArchivedOnBranch";
+  objectTypeCannotBeArchivedOnBranch: ObjectTypeCannotBeArchivedOnBranch;
+}
+
 export interface ErrorType_objectTypeOwningDirectWriterOnNonDirectDatasource {
   type: "objectTypeOwningDirectWriterOnNonDirectDatasource";
   objectTypeOwningDirectWriterOnNonDirectDatasource:
@@ -4548,6 +4571,34 @@ export interface ErrorType_objectTypeAssumedMarkingSpecifiedWithEditsOnlyBacking
   type: "objectTypeAssumedMarkingSpecifiedWithEditsOnlyBackingResource";
   objectTypeAssumedMarkingSpecifiedWithEditsOnlyBackingResource:
     ObjectTypeAssumedMarkingSpecifiedWithEditsOnlyBackingResource;
+}
+
+export interface ErrorType_objectTypeDirectDatasourceConfigurationReferencesNonExistentDatasources {
+  type:
+    "objectTypeDirectDatasourceConfigurationReferencesNonExistentDatasources";
+  objectTypeDirectDatasourceConfigurationReferencesNonExistentDatasources:
+    ObjectTypeDirectDatasourceConfigurationReferencesNonExistentDatasources;
+}
+
+export interface ErrorType_objectTypeDirectDatasourceConfigurationTimestampPropertiesNotFoundOnObjectType {
+  type:
+    "objectTypeDirectDatasourceConfigurationTimestampPropertiesNotFoundOnObjectType";
+  objectTypeDirectDatasourceConfigurationTimestampPropertiesNotFoundOnObjectType:
+    ObjectTypeDirectDatasourceConfigurationTimestampPropertiesNotFoundOnObjectType;
+}
+
+export interface ErrorType_objectTypeDirectDatasourceConfigurationTimestampPropertyNotInDatasource {
+  type:
+    "objectTypeDirectDatasourceConfigurationTimestampPropertyNotInDatasource";
+  objectTypeDirectDatasourceConfigurationTimestampPropertyNotInDatasource:
+    ObjectTypeDirectDatasourceConfigurationTimestampPropertyNotInDatasource;
+}
+
+export interface ErrorType_objectTypeDirectDatasourceConfigurationSourceTimestampPropertyIsPrimaryKey {
+  type:
+    "objectTypeDirectDatasourceConfigurationSourceTimestampPropertyIsPrimaryKey";
+  objectTypeDirectDatasourceConfigurationSourceTimestampPropertyIsPrimaryKey:
+    ObjectTypeDirectDatasourceConfigurationSourceTimestampPropertyIsPrimaryKey;
 }
 /**
  * A union that represents all possible ontology modification validation errors.
@@ -4627,6 +4678,8 @@ export type ErrorType =
   | ErrorType_interfaceTypeContainsTooManyProperties
   | ErrorType_interfaceLinkTypeApiNameConflict
   | ErrorType_interfaceActionTypeConstraintApiNameConflict
+  | ErrorType_interfaceParameterConstraintApiNameConflict
+  | ErrorType_interfaceParameterConstraintApiNameRequired
   | ErrorType_interfacePropertyTypeApiNameConflict
   | ErrorType_interfacePropertyTypeApiNameIgnoringNamespaceConflict
   | ErrorType_interfaceTypeImplementedTooOften
@@ -4839,6 +4892,7 @@ export type ErrorType =
   | ErrorType_objectTypeStreamDatasourceWithPatchesEnabled
   | ErrorType_objectTypeEntityMetadataModifyRequestWithInvalidObjectDbConfigValue
   | ErrorType_objectTypeToDeleteIsReferencedByExistingInterfaceLinkTypes
+  | ErrorType_objectTypeToDeleteHasWritebackDatasets
   | ErrorType_objectTypeImplementsTooManyInterfaces
   | ErrorType_objectTypeInterfaceImplementationInvalidIsIndexedForSearch
   | ErrorType_objectTypeInterfaceImplementationInvalidDataConstraints
@@ -5161,9 +5215,14 @@ export type ErrorType =
   | ErrorType_actionLogStructFieldMappedToIncompatibleBaseType
   | ErrorType_maxClassificationConstraintMustBeNonEmptyIfAllowEmptyMarkingsIsFalse
   | ErrorType_objectTypeArchivedObjectTypeCannotBeModified
+  | ErrorType_objectTypeCannotBeArchivedOnBranch
   | ErrorType_objectTypeOwningDirectWriterOnNonDirectDatasource
   | ErrorType_objectTypeCannotModifyDatasourcesOnBuilderOwned
-  | ErrorType_objectTypeAssumedMarkingSpecifiedWithEditsOnlyBackingResource;
+  | ErrorType_objectTypeAssumedMarkingSpecifiedWithEditsOnlyBackingResource
+  | ErrorType_objectTypeDirectDatasourceConfigurationReferencesNonExistentDatasources
+  | ErrorType_objectTypeDirectDatasourceConfigurationTimestampPropertiesNotFoundOnObjectType
+  | ErrorType_objectTypeDirectDatasourceConfigurationTimestampPropertyNotInDatasource
+  | ErrorType_objectTypeDirectDatasourceConfigurationSourceTimestampPropertyIsPrimaryKey;
 
 export interface IndeterminateErrorCategory {
 }
@@ -5186,6 +5245,16 @@ export interface InterfaceLinkTypeDescriptionTooLong {
  * The display name of an interface link type exceeds the maximum length.
  */
 export interface InterfaceLinkTypeDisplayNameTooLong {
+}
+/**
+ * Two interface parameter constraints within the same interface action type constraint have the same API name. API Names must be unique within the parent action type constraint.
+ */
+export interface InterfaceParameterConstraintApiNameConflict {
+}
+/**
+ * An interface parameter constraint is missing a required API name.
+ */
+export interface InterfaceParameterConstraintApiNameRequired {
 }
 /**
  * Two interface properties have the same API name. API Names must be unique within the context of an interface. I.e. across all properties in an interface and its super interfaces.
@@ -5976,6 +6045,11 @@ export interface ObjectTypeBothDerivedPropertyTypeAndObjectStorageV1MappedToGoth
 export interface ObjectTypeBranchIndexingConfigCanOnlyBeSetOnNonDefaultBranches {
 }
 /**
+ * Object types can only be archived on the default branch.
+ */
+export interface ObjectTypeCannotBeArchivedOnBranch {
+}
+/**
  * MDOs (Multi-Datasource Object Types) cannot be backed by a streaming datasource.
  */
 export interface ObjectTypeCannotBeMdoWithStreamingDatasource {
@@ -6164,6 +6238,26 @@ export interface ObjectTypeDerivedPropertyTypeIsTitle {
  * The description of an object type exceeds the maximum length.
  */
 export interface ObjectTypeDescriptionTooLong {
+}
+/**
+ * The direct datasource configuration references datasources that do not exist on the object type.
+ */
+export interface ObjectTypeDirectDatasourceConfigurationReferencesNonExistentDatasources {
+}
+/**
+ * The source timestamp property cannot be a primary key property.
+ */
+export interface ObjectTypeDirectDatasourceConfigurationSourceTimestampPropertyIsPrimaryKey {
+}
+/**
+ * The source timestamp properties were not found on the object type as timestamp properties.
+ */
+export interface ObjectTypeDirectDatasourceConfigurationTimestampPropertiesNotFoundOnObjectType {
+}
+/**
+ * The source timestamp property is not present on the referenced datasource.
+ */
+export interface ObjectTypeDirectDatasourceConfigurationTimestampPropertyNotInDatasource {
 }
 /**
  * The display name of an object type exceeds the maximum length.
@@ -7232,6 +7326,11 @@ export interface ObjectTypeTimestampPropertyMigrationNotAllowed {
  * There is no corresponding property type for the given title property.
  */
 export interface ObjectTypeTitlePropertyTypeNotFound {
+}
+/**
+ * Object types cannot be deleted if they have writeback datasets.
+ */
+export interface ObjectTypeToDeleteHasWritebackDatasets {
 }
 /**
  * Object types cannot be deleted if they are referenced by an interface link type.

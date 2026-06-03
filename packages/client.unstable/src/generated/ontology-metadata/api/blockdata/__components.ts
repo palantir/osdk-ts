@@ -43,9 +43,13 @@ import type {
   GroupId as _api_GroupId,
   Icon as _api_Icon,
   InterfaceActionTypeConstraint as _api_InterfaceActionTypeConstraint,
+  InterfaceActionTypeConstraintApiName
+    as _api_InterfaceActionTypeConstraintApiName,
   InterfaceActionTypeConstraintRid as _api_InterfaceActionTypeConstraintRid,
   InterfaceLinkTypeApiName as _api_InterfaceLinkTypeApiName,
   InterfaceLinkTypeRid as _api_InterfaceLinkTypeRid,
+  InterfaceParameterConstraintApiName
+    as _api_InterfaceParameterConstraintApiName,
   InterfaceParameterConstraintRid as _api_InterfaceParameterConstraintRid,
   InterfacePropertyTypeApiName as _api_InterfacePropertyTypeApiName,
   InterfacePropertyTypeDisplayMetadata
@@ -591,12 +595,12 @@ export interface OntologyIrKnownMarketplaceIdentifiers {
   geotimeSeriesSyncs: Record<GeotimeSeriesIntegrationName, BlockInternalId>;
   groupIds: Record<_api_GroupId, BlockInternalId>;
   interfaceActionTypeConstraints: Record<
-    _api_InterfaceActionTypeConstraintRid,
+    _api_InterfaceActionTypeConstraintApiName,
     BlockInternalId
   >;
   interfaceLinkTypes: Record<_api_InterfaceLinkTypeApiName, BlockInternalId>;
   interfaceParameterConstraints: Record<
-    _api_InterfaceParameterConstraintRid,
+    _api_InterfaceParameterConstraintApiName,
     BlockInternalId
   >;
   interfacePropertyTypes: Record<

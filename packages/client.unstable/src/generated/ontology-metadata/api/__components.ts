@@ -2482,6 +2482,7 @@ export interface BlueprintIcon {
 }
 export interface BooleanFormatter {
   valueIfFalse: string;
+  valueIfNull?: string | null | undefined;
   valueIfTrue: string;
 }
 export interface BooleanPropertyType {
@@ -2709,6 +2710,11 @@ export interface Condition_regex {
   regex: RegexCondition;
 }
 
+export interface Condition_executionContext {
+  type: "executionContext";
+  executionContext: ExecutionContextCondition;
+}
+
 export interface Condition_redacted {
   type: "redacted";
   redacted: Redacted;
@@ -2721,6 +2727,7 @@ export type Condition =
   | Condition_comparison
   | Condition_markings
   | Condition_regex
+  | Condition_executionContext
   | Condition_redacted;
 
 export interface ConditionalOverride {
@@ -2804,6 +2811,11 @@ export interface ConditionModification_regex {
   regex: RegexConditionModification;
 }
 
+export interface ConditionModification_executionContext {
+  type: "executionContext";
+  executionContext: ExecutionContextCondition;
+}
+
 export interface ConditionModification_redacted {
   type: "redacted";
   redacted: Redacted;
@@ -2816,6 +2828,7 @@ export type ConditionModification =
   | ConditionModification_comparison
   | ConditionModification_markings
   | ConditionModification_regex
+  | ConditionModification_executionContext
   | ConditionModification_redacted;
 
 export interface ConditionValue_parameterId {
@@ -3945,6 +3958,22 @@ export interface ExampleObjectTypeStatus {
  */
 export interface ExamplePropertyTypeStatus {
 }
+export interface ExecutionContext_scenario {
+  type: "scenario";
+  scenario: ScenarioExecutionContext;
+}
+/**
+ * A type of execution context in which an action submission is evaluated.
+ */
+export type ExecutionContext = ExecutionContext_scenario;
+
+/**
+ * True if the action submission is being evaluated in the specified execution context.
+ */
+export interface ExecutionContextCondition {
+  context: ExecutionContext;
+  displayMetadata?: ConditionDisplayMetadata | null | undefined;
+}
 /**
  * This status indicates that the ActionType is in development. Please refrain from using it in critical workflows as it may change/disappear at any time.
  */
@@ -4290,6 +4319,7 @@ export interface GetActionTypesForObjectTypeResponse {
  * Request to get action types for multiple object types.
  */
 export interface GetActionTypesForObjectTypesRequest {
+  includeInterfaceActionTypes?: boolean | null | undefined;
   objectTypeRids: Array<ObjectTypeRid>;
   versionReference?: VersionReference | null | undefined;
 }
@@ -4669,7 +4699,14 @@ export interface InterfaceParameterConstraint {
   requireImplementation: boolean;
   type: _api_types_BaseParameterConstraintType;
 }
+/**
+ * A string indicating the API name to use for the interface parameter constraint. This API name will be used to
+ * reference the interface parameter constraint in programming languages. The name should be given in
+ * lowerCamelCase and should be unique within the parent interface action type constraint.
+ */
+export type InterfaceParameterConstraintApiName = string;
 export interface InterfaceParameterConstraintDisplayMetadata {
+  apiName?: InterfaceParameterConstraintApiName | null | undefined;
   displayName: string;
 }
 export type InterfaceParameterConstraintIdInRequest = string;
@@ -8623,6 +8660,11 @@ export interface OntologyIrCondition_regex {
   regex: OntologyIrRegexCondition;
 }
 
+export interface OntologyIrCondition_executionContext {
+  type: "executionContext";
+  executionContext: ExecutionContextCondition;
+}
+
 export interface OntologyIrCondition_redacted {
   type: "redacted";
   redacted: Redacted;
@@ -8635,6 +8677,7 @@ export type OntologyIrCondition =
   | OntologyIrCondition_comparison
   | OntologyIrCondition_markings
   | OntologyIrCondition_regex
+  | OntologyIrCondition_executionContext
   | OntologyIrCondition_redacted;
 
 export interface OntologyIrConditionalOverride {
@@ -8914,7 +8957,7 @@ export interface OntologyIrFunctionRule {
 }
 export interface OntologyIrImplementingActionType {
   actionTypeRid: ActionTypeApiName;
-  parameters: Record<InterfaceParameterConstraintRid, ParameterRid>;
+  parameters: Record<InterfaceParameterConstraintApiName, ParameterRid>;
 }
 export interface OntologyIrImplementingLinkType {
   linkTypeRid: LinkTypeId;
@@ -8928,11 +8971,10 @@ export interface OntologyIrInlineActionType {
 export interface OntologyIrInterfaceActionTypeConstraint {
   metadata: InterfaceActionTypeConstraintMetadata;
   parameters: Record<
-    InterfaceParameterConstraintRid,
+    InterfaceParameterConstraintApiName,
     OntologyIrInterfaceParameterConstraint
   >;
   requireImplementation: boolean;
-  rid: InterfaceActionTypeConstraintRid;
 }
 export interface OntologyIrInterfaceArrayPropertyType {
   subtype: OntologyIrInterfacePropertyTypeType;
@@ -10038,7 +10080,7 @@ export interface OntologyIrObjectTypeGeotimeSeriesDatasource {
  */
 export interface OntologyIrObjectTypeInterfaceImplementation {
   actionTypes: Record<
-    InterfaceActionTypeConstraintRid,
+    InterfaceActionTypeConstraintApiName,
     OntologyIrImplementingActionType
   >;
   interfaceTypeApiName: InterfaceTypeApiName;
@@ -14047,6 +14089,11 @@ export type SafeDatasourceIdentifier =
   | SafeDatasourceIdentifier_derivedPropertiesSourceRid
   | SafeDatasourceIdentifier_tableRid;
 
+/**
+ * An execution within a Scenario.
+ */
+export interface ScenarioExecutionContext {
+}
 /**
  * The rid for a Scenario V2 instance defined in actions.
  */

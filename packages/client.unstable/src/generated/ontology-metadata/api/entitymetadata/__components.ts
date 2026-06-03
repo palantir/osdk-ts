@@ -150,6 +150,15 @@ export interface DayTime {
   time: string;
   zoneId: string;
 }
+/**
+ * Additional configuration for direct datasources on an object type.
+ */
+export interface DirectDatasourceConfiguration {
+  sourceTimestampProperties: Record<
+    _api_DatasourceRid,
+    SourceTimestampProperty
+  >;
+}
 export interface EditsHistory_config {
   type: "config";
   config: EditsHistoryConfig;
@@ -562,6 +571,10 @@ export interface ObjectTypeEntityMetadata {
   aliases: Array<ObjectTypeAlias>;
   arePatchesEnabled: boolean;
   diffEdits: boolean;
+  directDatasourceConfiguration?:
+    | DirectDatasourceConfiguration
+    | null
+    | undefined;
   editsHistory: EditsHistory;
   editsResolutionStrategies: EditsResolutionStrategies;
   entityConfig: EntityConfig;
@@ -722,6 +735,13 @@ export type SharedPropertyTypeAlias = Alias;
 export interface SoakPeriodInformation {
   end: string;
   start: string;
+}
+/**
+ * A source timestamp property for a direct datasource. The timestamp represents the source time
+ * of the object and is used for deduplicating base data of objects with the same primary key.
+ */
+export interface SourceTimestampProperty {
+  timestampPropertyRid: _api_PropertyTypeRid;
 }
 export interface StorageBackend_objectStorageV1 {
   type: "objectStorageV1";
