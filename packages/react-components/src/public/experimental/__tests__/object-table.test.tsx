@@ -18,11 +18,14 @@ import type { ObjectTypeDefinition, Osdk, PropertyKeys } from "@osdk/api";
 import type { AccessorColumnDef } from "@tanstack/react-table";
 import { render } from "@testing-library/react";
 import React from "react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, expectTypeOf, it, vi } from "vitest";
 import { useColumnDefs } from "../../../object-table/hooks/useColumnDefs.js";
 import { useObjectTableData } from "../../../object-table/hooks/useObjectTableData.js";
-import type { ObjectTableHandle } from "../../../object-table/ObjectTableApi.js";
-import { ObjectTable } from "../object-table.js";
+import {
+  ObjectTable,
+  type ObjectTableHandle,
+  type ObjectTableSnapshotOptions,
+} from "../object-table.js";
 
 vi.mock("@osdk/react", () => ({
   useRegisterUserAgent: vi.fn(),
@@ -84,19 +87,18 @@ describe("public experimental ObjectTable", () => {
 
   it("exports ObjectTable with a functional tableRef handle", () => {
     const ref = React.createRef<ObjectTableHandle<TestObject>>();
+    expectTypeOf<ObjectTableSnapshotOptions>().toEqualTypeOf<{
+      rowLimit?: number;
+    }>();
 
     render(<ObjectTable tableRef={ref} objectType={TestObjectType} />);
 
     expect(ref.current).not.toBeNull();
     expect(ref.current?.getSnapshot).toBeTypeOf("function");
-    expect(ref.current?.loadNextPage).toBeTypeOf("function");
   });
 });
 
-function createColumn(
-  id: string,
-  name: string,
-): AccessorColumnDef<TestRow> {
+function createColumn(id: string, name: string): AccessorColumnDef<TestRow> {
   return {
     id,
     accessorKey: id as keyof TestRow & string,

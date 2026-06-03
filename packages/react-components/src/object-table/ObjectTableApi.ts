@@ -41,20 +41,18 @@ export interface ObjectTableHandle<
    * and pagination state.
    *
    * The snapshot includes visible data columns only, excludes internal control
-   * columns such as row selection, and does not fetch additional pages.
+   * columns such as row selection, and does not fetch additional pages unless
+   * a positive finite `rowLimit` is provided.
    * Cell values come from the table's accessor values, not from rendered React
    * content supplied by `renderCell`.
    */
-  getSnapshot: () => ObjectTableSnapshot<Q, RDPs>;
+  getSnapshot: (
+    options?: ObjectTableSnapshotOptions,
+  ) => Promise<ObjectTableSnapshot<Q, RDPs>>;
+}
 
-  /**
-   * Fetches the next page using ObjectTable's existing pagination mechanism.
-   *
-   * This function is always safe to call. It resolves immediately when no next
-   * page is available. Use `getSnapshot().hasNextPage` to decide whether
-   * calling it can load additional rows.
-   */
-  loadNextPage: () => Promise<void>;
+export interface ObjectTableSnapshotOptions {
+  rowLimit?: number;
 }
 
 export interface ObjectTableSnapshot<

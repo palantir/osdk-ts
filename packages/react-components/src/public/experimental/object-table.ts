@@ -33,6 +33,7 @@ export type {
   ObjectTableHandle,
   ObjectTableProps,
   ObjectTableSnapshot,
+  ObjectTableSnapshotOptions,
   PropertyColumnLocator,
   RdpColumnLocator,
 } from "../../object-table/ObjectTableApi.js";

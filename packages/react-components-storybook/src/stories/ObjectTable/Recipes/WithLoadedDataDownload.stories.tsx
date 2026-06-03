@@ -22,10 +22,8 @@ import type {
   ObjectTableDataRow,
   ObjectTableHandle,
   ObjectTableProps,
-  ObjectTableSnapshot,
 } from "@osdk/react-components/experimental/object-table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import type { RefObject } from "react";
 import { useCallback, useRef, useState } from "react";
 import { fauxFoundry } from "../../../mocks/fauxFoundry.js";
 import { Employee } from "../../../types/Employee.js";
@@ -35,12 +33,13 @@ type EmployeeTableProps = ObjectTableProps<typeof Employee>;
 type EmployeeRow = ObjectTableDataRow<typeof Employee>;
 
 const MAX_DOWNLOAD_ROWS = 500;
+const PAGE_SIZE = 5;
 
 const employeeColumns: Array<ColumnDefinition<Employee>> = [
   {
     locator: { type: "property", id: "fullName" },
     columnName: "Full name",
-    renderCell: employee => <strong>{employee.fullName}</strong>,
+    renderCell: (employee) => <strong>{employee.fullName}</strong>,
   },
   {
     locator: { type: "property", id: "emailPrimaryWork" },
@@ -70,15 +69,16 @@ export const WithLoadedDataDownload: Story = {
     docs: {
       description: {
         story:
-          "Uses `tableRef.current.getSnapshot()` to build and download a CSV from the currently loaded visible ObjectTable data. The Full name column uses `renderCell`, but the CSV reads the column's accessor value rather than the rendered React element.",
+          "Uses `tableRef.current.getSnapshot()` to build and download a CSV from visible ObjectTable data. Passing a `rowLimit` explicitly fetches more rows before creating the CSV. The Full name column uses `renderCell`, but the CSV reads the column's accessor value rather than the rendered React element.",
       },
       source: {
         code:
           `const tableRef = useRef<ObjectTableHandle<typeof Employee>>(null);
 const MAX_DOWNLOAD_ROWS = ${MAX_DOWNLOAD_ROWS};
+const PAGE_SIZE = ${PAGE_SIZE};
 
-const handleDownload = () => {
-  const snapshot = tableRef.current?.getSnapshot();
+const handleDownload = async () => {
+  const snapshot = await tableRef.current?.getSnapshot();
   if (!snapshot) {
     return;
   }
@@ -87,44 +87,43 @@ const handleDownload = () => {
   downloadCsv(csv, "employees-loaded-rows.csv");
 };
 
-const handleLoadNextPage = async () => {
-  const snapshot = tableRef.current?.getSnapshot();
+const handleLoadMoreRows = async () => {
+  const snapshot = await tableRef.current?.getSnapshot();
   if (!snapshot?.hasNextPage) {
     return;
   }
 
-  await tableRef.current?.loadNextPage();
+  await tableRef.current?.getSnapshot({
+    rowLimit: snapshot.rows.length + PAGE_SIZE,
+  });
 };
 
 const handleDownloadUpToLimit = async () => {
-  let snapshot = tableRef.current?.getSnapshot();
-  while (
-    snapshot?.hasNextPage
-    && snapshot.rows.length < ${MAX_DOWNLOAD_ROWS}
-  ) {
-    await tableRef.current?.loadNextPage();
-    snapshot = tableRef.current?.getSnapshot();
-  }
-
+  const snapshot = await tableRef.current?.getSnapshot({
+    rowLimit: ${MAX_DOWNLOAD_ROWS},
+  });
   if (!snapshot) {
     return;
   }
 
-  const csv = toCsv(snapshot.columns, snapshot.rows);
+  const csv = toCsv(
+    snapshot.columns,
+    snapshot.rows.slice(0, ${MAX_DOWNLOAD_ROWS}),
+  );
   downloadCsv(csv, "employees-loaded-rows-capped.csv");
 };
 
 return (
   <>
     <button onClick={handleDownload}>Download loaded rows as CSV</button>
-    <button onClick={handleLoadNextPage}>Load next page</button>
+    <button onClick={handleLoadMoreRows}>Load ${PAGE_SIZE} more rows</button>
     <button onClick={handleDownloadUpToLimit}>
       Download up to ${MAX_DOWNLOAD_ROWS} rows as CSV
     </button>
     <ObjectTable
       objectType={Employee}
       columnDefinitions={employeeColumns}
-      pageSize={5}
+      pageSize={PAGE_SIZE}
       tableRef={tableRef}
     />
   </>
@@ -142,19 +141,25 @@ function LoadedDataDownloadExample(): React.ReactElement {
     "Download reads the rows currently loaded in ObjectTable.",
   );
 
-  const handleLoadNextPage = useCallback(async () => {
-    const snapshot = tableRef.current?.getSnapshot();
+  const handleLoadMoreRows = useCallback(async () => {
+    const snapshot = await tableRef.current?.getSnapshot();
     if (!snapshot?.hasNextPage) {
       setMessage("No next page to load.");
       return;
     }
 
-    await tableRef.current?.loadNextPage();
-    setMessage("Loaded next page. Download again to include it.");
+    const nextSnapshot = await tableRef.current?.getSnapshot({
+      rowLimit: snapshot.rows.length + PAGE_SIZE,
+    });
+    setMessage(
+      nextSnapshot != null && nextSnapshot.rows.length > snapshot.rows.length
+        ? `Loaded up to ${PAGE_SIZE} more rows. Download again to include them.`
+        : "No additional rows were loaded.",
+    );
   }, []);
 
-  const handleDownload = useCallback(() => {
-    const snapshot = tableRef.current?.getSnapshot();
+  const handleDownload = useCallback(async () => {
+    const snapshot = await tableRef.current?.getSnapshot();
     if (!snapshot) {
       setMessage("The table is not ready yet.");
       return;
@@ -170,7 +175,9 @@ function LoadedDataDownloadExample(): React.ReactElement {
   const handleDownloadUpToLimit = useCallback(async () => {
     setIsDownloadingUpToLimit(true);
     try {
-      const { snapshot, reachedLimit } = await loadPagesUpToLimit(tableRef);
+      const snapshot = await tableRef.current?.getSnapshot({
+        rowLimit: MAX_DOWNLOAD_ROWS,
+      });
       if (!snapshot) {
         setMessage("The table is not ready yet.");
         return;
@@ -181,7 +188,7 @@ function LoadedDataDownloadExample(): React.ReactElement {
         "employees-loaded-rows-capped.csv",
       );
       setMessage(
-        reachedLimit
+        snapshot.rows.length > MAX_DOWNLOAD_ROWS || snapshot.hasNextPage
           ? `Downloaded the first ${MAX_DOWNLOAD_ROWS} loaded rows. Narrow the table filters to export fewer rows.`
           : "Loaded every available page and downloaded the rows.",
       );
@@ -199,8 +206,8 @@ function LoadedDataDownloadExample(): React.ReactElement {
         <button onClick={handleDownload} type="button">
           Download loaded rows as CSV
         </button>{" "}
-        <button onClick={handleLoadNextPage} type="button">
-          Load next page
+        <button onClick={handleLoadMoreRows} type="button">
+          Load {PAGE_SIZE} more rows
         </button>{" "}
         <button
           disabled={isDownloadingUpToLimit}
@@ -211,49 +218,21 @@ function LoadedDataDownloadExample(): React.ReactElement {
             ? `Loading up to ${MAX_DOWNLOAD_ROWS} rows…`
             : `Download up to ${MAX_DOWNLOAD_ROWS} rows as CSV`}
         </button>
-        <div
-          aria-live="polite"
-          style={{ marginTop: 8 }}
-        >
+        <div aria-live="polite" style={{ marginTop: 8 }}>
           {message}
         </div>
       </div>
       <ObjectTable
         objectType={Employee}
         columnDefinitions={employeeColumns}
-        pageSize={5}
+        pageSize={PAGE_SIZE}
         tableRef={tableRef}
       />
     </div>
   );
 }
 
-async function loadPagesUpToLimit(
-  tableRef: RefObject<ObjectTableHandle<typeof Employee>>,
-): Promise<{
-  snapshot: ObjectTableSnapshot<typeof Employee> | undefined;
-  reachedLimit: boolean;
-}> {
-  let snapshot = tableRef.current?.getSnapshot();
-  while (
-    snapshot?.hasNextPage
-    && snapshot.rows.length < MAX_DOWNLOAD_ROWS
-  ) {
-    await tableRef.current?.loadNextPage();
-    snapshot = tableRef.current?.getSnapshot();
-  }
-
-  return {
-    snapshot,
-    reachedLimit: (snapshot?.rows.length ?? 0) >= MAX_DOWNLOAD_ROWS
-      && snapshot?.hasNextPage === true,
-  };
-}
-
-function toCsv(
-  columns: ObjectTableDataColumn[],
-  rows: EmployeeRow[],
-): string {
+function toCsv(columns: ObjectTableDataColumn[], rows: EmployeeRow[]): string {
   return [
     columns.map((column) => escapeCsvCell(column.name)).join(","),
     ...rows.map((row) =>
