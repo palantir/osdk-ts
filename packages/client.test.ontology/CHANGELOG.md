@@ -1,5 +1,11 @@
 # @osdk/client.test.ontology
 
+## 2.28.0
+
+### Patch Changes
+
+- @osdk/api@2.28.0
+
 ## 2.27.0
 
 ### Patch Changes

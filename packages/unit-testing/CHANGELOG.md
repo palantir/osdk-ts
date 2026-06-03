@@ -1,5 +1,20 @@
 # @osdk/unit-testing
 
+## 0.14.0
+
+### Minor Changes
+
+- 2803fd8: Move vitest from dependencies to devDependencies since it is only used in tests, not in the shipped output
+
+### Patch Changes
+
+- Updated dependencies [a5066b5]
+- Updated dependencies [3e03544]
+- Updated dependencies [13132b8]
+  - @osdk/client@2.28.0
+  - @osdk/functions@1.12.0
+  - @osdk/api@2.28.0
+
 ## 0.13.0
 
 ### Minor Changes
