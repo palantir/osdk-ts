@@ -42,7 +42,10 @@ export interface ObjectTableHandle<
    *
    * The snapshot includes visible data columns only, excludes internal control
    * columns such as row selection, and does not fetch additional pages unless
-   * a positive finite `rowLimit` is provided.
+   * a positive finite `rowLimit` is provided. `rowLimit` is a pagination
+   * threshold, not a hard cap: the returned snapshot can contain more rows when
+   * they were already loaded or when the final fetched page crosses the
+   * threshold.
    * Cell values come from the table's accessor values, not from rendered React
    * content supplied by `renderCell`.
    */
@@ -52,6 +55,13 @@ export interface ObjectTableHandle<
 }
 
 export interface ObjectTableSnapshotOptions {
+  /**
+   * Fetches additional pages until at least this many rows are loaded or
+   * pagination stops.
+   *
+   * This is not a hard maximum. The returned snapshot can contain more rows
+   * because ObjectTable keeps already-loaded rows and fetches full pages.
+   */
   rowLimit?: number;
 }
 

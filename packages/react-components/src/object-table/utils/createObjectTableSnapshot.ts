@@ -34,12 +34,10 @@ interface CreateObjectTableSnapshotParams<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 > {
-  table: Table<
-    Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
-  >;
+  table: Table<Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>>;
   hasNextPage: boolean;
   isLoading: boolean;
-  error: unknown | undefined;
+  error: unknown;
   totalCount: string | undefined;
 }
 
@@ -52,22 +50,20 @@ export function createObjectTableSnapshot<
   isLoading,
   error,
   totalCount,
-}: CreateObjectTableSnapshotParams<Q, RDPs>): ObjectTableSnapshot<
-  Q,
-  RDPs
-> {
-  const columns = table.getVisibleLeafColumns()
-    .filter(column => !CONTROL_COLUMN_IDS.has(column.id))
-    .map(column => ({
+}: CreateObjectTableSnapshotParams<Q, RDPs>): ObjectTableSnapshot<Q, RDPs> {
+  const columns = table
+    .getVisibleLeafColumns()
+    .filter((column) => !CONTROL_COLUMN_IDS.has(column.id))
+    .map((column) => ({
       id: column.id,
       name: getColumnName(column),
     }));
 
-  const loadedDataColumnIds = new Set(columns.map(column => column.id));
+  const loadedDataColumnIds = new Set(columns.map((column) => column.id));
 
   return {
     columns,
-    rows: table.getRowModel().rows.map(row => ({
+    rows: table.getRowModel().rows.map((row) => ({
       id: row.id,
       object: row.original,
       getValue: (columnId: string) => {
@@ -84,17 +80,15 @@ export function createObjectTableSnapshot<
   };
 }
 
-function getColumnName<TData>(
-  column: Column<TData, unknown>,
-): string {
-  const columnName = column.columnDef.meta?.columnName;
-  if (columnName != null) {
-    return columnName;
-  }
-
+function getColumnName<TData>(column: Column<TData, unknown>): string {
   const header = column.columnDef.header;
   if (typeof header === "string") {
     return header;
+  }
+
+  const columnName = column.columnDef.meta?.columnName;
+  if (columnName != null) {
+    return columnName;
   }
 
   return column.id;

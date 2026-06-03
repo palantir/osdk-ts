@@ -63,8 +63,10 @@ interface UseObjectTableSnapshotHandleParams<
 /**
  * Exposes `getSnapshot` on `tableRef`. A snapshot is a point-in-time read of the
  * table's committed rows and pagination state. When a caller passes a positive
- * `rowLimit`, `getSnapshot` pages through `fetchMore` until it has that many rows
- * (or the data set is exhausted / errors), then resolves.
+ * `rowLimit`, `getSnapshot` pages through `fetchMore` until it has at least
+ * that many rows (or the data set is exhausted / errors), then resolves.
+ * `rowLimit` is not a hard cap because ObjectTable keeps already-loaded rows
+ * and fetches complete pages.
  */
 export function useObjectTableSnapshotHandle<
   Q extends ObjectOrInterfaceDefinition,
@@ -170,11 +172,20 @@ export function useObjectTableSnapshotHandle<
 
         const rowsBefore = countRows(inputs);
 
-        // Race unmount so a fetch that never resolves can't strand the caller.
-        const fetched = await Promise.race([
-          currentFetchMore().then(() => true),
-          unmountedRef.current.promise.then(() => false),
-        ]);
+        let fetched: boolean;
+        try {
+          // Race unmount so a fetch that never resolves can't strand the caller.
+          fetched = await Promise.race([
+            currentFetchMore().then(() => true),
+            unmountedRef.current.promise.then(() => false),
+          ]);
+        } catch {
+          // The underlying table hook publishes fetch failures through its
+          // committed error state. Resolve with the latest committed snapshot so
+          // imperative callers can inspect the same shape as other terminal
+          // pagination paths instead of handling a rejected getSnapshot promise.
+          return readSnapshot();
+        }
         if (!fetched || !mountedRef.current) {
           return readSnapshot();
         }
@@ -182,9 +193,9 @@ export function useObjectTableSnapshotHandle<
         await waitForNextCommit();
         inputs = inputsRef.current;
 
-        // A fetch that added no rows (deduped or empty page) means we can't
-        // reach the limit — stop rather than spin.
-        if (countRows(inputs) === rowsBefore) {
+        // A fetch that does not increase the committed row count means we can't
+        // make reliable progress toward the limit — stop rather than spin.
+        if (countRows(inputs) <= rowsBefore) {
           break;
         }
       }

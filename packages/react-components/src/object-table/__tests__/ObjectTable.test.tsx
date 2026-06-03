@@ -216,6 +216,25 @@ describe(ObjectTable, () => {
     expect(fetchMore).not.toHaveBeenCalled();
   });
 
+  it("resolves with the latest snapshot when fetching the next page fails", async () => {
+    const fetchError = new Error("Could not fetch next page");
+    const fetchMore = vi.fn(async () => {
+      throw fetchError;
+    });
+    const row = createRow({ id: "1", name: "Ada", status: "Active" });
+    mockTableData({ data: [row], fetchMore, hasMore: true });
+
+    const ref = React.createRef<ObjectTableHandle<TestObject>>();
+    render(<ObjectTable tableRef={ref} objectType={TestObjectType} />);
+
+    const snapshot = await ref.current!.getSnapshot({ rowLimit: 2 });
+
+    expect(snapshot.rows).toHaveLength(1);
+    expect(snapshot.hasNextPage).toBe(true);
+    expect(snapshot.error).toBeUndefined();
+    expect(fetchMore).toHaveBeenCalledTimes(1);
+  });
+
   it("does not fetch for invalid row limits", async () => {
     const fetchMore = vi.fn(async () => {});
     const row = createRow({ id: "1", name: "Ada", status: "Active" });
@@ -250,6 +269,37 @@ describe(ObjectTable, () => {
     // looping forever chasing a limit the data set can't reach.
     fetchMoreFinished.resolve();
     await act(async () => {
+      await fetchMoreFinished.promise;
+    });
+
+    const snapshot = await snapshotPromise;
+
+    expect(snapshot.rows).toHaveLength(1);
+    expect(snapshot.hasNextPage).toBe(true);
+    expect(fetchMore).toHaveBeenCalledTimes(1);
+  });
+
+  it("stops fetching when a committed page decreases the loaded row count", async () => {
+    const fetchMoreFinished = createDeferred<void>();
+    const fetchMore = vi.fn(() => fetchMoreFinished.promise);
+    const firstRow = createRow({ id: "1", name: "Ada", status: "Active" });
+    const secondRow = createRow({ id: "2", name: "Grace", status: "Active" });
+    mockTableData({ data: [firstRow, secondRow], fetchMore, hasMore: true });
+
+    const ref = React.createRef<ObjectTableHandle<TestObject>>();
+    const { rerender } = render(
+      <ObjectTable tableRef={ref} objectType={TestObjectType} />,
+    );
+
+    const snapshotPromise = ref.current!.getSnapshot({ rowLimit: 3 });
+
+    expect(fetchMore).toHaveBeenCalledTimes(1);
+    expect(await isPromiseSettled(snapshotPromise)).toBe(false);
+
+    mockTableData({ data: [firstRow], fetchMore, hasMore: true });
+    fetchMoreFinished.resolve();
+    await act(async () => {
+      rerender(<ObjectTable tableRef={ref} objectType={TestObjectType} />);
       await fetchMoreFinished.promise;
     });
 

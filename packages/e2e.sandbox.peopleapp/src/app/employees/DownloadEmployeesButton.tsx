@@ -12,8 +12,9 @@ import type { Employee } from "../../generatedNoCheck2/index.js";
 // lines up.
 type RDPs = { managerName: "string" };
 
-// Cap the export so a large object set can't pull unbounded pages into the
-// client. getSnapshot pages until it has this many rows or the set is exhausted.
+// Bound pagination work so a large object set can't pull unbounded pages into
+// the client. This is a fetch threshold, not a CSV row cap: getSnapshot keeps
+// already-loaded rows and fetches full pages, so the CSV can contain more rows.
 const MAX_DOWNLOAD_ROWS = 10_000;
 
 export function DownloadEmployeesButton(

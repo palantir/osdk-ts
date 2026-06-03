@@ -69,7 +69,7 @@ export const WithLoadedDataDownload: Story = {
     docs: {
       description: {
         story:
-          "Uses `tableRef.current.getSnapshot()` to build and download a CSV from visible ObjectTable data. Passing a `rowLimit` explicitly fetches more rows before creating the CSV. The Full name column uses `renderCell`, but the CSV reads the column's accessor value rather than the rendered React element.",
+          "Uses `tableRef.current.getSnapshot()` to build and download a CSV from visible ObjectTable data. Passing a `rowLimit` explicitly fetches more rows before creating the CSV; it is a pagination threshold, so the snapshot can contain more rows when a full page crosses the threshold. The Full name column uses `renderCell`, but the CSV reads the column's accessor value rather than the rendered React element.",
       },
       source: {
         code:
