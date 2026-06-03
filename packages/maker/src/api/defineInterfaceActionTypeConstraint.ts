@@ -15,8 +15,7 @@
  */
 
 import type {
-  InterfaceActionTypeConstraintRid,
-  InterfaceParameterConstraintRid,
+  InterfaceParameterConstraintApiName,
   OntologyIrBaseParameterConstraintType,
   OntologyIrInterfaceParameterConstraint,
 } from "@osdk/client.unstable";
@@ -47,22 +46,6 @@ interface InterfaceActionTypeConstraintDefinition {
   parameters?: Array<ParameterConstraintDefinition>;
 }
 
-let constraintCounter = 0;
-let parameterCounter = 0;
-
-export function resetConstraintCounters(): void {
-  constraintCounter = 0;
-  parameterCounter = 0;
-}
-
-function generateConstraintRid(): InterfaceActionTypeConstraintRid {
-  return `ri.ontology.main.interface-action-type-constraint.${++constraintCounter}` as InterfaceActionTypeConstraintRid;
-}
-
-function generateParameterConstraintRid(): InterfaceParameterConstraintRid {
-  return `ri.ontology.main.interface-parameter-constraint.${++parameterCounter}` as InterfaceParameterConstraintRid;
-}
-
 export function defineInterfaceActionTypeConstraint(
   input: InterfaceActionTypeConstraintDefinition,
 ): void {
@@ -88,19 +71,18 @@ export function defineInterfaceActionTypeConstraint(
   );
 
   const parameters: Record<
-    InterfaceParameterConstraintRid,
+    InterfaceParameterConstraintApiName,
     OntologyIrInterfaceParameterConstraint
   > = {};
   const seenParamApiNames = new Set<string>();
   for (const param of def.parameters ?? []) {
-    const paramRid = generateParameterConstraintRid();
     const paramApiName = param.apiName ?? param.displayName;
     invariant(
       !seenParamApiNames.has(paramApiName),
       `Duplicate parameter constraint apiName "${paramApiName}" in action type constraint ${apiNameWithNamespace}`,
     );
     seenParamApiNames.add(paramApiName);
-    parameters[paramRid] = {
+    parameters[paramApiName] = {
       displayMetadata: {
         displayName: param.displayName,
         apiName: paramApiName,
@@ -111,7 +93,6 @@ export function defineInterfaceActionTypeConstraint(
   }
 
   def.from.actionTypeConstraints.push({
-    rid: generateConstraintRid(),
     metadata: {
       apiName: apiNameWithNamespace,
       displayName: def.displayName ?? apiNameWithoutNamespace,

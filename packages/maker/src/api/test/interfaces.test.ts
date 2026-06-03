@@ -1316,8 +1316,9 @@ describe("Interfaces", () => {
       expect(constraint.requireImplementation).toBe(true);
       expect(Object.keys(constraint.parameters)).toHaveLength(1);
 
-      const paramRid = Object.keys(constraint.parameters)[0];
-      const param = constraint.parameters[paramRid];
+      const paramKey = Object.keys(constraint.parameters)[0];
+      expect(paramKey).toBe("Boolean Param");
+      const param = constraint.parameters[paramKey];
       expect(param.displayMetadata.displayName).toBe("Boolean Param");
       expect(param.displayMetadata.apiName).toBe("Boolean Param");
       expect(param.type).toEqual({ type: "boolean", boolean: {} });
@@ -1372,8 +1373,9 @@ describe("Interfaces", () => {
       });
 
       const constraint = iface.actionTypeConstraints[0];
-      const paramRid = Object.keys(constraint.parameters)[0];
-      const param = constraint.parameters[paramRid];
+      const paramKey = Object.keys(constraint.parameters)[0];
+      expect(paramKey).toBe("boolParam");
+      const param = constraint.parameters[paramKey];
       expect(param.displayMetadata.apiName).toBe("boolParam");
       expect(param.displayMetadata.displayName).toBe("Boolean Param");
     });

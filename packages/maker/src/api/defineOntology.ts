@@ -46,7 +46,6 @@ import { createCodeSnippets } from "./code-snippets/createCodeSnippets.js";
 import type { OntologyDefinition } from "./common/OntologyDefinition.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import type { OntologyEntityType } from "./common/OntologyEntityTypeMapping.js";
-import { resetConstraintCounters } from "./defineInterfaceActionTypeConstraint.js";
 
 // type -> apiName -> entity
 /** @internal */
@@ -95,7 +94,6 @@ export async function defineOntology(
 ): Promise<OntologyIr> {
   namespace = ns;
   dependencies = {};
-  resetConstraintCounters();
   ontologyDefinition = {
     OBJECT_TYPE: {},
     ACTION_TYPE: {},
@@ -665,7 +663,6 @@ export function addNamespaceIfNone(apiName: string): string {
 export function initializeOntologyState(ns: string): void {
   namespace = ns;
   dependencies = {};
-  resetConstraintCounters();
   ontologyDefinition = {
     OBJECT_TYPE: {},
     ACTION_TYPE: {},
