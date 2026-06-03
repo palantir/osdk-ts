@@ -126,7 +126,7 @@ export namespace ObjectMetadata {
      * whose subtype is not exposed by the platform.
      */
     type: "marking";
-    subtype?: "CBAC" | "MANDATORY";
+    markingType?: "CBAC" | "MANDATORY";
   };
 
   export interface Link<

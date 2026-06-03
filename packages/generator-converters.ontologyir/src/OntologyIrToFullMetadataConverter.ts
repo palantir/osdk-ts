@@ -464,7 +464,7 @@ export class OntologyIrToFullMetadataConverter {
         >((acc, input) => {
           acc[input.name] = {
             dataType: convertDataType(input.dataType, func.customTypes),
-            required: input.required ?? false,
+            required: input.required ?? true,
           };
           return acc;
         }, {}),

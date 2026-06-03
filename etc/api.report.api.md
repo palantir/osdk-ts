@@ -1200,7 +1200,7 @@ export namespace ObjectMetadata {
     	// (undocumented)
     export type PropertyTypeMetadata = {
         		type: "marking"
-        		subtype?: "CBAC" | "MANDATORY"
+        		markingType?: "CBAC" | "MANDATORY"
         	};
 }
 

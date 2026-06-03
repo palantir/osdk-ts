@@ -284,6 +284,14 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
             rid: "rid",
             typeClasses: [],
           },
+          unknownMarking: {
+            dataType: {
+              type: "marking",
+              markingType: "INVALID_NOT_IN_API",
+            } as any,
+            rid: "rid",
+            typeClasses: [],
+          },
         },
         rid: "rid",
         status: "ACTIVE",
@@ -294,18 +302,22 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
 
     expect(result.properties.cbacMarking.typeMetadata).toEqual({
       type: "marking",
-      subtype: "CBAC",
+      markingType: "CBAC",
     });
     expect(result.properties.mandatoryMarking.typeMetadata).toEqual({
       type: "marking",
-      subtype: "MANDATORY",
+      markingType: "MANDATORY",
     });
     expect(result.properties.unspecifiedMarking.typeMetadata).toEqual({
       type: "marking",
     });
     expect(result.properties.arrayOfMandatoryMarkings.typeMetadata).toEqual({
       type: "marking",
-      subtype: "MANDATORY",
+      markingType: "MANDATORY",
+    });
+    // unknown markingType is dropped, not forwarded
+    expect(result.properties.unknownMarking.typeMetadata).toEqual({
+      type: "marking",
     });
   });
 

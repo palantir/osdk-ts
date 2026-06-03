@@ -25,7 +25,10 @@ import type {
   ResolvedInterfacePropertyType,
   SharedPropertyType,
 } from "@osdk/foundry.ontologies";
+import { ensureStringEnumSupportedOrUndefined } from "./wireObjectTypeFullMetadataToSdkObjectMetadata.js";
 import { wirePropertyFormattingToSdkFormatting } from "./wirePropertyFormattingToSdkFormatting.js";
+
+const supportedMarkingTypes = ["CBAC", "MANDATORY"] as const;
 
 /**
  * Extracts main value metadata from a struct property type.
@@ -56,20 +59,29 @@ function hasReducers(
 /**
  * Builds the per-`type` {@link ObjectMetadata.PropertyTypeMetadata} for a
  * wire property dataType, looking through `array` to its `subType`. Returns
- * `undefined` when no variant applies. New `typeMetadata` variants should be
- * added here so each call site stays a one-liner.
+ * an object that can be spread directly into the property — either
+ * `{ typeMetadata: ... }` when a variant applies, or `{}` otherwise — so
+ * non-applicable properties don't get a `typeMetadata: undefined` own key.
+ * New `typeMetadata` variants should be added here so each call site stays
+ * a one-liner.
  */
 function extractTypeMetadata(
   dataType: ObjectPropertyType,
-): ObjectMetadata.PropertyTypeMetadata | undefined {
+): Partial<Pick<ObjectMetadata.Property, "typeMetadata">> {
   const inner = dataType.type === "array" ? dataType.subType : dataType;
   if (inner.type === "marking") {
+    const markingType = ensureStringEnumSupportedOrUndefined(
+      inner.markingType,
+      supportedMarkingTypes,
+    );
     return {
-      type: "marking",
-      ...(inner.markingType != null ? { subtype: inner.markingType } : {}),
+      typeMetadata: {
+        type: "marking",
+        ...(markingType != null ? { markingType } : {}),
+      },
     };
   }
-  return undefined;
+  return {};
 }
 
 export function wirePropertyV2ToSdkPropertyDefinition(
@@ -127,7 +139,7 @@ export function wirePropertyV2ToSdkPropertyDefinition(
         valueFormatting: input.valueFormatting != null
           ? wirePropertyFormattingToSdkFormatting(input.valueFormatting, log)
           : undefined,
-        typeMetadata: extractTypeMetadata(input.dataType),
+        ...extractTypeMetadata(input.dataType),
       };
     case "struct": {
       const mainValue = extractMainValue(input.dataType);
@@ -156,7 +168,7 @@ export function wirePropertyV2ToSdkPropertyDefinition(
           ? wirePropertyFormattingToSdkFormatting(input.valueFormatting, log)
           : undefined,
         hasReducers: hasReducers(input.dataType),
-        typeMetadata: extractTypeMetadata(input.dataType),
+        ...extractTypeMetadata(input.dataType),
       };
     }
     case "cipherText": {
