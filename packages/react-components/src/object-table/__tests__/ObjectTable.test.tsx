@@ -216,7 +216,7 @@ describe(ObjectTable, () => {
     expect(fetchMore).not.toHaveBeenCalled();
   });
 
-  it("resolves with the latest snapshot when fetching the next page fails", async () => {
+  it("surfaces the fetch error on the snapshot when fetching the next page rejects", async () => {
     const fetchError = new Error("Could not fetch next page");
     const fetchMore = vi.fn(async () => {
       throw fetchError;
@@ -229,9 +229,12 @@ describe(ObjectTable, () => {
 
     const snapshot = await ref.current!.getSnapshot({ rowLimit: 2 });
 
+    // getSnapshot resolves with the rows loaded so far, but a rejecting
+    // fetchMore must not look like a complete result: the failure is exposed on
+    // snapshot.error so paginated callers (e.g. CSV export) can detect it.
     expect(snapshot.rows).toHaveLength(1);
     expect(snapshot.hasNextPage).toBe(true);
-    expect(snapshot.error).toBeUndefined();
+    expect(snapshot.error).toBe(fetchError);
     expect(fetchMore).toHaveBeenCalledTimes(1);
   });
 

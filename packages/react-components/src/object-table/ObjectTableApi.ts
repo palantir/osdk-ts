@@ -48,6 +48,12 @@ export interface ObjectTableHandle<
    * threshold.
    * Cell values come from the table's accessor values, not from rendered React
    * content supplied by `renderCell`.
+   *
+   * `getSnapshot` always resolves, even when a paginated fetch fails: it returns
+   * the rows loaded so far with the failure exposed on `snapshot.error`. Callers
+   * that require a complete result (e.g. exporting all rows) must inspect
+   * `snapshot.error` and `snapshot.hasNextPage` rather than assuming the snapshot
+   * is complete.
    */
   getSnapshot: (
     options?: ObjectTableSnapshotOptions,

@@ -179,12 +179,18 @@ export function useObjectTableSnapshotHandle<
             currentFetchMore().then(() => true),
             unmountedRef.current.promise.then(() => false),
           ]);
-        } catch {
-          // The underlying table hook publishes fetch failures through its
-          // committed error state. Resolve with the latest committed snapshot so
-          // imperative callers can inspect the same shape as other terminal
-          // pagination paths instead of handling a rejected getSnapshot promise.
-          return readSnapshot();
+        } catch (fetchError: unknown) {
+          // The underlying table hook normally surfaces fetch failures through
+          // committed error state and resolves, in which case the loop exits via
+          // `inputs.error` and the snapshot already carries that error. A
+          // *rejecting* fetchMore bypasses that committed state, so the latest
+          // snapshot wouldn't reflect the failure. Attach it explicitly so
+          // paginated callers (e.g. CSV export) can detect an incomplete result
+          // via `snapshot.error` instead of silently receiving partial rows.
+          const snapshot = readSnapshot();
+          return snapshot.error != null
+            ? snapshot
+            : { ...snapshot, error: fetchError };
         }
         if (!fetched || !mountedRef.current) {
           return readSnapshot();
