@@ -834,10 +834,10 @@ export class OntologyMetadataResolver {
       case "marking":
       case "geohash":
       case "geoshape":
+      case "scenarioReference":
         return Result.ok({});
 
       case "vector":
-      case "scenarioReference":
         return Result.err([
           `Unable to load action ${actionApiName} because it takes an unsupported parameter: ${
             JSON.stringify(

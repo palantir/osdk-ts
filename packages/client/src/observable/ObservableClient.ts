@@ -216,6 +216,21 @@ export interface ObserveListOptions<
    * queries.
    */
   pivotTo?: string;
+
+  /**
+   * When loading objects via an interface type, return the full concrete
+   * object type instances instead of interface views.
+   *
+   * By default, interface queries return objects narrowed to interface
+   * properties only. With `resolveToObjectType: true`, returned objects
+   * include all properties from the implementing object type (e.g. `$title`,
+   * custom properties not on the interface).
+   *
+   * Only has an effect when `type` is an interface.
+   *
+   * @default false
+   */
+  resolveToObjectType?: boolean;
 }
 
 export interface ObserveObjectCallbackArgs<

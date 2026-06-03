@@ -49,7 +49,10 @@
 
 /* Muted styling for filtered-out (count=0) entries. */
 .filteredOutItem {
-  opacity: var(--osdk-filter-filtered-out-item-opacity);
+  --osdk-filter-multiselect-count-color: var(
+    --osdk-filter-filtered-out-item-color
+  );
+
   color: var(--osdk-filter-filtered-out-item-color);
 }
 

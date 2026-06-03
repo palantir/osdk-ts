@@ -313,6 +313,20 @@ export interface ObjectTableProps<
   dedupeIntervalMs?: number;
 
   /**
+   * Enable streaming updates via websocket subscription.
+   * When true, the table will automatically update when matching
+   * objects are added, updated, or removed in Foundry.
+   *
+   * Limitations: `streamUpdates` cannot be used together with `pivotTo` or
+   * `withProperties`. The server does not support websocket subscriptions
+   * for link-traversal or derived-property queries. Those queries still
+   * fetch data normally but won't receive real-time updates.
+   *
+   * @default false
+   */
+  streamUpdates?: boolean;
+
+  /**
    * Number of objects to fetch per page.
    *
    * @default 50

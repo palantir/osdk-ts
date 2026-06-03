@@ -1,5 +1,37 @@
 # @osdk/maker
 
+## 0.32.0
+
+### Minor Changes
+
+- 1bc01d1: Add property validation for direct datasources
+
+### Patch Changes
+
+- @osdk/api@2.28.0
+- @osdk/generator-converters.ontologyir@2.28.0
+
+## 0.31.0
+
+### Patch Changes
+
+- Updated dependencies [8965bdf]
+- Updated dependencies [bd90dba]
+  - @osdk/generator-converters.ontologyir@2.25.0
+  - @osdk/typescript-sdk-docs@0.12.0
+  - @osdk/api@2.25.0
+
+## 0.30.0
+
+### Patch Changes
+
+- Updated dependencies [a492285]
+- Updated dependencies [60aff19]
+- Updated dependencies [d087189]
+  - @osdk/api@2.24.0
+  - @osdk/generator-converters.ontologyir@2.24.0
+  - @osdk/typescript-sdk-docs@0.11.0
+
 ## 0.29.0
 
 ### Minor Changes

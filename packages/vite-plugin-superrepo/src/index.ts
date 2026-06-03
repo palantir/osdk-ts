@@ -78,19 +78,26 @@ export function smartClientPlugin(): Plugin {
         return undefined;
       }
 
+      // Vite's proxy middleware runs before `base` is stripped from the URL,
+      // so each context must carry the base prefix and each rewrite must strip
+      // it back off before forwarding to the foundry-cli service.
+      const basePrefix = normalizeBasePrefix(userConfig.base);
+
       const proxy: Record<string, ProxyOptions> = {};
       const palantirDir = path.join(superrepoRoot, ".palantir");
 
       for (const route of PROXY_ROUTES) {
         const read = inspectDiscovery(superrepoRoot, route.service);
         if (read.kind === "ok") {
-          proxy[route.prefix] = buildProxyOptions(
+          const context = `${basePrefix}${route.prefix}`;
+          proxy[context] = buildProxyOptions(
             read.entry,
             route,
+            basePrefix,
             pendingWarnings,
             getLogger,
           );
-          setupProxies.push({ prefix: route.prefix, target: read.entry.url });
+          setupProxies.push({ prefix: context, target: read.entry.url });
           continue;
         }
         switch (read.kind) {
@@ -151,20 +158,54 @@ export function smartClientPlugin(): Plugin {
       const superrepoRoot = findSuperrepoRoot(server.config.root);
       if (!superrepoRoot) return;
 
+      const ownWatcher = server.watcher;
+
       const palantirDir = path.join(superrepoRoot, ".palantir");
       const expectedFiles = PROXY_ROUTES.map((r) =>
         path.join(palantirDir, `.${r.service}-discovery.json`)
       );
       const expectedFileSet = new Set(expectedFiles);
 
+      // Fingerprint of the current set of live discovery files. We compare
+      // against this after every restart to detect changes that vite swallowed
+      // via its `_restartPromise` dedup, and on every poll tick to detect
+      // chokidar events the watcher never delivered.
+      const snapshot = (): string =>
+        PROXY_ROUTES.map((r) => {
+          const read = inspectDiscovery(superrepoRoot, r.service);
+          return read.kind === "ok"
+            ? `${r.service}:${read.entry.url}`
+            : `${r.service}:${read.kind}`;
+        }).join("|");
+
+      let lastObserved = snapshot();
+      let restartChain: Promise<void> | undefined;
       let restartTimer: ReturnType<typeof setTimeout> | undefined;
+
+      // Restart in a loop until the discovery fingerprint is stable across a
+      // full restart cycle
+      const doRestart = (): Promise<void> => {
+        if (restartChain) return restartChain;
+        restartChain = (async () => {
+          let before: string;
+          do {
+            before = snapshot();
+            await server.restart();
+          } while (snapshot() !== before);
+          lastObserved = before;
+        })().finally(() => {
+          restartChain = undefined;
+        });
+        return restartChain;
+      };
+
       const scheduleRestart = (): void => {
         if (restartTimer) clearTimeout(restartTimer);
         // Coalesce rename+write bursts that commonly emit multiple events
         // for a single discovery file update.
         restartTimer = setTimeout(() => {
           restartTimer = undefined;
-          void server.restart();
+          void doRestart();
         }, 100);
       };
 
@@ -177,7 +218,25 @@ export function smartClientPlugin(): Plugin {
       server.watcher.on("change", onPathChange);
       server.watcher.on("unlink", onPathChange);
 
+      // Polling fallback. Chokidar on Linux can drop the `add` event for a
+      // path that did not exist when `server.watcher.add()` ran (vite passes
+      // `ignoreInitial: true`
+      const pollInterval = setInterval(() => {
+        // Vite restart swaps `server.watcher` for a fresh instance; stop
+        // polling once that happens so we don't leak a timer per restart.
+        if (server.watcher !== ownWatcher) {
+          clearInterval(pollInterval);
+          return;
+        }
+        const current = snapshot();
+        if (current !== lastObserved) {
+          lastObserved = current;
+          scheduleRestart();
+        }
+      }, 1000);
+
       const cleanup = (): void => {
+        clearInterval(pollInterval);
         if (restartTimer) clearTimeout(restartTimer);
         server.watcher.off("add", onPathChange);
         server.watcher.off("change", onPathChange);
@@ -200,8 +259,8 @@ export function smartClientPlugin(): Plugin {
 
       // Redirect the `@osdk/client` import to our shim. The shim
       // re-exports the real module but replaces `createClient` with one
-      // that (a) forces `window.location.origin` as the base URL so
-      // every OSDK request flows through Vite's proxy, and (b) wraps
+      // that (a) forces the dev server's origin and base path as the base
+      // URL so every OSDK request flows through Vite's proxy, and (b) wraps
       // the resulting client with `smartClient` so `executeFunction`
       // calls are routed to the local function runtimes. `@osdk/oauth`
       // and any other imports are untouched.
@@ -216,6 +275,7 @@ export function smartClientPlugin(): Plugin {
 function buildProxyOptions(
   entry: DiscoveryEntry,
   route: { prefix: string; rewrite: boolean },
+  basePrefix: string,
   pendingWarnings: string[],
   getLogger: () => Logger | undefined,
 ): ProxyOptions {
@@ -232,9 +292,14 @@ function buildProxyOptions(
       });
     },
   };
-  if (route.rewrite) {
+  // Always strip the base prefix; additionally strip the route prefix for
+  // routes whose backend is not mounted under it.
+  const stripPrefix = route.rewrite
+    ? `${basePrefix}${route.prefix}`
+    : basePrefix;
+  if (stripPrefix) {
     options.rewrite = (p) =>
-      p.replace(new RegExp(`^${escapeRegExp(route.prefix)}`), "");
+      p.replace(new RegExp(`^${escapeRegExp(stripPrefix)}`), "");
   }
   if (isHttps) {
     if (entry.caCertPath !== undefined && fs.existsSync(entry.caCertPath)) {
@@ -255,4 +320,15 @@ function buildProxyOptions(
 
 function escapeRegExp(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/**
+ * Reduce a Vite `base` to a bare path prefix with no trailing slash, so
+ * `${basePrefix}${route.prefix}` reads as a clean path (`/base/api`). The root
+ * base (`/`, the default) yields an empty prefix, leaving proxy contexts
+ * identical to a non-prefixed dev server.
+ */
+function normalizeBasePrefix(base: string | undefined): string {
+  if (base == null || base === "/" || base === "") return "";
+  return base.endsWith("/") ? base.slice(0, -1) : base;
 }

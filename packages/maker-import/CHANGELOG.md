@@ -1,5 +1,45 @@
 # @osdk/maker-import
 
+## 0.8.0
+
+### Patch Changes
+
+- Updated dependencies [1bc01d1]
+  - @osdk/maker@0.32.0
+  - @osdk/client.unstable@2.28.0
+
+## 0.7.0
+
+### Minor Changes
+
+- 5ff7aa5: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.61.0` to `2.63.0`. The OntologyScenarios endpoints now expose a `preview` query-param slot, so `createScenario` and the `EXPERIMENTAL_ScenarioClient` read methods pass `{ preview: true }` directly instead of relying on a fetch-level URL rewrite.
+
+### Patch Changes
+
+- @osdk/client.unstable@2.27.0
+
+## 0.6.0
+
+### Minor Changes
+
+- 8965bdf: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+
+### Patch Changes
+
+- @osdk/maker@0.31.0
+- @osdk/client.unstable@2.25.0
+
+## 0.5.0
+
+### Minor Changes
+
+- 60aff19: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+
+### Patch Changes
+
+- @osdk/maker@0.30.0
+- @osdk/client.unstable@2.24.0
+
 ## 0.4.0
 
 ### Patch Changes

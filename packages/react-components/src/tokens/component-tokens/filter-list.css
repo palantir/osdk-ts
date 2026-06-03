@@ -24,7 +24,6 @@
 
   /* Filtered-out entries: values present in the wider scope but absent from
      the narrowed scope. Rendered as count=0 muted rows. */
-  --osdk-filter-filtered-out-item-opacity: 0.5;
   --osdk-filter-filtered-out-item-color: var(--osdk-typography-color-muted);
 
   /* Filter List Header */

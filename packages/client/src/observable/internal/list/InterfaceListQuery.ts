@@ -126,11 +126,15 @@ export class InterfaceListQuery extends ListQuery {
     return reloadDataAsFullObjects(this.store.client, data);
   }
 
+  private wrapObject(object: ObjectHolder): ObjectHolder | InterfaceHolder {
+    return this.options.resolveToObjectType ? object : object.$as(this.apiName);
+  }
+
   protected createPayload(
     params: CollectionConnectableParams,
   ): ListPayload {
     const resolvedList = params.resolvedData?.map((obj: ObjectHolder) =>
-      obj.$as(this.apiName)
+      this.wrapObject(obj)
     );
 
     return {
@@ -148,12 +152,12 @@ export class InterfaceListQuery extends ListQuery {
 
     const added = Array.from(changes.addedObjects).filter(matchesApiName).map((
       [, object],
-    ) => object.$as(this.apiName));
+    ) => this.wrapObject(object));
 
     const modified = Array.from(changes.modifiedObjects).filter(matchesApiName)
       .map((
         [, object],
-      ) => object.$as(this.apiName));
+      ) => this.wrapObject(object));
 
     return {
       added: {

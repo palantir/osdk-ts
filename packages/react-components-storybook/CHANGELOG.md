@@ -1,5 +1,52 @@
 # @osdk/react-components-storybook
 
+## 0.23.0
+
+### Minor Changes
+
+- 46f3ef6: Import CbacPicker docs from source package instead of inlining a summary in Storybook MDX
+
+### Patch Changes
+
+- Updated dependencies [58922c1]
+  - @osdk/faux@0.23.0
+
+## 0.22.0
+
+### Patch Changes
+
+- Updated dependencies [5ff7aa5]
+  - @osdk/faux@0.22.0
+
+## 0.21.0
+
+### Minor Changes
+
+- e7acde5: Add per-component MDX documentation pages importing existing docs
+- ef3e8c1: Sort Docs entry first within each component folder in Storybook sidebar
+- a26b490: Sort attached MDX docs entries first within component folders
+- 2e92b90: Enable standalone MDX documentation pages co-located with stories
+
+## 0.20.0
+
+### Patch Changes
+
+- Updated dependencies [8965bdf]
+  - @osdk/faux@0.21.0
+
+## 0.19.0
+
+### Minor Changes
+
+- 4c53e48: Hide the DatePicker popover when its anchor scrolls out of view. Fixes an issue where the date picker in `ObjectTable` cells continued to render outside the table bounds after the cell scrolled out of the visible area.
+
+## 0.18.0
+
+### Patch Changes
+
+- Updated dependencies [60aff19]
+  - @osdk/faux@0.20.0
+
 ## 0.17.0
 
 ### Minor Changes

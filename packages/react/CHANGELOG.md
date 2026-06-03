@@ -1,5 +1,36 @@
 # @osdkkit/react
 
+## 2.28.0
+
+### Minor Changes
+
+- a5066b5: add resolveToObjectType option to useOsdkObjects so interface queries return full concrete object-type instances
+
+## 2.27.0
+
+### Minor Changes
+
+- 5ff7aa5: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.61.0` to `2.63.0`. The OntologyScenarios endpoints now expose a `preview` query-param slot, so `createScenario` and the `EXPERIMENTAL_ScenarioClient` read methods pass `{ preview: true }` directly instead of relying on a fetch-level URL rewrite.
+
+## 2.26.0
+
+### Minor Changes
+
+- 90f7fb6: Fix useOsdkFunction objectSet param not serialized correctly. Updated useStableObjectSet and useOsdkFunctions to use the same stableSerialize function
+- c3752ce: Temporarily remove the AIP chat entry points and AIP dependencies.
+
+## 2.25.0
+
+### Minor Changes
+
+- 8965bdf: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+
+## 2.24.0
+
+### Minor Changes
+
+- 60aff19: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+
 ## 2.23.0
 
 ## 2.22.0
