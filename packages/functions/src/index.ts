@@ -15,11 +15,13 @@
  */
 
 export type {
+  Byte,
   DateISOString,
   Double,
   Float,
   Integer,
   Long,
+  Short,
   TimestampISOString,
 } from "./PrimitiveTypes.js";
 
