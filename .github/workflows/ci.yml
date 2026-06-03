@@ -72,6 +72,38 @@ jobs:
           git fetch origin main:main
           pnpm exec changeset status --since=origin/main
 
+  new-package-check:
+    name: New package check
+    if: ${{ github.event_name == 'pull_request' }}
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Transpile tool.release
+        run: pnpm exec turbo transpile --filter=@osdk/tool.release
+
+      - name: Check for new unreleasable packages
+        continue-on-error: true
+        env:
+          BASE_REF: ${{ github.base_ref || 'main' }}
+        run: |
+          git fetch origin "$BASE_REF:refs/remotes/origin/$BASE_REF"
+          node ./packages/tool.release/build/esm/checkPublishable.js --base "origin/$BASE_REF"
 
   build:
     name: Build and Test
