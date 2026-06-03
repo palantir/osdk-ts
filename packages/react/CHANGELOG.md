@@ -1,5 +1,11 @@
 # @osdkkit/react
 
+## 2.28.0
+
+### Minor Changes
+
+- a5066b5: add resolveToObjectType option to useOsdkObjects so interface queries return full concrete object-type instances
+
 ## 2.27.0
 
 ### Minor Changes

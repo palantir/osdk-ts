@@ -1,5 +1,13 @@
 # @osdk/react-components
 
+## 0.24.0
+
+### Minor Changes
+
+- 2bc0b1a: disable filter-list reset until state diverges from initial; gate the reset button via a single `canReset` prop on `BaseFilterList` and deprecate `hasVisibilityChanges`
+- ab08d53: fix broken guide links in README by using absolute URLs so they resolve on npm
+- f13c85a: Update ObjectTable header select-all checkbox aria label to reflect actual action (deselect when rows are selected)
+
 ## 0.23.0
 
 ### Minor Changes

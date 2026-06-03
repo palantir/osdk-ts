@@ -1,5 +1,11 @@
 # @osdk/vite-plugin-superrepo
 
+## 0.8.0
+
+### Minor Changes
+
+- 57c7950: Respect subpaths when proxying API requests
+
 ## 0.7.0
 
 ### Minor Changes

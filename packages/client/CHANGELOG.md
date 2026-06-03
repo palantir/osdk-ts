@@ -1,5 +1,20 @@
 # @osdk/client
 
+## 2.28.0
+
+### Minor Changes
+
+- a5066b5: add resolveToObjectType option to useOsdkObjects so interface queries return full concrete object-type instances
+- 3e03544: fix crash when useLinks is called with an interface-typed source object
+- 13132b8: Fix writeable client reads not flushing staged edits: persist `flushEdits` onto the client context and wire it to the EditRequestManager so awaiting a read (fetchOne/fetchPage/aggregate/query) flushes pending creates/updates first.
+
+### Patch Changes
+
+- @osdk/shared.test@2.21.0
+- @osdk/api@2.28.0
+- @osdk/client.unstable@2.28.0
+- @osdk/generator-converters@2.28.0
+
 ## 2.27.0
 
 ### Minor Changes
