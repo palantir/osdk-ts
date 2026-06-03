@@ -87,17 +87,6 @@ const handleDownload = async () => {
   downloadCsv(csv, "employees-loaded-rows.csv");
 };
 
-const handleLoadMoreRows = async () => {
-  const snapshot = await tableRef.current?.getSnapshot();
-  if (!snapshot?.hasNextPage) {
-    return;
-  }
-
-  await tableRef.current?.getSnapshot({
-    rowLimit: snapshot.rows.length + PAGE_SIZE,
-  });
-};
-
 const handleDownloadUpToLimit = async () => {
   const snapshot = await tableRef.current?.getSnapshot({
     rowLimit: ${MAX_DOWNLOAD_ROWS},
@@ -116,7 +105,6 @@ const handleDownloadUpToLimit = async () => {
 return (
   <>
     <button onClick={handleDownload}>Download loaded rows as CSV</button>
-    <button onClick={handleLoadMoreRows}>Load ${PAGE_SIZE} more rows</button>
     <button onClick={handleDownloadUpToLimit}>
       Download up to ${MAX_DOWNLOAD_ROWS} rows as CSV
     </button>
@@ -136,64 +124,41 @@ return (
 
 function LoadedDataDownloadExample(): React.ReactElement {
   const tableRef = useRef<ObjectTableHandle<typeof Employee>>(null);
-  const [isDownloadingUpToLimit, setIsDownloadingUpToLimit] = useState(false);
-  const [message, setMessage] = useState(
-    "Download reads the rows currently loaded in ObjectTable.",
-  );
-
-  const handleLoadMoreRows = useCallback(async () => {
-    const snapshot = await tableRef.current?.getSnapshot();
-    if (!snapshot?.hasNextPage) {
-      setMessage("No next page to load.");
-      return;
-    }
-
-    const nextSnapshot = await tableRef.current?.getSnapshot({
-      rowLimit: snapshot.rows.length + PAGE_SIZE,
-    });
-    setMessage(
-      nextSnapshot != null && nextSnapshot.rows.length > snapshot.rows.length
-        ? `Loaded up to ${PAGE_SIZE} more rows. Download again to include them.`
-        : "No additional rows were loaded.",
-    );
-  }, []);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const handleDownload = useCallback(async () => {
-    const snapshot = await tableRef.current?.getSnapshot();
-    if (!snapshot) {
-      setMessage("The table is not ready yet.");
-      return;
-    }
+    setIsDownloading(true);
+    try {
+      const snapshot = await tableRef.current?.getSnapshot();
+      if (!snapshot) {
+        return;
+      }
 
-    downloadCsv(
-      toCsv(snapshot.columns, snapshot.rows),
-      "employees-loaded-rows.csv",
-    );
-    setMessage("Downloaded currently loaded rows.");
+      await downloadCsv(
+        toCsv(snapshot.columns, snapshot.rows),
+        "employees-loaded-rows.csv",
+      );
+    } finally {
+      setIsDownloading(false);
+    }
   }, []);
 
   const handleDownloadUpToLimit = useCallback(async () => {
-    setIsDownloadingUpToLimit(true);
+    setIsDownloading(true);
     try {
       const snapshot = await tableRef.current?.getSnapshot({
         rowLimit: MAX_DOWNLOAD_ROWS,
       });
       if (!snapshot) {
-        setMessage("The table is not ready yet.");
         return;
       }
 
-      downloadCsv(
+      await downloadCsv(
         toCsv(snapshot.columns, snapshot.rows),
         "employees-loaded-rows-capped.csv",
       );
-      setMessage(
-        snapshot.rows.length > MAX_DOWNLOAD_ROWS || snapshot.hasNextPage
-          ? `Downloaded the first ${MAX_DOWNLOAD_ROWS} loaded rows. Narrow the table filters to export fewer rows.`
-          : "Loaded every available page and downloaded the rows.",
-      );
     } finally {
-      setIsDownloadingUpToLimit(false);
+      setIsDownloading(false);
     }
   }, []);
 
@@ -203,24 +168,22 @@ function LoadedDataDownloadExample(): React.ReactElement {
       style={{ height: "600px", display: "flex", flexDirection: "column" }}
     >
       <div style={{ padding: "8px 0", marginBottom: 8 }}>
-        <button onClick={handleDownload} type="button">
+        <button
+          disabled={isDownloading}
+          onClick={handleDownload}
+          type="button"
+        >
           Download loaded rows as CSV
         </button>{" "}
-        <button onClick={handleLoadMoreRows} type="button">
-          Load {PAGE_SIZE} more rows
-        </button>{" "}
         <button
-          disabled={isDownloadingUpToLimit}
+          disabled={isDownloading}
           onClick={handleDownloadUpToLimit}
           type="button"
         >
-          {isDownloadingUpToLimit
-            ? `Loading up to ${MAX_DOWNLOAD_ROWS} rows…`
+          {isDownloading
+            ? "Downloading…"
             : `Download up to ${MAX_DOWNLOAD_ROWS} rows as CSV`}
         </button>
-        <div aria-live="polite" style={{ marginTop: 8 }}>
-          {message}
-        </div>
       </div>
       <ObjectTable
         objectType={Employee}
@@ -285,7 +248,7 @@ function escapeCsvCell(value: string): string {
   return `"${value.replaceAll("\"", "\"\"")}"`;
 }
 
-function downloadCsv(csv: string, fileName: string): void {
+async function downloadCsv(csv: string, fileName: string): Promise<void> {
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
@@ -296,5 +259,10 @@ function downloadCsv(csv: string, fileName: string): void {
   document.body.append(link);
   link.click();
   link.remove();
+  // click() only queues the download; the browser reads the blob from the
+  // object URL on a later tick. Wait a tick before revoking so the download has
+  // started — and so awaiting callers keep their loading state until the
+  // browser has taken over the blob.
+  await new Promise((resolve) => setTimeout(resolve, 0));
   URL.revokeObjectURL(url);
 }

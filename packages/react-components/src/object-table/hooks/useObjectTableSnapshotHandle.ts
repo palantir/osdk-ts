@@ -148,15 +148,18 @@ export function useObjectTableSnapshotHandle<
       options?: ObjectTableSnapshotOptions,
     ): Promise<ObjectTableSnapshot<Q, RDPs>> {
       const rowLimit = normalizeRowLimit(options?.rowLimit);
-      let snapshot = readSnapshot();
       if (rowLimit == null) {
-        return snapshot;
+        return readSnapshot();
       }
 
+      // Check pagination state off the committed inputs directly rather than
+      // materializing a full snapshot each pass — the loop only needs the row
+      // count and terminal flags, so the row/cell walk happens once, at return.
+      let inputs = inputsRef.current;
       while (
-        snapshot.rows.length < rowLimit
-        && snapshot.hasNextPage
-        && snapshot.error == null
+        countRows(inputs) < rowLimit
+        && inputs.hasNextPage
+        && inputs.error == null
       ) {
         // Read the live ref each iteration: fetchMore can flip to/from
         // undefined as pages run out while the loop is awaiting.
@@ -165,7 +168,7 @@ export function useObjectTableSnapshotHandle<
           break;
         }
 
-        const rowsBefore = snapshot.rows.length;
+        const rowsBefore = countRows(inputs);
 
         // Race unmount so a fetch that never resolves can't strand the caller.
         const fetched = await Promise.race([
@@ -177,16 +180,16 @@ export function useObjectTableSnapshotHandle<
         }
 
         await waitForNextCommit();
-        snapshot = readSnapshot();
+        inputs = inputsRef.current;
 
         // A fetch that added no rows (deduped or empty page) means we can't
         // reach the limit — stop rather than spin.
-        if (snapshot.rows.length === rowsBefore) {
+        if (countRows(inputs) === rowsBefore) {
           break;
         }
       }
 
-      return snapshot;
+      return readSnapshot();
     },
     [readSnapshot, waitForNextCommit],
   );
@@ -205,6 +208,14 @@ function createDeferred(): Deferred {
     resolve = resolvePromise;
   });
   return { promise, resolve: () => resolve() };
+}
+
+function countRows<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef>,
+>(inputs: SnapshotInputs<Q, RDPs>): number {
+  // getRowModel is memoized by TanStack, so this is cheap to call per loop pass.
+  return inputs.table.getRowModel().rows.length;
 }
 
 function drainWaiters(waitersRef: { current: Array<() => void> }): void {
