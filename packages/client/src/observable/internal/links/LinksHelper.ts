@@ -96,6 +96,7 @@ export class LinksHelper extends AbstractHelper<
       canonOrderBy,
       canonSelect,
       options.$includeAllBaseObjectProperties ? true : undefined,
+      options.resolveToObjectType ? true : undefined,
     );
 
     return this.store.queries.get(linkCacheKey, () => {
