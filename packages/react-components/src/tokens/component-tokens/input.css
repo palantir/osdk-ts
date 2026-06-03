@@ -27,6 +27,8 @@
 
   /* Input focus ring */
   --osdk-input-focus-outline: none;
+
+  /* Deprecated: use --osdk-input-focus-outline instead; retained for external compatibility. */
   --osdk-input-focus-width: var(--osdk-emphasis-focus-width);
   --osdk-input-focus-color: var(--osdk-emphasis-focus-color);
   --osdk-input-focus-offset: 0px;

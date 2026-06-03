@@ -33,11 +33,16 @@
       var(--osdk-file-picker-transition-ease),
     border-color var(--osdk-file-picker-transition-duration)
       var(--osdk-file-picker-transition-ease);
+
 }
 
-.osdkFilePickerTrigger:has(.osdkFilePickerText:focus-visible),
-.osdkFilePickerTrigger:has(.osdkFilePickerClear:focus-visible),
-.osdkFilePickerTrigger:has(.osdkFilePickerBrowse:focus-visible) {
+.osdkFilePickerTrigger:hover .osdkFilePickerBrowse {
+  --osdk-button-secondary-bg: var(--osdk-button-secondary-bg-active);
+}
+
+/* :focus-within fires on both mouse and keyboard focus, matching the
+   border-change behavior of DatePicker and BaseInput. */
+.osdkFilePickerTrigger:focus-within {
   border-color: var(--osdk-file-picker-trigger-border-color-focus);
 }
 
@@ -45,9 +50,7 @@
   border-color: var(--osdk-file-picker-trigger-border-color-error);
 }
 
-.osdkFilePickerTrigger[aria-invalid]:has(.osdkFilePickerText:focus-visible),
-.osdkFilePickerTrigger[aria-invalid]:has(.osdkFilePickerClear:focus-visible),
-.osdkFilePickerTrigger[aria-invalid]:has(.osdkFilePickerBrowse:focus-visible) {
+.osdkFilePickerTrigger[aria-invalid]:focus-within {
   border-color: var(--osdk-file-picker-trigger-border-color-error);
   box-shadow: var(--osdk-file-picker-trigger-focus-shadow-error);
 }
@@ -77,20 +80,14 @@
   font-size: inherit;
   line-height: inherit;
 
-  &:hover {
-    background-color: var(--osdk-file-picker-trigger-bg-hover);
-  }
-
-  &:active {
-    background-color: var(--osdk-surface-background-color-default-active);
-  }
-
   &:disabled {
     cursor: not-allowed;
     opacity: var(--osdk-input-disabled-opacity);
   }
 
-  &:focus-visible {
+  &:focus, &:focus-visible  {
+    /* Suppress the browser default outline on mouse click. The outer
+       .osdkFilePickerTrigger renders the focus border instead. */
     outline: none;
   }
 }
@@ -108,16 +105,21 @@
   width: var(--osdk-file-picker-clear-size);
   height: var(--osdk-file-picker-clear-size);
   margin: var(--osdk-file-picker-clear-margin);
-  padding: 0;
+  padding: var(--osdk-surface-spacing);
   border: none;
   background: none;
   color: var(--osdk-file-picker-clear-color);
+  border-radius: var(--osdk-surface-border-radius);
   cursor: pointer;
-  transition: color var(--osdk-file-picker-transition-duration)
-    var(--osdk-file-picker-transition-ease);
+  transition:
+    color var(--osdk-file-picker-transition-duration)
+      var(--osdk-file-picker-transition-ease),
+    background-color var(--osdk-file-picker-transition-duration)
+      var(--osdk-file-picker-transition-ease);
 
   &:hover {
     color: var(--osdk-file-picker-clear-color-hover);
+    background-color: var(--osdk-file-picker-trigger-bg-hover);
   }
 
   &:disabled {
@@ -129,10 +131,11 @@
     color: var(--osdk-file-picker-clear-color);
   }
 
+  &:focus,
   &:focus-visible {
-    outline: var(--osdk-file-picker-trigger-focus-width) solid
-      var(--osdk-file-picker-trigger-focus-color);
-    border-radius: var(--osdk-surface-border-radius);
+    /* The outer trigger renders focus indication via :focus-within,
+       so the clear button does not draw its own ring. */
+    outline: none;
   }
 }
 
@@ -165,6 +168,7 @@
   padding-inline: calc(var(--osdk-surface-spacing) * 3);
 }
 
+/* Doubled selector to beat the base Button's :focus-visible specificity. */
 .osdkFilePickerBrowse.osdkFilePickerBrowse:focus-visible {
   outline: none;
 }
