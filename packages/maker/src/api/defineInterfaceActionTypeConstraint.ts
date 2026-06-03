@@ -35,7 +35,7 @@ export function defineInterfaceActionTypeConstraint(
       def.interfaceType.apiName
     ]
       == null,
-    `Cannot define an action type constraint on imported interface ${def.interfaceType.apiName}. The "from" side must be a locally defined interface.`,
+    `Cannot define an action type constraint on imported interface ${def.interfaceType.apiName}. The interface must be locally defined.`,
   );
 
   const apiNameWithNamespace = combineApiNamespaceIfMissing(
