@@ -25,7 +25,7 @@ export function getOptionLabelText(value: string): string {
     return "No value";
   }
   if (value === "") {
-    return "(empty)";
+    return "(empty string)";
   }
   return value;
 }
@@ -40,7 +40,7 @@ interface OptionLabelProps {
  * Canonical label for a single filter option, covering the three cases that
  * share an identity-string space:
  * - the {@link NO_VALUE} sentinel (null/undefined) renders "No value"
- * - a literal empty string `""` renders "(empty)"
+ * - a literal empty string `""` renders "(empty string)"
  * - any other value renders via `renderValue` (or the raw value)
  *
  * `className` is forwarded to the placeholder labels so callers can theme the

@@ -28,7 +28,7 @@ const NO_VALUE_PLACEHOLDER = "—";
 const SELECT_NO_VALUE_LABEL = "(No value)";
 
 // Literal empty string is a real, selectable value distinct from "No value".
-const SELECT_EMPTY_STRING_LABEL = "(empty)";
+const SELECT_EMPTY_STRING_LABEL = "(empty string)";
 
 function summarizeSelectionValues(
   values: ReadonlyArray<string | number | boolean | Date | null | undefined>,

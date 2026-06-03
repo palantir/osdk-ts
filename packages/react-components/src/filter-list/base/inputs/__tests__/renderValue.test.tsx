@@ -107,7 +107,7 @@ describe("ListogramInput renderValue", () => {
     expect(screen.getByText("Alice Smith")).toBeDefined();
   });
 
-  it("renders '(empty)' for a literal empty string, distinct from No value", () => {
+  it("renders '(empty string)' for a literal empty string, distinct from No value", () => {
     const valuesWithEmpty: PropertyAggregationValue[] = [
       { value: NO_VALUE, count: 2, isNull: true },
       { value: "", count: 4 },
@@ -127,7 +127,7 @@ describe("ListogramInput renderValue", () => {
     );
 
     expect(screen.getByText("No value")).toBeDefined();
-    expect(screen.getByText("(empty)")).toBeDefined();
+    expect(screen.getByText("(empty string)")).toBeDefined();
     expect(screen.getByText("Alice Smith")).toBeDefined();
   });
 

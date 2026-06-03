@@ -17,7 +17,7 @@
 import classnames from "classnames";
 import React, { memo } from "react";
 // Shares the muted/italic styling used by NoValueLabel so the two special
-// option rows ("No value" and "(empty)") read as visually consistent.
+// option rows ("No value" and "(empty string)") read as visually consistent.
 import styles from "./NoValueLabel.module.css";
 
 interface EmptyStringLabelProps {
@@ -26,7 +26,7 @@ interface EmptyStringLabelProps {
 
 /**
  * Canonical rendering for a literal empty-string (`""`) filter value, shown as
- * "(empty)". Distinct from {@link NoValueLabel}, which renders null/undefined
+ * "(empty string)". Distinct from {@link NoValueLabel}, which renders null/undefined
  * ("No value").
  */
 function EmptyStringLabelInner(
@@ -34,7 +34,7 @@ function EmptyStringLabelInner(
 ): React.ReactElement {
   return (
     <span className={classnames(styles.noValue, className)}>
-      (empty)
+      (empty string)
     </span>
   );
 }

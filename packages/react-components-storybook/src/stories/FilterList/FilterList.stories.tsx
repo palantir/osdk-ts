@@ -2552,7 +2552,7 @@ export const WithResetButtonEmptyInitial: Story = {
       description: {
         story:
           "Reset button is disabled-by-default until the user diverges from "
-          + "the initial (empty) snapshot. After clicking reset the filter "
+          + "the initial (empty string) snapshot. After clicking reset the filter "
           + "state returns to the initial snapshot and the button disables "
           + "itself again.",
       },
