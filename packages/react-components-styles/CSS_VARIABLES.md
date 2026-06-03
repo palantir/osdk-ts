@@ -1036,30 +1036,30 @@ Styling for form components.
 
 Shared styling for input components.
 
-| Variable                           | Default Value                                                                                                                             | Description             |
-| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
-| `--osdk-input-min-height`          | `30px`                                                                                                                                    | Input minimum height    |
-| `--osdk-input-padding`             | `calc(var(--osdk-surface-spacing) * 1.5) calc(var(--osdk-surface-spacing) * 2.5)`                                                         | Input padding           |
-| `--osdk-input-border-radius`       | `var(--osdk-surface-border-radius)`                                                                                                       | Input border radius     |
-| `--osdk-input-border-width`        | `var(--osdk-surface-border-width)`                                                                                                        | Input border width      |
-| `--osdk-input-border-color`        | `var(--osdk-surface-border-color-default)`                                                                                                | Input border color      |
-| `--osdk-input-border-color-focus`  | `var(--osdk-intent-primary-rest)`                                                                                                         | Input focused border    |
-| `--osdk-input-border-color-error`  | `var(--osdk-intent-danger-rest)`                                                                                                          | Input error border      |
-| `--osdk-input-shadow`              | `inset 0 1px 1px var(--osdk-surface-border-color-default)`                                                                                | Input inset shadow      |
-| `--osdk-input-bg`                  | `var(--osdk-surface-background-color-default-rest)`                                                                                       | Input background        |
-| `--osdk-input-bg-hover`            | `var(--osdk-surface-background-color-default-hover)`                                                                                      | Input hover background  |
-| `--osdk-input-color`               | `var(--osdk-typography-color-default-rest)`                                                                                               | Input text color        |
-| `--osdk-input-placeholder-color`   | `var(--osdk-typography-color-muted)`                                                                                                      | Input placeholder color |
-| `--osdk-input-font-size`           | `var(--osdk-typography-size-body-medium)`                                                                                                 | Input font size         |
-| `--osdk-input-font-family`         | `var(--osdk-typography-family-default)`                                                                                                   | Input font family       |
-| `--osdk-input-transition-duration` | `var(--osdk-emphasis-transition-duration)`                                                                                                | Transition duration     |
-| `--osdk-input-transition-ease`     | `var(--osdk-emphasis-ease-default)`                                                                                                       | Transition easing       |
-| `--osdk-input-focus-outline`       | `none`                                                                                                                                    | Focus outline           |
-| `--osdk-input-focus-width`         | `var(--osdk-emphasis-focus-width)`                                                                                                        | Focus ring width        |
-| `--osdk-input-focus-color`         | `var(--osdk-emphasis-focus-color)`                                                                                                        | Focus ring color        |
-| `--osdk-input-focus-offset`        | `0px`                                                                                                                                     | Focus ring offset       |
-| `--osdk-input-focus-shadow-error`  | `var(--osdk-input-shadow), 0 0 0 var(--osdk-input-focus-width) color-mix(in srgb, var(--osdk-input-border-color-error) 75%, transparent)` | Danger focus shadow     |
-| `--osdk-input-disabled-opacity`    | `var(--osdk-disabled-opacity)`                                                                                                            | Input disabled opacity  |
+| Variable                           | Default Value                                                                                                   | Description             |
+| ---------------------------------- | --------------------------------------------------------------------------------------------------------------- | ----------------------- |
+| `--osdk-input-min-height`          | `30px`                                                                                                          | Input minimum height    |
+| `--osdk-input-padding`             | `calc(var(--osdk-surface-spacing) * 1.5) calc(var(--osdk-surface-spacing) * 2.5)`                               | Input padding           |
+| `--osdk-input-border-radius`       | `var(--osdk-surface-border-radius)`                                                                             | Input border radius     |
+| `--osdk-input-border-width`        | `var(--osdk-surface-border-width)`                                                                              | Input border width      |
+| `--osdk-input-border-color`        | `var(--osdk-surface-border-color-default)`                                                                      | Input border color      |
+| `--osdk-input-border-color-focus`  | `var(--osdk-intent-primary-rest)`                                                                               | Input focused border    |
+| `--osdk-input-border-color-error`  | `var(--osdk-intent-danger-rest)`                                                                                | Input error border      |
+| `--osdk-input-shadow`              | `inset 0 1px 1px var(--osdk-surface-border-color-default)`                                                      | Input inset shadow      |
+| `--osdk-input-bg`                  | `var(--osdk-surface-background-color-default-rest)`                                                             | Input background        |
+| `--osdk-input-bg-hover`            | `var(--osdk-surface-background-color-default-hover)`                                                            | Input hover background  |
+| `--osdk-input-color`               | `var(--osdk-typography-color-default-rest)`                                                                     | Input text color        |
+| `--osdk-input-placeholder-color`   | `var(--osdk-typography-color-muted)`                                                                            | Input placeholder color |
+| `--osdk-input-font-size`           | `var(--osdk-typography-size-body-medium)`                                                                       | Input font size         |
+| `--osdk-input-font-family`         | `var(--osdk-typography-family-default)`                                                                         | Input font family       |
+| `--osdk-input-transition-duration` | `var(--osdk-emphasis-transition-duration)`                                                                      | Transition duration     |
+| `--osdk-input-transition-ease`     | `var(--osdk-emphasis-ease-default)`                                                                             | Transition easing       |
+| `--osdk-input-focus-outline`       | `none`                                                                                                          | Focus outline           |
+| `--osdk-input-focus-width`         | `var(--osdk-emphasis-focus-width)`                                                                              | Focus ring width        |
+| `--osdk-input-focus-color`         | `var(--osdk-emphasis-focus-color)`                                                                              | Focus ring color        |
+| `--osdk-input-focus-offset`        | `0px`                                                                                                           | Focus ring offset       |
+| `--osdk-input-focus-shadow-error`  | `0 0 0 var(--osdk-input-focus-width) color-mix(in srgb, var(--osdk-input-border-color-error) 75%, transparent)` | Danger focus shadow     |
+| `--osdk-input-disabled-opacity`    | `var(--osdk-disabled-opacity)`                                                                                  | Input disabled opacity  |
 
 ### Markdown Renderer
 

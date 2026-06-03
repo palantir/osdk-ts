@@ -36,7 +36,8 @@
 }
 
 .osdkFilePickerTrigger:has(.osdkFilePickerText:focus-visible),
-.osdkFilePickerTrigger:has(.osdkFilePickerClear:focus-visible) {
+.osdkFilePickerTrigger:has(.osdkFilePickerClear:focus-visible),
+.osdkFilePickerTrigger:has(.osdkFilePickerBrowse:focus-visible) {
   border-color: var(--osdk-file-picker-trigger-border-color-focus);
 }
 
@@ -45,7 +46,8 @@
 }
 
 .osdkFilePickerTrigger[aria-invalid]:has(.osdkFilePickerText:focus-visible),
-.osdkFilePickerTrigger[aria-invalid]:has(.osdkFilePickerClear:focus-visible) {
+.osdkFilePickerTrigger[aria-invalid]:has(.osdkFilePickerClear:focus-visible),
+.osdkFilePickerTrigger[aria-invalid]:has(.osdkFilePickerBrowse:focus-visible) {
   border-color: var(--osdk-file-picker-trigger-border-color-error);
   box-shadow: var(--osdk-file-picker-trigger-focus-shadow-error);
 }
@@ -137,6 +139,7 @@
 /* Browse button (right section) */
 .osdkFilePickerBrowse {
   --osdk-button-min-height: 0;
+  --osdk-focus-outline: none;
 
   display: flex;
   align-items: center;
@@ -151,15 +154,17 @@
   font-size: var(--osdk-file-picker-trigger-font-size);
 
   &:focus {
+    /* Browse is visually part of the file picker field. The outer trigger
+       renders the focus indication so the button does not draw a second ring. */
     outline: none;
   }
-}
-
-.osdkFilePickerBrowse.osdkFilePickerBrowse:focus-visible {
-  outline: none;
 }
 
 .osdkFilePickerBrowse.osdkFilePickerBrowse {
   padding-block: calc(var(--osdk-surface-spacing) * 0.5);
   padding-inline: calc(var(--osdk-surface-spacing) * 3);
+}
+
+.osdkFilePickerBrowse.osdkFilePickerBrowse:focus-visible {
+  outline: none;
 }
