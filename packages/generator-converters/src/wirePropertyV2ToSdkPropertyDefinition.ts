@@ -53,6 +53,25 @@ function hasReducers(
     && dataType.reducers.length > 0;
 }
 
+/**
+ * Builds the per-`type` {@link ObjectMetadata.PropertyTypeMetadata} for a
+ * wire property dataType, looking through `array` to its `subType`. Returns
+ * `undefined` when no variant applies. New `typeMetadata` variants should be
+ * added here so each call site stays a one-liner.
+ */
+function extractTypeMetadata(
+  dataType: ObjectPropertyType,
+): ObjectMetadata.PropertyTypeMetadata | undefined {
+  const inner = dataType.type === "array" ? dataType.subType : dataType;
+  if (inner.type === "marking") {
+    return {
+      type: "marking",
+      ...(inner.markingType != null ? { subtype: inner.markingType } : {}),
+    };
+  }
+  return undefined;
+}
+
 export function wirePropertyV2ToSdkPropertyDefinition(
   input: (PropertyV2 | SharedPropertyType | ResolvedInterfacePropertyType) & {
     nullable?: boolean;
@@ -108,12 +127,7 @@ export function wirePropertyV2ToSdkPropertyDefinition(
         valueFormatting: input.valueFormatting != null
           ? wirePropertyFormattingToSdkFormatting(input.valueFormatting, log)
           : undefined,
-        typeMetadata: {
-          type: "marking",
-          ...(input.dataType.markingType != null
-            ? { subtype: input.dataType.markingType }
-            : {}),
-        },
+        typeMetadata: extractTypeMetadata(input.dataType),
       };
     case "struct": {
       const mainValue = extractMainValue(input.dataType);
@@ -131,7 +145,6 @@ export function wirePropertyV2ToSdkPropertyDefinition(
       };
     }
     case "array": {
-      const subType = input.dataType.subType;
       return {
         displayName: input.displayName,
         multiplicity: true,
@@ -143,16 +156,7 @@ export function wirePropertyV2ToSdkPropertyDefinition(
           ? wirePropertyFormattingToSdkFormatting(input.valueFormatting, log)
           : undefined,
         hasReducers: hasReducers(input.dataType),
-        ...(subType.type === "marking"
-          ? {
-            typeMetadata: {
-              type: "marking" as const,
-              ...(subType.markingType != null
-                ? { subtype: subType.markingType }
-                : {}),
-            },
-          }
-          : {}),
+        typeMetadata: extractTypeMetadata(input.dataType),
       };
     }
     case "cipherText": {
