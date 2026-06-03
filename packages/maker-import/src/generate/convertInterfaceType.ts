@@ -99,6 +99,7 @@ export function convertInterfaceType(
     },
     extendsInterfaces,
     links: [],
+    actionTypeConstraints: [],
     status: { type: "active", active: {} },
     propertiesV2,
     propertiesV3,
