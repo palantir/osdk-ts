@@ -24,6 +24,7 @@ import React, {
   useState,
 } from "react";
 import { PortalContainerProvider } from "../shared/PortalContainerContext.js";
+import { useFocusedRow } from "./hooks/useFocusedRow.js";
 import { LoadingStateTable } from "./LoadingStateTable.js";
 import { NonIdealState } from "./NonIdealState.js";
 import styles from "./Table.module.css";
@@ -102,6 +103,17 @@ export interface BaseTableProps<
    * rendered.
    */
   renderEmptyState?: () => React.ReactNode;
+  /**
+   * Controlled focused row id. `undefined` enables internal management
+   * (clicking focuses, clicking outside clears). When provided, the
+   * caller owns clearing — outside clicks no longer auto-clear.
+   */
+  focusedRowId?: string | null;
+  /**
+   * Fires whenever the focused row changes, in both controlled and
+   * uncontrolled modes.
+   */
+  onFocusedRowIdChanged?: (rowId: string | null) => void;
 }
 
 export function BaseTable<
@@ -132,12 +144,21 @@ function BaseTableInner<
     getRowAttributes,
     showEditFooter = true,
     renderEmptyState,
+    focusedRowId: focusedRowIdProp,
+    onFocusedRowIdChanged,
   }: BaseTableProps<TData>,
 ): ReactElement {
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const objectTablePortalRef = useRef<HTMLDivElement>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [focusedRowId, setFocusedRowId] = useState<string | null>(null);
+  const {
+    focusedRowId,
+    setFocusedRowId,
+    isControlled: isFocusControlled,
+  } = useFocusedRow({
+    focusedRowId: focusedRowIdProp,
+    onFocusedRowIdChanged,
+  });
   const portalTracker = usePortalTracker();
 
   // Sync focusedRowId into table meta so cell renderers (which only
@@ -203,7 +224,11 @@ function BaseTableInner<
   // which would incorrectly trigger the outside-click handler.
   // At pointerdown time the backdrop is still in the DOM, so
   // portalTracker.containsElement correctly identifies it.
+  // Skipped in controlled mode — the caller is the source of truth and
+  // is expected to clear focus when it's appropriate (e.g. when a
+  // detail drawer closes).
   useEffect(() => {
+    if (isFocusControlled) return;
     const handleClickOutside = (event: PointerEvent) => {
       const target = event.target as Node;
       if (
@@ -219,7 +244,7 @@ function BaseTableInner<
     return () => {
       document.removeEventListener("pointerdown", handleClickOutside);
     };
-  }, [portalTracker]);
+  }, [portalTracker, isFocusControlled, setFocusedRowId]);
 
   return (
     <PortalContainerProvider container={objectTablePortalRef}>
