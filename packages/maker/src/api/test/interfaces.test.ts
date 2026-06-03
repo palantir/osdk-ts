@@ -1299,6 +1299,7 @@ describe("Interfaces", () => {
         requireImplementation: true,
         parameters: [
           {
+            apiName: "booleanParam",
             displayName: "Boolean Param",
             type: { type: "boolean", boolean: {} },
             requireImplementation: true,
@@ -1317,10 +1318,10 @@ describe("Interfaces", () => {
       expect(Object.keys(constraint.parameters)).toHaveLength(1);
 
       const paramKey = Object.keys(constraint.parameters)[0];
-      expect(paramKey).toBe("Boolean Param");
+      expect(paramKey).toBe("booleanParam");
       const param = constraint.parameters[paramKey];
       expect(param.displayMetadata.displayName).toBe("Boolean Param");
-      expect(param.displayMetadata.apiName).toBe("Boolean Param");
+      expect(param.displayMetadata.apiName).toBe("booleanParam");
       expect(param.type).toEqual({ type: "boolean", boolean: {} });
       expect(param.requireImplementation).toBe(true);
     });
@@ -1331,43 +1332,41 @@ describe("Interfaces", () => {
       defineInterfaceActionTypeConstraint({
         interfaceType: iface,
         apiName: "myConstraint",
+        displayName: "My Constraint",
+        description: "A test constraint",
+        requireImplementation: true,
+        parameters: [],
       });
 
       expect(() => {
         defineInterfaceActionTypeConstraint({
           interfaceType: iface,
           apiName: "myConstraint",
+          displayName: "My Constraint",
+          description: "A test constraint",
+          requireImplementation: true,
+          parameters: [],
         });
       }).toThrowErrorMatchingInlineSnapshot(
         `[Error: Invariant failed: Action type constraint with apiName com.palantir.myConstraint already exists on interface com.palantir.MyInterface]`,
       );
     });
 
-    it("defaults displayName and description", () => {
+    it("uses explicit apiName on parameter constraint", () => {
       const iface = defineInterface({ apiName: "MyInterface" });
 
       defineInterfaceActionTypeConstraint({
         interfaceType: iface,
         apiName: "myConstraint",
-      });
-
-      const constraint = iface.actionTypeConstraints[0];
-      expect(constraint.metadata.displayName).toBe("myConstraint");
-      expect(constraint.metadata.description).toBe("myConstraint");
-      expect(constraint.requireImplementation).toBe(true);
-    });
-
-    it("uses explicit apiName on parameter constraint when provided", () => {
-      const iface = defineInterface({ apiName: "MyInterface" });
-
-      defineInterfaceActionTypeConstraint({
-        interfaceType: iface,
-        apiName: "myConstraint",
+        displayName: "My Constraint",
+        description: "A test constraint",
+        requireImplementation: true,
         parameters: [
           {
             apiName: "boolParam",
             displayName: "Boolean Param",
             type: { type: "boolean", boolean: {} },
+            requireImplementation: true,
           },
         ],
       });
@@ -1387,19 +1386,26 @@ describe("Interfaces", () => {
         defineInterfaceActionTypeConstraint({
           interfaceType: iface,
           apiName: "myConstraint",
+          displayName: "My Constraint",
+          description: "A test constraint",
+          requireImplementation: true,
           parameters: [
             {
+              apiName: "paramA",
               displayName: "Param A",
               type: { type: "boolean", boolean: {} },
+              requireImplementation: true,
             },
             {
-              displayName: "Param A",
+              apiName: "paramA",
+              displayName: "Param A Different",
               type: { type: "string", string: {} },
+              requireImplementation: true,
             },
           ],
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Duplicate parameter constraint apiName "Param A" in action type constraint com.palantir.myConstraint]`,
+        `[Error: Invariant failed: Duplicate parameter constraint apiName "paramA" in action type constraint com.palantir.myConstraint]`,
       );
     });
   });

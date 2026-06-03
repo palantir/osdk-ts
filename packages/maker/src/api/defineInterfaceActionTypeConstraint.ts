@@ -21,11 +21,7 @@ import type {
 import invariant from "tiny-invariant";
 import { cloneDefinition } from "./cloneDefinition.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
-import {
-  importedTypes,
-  namespace,
-  withoutNamespace,
-} from "./defineOntology.js";
+import { importedTypes, namespace } from "./defineOntology.js";
 import type { InterfaceActionTypeConstraintDefinition } from "./InterfaceActionTypeConstraintDefinition.js";
 import { combineApiNamespaceIfMissing } from "./namespace/combineApiNamespaceIfMissing.js";
 
@@ -46,7 +42,6 @@ export function defineInterfaceActionTypeConstraint(
     namespace,
     def.apiName,
   );
-  const apiNameWithoutNamespace = withoutNamespace(apiNameWithNamespace);
 
   invariant(
     def.interfaceType.actionTypeConstraints.find(
@@ -60,31 +55,29 @@ export function defineInterfaceActionTypeConstraint(
     OntologyIrInterfaceParameterConstraint
   > = {};
   const seenParamApiNames = new Set<string>();
-  for (const param of def.parameters ?? []) {
-    const paramApiName = param.apiName ?? param.displayName;
+  for (const param of def.parameters) {
     invariant(
-      !seenParamApiNames.has(paramApiName),
-      `Duplicate parameter constraint apiName "${paramApiName}" in action type constraint ${apiNameWithNamespace}`,
+      !seenParamApiNames.has(param.apiName),
+      `Duplicate parameter constraint apiName "${param.apiName}" in action type constraint ${apiNameWithNamespace}`,
     );
-    seenParamApiNames.add(paramApiName);
-    parameters[paramApiName] = {
+    seenParamApiNames.add(param.apiName);
+    parameters[param.apiName] = {
       displayMetadata: {
         displayName: param.displayName,
-        apiName: paramApiName,
+        apiName: param.apiName,
       },
       type: param.type,
-      requireImplementation: param.requireImplementation ?? true,
+      requireImplementation: param.requireImplementation,
     };
   }
 
   def.interfaceType.actionTypeConstraints.push({
     metadata: {
       apiName: apiNameWithNamespace,
-      displayName: def.displayName ?? apiNameWithoutNamespace,
-      description: def.description ?? def.displayName
-        ?? apiNameWithoutNamespace,
+      displayName: def.displayName,
+      description: def.description,
     },
     parameters,
-    requireImplementation: def.requireImplementation ?? true,
+    requireImplementation: def.requireImplementation,
   });
 }
