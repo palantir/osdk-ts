@@ -70,6 +70,12 @@ const startDateFilter: FilterDefinitionUnion<Employee> = {
   filterComponent: "DATE_RANGE",
   filterState: { type: "DATE_RANGE" },
   clickToFilter: true,
+  formatDate: (date) =>
+    date.toLocaleDateString("en-US", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }),
 };
 
 const employeeNumberFilter: FilterDefinitionUnion<Employee> = {
