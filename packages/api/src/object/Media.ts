@@ -35,6 +35,8 @@ export interface Media {
    * Optional because not every `Media` implementation can resolve a media set view (e.g.
    * forward-compatible custom implementations). Backed by `MediaSets.metadata` for both
    * ontology-backed and reference-backed media.
+   *
+   * @beta
    */
   fetchFullMetadata?(): Promise<MediaFullMetadata>;
   /**
@@ -100,7 +102,7 @@ export interface MediaMetadata {
 /**
  * Wrapper around the type-specific `MediaItemMetadata` discriminated union returned by
  * `Media.fetchFullMetadata`. The wrapper exists so optional sibling fields (e.g. attribution,
- * source view) can be added later without breaking callers; mirrors the python OSDK shape.
+ * source view) can be added later without breaking callers.
  */
 export interface MediaFullMetadata {
   /**

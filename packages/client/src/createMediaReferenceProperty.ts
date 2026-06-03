@@ -80,7 +80,7 @@ export class MediaReferencePropertyImpl implements Media {
   /**
    * Fetches type-specific metadata via `MediaSets.metadata`. There is no Ontologies-backed
    * full-metadata endpoint, so this routes through the media set view using the embedded media
-   * reference (matches python OSDK behavior).
+   * reference.
    */
   public async fetchFullMetadata(): Promise<MediaFullMetadata> {
     const { mediaSetRid, mediaItemRid, token } =
