@@ -1183,7 +1183,6 @@ export namespace ObjectMetadata {
         mainValue?: {
             			fields: readonly string[]
             		};
-        		markingType?: "CBAC" | "MANDATORY";
         		// (undocumented)
         multiplicity?: boolean;
         		// (undocumented)
@@ -1192,11 +1191,17 @@ export namespace ObjectMetadata {
         readonly?: boolean;
         		// (undocumented)
         type: WirePropertyTypes;
+        		typeMetadata?: PropertyTypeMetadata;
         		// (undocumented)
         valueFormatting?: PropertyValueFormattingRule;
         		// (undocumented)
         valueTypeApiName?: string;
         	}
+    	// (undocumented)
+    export type PropertyTypeMetadata = {
+        		type: "marking"
+        		subtype?: "CBAC" | "MANDATORY"
+        	};
 }
 
 // @public (undocumented)

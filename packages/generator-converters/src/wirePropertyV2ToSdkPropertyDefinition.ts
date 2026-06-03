@@ -108,9 +108,12 @@ export function wirePropertyV2ToSdkPropertyDefinition(
         valueFormatting: input.valueFormatting != null
           ? wirePropertyFormattingToSdkFormatting(input.valueFormatting, log)
           : undefined,
-        ...(input.dataType.markingType != null
-          ? { markingType: input.dataType.markingType }
-          : {}),
+        typeMetadata: {
+          type: "marking",
+          ...(input.dataType.markingType != null
+            ? { subtype: input.dataType.markingType }
+            : {}),
+        },
       };
     case "struct": {
       const mainValue = extractMainValue(input.dataType);
@@ -140,8 +143,15 @@ export function wirePropertyV2ToSdkPropertyDefinition(
           ? wirePropertyFormattingToSdkFormatting(input.valueFormatting, log)
           : undefined,
         hasReducers: hasReducers(input.dataType),
-        ...(subType.type === "marking" && subType.markingType != null
-          ? { markingType: subType.markingType }
+        ...(subType.type === "marking"
+          ? {
+            typeMetadata: {
+              type: "marking" as const,
+              ...(subType.markingType != null
+                ? { subtype: subType.markingType }
+                : {}),
+            },
+          }
           : {}),
       };
     }

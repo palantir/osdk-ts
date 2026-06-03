@@ -16,4 +16,4 @@
 "@osdk/vite-plugin-oac": patch
 ---
 
-Bump `foundry-platform-typescript` catalog to 2.63.0 and surface the new CBAC/MANDATORY marking subtype on `ObjectMetadata.Property`. The marking property type metadata now exposes an optional `markingType` field (`"CBAC" | "MANDATORY"`) forwarded from the v2 ontology metadata API, so consumers can distinguish classification-based markings from mandatory markings on object property columns.
+Bump `foundry-platform-typescript` catalog to 2.63.0 and surface the new CBAC/MANDATORY marking subtype on `ObjectMetadata.Property` via a new `typeMetadata` discriminated-union field. For marking properties, `typeMetadata` is `{ type: "marking"; subtype?: "CBAC" | "MANDATORY" }`, letting consumers distinguish classification-based markings from mandatory markings on object property columns. Future per-`type` metadata should be added as additional variants of `typeMetadata` rather than as new top-level optionals on `Property`.

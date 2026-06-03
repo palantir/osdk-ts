@@ -242,7 +242,7 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
     expect(linkKeys).toEqual(["linkA", "linkC", "linkZ"]);
   });
 
-  it("forwards markingType subtype on marking properties", () => {
+  it("forwards marking subtype via typeMetadata on marking properties", () => {
     const result = wireObjectTypeFullMetadataToSdkObjectMetadata({
       implementsInterfaces: [],
       implementsInterfaces2: {},
@@ -292,12 +292,21 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
       sharedPropertyTypeMapping: {},
     }, true);
 
-    expect(result.properties.cbacMarking.markingType).toBe("CBAC");
-    expect(result.properties.mandatoryMarking.markingType).toBe("MANDATORY");
-    expect(result.properties.unspecifiedMarking.markingType).toBeUndefined();
-    expect(result.properties.arrayOfMandatoryMarkings.markingType).toBe(
-      "MANDATORY",
-    );
+    expect(result.properties.cbacMarking.typeMetadata).toEqual({
+      type: "marking",
+      subtype: "CBAC",
+    });
+    expect(result.properties.mandatoryMarking.typeMetadata).toEqual({
+      type: "marking",
+      subtype: "MANDATORY",
+    });
+    expect(result.properties.unspecifiedMarking.typeMetadata).toEqual({
+      type: "marking",
+    });
+    expect(result.properties.arrayOfMandatoryMarkings.typeMetadata).toEqual({
+      type: "marking",
+      subtype: "MANDATORY",
+    });
   });
 
   it("preserves empty arrays", () => {
