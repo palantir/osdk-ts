@@ -44,6 +44,18 @@ export function defineInterfaceActionTypeConstraint(
   );
 
   invariant(
+    !def.requireImplementation,
+    `requireImplementation is not yet supported for action type constraints`,
+  );
+
+  for (const param of def.parameters) {
+    invariant(
+      !param.requireImplementation,
+      `requireImplementation is not yet supported for parameter constraints`,
+    );
+  }
+
+  invariant(
     def.interfaceType.actionTypeConstraints.find(
       a => a.metadata.apiName === apiNameWithNamespace,
     ) == null,

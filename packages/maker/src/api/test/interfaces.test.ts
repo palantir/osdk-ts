@@ -1296,13 +1296,13 @@ describe("Interfaces", () => {
         apiName: "myConstraint",
         displayName: "My Constraint",
         description: "A test constraint",
-        requireImplementation: true,
+        requireImplementation: false,
         parameters: [
           {
             apiName: "booleanParam",
             displayName: "Boolean Param",
             type: { type: "boolean", boolean: {} },
-            requireImplementation: true,
+            requireImplementation: false,
           },
         ],
       });
@@ -1314,7 +1314,7 @@ describe("Interfaces", () => {
       );
       expect(constraint.metadata.displayName).toBe("My Constraint");
       expect(constraint.metadata.description).toBe("A test constraint");
-      expect(constraint.requireImplementation).toBe(true);
+      expect(constraint.requireImplementation).toBe(false);
       expect(Object.keys(constraint.parameters)).toHaveLength(1);
 
       const paramKey = Object.keys(constraint.parameters)[0];
@@ -1323,7 +1323,7 @@ describe("Interfaces", () => {
       expect(param.displayMetadata.displayName).toBe("Boolean Param");
       expect(param.displayMetadata.apiName).toBe("booleanParam");
       expect(param.type).toEqual({ type: "boolean", boolean: {} });
-      expect(param.requireImplementation).toBe(true);
+      expect(param.requireImplementation).toBe(false);
     });
 
     it("doesn't let you define duplicate action type constraints", () => {
@@ -1334,7 +1334,7 @@ describe("Interfaces", () => {
         apiName: "myConstraint",
         displayName: "My Constraint",
         description: "A test constraint",
-        requireImplementation: true,
+        requireImplementation: false,
         parameters: [],
       });
 
@@ -1344,7 +1344,7 @@ describe("Interfaces", () => {
           apiName: "myConstraint",
           displayName: "My Constraint",
           description: "A test constraint",
-          requireImplementation: true,
+          requireImplementation: false,
           parameters: [],
         });
       }).toThrowErrorMatchingInlineSnapshot(
@@ -1360,13 +1360,13 @@ describe("Interfaces", () => {
         apiName: "myConstraint",
         displayName: "My Constraint",
         description: "A test constraint",
-        requireImplementation: true,
+        requireImplementation: false,
         parameters: [
           {
             apiName: "boolParam",
             displayName: "Boolean Param",
             type: { type: "boolean", boolean: {} },
-            requireImplementation: true,
+            requireImplementation: false,
           },
         ],
       });
@@ -1388,24 +1388,65 @@ describe("Interfaces", () => {
           apiName: "myConstraint",
           displayName: "My Constraint",
           description: "A test constraint",
-          requireImplementation: true,
+          requireImplementation: false,
           parameters: [
             {
               apiName: "paramA",
               displayName: "Param A",
               type: { type: "boolean", boolean: {} },
-              requireImplementation: true,
+              requireImplementation: false,
             },
             {
               apiName: "paramA",
               displayName: "Param A Different",
               type: { type: "string", string: {} },
-              requireImplementation: true,
+              requireImplementation: false,
             },
           ],
         });
       }).toThrowErrorMatchingInlineSnapshot(
         `[Error: Invariant failed: Duplicate parameter constraint apiName "paramA" in action type constraint com.palantir.myConstraint]`,
+      );
+    });
+
+    it("throws when requireImplementation is true on constraint", () => {
+      const iface = defineInterface({ apiName: "MyInterface" });
+
+      expect(() => {
+        defineInterfaceActionTypeConstraint({
+          interfaceType: iface,
+          apiName: "myConstraint",
+          displayName: "My Constraint",
+          description: "A test constraint",
+          requireImplementation: true,
+          parameters: [],
+        });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: requireImplementation is not yet supported for action type constraints]`,
+      );
+    });
+
+    it("throws when requireImplementation is true on parameter constraint", () => {
+      const iface = defineInterface({ apiName: "MyInterface" });
+
+      expect(() => {
+        defineInterfaceActionTypeConstraint({
+          interfaceType: iface,
+          apiName: "myConstraint",
+          displayName: "My Constraint",
+          description: "A test constraint",
+          requireImplementation: false,
+          parameters: [
+            {
+              apiName: "boolParam",
+              displayName: "Boolean Param",
+              type: { type: "boolean", boolean: {} },
+              requireImplementation: true,
+            },
+          ],
+        });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: requireImplementation is not yet supported for parameter constraints]`,
       );
     });
   });
