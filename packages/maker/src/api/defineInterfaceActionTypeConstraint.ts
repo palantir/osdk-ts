@@ -50,6 +50,11 @@ interface InterfaceActionTypeConstraintDefinition {
 let constraintCounter = 0;
 let parameterCounter = 0;
 
+export function resetConstraintCounters(): void {
+  constraintCounter = 0;
+  parameterCounter = 0;
+}
+
 function generateConstraintRid(): InterfaceActionTypeConstraintRid {
   return `ri.ontology.main.interface-action-type-constraint.${++constraintCounter}` as InterfaceActionTypeConstraintRid;
 }
@@ -86,9 +91,15 @@ export function defineInterfaceActionTypeConstraint(
     InterfaceParameterConstraintRid,
     OntologyIrInterfaceParameterConstraint
   > = {};
+  const seenParamApiNames = new Set<string>();
   for (const param of def.parameters ?? []) {
     const paramRid = generateParameterConstraintRid();
     const paramApiName = param.apiName ?? param.displayName;
+    invariant(
+      !seenParamApiNames.has(paramApiName),
+      `Duplicate parameter constraint apiName "${paramApiName}" in action type constraint ${apiNameWithNamespace}`,
+    );
+    seenParamApiNames.add(paramApiName);
     parameters[paramRid] = {
       displayMetadata: {
         displayName: param.displayName,

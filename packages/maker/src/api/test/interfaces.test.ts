@@ -1377,5 +1377,28 @@ describe("Interfaces", () => {
       expect(param.displayMetadata.apiName).toBe("boolParam");
       expect(param.displayMetadata.displayName).toBe("Boolean Param");
     });
+
+    it("doesn't let you define duplicate parameter constraint apiNames", () => {
+      const iface = defineInterface({ apiName: "MyInterface" });
+
+      expect(() => {
+        defineInterfaceActionTypeConstraint({
+          from: iface,
+          apiName: "myConstraint",
+          parameters: [
+            {
+              displayName: "Param A",
+              type: { type: "boolean", boolean: {} },
+            },
+            {
+              displayName: "Param A",
+              type: { type: "string", string: {} },
+            },
+          ],
+        });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Duplicate parameter constraint apiName "Param A" in action type constraint com.palantir.myConstraint]`,
+      );
+    });
   });
 });
