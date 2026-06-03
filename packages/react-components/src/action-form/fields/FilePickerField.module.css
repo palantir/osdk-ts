@@ -84,7 +84,7 @@
     opacity: var(--osdk-input-disabled-opacity);
   }
 
-  &:focus, &:focus-visible  {
+  &:focus {
     /* Suppress the browser default outline on mouse click. The outer
        .osdkFilePickerTrigger renders the focus border instead. */
     outline: none;
@@ -104,11 +104,11 @@
   width: var(--osdk-file-picker-clear-size);
   height: var(--osdk-file-picker-clear-size);
   margin: var(--osdk-file-picker-clear-margin);
-  padding: var(--osdk-surface-spacing);
+  padding: var(--osdk-file-picker-clear-padding);
   border: none;
   background: none;
   color: var(--osdk-file-picker-clear-color);
-  border-radius: var(--osdk-surface-border-radius);
+  border-radius: var(--osdk-file-picker-clear-border-radius);
   cursor: pointer;
   transition:
     color var(--osdk-file-picker-transition-duration)
@@ -138,6 +138,9 @@
 /* Browse button (right section) */
 .osdkFilePickerBrowse {
   --osdk-button-min-height: 0;
+  /* Overrides ActionButton's internal --osdk-focus-outline token
+     (defined in base-tokens/base.css). If that token is renamed this
+     override must be updated. */
   --osdk-focus-outline: none;
 
   display: flex;

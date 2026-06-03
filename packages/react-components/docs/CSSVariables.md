@@ -578,12 +578,14 @@ Styling for file picker components.
 
 #### Clear Button
 
-| Variable                               | Default Value                               | Description              |
-| -------------------------------------- | ------------------------------------------- | ------------------------ |
-| `--osdk-file-picker-clear-size`        | `calc(var(--osdk-surface-spacing) * 4)`     | Clear button size        |
-| `--osdk-file-picker-clear-margin`      | `0 calc(var(--osdk-surface-spacing) * 1)`   | Clear button margin      |
-| `--osdk-file-picker-clear-color`       | `var(--osdk-typography-color-muted)`        | Clear button color       |
-| `--osdk-file-picker-clear-color-hover` | `var(--osdk-typography-color-default-rest)` | Clear button hover color |
+| Variable                                 | Default Value                               | Description                |
+| ---------------------------------------- | ------------------------------------------- | -------------------------- |
+| `--osdk-file-picker-clear-size`          | `calc(var(--osdk-surface-spacing) * 4)`     | Clear button size          |
+| `--osdk-file-picker-clear-margin`        | `0 calc(var(--osdk-surface-spacing) * 1)`   | Clear button margin        |
+| `--osdk-file-picker-clear-padding`       | `var(--osdk-surface-spacing)`               | Clear button padding       |
+| `--osdk-file-picker-clear-border-radius` | `var(--osdk-surface-border-radius)`         | Clear button border radius |
+| `--osdk-file-picker-clear-color`         | `var(--osdk-typography-color-muted)`        | Clear button color         |
+| `--osdk-file-picker-clear-color-hover`   | `var(--osdk-typography-color-default-rest)` | Clear button hover color   |
 
 ### Filter List
 
