@@ -33,7 +33,6 @@
       var(--osdk-file-picker-transition-ease),
     border-color var(--osdk-file-picker-transition-duration)
       var(--osdk-file-picker-transition-ease);
-
 }
 
 .osdkFilePickerTrigger:hover .osdkFilePickerBrowse {
@@ -131,11 +130,8 @@
     color: var(--osdk-file-picker-clear-color);
   }
 
-  &:focus,
   &:focus-visible {
-    /* The outer trigger renders focus indication via :focus-within,
-       so the clear button does not draw its own ring. */
-    outline: none;
+    outline: var(--osdk-file-picker-clear-outline);
   }
 }
 
@@ -163,6 +159,7 @@
   }
 }
 
+/* Doubled selector to beat the base Button's padding specificity. */
 .osdkFilePickerBrowse.osdkFilePickerBrowse {
   padding-block: calc(var(--osdk-surface-spacing) * 0.5);
   padding-inline: calc(var(--osdk-surface-spacing) * 3);

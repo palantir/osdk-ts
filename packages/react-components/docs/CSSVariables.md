@@ -562,11 +562,12 @@ Styling for file picker components.
 
 #### Focus Ring
 
-| Variable                                  | Default Value                    | Description                                                     |
-| ----------------------------------------- | -------------------------------- | --------------------------------------------------------------- |
-| `--osdk-file-picker-trigger-focus-width`  | `var(--osdk-input-focus-width)`  | Focus ring width                                                |
-| `--osdk-file-picker-trigger-focus-color`  | `var(--osdk-input-focus-color)`  | Focus ring color                                                |
-| `--osdk-file-picker-trigger-focus-offset` | `var(--osdk-input-focus-offset)` | Deprecated; use `--osdk-file-picker-trigger-border-color-focus` |
+| Variable                                  | Default Value                                                                                   | Description                                                     |
+| ----------------------------------------- | ----------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| `--osdk-file-picker-clear-outline`        | `var(--osdk-file-picker-trigger-focus-width) solid var(--osdk-file-picker-trigger-focus-color)` | Clear button focus outline                                      |
+| `--osdk-file-picker-trigger-focus-width`  | `var(--osdk-input-focus-width)`                                                                 | Clear button focus ring width                                   |
+| `--osdk-file-picker-trigger-focus-color`  | `var(--osdk-input-focus-color)`                                                                 | Clear button focus ring color                                   |
+| `--osdk-file-picker-trigger-focus-offset` | `var(--osdk-input-focus-offset)`                                                                | Deprecated; use `--osdk-file-picker-trigger-border-color-focus` |
 
 #### Transitions
 

@@ -21,7 +21,9 @@
   --osdk-file-picker-transition-duration: var(--osdk-input-transition-duration);
   --osdk-file-picker-transition-ease: var(--osdk-input-transition-ease);
 
-  /* Focus ring */
+  /* Clear button focus ring */
+  --osdk-file-picker-clear-outline: var(--osdk-file-picker-trigger-focus-width)
+    solid var(--osdk-file-picker-trigger-focus-color);
   --osdk-file-picker-trigger-focus-width: var(--osdk-input-focus-width);
   --osdk-file-picker-trigger-focus-color: var(--osdk-input-focus-color);
 
