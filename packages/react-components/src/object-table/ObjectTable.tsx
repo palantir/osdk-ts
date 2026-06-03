@@ -16,12 +16,10 @@
 
 import type {
   ObjectOrInterfaceDefinition,
-  ObjectSet,
   Osdk,
   PropertyKeys,
   QueryDefinition,
   SimplePropertyDef,
-  WhereClause,
 } from "@osdk/api";
 import type { Cell } from "@tanstack/react-table";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
@@ -40,6 +38,7 @@ import { useTableSorting } from "./hooks/useTableSorting.js";
 import type { ObjectTableProps } from "./ObjectTableApi.js";
 import { BaseTable } from "./Table.js";
 import type { HeaderMenuFeatureFlags } from "./TableHeaderWithPopover.js";
+import { deriveSelectionObjectSet } from "./utils/deriveSelectionObjectSet.js";
 import { getRowId } from "./utils/getRowId.js";
 import type { EditableConfig } from "./utils/types.js";
 
@@ -146,40 +145,19 @@ export function ObjectTable<
     columnDefinitions,
   );
 
-  const primaryKeyApiName = objectType.type === "object"
-    ? objectType.primaryKeyApiName
-    : undefined;
-
   const handleRowSelectionChanged = useCallback(
     (change: UseRowSelectionChange<Q, RDPs>) => {
       if (!onRowSelectionChanged) return;
 
-      let derivedObjectSet: ObjectSet<Q, RDPs> | undefined;
-      if (resultingObjectSet) {
-        if (primaryKeyApiName) {
-          derivedObjectSet =
-            change.isSelectAll && change.selectedRows.length > 0
-              ? resultingObjectSet
-              : resultingObjectSet.where({
-                [primaryKeyApiName]: {
-                  $in: change.selectedRows.map(r => r.$primaryKey),
-                },
-              } as WhereClause<Q, RDPs>);
-        } else if (change.isSelectAll && change.selectedRows.length > 0) {
-          derivedObjectSet = resultingObjectSet;
-        }
-      }
-
       onRowSelectionChanged({
         selectedRows: change.selectedRows,
         isSelectAll: change.isSelectAll,
-        objectSet: derivedObjectSet,
+        objectSet: deriveSelectionObjectSet(resultingObjectSet, change),
       });
     },
     [
       onRowSelectionChanged,
       resultingObjectSet,
-      primaryKeyApiName,
     ],
   );
 
