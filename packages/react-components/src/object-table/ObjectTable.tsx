@@ -25,13 +25,14 @@ import type {
 } from "@osdk/api";
 import type { Cell } from "@tanstack/react-table";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useImperativeHandle, useMemo } from "react";
 import { useColumnDefs } from "./hooks/useColumnDefs.js";
 import { useColumnPinning } from "./hooks/useColumnPinning.js";
 import { useColumnResize } from "./hooks/useColumnResize.js";
 import { useColumnVisibility } from "./hooks/useColumnVisibility.js";
 import { useEditableTable } from "./hooks/useEditableTable.js";
 import { useObjectTableData } from "./hooks/useObjectTableData.js";
+import { useObjectTableSnapshot } from "./hooks/useObjectTableSnapshot.js";
 import type { UseRowSelectionChange } from "./hooks/useRowSelection.js";
 import { useRowSelection } from "./hooks/useRowSelection.js";
 import { useSelectionColumn } from "./hooks/useSelectionColumn.js";
@@ -93,6 +94,7 @@ export function ObjectTable<
   enableColumnResizing = true,
   enableColumnConfig = true,
   editMode = "manual",
+  apiRef,
   ...props
 }: ObjectTableProps<Q, RDPs, FunctionColumns>): React.ReactElement {
   const { columnSizing, onColumnSizingChange } = useColumnResize({
@@ -266,6 +268,15 @@ export function ObjectTable<
       validationErrors: editableConfig.validationErrors,
     },
   });
+
+  const tableSnapshot = useObjectTableSnapshot<Q, RDPs, FunctionColumns>({
+    table,
+    columnDefinitions,
+    objectSet: resultingObjectSet,
+    primaryKeyApiName,
+    pageSize,
+  });
+  useImperativeHandle(apiRef, () => tableSnapshot, [tableSnapshot]);
 
   const onRenderCellContextMenu = useCallback(
     (

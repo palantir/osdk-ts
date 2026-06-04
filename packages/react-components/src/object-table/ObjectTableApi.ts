@@ -605,7 +605,100 @@ export interface ObjectTableProps<
     object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
   ) => Record<string, string | undefined>;
 
+  /**
+   * Imperative handle for programmatic table actions. Pass a ref
+   * (`useRef<ObjectTableHandle>(null)`) to call {@link ObjectTableHandle}
+   * methods such as {@link ObjectTableHandle.getSnapshot}.
+   */
+  apiRef?: React.Ref<ObjectTableHandle>;
+
   className?: string;
+}
+
+/**
+ * Imperative handle exposing programmatic actions on an {@link ObjectTable}.
+ * Obtain it by passing {@link ObjectTableProps.apiRef}.
+ */
+export interface ObjectTableHandle {
+  /**
+   * Loads all matching rows (up to `maxRows`) and returns a format-agnostic
+   * snapshot of the table's columns and row values. The caller is responsible
+   * for turning the snapshot into a downloadable artifact (CSV, Excel, JSON,
+   * clipboard, …).
+   *
+   * Property, derived-property, and function-backed columns are included.
+   * Function-backed cells are fetched per page during snapshot collection; if
+   * a page's fetch fails, the failing cells hold the error and the rest of
+   * the snapshot still completes. Custom-rendered columns are omitted and
+   * reported in {@link ObjectTableSnapshot.excludedColumns} because they have
+   * no underlying value to export.
+   *
+   * The active filter is always applied. Row order is the object set's
+   * server-default order and is not guaranteed to match the table's current
+   * sort.
+   *
+   * @param options See {@link ObjectTableSnapshotOptions}.
+   */
+  getSnapshot: (
+    options?: ObjectTableSnapshotOptions,
+  ) => Promise<ObjectTableSnapshot>;
+}
+
+/**
+ * Options for {@link ObjectTableHandle.getSnapshot}.
+ */
+export interface ObjectTableSnapshotOptions {
+  /**
+   * Maximum number of rows to load and include in the snapshot. Loading stops
+   * once this many rows have been fetched from the object set.
+   *
+   * @default 10_000
+   */
+  maxRows?: number;
+}
+
+/**
+ * A point-in-time capture of an {@link ObjectTable}'s columns and row values,
+ * returned by {@link ObjectTableHandle.getSnapshot}.
+ */
+export interface ObjectTableSnapshot {
+  /**
+   * The exportable columns in their current display order. Reflects the
+   * table's column visibility, ordering, and pinning. The selection column
+   * is never included.
+   */
+  columns: ObjectTableSnapshotColumn[];
+
+  /**
+   * The loaded rows, in fetch order. Each row is keyed by
+   * {@link ObjectTableSnapshotColumn.id} and holds the raw cell value (not a
+   * formatted string) so the caller can format it as needed.
+   */
+  rows: Array<Record<string, unknown>>;
+
+  /**
+   * Display names of columns omitted from the snapshot because they have no
+   * underlying value to export (custom-rendered columns). Empty when nothing
+   * was excluded.
+   */
+  excludedColumns: string[];
+}
+
+/**
+ * A single column in an {@link ObjectTableSnapshot}.
+ */
+export interface ObjectTableSnapshotColumn {
+  /**
+   * The column id, matching the `locator.id` of the corresponding column
+   * definition (a property key or derived-property key). Use it to look up
+   * the value in each {@link ObjectTableSnapshot.rows} entry.
+   */
+  id: string;
+
+  /**
+   * The display name shown in the table header.
+   */
+  name: string;
 }
 
 /**

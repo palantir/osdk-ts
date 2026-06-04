@@ -22,7 +22,6 @@ import type {
   PropertyKeys,
   QueryDefinition,
   SimplePropertyDef,
-  WhereClause,
 } from "@osdk/api";
 import {
   type FunctionQueryParams,
@@ -30,7 +29,6 @@ import {
   useOsdkFunctions,
   type UseOsdkFunctionsResult,
 } from "@osdk/react";
-import { chunk } from "lodash-es";
 import { useMemo, useRef } from "react";
 import type {
   ColumnDefinition,
@@ -45,6 +43,11 @@ import {
   DEFAULT_MAX_CONCURRENT_REQUESTS,
   DEFAULT_PAGE_SIZE,
 } from "../utils/constants.js";
+import {
+  buildPagedObjectSets,
+  extractFunctionLocators,
+  type PagedObjects,
+} from "../utils/functionColumns.js";
 
 export interface FunctionColumnData {
   [columnId: string]: {
@@ -185,62 +188,6 @@ interface MergedResult {
 }
 
 const EMPTY_QUERY_GRID: QueryGrid = { queries: [], numColumns: 0 };
-
-/** Filters columnDefinitions down to only function-backed locators. */
-function extractFunctionLocators<
-  Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
-  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
-    string,
-    never
-  >,
->(
-  columnDefinitions:
-    | Array<ColumnDefinition<Q, RDPs, FunctionColumns>>
-    | undefined,
-): FunctionColumnLocator<Q, RDPs, FunctionColumns>[] {
-  if (!columnDefinitions) return [];
-
-  return columnDefinitions
-    .filter(colDef => colDef.locator.type === "function")
-    .map(colDef =>
-      colDef.locator as FunctionColumnLocator<Q, RDPs, FunctionColumns>
-    );
-}
-
-/** A page's filtered ObjectSet paired with the row objects it covers. */
-interface PagedObjects<
-  Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
-> {
-  objectSet: ObjectSet<Q, RDPs>;
-  objects: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[];
-}
-
-/** Chunks objects into pages and creates a filtered ObjectSet per page. */
-function buildPagedObjectSets<
-  Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
->(
-  objectSet: ObjectSet<Q, RDPs>,
-  objects: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[],
-  primaryKeyApiName: string | undefined,
-  pageSize: number,
-): PagedObjects<Q, RDPs>[] {
-  if (!primaryKeyApiName) {
-    return [{ objectSet, objects }];
-  }
-
-  return chunk(objects, pageSize).map(page => {
-    const whereClause = {
-      [primaryKeyApiName]: {
-        $in: page.map(obj => obj.$primaryKey),
-      },
-    } as WhereClause<Q, RDPs>;
-
-    return { objectSet: objectSet.where(whereClause), objects: page };
-  });
-}
 
 /**
  * Builds a flat query array and the layout metadata needed to recover per-column results.
