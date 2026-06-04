@@ -16,13 +16,11 @@
 
 import type {
   ObjectOrInterfaceDefinition,
-  ObjectSet,
   Osdk,
   PrimaryKeyType,
   PropertyKeys,
   QueryDefinition,
   SimplePropertyDef,
-  WhereClause,
 } from "@osdk/api";
 import type { Cell } from "@tanstack/react-table";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
@@ -33,6 +31,7 @@ import { useColumnResize } from "./hooks/useColumnResize.js";
 import { useColumnVisibility } from "./hooks/useColumnVisibility.js";
 import { useEditableTable } from "./hooks/useEditableTable.js";
 import { useObjectTableData } from "./hooks/useObjectTableData.js";
+import { useObjectTableSnapshotHandle } from "./hooks/useObjectTableSnapshotHandle.js";
 import type { UseRowSelectionChange } from "./hooks/useRowSelection.js";
 import { useRowSelection } from "./hooks/useRowSelection.js";
 import { useSelectionColumn } from "./hooks/useSelectionColumn.js";
@@ -40,10 +39,11 @@ import { useTableSorting } from "./hooks/useTableSorting.js";
 import type { ObjectTableProps } from "./ObjectTableApi.js";
 import { BaseTable } from "./Table.js";
 import type { HeaderMenuFeatureFlags } from "./TableHeaderWithPopover.js";
+import { deriveSelectionObjectSet } from "./utils/deriveSelectionObjectSet.js";
 import { getRowId, getRowIdFromPrimaryKey } from "./utils/getRowId.js";
+import type { EditableConfig } from "./utils/types.js";
 
 const EMPTY_ARRAY: [] = [];
-import type { EditableConfig } from "./utils/types.js";
 
 /**
  * ObjectTable - A headless table component for displaying OSDK object sets
@@ -96,6 +96,7 @@ export function ObjectTable<
   editMode = "manual",
   focusedRowId,
   onFocusedRowIdChanged,
+  tableRef,
   ...props
 }: ObjectTableProps<Q, RDPs, FunctionColumns>): React.ReactElement {
   const { columnSizing, onColumnSizingChange } = useColumnResize({
@@ -114,22 +115,29 @@ export function ObjectTable<
     },
   );
 
-  const { data, fetchMore, isLoading, error, objectSet: resultingObjectSet } =
-    useObjectTableData<
-      Q,
-      RDPs,
-      FunctionColumns
-    >(
-      objectType,
-      columnDefinitions,
-      filter,
-      sorting,
-      objectSet,
-      objectSetOptions,
-      dedupeIntervalMs,
-      pageSize,
-      streamUpdates,
-    );
+  const {
+    data,
+    fetchMore,
+    hasMore,
+    isLoading,
+    error,
+    totalCount,
+    objectSet: resultingObjectSet,
+  } = useObjectTableData<
+    Q,
+    RDPs,
+    FunctionColumns
+  >(
+    objectType,
+    columnDefinitions,
+    filter,
+    sorting,
+    objectSet,
+    objectSetOptions,
+    dedupeIntervalMs,
+    pageSize,
+    streamUpdates,
+  );
 
   const { columns, loading: isColumnsLoading } = useColumnDefs<
     Q,
@@ -140,40 +148,19 @@ export function ObjectTable<
     columnDefinitions,
   );
 
-  const primaryKeyApiName = objectType.type === "object"
-    ? objectType.primaryKeyApiName
-    : undefined;
-
   const handleRowSelectionChanged = useCallback(
     (change: UseRowSelectionChange<Q, RDPs>) => {
       if (!onRowSelectionChanged) return;
 
-      let derivedObjectSet: ObjectSet<Q, RDPs> | undefined;
-      if (resultingObjectSet) {
-        if (primaryKeyApiName) {
-          derivedObjectSet =
-            change.isSelectAll && change.selectedRows.length > 0
-              ? resultingObjectSet
-              : resultingObjectSet.where({
-                [primaryKeyApiName]: {
-                  $in: change.selectedRows.map(r => r.$primaryKey),
-                },
-              } as WhereClause<Q, RDPs>);
-        } else if (change.isSelectAll && change.selectedRows.length > 0) {
-          derivedObjectSet = resultingObjectSet;
-        }
-      }
-
       onRowSelectionChanged({
         selectedRows: change.selectedRows,
         isSelectAll: change.isSelectAll,
-        objectSet: derivedObjectSet,
+        objectSet: deriveSelectionObjectSet(resultingObjectSet, change),
       });
     },
     [
       onRowSelectionChanged,
       resultingObjectSet,
-      primaryKeyApiName,
     ],
   );
 
@@ -319,6 +306,16 @@ export function ObjectTable<
   );
 
   const isTableLoading = isLoading || isColumnsLoading;
+
+  useObjectTableSnapshotHandle({
+    tableRef,
+    table,
+    hasNextPage: hasMore,
+    isLoading: isTableLoading,
+    error,
+    totalCount,
+    fetchMore,
+  });
 
   const headerMenuFeatureFlags: HeaderMenuFeatureFlags = useMemo(() => ({
     showSortingItems: enableOrdering,

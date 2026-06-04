@@ -27,6 +27,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { LinkedPropertyInput } from "../../../inputs/LinkedPropertyInput.js";
 import type { PropertyAggregationValue } from "../../../types/AggregationTypes.js";
 import type { LinkedPropertyFilterDefinition } from "../../../types/LinkedFilterTypes.js";
+import { NO_VALUE } from "../../../utils/filterValues.js";
 import { createRenderValueFilter } from "../comboboxFilter.js";
 import { ListogramInput } from "../ListogramInput.js";
 import { MultiSelectInput } from "../MultiSelectInput.js";
@@ -84,9 +85,9 @@ describe("ListogramInput renderValue", () => {
     expect(screen.getByText("def-456")).toBeDefined();
   });
 
-  it("renders 'No value' for empty values even with renderValue", () => {
+  it("renders 'No value' for the No-value sentinel even with renderValue", () => {
     const valuesWithNull: PropertyAggregationValue[] = [
-      { value: "", count: 2, isNull: true },
+      { value: NO_VALUE, count: 2, isNull: true },
       { value: "abc-123", count: 5 },
     ];
 
@@ -103,6 +104,30 @@ describe("ListogramInput renderValue", () => {
     );
 
     expect(screen.getByText("No value")).toBeDefined();
+    expect(screen.getByText("Alice Smith")).toBeDefined();
+  });
+
+  it("renders '(empty string)' for a literal empty string, distinct from No value", () => {
+    const valuesWithEmpty: PropertyAggregationValue[] = [
+      { value: NO_VALUE, count: 2, isNull: true },
+      { value: "", count: 4 },
+      { value: "abc-123", count: 5 },
+    ];
+
+    render(
+      <ListogramInput
+        values={valuesWithEmpty}
+        maxCount={5}
+        isLoading={false}
+        error={null}
+        selectedValues={[]}
+        onChange={vi.fn()}
+        renderValue={mockRenderValue}
+      />,
+    );
+
+    expect(screen.getByText("No value")).toBeDefined();
+    expect(screen.getByText("(empty string)")).toBeDefined();
     expect(screen.getByText("Alice Smith")).toBeDefined();
   });
 

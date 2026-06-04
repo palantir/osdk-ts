@@ -1,6 +1,6 @@
 {
   "name": "@osdk/react-components",
-  "version": "0.24.0",
+  "version": "0.26.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -195,7 +195,7 @@
     "react-markdown": "^9.0.3",
     "remark-gfm": "^4.0.1",
     "utif": "^3.1.0",
-    "xlsx": "^0.18.5"
+    "xlsx-republish": "0.20.3"
   },
   "peerDependencies": {
     "@osdk/api": "^2.8.0",

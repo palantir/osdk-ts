@@ -32,6 +32,76 @@ import type { CellEditInfo, EditFieldConfig } from "./utils/types.js";
 
 export type { EditFieldConfig } from "./utils/types.js";
 
+export interface ObjectTableHandle<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+> {
+  /**
+   * Returns a point-in-time snapshot of ObjectTable's currently loaded data
+   * and pagination state.
+   *
+   * The snapshot includes visible data columns only, excludes internal control
+   * columns such as row selection, and does not fetch additional pages unless
+   * a positive finite `rowLimit` is provided. `rowLimit` is a pagination
+   * threshold, not a hard cap: the returned snapshot can contain more rows when
+   * they were already loaded or when the final fetched page crosses the
+   * threshold.
+   * Cell values come from the table's accessor values, not from rendered React
+   * content supplied by `renderCell`.
+   *
+   * `getSnapshot` always resolves, even when a paginated fetch fails: it returns
+   * the rows loaded so far with the failure exposed on `snapshot.error`. Callers
+   * that require a complete result (e.g. exporting all rows) must inspect
+   * `snapshot.error` and `snapshot.hasNextPage` rather than assuming the snapshot
+   * is complete.
+   */
+  getSnapshot: (
+    options?: ObjectTableSnapshotOptions,
+  ) => Promise<ObjectTableSnapshot<Q, RDPs>>;
+}
+
+export interface ObjectTableSnapshotOptions {
+  /**
+   * Fetches additional pages until at least this many rows are loaded or
+   * pagination stops.
+   *
+   * This is not a hard maximum. The returned snapshot can contain more rows
+   * because ObjectTable keeps already-loaded rows and fetches full pages.
+   */
+  rowLimit?: number;
+}
+
+export interface ObjectTableSnapshot<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+> {
+  columns: ObjectTableDataColumn[];
+  rows: ObjectTableDataRow<Q, RDPs>[];
+  hasNextPage: boolean;
+  isLoading: boolean;
+  error: unknown | undefined;
+  totalCount: string | undefined;
+}
+
+export interface ObjectTableDataColumn {
+  id: string;
+  name: string;
+}
+
+export interface ObjectTableDataRow<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+> {
+  id: string;
+  object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>;
+  getValue: (columnId: string) => ObjectTableDataCell | undefined;
+}
+
+export type ObjectTableDataCell =
+  | { status: "ready"; value: unknown }
+  | { status: "loading"; value: unknown | undefined }
+  | { status: "error"; error: unknown; value: unknown | undefined };
+
 export type ColumnDefinition<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
@@ -294,6 +364,15 @@ export interface ObjectTableProps<
    * If objectSet is not provided, objects will be fetched based on this type.
    */
   objectType: Q;
+
+  /**
+   * Ref-like handle for reading a point-in-time snapshot of the currently
+   * loaded table data and pagination state.
+   *
+   * The handle is exposed as a named prop rather than React's reserved `ref`
+   * prop so ObjectTable can preserve its generic component signature.
+   */
+  tableRef?: React.Ref<ObjectTableHandle<Q, RDPs>>;
 
   /**
    * The set of objects to show in the table.
@@ -665,13 +744,13 @@ export interface RowSelectionChange<
    *   provided, otherwise derived from `objectType` via `client(...)`).
    *   This includes rows not yet loaded into the table.
    * - Partial selection → the underlying `ObjectSet` narrowed to
-   *   `{ [primaryKeyApiName]: { $in: selectedRows.map(r => r.$primaryKey) } }`.
+   *   `{ $primaryKey: { $in: selectedRows.map(r => r.$primaryKey) } }`.
    * - "Deselect all" → an empty `ObjectSet` (`$in: []`).
    *
-   * `undefined` for interface types without a resolvable
-   * `primaryKeyApiName` when the selection is partial or empty (a
-   * `$primaryKey`-style filter can't be expressed). For "select all" on
-   * those types the underlying `ObjectSet` is still emitted.
+   * Works for both object and interface types, since the `$primaryKey`
+   * special property does not require resolving the underlying primary key
+   * property name. `undefined` only when there is no underlying `ObjectSet`
+   * to derive from.
    */
   objectSet: ObjectSet<Q, RDPs> | undefined;
 }

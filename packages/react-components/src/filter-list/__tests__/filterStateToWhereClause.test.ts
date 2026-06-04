@@ -21,6 +21,7 @@ import {
   buildWhereClause,
   getActiveLinkedFilters,
 } from "../utils/filterStateToWhereClause.js";
+import { NO_VALUE } from "../utils/filterValues.js";
 import { getFilterKey } from "../utils/getFilterKey.js";
 import type { MockObjectType } from "./testUtils.js";
 import {
@@ -374,7 +375,7 @@ describe("buildWhereClause", () => {
     });
   });
 
-  it("builds $or with $isNull for EXACT_MATCH with empty string and other values", () => {
+  it("treats a literal empty string as a value in EXACT_MATCH $in with other values", () => {
     const def = createPropertyFilterDef(
       "name",
       "LISTOGRAM",
@@ -384,19 +385,32 @@ describe("buildWhereClause", () => {
       [def, { type: "EXACT_MATCH", values: ["a", "b", ""] }],
     );
     const result = buildWhereClause([def], filterStates);
+    expect(result).toEqual({ name: { $in: ["a", "b", ""] } });
+  });
+
+  it("builds $or with $isNull for EXACT_MATCH with NO_VALUE and other values", () => {
+    const def = createPropertyFilterDef(
+      "name",
+      "LISTOGRAM",
+      { type: "EXACT_MATCH", values: ["a", "b", NO_VALUE] },
+    );
+    const filterStates = stateMap(
+      [def, { type: "EXACT_MATCH", values: ["a", "b", NO_VALUE] }],
+    );
+    const result = buildWhereClause([def], filterStates);
     expect(result).toEqual({
       $or: [{ name: { $in: ["a", "b"] } }, { name: { $isNull: true } }],
     });
   });
 
-  it("builds $or with single value and $isNull for EXACT_MATCH", () => {
+  it("builds $or with single value and $isNull for EXACT_MATCH with NO_VALUE", () => {
     const def = createPropertyFilterDef(
       "name",
       "LISTOGRAM",
-      { type: "EXACT_MATCH", values: ["a", ""] },
+      { type: "EXACT_MATCH", values: ["a", NO_VALUE] },
     );
     const filterStates = stateMap(
-      [def, { type: "EXACT_MATCH", values: ["a", ""] }],
+      [def, { type: "EXACT_MATCH", values: ["a", NO_VALUE] }],
     );
     const result = buildWhereClause([def], filterStates);
     expect(result).toEqual({
@@ -404,7 +418,7 @@ describe("buildWhereClause", () => {
     });
   });
 
-  it("builds $isNull for SELECT with empty string value", () => {
+  it("builds an equality clause for SELECT with a literal empty string", () => {
     const def = createPropertyFilterDef(
       "name",
       "MULTI_SELECT",
@@ -414,10 +428,23 @@ describe("buildWhereClause", () => {
       [def, createSelectState([""])],
     );
     const result = buildWhereClause([def], filterStates);
+    expect(result).toEqual({ name: "" });
+  });
+
+  it("builds $isNull for SELECT with the NO_VALUE sentinel", () => {
+    const def = createPropertyFilterDef(
+      "name",
+      "MULTI_SELECT",
+      createSelectState([NO_VALUE]),
+    );
+    const filterStates = stateMap(
+      [def, createSelectState([NO_VALUE])],
+    );
+    const result = buildWhereClause([def], filterStates);
     expect(result).toEqual({ name: { $isNull: true } });
   });
 
-  it("builds $or with $isNull for SELECT with empty string and other values", () => {
+  it("treats a literal empty string as a value in SELECT $in with other values", () => {
     const def = createPropertyFilterDef(
       "name",
       "MULTI_SELECT",
@@ -427,25 +454,38 @@ describe("buildWhereClause", () => {
       [def, createSelectState(["a", ""])],
     );
     const result = buildWhereClause([def], filterStates);
+    expect(result).toEqual({ name: { $in: ["a", ""] } });
+  });
+
+  it("builds $or with $isNull for SELECT with NO_VALUE and other values", () => {
+    const def = createPropertyFilterDef(
+      "name",
+      "MULTI_SELECT",
+      createSelectState(["a", NO_VALUE]),
+    );
+    const filterStates = stateMap(
+      [def, createSelectState(["a", NO_VALUE])],
+    );
+    const result = buildWhereClause([def], filterStates);
     expect(result).toEqual({
       $or: [{ name: "a" }, { name: { $isNull: true } }],
     });
   });
 
-  it("wraps $isNull with $not for EXACT_MATCH with empty string and isExcluding", () => {
+  it("wraps $isNull with $not for EXACT_MATCH with NO_VALUE and isExcluding", () => {
     const def = createPropertyFilterDef(
       "name",
       "LISTOGRAM",
-      { type: "EXACT_MATCH", values: [""], isExcluding: true },
+      { type: "EXACT_MATCH", values: [NO_VALUE], isExcluding: true },
     );
     const filterStates = stateMap(
-      [def, { type: "EXACT_MATCH", values: [""], isExcluding: true }],
+      [def, { type: "EXACT_MATCH", values: [NO_VALUE], isExcluding: true }],
     );
     const result = buildWhereClause([def], filterStates);
     expect(result).toEqual({ $not: { name: { $isNull: true } } });
   });
 
-  it("builds $isNull for EXACT_MATCH with empty string value", () => {
+  it("builds an equality clause for EXACT_MATCH with a literal empty string", () => {
     const def = createPropertyFilterDef(
       "name",
       "LISTOGRAM",
@@ -453,6 +493,19 @@ describe("buildWhereClause", () => {
     );
     const filterStates = stateMap(
       [def, { type: "EXACT_MATCH", values: [""] }],
+    );
+    const result = buildWhereClause([def], filterStates);
+    expect(result).toEqual({ name: "" });
+  });
+
+  it("builds $isNull for EXACT_MATCH with the NO_VALUE sentinel", () => {
+    const def = createPropertyFilterDef(
+      "name",
+      "LISTOGRAM",
+      { type: "EXACT_MATCH", values: [NO_VALUE] },
+    );
+    const filterStates = stateMap(
+      [def, { type: "EXACT_MATCH", values: [NO_VALUE] }],
     );
     const result = buildWhereClause([def], filterStates);
     expect(result).toEqual({ name: { $isNull: true } });

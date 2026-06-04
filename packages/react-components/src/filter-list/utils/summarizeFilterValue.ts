@@ -19,6 +19,7 @@ import { assertUnreachable } from "../../shared/assertUnreachable.js";
 import { formatDateForInput } from "../../shared/dateUtils.js";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
+import { NO_VALUE } from "./filterValues.js";
 
 // Em-dash reads naturally as an unbounded range half (e.g. "— – Jan 1").
 const NO_VALUE_PLACEHOLDER = "—";
@@ -26,17 +27,8 @@ const NO_VALUE_PLACEHOLDER = "—";
 // Standalone SELECT triggers need the explicit phrase; a bare em-dash isn't discoverable.
 const SELECT_NO_VALUE_LABEL = "(No value)";
 
-function isEmptySelectionValue(
-  value: string | number | boolean | Date | null | undefined,
-): boolean {
-  if (value == null) {
-    return true;
-  }
-  if (typeof value === "string") {
-    return value.trim() === "";
-  }
-  return false;
-}
+// Literal empty string is a real, selectable value distinct from "No value".
+const SELECT_EMPTY_STRING_LABEL = "(empty string)";
 
 function summarizeSelectionValues(
   values: ReadonlyArray<string | number | boolean | Date | null | undefined>,
@@ -52,8 +44,11 @@ function summarizeSelectionValues(
   if (v instanceof Date) {
     return formatDate(v);
   }
-  if (isEmptySelectionValue(v)) {
+  if (v == null || v === NO_VALUE) {
     return SELECT_NO_VALUE_LABEL;
+  }
+  if (v === "") {
+    return SELECT_EMPTY_STRING_LABEL;
   }
   return String(v);
 }
