@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { Employee, Office, Todo } from "@osdk/client.test.ontology";
+import {
+  Employee,
+  FooInterface,
+  Office,
+  Todo,
+} from "@osdk/client.test.ontology";
 import {
   FauxFoundry,
   ontologies,
@@ -645,6 +650,43 @@ describe("Store Invalidation Type Isolation", () => {
       await new Promise(resolve => setTimeout(resolve, 500));
 
       expect(empSubFn.next).not.toHaveBeenCalled();
+    });
+
+    it("should invalidate the backing object when given an interface instance", async () => {
+      const { subFn: empSubFn } = await expectStandardObserveObject({
+        cache,
+        type: Employee,
+        primaryKey: EMPLOYEE_1_ID,
+      });
+      const { subFn: emp2SubFn } = await expectStandardObserveObject({
+        cache,
+        type: Employee,
+        primaryKey: EMPLOYEE_2_ID,
+      });
+
+      empSubFn.next.mockClear();
+      emp2SubFn.next.mockClear();
+
+      // An interface-origin instance is one concrete object viewed through the
+      // interface lens; it carries the backing object's $objectType/$primaryKey.
+      const { data: foos } = await client(FooInterface).fetchPage();
+      const emp1AsFoo = foos.find(foo =>
+        foo.$objectType === Employee.apiName
+        && foo.$primaryKey === EMPLOYEE_1_ID
+      );
+      invariant(emp1AsFoo);
+      expect(emp1AsFoo.$apiName).toBe(FooInterface.apiName);
+      expect(emp1AsFoo.$objectType).toBe(Employee.apiName);
+      expect(emp1AsFoo.$primaryKey).toBe(EMPLOYEE_1_ID);
+
+      await cache.invalidateObjects(emp1AsFoo);
+
+      await vi.waitFor(() => {
+        expect(empSubFn.next).toHaveBeenCalled();
+      });
+      // The two objects are invalidated in the same batch, so once emp1's
+      // subscription has fired the decision for emp2 has already been made.
+      expect(emp2SubFn.next).not.toHaveBeenCalled();
     });
   });
 

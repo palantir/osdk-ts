@@ -576,12 +576,14 @@ export interface ObservableClient extends ObserveLinks {
 
   /**
    * Invalidates specific objects in the cache.
+   *
+   * Interface instances invalidate their backing concrete object.
    * @param objects - Single object or array of objects to invalidate
    */
   invalidateObjects(
     objects:
-      | Osdk.Instance<ObjectTypeDefinition>
-      | ReadonlyArray<Osdk.Instance<ObjectTypeDefinition>>,
+      | Osdk.Instance<ObjectOrInterfaceDefinition>
+      | ReadonlyArray<Osdk.Instance<ObjectOrInterfaceDefinition>>,
   ): Promise<void>;
 
   /**
