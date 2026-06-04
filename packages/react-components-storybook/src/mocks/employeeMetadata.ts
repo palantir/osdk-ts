@@ -571,6 +571,42 @@ export const employeeMetadata: TH_ObjectTypeFullMetadata<Employee> = {
           },
         ],
       },
+      "classificationMarking": {
+        "displayName": "Classification",
+        "dataType": {
+          "type": "marking",
+          "markingType": "MANDATORY",
+        },
+        "rid":
+          "ri.ontology.main.property.c1a55001-aaaa-4d5e-9abc-classification1",
+        "status": {
+          "type": "experimental",
+        },
+        "visibility": "NORMAL",
+        "typeClasses": [],
+      },
+      // The TH helper constrains `dataType.type` to equal the SDK property
+      // type ("marking"), but on the wire, multi-valued markings are
+      // represented as `{ type: "array", subType: { type: "marking" } }`.
+      // The cast lets us encode the real wire shape while keeping the rest
+      // of the metadata strictly typed.
+      "clearanceMarking": {
+        "displayName": "Clearance",
+        "dataType": {
+          "type": "array",
+          "subType": {
+            "type": "marking",
+            "markingType": "CBAC",
+          },
+        } as unknown as { type: "marking" },
+        "rid":
+          "ri.ontology.main.property.c1a55001-bbbb-4d5e-9abc-clearance00001",
+        "status": {
+          "type": "experimental",
+        },
+        "visibility": "NORMAL",
+        "typeClasses": [],
+      },
     },
     "rid": "ri.ontology.main.object-type.ade16a88-ecc4-4f96-9751-ca1799247d64",
     "titleProperty": "fullName",
