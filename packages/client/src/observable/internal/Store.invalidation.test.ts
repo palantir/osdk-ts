@@ -681,9 +681,11 @@ describe("Store Invalidation Type Isolation", () => {
 
       await cache.invalidateObjects(emp1AsFoo);
 
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      expect(empSubFn.next).toHaveBeenCalled();
+      await vi.waitFor(() => {
+        expect(empSubFn.next).toHaveBeenCalled();
+      });
+      // The two objects are invalidated in the same batch, so once emp1's
+      // subscription has fired the decision for emp2 has already been made.
       expect(emp2SubFn.next).not.toHaveBeenCalled();
     });
   });
