@@ -89,4 +89,4 @@ Before using any component, read the relevant doc from this package:
 - **TiffRenderer**: Read [docs/TiffViewer.md](./docs/TiffViewer.md) for props and usage
 - **MarkdownRenderer**: Read [docs/MarkdownRenderer.md](./docs/MarkdownRenderer.md) for props, examples, and theming
 - **FilterList**: Read [docs/FilterList.md](./docs/FilterList.md) for props, examples, and usage
-- **CbacPicker**: Read [docs/CbacPicker.md](./docs/CbacPicker.md) for props, examples, base components, and troubleshooting. Import from `@osdk/react-components/experimental/cbac-picker`.
+- **CbacPicker**: Read [docs/CbacPicker.md](./docs/CbacPicker.md) for props, examples, base components, and troubleshooting

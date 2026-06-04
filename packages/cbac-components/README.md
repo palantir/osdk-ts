@@ -1,6 +1,6 @@
 # @osdk/cbac-components
 
-> **DEPRECATED / RELOCATED**: The CBAC components have been merged into [`@osdk/react-components`](../react-components) and are now exported from `@osdk/react-components/experimental/cbac-picker`. This package is kept in the repository for legacy reference only and is no longer the source of truth. **New consumers should import from `@osdk/react-components`.** See [`packages/react-components/docs/CbacPicker.md`](../react-components/docs/CbacPicker.md) for usage.
+> **DEPRECATED / RELOCATED**: The CBAC components have been merged into [`@osdk/react-components`](https://github.com/palantir/osdk-ts/tree/main/packages/react-components) and are now exported from `@osdk/react-components/experimental/cbac-picker`. This package is kept in the repository for legacy reference only and is no longer the source of truth. **New consumers should import from `@osdk/react-components`.** See [`packages/react-components/docs/CbacPicker.md`](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/CbacPicker.md) for usage.
 
 > **Beta Release**: This package is currently in beta. Please use the latest beta version for the most up-to-date features and fixes.
 
