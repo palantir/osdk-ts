@@ -127,6 +127,10 @@ function getColumnsFromColumnDefinitions<
         ? propertyMetadata.type
         : undefined;
 
+    const markingType = propertyMetadata?.typeMetadata?.type === "marking"
+      ? propertyMetadata.typeMetadata.markingType
+      : undefined;
+
     const colDef: AccessorColumnDef<
       Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
     > = {
@@ -140,6 +144,7 @@ function getColumnsFromColumnDefinitions<
         editable,
         editFieldConfig,
         dataType,
+        markingType,
         validateEdit,
       },
       size: width,

@@ -1,0 +1,36 @@
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--osdk-mandatory-marking-cell-gap, 4px);
+  align-items: center;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--osdk-mandatory-marking-pill-padding-y, 1px)
+    var(--osdk-mandatory-marking-pill-padding-x, 6px);
+  border-radius: var(
+    --osdk-mandatory-marking-pill-border-radius,
+    var(--osdk-surface-border-radius)
+  );
+  background: var(
+    --osdk-mandatory-marking-pill-background,
+    var(--osdk-surface-background-color-default-hover)
+  );
+  color: var(
+    --osdk-mandatory-marking-pill-color,
+    var(--osdk-typography-color-default-rest)
+  );
+  border: var(--osdk-surface-border-width) solid
+    var(
+      --osdk-mandatory-marking-pill-border-color,
+      var(--osdk-surface-border-color-default)
+    );
+  font-size: var(--osdk-typography-size-body-small, 11px);
+  line-height: 1.2;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

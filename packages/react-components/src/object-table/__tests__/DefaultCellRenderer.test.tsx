@@ -16,9 +16,16 @@
 
 import type { CellContext } from "@tanstack/react-table";
 import { cleanup, render, screen } from "@testing-library/react";
+import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { renderDefaultCell } from "../DefaultCellRenderer.js";
 import type { CellEditInfo, EditFieldConfig } from "../utils/types.js";
+
+vi.mock("../../cbac-picker/CbacBanner.js", () => ({
+  CbacBanner: ({ markingIds }: { markingIds: string[] }) => (
+    <div data-testid="cbac-banner">{markingIds.join(",")}</div>
+  ),
+}));
 
 function createCellContext(
   value: unknown,
@@ -83,6 +90,58 @@ describe("renderDefaultCell", () => {
     const result = renderDefaultCell(createCellContext(undefined));
     render(<div data-testid="cell">{result}</div>);
     expect(screen.getByTestId("cell").textContent).toBe("");
+  });
+
+  describe("marking columns", () => {
+    it("renders a CbacBanner for a CBAC marking column with a single id", () => {
+      const result = renderDefaultCell(createCellContext("marking-1", {
+        columnMeta: { markingType: "CBAC" },
+      }));
+      render(<div data-testid="cell">{result}</div>);
+      expect(screen.getByTestId("cbac-banner").textContent).toBe("marking-1");
+    });
+
+    it("renders a CbacBanner for a CBAC marking column with multiple ids", () => {
+      const result = renderDefaultCell(createCellContext(["m-1", "m-2"], {
+        columnMeta: { markingType: "CBAC" },
+      }));
+      render(<div data-testid="cell">{result}</div>);
+      expect(screen.getByTestId("cbac-banner").textContent).toBe("m-1,m-2");
+    });
+
+    it("renders nothing for an empty CBAC marking value", () => {
+      const result = renderDefaultCell(createCellContext(null, {
+        columnMeta: { markingType: "CBAC" },
+      }));
+      render(<div data-testid="cell">{result}</div>);
+      expect(screen.queryByTestId("cbac-banner")).toBeNull();
+    });
+
+    it("renders one pill per id for a MANDATORY marking column", () => {
+      const result = renderDefaultCell(createCellContext(["m-1", "m-2"], {
+        columnMeta: { markingType: "MANDATORY" },
+      }));
+      render(<div data-testid="cell">{result}</div>);
+      expect(screen.getByText("m-1")).toBeDefined();
+      expect(screen.getByText("m-2")).toBeDefined();
+    });
+
+    it("renders a single pill for a single-valued MANDATORY marking", () => {
+      const result = renderDefaultCell(createCellContext("m-1", {
+        columnMeta: { markingType: "MANDATORY" },
+      }));
+      render(<div data-testid="cell">{result}</div>);
+      expect(screen.getByText("m-1")).toBeDefined();
+    });
+
+    it("falls back to the default renderer when markingType is absent", () => {
+      const result = renderDefaultCell(createCellContext("plain-value", {
+        columnMeta: { dataType: "marking" },
+      }));
+      render(<div data-testid="cell">{result}</div>);
+      expect(screen.getByTestId("cell").textContent).toBe("plain-value");
+      expect(screen.queryByTestId("cbac-banner")).toBeNull();
+    });
   });
 
   it("should pass only the current row's pending edits to getFieldComponentProps", () => {
