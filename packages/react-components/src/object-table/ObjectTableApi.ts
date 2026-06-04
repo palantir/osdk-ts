@@ -625,20 +625,19 @@ export interface ObjectTableHandle<
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 > {
   /**
-   * Loads all matching rows (up to `rowLimit`) and returns a format-agnostic
-   * snapshot of the table's columns and row values. The caller is responsible
-   * for turning the snapshot into a downloadable artifact (CSV, Excel, JSON,
-   * clipboard, …).
+   * Loads all rows and returns a format-agnostic
+   * snapshot of the table's columns, row values, and total count. The caller
+   * is responsible for turning the snapshot into a downloadable artifact
+   * (CSV, Excel, JSON, clipboard, …).
    *
    * Property, derived-property, and function-backed columns are included.
-   * Function-backed cells are fetched per page during snapshot collection; if
-   * a page's fetch fails, the failing cells surface an `"error"` status and
-   * the rest of the snapshot still completes. Custom-rendered columns are
-   * omitted because they have no underlying value to export.
+   * Function-backed cells are fetched per page during snapshot collection;
+   * when a page's fetch fails, `row.getValue(columnId)` returns the thrown
+   * `Error` instance for the affected cells and the rest of the snapshot
+   * still resolves. Custom-rendered columns are omitted because they have
+   * no underlying value to export.
    *
-   * The active filter is always applied. Row order is the object set's
-   * server-default order and is not guaranteed to match the table's current
-   * sort.
+   * Promise rejects when `totalCount` exceeds `rowLimit`.
    *
    * @param options See {@link ObjectTableSnapshotOptions}.
    */

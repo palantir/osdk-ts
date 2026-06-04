@@ -100,7 +100,7 @@ export function ObjectTable<
     onColumnResize,
   });
 
-  const { sorting, onSortingChange } = useTableSorting<
+  const { sorting, onSortingChange, orderByState } = useTableSorting<
     Q,
     RDPs,
     FunctionColumns
@@ -260,6 +260,7 @@ export function ObjectTable<
     objectSet: resultingObjectSet,
     pageSize,
     totalCount,
+    orderBy: orderByState,
   });
 
   useImperativeHandle(

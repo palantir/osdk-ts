@@ -43,6 +43,7 @@ import {
   DEFAULT_SNAPSHOT_ROW_LIMIT,
   fetchFunctionColumnValues,
 } from "../utils/objectTableSnapshot.js";
+import type { OrderBy } from "../utils/types.js";
 
 interface UseObjectTableSnapshotArgs<
   Q extends ObjectOrInterfaceDefinition,
@@ -64,11 +65,13 @@ interface UseObjectTableSnapshotArgs<
   /** Page size for chunking function-column queries across loaded rows. */
   pageSize?: number;
   /**
-   * Total number of objects matching the object set, as reported by the
+   * Total number of objects in the object set, as reported by the
    * underlying list payload. Used to fail fast when `getSnapshot` is called
-   * with a `rowLimit` lower than the matching row count.
+   * with a `rowLimit` lower than the row count.
    */
   totalCount: string | undefined;
+
+  orderBy?: OrderBy<Q>;
 }
 
 /**
@@ -90,6 +93,7 @@ export function useObjectTableSnapshot<
     objectSet,
     pageSize = DEFAULT_PAGE_SIZE,
     totalCount,
+    orderBy,
   }: UseObjectTableSnapshotArgs<Q, RDPs, FunctionColumns>,
 ): ObjectTableHandle<Q, RDPs> {
   const client = useOsdkClient();
@@ -111,9 +115,8 @@ export function useObjectTableSnapshot<
       if (totalCount != null) {
         const total = Number(totalCount);
         if (Number.isFinite(total) && total > rowLimit) {
-          throw new Error(
-            `getSnapshot: rowLimit (${rowLimit}) is less than the total `
-              + `matching rows (${total}). Raise rowLimit to include all rows.`,
+          return Promise.reject(
+            `getSnapshot error: total row count exceeds row limit. `,
           );
         }
       }
@@ -142,7 +145,11 @@ export function useObjectTableSnapshot<
         >
       > = [];
       if (objectSet != null && columnIds.length > 0 && rowLimit > 0) {
-        for await (const object of objectSet.asyncIter()) {
+        for await (
+          const object of objectSet.asyncIter({
+            $orderBy: orderBy,
+          })
+        ) {
           loadedObjects.push(
             object as unknown as Osdk.Instance<
               Q,
