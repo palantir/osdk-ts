@@ -23,6 +23,7 @@ import type {
   SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
+import type { Client } from "@osdk/client";
 import { chunk } from "lodash-es";
 import type {
   ColumnDefinition,
@@ -60,18 +61,35 @@ export function extractFunctionLocators<
     );
 }
 
-/** Chunks objects into pages and creates a filtered ObjectSet per page. */
+/**
+ * Constructs the per-page object sets used to fetch function-backed column
+ * values for `objects`. Builds an unfiltered base set from
+ * `objectOrInterfaceType` (so pages are scoped purely by primary key) and
+ * narrows each page via `{ [primaryKeyApiName]: { $in: pageKeys } }`.
+ *
+ * Returns `[]` when the type is an interface (no base set can be built) or
+ * when no primary-key apiName is available and the input is empty.
+ */
 export function buildPagedObjectSets<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 >(
-  objectSet: ObjectSet<Q, RDPs>,
+  client: Client,
+  objectOrInterfaceType: Q,
   objects: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[],
   primaryKeyApiName: string | undefined,
   pageSize: number,
 ): PagedObjects<Q, RDPs>[] {
+  const isObjectType = objectOrInterfaceType.type === "object";
+
+  const baseObjectSet = isObjectType
+    ? client(objectOrInterfaceType) as ObjectSet<Q, RDPs>
+    : undefined;
+  if (!baseObjectSet) {
+    return [];
+  }
   if (!primaryKeyApiName) {
-    return [{ objectSet, objects }];
+    return [{ objectSet: baseObjectSet, objects }];
   }
 
   return chunk(objects, pageSize).map(page => {
@@ -81,6 +99,6 @@ export function buildPagedObjectSets<
       },
     } as WhereClause<Q, RDPs>;
 
-    return { objectSet: objectSet.where(whereClause), objects: page };
+    return { objectSet: baseObjectSet.where(whereClause), objects: page };
   });
 }

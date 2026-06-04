@@ -270,6 +270,7 @@ export function ObjectTable<
   });
 
   const tableSnapshot = useObjectTableSnapshot<Q, RDPs, FunctionColumns>({
+    objectOrInterfaceType: objectType,
     table,
     columnDefinitions,
     objectSet: resultingObjectSet,

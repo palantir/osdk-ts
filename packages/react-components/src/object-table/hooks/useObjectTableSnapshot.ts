@@ -50,6 +50,11 @@ interface UseObjectTableSnapshotArgs<
   RDPs extends Record<string, SimplePropertyDef>,
   FunctionColumns extends Record<string, QueryDefinition<{}>>,
 > {
+  /**
+   * The object or interface type the table is rendering. Used to construct a
+   * base object set for chunking function-column queries by primary key.
+   */
+  objectOrInterfaceType: Q;
   table: Table<Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>>;
   columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>;
   /**
@@ -76,6 +81,7 @@ export function useObjectTableSnapshot<
   FunctionColumns extends Record<string, QueryDefinition<{}>>,
 >(
   {
+    objectOrInterfaceType,
     table,
     columnDefinitions,
     objectSet,
@@ -145,28 +151,30 @@ export function useObjectTableSnapshot<
       if (
         visibleFunctionLocators.length > 0
         && loadedObjects.length > 0
-        && objectSet != null
       ) {
         const pages = buildPagedObjectSets<Q, RDPs>(
-          objectSet,
+          client,
+          objectOrInterfaceType,
           loadedObjects,
           primaryKeyApiName,
           pageSize,
         );
-        functionColumnValues = await fetchFunctionColumnValues<
-          Q,
-          RDPs,
-          FunctionColumns
-        >(
-          visibleFunctionLocators,
-          pages,
-          (queryDefinition, params) =>
-            (
-              client(queryDefinition) as {
-                executeFunction: (params: unknown) => Promise<unknown>;
-              }
-            ).executeFunction(params),
-        );
+        if (pages.length > 0) {
+          functionColumnValues = await fetchFunctionColumnValues<
+            Q,
+            RDPs,
+            FunctionColumns
+          >(
+            visibleFunctionLocators,
+            pages,
+            (queryDefinition, params) =>
+              (
+                client(queryDefinition) as {
+                  executeFunction: (params: unknown) => Promise<unknown>;
+                }
+              ).executeFunction(params),
+          );
+        }
       }
 
       const rows = loadedObjects.map((object) => {
@@ -189,6 +197,7 @@ export function useObjectTableSnapshot<
       table,
       exportableIds,
       objectSet,
+      objectOrInterfaceType,
       functionLocators,
       client,
       primaryKeyApiName,

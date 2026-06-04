@@ -16,8 +16,6 @@
 
 import type {
   ObjectOrInterfaceDefinition,
-  ObjectSet,
-  ObjectTypeDefinition,
   Osdk,
   PropertyKeys,
   QueryDefinition,
@@ -72,12 +70,6 @@ export interface UseFunctionColumnsDataOptions<
   pageSize?: number;
 }
 
-const isObjectType = (
-  objectOrInterfaceType: ObjectOrInterfaceDefinition,
-): objectOrInterfaceType is ObjectTypeDefinition => {
-  return objectOrInterfaceType.type === "object";
-};
-
 export function useFunctionColumnsData<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
@@ -97,43 +89,38 @@ export function useFunctionColumnsData<
   const client = useOsdkClient();
   const prevDataRef = useRef<FunctionColumnData>({});
 
-  const isObjectTypeDefinition = objectOrInterfaceType
-    && isObjectType(objectOrInterfaceType);
-
   const stableObjects = useStableObjects(objects);
-
-  const baseObjectSet: ObjectSet<Q, RDPs> | undefined = useMemo(
-    () => {
-      return isObjectTypeDefinition
-        ? client(objectOrInterfaceType) as ObjectSet<Q, RDPs>
-        : undefined;
-    },
-    [client, isObjectTypeDefinition, objectOrInterfaceType],
-  );
 
   const functionColDefs = useMemo(
     () => extractFunctionLocators<Q, RDPs, FunctionColumns>(columnDefinitions),
     [columnDefinitions],
   );
 
-  const disabled = !baseObjectSet || !stableObjects?.length
-    || functionColDefs.length === 0;
-
-  // Construct object sets using the base object set (constructed with object type only)
-  // + filter with primary keys of each page's objects
+  // Construct an object set per page (base set filtered to each page's
+  // primary keys). `buildPagedObjectSets` returns `[]` for interfaces and
+  // when there's no work to do, which short-circuits the downstream queries.
   //
-  // When a new page loads, only that page's queries fire — old pages
-  // hit the dedupeIntervalMs cache since their params are unchanged.
+  // When a new page loads, only that page's queries fire — old pages hit the
+  // dedupeIntervalMs cache since their params are unchanged.
   const pagedObjectSets = useMemo(() => {
-    if (!baseObjectSet || !stableObjects?.length) return [];
-
-    return buildPagedObjectSets(
-      baseObjectSet,
+    if (!stableObjects?.length) return [];
+    return buildPagedObjectSets<Q, RDPs>(
+      client,
+      objectOrInterfaceType,
       stableObjects,
       primaryKeyApiName,
       pageSize,
     );
-  }, [baseObjectSet, stableObjects, primaryKeyApiName, pageSize]);
+  }, [
+    client,
+    objectOrInterfaceType,
+    stableObjects,
+    primaryKeyApiName,
+    pageSize,
+  ]);
+
+  const disabled = pagedObjectSets.length === 0
+    || functionColDefs.length === 0;
 
   const queryGrid = useMemo(() => {
     if (pagedObjectSets.length === 0 || functionColDefs.length === 0) {
