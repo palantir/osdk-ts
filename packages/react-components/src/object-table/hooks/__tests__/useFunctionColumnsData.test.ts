@@ -550,6 +550,59 @@ describe("useFunctionColumnsData", () => {
     });
   });
 
+  it("clears a cell whose value disappears from a resolved result, but keeps previous data while reloading", () => {
+    // First render: obj1 has a value.
+    vi.mocked(useOsdkFunctions).mockReturnValue([
+      {
+        data: { "TestObject:obj1": { value: "result1" } },
+        error: undefined,
+        isLoading: false,
+        lastUpdated: Date.now(),
+      },
+    ] as unknown as UseOsdkFunctionsResult);
+
+    const { result, rerender } = renderHook(
+      () =>
+        useFunctionColumnsData({
+          objectOrInterfaceType: TestObjectType,
+          objects: mockObjects,
+          columnDefinitions,
+        }),
+    );
+
+    expect(result.current.testColumn.obj1.data).toEqual({ value: "result1" });
+
+    // Refetch in flight: obj1's key not yet present but loading — keep the
+    // previous value so the cell doesn't flash empty.
+    vi.mocked(useOsdkFunctions).mockReturnValue([
+      {
+        data: {},
+        error: undefined,
+        isLoading: true,
+        lastUpdated: 0,
+      },
+    ] as unknown as UseOsdkFunctionsResult);
+    rerender();
+
+    expect(result.current.testColumn.obj1.isLoading).toBe(true);
+    expect(result.current.testColumn.obj1.data).toEqual({ value: "result1" });
+
+    // Refetch resolved with obj1 absent (its value became null) — the cell
+    // must clear instead of retaining the stale previous value.
+    vi.mocked(useOsdkFunctions).mockReturnValue([
+      {
+        data: {},
+        error: undefined,
+        isLoading: false,
+        lastUpdated: Date.now(),
+      },
+    ] as unknown as UseOsdkFunctionsResult);
+    rerender();
+
+    expect(result.current.testColumn.obj1.isLoading).toBe(false);
+    expect(result.current.testColumn.obj1.data).toBeUndefined();
+  });
+
   it("should handle errors gracefully", async () => {
     const mockError = new Error("Query failed");
 

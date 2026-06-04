@@ -1,5 +1,9 @@
 # @osdk/create-widget.template.react.v2
 
+## 3.26.0
+
+## 3.25.0
+
 ## 3.24.0
 
 ## 3.23.0

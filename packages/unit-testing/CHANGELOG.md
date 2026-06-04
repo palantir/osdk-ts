@@ -1,5 +1,34 @@
 # @osdk/unit-testing
 
+## 0.15.0
+
+### Minor Changes
+
+- 08e921c: Bump `foundry-platform-typescript` catalog to 2.63.0 and surface the new CBAC/MANDATORY marking subtype on `ObjectMetadata.Property` via a new `typeMetadata` discriminated-union field. For marking properties, `typeMetadata` is `{ type: "marking"; subtype?: "CBAC" | "MANDATORY" }`, letting consumers distinguish classification-based markings from mandatory markings on object property columns. Future per-`type` metadata should be added as additional variants of `typeMetadata` rather than as new top-level optionals on `Property`.
+
+### Patch Changes
+
+- Updated dependencies [08e921c]
+- Updated dependencies [4b38963]
+- Updated dependencies [9081e32]
+  - @osdk/api@2.29.0
+  - @osdk/client@2.29.0
+
+## 0.14.0
+
+### Minor Changes
+
+- 2803fd8: Move vitest from dependencies to devDependencies since it is only used in tests, not in the shipped output
+
+### Patch Changes
+
+- Updated dependencies [a5066b5]
+- Updated dependencies [3e03544]
+- Updated dependencies [13132b8]
+  - @osdk/client@2.28.0
+  - @osdk/functions@1.12.0
+  - @osdk/api@2.28.0
+
 ## 0.13.0
 
 ### Minor Changes

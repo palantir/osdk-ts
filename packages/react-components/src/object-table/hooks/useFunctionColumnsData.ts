@@ -318,9 +318,15 @@ function resolveCell(
     const rawData = result.functionsMap[objectKey];
     return { isLoading: false, data: getValue ? getValue(rawData) : rawData };
   }
-  // Key not in results — still loading, or query returned no data for this object
-  // Return with previous data
-  return { isLoading: result.isLoading, data: prevData };
+  // Key not in results. While the query is still loading, keep showing the
+  // previous data so the cell doesn't flash empty during a refetch. Once the
+  // query has resolved without an entry for this object, its value is gone —
+  // clear the cell instead of retaining the stale previous value (otherwise a
+  // cell whose derived value became null keeps displaying the old value).
+  return {
+    isLoading: result.isLoading,
+    data: result.isLoading ? prevData : undefined,
+  };
 }
 
 const useStableObjects = <
