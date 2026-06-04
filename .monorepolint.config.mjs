@@ -378,6 +378,7 @@ const archetypeRules = archetypes(
       attwExcludeEntrypoints: [
         "./experimental/action-form",
         "./experimental/aip-agent-chat",
+        "./experimental/cbac-picker",
         "./experimental/document-viewer",
         "./experimental/email-viewer",
         "./experimental/excel-viewer",
