@@ -223,8 +223,8 @@
 
   --osdk-filter-listogram-bar-height: calc(var(--osdk-surface-spacing) * 2);
   --osdk-filter-listogram-bar-width: calc(var(--osdk-surface-spacing) * 12.5);
-  --osdk-filter-listogram-bar-bg: var(--osdk-palette-gray-100);
-  --osdk-filter-listogram-bar-border-radius: var(--osdk-surface-border-radius);
+  --osdk-filter-listogram-bar-bg: var(--osdk-background-tertiary);
+  --osdk-filter-listogram-bar-border-radius: calc(var(--osdk-surface-border-radius) * 0.5);
   --osdk-filter-listogram-bar-color: var(--osdk-intent-primary-rest);
   --osdk-filter-listogram-bar-fill-transition: var(
       --osdk-emphasis-transition-duration
