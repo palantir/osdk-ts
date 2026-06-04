@@ -26,7 +26,7 @@ import type { PagedObjects } from "./functionColumns.js";
  * Default cap on the number of rows {@link ObjectTableHandle.getSnapshot}
  * will load. Bounds runaway loads against very large object sets.
  */
-export const DEFAULT_SNAPSHOT_MAX_ROWS = 10_000;
+export const DEFAULT_SNAPSHOT_ROW_LIMIT = 10_000;
 
 /**
  * Projects a loaded object into a snapshot row keyed by column id, holding the

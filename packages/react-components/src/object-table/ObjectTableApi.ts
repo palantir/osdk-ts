@@ -610,18 +610,18 @@ export interface ObjectTableProps<
    * (`useRef<ObjectTableHandle>(null)`) to call {@link ObjectTableHandle}
    * methods such as {@link ObjectTableHandle.getSnapshot}.
    */
-  apiRef?: React.Ref<ObjectTableHandle>;
+  tableRef?: React.Ref<ObjectTableHandle>;
 
   className?: string;
 }
 
 /**
  * Imperative handle exposing programmatic actions on an {@link ObjectTable}.
- * Obtain it by passing {@link ObjectTableProps.apiRef}.
+ * Obtain it by passing {@link ObjectTableProps.tableRef}.
  */
 export interface ObjectTableHandle {
   /**
-   * Loads all matching rows (up to `maxRows`) and returns a format-agnostic
+   * Loads all matching rows (up to `rowLimit`) and returns a format-agnostic
    * snapshot of the table's columns and row values. The caller is responsible
    * for turning the snapshot into a downloadable artifact (CSV, Excel, JSON,
    * clipboard, …).
@@ -645,7 +645,7 @@ export interface ObjectTableHandle {
 }
 
 /**
- * Options for {@link ObjectTableHandle.getSnapshot}.
+ * Options for {@link ObjectTableHandle["getSnapshot"]}.
  */
 export interface ObjectTableSnapshotOptions {
   /**
@@ -654,7 +654,7 @@ export interface ObjectTableSnapshotOptions {
    *
    * @default 10_000
    */
-  maxRows?: number;
+  rowLimit?: number;
 }
 
 /**

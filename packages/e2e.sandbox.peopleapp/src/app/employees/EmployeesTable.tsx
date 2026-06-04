@@ -189,7 +189,7 @@ export function EmployeesTable(): React.ReactElement {
               direction: "desc",
             }]}
             onSubmitEdits={handleSubmitEdits}
-            apiRef={tableRef}
+            tableRef={tableRef}
           />
         </div>
       </div>

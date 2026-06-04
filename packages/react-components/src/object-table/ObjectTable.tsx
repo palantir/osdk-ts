@@ -93,7 +93,7 @@ export function ObjectTable<
   enableColumnResizing = true,
   enableColumnConfig = true,
   editMode = "manual",
-  apiRef,
+  tableRef,
   ...props
 }: ObjectTableProps<Q, RDPs, FunctionColumns>): React.ReactElement {
   const { columnSizing, onColumnSizingChange } = useColumnResize({
@@ -256,7 +256,7 @@ export function ObjectTable<
     ? objectType.primaryKeyApiName
     : undefined;
 
-  const tableSnapshot = useObjectTableSnapshot<Q, RDPs, FunctionColumns>({
+  const { getSnapshot } = useObjectTableSnapshot<Q, RDPs, FunctionColumns>({
     objectOrInterfaceType: objectType,
     table,
     columnDefinitions,
@@ -264,7 +264,12 @@ export function ObjectTable<
     primaryKeyApiName,
     pageSize,
   });
-  useImperativeHandle(apiRef, () => tableSnapshot, [tableSnapshot]);
+
+  useImperativeHandle(
+    tableRef,
+    () => ({ getSnapshot }),
+    [getSnapshot],
+  );
 
   const onRenderCellContextMenu = useCallback(
     (

@@ -149,7 +149,7 @@ Each column header has a menu with items for sorting, filtering, pinning, resizi
 | `renderCellContextMenu` | `(row, cellValue) => ReactNode`                    | Custom context menu for right-click on cells                                                                                         |
 | `renderEmptyState`      | `() => ReactNode`                                  | Render override for the empty state. Called when the table has no rows and no error. Defaults to a "No Data" indicator               |
 | `getRowAttributes`      | `(rowData) => Record<string, string \| undefined>` | Extra HTML attributes (typically `data-*`) applied to each `<tr>`. See [Row Attributes](#row-attributes-and-conditional-row-styling) |
-| `apiRef`                | `React.Ref<ObjectTableHandle>`                     | Imperative handle for programmatic actions such as exporting data. See [Exporting Data](#exporting-data)                             |
+| `tableRef`              | `React.Ref<ObjectTableHandle>`                     | Imperative handle for programmatic actions such as exporting data. See [Exporting Data](#exporting-data)                             |
 
 ### Cell Editing
 
@@ -1293,7 +1293,7 @@ The ObjectTable automatically implements infinite scroll pagination, with page s
 
 ## Exporting Data
 
-Pass an `apiRef` to obtain an `ObjectTableHandle`. Its `getSnapshot()` method loads **all** matching rows (up to `maxRows`, default `10_000`) and returns a format-agnostic snapshot of the table's columns and row values, so you can export to CSV, Excel, JSON, the clipboard, or anywhere else.
+Pass a `tableRef` to obtain an `ObjectTableHandle`. Its `getSnapshot()` method loads **all** matching rows (up to `rowLimit`, default `10_000`) and returns a format-agnostic snapshot of the table's columns and row values, so you can export to CSV, Excel, JSON, the clipboard, or anywhere else.
 
 The snapshot reflects the table's current column visibility, ordering, and pinning. Only columns whose values are available for every row are included — function-backed and custom-rendered columns are omitted and listed in `excludedColumns`, because their values are computed per loaded row and aren't available for rows that haven't been fetched.
 
@@ -1341,13 +1341,13 @@ function EmployeeTableWithDownload() {
   return (
     <>
       <button onClick={downloadCsv}>Download CSV</button>
-      <ObjectTable objectType={Employee} apiRef={tableRef} />
+      <ObjectTable objectType={Employee} tableRef={tableRef} />
     </>
   );
 }
 ```
 
-`getSnapshot()` accepts an optional `{ maxRows }` to cap how many rows are loaded. Each entry in `rows` is keyed by `column.id` and holds the **raw** cell value (not a formatted string), so you control formatting per destination.
+`getSnapshot()` accepts an optional `{ rowLimit }` to cap how many rows are loaded. Each entry in `rows` is keyed by `column.id` and holds the **raw** cell value (not a formatted string), so you control formatting per destination.
 
 ## TypeScript Tips
 

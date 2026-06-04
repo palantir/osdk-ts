@@ -38,7 +38,7 @@ import {
 } from "../utils/functionColumns.js";
 import {
   buildSnapshotRow,
-  DEFAULT_SNAPSHOT_MAX_ROWS,
+  DEFAULT_SNAPSHOT_ROW_LIMIT,
   fetchFunctionColumnValues,
 } from "../utils/objectTableSnapshot.js";
 
@@ -76,10 +76,10 @@ export interface SnapshotLeafColumn {
   name: string;
 }
 /**
- * Builds the {@link ObjectTableHandle} exposed via `ObjectTable`'s `apiRef`.
+ * Builds the {@link ObjectTableHandle} exposed via `ObjectTable`'s `tableRef`.
  *
  * `getSnapshot` reads the table's currently visible columns to decide what to
- * export, paginates the resolved object set (up to `maxRows`), and resolves
+ * export, paginates the resolved object set (up to `rowLimit`), and resolves
  * function-backed column values for the loaded rows.
  */
 export function useObjectTableSnapshot<
@@ -107,7 +107,7 @@ export function useObjectTableSnapshot<
     async (
       options?: ObjectTableSnapshotOptions,
     ): Promise<ObjectTableSnapshot> => {
-      const maxRows = options?.maxRows ?? DEFAULT_SNAPSHOT_MAX_ROWS;
+      const rowLimit = options?.rowLimit ?? DEFAULT_SNAPSHOT_ROW_LIMIT;
 
       const columns: SnapshotLeafColumn[] = table
         .getVisibleLeafColumns()
@@ -131,10 +131,10 @@ export function useObjectTableSnapshot<
         RDPs
       >;
       const loadedObjects: Array<LoadedObject> = [];
-      if (objectSet != null && columnIds.length > 0 && maxRows > 0) {
+      if (objectSet != null && columnIds.length > 0 && rowLimit > 0) {
         for await (const object of objectSet.asyncIter()) {
           loadedObjects.push(object as unknown as LoadedObject);
-          if (loadedObjects.length >= maxRows) {
+          if (loadedObjects.length >= rowLimit) {
             break;
           }
         }

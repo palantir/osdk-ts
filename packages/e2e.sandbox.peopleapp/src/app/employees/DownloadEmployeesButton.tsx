@@ -24,7 +24,7 @@ export function DownloadEmployeesButton(
     setIsDownloading(true);
     try {
       const snapshot = await tableRef.current?.getSnapshot({
-        maxRows: MAX_DOWNLOAD_ROWS,
+        rowLimit: MAX_DOWNLOAD_ROWS,
       });
       if (snapshot == null) {
         return;
