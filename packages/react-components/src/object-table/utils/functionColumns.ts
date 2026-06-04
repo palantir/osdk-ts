@@ -65,7 +65,7 @@ export function extractFunctionLocators<
  * Constructs the per-page object sets used to fetch function-backed column
  * values for `objects`. Builds an unfiltered base set from
  * `objectOrInterfaceType` (so pages are scoped purely by primary key) and
- * narrows each page via `{ [primaryKeyApiName]: { $in: pageKeys } }`.
+ * narrows each page via `{ $primaryKey: { $in: pageKeys } }`.
  *
  * Returns `[]` when the type is an interface (no base set can be built) or
  * when no primary-key apiName is available and the input is empty.
@@ -77,7 +77,6 @@ export function buildPagedObjectSets<
   client: Client,
   objectOrInterfaceType: Q,
   objects: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[],
-  primaryKeyApiName: string | undefined,
   pageSize: number,
 ): PagedObjects<Q, RDPs>[] {
   const isObjectType = objectOrInterfaceType.type === "object";
@@ -85,19 +84,17 @@ export function buildPagedObjectSets<
   const baseObjectSet = isObjectType
     ? client(objectOrInterfaceType) as ObjectSet<Q, RDPs>
     : undefined;
+
   if (!baseObjectSet) {
     return [];
-  }
-  if (!primaryKeyApiName) {
-    return [{ objectSet: baseObjectSet, objects }];
   }
 
   return chunk(objects, pageSize).map(page => {
     const whereClause = {
-      [primaryKeyApiName]: {
+      $primaryKey: {
         $in: page.map(obj => obj.$primaryKey),
       },
-    } as WhereClause<Q, RDPs>;
+    } as unknown as WhereClause<Q, RDPs>;
 
     return { objectSet: baseObjectSet.where(whereClause), objects: page };
   });

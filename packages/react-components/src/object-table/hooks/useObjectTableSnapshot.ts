@@ -27,6 +27,8 @@ import type { Table } from "@tanstack/react-table";
 import { useCallback, useMemo } from "react";
 import type {
   ColumnDefinition,
+  ObjectTableDataColumn,
+  ObjectTableDataRow,
   ObjectTableHandle,
   ObjectTableSnapshot,
   ObjectTableSnapshotOptions,
@@ -59,22 +61,16 @@ interface UseObjectTableSnapshotArgs<
    * derived properties included). Rows are loaded by paginating this set.
    */
   objectSet: ObjectSet<Q, RDPs> | undefined;
-  /** Primary key apiName used to chunk loaded rows when fetching async columns. */
-  primaryKeyApiName: string | undefined;
   /** Page size for chunking function-column queries across loaded rows. */
   pageSize?: number;
+  /**
+   * Total number of objects matching the object set, as reported by the
+   * underlying list payload. Used to fail fast when `getSnapshot` is called
+   * with a `rowLimit` lower than the matching row count.
+   */
+  totalCount: string | undefined;
 }
 
-/**
- * Minimal description of a table leaf column, decoupled from `@tanstack/react-table`
- * so the column-selection logic is testable in isolation.
- */
-export interface SnapshotLeafColumn {
-  /** Column id (a property key, derived-property key, or custom id). */
-  id: string;
-  /** Display name shown in the table header. */
-  name: string;
-}
 /**
  * Builds the {@link ObjectTableHandle} exposed via `ObjectTable`'s `tableRef`.
  *
@@ -92,10 +88,10 @@ export function useObjectTableSnapshot<
     table,
     columnDefinitions,
     objectSet,
-    primaryKeyApiName,
     pageSize = DEFAULT_PAGE_SIZE,
+    totalCount,
   }: UseObjectTableSnapshotArgs<Q, RDPs, FunctionColumns>,
-): ObjectTableHandle {
+): ObjectTableHandle<Q, RDPs> {
   const client = useOsdkClient();
 
   const functionLocators = useMemo(
@@ -106,10 +102,23 @@ export function useObjectTableSnapshot<
   const getSnapshot = useCallback(
     async (
       options?: ObjectTableSnapshotOptions,
-    ): Promise<ObjectTableSnapshot> => {
+    ): Promise<ObjectTableSnapshot<Q, RDPs>> => {
       const rowLimit = options?.rowLimit ?? DEFAULT_SNAPSHOT_ROW_LIMIT;
 
-      const columns: SnapshotLeafColumn[] = table
+      // Fail fast when the caller's row cap is smaller than the matching set.
+      // `totalCount` is only available once the list payload has resolved; we
+      // skip the check otherwise rather than guess.
+      if (totalCount != null) {
+        const total = Number(totalCount);
+        if (Number.isFinite(total) && total > rowLimit) {
+          throw new Error(
+            `getSnapshot: rowLimit (${rowLimit}) is less than the total `
+              + `matching rows (${total}). Raise rowLimit to include all rows.`,
+          );
+        }
+      }
+
+      const columns: ObjectTableDataColumn[] = table
         .getVisibleLeafColumns()
         .filter(column => column.id !== SELECTION_COLUMN_ID)
         .map((column) => {
@@ -122,31 +131,37 @@ export function useObjectTableSnapshot<
         });
 
       const columnIds = columns.map((column) => column.id);
-      const includedColumnIds = new Set(columnIds);
+      const columnIdsSet = new Set(columnIds);
 
-      type LoadedObject = Osdk.Instance<
-        Q,
-        "$allBaseProperties",
-        PropertyKeys<Q>,
-        RDPs
-      >;
-      const loadedObjects: Array<LoadedObject> = [];
+      const loadedObjects: Array<
+        Osdk.Instance<
+          Q,
+          "$allBaseProperties",
+          PropertyKeys<Q>,
+          RDPs
+        >
+      > = [];
       if (objectSet != null && columnIds.length > 0 && rowLimit > 0) {
         for await (const object of objectSet.asyncIter()) {
-          loadedObjects.push(object as unknown as LoadedObject);
-          if (loadedObjects.length >= rowLimit) {
-            break;
-          }
+          loadedObjects.push(
+            object as unknown as Osdk.Instance<
+              Q,
+              "$allBaseProperties",
+              PropertyKeys<Q>,
+              RDPs
+            >,
+          );
         }
       }
 
       const visibleFunctionLocators = functionLocators.filter((locator) =>
-        includedColumnIds.has(String(locator.id))
+        columnIdsSet.has(String(locator.id))
       );
 
       let functionColumnValues:
         | Map<string, Map<string, unknown>>
         | undefined;
+
       if (
         visibleFunctionLocators.length > 0
         && loadedObjects.length > 0
@@ -155,9 +170,9 @@ export function useObjectTableSnapshot<
           client,
           objectOrInterfaceType,
           loadedObjects,
-          primaryKeyApiName,
           pageSize,
         );
+
         if (pages.length > 0) {
           functionColumnValues = await fetchFunctionColumnValues<
             Q,
@@ -167,30 +182,24 @@ export function useObjectTableSnapshot<
             visibleFunctionLocators,
             pages,
             (queryDefinition, params) =>
-              (
-                client(queryDefinition) as {
-                  executeFunction: (params: unknown) => Promise<unknown>;
-                }
-              ).executeFunction(params),
+              (client(queryDefinition) as {
+                executeFunction: (params: unknown) => Promise<unknown>;
+              })
+                .executeFunction(params),
           );
         }
       }
 
-      const rows = loadedObjects.map((object) => {
-        const row = buildSnapshotRow(object, columnIds);
-        if (functionColumnValues) {
-          for (const locator of visibleFunctionLocators) {
-            const columnId = String(locator.id);
-            const value = functionColumnValues.get(columnId)?.get(
-              locator.getKey(object),
-            );
-            row[columnId] = value;
-          }
-        }
-        return row;
-      });
+      const rows: ObjectTableDataRow<Q, RDPs>[] = loadedObjects.map((object) =>
+        buildSnapshotRow<Q, RDPs, FunctionColumns>(
+          object,
+          columnIds,
+          visibleFunctionLocators,
+          functionColumnValues,
+        )
+      );
 
-      return { columns, rows };
+      return { columns, rows, totalCount };
     },
     [
       table,
@@ -198,10 +207,13 @@ export function useObjectTableSnapshot<
       objectOrInterfaceType,
       functionLocators,
       client,
-      primaryKeyApiName,
       pageSize,
+      totalCount,
     ],
   );
 
-  return useMemo<ObjectTableHandle>(() => ({ getSnapshot }), [getSnapshot]);
+  return useMemo<ObjectTableHandle<Q, RDPs>>(
+    () => ({ getSnapshot }),
+    [getSnapshot],
+  );
 }

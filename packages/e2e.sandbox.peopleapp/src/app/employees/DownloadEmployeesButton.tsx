@@ -1,3 +1,4 @@
+import type { ObjectOrInterfaceDefinition, SimplePropertyDef } from "@osdk/api";
 import type {
   ObjectTableHandle,
   ObjectTableSnapshot,
@@ -9,14 +10,20 @@ import { Button } from "../../components/Button.js";
 // Bound the number of rows loaded so a very large object set can't pull
 // unbounded pages into the client. `getSnapshot` stops fetching once it has
 // this many rows.
-const MAX_DOWNLOAD_ROWS = 10_000;
+const MAX_DOWNLOAD_ROWS = 10;
 
-interface DownloadEmployeesButtonProps {
-  tableRef: RefObject<ObjectTableHandle | null>;
+interface DownloadEmployeesButtonProps<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+> {
+  tableRef: RefObject<ObjectTableHandle<Q, RDPs> | null>;
 }
 
-export function DownloadEmployeesButton(
-  { tableRef }: DownloadEmployeesButtonProps,
+export function DownloadEmployeesButton<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+>(
+  { tableRef }: DownloadEmployeesButtonProps<Q, RDPs>,
 ): React.ReactElement {
   const [isDownloading, setIsDownloading] = useState(false);
 
@@ -42,38 +49,44 @@ export function DownloadEmployeesButton(
   );
 }
 
-function snapshotToCsv(snapshot: ObjectTableSnapshot): string {
+function snapshotToCsv<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef>,
+>(
+  snapshot: ObjectTableSnapshot<Q, RDPs>,
+): string {
   const { columns, rows } = snapshot;
   return [
     columns.map((column) => escapeCsvCell(column.name)).join(","),
     ...rows.map((row) =>
       columns
-        .map((column) => escapeCsvCell(formatCellValue(row[column.id])))
+        .map((column) =>
+          escapeCsvCell(formatCellValue(row.getValue(column.id)))
+        )
         .join(",")
     ),
   ].join("\n");
 }
 
-function formatCellValue(value: unknown): string {
-  if (value == null) {
+function formatCellValue(cell: unknown): string {
+  if (cell == null) {
     return "";
   }
-  // Function-column failures surface as Error instances in the snapshot row;
-  // render a literal "error" marker so users can tell a failure from a
-  // legitimately empty cell.
-  if (value instanceof Error) {
+  // Function-column failures surface as the thrown Error instance; render a
+  // literal marker so users can tell a failure from a legitimately empty cell.
+  if (cell instanceof Error) {
     return "Error";
   }
-  if (typeof value === "string") {
-    return value;
+  if (typeof cell === "string") {
+    return cell;
   }
-  if (typeof value === "number" || typeof value === "boolean") {
-    return String(value);
+  if (typeof cell === "number" || typeof cell === "boolean") {
+    return String(cell);
   }
   try {
-    return JSON.stringify(value) ?? "";
+    return JSON.stringify(cell) ?? "";
   } catch {
-    return String(value);
+    return String(cell);
   }
 }
 

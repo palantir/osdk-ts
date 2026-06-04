@@ -607,10 +607,11 @@ export interface ObjectTableProps<
 
   /**
    * Imperative handle for programmatic table actions. Pass a ref
-   * (`useRef<ObjectTableHandle>(null)`) to call {@link ObjectTableHandle}
-   * methods such as {@link ObjectTableHandle.getSnapshot}.
+   * (`useRef<ObjectTableHandle<Q, RDPs>>(null)`) to call
+   * {@link ObjectTableHandle} methods such as
+   * {@link ObjectTableHandle.getSnapshot}.
    */
-  tableRef?: React.Ref<ObjectTableHandle>;
+  tableRef?: React.Ref<ObjectTableHandle<Q, RDPs>>;
 
   className?: string;
 }
@@ -619,7 +620,10 @@ export interface ObjectTableProps<
  * Imperative handle exposing programmatic actions on an {@link ObjectTable}.
  * Obtain it by passing {@link ObjectTableProps.tableRef}.
  */
-export interface ObjectTableHandle {
+export interface ObjectTableHandle<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+> {
   /**
    * Loads all matching rows (up to `rowLimit`) and returns a format-agnostic
    * snapshot of the table's columns and row values. The caller is responsible
@@ -628,10 +632,9 @@ export interface ObjectTableHandle {
    *
    * Property, derived-property, and function-backed columns are included.
    * Function-backed cells are fetched per page during snapshot collection; if
-   * a page's fetch fails, the failing cells hold the error and the rest of
-   * the snapshot still completes. Custom-rendered columns are omitted and
-   * reported in {@link ObjectTableSnapshot.excludedColumns} because they have
-   * no underlying value to export.
+   * a page's fetch fails, the failing cells surface an `"error"` status and
+   * the rest of the snapshot still completes. Custom-rendered columns are
+   * omitted because they have no underlying value to export.
    *
    * The active filter is always applied. Row order is the object set's
    * server-default order and is not guaranteed to match the table's current
@@ -641,7 +644,7 @@ export interface ObjectTableHandle {
    */
   getSnapshot: (
     options?: ObjectTableSnapshotOptions,
-  ) => Promise<ObjectTableSnapshot>;
+  ) => Promise<ObjectTableSnapshot<Q, RDPs>>;
 }
 
 /**
@@ -661,37 +664,47 @@ export interface ObjectTableSnapshotOptions {
  * A point-in-time capture of an {@link ObjectTable}'s columns and row values,
  * returned by {@link ObjectTableHandle.getSnapshot}.
  */
-export interface ObjectTableSnapshot {
+export interface ObjectTableSnapshot<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+> {
+  columns: ObjectTableDataColumn[];
+  rows: ObjectTableDataRow<Q, RDPs>[];
   /**
-   * The columns in their current display order. Reflects the
-   * table's column visibility, ordering, and pinning. The selection column
-   * is never included.
+   * Total number of objects matching the underlying object set, as reported
+   * by the API. `undefined` when the API did not provide a count. Encoded as
+   * a string to match the underlying list-payload representation.
    */
-  columns: ObjectTableSnapshotColumn[];
-
-  /**
-   * The loaded rows, in fetch order. Each row is keyed by
-   * {@link ObjectTableSnapshotColumn.id} and holds the raw cell value (not a
-   * formatted string) so the caller can format it as needed.
-   */
-  rows: Array<Record<string, unknown>>;
+  totalCount: string | undefined;
 }
 
 /**
  * A single column in an {@link ObjectTableSnapshot}.
  */
-export interface ObjectTableSnapshotColumn {
-  /**
-   * The column id, matching the `locator.id` of the corresponding column
-   * definition (a property key or derived-property key). Use it to look up
-   * the value in each {@link ObjectTableSnapshot.rows} entry.
-   */
+export interface ObjectTableDataColumn {
+  /** Column id, matching the `locator.id` of the column definition. */
   id: string;
-
-  /**
-   * The display name shown in the table header.
-   */
+  /** Display name shown in the table header. */
   name: string;
+}
+
+/**
+ * A single row in an {@link ObjectTableSnapshot}.
+ */
+export interface ObjectTableDataRow<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+> {
+  /** Row id (the underlying object's `$primaryKey` rendered as a string). */
+  id: string;
+  /** The underlying loaded object. */
+  object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>;
+  /**
+   * Returns the cell value for a given column id, or `undefined` when the
+   * column is not part of the snapshot. Function-backed cells whose query
+   * failed surface the thrown `Error` instance as their value.
+   */
+  getValue: (columnId: string) => unknown;
 }
 
 /**

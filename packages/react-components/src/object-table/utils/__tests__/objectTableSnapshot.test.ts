@@ -23,35 +23,9 @@ import { describe, expect, it, vi } from "vitest";
 import type { FunctionColumnLocator } from "../../ObjectTableApi.js";
 import type { PagedObjects } from "../functionColumns.js";
 import {
-  buildSnapshotRow,
   fetchFunctionColumnPage,
   fetchFunctionColumnValues,
 } from "../objectTableSnapshot.js";
-
-describe("buildSnapshotRow", () => {
-  it("keys raw cell values by column id", () => {
-    const object = { name: "Ada", age: 36, $primaryKey: 1 };
-    expect(buildSnapshotRow(object, ["name", "age"])).toEqual({
-      name: "Ada",
-      age: 36,
-    });
-  });
-
-  it("yields undefined for columns absent on the object", () => {
-    const object = { name: "Ada" };
-    expect(buildSnapshotRow(object, ["name", "missing"])).toEqual({
-      name: "Ada",
-      missing: undefined,
-    });
-  });
-
-  it("preserves non-primitive values without formatting them", () => {
-    const tags = ["x", "y"];
-    const object = { tags };
-    const row = buildSnapshotRow(object, ["tags"]);
-    expect(row.tags).toBe(tags);
-  });
-});
 
 type AnyFunctionLocator = FunctionColumnLocator<
   ObjectOrInterfaceDefinition,

@@ -158,7 +158,7 @@ export function EmployeesTable(): React.ReactElement {
 
   const os = client(Employee);
 
-  const tableRef = useRef<ObjectTableHandle>(null);
+  const tableRef = useRef<ObjectTableHandle<Employee, RDPs>>(null);
 
   return (
     <OsdkThemeProvider>

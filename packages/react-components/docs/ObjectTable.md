@@ -1293,29 +1293,28 @@ The ObjectTable automatically implements infinite scroll pagination, with page s
 
 ## Exporting Data
 
-Pass a `tableRef` to obtain an `ObjectTableHandle`. Its `getSnapshot()` method loads **all** matching rows (up to `rowLimit`, default `10_000`) and returns a format-agnostic snapshot of the table's columns and row values, so you can export to CSV, Excel, JSON, the clipboard, or anywhere else.
+Pass a `tableRef` to obtain an `ObjectTableHandle<Q, RDPs>`. Its `getSnapshot()` method loads **all** matching rows (up to `rowLimit`, default `10_000`) and returns a format-agnostic snapshot of the table's columns and rows, so you can export to CSV, Excel, JSON, the clipboard, or anywhere else.
 
-The snapshot reflects the table's current column visibility, ordering, and pinning. Only columns whose values are available for every row are included — function-backed and custom-rendered columns are omitted and listed in `excludedColumns`, because their values are computed per loaded row and aren't available for rows that haven't been fetched.
+The snapshot reflects the table's current column visibility, ordering, and pinning. Property, derived-property, and function-backed columns are all included. Custom-rendered columns have no underlying value and are omitted. Each row exposes a `getValue(columnId)` accessor; cells are the raw value, or the literal string `"Error"` if a function-backed cell failed to load (the promise still resolves with the rest of the snapshot).
 
 ```typescript
-import { Employee } from "@my/osdk";
+import type { Employee } from "@my/osdk";
 import {
   ObjectTable,
   type ObjectTableHandle,
 } from "@osdk/react-components/experimental";
 import { useRef } from "react";
 
+type RDPs = Record<string, never>;
+
 function EmployeeTableWithDownload() {
-  const tableRef = useRef<ObjectTableHandle>(null);
+  const tableRef = useRef<ObjectTableHandle<Employee, RDPs>>(null);
 
   const downloadCsv = async () => {
     const handle = tableRef.current;
     if (handle == null) return;
 
-    const { columns, rows, excludedColumns } = await handle.getSnapshot();
-    if (excludedColumns.length > 0) {
-      console.warn("Not exportable:", excludedColumns.join(", "));
-    }
+    const { columns, rows } = await handle.getSnapshot();
 
     const escape = (value: unknown) => {
       const text = value == null ? "" : String(value);
@@ -1324,7 +1323,7 @@ function EmployeeTableWithDownload() {
     const csv = [
       columns.map((column) => escape(column.name)).join(","),
       ...rows.map((row) =>
-        columns.map((column) => escape(row[column.id])).join(",")
+        columns.map((column) => escape(row.getValue(column.id))).join(",")
       ),
     ].join("\n");
 
@@ -1347,7 +1346,7 @@ function EmployeeTableWithDownload() {
 }
 ```
 
-`getSnapshot()` accepts an optional `{ rowLimit }` to cap how many rows are loaded. Each entry in `rows` is keyed by `column.id` and holds the **raw** cell value (not a formatted string), so you control formatting per destination.
+`getSnapshot()` accepts an optional `{ rowLimit }` to cap how many rows are loaded. `row.getValue(columnId)` returns the raw cell value (or `"Error"` for failed function-backed cells, or `undefined` for unknown column ids) — your formatter handles the rest.
 
 ## TypeScript Tips
 

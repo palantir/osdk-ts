@@ -117,6 +117,7 @@ export function ObjectTable<
     fetchMore,
     isLoading,
     error,
+    totalCount,
     objectSet: resultingObjectSet,
   } = useObjectTableData<
     Q,
@@ -252,17 +253,13 @@ export function ObjectTable<
     },
   });
 
-  const primaryKeyApiName = objectType.type === "object"
-    ? objectType.primaryKeyApiName
-    : undefined;
-
   const { getSnapshot } = useObjectTableSnapshot<Q, RDPs, FunctionColumns>({
     objectOrInterfaceType: objectType,
     table,
     columnDefinitions,
     objectSet: resultingObjectSet,
-    primaryKeyApiName,
     pageSize,
+    totalCount,
   });
 
   useImperativeHandle(

@@ -16,10 +16,15 @@
 
 import type {
   ObjectOrInterfaceDefinition,
+  Osdk,
+  PropertyKeys,
   QueryDefinition,
   SimplePropertyDef,
 } from "@osdk/api";
-import type { FunctionColumnLocator } from "../ObjectTableApi.js";
+import type {
+  FunctionColumnLocator,
+  ObjectTableDataRow,
+} from "../ObjectTableApi.js";
 import type { PagedObjects } from "./functionColumns.js";
 
 /**
@@ -29,19 +34,46 @@ import type { PagedObjects } from "./functionColumns.js";
 export const DEFAULT_SNAPSHOT_ROW_LIMIT = 10_000;
 
 /**
- * Projects a loaded object into a snapshot row keyed by column id, holding the
- * raw cell value for each column so the caller can format it as needed.
+ * Builds a single {@link ObjectTableDataRow} for a loaded object. Property and
+ * derived-property cells read straight off the object; function-backed cells
+ * are looked up in the pre-resolved per-locator values map (whose values are
+ * either the raw cell or, for failed pages, an `Error` instance).
  */
-export function buildSnapshotRow(
-  object: unknown,
+export function buildSnapshotRow<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef>,
+  FunctionColumns extends Record<string, QueryDefinition<{}>>,
+>(
+  object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
   columnIds: ReadonlyArray<string>,
-): Record<string, unknown> {
-  const source = object as Record<string, unknown>;
-  const row: Record<string, unknown> = {};
-  for (const id of columnIds) {
-    row[id] = source[id];
+  functionLocators: ReadonlyArray<
+    FunctionColumnLocator<Q, RDPs, FunctionColumns>
+  >,
+  functionColumnValues: Map<string, Map<string, unknown>> | undefined,
+): ObjectTableDataRow<Q, RDPs> {
+  const cells = new Map<string, unknown>();
+
+  // Resolve function-backed cells first so a same-named property doesn't
+  // overwrite them.
+  for (const locator of functionLocators) {
+    const columnId = String(locator.id);
+    cells.set(
+      columnId,
+      functionColumnValues?.get(columnId)?.get(locator.getKey(object)),
+    );
   }
-  return row;
+
+  const source = object as unknown as Record<string, unknown>;
+  for (const columnId of columnIds) {
+    if (cells.has(columnId)) continue;
+    cells.set(columnId, source[columnId]);
+  }
+
+  return {
+    id: String(object.$primaryKey),
+    object,
+    getValue: (columnId: string) => cells.get(columnId),
+  };
 }
 
 /**

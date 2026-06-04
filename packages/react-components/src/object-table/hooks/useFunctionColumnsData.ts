@@ -66,7 +66,6 @@ export interface UseFunctionColumnsDataOptions<
     | Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[]
     | undefined;
   columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>;
-  primaryKeyApiName?: string;
   pageSize?: number;
 }
 
@@ -82,7 +81,6 @@ export function useFunctionColumnsData<
     objectOrInterfaceType,
     objects,
     columnDefinitions,
-    primaryKeyApiName,
     pageSize = DEFAULT_PAGE_SIZE,
   }: UseFunctionColumnsDataOptions<Q, RDPs, FunctionColumns>,
 ): FunctionColumnData {
@@ -108,14 +106,12 @@ export function useFunctionColumnsData<
       client,
       objectOrInterfaceType,
       stableObjects,
-      primaryKeyApiName,
       pageSize,
     );
   }, [
     client,
     objectOrInterfaceType,
     stableObjects,
-    primaryKeyApiName,
     pageSize,
   ]);
 
