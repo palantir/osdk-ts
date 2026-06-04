@@ -44,8 +44,8 @@ export namespace ScopeResources {
   /**
    * Sentinel value: discovery populates scope from `defaultResources` declared in functions.json.
    */
-  export const defaultScopeResources: unique symbol = Symbol(
-    "ScopeResources.defaultScopeResources",
+  export const defaultResources: unique symbol = Symbol(
+    "ScopeResources.defaultResources",
   );
 
   export function of(opts: ScopeResources = {}): ScopeResources {
@@ -95,7 +95,7 @@ export namespace ScopeAuthorization {
  * Accepts plain object literals or the sentinel/factory helpers from `ScopeResources` and `ReadOnlyAuthorization`.
  */
 export interface Scope {
-  resources: ScopeResources | typeof ScopeResources.defaultScopeResources;
+  resources: ScopeResources | typeof ScopeResources.defaultResources;
   authorization:
     | ScopeReadAuthorization
     | ScopeReadWriteAuthorization
