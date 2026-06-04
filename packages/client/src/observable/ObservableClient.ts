@@ -576,6 +576,8 @@ export interface ObservableClient extends ObserveLinks {
 
   /**
    * Invalidates specific objects in the cache.
+   *
+   * Interface instances invalidate their backing concrete object.
    * @param objects - Single object or array of objects to invalidate
    */
   invalidateObjects(
