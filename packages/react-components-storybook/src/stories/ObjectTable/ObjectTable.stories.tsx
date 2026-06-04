@@ -982,6 +982,7 @@ export const EventListeners: Story = {
     onColumnVisibilityChanged: fn(),
     onColumnsPinnedChanged: fn(),
     onColumnResize: fn(),
+    onFocusedRowChanged: fn(),
   } as EmployeeTableProps,
   parameters: {
     docs: {
@@ -992,6 +993,9 @@ export const EventListeners: Story = {
   selectionMode="multiple"
   onRowClick={(employee) => {
     console.log("Row clicked:", employee);
+  }}
+  onFocusedRowChanged={(employee) => {
+    console.log("Row focused:", employee);
   }}
   onColumnHeaderClick={(columnId) => {
     console.log("Column header clicked:", columnId);
@@ -1303,7 +1307,7 @@ export const ControlledFocusedRow: Story = {
 return (
   <>
     <div>
-      Focused: {focusedRow?.fullName ?? "none"}
+      Focused employee: {focusedRow?.fullName ?? "none"}
       <button
         onClick={() => setFocusedRow(null)}
         disabled={focusedRow == null}
