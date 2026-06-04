@@ -103,6 +103,16 @@ export function useObjectTableSnapshot<
     [columnDefinitions],
   );
 
+  const customColumnIds = useMemo(
+    () =>
+      new Set(
+        columnDefinitions
+          ?.filter((definition) => definition.locator.type === "custom")
+          .map((definition) => String(definition.locator.id)) ?? [],
+      ),
+    [columnDefinitions],
+  );
+
   const getSnapshot = useCallback(
     async (
       options?: ObjectTableSnapshotOptions,
@@ -123,7 +133,9 @@ export function useObjectTableSnapshot<
 
       const columns: ObjectTableDataColumn[] = table
         .getVisibleLeafColumns()
-        .filter(column => column.id !== SELECTION_COLUMN_ID)
+        .filter(column =>
+          column.id !== SELECTION_COLUMN_ID && !customColumnIds.has(column.id)
+        )
         .map((column) => {
           const meta = column.columnDef.meta;
           const header = column.columnDef.header;
@@ -213,9 +225,11 @@ export function useObjectTableSnapshot<
       objectSet,
       objectOrInterfaceType,
       functionLocators,
+      customColumnIds,
       client,
       pageSize,
       totalCount,
+      orderBy,
     ],
   );
 

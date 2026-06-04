@@ -634,8 +634,8 @@ export interface ObjectTableHandle<
    * Function-backed cells are fetched per page during snapshot collection;
    * when a page's fetch fails, `row.getValue(columnId)` returns the thrown
    * `Error` instance for the affected cells and the rest of the snapshot
-   * still resolves. Custom-rendered columns are omitted because they have
-   * no underlying value to export.
+   * Columns defined with `locator.type === "custom"` are omitted because
+   * they have no underlying value to export.
    *
    * Promise rejects when `totalCount` exceeds `rowLimit`.
    *
