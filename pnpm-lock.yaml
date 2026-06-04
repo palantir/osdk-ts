@@ -4171,6 +4171,12 @@ importers:
       '@osdk/client':
         specifier: workspace:^
         version: link:../client
+      '@osdk/shared.client':
+        specifier: ^1.0.1
+        version: 1.0.1
+      '@osdk/shared.client2':
+        specifier: ^1.0.0
+        version: 1.0.0
     devDependencies:
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
