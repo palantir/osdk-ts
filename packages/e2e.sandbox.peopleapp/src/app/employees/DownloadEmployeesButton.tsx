@@ -10,7 +10,7 @@ import { Button } from "../../components/Button.js";
 // Bound the number of rows loaded so a very large object set can't pull
 // unbounded pages into the client. `getSnapshot` stops fetching once it has
 // this many rows.
-const MAX_DOWNLOAD_ROWS = 10;
+const MAX_DOWNLOAD_ROWS = 10_000;
 
 interface DownloadEmployeesButtonProps<
   Q extends ObjectOrInterfaceDefinition,
