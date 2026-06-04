@@ -108,12 +108,12 @@ export interface BaseTableProps<
    * (clicking focuses, clicking outside clears). When provided, the
    * caller owns clearing — outside clicks no longer auto-clear.
    */
-  focusedRowId?: string | null;
+  focusedRow?: TData | null;
   /**
    * Fires whenever the focused row changes, in both controlled and
    * uncontrolled modes.
    */
-  onFocusedRowIdChanged?: (rowId: string | null) => void;
+  onFocusedRowChanged?: (row: TData | null) => void;
 }
 
 export function BaseTable<
@@ -144,22 +144,34 @@ function BaseTableInner<
     getRowAttributes,
     showEditFooter = true,
     renderEmptyState,
-    focusedRowId: focusedRowIdProp,
-    onFocusedRowIdChanged,
+    focusedRow: focusedRowProp,
+    onFocusedRowChanged,
   }: BaseTableProps<TData>,
 ): ReactElement {
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const objectTablePortalRef = useRef<HTMLDivElement>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+
+  const tableGetRowId = table.options.getRowId;
+  const getRowIdForFocus = useCallback(
+    (row: TData) => tableGetRowId?.(row, 0, undefined) ?? "",
+    [tableGetRowId],
+  );
+
   const {
-    focusedRowId,
-    setFocusedRowId,
+    focusedRow,
+    setFocusedRow,
     isControlled: isFocusControlled,
-  } = useFocusedRow({
-    focusedRowId: focusedRowIdProp,
-    onFocusedRowIdChanged,
+  } = useFocusedRow<TData>({
+    focusedRow: focusedRowProp,
+    onFocusedRowChanged,
+    getRowId: getRowIdForFocus,
   });
   const portalTracker = usePortalTracker();
+
+  const focusedRowId = focusedRow != null
+    ? getRowIdForFocus(focusedRow)
+    : null;
 
   // Sync focusedRowId into table meta so cell renderers (which only
   // receive `table`) can read it without extra prop drilling.
@@ -236,7 +248,7 @@ function BaseTableInner<
         && !tableContainerRef.current.contains(target)
         && !portalTracker?.containsElement(target)
       ) {
-        setFocusedRowId(null);
+        setFocusedRow(null);
       }
     };
 
@@ -244,7 +256,7 @@ function BaseTableInner<
     return () => {
       document.removeEventListener("pointerdown", handleClickOutside);
     };
-  }, [portalTracker, isFocusControlled, setFocusedRowId]);
+  }, [portalTracker, isFocusControlled, setFocusedRow]);
 
   return (
     <PortalContainerProvider container={objectTablePortalRef}>
@@ -283,7 +295,7 @@ function BaseTableInner<
                     isLoadingMore={isLoadingMore}
                     headerGroups={headerGroups}
                     focusedRowId={focusedRowId}
-                    setFocusedRowId={setFocusedRowId}
+                    setFocusedRow={setFocusedRow}
                     isInEditMode={editableConfig?.editModeState.isActive}
                     getRowAttributes={getRowAttributes}
                   />
@@ -302,7 +314,7 @@ function BaseTableInner<
         {showEditFooter && hasEditableColumns && editableConfig && (
           <TableEditContainer
             editableConfig={editableConfig}
-            focusedRowId={focusedRowId}
+            hasFocusedRow={focusedRow != null}
           />
         )}
       </div>

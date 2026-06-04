@@ -17,64 +17,74 @@
 import { useCallback, useState } from "react";
 import { useEventCallback } from "../../shared/hooks/useEventCallback.js";
 
-export interface UseFocusedRowProps {
+export interface UseFocusedRowProps<TData> {
   /**
-   * Controlled focused row id. `undefined` enables uncontrolled mode
+   * Controlled focused row. `undefined` enables uncontrolled mode
    * (internal state). `null` means "no row focused" under controlled
    * mode.
    */
-  focusedRowId?: string | null;
-  onFocusedRowIdChanged?: (rowId: string | null) => void;
+  focusedRow?: TData | null;
+  onFocusedRowChanged?: (row: TData | null) => void;
+  /**
+   * Returns a stable id for a row
+   */
+  getRowId: (row: TData) => string;
 }
 
-export interface UseFocusedRowResult {
-  /** Effective focused row id — controlled value or internal state. */
-  focusedRowId: string | null;
+export interface UseFocusedRowResult<TData> {
+  /** Effective focused row — controlled value or internal state. */
+  focusedRow: TData | null;
   /**
    * Request a focus change. In uncontrolled mode this mutates internal
    * state; the change callback fires in both modes so callers can
    * observe.
    */
-  setFocusedRowId: (rowId: string | null) => void;
+  setFocusedRow: (row: TData | null) => void;
   /**
-   * True when the caller passed `focusedRowId` (including `null`). The
+   * True when the caller passed `focusedRow` (including `null`). The
    * table suppresses outside-click auto-clear in this mode so the
    * caller fully owns clearing.
    */
   isControlled: boolean;
 }
 
-export function useFocusedRow({
-  focusedRowId,
-  onFocusedRowIdChanged,
-}: UseFocusedRowProps): UseFocusedRowResult {
-  const isControlled = focusedRowId !== undefined;
-  const [internalFocusedRowId, setInternalFocusedRowId] = useState<
-    string | null
+export function useFocusedRow<TData>({
+  focusedRow,
+  onFocusedRowChanged,
+  getRowId,
+}: UseFocusedRowProps<TData>): UseFocusedRowResult<TData> {
+  // Explicit check for undefined instead of != null
+  // because null is a valid value to clear a focused row
+  const isControlled = focusedRow !== undefined;
+  const [internalFocusedRow, setInternalFocusedRow] = useState<
+    TData | null
   >(null);
 
   const effective = isControlled
-    ? focusedRowId
-    : internalFocusedRowId;
+    ? focusedRow
+    : internalFocusedRow;
 
-  const fireChanged = useEventCallback((rowId: string | null) => {
-    onFocusedRowIdChanged?.(rowId);
+  const fireChanged = useEventCallback((row: TData | null) => {
+    onFocusedRowChanged?.(row);
   });
 
-  const setFocusedRowId = useCallback(
-    (rowId: string | null) => {
-      if (effective === rowId) return;
+  const effectiveId = effective != null ? getRowId(effective) : null;
+
+  const setFocusedRow = useCallback(
+    (row: TData | null) => {
+      const nextId = row != null ? getRowId(row) : null;
+      if (effectiveId === nextId) return;
       if (!isControlled) {
-        setInternalFocusedRowId(rowId);
+        setInternalFocusedRow(row);
       }
-      fireChanged(rowId);
+      fireChanged(row);
     },
-    [effective, isControlled, fireChanged],
+    [effectiveId, isControlled, fireChanged, getRowId],
   );
 
   return {
-    focusedRowId: effective,
-    setFocusedRowId,
+    focusedRow: effective,
+    setFocusedRow,
     isControlled,
   };
 }

@@ -17,7 +17,6 @@
 import type {
   ObjectOrInterfaceDefinition,
   Osdk,
-  PrimaryKeyType,
   PropertyKeys,
   QueryDefinition,
   SimplePropertyDef,
@@ -40,7 +39,7 @@ import type { ObjectTableProps } from "./ObjectTableApi.js";
 import { BaseTable } from "./Table.js";
 import type { HeaderMenuFeatureFlags } from "./TableHeaderWithPopover.js";
 import { deriveSelectionObjectSet } from "./utils/deriveSelectionObjectSet.js";
-import { getRowId, getRowIdFromPrimaryKey } from "./utils/getRowId.js";
+import { getRowId } from "./utils/getRowId.js";
 import type { EditableConfig } from "./utils/types.js";
 
 const EMPTY_ARRAY: [] = [];
@@ -94,8 +93,8 @@ export function ObjectTable<
   enableColumnResizing = true,
   enableColumnConfig = true,
   editMode = "manual",
-  focusedRowId,
-  onFocusedRowIdChanged,
+  focusedRow,
+  onFocusedRowChanged,
   tableRef,
   ...props
 }: ObjectTableProps<Q, RDPs, FunctionColumns>): React.ReactElement {
@@ -284,27 +283,6 @@ export function ObjectTable<
     [onColumnHeaderClick],
   );
 
-  const baseFocusedRowId: string | null | undefined = focusedRowId == null
-    ? null
-    : getRowIdFromPrimaryKey<Q>(focusedRowId);
-
-  const handleFocusedRowIdChanged = useCallback(
-    (rowId: string | null) => {
-      if (!onFocusedRowIdChanged) return;
-      if (rowId == null) {
-        onFocusedRowIdChanged(null);
-        return;
-      }
-      const found = data?.find(item =>
-        getRowIdFromPrimaryKey<Q>(item.$primaryKey) === rowId
-      );
-      onFocusedRowIdChanged(
-        found ? found.$primaryKey : (rowId as PrimaryKeyType<Q>),
-      );
-    },
-    [onFocusedRowIdChanged, data],
-  );
-
   const isTableLoading = isLoading || isColumnsLoading;
 
   useObjectTableSnapshotHandle({
@@ -345,10 +323,8 @@ export function ObjectTable<
       editableConfig={editableConfig}
       getRowAttributes={props.getRowAttributes}
       showEditFooter={props.showEditFooter}
-      focusedRowId={baseFocusedRowId}
-      onFocusedRowIdChanged={onFocusedRowIdChanged
-        ? handleFocusedRowIdChanged
-        : undefined}
+      focusedRow={focusedRow}
+      onFocusedRowChanged={onFocusedRowChanged}
     />
   );
 }

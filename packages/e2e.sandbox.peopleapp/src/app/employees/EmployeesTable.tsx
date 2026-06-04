@@ -10,7 +10,7 @@ import {
   OsdkThemeProvider,
   useOsdkTheme,
 } from "@osdk/react-components/experimental/theme";
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import {
   Employee,
   getEmployeeDaysSinceStart,
@@ -159,6 +159,17 @@ export function EmployeesTable(): React.ReactElement {
   const os = client(Employee);
 
   const tableRef = useRef<ObjectTableHandle<Employee, RDPs>>(null);
+  const [focusedEmployee, setFocusedEmployee] = useState<
+    Osdk.Instance<Employee> | null
+  >(null);
+
+  const handleFocusedRowChanged = useCallback(
+    (row: Osdk.Instance<Employee> | null) => {
+      console.log("focused row changed", row);
+      setFocusedEmployee(row);
+    },
+    [],
+  );
 
   return (
     <OsdkThemeProvider>
@@ -172,6 +183,31 @@ export function EmployeesTable(): React.ReactElement {
         <ThemeToggle />
         <div style={{ marginBottom: 8 }}>
           <DownloadEmployeesButton tableRef={tableRef} />
+        </div>
+        <div
+          style={{
+            display: "flex",
+            gap: 8,
+            alignItems: "center",
+            marginBottom: 8,
+            fontSize: 12,
+          }}
+        >
+          <span style={{ color: "#666" }}>
+            Focused employee:{" "}
+            <strong>
+              {focusedEmployee == null
+                ? "none"
+                : `${focusedEmployee.fullName} (#${focusedEmployee.employeeNumber})`}
+            </strong>
+          </span>
+          <Button
+            type="button"
+            onClick={() => setFocusedEmployee(null)}
+            disabled={focusedEmployee == null}
+          >
+            Clear focus
+          </Button>
         </div>
         <div
           style={{
@@ -189,7 +225,9 @@ export function EmployeesTable(): React.ReactElement {
               direction: "desc",
             }]}
             onSubmitEdits={handleSubmitEdits}
-            tableRef={tableRef}
+            // tableRef={tableRef}
+            focusedRow={focusedEmployee}
+            onFocusedRowChanged={handleFocusedRowChanged}
           />
         </div>
       </div>

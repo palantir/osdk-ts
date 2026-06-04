@@ -29,7 +29,7 @@ interface TableRowProps<TData extends RowData> {
     cell: Cell<TData, unknown>,
   ) => React.ReactNode;
   isFocused: boolean;
-  setFocusedRowId?: (rowId: string | null) => void;
+  setFocusedRow?: (row: TData | null) => void;
   isInEditMode?: boolean;
   getRowAttributes?: (
     object: TData,
@@ -42,15 +42,15 @@ export function TableRow<TData extends RowData>({
   onRowClick,
   renderCellContextMenu,
   isFocused,
-  setFocusedRowId,
+  setFocusedRow,
   isInEditMode,
   getRowAttributes,
 }: TableRowProps<TData>): React.ReactElement {
   // Use the capture phase so row focus is set even when children call
   // stopPropagation on the click event (e.g. DatePicker's input).
   const handleClickCapture = useCallback(() => {
-    setFocusedRowId?.(row.id);
-  }, [row.id, setFocusedRowId]);
+    setFocusedRow?.(row.original);
+  }, [row.original, setFocusedRow]);
 
   const handleClick = useCallback(() => {
     if (!isInEditMode) {

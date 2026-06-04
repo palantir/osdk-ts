@@ -595,28 +595,31 @@ export interface ObjectTableProps<
   ) => void;
 
   /**
-   * Primary key of the row to render as visually focused (the "last
-   * interacted" row). When provided, focus state is controlled by the
-   * caller and the table will not auto-clear focus on outside clicks —
-   * the caller owns clearing. Use this to keep a row highlighted while a
-   * detail drawer or side panel is open.
+   * The row to render as visually focused (the "last interacted" row).
+   * When provided, focus state is controlled by the caller.
    *
    * Pass `null` to render no row as focused.
    *
    * When omitted, focus is managed internally: clicking a row focuses
    * it, and clicking outside the table clears it.
    */
-  focusedRowId?: PrimaryKeyType<Q> | null;
+  focusedRow?:
+    | Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
+    | null;
 
   /**
    * Called when the focused row changes — fires in both controlled and
    * uncontrolled modes so callers can observe focus without taking it
    * over.
    *
-   * @param rowId Primary key of the newly-focused row, or `null` if
-   * focus was cleared
+   * @param row The newly-focused row object, or `null` if focus was
+   * cleared
    */
-  onFocusedRowIdChanged?: (rowId: PrimaryKeyType<Q> | null) => void;
+  onFocusedRowChanged?: (
+    row:
+      | Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
+      | null,
+  ) => void;
 
   /**
    * Called when a column header is clicked.
