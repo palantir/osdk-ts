@@ -19,12 +19,7 @@ import type {
   QueryDefinition,
   SimplePropertyDef,
 } from "@osdk/api";
-import type {
-  ColumnDefinition,
-  FunctionColumnLocator,
-  ObjectTableSnapshotColumn,
-} from "../ObjectTableApi.js";
-import { SELECTION_COLUMN_ID } from "./constants.js";
+import type { FunctionColumnLocator } from "../ObjectTableApi.js";
 import type { PagedObjects } from "./functionColumns.js";
 
 /**
@@ -32,84 +27,6 @@ import type { PagedObjects } from "./functionColumns.js";
  * will load. Bounds runaway loads against very large object sets.
  */
 export const DEFAULT_SNAPSHOT_MAX_ROWS = 10_000;
-
-/**
- * Minimal description of a table leaf column, decoupled from `@tanstack/react-table`
- * so the column-selection logic is testable in isolation.
- */
-export interface SnapshotLeafColumn {
-  /** Column id (a property key, derived-property key, or custom id). */
-  id: string;
-  /** Display name shown in the table header. */
-  name: string;
-}
-
-/**
- * Computes the set of column ids whose values are exportable for every row —
- * i.e. `property`, `rdp`, and `function` columns. Property and rdp values live
- * on the loaded object; function-column values are fetched per page during
- * snapshot collection.
- *
- * Returns `undefined` when no explicit `columnDefinitions` are provided: in
- * that case the table renders the object type's properties directly and there
- * is no exclusion set to apply.
- */
-export function getExportableColumnIds<
-  Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef>,
-  FunctionColumns extends Record<string, QueryDefinition<{}>>,
->(
-  columnDefinitions:
-    | Array<ColumnDefinition<Q, RDPs, FunctionColumns>>
-    | undefined,
-): Set<string> | undefined {
-  if (columnDefinitions == null) {
-    return undefined;
-  }
-  const ids = new Set<string>();
-  for (const { locator } of columnDefinitions) {
-    if (
-      locator.type === "property"
-      || locator.type === "rdp"
-      || locator.type === "function"
-    ) {
-      ids.add(String(locator.id));
-    }
-  }
-  return ids;
-}
-
-/**
- * Partitions the table's visible leaf columns into the snapshot columns and
- * the display names of columns excluded from the snapshot.
- *
- * - The selection column is dropped silently (never included, never reported).
- * - When `exportableIds` is provided, columns absent from it (custom-rendered
- *   columns with no underlying value) are excluded and reported.
- *
- * Column order is preserved, so the result reflects the table's current
- * visibility, ordering, and pinning.
- */
-export function selectSnapshotColumns(
-  leafColumns: ReadonlyArray<SnapshotLeafColumn>,
-  exportableIds: ReadonlySet<string> | undefined,
-): { columns: ObjectTableSnapshotColumn[]; excludedColumns: string[] } {
-  const columns: ObjectTableSnapshotColumn[] = [];
-  const excludedColumns: string[] = [];
-
-  for (const column of leafColumns) {
-    if (column.id === SELECTION_COLUMN_ID) {
-      continue;
-    }
-    if (exportableIds != null && !exportableIds.has(column.id)) {
-      excludedColumns.push(column.name);
-      continue;
-    }
-    columns.push({ id: column.id, name: column.name });
-  }
-
-  return { columns, excludedColumns };
-}
 
 /**
  * Projects a loaded object into a snapshot row keyed by column id, holding the

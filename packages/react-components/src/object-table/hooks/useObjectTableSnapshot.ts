@@ -31,7 +31,7 @@ import type {
   ObjectTableSnapshot,
   ObjectTableSnapshotOptions,
 } from "../ObjectTableApi.js";
-import { DEFAULT_PAGE_SIZE } from "../utils/constants.js";
+import { DEFAULT_PAGE_SIZE, SELECTION_COLUMN_ID } from "../utils/constants.js";
 import {
   buildPagedObjectSets,
   extractFunctionLocators,
@@ -40,9 +40,6 @@ import {
   buildSnapshotRow,
   DEFAULT_SNAPSHOT_MAX_ROWS,
   fetchFunctionColumnValues,
-  getExportableColumnIds,
-  selectSnapshotColumns,
-  type SnapshotLeafColumn,
 } from "../utils/objectTableSnapshot.js";
 
 interface UseObjectTableSnapshotArgs<
@@ -69,6 +66,16 @@ interface UseObjectTableSnapshotArgs<
 }
 
 /**
+ * Minimal description of a table leaf column, decoupled from `@tanstack/react-table`
+ * so the column-selection logic is testable in isolation.
+ */
+export interface SnapshotLeafColumn {
+  /** Column id (a property key, derived-property key, or custom id). */
+  id: string;
+  /** Display name shown in the table header. */
+  name: string;
+}
+/**
  * Builds the {@link ObjectTableHandle} exposed via `ObjectTable`'s `apiRef`.
  *
  * `getSnapshot` reads the table's currently visible columns to decide what to
@@ -91,11 +98,6 @@ export function useObjectTableSnapshot<
 ): ObjectTableHandle {
   const client = useOsdkClient();
 
-  const exportableIds = useMemo(
-    () => getExportableColumnIds(columnDefinitions),
-    [columnDefinitions],
-  );
-
   const functionLocators = useMemo(
     () => extractFunctionLocators<Q, RDPs, FunctionColumns>(columnDefinitions),
     [columnDefinitions],
@@ -107,21 +109,18 @@ export function useObjectTableSnapshot<
     ): Promise<ObjectTableSnapshot> => {
       const maxRows = options?.maxRows ?? DEFAULT_SNAPSHOT_MAX_ROWS;
 
-      const leafColumns: SnapshotLeafColumn[] = table
+      const columns: SnapshotLeafColumn[] = table
         .getVisibleLeafColumns()
+        .filter(column => column.id !== SELECTION_COLUMN_ID)
         .map((column) => {
           const meta = column.columnDef.meta;
           const header = column.columnDef.header;
-          const name = meta?.columnName
-            ?? (typeof header === "string" ? header : undefined)
-            ?? column.id;
+          const name = typeof header === "string"
+            ? header
+            : meta?.columnName ?? column.id;
           return { id: column.id, name };
         });
 
-      const { columns, excludedColumns } = selectSnapshotColumns(
-        leafColumns,
-        exportableIds,
-      );
       const columnIds = columns.map((column) => column.id);
       const includedColumnIds = new Set(columnIds);
 
@@ -191,11 +190,10 @@ export function useObjectTableSnapshot<
         return row;
       });
 
-      return { columns, rows, excludedColumns };
+      return { columns, rows };
     },
     [
       table,
-      exportableIds,
       objectSet,
       objectOrInterfaceType,
       functionLocators,

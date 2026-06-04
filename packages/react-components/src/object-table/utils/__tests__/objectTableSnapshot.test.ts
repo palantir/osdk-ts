@@ -20,111 +20,13 @@ import type {
   QueryDefinition,
 } from "@osdk/api";
 import { describe, expect, it, vi } from "vitest";
-import type {
-  ColumnDefinition,
-  FunctionColumnLocator,
-} from "../../ObjectTableApi.js";
-import { SELECTION_COLUMN_ID } from "../constants.js";
+import type { FunctionColumnLocator } from "../../ObjectTableApi.js";
 import type { PagedObjects } from "../functionColumns.js";
 import {
   buildSnapshotRow,
   fetchFunctionColumnPage,
   fetchFunctionColumnValues,
-  getExportableColumnIds,
-  selectSnapshotColumns,
-  type SnapshotLeafColumn,
 } from "../objectTableSnapshot.js";
-
-type AnyColumnDef = ColumnDefinition<ObjectOrInterfaceDefinition>;
-
-function columnDef(type: string, id: string): AnyColumnDef {
-  return { locator: { type, id } } as unknown as AnyColumnDef;
-}
-
-describe("getExportableColumnIds", () => {
-  it("returns undefined when no column definitions are provided", () => {
-    expect(getExportableColumnIds(undefined)).toBeUndefined();
-  });
-
-  it("includes property, rdp, and function columns", () => {
-    const ids = getExportableColumnIds([
-      columnDef("property", "name"),
-      columnDef("rdp", "fullName"),
-      columnDef("function", "computed"),
-    ]);
-    expect(ids).toEqual(new Set(["name", "fullName", "computed"]));
-  });
-
-  it("excludes custom columns", () => {
-    const ids = getExportableColumnIds([
-      columnDef("property", "name"),
-      columnDef("custom", "actions"),
-    ]);
-    expect(ids).toEqual(new Set(["name"]));
-  });
-});
-
-describe("selectSnapshotColumns", () => {
-  const property: SnapshotLeafColumn = { id: "name", name: "Name" };
-  const asyncColumn: SnapshotLeafColumn = {
-    id: "computed",
-    name: "Computed",
-  };
-  const customColumn: SnapshotLeafColumn = { id: "actions", name: "Actions" };
-  const selectionColumn: SnapshotLeafColumn = {
-    id: SELECTION_COLUMN_ID,
-    name: "",
-  };
-
-  it("drops the selection column without reporting it", () => {
-    const { columns, excludedColumns } = selectSnapshotColumns(
-      [selectionColumn, property],
-      undefined,
-    );
-    expect(columns).toEqual([{ id: "name", name: "Name" }]);
-    expect(excludedColumns).toEqual([]);
-  });
-
-  it("includes function-backed columns when present in the exportable set", () => {
-    const { columns, excludedColumns } = selectSnapshotColumns(
-      [property, asyncColumn],
-      new Set(["name", "computed"]),
-    );
-    expect(columns).toEqual([
-      { id: "name", name: "Name" },
-      { id: "computed", name: "Computed" },
-    ]);
-    expect(excludedColumns).toEqual([]);
-  });
-
-  it("excludes custom columns absent from the exportable set", () => {
-    const { columns, excludedColumns } = selectSnapshotColumns(
-      [property, customColumn],
-      new Set(["name"]),
-    );
-    expect(columns).toEqual([{ id: "name", name: "Name" }]);
-    expect(excludedColumns).toEqual(["Actions"]);
-  });
-
-  it("treats every column as exportable when no exportable set is given", () => {
-    const { columns, excludedColumns } = selectSnapshotColumns(
-      [property, customColumn],
-      undefined,
-    );
-    expect(columns).toEqual([
-      { id: "name", name: "Name" },
-      { id: "actions", name: "Actions" },
-    ]);
-    expect(excludedColumns).toEqual([]);
-  });
-
-  it("preserves the input column order", () => {
-    const a: SnapshotLeafColumn = { id: "a", name: "A" };
-    const b: SnapshotLeafColumn = { id: "b", name: "B" };
-    const { columns } = selectSnapshotColumns([b, a], new Set(["a", "b"]));
-    expect(columns.map((c) => c.id)).toEqual(["b", "a"]);
-  });
-});
 
 describe("buildSnapshotRow", () => {
   it("keys raw cell values by column id", () => {

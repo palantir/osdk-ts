@@ -663,7 +663,7 @@ export interface ObjectTableSnapshotOptions {
  */
 export interface ObjectTableSnapshot {
   /**
-   * The exportable columns in their current display order. Reflects the
+   * The columns in their current display order. Reflects the
    * table's column visibility, ordering, and pinning. The selection column
    * is never included.
    */
@@ -675,13 +675,6 @@ export interface ObjectTableSnapshot {
    * formatted string) so the caller can format it as needed.
    */
   rows: Array<Record<string, unknown>>;
-
-  /**
-   * Display names of columns omitted from the snapshot because they have no
-   * underlying value to export (custom-rendered columns). Empty when nothing
-   * was excluded.
-   */
-  excludedColumns: string[];
 }
 
 /**
