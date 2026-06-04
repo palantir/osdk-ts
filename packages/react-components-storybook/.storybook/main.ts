@@ -83,8 +83,6 @@ const config: StorybookConfig = {
         // wrappers can import .md files without fragile relative paths.
         "@docs": new URL("../../react-components/docs", import.meta.url)
           .pathname,
-        "@cbac-docs": new URL("../../cbac-components/docs", import.meta.url)
-          .pathname,
         "@rc-root": new URL("../../react-components", import.meta.url)
           .pathname,
         // Polyfill Node.js modules for browser

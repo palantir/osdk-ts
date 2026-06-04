@@ -141,6 +141,10 @@ For every state change with a built-in default behavior (sort, filter, select, e
 
 - Do not fix diagnostic warnings in old code
 
+## CBAC components
+
+The CBAC (classification-based access control) picker lives at `src/cbac-picker/` and is exported through `src/public/experimental/cbac-picker.ts` under the `@osdk/react-components/experimental/cbac-picker` subpath. It was merged in from the legacy `@osdk/cbac-components` package — see `docs/CbacPicker.md` for usage. The legacy package still exists on disk for reference but is no longer the source of truth.
+
 ## Common pitfalls
 
 - **NEVER `pnpm --dir <path> turbo` or `cd <path> && pnpm turbo`** — the `--dir` flag breaks Turbo (pnpm interprets the path as the command). Always `pnpm turbo <task> --filter=@osdk/react-components`. For non-turbo commands (vitest, lint), `pnpm --dir packages/react-components <cmd>` is fine

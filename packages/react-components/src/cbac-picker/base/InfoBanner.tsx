@@ -1,4 +1,4 @@
-{/*
+/*
  * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,13 +12,26 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */}
+ */
 
-{/* cspell:words cbac */}
+import { InfoSign } from "@blueprintjs/icons";
+import classnames from "classnames";
+import React from "react";
+import styles from "./InfoBanner.module.css";
 
-import { Meta, Markdown } from "@storybook/addon-docs/blocks";
-import cbacPickerDocs from "@docs/CbacPicker.md?raw";
+export interface InfoBannerProps {
+  message: string;
+  className?: string;
+}
 
-<Meta title="Components/CbacPicker/Docs" tags={["beta"]}/>
-
-<Markdown>{cbacPickerDocs}</Markdown>
+export function InfoBanner({
+  message,
+  className,
+}: InfoBannerProps): React.ReactElement {
+  return (
+    <div className={classnames(styles.infoBanner, className)}>
+      <InfoSign className={styles.icon} size={14} />
+      <span>{message}</span>
+    </div>
+  );
+}

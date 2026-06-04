@@ -23,7 +23,6 @@
   "devDependencies": {
     "@blueprintjs/core": "^6.10.0",
     "@osdk/api": "workspace:*",
-    "@osdk/cbac-components": "workspace:*",
     "@osdk/client": "workspace:*",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/react": "workspace:*",

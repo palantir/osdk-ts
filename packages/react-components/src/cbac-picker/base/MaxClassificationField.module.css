@@ -1,4 +1,4 @@
-{/*
+/*
  * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,13 +12,28 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */}
+ */
 
-{/* cspell:words cbac */}
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--osdk-cbac-marking-button-gap);
+}
 
-import { Meta, Markdown } from "@storybook/addon-docs/blocks";
-import cbacPickerDocs from "@docs/CbacPicker.md?raw";
+.label {
+  font-size: var(--osdk-cbac-picker-category-title-font-size);
+  font-weight: var(--osdk-cbac-picker-category-title-font-weight);
+  color: var(--osdk-cbac-picker-category-title-color);
+  letter-spacing: var(--osdk-cbac-picker-category-title-letter-spacing);
+  margin: 0;
+}
 
-<Meta title="Components/CbacPicker/Docs" tags={["beta"]}/>
+.bannerWrapper {
+  pointer-events: none;
+}
 
-<Markdown>{cbacPickerDocs}</Markdown>
+.helperText {
+  font-size: var(--osdk-typography-size-body-small);
+  color: var(--osdk-typography-color-muted);
+  margin: 0;
+}

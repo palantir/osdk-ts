@@ -1,5 +1,7 @@
 # @osdk/cbac-components
 
+> **DEPRECATED / RELOCATED**: The CBAC components have been merged into [`@osdk/react-components`](../react-components) and are now exported from `@osdk/react-components/experimental/cbac-picker`. This package is kept for legacy reference only and is no longer the source of truth. **New consumers should import from `@osdk/react-components`.** See [`../react-components/docs/CbacPicker.md`](../react-components/docs/CbacPicker.md) and [`../react-components/AGENTS.md`](../react-components/AGENTS.md) for usage guidance.
+
 React components for [classification-based access control (CBAC)](https://www.palantir.com/docs/foundry/security/classification-based-access-controls/). CBAC markings control who can access data — users select markings from categories (disjunctive = pick one, conjunctive = pick many) and the server computes restrictions (implied, disallowed, required markings) and resolves a classification banner. Pass in marking IDs and these components handle all of that automatically. Requires `@osdk/react` (see the `@osdk/react` package's `AGENTS.md` for hooks and provider setup).
 
 ## Components
