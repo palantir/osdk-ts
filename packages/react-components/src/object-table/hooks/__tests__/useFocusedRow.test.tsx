@@ -52,7 +52,7 @@ describe("useFocusedRow", () => {
       expect(onChanged).toHaveBeenCalledWith(r1);
     });
 
-    it("dedupes by row id, not object reference", () => {
+    it("dedupes by row id", () => {
       const onChanged = vi.fn();
       const { result } = renderHook(() =>
         useFocusedRow<TestRow>({ onFocusedRowChanged: onChanged, getRowId })

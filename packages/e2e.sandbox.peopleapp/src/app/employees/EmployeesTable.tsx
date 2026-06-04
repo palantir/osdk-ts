@@ -10,7 +10,7 @@ import {
   OsdkThemeProvider,
   useOsdkTheme,
 } from "@osdk/react-components/experimental/theme";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useRef } from "react";
 import {
   Employee,
   getEmployeeDaysSinceStart,
@@ -159,17 +159,6 @@ export function EmployeesTable(): React.ReactElement {
   const os = client(Employee);
 
   const tableRef = useRef<ObjectTableHandle<Employee, RDPs>>(null);
-  const [focusedEmployee, setFocusedEmployee] = useState<
-    Osdk.Instance<Employee> | null
-  >(null);
-
-  const handleFocusedRowChanged = useCallback(
-    (row: Osdk.Instance<Employee> | null) => {
-      console.log("focused row changed", row);
-      setFocusedEmployee(row);
-    },
-    [],
-  );
 
   return (
     <OsdkThemeProvider>
@@ -225,9 +214,7 @@ export function EmployeesTable(): React.ReactElement {
               direction: "desc",
             }]}
             onSubmitEdits={handleSubmitEdits}
-            // tableRef={tableRef}
-            focusedRow={focusedEmployee}
-            onFocusedRowChanged={handleFocusedRowChanged}
+            tableRef={tableRef}
           />
         </div>
       </div>

@@ -213,7 +213,7 @@ const meta: Meta<EmployeeTableProps> = {
     },
     focusedRow: {
       description:
-        "The row to render as visually focused. When provided, focus is controlled; the caller is responsible for clearing it (outside clicks no longer auto-clear). When omitted, focus is managed internally.",
+        "The row to render as visually focused. When provided, focus is controlled.",
       control: false,
     },
     onFocusedRowChanged: {

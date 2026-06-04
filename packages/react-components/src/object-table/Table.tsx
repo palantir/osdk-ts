@@ -105,8 +105,6 @@ export interface BaseTableProps<
   renderEmptyState?: () => React.ReactNode;
   /**
    * Controlled focused row id. `undefined` enables internal management
-   * (clicking focuses, clicking outside clears). When provided, the
-   * caller owns clearing — outside clicks no longer auto-clear.
    */
   focusedRow?: TData | null;
   /**
@@ -236,11 +234,7 @@ function BaseTableInner<
   // which would incorrectly trigger the outside-click handler.
   // At pointerdown time the backdrop is still in the DOM, so
   // portalTracker.containsElement correctly identifies it.
-  // Skipped in controlled mode — the caller is the source of truth and
-  // is expected to clear focus when it's appropriate (e.g. when a
-  // detail drawer closes).
   useEffect(() => {
-    if (isFocusControlled) return;
     const handleClickOutside = (event: PointerEvent) => {
       const target = event.target as Node;
       if (

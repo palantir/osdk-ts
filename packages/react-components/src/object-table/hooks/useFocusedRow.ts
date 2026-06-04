@@ -41,9 +41,7 @@ export interface UseFocusedRowResult<TData> {
    */
   setFocusedRow: (row: TData | null) => void;
   /**
-   * True when the caller passed `focusedRow` (including `null`). The
-   * table suppresses outside-click auto-clear in this mode so the
-   * caller fully owns clearing.
+   * True when the caller passed `focusedRow` (including `null`).
    */
   isControlled: boolean;
 }

@@ -599,9 +599,6 @@ export interface ObjectTableProps<
    * When provided, focus state is controlled by the caller.
    *
    * Pass `null` to render no row as focused.
-   *
-   * When omitted, focus is managed internally: clicking a row focuses
-   * it, and clicking outside the table clears it.
    */
   focusedRow?:
     | Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
