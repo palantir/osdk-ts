@@ -39,7 +39,7 @@ interface RunArgs {
   applicationUrl: string | undefined;
   application: string;
   ontology: string | undefined;
-  clientId: string;
+  clientId: string | undefined;
   osdkPackage: string | undefined;
   osdkRegistryUrl: string | undefined;
   corsProxy: boolean;
@@ -67,6 +67,8 @@ export async function run(
   consola.start(
     `Creating project ${green(project)} using template ${green(template.id)}`,
   );
+
+  const authless = template.authless ?? false;
 
   const cwd = process.cwd();
   const root = path.join(cwd, project);
@@ -134,9 +136,10 @@ export async function run(
     corsProxy,
     clientVersion: changeVersionPrefix(clientVersion, "^"),
     scopes,
+    clientId,
   };
   const processFiles = function(dir: string) {
-    fs.readdirSync(dir).forEach(function(file) {
+    fs.readdirSync(dir).forEach((file) => {
       let fullPath = dir + "/" + file;
       const stat = fs.statSync(fullPath);
       if (stat.isDirectory()) {
@@ -187,21 +190,36 @@ export async function run(
   const npmRc = generateNpmRc({ osdkPackage, osdkRegistryUrl, foundryUrl });
   fs.writeFileSync(path.join(root, ".npmrc"), npmRc);
 
-  const envDevelopment = generateEnvDevelopment({
-    envPrefix: template.envPrefix,
-    foundryUrl,
-    clientId,
-    corsProxy,
-    ontology,
-  });
+  const envDevelopment = authless
+    ? generateEnvDevelopment({
+      authless: true,
+      envPrefix: template.envPrefix,
+      ontology,
+    })
+    : generateEnvDevelopment({
+      authless: false,
+      envPrefix: template.envPrefix,
+      foundryUrl,
+      clientId: clientId ?? "",
+      corsProxy,
+      ontology,
+    });
   fs.writeFileSync(path.join(root, ".env.development"), envDevelopment);
-  const envProduction = generateEnvProduction({
-    envPrefix: template.envPrefix,
-    foundryUrl,
-    applicationUrl,
-    clientId,
-    ontology,
-  });
+  const envProduction = authless
+    ? generateEnvProduction({
+      authless: true,
+      envPrefix: template.envPrefix,
+      applicationUrl,
+      ontology,
+    })
+    : generateEnvProduction({
+      authless: false,
+      envPrefix: template.envPrefix,
+      foundryUrl,
+      applicationUrl,
+      clientId: clientId ?? "",
+      ontology,
+    });
   fs.writeFileSync(path.join(root, ".env.production"), envProduction);
   const foundryConfigJson = generateFoundryConfigJson({
     foundryUrl,
