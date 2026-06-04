@@ -51,7 +51,7 @@ export interface IDataType {
 
 export interface IDiscoveredFunction {
   locator: { type: string; typescript?: { functionName: string } };
-  inputs: Array<{ name: string; dataType: IDataType }>;
+  inputs: Array<{ name: string; dataType: IDataType; required?: boolean }>;
   output: { single: { dataType: IDataType } };
   customTypes: Record<string, unknown>;
   ontologyProvenance?: {
@@ -464,6 +464,7 @@ export class OntologyIrToFullMetadataConverter {
         >((acc, input) => {
           acc[input.name] = {
             dataType: convertDataType(input.dataType, func.customTypes),
+            required: input.required ?? true,
           };
           return acc;
         }, {}),
@@ -606,6 +607,7 @@ export class OntologyIrToFullMetadataConverter {
               customTypes,
               input.required,
             ),
+            required: input.required ?? true,
           };
           return acc;
         }, {}),
@@ -973,15 +975,24 @@ export class OntologyIrToFullMetadataConverter {
           const r = irLogic.deleteObjectRule;
           const ontologyIrParameter =
             action.actionType.metadata.parameters[r.objectToDelete];
-          if (ontologyIrParameter.type.type !== "objectReference") {
-            throw new Error("invalid parameter type");
+          switch (ontologyIrParameter.type.type) {
+            case "objectReference": {
+              return {
+                type: "deleteObject",
+                objectTypeApiName:
+                  ontologyIrParameter.type.objectReference.objectTypeId,
+              } satisfies Ontologies.LogicRule;
+            }
+            case "interfaceReference": {
+              return {
+                type: "deleteInterfaceObject",
+                interfaceTypeApiName:
+                  ontologyIrParameter.type.interfaceReference.interfaceTypeRid,
+              } satisfies Ontologies.LogicRule;
+            }
+            default:
+              throw new Error("invalid objectToDelete parameter type");
           }
-
-          return {
-            type: "deleteObject",
-            objectTypeApiName:
-              ontologyIrParameter.type.objectReference.objectTypeId,
-          } satisfies Ontologies.LogicRule;
         }
         case "modifyInterfaceRule": {
           const r = irLogic.modifyInterfaceRule;
@@ -1122,10 +1133,6 @@ export class OntologyIrToFullMetadataConverter {
             subType: { type: "integer" },
           };
           break;
-        case "interfaceReference":
-          throw new Error("Interface reference type not supported");
-        case "interfaceReferenceList":
-          throw new Error("Interface reference list type not supported");
         case "long":
           dataType = { type: "long" };
           break;
@@ -1153,6 +1160,25 @@ export class OntologyIrToFullMetadataConverter {
             subType: { type: "mediaReference" },
           };
           break;
+        case "interfaceReference": {
+          const t = irParameter.type.interfaceReference;
+          dataType = {
+            type: "interfaceObject",
+            interfaceTypeApiName: t.interfaceTypeRid,
+          };
+          break;
+        }
+        case "interfaceReferenceList": {
+          const t = irParameter.type.interfaceReferenceList;
+          dataType = {
+            type: "array",
+            subType: {
+              type: "interfaceObject",
+              interfaceTypeApiName: t.interfaceTypeRid,
+            },
+          };
+          break;
+        }
         case "objectReference": {
           const t = irParameter.type.objectReference;
           dataType = {
@@ -1414,13 +1440,13 @@ export class OntologyIrToFullMetadataConverter {
       case "marking":
         return { type: "marking" };
       case "cipherText":
-        return null;
+        return { type: "cipherText" };
       case "mediaReference":
-        return null;
+        return { type: "mediaReference" };
       case "vector":
         return null;
       case "geotimeSeriesReference":
-        return null;
+        return { type: "geotimeSeriesReference" };
       case "struct": {
         const value = type.struct;
         const ridBase = `ri.struct.${

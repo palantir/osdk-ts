@@ -63,6 +63,69 @@ type ActionParameterMap = Parameters<
   typeof TypeHelpers.createActionType
 >[0]["parameters"];
 
+const generatedFieldsActionParameters = {
+  fullName: {
+    displayName: "Full name",
+    dataType: { type: "string" },
+    required: true,
+    typeClasses: [],
+  },
+  yearsExperience: {
+    displayName: "Years of experience",
+    dataType: { type: "integer" },
+    required: false,
+    typeClasses: [],
+  },
+  isRemote: {
+    displayName: "Remote employee",
+    dataType: { type: "boolean" },
+    required: false,
+    typeClasses: [],
+  },
+  startDate: {
+    displayName: "Start date",
+    dataType: { type: "timestamp" },
+    required: false,
+    typeClasses: [],
+  },
+  document: {
+    displayName: "Document",
+    dataType: { type: "attachment" },
+    required: false,
+    typeClasses: [],
+  },
+  manager: {
+    displayName: "Manager",
+    dataType: {
+      type: "object",
+      objectApiName: "Employee",
+      objectTypeApiName: "Employee",
+    },
+    required: false,
+    typeClasses: [],
+  },
+  reviewPool: {
+    displayName: "Review pool",
+    dataType: {
+      type: "objectSet",
+      objectApiName: "Employee",
+      objectTypeApiName: "Employee",
+    },
+    required: false,
+    typeClasses: [],
+  },
+} satisfies ActionParameterMap;
+
+export const generatedFieldsStoryAction = TypeHelpers
+  .actionTypeBuilder(
+    TypeHelpers.createActionType({
+      apiName: "generatedFieldsStoryAction",
+      displayName: "Create employee profile",
+      parameters: generatedFieldsActionParameters,
+    }),
+  )
+  .build();
+
 const unsupportedFieldsActionParameters = {
   structPayload: {
     displayName: "Struct payload",
@@ -132,6 +195,10 @@ export async function setupFauxFoundry(): Promise<void> {
   );
   fauxFoundry.getDefaultOntology().registerActionType(
     toggleRemoteStoryAction.actionTypeV2,
+    () => undefined,
+  );
+  fauxFoundry.getDefaultOntology().registerActionType(
+    generatedFieldsStoryAction.actionTypeV2,
     () => undefined,
   );
   fauxFoundry.getDefaultOntology().registerActionType(
@@ -356,6 +423,7 @@ export async function setupFauxFoundry(): Promise<void> {
             objectApiName: "Employee",
             objectTypeApiName: "Employee",
           },
+          required: true,
         },
       },
       output: {

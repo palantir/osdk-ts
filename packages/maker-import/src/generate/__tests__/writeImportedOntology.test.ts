@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type * as Ontologies from "@osdk/foundry.ontologies";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
@@ -71,15 +72,29 @@ describe("mapPropertyType", () => {
 
   it("maps array types", () => {
     expect(
-      mapPropertyType({ type: "array", subType: { type: "string" } }),
+      mapPropertyType({
+        type: "array",
+        subType: { type: "string" },
+        reducers: [],
+      }),
     ).toEqual({ type: "string", array: true });
   });
 
   it("returns undefined for unsupported types", () => {
     expect(mapPropertyType({ type: "marking" })).toBeUndefined();
-    expect(mapPropertyType({ type: "struct" })).toBeUndefined();
-    expect(mapPropertyType({ type: "timeseries" })).toBeUndefined();
-    expect(mapPropertyType({ type: "vector" })).toBeUndefined();
+    expect(mapPropertyType({ type: "struct", structFieldTypes: [] }))
+      .toBeUndefined();
+    expect(
+      mapPropertyType({ type: "timeseries", itemType: { type: "string" } }),
+    )
+      .toBeUndefined();
+    expect(
+      mapPropertyType({
+        type: "vector",
+        dimension: 1,
+        supportsSearchWith: [],
+      }),
+    ).toBeUndefined();
     expect(mapPropertyType({ type: "cipherText" })).toBeUndefined();
   });
 });
@@ -96,6 +111,7 @@ describe("mapActionParameterType", () => {
     expect(
       mapActionParameterType({
         type: "object",
+        objectApiName: "employee",
         objectTypeApiName: "Employee",
       }),
     ).toEqual({
@@ -129,7 +145,11 @@ describe("mapActionParameterType", () => {
     expect(
       mapActionParameterType({
         type: "array",
-        subType: { type: "object", objectTypeApiName: "Employee" },
+        subType: {
+          type: "object",
+          objectTypeApiName: "Employee",
+          objectApiName: "employee",
+        },
       }),
     ).toEqual({
       type: "objectReferenceList",
@@ -141,9 +161,9 @@ describe("mapActionParameterType", () => {
     expect(
       mapActionParameterType({
         type: "struct",
-        structFieldTypes: [
-          { apiName: "name", dataType: { type: "string" } },
-          { apiName: "count", dataType: { type: "integer" } },
+        fields: [
+          { name: "name", fieldType: { type: "string" }, required: true },
+          { name: "count", fieldType: { type: "integer" }, required: true },
         ],
       }),
     ).toEqual({
@@ -163,8 +183,8 @@ describe("mapActionParameterType", () => {
         type: "array",
         subType: {
           type: "struct",
-          structFieldTypes: [
-            { apiName: "key", dataType: { type: "string" } },
+          fields: [
+            { name: "key", fieldType: { type: "string" }, required: true },
           ],
         },
       }),
@@ -185,12 +205,18 @@ describe("mapActionParameterType", () => {
   });
 
   it("returns undefined for unsupported types", () => {
-    expect(mapActionParameterType({ type: "vector" })).toBeUndefined();
+    expect(
+      mapActionParameterType({
+        type: "vector",
+        dimension: 1,
+        supportsSearchWith: [],
+      }),
+    ).toBeUndefined();
   });
 });
 
 describe("writeImportedOntology", () => {
-  const sampleMetadata = {
+  const sampleMetadata: Ontologies.OntologyFullMetadata = {
     ontology: {
       apiName: "test-ontology",
       displayName: "Test",
@@ -208,19 +234,32 @@ describe("writeImportedOntology", () => {
           status: "ACTIVE",
           properties: {
             employeeId: {
+              rid: "ri.ontology.main.ontology.1",
               displayName: "Employee ID",
               dataType: { type: "string" },
+              typeClasses: [],
             },
             fullName: {
+              rid: "ri.ontology.main.ontology.2",
               displayName: "Full Name",
               dataType: { type: "string" },
+              typeClasses: [],
             },
             salary: {
+              rid: "ri.ontology.main.ontology.3",
               displayName: "Salary",
               dataType: { type: "double" },
+              typeClasses: [],
             },
           },
+          pluralDisplayName: "",
+          icon: { type: "blueprint", color: "", name: "" },
+          rid: "ri.ontology.main.ontology.1",
         },
+        linkTypes: [],
+        implementsInterfaces: [],
+        implementsInterfaces2: {},
+        sharedPropertyTypeMapping: {},
       },
     },
     actionTypes: {
@@ -233,25 +272,30 @@ describe("writeImportedOntology", () => {
             displayName: "Name",
             dataType: { type: "string" },
             required: true,
+            typeClasses: [],
           },
           employee: {
             displayName: "Employee",
             dataType: {
               type: "object",
               objectTypeApiName: "com.example.Employee",
+              objectApiName: "com.example.Employee",
             },
             required: true,
+            typeClasses: [],
           },
         },
         operations: [{
           type: "createObject",
           objectTypeApiName: "com.example.Employee",
         }],
+        rid: "ri.ontology.main.ontology.1",
       },
     },
     interfaceTypes: {},
     sharedPropertyTypes: {},
     queryTypes: {},
+    valueTypes: {},
   };
 
   it("generates object type files", () => {
@@ -266,6 +310,7 @@ describe("writeImportedOntology", () => {
     expect(objectFile).toContain("\"com.example.Employee\"");
     expect(objectFile).toContain("\"employeeId\"");
     expect(objectFile).toContain("export const employee");
+    expect(objectFile).toContain("ri.ontology.main.ontology.1");
   });
 
   it("generates action type files", () => {
@@ -294,7 +339,7 @@ describe("writeImportedOntology", () => {
   });
 
   it("handles empty ontology", () => {
-    const emptyMetadata = {
+    const emptyMetadata: Ontologies.OntologyFullMetadata = {
       ontology: {
         apiName: "empty",
         displayName: "Empty",
@@ -306,6 +351,7 @@ describe("writeImportedOntology", () => {
       interfaceTypes: {},
       sharedPropertyTypes: {},
       queryTypes: {},
+      valueTypes: {},
     };
 
     writeImportedOntology(emptyMetadata, TEST_OUTPUT_DIR);
@@ -317,7 +363,7 @@ describe("writeImportedOntology", () => {
   });
 
   it("disambiguates cross-namespace name conflicts within same type", () => {
-    const metadata = {
+    const metadata: Ontologies.OntologyFullMetadata = {
       ontology: {
         apiName: "test",
         displayName: "Test",
@@ -333,9 +379,21 @@ describe("writeImportedOntology", () => {
             titleProperty: "id",
             status: "ACTIVE",
             properties: {
-              id: { displayName: "ID", dataType: { type: "string" } },
+              id: {
+                displayName: "ID",
+                dataType: { type: "string" },
+                rid: "ri.ontology.main.ontology.1",
+                typeClasses: [],
+              },
             },
+            pluralDisplayName: "",
+            icon: { type: "blueprint", color: "", name: "" },
+            rid: "ri.ontology.main.ontology.1",
           },
+          linkTypes: [],
+          implementsInterfaces: [],
+          implementsInterfaces2: {},
+          sharedPropertyTypeMapping: {},
         },
         "com.b.Foo": {
           objectType: {
@@ -345,15 +403,28 @@ describe("writeImportedOntology", () => {
             titleProperty: "id",
             status: "ACTIVE",
             properties: {
-              id: { displayName: "ID", dataType: { type: "string" } },
+              id: {
+                displayName: "ID",
+                dataType: { type: "string" },
+                rid: "ri.ontology.main.ontology.1",
+                typeClasses: [],
+              },
             },
+            pluralDisplayName: "",
+            icon: { type: "blueprint", color: "", name: "" },
+            rid: "ri.ontology.main.ontology.2",
           },
+          linkTypes: [],
+          implementsInterfaces: [],
+          implementsInterfaces2: {},
+          sharedPropertyTypeMapping: {},
         },
       },
       actionTypes: {},
       interfaceTypes: {},
       sharedPropertyTypes: {},
       queryTypes: {},
+      valueTypes: {},
     };
 
     writeImportedOntology(metadata, TEST_OUTPUT_DIR);
@@ -381,7 +452,7 @@ describe("writeImportedOntology", () => {
   });
 
   it("disambiguates cross-type name conflicts", () => {
-    const metadata = {
+    const metadata: Ontologies.OntologyFullMetadata = {
       ontology: {
         apiName: "test",
         displayName: "Test",
@@ -397,9 +468,21 @@ describe("writeImportedOntology", () => {
             titleProperty: "id",
             status: "ACTIVE",
             properties: {
-              id: { displayName: "ID", dataType: { type: "string" } },
+              id: {
+                displayName: "ID",
+                dataType: { type: "string" },
+                rid: "ri.ontology.main.ontology.1",
+                typeClasses: [],
+              },
             },
+            icon: { type: "blueprint", color: "", name: "" },
+            rid: "ri.ontology.main.ontology.1",
+            pluralDisplayName: "",
           },
+          linkTypes: [],
+          implementsInterfaces: [],
+          implementsInterfaces2: {},
+          sharedPropertyTypeMapping: {},
         },
       },
       actionTypes: {},
@@ -409,9 +492,12 @@ describe("writeImportedOntology", () => {
           apiName: "Foo",
           displayName: "Foo",
           dataType: { type: "string" },
+          rid: "ri.ontology.main.ontology.1",
+          typeClasses: [],
         },
       },
       queryTypes: {},
+      valueTypes: {},
     };
 
     writeImportedOntology(metadata, TEST_OUTPUT_DIR);

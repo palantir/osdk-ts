@@ -22,7 +22,7 @@ import {
   waitFor,
   within,
 } from "@testing-library/react";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { FormContentItem } from "../ActionFormApi.js";
 import { BaseForm } from "../BaseForm.js";
@@ -73,6 +73,28 @@ describe("BaseForm", () => {
   });
 
   describe("uncontrolled mode", () => {
+    it("keeps edited state after a blank field is restored", async () => {
+      render(
+        <BaseForm formContent={[field(makeDef("name"))]} onSubmit={vi.fn()} />,
+      );
+
+      expect(screen.queryByText("Edited")).toBeNull();
+
+      const nameInput = screen.getByRole("textbox", { name: "name" });
+      fireEvent.change(nameInput, { target: { value: "Alice" } });
+
+      await waitFor(() => {
+        expect(screen.getByText("Edited")).toBeDefined();
+      });
+      expect(screen.getByRole("textbox", { name: "name" })).toBeDefined();
+
+      fireEvent.change(nameInput, { target: { value: "" } });
+
+      await waitFor(() => {
+        expect(screen.getByText("Edited")).toBeDefined();
+      });
+    });
+
     it("submits entered field values", async () => {
       const onSubmit = vi.fn();
 
@@ -320,6 +342,50 @@ describe("BaseForm", () => {
   });
 
   describe("controlled mode", () => {
+    it("keeps edited state after parent state updates and value is restored", async () => {
+      const content: ReadonlyArray<FormContentItem> = [field(makeDef("name"))];
+
+      function ControlledWrapper() {
+        const [formState, setFormState] = useState<Record<string, unknown>>({
+          name: "Initial",
+        });
+
+        const handleFieldChange = useCallback(
+          (fieldKey: string, value: unknown) => {
+            setFormState((prev) => ({ ...prev, [fieldKey]: value }));
+          },
+          [],
+        );
+
+        return (
+          <BaseForm
+            formContent={content}
+            formState={formState}
+            onFieldValueChange={handleFieldChange}
+            onSubmit={vi.fn()}
+          />
+        );
+      }
+
+      render(<ControlledWrapper />);
+
+      expect(screen.queryByText("Edited")).toBeNull();
+
+      const nameInput = screen.getByRole("textbox", { name: "name" });
+      fireEvent.change(nameInput, { target: { value: "Updated" } });
+
+      await waitFor(() => {
+        expect(screen.getByText("Edited")).toBeDefined();
+      });
+      expect(screen.getByRole("textbox", { name: "name" })).toBeDefined();
+
+      fireEvent.change(nameInput, { target: { value: "Initial" } });
+
+      await waitFor(() => {
+        expect(screen.getByText("Edited")).toBeDefined();
+      });
+    });
+
     it("calls onFieldValueChange when a field is edited", () => {
       const onFieldValueChange = vi.fn();
 
@@ -846,11 +912,12 @@ describe("BaseForm", () => {
       );
 
       expect(screen.queryByDisplayValue("sensitive value")).toBeNull();
-      expect(screen.getByRole("textbox", { name: /Unsupported/ }))
-        .toHaveProperty(
-          "value",
-          "Unsupported field type. Use a CUSTOM field instead",
-        );
+      expect(
+        screen.getByRole("textbox", { name: /Unsupported/ }),
+      ).toHaveProperty(
+        "value",
+        "Unsupported field type. Use a CUSTOM field instead",
+      );
 
       fireEvent.click(screen.getByRole("button", { name: /submit/i }));
 

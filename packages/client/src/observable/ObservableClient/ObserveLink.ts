@@ -54,6 +54,15 @@ export namespace ObserveLinks {
      * targets.
      */
     $includeAllBaseObjectProperties?: boolean;
+
+    /**
+     * When traversing to linked objects via an interface link target, return
+     * the full concrete object type instances instead of interface views.
+     * Has no effect when the link target is already an object type.
+     *
+     * @default false
+     */
+    resolveToObjectType?: boolean;
   }
 
   export interface CallbackArgs<

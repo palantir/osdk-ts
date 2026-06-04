@@ -1,6 +1,6 @@
 {
   "name": "@osdk/vite-plugin-superrepo",
-  "version": "0.5.0",
+  "version": "0.8.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -15,6 +15,24 @@
       },
       "require": "./build/cjs/index.cjs",
       "default": "./build/browser/index.js"
+    },
+    "./discovery": {
+      "browser": "./build/browser/public/discovery.js",
+      "import": {
+        "types": "./build/types/public/discovery.d.ts",
+        "default": "./build/esm/public/discovery.js"
+      },
+      "require": "./build/cjs/public/discovery.cjs",
+      "default": "./build/browser/public/discovery.js"
+    },
+    "./osdkClient": {
+      "browser": "./build/browser/public/osdkClient.js",
+      "import": {
+        "types": "./build/types/public/osdkClient.d.ts",
+        "default": "./build/esm/public/osdkClient.js"
+      },
+      "require": "./build/cjs/public/osdkClient.cjs",
+      "default": "./build/browser/public/osdkClient.js"
     },
     "./smartClient": {
       "browser": "./build/browser/public/smartClient.js",
@@ -41,6 +59,7 @@
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt",
     "lint": "eslint . && dprint check",
+    "test": "vitest run",
     "transpileBrowser": "monorepo.tool.transpile -f esm -m normal -t browser",
     "transpileCjs": "monorepo.tool.transpile -f cjs -m bundle -t node",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",

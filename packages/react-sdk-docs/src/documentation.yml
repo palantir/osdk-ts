@@ -9,7 +9,7 @@ versions:
 
             const client = createClient(
               "https://your-stack.palantirfoundry.com",
-              "{{{packageName}}}",
+              "ri.ontology.main.ontology.{UUID}",
               async () => "your-token"
             );
 
@@ -655,7 +655,7 @@ versions:
 
             const client = createClient(
               "https://your-stack.palantirfoundry.com",
-              "{{{packageName}}}",
+              "ri.ontology.main.ontology.{UUID}",
               async () => "your-token"
             );
 

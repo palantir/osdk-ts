@@ -18,14 +18,13 @@ import { Error as ErrorIcon, Spin } from "@blueprintjs/icons";
 import classnames from "classnames";
 import "pdfjs-dist/web/pdf_viewer.css";
 import React, { useEffect, useRef } from "react";
-import { createPortal } from "react-dom";
 import { EMPTY_ANNOTATION_ARRAY } from "../constants.js";
 import { usePdfAnnotationsByPage } from "../hooks/usePdfAnnotationsByPage.js";
 import { usePdfFormFields } from "../hooks/usePdfFormFields.js";
 import { usePdfViewerCore } from "../hooks/usePdfViewerCore.js";
 import styles from "../PdfViewer.module.css";
 import type { PdfAnnotation, PdfFormFieldValue } from "../types.js";
-import { PdfViewerAnnotationLayer } from "./PdfViewerAnnotationLayer.js";
+import { PdfAnnotationOverlay } from "./PdfAnnotationOverlay.js";
 
 export interface PdfViewerContentProps {
   /** PDF source — URL string or ArrayBuffer */
@@ -141,15 +140,13 @@ export function PdfViewerContent({
             if (pageAnnotations.length === 0) {
               return null;
             }
-            return createPortal(
-              <PdfViewerAnnotationLayer
+            return (
+              <PdfAnnotationOverlay
                 key={target.pageNumber}
+                target={target}
                 annotations={pageAnnotations}
-                pageHeight={target.pageHeight}
-                scale={target.scale}
                 onAnnotationClick={onAnnotationClick}
-              />,
-              target.container,
+              />
             );
           })}
         </div>

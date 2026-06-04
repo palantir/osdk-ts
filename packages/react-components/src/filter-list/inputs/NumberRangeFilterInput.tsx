@@ -15,7 +15,7 @@
  */
 
 import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
-import { useOsdkAggregation } from "@osdk/react";
+import { useOsdkAggregation, useOsdkMetadata } from "@osdk/react";
 import React, { memo, useCallback, useMemo } from "react";
 import { NullValueWrapper } from "../base/inputs/NullValueWrapper.js";
 import { NumberRangeInput } from "../base/inputs/NumberRangeInput.js";
@@ -23,7 +23,7 @@ import type { FilterState } from "../FilterListItemApi.js";
 import {
   createGroupByAggregateOptions,
   createNullCountAggregateOptions,
-  createNullWhereClause,
+  createNullCountWhereClause,
 } from "../utils/aggregationHelpers.js";
 
 interface NumberRangeFilterInputProps<Q extends ObjectTypeDefinition> {
@@ -50,6 +50,13 @@ function NumberRangeFilterInputInner<Q extends ObjectTypeDefinition>({
     : undefined;
   const includeNull = filterState?.includeNull;
 
+  const { metadata } = useOsdkMetadata(objectType);
+  const propertyType = metadata?.properties?.[propertyKey]?.type;
+  const isInteger = propertyType === "integer"
+    || propertyType === "long"
+    || propertyType === "short"
+    || propertyType === "byte";
+
   const handleNullChange = useCallback(
     (includeNull: boolean) => {
       onFilterStateChanged({
@@ -68,14 +75,18 @@ function NumberRangeFilterInputInner<Q extends ObjectTypeDefinition>({
 
   const handleRangeChange = useCallback(
     (minValue: number | undefined, maxValue: number | undefined) => {
+      const coerceMin = (v: number | undefined): number | undefined =>
+        isInteger && v !== undefined ? Math.ceil(v) : v;
+      const coerceMax = (v: number | undefined): number | undefined =>
+        isInteger && v !== undefined ? Math.floor(v) : v;
       onFilterStateChanged({
         type: "NUMBER_RANGE",
-        minValue,
-        maxValue,
+        minValue: coerceMin(minValue),
+        maxValue: coerceMax(maxValue),
         includeNull,
       });
     },
-    [onFilterStateChanged, includeNull],
+    [onFilterStateChanged, includeNull, isInteger],
   );
 
   const aggregateOptions = useMemo(
@@ -120,13 +131,8 @@ function NumberRangeFilterInputInner<Q extends ObjectTypeDefinition>({
     [],
   );
 
-  // Combine null-check with cross-filter where clause so the null count
-  // reflects the filtered dataset, not the full dataset
   const nullCountWhereClause = useMemo(
-    () =>
-      ({
-        $and: [createNullWhereClause<Q>(propertyKey), whereClause],
-      }) as WhereClause<Q>,
+    () => createNullCountWhereClause<Q>(propertyKey, whereClause),
     [propertyKey, whereClause],
   );
 
@@ -173,7 +179,7 @@ function NumberRangeFilterInputInner<Q extends ObjectTypeDefinition>({
         minValue={numberRangeState?.minValue}
         maxValue={numberRangeState?.maxValue}
         onChange={handleRangeChange}
-        clickToFilter={clickToFilter}
+        clickToFilter={clickToFilter && metadata != null}
       />
     </NullValueWrapper>
   );

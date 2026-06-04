@@ -18,9 +18,22 @@ import type { ObjectTypeDefinition, Osdk, QueryDefinition } from "@osdk/api";
 import type { ObservableClient } from "@osdk/client/observable";
 import { act, renderHook } from "@testing-library/react";
 import * as React from "react";
-import { beforeEach, describe, expect, it, vitest } from "vitest";
+import { beforeEach, describe, expect, it, vi, vitest } from "vitest";
 import { OsdkContext } from "../src/new/OsdkContext.js";
 import { useOsdkFunction } from "../src/new/useOsdkFunction.js";
+
+vi.mock("@osdk/client", async (importOriginal) => {
+  const actual = await importOriginal<{}>();
+  const MOCK_WIRE_FORM = Symbol.for("test.mockWireForm");
+  return {
+    ...actual,
+    isObjectSet: (o: unknown): boolean =>
+      o != null && typeof o === "object"
+      && (o as Record<symbol, unknown>)[MOCK_WIRE_FORM] !== undefined,
+    getWireObjectSet: (o: unknown): unknown =>
+      (o as Record<symbol, unknown>)[MOCK_WIRE_FORM],
+  };
+});
 
 const MockQueryDef: QueryDefinition<unknown> = {
   type: "query",
@@ -192,5 +205,53 @@ describe("useOsdkFunction", () => {
     expect(result.current.error).toBe(testError);
     expect(result.current.isLoading).toBe(false);
     expect(result.current.data).toBeUndefined();
+  });
+
+  describe("params memoization", () => {
+    const MOCK_WIRE_FORM = Symbol.for("test.mockWireForm");
+
+    function makeMockObjectSet(wireForm: object): object {
+      const o: Record<PropertyKey, unknown> = {};
+      Object.defineProperty(o, MOCK_WIRE_FORM, {
+        enumerable: false,
+        configurable: true,
+        writable: true,
+        value: wireForm,
+      });
+      return o;
+    }
+
+    it(
+      "should re-subscribe when params contains ObjectSets with different "
+        + "filter chains",
+      () => {
+        const wrapper = createWrapper();
+
+        const osA = makeMockObjectSet({
+          type: "filter",
+          objectSet: { type: "base", objectType: "Employee" },
+          where: { type: "eq", field: "dept", value: "A" },
+        });
+        const osB = makeMockObjectSet({
+          type: "filter",
+          objectSet: { type: "base", objectType: "Employee" },
+          where: { type: "eq", field: "dept", value: "B" },
+        });
+
+        const { rerender } = renderHook(
+          ({ os }: { os: object }) =>
+            useOsdkFunction(MockQueryDef, {
+              params: { someInput: os } as unknown as Record<string, unknown>,
+            }),
+          { wrapper, initialProps: { os: osA } },
+        );
+
+        expect(mockObserveFunction).toHaveBeenCalledTimes(1);
+
+        rerender({ os: osB });
+
+        expect(mockObserveFunction).toHaveBeenCalledTimes(2);
+      },
+    );
   });
 });

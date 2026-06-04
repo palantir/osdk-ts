@@ -27,7 +27,13 @@ export type {
   CustomColumnLocator,
   EditFieldConfig,
   FunctionColumnLocator,
+  ObjectTableDataCell,
+  ObjectTableDataColumn,
+  ObjectTableDataRow,
+  ObjectTableHandle,
   ObjectTableProps,
+  ObjectTableSnapshot,
+  ObjectTableSnapshotOptions,
   PropertyColumnLocator,
   RdpColumnLocator,
 } from "../../object-table/ObjectTableApi.js";

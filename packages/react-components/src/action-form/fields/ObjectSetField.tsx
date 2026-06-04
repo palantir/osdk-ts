@@ -39,6 +39,7 @@ export const ObjectSetField: <T extends ObjectTypeDefinition>(
 >({
   value,
   emptyMessage = DEFAULT_EMPTY_MESSAGE,
+  disabled,
 }: ObjectSetFieldProps<T>): React.ReactElement {
   if (value == null) {
     return (
@@ -47,19 +48,22 @@ export const ObjectSetField: <T extends ObjectTypeDefinition>(
           styles.osdkObjectSetField,
           styles.osdkObjectSetFieldEmpty,
         )}
+        aria-disabled={disabled === true || undefined}
       >
         {emptyMessage}
       </div>
     );
   }
 
-  return <ObjectSetFieldContent objectSet={value} />;
+  return <ObjectSetFieldContent objectSet={value} disabled={disabled} />;
 });
 
 const ObjectSetFieldContent = React.memo(function ObjectSetFieldContentFn({
   objectSet,
+  disabled,
 }: {
   objectSet: ObjectSet;
+  disabled: boolean | undefined;
 }): React.ReactElement {
   const objectTypeDef = objectSet.$objectSetInternals.def;
   const { metadata, loading: metadataLoading } = useOsdkMetadata(objectTypeDef);
@@ -93,7 +97,10 @@ const ObjectSetFieldContent = React.memo(function ObjectSetFieldContentFn({
   const showLoadingState = metadataLoading && !hasMetadata;
 
   return (
-    <div className={styles.osdkObjectSetField}>
+    <div
+      className={styles.osdkObjectSetField}
+      aria-disabled={disabled === true || undefined}
+    >
       {showLoadingState
         ? (
           <>

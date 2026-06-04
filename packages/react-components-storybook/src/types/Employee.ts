@@ -50,6 +50,7 @@ export namespace Employee {
     | "locationCountry"
     | "businessArea"
     | "newProperty1"
+    | "isRemote"
     | "emailPrimaryWork"
     | "locationRegion"
     | "team"
@@ -92,6 +93,7 @@ export namespace Employee {
     readonly team: $PropType["string"] | undefined;
     readonly favPlace: $PropType["geopoint"] | undefined;
     readonly locationType: $PropType["string"] | undefined;
+    readonly isRemote: $PropType["boolean"] | undefined;
   }
 
   export interface StrictProps {
@@ -125,6 +127,7 @@ export namespace Employee {
     readonly team: $PropType["string"] | undefined;
     readonly favPlace: $PropType["geopoint"] | undefined;
     readonly locationType: $PropType["string"] | undefined;
+    readonly isRemote: $PropType["boolean"] | undefined;
   }
 
   export interface ObjectSet extends $ObjectSet<Employee, Employee.ObjectSet> {}
@@ -179,6 +182,7 @@ export interface Employee extends $ObjectTypeDefinition {
       team: $PropertyDef<"string", "nullable", "single">;
       favPlace: $PropertyDef<"geopoint", "nullable", "single">;
       locationType: $PropertyDef<"string", "nullable", "single">;
+      isRemote: $PropertyDef<"boolean", "nullable", "single">;
     };
     links: {
       lead: $ObjectMetadata.Link<Employee, false>;

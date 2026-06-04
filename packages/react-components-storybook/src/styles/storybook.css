@@ -43,33 +43,6 @@ body {
   color: #2563eb;
 }
 
-/* Submit toast — auto-dismissing success banner */
-.osdkSubmitToast {
-  max-width: 480px;
-  width: 100%;
-  margin-bottom: calc(var(--osdk-surface-spacing) * 2);
-  padding: calc(var(--osdk-surface-spacing) * 2)
-    calc(var(--osdk-surface-spacing) * 3);
-  background: var(--osdk-intent-success-rest);
-  color: var(--osdk-intent-success-foreground);
-  border-radius: var(--osdk-surface-border-radius);
-  font-size: var(--osdk-typography-size-body-small);
-  font-weight: 500;
-  animation: osdkToastFadeIn 0.2s ease-out;
-}
-
-@keyframes osdkToastFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 .osdkFormCard {
   --osdk-form-label-font-size: var(--osdk-typography-size-body-small);
   --osdk-form-content-padding-inline: calc(var(--osdk-surface-spacing) * 4);
@@ -81,6 +54,7 @@ body {
   border: var(--osdk-surface-border-width) solid
     var(--osdk-surface-border-color-default);
   border-radius: var(--osdk-surface-border-radius);
+  color: var(--osdk-typography-color-default-rest);
 }
 
 .osdkFormStorySpacing {
@@ -95,14 +69,30 @@ body {
   max-height: calc(100vh - calc(var(--osdk-surface-spacing) * 16));
 }
 
-.osdkCustomTextarea {
-  width: 100%;
-  min-height: calc(var(--osdk-surface-spacing) * 15);
-  padding: calc(var(--osdk-surface-spacing) * 2);
+.osdkCustomChoiceGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--osdk-surface-spacing) * 2);
+}
+
+.osdkCustomChoiceButton {
+  padding: var(--osdk-surface-spacing) calc(var(--osdk-surface-spacing) * 2);
   border: var(--osdk-surface-border-width) solid
     var(--osdk-surface-border-color-default);
   border-radius: var(--osdk-surface-border-radius);
-  font-family: inherit;
+  background: var(--osdk-surface-background-color-default-rest);
+  color: var(--osdk-typography-color-default-rest);
+  font: inherit;
+}
+
+.osdkCustomChoiceButtonSelected {
+  background: var(--osdk-background-secondary);
+  border-color: var(--osdk-typography-color-muted);
+}
+
+.osdkCustomChoiceButton:disabled {
+  cursor: not-allowed;
+  opacity: var(--osdk-disabled-opacity);
 }
 
 /* Row highlight for RowAttributesForStyling story */
@@ -114,11 +104,23 @@ body {
   }
 }
 
+/* Dark-mode highlight values for the same rows. Activated by the
+   `data-bp-color-scheme="dark"` attribute that `<OsdkThemeProvider>`
+   writes onto the document root. */
+[data-bp-color-scheme="dark"] .customTableStyling {
+  tr[data-highlight-row="true"] {
+    --osdk-table-row-bg-default: #1c2a3a;
+    --osdk-table-row-bg-alternate: #182230;
+    --osdk-table-row-bg-hover: #213548;
+  }
+}
+
 .osdkCodeOutput {
   margin: 0;
   padding: calc(var(--osdk-surface-spacing) * 3);
   border-radius: var(--osdk-surface-border-radius);
   background: var(--osdk-background-secondary);
+  color: var(--osdk-typography-color-default-rest);
   overflow: auto;
   font-size: var(--osdk-typography-size-body-small);
   max-height: 300px;

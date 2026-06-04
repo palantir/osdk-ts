@@ -106,6 +106,40 @@ describe("useEditableTable", () => {
     expect(result.current.cellEdits).toEqual({});
   });
 
+  it.each([
+    {
+      name: "null newValue clearing undefined oldValue",
+      newValue: null,
+      oldValue: undefined,
+    },
+    {
+      name: "undefined newValue clearing null oldValue",
+      newValue: undefined,
+      oldValue: null,
+    },
+    { name: "null clearing null", newValue: null, oldValue: null },
+  ])(
+    "removes cell from cellEdits when $name (null/undefined equivalence)",
+    ({ newValue, oldValue }) => {
+      const { result } = renderHook(() =>
+        useEditableTable({ editMode: "always" })
+      );
+      const cellId = getCellId({ rowId: "row-1", columnId: "col-1" });
+
+      act(() => {
+        result.current.onCellEdit(cellId, {
+          rowId: "row-1",
+          columnId: "col-1",
+          newValue,
+          oldValue,
+          originalRowData: createMockObjectInstance("row-1"),
+        });
+      });
+
+      expect(result.current.cellEdits).toEqual({});
+    },
+  );
+
   it("handles multiple cell edits", () => {
     const { result } = renderHook(() =>
       useEditableTable({ editMode: "always" })

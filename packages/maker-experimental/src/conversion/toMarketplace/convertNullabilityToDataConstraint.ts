@@ -26,12 +26,15 @@ export function convertNullabilityToDataConstraint(
       return {
         propertyTypeConstraints: [],
         nullability: undefined,
-        nullabilityV2: { noNulls: true },
+        nullabilityV2: {
+          noNulls: true,
+          noEmptyCollections: true,
+        },
       };
     }
     invariant(
-      prop.nullability?.noNulls,
-      "Marking property type has noNulls set to false, marking properties must not be nullable",
+      prop.nullability?.noNulls && prop.nullability?.noEmptyCollections,
+      "Marking property type has noNulls or noEmptyCollections set to false, marking properties must not be nullable",
     );
     return {
       propertyTypeConstraints: [],

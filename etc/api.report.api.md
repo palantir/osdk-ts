@@ -64,7 +64,7 @@ export namespace ActionMetadata {
     	// (undocumented)
     export namespace DataType {
         		// (undocumented)
-        export type BaseActionParameterTypes = "boolean" | "string" | "integer" | "long" | "double" | "datetime" | "timestamp" | "attachment" | "marking" | "mediaReference" | "objectType" | "geoshape" | "geohash";
+        export type BaseActionParameterTypes = "boolean" | "string" | "integer" | "long" | "double" | "datetime" | "timestamp" | "attachment" | "marking" | "mediaReference" | "scenarioReference" | "objectType" | "geoshape" | "geohash";
         		// (undocumented)
         export interface Interface<T_Target extends InterfaceDefinition = never> {
             			// (undocumented)
@@ -266,8 +266,6 @@ export interface AsyncIterArgs<
 	MODIFIERS extends ApplyModifiersArg<Q> = {}
 > extends SelectArg<Q, K, R, S, RDP_KEYS, PROPERTY_SECURITIES>, OrderByArg<Q, PropertyKeys<Q> | RDP_KEYS, ORDER_BY_OPTIONS> {
     	// (undocumented)
-    $__UNSTABLE_useOldInterfaceApis?: boolean;
-    	// (undocumented)
     $applyModifiers?: ApplyModifiersArg<Q> & MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>] : never };
     	// (undocumented)
     $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
@@ -375,6 +373,9 @@ export interface DataValueClientToWire {
     null: null;
     	// (undocumented)
     objectType: string;
+    	scenarioReference: {
+        		getScenarioReference(): string
+        	};
     	// (undocumented)
     set: Set<any>;
     	// (undocumented)
@@ -434,6 +435,8 @@ export interface DataValueWireToClient {
     null: null;
     	// (undocumented)
     objectType: string;
+    	// (undocumented)
+    scenarioReference: never;
     	// (undocumented)
     set: Set<any>;
     	// (undocumented)
@@ -1188,11 +1191,17 @@ export namespace ObjectMetadata {
         readonly?: boolean;
         		// (undocumented)
         type: WirePropertyTypes;
+        		typeMetadata?: PropertyTypeMetadata;
         		// (undocumented)
         valueFormatting?: PropertyValueFormattingRule;
         		// (undocumented)
         valueTypeApiName?: string;
         	}
+    	// (undocumented)
+    export type PropertyTypeMetadata = {
+        		type: "marking"
+        		markingType?: "CBAC" | "MANDATORY"
+        	};
 }
 
 // @public (undocumented)
@@ -1226,8 +1235,6 @@ export namespace ObjectSetArgs {
     		RDP_KEYS extends string = never,
     		ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = never
     	> extends Select<K, RDP_KEYS>, OrderBy<ORDER_BY_OPTIONS, K> {
-        		// (undocumented)
-        $__UNSTABLE_useOldInterfaceApis?: boolean;
         		// (undocumented)
         $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
         	}

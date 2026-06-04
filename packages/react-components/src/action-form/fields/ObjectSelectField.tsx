@@ -20,7 +20,7 @@ import type {
   Osdk,
   WhereClause,
 } from "@osdk/api";
-import { useObjectSet, useOsdkMetadata, useOsdkObjects } from "@osdk/react";
+import { useObjectSet, useOsdkObjects } from "@osdk/react";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import { useDebouncedValue } from "../../shared/hooks/useDebouncedValue.js";
 import type { ObjectSelectFieldProps } from "../FormFieldApi.js";
@@ -65,6 +65,7 @@ const ObjectSelectInner: React.NamedExoticComponent<
   isMultiple,
   portalRef,
   portalContainer,
+  disabled,
 }): React.ReactElement {
   // Tracks the user's search text. Cleared on selection so the selected
   // label (managed by base-ui) doesn't trigger a server-side search.
@@ -79,24 +80,18 @@ const ObjectSelectInner: React.NamedExoticComponent<
     [onChange],
   );
 
-  const { metadata } = useOsdkMetadata(source.objectType);
-  const titleProperty = typeof metadata?.titleProperty === "string"
-    ? metadata.titleProperty
-    : undefined;
-
-  // Search on the title property (e.g. "fullName") so the where clause
-  // matches the same text displayed to the user via obj.$title.
-  // The where clause is loosely typed because we resolve the property
-  // name at runtime from metadata, not from compile-time type info.
+  // Search by the object's title via the special `$title` filter so the where
+  // clause matches the same text displayed to the user via obj.$title, without
+  // resolving the underlying title property from metadata at runtime.
   const where: WhereClause<ObjectTypeDefinition> | undefined = useMemo(() => {
     const trimmed = debouncedQuery.trim();
-    if (trimmed === "" || titleProperty == null) {
+    if (trimmed === "") {
       return undefined;
     }
     return {
-      [titleProperty]: { $containsAllTermsInOrder: trimmed },
-    } as WhereClause<ObjectTypeDefinition>;
-  }, [debouncedQuery, titleProperty]);
+      $title: { $containsAllTermsInOrder: trimmed },
+    };
+  }, [debouncedQuery]);
 
   const objectSetResult = useObjectSet(source.objectSet, {
     where,
@@ -138,6 +133,7 @@ const ObjectSelectInner: React.NamedExoticComponent<
       isMultiple={isMultiple}
       portalRef={portalRef}
       portalContainer={portalContainer}
+      disabled={disabled}
       onQueryChange={setQuery}
       isLoading={isLoading}
       isSearching={debouncedQuery.trim() !== "" && isLoading}

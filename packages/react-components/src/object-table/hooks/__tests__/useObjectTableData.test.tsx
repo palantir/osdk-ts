@@ -619,4 +619,68 @@ describe(useObjectTableData, () => {
       },
     ]);
   });
+
+  describe("streamUpdates", () => {
+    it("forwards streamUpdates to useOsdkObjects when no objectSet is provided", () => {
+      renderHook(
+        () =>
+          useObjectTableData(
+            TestObjectType,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            true,
+          ),
+        { wrapper },
+      );
+
+      expect(useOsdkObjects).toHaveBeenCalledWith(
+        TestObjectType,
+        expect.objectContaining({ streamUpdates: true }),
+      );
+    });
+
+    it("forwards streamUpdates to useObjectSet when an objectSet is provided", () => {
+      renderHook(
+        () =>
+          useObjectTableData(
+            TestObjectType,
+            undefined,
+            undefined,
+            undefined,
+            mockObjectSet,
+            undefined,
+            undefined,
+            undefined,
+            true,
+          ),
+        { wrapper },
+      );
+
+      expect(useObjectSet).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ streamUpdates: true }),
+      );
+    });
+
+    it("passes streamUpdates=undefined to both hooks when not provided", () => {
+      renderHook(
+        () => useObjectTableData(TestObjectType),
+        { wrapper },
+      );
+
+      expect(useOsdkObjects).toHaveBeenCalledWith(
+        TestObjectType,
+        expect.objectContaining({ streamUpdates: undefined }),
+      );
+      expect(useObjectSet).toHaveBeenCalledWith(
+        undefined,
+        expect.objectContaining({ streamUpdates: undefined }),
+      );
+    });
+  });
 });

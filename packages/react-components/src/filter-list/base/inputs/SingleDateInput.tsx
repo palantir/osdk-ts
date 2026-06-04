@@ -29,6 +29,8 @@ interface SingleDateInputProps {
   maxDate?: Date;
   placeholder?: string;
   showClearButton?: boolean;
+  /** Display formatter for picker idle text. Editing format stays ISO. */
+  formatDate?: (date: Date) => string;
 }
 
 function SingleDateInputInner({
@@ -40,6 +42,7 @@ function SingleDateInputInner({
   maxDate,
   placeholder,
   showClearButton = true,
+  formatDate,
 }: SingleDateInputProps): React.ReactElement {
   const handleClear = useCallback(() => {
     onChange(undefined);
@@ -63,6 +66,7 @@ function SingleDateInputInner({
           placeholder={placeholder}
           ariaLabel="Select date"
           modal={false}
+          formatDate={formatDate}
         />
         {showClearButton && selectedDate !== undefined && (
           <Button
