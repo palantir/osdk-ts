@@ -175,31 +175,6 @@ export function EmployeesTable(): React.ReactElement {
         </div>
         <div
           style={{
-            display: "flex",
-            gap: 8,
-            alignItems: "center",
-            marginBottom: 8,
-            fontSize: 12,
-          }}
-        >
-          <span style={{ color: "#666" }}>
-            Focused employee:{" "}
-            <strong>
-              {focusedEmployee == null
-                ? "none"
-                : `${focusedEmployee.fullName} (#${focusedEmployee.employeeNumber})`}
-            </strong>
-          </span>
-          <Button
-            type="button"
-            onClick={() => setFocusedEmployee(null)}
-            disabled={focusedEmployee == null}
-          >
-            Clear focus
-          </Button>
-        </div>
-        <div
-          style={{
             height: "300px",
             overflow: "hidden",
           }}

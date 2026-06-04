@@ -155,21 +155,22 @@ function BaseTableInner<
     (row: TData) => tableGetRowId?.(row, 0, undefined) ?? "",
     [tableGetRowId],
   );
+  const getRowById = useCallback(
+    (id: string) => table.getRow(id, true)?.original ?? null,
+    [table],
+  );
 
   const {
-    focusedRow,
-    setFocusedRow,
+    focusedRowId,
+    setFocusedRowId,
     isControlled: isFocusControlled,
   } = useFocusedRow<TData>({
     focusedRow: focusedRowProp,
     onFocusedRowChanged,
     getRowId: getRowIdForFocus,
+    getRowById,
   });
   const portalTracker = usePortalTracker();
-
-  const focusedRowId = focusedRow != null
-    ? getRowIdForFocus(focusedRow)
-    : null;
 
   // Sync focusedRowId into table meta so cell renderers (which only
   // receive `table`) can read it without extra prop drilling.
@@ -242,7 +243,7 @@ function BaseTableInner<
         && !tableContainerRef.current.contains(target)
         && !portalTracker?.containsElement(target)
       ) {
-        setFocusedRow(null);
+        setFocusedRowId(null);
       }
     };
 
@@ -250,7 +251,7 @@ function BaseTableInner<
     return () => {
       document.removeEventListener("pointerdown", handleClickOutside);
     };
-  }, [portalTracker, isFocusControlled, setFocusedRow]);
+  }, [portalTracker, isFocusControlled, setFocusedRowId]);
 
   return (
     <PortalContainerProvider container={objectTablePortalRef}>
@@ -289,7 +290,7 @@ function BaseTableInner<
                     isLoadingMore={isLoadingMore}
                     headerGroups={headerGroups}
                     focusedRowId={focusedRowId}
-                    setFocusedRow={setFocusedRow}
+                    setFocusedRowId={setFocusedRowId}
                     isInEditMode={editableConfig?.editModeState.isActive}
                     getRowAttributes={getRowAttributes}
                   />
@@ -308,7 +309,7 @@ function BaseTableInner<
         {showEditFooter && hasEditableColumns && editableConfig && (
           <TableEditContainer
             editableConfig={editableConfig}
-            hasFocusedRow={focusedRow != null}
+            hasFocusedRow={focusedRowId != null}
           />
         )}
       </div>

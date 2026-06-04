@@ -27,50 +27,70 @@ const getRowId = (row: TestRow): string => row.id;
 
 const row = (id: string, label?: string): TestRow => ({ id, label });
 
+// Default row registry used by the tests below. Tests that need a
+// specific lookup pass their own `getRowById`.
+const makeGetRowById = (rows: TestRow[]) => (id: string) =>
+  rows.find((r) => r.id === id) ?? null;
+
 describe("useFocusedRow", () => {
   describe("uncontrolled mode", () => {
     it("starts with no focused row", () => {
-      const { result } = renderHook(() => useFocusedRow<TestRow>({ getRowId }));
-      expect(result.current.focusedRow).toBeNull();
+      const { result } = renderHook(() =>
+        useFocusedRow<TestRow>({ getRowId, getRowById: () => null })
+      );
+      expect(result.current.focusedRowId).toBeNull();
       expect(result.current.isControlled).toBe(false);
     });
 
-    it("updates internal state when setFocusedRow is called", () => {
-      const { result } = renderHook(() => useFocusedRow<TestRow>({ getRowId }));
-      const r1 = row("row-1");
-      act(() => result.current.setFocusedRow(r1));
-      expect(result.current.focusedRow).toBe(r1);
+    it("updates internal state when setFocusedRowId is called", () => {
+      const { result } = renderHook(() =>
+        useFocusedRow<TestRow>({ getRowId, getRowById: () => null })
+      );
+      act(() => result.current.setFocusedRowId("row-1"));
+      expect(result.current.focusedRowId).toBe("row-1");
     });
 
-    it("fires onFocusedRowChanged when set", () => {
+    it("fires onFocusedRowChanged with the resolved row", () => {
       const onChanged = vi.fn();
-      const { result } = renderHook(() =>
-        useFocusedRow<TestRow>({ onFocusedRowChanged: onChanged, getRowId })
-      );
       const r1 = row("row-1");
-      act(() => result.current.setFocusedRow(r1));
+      const { result } = renderHook(() =>
+        useFocusedRow<TestRow>({
+          onFocusedRowChanged: onChanged,
+          getRowId,
+          getRowById: makeGetRowById([r1]),
+        })
+      );
+      act(() => result.current.setFocusedRowId("row-1"));
       expect(onChanged).toHaveBeenCalledWith(r1);
     });
 
     it("dedupes by row id", () => {
       const onChanged = vi.fn();
       const { result } = renderHook(() =>
-        useFocusedRow<TestRow>({ onFocusedRowChanged: onChanged, getRowId })
+        useFocusedRow<TestRow>({
+          onFocusedRowChanged: onChanged,
+          getRowId,
+          getRowById: makeGetRowById([row("row-1")]),
+        })
       );
-      act(() => result.current.setFocusedRow(row("row-1", "first")));
-      // Fresh object, same id (e.g. after a refetch) — should not fire again.
-      act(() => result.current.setFocusedRow(row("row-1", "second")));
+      act(() => result.current.setFocusedRowId("row-1"));
+      // Same id again — should not fire.
+      act(() => result.current.setFocusedRowId("row-1"));
       expect(onChanged).toHaveBeenCalledTimes(1);
     });
 
     it("clears focus when set to null", () => {
       const onChanged = vi.fn();
       const { result } = renderHook(() =>
-        useFocusedRow<TestRow>({ onFocusedRowChanged: onChanged, getRowId })
+        useFocusedRow<TestRow>({
+          onFocusedRowChanged: onChanged,
+          getRowId,
+          getRowById: makeGetRowById([row("row-1")]),
+        })
       );
-      act(() => result.current.setFocusedRow(row("row-1")));
-      act(() => result.current.setFocusedRow(null));
-      expect(result.current.focusedRow).toBeNull();
+      act(() => result.current.setFocusedRowId("row-1"));
+      act(() => result.current.setFocusedRowId(null));
+      expect(result.current.focusedRowId).toBeNull();
       expect(onChanged).toHaveBeenLastCalledWith(null);
     });
   });
@@ -79,46 +99,60 @@ describe("useFocusedRow", () => {
     it("reflects the controlled value", () => {
       const r2 = row("row-2");
       const { result } = renderHook(() =>
-        useFocusedRow<TestRow>({ focusedRow: r2, getRowId })
+        useFocusedRow<TestRow>({
+          focusedRow: r2,
+          getRowId,
+          getRowById: makeGetRowById([r2]),
+        })
       );
-      expect(result.current.focusedRow).toBe(r2);
+      expect(result.current.focusedRowId).toBe("row-2");
       expect(result.current.isControlled).toBe(true);
     });
 
     it("treats null as controlled with no focus", () => {
       const { result } = renderHook(() =>
-        useFocusedRow<TestRow>({ focusedRow: null, getRowId })
+        useFocusedRow<TestRow>({
+          focusedRow: null,
+          getRowId,
+          getRowById: () => null,
+        })
       );
-      expect(result.current.focusedRow).toBeNull();
+      expect(result.current.focusedRowId).toBeNull();
       expect(result.current.isControlled).toBe(true);
     });
 
-    it("does not mutate internal state when setFocusedRow is called", () => {
+    it("does not mutate internal state when setFocusedRowId is called", () => {
       const r1 = row("row-1");
       const r3 = row("row-3");
       const { result, rerender } = renderHook(
         ({ focusedRow }: { focusedRow: TestRow | null }) =>
-          useFocusedRow<TestRow>({ focusedRow, getRowId }),
+          useFocusedRow<TestRow>({
+            focusedRow,
+            getRowId,
+            getRowById: makeGetRowById([r1, r3, row("row-2")]),
+          }),
         { initialProps: { focusedRow: r1 } },
       );
-      act(() => result.current.setFocusedRow(row("row-2")));
-      // Effective value still reflects controlled prop, not internal state
-      expect(result.current.focusedRow).toBe(r1);
+      act(() => result.current.setFocusedRowId("row-2"));
+      // Effective id still reflects controlled prop, not internal state
+      expect(result.current.focusedRowId).toBe("row-1");
       rerender({ focusedRow: r3 });
-      expect(result.current.focusedRow).toBe(r3);
+      expect(result.current.focusedRowId).toBe("row-3");
     });
 
     it("still fires onFocusedRowChanged in controlled mode", () => {
       const onChanged = vi.fn();
+      const r1 = row("row-1");
       const r2 = row("row-2");
       const { result } = renderHook(() =>
         useFocusedRow<TestRow>({
-          focusedRow: row("row-1"),
+          focusedRow: r1,
           onFocusedRowChanged: onChanged,
           getRowId,
+          getRowById: makeGetRowById([r1, r2]),
         })
       );
-      act(() => result.current.setFocusedRow(r2));
+      act(() => result.current.setFocusedRowId("row-2"));
       expect(onChanged).toHaveBeenCalledWith(r2);
     });
   });

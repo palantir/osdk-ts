@@ -34,7 +34,7 @@ interface TableBodyProps<TData extends RowData> {
   isLoadingMore?: boolean;
   headerGroups?: Array<HeaderGroup<TData>>;
   focusedRowId?: string | null;
-  setFocusedRow?: (row: TData | null) => void;
+  setFocusedRowId?: (id: string | null) => void;
   isInEditMode?: boolean;
   getRowAttributes?: (
     object: TData,
@@ -50,7 +50,7 @@ export function TableBody<TData extends RowData>({
   isLoadingMore = false,
   headerGroups = [],
   focusedRowId,
-  setFocusedRow,
+  setFocusedRowId,
   isInEditMode,
   getRowAttributes,
 }: TableBodyProps<TData>): React.ReactElement {
@@ -92,7 +92,7 @@ export function TableBody<TData extends RowData>({
             onRowClick={onRowClick}
             renderCellContextMenu={renderCellContextMenu}
             isFocused={focusedRowId === row.id}
-            setFocusedRow={setFocusedRow}
+            setFocusedRowId={setFocusedRowId}
             isInEditMode={isInEditMode}
             getRowAttributes={getRowAttributes}
           />

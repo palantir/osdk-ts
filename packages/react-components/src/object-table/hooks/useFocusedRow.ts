@@ -26,20 +26,32 @@ export interface UseFocusedRowProps<TData> {
   focusedRow?: TData | null;
   onFocusedRowChanged?: (row: TData | null) => void;
   /**
-   * Returns a stable id for a row
+   * Returns a stable id for a row.
    */
   getRowId: (row: TData) => string;
+  /**
+   * Resolves a row id back to the row. Used to look up the full row
+   * when firing `onFocusedRowChanged` so callers receive row data even
+   * though the hook only stores the id. Return `null` when the id no
+   * longer matches a known row (e.g. it was removed).
+   */
+  getRowById: (id: string) => TData | null;
 }
 
 export interface UseFocusedRowResult<TData> {
-  /** Effective focused row — controlled value or internal state. */
-  focusedRow: TData | null;
   /**
-   * Request a focus change. In uncontrolled mode this mutates internal
-   * state; the change callback fires in both modes so callers can
-   * observe.
+   * Effective focused row id — derived from the controlled value or
+   * internal state. Children consume the id (not the row) so they can
+   * compare against TanStack row ids without holding row references.
    */
-  setFocusedRow: (row: TData | null) => void;
+  focusedRowId: string | null;
+  /**
+   * Request a focus change by id. In uncontrolled mode this mutates
+   * internal state; the change callback fires in both modes so callers
+   * can observe. The callback receives the full row resolved via
+   * `getRowById` (or `null`).
+   */
+  setFocusedRowId: (id: string | null) => void;
   /**
    * True when the caller passed `focusedRow` (including `null`).
    */
@@ -50,39 +62,39 @@ export function useFocusedRow<TData>({
   focusedRow,
   onFocusedRowChanged,
   getRowId,
+  getRowById,
 }: UseFocusedRowProps<TData>): UseFocusedRowResult<TData> {
   // Explicit check for undefined instead of != null
   // because null is a valid value to clear a focused row
   const isControlled = focusedRow !== undefined;
-  const [internalFocusedRow, setInternalFocusedRow] = useState<
-    TData | null
+  const [internalFocusedRowId, setInternalFocusedRowId] = useState<
+    string | null
   >(null);
 
-  const effective = isControlled
-    ? focusedRow
-    : internalFocusedRow;
+  const controlledId = focusedRow != null ? getRowId(focusedRow) : null;
+  const effectiveId = isControlled
+    ? controlledId
+    : internalFocusedRowId;
 
-  const fireChanged = useEventCallback((row: TData | null) => {
+  const fireChanged = useEventCallback((id: string | null) => {
+    const row = id != null ? getRowById(id) : null;
     onFocusedRowChanged?.(row);
   });
 
-  const effectiveId = effective != null ? getRowId(effective) : null;
-
-  const setFocusedRow = useCallback(
-    (row: TData | null) => {
-      const nextId = row != null ? getRowId(row) : null;
-      if (effectiveId === nextId) return;
+  const setFocusedRowId = useCallback(
+    (id: string | null) => {
+      if (effectiveId === id) return;
       if (!isControlled) {
-        setInternalFocusedRow(row);
+        setInternalFocusedRowId(id);
       }
-      fireChanged(row);
+      fireChanged(id);
     },
-    [effectiveId, isControlled, fireChanged, getRowId],
+    [effectiveId, isControlled, fireChanged],
   );
 
   return {
-    focusedRow: effective,
-    setFocusedRow,
+    focusedRowId: effectiveId,
+    setFocusedRowId,
     isControlled,
   };
 }
