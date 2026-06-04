@@ -1,5 +1,11 @@
 # @osdk/react-components
 
+## 0.26.0
+
+### Minor Changes
+
+- 67d5449: Replace `xlsx` dependency with `xlsx-republish`, a community republish of the latest SheetJS CDN release (`0.20.3`) back to npm. The maintainer-published `xlsx` on npm is pinned at `0.18.5` (which has a known prototype-pollution CVE) and SheetJS now distributes fixed releases only via their own CDN, so npm consumers cannot get a patched version through the registry.
+
 ## 0.25.0
 
 ### Minor Changes
