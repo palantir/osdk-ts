@@ -20,7 +20,7 @@ import {
   CbacPicker,
   CbacPickerDialog,
   computeMarkingStates,
-} from "@osdk/cbac-components/experimental";
+} from "@osdk/react-components/experimental/cbac-picker";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useMemo, useState } from "react";
 import {

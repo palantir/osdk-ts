@@ -1,14 +1,12 @@
 # CbacPicker
 
-> **DEPRECATED / RELOCATED**: These components have moved into `@osdk/react-components` and are exported from `@osdk/react-components/experimental/cbac-picker`. The up-to-date guide lives at [/react-components/CbacPicker](/react-components/CbacPicker). This file is kept for legacy reference only.
-
 Components for managing [classification-based access control (CBAC)](https://www.palantir.com/docs/foundry/security/classification-based-access-controls/) markings. CBAC markings control who can access data — each piece of data can be tagged with markings from different categories, and the combination determines its access restrictions.
 
 The picker lets users select markings grouped by category. Some categories are **disjunctive** (pick exactly one, like a sensitivity level) and others are **conjunctive** (pick any combination, like access groups). The server enforces which combinations are valid, which markings are implied by others, and which are disallowed.
 
 ## Prerequisites
 
-Before using CBAC components, make sure you have completed the library setup described in the [README](https://github.com/palantir/osdk-ts/blob/main/packages/cbac-components/README.md#setup), including:
+Before using CBAC components, make sure you have completed the library setup described in the [README](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/README.md#setup), including:
 
 - Installing the required dependencies
 - Wrapping your app with `OsdkProvider`
@@ -34,7 +32,7 @@ import {
   BaseCbacPickerDialog,
   CbacPicker,
   CbacPickerDialog,
-} from "@osdk/cbac-components/experimental";
+} from "@osdk/react-components/experimental/cbac-picker";
 ```
 
 ## Basic Usage
@@ -44,7 +42,7 @@ import {
 The simplest way to use the CBAC picker is inline with `CbacPicker`:
 
 ```typescript
-import { CbacPicker } from "@osdk/cbac-components/experimental";
+import { CbacPicker } from "@osdk/react-components/experimental/cbac-picker";
 import { useState } from "react";
 
 function ClassificationForm() {
@@ -66,7 +64,7 @@ This renders a marking picker that fetches categories and markings via the OSDK,
 For modal workflows, use `CbacPickerDialog`:
 
 ```typescript
-import { CbacPickerDialog } from "@osdk/cbac-components/experimental";
+import { CbacPickerDialog } from "@osdk/react-components/experimental/cbac-picker";
 import { useState } from "react";
 
 function ClassificationDialog() {
@@ -293,7 +291,7 @@ Groups a flat list of markings into `CategoryMarkingGroup` arrays, ordered by ca
 ### Example 1: Basic Inline Picker
 
 ```typescript
-import { CbacPicker } from "@osdk/cbac-components/experimental";
+import { CbacPicker } from "@osdk/react-components/experimental/cbac-picker";
 import { useState } from "react";
 
 function ClassificationForm() {
@@ -315,7 +313,7 @@ function ClassificationForm() {
 ### Example 2: Picker in a Dialog with Confirmation
 
 ```typescript
-import { CbacPickerDialog } from "@osdk/cbac-components/experimental";
+import { CbacPickerDialog } from "@osdk/react-components/experimental/cbac-picker";
 import { useState } from "react";
 
 function DocumentClassification() {
@@ -347,7 +345,7 @@ function DocumentClassification() {
 ### Example 3: Read-Only Classification Display
 
 ```typescript
-import { CbacPicker } from "@osdk/cbac-components/experimental";
+import { CbacPicker } from "@osdk/react-components/experimental/cbac-picker";
 
 interface ClassificationViewerProps {
   markingIds: string[];
@@ -376,7 +374,7 @@ import {
   type CategoryMarkingGroup,
   computeMarkingStates,
   toggleMarking,
-} from "@osdk/cbac-components/experimental";
+} from "@osdk/react-components/experimental/cbac-picker";
 import { useCallback, useMemo, useState } from "react";
 
 const CATEGORIES: CategoryMarkingGroup[] = [
@@ -450,7 +448,7 @@ The frontend handles **only UI concerns**: toggling selections (respecting conju
 
 ### Two-layer architecture
 
-`@osdk/cbac-components` follows the same pattern as `@osdk/react-components`:
+`@osdk/react-components` follows the same pattern as `@osdk/react-components`:
 
 - **OSDK layer** (`CbacPicker`, `CbacPickerDialog`) — fetches data using `@osdk/react` hooks, converts it to primitive props, passes to the base layer
 - **Base layer** (`BaseCbacPicker`, `BaseCbacBanner`, `BaseCbacPickerDialog`) — pure UI with no OSDK dependency, accepts primitive data directly
@@ -480,18 +478,18 @@ The frontend handles **only UI concerns**: toggling selections (respecting conju
 
 ### CSS not applied
 
-- Ensure you've imported `@osdk/cbac-components/styles.css` in your CSS entry file
+- Ensure you've imported `@osdk/react-components/styles.css` in your CSS entry file
 - If using CSS layers, verify the layer order includes the cbac styles
 
 ### Type errors with imports
 
-- All components and types should be imported from `@osdk/cbac-components/experimental`
+- All components and types should be imported from `@osdk/react-components/experimental/cbac-picker`
 - Ensure your `@osdk/react` and `@osdk/react-components` peer dependencies are installed
 
 ## Additional Resources
 
-- [CbacPicker Implementation](https://github.com/palantir/osdk-ts/blob/main/packages/cbac-components/src/cbac-picker/CbacPicker.tsx)
-- [CbacPickerDialog Implementation](https://github.com/palantir/osdk-ts/blob/main/packages/cbac-components/src/cbac-picker/CbacPickerDialog.tsx)
-- [Selection Logic](https://github.com/palantir/osdk-ts/blob/main/packages/cbac-components/src/cbac-picker/utils/selectionLogic.ts)
-- [Type Definitions](https://github.com/palantir/osdk-ts/blob/main/packages/cbac-components/src/cbac-picker/types.ts)
+- [CbacPicker Implementation](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/src/cbac-picker/CbacPicker.tsx)
+- [CbacPickerDialog Implementation](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/src/cbac-picker/CbacPickerDialog.tsx)
+- [Selection Logic](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/src/cbac-picker/utils/selectionLogic.ts)
+- [Type Definitions](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/src/cbac-picker/types.ts)
 - [@osdk/react Documentation](https://github.com/palantir/osdk-ts/blob/main/docs/react/getting-started.md)
