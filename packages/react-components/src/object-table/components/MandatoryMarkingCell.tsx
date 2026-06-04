@@ -15,6 +15,7 @@
  */
 
 import React from "react";
+import { CbacBanner } from "../../cbac-picker/CbacBanner.js";
 import { toMarkingIdArray } from "../utils/markingValue.js";
 import styles from "./MandatoryMarkingCell.module.css";
 
@@ -22,6 +23,11 @@ export interface MandatoryMarkingCellProps {
   value: unknown;
 }
 
+/**
+ * Renders one CBAC-resolved banner per marking on the row. MANDATORY marking
+ * columns render per-marking (rather than via a single combined banner) so
+ * each individual marking on the object is visible at a glance.
+ */
 export function MandatoryMarkingCell({
   value,
 }: MandatoryMarkingCellProps): React.ReactNode {
@@ -32,9 +38,7 @@ export function MandatoryMarkingCell({
   return (
     <span className={styles.container}>
       {markingIds.map((id) => (
-        <span key={id} className={styles.pill} title={id}>
-          {id}
-        </span>
+        <CbacBanner key={id} markingIds={[id]} className={styles.pill} />
       ))}
     </span>
   );

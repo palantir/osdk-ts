@@ -23,7 +23,9 @@ import type { CellEditInfo, EditFieldConfig } from "../utils/types.js";
 
 vi.mock("../../cbac-picker/CbacBanner.js", () => ({
   CbacBanner: ({ markingIds }: { markingIds: string[] }) => (
-    <div data-testid="cbac-banner">{markingIds.join(",")}</div>
+    <div data-testid="cbac-banner" data-marking-ids={markingIds.join(",")}>
+      {markingIds.join(",")}
+    </div>
   ),
 }));
 
@@ -117,21 +119,27 @@ describe("renderDefaultCell", () => {
       expect(screen.queryByTestId("cbac-banner")).toBeNull();
     });
 
-    it("renders one pill per id for a MANDATORY marking column", () => {
+    it("renders one CbacBanner per id for a MANDATORY marking column", () => {
       const result = renderDefaultCell(createCellContext(["m-1", "m-2"], {
         columnMeta: { markingType: "MANDATORY" },
       }));
       render(<div data-testid="cell">{result}</div>);
-      expect(screen.getByText("m-1")).toBeDefined();
-      expect(screen.getByText("m-2")).toBeDefined();
+      const banners = screen.getAllByTestId("cbac-banner");
+      expect(banners).toHaveLength(2);
+      expect(banners.map((el) => el.getAttribute("data-marking-ids"))).toEqual([
+        "m-1",
+        "m-2",
+      ]);
     });
 
-    it("renders a single pill for a single-valued MANDATORY marking", () => {
+    it("renders a single CbacBanner for a single-valued MANDATORY marking", () => {
       const result = renderDefaultCell(createCellContext("m-1", {
         columnMeta: { markingType: "MANDATORY" },
       }));
       render(<div data-testid="cell">{result}</div>);
-      expect(screen.getByText("m-1")).toBeDefined();
+      const banners = screen.getAllByTestId("cbac-banner");
+      expect(banners).toHaveLength(1);
+      expect(banners[0].getAttribute("data-marking-ids")).toBe("m-1");
     });
 
     it("falls back to the default renderer when markingType is absent", () => {
