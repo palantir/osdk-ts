@@ -1293,9 +1293,11 @@ The ObjectTable automatically implements infinite scroll pagination, with page s
 
 ## Exporting Data
 
-Pass a `tableRef` to obtain an `ObjectTableHandle<Q, RDPs>`. Its `getSnapshot()` method loads **all** matching rows and returns a format-agnostic snapshot of the table's columns and rows, so you can export to CSV, Excel, JSON, the clipboard, or anywhere else. When the total row count exceeds `rowLimit` (default `10_000`), the returned promise rejects; otherwise every matching row is loaded.
+Pass a `tableRef` to obtain an `ObjectTableHandle<Q, RDPs>`. Its `getSnapshot()` method loads **all** matching rows and returns a format-agnostic snapshot of the table's columns, rows, and total match count, so you can export to CSV, Excel, JSON, the clipboard, or anywhere else. When the total row count exceeds `rowLimit` (default `10_000`), the returned promise rejects (with a string error message); otherwise every matching row is loaded.
 
 The snapshot reflects the table's current column visibility, ordering, and pinning. Property, derived-property, and function-backed columns are all included. Custom-rendered columns have no underlying value and are omitted. Each row exposes a `getValue(columnId)` accessor; cells are the raw value, or the thrown `Error` instance if a function-backed cell failed to load (the promise still resolves with the rest of the snapshot).
+
+The snapshot also carries `totalCount` — the number of objects matching the underlying object set as reported by the API, encoded as a string (or `undefined` when no count was provided). It may exceed the number of loaded rows, so it's handy for surfacing "exported N of M".
 
 ```typescript
 import type { Employee } from "@my/osdk";
@@ -1314,10 +1316,17 @@ function EmployeeTableWithDownload() {
     const handle = tableRef.current;
     if (handle == null) return;
 
-    const { columns, rows } = await handle.getSnapshot();
+    const { columns, rows, totalCount } = await handle.getSnapshot();
+    console.log(`Exporting ${rows.length} of ${totalCount ?? "?"} rows`);
 
     const escape = (value: unknown) => {
-      const text = value == null ? "" : String(value);
+      // Failed function-backed cells surface as the thrown Error instance —
+      // render a marker so a failure is distinguishable from an empty cell.
+      const text = value == null
+        ? ""
+        : value instanceof Error
+        ? "#ERROR"
+        : String(value);
       return /[",\n]/.test(text) ? `"${text.replace(/"/g, "\"\"")}"` : text;
     };
     const csv = [
@@ -1346,7 +1355,7 @@ function EmployeeTableWithDownload() {
 }
 ```
 
-`getSnapshot()` accepts an optional `{ rowLimit }` that bounds the snapshot size — when the total row count exceeds it, the promise rejects. `row.getValue(columnId)` returns the raw cell value (or the thrown `Error` instance for failed function-backed cells, or `undefined` for unknown column ids) — your formatter handles the rest.
+`getSnapshot()` accepts an optional `{ rowLimit }` that bounds the snapshot size — when the total row count exceeds it, the promise rejects with a string error message. `row.getValue(columnId)` returns the raw cell value (or the thrown `Error` instance for failed function-backed cells, or `undefined` for unknown column ids) — your formatter handles the rest.
 
 ## TypeScript Tips
 
