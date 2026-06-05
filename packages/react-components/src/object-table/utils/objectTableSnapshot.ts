@@ -25,6 +25,7 @@ import type {
   FunctionColumnLocator,
   ObjectTableDataRow,
 } from "../ObjectTableApi.js";
+import { DEFAULT_MAX_CONCURRENT_REQUESTS } from "./constants.js";
 import type { PagedObjects } from "./functionColumns.js";
 
 /**
@@ -123,7 +124,11 @@ export async function fetchFunctionColumnPage<
  * locator across the rows. Returns the per-locator map of `getKey(obj)` →
  * cell value (already `getValue`-unwrapped, or an `Error` for failed pages).
  *
- * Pages run in parallel per locator; locators run in parallel with each other.
+ * Each (locator, page) pair is one function call. They run concurrently but no
+ * more than `maxConcurrent` are in flight at once, so a wide table over many
+ * pages doesn't fire hundreds of requests at the server simultaneously. This
+ * mirrors the live function-column path (`useFunctionColumnsData`), which caps
+ * concurrency the same way via `useOsdkFunctions`.
  */
 export async function fetchFunctionColumnValues<
   Q extends ObjectOrInterfaceDefinition,
@@ -136,30 +141,63 @@ export async function fetchFunctionColumnValues<
     queryDefinition: QueryDefinition<{}>,
     params: unknown,
   ) => Promise<unknown>,
+  maxConcurrent: number = DEFAULT_MAX_CONCURRENT_REQUESTS,
 ): Promise<Map<string, Map<string, unknown>>> {
   const valuesByColumnId = new Map<string, Map<string, unknown>>();
+  for (const locator of locators) {
+    valuesByColumnId.set(String(locator.id), new Map());
+  }
 
-  await Promise.all(
-    locators.map(async (locator) => {
-      const columnId = String(locator.id);
-      const merged = new Map<string, unknown>();
-      const pageMaps = await Promise.all(
-        pages.map((page) =>
-          fetchFunctionColumnPage(
-            (params) => executeFunction(locator.queryDefinition, params),
-            locator,
-            page,
-          )
-        ),
-      );
-      for (const pageMap of pageMaps) {
-        for (const [key, value] of pageMap) {
-          merged.set(key, value);
-        }
-      }
-      valuesByColumnId.set(columnId, merged);
-    }),
+  // Flatten to one task per (locator, page) so concurrency is bounded across
+  // every request, not just within a single locator.
+  const tasks = locators.flatMap((locator) =>
+    pages.map((page) => ({ columnId: String(locator.id), locator, page }))
   );
 
+  const pageMaps = await mapWithConcurrency(
+    tasks,
+    maxConcurrent,
+    (task) =>
+      fetchFunctionColumnPage(
+        (params) => executeFunction(task.locator.queryDefinition, params),
+        task.locator,
+        task.page,
+      ),
+  );
+
+  pageMaps.forEach((pageMap, index) => {
+    const merged = valuesByColumnId.get(tasks[index].columnId);
+    if (merged == null) return;
+    for (const [key, value] of pageMap) {
+      merged.set(key, value);
+    }
+  });
+
   return valuesByColumnId;
+}
+
+/**
+ * Runs `worker` over `items` with at most `limit` invocations in flight at a
+ * time, preserving input order in the returned results. A small fixed pool of
+ * workers pulls from a shared cursor until the items are exhausted.
+ */
+async function mapWithConcurrency<T, R>(
+  items: ReadonlyArray<T>,
+  limit: number,
+  worker: (item: T, index: number) => Promise<R>,
+): Promise<R[]> {
+  const results = new Array<R>(items.length);
+  const poolSize = Math.max(1, Math.min(limit, items.length));
+  let cursor = 0;
+
+  const runWorker = async (): Promise<void> => {
+    while (cursor < items.length) {
+      const index = cursor++;
+      results[index] = await worker(items[index], index);
+    }
+  };
+
+  await Promise.all(Array.from({ length: poolSize }, runWorker));
+
+  return results;
 }

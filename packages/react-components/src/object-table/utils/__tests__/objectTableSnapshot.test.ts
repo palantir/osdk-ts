@@ -163,4 +163,70 @@ describe("fetchFunctionColumnValues", () => {
     expect(values.get("computed")?.get("1")).toBe(failure);
     expect(values.get("computed")?.get("2")).toBe("ok");
   });
+
+  it("caps the number of in-flight function calls at maxConcurrent", async () => {
+    const locator = makeFunctionLocator("computed");
+    // Returns `val-<key>` for any looked-up object key, so each page resolves
+    // to a value without the stub needing to know which page it is serving.
+    const resultProxy = new Proxy({}, {
+      get: (_target, key) => `val-${String(key)}`,
+    });
+
+    let inFlight = 0;
+    let maxInFlight = 0;
+    const executeFunction = vi.fn(async () => {
+      inFlight++;
+      maxInFlight = Math.max(maxInFlight, inFlight);
+      await new Promise((resolve) => setTimeout(resolve, 1));
+      inFlight--;
+      return resultProxy;
+    });
+
+    const pages = Array.from({ length: 12 }, (_, i) => makePage([i + 1]));
+
+    const values = await fetchFunctionColumnValues(
+      [locator],
+      pages,
+      executeFunction,
+      3,
+    );
+
+    expect(executeFunction).toHaveBeenCalledTimes(12);
+    expect(maxInFlight).toBeLessThanOrEqual(3);
+    // Sanity check that work actually overlapped rather than running serially.
+    expect(maxInFlight).toBeGreaterThan(1);
+    expect(values.get("computed")?.size).toBe(12);
+    expect(values.get("computed")?.get("1")).toBe("val-1");
+    expect(values.get("computed")?.get("12")).toBe("val-12");
+  });
+
+  it("bounds concurrency across all locators and pages combined", async () => {
+    const locators = [
+      makeFunctionLocator("a"),
+      makeFunctionLocator("b"),
+      makeFunctionLocator("c"),
+    ];
+    const resultProxy = new Proxy({}, {
+      get: (_target, key) => `val-${String(key)}`,
+    });
+
+    let inFlight = 0;
+    let maxInFlight = 0;
+    const executeFunction = vi.fn(async () => {
+      inFlight++;
+      maxInFlight = Math.max(maxInFlight, inFlight);
+      await new Promise((resolve) => setTimeout(resolve, 1));
+      inFlight--;
+      return resultProxy;
+    });
+
+    // 3 locators × 4 pages = 12 tasks; a per-locator-only cap would allow 3
+    // concurrent (one per locator), so a cap of 2 proves the budget is shared.
+    const pages = Array.from({ length: 4 }, (_, i) => makePage([i + 1]));
+
+    await fetchFunctionColumnValues(locators, pages, executeFunction, 2);
+
+    expect(executeFunction).toHaveBeenCalledTimes(12);
+    expect(maxInFlight).toBeLessThanOrEqual(2);
+  });
 });

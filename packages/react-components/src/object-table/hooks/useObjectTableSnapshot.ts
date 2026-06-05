@@ -71,7 +71,7 @@ interface UseObjectTableSnapshotArgs<
    */
   totalCount: string | undefined;
 
-  orderBy?: OrderBy<Q>;
+  orderBy: OrderBy<Q> | undefined;
 }
 
 /**
