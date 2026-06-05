@@ -22,6 +22,10 @@
   --osdk-filter-list-empty-text-color: var(--osdk-typography-color-muted);
   --osdk-filter-list-empty-font-size: var(--osdk-typography-size-body-small);
 
+  /* Filtered-out entries: values present in the wider scope but absent from
+     the narrowed scope. Rendered as count=0 muted rows. */
+  --osdk-filter-filtered-out-item-color: var(--osdk-typography-color-muted);
+
   /* Filter List Header */
   --osdk-filter-header-padding: calc(var(--osdk-surface-spacing) * 2)
     calc(var(--osdk-surface-spacing) * 3);
@@ -219,8 +223,8 @@
 
   --osdk-filter-listogram-bar-height: calc(var(--osdk-surface-spacing) * 2);
   --osdk-filter-listogram-bar-width: calc(var(--osdk-surface-spacing) * 12.5);
-  --osdk-filter-listogram-bar-bg: var(--osdk-palette-gray-100);
-  --osdk-filter-listogram-bar-border-radius: var(--osdk-surface-border-radius);
+  --osdk-filter-listogram-bar-bg: var(--osdk-background-tertiary);
+  --osdk-filter-listogram-bar-border-radius: calc(var(--osdk-surface-border-radius) * 0.5);
   --osdk-filter-listogram-bar-color: var(--osdk-intent-primary-rest);
   --osdk-filter-listogram-bar-fill-transition: var(
       --osdk-emphasis-transition-duration

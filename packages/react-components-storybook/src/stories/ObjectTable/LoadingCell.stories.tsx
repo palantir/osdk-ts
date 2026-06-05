@@ -18,8 +18,9 @@ import { LoadingCell } from "@osdk/react-components/experimental/object-table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 const meta: Meta<typeof LoadingCell> = {
-  title: "Experimental/ObjectTable/Building Blocks/LoadingCell",
+  title: "Components/ObjectTable/Building Blocks/LoadingCell",
   component: LoadingCell,
+  tags: ["beta"],
   args: {
     width: 200,
   },

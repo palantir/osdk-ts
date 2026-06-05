@@ -1,5 +1,7 @@
 # CbacPicker
 
+> **DEPRECATED / RELOCATED**: These components have moved into `@osdk/react-components` and are exported from `@osdk/react-components/experimental/cbac-picker`. The up-to-date guide lives at [../react-components/CbacPicker](../react-components/CbacPicker). This file is kept for legacy reference only.
+
 Components for managing [classification-based access control (CBAC)](https://www.palantir.com/docs/foundry/security/classification-based-access-controls/) markings. CBAC markings control who can access data — each piece of data can be tagged with markings from different categories, and the combination determines its access restrictions.
 
 The picker lets users select markings grouped by category. Some categories are **disjunctive** (pick exactly one, like a sensitivity level) and others are **conjunctive** (pick any combination, like access groups). The server enforces which combinations are valid, which markings are implied by others, and which are disallowed.

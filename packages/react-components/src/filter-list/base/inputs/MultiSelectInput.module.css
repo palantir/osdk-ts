@@ -47,6 +47,15 @@
   flex-shrink: 0;
 }
 
+/* Muted styling for filtered-out (count=0) entries. */
+.filteredOutItem {
+  --osdk-filter-multiselect-count-color: var(
+    --osdk-filter-filtered-out-item-color
+  );
+
+  color: var(--osdk-filter-filtered-out-item-color);
+}
+
 .inlineInput {
   font-family: var(--osdk-filter-input-font-family);
   font-size: var(--osdk-filter-input-font-size);

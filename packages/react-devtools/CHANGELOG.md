@@ -1,5 +1,17 @@
 # @osdk/react-devtools
 
+## 0.9.0
+
+### Minor Changes
+
+- 958f6e0: Make react-devtools package public again
+
+## 0.8.0
+
+### Minor Changes
+
+- 4e0e7f6: Add docs for `@osdk/react-devtools` covering install, the Vite plugin, and the Performance, Compute, Intercept, and Debugging tabs.
+
 ## 0.7.0
 
 ### Minor Changes

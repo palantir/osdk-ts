@@ -257,6 +257,13 @@ export const DateRangePicker: React.NamedExoticComponent<
 
   const startInvalid = startInputError != null || hasOverlapError;
   const endInvalid = endInputError != null || hasOverlapError;
+  const activeStartDateValue =
+    startInputError == null && startParsedValue != null
+      ? startParsedValue
+      : (startDate ?? undefined);
+  const activeEndDateValue = endInputError == null && endParsedValue != null
+    ? endParsedValue
+    : (endDate ?? undefined);
 
   // --- Focus handlers ---
 
@@ -521,12 +528,12 @@ export const DateRangePicker: React.NamedExoticComponent<
     ? (
       <>
         <TimePicker
-          value={startDate}
+          value={activeStartDateValue ?? null}
           onChange={handleStartTimeChange}
           label="Start time"
         />
         <TimePicker
-          value={endDate}
+          value={activeEndDateValue ?? null}
           onChange={handleEndTimeChange}
           label="End time"
         />

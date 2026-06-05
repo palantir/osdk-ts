@@ -18,13 +18,12 @@ import classnames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
-import { isEmptyValue } from "../../utils/filterValues.js";
 import { useFilterListBoundary } from "../FilterListBoundaryContext.js";
 import { createRenderValueFilter } from "./comboboxFilter.js";
 import { MultiSelectDropdownLayout } from "./MultiSelectDropdownLayout.js";
 import { MultiSelectInlineLayout } from "./MultiSelectInlineLayout.js";
 import styles from "./MultiSelectInput.module.css";
-import { NoValueLabel } from "./NoValueLabel.js";
+import { getOptionLabelText, OptionLabel } from "./OptionLabel.js";
 import { SelectInputSkeleton } from "./SelectInputSkeleton.js";
 import sharedStyles from "./shared.module.css";
 import { useStableData } from "./useStableData.js";
@@ -49,6 +48,7 @@ interface MultiSelectInputProps {
   style?: React.CSSProperties;
   placeholder?: string;
   showCounts?: boolean;
+  showFilteredOutValues?: boolean;
   ariaLabel?: string;
   renderValue?: (value: string) => React.ReactNode;
   layout?: MultiSelectInputLayout;
@@ -64,6 +64,7 @@ function MultiSelectInputInner({
   style,
   placeholder = "Select values...",
   showCounts = true,
+  showFilteredOutValues = true,
   ariaLabel = "Search values",
   renderValue,
   layout = "dropdown",
@@ -89,6 +90,11 @@ function MultiSelectInputInner({
     [stableValues],
   );
 
+  const selectedSet = useMemo(
+    () => new Set(selectedValues),
+    [selectedValues],
+  );
+
   const comboboxFilter = useMemo(
     () => renderValue ? createRenderValueFilter(renderValue) : undefined,
     [renderValue],
@@ -96,39 +102,41 @@ function MultiSelectInputInner({
 
   const renderItem = useCallback(
     (value: string) => {
-      const isEmpty = isEmptyValue(value);
+      const count = countByValue.get(value) ?? 0;
+      const isFilteredOut = showFilteredOutValues
+        && count === 0
+        && !selectedSet.has(value);
       return (
-        <Combobox.Item key={value} value={value}>
+        <Combobox.Item
+          key={value}
+          value={value}
+          className={isFilteredOut ? styles.filteredOutItem : undefined}
+        >
           <Combobox.ItemIndicator />
           <span className={styles.itemLabel}>
-            {isEmpty
-              ? <NoValueLabel />
-              : (renderValue ? renderValue(value) : value)}
+            <OptionLabel value={value} renderValue={renderValue} />
           </span>
           {showCounts && (
             <span className={styles.itemCount}>
-              ({(countByValue.get(value) ?? 0).toLocaleString()})
+              ({count.toLocaleString()})
             </span>
           )}
         </Combobox.Item>
       );
     },
-    [countByValue, showCounts, renderValue],
+    [countByValue, selectedSet, showCounts, showFilteredOutValues, renderValue],
   );
 
   const renderChips = useCallback(
     (selectedItems: string[]) => (
       <>
         {selectedItems.map((value) => {
-          const isEmpty = isEmptyValue(value);
           return (
             <Combobox.Chip
               key={value}
-              aria-label={isEmpty ? "No value" : value}
+              aria-label={getOptionLabelText(value)}
             >
-              {isEmpty
-                ? <NoValueLabel />
-                : (renderValue ? renderValue(value) : value)}
+              <OptionLabel value={value} renderValue={renderValue} />
               <Combobox.ChipRemove />
             </Combobox.Chip>
           );

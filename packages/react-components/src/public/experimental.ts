@@ -15,6 +15,7 @@
  */
 
 export * from "./experimental/action-form.js";
+export * from "./experimental/cbac-picker.js";
 export * from "./experimental/document-viewer.js";
 export * from "./experimental/email-viewer.js";
 export * from "./experimental/excel-viewer.js";
@@ -23,6 +24,7 @@ export * from "./experimental/image-viewer.js";
 export * from "./experimental/markdown-renderer.js";
 export * from "./experimental/object-table.js";
 export * from "./experimental/pdf-viewer.js";
+export * from "./experimental/theme.js";
 export * from "./experimental/tiff-renderer.js";
 export * from "./experimental/video-viewer.js";
 export * from "./experimental/xml-viewer.js";
