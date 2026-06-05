@@ -213,7 +213,7 @@ const meta: Meta<EmployeeTableProps> = {
     },
     focusedRow: {
       description:
-        "The row to render as visually focused. When provided, focus is controlled.",
+        "The primary key of the row to render as visually focused. When provided, focus is controlled.",
       control: false,
     },
     onFocusedRowChanged: {
@@ -1317,7 +1317,7 @@ return (
     </div>
     <ObjectTable
       objectType={Employee}
-      focusedRow={focusedRow}
+      focusedRow={focusedRow?.$primaryKey ?? null}
       onFocusedRowChanged={setFocusedRow}
     />
   </>
@@ -1326,7 +1326,12 @@ return (
     },
   },
   render: (args) => {
-    type FocusedEmployee = NonNullable<EmployeeTableProps["focusedRow"]>;
+    // `focusedRow` (the prop) is now a primary key, but the
+    // `onFocusedRowChanged` callback still delivers the full row, so the
+    // banner keeps a full object in state and passes its key back down.
+    type FocusedEmployee = NonNullable<
+      Parameters<NonNullable<EmployeeTableProps["onFocusedRowChanged"]>>[0]
+    >;
     const [focusedRow, setFocusedRow] = useState<FocusedEmployee | null>(null);
 
     const handleFocusedRowChanged = useCallback(
@@ -1375,7 +1380,7 @@ return (
         <div className="object-table-container" style={{ height: "600px" }}>
           <ObjectTable
             {...args}
-            focusedRow={focusedRow}
+            focusedRow={focusedRow?.$primaryKey ?? null}
             onFocusedRowChanged={handleFocusedRowChanged}
           />
         </div>

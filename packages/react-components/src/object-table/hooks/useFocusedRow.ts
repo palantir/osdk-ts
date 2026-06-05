@@ -19,16 +19,12 @@ import { useEventCallback } from "../../shared/hooks/useEventCallback.js";
 
 export interface UseFocusedRowProps<TData> {
   /**
-   * Controlled focused row. `undefined` enables uncontrolled mode
+   * Controlled focused row id. `undefined` enables uncontrolled mode
    * (internal state). `null` means "no row focused" under controlled
    * mode.
    */
-  focusedRow?: TData | null;
+  focusedRowId?: string | null;
   onFocusedRowChanged?: (row: TData | null) => void;
-  /**
-   * Returns a stable id for a row.
-   */
-  getRowId: (row: TData) => string;
   /**
    * Resolves a row id back to the row. Used to look up the full row
    * when firing `onFocusedRowChanged` so callers receive row data even
@@ -59,21 +55,19 @@ export interface UseFocusedRowResult<TData> {
 }
 
 export function useFocusedRow<TData>({
-  focusedRow,
+  focusedRowId,
   onFocusedRowChanged,
-  getRowId,
   getRowById,
 }: UseFocusedRowProps<TData>): UseFocusedRowResult<TData> {
   // Explicit check for undefined instead of != null
   // because null is a valid value to clear a focused row
-  const isControlled = focusedRow !== undefined;
+  const isControlled = focusedRowId !== undefined;
   const [internalFocusedRowId, setInternalFocusedRowId] = useState<
     string | null
   >(null);
 
-  const controlledId = focusedRow != null ? getRowId(focusedRow) : null;
   const effectiveId = isControlled
-    ? controlledId
+    ? focusedRowId ?? null
     : internalFocusedRowId;
 
   const fireChanged = useEventCallback((id: string | null) => {

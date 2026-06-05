@@ -106,7 +106,7 @@ export interface BaseTableProps<
   /**
    * Controlled focused row id. `undefined` enables internal management
    */
-  focusedRow?: TData | null;
+  focusedRowId?: string | null;
   /**
    * Fires whenever the focused row changes, in both controlled and
    * uncontrolled modes.
@@ -142,7 +142,7 @@ function BaseTableInner<
     getRowAttributes,
     showEditFooter = true,
     renderEmptyState,
-    focusedRow: focusedRowProp,
+    focusedRowId: focusedRowIdProp,
     onFocusedRowChanged,
   }: BaseTableProps<TData>,
 ): ReactElement {
@@ -150,13 +150,17 @@ function BaseTableInner<
   const objectTablePortalRef = useRef<HTMLDivElement>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-  const tableGetRowId = table.options.getRowId;
-  const getRowIdForFocus = useCallback(
-    (row: TData) => tableGetRowId?.(row, 0, undefined) ?? "",
-    [tableGetRowId],
-  );
   const getRowById = useCallback(
-    (id: string) => table.getRow(id, true)?.original ?? null,
+    (id: string) => {
+      try {
+        return table.getRow(id, true)?.original ?? null;
+      } catch {
+        // table.getRow throws when the id no longer matches a row
+        // (e.g. the row was removed or has not loaded yet). Treat a
+        // missing row as "no focus" rather than crashing.
+        return null;
+      }
+    },
     [table],
   );
 
@@ -165,9 +169,8 @@ function BaseTableInner<
     setFocusedRowId,
     isControlled: isFocusControlled,
   } = useFocusedRow<TData>({
-    focusedRow: focusedRowProp,
+    focusedRowId: focusedRowIdProp,
     onFocusedRowChanged,
-    getRowId: getRowIdForFocus,
     getRowById,
   });
   const portalTracker = usePortalTracker();

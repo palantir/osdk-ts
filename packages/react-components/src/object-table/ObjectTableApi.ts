@@ -595,14 +595,16 @@ export interface ObjectTableProps<
   ) => void;
 
   /**
-   * The row to render as visually focused (the "last interacted" row).
-   * When provided, focus state is controlled by the caller.
+   * The primary key of the row to render as visually focused (the
+   * "last interacted" row). When provided, focus state is controlled by
+   * the caller.
+   *
+   * Stored as a primary key rather than a full object so the focus does
+   * not go stale when the underlying row data changes.
    *
    * Pass `null` to render no row as focused.
    */
-  focusedRow?:
-    | Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
-    | null;
+  focusedRow?: PrimaryKeyType<Q> | null;
 
   /**
    * Called when the focused row changes — fires in both controlled and
