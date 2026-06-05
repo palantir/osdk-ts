@@ -26,7 +26,11 @@ import { randomUUID } from "node:crypto";
 import { inspect } from "node:util";
 import invariant from "tiny-invariant";
 import type { ReadonlyDeep } from "type-fest";
-import { InvalidRequest, ObjectNotFoundError } from "../errors.js";
+import {
+  InvalidRequest,
+  ObjectNotFoundError,
+  ObjectSetNotFoundError,
+} from "../errors.js";
 import { subSelectProperties } from "../filterObjects.js";
 import { getPaginationParamsFromRequest } from "../handlers/util/getPaginationParams.js";
 import { OpenApiCallError } from "../handlers/util/handleOpenApiCall.js";
@@ -139,6 +143,11 @@ export class FauxDataStore {
   #manyLinks = new DefaultMap(
     (_objectLocator: ObjectLocator) => new SetMultiMap<string, ObjectLocator>(),
   );
+
+  #objectSets = new Map<
+    OntologiesV2.ObjectSetRid,
+    OntologiesV2.ObjectSet
+  >();
 
   #fauxOntology: FauxOntology;
 
@@ -308,14 +317,14 @@ export class FauxDataStore {
 
   registerObjectWithPropertySecurities(
     regularObject: BaseServerObject,
-    securedObject: BaseServerObject,
+    securedObject: OntologiesV2.OntologyObjectV2,
     propertySecurities: OntologiesV2.PropertySecurities[],
   ): BaseServerObject {
     const registeredObj = this.registerObject(regularObject);
 
     this.#objectsWithSecurities.get(registeredObj.__apiName).set(
       String(registeredObj.__primaryKey),
-      Object.freeze({ ...securedObject }),
+      Object.freeze({ ...securedObject }) as BaseServerObject,
     );
     this.#propertySecurities.set(
       objectLocator(registeredObj),
@@ -670,6 +679,28 @@ export class FauxDataStore {
     return mediaRef;
   }
 
+  registerObjectSet(
+    objectSetRid: OntologiesV2.ObjectSetRid,
+    objectSet: OntologiesV2.ObjectSet,
+  ): void {
+    this.#objectSets.set(objectSetRid, objectSet);
+  }
+
+  getObjectSetOrThrow(
+    objectSetRid: OntologiesV2.ObjectSetRid,
+  ): OntologiesV2.ObjectSet {
+    const objectSet = this.#objectSets.get(objectSetRid);
+
+    if (objectSet == null) {
+      throw new OpenApiCallError(
+        404,
+        ObjectSetNotFoundError(objectSetRid),
+      );
+    }
+
+    return objectSet;
+  }
+
   getMediaOrThrow(
     objectType: OntologiesV2.ObjectTypeApiName,
     primaryKey: string,
@@ -891,14 +922,20 @@ export class FauxDataStore {
     const loadPropertySecurities = parsedBody.loadPropertySecurities ?? false;
     // when we have interfaces in here, we have a little trick for
     // caching off the important properties
-    let objects = getObjectsFromSet(this, parsedBody.objectSet, undefined);
+    let objects = getObjectsFromSet(
+      this,
+      parsedBody.objectSet,
+      undefined,
+    );
 
+    let propertySecuritiesLocator: ObjectLocator | undefined;
     if (loadPropertySecurities) {
       invariant(
         objects.length === 1,
         "Loading property securities is only supported when loading a single object",
       );
 
+      propertySecuritiesLocator = objectLocator(objects[0]);
       objects = [
         this.getObjectWithSecurities(
           objects[0].__apiName,
@@ -926,10 +963,8 @@ export class FauxDataStore {
       objects,
       getPaginationParamsFromRequest(parsedBody),
       true,
-      loadPropertySecurities
-        ? this.#propertySecurities.get(
-          objectLocator(objects[0]),
-        )
+      propertySecuritiesLocator != null
+        ? this.#propertySecurities.get(propertySecuritiesLocator)
         : undefined,
     );
 

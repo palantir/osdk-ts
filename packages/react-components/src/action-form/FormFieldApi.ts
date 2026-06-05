@@ -89,7 +89,7 @@ export type FormFieldDefinition<
       /**
        * Whether the field is disabled
        */
-      isDisabled?: boolean;
+      disabled?: boolean;
 
       /**
        * A callback to customize error messages when a built-in validation rule fails.
@@ -333,11 +333,6 @@ export interface TextInputFieldProps extends
   >
 {
   placeholder?: string;
-
-  /**
-   * Whether this text input is disabled.
-   */
-  disabled?: boolean;
 }
 
 /**
@@ -406,7 +401,7 @@ export interface Option<V> {
  * Object set field displays the summary of the count of the given object set
  */
 export interface ObjectSetFieldProps<T extends ObjectTypeDefinition>
-  extends Pick<BaseFormFieldProps<ObjectSet<T>>, "id" | "value">
+  extends Pick<BaseFormFieldProps<ObjectSet<T>>, "id" | "value" | "disabled">
 {
   /**
    * Message displayed when no object set is provided.
@@ -495,6 +490,15 @@ export interface BaseFormFieldProps<V> {
    * The default value of the form field.
    */
   defaultValue?: V;
+
+  /**
+   * Whether the field is disabled.
+   *
+   * Disabled fields keep their current value in form state and submit payloads,
+   * but built-in renderers block user edits and remove disabled controls from
+   * keyboard navigation.
+   */
+  disabled?: boolean;
 
   /**
    * Called when the field value changes.
@@ -586,6 +590,7 @@ export type FieldType =
   | "objectType"
   | "geoshape"
   | "geohash"
+  | "scenarioReference"
   | { type: "object"; object: string }
   | { type: "objectSet"; objectSet: string }
   | { type: "interface"; interface: string }
@@ -598,8 +603,8 @@ export type FieldType =
  * fieldComponentProps so it bypasses form state cloning.
  */
 type FormManagedProps<K extends FieldComponent> = "onChange" extends
-  keyof FormFieldPropsByType[K] ? "value" | "onChange"
-  : "onChange";
+  keyof FormFieldPropsByType[K] ? "value" | "onChange" | "disabled"
+  : "onChange" | "disabled";
 
 type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<
     T,
@@ -625,6 +630,7 @@ export type RendererFieldDefinition = {
     placeholder?: string;
     helperText?: React.ReactNode;
     helperTextPlacement?: "bottom" | "tooltip";
+    disabled?: boolean;
     validate?: (value: unknown) => Promise<string | undefined>;
     onValidationError?: (error: ValidationError) => string | undefined;
     fieldComponentProps: DistributiveOmit<

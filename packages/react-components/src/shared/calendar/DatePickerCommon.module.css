@@ -34,10 +34,16 @@
   /* Match the dismiss layer's dialog stack level so the later positioner stays
      clickable above it without escalating z-index values. */
   z-index: var(--osdk-datetime-popover-z-index);
+
+  /* Hide the popover when its anchor scrolls out of view */
+  &[data-anchor-hidden] {
+    visibility: hidden;
+  }
 }
 
 .osdkDatePickerPopover {
   background: var(--osdk-datetime-popover-bg);
+  color: var(--osdk-typography-color-default-rest);
   padding: var(--osdk-datetime-popover-padding);
   z-index: var(--osdk-datetime-popover-z-index);
   box-shadow: var(--osdk-datetime-popover-shadow);
@@ -79,6 +85,19 @@
       var(--osdk-datetime-input-focus-color);
     outline-offset: var(--osdk-datetime-input-focus-offset);
     border-color: var(--osdk-datetime-input-border-color-focus);
+  }
+
+  &[data-disabled] {
+    cursor: not-allowed;
+    opacity: var(--osdk-disabled-opacity);
+
+    &:hover {
+      background-color: var(--osdk-datetime-input-bg);
+    }
+
+    .osdkDatePickerInput {
+      cursor: not-allowed;
+    }
   }
 }
 

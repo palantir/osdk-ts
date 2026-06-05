@@ -1,5 +1,7 @@
 # @osdk/cbac-components
 
+> **DEPRECATED / RELOCATED**: The CBAC components have been merged into [`@osdk/react-components`](https://github.com/palantir/osdk-ts/tree/main/packages/react-components) and are now exported from `@osdk/react-components/experimental/cbac-picker`. This package is kept in the repository for legacy reference only and is no longer the source of truth. **New consumers should import from `@osdk/react-components`.** See [`packages/react-components/docs/CbacPicker.md`](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/CbacPicker.md) for usage.
+
 > **Beta Release**: This package is currently in beta. Please use the latest beta version for the most up-to-date features and fixes.
 
 React components for managing [classification-based access control (CBAC)](https://www.palantir.com/docs/foundry/security/classification-based-access-controls/) markings. CBAC markings control who can access data — each piece of data can be tagged with markings from different categories, and the combination determines its access restrictions.
@@ -8,14 +10,32 @@ These components are OSDK-aware — pass in marking IDs, and they handle data lo
 
 ## Installation
 
+> If your tooling already installs dependencies, skip this section.
+
+Use whichever package manager your project uses:
+
 ```sh
+# npm
 npm install @osdk/cbac-components@beta
+
+# pnpm
+pnpm add @osdk/cbac-components@beta
+
+# yarn
+yarn add @osdk/cbac-components@beta
 ```
 
 **Peer Dependencies:**
 
 ```sh
+# npm
 npm install react react-dom classnames @osdk/react @osdk/react-components
+
+# pnpm
+pnpm add react react-dom classnames @osdk/react @osdk/react-components
+
+# yarn
+yarn add react react-dom classnames @osdk/react @osdk/react-components
 ```
 
 - `react`, `@types/react`, `react-dom` - React 17, 18, or 19

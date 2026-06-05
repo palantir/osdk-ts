@@ -18,6 +18,7 @@ import { Dialog as BaseUIDialog } from "@base-ui/react/dialog";
 import { Cross } from "@blueprintjs/icons";
 import classnames from "classnames";
 import React from "react";
+import { usePortalContainer } from "../../shared/PortalContainerContext.js";
 import styles from "./Dialog.module.css";
 
 export interface DialogProps {
@@ -39,13 +40,15 @@ export function Dialog({
   className,
   disablePointerDismissal,
 }: DialogProps): React.ReactElement {
+  const portalContainer = usePortalContainer();
+
   return (
     <BaseUIDialog.Root
       open={isOpen}
       onOpenChange={onOpenChange}
       disablePointerDismissal={disablePointerDismissal}
     >
-      <BaseUIDialog.Portal>
+      <BaseUIDialog.Portal container={portalContainer}>
         <BaseUIDialog.Backdrop className={styles.backdrop} />
         <BaseUIDialog.Popup
           className={classnames(

@@ -1,15 +1,14 @@
 /* Base tokens: Blueprint design tokens → OSDK semantic tokens */
 @import "./tokens/base-tokens/base.css";
+@import "./tokens/base-tokens/dark.css";
 
 /* Component tokens: component-specific tokens that reference base tokens */
-@import "./tokens/component-tokens/aip-agent-chat.css";
 @import "./tokens/component-tokens/async-dropdown.css";
 @import "./tokens/component-tokens/button.css";
 @import "./tokens/component-tokens/cbac-picker.css";
 @import "./tokens/component-tokens/checkbox.css";
 @import "./tokens/component-tokens/combobox.css";
 @import "./tokens/component-tokens/datetime-picker.css";
-@import "./tokens/component-tokens/docx-viewer.css";
 @import "./tokens/component-tokens/document-viewer.css";
 @import "./tokens/component-tokens/dialog.css";
 @import "./tokens/component-tokens/draggable.css";

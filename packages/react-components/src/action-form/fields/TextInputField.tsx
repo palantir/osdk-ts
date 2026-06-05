@@ -15,7 +15,7 @@
  */
 
 import { Input } from "@base-ui/react/input";
-import React, { useCallback } from "react";
+import React from "react";
 import type { TextInputFieldProps } from "../FormFieldApi.js";
 import styles from "./BaseInput.module.css";
 
@@ -29,23 +29,13 @@ export function TextInputField({
   maxLength,
   disabled,
 }: TextInputFieldProps & { id?: string }): React.ReactElement {
-  const handleValueChange = useCallback(
-    (nextValue: string) => {
-      if (disabled === true) {
-        return;
-      }
-      onChange?.(nextValue);
-    },
-    [disabled, onChange],
-  );
-
   return (
     <Input
       id={id}
       className={styles.osdkBaseInput}
       type="text"
       value={value ?? ""}
-      onValueChange={handleValueChange}
+      onValueChange={onChange}
       placeholder={placeholder}
       minLength={minLength}
       maxLength={maxLength}

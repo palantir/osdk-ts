@@ -26,6 +26,7 @@
 .osdkTooltipPopup {
   padding: var(--osdk-tooltip-padding);
   background-color: var(--osdk-tooltip-bg);
+  color: var(--osdk-tooltip-color);
   border-radius: var(--osdk-surface-border-radius);
   box-shadow: var(--osdk-tooltip-shadow);
   max-width: var(--osdk-tooltip-max-width);

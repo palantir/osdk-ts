@@ -21,6 +21,7 @@ import type {
   UserNotFound,
 } from "@osdk/foundry.admin";
 import type { InvalidPageToken } from "@osdk/foundry.core";
+import type { ObjectSetNotFound } from "@osdk/foundry.ontologies";
 import type {
   ActionNotFound,
   ApplyActionFailed,
@@ -102,6 +103,21 @@ export function ObjectNotFoundError(
     parameters: {
       objectType,
       primaryKey,
+    },
+  };
+}
+
+export function ObjectSetNotFoundError(
+  objectSetRid: string,
+): ObjectSetNotFound {
+  return {
+    errorCode: "NOT_FOUND",
+    errorName: "ObjectSetNotFound",
+    errorDescription:
+      "The requested object set is not found, or the client token does not have access to it.",
+    errorInstanceId,
+    parameters: {
+      objectSetRid,
     },
   };
 }
@@ -219,7 +235,7 @@ export const GetUserNotFoundError = (userId: string): UserNotFound => ({
   errorName: "UserNotFound",
   errorInstanceId,
   parameters: {
-    userId: userId,
+    userId,
   },
   errorDescription: "The given User could not be found.",
 });
@@ -254,7 +270,7 @@ export const GetInvalidPageTokenError = (
   errorCode: "INVALID_ARGUMENT",
   errorName: "InvalidPageToken",
   errorDescription: "The provided page token is invalid.",
-  errorInstanceId: errorInstanceId,
+  errorInstanceId,
   parameters: {
     pageToken,
   },

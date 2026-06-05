@@ -34,5 +34,5 @@ export interface FoundryWidgetPluginOptions {
 export default function FoundryWidgetPlugin(
   options?: FoundryWidgetPluginOptions,
 ): PluginOption {
-  return [FoundryWidgetDevPlugin(), FoundryWidgetBuildPlugin(options)];
+  return [FoundryWidgetDevPlugin(options), FoundryWidgetBuildPlugin(options)];
 }

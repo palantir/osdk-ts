@@ -17,6 +17,7 @@
 import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import type { ReactNode } from "react";
 import type {
+  FilterDefinitionControls,
   FilterState,
   FilterStateByComponentType,
 } from "../FilterListItemApi.js";
@@ -39,7 +40,7 @@ export type StaticValuesComponentType =
 export interface StaticValuesFilterDefinition<
   Q extends ObjectTypeDefinition,
   C extends StaticValuesComponentType = StaticValuesComponentType,
-> {
+> extends FilterDefinitionControls {
   type: "STATIC_VALUES";
 
   /**

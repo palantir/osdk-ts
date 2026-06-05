@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { memo, useCallback, useMemo } from "react";
+import React, { memo, useCallback, useMemo, useState } from "react";
 import type { Control } from "react-hook-form";
 import { useController } from "react-hook-form";
 import type {
@@ -32,10 +32,7 @@ export interface FieldBridgeProps {
   portalContainer?: PortalContainer;
 }
 const SELECT_LIKE_FIELDS: ReadonlySet<FieldComponent> = new Set<FieldComponent>(
-  [
-    "RADIO_BUTTONS",
-    "SWITCH",
-  ],
+  ["RADIO_BUTTONS", "SWITCH"],
 );
 
 export const FieldBridge: React.FC<FieldBridgeProps> = memo(
@@ -45,10 +42,7 @@ export const FieldBridge: React.FC<FieldBridgeProps> = memo(
     onExternalChange,
     portalContainer,
   }: FieldBridgeProps): React.ReactElement {
-    const rules = useMemo(
-      () => extractValidationRules(fieldDef),
-      [fieldDef],
-    );
+    const rules = useMemo(() => extractValidationRules(fieldDef), [fieldDef]);
 
     const {
       field: { onChange, onBlur, value },
@@ -61,10 +55,15 @@ export const FieldBridge: React.FC<FieldBridgeProps> = memo(
 
     const isSelectLike = SELECT_LIKE_FIELDS.has(fieldDef.fieldComponent);
     const isDropdown = fieldDef.fieldComponent === "DROPDOWN";
+    // RHF's touched state is blur-based and dirty state is value-comparison
+    // based. The tag represents an actual user edit, so set it from the
+    // field change path and keep it visible even if the value is restored.
+    const [isEdited, setIsEdited] = useState(false);
 
     const handleChange = useCallback(
       (newValue: unknown) => {
         onChange(newValue);
+        setIsEdited(true);
         onExternalChange?.(fieldDef.fieldKey, newValue);
         // Select-like fields are "pick once" interactions — mark as touched
         // immediately so RHF revalidates (clears errors) on selection rather
@@ -99,6 +98,7 @@ export const FieldBridge: React.FC<FieldBridgeProps> = memo(
         // would fire prematurely when the popover opens.
         onBlur={isDropdown ? undefined : handleBlur}
         onFieldBlur={isDropdown ? onBlur : undefined}
+        isEdited={isEdited}
         error={fieldError?.message}
         portalContainer={portalContainer}
       />

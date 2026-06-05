@@ -583,6 +583,8 @@ describe.each([
 
       expectTypeOf(object.$propertySecurities).toMatchObjectType<
         {
+          $primaryKey: PropertySecurity[];
+          $title: PropertySecurity[];
           class: PropertySecurity[];
           employeeId: PropertySecurity[];
           fullName: PropertySecurity[];
@@ -609,6 +611,44 @@ describe.each([
           "$objectType": "Employee",
           "$primaryKey": 20003,
           "$propertySecurities": {
+            "$primaryKey": [
+              {
+                "conjunctive": [
+                  "CONFIDENTIAL",
+                  "INTERNAL",
+                ],
+                "containerConjunctive": undefined,
+                "containerDisjunctive": undefined,
+                "disjunctive": [
+                  [
+                    "SECRET",
+                  ],
+                  [
+                    "TOP_SECRET",
+                  ],
+                ],
+                "type": "propertyMarkings",
+              },
+            ],
+            "$title": [
+              {
+                "conjunctive": [
+                  "CONFIDENTIAL",
+                  "INTERNAL",
+                ],
+                "containerConjunctive": undefined,
+                "containerDisjunctive": undefined,
+                "disjunctive": [
+                  [
+                    "SECRET",
+                  ],
+                  [
+                    "TOP_SECRET",
+                  ],
+                ],
+                "type": "propertyMarkings",
+              },
+            ],
             "class": [
               {
                 "type": "errorComputingSecurity",

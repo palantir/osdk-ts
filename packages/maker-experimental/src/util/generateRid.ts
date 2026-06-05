@@ -37,6 +37,7 @@ import type {
 } from "@osdk/client.unstable/api";
 // ParameterRid is defined in ontology-metadata but may not be re-exported through the main API
 type ParameterRid = string;
+import type { OntologyDefinition } from "@osdk/maker";
 import { createHash } from "crypto";
 import { toBlockShapeId } from "../cli/marketplaceSerialization/CodeBlockSpec.js";
 import type { InputMappingEntry } from "../cli/marketplaceSerialization/index.js";
@@ -167,6 +168,7 @@ export interface BiMap<K, V> {
   asMap(): Map<K, V>;
   inverse(): BiMap<V, K>;
   entries(): IterableIterator<[K, V]>;
+  includes(key: K): boolean;
 }
 
 /**
@@ -365,6 +367,9 @@ export class BiMapImpl<K, V> implements BiMap<K, V> {
     this.forward = forward;
     this.backward = backward;
   }
+  includes(key: K): boolean {
+    return this.forward.has(key);
+  }
   asMap(): Map<K, V> {
     return this.forward;
   }
@@ -434,7 +439,17 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
   private readonly objectTypeIds: BiMap<ReadableId, string>;
   private readonly randomnessUuid?: string;
 
-  constructor(randomnessUuid?: string) {
+  constructor(importedTypes: OntologyDefinition, randomnessUuid?: string) {
+    this.objectTypeRids = BiMapImpl.create();
+
+    Object.entries(importedTypes.OBJECT_TYPE).filter(([_apiName, object]) =>
+      object.ridHint !== undefined
+    ).map(([apiName, object]) =>
+      this.objectTypeRids.put(
+        ReadableIdGenerator.getForObjectType(object.apiName),
+        object.ridHint!,
+      )
+    );
     this.randomnessUuid = randomnessUuid;
     this.geotimeSeriesIntegrationRids = BiMapImpl.create();
     this.interfaceLinkTypeRids = BiMapImpl.create();
@@ -445,7 +460,6 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
     this.sharedPropertyTypeRids = BiMapImpl.create();
     this.consumedValueTypeReferences = BiMapImpl.create();
     this.producedValueTypeReferences = new Map();
-    this.objectTypeRids = BiMapImpl.create();
     this.datasourceLocators = BiMapImpl.create();
     this.filesDatasourceLocators = BiMapImpl.create();
     this.columnShapes = BiMapImpl.create();
@@ -608,10 +622,14 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
 
   // Object Types
   generateRidForObjectType(apiName: string): ObjectTypeRid {
+    const readableId = ReadableIdGenerator.getForObjectType(apiName);
+    if (this.objectTypeRids.includes(readableId)) {
+      return this.objectTypeRids.get(readableId)!;
+    }
     const rid = `ri.ontology-metadata.temp.object-type.${
       this.hashString(apiName)
     }` as ObjectTypeRid;
-    this.objectTypeRids.put(ReadableIdGenerator.getForObjectType(apiName), rid);
+    this.objectTypeRids.put(readableId, rid);
     return rid;
   }
 

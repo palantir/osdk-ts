@@ -21,16 +21,14 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
-import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { EditableCell } from "../EditableCell.js";
+import type { EditFieldConfig } from "../utils/types.js";
 
 describe("EditableCell", () => {
   afterEach(() => {
     cleanup();
     vi.clearAllMocks();
-  });
-
-  afterAll(() => {
     vi.useRealTimers();
   });
 
@@ -149,6 +147,163 @@ describe("EditableCell", () => {
       expect(onCellEdit).not.toHaveBeenCalled();
     },
   );
+
+  describe("DROPDOWN field with boolean values", () => {
+    const booleanDropdownConfig: EditFieldConfig<{ id: number }> = {
+      fieldComponent: "DROPDOWN",
+      getFieldComponentProps: () => ({
+        items: [true, false],
+      }),
+    };
+
+    it("commits true when user picks the 'true' option for a boolean cell", async () => {
+      const onCellEdit = vi.fn();
+      render(
+        <EditableCell
+          {...defaultProps}
+          initialValue={false}
+          currentValue={false}
+          isRowFocused={true}
+          editFieldConfig={booleanDropdownConfig}
+          onCellEdit={onCellEdit}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("combobox"));
+
+      await waitFor(() => {
+        expect(screen.getByRole("option", { name: "true" })).toBeDefined();
+      });
+
+      const trueOption = screen.getByRole("option", { name: "true" });
+      fireEvent.mouseMove(trueOption);
+      fireEvent.click(trueOption);
+
+      await waitFor(() => {
+        expect(onCellEdit).toHaveBeenCalledWith(
+          "row-1_col-1",
+          expect.objectContaining({ newValue: true }),
+        );
+      });
+    });
+
+    it("highlights the current boolean value in the dropdown popup", async () => {
+      render(
+        <EditableCell
+          {...defaultProps}
+          initialValue={true}
+          currentValue={true}
+          isRowFocused={true}
+          editFieldConfig={booleanDropdownConfig}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("combobox"));
+
+      await waitFor(() => {
+        expect(screen.getByRole("option", { name: "true" })).toBeDefined();
+      });
+
+      // The "true" option should reflect the current cell value via
+      // aria-selected so the user can see what is currently set.
+      expect(
+        screen.getByRole("option", { name: "true" }).getAttribute(
+          "aria-selected",
+        ),
+      ).toBe("true");
+      expect(
+        screen.getByRole("option", { name: "false" }).getAttribute(
+          "aria-selected",
+        ),
+      ).toBe("false");
+    });
+
+    it("formats the readonly (non-focused) cell text via itemToStringLabel", () => {
+      const itemToStringLabel = vi.fn((item: boolean | undefined) => {
+        if (item == null) return "No Value";
+        return item ? "Yes" : "No";
+      });
+      const config: EditFieldConfig<{ id: number }> = {
+        fieldComponent: "DROPDOWN",
+        getFieldComponentProps: () => ({
+          items: [true, false],
+          itemToStringLabel,
+        }),
+      };
+
+      render(
+        <EditableCell
+          {...defaultProps}
+          initialValue={true}
+          currentValue={true}
+          editFieldConfig={config}
+        />,
+      );
+
+      expect(itemToStringLabel).toHaveBeenCalledWith(true);
+      expect(screen.getByText("Yes")).toBeDefined();
+    });
+
+    it("lets itemToStringLabel render an unset readonly cell", () => {
+      const itemToStringLabel = vi.fn((item: boolean | undefined) => {
+        if (item == null) return "No Value";
+        return item ? "Yes" : "No";
+      });
+      const config: EditFieldConfig<{ id: number }> = {
+        fieldComponent: "DROPDOWN",
+        getFieldComponentProps: () => ({
+          items: [true, false],
+          itemToStringLabel,
+        }),
+      };
+
+      render(
+        <EditableCell
+          {...defaultProps}
+          initialValue={null}
+          currentValue={null}
+          editFieldConfig={config}
+        />,
+      );
+
+      expect(itemToStringLabel).toHaveBeenCalled();
+      expect(screen.getByText("No Value")).toBeDefined();
+    });
+
+    it("commits false when user picks the 'false' option after starting with true", async () => {
+      const onCellEdit = vi.fn();
+      render(
+        <EditableCell
+          {...defaultProps}
+          initialValue={true}
+          currentValue={true}
+          isRowFocused={true}
+          editFieldConfig={booleanDropdownConfig}
+          onCellEdit={onCellEdit}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("combobox"));
+
+      await waitFor(() => {
+        expect(screen.getByRole("option", { name: "false" })).toBeDefined();
+      });
+
+      // base-ui Select ignores clicks on items that aren't the highlighted
+      // (activeIndex) item. With mouse, real users hover first; in jsdom
+      // we synthesize that with fireEvent.mouseMove to update activeIndex.
+      const falseOption = screen.getByRole("option", { name: "false" });
+      fireEvent.mouseMove(falseOption);
+      fireEvent.click(falseOption);
+
+      await waitFor(() => {
+        expect(onCellEdit).toHaveBeenCalledWith(
+          "row-1_col-1",
+          expect.objectContaining({ newValue: false }),
+        );
+      });
+    });
+  });
 
   it("should not show error if validation is cancelled due to component unmount", async () => {
     vi.useFakeTimers();

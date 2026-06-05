@@ -237,6 +237,12 @@
       "dependsOn": ["^transpileEsm"]
     },
 
+    "updateSnapshots": {
+      "cache": false,
+      "env": ["FORCE_COLOR"],
+      "dependsOn": ["^transpileEsm"]
+    },
+
     "//#check-mrl": {
       "inputs": [
         "package.json",

@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 
-/* cspell:words tracemonkey pldi openxmlformats officedocument wordprocessingml spreadsheetml */
+/* cspell:words tracemonkey pldi openxmlformats officedocument spreadsheetml */
 
 import type { Media } from "@osdk/api";
 import type { DocumentViewerProps } from "@osdk/react-components/experimental/document-viewer";
 import { DocumentViewer } from "@osdk/react-components/experimental/document-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { http, HttpResponse, passthrough } from "msw";
-import { utils, write } from "xlsx";
+import { utils, write } from "xlsx-republish";
 
 const SAMPLE_PDF_URL =
   `${import.meta.env.BASE_URL}compressed.tracemonkey-pldi-09.pdf`;
-
-const SAMPLE_DOCX_URL = `${import.meta.env.BASE_URL}notional-word-example.docx`;
 
 const SAMPLE_VIDEO_URL = `${import.meta.env.BASE_URL}example.mp4`;
 
@@ -125,12 +123,6 @@ const mockVideoMedia = createMockMedia(
   "example.mp4",
 );
 
-const mockDocxMedia = createMockMedia(
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  () => fetch(SAMPLE_DOCX_URL),
-  "notional-word-example.docx",
-);
-
 const SAMPLE_EML = `From: Alice <alice@example.com>
 To: Bob <bob@example.com>
 Subject: Test Email
@@ -191,9 +183,9 @@ const mockUnsupportedMedia = createMockMedia(
 );
 
 const meta: Meta<DocumentViewerProps> = {
-  title: "Experimental/DocumentViewer",
-  tags: ["experimental"],
+  title: "Components/DocumentViewer",
   component: DocumentViewer,
+  tags: ["beta"],
   args: {
     media: mockPdfMedia,
   },
@@ -284,19 +276,6 @@ export const UnsupportedType: Story = {
       <DocumentViewer {...args} />
     </div>
   ),
-};
-
-export const Docx: Story = {
-  args: {
-    media: mockDocxMedia,
-  },
-  parameters: {
-    msw: {
-      handlers: [
-        http.get("*/notional-word-example.docx", () => passthrough()),
-      ],
-    },
-  },
 };
 
 export const Email: Story = {

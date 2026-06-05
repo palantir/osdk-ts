@@ -188,4 +188,35 @@ describe("useLinks enabled option", () => {
     const options = mockObserveLinks.mock.calls[0][2];
     expect(options.$includeAllBaseObjectProperties).toBe(true);
   });
+
+  describe("resolveToObjectType", () => {
+    it("should pass resolveToObjectType: true to observeLinks when true", () => {
+      const wrapper = createWrapper();
+
+      renderHook(
+        () =>
+          useLinks(mockObject, "relatedObjects", {
+            resolveToObjectType: true,
+          }),
+        { wrapper },
+      );
+
+      expect(mockObserveLinks).toHaveBeenCalledTimes(1);
+      const options = mockObserveLinks.mock.calls[0][2];
+      expect(options.resolveToObjectType).toBe(true);
+    });
+
+    it("should not include resolveToObjectType when not set", () => {
+      const wrapper = createWrapper();
+
+      renderHook(
+        () => useLinks(mockObject, "relatedObjects"),
+        { wrapper },
+      );
+
+      expect(mockObserveLinks).toHaveBeenCalledTimes(1);
+      const options = mockObserveLinks.mock.calls[0][2];
+      expect(options.resolveToObjectType).toBeUndefined();
+    });
+  });
 });

@@ -1044,6 +1044,71 @@ describe(Store, () => {
         expectNoMoreCalls(subFn);
       });
 
+      it("adds an object to a $title-filtered list when an optimistic write makes it match", async () => {
+        const johnDoe = employeesAsServerReturns.find(
+          (e) => e.$primaryKey === JOHN_DOE_ID,
+        );
+        invariant(johnDoe, "expected John Doe in the seeded employees");
+
+        // Seed an empty list filtered on a title nothing currently matches.
+        const where = { $title: { $eq: "Target Name" } };
+        updateList(cache, { type: Employee, where, orderBy: {} }, []);
+
+        const listSubFn = mockListSubCallback();
+        defer(
+          cache.lists.observe(
+            { type: Employee, where, orderBy: {}, mode: "offline" },
+            listSubFn,
+          ),
+        );
+
+        await waitForCall(listSubFn, 1);
+        expectSingleListCallAndClear(listSubFn, []);
+
+        // titleProperty is fullName, so this write sets $title to "Target Name",
+        // which the matcher strictly matches against the $title filter and adds
+        // to the list optimistically.
+        const renamed = johnDoe.$clone({ fullName: "Target Name" });
+        updateObject(cache, renamed, { optimisticId: createOptimisticId() });
+
+        await waitForCall(listSubFn, 1);
+        expectSingleListCallAndClear(listSubFn, [renamed], {
+          isOptimistic: true,
+          status: "loading",
+        });
+      });
+
+      it("adds an object to a $primaryKey-filtered list when written to the cache", async () => {
+        const johnDoe = employeesAsServerReturns.find(
+          (e) => e.$primaryKey === JOHN_DOE_ID,
+        );
+        invariant(johnDoe, "expected John Doe in the seeded employees");
+
+        const where = { $primaryKey: { $in: [JOHN_DOE_ID] } };
+        updateList(cache, { type: Employee, where, orderBy: {} }, []);
+
+        const listSubFn = mockListSubCallback();
+        defer(
+          cache.lists.observe(
+            { type: Employee, where, orderBy: {}, mode: "offline" },
+            listSubFn,
+          ),
+        );
+
+        await waitForCall(listSubFn, 1);
+        expectSingleListCallAndClear(listSubFn, []);
+
+        // The matcher reads $primaryKey off the holder and strictly matches it
+        // against the $in filter, so writing John Doe adds him to the list.
+        updateObject(cache, johnDoe);
+
+        await waitForCall(listSubFn, 1);
+        expectSingleListCallAndClear(listSubFn, [johnDoe], {
+          isOptimistic: false,
+          status: "loaded",
+        });
+      });
+
       describe("object deletes", () => {
         it("it properly updates the list", async () => {
           const emp = employeesAsServerReturns[0];
@@ -1676,6 +1741,40 @@ describe(Store, () => {
           const pk = employeesAsServerReturns[0].$primaryKey as number;
           const cached = getObject(cache, "Employee", pk);
           expect(cached?.$apiName).toBe("Employee");
+        });
+
+        it("interface queries return raw object instances when resolveToObjectType is set", async () => {
+          defer(
+            cache.lists.observe({
+              type: FooInterface,
+              orderBy: {},
+              mode: "force",
+              resolveToObjectType: true,
+            }, ifaceSub),
+          );
+          await waitForCall(ifaceSub, 2);
+
+          const ifacePayload = ifaceSub.next.mock.calls[1][0];
+          expect(ifacePayload?.resolvedList?.[0]?.$apiName).toBe("Employee");
+          expect(ifacePayload?.resolvedList?.[0]?.$objectType).toBe("Employee");
+        });
+
+        it("object-type queries collapse cache key regardless of resolveToObjectType", () => {
+          const baseOpts = {
+            type: Employee,
+            where: {},
+            orderBy: {},
+            mode: "force",
+          } as const satisfies ObserveListOptions<Employee>;
+
+          const queryWithoutFlag = cache.lists.getQuery(baseOpts);
+          const queryWithFlag = cache.lists.getQuery({
+            ...baseOpts,
+            resolveToObjectType: true,
+          });
+
+          expect(queryWithFlag).toBe(queryWithoutFlag);
+          expect(queryWithFlag.cacheKey).toBe(queryWithoutFlag.cacheKey);
         });
 
         it("direct query after interface query preserves interface $apiName", async () => {

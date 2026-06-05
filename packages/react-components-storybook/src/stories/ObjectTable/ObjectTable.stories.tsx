@@ -35,14 +35,19 @@ import { fn } from "storybook/test";
 import { fauxFoundry } from "../../mocks/fauxFoundry.js";
 import { Employee } from "../../types/Employee.js";
 import { WorkerInterface } from "../../types/WorkerInterface.js";
+import {
+  ObjectTableInBaseUIDialog,
+  ObjectTableInBlueprintDialog,
+  ObjectTableInBlueprintDrawer,
+} from "./overlays/ObjectTableOverlayStories.js";
 
 // Create a concrete type for Storybook to parse more easily
 type EmployeeTableProps = ObjectTableProps<typeof Employee>;
 
 const meta: Meta<EmployeeTableProps> = {
-  title: "Experimental/ObjectTable/Features",
-  tags: ["experimental"],
+  title: "Components/ObjectTable/Features",
   component: ObjectTable,
+  tags: ["beta"],
   parameters: {
     msw: {
       handlers: [...fauxFoundry.handlers],
@@ -198,6 +203,14 @@ const meta: Meta<EmployeeTableProps> = {
         category: "Events",
       },
     },
+    onRowSelectionChanged: {
+      description:
+        "Called when the row selection changes, with a RowSelectionChange payload (selectedRows, isSelectAll, derived objectSet). Preferred over the deprecated onRowSelection callback.",
+      control: false,
+      table: {
+        category: "Events",
+      },
+    },
     renderCellContextMenu: {
       description:
         "If provided, will render this context menu when right clicking on a cell",
@@ -249,6 +262,100 @@ const defaultEmployeeColumns: ColumnDefinition<Employee>[] = [
   { locator: { type: "property", id: "preferredNameLast" } },
   { locator: { type: "property", id: "leadEmployeeNumber" } },
   { locator: { type: "property", id: "mentorEmployeeNumber" } },
+];
+
+const editableColumnDefinitions: ColumnDefinition<Employee>[] = [
+  {
+    locator: { type: "property", id: "fullName" },
+    editable: true,
+  },
+  {
+    locator: { type: "property", id: "emailPrimaryWork" },
+    editable: true,
+  },
+  {
+    locator: { type: "property", id: "jobTitle" },
+    editable: true,
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      getFieldComponentProps: () => ({
+        items: [
+          "Software Engineer",
+          "Senior Software Engineer",
+          "Staff Engineer",
+          "Engineering Manager",
+          "Product Manager",
+          "Designer",
+        ],
+        isSearchable: true,
+        placeholder: "Search job titles…",
+      }),
+    },
+  },
+  {
+    locator: { type: "property", id: "department" },
+    editable: true,
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      getFieldComponentProps: () => ({
+        items: [
+          "Engineering",
+          "Product",
+          "Design",
+          "Sales",
+          "Marketing",
+          "Finance",
+          "Human Resources",
+        ],
+      }),
+    },
+  },
+  {
+    locator: { type: "property", id: "firstInternStartDate" },
+    editable: true,
+    renderCell: (object: Osdk.Instance<Employee>) => {
+      return (
+        <div>
+          {object.firstInternStartDate
+            ? new Date(object.firstInternStartDate).toISOString()
+            : "No value"}
+        </div>
+      );
+    },
+  },
+  {
+    locator: { type: "property", id: "firstFullTimeStartDate" },
+    editable: true,
+    editFieldConfig: {
+      fieldComponent: "DATE_PICKER",
+      getFieldComponentProps: () => ({
+        showTime: false,
+        placeholder: "Select date...",
+      }),
+    },
+  },
+  {
+    locator: { type: "property", id: "isRemote" },
+    renderCell: (object: Osdk.Instance<Employee>) => {
+      if (object.isRemote == null) {
+        return "No Value";
+      }
+      return object.isRemote ? "Yes" : "No";
+    },
+    editable: true,
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      getFieldComponentProps: () => ({
+        items: [true, false],
+        itemToStringLabel: (item: boolean | undefined) => {
+          if (item == null) {
+            return "No Value";
+          }
+          return item ? "Yes" : "No";
+        },
+      }),
+    },
+  },
 ];
 
 // Query definition for the function-backed column
@@ -545,6 +652,7 @@ export const SingleSelection: Story = {
     objectType: Employee,
     columnDefinitions: defaultEmployeeColumns,
     selectionMode: "single",
+    onRowSelectionChanged: fn(),
   },
   parameters: {
     docs: {
@@ -565,6 +673,7 @@ export const MultipleSelection: Story = {
     objectType: Employee,
     columnDefinitions: defaultEmployeeColumns,
     selectionMode: "multiple",
+    onRowSelectionChanged: fn(),
   },
   parameters: {
     docs: {
@@ -855,7 +964,7 @@ export const EventListeners: Story = {
     orderBy: [{ property: "fullName", direction: "asc" }] as any,
     onRowClick: fn(),
     onColumnHeaderClick: fn(),
-    onRowSelection: fn(),
+    onRowSelectionChanged: fn(),
     onOrderByChanged: fn(),
     onColumnVisibilityChanged: fn(),
     onColumnsPinnedChanged: fn(),
@@ -874,8 +983,9 @@ export const EventListeners: Story = {
   onColumnHeaderClick={(columnId) => {
     console.log("Column header clicked:", columnId);
   }}
-  onRowSelection={(selectedRows, isSelectAll) => {
-    console.log("Row selection changed:", selectedRows, isSelectAll);
+  onRowSelectionChanged={(change) => {
+    console.log("Selection changed:", change.selectedRows, change.isSelectAll);
+    console.log("Derived objectSet:", change.objectSet);
   }}
   onOrderByChanged={(orderBy) => {
     console.log("Sort changed:", orderBy);
@@ -916,14 +1026,14 @@ export const EventListeners: Story = {
       setLastEvent("onColumnHeaderClick");
     }, [args]);
 
-    const handleRowSelection = useCallback(
-      (newSelectedRows: any[], newIsSelectAll?: boolean) => {
-        args.onRowSelection?.(newSelectedRows, newIsSelectAll);
-        setSelectedRows(newSelectedRows);
-        if (newIsSelectAll !== undefined) {
-          setIsSelectAll(newIsSelectAll);
-        }
-        setLastEvent("onRowSelection");
+    const handleRowSelectionChanged = useCallback(
+      (change: any) => {
+        args.onRowSelectionChanged?.(change);
+        setSelectedRows(
+          change.selectedRows.map((r: any) => r.$primaryKey),
+        );
+        setIsSelectAll(change.isSelectAll);
+        setLastEvent("onRowSelectionChanged");
       },
       [args],
     );
@@ -1003,7 +1113,7 @@ export const EventListeners: Story = {
             orderBy={orderBy}
             onRowClick={handleRowClick}
             onColumnHeaderClick={handleColumnHeaderClick}
-            onRowSelection={handleRowSelection}
+            onRowSelectionChanged={handleRowSelectionChanged}
             onOrderByChanged={handleOrderByChanged}
             onColumnVisibilityChanged={handleColumnVisibilityChanged}
             onColumnsPinnedChanged={handleColumnsPinnedChanged}
@@ -1079,19 +1189,24 @@ export const ControlledSelection: Story = {
     columnDefinitions: defaultEmployeeColumns,
     selectionMode: "multiple" as const,
     selectedRows: [],
-    onRowSelection: fn(),
+    onRowSelectionChanged: fn(),
   } as EmployeeTableProps,
   parameters: {
     docs: {
       source: {
         code: `const [selectedRows, setSelectedRows] = useState<any[]>([]);
+const [isSelectAll, setIsSelectAll] = useState(false);
 
 return (
   <ObjectTable
     objectType={Employee}
     selectionMode="multiple"
     selectedRows={selectedRows}
-    onRowSelection={setSelectedRows}
+    isAllSelected={isSelectAll}
+    onRowSelectionChanged={(change) => {
+      setSelectedRows(change.selectedRows.map((r) => r.$primaryKey));
+      setIsSelectAll(change.isSelectAll);
+    }}
   />
 );`,
       },
@@ -1102,16 +1217,16 @@ return (
       args.selectedRows ?? [],
     );
     const [isSelectAll, setIsSelectAll] = useState<boolean>(false);
-    const handleRowSelection = useCallback(
+    const handleRowSelectionChanged = useCallback(
       (
-        newSelectedRows: any[],
-        newIsSelectAll?: boolean,
+        change: {
+          selectedRows: Array<{ $primaryKey: any }>;
+          isSelectAll: boolean;
+        },
       ) => {
-        args.onRowSelection?.(newSelectedRows, newIsSelectAll);
-        setSelectedRows(newSelectedRows);
-        if (newIsSelectAll !== undefined) {
-          setIsSelectAll(newIsSelectAll);
-        }
+        args.onRowSelectionChanged?.(change as any);
+        setSelectedRows(change.selectedRows.map((r) => r.$primaryKey));
+        setIsSelectAll(change.isSelectAll);
       },
       [args],
     );
@@ -1145,7 +1260,8 @@ return (
           <ObjectTable
             {...args}
             selectedRows={selectedRows}
-            onRowSelection={handleRowSelection}
+            isAllSelected={isSelectAll}
+            onRowSelectionChanged={handleRowSelectionChanged}
           />
         </div>
       </div>
@@ -1180,6 +1296,73 @@ export const DisableAllHeaderMenuFeatures: Story = {
       <ObjectTable {...args} />
     </div>
   ),
+};
+
+export const HeaderMenuInsideBlueprintDrawer: Story = {
+  args: {
+    objectType: Employee,
+    columnDefinitions: defaultEmployeeColumns,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Scenario for the header menu dropdown when ObjectTable is rendered inside a Blueprint Drawer. "
+          + "Open the drawer and click any column header chevron; the menu should appear above the drawer.",
+      },
+      source: {
+        code: `<Drawer isOpen={true} title="ObjectTable in Blueprint Drawer">
+  <ObjectTable objectType={Employee} columnDefinitions={defaultEmployeeColumns} />
+</Drawer>`,
+      },
+    },
+  },
+  render: (args) => <ObjectTableInBlueprintDrawer tableProps={args} />,
+};
+
+export const HeaderMenuInsideBlueprintDialog: Story = {
+  args: {
+    objectType: Employee,
+    columnDefinitions: defaultEmployeeColumns,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Scenario for the header menu dropdown when ObjectTable is rendered inside a Blueprint Dialog. "
+          + "Open the dialog and click any column header chevron; the menu should appear above the dialog.",
+      },
+      source: {
+        code: `<Dialog isOpen={true} title="ObjectTable in Blueprint Dialog">
+  <ObjectTable objectType={Employee} columnDefinitions={defaultEmployeeColumns} />
+</Dialog>`,
+      },
+    },
+  },
+  render: (args) => <ObjectTableInBlueprintDialog tableProps={args} />,
+};
+
+export const HeaderMenuInsideBaseUIDialog: Story = {
+  args: {
+    objectType: Employee,
+    columnDefinitions: defaultEmployeeColumns,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Scenario for the header menu dropdown when ObjectTable is rendered inside the OSDK Base UI Dialog primitive. "
+          + "Open the dialog and click any column header chevron; the menu should appear above the dialog.",
+      },
+      source: {
+        code:
+          `<Dialog isOpen={true} title="ObjectTable in Base UI Dialog" onOpenChange={setIsOpen}>
+  <ObjectTable objectType={Employee} columnDefinitions={defaultEmployeeColumns} />
+</Dialog>`,
+      },
+    },
+  },
+  render: (args) => <ObjectTableInBaseUIDialog tableProps={args} />,
 };
 
 export const CustomRowHeight: Story = {
@@ -1314,77 +1497,7 @@ export const WithCustomRenderers: Story = {
 export const EditableTable: Story = {
   args: {
     objectType: Employee,
-    columnDefinitions: [
-      {
-        locator: { type: "property", id: "fullName" },
-        editable: true,
-      },
-      {
-        locator: { type: "property", id: "emailPrimaryWork" },
-        editable: true,
-      },
-      {
-        locator: { type: "property", id: "jobTitle" },
-        editable: true,
-        editFieldConfig: {
-          fieldComponent: "DROPDOWN",
-          getFieldComponentProps: () => ({
-            items: [
-              "Software Engineer",
-              "Senior Software Engineer",
-              "Staff Engineer",
-              "Engineering Manager",
-              "Product Manager",
-              "Designer",
-            ],
-            isSearchable: true,
-            placeholder: "Search job titles…",
-          }),
-        },
-      },
-      {
-        locator: { type: "property", id: "department" },
-        editable: true,
-        editFieldConfig: {
-          fieldComponent: "DROPDOWN",
-          getFieldComponentProps: () => ({
-            items: [
-              "Engineering",
-              "Product",
-              "Design",
-              "Sales",
-              "Marketing",
-              "Finance",
-              "Human Resources",
-            ],
-          }),
-        },
-      },
-      {
-        locator: { type: "property", id: "firstInternStartDate" },
-        editable: true,
-        renderCell: (object: Osdk.Instance<Employee>) => {
-          return (
-            <div>
-              {object.firstInternStartDate
-                ? new Date(object.firstInternStartDate).toISOString()
-                : "No value"}
-            </div>
-          );
-        },
-      },
-      {
-        locator: { type: "property", id: "firstFullTimeStartDate" },
-        editable: true,
-        editFieldConfig: {
-          fieldComponent: "DATE_PICKER",
-          getFieldComponentProps: () => ({
-            showTime: false,
-            placeholder: "Select date...",
-          }),
-        },
-      },
-    ],
+    columnDefinitions: editableColumnDefinitions,
     editMode: "manual" as const,
     onCellValueChanged: fn(),
   } as EmployeeTableProps,
@@ -1450,6 +1563,25 @@ export const EditableTable: Story = {
       getFieldComponentProps: () => ({
         showTime: false,
         placeholder: "Select date...",
+      }),
+    },
+  },
+  // Boolean dropdown example
+  {
+    locator: { type: "property", id: "isRemote" },
+    renderCell: (object) => {
+      if (object.isRemote == null) {
+        return "No Value";
+      }
+      return object.isRemote ? "Yes" : "No";
+    },
+    editable: true,
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      getFieldComponentProps: () => ({
+        items: [true, false],
+        itemToStringLabel: (item: boolean | undefined) =>
+          item === false ? "No" : item === true ? "Yes" : "No Value",
       }),
     },
   },
@@ -1521,20 +1653,7 @@ return (
 export const WithSubmitEditsButton: Story = {
   args: {
     objectType: Employee,
-    columnDefinitions: [
-      {
-        locator: { type: "property", id: "fullName" },
-        editable: true,
-      },
-      {
-        locator: { type: "property", id: "emailPrimaryWork" },
-        editable: true,
-      },
-      {
-        locator: { type: "property", id: "jobTitle" },
-        editable: true,
-      },
-    ],
+    columnDefinitions: editableColumnDefinitions,
     editMode: "manual",
     onSubmitEdits: fn(
       async (edits: CellEditInfo<Osdk.Instance<Employee>>[]) => {
@@ -1558,12 +1677,86 @@ export const WithSubmitEditsButton: Story = {
   {
     locator: { type: "property", id: "jobTitle" },
     editable: true,
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      getFieldComponentProps: () => ({
+        items: [
+          "Software Engineer",
+          "Senior Software Engineer",
+          "Staff Engineer",
+          "Engineering Manager",
+          "Product Manager",
+          "Designer",
+        ],
+        isSearchable: true,
+        placeholder: "Search job titles…",
+      }),
+    },
+  },
+  {
+    locator: { type: "property", id: "department" },
+    editable: true,
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      getFieldComponentProps: () => ({
+        items: [
+          "Engineering",
+          "Product",
+          "Design",
+          "Sales",
+          "Marketing",
+          "Finance",
+          "Human Resources",
+        ],
+      }),
+    },
+  },
+  {
+    locator: { type: "property", id: "firstInternStartDate" },
+    editable: true,
+    renderCell: (object) => (
+      <div>
+        {object.firstInternStartDate
+          ? new Date(object.firstInternStartDate).toISOString()
+          : "No value"}
+      </div>
+    ),
+  },
+  {
+    locator: { type: "property", id: "firstFullTimeStartDate" },
+    editable: true,
+    editFieldConfig: {
+      fieldComponent: "DATE_PICKER",
+      getFieldComponentProps: () => ({
+        showTime: false,
+        placeholder: "Select date...",
+      }),
+    },
+  },
+  // Boolean dropdown example
+  {
+    locator: { type: "property", id: "isRemote" },
+    renderCell: (object) => {
+      if (object.isRemote == null) {
+        return "No Value";
+      }
+      return object.isRemote ? "Yes" : "No";
+    },
+    editable: true,
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      getFieldComponentProps: () => ({
+        items: [true, false],
+        itemToStringLabel: (item: boolean | undefined) =>
+          item === false ? "No" : item === true ? "Yes" : "No Value",
+      }),
+    },
   },
 ];
 
 return (
-  <ObjectTable 
-    objectType={Employee} 
+  <ObjectTable
+    objectType={Employee}
     columnDefinitions={columnDefinitions}
     editMode="manual"
     onCellValueChanged={(info) => {
@@ -1803,7 +1996,7 @@ export const PerRowEditableAndFieldConfig: Story = {
       { locator: { type: "property", id: "fullName" } },
       {
         locator: { type: "property", id: "jobTitle" },
-        editable: (rowData) => {
+        editable: (rowData: Osdk.Instance<Employee>) => {
           const jobTitle = rowData.jobTitle ?? "";
           return jobTitle === "Senior Product Manager";
         },
@@ -1813,7 +2006,7 @@ export const PerRowEditableAndFieldConfig: Story = {
         editable: true,
         editFieldConfig: {
           fieldComponent: "DROPDOWN",
-          getFieldComponentProps: (employee) => ({
+          getFieldComponentProps: (employee: Osdk.Instance<Employee>) => ({
             items: employee.department === "Operations"
               ? [
                 "Sales",
@@ -1978,7 +2171,7 @@ export const CustomEmptyState: Story = {
     renderEmptyState: () => (
       <NonIdealState
         icon="folder-close"
-        title="No saved PTL views found."
+        title="No saved views found."
       />
     ),
   },
@@ -2003,7 +2196,7 @@ return (
     renderEmptyState={() => (
       <NonIdealState
         icon="folder-close"
-        title="No saved PTL views found."
+        title="No saved views found."
       />
     )}
   />

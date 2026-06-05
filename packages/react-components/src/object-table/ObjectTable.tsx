@@ -30,16 +30,19 @@ import { useColumnResize } from "./hooks/useColumnResize.js";
 import { useColumnVisibility } from "./hooks/useColumnVisibility.js";
 import { useEditableTable } from "./hooks/useEditableTable.js";
 import { useObjectTableData } from "./hooks/useObjectTableData.js";
+import { useObjectTableSnapshotHandle } from "./hooks/useObjectTableSnapshotHandle.js";
+import type { UseRowSelectionChange } from "./hooks/useRowSelection.js";
 import { useRowSelection } from "./hooks/useRowSelection.js";
 import { useSelectionColumn } from "./hooks/useSelectionColumn.js";
 import { useTableSorting } from "./hooks/useTableSorting.js";
 import type { ObjectTableProps } from "./ObjectTableApi.js";
 import { BaseTable } from "./Table.js";
 import type { HeaderMenuFeatureFlags } from "./TableHeaderWithPopover.js";
+import { deriveSelectionObjectSet } from "./utils/deriveSelectionObjectSet.js";
 import { getRowId } from "./utils/getRowId.js";
+import type { EditableConfig } from "./utils/types.js";
 
 const EMPTY_ARRAY: [] = [];
-import type { EditableConfig } from "./utils/types.js";
 
 /**
  * ObjectTable - A headless table component for displaying OSDK object sets
@@ -68,12 +71,15 @@ export function ObjectTable<
   objectSetOptions,
   dedupeIntervalMs,
   pageSize,
+  streamUpdates,
   orderBy,
   defaultOrderBy,
   onOrderByChanged,
   onColumnsPinnedChanged,
   onColumnResize,
+  // eslint-disable-next-line @typescript-eslint/no-deprecated -- intentional pass-through to fire alongside onRowSelectionChanged for backwards compatibility
   onRowSelection,
+  onRowSelectionChanged,
   onColumnHeaderClick,
   renderCellContextMenu,
   selectionMode = "none",
@@ -87,6 +93,7 @@ export function ObjectTable<
   enableColumnResizing = true,
   enableColumnConfig = true,
   editMode = "manual",
+  tableRef,
   ...props
 }: ObjectTableProps<Q, RDPs, FunctionColumns>): React.ReactElement {
   const { columnSizing, onColumnSizingChange } = useColumnResize({
@@ -105,7 +112,15 @@ export function ObjectTable<
     },
   );
 
-  const { data, fetchMore, isLoading, error } = useObjectTableData<
+  const {
+    data,
+    fetchMore,
+    hasMore,
+    isLoading,
+    error,
+    totalCount,
+    objectSet: resultingObjectSet,
+  } = useObjectTableData<
     Q,
     RDPs,
     FunctionColumns
@@ -118,6 +133,7 @@ export function ObjectTable<
     objectSetOptions,
     dedupeIntervalMs,
     pageSize,
+    streamUpdates,
   );
 
   const { columns, loading: isColumnsLoading } = useColumnDefs<
@@ -127,6 +143,22 @@ export function ObjectTable<
   >(
     objectType,
     columnDefinitions,
+  );
+
+  const handleRowSelectionChanged = useCallback(
+    (change: UseRowSelectionChange<Q, RDPs>) => {
+      if (!onRowSelectionChanged) return;
+
+      onRowSelectionChanged({
+        selectedRows: change.selectedRows,
+        isSelectAll: change.isSelectAll,
+        objectSet: deriveSelectionObjectSet(resultingObjectSet, change),
+      });
+    },
+    [
+      onRowSelectionChanged,
+      resultingObjectSet,
+    ],
   );
 
   const {
@@ -141,6 +173,7 @@ export function ObjectTable<
     selectedRows,
     isAllSelected: isAllSelectedProp,
     onRowSelection,
+    onRowSelectionChanged: handleRowSelectionChanged,
     data,
   });
 
@@ -249,6 +282,16 @@ export function ObjectTable<
   );
 
   const isTableLoading = isLoading || isColumnsLoading;
+
+  useObjectTableSnapshotHandle({
+    tableRef,
+    table,
+    hasNextPage: hasMore,
+    isLoading: isTableLoading,
+    error,
+    totalCount,
+    fetchMore,
+  });
 
   const headerMenuFeatureFlags: HeaderMenuFeatureFlags = useMemo(() => ({
     showSortingItems: enableOrdering,

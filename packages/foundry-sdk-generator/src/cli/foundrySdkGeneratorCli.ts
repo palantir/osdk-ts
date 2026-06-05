@@ -17,10 +17,13 @@
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { GeneratePackageCommand } from "../generate/index.js";
+import { SlsLogger } from "../logging/index.js";
 
 export async function cli(args: string[] = process.argv): Promise<
   Record<string, unknown> | undefined
 > {
+  const logger = new SlsLogger();
+
   const base = yargs(hideBin(args))
     .command(new GeneratePackageCommand())
     .demandCommand()
@@ -33,7 +36,11 @@ export async function cli(args: string[] = process.argv): Promise<
   try {
     return await base.parseAsync();
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log(e);
+    logger.error(
+      "OSDK generation failed",
+      undefined,
+      e instanceof Error ? e : new Error(String(e)),
+    );
+    process.exit(1);
   }
 }

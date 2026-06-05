@@ -102,9 +102,9 @@ function createSampleTiffBytes(): Uint8Array {
 const sampleTiffBytes = createSampleTiffBytes();
 
 const meta: Meta<TiffRendererProps> = {
-  title: "Experimental/TiffRenderer",
-  tags: ["experimental"],
+  title: "Components/DocumentViewer/Renderers/TiffRenderer",
   component: TiffRenderer,
+  tags: ["beta"],
   args: {
     content: sampleTiffBytes,
   },
@@ -134,7 +134,7 @@ const meta: Meta<TiffRendererProps> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
+export const WithContent: Story = {
   parameters: {
     docs: {
       source: {

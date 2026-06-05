@@ -6,6 +6,94 @@
     "description": ""
   },
   "actionTypes": {
+    "delete-scenario-test-osdk": {
+      "apiName": "delete-scenario-test-osdk",
+      "displayName": "Delete Scenario Test Osdk",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "ScenarioTestOsdk": {
+          "displayName": "Scenario Test Osdk",
+          "dataType": {
+            "type": "object",
+            "objectApiName": "ScenarioTestOsdk",
+            "objectTypeApiName": "ScenarioTestOsdk"
+          },
+          "required": true,
+          "typeClasses": []
+        }
+      },
+      "rid": "ri.actions.main.action-type.1ba8424e-7997-436d-a53d-471ea776d589",
+      "operations": [
+        {
+          "type": "deleteObject",
+          "objectTypeApiName": "ScenarioTestOsdk"
+        }
+      ]
+    },
+    "create-scenario-test-osdk": {
+      "apiName": "create-scenario-test-osdk",
+      "displayName": "Create Scenario Test Osdk",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "string": {
+          "displayName": "String",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true,
+          "typeClasses": []
+        },
+        "scenarioRidCreatedOn": {
+          "displayName": "ScenarioRidCreatedOn",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true,
+          "typeClasses": []
+        }
+      },
+      "rid": "ri.actions.main.action-type.fddb9db7-30bb-43c0-9026-72794537ca98",
+      "operations": [
+        {
+          "type": "createObject",
+          "objectTypeApiName": "ScenarioTestOsdk"
+        }
+      ]
+    },
+    "scenario-osdk-test-action": {
+      "apiName": "scenario-osdk-test-action",
+      "displayName": "Scenario Osdk Test Action",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "scenario": {
+          "displayName": "Scenario",
+          "dataType": {
+            "type": "scenarioReference"
+          },
+          "required": true,
+          "typeClasses": []
+        }
+      },
+      "rid": "ri.actions.main.action-type.ed0f3aba-1eed-4d3c-b60f-417971f2b7dc",
+      "operations": [
+        {
+          "type": "applyScenario",
+          "scenarioParameter": "scenario",
+          "objectTypeApiNames": [
+            "ScenarioTestOsdk"
+          ],
+          "linkTypes": [
+            {
+              "objectTypeApiName": "ScenarioTestOsdk",
+              "linkTypes": [
+                "right",
+                "left"
+              ]
+            }
+          ]
+        }
+      ]
+    },
     "create-osdk-test-object": {
       "apiName": "create-osdk-test-object",
       "displayName": "Create Osdk Test Object",
@@ -445,6 +533,93 @@
     }
   },
   "objectTypes": {
+    "ScenarioTestOsdk": {
+      "objectType": {
+        "apiName": "ScenarioTestOsdk",
+        "displayName": "Scenario Test Osdk",
+        "status": "EXPERIMENTAL",
+        "description": "",
+        "pluralDisplayName": "Scenario Test Osdks",
+        "icon": {
+          "type": "blueprint",
+          "color": "#4C90F0",
+          "name": "cube"
+        },
+        "primaryKey": "primaryKey_",
+        "properties": {
+          "string": {
+            "displayName": "String",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.c1adf8c9-699e-474d-9037-88d5da1578dc",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          },
+          "primaryKey_": {
+            "displayName": "Primary Key",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.076f3343-8305-4514-be34-52117563e7f6",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          },
+          "scenarioRidCreatedOn": {
+            "displayName": "ScenarioRidCreatedOn",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.7e022eee-cec3-43a7-b7c9-d33f662b5a0a",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          }
+        },
+        "rid": "ri.ontology.main.object-type.ec8dc938-1a0b-45cd-96fd-68752f1ab199",
+        "titleProperty": "primaryKey_",
+        "visibility": "NORMAL"
+      },
+      "linkTypes": [],
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {},
+      "sharedPropertyTypeMapping": {}
+    },
     "ReducerTest": {
       "objectType": {
         "apiName": "ReducerTest",

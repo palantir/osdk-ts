@@ -1,6 +1,6 @@
 {
   "name": "@osdk/unit-testing",
-  "version": "0.10.0",
+  "version": "0.15.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -52,8 +52,7 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "tiny-invariant": "^1.3.3",
-    "vitest": "^3.2.4"
+    "tiny-invariant": "^1.3.3"
   },
   "peerDependencies": {
     "@osdk/api": "workspace:^",
@@ -71,7 +70,8 @@
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "msw": "^2.11.1",
-    "typescript": "~5.5.4"
+    "typescript": "~5.5.4",
+    "vitest": "^3.2.4"
   },
   "publishConfig": {
     "access": "public"
