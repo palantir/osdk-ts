@@ -31,7 +31,29 @@ type objectSet_asyncIter_result = AsyncIterableIterator<
       readonly $objectType: string;
       readonly $title: string | undefined;
     }
-    & Pick<EmployeeApiTest.Props, PropertyKeys<EmployeeApiTest>>
+    & Pick<
+      EmployeeApiTest.Props,
+      | "employeeId"
+      | "fullName"
+      | "addressStruct"
+      | "salaryHistory"
+      | "bonusHistory"
+      | "class"
+      | "mediaReference"
+      | "attachment"
+      | "geopoint"
+      | "geotimeSeriesReference"
+      | "timeseries"
+      | "isActive"
+      | "yearsOfExperience"
+      | "rank"
+      | "performanceScore"
+      | "hourlyRate"
+      | "dateOfJoining"
+      | "lastUpdated"
+      | "skillSet"
+      | "skillSetEmbedding"
+    >
     & {}
     & {
       readonly $link: {
