@@ -117,11 +117,17 @@ function renderGetSnapshot<
   RDPs extends Record<string, SimplePropertyDef>,
   FC extends Record<string, QueryDefinition<{}>>,
 >(
-  args: Parameters<typeof useObjectTableSnapshot<Q, RDPs, FC>>[0],
+  args:
+    & Omit<Parameters<typeof useObjectTableSnapshot<Q, RDPs, FC>>[0], "orderBy">
+    & { orderBy?: OrderBy<Q> },
   client: Client = fakeClient,
 ) {
   mockClient = client;
-  const { result } = renderHook(() => useObjectTableSnapshot(args));
+  // `orderBy` is a required field on the hook args; default it to undefined so
+  // tests that don't exercise ordering can omit it.
+  const { result } = renderHook(() =>
+    useObjectTableSnapshot({ orderBy: undefined, ...args })
+  );
   return result.current.getSnapshot;
 }
 
