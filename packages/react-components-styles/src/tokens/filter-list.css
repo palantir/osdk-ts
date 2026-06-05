@@ -350,7 +350,9 @@
     --osdk-typography-color-default-rest
   );
   --osdk-filter-item-header-action-bg-hover: var(--osdk-custom-color-gray-1);
-  --osdk-filter-item-header-action-bg-active: var(--osdk-custom-color-gray-2);
+  --osdk-filter-item-header-action-bg-active: var(
+    --osdk-surface-background-color-default-active
+  );
   --osdk-filter-item-header-action-border-radius: var(
     --osdk-surface-border-radius
   );
@@ -376,14 +378,10 @@
     --osdk-filter-item-exclude-dropdown-trigger-color
   );
   --osdk-filter-item-exclude-dropdown-trigger-font-weight-active: var(
-    --osdk-typography-weight-bold
+    --osdk-filter-item-exclude-dropdown-trigger-font-weight
   );
-  --osdk-filter-item-exclude-dropdown-trigger-bg-active: var(
-    --osdk-custom-color-gray-2
-  );
-  --osdk-filter-item-exclude-dropdown-trigger-indicator-active: inset 0
-    calc(var(--osdk-surface-border-width) * -4) 0
-    var(--osdk-filter-item-exclude-dropdown-trigger-color);
+  --osdk-filter-item-exclude-dropdown-trigger-bg-active: transparent;
+  --osdk-filter-item-exclude-dropdown-trigger-indicator-active: none;
   --osdk-filter-item-exclude-dropdown-trigger-border-radius: var(
     --osdk-surface-border-radius
   );
