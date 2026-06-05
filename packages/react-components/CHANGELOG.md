@@ -1,5 +1,14 @@
 # @osdk/react-components
 
+## 0.27.0
+
+### Minor Changes
+
+- 820bc7b: Fix listogram bar border-radius distortion and use theme-aware background token
+- 3c39c10: Merge `@osdk/cbac-components` into `@osdk/react-components`. The CBAC picker (`CbacPicker`, `CbacPickerDialog`, `CbacBanner`, `BaseCbacPicker`, `BaseCbacBanner`, `BaseCbacPickerDialog`, `MaxClassificationField`, and selection-logic utilities) is now exported from `@osdk/react-components/experimental/cbac-picker`. The legacy `@osdk/cbac-components` package remains in the repository for reference but is no longer the source of truth.
+- f30c848: - new `focusedRow` / `onFocusedRowChanged` props expose controlled focus state (typed `PrimaryKeyType<Q> | null`).
+- 2d40fb6: Update getSnapshot() implementation to fetch data separately from table rendering, capping concurrent function-column requests during snapshot collection
+
 ## 0.26.0
 
 ### Minor Changes
