@@ -227,10 +227,6 @@
   &:hover {
     text-decoration: underline;
   }
-
-  &:focus {
-    outline: none;
-  }
 }
 
 .dragging {
