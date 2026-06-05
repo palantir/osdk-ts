@@ -372,6 +372,16 @@
   );
   --osdk-filter-item-header-action-color: var(--osdk-typography-color-muted);
   --osdk-filter-item-header-action-bg-hover: var(--osdk-custom-color-gray-1);
+  /* Pressed (mouse-down) and toggled-on (popup open / aria-pressed) share a
+     theme-aware "active surface" so the selected state is clearly visible in
+     both light and dark mode. The flat gray-1/gray-2 alpha tints used for
+     hover are nearly invisible over the dark background. */
+  --osdk-filter-item-header-action-bg-active: var(
+    --osdk-surface-background-color-default-active
+  );
+  --osdk-filter-item-header-action-color-active: var(
+    --osdk-typography-color-default-rest
+  );
   --osdk-filter-item-header-action-border-radius: var(
     --osdk-surface-border-radius
   );
@@ -393,18 +403,18 @@
     --osdk-typography-weight-default
   );
   --osdk-filter-item-exclude-dropdown-trigger-indicator: none;
+  /* The selected (Excluding) state reuses the default trigger styling so it
+     reads as the same dropdown control as the default (Keeping) state. The
+     exclude icon and the "Excluding" label are the only differentiators; no
+     bold weight, background fill, or underline indicator. */
   --osdk-filter-item-exclude-dropdown-trigger-color-active: var(
     --osdk-filter-item-exclude-dropdown-trigger-color
   );
   --osdk-filter-item-exclude-dropdown-trigger-font-weight-active: var(
-    --osdk-typography-weight-bold
+    --osdk-filter-item-exclude-dropdown-trigger-font-weight
   );
-  --osdk-filter-item-exclude-dropdown-trigger-bg-active: var(
-    --osdk-custom-color-gray-2
-  );
-  --osdk-filter-item-exclude-dropdown-trigger-indicator-active: inset 0
-    calc(var(--osdk-surface-border-width) * -4) 0
-    var(--osdk-filter-item-exclude-dropdown-trigger-color);
+  --osdk-filter-item-exclude-dropdown-trigger-bg-active: transparent;
+  --osdk-filter-item-exclude-dropdown-trigger-indicator-active: none;
   --osdk-filter-item-exclude-dropdown-trigger-border-radius: var(
     --osdk-surface-border-radius
   );

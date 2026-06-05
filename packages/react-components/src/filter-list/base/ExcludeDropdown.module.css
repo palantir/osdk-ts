@@ -39,10 +39,8 @@
     background: var(--osdk-filter-item-header-action-bg-hover);
   }
 
-  &:focus-visible {
-    outline: var(--osdk-filter-input-focus-outline-width) solid
-      var(--osdk-filter-input-focus-outline-color);
-    outline-offset: var(--osdk-filter-input-focus-outline-offset);
+  &:focus {
+    outline: none;
   }
 
   &[data-excluding] {

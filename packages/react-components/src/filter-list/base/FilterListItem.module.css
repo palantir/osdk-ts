@@ -114,7 +114,7 @@
 .headerActionButton[aria-pressed="true"] {
   opacity: 1;
   color: var(--osdk-filter-item-header-action-color-active);
-  background: var(--osdk-filter-item-header-action-bg-hover);
+  background: var(--osdk-filter-item-header-action-bg-active);
 }
 
 .searchRow {
@@ -207,10 +207,14 @@
   font-family: var(--osdk-filter-item-exclude-dropdown-font-family);
   font-size: var(--osdk-filter-item-exclude-dropdown-font-size);
   color: var(--osdk-filter-item-exclude-dropdown-color);
-  padding: 0;
+  padding: calc(var(--osdk-surface-spacing) * 0.5);
 
   &:hover {
     text-decoration: underline;
+  }
+
+  &:focus {
+    outline: none;
   }
 }
 
