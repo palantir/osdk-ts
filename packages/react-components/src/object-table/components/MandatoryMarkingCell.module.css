@@ -1,7 +1,7 @@
 .container {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--osdk-mandatory-marking-cell-gap, 4px);
+  gap: var(--osdk-surface-spacing);
   align-items: center;
 }
 

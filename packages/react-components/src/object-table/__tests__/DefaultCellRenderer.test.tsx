@@ -132,6 +132,21 @@ describe("renderDefaultCell", () => {
       ]);
     });
 
+    it("deduplicates marking ids so duplicate values don't break React keys", () => {
+      const result = renderDefaultCell(
+        createCellContext(["m-1", "m-1", "m-2"], {
+          columnMeta: { markingType: "MANDATORY" },
+        }),
+      );
+      render(<div data-testid="cell">{result}</div>);
+      const banners = screen.getAllByTestId("cbac-banner");
+      expect(banners).toHaveLength(2);
+      expect(banners.map((el) => el.getAttribute("data-marking-ids"))).toEqual([
+        "m-1",
+        "m-2",
+      ]);
+    });
+
     it("renders a single CbacBanner for a single-valued MANDATORY marking", () => {
       const result = renderDefaultCell(createCellContext("m-1", {
         columnMeta: { markingType: "MANDATORY" },

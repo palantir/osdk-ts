@@ -393,6 +393,14 @@ export async function setupFauxFoundry(): Promise<void> {
   };
 
   admin.setBannerResolver((markingIds, markings) => {
+    if (markingIds.length === 0) {
+      return {
+        classificationString: "UNMARKED",
+        textColor: "#FFFFFF",
+        backgroundColors: ["#8F99A8"],
+      };
+    }
+
     const markingMap = new Map(markings.map((m) => [m.id, m]));
     const classificationId = markingIds.find(
       (id) => markingMap.get(id)?.categoryId === "cat-classification",
@@ -402,13 +410,6 @@ export async function setupFauxFoundry(): Promise<void> {
       // No classification marking — label with the joined marking names so
       // CBAC compartment / releasability columns render meaningfully on
       // their own. Color tracks the first marking's category.
-      if (markingIds.length === 0) {
-        return {
-          classificationString: "UNMARKED",
-          textColor: "#FFFFFF",
-          backgroundColors: ["#8F99A8"],
-        };
-      }
       const resolved = markingIds.map((id) => markingMap.get(id)?.name ?? id);
       const firstCategoryId = markingIds
         .map((id) => markingMap.get(id)?.categoryId)

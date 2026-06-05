@@ -18,12 +18,20 @@
  * Normalize a marking property's cell value into a string[] of marking ids.
  * Marking properties may arrive as a single string (single-valued) or
  * string[] (multi-valued); null/undefined become an empty array.
+ *
+ * Duplicates are removed so callers (e.g. per-marking pill renderers) can
+ * safely use the marking id as a React key.
  */
 export function toMarkingIdArray(value: unknown): string[] {
-  if (value == null) return [];
-  if (typeof value === "string") return [value];
+  if (value == null) {
+    return [];
+  }
+  if (typeof value === "string") {
+    return [value];
+  }
   if (Array.isArray(value)) {
-    return value.filter((v): v is string => typeof v === "string");
+    const ids = value.filter((v): v is string => typeof v === "string");
+    return Array.from(new Set(ids));
   }
   return [];
 }
