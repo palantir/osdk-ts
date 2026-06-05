@@ -745,6 +745,75 @@ describe(useColumnDefs, () => {
     expect(result.current.columns).toEqual([]);
   });
 
+  describe("marking column meta", () => {
+    const markingMetadata = {
+      ...mockMetadata,
+      properties: {
+        cbacMarking: {
+          type: "marking" as const,
+          displayName: "CBAC Marking",
+          typeMetadata: {
+            type: "marking" as const,
+            markingType: "CBAC" as const,
+          },
+        },
+        mandatoryMarking: {
+          type: "marking" as const,
+          displayName: "Mandatory Marking",
+          typeMetadata: {
+            type: "marking" as const,
+            markingType: "MANDATORY" as const,
+          },
+        },
+        plainMarking: {
+          type: "marking" as const,
+          displayName: "Plain Marking",
+        },
+        notAMarking: {
+          type: "string" as const,
+          displayName: "Plain String",
+        },
+      },
+    };
+
+    it("propagates markingType from property metadata onto column meta", async () => {
+      const deferred = pDefer();
+      const fakeClient = {
+        fetchMetadata: vitest.fn(() => deferred.promise),
+      } as unknown as Client;
+
+      const wrapper = createWrapper(fakeClient);
+
+      const columnDefinitions: Array<ColumnDefinition<TestObject, {}, {}>> = [
+        { locator: { type: "property", id: "cbacMarking" as TestObjectKeys } },
+        {
+          locator: {
+            type: "property",
+            id: "mandatoryMarking" as TestObjectKeys,
+          },
+        },
+        { locator: { type: "property", id: "plainMarking" as TestObjectKeys } },
+        { locator: { type: "property", id: "notAMarking" as TestObjectKeys } },
+      ];
+
+      const { result } = renderHook(
+        () => useColumnDefs(TestObjectType, columnDefinitions),
+        { wrapper },
+      );
+
+      deferred.resolve(markingMetadata);
+
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false);
+      });
+
+      expect(result.current.columns[0]?.meta?.markingType).toBe("CBAC");
+      expect(result.current.columns[1]?.meta?.markingType).toBe("MANDATORY");
+      expect(result.current.columns[2]?.meta?.markingType).toBeUndefined();
+      expect(result.current.columns[3]?.meta?.markingType).toBeUndefined();
+    });
+  });
+
   it("memoizes columns based on metadata properties", async () => {
     const deferred = pDefer();
     const fakeClient = {

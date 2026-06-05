@@ -16,9 +16,18 @@
 
 import type { CellContext } from "@tanstack/react-table";
 import { cleanup, render, screen } from "@testing-library/react";
+import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { renderDefaultCell } from "../DefaultCellRenderer.js";
 import type { CellEditInfo, EditFieldConfig } from "../utils/types.js";
+
+vi.mock("../../cbac-picker/CbacBanner.js", () => ({
+  CbacBanner: ({ markingIds }: { markingIds: string[] }) => (
+    <div data-testid="cbac-banner" data-marking-ids={markingIds.join(",")}>
+      {markingIds.join(",")}
+    </div>
+  ),
+}));
 
 function createCellContext(
   value: unknown,
@@ -83,6 +92,79 @@ describe("renderDefaultCell", () => {
     const result = renderDefaultCell(createCellContext(undefined));
     render(<div data-testid="cell">{result}</div>);
     expect(screen.getByTestId("cell").textContent).toBe("");
+  });
+
+  describe("marking columns", () => {
+    it("renders a CbacBanner for a CBAC marking column with a single id", () => {
+      const result = renderDefaultCell(createCellContext("marking-1", {
+        columnMeta: { markingType: "CBAC" },
+      }));
+      render(<div data-testid="cell">{result}</div>);
+      expect(screen.getByTestId("cbac-banner").textContent).toBe("marking-1");
+    });
+
+    it("renders a CbacBanner for a CBAC marking column with multiple ids", () => {
+      const result = renderDefaultCell(createCellContext(["m-1", "m-2"], {
+        columnMeta: { markingType: "CBAC" },
+      }));
+      render(<div data-testid="cell">{result}</div>);
+      expect(screen.getByTestId("cbac-banner").textContent).toBe("m-1,m-2");
+    });
+
+    it("renders nothing for an empty CBAC marking value", () => {
+      const result = renderDefaultCell(createCellContext(null, {
+        columnMeta: { markingType: "CBAC" },
+      }));
+      render(<div data-testid="cell">{result}</div>);
+      expect(screen.queryByTestId("cbac-banner")).toBeNull();
+    });
+
+    it("renders one CbacBanner per id for a MANDATORY marking column", () => {
+      const result = renderDefaultCell(createCellContext(["m-1", "m-2"], {
+        columnMeta: { markingType: "MANDATORY" },
+      }));
+      render(<div data-testid="cell">{result}</div>);
+      const banners = screen.getAllByTestId("cbac-banner");
+      expect(banners).toHaveLength(2);
+      expect(banners.map((el) => el.getAttribute("data-marking-ids"))).toEqual([
+        "m-1",
+        "m-2",
+      ]);
+    });
+
+    it("deduplicates marking ids so duplicate values don't break React keys", () => {
+      const result = renderDefaultCell(
+        createCellContext(["m-1", "m-1", "m-2"], {
+          columnMeta: { markingType: "MANDATORY" },
+        }),
+      );
+      render(<div data-testid="cell">{result}</div>);
+      const banners = screen.getAllByTestId("cbac-banner");
+      expect(banners).toHaveLength(2);
+      expect(banners.map((el) => el.getAttribute("data-marking-ids"))).toEqual([
+        "m-1",
+        "m-2",
+      ]);
+    });
+
+    it("renders a single CbacBanner for a single-valued MANDATORY marking", () => {
+      const result = renderDefaultCell(createCellContext("m-1", {
+        columnMeta: { markingType: "MANDATORY" },
+      }));
+      render(<div data-testid="cell">{result}</div>);
+      const banners = screen.getAllByTestId("cbac-banner");
+      expect(banners).toHaveLength(1);
+      expect(banners[0].getAttribute("data-marking-ids")).toBe("m-1");
+    });
+
+    it("falls back to the default renderer when markingType is absent", () => {
+      const result = renderDefaultCell(createCellContext("plain-value", {
+        columnMeta: { dataType: "marking" },
+      }));
+      render(<div data-testid="cell">{result}</div>);
+      expect(screen.getByTestId("cell").textContent).toBe("plain-value");
+      expect(screen.queryByTestId("cbac-banner")).toBeNull();
+    });
   });
 
   it("should pass only the current row's pending edits to getFieldComponentProps", () => {

@@ -51,6 +51,14 @@ declare module "@tanstack/react-table" {
     isVisible?: boolean;
     editable?: boolean | ((object: TData) => boolean);
     dataType?: string;
+    /**
+     * For columns backed by a `"marking"` property, the marking subtype as
+     * surfaced by the platform: `"CBAC"` for classification-based access
+     * control or `"MANDATORY"` for mandatory markings. Absent for
+     * non-marking columns and for marking columns whose subtype isn't
+     * exposed.
+     */
+    markingType?: "CBAC" | "MANDATORY";
     editFieldConfig?: EditFieldConfig<TData>;
     validateEdit?: (value: unknown) => Promise<string | undefined>;
   }
