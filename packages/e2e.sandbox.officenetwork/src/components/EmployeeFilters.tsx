@@ -17,8 +17,9 @@
 import {
   type FilterDefinitionUnion,
   FilterList,
+  type FilterListProps,
 } from "@osdk/react-components/experimental/filter-list";
-import React, { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Employee } from "../generatedNoCheck2/index.js";
 
 const ALL_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
@@ -125,13 +126,7 @@ function AddFilterButton({
 }
 
 interface EmployeeFiltersProps {
-  onFilterClauseChanged?: (
-    clause: Parameters<
-      NonNullable<
-        React.ComponentProps<typeof FilterList>["onFilterClauseChanged"]
-      >
-    >[0],
-  ) => void;
+  onFilterClauseChanged?: FilterListProps<Employee>["onFilterClauseChanged"];
 }
 
 export function EmployeeFilters({
