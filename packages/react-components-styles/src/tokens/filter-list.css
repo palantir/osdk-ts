@@ -343,10 +343,16 @@
 
   /* Header Action Buttons (search, remove, overflow) */
   --osdk-filter-item-header-action-padding: calc(
-    var(--osdk-surface-spacing) * 0.5
+    var(--osdk-surface-spacing) * 0.75
   );
   --osdk-filter-item-header-action-color: var(--osdk-typography-color-muted);
+  --osdk-filter-item-header-action-color-active: var(
+    --osdk-typography-color-default-rest
+  );
   --osdk-filter-item-header-action-bg-hover: var(--osdk-custom-color-gray-1);
+  --osdk-filter-item-header-action-bg-active: var(
+    --osdk-surface-background-color-default-active
+  );
   --osdk-filter-item-header-action-border-radius: var(
     --osdk-surface-border-radius
   );
@@ -364,6 +370,18 @@
   --osdk-filter-item-exclude-dropdown-trigger-color: var(
     --osdk-intent-primary-rest
   );
+  --osdk-filter-item-exclude-dropdown-trigger-font-weight: var(
+    --osdk-typography-weight-default
+  );
+  --osdk-filter-item-exclude-dropdown-trigger-indicator: none;
+  --osdk-filter-item-exclude-dropdown-trigger-color-active: var(
+    --osdk-filter-item-exclude-dropdown-trigger-color
+  );
+  --osdk-filter-item-exclude-dropdown-trigger-font-weight-active: var(
+    --osdk-filter-item-exclude-dropdown-trigger-font-weight
+  );
+  --osdk-filter-item-exclude-dropdown-trigger-bg-active: transparent;
+  --osdk-filter-item-exclude-dropdown-trigger-indicator-active: none;
   --osdk-filter-item-exclude-dropdown-trigger-border-radius: var(
     --osdk-surface-border-radius
   );
