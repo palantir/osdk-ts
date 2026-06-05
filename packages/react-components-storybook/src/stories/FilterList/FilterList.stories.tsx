@@ -1683,6 +1683,7 @@ function WithLinkedPropertyFiltersStory(
       </div>
       <div style={FLEX_FILL_STYLE}>
         <strong>Filter Clause (JSON):</strong>
+        <p>Note: LINKED_PROPERTY filter is not applied through where clause</p>
         <pre style={PRE_STYLE}>
           {filterClause
             ? JSON.stringify(filterClause, null, 2)
@@ -1693,7 +1694,7 @@ function WithLinkedPropertyFiltersStory(
   );
 }
 
-export const WithHasLinkFilter: Story = {
+export const WithLinkedPropertyFilters: Story = {
   name: "Linked Property Filters",
   parameters: {
     docs: {
