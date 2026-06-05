@@ -1775,6 +1775,7 @@ const combinedLeadNameFilter: FilterDefinitionUnion<Employee> = {
     type: "linkedProperty",
     linkedFilterState: { type: "SELECT", selectedValues: [] },
   },
+  searchField: false,
   label: "Manager Name",
 } as FilterDefinitionUnion<Employee>;
 
@@ -1811,7 +1812,7 @@ const COMBINED_TABLE_COLUMNS: ColumnDefinition<Employee, CombinedTableRdps>[] =
     },
   ];
 
-function CombinedWithLinkedFilterStory(
+function CombinedWithObjectTableStory(
   args: Partial<EmployeeFilterListProps>,
 ) {
   const client = useOsdkClient();
@@ -1877,6 +1878,40 @@ export const CombinedWithObjectTable: Story = {
         code: `const baseObjectSet = useMemo(() => client(Employee), [client]);
 const [effectiveObjectSet, setEffectiveObjectSet] = useState(baseObjectSet);
 
+const filterDefinitions: FilterDefinitionUnion<Employee>[] = [
+  {
+    type: "LINKED_PROPERTY",
+    id: "combined-lead-name",
+    linkName: "lead",
+    reverseLinkName: "peeps",
+    linkedPropertyKey: "fullName",
+    linkedFilterComponent: "MULTI_SELECT",
+    linkedFilterState: { type: "SELECT", selectedValues: [] },
+    filterState: {
+      type: "linkedProperty",
+      linkedFilterState: { type: "SELECT", selectedValues: [] },
+    },
+    searchField: false,
+    label: "Manager Name",
+  },
+  {
+    type: "PROPERTY",
+    id: "combined-department",
+    key: "department",
+    label: "Department",
+    filterComponent: "LISTOGRAM",
+    filterState: { type: "EXACT_MATCH", values: [] },
+  },
+  {
+    type: "PROPERTY",
+    id: "combined-locationCity",
+    key: "locationCity",
+    label: "Location City",
+    filterComponent: "MULTI_SELECT",
+    filterState: { type: "SELECT", selectedValues: [] },
+  },
+];
+
 type RDPs = { managerName: "string" };
 const columnDefinitions: ColumnDefinition<Employee, RDPs>[] = [
   { locator: { type: "property", id: "fullName" } },
@@ -1914,7 +1949,7 @@ const columnDefinitions: ColumnDefinition<Employee, RDPs>[] = [
       },
     },
   },
-  render: (args) => <CombinedWithLinkedFilterStory {...args} />,
+  render: (args) => <CombinedWithObjectTableStory {...args} />,
 };
 
 function CustomNameContainsFilter({
@@ -1975,70 +2010,6 @@ function CustomNameContainsFilter({
           Clear
         </button>
       )}
-    </div>
-  );
-}
-
-function CustomSeniorOnlyFilterItem({
-  filterState,
-  onFilterStateChanged,
-}: {
-  filterState: { type: "custom"; customState: { seniorOnly: boolean } };
-  onFilterStateChanged: (state: {
-    type: "custom";
-    customState: { seniorOnly: boolean };
-  }) => void;
-}) {
-  const handleToggle = useCallback(() => {
-    onFilterStateChanged({
-      type: "custom",
-      customState: {
-        seniorOnly: !filterState.customState.seniorOnly,
-      },
-    });
-  }, [filterState, onFilterStateChanged]);
-
-  const isEnabled = filterState.customState.seniorOnly;
-
-  return (
-    <div
-      style={{
-        padding: "12px",
-        backgroundColor: isEnabled ? "#e8f4f8" : "#fafafa",
-        border: `2px solid ${isEnabled ? "#0066cc" : "#ddd"}`,
-        borderRadius: "6px",
-        cursor: "pointer",
-      }}
-      onClick={handleToggle}
-      role="button"
-      tabIndex={0}
-    >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-          marginBottom: "6px",
-        }}
-      >
-        <input
-          type="checkbox"
-          checked={isEnabled}
-          onChange={() => {}}
-          style={{ cursor: "pointer" }}
-        />
-        <strong>Senior Only</strong>
-      </div>
-      <p
-        style={{
-          margin: "0",
-          fontSize: "12px",
-          color: "#666",
-          lineHeight: "1.4",
-        }}
-      >
-        Show only employees with "Senior" in their job title
-      </p>
     </div>
   );
 }

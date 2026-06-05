@@ -19,6 +19,7 @@
   flex-direction: column;
   border-radius: var(--osdk-filter-item-border-radius);
   padding: var(--osdk-filter-item-padding);
+  gap: var(--osdk-filter-item-gap);
 }
 
 .itemHeader {
@@ -77,7 +78,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--osdk-filter-item-header-action-padding);
+  padding: var(--osdk-surface-spacing);
   margin-left: calc(var(--osdk-surface-spacing) * 0.5);
   border: none;
   background: transparent;
@@ -125,21 +126,20 @@
 .searchRow {
   display: flex;
   align-items: center;
-  background: var(--osdk-filter-input-bg);
-  border: var(--osdk-filter-input-border);
-  border-radius: var(--osdk-filter-input-border-radius);
-  padding: var(--osdk-filter-input-padding);
+  padding: var(--osdk-surface-spacing);
   gap: var(--osdk-filter-input-gap);
 }
 
 .searchInput {
   flex: 1;
-  border: none;
-  background: transparent;
+  border: var(--osdk-filter-input-border);
+  border-radius: var(--osdk-filter-input-border-radius);
+  background: var(--osdk-filter-input-bg);
   font-family: var(--osdk-filter-input-font-family);
   font-size: var(--osdk-filter-input-font-size);
   color: var(--osdk-filter-input-color);
   outline: none;
+  padding: var(--osdk-filter-input-padding);
 
   &::placeholder {
     color: var(--osdk-filter-input-placeholder-color);

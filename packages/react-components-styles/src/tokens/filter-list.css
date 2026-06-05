@@ -342,9 +342,6 @@
   --osdk-filter-checkbox-row-border-radius: var(--osdk-surface-border-radius);
 
   /* Header Action Buttons (search, remove, overflow) */
-  --osdk-filter-item-header-action-padding: calc(
-    var(--osdk-surface-spacing) * 0.75
-  );
   --osdk-filter-item-header-action-color: var(--osdk-typography-color-muted);
   --osdk-filter-item-header-action-color-active: var(
     --osdk-typography-color-default-rest
