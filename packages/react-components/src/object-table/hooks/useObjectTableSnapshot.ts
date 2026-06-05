@@ -120,7 +120,7 @@ export function useObjectTableSnapshot<
     ): Promise<ObjectTableSnapshot<Q, RDPs>> => {
       const rowLimit = options?.rowLimit ?? DEFAULT_SNAPSHOT_ROW_LIMIT;
       const rowLimitExceededError =
-        `getSnapshot error: total row count exceeds row limit.`;
+        `Error in getSnapshot: total row count exceeds row limit of ${rowLimit}.`;
 
       // Fail fast when the caller's row cap is smaller than the matching set.
       // `totalCount` is only available once the list payload has resolved; we
