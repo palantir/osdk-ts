@@ -23,14 +23,14 @@ import type {
 } from "@osdk/api";
 import type { Cell } from "@tanstack/react-table";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useImperativeHandle, useMemo } from "react";
 import { useColumnDefs } from "./hooks/useColumnDefs.js";
 import { useColumnPinning } from "./hooks/useColumnPinning.js";
 import { useColumnResize } from "./hooks/useColumnResize.js";
 import { useColumnVisibility } from "./hooks/useColumnVisibility.js";
 import { useEditableTable } from "./hooks/useEditableTable.js";
 import { useObjectTableData } from "./hooks/useObjectTableData.js";
-import { useObjectTableSnapshotHandle } from "./hooks/useObjectTableSnapshotHandle.js";
+import { useObjectTableSnapshot } from "./hooks/useObjectTableSnapshot.js";
 import type { UseRowSelectionChange } from "./hooks/useRowSelection.js";
 import { useRowSelection } from "./hooks/useRowSelection.js";
 import { useSelectionColumn } from "./hooks/useSelectionColumn.js";
@@ -102,7 +102,7 @@ export function ObjectTable<
     onColumnResize,
   });
 
-  const { sorting, onSortingChange } = useTableSorting<
+  const { sorting, onSortingChange, orderByState } = useTableSorting<
     Q,
     RDPs,
     FunctionColumns
@@ -117,7 +117,6 @@ export function ObjectTable<
   const {
     data,
     fetchMore,
-    hasMore,
     isLoading,
     error,
     totalCount,
@@ -256,6 +255,22 @@ export function ObjectTable<
     },
   });
 
+  const { getSnapshot } = useObjectTableSnapshot<Q, RDPs, FunctionColumns>({
+    objectOrInterfaceType: objectType,
+    table,
+    columnDefinitions,
+    objectSet: resultingObjectSet,
+    pageSize,
+    totalCount,
+    orderBy: orderByState,
+  });
+
+  useImperativeHandle(
+    tableRef,
+    () => ({ getSnapshot }),
+    [getSnapshot],
+  );
+
   const onRenderCellContextMenu = useCallback(
     (
       row: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
@@ -284,16 +299,6 @@ export function ObjectTable<
   );
 
   const isTableLoading = isLoading || isColumnsLoading;
-
-  useObjectTableSnapshotHandle({
-    tableRef,
-    table,
-    hasNextPage: hasMore,
-    isLoading: isTableLoading,
-    error,
-    totalCount,
-    fetchMore,
-  });
 
   const headerMenuFeatureFlags: HeaderMenuFeatureFlags = useMemo(() => ({
     showSortingItems: enableOrdering,

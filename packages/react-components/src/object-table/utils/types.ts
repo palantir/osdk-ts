@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+import type {
+  ObjectOrInterfaceDefinition,
+  PropertyKeys,
+  SimplePropertyDef,
+} from "@osdk/api";
 import type { RowData } from "@tanstack/react-table";
 
 export interface ColumnOption {
@@ -184,3 +189,10 @@ export type EditFieldConfig<TData = unknown> = {
     ) => EditFieldPropsByType[K];
   };
 }[EditFieldComponent];
+
+export type OrderBy<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> = {
+  [K in PropertyKeys<Q> | keyof RDPs]?: "asc" | "desc";
+};

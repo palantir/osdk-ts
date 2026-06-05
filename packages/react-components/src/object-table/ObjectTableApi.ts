@@ -32,76 +32,6 @@ import type { CellEditInfo, EditFieldConfig } from "./utils/types.js";
 
 export type { EditFieldConfig } from "./utils/types.js";
 
-export interface ObjectTableHandle<
-  Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
-> {
-  /**
-   * Returns a point-in-time snapshot of ObjectTable's currently loaded data
-   * and pagination state.
-   *
-   * The snapshot includes visible data columns only, excludes internal control
-   * columns such as row selection, and does not fetch additional pages unless
-   * a positive finite `rowLimit` is provided. `rowLimit` is a pagination
-   * threshold, not a hard cap: the returned snapshot can contain more rows when
-   * they were already loaded or when the final fetched page crosses the
-   * threshold.
-   * Cell values come from the table's accessor values, not from rendered React
-   * content supplied by `renderCell`.
-   *
-   * `getSnapshot` always resolves, even when a paginated fetch fails: it returns
-   * the rows loaded so far with the failure exposed on `snapshot.error`. Callers
-   * that require a complete result (e.g. exporting all rows) must inspect
-   * `snapshot.error` and `snapshot.hasNextPage` rather than assuming the snapshot
-   * is complete.
-   */
-  getSnapshot: (
-    options?: ObjectTableSnapshotOptions,
-  ) => Promise<ObjectTableSnapshot<Q, RDPs>>;
-}
-
-export interface ObjectTableSnapshotOptions {
-  /**
-   * Fetches additional pages until at least this many rows are loaded or
-   * pagination stops.
-   *
-   * This is not a hard maximum. The returned snapshot can contain more rows
-   * because ObjectTable keeps already-loaded rows and fetches full pages.
-   */
-  rowLimit?: number;
-}
-
-export interface ObjectTableSnapshot<
-  Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
-> {
-  columns: ObjectTableDataColumn[];
-  rows: ObjectTableDataRow<Q, RDPs>[];
-  hasNextPage: boolean;
-  isLoading: boolean;
-  error: unknown | undefined;
-  totalCount: string | undefined;
-}
-
-export interface ObjectTableDataColumn {
-  id: string;
-  name: string;
-}
-
-export interface ObjectTableDataRow<
-  Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
-> {
-  id: string;
-  object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>;
-  getValue: (columnId: string) => ObjectTableDataCell | undefined;
-}
-
-export type ObjectTableDataCell =
-  | { status: "ready"; value: unknown }
-  | { status: "loading"; value: unknown | undefined }
-  | { status: "error"; error: unknown; value: unknown | undefined };
-
 export type ColumnDefinition<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
@@ -364,15 +294,6 @@ export interface ObjectTableProps<
    * If objectSet is not provided, objects will be fetched based on this type.
    */
   objectType: Q;
-
-  /**
-   * Ref-like handle for reading a point-in-time snapshot of the currently
-   * loaded table data and pagination state.
-   *
-   * The handle is exposed as a named prop rather than React's reserved `ref`
-   * prop so ObjectTable can preserve its generic component signature.
-   */
-  tableRef?: React.Ref<ObjectTableHandle<Q, RDPs>>;
 
   /**
    * The set of objects to show in the table.
@@ -710,7 +631,111 @@ export interface ObjectTableProps<
     object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
   ) => Record<string, string | undefined>;
 
+  /**
+   * Imperative handle for programmatic table actions. Pass a ref
+   * (`useRef<ObjectTableHandle<Q, RDPs>>(null)`) to call
+   * {@link ObjectTableHandle} methods such as
+   * {@link ObjectTableHandle.getSnapshot}.
+   */
+  tableRef?: React.Ref<ObjectTableHandle<Q, RDPs>>;
+
   className?: string;
+}
+
+/**
+ * Imperative handle exposing programmatic actions on an {@link ObjectTable}.
+ * Obtain it by passing {@link ObjectTableProps.tableRef}.
+ */
+export interface ObjectTableHandle<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+> {
+  /**
+   * Loads every row matching the object set and returns a format-agnostic
+   * snapshot of the table's columns, row values, and total count. The caller
+   * is responsible for turning the snapshot into a downloadable artifact
+   * (CSV, Excel, JSON, clipboard, …).
+   *
+   * Property, derived-property, and function-backed columns are included.
+   * Function-backed cells are fetched per page during snapshot collection;
+   * when a page's fetch fails, `row.getValue(columnId)` returns the thrown
+   * `Error` instance for the affected cells while the rest of the snapshot
+   * resolves normally.
+   * Columns defined with `locator.type === "custom"` are omitted because
+   * they have no underlying value to export.
+   *
+   * The returned promise rejects up front when the object set's `totalCount`
+   * exceeds `rowLimit`. When `totalCount` is unavailable, it instead rejects
+   * mid-load once more than `rowLimit` rows have been pulled, so an unknown
+   * count can't drain an unbounded set into the client. Otherwise every
+   * matching row is loaded.
+   *
+   * @param options See {@link ObjectTableSnapshotOptions}.
+   */
+  getSnapshot: (
+    options?: ObjectTableSnapshotOptions,
+  ) => Promise<ObjectTableSnapshot<Q, RDPs>>;
+}
+
+/**
+ * Options for {@link ObjectTableHandle["getSnapshot"]}.
+ */
+export interface ObjectTableSnapshotOptions {
+  /**
+   * Upper bound on how many rows the snapshot may contain. When the object
+   * set's total row count exceeds this value, `getSnapshot` rejects;
+   * otherwise every matching row is loaded.
+   *
+   * @default 10_000
+   */
+  rowLimit?: number;
+}
+
+/**
+ * A point-in-time capture of an {@link ObjectTable}'s columns and row values,
+ * returned by {@link ObjectTableHandle.getSnapshot}.
+ */
+export interface ObjectTableSnapshot<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+> {
+  columns: ObjectTableDataColumn[];
+  rows: ObjectTableDataRow<Q, RDPs>[];
+  /**
+   * Total number of objects matching the underlying object set, as reported
+   * by the API. `undefined` when the API did not provide a count. Encoded as
+   * a string to match the underlying list-payload representation.
+   */
+  totalCount: string | undefined;
+}
+
+/**
+ * A single column in an {@link ObjectTableSnapshot}.
+ */
+export interface ObjectTableDataColumn {
+  /** Column id, matching the `locator.id` of the column definition. */
+  id: string;
+  /** Display name shown in the table header. */
+  name: string;
+}
+
+/**
+ * A single row in an {@link ObjectTableSnapshot}.
+ */
+export interface ObjectTableDataRow<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+> {
+  /** Row id (the underlying object's `$primaryKey` rendered as a string). */
+  id: string;
+  /** The underlying loaded object. */
+  object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>;
+  /**
+   * Returns the cell value for a given column id, or `undefined` when the
+   * column is not part of the snapshot. Function-backed cells whose query
+   * failed surface the thrown `Error` instance as their value.
+   */
+  getValue: (columnId: string) => unknown;
 }
 
 /**

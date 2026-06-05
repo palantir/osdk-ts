@@ -16,13 +16,10 @@
 
 import type {
   ObjectOrInterfaceDefinition,
-  ObjectSet,
-  ObjectTypeDefinition,
   Osdk,
   PropertyKeys,
   QueryDefinition,
   SimplePropertyDef,
-  WhereClause,
 } from "@osdk/api";
 import {
   type FunctionQueryParams,
@@ -30,7 +27,6 @@ import {
   useOsdkFunctions,
   type UseOsdkFunctionsResult,
 } from "@osdk/react";
-import { chunk } from "lodash-es";
 import { useMemo, useRef } from "react";
 import type {
   ColumnDefinition,
@@ -45,6 +41,11 @@ import {
   DEFAULT_MAX_CONCURRENT_REQUESTS,
   DEFAULT_PAGE_SIZE,
 } from "../utils/constants.js";
+import {
+  buildPagedObjectSets,
+  extractFunctionLocators,
+  type PagedObjects,
+} from "../utils/functionColumns.js";
 
 export interface FunctionColumnData {
   [columnId: string]: {
@@ -65,15 +66,8 @@ export interface UseFunctionColumnsDataOptions<
     | Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[]
     | undefined;
   columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>;
-  primaryKeyApiName?: string;
   pageSize?: number;
 }
-
-const isObjectType = (
-  objectOrInterfaceType: ObjectOrInterfaceDefinition,
-): objectOrInterfaceType is ObjectTypeDefinition => {
-  return objectOrInterfaceType.type === "object";
-};
 
 export function useFunctionColumnsData<
   Q extends ObjectOrInterfaceDefinition,
@@ -87,50 +81,42 @@ export function useFunctionColumnsData<
     objectOrInterfaceType,
     objects,
     columnDefinitions,
-    primaryKeyApiName,
     pageSize = DEFAULT_PAGE_SIZE,
   }: UseFunctionColumnsDataOptions<Q, RDPs, FunctionColumns>,
 ): FunctionColumnData {
   const client = useOsdkClient();
   const prevDataRef = useRef<FunctionColumnData>({});
 
-  const isObjectTypeDefinition = objectOrInterfaceType
-    && isObjectType(objectOrInterfaceType);
-
   const stableObjects = useStableObjects(objects);
-
-  const baseObjectSet: ObjectSet<Q, RDPs> | undefined = useMemo(
-    () => {
-      return isObjectTypeDefinition
-        ? client(objectOrInterfaceType) as ObjectSet<Q, RDPs>
-        : undefined;
-    },
-    [client, isObjectTypeDefinition, objectOrInterfaceType],
-  );
 
   const functionColDefs = useMemo(
     () => extractFunctionLocators<Q, RDPs, FunctionColumns>(columnDefinitions),
     [columnDefinitions],
   );
 
-  const disabled = !baseObjectSet || !stableObjects?.length
-    || functionColDefs.length === 0;
-
-  // Construct object sets using the base object set (constructed with object type only)
-  // + filter with primary keys of each page's objects
+  // Construct an object set per page (base set filtered to each page's
+  // primary keys). `buildPagedObjectSets` returns `[]` for interfaces and
+  // when there's no work to do, which short-circuits the downstream queries.
   //
-  // When a new page loads, only that page's queries fire — old pages
-  // hit the dedupeIntervalMs cache since their params are unchanged.
+  // When a new page loads, only that page's queries fire — old pages hit the
+  // dedupeIntervalMs cache since their params are unchanged.
   const pagedObjectSets = useMemo(() => {
-    if (!baseObjectSet || !stableObjects?.length) return [];
-
-    return buildPagedObjectSets(
-      baseObjectSet,
+    if (!stableObjects?.length) return [];
+    return buildPagedObjectSets<Q, RDPs>(
+      client,
+      objectOrInterfaceType,
       stableObjects,
-      primaryKeyApiName,
       pageSize,
     );
-  }, [baseObjectSet, stableObjects, primaryKeyApiName, pageSize]);
+  }, [
+    client,
+    objectOrInterfaceType,
+    stableObjects,
+    pageSize,
+  ]);
+
+  const disabled = pagedObjectSets.length === 0
+    || functionColDefs.length === 0;
 
   const queryGrid = useMemo(() => {
     if (pagedObjectSets.length === 0 || functionColDefs.length === 0) {
@@ -185,62 +171,6 @@ interface MergedResult {
 }
 
 const EMPTY_QUERY_GRID: QueryGrid = { queries: [], numColumns: 0 };
-
-/** Filters columnDefinitions down to only function-backed locators. */
-function extractFunctionLocators<
-  Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
-  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
-    string,
-    never
-  >,
->(
-  columnDefinitions:
-    | Array<ColumnDefinition<Q, RDPs, FunctionColumns>>
-    | undefined,
-): FunctionColumnLocator<Q, RDPs, FunctionColumns>[] {
-  if (!columnDefinitions) return [];
-
-  return columnDefinitions
-    .filter(colDef => colDef.locator.type === "function")
-    .map(colDef =>
-      colDef.locator as FunctionColumnLocator<Q, RDPs, FunctionColumns>
-    );
-}
-
-/** A page's filtered ObjectSet paired with the row objects it covers. */
-interface PagedObjects<
-  Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
-> {
-  objectSet: ObjectSet<Q, RDPs>;
-  objects: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[];
-}
-
-/** Chunks objects into pages and creates a filtered ObjectSet per page. */
-function buildPagedObjectSets<
-  Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
->(
-  objectSet: ObjectSet<Q, RDPs>,
-  objects: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[],
-  primaryKeyApiName: string | undefined,
-  pageSize: number,
-): PagedObjects<Q, RDPs>[] {
-  if (!primaryKeyApiName) {
-    return [{ objectSet, objects }];
-  }
-
-  return chunk(objects, pageSize).map(page => {
-    const whereClause = {
-      [primaryKeyApiName]: {
-        $in: page.map(obj => obj.$primaryKey),
-      },
-    } as WhereClause<Q, RDPs>;
-
-    return { objectSet: objectSet.where(whereClause), objects: page };
-  });
-}
 
 /**
  * Builds a flat query array and the layout metadata needed to recover per-column results.

@@ -27,7 +27,6 @@ export type {
   CustomColumnLocator,
   EditFieldConfig,
   FunctionColumnLocator,
-  ObjectTableDataCell,
   ObjectTableDataColumn,
   ObjectTableDataRow,
   ObjectTableHandle,
