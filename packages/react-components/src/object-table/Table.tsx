@@ -167,7 +167,6 @@ function BaseTableInner<
   const {
     focusedRowId,
     setFocusedRowId,
-    isControlled: isFocusControlled,
   } = useFocusedRow<TData>({
     focusedRowId: focusedRowIdProp,
     onFocusedRowChanged,
@@ -254,7 +253,7 @@ function BaseTableInner<
     return () => {
       document.removeEventListener("pointerdown", handleClickOutside);
     };
-  }, [portalTracker, isFocusControlled, setFocusedRowId]);
+  }, [portalTracker, setFocusedRowId]);
 
   return (
     <PortalContainerProvider container={objectTablePortalRef}>
