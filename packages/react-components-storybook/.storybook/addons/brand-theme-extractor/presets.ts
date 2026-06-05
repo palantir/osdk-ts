@@ -177,7 +177,7 @@ export const THEME_PRESETS: ThemePreset[] = [
       valueAssignment("text-muted", "#78716c"),
       valueAssignment("primary", "#c2410c"),
       valueAssignment("primary-foreground", "#ffffff"),
-      valueAssignment("secondary", "#e7e5e4"),
+      valueAssignment("secondary", "#f2efec"),
       valueAssignment("secondary-foreground", "#44403c"),
       valueAssignment("icon-color", "#78716c"),
       valueAssignment("border", "#d6d3d1"),
