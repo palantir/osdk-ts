@@ -639,7 +639,10 @@ export interface ObjectTableHandle<
    * they have no underlying value to export.
    *
    * The returned promise rejects up front when the object set's `totalCount`
-   * exceeds `rowLimit`; otherwise every matching row is loaded.
+   * exceeds `rowLimit`. When `totalCount` is unavailable, it instead rejects
+   * mid-load once more than `rowLimit` rows have been pulled, so an unknown
+   * count can't drain an unbounded set into the client. Otherwise every
+   * matching row is loaded.
    *
    * @param options See {@link ObjectTableSnapshotOptions}.
    */

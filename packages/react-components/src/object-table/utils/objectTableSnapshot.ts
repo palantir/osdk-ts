@@ -154,6 +154,10 @@ export async function fetchFunctionColumnValues<
     pages.map((page) => ({ columnId: String(locator.id), locator, page }))
   );
 
+  // One entry per task (same index as `tasks`). Each entry is a
+  // `Map<objectKey, cellValue>` for that (locator, page) pair, where
+  // `objectKey` is `locator.getKey(obj)` and `cellValue` is the unwrapped
+  // result — or an `Error` if the page's function call threw.
   const pageMaps = await mapWithConcurrency(
     tasks,
     maxConcurrent,
@@ -177,27 +181,41 @@ export async function fetchFunctionColumnValues<
 }
 
 /**
- * Runs `worker` over `items` with at most `limit` invocations in flight at a
+ * Runs `execute` over `tasks` with at most `maxConcurrent` invocations in flight at a
  * time, preserving input order in the returned results. A small fixed pool of
- * workers pulls from a shared cursor until the items are exhausted.
+ * workers pulls from a shared cursor until the tasks are exhausted.
  */
 async function mapWithConcurrency<T, R>(
-  items: ReadonlyArray<T>,
-  limit: number,
-  worker: (item: T, index: number) => Promise<R>,
+  tasks: ReadonlyArray<T>,
+  maxConcurrent: number,
+  execute: (task: T, index: number) => Promise<R>,
 ): Promise<R[]> {
-  const results = new Array<R>(items.length);
-  const poolSize = Math.max(1, Math.min(limit, items.length));
-  let cursor = 0;
+  // Pre-sized so workers write at their claimed index so input order is preserved.
+  const results = new Array<R>(tasks.length);
 
-  const runWorker = async (): Promise<void> => {
-    while (cursor < items.length) {
-      const index = cursor++;
-      results[index] = await worker(items[index], index);
+  // Cap pool at maxConcurrent, but never more workers than tasks (and at least 1).
+  const poolSize = Math.max(1, Math.min(maxConcurrent, tasks.length));
+
+  let pointer = 0;
+
+  const runExecute = async (): Promise<void> => {
+    while (pointer < tasks.length) {
+      const index = pointer;
+      pointer++;
+      results[index] = await execute(tasks[index], index);
     }
   };
 
-  await Promise.all(Array.from({ length: poolSize }, runWorker));
+  /**
+   * Let's say we have maxConcurrent = 2, and 3 tasks
+   * Pool = [_, _], each pool calls runExecute
+   * Within each runExecute, there's a loop synchronously execute tasks.
+   *
+   * So at the beginning, we will have at most 2 concurrent requests, one execute in each pool.
+   * The first execute to finish would enter the next loop, and start the next task.
+   * The second execute will finish and find that pointer >= tasks.length and exit.
+   */
+  await Promise.all(Array.from({ length: poolSize }, runExecute));
 
   return results;
 }

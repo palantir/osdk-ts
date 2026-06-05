@@ -119,6 +119,8 @@ export function useObjectTableSnapshot<
       options?: ObjectTableSnapshotOptions,
     ): Promise<ObjectTableSnapshot<Q, RDPs>> => {
       const rowLimit = options?.rowLimit ?? DEFAULT_SNAPSHOT_ROW_LIMIT;
+      const rowLimitExceededError =
+        `getSnapshot error: total row count exceeds row limit.`;
 
       // Fail fast when the caller's row cap is smaller than the matching set.
       // `totalCount` is only available once the list payload has resolved; we
@@ -126,9 +128,7 @@ export function useObjectTableSnapshot<
       if (totalCount != null) {
         const total = Number(totalCount);
         if (Number.isFinite(total) && total > rowLimit) {
-          return Promise.reject(
-            `getSnapshot error: total row count exceeds row limit. `,
-          );
+          return Promise.reject(rowLimitExceededError);
         }
       }
 
@@ -171,6 +171,12 @@ export function useObjectTableSnapshot<
               RDPs
             >,
           );
+          // Bound the in-memory load even when `totalCount` was unavailable for
+          // the fail-fast check above: once we've pulled more rows than the
+          // caller allows, stop and reject rather than draining the whole set.
+          if (loadedObjects.length > rowLimit) {
+            return Promise.reject(rowLimitExceededError);
+          }
         }
       }
 

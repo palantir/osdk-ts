@@ -186,7 +186,7 @@ describe(useObjectTableSnapshot, () => {
       });
     });
 
-    it("skips the guard when totalCount is undefined", async () => {
+    it("skips the up-front guard when totalCount is undefined", async () => {
       const { objectSet, asyncIter } = makeObjectSet(OBJECTS);
       const getSnapshot = renderGetSnapshot({
         objectOrInterfaceType: TestObjectType,
@@ -195,14 +195,14 @@ describe(useObjectTableSnapshot, () => {
         totalCount: undefined,
       });
 
-      await expect(getSnapshot({ rowLimit: 1 })).resolves.toMatchObject({
+      await expect(getSnapshot({ rowLimit: 10 })).resolves.toMatchObject({
         rows: [{ id: "1" }, { id: "2" }],
         totalCount: undefined,
       });
       expect(asyncIter).toHaveBeenCalledOnce();
     });
 
-    it("skips the guard when totalCount is not a finite number", async () => {
+    it("skips the up-front guard when totalCount is not a finite number", async () => {
       const { objectSet } = makeObjectSet(OBJECTS);
       const getSnapshot = renderGetSnapshot({
         objectOrInterfaceType: TestObjectType,
@@ -211,7 +211,38 @@ describe(useObjectTableSnapshot, () => {
         totalCount: "not-a-number",
       });
 
-      await expect(getSnapshot({ rowLimit: 1 })).resolves.toMatchObject({
+      await expect(getSnapshot({ rowLimit: 10 })).resolves.toMatchObject({
+        rows: [{ id: "1" }, { id: "2" }],
+      });
+    });
+
+    it("rejects mid-load when loaded rows exceed rowLimit and totalCount is unknown", async () => {
+      // No up-front count, so the load is bounded by the in-loop guard: the
+      // 2 yielded rows exceed rowLimit 1, so the snapshot rejects rather than
+      // draining the whole set.
+      const { objectSet } = makeObjectSet(OBJECTS);
+      const getSnapshot = renderGetSnapshot({
+        objectOrInterfaceType: TestObjectType,
+        table: makeTable([makeColumn("name")]),
+        objectSet,
+        totalCount: undefined,
+      });
+
+      await expect(getSnapshot({ rowLimit: 1 })).rejects.toContain(
+        "total row count exceeds row limit",
+      );
+    });
+
+    it("loads exactly rowLimit rows without rejecting", async () => {
+      const { objectSet } = makeObjectSet(OBJECTS);
+      const getSnapshot = renderGetSnapshot({
+        objectOrInterfaceType: TestObjectType,
+        table: makeTable([makeColumn("name")]),
+        objectSet,
+        totalCount: undefined,
+      });
+
+      await expect(getSnapshot({ rowLimit: 2 })).resolves.toMatchObject({
         rows: [{ id: "1" }, { id: "2" }],
       });
     });
