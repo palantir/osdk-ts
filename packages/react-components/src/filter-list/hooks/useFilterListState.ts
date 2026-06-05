@@ -89,12 +89,19 @@ function buildInitialStates<Q extends ObjectTypeDefinition>(
         break;
       }
       case "LINKED_PROPERTY": {
-        const innerState = definition.defaultLinkedFilterState;
-        if (innerState) {
-          const state: LinkedPropertyFilterState = {
-            type: "linkedProperty",
-            linkedFilterState: innerState,
-          };
+        // Seed from the required `filterState` wrapper, mirroring PROPERTY
+        // filters, so header controls (include/exclude, clear all) are
+        // available out of the box. Fall back to wrapping the optional
+        // `defaultLinkedFilterState` for definitions that only set that.
+        const state: LinkedPropertyFilterState | undefined =
+          definition.filterState
+            ?? (definition.defaultLinkedFilterState
+              ? {
+                type: "linkedProperty",
+                linkedFilterState: definition.defaultLinkedFilterState,
+              }
+              : undefined);
+        if (state) {
           states.set(key, state);
         }
         break;

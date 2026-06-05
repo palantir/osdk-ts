@@ -635,6 +635,19 @@ describe("useFilterListState", () => {
       expect(result.current.linkedFilters[0].linkName).toBe("manager");
     });
 
+    it("seeds initial state from the definition's filterState wrapper", () => {
+      const linkedDef = createLinkedPropertyFilterDef("manager", "fullName");
+      const props = createProps({ filterDefinitions: [linkedDef] });
+      const { result } = renderHook(() => useFilterListState(props));
+
+      // Without seeding, header controls (include/exclude, clear all) never
+      // appear because FilterListItem sees an undefined filterState.
+      expect(result.current.filterStates.get(getFilterKey(linkedDef))).toEqual({
+        type: "linkedProperty",
+        linkedFilterState: { type: "EXACT_MATCH", values: [] },
+      });
+    });
+
     it("still reports state changes for UI-only linked filters", () => {
       const uiOnlyDef = createLinkedPropertyFilterDef(
         "office",
