@@ -61,6 +61,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     filterStates,
     setFilterState,
     clearFilterState,
+    seedFilterState,
     perFilterWhereClauses,
     perFilterLinkedFilters,
     activeFilterCount,
@@ -138,9 +139,13 @@ export function FilterList<Q extends ObjectTypeDefinition>(
   const handleFilterShown = useCallback(
     (filterKey: string) => {
       showFilter(filterKey);
+      // Re-seed initial state so a removed-then-re-added filter regains its
+      // header controls (include/exclude, clear all) without first needing a
+      // selection. `handleFilterRemoved` clears the state on removal.
+      seedFilterState(filterKey);
       onFilterAdded?.(filterKey, filterDefinitions ?? []);
     },
-    [showFilter, onFilterAdded, filterDefinitions],
+    [showFilter, seedFilterState, onFilterAdded, filterDefinitions],
   );
 
   const handleOrderChange = useCallback(

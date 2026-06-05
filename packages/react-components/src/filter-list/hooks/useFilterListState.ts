@@ -42,6 +42,12 @@ export interface UseFilterListStateResult<Q extends ObjectTypeDefinition> {
     state: FilterState,
   ) => void;
   clearFilterState: (filterKey: string) => void;
+  /**
+   * Re-seed a filter's initial state from its definition if it currently has
+   * none. Used when a removed filter is added back so its header controls
+   * (include/exclude, clear all) reappear without requiring a selection first.
+   */
+  seedFilterState: (filterKey: string) => void;
   /** Direct (non-link-traversing) filters combined into a `WhereClause<Q>`. */
   whereClause: WhereClause<Q>;
   /** Active linked-property records; apply via `narrowObjectSet`. */
@@ -55,6 +61,44 @@ export interface UseFilterListStateResult<Q extends ObjectTypeDefinition> {
   reset: () => void;
 }
 
+/**
+ * Returns the seeded initial `FilterState` for a single definition (or
+ * `undefined` when the definition specifies none). Shared by the initial-build
+ * path and the re-seed-on-add path so a removed-then-re-added filter regains
+ * the same header controls (include/exclude, clear all) it had at first render.
+ */
+function buildInitialStateForDefinition<Q extends ObjectTypeDefinition>(
+  definition: NonNullable<FilterListProps<Q>["filterDefinitions"]>[number],
+): FilterState | undefined {
+  switch (definition.type) {
+    case "PROPERTY":
+      return definition.filterState;
+    case "HAS_LINK":
+    case "KEYWORD_SEARCH":
+    case "CUSTOM":
+      return definition.defaultFilterState;
+    case "STATIC_VALUES":
+      return definition.filterState;
+    case "LINKED_PROPERTY": {
+      // Seed from the required `filterState` wrapper, mirroring PROPERTY
+      // filters, so header controls (include/exclude, clear all) are
+      // available out of the box. Fall back to wrapping the optional
+      // `defaultLinkedFilterState` for definitions that only set that.
+      const state: LinkedPropertyFilterState | undefined =
+        definition.filterState
+          ?? (definition.defaultLinkedFilterState
+            ? {
+              type: "linkedProperty",
+              linkedFilterState: definition.defaultLinkedFilterState,
+            }
+            : undefined);
+      return state;
+    }
+    default:
+      return assertUnreachable(definition);
+  }
+}
+
 function buildInitialStates<Q extends ObjectTypeDefinition>(
   definitions: FilterListProps<Q>["filterDefinitions"],
 ): Map<string, FilterState> {
@@ -65,51 +109,9 @@ function buildInitialStates<Q extends ObjectTypeDefinition>(
   }
 
   for (const definition of definitions) {
-    const key = getFilterKey(definition);
-    switch (definition.type) {
-      case "PROPERTY": {
-        const state = definition.filterState;
-        if (state) {
-          states.set(key, state);
-        }
-        break;
-      }
-      case "HAS_LINK":
-      case "KEYWORD_SEARCH":
-      case "CUSTOM": {
-        const state = definition.defaultFilterState;
-        if (state) {
-          states.set(key, state);
-        }
-        break;
-      }
-      case "STATIC_VALUES": {
-        const state = definition.filterState;
-        if (state) {
-          states.set(key, state);
-        }
-        break;
-      }
-      case "LINKED_PROPERTY": {
-        // Seed from the required `filterState` wrapper, mirroring PROPERTY
-        // filters, so header controls (include/exclude, clear all) are
-        // available out of the box. Fall back to wrapping the optional
-        // `defaultLinkedFilterState` for definitions that only set that.
-        const state: LinkedPropertyFilterState | undefined =
-          definition.filterState
-            ?? (definition.defaultLinkedFilterState
-              ? {
-                type: "linkedProperty",
-                linkedFilterState: definition.defaultLinkedFilterState,
-              }
-              : undefined);
-        if (state) {
-          states.set(key, state);
-        }
-        break;
-      }
-      default:
-        assertUnreachable(definition);
+    const state = buildInitialStateForDefinition<Q>(definition);
+    if (state) {
+      states.set(getFilterKey(definition), state);
     }
   }
 
@@ -196,6 +198,28 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     });
   }, []);
 
+  const seedFilterState = useCallback((filterKey: string) => {
+    const definition = filterDefinitionsRef.current?.find(
+      (d) => getFilterKey(d) === filterKey,
+    );
+    if (!definition) {
+      return;
+    }
+    const initial = buildInitialStateForDefinition(definition);
+    if (initial == null) {
+      return;
+    }
+    setFilterStates((prev) => {
+      // Don't clobber an existing (e.g. user-modified) state.
+      if (prev.has(filterKey)) {
+        return prev;
+      }
+      const next = new Map(prev);
+      next.set(filterKey, initial);
+      return next;
+    });
+  }, []);
+
   const reset = useCallback(() => {
     setFilterStates(new Map(initialFilterStatesSnapshot));
   }, [initialFilterStatesSnapshot]);
@@ -276,6 +300,7 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     filterStates,
     setFilterState,
     clearFilterState,
+    seedFilterState,
     whereClause,
     linkedFilters,
     perFilterWhereClauses,
@@ -287,6 +312,7 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     filterStates,
     setFilterState,
     clearFilterState,
+    seedFilterState,
     whereClause,
     linkedFilters,
     perFilterWhereClauses,
