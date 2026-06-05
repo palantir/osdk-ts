@@ -8,7 +8,7 @@ user-invocable: true
 
 Operational playbook for scaffolding a new component in `packages/react-components`. Use whenever a user asks to add a new OSDK-aware component to the package.
 
-This skill is a **companion** to [`packages/react-components/CONTRIBUTING.md`](../../../CONTRIBUTING.md) and [`packages/react-components/CLAUDE.md`](../../../CLAUDE.md). Those documents are the canonical source of truth for engineering rules, API design, styling, testing, Storybook conventions, and metrics. This skill **does not restate them** — it cites them and layers AI-driven structure on top:
+This skill is a **companion** to [`packages/react-components/CONTRIBUTING.md`](../../../packages/react-components/CONTRIBUTING.md) and [`packages/react-components/CLAUDE.md`](../../../packages/react-components/CLAUDE.md). Those documents are the canonical source of truth for engineering rules, API design, styling, testing, Storybook conventions, and metrics. This skill **does not restate them** — it cites them and layers AI-driven structure on top:
 
 1. An **API-first design checkpoint** — agree on the type contract before implementation begins (deep modules: small interface, hidden complexity). Once approved, continue on the same branch.
 2. A **user-supplied MVP checklist** that defines "done" before code is written.
