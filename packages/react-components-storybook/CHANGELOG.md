@@ -1,5 +1,11 @@
 # @osdk/react-components-storybook
 
+## 0.25.0
+
+### Minor Changes
+
+- a0602d1: Fix conflicting primary keys
+
 ## 0.24.0
 
 ### Patch Changes

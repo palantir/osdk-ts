@@ -1,5 +1,17 @@
 # @osdk/client
 
+## 2.30.0
+
+### Minor Changes
+
+- db8df24: Allow `invalidateObjects` to accept interface instances (`Osdk.Instance<ObjectOrInterfaceDefinition>`).
+
+### Patch Changes
+
+- @osdk/api@2.30.0
+- @osdk/client.unstable@2.30.0
+- @osdk/generator-converters@2.30.0
+
 ## 2.29.0
 
 ### Minor Changes
