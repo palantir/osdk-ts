@@ -25,14 +25,14 @@ interface TableEditContainerProps<
   TData extends RowData,
 > {
   editableConfig: EditableConfig<TData, unknown>;
-  focusedRowId?: string | null;
+  hasFocusedRow?: boolean;
 }
 
 export function TableEditContainer<
   TData extends RowData,
 >({
   editableConfig,
-  focusedRowId,
+  hasFocusedRow,
 }: TableEditContainerProps<TData>): ReactElement {
   const {
     cellEdits,
@@ -100,7 +100,7 @@ export function TableEditContainer<
             )}
           </div>
         )
-        : (isInEditMode && !focusedRowId && (
+        : (isInEditMode && !hasFocusedRow && (
           <div className={styles.placeholder}>
             Select a row to edit data…
           </div>

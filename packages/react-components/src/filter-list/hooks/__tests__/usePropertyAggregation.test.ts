@@ -19,6 +19,7 @@ import { useOsdkAggregation } from "@osdk/react";
 import { renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { MockObjectType } from "../../__tests__/testUtils.js";
+import { NO_VALUE } from "../../utils/filterValues.js";
 import { usePropertyAggregation } from "../usePropertyAggregation.js";
 
 vi.mock("@osdk/react", () => ({
@@ -124,10 +125,10 @@ describe("usePropertyAggregation activeValues", () => {
     ]);
   });
 
-  it("treats null, undefined, and empty string aggregation values as equivalent to empty string activeValue", () => {
-    // Aggregation results represent missing property values as null. The hook
-    // coerces them to { value: "", isNull: true }. An activeValue of "" should
-    // be recognized as already present and not create a duplicate filtered-out entry.
+  it("groups null and undefined under one No-value row but keeps empty string as its own row", () => {
+    // Aggregation represents missing property values as null/undefined; the hook
+    // coerces those to a single No-value bucket keyed by the NO_VALUE sentinel.
+    // A literal empty string ("") is a real value and must remain a distinct row.
     vi.mocked(useOsdkAggregation).mockReturnValue({
       data: [
         { $group: { name: null }, $count: 3 },
@@ -145,18 +146,24 @@ describe("usePropertyAggregation activeValues", () => {
         MockObjectType,
         "name" as PropertyKeys<typeof MockObjectType>,
         undefined,
-        { activeValues: [""] },
       )
     );
 
-    // All three null-ish values map to "" in existingValues, so "" activeValue
-    // should not produce a filtered-out entry. dedupeEmptyAggregationRows merges the
-    // three null-ish rows into one isNull entry.
-    const emptyEntries = result.current.data.filter((d) => d.value === "");
-    expect(emptyEntries).toHaveLength(1);
-    expect(emptyEntries[0].isNull).toBe(true);
-    // dedupeEmptyAggregationRows sums counts: 3 + 2 + 1 = 6
-    expect(emptyEntries[0].count).toBe(6);
+    // The No-value bucket merges only null + undefined (3 + 2 = 5).
+    const noValueEntries = result.current.data.filter((d) =>
+      d.value === NO_VALUE
+    );
+    expect(noValueEntries).toHaveLength(1);
+    expect(noValueEntries[0].isNull).toBe(true);
+    expect(noValueEntries[0].count).toBe(5);
+
+    // The empty string is its own non-null row with its own count.
+    const emptyStringEntries = result.current.data.filter((d) =>
+      d.value === ""
+    );
+    expect(emptyStringEntries).toHaveLength(1);
+    expect(emptyStringEntries[0].isNull).toBeUndefined();
+    expect(emptyStringEntries[0].count).toBe(1);
   });
 
   it("returns data unchanged when activeValues is empty", () => {

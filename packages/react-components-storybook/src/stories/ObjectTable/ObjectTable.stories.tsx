@@ -211,6 +211,19 @@ const meta: Meta<EmployeeTableProps> = {
         category: "Events",
       },
     },
+    focusedRow: {
+      description:
+        "The primary key of the row to render as visually focused. When provided, focus is controlled.",
+      control: false,
+    },
+    onFocusedRowChanged: {
+      description:
+        "Called when the focused row changes — fires in both controlled and uncontrolled modes so callers can observe focus without taking it over.",
+      control: false,
+      table: {
+        category: "Events",
+      },
+    },
     renderCellContextMenu: {
       description:
         "If provided, will render this context menu when right clicking on a cell",
@@ -969,6 +982,7 @@ export const EventListeners: Story = {
     onColumnVisibilityChanged: fn(),
     onColumnsPinnedChanged: fn(),
     onColumnResize: fn(),
+    onFocusedRowChanged: fn(),
   } as EmployeeTableProps,
   parameters: {
     docs: {
@@ -979,6 +993,9 @@ export const EventListeners: Story = {
   selectionMode="multiple"
   onRowClick={(employee) => {
     console.log("Row clicked:", employee);
+  }}
+  onFocusedRowChanged={(employee) => {
+    console.log("Row focused:", employee);
   }}
   onColumnHeaderClick={(columnId) => {
     console.log("Column header clicked:", columnId);
@@ -1262,6 +1279,109 @@ return (
             selectedRows={selectedRows}
             isAllSelected={isSelectAll}
             onRowSelectionChanged={handleRowSelectionChanged}
+          />
+        </div>
+      </div>
+    );
+  },
+};
+
+export const ControlledFocusedRow: Story = {
+  args: {
+    objectType: Employee,
+    columnDefinitions: defaultEmployeeColumns,
+    onFocusedRowChanged: fn(),
+  } as EmployeeTableProps,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates the `focusedRow` / `onFocusedRowChanged` API. Click any row to focus it; "
+          + "the focused employee is shown in the banner above and persists until cleared by the caller. "
+          + "Because focus is controlled, outside clicks no longer auto-clear — the caller owns clearing.",
+      },
+      source: {
+        code:
+          `const [focusedRow, setFocusedRow] = useState<Osdk.Instance<Employee> | null>(null);
+
+return (
+  <>
+    <div>
+      Focused employee: {focusedRow?.fullName ?? "none"}
+      <button
+        onClick={() => setFocusedRow(null)}
+        disabled={focusedRow == null}
+      >
+        Clear focus
+      </button>
+    </div>
+    <ObjectTable
+      objectType={Employee}
+      focusedRow={focusedRow?.$primaryKey ?? null}
+      onFocusedRowChanged={setFocusedRow}
+    />
+  </>
+);`,
+      },
+    },
+  },
+  render: (args) => {
+    // `focusedRow` (the prop) is now a primary key, but the
+    // `onFocusedRowChanged` callback still delivers the full row, so the
+    // banner keeps a full object in state and passes its key back down.
+    type FocusedEmployee = NonNullable<
+      Parameters<NonNullable<EmployeeTableProps["onFocusedRowChanged"]>>[0]
+    >;
+    const [focusedRow, setFocusedRow] = useState<FocusedEmployee | null>(null);
+
+    const handleFocusedRowChanged = useCallback(
+      (row: FocusedEmployee | null) => {
+        args.onFocusedRowChanged?.(row);
+        setFocusedRow(row);
+      },
+      [args],
+    );
+
+    return (
+      <div>
+        <div
+          style={{
+            marginBottom: "16px",
+            padding: "12px",
+            backgroundColor: "#f0f9ff",
+            borderRadius: "4px",
+            border: "1px solid #bfdbfe",
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+          }}
+        >
+          <span>
+            <strong>Focused employee:</strong> {focusedRow == null
+              ? "none"
+              : `${focusedRow.fullName} (#${focusedRow.employeeNumber})`}
+          </span>
+          <button
+            type="button"
+            style={{
+              padding: "4px 8px",
+              fontSize: "12px",
+              border: "1px solid #d1d5db",
+              borderRadius: "4px",
+              background: "white",
+              cursor: focusedRow == null ? "not-allowed" : "pointer",
+            }}
+            onClick={() => setFocusedRow(null)}
+            disabled={focusedRow == null}
+          >
+            Clear focus
+          </button>
+        </div>
+        <div className="object-table-container" style={{ height: "600px" }}>
+          <ObjectTable
+            {...args}
+            focusedRow={focusedRow?.$primaryKey ?? null}
+            onFocusedRowChanged={handleFocusedRowChanged}
           />
         </div>
       </div>

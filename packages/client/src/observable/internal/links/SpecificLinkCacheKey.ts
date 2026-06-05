@@ -31,6 +31,7 @@ export const WHERE_CLAUSE_IDX = 5;
 export const ORDER_BY_CLAUSE_IDX = 6;
 export const SELECT_IDX = 7;
 export const INCLUDE_ALL_BASE_PROPERTIES_IDX = 8;
+export const RESOLVE_TO_OBJECT_TYPE_IDX = 9;
 
 /**
  * Storage data format for link query cache entries, similar to ListStorageData
@@ -59,6 +60,7 @@ export interface SpecificLinkCacheKey extends
       orderByClause: Canonical<Record<string, "asc" | "desc" | undefined>>,
       select?: Canonical<readonly string[]> | undefined,
       includeAllBaseObjectProperties?: true | undefined,
+      resolveToObjectType?: true | undefined,
     ]
   >
 {

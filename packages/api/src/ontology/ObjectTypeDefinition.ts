@@ -104,7 +104,30 @@ export namespace ObjectMetadata {
       fields: readonly string[];
     };
     hasReducers?: boolean;
+    /**
+     * Per-`type` metadata, discriminated on the wire property `type`.
+     *
+     * New per-type fields should be added as variants of {@link PropertyTypeMetadata}
+     * rather than as new top-level optionals on `Property`, so that the shape
+     * stays narrow and illegal combinations (e.g. a marking subtype on a `double`)
+     * are not representable.
+     */
+    typeMetadata?: PropertyTypeMetadata;
   }
+
+  /**
+   * Discriminated union of per-`type` property metadata. Narrow on
+   * `typeMetadata.type` to access the variant-specific fields.
+   */
+  export type PropertyTypeMetadata = {
+    /**
+     * Marking subtype: `"CBAC"` for classification-based access control,
+     * `"MANDATORY"` for mandatory markings. Absent for marking properties
+     * whose subtype is not exposed by the platform.
+     */
+    type: "marking";
+    markingType?: "CBAC" | "MANDATORY";
+  };
 
   export interface Link<
     Q extends ObjectTypeDefinition,
