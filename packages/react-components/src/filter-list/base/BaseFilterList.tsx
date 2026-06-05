@@ -39,6 +39,7 @@ export function BaseFilterList<D extends FilterDefinitionControls>(
     renderInput,
     getFilterKey,
     getFilterLabel,
+    getEmptyDisplayState,
     activeFilterCount,
     onReset,
     onFilterAdded,
@@ -120,6 +121,7 @@ export function BaseFilterList<D extends FilterDefinitionControls>(
               renderInput={renderInput}
               getFilterKey={getFilterKey}
               getFilterLabel={getFilterLabel}
+              getEmptyDisplayState={getEmptyDisplayState}
               enableSorting={enableSorting}
             />
           </div>

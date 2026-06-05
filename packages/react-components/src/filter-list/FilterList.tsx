@@ -28,6 +28,7 @@ import type {
 import { useFilterListState } from "./hooks/useFilterListState.js";
 import { useFilterVisibility } from "./hooks/useFilterVisibility.js";
 import { EMPTY_LINKED_FILTERS } from "./types/LinkedFilterTypes.js";
+import { getEmptyDisplayState } from "./utils/emptyFilterDisplayState.js";
 import { getFilterKey } from "./utils/getFilterKey.js";
 import { getFilterLabel } from "./utils/getFilterLabel.js";
 
@@ -61,7 +62,6 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     filterStates,
     setFilterState,
     clearFilterState,
-    seedFilterState,
     perFilterWhereClauses,
     perFilterLinkedFilters,
     activeFilterCount,
@@ -139,13 +139,9 @@ export function FilterList<Q extends ObjectTypeDefinition>(
   const handleFilterShown = useCallback(
     (filterKey: string) => {
       showFilter(filterKey);
-      // Re-seed initial state so a removed-then-re-added filter regains its
-      // header controls (include/exclude, clear all) without first needing a
-      // selection. `handleFilterRemoved` clears the state on removal.
-      seedFilterState(filterKey);
       onFilterAdded?.(filterKey, filterDefinitions ?? []);
     },
-    [showFilter, seedFilterState, onFilterAdded, filterDefinitions],
+    [showFilter, onFilterAdded, filterDefinitions],
   );
 
   const handleOrderChange = useCallback(
@@ -236,6 +232,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
       renderInput={renderInput}
       getFilterKey={getFilterKey}
       getFilterLabel={getFilterLabel}
+      getEmptyDisplayState={getEmptyDisplayState}
       activeFilterCount={activeFilterCount}
       onReset={handleReset}
       showResetButton={showResetButton}

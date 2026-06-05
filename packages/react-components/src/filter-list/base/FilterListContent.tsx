@@ -77,6 +77,7 @@ interface FilterListContentProps<D extends FilterDefinitionControls> {
   renderInput: RenderFilterInput<D>;
   getFilterKey: (definition: D) => string;
   getFilterLabel: (definition: D) => string;
+  getEmptyDisplayState?: (definition: D) => FilterState | undefined;
   enableSorting?: boolean;
   className?: string;
   style?: React.CSSProperties;
@@ -91,6 +92,7 @@ export function FilterListContent<D extends FilterDefinitionControls>({
   renderInput,
   getFilterKey,
   getFilterLabel,
+  getEmptyDisplayState,
   enableSorting,
   className,
   style,
@@ -219,7 +221,8 @@ export function FilterListContent<D extends FilterDefinitionControls>({
               const id = sortableIds[index];
               const filterKey = getFilterKey(definition);
               const label = getFilterLabel(definition);
-              const state = filterStates.get(filterKey);
+              const state = filterStates.get(filterKey)
+                ?? getEmptyDisplayState?.(definition);
 
               return (
                 <SortableFilterListItem
@@ -247,7 +250,8 @@ export function FilterListContent<D extends FilterDefinitionControls>({
                 definition={activeDefinition}
                 filterKey={activeFilterKey}
                 label={getFilterLabel(activeDefinition)}
-                filterState={filterStates.get(activeFilterKey)}
+                filterState={filterStates.get(activeFilterKey)
+                  ?? getEmptyDisplayState?.(activeDefinition)}
                 onFilterStateChanged={onFilterStateChanged}
                 onFilterRemoved={onFilterRemoved}
                 renderInput={renderInput}
@@ -268,7 +272,8 @@ export function FilterListContent<D extends FilterDefinitionControls>({
     >
       {filterDefinitions.map((definition) => {
         const filterKey = getFilterKey(definition);
-        const state = filterStates.get(filterKey);
+        const state = filterStates.get(filterKey)
+          ?? getEmptyDisplayState?.(definition);
 
         return (
           <FilterListItem

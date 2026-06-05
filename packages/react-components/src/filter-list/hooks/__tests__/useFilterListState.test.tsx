@@ -410,71 +410,6 @@ describe("useFilterListState", () => {
     });
   });
 
-  describe("seedFilterState", () => {
-    it("restores a linked filter's initial wrapper after clear (re-add flow)", () => {
-      const linkedDef = createLinkedPropertyFilterDef("manager", "fullName");
-      const props = createProps({ filterDefinitions: [linkedDef] });
-      const { result } = renderHook(() => useFilterListState(props));
-      const filterKey = getFilterKey(linkedDef);
-
-      // Removing a filter clears its state (FilterList.handleFilterRemoved).
-      act(() => {
-        result.current.clearFilterState(filterKey);
-      });
-      expect(result.current.filterStates.has(filterKey)).toBe(false);
-
-      // Re-adding it (FilterList.handleFilterShown) re-seeds the initial
-      // wrapper so header controls (include/exclude) surface immediately.
-      act(() => {
-        result.current.seedFilterState(filterKey);
-      });
-      expect(result.current.filterStates.get(filterKey)).toEqual({
-        type: "linkedProperty",
-        linkedFilterState: { type: "EXACT_MATCH", values: [] },
-      });
-    });
-
-    it("does not clobber an existing (user-modified) state", () => {
-      const nameDef = createPropertyFilterDef(
-        "name",
-        "LISTOGRAM",
-        createExactMatchState([]),
-      );
-      const props = createProps({ filterDefinitions: [nameDef] });
-      const { result } = renderHook(() => useFilterListState(props));
-      const filterKey = getFilterKey(nameDef);
-
-      act(() => {
-        result.current.setFilterState(
-          filterKey,
-          createExactMatchState(["John"]),
-        );
-      });
-
-      act(() => {
-        result.current.seedFilterState(filterKey);
-      });
-      expect(result.current.filterStates.get(filterKey)).toEqual(
-        createExactMatchState(["John"]),
-      );
-    });
-
-    it("is a no-op for an unknown filter key", () => {
-      const nameDef = createPropertyFilterDef(
-        "name",
-        "LISTOGRAM",
-        createExactMatchState([]),
-      );
-      const props = createProps({ filterDefinitions: [nameDef] });
-      const { result } = renderHook(() => useFilterListState(props));
-
-      act(() => {
-        result.current.seedFilterState("does-not-exist");
-      });
-      expect(result.current.filterStates.has("does-not-exist")).toBe(false);
-    });
-  });
-
   it("works without objectSet (objectType only)", () => {
     const nameDef = createPropertyFilterDef(
       "name",
@@ -718,19 +653,6 @@ describe("useFilterListState", () => {
 
       expect(result.current.linkedFilters).toHaveLength(1);
       expect(result.current.linkedFilters[0].linkName).toBe("manager");
-    });
-
-    it("seeds initial state from the definition's filterState wrapper", () => {
-      const linkedDef = createLinkedPropertyFilterDef("manager", "fullName");
-      const props = createProps({ filterDefinitions: [linkedDef] });
-      const { result } = renderHook(() => useFilterListState(props));
-
-      // Without seeding, header controls (include/exclude, clear all) never
-      // appear because FilterListItem sees an undefined filterState.
-      expect(result.current.filterStates.get(getFilterKey(linkedDef))).toEqual({
-        type: "linkedProperty",
-        linkedFilterState: { type: "EXACT_MATCH", values: [] },
-      });
     });
 
     it("still reports state changes for UI-only linked filters", () => {

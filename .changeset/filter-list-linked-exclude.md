@@ -2,4 +2,4 @@
 "@osdk/react-components": patch
 ---
 
-Add include/exclude and clear-all controls to FilterList linked-property filters (seeded from the definition's filterState so the overflow … menu surfaces, and re-seeded when a removed filter is added back), and show an active state on the open overflow (…) button
+Add include/exclude and clear-all controls to FilterList linked-property filters. The overflow (…) menu now surfaces from the filter's component type, so the controls appear for empty and just-added filters without pre-filling any state, and the open overflow (…) button shows an active state.
