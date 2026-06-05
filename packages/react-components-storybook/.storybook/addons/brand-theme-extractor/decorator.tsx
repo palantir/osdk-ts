@@ -15,7 +15,7 @@
  */
 
 import type { Decorator } from "@storybook/react-vite";
-import React, { useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { GLOBALS_KEY } from "./constants.js";
 import { parseBrandThemeState } from "./state.js";
 import { getTokenRole, TOKEN_ROLES } from "./token-map.js";
@@ -28,9 +28,9 @@ const STYLE_ID = "brand-theme-overrides";
  * document head. Uses :root with high specificity to override theme values.
  */
 export const BrandThemeDecorator: Decorator = (Story, context) => {
-  const brandTheme = React.useMemo(
+  const brandTheme = useMemo(
     () => parseBrandThemeState(context.globals[GLOBALS_KEY]),
-    [context.globals],
+    [context.globals[GLOBALS_KEY]],
   );
 
   const cssText = useMemo(() => {
@@ -81,9 +81,7 @@ export const BrandThemeDecorator: Decorator = (Story, context) => {
 
     if (overrides.length === 0) return "";
 
-    // Use @layer to ensure overrides sit above theme layers.
-    // The styles.css layers are: storybook, osdk.styles, cbac.components, themes.
-    // An unlayered style block always beats layered styles in the cascade.
+    // Use :root:root (doubled specificity) to override theme layers.
     // Reset block reverts stale tokens; override block applies the new theme.
     return `:root:root {\n${resets.join("\n")}\n${overrides.join("\n")}\n}`;
   }, [brandTheme]);

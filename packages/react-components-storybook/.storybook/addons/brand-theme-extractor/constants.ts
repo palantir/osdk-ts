@@ -15,5 +15,4 @@
  */
 
 export const ADDON_ID = "osdk/brand-theme-extractor";
-export const PANEL_ID = `${ADDON_ID}/panel`;
 export const GLOBALS_KEY = "brandTheme";

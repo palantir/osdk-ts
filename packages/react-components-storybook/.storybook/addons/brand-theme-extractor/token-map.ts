@@ -366,13 +366,6 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
   },
 ];
 
-/** Get token roles filtered by category */
-export function getTokensByCategory(
-  category: string,
-): TokenRoleDefinition[] {
-  return TOKEN_ROLES.filter((t) => t.category === category);
-}
-
 /** Lookup a token role definition by role name */
 export function getTokenRole(
   role: string,

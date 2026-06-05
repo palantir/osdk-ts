@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  getThemePresetMode,
-  THEME_PRESETS,
-  type ThemePreset,
-} from "./presets.js";
+import { THEME_PRESETS, type ThemePreset } from "./presets.js";
 import type {
   BrandThemeGlobals,
   ExtractedColor,
@@ -56,14 +52,13 @@ export function createThemeStateForMode(
   }
 
   const effectiveColorMode = preset.colorMode ?? colorMode;
-  const presetMode = getThemePresetMode(preset, effectiveColorMode);
 
   return {
     active: true,
     colorMode: effectiveColorMode,
     selectedPresetId: preset.id,
     palette: [],
-    assignments: presetMode.assignments,
+    assignments: preset.assignments,
   };
 }
 
@@ -77,12 +72,13 @@ export function parseBrandThemeState(raw: unknown): BrandThemeGlobals {
     return getDefaultBrandThemeState();
   }
 
+  const defaults = getDefaultBrandThemeState();
   return {
-    active: getBoolean(parsed.active, getDefaultBrandThemeState().active),
+    active: getBoolean(parsed.active, defaults.active),
     colorMode: getThemeColorMode(parsed.colorMode),
     selectedPresetId: getString(
       parsed.selectedPresetId,
-      getDefaultBrandThemeState().selectedPresetId,
+      defaults.selectedPresetId,
     ),
     palette: getExtractedColors(parsed.palette),
     assignments: getTokenAssignments(parsed.assignments),

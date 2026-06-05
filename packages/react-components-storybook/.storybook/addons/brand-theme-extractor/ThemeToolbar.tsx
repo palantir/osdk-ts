@@ -29,21 +29,17 @@ import React, {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
-import { useGlobals, useStorybookApi } from "storybook/manager-api";
+import { useGlobals } from "storybook/manager-api";
 import { styled } from "storybook/theming";
-import { GLOBALS_KEY, PANEL_ID } from "./constants.js";
-import {
-  getThemePresetMode,
-  THEME_PRESETS,
-  type ThemePreset,
-} from "./presets.js";
+import { GLOBALS_KEY } from "./constants.js";
+import { THEME_PRESETS, type ThemePreset } from "./presets.js";
 import {
   createThemeStateForMode,
   findThemePreset,
   parseBrandThemeState,
   stringifyBrandThemeState,
 } from "./state.js";
-import type { BrandThemeGlobals, ThemeColorMode } from "./types.js";
+import type { BrandThemeGlobals } from "./types.js";
 
 const DEFAULT_SWATCHES: [string, string, string] = [
   "#ffffff",
@@ -61,7 +57,6 @@ interface DropdownPosition {
 
 export const ThemeToolbar = React.memo(function ThemeToolbarFn() {
   const [globals, updateGlobals] = useGlobals();
-  const api = useStorybookApi();
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [dropdownPosition, setDropdownPosition] = useState<DropdownPosition>({
@@ -73,19 +68,16 @@ export const ThemeToolbar = React.memo(function ThemeToolbarFn() {
 
   const themeState = useMemo(
     () => parseBrandThemeState(globals[GLOBALS_KEY]),
-    [globals],
+    [globals[GLOBALS_KEY]],
   );
   const selectedPreset = useMemo(
     () => findThemePreset(themeState.selectedPresetId),
     [themeState.selectedPresetId],
   );
-  const selectedMode = selectedPreset
-    ? getThemePresetMode(selectedPreset, themeState.colorMode)
-    : undefined;
   const selectedLabel = selectedPreset?.label ?? "Custom";
   const selectedSwatches = useMemo(
-    () => selectedMode?.swatches ?? getCustomSwatches(themeState),
-    [selectedMode?.swatches, themeState],
+    () => selectedPreset?.swatches ?? getCustomSwatches(themeState),
+    [selectedPreset?.swatches, themeState],
   );
   const visiblePresets = useMemo(() => {
     const normalizedQuery = searchQuery.trim().toLowerCase();
@@ -162,12 +154,6 @@ export const ThemeToolbar = React.memo(function ThemeToolbarFn() {
     };
   }, [open, updateDropdownPosition]);
 
-  const openBrandThemePanel = useCallback(() => {
-    api.setSelectedPanel(PANEL_ID);
-    api.togglePanel(true);
-    api.togglePanelPosition("bottom");
-  }, [api]);
-
   const toggleDropdown = useCallback(() => {
     setOpen((currentOpen) => !currentOpen);
   }, []);
@@ -181,9 +167,8 @@ export const ThemeToolbar = React.memo(function ThemeToolbarFn() {
       updateGlobals({ [GLOBALS_KEY]: stringifyBrandThemeState(nextState) });
       setOpen(false);
       setSearchQuery("");
-      openBrandThemePanel();
     },
-    [openBrandThemePanel, themeState.colorMode, updateGlobals],
+    [themeState.colorMode, updateGlobals],
   );
 
   return (
@@ -234,24 +219,11 @@ export const ThemeToolbar = React.memo(function ThemeToolbarFn() {
               <PresetOption
                 key={preset.id}
                 preset={preset}
-                colorMode={themeState.colorMode}
                 selected={preset.id === themeState.selectedPresetId}
                 onSelect={selectPreset}
               />
             ))}
           </PresetList>
-
-          <DropdownDivider />
-          <OpenPanelButton
-            type="button"
-            onClick={() => {
-              openBrandThemePanel();
-              setOpen(false);
-            }}
-          >
-            <PaintBrushIcon />
-            Customize
-          </OpenPanelButton>
         </Dropdown>,
         document.body,
       )}
@@ -261,15 +233,13 @@ export const ThemeToolbar = React.memo(function ThemeToolbarFn() {
 
 interface PresetOptionProps {
   preset: ThemePreset;
-  colorMode: ThemeColorMode;
   selected: boolean;
   onSelect: (preset: ThemePreset) => void;
 }
 
 const PresetOption = React.memo(function PresetOptionFn(
-  { preset, colorMode, selected, onSelect }: PresetOptionProps,
+  { preset, selected, onSelect }: PresetOptionProps,
 ) {
-  const presetMode = getThemePresetMode(preset, colorMode);
   const handleSelect = useCallback(() => {
     onSelect(preset);
   }, [onSelect, preset]);
@@ -284,7 +254,7 @@ const PresetOption = React.memo(function PresetOptionFn(
       title={preset.description}
     >
       <SwatchGroup aria-hidden="true">
-        {presetMode.swatches.map((swatch) => (
+        {preset.swatches.map((swatch) => (
           <PresetSwatch key={swatch} color={swatch} />
         ))}
       </SwatchGroup>
@@ -440,31 +410,6 @@ const PresetSwatch = styled.span<{ color: string }>(({ color, theme }) => ({
   borderWidth: 1,
   height: 14,
   width: 14,
-}));
-
-const DropdownDivider = styled.div(({ theme }) => ({
-  borderBlockStartColor: theme.appBorderColor,
-  borderBlockStartStyle: "solid",
-  borderBlockStartWidth: 1,
-  marginBlock: 8,
-}));
-
-const OpenPanelButton = styled.button(({ theme }) => ({
-  alignItems: "center",
-  backgroundColor: "transparent",
-  borderRadius: 4,
-  borderWidth: 0,
-  color: theme.color.defaultText,
-  cursor: "pointer",
-  display: "flex",
-  fontSize: 13,
-  gap: 8,
-  paddingBlock: 8,
-  paddingInline: 8,
-  width: "100%",
-  "&:hover": {
-    backgroundColor: theme.background.hoverable,
-  },
 }));
 
 const PresetLabel = styled.span({
