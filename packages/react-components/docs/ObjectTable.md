@@ -1293,9 +1293,9 @@ The ObjectTable automatically implements infinite scroll pagination, with page s
 
 ## Exporting Data
 
-Pass a `tableRef` to obtain an `ObjectTableHandle<Q, RDPs>`. Its `getSnapshot()` method loads **all** matching rows (up to `rowLimit`, default `10_000`) and returns a format-agnostic snapshot of the table's columns and rows, so you can export to CSV, Excel, JSON, the clipboard, or anywhere else.
+Pass a `tableRef` to obtain an `ObjectTableHandle<Q, RDPs>`. Its `getSnapshot()` method loads **all** matching rows and returns a format-agnostic snapshot of the table's columns and rows, so you can export to CSV, Excel, JSON, the clipboard, or anywhere else. When the total row count exceeds `rowLimit` (default `10_000`), the returned promise rejects; otherwise every matching row is loaded.
 
-The snapshot reflects the table's current column visibility, ordering, and pinning. Property, derived-property, and function-backed columns are all included. Custom-rendered columns have no underlying value and are omitted. Each row exposes a `getValue(columnId)` accessor; cells are the raw value, or the literal string `"Error"` if a function-backed cell failed to load (the promise still resolves with the rest of the snapshot).
+The snapshot reflects the table's current column visibility, ordering, and pinning. Property, derived-property, and function-backed columns are all included. Custom-rendered columns have no underlying value and are omitted. Each row exposes a `getValue(columnId)` accessor; cells are the raw value, or the thrown `Error` instance if a function-backed cell failed to load (the promise still resolves with the rest of the snapshot).
 
 ```typescript
 import type { Employee } from "@my/osdk";
@@ -1346,7 +1346,7 @@ function EmployeeTableWithDownload() {
 }
 ```
 
-`getSnapshot()` accepts an optional `{ rowLimit }` to cap how many rows are loaded. `row.getValue(columnId)` returns the raw cell value (or `"Error"` for failed function-backed cells, or `undefined` for unknown column ids) — your formatter handles the rest.
+`getSnapshot()` accepts an optional `{ rowLimit }` that bounds the snapshot size — when the total row count exceeds it, the promise rejects. `row.getValue(columnId)` returns the raw cell value (or the thrown `Error` instance for failed function-backed cells, or `undefined` for unknown column ids) — your formatter handles the rest.
 
 ## TypeScript Tips
 

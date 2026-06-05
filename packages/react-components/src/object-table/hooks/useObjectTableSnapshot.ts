@@ -78,7 +78,8 @@ interface UseObjectTableSnapshotArgs<
  * Builds the {@link ObjectTableHandle} exposed via `ObjectTable`'s `tableRef`.
  *
  * `getSnapshot` reads the table's currently visible columns to decide what to
- * export, paginates the resolved object set (up to `rowLimit`), and resolves
+ * export, rejects up front when the set's `totalCount` exceeds `rowLimit`,
+ * otherwise paginates the entire resolved object set, and resolves
  * function-backed column values for the loaded rows.
  */
 export function useObjectTableSnapshot<

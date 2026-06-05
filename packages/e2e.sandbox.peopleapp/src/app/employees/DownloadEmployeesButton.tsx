@@ -7,9 +7,9 @@ import type { RefObject } from "react";
 import React, { useCallback, useState } from "react";
 import { Button } from "../../components/Button.js";
 
-// Bound the number of rows loaded so a very large object set can't pull
-// unbounded pages into the client. `getSnapshot` stops fetching once it has
-// this many rows.
+// Guard against pulling a very large object set into the client.
+// `getSnapshot` rejects when the total row count exceeds this value;
+// otherwise it loads every matching row.
 const MAX_DOWNLOAD_ROWS = 10_000;
 
 interface DownloadEmployeesButtonProps<
