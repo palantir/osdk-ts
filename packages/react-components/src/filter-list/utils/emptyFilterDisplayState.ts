@@ -77,6 +77,8 @@ export function getEmptyDisplayState<Q extends ObjectTypeDefinition>(
         : { type: "linkedProperty", linkedFilterState: inner };
     }
     case "HAS_LINK":
+      // hasLink supports the include/exclude overflow dropdown.
+      return { type: "hasLink", hasLink: false };
     case "KEYWORD_SEARCH":
     case "CUSTOM":
       return undefined;

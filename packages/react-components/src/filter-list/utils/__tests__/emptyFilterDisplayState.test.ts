@@ -95,8 +95,8 @@ describe("getEmptyDisplayState", () => {
     });
   });
 
-  it("returns undefined for filter kinds without overflow controls", () => {
+  it("returns an empty hasLink state for HAS_LINK", () => {
     expect(getEmptyDisplayState(createHasLinkFilterDef("manager")))
-      .toBeUndefined();
+      .toEqual({ type: "hasLink", hasLink: false });
   });
 });

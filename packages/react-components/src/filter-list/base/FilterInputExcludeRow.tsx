@@ -19,6 +19,7 @@ import classnames from "classnames";
 import React, { memo, useCallback } from "react";
 import type { FilterState } from "../FilterListItemApi.js";
 import {
+  filterHasActiveState,
   getEffectiveFilterState,
   getSelectedCount,
   supportsExcluding,
@@ -86,7 +87,7 @@ function FilterInputExcludeRowInner({
             </span>
           )}
         </div>
-        {onClearAll && selectedCount > 0 && (
+        {onClearAll && filterHasActiveState(effectiveState) && (
           <Button
             className={styles.clearAllButton}
             onClick={onClearAll}
