@@ -39,7 +39,7 @@ import type { ObjectTableProps } from "./ObjectTableApi.js";
 import { BaseTable } from "./Table.js";
 import type { HeaderMenuFeatureFlags } from "./TableHeaderWithPopover.js";
 import { deriveSelectionObjectSet } from "./utils/deriveSelectionObjectSet.js";
-import { getRowId } from "./utils/getRowId.js";
+import { getRowId, getRowIdFromPrimaryKey } from "./utils/getRowId.js";
 import type { EditableConfig } from "./utils/types.js";
 
 const EMPTY_ARRAY: [] = [];
@@ -93,6 +93,8 @@ export function ObjectTable<
   enableColumnResizing = true,
   enableColumnConfig = true,
   editMode = "manual",
+  focusedRow,
+  onFocusedRowChanged,
   tableRef,
   ...props
 }: ObjectTableProps<Q, RDPs, FunctionColumns>): React.ReactElement {
@@ -321,6 +323,10 @@ export function ObjectTable<
       editableConfig={editableConfig}
       getRowAttributes={props.getRowAttributes}
       showEditFooter={props.showEditFooter}
+      focusedRowId={focusedRow == null
+        ? focusedRow
+        : getRowIdFromPrimaryKey<Q>(focusedRow)}
+      onFocusedRowChanged={onFocusedRowChanged}
     />
   );
 }
