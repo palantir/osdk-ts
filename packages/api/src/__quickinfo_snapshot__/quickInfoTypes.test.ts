@@ -20,15 +20,17 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, expectTypeOf, it } from "vitest";
 import type { ObjectSet } from "../objectSet/ObjectSet.js";
 import type { EmployeeApiTest } from "../test/EmployeeApiTest.js";
-import { renderQuickInfoProbes } from "./probeUtils.js";
+import { renderQuickInfoProbes } from "./testUtils.probe.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const tsconfigPath = path.resolve(here, "../../tsconfig.json");
-const probesDir = path.resolve(here, "probes");
+const probesDir = path.resolve(here, "testUtils.probes");
 
-// Auto-discover every `probes/*.ts` file. Add a new surface by dropping a
-// `probes/<name>.ts` file alongside the existing ones; the test will pick
-// it up on the next run. All probe files share one TS program.
+// Auto-discover every `testUtils.probes/*.ts` file. Add a new surface by
+// dropping a `testUtils.probes/<name>.ts` file alongside the existing ones;
+// the test will pick it up on the next run. All probe files share one TS
+// program. The `testUtils.` prefix keeps these files out of the build output
+// via `isTestFile` in monorepo.tool.transpile.
 const probesFiles = fs.readdirSync(probesDir).filter((f) => f.endsWith(".ts"))
   .sort();
 const allProbes = renderQuickInfoProbes({

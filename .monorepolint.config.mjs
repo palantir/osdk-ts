@@ -233,6 +233,7 @@ const archetypeRules = archetypes(
       "@osdk/create-app.template.*",
       "@osdk/create-widget.template.*",
       "@osdk/shared.test",
+      "@osdk/shared.test.intellisense",
     ],
     {
       ...INTERNAL_LIBRARY_RULES,
