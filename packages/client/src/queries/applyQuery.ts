@@ -35,6 +35,7 @@ import { createMediaFromReference } from "../createMediaFromReference.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { createObjectSet } from "../objectSet/createObjectSet.js";
 import { hydrateAttachmentFromRidInternal } from "../public-utils/hydrateAttachmentFromRid.js";
+import { addAttributionHeader } from "../util/addAttributionHeader.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import { augmentRequestContext } from "../util/augmentRequestContext.js";
 import {
@@ -65,9 +66,11 @@ export async function applyQuery<
   }
 
   const response = await Queries.execute(
-    addUserAgentAndRequestContextHeaders(
-      augmentRequestContext(client, _ => ({ finalMethodCall: "applyQuery" })),
-      query,
+    addAttributionHeader(
+      addUserAgentAndRequestContextHeaders(
+        augmentRequestContext(client, _ => ({ finalMethodCall: "applyQuery" })),
+        query,
+      ),
     ),
     await client.ontologyRid,
     query.apiName,

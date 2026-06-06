@@ -48,6 +48,7 @@ import { beforeAll, describe, expect, expectTypeOf, it, vi } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { createAttachmentUpload } from "../object/AttachmentUpload.js";
+import { ATTRIBUTION_RID_HEADER } from "../util/addAttributionHeader.js";
 import { ActionValidationError } from "./ActionValidationError.js";
 import { remapActionResponse } from "./applyAction.js";
 
@@ -57,6 +58,7 @@ describe.each([
 ])("actions for %s", (baseUrl) => {
   let client: Client;
   let apiServer: SetupServer;
+  let defaultOntologyRid: string;
 
   beforeAll(() => {
     const testSetup = startNodeApiServer(
@@ -64,10 +66,37 @@ describe.each([
       createClient,
     );
     ({ client, apiServer } = testSetup);
+    defaultOntologyRid = testSetup.fauxFoundry.defaultOntologyRid;
 
     return () => {
       apiServer.close();
     };
+  });
+
+  describe("attribution header", () => {
+    it("sends the single-rid attribution header on an action call", async () => {
+      let attributionRid: string | null = null;
+      const listener = ({ request }: { request: Request }) => {
+        if (
+          request.url.includes("/actions/") && request.url.includes("/apply")
+        ) {
+          attributionRid = request.headers.get(ATTRIBUTION_RID_HEADER);
+        }
+      };
+      apiServer.events.on("request:start", listener);
+
+      try {
+        await client(createOffice).applyAction({
+          officeId: "NYC",
+          address: "123 Main Street",
+          capacity: 100,
+        });
+      } finally {
+        apiServer.events.removeListener("request:start", listener);
+      }
+
+      expect(attributionRid).toBe(defaultOntologyRid);
+    });
   });
 
   it("conditionally returns the edits", async () => {
