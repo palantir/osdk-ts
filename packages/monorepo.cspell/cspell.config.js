@@ -147,6 +147,11 @@ const cspell = {
       filename: ["**/*.{mts,cts,ts,tsx}"],
       dictionaries: ["osdk-code"],
       words: [
+        // @osdk/telemetry: matches OpenTelemetry's *Millis config naming
+        "Millis",
+        // back/forward cache (pagehide lifecycle docs)
+        "bfcache",
+
         // react-devtools words
         "DEDUP",
         "Keymap",
