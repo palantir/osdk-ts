@@ -50,6 +50,7 @@ export const BasePdfViewer: React.ForwardRefExoticComponent<
     initialAutoSize = false,
     initialSidebarOpen = false,
     enableDownload = false,
+    downloadFileName,
     sidebarMode: sidebarModeProp = "thumbnails",
     outlineIcons,
     className,
@@ -90,8 +91,8 @@ export const BasePdfViewer: React.ForwardRefExoticComponent<
     const annotationsByPage = usePdfAnnotationsByPage(annotations);
 
     const handleDownload = useCallback(() => {
-      viewer.download();
-    }, [viewer]);
+      viewer.download(downloadFileName);
+    }, [viewer, downloadFileName]);
 
     const rootClassName = classnames(styles.pdfViewer, className);
 
