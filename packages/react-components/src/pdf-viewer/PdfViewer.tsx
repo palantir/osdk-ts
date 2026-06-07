@@ -17,7 +17,7 @@
 import { Error as ErrorIcon, Spin } from "@blueprintjs/icons";
 import classnames from "classnames";
 import "pdfjs-dist/web/pdf_viewer.css";
-import React, { forwardRef, useImperativeHandle } from "react";
+import React, { forwardRef, useCallback, useImperativeHandle } from "react";
 import { PdfAnnotationOverlay } from "./components/PdfAnnotationOverlay.js";
 import { PdfViewerOutlineSidebar } from "./components/PdfViewerOutlineSidebar.js";
 import { PdfViewerSearchBar } from "./components/PdfViewerSearchBar.js";
@@ -89,6 +89,10 @@ export const BasePdfViewer: React.ForwardRefExoticComponent<
 
     const annotationsByPage = usePdfAnnotationsByPage(annotations);
 
+    const handleDownload = useCallback(() => {
+      viewer.download();
+    }, [viewer]);
+
     const rootClassName = classnames(styles.pdfViewer, className);
 
     if (viewer.loading) {
@@ -135,7 +139,7 @@ export const BasePdfViewer: React.ForwardRefExoticComponent<
           onAutoSizeToggle={viewer.toggleAutoSize}
           onSearchOpen={viewer.search.openSearch}
           onSidebarToggle={viewer.toggleSidebar}
-          onDownload={viewer.download}
+          onDownload={handleDownload}
           enableDownload={enableDownload}
           onRotateLeft={viewer.rotateLeft}
           onRotateRight={viewer.rotateRight}
