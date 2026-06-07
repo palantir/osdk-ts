@@ -49,7 +49,11 @@ import type {
 import type { ObjectTypeDefinition } from "./object/ObjectTypeDefinition.js";
 import type { ObjectTypeStatus } from "./object/ObjectTypeStatus.js";
 import type { PropertyTypeType } from "./properties/PropertyTypeType.js";
-import { isExotic, isStruct } from "./properties/PropertyTypeType.js";
+import {
+  isExotic,
+  isExoticString,
+  isStruct,
+} from "./properties/PropertyTypeType.js";
 // From https://stackoverflow.com/a/79288714
 const ISO_8601_DURATION =
   /^P(?!$)(?:(?:((?:\d+Y)|(?:\d+(?:\.|,)\d+Y$))?((?:\d+M)|(?:\d+(?:\.|,)\d+M$))?((?:\d+D)|(?:\d+(?:\.|,)\d+D$))?(T((?:\d+H)|(?:\d+(?:\.|,)\d+H$))?((?:\d+M)|(?:\d+(?:\.|,)\d+M$))?((?:\d+S)|(?:\d+(?:\.|,)\d+S$))?)?)|(?:\d+(?:(?:\.|,)\d+)?W))$/;
@@ -186,10 +190,14 @@ export function defineObject(
         && !isExotic(titleProp.mainValue.type)),
     `Title property ${objectDef.titlePropertyApiName} must be a primitive type`,
   );
+
+  // Only allow creation if primary key is a primitive type or an "exotic string" type.
+  // This is because the "exotic string" contains other options such as analyzers/render hints that are also valid.
+  const apiNameProp = objectDef.properties
+    ?.[objectDef.primaryKeyPropertyApiName]
+    ?.type;
   invariant(
-    !isExotic(
-      objectDef.properties?.[objectDef.primaryKeyPropertyApiName]?.type,
-    ),
+    !isExotic(apiNameProp) || isExoticString(apiNameProp),
     `Primary key property ${objectDef.primaryKeyPropertyApiName} can only be primitive types`,
   );
 
