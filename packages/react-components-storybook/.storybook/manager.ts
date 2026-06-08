@@ -16,7 +16,9 @@
 
 import type { TagBadgeParameters } from "storybook-addon-tag-badges/manager-helpers";
 import type { API } from "storybook/manager-api";
-import { addons } from "storybook/manager-api";
+import { addons, types } from "storybook/manager-api";
+import { ADDON_ID } from "./addons/brand-theme-extractor/constants.js";
+import { ThemeToolbar } from "./addons/brand-theme-extractor/ThemeToolbar.js";
 
 addons.setConfig({
   tagBadges: [
@@ -67,3 +69,14 @@ addons.register(
     }, 100);
   },
 );
+
+// Brand Theme Extractor toolbar
+addons.register(ADDON_ID, () => {
+  addons.add(`${ADDON_ID}/theme-toolbar`, {
+    type: types.TOOL,
+    title: "Theme",
+    match: ({ viewMode, tabId }) =>
+      Boolean(viewMode?.match(/^(story|docs)$/)) && !tabId,
+    render: ThemeToolbar,
+  });
+});
