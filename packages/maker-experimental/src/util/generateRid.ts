@@ -438,9 +438,11 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
   private readonly groupIds: BiMap<ReadableId, GroupId>;
   private readonly objectTypeIds: BiMap<ReadableId, string>;
   private readonly randomnessUuid?: string;
+  private readonly importedTypes: OntologyDefinition;
 
   constructor(importedTypes: OntologyDefinition, randomnessUuid?: string) {
     this.objectTypeRids = BiMapImpl.create();
+    this.importedTypes = importedTypes;
 
     Object.entries(importedTypes.OBJECT_TYPE).filter(([_apiName, object]) =>
       object.ridHint !== undefined
@@ -625,6 +627,15 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
     const readableId = ReadableIdGenerator.getForObjectType(apiName);
     if (this.objectTypeRids.includes(readableId)) {
       return this.objectTypeRids.get(readableId)!;
+    }
+    // An imported object whose proxy fired after construction won't be in the
+    // BiMap yet. Promote its ridHint now so links emit the real rid.
+    const importedRidHint = this.importedTypes.OBJECT_TYPE[apiName]?.ridHint as
+      | ObjectTypeRid
+      | undefined;
+    if (importedRidHint !== undefined) {
+      this.objectTypeRids.put(readableId, importedRidHint);
+      return importedRidHint;
     }
     const rid = `ri.ontology-metadata.temp.object-type.${
       this.hashString(apiName)
