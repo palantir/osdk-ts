@@ -712,18 +712,19 @@ Styling for filter list components including search, checkboxes, listogram, and 
 
 #### Filter Item Header Actions
 
-| Variable                                         | Default Value                             | Description                    |
-| ------------------------------------------------ | ----------------------------------------- | ------------------------------ |
-| `--osdk-filter-item-header-action-padding`       | `calc(var(--osdk-surface-spacing) * 0.5)` | Action button padding          |
-| `--osdk-filter-item-header-action-color`         | `var(--osdk-typography-color-muted)`      | Action button color            |
-| `--osdk-filter-item-header-action-bg-hover`      | `var(--osdk-custom-color-gray-1)`         | Action button hover background |
-| `--osdk-filter-item-header-action-border-radius` | `var(--osdk-surface-border-radius)`       | Action button border radius    |
+| Variable                                         | Default Value                                         | Description                                                       |
+| ------------------------------------------------ | ----------------------------------------------------- | ----------------------------------------------------------------- |
+| `--osdk-filter-item-header-action-padding`       | `calc(var(--osdk-surface-spacing) * 0.5)`             | Action button padding                                             |
+| `--osdk-filter-item-header-action-color`         | `var(--osdk-typography-color-muted)`                  | Action button color                                               |
+| `--osdk-filter-item-header-action-bg-hover`      | `var(--osdk-custom-color-gray-1)`                     | Action button hover background                                    |
+| `--osdk-filter-item-header-action-bg-active`     | `var(--osdk-surface-background-color-default-active)` | Action button active/pressed background (open overflow or search) |
+| `--osdk-filter-item-header-action-color-active`  | `var(--osdk-typography-color-default-rest)`           | Action button active/pressed text color                           |
+| `--osdk-filter-item-header-action-border-radius` | `var(--osdk-surface-border-radius)`                   | Action button border radius                                       |
 
 #### Exclude Dropdown
 
 | Variable                                                    | Default Value                               | Description                    |
 | ----------------------------------------------------------- | ------------------------------------------- | ------------------------------ |
-| `--osdk-filter-item-exclude-dropdown-font-family`           | `var(--osdk-typography-family-default)`     | Dropdown font family           |
 | `--osdk-filter-item-exclude-dropdown-font-size`             | `var(--osdk-typography-size-body-small)`    | Dropdown font size             |
 | `--osdk-filter-item-exclude-dropdown-color`                 | `var(--osdk-typography-color-default-rest)` | Dropdown text color            |
 | `--osdk-filter-item-exclude-dropdown-trigger-color`         | `var(--osdk-intent-primary-rest)`           | Dropdown trigger color         |
@@ -846,32 +847,34 @@ Styling for filter list components including search, checkboxes, listogram, and 
 
 #### Listogram Tokens
 
-| Variable                                      | Default Value                                                                | Description                     |
-| --------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------------- |
-| `--osdk-filter-listogram-gap`                 | `var(--osdk-surface-spacing)`                                                | Listogram gap                   |
-| `--osdk-filter-listogram-row-gap`             | `calc(var(--osdk-surface-spacing) * 2)`                                      | Listogram row gap               |
-| `--osdk-filter-listogram-row-padding`         | `var(--osdk-surface-spacing)`                                                | Listogram row padding           |
-| `--osdk-filter-listogram-row-border-radius`   | `var(--osdk-surface-border-radius)`                                          | Listogram row border radius     |
-| `--osdk-filter-listogram-row-transition`      | `var(--osdk-emphasis-transition-duration) var(--osdk-emphasis-ease-default)` | Listogram row transition        |
-| `--osdk-filter-listogram-row-bg-hover`        | `var(--osdk-surface-background-color-default-hover)`                         | Listogram row hover background  |
-| `--osdk-filter-listogram-row-bg-active`       | `var(--osdk-surface-background-color-default-active)`                        | Listogram row active background |
-| `--osdk-filter-listogram-row-focus-outline`   | `var(--osdk-emphasis-focus-width) solid var(--osdk-emphasis-focus-color)`    | Listogram row focus outline     |
-| `--osdk-filter-listogram-row-focus-offset`    | `var(--osdk-emphasis-focus-offset)`                                          | Listogram row focus offset      |
-| `--osdk-filter-listogram-label-font-family`   | `var(--osdk-typography-family-default)`                                      | Listogram label font family     |
-| `--osdk-filter-listogram-label-font-size`     | `var(--osdk-typography-size-body-medium)`                                    | Listogram label font size       |
-| `--osdk-filter-listogram-label-color`         | `var(--osdk-typography-color-default-rest)`                                  | Listogram label color           |
-| `--osdk-filter-listogram-bar-height`          | `calc(var(--osdk-surface-spacing) * 2)`                                      | Bar height                      |
-| `--osdk-filter-listogram-bar-width`           | `calc(var(--osdk-surface-spacing) * 12.5)`                                   | Bar width                       |
-| `--osdk-filter-listogram-bar-bg`              | `var(--osdk-palette-gray-100)`                                               | Bar background                  |
-| `--osdk-filter-listogram-bar-border-radius`   | `var(--osdk-surface-border-radius)`                                          | Bar border radius               |
-| `--osdk-filter-listogram-bar-color`           | `var(--osdk-intent-primary-rest)`                                            | Bar fill color                  |
-| `--osdk-filter-listogram-bar-fill-transition` | `var(--osdk-emphasis-transition-duration) var(--osdk-emphasis-ease-default)` | Bar fill transition             |
-| `--osdk-filter-listogram-count-font-family`   | `var(--osdk-typography-family-default)`                                      | Count font family               |
-| `--osdk-filter-listogram-count-font-size`     | `var(--osdk-typography-size-body-small)`                                     | Count font size                 |
-| `--osdk-filter-listogram-count-color`         | `var(--osdk-typography-color-muted)`                                         | Count color                     |
-| `--osdk-filter-listogram-view-all-font-size`  | `var(--osdk-typography-size-body-small)`                                     | View all font size              |
-| `--osdk-filter-listogram-view-all-color`      | `var(--osdk-typography-color-muted)`                                         | View all color                  |
-| `--osdk-filter-listogram-selected-color`      | `var(--osdk-intent-primary-rest)`                                            | Selected item color             |
+| Variable                                         | Default Value                                                                | Description                           |
+| ------------------------------------------------ | ---------------------------------------------------------------------------- | ------------------------------------- |
+| `--osdk-filter-listogram-empty-label-color`      | `var(--osdk-typography-color-muted)`                                         | Listogram "No value" label color      |
+| `--osdk-filter-listogram-empty-label-font-style` | `italic`                                                                     | Listogram "No value" label font style |
+| `--osdk-filter-listogram-gap`                    | `var(--osdk-surface-spacing)`                                                | Listogram gap                         |
+| `--osdk-filter-listogram-row-gap`                | `calc(var(--osdk-surface-spacing) * 2)`                                      | Listogram row gap                     |
+| `--osdk-filter-listogram-row-padding`            | `var(--osdk-surface-spacing)`                                                | Listogram row padding                 |
+| `--osdk-filter-listogram-row-border-radius`      | `var(--osdk-surface-border-radius)`                                          | Listogram row border radius           |
+| `--osdk-filter-listogram-row-transition`         | `var(--osdk-emphasis-transition-duration) var(--osdk-emphasis-ease-default)` | Listogram row transition              |
+| `--osdk-filter-listogram-row-bg-hover`           | `var(--osdk-surface-background-color-default-hover)`                         | Listogram row hover background        |
+| `--osdk-filter-listogram-row-bg-active`          | `var(--osdk-surface-background-color-default-active)`                        | Listogram row active background       |
+| `--osdk-filter-listogram-row-focus-outline`      | `var(--osdk-emphasis-focus-width) solid var(--osdk-emphasis-focus-color)`    | Listogram row focus outline           |
+| `--osdk-filter-listogram-row-focus-offset`       | `var(--osdk-emphasis-focus-offset)`                                          | Listogram row focus offset            |
+| `--osdk-filter-listogram-label-font-family`      | `var(--osdk-typography-family-default)`                                      | Listogram label font family           |
+| `--osdk-filter-listogram-label-font-size`        | `var(--osdk-typography-size-body-medium)`                                    | Listogram label font size             |
+| `--osdk-filter-listogram-label-color`            | `var(--osdk-typography-color-default-rest)`                                  | Listogram label color                 |
+| `--osdk-filter-listogram-bar-height`             | `calc(var(--osdk-surface-spacing) * 2)`                                      | Bar height                            |
+| `--osdk-filter-listogram-bar-width`              | `calc(var(--osdk-surface-spacing) * 12.5)`                                   | Bar width                             |
+| `--osdk-filter-listogram-bar-bg`                 | `var(--osdk-palette-gray-100)`                                               | Bar background                        |
+| `--osdk-filter-listogram-bar-border-radius`      | `var(--osdk-surface-border-radius)`                                          | Bar border radius                     |
+| `--osdk-filter-listogram-bar-color`              | `var(--osdk-intent-primary-rest)`                                            | Bar fill color                        |
+| `--osdk-filter-listogram-bar-fill-transition`    | `var(--osdk-emphasis-transition-duration) var(--osdk-emphasis-ease-default)` | Bar fill transition                   |
+| `--osdk-filter-listogram-count-font-family`      | `var(--osdk-typography-family-default)`                                      | Count font family                     |
+| `--osdk-filter-listogram-count-font-size`        | `var(--osdk-typography-size-body-small)`                                     | Count font size                       |
+| `--osdk-filter-listogram-count-color`            | `var(--osdk-typography-color-muted)`                                         | Count color                           |
+| `--osdk-filter-listogram-view-all-font-size`     | `var(--osdk-typography-size-body-small)`                                     | View all font size                    |
+| `--osdk-filter-listogram-view-all-color`         | `var(--osdk-typography-color-muted)`                                         | View all color                        |
+| `--osdk-filter-listogram-selected-color`         | `var(--osdk-intent-primary-rest)`                                            | Selected item color                   |
 
 #### Range Input Tokens
 

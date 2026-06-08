@@ -169,5 +169,23 @@ describe("FilterListItem", () => {
         screen.getByRole("button", { name: /more actions/i }),
       ).toBeDefined();
     });
+
+    it("toggles aria-pressed on the overflow button for a linkedProperty filter", () => {
+      renderItem({
+        filterState: {
+          type: "linkedProperty",
+          linkedFilterState: {
+            type: "SELECT",
+            selectedValues: ["Research"],
+          },
+        },
+      });
+      const overflow = screen.getByRole("button", { name: /more actions/i });
+      expect(overflow.getAttribute("aria-pressed")).toBe("false");
+      fireEvent.click(overflow);
+      expect(overflow.getAttribute("aria-pressed")).toBe("true");
+      fireEvent.click(overflow);
+      expect(overflow.getAttribute("aria-pressed")).toBe("false");
+    });
   });
 });

@@ -138,6 +138,7 @@
   --osdk-surface-border-color-default: var(--devcon-green-700);
   --osdk-surface-background-color-default-rest: var(--devcon-bg-card);
   --osdk-surface-background-color-default-hover: var(--devcon-bg-elevated);
+  --osdk-surface-background-color-default-active: rgba(34, 197, 94, 0.2);
   --osdk-background-primary: var(--devcon-bg-dark);
   --osdk-background-secondary: var(--devcon-bg-elevated);
   --osdk-background-backdrop: color-mix(

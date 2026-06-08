@@ -26,7 +26,7 @@
   border: none;
   background: transparent;
   cursor: pointer;
-  font-family: var(--osdk-filter-item-exclude-dropdown-font-family);
+  font-family: var(--osdk-typography-family-default);
   font-size: var(--osdk-filter-item-exclude-dropdown-font-size);
   color: var(--osdk-filter-item-exclude-dropdown-trigger-color);
   padding: calc(var(--osdk-surface-spacing) * 1)

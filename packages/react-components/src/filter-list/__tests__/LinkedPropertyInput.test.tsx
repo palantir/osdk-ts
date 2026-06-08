@@ -21,7 +21,7 @@ import type {
   WhereClause,
 } from "@osdk/api";
 import { useOsdkAggregation } from "@osdk/react";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { FilterState } from "../FilterListItemApi.js";
@@ -528,6 +528,97 @@ describe("LinkedPropertyInput", () => {
       expect(screen.getByRole("button", { name: /Alice/ })).toBeTruthy();
       const bobRow = screen.getByRole("button", { name: /Bob/ });
       expect(bobRow.hasAttribute("data-filtered-out")).toBe(true);
+    });
+  });
+
+  describe("include/exclude controls", () => {
+    function mockEmptyAggregation(): void {
+      vi.mocked(useOsdkAggregation).mockReturnValue({
+        data: [],
+        isLoading: false,
+        error: null,
+        refetch: vi.fn(),
+      } as unknown as ReturnType<typeof useOsdkAggregation>);
+    }
+
+    it("renders the keeping/excluding dropdown and Clear all for a linked MULTI_SELECT with a selection", () => {
+      const selectedState: FilterState = {
+        type: "linkedProperty",
+        linkedFilterState: { type: "SELECT", selectedValues: ["Research"] },
+      };
+      mockEmptyAggregation();
+      const mockObjectSet = createMockObjectSet();
+
+      render(
+        <LinkedPropertyInput
+          objectSet={mockObjectSet}
+          whereClause={{} as WhereClause<ObjectTypeDefinition>}
+          definition={createDefinition("MULTI_SELECT")}
+          filterState={selectedState}
+          onFilterStateChanged={vi.fn()}
+          excludeRowOpen={true}
+        />,
+      );
+
+      expect(screen.getByRole("button", { name: "Keeping" })).toBeDefined();
+      expect(screen.getByText("Clear all")).toBeDefined();
+    });
+
+    it("clears the inner selection through the LINKED_PROPERTY wrapper when Clear all is clicked", () => {
+      const selectedState: FilterState = {
+        type: "linkedProperty",
+        linkedFilterState: { type: "SELECT", selectedValues: ["Research"] },
+      };
+      mockEmptyAggregation();
+      const mockObjectSet = createMockObjectSet();
+      const onFilterStateChanged = vi.fn();
+
+      render(
+        <LinkedPropertyInput
+          objectSet={mockObjectSet}
+          whereClause={{} as WhereClause<ObjectTypeDefinition>}
+          definition={createDefinition("MULTI_SELECT")}
+          filterState={selectedState}
+          onFilterStateChanged={onFilterStateChanged}
+          excludeRowOpen={true}
+        />,
+      );
+
+      fireEvent.click(screen.getByText("Clear all"));
+
+      expect(onFilterStateChanged).toHaveBeenCalledWith({
+        type: "linkedProperty",
+        linkedFilterState: {
+          type: "SELECT",
+          selectedValues: [],
+          isExcluding: undefined,
+        },
+      });
+    });
+
+    it("does not render exclude controls for a linked NUMBER_RANGE filter", () => {
+      mockEmptyAggregation();
+      const mockObjectSet = createMockObjectSet();
+
+      render(
+        <LinkedPropertyInput
+          objectSet={mockObjectSet}
+          whereClause={{} as WhereClause<ObjectTypeDefinition>}
+          definition={createDefinition("NUMBER_RANGE")}
+          filterState={{
+            type: "linkedProperty",
+            linkedFilterState: {
+              type: "NUMBER_RANGE",
+              minValue: 1,
+              maxValue: 5,
+            },
+          }}
+          onFilterStateChanged={vi.fn()}
+          excludeRowOpen={true}
+        />,
+      );
+
+      expect(screen.queryByRole("button", { name: "Keeping" })).toBeNull();
     });
   });
 });
