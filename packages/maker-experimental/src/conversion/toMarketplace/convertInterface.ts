@@ -28,6 +28,7 @@ export function convertInterface(
     __type,
     status,
     actionTypeConstraints: _actionTypeConstraints,
+    linkedInterfaces: _linkedInterfaces,
     ...other
   } = interfaceType;
   // Normalize deprecated deadline format to match Java (strip .000 milliseconds)
