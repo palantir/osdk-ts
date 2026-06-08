@@ -26,14 +26,12 @@
   border: none;
   background: transparent;
   cursor: pointer;
-  font-family: var(--osdk-filter-item-exclude-dropdown-font-family);
+  font-family: var(--osdk-typography-family-default);
   font-size: var(--osdk-filter-item-exclude-dropdown-font-size);
-  font-weight: var(--osdk-filter-item-exclude-dropdown-trigger-font-weight);
   color: var(--osdk-filter-item-exclude-dropdown-trigger-color);
   padding: calc(var(--osdk-surface-spacing) * 1)
     calc(var(--osdk-surface-spacing) * 1);
   border-radius: var(--osdk-filter-item-exclude-dropdown-trigger-border-radius);
-  box-shadow: var(--osdk-filter-item-exclude-dropdown-trigger-indicator);
 
   &:hover {
     background: var(--osdk-filter-item-header-action-bg-hover);
@@ -43,17 +41,6 @@
     outline: var(--osdk-filter-input-focus-outline-width) solid
       var(--osdk-filter-input-focus-outline-color);
     outline-offset: var(--osdk-filter-input-focus-outline-offset);
-  }
-
-  &[data-excluding] {
-    font-weight: var(
-      --osdk-filter-item-exclude-dropdown-trigger-font-weight-active
-    );
-    background: var(--osdk-filter-item-exclude-dropdown-trigger-bg-active);
-    color: var(--osdk-filter-item-exclude-dropdown-trigger-color-active);
-    box-shadow: var(
-      --osdk-filter-item-exclude-dropdown-trigger-indicator-active
-    );
   }
 }
 

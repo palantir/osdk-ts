@@ -723,21 +723,14 @@ Styling for filter list components including search, checkboxes, listogram, and 
 
 #### Exclude Dropdown
 
-| Variable                                                         | Default Value                                                  | Description                                    |
-| ---------------------------------------------------------------- | -------------------------------------------------------------- | ---------------------------------------------- |
-| `--osdk-filter-item-exclude-dropdown-font-family`                | `var(--osdk-typography-family-default)`                        | Dropdown font family                           |
-| `--osdk-filter-item-exclude-dropdown-font-size`                  | `var(--osdk-typography-size-body-small)`                       | Dropdown font size                             |
-| `--osdk-filter-item-exclude-dropdown-color`                      | `var(--osdk-typography-color-default-rest)`                    | Dropdown text color                            |
-| `--osdk-filter-item-exclude-dropdown-trigger-color`              | `var(--osdk-intent-primary-rest)`                              | Dropdown trigger color                         |
-| `--osdk-filter-item-exclude-dropdown-trigger-font-weight`        | `var(--osdk-typography-weight-default)`                        | Dropdown trigger font weight                   |
-| `--osdk-filter-item-exclude-dropdown-trigger-indicator`          | `none`                                                         | Dropdown trigger indicator (box-shadow)        |
-| `--osdk-filter-item-exclude-dropdown-trigger-color-active`       | `var(--osdk-filter-item-exclude-dropdown-trigger-color)`       | Dropdown trigger color (Excluding state)       |
-| `--osdk-filter-item-exclude-dropdown-trigger-font-weight-active` | `var(--osdk-filter-item-exclude-dropdown-trigger-font-weight)` | Dropdown trigger font weight (Excluding state) |
-| `--osdk-filter-item-exclude-dropdown-trigger-bg-active`          | `transparent`                                                  | Dropdown trigger background (Excluding state)  |
-| `--osdk-filter-item-exclude-dropdown-trigger-indicator-active`   | `none`                                                         | Dropdown trigger indicator (Excluding state)   |
-| `--osdk-filter-item-exclude-dropdown-trigger-border-radius`      | `var(--osdk-surface-border-radius)`                            | Dropdown trigger border radius                 |
-| `--osdk-filter-item-exclude-dropdown-separator-color`            | `var(--osdk-surface-border-color)`                             | Dropdown separator color                       |
-| `--osdk-filter-item-exclude-dropdown-min-width`                  | `calc(var(--osdk-surface-spacing) * 30)`                       | Dropdown minimum width                         |
+| Variable                                                    | Default Value                               | Description                    |
+| ----------------------------------------------------------- | ------------------------------------------- | ------------------------------ |
+| `--osdk-filter-item-exclude-dropdown-font-size`             | `var(--osdk-typography-size-body-small)`    | Dropdown font size             |
+| `--osdk-filter-item-exclude-dropdown-color`                 | `var(--osdk-typography-color-default-rest)` | Dropdown text color            |
+| `--osdk-filter-item-exclude-dropdown-trigger-color`         | `var(--osdk-intent-primary-rest)`           | Dropdown trigger color         |
+| `--osdk-filter-item-exclude-dropdown-trigger-border-radius` | `var(--osdk-surface-border-radius)`         | Dropdown trigger border radius |
+| `--osdk-filter-item-exclude-dropdown-separator-color`       | `var(--osdk-surface-border-color)`          | Dropdown separator color       |
+| `--osdk-filter-item-exclude-dropdown-min-width`             | `calc(var(--osdk-surface-spacing) * 30)`    | Dropdown minimum width         |
 
 #### Overflow / Dropdown Menu
 

@@ -358,9 +358,6 @@
   );
 
   /* Exclude Dropdown */
-  --osdk-filter-item-exclude-dropdown-font-family: var(
-    --osdk-typography-family-default
-  );
   --osdk-filter-item-exclude-dropdown-font-size: var(
     --osdk-typography-size-body-small
   );
@@ -370,18 +367,6 @@
   --osdk-filter-item-exclude-dropdown-trigger-color: var(
     --osdk-intent-primary-rest
   );
-  --osdk-filter-item-exclude-dropdown-trigger-font-weight: var(
-    --osdk-typography-weight-default
-  );
-  --osdk-filter-item-exclude-dropdown-trigger-indicator: none;
-  --osdk-filter-item-exclude-dropdown-trigger-color-active: var(
-    --osdk-filter-item-exclude-dropdown-trigger-color
-  );
-  --osdk-filter-item-exclude-dropdown-trigger-font-weight-active: var(
-    --osdk-filter-item-exclude-dropdown-trigger-font-weight
-  );
-  --osdk-filter-item-exclude-dropdown-trigger-bg-active: transparent;
-  --osdk-filter-item-exclude-dropdown-trigger-indicator-active: none;
   --osdk-filter-item-exclude-dropdown-trigger-border-radius: var(
     --osdk-surface-border-radius
   );
