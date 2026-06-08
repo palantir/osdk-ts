@@ -1,5 +1,13 @@
 # @osdk/react-components
 
+## 0.28.0
+
+### Minor Changes
+
+- c00ec4a: Add edit-component agent skill for contribution
+- 4fcf89e: Add include/exclude and clear-all controls to FilterList linked-property and has-link filters. The overflow (…) menu now surfaces from the filter's component type, so the controls appear for empty and just-added filters without pre-filling any state, and the open overflow (…) button shows an active state. For has-link filters, "Excluding" filters to objects that do not have the link.
+- 37344db: Render CBAC and MANDATORY marking property columns in `ObjectTable`. Columns backed by marking properties whose `typeMetadata.markingType` is `"CBAC"` now render via the `CbacBanner`, and `"MANDATORY"` marking columns render one pill per marking on the row. Columns whose marking subtype isn't surfaced by the platform fall back to the previous default rendering.
+
 ## 0.27.0
 
 ### Minor Changes

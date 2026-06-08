@@ -1,5 +1,15 @@
 # @osdk/react-components-storybook
 
+## 0.26.0
+
+### Minor Changes
+
+- 65c742b: Add theme preset switcher toolbar to Storybook with Workshop Light, Workshop Dark, and other built-in presets
+
+### Patch Changes
+
+- @osdk/faux@0.25.0
+
 ## 0.25.0
 
 ### Minor Changes
