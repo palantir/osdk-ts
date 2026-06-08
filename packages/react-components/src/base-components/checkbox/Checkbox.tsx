@@ -57,10 +57,10 @@ export function Checkbox(
       >
         {/* Color is used as the "fill" attribute on the svg  */}
         {indeterminate
-          ? <Minus size={12} />
+          ? <Minus size={16} />
           : isExcluding
-          ? <Cross size={12} />
-          : <SmallTick size={12} />}
+          ? <Cross size={16} />
+          : <SmallTick size={16} />}
       </BaseUICheckbox.Indicator>
     </BaseUICheckbox.Root>
   );
