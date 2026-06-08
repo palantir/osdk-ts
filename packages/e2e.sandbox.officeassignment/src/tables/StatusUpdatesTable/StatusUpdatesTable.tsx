@@ -34,6 +34,9 @@ const DEFAULT_ORDER_BY: Array<
   { property: "timestampEpochMs", direction: "desc" },
 ];
 
+// Static column definitions — no runtime inputs, so hoisted out of the component.
+const BASE_COLUMN_DEFS = createStatusUpdateColumnDefinitions();
+
 interface StatusUpdatesTableProps {
   objectSet: ObjectSet<StatusUpdate>;
   filter?: WhereClause<StatusUpdate>;
@@ -41,11 +44,6 @@ interface StatusUpdatesTableProps {
 
 export const StatusUpdatesTable = React.memo<StatusUpdatesTableProps>(
   function StatusUpdatesTableFn({ objectSet, filter }) {
-    const baseColumnDefs = React.useMemo(
-      () => createStatusUpdateColumnDefinitions(),
-      [],
-    );
-
     const {
       orderBy,
       effectiveColumnDefs,
@@ -54,7 +52,7 @@ export const StatusUpdatesTable = React.memo<StatusUpdatesTableProps>(
       handleColumnResize,
       handleColumnsPinnedChanged,
     } = useObjectTableState<StatusUpdate, StatusUpdateColumnRdps>(
-      baseColumnDefs,
+      BASE_COLUMN_DEFS,
       DEFAULT_ORDER_BY,
     );
 

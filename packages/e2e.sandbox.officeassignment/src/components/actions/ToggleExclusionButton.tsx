@@ -19,6 +19,7 @@ import { useOsdkAction } from "@osdk/react";
 import React from "react";
 import type { StatusUpdate } from "../../generatedNoCheck2/index.js";
 import { toggleStatusExclusion } from "../../generatedNoCheck2/index.js";
+import { ErrorBanner } from "../common/index.js";
 import styles from "./actions.module.css";
 
 export interface ToggleExclusionButtonProps {
@@ -30,7 +31,9 @@ export function ToggleExclusionButton(
   props: ToggleExclusionButtonProps,
 ): React.JSX.Element {
   const { statusUpdate } = props;
-  const { applyAction, isPending } = useOsdkAction(toggleStatusExclusion);
+  const { applyAction, isPending, error } = useOsdkAction(
+    toggleStatusExclusion,
+  );
   const currentlyExcluded = statusUpdate.isExcluded === true;
 
   const onClick = React.useCallback(() => {
@@ -40,14 +43,20 @@ export function ToggleExclusionButton(
     });
   }, [applyAction, statusUpdate, currentlyExcluded]);
 
+  const errorMessage = error?.actionValidation?.message
+    ?? (error != null ? "Failed to toggle exclusion." : undefined);
+
   return (
-    <button
-      type="button"
-      className={styles.linkButton}
-      onClick={onClick}
-      disabled={isPending}
-    >
-      {currentlyExcluded ? "Include" : "Exclude"}
-    </button>
+    <>
+      <button
+        type="button"
+        className={styles.linkButton}
+        onClick={onClick}
+        disabled={isPending}
+      >
+        {currentlyExcluded ? "Include" : "Exclude"}
+      </button>
+      <ErrorBanner message={errorMessage} context="Toggle exclusion" />
+    </>
   );
 }

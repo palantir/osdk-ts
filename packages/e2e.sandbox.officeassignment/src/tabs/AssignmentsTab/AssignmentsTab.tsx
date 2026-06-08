@@ -35,7 +35,7 @@ export function AssignmentsTab(): React.JSX.Element {
     setComposeAcrossTypes,
     filterClause,
     setFilterClause,
-    initialFilterStates,
+    filterStates,
     orderedFilterDefs,
     handleFilterStateChanged,
     handleFilterVisibilityChange,
@@ -78,7 +78,7 @@ export function AssignmentsTab(): React.JSX.Element {
           onFilterStateChanged={handleFilterStateChanged}
           onFilterVisibilityChange={handleFilterVisibilityChange}
           onReset={handleReset}
-          initialFilterStates={initialFilterStates}
+          initialFilterStates={filterStates}
         />
       </aside>
       <div className={styles.main}>

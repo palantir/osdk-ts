@@ -88,7 +88,11 @@ export function AssignmentDrawer(
 
             <section className={styles.section}>
               <h3 className={styles.sectionTitle}>Edit assignment</h3>
-              <UpdateAssignmentForm assignment={object} />
+              {/* Remount on assignment change so the form re-seeds from the new object. */}
+              <UpdateAssignmentForm
+                key={object.$primaryKey}
+                assignment={object}
+              />
             </section>
 
             <section className={styles.section}>

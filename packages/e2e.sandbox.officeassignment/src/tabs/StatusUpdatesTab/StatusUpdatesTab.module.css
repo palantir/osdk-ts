@@ -23,7 +23,3 @@
   flex: 1;
   min-height: 0;
 }
-
-.excludedValue {
-  color: var(--oa-text-muted);
-}

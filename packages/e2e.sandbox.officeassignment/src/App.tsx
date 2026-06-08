@@ -28,7 +28,7 @@ const TABS: readonly TabSpec[] = [
   { id: TAB_STATUS_UPDATES, label: "Status Updates" },
 ];
 
-export default function App(): React.JSX.Element {
+export function App(): React.JSX.Element {
   const [activeTab, setActiveTab] = React.useState<string>(TAB_ASSIGNMENTS);
 
   return (

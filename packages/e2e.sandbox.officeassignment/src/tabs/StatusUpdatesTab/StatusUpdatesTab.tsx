@@ -29,7 +29,7 @@ export function StatusUpdatesTab(): React.JSX.Element {
     objectSet,
     filterClause,
     setFilterClause,
-    initialFilterStates,
+    filterStates,
     orderedFilterDefs,
     handleFilterStateChanged,
     handleFilterVisibilityChange,
@@ -49,7 +49,7 @@ export function StatusUpdatesTab(): React.JSX.Element {
           onFilterStateChanged={handleFilterStateChanged}
           onFilterVisibilityChange={handleFilterVisibilityChange}
           onReset={handleReset}
-          initialFilterStates={initialFilterStates}
+          initialFilterStates={filterStates}
         />
       </aside>
       <div className={styles.main}>
