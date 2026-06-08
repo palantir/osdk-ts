@@ -1,6 +1,6 @@
 :root {
   --osdk-checkbox-icon-size: var(--osdk-iconography-size-small);
-  --osdk-checkbox-padding: calc(var(--osdk-surface-spacing) * 0.5);
+  --osdk-checkbox-padding: 0px;
   --osdk-checkbox-border: var(--osdk-surface-border);
   --osdk-checkbox-bg: transparent;
   --osdk-checkbox-bg-hover: var(--osdk-surface-background-color-default-hover);
