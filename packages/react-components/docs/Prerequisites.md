@@ -14,19 +14,19 @@ Use whichever package manager your project uses (`# if using CBAC components` li
 
 ```bash
 # npm
-npm install @osdk/api@beta @osdk/client@beta @osdk/react@beta
+npm install @osdk/api @osdk/client @osdk/react
 npm install @osdk/react-components
 npm install @osdk/cbac-components # if using CBAC components
 npm install react react-dom classnames
 
 # pnpm
-pnpm add @osdk/api@beta @osdk/client@beta @osdk/react@beta
+pnpm add @osdk/api @osdk/client @osdk/react
 pnpm add @osdk/react-components
 pnpm add @osdk/cbac-components # if using CBAC components
 pnpm add react react-dom classnames
 
 # yarn
-yarn add @osdk/api@beta @osdk/client@beta @osdk/react@beta
+yarn add @osdk/api @osdk/client @osdk/react
 yarn add @osdk/react-components
 yarn add @osdk/cbac-components # if using CBAC components
 yarn add react react-dom classnames
@@ -78,6 +78,12 @@ Components use CSS [`@layer`](https://developer.mozilla.org/en-US/docs/Web/CSS/@
 | `osdk.tokens`     | Design tokens (colors, spacing, typography) — the defaults |
 | `osdk.components` | Component structural styles (layout, borders, sizing)      |
 
+Both layers are bundled inside the single `@osdk/react-components/styles.css`
+import shown below — you do **not** import them separately. The stylesheet
+declares `@layer osdk.tokens, osdk.components` internally (so tokens always sit
+below component styles); importing it into your own `osdk.components` layer, as
+the examples do, nests both under that layer.
+
 Later layers always win when styles conflict, regardless of selector specificity.
 
 #### Without Tailwind
@@ -119,7 +125,7 @@ Add a custom layer after the OSDK layers to override any token:
 All components resolve their visual properties through CSS custom properties. There are two scopes of tokens you can target when theming:
 
 - **OSDK tokens (`--osdk-*`)** — every visual property used inside OSDK components resolves through a token prefixed with `--osdk-` (e.g. `--osdk-table-header-bg`, `--osdk-form-section-padding`). Override these to theme **OSDK components only**, leaving other Blueprint components in your app untouched.
-- **Blueprint tokens (`--bp-*`)** — the underlying Blueprint design tokens that `--osdk-*` tokens map to. Override these for consistent theming across **both Blueprint and OSDK components**.
+- **Blueprint tokens (`--bp-*`)** — the underlying Blueprint design tokens that most `--osdk-*` tokens map to. Override these for consistent theming across **both Blueprint and OSDK components**. (A few `--osdk-*` tokens hold raw values rather than mapping to a `--bp-*` token — override those `--osdk-*` tokens directly.)
 
 Per-component references list the `--osdk-*` variables each component exposes — see, for example, [ObjectTable › Theming](./ObjectTable.md#theming). The full catalog of variables lives in [CSSVariables.md](./CSSVariables.md).
 
