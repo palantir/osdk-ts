@@ -32,6 +32,7 @@ import { getFilterKey } from "./utils/getFilterKey.js";
 import { getFilterLabel } from "./utils/getFilterLabel.js";
 
 const EMPTY_WHERE = {};
+const EMPTY_DERIVED_NARROWINGS: ReadonlyArray<never> = [];
 
 export function FilterList<Q extends ObjectTypeDefinition>(
   props: FilterListProps<Q>,
@@ -63,6 +64,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     clearFilterState,
     perFilterWhereClauses,
     perFilterLinkedFilters,
+    perFilterDerivedNarrowings,
     activeFilterCount,
     reset,
   } = useFilterListState(props);
@@ -202,6 +204,8 @@ export function FilterList<Q extends ObjectTypeDefinition>(
         whereClause={perFilterWhereClauses.get(filterKey) ?? EMPTY_WHERE}
         linkedFilters={perFilterLinkedFilters.get(filterKey)
           ?? EMPTY_LINKED_FILTERS}
+        derivedNarrowings={perFilterDerivedNarrowings.get(filterKey)
+          ?? EMPTY_DERIVED_NARROWINGS}
         showFilteredOutValues={showFilteredOutValues}
         searchQuery={searchQuery}
         excludeRowOpen={excludeRowOpen}
@@ -212,6 +216,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
       objectSet,
       perFilterWhereClauses,
       perFilterLinkedFilters,
+      perFilterDerivedNarrowings,
       showFilteredOutValues,
     ],
   );

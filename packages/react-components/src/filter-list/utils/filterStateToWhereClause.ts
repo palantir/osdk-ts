@@ -30,6 +30,7 @@ import type {
   LinkedPropertyFilterState,
 } from "../types/LinkedFilterTypes.js";
 import { getFilterKey } from "./getFilterKey.js";
+import type { DerivedNarrowing } from "./narrowObjectSet.js";
 
 type PropertyFilter = Record<string, unknown> | boolean | string | number;
 
@@ -393,7 +394,7 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
           break;
         }
         // TypeScript narrows state to CustomFilterState
-        const customClause = definition.toWhereClause(state);
+        const customClause = definition.toWhereClause?.(state);
         if (customClause && Object.keys(customClause).length > 0) {
           clauses.push(customClause as Record<string, unknown>);
         }
@@ -489,6 +490,45 @@ export function getActiveLinkedFilters<Q extends ObjectTypeDefinition>(
       reverseLinkName: definition.reverseLinkName,
       innerWhere,
     } as LinkedFilter<Q>);
+  }
+  return result;
+}
+
+/**
+ * Returns the active derived-property narrowings contributed by CUSTOM filters
+ * that implement `toDerivedNarrowing`. These can't be expressed as a
+ * `WhereClause<Q>` (they introduce runtime derived properties), so they are
+ * applied separately via `narrowObjectSet`.
+ */
+export function getActiveDerivedNarrowings<Q extends ObjectTypeDefinition>(
+  definitions: Array<FilterDefinitionUnion<Q>> | undefined,
+  filterStates: Map<string, FilterState>,
+  excludeFilterKey?: string,
+): Array<DerivedNarrowing<Q>> {
+  if (!definitions || definitions.length === 0) {
+    return [];
+  }
+  const result: Array<DerivedNarrowing<Q>> = [];
+  for (const definition of definitions) {
+    if (definition.type !== "CUSTOM" || definition.toDerivedNarrowing == null) {
+      continue;
+    }
+    const key = getFilterKey(definition);
+    if (key === excludeFilterKey) {
+      continue;
+    }
+    const state = filterStates.get(key);
+    if (!state || state.type !== "custom") {
+      continue;
+    }
+    const narrowing = definition.toDerivedNarrowing(state);
+    if (narrowing == null) {
+      continue;
+    }
+    if (Object.keys(narrowing.withProperties).length === 0) {
+      continue;
+    }
+    result.push(narrowing);
   }
   return result;
 }

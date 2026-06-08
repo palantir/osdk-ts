@@ -26,12 +26,16 @@ import type {
 } from "../types/LinkedFilterTypes.js";
 import {
   buildWhereClause,
+  getActiveDerivedNarrowings,
   getActiveLinkedFilters,
   type PropertyTypeInfo,
 } from "../utils/filterStateToWhereClause.js";
 import { filterHasActiveState } from "../utils/filterValues.js";
 import { getFilterKey } from "../utils/getFilterKey.js";
-import { narrowObjectSet } from "../utils/narrowObjectSet.js";
+import {
+  type DerivedNarrowing,
+  narrowObjectSet,
+} from "../utils/narrowObjectSet.js";
 import { useStableMapEntries } from "./useStableMapEntries.js";
 
 export interface UseFilterListStateResult<Q extends ObjectTypeDefinition> {
@@ -45,10 +49,14 @@ export interface UseFilterListStateResult<Q extends ObjectTypeDefinition> {
   whereClause: WhereClause<Q>;
   /** Active linked-property records; apply via `narrowObjectSet`. */
   linkedFilters: ReadonlyArray<LinkedFilter<Q>>;
+  /** Active derived-property narrowings (CUSTOM `toDerivedNarrowing` filters). */
+  derivedNarrowings: ReadonlyArray<DerivedNarrowing<Q>>;
   /** Per-filter excluding-self where clauses keyed by `getFilterKey`. */
   perFilterWhereClauses: Map<string, WhereClause<Q>>;
   /** Per-filter excluding-self linked filters keyed by `getFilterKey`. */
   perFilterLinkedFilters: Map<string, ReadonlyArray<LinkedFilter<Q>>>;
+  /** Per-filter excluding-self derived narrowings keyed by `getFilterKey`. */
+  perFilterDerivedNarrowings: Map<string, ReadonlyArray<DerivedNarrowing<Q>>>;
   activeFilterCount: number;
   reset: () => void;
 }
@@ -194,12 +202,22 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     [filterDefinitions, filterStates],
   );
 
+  const derivedNarrowings = useMemo(
+    () => getActiveDerivedNarrowings(filterDefinitions, filterStates),
+    [filterDefinitions, filterStates],
+  );
+
   const effectiveObjectSet = useMemo<ObjectSet<Q> | undefined>(
     () =>
       objectSet == null
         ? undefined
-        : narrowObjectSet(objectSet, whereClause, linkedFilters),
-    [objectSet, whereClause, linkedFilters],
+        : narrowObjectSet(
+          objectSet,
+          whereClause,
+          linkedFilters,
+          derivedNarrowings,
+        ),
+    [objectSet, whereClause, linkedFilters, derivedNarrowings],
   );
 
   useEffect(() => {
@@ -241,6 +259,20 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     }, [filterDefinitions, filterStates]),
   );
 
+  const perFilterDerivedNarrowings = useStableMapEntries(
+    useMemo(() => {
+      const map = new Map<string, ReadonlyArray<DerivedNarrowing<Q>>>();
+      for (const definition of filterDefinitions ?? []) {
+        const key = getFilterKey(definition);
+        map.set(
+          key,
+          getActiveDerivedNarrowings(filterDefinitions, filterStates, key),
+        );
+      }
+      return map;
+    }, [filterDefinitions, filterStates]),
+  );
+
   const activeFilterCount = useMemo(() => {
     let count = 0;
     for (const state of filterStates.values()) {
@@ -257,8 +289,10 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     clearFilterState,
     whereClause,
     linkedFilters,
+    derivedNarrowings,
     perFilterWhereClauses,
     perFilterLinkedFilters,
+    perFilterDerivedNarrowings,
     activeFilterCount,
     reset,
   }), [
@@ -267,8 +301,10 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     clearFilterState,
     whereClause,
     linkedFilters,
+    derivedNarrowings,
     perFilterWhereClauses,
     perFilterLinkedFilters,
+    perFilterDerivedNarrowings,
     activeFilterCount,
     reset,
   ]);

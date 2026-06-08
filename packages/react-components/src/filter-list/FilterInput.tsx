@@ -15,7 +15,7 @@
  */
 
 import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
-import React, { memo, useCallback } from "react";
+import React, { memo, useCallback, useMemo } from "react";
 import { ContainsTextInput } from "./base/inputs/ContainsTextInput.js";
 import type { MultiSelectInputLayout } from "./base/inputs/MultiSelectInput.js";
 import { ToggleInput } from "./base/inputs/ToggleInput.js";
@@ -25,6 +25,13 @@ import { LinkedPropertyInput } from "./inputs/LinkedPropertyInput.js";
 import { PropertyFilterInput } from "./inputs/PropertyFilterInput.js";
 import { StaticValuesFilterInput } from "./inputs/StaticValuesFilterInput.js";
 import type { LinkedFilter } from "./types/LinkedFilterTypes.js";
+import {
+  type DerivedNarrowing,
+  narrowObjectSet,
+} from "./utils/narrowObjectSet.js";
+
+const EMPTY_WHERE_CLAUSE = {};
+const EMPTY_LINKED_FILTERS: ReadonlyArray<never> = [];
 
 export interface FilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
@@ -36,6 +43,8 @@ export interface FilterInputProps<Q extends ObjectTypeDefinition> {
   whereClause: WhereClause<Q>;
   /** Per-filter excluding-self linked-filter records. */
   linkedFilters?: ReadonlyArray<LinkedFilter<Q>>;
+  /** Per-filter excluding-self derived-property narrowings. */
+  derivedNarrowings?: ReadonlyArray<DerivedNarrowing<Q>>;
   showFilteredOutValues?: boolean;
   searchQuery?: string;
   excludeRowOpen?: boolean;
@@ -51,17 +60,37 @@ export interface FilterInputProps<Q extends ObjectTypeDefinition> {
 
 function FilterInputInner<Q extends ObjectTypeDefinition>({
   objectType,
-  objectSet,
+  objectSet: rawObjectSet,
   definition,
   filterState,
   onFilterStateChanged,
   whereClause,
   linkedFilters,
+  derivedNarrowings,
   showFilteredOutValues,
   searchQuery,
   excludeRowOpen,
   layout,
 }: FilterInputProps<Q>): React.ReactElement {
+  // Apply the (leave-one-out) derived-property narrowings once here so every
+  // child input's facet aggregation is scoped by them, without threading the
+  // narrowings through each sub-input. Sub-inputs narrow further with their own
+  // whereClause + linkedFilters on top of this.
+  const objectSet = useMemo<ObjectSet<Q> | undefined>(
+    () =>
+      rawObjectSet != null
+        && derivedNarrowings != null
+        && derivedNarrowings.length > 0
+        ? narrowObjectSet(
+          rawObjectSet,
+          EMPTY_WHERE_CLAUSE,
+          EMPTY_LINKED_FILTERS,
+          derivedNarrowings,
+        )
+        : rawObjectSet,
+    [rawObjectSet, derivedNarrowings],
+  );
+
   switch (definition.type) {
     case "HAS_LINK":
       return (

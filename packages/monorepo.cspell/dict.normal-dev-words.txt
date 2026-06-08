@@ -26,6 +26,7 @@ inbetween
 isModifierable
 jsons
 Multimap
+narrowings
 objs
 onwarn
 peopleapp

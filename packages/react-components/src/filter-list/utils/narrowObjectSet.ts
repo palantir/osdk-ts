@@ -14,19 +14,44 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
+import type {
+  DerivedProperty,
+  ObjectSet,
+  ObjectTypeDefinition,
+  SimplePropertyDef,
+  WhereClause,
+} from "@osdk/api";
 import type { LinkedFilter } from "../types/LinkedFilterTypes.js";
+
+/**
+ * A filter that narrows the object set using runtime derived properties (RDPs).
+ * Unlike a plain `WhereClause<Q>` or a {@link LinkedFilter}, this carries the
+ * `withProperties` clause that introduces the derived property names, plus a
+ * `where` that references those names. Applied as
+ * `objectSet.withProperties(withProperties).where(where)`.
+ *
+ * Use this for predicates that cannot be expressed without an aggregation over
+ * a link — e.g. "the latest linked row of a given kind has value X".
+ */
+export interface DerivedNarrowing<Q extends ObjectTypeDefinition> {
+  withProperties: DerivedProperty.Clause<Q>;
+  where: WhereClause<Q, Record<string, SimplePropertyDef>>;
+}
 
 export function narrowObjectSet<Q extends ObjectTypeDefinition>(
   objectSet: ObjectSet<Q>,
   whereClause: WhereClause<Q>,
   linkedFilters: ReadonlyArray<LinkedFilter<Q>>,
+  derivedNarrowings?: ReadonlyArray<DerivedNarrowing<Q>>,
 ): ObjectSet<Q> {
   let narrowed = Object.keys(whereClause).length === 0
     ? objectSet
     : objectSet.where(whereClause);
   for (const filter of linkedFilters) {
     narrowed = narrowed.intersect(applyLinkedFilter(narrowed, filter));
+  }
+  if (derivedNarrowings != null && derivedNarrowings.length > 0) {
+    narrowed = applyDerivedNarrowings(narrowed, derivedNarrowings);
   }
   return narrowed;
 }
@@ -41,6 +66,29 @@ function applyLinkedFilter<Q extends ObjectTypeDefinition>(
     .pivotTo(filter.linkName)
     .where(filter.innerWhere)
     .pivotTo(filter.reverseLinkName) as ObjectSet<Q>;
+}
+
+function applyDerivedNarrowings<Q extends ObjectTypeDefinition>(
+  base: ObjectSet<Q>,
+  narrowings: ReadonlyArray<DerivedNarrowing<Q>>,
+): ObjectSet<Q> {
+  let mergedProperties: DerivedProperty.Clause<Q> = {};
+  const wheres: Array<WhereClause<Q, Record<string, SimplePropertyDef>>> = [];
+  for (const narrowing of narrowings) {
+    mergedProperties = { ...mergedProperties, ...narrowing.withProperties };
+    wheres.push(narrowing.where);
+  }
+  const combinedWhere: WhereClause<Q, Record<string, SimplePropertyDef>> =
+    wheres.length === 1 ? wheres[0] : { $and: wheres };
+
+  // withProperties widens the second type parameter to the derived properties;
+  // the result is still an ObjectSet over Q at runtime (derived properties are
+  // additive), so we cast back to ObjectSet<Q> like applyLinkedFilter does.
+  return base.withProperties(mergedProperties).where(
+    combinedWhere,
+  ) as ObjectSet<
+    Q
+  >;
 }
 
 export function computeDualScopes<Q extends ObjectTypeDefinition>(
@@ -59,5 +107,7 @@ export function computeDualScopes<Q extends ObjectTypeDefinition>(
   if (!showFilteredOutValues || linkedFilters.length === 0) {
     return { scoped, emptySource: undefined };
   }
+  // emptySource intentionally drops the linked narrowings so the facet can
+  // surface values that the current narrowings filter out.
   return { scoped, emptySource: narrowObjectSet(objectSet, whereClause, []) };
 }
