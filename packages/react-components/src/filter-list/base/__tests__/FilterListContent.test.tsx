@@ -93,7 +93,7 @@ describe("FilterListContent", () => {
       );
     });
 
-    it("renders the overflow … toggle for an empty MULTI_SELECT via the fallback", () => {
+    it("renders the more-action … toggle for an empty MULTI_SELECT via the fallback", () => {
       const def = createPropertyFilterDef(
         "dept",
         "MULTI_SELECT",
@@ -112,14 +112,12 @@ describe("FilterListContent", () => {
         />,
       );
 
-      // Without the fallback, supportsExcluding(undefined) is false and the
-      // overflow toggle would not render for a brand-new filter with no state.
       expect(
         screen.getByRole("button", { name: /more actions/i }),
       ).toBeDefined();
     });
 
-    it("does not render the overflow toggle when getEmptyDisplayState is omitted", () => {
+    it("does not render the more-action toggle when getEmptyDisplayState is omitted", () => {
       const def = createPropertyFilterDef(
         "dept",
         "MULTI_SELECT",
@@ -162,7 +160,7 @@ describe("FilterListContent", () => {
         />,
       );
 
-      // NUMBER_RANGE has no overflow controls — fallback returns undefined.
+      // NUMBER_RANGE has no more-action controls — fallback returns undefined.
       expect(screen.getByTestId("filter-input").textContent).toEqual("null");
     });
 

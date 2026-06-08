@@ -541,12 +541,11 @@ describe("LinkedPropertyInput", () => {
       } as unknown as ReturnType<typeof useOsdkAggregation>);
     }
 
-    const selectedState: FilterState = {
-      type: "linkedProperty",
-      linkedFilterState: { type: "SELECT", selectedValues: ["Research"] },
-    };
-
     it("renders the keeping/excluding dropdown and Clear all for a linked MULTI_SELECT with a selection", () => {
+      const selectedState: FilterState = {
+        type: "linkedProperty",
+        linkedFilterState: { type: "SELECT", selectedValues: ["Research"] },
+      };
       mockEmptyAggregation();
       const mockObjectSet = createMockObjectSet();
 
@@ -566,6 +565,10 @@ describe("LinkedPropertyInput", () => {
     });
 
     it("clears the inner selection through the LINKED_PROPERTY wrapper when Clear all is clicked", () => {
+      const selectedState: FilterState = {
+        type: "linkedProperty",
+        linkedFilterState: { type: "SELECT", selectedValues: ["Research"] },
+      };
       mockEmptyAggregation();
       const mockObjectSet = createMockObjectSet();
       const onFilterStateChanged = vi.fn();

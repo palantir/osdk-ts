@@ -18,6 +18,9 @@ import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { FilterInput } from "../FilterInput.js";
+import type { FilterState } from "../FilterListItemApi.js";
+import { createHasLinkFilterDef, MockObjectType } from "./testUtils.js";
 
 vi.mock("@osdk/react", () => ({
   useOsdkAggregation: vi.fn().mockReturnValue({
@@ -29,10 +32,6 @@ vi.mock("@osdk/react", () => ({
   useOsdkMetadata: vi.fn(() => ({ loading: false, metadata: undefined })),
   useRegisterUserAgent: vi.fn(),
 }));
-
-import { FilterInput } from "../FilterInput.js";
-import type { FilterState } from "../FilterListItemApi.js";
-import { createHasLinkFilterDef, MockObjectType } from "./testUtils.js";
 
 const EMPTY_WHERE = {} as WhereClause<typeof MockObjectType>;
 
@@ -95,7 +94,7 @@ describe("HasLinkInput", () => {
       });
     });
 
-    it("emits hasLink=false with isExcluding=false when undefined initial state is toggled", () => {
+    it("emits hasLink=true with isExcluding=false when undefined initial state is toggled", () => {
       const onFilterStateChanged = vi.fn();
       renderHasLinkInput({
         filterState: undefined,
