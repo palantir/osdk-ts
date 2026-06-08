@@ -14,35 +14,15 @@
  * limitations under the License.
  */
 
+import type * as Ontologies from "@osdk/foundry.ontologies";
 import type { ObjectPropertyType, ObjectType } from "@osdk/maker";
 import { OntologyEntityTypeEnum } from "@osdk/maker";
 import { consola } from "consola";
 import { mapPropertyType } from "./mapPropertyType.js";
 import { withoutNamespace } from "./utils.js";
 
-interface GatewayObjectTypeFullMetadata {
-  objectType: {
-    apiName: string;
-    displayName?: string;
-    description?: string;
-    primaryKey: string;
-    titleProperty: string;
-    status: string;
-    visibility?: string;
-    properties: Record<
-      string,
-      {
-        displayName?: string;
-        description?: string;
-        dataType: { type: string; [key: string]: unknown };
-      }
-    >;
-  };
-  sharedPropertyTypeMapping?: Record<string, string>;
-}
-
 export function convertObjectType(
-  fullMetadata: GatewayObjectTypeFullMetadata,
+  fullMetadata: Ontologies.ObjectTypeFullMetadata,
 ): ObjectType {
   const obj = fullMetadata.objectType;
   const properties: Array<ObjectPropertyType> = [];
@@ -71,6 +51,7 @@ export function convertObjectType(
 
   return {
     __type: OntologyEntityTypeEnum.OBJECT_TYPE,
+    ridHint: obj.rid,
     apiName: obj.apiName,
     displayName: obj.displayName ?? shortName,
     pluralDisplayName: (obj.displayName ?? shortName) + "s",

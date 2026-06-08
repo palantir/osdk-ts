@@ -33,6 +33,19 @@ const sidebars: SidebarsConfig = {
     "react/advanced-queries",
     "react/cache-management",
     "react/platform-apis",
+    {
+      type: "category",
+      label: "OSDK Devtools (Experimental)",
+      collapsed: true,
+      items: [
+        "react-devtools/Prerequisites",
+        "react-devtools/GettingStarted",
+        "react-devtools/Performance",
+        "react-devtools/Compute",
+        "react-devtools/Intercept",
+        "react-devtools/Debugging",
+      ],
+    },
   ],
 };
 

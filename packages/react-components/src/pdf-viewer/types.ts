@@ -49,6 +49,7 @@ export interface PdfAnnotationRenderProps {
   annotation: PdfAnnotation;
   scale: number;
   pageHeight: number;
+  transform: number[];
 }
 
 /** Common fields shared by all annotation types. */

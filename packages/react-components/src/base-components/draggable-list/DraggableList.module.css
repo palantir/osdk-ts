@@ -62,6 +62,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: var(--osdk-typography-color-default-rest);
 }
 
 .removeButton {

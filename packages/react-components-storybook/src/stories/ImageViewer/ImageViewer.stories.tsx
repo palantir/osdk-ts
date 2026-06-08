@@ -15,16 +15,9 @@
  */
 
 import type { Media } from "@osdk/api";
-import type {
-  BaseImageViewerProps,
-  ImageViewerMediaProps,
-} from "@osdk/react-components/experimental/image-viewer";
-import {
-  BaseImageViewer,
-  ImageViewer,
-} from "@osdk/react-components/experimental/image-viewer";
+import type { ImageViewerMediaProps } from "@osdk/react-components/experimental/image-viewer";
+import { ImageViewer } from "@osdk/react-components/experimental/image-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { fn } from "storybook/test";
 
 /**
  * Creates a sample PNG image as a data URL.
@@ -82,27 +75,16 @@ function createMockImageMedia(
   };
 }
 
-// --- BaseImageViewer stories ---
-
-const baseMeta: Meta<BaseImageViewerProps> = {
-  title: "Experimental/ImageViewer/BaseImageViewer",
-  tags: ["experimental"],
-  component: BaseImageViewer,
-  args: {
-    src: sampleImageDataUrl,
-    alt: "Sample image",
-  },
-  render: (args: BaseImageViewerProps) => (
-    <div style={{ height: "400px", width: "400px" }}>
-      <BaseImageViewer {...args} />
-    </div>
-  ),
+const meta: Meta<ImageViewerMediaProps> = {
+  title: "Components/DocumentViewer/Renderers/ImageViewer",
+  component: ImageViewer,
+  tags: ["beta"],
   parameters: {
     controls: { expanded: true },
   },
   argTypes: {
-    src: {
-      description: "Object URL or data URL pointing to the image",
+    media: {
+      description: "The Media object to fetch image contents from",
       control: false,
     },
     alt: {
@@ -113,37 +95,12 @@ const baseMeta: Meta<BaseImageViewerProps> = {
       description: "Additional CSS class name for the root element",
       control: "text",
     },
-    onError: {
-      description: "Callback when the image fails to load",
-      control: false,
-      table: { category: "Events" },
-    },
   },
 };
 
-export default baseMeta;
-type Story = StoryObj<typeof baseMeta>;
+export default meta;
 
-export const Default: Story = {
-  parameters: {
-    docs: {
-      source: {
-        code:
-          `import { BaseImageViewer } from "@osdk/react-components/experimental/image-viewer";
-
-<BaseImageViewer src={imageUrl} alt="My image" />`,
-      },
-    },
-  },
-};
-
-export const WithErrorCallback: Story = {
-  args: {
-    onError: fn(),
-  },
-};
-
-export const WithMedia: StoryObj<ImageViewerMediaProps> = {
+export const Default: StoryObj<ImageViewerMediaProps> = {
   args: {
     media: createMockImageMedia(
       sampleImageDataUrl,

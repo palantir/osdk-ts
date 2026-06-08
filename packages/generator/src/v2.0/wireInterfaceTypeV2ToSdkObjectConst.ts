@@ -15,7 +15,10 @@
  */
 
 import type { InterfaceMetadata } from "@osdk/api";
-import { wireInterfaceTypeV2ToSdkObjectDefinition } from "@osdk/generator-converters";
+import {
+  GeneratorError,
+  wireInterfaceTypeV2ToSdkObjectDefinition,
+} from "@osdk/generator-converters";
 import consola from "consola";
 import fastDeepEqual from "fast-deep-equal";
 import invariant from "tiny-invariant";
@@ -133,11 +136,12 @@ export function wireInterfaceTypeV2ToSdkObjectConst(
     definition,
   );
   if (maybeBadProperties.length > 0) {
-    throw new Error(
-      `Property name collision in interface "${interfaceDef.fullApiName}": ${
-        maybeBadProperties.join(", ")
-      }.  +
-Cannot have both an unqualified property and a namespaced property with matching root name when the namespace matches the interface.`,
+    throw new GeneratorError(
+      "Property name collision in interface: cannot have both an unqualified property and a namespaced property with matching root name when the namespace matches the interface.",
+      {
+        interfaceApiName: interfaceDef.fullApiName,
+        collidingProperties: maybeBadProperties,
+      },
     );
   }
 

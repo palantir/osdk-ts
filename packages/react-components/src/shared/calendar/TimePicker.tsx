@@ -27,10 +27,6 @@ export interface TimePickerProps {
 type TimeSegment = "hours" | "minutes";
 type TimeSegments = Record<TimeSegment, string>;
 
-interface InternalSegments extends TimeSegments {
-  valueTimestamp: number | null;
-}
-
 const NUMERIC_INPUT_PATTERN = "[0-9]*";
 
 const SEGMENT_LIMITS: Record<TimeSegment, { min: number; max: number }> = {
@@ -45,30 +41,36 @@ export const TimePicker: React.NamedExoticComponent<TimePickerProps> = React
     label = "Time",
   }: TimePickerProps): React.ReactElement {
     const valueTimestamp = value?.getTime() ?? null;
-    // Keep typed text locally so users can enter temporarily invalid values
-    // like "99" or "" without immediately mutating/clamping the parent Date.
-    const [internalSegments, setInternalSegments] = useState<InternalSegments>(
-      () =>
-        createInternalSegments(
-          valueTimestamp,
-          segmentsFromTimestamp(valueTimestamp),
-        ),
-    );
     const valueSegments = useMemo(
       () => segmentsFromTimestamp(valueTimestamp),
       [valueTimestamp],
     );
+    // draftSegments always holds the displayed text. It is reset to
+    // valueSegments whenever the controlled value changes, so the parent
+    // Date is the source of truth once an edit is committed or discarded.
+    const [draftSegments, setDraftSegments] = useState(valueSegments);
+    const [prevSegments, setPrevSegments] = useState(valueSegments);
+    if (
+      prevSegments.hours !== valueSegments.hours
+      || prevSegments.minutes !== valueSegments.minutes
+    ) {
+      setPrevSegments(valueSegments);
+      setDraftSegments(valueSegments);
+    }
 
-    // Track which external value this internal text was derived from. If the
-    // parent commits a different Date, ignore stale internal text and render
-    // from the new value instead.
-    const activeSegments = internalSegments.valueTimestamp === valueTimestamp
-      ? internalSegments
-      : createInternalSegments(valueTimestamp, valueSegments);
-    const hourText = activeSegments.hours;
-    const minuteText = activeSegments.minutes;
+    const hourText = draftSegments.hours;
+    const minuteText = draftSegments.minutes;
     const hourInvalid = isSegmentInvalid(hourText, "hours");
     const minuteInvalid = isSegmentInvalid(minuteText, "minutes");
+
+    const handleSegmentChange = useCallback(
+      (segment: TimeSegment, nextText: string) => {
+        setDraftSegments((prev) =>
+          replaceSegmentText(prev, { segment, nextText })
+        );
+      },
+      [],
+    );
 
     const emitChange = useCallback(
       (hours: number, minutes: number) => {
@@ -79,62 +81,35 @@ export const TimePicker: React.NamedExoticComponent<TimePickerProps> = React
       [onChange, value],
     );
 
-    const handleSegmentChange = useCallback(
-      (segment: TimeSegment, nextText: string) => {
-        setInternalSegments({
-          valueTimestamp,
-          ...replaceSegmentText(
-            { hours: hourText, minutes: minuteText },
-            { segment, nextText },
-          ),
-        });
-      },
-      [hourText, minuteText, valueTimestamp],
-    );
-
     const handleSegmentBlur = useCallback(
       (segment: TimeSegment, text: string) => {
         const parsedSegment = parseNumber(text);
         if (parsedSegment == null) {
           // Non-numeric text cannot be converted into a valid time segment, so
-          // restore the displayed value instead of emitting an arbitrary Date.
-          setInternalSegments(
-            createInternalSegments(valueTimestamp, valueSegments),
-          );
+          // restore the controlled value instead of emitting an arbitrary Date.
+          setDraftSegments(valueSegments);
           return;
         }
 
         const clampedSegment = clampSegment(parsedSegment, segment);
-        const nextSegments = replaceSegmentText(
-          { hours: hourText, minutes: minuteText },
-          { segment, nextText: formatSegment(clampedSegment, segment) },
+        setDraftSegments((prev) =>
+          replaceSegmentText(prev, {
+            segment,
+            nextText: formatSegment(clampedSegment, segment),
+          })
         );
-        // Only the blurred segment should commit. If the other segment is
-        // currently invalid, preserve the committed value for that segment.
-        const nextHours = parseSegment(nextSegments.hours, "hours")
-          ?? Number(valueSegments.hours);
-        const nextMinutes = parseSegment(nextSegments.minutes, "minutes")
-          ?? Number(valueSegments.minutes);
-
-        setInternalSegments({
-          valueTimestamp,
-          hours: formatSegment(nextHours, "hours"),
-          minutes: formatSegment(nextMinutes, "minutes"),
-        });
 
         const currentHours = Number(valueSegments.hours);
         const currentMinutes = Number(valueSegments.minutes);
+        const nextHours = segment === "hours" ? clampedSegment : currentHours;
+        const nextMinutes = segment === "minutes"
+          ? clampedSegment
+          : currentMinutes;
         if (nextHours !== currentHours || nextMinutes !== currentMinutes) {
           emitChange(nextHours, nextMinutes);
         }
       },
-      [
-        emitChange,
-        hourText,
-        minuteText,
-        valueTimestamp,
-        valueSegments,
-      ],
+      [emitChange, valueSegments],
     );
 
     const handleHourChange = useCallback(
@@ -189,13 +164,6 @@ export const TimePicker: React.NamedExoticComponent<TimePickerProps> = React
     );
   });
 
-function createInternalSegments(
-  valueTimestamp: number | null,
-  segments: TimeSegments,
-): InternalSegments {
-  return { valueTimestamp, ...segments };
-}
-
 function replaceSegmentText(
   segments: TimeSegments,
   {
@@ -240,10 +208,7 @@ function parseNumber(text: string): number | undefined {
   return Number.isNaN(parsed) ? undefined : parsed;
 }
 
-function parseSegment(
-  text: string,
-  segment: TimeSegment,
-): number | undefined {
+function parseSegment(text: string, segment: TimeSegment): number | undefined {
   const parsed = parseNumber(text);
   if (parsed == null) {
     return undefined;

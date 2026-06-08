@@ -60,8 +60,24 @@ const fauxObject: Osdk.Instance<objectTypeWithAllPropertyTypes> = {
   objectTypeWithAllPropertyTypes
 >;
 
+// The matcher reads `$primaryKey` / `$title` straight off the holder, so these
+// variants carry those identifier keys (the base fauxObject only has props).
+const fauxObjectWithIdentifiers = {
+  ...fauxObject,
+  $primaryKey: 5,
+  $title: "Hi there",
+} as unknown as Osdk.Instance<objectTypeWithAllPropertyTypes>;
+
+const fauxObjectNoTitle = {
+  ...fauxObject,
+  $primaryKey: 5,
+  $title: undefined,
+} as unknown as Osdk.Instance<objectTypeWithAllPropertyTypes>;
+
 const objects = {
   fauxObject,
+  fauxObjectWithIdentifiers,
+  fauxObjectNoTitle,
 };
 
 const whereClauses = {
@@ -102,6 +118,21 @@ const whereClauses = {
         $bbox: [5, 3, 3, 2],
       },
     },
+  },
+  titleStartsWithHi: {
+    $title: { $startsWith: "Hi" },
+  },
+  titleStartsWithBye: {
+    $title: { $startsWith: "Bye" },
+  },
+  primaryKeyEquals: {
+    $primaryKey: { $eq: 5 },
+  },
+  primaryKeyInArray: {
+    $primaryKey: { $in: [5, 6] },
+  },
+  primaryKeyNotInArray: {
+    $primaryKey: { $in: [1, 2] },
   },
   empty: {},
   stringStartsWithHiAndBye: {
@@ -151,6 +182,12 @@ const cases = [
   ["fauxObject", "mediaReferenceIsNull", true, true],
   ["fauxObject", "mediaReferenceNotIsNull", false, false],
   ["fauxObject", "geopointIntersects", false, true],
+  ["fauxObjectWithIdentifiers", "titleStartsWithHi", true, true],
+  ["fauxObjectWithIdentifiers", "titleStartsWithBye", false, false],
+  ["fauxObjectWithIdentifiers", "primaryKeyEquals", true, true],
+  ["fauxObjectWithIdentifiers", "primaryKeyInArray", true, true],
+  ["fauxObjectWithIdentifiers", "primaryKeyNotInArray", false, false],
+  ["fauxObjectNoTitle", "titleStartsWithHi", false, false],
   ["fauxObject", "stringStartsWithHiAndBye", false, false],
   ["fauxObject", "stringStartsWithHiOrBye", true, true],
   ["fauxObject", "whereStrictAndNot", false, true],

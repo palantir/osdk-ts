@@ -18,9 +18,11 @@ import type { OntologyIrV2 } from "@osdk/client.unstable";
 import type { IDiscoveredFunction } from "@osdk/generator-converters.ontologyir";
 import type { LinkType, ObjectType } from "@osdk/maker";
 import {
+  getImportedTypes,
   getOntologyDefinition,
   initializeOntologyState,
   OntologyEntityTypeEnum,
+  writeStaticObjects,
 } from "@osdk/maker";
 import * as fs from "fs";
 import { convertOntologyDefinition } from "../conversion/toMarketplace/convertOntologyDefinition.js";
@@ -43,6 +45,7 @@ export interface FunctionsIr {
 export async function defineOntologyV2(
   ns: string,
   body: () => void | Promise<void>,
+  outputDir?: string,
   functionsIrFile?: string,
   randomnessKey?: string,
 ): Promise<OntologyV2Result> {
@@ -68,7 +71,10 @@ export async function defineOntologyV2(
     );
   }
 
-  const ridGenerator = new OntologyRidGeneratorImpl(randomnessKey);
+  const ridGenerator = new OntologyRidGeneratorImpl(
+    getImportedTypes(),
+    randomnessKey,
+  );
   const ontDef = convertOntologyDefinition(
     ontologyDefinition,
     ridGenerator,
@@ -114,6 +120,10 @@ export async function defineOntologyV2(
             .includeEmptyBackingDatasource === true;
     })
     .map(([apiName]) => apiName);
+
+  if (outputDir) {
+    writeStaticObjects(outputDir);
+  }
 
   return {
     ontologyIr: ontDef,

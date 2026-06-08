@@ -62,7 +62,7 @@
 
 .modeButton[data-pressed] {
   background-color: var(--osdk-pdf-viewer-outline-item-active-bg, rgba(45, 114, 210, 0.1));
-  color: var(--osdk-pdf-viewer-outline-item-active-color, var(--osdk-intent-primary));
+  color: var(--osdk-pdf-viewer-outline-item-active-color, var(--osdk-intent-primary-rest));
 }
 
 .modeButton[data-pressed]:hover {

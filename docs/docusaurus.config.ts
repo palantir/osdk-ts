@@ -88,7 +88,7 @@ const config: Config = {
           type: "docSidebar",
           sidebarId: "react",
           position: "left",
-          label: "osdk-react",
+          label: "OSDK React",
         },
         {
           type: "docSidebar",

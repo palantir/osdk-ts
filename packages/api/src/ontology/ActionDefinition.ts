@@ -65,6 +65,7 @@ export namespace ActionMetadata {
       | "attachment"
       | "marking"
       | "mediaReference"
+      | "scenarioReference"
       | "objectType"
       | "geoshape"
       | "geohash";

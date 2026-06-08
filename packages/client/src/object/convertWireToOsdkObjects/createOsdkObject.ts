@@ -58,6 +58,8 @@ const specialPropertyTypes = new Set(
   ],
 );
 
+const securableSpecialKeys = new Set(["$primaryKey", "$title"]);
+
 // kept separate so we are not redefining these functions
 // every time an object is created.
 const basePropDefs = {
@@ -358,7 +360,9 @@ function parseWhenSecuritiesLoaded(
 
   for (const propKey of Object.keys(rawObject)) {
     if (
-      propKey in objectDef.properties || propKey in derivedPropertyTypeByName
+      propKey in objectDef.properties
+      || propKey in derivedPropertyTypeByName
+      || securableSpecialKeys.has(propKey)
     ) {
       const value = rawObject[propKey];
 

@@ -24,6 +24,7 @@ export const addOneQueryType: QueryTypeV2 = {
       dataType: {
         type: "integer",
       },
+      required: true,
     },
   },
   output: {
@@ -43,6 +44,7 @@ export const addOneQueryTypeOlderVersion: QueryTypeV2 = {
       dataType: {
         type: "integer",
       },
+      required: true,
     },
   },
   output: {
@@ -90,6 +92,7 @@ export const queryTypeReturnsStruct: QueryTypeV2 = {
           },
         ],
       },
+      required: true,
     },
   },
   output: {
@@ -173,6 +176,7 @@ export const queryTypeReturnsComplexStruct: QueryTypeV2 = {
           },
         ],
       },
+      required: true,
     },
   },
   output: {
@@ -321,6 +325,7 @@ export const queryTypeAcceptsTwoDimensionalAggregation: QueryTypeV2 = {
           type: "double",
         },
       },
+      required: true,
     },
   },
   output: {
@@ -360,6 +365,7 @@ export const queryTypeAcceptsThreeDimensionalAggregation: QueryTypeV2 = {
           },
         },
       },
+      required: true,
     },
   },
   output: {
@@ -396,6 +402,7 @@ export const queryTypeAcceptsObjects: QueryTypeV2 = {
         objectApiName: "Employee",
         objectTypeApiName: "Employee",
       },
+      required: true,
     },
   },
   output: {
@@ -419,6 +426,7 @@ export const queryTypeAcceptsInterfaces: QueryTypeV2 = {
         type: "interfaceObject",
         interfaceTypeApiName: "FooInterface",
       },
+      required: true,
     },
   },
   output: {
@@ -440,6 +448,7 @@ export const queryTypeAcceptsInterfaceObjectSet: QueryTypeV2 = {
         type: "interfaceObjectSet",
         interfaceTypeApiName: "FooInterface",
       },
+      required: true,
     },
   },
   output: {
@@ -459,6 +468,7 @@ export const queryTypeOutputsInterfaceObjectSet: QueryTypeV2 = {
       dataType: {
         type: "string",
       },
+      required: true,
     },
   },
   output: {
@@ -482,6 +492,7 @@ export const queryTypeAcceptsObjectSets: QueryTypeV2 = {
         objectApiName: "Employee",
         objectTypeApiName: "Employee",
       },
+      required: true,
     },
   },
   output: {
@@ -507,6 +518,7 @@ export const queryTypeReturnsArray: QueryTypeV2 = {
         "type": "array",
         "subType": { "type": "string" },
       },
+      "required": true,
     },
   },
   "rid":
@@ -531,6 +543,7 @@ export const queryTypeReturnsArrayOfObjects: QueryTypeV2 = {
         "type": "array",
         "subType": { "type": "string" },
       },
+      "required": true,
     },
   },
   "rid":
@@ -565,6 +578,7 @@ export const queryTypeReturnsMap: QueryTypeV2 = {
           type: "string",
         },
       },
+      "required": true,
     },
   },
   "rid":
@@ -594,6 +608,7 @@ export const queryTypeAcceptsMediaReference: QueryTypeV2 = {
       dataType: {
         type: "mediaReference",
       },
+      required: true,
     },
   },
   output: {
@@ -614,6 +629,7 @@ export const queryTypeReturnsRecursiveStruct: QueryTypeV2 = {
         type: "typeReference",
         typeId: "recursive-tree-node",
       },
+      required: true,
     },
   },
   output: {
@@ -663,12 +679,14 @@ export const queryTypeWithMultipleTypeRefs: QueryTypeV2 = {
         type: "typeReference",
         typeId: "binary-tree-node",
       },
+      required: true,
     },
     linkedList: {
       dataType: {
         type: "typeReference",
         typeId: "linked-list-node",
       },
+      required: true,
     },
   },
   output: {

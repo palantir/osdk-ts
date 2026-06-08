@@ -111,6 +111,7 @@ export function createClientInternal(
   objectSetFactory: ObjectSetFactory<any, any>,
   transactionRid: string | undefined,
   flushEdits: (() => Promise<void>) | undefined,
+  scenarioRid: string | undefined,
   baseUrl: string,
   ontologyRid: string | Promise<string>,
   tokenProvider: () => Promise<string>,
@@ -146,6 +147,7 @@ export function createClientInternal(
       logger: options?.logger ?? new MinimalLogger(),
       transactionId: transactionRid,
       flushEdits,
+      scenarioRid,
       branch: options?.UNSTABLE_DO_NOT_USE_BRANCH,
     },
     fetchFn,
@@ -467,6 +469,7 @@ export const createClient: (
   createObjectSet,
   undefined,
   undefined,
+  undefined,
 );
 
 export const createClientWithTransaction: (
@@ -478,6 +481,20 @@ export const createClientWithTransaction: (
     createObjectSet,
     transactionRid,
     flushEdits,
+    undefined,
+    ...args,
+  ) as Client;
+
+/** @internal */
+export const createClientWithScenario: (
+  scenarioRid: string,
+  ...args: Parameters<typeof createClient>
+) => Client = (scenarioRid, ...args) =>
+  createClientInternal(
+    createObjectSet,
+    undefined,
+    undefined,
+    scenarioRid,
     ...args,
   ) as Client;
 

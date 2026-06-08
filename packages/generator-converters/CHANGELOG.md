@@ -1,5 +1,111 @@
 # @osdk/generator-converters
 
+## 2.31.0
+
+### Patch Changes
+
+- Updated dependencies [57cbc6d]
+  - @osdk/api@2.31.0
+
+## 2.30.0
+
+### Patch Changes
+
+- @osdk/api@2.30.0
+
+## 2.29.0
+
+### Minor Changes
+
+- 08e921c: Bump `foundry-platform-typescript` catalog to 2.63.0 and surface the new CBAC/MANDATORY marking subtype on `ObjectMetadata.Property` via a new `typeMetadata` discriminated-union field. For marking properties, `typeMetadata` is `{ type: "marking"; subtype?: "CBAC" | "MANDATORY" }`, letting consumers distinguish classification-based markings from mandatory markings on object property columns. Future per-`type` metadata should be added as additional variants of `typeMetadata` rather than as new top-level optionals on `Property`.
+
+### Patch Changes
+
+- Updated dependencies [08e921c]
+  - @osdk/api@2.29.0
+
+## 2.28.0
+
+### Patch Changes
+
+- @osdk/api@2.28.0
+
+## 2.27.0
+
+### Minor Changes
+
+- 5ff7aa5: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.61.0` to `2.63.0`. The OntologyScenarios endpoints now expose a `preview` query-param slot, so `createScenario` and the `EXPERIMENTAL_ScenarioClient` read methods pass `{ preview: true }` directly instead of relying on a fetch-level URL rewrite.
+
+### Patch Changes
+
+- @osdk/api@2.27.0
+
+## 2.26.0
+
+### Patch Changes
+
+- @osdk/api@2.26.0
+
+## 2.25.0
+
+### Minor Changes
+
+- 8965bdf: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+- bd90dba: Add end-to-end support for `scenarioReference` action parameters:
+  - `@osdk/api` adds `"scenarioReference"` to `ActionMetadata.DataType.BaseActionParameterTypes` and a matching `scenarioReference: ScenarioClient` entry in `DataValueClientToWire` (structurally typed as `{ getScenarioReference(): { scenarioRid } }` to avoid a circular dep on `@osdk/client`).
+  - `@osdk/generator-converters` maps the wire `scenarioReference` variant into the primitive type.
+  - Generated SDKs now emit `ActionParam.PrimitiveType<"scenarioReference">` (resolves to `ScenarioClient`) for scenarioReference parameters, instead of throwing at SDK build time.
+  - `@osdk/client`'s `toDataValue` accepts a `ScenarioClient` and serializes it to the rid string the platform expects.
+  - `@osdk/react-components`'s ActionForm renders scenarioReference parameters as `UNSUPPORTED` for now.
+
+  Enables `client(ScenarioMerge).applyAction({ scenario })` end-to-end in generated SDKs.
+
+### Patch Changes
+
+- Updated dependencies [bd90dba]
+  - @osdk/api@2.25.0
+
+## 2.24.0
+
+### Minor Changes
+
+- 60aff19: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+
+### Patch Changes
+
+- Updated dependencies [a492285]
+  - @osdk/api@2.24.0
+
+## 2.23.0
+
+### Minor Changes
+
+- 9fb5afb: Emit structured `service.1` JSON logs to stdout for log forwarders, with timing for ontology metadata loading and OSDK package generation phases. Reads `JOB_ID` and `TRACE_ID` from env and threads them into every record's params for cross-process correlation. The previous human-readable console output (via consola) has been removed; the CLI now exits with a non-zero status code on failure.
+
+### Patch Changes
+
+- Updated dependencies [198f219]
+- Updated dependencies [ef156b6]
+- Updated dependencies [8290dd7]
+  - @osdk/api@2.23.0
+
+## 2.22.0
+
+### Patch Changes
+
+- @osdk/api@2.22.0
+
+## 2.21.0
+
+### Minor Changes
+
+- 1a07c91: Clean up unstable interface code: remove the `$__UNSTABLE_useOldInterfaceApis` fetch option and its old `OntologyInterfaces.search`-based code path, consolidate `convertWireToOsdkObjects` / `convertWireToOsdkObjects2` into a single factory backed by `loadMultipleObjectTypes`, and rename `__UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition` / `__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst` (the latter is generator-internal). The unused `v2` parameter on `wireInterfaceTypeV2ToSdkObjectDefinition` is also removed.
+
+### Patch Changes
+
+- Updated dependencies [1a07c91]
+  - @osdk/api@2.21.0
+
 ## 2.20.0
 
 ### Patch Changes

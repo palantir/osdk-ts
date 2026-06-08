@@ -40,6 +40,7 @@ export function createMinimalClient(
     logger?: Logger;
     transactionId?: string;
     flushEdits?: () => Promise<void>;
+    scenarioRid?: string;
     branch?: string;
     headers?: Record<string, string>;
   } = {},
@@ -77,6 +78,8 @@ export function createMinimalClient(
     ontologyRid: metadata.ontologyRid,
     logger: options.logger,
     transactionId: options.transactionId,
+    flushEdits: options.flushEdits,
+    scenarioRid: options.scenarioRid,
     clientCacheKey: {} as ClientCacheKey,
     requestContext: {},
     branch: options.branch,

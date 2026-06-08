@@ -180,7 +180,10 @@ async function generateV2QueryFile(
 
             ${
       (() => {
-        const outputDef = paramToDef({ dataType: query.output });
+        const outputDef = paramToDef({
+          dataType: query.output,
+          required: true,
+        });
         const outputType = getQueryParamType(
           ontology,
           outputDef,

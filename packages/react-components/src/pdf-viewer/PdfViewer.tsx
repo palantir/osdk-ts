@@ -18,8 +18,7 @@ import { Error as ErrorIcon, Spin } from "@blueprintjs/icons";
 import classnames from "classnames";
 import "pdfjs-dist/web/pdf_viewer.css";
 import React, { forwardRef, useImperativeHandle } from "react";
-import { createPortal } from "react-dom";
-import { PdfViewerAnnotationLayer } from "./components/PdfViewerAnnotationLayer.js";
+import { PdfAnnotationOverlay } from "./components/PdfAnnotationOverlay.js";
 import { PdfViewerOutlineSidebar } from "./components/PdfViewerOutlineSidebar.js";
 import { PdfViewerSearchBar } from "./components/PdfViewerSearchBar.js";
 import { PdfViewerSidebar } from "./components/PdfViewerSidebar.js";
@@ -187,15 +186,13 @@ export const BasePdfViewer: React.ForwardRefExoticComponent<
                 if (pageAnnotations.length === 0) {
                   return null;
                 }
-                return createPortal(
-                  <PdfViewerAnnotationLayer
+                return (
+                  <PdfAnnotationOverlay
                     key={target.pageNumber}
+                    target={target}
                     annotations={pageAnnotations}
-                    pageHeight={target.pageHeight}
-                    scale={target.scale}
                     onAnnotationClick={onAnnotationClick}
-                  />,
-                  target.container,
+                  />
                 );
               })}
             </div>

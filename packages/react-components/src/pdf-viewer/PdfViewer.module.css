@@ -51,7 +51,7 @@
 /* PDFViewer page overrides */
 :global(.pdfViewer .page) {
   box-shadow: var(--osdk-pdf-viewer-page-shadow);
-  background-color: var(--osdk-palette-white);
+  background-color: var(--osdk-background-primary);
   margin: 0 auto var(--osdk-pdf-viewer-page-gap);
 }
 

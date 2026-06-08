@@ -29,7 +29,7 @@
     --osdk-datetime-calendar-font-size
   );
 
-  --osdk-datetime-calendar-day-color: var(--osdk-typography-color-default);
+  --osdk-datetime-calendar-day-color: var(--osdk-typography-color-default-rest);
   --osdk-datetime-calendar-day-hover-bg: var(
     --osdk-surface-background-color-default-hover
   );

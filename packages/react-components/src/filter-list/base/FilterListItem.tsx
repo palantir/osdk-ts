@@ -21,46 +21,19 @@ import type {
   DraggableSyntheticListeners,
 } from "@dnd-kit/core";
 import classnames from "classnames";
-import React, { memo, useCallback, useState } from "react";
+import React, { memo, useCallback, useMemo, useState } from "react";
 import { ErrorBoundary } from "../../shared/ErrorBoundary.js";
 import type { FilterState } from "../FilterListItemApi.js";
-import { supportsExcluding, supportsSearch } from "../utils/filterValues.js";
+import {
+  filterHasActiveState,
+  getEffectiveFilterState,
+  supportsExcluding,
+  supportsSearch,
+} from "../utils/filterValues.js";
 import type { RenderFilterInput } from "./BaseFilterListApi.js";
 import { DragHandleIcon } from "./DragHandleIcon.js";
 import { OverflowMenuIcon, RemoveIcon, SearchIcon } from "./FilterIcons.js";
 import styles from "./FilterListItem.module.css";
-
-function hasActiveSelection(filterState: FilterState | undefined): boolean {
-  if (filterState == null) {
-    return false;
-  }
-  switch (filterState.type) {
-    case "EXACT_MATCH":
-      return filterState.values.length > 0;
-    case "SELECT":
-      return filterState.selectedValues.length > 0;
-    case "CONTAINS_TEXT":
-      return filterState.value != null && filterState.value.length > 0;
-    case "NUMBER_RANGE":
-      return filterState.minValue != null || filterState.maxValue != null;
-    case "DATE_RANGE":
-      return filterState.minValue != null || filterState.maxValue != null;
-    case "TIMELINE":
-      return filterState.startDate != null || filterState.endDate != null;
-    case "TOGGLE":
-      return filterState.enabled;
-    case "keywordSearch":
-      return filterState.searchTerm.length > 0;
-    case "hasLink":
-      return filterState.hasLink;
-    case "linkedProperty":
-      return hasActiveSelection(filterState.linkedFilterState);
-    case "custom":
-      return true;
-    default:
-      return false;
-  }
-}
 
 interface FilterListItemProps<D> {
   definition: D;
@@ -73,6 +46,7 @@ interface FilterListItemProps<D> {
   ) => void;
   onFilterRemoved?: (filterKey: string) => void;
   renderInput: RenderFilterInput<D>;
+  searchField?: boolean;
   dragHandleAttributes?: DraggableAttributes;
   dragHandleListeners?: DraggableSyntheticListeners;
   className?: string;
@@ -87,6 +61,7 @@ function FilterListItemInner<D>({
   onFilterStateChanged,
   onFilterRemoved,
   renderInput,
+  searchField,
   dragHandleAttributes,
   dragHandleListeners,
   className,
@@ -133,9 +108,15 @@ function FilterListItemInner<D>({
     element?.focus({ preventScroll: true });
   }, []);
 
-  const showExcludeDropdown = supportsExcluding(filterState);
-  const showSearch = supportsSearch(filterState);
+  const effectiveState = useMemo(
+    () => getEffectiveFilterState(filterState),
+    [filterState],
+  );
+
+  const showExcludeDropdown = supportsExcluding(effectiveState);
+  const showSearch = supportsSearch(effectiveState) && searchField !== false;
   const hasOverflowActions = showExcludeDropdown;
+  const hasSelection = filterHasActiveState(filterState);
 
   const searchOpen = searchState.type === "open";
   const searchQuery = searchState.type === "open" ? searchState.query : "";
@@ -147,7 +128,7 @@ function FilterListItemInner<D>({
     <div
       className={classnames(styles.filterItem, className)}
       style={style}
-      data-has-selection={hasActiveSelection(filterState) || undefined}
+      data-has-selection={hasSelection || undefined}
     >
       <div className={styles.itemHeader}>
         {dragHandleAttributes && (

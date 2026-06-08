@@ -41,6 +41,8 @@ export namespace WidgetMessage {
       apiVersion: HostMessage.Version;
     }
 
+    export interface Reload {}
+
     export interface Resize {
       /** The width of the widget document body element according to border box sizing */
       width: number;
@@ -64,6 +66,13 @@ export namespace WidgetMessage {
   {}
 
   /**
+   * Emit when the widget should reload (e.g. for a full reload during hot module replacement)
+   */
+  export interface Reload
+    extends WidgetBaseMessage<"widget.reload", Payload.Reload>
+  {}
+
+  /**
    * Emit when the widget document body element resizes
    */
   export interface Resize
@@ -80,6 +89,7 @@ export namespace WidgetMessage {
 
 export type WidgetMessage<C extends WidgetConfig<C["parameters"]>> =
   | WidgetMessage.Ready
+  | WidgetMessage.Reload
   | WidgetMessage.Resize
   | WidgetMessage.EmitEvent<C>;
 
@@ -87,6 +97,12 @@ export function isWidgetReadyMessage<C extends WidgetConfig<C["parameters"]>>(
   event: WidgetMessage<C>,
 ): event is WidgetMessage.Ready {
   return event.type === "widget.ready";
+}
+
+export function isWidgetReloadMessage<C extends WidgetConfig<C["parameters"]>>(
+  event: WidgetMessage<C>,
+): event is WidgetMessage.Reload {
+  return event.type === "widget.reload";
 }
 
 export function isWidgetResizeMessage<C extends WidgetConfig<C["parameters"]>>(

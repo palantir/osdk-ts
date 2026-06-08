@@ -4,7 +4,7 @@
 
 React components for building Foundry applications. These components are Ontology-aware — pass in OSDK entities, and they handle data loading, caching, and state management automatically.
 
-Built on top of [@osdk/react](../react), these components use OSDK hooks internally to provide ready-to-use UI elements. While @osdk/react gives you low-level hooks for data fetching, @osdk/react-components provides UI widgets for common patterns like tables and forms.
+Built on top of [@osdk/react](https://github.com/palantir/osdk-ts/tree/main/packages/react), these components use OSDK hooks internally to provide ready-to-use UI elements. While @osdk/react gives you low-level hooks for data fetching, @osdk/react-components provides UI widgets for common patterns like tables and forms.
 
 ## Table of Contents
 
@@ -125,20 +125,19 @@ Add `isolation: isolate` to your app's root element. This is required for Base U
 
 The components that this package will provide are:
 
-| Component        | Description                                                                                     | Documentation                     |
-| ---------------- | ----------------------------------------------------------------------------------------------- | --------------------------------- |
-| `ObjectTable`    | Displays an Object Set as a sortable, paginated table with inline editing support               | [Guide](./docs/ObjectTable.md)    |
-| `PdfViewer`      | Renders PDF documents with annotations, search, sidebar navigation, and zoom                    | [Guide](./docs/PdfViewer.md)      |
-| `FilterList`     | Visualize a high-level summary of objects data to allow users to filter that data.              | [Guide](./docs/FilterList.md)     |
-| `ActionForm`     | Auto-generated form for executing Ontology Actions                                              | -                                 |
-| `AipAgentChat`   | Chat surface backed by Foundry LMS via `useChat` — takes a `PlatformClient` and model API name. | [Guide](./docs/AipAgentChat.md)   |
-| `DocumentViewer` | Unified media viewer that auto-detects file type and renders the appropriate viewer             | [Guide](./docs/DocumentViewer.md) |
-| `DocxViewer`     | Renders DOCX files with headers, footers, footnotes, and endnotes                               | [Guide](./docs/DocxViewer.md)     |
-| `EmailViewer`    | Parses and renders EML files with headers and sandboxed HTML body                               | [Guide](./docs/EmailViewer.md)    |
-| `ExcelViewer`    | Renders Excel spreadsheets with sheet tabs and column/row headers                               | [Guide](./docs/ExcelViewer.md)    |
-| `ImageViewer`    | Renders images (PNG, JPEG, GIF, SVG, WebP, BMP)                                                 | [Guide](./docs/ImageViewer.md)    |
-| `VideoViewer`    | Renders video with native browser controls                                                      | [Guide](./docs/VideoViewer.md)    |
-| `XmlViewer`      | Renders XML content with syntax preservation                                                    | [Guide](./docs/XmlViewer.md)      |
+| Component        | Description                                                                         | Documentation                                                                                           |
+| ---------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `ObjectTable`    | Displays an Object Set as a sortable, paginated table with inline editing support   | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/ObjectTable.md)    |
+| `PdfViewer`      | Renders PDF documents with annotations, search, sidebar navigation, and zoom        | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/PdfViewer.md)      |
+| `FilterList`     | Visualize a high-level summary of objects data to allow users to filter that data.  | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/FilterList.md)     |
+| `ActionForm`     | Auto-generated form for executing Ontology Actions                                  | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/ActionForm.md)     |
+| `DocumentViewer` | Unified media viewer that auto-detects file type and renders the appropriate viewer | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/DocumentViewer.md) |
+| `EmailViewer`    | Parses and renders EML files with headers and sandboxed HTML body                   | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/EmailViewer.md)    |
+| `ExcelViewer`    | Renders Excel spreadsheets with sheet tabs and column/row headers                   | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/ExcelViewer.md)    |
+| `ImageViewer`    | Renders images (PNG, JPEG, GIF, SVG, WebP, BMP)                                     | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/ImageViewer.md)    |
+| `VideoViewer`    | Renders video with native browser controls                                          | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/VideoViewer.md)    |
+| `XmlViewer`      | Renders XML content with syntax preservation                                        | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/XmlViewer.md)      |
+| `CbacPicker`     | Picker for classification-based access control (CBAC) markings with banner display  | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/CbacPicker.md)     |
 
 ## Component Architecture
 
@@ -170,7 +169,7 @@ For example, the PDF viewer offers three levels of customization:
 | Building blocks | `PdfViewerToolbar`, `PdfViewerSidebar`, `PdfViewerContent`, etc. | Custom layout using standard parts                               |
 | Hooks           | `usePdfViewerState` / `usePdfViewerCore` / primitive hooks       | Build entirely custom components; hooks do all the heavy lifting |
 
-See the [PdfViewer guide](./docs/PdfViewer.md) for the full API reference.
+See the [PdfViewer guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/PdfViewer.md) for the full API reference.
 
 ### Example: ObjectTable and BaseTable
 
@@ -275,7 +274,7 @@ export const MyComponent: typeof _MyComponent = withOsdkMetrics(
 
 ## Custom Styling
 
-See the [CSS Variables Reference](./docs/CSSVariables.md) on how to apply custom themes and styling to the components.
+See the [CSS Variables Reference](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/CSSVariables.md) on how to apply custom themes and styling to the components.
 
 ## Example Usage
 
@@ -296,9 +295,12 @@ function EmployeeDirectory() {
 
 ## Contributing
 
-Looking to contribute to the codebase? Read the [contribution guidelines](./CONTRIBUTING.md).
+Looking to contribute to the codebase? Read the [contribution guidelines](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/CONTRIBUTING.md).
 
-If you use [Claude Code](https://claude.com/claude-code), run `/add-new-component` (or just describe the component you want to add) — the [`add-new-component` skill](./.claude/skills/add-new-component/SKILL.md) walks you through the API-first PR, MVP checklist, and verification loop on top of `CONTRIBUTING.md`.
+If you use [Claude Code](https://claude.com/claude-code), this package ships two skills that wrap `CONTRIBUTING.md`:
+
+- Run `/add-new-component` (or describe the component you want to add) — the [`add-new-component` skill](../../.claude/skills/add-new-component/SKILL.md) walks you through the API-first PR, MVP checklist, and verification loop.
+- Run `/contribute` (or describe the bug to fix / feature to add on an existing component) — the [`contribute` skill](../../.claude/skills/contribute/SKILL.md) adds a failing-test-first gate for bugs, an API-change checkpoint when the diff touches public props, and a verification loop.
 
 ## Development Workflow
 

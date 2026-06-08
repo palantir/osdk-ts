@@ -1082,8 +1082,8 @@ describe("convertWireToOsdkObjects", () => {
   it("$as on an object loaded with $loadPropertySecurityMetadata produces the full interface view, threading $propertySecurities and the standard $* props", async () => {
     const wireEmployee = {
       __apiName: "Employee",
-      __primaryKey: 50031,
-      __title: "Jane Doe",
+      __primaryKey: { value: 50031, propertySecurityIndex: 0 },
+      __title: { value: "Jane Doe", propertySecurityIndex: 0 },
       employeeId: 50031,
       fullName: { value: "Jane Doe", propertySecurityIndex: 0 },
       office: { value: "SEA", propertySecurityIndex: 0 },
@@ -1113,7 +1113,9 @@ describe("convertWireToOsdkObjects", () => {
       >
     >();
 
-    expectTypeOf(asFoo.$propertySecurities).toEqualTypeOf<{
+    expectTypeOf(asFoo.$propertySecurities).branded.toEqualTypeOf<{
+      $primaryKey: PropertySecurity[];
+      $title: PropertySecurity[];
       fooIdp: PropertySecurity[];
       fooSpt: PropertySecurity[];
     }>();
@@ -1125,6 +1127,16 @@ describe("convertWireToOsdkObjects", () => {
         "$objectType": "Employee",
         "$primaryKey": 50031,
         "$propertySecurities": {
+          "$primaryKey": [
+            {
+              "type": "unsupportedPolicy",
+            },
+          ],
+          "$title": [
+            {
+              "type": "unsupportedPolicy",
+            },
+          ],
           "fooIdp": [
             {
               "type": "unsupportedPolicy",

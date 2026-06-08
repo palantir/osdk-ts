@@ -27,6 +27,7 @@ import {
   DEFAULT_TO_YEAR,
 } from "./calendarShared.js";
 import styles from "./DateCalendar.module.css";
+import { TimePicker } from "./TimePicker.js";
 
 export const CLASS_NAMES: ClassNames = {
   root: styles.calendar,
@@ -75,12 +76,12 @@ export const CALENDAR_COMPONENTS: {
 export interface DateCalendarProps {
   dateSelected: Date | undefined;
   onSelect: (date: Date | undefined) => void;
+  onTimeChange?: (date: Date) => void;
   onClear?: () => void;
   month?: Date;
   onMonthChange?: (month: Date) => void;
   min?: Date;
   max?: Date;
-  footer?: React.ReactNode;
   todayButtonText?: string;
   clearButtonText?: string;
 }
@@ -88,16 +89,17 @@ export interface DateCalendarProps {
 export default function DateCalendar({
   dateSelected,
   onSelect,
+  onTimeChange,
   onClear,
   month,
   onMonthChange,
   min,
   max,
-  footer,
   todayButtonText = "Today",
   clearButtonText = "Clear",
 }: DateCalendarProps): React.ReactElement {
   const disabled = useMemo(() => buildDisabledMatchers(min, max), [min, max]);
+  const showTime = onTimeChange != null;
 
   const fromYear = min != null ? min.getFullYear() : DEFAULT_FROM_YEAR;
   const toYear = max != null ? max.getFullYear() : DEFAULT_TO_YEAR;
@@ -110,6 +112,30 @@ export default function DateCalendar({
     today.getDate(),
   );
   const isTodaySelectable = isDateInRange(todayMidnight, min, max);
+  const applySelectedTime = useCallback(
+    (selected: Date): Date => {
+      // Calendar day buttons provide local-midnight dates. In datetime mode,
+      // keep the currently visible time when the user changes only the day.
+      // The Today action intentionally bypasses this path and uses wall-clock
+      // time from `new Date()`.
+      if (!showTime) {
+        return selected;
+      }
+      if (dateSelected == null) {
+        return selected;
+      }
+      const date = new Date(selected.getTime());
+      date.setHours(dateSelected.getHours(), dateSelected.getMinutes(), 0, 0);
+      return date;
+    },
+    [dateSelected, showTime],
+  );
+  const handleSelect = useCallback(
+    (selected: Date | undefined) => {
+      onSelect(selected == null ? undefined : applySelectedTime(selected));
+    },
+    [applySelectedTime, onSelect],
+  );
   const handleTodayClick = useCallback(() => {
     if (!isTodaySelectable) {
       return;
@@ -119,8 +145,10 @@ export default function DateCalendar({
 
   const calendarFooter = (
     <>
-      {footer != null && (
-        <div className={styles.calendarTimeFooter}>{footer}</div>
+      {showTime && (
+        <div className={styles.calendarTimeFooter}>
+          <TimePicker value={dateSelected ?? null} onChange={onTimeChange} />
+        </div>
       )}
       <div className={styles.calendarActionBar}>
         <ActionButton
@@ -144,7 +172,7 @@ export default function DateCalendar({
     <DayPicker
       mode="single"
       selected={dateSelected}
-      onSelect={onSelect}
+      onSelect={handleSelect}
       month={month}
       onMonthChange={onMonthChange}
       disabled={disabled}

@@ -640,7 +640,9 @@ export function extractAllowedValues(
         objectTypeReference: {
           type: "objectTypeReference",
           objectTypeReference: {
-            interfaceTypeRids: allowedValues.interfaceTypes,
+            interfaceTypeRids: allowedValues.interfaceTypes.map(
+              apiName => ridGenerator.generateRidForInterface(apiName),
+            ),
           },
         },
       };

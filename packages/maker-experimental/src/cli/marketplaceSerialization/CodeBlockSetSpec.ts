@@ -22,7 +22,7 @@ import type {
   LocalizedTitleAndDescription,
 } from "@osdk/client.unstable/api";
 import type { CodeBlockSpec } from "./CodeBlockSpec.js";
-import type { SemverVersion } from "./specGenerators.js";
+import type { SemverVersion } from "./semver.js";
 
 /**
  * The spec for a blockset created from code blocks. This is transported as a marketplace product artifact.

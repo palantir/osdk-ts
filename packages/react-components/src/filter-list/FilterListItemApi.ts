@@ -38,6 +38,21 @@ export type PropertyTypeFromKey<
 > = CompileTimeMetadata<Q>["properties"][K]["type"];
 
 /**
+ * Common mix-in for filter definitions: opt-out flag for the header search
+ * monocle.
+ */
+export interface FilterDefinitionControls {
+  /**
+   * When `false`, the header monocle (search-values icon) is hidden even for
+   * filter components that ordinarily support in-filter search. Useful for
+   * `MULTI_SELECT`, which already has its own inline search field.
+   *
+   * @default true
+   */
+  searchField?: boolean;
+}
+
+/**
  * All available filter component types
  */
 export type FilterComponentType =
@@ -215,10 +230,9 @@ export interface ToggleFilterState extends BaseFilterState {
  *
  * `formatDate` overrides the displayed string everywhere the filter
  * surfaces a date: the shared `DateRangePicker` / `DatePicker` idle text,
- * the date-range histogram tooltip and period subtitle, the histogram
- * x-tick labels (when no `formatTickLabel` is provided), the multi-date
- * chip text, and timeline labels. The picker's internal value remains ISO
- * `YYYY-MM-DD` so cross-locale viewers see a consistent input format
+ * the date-range histogram tooltip and period subtitle, the multi-date
+ * chip text, and timeline labels. The picker's internal value remains
+ * ISO `YYYY-MM-DD` so cross-locale viewers see a consistent input format
  * regardless of `formatDate`.
  *
  * Receives a `Date` in local time. If the property is a UTC ISO string and
@@ -243,7 +257,7 @@ interface PropertyFilterDefinitionBase<
   C extends ValidComponentsForPropertyType<
     PropertyTypeFromKey<Q, K>
   > = ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>>,
-> {
+> extends FilterDefinitionControls {
   /**
    * Discriminator for filter definition type
    */

@@ -216,6 +216,21 @@ export interface ObserveListOptions<
    * queries.
    */
   pivotTo?: string;
+
+  /**
+   * When loading objects via an interface type, return the full concrete
+   * object type instances instead of interface views.
+   *
+   * By default, interface queries return objects narrowed to interface
+   * properties only. With `resolveToObjectType: true`, returned objects
+   * include all properties from the implementing object type (e.g. `$title`,
+   * custom properties not on the interface).
+   *
+   * Only has an effect when `type` is an interface.
+   *
+   * @default false
+   */
+  resolveToObjectType?: boolean;
 }
 
 export interface ObserveObjectCallbackArgs<
@@ -561,12 +576,14 @@ export interface ObservableClient extends ObserveLinks {
 
   /**
    * Invalidates specific objects in the cache.
+   *
+   * Interface instances invalidate their backing concrete object.
    * @param objects - Single object or array of objects to invalidate
    */
   invalidateObjects(
     objects:
-      | Osdk.Instance<ObjectTypeDefinition>
-      | ReadonlyArray<Osdk.Instance<ObjectTypeDefinition>>,
+      | Osdk.Instance<ObjectOrInterfaceDefinition>
+      | ReadonlyArray<Osdk.Instance<ObjectOrInterfaceDefinition>>,
   ): Promise<void>;
 
   /**

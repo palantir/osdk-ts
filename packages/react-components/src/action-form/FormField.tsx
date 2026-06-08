@@ -25,6 +25,7 @@ interface FormFieldProps {
   isRequired?: boolean;
   helperText?: React.ReactNode;
   helperTextPlacement?: "bottom" | "tooltip";
+  isEdited?: boolean;
   error?: string;
   onBlur?: (e: React.FocusEvent<HTMLDivElement>) => void;
   children: React.ReactNode;
@@ -36,6 +37,7 @@ export const FormField: React.FC<FormFieldProps> = memo(function FormFieldFn({
   isRequired,
   helperText,
   helperTextPlacement = "tooltip",
+  isEdited,
   error,
   onBlur,
   children,
@@ -43,6 +45,7 @@ export const FormField: React.FC<FormFieldProps> = memo(function FormFieldFn({
   const hasHelperText = helperText != null && helperText !== "";
   const showTooltip = hasHelperText && helperTextPlacement === "tooltip";
   const showBottomText = hasHelperText && helperTextPlacement === "bottom";
+  const showEditedTag = isEdited === true;
 
   const labelElement = label != null
     ? (
@@ -57,17 +60,21 @@ export const FormField: React.FC<FormFieldProps> = memo(function FormFieldFn({
       </label>
     )
     : null;
+  const labelRow = labelElement != null || showTooltip || showEditedTag
+    ? (
+      <div className={styles.osdkFormFieldLabelRow}>
+        {labelElement}
+        {showTooltip && <InfoTip label={label}>{helperText}</InfoTip>}
+        {showEditedTag && (
+          <span className={styles.osdkFormFieldEditedTag}>Edited</span>
+        )}
+      </div>
+    )
+    : null;
 
   return (
     <div className={styles.osdkFormField} onBlur={onBlur}>
-      {showTooltip
-        ? (
-          <div className={styles.osdkFormFieldLabelRow}>
-            {labelElement}
-            <InfoTip label={label}>{helperText}</InfoTip>
-          </div>
-        )
-        : labelElement}
+      {labelRow}
       {showBottomText && (
         <div className={styles.osdkFormFieldHelperText}>{helperText}</div>
       )}

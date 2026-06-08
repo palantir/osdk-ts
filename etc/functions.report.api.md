@@ -8,16 +8,22 @@ import { Attachment } from '@osdk/client';
 import type { Client } from '@osdk/client';
 import type { CompileTimeMetadata } from '@osdk/client';
 import { Geometry } from 'geojson';
+import { GeometryCollection } from 'geojson';
 import type { GroupId as GroupId_2 } from '@osdk/foundry.core';
 import type { InterfaceDefinition } from '@osdk/client';
+import { LineString } from 'geojson';
 import type { Media } from '@osdk/client';
 import { MediaReference } from '@osdk/client';
 import { MediaUpload } from '@osdk/client';
+import { MultiLineString } from 'geojson';
+import { MultiPoint } from 'geojson';
+import { MultiPolygon } from 'geojson';
 import type { ObjectMetadata } from '@osdk/client';
 import type { ObjectTypeDefinition } from '@osdk/client';
 import type { Osdk } from '@osdk/client';
 import type { OsdkObjectCreatePropertyType } from '@osdk/client';
 import { Point } from 'geojson';
+import { Polygon } from 'geojson';
 import type { PropertyKeys } from '@osdk/client';
 import { Range as Range_2 } from '@osdk/client';
 import { ThreeDimensionalAggregation } from '@osdk/client';
@@ -36,6 +42,11 @@ declare namespace Aliases {
 }
 
 export { Attachment }
+
+// @public (undocumented)
+export type Byte<T extends number = number> = T & {
+    	__byteBrand?: void
+};
 
 // @public (undocumented)
 export type ClassificationMarking<T extends string = string> = T & {
@@ -144,6 +155,8 @@ export type Float<T extends number = number> = T & {
 
 export { Geometry }
 
+export { GeometryCollection }
+
 // @public (undocumented)
 export type GroupId = GroupId_2 & {
     	__groupIdBrand?: void
@@ -153,6 +166,8 @@ export type GroupId = GroupId_2 & {
 export type Integer<T extends number = number> = T & {
     	__integerBrand?: void
 };
+
+export { LineString }
 
 // @public (undocumented)
 export type Long<T extends string = string> = T & {
@@ -176,6 +191,12 @@ interface Model {
 
 // @public (undocumented)
 function model(alias: string): Model;
+
+export { MultiLineString }
+
+export { MultiPoint }
+
+export { MultiPolygon }
 
 // @public (undocumented)
 interface Notification_2 {
@@ -217,6 +238,8 @@ export interface PlatformNotification {
 
 export { Point }
 
+export { Polygon }
+
 // @public (undocumented)
 export type Principal = {
     	type: "user"
@@ -235,6 +258,11 @@ export interface RidLinkTarget {
     	// (undocumented)
     type: "rid";
 }
+
+// @public (undocumented)
+export type Short<T extends number = number> = T & {
+    	_shortBrand?: void
+};
 
 // @public (undocumented)
 interface Source {

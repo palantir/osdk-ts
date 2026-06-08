@@ -17,6 +17,7 @@
 import { Button, Dialog } from "@blueprintjs/core";
 import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
 import type {
+  BaseFormFieldProps,
   FormContentItem,
   RendererFieldDefinition,
 } from "@osdk/react-components/experimental";
@@ -27,6 +28,15 @@ import React, { useCallback, useMemo, useState } from "react";
 import { fn } from "storybook/test";
 import { fauxFoundry } from "../../mocks/fauxFoundry.js";
 import { Employee } from "../../types/Employee.js";
+import {
+  FormStoryLayout,
+  type StorySubmissionSnapshot,
+  SubmissionOutputPanel,
+} from "./SubmissionOutputPanel.js";
+import {
+  THEMED_SLIDER_DEFAULT_VALUE,
+  ThemedSliderField,
+} from "./ThemedSliderField.js";
 
 /**
  * Flattened (non-union) props type for Storybook Meta.
@@ -38,11 +48,13 @@ import { Employee } from "../../types/Employee.js";
 interface BaseFormStoryProps {
   formTitle?: string;
   formContent: ReadonlyArray<FormContentItem>;
-  onSubmit: (formState: Record<string, unknown>) => void;
+  onSubmit: (formState: Record<string, unknown>) => Promise<void> | void;
   isSubmitDisabled?: boolean;
   isPending?: boolean;
   isLoading?: boolean;
   className?: string;
+  submitButtonText?: string;
+  submitButtonVariant?: "primary" | "secondary";
 }
 
 function field(definition: RendererFieldDefinition): FormContentItem {
@@ -138,66 +150,62 @@ const formContent: ReadonlyArray<FormContentItem> = [
     },
   }),
   field({
-    fieldKey: "notes",
+    fieldKey: "completion",
     fieldComponent: "CUSTOM",
-    label: "Notes",
+    label: "Completion",
     fieldComponentProps: {
-      customRenderer: (props) => (
-        <textarea
-          value={props.value != null ? String(props.value) : ""}
-          onChange={(e) => props.onChange?.(e.target.value)}
-          className="osdkCustomTextarea"
-          placeholder="Custom rendered notes field"
-        />
-      ),
+      defaultValue: THEMED_SLIDER_DEFAULT_VALUE,
+      customRenderer: (props) => <ThemedSliderField {...props} />,
     },
   }),
 ];
 
 const EMPTY_FORM_CONTENT: ReadonlyArray<FormContentItem> = [];
 
-const TOAST_DURATION_MS = 3000;
-
-// Module-level ref so handleSubmit can trigger the toast rendered by SubmitToast.
-const toastRef: { current: ((msg: string) => void) | undefined } = {
+// Most BaseForm stories share handleSubmit through CSF args, while the output
+// panel is mounted by a decorator. This bridge lets the shared submit handler
+// update the panel without rewriting every story with a custom render function.
+const submitOutputRef: {
+  current: ((snapshot: StorySubmissionSnapshot) => void) | undefined;
+} = {
   current: undefined,
 };
 
 // Spy that logs submissions to the Storybook Actions panel
-// and shows a brief success toast in the story canvas.
+// while the canvas shows the submitted values in the JSON panel.
 const submitSpy = fn().mockName("onSubmit");
 function handleSubmit(formState: Record<string, unknown>): void {
   submitSpy(formState);
-  toastRef.current?.("Submitted successfully");
+  submitOutputRef.current?.({
+    status: "success",
+    submittedValues: formState,
+    response: { message: "onSubmit completed" },
+  });
 }
 
-function SubmitToast(): React.ReactElement | null {
-  const [message, setMessage] = useState<string>();
+function BaseFormSubmissionOutput(): React.ReactElement {
+  const [snapshot, setSnapshot] = useState<StorySubmissionSnapshot>({
+    status: "idle",
+  });
+  submitOutputRef.current = setSnapshot;
 
-  const showToast = useCallback((msg: string) => {
-    setMessage(msg);
-    setTimeout(() => setMessage(undefined), TOAST_DURATION_MS);
-  }, []);
-
-  toastRef.current = showToast;
-
-  if (message == null) {
-    return null;
-  }
-  return <div className="osdkSubmitToast">{message}</div>;
+  return (
+    <SubmissionOutputPanel
+      idleMessage="Submit the form to see submitted values."
+      snapshot={snapshot}
+    />
+  );
 }
 
 const meta: Meta<BaseFormStoryProps> = {
-  title: "Experimental/ActionForm/Building Blocks/BaseForm",
+  title: "Components/ActionForm/BaseForm",
   component: BaseForm,
+  tags: ["beta"],
   decorators: [
     (Story) => (
-      <>
-        <SubmitToast />
-        <div className="osdkFormCard">
-          <Story />
-        </div>
-      </>
+      <FormStoryLayout output={<BaseFormSubmissionOutput />}>
+        <Story />
+      </FormStoryLayout>
     ),
   ],
   parameters: {
@@ -262,6 +270,21 @@ const meta: Meta<BaseFormStoryProps> = {
       description: "Additional CSS class name for the form.",
       control: "text",
     },
+    submitButtonText: {
+      description: "Text displayed in the submit button.",
+      control: "text",
+      table: {
+        defaultValue: { summary: "Submit" },
+      },
+    },
+    submitButtonVariant: {
+      description: "Visual variant of the submit button.",
+      control: "select",
+      options: ["primary", "secondary"],
+      table: {
+        defaultValue: { summary: "primary" },
+      },
+    },
   },
 };
 
@@ -277,6 +300,10 @@ export const Default: Story = {
     docs: {
       source: {
         code: `import { BaseForm } from "@osdk/react-components/experimental";
+import {
+  THEMED_SLIDER_DEFAULT_VALUE,
+  ThemedSliderField,
+} from "./ThemedSliderField";
 
 const formContent = [
   {
@@ -332,17 +359,12 @@ const formContent = [
     fieldComponentProps: { accept: ".pdf,.doc,.docx" },
   },
   {
-    fieldKey: "notes",
+    fieldKey: "completion",
     fieldComponent: "CUSTOM",
-    label: "Notes",
+    label: "Completion",
     fieldComponentProps: {
-      customRenderer: (props) => (
-        <textarea
-          value={props.value ?? ""}
-          onChange={(e) => props.onChange?.(e.target.value)}
-          placeholder="Custom rendered notes field"
-        />
-      ),
+      defaultValue: THEMED_SLIDER_DEFAULT_VALUE,
+      customRenderer: (props) => <ThemedSliderField {...props} />,
     },
   },
 ];
@@ -360,7 +382,9 @@ export const Controlled: Story = {
   parameters: {
     docs: {
       source: {
-        code: `const [formState, setFormState] = useState({});
+        code: `const [formState, setFormState] = useState({
+  completion: THEMED_SLIDER_DEFAULT_VALUE,
+});
 
 const handleFieldValueChange = (fieldKey, value) => {
   setFormState((prev) => ({ ...prev, [fieldKey]: value }));
@@ -387,7 +411,9 @@ return (
 };
 
 function ControlledFormStory(): React.ReactElement {
-  const [formState, setFormState] = useState<Record<string, unknown>>({});
+  const [formState, setFormState] = useState<Record<string, unknown>>({
+    completion: THEMED_SLIDER_DEFAULT_VALUE,
+  });
 
   const handleFieldValueChange = useCallback(
     (fieldKey: string, value: unknown) => {
@@ -476,6 +502,257 @@ export const SubmitDisabled: Story = {
   },
 };
 
+const disabledFieldInitialState: Record<string, unknown> = {
+  name: "Locked employee",
+  description: "Locked multi-line description",
+  quantity: 42,
+  priority: "Medium",
+  tags: ["Urgent", "Pinned"],
+  isActive: true,
+  isRemote: true,
+  scheduledAt: new Date(2026, 0, 15, 9, 30),
+  vacationDates: [new Date(2026, 0, 15), new Date(2026, 0, 31)],
+  custom: "Requires approval",
+};
+
+const CUSTOM_STATUS_OPTIONS = ["Requires approval", "Ready to submit"];
+
+function renderDisabledCustomField(
+  props: BaseFormFieldProps<unknown>,
+): React.ReactNode {
+  const selectedValue = props.value != null ? String(props.value) : undefined;
+
+  return (
+    <div
+      className="osdkCustomChoiceGroup"
+      role="group"
+      aria-label="Custom status"
+      aria-disabled={props.disabled === true || undefined}
+    >
+      {CUSTOM_STATUS_OPTIONS.map((option) => (
+        <button
+          key={option}
+          type="button"
+          disabled={props.disabled}
+          className={option === selectedValue
+            ? "osdkCustomChoiceButton osdkCustomChoiceButtonSelected"
+            : "osdkCustomChoiceButton"}
+          onClick={() => props.onChange?.(option)}
+        >
+          {option}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function DisabledFieldsStory(): React.ReactElement {
+  const client = useOsdkClient();
+  const employeeObjectSet = useMemo(
+    () => client(Employee) as ObjectSet<ObjectTypeDefinition>,
+    [client],
+  );
+  const [formState, setFormState] = useState<Record<string, unknown>>(
+    disabledFieldInitialState,
+  );
+
+  const handleFieldValueChange = useCallback(
+    (fieldKey: string, value: unknown) => {
+      setFormState((prev) => ({ ...prev, [fieldKey]: value }));
+    },
+    [],
+  );
+
+  const disabledFormContent: ReadonlyArray<FormContentItem> = useMemo(
+    () => [
+      field({
+        fieldKey: "name",
+        fieldComponent: "TEXT_INPUT",
+        label: "Name",
+        disabled: true,
+        fieldComponentProps: {
+          placeholder: "Enter a name",
+        },
+      }),
+      field({
+        fieldKey: "description",
+        fieldComponent: "TEXT_AREA",
+        label: "Description",
+        disabled: true,
+        fieldComponentProps: {
+          placeholder: "Enter a description",
+          rows: 3,
+        },
+      }),
+      field({
+        fieldKey: "quantity",
+        fieldComponent: "NUMBER_INPUT",
+        label: "Quantity",
+        disabled: true,
+        fieldComponentProps: {
+          min: 0,
+          max: 1000,
+          step: 1,
+          placeholder: "0",
+        },
+      }),
+      field({
+        fieldKey: "priority",
+        fieldComponent: "DROPDOWN",
+        label: "Priority (select)",
+        disabled: true,
+        fieldComponentProps: {
+          items: DROPDOWN_ITEMS,
+          placeholder: "Select priority",
+        },
+      }),
+      field({
+        fieldKey: "tags",
+        fieldComponent: "DROPDOWN",
+        label: "Tags (searchable multi-select)",
+        disabled: true,
+        fieldComponentProps: {
+          items: TAG_ITEMS,
+          isMultiple: true,
+          isSearchable: true,
+          placeholder: "Search tags...",
+        },
+      }),
+      field({
+        fieldKey: "isActive",
+        fieldComponent: "RADIO_BUTTONS",
+        label: "Is Active",
+        disabled: true,
+        fieldComponentProps: {
+          options: [
+            { label: "True", value: true },
+            { label: "False", value: false },
+          ],
+        },
+      }),
+      field({
+        fieldKey: "isRemote",
+        fieldComponent: "SWITCH",
+        label: "Remote employee",
+        disabled: true,
+        fieldComponentProps: {},
+      }),
+      field({
+        fieldKey: "scheduledAt",
+        fieldComponent: "DATETIME_PICKER",
+        label: "Scheduled At",
+        disabled: true,
+        fieldComponentProps: {
+          showTime: true,
+          placeholder: "Select date and time",
+        },
+      }),
+      field({
+        fieldKey: "vacationDates",
+        fieldComponent: "DATE_RANGE_INPUT",
+        label: "Vacation Dates",
+        disabled: true,
+        fieldComponentProps: {
+          placeholderStart: "Start date",
+          placeholderEnd: "End date",
+        },
+      }),
+      field({
+        fieldKey: "document",
+        fieldComponent: "FILE_PICKER",
+        label: "Document",
+        disabled: true,
+        fieldComponentProps: {
+          accept: ".pdf,.doc,.docx",
+        },
+      }),
+      field({
+        fieldKey: "employee",
+        fieldComponent: "OBJECT_SELECT",
+        label: "Employee",
+        disabled: true,
+        fieldComponentProps: {
+          objectType: { type: "object" as const, apiName: "Employee" },
+          placeholder: "Search employees…",
+        },
+      }),
+      field({
+        fieldKey: "employees",
+        fieldComponent: "OBJECT_SET",
+        label: "Employees",
+        disabled: true,
+        fieldComponentProps: {
+          value: employeeObjectSet,
+        },
+      }),
+      field({
+        fieldKey: "custom",
+        fieldComponent: "CUSTOM",
+        label: "Custom field",
+        disabled: true,
+        fieldComponentProps: {
+          customRenderer: renderDisabledCustomField,
+        },
+      }),
+    ],
+    [employeeObjectSet],
+  );
+
+  return (
+    <BaseForm
+      formTitle="Disabled fields"
+      formContent={disabledFormContent}
+      formState={formState}
+      onFieldValueChange={handleFieldValueChange}
+      onSubmit={handleSubmit}
+    />
+  );
+}
+
+export const DisabledFields: Story = {
+  render: () => <DisabledFieldsStory />,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Shows every BaseForm field renderer in a disabled state. Disabled fields keep their current values in form state but block user edits.",
+      },
+      source: {
+        code: `const formContent = [
+  {
+    fieldKey: "name",
+    fieldComponent: "TEXT_INPUT",
+    label: "Name",
+    disabled: true,
+    fieldComponentProps: { placeholder: "Enter a name" },
+  },
+  {
+    fieldKey: "priority",
+    fieldComponent: "DROPDOWN",
+    label: "Priority",
+    disabled: true,
+    fieldComponentProps: {
+      items: ["Low", "Medium", "High"],
+      placeholder: "Select priority",
+    },
+  },
+  // Repeat disabled: true for TEXT_AREA, NUMBER_INPUT, RADIO_BUTTONS,
+  // SWITCH, DATETIME_PICKER, DATE_RANGE_INPUT, FILE_PICKER,
+  // OBJECT_SELECT, OBJECT_SET, and CUSTOM.
+];
+
+<BaseForm
+  formTitle="Disabled fields"
+  formContent={formContent}
+  formState={formState}
+  onFieldValueChange={handleFieldValueChange}
+  onSubmit={handleSubmit}
+/>`,
+      },
+    },
+  },
+};
+
 export const Pending: Story = {
   args: {
     formContent,
@@ -489,6 +766,27 @@ export const Pending: Story = {
   formContent={formContent}
   isPending={true}
   onSubmit={(formState) => console.log("Submitted:", formState)}
+/>`,
+      },
+    },
+  },
+};
+
+export const WithCustomSubmitButton: Story = {
+  args: {
+    formContent,
+    onSubmit: handleSubmit,
+    submitButtonText: "Save employee",
+    submitButtonVariant: "secondary",
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `<BaseForm
+  formContent={formContent}
+  onSubmit={(formState) => console.log("Submitted:", formState)}
+  submitButtonText="Save employee"
+  submitButtonVariant="secondary"
 />`,
       },
     },
@@ -1090,6 +1388,7 @@ const formContent = [
         </span>
       ),
       isSearchable: true,
+      placeholder: "Search users...",
     },
   },
 ];
@@ -1574,7 +1873,7 @@ export const WithHelperText: Story = {
   parameters: {
     docs: {
       source: {
-        code: `const fieldDefinitions = [
+        code: `const formContent = [
   {
     fieldKey: "email",
     fieldComponent: "TEXT_INPUT",
@@ -1619,7 +1918,7 @@ export const WithHelperText: Story = {
 // "tooltip" (default) shows an info icon next to the label.
 // "bottom" renders the text below the label, above the input.
 <BaseForm
-  fieldDefinitions={fieldDefinitions}
+  formContent={formContent}
   onSubmit={(formState) => console.log("Submitted:", formState)}
 />`,
       },
@@ -1805,7 +2104,7 @@ export const WithObjectSelect: Story = {
   parameters: {
     docs: {
       source: {
-        code: `const fieldDefinitions = [
+        code: `const formContent = [
   {
     fieldKey: "name",
     fieldComponent: "TEXT_INPUT",
@@ -1827,7 +2126,7 @@ export const WithObjectSelect: Story = {
 // OBJECT_SELECT renders a searchable dropdown that queries
 // the Foundry ontology for objects matching the search term.
 <BaseForm
-  fieldDefinitions={fieldDefinitions}
+  formContent={formContent}
   onSubmit={(formState) => console.log("Submitted:", formState)}
 />`,
       },

@@ -80,6 +80,11 @@
     background-color: var(--osdk-surface-background-color-default-active);
   }
 
+  &:disabled {
+    cursor: not-allowed;
+    opacity: var(--osdk-input-disabled-opacity);
+  }
+
   &:focus-visible {
     outline: none;
   }
@@ -108,6 +113,15 @@
 
   &:hover {
     color: var(--osdk-file-picker-clear-color-hover);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: var(--osdk-input-disabled-opacity);
+  }
+
+  &:disabled:hover {
+    color: var(--osdk-file-picker-clear-color);
   }
 
   &:focus-visible {

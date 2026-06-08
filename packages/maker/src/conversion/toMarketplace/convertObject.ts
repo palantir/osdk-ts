@@ -23,6 +23,7 @@ import type {
   OntologyIrObjectTypeDatasourceDefinition,
   OntologyIrPropertyType,
 } from "@osdk/client.unstable";
+import invariant from "tiny-invariant";
 import {
   buildDatasource,
   cleanAndValidateLinkTypeId,
@@ -202,6 +203,17 @@ function extractDerivedDatasources(
 } {
   const inputDerivedDatasources = (objectType.datasources ?? []).filter(ds =>
     ds.type === "derived"
+  );
+  const propertyApiNames = new Set(
+    (objectType.properties ?? []).map(prop => prop.apiName),
+  );
+  inputDerivedDatasources.forEach(ds =>
+    Object.keys(ds.propertyMapping).forEach(prop =>
+      invariant(
+        propertyApiNames.has(prop),
+        `Property '${prop}' used in derived datasource for object '${objectType.apiName}' is not defined.`,
+      )
+    )
   );
   const derivedDatasources = inputDerivedDatasources.map((ds, i) =>
     buildDerivedDatasource(ds, i, objectType.apiName)

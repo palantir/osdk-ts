@@ -1,5 +1,71 @@
 # @osdk/maker-import
 
+## 0.10.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.31.0
+- @osdk/maker@0.34.0
+
+## 0.9.0
+
+### Minor Changes
+
+- 08e921c: Bump `foundry-platform-typescript` catalog to 2.63.0 and surface the new CBAC/MANDATORY marking subtype on `ObjectMetadata.Property` via a new `typeMetadata` discriminated-union field. For marking properties, `typeMetadata` is `{ type: "marking"; subtype?: "CBAC" | "MANDATORY" }`, letting consumers distinguish classification-based markings from mandatory markings on object property columns. Future per-`type` metadata should be added as additional variants of `typeMetadata` rather than as new top-level optionals on `Property`.
+
+### Patch Changes
+
+- @osdk/maker@0.33.0
+- @osdk/client.unstable@2.29.0
+
+## 0.8.0
+
+### Patch Changes
+
+- Updated dependencies [1bc01d1]
+  - @osdk/maker@0.32.0
+  - @osdk/client.unstable@2.28.0
+
+## 0.7.0
+
+### Minor Changes
+
+- 5ff7aa5: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.61.0` to `2.63.0`. The OntologyScenarios endpoints now expose a `preview` query-param slot, so `createScenario` and the `EXPERIMENTAL_ScenarioClient` read methods pass `{ preview: true }` directly instead of relying on a fetch-level URL rewrite.
+
+### Patch Changes
+
+- @osdk/client.unstable@2.27.0
+
+## 0.6.0
+
+### Minor Changes
+
+- 8965bdf: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+
+### Patch Changes
+
+- @osdk/maker@0.31.0
+- @osdk/client.unstable@2.25.0
+
+## 0.5.0
+
+### Minor Changes
+
+- 60aff19: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+
+### Patch Changes
+
+- @osdk/maker@0.30.0
+- @osdk/client.unstable@2.24.0
+
+## 0.4.0
+
+### Patch Changes
+
+- Updated dependencies [56c2c9f]
+  - @osdk/maker@0.29.0
+  - @osdk/client.unstable@2.23.0
+
 ## 0.3.0
 
 ### Minor Changes

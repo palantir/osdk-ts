@@ -1,3 +1,4 @@
+ACMR
 aggregatable
 aimpoints
 BACKCOMPAT
@@ -10,6 +11,7 @@ codegen
 commitish
 Cpath
 Csvg
+dedups
 devx
 Discoverability
 duplicative
@@ -32,10 +34,10 @@ retryable
 rsort
 semver
 streamutils
-subdependencies
-subdeps
 struct
 structs
+subdependencies
+subdeps
 tsdoc
 typecheck
 typemapping
@@ -47,4 +49,3 @@ unioned
 unresolve
 Unsubscribable
 webapi
-ACMR

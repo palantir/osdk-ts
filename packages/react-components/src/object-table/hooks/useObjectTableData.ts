@@ -77,6 +77,7 @@ export function useObjectTableData<
   objectSetOptions?: ObjectSetOptions<Q>,
   dedupeIntervalMs: number = DEFAULT_OBJECT_TABLE_DEDUPE_INTERVAL_MS,
   pageSize: number = DEFAULT_PAGE_SIZE,
+  streamUpdates?: boolean,
 ): UseObjectTableDataResult<Q, RDPs> {
   const orderBy = useMemo(() => {
     if (!sorting || sorting.length === 0) {
@@ -138,6 +139,7 @@ export function useObjectTableData<
       pageSize,
       enabled: shouldUseObjectSet,
       dedupeIntervalMs,
+      streamUpdates,
     },
   );
 
@@ -153,22 +155,18 @@ export function useObjectTableData<
       orderBy,
       enabled: !shouldUseObjectSet,
       dedupeIntervalMs,
+      streamUpdates,
     },
   );
 
   // Get the result from the appropriate hook
   const baseResult = shouldUseObjectSet ? objectSetResult : osdkObjectsResult;
 
-  const primaryKeyApiName = objectOrInterfaceType.type === "object"
-    ? objectOrInterfaceType.primaryKeyApiName
-    : undefined;
-
   // Call useFunctionColumnsData to get function column data
   const functionColumnData = useFunctionColumnsData<Q, RDPs, FunctionColumns>({
     objectOrInterfaceType,
     objects: baseResult.data,
     columnDefinitions,
-    primaryKeyApiName,
     pageSize,
   });
 

@@ -1,0 +1,67 @@
+/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.reopenButton {
+  margin-block-end: calc(var(--osdk-surface-spacing) * 3);
+}
+
+.drawerBody {
+  box-sizing: border-box;
+  block-size: 100%;
+  padding-block: calc(var(--osdk-surface-spacing) * 4);
+  padding-inline: calc(var(--osdk-surface-spacing) * 4);
+}
+
+.blueprintDialog {
+  inline-size: min(1120px, calc(100vw - calc(var(--osdk-surface-spacing) * 8)));
+}
+
+.blueprintDialogContent {
+  box-sizing: border-box;
+  block-size: min(720px, calc(100vh - calc(var(--osdk-surface-spacing) * 20)));
+  padding-block: calc(var(--osdk-surface-spacing) * 4);
+  padding-inline: calc(var(--osdk-surface-spacing) * 4);
+}
+
+.baseUiDialog {
+  inline-size: min(1120px, calc(100vw - calc(var(--osdk-surface-spacing) * 8)));
+  block-size: min(760px, calc(100vh - calc(var(--osdk-surface-spacing) * 8)));
+}
+
+.shell {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--osdk-surface-spacing) * 3);
+  block-size: 100%;
+  min-block-size: 0;
+}
+
+.instructions {
+  color: var(--osdk-typography-color-muted);
+  font-size: var(--osdk-typography-size-body-small);
+}
+
+.tableFrame {
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: auto;
+  min-block-size: 0;
+  border-width: var(--osdk-surface-border-width);
+  border-style: solid;
+  border-color: var(--osdk-surface-border-color-default);
+  border-radius: var(--osdk-surface-border-radius);
+  overflow: hidden;
+}

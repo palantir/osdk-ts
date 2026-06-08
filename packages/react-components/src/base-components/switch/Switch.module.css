@@ -70,7 +70,7 @@
 
   &[data-disabled] {
     cursor: not-allowed;
-    opacity: var(--osdk-switch-disabled-opacity, var(--osdk-input-disabled-opacity));
+    opacity: var(--osdk-disabled-opacity);
   }
 
   &:focus-visible {

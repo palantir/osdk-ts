@@ -257,7 +257,11 @@ export async function fetchStaticRidPage<
     addUserAgentAndRequestContextHeaders(client, { osdkMetadata: undefined }),
     await client.ontologyRid,
     requestBody,
-    { preview: true, transactionId: client.transactionId },
+    {
+      preview: true,
+      transactionId: client.transactionId,
+      scenarioRid: client.scenarioRid,
+    },
   );
 
   return Promise.resolve({
@@ -359,6 +363,7 @@ async function fetchInterfacePage<
       preview: true,
       branch: client.branch,
       transactionId: client.transactionId,
+      scenarioRid: client.scenarioRid,
     },
   );
 
@@ -750,7 +755,11 @@ export async function fetchObjectPage<
     addUserAgentAndRequestContextHeaders(client, objectType),
     await client.ontologyRid,
     requestBody,
-    { branch: client.branch, transactionId: client.transactionId },
+    {
+      branch: client.branch,
+      transactionId: client.transactionId,
+      scenarioRid: client.scenarioRid,
+    },
   );
 
   return Promise.resolve({

@@ -1016,4 +1016,67 @@ describe("Experimental Test Suite", () => {
       });
     });
   });
+
+  it("Fails if a derived datasource added after defineObject maps a property not on the object", async () => {
+    await expect(
+      defineOntologyV2("com.palantir.", () => {
+        const passenger = defineObject({
+          displayName: "Passenger",
+          pluralDisplayName: "Passengers",
+          apiName: "passenger",
+          primaryKeyPropertyApiName: "name",
+          titlePropertyApiName: "name",
+          editsEnabled: true,
+          properties: {
+            name: { type: "string", displayName: "Name" },
+            flight_id: { type: "string", displayName: "Flight ID" },
+          },
+        });
+        const flightToPassengers = defineLink({
+          apiName: "flightToPassengersLink",
+          one: {
+            object: "com.palantir.flight",
+            metadata: { apiName: "flightFromPassengers" },
+          },
+          toMany: {
+            object: passenger.apiName,
+            metadata: { apiName: "passengersFromFlight" },
+          },
+          manyForeignKeyProperty: "flight_id",
+        });
+        const flight = defineObject({
+          displayName: "Flight",
+          pluralDisplayName: "Flights",
+          apiName: "flight",
+          primaryKeyPropertyApiName: "id",
+          titlePropertyApiName: "id",
+          editsEnabled: true,
+          properties: {
+            id: { type: "string", displayName: "ID" },
+            passengersList: {
+              type: "string",
+              array: true,
+              displayName: "Passengers",
+            },
+          },
+          datasources: [{ type: "dataset" }],
+        });
+        // Pushed AFTER defineObject() returns, mirroring the real factory
+        // pattern that bypasses defineObject's own validation.
+        flight.datasources!.push({
+          type: "derived",
+          linkDefinition: [{ linkType: flightToPassengers }],
+          propertyMapping: {
+            ghostProperty: {
+              type: "collectList",
+              property: "name",
+              limit: 100,
+            },
+          },
+        });
+      }),
+    ).rejects.toThrow(
+      /Property 'ghostProperty' used in derived datasource .* is not (defined|a property)/,
+    );
+  });
 });

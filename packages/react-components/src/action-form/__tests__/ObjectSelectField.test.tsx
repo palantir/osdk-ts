@@ -64,15 +64,13 @@ vi.stubGlobal(
 
 vi.mock("@osdk/react", () => ({
   useObjectSet: vi.fn(),
-  useOsdkMetadata: vi.fn(),
   useOsdkObjects: vi.fn(),
 }));
 
-const { useObjectSet, useOsdkMetadata, useOsdkObjects } = await import(
+const { useObjectSet, useOsdkObjects } = await import(
   "@osdk/react"
 );
 const mockUseObjectSet = vi.mocked(useObjectSet);
-const mockUseOsdkMetadata = vi.mocked(useOsdkMetadata);
 const mockUseOsdkObjects = vi.mocked(useOsdkObjects);
 
 // The full return type is UseOsdkListResult<ObjectTypeDefinition> whose `data`
@@ -118,8 +116,6 @@ describe("ObjectSelectField", () => {
   beforeEach(() => {
     mockUseObjectSet.mockReset();
     mockUseOsdkObjects.mockReset();
-    mockUseOsdkMetadata.mockReset();
-    mockMetadataLoaded();
   });
 
   it("uses the object type data source by default", () => {
@@ -161,7 +157,6 @@ describe("ObjectSelectField", () => {
         pageSize: 50,
       }),
     );
-    expect(mockUseOsdkMetadata).toHaveBeenCalledWith(EMPLOYEE_TYPE);
   });
 
   it("applies debounced search within an object set data source", async () => {
@@ -183,7 +178,7 @@ describe("ObjectSelectField", () => {
       await vi.waitFor(() => {
         const latestCall = mockUseObjectSet.mock.calls.at(-1);
         expect(latestCall?.[1]?.where).toEqual({
-          fullName: { $containsAllTermsInOrder: "Ali" },
+          $title: { $containsAllTermsInOrder: "Ali" },
         });
       });
       expect(mockUseOsdkObjects).toHaveBeenLastCalledWith(
@@ -263,7 +258,7 @@ describe("ObjectSelectField", () => {
       await vi.waitFor(() => {
         const latestCall = mockUseOsdkObjects.mock.calls.at(-1);
         expect(latestCall?.[1]?.where).toEqual({
-          fullName: { $containsAllTermsInOrder: "Ali" },
+          $title: { $containsAllTermsInOrder: "Ali" },
         });
       });
     } finally {
@@ -271,10 +266,12 @@ describe("ObjectSelectField", () => {
     }
   });
 
-  it("does not set where clause when metadata is still loading", async () => {
+  it("searches by $title without depending on object metadata", async () => {
+    // Regression guard: the field must not gate search on a metadata fetch.
+    // It filters via the generic $title key, so typing produces a where clause
+    // immediately after debounce with no titleProperty resolution.
     vi.useFakeTimers();
     try {
-      mockUseOsdkMetadata.mockReturnValue({ loading: true });
       mockLoadedState();
       renderObjectSelect();
       await openCombobox();
@@ -285,7 +282,9 @@ describe("ObjectSelectField", () => {
 
       await vi.waitFor(() => {
         const latestCall = mockUseOsdkObjects.mock.calls.at(-1);
-        expect(latestCall?.[1]?.where).toBeUndefined();
+        expect(latestCall?.[1]?.where).toEqual({
+          $title: { $containsAllTermsInOrder: "Ali" },
+        });
       });
     } finally {
       vi.useRealTimers();
@@ -305,6 +304,20 @@ describe("ObjectSelectField", () => {
     await vi.waitFor(() => {
       const latestCall = mockUseOsdkObjects.mock.calls.at(-1);
       expect(latestCall?.[1]?.where).toBeUndefined();
+    });
+  });
+
+  it("disables the dropdown trigger and prevents opening when disabled", async () => {
+    mockLoadedState();
+    renderObjectSelect({ disabled: true });
+
+    const trigger = screen.getByRole("combobox") as HTMLButtonElement;
+    expect(trigger.disabled).toBe(true);
+    fireEvent.click(trigger);
+    fireEvent.keyDown(trigger, { key: "ArrowDown" });
+
+    await vi.waitFor(() => {
+      expect(getPopup()).toBeNull();
     });
   });
 
@@ -328,15 +341,6 @@ describe("ObjectSelectField", () => {
     });
   });
 });
-
-function mockMetadataLoaded(titleProperty: string = "fullName"): void {
-  mockUseOsdkMetadata.mockReturnValue({
-    loading: false,
-    metadata: { titleProperty } as ReturnType<
-      typeof useOsdkMetadata
-    >["metadata"],
-  });
-}
 
 function makeMockObject(primaryKey: number, title?: string) {
   return {

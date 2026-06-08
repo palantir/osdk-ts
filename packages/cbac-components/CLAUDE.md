@@ -1,3 +1,5 @@
+> **DEPRECATED / RELOCATED**: The CBAC components have been merged into [`@osdk/react-components`](../react-components). The canonical source now lives at `packages/react-components/src/cbac-picker/` and is exported from `@osdk/react-components/experimental/cbac-picker`. This package is kept for legacy reference only — **do not develop new features here**. New work belongs in `@osdk/react-components` (see its `CLAUDE.md` and `CONTRIBUTING.md`).
+
 This documentation provides guidance for developing in `@osdk/cbac-components`.
 
 ## TypeScript Best Practices

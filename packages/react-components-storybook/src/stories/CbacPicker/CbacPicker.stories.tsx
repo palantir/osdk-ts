@@ -20,7 +20,7 @@ import {
   CbacPicker,
   CbacPickerDialog,
   computeMarkingStates,
-} from "@osdk/cbac-components/experimental";
+} from "@osdk/react-components/experimental/cbac-picker";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useMemo, useState } from "react";
 import {
@@ -32,9 +32,9 @@ import {
 } from "./mockData.js";
 
 const meta: Meta<typeof BaseCbacPicker> = {
-  title: "Experimental/CbacPicker",
-  tags: ["experimental"],
+  title: "Components/CbacPicker",
   component: BaseCbacPicker,
+  tags: ["beta"],
   parameters: {
     controls: {
       expanded: true,

@@ -40,6 +40,9 @@ class MockBiMap<K, V> implements BiMap<K, V> {
     this.forward = new Map(entries);
     this.backward = new Map(entries.map(([k, v]) => [v, k]));
   }
+  includes(key: K): boolean {
+    return this.forward.has(key);
+  }
   asMap(): Map<K, V> {
     return this.forward;
   }

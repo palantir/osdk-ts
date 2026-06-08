@@ -47,6 +47,7 @@ export function NumberInputField({
   min,
   max,
   step,
+  disabled,
 }: NumberInputFieldProps): React.ReactElement {
   const [displayValue, setDisplayValue] = useState<string>(() =>
     formatNumberForDisplay(value)
@@ -121,12 +122,14 @@ export function NumberInputField({
         onValueChange={handleValueChange}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
+        disabled={disabled}
       />
       <div className={styles.osdkNumberInputStepper}>
         <Button
           className={styles.osdkNumberInputStepButton}
           aria-label="Increment"
           tabIndex={-1}
+          disabled={disabled}
           onClick={handleStepUp}
         >
           <ChevronUp size={CHEVRON_SIZE} />
@@ -135,6 +138,7 @@ export function NumberInputField({
           className={styles.osdkNumberInputStepButton}
           aria-label="Decrement"
           tabIndex={-1}
+          disabled={disabled}
           onClick={handleStepDown}
         >
           <ChevronDown size={CHEVRON_SIZE} />

@@ -18,31 +18,67 @@ import { cleanup, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { MultiDateInput } from "../MultiDateInput.js";
+import { SingleDateInput } from "../SingleDateInput.js";
 import { TimelineInput } from "../TimelineInput.js";
 
-afterEach(cleanup);
+vi.mock("../../../../shared/calendar/LazyDateCalendar.js", async () => {
+  const { default: DateCalendar } = await vi.importActual<
+    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+    typeof import("../../../../shared/calendar/DateCalendar.js")
+  >("../../../../shared/calendar/DateCalendar.js");
+  return { LazyDateCalendar: DateCalendar };
+});
 
-const isoFormat = (d: Date): string =>
-  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${
-    String(d.getDate()).padStart(2, "0")
-  }`;
+afterEach(cleanup);
 
 const slashFormat = (d: Date): string =>
   `${String(d.getMonth() + 1).padStart(2, "0")}/${
     String(d.getDate()).padStart(2, "0")
   }/${d.getFullYear()}`;
 
-const slashParse = (text: string): Date | undefined => {
-  const match = text.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
-  if (!match) return undefined;
-  return new Date(
-    Number(match[3]),
-    Number(match[1]) - 1,
-    Number(match[2]),
-  );
-};
-
 describe("formatDate / parseDate plumbing", () => {
+  describe("SingleDateInput", () => {
+    it("renders the picker idle text via formatDate when provided", () => {
+      const selectedDate = new Date(2024, 0, 15);
+      render(
+        <SingleDateInput
+          selectedDate={selectedDate}
+          onChange={vi.fn()}
+          formatDate={slashFormat}
+        />,
+      );
+      const input = screen.getByLabelText("Select date") as HTMLInputElement;
+      expect(input.value).toBe("01/15/2024");
+    });
+
+    it(
+      "falls back to ISO YYYY-MM-DD when formatDate is omitted",
+      () => {
+        const selectedDate = new Date(2024, 0, 15);
+        render(
+          <SingleDateInput
+            selectedDate={selectedDate}
+            onChange={vi.fn()}
+          />,
+        );
+        const input = screen.getByLabelText("Select date") as HTMLInputElement;
+        expect(input.value).toBe("2024-01-15");
+      },
+    );
+
+    it("renders an empty input when no date is selected", () => {
+      render(
+        <SingleDateInput
+          selectedDate={undefined}
+          onChange={vi.fn()}
+          formatDate={slashFormat}
+        />,
+      );
+      const input = screen.getByLabelText("Select date") as HTMLInputElement;
+      expect(input.value).toBe("");
+    });
+  });
+
   describe("MultiDateInput", () => {
     it("renders chip text via formatDate when provided", () => {
       const dates = [new Date(2024, 0, 15), new Date(2024, 5, 30)];
@@ -67,10 +103,7 @@ describe("formatDate / parseDate plumbing", () => {
             onChange={vi.fn()}
           />,
         );
-        // Default formatDateForDisplay uses toLocaleDateString with month: "short"
-        // — the rendered string should NOT match the slash format.
         expect(screen.queryByText("01/15/2024")).toBeNull();
-        // It should mention the year so we know the date rendered
         const node = document.body.textContent ?? "";
         expect(node).toContain("2024");
       },
@@ -118,7 +151,6 @@ describe("formatDate / parseDate plumbing", () => {
           onChange={vi.fn()}
         />,
       );
-      // Default uses month: "short" — so "May" appears, not "05/01/2024".
       expect(screen.queryByText("05/01/2024")).toBeNull();
       const node = document.body.textContent ?? "";
       expect(node).toContain("2024");
@@ -143,42 +175,5 @@ describe("formatDate / parseDate plumbing", () => {
         expect(input.value).toBe("2024-05-01");
       },
     );
-  });
-
-  describe("parseDate roundtrip", () => {
-    it("recovers the original date from a formatDate output", () => {
-      const original = new Date(2024, 5, 30);
-      const text = slashFormat(original);
-      const parsed = slashParse(text);
-      expect(parsed).toBeDefined();
-      expect(parsed?.getFullYear()).toBe(2024);
-      expect(parsed?.getMonth()).toBe(5);
-      expect(parsed?.getDate()).toBe(30);
-    });
-
-    it("returns undefined when the input does not match the format", () => {
-      expect(slashParse("not a date")).toBeUndefined();
-      expect(slashParse("")).toBeUndefined();
-      // Wrong separator
-      expect(slashParse("06-30-2024")).toBeUndefined();
-    });
-
-    it("reproduces the formatted string after parse → format", () => {
-      const text = "06/30/2024";
-      const parsed = slashParse(text);
-      expect(parsed).toBeDefined();
-      if (parsed === undefined) {
-        return;
-      }
-      const reformatted = slashFormat(parsed);
-      expect(reformatted).toBe(text);
-    });
-  });
-
-  describe("ISO format helper sanity", () => {
-    it("produces ISO format identical to what HTML date inputs accept", () => {
-      const date = new Date(2024, 0, 15);
-      expect(isoFormat(date)).toBe("2024-01-15");
-    });
   });
 });

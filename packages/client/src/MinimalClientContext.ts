@@ -40,6 +40,7 @@ export interface MinimalClient extends SharedClientContext {
 
   transactionId?: string;
   flushEdits?: () => Promise<void>;
+  scenarioRid?: string;
 
   clientCacheKey: ClientCacheKey;
   requestContext: RequestContext;

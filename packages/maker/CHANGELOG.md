@@ -1,5 +1,94 @@
 # @osdk/maker
 
+## 0.34.0
+
+### Patch Changes
+
+- Updated dependencies [57cbc6d]
+  - @osdk/api@2.31.0
+  - @osdk/generator-converters.ontologyir@2.31.0
+
+## 0.33.0
+
+### Patch Changes
+
+- Updated dependencies [08e921c]
+  - @osdk/api@2.29.0
+  - @osdk/generator-converters.ontologyir@2.29.0
+
+## 0.32.0
+
+### Minor Changes
+
+- 1bc01d1: Add property validation for direct datasources
+
+### Patch Changes
+
+- @osdk/api@2.28.0
+- @osdk/generator-converters.ontologyir@2.28.0
+
+## 0.31.0
+
+### Patch Changes
+
+- Updated dependencies [8965bdf]
+- Updated dependencies [bd90dba]
+  - @osdk/generator-converters.ontologyir@2.25.0
+  - @osdk/typescript-sdk-docs@0.12.0
+  - @osdk/api@2.25.0
+
+## 0.30.0
+
+### Patch Changes
+
+- Updated dependencies [a492285]
+- Updated dependencies [60aff19]
+- Updated dependencies [d087189]
+  - @osdk/api@2.24.0
+  - @osdk/generator-converters.ontologyir@2.24.0
+  - @osdk/typescript-sdk-docs@0.11.0
+
+## 0.29.0
+
+### Minor Changes
+
+- 56c2c9f: write static object file
+
+### Patch Changes
+
+- Updated dependencies [198f219]
+- Updated dependencies [ef156b6]
+- Updated dependencies [8290dd7]
+  - @osdk/api@2.23.0
+  - @osdk/generator-converters.ontologyir@2.23.0
+
+## 0.28.0
+
+### Minor Changes
+
+- dea392c: Fix maker experimental imports
+
+### Patch Changes
+
+- Updated dependencies [dea392c]
+- Updated dependencies [d8f3dfd]
+  - @osdk/generator-converters.ontologyir@2.22.0
+  - @osdk/api@2.22.0
+
+## 0.27.0
+
+### Minor Changes
+
+- 6bca4fd: fix cbac default nullability
+
+### Patch Changes
+
+- Updated dependencies [1a07c91]
+- Updated dependencies [5b89f25]
+- Updated dependencies [b98e084]
+  - @osdk/api@2.21.0
+  - @osdk/generator-converters.ontologyir@2.21.0
+
 ## 0.26.0
 
 ### Patch Changes

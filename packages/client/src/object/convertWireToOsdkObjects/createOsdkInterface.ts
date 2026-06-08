@@ -168,6 +168,10 @@ function remapPropertySecuritiesForInterface(
   const remapped: PropertySecuritiesMap = {};
 
   for (const objPropName of Object.keys(underlyingSecurities)) {
+    if (objPropName === "$primaryKey" || objPropName === "$title") {
+      remapped[objPropName] = underlyingSecurities[objPropName];
+      continue;
+    }
     const interfacePropName = inverseMap[objPropName];
     if (interfacePropName == null) continue;
 

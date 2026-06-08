@@ -94,6 +94,7 @@ function buildFieldDefinition(
     case "geohash":
     case "geoshape":
     case "objectType":
+    case "scenarioReference":
       return {
         ...base,
         fieldComponent: "UNSUPPORTED",

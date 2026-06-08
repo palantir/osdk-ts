@@ -23,6 +23,7 @@ Pressable
 psdk
 siteasset
 superrepo
+superrepos
 Tamagui
 themabiltiy
 timecode

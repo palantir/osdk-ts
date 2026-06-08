@@ -1,5 +1,62 @@
 # @osdk/api
 
+## 2.31.0
+
+### Minor Changes
+
+- 57cbc6d: Stop shipping Node-only test infrastructure in the browser builds of `@osdk/api` and `@osdk/client`.
+  - `@osdk/api`: the `__quickinfo_snapshot__/` test harness (formerly `probeUtils.ts` + `probes/*.ts`) is renamed under the existing `testUtils.` prefix convention so the transpile tool drops it from every build target. Pure test infrastructure; no runtime surface change.
+  - `@osdk/client`: the `./internal-node` subpath export is removed. The TypeScript-language-server harness it pointed at (`tsserver.ts`) has moved to a new private workspace package, `@osdk/shared.test.intellisense`, which both `@osdk/client` and `@osdk/react` consume as a dev dependency. This eliminates the `node:events` / `node:fs/promises` / `node:path` imports from the browser build and removes the project-internal subpath from the published client API.
+
+## 2.30.0
+
+## 2.29.0
+
+### Minor Changes
+
+- 08e921c: Bump `foundry-platform-typescript` catalog to 2.63.0 and surface the new CBAC/MANDATORY marking subtype on `ObjectMetadata.Property` via a new `typeMetadata` discriminated-union field. For marking properties, `typeMetadata` is `{ type: "marking"; subtype?: "CBAC" | "MANDATORY" }`, letting consumers distinguish classification-based markings from mandatory markings on object property columns. Future per-`type` metadata should be added as additional variants of `typeMetadata` rather than as new top-level optionals on `Property`.
+
+## 2.28.0
+
+## 2.27.0
+
+## 2.26.0
+
+## 2.25.0
+
+### Minor Changes
+
+- bd90dba: Add end-to-end support for `scenarioReference` action parameters:
+  - `@osdk/api` adds `"scenarioReference"` to `ActionMetadata.DataType.BaseActionParameterTypes` and a matching `scenarioReference: ScenarioClient` entry in `DataValueClientToWire` (structurally typed as `{ getScenarioReference(): { scenarioRid } }` to avoid a circular dep on `@osdk/client`).
+  - `@osdk/generator-converters` maps the wire `scenarioReference` variant into the primitive type.
+  - Generated SDKs now emit `ActionParam.PrimitiveType<"scenarioReference">` (resolves to `ScenarioClient`) for scenarioReference parameters, instead of throwing at SDK build time.
+  - `@osdk/client`'s `toDataValue` accepts a `ScenarioClient` and serializes it to the rid string the platform expects.
+  - `@osdk/react-components`'s ActionForm renders scenarioReference parameters as `UNSUPPORTED` for now.
+
+  Enables `client(ScenarioMerge).applyAction({ scenario })` end-to-end in generated SDKs.
+
+## 2.24.0
+
+### Minor Changes
+
+- a492285: Add $title and $primaryKey special property filters to where clauses
+
+## 2.23.0
+
+### Minor Changes
+
+- 198f219: add quickinfo snapshot tests for high-traffic SDK surfaces (`ObjectSet`, `Osdk.Instance`, `AggregationsResults`, `Actions`, `Queries`, `DerivedProperty` builder, per-property `WhereClause` filter unions, subscribe message variants). internal-only — exercises `checker.typeToString` against curated probes and snapshots the formatted output, so future type-graph changes surface as snapshot diffs in code review. no published surface affected.
+- ef156b6: Short-circuit `MergeObjectSet<Q, D>` to `Q` when `D` has no keys. Removes `WithDerivedProperties<Q, {}>` from hover output for `where`, `subscribe`, and other ObjectSet method signatures on the common no-derived-properties path. No runtime change; structurally equivalent type.
+- 8290dd7: Unwrap `$primaryKey` and `$title` when they are returned as secured property values, and include them as keys in `$propertySecurities` (both at the type level and at runtime, including interface views).
+
+## 2.22.0
+
+## 2.21.0
+
+### Minor Changes
+
+- 1a07c91: Clean up unstable interface code: remove the `$__UNSTABLE_useOldInterfaceApis` fetch option and its old `OntologyInterfaces.search`-based code path, consolidate `convertWireToOsdkObjects` / `convertWireToOsdkObjects2` into a single factory backed by `loadMultipleObjectTypes`, and rename `__UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition` / `__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst` (the latter is generator-internal). The unused `v2` parameter on `wireInterfaceTypeV2ToSdkObjectDefinition` is also removed.
+
 ## 2.20.0
 
 ### Minor Changes

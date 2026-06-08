@@ -15,8 +15,10 @@
  */
 
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import type React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { CustomField } from "../fields/CustomField.js";
+import type { BaseFormFieldProps } from "../FormFieldApi.js";
 
 afterEach(cleanup);
 
@@ -71,6 +73,19 @@ describe("CustomField", () => {
       );
       expect(screen.getByTestId("value").textContent).toBe("null");
     });
+
+    it("passes disabled to customRenderer", () => {
+      render(
+        <CustomField
+          value={null}
+          onChange={vi.fn()}
+          disabled={true}
+          customRenderer={renderDisabledProp}
+        />,
+      );
+
+      expect(screen.getByTestId("disabled").textContent).toBe("true");
+    });
   });
 
   describe("interaction", () => {
@@ -98,3 +113,9 @@ describe("CustomField", () => {
     });
   });
 });
+
+function renderDisabledProp(
+  props: BaseFormFieldProps<unknown>,
+): React.ReactNode {
+  return <div data-testid="disabled">{String(props.disabled)}</div>;
+}

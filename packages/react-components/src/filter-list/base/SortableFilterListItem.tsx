@@ -35,6 +35,7 @@ interface SortableFilterListItemProps<D> {
   ) => void;
   onFilterRemoved?: (filterKey: string) => void;
   renderInput: RenderFilterInput<D>;
+  searchField?: boolean;
 }
 
 function SortableFilterListItemInner<D>({
@@ -46,6 +47,7 @@ function SortableFilterListItemInner<D>({
   onFilterStateChanged,
   onFilterRemoved,
   renderInput,
+  searchField,
 }: SortableFilterListItemProps<D>): React.ReactElement {
   const {
     attributes,
@@ -75,6 +77,7 @@ function SortableFilterListItemInner<D>({
         onFilterStateChanged={onFilterStateChanged}
         onFilterRemoved={onFilterRemoved}
         renderInput={renderInput}
+        searchField={searchField}
         dragHandleAttributes={attributes}
         dragHandleListeners={listeners}
       />

@@ -24,7 +24,7 @@ import type {
 import type { UUID } from "crypto";
 import crypto, { createHash } from "crypto";
 import type { ReadableId } from "../../util/generateRid.js";
-import type { SemverVersion } from "./specGenerators.js";
+import type { SemverVersion } from "./semver.js";
 import type {
   GeneratedBlockExternalRecommendations,
   InputMappingEntry,

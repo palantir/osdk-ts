@@ -23,6 +23,7 @@ import type {
 } from "@osdk/api";
 import { useCallback, useState } from "react";
 import type { ObjectTableProps } from "../ObjectTableApi.js";
+import { cellValuesEqual } from "../utils/editableUtils.js";
 import type {
   CellEditInfo,
   EditableConfig,
@@ -109,8 +110,11 @@ export function useEditableTable<
         unknown
       >,
     ) => {
-      // If value is changed back to original, remove it from edits
-      if (info.newValue === info.oldValue) {
+      // If value is changed back to original, remove it from edits. null
+      // and undefined are treated as the same empty state so clearing a
+      // never-set cell doesn't leave a phantom "edited" indicator. "" stays
+      // a distinct value.
+      if (cellValuesEqual(info.newValue, info.oldValue)) {
         setCellEdits(prev => {
           const { [cellId]: _, ...rest } = prev;
           return rest;

@@ -33,7 +33,6 @@ import { stopPropagation } from "./calendarShared.js";
 import styles from "./DatePicker.module.css";
 import commonStyles from "./DatePickerCommon.module.css";
 import { LazyDateCalendar } from "./LazyDateCalendar.js";
-import { TimePicker } from "./TimePicker.js";
 import { useDateEditState } from "./useDateEditState.js";
 
 /**
@@ -63,6 +62,9 @@ export interface DatePickerProps {
 
   /** Called when the user selects or types a new date. */
   onChange?: (value: Date | null) => void;
+
+  /** Whether the picker is disabled. */
+  disabled?: boolean;
 
   /** The earliest date the user can select. */
   min?: Date;
@@ -128,395 +130,382 @@ export interface DatePickerProps {
   modal?: "trap-focus" | false;
 }
 
-export const DatePicker: React.NamedExoticComponent<
-  DatePickerProps
-> = React.memo(function DatePicker({
-  id,
-  value,
-  onChange,
-  error,
-  min,
-  max,
-  placeholder,
-  formatDate,
-  parseDate,
-  showTime = false,
-  closeOnSelection,
-  portalRef,
-  portalContainer,
-  ariaLabel,
-  modal = "trap-focus",
-}: DatePickerProps) {
-  const isModal = modal !== false;
-  const shouldCloseOnSelection = closeOnSelection ?? !showTime;
-  const popoverId = useId();
-  // The wrapper is only a visual/positioning anchor. The input itself remains
-  // the Popover.Trigger so axe does not see an interactive wrapper around an
-  // interactive combobox.
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const popoverRef = useRef<HTMLDivElement>(null);
-
-  const [isOpen, setIsOpen] = useState(false);
-  // activeDateValue is the selected/typed date; visibleCalendarMonth is only
-  // the calendar viewport. Keeping the viewport separate lets typed dates jump
-  // the calendar while next/previous month navigation still works.
-  const [visibleCalendarMonth, setVisibleCalendarMonth] = useState<
-    Date | undefined
-  >(value ?? new Date());
-  // When true, the next handleFocus call skips reopening the popover.
-  // Set before focusing the input from a popover boundary exit so that
-  // Tab/Shift-Tab proceeds to the adjacent form field naturally.
-  const skipReopenRef = useRef(false);
-
-  // Format/parse: pick between date-only and datetime variants.
-  // editFormatFn produces a parsable string for typing (e.g. "2024-01-15" or "2024-01-15 14:30").
-  // displayFormatFn produces the idle string. Defaults stay deterministic so
-  // users in different browser locales see the same date in form inputs.
-  const editFormatFn = showTime ? formatDatetimeForInput : formatDateForInput;
-  const displayFormatFn = formatDate
-    ?? (showTime ? formatDatetimeForInput : formatDateForInput);
-  const parseFn = parseDate
-    ?? (showTime ? parseDatetimeFromInput : parseDateFromInput);
-
-  // Single normalization gate: when the time picker is hidden, strip
-  // hours/minutes/seconds so consumers receive a pure calendar date (local
-  // midnight). Defined before useDateEditState so the hook's commit path also
-  // goes through this gate.
-  const handleChange = useCallback(
-    (date: Date | null) => {
-      if (onChange == null) {
-        return;
-      }
-      if (date != null && !showTime) {
-        const dateOnly = new Date(
-          date.getFullYear(),
-          date.getMonth(),
-          date.getDate(),
-        );
-        onChange(dateOnly);
-      } else {
-        onChange(date);
-      }
-    },
-    [onChange, showTime],
-  );
-
-  const {
-    isEditing,
-    displayedValue,
-    inputError,
-    dateValue,
-    startEditing,
-    stopEditing,
-    commitAndStopEditing,
-    setInputValue,
-    setDateValue,
-  } = useDateEditState({
+export const DatePicker: React.NamedExoticComponent<DatePickerProps> = React
+  .memo(function DatePicker({
+    id,
     value,
-    displayFormatFn,
-    editFormatFn,
-    parseFn,
+    onChange,
+    error,
     min,
     max,
-    onChange: handleChange,
-  });
+    placeholder,
+    formatDate,
+    parseDate,
+    showTime = false,
+    closeOnSelection,
+    portalRef,
+    portalContainer,
+    ariaLabel,
+    modal = "trap-focus",
+    disabled = false,
+  }: DatePickerProps) {
+    const isModal = modal !== false;
+    const shouldCloseOnSelection = closeOnSelection ?? !showTime;
+    const popoverId = useId();
+    // The wrapper is only a visual/positioning anchor. The input itself remains
+    // the Popover.Trigger so axe does not see an interactive wrapper around an
+    // interactive combobox.
+    const wrapperRef = useRef<HTMLDivElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
+    const popoverRef = useRef<HTMLDivElement>(null);
 
-  // --- Input event handlers ---
+    const [isOpen, setIsOpen] = useState(false);
+    // activeDateValue is the selected/typed date; visibleCalendarMonth is only
+    // the calendar viewport. Keeping the viewport separate lets typed dates jump
+    // the calendar while next/previous month navigation still works.
+    const [visibleCalendarMonth, setVisibleCalendarMonth] = useState<
+      Date | undefined
+    >(value ?? new Date());
+    // When true, the next handleFocus call skips reopening the popover.
+    // Set before focusing the input from a popover boundary exit so that
+    // Tab/Shift-Tab proceeds to the adjacent form field naturally.
+    const skipReopenRef = useRef(false);
 
-  const handleFocus = useCallback(() => {
-    if (skipReopenRef.current) {
-      skipReopenRef.current = false;
-      startEditing();
-      return;
-    }
-    startEditing();
-    setVisibleCalendarMonth(value ?? undefined);
-    setIsOpen(true);
-  }, [startEditing, value]);
+    // Format/parse: pick between date-only and datetime variants.
+    // editFormatFn produces a parsable string for typing (e.g. "2024-01-15" or "2024-01-15 14:30").
+    // displayFormatFn produces the idle string. Defaults stay deterministic so
+    // users in different browser locales see the same date in form inputs.
+    const editFormatFn = showTime ? formatDatetimeForInput : formatDateForInput;
+    const displayFormatFn = formatDate
+      ?? (showTime ? formatDatetimeForInput : formatDateForInput);
+    const parseFn = parseDate
+      ?? (showTime ? parseDatetimeFromInput : parseDateFromInput);
 
-  const handlePointerDown = useCallback(() => {
-    // Opening from pointer-down keeps mouse interactions in sync with focus
-    // editing before Base UI's later click trigger handler runs.
-    inputRef.current?.focus();
-    handleFocus();
-  }, [handleFocus]);
-
-  const handleInputValueChange = useCallback(
-    (nextValue: string) => {
-      setInputValue(nextValue);
-      const parsedDate = nextValue !== "" ? parseFn(nextValue) : undefined;
-      if (parsedDate != null && isDateInRange(parsedDate, min, max)) {
-        setVisibleCalendarMonth(parsedDate);
-      }
-    },
-    [max, min, parseFn, setInputValue],
-  );
-
-  const handleBlur = useCallback(
-    (e: React.FocusEvent<HTMLInputElement>) => {
-      const relatedTarget = e.relatedTarget ?? document.activeElement;
-      if (popoverRef.current?.contains(relatedTarget as Node)) {
-        // Focus moved into the popover portal (e.g. clicking a calendar day).
-        // The field is still logically active, so suppress the blur from
-        // bubbling — parent containers should not treat this as a field exit.
-        e.stopPropagation();
-        return;
-      }
-      commitAndStopEditing();
-    },
-    [commitAndStopEditing],
-  );
-
-  // Shared close sequence: dismiss the popover, reset editing state, and
-  // blur the input so focus doesn't linger after the calendar disappears.
-  // Uses stopEditing (not commitAndStopEditing) to avoid double-firing
-  // onChange when called from calendar-select or after Enter already committed.
-  const closePopover = useCallback(() => {
-    setIsOpen(false);
-    stopEditing();
-    inputRef.current?.blur();
-  }, [stopEditing]);
-
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        commitAndStopEditing();
-        setIsOpen(false);
-        inputRef.current?.blur();
-      } else if (e.key === "Escape") {
-        e.preventDefault();
-        closePopover();
-      } else if (e.key === "Tab" && !e.shiftKey && isOpen && isModal) {
-        // Move focus from the text input into the calendar popover.
-        // The popover doesn't auto-focus on open (to keep the cursor in the input),
-        // so Tab manually bridges focus to the first interactive calendar element.
-        // Only meaningful when the popover traps focus; when non-modal we let
-        // the browser advance focus naturally to the next document element.
-        const firstFocusable = popoverRef.current?.querySelector<HTMLElement>(
-          "button, select",
-        );
-        if (firstFocusable != null) {
-          e.preventDefault();
-          firstFocusable.focus();
+    // Single normalization gate: when the time picker is hidden, strip
+    // hours/minutes/seconds so consumers receive a pure calendar date (local
+    // midnight). Defined before useDateEditState so the hook's commit path also
+    // goes through this gate.
+    const handleChange = useCallback(
+      (date: Date | null) => {
+        if (onChange == null) {
+          return;
         }
-      } else if (e.key === "Tab" && e.shiftKey) {
-        setIsOpen(false);
-      }
-    },
-    [commitAndStopEditing, closePopover, isOpen, isModal],
-  );
+        if (date != null && !showTime) {
+          const dateOnly = new Date(
+            date.getFullYear(),
+            date.getMonth(),
+            date.getDate(),
+          );
+          onChange(dateOnly);
+        } else {
+          onChange(date);
+        }
+      },
+      [onChange, showTime],
+    );
 
-  // --- Popover handlers ---
+    const {
+      isEditing,
+      displayedValue,
+      inputError,
+      dateValue,
+      startEditing,
+      stopEditing,
+      commitAndStopEditing,
+      setInputValue,
+      setDateValue,
+    } = useDateEditState({
+      value,
+      displayFormatFn,
+      editFormatFn,
+      parseFn,
+      min,
+      max,
+      onChange: handleChange,
+    });
 
-  // Called by base-ui when the popover opens or closes (e.g. click outside, Escape).
-  const handleOpenChange = useCallback(
-    (nextOpen: boolean) => {
-      if (nextOpen) {
-        setIsOpen(true);
-      } else {
-        closePopover();
-      }
-    },
-    [closePopover],
-  );
+    const activeDateValue = isEditing && inputError == null
+      ? dateValue
+      : (value ?? undefined);
 
-  // --- Calendar handlers ---
+    // --- Input event handlers ---
 
-  const handleCalendarSelect = useCallback(
-    (selected: Date | undefined) => {
-      if (selected == null) {
-        handleChange(null);
-        setInputValue("");
+    const handleFocus = useCallback(() => {
+      if (skipReopenRef.current) {
+        skipReopenRef.current = false;
+        startEditing();
         return;
       }
+      startEditing();
+      setVisibleCalendarMonth(value ?? undefined);
+      setIsOpen(true);
+    }, [startEditing, value]);
 
-      const date = new Date(selected.getTime());
-      if (showTime && value != null) {
-        date.setHours(value.getHours(), value.getMinutes());
-      }
+    const handlePointerDown = useCallback(() => {
+      // Opening from pointer-down keeps mouse interactions in sync with focus
+      // editing before Base UI's later click trigger handler runs.
+      inputRef.current?.focus();
+      handleFocus();
+    }, [handleFocus]);
 
-      handleChange(date);
-      setDateValue(date);
-      setVisibleCalendarMonth(date);
+    const handleInputValueChange = useCallback(
+      (nextValue: string) => {
+        setInputValue(nextValue);
+        const parsedDate = nextValue !== "" ? parseFn(nextValue) : undefined;
+        if (parsedDate != null && isDateInRange(parsedDate, min, max)) {
+          setVisibleCalendarMonth(parsedDate);
+        }
+      },
+      [max, min, parseFn, setInputValue],
+    );
 
-      if (shouldCloseOnSelection) {
-        closePopover();
-      }
-    },
-    [
-      handleChange,
-      showTime,
-      value,
-      shouldCloseOnSelection,
-      setDateValue,
-      setInputValue,
-      closePopover,
-    ],
-  );
+    const handleBlur = useCallback(
+      (e: React.FocusEvent<HTMLInputElement>) => {
+        const relatedTarget = e.relatedTarget ?? document.activeElement;
+        if (popoverRef.current?.contains(relatedTarget as Node)) {
+          // Focus moved into the popover portal (e.g. clicking a calendar day).
+          // The field is still logically active, so suppress the blur from
+          // bubbling — parent containers should not treat this as a field exit.
+          e.stopPropagation();
+          return;
+        }
+        commitAndStopEditing();
+      },
+      [commitAndStopEditing],
+    );
 
-  const handleTimeChange = useCallback(
-    (time: Date) => {
-      handleChange(time);
-      setDateValue(time);
-    },
-    [handleChange, setDateValue],
-  );
+    // Shared close sequence: dismiss the popover, reset editing state, and
+    // blur the input so focus doesn't linger after the calendar disappears.
+    // Uses stopEditing (not commitAndStopEditing) to avoid double-firing
+    // onChange when called from calendar-select or after Enter already committed.
+    const closePopover = useCallback(() => {
+      setIsOpen(false);
+      stopEditing();
+      inputRef.current?.blur();
+    }, [stopEditing]);
 
-  const handleCalendarClear = useCallback(() => {
-    handleChange(null);
-    setDateValue(null);
-  }, [handleChange, setDateValue]);
-
-  // --- Focus boundary handlers ---
-  // Visually-hidden elements at the start/end of the popover that trap Tab
-  // cycling between the text input and calendar. Without these, Tab would
-  // escape the popover into the page behind it.
-
-  const handleStartFocusBoundary = useCallback(() => {
-    inputRef.current?.focus();
-  }, []);
-
-  const handleEndFocusBoundary = useCallback(
-    (e: React.FocusEvent<HTMLDivElement>) => {
-      const relatedTarget = e.relatedTarget ?? document.activeElement;
-      if (popoverRef.current?.contains(relatedTarget as Node)) {
-        // Tab reached the end of the popover. Close the popover and
-        // return focus to the input without reopening it, so the next
-        // Tab advances to the next form field.
-        skipReopenRef.current = true;
-        setIsOpen(false);
-        stopEditing();
-        inputRef.current?.focus();
-      } else {
-        const buttons = popoverRef.current?.querySelectorAll<HTMLElement>(
-          "button, select",
-        );
-        const lastButton = buttons?.[buttons.length - 1];
-        lastButton?.focus();
-      }
-    },
-    [stopEditing],
-  );
-
-  // --- Time picker ---
-
-  const activeDateValue = isEditing && inputError == null
-    ? dateValue
-    : (value ?? undefined);
-
-  const timeFooter = showTime
-    ? (
-      <div className={styles.osdkDatetimeTimeFooter}>
-        <TimePicker
-          value={activeDateValue ?? null}
-          onChange={handleTimeChange}
-        />
-      </div>
-    )
-    : undefined;
-
-  const wrapperClassName = classnames(
-    commonStyles.osdkDatePickerInputWrapper,
-    styles.osdkDatetimeInputWrapper,
-    inputError != null && commonStyles.osdkDatePickerInputWrapperError,
-  );
-
-  // Keep Popover.Trigger on the input itself. Moving it to the wrapper would
-  // make click handling simpler, but it would also nest an interactive combobox
-  // inside an interactive trigger and reintroduce the axe violation.
-  return (
-    <Popover.Root
-      open={isOpen}
-      onOpenChange={handleOpenChange}
-      // When `modal === "trap-focus"`, base-ui traps Tab cycling and we render
-      // a transparent dismiss layer for outside-click. When `false`, we rely
-      // on base-ui's default outside-click — required for nested popover use
-      // (e.g. inside FilterPopover) where a fullscreen dismiss layer would
-      // intercept clicks intended for the parent.
-      modal={modal}
-    >
-      <div ref={wrapperRef} className={wrapperClassName}>
-        <Popover.Trigger
-          nativeButton={false}
-          render={
-            <Input
-              ref={inputRef}
-              id={id}
-              className={commonStyles.osdkDatePickerInput}
-              type="text"
-              value={displayedValue}
-              onValueChange={handleInputValueChange}
-              onFocus={handleFocus}
-              onPointerDown={handlePointerDown}
-              onBlur={handleBlur}
-              onClick={stopPropagation}
-              onKeyDown={handleKeyDown}
-              placeholder={placeholder}
-              autoComplete="off"
-              role="combobox"
-              aria-expanded={isOpen}
-              aria-controls={popoverId}
-              aria-haspopup="dialog"
-              aria-label={ariaLabel}
-            />
+    const handleKeyDown = useCallback(
+      (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          commitAndStopEditing();
+          setIsOpen(false);
+          inputRef.current?.blur();
+        } else if (e.key === "Escape") {
+          e.preventDefault();
+          closePopover();
+        } else if (e.key === "Tab" && !e.shiftKey && isOpen && isModal) {
+          // Move focus from the text input into the calendar popover.
+          // The popover doesn't auto-focus on open (to keep the cursor in the input),
+          // so Tab manually bridges focus to the first interactive calendar element.
+          // Only meaningful when the popover traps focus; when non-modal we let
+          // the browser advance focus naturally to the next document element.
+          const firstFocusable = popoverRef.current?.querySelector<HTMLElement>(
+            "button, select",
+          );
+          if (firstFocusable != null) {
+            e.preventDefault();
+            firstFocusable.focus();
           }
-        />
-      </div>
-      <Popover.Portal ref={portalRef} container={portalContainer}>
-        {isModal && (
-          <PortalDismissLayer
-            className={commonStyles.osdkDatePickerDismissLayer}
-            onDismiss={closePopover}
-          />
-        )}
-        <Popover.Positioner
-          anchor={wrapperRef}
-          className={commonStyles.osdkDatePickerPositioner}
-          sideOffset={4}
-          side="bottom"
-          align="start"
+        } else if (e.key === "Tab" && e.shiftKey) {
+          setIsOpen(false);
+        }
+      },
+      [commitAndStopEditing, closePopover, isOpen, isModal],
+    );
+
+    // --- Popover handlers ---
+
+    // Called by base-ui when the popover opens or closes (e.g. click outside, Escape).
+    const handleOpenChange = useCallback(
+      (nextOpen: boolean) => {
+        if (nextOpen) {
+          setIsOpen(true);
+        } else {
+          closePopover();
+        }
+      },
+      [closePopover],
+    );
+
+    // --- Calendar handlers ---
+
+    const handleCalendarSelect = useCallback(
+      (selected: Date | undefined) => {
+        if (selected == null) {
+          handleChange(null);
+          setInputValue("");
+          return;
+        }
+
+        const date = new Date(selected.getTime());
+        handleChange(date);
+        setDateValue(date);
+        setVisibleCalendarMonth(date);
+
+        if (shouldCloseOnSelection) {
+          closePopover();
+        }
+      },
+      [
+        handleChange,
+        shouldCloseOnSelection,
+        setDateValue,
+        setInputValue,
+        closePopover,
+      ],
+    );
+
+    const handleTimeChange = useCallback(
+      (time: Date) => {
+        handleChange(time);
+        setDateValue(time);
+      },
+      [handleChange, setDateValue],
+    );
+
+    const handleCalendarClear = useCallback(() => {
+      handleChange(null);
+      setDateValue(null);
+    }, [handleChange, setDateValue]);
+
+    // --- Focus boundary handlers ---
+    // Visually-hidden elements at the start/end of the popover that trap Tab
+    // cycling between the text input and calendar. Without these, Tab would
+    // escape the popover into the page behind it.
+
+    const handleStartFocusBoundary = useCallback(() => {
+      inputRef.current?.focus();
+    }, []);
+
+    const handleEndFocusBoundary = useCallback(
+      (e: React.FocusEvent<HTMLDivElement>) => {
+        const relatedTarget = e.relatedTarget ?? document.activeElement;
+        if (popoverRef.current?.contains(relatedTarget as Node)) {
+          // Tab reached the end of the popover. Close the popover and
+          // return focus to the input without reopening it, so the next
+          // Tab advances to the next form field.
+          skipReopenRef.current = true;
+          setIsOpen(false);
+          stopEditing();
+          inputRef.current?.focus();
+        } else {
+          const buttons = popoverRef.current?.querySelectorAll<HTMLElement>(
+            "button, select",
+          );
+          const lastButton = buttons?.[buttons.length - 1];
+          lastButton?.focus();
+        }
+      },
+      [stopEditing],
+    );
+
+    const wrapperClassName = classnames(
+      commonStyles.osdkDatePickerInputWrapper,
+      styles.osdkDatetimeInputWrapper,
+      inputError != null && commonStyles.osdkDatePickerInputWrapperError,
+    );
+    const isPopoverOpen = !disabled && isOpen;
+
+    // Keep Popover.Trigger on the input itself. Moving it to the wrapper would
+    // make click handling simpler, but it would also nest an interactive combobox
+    // inside an interactive trigger and reintroduce the axe violation.
+    return (
+      <Popover.Root
+        open={isPopoverOpen}
+        onOpenChange={handleOpenChange}
+        // When `modal === "trap-focus"`, base-ui traps Tab cycling and we render
+        // a transparent dismiss layer for outside-click. When `false`, we rely
+        // on base-ui's default outside-click — required for nested popover use
+        // (e.g. inside FilterPopover) where a fullscreen dismiss layer would
+        // intercept clicks intended for the parent.
+        modal={modal}
+      >
+        <div
+          ref={wrapperRef}
+          className={wrapperClassName}
+          data-disabled={disabled || undefined}
         >
-          <Popover.Popup
-            ref={popoverRef}
-            className={commonStyles.osdkDatePickerPopover}
-            id={popoverId}
-            role="dialog"
-            aria-label="Date picker"
-            // Disable base-ui's automatic focus restoration to the trigger on close.
-            // We manage focus ourselves via closePopover() which blurs the input.
-            finalFocus={false}
-          >
-            {isModal && (
-              <div
-                onFocus={handleStartFocusBoundary}
-                tabIndex={0}
-                aria-label="Start of date picker dialog"
-                className={commonStyles.osdkDatePickerFocusBoundary}
+          <Popover.Trigger
+            nativeButton={false}
+            render={
+              <Input
+                ref={inputRef}
+                id={id}
+                className={commonStyles.osdkDatePickerInput}
+                type="text"
+                value={displayedValue}
+                onValueChange={handleInputValueChange}
+                disabled={disabled}
+                onFocus={handleFocus}
+                onPointerDown={handlePointerDown}
+                onBlur={handleBlur}
+                onClick={stopPropagation}
+                onKeyDown={handleKeyDown}
+                placeholder={placeholder}
+                autoComplete="off"
+                role="combobox"
+                aria-expanded={isPopoverOpen}
+                aria-controls={popoverId}
+                aria-haspopup="dialog"
+                aria-label={ariaLabel}
               />
-            )}
-            <LazyDateCalendar
-              dateSelected={activeDateValue}
-              onSelect={handleCalendarSelect}
-              onClear={handleCalendarClear}
-              month={visibleCalendarMonth}
-              onMonthChange={setVisibleCalendarMonth}
-              min={min}
-              max={max}
-              footer={timeFooter}
+            }
+          />
+        </div>
+        <Popover.Portal ref={portalRef} container={portalContainer}>
+          {isModal && (
+            <PortalDismissLayer
+              className={commonStyles.osdkDatePickerDismissLayer}
+              onDismiss={closePopover}
             />
-            {isModal && (
-              <div
-                onFocus={handleEndFocusBoundary}
-                tabIndex={0}
-                aria-label="End of date picker dialog"
-                className={commonStyles.osdkDatePickerFocusBoundary}
+          )}
+          <Popover.Positioner
+            anchor={wrapperRef}
+            className={commonStyles.osdkDatePickerPositioner}
+            sideOffset={4}
+            side="bottom"
+            align="start"
+          >
+            <Popover.Popup
+              ref={popoverRef}
+              className={commonStyles.osdkDatePickerPopover}
+              id={popoverId}
+              role="dialog"
+              aria-label="Date picker"
+              // Disable base-ui's automatic focus restoration to the trigger on close.
+              // We manage focus ourselves via closePopover() which blurs the input.
+              finalFocus={false}
+            >
+              {isModal && (
+                <div
+                  onFocus={handleStartFocusBoundary}
+                  tabIndex={0}
+                  aria-label="Start of date picker dialog"
+                  className={commonStyles.osdkDatePickerFocusBoundary}
+                />
+              )}
+              <LazyDateCalendar
+                dateSelected={activeDateValue}
+                onSelect={handleCalendarSelect}
+                onTimeChange={showTime ? handleTimeChange : undefined}
+                onClear={handleCalendarClear}
+                month={visibleCalendarMonth}
+                onMonthChange={setVisibleCalendarMonth}
+                min={min}
+                max={max}
               />
-            )}
-          </Popover.Popup>
-        </Popover.Positioner>
-      </Popover.Portal>
-    </Popover.Root>
-  );
-});
+              {isModal && (
+                <div
+                  onFocus={handleEndFocusBoundary}
+                  tabIndex={0}
+                  aria-label="End of date picker dialog"
+                  className={commonStyles.osdkDatePickerFocusBoundary}
+                />
+              )}
+            </Popover.Popup>
+          </Popover.Positioner>
+        </Popover.Portal>
+      </Popover.Root>
+    );
+  });

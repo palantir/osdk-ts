@@ -15,7 +15,6 @@
  */
 
 import type { Media } from "@osdk/api";
-import type { BaseDocxViewerProps } from "../docx-viewer/DocxViewerApi.js";
 import type { BaseEmailViewerProps } from "../email-viewer/EmailViewerApi.js";
 import type { BaseExcelViewerProps } from "../excel-viewer/ExcelViewerApi.js";
 import type { BaseImageViewerProps } from "../images/image-viewer/ImageViewerApi.js";
@@ -31,7 +30,6 @@ export enum ViewerType {
   Image = "image",
   Video = "video",
   Markdown = "markdown",
-  Docx = "docx",
   Excel = "excel",
   Email = "email",
   Xml = "xml",
@@ -64,9 +62,6 @@ export interface DocumentViewerProps {
   markdownRendererProps?: Partial<
     Omit<MarkdownRendererProps, "content" | "className">
   >;
-  /** Props forwarded to BaseDocxViewer when rendering DOCX
-   * @default undefined */
-  docxViewerProps?: Partial<Omit<BaseDocxViewerProps, "src" | "className">>;
   /** Props forwarded to BaseExcelViewer when rendering Excel
    * @default undefined */
   excelViewerProps?: Partial<

@@ -23,7 +23,10 @@ import type {
   ValueTypeApiName,
   ValueTypeConstraint,
 } from "@osdk/foundry.ontologies";
-import { wireObjectTypeFullMetadataToSdkObjectMetadata } from "@osdk/generator-converters";
+import {
+  GeneratorError,
+  wireObjectTypeFullMetadataToSdkObjectMetadata,
+} from "@osdk/generator-converters";
 import consola from "consola";
 import { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";
 import { EnhancedObjectType } from "../GenerateContext/EnhancedObjectType.js";
@@ -463,8 +466,10 @@ function getPropTypeOrValueTypeEnum(
     return defaultPropString;
   }
   if (valueType.constraints.length !== 1) {
-    throw new Error(
-      `Expected exactly one constraint for value type ${propertyDefinition.valueTypeApiName} but got ${valueType.constraints.length}`,
+    throw new GeneratorError(
+      "Expected exactly one constraint for value type",
+      { valueTypeApiName: propertyDefinition.valueTypeApiName },
+      { constraintCount: valueType.constraints.length },
     );
   }
 

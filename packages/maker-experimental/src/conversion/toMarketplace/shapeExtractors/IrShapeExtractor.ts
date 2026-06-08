@@ -248,7 +248,14 @@ function extractInterfaceType(
     ),
   };
 
-  // Add shared property type input shapes for properties not in output
+  // Add shared property type input shapes for properties not in output,
+  // and extract value type input shapes for interface-defined properties
+  const blockShapesRef: BlockShapes = {
+    inputShapes: inputShapeMap,
+    outputShapes: outputShapeMap,
+    inputShapeMetadata: inputShapeMetadataMap,
+    inputMappings: [],
+  };
   for (
     const [_propertyRid, property] of Object.entries(
       interfaceType.propertiesV3,
@@ -278,6 +285,16 @@ function extractInterfaceType(
         },
       );
       inputShapeMetadataMap.set(sptReadableId, SPT_INPUT_SHAPE_METADATA);
+    } else if (property.type === "interfaceDefinedPropertyType") {
+      // TODO: once we have published output shapes for a while, add IPT input shapes
+      const idp = property.interfaceDefinedPropertyType;
+      extractValueTypeInputShapeIfPresent(
+        idp.constraints.valueType ?? undefined,
+        idp.displayMetadata.displayName,
+        idp.type as unknown as Type,
+        blockShapesRef,
+        ridGenerator,
+      );
     }
   }
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "@osdk/api";
+import type { InterfaceDefinition, ObjectTypeDefinition } from "@osdk/api";
 import { act, renderHook } from "@testing-library/react";
 import * as React from "react";
 import { beforeEach, describe, expect, it, vitest } from "vitest";
@@ -25,6 +25,11 @@ const MockObjectType = {
   apiName: "MockObject",
   primaryKeyType: "string",
 } as unknown as ObjectTypeDefinition;
+
+const MockInterface = {
+  apiName: "MockInterface",
+  type: "interface",
+} as unknown as InterfaceDefinition;
 
 describe("useOsdkObjects enabled option", () => {
   const mockObserveList = vitest.fn();
@@ -282,5 +287,45 @@ describe("useOsdkObjects enabled option", () => {
     rerender({ withProperties: { leadName: () => "a" } });
 
     expect(mockObserveList).toHaveBeenCalledTimes(1);
+  });
+
+  describe("resolveToObjectType", () => {
+    it("should pass resolveToObjectType: true to observeList when true", () => {
+      const wrapper = createWrapper();
+
+      renderHook(
+        () =>
+          useOsdkObjects(MockInterface, {
+            pivotTo: "linkedItems",
+            resolveToObjectType: true,
+          }),
+        { wrapper },
+      );
+
+      expect(mockObserveList).toHaveBeenCalledTimes(1);
+      expect(mockObserveList).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: MockInterface,
+          pivotTo: "linkedItems",
+          resolveToObjectType: true,
+        }),
+        expect.any(Object),
+      );
+    });
+
+    it("should not include resolveToObjectType when not set", () => {
+      const wrapper = createWrapper();
+
+      renderHook(
+        () =>
+          useOsdkObjects(MockInterface, {
+            pivotTo: "linkedItems",
+          }),
+        { wrapper },
+      );
+
+      const callArgs = mockObserveList.mock.calls[0][0];
+      expect(callArgs.resolveToObjectType).toBeUndefined();
+    });
   });
 });

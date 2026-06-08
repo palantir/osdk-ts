@@ -41,5 +41,6 @@ export interface OntologyIrV2 {
   importedOntology: OntologyBlockDataV2;
   valueTypes: ValueTypeBlockData[];
   importedValueTypes: ValueTypeBlockData[];
+  transitiveImportedOntology: OntologyBlockDataV2;
   randomnessKey?: string;
 }

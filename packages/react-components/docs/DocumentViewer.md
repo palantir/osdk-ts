@@ -1,4 +1,4 @@
-<!-- cspell:words openxmlformats officedocument wordprocessingml spreadsheetml -->
+<!-- cspell:words openxmlformats officedocument spreadsheetml -->
 
 # DocumentViewer
 
@@ -58,7 +58,6 @@ import { DocumentViewer } from "@osdk/react-components/experimental/document-vie
 | `videoViewerProps`      | `Partial<Omit<BaseVideoViewerProps, "src">>`         | No       | Props forwarded to BaseVideoViewer when rendering video     |
 | `tiffRendererProps`     | `Partial<Omit<TiffRendererProps, "content">>`        | No       | Props forwarded to TiffRenderer when rendering TIFF         |
 | `markdownRendererProps` | `Partial<Omit<MarkdownRendererProps, "content">>`    | No       | Props forwarded to MarkdownRenderer when rendering markdown |
-| `docxViewerProps`       | `Partial<Omit<BaseDocxViewerProps, "src">>`          | No       | Props forwarded to BaseDocxViewer when rendering DOCX       |
 | `excelViewerProps`      | `Partial<Omit<BaseExcelViewerProps, "spreadsheet">>` | No       | Props forwarded to BaseExcelViewer when rendering Excel     |
 | `emailViewerProps`      | `Partial<Omit<BaseEmailViewerProps, "email">>`       | No       | Props forwarded to BaseEmailViewer when rendering EML       |
 | `xmlViewerProps`        | `Partial<Omit<BaseXmlViewerProps, "content">>`       | No       | Props forwarded to BaseXmlViewer when rendering XML         |
@@ -72,12 +71,11 @@ import { DocumentViewer } from "@osdk/react-components/experimental/document-vie
 | `image/png`, `image/jpeg`, `image/gif`, `image/svg+xml`, `image/webp`, `image/bmp` | ImageViewer      |
 | `video/*`                                                                          | VideoViewer      |
 | `text/markdown`, `text/x-markdown`                                                 | MarkdownRenderer |
-| `application/vnd.openxmlformats-officedocument.wordprocessingml.document`          | DocxViewer       |
 | `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`                | ExcelViewer      |
 | `message/rfc822`                                                                   | EmailViewer      |
 | `application/xml`, `text/xml`                                                      | XmlViewer        |
 
-Unsupported MIME types display a fallback message.
+Unsupported MIME types — including `.doc`/`.docx` Microsoft Word documents — display a fallback message.
 
 ## Theming
 

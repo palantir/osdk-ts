@@ -1,5 +1,69 @@
 # @osdk/shared.test
 
+## 2.23.0
+
+### Patch Changes
+
+- Updated dependencies [57cbc6d]
+  - @osdk/api@2.31.0
+  - @osdk/generator-converters@2.31.0
+
+## 2.22.0
+
+### Minor Changes
+
+- 08e921c: Bump `foundry-platform-typescript` catalog to 2.63.0 and surface the new CBAC/MANDATORY marking subtype on `ObjectMetadata.Property` via a new `typeMetadata` discriminated-union field. For marking properties, `typeMetadata` is `{ type: "marking"; subtype?: "CBAC" | "MANDATORY" }`, letting consumers distinguish classification-based markings from mandatory markings on object property columns. Future per-`type` metadata should be added as additional variants of `typeMetadata` rather than as new top-level optionals on `Property`.
+
+### Patch Changes
+
+- Updated dependencies [08e921c]
+  - @osdk/api@2.29.0
+  - @osdk/generator-converters@2.29.0
+
+## 2.21.0
+
+### Patch Changes
+
+- @osdk/api@2.28.0
+- @osdk/generator-converters@2.28.0
+
+## 2.20.0
+
+### Patch Changes
+
+- Updated dependencies [8965bdf]
+- Updated dependencies [bd90dba]
+  - @osdk/generator-converters@2.25.0
+  - @osdk/api@2.25.0
+
+## 2.19.0
+
+### Patch Changes
+
+- Updated dependencies [a492285]
+- Updated dependencies [60aff19]
+  - @osdk/api@2.24.0
+  - @osdk/generator-converters@2.24.0
+
+## 2.18.0
+
+### Patch Changes
+
+- Updated dependencies [9fb5afb]
+- Updated dependencies [198f219]
+- Updated dependencies [ef156b6]
+- Updated dependencies [8290dd7]
+  - @osdk/generator-converters@2.23.0
+  - @osdk/api@2.23.0
+
+## 2.17.0
+
+### Patch Changes
+
+- Updated dependencies [1a07c91]
+  - @osdk/api@2.21.0
+  - @osdk/generator-converters@2.21.0
+
 ## 2.16.0
 
 ### Patch Changes

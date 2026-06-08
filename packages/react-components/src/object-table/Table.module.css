@@ -26,6 +26,12 @@
   min-height: 0;
   overflow: auto;
   position: relative;
+  /* Sticky headers, pinned columns, and resize handles use z-index only within
+     the scroll container. Isolating that stacking context lets the sibling
+     header-menu portal paint above them by DOM order instead of competing with
+     table internals on z-index values. */
+  isolation: isolate;
+  background-color: var(--osdk-background-primary);
 }
 
 .osdkTableContainer table {

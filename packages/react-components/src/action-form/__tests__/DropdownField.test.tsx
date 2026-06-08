@@ -195,6 +195,19 @@ describe("DropdownField", () => {
         document.querySelector("[data-osdk-portal-dismiss-layer]"),
       ).toBeNull();
     });
+
+    it("marks the select trigger disabled and does not open the popup when disabled", () => {
+      render(
+        <DropdownField value={null} items={STRING_ITEMS} disabled={true} />,
+      );
+
+      const trigger = screen.getByRole("combobox");
+      expect(trigger.hasAttribute("disabled")).toBe(true);
+
+      fireEvent.click(trigger);
+
+      expect(screen.queryByRole("option", { name: "Alice" })).toBeNull();
+    });
   });
 
   describe("multi select (Select variant)", () => {
@@ -317,6 +330,27 @@ describe("DropdownField", () => {
       expect(
         screen.getByRole("button", { name: "Remove Alice Admin" }),
       ).toBeDefined();
+    });
+
+    it("shows disabled chip remove controls without removing values when disabled", () => {
+      const onChange = vi.fn();
+      render(
+        <DropdownField<string, true>
+          value={["Alice"]}
+          items={STRING_ITEMS}
+          onChange={onChange}
+          isSearchable={true}
+          isMultiple={true}
+          disabled={true}
+        />,
+      );
+
+      const remove = screen.getByRole("button", { name: "Remove Alice" });
+      expect(remove.getAttribute("aria-disabled")).toBe("true");
+
+      fireEvent.click(remove);
+
+      expect(onChange).not.toHaveBeenCalled();
     });
 
     it("shows placeholder when no value is selected", () => {
@@ -725,6 +759,45 @@ describe("DropdownField", () => {
       );
 
       expect(screen.queryByLabelText("Clear")).toBeNull();
+    });
+
+    it("shows disabled clear button in select without clearing when disabled", () => {
+      const onChange = vi.fn();
+      render(
+        <DropdownField
+          value="Alice"
+          items={STRING_ITEMS}
+          onChange={onChange}
+          disabled={true}
+        />,
+      );
+
+      const clear = screen.getByLabelText("Clear");
+      expect(clear.getAttribute("aria-disabled")).toBe("true");
+
+      fireEvent.click(clear);
+
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it("shows disabled clear button in searchable combobox without clearing when disabled", () => {
+      const onChange = vi.fn();
+      render(
+        <DropdownField
+          value="Alice"
+          items={STRING_ITEMS}
+          onChange={onChange}
+          isSearchable={true}
+          disabled={true}
+        />,
+      );
+
+      const clear = screen.getByLabelText("Clear");
+      expect(clear.getAttribute("aria-disabled")).toBe("true");
+
+      fireEvent.click(clear);
+
+      expect(onChange).not.toHaveBeenCalled();
     });
   });
 });

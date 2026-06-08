@@ -120,6 +120,7 @@ describe("Miscellaneous Tests", () => {
                   },
                   "extendsInterfaces": [],
                   "extendsInterfacesMetadata": [],
+                  "linkedInterfaces": [],
                   "links": [],
                   "permission": undefined,
                   "properties": [],
@@ -295,6 +296,7 @@ describe("Miscellaneous Tests", () => {
                   },
                   "extendsInterfaces": [],
                   "extendsInterfacesMetadata": [],
+                  "linkedInterfaces": [],
                   "links": [],
                   "permission": undefined,
                   "properties": [],
@@ -433,6 +435,7 @@ describe("Miscellaneous Tests", () => {
             "description": "myInterface"
           },
           "extendsInterfaces": [],
+          "linkedInterfaces": [],
           "links": [],
           "actionTypeConstraints": [],
           "status": {
@@ -524,6 +527,7 @@ describe("Miscellaneous Tests", () => {
                   "description": "myInterface"
                 },
                 "extendsInterfaces": [],
+                "linkedInterfaces": [],
                 "links": [],
                 "actionTypeConstraints": [],
                 "status": {
@@ -685,6 +689,7 @@ describe("Miscellaneous Tests", () => {
                 "description": "parentInterface"
               },
               "extendsInterfaces": [],
+              "linkedInterfaces": [],
               "links": [],
               "actionTypeConstraints": [],
               "status": {
@@ -739,6 +744,7 @@ describe("Miscellaneous Tests", () => {
               "__type": OntologyEntityTypeEnum.INTERFACE_TYPE
             }
           ],
+          "linkedInterfaces": [],
           "links": [],
           "actionTypeConstraints": [],
           "status": {
@@ -914,6 +920,7 @@ describe("Miscellaneous Tests", () => {
                       },
                       "extendsInterfaces": [],
                       "extendsInterfacesMetadata": [],
+                      "linkedInterfaces": [],
                       "links": [],
                       "permission": undefined,
                       "properties": [],
@@ -1005,6 +1012,7 @@ describe("Miscellaneous Tests", () => {
                       },
                     },
                   ],
+                  "linkedInterfaces": [],
                   "links": [],
                   "permission": undefined,
                   "properties": [],
@@ -1113,6 +1121,7 @@ describe("Miscellaneous Tests", () => {
                   },
                   "extendsInterfaces": [],
                   "extendsInterfacesMetadata": [],
+                  "linkedInterfaces": [],
                   "links": [],
                   "permission": undefined,
                   "properties": [],
