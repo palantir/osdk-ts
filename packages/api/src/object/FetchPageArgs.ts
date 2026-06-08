@@ -68,10 +68,6 @@ export namespace ObjectSetArgs {
     $nextPageToken?: string;
     $pageSize?: number;
   }
-
-  export interface Snapshot {
-    $snapshot?: boolean;
-  }
 }
 
 export interface SelectArg<
@@ -101,8 +97,6 @@ export type SelectArgToKeys<
   : A["$select"] extends readonly string[] ? A["$select"][number]
   : PropertyKeys<Q>;
 
-export interface SnapshotArg extends ObjectSetArgs.Snapshot {}
-
 export interface FetchPageArgs<
   Q extends ObjectOrInterfaceDefinition,
   K extends string = PropertyKeys<Q>,
@@ -126,8 +120,7 @@ export interface FetchPageArgs<
     ORDER_BY_OPTIONS,
     PROPERTY_SECURITIES,
     MODIFIERS
-  >,
-  SnapshotArg
+  >
 {
   $nextPageToken?: string;
   $pageSize?: number;
@@ -135,6 +128,11 @@ export interface FetchPageArgs<
     & ApplyModifiersArg<Q>
     & MODIFIERS
     & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>]: never };
+  /**
+   * Ensures paging consistency by freezing the view at the time of query to prevent duplicate or missing items. New results cannot be added to page when $snapshot is set to true.
+   * @default false
+   */
+  $snapshot?: boolean;
 }
 
 export interface AsyncIterArgs<
