@@ -219,7 +219,6 @@ export async function fetchStaticRidPage<
     {},
     PROPERTY_SECURITIES
   >,
-  useSnapshot: boolean = false,
 ): Promise<
   FetchPageResult<
     ObjectOrInterfaceDefinition,
@@ -242,7 +241,7 @@ export async function fetchStaticRidPage<
       },
       select: ((args?.$select as string[] | undefined) ?? []),
       excludeRid: !args?.$includeRid,
-      snapshot: useSnapshot,
+      snapshot: args.$snapshot ?? false,
       loadPropertySecurities: shouldLoadPropertySecurities,
     } as LoadObjectSetV2MultipleObjectTypesRequest,
     client,
@@ -303,7 +302,6 @@ async function fetchInterfacePage<
   interfaceType: Q,
   args: FetchPageArgs<Q, L, R, any, S, T>,
   objectSet: ObjectSet,
-  useSnapshot: boolean = false,
 ): Promise<FetchPageResult<Q, L, R, S, T>> {
   const extractedInterfaceTypeApiName = (await extractObjectOrInterfaceType(
     client,
@@ -345,7 +343,7 @@ async function fetchInterfacePage<
       selectV2,
       loadPropertySecurities: shouldLoadPropertySecurities,
       excludeRid: !args?.$includeRid,
-      snapshot: useSnapshot,
+      snapshot: args.$snapshot ?? false,
     },
     client,
     interfaceType,
@@ -410,7 +408,6 @@ export async function fetchPageInternal<
     ORDER_BY_OPTIONS,
     PROPERTY_SECURITIES
   > = {},
-  useSnapshot: boolean,
 ): Promise<
   FetchPageResult<Q, L, R, S, T, ORDER_BY_OPTIONS, PROPERTY_SECURITIES>
 > {
@@ -429,7 +426,6 @@ export async function fetchPageInternal<
         ORDER_BY_OPTIONS
       >,
       objectSet,
-      useSnapshot,
     ) as any; // fixme
   } else {
     return await fetchObjectPage(
@@ -446,7 +442,6 @@ export async function fetchPageInternal<
         ORDER_BY_OPTIONS
       >,
       objectSet,
-      useSnapshot,
     ) as any; // fixme
   }
 }
@@ -466,13 +461,11 @@ export async function fetchPageWithErrorsInternal<
   args: FetchPageArgs<Q, L, R, A, S, T> = {},
 ): Promise<Result<FetchPageResult<Q, L, R, S, T>>> {
   try {
-    const { $snapshot, ...restArgs } = args;
     const result = await fetchPageInternal(
       client,
       objectType,
       objectSet,
-      restArgs,
-      $snapshot ?? false,
+      args,
     );
     return { value: result };
   } catch (e) {
@@ -504,13 +497,11 @@ export async function fetchPage<
   args: FetchPageArgs<Q, L, R, any, S, T, never, {}, PROPERTY_SECURITIES>,
   objectSet: ObjectSet = resolveBaseObjectSetType(objectType),
 ): Promise<FetchPageResult<Q, L, R, S, T, {}, PROPERTY_SECURITIES>> {
-  const { $snapshot, ...restArgs } = args;
   return fetchPageInternal(
     client,
     objectType,
     objectSet,
-    restArgs,
-    $snapshot ?? false,
+    args,
   );
 }
 
@@ -713,7 +704,6 @@ export async function fetchObjectPage<
   objectType: Q,
   args: FetchPageArgs<Q, L, R, Augments, S, T, never, ORDER_BY_OPTIONS>,
   objectSet: ObjectSet,
-  useSnapshot: boolean = false,
 ): Promise<FetchPageResult<Q, L, R, S, T, ORDER_BY_OPTIONS>> {
   // For simple object fetches, since we know the object type up front
   // we can parallelize network requests for loading metadata and loading the actual objects
@@ -755,7 +745,7 @@ export async function fetchObjectPage<
       selectV2,
       loadPropertySecurities: shouldLoadPropertySecurities,
       excludeRid: !args?.$includeRid,
-      snapshot: useSnapshot,
+      snapshot: args.$snapshot ?? false,
     },
     client,
     objectType,
