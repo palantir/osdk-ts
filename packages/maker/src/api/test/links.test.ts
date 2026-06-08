@@ -2059,6 +2059,28 @@ describe("Link Types", () => {
                 },
                 "extendsInterfaces": [],
                 "extendsInterfacesMetadata": [],
+                "linkedInterfaces": [
+                  {
+                    "__type": "INTERFACE_TYPE",
+                    "apiName": "com.palantir.B",
+                    "displayMetadata": {
+                      "description": "B",
+                      "displayName": "B",
+                      "icon": undefined,
+                    },
+                    "extendsInterfaces": [],
+                    "linkedInterfaces": [],
+                    "links": [],
+                    "permission": undefined,
+                    "propertiesV2": {},
+                    "propertiesV3": {},
+                    "searchable": true,
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                  },
+                ],
                 "links": [
                   {
                     "cardinality": "SINGLE",
@@ -2101,6 +2123,7 @@ describe("Link Types", () => {
                 },
                 "extendsInterfaces": [],
                 "extendsInterfacesMetadata": [],
+                "linkedInterfaces": [],
                 "links": [],
                 "permission": undefined,
                 "properties": [],
@@ -2155,6 +2178,28 @@ describe("Link Types", () => {
                 },
                 "extendsInterfaces": [],
                 "extendsInterfacesMetadata": [],
+                "linkedInterfaces": [
+                  {
+                    "__type": "INTERFACE_TYPE",
+                    "apiName": "com.palantir.B",
+                    "displayMetadata": {
+                      "description": "B",
+                      "displayName": "B",
+                      "icon": undefined,
+                    },
+                    "extendsInterfaces": [],
+                    "linkedInterfaces": [],
+                    "links": [],
+                    "permission": undefined,
+                    "propertiesV2": {},
+                    "propertiesV3": {},
+                    "searchable": true,
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                  },
+                ],
                 "links": [
                   {
                     "cardinality": "MANY",
@@ -2197,6 +2242,7 @@ describe("Link Types", () => {
                 },
                 "extendsInterfaces": [],
                 "extendsInterfacesMetadata": [],
+                "linkedInterfaces": [],
                 "links": [],
                 "permission": undefined,
                 "properties": [],

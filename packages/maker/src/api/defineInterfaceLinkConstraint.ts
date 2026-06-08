@@ -72,6 +72,7 @@ export function defineInterfaceLinkConstraint(
     metadata: fromLinkMeta,
     required: linkDef.required ?? true,
   });
+  linkDef.from.linkedInterfaces?.push(linkDef.toMany ?? linkDef.toOne);
 }
 
 function getLinkedType(t: string | InterfaceType) {
