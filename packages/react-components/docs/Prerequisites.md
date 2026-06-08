@@ -4,31 +4,28 @@ sidebar_position: 1
 
 # Prerequisites
 
-Setup required before using `@osdk/react-components` or `@osdk/cbac-components`.
+Setup required before using `@osdk/react-components`.
 
 ## Install dependencies
 
 > **Tip:** If your tooling already installs dependencies, skip this step.
 
-Use whichever package manager your project uses (`# if using CBAC components` lines are optional):
+Use whichever package manager your project uses:
 
 ```bash
 # npm
 npm install @osdk/api @osdk/client @osdk/react
 npm install @osdk/react-components
-npm install @osdk/cbac-components # if using CBAC components
 npm install react react-dom classnames
 
 # pnpm
 pnpm add @osdk/api @osdk/client @osdk/react
 pnpm add @osdk/react-components
-pnpm add @osdk/cbac-components # if using CBAC components
 pnpm add react react-dom classnames
 
 # yarn
 yarn add @osdk/api @osdk/client @osdk/react
 yarn add @osdk/react-components
-yarn add @osdk/cbac-components # if using CBAC components
 yarn add react react-dom classnames
 ```
 
@@ -79,22 +76,20 @@ The examples below import the styles into a layer named `osdk.components`; decla
 
 ```css
 /* index.css */
-@layer osdk.components, cbac.components;
+@layer osdk.components;
 
 @import "@osdk/react-components/styles.css" layer(osdk.components);
-@import "@osdk/cbac-components/styles.css" layer(cbac.components); /* only needed if using CBAC components */
 ```
 
 #### With Tailwind CSS v4
 
 ```css
 /* index.css */
-@layer tailwind, osdk.components, cbac.components;
+@layer tailwind, osdk.components;
 
 @import "tailwindcss" layer(tailwind);
 
 @import "@osdk/react-components/styles.css" layer(osdk.components);
-@import "@osdk/cbac-components/styles.css" layer(cbac.components); /* only needed if using CBAC components */
 ```
 
 #### Custom theme overrides
@@ -105,7 +100,6 @@ Add a custom layer after the OSDK layers to override any token:
 @layer osdk.components, user.brand;
 
 @import "@osdk/react-components/styles.css" layer(osdk.components);
-@import "@osdk/cbac-components/styles.css" layer(cbac.components); /* only needed if using CBAC components */
 @import "./user-brand.css" layer(user.brand);
 ```
 
