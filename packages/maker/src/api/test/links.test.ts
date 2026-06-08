@@ -2063,6 +2063,7 @@ describe("Link Types", () => {
                 "linkedInterfaces": [
                   {
                     "__type": "INTERFACE_TYPE",
+                    "actionTypeConstraints": [],
                     "apiName": "com.palantir.B",
                     "displayMetadata": {
                       "description": "B",
@@ -2184,6 +2185,7 @@ describe("Link Types", () => {
                 "linkedInterfaces": [
                   {
                     "__type": "INTERFACE_TYPE",
+                    "actionTypeConstraints": [],
                     "apiName": "com.palantir.B",
                     "displayMetadata": {
                       "description": "B",
