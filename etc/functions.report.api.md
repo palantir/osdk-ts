@@ -44,6 +44,11 @@ declare namespace Aliases {
 export { Attachment }
 
 // @public (undocumented)
+export type Byte<T extends number = number> = T & {
+    	__byteBrand?: void
+};
+
+// @public (undocumented)
 export type ClassificationMarking<T extends string = string> = T & {
     	__markingBrand?: "classification"
 };
@@ -253,6 +258,11 @@ export interface RidLinkTarget {
     	// (undocumented)
     type: "rid";
 }
+
+// @public (undocumented)
+export type Short<T extends number = number> = T & {
+    	_shortBrand?: void
+};
 
 // @public (undocumented)
 interface Source {
