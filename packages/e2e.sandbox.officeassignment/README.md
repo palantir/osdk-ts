@@ -22,8 +22,7 @@ status timeline and the available actions.
 
 ## Run server for dev
 
-1. Create a `.env` in this directory and fill out details for your stack. `VITE_FOUNDRY_URL`, 
-  `FOUNDRY_USER_TOKEN` and `VITE_FOUNDRY_CLIENT_ID` are required.
+1. Create a `.env` in this directory and fill out details for your stack. `VITE_FOUNDRY_URL`,
+   `FOUNDRY_USER_TOKEN` and `VITE_FOUNDRY_CLIENT_ID` are required.
 2. Install and build all dependencies, run `pnpm transpileEsm` and also `pnpm codegen` to make sure the generated client is up to date.
 3. Run `pnpm dev`, then open http://localhost:8080.
-
