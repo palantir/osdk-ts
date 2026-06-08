@@ -48,6 +48,16 @@ export interface BaseFilterListProps<D extends FilterDefinitionControls> {
   titleIcon?: React.ReactNode;
   showResetButton?: boolean;
   showActiveFilterCount?: boolean;
+  /**
+   * Whether the reset button is enabled. Hosts compute this from whether the
+   * filter and/or visibility state has diverged from its initial snapshot.
+   */
+  canReset?: boolean;
+  /**
+   * @deprecated Use {@link canReset} instead. When `canReset` is provided it
+   * takes precedence; `hasVisibilityChanges` is only consulted as a fallback
+   * for the reset button's enabled state.
+   */
   hasVisibilityChanges?: boolean;
   enableSorting?: boolean;
   className?: string;

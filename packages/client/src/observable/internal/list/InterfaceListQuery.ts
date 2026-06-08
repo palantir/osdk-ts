@@ -23,19 +23,7 @@ import type {
   Osdk,
   WhereClause,
 } from "@osdk/api";
-function groupBy<T>(
-  arr: T[],
-  fn: (item: T) => string,
-): Record<string, T[]> {
-  const result: Record<string, T[]> = {};
-  for (const item of arr) {
-    const key = fn(item);
-    (result[key] ??= []).push(item);
-  }
-  return result;
-}
-import invariant from "tiny-invariant";
-import { additionalContext, type Client } from "../../../Client.js";
+import { additionalContext } from "../../../Client.js";
 import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
 import { ObjectDefRef } from "../../../object/convertWireToOsdkObjects/InternalSymbols.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
@@ -44,8 +32,8 @@ import type { CollectionConnectableParams } from "../base-list/BaseCollectionQue
 import type { Changes } from "../Changes.js";
 import type { PivotInfo } from "../PivotCanonicalizer.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
-import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import type { Store } from "../Store.js";
+import { reloadDataAsFullObjects } from "../utils/reloadDataAsFullObjects.js";
 import { ListQuery, PIVOT_IDX, RDP_IDX, RIDS_IDX } from "./ListQuery.js";
 
 type ExtractRelevantObjectsResult = Record<"added" | "modified", {
@@ -126,11 +114,15 @@ export class InterfaceListQuery extends ListQuery {
     return reloadDataAsFullObjects(this.store.client, data);
   }
 
+  private wrapObject(object: ObjectHolder): ObjectHolder | InterfaceHolder {
+    return this.options.resolveToObjectType ? object : object.$as(this.apiName);
+  }
+
   protected createPayload(
     params: CollectionConnectableParams,
   ): ListPayload {
     const resolvedList = params.resolvedData?.map((obj: ObjectHolder) =>
-      obj.$as(this.apiName)
+      this.wrapObject(obj)
     );
 
     return {
@@ -148,12 +140,12 @@ export class InterfaceListQuery extends ListQuery {
 
     const added = Array.from(changes.addedObjects).filter(matchesApiName).map((
       [, object],
-    ) => object.$as(this.apiName));
+    ) => this.wrapObject(object));
 
     const modified = Array.from(changes.modifiedObjects).filter(matchesApiName)
       .map((
         [, object],
-      ) => object.$as(this.apiName));
+      ) => this.wrapObject(object));
 
     return {
       added: {
@@ -199,61 +191,4 @@ function createSourceSetForPivot(
     type: "object",
     apiName: pivotInfo.sourceType,
   } as ObjectTypeDefinition) as ObjectSet<ObjectOrInterfaceDefinition>;
-}
-
-// Hopefully this can go away when we can just request the full object properties on first load
-async function reloadDataAsFullObjects(
-  client: Client,
-  data: Osdk.Instance<any>[],
-) {
-  if (data.length === 0) {
-    return data;
-  }
-
-  const groups = groupBy(data, (x) => x.$objectType);
-  const objectTypeToPrimaryKeyToObject = Object.fromEntries(
-    await Promise.all(
-      Object.entries(groups).map<
-        Promise<
-          [
-            /** objectType **/ string,
-            Record<string | number, Osdk.Instance<ObjectTypeDefinition>>,
-          ]
-        >
-      >(async ([apiName, objects]) => {
-        // Interface query results don't have ObjectDefRef, so we fetch metadata to get primaryKeyApiName
-        const objectDef = await client.fetchMetadata({
-          type: "object",
-          apiName,
-        });
-        const where: SimpleWhereClause = {
-          [objectDef.primaryKeyApiName]: {
-            $in: objects.map(x => x.$primaryKey),
-          },
-        };
-
-        const result = await client(
-          objectDef as ObjectTypeDefinition,
-        ).where(
-          where as Parameters<ObjectSet<ObjectTypeDefinition>["where"]>[0],
-        ).fetchPage({ $includeRid: true });
-        return [
-          apiName,
-          Object.fromEntries(result.data.map(
-            x => [x.$primaryKey, x],
-          )),
-        ];
-      }),
-    ),
-  );
-
-  return data.map((obj) => {
-    const fullObject =
-      objectTypeToPrimaryKeyToObject[obj.$objectType][obj.$primaryKey];
-    invariant(
-      fullObject,
-      `Could not find object ${obj.$objectType} ${obj.$primaryKey}`,
-    );
-    return fullObject;
-  });
 }

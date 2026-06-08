@@ -113,18 +113,15 @@
   height: var(--osdk-filter-listogram-bar-height);
   background: var(--osdk-filter-listogram-bar-bg);
   border-radius: var(--osdk-filter-listogram-bar-border-radius);
-  overflow: hidden;
 }
 
 .barFill {
   display: block;
   height: 100%;
-  width: 100%;
+  width: calc(var(--osdk-filter-listogram-bar-fill-scale, 0) * 100%);
   background: var(--osdk-filter-listogram-row-bar-color, var(--osdk-filter-listogram-bar-color));
   border-radius: var(--osdk-filter-listogram-bar-border-radius);
-  transform-origin: left;
-  transform: scaleX(var(--osdk-filter-listogram-bar-fill-scale, 0));
-  transition: transform var(--osdk-filter-listogram-bar-fill-transition);
+  transition: width var(--osdk-filter-listogram-bar-fill-transition);
 }
 
 .row[aria-pressed="true"] .barFill {

@@ -29,7 +29,7 @@ interface TableRowProps<TData extends RowData> {
     cell: Cell<TData, unknown>,
   ) => React.ReactNode;
   isFocused: boolean;
-  setFocusedRowId?: (rowId: string | null) => void;
+  setFocusedRowId?: (id: string | null) => void;
   isInEditMode?: boolean;
   getRowAttributes?: (
     object: TData,

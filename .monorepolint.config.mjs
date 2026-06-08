@@ -379,6 +379,7 @@ const archetypeRules = archetypes(
       attwExcludeEntrypoints: [
         "./experimental/action-form",
         "./experimental/aip-agent-chat",
+        "./experimental/cbac-picker",
         "./experimental/document-viewer",
         "./experimental/email-viewer",
         "./experimental/excel-viewer",
@@ -422,7 +423,6 @@ const archetypeRules = archetypes(
       react: true,
       output: OUTPUT_ESM_ONLY,
       cssExport: ["styles.css"],
-      private: true,
     },
   )
   .addArchetype(

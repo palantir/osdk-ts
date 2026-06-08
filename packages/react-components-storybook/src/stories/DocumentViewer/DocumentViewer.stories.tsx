@@ -21,7 +21,7 @@ import type { DocumentViewerProps } from "@osdk/react-components/experimental/do
 import { DocumentViewer } from "@osdk/react-components/experimental/document-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { http, HttpResponse, passthrough } from "msw";
-import { utils, write } from "xlsx";
+import { utils, write } from "xlsx-republish";
 
 const SAMPLE_PDF_URL =
   `${import.meta.env.BASE_URL}compressed.tracemonkey-pldi-09.pdf`;

@@ -25,7 +25,10 @@ import type {
   ResolvedInterfacePropertyType,
   SharedPropertyType,
 } from "@osdk/foundry.ontologies";
+import { ensureStringEnumSupportedOrUndefined } from "./wireObjectTypeFullMetadataToSdkObjectMetadata.js";
 import { wirePropertyFormattingToSdkFormatting } from "./wirePropertyFormattingToSdkFormatting.js";
+
+const supportedMarkingTypes = ["CBAC", "MANDATORY"] as const;
 
 /**
  * Extracts main value metadata from a struct property type.
@@ -51,6 +54,34 @@ function hasReducers(
 ): boolean {
   return dataType.type === "array" && dataType.reducers != null
     && dataType.reducers.length > 0;
+}
+
+/**
+ * Builds the per-`type` {@link ObjectMetadata.PropertyTypeMetadata} for a
+ * wire property dataType, looking through `array` to its `subType`. Returns
+ * an object that can be spread directly into the property — either
+ * `{ typeMetadata: ... }` when a variant applies, or `{}` otherwise — so
+ * non-applicable properties don't get a `typeMetadata: undefined` own key.
+ * New `typeMetadata` variants should be added here so each call site stays
+ * a one-liner.
+ */
+function extractTypeMetadata(
+  dataType: ObjectPropertyType,
+): Partial<Pick<ObjectMetadata.Property, "typeMetadata">> {
+  const inner = dataType.type === "array" ? dataType.subType : dataType;
+  if (inner.type === "marking") {
+    const markingType = ensureStringEnumSupportedOrUndefined(
+      inner.markingType,
+      supportedMarkingTypes,
+    );
+    return {
+      typeMetadata: {
+        type: "marking",
+        ...(markingType != null ? { markingType } : {}),
+      },
+    };
+  }
+  return {};
 }
 
 export function wirePropertyV2ToSdkPropertyDefinition(
@@ -84,7 +115,6 @@ export function wirePropertyV2ToSdkPropertyDefinition(
     case "geoshape":
     case "timestamp":
     case "timeseries":
-    case "marking":
     case "geotimeSeriesReference":
     case "vector":
       return {
@@ -97,6 +127,19 @@ export function wirePropertyV2ToSdkPropertyDefinition(
         valueFormatting: input.valueFormatting != null
           ? wirePropertyFormattingToSdkFormatting(input.valueFormatting, log)
           : undefined,
+      };
+    case "marking":
+      return {
+        displayName: input.displayName,
+        multiplicity: false,
+        description: input.description,
+        type: sdkPropDefinition,
+        nullable: input.nullable == null ? isNullable : input.nullable,
+        valueTypeApiName: input.valueTypeApiName,
+        valueFormatting: input.valueFormatting != null
+          ? wirePropertyFormattingToSdkFormatting(input.valueFormatting, log)
+          : undefined,
+        ...extractTypeMetadata(input.dataType),
       };
     case "struct": {
       const mainValue = extractMainValue(input.dataType);
@@ -125,6 +168,7 @@ export function wirePropertyV2ToSdkPropertyDefinition(
           ? wirePropertyFormattingToSdkFormatting(input.valueFormatting, log)
           : undefined,
         hasReducers: hasReducers(input.dataType),
+        ...extractTypeMetadata(input.dataType),
       };
     }
     case "cipherText": {

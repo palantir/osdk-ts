@@ -34,7 +34,7 @@ interface TableBodyProps<TData extends RowData> {
   isLoadingMore?: boolean;
   headerGroups?: Array<HeaderGroup<TData>>;
   focusedRowId?: string | null;
-  setFocusedRowId?: (rowId: string | null) => void;
+  setFocusedRowId?: (id: string | null) => void;
   isInEditMode?: boolean;
   getRowAttributes?: (
     object: TData,

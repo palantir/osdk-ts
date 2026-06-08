@@ -24,7 +24,7 @@ import type {
 import { useOsdkAggregation } from "@osdk/react";
 import { useMemo } from "react";
 import type { AggregationGroupResult } from "../utils/aggregationHelpers.js";
-import { dedupeEmptyAggregationRows } from "../utils/filterValues.js";
+import { dedupeEmptyAggregationRows, NO_VALUE } from "../utils/filterValues.js";
 
 export type { PropertyAggregationValue } from "../types/AggregationTypes.js";
 
@@ -105,7 +105,7 @@ export function usePropertyAggregation<
       const existingValues = new Set<string>();
       for (const item of dataArray) {
         const raw = item.$group[propertyKey as string];
-        existingValues.add(raw == null ? "" : String(raw));
+        existingValues.add(raw == null ? NO_VALUE : String(raw));
       }
 
       // Synthesize filtered-out entries for active selections absent from
@@ -123,7 +123,7 @@ export function usePropertyAggregation<
         const count = item.$count ?? 0;
 
         if (rawValue == null) {
-          values.push({ value: "", count, isNull: true });
+          values.push({ value: NO_VALUE, count, isNull: true });
         } else {
           values.push({ value: String(rawValue), count });
         }

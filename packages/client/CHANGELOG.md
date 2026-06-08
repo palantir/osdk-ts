@@ -1,5 +1,50 @@
 # @osdk/client
 
+## 2.30.0
+
+### Minor Changes
+
+- db8df24: Allow `invalidateObjects` to accept interface instances (`Osdk.Instance<ObjectOrInterfaceDefinition>`).
+
+### Patch Changes
+
+- @osdk/api@2.30.0
+- @osdk/client.unstable@2.30.0
+- @osdk/generator-converters@2.30.0
+
+## 2.29.0
+
+### Minor Changes
+
+- 08e921c: Bump `foundry-platform-typescript` catalog to 2.63.0 and surface the new CBAC/MANDATORY marking subtype on `ObjectMetadata.Property` via a new `typeMetadata` discriminated-union field. For marking properties, `typeMetadata` is `{ type: "marking"; subtype?: "CBAC" | "MANDATORY" }`, letting consumers distinguish classification-based markings from mandatory markings on object property columns. Future per-`type` metadata should be added as additional variants of `typeMetadata` rather than as new top-level optionals on `Property`.
+- 4b38963: extend resolveToObjectType support to useLinks for interface link targets
+- 9081e32: use $title/$primaryKey special filters in object components and harden the observable matcher
+
+  ObjectSelectField now searches via the generic $title filter instead of resolving the title property from object metadata, and ObjectTable derives its row-selection object set via $primaryKey so interface-typed tables also produce a derived set on partial selection. The observable where-clause matcher no longer throws when $startsWith is evaluated against a null $title.
+
+### Patch Changes
+
+- Updated dependencies [08e921c]
+  - @osdk/api@2.29.0
+  - @osdk/generator-converters@2.29.0
+  - @osdk/shared.test@2.22.0
+  - @osdk/client.unstable@2.29.0
+
+## 2.28.0
+
+### Minor Changes
+
+- a5066b5: add resolveToObjectType option to useOsdkObjects so interface queries return full concrete object-type instances
+- 3e03544: fix crash when useLinks is called with an interface-typed source object
+- 13132b8: Fix writeable client reads not flushing staged edits: persist `flushEdits` onto the client context and wire it to the EditRequestManager so awaiting a read (fetchOne/fetchPage/aggregate/query) flushes pending creates/updates first.
+
+### Patch Changes
+
+- @osdk/shared.test@2.21.0
+- @osdk/api@2.28.0
+- @osdk/client.unstable@2.28.0
+- @osdk/generator-converters@2.28.0
+
 ## 2.27.0
 
 ### Minor Changes

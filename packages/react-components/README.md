@@ -137,6 +137,7 @@ The components that this package will provide are:
 | `ImageViewer`    | Renders images (PNG, JPEG, GIF, SVG, WebP, BMP)                                     | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/ImageViewer.md)    |
 | `VideoViewer`    | Renders video with native browser controls                                          | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/VideoViewer.md)    |
 | `XmlViewer`      | Renders XML content with syntax preservation                                        | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/XmlViewer.md)      |
+| `CbacPicker`     | Picker for classification-based access control (CBAC) markings with banner display  | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/CbacPicker.md)     |
 
 ## Component Architecture
 

@@ -129,6 +129,38 @@ describe("createDateHistogramBuckets", () => {
     );
     expect(result.subtitle).toBe("custom-2020");
   });
+
+  it("keeps short-month x-tick labels even when formatDate is provided", () => {
+    const pairs = [
+      { value: new Date(2020, 0, 15), count: 5 },
+      { value: new Date(2020, 5, 10), count: 7 },
+      { value: new Date(2020, 11, 31), count: 2 },
+    ];
+    const result = createDateHistogramBuckets(
+      pairs,
+      { min: new Date(2020, 0, 1), max: new Date(2020, 11, 31) },
+      (d) => `custom-${d.getFullYear()}-${d.getMonth()}`,
+    );
+    expect(result.granularity).toBe("month");
+    const expectedJune = new Intl.DateTimeFormat(undefined, {
+      month: "short",
+    }).format(new Date(2020, 5, 1));
+    expect(result.buckets[5].tickLabel).toBe(expectedJune);
+  });
+
+  it("uses formatTickLabel to override month x-tick labels", () => {
+    const pairs = [
+      { value: new Date(2020, 0, 15), count: 5 },
+      { value: new Date(2020, 5, 10), count: 7 },
+    ];
+    const result = createDateHistogramBuckets(
+      pairs,
+      { min: new Date(2020, 0, 1), max: new Date(2020, 11, 31) },
+      (d) => `custom-${d.getFullYear()}`,
+      (d, granularity) => `${granularity}:${d.getMonth()}`,
+    );
+    expect(result.buckets[5].tickLabel).toBe("month:5");
+  });
 });
 
 describe("RangeInput SVG histogram", () => {

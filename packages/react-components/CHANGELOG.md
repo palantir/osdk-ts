@@ -1,5 +1,40 @@
 # @osdk/react-components
 
+## 0.27.0
+
+### Minor Changes
+
+- 820bc7b: Fix listogram bar border-radius distortion and use theme-aware background token
+- 3c39c10: Merge `@osdk/cbac-components` into `@osdk/react-components`. The CBAC picker (`CbacPicker`, `CbacPickerDialog`, `CbacBanner`, `BaseCbacPicker`, `BaseCbacBanner`, `BaseCbacPickerDialog`, `MaxClassificationField`, and selection-logic utilities) is now exported from `@osdk/react-components/experimental/cbac-picker`. The legacy `@osdk/cbac-components` package remains in the repository for reference but is no longer the source of truth.
+- f30c848: - new `focusedRow` / `onFocusedRowChanged` props expose controlled focus state (typed `PrimaryKeyType<Q> | null`).
+- 2d40fb6: Update getSnapshot() implementation to fetch data separately from table rendering, capping concurrent function-column requests during snapshot collection
+
+## 0.26.0
+
+### Minor Changes
+
+- 67d5449: Replace `xlsx` dependency with `xlsx-republish`, a community republish of the latest SheetJS CDN release (`0.20.3`) back to npm. The maintainer-published `xlsx` on npm is pinned at `0.18.5` (which has a known prototype-pollution CVE) and SheetJS now distributes fixed releases only via their own CDN, so npm consumers cannot get a patched version through the registry.
+
+## 0.25.0
+
+### Minor Changes
+
+- 8e8ace3: fix filter-list date histogram x-axis to keep default short-month tick labels when `formatDate` is provided; `formatDate` now only drives the subtitle, tooltip, and From/To picker text
+- 5a80373: FilterList now separates "No value" (null/undefined) from a literal empty string. null and undefined are grouped under a single "No value" option, while an empty string is its own option rendered as "(empty string)". Selecting "No value" is now represented by the exported `NO_VALUE` sentinel in `selectedValues` (mapping to `$isNull`), whereas a literal empty string maps to an equality filter.
+- 4db9a03: Add an ObjectTable tableRef snapshot API for reading visible row data and explicitly fetching up to a row limit.
+- c660ee6: ObjectTable: clear a function/derived-property cell when its value disappears from a resolved query result instead of retaining the stale previous value.
+- 9081e32: use $title/$primaryKey special filters in object components and harden the observable matcher
+
+  ObjectSelectField now searches via the generic $title filter instead of resolving the title property from object metadata, and ObjectTable derives its row-selection object set via $primaryKey so interface-typed tables also produce a derived set on partial selection. The observable where-clause matcher no longer throws when $startsWith is evaluated against a null $title.
+
+## 0.24.0
+
+### Minor Changes
+
+- 2bc0b1a: disable filter-list reset until state diverges from initial; gate the reset button via a single `canReset` prop on `BaseFilterList` and deprecate `hasVisibilityChanges`
+- ab08d53: fix broken guide links in README by using absolute URLs so they resolve on npm
+- f13c85a: Update ObjectTable header select-all checkbox aria label to reflect actual action (deselect when rows are selected)
+
 ## 0.23.0
 
 ### Minor Changes

@@ -14,7 +14,19 @@
  * limitations under the License.
  */
 
-import type { PlatformClient } from "@osdk/client";
+import type { Client, PlatformClient } from "@osdk/client";
+import { symbolClientContext as legacySymbolClientContext } from "@osdk/shared.client";
+import { symbolClientContext } from "@osdk/shared.client2";
+
+function resolveContext(client: Client | PlatformClient): PlatformClient {
+  if (symbolClientContext in client) {
+    return client[symbolClientContext] as PlatformClient;
+  }
+  if (legacySymbolClientContext in client) {
+    return client[legacySymbolClientContext] as PlatformClient;
+  }
+  return client as PlatformClient;
+}
 
 /**
  * Returns the PlatformClient's `fetch` function, which automatically
@@ -39,9 +51,9 @@ import type { PlatformClient } from "@osdk/client";
  * ```
  */
 export function createFetch(
-  client: PlatformClient,
+  client: Client | PlatformClient,
 ): typeof globalThis.fetch {
-  return client.fetch;
+  return resolveContext(client).fetch;
 }
 
 /**
@@ -56,9 +68,9 @@ export function createFetch(
  * ```
  */
 export async function getFoundryToken(
-  client: PlatformClient,
+  client: Client | PlatformClient,
 ): Promise<string> {
-  return client.tokenProvider();
+  return resolveContext(client).tokenProvider();
 }
 
 /**
@@ -73,8 +85,11 @@ export async function getFoundryToken(
  * // Returns: "https://example.palantirfoundry.com/api/v2/llm/proxy/anthropic"
  * ```
  */
-export function getAnthropicBaseUrl(client: PlatformClient): string {
-  return new URL("api/v2/llm/proxy/anthropic", client.baseUrl).toString();
+export function getAnthropicBaseUrl(client: Client | PlatformClient): string {
+  return new URL(
+    "api/v2/llm/proxy/anthropic",
+    resolveContext(client).baseUrl,
+  ).toString();
 }
 
 /**
@@ -89,8 +104,11 @@ export function getAnthropicBaseUrl(client: PlatformClient): string {
  * // Returns: "https://example.palantirfoundry.com/api/v2/llm/proxy/openai/v1"
  * ```
  */
-export function getOpenAiBaseUrl(client: PlatformClient): string {
-  return new URL("api/v2/llm/proxy/openai/v1", client.baseUrl).toString();
+export function getOpenAiBaseUrl(client: Client | PlatformClient): string {
+  return new URL(
+    "api/v2/llm/proxy/openai/v1",
+    resolveContext(client).baseUrl,
+  ).toString();
 }
 
 /**
@@ -113,6 +131,9 @@ export function getOpenAiBaseUrl(client: PlatformClient): string {
  * });
  * ```
  */
-export function getGoogleBaseUrl(client: PlatformClient): string {
-  return new URL("api/v2/llm/proxy/google", client.baseUrl).toString();
+export function getGoogleBaseUrl(client: Client | PlatformClient): string {
+  return new URL(
+    "api/v2/llm/proxy/google",
+    resolveContext(client).baseUrl,
+  ).toString();
 }

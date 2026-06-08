@@ -1,5 +1,24 @@
 # @osdk/maker
 
+## 0.33.0
+
+### Patch Changes
+
+- Updated dependencies [08e921c]
+  - @osdk/api@2.29.0
+  - @osdk/generator-converters.ontologyir@2.29.0
+
+## 0.32.0
+
+### Minor Changes
+
+- 1bc01d1: Add property validation for direct datasources
+
+### Patch Changes
+
+- @osdk/api@2.28.0
+- @osdk/generator-converters.ontologyir@2.28.0
+
 ## 0.31.0
 
 ### Patch Changes

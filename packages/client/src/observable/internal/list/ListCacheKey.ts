@@ -34,6 +34,7 @@ export const RIDS_IDX = 7;
 export const SELECT_IDX = 8;
 export const LOAD_PROPERTY_SECURITY_IDX = 9;
 export const INCLUDE_ALL_BASE_PROPERTIES_IDX = 10;
+export const RESOLVE_TO_OBJECT_TYPE_IDX = 11;
 
 export interface ListStorageData extends CollectionStorageData {}
 
@@ -56,6 +57,7 @@ export interface ListCacheKey extends
       select?: Canonical<readonly string[]> | undefined,
       loadPropertySecurity?: true | undefined,
       includeAllBaseObjectProperties?: true | undefined,
+      resolveToObjectType?: true | undefined,
     ]
   >
 {

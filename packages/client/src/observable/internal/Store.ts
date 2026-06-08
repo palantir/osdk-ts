@@ -19,6 +19,7 @@ import type {
   ActionEditResponse,
   ActionValidationResponse,
   Logger,
+  ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
   Osdk,
   PrimaryKeyType,
@@ -638,8 +639,8 @@ export class Store {
 
   public async invalidateObjects(
     objects:
-      | Osdk.Instance<ObjectTypeDefinition>
-      | ReadonlyArray<Osdk.Instance<ObjectTypeDefinition>>,
+      | Osdk.Instance<ObjectOrInterfaceDefinition>
+      | ReadonlyArray<Osdk.Instance<ObjectOrInterfaceDefinition>>,
   ): Promise<void> {
     const objectsArray = Array.isArray(objects) ? objects : [objects];
     const promises: Array<Promise<unknown>> = [];

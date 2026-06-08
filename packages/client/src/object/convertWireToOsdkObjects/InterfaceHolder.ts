@@ -17,7 +17,7 @@
 import type { InterfaceMetadata, ObjectMetadata, Osdk } from "@osdk/api";
 import type { FormatPropertyOptions } from "../formatting/applyPropertyFormatter.js";
 import type { BaseHolder } from "./BaseHolder.js";
-import type { InterfaceDefRef } from "./InternalSymbols.js";
+import { InterfaceDefRef } from "./InternalSymbols.js";
 
 /** @internal */
 export interface InterfaceHolder<
@@ -36,4 +36,9 @@ export interface InterfaceHolder<
     propertyApiName: PropertyApiName,
     options?: FormatPropertyOptions,
   ) => string | undefined;
+}
+
+/** @internal */
+export function isInterfaceHolder(v: unknown): v is InterfaceHolder {
+  return typeof v === "object" && v != null && InterfaceDefRef in v;
 }

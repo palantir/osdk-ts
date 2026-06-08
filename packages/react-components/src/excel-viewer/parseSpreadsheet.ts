@@ -16,7 +16,7 @@
 
 /* cspell:words defval */
 
-import { read, utils } from "xlsx";
+import { read, utils } from "xlsx-republish";
 import type { ParsedSpreadsheet, SheetData } from "./ExcelViewerApi.js";
 
 export async function parseSpreadsheetFromResponse(

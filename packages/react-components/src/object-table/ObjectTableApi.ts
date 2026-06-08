@@ -516,6 +516,32 @@ export interface ObjectTableProps<
   ) => void;
 
   /**
+   * The primary key of the row to render as visually focused (the
+   * "last interacted" row). When provided, focus state is controlled by
+   * the caller.
+   *
+   * Stored as a primary key rather than a full object so the focus does
+   * not go stale when the underlying row data changes.
+   *
+   * Pass `null` to render no row as focused.
+   */
+  focusedRow?: PrimaryKeyType<Q> | null;
+
+  /**
+   * Called when the focused row changes — fires in both controlled and
+   * uncontrolled modes so callers can observe focus without taking it
+   * over.
+   *
+   * @param row The newly-focused row object, or `null` if focus was
+   * cleared
+   */
+  onFocusedRowChanged?: (
+    row:
+      | Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
+      | null,
+  ) => void;
+
+  /**
    * Called when a column header is clicked.
    *
    * The columnId matches the `locator.id` configured on the column definition.
@@ -605,7 +631,111 @@ export interface ObjectTableProps<
     object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
   ) => Record<string, string | undefined>;
 
+  /**
+   * Imperative handle for programmatic table actions. Pass a ref
+   * (`useRef<ObjectTableHandle<Q, RDPs>>(null)`) to call
+   * {@link ObjectTableHandle} methods such as
+   * {@link ObjectTableHandle.getSnapshot}.
+   */
+  tableRef?: React.Ref<ObjectTableHandle<Q, RDPs>>;
+
   className?: string;
+}
+
+/**
+ * Imperative handle exposing programmatic actions on an {@link ObjectTable}.
+ * Obtain it by passing {@link ObjectTableProps.tableRef}.
+ */
+export interface ObjectTableHandle<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+> {
+  /**
+   * Loads every row matching the object set and returns a format-agnostic
+   * snapshot of the table's columns, row values, and total count. The caller
+   * is responsible for turning the snapshot into a downloadable artifact
+   * (CSV, Excel, JSON, clipboard, …).
+   *
+   * Property, derived-property, and function-backed columns are included.
+   * Function-backed cells are fetched per page during snapshot collection;
+   * when a page's fetch fails, `row.getValue(columnId)` returns the thrown
+   * `Error` instance for the affected cells while the rest of the snapshot
+   * resolves normally.
+   * Columns defined with `locator.type === "custom"` are omitted because
+   * they have no underlying value to export.
+   *
+   * The returned promise rejects up front when the object set's `totalCount`
+   * exceeds `rowLimit`. When `totalCount` is unavailable, it instead rejects
+   * mid-load once more than `rowLimit` rows have been pulled, so an unknown
+   * count can't drain an unbounded set into the client. Otherwise every
+   * matching row is loaded.
+   *
+   * @param options See {@link ObjectTableSnapshotOptions}.
+   */
+  getSnapshot: (
+    options?: ObjectTableSnapshotOptions,
+  ) => Promise<ObjectTableSnapshot<Q, RDPs>>;
+}
+
+/**
+ * Options for {@link ObjectTableHandle["getSnapshot"]}.
+ */
+export interface ObjectTableSnapshotOptions {
+  /**
+   * Upper bound on how many rows the snapshot may contain. When the object
+   * set's total row count exceeds this value, `getSnapshot` rejects;
+   * otherwise every matching row is loaded.
+   *
+   * @default 10_000
+   */
+  rowLimit?: number;
+}
+
+/**
+ * A point-in-time capture of an {@link ObjectTable}'s columns and row values,
+ * returned by {@link ObjectTableHandle.getSnapshot}.
+ */
+export interface ObjectTableSnapshot<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+> {
+  columns: ObjectTableDataColumn[];
+  rows: ObjectTableDataRow<Q, RDPs>[];
+  /**
+   * Total number of objects matching the underlying object set, as reported
+   * by the API. `undefined` when the API did not provide a count. Encoded as
+   * a string to match the underlying list-payload representation.
+   */
+  totalCount: string | undefined;
+}
+
+/**
+ * A single column in an {@link ObjectTableSnapshot}.
+ */
+export interface ObjectTableDataColumn {
+  /** Column id, matching the `locator.id` of the column definition. */
+  id: string;
+  /** Display name shown in the table header. */
+  name: string;
+}
+
+/**
+ * A single row in an {@link ObjectTableSnapshot}.
+ */
+export interface ObjectTableDataRow<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+> {
+  /** Row id (the underlying object's `$primaryKey` rendered as a string). */
+  id: string;
+  /** The underlying loaded object. */
+  object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>;
+  /**
+   * Returns the cell value for a given column id, or `undefined` when the
+   * column is not part of the snapshot. Function-backed cells whose query
+   * failed surface the thrown `Error` instance as their value.
+   */
+  getValue: (columnId: string) => unknown;
 }
 
 /**
@@ -641,13 +771,13 @@ export interface RowSelectionChange<
    *   provided, otherwise derived from `objectType` via `client(...)`).
    *   This includes rows not yet loaded into the table.
    * - Partial selection → the underlying `ObjectSet` narrowed to
-   *   `{ [primaryKeyApiName]: { $in: selectedRows.map(r => r.$primaryKey) } }`.
+   *   `{ $primaryKey: { $in: selectedRows.map(r => r.$primaryKey) } }`.
    * - "Deselect all" → an empty `ObjectSet` (`$in: []`).
    *
-   * `undefined` for interface types without a resolvable
-   * `primaryKeyApiName` when the selection is partial or empty (a
-   * `$primaryKey`-style filter can't be expressed). For "select all" on
-   * those types the underlying `ObjectSet` is still emitted.
+   * Works for both object and interface types, since the `$primaryKey`
+   * special property does not require resolving the underlying primary key
+   * property name. `undefined` only when there is no underlying `ObjectSet`
+   * to derive from.
    */
   objectSet: ObjectSet<Q, RDPs> | undefined;
 }

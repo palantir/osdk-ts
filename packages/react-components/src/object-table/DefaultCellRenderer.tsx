@@ -17,6 +17,8 @@
 import type { CellContext, RowData } from "@tanstack/react-table";
 import React from "react";
 import { AsyncValueCell } from "./components/AsyncValueCell.js";
+import { CbacMarkingCell } from "./components/CbacMarkingCell.js";
+import { MandatoryMarkingCell } from "./components/MandatoryMarkingCell.js";
 import { EditableCell } from "./EditableCell.js";
 import styles from "./EditableCell.module.css";
 import { isAsyncCellData } from "./utils/AsyncCellData.js";
@@ -67,6 +69,14 @@ export function renderDefaultCell<TData extends RowData>(
   // and cannot be edited in the table. Return the async cell directly.
   if (columnMeta?.isAsyncColumn && asyncCellData) {
     return <AsyncValueCell {...asyncCellData} />;
+  }
+
+  if (columnMeta?.markingType === "CBAC") {
+    return <CbacMarkingCell value={cellValue} />;
+  }
+
+  if (columnMeta?.markingType === "MANDATORY") {
+    return <MandatoryMarkingCell value={cellValue} />;
   }
 
   const rowData = cellContext.row.original;

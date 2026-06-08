@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type * as OntologiesV2 from "@osdk/foundry.ontologies";
 import { beforeEach, describe, expect, it } from "vitest";
 import type { BaseServerObject } from "./BaseServerObject.js";
 import { FauxAttachmentStore } from "./FauxAttachmentStore.js";
@@ -125,6 +126,13 @@ describe(FauxDataStore, () => {
               description: "leadId",
               typeClasses: [],
             },
+            status: {
+              dataType: { type: "string" },
+              rid: "ri.status",
+              displayName: "status",
+              description: "status",
+              typeClasses: [],
+            },
           },
           status: "ACTIVE",
           titleProperty: "id",
@@ -221,6 +229,115 @@ describe(FauxDataStore, () => {
         employeeId,
         "contributedProjects",
       ),
+    });
+
+    describe("object set references", () => {
+      const activeEmployeesRid =
+        "ri.object-set.active-employees" as OntologiesV2.ObjectSetRid;
+
+      const activeEmployeesObjectSet = {
+        type: "filter",
+        objectSet: {
+          type: "base",
+          objectType: "Employee",
+        },
+        where: {
+          type: "eq",
+          field: "status",
+          value: "ACTIVE",
+        },
+      } as OntologiesV2.ObjectSet;
+
+      it("registers and returns object sets by rid", () => {
+        fauxDataStore.registerObjectSet(
+          activeEmployeesRid,
+          activeEmployeesObjectSet,
+        );
+
+        expect(fauxDataStore.getObjectSetOrThrow(activeEmployeesRid)).toBe(
+          activeEmployeesObjectSet,
+        );
+      });
+
+      it("overwrites an object set registered with the same rid", () => {
+        const inactiveEmployeesObjectSet = {
+          type: "filter",
+          objectSet: {
+            type: "base",
+            objectType: "Employee",
+          },
+          where: {
+            type: "eq",
+            field: "status",
+            value: "INACTIVE",
+          },
+        } as OntologiesV2.ObjectSet;
+
+        fauxDataStore.registerObjectSet(
+          activeEmployeesRid,
+          activeEmployeesObjectSet,
+        );
+        fauxDataStore.registerObjectSet(
+          activeEmployeesRid,
+          inactiveEmployeesObjectSet,
+        );
+
+        expect(fauxDataStore.getObjectSetOrThrow(activeEmployeesRid)).toBe(
+          inactiveEmployeesObjectSet,
+        );
+      });
+
+      it("throws ObjectSetNotFound for unknown object set rids", () => {
+        expect(() =>
+          fauxDataStore.getObjectSetOrThrow(
+            "ri.object-set.missing",
+          )
+        ).toThrow(
+          "NOT_FOUND ObjectSetNotFound {\"objectSetRid\":\"ri.object-set.missing\"}",
+        );
+      });
+
+      it("loads objects from a registered object set reference", () => {
+        const { a, b, c } = employees;
+        fauxDataStore.registerObject({ ...a, status: "ACTIVE" });
+        fauxDataStore.registerObject({ ...b, status: "INACTIVE" });
+        fauxDataStore.registerObject({ ...c, status: "ACTIVE" });
+        fauxDataStore.registerObjectSet(
+          activeEmployeesRid,
+          activeEmployeesObjectSet,
+        );
+
+        const page = fauxDataStore.getObjectsFromObjectSet({
+          objectSet: {
+            type: "reference",
+            reference: activeEmployeesRid,
+          },
+          select: [],
+          selectV2: [{
+            type: "property",
+            apiName: "id",
+          }, {
+            type: "property",
+            apiName: "status",
+          }],
+        });
+
+        expect(page.totalCount).toBe("2");
+        expect(page.data).toEqual([
+          {
+            __apiName: "Employee",
+            __primaryKey: "a",
+            id: "a",
+            status: "ACTIVE",
+          },
+          {
+            __apiName: "Employee",
+            __primaryKey: "c",
+            id: "c",
+            status: "ACTIVE",
+          },
+        ]);
+      });
     });
 
     it("should work in the happy paths", () => {
