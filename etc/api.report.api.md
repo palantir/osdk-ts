@@ -1120,55 +1120,10 @@ export type IntervalRule = {
     	$ordered?: never
 };
 
-// @public (undocumented)
-export function isAudioMediaItemMetadata(metadata: MediaItemMetadata): metadata is Extract<MediaItemMetadata, {
-    	type: "audio"
-}>;
-
-// @public (undocumented)
-export function isDicomMediaItemMetadata(metadata: MediaItemMetadata): metadata is Extract<MediaItemMetadata, {
-    	type: "dicom"
-}>;
-
-// @public
-export function isDocumentMediaItemMetadata(metadata: MediaItemMetadata): metadata is Extract<MediaItemMetadata, {
-    	type: "document"
-}>;
-
-// @public (undocumented)
-export function isEmailMediaItemMetadata(metadata: MediaItemMetadata): metadata is Extract<MediaItemMetadata, {
-    	type: "email"
-}>;
-
-// @public (undocumented)
-export function isImageryMediaItemMetadata(metadata: MediaItemMetadata): metadata is Extract<MediaItemMetadata, {
-    	type: "imagery"
-}>;
-
-// @public (undocumented)
-export function isModel3dMediaItemMetadata(metadata: MediaItemMetadata): metadata is Extract<MediaItemMetadata, {
-    	type: "model3d"
-}>;
-
 // Warning: (ae-forgotten-export) The symbol "OkResult" needs to be exported by the entry point index.d.ts
 //
 // @public
 export function isOk<X>(a: Result<X>): a is OkResult<X>;
-
-// @public (undocumented)
-export function isSpreadsheetMediaItemMetadata(metadata: MediaItemMetadata): metadata is Extract<MediaItemMetadata, {
-    	type: "spreadsheet"
-}>;
-
-// @public (undocumented)
-export function isUntypedMediaItemMetadata(metadata: MediaItemMetadata): metadata is Extract<MediaItemMetadata, {
-    	type: "untyped"
-}>;
-
-// @public (undocumented)
-export function isVideoMediaItemMetadata(metadata: MediaItemMetadata): metadata is Extract<MediaItemMetadata, {
-    	type: "video"
-}>;
 
 // @public
 export type KnownType = "USER_OR_GROUP_ID" | "RESOURCE_RID" | "ARTIFACT_GID";

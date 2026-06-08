@@ -20,21 +20,11 @@ export interface Media {
    */
   fetchMetadata(): Promise<MediaMetadata>;
   /**
-   * Fetches type-specific metadata for this media item, including fields like page count for
-   * documents, dimensions for imagery, duration for audio/video, etc.
+   * Fetches type-specific metadata for this media item, i.e. page count for documents,
+   * dimensions for imagery, duration for audio/video, etc.
    *
-   * Returns a `MediaFullMetadata` wrapper around a `MediaItemMetadata` discriminated union. Narrow
-   * on `result.itemMetadata.type` (or use the `is*MediaItemMetadata` helpers) to access
-   * variant-specific fields. The full per-variant shape matches `MediaItemMetadata` from
-   * `@osdk/foundry.mediasets`.
-   *
-   * Backed by the `@beta` `MediaSets.metadata` platform endpoint: the variant union and
-   * per-variant fields may evolve. The endpoint is per-media-item and does not accept a media set
-   * view RID, so view-level metadata overrides are not reachable through this method.
-   *
-   * Optional because not every `Media` implementation can resolve a media set view (e.g.
-   * forward-compatible custom implementations). Backed by `MediaSets.metadata` for both
-   * ontology-backed and reference-backed media.
+   * Returns a `MediaFullMetadata` that can be narrowed on `result.itemMetadata.type`
+   * to access variant-specific fields.
    *
    * @beta
    */
@@ -100,34 +90,23 @@ export interface MediaMetadata {
 }
 
 /**
- * Wrapper around the type-specific `MediaItemMetadata` discriminated union returned by
- * `Media.fetchFullMetadata`. The wrapper exists so optional sibling fields (e.g. attribution,
- * source view) can be added later without breaking callers.
+ * Metadata for a media item, returned by `Media.fetchFullMetadata`. Distinct from
+ * the generic `MediaMetadata`.
  */
 export interface MediaFullMetadata {
   /**
-   * Type-specific metadata. Narrow on `itemMetadata.type` (or use the `is*MediaItemMetadata`
-   * helpers) to access variant-specific fields.
+   * Type-specific metadata. Narrow on `itemMetadata.type` to access variant-specific fields.
    */
   itemMetadata: MediaItemMetadata;
 }
 
 /**
- * Type-specific metadata for a media item, discriminated by `type`.
- *
- * **Full structural mirror of `MediaItemMetadata` from `@osdk/foundry.mediasets`.** Every
- * variant interface and every nested type is duplicated here so `@osdk/api` doesn't take a
- * direct dependency on `@osdk/foundry.*` (matches the established pattern for `MediaReference`
- * and `ActionResults`). A compile-time equality assertion in
- * `@osdk/client/src/object/mediaItemMetadataMirror.test.ts` fails the build if the platform
- * schema drifts from this mirror.
- *
- * Narrow on `result.itemMetadata.type` (or use the `is*MediaItemMetadata` helpers) to access
- * variant-specific fields with full IntelliSense (no cast required).
+ * Type-specific metadata for a media item, discriminated by `type`. Narrow on
+ * `result.itemMetadata.type` to access variant-specific fields with full IntelliSense.
  *
  * Note: mio currently supports a `streamingVideo` variant internally, but it is not yet exposed
  * on the platform API and is therefore absent here. When the platform API adds it, the variant
- * will be appended here as a non-breaking change (the verify test will fail until done).
+ * will be appended here as a non-breaking change.
  */
 export type MediaItemMetadata =
   | ({ type: "document" } & DocumentMediaItemMetadata)

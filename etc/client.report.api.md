@@ -23,16 +23,7 @@ import type { ExperimentFns } from '@osdk/api/unstable';
 import { InterfaceDefinition } from '@osdk/api';
 import { InterfaceMetadata } from '@osdk/api';
 import type { InterfaceQueryDataType } from '@osdk/api';
-import { isAudioMediaItemMetadata } from '@osdk/api';
-import { isDicomMediaItemMetadata } from '@osdk/api';
-import { isDocumentMediaItemMetadata } from '@osdk/api';
-import { isEmailMediaItemMetadata } from '@osdk/api';
-import { isImageryMediaItemMetadata } from '@osdk/api';
-import { isModel3dMediaItemMetadata } from '@osdk/api';
 import { isOk } from '@osdk/api';
-import { isSpreadsheetMediaItemMetadata } from '@osdk/api';
-import { isUntypedMediaItemMetadata } from '@osdk/api';
-import { isVideoMediaItemMetadata } from '@osdk/api';
 import { Logger } from '@osdk/api';
 import { Media } from '@osdk/api';
 import { MediaFullMetadata } from '@osdk/api';
@@ -175,28 +166,10 @@ export { InterfaceDefinition }
 
 export { InterfaceMetadata }
 
-export { isAudioMediaItemMetadata }
-
-export { isDicomMediaItemMetadata }
-
-export { isDocumentMediaItemMetadata }
-
-export { isEmailMediaItemMetadata }
-
-export { isImageryMediaItemMetadata }
-
-export { isModel3dMediaItemMetadata }
-
 // @public (undocumented)
 export function isObjectSet(o: object): o is ObjectSet<ObjectOrInterfaceDefinition>;
 
 export { isOk }
-
-export { isSpreadsheetMediaItemMetadata }
-
-export { isUntypedMediaItemMetadata }
-
-export { isVideoMediaItemMetadata }
 
 export { Logger }
 

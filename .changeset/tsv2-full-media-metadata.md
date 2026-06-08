@@ -4,4 +4,4 @@
 "@osdk/faux": minor
 ---
 
-Add `Media.fetchFullMetadata()` returning a `MediaFullMetadata` wrapper around the type-specific `MediaItemMetadata` discriminated union (parity with python-osdk's `get_media_full_metadata`). Exposes `is*MediaItemMetadata` type guards mirroring the tsv1 pattern.
+Add `Media.fetchFullMetadata()` returning a `MediaFullMetadata` wrapper around the type-specific `MediaItemMetadata` discriminated union (parity with python-osdk's `get_media_full_metadata`).

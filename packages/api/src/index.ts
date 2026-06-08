@@ -143,17 +143,6 @@ export type {
   VideoMediaItemMetadata,
   VideoSpecification,
 } from "./object/Media.js";
-export {
-  isAudioMediaItemMetadata,
-  isDicomMediaItemMetadata,
-  isDocumentMediaItemMetadata,
-  isEmailMediaItemMetadata,
-  isImageryMediaItemMetadata,
-  isModel3dMediaItemMetadata,
-  isSpreadsheetMediaItemMetadata,
-  isUntypedMediaItemMetadata,
-  isVideoMediaItemMetadata,
-} from "./object/mediaTypeGuards.js";
 export type {
   PropertyMarkings,
   PropertySecurity,

@@ -16,18 +16,7 @@
 
 /* eslint-disable @typescript-eslint/no-deprecated */
 
-export {
-  isAudioMediaItemMetadata,
-  isDicomMediaItemMetadata,
-  isDocumentMediaItemMetadata,
-  isEmailMediaItemMetadata,
-  isImageryMediaItemMetadata,
-  isModel3dMediaItemMetadata,
-  isOk,
-  isSpreadsheetMediaItemMetadata,
-  isUntypedMediaItemMetadata,
-  isVideoMediaItemMetadata,
-} from "@osdk/api";
+export { isOk } from "@osdk/api";
 export type {
   ActionDefinition,
   ActionEditResponse,

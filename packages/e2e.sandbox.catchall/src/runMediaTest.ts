@@ -26,17 +26,6 @@ import {
   type MediaTransformation,
 } from "@osdk/api/unstable";
 import {
-  isAudioMediaItemMetadata,
-  isDicomMediaItemMetadata,
-  isDocumentMediaItemMetadata,
-  isEmailMediaItemMetadata,
-  isImageryMediaItemMetadata,
-  isModel3dMediaItemMetadata,
-  isSpreadsheetMediaItemMetadata,
-  isUntypedMediaItemMetadata,
-  isVideoMediaItemMetadata,
-} from "@osdk/client";
-import {
   $Actions,
   $Queries,
   MnayanOsdkMediaObject,
@@ -193,33 +182,43 @@ async function runReadMediaFullMetadataTest(ref: Media): Promise<void> {
   }
   const { itemMetadata } = await ref.fetchFullMetadata();
 
-  // Dispatch to the per-variant pattern matching the runtime shape. The fixture
-  // is image/png so the imagery branch is the one that fires; the other guards
-  // are compile-time documentation that the @osdk/api mirror exposes the right
-  // fields per variant.
-  if (isDocumentMediaItemMetadata(itemMetadata)) {
-    readDocumentMetadata(itemMetadata);
-  } else if (isImageryMediaItemMetadata(itemMetadata)) {
-    readImageryMetadata(itemMetadata);
-  } else if (isAudioMediaItemMetadata(itemMetadata)) {
-    readAudioMetadata(itemMetadata);
-  } else if (isVideoMediaItemMetadata(itemMetadata)) {
-    readVideoMetadata(itemMetadata);
-  } else if (isDicomMediaItemMetadata(itemMetadata)) {
-    readDicomMetadata(itemMetadata);
-  } else if (isEmailMediaItemMetadata(itemMetadata)) {
-    readEmailMetadata(itemMetadata);
-  } else if (isModel3dMediaItemMetadata(itemMetadata)) {
-    readModel3dMetadata(itemMetadata);
-  } else if (isSpreadsheetMediaItemMetadata(itemMetadata)) {
-    readSpreadsheetMetadata(itemMetadata);
-  } else if (isUntypedMediaItemMetadata(itemMetadata)) {
-    readUntypedMetadata(itemMetadata);
-  } else {
-    const _exhaustive: never = itemMetadata;
-    throw new Error(
-      `Unhandled MediaItemMetadata variant: ${JSON.stringify(_exhaustive)}`,
-    );
+  // Fixture is image/png, so the imagery branch fires; the other cases are
+  // exhaustively typed so adding a new variant breaks the build.
+  console.log("Full metadata variant:", itemMetadata.type);
+  switch (itemMetadata.type) {
+    case "document":
+      readDocumentMetadata(itemMetadata);
+      break;
+    case "imagery":
+      readImageryMetadata(itemMetadata);
+      break;
+    case "audio":
+      readAudioMetadata(itemMetadata);
+      break;
+    case "video":
+      readVideoMetadata(itemMetadata);
+      break;
+    case "dicom":
+      readDicomMetadata(itemMetadata);
+      break;
+    case "email":
+      readEmailMetadata(itemMetadata);
+      break;
+    case "model3d":
+      readModel3dMetadata(itemMetadata);
+      break;
+    case "spreadsheet":
+      readSpreadsheetMetadata(itemMetadata);
+      break;
+    case "untyped":
+      readUntypedMetadata(itemMetadata);
+      break;
+    default: {
+      const _exhaustive: never = itemMetadata;
+      throw new Error(
+        `Unhandled MediaItemMetadata variant: ${JSON.stringify(_exhaustive)}`,
+      );
+    }
   }
 
   if (itemMetadata.type !== "imagery") {
