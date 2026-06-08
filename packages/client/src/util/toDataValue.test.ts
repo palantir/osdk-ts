@@ -126,6 +126,24 @@ describe(toDataValue, () => {
     });
   });
 
+  it("passes GeoJSON geometries through as objects", async () => {
+    const point: GeoJSON.Point = {
+      type: "Point",
+      coordinates: [-74.0, 40.7],
+    };
+    const polygon: GeoJSON.Polygon = {
+      type: "Polygon",
+      coordinates: [[[0, 0], [1, 0], [1, 1], [0, 0]]],
+    };
+
+    expect(await toDataValue(point, clientCtx, mockActionMetadata)).toEqual(
+      point,
+    );
+    expect(await toDataValue(polygon, clientCtx, mockActionMetadata)).toEqual(
+      polygon,
+    );
+  });
+
   it("maps an ontology object into just its primary key", async () => {
     const employee = stubData.employee1;
     const ontologyConversion = await toDataValue(
