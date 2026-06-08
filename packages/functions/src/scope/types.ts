@@ -14,22 +14,26 @@
  * limitations under the License.
  */
 
-import type { InterfaceDefinition, ObjectTypeDefinition } from "@osdk/client";
+import type {
+  InterfaceDefinition,
+  ObjectTypeDefinition,
+  QueryDefinition,
+} from "@osdk/client";
 
 /**
  * Declare which resources a function needs access to.
  *
- * For `objects` and `interfaces`, you may provide either:
+ * For `objects`, `interfaces` and `queries`, you may provide either:
  * - A string alias from resources.json (e.g. `"myObject"`)
  * - An OSDK type reference imported from your generated ontology SDK (e.g. `Employee`)
  *
- * For `links`, `queries`, and `models`, only string aliases are supported.
+ * For `links`, and `models`, only string aliases are supported.
  */
 export interface ScopeResources {
+  queries?: Array<string | QueryDefinition>;
   objects?: Array<string | ObjectTypeDefinition>;
   interfaces?: Array<string | InterfaceDefinition>;
   links?: string[];
-  queries?: string[];
   models?: string[];
 }
 
@@ -38,7 +42,6 @@ export interface ScopeResources {
  *
  * Or use these helpers:
  *   `resources: ScopeResources.defaultScopeResources`  — use the repo's default scope from resources.json
- *   `resources: ScopeResources.of({ objects: ["myAlias"] })` — equivalent to a plain object literal
  */
 export namespace ScopeResources {
   /**
@@ -47,10 +50,6 @@ export namespace ScopeResources {
   export const defaultResources: unique symbol = Symbol(
     "ScopeResources.defaultResources",
   );
-
-  export function of(opts: ScopeResources = {}): ScopeResources {
-    return opts;
-  }
 }
 
 /**
@@ -72,7 +71,6 @@ export interface ScopeReadWriteAuthorization extends ScopeReadAuthorization {
  *
  * Or use these helpers:
  *   `authorization: ScopeAuthorization.defaultRead`  — use the repo's default read authorization from functions.json
- *   `authorization: ScopeAuthorization.of({ read: ["marking1"] })` — equivalent to a plain object literal
  */
 export namespace ScopeAuthorization {
   /**
@@ -81,13 +79,6 @@ export namespace ScopeAuthorization {
   export const defaultRead: unique symbol = Symbol(
     "ScopeAuthorization.defaultRead",
   );
-
-  export function of(
-    opts: ScopeReadWriteAuthorization,
-  ): ScopeReadWriteAuthorization;
-  export function of(opts: ScopeReadAuthorization): ScopeReadAuthorization {
-    return opts;
-  }
 }
 
 /**
