@@ -68,6 +68,10 @@ export namespace ObjectSetArgs {
     $nextPageToken?: string;
     $pageSize?: number;
   }
+
+  export interface Snapshot {
+    $snapshot?: boolean;
+  }
 }
 
 export interface SelectArg<
@@ -97,6 +101,8 @@ export type SelectArgToKeys<
   : A["$select"] extends readonly string[] ? A["$select"][number]
   : PropertyKeys<Q>;
 
+export interface SnapshotArg extends ObjectSetArgs.Snapshot {}
+
 export interface FetchPageArgs<
   Q extends ObjectOrInterfaceDefinition,
   K extends string = PropertyKeys<Q>,
@@ -120,7 +126,8 @@ export interface FetchPageArgs<
     ORDER_BY_OPTIONS,
     PROPERTY_SECURITIES,
     MODIFIERS
-  >
+  >,
+  SnapshotArg
 {
   $nextPageToken?: string;
   $pageSize?: number;
