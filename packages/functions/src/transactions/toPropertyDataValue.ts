@@ -27,12 +27,6 @@ export function toPropertyDataValue(
     return value.map((item) => toPropertyDataValue(item));
   }
 
-  if (isPoint(value)) {
-    return toPropertyDataValue(
-      `${value.coordinates[1]},${value.coordinates[0]}`,
-    );
-  }
-
   if (typeof value === "object") {
     const result: Record<string, DataValue> = {};
     for (const key in value) {
@@ -45,9 +39,4 @@ export function toPropertyDataValue(
 
   // expected to pass through - boolean, byte, date, decimal, float, double, integer, long, short, string, timestamp, object type reference
   return value;
-}
-
-function isPoint(o: any): o is GeoJSON.Point {
-  return o && typeof o === "object" && "type" in o && o.type === "Point"
-    && "coordinates" in o && o.coordinates.length === 2;
 }
