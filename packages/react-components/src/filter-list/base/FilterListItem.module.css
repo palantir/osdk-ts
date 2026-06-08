@@ -78,7 +78,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--osdk-surface-spacing);
+  padding: var(--osdk-filter-item-header-action-padding);
   margin-left: calc(var(--osdk-surface-spacing) * 0.5);
   border: none;
   background: transparent;
