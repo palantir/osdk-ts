@@ -37,7 +37,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  overflow: hidden;
+  overflow: clip;
   background: var(--osdk-filter-list-bg);
   border: var(--osdk-filter-list-border);
   border-radius: var(--osdk-filter-list-border-radius);
