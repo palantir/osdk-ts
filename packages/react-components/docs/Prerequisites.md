@@ -71,20 +71,9 @@ Apply this to your root element. See the [Base UI docs](https://base-ui.com/reac
 
 ### Layers
 
-Components use CSS [`@layer`](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer) for predictable theming. Add these imports to your application's entry CSS file (e.g., `index.css`).
+Import the component styles into a CSS [`@layer`](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer) in your application's entry CSS file (e.g., `index.css`). Using a layer keeps the cascade predictable: later layers always win when styles conflict, regardless of selector specificity, so your own styles and theme overrides take precedence over the defaults.
 
-| Layer             | Purpose                                                    |
-| ----------------- | ---------------------------------------------------------- |
-| `osdk.tokens`     | Design tokens (colors, spacing, typography) — the defaults |
-| `osdk.components` | Component structural styles (layout, borders, sizing)      |
-
-Both layers are bundled inside the single `@osdk/react-components/styles.css`
-import shown below — you do **not** import them separately. The stylesheet
-declares `@layer osdk.tokens, osdk.components` internally (so tokens always sit
-below component styles); importing it into your own `osdk.components` layer, as
-the examples do, nests both under that layer.
-
-Later layers always win when styles conflict, regardless of selector specificity.
+The examples below import the styles into a layer named `osdk.components`; declare any of your own layers after it to override.
 
 #### Without Tailwind
 
