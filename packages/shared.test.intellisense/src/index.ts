@@ -14,5 +14,12 @@
  * limitations under the License.
  */
 
-export { startTsServer } from "../tsserver.js";
-export type { TsServer } from "../tsserver.js";
+export {
+  isEvent,
+  isProjectLoadingEnd,
+  isProjectLoadingStart,
+  isQuickInfoResponse,
+  isResponse,
+  startTsServer,
+} from "./tsserver.js";
+export type { TsServer } from "./tsserver.js";
