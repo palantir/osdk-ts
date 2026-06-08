@@ -421,6 +421,11 @@ export interface DatasourceModificationConstraintError_gpsPolicyColumnsFromRestr
     GpsPolicyColumnsFromRestrictedViewsAreMappedError;
 }
 
+export interface DatasourceModificationConstraintError_editsOnlyRidNotSupported {
+  type: "editsOnlyRidNotSupported";
+  editsOnlyRidNotSupported: EditsOnlyRidNotSupportedError;
+}
+
 export interface DatasourceModificationConstraintError_objectTypeDatasourceCannotHaveAssumedMarkingsUpdated {
   type: "objectTypeDatasourceCannotHaveAssumedMarkingsUpdated";
   objectTypeDatasourceCannotHaveAssumedMarkingsUpdated:
@@ -456,6 +461,11 @@ export interface DatasourceModificationConstraintError_objectTypeCannotBeMdoWith
   objectTypeCannotBeMdoWithStreamingDatasource:
     ObjectTypeCannotBeMdoWithStreamingDatasourceError;
 }
+
+export interface DatasourceModificationConstraintError_deletedDerivedDatasourceNotAllowed {
+  type: "deletedDerivedDatasourceNotAllowed";
+  deletedDerivedDatasourceNotAllowed: DeletedDerivedDatasourceNotAllowedError;
+}
 /**
  * A type representing validation errors associated with datasource modifications on a branch.
  */
@@ -481,14 +491,33 @@ export type DatasourceModificationConstraintError =
   | DatasourceModificationConstraintError_derivedPropertyMultiHopLinkIsEmpty
   | DatasourceModificationConstraintError_derivedPropertyMultiHopLinkExceedsMaximumStepCount
   | DatasourceModificationConstraintError_gpsPolicyColumnsFromRestrictedViewsAreMapped
+  | DatasourceModificationConstraintError_editsOnlyRidNotSupported
   | DatasourceModificationConstraintError_objectTypeDatasourceCannotHaveAssumedMarkingsUpdated
   | DatasourceModificationConstraintError_objectTypeDatasourceCannotHaveDataSecurityUpdatedOnBranch
   | DatasourceModificationConstraintError_objectTypeDatasourceWithInvalidRetentionTargetSize
   | DatasourceModificationConstraintError_objectTypeWithStreamDatasourceCannotHaveMaterializations
   | DatasourceModificationConstraintError_objectTypeDatasourceWithInvalidTimeBasedRetention
-  | DatasourceModificationConstraintError_objectTypeCannotBeMdoWithStreamingDatasource;
+  | DatasourceModificationConstraintError_objectTypeCannotBeMdoWithStreamingDatasource
+  | DatasourceModificationConstraintError_deletedDerivedDatasourceNotAllowed;
 
+/**
+ * Cannot change this datasource from a type that supports property security groups to one that does not,
+ * because the datasource currently has property security groups configured.
+ */
+export interface DatasourceTypeDowngradeWithPropertySecurityGroupsConstraintError {
+  datasourceRid: _api_DatasourceRid;
+  objectTypeRid: _api_ObjectTypeRid;
+}
 export interface DefaultOntologyBranchDetails {
+}
+/**
+ * A modification request contains a derived datasource with the `deleted` variant, which is produced
+ * internally by OMS during link-type hard-deletion cascades and cannot be authored through normal
+ * modification paths.
+ */
+export interface DeletedDerivedDatasourceNotAllowedError {
+  datasource: _api_DatasourceRid;
+  objectType: _api_ObjectTypeRid;
 }
 /**
  * The derived property's base type has changed, either because the type it is deriving from has changed, or
@@ -651,6 +680,13 @@ export interface DuplicateStructDatasourceMappingForObjectTypeError {
   duplicateApiNames: Array<_api_ObjectTypeFieldApiName>;
   objectType: _api_ObjectTypeRid;
   propertyType: _api_PropertyTypeRid;
+}
+/**
+ * EditsOnlyRid is not supported for this deployment.
+ */
+export interface EditsOnlyRidNotSupportedError {
+  datasource: _api_DatasourceRid;
+  objectType: _api_ObjectTypeRid;
 }
 export interface EntityIndexingConfiguration {
   manyToManyLinkTypes: Record<
@@ -982,12 +1018,6 @@ export interface InterfaceImplementationError_requiredInterfaceLinkTypeNotImplem
     RequiredInterfaceLinkTypeNotImplementedError;
 }
 
-export interface InterfaceImplementationError_interfaceLinkTypeImplementedTooOften {
-  type: "interfaceLinkTypeImplementedTooOften";
-  interfaceLinkTypeImplementedTooOften:
-    InterfaceLinkTypeImplementedTooOftenError;
-}
-
 export interface InterfaceImplementationError_invalidCardinalityImplementingInterfaceLinkType {
   type: "invalidCardinalityImplementingInterfaceLinkType";
   invalidCardinalityImplementingInterfaceLinkType:
@@ -1080,7 +1110,6 @@ export type InterfaceImplementationError =
   | InterfaceImplementationError_interfaceLinkNotFound
   | InterfaceImplementationError_invalidConflictingDefinitionsImplementingInterfaceLinkType
   | InterfaceImplementationError_requiredInterfaceLinkTypeNotImplemented
-  | InterfaceImplementationError_interfaceLinkTypeImplementedTooOften
   | InterfaceImplementationError_invalidCardinalityImplementingInterfaceLinkType
   | InterfaceImplementationError_implementingLinkTypeDoesNotReferenceObjectType
   | InterfaceImplementationError_implementingLinkTypeSideIsAmbiguous
@@ -1102,16 +1131,6 @@ export type InterfaceImplementationError =
 export interface InterfaceLinkNotFoundError {
   interfaceLinkTypeRidOrIdInRequest: _api_InterfaceLinkTypeRidOrIdInRequest;
   interfaceTypeRidOrIdInRequest: _api_InterfaceTypeRidOrIdInRequest;
-  objectTypeId?: _api_ObjectTypeId | null | undefined;
-  objectTypeRid?: _api_ObjectTypeRid | null | undefined;
-}
-/**
- * An interface link type with a SINGLE cardinality is implemented more than once.
- */
-export interface InterfaceLinkTypeImplementedTooOftenError {
-  interfaceLinkTypeRidOrIdInRequest: _api_InterfaceLinkTypeRidOrIdInRequest;
-  interfaceTypeRidOrIdInRequest: _api_InterfaceTypeRidOrIdInRequest;
-  linkTypeIds: Array<_api_LinkTypeId>;
   objectTypeId?: _api_ObjectTypeId | null | undefined;
   objectTypeRid?: _api_ObjectTypeRid | null | undefined;
 }
@@ -1297,7 +1316,7 @@ export interface InvalidLinkedEntityImplementingInterfaceLinkTypeError {
  * to more than one property security group.
  */
 export interface InvalidNumberOfPropertyReferencesInPropertySecurityGroupError {
-  datasourceRid: _api_DatasourceRid;
+  datasourceRid?: _api_DatasourceRid | null | undefined;
   invalidNumberOfReferenceCounts: Record<_api_PropertyTypeId, number>;
   objectTypeRid: _api_ObjectTypeRid;
 }
@@ -2252,6 +2271,12 @@ export interface PropertySecurityGroupsConstraintError_unexpectedPropertyTypeRef
   unexpectedPropertyTypeReferencedInSecurityGroupGranularPolicyError:
     UnexpectedPropertyTypeReferencedInSecurityGroupGranularPolicyError;
 }
+
+export interface PropertySecurityGroupsConstraintError_datasourceTypeDowngradeWithPropertySecurityGroups {
+  type: "datasourceTypeDowngradeWithPropertySecurityGroups";
+  datasourceTypeDowngradeWithPropertySecurityGroups:
+    DatasourceTypeDowngradeWithPropertySecurityGroupsConstraintError;
+}
 /**
  * Errors related to validation of property security groups.
  */
@@ -2262,7 +2287,8 @@ export type PropertySecurityGroupsConstraintError =
   | PropertySecurityGroupsConstraintError_missingPropertySecurityGroupType
   | PropertySecurityGroupsConstraintError_nonUniquePropertySecurityGroupNames
   | PropertySecurityGroupsConstraintError_nonUniquePropertySecurityGroupSecurityPolicies
-  | PropertySecurityGroupsConstraintError_unexpectedPropertyTypeReferencedInSecurityGroupGranularPolicyError;
+  | PropertySecurityGroupsConstraintError_unexpectedPropertyTypeReferencedInSecurityGroupGranularPolicyError
+  | PropertySecurityGroupsConstraintError_datasourceTypeDowngradeWithPropertySecurityGroups;
 
 /**
  * Validation error using a value type with a property type.
@@ -2411,11 +2437,17 @@ export interface SchemaMigrationError_primaryKeyChange {
   type: "primaryKeyChange";
   primaryKeyChange: PrimaryKeyChangeMigrationError;
 }
+
+export interface SchemaMigrationError_timestampPropertyMigrationNotAllowed {
+  type: "timestampPropertyMigrationNotAllowed";
+  timestampPropertyMigrationNotAllowed: TimestampPropertyMigrationError;
+}
 export type SchemaMigrationError =
   | SchemaMigrationError_propertyDataType
   | SchemaMigrationError_deletedPropertyType
   | SchemaMigrationError_datasource
-  | SchemaMigrationError_primaryKeyChange;
+  | SchemaMigrationError_primaryKeyChange
+  | SchemaMigrationError_timestampPropertyMigrationNotAllowed;
 
 export interface SetOntologyBranchLockRequest {
   isLocked: boolean;
@@ -2511,11 +2543,28 @@ export interface TimeSeriesDatasourceDoesNotReferenceTimeDependentPropertiesErro
   timeSeriesSyncRid: _api_TimeSeriesSyncRid;
 }
 /**
+ * Indicates that a drop-property or rename-property migration was added for a property that is referenced as
+ * the timestamp property of a latest-timestamp-wins edits resolution strategy on the object type. Such
+ * migrations are not allowed because they would leave the resolution strategy pointing at a missing or
+ * re-aliased property.
+ */
+export interface TimestampPropertyMigrationError {
+  migrationType: TimestampPropertyMigrationType;
+  objectTypeRid: _api_ObjectTypeRid;
+  timestampPropertyRid: _api_PropertyTypeRid;
+}
+/**
+ * The migration type that is not allowed against a property referenced by a latest-timestamp-wins edits
+ * resolution strategy.
+ */
+export type TimestampPropertyMigrationType = "DROP" | "RENAME";
+
+/**
  * A property referenced in granular policy security is not of expected type.
  */
 export interface UnexpectedPropertyTypeReferencedInSecurityGroupGranularPolicyError {
-  actualOntologyType: _api_Type;
-  datasourceRid: _api_DatasourceRid;
+  actualOntologyType?: _api_Type | null | undefined;
+  datasourceRid?: _api_DatasourceRid | null | undefined;
   expectedPropertyType: string;
   objectTypeRid: _api_ObjectTypeRid;
   propertyTypeId: _api_PropertyTypeId;
@@ -2541,7 +2590,7 @@ export interface UnmappedInterfaceStructFieldError {
  * A property specified in a property security group does not have a mapping in the datasource definition.
  */
 export interface UnmappedPropertiesInPropertySecurityGroupError {
-  datasourceRid: _api_DatasourceRid;
+  datasourceRid?: _api_DatasourceRid | null | undefined;
   objectTypeRid: _api_ObjectTypeRid;
   unmappedPropertyTypeIds: Array<_api_PropertyTypeId>;
 }

@@ -15,7 +15,7 @@
  */
 
 import type {
-  DatasourceIdentifier as _api_DatasourceIdentifier,
+  DatasourceMigrationTarget as _api_DatasourceMigrationTarget,
   DatasourceRid as _api_DatasourceRid,
   ObjectTypeApiName as _api_ObjectTypeApiName,
   ObjectTypeFieldApiName as _api_ObjectTypeFieldApiName,
@@ -515,7 +515,7 @@ export interface RenameDatasourceMigration {
  */
 export interface RenameDatasourceMigrationModification {
   source: _api_DatasourceRid;
-  target: _api_DatasourceIdentifier;
+  target: _api_DatasourceMigrationTarget;
 }
 /**
  * Migration to rename one property to another.

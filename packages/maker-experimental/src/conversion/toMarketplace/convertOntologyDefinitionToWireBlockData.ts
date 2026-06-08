@@ -551,7 +551,10 @@ function buildKnownIdentifiers(
     functions: {},
     geotimeSeriesSyncs,
     groupIds: groupMappings,
+    // TODO: Add support for interface action type constraints and parameter constraints
+    interfaceActionTypeConstraints: {},
     interfaceLinkTypes: interfaceLinkMappings,
+    interfaceParameterConstraints: {},
     interfacePropertyTypes: {},
     interfaceTypes: interfaceMappings,
     linkTypeIds,

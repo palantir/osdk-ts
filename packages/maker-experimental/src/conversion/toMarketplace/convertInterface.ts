@@ -24,7 +24,13 @@ export function convertInterface(
   interfaceType: InterfaceType,
   ridGenerator: OntologyRidGenerator,
 ): MarketplaceInterfaceType {
-  const { __type, status, linkedInterfaces: _, ...other } = interfaceType;
+  const {
+    __type,
+    status,
+    actionTypeConstraints: _actionTypeConstraints,
+    linkedInterfaces: _linkedInterfaces,
+    ...other
+  } = interfaceType;
   // Normalize deprecated deadline format to match Java (strip .000 milliseconds)
   const normalizedStatus = status?.type === "deprecated"
     ? {
@@ -85,6 +91,8 @@ export function convertInterface(
         interfaceType.apiName,
       ),
     })),
+    // TODO: Add support for interface action type constraints and parameter constraints
+    actionTypeConstraints: [],
     // these are omitted from our internal types but we need to re-add them for the final json
     properties: [],
     propertiesV3: Object.fromEntries(
