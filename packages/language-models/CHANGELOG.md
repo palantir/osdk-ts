@@ -1,5 +1,16 @@
 # @osdk/language-models
 
+## 0.7.0
+
+### Minor Changes
+
+- 1aeba37: `getOpenAiBaseUrl`/`getAnthropicBaseUrl`/`getGoogleBaseUrl`/`getFoundryToken`/`createFetch` now accept an OSDK `Client` in addition to a `PlatformClient`, resolving the underlying client context internally.
+
+### Patch Changes
+
+- Updated dependencies [57cbc6d]
+  - @osdk/client@2.31.0
+
 ## 0.6.0
 
 ### Minor Changes

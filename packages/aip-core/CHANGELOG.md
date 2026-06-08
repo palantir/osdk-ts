@@ -1,5 +1,16 @@
 # @osdk/aip-core
 
+## 0.5.0
+
+### Minor Changes
+
+- 86f6b19: Widen the `@osdk/language-models` peer dependency range to `>=0.6.0 <1.0.0` so that minor (0.x) bumps of `@osdk/language-models` no longer force a major version bump on `@osdk/aip-core`.
+
+### Patch Changes
+
+- Updated dependencies [57cbc6d]
+  - @osdk/client@2.31.0
+
 ## 0.4.0
 
 ### Minor Changes
