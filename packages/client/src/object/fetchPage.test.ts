@@ -25,7 +25,8 @@ import type {
 } from "@osdk/api";
 import { Employee, FooInterface, Todo } from "@osdk/client.test.ontology";
 import type { SearchJsonQueryV2 } from "@osdk/foundry.ontologies";
-import { describe, expect, expectTypeOf, it } from "vitest";
+import { describe, expect, expectTypeOf, it, vi } from "vitest";
+import type { MockedFunction } from "vitest";
 import { createMinimalClient } from "../createMinimalClient.js";
 import {
   buildSelectV2,
@@ -38,6 +39,58 @@ import {
   createObjectSet,
   getWireObjectSet,
 } from "../objectSet/createObjectSet.js";
+
+/**
+ * Builds a minimal client whose `fetch` is a vitest mock, so tests can inspect
+ * the request bodies the client sends. The mock resolves every request with an
+ * empty (`{ data: [] }`), 200 OK response, so callers only care about what was
+ * sent, not what comes back.
+ *
+ * @returns the `client` to drive under test and the `fetchFn` mock to assert against
+ *   (typically via {@link lastObjectSetRequest}).
+ */
+function makeCapturingClient() {
+  const fetchFn = vi.fn() as MockedFunction<typeof globalThis.fetch>;
+  fetchFn.mockResolvedValue({
+    json: () => Promise.resolve({ data: [] }),
+    status: 200,
+    ok: true,
+  } as any);
+  const client = createMinimalClient(
+    metadata,
+    "https://foo",
+    async () => "",
+    {},
+    fetchFn,
+  );
+  return { client, fetchFn };
+}
+
+/**
+ * Finds the most recent request the mock `fetchFn` received whose JSON body
+ * mentions an `objectSet` (i.e. the object-set load call fetchPage issues),
+ * and returns it parsed. Walks the recorded calls newest-first so the latest
+ * matching request wins.
+ *
+ * @param fetchFn the mock returned by {@link makeCapturingClient}
+ * @returns the parsed request body, or `undefined` if no object-set request was sent
+ */
+function lastObjectSetRequest(
+  fetchFn: MockedFunction<typeof globalThis.fetch>,
+) {
+  const requestBody = fetchFn.mock.calls.reduceRight<string | undefined>(
+    (acc, cur) => {
+      if (acc) return acc;
+      const body = cur?.[1]?.body;
+      if (typeof body === "string" && body.includes("objectSet")) {
+        return body;
+      }
+    },
+    undefined,
+  );
+  if (!requestBody) return undefined;
+  return JSON.parse(requestBody);
+}
 
 const metadata = {
   ontologyRid: "asdf",
@@ -616,6 +669,27 @@ describe(fetchPage, () => {
         propertyIdentifier: { type: "property", apiName: "myStruct" },
         loadLevel: { type: "extractMainValue" },
       });
+    });
+  });
+
+  describe("snapshot", () => {
+    it("exposes $snapshot to client (type)", () => {
+      expectTypeOf<FetchPageArgs<Employee>>().toHaveProperty("$snapshot");
+    });
+    it("sets snapshot = false by default", async () => {
+      const { client, fetchFn } = makeCapturingClient();
+      await fetchPage(client, Employee, {});
+      expect(lastObjectSetRequest(fetchFn).snapshot).toBe(false);
+    });
+    it("properly generates fetch request when $snapshot is true", async () => {
+      const { client, fetchFn } = makeCapturingClient();
+      await fetchPage(client, Employee, { $snapshot: true });
+      expect(lastObjectSetRequest(fetchFn).snapshot).toBe(true);
+    });
+    it("strips $snapshot from the wire request body", async () => {
+      const { client, fetchFn } = makeCapturingClient();
+      await fetchPage(client, Employee, { $snapshot: true });
+      expect(lastObjectSetRequest(fetchFn)).not.toHaveProperty("$snapshot");
     });
   });
 });

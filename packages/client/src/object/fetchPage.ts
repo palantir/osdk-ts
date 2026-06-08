@@ -410,7 +410,7 @@ export async function fetchPageInternal<
     ORDER_BY_OPTIONS,
     PROPERTY_SECURITIES
   > = {},
-  useSnapshot: boolean = false,
+  useSnapshot: boolean,
 ): Promise<
   FetchPageResult<Q, L, R, S, T, ORDER_BY_OPTIONS, PROPERTY_SECURITIES>
 > {
@@ -466,7 +466,14 @@ export async function fetchPageWithErrorsInternal<
   args: FetchPageArgs<Q, L, R, A, S, T> = {},
 ): Promise<Result<FetchPageResult<Q, L, R, S, T>>> {
   try {
-    const result = await fetchPageInternal(client, objectType, objectSet, args);
+    const { $snapshot, ...restArgs } = args;
+    const result = await fetchPageInternal(
+      client,
+      objectType,
+      objectSet,
+      restArgs,
+      $snapshot ?? false,
+    );
     return { value: result };
   } catch (e) {
     if (e instanceof Error) {
@@ -497,7 +504,14 @@ export async function fetchPage<
   args: FetchPageArgs<Q, L, R, any, S, T, never, {}, PROPERTY_SECURITIES>,
   objectSet: ObjectSet = resolveBaseObjectSetType(objectType),
 ): Promise<FetchPageResult<Q, L, R, S, T, {}, PROPERTY_SECURITIES>> {
-  return fetchPageInternal(client, objectType, objectSet, args);
+  const { $snapshot, ...restArgs } = args;
+  return fetchPageInternal(
+    client,
+    objectType,
+    objectSet,
+    restArgs,
+    $snapshot ?? false,
+  );
 }
 
 /** @internal */
