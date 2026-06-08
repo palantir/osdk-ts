@@ -17,9 +17,9 @@
 .filterItem {
   display: flex;
   flex-direction: column;
+  gap: var(--osdk-filter-item-gap);
   border-radius: var(--osdk-filter-item-border-radius);
   padding: var(--osdk-filter-item-padding);
-  gap: var(--osdk-filter-item-gap);
 }
 
 .itemHeader {

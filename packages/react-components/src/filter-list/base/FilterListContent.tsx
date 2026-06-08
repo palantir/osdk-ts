@@ -127,6 +127,23 @@ export function FilterListContent<D extends FilterDefinitionControls>({
     [activeDefinition, getFilterKey],
   );
 
+  // Memoize per-definition fallbacks by filter key so the `??` lookup at each
+  // render site returns a stable reference; otherwise every render allocates a
+  // fresh FilterState and defeats memoization in the downstream filter inputs.
+  const emptyDisplayStates = useMemo(() => {
+    const map = new Map<string, FilterState>();
+    if (!getEmptyDisplayState || !filterDefinitions) {
+      return map;
+    }
+    for (const definition of filterDefinitions) {
+      const fallback = getEmptyDisplayState(definition);
+      if (fallback != null) {
+        map.set(getFilterKey(definition), fallback);
+      }
+    }
+    return map;
+  }, [filterDefinitions, getEmptyDisplayState, getFilterKey]);
+
   const handleDragStart = useCallback((event: DragStartEvent) => {
     setActiveId(event.active.id);
   }, []);
@@ -222,7 +239,7 @@ export function FilterListContent<D extends FilterDefinitionControls>({
               const filterKey = getFilterKey(definition);
               const label = getFilterLabel(definition);
               const state = filterStates.get(filterKey)
-                ?? getEmptyDisplayState?.(definition);
+                ?? emptyDisplayStates.get(filterKey);
 
               return (
                 <SortableFilterListItem
@@ -251,7 +268,7 @@ export function FilterListContent<D extends FilterDefinitionControls>({
                 filterKey={activeFilterKey}
                 label={getFilterLabel(activeDefinition)}
                 filterState={filterStates.get(activeFilterKey)
-                  ?? getEmptyDisplayState?.(activeDefinition)}
+                  ?? emptyDisplayStates.get(activeFilterKey)}
                 onFilterStateChanged={onFilterStateChanged}
                 onFilterRemoved={onFilterRemoved}
                 renderInput={renderInput}
@@ -273,7 +290,7 @@ export function FilterListContent<D extends FilterDefinitionControls>({
       {filterDefinitions.map((definition) => {
         const filterKey = getFilterKey(definition);
         const state = filterStates.get(filterKey)
-          ?? getEmptyDisplayState?.(definition);
+          ?? emptyDisplayStates.get(filterKey);
 
         return (
           <FilterListItem

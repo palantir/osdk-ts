@@ -17,6 +17,13 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { FilterList } from "../FilterList.js";
+import {
+  createHasLinkFilterDef,
+  createLinkedPropertyFilterDef,
+  createPropertyFilterDef,
+  MockObjectType,
+} from "./testUtils.js";
 
 vi.mock("@osdk/react", () => ({
   useOsdkAggregation: vi.fn().mockReturnValue({
@@ -29,24 +36,14 @@ vi.mock("@osdk/react", () => ({
   useRegisterUserAgent: vi.fn(),
 }));
 
-import { FilterList } from "../FilterList.js";
-import {
-  createHasLinkFilterDef,
-  createPropertyFilterDef,
-  MockObjectType,
-} from "./testUtils.js";
-
 afterEach(cleanup);
 
 describe("FilterList", () => {
-  describe("empty-state overflow controls (getEmptyDisplayState wiring)", () => {
-    it("renders the overflow … toggle on a freshly added MULTI_SELECT with no stored state", () => {
+  describe("when filter state is empty, more action controls should display", () => {
+    it("keeps the more-action … toggle on a MULTI_SELECT after it is removed and re-added", () => {
       const def = createPropertyFilterDef(
         "dept",
         "MULTI_SELECT",
-        // Definition default state is empty; useFilterListState seeds only
-        // definitions with non-empty filterState into the map, so this filter
-        // has no stored state at first render.
         { type: "SELECT", selectedValues: [] },
       );
 
@@ -57,14 +54,30 @@ describe("FilterList", () => {
         />,
       );
 
-      // Without the getEmptyDisplayState fallback, the overflow toggle would
-      // not appear until the user makes a selection.
+      // On first render the … shows from the state buildInitialStates seeds
+      // out of `definition.filterState`
+      expect(
+        screen.getByRole("button", { name: /more actions/i }),
+      ).toBeDefined();
+
+      // Removing clears the stored state and hides the filter.
+      fireEvent.click(
+        screen.getByRole("button", { name: "Remove dept filter" }),
+      );
+      expect(
+        screen.queryByRole("button", { name: /more actions/i }),
+      ).toBeNull();
+
+      // Re-add it through the "+ Add filter" menu
+      fireEvent.click(screen.getByRole("button", { name: /add filter/i }));
+      fireEvent.click(screen.getByRole("menuitem", { name: "dept" }));
+
       expect(
         screen.getByRole("button", { name: /more actions/i }),
       ).toBeDefined();
     });
 
-    it("renders the overflow … toggle for a HAS_LINK filter with no stored state", () => {
+    it("keeps the more-action … toggle on a HAS_LINK filter after it is removed and re-added", () => {
       const def = createHasLinkFilterDef("manager");
 
       render(
@@ -74,13 +87,57 @@ describe("FilterList", () => {
         />,
       );
 
-      // HAS_LINK supports include/exclude via the overflow dropdown.
+      expect(
+        screen.getByRole("button", { name: /more actions/i }),
+      ).toBeDefined();
+
+      fireEvent.click(
+        screen.getByRole("button", { name: "Remove manager filter" }),
+      );
+      expect(
+        screen.queryByRole("button", { name: /more actions/i }),
+      ).toBeNull();
+
+      fireEvent.click(screen.getByRole("button", { name: /add filter/i }));
+      fireEvent.click(screen.getByRole("menuitem", { name: "manager" }));
+
       expect(
         screen.getByRole("button", { name: /more actions/i }),
       ).toBeDefined();
     });
 
-    it("does not render the overflow toggle for a freshly added NUMBER_RANGE filter", () => {
+    it("keeps the more-action … toggle on a LINKED_PROPERTY filter after it is removed and re-added", () => {
+      const def = createLinkedPropertyFilterDef("manager", "fullName");
+
+      render(
+        <FilterList
+          objectType={MockObjectType}
+          filterDefinitions={[def]}
+        />,
+      );
+
+      expect(
+        screen.getByRole("button", { name: /more actions/i }),
+      ).toBeDefined();
+
+      fireEvent.click(
+        screen.getByRole("button", { name: "Remove manager filter" }),
+      );
+      expect(
+        screen.queryByRole("button", { name: /more actions/i }),
+      ).toBeNull();
+
+      fireEvent.click(screen.getByRole("button", { name: /add filter/i }));
+      fireEvent.click(screen.getByRole("menuitem", { name: "manager" }));
+
+      // The linked filter is not seeded either; the … reappears via the
+      // getEmptyDisplayState fallback (unwrapped to the inner EXACT_MATCH state).
+      expect(
+        screen.getByRole("button", { name: /more actions/i }),
+      ).toBeDefined();
+    });
+
+    it("does not render the more-action toggle for a freshly added NUMBER_RANGE filter", () => {
       const def = createPropertyFilterDef(
         "age",
         "NUMBER_RANGE",
@@ -99,7 +156,7 @@ describe("FilterList", () => {
       ).toBeNull();
     });
 
-    it("opens the keeping/excluding dropdown when the overflow toggle is clicked on an empty MULTI_SELECT", () => {
+    it("opens the keeping/excluding dropdown when the more-action toggle is clicked on an empty MULTI_SELECT", () => {
       const def = createPropertyFilterDef(
         "dept",
         "MULTI_SELECT",
