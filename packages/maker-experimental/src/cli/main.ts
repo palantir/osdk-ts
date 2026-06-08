@@ -32,6 +32,7 @@ import invariant from "tiny-invariant";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { defineOntologyV2 } from "../api/defineOntologyV2.js";
+import { getExternalRecommendations } from "../conversion/toMarketplace/RecommendationUtils.js";
 import { ReadableIdGenerator } from "../util/generateRid.js";
 import {
   generateBackingDatasetBlockResult,
@@ -389,7 +390,12 @@ export default async function main(
     inputs: Object.fromEntries(shapes.inputShapes),
     outputs: Object.fromEntries(shapes.outputShapes),
     input_mapping_entries: ontologyInputMappingEntries,
-    external_recommendations: [],
+    external_recommendations: getExternalRecommendations(
+      ontologyIr.importedOntology,
+      ontologyIr.valueTypes,
+      ontologyIr.importedValueTypes,
+      shapes.inputShapes,
+    ),
     add_on_override: undefined,
     input_shape_metadata: Object.fromEntries(shapes.inputShapeMetadata),
     block_type: "ONTOLOGY",
