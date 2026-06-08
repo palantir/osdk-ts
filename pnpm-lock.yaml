@@ -1633,8 +1633,8 @@ importers:
         specifier: workspace:^
         version: link:../client
       '@osdk/language-models':
-        specifier: workspace:^
-        version: link:../language-models
+        specifier: '>=0.6.0 <1.0.0'
+        version: 0.6.0(@osdk/client@packages+client)
     devDependencies:
       '@ai-sdk/provider':
         specifier: ^3.0.8
@@ -9128,6 +9128,11 @@ packages:
 
   '@osdk/internal.foundry.ontologies@2.63.0':
     resolution: {integrity: sha512-tSDRH8gNfh3Xt76uMpbDh7C76ff99b1FnU6pz6Yxv0t5Lc0+eydm9l3wOm9Md43yowP30KtsN7K9d+bFMYNIMw==}
+
+  '@osdk/language-models@0.6.0':
+    resolution: {integrity: sha512-cPyJA4YG6BeIKu1TtjKdqRfSCA85SOLoN+o8PCkJHx35Gn7YCUbHe0gWiSqznak0XzA7HjzWcSouPjWYjmdogw==}
+    peerDependencies:
+      '@osdk/client': ^2.16.0
 
   '@osdk/legacy-client@2.5.6':
     resolution: {integrity: sha512-QPeCcuqCv+s6toIxWMRArKJx35bzvcpoKAqsQ6YYiFEiGn43vLoQQGbeMlnqcGYfdbljyzeOoDxZtgVIn6a8HA==}
@@ -26523,6 +26528,10 @@ snapshots:
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.7.0
+
+  '@osdk/language-models@0.6.0(@osdk/client@packages+client)':
+    dependencies:
+      '@osdk/client': link:packages/client
 
   '@osdk/legacy-client@2.5.6':
     dependencies:
