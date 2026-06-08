@@ -183,6 +183,7 @@ export function defineInterface(
         : undefined,
     },
     extendsInterfaces,
+    linkedInterfaces: [],
     links: [],
     status,
     propertiesV2,

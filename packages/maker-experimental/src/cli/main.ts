@@ -18,7 +18,10 @@ import type {
   LinkTypeBlockDataV2,
   ObjectTypeBlockDataV2,
 } from "@osdk/client.unstable";
-import { OntologyIrToFullMetadataConverter } from "@osdk/generator-converters.ontologyir";
+import {
+  OntologyBlockDataToFullMetadataConverter,
+  OntologyIrToFullMetadataConverter,
+} from "@osdk/generator-converters.ontologyir";
 import { PreviewOntologyIrConverter } from "@osdk/generator-converters.preview";
 import { cleanAndValidateLinkTypeId } from "@osdk/maker";
 import { consola } from "consola";
@@ -210,6 +213,22 @@ export default async function main(
   const ontologyJson = JSON.stringify(ontologyIr.ontology, null, 2);
   await fs.promises.writeFile(ontologyJsonPath, ontologyJson);
   consola.info(`Wrote ontology.json to ${ontologyJsonPath}`);
+
+  const importedMetadata = OntologyBlockDataToFullMetadataConverter
+    .getFullMetadataFromBlockData(
+      ontologyIr.importedOntology,
+      undefined,
+      ontologyIr.transitiveImportedOntology,
+    );
+  const importedMetadataPath = path.join(
+    commandLineOpts.buildDir,
+    "oac-imported-metadata.json",
+  );
+  await fs.promises.writeFile(
+    importedMetadataPath,
+    JSON.stringify(importedMetadata, null, 2),
+  );
+  consola.info(`Wrote oac-imported-metadata.json to ${importedMetadataPath}`);
 
   let valueTypeResults: BlockGeneratorResult[] = [];
   if (ontologyIr.valueTypes.length > 0) {

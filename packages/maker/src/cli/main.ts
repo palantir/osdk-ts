@@ -160,7 +160,7 @@ export default async function main(
     commandLineOpts.output,
     JSON.stringify(
       ontologyIr,
-      null,
+      (key, value) => key === "linkedInterfaces" ? undefined : value,
       2,
     ),
   );
