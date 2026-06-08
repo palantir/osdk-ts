@@ -31,7 +31,7 @@ Pre-built, Ontology-aware React components with data loading, caching, and state
 - [FilterList](/react-components/FilterList) - Aggregation-based filter UI
 - [ActionForm](/react-components/ActionForm) - Generated and custom forms for applying OSDK actions
 - [PdfViewer](/react-components/PdfViewer) - PDF viewer with annotations and search
-- [CbacPicker](/cbac-components/CbacPicker) - Classification marking picker, dialog, and banner
+- [CbacPicker](/react-components/CbacPicker) - Classification marking picker, dialog, and banner
 
 ### Other Guides
 

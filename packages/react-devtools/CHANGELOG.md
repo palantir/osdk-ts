@@ -1,5 +1,11 @@
 # @osdk/react-devtools
 
+## 0.9.0
+
+### Minor Changes
+
+- 958f6e0: Make react-devtools package public again
+
 ## 0.8.0
 
 ### Minor Changes

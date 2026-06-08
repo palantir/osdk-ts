@@ -1,19 +1,23 @@
 import type { DerivedProperty, Osdk } from "@osdk/api";
 import { useOsdkClient } from "@osdk/react";
-import type { ColumnDefinition } from "@osdk/react-components/experimental/object-table";
+import type {
+  ColumnDefinition,
+  ObjectTableHandle,
+} from "@osdk/react-components/experimental/object-table";
 import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import {
   type OsdkThemeMode,
   OsdkThemeProvider,
   useOsdkTheme,
 } from "@osdk/react-components/experimental/theme";
-import React, { useCallback } from "react";
+import React, { useCallback, useRef } from "react";
 import {
   Employee,
   getEmployeeDaysSinceStart,
 } from "../../generatedNoCheck2/index.js";
 import "./EmployeesTable.css";
 import { Button } from "../../components/Button.js";
+import { DownloadEmployeesButton } from "./DownloadEmployeesButton.js";
 
 type RDPs = {
   managerName: "string";
@@ -154,6 +158,8 @@ export function EmployeesTable(): React.ReactElement {
 
   const os = client(Employee);
 
+  const tableRef = useRef<ObjectTableHandle<Employee, RDPs>>(null);
+
   return (
     <OsdkThemeProvider>
       <div
@@ -164,6 +170,9 @@ export function EmployeesTable(): React.ReactElement {
         }}
       >
         <ThemeToggle />
+        <div style={{ marginBottom: 8 }}>
+          <DownloadEmployeesButton tableRef={tableRef} />
+        </div>
         <div
           style={{
             height: "300px",
@@ -180,6 +189,7 @@ export function EmployeesTable(): React.ReactElement {
               direction: "desc",
             }]}
             onSubmitEdits={handleSubmitEdits}
+            tableRef={tableRef}
           />
         </div>
       </div>

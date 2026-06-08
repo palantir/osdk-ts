@@ -16,11 +16,15 @@
 
 import { createClient } from "@osdk/client";
 import { OsdkProvider } from "@osdk/react";
-import { OsdkThemeProvider } from "@osdk/react-components/experimental/theme";
-import { withThemeByDataAttribute } from "@storybook/addon-themes";
 import type { Preview } from "@storybook/react-vite";
 import { initialize, mswLoader } from "msw-storybook-addon";
 import { fauxFoundry, setupFauxFoundry } from "../src/mocks/fauxFoundry.js";
+import { GLOBALS_KEY } from "./addons/brand-theme-extractor/constants.js";
+import { BrandThemeDecorator } from "./addons/brand-theme-extractor/decorator.js";
+import {
+  getDefaultBrandThemeState,
+  stringifyBrandThemeState,
+} from "./addons/brand-theme-extractor/state.js";
 import "./styles.css";
 
 // Initialize MSW with proper options
@@ -48,6 +52,9 @@ const mockClient = createClient(
 );
 
 const preview: Preview = {
+  initialGlobals: {
+    [GLOBALS_KEY]: stringifyBrandThemeState(getDefaultBrandThemeState()),
+  },
   parameters: {
     options: {
       // @ts-expect-error — Storybook eval()s storySort at build time
@@ -119,30 +126,14 @@ const preview: Preview = {
     await fauxFoundryReady;
   }, mswLoader],
   decorators: [
-    (Story, context) => {
-      // The OSDK light/dark color scheme is driven by `<OsdkThemeProvider>`
-      const themeName = context.globals.theme as string | undefined;
-      const colorScheme = themeName === "dark" ? "dark" : "light";
-      return (
-        <div className="root">
-          <OsdkProvider client={mockClient}>
-            <OsdkThemeProvider theme={colorScheme}>
-              <Story />
-            </OsdkThemeProvider>
-          </OsdkProvider>
-        </div>
-      );
-    },
-    withThemeByDataAttribute({
-      themes: {
-        light: "light",
-        dark: "dark",
-        modern: "modern",
-        devcon: "devcon",
-      },
-      defaultTheme: "light",
-      attributeName: "data-theme",
-    }),
+    (Story) => (
+      <div className="root">
+        <OsdkProvider client={mockClient}>
+          <Story />
+        </OsdkProvider>
+      </div>
+    ),
+    BrandThemeDecorator,
   ],
 };
 

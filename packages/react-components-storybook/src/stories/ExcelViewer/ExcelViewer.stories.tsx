@@ -28,7 +28,7 @@ import {
 } from "@osdk/react-components/experimental/excel-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { http, passthrough } from "msw";
-import { utils, write } from "xlsx";
+import { utils, write } from "xlsx-republish";
 
 const SAMPLE_SPREADSHEET: ParsedSpreadsheet = {
   sheets: [

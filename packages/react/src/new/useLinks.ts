@@ -25,8 +25,15 @@ import React from "react";
 import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
 import { devToolsMetadata, makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext } from "./OsdkContext.js";
+import type { ResolveToObjectTypeOption } from "./useOsdkObjects.js";
 
-export interface UseLinksOptions<
+export type UseLinksOptions<
+  T extends ObjectOrInterfaceDefinition,
+> =
+  & UseLinksBaseOptions<T>
+  & ResolveToObjectTypeOption<T>;
+
+interface UseLinksBaseOptions<
   T extends ObjectOrInterfaceDefinition,
 > {
   /**
@@ -151,8 +158,12 @@ export function useLinks<
 ): UseLinksResult<LinkedType<T, L>> {
   const { observableClient } = React.useContext(OsdkContext);
 
-  const { enabled = true, $includeAllBaseObjectProperties, ...otherOptions } =
-    options;
+  const {
+    enabled = true,
+    $includeAllBaseObjectProperties,
+    resolveToObjectType,
+    ...otherOptions
+  } = options;
 
   const canonOptions = observableClient.canonicalizeOptions({
     where: otherOptions.where,
@@ -204,6 +215,7 @@ export function useLinks<
               mode: otherOptions.mode,
               dedupeInterval: otherOptions.dedupeIntervalMs ?? 2_000,
               $includeAllBaseObjectProperties,
+              resolveToObjectType,
               ...(canonOptions.$select ? { select: canonOptions.$select } : {}),
             },
             observer,
@@ -228,6 +240,7 @@ export function useLinks<
       otherOptions.dedupeIntervalMs,
       canonOptions.$select,
       $includeAllBaseObjectProperties,
+      !!resolveToObjectType,
     ],
   );
 

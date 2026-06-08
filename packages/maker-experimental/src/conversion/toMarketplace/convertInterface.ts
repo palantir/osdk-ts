@@ -24,7 +24,7 @@ export function convertInterface(
   interfaceType: InterfaceType,
   ridGenerator: OntologyRidGenerator,
 ): MarketplaceInterfaceType {
-  const { __type, status, ...other } = interfaceType;
+  const { __type, status, linkedInterfaces: _, ...other } = interfaceType;
   // Normalize deprecated deadline format to match Java (strip .000 milliseconds)
   const normalizedStatus = status?.type === "deprecated"
     ? {

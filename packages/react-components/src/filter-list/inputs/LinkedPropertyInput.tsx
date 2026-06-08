@@ -25,6 +25,7 @@ import { useOsdkAggregation } from "@osdk/react";
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
 import { assertUnreachable } from "../../shared/assertUnreachable.js";
+import { FilterInputExcludeRow } from "../base/FilterInputExcludeRow.js";
 import { ContainsTextInput } from "../base/inputs/ContainsTextInput.js";
 import { DateRangeHistogramInput } from "../base/inputs/DateRangeHistogramInput.js";
 import styles from "../base/inputs/LinkedPropertyInput.module.css";
@@ -58,6 +59,7 @@ import {
   coerceToString,
   coerceToStringArray,
 } from "../utils/coerceFilterValue.js";
+import { clearFilterState } from "../utils/filterValues.js";
 import { narrowObjectSet } from "../utils/narrowObjectSet.js";
 
 interface LinkedPropertyInputProps<
@@ -77,6 +79,7 @@ interface LinkedPropertyInputProps<
   onFilterStateChanged: (state: FilterState) => void;
   showFilteredOutValues?: boolean;
   searchQuery?: string;
+  excludeRowOpen?: boolean;
   className?: string;
   style?: React.CSSProperties;
   layout?: MultiSelectInputLayout;
@@ -94,6 +97,7 @@ function LinkedPropertyInputInner<
   onFilterStateChanged,
   showFilteredOutValues,
   searchQuery,
+  excludeRowOpen,
   className,
   style,
   layout,
@@ -138,6 +142,13 @@ function LinkedPropertyInputInner<
     },
     [onFilterStateChanged],
   );
+
+  const handleClearAll = useCallback(() => {
+    const cleared = clearFilterState(filterState);
+    if (cleared != null) {
+      onFilterStateChanged(cleared);
+    }
+  }, [filterState, onFilterStateChanged]);
 
   const onSelectChange = useCallback(
     (selectedValues: string[]) => {
@@ -442,9 +453,19 @@ function LinkedPropertyInputInner<
   })();
 
   return (
-    <div className={classnames(styles.linkedProperty, className)} style={style}>
-      {content}
-    </div>
+    <FilterInputExcludeRow
+      excludeRowOpen={excludeRowOpen}
+      filterState={filterState}
+      onFilterStateChanged={onFilterStateChanged}
+      onClearAll={handleClearAll}
+    >
+      <div
+        className={classnames(styles.linkedProperty, className)}
+        style={style}
+      >
+        {content}
+      </div>
+    </FilterInputExcludeRow>
   );
 }
 

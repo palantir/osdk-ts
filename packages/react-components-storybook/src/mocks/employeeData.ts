@@ -47,6 +47,35 @@ export const employeeData: BaseServerObject[] = [
     "__title": "Ahmed Williams",
   },
   {
+    // Department as null/undefined case
+    "jobProfile": "Content Manager",
+    "mentorEmployeeNumber": 657495024,
+    "locationName": "NYC Office",
+    "fullName": "Jordan Blank",
+    "__primaryKey": 657495999,
+    "leadEmployeeNumber": 657495067,
+    "preferredNameLast": "Blank",
+    "latestVenture": {},
+    "jobTitle": "Content Manager",
+    "preferredNameFirst": "Jordan",
+    "locationCity": "New York",
+    "firstInternStartDate": "2024-11-21T09:00:00.000Z",
+    "workerType": "Employee",
+    "employeeNumber": 657495999,
+    "primaryOfficeId": "7d4bb8d6-c94c-4d50-b444-923cf2ca01f0",
+    "adUsername": "jordan.blank",
+    "businessTitle": "Content Manager",
+    "locationCountry": "USA",
+    "businessArea": "Marketing",
+    "emailPrimaryWork": "jordan.blank999@example.com",
+    "__apiName": "Employee",
+    "locationRegion": "New York",
+    "team": "Content",
+    "locationType": "Regional Office",
+    "isRemote": false,
+    "__title": "Jordan Blank",
+  },
+  {
     "jobProfile": "Program Manager",
     "mentorEmployeeNumber": 657495051,
     "locationName": "NYC Office",
@@ -1306,5 +1335,24 @@ export const employeeData: BaseServerObject[] = [
     "locationType": "Regional Office",
     "isRemote": true,
     "__title": "Liam Carter",
+  },
+  // Null-title employee used by matcher-hardening scenarios. The faux data
+  // store reads $title from the title property (fullName), and falsy values
+  // are normalized to undefined — so this row lands in the cache with
+  // $title === undefined, exercising the $startsWith null-safety path in
+  // evaluateFilter.
+  {
+    "fullName": "",
+    "__primaryKey": 657495991,
+    "employeeNumber": 657495991,
+    "department": "Engineering",
+    "jobTitle": "Engineer",
+    "businessTitle": "Engineer",
+    "adUsername": "null.title",
+    "emailPrimaryWork": "null.title999@example.com",
+    "__apiName": "Employee",
+    "team": "Platform",
+    "workerType": "Employee",
+    "isRemote": false,
   },
 ];

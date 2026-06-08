@@ -162,16 +162,11 @@ export function useObjectTableData<
   // Get the result from the appropriate hook
   const baseResult = shouldUseObjectSet ? objectSetResult : osdkObjectsResult;
 
-  const primaryKeyApiName = objectOrInterfaceType.type === "object"
-    ? objectOrInterfaceType.primaryKeyApiName
-    : undefined;
-
   // Call useFunctionColumnsData to get function column data
   const functionColumnData = useFunctionColumnsData<Q, RDPs, FunctionColumns>({
     objectOrInterfaceType,
     objects: baseResult.data,
     columnDefinitions,
-    primaryKeyApiName,
     pageSize,
   });
 

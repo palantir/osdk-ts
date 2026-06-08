@@ -19,14 +19,11 @@ import classnames from "classnames";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import { Checkbox } from "../../../base-components/checkbox/Checkbox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
-import {
-  filterValuesBySearch,
-  isEmptyValue,
-} from "../../utils/filterValues.js";
+import { filterValuesBySearch, isNoValue } from "../../utils/filterValues.js";
 import { formatCompactCount } from "./formatCompactCount.js";
 import styles from "./ListogramInput.module.css";
 import { ListogramSkeleton } from "./ListogramSkeleton.js";
-import { NoValueLabel } from "./NoValueLabel.js";
+import { OptionLabel } from "./OptionLabel.js";
 import sharedStyles from "./shared.module.css";
 import { useStableData } from "./useStableData.js";
 
@@ -138,7 +135,7 @@ function ListogramInputInner({
           {displayValues.map(({ value, count }) => {
             const percentage = maxCount > 0 ? (count / maxCount) * 100 : 0;
             const perRowColor = colorMap?.[value];
-            const isEmpty = isEmptyValue(value);
+            const isEmpty = isNoValue(value) || value === "";
 
             const isFilteredOut = showFilteredOutValues
               && count === 0
@@ -179,9 +176,11 @@ function ListogramInputInner({
                   data-excluding={(isExcluding && selectedSet.has(value))
                     || undefined}
                 >
-                  {isEmpty
-                    ? <NoValueLabel className={styles.noValueLabel} />
-                    : (renderValue?.(value) ?? value)}
+                  <OptionLabel
+                    value={value}
+                    renderValue={renderValue}
+                    className={styles.noValueLabel}
+                  />
                 </span>
                 {showCount && displayMode !== "minimal" && (
                   <span

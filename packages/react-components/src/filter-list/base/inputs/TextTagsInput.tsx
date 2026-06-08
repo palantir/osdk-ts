@@ -19,9 +19,8 @@ import classnames from "classnames";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
-import { isEmptyValue } from "../../utils/filterValues.js";
 import { useFilterListBoundary } from "../FilterListBoundaryContext.js";
-import { NoValueLabel } from "./NoValueLabel.js";
+import { getOptionLabelText, OptionLabel } from "./OptionLabel.js";
 import { SelectInputSkeleton } from "./SelectInputSkeleton.js";
 import sharedStyles from "./shared.module.css";
 import styles from "./TextTagsInput.module.css";
@@ -38,12 +37,11 @@ const TagItem = memo(function TagItem({ tag, onRemove }: TagItemProps) {
     onRemove(tag);
   }, [tag, onRemove]);
 
-  const isEmpty = isEmptyValue(tag);
-  const displayLabel = isEmpty ? "No value" : tag;
+  const displayLabel = getOptionLabelText(tag);
 
   return (
     <span className={sharedStyles.tag}>
-      {isEmpty ? <NoValueLabel /> : tag}
+      <OptionLabel value={tag} />
       <Button
         type="button"
         className={sharedStyles.tagRemove}
@@ -225,7 +223,7 @@ function TextTagsInputInner({
                 )
                 : filteredSuggestions.map(({ value, count }) => (
                   <Combobox.Item key={value} value={value}>
-                    {value} ({count.toLocaleString()})
+                    <OptionLabel value={value} /> ({count.toLocaleString()})
                   </Combobox.Item>
                 ))}
             </Combobox.Popup>

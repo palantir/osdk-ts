@@ -17,7 +17,6 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it } from "vitest";
-import { isEmptyValue } from "../../../utils/filterValues.js";
 import { NoValueLabel } from "../NoValueLabel.js";
 
 afterEach(cleanup);
@@ -45,24 +44,5 @@ describe("NoValueLabel", () => {
     const node = container.firstElementChild;
     expect(node?.className.includes("noValue")).toBe(true);
     expect(node?.className.includes("extra")).toBe(true);
-  });
-});
-
-describe("isEmptyValue", () => {
-  it("treats null and undefined as empty", () => {
-    expect(isEmptyValue(null)).toBe(true);
-    expect(isEmptyValue(undefined)).toBe(true);
-  });
-
-  it("treats only the empty string as empty", () => {
-    expect(isEmptyValue("")).toBe(true);
-    expect(isEmptyValue("   ")).toBe(false);
-    expect(isEmptyValue("\t\n")).toBe(false);
-  });
-
-  it("treats non-empty strings as non-empty", () => {
-    expect(isEmptyValue("Active")).toBe(false);
-    expect(isEmptyValue("0")).toBe(false);
-    expect(isEmptyValue(" a ")).toBe(false);
   });
 });

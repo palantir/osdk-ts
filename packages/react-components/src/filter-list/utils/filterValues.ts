@@ -67,11 +67,13 @@ export function supportsExcluding(state: FilterState | undefined): boolean {
     case "EXACT_MATCH":
     case "CONTAINS_TEXT":
     case "TIMELINE":
+    // hasLink supports excluding via the overflow dropdown: "Keeping" filters
+    // to objects that have the link, "Excluding" to those that do not.
+    case "hasLink":
       return true;
     case "NUMBER_RANGE":
     case "DATE_RANGE":
     case "TOGGLE":
-    case "hasLink":
     case "linkedProperty":
     case "keywordSearch":
     case "custom":
@@ -84,43 +86,53 @@ export function supportsExcluding(state: FilterState | undefined): boolean {
 }
 
 /**
- * Returns true if the given value should render as a "No value" placeholder
- * in dropdown options, listogram buckets, and tag chips.
+ * Sentinel identity for the "No value" bucket (null/undefined property values).
  *
- * Whitespace-only strings (e.g. " ", "\t") are real values and remain
- * distinct from "No value".
+ * `selectedValues` is a `string[]`, so the null/undefined state needs a string
+ * stand-in that cannot collide with a real value. Put `NO_VALUE` in `selectedValues`
+ * to filter for objects whose property `$isNull`.
  */
-export function isEmptyValue(value: string | null | undefined): boolean {
-  return value == null || value === "";
+export const NO_VALUE = "__NO_VALUE__";
+
+/**
+ * Returns true if the given value represents "No value" (a null/undefined
+ * property value), i.e. the {@link NO_VALUE} sentinel (or a raw null/undefined
+ * defensively).
+ */
+export function isNoValue(value: string | null | undefined): boolean {
+  return value == null || value === NO_VALUE;
 }
 
 /**
- * Merges every null/undefined/empty-string aggregation row into a single
- * "No value" bucket placed at the position of the first empty row encountered.
- * Backends sometimes return separate rows for null, undefined, and ""; this
- * collapses them so consumers (listogram, dropdown, multi-select) all see one
- * canonical row.
+ * Merges every null/undefined aggregation row into a single "No value" bucket
+ * (keyed by the {@link NO_VALUE} sentinel) placed at the position of the first
+ * such row encountered. Backends sometimes return separate rows for null and
+ * undefined; this collapses them so consumers (listogram, dropdown,
+ * multi-select) all see one canonical "No value" row.
+ *
+ * Literal empty-string (`""`) rows are real values and are left untouched as
+ * their own distinct rows.
  */
 export function dedupeEmptyAggregationRows(
   values: PropertyAggregationValue[],
 ): PropertyAggregationValue[] {
   const out: PropertyAggregationValue[] = [];
-  let emptyCount = 0;
-  let firstEmptyIndex = -1;
+  let noValueCount = 0;
+  let firstNoValueIndex = -1;
   for (const v of values) {
-    if (isEmptyValue(v.value)) {
-      if (firstEmptyIndex === -1) {
-        firstEmptyIndex = out.length;
+    if (isNoValue(v.value)) {
+      if (firstNoValueIndex === -1) {
+        firstNoValueIndex = out.length;
       }
-      emptyCount += v.count;
+      noValueCount += v.count;
     } else {
       out.push(v);
     }
   }
-  if (firstEmptyIndex >= 0 && emptyCount > 0) {
-    out.splice(firstEmptyIndex, 0, {
-      value: "",
-      count: emptyCount,
+  if (firstNoValueIndex >= 0 && noValueCount > 0) {
+    out.splice(firstNoValueIndex, 0, {
+      value: NO_VALUE,
+      count: noValueCount,
       isNull: true,
     });
   }
@@ -196,7 +208,11 @@ export function clearFilterState(
     case "TOGGLE":
       return { type: "TOGGLE", enabled: false };
     case "hasLink":
-      return { type: "hasLink", hasLink: false };
+      return {
+        type: "hasLink",
+        hasLink: false,
+        isExcluding: state.isExcluding,
+      };
     case "keywordSearch":
       return {
         type: "keywordSearch",

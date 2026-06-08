@@ -15,6 +15,7 @@
  */
 
 export * from "./experimental/action-form.js";
+export * from "./experimental/cbac-picker.js";
 export * from "./experimental/document-viewer.js";
 export * from "./experimental/email-viewer.js";
 export * from "./experimental/excel-viewer.js";

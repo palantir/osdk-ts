@@ -680,18 +680,19 @@ Styling for filter list components including search, checkboxes, listogram, and 
 
 #### Filter Item Header Actions
 
-| Variable                                         | Default Value                             | Description                    |
-| ------------------------------------------------ | ----------------------------------------- | ------------------------------ |
-| `--osdk-filter-item-header-action-padding`       | `calc(var(--osdk-surface-spacing) * 0.5)` | Action button padding          |
-| `--osdk-filter-item-header-action-color`         | `var(--osdk-typography-color-muted)`      | Action button color            |
-| `--osdk-filter-item-header-action-bg-hover`      | `var(--osdk-custom-color-gray-1)`         | Action button hover background |
-| `--osdk-filter-item-header-action-border-radius` | `var(--osdk-surface-border-radius)`       | Action button border radius    |
+| Variable                                         | Default Value                                         | Description                                                       |
+| ------------------------------------------------ | ----------------------------------------------------- | ----------------------------------------------------------------- |
+| `--osdk-filter-item-header-action-padding`       | `calc(var(--osdk-surface-spacing) * 0.5)`             | Action button padding                                             |
+| `--osdk-filter-item-header-action-color`         | `var(--osdk-typography-color-muted)`                  | Action button color                                               |
+| `--osdk-filter-item-header-action-bg-hover`      | `var(--osdk-custom-color-gray-1)`                     | Action button hover background                                    |
+| `--osdk-filter-item-header-action-bg-active`     | `var(--osdk-surface-background-color-default-active)` | Action button active/pressed background (open overflow or search) |
+| `--osdk-filter-item-header-action-color-active`  | `var(--osdk-typography-color-default-rest)`           | Action button active/pressed text color                           |
+| `--osdk-filter-item-header-action-border-radius` | `var(--osdk-surface-border-radius)`                   | Action button border radius                                       |
 
 #### Exclude Dropdown
 
 | Variable                                                    | Default Value                               | Description                    |
 | ----------------------------------------------------------- | ------------------------------------------- | ------------------------------ |
-| `--osdk-filter-item-exclude-dropdown-font-family`           | `var(--osdk-typography-family-default)`     | Dropdown font family           |
 | `--osdk-filter-item-exclude-dropdown-font-size`             | `var(--osdk-typography-size-body-small)`    | Dropdown font size             |
 | `--osdk-filter-item-exclude-dropdown-color`                 | `var(--osdk-typography-color-default-rest)` | Dropdown text color            |
 | `--osdk-filter-item-exclude-dropdown-trigger-color`         | `var(--osdk-intent-primary-rest)`           | Dropdown trigger color         |
@@ -950,11 +951,12 @@ Canonical "No value" styling used by the shared `NoValueLabel` component across 
 
 #### Skeleton Loading
 
-| Variable                              | Default Value                              | Description                      |
-| ------------------------------------- | ------------------------------------------ | -------------------------------- |
-| `--osdk-filter-skeleton-text-height`  | `calc(var(--osdk-surface-spacing) * 1.5)`  | Skeleton text height             |
-| `--osdk-filter-skeleton-count-width`  | `calc(var(--osdk-surface-spacing) * 2.5)`  | Skeleton count width             |
-| `--osdk-filter-content-fade-duration` | `var(--osdk-emphasis-transition-duration)` | Content fade transition duration |
+| Variable                              | Default Value                                   | Description                      |
+| ------------------------------------- | ----------------------------------------------- | -------------------------------- |
+| `--osdk-filter-skeleton-text-height`  | `calc(var(--osdk-surface-spacing) * 1.5)`       | Skeleton text height             |
+| `--osdk-filter-skeleton-count-width`  | `calc(var(--osdk-surface-spacing) * 2.5)`       | Skeleton count width             |
+| `--osdk-filter-skeleton-input-height` | `var(--osdk-combobox-trigger-min-height, 30px)` | Skeleton input height            |
+| `--osdk-filter-content-fade-duration` | `var(--osdk-emphasis-transition-duration)`      | Content fade transition duration |
 
 #### Filtered-Out Item Tokens
 

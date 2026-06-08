@@ -14,4 +14,12 @@
  * limitations under the License.
  */
 
-export * from "./build/cjs/public/internal-node.cjs";
+export {
+  isEvent,
+  isProjectLoadingEnd,
+  isProjectLoadingStart,
+  isQuickInfoResponse,
+  isResponse,
+  startTsServer,
+} from "./tsserver.js";
+export type { TsServer } from "./tsserver.js";

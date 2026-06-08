@@ -137,6 +137,7 @@ The components that this package will provide are:
 | `ImageViewer`    | Renders images (PNG, JPEG, GIF, SVG, WebP, BMP)                                     | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/ImageViewer.md)    |
 | `VideoViewer`    | Renders video with native browser controls                                          | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/VideoViewer.md)    |
 | `XmlViewer`      | Renders XML content with syntax preservation                                        | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/XmlViewer.md)      |
+| `CbacPicker`     | Picker for classification-based access control (CBAC) markings with banner display  | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/CbacPicker.md)     |
 
 ## Component Architecture
 
@@ -296,7 +297,10 @@ function EmployeeDirectory() {
 
 Looking to contribute to the codebase? Read the [contribution guidelines](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/CONTRIBUTING.md).
 
-If you use [Claude Code](https://claude.com/claude-code), run `/add-new-component` (or just describe the component you want to add) — the [`add-new-component` skill](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/.claude/skills/add-new-component/SKILL.md) walks you through the API-first PR, MVP checklist, and verification loop on top of `CONTRIBUTING.md`.
+If you use [Claude Code](https://claude.com/claude-code), this package ships two skills that wrap `CONTRIBUTING.md`:
+
+- Run `/add-new-component` (or describe the component you want to add) — the [`add-new-component` skill](../../.claude/skills/add-new-component/SKILL.md) walks you through the API-first PR, MVP checklist, and verification loop.
+- Run `/contribute` (or describe the bug to fix / feature to add on an existing component) — the [`contribute` skill](../../.claude/skills/contribute/SKILL.md) adds a failing-test-first gate for bugs, an API-change checkpoint when the diff touches public props, and a verification loop.
 
 ## Development Workflow
 

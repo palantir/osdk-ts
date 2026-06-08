@@ -27,7 +27,6 @@ const config: StorybookConfig = {
     "@storybook/addon-a11y",
     "@storybook/addon-docs",
     "@storybook/addon-links",
-    "@storybook/addon-themes",
     "@storybook/addon-mcp",
     "msw-storybook-addon",
     "storybook-addon-tag-badges",
@@ -82,8 +81,6 @@ const config: StorybookConfig = {
         // Resolve @docs/ and @rc/ to the react-components package so MDX
         // wrappers can import .md files without fragile relative paths.
         "@docs": new URL("../../react-components/docs", import.meta.url)
-          .pathname,
-        "@cbac-docs": new URL("../../cbac-components/docs", import.meta.url)
           .pathname,
         "@rc-root": new URL("../../react-components", import.meta.url)
           .pathname,

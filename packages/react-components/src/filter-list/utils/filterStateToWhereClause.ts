@@ -29,6 +29,7 @@ import type {
   LinkedPropertyFilterDefinition,
   LinkedPropertyFilterState,
 } from "../types/LinkedFilterTypes.js";
+import { NO_VALUE } from "./filterValues.js";
 import { getFilterKey } from "./getFilterKey.js";
 
 type PropertyFilter = Record<string, unknown> | boolean | string | number;
@@ -306,7 +307,11 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
         if (!state.hasLink) {
           break;
         }
-        clauses.push({ [definition.linkName]: { $isNotNull: true } });
+        const hasLinkClause = { [definition.linkName]: { $isNotNull: true } };
+        // "Excluding" keeps objects that do NOT have the link.
+        clauses.push(
+          state.isExcluding ? { $not: hasLinkClause } : hasLinkClause,
+        );
         break;
       }
 
@@ -493,7 +498,11 @@ export function getActiveLinkedFilters<Q extends ObjectTypeDefinition>(
   return result;
 }
 
-/** Splits values into non-empty and empty, returning $isNull for empty strings. */
+/**
+ * Splits values into real values and the NO_VALUE sentinel, returning $isNull
+ * for the sentinel. A literal empty string `""` is a real value and matches
+ * via equality (`{ key: "" }`), not `$isNull`.
+ */
 function buildValueOrNullFilter(
   values: (string | number | boolean)[],
 ): PropertyFilter | CompoundFilter | undefined {
@@ -501,16 +510,16 @@ function buildValueOrNullFilter(
     return undefined;
   }
 
-  const nonEmpty = values.filter((v) => v !== "");
-  const hasEmpty = nonEmpty.length < values.length;
+  const realValues = values.filter((v) => v !== NO_VALUE);
+  const hasNoValue = realValues.length < values.length;
 
-  const valueClause: PropertyFilter | undefined = nonEmpty.length === 0
+  const valueClause: PropertyFilter | undefined = realValues.length === 0
     ? undefined
-    : nonEmpty.length === 1
-    ? nonEmpty[0]
-    : { $in: nonEmpty };
+    : realValues.length === 1
+    ? realValues[0]
+    : { $in: realValues };
 
-  if (!hasEmpty) {
+  if (!hasNoValue) {
     return valueClause;
   }
 

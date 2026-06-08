@@ -1,5 +1,42 @@
 # @osdk/vite-plugin-oac
 
+## 0.29.0
+
+### Patch Changes
+
+- Updated dependencies [57cbc6d]
+  - @osdk/api@2.31.0
+  - @osdk/cli@0.55.0
+  - @osdk/client.unstable@2.31.0
+  - @osdk/generator-converters.ontologyir@2.31.0
+  - @osdk/faux@0.25.0
+  - @osdk/maker@0.34.0
+
+## 0.28.0
+
+### Patch Changes
+
+- @osdk/api@2.30.0
+- @osdk/client.unstable@2.30.0
+- @osdk/generator-converters.ontologyir@2.30.0
+- @osdk/cli@0.54.0
+
+## 0.27.0
+
+### Minor Changes
+
+- 08e921c: Bump `foundry-platform-typescript` catalog to 2.63.0 and surface the new CBAC/MANDATORY marking subtype on `ObjectMetadata.Property` via a new `typeMetadata` discriminated-union field. For marking properties, `typeMetadata` is `{ type: "marking"; subtype?: "CBAC" | "MANDATORY" }`, letting consumers distinguish classification-based markings from mandatory markings on object property columns. Future per-`type` metadata should be added as additional variants of `typeMetadata` rather than as new top-level optionals on `Property`.
+
+### Patch Changes
+
+- Updated dependencies [08e921c]
+  - @osdk/api@2.29.0
+  - @osdk/faux@0.24.0
+  - @osdk/generator-converters.ontologyir@2.29.0
+  - @osdk/maker@0.33.0
+  - @osdk/cli@0.53.0
+  - @osdk/client.unstable@2.29.0
+
 ## 0.26.0
 
 ### Patch Changes

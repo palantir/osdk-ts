@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,20 @@
  * limitations under the License.
  */
 
-export function isPoint(o: any): o is GeoJSON.Point {
-  return o && typeof o === "object" && "type" in o && o.type === "Point"
-    && "coordinates" in o && o.coordinates.length === 2;
+import React from "react";
+import { CbacBanner } from "../../cbac-picker/CbacBanner.js";
+import { toMarkingIdArray } from "../utils/markingValue.js";
+
+export interface CbacMarkingCellProps {
+  value: unknown;
+}
+
+export function CbacMarkingCell({
+  value,
+}: CbacMarkingCellProps): React.ReactNode {
+  const markingIds = toMarkingIdArray(value);
+  if (markingIds.length === 0) {
+    return null;
+  }
+  return <CbacBanner markingIds={markingIds} />;
 }

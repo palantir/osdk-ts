@@ -1044,6 +1044,71 @@ describe(Store, () => {
         expectNoMoreCalls(subFn);
       });
 
+      it("adds an object to a $title-filtered list when an optimistic write makes it match", async () => {
+        const johnDoe = employeesAsServerReturns.find(
+          (e) => e.$primaryKey === JOHN_DOE_ID,
+        );
+        invariant(johnDoe, "expected John Doe in the seeded employees");
+
+        // Seed an empty list filtered on a title nothing currently matches.
+        const where = { $title: { $eq: "Target Name" } };
+        updateList(cache, { type: Employee, where, orderBy: {} }, []);
+
+        const listSubFn = mockListSubCallback();
+        defer(
+          cache.lists.observe(
+            { type: Employee, where, orderBy: {}, mode: "offline" },
+            listSubFn,
+          ),
+        );
+
+        await waitForCall(listSubFn, 1);
+        expectSingleListCallAndClear(listSubFn, []);
+
+        // titleProperty is fullName, so this write sets $title to "Target Name",
+        // which the matcher strictly matches against the $title filter and adds
+        // to the list optimistically.
+        const renamed = johnDoe.$clone({ fullName: "Target Name" });
+        updateObject(cache, renamed, { optimisticId: createOptimisticId() });
+
+        await waitForCall(listSubFn, 1);
+        expectSingleListCallAndClear(listSubFn, [renamed], {
+          isOptimistic: true,
+          status: "loading",
+        });
+      });
+
+      it("adds an object to a $primaryKey-filtered list when written to the cache", async () => {
+        const johnDoe = employeesAsServerReturns.find(
+          (e) => e.$primaryKey === JOHN_DOE_ID,
+        );
+        invariant(johnDoe, "expected John Doe in the seeded employees");
+
+        const where = { $primaryKey: { $in: [JOHN_DOE_ID] } };
+        updateList(cache, { type: Employee, where, orderBy: {} }, []);
+
+        const listSubFn = mockListSubCallback();
+        defer(
+          cache.lists.observe(
+            { type: Employee, where, orderBy: {}, mode: "offline" },
+            listSubFn,
+          ),
+        );
+
+        await waitForCall(listSubFn, 1);
+        expectSingleListCallAndClear(listSubFn, []);
+
+        // The matcher reads $primaryKey off the holder and strictly matches it
+        // against the $in filter, so writing John Doe adds him to the list.
+        updateObject(cache, johnDoe);
+
+        await waitForCall(listSubFn, 1);
+        expectSingleListCallAndClear(listSubFn, [johnDoe], {
+          isOptimistic: false,
+          status: "loaded",
+        });
+      });
+
       describe("object deletes", () => {
         it("it properly updates the list", async () => {
           const emp = employeesAsServerReturns[0];

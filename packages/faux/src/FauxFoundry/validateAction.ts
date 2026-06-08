@@ -170,7 +170,11 @@ function validateActionParameterType(
       }
       return;
     case "geohash":
-      if (!(typeof value === "string")) {
+      if (
+        !(typeof value === "string"
+          || (typeof value === "object" && value != null
+            && "coordinates" in value))
+      ) {
         ret.result = "INVALID";
         ret.parameters[paramKey] = {
           ...baseParam,

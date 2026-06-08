@@ -18,13 +18,12 @@ import classnames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
-import { isEmptyValue } from "../../utils/filterValues.js";
 import { useFilterListBoundary } from "../FilterListBoundaryContext.js";
 import { createRenderValueFilter } from "./comboboxFilter.js";
 import { MultiSelectDropdownLayout } from "./MultiSelectDropdownLayout.js";
 import { MultiSelectInlineLayout } from "./MultiSelectInlineLayout.js";
 import styles from "./MultiSelectInput.module.css";
-import { NoValueLabel } from "./NoValueLabel.js";
+import { getOptionLabelText, OptionLabel } from "./OptionLabel.js";
 import { SelectInputSkeleton } from "./SelectInputSkeleton.js";
 import sharedStyles from "./shared.module.css";
 import { useStableData } from "./useStableData.js";
@@ -103,7 +102,6 @@ function MultiSelectInputInner({
 
   const renderItem = useCallback(
     (value: string) => {
-      const isEmpty = isEmptyValue(value);
       const count = countByValue.get(value) ?? 0;
       const isFilteredOut = showFilteredOutValues
         && count === 0
@@ -116,9 +114,7 @@ function MultiSelectInputInner({
         >
           <Combobox.ItemIndicator />
           <span className={styles.itemLabel}>
-            {isEmpty
-              ? <NoValueLabel />
-              : (renderValue ? renderValue(value) : value)}
+            <OptionLabel value={value} renderValue={renderValue} />
           </span>
           {showCounts && (
             <span className={styles.itemCount}>
@@ -135,15 +131,12 @@ function MultiSelectInputInner({
     (selectedItems: string[]) => (
       <>
         {selectedItems.map((value) => {
-          const isEmpty = isEmptyValue(value);
           return (
             <Combobox.Chip
               key={value}
-              aria-label={isEmpty ? "No value" : value}
+              aria-label={getOptionLabelText(value)}
             >
-              {isEmpty
-                ? <NoValueLabel />
-                : (renderValue ? renderValue(value) : value)}
+              <OptionLabel value={value} renderValue={renderValue} />
               <Combobox.ChipRemove />
             </Combobox.Chip>
           );

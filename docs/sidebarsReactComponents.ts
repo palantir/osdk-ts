@@ -34,18 +34,7 @@ const sidebars: SidebarsConfig = {
         "ImageViewer",
         "VideoViewer",
         "XmlViewer",
-      ],
-    },
-    {
-      type: "category",
-      label: "@osdk/cbac-components",
-      collapsed: false,
-      items: [
-        {
-          type: "link",
-          label: "CbacPicker",
-          href: "/cbac-components/CbacPicker",
-        },
+        "CbacPicker",
       ],
     },
   ],

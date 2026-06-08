@@ -63,11 +63,9 @@ interface ValueCountPair {
  * tick labels stay self-describing.
  *
  * @param formatDate Consumer-provided display formatter. Used for the
- * subtitle and (when `formatTickLabel` is omitted) for monthly tick
- * labels. Day-of-month and year ticks stay numeric regardless.
+ * subtitle only.
  * @param formatTickLabel Optional override for per-bucket tick labels.
- * Receives the bucket's start `Date` and the chosen granularity. Takes
- * precedence over `formatDate` for ticks.
+ * Receives the bucket's start `Date` and the chosen granularity.
  */
 export function createDateHistogramBuckets(
   pairs: ReadonlyArray<ValueCountPair>,
@@ -136,16 +134,13 @@ export function createDateHistogramBuckets(
     }
     for (let i = 0; i < months.length; i++) {
       const monthStart = months[i];
-      const defaultLabel = formatDate != null
-        ? formatDate(monthStart)
-        : SHORT_MONTH_FORMATTER.format(monthStart);
       buckets.push({
         min: monthStart,
         max: addMonths(monthStart, 1),
         count: counts[i],
         tickLabel: formatTickLabel != null
           ? formatTickLabel(monthStart, "month")
-          : defaultLabel,
+          : SHORT_MONTH_FORMATTER.format(monthStart),
       });
     }
   } else {

@@ -149,6 +149,7 @@ Each column header has a menu with items for sorting, filtering, pinning, resizi
 | `renderCellContextMenu` | `(row, cellValue) => ReactNode`                    | Custom context menu for right-click on cells                                                                                         |
 | `renderEmptyState`      | `() => ReactNode`                                  | Render override for the empty state. Called when the table has no rows and no error. Defaults to a "No Data" indicator               |
 | `getRowAttributes`      | `(rowData) => Record<string, string \| undefined>` | Extra HTML attributes (typically `data-*`) applied to each `<tr>`. See [Row Attributes](#row-attributes-and-conditional-row-styling) |
+| `tableRef`              | `React.Ref<ObjectTableHandle>`                     | Imperative handle for programmatic actions such as exporting data. See [Exporting Data](#exporting-data)                             |
 
 ### Cell Editing
 
@@ -1289,6 +1290,72 @@ No additional configuration needed - these states are built-in!
 ### Infinite Scrolling
 
 The ObjectTable automatically implements infinite scroll pagination, with page size of 50. As users scroll down, more data is loaded seamlessly. No configuration required!
+
+## Exporting Data
+
+Pass a `tableRef` to obtain an `ObjectTableHandle<Q, RDPs>`. Its `getSnapshot()` method loads **all** matching rows and returns a format-agnostic snapshot of the table's columns, rows, and total match count, so you can export to CSV, Excel, JSON, the clipboard, or anywhere else. When the total row count exceeds `rowLimit` (default `10_000`), the returned promise rejects (with a string error message); otherwise every matching row is loaded.
+
+The snapshot reflects the table's current column visibility, ordering, and pinning. Property, derived-property, and function-backed columns are all included. Custom-rendered columns have no underlying value and are omitted. Each row exposes a `getValue(columnId)` accessor; cells are the raw value, or the thrown `Error` instance if a function-backed cell failed to load (the promise still resolves with the rest of the snapshot).
+
+The snapshot also carries `totalCount` — the number of objects matching the underlying object set as reported by the API, encoded as a string (or `undefined` when no count was provided). It may exceed the number of loaded rows, so it's handy for surfacing "exported N of M".
+
+```typescript
+import type { Employee } from "@my/osdk";
+import {
+  ObjectTable,
+  type ObjectTableHandle,
+} from "@osdk/react-components/experimental";
+import { useRef } from "react";
+
+type RDPs = Record<string, never>;
+
+function EmployeeTableWithDownload() {
+  const tableRef = useRef<ObjectTableHandle<Employee, RDPs>>(null);
+
+  const downloadCsv = async () => {
+    const handle = tableRef.current;
+    if (handle == null) return;
+
+    const { columns, rows, totalCount } = await handle.getSnapshot();
+    console.log(`Exporting ${rows.length} of ${totalCount ?? "?"} rows`);
+
+    const escape = (value: unknown) => {
+      // Failed function-backed cells surface as the thrown Error instance —
+      // render a marker so a failure is distinguishable from an empty cell.
+      const text = value == null
+        ? ""
+        : value instanceof Error
+        ? "#ERROR"
+        : String(value);
+      return /[",\n]/.test(text) ? `"${text.replace(/"/g, "\"\"")}"` : text;
+    };
+    const csv = [
+      columns.map((column) => escape(column.name)).join(","),
+      ...rows.map((row) =>
+        columns.map((column) => escape(row.getValue(column.id))).join(",")
+      ),
+    ].join("\n");
+
+    // Prepend a UTF-8 BOM so spreadsheet apps detect the encoding.
+    const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = "employees.csv";
+    anchor.click();
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <>
+      <button onClick={downloadCsv}>Download CSV</button>
+      <ObjectTable objectType={Employee} tableRef={tableRef} />
+    </>
+  );
+}
+```
+
+`getSnapshot()` accepts an optional `{ rowLimit }` that bounds the snapshot size — when the total row count exceeds it, the promise rejects with a string error message. `row.getValue(columnId)` returns the raw cell value (or the thrown `Error` instance for failed function-backed cells, or `undefined` for unknown column ids) — your formatter handles the rest.
 
 ## TypeScript Tips
 

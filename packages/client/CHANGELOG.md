@@ -1,5 +1,51 @@
 # @osdk/client
 
+## 2.31.0
+
+### Minor Changes
+
+- 57cbc6d: Stop shipping Node-only test infrastructure in the browser builds of `@osdk/api` and `@osdk/client`.
+  - `@osdk/api`: the `__quickinfo_snapshot__/` test harness (formerly `probeUtils.ts` + `probes/*.ts`) is renamed under the existing `testUtils.` prefix convention so the transpile tool drops it from every build target. Pure test infrastructure; no runtime surface change.
+  - `@osdk/client`: the `./internal-node` subpath export is removed. The TypeScript-language-server harness it pointed at (`tsserver.ts`) has moved to a new private workspace package, `@osdk/shared.test.intellisense`, which both `@osdk/client` and `@osdk/react` consume as a dev dependency. This eliminates the `node:events` / `node:fs/promises` / `node:path` imports from the browser build and removes the project-internal subpath from the published client API.
+
+### Patch Changes
+
+- Updated dependencies [57cbc6d]
+  - @osdk/api@2.31.0
+  - @osdk/client.unstable@2.31.0
+  - @osdk/generator-converters@2.31.0
+  - @osdk/shared.test@2.23.0
+
+## 2.30.0
+
+### Minor Changes
+
+- db8df24: Allow `invalidateObjects` to accept interface instances (`Osdk.Instance<ObjectOrInterfaceDefinition>`).
+
+### Patch Changes
+
+- @osdk/api@2.30.0
+- @osdk/client.unstable@2.30.0
+- @osdk/generator-converters@2.30.0
+
+## 2.29.0
+
+### Minor Changes
+
+- 08e921c: Bump `foundry-platform-typescript` catalog to 2.63.0 and surface the new CBAC/MANDATORY marking subtype on `ObjectMetadata.Property` via a new `typeMetadata` discriminated-union field. For marking properties, `typeMetadata` is `{ type: "marking"; subtype?: "CBAC" | "MANDATORY" }`, letting consumers distinguish classification-based markings from mandatory markings on object property columns. Future per-`type` metadata should be added as additional variants of `typeMetadata` rather than as new top-level optionals on `Property`.
+- 4b38963: extend resolveToObjectType support to useLinks for interface link targets
+- 9081e32: use $title/$primaryKey special filters in object components and harden the observable matcher
+
+  ObjectSelectField now searches via the generic $title filter instead of resolving the title property from object metadata, and ObjectTable derives its row-selection object set via $primaryKey so interface-typed tables also produce a derived set on partial selection. The observable where-clause matcher no longer throws when $startsWith is evaluated against a null $title.
+
+### Patch Changes
+
+- Updated dependencies [08e921c]
+  - @osdk/api@2.29.0
+  - @osdk/generator-converters@2.29.0
+  - @osdk/shared.test@2.22.0
+  - @osdk/client.unstable@2.29.0
+
 ## 2.28.0
 
 ### Minor Changes

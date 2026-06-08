@@ -22,17 +22,19 @@ import {
   dedupeEmptyAggregationRows,
   getEffectiveFilterState,
   getSelectedCount,
-  isEmptyValue,
+  isNoValue,
+  NO_VALUE,
   toggleIsExcluding,
 } from "../filterValues.js";
 
 describe("filterValues", () => {
-  describe("isEmptyValue", () => {
+  describe("isNoValue", () => {
     it.each(
       [
         [null, true],
         [undefined, true],
-        ["", true],
+        [NO_VALUE, true],
+        ["", false],
         [" ", false],
         ["   ", false],
         ["\t\n", false],
@@ -40,13 +42,13 @@ describe("filterValues", () => {
         ["  foo  ", false],
         ["0", false],
       ] as const,
-    )("isEmptyValue(%j) === %s", (input, expected) => {
-      expect(isEmptyValue(input)).toBe(expected);
+    )("isNoValue(%j) === %s", (input, expected) => {
+      expect(isNoValue(input)).toBe(expected);
     });
   });
 
   describe("dedupeEmptyAggregationRows", () => {
-    it("returns the input unchanged when no empty rows are present", () => {
+    it("returns the input unchanged when no No-value rows are present", () => {
       const input: PropertyAggregationValue[] = [
         { value: "alpha", count: 3 },
         { value: "beta", count: 1 },
@@ -54,29 +56,42 @@ describe("filterValues", () => {
       expect(dedupeEmptyAggregationRows(input)).toEqual(input);
     });
 
-    it("merges separate null and empty-string rows into one", () => {
+    it("merges separate No-value (sentinel) rows into one", () => {
       const input: PropertyAggregationValue[] = [
-        { value: "", count: 2, isNull: true },
+        { value: NO_VALUE, count: 2, isNull: true },
         { value: "alpha", count: 5 },
-        { value: "", count: 3 },
+        { value: NO_VALUE, count: 3 },
       ];
       expect(dedupeEmptyAggregationRows(input)).toEqual([
-        { value: "", count: 5, isNull: true },
+        { value: NO_VALUE, count: 5, isNull: true },
         { value: "alpha", count: 5 },
       ]);
     });
 
-    it("places the merged row at the position of the first empty row", () => {
+    it("keeps a literal empty-string row distinct from the No-value row", () => {
+      const input: PropertyAggregationValue[] = [
+        { value: NO_VALUE, count: 2, isNull: true },
+        { value: "", count: 4 },
+        { value: "alpha", count: 5 },
+      ];
+      expect(dedupeEmptyAggregationRows(input)).toEqual([
+        { value: NO_VALUE, count: 2, isNull: true },
+        { value: "", count: 4 },
+        { value: "alpha", count: 5 },
+      ]);
+    });
+
+    it("places the merged row at the position of the first No-value row", () => {
       const input: PropertyAggregationValue[] = [
         { value: "alpha", count: 5 },
-        { value: "", count: 2, isNull: true },
+        { value: NO_VALUE, count: 2, isNull: true },
         { value: "beta", count: 1 },
-        { value: "", count: 3 },
+        { value: NO_VALUE, count: 3 },
       ];
       const result = dedupeEmptyAggregationRows(input);
       expect(result).toEqual([
         { value: "alpha", count: 5 },
-        { value: "", count: 5, isNull: true },
+        { value: NO_VALUE, count: 5, isNull: true },
         { value: "beta", count: 1 },
       ]);
     });
@@ -94,9 +109,9 @@ describe("filterValues", () => {
       expect(dedupeEmptyAggregationRows([])).toEqual([]);
     });
 
-    it("does not insert an empty row when emptyCount is 0", () => {
+    it("does not insert a No-value row when its count is 0", () => {
       const input: PropertyAggregationValue[] = [
-        { value: "", count: 0 },
+        { value: NO_VALUE, count: 0 },
         { value: "alpha", count: 5 },
       ];
       expect(dedupeEmptyAggregationRows(input)).toEqual([
@@ -345,9 +360,12 @@ describe("filterValues", () => {
       expect(
         toggleIsExcluding({ type: "TOGGLE", enabled: true }),
       ).toBeUndefined();
+    });
+
+    it("flips isExcluding on a hasLink state", () => {
       expect(
         toggleIsExcluding({ type: "hasLink", hasLink: true }),
-      ).toBeUndefined();
+      ).toEqual({ type: "hasLink", hasLink: true, isExcluding: true });
     });
   });
 

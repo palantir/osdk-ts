@@ -16,22 +16,21 @@
 
 import type {
   ObjectOrInterfaceDefinition,
-  ObjectSet,
   Osdk,
   PropertyKeys,
   QueryDefinition,
   SimplePropertyDef,
-  WhereClause,
 } from "@osdk/api";
 import type { Cell } from "@tanstack/react-table";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useImperativeHandle, useMemo } from "react";
 import { useColumnDefs } from "./hooks/useColumnDefs.js";
 import { useColumnPinning } from "./hooks/useColumnPinning.js";
 import { useColumnResize } from "./hooks/useColumnResize.js";
 import { useColumnVisibility } from "./hooks/useColumnVisibility.js";
 import { useEditableTable } from "./hooks/useEditableTable.js";
 import { useObjectTableData } from "./hooks/useObjectTableData.js";
+import { useObjectTableSnapshot } from "./hooks/useObjectTableSnapshot.js";
 import type { UseRowSelectionChange } from "./hooks/useRowSelection.js";
 import { useRowSelection } from "./hooks/useRowSelection.js";
 import { useSelectionColumn } from "./hooks/useSelectionColumn.js";
@@ -39,10 +38,11 @@ import { useTableSorting } from "./hooks/useTableSorting.js";
 import type { ObjectTableProps } from "./ObjectTableApi.js";
 import { BaseTable } from "./Table.js";
 import type { HeaderMenuFeatureFlags } from "./TableHeaderWithPopover.js";
-import { getRowId } from "./utils/getRowId.js";
+import { deriveSelectionObjectSet } from "./utils/deriveSelectionObjectSet.js";
+import { getRowId, getRowIdFromPrimaryKey } from "./utils/getRowId.js";
+import type { EditableConfig } from "./utils/types.js";
 
 const EMPTY_ARRAY: [] = [];
-import type { EditableConfig } from "./utils/types.js";
 
 /**
  * ObjectTable - A headless table component for displaying OSDK object sets
@@ -93,13 +93,16 @@ export function ObjectTable<
   enableColumnResizing = true,
   enableColumnConfig = true,
   editMode = "manual",
+  focusedRow,
+  onFocusedRowChanged,
+  tableRef,
   ...props
 }: ObjectTableProps<Q, RDPs, FunctionColumns>): React.ReactElement {
   const { columnSizing, onColumnSizingChange } = useColumnResize({
     onColumnResize,
   });
 
-  const { sorting, onSortingChange } = useTableSorting<
+  const { sorting, onSortingChange, orderByState } = useTableSorting<
     Q,
     RDPs,
     FunctionColumns
@@ -111,22 +114,28 @@ export function ObjectTable<
     },
   );
 
-  const { data, fetchMore, isLoading, error, objectSet: resultingObjectSet } =
-    useObjectTableData<
-      Q,
-      RDPs,
-      FunctionColumns
-    >(
-      objectType,
-      columnDefinitions,
-      filter,
-      sorting,
-      objectSet,
-      objectSetOptions,
-      dedupeIntervalMs,
-      pageSize,
-      streamUpdates,
-    );
+  const {
+    data,
+    fetchMore,
+    isLoading,
+    error,
+    totalCount,
+    objectSet: resultingObjectSet,
+  } = useObjectTableData<
+    Q,
+    RDPs,
+    FunctionColumns
+  >(
+    objectType,
+    columnDefinitions,
+    filter,
+    sorting,
+    objectSet,
+    objectSetOptions,
+    dedupeIntervalMs,
+    pageSize,
+    streamUpdates,
+  );
 
   const { columns, loading: isColumnsLoading } = useColumnDefs<
     Q,
@@ -137,40 +146,19 @@ export function ObjectTable<
     columnDefinitions,
   );
 
-  const primaryKeyApiName = objectType.type === "object"
-    ? objectType.primaryKeyApiName
-    : undefined;
-
   const handleRowSelectionChanged = useCallback(
     (change: UseRowSelectionChange<Q, RDPs>) => {
       if (!onRowSelectionChanged) return;
 
-      let derivedObjectSet: ObjectSet<Q, RDPs> | undefined;
-      if (resultingObjectSet) {
-        if (primaryKeyApiName) {
-          derivedObjectSet =
-            change.isSelectAll && change.selectedRows.length > 0
-              ? resultingObjectSet
-              : resultingObjectSet.where({
-                [primaryKeyApiName]: {
-                  $in: change.selectedRows.map(r => r.$primaryKey),
-                },
-              } as WhereClause<Q, RDPs>);
-        } else if (change.isSelectAll && change.selectedRows.length > 0) {
-          derivedObjectSet = resultingObjectSet;
-        }
-      }
-
       onRowSelectionChanged({
         selectedRows: change.selectedRows,
         isSelectAll: change.isSelectAll,
-        objectSet: derivedObjectSet,
+        objectSet: deriveSelectionObjectSet(resultingObjectSet, change),
       });
     },
     [
       onRowSelectionChanged,
       resultingObjectSet,
-      primaryKeyApiName,
     ],
   );
 
@@ -267,6 +255,22 @@ export function ObjectTable<
     },
   });
 
+  const { getSnapshot } = useObjectTableSnapshot<Q, RDPs, FunctionColumns>({
+    objectOrInterfaceType: objectType,
+    table,
+    columnDefinitions,
+    objectSet: resultingObjectSet,
+    pageSize,
+    totalCount,
+    orderBy: orderByState,
+  });
+
+  useImperativeHandle(
+    tableRef,
+    () => ({ getSnapshot }),
+    [getSnapshot],
+  );
+
   const onRenderCellContextMenu = useCallback(
     (
       row: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
@@ -324,6 +328,10 @@ export function ObjectTable<
       editableConfig={editableConfig}
       getRowAttributes={props.getRowAttributes}
       showEditFooter={props.showEditFooter}
+      focusedRowId={focusedRow == null
+        ? focusedRow
+        : getRowIdFromPrimaryKey<Q>(focusedRow)}
+      onFocusedRowChanged={onFocusedRowChanged}
     />
   );
 }
