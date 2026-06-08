@@ -360,9 +360,12 @@ describe("filterValues", () => {
       expect(
         toggleIsExcluding({ type: "TOGGLE", enabled: true }),
       ).toBeUndefined();
+    });
+
+    it("flips isExcluding on a hasLink state", () => {
       expect(
         toggleIsExcluding({ type: "hasLink", hasLink: true }),
-      ).toBeUndefined();
+      ).toEqual({ type: "hasLink", hasLink: true, isExcluding: true });
     });
   });
 

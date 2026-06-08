@@ -46,16 +46,22 @@ snapshot now shows the part you actually wanted to pin.
 
 ## Layout
 
-- `probeUtils.ts` — the reusable renderer. Loads probes files via the
+- `testUtils.probe.ts` — the reusable renderer. Loads probes files via the
   TypeScript compiler API, walks every `declare const <name>: T;`
   declaration (skipping identifiers prefixed with `_`, which are
   construction helpers), and returns one TS-formatted snapshot string
   per probes file.
-- `probes/<surface>.ts` — one file per type-graph surface we want to
-  pin (e.g. `probes/objectSet.ts`, `probes/osdkInstance.ts`).
+- `testUtils.probes/<surface>.ts` — one file per type-graph surface we want
+  to pin (e.g. `testUtils.probes/objectSet.ts`,
+  `testUtils.probes/osdkInstance.ts`).
 - `quickInfoTypes.test.ts` — single test entry point. Auto-discovers every
-  `probes/*.ts` file and asserts each one against
+  `testUtils.probes/*.ts` file and asserts each one against
   `__snapshots__/<surface>.snap` via `toMatchFileSnapshot`.
+
+The `testUtils.` prefix on the harness files keeps them out of the
+published build output: `monorepo.tool.transpile` treats any path segment
+beginning with `testUtils.` as test-only and skips it.
+
 - `__snapshots__/<surface>.snap` — one snapshot file per surface,
   containing `type <name> = ...;` declarations with their JSDoc
   descriptions. Each file is syntactically valid TypeScript so
@@ -102,7 +108,7 @@ Useful built-ins for sculpting the type you want to snapshot:
 - `typeof <value>` — reference a value's type. Combine with TS 4.7+
   instantiation-expression syntax `typeof fn<T>` to capture what a
   generic method returns when called with a specific type argument.
-  See `_withProperties` in `probes/objectSet.ts` for an example.
+  See `_withProperties` in `testUtils.probes/objectSet.ts` for an example.
 - Index access (`Foo["bar"]`, `Tuple[0]`) — drill into an
   object/tuple.
 
@@ -173,8 +179,8 @@ right after `objectSet`; `_narrow` sits right after `opts`.
 
 ## How to add a probe
 
-1. Pick the right `probes/<surface>.ts` (or create a new one for a new
-   surface — the test auto-discovers it).
+1. Pick the right `testUtils.probes/<surface>.ts` (or create a new one for
+   a new surface — the test auto-discovers it).
 2. Add `declare const probe_<name>: <YourType>;` with a JSDoc above
    describing what user-facing code yields this quickinfo.
 3. From the repo root: `pnpm updateSnapshots --filter=@osdk/api` (or

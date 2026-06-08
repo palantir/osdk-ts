@@ -28,6 +28,7 @@ import type {
 import { useFilterListState } from "./hooks/useFilterListState.js";
 import { useFilterVisibility } from "./hooks/useFilterVisibility.js";
 import { EMPTY_LINKED_FILTERS } from "./types/LinkedFilterTypes.js";
+import { getEmptyDisplayState } from "./utils/emptyFilterDisplayState.js";
 import { getFilterKey } from "./utils/getFilterKey.js";
 import { getFilterLabel } from "./utils/getFilterLabel.js";
 
@@ -231,6 +232,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
       renderInput={renderInput}
       getFilterKey={getFilterKey}
       getFilterLabel={getFilterLabel}
+      getEmptyDisplayState={getEmptyDisplayState}
       activeFilterCount={activeFilterCount}
       onReset={handleReset}
       showResetButton={showResetButton}

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, WhereClause } from "@osdk/api";
+import type { DerivedProperty, ObjectSet, Osdk, WhereClause } from "@osdk/api";
 import { useOsdkClient } from "@osdk/react";
 import type {
   FilterDefinitionUnion,
@@ -25,6 +25,7 @@ import {
   FilterList,
   getFilterKey,
 } from "@osdk/react-components/experimental/filter-list";
+import type { ColumnDefinition } from "@osdk/react-components/experimental/object-table";
 import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useMemo, useState } from "react";
@@ -1274,164 +1275,6 @@ export const WithCheckbox: Story = {
   render: (args) => <WithCheckboxStory {...args} />,
 };
 
-function CombinedWithObjectTableStory(args: Partial<EmployeeFilterListProps>) {
-  const [filterClause, setFilterClause] = useState<
-    WhereClause<Employee> | undefined
-  >(undefined);
-
-  const argsOnFilterRemoved = args.onFilterRemoved;
-  const handleFilterRemoved = useCallback(
-    (filterKey: string) => {
-      // eslint-disable-next-line no-console
-      console.log("Removed filter:", filterKey);
-      argsOnFilterRemoved?.(filterKey);
-    },
-    [argsOnFilterRemoved],
-  );
-
-  const argsOnFilterClauseChanged = args.onFilterClauseChanged;
-  const handleFilterClauseChanged = useCallback(
-    (clause: WhereClause<Employee>) => {
-      setFilterClause(clause);
-      argsOnFilterClauseChanged?.(clause);
-    },
-    [argsOnFilterClauseChanged],
-  );
-
-  return (
-    <div style={COMBINED_LAYOUT_STYLE}>
-      <div style={SIDEBAR_FIXED_STYLE}>
-        <FilterList
-          objectType={Employee}
-          filterDefinitions={sharedFilterDefinitions}
-          {...args}
-          onFilterRemoved={handleFilterRemoved}
-          filterClause={filterClause}
-          onFilterClauseChanged={handleFilterClauseChanged}
-        />
-      </div>
-      <div style={FLEX_FILL_STYLE}>
-        <ObjectTable objectType={Employee} filter={filterClause} />
-      </div>
-    </div>
-  );
-}
-
-export const CombinedWithObjectTable: Story = {
-  args: {
-    title: "Employee Filters",
-    showResetButton: true,
-    showActiveFilterCount: true,
-    enableSorting: true,
-  },
-  parameters: {
-    docs: {
-      source: {
-        code: `const [filterClause, setFilterClause] = useState(undefined);
-
-<div style={{ display: "flex", gap: 16, height: 600 }}>
-  <div style={{ width: 320 }}>
-    <FilterList
-      objectType={Employee}
-      filterDefinitions={filterDefinitions}
-      title="Employee Filters"
-      showResetButton={true}
-      showActiveFilterCount={true}
-      enableSorting={true}
-      onFilterRemoved={handleFilterRemoved}
-      filterClause={filterClause}
-      onFilterClauseChanged={setFilterClause}
-    />
-  </div>
-  <div style={{ flex: 1 }}>
-    <ObjectTable objectType={Employee} filter={filterClause} />
-  </div>
-</div>`,
-      },
-    },
-  },
-  render: (args) => <CombinedWithObjectTableStory {...args} />,
-};
-
-function CombinedWithFilteredObjectSetStory(
-  args: Partial<EmployeeFilterListProps>,
-) {
-  const client = useOsdkClient();
-  const employeeObjectSet = useMemo(
-    () => client(Employee).where({ department: "Marketing" }),
-    [client],
-  );
-  const [filterClause, setFilterClause] = useState<
-    WhereClause<Employee> | undefined
-  >(undefined);
-
-  const argsOnFilterClauseChanged = args.onFilterClauseChanged;
-  const handleFilterClauseChanged = useCallback(
-    (clause: WhereClause<Employee>) => {
-      setFilterClause(clause);
-      argsOnFilterClauseChanged?.(clause);
-    },
-    [argsOnFilterClauseChanged],
-  );
-
-  return (
-    <div style={COMBINED_LAYOUT_STYLE}>
-      <div style={SIDEBAR_FIXED_STYLE}>
-        <FilterList
-          objectType={Employee}
-          objectSet={employeeObjectSet}
-          filterDefinitions={sharedFilterDefinitions}
-          {...args}
-          filterClause={filterClause}
-          onFilterClauseChanged={handleFilterClauseChanged}
-        />
-      </div>
-      <div style={FLEX_FILL_STYLE}>
-        <ObjectTable
-          objectType={Employee}
-          objectSet={employeeObjectSet}
-          filter={filterClause}
-        />
-      </div>
-    </div>
-  );
-}
-
-export const CombinedWithFilteredObjectSet: Story = {
-  args: {
-    title: "Marketing Employees",
-    showResetButton: true,
-    showActiveFilterCount: true,
-  },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Demonstrates using a pre-filtered objectSet to scope both FilterList aggregations "
-          + "and ObjectTable data to a subset of employees.",
-      },
-      source: {
-        code: `const client = useOsdkClient();
-const employeeObjectSet = client(Employee).where({ department: "Marketing" });
-
-<FilterList
-  objectType={Employee}
-  objectSet={employeeObjectSet}
-  filterDefinitions={filterDefinitions}
-  filterClause={filterClause}
-  onFilterClauseChanged={setFilterClause}
-/>
-<ObjectTable
-  objectType={Employee}
-  objectSet={employeeObjectSet}
-  filter={filterClause}
-/>`,
-      },
-    },
-  },
-  render: (args) => <CombinedWithFilteredObjectSetStory {...args} />,
-};
-
 function WithRemovableFiltersStory(args: Partial<EmployeeFilterListProps>) {
   const [definitions, setDefinitions] = useState<
     FilterDefinitionUnion<Employee>[]
@@ -1786,6 +1629,8 @@ export const FullFeatured: Story = {
 function WithLinkedPropertyFiltersStory(
   args: Partial<EmployeeFilterListProps>,
 ) {
+  const client = useOsdkClient();
+  const objectSet = useMemo(() => client(Employee), [client]);
   const [filterClause, setFilterClause] = useState<
     WhereClause<Employee> | undefined
   >(undefined);
@@ -1798,6 +1643,19 @@ function WithLinkedPropertyFiltersStory(
         label: "Has Manager",
         filterState: { type: "hasLink", hasLink: false },
       },
+      {
+        type: "LINKED_PROPERTY",
+        linkName: "lead",
+        reverseLinkName: "peeps",
+        linkedPropertyKey: "department",
+        linkedFilterComponent: "MULTI_SELECT",
+        linkedFilterState: { type: "SELECT", selectedValues: [] },
+        filterState: {
+          type: "linkedProperty",
+          linkedFilterState: { type: "SELECT", selectedValues: [] },
+        },
+        label: "Manager Department",
+      } as FilterDefinitionUnion<Employee>,
     ],
     [],
   );
@@ -1816,6 +1674,7 @@ function WithLinkedPropertyFiltersStory(
       <div style={SIDEBAR_STYLE}>
         <FilterList
           objectType={Employee}
+          objectSet={objectSet}
           filterDefinitions={filterDefinitions}
           {...args}
           filterClause={filterClause}
@@ -1824,6 +1683,7 @@ function WithLinkedPropertyFiltersStory(
       </div>
       <div style={FLEX_FILL_STYLE}>
         <strong>Filter Clause (JSON):</strong>
+        <p>Note: LINKED_PROPERTY filter is not applied through where clause</p>
         <pre style={PRE_STYLE}>
           {filterClause
             ? JSON.stringify(filterClause, null, 2)
@@ -1834,13 +1694,16 @@ function WithLinkedPropertyFiltersStory(
   );
 }
 
-export const WithHasLinkFilter: Story = {
+export const WithLinkedPropertyFilters: Story = {
   name: "Linked Property Filters",
   parameters: {
     docs: {
       description: {
         story: "Demonstrates filtering on properties of linked objects. "
-          + "HAS_LINK filters objects based on whether they have a linked object. ",
+          + "HAS_LINK filters objects based on whether they have a linked object. "
+          + "LINKED_PROPERTY filters on a property of the linked object and "
+          + "exposes the same overflow (…) controls as direct property filters — "
+          + "the inline Keeping/Excluding dropdown and Clear all.",
       },
       source: {
         code: `// HAS_LINK and LINKED_PROPERTY filter definitions
@@ -1850,6 +1713,19 @@ const filterDefinitions = [
     linkName: "lead",
     label: "Has Manager",
     filterState: { type: "hasLink", hasLink: false },
+  },
+  {
+    type: "LINKED_PROPERTY",
+    linkName: "lead",
+    reverseLinkName: "peeps",
+    linkedPropertyKey: "department",
+    linkedFilterComponent: "MULTI_SELECT",
+    linkedFilterState: { type: "SELECT", selectedValues: [] },
+    filterState: {
+      type: "linkedProperty",
+      linkedFilterState: { type: "SELECT", selectedValues: [] },
+    },
+    label: "Manager Department",
   },
 ];
 
@@ -1899,6 +1775,7 @@ const combinedLeadNameFilter: FilterDefinitionUnion<Employee> = {
     type: "linkedProperty",
     linkedFilterState: { type: "SELECT", selectedValues: [] },
   },
+  searchField: false,
   label: "Manager Name",
 } as FilterDefinitionUnion<Employee>;
 
@@ -1908,7 +1785,34 @@ const COMBINED_LINKED_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
   combinedLocationCityFilter,
 ];
 
-function CombinedWithLinkedFilterStory(
+type CombinedTableRdps = { managerName: "string" };
+
+// Surface the linked "Manager Name" in the table via a derived-property column
+// (pivotTo("lead").selectProperty("fullName")) so the active linked filter's
+// effect on the rows is visible alongside the direct properties.
+const COMBINED_TABLE_COLUMNS: ColumnDefinition<Employee, CombinedTableRdps>[] =
+  [
+    { locator: { type: "property", id: "fullName" } },
+    { locator: { type: "property", id: "department" } },
+    { locator: { type: "property", id: "locationCity" } },
+    {
+      locator: {
+        type: "rdp",
+        id: "managerName",
+        creator: (baseObjectSet: DerivedProperty.Builder<Employee, false>) =>
+          baseObjectSet.pivotTo("lead").selectProperty("fullName"),
+      },
+      renderHeader: () => "Manager Name",
+      renderCell: (object: Osdk.Instance<Employee>) => {
+        if ("managerName" in object) {
+          return <span>{object.managerName as string}</span>;
+        }
+        return <span style={{ color: "#999" }}>No Manager</span>;
+      },
+    },
+  ];
+
+function CombinedWithObjectTableStory(
   args: Partial<EmployeeFilterListProps>,
 ) {
   const client = useOsdkClient();
@@ -1948,28 +1852,85 @@ function CombinedWithLinkedFilterStory(
         <ObjectTable
           objectType={Employee}
           objectSet={effectiveObjectSet}
+          columnDefinitions={COMBINED_TABLE_COLUMNS}
         />
       </div>
     </div>
   );
 }
 
-export const CombinedWithLinkedFilter: Story = {
-  name: "Combined linked + direct filters (zero-count filtered-out rows)",
+export const CombinedWithObjectTable: Story = {
+  name: "Combined with Object Table",
   parameters: {
     docs: {
       description: {
         story:
           "A linked filter (Manager Name) and direct property filters coexist in "
-          + "one FilterList. Pass the unfiltered scope as `objectSet`; FilterList "
-          + "applies the linked-filter narrowing internally and emits the fully-"
-          + "narrowed `ObjectSet` via `onEffectiveObjectSet` for the table. "
+          + "one FilterList alongside an ObjectTable. Pass the unfiltered scope as "
+          + "`objectSet`; FilterList applies the linked-filter narrowing internally "
+          + "and emits the fully-narrowed `ObjectSet` via `onEffectiveObjectSet` for "
+          + "the table. The table surfaces the linked manager via a derived-property "
+          + "`Manager Name` column (`pivotTo(\"lead\").selectProperty(\"fullName\")`). "
           + "With `showFilteredOutValues`, direct-facet values absent under the "
           + "active linked filter render as greyed-out count=0 filtered-out rows.",
       },
       source: {
         code: `const baseObjectSet = useMemo(() => client(Employee), [client]);
 const [effectiveObjectSet, setEffectiveObjectSet] = useState(baseObjectSet);
+
+const filterDefinitions: FilterDefinitionUnion<Employee>[] = [
+  {
+    type: "LINKED_PROPERTY",
+    id: "combined-lead-name",
+    linkName: "lead",
+    reverseLinkName: "peeps",
+    linkedPropertyKey: "fullName",
+    linkedFilterComponent: "MULTI_SELECT",
+    linkedFilterState: { type: "SELECT", selectedValues: [] },
+    filterState: {
+      type: "linkedProperty",
+      linkedFilterState: { type: "SELECT", selectedValues: [] },
+    },
+    searchField: false,
+    label: "Manager Name",
+  },
+  {
+    type: "PROPERTY",
+    id: "combined-department",
+    key: "department",
+    label: "Department",
+    filterComponent: "LISTOGRAM",
+    filterState: { type: "EXACT_MATCH", values: [] },
+  },
+  {
+    type: "PROPERTY",
+    id: "combined-locationCity",
+    key: "locationCity",
+    label: "Location City",
+    filterComponent: "MULTI_SELECT",
+    filterState: { type: "SELECT", selectedValues: [] },
+  },
+];
+
+type RDPs = { managerName: "string" };
+const columnDefinitions: ColumnDefinition<Employee, RDPs>[] = [
+  { locator: { type: "property", id: "fullName" } },
+  { locator: { type: "property", id: "department" } },
+  { locator: { type: "property", id: "locationCity" } },
+  {
+    locator: {
+      type: "rdp",
+      id: "managerName",
+      creator: (baseObjectSet) =>
+        baseObjectSet.pivotTo("lead").selectProperty("fullName"),
+    },
+    renderHeader: () => "Manager Name",
+    renderCell: (object) =>
+      "managerName" in object
+        ? <span>{object.managerName}</span>
+        : <span style={{ color: "#999" }}>No Manager</span>,
+  },
+];
 
 <FilterList
   objectType={Employee}
@@ -1980,11 +1941,15 @@ const [effectiveObjectSet, setEffectiveObjectSet] = useState(baseObjectSet);
   onEffectiveObjectSet={setEffectiveObjectSet}
   showFilteredOutValues
 />
-<ObjectTable objectType={Employee} objectSet={effectiveObjectSet} />`,
+<ObjectTable
+  objectType={Employee}
+  objectSet={effectiveObjectSet}
+  columnDefinitions={columnDefinitions}
+/>`,
       },
     },
   },
-  render: (args) => <CombinedWithLinkedFilterStory {...args} />,
+  render: (args) => <CombinedWithObjectTableStory {...args} />,
 };
 
 function CustomNameContainsFilter({
@@ -2045,70 +2010,6 @@ function CustomNameContainsFilter({
           Clear
         </button>
       )}
-    </div>
-  );
-}
-
-function CustomSeniorOnlyFilterItem({
-  filterState,
-  onFilterStateChanged,
-}: {
-  filterState: { type: "custom"; customState: { seniorOnly: boolean } };
-  onFilterStateChanged: (state: {
-    type: "custom";
-    customState: { seniorOnly: boolean };
-  }) => void;
-}) {
-  const handleToggle = useCallback(() => {
-    onFilterStateChanged({
-      type: "custom",
-      customState: {
-        seniorOnly: !filterState.customState.seniorOnly,
-      },
-    });
-  }, [filterState, onFilterStateChanged]);
-
-  const isEnabled = filterState.customState.seniorOnly;
-
-  return (
-    <div
-      style={{
-        padding: "12px",
-        backgroundColor: isEnabled ? "#e8f4f8" : "#fafafa",
-        border: `2px solid ${isEnabled ? "#0066cc" : "#ddd"}`,
-        borderRadius: "6px",
-        cursor: "pointer",
-      }}
-      onClick={handleToggle}
-      role="button"
-      tabIndex={0}
-    >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-          marginBottom: "6px",
-        }}
-      >
-        <input
-          type="checkbox"
-          checked={isEnabled}
-          onChange={() => {}}
-          style={{ cursor: "pointer" }}
-        />
-        <strong>Senior Only</strong>
-      </div>
-      <p
-        style={{
-          margin: "0",
-          fontSize: "12px",
-          color: "#666",
-          lineHeight: "1.4",
-        }}
-      >
-        Show only employees with "Senior" in their job title
-      </p>
     </div>
   );
 }

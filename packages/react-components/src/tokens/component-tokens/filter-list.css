@@ -224,7 +224,9 @@
   --osdk-filter-listogram-bar-height: calc(var(--osdk-surface-spacing) * 2);
   --osdk-filter-listogram-bar-width: calc(var(--osdk-surface-spacing) * 12.5);
   --osdk-filter-listogram-bar-bg: var(--osdk-background-tertiary);
-  --osdk-filter-listogram-bar-border-radius: calc(var(--osdk-surface-border-radius) * 0.5);
+  --osdk-filter-listogram-bar-border-radius: calc(
+    var(--osdk-surface-border-radius) * 0.5
+  );
   --osdk-filter-listogram-bar-color: var(--osdk-intent-primary-rest);
   --osdk-filter-listogram-bar-fill-transition: var(
       --osdk-emphasis-transition-duration
@@ -371,14 +373,21 @@
   );
   --osdk-filter-item-header-action-color: var(--osdk-typography-color-muted);
   --osdk-filter-item-header-action-bg-hover: var(--osdk-custom-color-gray-1);
+  /* Pressed (mouse-down) and toggled-on (popup open / aria-pressed) share a
+     theme-aware "active surface" so the selected state is clearly visible in
+     both light and dark mode. The flat gray-1/gray-2 alpha tints used for
+     hover are nearly invisible over the dark background. */
+  --osdk-filter-item-header-action-bg-active: var(
+    --osdk-surface-background-color-default-active
+  );
+  --osdk-filter-item-header-action-color-active: var(
+    --osdk-typography-color-default-rest
+  );
   --osdk-filter-item-header-action-border-radius: var(
     --osdk-surface-border-radius
   );
 
   /* Exclude Dropdown */
-  --osdk-filter-item-exclude-dropdown-font-family: var(
-    --osdk-typography-family-default
-  );
   --osdk-filter-item-exclude-dropdown-font-size: var(
     --osdk-typography-size-body-small
   );
@@ -450,7 +459,10 @@
   /* Skeleton Loading */
   --osdk-filter-skeleton-text-height: calc(var(--osdk-surface-spacing) * 1.5);
   --osdk-filter-skeleton-count-width: calc(var(--osdk-surface-spacing) * 2.5);
-  --osdk-filter-skeleton-input-height: var(--osdk-combobox-trigger-min-height, 30px);
+  --osdk-filter-skeleton-input-height: var(
+    --osdk-combobox-trigger-min-height,
+    30px
+  );
 
   /* Filter Popover (composable label + popover-trigger primitive) */
   --osdk-filter-popover-gap: calc(var(--osdk-surface-spacing) * 1);
@@ -464,9 +476,8 @@
   --osdk-filter-popover-trigger-min-height: calc(
     var(--osdk-surface-spacing) * 7
   );
-  --osdk-filter-popover-trigger-padding: 0
-    calc(var(--osdk-surface-spacing) * 6) 0
-    calc(var(--osdk-surface-spacing) * 2);
+  --osdk-filter-popover-trigger-padding: 0 calc(var(--osdk-surface-spacing) * 6)
+    0 calc(var(--osdk-surface-spacing) * 2);
   --osdk-filter-popover-trigger-border-radius: var(
     --osdk-surface-border-radius
   );
@@ -481,7 +492,9 @@
     --osdk-intent-primary-rest
   );
   --osdk-filter-popover-trigger-bg: transparent;
-  --osdk-filter-popover-trigger-color: var(--osdk-typography-color-default-rest);
+  --osdk-filter-popover-trigger-color: var(
+    --osdk-typography-color-default-rest
+  );
   --osdk-filter-popover-trigger-font-family: var(
     --osdk-typography-family-default
   );

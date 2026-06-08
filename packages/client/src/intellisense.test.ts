@@ -15,6 +15,8 @@
  */
 
 import type { Logger } from "@osdk/api";
+import type { TsServer } from "@osdk/shared.test.intellisense";
+import { startTsServer } from "@osdk/shared.test.intellisense";
 import { findUpSync } from "find-up";
 import * as path from "node:path";
 import invariant from "tiny-invariant";
@@ -28,8 +30,6 @@ import {
   it,
   vi,
 } from "vitest";
-import type { TsServer } from "./tsserver.js";
-import { startTsServer } from "./tsserver.js";
 
 // it needs to be hoisted because its referenced from our mocked WebSocket
 // which must be hoisted to work

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,5 +14,13 @@
  * limitations under the License.
  */
 
-export { startTsServer } from "../tsserver.js";
-export type { TsServer } from "../tsserver.js";
+import type { StorybookTheme } from "storybook/theming";
+
+/**
+ * Storybook v10 exports `Theme` as an empty interface meant to be
+ * augmented. Extend it with StorybookTheme so `styled()` callbacks
+ * can access `theme.color`, `theme.background`, etc.
+ */
+declare module "storybook/theming" {
+  interface Theme extends StorybookTheme {}
+}

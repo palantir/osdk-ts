@@ -5,6 +5,7 @@ Thanks for your interest in contributing to `@osdk/react`! This package provides
 ## Table of Contents
 
 - [Getting Started](#getting-started)
+- [Using Claude Code](#using-claude-code)
 - [Development Setup](#development-setup)
 - [Development Workflow](#development-workflow)
 - [Architecture](#architecture)
@@ -27,6 +28,16 @@ Thanks for your interest in contributing to `@osdk/react`! This package provides
 
 - Palantir employees can push branches directly to this repository.
 - External contributors should [fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo) the repo and open pull requests from their fork.
+
+## Using Claude Code
+
+If you use [Claude Code](https://claude.com/claude-code), this package is covered by an opinionated skill that wraps this guide:
+
+- **`contribute`** — for fixing a bug or adding a feature to an existing hook (covers both `@osdk/react` and `@osdk/react-components`). Mention "fix a bug" / "add a feature to <hook>" / "extend <hook>" or invoke `/contribute`. Adds a failing-test-first gate for bug fixes (TDD), an API-change checkpoint when the diff touches an exported hook signature or public type, and a verification loop
+
+If the skill ever conflicts with this document, this document wins — flag the conflict.
+
+**Skill source:** repo-root `.claude/skills/contribute/SKILL.md` if you want to read or refine it.
 
 ## Development Setup
 

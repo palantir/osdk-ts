@@ -8,7 +8,7 @@ user-invocable: true
 
 Operational playbook for scaffolding a new component in `packages/react-components`. Use whenever a user asks to add a new OSDK-aware component to the package.
 
-This skill is a **companion** to [`packages/react-components/CONTRIBUTING.md`](../../../CONTRIBUTING.md) and [`packages/react-components/CLAUDE.md`](../../../CLAUDE.md). Those documents are the canonical source of truth for engineering rules, API design, styling, testing, Storybook conventions, and metrics. This skill **does not restate them** — it cites them and layers AI-driven structure on top:
+This skill is a **companion** to [`packages/react-components/CONTRIBUTING.md`](../../../packages/react-components/CONTRIBUTING.md) and [`packages/react-components/CLAUDE.md`](../../../packages/react-components/CLAUDE.md). Those documents are the canonical source of truth for engineering rules, API design, styling, testing, Storybook conventions, and metrics. This skill **does not restate them** — it cites them and layers AI-driven structure on top:
 
 1. An **API-first design checkpoint** — agree on the type contract before implementation begins (deep modules: small interface, hidden complexity). Once approved, continue on the same branch.
 2. A **user-supplied MVP checklist** that defines "done" before code is written.
@@ -92,13 +92,13 @@ Run **in parallel** with the source-analysis sub-agent (single message, two tool
 The API is the contract. Get user approval on the proposed surface before writing implementation. Approval happens via `AskUserQuestion` on the working branch; once approved, continue on the same branch into Step 2. The API can still evolve later — see the "Re-fan-out on Base API refactors" note in Step 2 for how to absorb changes that surface during implementation, verification, or PR review.
 
 1. **Branch off `main`** named `<your-initials>/<short-description>` (`CONTRIBUTING.md` "Branch Naming").
-2. **Create `<Name>Api.ts`** mirroring [`src/object-table/ObjectTableApi.ts`](../../../src/object-table/ObjectTableApi.ts):
+2. **Create `<Name>Api.ts`** mirroring [`src/object-table/ObjectTableApi.ts`](../../../packages/react-components/src/object-table/ObjectTableApi.ts):
    - Apache 2.0 license header (copy from any existing file)
    - Generic type parameters (`Q extends ObjectOrInterfaceDefinition`, etc.) where OSDK-typed
    - Outer-component props interface (`<Name>Props`) only — base props live inline in `Base<Name>.tsx`
    - Public sub-types co-located in this file (column definitions, locators, options)
    - JSDoc on every prop with `@default` for defaulted optional props
-3. **Apply `CLAUDE.md` "API Design" rules** — controlled/uncontrolled/no-default for every stateful feature, render override slots, `on*` listeners on top of default behavior, one required prop, `enable*` defaults `true`. **Use `AskUserQuestion` to confirm** which stateful features must support controlled mode in MVP.
+3. **Follow `CONTRIBUTING.md` "API Design" and `CLAUDE.md` "API Design".**
 4. **Apply the step-down rule to the file:** the outer-component props interface (`<Name>Props`) goes at the top; types it references appear in declining order of abstraction below. JSDoc reads as a top-down narrative. Use `interface`/`type` ordering or named exports to satisfy declaration order without reordering by abstraction level.
 5. **Checkpoint — API approval (named checkpoint #1).** Present the proposed surface via `AskUserQuestion` with two or three named alternatives where there is a real design choice (granularity, controlled-vs-uncontrolled scope, render-slot placement). **Use the `preview` field on each option to render the candidate TypeScript interface inline** — lets the user compare full prop shapes side-by-side in one tool call. Iterate until the user picks one. The API and implementation ship together in a single PR at the end of Step 4; if preflight #1 produced a justification for the component belonging in this package, keep that note for the eventual PR description.
 6. **Proceed to Step 2 on the same branch.**
@@ -130,7 +130,7 @@ Implementation continues on the same branch as Step 1. No new branch.
    - **Sub-agent A** — OSDK wrapper (`<Name>.tsx`) + experimental export (`src/public/experimental/<name>.ts`) + `withOsdkMetrics` wrap. Apply `CLAUDE.md` "OSDK Component Architecture" and "Metrics"
    - **Sub-agent B** — Storybook story (`packages/react-components-storybook/src/stories/<Name>/<Name>.stories.tsx`). Apply `CLAUDE.md` "Storybook" and `CONTRIBUTING.md` "Storybook"
    - **Sub-agent C** — Tests in `__tests__/`. Apply `CLAUDE.md` "Testing"
-   - **Sub-agent D** — Live peopleapp example in [`packages/e2e.sandbox.peopleapp/`](../../../../e2e.sandbox.peopleapp/README.md), wired into the sandbox's existing routing/navigation against real `Employee` / `Office` types. **Sub-agent D uses the OSDK component (`<Name>.tsx`), not Base** — the example showcases real Foundry data fetching
+   - **Sub-agent D** — Live peopleapp example in [`packages/e2e.sandbox.peopleapp/`](../../../packages/e2e.sandbox.peopleapp/README.md), wired into the sandbox's existing routing/navigation against real `Employee` / `Office` types. **Sub-agent D uses the OSDK component (`<Name>.tsx`), not Base** — the example showcases real Foundry data fetching
 
    Each sub-agent receives: path to `<Name>Api.ts`, path to `Base<Name>.tsx`, token-mapping decisions, the user's MVP feature checklist. Sub-agent D additionally receives the path to `packages/e2e.sandbox.peopleapp/` and ontology types available.
 
@@ -163,7 +163,7 @@ Transient verification using [`@playwright/cli`](https://github.com/microsoft/pl
 
    **Verify the new story loads with no runtime errors before continuing.** "Storybook ready!" only means Vite is serving — it does NOT mean the story renders. Storybook compiles per-story on demand, so import errors only surface when the story is visited. Hit the iframe URL (`http://localhost:6006/iframe.html?id=<story-id>`) and check the response does NOT contain `sb-errordisplay`, `Cannot find module`, or other error markers. If it does, fix the underlying issue (typically a missing import, wrong icon name, or CSS-module path) before moving on.
 
-2. **Live playground** ([`packages/e2e.sandbox.peopleapp`](../../../../e2e.sandbox.peopleapp/README.md)) to verify the OSDK wrapper against real Foundry data. Especially valuable when the component depends on data shape, server-side filtering, or pagination MSW mocks may not faithfully reproduce:
+2. **Live playground** ([`packages/e2e.sandbox.peopleapp`](../../../packages/e2e.sandbox.peopleapp/README.md)) to verify the OSDK wrapper against real Foundry data. Especially valuable when the component depends on data shape, server-side filtering, or pagination MSW mocks may not faithfully reproduce:
    ```sh
    # one-time: copy .env.local.sample to .env.local
    pnpm --filter @osdk/e2e.sandbox.peopleapp transpileAllDeps
@@ -188,7 +188,7 @@ The **Git policy** at the top of this skill applies — every git/gh write is a 
    ```sh
    pnpm turbo check --filter=@osdk/react-components
    ```
-4. **Add a changeset** (`CONTRIBUTING.md` "Changesets" + repo-root [`CLAUDE.md`](../../../../../CLAUDE.md) "Changesets"). `minor` for a new component. One changeset per branch — `ls .changeset/` first.
+4. **Add a changeset** (`CONTRIBUTING.md` "Changesets" + repo-root [`CLAUDE.md`](../../../CLAUDE.md) "Changesets"). `minor` for a new component. One changeset per branch — `ls .changeset/` first.
 5. **Format only changed files** (repo-root `CLAUDE.md` "Formatting"):
    ```sh
    git ls-files --modified --others --exclude-standard | xargs npx dprint fmt

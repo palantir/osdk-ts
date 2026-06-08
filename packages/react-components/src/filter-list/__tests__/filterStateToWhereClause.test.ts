@@ -239,6 +239,15 @@ describe("buildWhereClause", () => {
     expect(result).toEqual({});
   });
 
+  it("negates the hasLink clause when excluding (no link)", () => {
+    const def = createHasLinkFilterDef("employees");
+    const filterStates = stateMap(
+      [def, { type: "hasLink", hasLink: true, isExcluding: true }],
+    );
+    const result = buildWhereClause([def], filterStates);
+    expect(result).toEqual({ $not: { employees: { $isNotNull: true } } });
+  });
+
   it("builds $containsAllTerms for keywordSearch filter with AND operator", () => {
     const def = createKeywordSearchFilterDef(["name"]);
     const filterStates = stateMap(

@@ -4,6 +4,8 @@ This documentation provides guidance for developing in `@osdk/react-components`.
 
 When the user asks to **add, create, or scaffold a new component**, invoke the `add-new-component` skill. It walks through API-first PR, MVP feature checklist, and verification loop on top of `CONTRIBUTING.md`. Do not improvise the workflow — follow the skill.
 
+When the user asks to **fix a bug, add a feature to an existing component, or otherwise change a component already shipped in this package**, invoke the `contribute` skill. It adds a failing-test-first gate for bug fixes (TDD), an API-change checkpoint when the diff touches public props, and a verification loop. Do not improvise — follow the skill.
+
 If a skill ever conflicts with this file or `CONTRIBUTING.md`, those win — flag the conflict.
 
 ## TypeScript Best Practices
@@ -48,17 +50,35 @@ If a skill ever conflicts with this file or `CONTRIBUTING.md`, those win — fla
 
 These rules apply whenever a component's public API changes — new component, new feature, or bug fix that touches props.
 
-### Controlled / uncontrolled / no-default
+### Controlled and/or uncontrolled
 
-Every feature that holds state the user can change (selection, sort, filter, expansion, edit-in-progress, active tab, etc.) must expose all three modes:
+Every feature that holds state the user can change (selection, sort, filter, expansion, edit-in-progress, active tab, etc.) must expose **at least one** of the following modes. Implementing both is encouraged when the feature benefits from it, but only one is required.
 
 - **Controlled** — caller passes `<feature>` (e.g. `selectedRows`, `orderBy`, `filter`). The prop is the source of truth; caller re-renders with new values via the `on<Feature>Changed` callback
-- **Uncontrolled with explicit default** — caller passes `default<Feature>` (e.g. `defaultOrderBy`, `defaultSelectedRows`). The component seeds its own internal state from the default and continues to manage it. `on<Feature>Changed` still fires so callers can observe
-- **Uncontrolled with no default** — caller passes neither. **The feature must still work out of the box.** The component maintains internal state seeded with a sensible empty default (e.g. `[]`, `{}`, `null`) and built-in interactions continue to function
+- **Uncontrolled** — caller passes `default<Feature>` (e.g. `defaultOrderBy`, `defaultSelectedRows`) or nothing. The component maintains internal state seeded from the default (or a sensible empty value like `[]`, `{}`, `null`) and `on<Feature>Changed` still fires so callers can observe
+
+**State the chosen mode(s) clearly in JSDoc** on each new prop. Example:
+
+```ts
+/**
+ * Controlled mode only. Caller owns selection state; component does not
+ * maintain internal selection. Pair with `onRowSelection` to observe changes.
+ */
+selectedRows?: RowSelectionState;
+```
+
+```ts
+/**
+ * Uncontrolled mode. Seeds the component's internal sort state; component
+ * continues to own the state after mount. `onOrderByChanged` still fires.
+ * @default undefined (no initial sort)
+ */
+defaultOrderBy?: OrderBy;
+```
 
 **Naming**: `<feature>` (controlled), `default<Feature>` (uncontrolled seed), `on<Feature>Changed` (callback). Match `ObjectTableApi.ts` exactly: `selectedRows` / `onRowSelection`, `orderBy` / `defaultOrderBy` / `onOrderByChanged`, `filter` / `onFilterChanged`.
 
-**Canonical implementation**: see `src/object-table/hooks/useRowSelection.ts` — `rowSelectionState` is computed from `selectedRows` when controlled, falls back to `internalRowSelection` (a `useState({})`) otherwise; `onRowSelection` fires in both modes. Mirror this hook structure for any new stateful feature.
+**Canonical implementation** (both modes): see `src/object-table/hooks/useRowSelection.ts` — `rowSelectionState` is computed from `selectedRows` when controlled, falls back to `internalRowSelection` (a `useState({})`) otherwise; `onRowSelection` fires in both modes. Use this pattern when implementing both modes; for single-mode features, drop the branch you don't support.
 
 ### Render override slots
 
