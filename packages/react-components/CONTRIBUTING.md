@@ -93,6 +93,31 @@ npx dprint fmt
 
 The pre-commit hook runs `dprint check` and will reject unformatted code.
 
+### Props reference tables (auto-generated)
+
+Per-component **props reference tables in `docs/*.md` are generated from the component's props interface**, so they never drift from the source. The generator (`scripts/gen-props.mjs`) reads the named TypeScript interface (or type alias), turns each property into a `Name | Type | Description` row, and writes it between markers. JSDoc on each prop becomes the description — the main comment, `@default`, `@deprecated`, inline `{@link}`, and required/optional are all reflected. If the props type is generic, its type parameters and their constraints (e.g. `Q extends ActionDefinition<unknown>`) are listed above the table so bare `Q`-style types stay meaningful.
+
+Regenerate after changing any documented prop or its JSDoc:
+
+```sh
+pnpm --filter @osdk/react-components gen-props
+```
+
+The repo's pre-commit hook runs this for you whenever you commit changes under `packages/react-components/src/` or `docs/` — it regenerates the tables and stages them automatically. CI enforces freshness too: `lint` runs `gen-props --check` and fails if a committed table is stale (or was hand-edited inside the markers).
+
+**To enable a generated table for a new component**, drop a marker block into its doc where the table should appear, naming the source file (relative to the package root) and the props interface:
+
+```md
+## Props
+
+<!-- AUTOGEN:props START src=src/my-component/MyComponentApi.ts interface=MyComponentProps -->
+<!-- AUTOGEN:props END -->
+```
+
+Then run `gen-props` to fill it in (the generator normalizes the marker and inserts the table). It resolves both `interface` and `type` declarations in that file, following `extends` clauses, intersections (`A & B`), controlled/uncontrolled unions, and `Pick`/`Omit` — references are resolved within that single file, so keep a component's props type and its local bases together in `<Name>Api.ts`.
+
+Because the description column comes entirely from JSDoc, **write a JSDoc comment (with `@default` where relevant) on every prop.** Props with no JSDoc render with a blank description — that blank cell is your signal to document them, not a reason to hand-edit the table.
+
 ### Running the Example App
 
 The `packages/e2e.sandbox.peopleapp` package serves as a live playground:
@@ -153,6 +178,7 @@ Components in this package favour **minimum configuration**. A consumer should b
 8. Export the OSDK component (and optionally the Base component) from `src/public/experimental/<name>.ts`.
 9. **Update documentation:**
    - Add `docs/<Name>.md` with usage and a minimal example, matching the structure of existing per-component docs
+   - **Add an auto-generated props table.** Drop a `<!-- AUTOGEN:props START src=... interface=... -->` / `END` marker block into the doc and run `pnpm --filter @osdk/react-components gen-props`. See [Props reference tables (auto-generated)](#props-reference-tables-auto-generated). Don't hand-author the props table
    - If you added CSS variables, update `docs/CSSVariables.md`
    - Add a one-line entry to the components table in `AGENTS.md` and `README.md`
    - **Register the new doc with Docusaurus.** Add `"<Name>"` to the `@osdk/react-components` category in [`docs/sidebarsReactComponents.ts`](../../docs/sidebarsReactComponents.ts) (repo root).

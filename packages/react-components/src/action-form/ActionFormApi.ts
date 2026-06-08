@@ -36,7 +36,15 @@ import type {
  */
 export type ActionFormProps<Q extends ActionDefinition<unknown>> =
   | (ActionFormConfigProps<Q> & {
+    /**
+     * Current form values (controlled mode). Provide together with
+     * `onFormStateChange`; omit both for uncontrolled mode.
+     */
     formState: FormState<Q>;
+    /**
+     * Called with a state updater whenever a field value changes. Required
+     * in controlled mode.
+     */
     onFormStateChange: (
       updater: (prevState: FormState<Q>) => FormState<Q>,
     ) => void;
