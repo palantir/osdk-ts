@@ -55,7 +55,7 @@ function makeCapturingClient() {
     json: () => Promise.resolve({ data: [] }),
     status: 200,
     ok: true,
-  } as any);
+  } as Response);
   const client = createMinimalClient(
     metadata,
     "https://foo",
