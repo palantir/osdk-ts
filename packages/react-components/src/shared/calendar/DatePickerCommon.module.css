@@ -45,7 +45,7 @@
   display: flex;
   flex-direction: row;
   align-items: stretch;
-  gap: var(--osdk-datetime-popover-gap, 12px);
+  gap: var(--osdk-datetime-popover-gap);
   background: var(--osdk-datetime-popover-bg);
   color: var(--osdk-typography-color-default-rest);
   padding: var(--osdk-datetime-popover-padding);

@@ -43,7 +43,15 @@ describe("SingleDateFilterInput", () => {
       <SingleDateFilterInput
         filterState={undefined}
         onFilterStateChanged={onFilterStateChanged}
-        dateShortcuts={["past-week"]}
+        dateShortcuts={[
+          {
+            label: "Past week",
+            range: (n) => ({
+              min: new Date(n.getTime() - 7 * 24 * 60 * 60 * 1000),
+              max: n,
+            }),
+          },
+        ]}
       />,
     );
     fireEvent.focus(screen.getByRole("combobox"));

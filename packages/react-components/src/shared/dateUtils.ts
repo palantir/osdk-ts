@@ -126,8 +126,13 @@ export function getTimeValue(date: Date | null): string {
   return date != null ? formatTime(date) : "00:00";
 }
 
-/** Relative date range identifier; resolve via {@link getRelativeDateRange}. */
-export type RelativeDatePeriod = keyof typeof RELATIVE_DATE_PERIODS;
+/**
+ * Internal catalog of built-in relative periods used to construct
+ * {@link DEFAULT_DATE_SHORTCUTS}. Labels follow Workshop's relative-range
+ * wording. Not part of the public API — consumers customize via
+ * {@link DatePickerShortcut}.
+ */
+type RelativeDatePeriod = keyof typeof RELATIVE_DATE_PERIODS;
 
 const RELATIVE_DATE_PERIODS = {
   "past-hour": {
@@ -135,7 +140,7 @@ const RELATIVE_DATE_PERIODS = {
     subtract: (d: Date): Date => subHours(d, 1),
   },
   "past-day": {
-    label: "Past day",
+    label: "Past 24 hours",
     subtract: (d: Date): Date => subDays(d, 1),
   },
   "past-week": {
@@ -164,8 +169,8 @@ const RELATIVE_DATE_PERIODS = {
   },
 } as const;
 
-/** Returns { min, max } for the given period, anchored at now. */
-export function getRelativeDateRange(
+/** Returns { min, max } for the given built-in period, anchored at now. */
+function getRelativeDateRange(
   period: RelativeDatePeriod,
   now: Date = new Date(),
 ): { min: Date; max: Date } {
@@ -173,12 +178,7 @@ export function getRelativeDateRange(
   return { min: RELATIVE_DATE_PERIODS[period].subtract(max), max };
 }
 
-export function getRelativeDatePeriodLabel(p: RelativeDatePeriod): string {
-  return RELATIVE_DATE_PERIODS[p].label;
-}
-
-/** Default ordered period list for `dateShortcuts: true`. */
-export const DEFAULT_RELATIVE_DATE_PERIODS: readonly RelativeDatePeriod[] = [
+const DEFAULT_RELATIVE_DATE_PERIODS: readonly RelativeDatePeriod[] = [
   "past-hour",
   "past-day",
   "past-week",
@@ -188,3 +188,44 @@ export const DEFAULT_RELATIVE_DATE_PERIODS: readonly RelativeDatePeriod[] = [
   "past-year",
   "past-2-years",
 ];
+
+/**
+ * A user-defined date-picker shortcut. The picker renders a button labeled
+ * {@link label}; clicking it computes a relative `{ min, max }` range from the
+ * current time. Range pickers apply both bounds; single-date pickers commit
+ * `min` (with wall-clock time stripped).
+ */
+export interface DatePickerShortcut {
+  /** Text shown on the shortcut button. */
+  label: string;
+  /** Computes the absolute range this shortcut selects, given the current time. */
+  range: (now: Date) => { min: Date; max: Date };
+}
+
+/**
+ * Built-in shortcuts used when `dateShortcuts: true`. Exported so consumers can
+ * spread and extend them, e.g.
+ * `[...DEFAULT_DATE_SHORTCUTS, { label: "Last 6 hours", range }]`.
+ */
+export const DEFAULT_DATE_SHORTCUTS: readonly DatePickerShortcut[] =
+  DEFAULT_RELATIVE_DATE_PERIODS.map((period) => ({
+    label: RELATIVE_DATE_PERIODS[period].label,
+    range: (now: Date) => getRelativeDateRange(period, now),
+  }));
+
+/**
+ * Resolves a `dateShortcuts` prop to a shortcut list, or `undefined` to hide
+ * the rail. `true` yields {@link DEFAULT_DATE_SHORTCUTS}; a non-empty array is
+ * returned as-is; `false` / empty array / `undefined` hide the rail.
+ */
+export function resolveDateShortcuts(
+  prop: boolean | DatePickerShortcut[] | undefined,
+): readonly DatePickerShortcut[] | undefined {
+  if (prop === true) {
+    return DEFAULT_DATE_SHORTCUTS;
+  }
+  if (Array.isArray(prop) && prop.length > 0) {
+    return prop;
+  }
+  return undefined;
+}

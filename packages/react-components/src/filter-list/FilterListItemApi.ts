@@ -23,8 +23,8 @@ import type {
 } from "@osdk/api";
 import type { ReactNode } from "react";
 import {
-  DEFAULT_RELATIVE_DATE_PERIODS,
-  type RelativeDatePeriod,
+  type DatePickerShortcut,
+  DEFAULT_DATE_SHORTCUTS,
 } from "../shared/dateUtils.js";
 import type { CustomFilterState } from "./types/CustomRendererTypes.js";
 import type { KeywordSearchFilterState } from "./types/KeywordSearchTypes.js";
@@ -33,7 +33,7 @@ import type {
   LinkedPropertyFilterState,
 } from "./types/LinkedFilterTypes.js";
 
-export { DEFAULT_RELATIVE_DATE_PERIODS, type RelativeDatePeriod };
+export { type DatePickerShortcut, DEFAULT_DATE_SHORTCUTS };
 
 /**
  * Helper type to extract the property type from an ObjectTypeDefinition given a property key
@@ -252,11 +252,12 @@ export interface DateFormattingProps {
 export interface DateShortcutsProps {
   /**
    * Opt-in relative-range shortcut rail in the date picker popover.
-   * `true` renders {@link DEFAULT_RELATIVE_DATE_PERIODS}; an array
-   * renders exactly those periods in order. Stored `FilterState`
-   * remains absolute.
+   * `true` renders {@link DEFAULT_DATE_SHORTCUTS}; an array renders exactly
+   * those {@link DatePickerShortcut}s in order, letting you supply custom
+   * labels and ranges (e.g. "Last 6 hours"). Stored `FilterState` remains
+   * absolute.
    */
-  dateShortcuts?: RelativeDatePeriod[] | boolean;
+  dateShortcuts?: boolean | DatePickerShortcut[];
 }
 
 /** Filter components that support the shortcuts rail. */

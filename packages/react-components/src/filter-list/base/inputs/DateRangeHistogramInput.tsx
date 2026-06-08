@@ -16,12 +16,11 @@
 
 import React, { memo, useCallback, useMemo } from "react";
 import {
+  type DatePickerShortcut,
   formatDateForInput,
-  type RelativeDatePeriod,
 } from "../../../shared/dateUtils.js";
 import { createDateHistogramBuckets } from "./createDateHistogramBuckets.js";
 import { RangeInput, type RangeInputConfig } from "./RangeInput.js";
-import { resolveDateShortcuts, ShortcutBar } from "./ShortcutBar.js";
 
 const defaultDateConfig: RangeInputConfig<Date> = {
   inputType: "date",
@@ -55,7 +54,7 @@ interface DateRangeHistogramInputProps {
   formatDate?: (date: Date) => string;
   clickToFilter?: boolean;
   /** Optional relative-range shortcut rail. */
-  dateShortcuts?: RelativeDatePeriod[] | boolean;
+  dateShortcuts?: boolean | DatePickerShortcut[];
 }
 
 function DateRangeHistogramInputInner({
@@ -65,7 +64,6 @@ function DateRangeHistogramInputInner({
   onChange,
   ...rest
 }: DateRangeHistogramInputProps): React.ReactElement {
-  const shortcutPeriods = resolveDateShortcuts(dateShortcuts);
   const config = useMemo<RangeInputConfig<Date>>(
     () =>
       formatDate != null
@@ -108,27 +106,11 @@ function DateRangeHistogramInputInner({
   }, [valueCountPairs, formatDate]);
 
   const handleShortcutSelect = useCallback(
-    (range: { min: Date; max: Date }, closePopover: () => void) => {
-      // Close the open picker first so it exits edit mode before the
-      // value-sync path runs on the next render of either bound's input.
-      closePopover();
+    (range: { min: Date; max: Date }) => {
       onChange(range.min, range.max);
     },
     [onChange],
   );
-
-  const renderLeftRail = useCallback(
-    (closePopover: () => void) => (
-      <ShortcutBar
-        periods={shortcutPeriods ?? []}
-        onSelect={handleShortcutSelect}
-        closePopover={closePopover}
-      />
-    ),
-    [shortcutPeriods, handleShortcutSelect],
-  );
-
-  const dateLeftRail = shortcutPeriods != null ? renderLeftRail : undefined;
 
   return (
     <RangeInput
@@ -137,7 +119,8 @@ function DateRangeHistogramInputInner({
       valueCountPairs={valueCountPairs}
       config={config}
       histogramData={histogramData}
-      dateLeftRail={dateLeftRail}
+      dateShortcuts={dateShortcuts}
+      onDateShortcutSelect={handleShortcutSelect}
     />
   );
 }

@@ -15,14 +15,14 @@
  */
 
 import React, { memo, useCallback, useMemo } from "react";
-import type { RelativeDatePeriod } from "../../shared/dateUtils.js";
+import type { DatePickerShortcut } from "../../shared/dateUtils.js";
 import { SingleDateInput } from "../base/inputs/SingleDateInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
 
 interface SingleDateFilterInputProps {
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
-  dateShortcuts?: RelativeDatePeriod[] | boolean;
+  dateShortcuts?: boolean | DatePickerShortcut[];
   /**
    * Consumer-provided display formatter forwarded to the underlying
    * `SingleDateInput` / `DatePicker`. Falls back to ISO `YYYY-MM-DD` when

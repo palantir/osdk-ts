@@ -313,7 +313,9 @@ export const WithDateShortcuts: Story = {
     docs: {
       description: {
         story:
-          "Opt-in `dateShortcuts` rail for DATE_RANGE and SINGLE_DATE filters.",
+          "Opt-in `dateShortcuts` rail for DATE_RANGE and SINGLE_DATE filters. "
+          + "`true` ships the built-in defaults; an array supplies custom "
+          + "`{ label, range }` shortcuts (e.g. \"Last 6 hours\").",
       },
     },
   },
@@ -324,7 +326,7 @@ export const WithDateShortcuts: Story = {
           type: "PROPERTY",
           id: "startDate-range-shortcuts",
           key: "firstFullTimeStartDate",
-          label: "Start Date (DATE_RANGE, all shortcuts)",
+          label: "Start Date (DATE_RANGE, default shortcuts)",
           filterComponent: "DATE_RANGE",
           filterState: { type: "DATE_RANGE" },
           dateShortcuts: true,
@@ -333,10 +335,25 @@ export const WithDateShortcuts: Story = {
           type: "PROPERTY",
           id: "startDate-single-shortcuts",
           key: "firstFullTimeStartDate",
-          label: "Start Date (SINGLE_DATE, subset)",
+          label: "Start Date (SINGLE_DATE, custom shortcuts)",
           filterComponent: "SINGLE_DATE",
           filterState: { type: "DATE_RANGE" },
-          dateShortcuts: ["past-day", "past-week", "past-month"],
+          dateShortcuts: [
+            {
+              label: "Last 6 hours",
+              range: (now) => ({
+                min: new Date(now.getTime() - 6 * 60 * 60 * 1000),
+                max: now,
+              }),
+            },
+            {
+              label: "Past week",
+              range: (now) => ({
+                min: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000),
+                max: now,
+              }),
+            },
+          ],
         },
         {
           type: "PROPERTY",

@@ -74,12 +74,20 @@ describe("DateRangeFilterInput", () => {
         filterState={undefined}
         onFilterStateChanged={onFilterStateChanged}
         whereClause={whereClause}
-        dateShortcuts={["past-day"]}
+        dateShortcuts={[
+          {
+            label: "Past 24 hours",
+            range: (n) => ({
+              min: new Date(n.getTime() - 24 * 60 * 60 * 1000),
+              max: n,
+            }),
+          },
+        ]}
       />,
     );
     const [fromCombobox] = screen.getAllByRole("combobox");
     fireEvent.focus(fromCombobox);
-    fireEvent.click(screen.getByRole("button", { name: "Past day" }));
+    fireEvent.click(screen.getByRole("button", { name: "Past 24 hours" }));
     expect(onFilterStateChanged).toHaveBeenCalledTimes(1);
     const state = onFilterStateChanged.mock.calls[0][0];
     expect(state.type).toBe("DATE_RANGE");

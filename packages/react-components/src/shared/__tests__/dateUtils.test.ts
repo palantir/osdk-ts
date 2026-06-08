@@ -16,20 +16,19 @@
 
 import { describe, expect, it } from "vitest";
 import {
-  DEFAULT_RELATIVE_DATE_PERIODS,
+  type DatePickerShortcut,
+  DEFAULT_DATE_SHORTCUTS,
   formatDateForDisplay,
   formatDateForInput,
   formatDatetimeForInput,
   formatTime,
-  getRelativeDatePeriodLabel,
-  getRelativeDateRange,
   getTimeValue,
   isDateInRange,
   parseDateFromInput,
   parseDateFromISO,
   parseDatetimeFromInput,
   parseTimeString,
-  type RelativeDatePeriod,
+  resolveDateShortcuts,
 } from "../dateUtils.js";
 
 describe("formatDateForInput", () => {
@@ -176,59 +175,81 @@ describe("getTimeValue", () => {
   });
 });
 
-describe("relative date periods", () => {
-  it("subtracts the period from now to produce { min, max }", () => {
+describe("date shortcuts", () => {
+  function rangeFor(label: string, now: Date): { min: Date; max: Date } {
+    const shortcut = DEFAULT_DATE_SHORTCUTS.find((s) => s.label === label);
+    if (shortcut == null) {
+      throw new Error(`no default shortcut labeled "${label}"`);
+    }
+    return shortcut.range(now);
+  }
+
+  it("resolves a shortcut's range relative to now", () => {
     const now = new Date(2024, 5, 15, 12, 0, 0, 0);
-    const { min, max } = getRelativeDateRange("past-week", now);
+    const { min, max } = rangeFor("Past week", now);
     expect(max.getTime()).toBe(now.getTime());
     expect(max.getTime() - min.getTime()).toBe(7 * 24 * 60 * 60 * 1000);
   });
 
-  it("exposes the default ordered list with English labels", () => {
-    const labels: Record<RelativeDatePeriod, string> = {
-      "past-hour": "Past hour",
-      "past-day": "Past day",
-      "past-week": "Past week",
-      "past-month": "Past month",
-      "past-3-months": "Past 3 months",
-      "past-6-months": "Past 6 months",
-      "past-year": "Past year",
-      "past-2-years": "Past 2 years",
-    };
-    expect(DEFAULT_RELATIVE_DATE_PERIODS).toEqual(
-      Object.keys(labels) as RelativeDatePeriod[],
-    );
-    for (const period of DEFAULT_RELATIVE_DATE_PERIODS) {
-      expect(getRelativeDatePeriodLabel(period)).toBe(labels[period]);
-    }
+  it("exposes the default shortcuts in order with English labels", () => {
+    expect(DEFAULT_DATE_SHORTCUTS.map((s) => s.label)).toEqual([
+      "Past hour",
+      "Past 24 hours",
+      "Past week",
+      "Past month",
+      "Past 3 months",
+      "Past 6 months",
+      "Past year",
+      "Past 2 years",
+    ]);
   });
 
-  it("clamps past-month from a 31st to the last day of the prior shorter month", () => {
+  it("clamps Past month from a 31st to the last day of the prior shorter month", () => {
     // Mar 31 - 1 month should land on Feb 29 in a leap year (date-fns clamps).
     const now = new Date(2024, 2, 31, 12, 0, 0, 0);
-    const { min, max } = getRelativeDateRange("past-month", now);
+    const { min, max } = rangeFor("Past month", now);
     expect(max.getTime()).toBe(now.getTime());
     expect(min.getFullYear()).toBe(2024);
     expect(min.getMonth()).toBe(1);
     expect(min.getDate()).toBe(29);
   });
 
-  it("clamps past-year from Feb 29 to Feb 28 of the prior non-leap year", () => {
+  it("clamps Past year from Feb 29 to Feb 28 of the prior non-leap year", () => {
     // Feb 29 2024 - 1 year should land on Feb 28 2023.
     const now = new Date(2024, 1, 29, 12, 0, 0, 0);
-    const { min, max } = getRelativeDateRange("past-year", now);
+    const { min, max } = rangeFor("Past year", now);
     expect(max.getTime()).toBe(now.getTime());
     expect(min.getFullYear()).toBe(2023);
     expect(min.getMonth()).toBe(1);
     expect(min.getDate()).toBe(28);
   });
 
-  it("crosses the year boundary cleanly for past-3-months", () => {
+  it("crosses the year boundary cleanly for Past 3 months", () => {
     // Feb 15 2024 - 3 months → Nov 15 2023.
     const now = new Date(2024, 1, 15, 12, 0, 0, 0);
-    const { min } = getRelativeDateRange("past-3-months", now);
+    const { min } = rangeFor("Past 3 months", now);
     expect(min.getFullYear()).toBe(2023);
     expect(min.getMonth()).toBe(10);
     expect(min.getDate()).toBe(15);
+  });
+
+  it("resolveDateShortcuts maps true to defaults and false/empty to undefined", () => {
+    expect(resolveDateShortcuts(true)).toBe(DEFAULT_DATE_SHORTCUTS);
+    expect(resolveDateShortcuts(false)).toBeUndefined();
+    expect(resolveDateShortcuts(undefined)).toBeUndefined();
+    expect(resolveDateShortcuts([])).toBeUndefined();
+  });
+
+  it("resolveDateShortcuts returns a custom shortcut array verbatim", () => {
+    const custom: DatePickerShortcut[] = [
+      {
+        label: "Last 6 hours",
+        range: (now) => ({
+          min: new Date(now.getTime() - 6 * 60 * 60 * 1000),
+          max: now,
+        }),
+      },
+    ];
+    expect(resolveDateShortcuts(custom)).toBe(custom);
   });
 });

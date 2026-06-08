@@ -18,8 +18,7 @@ import { Button } from "@base-ui/react/button";
 import classnames from "classnames";
 import React, { memo, useCallback } from "react";
 import { DatePicker } from "../../../shared/calendar/index.js";
-import type { RelativeDatePeriod } from "../../../shared/dateUtils.js";
-import { resolveDateShortcuts, ShortcutBar } from "./ShortcutBar.js";
+import type { DatePickerShortcut } from "../../../shared/dateUtils.js";
 import styles from "./SingleDateInput.module.css";
 
 interface SingleDateInputProps {
@@ -32,7 +31,7 @@ interface SingleDateInputProps {
   placeholder?: string;
   showClearButton?: boolean;
   /** Optional relative-range shortcut rail. */
-  dateShortcuts?: RelativeDatePeriod[] | boolean;
+  dateShortcuts?: boolean | DatePickerShortcut[];
   /** Display formatter for picker idle text. Editing format stays ISO. */
   formatDate?: (date: Date) => string;
 }
@@ -49,7 +48,6 @@ function SingleDateInputInner({
   dateShortcuts,
   formatDate,
 }: SingleDateInputProps): React.ReactElement {
-  const shortcutPeriods = resolveDateShortcuts(dateShortcuts);
   const handleClear = useCallback(() => {
     onChange(undefined);
   }, [onChange]);
@@ -60,36 +58,6 @@ function SingleDateInputInner({
     },
     [onChange],
   );
-
-  const handleShortcutSelect = useCallback(
-    (range: { min: Date; max: Date }, closePopover: () => void) => {
-      // SingleDateInput is date-only — strip wall-clock time so consumers
-      // receive midnight rather than the current hh:mm carried by range.min.
-      const day = new Date(
-        range.min.getFullYear(),
-        range.min.getMonth(),
-        range.min.getDate(),
-      );
-      // Close the picker first so it exits edit mode before the value-sync
-      // path runs — otherwise the input keeps any in-progress typing.
-      closePopover();
-      onChange(day);
-    },
-    [onChange],
-  );
-
-  const renderLeftRail = useCallback(
-    (closePopover: () => void) => (
-      <ShortcutBar
-        periods={shortcutPeriods ?? []}
-        onSelect={handleShortcutSelect}
-        closePopover={closePopover}
-      />
-    ),
-    [shortcutPeriods, handleShortcutSelect],
-  );
-
-  const leftRail = shortcutPeriods != null ? renderLeftRail : undefined;
 
   return (
     <div className={classnames(styles.singleDate, className)} style={style}>
@@ -103,7 +71,7 @@ function SingleDateInputInner({
           ariaLabel="Select date"
           modal={false}
           formatDate={formatDate}
-          leftRail={leftRail}
+          shortcuts={dateShortcuts}
         />
         {showClearButton && selectedDate !== undefined && (
           <Button

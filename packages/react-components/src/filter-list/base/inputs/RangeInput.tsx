@@ -28,6 +28,7 @@ import React, {
   useState,
 } from "react";
 import { DatePicker } from "../../../shared/calendar/index.js";
+import type { DatePickerShortcut } from "../../../shared/dateUtils.js";
 import {
   createHistogramBuckets,
   getMaxBucketCount,
@@ -176,12 +177,16 @@ export interface RangeInputProps<T> {
    */
   clickToFilter?: boolean;
   /**
-   * Only used when `config.inputType === "date"`: optional content
-   * rendered inside both the From and the To `DatePicker` popovers as a
-   * left rail (e.g. relative-range shortcut buttons). Ignored for number
-   * ranges.
+   * Only used when `config.inputType === "date"`: opt-in relative-range
+   * shortcut rail rendered inside both the From and the To `DatePicker`
+   * popovers. Ignored for number ranges.
    */
-  dateLeftRail?: (closePopover: () => void) => React.ReactNode;
+  dateShortcuts?: boolean | DatePickerShortcut[];
+  /**
+   * Applies a clicked shortcut's range to both bounds at once. Only used for
+   * date ranges.
+   */
+  onDateShortcutSelect?: (range: { min: Date; max: Date }) => void;
 }
 
 function RangeInputInner<T>({
@@ -196,7 +201,8 @@ function RangeInputInner<T>({
   config,
   histogramData,
   clickToFilter = false,
-  dateLeftRail,
+  dateShortcuts,
+  onDateShortcutSelect,
 }: RangeInputProps<T>): React.ReactElement {
   const minInputId = useId();
   const maxInputId = useId();
@@ -884,7 +890,8 @@ function RangeInputInner<T>({
             formatDate={config.formatDate}
             minLabel={config.minLabel}
             maxLabel={config.maxLabel}
-            leftRail={dateLeftRail}
+            dateShortcuts={dateShortcuts}
+            onDateShortcutSelect={onDateShortcutSelect}
           />
         )
         : (
@@ -945,7 +952,8 @@ interface DateRangeInputsProps {
   formatDate: ((date: Date) => string) | undefined;
   minLabel: string;
   maxLabel: string;
-  leftRail?: (closePopover: () => void) => React.ReactNode;
+  dateShortcuts?: boolean | DatePickerShortcut[];
+  onDateShortcutSelect?: (range: { min: Date; max: Date }) => void;
 }
 
 function DateRangeInputs({
@@ -956,7 +964,8 @@ function DateRangeInputs({
   formatDate,
   minLabel,
   maxLabel,
-  leftRail,
+  dateShortcuts,
+  onDateShortcutSelect,
 }: DateRangeInputsProps): React.ReactElement {
   return (
     <div className={styles.rangeInputs}>
@@ -967,7 +976,8 @@ function DateRangeInputs({
         placeholder={minLabel}
         ariaLabel={minLabel}
         formatDate={formatDate}
-        leftRail={leftRail}
+        shortcuts={dateShortcuts}
+        onShortcutSelect={onDateShortcutSelect}
       />
       <DatePicker
         value={maxValue ?? null}
@@ -976,7 +986,8 @@ function DateRangeInputs({
         placeholder={maxLabel}
         ariaLabel={maxLabel}
         formatDate={formatDate}
-        leftRail={leftRail}
+        shortcuts={dateShortcuts}
+        onShortcutSelect={onDateShortcutSelect}
       />
     </div>
   );

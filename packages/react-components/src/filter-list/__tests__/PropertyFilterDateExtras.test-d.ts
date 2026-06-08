@@ -50,13 +50,16 @@ void numberEmpty;
 const stringEmpty: PropertyFilterDateExtras<"string"> = {};
 void stringEmpty;
 
-// For datetime / timestamp, `dateShortcuts` is allowed as a boolean or array.
+// For datetime / timestamp, `dateShortcuts` is allowed as a boolean or a
+// custom DatePickerShortcut[].
 const dateShortcutsBool: PropertyFilterDateExtras<"timestamp"> = {
   dateShortcuts: true,
 };
 void dateShortcutsBool;
 const dateShortcutsArr: PropertyFilterDateExtras<"datetime"> = {
-  dateShortcuts: ["past-day", "past-month"],
+  dateShortcuts: [
+    { label: "Last 6 hours", range: (now) => ({ min: now, max: now }) },
+  ],
 };
 void dateShortcutsArr;
 
@@ -69,7 +72,7 @@ const numberShortcuts: PropertyFilterDateExtras<"integer"> = {
 void numberShortcuts;
 const stringShortcuts: PropertyFilterDateExtras<"string"> = {
   // @ts-expect-error dateShortcuts is `never` for string-typed properties
-  dateShortcuts: ["past-day"],
+  dateShortcuts: true,
 };
 void stringShortcuts;
 
@@ -83,6 +86,6 @@ void multiDateShortcuts;
 
 const timelineShortcuts: PropertyFilterDateExtras<"timestamp", "TIMELINE"> = {
   // @ts-expect-error dateShortcuts is `never` for TIMELINE filter component
-  dateShortcuts: ["past-week"],
+  dateShortcuts: true,
 };
 void timelineShortcuts;
