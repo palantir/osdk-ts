@@ -21,7 +21,10 @@
 
 ## Formatting
 
-- Run `npx dprint fmt` on changed files before committing
+- Format only your changed files before committing — never run bare `npx dprint fmt`, which reformats the entire repo:
+  ```sh
+  git ls-files --modified --others --exclude-standard | xargs npx dprint fmt
+  ```
 - The pre-commit hook runs `dprint check` and will reject unformatted code
 - To check without fixing: `npx dprint check`
 
