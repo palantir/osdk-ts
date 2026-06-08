@@ -19,7 +19,7 @@ import {
   type CheckboxIndicatorProps,
   type CheckboxRootProps,
 } from "@base-ui/react/checkbox";
-import { Cross, Minus, Tick } from "@blueprintjs/icons";
+import { Cross, Minus, SmallTick } from "@blueprintjs/icons";
 import classnames from "classnames";
 import React from "react";
 import styles from "./Checkbox.module.css";
@@ -60,7 +60,7 @@ export function Checkbox(
           ? <Minus size={12} />
           : isExcluding
           ? <Cross size={12} />
-          : <Tick size={12} />}
+          : <SmallTick size={12} />}
       </BaseUICheckbox.Indicator>
     </BaseUICheckbox.Root>
   );
