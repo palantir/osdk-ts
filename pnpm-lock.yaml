@@ -1981,6 +1981,9 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
+      '@osdk/telemetry':
+        specifier: workspace:*
+        version: link:../telemetry
       '@types/ws':
         specifier: ^8.18.1
         version: 8.18.1

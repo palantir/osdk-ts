@@ -22,6 +22,10 @@ import {
   trace,
   TraceFlags,
 } from "@opentelemetry/api";
+import type { SharedClient, SharedClientContext } from "@osdk/shared.client2";
+import { symbolClientContext } from "@osdk/shared.client2";
+import type { LogEntry, Transport } from "@osdk/telemetry";
+import { createLoggingClient } from "@osdk/telemetry";
 import { AsyncLocalStorage } from "node:async_hooks";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import type { MinimalClient } from "../MinimalClientContext.js";
@@ -192,5 +196,68 @@ describe("getActiveTraceId", () => {
     await context.with(contextWithSpan(), () => {
       expect(getActiveTraceId()).toBe(TRACE_ID);
     });
+  });
+});
+
+function makeSharedClient(): SharedClient {
+  const sharedClientContext: SharedClientContext = {
+    baseUrl: "https://example.test/",
+    fetch: vi.fn<typeof globalThis.fetch>(),
+    tokenProvider: vi.fn().mockResolvedValue("tok"),
+  };
+  return { [symbolClientContext]: sharedClientContext };
+}
+
+describe("trace-context seam (FE log and outbound call)", () => {
+  it("stamps the outbound traceparent trace id onto a FE log emitted in the same span", async () => {
+    const emitted: LogEntry[] = [];
+    const transport: Transport = {
+      emit: async (request) => {
+        emitted.push(...request.logs);
+      },
+    };
+    const logger = createLoggingClient({
+      client: makeSharedClient(),
+      transport,
+      traceIdProvider: getActiveTraceId,
+    });
+
+    const ctx = contextWithSpan();
+    let headerTraceId: string | undefined;
+    await context.with(ctx, async () => {
+      const headers = await captureHeaders({ ctx });
+      headerTraceId = headers.get(TRACEPARENT_HEADER)?.split("-")[1];
+      logger.info("rendered checkout");
+    });
+    await logger.flush();
+
+    expect(headerTraceId).toBe(TRACE_ID);
+    expect(emitted).toHaveLength(1);
+    expect(emitted[0].traceId).toBe(headerTraceId);
+    expect(emitted[0].traceId).toBe(TRACE_ID);
+
+    await logger.shutdown();
+  });
+
+  it("emits a FE log with no trace id when no span is active", async () => {
+    const emitted: LogEntry[] = [];
+    const transport: Transport = {
+      emit: async (request) => {
+        emitted.push(...request.logs);
+      },
+    };
+    const logger = createLoggingClient({
+      client: makeSharedClient(),
+      transport,
+      traceIdProvider: getActiveTraceId,
+    });
+
+    logger.info("rendered checkout");
+    await logger.flush();
+
+    expect(emitted).toHaveLength(1);
+    expect(emitted[0].traceId).toBeUndefined();
+
+    await logger.shutdown();
   });
 });
