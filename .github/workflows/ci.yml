@@ -234,14 +234,24 @@ jobs:
         if: matrix.node != 18
         run: pnpm exec turbo run transpile transpileTypes
 
-      # These packages use Vite 7+ or Storybook which require Node 20+, so exclude them on Node 18
-      - name: Test (excluding Vite 7/Storybook packages on Node 18)
+      # @osdk/react-components is excluded here and run on its own below: it has a
+      # large happy-dom suite, and when it competes with the other ~80 test
+      # processes for CPU its vitest main thread is starved enough to trip the
+      # worker RPC timeout ("Timeout calling onTaskUpdate") on the slowest matrix
+      # leg. Running it isolated keeps the runner uncontended for it.
+      # The other --filter exclusions are Vite 7+/Storybook packages that need Node 20+.
+      - name: Test (excluding Vite 7/Storybook packages on Node 18, and react-components)
         if: matrix.node == 18
-        run: pnpm exec turbo run test --filter="!@osdk/create-app.template.*" --filter="!@osdk/create-widget.template.*" --filter="!@osdk/widget.vite-plugin" --filter="!@osdk/examples.*" --filter="!@psdk/examples.*" --filter="!@osdk/e2e.sandbox.todowidget" --filter="!@osdk/ontology-explorer-app" --filter="!@osdk/react-components-storybook"
+        run: pnpm exec turbo run test --filter="!@osdk/react-components" --filter="!@osdk/create-app.template.*" --filter="!@osdk/create-widget.template.*" --filter="!@osdk/widget.vite-plugin" --filter="!@osdk/examples.*" --filter="!@psdk/examples.*" --filter="!@osdk/e2e.sandbox.todowidget" --filter="!@osdk/ontology-explorer-app" --filter="!@osdk/react-components-storybook"
 
-      - name: Test
+      - name: Test (excluding react-components)
         if: matrix.node != 18
-        run: pnpm exec turbo run test
+        run: pnpm exec turbo run test --filter="!@osdk/react-components"
+
+      # Run react-components on its own (all Node versions) so it isn't starved by
+      # the concurrent test processes above. See the comment on the steps above.
+      - name: Test react-components (isolated)
+        run: pnpm exec turbo run test --filter="@osdk/react-components"
 
   # Build the app/site packages (Storybook, examples, sandboxes, docs) that have
   # no transpile/typecheck task — `turbo run build` is what proves they still
