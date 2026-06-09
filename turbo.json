@@ -54,6 +54,13 @@
       "inputs": ["**/*.{ts,tsx,cts,mts,md,json,js,mjs,cjs}"]
     },
 
+    /* Fails when a doc's AUTOGEN:props table has drifted from its source type. */
+    "check-gen-props": {
+      "outputLogs": "new-only",
+      "dependsOn": ["//#dprint"],
+      "inputs": ["src/**/*.{ts,tsx}", "docs/**/*.md", "scripts/gen-props.mjs"]
+    },
+
     /* Psuedo task to depend on the script contents */
     "//#babel-config": {
       "inputs": ["babel.config.mjs"]
@@ -267,7 +274,8 @@
         "check-attw",
         "check-bundle",
         "check-api",
-        "check-spelling"
+        "check-spelling",
+        "check-gen-props"
       ]
     }
   },

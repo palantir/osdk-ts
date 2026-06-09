@@ -44,7 +44,7 @@
  */
 
 import { execFileSync } from "child_process";
-import { readdirSync, readFileSync, writeFileSync } from "fs";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "fs";
 import path from "path";
 import ts from "typescript";
 import { fileURLToPath } from "url";
@@ -120,11 +120,13 @@ function collapseProse(text) {
     .trim();
 }
 
-/** Collapse all interior whitespace in a type string to single spaces, and
- * drop the stray padding inside generic brackets that multi-line types leave
- * behind (e.g. `Record< string, never >` -> `Record<string, never>`). */
+/** Collapse all interior whitespace in a type string to single spaces, drop
+ * the stray padding inside generic brackets that multi-line types leave behind
+ * (e.g. `Record< string, never >` -> `Record<string, never>`), and strip block
+ * comments that inline object-type literals carry in their source text. */
 function collapseType(text) {
   return text
+    .replace(/\/\*[\s\S]*?\*\//g, " ")
     .replace(/\s+/g, " ")
     .replace(/<\s+/g, "<")
     .replace(/\s+>/g, ">")
@@ -188,27 +190,88 @@ function buildDescription(member, isRequired) {
 // deduped list of property entries. Handles the shapes component props use in
 // this package: interface `extends` clauses, intersections (`A & B`), unions
 // (controlled/uncontrolled discriminated props), inline type literals, and
-// `Pick<X, K>` / `Omit<X, K>`. Resolution is single-file: type references are
-// looked up among the top-level declarations of the same source file (good
-// enough — props types and their local bases live together in `<Name>Api.ts`).
+// `Pick<X, K>` / `Omit<X, K>`. Type references are resolved first among the
+// current file's top-level declarations, then by following named imports into
+// other files (so a base shared across files — e.g. `FilterDefinitionControls`
+// — still contributes its members). External/bare imports are left unresolved.
 //
-// Each entry is `{ name, member, forcedOptional }`. `forcedOptional` is set
-// when a prop is optional in *some* union branch (or absent from one), so the
-// controlled/uncontrolled split doesn't mislabel an optional prop as required.
+// Each entry is `{ name, member, forcedOptional }`; `member` keeps its own
+// source file (parent pointers are set), so `member.getText()` renders the
+// right text even for members pulled in from another file. `forcedOptional` is
+// set when a prop is optional in *some* union branch (or absent from one), so
+// the controlled/uncontrolled split doesn't mislabel an optional prop.
 // ---------------------------------------------------------------------------
 
-/** Build a name -> declaration map of top-level interfaces and type aliases. */
+/** Build (and cache) a name -> declaration map of a file's top-level
+ * interfaces and type aliases. */
+const declMapCache = new Map();
 function declarationMap(sourceFile) {
-  const byName = new Map();
-  sourceFile.forEachChild((node) => {
-    if (
-      (ts.isInterfaceDeclaration(node) || ts.isTypeAliasDeclaration(node))
-      && node.name != null
-    ) {
-      byName.set(node.name.text, node);
-    }
-  });
+  let byName = declMapCache.get(sourceFile);
+  if (byName == null) {
+    byName = new Map();
+    sourceFile.forEachChild((node) => {
+      if (
+        (ts.isInterfaceDeclaration(node) || ts.isTypeAliasDeclaration(node))
+        && node.name != null
+      ) {
+        byName.set(node.name.text, node);
+      }
+    });
+    declMapCache.set(sourceFile, byName);
+  }
   return byName;
+}
+
+/** Find the module specifier a named import for `name` comes from, if any. */
+function importSpecifierFor(name, sourceFile) {
+  for (const stmt of sourceFile.statements) {
+    if (!ts.isImportDeclaration(stmt)) continue;
+    const named = stmt.importClause?.namedBindings;
+    if (named == null || !ts.isNamedImports(named)) continue;
+    for (const el of named.elements) {
+      if (el.name.text === name) return stmt.moduleSpecifier.text;
+    }
+  }
+  return undefined;
+}
+
+/** Resolve a relative import specifier to an on-disk `.ts`/`.tsx` file.
+ * ESM imports carry `.js`, which maps back to the `.ts(x)` source. Bare
+ * (non-relative) specifiers resolve to `undefined`. */
+function resolveModulePath(spec, fromFile) {
+  if (!spec.startsWith(".")) return undefined;
+  const base = path.resolve(path.dirname(fromFile), spec);
+  const candidates = [];
+  if (base.endsWith(".js")) {
+    candidates.push(`${base.slice(0, -3)}.ts`, `${base.slice(0, -3)}.tsx`);
+  } else if (base.endsWith(".jsx")) {
+    candidates.push(`${base.slice(0, -4)}.tsx`);
+  }
+  candidates.push(
+    `${base}.ts`,
+    `${base}.tsx`,
+    path.join(base, "index.ts"),
+    path.join(base, "index.tsx"),
+  );
+  return candidates.find((c) => existsSync(c));
+}
+
+/** Resolve a type/interface name to `{ decl, sourceFile }`, looking in the
+ * current file first, then following a named import into another file. */
+function lookupName(name, sourceFile) {
+  const local = declarationMap(sourceFile).get(name);
+  if (local != null) return { decl: local, sourceFile };
+
+  const spec = importSpecifierFor(name, sourceFile);
+  if (spec != null) {
+    const target = resolveModulePath(spec, sourceFile.fileName);
+    if (target != null) {
+      const imported = getSourceFile(target);
+      const decl = declarationMap(imported).get(name);
+      if (decl != null) return { decl, sourceFile: imported };
+    }
+  }
+  return undefined;
 }
 
 /** Extract `{ name, args }` from a type reference or `extends` expression. */
@@ -278,50 +341,50 @@ function mergeUnion(branches) {
   return order;
 }
 
-function membersOfDeclaration(decl, sourceFile, byName, seen) {
+function propertyEntry(member) {
+  return {
+    name: member.name.getText(),
+    member,
+    forcedOptional: member.questionToken != null,
+  };
+}
+
+function membersOfDeclaration(decl, sourceFile, seen) {
   if (ts.isTypeAliasDeclaration(decl)) {
-    return membersOfType(decl.type, sourceFile, byName, seen);
+    return membersOfType(decl.type, sourceFile, seen);
   }
   // InterfaceDeclaration: inherited (`extends`) members first, then own.
   const inherited = [];
   for (const clause of decl.heritageClauses ?? []) {
     if (clause.token === ts.SyntaxKind.ExtendsKeyword) {
       for (const type of clause.types) {
-        inherited.push(membersOfType(type, sourceFile, byName, seen));
+        inherited.push(membersOfType(type, sourceFile, seen));
       }
     }
   }
   const own = decl.members
     .filter((m) => ts.isPropertySignature(m) && m.type != null)
-    .map((m) => ({
-      name: m.name.getText(sourceFile),
-      member: m,
-      forcedOptional: m.questionToken != null,
-    }));
+    .map(propertyEntry);
   return dedupe([...inherited, own]);
 }
 
-function membersOfType(typeNode, sourceFile, byName, seen) {
+function membersOfType(typeNode, sourceFile, seen) {
   if (ts.isParenthesizedTypeNode(typeNode)) {
-    return membersOfType(typeNode.type, sourceFile, byName, seen);
+    return membersOfType(typeNode.type, sourceFile, seen);
   }
   if (ts.isTypeLiteralNode(typeNode)) {
     return typeNode.members
       .filter((m) => ts.isPropertySignature(m) && m.type != null)
-      .map((m) => ({
-        name: m.name.getText(sourceFile),
-        member: m,
-        forcedOptional: m.questionToken != null,
-      }));
+      .map(propertyEntry);
   }
   if (ts.isIntersectionTypeNode(typeNode)) {
     return dedupe(
-      typeNode.types.map((t) => membersOfType(t, sourceFile, byName, seen)),
+      typeNode.types.map((t) => membersOfType(t, sourceFile, seen)),
     );
   }
   if (ts.isUnionTypeNode(typeNode)) {
     return mergeUnion(
-      typeNode.types.map((t) => membersOfType(t, sourceFile, byName, seen)),
+      typeNode.types.map((t) => membersOfType(t, sourceFile, seen)),
     );
   }
 
@@ -330,59 +393,52 @@ function membersOfType(typeNode, sourceFile, byName, seen) {
     if (
       (ref.name === "Pick" || ref.name === "Omit") && ref.args?.length === 2
     ) {
-      const base = membersOfType(ref.args[0], sourceFile, byName, seen);
+      const base = membersOfType(ref.args[0], sourceFile, seen);
       const keys = literalKeys(ref.args[1]);
       return ref.name === "Pick"
         ? base.filter((e) => keys.has(e.name))
         : base.filter((e) => !keys.has(e.name));
     }
-    const decl = byName.get(ref.name);
-    if (decl != null && !seen.has(ref.name)) {
-      seen.add(ref.name);
-      const result = membersOfDeclaration(decl, sourceFile, byName, seen);
-      seen.delete(ref.name);
-      return result;
+    const found = lookupName(ref.name, sourceFile);
+    if (found != null) {
+      // Key the recursion guard by file + name (names can collide across files).
+      const key = `${found.sourceFile.fileName}#${ref.name}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        const result = membersOfDeclaration(found.decl, found.sourceFile, seen);
+        seen.delete(key);
+        return result;
+      }
     }
   }
-  // Cross-file references and unsupported constructs contribute no members.
+  // Unresolvable (external import) and unsupported constructs contribute none.
   return [];
 }
 
 /** Render a type parameter with its constraint and default, e.g.
  * `Q extends ActionDefinition<unknown>` or
  * `RDPs extends Record<string, SimplePropertyDef> = Record<string, never>`. */
-function renderTypeParam(tp, sourceFile) {
-  let text = tp.name.getText(sourceFile);
-  if (tp.constraint != null) {
-    text += ` extends ${tp.constraint.getText(sourceFile)}`;
-  }
-  if (tp.default != null) {
-    text += ` = ${tp.default.getText(sourceFile)}`;
-  }
+function renderTypeParam(tp) {
+  let text = tp.name.getText();
+  if (tp.constraint != null) text += ` extends ${tp.constraint.getText()}`;
+  if (tp.default != null) text += ` = ${tp.default.getText()}`;
   return escapeCell(collapseType(text));
 }
 
 function resolveProps(sourceFile, typeName) {
-  const byName = declarationMap(sourceFile);
-  const decl = byName.get(typeName);
-  if (decl == null) return undefined;
+  const found = lookupName(typeName, sourceFile);
+  if (found == null) return undefined;
+  const seen = new Set([`${found.sourceFile.fileName}#${typeName}`]);
   return {
-    entries: membersOfDeclaration(
-      decl,
-      sourceFile,
-      byName,
-      new Set([typeName]),
-    ),
-    typeParams: (decl.typeParameters ?? []).map((tp) =>
-      renderTypeParam(tp, sourceFile)
-    ),
+    entries: membersOfDeclaration(found.decl, found.sourceFile, seen),
+    typeParams: (found.decl.typeParameters ?? []).map(renderTypeParam),
   };
 }
 
-function buildRows(entries, sourceFile) {
+function buildRows(entries) {
   const rows = [];
   for (const { name, member, forcedOptional } of entries) {
-    const type = escapeCell(collapseType(member.type.getText(sourceFile)));
+    const type = escapeCell(collapseType(member.type.getText()));
     const isRequired = member.questionToken == null && !forcedOptional;
     const description = buildDescription(member, isRequired);
     rows.push(`| \`${name}\` | \`${type}\` | ${description} |`);
@@ -482,7 +538,7 @@ function renderDoc(docPath) {
       );
     }
     return buildBlock(
-      buildRows(resolved.entries, sourceFile),
+      buildRows(resolved.entries),
       resolved.typeParams,
       src,
       interfaceName,
