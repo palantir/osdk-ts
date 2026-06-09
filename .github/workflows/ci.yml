@@ -152,6 +152,16 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      # Materialize the full build output from the build job's cache before the
+      # checks. Several check tasks read build artifacts they do not fully
+      # declare as dependencies (e.g. check-attw packs build/types, which is
+      # produced by transpileTypes but only declared via check-api). Restoring
+      # transpile + transpileTypes to completion first (cache hits, no real
+      # recompilation) makes those artifacts present and avoids a race where a
+      # check runs before another task restores what it implicitly needs.
+      - name: Restore build artifacts from cache
+        run: pnpm exec turbo run transpile transpileTypes
+
       # Everything `pnpm check` runs except `test` (which moves to the matrix
       # job below), plus cspell. Node 22, so no Vite 7/Storybook exclusions.
       - name: Typecheck, lint, API checks and spelling
