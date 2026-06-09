@@ -19,7 +19,7 @@ import { symbolClientContext } from "@osdk/shared.client2";
 import type { BeforeSendHook } from "./flushController.js";
 import { createFlushController } from "./flushController.js";
 import { registerLifecycle } from "./lifecycle.js";
-import type { Logger } from "./logger.js";
+import type { Logger, TraceIdProvider } from "./logger.js";
 import { createLogger } from "./logger.js";
 import type { Transport } from "./transport.js";
 import { createFoundryTransport } from "./transport.js";
@@ -45,6 +45,14 @@ export interface CreateLoggingClientOptions {
   applicationRid?: string;
   /** Optional redaction hook (plan §4.1, §8.3). Return `null` to drop an entry. */
   beforeSend?: BeforeSendHook;
+  /**
+   * Source of the active call's W3C trace id, stamped on each entry so logs
+   * correlate with the outbound request that carried the same trace id in its
+   * `traceparent` header. Client code passes `getActiveTraceId` here; both read
+   * the same global OpenTelemetry context so the ids match.
+   */
+  // cspell:ignore traceparent
+  traceIdProvider?: TraceIdProvider;
   scheduledDelayMillis?: number;
   maxExportBatchSize?: number;
   maxQueueSize?: number;
@@ -94,5 +102,5 @@ export function createLoggingClient(
     options.lifecycleTarget,
   );
 
-  return createLogger(flushController, lifecycle);
+  return createLogger(flushController, lifecycle, options.traceIdProvider);
 }

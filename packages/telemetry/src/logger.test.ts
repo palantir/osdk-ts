@@ -91,4 +91,47 @@ describe("createLogger", () => {
     expect(controller.shutdown).toHaveBeenCalledTimes(1);
     expect(lifecycle.unregister).toHaveBeenCalledTimes(1);
   });
+
+  describe("traceIdProvider", () => {
+    it("stamps the active trace id onto each entry", () => {
+      const { entries, controller, lifecycle } = harness();
+      const traceId = "0af7651916cd43dd8448eb211c80319c";
+      const logger = createLogger(controller, lifecycle, () => traceId);
+
+      logger.info("booted");
+      logger.error(new Error("boom"));
+
+      expect(entries.map((e) => e.traceId)).toEqual([traceId, traceId]);
+    });
+
+    it("reads the provider per entry so the id can change between calls", () => {
+      const { entries, controller, lifecycle } = harness();
+      const ids = ["trace-a", "trace-b"];
+      let index = 0;
+      const logger = createLogger(controller, lifecycle, () => ids[index++]);
+
+      logger.info("first");
+      logger.info("second");
+
+      expect(entries.map((e) => e.traceId)).toEqual(["trace-a", "trace-b"]);
+    });
+
+    it("omits traceId when no trace is active", () => {
+      const { entries, controller, lifecycle } = harness();
+      const logger = createLogger(controller, lifecycle, () => undefined);
+
+      logger.info("booted");
+
+      expect(entries[0].traceId).toBeUndefined();
+    });
+
+    it("omits traceId when no provider is supplied", () => {
+      const { entries, controller, lifecycle } = harness();
+      const logger = createLogger(controller, lifecycle);
+
+      logger.info("booted");
+
+      expect(entries[0].traceId).toBeUndefined();
+    });
+  });
 });

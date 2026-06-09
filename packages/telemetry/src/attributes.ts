@@ -45,6 +45,13 @@ export interface LogEntry {
   message: string;
   context?: LogContext;
   error?: SerializedError;
+  /**
+   * W3C trace id of the call active when the entry was created, when available.
+   * Lets a log be correlated with the outbound request that carried the same
+   * trace id in its `traceparent` header.
+   */
+  // cspell:ignore traceparent
+  traceId?: string;
 }
 
 /**

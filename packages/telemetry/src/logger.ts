@@ -37,9 +37,18 @@ export interface Logger {
   shutdown(): Promise<void>;
 }
 
+/**
+ * Returns the trace id of the active call, or `undefined` when none is active.
+ * Stamped onto every entry so logs correlate with the outbound request that
+ * carried the same trace id in its `traceparent` header.
+ */
+// cspell:ignore traceparent
+export type TraceIdProvider = () => string | undefined;
+
 export function createLogger(
   flushController: FlushController,
   lifecycle: Lifecycle,
+  traceIdProvider?: TraceIdProvider,
 ): Logger {
   function enqueue(
     severity: LogSeverity,
@@ -58,6 +67,10 @@ export function createLogger(
     }
     if (error != null) {
       entry.error = error;
+    }
+    const traceId = traceIdProvider?.();
+    if (traceId != null) {
+      entry.traceId = traceId;
     }
     flushController.add(entry);
   }

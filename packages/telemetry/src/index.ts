@@ -25,5 +25,5 @@ export { createLoggingClient } from "./createLoggingClient.js";
 export type { SerializedError } from "./errorSerializer.js";
 export { serializeError } from "./errorSerializer.js";
 export type { BeforeSendHook } from "./flushController.js";
-export type { Logger } from "./logger.js";
+export type { Logger, TraceIdProvider } from "./logger.js";
 export type { LogWriteRequest, Transport } from "./transport.js";
