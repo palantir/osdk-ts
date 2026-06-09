@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.32.0
+
+### Minor Changes
+
+- 06adca1: add $snapshot option to fetchPage
+
 ## 2.31.0
 
 ### Minor Changes
