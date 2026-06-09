@@ -110,11 +110,14 @@ function renderComment(comment) {
     .join("");
 }
 
-/** Collapse prose newlines: blank line -> `<br><br>`, single newline -> space. */
+/** Collapse prose newlines: blank line -> `<br /><br />`, single newline ->
+ * space. Self-closing `<br />` is required because Docusaurus renders these
+ * docs through MDX, where a bare `<br>` is an unclosed JSX tag and fails the
+ * build. */
 function collapseProse(text) {
   return text
     .replace(/\r\n/g, "\n")
-    .replace(/\n[ \t]*\n+/g, "<br><br>")
+    .replace(/\n[ \t]*\n+/g, "<br /><br />")
     .replace(/\n/g, " ")
     .replace(/[ \t]+/g, " ")
     .trim();
