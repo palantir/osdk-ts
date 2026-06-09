@@ -4,10 +4,3 @@
 @import "../src/styles/storybook.css" layer(storybook);
 @import "@osdk/react-components/styles.css" layer(osdk.styles);
 @import "./themes.css" layer(themes);
-
-/* Override Blueprint's global :focus { outline } — unlayered styles
-   always beat layered styles in the CSS cascade. */
-:focus,
-:focus-visible {
-  outline: none;
-}
