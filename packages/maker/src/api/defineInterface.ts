@@ -186,7 +186,6 @@ export function defineInterface(
     extendsInterfaces,
     linkedInterfaces: [],
     links: [],
-    actionTypeConstraints: [],
     status,
     propertiesV2,
     propertiesV3,

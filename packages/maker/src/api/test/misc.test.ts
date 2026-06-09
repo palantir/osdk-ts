@@ -438,7 +438,6 @@ describe("Miscellaneous Tests", () => {
           "extendsInterfaces": [],
           "linkedInterfaces": [],
           "links": [],
-          "actionTypeConstraints": [],
           "status": {
             "type": "active",
             "active": {}
@@ -531,7 +530,6 @@ describe("Miscellaneous Tests", () => {
                 "extendsInterfaces": [],
                 "linkedInterfaces": [],
                 "links": [],
-                "actionTypeConstraints": [],
                 "status": {
                   "type": "active",
                   "active": {}
@@ -695,7 +693,6 @@ describe("Miscellaneous Tests", () => {
               "extendsInterfaces": [],
               "linkedInterfaces": [],
               "links": [],
-              "actionTypeConstraints": [],
               "status": {
                 "type": "active",
                 "active": {}
@@ -750,7 +747,6 @@ describe("Miscellaneous Tests", () => {
           ],
           "linkedInterfaces": [],
           "links": [],
-          "actionTypeConstraints": [],
           "status": {
             "type": "active",
             "active": {}
