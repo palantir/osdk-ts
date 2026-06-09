@@ -196,6 +196,20 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      # The `codegen` task generates source files (e.g. generatedNoCheck/) that
+      # tests import directly from `src`. It declares no turbo `outputs`, so its
+      # output is not cached/restored from the build job, and `turbo run test`
+      # (which only pulls in `^transpileEsm`) does not run each package's own
+      # codegen. Run it explicitly, to completion, before the tests. Must run on
+      # every Node version because the generated files live in the checkout.
+      - name: Generate code (excluding Vite 7/Storybook packages on Node 18)
+        if: matrix.node == 18
+        run: pnpm exec turbo run codegen --filter="!@osdk/create-app.template.*" --filter="!@osdk/create-widget.template.*" --filter="!@osdk/widget.vite-plugin" --filter="!@osdk/examples.*" --filter="!@psdk/examples.*" --filter="!@osdk/e2e.sandbox.todowidget" --filter="!@osdk/ontology-explorer-app" --filter="!@osdk/react-components-storybook"
+
+      - name: Generate code
+        if: matrix.node != 18
+        run: pnpm exec turbo run codegen
+
       # These packages use Vite 7+ or Storybook which require Node 20+, so exclude them on Node 18
       - name: Test (excluding Vite 7/Storybook packages on Node 18)
         if: matrix.node == 18
