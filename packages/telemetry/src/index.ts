@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-export type {
-  AttributeValue,
-  LogContext,
-  LogEntry,
-  LogSeverity,
-} from "./attributes.js";
+export type { AttributeValue, LogContext, LogSeverity } from "./attributes.js";
 export type { CreateLoggingClientOptions } from "./createLoggingClient.js";
 export { createLoggingClient } from "./createLoggingClient.js";
 export type { SerializedError } from "./errorSerializer.js";
 export { serializeError } from "./errorSerializer.js";
-export type { BeforeSendHook } from "./flushController.js";
 export type { Logger } from "./logger.js";
-export type { LogWriteRequest, Transport } from "./transport.js";
+export type { BeforeSendHook, TraceIdProvider } from "./redactionProcessor.js";

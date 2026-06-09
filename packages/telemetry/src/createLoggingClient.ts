@@ -14,15 +14,25 @@
  * limitations under the License.
  */
 
+import { LoggerProvider } from "@opentelemetry/sdk-logs";
 import type { SharedClient } from "@osdk/shared.client2";
 import { symbolClientContext } from "@osdk/shared.client2";
-import type { BeforeSendHook } from "./flushController.js";
-import { createFlushController } from "./flushController.js";
+// Deep-import the BROWSER batch processor: the node entrypoint has no
+// document-hide handling, and we want the browser implementation so its flush
+// behavior matches the browser OTLP transport. Auto flush on document hide is
+// disabled here because `lifecycle.ts` drives the pagehide flush explicitly.
+import { BatchLogRecordProcessor } from "@opentelemetry/sdk-logs/build/src/platform/browser/index.js";
 import { registerLifecycle } from "./lifecycle.js";
 import type { Logger } from "./logger.js";
 import { createLogger } from "./logger.js";
-import type { Transport } from "./transport.js";
-import { createFoundryTransport } from "./transport.js";
+import { createFoundryLogExporter } from "./otlpExporter.js";
+import type { BeforeSendHook, TraceIdProvider } from "./redactionProcessor.js";
+import { createPreExportProcessor } from "./redactionProcessor.js";
+import type { ResourceAttributes } from "./resource.js";
+import { buildResource } from "./resource.js";
+
+/** Name reported on the OTel logger scope. */
+const LOGGER_SCOPE = "@osdk/telemetry";
 
 /**
  * Defaults track OpenTelemetry's `BatchLogRecordProcessor` (plan §4.1).
@@ -30,69 +40,83 @@ import { createFoundryTransport } from "./transport.js";
 const DEFAULT_SCHEDULED_DELAY_MILLIS = 5000;
 const DEFAULT_MAX_EXPORT_BATCH_SIZE = 512;
 const DEFAULT_MAX_QUEUE_SIZE = 2048;
-const DEFAULT_UNLOAD_BATCH_SIZE = 64;
-const DEFAULT_MAX_RETRIES = 3;
-const DEFAULT_INITIAL_BACKOFF_MILLIS = 200;
 
 export interface CreateLoggingClientOptions {
   /** An existing OSDK client. Its base URL and OAuth token are reused. */
   client: SharedClient;
   /**
-   * The application RID that owns these logs; used as `traceOwningRid` in the
-   * `Log.write` request. OSDK-2 will allow this to be read off the client; until
-   * then it is passed explicitly.
+   * The application RID that owns these logs. Reserved for the resource seam
+   * (OTEL-2); see {@link buildResource}.
    */
   applicationRid?: string;
-  /** Optional redaction hook (plan §4.1, §8.3). Return `null` to drop an entry. */
+  /** Optional redaction hook. Return `null` to drop a record before export. */
   beforeSend?: BeforeSendHook;
+  /** Optional trace-id source stamped onto each record (OTEL-3 seam). */
+  traceIdProvider?: TraceIdProvider;
   scheduledDelayMillis?: number;
   maxExportBatchSize?: number;
   maxQueueSize?: number;
-  unloadBatchSize?: number;
-  maxRetries?: number;
-  /**
-   * Override the emission seam. Intended for tests; production code should rely
-   * on the default Foundry transport.
-   */
-  transport?: Transport;
   /** Override the event target the unload flush is registered on (tests). */
   lifecycleTarget?: EventTarget;
 }
 
 /**
- * Build a {@link Logger} bound to an OSDK client. Buffers entries client-side and
- * flushes one `Log.write` request per flush on an interval, on buffer fill, and
- * on `pagehide`.
+ * Build a {@link Logger} bound to an OSDK client. Records are buffered by an
+ * OTel `BatchLogRecordProcessor` and exported as one OTLP request per flush:
+ * on an interval, on buffer fill, on `flush()`/`shutdown()`, and on `pagehide`.
  */
 export function createLoggingClient(
   options: CreateLoggingClientOptions,
 ): Logger {
   const context = options.client[symbolClientContext];
 
-  const transport = options.transport ?? createFoundryTransport({
+  const exporter = createFoundryLogExporter({
     baseUrl: context.baseUrl,
-    fetch: context.fetch,
     tokenProvider: context.tokenProvider,
-    maxRetries: options.maxRetries ?? DEFAULT_MAX_RETRIES,
-    initialBackoffMillis: DEFAULT_INITIAL_BACKOFF_MILLIS,
   });
 
-  const flushController = createFlushController({
-    traceOwningRid: options.applicationRid ?? "",
-    transport,
+  const batchProcessor = new BatchLogRecordProcessor(exporter, {
     scheduledDelayMillis: options.scheduledDelayMillis
       ?? DEFAULT_SCHEDULED_DELAY_MILLIS,
     maxExportBatchSize: options.maxExportBatchSize
       ?? DEFAULT_MAX_EXPORT_BATCH_SIZE,
     maxQueueSize: options.maxQueueSize ?? DEFAULT_MAX_QUEUE_SIZE,
-    unloadBatchSize: options.unloadBatchSize ?? DEFAULT_UNLOAD_BATCH_SIZE,
-    beforeSend: options.beforeSend,
+    disableAutoFlushOnDocumentHide: true,
   });
 
+  const processor = createPreExportProcessor({
+    next: batchProcessor,
+    beforeSend: options.beforeSend,
+    traceIdProvider: options.traceIdProvider,
+  });
+
+  const resourceAttributes: ResourceAttributes = {};
+  if (options.applicationRid != null) {
+    resourceAttributes["service.name"] = options.applicationRid;
+  }
+
+  const provider = new LoggerProvider({
+    resource: buildResource(resourceAttributes),
+    processors: [processor],
+  });
+
+  const otelLogger = provider.getLogger(LOGGER_SCOPE);
+
   const lifecycle = registerLifecycle(
-    () => flushController.flushOnUnload(),
+    () => {
+      void provider.forceFlush();
+    },
     options.lifecycleTarget,
   );
 
-  return createLogger(flushController, lifecycle);
+  return createLogger({
+    otelLogger,
+    flush(): Promise<void> {
+      return provider.forceFlush();
+    },
+    async shutdown(): Promise<void> {
+      await provider.shutdown();
+      lifecycle.unregister();
+    },
+  });
 }
