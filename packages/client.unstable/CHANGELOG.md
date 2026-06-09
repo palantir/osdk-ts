@@ -1,5 +1,12 @@
 # @osdk/client.unstable
 
+## 2.32.0
+
+### Minor Changes
+
+- b5d0a61: transitive OAC imports
+- 833f47a: add support for interface action type constraint in ontology as code
+
 ## 2.31.0
 
 ## 2.30.0
