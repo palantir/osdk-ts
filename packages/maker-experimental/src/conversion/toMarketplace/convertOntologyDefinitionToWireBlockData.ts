@@ -308,6 +308,28 @@ function buildKnownIdentifiers(
       ]),
   );
 
+  // Interface action type constraints: InterfaceActionTypeConstraintRid -> BlockInternalId
+  const interfaceActionTypeConstraintMappings = Object.fromEntries(
+    Array.from(
+      ridGenerator.getInterfaceActionTypeConstraintRids().inverse().entries(),
+    )
+      .map(([rid, readableId]) => [
+        rid,
+        ridGenerator.toBlockInternalId(readableId),
+      ]),
+  );
+
+  // Interface parameter constraints: InterfaceParameterConstraintRid -> BlockInternalId
+  const interfaceParameterConstraintMappings = Object.fromEntries(
+    Array.from(
+      ridGenerator.getInterfaceParameterConstraintRids().inverse().entries(),
+    )
+      .map(([rid, readableId]) => [
+        rid,
+        ridGenerator.toBlockInternalId(readableId),
+      ]),
+  );
+
   // Datasources: BlockInternalId -> DatasourceLocator
   const backingDatasourceMappings = Object.fromEntries(
     Array.from(ridGenerator.getDatasourceLocators().entries()).map((
@@ -541,6 +563,8 @@ function buildKnownIdentifiers(
     markingsMappings[blockInternalId] = [markingId];
   });
 
+  // Cast needed: interfaceActionTypeConstraints/interfaceParameterConstraints
+  // are not yet in the generated KnownMarketplaceIdentifiers type
   return {
     actionParameterIds: actionParameterIdMappings,
     actionParameters: actionParameterMappings,
@@ -551,7 +575,9 @@ function buildKnownIdentifiers(
     functions: {},
     geotimeSeriesSyncs,
     groupIds: groupMappings,
+    interfaceActionTypeConstraints: interfaceActionTypeConstraintMappings,
     interfaceLinkTypes: interfaceLinkMappings,
+    interfaceParameterConstraints: interfaceParameterConstraintMappings,
     interfacePropertyTypes: {},
     interfaceTypes: interfaceMappings,
     linkTypeIds,
@@ -570,7 +596,7 @@ function buildKnownIdentifiers(
     valueTypes: valueTypeMappings,
     webhooks: {},
     workshopModules: {},
-  };
+  } as unknown as KnownMarketplaceIdentifiers;
 }
 
 /**

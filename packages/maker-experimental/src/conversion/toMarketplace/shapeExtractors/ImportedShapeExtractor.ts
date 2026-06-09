@@ -26,7 +26,9 @@ import type {
   ActionTypeParameterShape,
   ActionTypeShape,
   BaseParameterType,
+  InterfaceActionTypeConstraintShape,
   InterfaceLinkTypeInputShape,
+  InterfaceParameterConstraintShape,
   InterfacePropertyTypeInputShape,
   InterfaceTypeInputShape,
   LinkTypeInputShape,
@@ -338,11 +340,23 @@ function extractImportedInterfaceTypes(
       },
     );
 
+    // Build actionTypeConstraints list
+    const actionTypeConstraints: string[] =
+      ((interfaceType as any).actionTypeConstraints ?? []).map(
+        (constraint: any) => {
+          const constraintId = (knownIdentifiers as any)
+            .interfaceActionTypeConstraints
+            ?.[constraint.rid];
+          return constraintId ?? constraint.rid;
+        },
+      );
+
     const inputShape: InterfaceTypeInputShape = {
       about: createLocalizedAbout(
         interfaceType.displayMetadata.displayName,
         interfaceType.displayMetadata.description ?? "",
       ),
+      actionTypeConstraints,
       properties,
       propertiesV2: [],
       links,
@@ -464,6 +478,81 @@ function extractImportedInterfaceTypes(
         type: "interfaceLinkType",
         interfaceLinkType: linkInputShape,
       });
+    }
+
+    // Generate interface action type constraint input shapes
+    for (
+      const actionTypeConstraint of (interfaceType as any)
+        .actionTypeConstraints ?? []
+    ) {
+      const constraintReadableId = ReadableIdGenerator
+        .getForInterfaceActionTypeConstraint(
+          interfaceType.apiName,
+          actionTypeConstraint.metadata.apiName,
+        );
+
+      const parameterConstraintRefs: string[] = Object.entries(
+        actionTypeConstraint.parameters ?? {},
+      ).map(([paramApiName, _paramConstraint]: [string, any]) => {
+        const paramDisplayApiName = _paramConstraint.displayMetadata?.apiName
+          ?? paramApiName;
+        return ridGenerator.toBlockInternalId(
+          ReadableIdGenerator.getForInterfaceParameterConstraint(
+            interfaceType.apiName,
+            actionTypeConstraint.metadata.apiName,
+            paramDisplayApiName,
+          ),
+        );
+      });
+
+      const constraintInputShape: InterfaceActionTypeConstraintShape = {
+        about: createLocalizedAbout(
+          actionTypeConstraint.metadata.displayName,
+          actionTypeConstraint.metadata.description
+            ?? actionTypeConstraint.metadata.displayName,
+        ),
+        interfaceType: ridGenerator.toBlockInternalId(interfaceReadableId),
+        parameterConstraints: parameterConstraintRefs,
+        requireImplementation: actionTypeConstraint.requireImplementation,
+      };
+
+      blockShapes.inputShapes.set(constraintReadableId, {
+        type: "interfaceActionTypeConstraint",
+        interfaceActionTypeConstraint: constraintInputShape,
+      });
+
+      // Generate interface parameter constraint input shapes
+      for (
+        const [paramApiName, paramConstraint] of Object.entries(
+          actionTypeConstraint.parameters ?? {},
+        )
+      ) {
+        const pc = paramConstraint as any;
+        const paramDisplayApiName = pc.displayMetadata?.apiName ?? paramApiName;
+        const paramReadableId = ReadableIdGenerator
+          .getForInterfaceParameterConstraint(
+            interfaceType.apiName,
+            actionTypeConstraint.metadata.apiName,
+            paramDisplayApiName,
+          );
+
+        const paramInputShape: InterfaceParameterConstraintShape = {
+          about: createLocalizedAbout(
+            pc.displayMetadata?.displayName ?? pc.metadata?.displayName ?? "",
+            pc.displayMetadata?.description ?? pc.metadata?.description ?? "",
+          ),
+          actionTypeConstraint: ridGenerator.toBlockInternalId(
+            constraintReadableId,
+          ),
+          requireImplementation: pc.requireImplementation,
+          type: pc.type,
+        };
+
+        blockShapes.inputShapes.set(paramReadableId, {
+          type: "interfaceParameterConstraint",
+          interfaceParameterConstraint: paramInputShape,
+        });
+      }
     }
   }
 }

@@ -35,6 +35,7 @@ export function convertInterface(
       },
     }
     : status;
+  // Cast needed: actionTypeConstraints is not yet in the generated MarketplaceInterfaceType
   return {
     ...other,
     status: normalizedStatus,
@@ -85,6 +86,32 @@ export function convertInterface(
         interfaceType.apiName,
       ),
     })),
+    actionTypeConstraints: ((interfaceType as any).actionTypeConstraints ?? [])
+      .map(
+        (constraint: any) => ({
+          ...constraint,
+          rid: ridGenerator.generateRidForInterfaceActionTypeConstraint(
+            constraint.metadata.apiName,
+            interfaceType.apiName,
+          ),
+          parameters: Object.fromEntries(
+            Object.entries(constraint.parameters ?? {}).map(
+              ([_paramApiName, paramConstraint]: [string, any]) => {
+                const paramDisplayApiName =
+                  paramConstraint.displayMetadata?.apiName ?? _paramApiName;
+                return [
+                  ridGenerator.generateRidForInterfaceParameterConstraint(
+                    constraint.metadata.apiName,
+                    interfaceType.apiName,
+                    paramDisplayApiName,
+                  ),
+                  paramConstraint,
+                ];
+              },
+            ),
+          ),
+        }),
+      ),
     // these are omitted from our internal types but we need to re-add them for the final json
     properties: [],
     propertiesV3: Object.fromEntries(
@@ -97,5 +124,5 @@ export function convertInterface(
         )
       ),
     ),
-  };
+  } as unknown as MarketplaceInterfaceType;
 }
