@@ -241,13 +241,21 @@ describe("MediaItemMetadata mirror", () => {
       expectTypeOf<ApiUnitInterpretation>()
         .toEqualTypeOf<PlatformUnitInterpretation>();
     });
+    // ImageAttributeDomain / ImageAttributeKey are `LooselyBrandedString<...>` on the
+    // platform side and plain `string` on ours. The brand carries no runtime distinction
+    // (it's a structurally-optional phantom field), so mutual assignability is the
+    // meaningful drift check rather than strict structural equality.
     it("ImageAttributeDomain", () => {
       expectTypeOf<ApiImageAttributeDomain>()
-        .toEqualTypeOf<PlatformImageAttributeDomain>();
+        .toExtend<PlatformImageAttributeDomain>();
+      expectTypeOf<PlatformImageAttributeDomain>()
+        .toExtend<ApiImageAttributeDomain>();
     });
     it("ImageAttributeKey", () => {
       expectTypeOf<ApiImageAttributeKey>()
-        .toEqualTypeOf<PlatformImageAttributeKey>();
+        .toExtend<PlatformImageAttributeKey>();
+      expectTypeOf<PlatformImageAttributeKey>()
+        .toExtend<ApiImageAttributeKey>();
     });
     it("GeoMetadata", () => {
       expectTypeOf<ApiGeoMetadata>().toEqualTypeOf<PlatformGeoMetadata>();
@@ -295,9 +303,12 @@ describe("MediaItemMetadata mirror", () => {
       expectTypeOf<ApiCommonDicomDataElements>()
         .toEqualTypeOf<PlatformCommonDicomDataElements>();
     });
+    // `LooselyBrandedString<...>` on platform, plain `string` on ours
     it("DicomDataElementKey", () => {
       expectTypeOf<ApiDicomDataElementKey>()
-        .toEqualTypeOf<PlatformDicomDataElementKey>();
+        .toExtend<PlatformDicomDataElementKey>();
+      expectTypeOf<PlatformDicomDataElementKey>()
+        .toExtend<ApiDicomDataElementKey>();
     });
     it("Modality", () => {
       expectTypeOf<ApiModality>().toEqualTypeOf<PlatformModality>();

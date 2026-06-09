@@ -17,13 +17,13 @@
 import type {
   Media,
   MediaFullMetadata,
-  MediaItemMetadata,
   MediaMetadata,
   MediaReference,
 } from "@osdk/api";
 import { MediaSets } from "@osdk/foundry.mediasets";
 import invariant from "tiny-invariant";
 import type { MinimalClient } from "./MinimalClientContext.js";
+import { validateMediaItemMetadata } from "./object/validateMediaItemMetadata.js";
 
 /**
  * @internal
@@ -70,14 +70,14 @@ export function createMediaFromReference(
     },
 
     async fetchFullMetadata(): Promise<MediaFullMetadata> {
-      const itemMetadata: MediaItemMetadata = await MediaSets.metadata(
+      const raw = await MediaSets.metadata(
         client,
         mediaSetRid,
         mediaItemRid,
         { preview: true },
         token ? { ReadToken: token } : undefined,
       );
-      return { itemMetadata };
+      return { itemMetadata: validateMediaItemMetadata(raw) };
     },
 
     getMediaReference(): MediaReference {

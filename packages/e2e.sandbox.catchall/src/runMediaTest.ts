@@ -213,6 +213,12 @@ async function runReadMediaFullMetadataTest(ref: Media): Promise<void> {
     case "untyped":
       readUntypedMetadata(itemMetadata);
       break;
+    case "unknown":
+      console.log(
+        "Unknown MediaItemMetadata variant (SDK may be stale):",
+        itemMetadata.raw.type,
+      );
+      break;
     default: {
       const _exhaustive: never = itemMetadata;
       throw new Error(

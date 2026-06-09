@@ -644,7 +644,7 @@ export namespace DerivedProperty {
 }
 
 // @public (undocumented)
-export type DicomDataElementKey = LooselyBrandedString<"DicomDataElementKey">;
+export type DicomDataElementKey = string;
 
 // @public (undocumented)
 export interface DicomMediaItemMetadata {
@@ -988,10 +988,10 @@ export interface HumanReadableFormat {
 }
 
 // @public (undocumented)
-export type ImageAttributeDomain = LooselyBrandedString<"ImageAttributeDomain">;
+export type ImageAttributeDomain = string;
 
 // @public (undocumented)
-export type ImageAttributeKey = LooselyBrandedString<"ImageAttributeKey">;
+export type ImageAttributeKey = string;
 
 // @public (undocumented)
 export type ImageryDecodeFormat = "BMP" | "TIFF" | "NITF" | "JP2K" | "JPG" | "PNG" | "WEBP";
@@ -1174,11 +1174,6 @@ export namespace Logger {
         	}
 }
 
-// @public
-export type LooselyBrandedString<T extends string> = string & {
-    	__LOOSE_BRAND?: T
-};
-
 // @public (undocumented)
 export interface Mailbox {
     	// (undocumented)
@@ -1220,7 +1215,7 @@ export interface Media {
 
 // @public
 export interface MediaFullMetadata {
-    	itemMetadata: MediaItemMetadata;
+    	itemMetadata: MediaItemMetadata | UnknownMediaItemMetadata;
 }
 
 // @public
@@ -2330,6 +2325,17 @@ export interface UnitInterpretation {
     scale?: number;
     	// (undocumented)
     unit?: string;
+}
+
+// @public
+export interface UnknownMediaItemMetadata {
+    	// (undocumented)
+    raw: {
+        		type: string
+        		[key: string]: unknown
+        	};
+    	// (undocumented)
+    type: "unknown";
 }
 
 // @public (undocumented)

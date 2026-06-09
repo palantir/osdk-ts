@@ -17,7 +17,6 @@
 import type {
   Media,
   MediaFullMetadata,
-  MediaItemMetadata,
   MediaMetadata,
   MediaReference,
 } from "@osdk/api";
@@ -25,6 +24,7 @@ import type { MediaReference as CoreMediaReference } from "@osdk/foundry.core";
 import { MediaSets } from "@osdk/foundry.mediasets";
 import * as MediaReferenceProperties from "@osdk/foundry.ontologies/MediaReferenceProperty";
 import type { MinimalClient } from "./MinimalClientContext.js";
+import { validateMediaItemMetadata } from "./object/validateMediaItemMetadata.js";
 
 export class MediaReferencePropertyImpl implements Media {
   #mediaReference: MediaReference;
@@ -85,14 +85,14 @@ export class MediaReferencePropertyImpl implements Media {
   public async fetchFullMetadata(): Promise<MediaFullMetadata> {
     const { mediaSetRid, mediaItemRid, token } =
       this.#mediaReference.reference.mediaSetViewItem;
-    const itemMetadata: MediaItemMetadata = await MediaSets.metadata(
+    const raw = await MediaSets.metadata(
       this.#client,
       mediaSetRid,
       mediaItemRid,
       { preview: true },
       token ? { ReadToken: token } : undefined,
     );
-    return { itemMetadata };
+    return { itemMetadata: validateMediaItemMetadata(raw) };
   }
 
   public getMediaReference(): MediaReference {

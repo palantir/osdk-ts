@@ -62,6 +62,7 @@ import type { SharedClientContext } from '@osdk/shared.client2';
 import { SingleLinkAccessor } from '@osdk/api';
 import { ThreeDimensionalAggregation } from '@osdk/api';
 import { TwoDimensionalAggregation } from '@osdk/api';
+import { UnknownMediaItemMetadata } from '@osdk/api';
 import type { ValidateActionResponseV2 } from '@osdk/foundry.ontologies';
 import { VersionBound } from '@osdk/api';
 import { WhereClause } from '@osdk/api';
@@ -239,6 +240,8 @@ export { SingleLinkAccessor }
 export { ThreeDimensionalAggregation }
 
 export { TwoDimensionalAggregation }
+
+export { UnknownMediaItemMetadata }
 
 export { VersionBound }
 

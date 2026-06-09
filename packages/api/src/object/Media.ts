@@ -96,8 +96,12 @@ export interface MediaMetadata {
 export interface MediaFullMetadata {
   /**
    * Type-specific metadata. Narrow on `itemMetadata.type` to access variant-specific fields.
+   *
+   * If the platform returns a `type` value not modeled by this SDK version, `itemMetadata`
+   * will be an `UnknownMediaItemMetadata` instead, with the raw wire payload preserved on
+   * `raw` for inspection.
    */
-  itemMetadata: MediaItemMetadata;
+  itemMetadata: MediaItemMetadata | UnknownMediaItemMetadata;
 }
 
 /**
@@ -118,6 +122,20 @@ export type MediaItemMetadata =
   | ({ type: "model3d" } & Model3dMediaItemMetadata)
   | ({ type: "spreadsheet" } & SpreadsheetMediaItemMetadata)
   | ({ type: "untyped" } & UntypedMediaItemMetadata);
+
+/**
+ * Fallback variant emitted by the SDK when the platform returns a `MediaItemMetadata.type`
+ * value not modeled by this version of `@osdk/foundry.mediasets`. The raw wire payload is
+ * preserved on `raw` so callers can inspect it. Bump the platform SDK to promote the new
+ * variant into `MediaItemMetadata` proper.
+ *
+ * Distinct from the `untyped` variant of `MediaItemMetadata`, which is a real platform schema
+ * type for multimodal media.
+ */
+export interface UnknownMediaItemMetadata {
+  type: "unknown";
+  raw: { type: string; [key: string]: unknown };
+}
 
 // ─── Variant interfaces ──────────────────────────────────────────────────────
 
@@ -307,8 +325,8 @@ export interface UnitInterpretation {
   offset?: number;
 }
 
-export type ImageAttributeDomain = LooselyBrandedString<"ImageAttributeDomain">;
-export type ImageAttributeKey = LooselyBrandedString<"ImageAttributeKey">;
+export type ImageAttributeDomain = string;
+export type ImageAttributeKey = string;
 
 export interface GeoMetadata {
   crs?: CoordinateReferenceSystem;
@@ -382,7 +400,7 @@ export interface CommonDicomDataElements {
   seriesTime?: string;
 }
 
-export type DicomDataElementKey = LooselyBrandedString<"DicomDataElementKey">;
+export type DicomDataElementKey = string;
 
 export type Modality =
   | "AR"
@@ -503,13 +521,3 @@ export interface EmailAttachment {
   fileName?: string;
   mimeType: string;
 }
-
-// ─── Brand utility ───────────────────────────────────────────────────────────
-
-/**
- * Loose brand: structurally a string, with an optional phantom field for IntelliSense.
- * Matches the `@osdk/foundry.mediasets` definition so brand-bearing types unify across packages.
- */
-export type LooselyBrandedString<T extends string> = string & {
-  __LOOSE_BRAND?: T;
-};

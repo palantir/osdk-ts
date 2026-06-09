@@ -58,6 +58,7 @@ export type {
   SingleLinkAccessor,
   ThreeDimensionalAggregation,
   TwoDimensionalAggregation,
+  UnknownMediaItemMetadata,
   VersionBound,
   WhereClause,
 } from "@osdk/api";
