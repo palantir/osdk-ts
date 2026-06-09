@@ -110,16 +110,25 @@ function renderComment(comment) {
     .join("");
 }
 
-/** Collapse prose newlines: blank line -> `<br /><br />`, single newline ->
- * space. Self-closing `<br />` is required because Docusaurus renders these
- * docs through MDX, where a bare `<br>` is an unclosed JSX tag and fails the
- * build. */
+/**
+ * Flatten a multi-line JSDoc comment into a single line that fits in a
+ * Markdown table cell (cells can't contain real line breaks). Used for the
+ * description column — the main comment plus `@default` / `@deprecated` text.
+ *
+ * Newlines are treated by intent:
+ * - A blank line is a deliberate paragraph break, so it's preserved as a
+ *   visible `<br /><br />`.
+ * - A single newline is just a soft wrap in the source, so it collapses to a
+ *   space to keep the sentence flowing.
+ *
+ * Remaining whitespace runs collapse to one space, and the ends are trimmed.
+ */
 function collapseProse(text) {
   return text
-    .replace(/\r\n/g, "\n")
-    .replace(/\n[ \t]*\n+/g, "<br /><br />")
-    .replace(/\n/g, " ")
-    .replace(/[ \t]+/g, " ")
+    .replace(/\r\n/g, "\n") // normalize line endings
+    .replace(/\n[ \t]*\n+/g, "<br /><br />") // blank line(s) -> paragraph break
+    .replace(/\n/g, " ") // soft wrap -> space
+    .replace(/[ \t]+/g, " ") // collapse whitespace runs
     .trim();
 }
 
