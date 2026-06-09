@@ -120,6 +120,7 @@ export const createClient: (baseUrl: string, ontologyRid: string | Promise<strin
     	logger?: Logger
     	UNSTABLE_DO_NOT_USE_BRANCH?: string
     	headers?: Record<string, string>
+    	applicationRid?: string
 } | undefined, fetchFn?: typeof fetch | undefined) => Client;
 
 // @public

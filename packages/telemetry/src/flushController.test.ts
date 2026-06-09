@@ -18,6 +18,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import type { LogEntry } from "./attributes.js";
 import type { FlushControllerConfig } from "./flushController.js";
 import { createFlushController } from "./flushController.js";
+import { buildResource } from "./resource.js";
 import type { LogWriteRequest, Transport } from "./transport.js";
 
 function entry(message: string): LogEntry {
@@ -43,6 +44,7 @@ function config(
 ): FlushControllerConfig {
   return {
     traceOwningRid: "ri.app",
+    resource: buildResource({ applicationRid: "ri.app" }),
     transport,
     scheduledDelayMillis: 5000,
     maxExportBatchSize: 512,
