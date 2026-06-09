@@ -17,6 +17,7 @@
 import type { LogEntry } from "./attributes.js";
 import type { HttpRequestConfig, SendOptions } from "./httpRequest.js";
 import { sendJson } from "./httpRequest.js";
+import type { OtlpResource } from "./resource.js";
 
 /**
  * The request body sent to the upstream `Log.write` endpoint (plan §4.4).
@@ -24,11 +25,16 @@ import { sendJson } from "./httpRequest.js";
  * ```yaml
  * WriteLogsRequest:
  *   traceOwningRid: ResourceRid   # = applicationRid for app-emitted logs
+ *   resource: OtlpResource        # exactly one resource per export
  *   logs: list<LogEntry>
  * ```
+ *
+ * `resource` carries the four mandatory FTS attribute keys; exactly one
+ * resource is emitted per export.
  */
 export interface LogWriteRequest {
   traceOwningRid: string;
+  resource: OtlpResource;
   logs: LogEntry[];
 }
 
