@@ -35,7 +35,6 @@ export function convertInterface(
       },
     }
     : status;
-  // Cast needed: actionTypeConstraints is not yet in the generated MarketplaceInterfaceType
   return {
     ...other,
     status: normalizedStatus,
@@ -86,7 +85,7 @@ export function convertInterface(
         interfaceType.apiName,
       ),
     })),
-    actionTypeConstraints: ((interfaceType as any).actionTypeConstraints ?? [])
+    actionTypeConstraints: (interfaceType.actionTypeConstraints ?? [])
       .map(
         (constraint: any) => ({
           ...constraint,
@@ -124,5 +123,5 @@ export function convertInterface(
         )
       ),
     ),
-  } as unknown as MarketplaceInterfaceType;
+  };
 }

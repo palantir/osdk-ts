@@ -28,7 +28,10 @@ import type {
   PropertyTypeRid as _api_PropertyTypeRid,
 } from "../__components.js";
 import type { ObjectTypeGothamMapping as _api_typemapping_ObjectTypeGothamMapping } from "../typemapping/__components.js";
-import type { EntityProvenance as _api_entitymetadata_provenance_EntityProvenance } from "./provenance/__components.js";
+import type {
+  EntityProvenance as _api_entitymetadata_provenance_EntityProvenance,
+  OwningDirectWriter as _api_entitymetadata_provenance_OwningDirectWriter,
+} from "./provenance/__components.js";
 
 /**
  * Action Log is not required for this ObjectType.
@@ -146,6 +149,15 @@ export interface DayTime {
   day: DayOfWeek;
   time: string;
   zoneId: string;
+}
+/**
+ * Additional configuration for direct datasources on an object type.
+ */
+export interface DirectDatasourceConfiguration {
+  sourceTimestampProperties: Record<
+    _api_DatasourceRid,
+    SourceTimestampProperty
+  >;
 }
 export interface EditsHistory_config {
   type: "config";
@@ -559,12 +571,17 @@ export interface ObjectTypeEntityMetadata {
   aliases: Array<ObjectTypeAlias>;
   arePatchesEnabled: boolean;
   diffEdits: boolean;
+  directDatasourceConfiguration?:
+    | DirectDatasourceConfiguration
+    | null
+    | undefined;
   editsHistory: EditsHistory;
   editsResolutionStrategies: EditsResolutionStrategies;
   entityConfig: EntityConfig;
   gothamMapping?: _api_typemapping_ObjectTypeGothamMapping | null | undefined;
   interfaceSettings: InterfaceSettings;
   objectTypeIndexingSettings?: ObjectTypeIndexingSettings | null | undefined;
+  owningDirectWriters: Record<_api_DatasourceRid, OwningDirectWriters>;
   patchApplicationStrategy: PatchApplicationStrategy;
   provenance?:
     | _api_entitymetadata_provenance_EntityProvenance
@@ -679,6 +696,12 @@ export interface OntologyIrLinkTypeEntityMetadata {
 export interface OntologyIrTimestampPropertyStrategy {
   timestampPropertyRid: _api_ObjectTypeFieldApiName;
 }
+/**
+ * The set of owning direct writers for a single direct datasource.
+ */
+export interface OwningDirectWriters {
+  writers: Array<_api_entitymetadata_provenance_OwningDirectWriter>;
+}
 export interface PatchApplicationStrategy_datasourceScopedLiveness {
   type: "datasourceScopedLiveness";
   datasourceScopedLiveness: DatasourceScopedLivenessStrategy;
@@ -712,6 +735,13 @@ export type SharedPropertyTypeAlias = Alias;
 export interface SoakPeriodInformation {
   end: string;
   start: string;
+}
+/**
+ * A source timestamp property for a direct datasource. The timestamp represents the source time
+ * of the object and is used for deduplicating base data of objects with the same primary key.
+ */
+export interface SourceTimestampProperty {
+  timestampPropertyRid: _api_PropertyTypeRid;
 }
 export interface StorageBackend_objectStorageV1 {
   type: "objectStorageV1";

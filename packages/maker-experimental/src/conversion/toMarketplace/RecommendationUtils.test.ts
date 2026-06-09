@@ -140,6 +140,7 @@ describe("RecommendationUtils", () => {
           description: "An imported interface",
         },
         extendsInterfaces: [],
+        actionTypeConstraints: [],
         links: [],
         status: { type: "active", active: {} },
         propertiesV2: {},

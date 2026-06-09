@@ -177,6 +177,7 @@ export function convertObject(
                 ];
               },
             )),
+          actionTypes: {},
           properties: {},
         });
       }),

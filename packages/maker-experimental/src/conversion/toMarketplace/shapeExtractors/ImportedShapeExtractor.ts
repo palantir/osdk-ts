@@ -342,9 +342,9 @@ function extractImportedInterfaceTypes(
 
     // Build actionTypeConstraints list
     const actionTypeConstraints: string[] =
-      ((interfaceType as any).actionTypeConstraints ?? []).map(
+      (interfaceType.actionTypeConstraints ?? []).map(
         (constraint: any) => {
-          const constraintId = (knownIdentifiers as any)
+          const constraintId = knownIdentifiers
             .interfaceActionTypeConstraints
             ?.[constraint.rid];
           return constraintId ?? constraint.rid;
@@ -482,7 +482,7 @@ function extractImportedInterfaceTypes(
 
     // Generate interface action type constraint input shapes
     for (
-      const actionTypeConstraint of (interfaceType as any)
+      const actionTypeConstraint of interfaceType
         .actionTypeConstraints ?? []
     ) {
       const constraintReadableId = ReadableIdGenerator

@@ -16,26 +16,23 @@
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type {
-  GetActionTypesForInterfaceTypeRequest
-    as _api_GetActionTypesForInterfaceTypeRequest,
-  GetActionTypesForInterfaceTypeResponse
-    as _api_GetActionTypesForInterfaceTypeResponse,
+  GetEntityProjectsMigrationStatusRequest
+    as _api_permissions_GetEntityProjectsMigrationStatusRequest,
+  GetEntityProjectsMigrationStatusResponse
+    as _api_permissions_GetEntityProjectsMigrationStatusResponse,
 } from "../__components.js";
 
 /**
- * Gets all the action types that the interface type is associated with. E.g. actions that create an interface
- * object, edit an interface object, or use the interface as a parameter. Also returns actions that are
- * associated with an interface type that the interface type extends.
- *
- * This endpoint is deprecated and the bulk endpoint is preferred.
+ * Returns the public-project migration status of a single entity, read from the migration store. The FE
+ * uses this to surface stuck or failed migrations so the user can resolve them.
  */
-export async function getActionTypesForInterfaceType(
+export async function getEntityProjectsMigrationStatus(
   ctx: ConjureContext,
-  request: _api_GetActionTypesForInterfaceTypeRequest,
-): Promise<_api_GetActionTypesForInterfaceTypeResponse> {
+  request: _api_permissions_GetEntityProjectsMigrationStatusRequest,
+): Promise<_api_permissions_GetEntityProjectsMigrationStatusResponse> {
   return conjureFetch(
     ctx,
-    `/ontology/ontology/actionTypesForInterfaceType`,
+    `/permissions/entityProjectsMigrationStatus`,
     "PUT",
     request,
   );

@@ -248,10 +248,10 @@ function extractInterfaceType(
         return itId ?? it;
       },
     ),
-    actionTypeConstraints: ((interfaceType as any).actionTypeConstraints ?? [])
+    actionTypeConstraints: (interfaceType.actionTypeConstraints ?? [])
       .map(
         (constraint: any) => {
-          const constraintId = (knownMarketplaceIdentifiers as any)
+          const constraintId = knownMarketplaceIdentifiers
             .interfaceActionTypeConstraints?.[constraint.rid];
           return constraintId ?? constraint.rid;
         },
@@ -342,7 +342,7 @@ function extractInterfaceType(
 
   // Add action type constraint and parameter constraint output shapes
   for (
-    const actionTypeConstraint of (interfaceType as any).actionTypeConstraints
+    const actionTypeConstraint of interfaceType.actionTypeConstraints
       ?? []
   ) {
     const constraintOutputShape = getInterfaceActionTypeConstraintOutputShape(
@@ -546,7 +546,7 @@ function getInterfaceActionTypeConstraintOutputShape(
   const parameterConstraintRefs: string[] = Object.keys(
     actionTypeConstraint.parameters ?? {},
   ).map((paramRid: string) => {
-    const paramId = (knownMarketplaceIdentifiers as any)
+    const paramId = knownMarketplaceIdentifiers
       .interfaceParameterConstraints
       ?.[paramRid];
     return paramId ?? paramRid;
@@ -587,7 +587,7 @@ function getInterfaceParameterConstraintOutputShape(
   paramConstraint: any,
   ridGenerator: OntologyRidGenerator,
 ): { id: ReadableId; outputShape: OutputShape } {
-  const actionTypeConstraintId = (knownMarketplaceIdentifiers as any)
+  const actionTypeConstraintId = knownMarketplaceIdentifiers
     .interfaceActionTypeConstraints
     ?.[actionTypeConstraint.rid];
   const actionTypeConstraintRef = actionTypeConstraintId

@@ -28,6 +28,7 @@ export { getBulkSharedPropertyTypePermissions } from "./OntologyPermissionServic
 export { getBulkTypeGroupPermissions } from "./OntologyPermissionService/getBulkTypeGroupPermissions.js";
 export { getCreateOntologyPermissions } from "./OntologyPermissionService/getCreateOntologyPermissions.js";
 export { getEditorsForObjectType } from "./OntologyPermissionService/getEditorsForObjectType.js";
+export { getEntityProjectsMigrationStatus } from "./OntologyPermissionService/getEntityProjectsMigrationStatus.js";
 export { getInterfaceTypePermissions } from "./OntologyPermissionService/getInterfaceTypePermissions.js";
 export { getLinkTypePermissions } from "./OntologyPermissionService/getLinkTypePermissions.js";
 export { getObjectTypePermissions } from "./OntologyPermissionService/getObjectTypePermissions.js";

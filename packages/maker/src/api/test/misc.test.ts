@@ -105,6 +105,7 @@ describe("Miscellaneous Tests", () => {
             "interfaceTypes": {
               "com.palantir.myInterface": {
                 "interfaceType": {
+                  "actionTypeConstraints": [],
                   "apiName": "com.palantir.myInterface",
                   "displayMetadata": {
                     "description": "myInterface",
@@ -280,6 +281,7 @@ describe("Miscellaneous Tests", () => {
             "interfaceTypes": {
               "com.palantir.myInterface": {
                 "interfaceType": {
+                  "actionTypeConstraints": [],
                   "apiName": "com.palantir.myInterface",
                   "displayMetadata": {
                     "description": "myInterface",
@@ -427,6 +429,7 @@ describe("Miscellaneous Tests", () => {
 
         /** @type {import('@osdk/maker').InterfaceType} */
         const myInterface_base: InterfaceType = {
+          "actionTypeConstraints": [],
           "apiName": "com.my.package.myInterface",
           "displayMetadata": {
             "displayName": "myInterface",
@@ -518,6 +521,7 @@ describe("Miscellaneous Tests", () => {
           "implementsInterfaces": [
             {
               "implements": {
+                "actionTypeConstraints": [],
                 "apiName": "com.my.package.myInterface",
                 "displayMetadata": {
                   "displayName": "myInterface",
@@ -672,6 +676,7 @@ describe("Miscellaneous Tests", () => {
 
         /** @type {import('@osdk/maker').InterfaceType} */
         const childInterface_base: InterfaceType = {
+          "actionTypeConstraints": [],
           "apiName": "com.palantir.childInterface",
           "displayMetadata": {
             "displayName": "childInterface",
@@ -679,6 +684,7 @@ describe("Miscellaneous Tests", () => {
           },
           "extendsInterfaces": [
             {
+              "actionTypeConstraints": [],
               "apiName": "com.palantir.parentInterface",
               "displayMetadata": {
                 "displayName": "parentInterface",
@@ -881,6 +887,7 @@ describe("Miscellaneous Tests", () => {
             "interfaceTypes": {
               "com.palantir.childInterface": {
                 "interfaceType": {
+                  "actionTypeConstraints": [],
                   "apiName": "com.palantir.childInterface",
                   "displayMetadata": {
                     "description": "childInterface",
@@ -898,6 +905,7 @@ describe("Miscellaneous Tests", () => {
                   ],
                   "extendsInterfacesMetadata": [
                     {
+                      "actionTypeConstraints": [],
                       "apiName": "com.palantir.parentInterface",
                       "displayMetadata": {
                         "description": "parentInterface",
@@ -1098,6 +1106,7 @@ describe("Miscellaneous Tests", () => {
               },
               "com.palantir.parentInterface": {
                 "interfaceType": {
+                  "actionTypeConstraints": [],
                   "apiName": "com.palantir.parentInterface",
                   "displayMetadata": {
                     "description": "parentInterface",
@@ -1257,6 +1266,7 @@ describe("Miscellaneous Tests", () => {
                   },
                   "implementsInterfaces2": [
                     {
+                      "actionTypes": {},
                       "interfaceTypeApiName": "com.palantir.childInterface",
                       "linksV2": {},
                       "properties": {},

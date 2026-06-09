@@ -69,6 +69,7 @@ describe("Interfaces", () => {
           "interfaceTypes": {
             "com.palantir.Foo": {
               "interfaceType": {
+                "actionTypeConstraints": [],
                 "apiName": "com.palantir.Foo",
                 "displayMetadata": {
                   "description": "Foo",
@@ -163,6 +164,7 @@ describe("Interfaces", () => {
           "interfaceTypes": {
             "com.palantir.bar": {
               "interfaceType": {
+                "actionTypeConstraints": [],
                 "apiName": "com.palantir.bar",
                 "displayMetadata": {
                   "description": "Bar",
@@ -363,6 +365,7 @@ describe("Interfaces", () => {
           "interfaceTypes": {
             "com.palantir.parentInterface": {
               "interfaceType": {
+                "actionTypeConstraints": [],
                 "apiName": "com.palantir.parentInterface",
                 "displayMetadata": {
                   "description": "parentInterface",
@@ -578,6 +581,7 @@ describe("Interfaces", () => {
           "interfaceTypes": {
             "com.palantir.bar": {
               "interfaceType": {
+                "actionTypeConstraints": [],
                 "apiName": "com.palantir.bar",
                 "displayMetadata": {
                   "description": "Bar",
@@ -725,6 +729,7 @@ describe("Interfaces", () => {
           "interfaceTypes": {
             "com.palantir.parentInterface": {
               "interfaceType": {
+                "actionTypeConstraints": [],
                 "apiName": "com.palantir.parentInterface",
                 "displayMetadata": {
                   "description": "parentInterface",
@@ -985,6 +990,7 @@ describe("Interfaces", () => {
         "interfaceTypes": {
           "com.palantir.childInterface": {
             "interfaceType": {
+              "actionTypeConstraints": [],
               "apiName": "com.palantir.childInterface",
               "displayMetadata": {
                 "description": "childInterface",
@@ -1002,6 +1008,7 @@ describe("Interfaces", () => {
               ],
               "extendsInterfacesMetadata": [
                 {
+                  "actionTypeConstraints": [],
                   "apiName": "com.palantir.parentInterface",
                   "displayMetadata": {
                     "description": "parentInterface",
@@ -1104,6 +1111,7 @@ describe("Interfaces", () => {
           },
           "com.palantir.parentInterface": {
             "interfaceType": {
+              "actionTypeConstraints": [],
               "apiName": "com.palantir.parentInterface",
               "displayMetadata": {
                 "description": "parentInterface",
@@ -1188,6 +1196,7 @@ describe("Interfaces", () => {
         "interfaceTypes": {
           "com.palantir.parentInterface": {
             "interfaceType": {
+              "actionTypeConstraints": [],
               "apiName": "com.palantir.parentInterface",
               "displayMetadata": {
                 "description": "parentInterface",

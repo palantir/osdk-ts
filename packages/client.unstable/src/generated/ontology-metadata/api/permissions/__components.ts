@@ -81,11 +81,11 @@ export interface BulkUpdateEntityRolesResponse {
 export interface DatasourceDerived {
 }
 /**
- * Permissions to edit the entity is primarily controlled by datasource access.
+ * Permissions to edit the entity are primarily controlled by datasource access.
  *
  * The entity is viewable by users that satisfy the markings of the ontology and editable by users who have
- * access to a datasource and Ontology Editor or Ontology Owner role on the ontology. Only users with the
- * appropriate permissions can make view or edit the entity.
+ * access to a datasource *and* Ontology Editor or Ontology Owner role on the ontology. Only users with the
+ * appropriate permissions can view or edit the entity.
  */
 export interface EditRestrictedByDatasourcesPermissionModel {
 }
@@ -93,6 +93,25 @@ export interface EntityAndGrantPatches {
   entity: PermissionsOntologyEntity;
   grantPatches: Array<RoleGrantPatch>;
   parent?: EntityParent | null | undefined;
+}
+/**
+ * The entity's public-project migration has recorded a terminal error.
+ */
+export interface EntityMigrationFailed {
+  error: string;
+  migrationId: string;
+}
+/**
+ * The entity has an active public-project migration that has not yet recorded a terminal error.
+ */
+export interface EntityMigrationInProgress {
+  migrationId: string;
+}
+/**
+ * The entity has no public-project migration record. This means that the entity is either not migrating at
+ * the moment: they were either successfully migrated, or not migrated at all.
+ */
+export interface EntityMigrationNotMigrating {
 }
 export interface EntityParent_package {
   type: "package";
@@ -338,6 +357,37 @@ export interface GetEditorsForObjectTypeRequest {
 export interface GetEditorsForObjectTypeResponse {
   userIds: Array<_api_UserId>;
 }
+/**
+ * Request to look up the public-project migration status of a single entity. Used by the FE to surface
+ * stuck or failed migrations so users can resolve them or alert us.
+ */
+export interface GetEntityProjectsMigrationStatusRequest {
+  rid: _api_ProjectEntityRid;
+}
+export interface GetEntityProjectsMigrationStatusResponse_notMigrating {
+  type: "notMigrating";
+  notMigrating: EntityMigrationNotMigrating;
+}
+
+export interface GetEntityProjectsMigrationStatusResponse_inProgress {
+  type: "inProgress";
+  inProgress: EntityMigrationInProgress;
+}
+
+export interface GetEntityProjectsMigrationStatusResponse_failed {
+  type: "failed";
+  failed: EntityMigrationFailed;
+}
+/**
+ * The migration status of an entity. Each variant of this union maps to one of the states an entity can
+ * be in with respect to public-project migration: not migrating (no record in the migration store),
+ * in progress (record present, no error), or failed (record present with an error).
+ */
+export type GetEntityProjectsMigrationStatusResponse =
+  | GetEntityProjectsMigrationStatusResponse_notMigrating
+  | GetEntityProjectsMigrationStatusResponse_inProgress
+  | GetEntityProjectsMigrationStatusResponse_failed;
+
 /**
  * The operations the user has on the provided InterfaceType.
  */
@@ -741,11 +791,11 @@ export interface PropertySecurityGroupPermissions {
   canEdit: boolean;
 }
 /**
- * Entities in Compass projects. Permissions are entirely delegated to Compass project.
+ * Entities in Compass projects. Permissions are entirely delegated to the Compass project.
  *
- * The entity's visibility and editability is entirely controlled by the Compass project it belongs to. OMS does
- * not keep track of which project an entity is in; all permission resolution is delegated to Compass based on
- * project membership and roles.
+ * The entity's visibility and editability are entirely controlled by the Compass project it belongs to. OMS
+ * does not perform its own permission checks for these entities; all permission resolution is delegated to
+ * Compass based on project membership and roles.
  *
  * This is the modern approach for organizing and securing ontology entities. Entities are managed within Compass
  * projects, and permissions are determined by the user's access to those projects.
@@ -859,11 +909,11 @@ export interface UserPrincipal {
   user: _api_UserId;
 }
 /**
- * Permissions to view or edit the entity is primarily controlled by datasource access.
+ * Permissions to view or edit the entity are primarily controlled by datasource access.
  *
- * The entity is viewable by users that have access to a datasource and editable by users who have have access to
+ * The entity is viewable by users that have access to a datasource and editable by users who have access to
  * a datasource *and* Ontology Editor or Ontology Owner role on the ontology. Only users with the appropriate
- * permissions can make view or edit the entity.
+ * permissions can view or edit the entity.
  */
 export interface ViewRestrictedByDatasourcesPermissionModel {
 }

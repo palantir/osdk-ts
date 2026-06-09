@@ -107,6 +107,7 @@ export function convertObject(
       status: convertObjectStatus(objectType.status),
       redacted: false,
       implementsInterfaces2: implementations.map(impl => ({
+        actionTypes: {},
         interfaceTypeApiName: impl.implements.apiName,
         linksV2: {},
         propertiesV2: Object.fromEntries(impl.propertyMapping

@@ -413,6 +413,7 @@ export function convertAction(
             },
             enableLayoutUserSwitch: action.enableLayoutSwitch ?? false,
           },
+          applyingMessage: [],
           description: action.description ?? "",
           displayName: action.displayName,
           icon: {

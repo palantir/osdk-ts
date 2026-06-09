@@ -161,6 +161,7 @@ describe("Action Types", () => {
                 "metadata": {
                   "apiName": "com.palantir.foo",
                   "displayMetadata": {
+                    "applyingMessage": [],
                     "configuration": {
                       "defaultLayout": "FORM",
                       "displayAndFormat": {
@@ -355,6 +356,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.foo",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -423,6 +425,7 @@ describe("Action Types", () => {
             "interfaceTypes": {
               "com.palantir.foo": {
                 "interfaceType": {
+                  "actionTypeConstraints": [],
                   "apiName": "com.palantir.foo",
                   "displayMetadata": {
                     "description": "foo",
@@ -711,6 +714,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-example-interface-foo",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -958,6 +962,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.modify-example-interface-foo",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -1056,6 +1061,7 @@ describe("Action Types", () => {
             "interfaceTypes": {
               "com.palantir.exampleInterface": {
                 "interfaceType": {
+                  "actionTypeConstraints": [],
                   "apiName": "com.palantir.exampleInterface",
                   "displayMetadata": {
                     "description": "exampleInterface",
@@ -1349,6 +1355,7 @@ describe("Action Types", () => {
                   },
                   "implementsInterfaces2": [
                     {
+                      "actionTypes": {},
                       "interfaceTypeApiName": "com.palantir.exampleInterface",
                       "linksV2": {},
                       "properties": {},
@@ -1898,6 +1905,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-example-interface",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -2213,6 +2221,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-with-overrides",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -2449,6 +2458,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.modify-example-interface",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -2758,6 +2768,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.modify-with-overrides",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -2856,6 +2867,7 @@ describe("Action Types", () => {
             "interfaceTypes": {
               "com.palantir.exampleInterface": {
                 "interfaceType": {
+                  "actionTypeConstraints": [],
                   "apiName": "com.palantir.exampleInterface",
                   "displayMetadata": {
                     "description": "exampleInterface",
@@ -3267,6 +3279,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-example-interface",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -3446,6 +3459,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.modify-example-interface",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -3531,6 +3545,7 @@ describe("Action Types", () => {
             "interfaceTypes": {
               "com.palantir.exampleInterface": {
                 "interfaceType": {
+                  "actionTypeConstraints": [],
                   "apiName": "com.palantir.exampleInterface",
                   "displayMetadata": {
                     "description": "exampleInterface",
@@ -3697,6 +3712,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.delete-interface-object-example-interface",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -3769,6 +3785,7 @@ describe("Action Types", () => {
             "interfaceTypes": {
               "com.palantir.exampleInterface": {
                 "interfaceType": {
+                  "actionTypeConstraints": [],
                   "apiName": "com.palantir.exampleInterface",
                   "displayMetadata": {
                     "description": "exampleInterface",
@@ -3938,6 +3955,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.custom-delete-api-name",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -4010,6 +4028,7 @@ describe("Action Types", () => {
             "interfaceTypes": {
               "com.palantir.exampleInterface": {
                 "interfaceType": {
+                  "actionTypeConstraints": [],
                   "apiName": "com.palantir.exampleInterface",
                   "displayMetadata": {
                     "description": "exampleInterface",
@@ -4182,6 +4201,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.delete-interface-object-example-interface",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -4254,6 +4274,7 @@ describe("Action Types", () => {
             "interfaceTypes": {
               "com.palantir.exampleInterface": {
                 "interfaceType": {
+                  "actionTypeConstraints": [],
                   "apiName": "com.palantir.exampleInterface",
                   "displayMetadata": {
                     "description": "exampleInterface",
@@ -4751,6 +4772,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.custom-api-name-1",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "TABLE",
                         "displayAndFormat": {
@@ -5094,6 +5116,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.custom-api-name-2",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "TABLE",
                         "displayAndFormat": {
@@ -5217,6 +5240,7 @@ describe("Action Types", () => {
             "interfaceTypes": {
               "com.palantir.exampleInterface": {
                 "interfaceType": {
+                  "actionTypeConstraints": [],
                   "apiName": "com.palantir.exampleInterface",
                   "displayMetadata": {
                     "description": "exampleInterface",
@@ -6068,6 +6092,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-sample-interface",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -6332,6 +6357,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.modify-sample-interface",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -6443,6 +6469,7 @@ describe("Action Types", () => {
             "interfaceTypes": {
               "com.palantir.sampleInterface": {
                 "interfaceType": {
+                  "actionTypeConstraints": [],
                   "apiName": "com.palantir.sampleInterface",
                   "displayMetadata": {
                     "description": "sampleInterface",
@@ -6765,6 +6792,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-object-foo",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -6943,6 +6971,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-or-modify-foo",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -7085,6 +7114,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.delete-object-foo",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -7252,6 +7282,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.modify-object-foo",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -8104,6 +8135,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-object-foo",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "TABLE",
                         "displayAndFormat": {
@@ -8474,6 +8506,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-or-modify-foo",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "TABLE",
                         "displayAndFormat": {
@@ -8850,6 +8883,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.modify-object-foo",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "TABLE",
                         "displayAndFormat": {
@@ -9423,6 +9457,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-example-interface",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -9565,6 +9600,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-object-foo",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -9699,6 +9735,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-or-modify-foo",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -9846,6 +9883,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.modify-example-interface",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -9982,6 +10020,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.modify-object-foo",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -10054,6 +10093,7 @@ describe("Action Types", () => {
             "interfaceTypes": {
               "com.palantir.exampleInterface": {
                 "interfaceType": {
+                  "actionTypeConstraints": [],
                   "apiName": "com.palantir.exampleInterface",
                   "displayMetadata": {
                     "description": "exampleInterface",
@@ -10965,6 +11005,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-example-interface",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -11191,6 +11232,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-or-modify-employee",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -11333,6 +11375,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.delete-interface-object-example-interface",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -11461,6 +11504,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.delete-object-employee",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -11674,6 +11718,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.modify-example-interface",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -11898,6 +11943,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.modify-object-employee",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -11983,6 +12029,7 @@ describe("Action Types", () => {
             "interfaceTypes": {
               "com.palantir.exampleInterface": {
                 "interfaceType": {
+                  "actionTypeConstraints": [],
                   "apiName": "com.palantir.exampleInterface",
                   "displayMetadata": {
                     "description": "exampleInterface",
@@ -12500,6 +12547,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.foo",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -12803,6 +12851,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-object-employee",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -13340,6 +13389,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-object-sample-object",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -13799,6 +13849,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-object-sample-object",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -14263,6 +14314,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-object-object-with-arrays",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -14551,6 +14603,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.modify-object-object-with-arrays",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -15124,6 +15177,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-object-sample-object",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -15713,6 +15767,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-object-sample-object",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {
@@ -16279,6 +16334,7 @@ describe("Action Types", () => {
                   "metadata": {
                     "apiName": "com.palantir.create-object-foo",
                     "displayMetadata": {
+                      "applyingMessage": [],
                       "configuration": {
                         "defaultLayout": "FORM",
                         "displayAndFormat": {

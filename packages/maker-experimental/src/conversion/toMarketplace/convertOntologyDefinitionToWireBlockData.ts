@@ -563,8 +563,6 @@ function buildKnownIdentifiers(
     markingsMappings[blockInternalId] = [markingId];
   });
 
-  // Cast needed: interfaceActionTypeConstraints/interfaceParameterConstraints
-  // are not yet in the generated KnownMarketplaceIdentifiers type
   return {
     actionParameterIds: actionParameterIdMappings,
     actionParameters: actionParameterMappings,
@@ -596,7 +594,7 @@ function buildKnownIdentifiers(
     valueTypes: valueTypeMappings,
     webhooks: {},
     workshopModules: {},
-  } as unknown as KnownMarketplaceIdentifiers;
+  };
 }
 
 /**
