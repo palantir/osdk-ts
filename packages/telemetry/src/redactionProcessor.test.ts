@@ -88,4 +88,23 @@ describe("createPreExportProcessor", () => {
 
     expect(emitted[0].attributes[TRACE_ID]).toBeUndefined();
   });
+
+  it("reads the provider per record so the id can change between calls", () => {
+    const { emitted, next } = makeNext();
+    const ids = ["trace-a", "trace-b"];
+    let index = 0;
+    emitMessages({ next, traceIdProvider: () => ids[index++] }, ["a", "b"]);
+
+    expect(emitted.map((r) => r.attributes[TRACE_ID])).toEqual([
+      "trace-a",
+      "trace-b",
+    ]);
+  });
+
+  it("omits the trace id when no provider is supplied", () => {
+    const { emitted, next } = makeNext();
+    emitMessages({ next }, ["a"]);
+
+    expect(emitted[0].attributes[TRACE_ID]).toBeUndefined();
+  });
 });

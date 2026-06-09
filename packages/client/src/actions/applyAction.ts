@@ -33,6 +33,7 @@ import type {
 import * as Actions from "@osdk/foundry.ontologies/Action";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addAttributionHeader } from "../util/addAttributionHeader.js";
+import { addTraceContextHeader } from "../util/addTraceContextHeader.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import { augmentRequestContext } from "../util/augmentRequestContext.js";
 import type { NOOP } from "../util/NOOP.js";
@@ -125,10 +126,15 @@ export async function applyAction<
 ): Promise<
   ActionReturnTypeForOptions<Op>
 > {
-  const clientWithHeaders = addAttributionHeader(
-    addUserAgentAndRequestContextHeaders(
-      augmentRequestContext(client, _ => ({ finalMethodCall: "applyAction" })),
-      action,
+  const clientWithHeaders = addTraceContextHeader(
+    addAttributionHeader(
+      addUserAgentAndRequestContextHeaders(
+        augmentRequestContext(
+          client,
+          _ => ({ finalMethodCall: "applyAction" }),
+        ),
+        action,
+      ),
     ),
   );
   if (Array.isArray(parameters)) {

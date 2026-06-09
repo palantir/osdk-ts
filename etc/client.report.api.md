@@ -143,6 +143,9 @@ export const extractDateInUTC: (date: Date) => string;
 // @public
 export function extractPrimaryKeyFromObjectSpecifier(ObjectSpecifier: ObjectSpecifier<any>): string;
 
+// @public
+export function getActiveTraceId(): string | undefined;
+
 // @public (undocumented)
 export function getWireObjectSet(objectSet: ObjectSet<any> | MinimalObjectSet<any>): WireObjectSet;
 
