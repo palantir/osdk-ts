@@ -45,6 +45,7 @@ export function createMinimalClient(
     flushEdits?: () => Promise<void>;
     branch?: string;
     headers?: Record<string, string>;
+    applicationRid?: string;
   } = {},
   fetchFn: (
     input: Request | URL | string,
@@ -84,6 +85,7 @@ export function createMinimalClient(
     clientCacheKey: {} as ClientCacheKey,
     requestContext: {},
     branch: options.branch,
+    applicationRid: options.applicationRid,
     narrowTypeInterfaceOrObjectMapping: {},
   } satisfies Omit<
     MinimalClient,

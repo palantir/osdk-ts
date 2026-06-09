@@ -17,6 +17,7 @@
 import type { LogEntry } from "./attributes.js";
 import type { Batch } from "./batch.js";
 import { createBatch } from "./batch.js";
+import type { OtlpResource } from "./resource.js";
 import type { Transport } from "./transport.js";
 
 /**
@@ -27,6 +28,8 @@ export type BeforeSendHook = (entry: LogEntry) => LogEntry | null;
 
 export interface FlushControllerConfig {
   traceOwningRid: string;
+  /** The single OTLP resource attached to every export. */
+  resource: OtlpResource;
   transport: Transport;
   /** Interval between time-based flushes, in milliseconds. */
   scheduledDelayMillis: number;
@@ -63,7 +66,11 @@ export function createFlushController(
 
   function emit(logs: LogEntry[], unload: boolean): Promise<void> {
     return config.transport.emit(
-      { traceOwningRid: config.traceOwningRid, logs },
+      {
+        traceOwningRid: config.traceOwningRid,
+        resource: config.resource,
+        logs,
+      },
       unload ? { unload: true } : undefined,
     );
   }

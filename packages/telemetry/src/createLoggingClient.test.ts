@@ -18,6 +18,14 @@ import type { SharedClient, SharedClientContext } from "@osdk/shared.client2";
 import { symbolClientContext } from "@osdk/shared.client2";
 import { describe, expect, it, vi } from "vitest";
 import { createLoggingClient } from "./createLoggingClient.js";
+import {
+  DEFAULT_PRODUCING_RESOURCE_VERSION,
+  DEFAULT_PRODUCING_SERVICE,
+  PRODUCING_RESOURCE_IDENTIFIER,
+  PRODUCING_RESOURCE_VERSION,
+  PRODUCING_SERVICE,
+  TRACE_OWNING_RESOURCE_IDENTIFIER,
+} from "./resource.js";
 import type { LogWriteRequest, Transport } from "./transport.js";
 
 function makeClient(fetchFn: typeof globalThis.fetch): SharedClient {
@@ -25,6 +33,19 @@ function makeClient(fetchFn: typeof globalThis.fetch): SharedClient {
     baseUrl: "https://example.com/",
     fetch: fetchFn,
     tokenProvider: vi.fn().mockResolvedValue("tok"),
+  };
+  return { [symbolClientContext]: context };
+}
+
+function makeClientWithAppRid(
+  fetchFn: typeof globalThis.fetch,
+  applicationRid: string,
+): SharedClient {
+  const context: SharedClientContext & { applicationRid: string } = {
+    baseUrl: "https://example.com/",
+    fetch: fetchFn,
+    tokenProvider: vi.fn().mockResolvedValue("tok"),
+    applicationRid,
   };
   return { [symbolClientContext]: context };
 }
@@ -83,6 +104,53 @@ describe("createLoggingClient", () => {
 
     expect(transport.emit).toHaveBeenCalledTimes(1);
     expect(transport.emit.mock.calls[0][1]).toEqual({ unload: true });
+
+    await logger.shutdown();
+  });
+
+  it("emits exactly one resource carrying the four mandatory keys", async () => {
+    const transport = makeTransport();
+    const logger = createLoggingClient({
+      client: makeClient(vi.fn<typeof globalThis.fetch>()),
+      applicationRid: "ri.app",
+      transport,
+    });
+
+    logger.info("event");
+    await logger.flush();
+
+    expect(transport.emit).toHaveBeenCalledTimes(1);
+    const request = transport.emit.mock.calls[0][0];
+    expect(Array.isArray(request.resource)).toBe(false);
+    const attributes = request.resource.attributes;
+    expect(attributes[TRACE_OWNING_RESOURCE_IDENTIFIER]).toBe("ri.app");
+    expect(attributes[PRODUCING_RESOURCE_IDENTIFIER]).toBe("ri.app");
+    expect(attributes[PRODUCING_RESOURCE_VERSION]).toBe(
+      DEFAULT_PRODUCING_RESOURCE_VERSION,
+    );
+    expect(attributes[PRODUCING_SERVICE]).toBe(DEFAULT_PRODUCING_SERVICE);
+
+    await logger.shutdown();
+  });
+
+  it("reads applicationRid off the client when the option is omitted", async () => {
+    const transport = makeTransport();
+    const logger = createLoggingClient({
+      client: makeClientWithAppRid(
+        vi.fn<typeof globalThis.fetch>(),
+        "ri.ctx-app",
+      ),
+      transport,
+    });
+
+    logger.info("event");
+    await logger.flush();
+
+    const request = transport.emit.mock.calls[0][0];
+    expect(request.traceOwningRid).toBe("ri.ctx-app");
+    expect(request.resource.attributes[TRACE_OWNING_RESOURCE_IDENTIFIER]).toBe(
+      "ri.ctx-app",
+    );
 
     await logger.shutdown();
   });
