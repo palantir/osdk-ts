@@ -42,6 +42,19 @@ function headersOf(init: RequestInit | undefined): Record<string, string> {
   return (init?.headers ?? {}) as Record<string, string>;
 }
 
+function makeClientWithAppRid(
+  fetchFn: typeof globalThis.fetch,
+  applicationRid: string,
+): SharedClient {
+  const context: SharedClientContext & { applicationRid: string } = {
+    baseUrl: "https://example.com/",
+    fetch: fetchFn,
+    tokenProvider: vi.fn().mockResolvedValue("tok"),
+    applicationRid,
+  };
+  return { [symbolClientContext]: context };
+}
+
 describe("createLoggingClient", () => {
   let fetchFn: ReturnType<typeof fetchMock>;
 
@@ -115,6 +128,28 @@ describe("createLoggingClient", () => {
     expect(fetchFn.mock.calls[0][1]?.keepalive).toBe(true);
 
     await logger.shutdown();
+  });
+
+  it("reads applicationRid off the client when the option is omitted", async () => {
+    const logger = createLoggingClient({
+      client: makeClientWithAppRid(fetchFn, "ri.ctx-app"),
+    });
+
+    logger.info("event");
+    await logger.flush();
+
+    expect(fetchFn).toHaveBeenCalledTimes(1);
+    expect(headersOf(fetchFn.mock.calls[0][1]).Authorization).toBe(
+      "Bearer tok",
+    );
+
+    await logger.shutdown();
+  });
+
+  it("throws when no applicationRid is provided or on the client", () => {
+    expect(() => createLoggingClient({ client: makeClient() })).toThrowError(
+      /mandatory attribute/,
+    );
   });
 
   it("drops records that beforeSend returns null for", async () => {

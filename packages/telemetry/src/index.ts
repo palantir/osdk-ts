@@ -21,3 +21,13 @@ export type { SerializedError } from "./errorSerializer.js";
 export { serializeError } from "./errorSerializer.js";
 export type { Logger } from "./logger.js";
 export type { BeforeSendHook, TraceIdProvider } from "./redactionProcessor.js";
+export type { BuildResourceParams } from "./resource.js";
+export {
+  buildResource,
+  DEFAULT_PRODUCING_RESOURCE_VERSION,
+  DEFAULT_PRODUCING_SERVICE,
+  PRODUCING_RESOURCE_IDENTIFIER,
+  PRODUCING_RESOURCE_VERSION,
+  PRODUCING_SERVICE,
+  TRACE_OWNING_RESOURCE_IDENTIFIER,
+} from "./resource.js";

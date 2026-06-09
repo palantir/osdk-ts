@@ -36,6 +36,12 @@ export interface MinimalClient extends SharedClientContext {
   ontologyProvider: OntologyProvider;
   logger?: Logger;
   branch?: string;
+  /**
+   * The RID of the application that owns this client. When set, it is used as
+   * the single-rid attribution header and as the owning/producing resource for
+   * telemetry emitted by `@osdk/telemetry`.
+   */
+  applicationRid?: string;
   /** @internal */
   objectSetFactory: ObjectSetFactory<any, any>;
   /** @internal */

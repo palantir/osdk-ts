@@ -14,27 +14,81 @@
  * limitations under the License.
  */
 
-import type { LoggerProviderOptions } from "@opentelemetry/sdk-logs";
+import type { Resource } from "@opentelemetry/resources";
+import { resourceFromAttributes } from "@opentelemetry/resources";
 
-/** Resource-level attributes describing the emitting application. */
-export type ResourceAttributes = Record<string, string>;
+// === UPSTREAM CONTRACT (SEAM) ===========================================
+// The Foundry Telemetry Service (FTS) requires every OTLP export to carry
+// exactly one resource, and that resource MUST carry all four attribute keys
+// below. A missing key makes FTS reject the request, so {@link buildResource}
+// throws rather than emitting a partial resource.
+//
+// The attribute key strings are owned by the FTS contract; confirm them
+// against the gateway before relying on end-to-end ingestion.
+// ========================================================================
+
+/** OTLP resource attribute: the application RID that owns the trace. */
+export const TRACE_OWNING_RESOURCE_IDENTIFIER =
+  "trace.owning.resource.identifier";
+
+/** OTLP resource attribute: the RID of the resource producing the telemetry. */
+export const PRODUCING_RESOURCE_IDENTIFIER = "producing.resource.identifier";
+
+/** OTLP resource attribute: the version of the producing resource. */
+export const PRODUCING_RESOURCE_VERSION = "producing.resource.version";
+
+/** OTLP resource attribute: the name of the service producing the telemetry. */
+export const PRODUCING_SERVICE = "producing.service";
+
+/** Default producing service name when none is supplied. */
+export const DEFAULT_PRODUCING_SERVICE = "@osdk/telemetry";
+
+/** Default producing resource version when none is supplied. */
+export const DEFAULT_PRODUCING_RESOURCE_VERSION = "0.0.0";
+
+export interface BuildResourceParams {
+  /** The owning application RID; populates `TRACE_OWNING_RESOURCE_IDENTIFIER`. */
+  applicationRid: string;
+  /**
+   * The RID of the resource producing the telemetry. Defaults to
+   * `applicationRid`, which is correct for an app emitting its own telemetry.
+   */
+  producingResourceIdentifier?: string;
+  /** Version of the producing resource. */
+  producingResourceVersion?: string;
+  /** Name of the producing service. */
+  producingService?: string;
+}
 
 /**
- * OTEL-2 SEAM.
- *
- * The OTel `Resource` describes the entity producing telemetry (service name,
- * version, application RID, ...). OTEL-2 owns wiring a real resource; when
- * `@opentelemetry/resources` is added as a dependency, this becomes
- * `return resourceFromAttributes(attributes)`.
- *
- * Until then this returns `undefined`, which leaves the `LoggerProvider` on its
- * default empty resource so the package builds and runs standalone. The
- * attributes are accepted now so callers (and OTEL-2) have a stable entry
- * point.
+ * Assemble the one OTel `Resource` attached to a `LoggerProvider`, populating
+ * all four mandatory FTS keys and handing them to `@opentelemetry/resources`.
+ * Throws if the owning/producing rid is empty, since FTS rejects a resource
+ * that is missing any mandatory key.
  */
-export function buildResource(
-  attributes: ResourceAttributes,
-): LoggerProviderOptions["resource"] {
-  void attributes;
-  return undefined;
+export function buildResource(params: BuildResourceParams): Resource {
+  const producingResourceIdentifier = params.producingResourceIdentifier
+    ?? params.applicationRid;
+  const producingResourceVersion = params.producingResourceVersion
+    ?? DEFAULT_PRODUCING_RESOURCE_VERSION;
+  const producingService = params.producingService
+    ?? DEFAULT_PRODUCING_SERVICE;
+
+  const attributes: Record<string, string> = {
+    [TRACE_OWNING_RESOURCE_IDENTIFIER]: params.applicationRid,
+    [PRODUCING_RESOURCE_IDENTIFIER]: producingResourceIdentifier,
+    [PRODUCING_RESOURCE_VERSION]: producingResourceVersion,
+    [PRODUCING_SERVICE]: producingService,
+  };
+
+  for (const [key, value] of Object.entries(attributes)) {
+    if (value.length === 0) {
+      throw new Error(
+        `Telemetry resource is missing mandatory attribute "${key}"; FTS `
+          + `rejects exports with an incomplete resource.`,
+      );
+    }
+  }
+
+  return resourceFromAttributes(attributes);
 }

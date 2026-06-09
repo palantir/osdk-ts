@@ -115,6 +115,7 @@ export function createClientInternal(
       logger?: Logger;
       UNSTABLE_DO_NOT_USE_BRANCH?: string;
       headers?: Record<string, string>;
+      applicationRid?: string;
     }
     | undefined = undefined,
   fetchFn: typeof globalThis.fetch = fetch,
@@ -383,7 +384,8 @@ export function createClientFromContext(clientCtx: MinimalClient) {
  *   from `@osdk/oauth`, which handles caching and refresh; you can also provide a custom function if you
  *   manage tokens yourself.
  * @param options - Optional client configuration: a custom `logger`, an experimental `UNSTABLE_DO_NOT_USE_BRANCH`
- *   for branch-aware requests, and additional `headers` to include on every request.
+ *   for branch-aware requests, additional `headers` to include on every request, and an `applicationRid`
+ *   identifying the owning application for call attribution and telemetry.
  * @param fetchFn - An optional `fetch` implementation to use for all requests. Defaults to the global `fetch`.
  * @example
  * ```ts
@@ -414,6 +416,11 @@ export const createClient: (
     /** @beta This is an experimental feature subject to change */
     UNSTABLE_DO_NOT_USE_BRANCH?: string;
     headers?: Record<string, string>;
+    /**
+     * The RID of the application using this client. Used for call attribution
+     * and as the owning/producing resource for telemetry.
+     */
+    applicationRid?: string;
   } | undefined,
   fetchFn?: typeof fetch | undefined,
 ) => Client = createClientInternal.bind(
