@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-export type {
-  AttributeValue,
-  LogContext,
-  LogEntry,
-  LogSeverity,
-} from "./attributes.js";
+export type { AttributeValue, LogContext, LogSeverity } from "./attributes.js";
 export type { CreateLoggingClientOptions } from "./createLoggingClient.js";
 export { createLoggingClient } from "./createLoggingClient.js";
 export type { SerializedError } from "./errorSerializer.js";
 export { serializeError } from "./errorSerializer.js";
-export type { BeforeSendHook } from "./flushController.js";
 export type { Logger } from "./logger.js";
-export type { BuildResourceParams, OtlpResource } from "./resource.js";
+export type { BeforeSendHook, TraceIdProvider } from "./redactionProcessor.js";
+export type { BuildResourceParams } from "./resource.js";
 export {
   buildResource,
   DEFAULT_PRODUCING_RESOURCE_VERSION,
@@ -34,7 +29,5 @@ export {
   PRODUCING_RESOURCE_IDENTIFIER,
   PRODUCING_RESOURCE_VERSION,
   PRODUCING_SERVICE,
-  resourceFromAttributes,
   TRACE_OWNING_RESOURCE_IDENTIFIER,
 } from "./resource.js";
-export type { LogWriteRequest, Transport } from "./transport.js";

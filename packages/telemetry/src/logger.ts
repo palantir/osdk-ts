@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import type { LogContext, LogEntry, LogSeverity } from "./attributes.js";
-import { normalizeContext } from "./attributes.js";
+import type { Logger as OtelLogger } from "@opentelemetry/api-logs";
+import type { LogContext, LogSeverity } from "./attributes.js";
+import { buildLogRecord } from "./attributes.js";
+import type { SerializedError } from "./errorSerializer.js";
 import { serializeError } from "./errorSerializer.js";
-import type { FlushController } from "./flushController.js";
-import type { Lifecycle } from "./lifecycle.js";
 
 /**
  * The public logging surface returned by `createLoggingClient`.
@@ -31,35 +31,33 @@ export interface Logger {
   error(error: unknown): void;
   /** Log an error message, with optional context and an associated thrown value. */
   error(message: string, context?: LogContext, error?: unknown): void;
-  /** Force an immediate flush of buffered entries. */
+  /** Force an immediate flush of buffered records. */
   flush(): Promise<void>;
-  /** Flush, stop the interval timer, and remove lifecycle listeners. */
+  /** Flush, shut down the provider, and remove lifecycle listeners. */
   shutdown(): Promise<void>;
 }
 
-export function createLogger(
-  flushController: FlushController,
-  lifecycle: Lifecycle,
-): Logger {
-  function enqueue(
+/**
+ * The OTel-side dependencies a {@link Logger} drives. Kept as a small seam so
+ * the public surface can be unit-tested without standing up a provider.
+ */
+export interface LoggerBackend {
+  /** The OTel logger obtained from the provider; receives every record. */
+  otelLogger: OtelLogger;
+  /** Force the provider to export buffered records. */
+  flush(): Promise<void>;
+  /** Flush, shut the provider down, and tear down lifecycle listeners. */
+  shutdown(): Promise<void>;
+}
+
+export function createLogger(backend: LoggerBackend): Logger {
+  function emit(
     severity: LogSeverity,
     message: string,
     context?: LogContext,
-    error?: LogEntry["error"],
+    error?: SerializedError,
   ): void {
-    const entry: LogEntry = {
-      timestamp: new Date().toISOString(),
-      severity,
-      message,
-    };
-    const normalized = normalizeContext(context);
-    if (normalized != null) {
-      entry.context = normalized;
-    }
-    if (error != null) {
-      entry.error = error;
-    }
-    flushController.add(entry);
+    backend.otelLogger.emit(buildLogRecord(severity, message, context, error));
   }
 
   const error = (
@@ -71,31 +69,29 @@ export function createLogger(
       const serialized = errorArg === undefined
         ? undefined
         : serializeError(errorArg);
-      enqueue("ERROR", messageOrError, context, serialized);
+      emit("ERROR", messageOrError, context, serialized);
       return;
     }
     const serialized = serializeError(messageOrError);
-    enqueue("ERROR", serialized.message, undefined, serialized);
+    emit("ERROR", serialized.message, undefined, serialized);
   };
 
   return {
     debug(message: string, context?: LogContext): void {
-      enqueue("DEBUG", message, context);
+      emit("DEBUG", message, context);
     },
     info(message: string, context?: LogContext): void {
-      enqueue("INFO", message, context);
+      emit("INFO", message, context);
     },
     warn(message: string, context?: LogContext): void {
-      enqueue("WARN", message, context);
+      emit("WARN", message, context);
     },
     error,
     flush(): Promise<void> {
-      return flushController.flush();
+      return backend.flush();
     },
-    async shutdown(): Promise<void> {
-      await flushController.flush();
-      flushController.shutdown();
-      lifecycle.unregister();
+    shutdown(): Promise<void> {
+      return backend.shutdown();
     },
   };
 }

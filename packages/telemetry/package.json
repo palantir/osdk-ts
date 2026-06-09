@@ -40,6 +40,10 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
+    "@opentelemetry/api-logs": "0.218.0",
+    "@opentelemetry/exporter-logs-otlp-proto": "0.218.0",
+    "@opentelemetry/resources": "2.7.1",
+    "@opentelemetry/sdk-logs": "0.218.0",
     "@osdk/shared.client2": "^1.0.0"
   },
   "devDependencies": {

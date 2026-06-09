@@ -14,81 +14,111 @@
  * limitations under the License.
  */
 
+import type { LogRecord } from "@opentelemetry/api-logs";
+import { SeverityNumber } from "@opentelemetry/api-logs";
 import { describe, expect, it, vi } from "vitest";
-import type { LogEntry } from "./attributes.js";
-import type { FlushController } from "./flushController.js";
-import type { Lifecycle } from "./lifecycle.js";
+import { LOG_MESSAGE, LOG_TAGS } from "./foundryAttributes.js";
+import type { LoggerBackend } from "./logger.js";
 import { createLogger } from "./logger.js";
 
 function harness() {
-  const entries: LogEntry[] = [];
-  const controller: FlushController = {
-    add: (entry) => {
-      entries.push(entry);
+  const records: LogRecord[] = [];
+  const backend: LoggerBackend = {
+    otelLogger: {
+      emit: (record: LogRecord) => {
+        records.push(record);
+      },
+      enabled: () => true,
     },
     flush: vi.fn<() => Promise<void>>().mockResolvedValue(undefined),
-    flushOnUnload: vi.fn(),
-    size: () => entries.length,
-    shutdown: vi.fn(),
+    shutdown: vi.fn<() => Promise<void>>().mockResolvedValue(undefined),
   };
-  const lifecycle: Lifecycle = { unregister: vi.fn() };
-  return { entries, controller, lifecycle };
+  return { records, backend };
 }
 
 describe("createLogger", () => {
-  it("enqueues info, warn, and debug with the right severity", () => {
-    const { entries, controller, lifecycle } = harness();
-    const logger = createLogger(controller, lifecycle);
+  it("emits info, warn, and debug with the right severity number", () => {
+    const { records, backend } = harness();
+    const logger = createLogger(backend);
 
     logger.info("booted");
     logger.warn("retrying", { attempt: 2 });
     logger.debug("rendered", { itemCount: 3 });
 
-    expect(entries.map((e) => e.severity)).toEqual(["INFO", "WARN", "DEBUG"]);
-    expect(entries[0].context).toBeUndefined();
-    expect(entries[1].context).toEqual({ attempt: 2 });
+    expect(records.map((r) => r.severityNumber)).toEqual([
+      SeverityNumber.INFO,
+      SeverityNumber.WARN,
+      SeverityNumber.DEBUG,
+    ]);
+    expect(records.map((r) => r.severityText)).toEqual([
+      "INFO",
+      "WARN",
+      "DEBUG",
+    ]);
+  });
+
+  it("puts the message in LOG_MESSAGE and context in LOG_TAGS", () => {
+    const { records, backend } = harness();
+    const logger = createLogger(backend);
+
+    logger.info("checkout submitted", { orderId: "o1" });
+
+    const attributes = records[0].attributes ?? {};
+    expect(attributes[LOG_MESSAGE]).toBe("checkout submitted");
+    expect(attributes[LOG_TAGS]).toEqual({ orderId: "o1" });
+  });
+
+  it("omits LOG_TAGS when there is no context or error", () => {
+    const { records, backend } = harness();
+    const logger = createLogger(backend);
+
+    logger.info("booted");
+
+    const attributes = records[0].attributes ?? {};
+    expect(attributes[LOG_MESSAGE]).toBe("booted");
+    expect(attributes[LOG_TAGS]).toBeUndefined();
   });
 
   it("captures an error via the message overload", () => {
-    const { entries, controller, lifecycle } = harness();
-    const logger = createLogger(controller, lifecycle);
+    const { records, backend } = harness();
+    const logger = createLogger(backend);
 
     logger.error("payment failed", { orderId: "o1" }, new Error("boom"));
 
-    const entry = entries[0];
-    expect(entry.severity).toBe("ERROR");
-    expect(entry.message).toBe("payment failed");
-    expect(entry.context).toEqual({ orderId: "o1" });
-    expect(entry.error?.message).toBe("boom");
+    const record = records[0];
+    expect(record.severityNumber).toBe(SeverityNumber.ERROR);
+    expect((record.attributes ?? {})[LOG_MESSAGE]).toBe("payment failed");
+    const tags = (record.attributes ?? {})[LOG_TAGS] as Record<string, unknown>;
+    expect(tags.orderId).toBe("o1");
+    expect((tags.error as Record<string, unknown>).message).toBe("boom");
   });
 
   it("captures an error via the error-only overload", () => {
-    const { entries, controller, lifecycle } = harness();
-    const logger = createLogger(controller, lifecycle);
+    const { records, backend } = harness();
+    const logger = createLogger(backend);
 
     logger.error(new TypeError("bad input"));
 
-    const entry = entries[0];
-    expect(entry.severity).toBe("ERROR");
-    expect(entry.message).toBe("bad input");
-    expect(entry.error?.name).toBe("TypeError");
+    const record = records[0];
+    expect(record.severityNumber).toBe(SeverityNumber.ERROR);
+    expect((record.attributes ?? {})[LOG_MESSAGE]).toBe("bad input");
+    const tags = (record.attributes ?? {})[LOG_TAGS] as Record<string, unknown>;
+    expect((tags.error as Record<string, unknown>).name).toBe("TypeError");
   });
 
-  it("delegates flush to the controller", async () => {
-    const { controller, lifecycle } = harness();
-    const logger = createLogger(controller, lifecycle);
+  it("delegates flush to the backend", async () => {
+    const { backend } = harness();
+    const logger = createLogger(backend);
 
     await logger.flush();
-    expect(controller.flush).toHaveBeenCalledTimes(1);
+    expect(backend.flush).toHaveBeenCalledTimes(1);
   });
 
-  it("flushes, stops the timer, and unregisters on shutdown", async () => {
-    const { controller, lifecycle } = harness();
-    const logger = createLogger(controller, lifecycle);
+  it("delegates shutdown to the backend", async () => {
+    const { backend } = harness();
+    const logger = createLogger(backend);
 
     await logger.shutdown();
-    expect(controller.flush).toHaveBeenCalledTimes(1);
-    expect(controller.shutdown).toHaveBeenCalledTimes(1);
-    expect(lifecycle.unregister).toHaveBeenCalledTimes(1);
+    expect(backend.shutdown).toHaveBeenCalledTimes(1);
   });
 });
