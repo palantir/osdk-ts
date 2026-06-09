@@ -113,15 +113,10 @@ jobs:
       - name: Verify nothing added
         run: u="$(git ls-files --others --exclude-standard)" && test -z "$u"
 
-  # Node-version-independent checks on a single Node version (no per-Node
-  # output). These tasks transitively depend on the transpiled output of the
-  # whole repo (check-attw -> transpile, check-api -> transpileTypes, etc.), so
-  # this job `needs: build` and restores the build job's turbo cache: transpile
-  # and transpileTypes become cache hits, leaving only the actual checks
-  # (typecheck, lint, api-extractor, cspell) to run instead of recompiling.
+  # Node-version-independent checks. Runs in parallel with `build` on a single
+  # Node version because none of these tasks produce per-Node output.
   typecheck-lint-cspell:
     name: Typecheck, Lint and Cspell
-    needs: build
     timeout-minutes: 30
     runs-on: ubuntu-latest
     steps:
@@ -138,16 +133,13 @@ jobs:
           node-version: 22
           cache: "pnpm"
 
-      # Restore the build job's turbo cache (same key the build job saves) so
-      # the transpile/transpileTypes dependencies of the check tasks are cache
-      # hits rather than a second full compile of the monorepo.
-      - name: Restore Turbo cache from build
+      - name: Cache Turbo
         uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: .turbo/cache
-          key: turbo-${{ runner.os }}-build-${{ github.sha }}
+          key: turbo-${{ runner.os }}-check-${{ github.sha }}
           restore-keys: |
-            turbo-${{ runner.os }}-build-
+            turbo-${{ runner.os }}-check-
 
       - name: Install dependencies
         run: pnpm install
