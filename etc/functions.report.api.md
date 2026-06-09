@@ -25,6 +25,7 @@ import type { OsdkObjectCreatePropertyType } from '@osdk/client';
 import { Point } from 'geojson';
 import { Polygon } from 'geojson';
 import type { PropertyKeys } from '@osdk/client';
+import type { QueryDefinition } from '@osdk/client';
 import { Range as Range_2 } from '@osdk/client';
 import { ThreeDimensionalAggregation } from '@osdk/client';
 import { TwoDimensionalAggregation } from '@osdk/client';
