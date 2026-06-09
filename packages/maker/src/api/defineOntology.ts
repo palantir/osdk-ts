@@ -427,6 +427,7 @@ export function convertAction(
             }]
             : [],
           typeClasses: action.typeClasses ?? [],
+          applyingMessage: [],
           ...(action.submissionMetadata?.submitButtonDisplayMetadata
             && {
               submitButtonDisplayMetadata:

@@ -18,6 +18,7 @@ import type {
   Attachment,
   CompileTimeMetadata,
   ConvertProps,
+  FetchPageArgs,
   FetchPageResult,
   InterfaceDefinition,
   ObjectOrInterfaceDefinition,
@@ -49,6 +50,11 @@ import {
 import { beforeAll, describe, expect, expectTypeOf, it } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
+import { fetchPage } from "../object/fetchPage.js";
+import {
+  createMockCaptureClient,
+  getLastObjectSetRequest,
+} from "../util/mockCaptureClient.js";
 import { getWireObjectSet } from "./createObjectSet.js";
 
 type ApiNameAsString<
@@ -1302,6 +1308,32 @@ describe("ObjectSet", () => {
 
         cheesedFooNotStrict.fooSpt;
       });
+    });
+  });
+
+  describe("snapshot", () => {
+    it("exposes $snapshot to client (type)", () => {
+      expectTypeOf<FetchPageArgs<Employee>>().toHaveProperty("$snapshot");
+    });
+    it("sets snapshot = false by default", async () => {
+      const { client, fetchFn } = createMockCaptureClient();
+      await fetchPage(client, Employee, {});
+      expect(
+        (getLastObjectSetRequest(fetchFn) as { snapshot: boolean }).snapshot,
+      ).toBe(false);
+    });
+    it("properly generates fetch request when $snapshot is true", async () => {
+      const { client, fetchFn } = createMockCaptureClient();
+      await fetchPage(client, Employee, { $snapshot: true });
+      expect(
+        (getLastObjectSetRequest(fetchFn) as { snapshot: boolean }).snapshot,
+      ).toBe(true);
+    });
+    it("strips $snapshot from the wire request body", async () => {
+      const { client, fetchFn } = createMockCaptureClient();
+      await fetchPage(client, Employee, { $snapshot: true });
+      expect(getLastObjectSetRequest(fetchFn) as { snapshot: boolean }).not
+        .toHaveProperty("$snapshot");
     });
   });
 });

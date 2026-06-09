@@ -380,6 +380,54 @@ describe("usePdfViewerState", () => {
     });
   });
 
+  async function expectDownloadFilename(
+    src: string | ArrayBuffer,
+    expectedFilename: string,
+  ) {
+    const onDownload = vi.fn();
+    const coreResult = createMockCoreResult();
+    coreResult.document = {
+      getData: () => Promise.resolve(new Uint8Array([1, 2, 3])),
+    } as unknown as PDFDocumentProxy;
+
+    mockedUsePdfViewerCore.mockReturnValue(coreResult);
+    mockedUsePdfViewerSearch.mockReturnValue(createMockSearchResult());
+    mockedUsePdfOutline.mockReturnValue([]);
+
+    const { result } = renderHook(() => usePdfViewerState({ src, onDownload }));
+
+    await act(async () => {
+      result.current.download();
+    });
+
+    expect(onDownload).toHaveBeenCalledWith({
+      success: true,
+      filename: expectedFilename,
+    });
+  }
+
+  it("should derive the download filename from the src URL basename", async () => {
+    await expectDownloadFilename(
+      "https://example.com/files/report-2024.pdf",
+      "report-2024.pdf",
+    );
+  });
+
+  it("should strip the query string when deriving the filename from src", async () => {
+    await expectDownloadFilename(
+      "https://example.com/files/report.pdf?token=abc&page=1",
+      "report.pdf",
+    );
+  });
+
+  it("should fall back to document.pdf when src has no usable basename", async () => {
+    await expectDownloadFilename("https://example.com/files/", "document.pdf");
+  });
+
+  it("should use document.pdf when src is an ArrayBuffer", async () => {
+    await expectDownloadFilename(new ArrayBuffer(8), "document.pdf");
+  });
+
   it("should call onDownload with failure result when getData rejects", async () => {
     const onDownload = vi.fn();
     const downloadError = new Error("Corrupted data");
