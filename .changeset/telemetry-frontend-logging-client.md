@@ -1,5 +1,8 @@
 ---
 "@osdk/telemetry": minor
+"@osdk/client": minor
 ---
 
-Add `@osdk/telemetry`, a frontend logging library for OSDK apps. `createLoggingClient({ client, applicationRid })` returns a `Logger` (`debug`/`info`/`warn`/`error`) that buffers entries client-side and flushes one `Log.write` request per flush on a 5s interval, on buffer fill, and on `pagehide` (keepalive). Reuses the OSDK client's base URL and OAuth token, serializes errors with their `cause` chain, and supports an optional `beforeSend` redaction hook. Emission is isolated behind a single Foundry `Transport` seam built against the upstream `Log.write` stub contract.
+<!-- cspell:ignore traceparent tracestate -->
+
+Rewrite `@osdk/telemetry` as an OpenTelemetry logs frontend that exports over OTLP. `createLoggingClient({ client, applicationRid })` returns a `Logger` (`debug`/`info`/`warn`/`error`) backed by the OTel logs SDK, batching log records and exporting them as OTLP through the OSDK client's base URL and OAuth token, with an optional `beforeSend` redaction processor. The `applicationRid` is attached as an OTLP resource attribute so emitted logs are attributable to the calling app. On `@osdk/client`, outbound function, query, and action calls now carry W3C `traceparent`/`tracestate` headers so traces propagate end to end across the call boundary.
