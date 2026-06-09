@@ -142,7 +142,6 @@ describe("RecommendationUtils", () => {
         extendsInterfaces: [],
         actionTypeConstraints: [],
         links: [],
-        actionTypeConstraints: [],
         status: { type: "active", active: {} },
         propertiesV2: {},
         propertiesV3: {},
