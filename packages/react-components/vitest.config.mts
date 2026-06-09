@@ -18,13 +18,6 @@ import { configDefaults, defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-    // Use the forks pool (matching @osdk/react, which has the same happy-dom +
-    // fakeTimers profile). This is a large, slow suite (DatePicker/DateRangePicker
-    // alone run 60-70s each). With the "threads" pool, worker_threads share a
-    // single process event loop; under the concurrent CI test matrix the main
-    // thread could be starved long enough that vitest's worker RPC timed out
-    // ("Timeout calling onTaskUpdate") even though every test passed. Forks give
-    // each worker its own process/event loop, avoiding that starvation.
     pool: "forks",
     exclude: [...configDefaults.exclude, "**/build/**/*"],
     environment: "happy-dom",

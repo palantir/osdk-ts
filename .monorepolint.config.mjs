@@ -399,7 +399,11 @@ const archetypeRules = archetypes(
         TZ: "UTC",
         LANG: "en_US.UTF-8",
       },
-      vitestPool: "threads",
+      // forks (the template default), matching @osdk/react. The threads pool's
+      // shared event loop was starved under the concurrent CI test matrix,
+      // tripping vitest's worker RPC timeout ("Timeout calling onTaskUpdate")
+      // on the slowest leg even though all tests passed.
+      vitestPool: "forks",
     },
   )
   .addArchetype(
