@@ -1,0 +1,89 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.formRow {
+  display: flex;
+  gap: 10px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.fieldLabel {
+  font-size: 11px;
+  color: var(--oa-text-secondary);
+}
+
+.input,
+.select {
+  font-family: inherit;
+  font-size: 13px;
+  padding: 6px 8px;
+  border: 1px solid var(--oa-border);
+  border-radius: var(--oa-radius);
+  background: var(--oa-surface);
+  color: var(--oa-text);
+}
+
+.primaryButton {
+  align-self: flex-start;
+  border: none;
+  background: var(--oa-accent);
+  color: #fff;
+  font-size: 13px;
+  font-family: inherit;
+  padding: 7px 14px;
+  border-radius: var(--oa-radius);
+  cursor: pointer;
+}
+
+.primaryButton:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.actionBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dangerButton {
+  align-self: flex-start;
+  border: 1px solid var(--oa-danger);
+  background: transparent;
+  color: var(--oa-danger);
+  font-size: 13px;
+  font-family: inherit;
+  padding: 7px 14px;
+  border-radius: var(--oa-radius);
+  cursor: pointer;
+}
+
+.dangerButton:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.linkButton {
+  border: none;
+  background: transparent;
+  color: var(--oa-text-link);
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+
+.linkButton:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
