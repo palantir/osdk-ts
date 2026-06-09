@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
+import type { LogAttributes, LogRecord } from "@opentelemetry/api-logs";
+import { SeverityNumber } from "@opentelemetry/api-logs";
 import type { SerializedError } from "./errorSerializer.js";
+import { LOG_MESSAGE, LOG_TAGS } from "./foundryAttributes.js";
 
 /**
  * A JSON-serializable value. Log context is constrained to this shape so that
- * every entry survives transport without custom serialization.
+ * every field survives transport without custom serialization.
  */
 export type AttributeValue =
   | string
@@ -35,23 +38,74 @@ export type LogContext = Record<string, AttributeValue>;
 
 export type LogSeverity = "DEBUG" | "INFO" | "WARN" | "ERROR";
 
+/** Maps the public severity strings to OTel {@link SeverityNumber} values. */
+const SEVERITY_NUMBERS: Record<LogSeverity, SeverityNumber> = {
+  DEBUG: SeverityNumber.DEBUG,
+  INFO: SeverityNumber.INFO,
+  WARN: SeverityNumber.WARN,
+  ERROR: SeverityNumber.ERROR,
+};
+
 /**
- * A single buffered log entry. Mirrors the `LogEntry` shape in the upstream
- * `Log.write` contract (plan §4.4).
+ * Build the OTel {@link LogRecord} for a single log call. The message goes in
+ * the `LOG_MESSAGE` attribute and the structured fields (caller context plus
+ * any serialized error) go in the `LOG_TAGS` attribute, which is the layout FTS
+ * reads. The message is also mirrored into the standard OTLP `body` for
+ * generic OTLP consumers.
  */
-export interface LogEntry {
-  timestamp: string;
-  severity: LogSeverity;
-  message: string;
-  context?: LogContext;
-  error?: SerializedError;
-  /**
-   * W3C trace id of the call active when the entry was created, when available.
-   * Lets a log be correlated with the outbound request that carried the same
-   * trace id in its `traceparent` header.
-   */
-  // cspell:ignore traceparent
-  traceId?: string;
+export function buildLogRecord(
+  severity: LogSeverity,
+  message: string,
+  context?: LogContext,
+  error?: SerializedError,
+): LogRecord {
+  const attributes: LogAttributes = { [LOG_MESSAGE]: message };
+  const tags = buildLogTags(context, error);
+  if (tags != null) {
+    attributes[LOG_TAGS] = tags;
+  }
+  return {
+    severityNumber: SEVERITY_NUMBERS[severity],
+    severityText: severity,
+    body: message,
+    attributes,
+  };
+}
+
+function buildLogTags(
+  context: LogContext | undefined,
+  error: SerializedError | undefined,
+): LogContext | undefined {
+  const normalized = normalizeContext(context);
+  if (normalized == null && error == null) {
+    return undefined;
+  }
+  const tags: LogContext = {};
+  if (normalized != null) {
+    Object.assign(tags, normalized);
+  }
+  if (error != null) {
+    tags.error = errorToAttributeValue(error);
+  }
+  return tags;
+}
+
+/**
+ * Convert a {@link SerializedError} into a plain JSON-serializable value so it
+ * can sit inside the `LOG_TAGS` attribute map.
+ */
+export function errorToAttributeValue(error: SerializedError): AttributeValue {
+  const result: { [key: string]: AttributeValue } = {
+    name: error.name,
+    message: error.message,
+  };
+  if (error.stack != null) {
+    result.stack = error.stack;
+  }
+  if (error.cause != null) {
+    result.cause = errorToAttributeValue(error.cause);
+  }
+  return result;
 }
 
 /**

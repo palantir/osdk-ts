@@ -22,16 +22,8 @@ import {
   PRODUCING_RESOURCE_IDENTIFIER,
   PRODUCING_RESOURCE_VERSION,
   PRODUCING_SERVICE,
-  resourceFromAttributes,
   TRACE_OWNING_RESOURCE_IDENTIFIER,
 } from "./resource.js";
-
-describe("resourceFromAttributes", () => {
-  it("wraps a flat attribute map in the OTLP resource shape", () => {
-    const resource = resourceFromAttributes({ a: "1", b: "2" });
-    expect(resource).toEqual({ attributes: { a: "1", b: "2" } });
-  });
-});
 
 describe("buildResource", () => {
   it("populates all four mandatory FTS keys from the application rid", () => {

@@ -16,25 +16,30 @@
 
 import type { SharedClient, SharedClientContext } from "@osdk/shared.client2";
 import { symbolClientContext } from "@osdk/shared.client2";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createLoggingClient } from "./createLoggingClient.js";
-import {
-  DEFAULT_PRODUCING_RESOURCE_VERSION,
-  DEFAULT_PRODUCING_SERVICE,
-  PRODUCING_RESOURCE_IDENTIFIER,
-  PRODUCING_RESOURCE_VERSION,
-  PRODUCING_SERVICE,
-  TRACE_OWNING_RESOURCE_IDENTIFIER,
-} from "./resource.js";
-import type { LogWriteRequest, Transport } from "./transport.js";
 
-function makeClient(fetchFn: typeof globalThis.fetch): SharedClient {
+const ENDPOINT = "https://example.com/api/v1/observability/logs";
+
+function makeClient(
+  tokenProvider: () => Promise<string> = vi.fn().mockResolvedValue("tok"),
+): SharedClient {
   const context: SharedClientContext = {
     baseUrl: "https://example.com/",
-    fetch: fetchFn,
-    tokenProvider: vi.fn().mockResolvedValue("tok"),
+    fetch: vi.fn<typeof globalThis.fetch>(),
+    tokenProvider,
   };
   return { [symbolClientContext]: context };
+}
+
+function fetchMock() {
+  return vi.fn<typeof globalThis.fetch>().mockResolvedValue(
+    new Response(null, { status: 200 }),
+  );
+}
+
+function headersOf(init: RequestInit | undefined): Record<string, string> {
+  return (init?.headers ?? {}) as Record<string, string>;
 }
 
 function makeClientWithAppRid(
@@ -50,128 +55,116 @@ function makeClientWithAppRid(
   return { [symbolClientContext]: context };
 }
 
-function makeTransport(): Transport & { emit: ReturnType<typeof vi.fn> } {
-  return {
-    emit: vi.fn<
-      (
-        request: LogWriteRequest,
-        options?: { unload?: boolean },
-      ) => Promise<void>
-    >().mockResolvedValue(undefined),
-  };
-}
-
 describe("createLoggingClient", () => {
-  it("flushes one authenticated Log.write request through the default transport", async () => {
-    const fetchFn = vi.fn<typeof globalThis.fetch>().mockResolvedValue(
-      new Response(null, { status: 200 }),
-    );
+  let fetchFn: ReturnType<typeof fetchMock>;
+
+  beforeEach(() => {
+    fetchFn = fetchMock();
+    vi.stubGlobal("fetch", fetchFn);
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("exports one authenticated OTLP request per flush", async () => {
     const logger = createLoggingClient({
-      client: makeClient(fetchFn),
+      client: makeClient(),
       applicationRid: "ri.app",
     });
 
     logger.info("checkout submitted", { orderId: "o1" });
+    logger.info("second event");
     await logger.flush();
 
     expect(fetchFn).toHaveBeenCalledTimes(1);
     const [url, init] = fetchFn.mock.calls[0];
-    expect(String(url)).toBe(
-      "https://example.com/api/v2/observability/logs/write",
-    );
-    const headers = init?.headers as Record<string, string>;
+    expect(String(url)).toBe(ENDPOINT);
+    const headers = headersOf(init);
     expect(headers.Authorization).toBe("Bearer tok");
-    const body = JSON.parse(String(init?.body)) as LogWriteRequest;
-    expect(body.traceOwningRid).toBe("ri.app");
-    expect(body.logs).toHaveLength(1);
-    expect(body.logs[0].message).toBe("checkout submitted");
+    expect(headers["Content-Type"]).toBe("application/x-protobuf");
+
+    await logger.shutdown();
+  });
+
+  it("sends a fresh bearer on each flush", async () => {
+    let n = 0;
+    const tokenProvider = vi.fn(async () => `tok-${++n}`);
+    const logger = createLoggingClient({
+      client: makeClient(tokenProvider),
+      applicationRid: "ri.app",
+    });
+
+    logger.info("first");
+    await logger.flush();
+    logger.info("second");
+    await logger.flush();
+
+    expect(fetchFn).toHaveBeenCalledTimes(2);
+    expect(headersOf(fetchFn.mock.calls[0][1]).Authorization).toBe(
+      "Bearer tok-1",
+    );
+    expect(headersOf(fetchFn.mock.calls[1][1]).Authorization).toBe(
+      "Bearer tok-2",
+    );
 
     await logger.shutdown();
   });
 
   it("flushes with keepalive on pagehide", async () => {
-    const transport = makeTransport();
     const target = new EventTarget();
     const logger = createLoggingClient({
-      client: makeClient(vi.fn<typeof globalThis.fetch>()),
+      client: makeClient(),
       applicationRid: "ri.app",
-      transport,
       lifecycleTarget: target,
     });
 
     logger.info("about to leave");
     target.dispatchEvent(new Event("pagehide"));
-
-    expect(transport.emit).toHaveBeenCalledTimes(1);
-    expect(transport.emit.mock.calls[0][1]).toEqual({ unload: true });
-
-    await logger.shutdown();
-  });
-
-  it("emits exactly one resource carrying the four mandatory keys", async () => {
-    const transport = makeTransport();
-    const logger = createLoggingClient({
-      client: makeClient(vi.fn<typeof globalThis.fetch>()),
-      applicationRid: "ri.app",
-      transport,
+    await vi.waitFor(() => {
+      expect(fetchFn).toHaveBeenCalledTimes(1);
     });
 
-    logger.info("event");
-    await logger.flush();
-
-    expect(transport.emit).toHaveBeenCalledTimes(1);
-    const request = transport.emit.mock.calls[0][0];
-    expect(Array.isArray(request.resource)).toBe(false);
-    const attributes = request.resource.attributes;
-    expect(attributes[TRACE_OWNING_RESOURCE_IDENTIFIER]).toBe("ri.app");
-    expect(attributes[PRODUCING_RESOURCE_IDENTIFIER]).toBe("ri.app");
-    expect(attributes[PRODUCING_RESOURCE_VERSION]).toBe(
-      DEFAULT_PRODUCING_RESOURCE_VERSION,
-    );
-    expect(attributes[PRODUCING_SERVICE]).toBe(DEFAULT_PRODUCING_SERVICE);
+    expect(fetchFn.mock.calls[0][1]?.keepalive).toBe(true);
 
     await logger.shutdown();
   });
 
   it("reads applicationRid off the client when the option is omitted", async () => {
-    const transport = makeTransport();
     const logger = createLoggingClient({
-      client: makeClientWithAppRid(
-        vi.fn<typeof globalThis.fetch>(),
-        "ri.ctx-app",
-      ),
-      transport,
+      client: makeClientWithAppRid(fetchFn, "ri.ctx-app"),
     });
 
     logger.info("event");
     await logger.flush();
 
-    const request = transport.emit.mock.calls[0][0];
-    expect(request.traceOwningRid).toBe("ri.ctx-app");
-    expect(request.resource.attributes[TRACE_OWNING_RESOURCE_IDENTIFIER]).toBe(
-      "ri.ctx-app",
+    expect(fetchFn).toHaveBeenCalledTimes(1);
+    expect(headersOf(fetchFn.mock.calls[0][1]).Authorization).toBe(
+      "Bearer tok",
     );
 
     await logger.shutdown();
   });
 
-  it("drops entries that beforeSend returns null for", async () => {
-    const transport = makeTransport();
+  it("throws when no applicationRid is provided or on the client", () => {
+    expect(() => createLoggingClient({ client: makeClient() })).toThrowError(
+      /mandatory attribute/,
+    );
+  });
+
+  it("drops records that beforeSend returns null for", async () => {
     const logger = createLoggingClient({
-      client: makeClient(vi.fn<typeof globalThis.fetch>()),
+      client: makeClient(),
       applicationRid: "ri.app",
-      transport,
-      beforeSend: (entry) => (entry.message === "secret" ? null : entry),
+      beforeSend: (record) =>
+        record.attributes.message === "secret" ? null : record,
     });
 
     logger.info("keep");
     logger.info("secret");
     await logger.flush();
 
-    expect(transport.emit).toHaveBeenCalledTimes(1);
-    const request = transport.emit.mock.calls[0][0];
-    expect(request.logs).toHaveLength(1);
-    expect(request.logs[0].message).toBe("keep");
+    expect(fetchFn).toHaveBeenCalledTimes(1);
 
     await logger.shutdown();
   });

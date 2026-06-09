@@ -24,10 +24,18 @@ import {
 } from "@opentelemetry/api";
 import type { SharedClient, SharedClientContext } from "@osdk/shared.client2";
 import { symbolClientContext } from "@osdk/shared.client2";
-import type { LogEntry, Transport } from "@osdk/telemetry";
 import { createLoggingClient } from "@osdk/telemetry";
 import { AsyncLocalStorage } from "node:async_hooks";
-import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import {
   addTraceContextHeader,
@@ -208,18 +216,33 @@ function makeSharedClient(): SharedClient {
   return { [symbolClientContext]: sharedClientContext };
 }
 
+// The exporter posts via the global `fetch`; stub it so flush/shutdown never
+// reach the network. Records are captured at emit time via `beforeSend`, which
+// the pre-export processor runs after stamping the trace id.
 describe("trace-context seam (FE log and outbound call)", () => {
+  beforeEach(() => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn<typeof globalThis.fetch>().mockResolvedValue(
+        new Response(null, { status: 200 }),
+      ),
+    );
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   it("stamps the outbound traceparent trace id onto a FE log emitted in the same span", async () => {
-    const emitted: LogEntry[] = [];
-    const transport: Transport = {
-      emit: async (request) => {
-        emitted.push(...request.logs);
-      },
-    };
+    const traceIds: Array<unknown> = [];
     const logger = createLoggingClient({
       client: makeSharedClient(),
-      transport,
+      applicationRid: "ri.app",
       traceIdProvider: getActiveTraceId,
+      beforeSend: (record) => {
+        traceIds.push(record.attributes.traceId);
+        return record;
+      },
     });
 
     const ctx = contextWithSpan();
@@ -232,31 +255,28 @@ describe("trace-context seam (FE log and outbound call)", () => {
     await logger.flush();
 
     expect(headerTraceId).toBe(TRACE_ID);
-    expect(emitted).toHaveLength(1);
-    expect(emitted[0].traceId).toBe(headerTraceId);
-    expect(emitted[0].traceId).toBe(TRACE_ID);
+    expect(traceIds).toEqual([TRACE_ID]);
+    expect(traceIds[0]).toBe(headerTraceId);
 
     await logger.shutdown();
   });
 
   it("emits a FE log with no trace id when no span is active", async () => {
-    const emitted: LogEntry[] = [];
-    const transport: Transport = {
-      emit: async (request) => {
-        emitted.push(...request.logs);
-      },
-    };
+    const traceIds: Array<unknown> = [];
     const logger = createLoggingClient({
       client: makeSharedClient(),
-      transport,
+      applicationRid: "ri.app",
       traceIdProvider: getActiveTraceId,
+      beforeSend: (record) => {
+        traceIds.push(record.attributes.traceId);
+        return record;
+      },
     });
 
     logger.info("rendered checkout");
     await logger.flush();
 
-    expect(emitted).toHaveLength(1);
-    expect(emitted[0].traceId).toBeUndefined();
+    expect(traceIds).toEqual([undefined]);
 
     await logger.shutdown();
   });

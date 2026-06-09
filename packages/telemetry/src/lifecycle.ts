@@ -20,7 +20,8 @@ export interface Lifecycle {
 }
 
 /**
- * Wire `onUnload` to the `pagehide` event. `pagehide` is preferred over
+ * Wire `onUnload` to the `pagehide` event; `createLoggingClient` points it at
+ * the provider's `forceFlush`. `pagehide` is preferred over
  * `beforeunload`/`unload` because it fires reliably on mobile and on bfcache
  * navigation. When no event target is available (for example in Node), this is
  * a no-op so the package stays importable outside the browser.

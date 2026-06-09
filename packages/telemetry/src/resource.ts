@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import type { Resource } from "@opentelemetry/resources";
+import { resourceFromAttributes } from "@opentelemetry/resources";
+
 // === UPSTREAM CONTRACT (SEAM) ===========================================
 // The Foundry Telemetry Service (FTS) requires every OTLP export to carry
 // exactly one resource, and that resource MUST carry all four attribute keys
@@ -43,25 +46,6 @@ export const DEFAULT_PRODUCING_SERVICE = "@osdk/telemetry";
 /** Default producing resource version when none is supplied. */
 export const DEFAULT_PRODUCING_RESOURCE_VERSION = "0.0.0";
 
-/**
- * The single OTLP resource attached to an export. Exactly one of these is
- * emitted per export; FTS rejects multi-resource requests.
- */
-export interface OtlpResource {
-  attributes: Record<string, string>;
-}
-
-/**
- * The seam used to turn a flat attribute map into the OTLP resource shape. Kept
- * tiny on purpose so the Foundry OTLP transport and any future producer share
- * one construction path.
- */
-export function resourceFromAttributes(
-  attributes: Record<string, string>,
-): OtlpResource {
-  return { attributes };
-}
-
 export interface BuildResourceParams {
   /** The owning application RID; populates `TRACE_OWNING_RESOURCE_IDENTIFIER`. */
   applicationRid: string;
@@ -77,11 +61,12 @@ export interface BuildResourceParams {
 }
 
 /**
- * Assemble the one OTLP resource for an export, populating all four mandatory
- * FTS keys. Throws if the owning/producing rid is empty, since FTS rejects a
- * resource that is missing any mandatory key.
+ * Assemble the one OTel `Resource` attached to a `LoggerProvider`, populating
+ * all four mandatory FTS keys and handing them to `@opentelemetry/resources`.
+ * Throws if the owning/producing rid is empty, since FTS rejects a resource
+ * that is missing any mandatory key.
  */
-export function buildResource(params: BuildResourceParams): OtlpResource {
+export function buildResource(params: BuildResourceParams): Resource {
   const producingResourceIdentifier = params.producingResourceIdentifier
     ?? params.applicationRid;
   const producingResourceVersion = params.producingResourceVersion
