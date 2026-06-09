@@ -5,11 +5,16 @@
     calc(var(--osdk-surface-spacing) * 2.5);
   --osdk-input-border-radius: var(--osdk-surface-border-radius);
 
-  /* Input borders */
-  --osdk-input-border-width: var(--osdk-surface-border-width);
-  --osdk-input-border-color: var(--osdk-surface-border-color-default);
-  --osdk-input-border-color-focus: var(--osdk-intent-primary-rest);
-  --osdk-input-shadow: inset 0 1px 1px var(--osdk-surface-border-color-default);
+  /* Input borders — border is none; visual border comes from box-shadow
+     (inset 0 0 0 1px) to match Blueprint's .bp6-input convention */
+  --osdk-input-border-width: 0;
+  --osdk-input-border-color: transparent;
+  --osdk-input-border-color-focus: transparent;
+  --osdk-input-shadow:
+    0 0 0 0 rgba(33, 93, 176, 0),
+    0 0 0 0 rgba(33, 93, 176, 0),
+    inset 0 0 0 1px rgba(17, 20, 24, 0.2),
+    inset 0 1px 1px rgba(17, 20, 24, 0.3);
 
   /* Input backgrounds */
   --osdk-input-bg: var(--osdk-surface-background-color-default-rest);
@@ -35,4 +40,15 @@
 
   /* Input error */
   --osdk-input-border-color-error: var(--osdk-intent-danger-rest);
+}
+
+[data-bp-color-scheme="dark"],
+.bp6-dark {
+  --osdk-input-shadow:
+    0 0 0 0 rgba(138, 187, 255, 0),
+    0 0 0 0 rgba(138, 187, 255, 0),
+    inset 0 0 0 1px hsla(0, 0%, 100%, 0.2),
+    inset 0 -1px 1px 0 hsla(0, 0%, 100%, 0.3);
+  --osdk-input-bg: rgba(17, 20, 24, 0.3);
+  --osdk-input-color: #f6f7f9;
 }

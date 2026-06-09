@@ -16,20 +16,53 @@
 
 import type { ThemeColorMode, TokenAssignment } from "./types.js";
 
+export type ThemePresetCategory = "built-in" | "custom";
+
 export interface ThemePreset {
   id: string;
   label: string;
   description: string;
   /** The color mode this preset targets. Defaults to "light". */
   colorMode?: ThemeColorMode;
+  /** Grouping in the theme picker dropdown. Defaults to "custom". */
+  category?: ThemePresetCategory;
   /** Preview swatch colors: [background, primary, text] */
   swatches: [string, string, string];
-  /** Token assignments for the preset. */
+  /** Token assignments for the preset. Empty = use built-in component tokens. */
   assignments: TokenAssignment[];
 }
 
 function valueAssignment(role: string, value: string): TokenAssignment {
   return { role, colorIndex: -1, customValue: value };
+}
+
+/** Defaults that match the real Blueprint design-token values exactly. */
+function blueprintDefaults(overrides?: {
+  shadow?: string;
+}): TokenAssignment[] {
+  return [
+    valueAssignment(
+      "font-family",
+      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', blueprint-icons-16, sans-serif",
+    ),
+    valueAssignment("font-size-small", "12"),
+    valueAssignment("font-size-medium", "14"),
+    valueAssignment("font-size-large", "16"),
+    valueAssignment("font-weight-default", "400"),
+    valueAssignment("font-weight-bold", "600"),
+    valueAssignment("line-height", "1.28581"),
+    valueAssignment("border-radius", "4"),
+    valueAssignment("spacing", "4"),
+    valueAssignment("border-width", "1"),
+    valueAssignment(
+      "shadow",
+      overrides?.shadow
+        ?? "inset 0 1px 1px rgba(0, 0, 0, 0.15)",
+    ),
+    valueAssignment("focus-width", "2"),
+    valueAssignment("focus-offset", "2"),
+    valueAssignment("transition-duration", "100"),
+  ];
 }
 
 /** Shared non-color defaults used across most presets */
@@ -67,52 +100,21 @@ export const THEME_PRESETS: ThemePreset[] = [
   {
     id: "workshop-light",
     label: "Workshop Light",
-    description: "Default Blueprint light theme used by Workshop-style apps",
+    description:
+      "Built-in Blueprint light theme — no overrides, uses base tokens as-is",
+    category: "built-in",
     swatches: ["#ffffff", "#2d72d2", "#1c2127"],
-    assignments: [
-      valueAssignment("background", "#ffffff"),
-      valueAssignment("surface", "#f6f7f9"),
-      valueAssignment("text", "#1c2127"),
-      valueAssignment("text-muted", "#5f6b7c"),
-      valueAssignment("primary", "#2d72d2"),
-      valueAssignment("primary-foreground", "#ffffff"),
-      valueAssignment("secondary", "#f6f7f9"),
-      valueAssignment("secondary-foreground", "#1c2127"),
-      valueAssignment("icon-color", "#5f6b7c"),
-      valueAssignment("border", "#dce0e5"),
-      valueAssignment("danger", "#cd4246"),
-      valueAssignment("success", "#238551"),
-      valueAssignment("warning", "#c87619"),
-      ...baseDefaults({
-        shadow: "inset 0 1px 1px oklch(0 0 0 / 0.15)",
-      }),
-    ],
+    assignments: [],
   },
   {
     id: "workshop-dark",
     label: "Workshop Dark",
-    description: "Default Blueprint dark theme used by Workshop-style apps",
+    description:
+      "Built-in Blueprint dark theme — no overrides, just enables dark mode",
     colorMode: "dark",
+    category: "built-in",
     swatches: ["#111418", "#2d72d2", "#a5aab3"],
-    assignments: [
-      valueAssignment("background", "#111418"),
-      valueAssignment("surface", "#1c2127"),
-      valueAssignment("text", "#a5aab3"),
-      valueAssignment("text-muted", "#8f99a8"),
-      valueAssignment("primary", "#2d72d2"),
-      valueAssignment("primary-foreground", "#ffffff"),
-      valueAssignment("secondary", "#252a31"),
-      valueAssignment("secondary-foreground", "#f6f7f9"),
-      valueAssignment("icon-color", "#8f99a8"),
-      valueAssignment("border", "#ffffff33"),
-      valueAssignment("danger", "#cd4246"),
-      valueAssignment("success", "#238551"),
-      valueAssignment("warning", "#c87619"),
-      ...baseDefaults({
-        shadow:
-          "inset 0 0 0 1px oklch(1 0 0 / 0.2), 0 4px 6px -4px oklch(0 0 0 / 0.5), 0 10px 30px -5px oklch(0 0 0 / 0.5)",
-      }),
-    ],
+    assignments: [],
   },
   {
     id: "devcon",

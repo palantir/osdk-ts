@@ -1,10 +1,12 @@
 :root {
-  /* Button shared */
+  /* Button shared — border is none; visual border comes from box-shadow
+     to match Blueprint's .bp6-button convention */
   --osdk-button-min-height: calc(var(--osdk-surface-spacing) * 7.5);
-  --osdk-button-border-color: var(--osdk-surface-border-color-default);
-  --osdk-button-border: var(--osdk-surface-border-width) solid
-    var(--osdk-button-border-color);
-  --osdk-button-shadow: 0 1px 1px var(--osdk-surface-border-color-default);
+  --osdk-button-border-color: transparent;
+  --osdk-button-border: none;
+  --osdk-button-shadow:
+    inset 0 0 0 1px rgba(17, 20, 24, 0.2),
+    0 1px 1px rgba(17, 20, 24, 0.1);
 
   /* Primary Button */
   --osdk-button-primary-color: var(--osdk-intent-primary-foreground);
@@ -59,4 +61,18 @@
   --osdk-button-danger-bg-hover: var(--osdk-intent-danger-hover);
   --osdk-button-danger-bg-active: var(--osdk-intent-danger-active);
   --osdk-button-danger-border-color: var(--osdk-intent-danger-rest);
+}
+
+[data-bp-color-scheme="dark"],
+.bp6-dark {
+  --osdk-button-secondary-bg: color-mix(
+    in srgb,
+    var(--bp-intent-default-rest) 40%,
+    var(--bp-palette-black)
+  );
+  --osdk-button-secondary-color: var(--bp-intent-default-foreground);
+  --osdk-button-shadow:
+    inset 0 0 0 var(--bp-surface-border-width)
+      color-mix(in oklch, var(--bp-surface-border-color-default) 50%, transparent),
+    0 1px 2px color-mix(in oklch, var(--bp-palette-black) 20%, transparent);
 }

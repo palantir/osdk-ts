@@ -10,7 +10,7 @@
   --osdk-surface-border-radius: var(--bp-surface-border-radius);
   --osdk-surface-layer-primary: var(--bp-surface-layer-primary);
   --osdk-surface-border-width: var(--bp-surface-border-width);
-  --osdk-surface-border-color-default: var(--bp-surface-border-color-default);
+  --osdk-surface-border-color-default: var(--bp-palette-light-gray-2);
   --osdk-surface-border-color-strong: var(--bp-surface-border-color-strong);
   --osdk-surface-background-color-default-rest: var(
     --bp-surface-background-color-default-rest
@@ -31,7 +31,10 @@
     --bp-surface-background-color-danger-active
   );
   --osdk-surface-spacing: var(--bp-surface-spacing);
-  --osdk-surface-shadow-2: var(--bp-surface-shadow-2);
+  --osdk-surface-shadow-2:
+    0 0 0 1px rgba(17, 20, 24, 0.1),
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 15px -3px rgba(0, 0, 0, 0.1);
 
   /* Blueprint token mappings - Typography tokens */
   --osdk-typography-family-default: var(--bp-typography-family-default);
@@ -54,9 +57,7 @@
   --osdk-typography-size-body-small: var(--bp-typography-size-body-small);
   --osdk-typography-size-body-medium: var(--bp-typography-size-body-medium);
   --osdk-typography-size-body-large: var(--bp-typography-size-body-large);
-  --osdk-typography-line-height-default: var(
-    --bp-typography-line-height-default
-  );
+  --osdk-typography-line-height-default: var(--bp-typography-line-height-large);
   --osdk-typography-weight-default: var(--bp-typography-weight-default);
   --osdk-typography-weight-bold: var(--bp-typography-weight-bold);
 
@@ -65,7 +66,7 @@
   --osdk-intent-default-hover: var(--bp-intent-default-hover);
   --osdk-intent-default-active: var(--bp-intent-default-active);
   --osdk-intent-default-disabled: var(--bp-intent-default-disabled);
-  --osdk-intent-default-foreground: var(--bp-intent-default-foreground);
+  --osdk-intent-default-foreground: var(--bp-palette-dark-gray-1);
   --osdk-intent-primary-rest: var(--bp-intent-primary-rest);
   --osdk-intent-primary-hover: var(--bp-intent-primary-hover);
   --osdk-intent-primary-active: var(--bp-intent-primary-active);
@@ -91,7 +92,7 @@
   --osdk-emphasis-focus-width: var(--bp-emphasis-focus-width);
   --osdk-emphasis-focus-color: var(--bp-emphasis-focus-color);
   --osdk-emphasis-focus-offset: var(--bp-emphasis-focus-offset);
-  --osdk-emphasis-transition-duration: var(--bp-emphasis-transition-duration);
+  --osdk-emphasis-transition-duration: 150ms;
   --osdk-emphasis-ease-default: var(--bp-emphasis-ease-default);
 
   /* Blueprint token mappings - Palette tokens */
