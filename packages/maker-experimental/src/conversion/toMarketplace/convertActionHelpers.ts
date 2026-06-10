@@ -380,7 +380,6 @@ function convertFunctionBackedAction(
 function dataTypeToActionParameterType(
   dataType: IDataType,
 ): ActionParameter["type"] {
-  console.log(dataType);
   switch (dataType.type) {
     case "object": {
       const objectData = dataType as IObjectDataType;
