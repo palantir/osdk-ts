@@ -22,7 +22,7 @@ import { compareNumericStrings } from "../compareNumericStrings.js";
 import type { ObjectCacheKey } from "../object/ObjectCacheKey.js";
 import { PK_IDX } from "../object/ObjectCacheKey.js";
 import {
-  isNumericStringType,
+  isStringEncodedNumericType,
   resolvePropertyType,
 } from "../resolvePropertyType.js";
 
@@ -136,7 +136,7 @@ export function createOrderBySortFns(
       if (typeof aValue === "string" && typeof bValue === "string") {
         const propertyType = resolvePropertyType(a, key)
           ?? resolvePropertyType(b, key);
-        if (isNumericStringType(propertyType)) {
+        if (isStringEncodedNumericType(propertyType)) {
           return -m * compareNumericStrings(aValue, bValue);
         }
       }

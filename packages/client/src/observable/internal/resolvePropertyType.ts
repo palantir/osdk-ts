@@ -33,7 +33,7 @@ const NUMERIC_STRING_PROPERTY_TYPES: ReadonlySet<string> = new Set([
   "long",
 ]);
 
-export function isNumericStringType(type: string | undefined): boolean {
+export function isStringEncodedNumericType(type: string | undefined): boolean {
   return type != null && NUMERIC_STRING_PROPERTY_TYPES.has(type);
 }
 

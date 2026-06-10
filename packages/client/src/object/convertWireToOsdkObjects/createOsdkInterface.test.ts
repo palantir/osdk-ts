@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
+import type { DerivedPropertyDefinition } from "@osdk/foundry.ontologies";
 import { describe, expect, it } from "vitest";
+import type { DerivedPropertyRuntimeMetadata } from "../../derivedProperties/derivedPropertyRuntimeMetadata.js";
+import type { MinimalClient } from "../../MinimalClientContext.js";
 import {
   type FetchedObjectTypeDefinition,
   InterfaceDefinitions,
 } from "../../ontology/OntologyProvider.js";
 import { createOsdkInterface } from "./createOsdkInterface.js";
+import { createOsdkObject } from "./createOsdkObject.js";
 import { ObjectDefRef, RdpDefRef } from "./InternalSymbols.js";
 
 describe(createOsdkInterface, () => {
@@ -217,6 +221,74 @@ describe(createOsdkInterface, () => {
     expect(Object.keys(iface)).toContain("total");
     // ... and the RDP metadata is carried so its type can be resolved.
     expect((iface as any)[RdpDefRef]).toBe(rdpMetadata);
+  });
+
+  it("carries RDP metadata end-to-end when the underlying is built via createOsdkObject", () => {
+    // The test above sets [RdpDefRef] on a hand-rolled underlying; this one
+    // exercises the real path -- createOsdkObject populates [RdpDefRef] -- so a
+    // regression in that wiring (not just in createOsdkInterface) is caught.
+    const objectDef = {
+      [InterfaceDefinitions]: {},
+      apiName: "Obj",
+      displayName: "",
+      interfaceMap: { "IFoo": { "asdf": "foo" } },
+      inverseInterfaceMap: {},
+      links: {},
+      pluralDisplayName: "",
+      primaryKeyApiName: "$primaryKey",
+      primaryKeyType: "string",
+      properties: { "foo": { type: "string" } },
+      type: "object",
+      titleProperty: "foo",
+      rid: "",
+      status: "ACTIVE",
+      icon: undefined,
+      visibility: undefined,
+      description: undefined,
+    } satisfies FetchedObjectTypeDefinition;
+
+    const rdpMetadata: DerivedPropertyRuntimeMetadata = {
+      "total": {
+        definition: {
+          type: "selection",
+          operation: { type: "get", selectedPropertyApiName: "foo" },
+        } as DerivedPropertyDefinition,
+        selectedOrCollectedPropertyType: { type: "decimal" },
+      },
+    };
+
+    const underlying = createOsdkObject(
+      {} as MinimalClient,
+      objectDef,
+      {
+        $apiName: "Obj",
+        $objectType: "Obj",
+        $primaryKey: "pk-1",
+        $title: "hi mom",
+        foo: "hi mom",
+        // the derived value lives alongside regular properties on the underlying
+        total: "10",
+      },
+      rdpMetadata,
+    );
+
+    const iface = createOsdkInterface(underlying, {
+      "apiName": "IFoo",
+      displayName: "",
+      links: {},
+      properties: { "asdf": { type: "string" } },
+      rid: "",
+      type: "interface",
+      implements: [],
+      description: undefined,
+    });
+
+    // the derived value is exposed on the interface view ...
+    expect((iface as any).total).toBe("10");
+    expect(Object.keys(iface)).toContain("total");
+    // ... and the captured type survives, so consumers resolve it as numeric.
+    expect(iface[RdpDefRef]?.total?.selectedOrCollectedPropertyType?.type)
+      .toBe("decimal");
   });
 
   it("does not let a $-prefixed derived property clobber the $-metadata", () => {

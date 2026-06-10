@@ -27,136 +27,6 @@ import { InterfaceDefinitions } from "../../../ontology/OntologyProvider.js";
 import type { Canonical } from "../Canonical.js";
 import { createOrderBySortFns } from "./SortingStrategy.js";
 
-interface FakeHolderRefs {
-  /** Type of a regular property keyed by property name. */
-  propertyTypes?: Record<string, unknown>;
-  /** Type of a derived (RDP) property keyed by property name. */
-  derivedTypes?: Record<string, unknown>;
-  /** Derived properties present but without a statically-known type. */
-  derivedUntyped?: readonly string[];
-}
-
-/**
- * Builds a minimal holder that exposes only what the orderBy comparator reads:
- * the property values plus the metadata symbols used to resolve property types.
- */
-function fakeHolder(
-  values: Record<string, unknown>,
-  refs: FakeHolderRefs = {},
-): ObjectHolder {
-  const holder: { [k: string]: unknown } & {
-    [ObjectDefRef]?: unknown;
-    [RdpDefRef]?: unknown;
-  } = { ...values };
-
-  if (refs.propertyTypes != null) {
-    holder[ObjectDefRef] = {
-      properties: Object.fromEntries(
-        Object.entries(refs.propertyTypes).map((
-          [name, type],
-        ) => [name, { type }]),
-      ),
-    };
-  }
-
-  if (refs.derivedTypes != null || refs.derivedUntyped != null) {
-    const rdp: Record<string, unknown> = {};
-    for (const [name, type] of Object.entries(refs.derivedTypes ?? {})) {
-      rdp[name] = { selectedOrCollectedPropertyType: { type } };
-    }
-    for (const name of refs.derivedUntyped ?? []) {
-      rdp[name] = { selectedOrCollectedPropertyType: undefined };
-    }
-    holder[RdpDefRef] = rdp;
-  }
-
-  return holder as ObjectHolder;
-}
-
-/**
- * Builds a real interface holder (via createOsdkInterface) over an underlying
- * object with a single `amount` property, so the comparator is exercised
- * against the actual interface view -- including the namespace-stripped keys
- * and the derived-property metadata it now carries.
- *
- * For "regular" the property lives in the interface metadata; for "derived" it
- * lives only in the RDP metadata (as a runtime-derived property would).
- */
-function fakeInterfaceHolder(
-  amount: unknown,
-  type: string,
-  kind: "regular" | "derived",
-  interfaceApiName: string = "IFoo",
-): InterfaceHolder {
-  // A namespaced interface property's full apiName carries the interface's
-  // namespace; the interface view exposes it under the stripped "amount".
-  const [namespace] = extractNamespace(interfaceApiName);
-  const ifaceProp = namespace != null ? `${namespace}.amount` : "amount";
-
-  const underlying: Record<string | symbol, unknown> = {
-    amount,
-    [ObjectDefRef]: {
-      [InterfaceDefinitions]: {},
-      apiName: "Obj",
-      displayName: "",
-      interfaceMap: {
-        [interfaceApiName]: kind === "regular" ? { [ifaceProp]: "amount" } : {},
-      },
-      inverseInterfaceMap: {},
-      links: {},
-      pluralDisplayName: "",
-      primaryKeyApiName: "id",
-      primaryKeyType: "string",
-      properties: { "amount": { type } },
-      type: "object",
-      titleProperty: "amount",
-      rid: "",
-      status: "ACTIVE",
-      icon: undefined,
-      visibility: undefined,
-      description: undefined,
-    },
-  };
-
-  if (kind === "derived") {
-    underlying[RdpDefRef] = {
-      "amount": {
-        selectedOrCollectedPropertyType: { type },
-        definition: { type: "selection" },
-      },
-    };
-  }
-
-  return createOsdkInterface(underlying as any, {
-    "apiName": interfaceApiName,
-    displayName: "",
-    links: {},
-    properties: kind === "regular" ? { [ifaceProp]: { type } } : {},
-    rid: "",
-    type: "interface",
-    implements: [],
-    description: undefined,
-  });
-}
-
-function sort(
-  orderBy: Record<string, "asc" | "desc">,
-  holders: Array<ObjectHolder | InterfaceHolder>,
-): Array<ObjectHolder | InterfaceHolder> {
-  const sortFns = createOrderBySortFns(
-    orderBy as Canonical<Record<string, "asc" | "desc" | undefined>>,
-  );
-  return [...holders].sort((a, b) => {
-    for (const fn of sortFns) {
-      const ret = fn(a, b);
-      if (ret !== 0) {
-        return ret;
-      }
-    }
-    return 0;
-  });
-}
-
 describe("createOrderBySortFns", () => {
   it("sorts decimal properties numerically, not lexicographically", () => {
     const holders = ["10", "9", "100", "2"].map((amount) =>
@@ -320,3 +190,133 @@ describe("createOrderBySortFns", () => {
     ]);
   });
 });
+
+interface FakeHolderRefs {
+  /** Type of a regular property keyed by property name. */
+  propertyTypes?: Record<string, unknown>;
+  /** Type of a derived (RDP) property keyed by property name. */
+  derivedTypes?: Record<string, unknown>;
+  /** Derived properties present but without a statically-known type. */
+  derivedUntyped?: readonly string[];
+}
+
+/**
+ * Builds a minimal holder that exposes only what the orderBy comparator reads:
+ * the property values plus the metadata symbols used to resolve property types.
+ */
+function fakeHolder(
+  values: Record<string, unknown>,
+  refs: FakeHolderRefs = {},
+): ObjectHolder {
+  const holder: { [k: string]: unknown } & {
+    [ObjectDefRef]?: unknown;
+    [RdpDefRef]?: unknown;
+  } = { ...values };
+
+  if (refs.propertyTypes != null) {
+    holder[ObjectDefRef] = {
+      properties: Object.fromEntries(
+        Object.entries(refs.propertyTypes).map((
+          [name, type],
+        ) => [name, { type }]),
+      ),
+    };
+  }
+
+  if (refs.derivedTypes != null || refs.derivedUntyped != null) {
+    const rdp: Record<string, unknown> = {};
+    for (const [name, type] of Object.entries(refs.derivedTypes ?? {})) {
+      rdp[name] = { selectedOrCollectedPropertyType: { type } };
+    }
+    for (const name of refs.derivedUntyped ?? []) {
+      rdp[name] = { selectedOrCollectedPropertyType: undefined };
+    }
+    holder[RdpDefRef] = rdp;
+  }
+
+  return holder as ObjectHolder;
+}
+
+/**
+ * Builds a real interface holder (via createOsdkInterface) over an underlying
+ * object with a single `amount` property, so the comparator is exercised
+ * against the actual interface view -- including the namespace-stripped keys
+ * and the derived-property metadata it now carries.
+ *
+ * For "regular" the property lives in the interface metadata; for "derived" it
+ * lives only in the RDP metadata (as a runtime-derived property would).
+ */
+function fakeInterfaceHolder(
+  amount: unknown,
+  type: string,
+  kind: "regular" | "derived",
+  interfaceApiName: string = "IFoo",
+): InterfaceHolder {
+  // A namespaced interface property's full apiName carries the interface's
+  // namespace; the interface view exposes it under the stripped "amount".
+  const [namespace] = extractNamespace(interfaceApiName);
+  const ifaceProp = namespace != null ? `${namespace}.amount` : "amount";
+
+  const underlying: Record<string | symbol, unknown> = {
+    amount,
+    [ObjectDefRef]: {
+      [InterfaceDefinitions]: {},
+      apiName: "Obj",
+      displayName: "",
+      interfaceMap: {
+        [interfaceApiName]: kind === "regular" ? { [ifaceProp]: "amount" } : {},
+      },
+      inverseInterfaceMap: {},
+      links: {},
+      pluralDisplayName: "",
+      primaryKeyApiName: "id",
+      primaryKeyType: "string",
+      properties: { "amount": { type } },
+      type: "object",
+      titleProperty: "amount",
+      rid: "",
+      status: "ACTIVE",
+      icon: undefined,
+      visibility: undefined,
+      description: undefined,
+    },
+  };
+
+  if (kind === "derived") {
+    underlying[RdpDefRef] = {
+      "amount": {
+        selectedOrCollectedPropertyType: { type },
+        definition: { type: "selection" },
+      },
+    };
+  }
+
+  return createOsdkInterface(underlying as any, {
+    "apiName": interfaceApiName,
+    displayName: "",
+    links: {},
+    properties: kind === "regular" ? { [ifaceProp]: { type } } : {},
+    rid: "",
+    type: "interface",
+    implements: [],
+    description: undefined,
+  });
+}
+
+function sort(
+  orderBy: Record<string, "asc" | "desc">,
+  holders: Array<ObjectHolder | InterfaceHolder>,
+): Array<ObjectHolder | InterfaceHolder> {
+  const sortFns = createOrderBySortFns(
+    orderBy as Canonical<Record<string, "asc" | "desc" | undefined>>,
+  );
+  return [...holders].sort((a, b) => {
+    for (const fn of sortFns) {
+      const ret = fn(a, b);
+      if (ret !== 0) {
+        return ret;
+      }
+    }
+    return 0;
+  });
+}

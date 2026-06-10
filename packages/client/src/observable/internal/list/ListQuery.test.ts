@@ -609,7 +609,7 @@ describe("ListQuery sort stability across pages", () => {
 
     async function expectClientOrdered(
       orderByProp: "decimal" | "long",
-      expectedIds: number[],
+      expectedValues: string[],
     ) {
       const listSub = mockListSubCallback();
       defer(
@@ -646,13 +646,18 @@ describe("ListQuery sort stability across pages", () => {
       const payload = expectSingleListCallAndClear(listSub, expect.anything(), {
         status: "loaded",
       });
-      expect(payload!.resolvedList!.map((o) => o.id)).toEqual(expectedIds);
+      const resolved = payload!.resolvedList!;
+      // The ordered property itself is in true numeric order (not lexicographic).
+      expect(resolved.map((o) => o[orderByProp])).toEqual(expectedValues);
     }
 
-    // decimal asc: 2 < 9 < 10 < 100  -> ids 4,2,1,3
-    await expectClientOrdered("decimal", [4, 2, 1, 3]);
-    // long asc: 42 < 100 < 2^53 < 2^53+1 -> ids 3,4,2,1
-    await expectClientOrdered("long", [3, 4, 2, 1]);
+    // decimal asc: 2 < 9 < 10 < 100
+    await expectClientOrdered("decimal", ["2", "9", "10", "100"]);
+    // long asc: 42 < 100 < 2^53 < 2^53+1
+    await expectClientOrdered(
+      "long",
+      ["42", "100", "9007199254740992", "9007199254740993"],
+    );
   });
 });
 

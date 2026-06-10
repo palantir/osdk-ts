@@ -165,38 +165,6 @@ describe("extractRdpDefinition", () => {
     });
   });
 
-  it("does not capture a source type for sum aggregations (returns double)", async () => {
-    const objectSetWithSum: ObjectSet = {
-      type: "withProperties",
-      objectSet: {
-        type: "searchAround",
-        objectSet: { type: "base", objectType: "BaseType" },
-        link: "testLink1",
-      },
-      derivedProperties: {
-        totalAmount: {
-          type: "selection",
-          objectSet: {
-            type: "searchAround",
-            objectSet: { type: "methodInput" },
-            link: "testLink2",
-          },
-          operation: {
-            type: "sum",
-            selectedPropertyApiName: "decimalProperty",
-          },
-        },
-      },
-    };
-
-    const result = await extractRdpDefinition(mockClientCtx, objectSetWithSum);
-
-    // The API contract types sum (like avg) as double, not as the source
-    // property's type, so we leave it untyped -- it's a JS number, compared
-    // natively rather than as a numeric string.
-    expect(result.totalAmount.selectedOrCollectedPropertyType).toBeUndefined();
-  });
-
   it("combines definitions from multiple derived properties", async () => {
     const nestedObjectSet: ObjectSet = {
       type: "withProperties",

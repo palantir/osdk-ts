@@ -21,24 +21,24 @@ import {
   RdpDefRef,
 } from "../../object/convertWireToOsdkObjects/InternalSymbols.js";
 import {
-  isNumericStringType,
+  isStringEncodedNumericType,
   type PropertyTypeSource,
   resolvePropertyType,
 } from "./resolvePropertyType.js";
 
-describe(isNumericStringType, () => {
+describe(isStringEncodedNumericType, () => {
   it("is true for the wire-encoded-as-string numeric types", () => {
-    expect(isNumericStringType("decimal")).toBe(true);
-    expect(isNumericStringType("long")).toBe(true);
+    expect(isStringEncodedNumericType("decimal")).toBe(true);
+    expect(isStringEncodedNumericType("long")).toBe(true);
   });
 
   it("is false for everything else", () => {
     // integer/double/float arrive as JS numbers, so they don't need this path.
-    expect(isNumericStringType("integer")).toBe(false);
-    expect(isNumericStringType("double")).toBe(false);
-    expect(isNumericStringType("string")).toBe(false);
-    expect(isNumericStringType("timestamp")).toBe(false);
-    expect(isNumericStringType(undefined)).toBe(false);
+    expect(isStringEncodedNumericType("integer")).toBe(false);
+    expect(isStringEncodedNumericType("double")).toBe(false);
+    expect(isStringEncodedNumericType("string")).toBe(false);
+    expect(isStringEncodedNumericType("timestamp")).toBe(false);
+    expect(isStringEncodedNumericType(undefined)).toBe(false);
   });
 });
 
