@@ -1,0 +1,73 @@
+name: Chromatic
+
+env:
+  DO_NOT_TRACK: 1
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'packages/react-components/**'
+      - 'packages/react-components-storybook/**'
+      - '.github/workflows/chromatic.yml'
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'packages/react-components/**'
+      - 'packages/react-components-storybook/**'
+      - '.github/workflows/chromatic.yml'
+
+permissions: {}
+
+concurrency:
+  group: chromatic-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  chromatic:
+    name: Run Chromatic
+    # Fork PRs cannot read the CHROMATIC_PROJECT_TOKEN secret, so skip them.
+    if: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository }}
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out code
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          # Chromatic needs full git history to track baselines across commits.
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4.3.0
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build dependencies for Storybook
+        run: pnpm --filter "@osdk/*" transpileBrowser
+
+      - name: Build Storybook
+        env:
+          # Chromatic serves the build at the domain root, so override the
+          # GitHub Pages base path (/osdk-ts/storybook/) to avoid 404ing assets.
+          STORYBOOK_BASE_PATH: /
+        run: pnpm --filter @osdk/react-components-storybook build
+
+      - name: Publish to Chromatic
+        uses: chromaui/action@0b8c883861c1663076150cf1f4592b19d1ff6a54 # v17.0.1
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          workingDir: packages/react-components-storybook
+          storybookBuildDir: storybook-static
+          # Report visual changes without failing CI; review and accept them in
+          # the Chromatic app.
+          exitZeroOnChanges: true

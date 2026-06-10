@@ -9,6 +9,7 @@
   },
   "scripts": {
     "build": "storybook build",
+    "chromatic": "STORYBOOK_BASE_PATH=/ chromatic --build-script-name build",
     "dev": "trap 'kill 0' EXIT; pnpm turbo watch transpileBrowser --filter='@osdk/react-components-storybook^...' & storybook dev -p 6006",
     "fix-lint": "eslint . --fix && dprint fmt",
     "lint": "eslint . && dprint check",
@@ -38,6 +39,7 @@
     "@types/react": "^18.3.24",
     "@types/react-dom": "^18.3.7",
     "@vitejs/plugin-react": "^4.3.4",
+    "chromatic": "~17.0.1",
     "classnames": "^2.5.1",
     "eslint-plugin-storybook": "^10.2.10",
     "pdf-lib": "^1.17.1",
