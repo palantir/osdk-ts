@@ -730,6 +730,21 @@ export const MultipleSelection: Story = {
     await userEvent.click(headerCheckbox);
     await expect(firstRow).not.toBeChecked();
     await expect(secondRow).not.toBeChecked();
+
+    // With nothing selected the header label flips back to "Select all rows"
+    // (exact-string match so it doesn't also match "Deselect all rows").
+    // Clicking it now selects every row.
+    const selectAllCheckbox = await canvas.findByRole("checkbox", {
+      name: "Select all rows",
+    });
+    await userEvent.click(selectAllCheckbox);
+
+    const rowCheckboxes = await canvas.findAllByRole("checkbox", {
+      name: /select row/i,
+    });
+    for (const rowCheckbox of rowCheckboxes) {
+      await expect(rowCheckbox).toBeChecked();
+    }
   },
 };
 
