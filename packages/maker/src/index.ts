@@ -56,6 +56,7 @@ export {
   CREATE_OR_MODIFY_OBJECT_PARAMETER,
   defineAction,
   DELETE_OBJECT_PARAMETER,
+  extractAllowedValuesFromActionParameterType,
   kebab,
   MODIFY_INTERFACE_OBJECT_PARAMETER,
   MODIFY_OBJECT_PARAMETER,
