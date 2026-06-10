@@ -706,10 +706,15 @@ export const MultipleSelection: Story = {
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
 
+    // Re-query fresh each time: toggling the header re-renders the rows, so
+    // checkbox refs captured earlier could go stale.
+    const rowCheckboxes = () =>
+      canvas.findAllByRole("checkbox", { name: /select row/i });
+    const deselectAllCheckbox = () =>
+      canvas.findByRole("checkbox", { name: /deselect all rows/i });
+
     // Wait for the (MSW-mocked) rows to load, then grab the per-row checkboxes.
-    const [firstRow, secondRow] = await canvas.findAllByRole("checkbox", {
-      name: /select row/i,
-    });
+    const [firstRow, secondRow] = await rowCheckboxes();
 
     // Selecting one row checks it and notifies the consumer.
     await userEvent.click(firstRow);
@@ -724,35 +729,25 @@ export const MultipleSelection: Story = {
 
     // The header checkbox toggles every row. Once rows are selected its label
     // flips to "Deselect all rows", so clicking it clears the selection.
-    const headerCheckbox = await canvas.findByRole("checkbox", {
-      name: /deselect all rows/i,
-    });
-    await userEvent.click(headerCheckbox);
-    await expect(firstRow).not.toBeChecked();
-    await expect(secondRow).not.toBeChecked();
+    await userEvent.click(await deselectAllCheckbox());
+    for (const rowCheckbox of await rowCheckboxes()) {
+      await expect(rowCheckbox).not.toBeChecked();
+    }
 
     // With nothing selected the header label flips back to "Select all rows"
     // (exact-string match so it doesn't also match "Deselect all rows").
     // Clicking it now selects every row.
-    const selectAllCheckbox = await canvas.findByRole("checkbox", {
-      name: "Select all rows",
-    });
-    await userEvent.click(selectAllCheckbox);
-
-    const rowCheckboxes = await canvas.findAllByRole("checkbox", {
-      name: /select row/i,
-    });
-    for (const rowCheckbox of rowCheckboxes) {
+    await userEvent.click(
+      await canvas.findByRole("checkbox", { name: "Select all rows" }),
+    );
+    for (const rowCheckbox of await rowCheckboxes()) {
       await expect(rowCheckbox).toBeChecked();
     }
 
     // Everything is selected, so the header label is "Deselect all rows" again.
     // Clicking it clears the entire selection.
-    const deselectAllCheckbox = await canvas.findByRole("checkbox", {
-      name: /deselect all rows/i,
-    });
-    await userEvent.click(deselectAllCheckbox);
-    for (const rowCheckbox of rowCheckboxes) {
+    await userEvent.click(await deselectAllCheckbox());
+    for (const rowCheckbox of await rowCheckboxes()) {
       await expect(rowCheckbox).not.toBeChecked();
     }
   },

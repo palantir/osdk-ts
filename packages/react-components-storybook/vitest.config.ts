@@ -36,15 +36,6 @@ export default defineConfig({
     // room above Vitest's 5s default so a loaded CI runner doesn't trip the
     // per-test timeout before a play function's own waitFor resolves.
     testTimeout: 30_000,
-    // Several data-fetching stories log full Response payloads (including
-    // multi-MB PDFs as raw text) to the console. Intercept that noise on
-    // passing tests so the run shows clean progress instead of looking hung,
-    // while still surfacing logs for any test that fails.
-    silent: "passed-only",
-    // Retry flaky play tests in CI only. Browser interaction tests can flake
-    // under CI load (slow round-trips, timing). Locally we keep 0 retries so
-    // flakes surface immediately instead of being silently masked.
-    retry: process.env.CI ? 2 : 0,
     browser: {
       enabled: true,
       provider: "playwright",

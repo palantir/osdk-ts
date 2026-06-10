@@ -15,8 +15,16 @@
  */
 
 import { setProjectAnnotations } from "@storybook/react-vite";
+import { configure } from "storybook/test";
 import { beforeAll } from "vitest";
 import * as previewAnnotations from "./preview.js";
+
+// Interaction tests drive real (MSW-mocked) async round-trips — an action
+// apply, for example, legitimately takes ~1s end to end. testing-library's
+// 1000ms default for `waitFor`/`findBy` is too tight once the whole story
+// suite contends for the browser, so raise the async timeout suite-wide
+// instead of sprinkling per-assertion timeouts.
+configure({ asyncUtilTimeout: 5000 });
 
 // Apply the same global preview config (MSW loaders, OsdkProvider decorator,
 // brand-theme decorator, parameters) to every story when run under Vitest.

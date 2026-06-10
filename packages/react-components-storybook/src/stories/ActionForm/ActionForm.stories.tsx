@@ -41,12 +41,6 @@ const generatedFieldsActionDefinition =
 const unsupportedFieldsActionDefinition =
   unsupportedFieldsStoryAction.actionDefinition;
 const SUBMIT_DELAY_MS = 1500;
-// `successSpy` only fires after the action round-trips through MSW/OSDK. The
-// testing-library default (1000ms) is too tight for that round-trip when the
-// whole story suite contends for the browser under CI load, so the
-// success-path waits get generous headroom. The happy path still resolves in
-// ~1s; this only prevents premature timeouts, it does not slow passing runs.
-const ACTION_ROUND_TRIP_TIMEOUT_MS = 10_000;
 interface UpdateEmployeeActionFormStoryProps {
   formFieldDefinitions?: ReadonlyArray<
     FormFieldDefinition<typeof actionDefinition>
@@ -523,9 +517,7 @@ export const SubmitSuccess: Story = {
     );
     await userEvent.click(submitButton);
 
-    await waitFor(() => expect(successSpy).toHaveBeenCalled(), {
-      timeout: ACTION_ROUND_TRIP_TIMEOUT_MS,
-    });
+    await waitFor(() => expect(successSpy).toHaveBeenCalled());
     await expect(await canvas.findByText("Submit succeeded."))
       .toBeInTheDocument();
     await expect(await canvas.findByText(/Ada Lovelace/)).toBeInTheDocument();

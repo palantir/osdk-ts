@@ -216,6 +216,8 @@ jobs:
     name: Detect package changes
     timeout-minutes: 5
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     outputs:
       # "true" when this push/PR touches the component packages whose stories
       # the interaction tests exercise.
@@ -255,6 +257,8 @@ jobs:
     if: needs.changes.outputs.storybook == 'true'
     timeout-minutes: 20
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
       - name: Check out code
