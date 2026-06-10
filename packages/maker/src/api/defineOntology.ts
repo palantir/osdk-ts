@@ -294,7 +294,7 @@ export function sanitizeTypes(
 }
 
 function sanitizeImplements(
-  implementsInterfaces: ReadonlyArray<InterfaceImplementation>,
+  implementsInterfaces: Array<InterfaceImplementation>,
 ): Array<InterfaceImplementation> {
   return implementsInterfaces.map(impl => ({
     ...impl,
