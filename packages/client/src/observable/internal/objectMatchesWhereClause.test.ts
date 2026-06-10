@@ -17,6 +17,12 @@
 import type { Osdk, WhereClause } from "@osdk/api";
 import type { objectTypeWithAllPropertyTypes } from "@osdk/client.test.ontology";
 import { describe, expect, expectTypeOf, it } from "vitest";
+import type { InterfaceHolder } from "../../object/convertWireToOsdkObjects/InterfaceHolder.js";
+import {
+  InterfaceDefRef,
+  ObjectDefRef,
+  RdpDefRef,
+} from "../../object/convertWireToOsdkObjects/InternalSymbols.js";
 import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import { objectSortaMatchesWhereClause } from "./objectMatchesWhereClause.js";
 
@@ -222,4 +228,275 @@ describe(objectSortaMatchesWhereClause, () => {
         .toBe(nonStrictExpected);
     },
   );
+});
+
+/**
+ * Builds a minimal holder exposing the property values plus the object metadata
+ * the matcher reads to resolve a property's type.
+ */
+function holderWithTypes(
+  values: Record<string, unknown>,
+  types: Record<string, string>,
+): ObjectHolder {
+  const holder: { [k: string]: unknown } & { [ObjectDefRef]?: unknown } = {
+    ...values,
+    [ObjectDefRef]: {
+      properties: Object.fromEntries(
+        Object.entries(types).map(([name, type]) => [name, { type }]),
+      ),
+    },
+  };
+  return holder as ObjectHolder;
+}
+
+describe("decimal/long ordered comparisons", () => {
+  // decimal/long are wire-encoded as strings; the matcher must compare them
+  // numerically. Lexicographically "10" < "9", so these cases all flip if the
+  // native string operators are used.
+  it("compares decimal $gt/$gte/$lt/$lte numerically", () => {
+    const obj = holderWithTypes({ amount: "10" }, { amount: "decimal" });
+
+    expect(objectSortaMatchesWhereClause(obj, { amount: { $gt: "9" } }, true))
+      .toBe(true);
+    expect(objectSortaMatchesWhereClause(obj, { amount: { $lt: "9" } }, true))
+      .toBe(false);
+    expect(objectSortaMatchesWhereClause(obj, { amount: { $gte: "10" } }, true))
+      .toBe(true);
+    expect(objectSortaMatchesWhereClause(obj, { amount: { $lte: "9" } }, true))
+      .toBe(false);
+    // boundary: 10.0 == 10 numerically
+    expect(
+      objectSortaMatchesWhereClause(obj, { amount: { $gte: "10.0" } }, true),
+    )
+      .toBe(true);
+    expect(
+      objectSortaMatchesWhereClause(obj, { amount: { $lte: "10.0" } }, true),
+    )
+      .toBe(true);
+  });
+
+  it("compares long values beyond 2^53 without precision loss", () => {
+    const obj = holderWithTypes(
+      { big: "9007199254740993" },
+      { big: "long" },
+    );
+
+    // 9007199254740993 > 9007199254740992, indistinguishable as doubles.
+    expect(
+      objectSortaMatchesWhereClause(
+        obj,
+        { big: { $gt: "9007199254740992" } },
+        true,
+      ),
+    ).toBe(true);
+  });
+
+  it("keeps native comparison for real string properties", () => {
+    const obj = holderWithTypes({ name: "10" }, { name: "string" });
+
+    // lexicographic: "10" is not > "9"
+    expect(objectSortaMatchesWhereClause(obj, { name: { $gt: "9" } }, true))
+      .toBe(false);
+  });
+});
+
+describe("decimal/long filters with public number-typed values", () => {
+  // The real (wire) value is a string, but public NumberFilter values are JS
+  // numbers, so the matcher must bridge "5" and 5.
+  it("compares $gt against a number without precision loss at 2^53", () => {
+    const obj = holderWithTypes(
+      { big: "9007199254740993" },
+      { big: "long" },
+    );
+
+    // 9007199254740992 (=2^53) is exactly representable as a number.
+    expect(
+      objectSortaMatchesWhereClause(
+        obj,
+        { big: { $gt: 9007199254740992 } },
+        true,
+      ),
+    ).toBe(true);
+  });
+
+  it("matches $eq against a number", () => {
+    const obj = holderWithTypes({ long: "5" }, { long: "long" });
+
+    expect(objectSortaMatchesWhereClause(obj, { long: { $eq: 5 } }, true))
+      .toBe(true);
+    expect(objectSortaMatchesWhereClause(obj, { long: { $eq: 6 } }, true))
+      .toBe(false);
+  });
+
+  it("matches $ne against a number", () => {
+    const obj = holderWithTypes({ long: "5" }, { long: "long" });
+
+    expect(objectSortaMatchesWhereClause(obj, { long: { $ne: 6 } }, true))
+      .toBe(true);
+    expect(objectSortaMatchesWhereClause(obj, { long: { $ne: 5 } }, true))
+      .toBe(false);
+  });
+
+  it("matches $in against numbers", () => {
+    const obj = holderWithTypes({ long: "5" }, { long: "long" });
+
+    expect(objectSortaMatchesWhereClause(obj, { long: { $in: [5] } }, true))
+      .toBe(true);
+    expect(objectSortaMatchesWhereClause(obj, { long: { $in: [6, 7] } }, true))
+      .toBe(false);
+  });
+
+  it("matches the primitive-shorthand equality against a number", () => {
+    const obj = holderWithTypes({ long: "5" }, { long: "long" });
+
+    // `{ long: 5 }` shorthand, where the real value is the string "5".
+    expect(objectSortaMatchesWhereClause(obj, { long: 5 }, true)).toBe(true);
+    expect(objectSortaMatchesWhereClause(obj, { long: 6 }, true)).toBe(false);
+  });
+
+  it("matches a decimal $eq against a fractional number", () => {
+    const obj = holderWithTypes({ amount: "1.5" }, { amount: "decimal" });
+
+    expect(objectSortaMatchesWhereClause(obj, { amount: { $eq: 1.5 } }, true))
+      .toBe(true);
+    expect(objectSortaMatchesWhereClause(obj, { amount: { $eq: 1.25 } }, true))
+      .toBe(false);
+  });
+
+  it("matches $in against numeric-string operands numerically", () => {
+    const obj = holderWithTypes({ decimal: "100" }, { decimal: "decimal" });
+
+    // Lexicographically "100" is not in ["9","10"], and numerically it is in
+    // ["100","9"]; both must use the numeric comparison.
+    expect(
+      objectSortaMatchesWhereClause(
+        obj,
+        { decimal: { $in: ["100", "9"] } },
+        true,
+      ),
+    ).toBe(true);
+    expect(
+      objectSortaMatchesWhereClause(
+        obj,
+        { decimal: { $in: ["9", "10"] } },
+        true,
+      ),
+    ).toBe(false);
+  });
+
+  it("compares a $gt number literal beyond 1e21 without exponent-form precision loss", () => {
+    // String(1e21) === "1e+21", which (pre-fix) bypassed the exact BigInt path
+    // and fell back to lossy double comparison. 1e21 is exactly representable,
+    // so a wire value one greater must compare strictly greater.
+    const obj = holderWithTypes(
+      { big: "1000000000000000000001" },
+      { big: "long" },
+    );
+
+    expect(objectSortaMatchesWhereClause(obj, { big: { $gt: 1e21 } }, true))
+      .toBe(true);
+  });
+});
+
+/**
+ * Builds a minimal interface holder exposing the property values plus the
+ * interface (and optional derived-property) metadata the matcher reads to
+ * resolve a property's type -- the interface analogue of holderWithTypes.
+ */
+function interfaceHolderWithTypes(
+  values: Record<string, unknown>,
+  interfaceApiName: string,
+  interfaceProperties: Record<string, string>,
+  derivedTypes?: Record<string, string>,
+): InterfaceHolder {
+  const holder: { [k: string]: unknown } & {
+    [InterfaceDefRef]?: unknown;
+    [RdpDefRef]?: unknown;
+  } = {
+    ...values,
+    [InterfaceDefRef]: {
+      apiName: interfaceApiName,
+      properties: Object.fromEntries(
+        Object.entries(interfaceProperties).map((
+          [name, type],
+        ) => [name, { type }]),
+      ),
+    },
+  };
+  if (derivedTypes != null) {
+    holder[RdpDefRef] = Object.fromEntries(
+      Object.entries(derivedTypes).map((
+        [name, type],
+      ) => [name, { selectedOrCollectedPropertyType: { type } }]),
+    );
+  }
+  return holder as InterfaceHolder;
+}
+
+describe("interface decimal/long filtering", () => {
+  // The PR claims numeric filtering works on interface lists; drive the matcher
+  // with interface holders for regular, derived, and namespaced properties.
+  it("compares a regular interface decimal property numerically", () => {
+    const iface = interfaceHolderWithTypes(
+      { amount: "10" },
+      "IFoo",
+      { amount: "decimal" },
+    );
+
+    expect(objectSortaMatchesWhereClause(iface, { amount: { $gt: "9" } }, true))
+      .toBe(true);
+    expect(objectSortaMatchesWhereClause(iface, { amount: { $lt: "9" } }, true))
+      .toBe(false);
+  });
+
+  it("compares a derived (RDP) interface decimal property numerically", () => {
+    const iface = interfaceHolderWithTypes(
+      { total: "10" },
+      "IFoo",
+      {},
+      { total: "decimal" },
+    );
+
+    expect(objectSortaMatchesWhereClause(iface, { total: { $gt: "9" } }, true))
+      .toBe(true);
+  });
+
+  it("compares a namespaced interface decimal property numerically", () => {
+    // Property exposed under the stripped key "amount" while the metadata is
+    // keyed "a.amount"; the matcher must re-qualify to compare numerically.
+    const iface = interfaceHolderWithTypes(
+      { amount: "10" },
+      "a.IFoo",
+      { "a.amount": "decimal" },
+    );
+
+    expect(objectSortaMatchesWhereClause(iface, { amount: { $gt: "9" } }, true))
+      .toBe(true);
+    expect(objectSortaMatchesWhereClause(iface, { amount: { $lt: "9" } }, true))
+      .toBe(false);
+  });
+});
+
+describe("decimal/long filtering ignores malformed values", () => {
+  // A typed decimal/long column should never hold a non-numeric string, but if
+  // it does, $eq must not silently treat it as equal (Number("") === 0, and a
+  // NaN comparison would otherwise collapse to "equal"); it must fall back to
+  // the strict native comparison instead.
+  it("does not $eq-match a non-numeric value against a number", () => {
+    const obj = holderWithTypes({ amount: "abc" }, { amount: "decimal" });
+
+    expect(objectSortaMatchesWhereClause(obj, { amount: { $eq: 10 } }, true))
+      .toBe(false);
+    expect(objectSortaMatchesWhereClause(obj, { amount: { $ne: 10 } }, true))
+      .toBe(true);
+  });
+
+  it("does not $eq-match an empty value against 0", () => {
+    const obj = holderWithTypes({ amount: "" }, { amount: "decimal" });
+
+    expect(objectSortaMatchesWhereClause(obj, { amount: { $eq: 0 } }, true))
+      .toBe(false);
+    expect(objectSortaMatchesWhereClause(obj, { amount: { $ne: 0 } }, true))
+      .toBe(true);
+  });
 });
