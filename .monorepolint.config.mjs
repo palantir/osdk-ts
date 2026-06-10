@@ -228,6 +228,11 @@ const archetypeRules = archetypes(
       "@osdk/client.test.ontology",
       "@osdk/create-app.template.*",
       "@osdk/create-widget.template.*",
+      // Generated test-fixture package (created during the client intellisense
+      // test, not in source control). Listed explicitly so it keeps the
+      // ESLint/dprint scripts it is generated with, rather than falling through
+      // to the oxc "@osdk/shared.test" archetype below by namespace prefix.
+      "@osdk/shared.test.intellisense",
     ],
     {
       ...INTERNAL_LIBRARY_RULES,
