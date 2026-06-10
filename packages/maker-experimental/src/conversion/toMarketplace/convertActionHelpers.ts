@@ -410,7 +410,9 @@ function dataTypeToActionParameterType(
     }
     case "optionalType": {
       const optionalData = dataType as IOptionalDataType;
-      return dataTypeToActionParameterType(optionalData.optionalType.wrappedType);
+      return dataTypeToActionParameterType(
+        optionalData.optionalType.wrappedType,
+      );
     }
     default: {
       if (isActionParameterTypePrimitive(dataType.type)) {
