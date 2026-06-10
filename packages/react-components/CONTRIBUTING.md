@@ -9,6 +9,7 @@ Thanks for your interest in contributing to `@osdk/react-components`! This docum
 - [Development Setup](#development-setup)
 - [Development Workflow](#development-workflow)
 - [Component Architecture](#component-architecture)
+- [Documentation](#documentation)
 - [Styling Guidelines](#styling-guidelines)
 - [Testing](#testing)
 - [Storybook](#storybook)
@@ -92,33 +93,6 @@ npx dprint fmt
 ```
 
 The pre-commit hook runs `dprint check` and will reject unformatted code.
-
-### Props reference tables (auto-generated)
-
-Per-component **props reference tables in `docs/*.md` are generated from the component's props interface**, so they never drift from the source. The generator (`scripts/gen-props.mjs`) reads the named TypeScript interface (or type alias), turns each property into a `Name | Type | Description` row, and writes it between markers. JSDoc on each prop becomes the description — the main comment, `@default`, `@deprecated`, inline `{@link}`, and required/optional are all reflected. If the props type is generic, its type parameters and their constraints (e.g. `Q extends ActionDefinition<unknown>`) are listed above the table so bare `Q`-style types stay meaningful.
-
-Regenerate after changing any documented prop or its JSDoc:
-
-```sh
-pnpm --filter @osdk/react-components gen-props
-```
-
-The repo's pre-commit hook runs this for you whenever you commit changes under `packages/react-components/src/` or `docs/` — it regenerates the tables and stages them automatically. CI enforces freshness too: the `check-gen-props` task (part of `pnpm turbo check`) runs `gen-props --check` and fails if a committed table is stale (or was hand-edited inside the markers).
-
-**To enable a generated table for a new component**, drop a marker block into its doc where the table should appear, naming the source file (relative to the package root) and the props interface:
-
-```md
-## Props
-
-<!-- AUTOGEN:props START src=src/my-component/MyComponentApi.ts interface=MyComponentProps -->
-<!-- AUTOGEN:props END -->
-```
-
-Then run `gen-props` to fill it in (the generator normalizes the marker and inserts the table). It resolves both `interface` and `type` declarations, following `extends` clauses, intersections (`A & B`), controlled/uncontrolled unions, and `Pick`/`Omit`. References are resolved first in the marker's `src` file, then by following named imports into other files — so a base shared across files (e.g. `FilterDefinitionControls`) still contributes its members. Only bare/external imports (e.g. `@osdk/api`) are left unresolved.
-
-The same marker works for any object-shaped type referenced from the props, not just the top-level props interface — add a block pointing at `interface=ColumnDefinition` (or `PropertyFilterDefinition`, `ObjectSetOptions`, …) to document a config sub-type. A discriminated union of differently-shaped variants (e.g. the column locator union, `FilterDefinitionUnion`) and distributive/conditional/mapped types (e.g. `FormFieldDefinition`, `EditFieldConfig`) resolve to no members; the generator errors rather than emit a misleading merged table, so document each concrete variant with its own block (e.g. one per `FilterDefinitionUnion` member, or `DropdownEditConfig` / `DatePickerEditConfig` for `EditFieldConfig`).
-
-Because the description column comes entirely from JSDoc, **write a JSDoc comment (with `@default` where relevant) on every prop.** Props with no JSDoc render with a blank description — that blank cell is your signal to document them, not a reason to hand-edit the table.
 
 ### Running the Example App
 
@@ -204,6 +178,35 @@ src/my-component/
 - **OSDK components** are exported through per-component files in `src/public/experimental/<name>.ts`. Check `package.json` `exports` first — the existing wildcard pattern (`"./experimental/*"`) may already cover the new sub-path; only add an explicit entry if the wildcard doesn't resolve to it
 - **Base components** may be exported for advanced use cases
 - **UI primitives** in `src/base-components/` are internal and must **not** be exported. The sanctioned reuse list is `src/public/primitives.ts`
+
+## Documentation
+
+### Props reference tables (auto-generated)
+
+Per-component **props reference tables in `docs/*.md` are generated from the component's props interface**, so they never drift from the source. The generator (`scripts/gen-props.mjs`) reads the named TypeScript interface (or type alias), turns each property into a `Name | Type | Description` row, and writes it between markers. JSDoc on each prop becomes the description — the main comment, `@default`, `@deprecated`, inline `{@link}`, and required/optional are all reflected. If the props type is generic, its type parameters and their constraints (e.g. `Q extends ActionDefinition<unknown>`) are listed above the table so bare `Q`-style types stay meaningful.
+
+Regenerate after changing any documented prop or its JSDoc:
+
+```sh
+pnpm --filter @osdk/react-components gen-props
+```
+
+The repo's pre-commit hook runs this for you whenever you commit changes under `packages/react-components/src/` or `docs/` — it regenerates the tables and stages them automatically. CI enforces freshness too: the `check-gen-props` task (part of `pnpm turbo check`) runs `gen-props --check` and fails if a committed table is stale (or was hand-edited inside the markers).
+
+**To enable a generated table for a new component**, drop a marker block into its doc where the table should appear, naming the source file (relative to the package root) and the props interface:
+
+```md
+## Props
+
+<!-- AUTOGEN:props START src=src/my-component/MyComponentApi.ts interface=MyComponentProps -->
+<!-- AUTOGEN:props END -->
+```
+
+Then run `gen-props` to fill it in (the generator normalizes the marker and inserts the table). It resolves both `interface` and `type` declarations, following `extends` clauses, intersections (`A & B`), controlled/uncontrolled unions, and `Pick`/`Omit`. References are resolved first in the marker's `src` file, then by following named imports into other files — so a base shared across files (e.g. `FilterDefinitionControls`) still contributes its members. Only bare/external imports (e.g. `@osdk/api`) are left unresolved.
+
+The same marker works for any object-shaped type referenced from the props, not just the top-level props interface — add a block pointing at `interface=ColumnDefinition` (or `PropertyFilterDefinition`, `ObjectSetOptions`, …) to document a config sub-type. A discriminated union of differently-shaped variants (e.g. the column locator union, `FilterDefinitionUnion`) and distributive/conditional/mapped types (e.g. `FormFieldDefinition`, `EditFieldConfig`) resolve to no members; the generator errors rather than emit a misleading merged table, so document each concrete variant with its own block (e.g. one per `FilterDefinitionUnion` member, or `DropdownEditConfig` / `DatePickerEditConfig` for `EditFieldConfig`).
+
+Because the description column comes entirely from JSDoc, **write a JSDoc comment (with `@default` where relevant) on every prop.** Props with no JSDoc render with a blank description — that blank cell is your signal to document them, not a reason to hand-edit the table.
 
 ## Styling Guidelines
 
