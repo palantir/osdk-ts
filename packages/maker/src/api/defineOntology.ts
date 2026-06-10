@@ -47,6 +47,13 @@ import type { OntologyDefinition } from "./common/OntologyDefinition.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import type { OntologyEntityType } from "./common/OntologyEntityTypeMapping.js";
 import type { InterfaceType } from "./interface/InterfaceType.js";
+import type {
+  IntermediaryObjectLinkReference,
+  LinkType,
+} from "./links/LinkType.js";
+import type { InterfaceImplementation } from "./object/InterfaceImplementation.js";
+import type { ObjectType } from "./object/ObjectType.js";
+import type { ObjectTypeDefinition } from "./object/ObjectTypeDefinition.js";
 
 // type -> apiName -> entity
 /** @internal */
@@ -181,7 +188,7 @@ export function writeStaticObjects(outputDir: string): void {
           const filePath = path.join(typeDirPath, `${entityFileNameBase}.ts`);
           const entityTypeName = getEntityTypeName(ontologyTypeEnumKey);
           const entityJSON = JSON.stringify(
-            explodeInterfaceType(entity),
+            sanitizeTypes(entity),
             null,
             2,
           ).replace(
@@ -256,25 +263,99 @@ export function buildDatasource(
   });
 }
 
-// convert linked interface api name references to full type before codegen
-export function explodeInterfaceType(
+export function sanitizeTypes(
   entity: OntologyEntityType,
 ): OntologyEntityType {
-  if (entity.__type === OntologyEntityTypeEnum.INTERFACE_TYPE) {
-    return filterCyclicReferences({
-      ...entity,
-      linkedInterfaces: (entity.linkedInterfaces ?? []).map(
-        interfaceTypeOrApiName =>
-          typeof interfaceTypeOrApiName === "string"
-            ? ontologyDefinition[OntologyEntityTypeEnum.INTERFACE_TYPE][
-              interfaceTypeOrApiName
-            ]
-            : interfaceTypeOrApiName,
-      ),
-    });
-  } else {
-    return entity;
+  switch (entity.__type) {
+    case OntologyEntityTypeEnum.INTERFACE_TYPE:
+      return filterCyclicReferences({
+        ...entity,
+        linkedInterfaces: (entity.linkedInterfaces ?? []).map(
+          interfaceTypeOrApiName =>
+            typeof interfaceTypeOrApiName === "string"
+              ? ontologyDefinition[OntologyEntityTypeEnum.INTERFACE_TYPE][
+                interfaceTypeOrApiName
+              ]
+              : interfaceTypeOrApiName,
+        ),
+      });
+    case OntologyEntityTypeEnum.OBJECT_TYPE:
+      return entity.implementsInterfaces === undefined
+        ? entity
+        : {
+          ...entity,
+          implementsInterfaces: sanitizeImplements(entity.implementsInterfaces),
+        };
+    case OntologyEntityTypeEnum.LINK_TYPE:
+      return sanitizeLinkInterfaces(entity);
+    default:
+      return entity;
   }
+}
+
+function sanitizeImplements(
+  implementsInterfaces: ReadonlyArray<InterfaceImplementation>,
+): Array<InterfaceImplementation> {
+  return implementsInterfaces.map(impl => ({
+    ...impl,
+    implements: filterCyclicReferences(impl.implements),
+  }));
+}
+
+function sanitizeImplementer(
+  object: ObjectTypeDefinition | ObjectType,
+): ObjectTypeDefinition | ObjectType {
+  return object.implementsInterfaces === undefined
+    ? object
+    : {
+      ...object,
+      implementsInterfaces: sanitizeImplements(object.implementsInterfaces),
+    };
+}
+
+function sanitizeLinkSideObject(
+  object: ObjectTypeDefinition | ObjectType | string,
+): ObjectTypeDefinition | ObjectType | string {
+  return typeof object === "string" ? object : sanitizeImplementer(object);
+}
+
+function sanitizeLinkInterfaces(link: LinkType): LinkType {
+  if ("one" in link) {
+    return {
+      ...link,
+      one: { ...link.one, object: sanitizeLinkSideObject(link.one.object) },
+      toMany: {
+        ...link.toMany,
+        object: sanitizeLinkSideObject(link.toMany.object),
+      },
+    };
+  }
+  if ("intermediaryObjectType" in link) {
+    return {
+      ...link,
+      intermediaryObjectType: sanitizeImplementer(link.intermediaryObjectType),
+      many: sanitizeIntermediarySide(link.many),
+      toMany: sanitizeIntermediarySide(link.toMany),
+    };
+  }
+  return {
+    ...link,
+    many: { ...link.many, object: sanitizeLinkSideObject(link.many.object) },
+    toMany: {
+      ...link.toMany,
+      object: sanitizeLinkSideObject(link.toMany.object),
+    },
+  };
+}
+
+function sanitizeIntermediarySide(
+  side: IntermediaryObjectLinkReference,
+): IntermediaryObjectLinkReference {
+  return {
+    ...side,
+    object: sanitizeLinkSideObject(side.object),
+    linkToIntermediary: sanitizeLinkInterfaces(side.linkToIntermediary),
+  };
 }
 
 function filterCyclicReferences(
