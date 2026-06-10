@@ -95,20 +95,38 @@ describe("renderDefaultCell", () => {
   });
 
   describe("marking columns", () => {
-    it("renders a CbacBanner for a CBAC marking column with a single id", () => {
+    // Placed first in this block so the lazily-imported CbacBanner module is
+    // still unresolved when it runs. A lazy boundary renders its Suspense
+    // fallback (no banner) on the first synchronous pass, then resolves the
+    // banner asynchronously. An eager static import renders the banner
+    // synchronously — that eager import is the build coupling this change removes.
+    it("lazy-loads the CbacBanner instead of importing it eagerly", async () => {
       const result = renderDefaultCell(createCellContext("marking-1", {
         columnMeta: { markingType: "CBAC" },
       }));
       render(<div data-testid="cell">{result}</div>);
-      expect(screen.getByTestId("cbac-banner").textContent).toBe("marking-1");
+      expect(screen.queryByTestId("cbac-banner")).toBeNull();
+      expect(await screen.findByTestId("cbac-banner")).toBeTruthy();
     });
 
-    it("renders a CbacBanner for a CBAC marking column with multiple ids", () => {
+    it("renders a CbacBanner for a CBAC marking column with a single id", async () => {
+      const result = renderDefaultCell(createCellContext("marking-1", {
+        columnMeta: { markingType: "CBAC" },
+      }));
+      render(<div data-testid="cell">{result}</div>);
+      expect((await screen.findByTestId("cbac-banner")).textContent).toBe(
+        "marking-1",
+      );
+    });
+
+    it("renders a CbacBanner for a CBAC marking column with multiple ids", async () => {
       const result = renderDefaultCell(createCellContext(["m-1", "m-2"], {
         columnMeta: { markingType: "CBAC" },
       }));
       render(<div data-testid="cell">{result}</div>);
-      expect(screen.getByTestId("cbac-banner").textContent).toBe("m-1,m-2");
+      expect((await screen.findByTestId("cbac-banner")).textContent).toBe(
+        "m-1,m-2",
+      );
     });
 
     it("renders nothing for an empty CBAC marking value", () => {
@@ -119,12 +137,12 @@ describe("renderDefaultCell", () => {
       expect(screen.queryByTestId("cbac-banner")).toBeNull();
     });
 
-    it("renders one CbacBanner per id for a MANDATORY marking column", () => {
+    it("renders one CbacBanner per id for a MANDATORY marking column", async () => {
       const result = renderDefaultCell(createCellContext(["m-1", "m-2"], {
         columnMeta: { markingType: "MANDATORY" },
       }));
       render(<div data-testid="cell">{result}</div>);
-      const banners = screen.getAllByTestId("cbac-banner");
+      const banners = await screen.findAllByTestId("cbac-banner");
       expect(banners).toHaveLength(2);
       expect(banners.map((el) => el.getAttribute("data-marking-ids"))).toEqual([
         "m-1",
@@ -132,14 +150,14 @@ describe("renderDefaultCell", () => {
       ]);
     });
 
-    it("deduplicates marking ids so duplicate values don't break React keys", () => {
+    it("deduplicates marking ids so duplicate values don't break React keys", async () => {
       const result = renderDefaultCell(
         createCellContext(["m-1", "m-1", "m-2"], {
           columnMeta: { markingType: "MANDATORY" },
         }),
       );
       render(<div data-testid="cell">{result}</div>);
-      const banners = screen.getAllByTestId("cbac-banner");
+      const banners = await screen.findAllByTestId("cbac-banner");
       expect(banners).toHaveLength(2);
       expect(banners.map((el) => el.getAttribute("data-marking-ids"))).toEqual([
         "m-1",
@@ -147,12 +165,12 @@ describe("renderDefaultCell", () => {
       ]);
     });
 
-    it("renders a single CbacBanner for a single-valued MANDATORY marking", () => {
+    it("renders a single CbacBanner for a single-valued MANDATORY marking", async () => {
       const result = renderDefaultCell(createCellContext("m-1", {
         columnMeta: { markingType: "MANDATORY" },
       }));
       render(<div data-testid="cell">{result}</div>);
-      const banners = screen.getAllByTestId("cbac-banner");
+      const banners = await screen.findAllByTestId("cbac-banner");
       expect(banners).toHaveLength(1);
       expect(banners[0].getAttribute("data-marking-ids")).toBe("m-1");
     });

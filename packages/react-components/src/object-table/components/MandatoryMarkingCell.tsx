@@ -15,8 +15,8 @@
  */
 
 import React from "react";
-import { CbacBanner } from "../../cbac-picker/CbacBanner.js";
 import { toMarkingIdArray } from "../utils/markingValue.js";
+import { LazyCbacBanner } from "./LazyCbacBanner.js";
 import styles from "./MandatoryMarkingCell.module.css";
 
 export interface MandatoryMarkingCellProps {
@@ -38,7 +38,7 @@ export function MandatoryMarkingCell({
   return (
     <span className={styles.container}>
       {markingIds.map((id) => (
-        <CbacBanner key={id} markingIds={[id]} className={styles.pill} />
+        <LazyCbacBanner key={id} markingIds={[id]} className={styles.pill} />
       ))}
     </span>
   );
