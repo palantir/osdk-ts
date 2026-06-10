@@ -36,35 +36,6 @@ function valueAssignment(role: string, value: string): TokenAssignment {
   return { role, colorIndex: -1, customValue: value };
 }
 
-/** Defaults that match the real Blueprint design-token values exactly. */
-function blueprintDefaults(overrides?: {
-  shadow?: string;
-}): TokenAssignment[] {
-  return [
-    valueAssignment(
-      "font-family",
-      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', blueprint-icons-16, sans-serif",
-    ),
-    valueAssignment("font-size-small", "12"),
-    valueAssignment("font-size-medium", "14"),
-    valueAssignment("font-size-large", "16"),
-    valueAssignment("font-weight-default", "400"),
-    valueAssignment("font-weight-bold", "600"),
-    valueAssignment("line-height", "1.28581"),
-    valueAssignment("border-radius", "4"),
-    valueAssignment("spacing", "4"),
-    valueAssignment("border-width", "1"),
-    valueAssignment(
-      "shadow",
-      overrides?.shadow
-        ?? "inset 0 1px 1px rgba(0, 0, 0, 0.15)",
-    ),
-    valueAssignment("focus-width", "2"),
-    valueAssignment("focus-offset", "2"),
-    valueAssignment("transition-duration", "100"),
-  ];
-}
-
 /** Shared non-color defaults used across most presets */
 function baseDefaults(overrides?: {
   radius?: string;
