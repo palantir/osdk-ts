@@ -5,9 +5,10 @@
     calc(var(--osdk-surface-spacing) * 2.5);
   --osdk-input-border-radius: var(--osdk-surface-border-radius);
 
-  /* Input borders — border is none; visual border comes from box-shadow
-     (inset 0 0 0 1px) to match Blueprint's .bp6-input convention */
-  --osdk-input-border-width: 0;
+  /* Input borders — visual border comes from box-shadow (inset 0 0 0 1px)
+     to match Blueprint's .bp6-input convention. Border width is 1px so
+     custom themes can set --osdk-input-border-color to add a real border. */
+  --osdk-input-border-width: 1px;
   --osdk-input-border-color: transparent;
   --osdk-input-border-color-focus: transparent;
   --osdk-input-shadow:
