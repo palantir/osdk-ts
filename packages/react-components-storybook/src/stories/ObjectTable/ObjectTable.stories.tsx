@@ -31,7 +31,7 @@ import type {
 } from "@osdk/react-components/experimental/object-table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useState } from "react";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 import { fauxFoundry } from "../../mocks/fauxFoundry.js";
 import { Employee } from "../../types/Employee.js";
 import { WorkerInterface } from "../../types/WorkerInterface.js";
@@ -700,6 +700,37 @@ export const MultipleSelection: Story = {
       <ObjectTable {...args} />
     </div>
   ),
+  // Storybook "Interactions" test: the play function drives the rendered
+  // component with simulated user input and asserts on the result. It runs
+  // automatically in the Interactions panel and as part of the test runner.
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+
+    // Wait for the (MSW-mocked) rows to load, then grab the per-row checkboxes.
+    const [firstRow, secondRow] = await canvas.findAllByRole("checkbox", {
+      name: /select row/i,
+    });
+
+    // Selecting one row checks it and notifies the consumer.
+    await userEvent.click(firstRow);
+    await expect(firstRow).toBeChecked();
+    await waitFor(() => expect(args.onRowSelectionChanged).toHaveBeenCalled());
+
+    // In "multiple" mode a second row can be selected without clearing the
+    // first — both stay checked.
+    await userEvent.click(secondRow);
+    await expect(firstRow).toBeChecked();
+    await expect(secondRow).toBeChecked();
+
+    // The header checkbox toggles every row. Once rows are selected its label
+    // flips to "Deselect all rows", so clicking it clears the selection.
+    const headerCheckbox = await canvas.findByRole("checkbox", {
+      name: /deselect all rows/i,
+    });
+    await userEvent.click(headerCheckbox);
+    await expect(firstRow).not.toBeChecked();
+    await expect(secondRow).not.toBeChecked();
+  },
 };
 
 export const WithContextMenu: Story = {
