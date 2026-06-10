@@ -165,7 +165,7 @@ describe("extractRdpDefinition", () => {
     });
   });
 
-  it("captures the source property type for sum aggregations", async () => {
+  it("does not capture a source type for sum aggregations (returns double)", async () => {
     const objectSetWithSum: ObjectSet = {
       type: "withProperties",
       objectSet: {
@@ -191,12 +191,10 @@ describe("extractRdpDefinition", () => {
 
     const result = await extractRdpDefinition(mockClientCtx, objectSetWithSum);
 
-    // sum of a decimal is a decimal (wire-encoded as a string), so the type is
-    // captured -- letting sorting/filtering compare it numerically rather than
-    // guessing from the value.
-    expect(result.totalAmount.selectedOrCollectedPropertyType).toEqual({
-      type: "decimal",
-    });
+    // The API contract types sum (like avg) as double, not as the source
+    // property's type, so we leave it untyped -- it's a JS number, compared
+    // natively rather than as a numeric string.
+    expect(result.totalAmount.selectedOrCollectedPropertyType).toBeUndefined();
   });
 
   it("combines definitions from multiple derived properties", async () => {

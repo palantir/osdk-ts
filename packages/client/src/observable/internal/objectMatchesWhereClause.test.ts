@@ -294,3 +294,67 @@ describe("decimal/long ordered comparisons", () => {
       .toBe(false);
   });
 });
+
+describe("decimal/long filters with public number-typed values", () => {
+  // The real (wire) value is a string, but public NumberFilter values are JS
+  // numbers, so the matcher must bridge "5" and 5.
+  it("compares $gt against a number without precision loss at 2^53", () => {
+    const obj = holderWithTypes(
+      { big: "9007199254740993" },
+      { big: "long" },
+    );
+
+    // 9007199254740992 (=2^53) is exactly representable as a number.
+    expect(
+      objectSortaMatchesWhereClause(
+        obj,
+        { big: { $gt: 9007199254740992 } },
+        true,
+      ),
+    ).toBe(true);
+  });
+
+  it("matches $eq against a number", () => {
+    const obj = holderWithTypes({ long: "5" }, { long: "long" });
+
+    expect(objectSortaMatchesWhereClause(obj, { long: { $eq: 5 } }, true))
+      .toBe(true);
+    expect(objectSortaMatchesWhereClause(obj, { long: { $eq: 6 } }, true))
+      .toBe(false);
+  });
+
+  it("matches $ne against a number", () => {
+    const obj = holderWithTypes({ long: "5" }, { long: "long" });
+
+    expect(objectSortaMatchesWhereClause(obj, { long: { $ne: 6 } }, true))
+      .toBe(true);
+    expect(objectSortaMatchesWhereClause(obj, { long: { $ne: 5 } }, true))
+      .toBe(false);
+  });
+
+  it("matches $in against numbers", () => {
+    const obj = holderWithTypes({ long: "5" }, { long: "long" });
+
+    expect(objectSortaMatchesWhereClause(obj, { long: { $in: [5] } }, true))
+      .toBe(true);
+    expect(objectSortaMatchesWhereClause(obj, { long: { $in: [6, 7] } }, true))
+      .toBe(false);
+  });
+
+  it("matches the primitive-shorthand equality against a number", () => {
+    const obj = holderWithTypes({ long: "5" }, { long: "long" });
+
+    // `{ long: 5 }` shorthand, where the real value is the string "5".
+    expect(objectSortaMatchesWhereClause(obj, { long: 5 }, true)).toBe(true);
+    expect(objectSortaMatchesWhereClause(obj, { long: 6 }, true)).toBe(false);
+  });
+
+  it("matches a decimal $eq against a fractional number", () => {
+    const obj = holderWithTypes({ amount: "1.5" }, { amount: "decimal" });
+
+    expect(objectSortaMatchesWhereClause(obj, { amount: { $eq: 1.5 } }, true))
+      .toBe(true);
+    expect(objectSortaMatchesWhereClause(obj, { amount: { $eq: 1.25 } }, true))
+      .toBe(false);
+  });
+});

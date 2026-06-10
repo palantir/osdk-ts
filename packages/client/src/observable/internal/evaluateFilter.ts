@@ -36,8 +36,10 @@ export function evaluateFilter(
   propertyType?: string,
 ): boolean {
   switch (f) {
-    case "$eq":
-      return realValue === expected;
+    case "$eq": {
+      const c = numericCompare(realValue, expected, propertyType);
+      return c != null ? c === 0 : realValue === expected;
+    }
     case "$gt": {
       const c = numericCompare(realValue, expected, propertyType);
       return c != null ? c > 0 : realValue > expected;
@@ -54,10 +56,21 @@ export function evaluateFilter(
       const c = numericCompare(realValue, expected, propertyType);
       return c != null ? c <= 0 : realValue <= expected;
     }
-    case "$ne":
-      return realValue !== expected;
+    case "$ne": {
+      const c = numericCompare(realValue, expected, propertyType);
+      return c != null ? c !== 0 : realValue !== expected;
+    }
     case "$in":
-      return Array.isArray(expected) && expected.includes(realValue);
+      if (!Array.isArray(expected)) {
+        return false;
+      }
+      if (isNumericStringType(propertyType)) {
+        return expected.some((e) => {
+          const c = numericCompare(realValue, e, propertyType);
+          return c != null ? c === 0 : realValue === e;
+        });
+      }
+      return expected.includes(realValue);
     case "$isNull":
       return realValue == null;
     case "$startsWith":
@@ -87,21 +100,42 @@ export function evaluateFilter(
 
 /**
  * Returns the numeric ordering (-1/0/1) of two values when the property is a
- * decimal/long wire-encoded as strings, or undefined when the native
- * comparison operators should be used instead (real strings, dates, numbers,
- * or values that aren't both strings).
+ * decimal/long, or undefined when the native comparison operators should be
+ * used instead (real strings, dates, or values that aren't numbers/strings).
+ *
+ * Real (wire) decimal/long values arrive as strings, but public number filters
+ * (e.g. `{ long: { $gt: 5 } }`) supply JS numbers, so both operands are
+ * normalized to their numeric-string form before the exact comparison. Note a
+ * number literal beyond 2^53 is already rounded by JS before it reaches here, so
+ * exactness is only guaranteed for the string-side value and safe-range numbers.
  */
 function numericCompare(
   realValue: unknown,
   expected: unknown,
   propertyType: string | undefined,
 ): number | undefined {
-  if (
-    isNumericStringType(propertyType)
-    && typeof realValue === "string"
-    && typeof expected === "string"
-  ) {
-    return compareNumericStrings(realValue, expected);
+  if (!isNumericStringType(propertyType)) {
+    return undefined;
+  }
+  const r = toComparableNumericString(realValue);
+  const e = toComparableNumericString(expected);
+  if (r == null || e == null) {
+    return undefined;
+  }
+  return compareNumericStrings(r, e);
+}
+
+/**
+ * Normalizes a filter/real value to the numeric-string form `compareNumericStrings`
+ * expects: strings pass through, numbers are stringified, anything else yields
+ * undefined so the caller falls back to native comparison.
+ */
+function toComparableNumericString(value: unknown): string | undefined {
+  if (typeof value === "string") {
+    return value;
+  }
+  if (typeof value === "number") {
+    return String(value);
   }
   return undefined;
 }
