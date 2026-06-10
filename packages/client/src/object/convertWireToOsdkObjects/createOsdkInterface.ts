@@ -45,6 +45,20 @@ export function createOsdkInterface<
       // first to minimize hidden classes
       [UnderlyingOsdkObject]: { value: underlying },
 
+      // Expose each runtime-derived (RDP) property value. These aren't part of
+      // interfaceDef.properties, so copy them from the underlying object (the
+      // RDP type metadata is carried separately via [RdpDefRef] below, so
+      // consumers like orderBy sorting can resolve their numeric types).
+      // Defined before the "$"-metadata descriptors so a derived property can
+      // never clobber them -- a later same-named "$"-descriptor wins.
+      ...Object.fromEntries(
+        Object.keys(underlying[RdpDefRef] ?? {})
+          .map(k => [k, {
+            enumerable: k in underlying,
+            value: underlying[k as keyof typeof underlying],
+          }]),
+      ),
+
       "$apiName": { value: interfaceDef.apiName, enumerable: true },
       "$as": {
         value: underlying.$as,
@@ -105,22 +119,10 @@ export function createOsdkInterface<
 
       [InterfaceDefRef]: { value: interfaceDef },
 
-      // Runtime-derived (RDP) properties aren't part of interfaceDef.properties,
-      // so copy their values from the underlying object and carry the RDP
-      // metadata, so consumers (e.g. orderBy sorting and where-clause filtering)
-      // can read the values and resolve their numeric types.
+      // Carry the RDP type metadata so consumers (e.g. orderBy sorting and
+      // where-clause filtering) can resolve a derived property's numeric type.
+      // The values themselves are spread in above.
       [RdpDefRef]: { value: underlying[RdpDefRef] },
-
-      // Skip any "$"-prefixed RDP name so a derived property can never clobber
-      // the fixed "$"-metadata descriptors defined above (RDP names are
-      // developer-chosen aliases and are never "$"-prefixed in practice).
-      ...Object.fromEntries(
-        Object.keys(underlying[RdpDefRef] ?? {}).filter(k => !k.startsWith("$"))
-          .map(k => [k, {
-            enumerable: k in underlying,
-            value: underlying[k as keyof typeof underlying],
-          }]),
-      ),
 
       ...Object.fromEntries(
         Object.keys(interfaceDef.properties).map(p => {

@@ -293,8 +293,10 @@ describe(createOsdkInterface, () => {
 
   it("does not let a $-prefixed derived property clobber the $-metadata", () => {
     // RDP names are developer-chosen aliases and never $-prefixed in practice,
-    // but a derived property literally named "$title" must not overwrite the
-    // interface's $title accessor.
+    // but a derived property literally named "$apiName" must not overwrite the
+    // interface's $apiName. This discriminates clobbering because the interface
+    // metadata value ("IFoo") differs from the underlying object's value
+    // ("Obj") -- a clobbering RDP would surface "Obj".
     const underlying = {
       "foo": "hi mom",
       "$title": "real title",
@@ -302,7 +304,7 @@ describe(createOsdkInterface, () => {
       "$apiName": "Obj",
 
       [RdpDefRef]: {
-        "$title": {
+        "$apiName": {
           selectedOrCollectedPropertyType: { type: "string" },
           definition: { type: "selection" },
         },
@@ -340,8 +342,8 @@ describe(createOsdkInterface, () => {
       description: undefined,
     });
 
-    // $title remains the interface's title accessor, not the RDP value.
-    expect((iface as any).$title).toBe("real title");
+    // $apiName remains the interface's apiName, not the underlying RDP value.
+    expect((iface as any).$apiName).toBe("IFoo");
   });
 
   it("works with mixed namespaces", () => {

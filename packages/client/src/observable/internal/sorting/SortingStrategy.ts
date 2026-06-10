@@ -108,6 +108,10 @@ export function createOrderBySortFns(
   orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>,
 ): ObjectInterfaceComparer[] {
   return Object.entries(orderBy).map(([key, order]) => {
+    // The declared property type is invariant across the whole sort, so resolve
+    // it once on the first string pair and cache it rather than re-resolving on
+    // every comparison.
+    let isNumeric: boolean | undefined;
     return (
       a: ObjectHolder | InterfaceHolder | undefined,
       b: ObjectHolder | InterfaceHolder | undefined,
@@ -134,9 +138,10 @@ export function createOrderBySortFns(
       // numeric-string-encoded (real strings, dates, etc.) keep the
       // lexicographic comparison, which is correct for them.
       if (typeof aValue === "string" && typeof bValue === "string") {
-        const propertyType = resolvePropertyType(a, key)
-          ?? resolvePropertyType(b, key);
-        if (isStringEncodedNumericType(propertyType)) {
+        isNumeric ??= isStringEncodedNumericType(
+          resolvePropertyType(a, key) ?? resolvePropertyType(b, key),
+        );
+        if (isNumeric) {
           return -m * compareNumericStrings(aValue, bValue);
         }
       }
