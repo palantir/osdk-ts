@@ -244,7 +244,16 @@ Shared tokens for drag handle styling across components.
 
 ### Button
 
-Styling for button components.
+Styling for button components. Buttons use `border: none` with `box-shadow` for visual borders, matching Blueprint's `.bp6-button` convention.
+
+#### Shared
+
+| Variable                    | Default Value                                                                                                                    | Description           |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
+| `--osdk-button-min-height`  | `calc(var(--osdk-surface-spacing) * 7.5)`                                                                                        | Button minimum height |
+| `--osdk-button-border-color`| `transparent`                                                                                                                    | Button border color   |
+| `--osdk-button-border`      | `none`                                                                                                                           | Button border         |
+| `--osdk-button-shadow`      | `inset 0 0 0 1px color-mix(…, --bp-palette-black 20%), 0 1px 1px color-mix(…, --bp-palette-black 10%)`                          | Button box-shadow     |
 
 #### Primary Button
 
@@ -1059,17 +1068,18 @@ Styling for form components.
 
 ### Input
 
-Shared styling for input components.
+Shared styling for input components. Inputs use `box-shadow` for visual borders (matching Blueprint's `.bp6-input` convention). The border is transparent by default; custom themes can set `--osdk-input-border-color` to add a real CSS border.
 
 | Variable                           | Default Value                                                                     | Description             |
 | ---------------------------------- | --------------------------------------------------------------------------------- | ----------------------- |
 | `--osdk-input-min-height`          | `30px`                                                                            | Input minimum height    |
 | `--osdk-input-padding`             | `calc(var(--osdk-surface-spacing) * 1.5) calc(var(--osdk-surface-spacing) * 2.5)` | Input padding           |
 | `--osdk-input-border-radius`       | `var(--osdk-surface-border-radius)`                                               | Input border radius     |
-| `--osdk-input-border-width`        | `var(--osdk-surface-border-width)`                                                | Input border width      |
-| `--osdk-input-border-color`        | `var(--osdk-surface-border-color-default)`                                        | Input border color      |
-| `--osdk-input-border-color-focus`  | `var(--osdk-intent-primary-rest)`                                                 | Input focused border    |
+| `--osdk-input-border-width`        | `1px`                                                                             | Input border width      |
+| `--osdk-input-border-color`        | `transparent`                                                                     | Input border color      |
+| `--osdk-input-border-color-focus`  | `transparent`                                                                     | Input focused border    |
 | `--osdk-input-border-color-error`  | `var(--osdk-intent-danger-rest)`                                                  | Input error border      |
+| `--osdk-input-shadow`              | `inset 0 0 0 1px color-mix(…, --bp-palette-black 20%), inset 0 1px 1px color-mix(…, --bp-palette-black 30%)` | Input box-shadow |
 | `--osdk-input-bg`                  | `var(--osdk-surface-background-color-default-rest)`                               | Input background        |
 | `--osdk-input-bg-hover`            | `var(--osdk-surface-background-color-default-hover)`                              | Input hover background  |
 | `--osdk-input-color`               | `var(--osdk-typography-color-default-rest)`                                       | Input text color        |
@@ -1195,10 +1205,11 @@ Styling for radio button components.
 
 ### Select
 
-Styling for select components.
+Styling for select components. The select trigger uses `box-shadow` (via `--osdk-button-shadow`) for its visual border, matching Blueprint's convention.
 
 | Variable                         | Default Value | Description          |
 | -------------------------------- | ------------- | -------------------- |
+| `--osdk-select-border-width`     | `none`        | Trigger border       |
 | `--osdk-select-popup-max-height` | `320px`       | Popup maximum height |
 
 ### Switch
