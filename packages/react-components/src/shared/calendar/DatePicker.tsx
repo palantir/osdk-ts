@@ -17,7 +17,7 @@
 import { Input } from "@base-ui/react/input";
 import { Popover } from "@base-ui/react/popover";
 import classnames from "classnames";
-import React, { useCallback, useId, useRef, useState } from "react";
+import React, { useCallback, useId, useMemo, useRef, useState } from "react";
 import {
   type DatePickerShortcut,
   formatDateForInput,
@@ -133,20 +133,13 @@ export interface DatePickerProps {
   modal?: "trap-focus" | false;
 
   /**
-   * Opt-in relative-range shortcut rail rendered alongside the calendar.
+   * Opt-in relative-date shortcut rail rendered alongside the calendar.
    * `true` renders the built-in default shortcuts; an array renders exactly
    * those {@link DatePickerShortcut}s in order; `false` / omitted hides the
-   * rail.
+   * rail. Clicking a shortcut commits its date (wall-clock time stripped when
+   * `showTime` is false).
    */
   shortcuts?: boolean | DatePickerShortcut[];
-
-  /**
-   * Overrides how a clicked shortcut is applied. Receives the absolute
-   * `{ min, max }` range the shortcut resolved to. When omitted, the picker
-   * commits `min` as the selected date (wall-clock time stripped when
-   * `showTime` is false). Range bounds pass this to apply both ends at once.
-   */
-  onShortcutSelect?: (range: { min: Date; max: Date }) => void;
 }
 
 export const DatePicker: React.NamedExoticComponent<DatePickerProps> = React
@@ -168,7 +161,6 @@ export const DatePicker: React.NamedExoticComponent<DatePickerProps> = React
     modal = "trap-focus",
     disabled = false,
     shortcuts,
-    onShortcutSelect,
   }: DatePickerProps) {
     const isModal = modal !== false;
     const shouldCloseOnSelection = closeOnSelection ?? !showTime;
@@ -305,22 +297,30 @@ export const DatePicker: React.NamedExoticComponent<DatePickerProps> = React
       inputRef.current?.blur();
     }, [stopEditing]);
 
-    const resolvedShortcuts = resolveDateShortcuts(shortcuts);
+    const resolvedShortcuts = useMemo(
+      () => resolveDateShortcuts(shortcuts),
+      [shortcuts],
+    );
 
     const handleShortcutSelect = useCallback(
-      (range: { min: Date; max: Date }) => {
+      (date: Date) => {
         // Close the picker first so it exits edit mode before the value-sync
         // path runs — otherwise the input keeps any in-progress typing.
         closePopover();
-        if (onShortcutSelect != null) {
-          onShortcutSelect(range);
-        } else {
-          // Default: commit the range start. handleChange's `!showTime` gate
-          // strips wall-clock time to local midnight for date-only pickers.
-          handleChange(range.min);
-        }
+        // handleChange's `!showTime` gate strips wall-clock time to local
+        // midnight for date-only pickers.
+        handleChange(date);
       },
-      [closePopover, onShortcutSelect, handleChange],
+      [closePopover, handleChange],
+    );
+
+    const shortcutItems = useMemo(
+      () =>
+        resolvedShortcuts?.map((shortcut) => ({
+          label: shortcut.label,
+          onSelect: () => handleShortcutSelect(shortcut.date(new Date())),
+        })),
+      [resolvedShortcuts, handleShortcutSelect],
     );
 
     const handleKeyDown = useCallback(
@@ -524,12 +524,9 @@ export const DatePicker: React.NamedExoticComponent<DatePickerProps> = React
                   className={commonStyles.osdkDatePickerFocusBoundary}
                 />
               )}
-              {resolvedShortcuts != null && (
+              {shortcutItems != null && (
                 <div className={commonStyles.osdkDatePickerPopoverLeftRail}>
-                  <ShortcutBar
-                    shortcuts={resolvedShortcuts}
-                    onSelect={handleShortcutSelect}
-                  />
+                  <ShortcutBar shortcuts={shortcutItems} />
                 </div>
               )}
               <div className={commonStyles.osdkDatePickerPopoverCalendar}>

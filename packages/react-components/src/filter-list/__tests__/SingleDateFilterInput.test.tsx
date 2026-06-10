@@ -46,10 +46,7 @@ describe("SingleDateFilterInput", () => {
         dateShortcuts={[
           {
             label: "Past week",
-            range: (n) => ({
-              min: new Date(n.getTime() - 7 * 24 * 60 * 60 * 1000),
-              max: n,
-            }),
+            date: (n) => new Date(n.getTime() - 7 * 24 * 60 * 60 * 1000),
           },
         ]}
       />,
@@ -65,7 +62,7 @@ describe("SingleDateFilterInput", () => {
     }
     // SingleDateInput is date-only, so wall-clock time is stripped: the
     // shortcut commits midnight of the period-start day rather than the
-    // exact hh:mm carried by range.min.
+    // exact hh:mm carried by the shortcut's date.
     const periodStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
     const expected = new Date(
       periodStart.getFullYear(),

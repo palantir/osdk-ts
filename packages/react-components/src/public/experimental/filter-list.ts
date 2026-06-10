@@ -30,9 +30,13 @@ export type {
   FilterDefinitionUnion,
   FilterListProps,
 } from "../../filter-list/FilterListApi.js";
-export { DEFAULT_DATE_SHORTCUTS } from "../../filter-list/FilterListItemApi.js";
+export {
+  DEFAULT_DATE_RANGE_SHORTCUTS,
+  DEFAULT_DATE_SHORTCUTS,
+} from "../../filter-list/FilterListItemApi.js";
 export type {
   DatePickerShortcut,
+  DateRangePickerShortcut,
   FilterComponentType,
   FilterDefinitionControls,
   FilterListItemProps,

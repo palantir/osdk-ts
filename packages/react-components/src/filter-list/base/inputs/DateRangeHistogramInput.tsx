@@ -16,7 +16,8 @@
 
 import React, { memo, useCallback, useMemo } from "react";
 import {
-  type DatePickerShortcut,
+  type DateRange,
+  type DateRangePickerShortcut,
   formatDateForInput,
 } from "../../../shared/dateUtils.js";
 import { createDateHistogramBuckets } from "./createDateHistogramBuckets.js";
@@ -54,7 +55,7 @@ interface DateRangeHistogramInputProps {
   formatDate?: (date: Date) => string;
   clickToFilter?: boolean;
   /** Optional relative-range shortcut rail. */
-  dateShortcuts?: boolean | DatePickerShortcut[];
+  dateShortcuts?: boolean | DateRangePickerShortcut[];
 }
 
 function DateRangeHistogramInputInner({
@@ -106,8 +107,8 @@ function DateRangeHistogramInputInner({
   }, [valueCountPairs, formatDate]);
 
   const handleShortcutSelect = useCallback(
-    (range: { min: Date; max: Date }) => {
-      onChange(range.min, range.max);
+    (range: DateRange) => {
+      onChange(range[0] ?? undefined, range[1] ?? undefined);
     },
     [onChange],
   );

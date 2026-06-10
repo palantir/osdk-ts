@@ -62,7 +62,7 @@ describe("DateRangeFilterInput", () => {
     expect(histogramCall![1]).toHaveProperty("where", whereClause);
   });
 
-  it("emits a DATE_RANGE state when a shortcut is clicked in the popover", () => {
+  it("emits a DATE_RANGE state when a shortcut is clicked", () => {
     // Mid-year date avoids DST boundary drift.
     vi.useFakeTimers({ now: new Date(2024, 5, 15, 12, 0, 0, 0) });
     const whereClause = {} as WhereClause<typeof MockObjectType>;
@@ -77,16 +77,13 @@ describe("DateRangeFilterInput", () => {
         dateShortcuts={[
           {
             label: "Past 24 hours",
-            range: (n) => ({
-              min: new Date(n.getTime() - 24 * 60 * 60 * 1000),
-              max: n,
-            }),
+            dateRange: (n) => [new Date(n.getTime() - 24 * 60 * 60 * 1000), n],
           },
         ]}
       />,
     );
-    const [fromCombobox] = screen.getAllByRole("combobox");
-    fireEvent.focus(fromCombobox);
+    // The range shortcut rail renders inline above the From / To inputs, so
+    // no popover needs to be opened to reach it.
     fireEvent.click(screen.getByRole("button", { name: "Past 24 hours" }));
     expect(onFilterStateChanged).toHaveBeenCalledTimes(1);
     const state = onFilterStateChanged.mock.calls[0][0];

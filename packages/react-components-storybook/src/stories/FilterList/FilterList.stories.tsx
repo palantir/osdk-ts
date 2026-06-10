@@ -315,7 +315,7 @@ export const WithDateShortcuts: Story = {
         story:
           "Opt-in `dateShortcuts` rail for DATE_RANGE and SINGLE_DATE filters. "
           + "`true` ships the built-in defaults; an array supplies custom "
-          + "`{ label, range }` shortcuts (e.g. \"Last 6 hours\").",
+          + "shortcuts (`dateRange` for DATE_RANGE, `date` for SINGLE_DATE).",
       },
     },
   },
@@ -337,21 +337,15 @@ export const WithDateShortcuts: Story = {
           key: "firstFullTimeStartDate",
           label: "Start Date (SINGLE_DATE, custom shortcuts)",
           filterComponent: "SINGLE_DATE",
-          filterState: { type: "DATE_RANGE" },
+          filterState: { type: "SELECT", selectedValues: [] },
           dateShortcuts: [
             {
-              label: "Last 6 hours",
-              range: (now) => ({
-                min: new Date(now.getTime() - 6 * 60 * 60 * 1000),
-                max: now,
-              }),
+              label: "Yesterday",
+              date: (now) => new Date(now.getTime() - 24 * 60 * 60 * 1000),
             },
             {
-              label: "Past week",
-              range: (now) => ({
-                min: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000),
-                max: now,
-              }),
+              label: "Last week",
+              date: (now) => new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000),
             },
           ],
         },
@@ -361,7 +355,7 @@ export const WithDateShortcuts: Story = {
           key: "firstFullTimeStartDate",
           label: "Start Date (SINGLE_DATE, no shortcuts)",
           filterComponent: "SINGLE_DATE",
-          filterState: { type: "DATE_RANGE" },
+          filterState: { type: "SELECT", selectedValues: [] },
         },
       ],
       [],
@@ -419,7 +413,7 @@ function WithDateShortcutsVerificationStory(
         key: "firstFullTimeStartDate",
         label: "Start Date (SINGLE_DATE, all shortcuts)",
         filterComponent: "SINGLE_DATE",
-        filterState: { type: "DATE_RANGE" },
+        filterState: { type: "SELECT", selectedValues: [] },
         dateShortcuts: true,
       },
     ],

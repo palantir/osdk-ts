@@ -24,6 +24,8 @@ import type {
 import type { ReactNode } from "react";
 import {
   type DatePickerShortcut,
+  type DateRangePickerShortcut,
+  DEFAULT_DATE_RANGE_SHORTCUTS,
   DEFAULT_DATE_SHORTCUTS,
 } from "../shared/dateUtils.js";
 import type { CustomFilterState } from "./types/CustomRendererTypes.js";
@@ -33,7 +35,12 @@ import type {
   LinkedPropertyFilterState,
 } from "./types/LinkedFilterTypes.js";
 
-export { type DatePickerShortcut, DEFAULT_DATE_SHORTCUTS };
+export {
+  type DatePickerShortcut,
+  type DateRangePickerShortcut,
+  DEFAULT_DATE_RANGE_SHORTCUTS,
+  DEFAULT_DATE_SHORTCUTS,
+};
 
 /**
  * Helper type to extract the property type from an ObjectTypeDefinition given a property key
@@ -249,15 +256,26 @@ export interface DateFormattingProps {
   formatDate?: (date: Date) => string;
 }
 
-export interface DateShortcutsProps {
+export interface SingleDateShortcutsProps {
   /**
-   * Opt-in relative-range shortcut rail in the date picker popover.
+   * Opt-in relative-date shortcut rail in the date picker popover.
    * `true` renders {@link DEFAULT_DATE_SHORTCUTS}; an array renders exactly
    * those {@link DatePickerShortcut}s in order, letting you supply custom
-   * labels and ranges (e.g. "Last 6 hours"). Stored `FilterState` remains
+   * labels and dates (e.g. "Yesterday"). Stored `FilterState` remains
    * absolute.
    */
   dateShortcuts?: boolean | DatePickerShortcut[];
+}
+
+export interface RangeDateShortcutsProps {
+  /**
+   * Opt-in relative-range shortcut rail above the From / To inputs.
+   * `true` renders {@link DEFAULT_DATE_RANGE_SHORTCUTS}; an array renders
+   * exactly those {@link DateRangePickerShortcut}s in order, letting you
+   * supply custom labels and ranges (e.g. "Last 6 hours"). Stored
+   * `FilterState` remains absolute.
+   */
+  dateShortcuts?: boolean | DateRangePickerShortcut[];
 }
 
 /** Filter components that support the shortcuts rail. */
@@ -267,14 +285,16 @@ export type FilterComponentsSupportingDateShortcuts =
 
 /**
  * Adds `formatDate` / `dateShortcuts` only for date-typed properties.
- * `dateShortcuts` is further gated to DATE_RANGE / SINGLE_DATE.
+ * `dateShortcuts` is further gated to DATE_RANGE (range shortcuts) and
+ * SINGLE_DATE (single-date shortcuts).
  */
 export type PropertyFilterDateExtras<
   P extends WirePropertyTypes,
   C extends FilterComponentType = FilterComponentType,
 > = P extends "datetime" | "timestamp" ?
     & DateFormattingProps
-    & (C extends FilterComponentsSupportingDateShortcuts ? DateShortcutsProps
+    & (C extends "DATE_RANGE" ? RangeDateShortcutsProps
+      : C extends "SINGLE_DATE" ? SingleDateShortcutsProps
       : { dateShortcuts?: never })
   : { formatDate?: never; dateShortcuts?: never };
 
@@ -390,9 +410,10 @@ export type PropertyFilterDefinition<
   C extends ValidComponentsForPropertyType<
     PropertyTypeFromKey<Q, K>
   > = ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>>,
-> =
-  & PropertyFilterDefinitionBase<Q, K, C>
-  & PropertyFilterDateExtras<PropertyTypeFromKey<Q, K>, C>;
+> = C extends FilterComponentType ?
+    & PropertyFilterDefinitionBase<Q, K, C>
+    & PropertyFilterDateExtras<PropertyTypeFromKey<Q, K>, C>
+  : never;
 
 /**
  * Props for a single filter list item component.

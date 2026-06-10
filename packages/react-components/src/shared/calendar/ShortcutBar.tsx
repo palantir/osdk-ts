@@ -17,24 +17,33 @@
 import classnames from "classnames";
 import React, { memo } from "react";
 import { ActionButton } from "../../base-components/action-button/ActionButton.js";
-import type { DatePickerShortcut } from "../dateUtils.js";
 import styles from "./ShortcutBar.module.css";
 
+/** A single shortcut button: a label plus the action to run on click. */
+export interface ShortcutBarItem {
+  label: string;
+  onSelect: () => void;
+}
+
 export interface ShortcutBarProps {
-  shortcuts: readonly DatePickerShortcut[];
-  /** Called with the absolute range the clicked shortcut resolves to. */
-  onSelect: (range: { min: Date; max: Date }) => void;
+  shortcuts: readonly ShortcutBarItem[];
+  /** Stacks buttons in a column (default) or a wrapping row. */
+  orientation?: "vertical" | "horizontal";
   className?: string;
 }
 
 function ShortcutBarInner({
   shortcuts,
-  onSelect,
+  orientation = "vertical",
   className,
 }: ShortcutBarProps): React.ReactElement {
   return (
     <div
-      className={classnames(styles.bar, className)}
+      className={classnames(
+        styles.bar,
+        orientation === "horizontal" && styles.barHorizontal,
+        className,
+      )}
       role="group"
       aria-label="Relative date shortcuts"
     >
@@ -44,7 +53,7 @@ function ShortcutBarInner({
           type="button"
           appearance="minimal"
           className={styles.shortcut}
-          onClick={() => onSelect(shortcut.range(new Date()))}
+          onClick={shortcut.onSelect}
         >
           {shortcut.label}
         </ActionButton>

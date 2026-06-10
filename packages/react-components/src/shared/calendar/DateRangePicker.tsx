@@ -20,6 +20,7 @@ import classnames from "classnames";
 import React, { useCallback, useId, useRef, useState } from "react";
 import type { DateRange as RdpDateRange } from "react-day-picker";
 import {
+  type DateRange,
   formatDateForInput,
   formatDatetimeForInput,
   parseDateFromInput,
@@ -36,11 +37,7 @@ import { LazyDateRangeCalendar } from "./LazyDateRangeCalendar.js";
 import { TimePicker } from "./TimePicker.js";
 import { useDateEditState } from "./useDateEditState.js";
 
-/**
- * A date range represented as a start/end tuple. Either element may be
- * `null` when the range is partially selected.
- */
-export type DateRange = readonly [Date | null, Date | null];
+export type { DateRange };
 
 /** Default empty range — both bounds are null. */
 export const EMPTY_RANGE: DateRange = [null, null];

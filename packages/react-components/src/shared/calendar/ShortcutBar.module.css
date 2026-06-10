@@ -21,6 +21,12 @@
   gap: var(--osdk-filter-input-gap);
 }
 
+.barHorizontal {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
 .shortcut {
   justify-content: flex-start;
   text-align: left;
