@@ -745,6 +745,16 @@ export const MultipleSelection: Story = {
     for (const rowCheckbox of rowCheckboxes) {
       await expect(rowCheckbox).toBeChecked();
     }
+
+    // Everything is selected, so the header label is "Deselect all rows" again.
+    // Clicking it clears the entire selection.
+    const deselectAllCheckbox = await canvas.findByRole("checkbox", {
+      name: /deselect all rows/i,
+    });
+    await userEvent.click(deselectAllCheckbox);
+    for (const rowCheckbox of rowCheckboxes) {
+      await expect(rowCheckbox).not.toBeChecked();
+    }
   },
 };
 
