@@ -62,6 +62,8 @@
     "husky": "^9.1.7",
     "lint-staged": "^15.5.2",
     "micromatch": "^4.0.8",
+    "oxlint": "^1.68.0",
+    "oxlint-tsgolint": "^0.23.0",
     "postcss": "^8.5.6",
     "postcss-cli": "^11.0.1",
     "postcss-import": "^16.1.1",
@@ -92,6 +94,8 @@
       "dprint",
       "esbuild",
       "msw",
+      "oxlint",
+      "oxlint-tsgolint",
       "unrs-resolver"
     ],
     "overrides": {

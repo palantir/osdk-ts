@@ -27,7 +27,13 @@
         "tsconfig.json"
       ],
       "outputs": [],
-      "dependsOn": ["//#global-eslint-config", "//#dprint", "codegen", "^transpileTypes"]
+      "dependsOn": [
+        "//#global-eslint-config",
+        "//#global-oxlint-config",
+        "//#dprint",
+        "codegen",
+        "^transpileTypes"
+      ]
     },
 
     /* Psuedo task to let us depend on dprint config */
@@ -61,6 +67,11 @@
 
     "//#global-eslint-config": {
       "inputs": ["eslint.config.mjs"]
+    },
+
+    /* Psuedo task to let oxlint-linted packages depend on the global oxlint config */
+    "//#global-oxlint-config": {
+      "inputs": [".oxlintrc.json", "plugins/oxlint-plugin-header.js"]
     },
 
     "clean": {
