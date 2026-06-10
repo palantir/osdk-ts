@@ -14,8 +14,8 @@
   /* First two layers are 0-opacity placeholders that maintain shadow layer
      count for smooth CSS transitions when focus adds a visible glow. */
   --osdk-input-shadow:
-    0 0 0 0 rgba(33, 93, 176, 0),
-    0 0 0 0 rgba(33, 93, 176, 0),
+    0 0 0 0 color-mix(in srgb, var(--bp-intent-primary-rest) 0%, transparent),
+    0 0 0 0 color-mix(in srgb, var(--bp-intent-primary-rest) 0%, transparent),
     inset 0 0 0 1px color-mix(in oklch, var(--bp-palette-black) 20%, transparent),
     inset 0 1px 1px color-mix(in oklch, var(--bp-palette-black) 30%, transparent);
 
@@ -48,10 +48,10 @@
 [data-bp-color-scheme="dark"],
 .bp6-dark {
   --osdk-input-shadow:
-    0 0 0 0 rgba(138, 187, 255, 0),
-    0 0 0 0 rgba(138, 187, 255, 0),
-    inset 0 0 0 1px hsla(0, 0%, 100%, 0.2),
-    inset 0 -1px 1px 0 hsla(0, 0%, 100%, 0.3);
+    0 0 0 0 color-mix(in srgb, var(--bp-intent-primary-rest) 0%, transparent),
+    0 0 0 0 color-mix(in srgb, var(--bp-intent-primary-rest) 0%, transparent),
+    inset 0 0 0 1px color-mix(in oklch, var(--bp-palette-white) 20%, transparent),
+    inset 0 -1px 1px 0 color-mix(in oklch, var(--bp-palette-white) 30%, transparent);
   --osdk-input-bg: color-mix(in srgb, var(--osdk-palette-black) 30%, transparent);
   --osdk-input-color: var(--osdk-palette-light-gray-5);
 }
