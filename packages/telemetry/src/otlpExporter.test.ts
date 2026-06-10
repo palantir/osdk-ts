@@ -25,7 +25,7 @@ import {
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createFoundryLogExporter } from "./otlpExporter.js";
 
-const ENDPOINT = "https://example.com/api/v1/observability/logs";
+const ENDPOINT = "https://example.com/api/v2/observability/otlp/v1/logs";
 
 /** Emit a single record through the SDK to obtain a valid ReadableLogRecord. */
 function captureRecord(): ReadableLogRecord {
@@ -88,7 +88,7 @@ describe("createFoundryLogExporter", () => {
     vi.unstubAllGlobals();
   });
 
-  it("posts protobuf to the Foundry endpoint with keepalive", async () => {
+  it("posts JSON to the Foundry endpoint with keepalive", async () => {
     const exporter = createFoundryLogExporter({
       baseUrl: "https://example.com/",
       tokenProvider: async () => "tok",
@@ -100,7 +100,7 @@ describe("createFoundryLogExporter", () => {
     const [url, init] = fetchFn.mock.calls[0];
     expect(String(url)).toBe(ENDPOINT);
     expect(init?.keepalive).toBe(true);
-    expect(headersOf(init)["Content-Type"]).toBe("application/x-protobuf");
+    expect(headersOf(init)["Content-Type"]).toBe("application/json");
   });
 
   it("requests a fresh bearer on every export", async () => {
@@ -123,7 +123,7 @@ describe("createFoundryLogExporter", () => {
     );
   });
 
-  it("still exports without auth when the token provider rejects", async () => {
+  it("fails without a network call when no token is ever available", async () => {
     const exporter = createFoundryLogExporter({
       baseUrl: "https://example.com/",
       tokenProvider: async () => {
@@ -131,9 +131,66 @@ describe("createFoundryLogExporter", () => {
       },
     });
 
-    await expect(exportOnce(exporter, captureRecord())).resolves
-      .toBeUndefined();
+    await expect(exportOnce(exporter, captureRecord())).rejects.toThrow();
+    expect(fetchFn).not.toHaveBeenCalled();
+  });
+
+  it("opens the circuit after two 401s and stops calling the gateway", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    fetchFn.mockResolvedValue(new Response(null, { status: 401 }));
+    const exporter = createFoundryLogExporter({
+      baseUrl: "https://example.com/",
+      tokenProvider: async () => "tok",
+    });
+    const record = captureRecord();
+
+    await exportOnce(exporter, record).catch(() => {});
+    await exportOnce(exporter, record).catch(() => {});
+    const callsAfterOpen = fetchFn.mock.calls.length;
+    await exportOnce(exporter, record);
+
+    expect(fetchFn.mock.calls.length).toBe(callsAfterOpen);
+    warn.mockRestore();
+  });
+
+  it("opens the circuit immediately on a 400", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    fetchFn.mockResolvedValue(new Response(null, { status: 400 }));
+    const exporter = createFoundryLogExporter({
+      baseUrl: "https://example.com/",
+      tokenProvider: async () => "tok",
+    });
+    const record = captureRecord();
+
+    await exportOnce(exporter, record).catch(() => {});
+    await exportOnce(exporter, record);
+
     expect(fetchFn).toHaveBeenCalledTimes(1);
-    expect(headersOf(fetchFn.mock.calls[0][1]).Authorization).toBeUndefined();
+    expect(warn).toHaveBeenCalledOnce();
+    warn.mockRestore();
+  });
+
+  it("uses the cached token synchronously on unload", async () => {
+    const tokenProvider = vi.fn(async () => "tok");
+    const exporter = createFoundryLogExporter({
+      baseUrl: "https://example.com/",
+      tokenProvider,
+    });
+    const record = captureRecord();
+
+    await exportOnce(exporter, record);
+    vi.stubGlobal("document", { visibilityState: "hidden" });
+    try {
+      await exportOnce(exporter, record);
+    } finally {
+      vi.unstubAllGlobals();
+      vi.stubGlobal("fetch", fetchFn);
+    }
+
+    expect(fetchFn).toHaveBeenCalledTimes(2);
+    expect(tokenProvider).toHaveBeenCalledTimes(1);
+    expect(headersOf(fetchFn.mock.calls[1][1]).Authorization).toBe(
+      "Bearer tok",
+    );
   });
 });

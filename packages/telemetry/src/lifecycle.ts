@@ -20,35 +20,66 @@ export interface Lifecycle {
 }
 
 /**
- * Wire `onUnload` to the `pagehide` event; `createLoggingClient` points it at
- * the provider's `forceFlush`. `pagehide` is preferred over
- * `beforeunload`/`unload` because it fires reliably on mobile and on bfcache
- * navigation. When no event target is available (for example in Node), this is
- * a no-op so the package stays importable outside the browser.
+ * Flush buffered logs on `visibilitychange` to hidden (primary) and `pagehide`
+ * (backup; pagehide alone is unreliable on mobile). Both can fire on one
+ * teardown, so the flush runs once per hidden episode and re-arms on visible.
+ * No-op outside the browser so the package stays importable in Node.
  */
 export function registerLifecycle(
   onUnload: () => void,
-  target: EventTarget | undefined = defaultTarget(),
+  target: EventTarget | undefined = defaultWindow(),
 ): Lifecycle {
-  if (target == null) {
-    return { unregister(): void {} };
-  }
+  const cleanups: Array<() => void> = [];
+  let flushedWhileHidden = false;
 
-  const handler = (): void => {
+  const flushOnce = (): void => {
+    if (flushedWhileHidden) {
+      return;
+    }
+    flushedWhileHidden = true;
     onUnload();
   };
-  target.addEventListener("pagehide", handler);
+
+  if (target != null) {
+    const onPageHide = (): void => flushOnce();
+    target.addEventListener("pagehide", onPageHide);
+    cleanups.push(() => target.removeEventListener("pagehide", onPageHide));
+  }
+
+  const doc = defaultDocument();
+  if (doc != null) {
+    const onVisibilityChange = (): void => {
+      if (doc.visibilityState === "hidden") {
+        flushOnce();
+      } else {
+        flushedWhileHidden = false;
+      }
+    };
+    doc.addEventListener("visibilitychange", onVisibilityChange);
+    cleanups.push(() =>
+      doc.removeEventListener("visibilitychange", onVisibilityChange)
+    );
+  }
 
   return {
     unregister(): void {
-      target.removeEventListener("pagehide", handler);
+      for (const teardown of cleanups) {
+        teardown();
+      }
     },
   };
 }
 
-function defaultTarget(): EventTarget | undefined {
+function defaultWindow(): EventTarget | undefined {
   if (typeof window !== "undefined") {
     return window;
+  }
+  return undefined;
+}
+
+function defaultDocument(): Document | undefined {
+  if (typeof document !== "undefined") {
+    return document;
   }
   return undefined;
 }

@@ -14,11 +14,38 @@
  * limitations under the License.
  */
 
+import { ROOT_CONTEXT, trace, TraceFlags } from "@opentelemetry/api";
 import type { Logger as OtelLogger } from "@opentelemetry/api-logs";
 import type { LogContext, LogSeverity } from "./attributes.js";
 import { buildLogRecord } from "./attributes.js";
 import type { SerializedError } from "./errorSerializer.js";
 import { serializeError } from "./errorSerializer.js";
+
+/** Public emission threshold; records below it are dropped at the call site. */
+export type MinimumLevel = "debug" | "info" | "warn" | "error";
+
+/**
+ * Supplies the trace/span ids stamped as each record's span context, so the SDK
+ * sets the native OTLP `trace_id`/`span_id` fields FTS reads (and rejects empty).
+ */
+export type SpanContextProvider = () =>
+  | { traceId: string; spanId: string }
+  | undefined;
+
+/** Severity ordering used to compare a record's level against the threshold. */
+const SEVERITY_RANK: Record<LogSeverity, number> = {
+  DEBUG: 0,
+  INFO: 1,
+  WARN: 2,
+  ERROR: 3,
+};
+
+const MINIMUM_LEVEL_RANK: Record<MinimumLevel, number> = {
+  debug: 0,
+  info: 1,
+  warn: 2,
+  error: 3,
+};
 
 /**
  * The public logging surface returned by `createLoggingClient`.
@@ -37,10 +64,7 @@ export interface Logger {
   shutdown(): Promise<void>;
 }
 
-/**
- * The OTel-side dependencies a {@link Logger} drives. Kept as a small seam so
- * the public surface can be unit-tested without standing up a provider.
- */
+/** The OTel-side dependencies a {@link Logger} drives. */
 export interface LoggerBackend {
   /** The OTel logger obtained from the provider; receives every record. */
   otelLogger: OtelLogger;
@@ -50,14 +74,41 @@ export interface LoggerBackend {
   shutdown(): Promise<void>;
 }
 
-export function createLogger(backend: LoggerBackend): Logger {
+export interface CreateLoggerOptions {
+  /** Lowest level to emit; defaults to `"debug"`. */
+  minimumLevel?: MinimumLevel;
+  /** Span context stamped on each record so the SDK sets native trace ids. */
+  spanContextProvider?: SpanContextProvider;
+}
+
+export function createLogger(
+  backend: LoggerBackend,
+  options: CreateLoggerOptions = {},
+): Logger {
+  const threshold = MINIMUM_LEVEL_RANK[options.minimumLevel ?? "debug"];
+  const spanContextProvider = options.spanContextProvider;
+
   function emit(
     severity: LogSeverity,
     message: string,
     context?: LogContext,
     error?: SerializedError,
   ): void {
-    backend.otelLogger.emit(buildLogRecord(severity, message, context, error));
+    // Gate before building the record so suppressed logs never enter the queue.
+    if (SEVERITY_RANK[severity] < threshold) {
+      return;
+    }
+    const record = buildLogRecord(severity, message, context, error);
+    const span = spanContextProvider?.();
+    if (span != null) {
+      record.context = trace.setSpanContext(ROOT_CONTEXT, {
+        traceId: span.traceId,
+        spanId: span.spanId,
+        traceFlags: TraceFlags.SAMPLED,
+        isRemote: false,
+      });
+    }
+    backend.otelLogger.emit(record);
   }
 
   const error = (

@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-/**
- * A flattened, JSON-serializable representation of an {@link Error}. Mirrors the
- * `SerializedError` shape in the upstream `Log.write` contract (plan §4.4).
- */
+/** A flattened, JSON-serializable representation of an {@link Error}. */
 export interface SerializedError {
   name: string;
   message: string;
@@ -73,7 +70,8 @@ export function extractOriginatingCode(
   }
   for (const line of error.stack.split("\n")) {
     const trimmed = line.trim();
-    if (trimmed.startsWith("at ")) {
+    // V8: "at fn (file:line:col)"; Firefox/Safari: "fn@file:line:col".
+    if (trimmed.startsWith("at ") || /@.+:\d+/.test(trimmed)) {
       return trimmed;
     }
   }

@@ -19,7 +19,7 @@ import { symbolClientContext } from "@osdk/shared.client2";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createLoggingClient } from "./createLoggingClient.js";
 
-const ENDPOINT = "https://example.com/api/v1/observability/logs";
+const ENDPOINT = "https://example.com/api/v2/observability/otlp/v1/logs";
 
 function makeClient(
   tokenProvider: () => Promise<string> = vi.fn().mockResolvedValue("tok"),
@@ -82,7 +82,7 @@ describe("createLoggingClient", () => {
     expect(String(url)).toBe(ENDPOINT);
     const headers = headersOf(init);
     expect(headers.Authorization).toBe("Bearer tok");
-    expect(headers["Content-Type"]).toBe("application/x-protobuf");
+    expect(headers["Content-Type"]).toBe("application/json");
 
     await logger.shutdown();
   });
@@ -148,7 +148,7 @@ describe("createLoggingClient", () => {
 
   it("throws when no applicationRid is provided or on the client", () => {
     expect(() => createLoggingClient({ client: makeClient() })).toThrowError(
-      /mandatory attribute/,
+      /applicationRid/,
     );
   });
 
@@ -156,8 +156,7 @@ describe("createLoggingClient", () => {
     const logger = createLoggingClient({
       client: makeClient(),
       applicationRid: "ri.app",
-      beforeSend: (record) =>
-        record.attributes.message === "secret" ? null : record,
+      beforeSend: (record) => record.message === "secret" ? null : record,
     });
 
     logger.info("keep");

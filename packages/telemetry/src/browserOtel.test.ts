@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-export type { AttributeValue, LogContext, LogSeverity } from "./attributes.js";
-export type { CreateLoggingClientOptions } from "./createLoggingClient.js";
-export { createLoggingClient } from "./createLoggingClient.js";
-export type { SerializedError } from "./errorSerializer.js";
-export { serializeError } from "./errorSerializer.js";
-export type { Logger, MinimumLevel, SpanContextProvider } from "./logger.js";
-export type { BeforeSendHook, RedactableRecord } from "./redactionProcessor.js";
+import { describe, expect, it } from "vitest";
+import { BatchLogRecordProcessor, OTLPLogExporter } from "./browserOtel.js";
+
+// Smoke test for the version-internal `build/src/platform/browser/...` deep
+// imports: if an OTel version bump moves or removes those paths, this fails
+// loudly here rather than at a consumer.
+describe("browserOtel deep imports", () => {
+  it("resolves the pinned browser OTLPLogExporter and BatchLogRecordProcessor", () => {
+    expect(typeof OTLPLogExporter).toBe("function");
+    expect(typeof BatchLogRecordProcessor).toBe("function");
+  });
+});

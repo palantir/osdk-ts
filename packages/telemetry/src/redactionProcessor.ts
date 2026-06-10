@@ -14,35 +14,38 @@
  * limitations under the License.
  */
 
-import type { LogRecordProcessor, SdkLogRecord } from "@opentelemetry/sdk-logs";
-import { TRACE_ID } from "./foundryAttributes.js";
+import type { LogRecordProcessor } from "@opentelemetry/sdk-logs";
+import { LOG_MESSAGE, LOG_TAGS } from "./foundryAttributes.js";
+
+/** The view of a record passed to {@link BeforeSendHook}. */
+export interface RedactableRecord {
+  readonly severity: string | undefined;
+  /** Reassign to redact the message. */
+  message: string;
+  /** Mutate or replace entries to redact fields. */
+  tags: Record<string, string>;
+}
 
 /**
  * Redaction hook. Runs on each emitted record before it reaches the batch
  * processor. Return the (optionally mutated) record to keep it, or `null` to
- * drop it. The record carries the Foundry attribute keys (`LOG_MESSAGE`,
- * `LOG_TAGS`); use `record.setAttribute` to scrub fields in place.
+ * drop it.
  */
-export type BeforeSendHook = (record: SdkLogRecord) => SdkLogRecord | null;
-
-/**
- * OTEL-3 SEAM. Supplies an externally managed trace id to stamp onto each
- * record (as the `TRACE_ID` attribute, since `spanContext` is read-only).
- * Returning `undefined` leaves the record untouched. The default is a no-op.
- */
-export type TraceIdProvider = () => string | undefined;
+export type BeforeSendHook = (
+  record: RedactableRecord,
+) => RedactableRecord | null;
 
 export interface PreExportProcessorOptions {
   /** The downstream processor (the batch processor) records are forwarded to. */
   next: LogRecordProcessor;
   beforeSend?: BeforeSendHook;
-  traceIdProvider?: TraceIdProvider;
 }
 
 /**
- * A {@link LogRecordProcessor} that sits in front of the batch processor:
- * it stamps an optional trace id, applies the optional {@link BeforeSendHook}
- * (dropping records the hook rejects), and forwards survivors to `next`.
+ * A {@link LogRecordProcessor} that sits in front of the batch processor: it
+ * applies the optional {@link BeforeSendHook} (dropping records the hook
+ * rejects, writing edits back onto the record) and forwards survivors to
+ * `next`.
  *
  * This is the only processor registered with the `LoggerProvider`; the batch
  * processor is reached exclusively through here, so redaction cannot be
@@ -51,22 +54,20 @@ export interface PreExportProcessorOptions {
 export function createPreExportProcessor(
   options: PreExportProcessorOptions,
 ): LogRecordProcessor {
-  const { next, beforeSend, traceIdProvider } = options;
+  const { next, beforeSend } = options;
   return {
     onEmit(record, context): void {
-      if (traceIdProvider != null) {
-        const traceId = traceIdProvider();
-        if (traceId != null) {
-          record.setAttribute(TRACE_ID, traceId);
-        }
-      }
       if (beforeSend != null) {
-        const kept = beforeSend(record);
+        const kept = beforeSend({
+          severity: record.severityText,
+          message: readString(record.attributes[LOG_MESSAGE]),
+          tags: readTags(record.attributes[LOG_TAGS]),
+        });
         if (kept == null) {
           return;
         }
-        next.onEmit(kept, context);
-        return;
+        record.setAttribute(LOG_MESSAGE, kept.message);
+        record.setAttribute(LOG_TAGS, kept.tags);
       }
       next.onEmit(record, context);
     },
@@ -77,4 +78,21 @@ export function createPreExportProcessor(
       return next.shutdown();
     },
   };
+}
+
+function readString(value: unknown): string {
+  return typeof value === "string" ? value : "";
+}
+
+function readTags(value: unknown): Record<string, string> {
+  if (value == null || typeof value !== "object") {
+    return {};
+  }
+  const tags: Record<string, string> = {};
+  for (const [key, entry] of Object.entries(value)) {
+    if (typeof entry === "string") {
+      tags[key] = entry;
+    }
+  }
+  return tags;
 }

@@ -17,7 +17,7 @@
 import type { LogRecordProcessor, SdkLogRecord } from "@opentelemetry/sdk-logs";
 import { LoggerProvider } from "@opentelemetry/sdk-logs";
 import { describe, expect, it } from "vitest";
-import { TRACE_ID } from "./foundryAttributes.js";
+import { LOG_MESSAGE, LOG_TAGS } from "./foundryAttributes.js";
 import type { PreExportProcessorOptions } from "./redactionProcessor.js";
 import { createPreExportProcessor } from "./redactionProcessor.js";
 
@@ -47,7 +47,7 @@ function emitMessages(
   const provider = new LoggerProvider({ processors: [processor] });
   const logger = provider.getLogger("test");
   for (const message of messages) {
-    logger.emit({ body: message, attributes: { message } });
+    logger.emit({ body: message, attributes: { [LOG_MESSAGE]: message } });
   }
 }
 
@@ -57,7 +57,7 @@ describe("createPreExportProcessor", () => {
     emitMessages({ next }, ["a", "b"]);
 
     expect(emitted).toHaveLength(2);
-    expect(emitted.map((r) => r.attributes.message)).toEqual(["a", "b"]);
+    expect(emitted.map((r) => r.attributes[LOG_MESSAGE])).toEqual(["a", "b"]);
   });
 
   it("drops records that beforeSend returns null for", () => {
@@ -65,46 +65,50 @@ describe("createPreExportProcessor", () => {
     emitMessages(
       {
         next,
-        beforeSend: (record) =>
-          record.attributes.message === "secret" ? null : record,
+        beforeSend: (record) => record.message === "secret" ? null : record,
       },
       ["keep", "secret"],
     );
 
     expect(emitted).toHaveLength(1);
-    expect(emitted[0].attributes.message).toBe("keep");
+    expect(emitted[0].attributes[LOG_MESSAGE]).toBe("keep");
   });
 
-  it("stamps a trace id from the provider onto each record", () => {
+  it("writes beforeSend edits back onto the record", () => {
     const { emitted, next } = makeNext();
-    emitMessages({ next, traceIdProvider: () => "trace-1" }, ["a"]);
+    emitMessages(
+      {
+        next,
+        beforeSend: (record) => ({
+          ...record,
+          message: "[redacted]",
+          tags: { safe: "1" },
+        }),
+      },
+      ["original"],
+    );
 
-    expect(emitted[0].attributes[TRACE_ID]).toBe("trace-1");
+    expect(emitted[0].attributes[LOG_MESSAGE]).toBe("[redacted]");
+    expect(emitted[0].attributes[LOG_TAGS]).toEqual({ safe: "1" });
   });
 
-  it("leaves the record untouched when the trace-id provider returns undefined", () => {
+  it("exposes the severity text to the hook", () => {
     const { emitted, next } = makeNext();
-    emitMessages({ next, traceIdProvider: () => undefined }, ["a"]);
+    const seen: Array<string | undefined> = [];
+    const processor = createPreExportProcessor({
+      next,
+      beforeSend: (record) => {
+        seen.push(record.severity);
+        return record;
+      },
+    });
+    const provider = new LoggerProvider({ processors: [processor] });
+    provider.getLogger("test").emit({
+      body: "hi",
+      severityText: "WARN",
+      attributes: { [LOG_MESSAGE]: "hi" },
+    });
 
-    expect(emitted[0].attributes[TRACE_ID]).toBeUndefined();
-  });
-
-  it("reads the provider per record so the id can change between calls", () => {
-    const { emitted, next } = makeNext();
-    const ids = ["trace-a", "trace-b"];
-    let index = 0;
-    emitMessages({ next, traceIdProvider: () => ids[index++] }, ["a", "b"]);
-
-    expect(emitted.map((r) => r.attributes[TRACE_ID])).toEqual([
-      "trace-a",
-      "trace-b",
-    ]);
-  });
-
-  it("omits the trace id when no provider is supplied", () => {
-    const { emitted, next } = makeNext();
-    emitMessages({ next }, ["a"]);
-
-    expect(emitted[0].attributes[TRACE_ID]).toBeUndefined();
+    expect(seen).toEqual(["WARN"]);
   });
 });

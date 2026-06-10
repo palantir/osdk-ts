@@ -75,6 +75,18 @@ describe("extractOriginatingCode", () => {
       .toBeUndefined();
   });
 
+  it("returns the top frame for a Firefox/Safari stack", () => {
+    const error = {
+      name: "Error",
+      message: "boom",
+      stack: "doWork@https://app.test/main.js:12:5\n"
+        + "onClick@https://app.test/main.js:30:9",
+    };
+    expect(extractOriginatingCode(error)).toBe(
+      "doWork@https://app.test/main.js:12:5",
+    );
+  });
+
   it("returns undefined when the stack carries no frames", () => {
     expect(
       extractOriginatingCode({

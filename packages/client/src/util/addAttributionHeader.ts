@@ -17,25 +17,13 @@
 import { createFetchHeaderMutator } from "@osdk/shared.net.fetch";
 import type { MinimalClient } from "../MinimalClientContext.js";
 
-// cspell:ignore callerrid
-
-/**
- * Single-rid attribution header sent on function, query, and action calls.
- *
- * SEAM: the exact header name and value format are owned by the upstream API
- * Gateway `gw-w3-callerrid` contract. The Gateway resolves the calling app rid
- * as `callerRid` only when this header is present and carries a single resource
- * rid; confirm this name and value format match the gateway's expected
- * attribution header before relying on end-to-end attribution.
- */
+/** Attribution header the gateway reads to attribute a call to the calling app. */
 export const ATTRIBUTION_RID_HEADER = "X-Foundry-Attribution-Rid";
 
 /**
- * Returns a client whose fetch sends the single-rid attribution header so the
- * Gateway can attribute the call to the calling app. Prefers the client's
- * `applicationRid` (OSDK-2) when present and otherwise falls back to the
- * resource rid the call acts on. The header is only sent when an attribution
- * rid is available.
+ * Returns a client whose fetch sends the attribution header, preferring
+ * `applicationRid` and falling back to the ontology rid. Omitted when neither
+ * is set.
  */
 export function addAttributionHeader(client: MinimalClient): MinimalClient {
   return {

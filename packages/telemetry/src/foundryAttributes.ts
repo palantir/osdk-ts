@@ -14,33 +14,13 @@
  * limitations under the License.
  */
 
-// === UPSTREAM CONTRACT (STUB) ===========================================
-// Foundry Telemetry Service (FTS) reads these specific LogRecord attribute
-// keys rather than the stock OTLP `body`/`attributes` layout. The wire keys
-// below are the seam against which this package is built today; when the FTS
-// OTLP ingest contract is finalized, only these constants need reconciling.
-// ========================================================================
+// FTS reads these specific LogRecord attribute keys instead of the stock OTLP
+// body/attributes layout.
 
-/** Record attribute key carrying the human-readable log message. */
-export const LOG_MESSAGE = "message";
+export const LOG_MESSAGE = "LOG_MESSAGE";
 
-/**
- * Record attribute key carrying the structured fields (the caller's context
- * plus any serialized error) as a nested map.
- */
-export const LOG_TAGS = "tags";
+/** Structured fields; FTS reads it as a kvlist of string values (see attributes.ts). */
+export const LOG_TAGS = "LOG_TAGS";
 
-/**
- * Record attribute key carrying an externally supplied trace id. Populated by
- * the trace-id seam (OTEL-3); absent by default.
- */
-export const TRACE_ID = "traceId";
-
-/**
- * Record attribute key carrying the source location of a logged error, which
- * FTS surfaces as `originatingCode`. Populated only on `error` logs, from the
- * top frame of the error's already-captured stack; the info/warn/debug path is
- * never stack-walked, matching how mature loggers (bunyan, log4js) leave
- * per-log source capture off by default because the stack walk is slow.
- */
-export const ORIGINATING_CODE = "originatingCode";
+/** Source location of a logged error; populated only on `error` logs. */
+export const ORIGINATING_CODE = "ORIGINATING_CODE";

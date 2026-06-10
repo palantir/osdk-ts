@@ -22,20 +22,8 @@ import {
   trace,
   TraceFlags,
 } from "@opentelemetry/api";
-import type { SharedClient, SharedClientContext } from "@osdk/shared.client2";
-import { symbolClientContext } from "@osdk/shared.client2";
-import { createLoggingClient } from "@osdk/telemetry";
 import { AsyncLocalStorage } from "node:async_hooks";
-import {
-  afterAll,
-  afterEach,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import {
   addTraceContextHeader,
@@ -44,6 +32,7 @@ import {
   TRACEPARENT_HEADER,
   TRACESTATE_HEADER,
 } from "./addTraceContextHeader.js";
+import { createTraceSource } from "./traceContext.js";
 
 // cspell:ignore owningrid tracestate traceparent
 
@@ -117,6 +106,7 @@ function createFakeClient(
   const client = {
     ontologyRid: "ri.ontology.main.ontology.test",
     applicationRid: config.applicationRid,
+    traceSource: createTraceSource(),
     fetch: fetchMock,
   } as MinimalClient;
   return { client, fetchMock };
@@ -160,10 +150,25 @@ describe("addTraceContextHeader", () => {
     });
   });
 
-  it("omits trace headers when no span is active", async () => {
+  it("emits a page-scoped traceparent when no host span is active", async () => {
     const headers = await captureHeaders({});
-    expect(headers.has(TRACEPARENT_HEADER)).toBe(false);
-    expect(headers.has(TRACESTATE_HEADER)).toBe(false);
+    const traceparent = headers.get(TRACEPARENT_HEADER);
+    expect(traceparent).toMatch(TRACEPARENT_PATTERN);
+    expect(traceparent).not.toContain(TRACE_ID);
+  });
+
+  it("reuses the page trace id across calls until rotated", async () => {
+    const { client, fetchMock } = createFakeClient({});
+    const wrapped = addTraceContextHeader(client);
+    await wrapped.fetch("https://example.test/a", {});
+    await wrapped.fetch("https://example.test/b", {});
+    const first = new Headers(fetchMock.mock.calls[0][1]?.headers).get(
+      TRACEPARENT_HEADER,
+    );
+    const second = new Headers(fetchMock.mock.calls[1][1]?.headers).get(
+      TRACEPARENT_HEADER,
+    );
+    expect(first?.split("-")[1]).toBe(second?.split("-")[1]);
   });
 
   it("adds a palantir@owningrid member when applicationRid is present", async () => {
@@ -217,80 +222,5 @@ describe("getActiveTraceId", () => {
     await context.with(contextWithSpan(), () => {
       expect(getActiveTraceId()).toBe(TRACE_ID);
     });
-  });
-});
-
-function makeSharedClient(): SharedClient {
-  const sharedClientContext: SharedClientContext = {
-    baseUrl: "https://example.test/",
-    fetch: vi.fn<typeof globalThis.fetch>(),
-    tokenProvider: vi.fn().mockResolvedValue("tok"),
-  };
-  return { [symbolClientContext]: sharedClientContext };
-}
-
-// The exporter posts via the global `fetch`; stub it so flush/shutdown never
-// reach the network. Records are captured at emit time via `beforeSend`, which
-// the pre-export processor runs after stamping the trace id.
-describe("trace-context seam (FE log and outbound call)", () => {
-  beforeEach(() => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn<typeof globalThis.fetch>().mockResolvedValue(
-        new Response(null, { status: 200 }),
-      ),
-    );
-  });
-
-  afterEach(() => {
-    vi.unstubAllGlobals();
-  });
-
-  it("stamps the outbound traceparent trace id onto a FE log emitted in the same span", async () => {
-    const traceIds: Array<unknown> = [];
-    const logger = createLoggingClient({
-      client: makeSharedClient(),
-      applicationRid: "ri.app",
-      traceIdProvider: getActiveTraceId,
-      beforeSend: (record) => {
-        traceIds.push(record.attributes.traceId);
-        return record;
-      },
-    });
-
-    const ctx = contextWithSpan();
-    let headerTraceId: string | undefined;
-    await context.with(ctx, async () => {
-      const headers = await captureHeaders({ ctx });
-      headerTraceId = headers.get(TRACEPARENT_HEADER)?.split("-")[1];
-      logger.info("rendered checkout");
-    });
-    await logger.flush();
-
-    expect(headerTraceId).toBe(TRACE_ID);
-    expect(traceIds).toEqual([TRACE_ID]);
-    expect(traceIds[0]).toBe(headerTraceId);
-
-    await logger.shutdown();
-  });
-
-  it("emits a FE log with no trace id when no span is active", async () => {
-    const traceIds: Array<unknown> = [];
-    const logger = createLoggingClient({
-      client: makeSharedClient(),
-      applicationRid: "ri.app",
-      traceIdProvider: getActiveTraceId,
-      beforeSend: (record) => {
-        traceIds.push(record.attributes.traceId);
-        return record;
-      },
-    });
-
-    logger.info("rendered checkout");
-    await logger.flush();
-
-    expect(traceIds).toEqual([undefined]);
-
-    await logger.shutdown();
   });
 });

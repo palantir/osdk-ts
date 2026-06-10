@@ -17,34 +17,27 @@
 import type { Resource } from "@opentelemetry/resources";
 import { resourceFromAttributes } from "@opentelemetry/resources";
 
-// === UPSTREAM CONTRACT (SEAM) ===========================================
-// The Foundry Telemetry Service (FTS) requires every OTLP export to carry
-// exactly one resource, and that resource MUST carry all four attribute keys
-// below. A missing key makes FTS reject the request, so {@link buildResource}
-// throws rather than emitting a partial resource.
-//
-// The attribute key strings are owned by the FTS contract; confirm them
-// against the gateway before relying on end-to-end ingestion.
-// ========================================================================
+// FTS requires exactly one resource carrying all four keys below; a missing key
+// makes it reject the whole export, so buildResource throws on an empty value.
 
 /** OTLP resource attribute: the application RID that owns the trace. */
 export const TRACE_OWNING_RESOURCE_IDENTIFIER =
-  "trace.owning.resource.identifier";
+  "TRACE_OWNING_RESOURCE_IDENTIFIER";
 
 /** OTLP resource attribute: the RID of the resource producing the telemetry. */
-export const PRODUCING_RESOURCE_IDENTIFIER = "producing.resource.identifier";
+export const PRODUCING_RESOURCE_IDENTIFIER = "PRODUCING_RESOURCE_IDENTIFIER";
 
 /** OTLP resource attribute: the version of the producing resource. */
-export const PRODUCING_RESOURCE_VERSION = "producing.resource.version";
+export const PRODUCING_RESOURCE_VERSION = "PRODUCING_RESOURCE_VERSION";
 
 /** OTLP resource attribute: the name of the service producing the telemetry. */
-export const PRODUCING_SERVICE = "producing.service";
+export const PRODUCING_SERVICE = "PRODUCING_SERVICE";
 
 /** Default producing service name when none is supplied. */
-export const DEFAULT_PRODUCING_SERVICE = "@osdk/telemetry";
+export const DEFAULT_PRODUCING_SERVICE = "osdk-frontend";
 
 /** Default producing resource version when none is supplied. */
-export const DEFAULT_PRODUCING_RESOURCE_VERSION = "0.0.0";
+export const DEFAULT_PRODUCING_RESOURCE_VERSION = "unknown";
 
 export interface BuildResourceParams {
   /** The owning application RID; populates `TRACE_OWNING_RESOURCE_IDENTIFIER`. */
@@ -60,12 +53,7 @@ export interface BuildResourceParams {
   producingService?: string;
 }
 
-/**
- * Assemble the one OTel `Resource` attached to a `LoggerProvider`, populating
- * all four mandatory FTS keys and handing them to `@opentelemetry/resources`.
- * Throws if the owning/producing rid is empty, since FTS rejects a resource
- * that is missing any mandatory key.
- */
+/** Build the one OTel `Resource`, populating the four mandatory FTS keys. */
 export function buildResource(params: BuildResourceParams): Resource {
   const producingResourceIdentifier = params.producingResourceIdentifier
     ?? params.applicationRid;

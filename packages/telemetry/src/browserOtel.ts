@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-export type { AttributeValue, LogContext, LogSeverity } from "./attributes.js";
-export type { CreateLoggingClientOptions } from "./createLoggingClient.js";
-export { createLoggingClient } from "./createLoggingClient.js";
-export type { SerializedError } from "./errorSerializer.js";
-export { serializeError } from "./errorSerializer.js";
-export type { Logger, MinimumLevel, SpanContextProvider } from "./logger.js";
-export type { BeforeSendHook, RedactableRecord } from "./redactionProcessor.js";
+// Version-internal browser deep imports, contained here so a pin bump fails in
+// one place (browserOtel.test.ts smoke-imports them). The browser builds post
+// via `fetch` keepalive; nodenext ignores the packages' `browser` field. The
+// exact 0.218.0 pin is load-bearing.
+export { OTLPLogExporter } from "@opentelemetry/exporter-logs-otlp-http/build/src/platform/browser/index.js";
+export { BatchLogRecordProcessor } from "@opentelemetry/sdk-logs/build/src/platform/browser/index.js";

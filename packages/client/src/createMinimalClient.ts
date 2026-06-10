@@ -32,6 +32,7 @@ import {
   createStandardOntologyProviderFactory,
   type OntologyCachingOptions,
 } from "./ontology/StandardOntologyProvider.js";
+import { createTraceSource } from "./util/traceContext.js";
 import { USER_AGENT } from "./util/UserAgent.js";
 
 /** @internal */
@@ -86,6 +87,7 @@ export function createMinimalClient(
     requestContext: {},
     branch: options.branch,
     applicationRid: options.applicationRid,
+    traceSource: createTraceSource(),
     narrowTypeInterfaceOrObjectMapping: {},
   } satisfies Omit<
     MinimalClient,

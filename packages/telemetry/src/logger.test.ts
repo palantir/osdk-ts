@@ -94,7 +94,7 @@ describe("createLogger", () => {
     expect((record.attributes ?? {})[LOG_MESSAGE]).toBe("payment failed");
     const tags = (record.attributes ?? {})[LOG_TAGS] as Record<string, unknown>;
     expect(tags.orderId).toBe("o1");
-    expect((tags.error as Record<string, unknown>).message).toBe("boom");
+    expect(tags["error.message"]).toBe("boom");
   });
 
   it("captures an error via the error-only overload", () => {
@@ -107,7 +107,7 @@ describe("createLogger", () => {
     expect(record.severityNumber).toBe(SeverityNumber.ERROR);
     expect((record.attributes ?? {})[LOG_MESSAGE]).toBe("bad input");
     const tags = (record.attributes ?? {})[LOG_TAGS] as Record<string, unknown>;
-    expect((tags.error as Record<string, unknown>).name).toBe("TypeError");
+    expect(tags["error.name"]).toBe("TypeError");
   });
 
   it("stamps ORIGINATING_CODE from the error stack on error logs", () => {
@@ -128,6 +128,32 @@ describe("createLogger", () => {
     logger.info("booted", { orderId: "o1" });
 
     expect((records[0].attributes ?? {})[ORIGINATING_CODE]).toBeUndefined();
+  });
+
+  it("drops records below minimumLevel at the call site", () => {
+    const { records, backend } = harness();
+    const logger = createLogger(backend, { minimumLevel: "warn" });
+
+    logger.debug("d");
+    logger.info("i");
+    logger.warn("w");
+    logger.error("e");
+
+    expect(records.map((r) => r.severityText)).toEqual(["WARN", "ERROR"]);
+  });
+
+  it("stamps the span context from the provider as the record context", () => {
+    const { records, backend } = harness();
+    const logger = createLogger(backend, {
+      spanContextProvider: () => ({
+        traceId: "0af7651916cd43dd8448eb211c80319c",
+        spanId: "b7ad6b7169203331",
+      }),
+    });
+
+    logger.info("hi");
+
+    expect(records[0].context).toBeDefined();
   });
 
   it("delegates flush to the backend", async () => {

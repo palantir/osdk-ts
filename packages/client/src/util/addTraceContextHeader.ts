@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { context, defaultTextMapSetter, trace } from "@opentelemetry/api";
-import { W3CTraceContextPropagator } from "@opentelemetry/core";
+import { context, trace } from "@opentelemetry/api";
 import { createFetchHeaderMutator } from "@osdk/shared.net.fetch";
 import type { MinimalClient } from "../MinimalClientContext.js";
-
-// cspell:ignore owningrid tracestate traceparent
+import { formatTraceparent } from "./traceContext.js";
 
 /** W3C trace-context headers (https://www.w3.org/TR/trace-context/). */
 export const TRACEPARENT_HEADER = "traceparent";
@@ -32,16 +30,7 @@ export const TRACESTATE_HEADER = "tracestate";
  */
 export const OWNING_RID_TRACESTATE_KEY = "palantir@owningrid";
 
-const propagator = new W3CTraceContextPropagator();
-
-/**
- * The active trace id, or `undefined` when no valid span context is active.
- *
- * SEAM: this is the trace-id source that telemetry's `traceIdProvider` reads so
- * that FE logs emitted during a call share the trace id stamped on that call's
- * `traceparent` header. Both sides read the same global OpenTelemetry context,
- * so the ids match without threading state by hand.
- */
+/** The active host OTel span's trace id, or `undefined` when none is active. */
 export function getActiveTraceId(): string | undefined {
   const spanContext = trace.getSpanContext(context.active());
   if (spanContext == null) {
@@ -53,24 +42,25 @@ export function getActiveTraceId(): string | undefined {
 /**
  * Returns a client whose fetch injects the W3C `traceparent` (and, when an
  * application rid is available, a `tracestate` carrying `palantir@owningrid`) so
- * outbound calls propagate the active trace. Headers are only added when a valid
- * span context is active; otherwise the request is left untouched.
+ * outbound calls propagate a trace. The trace id comes from the active host
+ * OTel span when one exists, otherwise from the client's page-scoped trace
+ * source, so a `traceparent` is emitted even for apps that do not run OTel.
  */
 export function addTraceContextHeader(client: MinimalClient): MinimalClient {
+  const traceSource = client.traceSource;
+  if (traceSource == null) {
+    return client;
+  }
   return {
     ...client,
     fetch: createFetchHeaderMutator(client.fetch, (headers) => {
-      const carrier: Record<string, string> = {};
-      propagator.inject(context.active(), carrier, defaultTextMapSetter);
-
-      const traceparent = carrier[TRACEPARENT_HEADER];
-      if (traceparent == null) {
-        return headers;
-      }
-      headers.set(TRACEPARENT_HEADER, traceparent);
+      headers.set(
+        TRACEPARENT_HEADER,
+        formatTraceparent(traceSource.spanContext()),
+      );
 
       const tracestate = composeTracestate(
-        carrier[TRACESTATE_HEADER],
+        activeTracestate(),
         resolveOwningRid(client),
       );
       if (tracestate != null) {
@@ -79,6 +69,11 @@ export function addTraceContextHeader(client: MinimalClient): MinimalClient {
       return headers;
     }),
   };
+}
+
+/** Serialize any `tracestate` a host app's active span carries, to preserve it. */
+function activeTracestate(): string | undefined {
+  return trace.getSpanContext(context.active())?.traceState?.serialize();
 }
 
 function resolveOwningRid(

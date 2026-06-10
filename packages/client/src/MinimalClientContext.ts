@@ -22,6 +22,7 @@ import type {
 } from "./object/convertWireToOsdkObjects.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
 import type { OntologyProvider } from "./ontology/OntologyProvider.js";
+import type { TraceSource } from "./util/traceContext.js";
 
 declare const tag: unique symbol;
 
@@ -42,6 +43,11 @@ export interface MinimalClient extends SharedClientContext {
    * telemetry emitted by `@osdk/telemetry`.
    */
   applicationRid?: string;
+  /**
+   * Per-client page-scoped trace source. Outbound action/query/function calls
+   * and `@osdk/telemetry` logs read it so they share a trace id and correlate.
+   */
+  traceSource?: TraceSource;
   /** @internal */
   objectSetFactory: ObjectSetFactory<any, any>;
   /** @internal */

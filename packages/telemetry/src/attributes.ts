@@ -83,40 +83,52 @@ export function buildLogRecord(
   };
 }
 
+/**
+ * Build the flat `LOG_TAGS` map. FTS silently drops non-string tag values, so
+ * every value is a string: non-string context leaves are JSON-stringified and
+ * the error is flattened to `error.*` keys.
+ */
 function buildLogTags(
   context: LogContext | undefined,
   error: SerializedError | undefined,
-): LogContext | undefined {
+): Record<string, string> | undefined {
   const normalized = normalizeContext(context);
   if (normalized == null && error == null) {
     return undefined;
   }
-  const tags: LogContext = {};
+  const tags: Record<string, string> = {};
   if (normalized != null) {
-    Object.assign(tags, normalized);
+    for (const [key, value] of Object.entries(normalized)) {
+      tags[key] = toTagString(value);
+    }
   }
   if (error != null) {
-    tags.error = errorToAttributeValue(error);
+    flattenError(error, "error", tags);
   }
   return tags;
 }
 
-/**
- * Convert a {@link SerializedError} into a plain JSON-serializable value so it
- * can sit inside the `LOG_TAGS` attribute map.
- */
-export function errorToAttributeValue(error: SerializedError): AttributeValue {
-  const result: { [key: string]: AttributeValue } = {
-    name: error.name,
-    message: error.message,
-  };
+function toTagString(value: AttributeValue): string {
+  if (typeof value === "string") {
+    return value;
+  }
+  return JSON.stringify(value);
+}
+
+/** Flatten an error to `error.name`/`error.message`/`error.stack`, recursing `cause`. */
+function flattenError(
+  error: SerializedError,
+  prefix: string,
+  out: Record<string, string>,
+): void {
+  out[`${prefix}.name`] = error.name;
+  out[`${prefix}.message`] = error.message;
   if (error.stack != null) {
-    result.stack = error.stack;
+    out[`${prefix}.stack`] = error.stack;
   }
   if (error.cause != null) {
-    result.cause = errorToAttributeValue(error.cause);
+    flattenError(error.cause, `${prefix}.cause`, out);
   }
-  return result;
 }
 
 /**
