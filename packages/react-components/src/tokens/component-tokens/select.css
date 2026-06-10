@@ -1,7 +1,7 @@
 :root {
   /* Select trigger: border is none; visual border comes from box-shadow
      (--osdk-button-shadow) to match Blueprint's convention */
-  --osdk-select-border-width: 0;
+  --osdk-select-border-width: none;
 
   /* Select popup: cap long dropdowns so they scroll inside the popup instead
      of growing to fill the available viewport/dialog height. The component

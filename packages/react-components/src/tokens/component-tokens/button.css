@@ -5,8 +5,8 @@
   --osdk-button-border-color: transparent;
   --osdk-button-border: none;
   --osdk-button-shadow:
-    inset 0 0 0 1px rgba(17, 20, 24, 0.2),
-    0 1px 1px rgba(17, 20, 24, 0.1);
+    inset 0 0 0 1px color-mix(in oklch, var(--bp-palette-black) 20%, transparent),
+    0 1px 1px color-mix(in oklch, var(--bp-palette-black) 10%, transparent);
 
   /* Primary Button */
   --osdk-button-primary-color: var(--osdk-intent-primary-foreground);

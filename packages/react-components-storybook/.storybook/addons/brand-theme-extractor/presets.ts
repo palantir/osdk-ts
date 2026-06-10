@@ -24,8 +24,8 @@ export interface ThemePreset {
   description: string;
   /** The color mode this preset targets. Defaults to "light". */
   colorMode?: ThemeColorMode;
-  /** Grouping in the theme picker dropdown. Defaults to "custom". */
-  category?: ThemePresetCategory;
+  /** Grouping in the theme picker dropdown. */
+  category: ThemePresetCategory;
   /** Preview swatch colors: [background, primary, text] */
   swatches: [string, string, string];
   /** Token assignments for the preset. Empty = use built-in component tokens. */
@@ -92,6 +92,7 @@ export const THEME_PRESETS: ThemePreset[] = [
     label: "DevCon",
     description: "Dark theme with green accents for DevCon demos",
     colorMode: "dark",
+    category: "custom",
     swatches: ["#0a0a0a", "#16a34a", "#86efac"],
     assignments: [
       valueAssignment("background", "#0a0a0a"),
@@ -117,6 +118,7 @@ export const THEME_PRESETS: ThemePreset[] = [
     label: "Midnight Blue",
     description: "Dark theme with blue accents",
     colorMode: "dark",
+    category: "custom",
     swatches: ["#0f172a", "#2563eb", "#e2e8f0"],
     assignments: [
       valueAssignment("background", "#0f172a"),
@@ -142,6 +144,7 @@ export const THEME_PRESETS: ThemePreset[] = [
     id: "warm-sand",
     label: "Warm Sand",
     description: "Warm neutral light theme",
+    category: "custom",
     swatches: ["#faf8f5", "#c2410c", "#44403c"],
     assignments: [
       valueAssignment("background", "#faf8f5"),
@@ -165,6 +168,7 @@ export const THEME_PRESETS: ThemePreset[] = [
     label: "Royal Purple",
     description: "Dark theme with purple accents",
     colorMode: "dark",
+    category: "custom",
     swatches: ["#1a1025", "#a855f7", "#e9d5ff"],
     assignments: [
       valueAssignment("background", "#1a1025"),

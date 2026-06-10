@@ -11,11 +11,13 @@
   --osdk-input-border-width: 1px;
   --osdk-input-border-color: transparent;
   --osdk-input-border-color-focus: transparent;
+  /* First two layers are 0-opacity placeholders that maintain shadow layer
+     count for smooth CSS transitions when focus adds a visible glow. */
   --osdk-input-shadow:
     0 0 0 0 rgba(33, 93, 176, 0),
     0 0 0 0 rgba(33, 93, 176, 0),
-    inset 0 0 0 1px rgba(17, 20, 24, 0.2),
-    inset 0 1px 1px rgba(17, 20, 24, 0.3);
+    inset 0 0 0 1px color-mix(in oklch, var(--bp-palette-black) 20%, transparent),
+    inset 0 1px 1px color-mix(in oklch, var(--bp-palette-black) 30%, transparent);
 
   /* Input backgrounds */
   --osdk-input-bg: var(--osdk-surface-background-color-default-rest);

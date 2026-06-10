@@ -87,10 +87,12 @@ export const ThemeToolbar = React.memo(function ThemeToolbarFn() {
         preset.label.toLowerCase().includes(normalizedQuery)
       );
 
-    return {
-      builtInPresets: filtered.filter((p) => p.category === "built-in"),
-      customPresets: filtered.filter((p) => p.category !== "built-in"),
-    };
+    const builtIn: ThemePreset[] = [];
+    const custom: ThemePreset[] = [];
+    for (const p of filtered) {
+      (p.category === "built-in" ? builtIn : custom).push(p);
+    }
+    return { builtInPresets: builtIn, customPresets: custom };
   }, [searchQuery]);
   const totalVisible = builtInPresets.length + customPresets.length;
 
