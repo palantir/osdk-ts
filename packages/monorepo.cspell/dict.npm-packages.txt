@@ -20,6 +20,7 @@ ngeohash
 npmjs
 oxc
 oxfmt
+oxfmtrc
 oxlint
 oxlintrc
 trivago

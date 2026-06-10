@@ -29,7 +29,7 @@
       "outputs": [],
       "dependsOn": [
         "//#global-eslint-config",
-        "//#global-oxlint-config",
+        "//#global-oxc-config",
         "//#dprint",
         "codegen",
         "^transpileTypes"
@@ -69,9 +69,9 @@
       "inputs": ["eslint.config.mjs"]
     },
 
-    /* Psuedo task to let oxlint-linted packages depend on the global oxlint config */
-    "//#global-oxlint-config": {
-      "inputs": [".oxlintrc.json", "plugins/oxlint-plugin-header.js"]
+    /* Psuedo task to let oxc-migrated packages depend on the global oxlint + oxfmt config */
+    "//#global-oxc-config": {
+      "inputs": [".oxlintrc.json", ".oxfmtrc.json", "plugins/oxlint-plugin-header.js"]
     },
 
     "clean": {

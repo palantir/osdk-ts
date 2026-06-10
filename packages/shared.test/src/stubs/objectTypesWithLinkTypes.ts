@@ -70,16 +70,16 @@ export const officeObjectTypeWithLinkTypes: ObjectTypeFullMetadata = {
   sharedPropertyTypeMapping: {},
 };
 
-export const objectTypeWithAllPropertyTypesWithLinkTypes:
-  ObjectTypeFullMetadata = {
+export const objectTypeWithAllPropertyTypesWithLinkTypes: ObjectTypeFullMetadata =
+  {
     objectType: objectTypeWithAllPropertyTypes,
     linkTypes: [allPropertyTypesSelfLink],
     implementsInterfaces: [],
     implementsInterfaces2: {},
     sharedPropertyTypeMapping: {},
   };
-export const objectTypeWithTimestampPrimaryKeyWithLinkTypes:
-  ObjectTypeFullMetadata = {
+export const objectTypeWithTimestampPrimaryKeyWithLinkTypes: ObjectTypeFullMetadata =
+  {
     objectType: objectTypeWithTimestampPrimaryKey,
     linkTypes: [],
     implementsInterfaces: [],

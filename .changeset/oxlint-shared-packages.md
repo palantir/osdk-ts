@@ -5,4 +5,4 @@
 "@osdk/shared.net": patch
 ---
 
-Lint with oxlint instead of ESLint (first increment of the repo-wide oxlint migration)
+Lint with oxlint and format with oxfmt instead of ESLint and dprint (first increment of the repo-wide oxc migration)

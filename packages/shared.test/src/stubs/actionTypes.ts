@@ -59,10 +59,12 @@ export const PromoteEmployee: ActionTypeV2 = {
     },
   },
   rid: "ri.ontology.main.action-type.7ed72754-7491-428a-bb18-4d7296eb2167",
-  operations: [{
-    type: "modifyObject",
-    objectTypeApiName: employeeObjectType.apiName,
-  }],
+  operations: [
+    {
+      type: "modifyObject",
+      objectTypeApiName: employeeObjectType.apiName,
+    },
+  ],
   status: "ACTIVE",
 };
 
@@ -98,10 +100,12 @@ export const PromoteEmployeeObject: ActionTypeV2 = {
     },
   },
   rid: "ri.ontology.main.action-type.7ed72754-7491-428a-bb18-4d7296eb2168",
-  operations: [{
-    type: "modifyObject",
-    objectTypeApiName: employeeObjectType.apiName,
-  }],
+  operations: [
+    {
+      type: "modifyObject",
+      objectTypeApiName: employeeObjectType.apiName,
+    },
+  ],
   status: "ACTIVE",
 };
 
@@ -151,10 +155,12 @@ export const CreateOffice: ActionTypeV2 = {
     },
   },
   rid: "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f1",
-  operations: [{
-    type: "createObject",
-    objectTypeApiName: officeObjectType.apiName,
-  }],
+  operations: [
+    {
+      type: "createObject",
+      objectTypeApiName: officeObjectType.apiName,
+    },
+  ],
   status: "ACTIVE",
 };
 
@@ -267,10 +273,12 @@ export const MoveOffice: ActionTypeV2 = {
     },
   },
   rid: "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2",
-  operations: [{
-    type: "modifyObject",
-    objectTypeApiName: officeObjectType.apiName,
-  }],
+  operations: [
+    {
+      type: "modifyObject",
+      objectTypeApiName: officeObjectType.apiName,
+    },
+  ],
   status: "ACTIVE",
 };
 
