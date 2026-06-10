@@ -16,6 +16,7 @@
 
 import type { ObjectOrInterfaceDefinition, OsdkBase } from "@osdk/api";
 import type { PropertySecurities } from "@osdk/foundry.ontologies";
+import type { DerivedPropertyRuntimeMetadata } from "../../derivedProperties/derivedPropertyRuntimeMetadata.js";
 
 /** @internal */
 export const UnderlyingOsdkObject = Symbol(
@@ -25,6 +26,18 @@ export const UnderlyingOsdkObject = Symbol(
 /** @internal */
 export const ObjectDefRef = Symbol(
   process.env.MODE !== "production" ? "ObjectDefinition" : undefined,
+);
+
+/**
+ * Holds the runtime metadata for an object's derived (runtime-derived)
+ * properties. Unlike regular properties, derived properties aren't part of the
+ * object/interface metadata, so their types are captured here at construction
+ * time (e.g. so sorting can compare numeric-but-string types correctly).
+ *
+ * @internal
+ */
+export const RdpDefRef = Symbol(
+  process.env.MODE !== "production" ? "DerivedPropertyDefinitions" : undefined,
 );
 
 /** @internal */
@@ -46,5 +59,6 @@ export interface HolderBase<T extends ObjectOrInterfaceDefinition> {
   [UnderlyingOsdkObject]: OsdkBase<any>;
   [ObjectDefRef]?: T;
   [InterfaceDefRef]?: T;
+  [RdpDefRef]?: DerivedPropertyRuntimeMetadata;
   [PropertySecuritiesRef]?: PropertySecurities[];
 }

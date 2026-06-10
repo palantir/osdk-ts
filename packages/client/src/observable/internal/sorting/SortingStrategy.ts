@@ -18,8 +18,13 @@ import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/I
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { BatchContext } from "../BatchContext.js";
 import type { Canonical } from "../Canonical.js";
+import { compareNumericStrings } from "../compareNumericStrings.js";
 import type { ObjectCacheKey } from "../object/ObjectCacheKey.js";
 import { PK_IDX } from "../object/ObjectCacheKey.js";
+import {
+  isNumericStringType,
+  resolvePropertyType,
+} from "../resolvePropertyType.js";
 
 /**
  * Strategy interface for collection sorting
@@ -113,13 +118,29 @@ export function createOrderBySortFns(
       if (aValue == null && bValue == null) {
         return 0;
       }
+      // Nulls always sort last, regardless of direction.
       if (aValue == null) {
         return 1;
       }
       if (bValue == null) {
         return -1;
       }
+
       const m = order === "asc" ? -1 : 1;
+
+      // decimal/long are wire-encoded as strings; comparing them with `<` / `>`
+      // sorts them lexicographically ("10" < "9"), so compare them numerically
+      // when the property type says they're numbers. Types that aren't
+      // numeric-string-encoded (real strings, dates, etc.) keep the
+      // lexicographic comparison, which is correct for them.
+      if (typeof aValue === "string" && typeof bValue === "string") {
+        const propertyType = resolvePropertyType(a, key)
+          ?? resolvePropertyType(b, key);
+        if (isNumericStringType(propertyType)) {
+          return -m * compareNumericStrings(aValue, bValue);
+        }
+      }
+
       return aValue < bValue ? m : aValue > bValue ? -m : 0;
     };
   });

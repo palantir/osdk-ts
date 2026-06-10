@@ -165,6 +165,11 @@ const cspell = {
         // used in a const (that is removed in a different PR)
         "asdfasdfdhjlkajhgj",
 
+        // numeric sort/filter comments
+        "misordered",
+        "requalified",
+        "unparseable",
+
         // Used in a stub
         "Clooney",
         "Itask",

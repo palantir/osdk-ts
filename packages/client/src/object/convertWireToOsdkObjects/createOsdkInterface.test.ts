@@ -20,7 +20,7 @@ import {
   InterfaceDefinitions,
 } from "../../ontology/OntologyProvider.js";
 import { createOsdkInterface } from "./createOsdkInterface.js";
-import { ObjectDefRef } from "./InternalSymbols.js";
+import { ObjectDefRef, RdpDefRef } from "./InternalSymbols.js";
 
 describe(createOsdkInterface, () => {
   it("works in the normal case", () => {
@@ -151,6 +151,125 @@ describe(createOsdkInterface, () => {
         "asdf": "hi mom"
       }"
     `);
+  });
+
+  it("carries runtime-derived properties and RDP metadata onto the interface", () => {
+    const rdpMetadata = {
+      "total": {
+        selectedOrCollectedPropertyType: { type: "decimal" },
+        definition: { type: "selection" },
+      },
+    };
+
+    const underlying = {
+      "foo": "hi mom",
+      // derived properties live alongside regular ones on the underlying object
+      "total": "10",
+
+      [RdpDefRef]: rdpMetadata,
+
+      [ObjectDefRef]: {
+        [InterfaceDefinitions]: {},
+        apiName: "Obj",
+        displayName: "",
+        interfaceMap: {
+          "IFoo": {
+            "asdf": "foo",
+          },
+        },
+        inverseInterfaceMap: {},
+        links: {},
+        pluralDisplayName: "",
+        primaryKeyApiName: "",
+        primaryKeyType: "string",
+        properties: {
+          "foo": {
+            type: "string",
+          },
+        },
+        type: "object",
+        titleProperty: "foo",
+        rid: "",
+        status: "ACTIVE",
+        icon: undefined,
+        visibility: undefined,
+        description: undefined,
+      } satisfies FetchedObjectTypeDefinition,
+    };
+
+    const iface = createOsdkInterface(underlying as any, {
+      "apiName": "IFoo",
+      displayName: "",
+      links: {},
+      properties: {
+        "asdf": {
+          type: "string",
+        },
+      },
+      rid: "",
+      type: "interface",
+      implements: [],
+      description: undefined,
+    });
+
+    // the derived value is exposed on the interface view ...
+    expect((iface as any).total).toBe("10");
+    expect(Object.keys(iface)).toContain("total");
+    // ... and the RDP metadata is carried so its type can be resolved.
+    expect((iface as any)[RdpDefRef]).toBe(rdpMetadata);
+  });
+
+  it("does not let a $-prefixed derived property clobber the $-metadata", () => {
+    // RDP names are developer-chosen aliases and never $-prefixed in practice,
+    // but a derived property literally named "$title" must not overwrite the
+    // interface's $title accessor.
+    const underlying = {
+      "foo": "hi mom",
+      "$title": "real title",
+      "$primaryKey": "pk-1",
+      "$apiName": "Obj",
+
+      [RdpDefRef]: {
+        "$title": {
+          selectedOrCollectedPropertyType: { type: "string" },
+          definition: { type: "selection" },
+        },
+      },
+
+      [ObjectDefRef]: {
+        [InterfaceDefinitions]: {},
+        apiName: "Obj",
+        displayName: "",
+        interfaceMap: { "IFoo": { "asdf": "foo" } },
+        inverseInterfaceMap: {},
+        links: {},
+        pluralDisplayName: "",
+        primaryKeyApiName: "$primaryKey",
+        primaryKeyType: "string",
+        properties: { "foo": { type: "string" } },
+        type: "object",
+        titleProperty: "foo",
+        rid: "",
+        status: "ACTIVE",
+        icon: undefined,
+        visibility: undefined,
+        description: undefined,
+      } satisfies FetchedObjectTypeDefinition,
+    };
+
+    const iface = createOsdkInterface(underlying as any, {
+      "apiName": "IFoo",
+      displayName: "",
+      links: {},
+      properties: { "asdf": { type: "string" } },
+      rid: "",
+      type: "interface",
+      implements: [],
+      description: undefined,
+    });
+
+    // $title remains the interface's title accessor, not the RDP value.
+    expect((iface as any).$title).toBe("real title");
   });
 
   it("works with mixed namespaces", () => {

@@ -43,6 +43,7 @@ import {
   ClientRef,
   ObjectDefRef,
   PropertySecuritiesRef,
+  RdpDefRef,
   UnderlyingOsdkObject,
 } from "./InternalSymbols.js";
 import type { ObjectHolder } from "./ObjectHolder.js";
@@ -83,7 +84,12 @@ const basePropDefs = {
       const def = this[ObjectDefRef];
 
       if (update == null) {
-        return createOsdkObject(this[ClientRef], def, { ...rawObj });
+        return createOsdkObject(
+          this[ClientRef],
+          def,
+          { ...rawObj },
+          this[RdpDefRef],
+        );
       }
 
       if (
@@ -100,7 +106,12 @@ const basePropDefs = {
       }
 
       const newObject = { ...this[UnderlyingOsdkObject], ...update };
-      return createOsdkObject(this[ClientRef], this[ObjectDefRef], newObject);
+      return createOsdkObject(
+        this[ClientRef],
+        this[ObjectDefRef],
+        newObject,
+        this[RdpDefRef],
+      );
     },
   },
   "$objectSpecifier": {
@@ -183,6 +194,9 @@ export function createOsdkObject(
       },
       [ObjectDefRef]: { value: objectDef, enumerable: false }, // TODO: Potentially update when GA metadata field
       [ClientRef]: { value: client, enumerable: false },
+      // Derived property types aren't part of objectDef; keep them on the holder
+      // so consumers (e.g. orderBy sorting) can resolve their types.
+      [RdpDefRef]: { value: derivedPropertyTypeByName, enumerable: false },
       ...basePropDefs,
     } satisfies Record<keyof ObjectHolder, PropertyDescriptor>,
   );

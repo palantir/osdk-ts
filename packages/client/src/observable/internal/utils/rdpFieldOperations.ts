@@ -18,6 +18,7 @@ import { createOsdkObject } from "../../../object/convertWireToOsdkObjects/creat
 import {
   ClientRef,
   ObjectDefRef,
+  RdpDefRef,
   UnderlyingOsdkObject,
 } from "../../../object/convertWireToOsdkObjects/InternalSymbols.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
@@ -84,7 +85,15 @@ function stripRdpFields(
     }
   }
 
-  return createOsdkObject(value[ClientRef], objectDef, newProps);
+  // Forward the RDP type metadata so derived numeric (decimal/long) fields keep
+  // sorting/filtering numerically after a rebuild; entries for stripped fields
+  // are harmless since resolvePropertyType only reads keys present on the holder.
+  return createOsdkObject(
+    value[ClientRef],
+    objectDef,
+    newProps,
+    value[RdpDefRef],
+  );
 }
 
 function isSuperset(
@@ -124,7 +133,12 @@ function filterToRdpFields(
     }
   }
 
-  return createOsdkObject(value[ClientRef], objectDef, newProps);
+  return createOsdkObject(
+    value[ClientRef],
+    objectDef,
+    newProps,
+    value[RdpDefRef],
+  );
 }
 
 export function mergeSelectFields(
@@ -161,7 +175,13 @@ export function mergeSelectFields(
     }
   }
 
-  return createOsdkObject(sourceValue[ClientRef], objectDef, newProps);
+  // RDP fields can come from either holder, so merge both sets of metadata.
+  return createOsdkObject(
+    sourceValue[ClientRef],
+    objectDef,
+    newProps,
+    { ...existingValue[RdpDefRef], ...sourceValue[RdpDefRef] },
+  );
 }
 
 export function mergeObjectFields(
@@ -223,9 +243,11 @@ export function mergeObjectFields(
     }
   }
 
+  // Target supplies the preserved RDP fields, so merge its metadata too.
   return createOsdkObject(
     sourceValue[ClientRef],
     objectDef,
     newProps,
+    { ...targetCurrentValue?.[RdpDefRef], ...sourceValue[RdpDefRef] },
   );
 }

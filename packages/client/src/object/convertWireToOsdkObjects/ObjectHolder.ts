@@ -15,11 +15,12 @@
  */
 
 import type { Osdk } from "@osdk/api";
+import type { DerivedPropertyRuntimeMetadata } from "../../derivedProperties/derivedPropertyRuntimeMetadata.js";
 import type { MinimalClient } from "../../MinimalClientContext.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
 import type { BaseHolder } from "./BaseHolder.js";
 import type { get$link } from "./getDollarLink.js";
-import type { ClientRef, ObjectDefRef } from "./InternalSymbols.js";
+import type { ClientRef, ObjectDefRef, RdpDefRef } from "./InternalSymbols.js";
 
 /**
  * @internal
@@ -32,6 +33,7 @@ export interface ObjectHolder<_Q extends Osdk.Instance<any> = never>
 {
   readonly [ObjectDefRef]: FetchedObjectTypeDefinition;
   readonly [ClientRef]: MinimalClient;
+  readonly [RdpDefRef]: DerivedPropertyRuntimeMetadata;
 
   readonly "$link": ReturnType<typeof get$link>;
 }

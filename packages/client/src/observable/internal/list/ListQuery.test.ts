@@ -17,6 +17,7 @@
 import {
   Employee,
   FooInterface,
+  objectTypeWithAllPropertyTypes,
   Office,
   Todo,
 } from "@osdk/client.test.ontology";
@@ -56,6 +57,12 @@ function setupOntology(fauxFoundry: FauxFoundry) {
   fauxFoundry.getDefaultOntology().registerObjectType(
     stubData.todoWithLinkTypes,
   );
+  fauxFoundry.getDefaultOntology().registerObjectType({
+    // Drop the self-link: its ONE cardinality has no foreign key, which
+    // FauxFoundry rejects, and the sorting tests don't traverse links.
+    ...stubData.objectTypeWithAllPropertyTypesWithLinkTypes,
+    linkTypes: [],
+  });
 }
 
 function setupTodos(
@@ -571,6 +578,81 @@ describe("ListQuery sort stability across pages", () => {
     // clientOrdered sorts by text asc, then PK tiebreaker for equal keys
     const ids = payload!.resolvedList!.map((t) => t.id);
     expect(ids).toEqual([10, 30, 31, 20]);
+  });
+
+  it("clientOrdered sorts decimal/long properties numerically, not lexicographically", async () => {
+    const dataStore = fauxFoundry.getDefaultDataStore();
+    dataStore.clear();
+
+    // decimal/long arrive as strings. Lexicographically these sort as
+    // "10" < "100" < "2" < "9", which is wrong; the fix sorts them by value.
+    // The longs straddle 2^53, where doubles lose precision.
+    const rows = [
+      { id: 1, decimal: "10", long: "9007199254740993" },
+      { id: 2, decimal: "9", long: "9007199254740992" },
+      { id: 3, decimal: "100", long: "42" },
+      { id: 4, decimal: "2", long: "100" },
+    ];
+    for (const row of rows) {
+      dataStore.registerObject(objectTypeWithAllPropertyTypes, {
+        $apiName: "objectTypeWithAllPropertyTypes",
+        ...row,
+      });
+    }
+
+    // Fetch real instances (carry the object metadata used to resolve types).
+    const fetched = await Promise.all(
+      rows.map((row) =>
+        client(objectTypeWithAllPropertyTypes).fetchOne(row.id)
+      ),
+    );
+
+    async function expectClientOrdered(
+      orderByProp: "decimal" | "long",
+      expectedIds: number[],
+    ) {
+      const listSub = mockListSubCallback();
+      defer(
+        store.lists.observe(
+          {
+            type: objectTypeWithAllPropertyTypes,
+            where: {},
+            orderBy: { [orderByProp]: "asc" },
+            pageSize: 10,
+          },
+          listSub,
+        ),
+      );
+
+      await waitForCall(listSub.next, 1);
+      expectSingleListCallAndClear(listSub, undefined, { status: "loading" });
+      await waitForCall(listSub.next, 1);
+      expectSingleListCallAndClear(listSub, expect.anything(), {
+        status: "loaded",
+      });
+
+      // Push in id order (i.e. unsorted by the ordered property).
+      updateList(
+        store,
+        {
+          type: objectTypeWithAllPropertyTypes,
+          where: {},
+          orderBy: { [orderByProp]: "asc" },
+        },
+        fetched,
+      );
+
+      await waitForCall(listSub.next, 1);
+      const payload = expectSingleListCallAndClear(listSub, expect.anything(), {
+        status: "loaded",
+      });
+      expect(payload!.resolvedList!.map((o) => o.id)).toEqual(expectedIds);
+    }
+
+    // decimal asc: 2 < 9 < 10 < 100  -> ids 4,2,1,3
+    await expectClientOrdered("decimal", [4, 2, 1, 3]);
+    // long asc: 42 < 100 < 2^53 < 2^53+1 -> ids 3,4,2,1
+    await expectClientOrdered("long", [3, 4, 2, 1]);
   });
 });
 

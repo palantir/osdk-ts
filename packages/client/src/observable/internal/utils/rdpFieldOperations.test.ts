@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
+import type { DerivedPropertyDefinition } from "@osdk/foundry.ontologies";
 import { describe, expect, it } from "vitest";
+import type { DerivedPropertyRuntimeMetadata } from "../../../derivedProperties/derivedPropertyRuntimeMetadata.js";
 import type { MinimalClient } from "../../../MinimalClientContext.js";
 import { createOsdkObject } from "../../../object/convertWireToOsdkObjects/createOsdkObject.js";
 import {
   ClientRef,
   ObjectDefRef,
+  RdpDefRef,
   UnderlyingOsdkObject,
 } from "../../../object/convertWireToOsdkObjects/InternalSymbols.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
@@ -75,6 +78,43 @@ function createTestObject(
     ...defaultProps,
     ...props,
   });
+}
+
+function buildRdpMeta(
+  types: Record<string, string>,
+): DerivedPropertyRuntimeMetadata {
+  const meta: DerivedPropertyRuntimeMetadata = {};
+  for (const [key, type] of Object.entries(types)) {
+    meta[key] = {
+      // resolvePropertyType only reads selectedOrCollectedPropertyType.type;
+      // the definition needs just enough shape for createOsdkObject's RDP
+      // deserialization (it inspects definition.operation.type).
+      definition: {
+        type: "selection",
+        operation: { type: "get" },
+      } as DerivedPropertyDefinition,
+      selectedOrCollectedPropertyType: { type },
+    };
+  }
+  return meta;
+}
+
+function createTestObjectWithRdp(
+  props: Partial<SimpleOsdkProperties>,
+  rdpTypes: Record<string, string>,
+): ObjectHolder {
+  const defaultProps: SimpleOsdkProperties = {
+    $apiName: "Employee",
+    $objectType: "Employee",
+    $primaryKey: 50030,
+    $title: "John Doe",
+  };
+  return createOsdkObject(
+    mockClient,
+    employeeObjectDef,
+    { ...defaultProps, ...props },
+    buildRdpMeta(rdpTypes),
+  );
 }
 
 function assertValidObjectHolder(obj: ObjectHolder): void {
@@ -319,5 +359,84 @@ describe("mergeSelectFields", () => {
     expect(underlying.office).toBe("SF");
     expect(underlying.rdpField1).toBe("existing-rdp");
     expect(underlying.employeeId).toBe(50030);
+  });
+
+  it("preserves RDP type metadata from both holders", () => {
+    const source = createTestObjectWithRdp(
+      { employeeId: 50030, rdpField1: "10" },
+      { rdpField1: "decimal" },
+    );
+    const existing = createTestObjectWithRdp(
+      { employeeId: 50030, rdpField2: "9007199254740993" },
+      { rdpField2: "long" },
+    );
+
+    const result = mergeSelectFields(source, new Set(["rdpField1"]), existing);
+
+    expect(result[RdpDefRef].rdpField1?.selectedOrCollectedPropertyType?.type)
+      .toBe("decimal");
+    expect(result[RdpDefRef].rdpField2?.selectedOrCollectedPropertyType?.type)
+      .toBe("long");
+  });
+});
+
+describe("rdpFieldOperations RDP metadata preservation", () => {
+  it("preserves metadata when stripping rdp fields", () => {
+    const source = createTestObjectWithRdp(
+      { employeeId: 50030, rdpField1: "10" },
+      { rdpField1: "decimal" },
+    );
+
+    // targetRdpFields empty -> stripRdpFields path
+    const result = mergeObjectFields(
+      source,
+      new Set(["rdpField1"]),
+      new Set(),
+      undefined,
+    );
+
+    expect(result[RdpDefRef].rdpField1?.selectedOrCollectedPropertyType?.type)
+      .toBe("decimal");
+  });
+
+  it("preserves metadata when filtering to a subset of rdp fields", () => {
+    const source = createTestObjectWithRdp(
+      { employeeId: 50030, rdpField1: "10", rdpField2: "20" },
+      { rdpField1: "decimal", rdpField2: "long" },
+    );
+
+    // source is a strict superset of target -> filterToRdpFields path
+    const result = mergeObjectFields(
+      source,
+      new Set(["rdpField1", "rdpField2"]),
+      new Set(["rdpField1"]),
+      undefined,
+    );
+
+    expect(result[RdpDefRef].rdpField1?.selectedOrCollectedPropertyType?.type)
+      .toBe("decimal");
+  });
+
+  it("preserves metadata from source and target on the full merge path", () => {
+    const source = createTestObjectWithRdp(
+      { employeeId: 50030, rdpField1: "10" },
+      { rdpField1: "decimal" },
+    );
+    const target = createTestObjectWithRdp(
+      { employeeId: 50030, rdpField2: "9007199254740993" },
+      { rdpField2: "long" },
+    );
+
+    const result = mergeObjectFields(
+      source,
+      new Set(["rdpField1"]),
+      new Set(["rdpField1", "rdpField2"]),
+      target,
+    );
+
+    expect(result[RdpDefRef].rdpField1?.selectedOrCollectedPropertyType?.type)
+      .toBe("decimal");
+    expect(result[RdpDefRef].rdpField2?.selectedOrCollectedPropertyType?.type)
+      .toBe("long");
   });
 });

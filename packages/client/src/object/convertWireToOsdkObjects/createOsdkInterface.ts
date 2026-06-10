@@ -22,6 +22,7 @@ import type { InterfaceHolder } from "./InterfaceHolder.js";
 import {
   InterfaceDefRef,
   ObjectDefRef,
+  RdpDefRef,
   UnderlyingOsdkObject,
 } from "./InternalSymbols.js";
 import type { ObjectHolder } from "./ObjectHolder.js";
@@ -103,6 +104,23 @@ export function createOsdkInterface<
       },
 
       [InterfaceDefRef]: { value: interfaceDef },
+
+      // Runtime-derived (RDP) properties aren't part of interfaceDef.properties,
+      // so copy their values from the underlying object and carry the RDP
+      // metadata, so consumers (e.g. orderBy sorting and where-clause filtering)
+      // can read the values and resolve their numeric types.
+      [RdpDefRef]: { value: underlying[RdpDefRef] },
+
+      // Skip any "$"-prefixed RDP name so a derived property can never clobber
+      // the fixed "$"-metadata descriptors defined above (RDP names are
+      // developer-chosen aliases and are never "$"-prefixed in practice).
+      ...Object.fromEntries(
+        Object.keys(underlying[RdpDefRef] ?? {}).filter(k => !k.startsWith("$"))
+          .map(k => [k, {
+            enumerable: k in underlying,
+            value: underlying[k as keyof typeof underlying],
+          }]),
+      ),
 
       ...Object.fromEntries(
         Object.keys(interfaceDef.properties).map(p => {
