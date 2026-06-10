@@ -40,7 +40,7 @@ function makeClient(): SharedClient {
   return { [symbolClientContext]: context };
 }
 
-// Asserts the exported OTLP/JSON matches what FTS reads: one resource with the
+// Asserts the exported OTLP/JSON matches what Foundry reads: one resource with the
 // four required keys, message in LOG_MESSAGE, tags as a string kvlist in
 // LOG_TAGS, severity number, and the native trace/span ids.
 describe("OTLP/JSON contract fixture", () => {
@@ -57,7 +57,7 @@ describe("OTLP/JSON contract fixture", () => {
     vi.unstubAllGlobals();
   });
 
-  it("emits the FTS-shaped OTLP payload", async () => {
+  it("emits the Foundry-shaped OTLP payload", async () => {
     const logger = createLoggingClient({
       client: makeClient(),
       applicationRid: "ri.app",

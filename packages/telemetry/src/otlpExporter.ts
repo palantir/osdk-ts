@@ -25,8 +25,8 @@ import { OTLPLogExporter } from "./browserOtel.js";
 
 const LOG_WRITE_PATH = "api/v2/observability/otlp/v1/logs";
 
-// 400 covers validation and markings-mismatch failures; 403 an owning rid the
-// token is not authorized for. Both are permanent, so the breaker opens.
+// 400 is a rejected request; 403 an owning rid the token is not authorized for.
+// Both are permanent, so the breaker opens rather than retrying.
 const PERMANENT_STATUSES = new Set<number>([400, 403]);
 
 // `fetch` keepalive has a ~64 KB in-flight quota; an oversized final flush fails
@@ -44,7 +44,7 @@ export interface FoundryLogExporterConfig {
 /**
  * A {@link LogRecordExporter} wrapping the OTLP/JSON browser exporter, adding a
  * per-export bearer (cached, never shipping unauthenticated) and a circuit
- * breaker that stops calling the gateway on a permanent failure. Internal
+ * breaker that stops calling the endpoint on a permanent failure. Internal
  * failures go to `diag`, never the logger, so telemetry cannot self-log.
  */
 export function createFoundryLogExporter(

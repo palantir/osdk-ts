@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-// FTS reads these specific LogRecord attribute keys instead of the stock OTLP
+// Foundry reads these specific LogRecord attribute keys instead of the stock OTLP
 // body/attributes layout.
 
 export const LOG_MESSAGE = "LOG_MESSAGE";
 
-/** Structured fields; FTS reads it as a kvlist of string values (see attributes.ts). */
+/** Structured fields; Foundry reads it as a kvlist of string values (see attributes.ts). */
 export const LOG_TAGS = "LOG_TAGS";
 
 /** Source location of a logged error; populated only on `error` logs. */

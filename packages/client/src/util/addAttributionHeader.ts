@@ -17,7 +17,7 @@
 import { createFetchHeaderMutator } from "@osdk/shared.net.fetch";
 import type { MinimalClient } from "../MinimalClientContext.js";
 
-/** Attribution header the gateway reads to attribute a call to the calling app. */
+/** Attribution header Foundry reads to attribute a call to the calling app. */
 export const ATTRIBUTION_RID_HEADER = "X-Foundry-Attribution-Rid";
 
 /**

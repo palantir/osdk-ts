@@ -135,7 +135,7 @@ describe("createFoundryLogExporter", () => {
     expect(fetchFn).not.toHaveBeenCalled();
   });
 
-  it("opens the circuit after two 401s and stops calling the gateway", async () => {
+  it("opens the circuit after two 401s and stops calling the endpoint", async () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
     fetchFn.mockResolvedValue(new Response(null, { status: 401 }));
     const exporter = createFoundryLogExporter({

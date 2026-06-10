@@ -17,7 +17,7 @@
 import type { Resource } from "@opentelemetry/resources";
 import { resourceFromAttributes } from "@opentelemetry/resources";
 
-// FTS requires exactly one resource carrying all four keys below; a missing key
+// Foundry requires exactly one resource carrying all four keys below; a missing key
 // makes it reject the whole export, so buildResource throws on an empty value.
 
 /** OTLP resource attribute: the application RID that owns the trace. */
@@ -53,7 +53,7 @@ export interface BuildResourceParams {
   producingService?: string;
 }
 
-/** Build the one OTel `Resource`, populating the four mandatory FTS keys. */
+/** Build the one OTel `Resource`, populating the four mandatory Foundry keys. */
 export function buildResource(params: BuildResourceParams): Resource {
   const producingResourceIdentifier = params.producingResourceIdentifier
     ?? params.applicationRid;
@@ -72,7 +72,7 @@ export function buildResource(params: BuildResourceParams): Resource {
   for (const [key, value] of Object.entries(attributes)) {
     if (value.length === 0) {
       throw new Error(
-        `Telemetry resource is missing mandatory attribute "${key}"; FTS `
+        `Telemetry resource is missing mandatory attribute "${key}"; Foundry `
           + `rejects exports with an incomplete resource.`,
       );
     }

@@ -26,7 +26,7 @@ export type MinimumLevel = "debug" | "info" | "warn" | "error";
 
 /**
  * Supplies the trace/span ids stamped as each record's span context, so the SDK
- * sets the native OTLP `trace_id`/`span_id` fields FTS reads (and rejects empty).
+ * sets the native OTLP `trace_id`/`span_id` fields Foundry reads (and rejects empty).
  */
 export type SpanContextProvider = () =>
   | { traceId: string; spanId: string }

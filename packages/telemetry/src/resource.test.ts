@@ -26,7 +26,7 @@ import {
 } from "./resource.js";
 
 describe("buildResource", () => {
-  it("populates all four mandatory FTS keys from the application rid", () => {
+  it("populates all four mandatory Foundry keys from the application rid", () => {
     const resource = buildResource({ applicationRid: "ri.app" });
 
     expect(resource.attributes[TRACE_OWNING_RESOURCE_IDENTIFIER]).toBe(

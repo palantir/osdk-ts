@@ -54,7 +54,7 @@ const SEVERITY_NUMBERS: Record<LogSeverity, SeverityNumber> = {
 /**
  * Build the OTel {@link LogRecord} for a single log call. The message goes in
  * the `LOG_MESSAGE` attribute and the structured fields (caller context plus
- * any serialized error) go in the `LOG_TAGS` attribute, which is the layout FTS
+ * any serialized error) go in the `LOG_TAGS` attribute, which is the layout Foundry
  * reads. The message is also mirrored into the standard OTLP `body` for
  * generic OTLP consumers.
  */
@@ -84,7 +84,7 @@ export function buildLogRecord(
 }
 
 /**
- * Build the flat `LOG_TAGS` map. FTS silently drops non-string tag values, so
+ * Build the flat `LOG_TAGS` map. Foundry silently drops non-string tag values, so
  * every value is a string: non-string context leaves are JSON-stringified and
  * the error is flattened to `error.*` keys.
  */
