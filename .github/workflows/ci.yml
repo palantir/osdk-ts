@@ -358,15 +358,17 @@ jobs:
           cache: "pnpm"
 
       # Own per-job cache so the app/site builds persist across runs (warm).
-      # restore-keys fall back to a prior build-apps cache, then this run's build
-      # cache (cold first run), then any prior build cache.
+      # Key prefix is "apps-" (not "build-apps-") so it does not collide with the
+      # "turbo-…-build-" restore-key used by the build/typecheck/lint/test jobs.
+      # restore-keys fall back to a prior apps cache, then this run's build cache
+      # (cold first run), then any prior build cache.
       - name: Turbo cache
         uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: .turbo/cache
-          key: turbo-${{ runner.os }}-build-apps-${{ github.sha }}
+          key: turbo-${{ runner.os }}-apps-${{ github.sha }}
           restore-keys: |
-            turbo-${{ runner.os }}-build-apps-
+            turbo-${{ runner.os }}-apps-
             turbo-${{ runner.os }}-build-${{ github.sha }}
             turbo-${{ runner.os }}-build-
 
