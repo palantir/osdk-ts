@@ -21,6 +21,7 @@ import { DownloadEmployeesButton } from "./DownloadEmployeesButton.js";
 
 type RDPs = {
   managerName: "string";
+  leadStockOptions: "long";
 };
 
 type FunctionColumns = {
@@ -28,11 +29,7 @@ type FunctionColumns = {
 };
 
 const columnDefinitions: Array<
-  ColumnDefinition<
-    Employee,
-    RDPs,
-    FunctionColumns
-  >
+  ColumnDefinition<Employee, RDPs, FunctionColumns>
 > = [
   {
     locator: {
@@ -70,6 +67,21 @@ const columnDefinitions: Array<
   },
   {
     locator: { type: "property", id: "jobTitle" },
+  },
+  // Base long property — longs arrive as strings; sorting must be numeric.
+  {
+    locator: { type: "property", id: "stockOptions" },
+    columnName: "Stock Options",
+  },
+  // Derived long property (the reported scenario): the lead's stock options.
+  {
+    locator: {
+      type: "rdp",
+      id: "leadStockOptions",
+      creator: (baseObjectSet: DerivedProperty.Builder<Employee, false>) =>
+        baseObjectSet.pivotTo("lead").selectProperty("stockOptions"),
+    },
+    columnName: "Lead Stock Options (derived)",
   },
   {
     locator: { type: "property", id: "firstFullTimeStartDate" },
@@ -146,13 +158,10 @@ function ThemeToggle(): React.ReactElement {
 }
 
 export function EmployeesTable(): React.ReactElement {
-  const handleSubmitEdits = useCallback(
-    async () => {
-      alert(`Submitting edits...`);
-      return true;
-    },
-    [],
-  );
+  const handleSubmitEdits = useCallback(async () => {
+    alert(`Submitting edits...`);
+    return true;
+  }, []);
 
   const client = useOsdkClient();
 
@@ -184,10 +193,16 @@ export function EmployeesTable(): React.ReactElement {
             objectType={Employee}
             columnDefinitions={columnDefinitions}
             selectionMode={"multiple"}
-            defaultOrderBy={[{
-              property: "firstFullTimeStartDate",
-              direction: "desc",
-            }]}
+            defaultOrderBy={[
+              {
+                property: "leadStockOptions",
+                direction: "asc",
+              },
+              {
+                property: "firstFullTimeStartDate",
+                direction: "desc",
+              },
+            ]}
             onSubmitEdits={handleSubmitEdits}
             tableRef={tableRef}
           />
