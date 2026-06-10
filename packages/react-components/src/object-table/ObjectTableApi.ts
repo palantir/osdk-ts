@@ -51,6 +51,11 @@ interface SharedColumnDefinition<
     never
   >,
 > {
+  /**
+   * Defines what the column shows:
+   * an object/interface property, a linked object property (derived property), a function
+   * column, or a custom column — and carries that locator's configuration.
+   */
   locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>;
 
   /**

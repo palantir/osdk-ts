@@ -35,12 +35,11 @@
  * whitespace match repo style (and never fight the pre-commit `dprint check`).
  *
  * Usage:
- *   node scripts/gen-props.mjs                 # write the tables
- *   node scripts/gen-props.mjs --check          # fail if any doc is out of date
- *   node scripts/gen-props.mjs --list-changed   # write, print only changed paths
+ *   node scripts/gen-props.mjs           # write the tables
+ *   node scripts/gen-props.mjs --check   # fail if any doc is out of date
  *
- * `--check` backs the CI `lint` gate; `--list-changed` backs the pre-commit
- * hook (it stages exactly the regenerated docs — see `.husky/pre-commit`).
+ * `--check` backs the `check-gen-props` task (part of `pnpm turbo check`),
+ * which fails CI when a committed table has drifted from its source.
  */
 
 import { execFileSync } from "child_process";
@@ -133,15 +132,18 @@ function collapseProse(text) {
 }
 
 /** Collapse all interior whitespace in a type string to single spaces, drop
- * the stray padding inside generic brackets that multi-line types leave behind
- * (e.g. `Record< string, never >` -> `Record<string, never>`), and strip block
- * comments that inline object-type literals carry in their source text. */
+ * the stray padding inside generic brackets and parens that multi-line types
+ * leave behind (e.g. `Record< string, never >` -> `Record<string, never>`,
+ * `( arg: T, ) => U` -> `(arg: T) => U`), and strip block comments that inline
+ * object-type literals carry in their source text. */
 function collapseType(text) {
   return text
     .replace(/\/\*[\s\S]*?\*\//g, " ")
     .replace(/\s+/g, " ")
     .replace(/<\s+/g, "<")
     .replace(/\s+>/g, ">")
+    .replace(/\(\s+/g, "(")
+    .replace(/,?\s+\)/g, ")")
     .trim();
 }
 
@@ -316,15 +318,21 @@ function literalKeys(node) {
   return keys;
 }
 
-/** Concatenate entry lists, keeping the first occurrence of each name. */
+/** Concatenate entry lists into one, deduped by name. On a name collision the
+ * later entry wins — so an interface's own member overrides the base it
+ * `extends` (matching TypeScript, where the derived declaration takes
+ * precedence) — while keeping the name's first-seen position in the table. */
 function dedupe(lists) {
   const out = [];
-  const seen = new Set();
+  const indexByName = new Map();
   for (const list of lists) {
     for (const entry of list) {
-      if (!seen.has(entry.name)) {
-        seen.add(entry.name);
+      const at = indexByName.get(entry.name);
+      if (at == null) {
+        indexByName.set(entry.name, out.length);
         out.push(entry);
+      } else {
+        out[at] = entry;
       }
     }
   }
@@ -353,6 +361,26 @@ function mergeUnion(branches) {
   return order;
 }
 
+/** A documentable member: a property or method signature carrying a type. */
+function isDocumentableMember(member) {
+  return (
+    (ts.isPropertySignature(member) || ts.isMethodSignature(member))
+    && member.type != null
+  );
+}
+
+/** Render a member's type for the Type column. Property signatures use their
+ * declared type; a method signature (`foo(arg): T`) is rendered as the
+ * equivalent function type `(arg) => T` so it reads like the other callbacks
+ * (and so its parameters aren't dropped, leaving only the return type). */
+function memberTypeText(member) {
+  if (ts.isMethodSignature(member)) {
+    const params = member.parameters.map((p) => p.getText()).join(", ");
+    return `(${params}) => ${member.type.getText()}`;
+  }
+  return member.type.getText();
+}
+
 function propertyEntry(member) {
   return {
     name: member.name.getText(),
@@ -375,7 +403,7 @@ function membersOfDeclaration(decl, sourceFile, seen) {
     }
   }
   const own = decl.members
-    .filter((m) => ts.isPropertySignature(m) && m.type != null)
+    .filter(isDocumentableMember)
     .map(propertyEntry);
   return dedupe([...inherited, own]);
 }
@@ -386,7 +414,7 @@ function membersOfType(typeNode, sourceFile, seen) {
   }
   if (ts.isTypeLiteralNode(typeNode)) {
     return typeNode.members
-      .filter((m) => ts.isPropertySignature(m) && m.type != null)
+      .filter(isDocumentableMember)
       .map(propertyEntry);
   }
   if (ts.isIntersectionTypeNode(typeNode)) {
@@ -415,15 +443,21 @@ function membersOfType(typeNode, sourceFile, seen) {
     if (found != null) {
       // Key the recursion guard by file + name (names can collide across files).
       const key = `${found.sourceFile.fileName}#${ref.name}`;
-      if (!seen.has(key)) {
-        seen.add(key);
-        const result = membersOfDeclaration(found.decl, found.sourceFile, seen);
-        seen.delete(key);
-        return result;
-      }
+      if (seen.has(key)) return []; // already resolving this type up the stack
+      seen.add(key);
+      const result = membersOfDeclaration(found.decl, found.sourceFile, seen);
+      seen.delete(key);
+      return result;
     }
+    // A named type we were asked to pull members from but couldn't resolve
+    // (external/bare import, re-export, or aliased import). Surface it — a
+    // silently-incomplete table is the worst outcome for a drift checker.
+    console.warn(
+      `gen-props: could not resolve \`${ref.name}\` — any props it `
+        + `contributes will be missing from the generated table.`,
+    );
   }
-  // Unresolvable (external import) and unsupported constructs contribute none.
+  // Unsupported constructs contribute no members.
   return [];
 }
 
@@ -450,7 +484,7 @@ function resolveProps(sourceFile, typeName) {
 function buildRows(entries) {
   const rows = [];
   for (const { name, member, forcedOptional } of entries) {
-    const type = escapeCell(collapseType(member.type.getText()));
+    const type = escapeCell(collapseType(memberTypeText(member)));
     const isRequired = member.questionToken == null && !forcedOptional;
     const description = buildDescription(member, isRequired);
     rows.push(`| \`${name}\` | \`${type}\` | ${description} |`);
@@ -569,18 +603,13 @@ function renderDoc(docPath) {
 
 function main() {
   const check = process.argv.includes("--check");
-  // `--list-changed` writes the docs but prints ONLY the changed paths (one
-  // per line, relative to the cwd) and nothing else, so the pre-commit hook
-  // can `git add` exactly the regenerated files — never sweeping in unrelated
-  // unstaged doc edits.
-  const listChanged = process.argv.includes("--list-changed");
 
   const docs = findMarkdownFiles(DOCS_DIR)
     .map((docPath) => ({ docPath, result: renderDoc(docPath) }))
     .filter(({ result }) => result != null);
 
   if (docs.length === 0) {
-    if (!listChanged) console.log("No docs with AUTOGEN:props markers found.");
+    console.log("No docs with AUTOGEN:props markers found.");
     return;
   }
 
@@ -605,21 +634,14 @@ function main() {
     if (result.formatted !== result.original) {
       writeFileSync(docPath, result.formatted, "utf8");
       written++;
-      if (listChanged) {
-        // Path relative to cwd (repo root when invoked from the hook).
-        console.log(path.relative(process.cwd(), docPath));
-      } else {
-        console.log(`✨ Wrote ${result.rel}`);
-      }
+      console.log(`✨ Wrote ${result.rel}`);
     }
   }
-  if (!listChanged) {
-    console.log(
-      written === 0
-        ? `✅ ${docs.length} props table(s) already up to date`
-        : `✨ Updated ${written} of ${docs.length} doc(s)`,
-    );
-  }
+  console.log(
+    written === 0
+      ? `✅ ${docs.length} props table(s) already up to date`
+      : `✨ Updated ${written} of ${docs.length} doc(s)`,
+  );
 }
 
 try {

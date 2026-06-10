@@ -3,15 +3,4 @@ if [ "$(git config user.email)" = "checkpoint@cline.bot" ]; then
   exit 0
 fi
 
-# Regenerate @osdk/react-components doc props tables when its sources or docs
-# are committed, so the generated tables can't drift from the source. The
-# generated docs are dprint-formatted; only the docs that actually changed are
-# re-staged. See that package's CONTRIBUTING.md ("Props reference tables").
-if git diff --cached --name-only | grep -qE '^packages/react-components/(src/|docs/)'; then
-  CHANGED_DOCS=$(node packages/react-components/scripts/gen-props.mjs --list-changed) || exit 1
-  if [ -n "$CHANGED_DOCS" ]; then
-    echo "$CHANGED_DOCS" | xargs git add
-  fi
-fi
-
 TERM=dumb npx lint-staged

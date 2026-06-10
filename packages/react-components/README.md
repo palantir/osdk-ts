@@ -341,7 +341,7 @@ Regenerate after changing any documented prop or its JSDoc:
 pnpm --filter @osdk/react-components gen-props
 ```
 
-The repo's pre-commit hook runs this for you whenever you commit changes under `packages/react-components/src/` or `docs/` — it regenerates the tables and stages them automatically. CI enforces freshness too: the `check-gen-props` task (part of `pnpm turbo check`) runs `gen-props --check` and fails if a committed table is stale (or was hand-edited inside the markers).
+Commit the regenerated docs alongside your change. CI enforces freshness: the `check-gen-props` task (part of `pnpm turbo check`) runs `gen-props --check` and fails if a committed table is stale (or was hand-edited inside the markers).
 
 **To enable a generated table for a new component**, drop a marker block into its doc where the table should appear, naming the source file (relative to the package root) and the props interface:
 
