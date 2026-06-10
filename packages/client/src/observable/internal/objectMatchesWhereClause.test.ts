@@ -17,6 +17,7 @@
 import type { Osdk, WhereClause } from "@osdk/api";
 import type { objectTypeWithAllPropertyTypes } from "@osdk/client.test.ontology";
 import { describe, expect, expectTypeOf, it } from "vitest";
+import { ObjectDefRef } from "../../object/convertWireToOsdkObjects/InternalSymbols.js";
 import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import { objectSortaMatchesWhereClause } from "./objectMatchesWhereClause.js";
 
@@ -222,4 +223,74 @@ describe(objectSortaMatchesWhereClause, () => {
         .toBe(nonStrictExpected);
     },
   );
+});
+
+/**
+ * Builds a minimal holder exposing the property values plus the object metadata
+ * the matcher reads to resolve a property's type.
+ */
+function holderWithTypes(
+  values: Record<string, unknown>,
+  types: Record<string, string>,
+): ObjectHolder {
+  const holder: { [k: string]: unknown } & { [ObjectDefRef]?: unknown } = {
+    ...values,
+    [ObjectDefRef]: {
+      properties: Object.fromEntries(
+        Object.entries(types).map(([name, type]) => [name, { type }]),
+      ),
+    },
+  };
+  return holder as ObjectHolder;
+}
+
+describe("decimal/long ordered comparisons", () => {
+  // decimal/long are wire-encoded as strings; the matcher must compare them
+  // numerically. Lexicographically "10" < "9", so these cases all flip if the
+  // native string operators are used.
+  it("compares decimal $gt/$gte/$lt/$lte numerically", () => {
+    const obj = holderWithTypes({ amount: "10" }, { amount: "decimal" });
+
+    expect(objectSortaMatchesWhereClause(obj, { amount: { $gt: "9" } }, true))
+      .toBe(true);
+    expect(objectSortaMatchesWhereClause(obj, { amount: { $lt: "9" } }, true))
+      .toBe(false);
+    expect(objectSortaMatchesWhereClause(obj, { amount: { $gte: "10" } }, true))
+      .toBe(true);
+    expect(objectSortaMatchesWhereClause(obj, { amount: { $lte: "9" } }, true))
+      .toBe(false);
+    // boundary: 10.0 == 10 numerically
+    expect(
+      objectSortaMatchesWhereClause(obj, { amount: { $gte: "10.0" } }, true),
+    )
+      .toBe(true);
+    expect(
+      objectSortaMatchesWhereClause(obj, { amount: { $lte: "10.0" } }, true),
+    )
+      .toBe(true);
+  });
+
+  it("compares long values beyond 2^53 without precision loss", () => {
+    const obj = holderWithTypes(
+      { big: "9007199254740993" },
+      { big: "long" },
+    );
+
+    // 9007199254740993 > 9007199254740992, indistinguishable as doubles.
+    expect(
+      objectSortaMatchesWhereClause(
+        obj,
+        { big: { $gt: "9007199254740992" } },
+        true,
+      ),
+    ).toBe(true);
+  });
+
+  it("keeps native comparison for real string properties", () => {
+    const obj = holderWithTypes({ name: "10" }, { name: "string" });
+
+    // lexicographic: "10" is not > "9"
+    expect(objectSortaMatchesWhereClause(obj, { name: { $gt: "9" } }, true))
+      .toBe(false);
+  });
 });

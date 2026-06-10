@@ -15,8 +15,10 @@
  */
 
 import type { InterfaceMetadata, ObjectMetadata, Osdk } from "@osdk/api";
+import type { DerivedPropertyRuntimeMetadata } from "../../derivedProperties/derivedPropertyRuntimeMetadata.js";
 import type { FormatPropertyOptions } from "../formatting/applyPropertyFormatter.js";
 import type { BaseHolder } from "./BaseHolder.js";
+import type { RdpDefRef } from "./InternalSymbols.js";
 import { InterfaceDefRef } from "./InternalSymbols.js";
 
 /** @internal */
@@ -24,6 +26,7 @@ export interface InterfaceHolder<
   _Q extends Osdk.Instance<any> = never,
 > extends BaseHolder {
   [InterfaceDefRef]: InterfaceMetadata;
+  readonly [RdpDefRef]?: DerivedPropertyRuntimeMetadata;
 
   readonly "$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata": {
     readonly ObjectMetadata: ObjectMetadata;

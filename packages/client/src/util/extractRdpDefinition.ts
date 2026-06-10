@@ -110,6 +110,15 @@ async function extractRdpDefinitionInternal(
           case "collectList":
           case "collectSet":
           case "get":
+          // min/max/sum preserve the aggregated property's numeric type (e.g.
+          // min or sum of a decimal is a decimal, which is wire-encoded as a
+          // string), so capture it the same way -- sorting/filtering relies on
+          // it to compare numerically. avg/count/distinct don't preserve the
+          // type (they return double/integer as JS numbers), so they fall
+          // through and are left untyped.
+          case "min":
+          case "max":
+          case "sum":
             // This is the object set construction for the derived property definition construction. We pass in childObjectType so that when we reach MethodInputObjectSet, we know where to start looking.
             const { childObjectType: operationLevelObjectType } =
               await extractRdpDefinitionInternal(

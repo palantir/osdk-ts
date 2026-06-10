@@ -16,28 +16,44 @@
 
 import type { PossibleWhereClauseFilters } from "@osdk/api";
 import invariant from "tiny-invariant";
+import { compareNumericStrings } from "./compareNumericStrings.js";
+import { isNumericStringType } from "./resolvePropertyType.js";
 
 /**
  * Evaluates a where clause filter against a value.
  * This is a runtime evaluation function that handles different property types.
+ *
+ * @param propertyType - the declared type of the property being filtered, used
+ * to compare decimal/long (wire-encoded as strings) numerically rather than
+ * lexicographically for the ordered operators. Undefined for properties whose
+ * type can't be resolved, in which case the native comparison is used.
  */
 export function evaluateFilter(
   f: PossibleWhereClauseFilters,
   realValue: any,
   expected: any,
   strict: boolean,
+  propertyType?: string,
 ): boolean {
   switch (f) {
     case "$eq":
       return realValue === expected;
-    case "$gt":
-      return realValue > expected;
-    case "$lt":
-      return realValue < expected;
-    case "$gte":
-      return realValue >= expected;
-    case "$lte":
-      return realValue <= expected;
+    case "$gt": {
+      const c = numericCompare(realValue, expected, propertyType);
+      return c != null ? c > 0 : realValue > expected;
+    }
+    case "$lt": {
+      const c = numericCompare(realValue, expected, propertyType);
+      return c != null ? c < 0 : realValue < expected;
+    }
+    case "$gte": {
+      const c = numericCompare(realValue, expected, propertyType);
+      return c != null ? c >= 0 : realValue >= expected;
+    }
+    case "$lte": {
+      const c = numericCompare(realValue, expected, propertyType);
+      return c != null ? c <= 0 : realValue <= expected;
+    }
     case "$ne":
       return realValue !== expected;
     case "$in":
@@ -67,4 +83,25 @@ export function evaluateFilter(
       }
       return !strict;
   }
+}
+
+/**
+ * Returns the numeric ordering (-1/0/1) of two values when the property is a
+ * decimal/long wire-encoded as strings, or undefined when the native
+ * comparison operators should be used instead (real strings, dates, numbers,
+ * or values that aren't both strings).
+ */
+function numericCompare(
+  realValue: unknown,
+  expected: unknown,
+  propertyType: string | undefined,
+): number | undefined {
+  if (
+    isNumericStringType(propertyType)
+    && typeof realValue === "string"
+    && typeof expected === "string"
+  ) {
+    return compareNumericStrings(realValue, expected);
+  }
+  return undefined;
 }

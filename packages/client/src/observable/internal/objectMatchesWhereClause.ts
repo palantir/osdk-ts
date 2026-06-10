@@ -20,6 +20,7 @@ import invariant from "tiny-invariant";
 import type { InterfaceHolder } from "../../object/convertWireToOsdkObjects/InterfaceHolder.js";
 import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import { evaluateFilter } from "./evaluateFilter.js";
+import { resolvePropertyType } from "./resolvePropertyType.js";
 import type { SimpleWhereClause } from "./SimpleWhereClause.js";
 
 function is$and(
@@ -101,7 +102,8 @@ export function objectSortaMatchesWhereClause(
       const realValue: any = o[key as keyof typeof o];
       const [f] = Object.keys(filter) as Array<PossibleWhereClauseFilters>;
       const expected = (filter as any)[f];
-      return evaluateFilter(f, realValue, expected, strict);
+      const propertyType = resolvePropertyType(o, key);
+      return evaluateFilter(f, realValue, expected, strict, propertyType);
     }
 
     if (key in o) {
