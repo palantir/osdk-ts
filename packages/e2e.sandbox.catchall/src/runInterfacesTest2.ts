@@ -103,6 +103,27 @@ export async function runInterfacesTest2(): Promise<void> {
   const interfaceA = await dsClient(EsongInterfaceA).fetchPage();
   console.log("interfaceA instances: ", interfaceA);
 
+  const interfaceAFilteredByTitle = await dsClient(EsongInterfaceA).where({
+    "$title": {
+      $in: [
+        "Support link presence filter",
+        "Plan remainder of real-time updates work in API Gateway",
+      ],
+    },
+  }).fetchPage({ $includeAllBaseObjectProperties: true });
+  console.log(
+    "interfaceA filtered by title instances: ",
+    interfaceAFilteredByTitle,
+  );
+
+  const interfaceAFilteredByPk = await dsClient(EsongInterfaceA).where({
+    "$primaryKey": { $in: [5320, 5323] },
+  }).fetchPage({ $includeAllBaseObjectProperties: true });
+  console.log(
+    "interfaceA filtered by title instances: ",
+    interfaceAFilteredByPk,
+  );
+
   const huh3 = await interfaceA.data[0].$link.esongPds.fetchOne();
 
   const implementObjectTypeAAndB = await client(

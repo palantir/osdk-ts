@@ -20,6 +20,7 @@ React hooks for building front-end applications with OSDK.
 - [Advanced Queries](/react/advanced-queries) - useObjectSet, derived properties, aggregations
 - [Cache Management](/react/cache-management) - Cache behavior and invalidation
 - [Platform APIs](/react/platform-apis) - useCurrentFoundryUser, useFoundryUser, useFoundryUsersList
+- [Devtools (Experimental)](/react-devtools/Prerequisites) - In-app monitoring panel and Vite plugin for inspecting, debugging, and tuning OSDK React apps
 
 ### [Components](/react-components/Prerequisites)
 
@@ -28,8 +29,9 @@ Pre-built, Ontology-aware React components with data loading, caching, and state
 - [Prerequisites](/react-components/Prerequisites) - Installation, CSS layers, and theming setup
 - [ObjectTable](/react-components/ObjectTable) - Sortable, filterable table with inline editing
 - [FilterList](/react-components/FilterList) - Aggregation-based filter UI
+- [ActionForm](/react-components/ActionForm) - Generated and custom forms for applying OSDK actions
 - [PdfViewer](/react-components/PdfViewer) - PDF viewer with annotations and search
-- [CbacPicker](/cbac-components/CbacPicker) - Classification marking picker, dialog, and banner
+- [CbacPicker](/react-components/CbacPicker) - Classification marking picker, dialog, and banner
 
 ### Other Guides
 

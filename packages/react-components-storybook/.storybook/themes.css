@@ -1,25 +1,4 @@
-/* Light theme (default) - No overrides needed, uses default Blueprint/OSDK tokens */
-[data-theme="light"] {
-  --bp-intent-primary-rest: #2d72d2;
-  --bp-intent-danger-rest: #cd4246;
-
-  --bp-palette-black: oklch(0.2827 0.019 238.86);
-  --bp-palette-white: oklch(1 0 89.88);
-
-  --bp-palette-gray-1: oklch(0.6792 0.0229 243.66);
-  --bp-palette-gray-2: oklch(0.6792 0.0229 243.66);
-  --bp-palette-gray-3: oklch(0.8562 0.0148 244.74);
-  --bp-palette-gray-4: oklch(0.8562 0.0148 244.74);
-  --bp-palette-gray-5: oklch(0.9178 0.0101 227.89);
-  --bp-palette-gray-100: oklch(0.93 0.008 240);
-  --bp-palette-gray-200: oklch(0.88 0.012 240);
-
-  --bp-palette-light-gray-1: oklch(0.9178 0.0101 227.89);
-  --bp-palette-light-gray-2: oklch(0.9587 0.0051 228.82);
-  --bp-palette-light-gray-3: oklch(0.9587 0.0051 228.82);
-  --bp-palette-light-gray-4: oklch(0.9809 0.0025 228.78);
-  --bp-palette-light-gray-5: oklch(0.9809 0.0025 228.78);
-}
+/* light and dark themes are handled in the components by default `*/
 
 /* Modern theme - based on e2e.sandbox.peopleapp theme-overrides.css */
 [data-theme="modern"] {
@@ -159,6 +138,7 @@
   --osdk-surface-border-color-default: var(--devcon-green-700);
   --osdk-surface-background-color-default-rest: var(--devcon-bg-card);
   --osdk-surface-background-color-default-hover: var(--devcon-bg-elevated);
+  --osdk-surface-background-color-default-active: rgba(34, 197, 94, 0.2);
   --osdk-background-primary: var(--devcon-bg-dark);
   --osdk-background-secondary: var(--devcon-bg-elevated);
   --osdk-background-backdrop: color-mix(

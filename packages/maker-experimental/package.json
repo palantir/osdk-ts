@@ -1,6 +1,6 @@
 {
   "name": "@osdk/maker-experimental",
-  "version": "0.14.0",
+  "version": "0.25.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -42,6 +42,7 @@
   "dependencies": {
     "@osdk/api": "workspace:~",
     "@osdk/client.unstable": "workspace:~",
+    "@osdk/foundry.ontologies": "catalog:foundry-platform-typescript",
     "@osdk/generator-converters.ontologyir": "workspace:~",
     "@osdk/generator-converters.preview": "workspace:~",
     "@osdk/maker": "workspace:~",

@@ -2045,6 +2045,7 @@ describe("Link Types", () => {
           "interfaceTypes": {
             "com.palantir.A": {
               "interfaceType": {
+                "actionTypeConstraints": [],
                 "apiName": "com.palantir.A",
                 "displayMetadata": {
                   "description": "A",
@@ -2059,6 +2060,29 @@ describe("Link Types", () => {
                 },
                 "extendsInterfaces": [],
                 "extendsInterfacesMetadata": [],
+                "linkedInterfaces": [
+                  {
+                    "__type": "INTERFACE_TYPE",
+                    "actionTypeConstraints": [],
+                    "apiName": "com.palantir.B",
+                    "displayMetadata": {
+                      "description": "B",
+                      "displayName": "B",
+                      "icon": undefined,
+                    },
+                    "extendsInterfaces": [],
+                    "linkedInterfaces": [],
+                    "links": [],
+                    "permission": undefined,
+                    "propertiesV2": {},
+                    "propertiesV3": {},
+                    "searchable": true,
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                  },
+                ],
                 "links": [
                   {
                     "cardinality": "SINGLE",
@@ -2087,6 +2111,7 @@ describe("Link Types", () => {
             },
             "com.palantir.B": {
               "interfaceType": {
+                "actionTypeConstraints": [],
                 "apiName": "com.palantir.B",
                 "displayMetadata": {
                   "description": "B",
@@ -2101,6 +2126,7 @@ describe("Link Types", () => {
                 },
                 "extendsInterfaces": [],
                 "extendsInterfacesMetadata": [],
+                "linkedInterfaces": [],
                 "links": [],
                 "permission": undefined,
                 "properties": [],
@@ -2141,6 +2167,7 @@ describe("Link Types", () => {
           "interfaceTypes": {
             "com.palantir.A": {
               "interfaceType": {
+                "actionTypeConstraints": [],
                 "apiName": "com.palantir.A",
                 "displayMetadata": {
                   "description": "A",
@@ -2155,6 +2182,29 @@ describe("Link Types", () => {
                 },
                 "extendsInterfaces": [],
                 "extendsInterfacesMetadata": [],
+                "linkedInterfaces": [
+                  {
+                    "__type": "INTERFACE_TYPE",
+                    "actionTypeConstraints": [],
+                    "apiName": "com.palantir.B",
+                    "displayMetadata": {
+                      "description": "B",
+                      "displayName": "B",
+                      "icon": undefined,
+                    },
+                    "extendsInterfaces": [],
+                    "linkedInterfaces": [],
+                    "links": [],
+                    "permission": undefined,
+                    "propertiesV2": {},
+                    "propertiesV3": {},
+                    "searchable": true,
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                  },
+                ],
                 "links": [
                   {
                     "cardinality": "MANY",
@@ -2183,6 +2233,7 @@ describe("Link Types", () => {
             },
             "com.palantir.B": {
               "interfaceType": {
+                "actionTypeConstraints": [],
                 "apiName": "com.palantir.B",
                 "displayMetadata": {
                   "description": "B",
@@ -2197,6 +2248,7 @@ describe("Link Types", () => {
                 },
                 "extendsInterfaces": [],
                 "extendsInterfacesMetadata": [],
+                "linkedInterfaces": [],
                 "links": [],
                 "permission": undefined,
                 "properties": [],

@@ -29,10 +29,10 @@ import {
   isMediaUpload,
 } from "../object/mediaUpload.js";
 import { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
+import { isScenarioClient } from "../scenarios/ScenarioClient.js";
 import { isInterfaceActionParam } from "./interfaceUtils.js";
 import { isObjectSpecifiersObject } from "./isObjectSpecifiersObject.js";
 import { isOntologyObjectV2 } from "./isOntologyObjectV2.js";
-import { isPoint } from "./isPoint.js";
 import { isWireObjectSet } from "./WireObjectSet.js";
 
 /**
@@ -126,14 +126,6 @@ export async function toDataValue(
     return await toDataValue(value.$primaryKey, client, actionMetadata);
   }
 
-  if (isPoint(value)) {
-    return await toDataValue(
-      `${value.coordinates[1]},${value.coordinates[0]}`,
-      client,
-      actionMetadata,
-    );
-  }
-
   // object set (the rid as a string (passes through the last return), or the ObjectSet definition directly)
   if (isWireObjectSet(value)) {
     return value;
@@ -147,6 +139,10 @@ export async function toDataValue(
       objectTypeApiName: value.$objectType,
       primaryKeyValue: value.$primaryKey,
     };
+  }
+
+  if (isScenarioClient(value)) {
+    return value.getScenarioReference();
   }
 
   // TODO (during queries implementation)

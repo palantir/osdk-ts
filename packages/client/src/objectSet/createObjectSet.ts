@@ -131,6 +131,9 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     ) as ObjectSet<Q>["fetchPageWithErrors"],
 
     where: (clause) => {
+      if (clause == null || Object.keys(clause).length === 0) {
+        return clientCtx.objectSetFactory(objectType, clientCtx, objectSet);
+      }
       return clientCtx.objectSetFactory(objectType, clientCtx, {
         type: "filter",
         objectSet,
@@ -222,8 +225,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
           ),
           objectType,
           objectSet,
-          { ...args, $pageSize: 10000, $nextPageToken },
-          true,
+          { ...args, $pageSize: 10000, $nextPageToken, $snapshot: true },
         );
         $nextPageToken = result.nextPageToken;
 

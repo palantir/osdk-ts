@@ -55,6 +55,7 @@ export interface ObjectTypeInner extends
     | "status"
   >
 {
+  ridHint: string | undefined; // This is a hint for maker-experimental to enable moving
   primaryKeyPropertyApiName: string;
   properties: Array<ObjectPropertyType>;
   titlePropertyApiName: string;

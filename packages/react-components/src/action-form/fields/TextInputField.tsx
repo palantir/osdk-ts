@@ -27,6 +27,7 @@ export function TextInputField({
   placeholder,
   minLength,
   maxLength,
+  disabled,
 }: TextInputFieldProps & { id?: string }): React.ReactElement {
   return (
     <Input
@@ -38,6 +39,7 @@ export function TextInputField({
       placeholder={placeholder}
       minLength={minLength}
       maxLength={maxLength}
+      disabled={disabled}
       aria-invalid={error != null || undefined}
     />
   );

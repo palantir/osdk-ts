@@ -127,7 +127,8 @@ export interface Client extends SharedClient, OldSharedClient {
       | Experiment<"2.0.8">
       | Experiment<"2.1.0">
       | Experiment<"2.2.0">
-      | Experiment<"2.8.0">,
+      | Experiment<"2.8.0">
+      | Experiment<"2.19.0">,
   >(
     experiment: Q,
   ): ExperimentFns<Q>;
@@ -168,7 +169,7 @@ export interface Client extends SharedClient, OldSharedClient {
 export const additionalContext: unique symbol = Symbol("additionalContext");
 
 // BEGIN: THIS IS GENERATED CODE. DO NOT EDIT.
-const MaxOsdkVersion = "2.17.0";
+const MaxOsdkVersion = "2.32.0";
 // END: THIS IS GENERATED CODE. DO NOT EDIT.
 export type MaxOsdkVersion = typeof MaxOsdkVersion;
 const ErrorMessage: unique symbol = Symbol("ErrorMessage");

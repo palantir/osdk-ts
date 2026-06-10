@@ -4,8 +4,3 @@
 .osdkDatetimeInputWrapper {
   outline: none;
 }
-
-.osdkDatetimeTimeFooter {
-  display: flex;
-  justify-content: center;
-}

@@ -22,7 +22,9 @@ import { CellContextMenu } from "./CellContextMenu.js";
 import { useCellContextMenu } from "./hooks/useCellContextMenu.js";
 import styles from "./TableCell.module.css";
 import { SELECTION_COLUMN_ID } from "./utils/constants.js";
+import { isCellEditable } from "./utils/editableUtils.js";
 import { getColumnPinningStyles } from "./utils/getColumnPinningStyles.js";
+import { shouldShowEditableCell } from "./utils/shouldShowEditableCell.js";
 
 interface TableCellProps<TData extends RowData> {
   cell: Cell<TData, unknown>;
@@ -53,11 +55,20 @@ export function TableCell<TData extends RowData>(
 
   const { columnStyles } = getColumnPinningStyles(cell.column);
 
+  const tableMeta = cell.getContext().table.options.meta;
+  const columnMeta = cell.column.columnDef.meta;
+  const isEditable = shouldShowEditableCell(
+    isCellEditable(columnMeta?.editable, cell.row.original),
+    tableMeta?.onCellEdit,
+    tableMeta?.isInEditMode,
+  );
+
   return (
     <>
       <td
         ref={tdRef}
         data-pinned={cell.column.getIsPinned()}
+        data-editable={isEditable ? "true" : undefined}
         className={styles.osdkTableCell}
         style={columnStyles}
         onContextMenu={handleOpenContextMenu}

@@ -1,5 +1,147 @@
 # @osdk/widget.client-react
 
+## 3.29.0
+
+### Patch Changes
+
+- Updated dependencies [06adca1]
+- Updated dependencies [79f8a6e]
+  - @osdk/client@2.32.0
+  - @osdk/widget.client@3.29.0
+
+## 3.28.0
+
+### Patch Changes
+
+- Updated dependencies [57cbc6d]
+  - @osdk/client@2.31.0
+  - @osdk/widget.client@3.28.0
+
+## 3.27.0
+
+### Patch Changes
+
+- Updated dependencies [db8df24]
+  - @osdk/client@2.30.0
+  - @osdk/widget.client@3.27.0
+
+## 3.26.0
+
+### Patch Changes
+
+- Updated dependencies [08e921c]
+- Updated dependencies [4b38963]
+- Updated dependencies [9081e32]
+  - @osdk/client@2.29.0
+  - @osdk/widget.client@3.26.0
+
+## 3.25.0
+
+### Patch Changes
+
+- Updated dependencies [a5066b5]
+- Updated dependencies [3e03544]
+- Updated dependencies [13132b8]
+  - @osdk/client@2.28.0
+  - @osdk/widget.client@3.25.0
+
+## 3.24.0
+
+### Patch Changes
+
+- Updated dependencies [5ff7aa5]
+  - @osdk/client@2.27.0
+  - @osdk/widget.client@3.24.0
+
+## 3.23.0
+
+### Patch Changes
+
+- @osdk/client@2.26.0
+- @osdk/widget.client@3.23.0
+
+## 3.22.0
+
+### Patch Changes
+
+- Updated dependencies [8965bdf]
+- Updated dependencies [8965bdf]
+- Updated dependencies [bd90dba]
+- Updated dependencies [643c450]
+- Updated dependencies [d0845dd]
+  - @osdk/client@2.25.0
+  - @osdk/widget.client@3.22.0
+
+## 3.21.0
+
+### Patch Changes
+
+- Updated dependencies [a492285]
+- Updated dependencies [60aff19]
+- Updated dependencies [35ad6d1]
+- Updated dependencies [6923158]
+  - @osdk/client@2.24.0
+  - @osdk/widget.client@3.21.0
+
+## 3.20.0
+
+### Patch Changes
+
+- Updated dependencies [8290dd7]
+  - @osdk/client@2.23.0
+  - @osdk/widget.client@3.20.0
+
+## 3.19.0
+
+### Minor Changes
+
+- 2f3aa7b: Support reloading widget on vite HMR full reload
+
+### Patch Changes
+
+- Updated dependencies [2f3aa7b]
+  - @osdk/widget.client@3.19.0
+  - @osdk/client@2.22.0
+
+## 3.18.0
+
+### Patch Changes
+
+- Updated dependencies [1a07c91]
+- Updated dependencies [2db1450]
+  - @osdk/client@2.21.0
+  - @osdk/widget.client@3.18.0
+
+## 3.17.0
+
+### Patch Changes
+
+- Updated dependencies [f90a2da]
+- Updated dependencies [9eb67e4]
+- Updated dependencies [51b3bce]
+- Updated dependencies [75f877f]
+  - @osdk/client@2.20.0
+  - @osdk/widget.client@3.17.0
+
+## 3.16.0
+
+### Patch Changes
+
+- Updated dependencies [02c796c]
+- Updated dependencies [2a2b672]
+- Updated dependencies [d962309]
+  - @osdk/client@2.19.0
+  - @osdk/widget.client@3.16.0
+
+## 3.15.0
+
+### Patch Changes
+
+- Updated dependencies [69ebc43]
+- Updated dependencies [85a248d]
+  - @osdk/client@2.18.0
+  - @osdk/widget.client@3.15.0
+
 ## 3.14.0
 
 ### Patch Changes

@@ -14,14 +14,23 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, ObjectTypeDefinition, PropertyKeys } from "@osdk/api";
+import type {
+  ObjectSet,
+  ObjectTypeDefinition,
+  PropertyKeys,
+  WhereClause,
+} from "@osdk/api";
 import { useOsdkAggregation } from "@osdk/react";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { FilterState } from "../FilterListItemApi.js";
 import { LinkedPropertyInput } from "../inputs/LinkedPropertyInput.js";
-import type { LinkedPropertyFilterDefinition } from "../types/LinkedFilterTypes.js";
+import type {
+  LinkedFilter,
+  LinkedPropertyFilterDefinition,
+} from "../types/LinkedFilterTypes.js";
+import { mockAggregationByObjectSetKind } from "./aggregationMocks.js";
 
 vi.mock("@osdk/react", () => ({
   useOsdkAggregation: vi.fn(),
@@ -49,7 +58,7 @@ function createMockObjectSet() {
     },
   };
 
-  return {
+  const mock: ObjectSet<ObjectTypeDefinition> = {
     $objectSetInternals: {
       def: {
         apiName: "Employee",
@@ -57,7 +66,12 @@ function createMockObjectSet() {
       } as ObjectTypeDefinition,
     },
     pivotTo: vi.fn().mockReturnValue(linkedObjectSet),
+    where: vi.fn(),
   } as unknown as ObjectSet<ObjectTypeDefinition>;
+  // Default `where` returns the mock itself so chained calls work; tests that
+  // assert on `.where()` override this.
+  vi.mocked(mock.where).mockReturnValue(mock);
+  return mock;
 }
 
 function createDefinition(
@@ -82,6 +96,7 @@ function createDefinition(
   return {
     type: "LINKED_PROPERTY",
     linkName: "primaryOffice",
+    reverseLinkName: "occupants",
     linkedPropertyKey: "name" as PropertyKeys<ObjectTypeDefinition>,
     linkedFilterComponent,
     linkedFilterState: { type: "SELECT", selectedValues: [] },
@@ -110,6 +125,7 @@ describe("LinkedPropertyInput", () => {
       render(
         <LinkedPropertyInput
           objectSet={mockObjectSet}
+          whereClause={{} as WhereClause<ObjectTypeDefinition>}
           definition={createDefinition("TOGGLE")}
           filterState={undefined}
           onFilterStateChanged={onFilterStateChanged}
@@ -145,6 +161,7 @@ describe("LinkedPropertyInput", () => {
       render(
         <LinkedPropertyInput
           objectSet={mockObjectSet}
+          whereClause={{} as WhereClause<ObjectTypeDefinition>}
           definition={createDefinition("TOGGLE")}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
@@ -162,6 +179,7 @@ describe("LinkedPropertyInput", () => {
       render(
         <LinkedPropertyInput
           objectSet={mockObjectSet}
+          whereClause={{} as WhereClause<ObjectTypeDefinition>}
           definition={createDefinition("TOGGLE")}
           filterState={undefined}
           onFilterStateChanged={onFilterStateChanged}
@@ -184,6 +202,7 @@ describe("LinkedPropertyInput", () => {
       render(
         <LinkedPropertyInput
           objectSet={mockObjectSet}
+          whereClause={{} as WhereClause<ObjectTypeDefinition>}
           definition={createDefinition("TOGGLE")}
           filterState={wrongState}
           onFilterStateChanged={onFilterStateChanged}
@@ -203,6 +222,7 @@ describe("LinkedPropertyInput", () => {
       render(
         <LinkedPropertyInput
           objectSet={mockObjectSet}
+          whereClause={{} as WhereClause<ObjectTypeDefinition>}
           definition={createDefinition("TOGGLE")}
           filterState={undefined}
           onFilterStateChanged={onFilterStateChanged}
@@ -211,9 +231,53 @@ describe("LinkedPropertyInput", () => {
 
       expect(mockObjectSet.pivotTo).toHaveBeenCalledWith("primaryOffice");
     });
+
+    it("pivots the raw objectSet for emptySource when showFilteredOutValues is true and whereClause is non-empty", () => {
+      const scopedLinkedSet = {
+        $objectSetInternals: { def: MockLinkedObjectType },
+      };
+      const rawLinkedSet = {
+        $objectSetInternals: { def: MockLinkedObjectType },
+      };
+      const scopedSourceSet = {
+        pivotTo: vi.fn().mockReturnValue(scopedLinkedSet),
+      };
+      const mockObjectSet = {
+        $objectSetInternals: {
+          def: { apiName: "Employee", type: "object" } as ObjectTypeDefinition,
+        },
+        pivotTo: vi.fn().mockReturnValue(rawLinkedSet),
+        where: vi.fn().mockReturnValue(scopedSourceSet),
+      } as unknown as ObjectSet<ObjectTypeDefinition>;
+
+      vi.mocked(useOsdkAggregation).mockReturnValue({
+        data: [],
+        isLoading: false,
+        error: null,
+        refetch: vi.fn(),
+      } as unknown as ReturnType<typeof useOsdkAggregation>);
+
+      render(
+        <LinkedPropertyInput
+          objectSet={mockObjectSet}
+          whereClause={{ department: "Engineering" } as unknown as WhereClause<
+            ObjectTypeDefinition
+          >}
+          linkedFilters={[]}
+          definition={createDefinition("MULTI_SELECT")}
+          filterState={undefined}
+          onFilterStateChanged={vi.fn()}
+          showFilteredOutValues={true}
+        />,
+      );
+
+      expect(mockObjectSet.where).toHaveBeenCalled();
+      expect(scopedSourceSet.pivotTo).toHaveBeenCalledWith("primaryOffice");
+      expect(mockObjectSet.pivotTo).toHaveBeenCalledWith("primaryOffice");
+    });
   });
 
-  describe("ghost initialFilterStates values", () => {
+  describe("filtered-out initialFilterStates values", () => {
     function mockAggregationData(
       groups: Array<{ name: string; count: number }>,
     ): void {
@@ -228,13 +292,14 @@ describe("LinkedPropertyInput", () => {
       } as unknown as ReturnType<typeof useOsdkAggregation>);
     }
 
-    it("renders ghost selected value as a chip in MULTI_SELECT", () => {
+    it("renders filtered-out selected value as a chip in MULTI_SELECT", () => {
       mockAggregationData([]);
       const mockObjectSet = createMockObjectSet();
 
       render(
         <LinkedPropertyInput
           objectSet={mockObjectSet}
+          whereClause={{} as WhereClause<ObjectTypeDefinition>}
           definition={createDefinition("MULTI_SELECT")}
           filterState={{
             type: "linkedProperty",
@@ -253,13 +318,14 @@ describe("LinkedPropertyInput", () => {
       expect(screen.getByText("Research")).toBeDefined();
     });
 
-    it("mounts combobox for ghost selected value in SINGLE_SELECT", () => {
+    it("mounts combobox for filtered-out selected value in SINGLE_SELECT", () => {
       mockAggregationData([]);
       const mockObjectSet = createMockObjectSet();
 
       render(
         <LinkedPropertyInput
           objectSet={mockObjectSet}
+          whereClause={{} as WhereClause<ObjectTypeDefinition>}
           definition={createDefinition("SINGLE_SELECT")}
           filterState={{
             type: "linkedProperty",
@@ -273,13 +339,13 @@ describe("LinkedPropertyInput", () => {
       );
 
       // Without the fix, values.length === 0 renders "No options available"
-      // and the Combobox never mounts. With the fix, the ghost value makes
-      // values.length > 0, so the search input renders instead.
+      // and the Combobox never mounts. With the fix, the filtered-out value
+      // makes values.length > 0, so the search input renders instead.
       expect(screen.queryByText("No options available")).toBeNull();
       expect(screen.getByLabelText("Select name")).toBeDefined();
     });
 
-    it("renders ghost selected value as a checked row with count 0 in LISTOGRAM", () => {
+    it("renders filtered-out selected value as a checked row with count 0 in LISTOGRAM", () => {
       mockAggregationData([{ name: "Marketing", count: 5 }]);
       const mockObjectSet = createMockObjectSet();
 
@@ -303,6 +369,7 @@ describe("LinkedPropertyInput", () => {
       render(
         <LinkedPropertyInput
           objectSet={mockObjectSet}
+          whereClause={{} as WhereClause<ObjectTypeDefinition>}
           definition={definition}
           filterState={{
             type: "linkedProperty",
@@ -332,6 +399,7 @@ describe("LinkedPropertyInput", () => {
       render(
         <LinkedPropertyInput
           objectSet={mockObjectSet}
+          whereClause={{} as WhereClause<ObjectTypeDefinition>}
           definition={createDefinition("TOGGLE")}
           filterState={undefined}
           onFilterStateChanged={vi.fn()}
@@ -347,6 +415,7 @@ describe("LinkedPropertyInput", () => {
       render(
         <LinkedPropertyInput
           objectSet={mockObjectSet}
+          whereClause={{} as WhereClause<ObjectTypeDefinition>}
           definition={createDefinition("CONTAINS_TEXT")}
           filterState={undefined}
           onFilterStateChanged={vi.fn()}
@@ -372,6 +441,7 @@ describe("LinkedPropertyInput", () => {
       render(
         <LinkedPropertyInput
           objectSet={mockObjectSet}
+          whereClause={{} as WhereClause<ObjectTypeDefinition>}
           definition={definition}
           filterState={undefined}
           onFilterStateChanged={vi.fn()}
@@ -381,6 +451,174 @@ describe("LinkedPropertyInput", () => {
       const dateInput = screen.getByLabelText("Select date");
       expect(dateInput).toBeTruthy();
       expect(dateInput.getAttribute("role")).toBe("combobox");
+    });
+  });
+
+  describe("showFilteredOutValues (linked filtered-out rows)", () => {
+    function mockDualLinkedAggregation(
+      scoped: Array<{ name: string; count: number }>,
+      emptySource: Array<{ name: string; count: number }>,
+    ): void {
+      mockAggregationByObjectSetKind({
+        scoped,
+        emptySource,
+        "scoped-intersected": scoped,
+        chained: scoped,
+      });
+    }
+
+    function makeChainable(
+      kind: string,
+    ): ObjectSet<ObjectTypeDefinition> {
+      const set = {
+        _kind: kind,
+        $objectSetInternals: { def: MockLinkedObjectType },
+        where: vi.fn(),
+        pivotTo: vi.fn(),
+        intersect: vi.fn(),
+      } as unknown as ObjectSet<ObjectTypeDefinition>;
+      vi.mocked(set.where).mockImplementation(() => makeChainable("chained"));
+      vi.mocked(set.pivotTo).mockImplementation(() => makeChainable(kind));
+      vi.mocked(set.intersect).mockImplementation(() => makeChainable(kind));
+      return set;
+    }
+
+    function createDualScopeMock(): ObjectSet<ObjectTypeDefinition> {
+      const emptySourcePivoted = makeChainable("emptySource");
+      const scopedPivoted = makeChainable("scoped");
+      const intersected = {
+        ...makeChainable("scoped-intersected"),
+      } as ObjectSet<ObjectTypeDefinition>;
+      vi.mocked(intersected.pivotTo).mockImplementation(() => scopedPivoted);
+
+      const base = makeChainable("base");
+      vi.mocked(base.pivotTo).mockImplementation(() => emptySourcePivoted);
+      vi.mocked(base.intersect).mockImplementation(() => intersected);
+      return base;
+    }
+
+    it("merges emptySource linked-facet values into LISTOGRAM as count=0 filtered-out rows when showFilteredOutValues + linkedFilters", () => {
+      mockDualLinkedAggregation(
+        [{ name: "Alice", count: 2 }],
+        [{ name: "Alice", count: 5 }, { name: "Bob", count: 3 }],
+      );
+      const objectSet = createDualScopeMock();
+      const linkedFilters: ReadonlyArray<LinkedFilter<ObjectTypeDefinition>> = [
+        {
+          linkName: "manager",
+          reverseLinkName: "reports",
+          innerWhere: {} as WhereClause<ObjectTypeDefinition>,
+        },
+      ];
+
+      render(
+        <LinkedPropertyInput
+          objectSet={objectSet}
+          whereClause={{} as WhereClause<ObjectTypeDefinition>}
+          linkedFilters={linkedFilters}
+          showFilteredOutValues={true}
+          definition={createDefinition("LISTOGRAM")}
+          filterState={undefined}
+          onFilterStateChanged={vi.fn()}
+        />,
+      );
+
+      // Both rows render — "Alice" from scoped, "Bob" synthesized from
+      // emptySource as a count=0 filtered-out row.
+      expect(screen.getByRole("button", { name: /Alice/ })).toBeTruthy();
+      const bobRow = screen.getByRole("button", { name: /Bob/ });
+      expect(bobRow.hasAttribute("data-filtered-out")).toBe(true);
+    });
+  });
+
+  describe("include/exclude controls", () => {
+    function mockEmptyAggregation(): void {
+      vi.mocked(useOsdkAggregation).mockReturnValue({
+        data: [],
+        isLoading: false,
+        error: null,
+        refetch: vi.fn(),
+      } as unknown as ReturnType<typeof useOsdkAggregation>);
+    }
+
+    it("renders the keeping/excluding dropdown and Clear all for a linked MULTI_SELECT with a selection", () => {
+      const selectedState: FilterState = {
+        type: "linkedProperty",
+        linkedFilterState: { type: "SELECT", selectedValues: ["Research"] },
+      };
+      mockEmptyAggregation();
+      const mockObjectSet = createMockObjectSet();
+
+      render(
+        <LinkedPropertyInput
+          objectSet={mockObjectSet}
+          whereClause={{} as WhereClause<ObjectTypeDefinition>}
+          definition={createDefinition("MULTI_SELECT")}
+          filterState={selectedState}
+          onFilterStateChanged={vi.fn()}
+          excludeRowOpen={true}
+        />,
+      );
+
+      expect(screen.getByRole("button", { name: "Keeping" })).toBeDefined();
+      expect(screen.getByText("Clear all")).toBeDefined();
+    });
+
+    it("clears the inner selection through the LINKED_PROPERTY wrapper when Clear all is clicked", () => {
+      const selectedState: FilterState = {
+        type: "linkedProperty",
+        linkedFilterState: { type: "SELECT", selectedValues: ["Research"] },
+      };
+      mockEmptyAggregation();
+      const mockObjectSet = createMockObjectSet();
+      const onFilterStateChanged = vi.fn();
+
+      render(
+        <LinkedPropertyInput
+          objectSet={mockObjectSet}
+          whereClause={{} as WhereClause<ObjectTypeDefinition>}
+          definition={createDefinition("MULTI_SELECT")}
+          filterState={selectedState}
+          onFilterStateChanged={onFilterStateChanged}
+          excludeRowOpen={true}
+        />,
+      );
+
+      fireEvent.click(screen.getByText("Clear all"));
+
+      expect(onFilterStateChanged).toHaveBeenCalledWith({
+        type: "linkedProperty",
+        linkedFilterState: {
+          type: "SELECT",
+          selectedValues: [],
+          isExcluding: undefined,
+        },
+      });
+    });
+
+    it("does not render exclude controls for a linked NUMBER_RANGE filter", () => {
+      mockEmptyAggregation();
+      const mockObjectSet = createMockObjectSet();
+
+      render(
+        <LinkedPropertyInput
+          objectSet={mockObjectSet}
+          whereClause={{} as WhereClause<ObjectTypeDefinition>}
+          definition={createDefinition("NUMBER_RANGE")}
+          filterState={{
+            type: "linkedProperty",
+            linkedFilterState: {
+              type: "NUMBER_RANGE",
+              minValue: 1,
+              maxValue: 5,
+            },
+          }}
+          onFilterStateChanged={vi.fn()}
+          excludeRowOpen={true}
+        />,
+      );
+
+      expect(screen.queryByRole("button", { name: "Keeping" })).toBeNull();
     });
   });
 });

@@ -27,7 +27,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { DateRangePicker } from "../../../shared/calendar/index.js";
+import { DatePicker } from "../../../shared/calendar/index.js";
 import {
   createHistogramBuckets,
   getMaxBucketCount,
@@ -142,10 +142,9 @@ export interface RangeInputConfig<T> {
   formatPlaceholder?: (value: T) => string;
   inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
   /**
-   * For `inputType === "date"`: forwarded to the shared `DateRangePicker`'s
-   * `formatDate` so the date-range histogram From/To inputs render the
-   * consumer-provided display string instead of ISO. Ignored for number
-   * ranges.
+   * For `inputType === "date"`: forwarded to each `DatePicker` (From/To)
+   * so the histogram From/To inputs render the consumer-provided display
+   * string instead of ISO. Ignored for number ranges.
    */
   formatDate?: (date: Date) => string;
 }
@@ -224,6 +223,19 @@ function RangeInputInner<T>({
       }, DEBOUNCE_MS),
     [config],
   );
+
+  // Date branch handlers — only invoked when `config.inputType === "date"`,
+  // so T is Date. Reusing the refs above keeps the callbacks identity-stable
+  // across renders, so the cross-bound update of one boundary doesn't bust
+  // the React.memo on the OTHER DatePicker.
+  const handleDateMinChange = useCallback((next: Date | null): void => {
+    const dispatch = onChangeRef.current as RangeOnChange<Date>;
+    dispatch(next ?? undefined, maxValueRef.current as Date | undefined);
+  }, []);
+  const handleDateMaxChange = useCallback((next: Date | null): void => {
+    const dispatch = onChangeRef.current as RangeOnChange<Date>;
+    dispatch(minValueRef.current as Date | undefined, next ?? undefined);
+  }, []);
 
   useEffect(() => {
     setLocalMin(config.formatValue(minValue));
@@ -859,7 +871,8 @@ function RangeInputInner<T>({
           <DateRangeInputs
             minValue={minValue as Date | undefined}
             maxValue={maxValue as Date | undefined}
-            onChange={onChange as RangeOnChange<Date>}
+            onMinChange={handleDateMinChange}
+            onMaxChange={handleDateMaxChange}
             formatDate={config.formatDate}
             minLabel={config.minLabel}
             maxLabel={config.maxLabel}
@@ -918,7 +931,8 @@ type RangeOnChange<T> = (
 interface DateRangeInputsProps {
   minValue: Date | undefined;
   maxValue: Date | undefined;
-  onChange: RangeOnChange<Date>;
+  onMinChange: (next: Date | null) => void;
+  onMaxChange: (next: Date | null) => void;
   formatDate: ((date: Date) => string) | undefined;
   minLabel: string;
   maxLabel: string;
@@ -927,29 +941,28 @@ interface DateRangeInputsProps {
 function DateRangeInputs({
   minValue,
   maxValue,
-  onChange,
+  onMinChange,
+  onMaxChange,
   formatDate,
   minLabel,
   maxLabel,
 }: DateRangeInputsProps): React.ReactElement {
-  const handleChange = useCallback(
-    (next: readonly [Date | null, Date | null] | null) => {
-      const [start, end] = next ?? [null, null];
-      onChange(start ?? undefined, end ?? undefined);
-    },
-    [onChange],
-  );
-  const value = useMemo<readonly [Date | null, Date | null]>(
-    () => [minValue ?? null, maxValue ?? null],
-    [minValue, maxValue],
-  );
   return (
     <div className={styles.rangeInputs}>
-      <DateRangePicker
-        value={value}
-        onChange={handleChange}
-        placeholderStart={minLabel}
-        placeholderEnd={maxLabel}
+      <DatePicker
+        value={minValue ?? null}
+        onChange={onMinChange}
+        max={maxValue}
+        placeholder={minLabel}
+        ariaLabel={minLabel}
+        formatDate={formatDate}
+      />
+      <DatePicker
+        value={maxValue ?? null}
+        onChange={onMaxChange}
+        min={minValue}
+        placeholder={maxLabel}
+        ariaLabel={maxLabel}
         formatDate={formatDate}
       />
     </div>

@@ -1,0 +1,10 @@
+:root {
+  /* XML Viewer - Container */
+  --osdk-xml-viewer-bg: var(--osdk-background-primary);
+  --osdk-xml-viewer-border: var(--osdk-surface-border);
+
+  /* XML Viewer - Code */
+  --osdk-xml-viewer-font-family: monospace;
+  --osdk-xml-viewer-font-size: var(--osdk-typography-size-body-small);
+  --osdk-xml-viewer-line-height: 1.5;
+}

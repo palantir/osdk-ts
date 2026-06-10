@@ -17,18 +17,40 @@
 import type { CellContext, RowData } from "@tanstack/react-table";
 import React from "react";
 import { AsyncValueCell } from "./components/AsyncValueCell.js";
+import { CbacMarkingCell } from "./components/CbacMarkingCell.js";
+import { MandatoryMarkingCell } from "./components/MandatoryMarkingCell.js";
 import { EditableCell } from "./EditableCell.js";
 import styles from "./EditableCell.module.css";
 import { isAsyncCellData } from "./utils/AsyncCellData.js";
 import { isCellEditable } from "./utils/editableUtils.js";
 import { getCellId } from "./utils/getCellId.js";
 import { shouldShowEditableCell } from "./utils/shouldShowEditableCell.js";
+import type { CellEditInfo } from "./utils/types.js";
 
 function toDisplayValue(value: unknown): React.ReactNode {
   if (typeof value === "boolean") {
     return String(value);
   }
   return value as React.ReactNode;
+}
+
+// Returns the subset of `cellEdits` belonging to `rowId`, re-keyed by columnId.
+// Returns `undefined` (stable reference) when the row has no pending edits, so
+// that `React.memo` on `EditableCell` can skip re-renders of unedited rows when
+// edits change elsewhere in the table.
+function filterCellEditsToRow<TData extends RowData>(
+  cellEdits: Record<string, CellEditInfo<TData, unknown>> | undefined,
+  rowId: string,
+): Record<string, CellEditInfo<TData, unknown>> | undefined {
+  if (!cellEdits) return undefined;
+  let result: Record<string, CellEditInfo<TData, unknown>> | undefined;
+  for (const edit of Object.values(cellEdits)) {
+    if (edit.rowId === rowId) {
+      result ??= {};
+      result[edit.columnId] = edit;
+    }
+  }
+  return result;
 }
 
 export function renderDefaultCell<TData extends RowData>(
@@ -47,6 +69,14 @@ export function renderDefaultCell<TData extends RowData>(
   // and cannot be edited in the table. Return the async cell directly.
   if (columnMeta?.isAsyncColumn && asyncCellData) {
     return <AsyncValueCell {...asyncCellData} />;
+  }
+
+  if (columnMeta?.markingType === "CBAC") {
+    return <CbacMarkingCell value={cellValue} />;
+  }
+
+  if (columnMeta?.markingType === "MANDATORY") {
+    return <MandatoryMarkingCell value={cellValue} />;
   }
 
   const rowData = cellContext.row.original;
@@ -84,6 +114,7 @@ export function renderDefaultCell<TData extends RowData>(
     : editedValue?.newValue;
   const validationError = meta.validationErrors?.get(cellId);
   const isRowFocused = meta.focusedRowId === rowId;
+  const rowCellEdits = filterCellEditsToRow(cellEdits, rowId);
 
   return (
     <EditableCell<TData>
@@ -92,6 +123,7 @@ export function renderDefaultCell<TData extends RowData>(
       cellId={cellId}
       dataType={columnMeta?.dataType}
       editFieldConfig={columnMeta?.editFieldConfig}
+      rowCellEdits={rowCellEdits}
       onCellEdit={meta.onCellEdit}
       onCellValidationError={meta.onCellValidationError}
       clearCellValidationError={meta.clearCellValidationError}

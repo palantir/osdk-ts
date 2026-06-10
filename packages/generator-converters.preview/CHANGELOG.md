@@ -1,5 +1,136 @@
 # @osdk/generator-converters.preview
 
+## 0.20.0
+
+### Patch Changes
+
+- Updated dependencies [b5d0a61]
+- Updated dependencies [833f47a]
+  - @osdk/generator-converters.ontologyir@2.32.0
+  - @osdk/client.unstable@2.32.0
+  - @osdk/generator@2.32.0
+
+## 0.19.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.31.0
+- @osdk/generator-converters.ontologyir@2.31.0
+- @osdk/generator@2.31.0
+
+## 0.18.0
+
+### Minor Changes
+
+- 08e921c: Bump `foundry-platform-typescript` catalog to 2.63.0 and surface the new CBAC/MANDATORY marking subtype on `ObjectMetadata.Property` via a new `typeMetadata` discriminated-union field. For marking properties, `typeMetadata` is `{ type: "marking"; subtype?: "CBAC" | "MANDATORY" }`, letting consumers distinguish classification-based markings from mandatory markings on object property columns. Future per-`type` metadata should be added as additional variants of `typeMetadata` rather than as new top-level optionals on `Property`.
+
+### Patch Changes
+
+- Updated dependencies [08e921c]
+  - @osdk/generator@2.29.0
+  - @osdk/generator-converters.ontologyir@2.29.0
+  - @osdk/client.unstable@2.29.0
+
+## 0.17.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.28.0
+- @osdk/generator-converters.ontologyir@2.28.0
+- @osdk/generator@2.28.0
+
+## 0.16.0
+
+### Minor Changes
+
+- 5ff7aa5: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.61.0` to `2.63.0`. The OntologyScenarios endpoints now expose a `preview` query-param slot, so `createScenario` and the `EXPERIMENTAL_ScenarioClient` read methods pass `{ preview: true }` directly instead of relying on a fetch-level URL rewrite.
+
+### Patch Changes
+
+- Updated dependencies [5ff7aa5]
+  - @osdk/generator@2.27.0
+  - @osdk/generator-converters.ontologyir@2.27.0
+  - @osdk/client.unstable@2.27.0
+
+## 0.15.0
+
+### Minor Changes
+
+- 8965bdf: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+
+### Patch Changes
+
+- Updated dependencies [8965bdf]
+  - @osdk/generator@2.25.0
+  - @osdk/generator-converters.ontologyir@2.25.0
+  - @osdk/client.unstable@2.25.0
+
+## 0.14.0
+
+### Minor Changes
+
+- 60aff19: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+
+### Patch Changes
+
+- Updated dependencies [60aff19]
+- Updated dependencies [d087189]
+  - @osdk/generator@2.24.0
+  - @osdk/generator-converters.ontologyir@2.24.0
+  - @osdk/client.unstable@2.24.0
+
+## 0.13.0
+
+### Patch Changes
+
+- Updated dependencies [9fb5afb]
+  - @osdk/generator@2.23.0
+  - @osdk/client.unstable@2.23.0
+  - @osdk/generator-converters.ontologyir@2.23.0
+
+## 0.12.0
+
+### Minor Changes
+
+- dea392c: Fix maker experimental imports
+
+### Patch Changes
+
+- Updated dependencies [dea392c]
+- Updated dependencies [d8f3dfd]
+  - @osdk/generator-converters.ontologyir@2.22.0
+  - @osdk/client.unstable@2.22.0
+  - @osdk/generator@2.22.0
+
+## 0.11.0
+
+### Patch Changes
+
+- Updated dependencies [1a07c91]
+- Updated dependencies [5b89f25]
+- Updated dependencies [b98e084]
+  - @osdk/generator@2.21.0
+  - @osdk/generator-converters.ontologyir@2.21.0
+  - @osdk/client.unstable@2.21.0
+
+## 0.10.0
+
+### Patch Changes
+
+- @osdk/generator@2.20.0
+- @osdk/client.unstable@2.20.0
+- @osdk/generator-converters.ontologyir@2.20.0
+
+## 0.9.0
+
+### Patch Changes
+
+- Updated dependencies [02c796c]
+- Updated dependencies [46c553f]
+  - @osdk/generator@2.19.0
+  - @osdk/generator-converters.ontologyir@2.19.0
+  - @osdk/client.unstable@2.19.0
+
 ## 0.8.0
 
 ### Minor Changes

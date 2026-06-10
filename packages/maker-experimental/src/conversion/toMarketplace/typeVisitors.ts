@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { InterfacePropertyTypeType, Type } from "@osdk/client.unstable";
+import type {
+  BaseType as IrBaseType,
+  InterfacePropertyTypeType,
+  Type,
+} from "@osdk/client.unstable";
 import type {
   ArrayBaseType,
   ArrayObjectPropertyType,
@@ -398,10 +402,12 @@ export function typeToConcreteDataType(type: Type): ConcreteDataType {
  * Convert Type to BaseType for value type input shapes
  * TypeScript port of TypeToMarketplaceShapeBaseTypeVisitor
  */
-export function typeToMarketplaceBaseType(type: Type): BaseType {
+export function typeToMarketplaceBaseType(type: Type | IrBaseType): BaseType {
   switch (type.type) {
     case "array": {
-      const itemBaseType = typeToMarketplaceBaseType(type.array.subtype);
+      const arr = type.array;
+      const subItem = "subtype" in arr ? arr.subtype : arr.elementType;
+      const itemBaseType = typeToMarketplaceBaseType(subItem);
       if (itemBaseType.type === "array") {
         throw new Error(
           "Nested array property types are not supported in marketplace",
@@ -418,6 +424,12 @@ export function typeToMarketplaceBaseType(type: Type): BaseType {
         array: { elementType: itemBaseType.primitive } as ArrayBaseType,
       };
     }
+
+    case "binary":
+      return {
+        type: "primitive",
+        primitive: { type: "binary", binary: VOID } as PrimitiveBaseType,
+      };
 
     case "boolean":
       return {
@@ -479,6 +491,18 @@ export function typeToMarketplaceBaseType(type: Type): BaseType {
         primitive: { type: "long", long: VOID } as PrimitiveBaseType,
       };
 
+    case "map":
+      return {
+        type: "primitive",
+        primitive: { type: "map", map: VOID } as PrimitiveBaseType,
+      };
+
+    case "optional":
+      return {
+        type: "primitive",
+        primitive: { type: "optional", optional: VOID } as PrimitiveBaseType,
+      };
+
     case "short":
       return {
         type: "primitive",
@@ -529,6 +553,24 @@ export function typeToMarketplaceBaseType(type: Type): BaseType {
         type: "primitive",
         primitive: { type: "struct", struct: VOID } as PrimitiveBaseType,
       };
+
+    case "structV2": {
+      const sv2 = type as IrBaseType & { type: "structV2" };
+      return {
+        type: "structV2",
+        structV2: {
+          structFieldTypes: sv2.structV2.fields.map(field =>
+            typeToMarketplaceBaseType(field.baseType)
+          ),
+        },
+      };
+    }
+
+    case "referenced":
+      throw new Error("Referenced types are not supported in marketplace");
+
+    case "union":
+      throw new Error("Union types are not supported in marketplace");
 
     default:
       throw new Error(`Unknown property type: ${(type as any).type}`);

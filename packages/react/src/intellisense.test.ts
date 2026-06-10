@@ -15,8 +15,8 @@
  */
 
 import type { Logger } from "@osdk/api";
-import type { TsServer } from "@osdk/client/internal-node";
-import { startTsServer } from "@osdk/client/internal-node";
+import type { TsServer } from "@osdk/shared.test.intellisense";
+import { startTsServer } from "@osdk/shared.test.intellisense";
 import { findUpSync } from "find-up";
 import * as path from "node:path";
 import invariant from "tiny-invariant";
@@ -119,7 +119,7 @@ describe("intellisense", () => {
     }
   });
 
-  it("useOsdkObjectsWithPivot", { timeout: 40_000 }, async () => {
+  it("useOsdkObjectsWithPivot", { timeout: 90_000 }, async () => {
     expect(ts.sys.fileExists(intellisenseFilePath)).toBeTruthy();
     invariant(tsServer);
 
@@ -143,7 +143,7 @@ describe("intellisense", () => {
     expect(typeResp.body?.displayString).toContain("Employee");
   });
 
-  it("useOsdkObjectsWithRids", { timeout: 40_000 }, async () => {
+  it("useOsdkObjectsWithRids", { timeout: 90_000 }, async () => {
     expect(ts.sys.fileExists(intellisenseFilePath)).toBeTruthy();
     invariant(tsServer);
 
@@ -166,7 +166,7 @@ describe("intellisense", () => {
     expect(noRidsResp.body?.displayString).not.toContain("$rid");
   });
 
-  it("useOsdkObjectsWithProperties", { timeout: 40_000 }, async () => {
+  it("useOsdkObjectsWithProperties", { timeout: 90_000 }, async () => {
     expect(ts.sys.fileExists(intellisenseFilePath)).toBeTruthy();
     invariant(tsServer);
 
@@ -190,7 +190,7 @@ describe("intellisense", () => {
 
   it(
     "useOsdkObjectsWithPivotStreamUpdates",
-    { timeout: 40_000 },
+    { timeout: 90_000 },
     async () => {
       expect(ts.sys.fileExists(intellisenseFilePath)).toBeTruthy();
       invariant(tsServer);

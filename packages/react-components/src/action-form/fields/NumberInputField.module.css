@@ -62,6 +62,11 @@
     color: var(--osdk-input-placeholder-color);
   }
 
+  &:disabled {
+    cursor: not-allowed;
+    opacity: var(--osdk-disabled-opacity);
+  }
+
   &:focus-visible {
     outline: none;
   }
@@ -92,6 +97,11 @@
 
   &:active {
     background-color: var(--osdk-input-border-color);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: var(--osdk-disabled-opacity);
   }
 
   & + & {

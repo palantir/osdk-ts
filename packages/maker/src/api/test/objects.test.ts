@@ -178,6 +178,7 @@ describe("Object Types", () => {
         "interfaceTypes": {
           "com.palantir.interface": {
             "interfaceType": {
+              "actionTypeConstraints": [],
               "apiName": "com.palantir.interface",
               "displayMetadata": {
                 "description": "interface",
@@ -192,6 +193,7 @@ describe("Object Types", () => {
               },
               "extendsInterfaces": [],
               "extendsInterfacesMetadata": [],
+              "linkedInterfaces": [],
               "links": [],
               "permission": undefined,
               "properties": [],
@@ -355,6 +357,7 @@ describe("Object Types", () => {
               },
               "implementsInterfaces2": [
                 {
+                  "actionTypes": {},
                   "interfaceTypeApiName": "com.palantir.interface",
                   "linksV2": {},
                   "properties": {},
@@ -1568,6 +1571,62 @@ describe("Object Types", () => {
       }
     `);
   });
+  it("Fails if a derived datasource added after defineObject maps a property not on the object", () => {
+    const passenger = defineObject({
+      displayName: "Passenger",
+      pluralDisplayName: "Passengers",
+      apiName: "passenger",
+      primaryKeyPropertyApiName: "name",
+      titlePropertyApiName: "name",
+      editsEnabled: true,
+      properties: {
+        name: { type: "string", displayName: "Name" },
+        flight_id: { type: "string", displayName: "Flight ID" },
+      },
+    });
+    const flightToPassengers = defineLink({
+      apiName: "flightToPassengersLink",
+      one: {
+        object: "com.palantir.flight",
+        metadata: { apiName: "flightFromPassengers" },
+      },
+      toMany: {
+        object: passenger.apiName,
+        metadata: { apiName: "passengersFromFlight" },
+      },
+      manyForeignKeyProperty: "flight_id",
+    });
+    const flight = defineObject({
+      displayName: "Flight",
+      pluralDisplayName: "Flights",
+      apiName: "flight",
+      primaryKeyPropertyApiName: "id",
+      titlePropertyApiName: "id",
+      editsEnabled: true,
+      properties: {
+        id: { type: "string", displayName: "ID" },
+        passengersList: {
+          type: "string",
+          array: true,
+          displayName: "Passengers",
+        },
+      },
+      datasources: [{ type: "dataset" }],
+    });
+    // Mirror the real-world factory pattern: the derived datasource is pushed
+    // onto the object AFTER defineObject() returns, so defineObject's own
+    // validation never sees it. 'ghostProperty' is not a property on flight.
+    flight.datasources!.push({
+      type: "derived",
+      linkDefinition: [{ linkType: flightToPassengers }],
+      propertyMapping: {
+        ghostProperty: { type: "collectList", property: "name", limit: 100 },
+      },
+    });
+    expect(() => dumpOntologyFullMetadata()).toThrow(
+      /Property 'ghostProperty' used in derived datasource .* is not (defined|a property)/,
+    );
+  });
   it("Derived datasources are properly defined", () => {
     const passenger = defineObject({
       displayName: "Passenger",
@@ -1783,6 +1842,7 @@ describe("Object Types", () => {
                 "metadata": {
                   "apiName": "com.palantir.create-object-flight",
                   "displayMetadata": {
+                    "applyingMessage": [],
                     "configuration": {
                       "defaultLayout": "FORM",
                       "displayAndFormat": {
@@ -1945,6 +2005,7 @@ describe("Object Types", () => {
                 "metadata": {
                   "apiName": "com.palantir.create-object-passenger",
                   "displayMetadata": {
+                    "applyingMessage": [],
                     "configuration": {
                       "defaultLayout": "FORM",
                       "displayAndFormat": {
@@ -2081,6 +2142,7 @@ describe("Object Types", () => {
                 "metadata": {
                   "apiName": "com.palantir.delete-object-flight",
                   "displayMetadata": {
+                    "applyingMessage": [],
                     "configuration": {
                       "defaultLayout": "FORM",
                       "displayAndFormat": {
@@ -2206,6 +2268,7 @@ describe("Object Types", () => {
                 "metadata": {
                   "apiName": "com.palantir.delete-object-passenger",
                   "displayMetadata": {
+                    "applyingMessage": [],
                     "configuration": {
                       "defaultLayout": "FORM",
                       "displayAndFormat": {
@@ -3782,6 +3845,7 @@ describe("Object Types", () => {
                     "dataConstraints": {
                       "nullability": undefined,
                       "nullabilityV2": {
+                        "noEmptyCollections": true,
                         "noNulls": true,
                       },
                       "propertyTypeConstraints": [],

@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+import type {
+  ObjectOrInterfaceDefinition,
+  PropertyKeys,
+  SimplePropertyDef,
+} from "@osdk/api";
 import type { RowData } from "@tanstack/react-table";
 
 export interface ColumnOption {
@@ -75,8 +80,11 @@ export interface DropdownEditConfig<V = unknown> {
 
   /**
    * Converts an item to a display string. Defaults to `String()`.
+   *
+   * `item` may be `undefined` when the cell has no value yet — the formatter
+   * is responsible for producing a sensible label in that case.
    */
-  itemToStringLabel?: (item: V) => string;
+  itemToStringLabel?(item: V | undefined): string;
 
   /**
    * Returns a unique string key for a list item. Used as the React `key`.
@@ -167,12 +175,24 @@ type EditFieldComponent = keyof EditFieldPropsByType;
 /**
  * Configuration for an editable cell's field component.
  *
- * `getFieldComponentProps` is called with the row's object so the configuration
- * can vary per row (e.g. dropdown items that depend on row state).
+ * `getFieldComponentProps` is called with the row's object and a map of any
+ * pending cell edits for the same row, keyed by `columnId`. This lets the
+ * configuration depend on row state or on other in-progress edits within the
+ * row (e.g. dropdown items that change once another column is edited).
  */
 export type EditFieldConfig<TData = unknown> = {
   [K in EditFieldComponent]: {
     fieldComponent: K;
-    getFieldComponentProps: (object: TData) => EditFieldPropsByType[K];
+    getFieldComponentProps: (
+      object: TData,
+      edits?: Record<string, CellEditInfo<TData, unknown>>,
+    ) => EditFieldPropsByType[K];
   };
 }[EditFieldComponent];
+
+export type OrderBy<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> = {
+  [K in PropertyKeys<Q> | keyof RDPs]?: "asc" | "desc";
+};

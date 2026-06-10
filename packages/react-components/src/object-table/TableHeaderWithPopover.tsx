@@ -29,6 +29,7 @@ import {
 import type { Header, RowData, Table } from "@tanstack/react-table";
 import classNames from "classnames";
 import React, { useCallback, useState } from "react";
+import { usePortalContainer } from "../shared/PortalContainerContext.js";
 import { TableHeaderContent } from "./TableHeaderContent.js";
 import styles from "./TableHeaderWithPopover.module.css";
 import type { ColumnOption } from "./utils/types.js";
@@ -113,6 +114,7 @@ export function TableHeaderWithPopover<
   onOpenMultiSort,
   onColumnHeaderClick,
 }: TableHeaderWithPopoverProps<TData>): React.ReactElement {
+  const portalContainer = usePortalContainer();
   const {
     showSortingItems = false,
     showPinningItems = false,
@@ -203,7 +205,8 @@ export function TableHeaderWithPopover<
 
   return (
     <>
-      <Menu.Root open={isOpen} onOpenChange={setIsOpen}>
+      {/* Header menus should not lock drawer/table scrolling; they dismiss like lightweight contextual menus. */}
+      <Menu.Root open={isOpen} onOpenChange={setIsOpen} modal={false}>
         <div
           className={classNames(
             styles.osdkCenterContainer,
@@ -266,7 +269,7 @@ export function TableHeaderWithPopover<
               </Menu.Trigger>
             )}
           </div>
-          <Menu.Portal container={document.body}>
+          <Menu.Portal container={portalContainer}>
             <Menu.Positioner sideOffset={4}>
               <Menu.Popup
                 className={styles.osdkHeaderPopup}

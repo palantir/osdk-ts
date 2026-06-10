@@ -23,7 +23,10 @@ import type {
   ValueTypeApiName,
   ValueTypeConstraint,
 } from "@osdk/foundry.ontologies";
-import { wireObjectTypeFullMetadataToSdkObjectMetadata } from "@osdk/generator-converters";
+import {
+  GeneratorError,
+  wireObjectTypeFullMetadataToSdkObjectMetadata,
+} from "@osdk/generator-converters";
 import consola from "consola";
 import { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";
 import { EnhancedObjectType } from "../GenerateContext/EnhancedObjectType.js";
@@ -343,8 +346,20 @@ export function createDefinition(
       properties: (_value) => (`{
         ${
         stringify(definition.properties, {
-          "*": (propertyDefinition, _, apiName) =>
-            [
+          "*": (propertyDefinition, _, apiName) => {
+            const hasMainValue = propertyDefinition.mainValue?.fields != null;
+            const hasReducers = propertyDefinition.hasReducers === true;
+
+            let extraParams = "";
+            if (hasMainValue || hasReducers) {
+              const mainValueParam = hasMainValue
+                ? JSON.stringify(propertyDefinition.mainValue!.fields)
+                : "undefined";
+              const hasReducersParam = hasReducers ? "true" : "false";
+              extraParams = `, ${mainValueParam}, ${hasReducersParam}`;
+            }
+
+            return [
               `${
                 propertyJsdoc(
                   propertyDefinition,
@@ -358,8 +373,11 @@ export function createDefinition(
               }"${maybeStripNamespace(object, apiName)}"`,
               `$PropertyDef<${JSON.stringify(propertyDefinition.type)}, "${
                 propertyDefinition.nullable ? "nullable" : "non-nullable"
-              }", "${propertyDefinition.multiplicity ? "array" : "single"}">`,
-            ] as [string, string],
+              }", "${
+                propertyDefinition.multiplicity ? "array" : "single"
+              }"${extraParams}>`,
+            ] as [string, string];
+          },
         })
       }
       }`),
@@ -448,8 +466,10 @@ function getPropTypeOrValueTypeEnum(
     return defaultPropString;
   }
   if (valueType.constraints.length !== 1) {
-    throw new Error(
-      `Expected exactly one constraint for value type ${propertyDefinition.valueTypeApiName} but got ${valueType.constraints.length}`,
+    throw new GeneratorError(
+      "Expected exactly one constraint for value type",
+      { valueTypeApiName: propertyDefinition.valueTypeApiName },
+      { constraintCount: valueType.constraints.length },
     );
   }
 

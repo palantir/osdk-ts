@@ -15,7 +15,7 @@
  */
 
 import type { UUID } from "crypto";
-import type { SemverVersion } from "./specGenerators.js";
+import type { SemverVersion } from "./semver.js";
 
 export interface MarketplaceBundleManifestEntry {
   blockSetVersionId: UUID;

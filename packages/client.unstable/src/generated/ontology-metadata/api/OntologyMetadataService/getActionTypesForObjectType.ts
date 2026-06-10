@@ -25,6 +25,8 @@ import type {
  * Gets all the action types that the object type is associated with. E.g. actions that create an object, edit
  * an object, or use the object as a parameter. Also returns actions that are associated with an interface type
  * that the object type implements.
+ *
+ * This endpoint is deprecated and the bulk endpoint is preferred.
  */
 export async function getActionTypesForObjectType(
   ctx: ConjureContext,

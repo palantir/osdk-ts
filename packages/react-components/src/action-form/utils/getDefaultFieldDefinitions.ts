@@ -74,15 +74,10 @@ function buildFieldDefinition(
           },
         };
       case "interface":
-        return {
-          ...base,
-          fieldComponent: "TEXT_INPUT",
-          fieldComponentProps: {},
-        };
       case "struct":
         return {
           ...base,
-          fieldComponent: "TEXT_INPUT",
+          fieldComponent: "UNSUPPORTED",
           fieldComponentProps: {},
         };
     }
@@ -90,13 +85,19 @@ function buildFieldDefinition(
 
   switch (paramType) {
     case "string":
+      return {
+        ...base,
+        fieldComponent: "TEXT_INPUT",
+        fieldComponentProps: {},
+      };
     case "marking":
     case "geohash":
     case "geoshape":
     case "objectType":
+    case "scenarioReference":
       return {
         ...base,
-        fieldComponent: "TEXT_INPUT",
+        fieldComponent: "UNSUPPORTED",
         fieldComponentProps: {},
       };
     case "boolean":

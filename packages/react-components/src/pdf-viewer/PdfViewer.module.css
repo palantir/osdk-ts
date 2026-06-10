@@ -33,50 +33,25 @@
 }
 
 .loadingContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: calc(var(--osdk-surface-spacing) * 2);
-  height: 100%;
-  font-family: var(--osdk-typography-family-default);
-  font-size: var(--osdk-typography-size-body-medium);
-  color: var(--osdk-typography-color-muted);
+  composes: loadingContainer from "../shared/LoadingError.module.css";
 }
 
 .errorContainer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--osdk-surface-spacing);
-  height: 100%;
-  font-family: var(--osdk-typography-family-default);
-  font-size: var(--osdk-typography-size-body-medium);
-  color: var(--osdk-typography-color-danger-rest);
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  composes: errorContainer from "../shared/LoadingError.module.css";
 }
 
 .spinnerIcon {
-  animation: spin 1s linear infinite;
-  color: var(--osdk-typography-color-muted);
+  composes: spinnerIcon from "../shared/LoadingError.module.css";
 }
 
 .errorIcon {
-  flex-shrink: 0;
+  composes: errorIcon from "../shared/LoadingError.module.css";
 }
 
 /* PDFViewer page overrides */
 :global(.pdfViewer .page) {
   box-shadow: var(--osdk-pdf-viewer-page-shadow);
-  background-color: var(--osdk-palette-white);
+  background-color: var(--osdk-background-primary);
   margin: 0 auto var(--osdk-pdf-viewer-page-gap);
 }
 

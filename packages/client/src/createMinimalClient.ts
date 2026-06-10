@@ -21,10 +21,7 @@ import type {
   MinimalClient,
   MinimalClientParams,
 } from "./MinimalClientContext.js";
-import {
-  convertWireToOsdkObjects,
-  convertWireToOsdkObjects2,
-} from "./object/convertWireToOsdkObjects.js";
+import { convertWireToOsdkObjects } from "./object/convertWireToOsdkObjects.js";
 import { createObjectSet } from "./objectSet/createObjectSet.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
 import type { OntologyProvider } from "./ontology/OntologyProvider.js";
@@ -44,6 +41,7 @@ export function createMinimalClient(
     logger?: Logger;
     transactionId?: string;
     flushEdits?: () => Promise<void>;
+    scenarioRid?: string;
     branch?: string;
     headers?: Record<string, string>;
     applicationRid?: string;
@@ -79,10 +77,11 @@ export function createMinimalClient(
     ),
     objectSetFactory,
     objectFactory: convertWireToOsdkObjects,
-    objectFactory2: convertWireToOsdkObjects2,
     ontologyRid: metadata.ontologyRid,
     logger: options.logger,
     transactionId: options.transactionId,
+    flushEdits: options.flushEdits,
+    scenarioRid: options.scenarioRid,
     clientCacheKey: {} as ClientCacheKey,
     requestContext: {},
     branch: options.branch,

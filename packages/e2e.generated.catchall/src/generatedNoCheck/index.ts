@@ -5,6 +5,7 @@ export {
   createMediaObject,
   createMediaViaFunction,
   createOsdkTestObject,
+  createScenarioTestOsdk,
   createStructPerson,
   createStructPersonOpiTeam,
   createTestGeoAction,
@@ -12,7 +13,9 @@ export {
   createUnstructuredImageExample,
   deleteFooInterface,
   deleteOsdkTestObject,
+  deleteScenarioTestOsdk,
   editOsdkTestObject,
+  scenarioOsdkTestAction,
 } from './ontology/actions.js';
 export * as $Actions from './ontology/actions.js';
 export {
@@ -60,7 +63,9 @@ export {
   ObjectTypeWithAllPropertyTypes,
   OsdkTestObject,
   Person,
+  ReducerTest,
   RhemmingsObjectWithGtsrProperty2,
+  ScenarioTestOsdk,
   SotSensor,
   StateTerritory,
   StructPerson,

@@ -49,6 +49,7 @@ export interface PdfAnnotationRenderProps {
   annotation: PdfAnnotation;
   scale: number;
   pageHeight: number;
+  transform: number[];
 }
 
 /** Common fields shared by all annotation types. */
@@ -220,6 +221,11 @@ export interface PdfViewerProps {
    * @default false
    */
   enableDownload?: boolean;
+  /**
+   * Filename used when the user downloads the PDF via the toolbar button.
+   * If omitted, the name is derived from the `src` URL, falling back to "document.pdf".
+   */
+  downloadFileName?: string;
   /**
    * Which sidebar panel to show: thumbnails or document outline.
    * @default "thumbnails"

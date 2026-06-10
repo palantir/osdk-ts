@@ -44,9 +44,9 @@ interface DateRangeHistogramInputProps {
   style?: React.CSSProperties;
   /**
    * Consumer-provided display formatter. Routes through the shared
-   * `DateRangePicker`'s idle text, the histogram tooltip, the period
-   * subtitle, and (when `formatTickLabel` is omitted) the histogram x-tick
-   * labels. The picker's internal value remains ISO `YYYY-MM-DD`.
+   * `DateRangePicker`'s idle text, the histogram tooltip, and the period
+   * subtitle.
+   * The picker's internal value remains ISO `YYYY-MM-DD`.
    */
   formatDate?: (date: Date) => string;
   clickToFilter?: boolean;

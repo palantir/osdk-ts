@@ -25,6 +25,17 @@ import type { UseOsdkFunctionOptions } from "../useOsdkFunction.js";
 import type { UseOsdkFunctionsProps } from "../useOsdkFunctions.js";
 import { useOsdkFunctions } from "../useOsdkFunctions.js";
 
+const MOCK_WIRE_FORM = Symbol.for("test.mockWireForm");
+vi.mock("@osdk/client", () => {
+  return {
+    isObjectSet: (o: unknown): boolean =>
+      o != null && typeof o === "object"
+      && (o as Record<symbol, unknown>)[MOCK_WIRE_FORM] !== undefined,
+    getWireObjectSet: (o: unknown): unknown =>
+      (o as Record<symbol, unknown>)[MOCK_WIRE_FORM],
+  };
+});
+
 const MOCK_QUERY_DEF_1: QueryDefinition<unknown> = {
   type: "query",
   apiName: "calculateStats",
@@ -581,6 +592,70 @@ describe("useOsdkFunctions", () => {
         dependsOnObjects: [testObject],
       },
       expect.objectContaining({ next: expect.any(Function) }),
+    );
+  });
+
+  describe("params memoization", () => {
+    function makeMockObjectSet(wireForm: object): object {
+      const o: Record<PropertyKey, unknown> = {};
+      Object.defineProperty(o, MOCK_WIRE_FORM, {
+        enumerable: false,
+        configurable: true,
+        writable: true,
+        value: wireForm,
+      });
+      return o;
+    }
+
+    it(
+      "should re-subscribe when a query's params contains ObjectSets with "
+        + "different filter chains",
+      () => {
+        const osA = makeMockObjectSet({
+          type: "filter",
+          objectSet: { type: "base", objectType: "Employee" },
+          where: { type: "eq", field: "dept", value: "A" },
+        });
+        const osB = makeMockObjectSet({
+          type: "filter",
+          objectSet: { type: "base", objectType: "Employee" },
+          where: { type: "eq", field: "dept", value: "B" },
+        });
+
+        // Sanity: both serialize to {} via the default JSON.stringify path —
+        // this is what makes the buggy memo key collide.
+        expect(JSON.stringify({ someInput: osA })).toBe(
+          JSON.stringify({ someInput: osB }),
+        );
+
+        const { rerender } = renderHook(
+          ({ os }: { os: object }) =>
+            useOsdkFunctions({
+              queries: [
+                {
+                  queryDefinition: MOCK_QUERY_DEF_1,
+                  options: {
+                    params: {
+                      someInput: os,
+                    } as unknown as UseOsdkFunctionOptions<
+                      typeof MOCK_QUERY_DEF_1
+                    >["params"],
+                  },
+                },
+              ],
+            }),
+          {
+            wrapper: createWrapper(mockObservableClient),
+            initialProps: { os: osA },
+          },
+        );
+
+        expect(mockObservableClient.observeFunction).toHaveBeenCalledTimes(1);
+
+        rerender({ os: osB });
+
+        expect(mockObservableClient.observeFunction).toHaveBeenCalledTimes(2);
+      },
     );
   });
 

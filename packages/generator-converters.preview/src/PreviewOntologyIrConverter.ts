@@ -47,9 +47,10 @@ export class PreviewOntologyIrConverter {
    */
   static getPreviewFullMetadataFromBlockData(
     blockdata: OntologyBlockDataV2,
+    importedTypes?: Ontologies.OntologyFullMetadata,
   ): PreviewOntologyFullMetadata {
     const baseMetadata = OntologyBlockDataToFullMetadataConverter
-      .getFullMetadataFromBlockData(blockdata);
+      .getFullMetadataFromBlockData(blockdata, importedTypes);
 
     const actionTypes = this.convertActionTypesWithFullLogicRulesFromBlockData(
       blockdata.actionTypes,

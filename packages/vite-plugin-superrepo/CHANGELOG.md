@@ -1,5 +1,39 @@
 # @osdk/vite-plugin-superrepo
 
+## 0.8.0
+
+### Minor Changes
+
+- 57c7950: Respect subpaths when proxying API requests
+
+## 0.7.0
+
+### Minor Changes
+
+- 4e2a115: Fix race where a late-publishing service (e.g. python-functions waiting on ontology discovery) is silently absent from the proxy table. Vite's `server.restart()` dedups concurrent calls, so a change event arriving while a restart is in flight is dropped; chokidar can additionally swallow `add` for files not present at watch-time under `ignoreInitial: true`. The watcher now restarts in a loop until the discovery fingerprint is stable, and polls discovery state once per second as a fallback for missed `add` events.
+
+## 0.6.0
+
+### Minor Changes
+
+- ea6bdb0: Respect superrepo service discovery.
+
+  `vite-plugin-superrepo` now reads `.palantir/.<service>-discovery.json` files
+  written by `foundry start` and installs Vite dev proxies for `ontology`,
+  `typescript-functions`, `python-functions`, and `platform-api-proxy`
+  automatically. The `/api` prefix is routed through the platform-API proxy;
+  more-specific ontology routes (`/api/v2`) take precedence. New discovery
+  files are picked up via Vite's own chokidar watcher and trigger a dev-server
+  restart.
+
+  **Breaking** (`@osdk/vite-plugin-status-reporter`): the required
+  `gatewayAddrFile` option has been removed. The plugin now resolves the
+  status-server URL from `.palantir/.status-server-discovery.json` by walking
+  up to the nearest `foundry.yml`, matching the discovery flow the
+  foundry-cli already publishes.
+
+- aee7366: Wire up the platform API proxy & log proxied requests
+
 ## 0.5.0
 
 ### Minor Changes

@@ -18,6 +18,10 @@ import type {
   ObjectOrInterfaceDefinition,
   PropertyKeys,
 } from "../ontology/ObjectOrInterface.js";
+import type {
+  ApplyModifiersArg,
+  PropertyModifierValue,
+} from "../ontology/PropertyModifiers.js";
 import type { SimplePropertyDef } from "../ontology/SimplePropertyDef.js";
 import type {
   ExtractOptions,
@@ -48,6 +52,13 @@ export type UnionIfTrue<
   : UNION_IF_TRUE extends true ? S | E
   : S;
 
+type ModifiersToSelectStrings<M> = {
+  [K in keyof M]: K extends string
+    ? M[K] extends PropertyModifierValue ? `${K}:${M[K]}`
+    : never
+    : never;
+}[keyof M];
+
 /**
  * Helper type for converting fetch options into an Osdk object
  */
@@ -59,12 +70,15 @@ export type FetchPageResult<
   T extends boolean = false,
   ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
   PROPERTY_SECURITIES extends boolean = false,
+  MODIFIERS extends ApplyModifiersArg<Q> = {},
 > = PageResult<
   MaybeScore<
     Osdk.Instance<
       Q,
       ExtractOptions<R, S, T, PROPERTY_SECURITIES>,
-      PropertyKeys<Q> extends L ? never : L
+      | Exclude<PropertyKeys<Q> extends L ? never : L, keyof MODIFIERS>
+      | ModifiersToSelectStrings<MODIFIERS>,
+      {}
     >,
     ORDER_BY_OPTIONS
   >

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { InterfaceMetadata } from "@osdk/api";
+import type { InterfaceMetadata, PropertySecurity } from "@osdk/api";
 import { extractNamespace } from "../../internal/conversions/extractNamespace.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
 import { get$linkForInterface } from "./getDollarLink.js";
@@ -25,6 +25,10 @@ import {
   UnderlyingOsdkObject,
 } from "./InternalSymbols.js";
 import type { ObjectHolder } from "./ObjectHolder.js";
+
+type PropertySecuritiesMap = {
+  [propName: string]: PropertySecurity[] | PropertySecurity[][];
+};
 
 /** @internal */
 export function createOsdkInterface<
@@ -70,7 +74,14 @@ export function createOsdkInterface<
         enumerable: false,
       },
       "$propertySecurities": {
-        value: underlying.$propertySecurities,
+        value: remapPropertySecuritiesForInterface(
+          underlying.$propertySecurities as unknown as
+            | PropertySecuritiesMap
+            | undefined,
+          underlying[ObjectDefRef],
+          interfaceDef,
+          objApiNamespace,
+        ),
         enumerable: "$propertySecurities" in underlying,
       },
       "$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata": {
@@ -86,7 +97,7 @@ export function createOsdkInterface<
       },
 
       "$link": {
-        get: function(this: InterfaceHolder) {
+        get(this: InterfaceHolder) {
           return get$linkForInterface(this);
         },
       },
@@ -143,4 +154,30 @@ export function createOsdkInterface<
     }
     return [targetPropName, value];
   }
+}
+
+function remapPropertySecuritiesForInterface(
+  underlyingSecurities: PropertySecuritiesMap | undefined,
+  objDef: FetchedObjectTypeDefinition,
+  interfaceDef: InterfaceMetadata,
+  objApiNamespace: string | undefined,
+): PropertySecuritiesMap | undefined {
+  if (underlyingSecurities == null) return undefined;
+
+  const inverseMap = objDef.inverseInterfaceMap?.[interfaceDef.apiName] ?? {};
+  const remapped: PropertySecuritiesMap = {};
+
+  for (const objPropName of Object.keys(underlyingSecurities)) {
+    if (objPropName === "$primaryKey" || objPropName === "$title") {
+      remapped[objPropName] = underlyingSecurities[objPropName];
+      continue;
+    }
+    const interfacePropName = inverseMap[objPropName];
+    if (interfacePropName == null) continue;
+
+    const [apiNamespace, apiName] = extractNamespace(interfacePropName);
+    const key = apiNamespace === objApiNamespace ? apiName : interfacePropName;
+    remapped[key] = underlyingSecurities[objPropName];
+  }
+  return remapped;
 }

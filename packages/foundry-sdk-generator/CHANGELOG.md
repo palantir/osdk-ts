@@ -1,5 +1,226 @@
 # @osdk/foundry-sdk-generator
 
+## 2.32.0
+
+### Patch Changes
+
+- Updated dependencies [b5d0a61]
+- Updated dependencies [06adca1]
+- Updated dependencies [833f47a]
+- Updated dependencies [79f8a6e]
+  - @osdk/client.unstable@2.32.0
+  - @osdk/client@2.32.0
+  - @osdk/api@2.32.0
+  - @osdk/generator@2.32.0
+  - @osdk/generator-converters@2.32.0
+  - @osdk/generator-utils@2.32.0
+
+## 2.31.0
+
+### Patch Changes
+
+- Updated dependencies [57cbc6d]
+  - @osdk/api@2.31.0
+  - @osdk/client@2.31.0
+  - @osdk/client.unstable@2.31.0
+  - @osdk/generator-converters@2.31.0
+  - @osdk/generator-utils@2.31.0
+  - @osdk/generator@2.31.0
+
+## 2.30.0
+
+### Patch Changes
+
+- Updated dependencies [db8df24]
+  - @osdk/client@2.30.0
+  - @osdk/api@2.30.0
+  - @osdk/client.unstable@2.30.0
+  - @osdk/generator-converters@2.30.0
+  - @osdk/generator-utils@2.30.0
+  - @osdk/generator@2.30.0
+
+## 2.29.0
+
+### Minor Changes
+
+- 08e921c: Bump `foundry-platform-typescript` catalog to 2.63.0 and surface the new CBAC/MANDATORY marking subtype on `ObjectMetadata.Property` via a new `typeMetadata` discriminated-union field. For marking properties, `typeMetadata` is `{ type: "marking"; subtype?: "CBAC" | "MANDATORY" }`, letting consumers distinguish classification-based markings from mandatory markings on object property columns. Future per-`type` metadata should be added as additional variants of `typeMetadata` rather than as new top-level optionals on `Property`.
+
+### Patch Changes
+
+- Updated dependencies [08e921c]
+- Updated dependencies [4b38963]
+- Updated dependencies [9081e32]
+  - @osdk/api@2.29.0
+  - @osdk/generator-converters@2.29.0
+  - @osdk/client@2.29.0
+  - @osdk/generator@2.29.0
+  - @osdk/client.unstable@2.29.0
+  - @osdk/generator-utils@2.29.0
+
+## 2.28.0
+
+### Patch Changes
+
+- Updated dependencies [a5066b5]
+- Updated dependencies [3e03544]
+- Updated dependencies [13132b8]
+  - @osdk/client@2.28.0
+  - @osdk/api@2.28.0
+  - @osdk/client.unstable@2.28.0
+  - @osdk/generator-converters@2.28.0
+  - @osdk/generator-utils@2.28.0
+  - @osdk/generator@2.28.0
+
+## 2.27.0
+
+### Minor Changes
+
+- 5ff7aa5: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.61.0` to `2.63.0`. The OntologyScenarios endpoints now expose a `preview` query-param slot, so `createScenario` and the `EXPERIMENTAL_ScenarioClient` read methods pass `{ preview: true }` directly instead of relying on a fetch-level URL rewrite.
+
+### Patch Changes
+
+- Updated dependencies [5ff7aa5]
+  - @osdk/client@2.27.0
+  - @osdk/generator@2.27.0
+  - @osdk/generator-converters@2.27.0
+  - @osdk/api@2.27.0
+  - @osdk/client.unstable@2.27.0
+  - @osdk/generator-utils@2.27.0
+
+## 2.26.0
+
+### Patch Changes
+
+- @osdk/api@2.26.0
+- @osdk/client.unstable@2.26.0
+- @osdk/client@2.26.0
+- @osdk/generator-converters@2.26.0
+- @osdk/generator-utils@2.26.0
+- @osdk/generator@2.26.0
+
+## 2.25.0
+
+### Minor Changes
+
+- 8965bdf: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+
+### Patch Changes
+
+- Updated dependencies [8965bdf]
+- Updated dependencies [8965bdf]
+- Updated dependencies [bd90dba]
+- Updated dependencies [643c450]
+- Updated dependencies [d0845dd]
+  - @osdk/client@2.25.0
+  - @osdk/generator@2.25.0
+  - @osdk/generator-converters@2.25.0
+  - @osdk/api@2.25.0
+  - @osdk/client.unstable@2.25.0
+  - @osdk/generator-utils@2.25.0
+
+## 2.24.0
+
+### Minor Changes
+
+- 60aff19: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+
+### Patch Changes
+
+- Updated dependencies [a492285]
+- Updated dependencies [60aff19]
+- Updated dependencies [35ad6d1]
+- Updated dependencies [6923158]
+  - @osdk/api@2.24.0
+  - @osdk/client@2.24.0
+  - @osdk/generator@2.24.0
+  - @osdk/generator-converters@2.24.0
+  - @osdk/client.unstable@2.24.0
+  - @osdk/generator-utils@2.24.0
+
+## 2.23.0
+
+### Minor Changes
+
+- 9fb5afb: Emit structured `service.1` JSON logs to stdout for log forwarders, with timing for ontology metadata loading and OSDK package generation phases. Reads `JOB_ID` and `TRACE_ID` from env and threads them into every record's params for cross-process correlation. The previous human-readable console output (via consola) has been removed; the CLI now exits with a non-zero status code on failure.
+
+### Patch Changes
+
+- Updated dependencies [9fb5afb]
+- Updated dependencies [198f219]
+- Updated dependencies [ef156b6]
+- Updated dependencies [8290dd7]
+  - @osdk/generator@2.23.0
+  - @osdk/generator-converters@2.23.0
+  - @osdk/api@2.23.0
+  - @osdk/client@2.23.0
+  - @osdk/client.unstable@2.23.0
+  - @osdk/generator-utils@2.23.0
+
+## 2.22.0
+
+### Patch Changes
+
+- @osdk/api@2.22.0
+- @osdk/client.unstable@2.22.0
+- @osdk/client@2.22.0
+- @osdk/generator-utils@2.22.0
+- @osdk/generator@2.22.0
+
+## 2.21.0
+
+### Patch Changes
+
+- Updated dependencies [1a07c91]
+- Updated dependencies [2db1450]
+  - @osdk/api@2.21.0
+  - @osdk/client@2.21.0
+  - @osdk/generator@2.21.0
+  - @osdk/client.unstable@2.21.0
+  - @osdk/generator-utils@2.21.0
+
+## 2.20.0
+
+### Patch Changes
+
+- Updated dependencies [f90a2da]
+- Updated dependencies [9eb67e4]
+- Updated dependencies [51b3bce]
+- Updated dependencies [75f877f]
+  - @osdk/client@2.20.0
+  - @osdk/api@2.20.0
+  - @osdk/generator@2.20.0
+  - @osdk/client.unstable@2.20.0
+  - @osdk/generator-utils@2.20.0
+
+## 2.19.0
+
+### Minor Changes
+
+- 02c796c: Array Reducers and Struct Main Value support
+
+### Patch Changes
+
+- Updated dependencies [02c796c]
+- Updated dependencies [2a2b672]
+- Updated dependencies [d962309]
+  - @osdk/generator@2.19.0
+  - @osdk/client@2.19.0
+  - @osdk/api@2.19.0
+  - @osdk/client.unstable@2.19.0
+  - @osdk/generator-utils@2.19.0
+
+## 2.18.0
+
+### Patch Changes
+
+- Updated dependencies [69ebc43]
+- Updated dependencies [85a248d]
+  - @osdk/client@2.18.0
+  - @osdk/api@2.18.0
+  - @osdk/client.unstable@2.18.0
+  - @osdk/generator-utils@2.18.0
+  - @osdk/generator@2.18.0
+
 ## 2.17.0
 
 ### Patch Changes

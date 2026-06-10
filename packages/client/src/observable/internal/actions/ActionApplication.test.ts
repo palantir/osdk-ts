@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { DerivedProperty } from "@osdk/api";
+import type { DerivedProperty, ObjectSet } from "@osdk/api";
 import {
   addOne,
   editTodo,
@@ -43,6 +43,7 @@ import type { Client } from "../../../Client.js";
 import { createClient } from "../../../createClient.js";
 import type { FunctionPayload } from "../../FunctionPayload.js";
 import type { ListPayload } from "../../ListPayload.js";
+import type { ObjectSetPayload } from "../../ObjectSetPayload.js";
 import type { Observer } from "../../ObservableClient/common.js";
 import { Store } from "../Store.js";
 import { mockObserver } from "../testUtils.js";
@@ -66,10 +67,49 @@ async function waitForCall(
   });
 }
 
+function deferredPromise(): {
+  promise: Promise<void>;
+  resolve: () => void;
+} {
+  let resolvePromise: (() => void) | undefined;
+  const promise = new Promise<void>((resolve) => {
+    resolvePromise = resolve;
+  });
+
+  return {
+    promise,
+    resolve: () => {
+      if (resolvePromise == null) {
+        throw new Error("Deferred promise resolve was not initialized");
+      }
+      resolvePromise();
+    },
+  };
+}
+
+async function hasSettled(promise: Promise<unknown>): Promise<boolean> {
+  let settled = false;
+  promise.then(
+    () => {
+      settled = true;
+    },
+    () => {
+      settled = true;
+    },
+  );
+
+  // Let already-settled promises run their queued continuation without waiting
+  // on clocks. If the promise is still blocked, this remains false.
+  await Promise.resolve();
+  return settled;
+}
+
 describe("ActionApplication invalidation", () => {
   let client: Client;
   let store: Store;
   let fauxFoundry: FauxFoundry;
+
+  const INITIAL_OFFICE_CAPACITY = 10;
 
   beforeAll(() => {
     const testSetup = startNodeApiServer(
@@ -120,6 +160,7 @@ describe("ActionApplication invalidation", () => {
       $apiName: "Office",
       officeId: "office-a",
       name: "Alpha Office",
+      capacity: INITIAL_OFFICE_CAPACITY,
     });
     const emp1 = dataStore.registerObject(Employee, {
       $apiName: "Employee",
@@ -211,8 +252,6 @@ describe("ActionApplication invalidation", () => {
 
     await store.applyAction(editTodo, { id: 0, text: "should-not-fire" });
 
-    // applyAction awaits all per-PK and per-type fan-out; the unrelated sub
-    // triggers no revalidate, so no notification can be in flight.
     expect(subFn.next).not.toHaveBeenCalled();
 
     subscription.unsubscribe();
@@ -243,6 +282,62 @@ describe("ActionApplication invalidation", () => {
       expect(subFn.next).toHaveBeenCalled();
     });
 
+    subscription.unsubscribe();
+  });
+
+  it("does not wait for broad per-type invalidation before resolving an action", async () => {
+    const subFn = mockFunctionSubCallback();
+
+    const subscription = store.functions.observe(
+      {
+        queryDef: addOne,
+        params: { n: 2 },
+        dependsOn: [Todo.apiName],
+        dedupeInterval: 0,
+      },
+      subFn,
+    );
+
+    await waitForCall(subFn, 2);
+
+    const functionQueryEntry = Array.from(store.queries.map.entries()).find(
+      ([cacheKey]) => cacheKey.type === "function",
+    );
+    if (functionQueryEntry == null) {
+      throw new Error("Expected a function query to be registered");
+    }
+
+    const [, functionQuery] = functionQueryEntry;
+    const delayedInvalidation = deferredPromise();
+
+    // Simulate slow broad invalidation by making the touched query return a
+    // promise that this test intentionally does not resolve yet.
+    const invalidateObjectType = vi.fn(() => delayedInvalidation.promise);
+    functionQuery.invalidateObjectType = invalidateObjectType;
+
+    // Batch apply avoids the dev-only single-action delay, keeping this test
+    // focused on whether invalidation blocks action resolution.
+    const actionPromise = store.applyAction(editTodo, [
+      { id: 0, text: "batch-first" },
+      { id: 1, text: "batch-second" },
+    ]);
+
+    await vi.waitFor(() => {
+      expect(invalidateObjectType).toHaveBeenCalledWith(
+        Todo.apiName,
+        undefined,
+      );
+    });
+
+    // Broad invalidation has started and is still blocked on
+    // delayedInvalidation.promise. If applyAction awaited that fan-out,
+    // actionPromise would still be unsettled here.
+    await expect(hasSettled(actionPromise)).resolves.toBe(true);
+
+    // Finish the blocked background invalidation so the test leaves no
+    // intentionally pending promise behind.
+    delayedInvalidation.resolve();
+    await delayedInvalidation.promise;
     subscription.unsubscribe();
   });
 
@@ -278,6 +373,53 @@ describe("ActionApplication invalidation", () => {
     });
 
     subscription.unsubscribe();
+  });
+
+  describe("ObjectSetQuery RDP invalidation", () => {
+    it("revalidates an object-set list whose RDP traverses an edited object type", async () => {
+      const subFn = mockObserver<ObjectSetPayload | undefined>();
+
+      const withProperties: DerivedProperty.Clause<typeof Employee> = {
+        officeCapacity: (b) =>
+          b.pivotTo("officeLink").selectProperty("capacity"),
+      };
+      const subscription = store.objectSets.observe(
+        {
+          baseObjectSet: client(Employee) as ObjectSet<Employee>,
+          withProperties,
+          dedupeInterval: 0,
+        },
+        subFn,
+      );
+
+      // Wait for initial loaded emission with the original capacity.
+      await vi.waitFor(() => {
+        const last = subFn.next.mock.lastCall?.[0];
+        expect(last?.status).toBe("loaded");
+        expect(
+          (last?.resolvedList?.[0] as { officeCapacity?: number } | undefined)
+            ?.officeCapacity,
+        ).toBe(INITIAL_OFFICE_CAPACITY);
+      });
+
+      // Edit Office (NOT Employee). The RDP traverses officeLink → Office, so
+      // the object-set list must refetch and reflect the new capacity.
+      await store.applyAction(moveOffice, {
+        officeId: "office-a",
+        newCapacity: 99,
+        newAddress: "new-address",
+      });
+
+      await vi.waitFor(() => {
+        const last = subFn.next.mock.lastCall?.[0];
+        expect(
+          (last?.resolvedList?.[0] as { officeCapacity?: number } | undefined)
+            ?.officeCapacity,
+        ).toBe(99);
+      });
+
+      subscription.unsubscribe();
+    });
   });
 
   it("does not fan out per-type invalidation when an action throws", async () => {

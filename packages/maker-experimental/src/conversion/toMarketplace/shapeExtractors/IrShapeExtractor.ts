@@ -16,6 +16,7 @@
 
 import type {
   GroupId,
+  InterfaceTypeBlockDataV2,
   KnownMarketplaceIdentifiers,
   MarketplaceInterfaceLinkType,
   MarketplaceInterfaceType,
@@ -28,7 +29,9 @@ import type {
 import type {
   AllowOntologySchemaMigrationsShape,
   InputShape,
+  InputShapeMetadata,
   InterfaceLinkTypeOutputShape,
+  InterfacePropertyTypeOutputShape,
   InterfaceTypeOutputShape,
   LocalizedTitleAndDescription,
   MarkingsShape,
@@ -53,6 +56,13 @@ import { ObjectTypeShapeExtractor } from "./ObjectTypeShapeExtractor.js";
 
 export const MIGRATION_SHAPE_READABLE_ID: ReadableId =
   "migration-input" as ReadableId;
+
+const SPT_INPUT_SHAPE_METADATA: InputShapeMetadata = {
+  isOptional: false,
+  isAccessedInReconcile: true,
+  reconcileAccessRequirements: "RESOURCE_EXISTENCE_REQUIRED",
+  preallocateAccessRequirements: "RESOURCE_PREALLOCATION_REQUIRED",
+};
 
 /**
  * Helper to create LocalizedTitleAndDescription with empty localizations
@@ -89,6 +99,10 @@ export async function getShapes(
     Object.keys(ontologyBlockDataV2.sharedPropertyTypes),
   );
 
+  const multiInterfaceSptApiNames = getMultiInterfaceSptApiNames(
+    ontologyBlockDataV2.interfaceTypes,
+  );
+
   // Interfaces
   for (
     const [_rid, interfaceType] of Object.entries(
@@ -98,8 +112,10 @@ export async function getShapes(
     extractInterfaceType(
       allBlockShapes.outputShapes,
       allBlockShapes.inputShapes,
+      allBlockShapes.inputShapeMetadata,
       ontologyBlockDataV2.knownIdentifiers,
       outputSharedPropertyTypeRids,
+      multiInterfaceSptApiNames,
       interfaceType.interfaceType,
       ridGenerator,
     );
@@ -191,23 +207,21 @@ export async function getShapes(
 function extractInterfaceType(
   outputShapeMap: Map<ReadableId, OutputShape>,
   inputShapeMap: Map<ReadableId, InputShape>,
+  inputShapeMetadataMap: Map<ReadableId, InputShapeMetadata>,
   knownMarketplaceIdentifiers: KnownMarketplaceIdentifiers,
   outputSharedPropertyTypeRids: Set<string>,
+  multiInterfaceSptApiNames: Set<string>,
   interfaceType: MarketplaceInterfaceType,
   ridGenerator: OntologyRidGenerator,
 ): void {
   const interfaceReadableId = getReadableIdForInterface(interfaceType.apiName);
-  // Build propertiesV2 from propertiesV3 entries
+  // Build propertiesV2 from propertiesV3 entries using knownMarketplaceIdentifiers
   const propertiesV2: string[] = [];
-  for (
-    const [propertyRid, _property] of Object.entries(
-      interfaceType.propertiesV3 ?? {},
-    )
-  ) {
-    const readableId = ridGenerator.getInterfacePropertyTypeRids().inverse()
-      .get(propertyRid);
-    if (readableId) {
-      propertiesV2.push(ridGenerator.toBlockInternalId(readableId));
+  for (const iptRid of Object.keys(interfaceType.propertiesV3 ?? {})) {
+    const blockInternalId = knownMarketplaceIdentifiers.interfacePropertyTypes
+      ?.[iptRid];
+    if (blockInternalId) {
+      propertiesV2.push(blockInternalId);
     }
   }
 
@@ -234,9 +248,18 @@ function extractInterfaceType(
     ),
   };
 
-  // Add shared property type input shapes for properties not in output
+  // Add shared property type input shapes for properties not in output,
+  // and extract value type input shapes for interface-defined properties
+  const blockShapesRef: BlockShapes = {
+    inputShapes: inputShapeMap,
+    outputShapes: outputShapeMap,
+    inputShapeMetadata: inputShapeMetadataMap,
+    inputMappings: [],
+  };
   for (
-    const [propertyRid, property] of Object.entries(interfaceType.propertiesV3)
+    const [_propertyRid, property] of Object.entries(
+      interfaceType.propertiesV3,
+    )
       ?? []
   ) {
     if (
@@ -261,33 +284,39 @@ function extractInterfaceType(
           sharedPropertyType: sharedPropInputShape,
         },
       );
+      inputShapeMetadataMap.set(sptReadableId, SPT_INPUT_SHAPE_METADATA);
     } else if (property.type === "interfaceDefinedPropertyType") {
-      outputShapeMap.set(
-        ridGenerator.getInterfacePropertyTypeRids().inverse().get(propertyRid)!,
-        {
-          type: "interfacePropertyType",
-          interfacePropertyType: {
-            type: typeToMarketplaceObjectPropertyType(
-              property.interfaceDefinedPropertyType.type,
-            ),
-            about: {
-              fallbackTitle:
-                property.interfaceDefinedPropertyType.displayMetadata
-                  .displayName,
-              fallbackDescription:
-                property.interfaceDefinedPropertyType.displayMetadata
-                  .description ?? "",
-              localizedDescription: {},
-              localizedTitle: {},
-            },
-            interfaceType: ridGenerator.toBlockInternalId(interfaceReadableId),
-            requireImplementation:
-              property.interfaceDefinedPropertyType.constraints
-                .requireImplementation,
-          },
-        },
+      // TODO: once we have published output shapes for a while, add IPT input shapes
+      const idp = property.interfaceDefinedPropertyType;
+      extractValueTypeInputShapeIfPresent(
+        idp.constraints.valueType ?? undefined,
+        idp.displayMetadata.displayName,
+        idp.type as unknown as Type,
+        blockShapesRef,
+        ridGenerator,
       );
     }
+  }
+
+  // For every property directly defined on the interface, generate an IPT output shape.
+  // IDPs can only be defined on a single interface so they are guaranteed to only be added once here.
+  // SPT-backed properties may be added multiple times here with the latest winning out, however,
+  // this is not an issue as the only thing that will change is the interfaceTypeReference which is unused
+  for (
+    const [_propertyRid, property] of Object.entries(
+      interfaceType.propertiesV3,
+    )
+      ?? []
+  ) {
+    const outputShapeEntry = getInterfacePropertyTypeOutputShape(
+      knownMarketplaceIdentifiers,
+      interfaceType,
+      multiInterfaceSptApiNames,
+      property,
+      interfaceReadableId,
+      ridGenerator,
+    );
+    outputShapeMap.set(outputShapeEntry.id, outputShapeEntry.outputShape);
   }
 
   // Add interface link type output shapes
@@ -306,6 +335,100 @@ function extractInterfaceType(
     type: "interfaceType",
     interfaceType: interfaceTypeOutputShape,
   });
+}
+
+/**
+ * Get interface property type output shape for either interface-defined or SPT-backed properties.
+ */
+function getInterfacePropertyTypeOutputShape(
+  knownMarketplaceIdentifiers: KnownMarketplaceIdentifiers,
+  interfaceType: MarketplaceInterfaceType,
+  multiInterfaceSptApiNames: Set<string>,
+  property: MarketplaceInterfaceType["propertiesV3"][string],
+  interfaceReadableId: ReadableId,
+  ridGenerator: OntologyRidGenerator,
+): { id: ReadableId; outputShape: OutputShape } {
+  const interfaceTypeRef = ridGenerator.toBlockInternalId(interfaceReadableId);
+
+  if (property.type === "interfaceDefinedPropertyType") {
+    const idp = property.interfaceDefinedPropertyType;
+    const readableId = ReadableIdGenerator.getForInterfaceProperty(
+      interfaceType.apiName,
+      idp.apiName,
+    );
+    const shape: InterfacePropertyTypeOutputShape = {
+      about: createLocalizedAbout(
+        idp.displayMetadata.displayName,
+        idp.displayMetadata.description ?? idp.displayMetadata.displayName,
+      ),
+      interfaceType: interfaceTypeRef,
+      type: typeToMarketplaceObjectPropertyType(idp.type),
+      requireImplementation: idp.constraints.requireImplementation,
+    };
+    return {
+      id: readableId,
+      outputShape: {
+        type: "interfacePropertyType",
+        interfacePropertyType: shape,
+      },
+    };
+  } else {
+    const spt = property.sharedPropertyBasedPropertyType.sharedPropertyType;
+    const sptApiName = spt.apiName;
+
+    const readableId = multiInterfaceSptApiNames.has(sptApiName)
+      ? ReadableIdGenerator.getForSptBackedInterfaceProperty(sptApiName)
+      : ReadableIdGenerator.getForSptBackedInterfaceProperty(
+        interfaceType.apiName,
+        sptApiName,
+      );
+
+    const sptBlockInternalId = knownMarketplaceIdentifiers.sharedPropertyTypes
+      ?.[spt.rid];
+    const shape: InterfacePropertyTypeOutputShape = {
+      about: getTitleAndDescriptionForSharedPropertyType(spt),
+      interfaceType: interfaceTypeRef,
+      type: typeToMarketplaceObjectPropertyType(spt.type),
+      requireImplementation:
+        property.sharedPropertyBasedPropertyType.requireImplementation,
+      sharedPropertyType: sptBlockInternalId,
+    };
+    return {
+      id: readableId,
+      outputShape: {
+        type: "interfacePropertyType",
+        interfacePropertyType: shape,
+      },
+    };
+  }
+}
+
+/**
+ * Returns the set of SPT api names that are used by more than one interface type.
+ * For these SPTs, the shape ID must not include the interface api name to avoid RID collisions.
+ */
+export function getMultiInterfaceSptApiNames(
+  interfaces: Record<string, InterfaceTypeBlockDataV2>,
+): Set<string> {
+  const seen = new Set<string>();
+  const shared = new Set<string>();
+  for (const interfaceBlock of Object.values(interfaces)) {
+    for (
+      const property of Object.values(
+        interfaceBlock.interfaceType.propertiesV3 ?? {},
+      )
+    ) {
+      if (property.type === "sharedPropertyBasedPropertyType") {
+        const apiName =
+          property.sharedPropertyBasedPropertyType.sharedPropertyType.apiName;
+        if (seen.has(apiName)) {
+          shared.add(apiName);
+        }
+        seen.add(apiName);
+      }
+    }
+  }
+  return shared;
 }
 
 /**
@@ -432,7 +555,8 @@ function getTitleAndDescriptionForSharedPropertyType(
 ): LocalizedTitleAndDescription {
   return createLocalizedAbout(
     sharedPropertyType.displayMetadata.displayName,
-    sharedPropertyType.displayMetadata.description ?? "Shared Property Type",
+    sharedPropertyType.displayMetadata.description
+      ?? sharedPropertyType.displayMetadata.displayName,
   );
 }
 

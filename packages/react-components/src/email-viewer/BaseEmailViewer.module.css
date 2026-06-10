@@ -1,0 +1,92 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background-color: var(--osdk-email-viewer-bg);
+  border: var(--osdk-email-viewer-border);
+  border-radius: var(--osdk-surface-border-radius);
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--osdk-surface-spacing) / 2);
+  padding: var(--osdk-surface-spacing);
+  border-bottom: var(--osdk-email-viewer-header-border);
+  background-color: var(--osdk-email-viewer-header-bg);
+  font-family: var(--osdk-typography-family-default);
+  font-size: var(--osdk-typography-size-body-medium);
+  color: var(--osdk-typography-color-default-rest);
+  flex-shrink: 0;
+}
+
+.headerRow {
+  display: flex;
+  gap: calc(var(--osdk-surface-spacing) / 2);
+}
+
+.headerLabel {
+  font-weight: var(--osdk-typography-weight-bold);
+  color: var(--osdk-typography-color-muted);
+  min-width: 60px;
+  flex-shrink: 0;
+}
+
+.headerValue {
+  word-break: break-word;
+}
+
+.subject {
+  font-size: var(--osdk-typography-size-body-large);
+  font-weight: var(--osdk-typography-weight-bold);
+  padding-bottom: calc(var(--osdk-surface-spacing) / 2);
+}
+
+.bodyContainer {
+  flex: 1;
+  overflow: hidden;
+}
+
+.bodyIframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.textBody {
+  padding: var(--osdk-surface-spacing);
+  font-family: var(--osdk-typography-family-default);
+  font-size: var(--osdk-typography-size-body-medium);
+  color: var(--osdk-typography-color-default-rest);
+  white-space: pre-wrap;
+  overflow: auto;
+  height: 100%;
+}
+
+.emptyBody {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-family: var(--osdk-typography-family-default);
+  font-size: var(--osdk-typography-size-body-medium);
+  color: var(--osdk-typography-color-muted);
+}
+
+.loadingContainer {
+  composes: loadingContainer from "../shared/LoadingError.module.css";
+}
+
+.errorContainer {
+  composes: errorContainer from "../shared/LoadingError.module.css";
+}
+
+.spinnerIcon {
+  composes: spinnerIcon from "../shared/LoadingError.module.css";
+}
+
+.errorIcon {
+  composes: errorIcon from "../shared/LoadingError.module.css";
+}

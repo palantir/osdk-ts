@@ -16,18 +16,17 @@
 
 import { Button } from "@base-ui/react/button";
 import classnames from "classnames";
-import React, { memo, useCallback, useMemo } from "react";
+import React, { memo, useCallback } from "react";
 import type { FilterState } from "../FilterListItemApi.js";
-import { supportsExcluding } from "../utils/filterValues.js";
+import {
+  filterHasActiveState,
+  getEffectiveFilterState,
+  getSelectedCount,
+  supportsExcluding,
+  toggleIsExcluding,
+} from "../utils/filterValues.js";
 import { ExcludeDropdown } from "./ExcludeDropdown.js";
 import styles from "./FilterListItem.module.css";
-
-function getSelectedCount(filterState: FilterState | undefined): number {
-  if (!filterState) return 0;
-  if (filterState.type === "EXACT_MATCH") return filterState.values.length;
-  if (filterState.type === "SELECT") return filterState.selectedValues.length;
-  return 0;
-}
 
 interface FilterInputExcludeRowProps {
   excludeRowOpen?: boolean;
@@ -47,22 +46,21 @@ function FilterInputExcludeRowInner({
   children,
 }: FilterInputExcludeRowProps): React.ReactElement {
   const handleToggleExclude = useCallback(() => {
-    if (filterState) {
-      onFilterStateChanged({
-        ...filterState,
-        isExcluding: !filterState.isExcluding,
-      });
+    if (filterState == null) {
+      return;
+    }
+    const next = toggleIsExcluding(filterState);
+    if (next != null) {
+      onFilterStateChanged(next);
     }
   }, [filterState, onFilterStateChanged]);
 
-  const isExcluding = filterState?.isExcluding ?? false;
+  const effectiveState = getEffectiveFilterState(filterState);
+  const isExcluding = effectiveState?.isExcluding ?? false;
   const isOpen = excludeRowOpen ?? false;
-  const selectedCount = useMemo(
-    () => getSelectedCount(filterState),
-    [filterState],
-  );
+  const selectedCount = getSelectedCount(effectiveState);
 
-  if (!supportsExcluding(filterState)) {
+  if (!supportsExcluding(effectiveState)) {
     return <>{children}</>;
   }
 
@@ -74,20 +72,22 @@ function FilterInputExcludeRowInner({
           [styles.excludeRowVisible]: isOpen,
         })}
       >
-        <ExcludeDropdown
-          isExcluding={isExcluding}
-          onToggleExclude={handleToggleExclude}
-        />
-        {totalValueCount != null && totalValueCount > 0 && (
-          <span
-            className={styles.excludeCountLabel}
-            title="Approximate count of unique values"
-          >
-            {selectedCount.toLocaleString()} of{" "}
-            {totalValueCount.toLocaleString()} values
-          </span>
-        )}
-        {onClearAll && selectedCount > 0 && (
+        <div className={styles.excludeRowLeading}>
+          <ExcludeDropdown
+            isExcluding={isExcluding}
+            onToggleExclude={handleToggleExclude}
+          />
+          {totalValueCount != null && totalValueCount > 0 && (
+            <span
+              className={styles.excludeCountLabel}
+              title="Approximate count of unique values"
+            >
+              {selectedCount.toLocaleString()} of{" "}
+              {totalValueCount.toLocaleString()} values
+            </span>
+          )}
+        </div>
+        {onClearAll && filterHasActiveState(effectiveState) && (
           <Button
             className={styles.clearAllButton}
             onClick={onClearAll}

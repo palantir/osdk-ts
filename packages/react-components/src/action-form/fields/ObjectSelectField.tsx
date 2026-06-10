@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, Osdk, WhereClause } from "@osdk/api";
-import { useOsdkMetadata, useOsdkObjects } from "@osdk/react";
+import type {
+  ObjectSet,
+  ObjectTypeDefinition,
+  Osdk,
+  WhereClause,
+} from "@osdk/api";
+import { useObjectSet, useOsdkObjects } from "@osdk/react";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import { useDebouncedValue } from "../../shared/hooks/useDebouncedValue.js";
 import type { ObjectSelectFieldProps } from "../FormFieldApi.js";
@@ -26,15 +31,32 @@ const SEARCH_DEBOUNCE_MS = 300;
 /** Number of objects fetched per page from the OSDK. */
 const PAGE_SIZE = 50;
 
-type OsdkObject = Osdk.Instance<ObjectTypeDefinition>;
+type ObjectSelectOsdkObject = Osdk.Instance<ObjectTypeDefinition>;
 
 /** Stable empty array so the component doesn't re-render when data is undefined. */
-const EMPTY_ITEMS: OsdkObject[] = [];
+const EMPTY_OBJECT_SELECT_ITEMS: ObjectSelectOsdkObject[] = [];
 
 export const ObjectSelectField: React.NamedExoticComponent<
   ObjectSelectFieldProps
-> = memo(function ObjectSelectFieldFn({
-  objectType,
+> = memo(function ObjectSelectFieldFn(props): React.ReactElement {
+  const source = resolveObjectSelectSource(props);
+  return <ObjectSelectInner {...props} source={source} />;
+});
+
+type ResolvedObjectSelectSource<Q extends ObjectTypeDefinition> =
+  | { kind: "objectType"; objectType: Q; objectSet?: undefined }
+  | { kind: "objectSet"; objectType: Q; objectSet: ObjectSet<Q> };
+
+type ObjectSelectInnerProps<Q extends ObjectTypeDefinition> =
+  & ObjectSelectFieldProps<Q>
+  & {
+    source: ResolvedObjectSelectSource<Q>;
+  };
+
+const ObjectSelectInner: React.NamedExoticComponent<
+  ObjectSelectInnerProps<ObjectTypeDefinition>
+> = memo(function ObjectSelectInnerFn({
+  source,
   value,
   onChange,
   error,
@@ -43,6 +65,7 @@ export const ObjectSelectField: React.NamedExoticComponent<
   isMultiple,
   portalRef,
   portalContainer,
+  disabled,
 }): React.ReactElement {
   // Tracks the user's search text. Cleared on selection so the selected
   // label (managed by base-ui) doesn't trigger a server-side search.
@@ -50,31 +73,37 @@ export const ObjectSelectField: React.NamedExoticComponent<
   const debouncedQuery = useDebouncedValue(query, SEARCH_DEBOUNCE_MS);
 
   const handleChange = useCallback(
-    (newValue: OsdkObject | null) => {
+    (newValue: ObjectSelectOsdkObject | null) => {
       onChange?.(newValue);
       setQuery("");
     },
     [onChange],
   );
 
-  const { metadata } = useOsdkMetadata(objectType);
-  const titleProperty = typeof metadata?.titleProperty === "string"
-    ? metadata.titleProperty
-    : undefined;
-
-  // Search on the title property (e.g. "fullName") so the where clause
-  // matches the same text displayed to the user via obj.$title.
-  // The where clause is loosely typed because we resolve the property
-  // name at runtime from metadata, not from compile-time type info.
+  // Search by the object's title via the special `$title` filter so the where
+  // clause matches the same text displayed to the user via obj.$title, without
+  // resolving the underlying title property from metadata at runtime.
   const where: WhereClause<ObjectTypeDefinition> | undefined = useMemo(() => {
     const trimmed = debouncedQuery.trim();
-    if (trimmed === "" || titleProperty == null) {
+    if (trimmed === "") {
       return undefined;
     }
     return {
-      [titleProperty]: { $containsAllTermsInOrder: trimmed },
-    } as WhereClause<ObjectTypeDefinition>;
-  }, [debouncedQuery, titleProperty]);
+      $title: { $containsAllTermsInOrder: trimmed },
+    };
+  }, [debouncedQuery]);
+
+  const objectSetResult = useObjectSet(source.objectSet, {
+    where,
+    pageSize: PAGE_SIZE,
+    enabled: source.kind === "objectSet",
+  });
+
+  const objectTypeResult = useOsdkObjects(source.objectType, {
+    where,
+    pageSize: PAGE_SIZE,
+    enabled: source.kind === "objectType",
+  });
 
   const {
     data,
@@ -82,12 +111,9 @@ export const ObjectSelectField: React.NamedExoticComponent<
     error: fetchError,
     fetchMore,
     hasMore,
-  } = useOsdkObjects(objectType, {
-    where,
-    pageSize: PAGE_SIZE,
-  });
+  } = source.kind === "objectSet" ? objectSetResult : objectTypeResult;
 
-  const items = data ?? EMPTY_ITEMS;
+  const items = data ?? EMPTY_OBJECT_SELECT_ITEMS;
 
   const handleFetchMore = useCallback(() => {
     void fetchMore?.();
@@ -107,6 +133,7 @@ export const ObjectSelectField: React.NamedExoticComponent<
       isMultiple={isMultiple}
       portalRef={portalRef}
       portalContainer={portalContainer}
+      disabled={disabled}
       onQueryChange={setQuery}
       isLoading={isLoading}
       isSearching={debouncedQuery.trim() !== "" && isLoading}
@@ -117,14 +144,31 @@ export const ObjectSelectField: React.NamedExoticComponent<
   );
 });
 
-function itemToStringLabel(obj: OsdkObject): string {
+function resolveObjectSelectSource(
+  props: ObjectSelectFieldProps<ObjectTypeDefinition>,
+): ResolvedObjectSelectSource<ObjectTypeDefinition> {
+  if ("objectSet" in props && props.objectSet != null) {
+    return {
+      kind: "objectSet",
+      objectSet: props.objectSet,
+      objectType: props.objectSet.$objectSetInternals.def,
+    };
+  }
+
+  return { kind: "objectType", objectType: props.objectType };
+}
+
+function itemToStringLabel(obj: ObjectSelectOsdkObject): string {
   return obj.$title ?? String(obj.$primaryKey);
 }
 
-function itemToKey(obj: OsdkObject): string {
+function itemToKey(obj: ObjectSelectOsdkObject): string {
   return String(obj.$primaryKey);
 }
 
-function isItemEqual(a: OsdkObject, b: OsdkObject): boolean {
+function isItemEqual(
+  a: ObjectSelectOsdkObject,
+  b: ObjectSelectOsdkObject,
+): boolean {
   return a.$primaryKey === b.$primaryKey;
 }

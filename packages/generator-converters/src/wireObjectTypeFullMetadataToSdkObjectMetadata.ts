@@ -20,6 +20,7 @@ import type {
   PropertyApiName,
   PropertyV2,
 } from "@osdk/foundry.ontologies";
+import { GeneratorError } from "./GeneratorError.js";
 import { wirePropertyV2ToSdkPrimaryKeyTypeDefinition } from "./wirePropertyV2ToSdkPrimaryKeyTypeDefinition.js";
 import { wirePropertyV2ToSdkPropertyDefinition } from "./wirePropertyV2ToSdkPropertyDefinition.js";
 
@@ -36,9 +37,10 @@ export function wireObjectTypeFullMetadataToSdkObjectMetadata(
     objectTypeWithLink.objectType
       .properties[objectTypeWithLink.objectType.primaryKey] === undefined
   ) {
-    throw new Error(
-      `Primary key ${objectTypeWithLink.objectType.primaryKey} not found in ${objectTypeWithLink.objectType.apiName}`,
-    );
+    throw new GeneratorError("Primary key not found in object type", {
+      primaryKey: objectTypeWithLink.objectType.primaryKey,
+      objectTypeApiName: objectTypeWithLink.objectType.apiName,
+    });
   }
 
   // saved ontology.json files may not have this implementsInterfaces2 so we need to handle

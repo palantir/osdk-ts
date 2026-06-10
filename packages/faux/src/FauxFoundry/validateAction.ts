@@ -170,7 +170,11 @@ function validateActionParameterType(
       }
       return;
     case "geohash":
-      if (!(typeof value === "string")) {
+      if (
+        !(typeof value === "string"
+          || (typeof value === "object" && value != null
+            && "coordinates" in value))
+      ) {
         ret.result = "INVALID";
         ret.parameters[paramKey] = {
           ...baseParam,
@@ -270,6 +274,20 @@ function validateActionParameterType(
         return;
       }
 
+      return;
+    }
+
+    case "scenarioReference": {
+      if (
+        !value
+        || typeof value !== "object"
+        || typeof (value as { scenarioRid?: unknown }).scenarioRid !== "string"
+      ) {
+        ret.result = "INVALID";
+        ret.parameters[paramKey] = {
+          ...baseParam,
+        };
+      }
       return;
     }
 

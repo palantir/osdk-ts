@@ -106,7 +106,7 @@
 
   &[data-disabled] {
     cursor: not-allowed;
-    opacity: var(--osdk-disabled-opacity, 0.5);
+    opacity: var(--osdk-disabled-opacity);
   }
 
   &[data-popup-open] {
@@ -206,6 +206,16 @@
       var(--osdk-surface-background-color-default-hover)
     );
   }
+
+  &[aria-disabled="true"] {
+    cursor: not-allowed;
+    opacity: var(--osdk-disabled-opacity);
+  }
+
+  &[aria-disabled="true"]:hover {
+    color: var(--osdk-select-clear-color, var(--osdk-iconography-color-muted));
+    background-color: transparent;
+  }
 }
 
 .osdkSelectPositioner {
@@ -224,7 +234,10 @@
   display: flex;
   flex-direction: column;
   min-width: var(--anchor-width);
-  max-height: var(--available-height);
+  max-height: min(
+    var(--osdk-select-popup-max-height),
+    var(--available-height)
+  );
   overflow-y: auto;
   padding: calc(var(--osdk-select-spacing, var(--osdk-surface-spacing)) * 1.5);
   border-radius: var(
@@ -299,6 +312,6 @@
 
   &[data-disabled] {
     cursor: not-allowed;
-    opacity: var(--osdk-disabled-opacity, 0.5);
+    opacity: var(--osdk-disabled-opacity);
   }
 }

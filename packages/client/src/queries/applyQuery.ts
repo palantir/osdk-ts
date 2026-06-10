@@ -31,7 +31,7 @@ import type {
 import type { DataValue } from "@osdk/foundry.ontologies";
 import * as Queries from "@osdk/foundry.ontologies/Query";
 import invariant from "tiny-invariant";
-import { createMediaFromReference } from "../createMediaFromReference.js";
+import { createMediaFromReferenceInternal } from "../createMediaFromReference.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { createObjectSet } from "../objectSet/createObjectSet.js";
 import { hydrateAttachmentFromRidInternal } from "../public-utils/hydrateAttachmentFromRid.js";
@@ -92,6 +92,7 @@ export async function applyQuery<
     {
       version: query.isFixedVersion ? query.version : undefined,
       transactionId: client.transactionId,
+      scenarioRid: client.scenarioRid,
       branch: client.branch,
     },
   );
@@ -109,7 +110,7 @@ export async function applyQuery<
   return remappedResponse as QueryReturnType<CompileTimeMetadata<QD>["output"]>;
 }
 
-async function remapQueryParams(
+export async function remapQueryParams(
   params: { [parameterId: string]: any },
   client: MinimalClient,
   paramTypes: Record<string, QueryParameterDefinition<any>>,
@@ -125,7 +126,7 @@ async function remapQueryParams(
   return parameterMap;
 }
 
-async function remapQueryResponse<
+export async function remapQueryResponse<
   Q extends ObjectTypeDefinition,
   T extends QueryDataTypeDefinition<Q | never>,
 >(
@@ -184,7 +185,7 @@ async function remapQueryResponse<
     }
 
     case "mediaReference": {
-      return createMediaFromReference(
+      return createMediaFromReferenceInternal(
         client,
         responseValue,
       ) as unknown as QueryReturnType<
@@ -323,7 +324,7 @@ async function remapQueryResponse<
   return responseValue as QueryReturnType<typeof responseDataType>;
 }
 
-async function getRequiredDefinitions(
+export async function getRequiredDefinitions(
   dataType: QueryDataTypeDefinition,
   client: MinimalClient,
 ): Promise<Map<string, ObjectOrInterfaceDefinition>> {

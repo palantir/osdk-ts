@@ -17,6 +17,17 @@
 .singleSelect {
   display: flex;
   flex-direction: column;
+  transition: opacity var(--osdk-filter-content-fade-duration);
+}
+
+.singleSelect[data-loading="true"] {
+  opacity: 0.5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .singleSelect {
+    transition: none;
+  }
 }
 
 .selectContainer {

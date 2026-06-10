@@ -33,6 +33,7 @@ export { loadAllOntologies } from "./generated/ontology-metadata/api/OntologyMet
 export * from "./generated/ontology-metadata/api/__components.js";
 
 export type {
+  OntologyIrBaseParameterConstraintType,
   OntologyIrBaseParameterType,
   OntologyIrBaseParameterType_decimal,
   OntologyIrBaseParameterType_decimalList,
@@ -46,6 +47,7 @@ export type {
   OntologyIrBaseParameterType_structList,
   OntologyIrBaseParameterType_timestamp,
   OntologyIrBaseParameterType_timestampList,
+  OntologyIrStructFieldBaseParameterType,
   ParameterRenderHint,
   ParameterRequiredConfiguration,
   ParameterVisibility,
@@ -60,6 +62,11 @@ export type {
 
 export type { SharedPropertyTypeGothamMapping } from "./generated/ontology-metadata/api/typemapping/__components.ts";
 
+export type {
+  OntologyIrValueTypeBlockData,
+  OntologyIrValueTypeBlockDataEntry,
+} from "./generated/type-registry-marketplace/__components.js";
+export type { ValueTypeBlockData } from "./generated/type-registry-marketplace/__components.js";
 export type { BaseType } from "./generated/type-registry/api/BaseType.js";
 export type { DataConstraint } from "./generated/type-registry/api/DataConstraint.js";
 export type { DataConstraintWrapper } from "./generated/type-registry/api/DataConstraintWrapper.js";
@@ -75,8 +82,6 @@ export type {
   OntologyIr,
   OntologyIrOntologyBlockDataV2,
   OntologyIrV2,
-  OntologyIrValueTypeBlockData,
-  OntologyIrValueTypeBlockDataEntry,
 } from "./blockDataIr.js";
 
 export type {

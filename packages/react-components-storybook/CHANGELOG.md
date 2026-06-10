@@ -1,5 +1,131 @@
 # @osdk/react-components-storybook
 
+## 0.27.0
+
+### Patch Changes
+
+- Updated dependencies [79f8a6e]
+  - @osdk/faux@0.26.0
+
+## 0.26.0
+
+### Minor Changes
+
+- 65c742b: Add theme preset switcher toolbar to Storybook with Workshop Light, Workshop Dark, and other built-in presets
+
+### Patch Changes
+
+- @osdk/faux@0.25.0
+
+## 0.25.0
+
+### Minor Changes
+
+- a0602d1: Fix conflicting primary keys
+
+## 0.24.0
+
+### Patch Changes
+
+- Updated dependencies [08e921c]
+  - @osdk/faux@0.24.0
+
+## 0.23.0
+
+### Minor Changes
+
+- 46f3ef6: Import CbacPicker docs from source package instead of inlining a summary in Storybook MDX
+
+### Patch Changes
+
+- Updated dependencies [58922c1]
+  - @osdk/faux@0.23.0
+
+## 0.22.0
+
+### Patch Changes
+
+- Updated dependencies [5ff7aa5]
+  - @osdk/faux@0.22.0
+
+## 0.21.0
+
+### Minor Changes
+
+- e7acde5: Add per-component MDX documentation pages importing existing docs
+- ef3e8c1: Sort Docs entry first within each component folder in Storybook sidebar
+- a26b490: Sort attached MDX docs entries first within component folders
+- 2e92b90: Enable standalone MDX documentation pages co-located with stories
+
+## 0.20.0
+
+### Patch Changes
+
+- Updated dependencies [8965bdf]
+  - @osdk/faux@0.21.0
+
+## 0.19.0
+
+### Minor Changes
+
+- 4c53e48: Hide the DatePicker popover when its anchor scrolls out of view. Fixes an issue where the date picker in `ObjectTable` cells continued to render outside the table bounds after the cell scrolled out of the visible area.
+
+## 0.18.0
+
+### Patch Changes
+
+- Updated dependencies [60aff19]
+  - @osdk/faux@0.20.0
+
+## 0.17.0
+
+### Minor Changes
+
+- b3229eb: Fix ObjectTable overlay menus and dialogs inside drawers and dialogs.
+- 1760597: Change experimental labels to beta
+- bde8026: group viewer/renderer storybook entries under DocumentViewer/Renderers, reorder WithMedia stories to appear first, and split out top-level ImageViewer/PdfViewer media stories
+
+### Patch Changes
+
+- @osdk/faux@0.19.0
+
+## 0.16.0
+
+### Minor Changes
+
+- 7945245: add missing postal-mime dev dep so storybook dev resolves the email viewer stories
+
+## 0.15.0
+
+### Minor Changes
+
+- ddeda7f: Fix custom value rendering in ObjectTable dropdown cells for non-string item types (booleans, numbers, etc.)
+
+### Patch Changes
+
+- @osdk/faux@0.18.0
+
+## 0.14.0
+
+### Patch Changes
+
+- @osdk/faux@0.17.0
+
+## 0.13.0
+
+### Patch Changes
+
+- Updated dependencies [02c796c]
+- Updated dependencies [ecc5b36]
+  - @osdk/faux@0.16.0
+
+## 0.12.0
+
+### Patch Changes
+
+- Updated dependencies [2f3271b]
+  - @osdk/faux@0.15.0
+
 ## 0.11.0
 
 ### Minor Changes

@@ -14,37 +14,17 @@
  * limitations under the License.
  */
 
-import type { InterfaceType, SharedPropertyType } from "@osdk/maker";
+import type * as Ontologies from "@osdk/foundry.ontologies";
+import type {
+  InterfacePropertyType,
+  InterfaceType,
+  SharedPropertyType,
+} from "@osdk/maker";
 import { OntologyEntityTypeEnum } from "@osdk/maker";
+import { consola } from "consola";
 import { convertSharedPropertyType } from "./convertSharedPropertyType.js";
+import { mapPropertyType } from "./mapPropertyType.js";
 import { withoutNamespace } from "./utils.js";
-
-interface GatewayInterfaceType {
-  apiName: string;
-  displayName?: string;
-  description?: string;
-  extendsInterfaces: ReadonlyArray<string>;
-  properties: Record<
-    string,
-    {
-      apiName: string;
-      displayName?: string;
-      description?: string;
-      dataType: { type: string; [key: string]: unknown };
-    }
-  >;
-  links: Record<
-    string,
-    {
-      apiName: string;
-      displayName?: string;
-      description?: string;
-      cardinality: string;
-      required: boolean;
-      linkedEntityApiName: { type: string; apiName?: string };
-    }
-  >;
-}
 
 /**
  * Converts a gateway InterfaceType to a maker InterfaceType.
@@ -52,32 +32,41 @@ interface GatewayInterfaceType {
  * `allInterfaces` is the full map so we can resolve extendsInterfaces references.
  */
 export function convertInterfaceType(
-  iface: GatewayInterfaceType,
-  allInterfaces: Record<string, GatewayInterfaceType>,
+  iface: Ontologies.InterfaceType,
+  allInterfaces: Record<string, Ontologies.InterfaceType>,
 ): InterfaceType {
   const shortName = withoutNamespace(iface.apiName);
 
-  // Convert properties to propertiesV2 (SharedPropertyType-based)
+  // propertiesV2 is SPT-only; propertiesV3 also carries inline-defined properties.
   const propertiesV2: Record<
     string,
     { sharedPropertyType: SharedPropertyType; required: boolean }
   > = {};
-  const propertiesV3: Record<
-    string,
-    { sharedPropertyType: SharedPropertyType; required: boolean }
-  > = {};
+  const propertiesV3: Record<string, InterfacePropertyType> = {};
 
-  for (const [sptApiName, sptDef] of Object.entries(iface.properties)) {
-    const converted = convertSharedPropertyType({
-      apiName: sptApiName,
-      displayName: sptDef.displayName,
-      description: sptDef.description,
-      dataType: sptDef.dataType,
-    });
-    if (converted) {
-      const entry = { sharedPropertyType: converted, required: true };
-      propertiesV2[sptApiName] = entry;
-      propertiesV3[withoutNamespace(sptApiName)] = entry;
+  for (const [_propApiName, prop] of Object.entries(iface.propertiesV2)) {
+    if (prop.type === "interfaceSharedPropertyType") {
+      const converted = convertSharedPropertyType(prop);
+      if (converted) {
+        const entry = { sharedPropertyType: converted, required: true };
+        propertiesV2[prop.apiName] = entry;
+        propertiesV3[withoutNamespace(prop.apiName)] = entry;
+      }
+    } else if (prop.type === "interfaceDefinedPropertyType") {
+      const mapped = mapPropertyType(prop.dataType);
+      if (mapped) {
+        propertiesV3[withoutNamespace(prop.apiName)] = {
+          type: mapped.type,
+          array: mapped.array,
+          displayName: prop.displayName,
+          description: prop.description,
+          required: prop.requireImplementation,
+        };
+      } else {
+        consola.warn(
+          `Skipping interface-defined property "${prop.apiName}": unsupported type "${prop.dataType.type}"`,
+        );
+      }
     }
   }
 
@@ -99,9 +88,10 @@ export function convertInterfaceType(
     },
     extendsInterfaces,
     links: [],
+    actionTypeConstraints: [],
     status: { type: "active", active: {} },
     propertiesV2,
     propertiesV3,
     searchable: true,
-  } as unknown as InterfaceType;
+  };
 }

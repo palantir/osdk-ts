@@ -4,17 +4,18 @@
   width: 100%;
 }
 
+.loadingContainer {
+  composes: loadingContainer from "../../shared/LoadingError.module.css";
+}
+
 .errorContainer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--osdk-surface-spacing);
-  height: 100%;
-  font-family: var(--osdk-typography-family-default);
-  font-size: var(--osdk-typography-size-body-medium);
-  color: var(--osdk-typography-color-danger-rest);
+  composes: errorContainer from "../../shared/LoadingError.module.css";
+}
+
+.spinnerIcon {
+  composes: spinnerIcon from "../../shared/LoadingError.module.css";
 }
 
 .errorIcon {
-  flex-shrink: 0;
+  composes: errorIcon from "../../shared/LoadingError.module.css";
 }

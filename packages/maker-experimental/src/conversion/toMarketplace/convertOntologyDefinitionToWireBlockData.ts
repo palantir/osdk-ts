@@ -46,7 +46,10 @@ import { convertInterface } from "./convertInterface.js";
 import { convertLink } from "./convertLink.js";
 import { convertObject } from "./convertObject.js";
 import { convertSpt } from "./convertSpt.js";
-import { MIGRATION_SHAPE_READABLE_ID } from "./shapeExtractors/IrShapeExtractor.js";
+import {
+  getMultiInterfaceSptApiNames,
+  MIGRATION_SHAPE_READABLE_ID,
+} from "./shapeExtractors/IrShapeExtractor.js";
 
 function toActionTypeRestrictionStatus(
   p: EntityPermission,
@@ -173,6 +176,11 @@ export function convertOntologyDefinitionToWireBlockData(
     ontology,
     ridGenerator,
     ontologiesToScan,
+  );
+  // Override interfacePropertyTypes with correct mapping derived from converted interfaces,
+  knownIdentifiers.interfacePropertyTypes = getInterfacePropertyMappings(
+    interfaceTypes,
+    ridGenerator,
   );
 
   return ({
@@ -466,15 +474,6 @@ function buildKnownIdentifiers(
     ) => [groupId, ridGenerator.toBlockInternalId(readableId)]),
   );
 
-  // Interface property types: InterfacePropertyTypeRid -> BlockInternalId
-  const interfacePropertyMappings = Object.fromEntries(
-    Array.from(ridGenerator.getInterfacePropertyTypeRids().inverse().entries())
-      .map(([rid, readableId]) => [
-        rid,
-        ridGenerator.toBlockInternalId(readableId),
-      ]),
-  );
-
   // Value types: ValueTypeRid -> (ValueTypeVersionId -> BlockInternalId)
   const valueTypeMappings: Record<string, Record<string, string>> = {};
   ridGenerator.getConsumedValueTypeReferences().asMap().forEach((
@@ -552,8 +551,11 @@ function buildKnownIdentifiers(
     functions: {},
     geotimeSeriesSyncs,
     groupIds: groupMappings,
+    // TODO: Add support for interface action type constraints and parameter constraints
+    interfaceActionTypeConstraints: {},
     interfaceLinkTypes: interfaceLinkMappings,
-    interfacePropertyTypes: interfacePropertyMappings,
+    interfaceParameterConstraints: {},
+    interfacePropertyTypes: {},
     interfaceTypes: interfaceMappings,
     linkTypeIds,
     linkTypes: linkTypeRids,
@@ -572,4 +574,38 @@ function buildKnownIdentifiers(
     webhooks: {},
     workshopModules: {},
   };
+}
+
+/**
+ * Port of Java's OntologyAsCodeBlockGenerator.getInterfacePropertyMappings().
+ */
+function getInterfacePropertyMappings(
+  interfaces: Record<string, InterfaceTypeBlockDataV2>,
+  ridGenerator: OntologyRidGenerator,
+): Record<string, string> {
+  const multiInterfaceSptApiNames = getMultiInterfaceSptApiNames(interfaces);
+  const mappings: Record<string, string> = {};
+  for (const interfaceBlock of Object.values(interfaces)) {
+    const iface = interfaceBlock.interfaceType;
+    for (const [iptRid, property] of Object.entries(iface.propertiesV3)) {
+      let readableId;
+      if (property.type === "interfaceDefinedPropertyType") {
+        readableId = ReadableIdGenerator.getForInterfaceProperty(
+          iface.apiName,
+          property.interfaceDefinedPropertyType.apiName,
+        );
+      } else {
+        const sptApiName =
+          property.sharedPropertyBasedPropertyType.sharedPropertyType.apiName;
+        readableId = multiInterfaceSptApiNames.has(sptApiName)
+          ? ReadableIdGenerator.getForSptBackedInterfaceProperty(sptApiName)
+          : ReadableIdGenerator.getForSptBackedInterfaceProperty(
+            iface.apiName,
+            sptApiName,
+          );
+      }
+      mappings[iptRid] = ridGenerator.toBlockInternalId(readableId);
+    }
+  }
+  return mappings;
 }

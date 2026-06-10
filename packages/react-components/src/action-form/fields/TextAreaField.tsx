@@ -31,6 +31,7 @@ export function TextAreaField({
   wrap,
   minLength,
   maxLength,
+  disabled,
 }: TextAreaFieldProps): React.ReactElement {
   const renderTextarea = useCallback(
     (props: React.ComponentPropsWithRef<"textarea">) => (
@@ -48,6 +49,7 @@ export function TextAreaField({
       placeholder={placeholder}
       minLength={minLength}
       maxLength={maxLength}
+      disabled={disabled}
       render={renderTextarea}
       aria-invalid={error != null || undefined}
     />

@@ -44,6 +44,27 @@
   );
   --osdk-form-error-color: var(--osdk-typography-color-danger-rest);
 
+  /* Edited tag */
+  --osdk-form-edited-tag-bg: var(--osdk-custom-color-gray-2);
+  --osdk-form-edited-tag-color: var(--osdk-typography-color-default-rest);
+  --osdk-form-edited-tag-font-size: var(--osdk-typography-size-body-small);
+  --osdk-form-edited-tag-font-weight: var(--osdk-typography-weight-bold);
+  --osdk-form-edited-tag-line-height: var(
+    --osdk-typography-line-height-default
+  );
+  --osdk-form-edited-tag-padding-block: calc(var(--osdk-surface-spacing) * 0.5);
+  --osdk-form-edited-tag-padding-inline: calc(
+    var(--osdk-surface-spacing) * 1.5
+  );
+  --osdk-form-edited-tag-border-radius: var(--osdk-surface-border-radius);
+
+  /* Label row reserved height (accounts for edited tag) to avoid layout shift */
+  --osdk-form-label-row-min-block-size: calc(
+    var(--osdk-form-edited-tag-font-size) *
+      var(--osdk-form-edited-tag-line-height) +
+      var(--osdk-form-edited-tag-padding-block) * 2
+  );
+
   /* Form footer error indicator */
   --osdk-form-footer-error-color: var(--osdk-form-error-color);
   --osdk-form-footer-error-font-size: var(--osdk-typography-size-body-medium);

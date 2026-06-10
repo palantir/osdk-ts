@@ -17,9 +17,8 @@
 import { Error as ErrorIcon, Spin } from "@blueprintjs/icons";
 import classnames from "classnames";
 import "pdfjs-dist/web/pdf_viewer.css";
-import React, { forwardRef, useImperativeHandle } from "react";
-import { createPortal } from "react-dom";
-import { PdfViewerAnnotationLayer } from "./components/PdfViewerAnnotationLayer.js";
+import React, { forwardRef, useCallback, useImperativeHandle } from "react";
+import { PdfAnnotationOverlay } from "./components/PdfAnnotationOverlay.js";
 import { PdfViewerOutlineSidebar } from "./components/PdfViewerOutlineSidebar.js";
 import { PdfViewerSearchBar } from "./components/PdfViewerSearchBar.js";
 import { PdfViewerSidebar } from "./components/PdfViewerSidebar.js";
@@ -51,6 +50,7 @@ export const BasePdfViewer: React.ForwardRefExoticComponent<
     initialAutoSize = false,
     initialSidebarOpen = false,
     enableDownload = false,
+    downloadFileName,
     sidebarMode: sidebarModeProp = "thumbnails",
     outlineIcons,
     className,
@@ -89,6 +89,10 @@ export const BasePdfViewer: React.ForwardRefExoticComponent<
     });
 
     const annotationsByPage = usePdfAnnotationsByPage(annotations);
+
+    const handleDownload = useCallback(() => {
+      viewer.download(downloadFileName);
+    }, [viewer, downloadFileName]);
 
     const rootClassName = classnames(styles.pdfViewer, className);
 
@@ -136,7 +140,7 @@ export const BasePdfViewer: React.ForwardRefExoticComponent<
           onAutoSizeToggle={viewer.toggleAutoSize}
           onSearchOpen={viewer.search.openSearch}
           onSidebarToggle={viewer.toggleSidebar}
-          onDownload={viewer.download}
+          onDownload={handleDownload}
           enableDownload={enableDownload}
           onRotateLeft={viewer.rotateLeft}
           onRotateRight={viewer.rotateRight}
@@ -187,15 +191,13 @@ export const BasePdfViewer: React.ForwardRefExoticComponent<
                 if (pageAnnotations.length === 0) {
                   return null;
                 }
-                return createPortal(
-                  <PdfViewerAnnotationLayer
+                return (
+                  <PdfAnnotationOverlay
                     key={target.pageNumber}
+                    target={target}
                     annotations={pageAnnotations}
-                    pageHeight={target.pageHeight}
-                    scale={target.scale}
                     onAnnotationClick={onAnnotationClick}
-                  />,
-                  target.container,
+                  />
                 );
               })}
             </div>

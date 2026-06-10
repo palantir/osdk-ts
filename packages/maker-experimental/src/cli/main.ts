@@ -18,23 +18,31 @@ import type {
   LinkTypeBlockDataV2,
   ObjectTypeBlockDataV2,
 } from "@osdk/client.unstable";
-import { OntologyIrToFullMetadataConverter } from "@osdk/generator-converters.ontologyir";
+import {
+  OntologyBlockDataToFullMetadataConverter,
+  OntologyIrToFullMetadataConverter,
+} from "@osdk/generator-converters.ontologyir";
 import { PreviewOntologyIrConverter } from "@osdk/generator-converters.preview";
 import { cleanAndValidateLinkTypeId } from "@osdk/maker";
 import { consola } from "consola";
-import { createJiti } from "jiti";
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { pathToFileURL } from "node:url";
 import invariant from "tiny-invariant";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { defineOntologyV2 } from "../api/defineOntologyV2.js";
+import { getExternalRecommendations } from "../conversion/toMarketplace/RecommendationUtils.js";
 import { ReadableIdGenerator } from "../util/generateRid.js";
 import {
   generateBackingDatasetBlockResult,
   generateBackingDatasetBlockResultForLink,
   getNonEditOnlyProperties,
 } from "./generateBackingDataset.js";
+import {
+  generateValueTypeBlockResults,
+  getValueTypeInternalMappings,
+} from "./generateValueTypeBlockResults.js";
 import type { BlockGeneratorResult } from "./marketplaceSerialization/BlockGeneratorResult.js";
 import type { InputMappingEntry } from "./marketplaceSerialization/supportingTypes.js";
 
@@ -50,6 +58,7 @@ export default async function main(
   const commandLineOpts: {
     input: string;
     output: string;
+    valueTypesOutput: string;
     apiNamespace: string;
     buildDir: string;
     temporaryBlockDataFile?: string;
@@ -72,9 +81,15 @@ export default async function main(
       },
       output: {
         alias: "o",
-        describe: "Output file for BlockGeneratorResult JSON",
+        describe: "Output file for ontology BlockGeneratorResult JSON",
         type: "string",
         default: "build/block_generator_result.json",
+        coerce: path.resolve,
+      },
+      valueTypesOutput: {
+        describe: "Output file for value types BlockGeneratorResult JSON",
+        type: "string",
+        default: "build/value_types_block_generator_result.json",
         coerce: path.resolve,
       },
       apiNamespace: {
@@ -183,6 +198,7 @@ export default async function main(
   } = await loadOntology(
     commandLineOpts.input,
     apiNamespace,
+    commandLineOpts.buildDir,
     functionsIrFile,
     commandLineOpts.randomnessKey,
   );
@@ -198,6 +214,30 @@ export default async function main(
   const ontologyJson = JSON.stringify(ontologyIr.ontology, null, 2);
   await fs.promises.writeFile(ontologyJsonPath, ontologyJson);
   consola.info(`Wrote ontology.json to ${ontologyJsonPath}`);
+
+  const importedMetadata = OntologyBlockDataToFullMetadataConverter
+    .getFullMetadataFromBlockData(
+      ontologyIr.importedOntology,
+      undefined,
+      ontologyIr.transitiveImportedOntology,
+    );
+  const importedMetadataPath = path.join(
+    commandLineOpts.buildDir,
+    "oac-imported-metadata.json",
+  );
+  await fs.promises.writeFile(
+    importedMetadataPath,
+    JSON.stringify(importedMetadata, null, 2),
+  );
+  consola.info(`Wrote oac-imported-metadata.json to ${importedMetadataPath}`);
+
+  let valueTypeResults: BlockGeneratorResult[] = [];
+  if (ontologyIr.valueTypes.length > 0) {
+    valueTypeResults = await generateValueTypeBlockResults(
+      ontologyIr.valueTypes,
+      commandLineOpts.buildDir,
+    );
+  }
 
   // Collect input_mapping_entries for the ontology block
   // These map ontology inputs to datasource block outputs for objects with includeEmptyBackingDatasource
@@ -287,6 +327,10 @@ export default async function main(
     }
   }
 
+  ontologyInputMappingEntries.push(
+    ...getValueTypeInternalMappings(ontologyIr.valueTypes, shapes.inputShapes),
+  );
+
   // Generate backing datasource BlockGeneratorResults for objects with includeEmptyBackingDatasource
   const backingDsGeneratorResults = await Promise.all(
     backingDatasourceApiNames.filter(apiName => {
@@ -346,7 +390,12 @@ export default async function main(
     inputs: Object.fromEntries(shapes.inputShapes),
     outputs: Object.fromEntries(shapes.outputShapes),
     input_mapping_entries: ontologyInputMappingEntries,
-    external_recommendations: [],
+    external_recommendations: getExternalRecommendations(
+      ontologyIr.importedOntology,
+      ontologyIr.valueTypes,
+      ontologyIr.importedValueTypes,
+      shapes.inputShapes,
+    ),
     add_on_override: undefined,
     input_shape_metadata: Object.fromEntries(shapes.inputShapeMetadata),
     block_type: "ONTOLOGY",
@@ -358,6 +407,7 @@ export default async function main(
       blockGeneratorResult,
       ...backingDsGeneratorResults,
       ...backingDsLinkGeneratorResults,
+      ...valueTypeResults,
     ],
     null,
     2,
@@ -372,24 +422,30 @@ export default async function main(
   consola.info(
     `Block data directory: ${blockDataDir}`,
   );
+
+  if (valueTypeResults.length > 0) {
+    const valueTypeResultsJson = JSON.stringify(valueTypeResults, null, 2);
+    await fs.promises.writeFile(
+      commandLineOpts.valueTypesOutput,
+      valueTypeResultsJson,
+    );
+    consola.success(
+      `Value type BlockGeneratorResult written to ${commandLineOpts.valueTypesOutput}`,
+    );
+  }
 }
 
 async function loadOntology(
   input: string,
   apiNamespace: string,
+  outputDir?: string,
   functionsIrFile?: string,
   randomnessKey?: string,
 ) {
   const result = await defineOntologyV2(
     apiNamespace,
-    async () => {
-      const jiti = createJiti(import.meta.filename, {
-        moduleCache: true,
-        debug: false,
-        importMeta: import.meta,
-      });
-      const module = await jiti.import(input);
-    },
+    async () => await import(pathToFileURL(input).href),
+    outputDir,
     functionsIrFile,
     randomnessKey,
   );

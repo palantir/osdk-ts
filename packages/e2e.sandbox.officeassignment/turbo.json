@@ -1,0 +1,15 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "inputs": ["src/**/*", "vite.config.mts", "index.html"],
+      "dependsOn": ["transpile", "typecheck"]
+    },
+
+    "codegen": {
+      "inputs": ["ontology.json"],
+      "outputs": ["src/generatedNoCheck2/**/*"],
+      "dependsOn": ["@osdk/cli.cmd.typescript#transpile"]
+    }
+  }
+}

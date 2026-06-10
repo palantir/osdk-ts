@@ -23,6 +23,7 @@ import type {
 import type { OnChangeFn, SortingState } from "@tanstack/react-table";
 import { useCallback, useMemo, useState } from "react";
 import type { ObjectTableProps } from "../ObjectTableApi.js";
+import type { OrderBy } from "../utils/types.js";
 
 interface UseTableSortingProps<
   Q extends ObjectOrInterfaceDefinition,
@@ -43,9 +44,13 @@ interface UseTableSortingProps<
   >["onOrderByChanged"];
 }
 
-interface UseTableSortingResults {
+interface UseTableSortingResults<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> {
   sorting: SortingState;
   onSortingChange: OnChangeFn<SortingState>;
+  orderByState: OrderBy<Q, RDPs>;
 }
 
 export const useTableSorting = <
@@ -59,7 +64,10 @@ export const useTableSorting = <
   orderBy,
   defaultOrderBy,
   onOrderByChanged,
-}: UseTableSortingProps<Q, RDPs, FunctionColumns>): UseTableSortingResults => {
+}: UseTableSortingProps<Q, RDPs, FunctionColumns>): UseTableSortingResults<
+  Q,
+  RDPs
+> => {
   // The sorting state in uncontrolled mode
   const [internalSorting, setInternalSorting] = useState<SortingState>(() =>
     defaultOrderBy ? convertOrderByToSortingState(defaultOrderBy) : []
@@ -74,6 +82,16 @@ export const useTableSorting = <
     () => (orderBy ? convertOrderByToSortingState(orderBy) : internalSorting),
     [orderBy, internalSorting],
   );
+
+  const orderByState: OrderBy<Q, RDPs> = useMemo(() => {
+    const currentOrderBy = orderBy
+      ? orderBy
+      : convertSortingStateToOrderBy(internalSorting);
+
+    return Object.fromEntries(
+      currentOrderBy.map(({ property, direction }) => [property, direction]),
+    ) as OrderBy<Q, RDPs>;
+  }, [orderBy, internalSorting]);
 
   const onSortingChange: OnChangeFn<SortingState> = useCallback(
     (updater) => {
@@ -94,7 +112,7 @@ export const useTableSorting = <
     [isControlled, sortingState, onOrderByChanged],
   );
 
-  return { sorting: sortingState, onSortingChange };
+  return { sorting: sortingState, orderByState, onSortingChange };
 };
 
 function convertOrderByToSortingState<Q extends ObjectOrInterfaceDefinition>(

@@ -127,6 +127,44 @@ export const employeeObjectType: ObjectTypeV2 = {
       rid: "rid",
       typeClasses: [],
     },
+    employeeProfile: {
+      description: "Employee profile with main value being the bio",
+      dataType: {
+        type: "struct",
+        structFieldTypes: [
+          {
+            apiName: "bio",
+            dataType: { type: "string" },
+            rid: "ri.struct.bio",
+            typeClasses: [],
+          },
+          {
+            apiName: "yearsExperience",
+            dataType: { type: "integer" },
+            rid: "ri.struct.yearsExperience",
+            typeClasses: [],
+          },
+        ],
+        mainValue: {
+          mainValueType: { type: "string" },
+          fields: ["bio"],
+        },
+      },
+      rid: "rid",
+      typeClasses: [],
+    },
+    performanceScores: {
+      description: "Array of performance scores with reducers",
+      dataType: {
+        type: "array",
+        subType: { type: "double" },
+        reducers: [
+          { direction: "DESCENDING_NULLS_LAST" },
+        ],
+      },
+      rid: "rid",
+      typeClasses: [],
+    },
   },
   rid: "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44",
   status: "ACTIVE",

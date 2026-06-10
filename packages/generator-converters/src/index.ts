@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-export { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition } from "./__UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition.js";
+export { GeneratorError } from "./GeneratorError.js";
 export { wireActionTypeV2ToSdkActionMetadata } from "./wireActionTypeV2ToSdkActionMetadata.js";
+export {
+  __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition,
+  wireInterfaceTypeV2ToSdkObjectDefinition,
+} from "./wireInterfaceTypeV2ToSdkObjectDefinition.js";
 export { wireObjectTypeFullMetadataToSdkObjectMetadata } from "./wireObjectTypeFullMetadataToSdkObjectMetadata.js";
 export { wirePropertyV2ToSdkPropertyDefinition } from "./wirePropertyV2ToSdkPropertyDefinition.js";
 export { wireQueryDataTypeToQueryDataTypeDefinition } from "./wireQueryDataTypeToQueryDataTypeDefinition.js";

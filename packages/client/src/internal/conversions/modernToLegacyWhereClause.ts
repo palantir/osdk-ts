@@ -76,6 +76,11 @@ export function modernToLegacyWhereClause<
   const parts = Object.entries(whereClause).map(([key, value]) => ({
     [key]: value,
   })) as WhereClause<T, RDPs>[];
+  invariant(
+    parts.length > 0,
+    "Cannot convert an empty where clause to a filter. "
+      + "Skip the .where() call entirely when no conditions are provided.",
+  );
   if (parts.length === 1) {
     return modernToLegacyWhereClauseInner(
       whereClause,
@@ -134,6 +139,36 @@ export function modernToLegacyWhereClauseInner<
   return handleWherePair(parts[0], objectOrInterface, undefined, rdpNames);
 }
 
+function resolvePropertyIdentifier(
+  fieldName: string,
+  objectOrInterface: ObjectOrInterfaceDefinition,
+  isTitleProperty: boolean,
+  isPrimaryKeyProperty: boolean,
+  isRdp: boolean | undefined,
+  structFieldSelector?: { propertyApiName: string; structFieldApiName: string },
+): PropertyIdentifier | undefined {
+  if (isTitleProperty) {
+    return { type: "titleProperty" } as PropertyIdentifier;
+  } else if (isPrimaryKeyProperty) {
+    return { type: "primaryKeyProperty" } as PropertyIdentifier;
+  } else if (isRdp) {
+    return {
+      type: "property",
+      apiName: fieldName,
+    };
+  } else if (structFieldSelector != null) {
+    return {
+      type: "structField",
+      ...structFieldSelector,
+      propertyApiName: fullyQualifyPropName(
+        structFieldSelector.propertyApiName,
+        objectOrInterface,
+      ),
+    };
+  }
+  return undefined;
+}
+
 function handleWherePair(
   [fieldName, filter]: [string, any],
   objectOrInterface: ObjectOrInterfaceDefinition,
@@ -146,25 +181,23 @@ function handleWherePair(
       + `If the value might be undefined, check it before adding to the where clause.`,
   );
 
-  const isRdp = !structFieldSelector && rdpNames?.has(fieldName);
+  const isTitleProperty = fieldName === "$title";
+  const isPrimaryKeyProperty = fieldName === "$primaryKey";
+  const isSpecialProperty = isTitleProperty || isPrimaryKeyProperty;
 
-  const propertyIdentifier: PropertyIdentifier | undefined = isRdp
-    ? {
-      type: "property",
-      apiName: fieldName,
-    }
-    : structFieldSelector != null
-    ? {
-      type: "structField",
-      ...structFieldSelector,
-      propertyApiName: fullyQualifyPropName(
-        structFieldSelector.propertyApiName,
-        objectOrInterface,
-      ),
-    }
-    : undefined;
+  const isRdp = !structFieldSelector && !isSpecialProperty
+    && rdpNames?.has(fieldName);
 
-  const field = !isRdp && structFieldSelector == null
+  const propertyIdentifier = resolvePropertyIdentifier(
+    fieldName,
+    objectOrInterface,
+    isTitleProperty,
+    isPrimaryKeyProperty,
+    isRdp,
+    structFieldSelector,
+  );
+
+  const field = !isRdp && !isSpecialProperty && structFieldSelector == null
     ? fullyQualifyPropName(fieldName, objectOrInterface)
     : undefined;
 

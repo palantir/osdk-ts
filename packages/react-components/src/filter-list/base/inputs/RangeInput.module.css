@@ -197,9 +197,11 @@
 .separator {
   display: flex;
   align-items: center;
-  height: calc(
-    var(--osdk-filter-input-font-size) + var(--osdk-filter-input-padding) * 2
-  );
+  font-family: var(--osdk-filter-input-font-family);
+  font-size: var(--osdk-filter-input-font-size);
+  padding: var(--osdk-filter-input-padding);
+  border: var(--osdk-filter-input-border);
+  border-color: transparent;
   color: var(--osdk-filter-range-separator-color);
 }
 

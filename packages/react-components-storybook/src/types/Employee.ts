@@ -50,11 +50,14 @@ export namespace Employee {
     | "locationCountry"
     | "businessArea"
     | "newProperty1"
+    | "isRemote"
     | "emailPrimaryWork"
     | "locationRegion"
     | "team"
     | "favPlace"
-    | "locationType";
+    | "locationType"
+    | "classificationMarking"
+    | "clearanceMarking";
 
   export interface Links {
     readonly lead: $SingleLinkAccessor<Employee>;
@@ -92,6 +95,11 @@ export namespace Employee {
     readonly team: $PropType["string"] | undefined;
     readonly favPlace: $PropType["geopoint"] | undefined;
     readonly locationType: $PropType["string"] | undefined;
+    readonly isRemote: $PropType["boolean"] | undefined;
+    readonly classificationMarking: $PropType["marking"] | undefined;
+    readonly clearanceMarking:
+      | ReadonlyArray<$PropType["marking"]>
+      | undefined;
   }
 
   export interface StrictProps {
@@ -125,6 +133,11 @@ export namespace Employee {
     readonly team: $PropType["string"] | undefined;
     readonly favPlace: $PropType["geopoint"] | undefined;
     readonly locationType: $PropType["string"] | undefined;
+    readonly isRemote: $PropType["boolean"] | undefined;
+    readonly classificationMarking: $PropType["marking"] | undefined;
+    readonly clearanceMarking:
+      | ReadonlyArray<$PropType["marking"]>
+      | undefined;
   }
 
   export interface ObjectSet extends $ObjectSet<Employee, Employee.ObjectSet> {}
@@ -179,6 +192,9 @@ export interface Employee extends $ObjectTypeDefinition {
       team: $PropertyDef<"string", "nullable", "single">;
       favPlace: $PropertyDef<"geopoint", "nullable", "single">;
       locationType: $PropertyDef<"string", "nullable", "single">;
+      isRemote: $PropertyDef<"boolean", "nullable", "single">;
+      classificationMarking: $PropertyDef<"marking", "nullable", "single">;
+      clearanceMarking: $PropertyDef<"marking", "nullable", "array">;
     };
     links: {
       lead: $ObjectMetadata.Link<Employee, false>;

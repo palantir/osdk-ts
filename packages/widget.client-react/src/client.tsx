@@ -254,9 +254,17 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
     });
     resizeObserver.observe(document.body, { box: "border-box" });
 
+    const handleFullReload = () => client.reload();
+    if (import.meta.hot?.on) {
+      import.meta.hot.on("vite:beforeFullReload", handleFullReload);
+    }
+
     return () => {
       client.unsubscribe();
       resizeObserver.disconnect();
+      if (import.meta.hot?.off) {
+        import.meta.hot.off("vite:beforeFullReload", handleFullReload);
+      }
     };
   }, []);
 

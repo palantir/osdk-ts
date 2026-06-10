@@ -24,7 +24,7 @@
   cursor: pointer;
   font-family: var(--osdk-typography-family-default);
   font-size: var(--osdk-typography-size-body-small);
-  color: var(--osdk-typography-color-default);
+  color: var(--osdk-typography-color-default-rest);
   text-decoration: none;
   border: none;
   background: none;
@@ -46,8 +46,8 @@
 
 .outlineItemActive {
   background-color: var(--osdk-pdf-viewer-outline-item-active-bg, rgba(45, 114, 210, 0.1));
-  color: var(--osdk-pdf-viewer-outline-item-active-color, var(--osdk-intent-primary));
-  font-weight: var(--osdk-typography-weight-semibold);
+  color: var(--osdk-pdf-viewer-outline-item-active-color, var(--osdk-intent-primary-rest));
+  font-weight: var(--osdk-typography-weight-bold);
 }
 
 .outlineItemBold {

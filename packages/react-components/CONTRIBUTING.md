@@ -31,13 +31,14 @@ Thanks for your interest in contributing to `@osdk/react-components`! This docum
 
 ## Using Claude Code
 
-If you use [Claude Code](https://claude.com/claude-code), this package ships an opinionated skill that wraps this guide:
+If you use [Claude Code](https://claude.com/claude-code), this package ships opinionated skills that wrap this guide:
 
 - **`add-new-component`** — for scaffolding a fresh OSDK-aware component. Mention "create a component" / "add a component" or invoke `/add-new-component`. Adds three gates on top of this document: an API-first design checkpoint (agree on `<Name>Api.ts` before writing implementation, on the same branch), a user-supplied MVP checklist, and a verification loop driven by Playwright
+- **`contribute`** — for fixing a bug or adding a feature to a component that already exists (covers both `@osdk/react-components` and `@osdk/react`). Mention "fix a bug" / "add a feature to <component>" / "extend <component>" or invoke `/contribute`. Adds a failing-test-first gate for bug fixes (TDD), an API-change checkpoint when the diff touches public props, and a verification loop
 
 If a skill ever conflicts with this document, this document wins — flag the conflict.
 
-**Skill sources:** `packages/react-components/.claude/skills/add-new-component/SKILL.md` if you want to read or refine them.
+**Skill sources:** repo-root `.claude/skills/add-new-component/SKILL.md` and `.claude/skills/contribute/SKILL.md` if you want to read or refine them.
 
 ## Development Setup
 
@@ -137,7 +138,7 @@ Components in this package favour **minimum configuration**. A consumer should b
 - **Aim for one required prop.** Question every required prop you add — most "required" inputs can be derived (e.g. column definitions from `objectType`) or defaulted. If you genuinely need more than one required prop, justify it based on the component type.
 - **Default `enable*` boolean flags to `true`** when the feature is part of the out-of-the-box experience (e.g. `enableOrdering`, `enableColumnPinning`).
 - **Document defaults inline** with `@default` JSDoc tags on every optional prop.
-- **Provide controlled and uncontrolled variants** where applicable — see how `ObjectTable` exposes both `defaultOrderBy` (uncontrolled) and `orderBy` + `onOrderByChanged` (controlled).
+- **Provide controlled and/or uncontrolled variants** for any stateful feature — implement **at least one** (both encouraged where useful). State the chosen mode(s) explicitly in JSDoc on each prop, e.g. `"Controlled mode only. Caller owns selection state..."` or `"Uncontrolled. Seeds initial sort; component continues to own the state."`. See how `ObjectTable` exposes both `defaultOrderBy` (uncontrolled) and `orderBy` + `onOrderByChanged` (controlled); `useRowSelection.ts` is the canonical both-modes hook implementation — drop the branch you don't support for single-mode features.
 - **Define the API in its own file:** `<Name>Api.ts` co-located with the component, exporting only the OSDK-aware outer-component props plus public sub-types (column definitions, locators, options). Base props live inline in `Base<Name>.tsx`.
 
 ### Adding a New Component
@@ -226,17 +227,18 @@ Storybook runs on `http://localhost:6006`.
 
 - Story files live in `packages/react-components-storybook/src/stories/<Name>/<Name>.stories.tsx`. Folders match the component name; sub-stories live alongside, optionally under a `Recipes/` or `Features/` subfolder
 - Follow the [Component Story Format (CSF)](https://storybook.js.org/docs/api/csf)
-- **Tier placement is via the meta `title:`, not the folder path.** New components belong under the `Experimental/` category:
+- **Tier placement is via the meta `title:`, not the folder path.** New components belong under the `Beta/` category:
 
   ```ts
   const meta: Meta<typeof MyComponent> = {
-    title: "Experimental/<Name>", // or "Experimental/<Parent>/<Subfeature>"
-    tags: ["experimental"],
+    title: "Beta/<Name>", // or "Beta/<Parent>/<Subfeature>"
     component: MyComponent,
   };
   ```
 
-  This produces URLs like `experimental-myname--default`, matching the existing pattern (`experimental-baseform--default`, `experimental-objecttable-building-blocks-basetable--default`)
+  The `beta` tag (and resulting tag badge) is injected automatically by the indexer in `.storybook/main.ts` for any title starting with `Beta/` — do **not** add `tags: ["beta"]` manually.
+
+  This produces URLs like `beta-myname--default`, matching the existing pattern (`beta-baseform--default`, `beta-objecttable-building-blocks-basetable--default`)
 - Include stories that demonstrate the component's key states: default, loading, error, empty, and edge cases
 - **OSDK-aware components must accept mocked data via props in stories** — Storybook runs without a Foundry stack. Either expose a `data` / `objects` / `value` prop the story can populate, or render the `Base<Name>` component (not the OSDK wrapper) in the story. Use the MSW addon for stories that exercise hook-level fetch paths against a fake server
 
@@ -257,7 +259,7 @@ Storybook runs on `http://localhost:6006`.
    pnpm turbo check
    ```
 6. **Push and open a PR** against `main`. Fill out the PR template.
-7. **Do not force-push** amended commits during review — push new commits so reviewers can see incremental changes.
+7. **Attach a screenshot or short screen-capture video to the PR description if the change is user-visible** (new UI, visual fix, interaction change, layout tweak). Reviewers shouldn't have to check out the branch to see what changed. Pure refactors, type-only edits, and non-visible internals don't need one.
 
 ## Code Review
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { PlatformClient } from "@osdk/client";
+import { createClient, type PlatformClient } from "@osdk/client";
 import { describe, expect, it, vi } from "vitest";
 import {
   createFetch,
@@ -109,6 +109,31 @@ describe("getGoogleBaseUrl", () => {
       baseUrl: "https://example.palantirfoundry.com/",
     });
 
+    expect(getGoogleBaseUrl(client)).toBe(
+      "https://example.palantirfoundry.com/api/v2/llm/proxy/google",
+    );
+  });
+});
+
+describe("accepts an OSDK Client (context nested under symbolClientContext)", () => {
+  it("resolves token, fetch, and base URLs through the nested context", async () => {
+    const mockFetch = vi.fn();
+    const client = createClient(
+      "https://example.palantirfoundry.com/",
+      "ri.a.b.ontology",
+      async () => "nested-token",
+      {},
+      mockFetch,
+    );
+
+    expect(await getFoundryToken(client)).toBe("nested-token");
+    expect(typeof createFetch(client)).toBe("function");
+    expect(getOpenAiBaseUrl(client)).toBe(
+      "https://example.palantirfoundry.com/api/v2/llm/proxy/openai/v1",
+    );
+    expect(getAnthropicBaseUrl(client)).toBe(
+      "https://example.palantirfoundry.com/api/v2/llm/proxy/anthropic",
+    );
     expect(getGoogleBaseUrl(client)).toBe(
       "https://example.palantirfoundry.com/api/v2/llm/proxy/google",
     );

@@ -44,23 +44,39 @@ Components are imported from their individual entry points under `@osdk/react-co
 - `@osdk/react-components/experimental/pdf-viewer` — PdfViewer, BasePdfViewer, and building blocks/hooks
 - `@osdk/react-components/experimental/tiff-renderer` — TiffRenderer
 - `@osdk/react-components/experimental/markdown-renderer` — MarkdownRenderer
-- `@osdk/react-components/experimental/aip-agent-chat` — AipAgentChat, BaseAipAgentChat
+- `@osdk/react-components/experimental/document-viewer` — DocumentViewer
+- `@osdk/react-components/experimental/email-viewer` — EmailViewer, BaseEmailViewer
+- `@osdk/react-components/experimental/excel-viewer` — ExcelViewer, BaseExcelViewer
+- `@osdk/react-components/experimental/image-viewer` — ImageViewer, BaseImageViewer
+- `@osdk/react-components/experimental/video-viewer` — VideoViewer, BaseVideoViewer
+- `@osdk/react-components/experimental/xml-viewer` — XmlViewer, BaseXmlViewer
 
-| Component              | Description                                                                                                                                 |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| **ObjectTable**        | Table for displaying OSDK object sets with sorting, filtering, inline editing, column pinning/resizing, row selection, and infinite scroll. |
-| **BaseTable**          | OSDK-agnostic base table — use when building custom data fetching on top of the table UI.                                                   |
-| **FilterList**         | Aggregation-based filter UI for object sets with draggable reordering.                                                                      |
-| **BaseFilterList**     | OSDK-agnostic base filter list — use for custom filter implementations.                                                                     |
-| **ActionForm**         | Form for applying OSDK actions with generated or custom field definitions.                                                                  |
-| **BaseForm**           | OSDK-agnostic base action form — use when supplying explicit field content and submit handling.                                             |
-| **ColumnConfigDialog** | Dialog for managing column visibility and drag-and-drop reordering.                                                                         |
-| **PdfViewer**          | PDF viewer for OSDK Media objects with toolbar, search, annotations, sidebar (thumbnails/outline), highlight mode, and form fields.         |
-| **BasePdfViewer**      | OSDK-agnostic base PDF viewer — accepts a URL or ArrayBuffer directly. Use when building custom data fetching on top of the viewer UI.      |
-| **TiffRenderer**       | TIFF image renderer — accepts a `Uint8Array` and renders onto a canvas with size validation and error handling.                             |
-| **MarkdownRenderer**   | Markdown renderer that accepts a markdown string and renders it with styled headings, code blocks, tables, and links.                       |
-| **AipAgentChat**       | Chat surface backed by Foundry LMS via `useChat`. Takes a `PlatformClient` + model API name and renders messages, composer, and streaming.  |
-| **BaseAipAgentChat**   | OSDK-agnostic base chat — accepts `messages`/`status`/`onSendMessage` directly. Use for custom chat-state plumbing.                         |
+| Component                  | Description                                                                                                                                 |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| **ObjectTable**            | Table for displaying OSDK object sets with sorting, filtering, inline editing, column pinning/resizing, row selection, and infinite scroll. |
+| **BaseTable**              | OSDK-agnostic base table — use when building custom data fetching on top of the table UI.                                                   |
+| **FilterList**             | Aggregation-based filter UI for object sets with draggable reordering.                                                                      |
+| **BaseFilterList**         | OSDK-agnostic base filter list — use for custom filter implementations.                                                                     |
+| **ActionForm**             | Form for applying OSDK actions with generated or custom field definitions.                                                                  |
+| **BaseForm**               | OSDK-agnostic base action form — use when supplying explicit field content and submit handling.                                             |
+| **ColumnConfigDialog**     | Dialog for managing column visibility and drag-and-drop reordering.                                                                         |
+| **PdfViewer**              | PDF viewer for OSDK Media objects with toolbar, search, annotations, sidebar (thumbnails/outline), highlight mode, and form fields.         |
+| **BasePdfViewer**          | OSDK-agnostic base PDF viewer — accepts a URL or ArrayBuffer directly. Use when building custom data fetching on top of the viewer UI.      |
+| **TiffRenderer**           | TIFF image renderer — accepts a `Uint8Array` and renders onto a canvas with size validation and error handling.                             |
+| **MarkdownRenderer**       | Markdown renderer that accepts a markdown string and renders it with styled headings, code blocks, tables, and links.                       |
+| **DocumentViewer**         | Unified media viewer that auto-detects file type (PDF, TIFF, image, video, Excel, email, markdown, XML) and renders the appropriate viewer. |
+| **EmailViewer**            | Email viewer — parses and renders `.eml` files with headers, HTML body (sandboxed iframe), and plain text fallback.                         |
+| **ExcelViewer**            | Excel viewer — parses and renders `.xlsx` spreadsheets with sheet tabs and column/row headers.                                              |
+| **ImageViewer**            | Image viewer — renders images (PNG, JPEG, GIF, SVG, WebP, BMP) with object-fit contain.                                                     |
+| **VideoViewer**            | Video viewer — renders video with native browser controls.                                                                                  |
+| **XmlViewer**              | XML viewer — renders XML content with syntax preservation.                                                                                  |
+| **CbacPicker**             | Picker for classification-based access control (CBAC) markings — disjunctive/conjunctive categories, restriction enforcement, banner.       |
+| **CbacPickerDialog**       | Dialog wrapper for `CbacPicker` with confirm/cancel actions and validation.                                                                 |
+| **CbacBanner**             | OSDK-aware classification banner that resolves a marking-set into a colored banner.                                                         |
+| **BaseCbacPicker**         | OSDK-agnostic base CBAC picker — use when building custom data fetching on top of the picker UI.                                            |
+| **BaseCbacBanner**         | OSDK-agnostic classification banner display with customizable colors and text.                                                              |
+| **BaseCbacPickerDialog**   | OSDK-agnostic dialog wrapper for `BaseCbacPicker`.                                                                                          |
+| **MaxClassificationField** | Field that lets users constrain the maximum classification allowed for a marking selection.                                                 |
 
 ## Documentation
 
@@ -73,3 +89,4 @@ Before using any component, read the relevant doc from this package:
 - **TiffRenderer**: Read [docs/TiffViewer.md](./docs/TiffViewer.md) for props and usage
 - **MarkdownRenderer**: Read [docs/MarkdownRenderer.md](./docs/MarkdownRenderer.md) for props, examples, and theming
 - **FilterList**: Read [docs/FilterList.md](./docs/FilterList.md) for props, examples, and usage
+- **CbacPicker**: Read [docs/CbacPicker.md](./docs/CbacPicker.md) for props, examples, base components, and troubleshooting

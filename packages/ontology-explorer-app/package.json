@@ -41,7 +41,7 @@
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@tanstack/react-query": "^5.66.0",
-    "@tanstack/react-router": "^1.114.0",
+    "@tanstack/react-router": "1.114.35",
     "@types/react": "^18.3.24",
     "@types/react-dom": "^18.3.7",
     "@vitejs/plugin-react": "^4.3.4",

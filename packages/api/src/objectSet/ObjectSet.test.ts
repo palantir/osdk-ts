@@ -189,6 +189,9 @@ describe("ObjectSet", () => {
             "lastUpdated",
             "skillSet",
             "skillSetEmbedding",
+            "addressStruct",
+            "salaryHistory",
+            "bonusHistory",
           ],
         });
 
@@ -219,6 +222,9 @@ describe("ObjectSet", () => {
             "lastUpdated",
             "skillSet",
             "skillSetEmbedding",
+            "addressStruct",
+            "salaryHistory",
+            "bonusHistory",
           ],
         });
     });
@@ -576,6 +582,9 @@ describe("ObjectSet", () => {
             "lastUpdated",
             "skillSet",
             "skillSetEmbedding",
+            "addressStruct",
+            "salaryHistory",
+            "bonusHistory",
           ],
         });
 

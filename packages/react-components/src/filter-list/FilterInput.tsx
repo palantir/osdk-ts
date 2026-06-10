@@ -16,6 +16,7 @@
 
 import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import React, { memo, useCallback } from "react";
+import { FilterInputExcludeRow } from "./base/FilterInputExcludeRow.js";
 import { ContainsTextInput } from "./base/inputs/ContainsTextInput.js";
 import type { MultiSelectInputLayout } from "./base/inputs/MultiSelectInput.js";
 import { ToggleInput } from "./base/inputs/ToggleInput.js";
@@ -24,6 +25,7 @@ import type { FilterState } from "./FilterListItemApi.js";
 import { LinkedPropertyInput } from "./inputs/LinkedPropertyInput.js";
 import { PropertyFilterInput } from "./inputs/PropertyFilterInput.js";
 import { StaticValuesFilterInput } from "./inputs/StaticValuesFilterInput.js";
+import type { LinkedFilter } from "./types/LinkedFilterTypes.js";
 
 export interface FilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
@@ -31,7 +33,11 @@ export interface FilterInputProps<Q extends ObjectTypeDefinition> {
   definition: FilterDefinitionUnion<Q>;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
+  /** Per-filter excluding-self where clause (direct filters only). */
   whereClause: WhereClause<Q>;
+  /** Per-filter excluding-self linked-filter records. */
+  linkedFilters?: ReadonlyArray<LinkedFilter<Q>>;
+  showFilteredOutValues?: boolean;
   searchQuery?: string;
   excludeRowOpen?: boolean;
   /**
@@ -51,6 +57,8 @@ function FilterInputInner<Q extends ObjectTypeDefinition>({
   filterState,
   onFilterStateChanged,
   whereClause,
+  linkedFilters,
+  showFilteredOutValues,
   searchQuery,
   excludeRowOpen,
   layout,
@@ -61,6 +69,7 @@ function FilterInputInner<Q extends ObjectTypeDefinition>({
         <HasLinkInput
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
+          excludeRowOpen={excludeRowOpen}
         />
       );
 
@@ -74,7 +83,11 @@ function FilterInputInner<Q extends ObjectTypeDefinition>({
           definition={definition}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
+          whereClause={whereClause}
+          linkedFilters={linkedFilters}
+          showFilteredOutValues={showFilteredOutValues}
           searchQuery={searchQuery}
+          excludeRowOpen={excludeRowOpen}
           layout={layout}
         />
       );
@@ -119,6 +132,8 @@ function FilterInputInner<Q extends ObjectTypeDefinition>({
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
           whereClause={whereClause}
+          linkedFilters={linkedFilters}
+          showFilteredOutValues={showFilteredOutValues}
           searchQuery={searchQuery}
           excludeRowOpen={excludeRowOpen}
           layout={layout}
@@ -147,24 +162,42 @@ export const FilterInput = memo(FilterInputInner) as typeof FilterInputInner;
 interface HasLinkInputProps {
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
+  excludeRowOpen?: boolean;
 }
 
 const HasLinkInput = memo(function HasLinkInput({
   filterState,
   onFilterStateChanged,
+  excludeRowOpen,
 }: HasLinkInputProps): React.ReactElement {
   const hasLink = filterState?.type === "hasLink"
     ? filterState.hasLink
     : false;
+  const isExcluding = filterState?.type === "hasLink"
+    ? filterState.isExcluding ?? false
+    : false;
 
   const handleChange = useCallback(
     (hasLink: boolean) => {
-      onFilterStateChanged({ type: "hasLink", hasLink });
+      onFilterStateChanged({ type: "hasLink", hasLink, isExcluding });
     },
-    [onFilterStateChanged],
+    [onFilterStateChanged, isExcluding],
   );
 
-  return <ToggleInput enabled={hasLink} onChange={handleChange} />;
+  const handleClearAll = useCallback(() => {
+    onFilterStateChanged({ type: "hasLink", hasLink: false, isExcluding });
+  }, [onFilterStateChanged, isExcluding]);
+
+  return (
+    <FilterInputExcludeRow
+      excludeRowOpen={excludeRowOpen}
+      filterState={filterState}
+      onFilterStateChanged={onFilterStateChanged}
+      onClearAll={handleClearAll}
+    >
+      <ToggleInput enabled={hasLink} onChange={handleChange} />
+    </FilterInputExcludeRow>
+  );
 });
 
 interface KeywordSearchInputProps {

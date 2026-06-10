@@ -28,17 +28,21 @@ import { FilterList } from "@osdk/react-components/experimental/filter-list";
 
 ## Basic Usage
 
+:::note About `@my/osdk` and `./client`
+`@my/osdk` is a placeholder for **your generated SDK package** (e.g. `@your-app/sdk`). `./client` is the file in your app where you exported the OSDK client returned by `createClient(...)`. Replace both with the actual paths in your project.
+:::
+
 The simplest way to use FilterList is with an objectSet and a few filter definitions:
 
 ```typescript
+import { Employee } from "@my/osdk";
 import { FilterList } from "@osdk/react-components/experimental/filter-list";
-import { Employee } from "@YourApp/sdk";
-import { $ } from "@YourApp/sdk";
+import client from "./client";
 
 function EmployeeFilters() {
   return (
     <FilterList
-      objectSet={$(Employee)}
+      objectSet={client(Employee)}
       filterDefinitions={[
         {
           type: "PROPERTY",
@@ -67,12 +71,13 @@ function EmployeeFilters() {
 
 ### Filter Management
 
-| Prop                    | Type                             | Default | Description                                                    |
-| ----------------------- | -------------------------------- | ------- | -------------------------------------------------------------- |
-| `filterClause`          | `WhereClause<Q>`                 | -       | Current where clause (controlled mode)                         |
-| `onFilterClauseChanged` | `(newClause) => void`            | -       | Called when filter clause changes. Required in controlled mode |
-| `onFilterStateChanged`  | `(definition, newState) => void` | -       | Called when any filter's state changes                         |
-| `initialFilterStates`   | `Map<string, FilterState>`       | -       | Initial states for hydrating from external storage             |
+| Prop                    | Type                             | Default | Description                                                                                                                                                               |
+| ----------------------- | -------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `filterClause`          | `WhereClause<Q>`                 | -       | Current where clause covering direct filters (controlled mode). LINKED_PROPERTY narrowing surfaces only through `onEffectiveObjectSet`.                                   |
+| `onFilterClauseChanged` | `(newClause) => void`            | -       | Called when the direct-filter where clause changes. Required in controlled mode.                                                                                          |
+| `onEffectiveObjectSet`  | `(objectSet) => void`            | -       | Observer invoked with the fully-narrowed `ObjectSet` (direct + linked filters applied) on every filter change. Requires `objectSet`. Use when LINKED filters are present. |
+| `onFilterStateChanged`  | `(definition, newState) => void` | -       | Called when any filter's state changes                                                                                                                                    |
+| `initialFilterStates`   | `Map<string, FilterState>`       | -       | Initial states for hydrating from external storage                                                                                                                        |
 
 ### UI Features
 
@@ -131,6 +136,51 @@ When using `type: "PROPERTY"`, the definition supports:
 | `displayMode`     | `"full" \| "count" \| "minimal"` | `"full"` | `full`: bar + count, `count`: count only, `minimal`: label only |
 | `maxVisibleItems` | `number`                         | `5`      | Number of items shown before "View all" link appears            |
 
+### Linked Property Filter Definition
+
+When using `type: "LINKED_PROPERTY"`, the definition supports:
+
+| Field                   | Type                            | Description                                                                                                                                                                                                                             |
+| ----------------------- | ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `linkName`              | `LinkNames<Q>`                  | Link on `Q` that traverses to the related object type                                                                                                                                                                                   |
+| `linkedPropertyKey`     | `PropertyKeys<LinkedQ>`         | Property on the linked type to filter by                                                                                                                                                                                                |
+| `linkedFilterComponent` | `FilterComponentType`           | Which UI component to render (see Filter Components table)                                                                                                                                                                              |
+| `linkedFilterState`     | `FilterState`                   | Initial state for the linked filter                                                                                                                                                                                                     |
+| `filterState`           | `LinkedPropertyFilterState`     | Wrapped filter state                                                                                                                                                                                                                    |
+| `reverseLinkName`       | `LinkNames<LinkedQ>` (optional) | **Opt-in for FilterList-managed narrowing.** When set, the linked filter narrows `objectSet` and emits via `onEffectiveObjectSet`. Names the link on the linked type that points back to `Q`. Omit to keep the filter as UI state only. |
+| `label`                 | `string`                        | Display label for the filter                                                                                                                                                                                                            |
+| `isVisible`             | `boolean`                       | Whether the filter is initially visible (default: `true`)                                                                                                                                                                               |
+
+#### Two modes for LINKED_PROPERTY
+
+**Auto-narrowing** — set `reverseLinkName`. FilterList composes `pivotTo(linkName).where(...).pivotTo(reverseLinkName)` and emits the narrowed set via `onEffectiveObjectSet`:
+
+```typescript
+{
+  type: "LINKED_PROPERTY",
+  linkName: "manager",          // Employee → Manager
+  reverseLinkName: "directReports", // Manager → Employee (back-link)
+  linkedPropertyKey: "fullName",
+  linkedFilterComponent: "MULTI_SELECT",
+  linkedFilterState: { type: "SELECT", selectedValues: [] },
+  filterState: { type: "linkedProperty", linkedFilterState: { type: "SELECT", selectedValues: [] } },
+}
+```
+
+**UI-only** — omit `reverseLinkName`. The filter still renders and fires `onFilterStateChanged`; downstream narrowing is up to the consumer:
+
+```typescript
+{
+  type: "LINKED_PROPERTY",
+  linkName: "manager",
+  // no reverseLinkName — FilterList won't narrow objectSet on this filter
+  linkedPropertyKey: "fullName",
+  linkedFilterComponent: "MULTI_SELECT",
+  linkedFilterState: { type: "SELECT", selectedValues: [] },
+  filterState: { type: "linkedProperty", linkedFilterState: { type: "SELECT", selectedValues: [] } },
+}
+```
+
 ### Filter Components
 
 When using `type: "PROPERTY"` or `type: "LINKED_PROPERTY"`, specify a `filterComponent`:
@@ -156,18 +206,18 @@ When using `type: "PROPERTY"` or `type: "LINKED_PROPERTY"`, specify a `filterCom
 Use controlled `filterClause` to connect FilterList and ObjectTable:
 
 ```typescript
+import { Employee } from "@my/osdk";
 import type { WhereClause } from "@osdk/api";
 import { FilterList } from "@osdk/react-components/experimental/filter-list";
 import { ObjectTable } from "@osdk/react-components/experimental/object-table";
-import { Employee } from "@YourApp/sdk";
-import { $ } from "@YourApp/sdk";
 import { useMemo, useState } from "react";
+import client from "./client";
 
 function EmployeeDashboard() {
   const [filterClause, setFilterClause] = useState<
     WhereClause<typeof Employee>
   >({});
-  const objectSet = useMemo(() => $(Employee), []);
+  const objectSet = useMemo(() => client(Employee), []);
 
   return (
     <div style={{ display: "flex", gap: 16, height: 600 }}>
@@ -242,7 +292,7 @@ const filterDefinitions = [
 ];
 
 <FilterList
-  objectSet={$(Employee)}
+  objectSet={client(Employee)}
   filterDefinitions={filterDefinitions}
   addFilterMode="uncontrolled"
   showResetButton={true}
@@ -263,7 +313,7 @@ const handleFilterRemoved = (filterKey) => {
 };
 
 <FilterList
-  objectSet={$(Employee)}
+  objectSet={client(Employee)}
   filterDefinitions={definitions}
   addFilterMode="controlled"
   onFilterRemoved={handleFilterRemoved}
@@ -276,14 +326,14 @@ const handleFilterRemoved = (filterKey) => {
 Pass a `.where()` objectSet to scope filter dropdown values. For example, to only show Engineering employees:
 
 ```typescript
+import { Employee } from "@my/osdk";
 import { FilterList } from "@osdk/react-components/experimental/filter-list";
-import { Employee } from "@YourApp/sdk";
-import { $ } from "@YourApp/sdk";
 import { useMemo } from "react";
+import client from "./client";
 
 function EngineeringFilters() {
   const engineeringSet = useMemo(
-    () => $(Employee).where({ department: "Engineering" }),
+    () => client(Employee).where({ department: "Engineering" }),
     [],
   );
 
@@ -316,7 +366,10 @@ const filterDefinitions = [
   { type: "PROPERTY", key: "locationCity", filterComponent: "LISTOGRAM" },
 ];
 
-<FilterList objectSet={$(Employee)} filterDefinitions={filterDefinitions} />;
+<FilterList
+  objectSet={client(Employee)}
+  filterDefinitions={filterDefinitions}
+/>;
 ```
 
 ### Custom Listogram Colors
@@ -325,7 +378,7 @@ Assign colors to specific values in a listogram:
 
 ```typescript
 <FilterList
-  objectSet={$(Employee)}
+  objectSet={client(Employee)}
   filterDefinitions={[
     {
       type: "PROPERTY",
@@ -353,7 +406,7 @@ const USER_NAMES: Record<string, string> = {
 };
 
 <FilterList
-  objectSet={$(Task)}
+  objectSet={client(Task)}
   filterDefinitions={[
     {
       type: "PROPERTY",
@@ -379,7 +432,7 @@ Control how much detail each listogram row shows:
 // "minimal": checkbox + label only
 
 <FilterList
-  objectSet={$(Employee)}
+  objectSet={client(Employee)}
   filterDefinitions={[
     {
       type: "PROPERTY",
@@ -397,7 +450,7 @@ By default, LISTOGRAM filters show at most 5 items with a "View all" link. Overr
 
 ```typescript
 <FilterList
-  objectSet={$(Employee)}
+  objectSet={client(Employee)}
   filterDefinitions={[
     {
       type: "PROPERTY",
@@ -421,7 +474,7 @@ function CollapsibleFilters() {
 
   return (
     <FilterList
-      objectSet={$(Employee)}
+      objectSet={client(Employee)}
       title="Filters"
       collapsed={collapsed}
       onCollapsedChange={setCollapsed}
@@ -440,7 +493,7 @@ Enable reordering of filters via drag and drop:
 
 ```typescript
 <FilterList
-  objectSet={$(Employee)}
+  objectSet={client(Employee)}
   filterDefinitions={filterDefinitions}
   enableSorting={true}
 />;
@@ -454,7 +507,7 @@ LISTOGRAM and TEXT_TAGS filters support an exclude/include toggle. Hover a filte
 // Exclude mode is built into LISTOGRAM filters automatically.
 // Users access it via the overflow menu (three dots) on each filter item.
 <FilterList
-  objectSet={$(Employee)}
+  objectSet={client(Employee)}
   filterDefinitions={[
     {
       type: "PROPERTY",
@@ -487,7 +540,7 @@ Use the `className` prop for scoped styling:
 
 ```typescript
 <FilterList
-  objectSet={$(Employee)}
+  objectSet={client(Employee)}
   className="my-custom-filters"
   filterDefinitions={[...]}
 />
@@ -499,6 +552,6 @@ For a full reference of CSS tokens, see the [CSS Variables documentation](./CSSV
 
 - **Memoize filterDefinitions** -- define the array outside the component or wrap in `useMemo` to avoid unnecessary re-renders
 - **Use controlled mode for persistence** -- provide `filterClause` and `onFilterClauseChanged` to persist filter state across navigation
-- **Use objectSet constraints to scope filter values** -- pass a prefiltered objectSet (e.g. `$(Employee).where(...)`) so filter dropdowns only show relevant values
+- **Use objectSet constraints to scope filter values** -- pass a prefiltered objectSet (e.g. `client(Employee).where(...)`) so filter dropdowns only show relevant values
 - **Keep filter lists focused** -- show 3-8 filters; too many filters overwhelm users
 - **Use `addFilterMode="uncontrolled"` for progressive disclosure** -- start with a few visible filters and let users add more as needed

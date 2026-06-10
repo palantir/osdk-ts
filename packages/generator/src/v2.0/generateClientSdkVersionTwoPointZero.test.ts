@@ -483,6 +483,7 @@ const referencingOntology: WireOntologyDefinition = {
             objectApiName: "com.example.dep.Task",
             objectTypeApiName: "com.example.dep.Task",
           },
+          required: true,
         },
       },
       rid: "ri.a.b.c",

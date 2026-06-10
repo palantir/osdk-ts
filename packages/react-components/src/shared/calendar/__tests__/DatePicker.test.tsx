@@ -126,6 +126,20 @@ describe("DatePicker", () => {
       expect(screen.getByRole("dialog")).toBeDefined();
     });
 
+    it("keeps the input disabled and does not open the calendar when disabled", () => {
+      render(<DatePicker value={null} onChange={vi.fn()} disabled={true} />);
+      const input = screen.getByRole("combobox") as HTMLInputElement;
+
+      fireEvent.focus(input);
+      fireEvent.pointerDown(input);
+      fireEvent.click(input);
+
+      expect(input.disabled).toBe(true);
+      expect(input.parentElement?.getAttribute("data-disabled")).toBe("true");
+      expect(input.getAttribute("aria-expanded")).toBe("false");
+      expect(screen.queryByRole("dialog")).toBeNull();
+    });
+
     it("selects local today from the calendar action bar", () => {
       vi.useFakeTimers();
       vi.setSystemTime(new Date(2024, 6, 4, 9, 30));
@@ -208,6 +222,69 @@ describe("DatePicker", () => {
       expect(calledDate.getDate()).toBe(4);
       expect(calledDate.getHours()).toBe(9);
       expect(calledDate.getMinutes()).toBe(30);
+    });
+
+    it("resets to wall-clock time when selecting today after editing time and selecting another date with showTime", () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date(2024, 6, 4, 10, 45));
+      const onChange = vi.fn();
+      render(
+        <DatePicker
+          value={new Date(2024, 6, 4, 9, 30)}
+          onChange={onChange}
+          showTime={true}
+        />,
+      );
+      const input = screen.getByRole("combobox") as HTMLInputElement;
+      fireEvent.focus(input);
+
+      fireEvent.change(screen.getByLabelText("Time hours"), {
+        target: { value: "1" },
+      });
+      fireEvent.blur(screen.getByLabelText("Time hours"));
+      fireEvent.change(screen.getByLabelText("Time minutes"), {
+        target: { value: "02" },
+      });
+      fireEvent.blur(screen.getByLabelText("Time minutes"));
+      expect(input.value).toBe("2024-07-04 01:02");
+
+      const julyTenth = screen.getAllByText("10")[0];
+      if (julyTenth == null) {
+        throw new Error("Expected July 10 to be rendered");
+      }
+      fireEvent.click(julyTenth);
+      expect(input.value).toBe("2024-07-10 01:02");
+
+      fireEvent.click(screen.getByRole("button", { name: "Today" }));
+
+      const lastCall = onChange.mock.calls[onChange.mock.calls.length - 1];
+      if (lastCall == null) {
+        throw new Error("Expected DatePicker to call onChange");
+      }
+      expect(lastCall[0]).toEqual(new Date(2024, 6, 4, 10, 45));
+    });
+
+    it("uses the current wall-clock time when selecting today after midnight with showTime", () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date(2024, 6, 4, 23, 59));
+      const onChange = vi.fn();
+      render(
+        <DatePicker
+          value={new Date(2024, 6, 4, 12, 0)}
+          onChange={onChange}
+          showTime={true}
+        />,
+      );
+      fireEvent.focus(screen.getByRole("combobox"));
+
+      vi.setSystemTime(new Date(2024, 6, 5, 0, 1));
+      fireEvent.click(screen.getByRole("button", { name: "Today" }));
+
+      const lastCall = onChange.mock.calls[onChange.mock.calls.length - 1];
+      if (lastCall == null) {
+        throw new Error("Expected DatePicker to call onChange");
+      }
+      expect(lastCall[0]).toEqual(new Date(2024, 6, 5, 0, 1));
     });
 
     it("clears the selected date from the calendar action bar", () => {
@@ -330,6 +407,104 @@ describe("DatePicker", () => {
       expect(calledDate.getHours()).toBe(14);
       expect(calledDate.getMinutes()).toBe(30);
     });
+
+    it("defaults to midnight when selecting a day with showTime and no prior value", () => {
+      const onChange = vi.fn();
+      render(<DatePicker value={null} onChange={onChange} showTime={true} />);
+      fireEvent.focus(screen.getByRole("combobox"));
+
+      const dayButton = screen.getByText("20");
+      fireEvent.click(dayButton);
+
+      expect(onChange).toHaveBeenCalledTimes(1);
+      const calledDate: Date = onChange.mock.calls[0][0];
+      expect(calledDate.getHours()).toBe(0);
+      expect(calledDate.getMinutes()).toBe(0);
+    });
+
+    it("uses the visible edited time when selecting a calendar day with showTime", () => {
+      const onChange = vi.fn();
+      render(
+        <DatePicker
+          value={new Date(2024, 6, 4, 9, 30)}
+          onChange={onChange}
+          showTime={true}
+        />,
+      );
+      const input = screen.getByRole("combobox") as HTMLInputElement;
+      fireEvent.focus(input);
+
+      fireEvent.change(screen.getByLabelText("Time hours"), {
+        target: { value: "1" },
+      });
+      fireEvent.blur(screen.getByLabelText("Time hours"));
+      fireEvent.change(screen.getByLabelText("Time minutes"), {
+        target: { value: "02" },
+      });
+      fireEvent.blur(screen.getByLabelText("Time minutes"));
+      expect(input.value).toBe("2024-07-04 01:02");
+
+      const julyTenth = screen.getAllByText("10")[0];
+      if (julyTenth == null) {
+        throw new Error("Expected July 10 to be rendered");
+      }
+      fireEvent.click(julyTenth);
+
+      const lastCall = onChange.mock.calls[onChange.mock.calls.length - 1];
+      if (lastCall == null) {
+        throw new Error("Expected DatePicker to call onChange");
+      }
+      expect(lastCall[0]).toEqual(new Date(2024, 6, 10, 1, 2));
+    });
+
+    it("uses the visible edited time when selecting today's calendar day with showTime", () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date(2024, 6, 4, 10, 45));
+      const onChange = vi.fn();
+      render(<DatePicker value={null} onChange={onChange} showTime={true} />);
+      const input = screen.getByRole("combobox") as HTMLInputElement;
+      fireEvent.focus(input);
+
+      fireEvent.click(screen.getByRole("button", { name: "Today" }));
+      expect(input.value).toBe("2024-07-04 10:45");
+
+      const julyTenth = screen.getAllByText("10")[0];
+      if (julyTenth == null) {
+        throw new Error("Expected July 10 to be rendered");
+      }
+      fireEvent.click(julyTenth);
+      expect(input.value).toBe("2024-07-10 10:45");
+
+      fireEvent.change(screen.getByLabelText("Time hours"), {
+        target: { value: "1" },
+      });
+      fireEvent.blur(screen.getByLabelText("Time hours"));
+      fireEvent.change(screen.getByLabelText("Time minutes"), {
+        target: { value: "02" },
+      });
+      fireEvent.blur(screen.getByLabelText("Time minutes"));
+      expect(input.value).toBe("2024-07-10 01:02");
+
+      const julyEleventh = screen.getAllByText("11")[0];
+      if (julyEleventh == null) {
+        throw new Error("Expected July 11 to be rendered");
+      }
+      fireEvent.click(julyEleventh);
+      expect(input.value).toBe("2024-07-11 01:02");
+
+      const julyFourth = screen.getAllByText("4")[0];
+      if (julyFourth == null) {
+        throw new Error("Expected July 4 to be rendered");
+      }
+      fireEvent.click(julyFourth);
+
+      const lastCall = onChange.mock.calls[onChange.mock.calls.length - 1];
+      if (lastCall == null) {
+        throw new Error("Expected DatePicker to call onChange");
+      }
+      expect(lastCall[0]).toEqual(new Date(2024, 6, 4, 1, 2));
+      expect(input.value).toBe("2024-07-04 01:02");
+    });
   });
 
   describe("time input", () => {
@@ -381,6 +556,31 @@ describe("DatePicker", () => {
       expect(calledDate.getHours()).toBe(16);
       expect(calledDate.getMinutes()).toBe(45);
       expect(calledDate.getDate()).toBe(15);
+    });
+
+    it("keeps the popover open when time changes and closeOnSelection is true", () => {
+      const onChange = vi.fn();
+      render(
+        <DatePicker
+          value={new Date(2024, 0, 15, 14, 30)}
+          onChange={onChange}
+          showTime={true}
+          closeOnSelection={true}
+        />,
+      );
+      const input = screen.getByRole("combobox");
+      fireEvent.focus(input);
+      expect(input.getAttribute("aria-expanded")).toBe("true");
+
+      const hourInput = screen.getByLabelText("Time hours");
+      fireEvent.change(hourInput, {
+        target: { value: "16" },
+      });
+      fireEvent.blur(hourInput);
+
+      expect(onChange).toHaveBeenCalledTimes(1);
+      expect(input.getAttribute("aria-expanded")).toBe("true");
+      expect(screen.getByRole("dialog")).toBeDefined();
     });
 
     it("does not call onChange before a valid time segment blurs", () => {

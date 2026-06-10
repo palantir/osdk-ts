@@ -62,8 +62,10 @@ function ThumbnailSidebarWrapper({
 }
 
 const meta: Meta<ThumbnailSidebarStoryProps> = {
-  title: "Experimental/PdfViewer/Building Blocks/ThumbnailSidebar",
+  title:
+    "Components/DocumentViewer/Renderers/PdfViewer/Building Blocks/ThumbnailSidebar",
   component: ThumbnailSidebarWrapper,
+  tags: ["beta"],
   args: {
     src: SAMPLE_PDF_URL,
     currentPage: 1,

@@ -1,0 +1,193 @@
+/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.popover {
+  max-width: var(--osdk-cbac-popover-max-width);
+  padding: var(--osdk-cbac-popover-padding);
+  background: var(--osdk-surface-background-color-default);
+  border: 1px solid var(--osdk-surface-border-color-default);
+  border-radius: var(--osdk-surface-border-radius);
+  box-shadow: var(--osdk-surface-elevation-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--osdk-cbac-popover-section-gap);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--osdk-cbac-popover-pill-padding);
+  border-radius: var(--osdk-cbac-popover-pill-border-radius);
+  font-size: var(--osdk-typography-size-body-small);
+  font-weight: var(--osdk-typography-weight-bold);
+  width: fit-content;
+}
+
+.sectionLabel {
+  font-size: var(--osdk-typography-size-body-small);
+  font-weight: var(--osdk-typography-weight-bold);
+  color: var(--osdk-typography-color-default-muted);
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.markingGroup {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--osdk-surface-spacing) * 0.5);
+}
+
+.markingCategoryName {
+  font-size: var(--osdk-typography-size-body-small);
+  font-weight: var(--osdk-typography-weight-bold);
+  color: var(--osdk-typography-color-default-rest);
+  margin: 0;
+}
+
+.markingName {
+  font-size: var(--osdk-typography-size-body-small);
+  color: var(--osdk-typography-color-default-rest);
+  margin: 0;
+  padding-left: calc(var(--osdk-surface-spacing) * 2);
+}
+
+.noMarkings {
+  font-size: var(--osdk-typography-size-body-small);
+  color: var(--osdk-typography-color-default-muted);
+  margin: 0;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid var(--osdk-surface-border-color-default);
+  margin: 0;
+}
+
+.editButton {
+  width: 100%;
+}
+
+.description {
+  font-size: var(--osdk-typography-size-body-small);
+  color: var(--osdk-typography-color-default-muted);
+  margin: 0;
+}
+
+/* Skeleton loading */
+.skeletonContainer {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--osdk-surface-spacing) * 1.5);
+}
+
+.skeletonPill {
+  width: var(--osdk-cbac-skeleton-pill-width);
+  height: var(--osdk-cbac-skeleton-pill-height);
+}
+
+.skeletonLine {
+  width: 100%;
+  height: var(--osdk-cbac-skeleton-line-height);
+}
+
+.skeletonLineNarrow {
+  width: var(--osdk-cbac-skeleton-line-narrow-width);
+  height: var(--osdk-cbac-skeleton-line-height);
+}
+
+/* Error state */
+.errorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--osdk-surface-spacing);
+  padding: calc(var(--osdk-surface-spacing) * 2) 0;
+}
+
+.errorMessage {
+  font-size: var(--osdk-typography-size-body-small);
+  color: var(--osdk-typography-color-default-rest);
+  font-weight: var(--osdk-typography-weight-bold);
+  margin: 0;
+  text-align: center;
+}
+
+.errorRemediation {
+  font-size: var(--osdk-typography-size-body-small);
+  color: var(--osdk-typography-color-default-muted);
+  margin: 0;
+  text-align: center;
+}
+
+/* Warnings section */
+.warningsSection {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--osdk-surface-spacing) * 1.5);
+}
+
+.warningsHeader {
+  font-size: var(--osdk-typography-size-body-small);
+  font-weight: var(--osdk-typography-weight-bold);
+  color: var(--osdk-typography-color-default-muted);
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.warningCallout {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--osdk-surface-spacing);
+  padding: var(--osdk-cbac-warning-callout-padding);
+  background: var(--osdk-cbac-warning-callout-bg);
+  color: var(--osdk-cbac-warning-callout-color);
+  border-radius: var(--osdk-cbac-warning-callout-border-radius);
+  font-size: var(--osdk-cbac-warning-callout-font-size);
+}
+
+.warningIcon {
+  flex-shrink: 0;
+  margin-top: calc(var(--osdk-surface-spacing) * 0.125);
+}
+
+.warningText {
+  margin: 0;
+}
+
+/* Banner trigger wrapper with caret */
+.bannerTriggerWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.caretIcon {
+  position: absolute;
+  right: calc(var(--osdk-surface-spacing) * 1.5);
+  display: flex;
+  align-items: center;
+  color: inherit;
+  opacity: 0;
+  transition: opacity var(--osdk-emphasis-transition-duration)
+    var(--osdk-emphasis-ease-default);
+  pointer-events: none;
+}
+
+.bannerTriggerWrapper:hover .caretIcon,
+.caretIconVisible {
+  opacity: 1;
+}

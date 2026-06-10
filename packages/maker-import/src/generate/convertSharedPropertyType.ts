@@ -14,21 +14,15 @@
  * limitations under the License.
  */
 
+import type * as Ontologies from "@osdk/foundry.ontologies";
 import type { SharedPropertyType } from "@osdk/maker";
 import { OntologyEntityTypeEnum } from "@osdk/maker";
 import { consola } from "consola";
 import { mapPropertyType } from "./mapPropertyType.js";
 import { withoutNamespace } from "./utils.js";
 
-interface GatewaySharedPropertyType {
-  apiName: string;
-  displayName?: string;
-  description?: string;
-  dataType: { type: string; [key: string]: unknown };
-}
-
 export function convertSharedPropertyType(
-  spt: GatewaySharedPropertyType,
+  spt: Ontologies.SharedPropertyType,
 ): SharedPropertyType | undefined {
   const mapped = mapPropertyType(spt.dataType);
   if (!mapped) {

@@ -33,6 +33,10 @@ import {
   coerceToStringArray,
 } from "../utils/coerceFilterValue.js";
 
+// Static values are caller-provided options, not aggregation results, so their
+// zero counts should not be interpreted as values filtered out by another facet.
+const SHOW_FILTERED_OUT_VALUES = false;
+
 interface StaticValuesFilterInputProps<Q extends ObjectTypeDefinition> {
   /** The static values filter definition containing values and component config */
   definition: StaticValuesFilterDefinition<Q>;
@@ -42,7 +46,7 @@ interface StaticValuesFilterInputProps<Q extends ObjectTypeDefinition> {
   onFilterStateChanged: (state: FilterState) => void;
   /** Search term for filtering displayed values within the filter input */
   searchQuery?: string;
-  /** Whether the exclude/include toggle row is expanded */
+  /** Whether the inline exclude row is currently open */
   excludeRowOpen?: boolean;
   /** Layout for `MULTI_SELECT` rendering. Forwarded to `MultiSelectInput`. */
   layout?: MultiSelectInputLayout;
@@ -196,6 +200,7 @@ function StaticValuesFilterInputInner<Q extends ObjectTypeDefinition>({
             displayMode={definition.listogramConfig?.displayMode}
             showCount={definition.showCount}
             isExcluding={isExcluding}
+            showFilteredOutValues={SHOW_FILTERED_OUT_VALUES}
             maxVisibleItems={definition.listogramConfig?.maxVisibleItems ?? 5}
             searchQuery={searchQuery}
             renderValue={definition.renderValue}
@@ -241,6 +246,7 @@ function StaticValuesFilterInputInner<Q extends ObjectTypeDefinition>({
             selectedValues={select.selectedValues}
             onChange={select.handleMultiChange}
             showCounts={definition.showCount}
+            showFilteredOutValues={SHOW_FILTERED_OUT_VALUES}
             ariaLabel={`Search ${definition.key} values`}
             renderValue={definition.renderValue}
             layout={layout}

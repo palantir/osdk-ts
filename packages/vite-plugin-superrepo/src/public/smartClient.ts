@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
+/// <reference types="vite/client" />
+
 import type { Client } from "@osdk/client";
+
+// Vite serves under `import.meta.env.BASE_URL` (trailing slash); the direct
+// fetches below hit the same-origin proxies the plugin installs, so they must
+// carry that prefix to route through Vite when it is served under a path.
+const BASE_PATH = import.meta.env.BASE_URL.replace(/\/$/, "");
+const withBase = (path: string): string => `${BASE_PATH}${path}`;
 
 interface RuntimeConfig {
   name: "TypeScript" | "Python";
@@ -73,9 +81,10 @@ function isOsdkObject(
 }
 
 async function fetchPkPropertyNames(): Promise<Map<string, string>> {
-  const response = await fetch("/api/v2/ontologies/ontology/objectTypes", {
-    headers: { "Authorization": LOCAL_RUNTIME_TOKEN },
-  });
+  const response = await fetch(
+    withBase("/api/v2/ontologies/ontology/objectTypes"),
+    { headers: { "Authorization": LOCAL_RUNTIME_TOKEN } },
+  );
   if (!response.ok) {
     throw new Error(
       `Failed to fetch object types: ${response.status}`,
@@ -295,7 +304,7 @@ async function fetchSpecs(
   runtime: RuntimeConfig,
 ): Promise<RuntimeSpecs | null> {
   try {
-    const response = await fetch(runtime.specsEndpoint, {
+    const response = await fetch(withBase(runtime.specsEndpoint), {
       method: "GET",
       headers: { "Authorization": LOCAL_RUNTIME_TOKEN },
       signal: AbortSignal.timeout(SPECS_TIMEOUT_MS),
@@ -362,7 +371,7 @@ async function postJsonToLocalRuntime(
   url: string,
   body: unknown,
 ): Promise<Response> {
-  const response = await fetch(url, {
+  const response = await fetch(withBase(url), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

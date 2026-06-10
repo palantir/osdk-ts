@@ -88,6 +88,13 @@ export function convertActionParameters(
           };
           break;
 
+        case "objectTypeReference":
+          convertedType = {
+            type: "objectTypeReference",
+            objectTypeReference: {},
+          };
+          break;
+
         default:
           // Pass through other types unchanged
           convertedType = parameter.type;

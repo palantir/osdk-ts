@@ -179,6 +179,7 @@ async function transpileWithTsup(format, target) {
     "@osdk/cli.common",
     "@osdk/foundry.ontologies",
     "@osdk/foundry.mediasets",
+    "@osdk/foundry.functions",
     "@osdk/shared.client",
     "@osdk/shared.client2",
     "oauth4webapi",

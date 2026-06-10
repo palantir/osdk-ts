@@ -1,5 +1,56 @@
 # @osdk/functions
 
+## 1.13.0
+
+### Minor Changes
+
+- c4d39ed: Added support for Byte and Short types in @osdk/functions
+- b6f0fc3: Added FunctionConfig and Scope experimental types
+- 79f8a6e: Stop serializing GeoJSON `Point` geometries into a `"lat,lon"` string when sending object property/parameter values. This broke geoshape values that are Points (the transaction edits and action endpoints rejected `"lat,lon"` with `InvalidTransactionEditPropertyValue` / invalid parameter for `GeoShape`). GeoJSON values are now passed through as objects, which the server accepts for both geoshape and geopoint/geohash targets. The FauxFoundry geohash action-parameter validator now also accepts GeoJSON objects, matching the real server.
+
+### Patch Changes
+
+- Updated dependencies [06adca1]
+- Updated dependencies [79f8a6e]
+  - @osdk/client@2.32.0
+
+## 1.12.0
+
+### Minor Changes
+
+- 13132b8: Fix writeable client reads not flushing staged edits: persist `flushEdits` onto the client context and wire it to the EditRequestManager so awaiting a read (fetchOne/fetchPage/aggregate/query) flushes pending creates/updates first.
+
+### Patch Changes
+
+- Updated dependencies [a5066b5]
+- Updated dependencies [3e03544]
+- Updated dependencies [13132b8]
+  - @osdk/client@2.28.0
+
+## 1.11.0
+
+### Minor Changes
+
+- 21003f1: Export additional GeoJSON subtypes (GeometryCollection, LineString, MultiLineString, MultiPoint, MultiPolygon, Polygon) alongside Geometry and Point.
+
+### Patch Changes
+
+- @osdk/client@2.26.0
+
+## 1.10.0
+
+### Minor Changes
+
+- 51b3bce: Modify uploadMedia to return a Media object
+
+### Patch Changes
+
+- Updated dependencies [f90a2da]
+- Updated dependencies [9eb67e4]
+- Updated dependencies [51b3bce]
+- Updated dependencies [75f877f]
+  - @osdk/client@2.20.0
+
 ## 1.9.0
 
 ### Minor Changes

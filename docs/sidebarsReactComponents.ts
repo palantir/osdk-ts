@@ -26,19 +26,15 @@ const sidebars: SidebarsConfig = {
       items: [
         "ObjectTable",
         "FilterList",
+        "ActionForm",
         "PdfViewer",
-      ],
-    },
-    {
-      type: "category",
-      label: "@osdk/cbac-components",
-      collapsed: false,
-      items: [
-        {
-          type: "link",
-          label: "CbacPicker",
-          href: "/cbac-components/CbacPicker",
-        },
+        "DocumentViewer",
+        "EmailViewer",
+        "ExcelViewer",
+        "ImageViewer",
+        "VideoViewer",
+        "XmlViewer",
+        "CbacPicker",
       ],
     },
   ],

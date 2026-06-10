@@ -97,6 +97,24 @@ describe("evaluateFilter", () => {
         false,
       );
     });
+
+    it("$startsWith returns false for null/undefined values without throwing", () => {
+      // $title is `string | undefined`, so filtering by `$title` can reach a
+      // null value here — it must not throw on the `.startsWith` call.
+      expect(evaluateFilter("$startsWith", undefined, "hello", true)).toBe(
+        false,
+      );
+      expect(evaluateFilter("$startsWith", null, "hello", true)).toBe(false);
+      // A missing value definitively cannot match, so loose mode is false too.
+      expect(evaluateFilter("$startsWith", undefined, "hello", false)).toBe(
+        false,
+      );
+      expect(evaluateFilter("$startsWith", null, "hello", false)).toBe(false);
+    });
+
+    it("$startsWith returns false for non-string values", () => {
+      expect(evaluateFilter("$startsWith", 42, "4", true)).toBe(false);
+    });
   });
 
   describe("null checks", () => {

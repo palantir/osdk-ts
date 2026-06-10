@@ -1,0 +1,48 @@
+.header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 4px;
+}
+
+.title {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.tags {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  padding: 2px 8px;
+  background: var(--oa-border-muted);
+  border-radius: var(--oa-radius);
+}
+
+.tagValue {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.tagLabel {
+  font-size: 11px;
+  color: var(--oa-text-secondary);
+}
+
+.filteredFlag {
+  font-size: 11px;
+  color: var(--oa-accent);
+  border: 1px solid var(--oa-accent);
+  border-radius: 999px;
+  padding: 1px 8px;
+}
+
+.right {
+  margin-left: auto;
+}

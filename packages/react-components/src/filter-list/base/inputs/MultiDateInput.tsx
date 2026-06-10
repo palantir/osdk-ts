@@ -112,6 +112,7 @@ function MultiDateInputInner({
           max={maxDate}
           ariaLabel="Add date"
           modal={false}
+          formatDate={formatDate}
         />
       </div>
     </div>

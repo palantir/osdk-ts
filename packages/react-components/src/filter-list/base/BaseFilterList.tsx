@@ -17,6 +17,7 @@
 import { Button } from "@base-ui/react/button";
 import classnames from "classnames";
 import React, { useCallback, useState } from "react";
+import type { FilterDefinitionControls } from "../FilterListItemApi.js";
 import type { BaseFilterListProps } from "./BaseFilterListApi.js";
 import { ExpandIcon } from "./FilterIcons.js";
 import styles from "./FilterList.module.css";
@@ -24,7 +25,7 @@ import { FilterListBoundaryProvider } from "./FilterListBoundaryContext.js";
 import { FilterListContent } from "./FilterListContent.js";
 import { FilterListHeader } from "./FilterListHeader.js";
 
-export function BaseFilterList<D>(
+export function BaseFilterList<D extends FilterDefinitionControls>(
   props: BaseFilterListProps<D>,
 ): React.ReactElement {
   const {
@@ -38,6 +39,7 @@ export function BaseFilterList<D>(
     renderInput,
     getFilterKey,
     getFilterLabel,
+    getEmptyDisplayState,
     activeFilterCount,
     onReset,
     onFilterAdded,
@@ -45,6 +47,8 @@ export function BaseFilterList<D>(
     onOrderChange,
     showResetButton = false,
     showActiveFilterCount = false,
+    canReset,
+    // eslint-disable-next-line @typescript-eslint/no-deprecated -- consumed as a backwards-compatible fallback when canReset is not provided
     hasVisibilityChanges,
     enableSorting,
     className,
@@ -102,6 +106,7 @@ export function BaseFilterList<D>(
               onReset={onReset}
               showActiveFilterCount={showActiveFilterCount}
               activeFilterCount={activeFilterCount}
+              canReset={canReset}
               hasVisibilityChanges={hasVisibilityChanges}
             />
           )}
@@ -116,6 +121,7 @@ export function BaseFilterList<D>(
               renderInput={renderInput}
               getFilterKey={getFilterKey}
               getFilterLabel={getFilterLabel}
+              getEmptyDisplayState={getEmptyDisplayState}
               enableSorting={enableSorting}
             />
           </div>

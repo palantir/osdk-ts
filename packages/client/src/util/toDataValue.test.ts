@@ -33,6 +33,7 @@ import type { MinimalClient } from "../MinimalClientContext.js";
 import { createAttachmentUpload } from "../object/AttachmentUpload.js";
 import { isMediaReference } from "../object/mediaUpload.js";
 import { getWireObjectSet } from "../objectSet/createObjectSet.js";
+import { withScenario } from "../scenarios/withScenario.js";
 import { toDataValue } from "./toDataValue.js";
 
 describe(toDataValue, () => {
@@ -123,6 +124,24 @@ describe(toDataValue, () => {
     expect(recursiveConversion).toEqual({
       inner: { attachment: "rid" },
     });
+  });
+
+  it("passes GeoJSON geometries through as objects", async () => {
+    const point: GeoJSON.Point = {
+      type: "Point",
+      coordinates: [-74.0, 40.7],
+    };
+    const polygon: GeoJSON.Polygon = {
+      type: "Polygon",
+      coordinates: [[[0, 0], [1, 0], [1, 1], [0, 0]]],
+    };
+
+    expect(await toDataValue(point, clientCtx, mockActionMetadata)).toEqual(
+      point,
+    );
+    expect(await toDataValue(polygon, clientCtx, mockActionMetadata)).toEqual(
+      polygon,
+    );
   });
 
   it("maps an ontology object into just its primary key", async () => {
@@ -306,5 +325,16 @@ describe(toDataValue, () => {
 
     expect(converted).toEqual(expectedMediaReference);
     expect(isMediaReference(converted)).toBe(true);
+  });
+
+  it("converts a ScenarioClient into the rid string", async () => {
+    const scenario = withScenario(client, "ri.actions..scenario.abc");
+
+    const converted = await toDataValue(
+      scenario,
+      clientCtx,
+      mockActionMetadata,
+    );
+    expect(converted).toBe("ri.actions..scenario.abc");
   });
 });

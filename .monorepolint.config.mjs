@@ -85,7 +85,7 @@ const archetypeRules = archetypes(
     [
       "@osdk/api",
       "@osdk/functions",
-      "@osdk/functions-testing.experimental",
+      "@osdk/unit-testing",
     ],
     {
       ...LIBRARY_RULES,
@@ -233,6 +233,7 @@ const archetypeRules = archetypes(
       "@osdk/create-app.template.*",
       "@osdk/create-widget.template.*",
       "@osdk/shared.test",
+      "@osdk/shared.test.intellisense",
     ],
     {
       ...INTERNAL_LIBRARY_RULES,
@@ -277,6 +278,7 @@ const archetypeRules = archetypes(
   .addArchetype(
     "viteSandboxes",
     [
+      "@osdk/e2e.sandbox.officeassignment",
       "@osdk/e2e.sandbox.officenetwork",
       "@osdk/e2e.sandbox.todowidget",
       "@osdk/e2e.sandbox.todoapp",
@@ -378,11 +380,19 @@ const archetypeRules = archetypes(
       attwExcludeEntrypoints: [
         "./experimental/action-form",
         "./experimental/aip-agent-chat",
+        "./experimental/cbac-picker",
+        "./experimental/document-viewer",
+        "./experimental/email-viewer",
+        "./experimental/excel-viewer",
         "./experimental/filter-list",
+        "./experimental/image-viewer",
         "./experimental/markdown-renderer",
         "./experimental/object-table",
         "./experimental/pdf-viewer",
+        "./experimental/theme",
         "./experimental/tiff-renderer",
+        "./experimental/video-viewer",
+        "./experimental/xml-viewer",
       ],
       setupFiles: ["./src/test/setupPolyfills.ts"],
       vitestEnv: {
@@ -414,7 +424,6 @@ const archetypeRules = archetypes(
       react: true,
       output: OUTPUT_ESM_ONLY,
       cssExport: ["styles.css"],
-      private: true,
     },
   )
   .addArchetype(

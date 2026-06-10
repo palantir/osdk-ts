@@ -84,6 +84,24 @@ describe("FilePickerField", () => {
 
       expect(onChange).toHaveBeenCalledWith(null);
     });
+
+    it("shows a disabled clear button without clearing when disabled", () => {
+      const onChange = vi.fn();
+      const file = new File(["content"], "report.pdf");
+
+      render(
+        <FilePickerField value={file} onChange={onChange} disabled={true} />,
+      );
+
+      const clearButton = screen.getByRole("button", {
+        name: "Clear selection",
+      }) as HTMLButtonElement;
+      expect(clearButton.disabled).toBe(true);
+
+      fireEvent.click(clearButton);
+
+      expect(onChange).not.toHaveBeenCalled();
+    });
   });
 
   describe("keyboard interaction", () => {
@@ -137,6 +155,21 @@ describe("FilePickerField", () => {
 
       expect(document.activeElement).toBe(trigger);
       expect(clickSpy).toHaveBeenCalledOnce();
+    });
+
+    it("shows disabled file dialog triggers when disabled", () => {
+      render(<FilePickerField value={null} disabled={true} />);
+
+      const trigger = screen.getByRole("button", {
+        name: "Choose file",
+      }) as HTMLButtonElement;
+      const browse = screen.getByRole("button", {
+        name: "Browse",
+      }) as HTMLButtonElement;
+
+      expect(trigger.disabled).toBe(true);
+      expect(browse.disabled).toBe(true);
+      expect(getFileInput().disabled).toBe(true);
     });
 
     it("clear button is a separate tab stop", () => {

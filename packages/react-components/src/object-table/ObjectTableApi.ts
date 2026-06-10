@@ -129,9 +129,10 @@ interface EditableColumnDefinition<
    * When provided, the column uses the specified field component
    * (e.g. dropdown) instead of the default auto-detected text/number input.
    *
-   * `getFieldComponentProps` receives the row's object and returns the props
-   * to pass to the field component, so editor configuration can depend on the
-   * current row.
+   * `getFieldComponentProps` receives the row's object and a map of any
+   * pending edits for that row (keyed by column id), and returns the props to
+   * pass to the field component. Editor configuration can depend on the
+   * current row or on other in-progress edits within the row.
    */
   editFieldConfig?: EditFieldConfig<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
@@ -310,6 +311,20 @@ export interface ObjectTableProps<
    * @default 60_000 1 minute
    */
   dedupeIntervalMs?: number;
+
+  /**
+   * Enable streaming updates via websocket subscription.
+   * When true, the table will automatically update when matching
+   * objects are added, updated, or removed in Foundry.
+   *
+   * Limitations: `streamUpdates` cannot be used together with `pivotTo` or
+   * `withProperties`. The server does not support websocket subscriptions
+   * for link-traversal or derived-property queries. Those queries still
+   * fetch data normally but won't receive real-time updates.
+   *
+   * @default false
+   */
+  streamUpdates?: boolean;
 
   /**
    * Number of objects to fetch per page.
@@ -501,6 +516,32 @@ export interface ObjectTableProps<
   ) => void;
 
   /**
+   * The primary key of the row to render as visually focused (the
+   * "last interacted" row). When provided, focus state is controlled by
+   * the caller.
+   *
+   * Stored as a primary key rather than a full object so the focus does
+   * not go stale when the underlying row data changes.
+   *
+   * Pass `null` to render no row as focused.
+   */
+  focusedRow?: PrimaryKeyType<Q> | null;
+
+  /**
+   * Called when the focused row changes — fires in both controlled and
+   * uncontrolled modes so callers can observe focus without taking it
+   * over.
+   *
+   * @param row The newly-focused row object, or `null` if focus was
+   * cleared
+   */
+  onFocusedRowChanged?: (
+    row:
+      | Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
+      | null,
+  ) => void;
+
+  /**
    * Called when a column header is clicked.
    *
    * The columnId matches the `locator.id` configured on the column definition.
@@ -537,7 +578,11 @@ export interface ObjectTableProps<
 
   /**
    * Called when the row selection changes.
-   * Required when row selection is controlled.
+   *
+   * @deprecated Use {@link onRowSelectionChanged} instead. The new callback
+   * delivers a {@link RowSelectionChange} object with `selectedRows`,
+   * `isSelectAll`, and a derived `objectSet`. This legacy callback
+   * continues to fire alongside the new one for backwards compatibility.
    *
    * @param selectedRowIds The primary keys of currently selected rows
    * @param isSelectAll Whether the change was triggered by a "select all" action. Defaults to false
@@ -546,6 +591,16 @@ export interface ObjectTableProps<
     selectedRowIds: PrimaryKeyType<Q>[],
     isSelectAll?: boolean,
   ) => void;
+
+  /**
+   * Called when the row selection changes, with a {@link RowSelectionChange}
+   * payload describing the new state.
+   *
+   * @param change The new selection state. See {@link RowSelectionChange}.
+   */
+  onRowSelectionChanged?: (
+    change: RowSelectionChange<Q, RDPs>,
+  ) => void;
   /**
    * If provided, will render this context menu when right clicking on a cell
    */
@@ -553,6 +608,13 @@ export interface ObjectTableProps<
     row: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
     cellValue: unknown,
   ) => React.ReactNode;
+
+  /**
+   * Render override for the empty state. Called when the table has no
+   * rows and no error. When omitted, a default "No Data" indicator is
+   * rendered.
+   */
+  renderEmptyState?: () => React.ReactNode;
 
   /**
    * The height of each row in pixels.
@@ -569,7 +631,155 @@ export interface ObjectTableProps<
     object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
   ) => Record<string, string | undefined>;
 
+  /**
+   * Imperative handle for programmatic table actions. Pass a ref
+   * (`useRef<ObjectTableHandle<Q, RDPs>>(null)`) to call
+   * {@link ObjectTableHandle} methods such as
+   * {@link ObjectTableHandle.getSnapshot}.
+   */
+  tableRef?: React.Ref<ObjectTableHandle<Q, RDPs>>;
+
   className?: string;
+}
+
+/**
+ * Imperative handle exposing programmatic actions on an {@link ObjectTable}.
+ * Obtain it by passing {@link ObjectTableProps.tableRef}.
+ */
+export interface ObjectTableHandle<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+> {
+  /**
+   * Loads every row matching the object set and returns a format-agnostic
+   * snapshot of the table's columns, row values, and total count. The caller
+   * is responsible for turning the snapshot into a downloadable artifact
+   * (CSV, Excel, JSON, clipboard, …).
+   *
+   * Property, derived-property, and function-backed columns are included.
+   * Function-backed cells are fetched per page during snapshot collection;
+   * when a page's fetch fails, `row.getValue(columnId)` returns the thrown
+   * `Error` instance for the affected cells while the rest of the snapshot
+   * resolves normally.
+   * Columns defined with `locator.type === "custom"` are omitted because
+   * they have no underlying value to export.
+   *
+   * The returned promise rejects up front when the object set's `totalCount`
+   * exceeds `rowLimit`. When `totalCount` is unavailable, it instead rejects
+   * mid-load once more than `rowLimit` rows have been pulled, so an unknown
+   * count can't drain an unbounded set into the client. Otherwise every
+   * matching row is loaded.
+   *
+   * @param options See {@link ObjectTableSnapshotOptions}.
+   */
+  getSnapshot: (
+    options?: ObjectTableSnapshotOptions,
+  ) => Promise<ObjectTableSnapshot<Q, RDPs>>;
+}
+
+/**
+ * Options for {@link ObjectTableHandle["getSnapshot"]}.
+ */
+export interface ObjectTableSnapshotOptions {
+  /**
+   * Upper bound on how many rows the snapshot may contain. When the object
+   * set's total row count exceeds this value, `getSnapshot` rejects;
+   * otherwise every matching row is loaded.
+   *
+   * @default 10_000
+   */
+  rowLimit?: number;
+}
+
+/**
+ * A point-in-time capture of an {@link ObjectTable}'s columns and row values,
+ * returned by {@link ObjectTableHandle.getSnapshot}.
+ */
+export interface ObjectTableSnapshot<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+> {
+  columns: ObjectTableDataColumn[];
+  rows: ObjectTableDataRow<Q, RDPs>[];
+  /**
+   * Total number of objects matching the underlying object set, as reported
+   * by the API. `undefined` when the API did not provide a count. Encoded as
+   * a string to match the underlying list-payload representation.
+   */
+  totalCount: string | undefined;
+}
+
+/**
+ * A single column in an {@link ObjectTableSnapshot}.
+ */
+export interface ObjectTableDataColumn {
+  /** Column id, matching the `locator.id` of the column definition. */
+  id: string;
+  /** Display name shown in the table header. */
+  name: string;
+}
+
+/**
+ * A single row in an {@link ObjectTableSnapshot}.
+ */
+export interface ObjectTableDataRow<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+> {
+  /** Row id (the underlying object's `$primaryKey` rendered as a string). */
+  id: string;
+  /** The underlying loaded object. */
+  object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>;
+  /**
+   * Returns the cell value for a given column id, or `undefined` when the
+   * column is not part of the snapshot. Function-backed cells whose query
+   * failed surface the thrown `Error` instance as their value.
+   */
+  getValue: (columnId: string) => unknown;
+}
+
+/**
+ * Payload for {@link ObjectTableProps.onRowSelectionChanged}. Consolidates
+ * the loaded row instances, the `isSelectAll` semantic intent, and an
+ * `ObjectSet` covering the selection.
+ */
+export interface RowSelectionChange<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+> {
+  /**
+   * Loaded row instances currently selected. When `isSelectAll` is true,
+   * this reflects only the rows currently in the table — pages not yet
+   * fetched are absent. Use `objectSet` for the cross-page view, and
+   * `selectedRows.map(r => r.$primaryKey)` if you need the primary keys.
+   */
+  selectedRows: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[];
+
+  /**
+   * True when the user invoked "select all" (header checkbox) or when
+   * controlled mode supplies `isAllSelected={true}`. Distinct from "every
+   * loaded row happens to be selected" — that condition is reflected by
+   * `selectedRows.length` matching the visible row count but does not set
+   * this flag.
+   */
+  isSelectAll: boolean;
+
+  /**
+   * An `ObjectSet` representing the selection.
+   *
+   * - "Select all" → the underlying `ObjectSet` (`objectSet` prop if
+   *   provided, otherwise derived from `objectType` via `client(...)`).
+   *   This includes rows not yet loaded into the table.
+   * - Partial selection → the underlying `ObjectSet` narrowed to
+   *   `{ $primaryKey: { $in: selectedRows.map(r => r.$primaryKey) } }`.
+   * - "Deselect all" → an empty `ObjectSet` (`$in: []`).
+   *
+   * Works for both object and interface types, since the `$primaryKey`
+   * special property does not require resolving the underlying primary key
+   * property name. `undefined` only when there is no underlying `ObjectSet`
+   * to derive from.
+   */
+  objectSet: ObjectSet<Q, RDPs> | undefined;
 }
 
 export interface ObjectSetOptions<

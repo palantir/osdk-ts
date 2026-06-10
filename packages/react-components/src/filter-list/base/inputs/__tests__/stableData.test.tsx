@@ -20,6 +20,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import type { PropertyAggregationValue } from "../../../types/AggregationTypes.js";
 import { MultiSelectInput } from "../MultiSelectInput.js";
 import { SingleSelectInput } from "../SingleSelectInput.js";
+import { TextTagsInput } from "../TextTagsInput.js";
 
 afterEach(cleanup);
 
@@ -57,7 +58,7 @@ describe("MultiSelectInput stableData", () => {
     expect(screen.queryByText("Loading options...")).toBeNull();
   });
 
-  it("shows loading message on first load with no data", () => {
+  it("shows skeleton on first load with no data", () => {
     const { rerender } = render(
       <MultiSelectInput
         values={[]}
@@ -68,7 +69,8 @@ describe("MultiSelectInput stableData", () => {
       />,
     );
 
-    expect(screen.getByText("Loading options...")).toBeDefined();
+    expect(screen.queryByTestId("select-input-skeleton")).not.toBeNull();
+    expect(screen.queryByText("Loading options...")).toBeNull();
 
     rerender(
       <MultiSelectInput
@@ -81,7 +83,7 @@ describe("MultiSelectInput stableData", () => {
     );
 
     expect(screen.getByText("No options available")).toBeDefined();
-    expect(screen.queryByText("Loading options...")).toBeNull();
+    expect(screen.queryByTestId("select-input-skeleton")).toBeNull();
   });
 
   it("transitions to empty-state when refetch resolves to no data", () => {
@@ -138,7 +140,7 @@ describe("SingleSelectInput stableData", () => {
     expect(screen.queryByText("Loading options...")).toBeNull();
   });
 
-  it("shows loading message on first load with no data", () => {
+  it("shows skeleton on first load with no data", () => {
     const { rerender } = render(
       <SingleSelectInput
         values={[]}
@@ -149,7 +151,8 @@ describe("SingleSelectInput stableData", () => {
       />,
     );
 
-    expect(screen.getByText("Loading options...")).toBeDefined();
+    expect(screen.queryByTestId("select-input-skeleton")).not.toBeNull();
+    expect(screen.queryByText("Loading options...")).toBeNull();
 
     rerender(
       <SingleSelectInput
@@ -162,7 +165,7 @@ describe("SingleSelectInput stableData", () => {
     );
 
     expect(screen.getByText("No options available")).toBeDefined();
-    expect(screen.queryByText("Loading options...")).toBeNull();
+    expect(screen.queryByTestId("select-input-skeleton")).toBeNull();
   });
 
   it("transitions to empty-state when refetch resolves to no data", () => {
@@ -188,5 +191,65 @@ describe("SingleSelectInput stableData", () => {
 
     expect(screen.getByText("No options available")).toBeDefined();
     expect(container.querySelector("input")).toBeNull();
+  });
+});
+
+describe("TextTagsInput stableData", () => {
+  it("shows skeleton on first load with no suggestions when suggestionLimit is set", () => {
+    const { rerender } = render(
+      <TextTagsInput
+        suggestions={[]}
+        isLoading={true}
+        error={null}
+        tags={[]}
+        onChange={vi.fn()}
+        suggestionLimit={10}
+      />,
+    );
+
+    expect(screen.queryByTestId("select-input-skeleton")).not.toBeNull();
+
+    rerender(
+      <TextTagsInput
+        suggestions={[{ value: "Engineering", count: 1 }]}
+        isLoading={false}
+        error={null}
+        tags={[]}
+        onChange={vi.fn()}
+        suggestionLimit={10}
+      />,
+    );
+
+    expect(screen.queryByTestId("select-input-skeleton")).toBeNull();
+  });
+
+  it("does not show skeleton when suggestionLimit is 0", () => {
+    render(
+      <TextTagsInput
+        suggestions={[]}
+        isLoading={true}
+        error={null}
+        tags={[]}
+        onChange={vi.fn()}
+        suggestionLimit={0}
+      />,
+    );
+
+    expect(screen.queryByTestId("select-input-skeleton")).toBeNull();
+  });
+
+  it("does not show skeleton when suggestions exist", () => {
+    render(
+      <TextTagsInput
+        suggestions={[{ value: "Engineering", count: 1 }]}
+        isLoading={true}
+        error={null}
+        tags={[]}
+        onChange={vi.fn()}
+        suggestionLimit={10}
+      />,
+    );
+
+    expect(screen.queryByTestId("select-input-skeleton")).toBeNull();
   });
 });

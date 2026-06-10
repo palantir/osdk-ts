@@ -248,6 +248,43 @@ export class ObjectSetListenerWebsocket {
   }
 
   /**
+   * Subscribes to a wire object set without an ontology type lookup.
+   *
+   * Used when the caller has only an object set RID and does not know (or care
+   * about) the underlying object/interface type. No properties are requested,
+   * so emitted `object` payloads carry only `$apiName` (and `$rid` when
+   * `shouldLoadRids` is true). `$primaryKey` will be `undefined`.
+   */
+  subscribeWithoutType(
+    objectSet: ObjectSet,
+    listener: ObjectSetSubscription.Listener<
+      ObjectOrInterfaceDefinition,
+      never
+    >,
+    shouldLoadRids: boolean = false,
+  ): () => void {
+    const sub: Subscription<ObjectOrInterfaceDefinition, never> = {
+      listener: fillOutListener(listener),
+      objectSet,
+      primaryKeyPropertyName: undefined,
+      requestedProperties: [],
+      requestedReferenceProperties: [],
+      status: "preparing",
+      subscriptionId: `TMP-${nextUuid()}}`,
+      interfaceApiName: undefined,
+      loadRids: shouldLoadRids,
+    };
+
+    this.#subscriptions.set(sub.subscriptionId, sub);
+
+    void this.#initiateSubscribe(sub);
+
+    return () => {
+      this.#unsubscribe(sub);
+    };
+  }
+
+  /**
    * Called at least once for every subscription.
    *
    * - Resets pending expiry
@@ -498,7 +535,7 @@ export class ObjectSetListenerWebsocket {
     );
     const osdkObjectsWithReferenceUpdates = await Promise.all(
       referenceUpdates.map(async (o) => {
-        const osdkObjectArray = await this.#client.objectFactory2(
+        const osdkObjectArray = await this.#client.objectFactory(
           this.#client,
           [{
             __apiName: o.objectType,
@@ -548,7 +585,7 @@ export class ObjectSetListenerWebsocket {
         delete o.object[key];
       }
 
-      const osdkObjectArray = await this.#client.objectFactory2(
+      const osdkObjectArray = await this.#client.objectFactory(
         this.#client,
         [o.object],
         sub.interfaceApiName,

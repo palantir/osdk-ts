@@ -113,7 +113,7 @@ export function extractValidationRules(
       }
       break;
     }
-    // DROPDOWN, RADIO_BUTTONS, CUSTOM, OBJECT_SET: only `required` applies
+    // DROPDOWN, RADIO_BUTTONS, CUSTOM, OBJECT_SET, UNSUPPORTED: only `required` applies
     default:
       break;
   }

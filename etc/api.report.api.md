@@ -64,7 +64,7 @@ export namespace ActionMetadata {
     	// (undocumented)
     export namespace DataType {
         		// (undocumented)
-        export type BaseActionParameterTypes = "boolean" | "string" | "integer" | "long" | "double" | "datetime" | "timestamp" | "attachment" | "marking" | "mediaReference" | "objectType" | "geoshape" | "geohash";
+        export type BaseActionParameterTypes = "boolean" | "string" | "integer" | "long" | "double" | "datetime" | "timestamp" | "attachment" | "marking" | "mediaReference" | "scenarioReference" | "objectType" | "geoshape" | "geohash";
         		// (undocumented)
         export interface Interface<T_Target extends InterfaceDefinition = never> {
             			// (undocumented)
@@ -249,6 +249,7 @@ export type ApplyBatchActionOptions = {
     	$returnEdits?: boolean
 };
 
+// Warning: (ae-forgotten-export) The symbol "ApplyModifiersArg" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "OrderByArg" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -261,10 +262,11 @@ export interface AsyncIterArgs<
 	T extends boolean = false,
 	RDP_KEYS extends string = never,
 	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = never,
-	PROPERTY_SECURITIES extends boolean = false
+	PROPERTY_SECURITIES extends boolean = false,
+	MODIFIERS extends ApplyModifiersArg<Q> = {}
 > extends SelectArg<Q, K, R, S, RDP_KEYS, PROPERTY_SECURITIES>, OrderByArg<Q, PropertyKeys<Q> | RDP_KEYS, ORDER_BY_OPTIONS> {
     	// (undocumented)
-    $__UNSTABLE_useOldInterfaceApis?: boolean;
+    $applyModifiers?: ApplyModifiersArg<Q> & MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>] : never };
     	// (undocumented)
     $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
 }
@@ -371,6 +373,9 @@ export interface DataValueClientToWire {
     null: null;
     	// (undocumented)
     objectType: string;
+    	scenarioReference: {
+        		getScenarioReference(): string
+        	};
     	// (undocumented)
     set: Set<any>;
     	// (undocumented)
@@ -430,6 +435,8 @@ export interface DataValueWireToClient {
     null: null;
     	// (undocumented)
     objectType: string;
+    	// (undocumented)
+    scenarioReference: never;
     	// (undocumented)
     set: Set<any>;
     	// (undocumented)
@@ -637,15 +644,21 @@ export interface FetchPageArgs<
 	T extends boolean = false,
 	RDP_KEYS extends string = never,
 	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = {},
-	PROPERTY_SECURITIES extends boolean = false
-> extends AsyncIterArgs<Q, K, R, A, S, T, RDP_KEYS, ORDER_BY_OPTIONS, PROPERTY_SECURITIES> {
+	PROPERTY_SECURITIES extends boolean = false,
+	MODIFIERS extends ApplyModifiersArg<Q> = {}
+> extends AsyncIterArgs<Q, K, R, A, S, T, RDP_KEYS, ORDER_BY_OPTIONS, PROPERTY_SECURITIES, MODIFIERS> {
+    	// (undocumented)
+    $applyModifiers?: ApplyModifiersArg<Q> & MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>] : never };
     	// (undocumented)
     $nextPageToken?: string;
     	// (undocumented)
     $pageSize?: number;
+    	// Warning: (tsdoc-undefined-tag) The TSDoc tag "@default" is not defined in this configuration
+    $snapshot?: boolean;
 }
 
 // Warning: (ae-forgotten-export) The symbol "ExtractOptions" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "ModifiersToSelectStrings_2" needs to be exported by the entry point index.d.ts
 //
 // @public
 export type FetchPageResult<
@@ -655,8 +668,9 @@ export type FetchPageResult<
 	S extends NullabilityAdherence,
 	T extends boolean = false,
 	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
-	PROPERTY_SECURITIES extends boolean = false
-> = PageResult<MaybeScore<Osdk.Instance<Q, ExtractOptions<R, S, T, PROPERTY_SECURITIES>, PropertyKeys<Q> extends L ? never : L>, ORDER_BY_OPTIONS>>;
+	PROPERTY_SECURITIES extends boolean = false,
+	MODIFIERS extends ApplyModifiersArg<Q> = {}
+> = PageResult<MaybeScore<Osdk.Instance<Q, ExtractOptions<R, S, T, PROPERTY_SECURITIES>, Exclude<PropertyKeys<Q> extends L ? never : L, keyof MODIFIERS> | ModifiersToSelectStrings_2<MODIFIERS>, {}>, ORDER_BY_OPTIONS>>;
 
 // @public (undocumented)
 export type GeoFilter_Intersects = {
@@ -1166,6 +1180,12 @@ export namespace ObjectMetadata {
         		// (undocumented)
         displayName?: string;
         		// (undocumented)
+        hasReducers?: boolean;
+        		// (undocumented)
+        mainValue?: {
+            			fields: readonly string[]
+            		};
+        		// (undocumented)
         multiplicity?: boolean;
         		// (undocumented)
         nullable?: boolean;
@@ -1173,11 +1193,17 @@ export namespace ObjectMetadata {
         readonly?: boolean;
         		// (undocumented)
         type: WirePropertyTypes;
+        		typeMetadata?: PropertyTypeMetadata;
         		// (undocumented)
         valueFormatting?: PropertyValueFormattingRule;
         		// (undocumented)
         valueTypeApiName?: string;
         	}
+    	// (undocumented)
+    export type PropertyTypeMetadata = {
+        		type: "marking"
+        		markingType?: "CBAC" | "MANDATORY"
+        	};
 }
 
 // @public (undocumented)
@@ -1211,8 +1237,6 @@ export namespace ObjectSetArgs {
     		RDP_KEYS extends string = never,
     		ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = never
     	> extends Select<K, RDP_KEYS>, OrderBy<ORDER_BY_OPTIONS, K> {
-        		// (undocumented)
-        $__UNSTABLE_useOldInterfaceApis?: boolean;
         		// (undocumented)
         $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
         	}
@@ -1343,15 +1367,20 @@ export type Osdk<
 
 // @public (undocumented)
 export namespace Osdk {
-    	// Warning: (ae-forgotten-export) The symbol "GetPropsKeys" needs to be exported by the entry point index.d.ts
+    	// Warning: (ae-forgotten-export) The symbol "ReducedValues" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "GetPropsKeys" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "HasModifiers" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "ApplyModifiersToProps" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "BuildModifiersFromP" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "GetPropNamesFromP" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
     export type Instance<
     		Q extends ObjectOrInterfaceDefinition,
     		OPTIONS extends never | "$rid" | "$allBaseProperties" | "$propertySecurities" = never,
-    		P extends PropertyKeys<Q> = PropertyKeys<Q>,
+    		P extends PropertyKeys<Q> | ReducedValues<Q> = PropertyKeys<Q>,
     		R extends Record<string, SimplePropertyDef> = {}
-    	> = OsdkBase<Q> & Pick<CompileTimeMetadata<Q>["props"], GetPropsKeys<Q, P, [R] extends [{}] ? false : true>> & ([R] extends [never] ? {} : { [A in keyof R] : SimplePropertyDef.ToRuntimeProperty<R[A]> }) & {
+    	> = OsdkBase<Q> & ([P] extends [PropertyKeys<Q>] ? Pick<CompileTimeMetadata<Q>["props"], GetPropsKeys<Q, P, [R] extends [{}] ? false : true>> : Pick<HasModifiers<P> extends true ? ApplyModifiersToProps<Q, BuildModifiersFromP<P>> : CompileTimeMetadata<Q>["props"], GetPropsKeys<Q, GetPropNamesFromP<P>, [R] extends [{}] ? false : true>>) & ([R] extends [never] ? {} : { [A in keyof R] : SimplePropertyDef.ToRuntimeProperty<R[A]> }) & {
         		readonly $link: Q extends {
             			linksType?: any
             		} ? Q["linksType"] : Q extends ObjectOrInterfaceDefinition ? OsdkObjectLinksObject<Q> : never
@@ -1453,8 +1482,16 @@ export interface PropertyDateFormattingRule {
 export interface PropertyDef<
 	T extends WirePropertyTypes,
 	N extends "nullable" | "non-nullable" = "nullable",
-	M extends "array" | "single" = "single"
+	M extends "array" | "single" = "single",
+	MAIN_VALUE_FIELDS extends readonly string[] | undefined = undefined,
+	HAS_REDUCERS extends boolean = false
 > extends ObjectMetadata.Property {
+    	// (undocumented)
+    hasReducers: HAS_REDUCERS;
+    	// (undocumented)
+    mainValue: MAIN_VALUE_FIELDS extends readonly string[] ? {
+        		fields: MAIN_VALUE_FIELDS
+        	} : undefined;
     	// (undocumented)
     multiplicity: M extends "array" ? true : false;
     	// (undocumented)
@@ -1949,12 +1986,15 @@ export type WirePropertyTypes = BaseWirePropertyTypes | Record<string, BaseWireP
 
 // Warnings were encountered during analysis:
 //
-// src/OsdkObjectFrom.ts:273:49 - (ae-forgotten-export) The symbol "ObjectPropertySecurities" needs to be exported by the entry point index.d.ts
+// src/OsdkObjectFrom.ts:315:49 - (ae-forgotten-export) The symbol "ObjectPropertySecurities" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "UnorderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "OrderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregationResultsWithGroups.ts:36:5 - (ae-forgotten-export) The symbol "MaybeNullable_2" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregationResultsWithGroups.ts:36:5 - (ae-forgotten-export) The symbol "OsdkObjectPropertyTypeNotUndefined" needs to be exported by the entry point index.d.ts
 // src/objectSet/ObjectSetLinks.ts:36:3 - (ae-forgotten-export) The symbol "LinkedObjectType" needs to be exported by the entry point index.d.ts
+// src/ontology/PropertyModifiers.ts:76:9 - (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
+// src/ontology/PropertyModifiers.ts:77:8 - (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
+// src/ontology/PropertyModifiers.ts:78:27 - (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
 
 // (No @packageDocumentation comment for this package)
 

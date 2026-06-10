@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition, Osdk } from "@osdk/api";
+import type {
+  CompileTimeMetadata,
+  ObjectOrInterfaceDefinition,
+  Osdk,
+} from "@osdk/api";
 import type { ShapePropertyConfig } from "@osdk/api/shapes-internal";
 import type {
   NullabilityViolation,
@@ -117,7 +121,9 @@ export function applyShapeTransformations<
   // Clone the object with transformed properties if any were modified
   const clonedObject = Object.keys(transformedProps).length > 0
     ? rawObject.$clone(
-      transformedProps as Partial<Osdk.Instance<ShapeBaseType<S>>>,
+      transformedProps as Partial<
+        CompileTimeMetadata<ShapeBaseType<S>>["props"]
+      >,
     )
     : rawObject;
 

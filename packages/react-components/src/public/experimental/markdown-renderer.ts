@@ -19,3 +19,12 @@ export {
   MarkdownRenderer,
   type MarkdownRendererProps,
 } from "../../markdown-renderer/MarkdownRenderer.js";
+
+// MarkdownViewerMedia (Media wrapper)
+import { MarkdownViewerMedia as _MarkdownViewerMedia } from "../../markdown-renderer/MarkdownViewerMedia.js";
+import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
+export const MarkdownViewerMedia: typeof _MarkdownViewerMedia = withOsdkMetrics(
+  _MarkdownViewerMedia,
+  "MarkdownViewerMedia",
+);
+export type { MarkdownViewerMediaProps } from "../../markdown-renderer/MarkdownViewerMedia.js";

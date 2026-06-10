@@ -30,11 +30,11 @@ import {
 } from "../common/constants.js";
 import { getInputHtmlEntrypoints } from "../common/getInputHtmlEntrypoints.js";
 import { standardizePathAndFileExtension } from "../common/standardizePathAndFileExtension.js";
+import { buildDevModeManifest } from "./buildDevModeManifest.js";
 import { isCodeWorkspacesMode } from "./codeWorkspacesMode.js";
 import { extractInjectedScripts } from "./extractInjectedScripts.js";
 import { getBaseHref } from "./getBaseHref.js";
 import { getFoundryToken } from "./getFoundryToken.js";
-import { getWidgetIdOverrideMap } from "./getWidgetIdOverrideMap.js";
 import { publishDevModeSettings } from "./publishDevModeSettings.js";
 import { warnIfWrongDevCommand } from "./validateDevEnvironment.js";
 
@@ -43,7 +43,11 @@ const DIR_DIST: string = typeof __dirname !== "undefined"
   ? __dirname
   : path.dirname(fileURLToPath(import.meta.url));
 
-export function FoundryWidgetDevPlugin(): Plugin {
+import type { FoundryWidgetPluginOptions } from "../index.js";
+
+export function FoundryWidgetDevPlugin(
+  pluginOptions?: FoundryWidgetPluginOptions,
+): Plugin {
   // The root HTML entrypoints of the build process
   let htmlEntrypoints: string[];
   // Fully resolved paths to the entrypoint files, mapped to relative paths
@@ -176,19 +180,15 @@ export function FoundryWidgetDevPlugin(): Plugin {
             return;
           }
 
-          // Prepare the widget overrides and finish the setup process
-          const widgetIdToOverrides = await getWidgetIdOverrideMap(
+          // Build the dev mode manifest and finish the setup process
+          const manifest = await buildDevModeManifest(
             server,
             codeEntrypoints,
             configFileToEntrypoint,
             getBaseHref(server),
+            pluginOptions,
           );
-          await publishDevModeSettings(
-            server,
-            widgetIdToOverrides,
-            getBaseHref(server),
-            res,
-          );
+          await publishDevModeSettings(server, manifest, res);
         },
       );
 

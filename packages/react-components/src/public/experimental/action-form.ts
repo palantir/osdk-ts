@@ -40,6 +40,7 @@ export type {
   FormFieldDefinition,
   FormFieldPropsByType,
   NumberInputFieldProps,
+  ObjectSelectFieldProps,
   ObjectSetFieldProps,
   Option,
   PortalContainer,
@@ -47,5 +48,6 @@ export type {
   RendererFieldDefinition,
   TextAreaFieldProps,
   TextInputFieldProps,
+  UnsupportedFieldProps,
   ValidationError,
 } from "../../action-form/FormFieldApi.js";

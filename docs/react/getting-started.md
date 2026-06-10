@@ -10,8 +10,20 @@ This guide covers installation, setup, and your first OSDK React application.
 
 ### 1. Install `@osdk/react`
 
+:::tip If your tooling already installs dependencies, skip this step.
+:::
+
+Use whichever package manager your project uses:
+
 ```bash
+# npm
 npm install @osdk/api @osdk/client @osdk/react
+
+# pnpm
+pnpm add @osdk/api @osdk/client @osdk/react
+
+# yarn
+yarn add @osdk/api @osdk/client @osdk/react
 ```
 
 :::warning Version Compatibility
@@ -36,7 +48,7 @@ If you haven't generated an SDK yet:
 ```json
 {
   "dependencies": {
-    "@your-app/sdk": "^0.4.0"
+    "@my/osdk": "^0.4.0"
   }
 }
 ```
