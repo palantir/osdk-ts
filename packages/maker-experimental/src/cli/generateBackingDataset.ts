@@ -64,12 +64,67 @@ export function propertyTypeToSchemaType(
       return "DATE";
     case "timestamp":
       return "TIMESTAMP";
+    case "array":
+      return "ARRAY";
+    case "decimal":
+      return "DECIMAL";
+    case "struct":
+      return "STRUCT";
     default:
       throw new Error(
         `Unsupported property type "${typeStr}" for empty backing datasource. `
           + `If using a property type that doesn't support empty backing datasources please make the property an edit only property.`,
       );
   }
+}
+
+/**
+ * A single field entry in a Foundry dataset schema.json `fieldSchemaList`.
+ */
+interface FieldSchema {
+  type: string;
+  name: string | null;
+  nullable: boolean | null;
+  userDefinedTypeClass: string | null;
+  customMetadata: Record<string, unknown>;
+  arraySubtype: FieldSchema | null;
+  precision: number | null;
+  scale: number | null;
+  mapKeyType: FieldSchema | null;
+  mapValueType: FieldSchema | null;
+  subSchemas: FieldSchema[] | null;
+}
+
+/**
+ * Build a Foundry schema field object for a column type.
+ */
+export function typeToFieldSchema(
+  type: Type,
+  name?: string,
+): FieldSchema {
+  return {
+    type: propertyTypeToSchemaType(type),
+    name: name ?? null,
+    nullable: null,
+    userDefinedTypeClass: null,
+    customMetadata: {},
+    arraySubtype: type.type === "array"
+      ? typeToFieldSchema(type.array.subtype)
+      : null,
+    precision: type.type === "decimal"
+      ? type.decimal.precision ?? null
+      : null,
+    scale: type.type === "decimal"
+      ? type.decimal.scale ?? null
+      : null,
+    mapKeyType: null,
+    mapValueType: null,
+    subSchemas: type.type === "struct"
+      ? type.struct.structFields.map((f) =>
+        typeToFieldSchema(f.fieldType, f.apiName)
+      )
+      : null,
+  };
 }
 
 /**
@@ -236,19 +291,9 @@ async function generateBackingDatasetBlock(
 
   // Write schema.json
   const schemaJson = {
-    fieldSchemaList: columns.map((col) => ({
-      type: propertyTypeToSchemaType(col.type),
-      name: col.name,
-      nullable: null,
-      userDefinedTypeClass: null,
-      customMetadata: {},
-      arraySubtype: null,
-      precision: null,
-      scale: null,
-      mapKeyType: null,
-      mapValueType: null,
-      subSchemas: null,
-    })),
+    fieldSchemaList: columns.map((col) =>
+      typeToFieldSchema(col.type, col.name)
+    ),
     primaryKey: null,
     dataFrameReaderClass:
       "com.palantir.foundry.spark.input.ParquetDataFrameReader",
