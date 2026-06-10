@@ -59,9 +59,17 @@ export function createFoundryLogExporter(
   const url = new URL(LOG_WRITE_PATH, config.baseUrl).toString();
   const inner = new OTLPLogExporter({
     url,
-    headers: async () => ({
-      Authorization: `Bearer ${await config.tokenProvider()}`,
-    }),
+    headers: async (): Promise<Record<string, string>> => {
+      // The OTel headers factory must not throw: a rejected tokenProvider would
+      // reject the headers promise and drop the whole batch. Return no auth on
+      // failure so the export still goes out (the transport retries with a
+      // fresh token) rather than silently losing the flush.
+      try {
+        return { Authorization: `Bearer ${await config.tokenProvider()}` };
+      } catch {
+        return {};
+      }
+    },
   });
 
   return {

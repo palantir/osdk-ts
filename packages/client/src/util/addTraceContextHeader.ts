@@ -102,10 +102,31 @@ function composeTracestate(
     members.push(`${OWNING_RID_TRACESTATE_KEY}=${owningRid}`);
   }
   if (existing != null && existing.length > 0) {
-    members.push(existing);
+    for (const member of existing.split(",")) {
+      const trimmed = member.trim();
+      if (trimmed.length === 0) {
+        continue;
+      }
+      // when we set our own owningrid member, drop any inbound one so the
+      // tracestate never carries a duplicate key (w3c forbids duplicate keys)
+      if (
+        owningRid != null && memberKey(trimmed) === OWNING_RID_TRACESTATE_KEY
+      ) {
+        continue;
+      }
+      members.push(trimmed);
+    }
   }
   if (members.length === 0) {
     return undefined;
   }
   return members.join(",");
+}
+
+function memberKey(member: string): string {
+  const separator = member.indexOf("=");
+  if (separator === -1) {
+    return member;
+  }
+  return member.slice(0, separator);
 }

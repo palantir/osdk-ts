@@ -15,7 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { serializeError } from "./errorSerializer.js";
+import { extractOriginatingCode, serializeError } from "./errorSerializer.js";
 
 describe("serializeError", () => {
   it("captures name, message, and stack from an Error", () => {
@@ -54,5 +54,34 @@ describe("serializeError", () => {
     const serialized = serializeError({ code: 42 });
     expect(serialized.name).toBe("Error");
     expect(serialized.message).toContain("42");
+  });
+});
+
+describe("extractOriginatingCode", () => {
+  it("returns the top stack frame", () => {
+    const error = {
+      name: "Error",
+      message: "boom",
+      stack:
+        "Error: boom\n    at doWork (https://app.test/main.js:12:5)\n    at onClick (https://app.test/main.js:30:9)",
+    };
+    expect(extractOriginatingCode(error)).toBe(
+      "at doWork (https://app.test/main.js:12:5)",
+    );
+  });
+
+  it("returns undefined when the stack is absent", () => {
+    expect(extractOriginatingCode({ name: "Error", message: "boom" }))
+      .toBeUndefined();
+  });
+
+  it("returns undefined when the stack carries no frames", () => {
+    expect(
+      extractOriginatingCode({
+        name: "Error",
+        message: "boom",
+        stack: "Error: boom",
+      }),
+    ).toBeUndefined();
   });
 });

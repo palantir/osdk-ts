@@ -59,6 +59,27 @@ function serializeAtDepth(error: unknown, depth: number): SerializedError {
   return { name: "Error", message: safeStringify(error) };
 }
 
+/**
+ * The source location of a serialized error: the top frame of its stack, where
+ * the error was constructed. Returns `undefined` when the stack is absent or
+ * carries no frames. Mirrors how loggers like log4js derive file/line from a
+ * logged Error instead of walking the call stack on every log.
+ */
+export function extractOriginatingCode(
+  error: SerializedError,
+): string | undefined {
+  if (error.stack == null) {
+    return undefined;
+  }
+  for (const line of error.stack.split("\n")) {
+    const trimmed = line.trim();
+    if (trimmed.startsWith("at ")) {
+      return trimmed;
+    }
+  }
+  return undefined;
+}
+
 function safeStringify(value: unknown): string {
   try {
     return JSON.stringify(value) ?? String(value);

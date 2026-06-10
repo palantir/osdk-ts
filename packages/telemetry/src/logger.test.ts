@@ -17,7 +17,11 @@
 import type { LogRecord } from "@opentelemetry/api-logs";
 import { SeverityNumber } from "@opentelemetry/api-logs";
 import { describe, expect, it, vi } from "vitest";
-import { LOG_MESSAGE, LOG_TAGS } from "./foundryAttributes.js";
+import {
+  LOG_MESSAGE,
+  LOG_TAGS,
+  ORIGINATING_CODE,
+} from "./foundryAttributes.js";
 import type { LoggerBackend } from "./logger.js";
 import { createLogger } from "./logger.js";
 
@@ -104,6 +108,26 @@ describe("createLogger", () => {
     expect((record.attributes ?? {})[LOG_MESSAGE]).toBe("bad input");
     const tags = (record.attributes ?? {})[LOG_TAGS] as Record<string, unknown>;
     expect((tags.error as Record<string, unknown>).name).toBe("TypeError");
+  });
+
+  it("stamps ORIGINATING_CODE from the error stack on error logs", () => {
+    const { records, backend } = harness();
+    const logger = createLogger(backend);
+
+    logger.error("payment failed", { orderId: "o1" }, new Error("boom"));
+
+    const originatingCode = (records[0].attributes ?? {})[ORIGINATING_CODE];
+    expect(typeof originatingCode).toBe("string");
+    expect(originatingCode as string).toContain("at ");
+  });
+
+  it("does not stamp ORIGINATING_CODE on non-error logs", () => {
+    const { records, backend } = harness();
+    const logger = createLogger(backend);
+
+    logger.info("booted", { orderId: "o1" });
+
+    expect((records[0].attributes ?? {})[ORIGINATING_CODE]).toBeUndefined();
   });
 
   it("delegates flush to the backend", async () => {

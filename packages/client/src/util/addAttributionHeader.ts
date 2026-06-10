@@ -56,7 +56,7 @@ async function resolveAttributionRid(
     ontologyRid: string | Promise<string>;
   },
 ): Promise<string | undefined> {
-  if (client.applicationRid != null) {
+  if (client.applicationRid != null && client.applicationRid.length > 0) {
     return client.applicationRid;
   }
   return client.ontologyRid;

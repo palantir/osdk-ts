@@ -122,4 +122,18 @@ describe("createFoundryLogExporter", () => {
       "Bearer tok-2",
     );
   });
+
+  it("still exports without auth when the token provider rejects", async () => {
+    const exporter = createFoundryLogExporter({
+      baseUrl: "https://example.com/",
+      tokenProvider: async () => {
+        throw new Error("token fetch failed");
+      },
+    });
+
+    await expect(exportOnce(exporter, captureRecord())).resolves
+      .toBeUndefined();
+    expect(fetchFn).toHaveBeenCalledTimes(1);
+    expect(headersOf(fetchFn.mock.calls[0][1]).Authorization).toBeUndefined();
+  });
 });

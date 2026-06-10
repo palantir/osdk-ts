@@ -76,6 +76,12 @@ describe("addAttributionHeader", () => {
     expect(headers.get(ATTRIBUTION_RID_HEADER)).toBe(ontologyRid);
   });
 
+  it("falls back to the ontology rid when applicationRid is an empty string", async () => {
+    const ontologyRid = "ri.ontology.main.ontology.fallback";
+    const headers = await captureHeaders({ applicationRid: "", ontologyRid });
+    expect(headers.get(ATTRIBUTION_RID_HEADER)).toBe(ontologyRid);
+  });
+
   it("omits the header when no attribution rid is available", async () => {
     const headers = await captureHeaders({ ontologyRid: "" });
     expect(headers.has(ATTRIBUTION_RID_HEADER)).toBe(false);

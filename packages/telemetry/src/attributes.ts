@@ -17,7 +17,12 @@
 import type { LogAttributes, LogRecord } from "@opentelemetry/api-logs";
 import { SeverityNumber } from "@opentelemetry/api-logs";
 import type { SerializedError } from "./errorSerializer.js";
-import { LOG_MESSAGE, LOG_TAGS } from "./foundryAttributes.js";
+import { extractOriginatingCode } from "./errorSerializer.js";
+import {
+  LOG_MESSAGE,
+  LOG_TAGS,
+  ORIGINATING_CODE,
+} from "./foundryAttributes.js";
 
 /**
  * A JSON-serializable value. Log context is constrained to this shape so that
@@ -63,6 +68,12 @@ export function buildLogRecord(
   const tags = buildLogTags(context, error);
   if (tags != null) {
     attributes[LOG_TAGS] = tags;
+  }
+  if (error != null) {
+    const originatingCode = extractOriginatingCode(error);
+    if (originatingCode != null) {
+      attributes[ORIGINATING_CODE] = originatingCode;
+    }
   }
   return {
     severityNumber: SEVERITY_NUMBERS[severity],

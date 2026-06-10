@@ -188,6 +188,19 @@ describe("addTraceContextHeader", () => {
     );
   });
 
+  it("replaces an inbound owningrid member instead of duplicating it", async () => {
+    const appRid = "ri.third-party-applications.main.application.app-1";
+    const headers = await captureHeaders({
+      applicationRid: appRid,
+      ctx: contextWithSpan(
+        createTraceState(`${OWNING_RID_TRACESTATE_KEY}=ri.stale,vendor=value`),
+      ),
+    });
+    expect(headers.get(TRACESTATE_HEADER)).toBe(
+      `${OWNING_RID_TRACESTATE_KEY}=${appRid},vendor=value`,
+    );
+  });
+
   it("omits tracestate when neither owningrid nor existing state is present", async () => {
     const headers = await captureHeaders({ ctx: contextWithSpan() });
     expect(headers.has(TRACEPARENT_HEADER)).toBe(true);

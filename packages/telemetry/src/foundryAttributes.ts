@@ -35,3 +35,12 @@ export const LOG_TAGS = "tags";
  * the trace-id seam (OTEL-3); absent by default.
  */
 export const TRACE_ID = "traceId";
+
+/**
+ * Record attribute key carrying the source location of a logged error, which
+ * FTS surfaces as `originatingCode`. Populated only on `error` logs, from the
+ * top frame of the error's already-captured stack; the info/warn/debug path is
+ * never stack-walked, matching how mature loggers (bunyan, log4js) leave
+ * per-log source capture off by default because the stack walk is slow.
+ */
+export const ORIGINATING_CODE = "originatingCode";
