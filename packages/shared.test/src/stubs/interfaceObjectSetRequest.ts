@@ -117,25 +117,22 @@ const eqSearchBody: LoadObjectSetV2MultipleObjectTypesRequest = {
 const eqSearchBodyFullScope: LoadObjectSetV2MultipleObjectTypesRequest = {
   objectSet: {
     type: "intersect",
-    objectSets: [
-      {
-        type: "filter",
-        objectSet: {
-          type: "interfaceBase",
-          interfaceType: FooInterface.apiName,
-        },
-        where: {
-          type: "eq",
-          field: "fooSpt",
-          value: "The Grinch",
-        },
-      },
-      {
+    objectSets: [{
+      type: "filter",
+      objectSet: {
         type: "interfaceBase",
         interfaceType: FooInterface.apiName,
-        includeAllBaseObjectProperties: true,
       },
-    ],
+      where: {
+        type: "eq",
+        field: "fooSpt",
+        value: "The Grinch",
+      },
+    }, {
+      type: "interfaceBase",
+      interfaceType: FooInterface.apiName,
+      includeAllBaseObjectProperties: true,
+    }],
   },
   select: [],
   selectV2: [],
@@ -188,8 +185,8 @@ const equalsObjectSetResponse: LoadObjectSetV2MultipleObjectTypesResponse = {
   propertySecurities: [],
 };
 
-const baseObjectFullScopeSetResponse: LoadObjectSetV2MultipleObjectTypesResponse =
-  {
+const baseObjectFullScopeSetResponse:
+  LoadObjectSetV2MultipleObjectTypesResponse = {
     data: [employeeFullObjectScoped],
     interfaceToObjectTypeMappings: {
       FooInterface: { Employee: { fooSpt: "fullName" } },
@@ -212,8 +209,8 @@ const baseObjectFullScopeSetResponse: LoadObjectSetV2MultipleObjectTypesResponse
     propertySecurities: [],
   };
 
-const equalsFullScopeObjectSetResponse: LoadObjectSetV2MultipleObjectTypesResponse =
-  {
+const equalsFullScopeObjectSetResponse:
+  LoadObjectSetV2MultipleObjectTypesResponse = {
     data: [employeeFullObjectScoped2],
     interfaceToObjectTypeMappings: {
       FooInterface: { Employee: { fooSpt: "fullName" } },

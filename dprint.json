@@ -27,8 +27,7 @@
     "packages/shared.net.errors/",
     "packages/shared.client.impl/",
     "packages/shared.net.fetch/",
-    "packages/shared.net/",
-    "packages/shared.test/"
+    "packages/shared.net/"
   ],
   "plugins": [
     "https://plugins.dprint.dev/typescript-0.90.4.wasm",

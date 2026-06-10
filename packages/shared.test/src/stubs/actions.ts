@@ -138,11 +138,26 @@ export const actionRequestWithGeoshape: ApplyActionRequestV2 = {
     geoshapeParam: {
       coordinates: [
         [
-          [-97.86567863752134, 38.418052586871624],
-          [-97.86567863752134, 35.410223767370525],
-          [-91.98573135442845, 35.410223767370525],
-          [-91.98573135442845, 38.418052586871624],
-          [-97.86567863752134, 38.418052586871624],
+          [
+            -97.86567863752134,
+            38.418052586871624,
+          ],
+          [
+            -97.86567863752134,
+            35.410223767370525,
+          ],
+          [
+            -91.98573135442845,
+            35.410223767370525,
+          ],
+          [
+            -91.98573135442845,
+            38.418052586871624,
+          ],
+          [
+            -97.86567863752134,
+            38.418052586871624,
+          ],
         ],
       ],
       type: "Polygon",
@@ -186,13 +201,11 @@ const actionResponseCreateOffice: SyncApplyActionResponseV2 = {
   },
   edits: {
     type: "edits",
-    edits: [
-      {
-        type: "addObject",
-        primaryKey: "NYC",
-        objectType: officeObjectType.apiName,
-      },
-    ],
+    edits: [{
+      type: "addObject",
+      primaryKey: "NYC",
+      objectType: officeObjectType.apiName,
+    }],
     addedObjectCount: 1,
     addedLinksCount: 0,
     modifiedObjectsCount: 0,
@@ -239,9 +252,10 @@ export function registerLazyActions(fauxOntology: FauxOntology): void {
 
   fauxOntology.registerActionType(
     ActionTakesGeoshape,
-    createLazyDoNothingActionImpl([
-      [actionRequestWithGeoshape, actionResponse],
-    ]),
+    createLazyDoNothingActionImpl([[
+      actionRequestWithGeoshape,
+      actionResponse,
+    ]]),
   );
 
   fauxOntology.registerActionType(
@@ -263,7 +277,9 @@ export function registerLazyActions(fauxOntology: FauxOntology): void {
 
   fauxOntology.registerActionType(
     ActionTakesMedia,
-    createLazyDoNothingActionImpl([[actionRequestMediaUpload, actionResponse]]),
+    createLazyDoNothingActionImpl([
+      [actionRequestMediaUpload, actionResponse],
+    ]),
   );
 
   fauxOntology.registerActionType(
@@ -275,7 +291,9 @@ export function registerLazyActions(fauxOntology: FauxOntology): void {
 
   fauxOntology.registerActionType(
     ActionTakesStruct,
-    createLazyDoNothingActionImpl([[actionRequestWithStruct, actionResponse]]),
+    createLazyDoNothingActionImpl([
+      [actionRequestWithStruct, actionResponse],
+    ]),
   );
 
   fauxOntology.registerActionType(

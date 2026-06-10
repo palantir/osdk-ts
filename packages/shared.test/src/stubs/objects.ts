@@ -215,10 +215,12 @@ export const objectWithAllPropertyTypes1 = {
   },
   attachmentArray: [
     {
-      rid: "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
+      rid:
+        "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
     },
     {
-      rid: "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a80",
+      rid:
+        "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a80",
     },
   ],
   long: 1,
@@ -311,10 +313,12 @@ export const objectWithAllPropertyTypes2 = {
   },
   attachmentArray: [
     {
-      rid: "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a81",
+      rid:
+        "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a81",
     },
     {
-      rid: "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a82",
+      rid:
+        "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a82",
     },
   ],
   long: 2,
@@ -433,13 +437,10 @@ export const securedEmployee = {
     value: "2003-01-01",
     propertySecurityIndex: 0,
   },
-  favoriteRestaurants: [
-    { value: "Pasta Place", propertySecurityIndex: 1 },
-    {
-      value: "Sushi Spot",
-      propertySecurityIndex: 0,
-    },
-  ],
+  favoriteRestaurants: [{ value: "Pasta Place", propertySecurityIndex: 1 }, {
+    value: "Sushi Spot",
+    propertySecurityIndex: 0,
+  }],
 } as const;
 
 // Mixed secured and regular properties for testing

@@ -228,18 +228,21 @@ const archetypeRules = archetypes(
       "@osdk/client.test.ontology",
       "@osdk/create-app.template.*",
       "@osdk/create-widget.template.*",
-      // Generated test-fixture package (created during the client intellisense
-      // test, not in source control). Listed explicitly so it keeps the
-      // ESLint/dprint scripts it is generated with, rather than falling through
-      // to the oxc "@osdk/shared.test" archetype below by namespace prefix.
-      "@osdk/shared.test.intellisense",
+      // NOTE: @osdk/shared.test is intentionally NOT migrated to oxc in this
+      // increment. The client intellisense test generates a package named
+      // @osdk/shared.test.intellisense, and monorepolint matches archetypes by
+      // namespace prefix, so an oxc "@osdk/shared.test" archetype would also
+      // capture that generated package (which ships ESLint/dprint scripts) and
+      // fail //#check-mrl. shared.test will move to oxc when linting goes global.
+      "@osdk/shared.test",
     ],
     {
       ...INTERNAL_LIBRARY_RULES,
     },
   )
   // Packages migrated to the oxc toolchain (oxlint + oxfmt). As more packages
-  // are migrated, move them into one of these two archetypes. See #3031.
+  // are migrated, add them here (taking care not to capture generated
+  // namespace-prefix children via monorepolint's archetype matching). See #3031.
   .addArchetype(
     "oxc migrated libraries",
     [
@@ -250,17 +253,6 @@ const archetypeRules = archetypes(
     ],
     {
       ...LIBRARY_RULES,
-      oxc: true,
-    },
-  )
-  .addArchetype(
-    "oxc migrated internal libraries",
-    [
-      "@osdk/shared.test",
-      "@osdk/shared.test.intellisense",
-    ],
-    {
-      ...INTERNAL_LIBRARY_RULES,
       oxc: true,
     },
   )

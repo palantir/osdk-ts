@@ -14,7 +14,6 @@ const OXC_PACKAGES = [
   "shared.client.impl",
   "shared.net.fetch",
   "shared.net",
-  "shared.test",
 ];
 const OXC_PACKAGE_GLOB = `packages/{${
   OXC_PACKAGES.join(",")

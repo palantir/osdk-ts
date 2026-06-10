@@ -99,8 +99,8 @@ export const queryTypeReturnsStructRequestReturnNull: ExecuteQueryRequest = {
   },
 };
 
-export const queryTypeReturnsStructRequestReturnNullResponse: ExecuteQueryResponse =
-  {
+export const queryTypeReturnsStructRequestReturnNullResponse:
+  ExecuteQueryResponse = {
     value: {
       firstName: "Joe",
       lastName: "Joseph",
@@ -206,8 +206,8 @@ export const queryTypeAcceptsObjectSetResponse: ExecuteQueryResponse = {
   },
 };
 
-export const queryTypeThreeDimensionalAggregationResponse: ExecuteQueryResponse =
-  {
+export const queryTypeThreeDimensionalAggregationResponse:
+  ExecuteQueryResponse = {
     value: {
       groups: [
         {
@@ -246,8 +246,8 @@ export const queryTypeTwoDimensionalAggregationResponse: ExecuteQueryResponse =
     },
   };
 
-export const queryTypeAcceptsTwoDimensionalAggregationRequest: ExecuteQueryRequest =
-  {
+export const queryTypeAcceptsTwoDimensionalAggregationRequest:
+  ExecuteQueryRequest = {
     parameters: {
       aggFunction: {
         groups: [
@@ -264,8 +264,8 @@ export const queryTypeAcceptsTwoDimensionalAggregationRequest: ExecuteQueryReque
     },
   };
 
-export const queryTypeAcceptsTwoDimensionalAggregationResponse: ExecuteQueryResponse =
-  {
+export const queryTypeAcceptsTwoDimensionalAggregationResponse:
+  ExecuteQueryResponse = {
     value: {
       groups: [
         {
@@ -280,8 +280,8 @@ export const queryTypeAcceptsTwoDimensionalAggregationResponse: ExecuteQueryResp
     },
   };
 
-export const queryTypeAcceptsThreeDimensionalAggregationRequest: ExecuteQueryRequest =
-  {
+export const queryTypeAcceptsThreeDimensionalAggregationRequest:
+  ExecuteQueryRequest = {
     parameters: {
       aggFunction: {
         groups: [
@@ -306,8 +306,8 @@ export const queryTypeAcceptsThreeDimensionalAggregationRequest: ExecuteQueryReq
     },
   };
 
-export const queryTypeAcceptsThreeDimensionalAggregationResponse: ExecuteQueryResponse =
-  {
+export const queryTypeAcceptsThreeDimensionalAggregationResponse:
+  ExecuteQueryResponse = {
     value: {
       groups: [
         {
@@ -351,7 +351,9 @@ export const queryTypeReturnsMapResponse: ExecuteQueryResponse = {
 };
 
 export const queryTypeReturnsArrayOfObjectsResponse: ExecuteQueryResponse = {
-  value: [employee1.__primaryKey],
+  value: [
+    employee1.__primaryKey,
+  ],
 };
 
 export const emptyBody: string = JSON.stringify({
