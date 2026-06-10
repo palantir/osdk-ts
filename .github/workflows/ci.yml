@@ -117,14 +117,18 @@ jobs:
       - name: Verify nothing added
         run: u="$(git ls-files --others --exclude-standard)" && test -z "$u"
 
-  # Node-version-independent checks on a single Node version (no per-Node
-  # output). These tasks transitively depend on the transpiled output of the
-  # whole repo (check-attw -> transpile, check-api -> transpileTypes, etc.), so
-  # this job `needs: build` and restores the build job's turbo cache: transpile
-  # and transpileTypes become cache hits, leaving only the actual checks
-  # (typecheck, lint, api-extractor, cspell) to run instead of recompiling.
-  typecheck-lint-cspell:
-    name: Typecheck, Lint and Cspell
+  # The Node-version-independent checks (no per-Node output) are split into three
+  # parallel jobs instead of one, because on a single runner typecheck, lint,
+  # cspell and the api/attw checks contend for CPU and serialize (check-attw also
+  # tails behind typecheck). Each job `needs: build` and restores the build cache,
+  # so transpile/transpileTypes are cache hits (no recompile). The check phase's
+  # wall-clock then ≈ the slowest of the three rather than their sum.
+
+  # Typecheck + the checks that pack/analyze build output. check-attw/check-api/
+  # check-bundle depend on transpile/typecheck, so they're grouped with typecheck
+  # (typecheck has no cached outputs; splitting it out would just re-run it here).
+  typecheck:
+    name: Typecheck and API checks
     needs: build
     timeout-minutes: 30
     runs-on: ubuntu-latest
@@ -142,9 +146,6 @@ jobs:
           node-version: 22
           cache: "pnpm"
 
-      # Restore the build job's turbo cache (same key the build job saves) so
-      # the transpile/transpileTypes dependencies of the check tasks are cache
-      # hits rather than a second full compile of the monorepo.
       - name: Restore Turbo cache from build
         uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
@@ -156,26 +157,90 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      # Materialize the full build output from the build job's cache before the
-      # checks. Several check tasks read build artifacts they do not fully
-      # declare as dependencies (e.g. check-attw packs build/types, which is
-      # produced by transpileTypes but only declared via check-api). Restoring
-      # transpile + transpileTypes to completion first (cache hits, no real
-      # recompilation) makes those artifacts present and avoids a race where a
-      # check runs before another task restores what it implicitly needs.
+      # Materialize build/{esm,cjs,browser,types} from the build cache (cache
+      # hits) so check-attw (which packs them) finds everything, avoiding a race
+      # with the tasks that produce them.
       - name: Restore build artifacts from cache
         run: pnpm exec turbo run transpile transpileTypes
 
-      # Everything `pnpm check` runs except `test` (which moves to the matrix
-      # job below), plus cspell. Node 22, so no Vite 7/Storybook exclusions.
-      - name: Typecheck, lint, API checks and spelling
-        run: pnpm exec turbo run //#check-mrl lint typecheck check-attw check-bundle check-api check-spelling ci:cspell
+      - name: Typecheck and API checks
+        run: pnpm exec turbo run typecheck check-attw check-api check-bundle
 
       - name: Verify nothing changed
         run: git diff --exit-code
 
       - name: Verify nothing added
         run: u="$(git ls-files --others --exclude-standard)" && test -z "$u"
+
+  lint:
+    name: Lint
+    needs: build
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 2
+
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4.3.0
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Restore Turbo cache from build
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: .turbo/cache
+          key: turbo-${{ runner.os }}-build-${{ github.sha }}
+          restore-keys: |
+            turbo-${{ runner.os }}-build-
+
+      - name: Install dependencies
+        run: pnpm install
+
+      # lint dependsOn ^transpileTypes (deps' .d.ts for type-aware rules); restore
+      # the build artifacts from cache so those are present.
+      - name: Restore build artifacts from cache
+        run: pnpm exec turbo run transpile transpileTypes
+
+      - name: Lint and monorepolint
+        run: pnpm exec turbo run lint //#check-mrl
+
+      - name: Verify nothing changed
+        run: git diff --exit-code
+
+      - name: Verify nothing added
+        run: u="$(git ls-files --others --exclude-standard)" && test -z "$u"
+
+  cspell:
+    name: Spelling
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 2
+
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4.3.0
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      # Single whole-repo cspell pass (ci:cspell -> cspell . --quiet). This
+      # supersedes the per-package check-spelling task, so we don't run both.
+      - name: Check spelling
+        run: pnpm exec turbo run ci:cspell
 
   # The load-bearing matrix: run the test suites against the artifacts built by
   # the `build` job under every supported Node version. This is what actually
@@ -622,7 +687,7 @@ jobs:
   ci-build:
     name: ci-build
     if: ${{ always() }}
-    needs: [build, build-apps, typecheck-lint-cspell, test, e2e, fork-guard]
+    needs: [build, build-apps, typecheck, lint, cspell, test, e2e, fork-guard]
     runs-on: ubuntu-latest
     steps:
       - name: Verify dependent jobs succeeded
@@ -635,8 +700,16 @@ jobs:
             echo "build-apps did not succeed: ${{ needs.build-apps.result }}"
             exit 1
           fi
-          if [[ "${{ needs.typecheck-lint-cspell.result }}" != "success" ]]; then
-            echo "typecheck-lint-cspell did not succeed: ${{ needs.typecheck-lint-cspell.result }}"
+          if [[ "${{ needs.typecheck.result }}" != "success" ]]; then
+            echo "typecheck did not succeed: ${{ needs.typecheck.result }}"
+            exit 1
+          fi
+          if [[ "${{ needs.lint.result }}" != "success" ]]; then
+            echo "lint did not succeed: ${{ needs.lint.result }}"
+            exit 1
+          fi
+          if [[ "${{ needs.cspell.result }}" != "success" ]]; then
+            echo "cspell did not succeed: ${{ needs.cspell.result }}"
             exit 1
           fi
           if [[ "${{ needs.test.result }}" != "success" ]]; then
