@@ -146,12 +146,17 @@ jobs:
           node-version: 22
           cache: "pnpm"
 
-      - name: Restore Turbo cache from build
+      # Own per-job cache so typecheck/attw results persist across runs (warm).
+      # restore-keys fall back to a prior typecheck cache first, then this run's
+      # build cache (cold first run), then any prior build cache.
+      - name: Turbo cache
         uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: .turbo/cache
-          key: turbo-${{ runner.os }}-build-${{ github.sha }}
+          key: turbo-${{ runner.os }}-typecheck-${{ github.sha }}
           restore-keys: |
+            turbo-${{ runner.os }}-typecheck-
+            turbo-${{ runner.os }}-build-${{ github.sha }}
             turbo-${{ runner.os }}-build-
 
       - name: Install dependencies
@@ -191,12 +196,17 @@ jobs:
           node-version: 22
           cache: "pnpm"
 
-      - name: Restore Turbo cache from build
+      # Own per-job cache so lint results persist across runs (warm). restore-keys
+      # fall back to a prior lint cache first, then this run's build cache (cold
+      # first run), then any prior build cache.
+      - name: Turbo cache
         uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: .turbo/cache
-          key: turbo-${{ runner.os }}-build-${{ github.sha }}
+          key: turbo-${{ runner.os }}-lint-${{ github.sha }}
           restore-keys: |
+            turbo-${{ runner.os }}-lint-
+            turbo-${{ runner.os }}-build-${{ github.sha }}
             turbo-${{ runner.os }}-build-
 
       - name: Install dependencies
@@ -269,14 +279,19 @@ jobs:
           node-version: ${{ matrix.node }}
           cache: "pnpm"
 
-      # Restore the turbo cache populated by the `build` job so the build
-      # artifacts can be materialized from cache instead of recompiled.
-      - name: Restore Turbo cache from build
+      # Own per-job cache, keyed PER NODE VERSION so test results aren't shared
+      # across the matrix legs (turbo's hash doesn't encode the Node runtime, so a
+      # shared cache could restore another version's result and defeat the matrix).
+      # restore-keys warm from this node's prior test cache, else this run's build
+      # cache (cold first run), else any prior build cache.
+      - name: Turbo cache
         uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: .turbo/cache
-          key: turbo-${{ runner.os }}-build-${{ github.sha }}
+          key: turbo-${{ runner.os }}-test-node${{ matrix.node }}-${{ github.sha }}
           restore-keys: |
+            turbo-${{ runner.os }}-test-node${{ matrix.node }}-
+            turbo-${{ runner.os }}-build-${{ github.sha }}
             turbo-${{ runner.os }}-build-
 
       - name: Install dependencies
@@ -342,12 +357,17 @@ jobs:
           node-version: 22
           cache: "pnpm"
 
-      - name: Restore Turbo cache from build
+      # Own per-job cache so the app/site builds persist across runs (warm).
+      # restore-keys fall back to a prior build-apps cache, then this run's build
+      # cache (cold first run), then any prior build cache.
+      - name: Turbo cache
         uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: .turbo/cache
-          key: turbo-${{ runner.os }}-build-${{ github.sha }}
+          key: turbo-${{ runner.os }}-build-apps-${{ github.sha }}
           restore-keys: |
+            turbo-${{ runner.os }}-build-apps-
+            turbo-${{ runner.os }}-build-${{ github.sha }}
             turbo-${{ runner.os }}-build-
 
       - name: Install dependencies
