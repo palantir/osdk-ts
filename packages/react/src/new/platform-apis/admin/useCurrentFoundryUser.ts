@@ -18,6 +18,7 @@ import type { User } from "@osdk/foundry.admin";
 import React from "react";
 import { usePlatformQuery } from "../../../utils/usePlatformQuery.js";
 import { OsdkContext } from "../../OsdkContext.js";
+import { importFoundryAdmin } from "./importFoundryAdmin.js";
 
 export interface UseCurrentFoundryUserOptions {
   /**
@@ -56,7 +57,7 @@ export function useCurrentFoundryUser(
 
   const handleQuery = React.useCallback(
     async () => {
-      const { Users } = await import("@osdk/foundry.admin");
+      const { Users } = await importFoundryAdmin();
       return Users.getCurrent(client);
     },
     [client],

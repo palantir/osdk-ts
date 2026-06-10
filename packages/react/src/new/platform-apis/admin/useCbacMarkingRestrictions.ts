@@ -17,6 +17,7 @@
 import React from "react";
 import { usePlatformQuery } from "../../../utils/usePlatformQuery.js";
 import { OsdkContext } from "../../OsdkContext.js";
+import { importFoundryAdmin } from "./importFoundryAdmin.js";
 
 export interface CbacMarkingRestrictionsData {
   disallowedMarkings: string[];
@@ -70,9 +71,7 @@ export function useCbacMarkingRestrictions(
   const enabled = stableMarkingIds.length > 0 && externalEnabled;
 
   const handleQuery = React.useCallback(async () => {
-    const { CbacMarkingRestrictionsObjects } = await import(
-      "@osdk/foundry.admin"
-    );
+    const { CbacMarkingRestrictionsObjects } = await importFoundryAdmin();
     return CbacMarkingRestrictionsObjects.get(client, {
       markingIds: stableMarkingIds,
       preview: true,

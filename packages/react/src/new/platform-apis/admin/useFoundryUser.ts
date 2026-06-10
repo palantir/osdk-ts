@@ -19,6 +19,7 @@ import type { UserStatus } from "@osdk/foundry.core";
 import React from "react";
 import { usePlatformQuery } from "../../../utils/usePlatformQuery.js";
 import { OsdkContext } from "../../OsdkContext.js";
+import { importFoundryAdmin } from "./importFoundryAdmin.js";
 
 export interface UseFoundryUserOptions {
   /**
@@ -65,7 +66,7 @@ export function useFoundryUser(
   const { client } = React.useContext(OsdkContext);
 
   const handleQuery = React.useCallback(async () => {
-    const { Users } = await import("@osdk/foundry.admin");
+    const { Users } = await importFoundryAdmin();
     return Users.get(client, userId, { status });
   }, [client, userId, status]);
 
