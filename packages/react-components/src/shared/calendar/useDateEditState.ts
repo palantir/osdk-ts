@@ -92,11 +92,8 @@ export function useDateEditState({
   const [isEditing, setIsEditing] = useState(false);
   const [inputValue, setInputValue] = useState("");
 
-  // Sync inputValue when external value changes (e.g. parent resets, or the
-  // picker's popover closes via a shortcut click and feeds the new value back).
-  // Intentionally skipped while the user is editing so an external write
-  // doesn't clobber in-progress typing — shortcut callers must close the
-  // picker (which exits editing) before committing.
+  // Sync inputValue when the external value changes, unless the user is
+  // mid-edit (an external write shouldn't clobber in-progress typing).
   const prevValueTimeRef = useRef<number | null>(value?.getTime() ?? null);
   const currentValueTime = value?.getTime() ?? null;
   if (prevValueTimeRef.current !== currentValueTime) {

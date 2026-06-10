@@ -129,8 +129,7 @@ export function getTimeValue(date: Date | null): string {
 /**
  * Internal catalog of built-in relative periods used to construct
  * {@link DEFAULT_DATE_SHORTCUTS}. Labels follow Workshop's relative-range
- * wording. Not part of the public API — consumers customize via
- * {@link DatePickerShortcut}.
+ * wording. Consumers customize via {@link DatePickerShortcut}.
  */
 type RelativeDatePeriod = keyof typeof RELATIVE_DATE_PERIODS;
 

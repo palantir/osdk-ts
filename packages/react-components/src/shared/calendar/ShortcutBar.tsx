@@ -15,7 +15,7 @@
  */
 
 import classnames from "classnames";
-import React, { memo, useCallback } from "react";
+import React, { memo } from "react";
 import { ActionButton } from "../../base-components/action-button/ActionButton.js";
 import type { DatePickerShortcut } from "../dateUtils.js";
 import styles from "./ShortcutBar.module.css";
@@ -26,30 +26,6 @@ export interface ShortcutBarProps {
   onSelect: (range: { min: Date; max: Date }) => void;
   className?: string;
 }
-
-interface ShortcutButtonProps {
-  shortcut: DatePickerShortcut;
-  onSelect: ShortcutBarProps["onSelect"];
-}
-
-const ShortcutButton = memo(function ShortcutButton({
-  shortcut,
-  onSelect,
-}: ShortcutButtonProps): React.ReactElement {
-  const handleClick = useCallback(() => {
-    onSelect(shortcut.range(new Date()));
-  }, [shortcut, onSelect]);
-  return (
-    <ActionButton
-      type="button"
-      appearance="minimal"
-      className={styles.shortcut}
-      onClick={handleClick}
-    >
-      {shortcut.label}
-    </ActionButton>
-  );
-});
 
 function ShortcutBarInner({
   shortcuts,
@@ -63,11 +39,15 @@ function ShortcutBarInner({
       aria-label="Relative date shortcuts"
     >
       {shortcuts.map((shortcut, index) => (
-        <ShortcutButton
+        <ActionButton
           key={`${shortcut.label}-${index}`}
-          shortcut={shortcut}
-          onSelect={onSelect}
-        />
+          type="button"
+          appearance="minimal"
+          className={styles.shortcut}
+          onClick={() => onSelect(shortcut.range(new Date()))}
+        >
+          {shortcut.label}
+        </ActionButton>
       ))}
     </div>
   );
