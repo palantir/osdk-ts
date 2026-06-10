@@ -37,15 +37,21 @@ pnpm turbo transpileBrowser --filter='@osdk/react-components-storybook^...'
 pnpm --filter @osdk/react-components-storybook test-storybook
 ```
 
-Useful variants (run from this package directory):
+Useful variants:
 
 ```bash
-# a single story file
-pnpm exec vitest run ObjectTable.stories
+# a single story file (the argument is a substring match on the file path)
+pnpm --filter @osdk/react-components-storybook exec vitest run ObjectTable.stories
 
 # watch mode
-pnpm exec vitest
+pnpm --filter @osdk/react-components-storybook exec vitest
 ```
+
+These use `--filter` so they work from anywhere in the repo. The Vitest config
+that turns stories into tests lives in this package, so running a bare
+`pnpm exec vitest …` from the repo root instead picks up the root Vitest setup
+and reports "No test files found". If you'd rather use the short
+`pnpm exec vitest …` form, `cd packages/react-components-storybook` first.
 
 Notes:
 
