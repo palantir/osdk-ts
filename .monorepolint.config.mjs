@@ -147,10 +147,6 @@ const archetypeRules = archetypes(
       "@osdk/seed-compiler",
       "@osdk/seed-helpers",
       "@osdk/oauth",
-      "@osdk/shared.client.impl",
-      "@osdk/shared.net.errors",
-      "@osdk/shared.net.fetch",
-      "@osdk/shared.net",
       "@osdk/react-sdk-docs",
       "@osdk/typescript-sdk-docs",
       "@osdk/widget.api",
@@ -232,11 +228,35 @@ const archetypeRules = archetypes(
       "@osdk/client.test.ontology",
       "@osdk/create-app.template.*",
       "@osdk/create-widget.template.*",
+    ],
+    {
+      ...INTERNAL_LIBRARY_RULES,
+    },
+  )
+  // Packages migrated to the oxc toolchain (oxlint + oxfmt). As more packages
+  // are migrated, move them into one of these two archetypes. See #3031.
+  .addArchetype(
+    "oxc migrated libraries",
+    [
+      "@osdk/shared.client.impl",
+      "@osdk/shared.net.errors",
+      "@osdk/shared.net.fetch",
+      "@osdk/shared.net",
+    ],
+    {
+      ...LIBRARY_RULES,
+      oxc: true,
+    },
+  )
+  .addArchetype(
+    "oxc migrated internal libraries",
+    [
       "@osdk/shared.test",
       "@osdk/shared.test.intellisense",
     ],
     {
       ...INTERNAL_LIBRARY_RULES,
+      oxc: true,
     },
   )
   .addArchetype(
@@ -955,6 +975,7 @@ function minimalPackageRules(shared, options) {
  * @property { boolean } [fixedDepsOnly]
  * @property { boolean } [checkApi]
  * @property { boolean } [minimalChangesOnly]
+ * @property { boolean } [oxc]
  * @property { "vite" | undefined } [framework]
  * @property { import("typescript").CompilerOptions} [extraTsConfigCompilerOptions]
  * @property { string[] } [cssExport]
@@ -1091,8 +1112,12 @@ function standardPackageRules(shared, options) {
           "check-bundle": options.output.esm === "bundle"
             ? "monorepo.tool.check-bundle"
             : DELETE_SCRIPT_ENTRY,
-          lint: "eslint . && dprint check",
-          "fix-lint": "eslint . --fix && dprint fmt",
+          lint: options.oxc
+            ? "oxlint -c ../../.oxlintrc.json . && oxfmt -c ../../.oxfmtrc.json --check ."
+            : "eslint . && dprint check",
+          "fix-lint": options.oxc
+            ? "oxlint -c ../../.oxlintrc.json --fix . && oxfmt -c ../../.oxfmtrc.json ."
+            : "eslint . --fix && dprint fmt",
           transpile: DELETE_SCRIPT_ENTRY,
           transpileEsm: getTranspileEsmScript(),
           transpileBrowser: getTranspileBrowserScript(),

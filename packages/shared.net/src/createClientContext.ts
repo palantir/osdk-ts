@@ -32,7 +32,7 @@ export function createClientContext(
 ): SharedClientContext {
   return createSharedClientContext(
     baseUrl,
-    async () =>  tokenProvider(),
+    async () => tokenProvider(),
     [userAgent].filter((x) => x && x?.length > 0).join(" "),
     fetchFn,
   );

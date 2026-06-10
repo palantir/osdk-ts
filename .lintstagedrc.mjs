@@ -38,9 +38,11 @@ export default {
   "*.md": [CSPELL_CMD],
   [OXC_PACKAGE_GLOB]: (files) => {
     if (files.length === 0) return [];
+    // oxlint --fix first (its fixes can affect whitespace), then oxfmt last so
+    // the final result is always formatted. Mirrors the package fix-lint script.
     return [
-      `oxfmt -c .oxfmtrc.json ${files.join(" ")}`,
       `oxlint -c .oxlintrc.json --fix ${files.join(" ")}`,
+      `oxfmt -c .oxfmtrc.json ${files.join(" ")}`,
       `${CSPELL_CMD} ${files.join(" ")}`,
     ];
   },
