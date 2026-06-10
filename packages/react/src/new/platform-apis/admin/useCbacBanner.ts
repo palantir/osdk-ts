@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { CbacBanners } from "@osdk/foundry.admin";
 import React from "react";
 import { usePlatformQuery } from "../../../utils/usePlatformQuery.js";
 import { OsdkContext } from "../../OsdkContext.js";
@@ -68,7 +67,8 @@ export function useCbacBanner(
 
   const enabled = stableMarkingIds.length > 0 && externalEnabled;
 
-  const handleQuery = React.useCallback(() => {
+  const handleQuery = React.useCallback(async () => {
+    const { CbacBanners } = await import("@osdk/foundry.admin");
     return CbacBanners.get(client, {
       markingIds: stableMarkingIds,
       preview: true,

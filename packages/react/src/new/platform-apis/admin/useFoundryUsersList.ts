@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { type ListUsersResponse, Users } from "@osdk/foundry.admin";
+import type { ListUsersResponse } from "@osdk/foundry.admin";
 import type { UserStatus } from "@osdk/foundry.core";
 import React from "react";
 import { usePlatformQuery } from "../../../utils/usePlatformQuery.js";
@@ -82,7 +82,8 @@ export function useFoundryUsersList(
 ): UseFoundryUsersListResult {
   const { client } = React.useContext(OsdkContext);
 
-  const handleQuery = React.useCallback(() => {
+  const handleQuery = React.useCallback(async () => {
+    const { Users } = await import("@osdk/foundry.admin");
     return Users.list(client, { include, pageSize, pageToken });
   }, [client, include, pageSize, pageToken]);
 

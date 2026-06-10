@@ -15,7 +15,6 @@
  */
 
 import type { MarkingCategory } from "@osdk/foundry.admin";
-import { MarkingCategories } from "@osdk/foundry.admin";
 import React from "react";
 import { usePlatformQuery } from "../../../utils/usePlatformQuery.js";
 import { OsdkContext } from "../../OsdkContext.js";
@@ -54,7 +53,8 @@ export function useMarkingCategories(
 ): UseMarkingCategoriesResult {
   const { client } = React.useContext(OsdkContext);
 
-  const handleQuery = React.useCallback(() => {
+  const handleQuery = React.useCallback(async () => {
+    const { MarkingCategories } = await import("@osdk/foundry.admin");
     return MarkingCategories.list(client);
   }, [client]);
 

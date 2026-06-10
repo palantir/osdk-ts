@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { CbacMarkingRestrictionsObjects } from "@osdk/foundry.admin";
 import React from "react";
 import { usePlatformQuery } from "../../../utils/usePlatformQuery.js";
 import { OsdkContext } from "../../OsdkContext.js";
@@ -70,7 +69,10 @@ export function useCbacMarkingRestrictions(
 
   const enabled = stableMarkingIds.length > 0 && externalEnabled;
 
-  const handleQuery = React.useCallback(() => {
+  const handleQuery = React.useCallback(async () => {
+    const { CbacMarkingRestrictionsObjects } = await import(
+      "@osdk/foundry.admin"
+    );
     return CbacMarkingRestrictionsObjects.get(client, {
       markingIds: stableMarkingIds,
       preview: true,
