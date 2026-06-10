@@ -31,6 +31,7 @@ import type {
   IListDataType,
   IObjectDataType,
   IObjectSetDataType,
+  IOptionalDataType,
   ISetDataType,
 } from "@osdk/generator-converters.ontologyir";
 import type {
@@ -41,6 +42,7 @@ import type {
   InterfaceType,
 } from "@osdk/maker";
 import {
+  extractAllowedValuesFromActionParameterType,
   getOntologyDefinition,
   isActionParameterTypePrimitive,
   uppercaseFirstLetter,
@@ -303,10 +305,6 @@ function convertFunctionBackedAction(
     };
 
     const paramType = dataTypeToActionParameterType(input.dataType);
-    const isObjectParam = input.dataType.type === "object"
-      || (input.dataType.type === "list"
-        && (input.dataType as IListDataType).list.elementsType.type
-          === "object");
 
     syntheticParameters.push({
       id: paramId,
@@ -315,9 +313,7 @@ function convertFunctionBackedAction(
       validation: {
         required: true,
         defaultVisibility: "editable",
-        allowedValues: isObjectParam
-          ? { type: "objectQuery" }
-          : undefined,
+        allowedValues: extractAllowedValuesFromActionParameterType(paramType),
       },
     });
   }
@@ -384,6 +380,7 @@ function convertFunctionBackedAction(
 function dataTypeToActionParameterType(
   dataType: IDataType,
 ): ActionParameter["type"] {
+  console.log(dataType);
   switch (dataType.type) {
     case "object": {
       const objectData = dataType as IObjectDataType;
@@ -411,6 +408,10 @@ function dataTypeToActionParameterType(
     case "set": {
       const setData = dataType as ISetDataType;
       return dataTypeToActionParameterListType(setData.set.elementsType);
+    }
+    case "optionalType": {
+      const optionalData = dataType as IOptionalDataType;
+      return dataTypeToActionParameterType(optionalData.optionalType.wrappedType);
     }
     default: {
       if (isActionParameterTypePrimitive(dataType.type)) {
