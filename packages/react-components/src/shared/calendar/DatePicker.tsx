@@ -485,18 +485,16 @@ export const DatePicker: React.NamedExoticComponent<DatePickerProps> = React
                   className={commonStyles.osdkDatePickerFocusBoundary}
                 />
               )}
-              <div className={commonStyles.osdkDatePickerPopoverCalendar}>
-                <LazyDateCalendar
-                  dateSelected={activeDateValue}
-                  onSelect={handleCalendarSelect}
-                  onTimeChange={showTime ? handleTimeChange : undefined}
-                  onClear={handleCalendarClear}
-                  month={visibleCalendarMonth}
-                  onMonthChange={setVisibleCalendarMonth}
-                  min={min}
-                  max={max}
-                />
-              </div>
+              <LazyDateCalendar
+                dateSelected={activeDateValue}
+                onSelect={handleCalendarSelect}
+                onTimeChange={showTime ? handleTimeChange : undefined}
+                onClear={handleCalendarClear}
+                month={visibleCalendarMonth}
+                onMonthChange={setVisibleCalendarMonth}
+                min={min}
+                max={max}
+              />
               {isModal && (
                 <div
                   onFocus={handleEndFocusBoundary}

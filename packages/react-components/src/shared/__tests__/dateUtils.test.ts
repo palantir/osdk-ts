@@ -250,17 +250,4 @@ describe("date shortcuts", () => {
     ];
     expect(resolveDateRangeShortcuts(custom)).toBe(custom);
   });
-
-  it("resolveDateRangeShortcuts returns a custom shortcut array verbatim", () => {
-    const custom: DateRangePickerShortcut[] = [
-      {
-        label: "Last 6 hours",
-        dateRange: (now) => [
-          new Date(now.getTime() - 6 * 60 * 60 * 1000),
-          now,
-        ],
-      },
-    ];
-    expect(resolveDateRangeShortcuts(custom)).toBe(custom);
-  });
 });

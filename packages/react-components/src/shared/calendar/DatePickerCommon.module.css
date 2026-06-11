@@ -42,31 +42,11 @@
 }
 
 .osdkDatePickerPopover {
-  display: flex;
-  flex-direction: row;
-  align-items: stretch;
-  gap: var(--osdk-datetime-popover-gap);
   background: var(--osdk-datetime-popover-bg);
   color: var(--osdk-typography-color-default-rest);
   padding: var(--osdk-datetime-popover-padding);
   z-index: var(--osdk-datetime-popover-z-index);
   box-shadow: var(--osdk-datetime-popover-shadow);
-}
-
-/* Vertical rail (left side) — preset/shortcut buttons next to the calendar */
-.osdkDatePickerPopoverLeftRail {
-  display: flex;
-  flex-direction: column;
-  flex: 0 0 auto;
-  min-width: 0;
-}
-
-/* Calendar column (right of the rail) — stacks calendar + optional time footer */
-.osdkDatePickerPopoverCalendar {
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 auto;
-  min-width: 0;
 }
 
 /* Visually-hidden focus boundary for Tab cycling between input and popover */
