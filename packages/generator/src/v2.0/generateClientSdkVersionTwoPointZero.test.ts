@@ -552,7 +552,11 @@ describe("generator", () => {
       }
 
       // TODO: Certain errors are expected since we can't resolve the static code, but we should fix them.
-      const errors = diagnostics.filter(q => q.code !== 2792);
+      // "Cannot find module" is reported as 2792 under TypeScript <6 and as 2307
+      // under TypeScript 6+ (the default moduleResolution changed); ignore both.
+      const errors = diagnostics.filter(q =>
+        q.code !== 2792 && q.code !== 2307
+      );
       expect(errors).toHaveLength(0);
 
       expect(

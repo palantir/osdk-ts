@@ -70,7 +70,7 @@
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "msw": "^2.11.1",
-    "typescript": "~5.5.4",
+    "typescript": "~6.0.3",
     "vitest": "^3.2.4"
   },
   "publishConfig": {

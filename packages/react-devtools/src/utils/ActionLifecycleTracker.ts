@@ -71,7 +71,9 @@ export class ActionLifecycleTracker {
 
   constructor(
     private readonly metricsStore: MetricsStore,
-    private readonly eventTimeline?: EventTimeline
+    // Explicit `| undefined` keeps isolatedDeclarations happy under TypeScript 6,
+    // which no longer implicitly widens an optional parameter property for emit.
+    private readonly eventTimeline?: EventTimeline | undefined,
   ) {}
 
   startAction(options: StartActionOptions): string {

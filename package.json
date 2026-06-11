@@ -79,7 +79,7 @@
     "typedoc-github-theme": "^0.2.1",
     "typedoc-material-theme": "^1.4.0",
     "typedoc-plugin-missing-exports": "^3.1.0",
-    "typescript": "~5.5.4",
+    "typescript": "~6.0.3",
     "typescript-eslint": "^8.43.0",
     "ultracite": "7.8.2",
     "vitest": "^3.2.4"

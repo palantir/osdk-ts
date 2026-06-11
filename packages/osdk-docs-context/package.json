@@ -52,7 +52,7 @@
     "@osdk/osdk-docs-context-generator": "workspace:~",
     "@types/semver": "^7.7.1",
     "tsx": "^4.19.1",
-    "typescript": "~5.5.4",
+    "typescript": "~6.0.3",
     "vitest": "^3.2.4"
   },
   "publishConfig": {

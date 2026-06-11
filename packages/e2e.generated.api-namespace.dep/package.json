@@ -51,7 +51,7 @@
     "@osdk/cli.cmd.typescript": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
-    "typescript": "~5.5.4"
+    "typescript": "~6.0.3"
   },
   "publishConfig": {
     "access": "public"
