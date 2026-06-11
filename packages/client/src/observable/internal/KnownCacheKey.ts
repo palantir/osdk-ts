@@ -18,6 +18,7 @@ import type { AggregationCacheKey } from "./aggregation/AggregationCacheKey.js";
 import type { FunctionCacheKey } from "./function/FunctionCacheKey.js";
 import type { SpecificLinkCacheKey } from "./links/SpecificLinkCacheKey.js";
 import type { ListCacheKey } from "./list/ListCacheKey.js";
+import type { MediaContentCacheKey } from "./media/MediaContentCacheKey.js";
 import type { MediaMetadataCacheKey } from "./media/MediaMetadataCacheKey.js";
 import type { ObjectCacheKey } from "./object/ObjectCacheKey.js";
 import type { ObjectSetCacheKey } from "./objectset/ObjectSetCacheKey.js";
@@ -28,5 +29,6 @@ export type KnownCacheKey =
   | ObjectCacheKey
   | SpecificLinkCacheKey
   | ListCacheKey
+  | MediaContentCacheKey
   | MediaMetadataCacheKey
   | ObjectSetCacheKey;
