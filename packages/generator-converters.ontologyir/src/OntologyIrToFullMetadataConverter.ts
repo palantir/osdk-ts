@@ -823,7 +823,7 @@ export class OntologyIrToFullMetadataConverter {
       const linkType = link.linkType;
       const linkStatus = this.convertLinkTypeStatus(linkType.status);
 
-      let mappings: Record<string, Ontologies.LinkTypeSideV2>;
+      let mappings: Record<string, Ontologies.LinkTypeSideV2[]>;
       switch (linkType.definition.type) {
         case "manyToMany": {
           const linkDef = linkType.definition.manyToMany;
@@ -842,13 +842,17 @@ export class OntologyIrToFullMetadataConverter {
             ...sideA,
             apiName: linkDef.objectTypeBToALinkMetadata.apiName
               ?? "",
+            displayName: linkDef.objectTypeBToALinkMetadata
+              .displayMetadata.displayName,
             objectTypeApiName: linkDef.objectTypeRidA,
           };
 
           mappings = {
-            [linkDef.objectTypeRidA]: sideA,
-            [linkDef.objectTypeRidB]: sideB,
+            [linkDef.objectTypeRidA]: [],
+            [linkDef.objectTypeRidB]: [],
           };
+          mappings[linkDef.objectTypeRidA].push(sideA);
+          mappings[linkDef.objectTypeRidB].push(sideB);
           break;
         }
         case "oneToMany": {
@@ -888,9 +892,11 @@ export class OntologyIrToFullMetadataConverter {
           };
 
           mappings = {
-            [linkDef.objectTypeRidOneSide]: oneSide,
-            [linkDef.objectTypeRidManySide]: manySide,
+            [linkDef.objectTypeRidOneSide]: [],
+            [linkDef.objectTypeRidManySide]: [],
           };
+          mappings[linkDef.objectTypeRidOneSide].push(oneSide);
+          mappings[linkDef.objectTypeRidManySide].push(manySide);
           break;
         }
         default:
@@ -902,7 +908,7 @@ export class OntologyIrToFullMetadataConverter {
         if (!result[objectTypeApiName]) {
           result[objectTypeApiName] = [];
         }
-        result[objectTypeApiName].push(linkSide);
+        result[objectTypeApiName].push(...linkSide);
       }
     }
 
