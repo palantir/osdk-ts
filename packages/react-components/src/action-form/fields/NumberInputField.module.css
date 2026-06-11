@@ -83,6 +83,7 @@
   }
 }
 
+/* Not applying an outline on focus on the stepper to match the Blueprint behaviour */
 .osdkNumberInputStepper {
   display: flex;
   flex-direction: column;

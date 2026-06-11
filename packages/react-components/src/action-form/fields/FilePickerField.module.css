@@ -167,8 +167,3 @@
   padding-block: calc(var(--osdk-surface-spacing) * 0.5);
   padding-inline: calc(var(--osdk-surface-spacing) * 3);
 }
-
-/* Doubled selector to beat the base Button's :focus-visible specificity. */
-.osdkFilePickerBrowse.osdkFilePickerBrowse:focus-visible {
-  outline: none;
-}

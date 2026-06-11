@@ -22,13 +22,8 @@
   --osdk-file-picker-transition-ease: var(--osdk-input-transition-ease);
 
   /* Clear button focus ring */
-  --osdk-file-picker-clear-outline: var(--osdk-file-picker-trigger-focus-width)
-    solid var(--osdk-file-picker-trigger-focus-color);
-  --osdk-file-picker-trigger-focus-width: var(--osdk-input-focus-width);
-  --osdk-file-picker-trigger-focus-color: var(--osdk-input-focus-color);
-
-  /* Deprecated: use --osdk-file-picker-trigger-border-color-focus for trigger focus styling; retained for external compatibility. */
-  --osdk-file-picker-trigger-focus-offset: var(--osdk-input-focus-offset);
+  --osdk-file-picker-clear-outline: var(--osdk-emphasis-focus-width) solid
+    var(--osdk-emphasis-focus-color);
 
   /* Clear button */
   --osdk-file-picker-clear-size: calc(var(--osdk-surface-spacing) * 4);

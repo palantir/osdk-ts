@@ -32,7 +32,7 @@
   --osdk-input-focus-width: var(--osdk-emphasis-focus-width);
   --osdk-input-focus-color: var(--osdk-emphasis-focus-color);
   --osdk-input-focus-offset: 0px;
-  --osdk-input-focus-shadow-error: 0 0 0 var(--osdk-input-focus-width)
+  --osdk-input-focus-shadow-error: 0 0 0 var(--osdk-emphasis-focus-width)
     color-mix(in srgb, var(--osdk-input-border-color-error) 75%, transparent);
 
   /* Input disabled */

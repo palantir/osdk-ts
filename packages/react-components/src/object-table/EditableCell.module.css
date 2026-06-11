@@ -104,6 +104,7 @@
   --osdk-datetime-input-bg: transparent;
   --osdk-datetime-input-bg-hover: transparent;
   --osdk-datetime-input-shadow: none;
+  --osdk-datetime-input-focus-shadow-error: none;
 
   --osdk-datetime-input-padding: var(--osdk-surface-spacing)
     calc(var(--osdk-surface-spacing) * 3);
