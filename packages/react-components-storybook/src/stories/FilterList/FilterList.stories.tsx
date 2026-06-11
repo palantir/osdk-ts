@@ -313,9 +313,10 @@ export const WithDateShortcuts: Story = {
     docs: {
       description: {
         story:
-          "Opt-in `dateShortcuts` rail for DATE_RANGE and SINGLE_DATE filters. "
-          + "`true` ships the built-in defaults; an array supplies custom "
-          + "shortcuts (`dateRange` for DATE_RANGE, `date` for SINGLE_DATE).",
+          "Opt-in `dateShortcuts` rail for DATE_RANGE filters. `true` ships the "
+          + "built-in defaults; an array supplies custom `DateRangePickerShortcut`s "
+          + "(e.g. \"Last 6 hours\"). Single-date filters have no shortcut rail, "
+          + "matching Workshop.",
       },
     },
   },
@@ -333,19 +334,25 @@ export const WithDateShortcuts: Story = {
         },
         {
           type: "PROPERTY",
-          id: "startDate-single-shortcuts",
+          id: "startDate-range-custom-shortcuts",
           key: "firstFullTimeStartDate",
-          label: "Start Date (SINGLE_DATE, custom shortcuts)",
-          filterComponent: "SINGLE_DATE",
-          filterState: { type: "SELECT", selectedValues: [] },
+          label: "Start Date (DATE_RANGE, custom shortcuts)",
+          filterComponent: "DATE_RANGE",
+          filterState: { type: "DATE_RANGE" },
           dateShortcuts: [
             {
-              label: "Yesterday",
-              date: (now) => new Date(now.getTime() - 24 * 60 * 60 * 1000),
+              label: "Last 6 hours",
+              dateRange: (now) => [
+                new Date(now.getTime() - 6 * 60 * 60 * 1000),
+                now,
+              ],
             },
             {
-              label: "Last week",
-              date: (now) => new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000),
+              label: "Past week",
+              dateRange: (now) => [
+                new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000),
+                now,
+              ],
             },
           ],
         },
@@ -353,7 +360,7 @@ export const WithDateShortcuts: Story = {
           type: "PROPERTY",
           id: "startDate-single-plain",
           key: "firstFullTimeStartDate",
-          label: "Start Date (SINGLE_DATE, no shortcuts)",
+          label: "Start Date (SINGLE_DATE, no shortcut rail)",
           filterComponent: "SINGLE_DATE",
           filterState: { type: "SELECT", selectedValues: [] },
         },
@@ -411,10 +418,9 @@ function WithDateShortcutsVerificationStory(
         type: "PROPERTY",
         id: VERIFICATION_SINGLE_FILTER_ID,
         key: "firstFullTimeStartDate",
-        label: "Start Date (SINGLE_DATE, all shortcuts)",
+        label: "Start Date (SINGLE_DATE, no shortcut rail)",
         filterComponent: "SINGLE_DATE",
         filterState: { type: "SELECT", selectedValues: [] },
-        dateShortcuts: true,
       },
     ],
     [],

@@ -17,15 +17,13 @@
 import { Input } from "@base-ui/react/input";
 import { Popover } from "@base-ui/react/popover";
 import classnames from "classnames";
-import React, { useCallback, useId, useMemo, useRef, useState } from "react";
+import React, { useCallback, useId, useRef, useState } from "react";
 import {
-  type DatePickerShortcut,
   formatDateForInput,
   formatDatetimeForInput,
   isDateInRange,
   parseDateFromInput,
   parseDatetimeFromInput,
-  resolveDateShortcuts,
 } from "../dateUtils.js";
 import {
   type PortalContainer,
@@ -35,7 +33,6 @@ import { stopPropagation } from "./calendarShared.js";
 import styles from "./DatePicker.module.css";
 import commonStyles from "./DatePickerCommon.module.css";
 import { LazyDateCalendar } from "./LazyDateCalendar.js";
-import { ShortcutBar } from "./ShortcutBar.js";
 import { useDateEditState } from "./useDateEditState.js";
 
 /**
@@ -131,15 +128,6 @@ export interface DatePickerProps {
    * instead.
    */
   modal?: "trap-focus" | false;
-
-  /**
-   * Opt-in relative-date shortcut rail rendered alongside the calendar.
-   * `true` renders the built-in default shortcuts; an array renders exactly
-   * those {@link DatePickerShortcut}s in order; `false` / omitted hides the
-   * rail. Clicking a shortcut commits its date (wall-clock time stripped when
-   * `showTime` is false).
-   */
-  shortcuts?: boolean | DatePickerShortcut[];
 }
 
 export const DatePicker: React.NamedExoticComponent<DatePickerProps> = React
@@ -160,7 +148,6 @@ export const DatePicker: React.NamedExoticComponent<DatePickerProps> = React
     ariaLabel,
     modal = "trap-focus",
     disabled = false,
-    shortcuts,
   }: DatePickerProps) {
     const isModal = modal !== false;
     const shouldCloseOnSelection = closeOnSelection ?? !showTime;
@@ -296,32 +283,6 @@ export const DatePicker: React.NamedExoticComponent<DatePickerProps> = React
       stopEditing();
       inputRef.current?.blur();
     }, [stopEditing]);
-
-    const resolvedShortcuts = useMemo(
-      () => resolveDateShortcuts(shortcuts),
-      [shortcuts],
-    );
-
-    const handleShortcutSelect = useCallback(
-      (date: Date) => {
-        // Close the picker first so it exits edit mode before the value-sync
-        // path runs — otherwise the input keeps any in-progress typing.
-        closePopover();
-        // handleChange's `!showTime` gate strips wall-clock time to local
-        // midnight for date-only pickers.
-        handleChange(date);
-      },
-      [closePopover, handleChange],
-    );
-
-    const shortcutItems = useMemo(
-      () =>
-        resolvedShortcuts?.map((shortcut) => ({
-          label: shortcut.label,
-          onSelect: () => handleShortcutSelect(shortcut.date(new Date())),
-        })),
-      [resolvedShortcuts, handleShortcutSelect],
-    );
 
     const handleKeyDown = useCallback(
       (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -523,11 +484,6 @@ export const DatePicker: React.NamedExoticComponent<DatePickerProps> = React
                   aria-label="Start of date picker dialog"
                   className={commonStyles.osdkDatePickerFocusBoundary}
                 />
-              )}
-              {shortcutItems != null && (
-                <div className={commonStyles.osdkDatePickerPopoverLeftRail}>
-                  <ShortcutBar shortcuts={shortcutItems} />
-                </div>
               )}
               <div className={commonStyles.osdkDatePickerPopoverCalendar}>
                 <LazyDateCalendar

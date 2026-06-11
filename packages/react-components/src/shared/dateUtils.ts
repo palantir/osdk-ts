@@ -134,8 +134,8 @@ export type DateRange = readonly [Date | null, Date | null];
 
 /**
  * Internal catalog of built-in relative periods used to construct
- * {@link DEFAULT_DATE_SHORTCUTS}. Labels follow Workshop's relative-range
- * wording. Consumers customize via {@link DatePickerShortcut}.
+ * {@link DEFAULT_DATE_RANGE_SHORTCUTS}. Labels follow Workshop's relative-range
+ * wording. Consumers customize via {@link DateRangePickerShortcut}.
  */
 type RelativeDatePeriod = keyof typeof RELATIVE_DATE_PERIODS;
 
@@ -174,14 +174,6 @@ const RELATIVE_DATE_PERIODS = {
   },
 } as const;
 
-/** Returns the date for the given built-in period, anchored at now. */
-function getRelativeDate(
-  period: RelativeDatePeriod,
-  now: Date = new Date(),
-): Date {
-  return RELATIVE_DATE_PERIODS[period].subtract(new Date(now.getTime()));
-}
-
 /** Returns the [start, end] range for the given built-in period, anchored at now. */
 function getRelativeDateRange(
   period: RelativeDatePeriod,
@@ -203,18 +195,6 @@ const DEFAULT_RELATIVE_DATE_PERIODS: readonly RelativeDatePeriod[] = [
 ];
 
 /**
- * A user-defined shortcut for a single-date picker. The picker renders a
- * button labeled {@link label}; clicking it computes a date from the current
- * time (wall-clock time stripped for date-only pickers).
- */
-export interface DatePickerShortcut {
-  /** Text shown on the shortcut button. */
-  label: string;
-  /** Computes the single date this shortcut selects, given the current time. */
-  date: (now: Date) => Date;
-}
-
-/**
  * A user-defined shortcut for a date-range picker. The picker renders a button
  * labeled {@link label}; clicking it computes a {@link DateRange} and applies
  * both bounds at once.
@@ -227,17 +207,6 @@ export interface DateRangePickerShortcut {
 }
 
 /**
- * Built-in single-date shortcuts used when a single-date picker's
- * `dateShortcuts: true`. Exported so consumers can spread and extend them,
- * e.g. `[...DEFAULT_DATE_SHORTCUTS, { label: "Last 6 hours", date }]`.
- */
-export const DEFAULT_DATE_SHORTCUTS: readonly DatePickerShortcut[] =
-  DEFAULT_RELATIVE_DATE_PERIODS.map((period) => ({
-    label: RELATIVE_DATE_PERIODS[period].label,
-    date: (now: Date) => getRelativeDate(period, now),
-  }));
-
-/**
  * Built-in range shortcuts used when a date-range picker's
  * `dateShortcuts: true`. Exported so consumers can spread and extend them,
  * e.g.
@@ -248,24 +217,6 @@ export const DEFAULT_DATE_RANGE_SHORTCUTS: readonly DateRangePickerShortcut[] =
     label: RELATIVE_DATE_PERIODS[period].label,
     dateRange: (now: Date) => getRelativeDateRange(period, now),
   }));
-
-/**
- * Resolves a single-date `dateShortcuts` prop to a shortcut list, or
- * `undefined` to hide the rail. `true` yields {@link DEFAULT_DATE_SHORTCUTS}; a
- * non-empty array is returned as-is; `false` / empty array / `undefined` hide
- * the rail.
- */
-export function resolveDateShortcuts(
-  prop: boolean | DatePickerShortcut[] | undefined,
-): readonly DatePickerShortcut[] | undefined {
-  if (prop === true) {
-    return DEFAULT_DATE_SHORTCUTS;
-  }
-  if (Array.isArray(prop) && prop.length > 0) {
-    return prop;
-  }
-  return undefined;
-}
 
 /**
  * Resolves a date-range `dateShortcuts` prop to a shortcut list, or `undefined`

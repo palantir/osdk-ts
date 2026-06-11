@@ -63,13 +63,6 @@ const rangeShortcutsArr: PropertyFilterDateExtras<"datetime", "DATE_RANGE"> = {
 };
 void rangeShortcutsArr;
 
-// SINGLE_DATE accepts a boolean or a custom DatePickerShortcut[] (single date).
-const singleShortcutsArr: PropertyFilterDateExtras<"timestamp", "SINGLE_DATE"> =
-  {
-    dateShortcuts: [{ label: "Yesterday", date: (now) => now }],
-  };
-void singleShortcutsArr;
-
 // A single-date-shaped shortcut is rejected for DATE_RANGE.
 const wrongRangeShortcut: PropertyFilterDateExtras<"timestamp", "DATE_RANGE"> =
   {
@@ -78,13 +71,15 @@ const wrongRangeShortcut: PropertyFilterDateExtras<"timestamp", "DATE_RANGE"> =
   };
 void wrongRangeShortcut;
 
-// A range-shaped shortcut is rejected for SINGLE_DATE.
-const wrongSingleShortcut: PropertyFilterDateExtras<"datetime", "SINGLE_DATE"> =
-  {
-    // @ts-expect-error SINGLE_DATE shortcuts use `date`, not `dateRange`
-    dateShortcuts: [{ label: "Range", dateRange: (now: Date) => [now, now] }],
-  };
-void wrongSingleShortcut;
+// SINGLE_DATE has no shortcut rail (matches Workshop); dateShortcuts is `never`.
+const singleDateShortcuts: PropertyFilterDateExtras<
+  "timestamp",
+  "SINGLE_DATE"
+> = {
+  // @ts-expect-error SINGLE_DATE does not support dateShortcuts
+  dateShortcuts: true,
+};
+void singleDateShortcuts;
 
 // For non-date property types, `dateShortcuts` is `never` — setting it must
 // be a TS error.

@@ -15,14 +15,12 @@
  */
 
 import React, { memo, useCallback, useMemo } from "react";
-import type { DatePickerShortcut } from "../../shared/dateUtils.js";
 import { SingleDateInput } from "../base/inputs/SingleDateInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
 
 interface SingleDateFilterInputProps {
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
-  dateShortcuts?: boolean | DatePickerShortcut[];
   /**
    * Consumer-provided display formatter forwarded to the underlying
    * `SingleDateInput` / `DatePicker`. Falls back to ISO `YYYY-MM-DD` when
@@ -34,7 +32,6 @@ interface SingleDateFilterInputProps {
 function SingleDateFilterInputInner({
   filterState,
   onFilterStateChanged,
-  dateShortcuts,
   formatDate,
 }: SingleDateFilterInputProps): React.ReactElement {
   const selectedDate = useMemo(
@@ -63,7 +60,6 @@ function SingleDateFilterInputInner({
     <SingleDateInput
       selectedDate={selectedDate}
       onChange={handleChange}
-      dateShortcuts={dateShortcuts}
       formatDate={formatDate}
     />
   );

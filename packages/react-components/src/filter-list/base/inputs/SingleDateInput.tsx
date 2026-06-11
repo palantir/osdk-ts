@@ -18,7 +18,6 @@ import { Button } from "@base-ui/react/button";
 import classnames from "classnames";
 import React, { memo, useCallback } from "react";
 import { DatePicker } from "../../../shared/calendar/index.js";
-import type { DatePickerShortcut } from "../../../shared/dateUtils.js";
 import styles from "./SingleDateInput.module.css";
 
 interface SingleDateInputProps {
@@ -30,8 +29,6 @@ interface SingleDateInputProps {
   maxDate?: Date;
   placeholder?: string;
   showClearButton?: boolean;
-  /** Optional relative-range shortcut rail. */
-  dateShortcuts?: boolean | DatePickerShortcut[];
   /** Display formatter for picker idle text. Editing format stays ISO. */
   formatDate?: (date: Date) => string;
 }
@@ -45,7 +42,6 @@ function SingleDateInputInner({
   maxDate,
   placeholder,
   showClearButton = true,
-  dateShortcuts,
   formatDate,
 }: SingleDateInputProps): React.ReactElement {
   const handleClear = useCallback(() => {
@@ -71,7 +67,6 @@ function SingleDateInputInner({
           ariaLabel="Select date"
           modal={false}
           formatDate={formatDate}
-          shortcuts={dateShortcuts}
         />
         {showClearButton && selectedDate !== undefined && (
           <Button

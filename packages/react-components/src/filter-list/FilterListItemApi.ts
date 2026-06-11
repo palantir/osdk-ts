@@ -23,10 +23,8 @@ import type {
 } from "@osdk/api";
 import type { ReactNode } from "react";
 import {
-  type DatePickerShortcut,
   type DateRangePickerShortcut,
   DEFAULT_DATE_RANGE_SHORTCUTS,
-  DEFAULT_DATE_SHORTCUTS,
 } from "../shared/dateUtils.js";
 import type { CustomFilterState } from "./types/CustomRendererTypes.js";
 import type { KeywordSearchFilterState } from "./types/KeywordSearchTypes.js";
@@ -35,12 +33,7 @@ import type {
   LinkedPropertyFilterState,
 } from "./types/LinkedFilterTypes.js";
 
-export {
-  type DatePickerShortcut,
-  type DateRangePickerShortcut,
-  DEFAULT_DATE_RANGE_SHORTCUTS,
-  DEFAULT_DATE_SHORTCUTS,
-};
+export { type DateRangePickerShortcut, DEFAULT_DATE_RANGE_SHORTCUTS };
 
 /**
  * Helper type to extract the property type from an ObjectTypeDefinition given a property key
@@ -256,17 +249,6 @@ export interface DateFormattingProps {
   formatDate?: (date: Date) => string;
 }
 
-export interface SingleDateShortcutsProps {
-  /**
-   * Opt-in relative-date shortcut rail in the date picker popover.
-   * `true` renders {@link DEFAULT_DATE_SHORTCUTS}; an array renders exactly
-   * those {@link DatePickerShortcut}s in order, letting you supply custom
-   * labels and dates (e.g. "Yesterday"). Stored `FilterState` remains
-   * absolute.
-   */
-  dateShortcuts?: boolean | DatePickerShortcut[];
-}
-
 export interface RangeDateShortcutsProps {
   /**
    * Opt-in relative-range shortcut rail above the From / To inputs.
@@ -278,15 +260,10 @@ export interface RangeDateShortcutsProps {
   dateShortcuts?: boolean | DateRangePickerShortcut[];
 }
 
-/** Filter components that support the shortcuts rail. */
-export type FilterComponentsSupportingDateShortcuts =
-  | "DATE_RANGE"
-  | "SINGLE_DATE";
-
 /**
- * Adds `formatDate` / `dateShortcuts` only for date-typed properties.
- * `dateShortcuts` is further gated to DATE_RANGE (range shortcuts) and
- * SINGLE_DATE (single-date shortcuts).
+ * Adds `formatDate` for date-typed properties, plus `dateShortcuts` for the
+ * DATE_RANGE component (relative-range shortcuts). Single-date pickers do not
+ * have a shortcut rail, matching Workshop.
  */
 export type PropertyFilterDateExtras<
   P extends WirePropertyTypes,
@@ -294,7 +271,6 @@ export type PropertyFilterDateExtras<
 > = P extends "datetime" | "timestamp" ?
     & DateFormattingProps
     & (C extends "DATE_RANGE" ? RangeDateShortcutsProps
-      : C extends "SINGLE_DATE" ? SingleDateShortcutsProps
       : { dateShortcuts?: never })
   : { formatDate?: never; dateShortcuts?: never };
 

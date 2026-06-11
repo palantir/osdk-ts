@@ -156,7 +156,6 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
           formatDate={definition.formatDate}
-          dateShortcuts={definition.dateShortcuts}
         />
       );
 
