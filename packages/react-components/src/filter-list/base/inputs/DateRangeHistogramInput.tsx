@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import React, { memo, useCallback, useMemo } from "react";
+import React, { memo, useMemo } from "react";
 import {
-  type DateRange,
   type DateRangePickerShortcut,
   formatDateForInput,
 } from "../../../shared/dateUtils.js";
@@ -106,13 +105,6 @@ function DateRangeHistogramInputInner({
     return { buckets, subtitle };
   }, [valueCountPairs, formatDate]);
 
-  const handleShortcutSelect = useCallback(
-    (range: DateRange) => {
-      onChange(range[0] ?? undefined, range[1] ?? undefined);
-    },
-    [onChange],
-  );
-
   return (
     <RangeInput
       {...rest}
@@ -121,7 +113,6 @@ function DateRangeHistogramInputInner({
       config={config}
       histogramData={histogramData}
       dateShortcuts={dateShortcuts}
-      onDateShortcutSelect={handleShortcutSelect}
     />
   );
 }

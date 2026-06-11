@@ -17,14 +17,16 @@
 import { Input } from "@base-ui/react/input";
 import { Popover } from "@base-ui/react/popover";
 import classnames from "classnames";
-import React, { useCallback, useId, useRef, useState } from "react";
+import React, { useCallback, useId, useMemo, useRef, useState } from "react";
 import type { DateRange as RdpDateRange } from "react-day-picker";
 import {
   type DateRange,
+  type DateRangePickerShortcut,
   formatDateForInput,
   formatDatetimeForInput,
   parseDateFromInput,
   parseDatetimeFromInput,
+  resolveDateRangeShortcuts,
 } from "../dateUtils.js";
 import {
   type PortalContainer,
@@ -34,6 +36,7 @@ import { stopPropagation } from "./calendarShared.js";
 import commonStyles from "./DatePickerCommon.module.css";
 import styles from "./DateRangePicker.module.css";
 import { LazyDateRangeCalendar } from "./LazyDateRangeCalendar.js";
+import { ShortcutBar } from "./ShortcutBar.js";
 import { TimePicker } from "./TimePicker.js";
 import { useDateEditState } from "./useDateEditState.js";
 
@@ -113,6 +116,15 @@ export interface DateRangePickerProps {
    * instead.
    */
   modal?: "trap-focus" | false;
+
+  /**
+   * Opt-in relative-range shortcut rail rendered to the left of the calendar
+   * inside the popover. `true` renders the built-in default shortcuts; an
+   * array renders exactly those {@link DateRangePickerShortcut}s in order;
+   * `false` / omitted hides the rail. Clicking a shortcut applies its range to
+   * both bounds and closes the popover.
+   */
+  shortcuts?: boolean | DateRangePickerShortcut[];
 }
 
 type ActiveBoundary = "start" | "end";
@@ -145,6 +157,7 @@ export const DateRangePicker: React.NamedExoticComponent<
   portalContainer,
   modal = "trap-focus",
   disabled = false,
+  shortcuts,
 }: DateRangePickerProps) {
   const shouldCloseOnSelection = !showTime;
   const popoverId = useId();
@@ -368,6 +381,25 @@ export const DateRangePicker: React.NamedExoticComponent<
     startInputRef.current?.blur();
     endInputRef.current?.blur();
   }, [stopStartEditing, stopEndEditing]);
+
+  const resolvedShortcuts = useMemo(
+    () => resolveDateRangeShortcuts(shortcuts),
+    [shortcuts],
+  );
+
+  const shortcutItems = useMemo(
+    () =>
+      resolvedShortcuts?.map((shortcut) => ({
+        label: shortcut.label,
+        onSelect: () => {
+          // Close first so the picker exits edit mode before the value-sync
+          // path runs, then apply the resolved range to both bounds.
+          closePopover();
+          onChange?.(shortcut.dateRange(new Date()));
+        },
+      })),
+    [resolvedShortcuts, closePopover, onChange],
+  );
 
   // --- Keyboard handlers ---
 
@@ -633,7 +665,11 @@ export const DateRangePicker: React.NamedExoticComponent<
         >
           <Popover.Popup
             ref={popoverRef}
-            className={commonStyles.osdkDatePickerPopover}
+            className={classnames(
+              commonStyles.osdkDatePickerPopover,
+              shortcutItems != null
+                && commonStyles.osdkDatePickerPopoverWithRail,
+            )}
             id={popoverId}
             role="dialog"
             aria-label="date range picker"
@@ -647,13 +683,20 @@ export const DateRangePicker: React.NamedExoticComponent<
               aria-label="Start of date range picker dialog"
               className={commonStyles.osdkDatePickerFocusBoundary}
             />
-            <LazyDateRangeCalendar
-              selected={calendarSelected}
-              onSelect={handleRangeSelect}
-              min={min}
-              max={max}
-              footer={timeFooter}
-            />
+            {shortcutItems != null && (
+              <div className={commonStyles.osdkDatePickerPopoverLeftRail}>
+                <ShortcutBar shortcuts={shortcutItems} />
+              </div>
+            )}
+            <div className={commonStyles.osdkDatePickerPopoverCalendar}>
+              <LazyDateRangeCalendar
+                selected={calendarSelected}
+                onSelect={handleRangeSelect}
+                min={min}
+                max={max}
+                footer={timeFooter}
+              />
+            </div>
             <div
               onFocus={handleEndFocusBoundary}
               tabIndex={0}

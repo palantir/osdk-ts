@@ -27,12 +27,10 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { DatePicker } from "../../../shared/calendar/index.js";
-import { ShortcutBar } from "../../../shared/calendar/ShortcutBar.js";
+import { DateRangePicker } from "../../../shared/calendar/index.js";
 import {
   type DateRange,
   type DateRangePickerShortcut,
-  resolveDateRangeShortcuts,
 } from "../../../shared/dateUtils.js";
 import {
   createHistogramBuckets,
@@ -183,15 +181,10 @@ export interface RangeInputProps<T> {
   clickToFilter?: boolean;
   /**
    * Only used when `config.inputType === "date"`: opt-in relative-range
-   * shortcut rail rendered above the From / To inputs. Ignored for number
-   * ranges.
+   * shortcut rail rendered inside the date range picker popover. Ignored for
+   * number ranges.
    */
   dateShortcuts?: boolean | DateRangePickerShortcut[];
-  /**
-   * Applies a clicked shortcut's range to both bounds at once. Only used for
-   * date ranges.
-   */
-  onDateShortcutSelect?: (range: DateRange) => void;
 }
 
 function RangeInputInner<T>({
@@ -207,7 +200,6 @@ function RangeInputInner<T>({
   histogramData,
   clickToFilter = false,
   dateShortcuts,
-  onDateShortcutSelect,
 }: RangeInputProps<T>): React.ReactElement {
   const minInputId = useId();
   const maxInputId = useId();
@@ -247,13 +239,9 @@ function RangeInputInner<T>({
   // so T is Date. Reusing the refs above keeps the callbacks identity-stable
   // across renders, so the cross-bound update of one boundary doesn't bust
   // the React.memo on the OTHER DatePicker.
-  const handleDateMinChange = useCallback((next: Date | null): void => {
+  const handleDateRangeChange = useCallback((range: DateRange | null): void => {
     const dispatch = onChangeRef.current as RangeOnChange<Date>;
-    dispatch(next ?? undefined, maxValueRef.current as Date | undefined);
-  }, []);
-  const handleDateMaxChange = useCallback((next: Date | null): void => {
-    const dispatch = onChangeRef.current as RangeOnChange<Date>;
-    dispatch(minValueRef.current as Date | undefined, next ?? undefined);
+    dispatch(range?.[0] ?? undefined, range?.[1] ?? undefined);
   }, []);
 
   useEffect(() => {
@@ -890,13 +878,11 @@ function RangeInputInner<T>({
           <DateRangeInputs
             minValue={minValue as Date | undefined}
             maxValue={maxValue as Date | undefined}
-            onMinChange={handleDateMinChange}
-            onMaxChange={handleDateMaxChange}
+            onRangeChange={handleDateRangeChange}
             formatDate={config.formatDate}
             minLabel={config.minLabel}
             maxLabel={config.maxLabel}
             dateShortcuts={dateShortcuts}
-            onDateShortcutSelect={onDateShortcutSelect}
           />
         )
         : (
@@ -952,64 +938,36 @@ type RangeOnChange<T> = (
 interface DateRangeInputsProps {
   minValue: Date | undefined;
   maxValue: Date | undefined;
-  onMinChange: (next: Date | null) => void;
-  onMaxChange: (next: Date | null) => void;
+  onRangeChange: (range: DateRange | null) => void;
   formatDate: ((date: Date) => string) | undefined;
   minLabel: string;
   maxLabel: string;
   dateShortcuts?: boolean | DateRangePickerShortcut[];
-  onDateShortcutSelect?: (range: DateRange) => void;
 }
 
 function DateRangeInputs({
   minValue,
   maxValue,
-  onMinChange,
-  onMaxChange,
+  onRangeChange,
   formatDate,
   minLabel,
   maxLabel,
   dateShortcuts,
-  onDateShortcutSelect,
 }: DateRangeInputsProps): React.ReactElement {
-  const resolvedShortcuts = useMemo(
-    () => resolveDateRangeShortcuts(dateShortcuts),
-    [dateShortcuts],
-  );
-
-  const shortcutItems = useMemo(
-    () =>
-      resolvedShortcuts?.map((shortcut) => ({
-        label: shortcut.label,
-        onSelect: () => onDateShortcutSelect?.(shortcut.dateRange(new Date())),
-      })),
-    [resolvedShortcuts, onDateShortcutSelect],
+  const value = useMemo<DateRange>(
+    () => [minValue ?? null, maxValue ?? null],
+    [minValue, maxValue],
   );
 
   return (
-    <div className={styles.dateRangeWithShortcuts}>
-      {shortcutItems != null && (
-        <ShortcutBar shortcuts={shortcutItems} orientation="horizontal" />
-      )}
-      <div className={styles.rangeInputs}>
-        <DatePicker
-          value={minValue ?? null}
-          onChange={onMinChange}
-          max={maxValue}
-          placeholder={minLabel}
-          ariaLabel={minLabel}
-          formatDate={formatDate}
-        />
-        <DatePicker
-          value={maxValue ?? null}
-          onChange={onMaxChange}
-          min={minValue}
-          placeholder={maxLabel}
-          ariaLabel={maxLabel}
-          formatDate={formatDate}
-        />
-      </div>
-    </div>
+    <DateRangePicker
+      value={value}
+      onChange={onRangeChange}
+      placeholderStart={minLabel}
+      placeholderEnd={maxLabel}
+      formatDate={formatDate}
+      shortcuts={dateShortcuts}
+    />
   );
 }
 

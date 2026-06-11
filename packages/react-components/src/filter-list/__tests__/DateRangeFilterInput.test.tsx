@@ -31,6 +31,16 @@ vi.mock("@osdk/react", () => ({
   useRegisterUserAgent: vi.fn(),
 }));
 
+// Render the range calendar synchronously so the picker popover mounts in
+// happy-dom without resolving React.lazy.
+vi.mock("../../shared/calendar/LazyDateRangeCalendar.js", async () => {
+  const { default: DateRangeCalendar } = await vi.importActual<
+    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+    typeof import("../../shared/calendar/DateRangeCalendar.js")
+  >("../../shared/calendar/DateRangeCalendar.js");
+  return { LazyDateRangeCalendar: DateRangeCalendar };
+});
+
 afterEach(() => {
   cleanup();
   vi.useRealTimers();
@@ -82,8 +92,9 @@ describe("DateRangeFilterInput", () => {
         ]}
       />,
     );
-    // The range shortcut rail renders inline above the From / To inputs, so
-    // no popover needs to be opened to reach it.
+    // The shortcut rail lives inside the range picker popover, so open it by
+    // focusing the start input before clicking the shortcut.
+    fireEvent.focus(screen.getByLabelText("Start date"));
     fireEvent.click(screen.getByRole("button", { name: "Past 24 hours" }));
     expect(onFilterStateChanged).toHaveBeenCalledTimes(1);
     const state = onFilterStateChanged.mock.calls[0][0];

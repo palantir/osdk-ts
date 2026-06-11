@@ -49,6 +49,31 @@
   box-shadow: var(--osdk-datetime-popover-shadow);
 }
 
+/* Applied only when a shortcut rail is rendered: lay the rail and calendar
+   out side by side. */
+.osdkDatePickerPopoverWithRail {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: var(--osdk-datetime-popover-gap);
+}
+
+/* Vertical rail (left side) — preset/shortcut buttons next to the calendar */
+.osdkDatePickerPopoverLeftRail {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+/* Calendar column (right of the rail) — stacks calendar + optional time footer */
+.osdkDatePickerPopoverCalendar {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
 /* Visually-hidden focus boundary for Tab cycling between input and popover */
 .osdkDatePickerFocusBoundary {
   position: absolute;

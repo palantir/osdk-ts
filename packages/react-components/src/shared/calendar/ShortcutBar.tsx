@@ -27,23 +27,16 @@ export interface ShortcutBarItem {
 
 export interface ShortcutBarProps {
   shortcuts: readonly ShortcutBarItem[];
-  /** Stacks buttons in a column (default) or a wrapping row. */
-  orientation?: "vertical" | "horizontal";
   className?: string;
 }
 
 function ShortcutBarInner({
   shortcuts,
-  orientation = "vertical",
   className,
 }: ShortcutBarProps): React.ReactElement {
   return (
     <div
-      className={classnames(
-        styles.bar,
-        orientation === "horizontal" && styles.barHorizontal,
-        className,
-      )}
+      className={classnames(styles.bar, className)}
       role="group"
       aria-label="Relative date shortcuts"
     >

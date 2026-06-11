@@ -152,13 +152,6 @@
   font-size: var(--osdk-filter-range-histogram-subtitle-font-size);
 }
 
-.dateRangeWithShortcuts {
-  display: flex;
-  flex-direction: column;
-  gap: var(--osdk-filter-range-inputs-gap);
-  min-width: 0;
-}
-
 .rangeInputs {
   display: flex;
   align-items: flex-end;
