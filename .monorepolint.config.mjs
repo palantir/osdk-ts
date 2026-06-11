@@ -228,13 +228,11 @@ const archetypeRules = archetypes(
       "@osdk/client.test.ontology",
       "@osdk/create-app.template.*",
       "@osdk/create-widget.template.*",
-      // NOTE: @osdk/shared.test is intentionally NOT migrated to oxc in this
-      // increment. The client intellisense test generates a package named
-      // @osdk/shared.test.intellisense, and monorepolint matches archetypes by
-      // namespace prefix, so an oxc "@osdk/shared.test" archetype would also
-      // capture that generated package (which ships ESLint/dprint scripts) and
-      // fail //#check-mrl. shared.test will move to oxc when linting goes global.
+      // @osdk/shared.test and its companion @osdk/shared.test.intellisense are
+      // intentionally left on ESLint/dprint in this increment (deferred from the
+      // oxc migration); they move to oxc when linting goes global. See #3031.
       "@osdk/shared.test",
+      "@osdk/shared.test.intellisense",
     ],
     {
       ...INTERNAL_LIBRARY_RULES,
@@ -1110,10 +1108,10 @@ function standardPackageRules(shared, options) {
             ? "monorepo.tool.check-bundle"
             : DELETE_SCRIPT_ENTRY,
           lint: options.oxc
-            ? "oxlint -c ../../.oxlintrc.json . && oxfmt -c ../../.oxfmtrc.json --check ."
+            ? "oxlint -c ../../oxlint.config.ts . && oxfmt -c ../../oxfmt.config.ts --check ."
             : "eslint . && dprint check",
           "fix-lint": options.oxc
-            ? "oxlint -c ../../.oxlintrc.json --fix . && oxfmt -c ../../.oxfmtrc.json ."
+            ? "oxlint -c ../../oxlint.config.ts --fix . && oxfmt -c ../../oxfmt.config.ts ."
             : "eslint . --fix && dprint fmt",
           transpile: DELETE_SCRIPT_ENTRY,
           transpileEsm: getTranspileEsmScript(),

@@ -27,4 +27,5 @@ trivago
 tsgolint
 tsup
 timecode
+ultracite
 utif

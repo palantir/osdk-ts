@@ -28,12 +28,12 @@ export function createClientContext(
   baseUrl: string,
   tokenProvider: () => Promise<string> | string,
   userAgent: string,
-  fetchFn: typeof globalThis.fetch = fetch,
+  fetchFn: typeof globalThis.fetch = fetch
 ): SharedClientContext {
   return createSharedClientContext(
     baseUrl,
     async () => tokenProvider(),
     [userAgent].filter((x) => x && x?.length > 0).join(" "),
-    fetchFn,
+    fetchFn
   );
 }

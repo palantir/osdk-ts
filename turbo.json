@@ -71,7 +71,7 @@
 
     /* Psuedo task to let oxc-migrated packages depend on the global oxlint + oxfmt config */
     "//#global-oxc-config": {
-      "inputs": [".oxlintrc.json", ".oxfmtrc.json", "plugins/oxlint-plugin-header.js"]
+      "inputs": ["oxlint.config.ts", "oxfmt.config.ts", "plugins/oxlint-plugin-header.js"]
     },
 
     "clean": {

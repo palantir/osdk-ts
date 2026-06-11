@@ -23,7 +23,7 @@
     "**/tsup.config.bundled_*",
     "**/api-docs/",
     "**/*.report.api.md",
-    // The shared.* packages below are formatted by oxfmt, not dprint (oxc migration, see .oxfmtrc.json)
+    // The shared.* packages below are formatted by oxfmt, not dprint (oxc migration, see oxfmt.config.ts)
     "packages/shared.net.errors/",
     "packages/shared.client.impl/",
     "packages/shared.net.fetch/",

@@ -40,8 +40,8 @@ export default {
     // oxlint --fix first (its fixes can affect whitespace), then oxfmt last so
     // the final result is always formatted. Mirrors the package fix-lint script.
     return [
-      `oxlint -c .oxlintrc.json --fix ${files.join(" ")}`,
-      `oxfmt -c .oxfmtrc.json ${files.join(" ")}`,
+      `oxlint -c oxlint.config.ts --fix ${files.join(" ")}`,
+      `oxfmt -c oxfmt.config.ts ${files.join(" ")}`,
       `${CSPELL_CMD} ${files.join(" ")}`,
     ];
   },
