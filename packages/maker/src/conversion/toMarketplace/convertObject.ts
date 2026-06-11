@@ -83,6 +83,19 @@ export function convertObject(
 
   const implementations = objectType.implementsInterfaces ?? [];
 
+  for (const impl of implementations) {
+    const requiredConstraints = (impl.implements.actionTypeConstraints ?? [])
+      .filter(constraint => constraint.requireImplementation);
+    invariant(
+      requiredConstraints.length === 0,
+      `Object "${objectType.apiName}" implements interface "${impl.implements.apiName}" which has required action type constraints: ${
+        requiredConstraints.map(constraint => constraint.metadata.apiName).join(
+          ", ",
+        )
+      }. Action type constraint implementation mappings are not yet supported in OAC.`,
+    );
+  }
+
   return {
     objectType: {
       displayMetadata: {

@@ -1444,36 +1444,38 @@ describe("Interfaces", () => {
       expect(param.requireImplementation).toBe(true);
     });
 
-    it("throws when object implements interface with required constraint", () => {
-      const iface = defineInterface({ apiName: "MyInterface" });
+    it("throws when object implements interface with required constraint", async () => {
+      await expect(
+        defineOntology("com.palantir.", () => {
+          const iface = defineInterface({ apiName: "MyInterface" });
 
-      defineInterfaceActionTypeConstraint({
-        interfaceType: iface,
-        apiName: "myConstraint",
-        displayName: "My Constraint",
-        description: "A test constraint",
-        requireImplementation: true,
-        parameters: [],
-      });
+          defineInterfaceActionTypeConstraint({
+            interfaceType: iface,
+            apiName: "myConstraint",
+            displayName: "My Constraint",
+            description: "A test constraint",
+            requireImplementation: true,
+            parameters: [],
+          });
 
-      expect(() => {
-        defineObject({
-          apiName: "myObject",
-          displayName: "My Object",
-          pluralDisplayName: "My Objects",
-          titlePropertyApiName: "name",
-          primaryKeyPropertyApiName: "id",
-          properties: {
-            "id": { type: "string", displayName: "ID" },
-            "name": { type: "string", displayName: "Name" },
-          },
-          implementsInterfaces: [{
-            implements: iface,
-            propertyMapping: [],
-          }],
-        });
-      }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Object "myObject" implements interface "com.palantir.MyInterface" which has required action type constraints: com.palantir.myConstraint. Action type constraint implementation mappings are not yet supported in OAC.]`,
+          defineObject({
+            apiName: "myObject",
+            displayName: "My Object",
+            pluralDisplayName: "My Objects",
+            titlePropertyApiName: "name",
+            primaryKeyPropertyApiName: "id",
+            properties: {
+              "id": { type: "string", displayName: "ID" },
+              "name": { type: "string", displayName: "Name" },
+            },
+            implementsInterfaces: [{
+              implements: iface,
+              propertyMapping: [],
+            }],
+          });
+        }, undefined),
+      ).rejects.toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Object "com.palantir.myObject" implements interface "com.palantir.MyInterface" which has required action type constraints: com.palantir.myConstraint. Action type constraint implementation mappings are not yet supported in OAC.]`,
       );
     });
 
