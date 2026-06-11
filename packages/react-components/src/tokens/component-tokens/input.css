@@ -10,7 +10,7 @@
      custom themes can set --osdk-input-border-color to add a real border. */
   --osdk-input-border-width: 1px;
   --osdk-input-border-color: transparent;
-  --osdk-input-border-color-focus: var(--osdk-intent-primary-rest);
+  --osdk-input-border-color-focus: transparent;
   /* First two layers are 0-opacity placeholders that maintain shadow layer
      count for smooth CSS transitions when focus adds a visible glow. */
   --osdk-input-shadow:
@@ -33,8 +33,8 @@
   --osdk-input-transition-duration: var(--osdk-emphasis-transition-duration);
   --osdk-input-transition-ease: var(--osdk-emphasis-ease-default);
 
-  /* Input focus ring */
-  --osdk-input-focus-outline: none;
+  /* Input focus ring — use outline instead of Blueprint's box-shadow focus */
+  --osdk-input-focus-outline: 2px solid var(--osdk-intent-primary-rest);
   --osdk-input-focus-shadow:
     inset 0 0 0 var(--osdk-input-border-width)
       color-mix(in srgb, var(--osdk-input-border-color-focus) 75%, transparent),
