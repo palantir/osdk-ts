@@ -98,16 +98,8 @@
   }
 
   &:focus-visible {
-    outline: var(
-        --osdk-combobox-trigger-focus-width,
-        var(--osdk-emphasis-focus-width)
-      )
-      solid
-      var(--osdk-combobox-trigger-focus-color, var(--osdk-emphasis-focus-color));
-    outline-offset: var(
-      --osdk-combobox-trigger-focus-offset,
-      var(--osdk-emphasis-focus-offset)
-    );
+    outline: var(--osdk-input-focus-outline);
+    outline-offset: var(--osdk-input-focus-outline-offset, 0px);
   }
 
   &[data-popup-open]:focus-visible {
