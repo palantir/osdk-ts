@@ -142,7 +142,7 @@ export class Layers {
 
     return {
       batchResult: batchContext,
-      retVal: retVal,
+      retVal,
       changes: batchContext.changes,
     };
   }

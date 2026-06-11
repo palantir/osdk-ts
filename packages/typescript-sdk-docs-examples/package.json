@@ -48,8 +48,8 @@
     "@osdk/typescript-docs-example-generator": "workspace:~",
     "@osdk/typescript-sdk-docs": "workspace:~",
     "@types/node": "^20.8.0",
-    "@typescript-eslint/eslint-plugin": "^6.7.0",
-    "@typescript-eslint/parser": "^6.7.0",
+    "@typescript-eslint/eslint-plugin": "^8.60.1",
+    "@typescript-eslint/parser": "^8.60.1",
     "eslint": "^8.50.0",
     "typescript": "~6.0.3"
   },

@@ -60,8 +60,8 @@
     "@osdk/functions": "workspace:^"
   },
   "devDependencies": {
-    "@microsoft/api-documenter": "^7.26.32",
-    "@microsoft/api-extractor": "^7.52.11",
+    "@microsoft/api-documenter": "^7.30.5",
+    "@microsoft/api-extractor": "^7.58.7",
     "@osdk/api": "workspace:~",
     "@osdk/client": "workspace:~",
     "@osdk/client.test.ontology": "workspace:~",

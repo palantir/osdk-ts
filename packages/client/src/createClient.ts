@@ -117,13 +117,13 @@ export function createClientInternal(
   baseUrl: string,
   ontologyRid: string | Promise<string>,
   tokenProvider: () => Promise<string>,
-  options:
+  options?:
     | {
       logger?: Logger;
       UNSTABLE_DO_NOT_USE_BRANCH?: string;
       headers?: Record<string, string>;
     }
-    | undefined = undefined,
+    | undefined,
   fetchFn: typeof globalThis.fetch = fetch,
 ): Client {
   if (typeof ontologyRid === "string") {
