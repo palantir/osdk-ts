@@ -35,18 +35,10 @@
 
   /* Input focus ring — use outline instead of Blueprint's box-shadow focus */
   --osdk-input-focus-outline: 1px solid var(--osdk-intent-primary-rest);
-  --osdk-input-focus-shadow:
-    inset 0 0 0 var(--osdk-input-border-width)
-      color-mix(in srgb, var(--osdk-input-border-color-focus) 75%, transparent),
-    0 0 0 var(--osdk-input-border-width)
-      color-mix(in srgb, var(--osdk-input-border-color-focus) 75%, transparent),
-    inset 0 1px 1px var(--osdk-surface-border-color-default);
-  --osdk-input-focus-shadow-error:
-    inset 0 0 0 var(--osdk-input-border-width)
-      color-mix(in srgb, var(--osdk-input-border-color-error) 75%, transparent),
-    0 0 0 var(--osdk-input-border-width)
-      color-mix(in srgb, var(--osdk-input-border-color-error) 75%, transparent),
-    inset 0 1px 1px var(--osdk-surface-border-color-default);
+  --osdk-input-focus-outline-offset: -1px;
+  /* Focus shadow keeps the base inset border; outline provides the focus ring */
+  --osdk-input-focus-shadow: var(--osdk-input-shadow);
+  --osdk-input-focus-shadow-error: var(--osdk-input-shadow-error);
 
   /* Input disabled */
   --osdk-input-disabled-opacity: var(--osdk-disabled-opacity);
