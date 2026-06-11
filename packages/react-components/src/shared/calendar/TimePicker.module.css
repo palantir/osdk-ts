@@ -21,15 +21,19 @@
   background: var(--osdk-time-picker-input-bg);
   color: var(--osdk-time-picker-input-color);
   box-sizing: border-box;
+  box-shadow: var(--osdk-time-picker-input-shadow);
 
-  &:focus {
-    border-color: var(--osdk-time-picker-input-border-color-focus);
+  &:focus-visible {
     outline: var(--osdk-time-picker-input-focus-outline);
-    outline-offset: var(--osdk-time-picker-input-focus-offset);
+    box-shadow: var(--osdk-time-picker-input-focus-shadow);
   }
 
   &[aria-invalid] {
-    border-color: var(--osdk-input-border-color-error);
+    box-shadow: var(--osdk-time-picker-input-shadow-error);
+  }
+
+  &[aria-invalid]:focus-visible {
+    box-shadow: var(--osdk-time-picker-input-focus-shadow-error);
   }
 }
 
