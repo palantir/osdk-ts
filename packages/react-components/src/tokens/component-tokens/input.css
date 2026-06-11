@@ -44,11 +44,6 @@
       color-mix(in srgb, var(--osdk-input-border-color-error) 75%, transparent),
     inset 0 1px 1px var(--osdk-surface-border-color-default);
 
-  /* Deprecated: use --osdk-input-focus-outline instead; retained for external compatibility. */
-  --osdk-input-focus-width: var(--osdk-emphasis-focus-width);
-  --osdk-input-focus-color: var(--osdk-emphasis-focus-color);
-  --osdk-input-focus-offset: var(--osdk-emphasis-focus-offset);
-
   /* Input disabled */
   --osdk-input-disabled-opacity: var(--osdk-disabled-opacity);
 

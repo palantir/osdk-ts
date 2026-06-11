@@ -24,12 +24,7 @@
   --osdk-file-picker-clear-outline: var(--osdk-emphasis-focus-width) solid
     var(--osdk-emphasis-focus-color);
   --osdk-file-picker-browse-focus-outline: none;
-  --osdk-file-picker-browse-bg-hover: var(--osdk-button-secondary-bg-active);
-
-  /* Deprecated: use --osdk-file-picker-trigger-border-color-focus instead; retained for external compatibility. */
-  --osdk-file-picker-trigger-focus-width: var(--osdk-input-focus-width);
-  --osdk-file-picker-trigger-focus-color: var(--osdk-input-focus-color);
-  --osdk-file-picker-trigger-focus-offset: var(--osdk-input-focus-offset);
+  --osdk-file-picker-browse-bg-hover: var(--osdk-button-secondary-bg-hover);
 
   /* Clear button */
   --osdk-file-picker-clear-size: calc(var(--osdk-surface-spacing) * 4);

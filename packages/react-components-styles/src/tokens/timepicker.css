@@ -40,7 +40,4 @@
         transparent
       ),
     inset 0 1px 1px var(--osdk-surface-border-color-default);
-
-  /* Deprecated: use --osdk-time-picker-input-focus-outline instead; retained for external compatibility. */
-  --osdk-time-picker-input-focus-offset: var(--osdk-input-focus-offset);
 }

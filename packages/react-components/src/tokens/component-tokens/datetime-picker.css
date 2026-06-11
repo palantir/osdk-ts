@@ -126,11 +126,6 @@
     --osdk-input-focus-shadow-error
   );
 
-  /* Deprecated: use --osdk-datetime-input-focus-outline instead; retained for external compatibility. */
-  --osdk-datetime-input-focus-width: var(--osdk-input-focus-width);
-  --osdk-datetime-input-focus-color: var(--osdk-input-focus-color);
-  --osdk-datetime-input-focus-offset: var(--osdk-input-focus-offset);
-
   --osdk-datetime-input-transition-duration: var(--osdk-input-transition-duration);
   --osdk-datetime-input-transition-ease: var(--osdk-input-transition-ease);
 
