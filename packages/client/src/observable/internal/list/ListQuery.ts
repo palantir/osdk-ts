@@ -82,6 +82,7 @@ type ExtractRelevantObjectsResult = Record<"added" | "modified", {
   sortaMatches: Set<(ObjectHolder | InterfaceHolder)>;
 }>;
 
+// TODO: Pass also the derivedPropertyMetadata here
 /**
  * Base class for filtered and sorted object collection queries.
  * - Handles where clause filtering and orderBy sorting
