@@ -92,8 +92,25 @@ export namespace ActionMetadata {
       objectSet: T_Target["apiName"];
     }
 
+    /**
+     * A struct field whose nullability is tracked. Fields declared with the
+     * bare {@link BaseActionParameterTypes} string form are required; fields
+     * declared with this object form and `nullable: true` may be omitted (or
+     * passed as `null`) when applying the action.
+     */
+    export interface StructField<
+      T extends DataType.BaseActionParameterTypes =
+        DataType.BaseActionParameterTypes,
+    > {
+      type: T;
+      nullable?: boolean;
+    }
+
     export interface Struct<
-      T extends Record<string, DataType.BaseActionParameterTypes>,
+      T extends Record<
+        string,
+        DataType.BaseActionParameterTypes | DataType.StructField
+      >,
     > {
       type: "struct";
       struct: T;

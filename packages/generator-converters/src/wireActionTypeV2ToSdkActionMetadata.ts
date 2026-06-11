@@ -109,13 +109,20 @@ function actionPropertyToSdkPropertyDefinition(
           (
             structMap: Record<
               string,
-              ActionMetadata.DataType.BaseActionParameterTypes
+              | ActionMetadata.DataType.BaseActionParameterTypes
+              | ActionMetadata.DataType.StructField
             >,
             structField,
           ) => {
-            structMap[structField.name] = actionPropertyToSdkPropertyDefinition(
+            const fieldType = actionPropertyToSdkPropertyDefinition(
               structField.fieldType as ActionParameterType,
             ) as ActionMetadata.DataType.BaseActionParameterTypes;
+            // Bare string form for required fields keeps the encoding (and
+            // previously generated SDKs) unchanged; only optional fields get
+            // the object form carrying nullability.
+            structMap[structField.name] = structField.required
+              ? fieldType
+              : { type: fieldType, nullable: true };
             return structMap;
           },
           {},

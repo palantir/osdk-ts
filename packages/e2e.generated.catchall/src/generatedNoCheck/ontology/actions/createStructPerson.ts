@@ -15,7 +15,11 @@ export namespace createStructPerson {
       description: undefined;
       multiplicity: false;
       nullable: true;
-      type: ActionMetadata.DataType.Struct<{ city: 'string'; state: 'string' }>;
+      type: ActionMetadata.DataType.Struct<{
+        city: 'string';
+        state: 'string';
+        streetName: { type: 'string'; nullable: true };
+      }>;
     };
     name: {
       description: undefined;
@@ -29,7 +33,11 @@ export namespace createStructPerson {
    * Create a struct
    */
   export interface Params {
-    readonly address?: ActionParam.StructType<{ city: 'string'; state: 'string' }> | null;
+    readonly address?: ActionParam.StructType<{
+      city: 'string';
+      state: 'string';
+      streetName: { type: 'string'; nullable: true };
+    }> | null;
 
     readonly name: ActionParam.PrimitiveType<'string'>;
   }
@@ -58,7 +66,7 @@ export namespace createStructPerson {
  * can change the behavior of the applied action. If prefills are configured, null prevents them
  * from being applied. If a parameter modifies an object's property, null will clear the data from
  * the object, whereas undefined would not modify that property._
- * @param {ActionParam.StructType<{"city":"string","state":"string"}>} [address]
+ * @param {ActionParam.StructType<{"city":"string","state":"string","streetName":{"type":"string","nullable":true}}>} [address]
  * @param {ActionParam.PrimitiveType<"string">} name
  */
 export interface createStructPerson extends ActionDefinition<createStructPerson.Signatures> {

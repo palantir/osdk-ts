@@ -467,6 +467,13 @@ export const ActionTakesStruct: ActionTypeV2 = {
             },
             required: true,
           },
+          {
+            name: "streetName",
+            fieldType: {
+              type: "string",
+            },
+            required: false,
+          },
         ],
       },
       required: false,
