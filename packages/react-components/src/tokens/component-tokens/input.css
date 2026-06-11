@@ -10,7 +10,7 @@
      custom themes can set --osdk-input-border-color to add a real border. */
   --osdk-input-border-width: 1px;
   --osdk-input-border-color: transparent;
-  --osdk-input-border-color-focus: transparent;
+  --osdk-input-border-color-focus: var(--osdk-intent-primary-rest);
   /* First two layers are 0-opacity placeholders that maintain shadow layer
      count for smooth CSS transitions when focus adds a visible glow. */
   --osdk-input-shadow:
