@@ -1,5 +1,15 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.33.0
+
+### Minor Changes
+
+- a9de941: Fix interfaces in function discovery
+
+### Patch Changes
+
+- @osdk/client.unstable@2.33.0
+
 ## 2.32.0
 
 ### Minor Changes
