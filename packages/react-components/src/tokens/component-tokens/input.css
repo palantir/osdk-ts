@@ -14,14 +14,14 @@
   /* First two layers are 0-opacity placeholders that maintain shadow layer
      count for smooth CSS transitions when focus adds a visible glow. */
   --osdk-input-shadow:
-    0 0 0 0 color-mix(in srgb, var(--bp-intent-primary-rest) 0%, transparent),
-    0 0 0 0 color-mix(in srgb, var(--bp-intent-primary-rest) 0%, transparent),
-    inset 0 0 0 1px color-mix(in oklch, var(--bp-palette-black) 20%, transparent),
+    inset 0 0 0 var(--osdk-input-border-width)
+      color-mix(in oklch, var(--bp-palette-black) 20%, transparent),
+    0 0 0 0 transparent,
     inset 0 1px 1px color-mix(in oklch, var(--bp-palette-black) 30%, transparent);
 
   /* Input backgrounds */
   --osdk-input-bg: var(--osdk-surface-background-color-default-rest);
-  --osdk-input-bg-hover: var(--osdk-surface-background-color-default-hover);
+  --osdk-input-bg-hover: var(--osdk-input-bg);
 
   /* Input typography */
   --osdk-input-color: var(--osdk-typography-color-default-rest);
@@ -34,15 +34,30 @@
   --osdk-input-transition-ease: var(--osdk-emphasis-ease-default);
 
   /* Input focus ring */
-  --osdk-input-focus-width: var(--osdk-emphasis-focus-width);
-  --osdk-input-focus-color: var(--osdk-emphasis-focus-color);
-  --osdk-input-focus-offset: var(--osdk-emphasis-focus-offset);
+  --osdk-input-focus-outline: none;
+  --osdk-input-focus-shadow:
+    inset 0 0 0 var(--osdk-input-border-width)
+      color-mix(in srgb, var(--osdk-input-border-color-focus) 75%, transparent),
+    0 0 0 var(--osdk-input-border-width)
+      color-mix(in srgb, var(--osdk-input-border-color-focus) 75%, transparent),
+    inset 0 1px 1px var(--osdk-surface-border-color-default);
+  --osdk-input-focus-shadow-error:
+    inset 0 0 0 var(--osdk-input-border-width)
+      color-mix(in srgb, var(--osdk-input-border-color-error) 75%, transparent),
+    0 0 0 var(--osdk-input-border-width)
+      color-mix(in srgb, var(--osdk-input-border-color-error) 75%, transparent),
+    inset 0 1px 1px var(--osdk-surface-border-color-default);
 
   /* Input disabled */
   --osdk-input-disabled-opacity: var(--osdk-disabled-opacity);
 
   /* Input error */
   --osdk-input-border-color-error: var(--osdk-intent-danger-rest);
+  --osdk-input-shadow-error:
+    inset 0 0 0 var(--osdk-input-border-width)
+      var(--osdk-input-border-color-error),
+    0 0 0 0 transparent,
+    inset 0 1px 1px var(--osdk-surface-border-color-default);
 }
 
 [data-bp-color-scheme="dark"],

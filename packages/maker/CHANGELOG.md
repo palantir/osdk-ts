@@ -1,5 +1,19 @@
 # @osdk/maker
 
+## 0.36.0
+
+### Minor Changes
+
+- cae84bd: Fix optional inputs for OAC FBA
+- 9e602f2: allow require implementation for interface action type constraint
+- 0032d94: fix cyclical interfaces on all internal types
+
+### Patch Changes
+
+- Updated dependencies [a9de941]
+  - @osdk/generator-converters.ontologyir@2.33.0
+  - @osdk/api@2.33.0
+
 ## 0.35.0
 
 ### Minor Changes

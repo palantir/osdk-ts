@@ -398,8 +398,14 @@ export class OntologyIrToFullMetadataConverter {
         { interfaceTypeRid: string }
       > = {};
       if (previewMetadata.interfaceTypes) {
-        for (const apiName of Object.keys(previewMetadata.interfaceTypes)) {
-          interfaceTypesMap[apiName] = { interfaceTypeRid: apiName };
+        for (
+          const [apiName, interfaceType] of Object.entries(
+            previewMetadata.interfaceTypes,
+          )
+        ) {
+          interfaceTypesMap[apiName] = {
+            interfaceTypeRid: interfaceType.rid,
+          };
         }
       }
       entityMetadataMapping = {

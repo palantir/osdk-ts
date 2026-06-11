@@ -22,7 +22,7 @@
   height: var(--osdk-file-picker-trigger-height);
   border: var(--osdk-file-picker-trigger-border);
   border-radius: var(--osdk-file-picker-trigger-border-radius);
-  box-shadow: var(--osdk-input-shadow);
+  box-shadow: var(--osdk-file-picker-trigger-shadow);
   background-color: var(--osdk-file-picker-trigger-bg);
   font-family: var(--osdk-file-picker-trigger-font-family);
   font-size: var(--osdk-file-picker-trigger-font-size);
@@ -31,20 +31,26 @@
   transition:
     background-color var(--osdk-file-picker-transition-duration)
       var(--osdk-file-picker-transition-ease),
-    border-color var(--osdk-file-picker-transition-duration)
+    box-shadow var(--osdk-file-picker-transition-duration)
       var(--osdk-file-picker-transition-ease);
 }
 
-.osdkFilePickerTrigger:has(.osdkFilePickerText:focus-visible),
-.osdkFilePickerTrigger:has(.osdkFilePickerClear:focus-visible) {
-  border-color: var(--osdk-file-picker-trigger-border-color-focus);
-  outline: var(--osdk-file-picker-trigger-focus-width) solid
-    var(--osdk-file-picker-trigger-focus-color);
-  outline-offset: var(--osdk-file-picker-trigger-focus-offset);
+.osdkFilePickerTrigger:hover .osdkFilePickerBrowse {
+  --osdk-button-secondary-bg: var(--osdk-file-picker-browse-bg-hover);
+}
+
+/* :focus-within fires on both mouse and keyboard focus for the trigger's
+   internal controls, matching DatePicker's wrapper-level focus shadow. */
+.osdkFilePickerTrigger:focus-within {
+  box-shadow: var(--osdk-file-picker-trigger-focus-shadow);
 }
 
 .osdkFilePickerTrigger[aria-invalid] {
-  border-color: var(--osdk-file-picker-trigger-border-color-error);
+  box-shadow: var(--osdk-file-picker-trigger-shadow-error);
+}
+
+.osdkFilePickerTrigger[aria-invalid]:focus-within {
+  box-shadow: var(--osdk-file-picker-trigger-focus-shadow-error);
 }
 
 /* display: none fully removes the input from the a11y tree, avoiding
@@ -72,20 +78,14 @@
   font-size: inherit;
   line-height: inherit;
 
-  &:hover {
-    background-color: var(--osdk-file-picker-trigger-bg-hover);
-  }
-
-  &:active {
-    background-color: var(--osdk-surface-background-color-default-active);
-  }
-
   &:disabled {
     cursor: not-allowed;
     opacity: var(--osdk-input-disabled-opacity);
   }
 
-  &:focus-visible {
+  &:focus {
+    /* Suppress the browser default outline on mouse click. The outer
+       .osdkFilePickerTrigger renders the focus border instead. */
     outline: none;
   }
 }
@@ -103,16 +103,21 @@
   width: var(--osdk-file-picker-clear-size);
   height: var(--osdk-file-picker-clear-size);
   margin: var(--osdk-file-picker-clear-margin);
-  padding: 0;
+  padding: var(--osdk-file-picker-clear-padding);
   border: none;
   background: none;
   color: var(--osdk-file-picker-clear-color);
+  border-radius: var(--osdk-file-picker-clear-border-radius);
   cursor: pointer;
-  transition: color var(--osdk-file-picker-transition-duration)
-    var(--osdk-file-picker-transition-ease);
+  transition:
+    color var(--osdk-file-picker-transition-duration)
+      var(--osdk-file-picker-transition-ease),
+    background-color var(--osdk-file-picker-transition-duration)
+      var(--osdk-file-picker-transition-ease);
 
   &:hover {
     color: var(--osdk-file-picker-clear-color-hover);
+    background-color: var(--osdk-file-picker-trigger-bg-hover);
   }
 
   &:disabled {
@@ -125,15 +130,18 @@
   }
 
   &:focus-visible {
-    outline: var(--osdk-file-picker-trigger-focus-width) solid
-      var(--osdk-file-picker-trigger-focus-color);
-    border-radius: var(--osdk-surface-border-radius);
+    outline: var(--osdk-file-picker-clear-outline);
   }
 }
 
 /* Browse button (right section) */
 .osdkFilePickerBrowse {
   --osdk-button-min-height: 0;
+  --osdk-button-secondary-bg-hover: var(--osdk-file-picker-browse-bg-hover);
+  /* ActionButton reads --osdk-focus-outline for its focus style; route it
+     through a file-picker-owned token so consumers do not have to override
+     ActionButton internals directly. */
+  --osdk-focus-outline: var(--osdk-file-picker-browse-focus-outline);
 
   display: flex;
   align-items: center;
@@ -148,10 +156,13 @@
   font-size: var(--osdk-file-picker-trigger-font-size);
 
   &:focus {
+    /* Browse is visually part of the file picker field. The outer trigger
+       renders the focus indication so the button does not draw a second ring. */
     outline: none;
   }
 }
 
+/* Doubled selector to beat the base Button's padding specificity. */
 .osdkFilePickerBrowse.osdkFilePickerBrowse {
   padding-block: calc(var(--osdk-surface-spacing) * 0.5);
   padding-inline: calc(var(--osdk-surface-spacing) * 3);
