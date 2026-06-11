@@ -35,6 +35,9 @@ const DEFAULT_ORDER_BY: Array<OrderByEntry<Assignment, AssignmentColumnRdps>> =
     { property: "assignmentId", direction: "asc" },
   ];
 
+// Static column definitions — no runtime inputs, so hoisted out of the component.
+const BASE_COLUMN_DEFS = createAssignmentColumnDefinitions();
+
 interface AssignmentsTableProps {
   objectSet: ObjectSet<Assignment>;
   filter?: WhereClause<Assignment>;
@@ -56,11 +59,6 @@ export const AssignmentsTable = React.memo<AssignmentsTableProps>(
     selectedRows,
     onRowSelectionChanged,
   }) {
-    const baseColumnDefs = React.useMemo(
-      () => createAssignmentColumnDefinitions(),
-      [],
-    );
-
     const {
       orderBy,
       effectiveColumnDefs,
@@ -69,7 +67,7 @@ export const AssignmentsTable = React.memo<AssignmentsTableProps>(
       handleColumnResize,
       handleColumnsPinnedChanged,
     } = useObjectTableState<Assignment, AssignmentColumnRdps>(
-      baseColumnDefs,
+      BASE_COLUMN_DEFS,
       DEFAULT_ORDER_BY,
     );
 

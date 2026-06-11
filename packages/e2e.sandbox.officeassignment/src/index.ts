@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { default as App } from "./App.js";
+export { App } from "./App.js";

@@ -31,7 +31,7 @@ export interface UseStatusUpdateFiltersResult {
   readonly objectSet: ObjectSet<StatusUpdate>;
   readonly filterClause: WhereClause<StatusUpdate> | undefined;
   readonly setFilterClause: (c: WhereClause<StatusUpdate>) => void;
-  readonly initialFilterStates: Map<string, FilterState>;
+  readonly filterStates: Map<string, FilterState>;
   readonly orderedFilterDefs: Array<IdentifiedFilterDef<StatusUpdate>>;
   readonly handleFilterStateChanged: (
     def: FilterDefinitionUnion<StatusUpdate>,
@@ -105,6 +105,7 @@ export function useStatusUpdateFilters(): UseStatusUpdateFiltersResult {
   const handleReset = React.useCallback(() => {
     setFilterClauseRaw(undefined);
     setFilterStates(new Map());
+    setFilterVisibility(undefined);
     setResetKey((prev) => prev + 1);
   }, []);
 
@@ -112,7 +113,7 @@ export function useStatusUpdateFilters(): UseStatusUpdateFiltersResult {
     objectSet,
     filterClause,
     setFilterClause,
-    initialFilterStates: filterStates,
+    filterStates,
     orderedFilterDefs,
     handleFilterStateChanged,
     handleFilterVisibilityChange,

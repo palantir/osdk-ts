@@ -27,6 +27,8 @@ export interface DrawerProps {
 /** A minimal right-side overlay drawer. No external UI library dependency. */
 export function Drawer(props: DrawerProps): React.JSX.Element | null {
   const { isOpen, onClose, title, children } = props;
+  // Stable per-instance id so the dialog can name itself via the title; drawers can stack.
+  const titleId = React.useId();
   if (!isOpen) {
     return null;
   }
@@ -38,9 +40,14 @@ export function Drawer(props: DrawerProps): React.JSX.Element | null {
         className={styles.backdrop}
         onClick={onClose}
       />
-      <aside className={styles.panel} role="dialog" aria-modal="true">
+      <aside
+        className={styles.panel}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+      >
         <header className={styles.header}>
-          <div className={styles.title}>{title}</div>
+          <div id={titleId} className={styles.title}>{title}</div>
           <button
             type="button"
             className={styles.closeButton}

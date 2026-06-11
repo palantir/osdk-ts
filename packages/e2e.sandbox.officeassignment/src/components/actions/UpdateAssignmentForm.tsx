@@ -15,103 +15,94 @@
  */
 
 import { useOsdkAction } from "@osdk/react";
+import {
+  ActionForm,
+  type FormFieldDefinition,
+  type FormState,
+} from "@osdk/react-components/experimental/action-form";
 import React from "react";
 import type { Assignment } from "../../generatedNoCheck2/index.js";
 import { updateAssignment } from "../../generatedNoCheck2/index.js";
 import { ErrorBanner } from "../common/index.js";
-import styles from "./actions.module.css";
 
 export interface UpdateAssignmentFormProps {
   assignment: Assignment.OsdkInstance;
 }
 
-interface FormFields {
-  title: string;
-  function: string;
-  officeId: string;
-  floorId: string;
-  managerId: string;
+type EditableFieldKey =
+  | "title"
+  | "function"
+  | "officeId"
+  | "floorId"
+  | "managerId";
+
+const TEXT_FIELDS: ReadonlyArray<
+  { fieldKey: EditableFieldKey; label: string }
+> = [
+  { fieldKey: "title", label: "Title" },
+  { fieldKey: "function", label: "Function" },
+  { fieldKey: "officeId", label: "Office ID" },
+  { fieldKey: "floorId", label: "Floor ID" },
+  { fieldKey: "managerId", label: "Manager ID" },
+];
+
+function emptyToUndefined(value: string | undefined): string | undefined {
+  return value == null || value === "" ? undefined : value;
 }
 
-function fieldsFromAssignment(assignment: Assignment.OsdkInstance): FormFields {
-  return {
-    title: assignment.title ?? "",
-    function: assignment.function ?? "",
-    officeId: assignment.officeId ?? "",
-    floorId: assignment.floorId ?? "",
-    managerId: assignment.managerId ?? "",
-  };
-}
-
-function emptyToUndefined(value: string): string | undefined {
-  return value === "" ? undefined : value;
-}
-
-/** Edits an assignment's role details and location/ownership FKs. */
+/**
+ * Edits an assignment's role details and location/ownership FKs.
+ *
+ * Built on the `ActionForm` component: the editable parameters are declared as text fields seeded
+ * from the current assignment, while the fixed `assignment` object parameter is injected in
+ * `onSubmit`. Seed values are read once on mount, so the parent remounts this form (keyed on the
+ * assignment's primary key) when a different assignment loads.
+ */
 export function UpdateAssignmentForm(
   props: UpdateAssignmentFormProps,
 ): React.JSX.Element {
   const { assignment } = props;
-  const { applyAction, isPending, error } = useOsdkAction(updateAssignment);
-  const [fields, setFields] = React.useState<FormFields>(() =>
-    fieldsFromAssignment(assignment)
+  const { applyAction, error } = useOsdkAction(updateAssignment);
+
+  const fieldDefinitions = React.useMemo<
+    ReadonlyArray<FormFieldDefinition<typeof updateAssignment>>
+  >(
+    () =>
+      TEXT_FIELDS.map(({ fieldKey, label }) => ({
+        fieldKey,
+        label,
+        fieldComponent: "TEXT_INPUT",
+        defaultValue: assignment[fieldKey] ?? "",
+        fieldComponentProps: {},
+      })),
+    [assignment],
   );
 
-  const setField = React.useCallback(
-    (key: keyof FormFields, value: string) => {
-      setFields((prev) => ({ ...prev, [key]: value }));
-    },
-    [],
-  );
-
-  const onSubmit = React.useCallback(
-    (event: React.FormEvent) => {
-      event.preventDefault();
-      void applyAction({
+  const handleSubmit = React.useCallback(
+    async (formState: FormState<typeof updateAssignment>) => {
+      await applyAction({
         assignment,
-        title: emptyToUndefined(fields.title),
-        function: emptyToUndefined(fields.function),
-        officeId: emptyToUndefined(fields.officeId),
-        floorId: emptyToUndefined(fields.floorId),
-        managerId: emptyToUndefined(fields.managerId),
+        title: emptyToUndefined(formState.title),
+        function: emptyToUndefined(formState.function),
+        officeId: emptyToUndefined(formState.officeId),
+        floorId: emptyToUndefined(formState.floorId),
+        managerId: emptyToUndefined(formState.managerId),
       });
     },
-    [applyAction, assignment, fields],
+    [applyAction, assignment],
   );
 
-  const textFields: Array<{ key: keyof FormFields; label: string }> = [
-    { key: "title", label: "Title" },
-    { key: "function", label: "Function" },
-    { key: "officeId", label: "Office ID" },
-    { key: "floorId", label: "Floor ID" },
-    { key: "managerId", label: "Manager ID" },
-  ];
-
   return (
-    <form className={styles.form} onSubmit={onSubmit}>
-      {textFields.map(({ key, label }) => (
-        <label key={key} className={styles.field}>
-          <span className={styles.fieldLabel}>{label}</span>
-          <input
-            className={styles.input}
-            type="text"
-            value={fields[key]}
-            onChange={(e) =>
-              setField(key, e.target.value)}
-          />
-        </label>
-      ))}
-      <button
-        type="submit"
-        className={styles.primaryButton}
-        disabled={isPending}
-      >
-        Save changes
-      </button>
+    <>
+      <ActionForm
+        actionDefinition={updateAssignment}
+        formFieldDefinitions={fieldDefinitions}
+        onSubmit={handleSubmit}
+      />
       <ErrorBanner
         message={error?.actionValidation?.message}
         context="Update assignment"
       />
-    </form>
+    </>
   );
 }

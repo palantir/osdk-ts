@@ -78,20 +78,21 @@ function buildLatestValueRdps(
     $and: [{ type: { $eq: sel.type } }, { value: { $ne: sel.value } }],
   };
 
+  // Latest timestamp over the rows matching `where`. Kept as a local (not the creator type) so its
+  // narrow numeric return type is preserved — `diff` reuses it via `.subtract`, which the widened
+  // creator return type would drop.
+  const latestTimestamp = (
+    base: Parameters<StatusRdpCreators[string]>[0],
+    where: typeof targetWhere | typeof negatedWhere,
+  ) => base.pivotTo(STATUS_LINK).where(where).aggregate("timestampEpochMs:max");
+
   const targetMax: StatusRdpCreators[string] = (base) =>
-    base.pivotTo(STATUS_LINK).where(targetWhere).aggregate(
-      "timestampEpochMs:max",
-    );
+    latestTimestamp(base, targetWhere);
 
   const diff: StatusRdpCreators[string] = (base) =>
-    base.pivotTo(STATUS_LINK).where(targetWhere).aggregate(
-      "timestampEpochMs:max",
-    )
-      .subtract(
-        base.pivotTo(STATUS_LINK).where(negatedWhere).aggregate(
-          "timestampEpochMs:max",
-        ),
-      );
+    latestTimestamp(base, targetWhere).subtract(
+      latestTimestamp(base, negatedWhere),
+    );
 
   return {
     creators: { [targetMaxKey]: targetMax, [diffKey]: diff },

@@ -31,9 +31,12 @@ export function applyVisibilityState<T extends { isVisible?: boolean }>(
   getId: (def: T) => string,
   applyOverrides?: (def: T) => T,
 ): Array<T & { isVisible: boolean }> {
+  const apply = (def: T): T =>
+    applyOverrides != null ? applyOverrides(def) : def;
+
   if (savedState == null) {
     return baseDefs.map((def) => {
-      const base = applyOverrides != null ? applyOverrides(def) : def;
+      const base = apply(def);
       return { ...base, isVisible: base.isVisible ?? true };
     });
   }
@@ -46,14 +49,14 @@ export function applyVisibilityState<T extends { isVisible?: boolean }>(
     const def = defMap.get(id);
     if (def != null) {
       seen.add(id);
-      const base = applyOverrides != null ? applyOverrides(def) : def;
+      const base = apply(def);
       result.push({ ...base, isVisible });
     }
   }
 
   for (const def of baseDefs) {
     if (!seen.has(getId(def))) {
-      const base = applyOverrides != null ? applyOverrides(def) : def;
+      const base = apply(def);
       result.push({ ...base, isVisible: base.isVisible ?? true });
     }
   }

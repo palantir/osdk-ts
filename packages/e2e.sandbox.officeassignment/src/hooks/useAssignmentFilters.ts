@@ -42,7 +42,7 @@ export interface UseAssignmentFiltersResult {
   readonly filterClause: WhereClause<Assignment> | undefined;
   readonly setFilterClause: (c: WhereClause<Assignment>) => void;
   /** Per-filter UI state + visibility/order, for FilterList rehydration. */
-  readonly initialFilterStates: Map<string, FilterState>;
+  readonly filterStates: Map<string, FilterState>;
   readonly orderedFilterDefs: Array<IdentifiedFilterDef<Assignment>>;
   readonly handleFilterStateChanged: (
     def: FilterDefinitionUnion<Assignment>,
@@ -144,8 +144,10 @@ export function useAssignmentFilters(): UseAssignmentFiltersResult {
 
   const handleReset = React.useCallback(() => {
     setLatestSelections([]);
+    setComposeAcrossTypes("$and");
     setFilterClauseRaw(undefined);
     setFilterStates(new Map());
+    setFilterVisibility(undefined);
     setResetKey((prev) => prev + 1);
   }, []);
 
@@ -169,7 +171,7 @@ export function useAssignmentFilters(): UseAssignmentFiltersResult {
     setComposeAcrossTypes,
     filterClause,
     setFilterClause,
-    initialFilterStates: filterStates,
+    filterStates,
     orderedFilterDefs,
     handleFilterStateChanged,
     handleFilterVisibilityChange,
