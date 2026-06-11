@@ -221,7 +221,7 @@ export class OntologyMetadataResolver {
       includeActionTypeFullMetadata?: boolean;
     },
     extPackageInfo: PackageInfo = new Map(),
-    branch: string | undefined = undefined,
+    branch?: string | undefined,
   ): Promise<
     Result<OntologyInfo, GeneratorError[]>
   > {
