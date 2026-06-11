@@ -36,7 +36,6 @@
     "transpileTypes": "monorepo.tool.transpile -f esm -m types -t node",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
-  "dependencies": {},
   "peerDependencies": {
     "@osdk/client": "workspace:^",
     "@osdk/functions": "workspace:^"
@@ -52,7 +51,7 @@
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^6.7.0",
     "eslint": "^8.50.0",
-    "typescript": "~5.5.4"
+    "typescript": "~6.0.3"
   },
   "publishConfig": {
     "access": "public"
