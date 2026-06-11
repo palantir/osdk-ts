@@ -15,7 +15,8 @@
  */
 
 .osdkNumberInputWrapper {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto;
   align-items: stretch;
   gap: calc(var(--osdk-surface-spacing) * 0.5);
 }
@@ -44,11 +45,10 @@
 }
 
 .osdkNumberInputField {
-  flex: 1;
   min-width: 0;
   min-height: var(--osdk-input-min-height);
   padding: var(--osdk-input-padding);
-  border-radius: var(--osdk-input-border-radius) 0 0 var(--osdk-input-border-radius);
+  border-radius: var(--osdk-input-border-radius);
   border: none;
   box-shadow: var(--osdk-input-shadow);
   background-color: var(--osdk-input-bg);
