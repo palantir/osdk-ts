@@ -563,6 +563,11 @@ describe("generator", () => {
         export const $osdkMetadata = { extraUserAgent: 'typescript-sdk/0.0.0 osdk-cli/0.0.0' };
 
         export const $ontologyRid = 'ridHere';
+        /**
+         * The RID of the Foundry branch this SDK was generated against, or
+         * \`undefined\` if it was generated against the main branch.
+         */
+        export const $branchRid: string | undefined = undefined;
         ",
           "/foo/index.ts": "export { deleteTodos, markTodoCompleted } from './ontology/actions.js';
         export * as $Actions from './ontology/actions.js';
@@ -573,7 +578,7 @@ describe("generator", () => {
         export { getCount, returnsTodo } from './ontology/queries.js';
         export * as $Queries from './ontology/queries.js';
         export { $osdkMetadata } from './OntologyMetadata.js';
-        export { $ontologyRid } from './OntologyMetadata.js';
+        export { $branchRid, $ontologyRid } from './OntologyMetadata.js';
         ",
           "/foo/ontology/actions.ts": "export { deleteTodos } from './actions/deleteTodos.js';
         export { markTodoCompleted } from './actions/markTodoCompleted.js';
@@ -1254,6 +1259,11 @@ describe("generator", () => {
         export const $osdkMetadata = { extraUserAgent: '' };
 
         export const $ontologyRid = 'ridHere';
+        /**
+         * The RID of the Foundry branch this SDK was generated against, or
+         * \`undefined\` if it was generated against the main branch.
+         */
+        export const $branchRid: string | undefined = undefined;
         ",
           "/foo/index.ts": "export { deleteTodos, markTodoCompleted } from './ontology/actions.js';
         export * as $Actions from './ontology/actions.js';
@@ -1264,7 +1274,7 @@ describe("generator", () => {
         export { getCount, returnsTodo } from './ontology/queries.js';
         export * as $Queries from './ontology/queries.js';
         export { $osdkMetadata } from './OntologyMetadata.js';
-        export { $ontologyRid } from './OntologyMetadata.js';
+        export { $branchRid, $ontologyRid } from './OntologyMetadata.js';
         ",
           "/foo/ontology/actions.ts": "export { deleteTodos } from './actions/deleteTodos.js';
         export { markTodoCompleted } from './actions/markTodoCompleted.js';
@@ -2315,6 +2325,11 @@ describe("generator", () => {
         export const $osdkMetadata = { extraUserAgent: 'typescript-sdk/0.0.0 osdk-cli/0.0.0' };
 
         export const $ontologyRid = 'ridHere';
+        /**
+         * The RID of the Foundry branch this SDK was generated against, or
+         * \`undefined\` if it was generated against the main branch.
+         */
+        export const $branchRid: string | undefined = undefined;
         ",
           "/foo/index.ts": "export {} from './ontology/actions.js';
         export * as $Actions from './ontology/actions.js';
@@ -2325,7 +2340,7 @@ describe("generator", () => {
         export { getCount, returnsTodo } from './ontology/queries.js';
         export * as $Queries from './ontology/queries.js';
         export { $osdkMetadata } from './OntologyMetadata.js';
-        export { $ontologyRid } from './OntologyMetadata.js';
+        export { $branchRid, $ontologyRid } from './OntologyMetadata.js';
         ",
           "/foo/ontology/actions.ts": "export {};
         ",
@@ -2715,8 +2730,11 @@ describe("generator", () => {
         export const $osdkMetadata = { extraUserAgent: '' };
 
         export const $ontologyRid = 'ri.ontology.main.ontology.dep';
-
-        export const $branch = 'someRidHere';
+        /**
+         * The RID of the Foundry branch this SDK was generated against, or
+         * \`undefined\` if it was generated against the main branch.
+         */
+        export const $branchRid: string | undefined = 'someRidHere';
         ",
           "/foo/index.ts": "export {} from './ontology/actions.js';
         export * as $Actions from './ontology/actions.js';
@@ -2727,7 +2745,7 @@ describe("generator", () => {
         export {} from './ontology/queries.js';
         export * as $Queries from './ontology/queries.js';
         export { $osdkMetadata } from './OntologyMetadata.js';
-        export { $ontologyRid } from './OntologyMetadata.js';
+        export { $branchRid, $ontologyRid } from './OntologyMetadata.js';
         ",
           "/foo/ontology/actions.ts": "export {};
         ",

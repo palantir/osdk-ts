@@ -44,7 +44,7 @@ export async function generateRootIndexTsFile(
         export { $osdkMetadata } from "./OntologyMetadata${importExt}";
         ${
         ontologyApiNamespace == null
-          ? `export { $ontologyRid } from "./OntologyMetadata${importExt}";`
+          ? `export { $branchRid, $ontologyRid } from "./OntologyMetadata${importExt}";`
           : ``
       }
     `,
