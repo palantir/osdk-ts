@@ -3150,9 +3150,9 @@ describe(OntologyIrToFullMetadataConverter, () => {
             "implementsInterfaces2": {},
             "linkTypes": [
               {
-                "apiName": "distributionRouteAnalysis",
+                "apiName": "distributionCenterProposal",
                 "cardinality": "MANY",
-                "displayName": "Distribution Route Analysis",
+                "displayName": "Distribution Center Proposal",
                 "linkTypeRid": "ri.Dc3DistributionCenterProposal.Dc3DistributionCenterProposalToDistributionRoute.Dc3DistributionRouteAnalysis",
                 "objectTypeApiName": "Dc3DistributionRouteAnalysis",
                 "status": "ACTIVE",
@@ -3234,18 +3234,18 @@ describe(OntologyIrToFullMetadataConverter, () => {
             "implementsInterfaces2": {},
             "linkTypes": [
               {
-                "apiName": "restaurant",
+                "apiName": "distributionRouteAnalysis",
                 "cardinality": "ONE",
-                "displayName": "Restaurant",
+                "displayName": "Distribution Route Analysis",
                 "foreignKeyPropertyApiName": "restaurant",
                 "linkTypeRid": "ri.Dc3Restaurant.Dc3RestaurantToDistributionRoute.Dc3DistributionRouteAnalysis",
                 "objectTypeApiName": "Dc3Restaurant",
                 "status": "ACTIVE",
               },
               {
-                "apiName": "distributionCenterProposal",
+                "apiName": "distributionRouteAnalysis",
                 "cardinality": "ONE",
-                "displayName": "Distribution Center Proposal",
+                "displayName": "Distribution Route Analysis",
                 "foreignKeyPropertyApiName": "distributionProposal",
                 "linkTypeRid": "ri.Dc3DistributionCenterProposal.Dc3DistributionCenterProposalToDistributionRoute.Dc3DistributionRouteAnalysis",
                 "objectTypeApiName": "Dc3DistributionCenterProposal",
@@ -3328,9 +3328,9 @@ describe(OntologyIrToFullMetadataConverter, () => {
             "implementsInterfaces2": {},
             "linkTypes": [
               {
-                "apiName": "distributionRouteAnalysis",
+                "apiName": "restaurant",
                 "cardinality": "MANY",
-                "displayName": "Distribution Route Analysis",
+                "displayName": "Restaurant",
                 "linkTypeRid": "ri.Dc3Restaurant.Dc3RestaurantToDistributionRoute.Dc3DistributionRouteAnalysis",
                 "objectTypeApiName": "Dc3DistributionRouteAnalysis",
                 "status": "ACTIVE",
