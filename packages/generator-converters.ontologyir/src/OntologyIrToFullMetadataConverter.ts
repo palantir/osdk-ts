@@ -870,9 +870,9 @@ export class OntologyIrToFullMetadataConverter {
 
           const manySide: Ontologies.LinkTypeSideV2 = {
             ...common,
-            apiName: linkDef.oneToManyLinkMetadata.apiName ?? "",
+            apiName: linkDef.manyToOneLinkMetadata.apiName ?? "",
             displayName:
-              linkDef.oneToManyLinkMetadata.displayMetadata.displayName,
+              linkDef.manyToOneLinkMetadata.displayMetadata.displayName,
             objectTypeApiName: linkDef.objectTypeRidOneSide,
             cardinality: "ONE",
             // This should only exist on the one side and it should be the property on this object
@@ -885,9 +885,9 @@ export class OntologyIrToFullMetadataConverter {
           const oneSide: Ontologies.LinkTypeSideV2 = {
             ...common,
             cardinality: "MANY",
-            apiName: linkDef.manyToOneLinkMetadata.apiName ?? "",
+            apiName: linkDef.oneToManyLinkMetadata.apiName ?? "",
             displayName:
-              linkDef.manyToOneLinkMetadata.displayMetadata.displayName,
+              linkDef.oneToManyLinkMetadata.displayMetadata.displayName,
             objectTypeApiName: linkDef.objectTypeRidManySide,
           };
 

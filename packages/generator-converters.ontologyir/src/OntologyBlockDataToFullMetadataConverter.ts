@@ -300,9 +300,9 @@ export class OntologyBlockDataToFullMetadataConverter {
 
           const manySide: Ontologies.LinkTypeSideV2 = {
             ...common,
-            apiName: linkDef.oneToManyLinkMetadata.apiName ?? "",
+            apiName: linkDef.manyToOneLinkMetadata.apiName ?? "",
             displayName:
-              linkDef.oneToManyLinkMetadata.displayMetadata.displayName,
+              linkDef.manyToOneLinkMetadata.displayMetadata.displayName,
             objectTypeApiName: resolveBlockDataApiName(
               linkDef.objectTypeRidOneSide,
               objectTypeLookup,
@@ -320,9 +320,9 @@ export class OntologyBlockDataToFullMetadataConverter {
           const oneSide: Ontologies.LinkTypeSideV2 = {
             ...common,
             cardinality: "MANY",
-            apiName: linkDef.manyToOneLinkMetadata.apiName ?? "",
+            apiName: linkDef.oneToManyLinkMetadata.apiName ?? "",
             displayName:
-              linkDef.manyToOneLinkMetadata.displayMetadata.displayName,
+              linkDef.oneToManyLinkMetadata.displayMetadata.displayName,
             objectTypeApiName: resolveBlockDataApiName(
               linkDef.objectTypeRidManySide,
               objectTypeLookup,
