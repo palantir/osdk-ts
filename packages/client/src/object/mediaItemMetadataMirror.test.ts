@@ -119,14 +119,8 @@ import type {
 import { describe, expectTypeOf, it } from "vitest";
 
 /**
- * Pins the `@osdk/api` `MediaItemMetadata` mirror to the platform shape exposed by
- * `@osdk/foundry.mediasets`. If the platform schema changes (a field added, removed, made
- * optional, an enum value added, a nested type restructured), these assertions fail at
- * `typecheck` time and the mirror must be updated.
- *
- * The mirror exists so `@osdk/api` doesn't take a runtime / declaration dep on
- * `@osdk/foundry.mediasets`. The verify lives here in `@osdk/client` (which already depends on
- * both) and turns the maintenance burden from "silent drift over time" into "loud build break".
+ * Fails the build when `@osdk/api`'s `MediaItemMetadata` mirror drifts from
+ * `@osdk/foundry.mediasets` (union extensions, new fields on existing variants).
  */
 describe("MediaItemMetadata mirror", () => {
   it("matches the platform union", () => {
