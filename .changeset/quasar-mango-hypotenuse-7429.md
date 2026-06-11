@@ -3,4 +3,4 @@
 "@osdk/react-components-styles": patch
 ---
 
-Use border-and-shadow focus styling for input-like React components while preserving danger focus treatment.
+Align ActionForm input-like controls with Blueprint-style shadows, focus rings, and button hover behavior.
