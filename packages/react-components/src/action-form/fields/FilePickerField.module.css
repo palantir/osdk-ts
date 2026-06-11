@@ -36,11 +36,11 @@
 }
 
 .osdkFilePickerTrigger:hover .osdkFilePickerBrowse {
-  --osdk-button-secondary-bg: var(--osdk-button-secondary-bg-active);
+  --osdk-button-secondary-bg: var(--osdk-button-secondary-bg-hover);
 }
 
-/* :focus-within fires on both mouse and keyboard focus, matching the
-   border-change behavior of DatePicker and BaseInput. */
+/* :focus-within fires on both mouse and keyboard focus for the trigger's
+   internal controls, matching DatePicker's wrapper-level border change. */
 .osdkFilePickerTrigger:focus-within {
   border-color: var(--osdk-file-picker-trigger-border-color-focus);
 }
@@ -138,10 +138,10 @@
 /* Browse button (right section) */
 .osdkFilePickerBrowse {
   --osdk-button-min-height: 0;
-  /* Overrides ActionButton's internal --osdk-focus-outline token
-     (defined in base-tokens/base.css). If that token is renamed this
-     override must be updated. */
-  --osdk-focus-outline: none;
+  /* ActionButton reads --osdk-focus-outline for its focus style; route it
+     through a file-picker-owned token so consumers do not have to override
+     ActionButton internals directly. */
+  --osdk-focus-outline: var(--osdk-file-picker-browse-focus-outline);
 
   display: flex;
   align-items: center;

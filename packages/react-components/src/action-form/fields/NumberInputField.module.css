@@ -79,7 +79,6 @@
 
   &:focus-visible {
     outline: var(--osdk-input-focus-outline);
-    outline-offset: var(--osdk-input-focus-offset);
   }
 }
 

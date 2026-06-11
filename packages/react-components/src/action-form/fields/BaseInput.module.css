@@ -46,7 +46,6 @@
 
   &:focus-visible {
     outline: var(--osdk-input-focus-outline);
-    outline-offset: var(--osdk-input-focus-offset);
     border-color: var(--osdk-input-border-color-focus);
   }
 

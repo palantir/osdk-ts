@@ -17,11 +17,13 @@
   );
 
   --osdk-time-picker-input-focus-outline: var(--osdk-input-focus-outline);
-  --osdk-time-picker-input-focus-offset: var(--osdk-input-focus-offset);
   --osdk-time-picker-input-border-color-error: var(
     --osdk-input-border-color-error
   );
   --osdk-time-picker-input-focus-shadow-error: var(
     --osdk-input-focus-shadow-error
   );
+
+  /* Deprecated: use --osdk-time-picker-input-focus-outline instead; retained for external compatibility. */
+  --osdk-time-picker-input-focus-offset: var(--osdk-input-focus-offset);
 }

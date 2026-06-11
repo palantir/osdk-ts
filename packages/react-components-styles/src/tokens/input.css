@@ -27,13 +27,13 @@
 
   /* Input focus ring */
   --osdk-input-focus-outline: none;
+  --osdk-input-focus-shadow-error: 0 0 0 var(--osdk-emphasis-focus-width)
+    color-mix(in srgb, var(--osdk-input-border-color-error) 75%, transparent);
 
   /* Deprecated: use --osdk-input-focus-outline instead; retained for external compatibility. */
   --osdk-input-focus-width: var(--osdk-emphasis-focus-width);
   --osdk-input-focus-color: var(--osdk-emphasis-focus-color);
   --osdk-input-focus-offset: 0px;
-  --osdk-input-focus-shadow-error: 0 0 0 var(--osdk-emphasis-focus-width)
-    color-mix(in srgb, var(--osdk-input-border-color-error) 75%, transparent);
 
   /* Input disabled */
   --osdk-input-disabled-opacity: var(--osdk-disabled-opacity);
