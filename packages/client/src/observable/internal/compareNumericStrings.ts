@@ -32,20 +32,30 @@ const NUMERIC_STRING = /^[+-]?\d+(\.\d+)?$/;
  * exceed the precision of a double. Exotic forms (e.g. scientific notation)
  * fall back to a best-effort Number() comparison.
  *
- * The fallback keeps a TOTAL order even for unparseable input: a value that
- * isn't a finite number (e.g. malformed data on a numeric column) sorts after
- * every finite value and is never reported equal to one. This matters because
- * the function is used as an Array.sort comparator -- a NaN-vs-finite pair that
- * returned 0 would make the comparator non-transitive and corrupt the sort.
+ * Empty/whitespace values represent "no value" and sort as the smallest value:
+ * first when ascending, last when descending, matching Workshop's blank-cell
+ * ordering. (Note Number("") === 0, so they must NOT be compared as zero.)
+ *
+ * Any other non-numeric input (malformed data on a numeric column) sorts last
+ * and is never reported equal to a finite value, so the comparator stays a
+ * TOTAL order -- it's used as an Array.sort comparator, and a non-transitive
+ * NaN-vs-finite pair would corrupt the sort.
  */
 export function compareNumericStrings(a: string, b: string): number {
   if (!NUMERIC_STRING.test(a) || !NUMERIC_STRING.test(b)) {
+    // Empty/whitespace ("no value") is the smallest value; two such are equal.
+    const aEmpty = a.trim() === "";
+    const bEmpty = b.trim() === "";
+    if (aEmpty || bEmpty) {
+      return aEmpty && bEmpty ? 0 : aEmpty ? -1 : 1;
+    }
+
     const aNum = Number(a);
     const bNum = Number(b);
     const aIsNaN = Number.isNaN(aNum);
     const bIsNaN = Number.isNaN(bNum);
     if (aIsNaN || bIsNaN) {
-      // NaN sorts last; two NaNs are equal.
+      // Malformed values sort last; two NaNs are equal.
       return aIsNaN && bIsNaN ? 0 : aIsNaN ? 1 : -1;
     }
     return aNum < bNum ? -1 : aNum > bNum ? 1 : 0;

@@ -149,6 +149,26 @@ describe("createOrderBySortFns", () => {
     ]);
   });
 
+  it("sorts empty values first ascending and last descending", () => {
+    // Unlike null (always last), an empty/whitespace decimal is treated as the
+    // smallest value, so it leads ascending and trails descending -- matching
+    // what Workshop shows for a blank cell on a numeric column.
+    const holders = ["10", "", "9"].map((amount) =>
+      fakeHolder({ amount }, { propertyTypes: { amount: "decimal" } })
+    );
+
+    expect(sort({ amount: "asc" }, holders).map((h) => h.amount)).toEqual([
+      "",
+      "9",
+      "10",
+    ]);
+    expect(sort({ amount: "desc" }, holders).map((h) => h.amount)).toEqual([
+      "10",
+      "9",
+      "",
+    ]);
+  });
+
   it("sorts interface lists by a regular decimal property numerically", () => {
     const holders = ["10", "9", "100"].map((amount) =>
       fakeInterfaceHolder(amount, "decimal", "regular")

@@ -92,6 +92,23 @@ describe(compareNumericStrings, () => {
     expect(compareNumericStrings("abc", "xyz")).toBe(0);
   });
 
+  it("treats empty/whitespace as the smallest value, not as zero", () => {
+    // compareNumericStrings defines the ascending order, where an empty/
+    // whitespace ("no value") cell is the smallest -- so it sorts before every
+    // number (and the caller negates the result for descending, putting it
+    // last). Number("") === 0, so it must NOT be compared as the value zero.
+    expect(compareNumericStrings("", "10")).toBe(-1);
+    expect(compareNumericStrings("10", "")).toBe(1);
+    expect(compareNumericStrings("", "-5")).toBe(-1);
+    expect(compareNumericStrings("", "0")).toBe(-1);
+    expect(compareNumericStrings("   ", "0")).toBe(-1);
+    expect(compareNumericStrings("\n", "0")).toBe(-1);
+    // Empty sorts before even malformed values, and two empties are equal.
+    expect(compareNumericStrings("", "abc")).toBe(-1);
+    expect(compareNumericStrings("abc", "")).toBe(1);
+    expect(compareNumericStrings("", "")).toBe(0);
+  });
+
   it("is transitive on junk-containing input, so Array.sort is order-independent", () => {
     // With a non-transitive comparator (junk == 5 and junk == 10 while 5 < 10),
     // even the finite values would be misordered depending on the starting
