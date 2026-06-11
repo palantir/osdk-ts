@@ -90,8 +90,7 @@ export interface MediaMetadata {
 }
 
 /**
- * Metadata for a media item, returned by `Media.fetchFullMetadata`. Distinct from
- * the generic `MediaMetadata`.
+ * Metadata for a media item, returned by `Media.fetchFullMetadata`.
  */
 export interface MediaFullMetadata {
   /**
@@ -126,7 +125,7 @@ export type MediaItemMetadata =
 /**
  * Fallback variant emitted by the SDK when the platform returns a `MediaItemMetadata.type`
  * value not modeled by this version of `@osdk/foundry.mediasets`. The raw wire payload is
- * preserved on `raw` so callers can inspect it. Bump the platform SDK to promote the new
+ * preserved on `raw` so callers can inspect it. Bump `@osdk/client` to promote the new
  * variant into `MediaItemMetadata` proper.
  *
  * Distinct from the `untyped` variant of `MediaItemMetadata`, which is a real platform schema
