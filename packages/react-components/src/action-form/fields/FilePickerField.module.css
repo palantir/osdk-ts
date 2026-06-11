@@ -31,26 +31,25 @@
   transition:
     background-color var(--osdk-file-picker-transition-duration)
       var(--osdk-file-picker-transition-ease),
-    border-color var(--osdk-file-picker-transition-duration)
+    box-shadow var(--osdk-file-picker-transition-duration)
       var(--osdk-file-picker-transition-ease);
 }
 
 .osdkFilePickerTrigger:hover .osdkFilePickerBrowse {
-  --osdk-button-secondary-bg: var(--osdk-button-secondary-bg-hover);
+  --osdk-button-secondary-bg: var(--osdk-file-picker-browse-bg-hover);
 }
 
 /* :focus-within fires on both mouse and keyboard focus for the trigger's
-   internal controls, matching DatePicker's wrapper-level border change. */
+   internal controls, matching DatePicker's wrapper-level focus shadow. */
 .osdkFilePickerTrigger:focus-within {
-  border-color: var(--osdk-file-picker-trigger-border-color-focus);
+  box-shadow: var(--osdk-file-picker-trigger-focus-shadow);
 }
 
 .osdkFilePickerTrigger[aria-invalid] {
-  border-color: var(--osdk-file-picker-trigger-border-color-error);
+  box-shadow: var(--osdk-file-picker-trigger-shadow-error);
 }
 
 .osdkFilePickerTrigger[aria-invalid]:focus-within {
-  border-color: var(--osdk-file-picker-trigger-border-color-error);
   box-shadow: var(--osdk-file-picker-trigger-focus-shadow-error);
 }
 
@@ -138,6 +137,7 @@
 /* Browse button (right section) */
 .osdkFilePickerBrowse {
   --osdk-button-min-height: 0;
+  --osdk-button-secondary-bg-hover: var(--osdk-file-picker-browse-bg-hover);
   /* ActionButton reads --osdk-focus-outline for its focus style; route it
      through a file-picker-owned token so consumers do not have to override
      ActionButton internals directly. */

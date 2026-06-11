@@ -3,8 +3,7 @@
   --osdk-file-picker-trigger-height: var(--osdk-input-min-height);
   --osdk-file-picker-trigger-padding: var(--osdk-input-padding);
   --osdk-file-picker-trigger-border-radius: var(--osdk-input-border-radius);
-  --osdk-file-picker-trigger-border: var(--osdk-input-border-width) solid
-    var(--osdk-input-border-color);
+  --osdk-file-picker-trigger-border: none;
   --osdk-file-picker-trigger-border-color-focus: var(
     --osdk-input-border-color-focus
   );
@@ -25,6 +24,7 @@
   --osdk-file-picker-clear-outline: var(--osdk-emphasis-focus-width) solid
     var(--osdk-emphasis-focus-color);
   --osdk-file-picker-browse-focus-outline: none;
+  --osdk-file-picker-browse-bg-hover: var(--osdk-button-secondary-bg-active);
 
   /* Deprecated: use --osdk-file-picker-trigger-border-color-focus instead; retained for external compatibility. */
   --osdk-file-picker-trigger-focus-width: var(--osdk-input-focus-width);
@@ -43,6 +43,8 @@
 
   /* Shadows */
   --osdk-file-picker-trigger-shadow: var(--osdk-input-shadow);
+  --osdk-file-picker-trigger-shadow-error: var(--osdk-input-shadow-error);
+  --osdk-file-picker-trigger-focus-shadow: var(--osdk-input-focus-shadow);
   --osdk-file-picker-trigger-focus-shadow-error: var(
     --osdk-input-focus-shadow-error
   );

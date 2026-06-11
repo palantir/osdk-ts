@@ -120,7 +120,9 @@
   --osdk-datetime-input-border-color-focus: var(--osdk-input-border-color-focus);
 
   --osdk-datetime-input-shadow: var(--osdk-input-shadow);
+  --osdk-datetime-input-shadow-error: var(--osdk-input-shadow-error);
   --osdk-datetime-input-focus-outline: var(--osdk-input-focus-outline);
+  --osdk-datetime-input-focus-shadow: var(--osdk-input-focus-shadow);
   --osdk-datetime-input-focus-shadow-error: var(
     --osdk-input-focus-shadow-error
   );

@@ -3,4 +3,4 @@
 "@osdk/react-components-styles": patch
 ---
 
-Disable custom focus outlines for input-like React components while preserving danger focus treatment.
+Use border-and-shadow focus styling for input-like React components while preserving danger focus treatment.

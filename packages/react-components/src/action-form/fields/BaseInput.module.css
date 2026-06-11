@@ -20,7 +20,7 @@
   min-height: var(--osdk-input-min-height);
   padding: var(--osdk-input-padding);
   border-radius: var(--osdk-input-border-radius);
-  border: var(--osdk-input-border-width) solid var(--osdk-input-border-color);
+  border: none;
   box-shadow: var(--osdk-input-shadow);
   background-color: var(--osdk-input-bg);
   color: var(--osdk-input-color);
@@ -30,10 +30,11 @@
     --osdk-input-line-height,
     var(--osdk-typography-line-height-default)
   );
+  box-sizing: border-box;
   transition:
     background-color var(--osdk-input-transition-duration)
       var(--osdk-input-transition-ease),
-    border-color var(--osdk-input-transition-duration)
+    box-shadow var(--osdk-input-transition-duration)
       var(--osdk-input-transition-ease);
 
   &::placeholder {
@@ -46,7 +47,7 @@
 
   &:focus-visible {
     outline: var(--osdk-input-focus-outline);
-    border-color: var(--osdk-input-border-color-focus);
+    box-shadow: var(--osdk-input-focus-shadow);
   }
 
   &:disabled {
@@ -55,7 +56,7 @@
   }
 
   &[aria-invalid] {
-    border-color: var(--osdk-input-border-color-error);
+    box-shadow: var(--osdk-input-shadow-error);
   }
 
   &[aria-invalid]:focus-visible {

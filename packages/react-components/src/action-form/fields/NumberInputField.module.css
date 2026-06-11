@@ -21,15 +21,15 @@
 }
 
 .osdkNumberInputWrapper:focus-within .osdkNumberInputField {
-  border-color: var(--osdk-input-border-color-focus);
+  box-shadow: var(--osdk-input-focus-shadow);
 }
 
 .osdkNumberInputWrapper[aria-invalid] .osdkNumberInputField {
-  border-color: var(--osdk-input-border-color-error);
+  box-shadow: var(--osdk-input-shadow-error);
 }
 
 .osdkNumberInputWrapper[aria-invalid] .osdkNumberInputStepper {
-  border-color: var(--osdk-input-border-color-error);
+  box-shadow: var(--osdk-input-shadow-error);
 }
 
 .osdkNumberInputWrapper[aria-invalid]:focus-within .osdkNumberInputField {
@@ -39,7 +39,8 @@
 .osdkNumberInputWrapper[aria-invalid]
   .osdkNumberInputStepButton
   + .osdkNumberInputStepButton {
-  border-block-start-color: var(--osdk-input-border-color-error);
+  box-shadow: inset 0 var(--osdk-input-border-width) 0
+    var(--osdk-input-border-color-error);
 }
 
 .osdkNumberInputField {
@@ -48,7 +49,7 @@
   min-height: var(--osdk-input-min-height);
   padding: var(--osdk-input-padding);
   border-radius: var(--osdk-input-border-radius);
-  border: var(--osdk-input-border-width) solid var(--osdk-input-border-color);
+  border: none;
   box-shadow: var(--osdk-input-shadow);
   background-color: var(--osdk-input-bg);
   color: var(--osdk-input-color);
@@ -58,10 +59,11 @@
     --osdk-input-line-height,
     var(--osdk-typography-line-height-default)
   );
+  box-sizing: border-box;
   transition:
     background-color var(--osdk-input-transition-duration)
       var(--osdk-input-transition-ease),
-    border-color var(--osdk-input-transition-duration)
+    box-shadow var(--osdk-input-transition-duration)
       var(--osdk-input-transition-ease);
 
   &:hover {
@@ -86,7 +88,7 @@
 .osdkNumberInputStepper {
   display: flex;
   flex-direction: column;
-  border: var(--osdk-input-border-width) solid var(--osdk-input-border-color);
+  border: none;
   border-radius: var(--osdk-input-border-radius);
   box-shadow: var(--osdk-input-shadow);
   background-color: var(--osdk-input-bg);
@@ -104,13 +106,20 @@
   color: var(--osdk-input-color);
   cursor: pointer;
   line-height: 0;
+  transition:
+    background-color var(--osdk-input-transition-duration)
+      var(--osdk-input-transition-ease),
+    box-shadow var(--osdk-input-transition-duration)
+      var(--osdk-input-transition-ease);
 
   &:hover {
-    background-color: var(--osdk-input-bg-hover);
+    background-color: var(--osdk-button-secondary-bg-active);
+    box-shadow: inset 0 0 0 var(--osdk-input-border-width)
+      var(--osdk-input-border-color);
   }
 
   &:active {
-    background-color: var(--osdk-input-border-color);
+    background-color: var(--osdk-button-secondary-bg-active);
   }
 
   &:disabled {

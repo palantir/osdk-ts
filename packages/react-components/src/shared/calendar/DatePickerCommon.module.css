@@ -65,14 +65,13 @@
   display: flex;
   align-items: center;
   border-radius: var(--osdk-datetime-input-border-radius);
-  border: var(--osdk-datetime-input-border-width) solid
-    var(--osdk-datetime-input-border-color);
+  border: none;
   box-shadow: var(--osdk-datetime-input-shadow);
   background-color: var(--osdk-datetime-input-bg);
   transition:
     background-color var(--osdk-datetime-input-transition-duration)
       var(--osdk-datetime-input-transition-ease),
-    border-color var(--osdk-datetime-input-transition-duration)
+    box-shadow var(--osdk-datetime-input-transition-duration)
       var(--osdk-datetime-input-transition-ease);
   cursor: text;
 
@@ -81,7 +80,7 @@
   }
 
   &:focus-within {
-    border-color: var(--osdk-datetime-input-border-color-focus);
+    box-shadow: var(--osdk-datetime-input-focus-shadow);
   }
 
   &[data-disabled] {
@@ -99,10 +98,9 @@
 }
 
 .osdkDatePickerInputWrapperError {
-  border-color: var(--osdk-datetime-input-error-border-color);
+  box-shadow: var(--osdk-datetime-input-shadow-error);
 
   &:focus-within {
-    border-color: var(--osdk-datetime-input-error-border-color);
     box-shadow: var(--osdk-datetime-input-focus-shadow-error);
   }
 }
