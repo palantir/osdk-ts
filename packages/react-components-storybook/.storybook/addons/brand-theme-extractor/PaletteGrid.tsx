@@ -70,8 +70,8 @@ export function PaletteGrid({ palette }: PaletteGridProps): React.ReactElement {
 
   return (
     <Grid>
-      {palette.map((color) => (
-        <SwatchWrapper key={color.hex}>
+      {palette.map((color, index) => (
+        <SwatchWrapper key={index}>
           <Swatch
             color={color.hex}
             title={`${color.hex} (${

@@ -83,13 +83,15 @@ export function adjustForContrast(
 
   if (currentRatio >= targetRatio) return hex;
 
-  // Determine direction: darken if fg is darker than bg, lighten if fg is lighter
-  const shouldDarken = fgLuminance < bgLuminance;
-  // If bg is very dark and fg is also dark, we need to lighten fg instead
-  const shouldLighten = !shouldDarken;
-
+  // Move fg *away* from bg to increase contrast. If fg is darker, darken
+  // further; if lighter, lighten further. When both are very dark (or both
+  // very light), prefer the direction with more headroom.
   let [r, g, b] = rgb;
-  const step = shouldLighten ? 3 : -3;
+  const darkenHeadroom = fgLuminance;
+  const lightenHeadroom = 1 - fgLuminance;
+  const step = fgLuminance < bgLuminance
+    ? (darkenHeadroom > 0.05 ? -3 : 3)
+    : (lightenHeadroom > 0.05 ? 3 : -3);
 
   // Iteratively adjust until contrast is met (max 100 steps)
   for (let i = 0; i < 100; i++) {

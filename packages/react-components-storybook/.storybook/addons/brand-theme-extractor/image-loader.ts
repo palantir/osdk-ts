@@ -115,7 +115,12 @@ function xhrFetchJson(url: string): Promise<Record<string, unknown>> {
     xhr.responseType = "json";
     xhr.onload = () => {
       if (xhr.status >= 200 && xhr.status < 300) {
-        resolve(xhr.response as Record<string, unknown>);
+        const response: unknown = xhr.response;
+        if (response != null && typeof response === "object") {
+          resolve(response as Record<string, unknown>);
+        } else {
+          reject(new Error("Invalid JSON response"));
+        }
       } else {
         reject(new Error(`HTTP ${xhr.status}`));
       }
@@ -133,7 +138,11 @@ function xhrFetchBlob(url: string): Promise<Blob> {
     xhr.responseType = "blob";
     xhr.onload = () => {
       if (xhr.status >= 200 && xhr.status < 300) {
-        resolve(xhr.response as Blob);
+        if (xhr.response instanceof Blob) {
+          resolve(xhr.response);
+        } else {
+          reject(new Error("Response is not a Blob"));
+        }
       } else {
         reject(new Error(`HTTP ${xhr.status}`));
       }

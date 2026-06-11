@@ -101,7 +101,7 @@ export const BrandThemeDecorator: Decorator = (Story, context) => {
   }, [brandTheme]);
 
   useEffect(function syncBrandThemeOverrideStyle() {
-    let styleEl = document.getElementById(STYLE_ID) as HTMLStyleElement | null;
+    let styleEl = document.getElementById(STYLE_ID);
 
     if (cssText) {
       if (!styleEl) {

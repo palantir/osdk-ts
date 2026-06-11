@@ -390,8 +390,10 @@ function TokenRow({
           customValue: currentValue || "",
         });
       } else {
+        const parsed = Number(val);
+        if (Number.isNaN(parsed)) return;
         onAssignmentChange(roleDef.role, {
-          colorIndex: Number(val),
+          colorIndex: parsed,
           customValue: undefined,
         });
       }

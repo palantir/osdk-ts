@@ -48,21 +48,6 @@ const STYLE_PRESETS: StylePreset[] = [
   { label: "Pill", radius: "16", spacing: "6" },
 ];
 
-const COLOR_ROLES = [
-  "background",
-  "surface",
-  "text",
-  "text-muted",
-  "primary",
-  "primary-foreground",
-  "secondary",
-  "secondary-foreground",
-  "icon-color",
-  "border",
-  "danger",
-  "success",
-];
-
 interface PanelProps {
   active: boolean;
 }

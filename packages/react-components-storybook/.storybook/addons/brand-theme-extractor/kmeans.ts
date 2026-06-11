@@ -153,7 +153,11 @@ function kmeansCluster(samples: RGB[], k: number): ExtractedColor[] {
 
   // Build result sorted by cluster size (most dominant first)
   const results: ExtractedColor[] = centroids.map((rgb, i) => ({
-    rgb: [Math.round(rgb[0]), Math.round(rgb[1]), Math.round(rgb[2])] as RGB,
+    rgb: [
+      Math.round(rgb[0]),
+      Math.round(rgb[1]),
+      Math.round(rgb[2]),
+    ] satisfies RGB,
     hex: rgbToHex(rgb[0], rgb[1], rgb[2]),
     luminance: relativeLuminance(rgb[0], rgb[1], rgb[2]),
     chroma: chromaFromRgb(rgb[0], rgb[1], rgb[2]),

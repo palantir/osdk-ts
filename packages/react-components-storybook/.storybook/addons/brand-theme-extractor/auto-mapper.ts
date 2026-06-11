@@ -163,11 +163,8 @@ export function autoMapColors(
     colorIndex: textIndex,
   });
 
-  // Icon color: same as text-muted (icons are typically muted)
-  const iconSorted = palette
-    .map((c, i) => ({ i, dist: Math.abs(c.luminance - mutedTarget) }))
-    .sort((a, b) => a.dist - b.dist);
-  pickUnused(iconSorted, "icon-color");
+  // Icon color: same luminance target as text-muted (icons are typically muted)
+  pickUnused(mutedSorted, "icon-color");
 
   // ── Accessibility enforcement ──────────────────────────────
   // Adjust colors to meet WCAG AA. Order matters: fix primary first
