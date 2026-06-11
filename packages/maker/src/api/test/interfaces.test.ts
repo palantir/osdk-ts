@@ -17,6 +17,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { defineInterface } from "../defineInterface.js";
 import { defineInterfaceActionTypeConstraint } from "../defineInterfaceActionTypeConstraint.js";
+import { defineObject } from "../defineObject.js";
 import { defineOntology, dumpOntologyFullMetadata } from "../defineOntology.js";
 import { defineSharedPropertyType } from "../defineSpt.js";
 
@@ -1418,45 +1419,93 @@ describe("Interfaces", () => {
       );
     });
 
-    it("throws when requireImplementation is true on constraint", () => {
+    it("allows requireImplementation true on constraint definition", () => {
       const iface = defineInterface({ apiName: "MyInterface" });
 
+      defineInterfaceActionTypeConstraint({
+        interfaceType: iface,
+        apiName: "myConstraint",
+        displayName: "My Constraint",
+        description: "A test constraint",
+        requireImplementation: true,
+        parameters: [
+          {
+            apiName: "boolParam",
+            displayName: "Boolean Param",
+            type: { type: "boolean", boolean: {} },
+            requireImplementation: true,
+          },
+        ],
+      });
+
+      const constraint = iface.actionTypeConstraints[0];
+      expect(constraint.requireImplementation).toBe(true);
+      const param = Object.values(constraint.parameters)[0];
+      expect(param.requireImplementation).toBe(true);
+    });
+
+    it("throws when object implements interface with required constraint", () => {
+      const iface = defineInterface({ apiName: "MyInterface" });
+
+      defineInterfaceActionTypeConstraint({
+        interfaceType: iface,
+        apiName: "myConstraint",
+        displayName: "My Constraint",
+        description: "A test constraint",
+        requireImplementation: true,
+        parameters: [],
+      });
+
       expect(() => {
-        defineInterfaceActionTypeConstraint({
-          interfaceType: iface,
-          apiName: "myConstraint",
-          displayName: "My Constraint",
-          description: "A test constraint",
-          requireImplementation: true,
-          parameters: [],
+        defineObject({
+          apiName: "myObject",
+          displayName: "My Object",
+          pluralDisplayName: "My Objects",
+          titlePropertyApiName: "name",
+          primaryKeyPropertyApiName: "id",
+          properties: {
+            "id": { type: "string", displayName: "ID" },
+            "name": { type: "string", displayName: "Name" },
+          },
+          implementsInterfaces: [{
+            implements: iface,
+            propertyMapping: [],
+          }],
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: requireImplementation is not yet supported for action type constraints]`,
+        `[Error: Invariant failed: Object "myObject" implements interface "com.palantir.MyInterface" which has required action type constraints: com.palantir.myConstraint. Action type constraint implementation mappings are not yet supported in OAC.]`,
       );
     });
 
-    it("throws when requireImplementation is true on parameter constraint", () => {
+    it("allows object to implement interface with non-required constraint", () => {
       const iface = defineInterface({ apiName: "MyInterface" });
 
-      expect(() => {
-        defineInterfaceActionTypeConstraint({
-          interfaceType: iface,
-          apiName: "myConstraint",
-          displayName: "My Constraint",
-          description: "A test constraint",
-          requireImplementation: false,
-          parameters: [
-            {
-              apiName: "boolParam",
-              displayName: "Boolean Param",
-              type: { type: "boolean", boolean: {} },
-              requireImplementation: true,
-            },
-          ],
-        });
-      }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: requireImplementation is not yet supported for parameter constraints]`,
-      );
+      defineInterfaceActionTypeConstraint({
+        interfaceType: iface,
+        apiName: "myConstraint",
+        displayName: "My Constraint",
+        description: "A test constraint",
+        requireImplementation: false,
+        parameters: [],
+      });
+
+      const obj = defineObject({
+        apiName: "myObject",
+        displayName: "My Object",
+        pluralDisplayName: "My Objects",
+        titlePropertyApiName: "name",
+        primaryKeyPropertyApiName: "id",
+        properties: {
+          "id": { type: "string", displayName: "ID" },
+          "name": { type: "string", displayName: "Name" },
+        },
+        implementsInterfaces: [{
+          implements: iface,
+          propertyMapping: [],
+        }],
+      });
+
+      expect(obj).toBeDefined();
     });
   });
 });
