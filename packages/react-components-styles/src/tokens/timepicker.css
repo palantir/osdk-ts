@@ -17,14 +17,29 @@
 
   --osdk-time-picker-input-focus-outline: var(--osdk-input-focus-outline);
   --osdk-time-picker-input-shadow: var(--osdk-input-shadow);
-  --osdk-time-picker-input-shadow-error: var(--osdk-input-shadow-error);
+  --osdk-time-picker-input-shadow-error:
+    inset 0 0 0 var(--osdk-input-border-width)
+      var(--osdk-time-picker-input-border-color-error),
+    0 0 0 0 transparent,
+    inset 0 1px 1px var(--osdk-surface-border-color-default);
   --osdk-time-picker-input-focus-shadow: var(--osdk-input-focus-shadow);
   --osdk-time-picker-input-border-color-error: var(
     --osdk-input-border-color-error
   );
-  --osdk-time-picker-input-focus-shadow-error: var(
-    --osdk-input-focus-shadow-error
-  );
+  --osdk-time-picker-input-focus-shadow-error:
+    inset 0 0 0 var(--osdk-input-border-width)
+      color-mix(
+        in srgb,
+        var(--osdk-time-picker-input-border-color-error) 75%,
+        transparent
+      ),
+    0 0 0 var(--osdk-input-border-width)
+      color-mix(
+        in srgb,
+        var(--osdk-time-picker-input-border-color-error) 75%,
+        transparent
+      ),
+    inset 0 1px 1px var(--osdk-surface-border-color-default);
 
   /* Deprecated: use --osdk-time-picker-input-focus-outline instead; retained for external compatibility. */
   --osdk-time-picker-input-focus-offset: var(--osdk-input-focus-offset);

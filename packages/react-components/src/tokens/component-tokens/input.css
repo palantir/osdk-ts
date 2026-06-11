@@ -10,10 +10,9 @@
   --osdk-input-border-color: var(--osdk-surface-border-color-default);
   --osdk-input-border-color-focus: var(--osdk-intent-primary-rest);
   --osdk-input-shadow:
-    0 0 0 0 transparent,
-    0 0 0 0 transparent,
     inset 0 0 0 var(--osdk-input-border-width)
       var(--osdk-input-border-color),
+    0 0 0 0 transparent,
     inset 0 1px 1px var(--osdk-surface-border-color-default);
 
   /* Input backgrounds */
@@ -48,7 +47,7 @@
   /* Deprecated: use --osdk-input-focus-outline instead; retained for external compatibility. */
   --osdk-input-focus-width: var(--osdk-emphasis-focus-width);
   --osdk-input-focus-color: var(--osdk-emphasis-focus-color);
-  --osdk-input-focus-offset: 0px;
+  --osdk-input-focus-offset: var(--osdk-emphasis-focus-offset);
 
   /* Input disabled */
   --osdk-input-disabled-opacity: var(--osdk-disabled-opacity);
@@ -56,9 +55,8 @@
   /* Input error */
   --osdk-input-border-color-error: var(--osdk-intent-danger-rest);
   --osdk-input-shadow-error:
-    0 0 0 0 transparent,
-    0 0 0 0 transparent,
     inset 0 0 0 var(--osdk-input-border-width)
       var(--osdk-input-border-color-error),
+    0 0 0 0 transparent,
     inset 0 1px 1px var(--osdk-surface-border-color-default);
 }
