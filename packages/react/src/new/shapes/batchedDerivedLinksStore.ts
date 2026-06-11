@@ -19,7 +19,9 @@ import type { ShapeDerivedLinkDef } from "@osdk/api/shapes-internal";
 import type {
   LinkLoadConfig,
   LinkStatus,
+  ShapeBaseType,
   ShapeDefinition,
+  ShapeDerivedLinks,
 } from "@osdk/api/unstable";
 import type { Client } from "@osdk/client";
 import { applyShapeTransformationsToArray } from "@osdk/client/unstable-do-not-use";
@@ -34,7 +36,8 @@ import {
   createVersionedCache,
   wrapError,
 } from "../shared/storeUtils.js";
-import type { AnyShapeInstance } from "./types.js";
+import { createDerivedLinksStore } from "./derivedLinksStore.js";
+import type { AnyShapeInstance, DerivedLinksStore } from "./types.js";
 import {
   isBatchableLink,
   NOOP_FETCH_MORE,
@@ -173,9 +176,12 @@ export function createBatchedDerivedLinksStore<
   linkConfig: Partial<Record<string, LinkLoadConfig>>,
 ): BatchedDerivedLinksStore<S> {
   const batchableLinks: ShapeDerivedLinkDef[] = [];
+  const nonBatchableLinks: ShapeDerivedLinkDef[] = [];
   for (const linkDef of allLinks) {
     if (isBatchableLink(linkDef)) {
       batchableLinks.push(linkDef);
+    } else {
+      nonBatchableLinks.push(linkDef);
     }
   }
 
@@ -183,14 +189,18 @@ export function createBatchedDerivedLinksStore<
   const cache = createVersionedCache<BatchedDerivedLinksPayload<S>>();
   const rawNotify = createCachingNotifier(subscribers, cache);
   function notifySubscribers(): void {
+    fetchMoreCache.clear();
     rawNotify();
   }
 
   const linkStates = new Map<string, BatchableLinkState>();
+  const perItemStores = new Map<string | number, DerivedLinksStore<S>>();
+  const perItemUnsubscribes = new Map<string | number, () => void>();
 
   let currentSourceObjects: Osdk.Instance<ObjectOrInterfaceDefinition>[] = [];
   let destroyed = false;
   let observationsActive = false;
+  const fetchMoreCache = new Map<string, () => Promise<void>>();
 
   const observeLinksUntyped = adaptObserveLinks(observableClient.observeLinks);
 
@@ -222,8 +232,19 @@ export function createBatchedDerivedLinksStore<
     }
   }
 
+  function cleanupPerItemStores(): void {
+    for (const [pk, store] of perItemStores) {
+      perItemUnsubscribes.get(pk)?.();
+      store.destroy();
+    }
+    perItemStores.clear();
+    perItemUnsubscribes.clear();
+  }
+
   function cleanupAll(): void {
     teardownBatchedSubscriptions();
+    cleanupPerItemStores();
+    fetchMoreCache.clear();
     observationsActive = false;
   }
 
@@ -303,6 +324,60 @@ export function createBatchedDerivedLinksStore<
     );
   }
 
+  function reconcilePerItemStores(
+    sourceObjects: Osdk.Instance<ObjectOrInterfaceDefinition>[],
+    transformedData: AnyShapeInstance[],
+  ): void {
+    const nonBatchableShape = {
+      ...shape,
+      __derivedLinks: nonBatchableLinks,
+    } as S;
+
+    const prev = new Map(perItemStores);
+    perItemStores.clear();
+
+    const sourceObjectsByPk = new Map<
+      string | number,
+      Osdk.Instance<ObjectOrInterfaceDefinition>
+    >();
+    for (const obj of sourceObjects) {
+      sourceObjectsByPk.set(obj.$primaryKey, obj);
+    }
+
+    for (const obj of transformedData) {
+      const pk = obj.$primaryKey;
+      const existing = prev.get(pk);
+      if (existing) {
+        perItemStores.set(pk, existing);
+        prev.delete(pk);
+      } else {
+        const sourceObj = sourceObjectsByPk.get(pk);
+        if (sourceObj) {
+          const store = createDerivedLinksStore<S>(
+            nonBatchableShape,
+            sourceObj as Osdk.Instance<ShapeBaseType<S>>,
+            observableClient,
+            client,
+            linkConfig as Partial<
+              Record<keyof ShapeDerivedLinks<S>, LinkLoadConfig>
+            >,
+          );
+          const unsub = store.subscribe(() => {
+            notifySubscribers();
+          });
+          perItemStores.set(pk, store);
+          perItemUnsubscribes.set(pk, unsub);
+        }
+      }
+    }
+
+    for (const [pk, store] of prev) {
+      perItemUnsubscribes.get(pk)?.();
+      perItemUnsubscribes.delete(pk);
+      store.destroy();
+    }
+  }
+
   function updateSourceObjects(
     sourceObjects: Osdk.Instance<ObjectOrInterfaceDefinition>[],
     transformedData: AnyShapeInstance[],
@@ -324,6 +399,12 @@ export function createBatchedDerivedLinksStore<
     currentSourceObjects = sourceObjects;
     startAllNonDeferred();
     notifySubscribers();
+
+    if (nonBatchableLinks.length > 0) {
+      reconcilePerItemStores(sourceObjects, transformedData);
+    } else {
+      cleanupPerItemStores();
+    }
   }
 
   function buildSnapshot(): BatchedDerivedLinksPayload<S> {
@@ -353,6 +434,12 @@ export function createBatchedDerivedLinksStore<
             hasMore: state.hasMore,
             fetchMore: state.fetchMore,
           };
+        }
+
+        const perItemPayload = perItemStores.get(sourcePk)?.getSnapShot();
+        if (perItemPayload) {
+          Object.assign(links, perItemPayload.links);
+          Object.assign(statuses, perItemPayload.linkStatus);
         }
 
         linksBySourcePk.set(sourcePk, links);
@@ -394,6 +481,56 @@ export function createBatchedDerivedLinksStore<
         };
       }
 
+      for (const linkDef of nonBatchableLinks) {
+        const linkName = linkDef.name;
+        let linkAnyLoading = false;
+        let linkError: Error | undefined;
+        let linkHasMore = false;
+
+        for (const [, statuses] of linkStatusBySourcePk) {
+          const s = statuses[linkName];
+          if (s?.isLoading) {
+            linkAnyLoading = true;
+            anyLoading = true;
+          }
+          if (s?.error) {
+            if (!linkError) {
+              linkError = s.error;
+            }
+            anyError = true;
+          }
+          if (s?.hasMore) {
+            linkHasMore = true;
+          }
+        }
+
+        let cachedFetchMore = fetchMoreCache.get(linkName);
+        if (!cachedFetchMore) {
+          const capturedLinkName = linkName;
+          cachedFetchMore = async () => {
+            const promises: Promise<void>[] = [];
+            for (const [, store] of perItemStores) {
+              const snapshot = store.getSnapShot();
+              const status = snapshot.linkStatus[
+                capturedLinkName as keyof ShapeDerivedLinks<S>
+              ];
+              if (status?.hasMore && status.fetchMore) {
+                promises.push(status.fetchMore());
+              }
+            }
+            await Promise.all(promises);
+          };
+          fetchMoreCache.set(linkName, cachedFetchMore);
+        }
+
+        aggregatedLinkStatus[linkName] = {
+          isLoading: linkAnyLoading,
+          error: linkError,
+          hasMore: linkHasMore,
+          fetchMore: cachedFetchMore,
+        };
+      }
+
       return {
         linksBySourcePk,
         linkStatusBySourcePk,
@@ -432,6 +569,12 @@ export function createBatchedDerivedLinksStore<
       }
       startObserveLinks(state, currentSourceObjects);
       notifySubscribers();
+      return;
+    }
+
+    const store = perItemStores.get(sourcePk);
+    if (store) {
+      store.loadDeferred(linkName as keyof ShapeDerivedLinks<S>);
     }
   }
 
@@ -448,10 +591,27 @@ export function createBatchedDerivedLinksStore<
       const state = linkStates.get(linkName);
       if (state) {
         retryBatchedState(state);
+        return;
+      }
+      if (sourcePk !== undefined) {
+        perItemStores.get(sourcePk)?.retry(
+          linkName as keyof ShapeDerivedLinks<S>,
+        );
+      } else {
+        for (const store of perItemStores.values()) {
+          store.retry(linkName as keyof ShapeDerivedLinks<S>);
+        }
       }
     } else {
       for (const state of linkStates.values()) {
         retryBatchedState(state);
+      }
+      if (sourcePk !== undefined) {
+        perItemStores.get(sourcePk)?.retry();
+      } else {
+        for (const store of perItemStores.values()) {
+          store.retry();
+        }
       }
     }
   }
