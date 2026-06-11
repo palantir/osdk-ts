@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { DerivedProperty } from "@osdk/api";
 import { Employee, Office } from "@osdk/client.test.ontology";
 import type { SetupServer } from "@osdk/shared.test";
 import { FauxFoundry, ontologies, startNodeApiServer } from "@osdk/shared.test";
@@ -103,5 +104,127 @@ describe("aggregation ObjectSet support", () => {
 
     await query.invalidateObjectType("Employee", undefined);
     expect(revalidateSpy).not.toHaveBeenCalled();
+  });
+
+  describe("property-aware invalidation", () => {
+    it(
+      "skips revalidate when edited properties don't intersect groupBy",
+      async () => {
+        const query = store.aggregations.getQuery({
+          type: Employee,
+          where: {},
+          aggregate: {
+            $select: { $count: "unordered" },
+            $groupBy: { fullName: { $exact: { $includeNullValue: true } } },
+          },
+        });
+
+        const revalidateSpy = vi.spyOn(query, "revalidate")
+          .mockResolvedValue(undefined);
+
+        // `class` is unrelated to the `fullName` groupBy and the empty where.
+        await query.invalidateObjectType(
+          "Employee",
+          undefined,
+          new Set(["class"]),
+        );
+        expect(revalidateSpy).not.toHaveBeenCalled();
+      },
+    );
+
+    it(
+      "revalidates when edited properties intersect groupBy",
+      async () => {
+        const query = store.aggregations.getQuery({
+          type: Employee,
+          where: {},
+          aggregate: {
+            $select: { $count: "unordered" },
+            $groupBy: { fullName: { $exact: { $includeNullValue: true } } },
+          },
+        });
+
+        const revalidateSpy = vi.spyOn(query, "revalidate")
+          .mockResolvedValue(undefined);
+
+        await query.invalidateObjectType(
+          "Employee",
+          undefined,
+          new Set(["fullName"]),
+        );
+        expect(revalidateSpy).toHaveBeenCalledWith(true);
+      },
+    );
+
+    it(
+      "revalidates conservatively when editedProperties is undefined",
+      async () => {
+        const query = store.aggregations.getQuery({
+          type: Employee,
+          where: {},
+          aggregate: {
+            $select: { $count: "unordered" },
+            $groupBy: { fullName: { $exact: { $includeNullValue: true } } },
+          },
+        });
+
+        const revalidateSpy = vi.spyOn(query, "revalidate")
+          .mockResolvedValue(undefined);
+
+        // No property info — must invalidate (matches add/delete behavior).
+        await query.invalidateObjectType("Employee", undefined, undefined);
+        expect(revalidateSpy).toHaveBeenCalledWith(true);
+      },
+    );
+
+    it(
+      "revalidates when an aggregation's where clause references the edited property",
+      async () => {
+        const query = store.aggregations.getQuery({
+          type: Employee,
+          where: { class: { $eq: "engineering" } },
+          aggregate: { $select: { $count: "unordered" } },
+        });
+
+        const revalidateSpy = vi.spyOn(query, "revalidate")
+          .mockResolvedValue(undefined);
+
+        await query.invalidateObjectType(
+          "Employee",
+          undefined,
+          new Set(["class"]),
+        );
+        expect(revalidateSpy).toHaveBeenCalledWith(true);
+      },
+    );
+
+    it(
+      "revalidates conservatively when the aggregation has same-type RDPs",
+      async () => {
+        // withProperties pins an RDP on the query's cache key. The where
+        // clause could reference the derived name, but the per-action diff
+        // only sees underlying-property changes — so we must invalidate even
+        // when no edited property overlaps the statically collected set.
+        const withProperties: DerivedProperty.Clause<typeof Employee> = {
+          officeName: (b) => b.pivotTo("officeLink").selectProperty("name"),
+        };
+        const query = store.aggregations.getQuery({
+          type: Employee,
+          where: {},
+          withProperties,
+          aggregate: { $select: { $count: "unordered" } },
+        });
+
+        const revalidateSpy = vi.spyOn(query, "revalidate")
+          .mockResolvedValue(undefined);
+
+        await query.invalidateObjectType(
+          "Employee",
+          undefined,
+          new Set(["unrelated"]),
+        );
+        expect(revalidateSpy).toHaveBeenCalledWith(true);
+      },
+    );
   });
 });

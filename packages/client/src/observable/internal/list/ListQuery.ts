@@ -50,6 +50,10 @@ import {
 import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "../objectMatchesWhereClause.js";
 import type { OptimisticId } from "../OptimisticId.js";
 import type { PivotInfo } from "../PivotCanonicalizer.js";
+import {
+  canSkipForProperties,
+  computeDependentProperties,
+} from "../propertyDependencies.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import { OrderBySortingStrategy } from "../sorting/SortingStrategy.js";
@@ -117,6 +121,11 @@ export abstract class ListQuery extends BaseListQuery<
   // revalidation. Undefined for ObjectSets the walker doesn't support.
   #rdpInvalidationSet: ReadonlySet<string> | undefined;
 
+  // See `computeDependentProperties`. Only consulted when the edited type
+  // equals `apiName`; RDP-traversed and pivoted-through types always
+  // invalidate conservatively.
+  #dependentProperties: ReadonlySet<string> | undefined;
+
   public override get rdpConfig(): Canonical<Rdp> | undefined {
     return this.cacheKey.otherKeys[RDP_IDX];
   }
@@ -160,6 +169,13 @@ export abstract class ListQuery extends BaseListQuery<
 
     this.#objectSet = this.createObjectSet(store);
     this.#objectTypesCache = new Set([this.apiName]);
+
+    this.#dependentProperties = computeDependentProperties(
+      this.rdpConfig,
+      this.#whereClause,
+      this.#intersectWith,
+      Object.keys(this.#orderBy),
+    );
 
     // Only initialize the sorting strategy here if there's no pivotTo.
     // When pivotTo is used, the target type differs from apiName, so we
@@ -375,10 +391,18 @@ export abstract class ListQuery extends BaseListQuery<
    * implementation checks).
    */
   async revalidateObjectType(objectType: string): Promise<boolean> {
+    return this.isPrimaryType(objectType)
+      || (this.#rdpInvalidationSet?.has(objectType) ?? false);
+  }
+
+  /**
+   * `objectType` is the list's source `apiName` or — for pivot/link queries —
+   * the type it ultimately fetches. RDP-traversed types are excluded.
+   */
+  protected isPrimaryType(objectType: string): boolean {
     return this.apiName === objectType
       || (this.#fetchedObjectType != null
-        && this.#fetchedObjectType === objectType)
-      || (this.#rdpInvalidationSet?.has(objectType) ?? false);
+        && this.#fetchedObjectType === objectType);
   }
 
   /**
@@ -391,11 +415,24 @@ export abstract class ListQuery extends BaseListQuery<
   invalidateObjectType = async (
     objectType: string,
     changes: Changes | undefined,
+    editedProperties?: ReadonlySet<string>,
   ): Promise<void> => {
-    if (await this.revalidateObjectType(objectType)) {
-      changes?.modified.add(this.cacheKey);
-      return this.revalidate(true);
+    if (!(await this.revalidateObjectType(objectType))) {
+      return;
     }
+
+    // Property-aware skip applies only to the list's primary/fetched type —
+    // for RDP-traversed pivot types we don't know which pivot properties the
+    // list cares about.
+    if (
+      this.isPrimaryType(objectType)
+      && canSkipForProperties(editedProperties, this.#dependentProperties)
+    ) {
+      return;
+    }
+
+    changes?.modified.add(this.cacheKey);
+    return this.revalidate(true);
   };
 
   /**

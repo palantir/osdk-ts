@@ -16,11 +16,22 @@
 
 import type { ActionDefinition, ActionEditResponse } from "@osdk/api";
 import type { ActionSignatureFromDef } from "../../../actions/applyAction.js";
+import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import { isObjectHolder } from "../isObjectHolder.js";
 import { API_NAME_IDX } from "../list/ListCacheKey.js";
+import type { ObjectCacheKey } from "../object/ObjectCacheKey.js";
 import type { Store } from "../Store.js";
+import { computePropertyDiff } from "./computePropertyDiff.js";
 import { runOptimisticJob } from "./OptimisticJob.js";
 
 const ACTION_DELAY = process.env.NODE_ENV === "production" ? 0 : 1000;
+
+/**
+ * Per-type edited-property tracking. `undefined` value means "conservative —
+ * invalidate any query that depends on this type regardless of which
+ * properties it cares about."
+ */
+type EditedPropertiesByType = Map<string, Set<string> | undefined>;
 
 export class ActionApplication {
   constructor(private store: Store) {}
@@ -75,16 +86,12 @@ export class ActionApplication {
         }
       }
 
-      await this.#invalidatePerObjectEdits(actionResults);
-      // Per-type invalidation can fan out into expensive list/object-set
-      // aggregation refetches. Start it after the precise per-object updates,
-      // but do not block the action result on those background refreshes.
-      void this.#invalidatePerTypeEdits(actionResults).catch((e: unknown) => {
-        logger?.warn(
-          { err: e },
-          "Error while invalidating action edits by object type",
-        );
-      });
+      const editedPropertiesByType = await this.#invalidatePerObjectEdits(
+        actionResults,
+      );
+      // Awaited so the cache is consistent before applyAction resolves; the
+      // per-property skip in the dispatch loop keeps the fan-out cheap.
+      await this.#invalidatePerTypeEdits(actionResults, editedPropertiesByType);
     } finally {
       if (process.env.NODE_ENV !== "production") {
         logger?.debug(
@@ -100,12 +107,36 @@ export class ActionApplication {
 
   #invalidatePerObjectEdits = async (
     actionEditResponse: ActionEditResponse | undefined,
-  ): Promise<void> => {
+  ): Promise<EditedPropertiesByType> => {
+    const editedPropertiesByType: EditedPropertiesByType = new Map();
     if (actionEditResponse == null || actionEditResponse.type !== "edits") {
-      return;
+      return editedPropertiesByType;
     }
     const { deletedObjects, modifiedObjects, addedObjects } =
       actionEditResponse;
+
+    // Snapshot truth-layer values BEFORE the per-PK refetches land. We hold
+    // onto the variants too so the post-refetch diff doesn't need a second
+    // registry lookup.
+    const modifiedSnapshots: Array<{
+      apiName: string;
+      variant: ObjectCacheKey;
+      oldValue: ObjectHolder | undefined;
+    }> = [];
+    for (const obj of modifiedObjects ?? []) {
+      for (
+        const variant of this.store.objectCacheKeyRegistry.getVariants(
+          obj.objectType,
+          obj.primaryKey,
+        )
+      ) {
+        modifiedSnapshots.push({
+          apiName: obj.objectType,
+          variant,
+          oldValue: this.#readTruthHolder(variant),
+        });
+      }
+    }
 
     const promisesToWait: Promise<unknown>[] = [];
     for (const list of [deletedObjects, modifiedObjects, addedObjects]) {
@@ -133,17 +164,50 @@ export class ActionApplication {
       }
     });
     await Promise.all(promisesToWait);
+
+    // Adds/deletes shift counts and list membership; we have no diff for
+    // them, so they're always conservative.
+    for (const obj of addedObjects ?? []) {
+      editedPropertiesByType.set(obj.objectType, undefined);
+    }
+    for (const obj of deletedObjects ?? []) {
+      editedPropertiesByType.set(obj.objectType, undefined);
+    }
+
+    for (const { apiName, variant, oldValue } of modifiedSnapshots) {
+      const newValue = this.#readTruthHolder(variant);
+
+      if (!oldValue || !newValue) {
+        editedPropertiesByType.set(apiName, undefined);
+        continue;
+      }
+
+      mergeEditedProperties(
+        editedPropertiesByType,
+        apiName,
+        computePropertyDiff(oldValue, newValue),
+      );
+    }
+
+    return editedPropertiesByType;
+  };
+
+  #readTruthHolder = (key: ObjectCacheKey): ObjectHolder | undefined => {
+    const value = this.store.layers.truth.get(key)?.value;
+    return isObjectHolder(value) ? value : undefined;
   };
 
   #invalidatePerTypeEdits = async (
     actionEditResponse: ActionEditResponse | undefined,
+    editedPropertiesByType: EditedPropertiesByType,
   ): Promise<void> => {
     if (actionEditResponse == null) {
       return;
     }
 
+    const isEditsBranch = actionEditResponse.type === "edits";
     const editedObjectTypeSet = new Set<string>();
-    if (actionEditResponse.type === "edits") {
+    if (isEditsBranch) {
       const { deletedObjects, modifiedObjects, addedObjects } =
         actionEditResponse;
       for (const list of [deletedObjects, modifiedObjects, addedObjects]) {
@@ -161,12 +225,16 @@ export class ActionApplication {
       return;
     }
 
-    // Walk the cache once and dispatch per (query, editedType) pair. The two
-    // skips below mean each query is touched at most once on the path that's
-    // right for it: ObjectQueries via the per-PK pass, primary-type lists via
-    // Subject reactions from that refetch, and everything else (RDP-traversed
-    // lists, FunctionQueries with dependsOn) via this walk.
-    const isEditsBranch = actionEditResponse.type === "edits";
+    // largeScaleEdits don't carry per-property info, so they're always
+    // conservative (undefined). For the edits branch we read the precomputed
+    // diff out of editedPropertiesByType.
+    const editedPropertiesFor = (apiName: string): Set<string> | undefined =>
+      isEditsBranch ? editedPropertiesByType.get(apiName) : undefined;
+
+    // Each query is touched on at most one path: ObjectQueries via the
+    // per-PK pass, primary-type lists via Subject reactions from that
+    // refetch, everything else (RDP-traversed lists, FunctionQueries with
+    // dependsOn, aggregations) via this walk.
     const promises: Promise<unknown>[] = [];
     for (const cacheKey of this.store.queries.keys()) {
       if (isEditsBranch && cacheKey.type === "object") {
@@ -184,9 +252,35 @@ export class ActionApplication {
         ) {
           continue;
         }
-        promises.push(query.invalidateObjectType(apiName, undefined));
+        promises.push(
+          query.invalidateObjectType(
+            apiName,
+            undefined,
+            editedPropertiesFor(apiName),
+          ),
+        );
       }
     }
     await Promise.allSettled(promises);
   };
+}
+
+function mergeEditedProperties(
+  map: EditedPropertiesByType,
+  apiName: string,
+  properties: ReadonlySet<string>,
+): void {
+  const existing = map.get(apiName);
+  if (existing !== undefined) {
+    for (const p of properties) {
+      existing.add(p);
+    }
+    return;
+  }
+  // `undefined` is the conservative sentinel — distinct from "missing".
+  // Once set, adding specifics can't shrink it.
+  if (map.has(apiName)) {
+    return;
+  }
+  map.set(apiName, new Set(properties));
 }

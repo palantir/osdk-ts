@@ -35,6 +35,10 @@ import type { Canonical } from "../Canonical.js";
 import type { Changes } from "../Changes.js";
 import { getObjectTypesThatInvalidate } from "../getObjectTypesThatInvalidate.js";
 import type { Entry } from "../Layer.js";
+import {
+  canSkipForProperties,
+  computeDependentProperties,
+} from "../propertyDependencies.js";
 import { Query } from "../Query.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
@@ -44,6 +48,7 @@ import {
   AGGREGATE_IDX,
   type AggregationCacheKey,
   API_NAME_IDX,
+  INTERSECT_IDX,
   RDP_IDX,
   WHERE_IDX,
   WIRE_OBJECT_SET_IDX,
@@ -96,6 +101,9 @@ export abstract class AggregationQuery extends Query<
   protected parsedWireObjectSet: WireObjectSet | undefined;
   #invalidationTypes: Set<string>;
   #invalidationTypesPromise: Promise<Set<string>> | undefined;
+  // See `computeDependentProperties`. Only consulted when the edited type
+  // equals `apiName`; RDP-traversed types always invalidate conservatively.
+  #dependentProperties: ReadonlySet<string> | undefined;
 
   constructor(
     store: Store,
@@ -133,6 +141,13 @@ export abstract class AggregationQuery extends Query<
         this.parsedWireObjectSet,
       );
     }
+
+    this.#dependentProperties = computeAggregationDependentProperties(
+      this.rdpConfig,
+      this.canonicalWhere,
+      cacheKey.otherKeys[INTERSECT_IDX],
+      this.canonicalAggregate,
+    );
   }
 
   async #computeInvalidationTypes(
@@ -224,11 +239,54 @@ export abstract class AggregationQuery extends Query<
   invalidateObjectType = (
     objectType: string,
     changes: Changes | undefined,
+    editedProperties?: ReadonlySet<string>,
   ): Promise<void> => {
-    if (this.#invalidationTypes.has(objectType)) {
-      changes?.modified.add(this.cacheKey);
-      return this.revalidate(true);
+    if (!this.#invalidationTypes.has(objectType)) {
+      return Promise.resolve();
     }
-    return Promise.resolve();
+
+    // Property-aware skip applies only to the aggregation's primary type —
+    // for RDP-traversed types we don't know which pivot properties affect
+    // the result.
+    if (
+      objectType === this.apiName
+      && canSkipForProperties(editedProperties, this.#dependentProperties)
+    ) {
+      return Promise.resolve();
+    }
+
+    changes?.modified.add(this.cacheKey);
+    return this.revalidate(true);
   };
+}
+
+function computeAggregationDependentProperties(
+  rdpConfig: Canonical<Rdp> | undefined,
+  canonicalWhere: Canonical<SimpleWhereClause>,
+  intersectWith:
+    | Canonical<Array<Canonical<SimpleWhereClause>>>
+    | undefined,
+  canonicalAggregate: Canonical<AggregateOpts<ObjectOrInterfaceDefinition>>,
+): ReadonlySet<string> | undefined {
+  const selectKeys: string[] = [];
+  for (const key of Object.keys(canonicalAggregate.$select)) {
+    if (key === "$count") {
+      continue;
+    }
+    // Keys are formatted as `${propertyName}:${aggregationType}`. Bail
+    // conservative if we see anything we don't recognize.
+    const colonIdx = key.indexOf(":");
+    if (colonIdx <= 0) {
+      return undefined;
+    }
+    selectKeys.push(key.slice(0, colonIdx));
+  }
+
+  return computeDependentProperties(
+    rdpConfig,
+    canonicalWhere,
+    intersectWith,
+    Object.keys(canonicalAggregate.$groupBy ?? {}),
+    selectKeys,
+  );
 }

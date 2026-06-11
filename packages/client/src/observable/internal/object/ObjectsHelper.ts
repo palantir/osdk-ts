@@ -27,6 +27,7 @@ import type { Observer, Status } from "../../ObservableClient/common.js";
 import { AbstractHelper } from "../AbstractHelper.js";
 import type { BatchContext } from "../BatchContext.js";
 import type { Canonical } from "../Canonical.js";
+import { isObjectHolder } from "../isObjectHolder.js";
 import type { QuerySubscription } from "../QuerySubscription.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
 import { tombstone } from "../tombstone.js";
@@ -159,7 +160,7 @@ export class ObjectsHelper extends AbstractHelper<
       && selectFields
       && selectFields.size > 0
       && existingHolder
-      && this.isObjectHolder(existingHolder);
+      && isObjectHolder(existingHolder);
 
     if (canMergeSelectFields && valueToWrite !== tombstone) {
       valueToWrite = mergeSelectFields(
@@ -176,7 +177,7 @@ export class ObjectsHelper extends AbstractHelper<
     if (
       valueToWrite !== tombstone
       && existing?.value
-      && this.isObjectHolder(existing.value)
+      && isObjectHolder(existing.value)
     ) {
       const expectedRdpFields = this.store.objectCacheKeyRegistry
         .getRdpFieldSet(sourceCacheKey);
@@ -232,7 +233,7 @@ export class ObjectsHelper extends AbstractHelper<
 
       const targetCurrentValue = batch.read(targetKey)?.value;
       const targetHolder =
-        targetCurrentValue && this.isObjectHolder(targetCurrentValue)
+        targetCurrentValue && isObjectHolder(targetCurrentValue)
           ? targetCurrentValue
           : undefined;
 
@@ -267,18 +268,6 @@ export class ObjectsHelper extends AbstractHelper<
       return true;
     }
     return (this.store.pendingCleanup.get(key) ?? 0) > 0;
-  }
-
-  /**
-   * Type guard to check if a value is an ObjectHolder
-   */
-  private isObjectHolder(
-    value: ObjectHolder | undefined,
-  ): value is ObjectHolder {
-    return value != null
-      && typeof value === "object"
-      && "$apiName" in value
-      && "$primaryKey" in value;
   }
 
   /**
