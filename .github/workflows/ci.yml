@@ -29,7 +29,7 @@ jobs:
       - name: Setup Node.js environment
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
-          node-version: 22
+          node-version: 24
           cache: "pnpm"
 
       - name: Install dependencies
@@ -65,7 +65,7 @@ jobs:
       - name: Setup Node.js environment
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
-          node-version: 22
+          node-version: 24
           cache: "pnpm"
 
       - name: Cache Turbo
@@ -107,7 +107,7 @@ jobs:
       # packages — the artifacts the test matrix and the checks consume. The
       # app/site builds (Storybook, examples, sandboxes) run separately in the
       # build-apps job so the slow Storybook build does not sit on the test
-      # matrix's critical path. No Node-18 exclusions here (runs on Node 22).
+      # matrix's critical path. No Node-18 exclusions here (runs on Node 24).
       - name: Build all artifacts
         run: pnpm exec turbo run transpile transpileTypes ${{ steps.infra.outputs.changed == 'true' && '--force' || '' }}
 
@@ -143,7 +143,7 @@ jobs:
       - name: Setup Node.js environment
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
-          node-version: 22
+          node-version: 24
           cache: "pnpm"
 
       # Own per-job cache so typecheck/attw results persist across runs (warm).
@@ -193,7 +193,7 @@ jobs:
       - name: Setup Node.js environment
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
-          node-version: 22
+          node-version: 24
           cache: "pnpm"
 
       # Own per-job cache so lint results persist across runs (warm). restore-keys
@@ -241,7 +241,7 @@ jobs:
       - name: Setup Node.js environment
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
-          node-version: 22
+          node-version: 24
           cache: "pnpm"
 
       - name: Install dependencies
@@ -354,7 +354,7 @@ jobs:
       - name: Setup Node.js environment
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
-          node-version: 22
+          node-version: 24
           cache: "pnpm"
 
       # Own per-job cache so the app/site builds persist across runs (warm).
@@ -375,7 +375,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      # Runs on Node 22, so no Node-18 Vite 7/Storybook exclusions are needed.
+      # Runs on Node 24, so no Node-18 Vite 7/Storybook exclusions are needed.
       - name: Build apps and sites
         run: pnpm exec turbo run build ${{ needs.build.outputs.infra_changed == 'true' && '--force' || '' }}
 
@@ -411,7 +411,7 @@ jobs:
       - name: Setup Node.js environment
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
-          node-version: 22
+          node-version: 24
           cache: "pnpm"
 
       - name: Cache Turbo
@@ -542,7 +542,7 @@ jobs:
       - name: Setup Node.js environment
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
-          node-version: 22
+          node-version: 24
           cache: "pnpm"
 
       - name: Cache Turbo
