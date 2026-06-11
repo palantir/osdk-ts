@@ -92,7 +92,7 @@ export function convertObject(
         requiredConstraints.map(constraint => constraint.metadata.apiName).join(
           ", ",
         )
-      }. Action type constraint implementation mappings are not yet supported in OAC.`,
+      }. Action type constraint implementation is not yet supported in OAC. Set requireImplementation to false and manually implement the constraint after installation.`,
     );
   }
 
