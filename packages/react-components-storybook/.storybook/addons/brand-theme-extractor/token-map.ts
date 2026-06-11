@@ -328,8 +328,6 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
       // are derived by the component library's own depth hierarchy
       "--osdk-surface-shadow-2",
       "--bp-surface-shadow-2",
-      // Input shadow
-      "--osdk-input-shadow",
     ],
   },
 
