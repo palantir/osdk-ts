@@ -4,9 +4,6 @@
   --osdk-file-picker-trigger-padding: var(--osdk-input-padding);
   --osdk-file-picker-trigger-border-radius: var(--osdk-input-border-radius);
   --osdk-file-picker-trigger-border: none;
-  --osdk-file-picker-trigger-border-color-focus: var(
-    --osdk-input-border-color-focus
-  );
   --osdk-file-picker-trigger-bg: var(--osdk-input-bg);
   --osdk-file-picker-trigger-bg-hover: var(--osdk-input-bg-hover);
   --osdk-file-picker-trigger-color: var(--osdk-input-color);
@@ -42,10 +39,5 @@
   --osdk-file-picker-trigger-focus-shadow: var(--osdk-input-focus-shadow);
   --osdk-file-picker-trigger-focus-shadow-error: var(
     --osdk-input-focus-shadow-error
-  );
-
-  /* Error state */
-  --osdk-file-picker-trigger-border-color-error: var(
-    --osdk-input-border-color-error
   );
 }

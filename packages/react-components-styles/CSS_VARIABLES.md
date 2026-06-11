@@ -574,24 +574,22 @@ Styling for file picker components.
 
 #### Trigger
 
-| Variable                                        | Default Value                          | Description                  |
-| ----------------------------------------------- | -------------------------------------- | ---------------------------- |
-| `--osdk-file-picker-trigger-height`             | `var(--osdk-input-min-height)`         | Trigger height               |
-| `--osdk-file-picker-trigger-padding`            | `var(--osdk-input-padding)`            | Trigger padding              |
-| `--osdk-file-picker-trigger-border-radius`      | `var(--osdk-input-border-radius)`      | Trigger border radius        |
-| `--osdk-file-picker-trigger-border`             | `none`                                 | Trigger border               |
-| `--osdk-file-picker-trigger-border-color-focus` | `var(--osdk-input-border-color-focus)` | Trigger focused border color |
-| `--osdk-file-picker-trigger-border-color-error` | `var(--osdk-input-border-color-error)` | Trigger error border color   |
-| `--osdk-file-picker-trigger-shadow`             | `var(--osdk-input-shadow)`             | Trigger inset shadow         |
-| `--osdk-file-picker-trigger-shadow-error`       | `var(--osdk-input-shadow-error)`       | Trigger error shadow         |
-| `--osdk-file-picker-trigger-focus-shadow`       | `var(--osdk-input-focus-shadow)`       | Trigger focus shadow         |
-| `--osdk-file-picker-trigger-focus-shadow-error` | `var(--osdk-input-focus-shadow-error)` | Danger focus shadow          |
-| `--osdk-file-picker-trigger-bg`                 | `var(--osdk-input-bg)`                 | Trigger background           |
-| `--osdk-file-picker-trigger-bg-hover`           | `var(--osdk-input-bg-hover)`           | Trigger hover background     |
-| `--osdk-file-picker-trigger-color`              | `var(--osdk-input-color)`              | Trigger text color           |
-| `--osdk-file-picker-trigger-font-size`          | `var(--osdk-input-font-size)`          | Trigger font size            |
-| `--osdk-file-picker-trigger-font-family`        | `var(--osdk-input-font-family)`        | Trigger font family          |
-| `--osdk-file-picker-trigger-placeholder-color`  | `var(--osdk-input-placeholder-color)`  | Trigger placeholder color    |
+| Variable                                        | Default Value                          | Description               |
+| ----------------------------------------------- | -------------------------------------- | ------------------------- |
+| `--osdk-file-picker-trigger-height`             | `var(--osdk-input-min-height)`         | Trigger height            |
+| `--osdk-file-picker-trigger-padding`            | `var(--osdk-input-padding)`            | Trigger padding           |
+| `--osdk-file-picker-trigger-border-radius`      | `var(--osdk-input-border-radius)`      | Trigger border radius     |
+| `--osdk-file-picker-trigger-border`             | `none`                                 | Trigger border            |
+| `--osdk-file-picker-trigger-shadow`             | `var(--osdk-input-shadow)`             | Trigger inset shadow      |
+| `--osdk-file-picker-trigger-shadow-error`       | `var(--osdk-input-shadow-error)`       | Trigger error shadow      |
+| `--osdk-file-picker-trigger-focus-shadow`       | `var(--osdk-input-focus-shadow)`       | Trigger focus shadow      |
+| `--osdk-file-picker-trigger-focus-shadow-error` | `var(--osdk-input-focus-shadow-error)` | Danger focus shadow       |
+| `--osdk-file-picker-trigger-bg`                 | `var(--osdk-input-bg)`                 | Trigger background        |
+| `--osdk-file-picker-trigger-bg-hover`           | `var(--osdk-input-bg-hover)`           | Trigger hover background  |
+| `--osdk-file-picker-trigger-color`              | `var(--osdk-input-color)`              | Trigger text color        |
+| `--osdk-file-picker-trigger-font-size`          | `var(--osdk-input-font-size)`          | Trigger font size         |
+| `--osdk-file-picker-trigger-font-family`        | `var(--osdk-input-font-family)`        | Trigger font family       |
+| `--osdk-file-picker-trigger-placeholder-color`  | `var(--osdk-input-placeholder-color)`  | Trigger placeholder color |
 
 #### Focus Ring
 
