@@ -203,7 +203,7 @@ export class MetadataClient {
         {
           identifier: {
             type: "objectTypeRid" as const,
-            objectTypeRid: objectTypeRid,
+            objectTypeRid,
           },
           versionReference: {
             type: "ontologyVersion" as const,

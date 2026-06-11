@@ -52,8 +52,9 @@ export function createBulkLinksAsyncIterFactory(ctx: MinimalClient) {
     const mcc = await metadataCacheClient(ctx);
     const helper = await mcc.forObjectByApiName(objs[0].$objectType);
 
-    const [objectTypeRid, propertyMapping, fullLinkMapping] = await Promise.all(
-      [helper.getRid(), helper.getPropertyMapping(), helper.getLinkMapping()]
+    const objectTypeRid = helper.getRid();
+    const [propertyMapping, fullLinkMapping] = await Promise.all(
+      [helper.getPropertyMapping(), helper.getLinkMapping()],
     );
 
     const linkMapping = Object.fromEntries(
@@ -147,7 +148,7 @@ export function createBulkLinksAsyncIterFactory(ctx: MinimalClient) {
         yield {
           object: obj,
           linkApiName: mappedLink.apiName,
-          otherObjectApiName: otherObjectApiName,
+          otherObjectApiName,
           otherObjectPk: pk.pkValue,
         };
       }
