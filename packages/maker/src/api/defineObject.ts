@@ -194,13 +194,18 @@ export function defineObject(
   );
 
   objectDef.implementsInterfaces?.forEach(interfaceImpl => {
-    const requiredConstraints = (interfaceImpl.implements.actionTypeConstraints
-      ?? [])
-      .filter((c: any) => c.requireImplementation);
+    const requiredActionTypeConstraints =
+      (interfaceImpl.implements.actionTypeConstraints
+        ?? [])
+        .filter((actionTypeConstraint: any) =>
+          actionTypeConstraint.requireImplementation
+        );
     invariant(
-      requiredConstraints.length === 0,
+      requiredActionTypeConstraints.length === 0,
       `Object "${objectDef.apiName}" implements interface "${interfaceImpl.implements.apiName}" which has required action type constraints: ${
-        requiredConstraints.map((c: any) => c.metadata.apiName).join(", ")
+        requiredActionTypeConstraints.map((actionTypeConstraint: any) =>
+          actionTypeConstraint.metadata.apiName
+        ).join(", ")
       }. Action type constraint implementation mappings are not yet supported in OAC.`,
     );
 
