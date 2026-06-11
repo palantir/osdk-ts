@@ -133,71 +133,11 @@ export function getTimeValue(date: Date | null): string {
 export type DateRange = readonly [Date | null, Date | null];
 
 /**
- * Internal catalog of built-in relative periods used to construct
- * {@link DEFAULT_DATE_RANGE_SHORTCUTS}. Labels follow Workshop's relative-range
- * wording. Consumers customize via {@link DateRangePickerShortcut}.
- */
-type RelativeDatePeriod = keyof typeof RELATIVE_DATE_PERIODS;
-
-const RELATIVE_DATE_PERIODS = {
-  "past-hour": {
-    label: "Past hour",
-    subtract: (d: Date): Date => subHours(d, 1),
-  },
-  "past-day": {
-    label: "Past 24 hours",
-    subtract: (d: Date): Date => subDays(d, 1),
-  },
-  "past-week": {
-    label: "Past week",
-    subtract: (d: Date): Date => subWeeks(d, 1),
-  },
-  "past-month": {
-    label: "Past month",
-    subtract: (d: Date): Date => subMonths(d, 1),
-  },
-  "past-3-months": {
-    label: "Past 3 months",
-    subtract: (d: Date): Date => subMonths(d, 3),
-  },
-  "past-6-months": {
-    label: "Past 6 months",
-    subtract: (d: Date): Date => subMonths(d, 6),
-  },
-  "past-year": {
-    label: "Past year",
-    subtract: (d: Date): Date => subYears(d, 1),
-  },
-  "past-2-years": {
-    label: "Past 2 years",
-    subtract: (d: Date): Date => subYears(d, 2),
-  },
-} as const;
-
-/** Returns the [start, end] range for the given built-in period, anchored at now. */
-function getRelativeDateRange(
-  period: RelativeDatePeriod,
-  now: Date = new Date(),
-): DateRange {
-  const max = new Date(now.getTime());
-  return [RELATIVE_DATE_PERIODS[period].subtract(max), max];
-}
-
-const DEFAULT_RELATIVE_DATE_PERIODS: readonly RelativeDatePeriod[] = [
-  "past-hour",
-  "past-day",
-  "past-week",
-  "past-month",
-  "past-3-months",
-  "past-6-months",
-  "past-year",
-  "past-2-years",
-];
-
-/**
  * A user-defined shortcut for a date-range picker. The picker renders a button
  * labeled {@link label}; clicking it computes a {@link DateRange} and applies
- * both bounds at once.
+ * both bounds at once. The returned range is applied verbatim — the picker does
+ * not reorder or validate the bounds, so a shortcut should return
+ * `[start, end]` with `start <= end`.
  */
 export interface DateRangePickerShortcut {
   /** Text shown on the shortcut button. */
@@ -207,16 +147,22 @@ export interface DateRangePickerShortcut {
 }
 
 /**
- * Built-in range shortcuts used when a date-range picker's
- * `dateShortcuts: true`. Exported so consumers can spread and extend them,
- * e.g.
+ * Built-in range shortcuts used when a date-range picker's `dateShortcuts: true`.
+ * Labels follow Workshop's relative-range wording; each resolves to
+ * `[now - period, now]`. Exported so consumers can spread and extend them, e.g.
  * `[...DEFAULT_DATE_RANGE_SHORTCUTS, { label: "Last 6 hours", dateRange }]`.
  */
 export const DEFAULT_DATE_RANGE_SHORTCUTS: readonly DateRangePickerShortcut[] =
-  DEFAULT_RELATIVE_DATE_PERIODS.map((period) => ({
-    label: RELATIVE_DATE_PERIODS[period].label,
-    dateRange: (now: Date) => getRelativeDateRange(period, now),
-  }));
+  [
+    { label: "Past hour", dateRange: (now) => [subHours(now, 1), now] },
+    { label: "Past 24 hours", dateRange: (now) => [subDays(now, 1), now] },
+    { label: "Past week", dateRange: (now) => [subWeeks(now, 1), now] },
+    { label: "Past month", dateRange: (now) => [subMonths(now, 1), now] },
+    { label: "Past 3 months", dateRange: (now) => [subMonths(now, 3), now] },
+    { label: "Past 6 months", dateRange: (now) => [subMonths(now, 6), now] },
+    { label: "Past year", dateRange: (now) => [subYears(now, 1), now] },
+    { label: "Past 2 years", dateRange: (now) => [subYears(now, 2), now] },
+  ];
 
 /**
  * Resolves a date-range `dateShortcuts` prop to a shortcut list, or `undefined`
