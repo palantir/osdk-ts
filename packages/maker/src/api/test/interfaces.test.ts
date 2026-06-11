@@ -1475,7 +1475,7 @@ describe("Interfaces", () => {
           });
         }, undefined),
       ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Object "com.palantir.myObject" implements interface "com.palantir.MyInterface" which has required action type constraints: com.palantir.myConstraint. Action type constraint implementation mappings are not yet supported in OAC.]`,
+        `[Error: Invariant failed: Object "com.palantir.myObject" implements interface "com.palantir.MyInterface" which has required action type constraints: com.palantir.myConstraint. Action type constraint implementation is not yet supported in OAC. Set requireImplementation to false and manually implement the constraint after installation.]`,
       );
     });
 
