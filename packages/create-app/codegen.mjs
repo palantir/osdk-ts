@@ -54,6 +54,13 @@ export const TEMPLATES = [
     buildDirectory: "./dist",
     hidden: true,
   },
+  {
+    id: "typescript-library",
+    label: "TypeScript Library",
+    envPrefix: "",
+    buildDirectory: "dist",
+    hidden: true,
+  },
 ];
 
 const packagesDir = path.join(__dirname, "../");
