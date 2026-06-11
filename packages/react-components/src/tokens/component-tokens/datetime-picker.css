@@ -1,8 +1,5 @@
 /* Datetime Picker Styling */
 :root {
-  /* Input error */
-  --osdk-datetime-input-error-border-color: var(--osdk-intent-danger-rest);
-
   /* Popover */
   --osdk-datetime-popover-bg: var(--osdk-background-primary);
   --osdk-datetime-popover-padding: calc(var(--osdk-surface-spacing) * 2);
@@ -114,9 +111,6 @@
     var(--osdk-typography-line-height-default)
   );
   --osdk-datetime-input-placeholder-color: var(--osdk-input-placeholder-color);
-  --osdk-datetime-input-border-width: var(--osdk-input-border-width);
-  --osdk-datetime-input-border-color: var(--osdk-input-border-color);
-  --osdk-datetime-input-border-color-focus: var(--osdk-input-border-color-focus);
 
   --osdk-datetime-input-shadow: var(--osdk-input-shadow);
   --osdk-datetime-input-shadow-error: var(--osdk-input-shadow-error);

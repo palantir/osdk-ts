@@ -11,9 +11,6 @@
   --osdk-time-picker-input-border-radius: var(--osdk-input-border-radius);
   --osdk-time-picker-input-bg: var(--osdk-input-bg);
   --osdk-time-picker-input-color: var(--osdk-input-color);
-  --osdk-time-picker-input-border-color-focus: var(
-    --osdk-input-border-color-focus
-  );
 
   --osdk-time-picker-input-focus-outline: var(--osdk-input-focus-outline);
   --osdk-time-picker-input-shadow: var(--osdk-input-shadow);

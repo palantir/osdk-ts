@@ -98,9 +98,6 @@
      is the only thing painting a border on focus. Without these overrides
      the date picker's own input-wrapper draws a box-shadow on top of the
      cell border, masking the cell's :focus-within outline. */
-  --osdk-datetime-input-border-width: 0px;
-  --osdk-datetime-input-border-color: transparent;
-  --osdk-datetime-input-border-color-focus: transparent;
   --osdk-datetime-input-bg: transparent;
   --osdk-datetime-input-bg-hover: transparent;
   --osdk-datetime-input-shadow: none;
