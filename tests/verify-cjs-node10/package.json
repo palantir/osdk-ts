@@ -20,6 +20,6 @@
   },
   "devDependencies": {
     "@osdk/tool.generate-with-mock-ontology": "workspace:~",
-    "typescript": "~5.5.4"
+    "typescript": "~6.0.3"
   }
 }
