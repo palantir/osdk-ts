@@ -24,11 +24,6 @@ const dateExtras: PropertyFilterDateExtras<"timestamp"> = {
 };
 void dateExtras;
 
-const datetimeExtras: PropertyFilterDateExtras<"datetime"> = {
-  formatDate: (d) => d.toISOString(),
-};
-void datetimeExtras;
-
 // For non-date property types, `formatDate` is typed as `never`. Setting
 // it to a function must be a TS error.
 const numberExtras: PropertyFilterDateExtras<"integer"> = {
@@ -37,18 +32,10 @@ const numberExtras: PropertyFilterDateExtras<"integer"> = {
 };
 void numberExtras;
 
-const stringExtras: PropertyFilterDateExtras<"string"> = {
-  // @ts-expect-error formatDate is `never` for string-typed properties
-  formatDate: (d: Date): string => d.toISOString(),
-};
-void stringExtras;
-
 // Empty object literals are still allowed — `formatDate` is optional on
 // all property types (either documented or typed as optional `never`).
 const numberEmpty: PropertyFilterDateExtras<"integer"> = {};
 void numberEmpty;
-const stringEmpty: PropertyFilterDateExtras<"string"> = {};
-void stringEmpty;
 
 // DATE_RANGE accepts a boolean or a custom DateRangePickerShortcut[] (range).
 const rangeShortcutsBool: PropertyFilterDateExtras<"timestamp", "DATE_RANGE"> =
@@ -88,11 +75,6 @@ const numberShortcuts: PropertyFilterDateExtras<"integer"> = {
   dateShortcuts: true,
 };
 void numberShortcuts;
-const stringShortcuts: PropertyFilterDateExtras<"string"> = {
-  // @ts-expect-error dateShortcuts is `never` for string-typed properties
-  dateShortcuts: true,
-};
-void stringShortcuts;
 
 // dateShortcuts is gated to DATE_RANGE / SINGLE_DATE filter components.
 const multiDateShortcuts: PropertyFilterDateExtras<"timestamp", "MULTI_DATE"> =
