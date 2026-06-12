@@ -1,15 +1,5 @@
 # @osdk/generator-converters.ontologyir
 
-## 2.34.0
-
-### Minor Changes
-
-- 48eb46e: Fix full metadata link gen
-
-### Patch Changes
-
-- @osdk/client.unstable@2.34.0
-
 ## 2.33.0
 
 ### Minor Changes

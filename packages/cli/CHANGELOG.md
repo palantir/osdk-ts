@@ -1,17 +1,5 @@
 # @osdk/cli
 
-## 0.58.0
-
-### Minor Changes
-
-- ef30525: Added "increment" option to AutoVersionConfig
-
-### Patch Changes
-
-- Updated dependencies [ef30525]
-  - @osdk/foundry-config-json@1.10.0
-  - @osdk/widget.api@3.31.0
-
 ## 0.57.0
 
 ### Patch Changes

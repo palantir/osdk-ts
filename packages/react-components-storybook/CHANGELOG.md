@@ -1,11 +1,5 @@
 # @osdk/react-components-storybook
 
-## 0.28.0
-
-### Minor Changes
-
-- b237ef9: Run Storybook interaction (play-function) tests in CI via @storybook/addon-vitest, add a MultipleSelection play function, disable MSW per-request console logging, and bump @vitest/browser to the patched 3.2.5+.
-
 ## 0.27.0
 
 ### Patch Changes
