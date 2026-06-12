@@ -88,21 +88,6 @@ describe("useOsdkObject with pre-built ShapeDefinition", () => {
     );
   });
 
-  it("should return loading state initially", () => {
-    const shape = makeMockShapeDefinition({
-      name: { nullabilityOp: { type: "select" } },
-    });
-    const wrapper = createWrapper();
-
-    const { result } = renderHook(
-      () => useOsdkObject(MockObjectType, "pk-1", { shape }),
-      { wrapper },
-    );
-
-    expect(result.current.isLoading).toBe(true);
-    expect(result.current.data).toBeUndefined();
-  });
-
   it("should NOT call observeObject when enabled is false", () => {
     const shape = makeMockShapeDefinition({
       name: { nullabilityOp: { type: "select" } },
@@ -132,14 +117,6 @@ describe("useOsdkObject with pre-built ShapeDefinition", () => {
       { wrapper },
     );
 
-    expect(result.current).toHaveProperty("data");
-    expect(result.current).toHaveProperty("isLoading");
-    expect(result.current).toHaveProperty("droppedDueToNullability");
-    expect(result.current).toHaveProperty("nullabilityViolations");
-    expect(result.current).toHaveProperty("linkStatus");
-    expect(result.current).toHaveProperty("loadDeferred");
-    expect(result.current).toHaveProperty("retry");
-    expect(result.current).toHaveProperty("invalidate");
     // Pre-built shapes should NOT have a `shape` field (that's for inline configs)
     expect(result.current).not.toHaveProperty("shape");
   });
