@@ -50,6 +50,8 @@ export namespace ObjectTypeWithAllPropertyTypes {
 
   export type Links = {};
 
+  export type LinkTokens = {};
+
   export interface Props {
     /**
      * (no ontology metadata)
@@ -199,6 +201,7 @@ export interface ObjectTypeWithAllPropertyTypes extends $ObjectTypeDefinition {
   apiName: 'ObjectTypeWithAllPropertyTypes';
   primaryKeyApiName: 'id';
   primaryKeyType: 'integer';
+  links: ObjectTypeWithAllPropertyTypes.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: ObjectTypeWithAllPropertyTypes.ObjectSet;
     props: ObjectTypeWithAllPropertyTypes.Props;
@@ -213,6 +216,7 @@ export interface ObjectTypeWithAllPropertyTypes extends $ObjectTypeDefinition {
       color: 'color';
     };
     implements: undefined;
+    interfaceLinkMap: {};
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -359,6 +363,7 @@ export const ObjectTypeWithAllPropertyTypes = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'id',
   primaryKeyType: 'integer',
+  links: {},
   internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },

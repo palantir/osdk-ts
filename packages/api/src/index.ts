@@ -56,6 +56,20 @@ export type {
   GroupByClause,
   GroupByRange,
 } from "./groupby/GroupByClause.js";
+export { createLinkDef } from "./links/createLinkDef.js";
+export { hashTraversal } from "./links/hashTraversal.js";
+export type {
+  LinkDef,
+  LinkTraversal,
+  Path,
+  RecursiveTraversal,
+} from "./links/LinkDef.js";
+export type {
+  LinkHopDescriptor,
+  LinkTraversalDescriptor,
+  LinkTraversalKind,
+  RecursiveOptions,
+} from "./links/LinkTraversalDescriptor.js";
 export type { Logger } from "./Logger.js";
 export type {
   AllowedBucketKeyTypes,
@@ -118,6 +132,13 @@ export type {
   ObjectOrInterfaceDefinition,
   PropertyKeys,
 } from "./ontology/ObjectOrInterface.js";
+export {
+  objectRefEquals,
+  objectRefKey,
+  objectRefOf,
+} from "./ontology/ObjectRef.js";
+export type { ObjectRef } from "./ontology/ObjectRef.js";
+export { ObjectRefMap } from "./ontology/ObjectRefMap.js";
 export type { ObjectSpecifier } from "./ontology/ObjectSpecifier.js";
 export type {
   CompileTimeMetadata,

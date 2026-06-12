@@ -15,6 +15,8 @@ export type OsdkObjectLinks$TestAsTypeIltInterface = {};
 export namespace TestAsTypeIltInterface {
   export type PropertyKeys = 'com.palantir.defense.ontology.collateralConcernName';
 
+  export type LinkTokens = {};
+
   export interface Props {
     /**
      *   display name: 'Name',
@@ -43,6 +45,7 @@ export interface TestAsTypeIltInterface extends $InterfaceDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'interface';
   apiName: 'TestAsTypeIltInterface';
+  links: TestAsTypeIltInterface.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: TestAsTypeIltInterface.ObjectSet;
     props: TestAsTypeIltInterface.Props;
@@ -71,6 +74,7 @@ export const TestAsTypeIltInterface = {
   type: 'interface',
   apiName: 'TestAsTypeIltInterface',
   osdkMetadata: $osdkMetadata,
+  links: {},
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.interface.93463b40-940d-430d-9283-9eca82fa9aa4',
   },

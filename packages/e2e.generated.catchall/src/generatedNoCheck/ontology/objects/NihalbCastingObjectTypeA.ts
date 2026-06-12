@@ -13,13 +13,23 @@ import type {
   OsdkObject as $OsdkObject,
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
+  LinkDef as $LinkDef,
 } from '@osdk/client';
+import { createLinkDef as $createLinkDef } from '@osdk/client';
 
 export namespace NihalbCastingObjectTypeA {
   export type PropertyKeys = 'additionalProperty' | 'primaryKey_';
 
   export interface Links {
     readonly nihalbCastingLinkedObjectTypeAs: NihalbCastingLinkedObjectTypeA.ObjectSet;
+  }
+
+  export interface LinkTokens {
+    readonly nihalbCastingLinkedObjectTypeAs: $LinkDef<
+      NihalbCastingObjectTypeA,
+      NihalbCastingLinkedObjectTypeA,
+      'many'
+    >;
   }
 
   export interface Props {
@@ -62,6 +72,7 @@ export interface NihalbCastingObjectTypeA extends $ObjectTypeDefinition {
   apiName: 'NihalbCastingObjectTypeA';
   primaryKeyApiName: 'primaryKey_';
   primaryKeyType: 'string';
+  links: NihalbCastingObjectTypeA.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: NihalbCastingObjectTypeA.ObjectSet;
     props: NihalbCastingObjectTypeA.Props;
@@ -76,6 +87,11 @@ export interface NihalbCastingObjectTypeA extends $ObjectTypeDefinition {
       name: 'cube';
     };
     implements: ['NihalbCastingInterfaceTypeA'];
+    interfaceLinkMap: {
+      NihalbCastingInterfaceTypeA: {
+        nihalbCastingLinkedObjectTypeA: 'nihalbCastingLinkedObjectTypeAs';
+      };
+    };
     interfaceMap: {
       NihalbCastingInterfaceTypeA: {
         interfaceProperty: 'primaryKey_';
@@ -124,6 +140,15 @@ export const NihalbCastingObjectTypeA = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'primaryKey_',
   primaryKeyType: 'string',
+  links: {
+    nihalbCastingLinkedObjectTypeAs: $createLinkDef(
+      'NihalbCastingObjectTypeA',
+      'nihalbCastingLinkedObjectTypeAs',
+      'NihalbCastingLinkedObjectTypeA',
+      true,
+      false,
+    ),
+  },
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.47776705-2ee2-4f59-af48-da192cd42456',
   },

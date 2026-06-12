@@ -19,6 +19,8 @@ export namespace ScenarioTestOsdk {
 
   export type Links = {};
 
+  export type LinkTokens = {};
+
   export interface Props {
     /**
      * @experimental
@@ -67,6 +69,7 @@ export interface ScenarioTestOsdk extends $ObjectTypeDefinition {
   apiName: 'ScenarioTestOsdk';
   primaryKeyApiName: 'primaryKey_';
   primaryKeyType: 'string';
+  links: ScenarioTestOsdk.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: ScenarioTestOsdk.ObjectSet;
     props: ScenarioTestOsdk.Props;
@@ -81,6 +84,7 @@ export interface ScenarioTestOsdk extends $ObjectTypeDefinition {
       name: 'cube';
     };
     implements: [];
+    interfaceLinkMap: {};
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -127,6 +131,7 @@ export const ScenarioTestOsdk = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'primaryKey_',
   primaryKeyType: 'string',
+  links: {},
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.ec8dc938-1a0b-45cd-96fd-68752f1ab199',
   },

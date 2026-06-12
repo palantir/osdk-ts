@@ -100,6 +100,10 @@ export class LinksHelper extends AbstractHelper<
     );
 
     return this.store.queries.get(linkCacheKey, () => {
+      this.store.specificLinkCacheKeyRegistry.register(linkCacheKey, {
+        $objectType: options.sourceUnderlyingObjectType,
+        $primaryKey: options.pk,
+      });
       return new SpecificLinkQuery(
         this.store,
         this.store.subjects.get(linkCacheKey),

@@ -21,6 +21,8 @@ export namespace FooInterface {
     | 'inheritedDescription'
     | 'name';
 
+  export type LinkTokens = {};
+
   export interface Props {
     /**
      *   @deprecated
@@ -97,6 +99,7 @@ export interface FooInterface extends $InterfaceDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'interface';
   apiName: 'FooInterface';
+  links: FooInterface.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: FooInterface.ObjectSet;
     props: FooInterface.Props;
@@ -173,6 +176,7 @@ export const FooInterface = {
   type: 'interface',
   apiName: 'FooInterface',
   osdkMetadata: $osdkMetadata,
+  links: {},
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.interface-type.1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b',
   },

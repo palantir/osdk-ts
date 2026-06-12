@@ -19,6 +19,8 @@ export namespace UnstructuredImageExample {
 
   export type Links = {};
 
+  export type LinkTokens = {};
+
   export interface Props {
     /**
      * (no ontology metadata)
@@ -55,6 +57,7 @@ export interface UnstructuredImageExample extends $ObjectTypeDefinition {
   apiName: 'UnstructuredImageExample';
   primaryKeyApiName: 'mediaItemRid';
   primaryKeyType: 'string';
+  links: UnstructuredImageExample.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: UnstructuredImageExample.ObjectSet;
     props: UnstructuredImageExample.Props;
@@ -69,6 +72,7 @@ export interface UnstructuredImageExample extends $ObjectTypeDefinition {
       color: 'color';
     };
     implements: undefined;
+    interfaceLinkMap: {};
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -103,6 +107,7 @@ export const UnstructuredImageExample = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'mediaItemRid',
   primaryKeyType: 'string',
+  links: {},
   internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },

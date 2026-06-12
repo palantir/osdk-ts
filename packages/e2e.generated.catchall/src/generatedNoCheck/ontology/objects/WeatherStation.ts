@@ -19,6 +19,8 @@ export namespace WeatherStation {
 
   export type Links = {};
 
+  export type LinkTokens = {};
+
   export interface Props {
     /**
      *   display name: 'Geohash',
@@ -53,6 +55,7 @@ export interface WeatherStation extends $ObjectTypeDefinition {
   apiName: 'WeatherStation';
   primaryKeyApiName: 'stationId';
   primaryKeyType: 'string';
+  links: WeatherStation.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: WeatherStation.ObjectSet;
     props: WeatherStation.Props;
@@ -67,6 +70,7 @@ export interface WeatherStation extends $ObjectTypeDefinition {
       color: 'color';
     };
     implements: undefined;
+    interfaceLinkMap: {};
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -99,6 +103,7 @@ export const WeatherStation = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'stationId',
   primaryKeyType: 'string',
+  links: {},
   internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
   },

@@ -15,6 +15,8 @@ export type OsdkObjectLinks$Athlete = {};
 export namespace Athlete {
   export type PropertyKeys = 'athleteId' | 'jerseyNumber' | 'name22';
 
+  export type LinkTokens = {};
+
   export interface Props {
     /**
      *   display name: 'Athlete ID',
@@ -55,6 +57,7 @@ export interface Athlete extends $InterfaceDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'interface';
   apiName: 'Athlete';
+  links: Athlete.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: Athlete.ObjectSet;
     props: Athlete.Props;
@@ -95,6 +98,7 @@ export const Athlete = {
   type: 'interface',
   apiName: 'Athlete',
   osdkMetadata: $osdkMetadata,
+  links: {},
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.interface-type.1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b',
   },

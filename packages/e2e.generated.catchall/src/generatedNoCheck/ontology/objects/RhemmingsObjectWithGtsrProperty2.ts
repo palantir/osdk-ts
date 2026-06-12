@@ -19,6 +19,8 @@ export namespace RhemmingsObjectWithGtsrProperty2 {
 
   export type Links = {};
 
+  export type LinkTokens = {};
+
   export interface Props {
     /**
      * (no ontology metadata)
@@ -64,6 +66,7 @@ export interface RhemmingsObjectWithGtsrProperty2 extends $ObjectTypeDefinition 
   apiName: 'RhemmingsObjectWithGtsrProperty2';
   primaryKeyApiName: 'id';
   primaryKeyType: 'string';
+  links: RhemmingsObjectWithGtsrProperty2.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: RhemmingsObjectWithGtsrProperty2.ObjectSet;
     props: RhemmingsObjectWithGtsrProperty2.Props;
@@ -78,6 +81,7 @@ export interface RhemmingsObjectWithGtsrProperty2 extends $ObjectTypeDefinition 
       color: 'color';
     };
     implements: undefined;
+    interfaceLinkMap: {};
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -120,6 +124,7 @@ export const RhemmingsObjectWithGtsrProperty2 = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'id',
   primaryKeyType: 'string',
+  links: {},
   internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
   },

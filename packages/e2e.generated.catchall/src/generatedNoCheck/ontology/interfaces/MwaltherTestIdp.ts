@@ -15,6 +15,8 @@ export type OsdkObjectLinks$MwaltherTestIdp = {};
 export namespace MwaltherTestIdp {
   export type PropertyKeys = 'mwaltherName' | 'idpAge' | 'mwaltherNam' | 'newProperty1';
 
+  export type LinkTokens = {};
+
   export interface Props {
     /**
      *   display name: 'Details - Details',
@@ -55,6 +57,7 @@ export interface MwaltherTestIdp extends $InterfaceDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'interface';
   apiName: 'com.palantirfoundry.swirl.esong.MwaltherTestIdp';
+  links: MwaltherTestIdp.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: MwaltherTestIdp.ObjectSet;
     props: MwaltherTestIdp.Props;
@@ -95,6 +98,7 @@ export const MwaltherTestIdp = {
   type: 'interface',
   apiName: 'com.palantirfoundry.swirl.esong.MwaltherTestIdp',
   osdkMetadata: $osdkMetadata,
+  links: {},
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.interface.19fcaed0-457d-4e4c-82b1-7e3933a61df3',
   },

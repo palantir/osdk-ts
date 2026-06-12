@@ -15,6 +15,8 @@ export type OsdkObjectLinks$TodoLike = {};
 export namespace TodoLike {
   export type PropertyKeys = 'isComplete' | 'name';
 
+  export type LinkTokens = {};
+
   export interface Props {
     /**
      * (no ontology metadata)
@@ -45,6 +47,7 @@ export interface TodoLike extends $InterfaceDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'interface';
   apiName: 'TodoLike';
+  links: TodoLike.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: TodoLike.ObjectSet;
     props: TodoLike.Props;
@@ -75,6 +78,7 @@ export const TodoLike = {
   type: 'interface',
   apiName: 'TodoLike',
   osdkMetadata: $osdkMetadata,
+  links: {},
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.interface.fe6b2917-915d-4952-b89d-1231dad224e0',
   },

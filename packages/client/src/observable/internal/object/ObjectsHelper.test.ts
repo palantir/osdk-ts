@@ -765,3 +765,94 @@ describe("ObjectsHelper.storeOsdkInstances interface unwrap", () => {
     expect(InterfaceDefRef in cached).toBe(false);
   });
 });
+
+// Regression guard for the original useLinks crash: an interface-typed source
+// traversed over an RDP field used to be stored under its interface `$apiName`, so
+// the later concrete RDP merge ran with an undefined ObjectDefRef and threw a
+// TypeError in the cache. storeOsdkInstances now keys by the concrete
+// `$objectType`, so the merge sees a concrete holder and resolves without throwing.
+// This pins the behavior so a future regression to `v.$apiName` keying is caught.
+describe("ObjectsHelper interface-link RDP no-crash regression (original problem)", () => {
+  let client: Client;
+  let store: Store;
+  let emp: Osdk.Instance<Employee>;
+
+  beforeAll(async () => {
+    const testSetup = startNodeApiServer(
+      new FauxFoundry("https://stack.palantir.com/"),
+      createClient,
+    );
+    client = testSetup.client;
+
+    const fauxOntology = testSetup.fauxFoundry.getDefaultOntology();
+    ontologies.addEmployeeOntology(fauxOntology);
+
+    testSetup.fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+      employeeId: 1,
+      fullName: "Alice",
+    });
+
+    emp = await client(Employee).fetchOne(1, { $includeRid: true });
+
+    return () => {
+      testSetup.apiServer.close();
+    };
+  });
+
+  beforeEach(() => {
+    store = new Store(client);
+    return () => {
+      store = undefined!;
+    };
+  });
+
+  it("stores an interface source over an RDP field without throwing and returns concrete data (already fixed on branch)", () => {
+    const rdpConfig = createFakeRdpConfig("derivedAddress");
+    const ifaceInstance = emp.$as(FooInterface);
+
+    expect(ifaceInstance.$apiName).toBe("FooInterface");
+    expect(ifaceInstance.$objectType).toBe("Employee");
+
+    // The concrete-typed query (keyed by $objectType) the store should converge
+    // on, and the interface-named query the original crash mistakenly used.
+    const concreteQuery = store.objects.getQuery(
+      { apiName: Employee, pk: 1 },
+      rdpConfig,
+    );
+    const interfaceQuery = store.objects.getQuery(
+      { apiName: FooInterface, pk: 1 },
+      rdpConfig,
+    );
+    expect(concreteQuery.cacheKey).not.toBe(interfaceQuery.cacheKey);
+
+    // Seed the concrete RDP key so the second write hits the propagateWrite
+    // merge branch (derivedAddress is absent on the object, so the merge runs).
+    store.batch({}, (batch) => {
+      concreteQuery.writeToStore(emp as any, "loaded", batch);
+    });
+
+    // Store the interface holder over the RDP field via the token-overload path.
+    // This must not throw — the original problem threw on the concrete merge.
+    const cacheKeys = store.batch({}, (batch) => {
+      return store.objects.storeOsdkInstances(
+        [ifaceInstance],
+        batch,
+        rdpConfig,
+      );
+    }).retVal;
+
+    // Keyed by the concrete type, so it lands on the concrete query's key, not
+    // the interface-named key.
+    expect(cacheKeys).toEqual([concreteQuery.cacheKey]);
+
+    const cached = store.getValue(cacheKeys[0])?.value;
+    expect(cached).toEqual(
+      expect.objectContaining({ $objectType: "Employee", $primaryKey: 1 }),
+    );
+    if (!cached) {
+      return;
+    }
+    expect(cached[ObjectDefRef]).toBeDefined();
+    expect(InterfaceDefRef in cached).toBe(false);
+  });
+});

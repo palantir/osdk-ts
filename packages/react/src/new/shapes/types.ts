@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition, Osdk } from "@osdk/api";
+import type { ObjectOrInterfaceDefinition, ObjectRef, Osdk } from "@osdk/api";
+import { objectRefKey, objectRefOf } from "@osdk/api";
 import type { ShapeDerivedLinkDef } from "@osdk/api/shapes-internal";
 import type {
   LinkStatus,
@@ -169,7 +170,8 @@ export function buildDataWithNestedLinks(
  * A link is batchable when it can use observeLinks (one API call for all source
  * objects) instead of per-object observeObjectSet calls. This requires a simple
  * single-hop pivotTo with no filters, ordering, limits, or set operations,
- * since observeLinks doesn't support those query features.
+ * since observeLinks doesn't support those query features. Recursive follows are
+ * never batchable: they are driven per-root by observeLinkClosure.
  */
 export function isBatchableLink(linkDef: ShapeDerivedLinkDef): boolean {
   const def = linkDef.objectSetDef;
@@ -181,5 +183,71 @@ export function isBatchableLink(linkDef: ShapeDerivedLinkDef): boolean {
     && !def.orderBy
     && def.limit == null
     && !def.distinct
+    && !def.recursive
   );
+}
+
+/**
+ * Attaches a lazy, non-enumerable `tree` view to a flat recursive-closure
+ * result. Canonical storage stays flat (the array itself) so spreads and
+ * iteration behave like any other link list; `tree` reconstructs the nesting on
+ * demand from the closure's `adjacency` map, starting at `rootRef` and nesting
+ * each node's children under `childLinkName` (the recursive link's own name).
+ * Nodes with no resolved children omit the `childLinkName` key entirely.
+ */
+export function attachRecursiveTreeView(
+  flatData: AnyShapeInstance[],
+  adjacency: ReadonlyObjectRefMap,
+  rootRef: ObjectRef,
+  childLinkName: string,
+): AnyShapeInstance[] {
+  const byRef = new Map<string, AnyShapeInstance>();
+  for (const obj of flatData) {
+    byRef.set(objectRefKey(objectRefOf(obj)), obj);
+  }
+
+  function buildChildren(
+    parentRef: ObjectRef,
+    visited: ReadonlySet<string>,
+  ): AnyShapeInstance[] {
+    const childRefs = adjacency.get(parentRef) ?? [];
+    const result: AnyShapeInstance[] = [];
+    for (const childRef of childRefs) {
+      const key = objectRefKey(childRef);
+      if (visited.has(key)) {
+        continue;
+      }
+      const child = byRef.get(key);
+      if (child === undefined) {
+        continue;
+      }
+      const nextVisited = new Set(visited).add(key);
+      const grandchildren = buildChildren(childRef, nextVisited);
+      result.push(
+        grandchildren.length > 0
+          ? { ...child, [childLinkName]: grandchildren } as AnyShapeInstance
+          : child,
+      );
+    }
+    return result;
+  }
+
+  Object.defineProperty(flatData, "tree", {
+    get() {
+      return buildChildren(rootRef, new Set([objectRefKey(rootRef)]));
+    },
+    enumerable: false,
+    configurable: true,
+  });
+
+  return flatData;
+}
+
+/**
+ * Minimal structural view of the closure `adjacency` map used by
+ * {@link attachRecursiveTreeView}. Avoids a hard dependency on the concrete
+ * `ObjectRefMap` class while still keying lookups structurally.
+ */
+export interface ReadonlyObjectRefMap {
+  get(ref: ObjectRef): ObjectRef[] | undefined;
 }

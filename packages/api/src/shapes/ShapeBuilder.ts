@@ -307,7 +307,7 @@ class ShapeLinkBuilderImpl<
     });
   }
 
-  as<TARGET_SHAPE extends ShapeDefinition<CURRENT>>(
+  project<TARGET_SHAPE extends ShapeDefinition<CURRENT>>(
     shape: TARGET_SHAPE,
     config: DerivedLinkConfig = {},
   ): ShapeLinkResult<TARGET_SHAPE> {
@@ -317,6 +317,14 @@ class ShapeLinkBuilderImpl<
       objectSetDef: this.toObjectSetDef(),
       config,
     } as ShapeLinkResult<TARGET_SHAPE>;
+  }
+
+  /** @deprecated Use {@link project} instead. */
+  as<TARGET_SHAPE extends ShapeDefinition<CURRENT>>(
+    shape: TARGET_SHAPE,
+    config: DerivedLinkConfig = {},
+  ): ShapeLinkResult<TARGET_SHAPE> {
+    return this.project(shape, config);
   }
 
   toObjectSetDef(): ShapeLinkObjectSetDef {

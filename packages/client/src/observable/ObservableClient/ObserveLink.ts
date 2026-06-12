@@ -17,6 +17,7 @@
 import type {
   CompileTimeMetadata,
   InterfaceDefinition,
+  ObjectRefMap,
   ObjectTypeDefinition,
   Osdk,
   PrimaryKeyType,
@@ -69,6 +70,22 @@ export namespace ObserveLinks {
     T extends ObjectTypeDefinition | InterfaceDefinition,
   > {
     resolvedList: Osdk.Instance<T, "$allBaseProperties">[] | undefined;
+
+    /**
+     * Maps each source object's {@link ObjectRef} to its linked object
+     * instances. Heterogeneous-safe: two concrete types that share a primary
+     * key key into distinct entries. A source never appears in its own group.
+     */
+    linkedObjectsBySource: ObjectRefMap<
+      ReadonlyArray<Osdk.Instance<T, "$allBaseProperties">>
+    >;
+
+    /**
+     * @deprecated Use {@link linkedObjectsBySource} instead, which keys by
+     * {@link ObjectRef} and is heterogeneous-safe. This bare primary-key map
+     * collapses sources that share a primary key across concrete types and is
+     * kept as a derived alias for one release.
+     */
     linkedObjectsBySourcePrimaryKey: ReadonlyMap<
       string | number,
       ReadonlyArray<Osdk.Instance<T, "$allBaseProperties">>

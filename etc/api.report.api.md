@@ -337,6 +337,15 @@ export type ConvertProps<
 	OPTIONS extends never | "$rid" | "$allBaseProperties" | "$propertySecurities" = never
 > = TO extends FROM ? P : TO extends ObjectTypeDefinition ? (UnionIfTrue<MapPropNamesToObjectType<FROM, TO, P, OPTIONS>, P extends "$rid" ? true : false, "$rid">) : TO extends InterfaceDefinition ? FROM extends ObjectTypeDefinition ? (UnionIfTrue<MapPropNamesToInterface<FROM, TO, P>, P extends "$rid" ? true : false, "$rid">) : never : never;
 
+// Warning: (ae-forgotten-export) The symbol "Node_2" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export function createLinkDef<
+	Source extends Node_2 = Node_2,
+	Target extends Node_2 = Node_2,
+	M extends boolean = boolean
+>(sourceTypeApiName: string, linkApiName: string, targetTypeApiName: string, multiplicity: M, sourceIsInterface: boolean): LinkDef<Source, Target, M extends true ? "many" : "one">;
+
 // @public
 export interface DataValueClientToWire {
     	// (undocumented)
@@ -750,6 +759,9 @@ export type GroupByClause<Q extends ObjectOrInterfaceDefinition> = { [P in Aggre
 // @public (undocumented)
 export type GroupByRange<T> = [T, T];
 
+// @public
+export function hashTraversal(descriptor: LinkTraversalDescriptor): string;
+
 // @public (undocumented)
 export interface HumanReadableFormat {
     	// (undocumented)
@@ -868,14 +880,91 @@ export function isOk<X>(a: Result<X>): a is OkResult<X>;
 // @public
 export type KnownType = "USER_OR_GROUP_ID" | "RESOURCE_RID" | "ARTIFACT_GID";
 
+// Warning: (ae-forgotten-export) The symbol "Node_3" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export interface LinkDef<
+	Source extends Node_3,
+	Target extends Node_3,
+	Card extends "one" | "many"
+> extends LinkTraversal<Source, Target, Card> {
+    	// (undocumented)
+    readonly apiName: string;
+    	// (undocumented)
+    readonly cardinality: Card;
+    	recursive(opts?: Partial<RecursiveOptions>): RecursiveTraversal<Source, Target>;
+    	// (undocumented)
+    readonly sourceType: Source;
+    	// (undocumented)
+    readonly targetType: Target;
+}
+
 // @public (undocumented)
 export type LinkedType<
 	Q extends ObjectOrInterfaceDefinition,
 	L extends LinkNames<Q>
 > = NonNullable<CompileTimeMetadata<Q>["links"][L]["__OsdkLinkTargetType"]>;
 
+// @public
+export interface LinkHopDescriptor {
+    	// (undocumented)
+    readonly limit?: number;
+    	// (undocumented)
+    readonly linkApiName: string;
+    	readonly multiplicity: boolean;
+    	// (undocumented)
+    readonly orderBy?: ReadonlyArray<{
+        		property: string
+        		direction: "asc" | "desc"
+        	}>;
+    	readonly projectShapeId?: string;
+    	readonly sourceIsInterface: boolean;
+    	// (undocumented)
+    readonly sourceTypeApiName: string;
+    	// (undocumented)
+    readonly targetTypeApiName: string;
+    	// (undocumented)
+    readonly where?: WhereClause<never>;
+}
+
 // @public (undocumented)
 export type LinkNames<Q extends ObjectOrInterfaceDefinition> = Q extends InterfaceDefinition ? keyof CompileTimeMetadata<Q>["links"] : keyof CompileTimeMetadata<Q>["links"] & string;
+
+// @public (undocumented)
+export interface LinkTraversal<
+	Source extends Node_3,
+	Target extends Node_3,
+	Card extends "one" | "many"
+> {
+    	// (undocumented)
+    readonly __descriptor: LinkTraversalDescriptor;
+    	// Warning: (ae-forgotten-export) The symbol "ShapeDefinition" needs to be exported by the entry point index.d.ts
+    readonly __projectedShape?: ShapeDefinition<Target>;
+    	// (undocumented)
+    limit(n: number): LinkTraversal<Source, Target, Card>;
+    	// (undocumented)
+    orderBy(spec: { [K in PropertyKeys<Target>]? : "asc" | "desc" }): LinkTraversal<Source, Target, Card>;
+    	// (undocumented)
+    project<S extends ShapeDefinition<Target>>(shape: S): LinkTraversal<Source, Target, Card>;
+    	then<
+    		NextTarget extends Node_3,
+    		NextCard extends "one" | "many"
+    	>(next: LinkDef<Target, NextTarget, NextCard>): Path<Source, NextTarget, Card extends "many" ? "many" : NextCard>;
+    	// (undocumented)
+    where(clause: WhereClause<Target>): LinkTraversal<Source, Target, Card>;
+}
+
+// @public (undocumented)
+export interface LinkTraversalDescriptor {
+    	// Warning: (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
+    readonly hops: ReadonlyArray<LinkHopDescriptor>;
+    	// (undocumented)
+    readonly kind: LinkTraversalKind;
+    	readonly recursive?: RecursiveOptions;
+}
+
+// @public (undocumented)
+export type LinkTraversalKind = "single" | "path" | "recursive";
 
 // @public (undocumented)
 export type LinkTypeApiNamesFor<Q extends ObjectOrInterfaceDefinition> = Extract<keyof CompileTimeMetadata<Q>["links"], string>;
@@ -1135,6 +1224,7 @@ export interface ObjectMetadata extends ObjectInterfaceBaseMetadata {
     //
     // (undocumented)
     icon: Icon | undefined;
+    	interfaceLinkMap?: Record<string, Record<string, string>>;
     	// (undocumented)
     interfaceMap: Record<string, Record<string, string>>;
     	// (undocumented)
@@ -1216,6 +1306,46 @@ export interface ObjectQueryDataType<T_Target extends ObjectOrInterfaceDefinitio
     	// (undocumented)
     object: string;
 }
+
+// @public
+export interface ObjectRef {
+    	// (undocumented)
+    readonly $objectType: string;
+    	// (undocumented)
+    readonly $primaryKey: string | number;
+}
+
+// @public (undocumented)
+export function objectRefEquals(a: ObjectRef, b: ObjectRef): boolean;
+
+// @public
+export function objectRefKey(ref: ObjectRef): string;
+
+// @public
+export class ObjectRefMap<V> {
+    	// (undocumented)
+    delete(ref: ObjectRef): boolean;
+    	// (undocumented)
+    entries(): Array<[ObjectRef, V]>;
+    	// (undocumented)
+    forEach(fn: (value: V, ref: ObjectRef) => void): void;
+    	// (undocumented)
+    get(ref: ObjectRef): V | undefined;
+    	// (undocumented)
+    has(ref: ObjectRef): boolean;
+    	// (undocumented)
+    keys(): ObjectRef[];
+    	// (undocumented)
+    set(ref: ObjectRef, value: V): this;
+    	// (undocumented)
+    get size(): number;
+}
+
+// @public (undocumented)
+export function objectRefOf(instance: {
+    	$objectType: string
+    	$primaryKey: string | number
+}): ObjectRef;
 
 // Warning: (ae-forgotten-export) The symbol "ObjectSetCleanedTypes" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "ExtractRdp" needs to be exported by the entry point index.d.ts
@@ -1449,6 +1579,18 @@ export interface PageResult<T> {
     nextPageToken: string | undefined;
     	// (undocumented)
     totalCount: string;
+}
+
+// @public (undocumented)
+export interface Path<
+	Source extends Node_3,
+	EndTarget extends Node_3,
+	Card extends "one" | "many"
+> extends LinkTraversal<Source, EndTarget, Card> {
+    	// (undocumented)
+    readonly __descriptor: LinkTraversalDescriptor & {
+        		kind: "path"
+        	};
 }
 
 // @public (undocumented)
@@ -1766,6 +1908,24 @@ type Range_2<T extends AllowedBucketTypes_2> = {
     	endValue?: T
 };
 export { Range_2 as Range }
+
+// @public (undocumented)
+export interface RecursiveOptions {
+    	maxDepth: number | "unbounded";
+    	maxNodes: number;
+}
+
+// @public (undocumented)
+export interface RecursiveTraversal<
+	Source extends Node_3,
+	Target extends Node_3
+> extends LinkTraversal<Source, Target, "many"> {
+    	// (undocumented)
+    readonly __descriptor: LinkTraversalDescriptor & {
+        		kind: "recursive"
+        		recursive: RecursiveOptions
+        	};
+}
 
 // Warning: (ae-forgotten-export) The symbol "ErrorResult" needs to be exported by the entry point index.d.ts
 //

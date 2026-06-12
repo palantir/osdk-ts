@@ -8,7 +8,9 @@ import type {
   Osdk as $Osdk,
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
+  LinkDef as $LinkDef,
 } from '@osdk/client';
+import { createLinkDef as $createLinkDef } from '@osdk/client';
 
 export interface OsdkObjectLinks$EsongInterfaceA {
   esongPds: $SingleLinkAccessor<EsongPds>;
@@ -16,6 +18,10 @@ export interface OsdkObjectLinks$EsongInterfaceA {
 
 export namespace EsongInterfaceA {
   export type PropertyKeys = 'esongSptA';
+
+  export interface LinkTokens {
+    readonly esongPds: $LinkDef<EsongInterfaceA, EsongPds, 'one'>;
+  }
 
   export interface Props {
     /**
@@ -43,6 +49,7 @@ export interface EsongInterfaceA extends $InterfaceDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'interface';
   apiName: 'EsongInterfaceA';
+  links: EsongInterfaceA.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: EsongInterfaceA.ObjectSet;
     props: EsongInterfaceA.Props;
@@ -71,6 +78,9 @@ export const EsongInterfaceA = {
   type: 'interface',
   apiName: 'EsongInterfaceA',
   osdkMetadata: $osdkMetadata,
+  links: {
+    esongPds: $createLinkDef('EsongInterfaceA', 'esongPds', 'EsongPds', false, true),
+  },
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.interface.3f52b54b-dab9-41f1-b02c-4eba39846673',
   },

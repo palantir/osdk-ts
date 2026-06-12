@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import type { ObjectRef } from "@osdk/api";
+import { ObjectRefMap } from "@osdk/api";
 import type { Client } from "@osdk/client";
 import type * as UnstableClient from "@osdk/client/unstable-do-not-use";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -96,6 +98,50 @@ function linkDef(name: string, targetShape: unknown) {
     },
     config: {},
   };
+}
+
+function recursiveLinkDef(
+  name: string,
+  linkApiName: string,
+  sourceType: string,
+  targetShape: unknown,
+) {
+  return {
+    name,
+    targetShape,
+    objectSetDef: {
+      segments: [{
+        type: "pivotTo",
+        linkName: linkApiName,
+        sourceType,
+        targetType: sourceType,
+      }],
+      recursive: { maxDepth: 3, maxNodes: 1000 },
+    },
+    config: {},
+  };
+}
+
+function recursiveTargetShape(apiName: string) {
+  const baseType = {
+    apiName,
+    primaryKeyType: "string",
+    type: "object",
+  };
+  return {
+    __shapeId: `${apiName}-recursive-shape`,
+    __debugName: `${apiName}RecursiveShape`,
+    __baseType: baseType,
+    __baseTypeApiName: apiName,
+    __props: Object.freeze({}),
+    __derivedLinks: Object.freeze([]),
+    __selectedPropsType: {},
+    __derivedLinksType: {},
+  };
+}
+
+function ref(apiName: string, pk: string): ObjectRef {
+  return { $objectType: apiName, $primaryKey: pk };
 }
 
 function rawInstance(apiName: string, pk: string): Record<string, unknown> {
@@ -228,5 +274,100 @@ describe("createDerivedLinksStore", () => {
     for (const unsub of unsubscribes) {
       expect(unsub).toHaveBeenCalled();
     }
+  });
+
+  it("drives a recursive follow via observeLinkClosure and exposes a flat list with a lazy tree view", async () => {
+    let closureObserver: Observer<unknown> | undefined;
+    const closureUnsub = vi.fn();
+
+    const observableClient = {
+      observeLinkClosure: vi.fn(
+        (_options: unknown, obs: Observer<unknown>) => {
+          closureObserver = obs;
+          return { unsubscribe: closureUnsub };
+        },
+      ),
+      observeObjectSet: vi.fn(() => ({ unsubscribe: vi.fn() })),
+    } as unknown as ObservableClient;
+
+    const targetShape = recursiveTargetShape("Operation");
+    const shape = makeShape([
+      recursiveLinkDef(
+        "descendants",
+        "subOperations",
+        "Operation",
+        targetShape,
+      ),
+    ]);
+    const sourceObject = rawInstance("Operation", "op1");
+
+    const store = createDerivedLinksStore(
+      shape,
+      sourceObject as never,
+      observableClient,
+      {} as Client,
+      {},
+    );
+
+    const notify = vi.fn();
+    store.subscribe(notify);
+
+    await vi.waitFor(() => {
+      expect(closureObserver).toBeDefined();
+    });
+
+    // op1 -> [op2, op4]; op2 -> [op3]
+    const op2 = rawInstance("Operation", "op2");
+    const op3 = rawInstance("Operation", "op3");
+    const op4 = rawInstance("Operation", "op4");
+
+    const adjacency = new ObjectRefMap<ObjectRef[]>();
+    adjacency.set(ref("Operation", "op1"), [
+      ref("Operation", "op2"),
+      ref("Operation", "op4"),
+    ]);
+    adjacency.set(ref("Operation", "op2"), [ref("Operation", "op3")]);
+    adjacency.set(ref("Operation", "op3"), []);
+    adjacency.set(ref("Operation", "op4"), []);
+
+    closureObserver?.next({
+      // BFS discovery order, root excluded
+      data: [op2, op4, op3],
+      adjacency,
+      byDepth: new ObjectRefMap(),
+      frontier: [],
+      depthReached: 2,
+      isExpanding: false,
+      truncated: { byDepth: false, byNodeBudget: false },
+      expand: () => {},
+      isOptimistic: false,
+      status: "loaded",
+      error: undefined,
+      lastUpdated: Date.now(),
+    });
+
+    const snapshot = store.getSnapShot();
+    const flat = snapshot.links.descendants as Array<Record<string, unknown>>;
+    expect(flat.map(o => o.$primaryKey).sort()).toEqual(["op2", "op3", "op4"]);
+
+    const descendantsStatus =
+      (snapshot.linkStatus as Record<string, { isLoading: boolean }>)
+        .descendants;
+    expect(descendantsStatus?.isLoading).toBe(false);
+
+    // The lazy tree view reconstructs nesting from adjacency.
+    const tree = (flat as unknown as {
+      tree: Array<Record<string, unknown>>;
+    }).tree;
+    expect(tree.map(o => o.$primaryKey).sort()).toEqual(["op2", "op4"]);
+
+    const op2Node = tree.find(o => o.$primaryKey === "op2");
+    const op2Children = op2Node?.descendants as
+      | Array<Record<string, unknown>>
+      | undefined;
+    expect(op2Children?.map(o => o.$primaryKey)).toEqual(["op3"]);
+
+    const op4Node = tree.find(o => o.$primaryKey === "op4");
+    expect(op4Node?.descendants).toBeUndefined();
   });
 });

@@ -15,6 +15,7 @@ import { ApplyBatchActionOptions } from '@osdk/api';
 import { Attachment } from '@osdk/api';
 import type { AttachmentUpload } from '@osdk/api';
 import { CompileTimeMetadata } from '@osdk/api';
+import { createLinkDef } from '@osdk/api';
 import type { DataValueClientToWire } from '@osdk/api';
 import type { DataValueWireToClient } from '@osdk/api';
 import { DerivedProperty } from '@osdk/api';
@@ -24,6 +25,11 @@ import { InterfaceDefinition } from '@osdk/api';
 import { InterfaceMetadata } from '@osdk/api';
 import type { InterfaceQueryDataType } from '@osdk/api';
 import { isOk } from '@osdk/api';
+import { LinkDef } from '@osdk/api';
+import { LinkHopDescriptor } from '@osdk/api';
+import { LinkTraversal } from '@osdk/api';
+import { LinkTraversalDescriptor } from '@osdk/api';
+import { LinkTraversalKind } from '@osdk/api';
 import { Logger } from '@osdk/api';
 import { Media } from '@osdk/api';
 import { MediaMetadata as MediaMetadata_2 } from '@osdk/api';
@@ -43,6 +49,7 @@ import { OsdkObjectCreatePropertyType } from '@osdk/api';
 import { OsdkObjectPropertyType } from '@osdk/api';
 import { PageResult } from '@osdk/api';
 import { PalantirApiError } from '@osdk/shared.net.errors';
+import { Path } from '@osdk/api';
 import type { PrimaryKeyType } from '@osdk/api';
 import { PropertyDef } from '@osdk/api';
 import { PropertyKeys } from '@osdk/api';
@@ -53,6 +60,8 @@ import type { QueryMetadata } from '@osdk/api';
 import { QueryParam } from '@osdk/api';
 import { QueryResult } from '@osdk/api';
 import { Range as Range_2 } from '@osdk/api';
+import { RecursiveOptions } from '@osdk/api';
+import { RecursiveTraversal } from '@osdk/api';
 import { Result } from '@osdk/api';
 import type { SharedClient } from '@osdk/shared.client2';
 import { SharedClient as SharedClient_2 } from '@osdk/shared.client';
@@ -108,6 +117,7 @@ export interface Client extends SharedClient, OldSharedClient {
     	// (undocumented)
     <Q extends Experiment<"2.0.8"> | Experiment<"2.1.0"> | Experiment<"2.2.0"> | Experiment<"2.8.0"> | Experiment<"2.19.0">>(experiment: Q): ExperimentFns<Q>;
     	fetchMetadata<Q extends (ObjectTypeDefinition | InterfaceDefinition | ActionDefinition<any> | QueryDefinition<any>)>(o: Q): Promise<Q extends ObjectTypeDefinition ? ObjectMetadata : Q extends InterfaceDefinition ? InterfaceMetadata : Q extends ActionDefinition<any> ? ActionMetadata : Q extends QueryDefinition<any> ? QueryMetadata : never>;
+    	ontologyMetadata: OntologyMetadataClient;
 }
 
 export { CompileTimeMetadata }
@@ -121,6 +131,8 @@ export const createClient: (baseUrl: string, ontologyRid: string | Promise<strin
     	UNSTABLE_DO_NOT_USE_BRANCH?: string
     	headers?: Record<string, string>
 } | undefined, fetchFn?: typeof fetch | undefined) => Client;
+
+export { createLinkDef }
 
 // @public
 export function createObjectSpecifierFromPrimaryKey<Q extends ObjectTypeDefinition>(objectDef: Q, primaryKey: PrimaryKeyType<Q>): ObjectSpecifier<Q>;
@@ -147,12 +159,33 @@ export function getWireObjectSet(objectSet: ObjectSet<any> | MinimalObjectSet<an
 
 export { InterfaceDefinition }
 
+// @public (undocumented)
+export class InterfaceLinkNotResolvableError extends Error {
+    	constructor(concreteType: string, interfaceLinkApiName: string, message?: string);
+    	// (undocumented)
+    readonly concreteType: string;
+    	// (undocumented)
+    readonly interfaceLinkApiName: string;
+    	// (undocumented)
+    readonly name = "InterfaceLinkNotResolvableError";
+}
+
 export { InterfaceMetadata }
 
 // @public (undocumented)
 export function isObjectSet(o: object): o is ObjectSet<ObjectOrInterfaceDefinition>;
 
 export { isOk }
+
+export { LinkDef }
+
+export { LinkHopDescriptor }
+
+export { LinkTraversal }
+
+export { LinkTraversalDescriptor }
+
+export { LinkTraversalKind }
 
 export { Logger }
 
@@ -172,6 +205,22 @@ export { ObjectSpecifier }
 
 export { ObjectTypeDefinition }
 
+// @public (undocumented)
+export interface OntologyMetadataClient {
+    	implementationsOf(iface: InterfaceDefinition | string): Promise<string[]>;
+    	implements(objectTypeApiName: string, iface: InterfaceDefinition | string): Promise<boolean>;
+    	resolveLink(concreteType: ObjectTypeDefinition | string, interfaceLinkApiName: string): Promise<ResolvedLink>;
+}
+
+// @public (undocumented)
+export class OntologyMetadataNotFoundError extends Error {
+    	constructor(apiName: string, message?: string);
+    	// (undocumented)
+    readonly apiName: string;
+    	// (undocumented)
+    readonly name = "OntologyMetadataNotFoundError";
+}
+
 export { Osdk }
 
 export { OsdkObject }
@@ -183,6 +232,8 @@ export { OsdkObjectPropertyType }
 export { PageResult }
 
 export { PalantirApiError }
+
+export { Path }
 
 // @public (undocumented)
 export interface PlatformClient extends SharedClientContext {}
@@ -200,6 +251,18 @@ export { QueryParam }
 export { QueryResult }
 
 export { Range_2 as Range }
+
+export { RecursiveOptions }
+
+export { RecursiveTraversal }
+
+// @public (undocumented)
+export interface ResolvedLink {
+    	// (undocumented)
+    readonly concreteLinkApiName: string;
+    	readonly multiplicity: boolean;
+    	readonly targetType: string;
+}
 
 export { Result }
 

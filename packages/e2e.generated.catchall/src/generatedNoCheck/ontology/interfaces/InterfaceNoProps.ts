@@ -15,6 +15,8 @@ export type OsdkObjectLinks$InterfaceNoProps = {};
 export namespace InterfaceNoProps {
   export type PropertyKeys = never;
 
+  export type LinkTokens = {};
+
   export interface Props {}
   export type StrictProps = Props;
 
@@ -36,6 +38,7 @@ export interface InterfaceNoProps extends $InterfaceDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'interface';
   apiName: 'InterfaceNoProps';
+  links: InterfaceNoProps.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: InterfaceNoProps.ObjectSet;
     props: InterfaceNoProps.Props;
@@ -57,6 +60,7 @@ export const InterfaceNoProps = {
   type: 'interface',
   apiName: 'InterfaceNoProps',
   osdkMetadata: $osdkMetadata,
+  links: {},
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.interface-type.1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b',
   },

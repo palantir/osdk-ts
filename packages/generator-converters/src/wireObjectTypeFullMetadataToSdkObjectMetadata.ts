@@ -83,6 +83,29 @@ export function wireObjectTypeFullMetadataToSdkObjectMetadata(
     )
     : {};
 
+  const interfaceLinkMap = objectTypeWithLink.implementsInterfaces2
+    ? Object.fromEntries(
+      Object.entries(objectTypeWithLink.implementsInterfaces2).sort(
+        ([a], [b]) => a.localeCompare(b),
+      ).map(
+        ([interfaceApiName, impl]) => {
+          const linkMap: Record<string, string> = {};
+          for (
+            const [interfaceLinkApiName, concreteLinks] of Object.entries(
+              impl.links ?? {},
+            )
+          ) {
+            const concreteLinkApiName = concreteLinks?.[0];
+            if (concreteLinkApiName != null) {
+              linkMap[interfaceLinkApiName] = concreteLinkApiName;
+            }
+          }
+          return [interfaceApiName, linkMap];
+        },
+      ),
+    )
+    : {};
+
   return {
     type: "object",
     apiName: objectTypeWithLink.objectType.apiName,
@@ -126,6 +149,7 @@ export function wireObjectTypeFullMetadataToSdkObjectMetadata(
         [interfaceApiName, props],
       ) => [interfaceApiName, invertProps(props)]),
     ),
+    interfaceLinkMap,
     icon: supportedIconTypes.includes(objectTypeWithLink.objectType.icon.type)
       ? objectTypeWithLink.objectType.icon
       : undefined,

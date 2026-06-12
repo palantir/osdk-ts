@@ -19,6 +19,8 @@ export namespace Todo {
 
   export type Links = {};
 
+  export type LinkTokens = {};
+
   export interface Props {
     /**
      * @experimental
@@ -73,6 +75,7 @@ export interface Todo extends $ObjectTypeDefinition {
   apiName: 'Todo';
   primaryKeyApiName: 'id';
   primaryKeyType: 'string';
+  links: Todo.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: Todo.ObjectSet;
     props: Todo.Props;
@@ -87,6 +90,7 @@ export interface Todo extends $ObjectTypeDefinition {
       name: 'confirm';
     };
     implements: [];
+    interfaceLinkMap: {};
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -139,6 +143,7 @@ export const Todo = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'id',
   primaryKeyType: 'string',
+  links: {},
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.a3fcfef9-ec11-4f2d-8a4c-dc010de837bf',
   },

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { stableStringify } from "../util/stableStringify.js";
 import type {
   ShapeDerivedLinkDef,
   ShapeLinkObjectSetDef,
@@ -26,18 +27,6 @@ interface ShapeIdInput {
   derivedLinks: readonly ShapeDerivedLinkDef[];
 }
 
-function sortedStringify(obj: unknown): string {
-  return JSON.stringify(
-    obj,
-    (_, v) =>
-      v && typeof v === "object" && !Array.isArray(v)
-        ? Object.fromEntries(
-          Object.entries(v).sort(([a], [b]) => a.localeCompare(b)),
-        )
-        : v,
-  );
-}
-
 /**
  * Computes a stable, deterministic identifier for a shape definition.
  * The ID uniquely represents the combination of base type, property
@@ -46,7 +35,7 @@ function sortedStringify(obj: unknown): string {
  */
 export function computeShapeId(input: ShapeIdInput): string {
   const canonical = canonicalizeShapeInput(input);
-  return simpleHash(sortedStringify(canonical));
+  return simpleHash(stableStringify(canonical));
 }
 
 function canonicalizeShapeInput(
@@ -89,7 +78,7 @@ function canonicalizeObjectSetDef(
   };
 
   if (def.where) {
-    result.where = JSON.parse(sortedStringify(def.where));
+    result.where = JSON.parse(stableStringify(def.where));
   }
 
   if (def.orderBy && def.orderBy.length > 0) {
@@ -112,6 +101,13 @@ function canonicalizeObjectSetDef(
       type: op.type,
       other: canonicalizeObjectSetDef(op.other),
     }));
+  }
+
+  if (def.recursive) {
+    result.recursive = {
+      maxDepth: def.recursive.maxDepth,
+      maxNodes: def.recursive.maxNodes,
+    };
   }
 
   return result;

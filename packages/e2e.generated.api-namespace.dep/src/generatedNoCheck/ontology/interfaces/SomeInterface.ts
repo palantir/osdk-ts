@@ -15,6 +15,8 @@ export type OsdkObjectLinks$SomeInterface = {};
 export namespace SomeInterface {
   export type PropertyKeys = 'spt';
 
+  export type LinkTokens = {};
+
   export interface Props {
     /**
      *   display name: 'Some Property'
@@ -41,6 +43,7 @@ export interface SomeInterface extends $InterfaceDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'interface';
   apiName: 'com.example.dep.SomeInterface';
+  links: SomeInterface.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: SomeInterface.ObjectSet;
     props: SomeInterface.Props;
@@ -67,6 +70,7 @@ export const SomeInterface = {
   type: 'interface',
   apiName: 'com.example.dep.SomeInterface',
   osdkMetadata: $osdkMetadata,
+  links: {},
   internalDoNotUseMetadata: {
     rid: 'idk2',
   },

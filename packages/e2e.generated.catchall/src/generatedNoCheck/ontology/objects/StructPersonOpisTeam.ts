@@ -19,6 +19,8 @@ export namespace StructPersonOpisTeam {
 
   export type Links = {};
 
+  export type LinkTokens = {};
+
   export interface Props {
     /**
      * (no ontology metadata)
@@ -61,6 +63,7 @@ export interface StructPersonOpisTeam extends $ObjectTypeDefinition {
   apiName: 'StructPersonOpisTeam';
   primaryKeyApiName: 'id';
   primaryKeyType: 'string';
+  links: StructPersonOpisTeam.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: StructPersonOpisTeam.ObjectSet;
     props: StructPersonOpisTeam.Props;
@@ -75,6 +78,7 @@ export interface StructPersonOpisTeam extends $ObjectTypeDefinition {
       color: 'color';
     };
     implements: undefined;
+    interfaceLinkMap: {};
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -109,6 +113,7 @@ export const StructPersonOpisTeam = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'id',
   primaryKeyType: 'string',
+  links: {},
   internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
   },

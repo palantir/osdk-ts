@@ -16,7 +16,7 @@
 
 /* eslint-disable @typescript-eslint/no-deprecated */
 
-export { isOk } from "@osdk/api";
+export { createLinkDef, isOk } from "@osdk/api";
 export type {
   ActionDefinition,
   ActionEditResponse,
@@ -31,6 +31,11 @@ export type {
   DerivedProperty,
   InterfaceDefinition,
   InterfaceMetadata,
+  LinkDef,
+  LinkHopDescriptor,
+  LinkTraversal,
+  LinkTraversalDescriptor,
+  LinkTraversalKind,
   Logger,
   Media,
   MediaMetadata,
@@ -45,6 +50,7 @@ export type {
   OsdkObjectCreatePropertyType,
   OsdkObjectPropertyType,
   PageResult,
+  Path,
   PropertyDef,
   PropertyKeys,
   PropertyValueWireToClient,
@@ -52,6 +58,8 @@ export type {
   QueryParam,
   QueryResult,
   Range,
+  RecursiveOptions,
+  RecursiveTraversal,
   Result,
   SingleLinkAccessor,
   ThreeDimensionalAggregation,
@@ -67,6 +75,14 @@ export { createClient } from "./createClient.js";
 export { createPlatformClient } from "./createPlatformClient.js";
 export type { PlatformClient } from "./createPlatformClient.js";
 export { createAttachmentUpload } from "./object/AttachmentUpload.js";
+export {
+  InterfaceLinkNotResolvableError,
+  OntologyMetadataNotFoundError,
+} from "./ontology/errors/InterfaceLinkErrors.js";
+export type {
+  OntologyMetadataClient,
+  ResolvedLink,
+} from "./ontology/OntologyMetadataClient.js";
 export type { ResultOrError } from "./ResultOrError.js";
 
 export type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";

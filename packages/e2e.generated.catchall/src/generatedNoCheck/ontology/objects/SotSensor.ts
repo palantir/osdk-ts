@@ -19,6 +19,8 @@ export namespace SotSensor {
 
   export type Links = {};
 
+  export type LinkTokens = {};
+
   export interface Props {
     /**
      *   display name: 'Is Enum'
@@ -63,6 +65,7 @@ export interface SotSensor extends $ObjectTypeDefinition {
   apiName: 'SotSensor';
   primaryKeyApiName: 'seriesId';
   primaryKeyType: 'string';
+  links: SotSensor.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: SotSensor.ObjectSet;
     props: SotSensor.Props;
@@ -77,6 +80,7 @@ export interface SotSensor extends $ObjectTypeDefinition {
       color: 'color';
     };
     implements: undefined;
+    interfaceLinkMap: {};
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -119,6 +123,7 @@ export const SotSensor = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'seriesId',
   primaryKeyType: 'string',
+  links: {},
   internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },

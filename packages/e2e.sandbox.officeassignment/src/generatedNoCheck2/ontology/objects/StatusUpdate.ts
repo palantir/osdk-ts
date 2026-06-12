@@ -13,7 +13,9 @@ import type {
   OsdkObject as $OsdkObject,
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
+  LinkDef as $LinkDef,
 } from '@osdk/client';
+import { createLinkDef as $createLinkDef } from '@osdk/client';
 
 export namespace StatusUpdate {
   export type PropertyKeys =
@@ -30,6 +32,10 @@ export namespace StatusUpdate {
 
   export interface Links {
     readonly assignment: $SingleLinkAccessor<Assignment>;
+  }
+
+  export interface LinkTokens {
+    readonly assignment: $LinkDef<StatusUpdate, Assignment, 'one'>;
   }
 
   export interface Props {
@@ -136,6 +142,7 @@ export interface StatusUpdate extends $ObjectTypeDefinition {
   apiName: 'StatusUpdate';
   primaryKeyApiName: 'statusUpdateId';
   primaryKeyType: 'string';
+  links: StatusUpdate.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: StatusUpdate.ObjectSet;
     props: StatusUpdate.Props;
@@ -150,6 +157,7 @@ export interface StatusUpdate extends $ObjectTypeDefinition {
       name: 'timeline-events';
     };
     implements: [];
+    interfaceLinkMap: {};
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {
@@ -254,6 +262,9 @@ export const StatusUpdate = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'statusUpdateId',
   primaryKeyType: 'string',
+  links: {
+    assignment: $createLinkDef('StatusUpdate', 'assignment', 'Assignment', false, false),
+  },
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.586dc2cc-44d2-4a82-8831-bd529c6f2042',
   },

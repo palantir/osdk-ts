@@ -19,6 +19,8 @@ export namespace StructPerson {
 
   export type Links = {};
 
+  export type LinkTokens = {};
+
   export interface Props {
     /**
      * (no ontology metadata)
@@ -51,6 +53,7 @@ export interface StructPerson extends $ObjectTypeDefinition {
   apiName: 'StructPerson';
   primaryKeyApiName: 'name';
   primaryKeyType: 'string';
+  links: StructPerson.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: StructPerson.ObjectSet;
     props: StructPerson.Props;
@@ -65,6 +68,7 @@ export interface StructPerson extends $ObjectTypeDefinition {
       color: 'color';
     };
     implements: undefined;
+    interfaceLinkMap: {};
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -95,6 +99,7 @@ export const StructPerson = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'name',
   primaryKeyType: 'string',
+  links: {},
   internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
   },

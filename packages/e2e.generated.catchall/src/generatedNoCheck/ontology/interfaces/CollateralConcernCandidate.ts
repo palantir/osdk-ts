@@ -8,7 +8,9 @@ import type {
   Osdk as $Osdk,
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
+  LinkDef as $LinkDef,
 } from '@osdk/client';
+import { createLinkDef as $createLinkDef } from '@osdk/client';
 
 export interface OsdkObjectLinks$CollateralConcernCandidate {
   'com.palantir.pcl.civpro.collateral-concern-core.collateralConcernEntityToList': CollateralConcernList.ObjectSet;
@@ -16,6 +18,14 @@ export interface OsdkObjectLinks$CollateralConcernCandidate {
 
 export namespace CollateralConcernCandidate {
   export type PropertyKeys = 'collateralConcernDescription' | 'collateralConcernName';
+
+  export interface LinkTokens {
+    readonly 'com.palantir.pcl.civpro.collateral-concern-core.collateralConcernEntityToList': $LinkDef<
+      CollateralConcernCandidate,
+      CollateralConcernList,
+      'many'
+    >;
+  }
 
   export interface Props {
     /**
@@ -51,6 +61,7 @@ export interface CollateralConcernCandidate extends $InterfaceDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'interface';
   apiName: 'com.palantir.pcl.civpro.collateral-concern-core.CollateralConcernCandidate';
+  links: CollateralConcernCandidate.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: CollateralConcernCandidate.ObjectSet;
     props: CollateralConcernCandidate.Props;
@@ -90,6 +101,15 @@ export const CollateralConcernCandidate = {
   type: 'interface',
   apiName: 'com.palantir.pcl.civpro.collateral-concern-core.CollateralConcernCandidate',
   osdkMetadata: $osdkMetadata,
+  links: {
+    'com.palantir.pcl.civpro.collateral-concern-core.collateralConcernEntityToList': $createLinkDef(
+      'com.palantir.pcl.civpro.collateral-concern-core.CollateralConcernCandidate',
+      'com.palantir.pcl.civpro.collateral-concern-core.collateralConcernEntityToList',
+      'com.palantir.pcl.civpro.collateral-concern-core.CollateralConcernList',
+      true,
+      true,
+    ),
+  },
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.interface.81202dc9-3dcb-4031-b102-bfdb01a0e17c',
   },

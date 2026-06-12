@@ -17,7 +17,9 @@ import type {
   OsdkObject as $OsdkObject,
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
+  LinkDef as $LinkDef,
 } from '@osdk/client';
+import { createLinkDef as $createLinkDef } from '@osdk/client';
 
 export namespace Assignment {
   export type PropertyKeys =
@@ -40,6 +42,14 @@ export namespace Assignment {
     readonly manager: $SingleLinkAccessor<Manager>;
     readonly office: $SingleLinkAccessor<Office>;
     readonly statusUpdate: StatusUpdate.ObjectSet;
+  }
+
+  export interface LinkTokens {
+    readonly employee: $LinkDef<Assignment, Employee, 'one'>;
+    readonly floor: $LinkDef<Assignment, Floor, 'one'>;
+    readonly manager: $LinkDef<Assignment, Manager, 'one'>;
+    readonly office: $LinkDef<Assignment, Office, 'one'>;
+    readonly statusUpdate: $LinkDef<Assignment, StatusUpdate, 'many'>;
   }
 
   export interface Props {
@@ -162,6 +172,7 @@ export interface Assignment extends $ObjectTypeDefinition {
   apiName: 'Assignment';
   primaryKeyApiName: 'assignmentId';
   primaryKeyType: 'string';
+  links: Assignment.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: Assignment.ObjectSet;
     props: Assignment.Props;
@@ -176,6 +187,7 @@ export interface Assignment extends $ObjectTypeDefinition {
       name: 'briefcase';
     };
     implements: [];
+    interfaceLinkMap: {};
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {
@@ -300,6 +312,13 @@ export const Assignment = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'assignmentId',
   primaryKeyType: 'string',
+  links: {
+    employee: $createLinkDef('Assignment', 'employee', 'Employee', false, false),
+    floor: $createLinkDef('Assignment', 'floor', 'Floor', false, false),
+    manager: $createLinkDef('Assignment', 'manager', 'Manager', false, false),
+    office: $createLinkDef('Assignment', 'office', 'Office', false, false),
+    statusUpdate: $createLinkDef('Assignment', 'statusUpdate', 'StatusUpdate', true, false),
+  },
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.6720b526-a510-456d-b328-73bfeb8471d7',
   },

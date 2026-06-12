@@ -19,6 +19,8 @@ export namespace GtfsTripTrackObject {
 
   export type Links = {};
 
+  export type LinkTokens = {};
+
   export interface Props {
     /**
      * (no ontology metadata)
@@ -55,6 +57,7 @@ export interface GtfsTripTrackObject extends $ObjectTypeDefinition {
   apiName: 'GtfsTripTrackObject';
   primaryKeyApiName: 'entityId';
   primaryKeyType: 'string';
+  links: GtfsTripTrackObject.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: GtfsTripTrackObject.ObjectSet;
     props: GtfsTripTrackObject.Props;
@@ -69,6 +72,7 @@ export interface GtfsTripTrackObject extends $ObjectTypeDefinition {
       color: 'color';
     };
     implements: undefined;
+    interfaceLinkMap: {};
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -103,6 +107,7 @@ export const GtfsTripTrackObject = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'entityId',
   primaryKeyType: 'string',
+  links: {},
   internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
   },

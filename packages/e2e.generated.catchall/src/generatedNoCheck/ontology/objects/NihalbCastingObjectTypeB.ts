@@ -13,13 +13,23 @@ import type {
   OsdkObject as $OsdkObject,
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
+  LinkDef as $LinkDef,
 } from '@osdk/client';
+import { createLinkDef as $createLinkDef } from '@osdk/client';
 
 export namespace NihalbCastingObjectTypeB {
   export type PropertyKeys = 'additionalProperty' | 'primaryKey_';
 
   export interface Links {
     readonly nihalbCastingLinkedObjectTypeAs: NihalbCastingLinkedObjectTypeA.ObjectSet;
+  }
+
+  export interface LinkTokens {
+    readonly nihalbCastingLinkedObjectTypeAs: $LinkDef<
+      NihalbCastingObjectTypeB,
+      NihalbCastingLinkedObjectTypeA,
+      'many'
+    >;
   }
 
   export interface Props {
@@ -62,6 +72,7 @@ export interface NihalbCastingObjectTypeB extends $ObjectTypeDefinition {
   apiName: 'NihalbCastingObjectTypeB';
   primaryKeyApiName: 'primaryKey_';
   primaryKeyType: 'string';
+  links: NihalbCastingObjectTypeB.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: NihalbCastingObjectTypeB.ObjectSet;
     props: NihalbCastingObjectTypeB.Props;
@@ -76,6 +87,14 @@ export interface NihalbCastingObjectTypeB extends $ObjectTypeDefinition {
       name: 'cube';
     };
     implements: ['NihalbCastingInterfaceB', 'NihalbCastingInterfaceTypeA'];
+    interfaceLinkMap: {
+      NihalbCastingInterfaceB: {
+        nihalbCastingLinkedObjectTypeA: 'nihalbCastingLinkedObjectTypeAs';
+      };
+      NihalbCastingInterfaceTypeA: {
+        nihalbCastingLinkedObjectTypeA: 'nihalbCastingLinkedObjectTypeAs';
+      };
+    };
     interfaceMap: {
       NihalbCastingInterfaceB: {
         interfaceProperty: 'primaryKey_';
@@ -130,6 +149,15 @@ export const NihalbCastingObjectTypeB = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'primaryKey_',
   primaryKeyType: 'string',
+  links: {
+    nihalbCastingLinkedObjectTypeAs: $createLinkDef(
+      'NihalbCastingObjectTypeB',
+      'nihalbCastingLinkedObjectTypeAs',
+      'NihalbCastingLinkedObjectTypeA',
+      true,
+      false,
+    ),
+  },
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.66898c81-9a3f-4f8b-937a-6934f6d9f660',
   },

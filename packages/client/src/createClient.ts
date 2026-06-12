@@ -62,6 +62,8 @@ import { fetchSingle } from "./object/fetchSingle.js";
 import { createObjectSet } from "./objectSet/createObjectSet.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
 import { ObjectSetListenerWebsocket } from "./objectSet/ObjectSetListenerWebsocket.js";
+import { createOntologyMetadataClient } from "./ontology/OntologyMetadataClient.js";
+import { ontologyVersionKey } from "./ontology/versionKeyedMetadataCache.js";
 import { applyQuery } from "./queries/applyQuery.js";
 import type { QuerySignatureFromDef } from "./queries/types.js";
 
@@ -396,6 +398,11 @@ export function createClientFromContext(clientCtx: MinimalClient) {
     clientCtx,
   );
 
+  const ontologyMetadata = createOntologyMetadataClient(
+    clientCtx.ontologyProvider,
+    () => ontologyVersionKey(clientCtx),
+  );
+
   const symbolClientContext: newSymbolClientContext = "__osdkClientContext";
 
   const client: Client = Object.defineProperties<Client>(
@@ -412,6 +419,9 @@ export function createClientFromContext(clientCtx: MinimalClient) {
       },
       fetchMetadata: {
         value: fetchMetadata,
+      },
+      ontologyMetadata: {
+        value: ontologyMetadata,
       },
     } satisfies Record<keyof Client, PropertyDescriptor>,
   );

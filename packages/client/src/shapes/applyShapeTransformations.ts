@@ -52,6 +52,7 @@ export function applyShapeTransformations<
   const primaryKey = rawObject.$primaryKey;
   const transformedProps: Record<string, unknown> = {};
   const requireProps: string[] = [];
+  const missingFields: string[] = [];
 
   // Phase 1-3: filter (dropIfNull), apply defaults and transforms
   // Collect require props to check after cloning
@@ -82,6 +83,9 @@ export function applyShapeTransformations<
         break;
       }
       case "withDefault": {
+        if (originalValue == null) {
+          missingFields.push(prop);
+        }
         transformedProps[prop] = originalValue ?? op.defaultValue;
         break;
       }
@@ -149,8 +153,21 @@ export function applyShapeTransformations<
     };
   }
 
+  // Attach the missing-field set to a fresh object so the shared cache instance
+  // is never mutated. When no transform produced a clone, clone now with no
+  // overrides to obtain an object we own.
+  const resultObject = clonedObject === rawObject
+    ? rawObject.$clone()
+    : clonedObject;
+  Object.defineProperty(resultObject, "$missingFields", {
+    value: new Set(missingFields),
+    enumerable: false,
+    configurable: true,
+    writable: false,
+  });
+
   return {
-    data: clonedObject as Osdk.Instance<ShapeBaseType<S>> & ShapeInstance<S>,
+    data: resultObject as Osdk.Instance<ShapeBaseType<S>> & ShapeInstance<S>,
     dropped: false,
     violations: [],
   };

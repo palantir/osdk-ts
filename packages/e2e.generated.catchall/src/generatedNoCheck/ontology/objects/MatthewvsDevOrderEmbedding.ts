@@ -19,6 +19,8 @@ export namespace MatthewvsDevOrderEmbedding {
 
   export type Links = {};
 
+  export type LinkTokens = {};
+
   export interface Props {
     /**
      * @experimental
@@ -59,6 +61,7 @@ export interface MatthewvsDevOrderEmbedding extends $ObjectTypeDefinition {
   apiName: 'MatthewvsDevOrderEmbedding';
   primaryKeyApiName: 'orderId';
   primaryKeyType: 'string';
+  links: MatthewvsDevOrderEmbedding.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: MatthewvsDevOrderEmbedding.ObjectSet;
     props: MatthewvsDevOrderEmbedding.Props;
@@ -73,6 +76,7 @@ export interface MatthewvsDevOrderEmbedding extends $ObjectTypeDefinition {
       color: 'color';
     };
     implements: undefined;
+    interfaceLinkMap: {};
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -111,6 +115,7 @@ export const MatthewvsDevOrderEmbedding = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'orderId',
   primaryKeyType: 'string',
+  links: {},
   internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },

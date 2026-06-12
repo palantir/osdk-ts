@@ -19,6 +19,8 @@ export namespace DherlihyComplexObject {
 
   export type Links = {};
 
+  export type LinkTokens = {};
+
   export interface Props {
     /**
      * (no ontology metadata)
@@ -55,6 +57,7 @@ export interface DherlihyComplexObject extends $ObjectTypeDefinition {
   apiName: 'DherlihyComplexObject';
   primaryKeyApiName: 'id';
   primaryKeyType: 'string';
+  links: DherlihyComplexObject.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: DherlihyComplexObject.ObjectSet;
     props: DherlihyComplexObject.Props;
@@ -69,6 +72,7 @@ export interface DherlihyComplexObject extends $ObjectTypeDefinition {
       color: 'color';
     };
     implements: undefined;
+    interfaceLinkMap: {};
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -103,6 +107,7 @@ export const DherlihyComplexObject = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'id',
   primaryKeyType: 'string',
+  links: {},
   internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },

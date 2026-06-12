@@ -321,6 +321,83 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
     });
   });
 
+  it("extracts interface link map from implementsInterfaces2", () => {
+    const result = wireObjectTypeFullMetadataToSdkObjectMetadata({
+      implementsInterfaces: ["CategoryInterface"],
+      implementsInterfaces2: {
+        CategoryInterface: {
+          properties: {},
+          propertiesV2: {},
+          links: { childCategories: ["concreteChildren"] },
+        },
+      },
+      linkTypes: [
+        {
+          apiName: "concreteChildren",
+          cardinality: "MANY",
+          objectTypeApiName: "SubCategory",
+          displayName: "Children",
+          status: "ACTIVE",
+          linkTypeRid: "rid",
+        },
+      ],
+      objectType: {
+        apiName: "SubCategory",
+        description: "description",
+        displayName: "displayName",
+        pluralDisplayName: "displayNames",
+        icon: { type: "blueprint", name: "blueprint", color: "blue" },
+        primaryKey: "primaryKey",
+        properties: {
+          primaryKey: {
+            dataType: { type: "string" },
+            "rid": "rid",
+            typeClasses: [],
+          },
+        },
+        rid: "rid",
+        status: "ACTIVE",
+        titleProperty: "primaryKey",
+      },
+      sharedPropertyTypeMapping: {},
+    }, true);
+
+    expect(result.interfaceLinkMap).toEqual({
+      CategoryInterface: { childCategories: "concreteChildren" },
+    });
+  });
+
+  it("emits empty interface link map when no interface links are present", () => {
+    const result = wireObjectTypeFullMetadataToSdkObjectMetadata({
+      implementsInterfaces: ["CategoryInterface"],
+      implementsInterfaces2: {
+        CategoryInterface: { properties: {}, propertiesV2: {}, links: {} },
+      },
+      linkTypes: [],
+      objectType: {
+        apiName: "apiName",
+        description: "description",
+        displayName: "displayName",
+        pluralDisplayName: "displayNames",
+        icon: { type: "blueprint", name: "blueprint", color: "blue" },
+        primaryKey: "primaryKey",
+        properties: {
+          primaryKey: {
+            dataType: { type: "string" },
+            "rid": "rid",
+            typeClasses: [],
+          },
+        },
+        rid: "rid",
+        status: "ACTIVE",
+        titleProperty: "primaryKey",
+      },
+      sharedPropertyTypeMapping: {},
+    }, true);
+
+    expect(result.interfaceLinkMap).toEqual({ CategoryInterface: {} });
+  });
+
   it("preserves empty arrays", () => {
     const result = wireObjectTypeFullMetadataToSdkObjectMetadata({
       implementsInterfaces: [],

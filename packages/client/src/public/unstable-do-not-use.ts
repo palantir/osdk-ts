@@ -60,4 +60,8 @@ export type { Observer } from "../observable/ObservableClient/common.js";
 /** @deprecated Import from `@osdk/client/observable` instead. */
 export type { ObserveLinks } from "../observable/ObservableClient/ObserveLink.js";
 /** @deprecated Import from `@osdk/client/observable` instead. */
+export type { ObserveLinkClosure } from "../observable/ObservableClient/ObserveLinkClosure.js";
+/** @deprecated Import from `@osdk/client/observable` instead. */
+export type { ObservePath } from "../observable/ObservableClient/ObservePath.js";
+/** @deprecated Import from `@osdk/client/observable` instead. */
 export type { QueryParameterType, QueryReturnType } from "../queries/types.js";

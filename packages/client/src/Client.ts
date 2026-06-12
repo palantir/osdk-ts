@@ -35,6 +35,7 @@ import type {
 import type { SharedClient } from "@osdk/shared.client2";
 import type { ActionSignatureFromDef } from "./actions/applyAction.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
+import type { OntologyMetadataClient } from "./ontology/OntologyMetadataClient.js";
 import type { QuerySignatureFromDef } from "./queries/types.js";
 import type { SatisfiesSemver } from "./SatisfiesSemver.js";
 
@@ -159,6 +160,13 @@ export interface Client extends SharedClient, OldSharedClient {
       : Q extends QueryDefinition<any> ? QueryMetadata
       : never
   >;
+
+  /**
+   * Ontology metadata discovery surface for interface-aware graph loading.
+   * Resolves which concrete object types implement an interface and translates
+   * interface links to their concrete link on a given object type.
+   */
+  ontologyMetadata: OntologyMetadataClient;
 
   /** @internal */
   [additionalContext]: MinimalClient;

@@ -19,6 +19,8 @@ export namespace BuilderDeploymentState {
 
   export type Links = {};
 
+  export type LinkTokens = {};
+
   export interface Props {
     /**
      * (no ontology metadata)
@@ -55,6 +57,7 @@ export interface BuilderDeploymentState extends $ObjectTypeDefinition {
   apiName: 'BuilderDeploymentState';
   primaryKeyApiName: 'skuId';
   primaryKeyType: 'string';
+  links: BuilderDeploymentState.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: BuilderDeploymentState.ObjectSet;
     props: BuilderDeploymentState.Props;
@@ -69,6 +72,7 @@ export interface BuilderDeploymentState extends $ObjectTypeDefinition {
       color: 'color';
     };
     implements: undefined;
+    interfaceLinkMap: {};
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -103,6 +107,7 @@ export const BuilderDeploymentState = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'skuId',
   primaryKeyType: 'string',
+  links: {},
   internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },

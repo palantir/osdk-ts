@@ -32,4 +32,6 @@ export type {
 } from "../observable/ObservableClient.js";
 export type { Observer } from "../observable/ObservableClient/common.js";
 export type { ObserveLinks } from "../observable/ObservableClient/ObserveLink.js";
+export type { ObserveLinkClosure } from "../observable/ObservableClient/ObserveLinkClosure.js";
+export type { ObservePath } from "../observable/ObservableClient/ObservePath.js";
 export type { QueryParameterType, QueryReturnType } from "../queries/types.js";

@@ -15,6 +15,7 @@
  */
 
 import type { ObjectSet, Osdk } from "@osdk/api";
+import { ObjectRefMap } from "@osdk/api";
 import {
   editTodo,
   Employee,
@@ -497,6 +498,302 @@ describe(Store, () => {
       });
     });
 
+    it(
+      "invalidateObject only refetches link records sourced from that exact object",
+      async () => {
+        // Two dedicated employees, each pointing at its own office through the
+        // `officeLink` (Employee->Office) relationship. The target type differs
+        // from the source type, so invalidating one source employee can only
+        // touch the sibling via the per-PK source path — never the target-type
+        // walk — which is exactly the source-side precision under test.
+        const dataStore = fauxFoundry.getDefaultDataStore();
+        const empA = 9401;
+        const officeA = "9402";
+        const empB = 9403;
+        const officeB = "9404";
+        for (
+          const [emp, office] of [[empA, officeA], [empB, officeB]] as const
+        ) {
+          dataStore.registerObject(Employee, {
+            $apiName: "Employee",
+            employeeId: emp,
+          });
+          dataStore.registerObject(Office, {
+            $apiName: "Office",
+            officeId: office,
+            name: `Office ${office}`,
+          });
+          dataStore.registerLink(
+            { __apiName: "Employee", __primaryKey: emp },
+            "officeLink",
+            { __apiName: "Office", __primaryKey: office },
+            "occupants",
+          );
+        }
+
+        try {
+          const empAOfficeFn = mockLinkSubCallback();
+          defer(cache.links.observe({
+            linkName: "officeLink",
+            srcType: { type: "object", apiName: "Employee" },
+            sourceUnderlyingObjectType: "Employee",
+            pk: empA,
+            dedupeInterval: 60_000,
+          }, empAOfficeFn));
+
+          await waitForCall(empAOfficeFn);
+          expectSingleLinkCallAndClear(empAOfficeFn, undefined, {
+            status: "loading",
+          });
+          await waitForCall(empAOfficeFn);
+          expectSingleLinkCallAndClear(
+            empAOfficeFn,
+            [expect.objectContaining({ $primaryKey: officeA })],
+            { status: "loaded" },
+          );
+
+          const empBOfficeFn = mockLinkSubCallback();
+          defer(cache.links.observe({
+            linkName: "officeLink",
+            srcType: { type: "object", apiName: "Employee" },
+            sourceUnderlyingObjectType: "Employee",
+            pk: empB,
+            dedupeInterval: 60_000,
+          }, empBOfficeFn));
+
+          await waitForCall(empBOfficeFn);
+          expectSingleLinkCallAndClear(empBOfficeFn, undefined, {
+            status: "loading",
+          });
+          await waitForCall(empBOfficeFn);
+          expectSingleLinkCallAndClear(
+            empBOfficeFn,
+            [expect.objectContaining({ $primaryKey: officeB })],
+            { status: "loaded" },
+          );
+
+          testStage("Invalidating only Employee A via the per-object path");
+
+          const invalidatePromise = cache.invalidateObject(Employee, empA);
+
+          // empA's link record refetches: loading then loaded.
+          await waitForCall(empAOfficeFn);
+          expectSingleLinkCallAndClear(
+            empAOfficeFn,
+            [expect.objectContaining({ $primaryKey: officeA })],
+            { status: "loading" },
+          );
+          await waitForCall(empAOfficeFn);
+          expectSingleLinkCallAndClear(
+            empAOfficeFn,
+            [expect.objectContaining({ $primaryKey: officeA })],
+            { status: "loaded" },
+          );
+
+          await invalidatePromise;
+
+          // empB's link record was sourced from a different object and points
+          // at a different type, so neither the source nor the target path
+          // touches it.
+          expect(empBOfficeFn.next).not.toHaveBeenCalled();
+        } finally {
+          for (
+            const [emp, office] of [[empA, officeA], [empB, officeB]] as const
+          ) {
+            dataStore.unregisterLink(
+              { __apiName: "Employee", __primaryKey: emp },
+              "officeLink",
+              { __apiName: "Office", __primaryKey: office },
+              "occupants",
+            );
+          }
+        }
+      },
+    );
+
+    it(
+      "many-cardinality link is marked optimistic while a member is optimistically edited",
+      async () => {
+        const dataStore = fauxFoundry.getDefaultDataStore();
+        // Dedicated objects keep this order-independent from the shared
+        // emp1/johnDoe peeps link that other tests mutate in place.
+        const manySrc = 9101;
+        const manyPeep = 9102;
+        for (const employeeId of [manySrc, manyPeep]) {
+          dataStore.registerObject(Employee, {
+            $apiName: "Employee",
+            employeeId,
+          });
+        }
+        dataStore.registerLink(
+          { __apiName: "Employee", __primaryKey: manySrc },
+          "peeps",
+          { __apiName: "Employee", __primaryKey: manyPeep },
+          "lead",
+        );
+
+        try {
+          const { payload: peepPayload } = await expectStandardObserveObject({
+            cache,
+            type: Employee,
+            primaryKey: manyPeep,
+          });
+          const peep = peepPayload?.object;
+          invariant(peep);
+
+          const peepsFn = mockLinkSubCallback();
+          defer(cache.links.observe({
+            linkName: "peeps",
+            srcType: { type: "object", apiName: "Employee" },
+            sourceUnderlyingObjectType: "Employee",
+            pk: manySrc,
+            dedupeInterval: 60_000,
+          }, peepsFn));
+
+          await waitForCall(peepsFn);
+          expectSingleLinkCallAndClear(peepsFn, undefined, {
+            status: "loading",
+          });
+          await waitForCall(peepsFn);
+          const loaded = expectSingleLinkCallAndClear(
+            peepsFn,
+            [expect.objectContaining({ $primaryKey: manyPeep })],
+            { status: "loaded" },
+          );
+          expect(loaded?.isOptimistic).toBe(false);
+
+          testStage("Optimistically editing a member of the many-link");
+          const optimisticId = createOptimisticId();
+          updateObject(cache, peep.$clone({ fullName: "Optimistic Name" }), {
+            optimisticId,
+          });
+
+          await waitForCall(peepsFn);
+          const optimistic = expectSingleLinkCallAndClear(
+            peepsFn,
+            [expect.objectContaining({
+              $primaryKey: manyPeep,
+              fullName: "Optimistic Name",
+            })],
+          );
+          expect(optimistic?.isOptimistic).toBe(true);
+
+          testStage("Rolling back the optimistic member edit");
+          cache.layers.remove(optimisticId);
+
+          await waitForCall(peepsFn);
+          const rolledBack = expectSingleLinkCallAndClear(
+            peepsFn,
+            [expect.objectContaining({ $primaryKey: manyPeep })],
+          );
+          expect(rolledBack?.isOptimistic).toBe(false);
+        } finally {
+          dataStore.unregisterLink(
+            { __apiName: "Employee", __primaryKey: manySrc },
+            "peeps",
+            { __apiName: "Employee", __primaryKey: manyPeep },
+            "lead",
+          );
+        }
+      },
+    );
+
+    it(
+      "one-cardinality link swaps its single value when the target is optimistically edited",
+      async () => {
+        const dataStore = fauxFoundry.getDefaultDataStore();
+        const oneSrc = 9201;
+        const oneOffice = "9202";
+        dataStore.registerObject(Employee, {
+          $apiName: "Employee",
+          employeeId: oneSrc,
+        });
+        dataStore.registerObject(Office, {
+          $apiName: "Office",
+          officeId: oneOffice,
+          name: "Original Office",
+        });
+        dataStore.registerLink(
+          { __apiName: "Employee", __primaryKey: oneSrc },
+          "officeLink",
+          { __apiName: "Office", __primaryKey: oneOffice },
+          "occupants",
+        );
+
+        try {
+          const { payload: officePayload } = await expectStandardObserveObject({
+            cache,
+            type: Office,
+            primaryKey: oneOffice,
+          });
+          const office = officePayload?.object;
+          invariant(office);
+
+          const officeLinkFn = mockLinkSubCallback();
+          defer(cache.links.observe({
+            linkName: "officeLink",
+            srcType: { type: "object", apiName: "Employee" },
+            sourceUnderlyingObjectType: "Employee",
+            pk: oneSrc,
+            dedupeInterval: 60_000,
+          }, officeLinkFn));
+
+          await waitForCall(officeLinkFn);
+          expectSingleLinkCallAndClear(officeLinkFn, undefined, {
+            status: "loading",
+          });
+          await waitForCall(officeLinkFn);
+          const loaded = expectSingleLinkCallAndClear(
+            officeLinkFn,
+            [expect.objectContaining({
+              $primaryKey: oneOffice,
+              name: "Original Office",
+            })],
+            { status: "loaded" },
+          );
+          expect(loaded?.resolvedList).toHaveLength(1);
+          expect(loaded?.isOptimistic).toBe(false);
+
+          testStage("Optimistically editing the single linked office");
+          const optimisticId = createOptimisticId();
+          updateObject(cache, office.$clone({ name: "Optimistic Office" }), {
+            optimisticId,
+          });
+
+          await waitForCall(officeLinkFn);
+          const optimistic = expectSingleLinkCallAndClear(
+            officeLinkFn,
+            [expect.objectContaining({
+              $primaryKey: oneOffice,
+              name: "Optimistic Office",
+            })],
+          );
+          expect(optimistic?.resolvedList).toHaveLength(1);
+          expect(optimistic?.isOptimistic).toBe(true);
+
+          testStage("Rolling back the optimistic office edit");
+          cache.layers.remove(optimisticId);
+
+          await waitForCall(officeLinkFn);
+          const rolledBack = expectSingleLinkCallAndClear(
+            officeLinkFn,
+            [expect.objectContaining({
+              $primaryKey: oneOffice,
+              name: "Original Office",
+            })],
+          );
+          expect(rolledBack?.isOptimistic).toBe(false);
+        } finally {
+          dataStore.unregisterLink(
+            { __apiName: "Employee", __primaryKey: oneSrc },
+            "officeLink",
+            { __apiName: "Office", __primaryKey: oneOffice },
+            "occupants",
+          );
+        }
+      },
+    );
+
     describe("multi-object observeLinks", () => {
       function getLastPayload(
         subFn: ReturnType<typeof mockLinkSubCallback>,
@@ -629,6 +926,26 @@ describe(Store, () => {
               expect.objectContaining({ $primaryKey: "101" }),
             ]),
           );
+          expect(
+            lastPayload.linkedObjectsBySource.get({
+              $objectType: "Employee",
+              $primaryKey: 1,
+            }),
+          ).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({ $primaryKey: "101" }),
+            ]),
+          );
+          expect(
+            lastPayload.linkedObjectsBySource.get({
+              $objectType: "Employee",
+              $primaryKey: 3,
+            }),
+          ).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({ $primaryKey: "101" }),
+            ]),
+          );
         } finally {
           dataStore.unregisterLink(
             { __apiName: "Employee", __primaryKey: 3 },
@@ -636,6 +953,207 @@ describe(Store, () => {
             { __apiName: "Office", __primaryKey: "101" },
             "occupants",
           );
+        }
+      });
+
+      it("exposes linkedObjectsBySource as an ObjectRefMap keyed by source ObjectRef", async () => {
+        const observableClient: ObservableClient = new ObservableClientImpl(
+          cache,
+        );
+
+        const { payload: emp1Payload } = await expectStandardObserveObject({
+          cache,
+          type: Employee,
+          primaryKey: 1,
+        });
+        const emp1 = emp1Payload?.object;
+        invariant(emp1);
+
+        const { payload: emp2Payload } = await expectStandardObserveObject({
+          cache,
+          type: Employee,
+          primaryKey: 2,
+        });
+        const emp2 = emp2Payload?.object;
+        invariant(emp2);
+
+        const linkSubFn = mockLinkSubCallback();
+
+        defer(
+          observableClient.observeLinks(
+            [emp1, emp2],
+            "officeLink",
+            { linkName: "officeLink" },
+            // @ts-expect-error crossing typed/untyped barrier for test
+            linkSubFn as unknown as Observer<SpecificLinkPayload>,
+          ),
+        );
+
+        await waitForLoaded(linkSubFn);
+        const lastPayload = getLastPayload(linkSubFn);
+
+        expect(lastPayload.linkedObjectsBySource).toBeInstanceOf(ObjectRefMap);
+        expect(
+          lastPayload.linkedObjectsBySource.get({
+            $objectType: "Employee",
+            $primaryKey: 1,
+          }),
+        ).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ $primaryKey: "101" }),
+          ]),
+        );
+        expect(
+          lastPayload.linkedObjectsBySource.get({
+            $objectType: "Employee",
+            $primaryKey: 2,
+          }),
+        ).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ $primaryKey: "102" }),
+          ]),
+        );
+      });
+
+      it("excludes source refs from every group in multi-source merge", async () => {
+        const dataStore = fauxFoundry.getDefaultDataStore();
+
+        // Use dedicated employees so the mutual peeps cycle cannot pollute the
+        // shared emp1/emp2/emp3 that the rest of the suite depends on.
+        // peeps/lead is a one-to-many (lead is the ONE side): a target belongs
+        // to at most one source's peeps group, keyed by its leadId.
+        const srcA = 9001;
+        const srcB = 9002;
+        const targetForB = 9003;
+        const targetForA = 9004;
+        for (const employeeId of [srcA, srcB, targetForA, targetForB]) {
+          dataStore.registerObject(Employee, {
+            $apiName: "Employee",
+            employeeId,
+          });
+        }
+
+        // srcA <-> srcB link to each other; each also has a non-source peep.
+        dataStore.registerLink(
+          { __apiName: "Employee", __primaryKey: srcA },
+          "peeps",
+          { __apiName: "Employee", __primaryKey: srcB },
+          "lead",
+        );
+        dataStore.registerLink(
+          { __apiName: "Employee", __primaryKey: srcB },
+          "peeps",
+          { __apiName: "Employee", __primaryKey: srcA },
+          "lead",
+        );
+        dataStore.registerLink(
+          { __apiName: "Employee", __primaryKey: srcA },
+          "peeps",
+          { __apiName: "Employee", __primaryKey: targetForA },
+          "lead",
+        );
+        dataStore.registerLink(
+          { __apiName: "Employee", __primaryKey: srcB },
+          "peeps",
+          { __apiName: "Employee", __primaryKey: targetForB },
+          "lead",
+        );
+
+        try {
+          const observableClient: ObservableClient = new ObservableClientImpl(
+            cache,
+          );
+
+          const { payload: srcAPayload } = await expectStandardObserveObject({
+            cache,
+            type: Employee,
+            primaryKey: srcA,
+          });
+          const empA = srcAPayload?.object;
+          invariant(empA);
+
+          const { payload: srcBPayload } = await expectStandardObserveObject({
+            cache,
+            type: Employee,
+            primaryKey: srcB,
+          });
+          const empB = srcBPayload?.object;
+          invariant(empB);
+
+          const linkSubFn = mockLinkSubCallback();
+
+          defer(
+            observableClient.observeLinks(
+              [empA, empB],
+              "peeps",
+              { linkName: "peeps" },
+              // @ts-expect-error crossing typed/untyped barrier for test
+              linkSubFn as unknown as Observer<SpecificLinkPayload>,
+            ),
+          );
+
+          await waitForLoaded(linkSubFn);
+          const lastPayload = getLastPayload(linkSubFn);
+
+          const gA = lastPayload.linkedObjectsBySource.get({
+            $objectType: "Employee",
+            $primaryKey: srcA,
+          }) ?? [];
+          const gB = lastPayload.linkedObjectsBySource.get({
+            $objectType: "Employee",
+            $primaryKey: srcB,
+          }) ?? [];
+
+          const gAPks = gA.map((o) => o.$primaryKey);
+          const gBPks = gB.map((o) => o.$primaryKey);
+
+          // srcA links to srcB and srcB links to srcA, but neither source may
+          // appear in any group since both are sources (self-exclusion).
+          expect(gAPks).not.toContain(srcA);
+          expect(gAPks).not.toContain(srcB);
+          expect(gBPks).not.toContain(srcA);
+          expect(gBPks).not.toContain(srcB);
+
+          // each source still surfaces its own non-source peep.
+          expect(gAPks).toContain(targetForA);
+          expect(gBPks).toContain(targetForB);
+
+          // flat list excludes source refs entirely.
+          const flatPks = (lastPayload.resolvedList ?? []).map((o) =>
+            o.$primaryKey
+          );
+          expect(flatPks).not.toContain(srcA);
+          expect(flatPks).not.toContain(srcB);
+          expect(flatPks).toContain(targetForA);
+          expect(flatPks).toContain(targetForB);
+        } finally {
+          dataStore.unregisterLink(
+            { __apiName: "Employee", __primaryKey: srcA },
+            "peeps",
+            { __apiName: "Employee", __primaryKey: srcB },
+            "lead",
+          );
+          dataStore.unregisterLink(
+            { __apiName: "Employee", __primaryKey: srcB },
+            "peeps",
+            { __apiName: "Employee", __primaryKey: srcA },
+            "lead",
+          );
+          dataStore.unregisterLink(
+            { __apiName: "Employee", __primaryKey: srcA },
+            "peeps",
+            { __apiName: "Employee", __primaryKey: targetForA },
+            "lead",
+          );
+          dataStore.unregisterLink(
+            { __apiName: "Employee", __primaryKey: srcB },
+            "peeps",
+            { __apiName: "Employee", __primaryKey: targetForB },
+            "lead",
+          );
+          for (const employeeId of [srcA, srcB, targetForA, targetForB]) {
+            dataStore.unregisterObjectOrThrow("Employee", employeeId);
+          }
         }
       });
 

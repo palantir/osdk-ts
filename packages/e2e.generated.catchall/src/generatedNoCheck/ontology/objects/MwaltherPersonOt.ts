@@ -19,6 +19,8 @@ export namespace MwaltherPersonOt {
 
   export type Links = {};
 
+  export type LinkTokens = {};
+
   export interface Props {
     /**
      * @experimental
@@ -67,6 +69,7 @@ export interface MwaltherPersonOt extends $ObjectTypeDefinition {
   apiName: 'MwaltherPersonOt';
   primaryKeyApiName: 'id';
   primaryKeyType: 'string';
+  links: MwaltherPersonOt.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: MwaltherPersonOt.ObjectSet;
     props: MwaltherPersonOt.Props;
@@ -86,6 +89,12 @@ export interface MwaltherPersonOt extends $ObjectTypeDefinition {
       'MwaltherPersonV2',
       'MwaltherTestUpgrade',
     ];
+    interfaceLinkMap: {
+      'com.palantirfoundry.swirl.esong.MwaltherTest': {};
+      'com.palantirfoundry.swirl.esong.MwaltherTestIdp': {};
+      MwaltherPersonV2: {};
+      MwaltherTestUpgrade: {};
+    };
     interfaceMap: {
       'com.palantirfoundry.swirl.esong.MwaltherTest': {
         mwaltherVtInputTest: 'name';
@@ -164,6 +173,7 @@ export const MwaltherPersonOt = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'id',
   primaryKeyType: 'string',
+  links: {},
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.4ee4fa8d-e080-4317-be09-5e900223f4d5',
   },

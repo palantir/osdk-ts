@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { LinkTraversal } from "../links/LinkDef.js";
 import type {
   ObjectOrInterfaceDefinition,
   PropertyKeys,
@@ -25,6 +26,13 @@ import type {
   ShapeLinkBuilder,
 } from "./ShapeDefinition.js";
 
+/** A projected link traversal token usable as a `follow` entry, regardless of source/target node or cardinality. */
+export type AnyProjectedTraversal = LinkTraversal<
+  ObjectOrInterfaceDefinition,
+  ObjectOrInterfaceDefinition,
+  "one" | "many"
+>;
+
 export interface InlineShapeConfig<
   BASE extends ObjectOrInterfaceDefinition,
 > {
@@ -34,12 +42,26 @@ export interface InlineShapeConfig<
   readonly defaults?: {
     readonly [K in PropertyKeys<BASE>]?: NonNullable<PropertyType<BASE, K>>;
   };
+  /**
+   * Substitute a value when the source property is null. Behaves like
+   * {@link InlineShapeConfig.defaults} but keeps the substitution visible via
+   * `$missingFields` on the resulting instance.
+   */
+  readonly fallbacks?: {
+    readonly [K in PropertyKeys<BASE>]?: NonNullable<PropertyType<BASE, K>>;
+  };
   readonly transforms?: {
     readonly [K in PropertyKeys<BASE>]?: (
       value: PropertyType<BASE, K>,
     ) => unknown;
   };
   readonly links?: Record<string, InlineLinkConfig<BASE>>;
+  /**
+   * Token-driven derived links. Each value is a projected `LinkTraversal`
+   * (`Type.links.X.project(Slim)`, `.then(...).project(...)`, or
+   * `.recursive(...).project(...)`) compiled into a `ShapeDerivedLinkDef`.
+   */
+  readonly follow?: Record<string, AnyProjectedTraversal>;
 }
 
 export interface InlineLinkConfig<
@@ -82,6 +104,11 @@ export type InferInlineProps<
     >;
   }
   & {
+    [K in keyof C["fallbacks"] & PropertyKeys<BASE>]: NonNullable<
+      PropertyType<BASE, K>
+    >;
+  }
+  & {
     [K in keyof C["transforms"] & PropertyKeys<BASE>]: C["transforms"] extends
       Record<K, (v: PropertyType<BASE, K>) => infer R> ? R : never;
   };
@@ -96,11 +123,23 @@ export type InferInlineLinks<
   }
   : {};
 
+export type InferInlineFollow<
+  BASE extends ObjectOrInterfaceDefinition,
+  C extends InlineShapeConfig<BASE>,
+> = C["follow"] extends Record<string, AnyProjectedTraversal> ? {
+    [K in keyof C["follow"] & string]: NonNullable<
+      C["follow"][K]["__projectedShape"]
+    > extends ShapeDefinition<ObjectOrInterfaceDefinition>
+      ? NonNullable<C["follow"][K]["__projectedShape"]>
+      : ShapeDefinition<ObjectOrInterfaceDefinition>;
+  }
+  : {};
+
 export type InferShapeDefinition<
   BASE extends ObjectOrInterfaceDefinition,
   C extends InlineShapeConfig<BASE>,
 > = ShapeDefinition<
   BASE,
   InferInlineProps<BASE, C>,
-  InferInlineLinks<BASE, C>
+  InferInlineLinks<BASE, C> & InferInlineFollow<BASE, C>
 >;

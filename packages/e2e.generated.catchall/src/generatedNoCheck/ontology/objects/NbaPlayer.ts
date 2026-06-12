@@ -19,6 +19,8 @@ export namespace NbaPlayer {
 
   export type Links = {};
 
+  export type LinkTokens = {};
+
   export interface Props {
     /**
      * (no ontology metadata)
@@ -63,6 +65,7 @@ export interface NbaPlayer extends $ObjectTypeDefinition {
   apiName: 'NbaPlayer';
   primaryKeyApiName: 'id';
   primaryKeyType: 'string';
+  links: NbaPlayer.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: NbaPlayer.ObjectSet;
     props: NbaPlayer.Props;
@@ -77,6 +80,9 @@ export interface NbaPlayer extends $ObjectTypeDefinition {
       color: 'color';
     };
     implements: ['Athlete'];
+    interfaceLinkMap: {
+      Athlete: {};
+    };
     interfaceMap: {
       Athlete: {
         jerseyNumber: 'jerseyNumber';
@@ -131,6 +137,7 @@ export const NbaPlayer = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'id',
   primaryKeyType: 'string',
+  links: {},
   internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
   },

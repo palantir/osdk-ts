@@ -19,6 +19,8 @@ export namespace UsesForeignSpt {
 
   export type Links = {};
 
+  export type LinkTokens = {};
+
   export interface Props {
     /**
      * (no ontology metadata)
@@ -51,6 +53,7 @@ export interface UsesForeignSpt extends $ObjectTypeDefinition {
   apiName: 'UsesForeignSpt';
   primaryKeyApiName: 'id';
   primaryKeyType: 'integer';
+  links: UsesForeignSpt.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: UsesForeignSpt.ObjectSet;
     props: UsesForeignSpt.Props;
@@ -65,6 +68,7 @@ export interface UsesForeignSpt extends $ObjectTypeDefinition {
       color: 'red';
     };
     implements: [];
+    interfaceLinkMap: {};
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -95,6 +99,7 @@ export const UsesForeignSpt = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'id',
   primaryKeyType: 'integer',
+  links: {},
   internalDoNotUseMetadata: {
     rid: 'theRid',
   },

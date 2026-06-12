@@ -13,7 +13,9 @@ import type {
   OsdkObject as $OsdkObject,
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
+  LinkDef as $LinkDef,
 } from '@osdk/client';
+import { createLinkDef as $createLinkDef } from '@osdk/client';
 
 export namespace Person {
   export type PropertyKeys = 'email';
@@ -21,6 +23,11 @@ export namespace Person {
   export interface Links {
     readonly Friends: Person.ObjectSet;
     readonly Todos: Todo.ObjectSet;
+  }
+
+  export interface LinkTokens {
+    readonly Friends: $LinkDef<Person, Person, 'many'>;
+    readonly Todos: $LinkDef<Person, Todo, 'many'>;
   }
 
   export interface Props {
@@ -51,6 +58,7 @@ export interface Person extends $ObjectTypeDefinition {
   apiName: 'Person';
   primaryKeyApiName: 'email';
   primaryKeyType: 'string';
+  links: Person.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: Person.ObjectSet;
     props: Person.Props;
@@ -65,6 +73,7 @@ export interface Person extends $ObjectTypeDefinition {
       color: 'color';
     };
     implements: undefined;
+    interfaceLinkMap: {};
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {
@@ -94,6 +103,10 @@ export const Person = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'email',
   primaryKeyType: 'string',
+  links: {
+    Friends: $createLinkDef('Person', 'Friends', 'Person', true, false),
+    Todos: $createLinkDef('Person', 'Todos', 'Todo', true, false),
+  },
   internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },

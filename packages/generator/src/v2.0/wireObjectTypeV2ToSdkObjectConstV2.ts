@@ -88,22 +88,33 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
     propertyKeysIdentifier,
   };
 
+  const hasLinks =
+    Object.keys(object.getCleanedUpDefinition(true).links).length > 0;
+
   function getV2Types(
     object: EnhancedObjectType,
     forInternalUse: boolean = false,
   ) {
+    const apiPackage = forInternalUse ? "@osdk/api" : "@osdk/client";
     return `import type {
-      PropertyKeys as $PropertyKeys,  
+      PropertyKeys as $PropertyKeys,
       ObjectTypeDefinition as $ObjectTypeDefinition,
       ObjectMetadata as $ObjectMetadata,
-    } from "${forInternalUse ? "@osdk/api" : "@osdk/client"}";
+    } from "${apiPackage}";
      import type {
-      ObjectSet as $ObjectSet, 
+      ObjectSet as $ObjectSet,
       Osdk as $Osdk,
       OsdkObject as $OsdkObject,
       PropertyValueWireToClient as $PropType,
-      SingleLinkAccessor  as $SingleLinkAccessor,
-    } from "${forInternalUse ? "@osdk/api" : "@osdk/client"}";
+      SingleLinkAccessor  as $SingleLinkAccessor,${
+      hasLinks ? `\n      LinkDef as $LinkDef,` : ""
+    }
+    } from "${apiPackage}";
+    ${
+      hasLinks
+        ? `import { createLinkDef as $createLinkDef } from "${apiPackage}";`
+        : ""
+    }
 
 
     export namespace ${object.shortApiName} {
@@ -113,13 +124,15 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
 
       ${createLinks(ontology, object, "Links")}
 
+      ${createLinkTokens(ontology, object, "LinkTokens")}
+
       ${createProps(object, "Props", false, ontology.raw.valueTypes)}
       ${createProps(object, "StrictProps", true, ontology.raw.valueTypes)}
 
       ${createObjectSet(object, identifiers)}
-      
+
       ${createOsdkObject(object, "OsdkInstance", identifiers)}
-    }    
+    }
 
 
 
@@ -143,6 +156,7 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
       osdkMetadata: $osdkMetadata,
       primaryKeyApiName: "${definition.primaryKeyApiName}",
       primaryKeyType: "${definition.primaryKeyType}",
+      ${createLinkTokensRuntime(object)}
       internalDoNotUseMetadata: {
         rid: "${definition.rid}",
       },
@@ -310,6 +324,7 @@ export function createDefinition(
       primaryKeyType: "${definition.primaryKeyType}";`
       : ""
   }
+      links: ${identifier}.LinkTokens;
       __DefinitionMetadata?: {
       objectSet: ${objectSetIdentifier};
       props: ${osdkObjectPropsIdentifier};
@@ -424,6 +439,79 @@ ${
     }
     `
   }`;
+}
+
+export function createLinkTokens(
+  ontology: EnhancedOntologyDefinition,
+  object: EnhancedObjectType | EnhancedInterfaceType,
+  identifier: string,
+): string {
+  const definition = object.getCleanedUpDefinition(true);
+
+  if (Object.keys(definition.links).length === 0) {
+    return `export type ${identifier} = {};`;
+  }
+
+  const sourceIdentifier = object.shortApiName;
+  const linkTokens = definition.type === "interface"
+    ? stringify(definition.links, {
+      "*": (linkDefinition, _, key) => {
+        const linkTarget = linkDefinition.targetType === "interface"
+          ? ontology.requireInterfaceType(linkDefinition.targetTypeApiName)
+            .getImportedDefinitionIdentifier(true)
+          : ontology.requireObjectType(linkDefinition.targetTypeApiName)
+            .getImportedDefinitionIdentifier(true);
+        return [
+          `readonly ${JSON.stringify(key)}`,
+          `$LinkDef<${sourceIdentifier}, ${linkTarget}, '${
+            linkDefinition.multiplicity ? "many" : "one"
+          }'>`,
+        ];
+      },
+    })
+    : stringify(definition.links, {
+      "*": (linkDefinition, _, key) => {
+        const linkTarget = ontology.requireObjectType(linkDefinition.targetType)
+          .getImportedDefinitionIdentifier(true);
+        return [
+          `readonly ${JSON.stringify(key)}`,
+          `$LinkDef<${sourceIdentifier}, ${linkTarget}, '${
+            linkDefinition.multiplicity ? "many" : "one"
+          }'>`,
+        ];
+      },
+    });
+
+  return `
+        export interface ${identifier}  {
+${linkTokens}
+    }
+    `;
+}
+
+export function createLinkTokensRuntime(
+  object: EnhancedObjectType | EnhancedInterfaceType,
+): string {
+  const definition = object.getCleanedUpDefinition(true);
+
+  if (Object.keys(definition.links).length === 0) {
+    return `links: {},`;
+  }
+
+  const source = object.fullApiName;
+  const linkTokens = definition.type === "interface"
+    ? stringify(definition.links, {
+      "*": (linkDefinition, _, key) =>
+        `$createLinkDef("${source}", "${key}", "${linkDefinition.targetTypeApiName}", ${linkDefinition.multiplicity}, true)`,
+    })
+    : stringify(definition.links, {
+      "*": (linkDefinition, _, key) =>
+        `$createLinkDef("${source}", "${key}", "${linkDefinition.targetType}", ${linkDefinition.multiplicity}, false)`,
+    });
+
+  return `links: {
+${linkTokens}
+    },`;
 }
 
 export function createPropertyKeys(
