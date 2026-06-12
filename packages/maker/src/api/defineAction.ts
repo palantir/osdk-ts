@@ -650,6 +650,9 @@ export function extractAllowedValuesFromActionParameterType(
       case "objectReference":
       case "objectReferenceList":
         return { type: "objectQuery" };
+      case "interfaceReference":
+      case "interfaceReferenceList":
+        return { type: "interfaceObjectQuery" };
       case "objectSetRid":
         return { type: "objectSetRid" };
       case "struct":
