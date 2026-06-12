@@ -361,6 +361,7 @@ export class OntologyIrToFullMetadataConverter {
     // Construct entity metadata mapping from preview metadata so FunctionDiscoverer
     // can resolve ontology types (Client, Osdk.Instance, ontology edits, etc.)
     let entityMetadataMapping: unknown;
+    const interfaceRidToApiName: Record<string, string> = {};
     if (previewMetadata) {
       if (!previewMetadata.ontology?.rid) {
         throw new Error("previewMetadata.ontology.rid is required");
@@ -406,6 +407,7 @@ export class OntologyIrToFullMetadataConverter {
           interfaceTypesMap[apiName] = {
             interfaceTypeRid: interfaceType.rid,
           };
+          interfaceRidToApiName[interfaceType.rid] = apiName;
         }
       }
       entityMetadataMapping = {
@@ -469,7 +471,11 @@ export class OntologyIrToFullMetadataConverter {
           Record<ApiName, Ontologies.QueryParameterV2>
         >((acc, input) => {
           acc[input.name] = {
-            dataType: convertDataType(input.dataType, func.customTypes),
+            dataType: convertDataType(
+              input.dataType,
+              func.customTypes,
+              interfaceRidToApiName,
+            ),
             required: input.required ?? true,
           };
           return acc;
@@ -477,6 +483,7 @@ export class OntologyIrToFullMetadataConverter {
         output: convertDataType(
           func.output.single.dataType,
           func.customTypes,
+          interfaceRidToApiName,
         ),
         typeReferences: {},
       } satisfies Ontologies.QueryTypeV2;
@@ -608,9 +615,11 @@ export class OntologyIrToFullMetadataConverter {
           Record<ApiName, Ontologies.QueryParameterV2>
         >((acc, input) => {
           acc[input.name] = {
+            // TODO (ethana): interface support for python queries
             dataType: convertDataType(
               input.dataType,
               customTypes,
+              {},
               input.required,
             ),
             required: input.required ?? true,
@@ -620,6 +629,7 @@ export class OntologyIrToFullMetadataConverter {
         output: convertDataType(
           resolvedOutput,
           customTypes,
+          {},
         ),
         typeReferences: {},
       };
