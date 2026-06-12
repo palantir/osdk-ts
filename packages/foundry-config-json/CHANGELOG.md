@@ -1,5 +1,11 @@
 # @osdk/foundry-config-json
 
+## 1.10.0
+
+### Minor Changes
+
+- ef30525: Added "increment" option to AutoVersionConfig
+
 ## 1.9.0
 
 ### Minor Changes
