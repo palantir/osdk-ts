@@ -59,10 +59,26 @@ export default async function siteDeployCommand(
   if (typeof selectedVersion === "string") {
     siteVersion = selectedVersion;
   } else {
-    siteVersion = await findAutoVersion(selectedVersion);
-    consola.info(
-      `Auto version inferred next version to be: ${siteVersion}`,
-    );
+    if (selectedVersion.type === "increment") {
+      const versions = await thirdPartyApplications.listVersions(
+        clientCtx,
+        application,
+      );
+      if (versions.data.length === 0) {
+        throw new ExitProcessError(2, "No versions found to increment");
+      }
+
+      const semver = await import("semver");
+      const sortedVersions = semver.rsort(
+        versions.data.map(v => v.version).filter(v => semver.valid(v)),
+      );
+      siteVersion = await findAutoVersion(selectedVersion, sortedVersions[0]);
+    } else {
+      siteVersion = await findAutoVersion(selectedVersion);
+      consola.info(
+        `Auto version inferred next version to be: ${siteVersion}`,
+      );
+    }
   }
 
   consola.debug(`Using directory for site files: "${path.resolve(directory)}`);
@@ -130,9 +146,12 @@ export default async function siteDeployCommand(
   }
 }
 
-async function findAutoVersion(config: AutoVersionConfig): Promise<string> {
+async function findAutoVersion(
+  config: AutoVersionConfig,
+  priorVersion?: string,
+): Promise<string> {
   try {
-    return await autoVersion(config);
+    return await autoVersion(config, priorVersion);
   } catch (e) {
     throw new ExitProcessError(
       2,

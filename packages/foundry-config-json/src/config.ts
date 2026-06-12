@@ -54,7 +54,8 @@ export interface WidgetSetConfig {
 
 export type AutoVersionConfig =
   | GitDescribeAutoVersionConfig
-  | PackageJsonAutoVersionConfig;
+  | PackageJsonAutoVersionConfig
+  | IncrementAutoVersionConfig;
 export type AutoVersionConfigType = AutoVersionConfig["type"];
 
 export interface GitDescribeAutoVersionConfig {
@@ -64,6 +65,11 @@ export interface GitDescribeAutoVersionConfig {
 
 export interface PackageJsonAutoVersionConfig {
   type: "package-json";
+}
+
+export interface IncrementAutoVersionConfig {
+  type: "increment";
+  increment?: "patch" | "minor" | "major";
 }
 
 const CONFIG_FILE_NAMES: string[] = [
