@@ -1,0 +1,56 @@
+{
+  "name": "@osdk/codemod",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/palantir/osdk-ts.git"
+  },
+  "description": "Codemods for OSDK TypeScript SDK migrations",
+  "bin": {
+    "osdk-codemod": "./bin/osdk-codemod.mjs"
+  },
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./build/types/index.d.ts",
+        "default": "./build/esm/index.js"
+      },
+      "default": "./build/esm/index.js"
+    }
+  },
+  "scripts": {
+    "check-spelling": "cspell --quiet .",
+    "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
+    "fix-lint": "eslint . --fix && dprint fmt",
+    "lint": "eslint . && dprint check",
+    "test": "vitest run",
+    "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
+    "transpileTypes": "monorepo.tool.transpile -f esm -m types -t node",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+  },
+  "dependencies": {
+    "@clack/prompts": "^1.5.1",
+    "jscodeshift": "^17.3.0",
+    "semver": "^7.7.2",
+    "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "@osdk/monorepo.tsconfig": "workspace:~",
+    "@types/jscodeshift": "^17.3.0",
+    "@types/node": "^18.19.124",
+    "@types/semver": "^7.5.8",
+    "@types/yargs": "^17.0.33",
+    "typescript": "~5.5.4"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "bin",
+    "build"
+  ],
+  "module": "./build/esm/index.js",
+  "types": "./build/esm/index.d.ts"
+}

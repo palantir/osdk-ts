@@ -252,6 +252,8 @@ export default tseslint.config(
     ignores: [
       // Uses ESLint 8 + @typescript-eslint v6, incompatible with v8 type-checked rules
       "packages/typescript-sdk-docs-examples/**",
+      // CLI tool; jscodeshift's CJS API requires `any` throughout — no value in type-checking
+      "packages/codemod/**",
     ],
     extends: [
       tseslint.configs.strictTypeCheckedOnly,
@@ -337,6 +339,7 @@ export default tseslint.config(
   },
   {
     files: ["**/*.test.ts"],
+    ignores: ["packages/codemod/**"],
     rules: {
       // Just trying to reduce the errors in tests
       "@typescript-eslint/unbound-method": "warn",
@@ -363,6 +366,7 @@ export default tseslint.config(
       "examples-extra/**/*",
       "packages/e2e.sandbox.*/**/*",
       "packages/typescript-sdk-docs-examples/**/*",
+      "packages/codemod/**/*",
     ],
     rules: {
       "no-console": "off",
@@ -440,6 +444,7 @@ export default tseslint.config(
       "**/src/generatedNoCheck/",
       "**/src/generatedNoCheck2/",
       "**/templates/",
+      "**/__testfixtures__/**",
       "examples/**/*",
       "packages/monorepo.*/**",
       "google-font-mocked-response.js",
