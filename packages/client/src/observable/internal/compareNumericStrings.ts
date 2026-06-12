@@ -14,23 +14,15 @@
  * limitations under the License.
  */
 
-/**
- * Matches a plain base-10 number in decimal notation (optionally signed,
- * optional fractional part) -- this covers both `long` (no fraction) and
- * `decimal`. Excludes exotic forms like scientific notation, which fall back
- * to Number().
- */
-const NUMERIC_STRING = /^[+-]?\d+(\.\d+)?$/;
+import { Big } from "big.js";
 
 /**
  * Compares two numeric strings (the wire encoding for `decimal` and `long`) by
  * value, ascending.
  *
- * Scales both operands to a common number of fractional digits and compares
- * them as BigInt, so the result is exact for arbitrary precision -- including
- * longs beyond Number.MAX_SAFE_INTEGER and decimals whose fractional parts
- * exceed the precision of a double. Exotic forms (e.g. scientific notation)
- * fall back to a best-effort Number() comparison.
+ * Uses big.js for exact arbitrary-precision comparison, covering longs beyond
+ * Number.MAX_SAFE_INTEGER, decimals with high fractional precision, and exotic
+ * forms like scientific notation.
  *
  * Empty/whitespace values represent "no value" and sort as the smallest value:
  * first when ascending, last when descending, matching Workshop's blank-cell
@@ -39,36 +31,31 @@ const NUMERIC_STRING = /^[+-]?\d+(\.\d+)?$/;
  * Any other non-numeric input (malformed data on a numeric column) sorts last
  * and is never reported equal to a finite value, so the comparator stays a
  * TOTAL order -- it's used as an Array.sort comparator, and a non-transitive
- * NaN-vs-finite pair would corrupt the sort.
+ * malformed-vs-finite pair would corrupt the sort.
  */
 export function compareNumericStrings(a: string, b: string): number {
-  if (!NUMERIC_STRING.test(a) || !NUMERIC_STRING.test(b)) {
-    // Empty/whitespace ("no value") is the smallest value; two such are equal.
-    const aEmpty = a.trim() === "";
-    const bEmpty = b.trim() === "";
-    if (aEmpty || bEmpty) {
-      return aEmpty && bEmpty ? 0 : aEmpty ? -1 : 1;
-    }
-
-    const aNum = Number(a);
-    const bNum = Number(b);
-    const aIsNaN = Number.isNaN(aNum);
-    const bIsNaN = Number.isNaN(bNum);
-    if (aIsNaN || bIsNaN) {
-      // Malformed values sort last; two NaNs are equal.
-      return aIsNaN && bIsNaN ? 0 : aIsNaN ? 1 : -1;
-    }
-    return aNum < bNum ? -1 : aNum > bNum ? 1 : 0;
+  // Empty/whitespace ("no value") is the smallest value; two such are equal.
+  const aEmpty = a.trim() === "";
+  const bEmpty = b.trim() === "";
+  if (aEmpty || bEmpty) {
+    return aEmpty && bEmpty ? 0 : aEmpty ? -1 : 1;
   }
 
-  const [aInt, aFrac = ""] = a.split(".");
-  const [bInt, bFrac = ""] = b.split(".");
-  const fracDigits = Math.max(aFrac.length, bFrac.length);
+  const aBig = tryParseBig(a);
+  const bBig = tryParseBig(b);
 
-  // Concatenating the (sign-bearing) integer part with the zero-padded
-  // fractional part scales both values by the same power of ten, so the
-  // BigInt comparison preserves the original ordering exactly.
-  const aScaled = BigInt(aInt + aFrac.padEnd(fracDigits, "0"));
-  const bScaled = BigInt(bInt + bFrac.padEnd(fracDigits, "0"));
-  return aScaled < bScaled ? -1 : aScaled > bScaled ? 1 : 0;
+  if (aBig == null || bBig == null) {
+    // Malformed values sort last; two malformed are equal.
+    return aBig == null && bBig == null ? 0 : aBig == null ? 1 : -1;
+  }
+
+  return aBig.cmp(bBig);
+}
+
+function tryParseBig(s: string): Big | undefined {
+  try {
+    return new Big(s);
+  } catch {
+    return undefined;
+  }
 }

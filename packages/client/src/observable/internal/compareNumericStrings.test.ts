@@ -78,12 +78,12 @@ describe(compareNumericStrings, () => {
     expect(compareNumericStrings("-0.0", "0.0")).toBe(0);
   });
 
-  it("falls back to a Number comparison for exotic forms (e.g. scientific)", () => {
+  it("handles exotic forms such as scientific notation", () => {
     expect(compareNumericStrings("1e3", "999")).toBe(1);
     expect(compareNumericStrings("999", "1e3")).toBe(-1);
   });
 
-  it("keeps a total order for non-numeric values (NaN sorts last)", () => {
+  it("keeps a total order for non-numeric values (malformed sorts last)", () => {
     // A non-numeric string can't be compared by value, so it must sort after
     // every finite value and never compare equal to one -- otherwise the
     // comparator is non-transitive and Array.sort is corrupted (see below).

@@ -59,10 +59,8 @@ function setupOntology(fauxFoundry: FauxFoundry) {
   fauxFoundry.getDefaultOntology().registerObjectType(
     stubData.todoWithLinkTypes,
   );
-  // Register objectTypeWithAllPropertyTypes with a self-referential ONE/MANY
-  // link pair (modeled on Employee's lead/peeps) so a derived property can
-  // select a long/decimal through the link. The stub's default self-link has no
-  // foreign key, which FauxFoundry (strict) rejects on registerLink.
+  // objectTypeWithAllPropertyTypes needs a self-referential link with a foreign key;
+  // the stub default omits it, which FauxFoundry (strict) rejects on registerLink.
   const allPropsApiName =
     stubData.objectTypeWithAllPropertyTypesWithLinkTypes.objectType.apiName;
   const allPropsSelfLinkRid = "rid.link-type.all-props-self";
