@@ -22,6 +22,10 @@ import type { Canonical } from "../Canonical.js";
 import { compareNumericStrings } from "../compareNumericStrings.js";
 import type { ObjectCacheKey } from "../object/ObjectCacheKey.js";
 import { PK_IDX } from "../object/ObjectCacheKey.js";
+import {
+  isStringEncodedNumericType,
+  resolvePropertyType,
+} from "../resolvePropertyType.js";
 
 /**
  * Strategy interface for collection sorting
@@ -109,10 +113,6 @@ export function createOrderBySortFns(
   orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>,
 ): ObjectInterfaceComparer[] {
   return Object.entries(orderBy).map(([key, order]) => {
-    // The declared property type is invariant across the whole sort, so resolve
-    // it once on the first string pair and cache it rather than re-resolving on
-    // every comparison.
-    let isNumeric: boolean | undefined;
     return (
       a: ObjectHolder | InterfaceHolder | undefined,
       b: ObjectHolder | InterfaceHolder | undefined,
@@ -124,6 +124,7 @@ export function createOrderBySortFns(
       if (aValue == null && bValue == null) {
         return 0;
       }
+      // Nulls always sort last, regardless of direction.
       if (aValue == null) {
         return 1;
       }
@@ -131,32 +132,25 @@ export function createOrderBySortFns(
         return -1;
       }
       const m = order === "asc" ? -1 : 1;
-      if (typeof aValue === "string" && typeof bValue === "string") {
-        isNumeric ??= isNumericStringProperty(
-          key,
-          a,
-          derivedPropertyMetadata,
-        ) ?? isNumericStringProperty(
-          key,
-          b,
-          derivedPropertyMetadata,
-        );
-        if (isNumeric) {
-          return -m * compareNumericStrings(aValue, bValue);
-        }
+
+      // `decimal`/`long` are wire-encoded as strings; comparing them with
+      // `<` / `>` sorts them lexicographically ("10" < "9"), so compare them by
+      // value when the declared type says they're numeric. The type comes from
+      // the object/interface metadata on the holder, or -- for derived
+      // properties -- from the runtime metadata passed alongside. The `?? b`
+      // covers heterogeneous holders (e.g. an interface list backed by
+      // different object types). resolvePropertyType is O(1), so it runs per
+      // comparison rather than being cached.
+      if (
+        typeof aValue === "string" && typeof bValue === "string"
+        && isStringEncodedNumericType(
+          resolvePropertyType(a, key, derivedPropertyMetadata)
+            ?? resolvePropertyType(b, key, derivedPropertyMetadata),
+        )
+      ) {
+        return -m * compareNumericStrings(aValue, bValue);
       }
       return aValue < bValue ? m : aValue > bValue ? -m : 0;
     };
   });
-}
-
-const NUMERIC_STRING_TYPES = new Set(["decimal", "long"]);
-
-function isNumericStringProperty(
-  key: string,
-  holder: ObjectHolder | InterfaceHolder | undefined,
-  derivedPropertyMetadata: DerivedPropertyRuntimeMetadata = {},
-): boolean {
-  // TODO: IMPL
-  return false;
 }

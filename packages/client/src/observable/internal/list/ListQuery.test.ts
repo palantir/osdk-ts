@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import type { DerivedProperty } from "@osdk/api";
 import {
   Employee,
   FooInterface,
+  objectTypeWithAllPropertyTypes,
   Office,
   Todo,
 } from "@osdk/client.test.ontology";
@@ -32,6 +34,7 @@ import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import type { Client } from "../../../Client.js";
 import { createClient } from "../../../createClient.js";
 import { TestLogger } from "../../../logger/TestLogger.js";
+import type { OrderBy } from "../../ObservableClient.js";
 import { Store } from "../Store.js";
 import {
   createDefer,
@@ -56,6 +59,35 @@ function setupOntology(fauxFoundry: FauxFoundry) {
   fauxFoundry.getDefaultOntology().registerObjectType(
     stubData.todoWithLinkTypes,
   );
+  // Register objectTypeWithAllPropertyTypes with a self-referential ONE/MANY
+  // link pair (modeled on Employee's lead/peeps) so a derived property can
+  // select a long/decimal through the link. The stub's default self-link has no
+  // foreign key, which FauxFoundry (strict) rejects on registerLink.
+  const allPropsApiName =
+    stubData.objectTypeWithAllPropertyTypesWithLinkTypes.objectType.apiName;
+  const allPropsSelfLinkRid = "rid.link-type.all-props-self";
+  fauxFoundry.getDefaultOntology().registerObjectType({
+    ...stubData.objectTypeWithAllPropertyTypesWithLinkTypes,
+    linkTypes: [
+      {
+        apiName: "linkedObjectType",
+        status: "EXPERIMENTAL",
+        objectTypeApiName: allPropsApiName,
+        cardinality: "ONE",
+        displayName: "Linked Object Type",
+        linkTypeRid: allPropsSelfLinkRid,
+        foreignKeyPropertyApiName: "integer",
+      },
+      {
+        apiName: "linkedFrom",
+        status: "EXPERIMENTAL",
+        objectTypeApiName: allPropsApiName,
+        cardinality: "MANY",
+        displayName: "Linked From",
+        linkTypeRid: allPropsSelfLinkRid,
+      },
+    ],
+  });
 }
 
 function setupTodos(
@@ -571,6 +603,180 @@ describe("ListQuery sort stability across pages", () => {
     // clientOrdered sorts by text asc, then PK tiebreaker for equal keys
     const ids = payload!.resolvedList!.map((t) => t.id);
     expect(ids).toEqual([10, 30, 31, 20]);
+  });
+
+  it("clientOrdered sorts decimal/long properties numerically, not lexicographically", async () => {
+    const dataStore = fauxFoundry.getDefaultDataStore();
+    dataStore.clear();
+
+    // decimal/long arrive as strings. Lexicographically these sort as
+    // "10" < "100" < "2" < "9", which is wrong; the fix sorts them by value.
+    // The longs straddle 2^53, where doubles lose precision.
+    const rows = [
+      { id: 1, decimal: "10", long: "9007199254740993" },
+      { id: 2, decimal: "9", long: "9007199254740992" },
+      { id: 3, decimal: "100", long: "42" },
+      { id: 4, decimal: "2", long: "100" },
+    ];
+    for (const row of rows) {
+      dataStore.registerObject(objectTypeWithAllPropertyTypes, {
+        $apiName: "objectTypeWithAllPropertyTypes",
+        ...row,
+      });
+    }
+
+    // Fetch real instances (carry the object metadata used to resolve types).
+    const fetched = await Promise.all(
+      rows.map((row) =>
+        client(objectTypeWithAllPropertyTypes).fetchOne(row.id)
+      ),
+    );
+
+    async function expectClientOrdered(
+      orderByProp: "decimal" | "long",
+      expectedValues: string[],
+    ) {
+      const listSub = mockListSubCallback();
+      defer(
+        store.lists.observe(
+          {
+            type: objectTypeWithAllPropertyTypes,
+            where: {},
+            orderBy: { [orderByProp]: "asc" },
+            pageSize: 10,
+          },
+          listSub,
+        ),
+      );
+
+      await waitForCall(listSub.next, 1);
+      expectSingleListCallAndClear(listSub, undefined, { status: "loading" });
+      await waitForCall(listSub.next, 1);
+      expectSingleListCallAndClear(listSub, expect.anything(), {
+        status: "loaded",
+      });
+
+      // Push in id order (i.e. unsorted by the ordered property).
+      updateList(
+        store,
+        {
+          type: objectTypeWithAllPropertyTypes,
+          where: {},
+          orderBy: { [orderByProp]: "asc" },
+        },
+        fetched,
+      );
+
+      await waitForCall(listSub.next, 1);
+      const payload = expectSingleListCallAndClear(listSub, expect.anything(), {
+        status: "loaded",
+      });
+      const resolved = payload!.resolvedList!;
+      // The ordered property itself is in true numeric order (not lexicographic).
+      expect(resolved.map((o) => o[orderByProp])).toEqual(expectedValues);
+    }
+
+    // decimal asc: 2 < 9 < 10 < 100
+    await expectClientOrdered("decimal", ["2", "9", "10", "100"]);
+    // long asc: 42 < 100 < 2^53 < 2^53+1
+    await expectClientOrdered(
+      "long",
+      ["42", "100", "9007199254740992", "9007199254740993"],
+    );
+  });
+
+  it("clientOrdered sorts a DERIVED long property numerically (observeList/useOsdkObjects path)", async () => {
+    // Derived (RDP) properties flow through ListQuery (observeList /
+    // useOsdkObjects), NOT ObjectSetQuery. A derived long arrives as a string
+    // and must sort by value -- ordering by the derived key resolves its type
+    // from the RDP metadata, which ListQuery must thread into the sort strategy.
+    const dataStore = fauxFoundry.getDefaultDataStore();
+    dataStore.clear();
+
+    // Each row links (linkedObjectType) to another whose `long` becomes this
+    // row's derived value, so the derived order differs from the base order.
+    const rows = [
+      { id: 1, long: "1", linksTo: 2 }, // derivedLong = 100
+      { id: 2, long: "100", linksTo: 3 }, // derivedLong = 42
+      { id: 3, long: "42", linksTo: 4 }, // derivedLong = 9007199254740993
+      { id: 4, long: "9007199254740993", linksTo: 1 }, // derivedLong = 1
+    ];
+    for (const { id, long } of rows) {
+      dataStore.registerObject(objectTypeWithAllPropertyTypes, {
+        $apiName: "objectTypeWithAllPropertyTypes",
+        id,
+        long,
+      });
+    }
+    for (const { id, linksTo } of rows) {
+      dataStore.registerLink(
+        { __apiName: "objectTypeWithAllPropertyTypes", __primaryKey: id },
+        "linkedObjectType",
+        { __apiName: "objectTypeWithAllPropertyTypes", __primaryKey: linksTo },
+        "linkedFrom",
+      );
+    }
+
+    // The derived key is not in the object's own metadata, so its type can only
+    // come from the RDP metadata threaded into the sort strategy.
+    const withProperties: DerivedProperty.Clause<
+      typeof objectTypeWithAllPropertyTypes
+    > = {
+      derivedLong: (b) => b.pivotTo("linkedObjectType").selectProperty("long"),
+    };
+
+    const { data: fetched } = await client(objectTypeWithAllPropertyTypes)
+      .withProperties(withProperties)
+      .fetchPage();
+
+    const listSub = mockListSubCallback();
+    defer(
+      store.lists.observe(
+        {
+          type: objectTypeWithAllPropertyTypes,
+          where: {},
+          orderBy: { derivedLong: "asc" } as OrderBy<
+            typeof objectTypeWithAllPropertyTypes
+          >,
+          pageSize: 10,
+          withProperties,
+        },
+        listSub,
+      ),
+    );
+
+    await waitForCall(listSub.next, 1);
+    expectSingleListCallAndClear(listSub, undefined, { status: "loading" });
+    await waitForCall(listSub.next, 1);
+    expectSingleListCallAndClear(listSub, expect.anything(), {
+      status: "loaded",
+    });
+
+    // Push unsorted by the derived value.
+    updateList(
+      store,
+      {
+        type: objectTypeWithAllPropertyTypes,
+        where: {},
+        orderBy: { derivedLong: "asc" } as OrderBy<
+          typeof objectTypeWithAllPropertyTypes
+        >,
+      },
+      fetched,
+      {},
+      { dedupeInterval: 0, withProperties },
+    );
+
+    await waitForCall(listSub.next, 1);
+    const payload = expectSingleListCallAndClear(listSub, expect.anything(), {
+      status: "loaded",
+    });
+    const resolved = payload!.resolvedList!;
+    // Numeric order of the derived long, not lexicographic
+    // ("100" must NOT sort before "42").
+    expect(
+      resolved.map((o) => (o as { derivedLong: string }).derivedLong),
+    ).toEqual(["1", "42", "100", "9007199254740993"]);
   });
 });
 
