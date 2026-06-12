@@ -17,6 +17,7 @@
 import type {
   ActionTypeBlockDataV2,
   ActionTypeStatus,
+  InterfacePropertyTypeType,
   InterfaceTypeBlockDataV2,
   LinkTypeBlockDataV2,
   LinkTypeStatus,
@@ -770,13 +771,71 @@ export class OntologyBlockDataToFullMetadataConverter {
         }
       }
 
+      // Convert shared properties to interface shared properties
+      const propertiesV2: Record<
+        ApiName,
+        Ontologies.InterfacePropertyType
+      > = {};
+      const allPropertiesV2: Record<
+        ApiName,
+        Ontologies.ResolvedInterfacePropertyType
+      > = {};
+      for (
+        const [propKey, propValue] of Object.entries(interfaceType.propertiesV3)
+      ) {
+        switch (propValue.type) {
+          case "interfaceDefinedPropertyType":
+            const idp = propValue.interfaceDefinedPropertyType;
+            const idpDataType = this.getOsdkPropertyTypeFromBlockData(idp.type);
+            if (idpDataType) {
+              const resolved = {
+                rid: idp.rid,
+                apiName: idp.apiName,
+                displayName: idp.displayMetadata.displayName,
+                description: idp.displayMetadata.description ?? undefined,
+                dataType: idpDataType,
+                requireImplementation: idp.constraints.requireImplementation,
+              };
+              propertiesV2[idp.apiName] = {
+                ...resolved,
+                type: "interfaceDefinedPropertyType",
+                typeClasses: [],
+              };
+              allPropertiesV2[idp.apiName] = resolved;
+            }
+            break;
+          case "sharedPropertyBasedPropertyType":
+            const spt =
+              propValue.sharedPropertyBasedPropertyType.sharedPropertyType;
+            const sptDataType = this.getOsdkPropertyTypeFromBlockData(spt.type);
+            if (sptDataType) {
+              const resolved = {
+                rid: spt.rid,
+                apiName: spt.apiName,
+                displayName: spt.displayMetadata.displayName,
+                description: spt.displayMetadata.description ?? undefined,
+                dataType: sptDataType,
+                requireImplementation: propValue.sharedPropertyBasedPropertyType
+                  .requireImplementation,
+              };
+              propertiesV2[spt.apiName] = {
+                ...resolved,
+                type: "interfaceSharedPropertyType",
+                required: resolved.requireImplementation,
+                typeClasses: [],
+              };
+              allPropertiesV2[spt.apiName] = resolved;
+            }
+        }
+      }
+
       const result_interfaceType: Ontologies.InterfaceType = {
         apiName: interfaceType.apiName,
         rid,
         properties,
         allProperties: properties, // Same as properties for now
-        propertiesV2: {},
-        allPropertiesV2: {},
+        propertiesV2,
+        allPropertiesV2,
         extendsInterfaces: interfaceType.extendsInterfaces.map(val =>
           resolveBlockDataApiName(val, interfaceTypeLookup)
         ),
@@ -896,7 +955,7 @@ export class OntologyBlockDataToFullMetadataConverter {
   }
 
   static getOsdkPropertyTypeFromBlockData(
-    type: Type,
+    type: Type | InterfacePropertyTypeType,
   ): Ontologies.ObjectPropertyType | null {
     switch (type.type) {
       case "array": {
