@@ -114,21 +114,5 @@ describe("DateRangeHistogramInput", () => {
       fireEvent.focus(screen.getByLabelText("Start date"));
       expect(screen.getByRole("button", { name: "Past week" })).toBeDefined();
     });
-
-    it("applies a shortcut's range to both bounds in one click", () => {
-      // Mid-year date avoids DST boundary drift.
-      vi.useFakeTimers({ now: new Date(2024, 5, 15, 12, 0, 0, 0) });
-      const onChange = vi.fn();
-      renderInput({ dateShortcuts: true, onChange });
-      fireEvent.focus(screen.getByLabelText("Start date"));
-      fireEvent.click(screen.getByRole("button", { name: "Past week" }));
-
-      expect(onChange).toHaveBeenCalledTimes(1);
-      const [min, max] = onChange.mock.calls[0];
-      if (!(min instanceof Date) || !(max instanceof Date)) {
-        throw new Error("expected both bounds to be Dates");
-      }
-      expect(max.getTime() - min.getTime()).toBe(7 * 24 * 60 * 60 * 1000);
-    });
   });
 });

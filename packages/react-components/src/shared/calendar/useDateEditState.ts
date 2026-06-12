@@ -92,8 +92,7 @@ export function useDateEditState({
   const [isEditing, setIsEditing] = useState(false);
   const [inputValue, setInputValue] = useState("");
 
-  // Sync inputValue when the external value changes, unless the user is
-  // mid-edit (an external write shouldn't clobber in-progress typing).
+  // Sync inputValue when external value changes (e.g. parent resets)
   const prevValueTimeRef = useRef<number | null>(value?.getTime() ?? null);
   const currentValueTime = value?.getTime() ?? null;
   if (prevValueTimeRef.current !== currentValueTime) {

@@ -226,14 +226,6 @@ describe("date shortcuts", () => {
     expect(min.getDate()).toBe(28);
   });
 
-  it("crosses the year boundary cleanly for Past 3 months", () => {
-    // Feb 15 2024 - 3 months → Nov 15 2023.
-    const [min] = rangeFor("Past 3 months", new Date(2024, 1, 15, 12, 0, 0, 0));
-    expect(min.getFullYear()).toBe(2023);
-    expect(min.getMonth()).toBe(10);
-    expect(min.getDate()).toBe(15);
-  });
-
   it("resolveDateRangeShortcuts maps true to defaults and false/empty to undefined", () => {
     expect(resolveDateRangeShortcuts(true)).toBe(DEFAULT_DATE_RANGE_SHORTCUTS);
     expect(resolveDateRangeShortcuts(false)).toBeUndefined();

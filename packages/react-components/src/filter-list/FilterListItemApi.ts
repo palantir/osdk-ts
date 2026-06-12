@@ -254,8 +254,7 @@ export interface RangeDateShortcutsProps {
    * Opt-in relative-range shortcut rail above the From / To inputs.
    * `true` renders {@link DEFAULT_DATE_RANGE_SHORTCUTS}; an array renders
    * exactly those {@link DateRangePickerShortcut}s in order, letting you
-   * supply custom labels and ranges (e.g. "Last 6 hours"). Stored
-   * `FilterState` remains absolute.
+   * supply custom labels and ranges (e.g. "Last 6 hours").
    */
   dateShortcuts?: boolean | DateRangePickerShortcut[];
 }

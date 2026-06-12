@@ -469,10 +469,10 @@ export const WithDateShortcutsVerification: Story = {
   parameters: {
     docs: {
       description: {
-        story: "Playwright verification harness for relative date shortcuts. "
+        story: "Verification harness for relative date shortcuts. "
           + "Exposes the captured FilterState for both a DATE_RANGE and a "
-          + "SINGLE_DATE filter via `data-testid` panels so end-to-end tests "
-          + "can read the resolved range after clicking a shortcut.",
+          + "SINGLE_DATE filter via `data-testid` panels so the resolved "
+          + "range can be inspected after clicking a shortcut.",
       },
     },
   },

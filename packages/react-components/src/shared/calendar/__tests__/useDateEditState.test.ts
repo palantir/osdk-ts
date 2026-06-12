@@ -423,7 +423,7 @@ describe("useDateEditState", () => {
       expect(result.current.displayedValue).toBe("Jul 20, 2024");
     });
 
-    it("preserves user's unsaved edits when external value changes during editing", () => {
+    it("does not overwrite user edits when external value changes during editing", () => {
       const { result, rerender } = renderHook(
         (config: UseDateEditStateConfig) => useDateEditState(config),
         { initialProps: makeConfig({ value: new Date(2024, 0, 15) }) },
@@ -436,9 +436,8 @@ describe("useDateEditState", () => {
         result.current.setInputValue("2024-03-20");
       });
 
-      // External value changes during editing must NOT clobber the user's
-      // in-progress text. Shortcut callers close the popover first (which
-      // exits editing) so the value-sync path runs cleanly.
+      // Intentional: user's unsaved edits are preserved when the parent
+      // value changes. The hook only syncs when not editing.
       rerender(makeConfig({ value: new Date(2024, 6, 20) }));
 
       expect(result.current.displayedValue).toBe("2024-03-20");
