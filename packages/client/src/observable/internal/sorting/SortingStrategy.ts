@@ -15,7 +15,7 @@
  */
 
 import type { DerivedPropertyRuntimeMetadata } from "../../../derivedProperties/derivedPropertyRuntimeMetadata.js";
-import { type InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
+import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { BatchContext } from "../BatchContext.js";
 import type { Canonical } from "../Canonical.js";
@@ -124,7 +124,6 @@ export function createOrderBySortFns(
       if (aValue == null && bValue == null) {
         return 0;
       }
-      // Nulls always sort last, regardless of direction.
       if (aValue == null) {
         return 1;
       }
@@ -139,8 +138,7 @@ export function createOrderBySortFns(
       // the object/interface metadata on the holder, or -- for derived
       // properties -- from the runtime metadata passed alongside. The `?? b`
       // covers heterogeneous holders (e.g. an interface list backed by
-      // different object types). resolvePropertyType is O(1), so it runs per
-      // comparison rather than being cached.
+      // different object types).
       if (
         typeof aValue === "string" && typeof bValue === "string"
         && isStringEncodedNumericType(

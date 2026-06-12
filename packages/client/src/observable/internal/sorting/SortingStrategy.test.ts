@@ -30,7 +30,7 @@ import { createOrderBySortFns } from "./SortingStrategy.js";
 type Holder = ObjectHolder | InterfaceHolder;
 
 describe("createOrderBySortFns", () => {
-  it("sorts decimal properties numerically, not lexicographically", () => {
+  it("sorts decimal properties numerically", () => {
     const holders = ["10", "9", "100", "2"].map((amount) =>
       objectHolder({ amount }, { amount: "decimal" })
     );

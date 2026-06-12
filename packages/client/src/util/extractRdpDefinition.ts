@@ -110,11 +110,6 @@ async function extractRdpDefinitionInternal(
           case "collectList":
           case "collectSet":
           case "get":
-          // `min`/`max` preserve the aggregated property's type (e.g. max of a
-          // `long` is a `long`), so they resolve their type the same way as a
-          // direct selection. (`count`/distinct are `integer` and `sum`/`avg`
-          // are `double` -- all delivered as JS numbers, so they sort
-          // numerically without needing the type captured here.)
           case "min":
           case "max":
             // This is the object set construction for the derived property definition construction. We pass in childObjectType so that when we reach MethodInputObjectSet, we know where to start looking.
