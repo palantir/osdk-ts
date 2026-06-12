@@ -1,0 +1,8 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["transpile", "transpileTypes", "^typecheck"]
+    }
+  }
+}
