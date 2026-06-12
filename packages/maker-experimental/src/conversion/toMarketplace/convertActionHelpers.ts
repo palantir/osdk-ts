@@ -28,6 +28,8 @@ import type {
 } from "@osdk/client.unstable";
 import type {
   IDataType,
+  IInterfaceDataType,
+  IInterfaceObjectSetDataType,
   IListDataType,
   IObjectDataType,
   IObjectSetDataType,
@@ -400,6 +402,24 @@ function dataTypeToActionParameterType(
         },
       };
     }
+    case "interface": {
+      const interfaceData = dataType as IInterfaceDataType;
+      return {
+        type: "interfaceReference",
+        interfaceReference: {
+          interfaceTypeRid: interfaceData.interface.interfaceTypeRid,
+        },
+      };
+    }
+    case "interfaceObjectSet": {
+      const interfaceData = dataType as IInterfaceObjectSetDataType;
+      return {
+        type: "interfaceReferenceList",
+        interfaceReferenceList: {
+          interfaceTypeRid: interfaceData.interfaceObjectSet.interfaceTypeRid,
+        },
+      };
+    }
     case "list": {
       const listData = dataType as IListDataType;
       return dataTypeToActionParameterListType(listData.list.elementsType);
@@ -445,6 +465,15 @@ function dataTypeToActionParameterListType(
       type: "objectReferenceList",
       objectReferenceList: {
         objectTypeId: objectData.object.objectTypeId,
+      },
+    };
+  }
+  if (elementType.type === "interface") {
+    const interfaceData = elementType as IInterfaceDataType;
+    return {
+      type: "interfaceReferenceList",
+      interfaceReferenceList: {
+        interfaceTypeRid: interfaceData.interface.interfaceTypeRid,
       },
     };
   }
