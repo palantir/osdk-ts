@@ -81,6 +81,12 @@ export const BrandThemeDecorator: Decorator = (Story, context) => {
 
     if (overrides.length === 0) return "";
 
+    // Custom themes get a visible border and focus outline; built-in themes use none
+    overrides.push(
+      "  --osdk-input-border-color: var(--osdk-surface-border-color-default);",
+      "  --osdk-input-focus-outline: 1px solid var(--osdk-intent-primary-rest);",
+    );
+
     // Use :root:root (doubled specificity) to override theme layers.
     // Reset block reverts stale tokens; override block applies the new theme.
     return `:root:root {\n${resets.join("\n")}\n${overrides.join("\n")}\n}`;
