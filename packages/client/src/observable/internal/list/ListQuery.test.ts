@@ -605,7 +605,7 @@ describe("ListQuery sort stability across pages", () => {
     expect(ids).toEqual([10, 30, 31, 20]);
   });
 
-  it("clientOrdered sorts decimal/long properties numerically, not lexicographically", async () => {
+  it("clientOrdered sorts decimal/long properties numerically", async () => {
     const dataStore = fauxFoundry.getDefaultDataStore();
     dataStore.clear();
 
@@ -672,7 +672,7 @@ describe("ListQuery sort stability across pages", () => {
         status: "loaded",
       });
       const resolved = payload!.resolvedList!;
-      // The ordered property itself is in true numeric order (not lexicographic).
+      // The ordered property itself is in true numeric order.
       expect(resolved.map((o) => o[orderByProp])).toEqual(expectedValues);
     }
 
@@ -772,8 +772,7 @@ describe("ListQuery sort stability across pages", () => {
       status: "loaded",
     });
     const resolved = payload!.resolvedList!;
-    // Numeric order of the derived long, not lexicographic
-    // ("100" must NOT sort before "42").
+    // Numeric order of the derived long ("100" must sort after "42").
     expect(
       resolved.map((o) => (o as { derivedLong: string }).derivedLong),
     ).toEqual(["1", "42", "100", "9007199254740993"]);
