@@ -19,6 +19,8 @@ export namespace BoundariesUsState {
 
   export type Links = {};
 
+  export type LinkTokens = {};
+
   export interface Props {
     /**
      *   display name: 'Geometry10M',
@@ -69,6 +71,7 @@ export interface BoundariesUsState extends $ObjectTypeDefinition {
   apiName: 'BoundariesUsState';
   primaryKeyApiName: 'usState';
   primaryKeyType: 'string';
+  links: BoundariesUsState.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: BoundariesUsState.ObjectSet;
     props: BoundariesUsState.Props;
@@ -83,6 +86,7 @@ export interface BoundariesUsState extends $ObjectTypeDefinition {
       color: 'color';
     };
     implements: undefined;
+    interfaceLinkMap: {};
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -131,6 +135,7 @@ export const BoundariesUsState = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'usState',
   primaryKeyType: 'string',
+  links: {},
   internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
   },

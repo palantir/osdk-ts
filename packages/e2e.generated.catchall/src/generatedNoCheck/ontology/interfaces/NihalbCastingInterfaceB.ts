@@ -8,7 +8,9 @@ import type {
   Osdk as $Osdk,
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
+  LinkDef as $LinkDef,
 } from '@osdk/client';
+import { createLinkDef as $createLinkDef } from '@osdk/client';
 
 export interface OsdkObjectLinks$NihalbCastingInterfaceB {
   nihalbCastingLinkedObjectTypeA: NihalbCastingLinkedObjectTypeA.ObjectSet;
@@ -16,6 +18,10 @@ export interface OsdkObjectLinks$NihalbCastingInterfaceB {
 
 export namespace NihalbCastingInterfaceB {
   export type PropertyKeys = 'interfaceProperty';
+
+  export interface LinkTokens {
+    readonly nihalbCastingLinkedObjectTypeA: $LinkDef<NihalbCastingInterfaceB, NihalbCastingLinkedObjectTypeA, 'many'>;
+  }
 
   export interface Props {
     /**
@@ -43,6 +49,7 @@ export interface NihalbCastingInterfaceB extends $InterfaceDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'interface';
   apiName: 'NihalbCastingInterfaceB';
+  links: NihalbCastingInterfaceB.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: NihalbCastingInterfaceB.ObjectSet;
     props: NihalbCastingInterfaceB.Props;
@@ -71,6 +78,15 @@ export const NihalbCastingInterfaceB = {
   type: 'interface',
   apiName: 'NihalbCastingInterfaceB',
   osdkMetadata: $osdkMetadata,
+  links: {
+    nihalbCastingLinkedObjectTypeA: $createLinkDef(
+      'NihalbCastingInterfaceB',
+      'nihalbCastingLinkedObjectTypeA',
+      'NihalbCastingLinkedObjectTypeA',
+      true,
+      true,
+    ),
+  },
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.interface.001b6854-774a-4ba4-9ea7-dedc05901e4f',
   },

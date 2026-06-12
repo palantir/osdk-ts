@@ -128,4 +128,32 @@ describe("createShapeLinkBuilder", () => {
     const def = result.toObjectSetDef();
     expect(def.where).toEqual({ name: "second" });
   });
+
+  it("project produces the same ShapeLinkResult as the deprecated as alias", () => {
+    const targetShape = createShapeBuilder(MockOffice).select("name" as never)
+      .build();
+
+    const fromProject = (createShapeLinkBuilder("Employee") as any)
+      .pivotTo("office")
+      .project(targetShape);
+
+    const fromAs = (createShapeLinkBuilder("Employee") as any)
+      .pivotTo("office")
+      .as(targetShape);
+
+    expect(fromProject.targetShape).toBe(targetShape);
+    expect(fromProject.objectSetDef).toEqual(fromAs.objectSetDef);
+    expect(fromProject.config).toEqual(fromAs.config);
+  });
+
+  it("project forwards config", () => {
+    const targetShape = createShapeBuilder(MockOffice).select("name" as never)
+      .build();
+
+    const result = (createShapeLinkBuilder("Employee") as any)
+      .pivotTo("office")
+      .project(targetShape, { defer: true });
+
+    expect(result.config).toEqual({ defer: true });
+  });
 });

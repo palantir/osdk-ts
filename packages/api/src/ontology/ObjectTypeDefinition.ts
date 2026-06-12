@@ -88,6 +88,16 @@ export interface ObjectMetadata extends ObjectInterfaceBaseMetadata {
       /* InterfaceType property api name */ string
     >
   >;
+  /**
+   * For each implemented interface api name, maps an interface link api name to
+   * the concrete link api name on this object type. Empty when the object
+   * implements no interface links. Enables interface-link to concrete-link
+   * resolution without an extra metadata round trip.
+   *
+   * Optional because legacy generated metadata and the many existing
+   * ObjectMetadata literals predate this field; treat a missing value as `{}`.
+   */
+  interfaceLinkMap?: Record<string, Record<string, string>>;
 }
 
 export namespace ObjectMetadata {

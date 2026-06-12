@@ -19,6 +19,8 @@ export namespace OsdkTestObject {
 
   export type Links = {};
 
+  export type LinkTokens = {};
+
   export interface Props {
     /**
      *   display name: 'Description'
@@ -73,6 +75,7 @@ export interface OsdkTestObject extends $ObjectTypeDefinition {
   apiName: 'OsdkTestObject';
   primaryKeyApiName: 'primaryKey_';
   primaryKeyType: 'string';
+  links: OsdkTestObject.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: OsdkTestObject.ObjectSet;
     props: OsdkTestObject.Props;
@@ -87,6 +90,10 @@ export interface OsdkTestObject extends $ObjectTypeDefinition {
       name: 'cube';
     };
     implements: ['FooInterface', 'OsdkTestInterface'];
+    interfaceLinkMap: {
+      FooInterface: {};
+      OsdkTestInterface: {};
+    };
     interfaceMap: {
       FooInterface: {
         name: 'osdkObjectName';
@@ -149,6 +156,7 @@ export const OsdkTestObject = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'primaryKey_',
   primaryKeyType: 'string',
+  links: {},
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.ba4a949c-547a-45de-9c78-b772bb55acfb',
   },

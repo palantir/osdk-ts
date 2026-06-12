@@ -770,6 +770,8 @@ describe("generator", () => {
         export namespace SomeInterface {
           export type PropertyKeys = 'SomeProperty';
 
+          export type LinkTokens = {};
+
           export interface Props {
             /**
              *   display name: 'Sum Property',
@@ -798,6 +800,7 @@ describe("generator", () => {
           osdkMetadata: typeof $osdkMetadata;
           type: 'interface';
           apiName: 'SomeInterface';
+          links: SomeInterface.LinkTokens;
           __DefinitionMetadata?: {
             objectSet: SomeInterface.ObjectSet;
             props: SomeInterface.Props;
@@ -826,6 +829,7 @@ describe("generator", () => {
           type: 'interface',
           apiName: 'SomeInterface',
           osdkMetadata: $osdkMetadata,
+          links: {},
           internalDoNotUseMetadata: {
             rid: 'idk',
           },
@@ -849,13 +853,19 @@ describe("generator", () => {
           OsdkObject as $OsdkObject,
           PropertyValueWireToClient as $PropType,
           SingleLinkAccessor as $SingleLinkAccessor,
+          LinkDef as $LinkDef,
         } from '@osdk/client';
+        import { createLinkDef as $createLinkDef } from '@osdk/client';
 
         export namespace Person {
           export type PropertyKeys = 'email';
 
           export interface Links {
             readonly Todos: Todo.ObjectSet;
+          }
+
+          export interface LinkTokens {
+            readonly Todos: $LinkDef<Person, Todo, 'many'>;
           }
 
           export interface Props {
@@ -886,6 +896,7 @@ describe("generator", () => {
           apiName: 'Person';
           primaryKeyApiName: 'email';
           primaryKeyType: 'string';
+          links: Person.LinkTokens;
           __DefinitionMetadata?: {
             objectSet: Person.ObjectSet;
             props: Person.Props;
@@ -900,6 +911,7 @@ describe("generator", () => {
               color: 'blue';
             };
             implements: [];
+            interfaceLinkMap: {};
             interfaceMap: {};
             inverseInterfaceMap: {};
             links: {
@@ -928,6 +940,9 @@ describe("generator", () => {
           osdkMetadata: $osdkMetadata,
           primaryKeyApiName: 'email',
           primaryKeyType: 'string',
+          links: {
+            Todos: $createLinkDef('Person', 'Todos', 'Todo', true, false),
+          },
           internalDoNotUseMetadata: {
             rid: 'ridForPerson',
           },
@@ -948,13 +963,19 @@ describe("generator", () => {
           OsdkObject as $OsdkObject,
           PropertyValueWireToClient as $PropType,
           SingleLinkAccessor as $SingleLinkAccessor,
+          LinkDef as $LinkDef,
         } from '@osdk/client';
+        import { createLinkDef as $createLinkDef } from '@osdk/client';
 
         export namespace Todo {
           export type PropertyKeys = 'array' | 'body' | 'complete' | 'id';
 
           export interface Links {
             readonly Assignee: $SingleLinkAccessor<Person>;
+          }
+
+          export interface LinkTokens {
+            readonly Assignee: $LinkDef<Todo, Person, 'one'>;
           }
 
           export interface Props {
@@ -999,6 +1020,7 @@ describe("generator", () => {
           apiName: 'Todo';
           primaryKeyApiName: 'id';
           primaryKeyType: 'integer';
+          links: Todo.LinkTokens;
           __DefinitionMetadata?: {
             objectSet: Todo.ObjectSet;
             props: Todo.Props;
@@ -1013,6 +1035,9 @@ describe("generator", () => {
               color: 'blue';
             };
             implements: ['SomeInterface'];
+            interfaceLinkMap: {
+              SomeInterface: {};
+            };
             interfaceMap: {
               SomeInterface: {
                 SomeProperty: 'body';
@@ -1063,6 +1088,9 @@ describe("generator", () => {
           osdkMetadata: $osdkMetadata,
           primaryKeyApiName: 'id',
           primaryKeyType: 'integer',
+          links: {
+            Assignee: $createLinkDef('Todo', 'Assignee', 'Person', false, false),
+          },
           internalDoNotUseMetadata: {
             rid: 'ridForTodo',
           },
@@ -1189,6 +1217,43 @@ describe("generator", () => {
         ",
         }
       `);
+    },
+  );
+
+  test(
+    "emits Type.links LinkDef token namespace",
+    { timeout: 60_000 },
+    async () => {
+      await generateClientSdkVersionTwoPointZero(
+        TodoWireOntology,
+        "typescript-sdk/0.0.0 osdk-cli/0.0.0",
+        helper.minimalFiles,
+        BASE_PATH,
+      );
+
+      const files = helper.getFiles();
+      const personFile = files[`${BASE_PATH}/ontology/objects/Person.ts`];
+      const todoFile = files[`${BASE_PATH}/ontology/objects/Todo.ts`];
+
+      // value import + runtime token block on the const
+      expect(personFile).toContain(
+        "import { createLinkDef as $createLinkDef } from '@osdk/client';",
+      );
+      expect(personFile).toContain(
+        "Todos: $createLinkDef('Person', 'Todos', 'Todo', true, false),",
+      );
+      // type-level token interface, many-cardinality
+      expect(personFile).toContain(
+        "readonly Todos: $LinkDef<Person, Todo, 'many'>;",
+      );
+
+      // single-cardinality link on Todo
+      expect(todoFile).toContain(
+        "Assignee: $createLinkDef('Todo', 'Assignee', 'Person', false, false),",
+      );
+      expect(todoFile).toContain(
+        "readonly Assignee: $LinkDef<Todo, Person, 'one'>;",
+      );
     },
   );
 
@@ -1461,6 +1526,8 @@ describe("generator", () => {
         export namespace SomeInterface {
           export type PropertyKeys = 'SomeProperty';
 
+          export type LinkTokens = {};
+
           export interface Props {
             /**
              *   display name: 'Sum Property',
@@ -1489,6 +1556,7 @@ describe("generator", () => {
           osdkMetadata: typeof $osdkMetadata;
           type: 'interface';
           apiName: 'foo.bar.SomeInterface';
+          links: SomeInterface.LinkTokens;
           __DefinitionMetadata?: {
             objectSet: SomeInterface.ObjectSet;
             props: SomeInterface.Props;
@@ -1517,6 +1585,7 @@ describe("generator", () => {
           type: 'interface',
           apiName: 'foo.bar.SomeInterface',
           osdkMetadata: $osdkMetadata,
+          links: {},
           internalDoNotUseMetadata: {
             rid: 'idk',
           },
@@ -1540,13 +1609,19 @@ describe("generator", () => {
           OsdkObject as $OsdkObject,
           PropertyValueWireToClient as $PropType,
           SingleLinkAccessor as $SingleLinkAccessor,
+          LinkDef as $LinkDef,
         } from '@osdk/api';
+        import { createLinkDef as $createLinkDef } from '@osdk/api';
 
         export namespace Person {
           export type PropertyKeys = 'email';
 
           export interface Links {
             readonly Todos: Todo.ObjectSet;
+          }
+
+          export interface LinkTokens {
+            readonly Todos: $LinkDef<Person, Todo, 'many'>;
           }
 
           export interface Props {
@@ -1577,6 +1652,7 @@ describe("generator", () => {
           apiName: 'foo.bar.Person';
           primaryKeyApiName: 'email';
           primaryKeyType: 'string';
+          links: Person.LinkTokens;
           __DefinitionMetadata?: {
             objectSet: Person.ObjectSet;
             props: Person.Props;
@@ -1591,6 +1667,7 @@ describe("generator", () => {
               color: 'blue';
             };
             implements: [];
+            interfaceLinkMap: {};
             interfaceMap: {};
             inverseInterfaceMap: {};
             links: {
@@ -1619,6 +1696,9 @@ describe("generator", () => {
           osdkMetadata: $osdkMetadata,
           primaryKeyApiName: 'email',
           primaryKeyType: 'string',
+          links: {
+            Todos: $createLinkDef('foo.bar.Person', 'Todos', 'foo.bar.Todo', true, false),
+          },
           internalDoNotUseMetadata: {
             rid: 'ridForPerson',
           },
@@ -1639,13 +1719,19 @@ describe("generator", () => {
           OsdkObject as $OsdkObject,
           PropertyValueWireToClient as $PropType,
           SingleLinkAccessor as $SingleLinkAccessor,
+          LinkDef as $LinkDef,
         } from '@osdk/api';
+        import { createLinkDef as $createLinkDef } from '@osdk/api';
 
         export namespace Todo {
           export type PropertyKeys = 'array' | 'body' | 'complete' | 'id';
 
           export interface Links {
             readonly Assignee: $SingleLinkAccessor<Person>;
+          }
+
+          export interface LinkTokens {
+            readonly Assignee: $LinkDef<Todo, Person, 'one'>;
           }
 
           export interface Props {
@@ -1690,6 +1776,7 @@ describe("generator", () => {
           apiName: 'foo.bar.Todo';
           primaryKeyApiName: 'id';
           primaryKeyType: 'integer';
+          links: Todo.LinkTokens;
           __DefinitionMetadata?: {
             objectSet: Todo.ObjectSet;
             props: Todo.Props;
@@ -1704,6 +1791,9 @@ describe("generator", () => {
               color: 'blue';
             };
             implements: ['foo.bar.SomeInterface'];
+            interfaceLinkMap: {
+              'foo.bar.SomeInterface': {};
+            };
             interfaceMap: {
               'foo.bar.SomeInterface': {
                 SomeProperty: 'body';
@@ -1754,6 +1844,9 @@ describe("generator", () => {
           osdkMetadata: $osdkMetadata,
           primaryKeyApiName: 'id',
           primaryKeyType: 'integer',
+          links: {
+            Assignee: $createLinkDef('foo.bar.Todo', 'Assignee', 'foo.bar.Person', false, false),
+          },
           internalDoNotUseMetadata: {
             rid: 'ridForTodo',
           },
@@ -2087,6 +2180,8 @@ describe("generator", () => {
 
             export type Links = {};
 
+            export type LinkTokens = {};
+
             export interface Props {
               /**
                * (no ontology metadata)
@@ -2119,6 +2214,7 @@ describe("generator", () => {
             apiName: 'UsesForeignSpt';
             primaryKeyApiName: 'id';
             primaryKeyType: 'integer';
+            links: UsesForeignSpt.LinkTokens;
             __DefinitionMetadata?: {
               objectSet: UsesForeignSpt.ObjectSet;
               props: UsesForeignSpt.Props;
@@ -2133,6 +2229,7 @@ describe("generator", () => {
                 name: 'document';
               };
               implements: [];
+              interfaceLinkMap: {};
               interfaceMap: {};
               inverseInterfaceMap: {};
               links: {};
@@ -2163,6 +2260,7 @@ describe("generator", () => {
             osdkMetadata: $osdkMetadata,
             primaryKeyApiName: 'id',
             primaryKeyType: 'integer',
+            links: {},
             internalDoNotUseMetadata: {
               rid: 'theRid',
             },
@@ -2349,13 +2447,19 @@ describe("generator", () => {
           OsdkObject as $OsdkObject,
           PropertyValueWireToClient as $PropType,
           SingleLinkAccessor as $SingleLinkAccessor,
+          LinkDef as $LinkDef,
         } from '@osdk/client';
+        import { createLinkDef as $createLinkDef } from '@osdk/client';
 
         export namespace Person {
           export type PropertyKeys = 'email';
 
           export interface Links {
             readonly Todos: Todo.ObjectSet;
+          }
+
+          export interface LinkTokens {
+            readonly Todos: $LinkDef<Person, Todo, 'many'>;
           }
 
           export interface Props {
@@ -2386,6 +2490,7 @@ describe("generator", () => {
           apiName: 'Person';
           primaryKeyApiName: 'email';
           primaryKeyType: 'string';
+          links: Person.LinkTokens;
           __DefinitionMetadata?: {
             objectSet: Person.ObjectSet;
             props: Person.Props;
@@ -2400,6 +2505,7 @@ describe("generator", () => {
               color: 'blue';
             };
             implements: [];
+            interfaceLinkMap: {};
             interfaceMap: {};
             inverseInterfaceMap: {};
             links: {
@@ -2428,6 +2534,9 @@ describe("generator", () => {
           osdkMetadata: $osdkMetadata,
           primaryKeyApiName: 'email',
           primaryKeyType: 'string',
+          links: {
+            Todos: $createLinkDef('Person', 'Todos', 'Todo', true, false),
+          },
           internalDoNotUseMetadata: {
             rid: 'ridForPerson',
           },
@@ -2448,13 +2557,19 @@ describe("generator", () => {
           OsdkObject as $OsdkObject,
           PropertyValueWireToClient as $PropType,
           SingleLinkAccessor as $SingleLinkAccessor,
+          LinkDef as $LinkDef,
         } from '@osdk/client';
+        import { createLinkDef as $createLinkDef } from '@osdk/client';
 
         export namespace Todo {
           export type PropertyKeys = 'array' | 'body' | 'complete' | 'id';
 
           export interface Links {
             readonly Assignee: $SingleLinkAccessor<Person>;
+          }
+
+          export interface LinkTokens {
+            readonly Assignee: $LinkDef<Todo, Person, 'one'>;
           }
 
           export interface Props {
@@ -2499,6 +2614,7 @@ describe("generator", () => {
           apiName: 'Todo';
           primaryKeyApiName: 'id';
           primaryKeyType: 'integer';
+          links: Todo.LinkTokens;
           __DefinitionMetadata?: {
             objectSet: Todo.ObjectSet;
             props: Todo.Props;
@@ -2513,6 +2629,9 @@ describe("generator", () => {
               color: 'blue';
             };
             implements: ['SomeInterface'];
+            interfaceLinkMap: {
+              SomeInterface: {};
+            };
             interfaceMap: {
               SomeInterface: {
                 SomeProperty: 'body';
@@ -2563,6 +2682,9 @@ describe("generator", () => {
           osdkMetadata: $osdkMetadata,
           primaryKeyApiName: 'id',
           primaryKeyType: 'integer',
+          links: {
+            Assignee: $createLinkDef('Todo', 'Assignee', 'Person', false, false),
+          },
           internalDoNotUseMetadata: {
             rid: 'ridForTodo',
           },
@@ -2750,6 +2872,8 @@ describe("generator", () => {
         export namespace SomeInterface {
           export type PropertyKeys = 'spt' | 'spt2';
 
+          export type LinkTokens = {};
+
           export interface Props {
             /**
              *   display name: 'Some Property'
@@ -2780,6 +2904,7 @@ describe("generator", () => {
           osdkMetadata: typeof $osdkMetadata;
           type: 'interface';
           apiName: 'com.example.dep.SomeInterface';
+          links: SomeInterface.LinkTokens;
           __DefinitionMetadata?: {
             objectSet: SomeInterface.ObjectSet;
             props: SomeInterface.Props;
@@ -2810,6 +2935,7 @@ describe("generator", () => {
           type: 'interface',
           apiName: 'com.example.dep.SomeInterface',
           osdkMetadata: $osdkMetadata,
+          links: {},
           internalDoNotUseMetadata: {
             rid: 'idk2',
           },
@@ -2837,6 +2963,8 @@ describe("generator", () => {
           export type PropertyKeys = 'body' | 'taskId';
 
           export type Links = {};
+
+          export type LinkTokens = {};
 
           export interface Props {
             /**
@@ -2870,6 +2998,7 @@ describe("generator", () => {
           apiName: 'com.example.dep.Task';
           primaryKeyApiName: 'taskId';
           primaryKeyType: 'string';
+          links: Task.LinkTokens;
           __DefinitionMetadata?: {
             objectSet: Task.ObjectSet;
             props: Task.Props;
@@ -2884,6 +3013,7 @@ describe("generator", () => {
               name: 'document';
             };
             implements: [];
+            interfaceLinkMap: {};
             interfaceMap: {};
             inverseInterfaceMap: {};
             links: {};
@@ -2914,6 +3044,7 @@ describe("generator", () => {
           osdkMetadata: $osdkMetadata,
           primaryKeyApiName: 'taskId',
           primaryKeyType: 'string',
+          links: {},
           internalDoNotUseMetadata: {
             rid: 'ridForTask',
           },

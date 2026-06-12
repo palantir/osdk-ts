@@ -19,6 +19,8 @@ export namespace MasonMovie {
 
   export type Links = {};
 
+  export type LinkTokens = {};
+
   export interface Props {
     /**
      * @experimental
@@ -91,6 +93,7 @@ export interface MasonMovie extends $ObjectTypeDefinition {
   apiName: 'MasonMovie';
   primaryKeyApiName: 'movie';
   primaryKeyType: 'string';
+  links: MasonMovie.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: MasonMovie.ObjectSet;
     props: MasonMovie.Props;
@@ -105,6 +108,7 @@ export interface MasonMovie extends $ObjectTypeDefinition {
       name: 'cube';
     };
     implements: [];
+    interfaceLinkMap: {};
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -175,6 +179,7 @@ export const MasonMovie = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'movie',
   primaryKeyType: 'string',
+  links: {},
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.65a5444c-452e-450e-ac28-04f0028a243d',
   },

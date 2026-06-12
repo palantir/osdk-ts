@@ -19,6 +19,8 @@ export namespace MnayanOsdkMediaObject {
 
   export type Links = {};
 
+  export type LinkTokens = {};
+
   export interface Props {
     /**
      * (no ontology metadata)
@@ -55,6 +57,7 @@ export interface MnayanOsdkMediaObject extends $ObjectTypeDefinition {
   apiName: 'MnayanOsdkMediaObject';
   primaryKeyApiName: 'id';
   primaryKeyType: 'string';
+  links: MnayanOsdkMediaObject.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: MnayanOsdkMediaObject.ObjectSet;
     props: MnayanOsdkMediaObject.Props;
@@ -69,6 +72,7 @@ export interface MnayanOsdkMediaObject extends $ObjectTypeDefinition {
       color: 'color';
     };
     implements: undefined;
+    interfaceLinkMap: {};
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -103,6 +107,7 @@ export const MnayanOsdkMediaObject = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'id',
   primaryKeyType: 'string',
+  links: {},
   internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },

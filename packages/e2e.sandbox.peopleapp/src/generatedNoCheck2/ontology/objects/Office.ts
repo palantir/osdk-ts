@@ -13,13 +13,19 @@ import type {
   OsdkObject as $OsdkObject,
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
+  LinkDef as $LinkDef,
 } from '@osdk/client';
+import { createLinkDef as $createLinkDef } from '@osdk/client';
 
 export namespace Office {
   export type PropertyKeys = 'location' | 'name' | 'primaryKey_';
 
   export interface Links {
     readonly occupants: Employee.ObjectSet;
+  }
+
+  export interface LinkTokens {
+    readonly occupants: $LinkDef<Office, Employee, 'many'>;
   }
 
   export interface Props {
@@ -70,6 +76,7 @@ export interface Office extends $ObjectTypeDefinition {
   apiName: 'Office';
   primaryKeyApiName: 'primaryKey_';
   primaryKeyType: 'string';
+  links: Office.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: Office.ObjectSet;
     props: Office.Props;
@@ -84,6 +91,7 @@ export interface Office extends $ObjectTypeDefinition {
       name: 'cube';
     };
     implements: [];
+    interfaceLinkMap: {};
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {
@@ -132,6 +140,9 @@ export const Office = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'primaryKey_',
   primaryKeyType: 'string',
+  links: {
+    occupants: $createLinkDef('Office', 'occupants', 'Employee', true, false),
+  },
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.bbca9c02-5c6a-4d3a-8bf1-e4db0177ab5f',
   },

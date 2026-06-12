@@ -14,21 +14,79 @@
  * limitations under the License.
  */
 
+import type { WhereClause } from "../aggregate/WhereClause.js";
+import type {
+  LinkHopDescriptor,
+  LinkTraversalDescriptor,
+} from "../links/LinkTraversalDescriptor.js";
 import type { ObjectOrInterfaceDefinition } from "../ontology/ObjectOrInterface.js";
 import { computeShapeId } from "./computeShapeId.js";
 import type {
   InferShapeDefinition,
   InlineShapeConfig,
 } from "./InlineShapeConfig.js";
-import { createShapeLinkBuilder } from "./ShapeBuilder.js";
+import { createShapeBuilder, createShapeLinkBuilder } from "./ShapeBuilder.js";
 import type {
   NullabilityOp,
   ShapeDefinition,
   ShapeDerivedLinkDef,
   ShapeLinkBuilderInternal,
   ShapeLinkObjectSetDef,
+  ShapeLinkOrderBy,
+  ShapeLinkSegment,
   ShapePropertyConfig,
 } from "./ShapeDefinition.js";
+
+function hopToSegment(hop: LinkHopDescriptor): ShapeLinkSegment {
+  return {
+    type: "pivotTo",
+    linkName: hop.linkApiName,
+    sourceType: hop.sourceTypeApiName,
+    targetType: hop.targetTypeApiName,
+  };
+}
+
+/**
+ * Translates a token `LinkTraversalDescriptor` into a `ShapeLinkObjectSetDef`.
+ * Each hop becomes one `pivotTo` segment. `where`/`orderBy`/`limit` come from
+ * the endpoint (last) hop, matching the top-level filter semantics of
+ * `ShapeLinkObjectSetDef`.
+ */
+function descriptorToObjectSetDef(
+  descriptor: LinkTraversalDescriptor,
+): ShapeLinkObjectSetDef {
+  const segments = descriptor.hops.map(hopToSegment);
+  const lastHop = descriptor.hops[descriptor.hops.length - 1];
+  const where = lastHop.where as
+    | WhereClause<ObjectOrInterfaceDefinition>
+    | undefined;
+  const orderBy = lastHop.orderBy as readonly ShapeLinkOrderBy[] | undefined;
+  return {
+    segments: Object.freeze(segments),
+    where,
+    orderBy: orderBy && orderBy.length > 0
+      ? Object.freeze([...orderBy])
+      : undefined,
+    limit: lastHop.limit,
+    recursive: descriptor.recursive,
+  };
+}
+
+/**
+ * Synthesizes the default target shape for a recursive `follow` entry that was
+ * not given an explicit `.project(shape)`. The projection is intentionally
+ * minimal: each node carries only its `$primaryKey`/`$title` (always present via
+ * `OsdkBase`, so no selected props are needed) and no nested derived links. The
+ * recursion itself is driven by the parent derived link's
+ * `objectSetDef.recursive`, and the flat-plus-adjacency batched store
+ * reconstructs nesting, so a self-referential link here is neither required nor
+ * desirable.
+ */
+function minimalRecursiveShape(
+  baseType: ObjectOrInterfaceDefinition,
+): ShapeDefinition<ObjectOrInterfaceDefinition> {
+  return createShapeBuilder(baseType).build();
+}
 
 export function configToShapeDefinition<
   BASE extends ObjectOrInterfaceDefinition,
@@ -78,6 +136,17 @@ export function configToShapeDefinition<
     }
   }
 
+  if (config.fallbacks) {
+    for (const [prop, defaultValue] of Object.entries(config.fallbacks)) {
+      addProp(prop, {
+        nullabilityOp: {
+          type: "withDefault",
+          defaultValue,
+        } as NullabilityOp,
+      });
+    }
+  }
+
   if (config.transforms) {
     for (const [prop, transform] of Object.entries(config.transforms)) {
       if (typeof transform !== "function") {
@@ -111,6 +180,33 @@ export function configToShapeDefinition<
         objectSetDef,
         targetShape,
         config: { defer: linkConfig.defer },
+      });
+    }
+  }
+
+  if (config.follow) {
+    const linkNames = new Set(derivedLinks.map((l) => l.name));
+    for (const [name, traversal] of Object.entries(config.follow)) {
+      if (linkNames.has(name)) {
+        throw new Error(`Derived link "${name}" is defined more than once`);
+      }
+      linkNames.add(name);
+
+      const objectSetDef = descriptorToObjectSetDef(traversal.__descriptor);
+      const isRecursive = traversal.__descriptor.kind === "recursive";
+      const targetShape = traversal.__projectedShape
+        ?? (isRecursive ? minimalRecursiveShape(baseType) : undefined);
+      if (targetShape == null) {
+        throw new Error(
+          `follow["${name}"] must be projected with .project(shape)`,
+        );
+      }
+
+      derivedLinks.push({
+        name,
+        objectSetDef,
+        targetShape,
+        config: {},
       });
     }
   }

@@ -98,6 +98,8 @@ export namespace GraphqlFormatting {
 
   export type Links = {};
 
+  export type LinkTokens = {};
+
   export interface Props {
     /**
      * @experimental
@@ -764,6 +766,7 @@ export interface GraphqlFormatting extends $ObjectTypeDefinition {
   apiName: 'GraphqlFormatting';
   primaryKeyApiName: 'stringPlain';
   primaryKeyType: 'string';
+  links: GraphqlFormatting.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: GraphqlFormatting.ObjectSet;
     props: GraphqlFormatting.Props;
@@ -778,6 +781,7 @@ export interface GraphqlFormatting extends $ObjectTypeDefinition {
       name: 'cube';
     };
     implements: [];
+    interfaceLinkMap: {};
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -1444,6 +1448,7 @@ export const GraphqlFormatting = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'stringPlain',
   primaryKeyType: 'string',
+  links: {},
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.353eb83c-df7e-4c97-a362-1e94689869bc',
   },

@@ -15,6 +15,8 @@ export type OsdkObjectLinks$MwaltherPersonV2 = {};
 export namespace MwaltherPersonV2 {
   export type PropertyKeys = 'mwaltherNam';
 
+  export type LinkTokens = {};
+
   export interface Props {
     /**
      *   display name: 'prop1'
@@ -41,6 +43,7 @@ export interface MwaltherPersonV2 extends $InterfaceDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'interface';
   apiName: 'MwaltherPersonV2';
+  links: MwaltherPersonV2.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: MwaltherPersonV2.ObjectSet;
     props: MwaltherPersonV2.Props;
@@ -67,6 +70,7 @@ export const MwaltherPersonV2 = {
   type: 'interface',
   apiName: 'MwaltherPersonV2',
   osdkMetadata: $osdkMetadata,
+  links: {},
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.interface.2fc1336c-6d4d-428f-9a4f-4f3ebfaf860e',
   },

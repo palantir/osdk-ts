@@ -13,13 +13,19 @@ import type {
   OsdkObject as $OsdkObject,
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
+  LinkDef as $LinkDef,
 } from '@osdk/client';
+import { createLinkDef as $createLinkDef } from '@osdk/client';
 
 export namespace Todo {
   export type PropertyKeys = 'body' | 'complete' | 'id' | 'priority' | 'text';
 
   export interface Links {
     readonly Assignee: $SingleLinkAccessor<Person>;
+  }
+
+  export interface LinkTokens {
+    readonly Assignee: $LinkDef<Todo, Person, 'one'>;
   }
 
   export interface Props {
@@ -68,6 +74,7 @@ export interface Todo extends $ObjectTypeDefinition {
   apiName: 'Todo';
   primaryKeyApiName: 'id';
   primaryKeyType: 'integer';
+  links: Todo.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: Todo.ObjectSet;
     props: Todo.Props;
@@ -82,6 +89,7 @@ export interface Todo extends $ObjectTypeDefinition {
       color: 'color';
     };
     implements: undefined;
+    interfaceLinkMap: {};
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {
@@ -128,6 +136,9 @@ export const Todo = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'id',
   primaryKeyType: 'integer',
+  links: {
+    Assignee: $createLinkDef('Todo', 'Assignee', 'Person', false, false),
+  },
   internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },

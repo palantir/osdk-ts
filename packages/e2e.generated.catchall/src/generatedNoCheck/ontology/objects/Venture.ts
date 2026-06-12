@@ -13,13 +13,19 @@ import type {
   OsdkObject as $OsdkObject,
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
+  LinkDef as $LinkDef,
 } from '@osdk/client';
+import { createLinkDef as $createLinkDef } from '@osdk/client';
 
 export namespace Venture {
   export type PropertyKeys = 'ventureId' | 'ventureName' | 'ventureStart';
 
   export interface Links {
     readonly employees: Employee.ObjectSet;
+  }
+
+  export interface LinkTokens {
+    readonly employees: $LinkDef<Venture, Employee, 'many'>;
   }
 
   export interface Props {
@@ -58,6 +64,7 @@ export interface Venture extends $ObjectTypeDefinition {
   apiName: 'Venture';
   primaryKeyApiName: 'ventureId';
   primaryKeyType: 'string';
+  links: Venture.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: Venture.ObjectSet;
     props: Venture.Props;
@@ -72,6 +79,7 @@ export interface Venture extends $ObjectTypeDefinition {
       color: 'color';
     };
     implements: undefined;
+    interfaceLinkMap: {};
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {
@@ -108,6 +116,9 @@ export const Venture = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'ventureId',
   primaryKeyType: 'string',
+  links: {
+    employees: $createLinkDef('Venture', 'employees', 'Employee', true, false),
+  },
   internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },

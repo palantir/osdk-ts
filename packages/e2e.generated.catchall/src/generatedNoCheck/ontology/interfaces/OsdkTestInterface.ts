@@ -15,6 +15,8 @@ export type OsdkObjectLinks$OsdkTestInterface = {};
 export namespace OsdkTestInterface {
   export type PropertyKeys = 'objectDescription';
 
+  export type LinkTokens = {};
+
   export interface Props {
     /**
      * (no ontology metadata)
@@ -41,6 +43,7 @@ export interface OsdkTestInterface extends $InterfaceDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'interface';
   apiName: 'OsdkTestInterface';
+  links: OsdkTestInterface.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: OsdkTestInterface.ObjectSet;
     props: OsdkTestInterface.Props;
@@ -67,6 +70,7 @@ export const OsdkTestInterface = {
   type: 'interface',
   apiName: 'OsdkTestInterface',
   osdkMetadata: $osdkMetadata,
+  links: {},
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.interface.06c534fd-4f68-44d9-b268-72729a47eaab',
   },

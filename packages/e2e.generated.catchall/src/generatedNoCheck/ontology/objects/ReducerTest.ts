@@ -25,6 +25,8 @@ export namespace ReducerTest {
 
   export type Links = {};
 
+  export type LinkTokens = {};
+
   export interface Props {
     /**
      * @experimental
@@ -101,6 +103,7 @@ export interface ReducerTest extends $ObjectTypeDefinition {
   apiName: 'ReducerTest';
   primaryKeyApiName: 'primaryKey_';
   primaryKeyType: 'string';
+  links: ReducerTest.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: ReducerTest.ObjectSet;
     props: ReducerTest.Props;
@@ -115,6 +118,9 @@ export interface ReducerTest extends $ObjectTypeDefinition {
       name: 'cube';
     };
     implements: ['ReducerTestInterface'];
+    interfaceLinkMap: {
+      ReducerTestInterface: {};
+    };
     interfaceMap: {
       ReducerTestInterface: {
         stringFromArrayFromAlreadyReduced: 'stringArray';
@@ -195,6 +201,7 @@ export const ReducerTest = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'primaryKey_',
   primaryKeyType: 'string',
+  links: {},
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.4069c2c9-9497-45ec-8fa2-02caf0c261e9',
   },

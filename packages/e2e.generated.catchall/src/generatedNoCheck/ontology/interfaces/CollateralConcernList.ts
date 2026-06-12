@@ -8,7 +8,9 @@ import type {
   Osdk as $Osdk,
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
+  LinkDef as $LinkDef,
 } from '@osdk/client';
+import { createLinkDef as $createLinkDef } from '@osdk/client';
 
 export interface OsdkObjectLinks$CollateralConcernList {
   'com.palantir.pcl.civpro.collateral-concern-core.collateralConcernListToEntity': CollateralConcernCandidate.ObjectSet;
@@ -16,6 +18,14 @@ export interface OsdkObjectLinks$CollateralConcernList {
 
 export namespace CollateralConcernList {
   export type PropertyKeys = 'collateralConcernListDescription' | 'collateralConcernListName';
+
+  export interface LinkTokens {
+    readonly 'com.palantir.pcl.civpro.collateral-concern-core.collateralConcernListToEntity': $LinkDef<
+      CollateralConcernList,
+      CollateralConcernCandidate,
+      'many'
+    >;
+  }
 
   export interface Props {
     /**
@@ -51,6 +61,7 @@ export interface CollateralConcernList extends $InterfaceDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'interface';
   apiName: 'com.palantir.pcl.civpro.collateral-concern-core.CollateralConcernList';
+  links: CollateralConcernList.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: CollateralConcernList.ObjectSet;
     props: CollateralConcernList.Props;
@@ -90,6 +101,15 @@ export const CollateralConcernList = {
   type: 'interface',
   apiName: 'com.palantir.pcl.civpro.collateral-concern-core.CollateralConcernList',
   osdkMetadata: $osdkMetadata,
+  links: {
+    'com.palantir.pcl.civpro.collateral-concern-core.collateralConcernListToEntity': $createLinkDef(
+      'com.palantir.pcl.civpro.collateral-concern-core.CollateralConcernList',
+      'com.palantir.pcl.civpro.collateral-concern-core.collateralConcernListToEntity',
+      'com.palantir.pcl.civpro.collateral-concern-core.CollateralConcernCandidate',
+      true,
+      true,
+    ),
+  },
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.interface.7d459ce8-bb84-4ea5-9039-71560d82b53f',
   },

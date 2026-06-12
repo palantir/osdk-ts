@@ -13,13 +13,19 @@ import type {
   OsdkObject as $OsdkObject,
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
+  LinkDef as $LinkDef,
 } from '@osdk/client';
+import { createLinkDef as $createLinkDef } from '@osdk/client';
 
 export namespace Employee {
   export type PropertyKeys = 'email' | 'employeeId' | 'fullName' | 'homeRegion' | 'joinedDate';
 
   export interface Links {
     readonly assignments: Assignment.ObjectSet;
+  }
+
+  export interface LinkTokens {
+    readonly assignments: $LinkDef<Employee, Assignment, 'many'>;
   }
 
   export interface Props {
@@ -86,6 +92,7 @@ export interface Employee extends $ObjectTypeDefinition {
   apiName: 'Employee';
   primaryKeyApiName: 'employeeId';
   primaryKeyType: 'string';
+  links: Employee.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: Employee.ObjectSet;
     props: Employee.Props;
@@ -100,6 +107,7 @@ export interface Employee extends $ObjectTypeDefinition {
       name: 'person';
     };
     implements: [];
+    interfaceLinkMap: {};
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {
@@ -164,6 +172,9 @@ export const Employee = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'employeeId',
   primaryKeyType: 'string',
+  links: {
+    assignments: $createLinkDef('Employee', 'assignments', 'Assignment', true, false),
+  },
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.679d471d-610f-4d7c-915f-c67060c5d4c0',
   },

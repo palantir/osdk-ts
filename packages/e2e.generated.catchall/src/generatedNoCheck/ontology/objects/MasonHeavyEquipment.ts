@@ -12,7 +12,9 @@ import type {
   OsdkObject as $OsdkObject,
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
+  LinkDef as $LinkDef,
 } from '@osdk/client';
+import { createLinkDef as $createLinkDef } from '@osdk/client';
 
 export namespace MasonHeavyEquipment {
   export type PropertyKeys =
@@ -45,6 +47,10 @@ export namespace MasonHeavyEquipment {
 
   export interface Links {
     readonly masonHeavyEquipment: $SingleLinkAccessor<MasonHeavyEquipment>;
+  }
+
+  export interface LinkTokens {
+    readonly masonHeavyEquipment: $LinkDef<MasonHeavyEquipment, MasonHeavyEquipment, 'one'>;
   }
 
   export interface Props {
@@ -477,6 +483,7 @@ export interface MasonHeavyEquipment extends $ObjectTypeDefinition {
   apiName: 'MasonHeavyEquipment';
   primaryKeyApiName: 'id';
   primaryKeyType: 'string';
+  links: MasonHeavyEquipment.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: MasonHeavyEquipment.ObjectSet;
     props: MasonHeavyEquipment.Props;
@@ -491,6 +498,7 @@ export interface MasonHeavyEquipment extends $ObjectTypeDefinition {
       name: 'cube';
     };
     implements: [];
+    interfaceLinkMap: {};
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {
@@ -947,6 +955,15 @@ export const MasonHeavyEquipment = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'id',
   primaryKeyType: 'string',
+  links: {
+    masonHeavyEquipment: $createLinkDef(
+      'MasonHeavyEquipment',
+      'masonHeavyEquipment',
+      'MasonHeavyEquipment',
+      false,
+      false,
+    ),
+  },
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.73756c21-5a63-47ae-af39-2f22bedd8ec2',
   },

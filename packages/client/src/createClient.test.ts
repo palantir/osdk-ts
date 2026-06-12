@@ -202,4 +202,121 @@ describe(createClient, () => {
       expect(someParam).toBe(transactionId);
     });
   });
+
+  describe("ontologyMetadata", () => {
+    const objectFullMetadataWire = {
+      implementsInterfaces: ["CategoryInterface"],
+      implementsInterfaces2: {
+        CategoryInterface: {
+          properties: {},
+          propertiesV2: {},
+          links: { childCategories: ["concreteChildren"] },
+        },
+      },
+      linkTypes: [
+        {
+          apiName: "concreteChildren",
+          cardinality: "MANY",
+          objectTypeApiName: "SubCategory",
+          displayName: "Children",
+          status: "ACTIVE",
+          linkTypeRid: "ri.link",
+        },
+      ],
+      objectType: {
+        apiName: "SubCategory",
+        description: "description",
+        displayName: "Sub Category",
+        pluralDisplayName: "Sub Categories",
+        icon: { type: "blueprint", name: "blueprint", color: "blue" },
+        primaryKey: "primaryKey",
+        properties: {
+          primaryKey: {
+            dataType: { type: "string" },
+            rid: "ri.property",
+            typeClasses: [],
+          },
+        },
+        rid: "ri.object",
+        status: "ACTIVE",
+        titleProperty: "primaryKey",
+      },
+      sharedPropertyTypeMapping: {},
+    };
+
+    const interfaceWire = {
+      rid: "ri.interface",
+      apiName: "CategoryInterface",
+      displayName: "Category Interface",
+      description: "",
+      properties: {},
+      allProperties: {},
+      links: {},
+      allLinks: {},
+      implementedByObjectTypes: ["SubCategory"],
+    };
+
+    it("resolveLink round-trips an interface link to its concrete link through the provider", async () => {
+      const fetch = vi.fn() as MockedFunction<typeof globalThis.fetch>;
+      fetch.mockImplementation((input) => {
+        const url = String(input);
+        const body = url.includes("/fullMetadata")
+          ? objectFullMetadataWire
+          : interfaceWire;
+        return Promise.resolve(
+          {
+            json: () => Promise.resolve(body),
+            status: 200,
+            ok: true,
+          } as Response,
+        );
+      });
+
+      const localClient = createClient(
+        "https://mock.com",
+        ontologyRid,
+        async () => "Token",
+        undefined,
+        fetch,
+      );
+
+      const resolved = await localClient.ontologyMetadata.resolveLink(
+        "SubCategory",
+        "childCategories",
+      );
+
+      expect(resolved).toEqual({
+        concreteLinkApiName: "concreteChildren",
+        targetType: "SubCategory",
+        multiplicity: true,
+      });
+    });
+
+    it("implementationsOf round-trips implementedBy through the provider", async () => {
+      const fetch = vi.fn() as MockedFunction<typeof globalThis.fetch>;
+      fetch.mockImplementation(() =>
+        Promise.resolve(
+          {
+            json: () => Promise.resolve(interfaceWire),
+            status: 200,
+            ok: true,
+          } as Response,
+        )
+      );
+
+      const localClient = createClient(
+        "https://mock.com",
+        ontologyRid,
+        async () => "Token",
+        undefined,
+        fetch,
+      );
+
+      expect(
+        await localClient.ontologyMetadata.implementationsOf(
+          "CategoryInterface",
+        ),
+      ).toEqual(["SubCategory"]);
+    });
+  });
 });

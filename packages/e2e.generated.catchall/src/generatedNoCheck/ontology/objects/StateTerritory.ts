@@ -13,13 +13,19 @@ import type {
   OsdkObject as $OsdkObject,
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
+  LinkDef as $LinkDef,
 } from '@osdk/client';
+import { createLinkDef as $createLinkDef } from '@osdk/client';
 
 export namespace StateTerritory {
   export type PropertyKeys = 'airportStateCode' | 'airportStateName' | 'country';
 
   export interface Links {
     readonly country1: $SingleLinkAccessor<Country_1>;
+  }
+
+  export interface LinkTokens {
+    readonly country1: $LinkDef<StateTerritory, Country_1, 'one'>;
   }
 
   export interface Props {
@@ -58,6 +64,7 @@ export interface StateTerritory extends $ObjectTypeDefinition {
   apiName: 'StateTerritory';
   primaryKeyApiName: 'airportStateName';
   primaryKeyType: 'string';
+  links: StateTerritory.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: StateTerritory.ObjectSet;
     props: StateTerritory.Props;
@@ -72,6 +79,7 @@ export interface StateTerritory extends $ObjectTypeDefinition {
       name: 'cube';
     };
     implements: [];
+    interfaceLinkMap: {};
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {
@@ -108,6 +116,9 @@ export const StateTerritory = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'airportStateName',
   primaryKeyType: 'string',
+  links: {
+    country1: $createLinkDef('StateTerritory', 'country1', 'Country_1', false, false),
+  },
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.98f324e1-b8f4-42ef-aee7-5c4a1494ce5e',
   },

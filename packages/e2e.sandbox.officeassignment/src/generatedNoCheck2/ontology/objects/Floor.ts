@@ -14,7 +14,9 @@ import type {
   OsdkObject as $OsdkObject,
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
+  LinkDef as $LinkDef,
 } from '@osdk/client';
+import { createLinkDef as $createLinkDef } from '@osdk/client';
 
 export namespace Floor {
   export type PropertyKeys = 'deskCapacity' | 'floorId' | 'isExcluded' | 'name' | 'officeId';
@@ -22,6 +24,11 @@ export namespace Floor {
   export interface Links {
     readonly assignments: Assignment.ObjectSet;
     readonly office: $SingleLinkAccessor<Office>;
+  }
+
+  export interface LinkTokens {
+    readonly assignments: $LinkDef<Floor, Assignment, 'many'>;
+    readonly office: $LinkDef<Floor, Office, 'one'>;
   }
 
   export interface Props {
@@ -88,6 +95,7 @@ export interface Floor extends $ObjectTypeDefinition {
   apiName: 'Floor';
   primaryKeyApiName: 'floorId';
   primaryKeyType: 'string';
+  links: Floor.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: Floor.ObjectSet;
     props: Floor.Props;
@@ -102,6 +110,7 @@ export interface Floor extends $ObjectTypeDefinition {
       name: 'layer';
     };
     implements: [];
+    interfaceLinkMap: {};
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {
@@ -167,6 +176,10 @@ export const Floor = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'floorId',
   primaryKeyType: 'string',
+  links: {
+    assignments: $createLinkDef('Floor', 'assignments', 'Assignment', true, false),
+    office: $createLinkDef('Floor', 'office', 'Office', false, false),
+  },
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.eafe2bc2-26d3-4d05-a01a-a563c4b538a5',
   },

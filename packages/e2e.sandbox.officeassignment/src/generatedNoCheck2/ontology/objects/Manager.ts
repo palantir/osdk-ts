@@ -13,13 +13,19 @@ import type {
   OsdkObject as $OsdkObject,
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
+  LinkDef as $LinkDef,
 } from '@osdk/client';
+import { createLinkDef as $createLinkDef } from '@osdk/client';
 
 export namespace Manager {
   export type PropertyKeys = 'email' | 'fullName' | 'managerId' | 'title';
 
   export interface Links {
     readonly assignments: Assignment.ObjectSet;
+  }
+
+  export interface LinkTokens {
+    readonly assignments: $LinkDef<Manager, Assignment, 'many'>;
   }
 
   export interface Props {
@@ -78,6 +84,7 @@ export interface Manager extends $ObjectTypeDefinition {
   apiName: 'Manager';
   primaryKeyApiName: 'managerId';
   primaryKeyType: 'string';
+  links: Manager.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: Manager.ObjectSet;
     props: Manager.Props;
@@ -92,6 +99,7 @@ export interface Manager extends $ObjectTypeDefinition {
       name: 'hat';
     };
     implements: [];
+    interfaceLinkMap: {};
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {
@@ -148,6 +156,9 @@ export const Manager = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'managerId',
   primaryKeyType: 'string',
+  links: {
+    assignments: $createLinkDef('Manager', 'assignments', 'Assignment', true, false),
+  },
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.a63ba05c-d155-4a05-9e06-aed231a64571',
   },

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ObjectRefMap } from "@osdk/api";
 import type { InterfaceHolder } from "../object/convertWireToOsdkObjects/InterfaceHolder.js";
 import type { ObjectHolder } from "../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { ObserveLinkCallbackArgs } from "./ObservableClient.js";
@@ -24,10 +25,15 @@ import type { ObserveLinkCallbackArgs } from "./ObservableClient.js";
 export interface SpecificLinkPayload extends
   Omit<
     ObserveLinkCallbackArgs<any>,
-    "resolvedList" | "linkedObjectsBySourcePrimaryKey"
+    | "resolvedList"
+    | "linkedObjectsBySource"
+    | "linkedObjectsBySourcePrimaryKey"
   >
 {
   resolvedList: Array<ObjectHolder | InterfaceHolder> | undefined;
+  linkedObjectsBySource: ObjectRefMap<
+    ReadonlyArray<ObjectHolder | InterfaceHolder>
+  >;
   linkedObjectsBySourcePrimaryKey: ReadonlyMap<
     string | number,
     ReadonlyArray<ObjectHolder | InterfaceHolder>

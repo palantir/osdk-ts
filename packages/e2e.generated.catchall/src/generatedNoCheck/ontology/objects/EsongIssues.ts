@@ -13,7 +13,9 @@ import type {
   OsdkObject as $OsdkObject,
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
+  LinkDef as $LinkDef,
 } from '@osdk/client';
+import { createLinkDef as $createLinkDef } from '@osdk/client';
 
 export namespace EsongIssues {
   export type PropertyKeys =
@@ -29,6 +31,11 @@ export namespace EsongIssues {
   export interface Links {
     readonly esongPds: $SingleLinkAccessor<EsongPds>;
     readonly esongPdsM2m: EsongPds.ObjectSet;
+  }
+
+  export interface LinkTokens {
+    readonly esongPds: $LinkDef<EsongIssues, EsongPds, 'one'>;
+    readonly esongPdsM2m: $LinkDef<EsongIssues, EsongPds, 'many'>;
   }
 
   export interface Props {
@@ -119,6 +126,7 @@ export interface EsongIssues extends $ObjectTypeDefinition {
   apiName: 'EsongIssues';
   primaryKeyApiName: 'id';
   primaryKeyType: 'integer';
+  links: EsongIssues.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: EsongIssues.ObjectSet;
     props: EsongIssues.Props;
@@ -133,6 +141,11 @@ export interface EsongIssues extends $ObjectTypeDefinition {
       name: 'cube';
     };
     implements: ['EsongInterfaceA', 'EsongInterfaceC', 'EsongInterfaceWithIlts'];
+    interfaceLinkMap: {
+      EsongInterfaceA: {};
+      EsongInterfaceC: {};
+      EsongInterfaceWithIlts: {};
+    };
     interfaceMap: {
       EsongInterfaceA: {
         esongSptA: 'label';
@@ -242,6 +255,10 @@ export const EsongIssues = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'id',
   primaryKeyType: 'integer',
+  links: {
+    esongPds: $createLinkDef('EsongIssues', 'esongPds', 'EsongPds', false, false),
+    esongPdsM2m: $createLinkDef('EsongIssues', 'esongPdsM2m', 'EsongPds', true, false),
+  },
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.9e50a0d3-5b89-41f5-a894-b0e9bb388950',
   },

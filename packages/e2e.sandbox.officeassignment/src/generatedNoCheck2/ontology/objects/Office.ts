@@ -14,7 +14,9 @@ import type {
   OsdkObject as $OsdkObject,
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
+  LinkDef as $LinkDef,
 } from '@osdk/client';
+import { createLinkDef as $createLinkDef } from '@osdk/client';
 
 export namespace Office {
   export type PropertyKeys = 'city' | 'name' | 'officeId' | 'region';
@@ -22,6 +24,11 @@ export namespace Office {
   export interface Links {
     readonly assignments: Assignment.ObjectSet;
     readonly floors: Floor.ObjectSet;
+  }
+
+  export interface LinkTokens {
+    readonly assignments: $LinkDef<Office, Assignment, 'many'>;
+    readonly floors: $LinkDef<Office, Floor, 'many'>;
   }
 
   export interface Props {
@@ -80,6 +87,7 @@ export interface Office extends $ObjectTypeDefinition {
   apiName: 'Office';
   primaryKeyApiName: 'officeId';
   primaryKeyType: 'string';
+  links: Office.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: Office.ObjectSet;
     props: Office.Props;
@@ -94,6 +102,7 @@ export interface Office extends $ObjectTypeDefinition {
       name: 'office';
     };
     implements: [];
+    interfaceLinkMap: {};
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {
@@ -151,6 +160,10 @@ export const Office = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'officeId',
   primaryKeyType: 'string',
+  links: {
+    assignments: $createLinkDef('Office', 'assignments', 'Assignment', true, false),
+    floors: $createLinkDef('Office', 'floors', 'Floor', true, false),
+  },
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.a8feaba1-2c21-4aaa-9533-f76eac796c55',
   },

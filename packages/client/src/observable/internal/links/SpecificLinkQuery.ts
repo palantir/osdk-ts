@@ -17,6 +17,7 @@
 import type {
   InterfaceDefinition,
   ObjectOrInterfaceDefinition,
+  ObjectRef,
   ObjectSet,
   ObjectTypeDefinition,
   Osdk,
@@ -24,9 +25,12 @@ import type {
   PrimaryKeyType,
   WhereClause,
 } from "@osdk/api";
+import { ObjectRefMap } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
 import { type Subject } from "rxjs";
 import { additionalContext } from "../../../Client.js";
+import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
+import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { SpecificLinkPayload } from "../../LinkPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
 import type { ObserveLinks } from "../../ObservableClient/ObserveLink.js";
@@ -77,11 +81,21 @@ export class SpecificLinkQuery extends BaseListQuery<
   protected override createPayload(
     params: CollectionConnectableParams,
   ): SpecificLinkPayload {
+    const sourceRef: ObjectRef = {
+      $objectType: this.#sourceUnderlyingObjectType,
+      $primaryKey: this.#sourcePk,
+    };
+    const linkGroup = params.resolvedData ?? [];
+    const linkedObjectsBySource = new ObjectRefMap<
+      ReadonlyArray<ObjectHolder | InterfaceHolder>
+    >();
+    linkedObjectsBySource.set(sourceRef, linkGroup);
     return {
       ...super.createPayload(params),
+      linkedObjectsBySource,
       linkedObjectsBySourcePrimaryKey: new Map([[
         this.#sourcePk,
-        params.resolvedData ?? [],
+        linkGroup,
       ]]),
     };
   }
@@ -353,6 +367,7 @@ export class SpecificLinkQuery extends BaseListQuery<
     // 3. When the target type matches the invalidated type
     // 4. When the target is an interface and the invalidated type implements it
 
+    // 1. Source object type matches directly.
     if (
       this.#sourceTypeKind === "object" && this.#sourceApiName === objectType
     ) {
@@ -361,11 +376,11 @@ export class SpecificLinkQuery extends BaseListQuery<
     }
 
     return (async () => {
-      try {
-        const ontologyProvider = this.store.client[additionalContext]
-          .ontologyProvider;
-
-        if (this.#sourceTypeKind === "interface") {
+      // 2. Source is an interface that the invalidated type implements.
+      if (this.#sourceTypeKind === "interface") {
+        try {
+          const ontologyProvider = this.store.client[additionalContext]
+            .ontologyProvider;
           const objectMetadata = await ontologyProvider.getObjectDefinition(
             objectType,
           );
@@ -373,7 +388,43 @@ export class SpecificLinkQuery extends BaseListQuery<
             changes?.modified.add(this.cacheKey);
             return void await this.revalidate(true);
           }
+        } catch (e) {
+          if (process.env.NODE_ENV !== "production") {
+            this.logger?.error(
+              "Failed to resolve metadata during invalidation",
+              e,
+            );
+          }
+          changes?.modified.add(this.cacheKey);
+          return void await this.revalidate(true);
         }
+      }
+
+      // 3 & 4. Target type matches the invalidated type (directly or via an
+      // interface the invalidated type implements).
+      await this.invalidateTargetType(objectType, changes);
+    })();
+  };
+
+  /**
+   * Revalidate this link query when the invalidated object type is its *target*
+   * type — a direct target match, or an interface target that the invalidated
+   * object type implements (cases 3 & 4 of {@link invalidateObjectType}).
+   *
+   * Link queries are keyed on `(srcType, srcPk, linkName, ...)`, never on the
+   * linked object's type, so per-PK source invalidation never reaches a query
+   * that merely points *at* the edited object. {@link Store.invalidateObject}
+   * walks live link queries through this method so editing a linked object
+   * still refreshes the relationships that resolve to it.
+   */
+  invalidateTargetType = (
+    objectType: string,
+    changes: Changes | undefined,
+  ): Promise<void> => {
+    return (async () => {
+      try {
+        const ontologyProvider = this.store.client[additionalContext]
+          .ontologyProvider;
 
         let targetTypeApiName: string | undefined;
 
@@ -391,7 +442,9 @@ export class SpecificLinkQuery extends BaseListQuery<
             ?.targetType;
         }
 
-        if (!targetTypeApiName) return;
+        if (!targetTypeApiName) {
+          return;
+        }
 
         if (targetTypeApiName === objectType) {
           changes?.modified.add(this.cacheKey);

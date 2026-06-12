@@ -15,6 +15,8 @@ export type OsdkObjectLinks$mwaltherPerson = {};
 export namespace mwaltherPerson {
   export type PropertyKeys = 'age' | 'mwaltherName';
 
+  export type LinkTokens = {};
+
   export interface Props {
     /**
      *   display name: 'Age (IDP)'
@@ -45,6 +47,7 @@ export interface mwaltherPerson extends $InterfaceDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'interface';
   apiName: 'mwaltherPerson';
+  links: mwaltherPerson.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: mwaltherPerson.ObjectSet;
     props: mwaltherPerson.Props;
@@ -75,6 +78,7 @@ export const mwaltherPerson = {
   type: 'interface',
   apiName: 'mwaltherPerson',
   osdkMetadata: $osdkMetadata,
+  links: {},
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.interface.2bf99935-b656-4c38-87ff-5970ccb3f2a7',
   },

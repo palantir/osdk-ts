@@ -23,7 +23,9 @@
  */
 
 import type {
+  LinkHopDescriptor,
   ObjectOrInterfaceDefinition,
+  ObjectRef,
   ObjectSet,
   ObjectTypeDefinition,
   Osdk,
@@ -37,7 +39,11 @@ import type {
   ShapeDerivedLinks,
 } from "@osdk/api/unstable";
 import type { Client } from "@osdk/client";
-import type { ObservableClient, Observer } from "@osdk/client/observable";
+import type {
+  ObservableClient,
+  ObserveLinkClosure,
+  Observer,
+} from "@osdk/client/observable";
 import {
   applyShapeTransformationsToArray,
   buildObjectSetFromLinkDefByType,
@@ -57,9 +63,11 @@ import type {
   ListObserverPayload,
 } from "./types.js";
 import {
+  attachRecursiveTreeView,
   buildDataWithNestedLinks,
   cleanupNestedMap,
   createLinkEntry,
+  NOOP_FETCH_MORE,
   violationsToError,
 } from "./types.js";
 
@@ -320,10 +328,108 @@ export function createDerivedLinksStore<
     };
   }
 
+  /**
+   * Observer used for `observeLinkClosure` on a recursive link entry. The
+   * closure emits a flat, root-excluded discovery list plus an `adjacency`
+   * map. We keep the flat list as the entry's canonical `data` (so it behaves
+   * like every other link list) and attach a lazy `tree` view derived from
+   * `adjacency` so consumers can opt into the reconstructed nesting.
+   */
+  function createClosureObserver(
+    entry: LinkEntry,
+    rootRef: ObjectRef,
+  ): Observer<ObserveLinkClosure.CallbackArgs<ObjectOrInterfaceDefinition>> {
+    return {
+      next: (payload) => {
+        if (isDestroyed) {
+          return;
+        }
+        const transformResult = applyShapeTransformationsToArray(
+          entry.linkDef.targetShape,
+          payload.data,
+        );
+
+        const stillLoading = payload.isExpanding
+          || payload.status === "loading";
+        entry.status = stillLoading ? "loading" : "loaded";
+        entry.hasMore = false;
+        entry.fetchMore = NOOP_FETCH_MORE;
+        entry.error = payload.error ?? violationsToError(
+          entry.linkDef.targetShape,
+          transformResult.violations,
+        );
+
+        entry.data = attachRecursiveTreeView(
+          transformResult.data,
+          payload.adjacency,
+          rootRef,
+          entry.linkDef.name,
+        );
+
+        notifySubscribers();
+      },
+      error: (err) => {
+        if (isDestroyed) {
+          return;
+        }
+        entry.status = "error";
+        entry.error = wrapError(err);
+        notifySubscribers();
+      },
+      complete: () => {},
+    };
+  }
+
+  /**
+   * Drives a recursive follow entry via `observeLinkClosure`. The link's single
+   * segment describes one expansion hop; `objectSetDef.recursive` carries the
+   * depth/node budget. The closure is rooted at the entry's source object.
+   */
+  function startClosureObservation(entry: LinkEntry): void {
+    const recursive = entry.linkDef.objectSetDef.recursive;
+    if (recursive == null) {
+      return;
+    }
+    const segment = entry.linkDef.objectSetDef.segments[0];
+    const source = entry.sourceObject;
+    const root: ObjectRef = {
+      $objectType: source.$objectType,
+      $primaryKey: source.$primaryKey,
+    };
+    const hop: LinkHopDescriptor = {
+      sourceTypeApiName: segment.sourceType ?? source.$objectType,
+      linkApiName: segment.linkName,
+      targetTypeApiName: segment.targetType ?? source.$objectType,
+      multiplicity: true,
+      sourceIsInterface: false,
+    };
+
+    const subscription = observableClient.observeLinkClosure(
+      {
+        root,
+        hop,
+        maxDepth: recursive.maxDepth,
+        maxNodes: recursive.maxNodes,
+      },
+      createClosureObserver(entry, root),
+    );
+
+    if (isDestroyed) {
+      subscription.unsubscribe();
+      return;
+    }
+    entry.subscription = subscription;
+  }
+
   async function startLinkObservationInternal(
     entry: LinkEntry,
     sourceType: ObjectOrInterfaceDefinition,
   ): Promise<void> {
+    if (entry.linkDef.objectSetDef.recursive) {
+      startClosureObservation(entry);
+      return;
+    }
+
     const objectSet = await buildObjectSetFromLinkDefByType(
       client,
       sourceType,

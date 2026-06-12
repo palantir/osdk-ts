@@ -144,6 +144,51 @@ describe("applyShapeTransformations", () => {
     expect(result.violations).toEqual([]);
   });
 
+  it("records a missing field when withDefault substitutes a null source value", () => {
+    const shape = createMockShape({
+      codename: {
+        nullabilityOp: { type: "withDefault", defaultValue: "TBD" },
+      },
+    });
+    const obj = createMockObject({ codename: null });
+    const result = applyShapeTransformations(shape, obj);
+    expect(result.data).toBeDefined();
+    const data = result.data as Record<string, unknown> & {
+      $missingFields: ReadonlySet<string>;
+    };
+    expect(data.codename).toBe("TBD");
+    expect(data.$missingFields.has("codename")).toBe(true);
+  });
+
+  it("does not record a missing field when the source value is present", () => {
+    const shape = createMockShape({
+      codename: {
+        nullabilityOp: { type: "withDefault", defaultValue: "TBD" },
+      },
+    });
+    const obj = createMockObject({ codename: "TBD" });
+    const result = applyShapeTransformations(shape, obj);
+    expect(result.data).toBeDefined();
+    const data = result.data as Record<string, unknown> & {
+      $missingFields: ReadonlySet<string>;
+    };
+    expect(data.codename).toBe("TBD");
+    expect(data.$missingFields.has("codename")).toBe(false);
+  });
+
+  it("exposes an empty missing-field set when no fallback substitutes", () => {
+    const shape = createMockShape({
+      name: { nullabilityOp: { type: "select" } },
+    });
+    const obj = createMockObject({ name: "Alice" });
+    const result = applyShapeTransformations(shape, obj);
+    expect(result.data).toBeDefined();
+    const data = result.data as Record<string, unknown> & {
+      $missingFields: ReadonlySet<string>;
+    };
+    expect(data.$missingFields.size).toBe(0);
+  });
+
   it("withTransform error returns transformError violation", () => {
     const shape = createMockShape({
       name: {

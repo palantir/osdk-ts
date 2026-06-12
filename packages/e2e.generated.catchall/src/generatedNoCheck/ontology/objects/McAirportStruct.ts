@@ -19,6 +19,8 @@ export namespace McAirportStruct {
 
   export type Links = {};
 
+  export type LinkTokens = {};
+
   export interface Props {
     /**
      *   display name: 'Airport Name'
@@ -69,6 +71,7 @@ export interface McAirportStruct extends $ObjectTypeDefinition {
   apiName: 'McAirportStruct';
   primaryKeyApiName: 'airportName';
   primaryKeyType: 'string';
+  links: McAirportStruct.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: McAirportStruct.ObjectSet;
     props: McAirportStruct.Props;
@@ -83,6 +86,7 @@ export interface McAirportStruct extends $ObjectTypeDefinition {
       color: 'color';
     };
     implements: undefined;
+    interfaceLinkMap: {};
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -125,6 +129,7 @@ export const McAirportStruct = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'airportName',
   primaryKeyType: 'string',
+  links: {},
   internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },

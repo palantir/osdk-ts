@@ -15,6 +15,7 @@
  */
 
 import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
+import { ObjectRefMap } from "@osdk/api";
 import { act, renderHook } from "@testing-library/react";
 import * as React from "react";
 import { beforeEach, describe, expect, it, vitest } from "vitest";
@@ -218,5 +219,210 @@ describe("useLinks enabled option", () => {
       const options = mockObserveLinks.mock.calls[0][2];
       expect(options.resolveToObjectType).toBeUndefined();
     });
+  });
+});
+
+const manyToken = {
+  __descriptor: {
+    kind: "single",
+    hops: [{
+      sourceTypeApiName: "Category",
+      linkApiName: "childCategories",
+      targetTypeApiName: "Category",
+      multiplicity: true,
+      sourceIsInterface: false,
+    }],
+  },
+  cardinality: "many",
+} as unknown as Parameters<typeof useLinks>[1];
+
+const oneToken = {
+  __descriptor: {
+    kind: "single",
+    hops: [{
+      sourceTypeApiName: "Category",
+      linkApiName: "owningGroup",
+      targetTypeApiName: "Group",
+      multiplicity: false,
+      sourceIsInterface: false,
+    }],
+  },
+  cardinality: "one",
+} as unknown as Parameters<typeof useLinks>[1];
+
+describe("useLinks token overload", () => {
+  const mockObserveLinks = vitest.fn();
+
+  const createWrapper = () => {
+    const observableClient = {
+      observeLinks: mockObserveLinks,
+      canonicalizeOptions: vitest.fn((opts) => opts),
+    } as any;
+
+    return ({ children }: React.PropsWithChildren) => (
+      <OsdkContext.Provider
+        value={{ observableClient, devtoolsEnabled: false }}
+      >
+        {children}
+      </OsdkContext.Provider>
+    );
+  };
+
+  beforeEach(() => {
+    mockObserveLinks.mockClear();
+    mockObserveLinks.mockReturnValue({ unsubscribe: vitest.fn() });
+  });
+
+  it("should observe a 'many' token using its linkApiName", () => {
+    const wrapper = createWrapper();
+
+    const { result } = renderHook(
+      () => useLinks(mockObject, manyToken),
+      { wrapper },
+    );
+
+    expect(mockObserveLinks).toHaveBeenCalledTimes(1);
+    expect(mockObserveLinks.mock.calls[0][1]).toBe("childCategories");
+
+    const observer = mockObserveLinks.mock.calls[0][3];
+    const linkedA = {
+      $objectType: "Category",
+      $primaryKey: "cat-1",
+      $apiName: "Category",
+    };
+    const linkedB = {
+      $objectType: "Category",
+      $primaryKey: "cat-2",
+      $apiName: "Category",
+    };
+
+    act(() => {
+      observer.next({
+        resolvedList: [linkedA, linkedB],
+        linkedObjectsBySourcePrimaryKey: new Map(),
+        status: "loaded",
+        isOptimistic: false,
+        hasMore: false,
+      });
+    });
+
+    expect(result.current.data).toEqual([linkedA, linkedB]);
+  });
+
+  it("should project a 'one' token through loading, absent, and present", () => {
+    const wrapper = createWrapper();
+
+    const { result } = renderHook(
+      () => useLinks(mockObject, oneToken),
+      { wrapper },
+    );
+
+    expect(mockObserveLinks).toHaveBeenCalledTimes(1);
+    expect(mockObserveLinks.mock.calls[0][1]).toBe("owningGroup");
+    expect(result.current.data).toBeUndefined();
+    expect(result.current.isLoading).toBe(true);
+
+    const observer = mockObserveLinks.mock.calls[0][3];
+
+    act(() => {
+      observer.next({
+        resolvedList: [],
+        linkedObjectsBySourcePrimaryKey: new Map(),
+        status: "loaded",
+        isOptimistic: false,
+        hasMore: false,
+      });
+    });
+
+    expect(result.current.data).toBeNull();
+    expect(result.current.isLoading).toBe(false);
+
+    const linkedGroup = {
+      $objectType: "Group",
+      $primaryKey: "group-1",
+      $apiName: "Group",
+    };
+
+    act(() => {
+      observer.next({
+        resolvedList: [linkedGroup],
+        linkedObjectsBySourcePrimaryKey: new Map(),
+        status: "loaded",
+        isOptimistic: false,
+        hasMore: false,
+      });
+    });
+
+    expect(result.current.data).toEqual(linkedGroup);
+  });
+
+  it("should project bySource as an ObjectRefMap for a multi-source 'many' token", () => {
+    const wrapper = createWrapper();
+
+    const sourceA: Osdk.Instance<typeof MockObjectType> = {
+      $objectType: "Category",
+      $primaryKey: "src-a",
+      $apiName: "Category",
+    } as any;
+    const sourceB: Osdk.Instance<typeof MockObjectType> = {
+      $objectType: "Category",
+      $primaryKey: "src-b",
+      $apiName: "Category",
+    } as any;
+    const sources = [sourceA, sourceB];
+
+    const { result } = renderHook(
+      () => useLinks(sources, manyToken),
+      { wrapper },
+    );
+
+    expect(result.current.bySource).toBeInstanceOf(ObjectRefMap);
+    expect(result.current.bySource.size).toBe(0);
+
+    const observer = mockObserveLinks.mock.calls[0][3];
+    const linkedA = {
+      $objectType: "Category",
+      $primaryKey: "cat-1",
+      $apiName: "Category",
+    };
+    const linkedB = {
+      $objectType: "Category",
+      $primaryKey: "cat-2",
+      $apiName: "Category",
+    };
+
+    const bySource = new ObjectRefMap<ReadonlyArray<typeof linkedA>>();
+    bySource.set({ $objectType: "Category", $primaryKey: "src-a" }, [linkedA]);
+    bySource.set({ $objectType: "Category", $primaryKey: "src-b" }, [linkedB]);
+
+    act(() => {
+      observer.next({
+        resolvedList: [linkedA, linkedB],
+        linkedObjectsBySourcePrimaryKey: new Map([
+          ["src-a", [linkedA]],
+          ["src-b", [linkedB]],
+        ]),
+        linkedObjectsBySource: bySource,
+        status: "loaded",
+        isOptimistic: false,
+        hasMore: false,
+      });
+    });
+
+    expect(result.current.data).toEqual([linkedA, linkedB]);
+    expect(result.current.bySource).toBeInstanceOf(ObjectRefMap);
+    expect(result.current.bySource.size).toBe(2);
+    expect(
+      result.current.bySource.get({
+        $objectType: "Category",
+        $primaryKey: "src-a",
+      }),
+    ).toEqual([linkedA]);
+    expect(
+      result.current.bySource.get({
+        $objectType: "Category",
+        $primaryKey: "src-b",
+      }),
+    ).toEqual([linkedB]);
   });
 });

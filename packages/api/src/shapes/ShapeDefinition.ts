@@ -15,6 +15,7 @@
  */
 
 import type { WhereClause } from "../aggregate/WhereClause.js";
+import type { RecursiveOptions } from "../links/LinkTraversalDescriptor.js";
 import type {
   ObjectOrInterfaceDefinition,
   PropertyKeys,
@@ -45,7 +46,7 @@ export interface DerivedLinkConfig {
   defer?: boolean;
 }
 
-/** The result of calling `ShapeLinkBuilder.as()`, binding a link traversal to a target shape. */
+/** The result of calling `ShapeLinkBuilder.project()`, binding a link traversal to a target shape. */
 export interface ShapeLinkResult<
   TARGET_SHAPE extends ShapeDefinition<ObjectOrInterfaceDefinition>,
 > {
@@ -83,6 +84,12 @@ export interface ShapeLinkObjectSetDef {
   readonly limit?: number;
   readonly distinct?: boolean;
   readonly setOperations?: readonly ShapeLinkSetOperation[];
+  /**
+   * Present when the traversal is recursive (built via `.recursive()`). The
+   * segments describe one expansion step; `recursive` carries the depth/node
+   * budget the runtime uses to drive the incremental closure.
+   */
+  readonly recursive?: RecursiveOptions;
 }
 
 /** How a shape handles null values for a selected property. */
@@ -152,6 +159,13 @@ export type ShapeInstance<
 > = S extends ShapeDefinition<infer BASE, infer PROPS, infer LINKS> ?
     & OsdkBase<BASE>
     & { readonly $rid: string }
+    & {
+      /**
+       * Properties whose source value was null and were substituted by a
+       * `fallbacks`/`withDefault` value. Empty when nothing was substituted.
+       */
+      readonly $missingFields: ReadonlySet<string>;
+    }
     & PROPS
     & {
       [K in keyof LINKS]: LINKS[K] extends
@@ -198,6 +212,12 @@ export interface ShapeLinkBuilder<
 
   distinct(): ShapeLinkBuilder<SOURCE, CURRENT>;
 
+  project<TARGET_SHAPE extends ShapeDefinition<CURRENT>>(
+    shape: TARGET_SHAPE,
+    config?: DerivedLinkConfig,
+  ): ShapeLinkResult<TARGET_SHAPE>;
+
+  /** @deprecated Use {@link ShapeLinkBuilder.project} instead. */
   as<TARGET_SHAPE extends ShapeDefinition<CURRENT>>(
     shape: TARGET_SHAPE,
     config?: DerivedLinkConfig,

@@ -31,6 +31,8 @@ import { stringify } from "../util/stringify.js";
 import type { Identifiers } from "./wireObjectTypeV2ToSdkObjectConstV2.js";
 import {
   createDefinition,
+  createLinkTokens,
+  createLinkTokensRuntime,
   createObjectSet,
   createOsdkObject,
   createPropertyKeys,
@@ -145,16 +147,27 @@ export function wireInterfaceTypeV2ToSdkObjectConst(
     );
   }
 
+  const hasLinks = definition.links != null
+    && Object.keys(definition.links).length > 0;
+
   function getV2Types(forInternalUse: boolean = false) {
+    const apiPackage = forInternalUse ? "@osdk/api" : "@osdk/client";
     return `import type {
       InterfaceDefinition as $InterfaceDefinition,
       InterfaceMetadata as $InterfaceMetadata,
       ObjectSet as $ObjectSet,
       Osdk as $Osdk,
       PropertyValueWireToClient as $PropType,
-      SingleLinkAccessor as $SingleLinkAccessor,
-    } from "${forInternalUse ? "@osdk/api" : "@osdk/client"}";
-    
+      SingleLinkAccessor as $SingleLinkAccessor,${
+      hasLinks ? `\n      LinkDef as $LinkDef,` : ""
+    }
+    } from "${apiPackage}";
+    ${
+      hasLinks
+        ? `import { createLinkDef as $createLinkDef } from "${apiPackage}";`
+        : ""
+    }
+
         ${
       definition.links
         ? Object.keys(definition.links).length > 0
@@ -192,6 +205,7 @@ ${
 
       ${createPropertyKeys(interfaceDef)}
 
+      ${createLinkTokens(ontology, interfaceDef, "LinkTokens")}
 
       ${createProps(interfaceDef, "Props", false, ontology.raw.valueTypes)}
       ${createProps(interfaceDef, "StrictProps", true, ontology.raw.valueTypes)}
@@ -222,6 +236,7 @@ ${
       type: "interface",
       apiName: "${interfaceDef.fullApiName}",
       osdkMetadata: $osdkMetadata,
+      ${createLinkTokensRuntime(interfaceDef)}
       internalDoNotUseMetadata: {
         rid: "${definition.rid}",
       },

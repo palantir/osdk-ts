@@ -13,7 +13,9 @@ import type {
   OsdkObject as $OsdkObject,
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
+  LinkDef as $LinkDef,
 } from '@osdk/client';
+import { createLinkDef as $createLinkDef } from '@osdk/client';
 
 export namespace Employee {
   export type PropertyKeys =
@@ -34,6 +36,12 @@ export namespace Employee {
     readonly lead: $SingleLinkAccessor<Employee>;
     readonly peeps: Employee.ObjectSet;
     readonly ventures: Venture.ObjectSet;
+  }
+
+  export interface LinkTokens {
+    readonly lead: $LinkDef<Employee, Employee, 'one'>;
+    readonly peeps: $LinkDef<Employee, Employee, 'many'>;
+    readonly ventures: $LinkDef<Employee, Venture, 'many'>;
   }
 
   export interface Props {
@@ -108,6 +116,7 @@ export interface Employee extends $ObjectTypeDefinition {
   apiName: 'Employee';
   primaryKeyApiName: 'id';
   primaryKeyType: 'string';
+  links: Employee.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: Employee.ObjectSet;
     props: Employee.Props;
@@ -122,6 +131,9 @@ export interface Employee extends $ObjectTypeDefinition {
       color: 'color';
     };
     implements: ['FooInterface'];
+    interfaceLinkMap: {
+      FooInterface: {};
+    };
     interfaceMap: {
       FooInterface: {
         name: 'firstName';
@@ -206,6 +218,11 @@ export const Employee = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'id',
   primaryKeyType: 'string',
+  links: {
+    lead: $createLinkDef('Employee', 'lead', 'Employee', false, false),
+    peeps: $createLinkDef('Employee', 'peeps', 'Employee', true, false),
+    ventures: $createLinkDef('Employee', 'ventures', 'Venture', true, false),
+  },
   internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },

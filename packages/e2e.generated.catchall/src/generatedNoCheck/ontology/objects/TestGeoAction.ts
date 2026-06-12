@@ -19,6 +19,8 @@ export namespace TestGeoAction {
 
   export type Links = {};
 
+  export type LinkTokens = {};
+
   export interface Props {
     /**
      * (no ontology metadata)
@@ -59,6 +61,7 @@ export interface TestGeoAction extends $ObjectTypeDefinition {
   apiName: 'TestGeoAction';
   primaryKeyApiName: 'geoPk';
   primaryKeyType: 'string';
+  links: TestGeoAction.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: TestGeoAction.ObjectSet;
     props: TestGeoAction.Props;
@@ -73,6 +76,7 @@ export interface TestGeoAction extends $ObjectTypeDefinition {
       color: 'color';
     };
     implements: undefined;
+    interfaceLinkMap: {};
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -111,6 +115,7 @@ export const TestGeoAction = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'geoPk',
   primaryKeyType: 'string',
+  links: {},
   internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
   },

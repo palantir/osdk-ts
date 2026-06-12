@@ -19,6 +19,8 @@ export namespace Task {
 
   export type Links = {};
 
+  export type LinkTokens = {};
+
   export interface Props {
     /**
      * (no ontology metadata)
@@ -51,6 +53,7 @@ export interface Task extends $ObjectTypeDefinition {
   apiName: 'com.example.dep.Task';
   primaryKeyApiName: 'taskId';
   primaryKeyType: 'string';
+  links: Task.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: Task.ObjectSet;
     props: Task.Props;
@@ -65,6 +68,7 @@ export interface Task extends $ObjectTypeDefinition {
       color: '#000000';
     };
     implements: [];
+    interfaceLinkMap: {};
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -95,6 +99,7 @@ export const Task = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'taskId',
   primaryKeyType: 'string',
+  links: {},
   internalDoNotUseMetadata: {
     rid: 'ridForTask',
   },

@@ -56,6 +56,8 @@ import type {
 } from "./ObservableClient/MediaObservableTypes.js";
 import type { MediaPropertyLocation } from "./ObservableClient/MediaTypes.js";
 import type { ObserveLinks } from "./ObservableClient/ObserveLink.js";
+import type { ObserveLinkClosure } from "./ObservableClient/ObserveLinkClosure.js";
+import type { ObservePath } from "./ObservableClient/ObservePath.js";
 import type { OptimisticBuilder } from "./OptimisticBuilder.js";
 
 export namespace ObservableClient {
@@ -389,7 +391,9 @@ export interface ObserveLinkCallbackArgs<
  * - Pagination support for large collections
  * - Link traversal for relationship navigation
  */
-export interface ObservableClient extends ObserveLinks {
+export interface ObservableClient
+  extends ObserveLinks, ObserveLinkClosure, ObservePath
+{
   /**
    * Observe a single object or interface instance with automatic updates when it changes.
    *

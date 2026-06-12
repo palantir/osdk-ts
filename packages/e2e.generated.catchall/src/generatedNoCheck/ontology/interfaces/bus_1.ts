@@ -15,6 +15,8 @@ export type OsdkObjectLinks$bus_1 = {};
 export namespace bus_1 {
   export type PropertyKeys = 'vehicleId_1';
 
+  export type LinkTokens = {};
+
   export interface Props {
     /**
      *   display name: 'Vehicle Id'
@@ -41,6 +43,7 @@ export interface bus_1 extends $InterfaceDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'interface';
   apiName: 'bus_1';
+  links: bus_1.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: bus_1.ObjectSet;
     props: bus_1.Props;
@@ -67,6 +70,7 @@ export const bus_1 = {
   type: 'interface',
   apiName: 'bus_1',
   osdkMetadata: $osdkMetadata,
+  links: {},
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.interface.13ac66ef-d94e-4020-ac20-3285557149dd',
   },

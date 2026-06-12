@@ -33,6 +33,12 @@ import type { SubjectPayload } from "../SubjectPayload.js";
 import type { Subjects } from "../Subjects.js";
 import type { CollectionConnectableParams } from "./BaseCollectionQuery.js";
 
+/** A resolved collection member: its current value and its optimism. */
+interface ResolvedMember {
+  value: unknown;
+  isOptimistic: boolean;
+}
+
 /**
  * Creates a connectable observable for a collection of objects
  *
@@ -52,40 +58,53 @@ export function createCollectionConnectable<
   return connectable<P>(
     subject.pipe(
       switchMap(listEntry => {
-        const resolvedData = listEntry?.value?.data == null
-          ? of(undefined)
-          : listEntry.value.data.length === 0
-          ? of([])
-          : combineLatest(
-            listEntry.value.data.map((cacheKey: ObjectCacheKey) =>
-              subjects.get(cacheKey).pipe(
-                map(objectEntry => objectEntry?.value!),
-                distinctUntilChanged(),
-              )
-            ),
-          );
+        // Resolve each member to both its current value and whether that value
+        // is itself optimistic. A collection has no write primitive in v1, so a
+        // link/list becomes optimistic when one of its members is optimistically
+        // edited (e.g. an action's optimistic object edit) even though the
+        // membership entry stays on the truth layer.
+        const members: Observable<ResolvedMember[] | undefined> =
+          listEntry?.value?.data == null
+            ? of(undefined)
+            : listEntry.value.data.length === 0
+            ? of([] as ResolvedMember[])
+            : combineLatest<ResolvedMember[]>(
+              listEntry.value.data.map((cacheKey: ObjectCacheKey) =>
+                subjects.get(cacheKey).pipe(
+                  map((objectEntry): ResolvedMember => ({
+                    value: objectEntry?.value,
+                    isOptimistic: objectEntry?.isOptimistic ?? false,
+                  })),
+                  distinctUntilChanged(
+                    (a, b) =>
+                      a.value === b.value && a.isOptimistic === b.isOptimistic,
+                  ),
+                )
+              ),
+            );
 
         return scheduled(
           combineLatest({
-            resolvedData,
-            isOptimistic: of(listEntry.isOptimistic),
+            members,
+            listOptimistic: of(listEntry.isOptimistic),
             status: of(listEntry.status),
             lastUpdated: of(listEntry.lastUpdated),
             totalCount: of(listEntry?.value?.totalCount),
           }).pipe(
-            map(params =>
-              createPayload({
-                resolvedData: params.resolvedData === undefined
+            map(params => {
+              const resolvedMembers = params.members;
+              return createPayload({
+                resolvedData: resolvedMembers === undefined
                   ? undefined
-                  : Array.isArray(params.resolvedData)
-                  ? params.resolvedData
-                  : [],
-                isOptimistic: params.isOptimistic,
+                  : resolvedMembers.map(member => member.value),
+                isOptimistic: params.listOptimistic
+                  || (resolvedMembers?.some(member => member.isOptimistic)
+                    ?? false),
                 status: params.status,
                 lastUpdated: params.lastUpdated,
                 totalCount: params.totalCount,
-              })
-            ),
+              });
+            }),
           ),
           asapScheduler,
         );

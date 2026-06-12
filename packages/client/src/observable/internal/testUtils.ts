@@ -621,6 +621,8 @@ export function linkPayloadContaining(
       : {}),
     linkedObjectsBySourcePrimaryKey: x.linkedObjectsBySourcePrimaryKey
       ?? expect.anything(),
+    linkedObjectsBySource: x.linkedObjectsBySource
+      ?? expect.anything(),
   };
 }
 

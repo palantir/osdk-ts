@@ -19,6 +19,8 @@ export namespace MtaBus {
 
   export type Links = {};
 
+  export type LinkTokens = {};
+
   export interface Props {
     /**
      * (no ontology metadata)
@@ -59,6 +61,7 @@ export interface MtaBus extends $ObjectTypeDefinition {
   apiName: 'MtaBus';
   primaryKeyApiName: 'vehicleId';
   primaryKeyType: 'string';
+  links: MtaBus.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: MtaBus.ObjectSet;
     props: MtaBus.Props;
@@ -73,6 +76,7 @@ export interface MtaBus extends $ObjectTypeDefinition {
       color: 'color';
     };
     implements: undefined;
+    interfaceLinkMap: {};
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -111,6 +115,7 @@ export const MtaBus = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'vehicleId',
   primaryKeyType: 'string',
+  links: {},
   internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
   },

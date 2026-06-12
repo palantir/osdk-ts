@@ -172,6 +172,14 @@ export class ActionApplication {
       if (isEditsBranch && cacheKey.type === "object") {
         continue;
       }
+      // On the edits branch we know the precise edited PKs, so the per-PK path
+      // (Store.invalidateObject) already refreshes both the link records
+      // sourced from those objects (via the reverse index) and the link records
+      // that target their type. Walking every specificLink query here would
+      // re-introduce the blunt per-type over-invalidation on the source side.
+      if (isEditsBranch && cacheKey.type === "specificLink") {
+        continue;
+      }
       const query = this.store.queries.peek(cacheKey);
       if (!query) {
         continue;

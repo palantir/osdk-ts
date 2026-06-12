@@ -20,7 +20,11 @@ import type {
   ActionValidationResponse,
   AggregateOpts,
   CompileTimeMetadata,
+  InterfaceDefinition,
+  LinkHopDescriptor,
+  LinkTraversalDescriptor,
   ObjectOrInterfaceDefinition,
+  ObjectRef,
   ObjectSet,
   ObjectTypeDefinition,
   Osdk,
@@ -30,9 +34,12 @@ import type {
   WhereClause,
   WirePropertyTypes,
 } from "@osdk/api";
+import { hashTraversal, objectRefKey, ObjectRefMap } from "@osdk/api";
 import { Subscription } from "rxjs";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import { additionalContext } from "../../Client.js";
+import type { InterfaceHolder } from "../../object/convertWireToOsdkObjects/InterfaceHolder.js";
+import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import {
   getWireObjectSet,
   isObjectSet,
@@ -67,8 +74,17 @@ import type {
 } from "../ObservableClient/MediaObservableTypes.js";
 import type { MediaPropertyLocation } from "../ObservableClient/MediaTypes.js";
 import type { ObserveLinks } from "../ObservableClient/ObserveLink.js";
+import type { ObserveLinkClosure } from "../ObservableClient/ObserveLinkClosure.js";
+import type { ObservePath } from "../ObservableClient/ObservePath.js";
 import type { AggregationPayloadBase } from "./aggregation/AggregationQuery.js";
 import type { Canonical } from "./Canonical.js";
+import type { ExpandedChild } from "./links/ClosureExpansion.js";
+import type { ClosurePayload } from "./links/ClosureQuery.js";
+import { ClosureQuery } from "./links/ClosureQuery.js";
+import type { PathPayload } from "./links/PathQuery.js";
+import { PathQuery } from "./links/PathQuery.js";
+import { createSharedTraversalRegistry } from "./links/sharedTraversalRegistry.js";
+import type { ObjectCacheKey } from "./object/ObjectCacheKey.js";
 import type { ObserveObjectSetOptions } from "./objectset/ObjectSetQueryOptions.js";
 import type { Rdp } from "./RdpCanonicalizer.js";
 import type { Store } from "./Store.js";
@@ -88,6 +104,16 @@ export class ObservableClientImpl implements ObservableClient {
   #unionCache = new WeakMap<Canonical<string[]>, ReadonlyArray<any>>();
   #intersectCache = new WeakMap<Canonical<string[]>, ReadonlyArray<any>>();
   #subtractCache = new WeakMap<Canonical<string[]>, ReadonlyArray<any>>();
+
+  // In-flight de-dup: identical descriptor + root share one underlying BFS.
+  #linkClosureRegistry = createSharedTraversalRegistry<
+    ObserveLinkClosure.CallbackArgs<
+      ObjectTypeDefinition | InterfaceDefinition
+    >
+  >();
+  #pathRegistry = createSharedTraversalRegistry<
+    ObservePath.CallbackArgs<ObjectTypeDefinition | InterfaceDefinition>
+  >();
 
   constructor(store: Store) {
     this.__experimentalStore = store;
@@ -255,6 +281,178 @@ export class ObservableClientImpl implements ObservableClient {
       );
   };
 
+  public observeLinkClosure<
+    T extends ObjectTypeDefinition | InterfaceDefinition,
+  >(
+    options: ObserveLinkClosure.Options,
+    subFn: Observer<ObserveLinkClosure.CallbackArgs<T>>,
+  ): Unsubscribable {
+    const store = this.__experimentalStore;
+    // cross typed to untyped barrier
+    const observer = subFn as unknown as Observer<
+      ObserveLinkClosure.CallbackArgs<
+        ObjectTypeDefinition | InterfaceDefinition
+      >
+    >;
+
+    const descriptor: LinkTraversalDescriptor = {
+      kind: "recursive",
+      hops: [options.hop],
+      recursive: { maxDepth: options.maxDepth, maxNodes: options.maxNodes },
+    };
+    const key = `${hashTraversal(descriptor)}|${objectRefKey(options.root)}`;
+
+    const subscription = new Subscription();
+    const unsubscribe = this.#linkClosureRegistry.subscribe(
+      key,
+      observer,
+      (emit) => {
+        // Retain every discovered intermediate object in the store's refcount
+        // machinery while this closure is observed, so the shared object cache
+        // keeps them alive. They are released on teardown (last unsubscribe),
+        // letting the store gc evict any nodes no other observer holds.
+        const retained = new Set<ObjectCacheKey>();
+        // Nodes this closure has registered for source-side invalidation, keyed
+        // by objectRefKey so we register each once and can unregister on
+        // teardown. An edge change sourced at any of these routes to the
+        // closure's `expand(ref)` via the store's closureInvalidationRegistry.
+        const registeredNodes = new Map<string, ObjectRef>();
+        let tornDown = false;
+        const query = new ClosureQuery<ObjectHolder | InterfaceHolder>({
+          root: options.root,
+          hop: options.hop,
+          options: { maxDepth: options.maxDepth, maxNodes: options.maxNodes },
+          resolveLink: (concreteType, interfaceLinkApiName) => {
+            // Plain object links already name their concrete link on the hop,
+            // and ontologyMetadata.resolveLink only handles interface links (it
+            // throws for object links), so short-circuit here.
+            if (!options.hop.sourceIsInterface) {
+              return Promise.resolve({
+                concreteLinkApiName: options.hop.linkApiName,
+                targetType: options.hop.targetTypeApiName,
+                multiplicity: options.hop.multiplicity,
+              });
+            }
+            return store.client.ontologyMetadata.resolveLink(
+              concreteType,
+              interfaceLinkApiName,
+            );
+          },
+          fetchLinks: (concreteType, concreteLinkApiName, sources) =>
+            fetchLinksForSources(
+              store,
+              concreteType,
+              concreteLinkApiName,
+              sources,
+            ),
+          isOptimistic: (ref) => refIsOptimistic(store, ref),
+          emit: (payload) => {
+            const args = toClosureCallbackArgs(payload);
+            if (!tornDown) {
+              const keys = store.batch(
+                {},
+                (batch) => store.objects.storeOsdkInstances(args.data, batch),
+              ).retVal;
+              for (const k of keys) {
+                if (!retained.has(k)) {
+                  retained.add(k);
+                  store.cacheKeys.retain(k);
+                }
+              }
+              for (const ref of payload.data) {
+                const nodeKey = objectRefKey(ref);
+                if (!registeredNodes.has(nodeKey)) {
+                  registeredNodes.set(nodeKey, ref);
+                  store.closureInvalidationRegistry.register(ref, query);
+                }
+              }
+            }
+            emit(args);
+          },
+        });
+        void query.run();
+        return () => {
+          tornDown = true;
+          for (const k of retained) {
+            store.cacheKeys.release(k);
+          }
+          retained.clear();
+          for (const ref of registeredNodes.values()) {
+            store.closureInvalidationRegistry.unregister(ref, query);
+          }
+          registeredNodes.clear();
+        };
+      },
+    );
+    subscription.add(unsubscribe);
+
+    return new UnsubscribableWrapper(subscription);
+  }
+
+  public observePath<
+    T extends ObjectTypeDefinition | InterfaceDefinition,
+  >(
+    options: ObservePath.Options,
+    subFn: Observer<ObservePath.CallbackArgs<T>>,
+  ): Unsubscribable {
+    const store = this.__experimentalStore;
+    // cross typed to untyped barrier
+    const observer = subFn as unknown as Observer<
+      ObservePath.CallbackArgs<ObjectTypeDefinition | InterfaceDefinition>
+    >;
+
+    const descriptor: LinkTraversalDescriptor = {
+      kind: "path",
+      hops: options.hops,
+    };
+    const key = `${hashTraversal(descriptor)}|${objectRefKey(options.root)}`;
+
+    const subscription = new Subscription();
+    const unsubscribe = this.#pathRegistry.subscribe(
+      key,
+      observer,
+      (emit) => {
+        const query = new PathQuery<ObjectHolder | InterfaceHolder>({
+          root: options.root,
+          hops: options.hops,
+          resolveLink: (concreteType, interfaceLinkApiName, hop) => {
+            // Plain object links already name their concrete link on the hop,
+            // and ontologyMetadata.resolveLink only handles interface links (it
+            // throws for object links), so short-circuit here.
+            if (!hop.sourceIsInterface) {
+              return Promise.resolve({
+                concreteLinkApiName: hop.linkApiName,
+                targetType: hop.targetTypeApiName,
+                multiplicity: hop.multiplicity,
+              });
+            }
+            return store.client.ontologyMetadata.resolveLink(
+              concreteType,
+              interfaceLinkApiName,
+            );
+          },
+          fetchLinks: (concreteType, concreteLinkApiName, sources, hop) =>
+            fetchLinksForSources(
+              store,
+              concreteType,
+              concreteLinkApiName,
+              sources,
+              hop,
+            ),
+          isOptimistic: (ref) => refIsOptimistic(store, ref),
+          emit: (payload) => {
+            emit(toPathCallbackArgs(payload));
+          },
+        });
+        void query.run();
+        return () => {};
+      },
+    );
+    subscription.add(unsubscribe);
+
+    return new UnsubscribableWrapper(subscription);
+  }
+
   public applyAction: <Q extends ActionDefinition<any>>(
     action: Q,
     args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
@@ -408,6 +606,8 @@ export class ObservableClientImpl implements ObservableClient {
   }
 }
 
+type LinkedHolder = NonNullable<SpecificLinkPayload["resolvedList"]>[number];
+
 function observeSingleLink(
   store: Store,
   objectsArray: ReadonlyArray<Osdk.Instance<ObjectOrInterfaceDefinition>>,
@@ -418,6 +618,7 @@ function observeSingleLink(
   if (objectsArray.length === 0) {
     observer.next({
       resolvedList: [],
+      linkedObjectsBySource: new ObjectRefMap<ReadonlyArray<LinkedHolder>>(),
       linkedObjectsBySourcePrimaryKey: new Map(),
       isOptimistic: false,
       lastUpdated: 0,
@@ -468,8 +669,19 @@ function observeMultiLinks(
   const totalExpected = objectsArray.length;
   const perObjectData = new Map<
     string,
-    { payload: SpecificLinkPayload; pk: string | number }
+    { payload: SpecificLinkPayload; sourceRef: ObjectRef }
   >();
+  // Every source's ref is excluded from results (self-referential exclusion),
+  // computed up front so exclusion holds even before a source has reported.
+  const sourceRefKeys = new Set<string>();
+  for (const obj of objectsArray) {
+    sourceRefKeys.add(
+      objectRefKey({
+        $objectType: obj.$objectType ?? obj.$apiName,
+        $primaryKey: obj.$primaryKey,
+      }),
+    );
+  }
   let errored = false;
 
   function mergeAndEmit() {
@@ -477,25 +689,33 @@ function observeMultiLinks(
       return;
     }
 
-    const seen = new Map<
-      string,
-      NonNullable<SpecificLinkPayload["resolvedList"]>[number]
-    >();
-    const linkedObjectsBySourcePrimaryKey = new Map<
-      string | number,
-      ReadonlyArray<NonNullable<SpecificLinkPayload["resolvedList"]>[number]>
+    const seen = new Map<string, LinkedHolder>();
+    const linkedObjectsBySource = new ObjectRefMap<
+      ReadonlyArray<LinkedHolder>
     >();
     const fetchMores: Array<() => Promise<void>> = [];
     let latestUpdated = 0;
     let hasMore = false;
     let isOptimistic = false;
 
-    for (const { payload, pk } of perObjectData.values()) {
-      linkedObjectsBySourcePrimaryKey.set(pk, payload.resolvedList ?? []);
+    for (const { payload, sourceRef } of perObjectData.values()) {
+      const group: LinkedHolder[] = [];
 
       for (const obj of payload.resolvedList ?? []) {
-        seen.set(`${obj.$objectType}:${obj.$primaryKey}`, obj);
+        const refKey = objectRefKey({
+          $objectType: obj.$objectType,
+          $primaryKey: obj.$primaryKey,
+        });
+        // dedupe-by-ref with source refs excluded
+        if (sourceRefKeys.has(refKey)) {
+          continue;
+        }
+        group.push(obj);
+        seen.set(refKey, obj);
       }
+
+      linkedObjectsBySource.set(sourceRef, group);
+
       if (payload.lastUpdated > latestUpdated) {
         latestUpdated = payload.lastUpdated;
       }
@@ -508,12 +728,22 @@ function observeMultiLinks(
       }
     }
 
+    // Derived from linkedObjectsBySource; collapses sources that share a pk.
+    const linkedObjectsBySourcePrimaryKey = new Map<
+      string | number,
+      ReadonlyArray<LinkedHolder>
+    >();
+    linkedObjectsBySource.forEach((group, ref) => {
+      linkedObjectsBySourcePrimaryKey.set(ref.$primaryKey, group);
+    });
+
     const payloads = [...perObjectData.values()].map(d => d.payload);
     const loading = perObjectData.size < totalExpected
       || payloads.some(p => p.status === "init" || p.status === "loading");
 
     observer.next({
       resolvedList: Array.from(seen.values()),
+      linkedObjectsBySource,
       linkedObjectsBySourcePrimaryKey,
       isOptimistic,
       lastUpdated: latestUpdated,
@@ -531,8 +761,12 @@ function observeMultiLinks(
   }
 
   for (const obj of objectsArray) {
-    const objKey = `${obj.$objectType ?? obj.$apiName}:${obj.$primaryKey}`;
     const pk = obj.$primaryKey;
+    const sourceRef: ObjectRef = {
+      $objectType: obj.$objectType ?? obj.$apiName,
+      $primaryKey: pk,
+    };
+    const objKey = objectRefKey(sourceRef);
 
     const sourceType: "object" | "interface" = obj.$apiName === obj.$objectType
       ? "object"
@@ -555,7 +789,7 @@ function observeMultiLinks(
             if (errored) {
               return;
             }
-            perObjectData.set(objKey, { payload, pk });
+            perObjectData.set(objKey, { payload, sourceRef });
             mergeAndEmit();
           },
           error: (err: unknown) => {
@@ -574,4 +808,170 @@ function observeMultiLinks(
   }
 
   return new UnsubscribableWrapper(parentSub);
+}
+
+/**
+ * Fetches one BFS level for a set of same-typed sources by issuing a pivot
+ * query per source. Pivoting from a multi-source set loses the source->children
+ * grouping, so we fetch per source and key the result by each source's ref.
+ */
+async function fetchLinksForSources(
+  store: Store,
+  concreteType: string,
+  concreteLinkApiName: string,
+  sources: ReadonlyArray<ObjectRef>,
+  hop?: LinkHopDescriptor,
+): Promise<
+  ObjectRefMap<ReadonlyArray<ExpandedChild<ObjectHolder | InterfaceHolder>>>
+> {
+  const client = store.client;
+  const ontologyProvider = client[additionalContext].ontologyProvider;
+  const objectMetadata = await ontologyProvider.getObjectDefinition(
+    concreteType,
+  );
+  const pkApiName = objectMetadata.primaryKeyApiName;
+
+  const result = new ObjectRefMap<
+    ReadonlyArray<ExpandedChild<ObjectHolder | InterfaceHolder>>
+  >();
+
+  // Per-hop where/orderBy/limit are applied as fetchPage params so the
+  // traversal honors the filters chained onto each hop via `.where(...)` etc.
+  const fetchPageArgs: {
+    $includeRid: true;
+    $pageSize?: number;
+    $orderBy?: Record<string, "asc" | "desc">;
+    $where?: Record<string, unknown>;
+  } = { $includeRid: true };
+  if (hop?.limit != null) {
+    fetchPageArgs.$pageSize = hop.limit;
+  }
+  if (hop?.orderBy != null && hop.orderBy.length > 0) {
+    const orderBy: Record<string, "asc" | "desc"> = {};
+    for (const entry of hop.orderBy) {
+      orderBy[entry.property] = entry.direction;
+    }
+    fetchPageArgs.$orderBy = orderBy;
+  }
+  if (hop?.where != null) {
+    fetchPageArgs.$where = hop.where as Record<string, unknown>;
+  }
+
+  await Promise.all(
+    sources.map(async (source) => {
+      const sourceQuery = client({
+        type: "object",
+        apiName: concreteType,
+      } as ObjectTypeDefinition).where({
+        [pkApiName]: source.$primaryKey,
+      } as WhereClause<any>);
+
+      const response = await sourceQuery
+        .pivotTo(concreteLinkApiName)
+        .fetchPage(fetchPageArgs);
+
+      const children: Array<ExpandedChild<ObjectHolder | InterfaceHolder>> =
+        response.data.map((obj) => ({
+          ref: {
+            $objectType: obj.$objectType,
+            $primaryKey: obj.$primaryKey,
+          },
+          // cross typed to untyped barrier: holders back every Osdk.Instance
+          instance: obj as unknown as ObjectHolder | InterfaceHolder,
+        }));
+
+      result.set(source, children);
+    }),
+  );
+
+  return result;
+}
+
+/**
+ * Reads the store's per-object optimism flag for a traversal node. Mirrors the
+ * `("object", apiName, pk)` key the closure/path emit path already builds via
+ * {@link Store.objects}.storeOsdkInstances; reads it without creating or
+ * retaining the key. Returns false when no subject exists yet (fresh data).
+ */
+function refIsOptimistic(store: Store, ref: ObjectRef): boolean {
+  const key = store.cacheKeys.peek<ObjectCacheKey>(
+    "object",
+    ref.$objectType,
+    ref.$primaryKey,
+  );
+  if (key == null) {
+    return false;
+  }
+  return store.subjects.peek(key)?.getValue().isOptimistic ?? false;
+}
+
+/** Projects a {@link PathPayload} to the public path callback args. */
+function toPathCallbackArgs(
+  payload: PathPayload<ObjectHolder | InterfaceHolder>,
+): ObservePath.CallbackArgs<ObjectTypeDefinition | InterfaceDefinition> {
+  const data: Array<
+    Osdk.Instance<
+      ObjectTypeDefinition | InterfaceDefinition,
+      "$allBaseProperties"
+    >
+  > = [];
+  for (const ref of payload.data) {
+    const instance = payload.instances.get(ref);
+    if (instance != null) {
+      // cross typed to untyped barrier: holders back every Osdk.Instance
+      data.push(
+        instance as unknown as Osdk.Instance<
+          ObjectTypeDefinition | InterfaceDefinition,
+          "$allBaseProperties"
+        >,
+      );
+    }
+  }
+
+  return {
+    data,
+    isOptimistic: payload.isOptimistic,
+    status: payload.status,
+    error: payload.error,
+    lastUpdated: payload.lastUpdated,
+  };
+}
+
+/** Projects a {@link ClosurePayload} to the public closure callback args. */
+function toClosureCallbackArgs(
+  payload: ClosurePayload<ObjectHolder | InterfaceHolder>,
+): ObserveLinkClosure.CallbackArgs<ObjectTypeDefinition | InterfaceDefinition> {
+  const data: Array<
+    Osdk.Instance<
+      ObjectTypeDefinition | InterfaceDefinition,
+      "$allBaseProperties"
+    >
+  > = [];
+  for (const ref of payload.data) {
+    const instance = payload.instances.get(ref);
+    if (instance != null) {
+      // cross typed to untyped barrier: holders back every Osdk.Instance
+      data.push(
+        instance as unknown as Osdk.Instance<
+          ObjectTypeDefinition | InterfaceDefinition,
+          "$allBaseProperties"
+        >,
+      );
+    }
+  }
+
+  return {
+    data,
+    adjacency: payload.adjacency,
+    byDepth: payload.byDepth,
+    frontier: payload.frontier,
+    depthReached: payload.depthReached,
+    isExpanding: payload.isExpanding,
+    truncated: payload.truncated,
+    expand: payload.expand,
+    isOptimistic: payload.isOptimistic,
+    status: payload.status,
+    error: payload.error,
+    lastUpdated: payload.lastUpdated,
+  };
 }

@@ -52,10 +52,13 @@ import { IntersectCanonicalizer } from "./IntersectCanonicalizer.js";
 import type { KnownCacheKey } from "./KnownCacheKey.js";
 import type { Entry } from "./Layer.js";
 import { Layers } from "./Layers.js";
+import { ClosureInvalidationRegistry } from "./links/ClosureInvalidationRegistry.js";
 import { LinksHelper } from "./links/LinksHelper.js";
 import {
   SOURCE_API_NAME_IDX as LINK_API_NAME_IDX,
 } from "./links/SpecificLinkCacheKey.js";
+import { SpecificLinkCacheKeyRegistry } from "./links/SpecificLinkCacheKeyRegistry.js";
+import { SpecificLinkQuery } from "./links/SpecificLinkQuery.js";
 import {
   API_NAME_IDX as LIST_API_NAME_IDX,
   RDP_IDX as LIST_RDP_IDX,
@@ -140,6 +143,12 @@ export class Store {
 
   readonly objectCacheKeyRegistry: ObjectCacheKeyRegistry =
     new ObjectCacheKeyRegistry();
+
+  readonly specificLinkCacheKeyRegistry: SpecificLinkCacheKeyRegistry =
+    new SpecificLinkCacheKeyRegistry();
+
+  readonly closureInvalidationRegistry: ClosureInvalidationRegistry =
+    new ClosureInvalidationRegistry();
 
   readonly layers: Layers = new Layers({
     logger: this.logger,
@@ -234,6 +243,8 @@ export class Store {
 
     if (key.type === "object") {
       this.objectCacheKeyRegistry.unregister(key);
+    } else if (key.type === "specificLink") {
+      this.specificLinkCacheKeyRegistry.unregister(key);
     }
   };
 
@@ -311,8 +322,27 @@ export class Store {
     }
 
     // Per-PK invalidation doesn't propagate to specificLink queries (they're
-    // keyed on srcType+srcPk+linkName, not the linked object's pk).
-    promises.push(this.invalidateLinkQueriesForType(apiName));
+    // keyed on srcType+srcPk+linkName, not the linked object's pk). Use the
+    // reverse index to refetch only the link records sourced from this exact
+    // object, instead of every link query for the type.
+    promises.push(this.invalidateLinkRecordsForSource(apiName, pk));
+
+    // The reverse index only covers links *sourced* from the edited object.
+    // Link queries that *target* this type aren't keyed on it, so editing a
+    // linked object would otherwise leave the relationships pointing at it
+    // stale. Refetch those (type-level — there is no target-side reverse index
+    // in v1) so a target-object edit still refreshes its inbound links.
+    promises.push(this.invalidateLinkRecordsForTargetType(apiName));
+
+    // A live link closure holds an adjacency entry for every node it expanded.
+    // An edge change sourced at one of those nodes must re-read just that node's
+    // children via `expand(ref)` rather than rebuild the closure from its root.
+    promises.push(
+      this.closureInvalidationRegistry.invalidateSource({
+        $objectType: apiName,
+        $primaryKey: pk,
+      }),
+    );
 
     // Function queries with explicit `dependsOnObjects` need to be told the
     // edited PK directly — they aren't object-cache variants and so aren't
@@ -323,19 +353,47 @@ export class Store {
   }
 
   /**
-   * Force every cached `specificLink` query to re-evaluate against the given
-   * apiName. Link queries are keyed on `(srcType, srcPk, linkName, ...)` rather
-   * than the linked object's pk, so per-object propagation never marks them
-   * as modified.
-   *
-   * TODO: make SpecificLinkQuery self-invalidate from per-type changes so
-   * callers don't need this manual kick.
+   * Invalidate and refetch only the `specificLink` records whose source is the
+   * given object. Uses {@link SpecificLinkCacheKeyRegistry} so we touch exactly
+   * the link queries reading outgoing links from `(apiName, pk)` rather than
+   * every link query for the type.
    */
-  public invalidateLinkQueriesForType(apiName: string): Promise<void> {
+  public invalidateLinkRecordsForSource(
+    apiName: string,
+    pk: string | number,
+  ): Promise<void> {
+    const links = this.specificLinkCacheKeyRegistry.getLinksForSource({
+      $objectType: apiName,
+      $primaryKey: pk,
+    });
+
+    const promises: Array<Promise<void>> = [];
+    for (const cacheKey of links) {
+      const query = this.queries.peek(cacheKey);
+      if (!query) {
+        continue;
+      }
+      promises.push(query.revalidate(/* force */ true));
+    }
+    return Promise.allSettled(promises).then(() => void 0);
+  }
+
+  /**
+   * Refetch the live `specificLink` queries whose *target* type is `apiName`.
+   * Link queries are keyed on `(srcType, srcPk, linkName, ...)` rather than the
+   * linked object's type, so per-object propagation never marks a query that
+   * points *at* the edited type as modified. Walk the live link queries and let
+   * each decide (via {@link SpecificLinkQuery.invalidateTargetType}) whether its
+   * target matches, directly or through an interface.
+   *
+   * TODO: a target-side reverse index would make this per-PK precise like
+   * {@link invalidateLinkRecordsForSource}; v1 stays type-level.
+   */
+  public invalidateLinkRecordsForTargetType(apiName: string): Promise<void> {
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "invalidateLinkQueriesForType" }).debug(
-        apiName,
-      );
+      this.logger?.child({
+        methodName: "invalidateLinkRecordsForTargetType",
+      }).debug(apiName);
     }
 
     const promises: Array<Promise<void>> = [];
@@ -344,10 +402,9 @@ export class Store {
         continue;
       }
       const query = this.queries.peek(cacheKey);
-      if (!query) {
-        continue;
+      if (query instanceof SpecificLinkQuery) {
+        promises.push(query.invalidateTargetType(apiName, undefined));
       }
-      promises.push(query.invalidateObjectType(apiName, undefined));
     }
     return Promise.allSettled(promises).then(() => void 0);
   }

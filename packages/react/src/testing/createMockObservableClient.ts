@@ -20,6 +20,7 @@ import type {
   PrimaryKeyType,
   WhereClause,
 } from "@osdk/api";
+import { ObjectRefMap } from "@osdk/api";
 import type {
   ObservableClient,
   Observer,
@@ -273,6 +274,39 @@ export function createMockObservableClient(
       }, delay);
       return { unsubscribe: () => {} };
     }) as ObservableClient["observeLinks"],
+
+    observeLinkClosure: ((_options, subFn): Unsubscribable => {
+      setTimeout(() => {
+        (subFn as Observer<unknown>).next({
+          data: [],
+          adjacency: new ObjectRefMap(),
+          byDepth: new ObjectRefMap(),
+          frontier: [],
+          depthReached: 0,
+          isExpanding: false,
+          truncated: { byDepth: false, byNodeBudget: false },
+          expand: () => {},
+          isOptimistic: false,
+          status: "loaded",
+          error: undefined,
+          lastUpdated: Date.now(),
+        });
+      }, delay);
+      return { unsubscribe: () => {} };
+    }) as ObservableClient["observeLinkClosure"],
+
+    observePath: ((_options, subFn): Unsubscribable => {
+      setTimeout(() => {
+        (subFn as Observer<unknown>).next({
+          data: [],
+          isOptimistic: false,
+          status: "loaded",
+          error: undefined,
+          lastUpdated: Date.now(),
+        });
+      }, delay);
+      return { unsubscribe: () => {} };
+    }) as ObservableClient["observePath"],
 
     applyAction: (async () => ({}) as never) as ObservableClient["applyAction"],
     validateAction:

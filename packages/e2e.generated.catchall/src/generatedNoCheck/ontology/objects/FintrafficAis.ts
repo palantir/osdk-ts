@@ -19,6 +19,8 @@ export namespace FintrafficAis {
 
   export type Links = {};
 
+  export type LinkTokens = {};
+
   export interface Props {
     /**
      * (no ontology metadata)
@@ -71,6 +73,7 @@ export interface FintrafficAis extends $ObjectTypeDefinition {
   apiName: 'FintrafficAis';
   primaryKeyApiName: 'mmsi';
   primaryKeyType: 'string';
+  links: FintrafficAis.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: FintrafficAis.ObjectSet;
     props: FintrafficAis.Props;
@@ -85,6 +88,7 @@ export interface FintrafficAis extends $ObjectTypeDefinition {
       color: 'color';
     };
     implements: undefined;
+    interfaceLinkMap: {};
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -135,6 +139,7 @@ export const FintrafficAis = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'mmsi',
   primaryKeyType: 'string',
+  links: {},
   internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
   },

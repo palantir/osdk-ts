@@ -19,6 +19,8 @@ export namespace BgaoNflPlayer {
 
   export type Links = {};
 
+  export type LinkTokens = {};
+
   export interface Props {
     /**
      * (no ontology metadata)
@@ -75,6 +77,7 @@ export interface BgaoNflPlayer extends $ObjectTypeDefinition {
   apiName: 'BgaoNflPlayer';
   primaryKeyApiName: 'id';
   primaryKeyType: 'string';
+  links: BgaoNflPlayer.LinkTokens;
   __DefinitionMetadata?: {
     objectSet: BgaoNflPlayer.ObjectSet;
     props: BgaoNflPlayer.Props;
@@ -89,6 +92,7 @@ export interface BgaoNflPlayer extends $ObjectTypeDefinition {
       color: 'color';
     };
     implements: undefined;
+    interfaceLinkMap: {};
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -139,6 +143,7 @@ export const BgaoNflPlayer = {
   osdkMetadata: $osdkMetadata,
   primaryKeyApiName: 'id',
   primaryKeyType: 'string',
+  links: {},
   internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
   },
