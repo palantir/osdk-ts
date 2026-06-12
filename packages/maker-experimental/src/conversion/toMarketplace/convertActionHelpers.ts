@@ -558,9 +558,7 @@ function buildActionMetadata(
       : action.status,
     entities: action.entities
       ? {
-        affectedInterfaceTypes: action.entities.affectedInterfaceTypes.map(
-          apiName => ridGenerator.generateRidForInterface(apiName),
-        ),
+        affectedInterfaceTypes: action.entities.affectedInterfaceTypes,
         affectedLinkTypes: action.entities.affectedLinkTypes,
         affectedObjectTypes: action.entities.affectedObjectTypes.map(
           apiName => ridGenerator.generateObjectTypeId(apiName),
