@@ -142,7 +142,8 @@
     "CHANGELOG.md",
     "package.json",
     "templates",
-    "*.d.ts"
+    "*.d.ts",
+    "skills"
   ],
   "main": "./build/cjs/index.cjs",
   "module": "./build/esm/index.js",
