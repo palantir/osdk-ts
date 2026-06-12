@@ -429,7 +429,6 @@ describe("Miscellaneous Tests", () => {
 
         /** @type {import('@osdk/maker').InterfaceType} */
         const myInterface_base: InterfaceType = {
-          "actionTypeConstraints": [],
           "apiName": "com.my.package.myInterface",
           "displayMetadata": {
             "displayName": "myInterface",
@@ -438,6 +437,7 @@ describe("Miscellaneous Tests", () => {
           "extendsInterfaces": [],
           "linkedInterfaces": [],
           "links": [],
+          "actionTypeConstraints": [],
           "status": {
             "type": "active",
             "active": {}
@@ -521,7 +521,6 @@ describe("Miscellaneous Tests", () => {
           "implementsInterfaces": [
             {
               "implements": {
-                "actionTypeConstraints": [],
                 "apiName": "com.my.package.myInterface",
                 "displayMetadata": {
                   "displayName": "myInterface",
@@ -530,6 +529,7 @@ describe("Miscellaneous Tests", () => {
                 "extendsInterfaces": [],
                 "linkedInterfaces": [],
                 "links": [],
+                "actionTypeConstraints": [],
                 "status": {
                   "type": "active",
                   "active": {}
@@ -676,7 +676,6 @@ describe("Miscellaneous Tests", () => {
 
         /** @type {import('@osdk/maker').InterfaceType} */
         const childInterface_base: InterfaceType = {
-          "actionTypeConstraints": [],
           "apiName": "com.palantir.childInterface",
           "displayMetadata": {
             "displayName": "childInterface",
@@ -684,7 +683,6 @@ describe("Miscellaneous Tests", () => {
           },
           "extendsInterfaces": [
             {
-              "actionTypeConstraints": [],
               "apiName": "com.palantir.parentInterface",
               "displayMetadata": {
                 "displayName": "parentInterface",
@@ -693,6 +691,7 @@ describe("Miscellaneous Tests", () => {
               "extendsInterfaces": [],
               "linkedInterfaces": [],
               "links": [],
+              "actionTypeConstraints": [],
               "status": {
                 "type": "active",
                 "active": {}
@@ -747,6 +746,7 @@ describe("Miscellaneous Tests", () => {
           ],
           "linkedInterfaces": [],
           "links": [],
+          "actionTypeConstraints": [],
           "status": {
             "type": "active",
             "active": {}

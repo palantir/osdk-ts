@@ -413,7 +413,6 @@ export function convertAction(
             },
             enableLayoutUserSwitch: action.enableLayoutSwitch ?? false,
           },
-          applyingMessage: [],
           description: action.description ?? "",
           displayName: action.displayName,
           icon: {
@@ -427,6 +426,7 @@ export function convertAction(
             }]
             : [],
           typeClasses: action.typeClasses ?? [],
+          applyingMessage: [],
           ...(action.submissionMetadata?.submitButtonDisplayMetadata
             && {
               submitButtonDisplayMetadata:

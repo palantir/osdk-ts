@@ -167,7 +167,6 @@ export function defineInterface(
   );
 
   const fullInterface: InterfaceType = {
-    actionTypeConstraints: [],
     apiName,
     displayMetadata: {
       displayName: interfaceDef.displayName ?? interfaceDef.apiName,
@@ -186,6 +185,7 @@ export function defineInterface(
     extendsInterfaces,
     linkedInterfaces: [],
     links: [],
+    actionTypeConstraints: [],
     status,
     propertiesV2,
     propertiesV3,
