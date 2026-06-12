@@ -365,14 +365,12 @@ function convertShapeDataType(
       };
     }
     case "interface": {
-      // The function IR references interfaces by their already-resolved temp rid, but the
-      // marketplace function shape expects the interface's block-internal id.
       const blockId = interfaceTypes[
         (dataType.interface as { interfaceTypeRid: string }).interfaceTypeRid
       ];
       return {
         type: "interface",
-        interface: { interfaceTypeReference: blockId ?? "" },
+        interface: { interfaceTypeReference: blockId },
       };
     }
     case "interfaceObjectSet": {
@@ -382,7 +380,7 @@ function convertShapeDataType(
       ];
       return {
         type: "interfaceObjectSet",
-        interfaceObjectSet: { interfaceTypeReference: blockId ?? "" },
+        interfaceObjectSet: { interfaceTypeReference: blockId },
       };
     }
     case "list": {
