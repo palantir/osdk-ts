@@ -227,7 +227,10 @@ jobs:
         run: u="$(git ls-files --others --exclude-standard)" && test -z "$u"
 
   cspell:
-    name: Spelling
+    # TODO: rename to "Spelling" once we can update the required status checks in
+    # branch protection. Kept as "Check spelling" for now so it matches the
+    # existing required check (branch protection can't be modified from here yet).
+    name: Check spelling
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -256,7 +259,11 @@ jobs:
   # the `build` job under every supported Node version. This is what actually
   # proves the published packages run on Node 18 (and up).
   test:
-    name: Test (Node ${{ matrix.node }})
+    # TODO: rename to "Test (Node ${{ matrix.node }})" once we can update the
+    # required status checks in branch protection. Kept as "Build and Test" for
+    # now so the matrix checks ("Build and Test (18)" … "(24)") match the existing
+    # required checks (branch protection can't be modified from here yet).
+    name: Build and Test
     needs: build
     timeout-minutes: 30
     runs-on: ubuntu-latest
@@ -498,7 +505,7 @@ jobs:
       - name: Setup Node.js environment
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
-          node-version: 22
+          node-version: 24
           cache: "pnpm"
 
       - name: Cache Turbo
@@ -709,7 +716,7 @@ jobs:
   ci-build:
     name: ci-build
     if: ${{ always() }}
-    needs: [build, build-apps, typecheck, lint, cspell, test, e2e, fork-guard]
+    needs: [build, build-apps, typecheck, lint, cspell, test, e2e, fork-guard, changes, storybook-tests]
     runs-on: ubuntu-latest
     steps:
       - name: Verify dependent jobs succeeded
