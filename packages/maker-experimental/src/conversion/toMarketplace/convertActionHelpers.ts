@@ -307,13 +307,24 @@ function convertFunctionBackedAction(
     };
 
     const paramType = dataTypeToActionParameterType(input.dataType);
+    const listTypes = [
+      ...Object.values(PRIMITIVE_LIST_TYPES),
+      "objectReferenceList",
+      "interfaceReferenceList",
+      "structList",
+    ];
 
     syntheticParameters.push({
       id: paramId,
       displayName: uppercaseFirstLetter(paramId),
       type: paramType,
       validation: {
-        required: true,
+        required:
+          (typeof paramType === "object") && listTypes.includes(paramType.type)
+            ? {
+              listLength: {},
+            }
+            : input.required,
         defaultVisibility: "editable",
         allowedValues: extractAllowedValuesFromActionParameterType(paramType),
       },
@@ -454,6 +465,7 @@ const PRIMITIVE_LIST_TYPES: Record<string, ActionParameter["type"]> = {
   "date": "dateList",
   "timestamp": "timestampList",
   "attachment": "attachmentList",
+  "decimal": "decimalList",
 };
 
 function dataTypeToActionParameterListType(
