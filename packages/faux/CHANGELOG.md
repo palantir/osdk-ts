@@ -1,5 +1,25 @@
 # @osdk/shared.test
 
+## 0.26.0
+
+### Minor Changes
+
+- 79f8a6e: Stop serializing GeoJSON `Point` geometries into a `"lat,lon"` string when sending object property/parameter values. This broke geoshape values that are Points (the transaction edits and action endpoints rejected `"lat,lon"` with `InvalidTransactionEditPropertyValue` / invalid parameter for `GeoShape`). GeoJSON values are now passed through as objects, which the server accepts for both geoshape and geopoint/geohash targets. The FauxFoundry geohash action-parameter validator now also accepts GeoJSON objects, matching the real server.
+
+### Patch Changes
+
+- Updated dependencies [06adca1]
+  - @osdk/api@2.32.0
+  - @osdk/generator-converters@2.32.0
+
+## 0.25.0
+
+### Patch Changes
+
+- Updated dependencies [57cbc6d]
+  - @osdk/api@2.31.0
+  - @osdk/generator-converters@2.31.0
+
 ## 0.24.0
 
 ### Minor Changes

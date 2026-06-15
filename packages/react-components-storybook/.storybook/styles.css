@@ -1,6 +1,6 @@
-@layer storybook, osdk.styles, themes;
+@layer bp, storybook, osdk.styles, themes;
 
-@import "@blueprintjs/core/lib/css/blueprint.css" layer(storybook);
+@import "@blueprintjs/core/lib/css/blueprint.css" layer(bp);
 @import "../src/styles/storybook.css" layer(storybook);
 @import "@osdk/react-components/styles.css" layer(osdk.styles);
 @import "./themes.css" layer(themes);

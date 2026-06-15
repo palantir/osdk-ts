@@ -361,6 +361,7 @@ export class OntologyIrToFullMetadataConverter {
     // Construct entity metadata mapping from preview metadata so FunctionDiscoverer
     // can resolve ontology types (Client, Osdk.Instance, ontology edits, etc.)
     let entityMetadataMapping: unknown;
+    const interfaceRidToApiName: Record<string, string> = {};
     if (previewMetadata) {
       if (!previewMetadata.ontology?.rid) {
         throw new Error("previewMetadata.ontology.rid is required");
@@ -398,8 +399,15 @@ export class OntologyIrToFullMetadataConverter {
         { interfaceTypeRid: string }
       > = {};
       if (previewMetadata.interfaceTypes) {
-        for (const apiName of Object.keys(previewMetadata.interfaceTypes)) {
-          interfaceTypesMap[apiName] = { interfaceTypeRid: apiName };
+        for (
+          const [apiName, interfaceType] of Object.entries(
+            previewMetadata.interfaceTypes,
+          )
+        ) {
+          interfaceTypesMap[apiName] = {
+            interfaceTypeRid: interfaceType.rid,
+          };
+          interfaceRidToApiName[interfaceType.rid] = apiName;
         }
       }
       entityMetadataMapping = {
@@ -463,7 +471,11 @@ export class OntologyIrToFullMetadataConverter {
           Record<ApiName, Ontologies.QueryParameterV2>
         >((acc, input) => {
           acc[input.name] = {
-            dataType: convertDataType(input.dataType, func.customTypes),
+            dataType: convertDataType(
+              input.dataType,
+              func.customTypes,
+              interfaceRidToApiName,
+            ),
             required: input.required ?? true,
           };
           return acc;
@@ -471,6 +483,7 @@ export class OntologyIrToFullMetadataConverter {
         output: convertDataType(
           func.output.single.dataType,
           func.customTypes,
+          interfaceRidToApiName,
         ),
         typeReferences: {},
       } satisfies Ontologies.QueryTypeV2;
@@ -602,9 +615,11 @@ export class OntologyIrToFullMetadataConverter {
           Record<ApiName, Ontologies.QueryParameterV2>
         >((acc, input) => {
           acc[input.name] = {
+            // TODO (ethana): interface support for python queries
             dataType: convertDataType(
               input.dataType,
               customTypes,
+              {},
               input.required,
             ),
             required: input.required ?? true,
@@ -614,6 +629,7 @@ export class OntologyIrToFullMetadataConverter {
         output: convertDataType(
           resolvedOutput,
           customTypes,
+          {},
         ),
         typeReferences: {},
       };
@@ -817,7 +833,7 @@ export class OntologyIrToFullMetadataConverter {
       const linkType = link.linkType;
       const linkStatus = this.convertLinkTypeStatus(linkType.status);
 
-      let mappings: Record<string, Ontologies.LinkTypeSideV2>;
+      let mappings: Record<string, Ontologies.LinkTypeSideV2[]>;
       switch (linkType.definition.type) {
         case "manyToMany": {
           const linkDef = linkType.definition.manyToMany;
@@ -836,13 +852,17 @@ export class OntologyIrToFullMetadataConverter {
             ...sideA,
             apiName: linkDef.objectTypeBToALinkMetadata.apiName
               ?? "",
+            displayName: linkDef.objectTypeBToALinkMetadata
+              .displayMetadata.displayName,
             objectTypeApiName: linkDef.objectTypeRidA,
           };
 
           mappings = {
-            [linkDef.objectTypeRidA]: sideA,
-            [linkDef.objectTypeRidB]: sideB,
+            [linkDef.objectTypeRidA]: [],
+            [linkDef.objectTypeRidB]: [],
           };
+          mappings[linkDef.objectTypeRidA].push(sideA);
+          mappings[linkDef.objectTypeRidB].push(sideB);
           break;
         }
         case "oneToMany": {
@@ -860,9 +880,9 @@ export class OntologyIrToFullMetadataConverter {
 
           const manySide: Ontologies.LinkTypeSideV2 = {
             ...common,
-            apiName: linkDef.oneToManyLinkMetadata.apiName ?? "",
+            apiName: linkDef.manyToOneLinkMetadata.apiName ?? "",
             displayName:
-              linkDef.oneToManyLinkMetadata.displayMetadata.displayName,
+              linkDef.manyToOneLinkMetadata.displayMetadata.displayName,
             objectTypeApiName: linkDef.objectTypeRidOneSide,
             cardinality: "ONE",
             // This should only exist on the one side and it should be the property on this object
@@ -875,16 +895,18 @@ export class OntologyIrToFullMetadataConverter {
           const oneSide: Ontologies.LinkTypeSideV2 = {
             ...common,
             cardinality: "MANY",
-            apiName: linkDef.manyToOneLinkMetadata.apiName ?? "",
+            apiName: linkDef.oneToManyLinkMetadata.apiName ?? "",
             displayName:
-              linkDef.manyToOneLinkMetadata.displayMetadata.displayName,
+              linkDef.oneToManyLinkMetadata.displayMetadata.displayName,
             objectTypeApiName: linkDef.objectTypeRidManySide,
           };
 
           mappings = {
-            [linkDef.objectTypeRidOneSide]: oneSide,
-            [linkDef.objectTypeRidManySide]: manySide,
+            [linkDef.objectTypeRidOneSide]: [],
+            [linkDef.objectTypeRidManySide]: [],
           };
+          mappings[linkDef.objectTypeRidOneSide].push(oneSide);
+          mappings[linkDef.objectTypeRidManySide].push(manySide);
           break;
         }
         default:
@@ -896,7 +918,7 @@ export class OntologyIrToFullMetadataConverter {
         if (!result[objectTypeApiName]) {
           result[objectTypeApiName] = [];
         }
-        result[objectTypeApiName].push(linkSide);
+        result[objectTypeApiName].push(...linkSide);
       }
     }
 

@@ -17,6 +17,7 @@
 import type {
   ActionTypeBlockDataV2,
   ActionTypeStatus,
+  InterfacePropertyTypeType,
   InterfaceTypeBlockDataV2,
   LinkTypeBlockDataV2,
   LinkTypeStatus,
@@ -37,17 +38,23 @@ export class OntologyBlockDataToFullMetadataConverter {
   static getFullMetadataFromBlockData(
     blockData: OntologyBlockDataV2,
     importedTypes?: Ontologies.OntologyFullMetadata,
+    transitiveImportedBlockData?: OntologyBlockDataV2,
   ): Ontologies.OntologyFullMetadata {
     const objectTypeLookup = buildBlockDataObjectTypeLookup(
       blockData,
       importedTypes,
+      transitiveImportedBlockData,
     );
     const interfaceTypeLookup = buildBlockDataInterfaceTypeLookup(
       blockData,
       importedTypes,
+      transitiveImportedBlockData,
     );
     const interfaceTypes = this.getOsdkInterfaceTypesFromBlockData(
-      blockData.interfaceTypes,
+      {
+        ...blockData.interfaceTypes,
+        ...transitiveImportedBlockData?.interfaceTypes,
+      },
       interfaceTypeLookup,
     );
     const sharedPropertyTypes = this.getOsdkSharedPropertyTypesFromBlockData(
@@ -240,7 +247,7 @@ export class OntologyBlockDataToFullMetadataConverter {
         linkType.status,
       );
 
-      let mappings: Record<string, Ontologies.LinkTypeSideV2>;
+      let mappings: Record<string, Ontologies.LinkTypeSideV2[]>;
       switch (linkType.definition.type) {
         case "manyToMany": {
           const linkDef = linkType.definition.manyToMany;
@@ -262,6 +269,8 @@ export class OntologyBlockDataToFullMetadataConverter {
             ...sideA,
             apiName: linkDef.objectTypeBToALinkMetadata.apiName
               ?? "",
+            displayName: linkDef.objectTypeBToALinkMetadata
+              .displayMetadata.displayName,
             objectTypeApiName: resolveBlockDataApiName(
               linkDef.objectTypeRidA,
               objectTypeLookup,
@@ -269,9 +278,11 @@ export class OntologyBlockDataToFullMetadataConverter {
           };
 
           mappings = {
-            [linkDef.objectTypeRidA]: sideA,
-            [linkDef.objectTypeRidB]: sideB,
+            [linkDef.objectTypeRidA]: [],
+            [linkDef.objectTypeRidB]: [],
           };
+          mappings[linkDef.objectTypeRidA].push(sideA);
+          mappings[linkDef.objectTypeRidB].push(sideB);
           break;
         }
         case "oneToMany": {
@@ -290,9 +301,9 @@ export class OntologyBlockDataToFullMetadataConverter {
 
           const manySide: Ontologies.LinkTypeSideV2 = {
             ...common,
-            apiName: linkDef.oneToManyLinkMetadata.apiName ?? "",
+            apiName: linkDef.manyToOneLinkMetadata.apiName ?? "",
             displayName:
-              linkDef.oneToManyLinkMetadata.displayMetadata.displayName,
+              linkDef.manyToOneLinkMetadata.displayMetadata.displayName,
             objectTypeApiName: resolveBlockDataApiName(
               linkDef.objectTypeRidOneSide,
               objectTypeLookup,
@@ -310,9 +321,9 @@ export class OntologyBlockDataToFullMetadataConverter {
           const oneSide: Ontologies.LinkTypeSideV2 = {
             ...common,
             cardinality: "MANY",
-            apiName: linkDef.manyToOneLinkMetadata.apiName ?? "",
+            apiName: linkDef.oneToManyLinkMetadata.apiName ?? "",
             displayName:
-              linkDef.manyToOneLinkMetadata.displayMetadata.displayName,
+              linkDef.oneToManyLinkMetadata.displayMetadata.displayName,
             objectTypeApiName: resolveBlockDataApiName(
               linkDef.objectTypeRidManySide,
               objectTypeLookup,
@@ -320,9 +331,11 @@ export class OntologyBlockDataToFullMetadataConverter {
           };
 
           mappings = {
-            [linkDef.objectTypeRidOneSide]: oneSide,
-            [linkDef.objectTypeRidManySide]: manySide,
+            [linkDef.objectTypeRidOneSide]: [],
+            [linkDef.objectTypeRidManySide]: [],
           };
+          mappings[linkDef.objectTypeRidOneSide].push(oneSide);
+          mappings[linkDef.objectTypeRidManySide].push(manySide);
           break;
         }
         default:
@@ -334,7 +347,7 @@ export class OntologyBlockDataToFullMetadataConverter {
         if (!result[objectTypeApiName]) {
           result[objectTypeApiName] = [];
         }
-        result[objectTypeApiName].push(linkSide);
+        result[objectTypeApiName].push(...linkSide);
       }
     }
 
@@ -758,13 +771,71 @@ export class OntologyBlockDataToFullMetadataConverter {
         }
       }
 
+      // Convert shared properties to interface shared properties
+      const propertiesV2: Record<
+        ApiName,
+        Ontologies.InterfacePropertyType
+      > = {};
+      const allPropertiesV2: Record<
+        ApiName,
+        Ontologies.ResolvedInterfacePropertyType
+      > = {};
+      for (
+        const [propKey, propValue] of Object.entries(interfaceType.propertiesV3)
+      ) {
+        switch (propValue.type) {
+          case "interfaceDefinedPropertyType":
+            const idp = propValue.interfaceDefinedPropertyType;
+            const idpDataType = this.getOsdkPropertyTypeFromBlockData(idp.type);
+            if (idpDataType) {
+              const resolved = {
+                rid: idp.rid,
+                apiName: idp.apiName,
+                displayName: idp.displayMetadata.displayName,
+                description: idp.displayMetadata.description ?? undefined,
+                dataType: idpDataType,
+                requireImplementation: idp.constraints.requireImplementation,
+              };
+              propertiesV2[idp.apiName] = {
+                ...resolved,
+                type: "interfaceDefinedPropertyType",
+                typeClasses: [],
+              };
+              allPropertiesV2[idp.apiName] = resolved;
+            }
+            break;
+          case "sharedPropertyBasedPropertyType":
+            const spt =
+              propValue.sharedPropertyBasedPropertyType.sharedPropertyType;
+            const sptDataType = this.getOsdkPropertyTypeFromBlockData(spt.type);
+            if (sptDataType) {
+              const resolved = {
+                rid: spt.rid,
+                apiName: spt.apiName,
+                displayName: spt.displayMetadata.displayName,
+                description: spt.displayMetadata.description ?? undefined,
+                dataType: sptDataType,
+                requireImplementation: propValue.sharedPropertyBasedPropertyType
+                  .requireImplementation,
+              };
+              propertiesV2[spt.apiName] = {
+                ...resolved,
+                type: "interfaceSharedPropertyType",
+                required: resolved.requireImplementation,
+                typeClasses: [],
+              };
+              allPropertiesV2[spt.apiName] = resolved;
+            }
+        }
+      }
+
       const result_interfaceType: Ontologies.InterfaceType = {
         apiName: interfaceType.apiName,
         rid,
         properties,
         allProperties: properties, // Same as properties for now
-        propertiesV2: {},
-        allPropertiesV2: {},
+        propertiesV2,
+        allPropertiesV2,
         extendsInterfaces: interfaceType.extendsInterfaces.map(val =>
           resolveBlockDataApiName(val, interfaceTypeLookup)
         ),
@@ -884,7 +955,7 @@ export class OntologyBlockDataToFullMetadataConverter {
   }
 
   static getOsdkPropertyTypeFromBlockData(
-    type: Type,
+    type: Type | InterfacePropertyTypeType,
   ): Ontologies.ObjectPropertyType | null {
     switch (type.type) {
       case "array": {
@@ -1034,6 +1105,7 @@ export interface BlockDataApiNameLookup {
 export function buildBlockDataObjectTypeLookup(
   blockdata: OntologyBlockDataV2 | undefined,
   importedTypes?: Ontologies.OntologyFullMetadata,
+  transitiveImportedBlockData?: OntologyBlockDataV2,
 ): BlockDataApiNameLookup | undefined {
   if (!blockdata?.objectTypes) {
     return undefined;
@@ -1054,12 +1126,24 @@ export function buildBlockDataObjectTypeLookup(
       );
     }
   }
+  if (transitiveImportedBlockData) {
+    for (
+      const [key, value] of Object.entries(
+        transitiveImportedBlockData.objectTypes,
+      )
+    ) {
+      const apiName = value.objectType.apiName!;
+      byRid.set(key, apiName);
+      byHyphenated.set(hyphenateApiName(apiName), apiName);
+    }
+  }
   return { byRid, byHyphenated };
 }
 
 export function buildBlockDataInterfaceTypeLookup(
   blockdata: OntologyBlockDataV2 | undefined,
   importedTypes?: Ontologies.OntologyFullMetadata,
+  transitiveImportedBlockData?: OntologyBlockDataV2,
 ): BlockDataApiNameLookup | undefined {
   if (!blockdata?.interfaceTypes) {
     return undefined;
@@ -1078,6 +1162,17 @@ export function buildBlockDataInterfaceTypeLookup(
         hyphenateApiName(value.apiName),
         value.apiName,
       );
+    }
+  }
+  if (transitiveImportedBlockData) {
+    for (
+      const [key, value] of Object.entries(
+        transitiveImportedBlockData.interfaceTypes,
+      )
+    ) {
+      const apiName = value.interfaceType.apiName!;
+      byRid.set(key, apiName);
+      byHyphenated.set(hyphenateApiName(apiName), apiName);
     }
   }
   return { byRid, byHyphenated };

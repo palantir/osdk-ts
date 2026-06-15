@@ -642,7 +642,7 @@ function referencedParameterIds(
   return parameterIds;
 }
 
-function extractAllowedValuesFromActionParameterType(
+export function extractAllowedValuesFromActionParameterType(
   type: ActionParameterType,
 ): ActionParameterAllowedValues {
   if (typeof type === "object") {
@@ -650,6 +650,11 @@ function extractAllowedValuesFromActionParameterType(
       case "objectReference":
       case "objectReferenceList":
         return { type: "objectQuery" };
+      case "interfaceReference":
+      case "interfaceReferenceList":
+        return { type: "interfaceObjectQuery" };
+      case "objectSetRid":
+        return { type: "objectSetRid" };
       case "struct":
       case "structList":
         throw new Error("Structs are not supported yet");

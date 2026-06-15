@@ -1,0 +1,34 @@
+.errorBanner {
+  margin: 8px 0;
+  padding: 8px 12px;
+  border: 1px solid color-mix(in srgb, var(--oa-danger) 40%, transparent);
+  background: color-mix(in srgb, var(--oa-danger) 8%, transparent);
+  color: var(--oa-danger);
+  border-radius: var(--oa-radius);
+  font-size: 12px;
+}
+
+.loadingTrack {
+  position: relative;
+  height: 2px;
+  width: 100%;
+  overflow: hidden;
+  background: var(--oa-border-muted);
+}
+
+.loadingBar {
+  position: absolute;
+  height: 100%;
+  width: 40%;
+  background: var(--oa-accent);
+  animation: oa-indeterminate 1.1s ease-in-out infinite;
+}
+
+@keyframes oa-indeterminate {
+  0% {
+    left: -40%;
+  }
+  100% {
+    left: 100%;
+  }
+}

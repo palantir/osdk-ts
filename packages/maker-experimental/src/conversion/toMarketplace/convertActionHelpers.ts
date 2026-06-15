@@ -28,9 +28,12 @@ import type {
 } from "@osdk/client.unstable";
 import type {
   IDataType,
+  IInterfaceDataType,
+  IInterfaceObjectSetDataType,
   IListDataType,
   IObjectDataType,
   IObjectSetDataType,
+  IOptionalDataType,
   ISetDataType,
 } from "@osdk/generator-converters.ontologyir";
 import type {
@@ -41,6 +44,7 @@ import type {
   InterfaceType,
 } from "@osdk/maker";
 import {
+  extractAllowedValuesFromActionParameterType,
   getOntologyDefinition,
   isActionParameterTypePrimitive,
   uppercaseFirstLetter,
@@ -303,10 +307,6 @@ function convertFunctionBackedAction(
     };
 
     const paramType = dataTypeToActionParameterType(input.dataType);
-    const isObjectParam = input.dataType.type === "object"
-      || (input.dataType.type === "list"
-        && (input.dataType as IListDataType).list.elementsType.type
-          === "object");
 
     syntheticParameters.push({
       id: paramId,
@@ -315,9 +315,7 @@ function convertFunctionBackedAction(
       validation: {
         required: true,
         defaultVisibility: "editable",
-        allowedValues: isObjectParam
-          ? { type: "objectQuery" }
-          : undefined,
+        allowedValues: extractAllowedValuesFromActionParameterType(paramType),
       },
     });
   }
@@ -404,6 +402,24 @@ function dataTypeToActionParameterType(
         },
       };
     }
+    case "interface": {
+      const interfaceData = dataType as IInterfaceDataType;
+      return {
+        type: "interfaceReference",
+        interfaceReference: {
+          interfaceTypeRid: interfaceData.interface.interfaceTypeRid,
+        },
+      };
+    }
+    case "interfaceObjectSet": {
+      const interfaceData = dataType as IInterfaceObjectSetDataType;
+      return {
+        type: "interfaceReferenceList",
+        interfaceReferenceList: {
+          interfaceTypeRid: interfaceData.interfaceObjectSet.interfaceTypeRid,
+        },
+      };
+    }
     case "list": {
       const listData = dataType as IListDataType;
       return dataTypeToActionParameterListType(listData.list.elementsType);
@@ -411,6 +427,12 @@ function dataTypeToActionParameterType(
     case "set": {
       const setData = dataType as ISetDataType;
       return dataTypeToActionParameterListType(setData.set.elementsType);
+    }
+    case "optionalType": {
+      const optionalData = dataType as IOptionalDataType;
+      return dataTypeToActionParameterType(
+        optionalData.optionalType.wrappedType,
+      );
     }
     default: {
       if (isActionParameterTypePrimitive(dataType.type)) {
@@ -443,6 +465,15 @@ function dataTypeToActionParameterListType(
       type: "objectReferenceList",
       objectReferenceList: {
         objectTypeId: objectData.object.objectTypeId,
+      },
+    };
+  }
+  if (elementType.type === "interface") {
+    const interfaceData = elementType as IInterfaceDataType;
+    return {
+      type: "interfaceReferenceList",
+      interfaceReferenceList: {
+        interfaceTypeRid: interfaceData.interface.interfaceTypeRid,
       },
     };
   }
@@ -527,9 +558,7 @@ function buildActionMetadata(
       : action.status,
     entities: action.entities
       ? {
-        affectedInterfaceTypes: action.entities.affectedInterfaceTypes.map(
-          apiName => ridGenerator.generateRidForInterface(apiName),
-        ),
+        affectedInterfaceTypes: action.entities.affectedInterfaceTypes,
         affectedLinkTypes: action.entities.affectedLinkTypes,
         affectedObjectTypes: action.entities.affectedObjectTypes.map(
           apiName => ridGenerator.generateObjectTypeId(apiName),

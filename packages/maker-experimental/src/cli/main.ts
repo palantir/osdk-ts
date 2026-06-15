@@ -18,7 +18,10 @@ import type {
   LinkTypeBlockDataV2,
   ObjectTypeBlockDataV2,
 } from "@osdk/client.unstable";
-import { OntologyIrToFullMetadataConverter } from "@osdk/generator-converters.ontologyir";
+import {
+  OntologyBlockDataToFullMetadataConverter,
+  OntologyIrToFullMetadataConverter,
+} from "@osdk/generator-converters.ontologyir";
 import { PreviewOntologyIrConverter } from "@osdk/generator-converters.preview";
 import { cleanAndValidateLinkTypeId } from "@osdk/maker";
 import { consola } from "consola";
@@ -29,6 +32,7 @@ import invariant from "tiny-invariant";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { defineOntologyV2 } from "../api/defineOntologyV2.js";
+import { getExternalRecommendations } from "../conversion/toMarketplace/RecommendationUtils.js";
 import { ReadableIdGenerator } from "../util/generateRid.js";
 import {
   generateBackingDatasetBlockResult,
@@ -211,6 +215,22 @@ export default async function main(
   await fs.promises.writeFile(ontologyJsonPath, ontologyJson);
   consola.info(`Wrote ontology.json to ${ontologyJsonPath}`);
 
+  const importedMetadata = OntologyBlockDataToFullMetadataConverter
+    .getFullMetadataFromBlockData(
+      ontologyIr.importedOntology,
+      undefined,
+      ontologyIr.transitiveImportedOntology,
+    );
+  const importedMetadataPath = path.join(
+    commandLineOpts.buildDir,
+    "oac-imported-metadata.json",
+  );
+  await fs.promises.writeFile(
+    importedMetadataPath,
+    JSON.stringify(importedMetadata, null, 2),
+  );
+  consola.info(`Wrote oac-imported-metadata.json to ${importedMetadataPath}`);
+
   let valueTypeResults: BlockGeneratorResult[] = [];
   if (ontologyIr.valueTypes.length > 0) {
     valueTypeResults = await generateValueTypeBlockResults(
@@ -370,7 +390,12 @@ export default async function main(
     inputs: Object.fromEntries(shapes.inputShapes),
     outputs: Object.fromEntries(shapes.outputShapes),
     input_mapping_entries: ontologyInputMappingEntries,
-    external_recommendations: [],
+    external_recommendations: getExternalRecommendations(
+      ontologyIr.importedOntology,
+      ontologyIr.valueTypes,
+      ontologyIr.importedValueTypes,
+      shapes.inputShapes,
+    ),
     add_on_override: undefined,
     input_shape_metadata: Object.fromEntries(shapes.inputShapeMetadata),
     block_type: "ONTOLOGY",

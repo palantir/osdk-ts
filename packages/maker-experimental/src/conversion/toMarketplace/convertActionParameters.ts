@@ -19,6 +19,9 @@ import type { BaseParameterType } from "@osdk/client.unstable/api";
 import type { ActionType } from "@osdk/maker";
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 
+const FUNCTIONS_IR_INTERFACE_TYPE_RID_REGEX =
+  /^ri\.ontology-metadata\.temp\.interface-type\.[0-9a-f]+$/;
+
 export function convertActionParameters(
   action: ActionType,
   ridGenerator: OntologyRidGenerator,
@@ -60,8 +63,11 @@ export function convertActionParameters(
           convertedType = {
             type: "interfaceReference",
             interfaceReference: {
-              interfaceTypeRid: ridGenerator.generateRidForInterface(
+              // the functionsIR uses resolved rids over the wire, so function-backed action
+              // interface parameters should be unconverted
+              interfaceTypeRid: resolveInterfaceTypeRid(
                 parameter.type.interfaceReference.interfaceTypeRid,
+                ridGenerator,
               ),
             },
           };
@@ -70,8 +76,9 @@ export function convertActionParameters(
           convertedType = {
             type: "interfaceReferenceList",
             interfaceReferenceList: {
-              interfaceTypeRid: ridGenerator.generateRidForInterface(
+              interfaceTypeRid: resolveInterfaceTypeRid(
                 parameter.type.interfaceReferenceList.interfaceTypeRid,
+                ridGenerator,
               ),
             },
           };
@@ -114,4 +121,13 @@ export function convertActionParameters(
       },
     }];
   }));
+}
+
+function resolveInterfaceTypeRid(
+  interfaceTypeRidOrApiName: string,
+  ridGenerator: OntologyRidGenerator,
+): string {
+  return FUNCTIONS_IR_INTERFACE_TYPE_RID_REGEX.test(interfaceTypeRidOrApiName)
+    ? interfaceTypeRidOrApiName
+    : ridGenerator.generateRidForInterface(interfaceTypeRidOrApiName);
 }

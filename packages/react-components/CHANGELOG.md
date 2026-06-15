@@ -1,5 +1,30 @@
 # @osdk/react-components
 
+## 0.30.0
+
+### Minor Changes
+
+- 083b82e: Fix filter list focus outline clipping by switching overflow from hidden to clip
+- a225595: Align ActionForm input-like controls with Blueprint-style shadows, focus rings, and button hover behavior.
+
+  Migration: remove overrides for the legacy input focus width, color, and offset CSS variables, plus the removed file picker trigger, date picker, and time picker border/border-color/focus/error border color variables (e.g. `--osdk-datetime-input-border-color`, `--osdk-datetime-input-border-color-focus`, `--osdk-datetime-input-error-border-color`, `--osdk-time-picker-input-border-color-focus`). Use `--osdk-input-focus-outline`, `--osdk-input-focus-shadow`, and the matching date picker, file picker, or time picker focus shadow tokens instead.
+
+## 0.29.0
+
+### Minor Changes
+
+- ee3bce8: Fix PDF viewer toolbar download saving an invalid filename.
+- ee3bce8: Add `downloadFileName` prop to set the PDF download name.
+- e553390: Fix inaccurate docs: drop stale `@beta` install pins (now older than `latest`) so all setup pages agree on untagged installs, soften the "every `--osdk-*` token maps to a `--bp-*` token" claim (some hold raw values), simplify the Layers section to user-facing setup, and remove `@osdk/cbac-components` install/style references now that CBAC components are merged into `@osdk/react-components`.
+
+## 0.28.0
+
+### Minor Changes
+
+- c00ec4a: Add edit-component agent skill for contribution
+- 4fcf89e: Add include/exclude and clear-all controls to FilterList linked-property and has-link filters. The overflow (…) menu now surfaces from the filter's component type, so the controls appear for empty and just-added filters without pre-filling any state, and the open overflow (…) button shows an active state. For has-link filters, "Excluding" filters to objects that do not have the link.
+- 37344db: Render CBAC and MANDATORY marking property columns in `ObjectTable`. Columns backed by marking properties whose `typeMetadata.markingType` is `"CBAC"` now render via the `CbacBanner`, and `"MANDATORY"` marking columns render one pill per marking on the row. Columns whose marking subtype isn't surfaced by the platform fall back to the previous default rendering.
+
 ## 0.27.0
 
 ### Minor Changes

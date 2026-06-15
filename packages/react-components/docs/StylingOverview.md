@@ -28,9 +28,9 @@ inherited from `@blueprintjs/core`.
 
 ### Layer 2: OSDK Tokens
 
-OSDK tokens (`--osdk-*`) map to Blueprint tokens by default. Override these
-to theme OSDK components **without** affecting other Blueprint components in
-your app.
+Most OSDK tokens (`--osdk-*`) map to Blueprint tokens by default; a few hold
+raw values instead (e.g. opacities and cursors). Override these to theme OSDK
+components **without** affecting other Blueprint components in your app.
 
 ```css
 :root {
@@ -121,10 +121,13 @@ design-system provider), pass `theme` instead of `defaultTheme`:
 | `--osdk-*`             | Theme only OSDK components, leave Blueprint unchanged |
 | `--osdk-<component>-*` | Customize a single component                          |
 
-Every `--osdk-*` token maps to a `--bp-*` token by default. If your app
-uses Blueprint components alongside OSDK components and you want a
-consistent look, override the `--bp-*` tokens. If you only want to restyle
-OSDK components without affecting Blueprint, override the `--osdk-*` tokens.
+Most `--osdk-*` tokens map to a `--bp-*` token by default (a handful — e.g.
+`--osdk-disabled-opacity`, `--osdk-drag-handle-cursor` — hold raw values
+instead). If your app uses Blueprint components alongside OSDK components and
+you want a consistent look, override the `--bp-*` tokens; for `--osdk-*` tokens
+with no `--bp-*` backing, override the `--osdk-*` token directly. If you only
+want to restyle OSDK components without affecting Blueprint, override the
+`--osdk-*` tokens.
 
 ## Custom Themes
 

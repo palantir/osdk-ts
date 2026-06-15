@@ -15,11 +15,13 @@
  */
 
 export type {
+  Byte,
   DateISOString,
   Double,
   Float,
   Integer,
   Long,
+  Short,
   TimestampISOString,
 } from "./PrimitiveTypes.js";
 
@@ -50,6 +52,7 @@ export type {
   UrlLinkTarget,
 } from "./Notification.js";
 
+export type { FunctionConfig } from "./FunctionConfig.js";
 export type { ClassificationMarking, MandatoryMarking } from "./Markings.js";
 export type { GroupId, Principal, UserId } from "./UserGroup.js";
 

@@ -14,7 +14,21 @@
  * limitations under the License.
  */
 
-export function isPoint(o: any): o is GeoJSON.Point {
-  return o && typeof o === "object" && "type" in o && o.type === "Point"
-    && "coordinates" in o && o.coordinates.length === 2;
+import type { OntologyIrBaseParameterConstraintType } from "@osdk/client.unstable";
+import type { InterfaceType } from "./interface/InterfaceType.js";
+
+export interface ParameterConstraintDefinition {
+  apiName: string;
+  displayName: string;
+  type: OntologyIrBaseParameterConstraintType;
+  requireImplementation: boolean;
+}
+
+export interface InterfaceActionTypeConstraintDefinition {
+  interfaceType: InterfaceType;
+  apiName: string;
+  displayName: string;
+  description: string;
+  requireImplementation: boolean;
+  parameters: Array<ParameterConstraintDefinition>;
 }

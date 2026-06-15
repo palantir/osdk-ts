@@ -56,6 +56,7 @@ export {
   CREATE_OR_MODIFY_OBJECT_PARAMETER,
   defineAction,
   DELETE_OBJECT_PARAMETER,
+  extractAllowedValuesFromActionParameterType,
   kebab,
   MODIFY_INTERFACE_OBJECT_PARAMETER,
   MODIFY_OBJECT_PARAMETER,
@@ -66,6 +67,7 @@ export { defineCreateOrModifyObjectAction } from "./api/defineCreateOrModifyObje
 export { defineDeleteInterfaceObjectAction } from "./api/defineDeleteInterfaceObjectAction.js";
 export { defineDeleteObjectAction } from "./api/defineDeleteObjectAction.js";
 export { defineInterface } from "./api/defineInterface.js";
+export { defineInterfaceActionTypeConstraint } from "./api/defineInterfaceActionTypeConstraint.js";
 export { defineInterfaceLinkConstraint } from "./api/defineInterfaceLinkConstraint.js";
 export { defineLink } from "./api/defineLink.js";
 export { defineModifyInterfaceObjectAction } from "./api/defineModifyInterfaceObjectAction.js";
@@ -129,4 +131,5 @@ export {
 } from "./api/propertyConversionUtils.js";
 export type { ValueTypeDefinitionVersion } from "./api/values/ValueTypeDefinitionVersion.js";
 export { wrapWithProxy } from "./api/wrapWithProxy.js";
+export { default } from "./cli/main.js";
 export { propertyTypeTypeToOntologyIrType as convertType } from "./conversion/toMarketplace/propertyTypeTypeToOntologyIrType.js";

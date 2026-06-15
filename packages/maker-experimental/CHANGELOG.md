@@ -1,5 +1,53 @@
 # @osdk/maker-experimental
 
+## 0.26.0
+
+### Minor Changes
+
+- cae84bd: Fix optional inputs for OAC FBA
+- cf7c06b: Add more type support for empty backing datasets
+
+### Patch Changes
+
+- Updated dependencies [cae84bd]
+- Updated dependencies [9e602f2]
+- Updated dependencies [0032d94]
+- Updated dependencies [a9de941]
+  - @osdk/maker@0.36.0
+  - @osdk/generator-converters.ontologyir@2.33.0
+  - @osdk/api@2.33.0
+  - @osdk/client.unstable@2.33.0
+
+## 0.25.0
+
+### Minor Changes
+
+- b5d0a61: transitive OAC imports
+- 833f47a: add support for interface action type constraint in ontology as code
+- 1bb7513: external recommendations
+
+### Patch Changes
+
+- Updated dependencies [b5d0a61]
+- Updated dependencies [06adca1]
+- Updated dependencies [833f47a]
+  - @osdk/generator-converters.ontologyir@2.32.0
+  - @osdk/client.unstable@2.32.0
+  - @osdk/maker@0.35.0
+  - @osdk/api@2.32.0
+  - @osdk/generator-converters.preview@0.20.0
+
+## 0.24.0
+
+### Patch Changes
+
+- Updated dependencies [57cbc6d]
+  - @osdk/api@2.31.0
+  - @osdk/client.unstable@2.31.0
+  - @osdk/generator-converters.ontologyir@2.31.0
+  - @osdk/maker@0.34.0
+  - @osdk/generator-converters.preview@0.19.0
+
 ## 0.23.0
 
 ### Patch Changes

@@ -178,6 +178,7 @@ describe("Object Types", () => {
         "interfaceTypes": {
           "com.palantir.interface": {
             "interfaceType": {
+              "actionTypeConstraints": [],
               "apiName": "com.palantir.interface",
               "displayMetadata": {
                 "description": "interface",
@@ -192,6 +193,7 @@ describe("Object Types", () => {
               },
               "extendsInterfaces": [],
               "extendsInterfacesMetadata": [],
+              "linkedInterfaces": [],
               "links": [],
               "permission": undefined,
               "properties": [],
@@ -355,6 +357,7 @@ describe("Object Types", () => {
               },
               "implementsInterfaces2": [
                 {
+                  "actionTypes": {},
                   "interfaceTypeApiName": "com.palantir.interface",
                   "linksV2": {},
                   "properties": {},
@@ -1839,6 +1842,7 @@ describe("Object Types", () => {
                 "metadata": {
                   "apiName": "com.palantir.create-object-flight",
                   "displayMetadata": {
+                    "applyingMessage": [],
                     "configuration": {
                       "defaultLayout": "FORM",
                       "displayAndFormat": {
@@ -2001,6 +2005,7 @@ describe("Object Types", () => {
                 "metadata": {
                   "apiName": "com.palantir.create-object-passenger",
                   "displayMetadata": {
+                    "applyingMessage": [],
                     "configuration": {
                       "defaultLayout": "FORM",
                       "displayAndFormat": {
@@ -2137,6 +2142,7 @@ describe("Object Types", () => {
                 "metadata": {
                   "apiName": "com.palantir.delete-object-flight",
                   "displayMetadata": {
+                    "applyingMessage": [],
                     "configuration": {
                       "defaultLayout": "FORM",
                       "displayAndFormat": {
@@ -2262,6 +2268,7 @@ describe("Object Types", () => {
                 "metadata": {
                   "apiName": "com.palantir.delete-object-passenger",
                   "displayMetadata": {
+                    "applyingMessage": [],
                     "configuration": {
                       "defaultLayout": "FORM",
                       "displayAndFormat": {

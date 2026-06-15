@@ -37,6 +37,11 @@ const serviceWorkerUrl = `${basePath}${
 
 initialize({
   onUnhandledRequest: "warn",
+  // Disable MSW's per-request console logging. In a browser it goes to
+  // devtools (collapsed), but under Vitest browser mode it is forwarded to the
+  // terminal, dumping full request/response payloads (including multi-MB PDFs)
+  // for every intercepted call.
+  quiet: true,
   serviceWorker: {
     url: serviceWorkerUrl,
   },

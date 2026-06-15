@@ -13,12 +13,19 @@
         "*.d.ts"
       ],
       "outputs": [
-        "build/{esm,cjs,browser}/**/*.{ts,cjs,ts.map,cts.map}"
+        // Includes `cts`: typecheck.sh renames the CJS `*.d.ts` to `*.d.cts`,
+        // and those declarations must be cached/restored so check-attw (which
+        // packs build/cjs) finds the CJS types when this task is a cache hit.
+        "build/{esm,cjs,browser}/**/*.{ts,cts,cjs,ts.map,cts.map}"
       ],
       "dependsOn": [
         "@osdk/monorepo.tsconfig#typecheck",
         "^typecheck",
         "^transpile",
+        // Own transpile too: transpile and typecheck both write build/cjs (and
+        // typecheck.sh deletes existing *.ts/*.cts there first), so they must
+        // not run concurrently or typecheck's *.d.cts can be clobbered.
+        "transpile",
         "codegen"
       ]
     },

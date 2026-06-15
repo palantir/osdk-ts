@@ -225,8 +225,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
           ),
           objectType,
           objectSet,
-          { ...args, $pageSize: 10000, $nextPageToken },
-          true,
+          { ...args, $pageSize: 10000, $nextPageToken, $snapshot: true },
         );
         $nextPageToken = result.nextPageToken;
 

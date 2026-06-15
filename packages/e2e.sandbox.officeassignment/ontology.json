@@ -1,0 +1,1333 @@
+{
+  "ontology": {
+    "apiName": "ontology-166e9f82-e310-4459-ab67-b851ef05769d",
+    "displayName": "osdk-ts Ontology",
+    "description": " Ontology",
+    "rid": "ri.ontology.main.ontology.5a277e05-5cdb-4766-bbd1-22a4ba8d6433"
+  },
+  "objectTypes": {
+    "Assignment": {
+      "objectType": {
+        "apiName": "Assignment",
+        "displayName": "Assignment",
+        "status": "ACTIVE",
+        "description": "The central hub object: a placement of an Employee into an Office/Floor under a Manager. Owns the one-to-many timeline of Status Updates that drives the latest-value-of-type derivation. Base app filter: assignmentType == Permanent AND assignmentStatus == Active.",
+        "pluralDisplayName": "Assignments",
+        "icon": {
+          "type": "blueprint",
+          "color": "#2D72D2",
+          "name": "briefcase"
+        },
+        "primaryKey": "assignmentId",
+        "properties": {
+          "assignmentId": {
+            "description": "Unique identifier for the assignment.",
+            "displayName": "Assignment ID",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.8cefab38-5b54-4498-b6c0-b37e6a5e62ca",
+            "status": {
+              "type": "active"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          },
+          "assignmentStatus": {
+            "description": "Active | Ended.",
+            "displayName": "Assignment Status",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.68bb236f-7f47-4c27-98a6-875e3bdd2b4b",
+            "status": {
+              "type": "active"
+            },
+            "visibility": "PROMINENT",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          },
+          "assignmentType": {
+            "description": "Permanent | Contract | Secondment.",
+            "displayName": "Assignment Type",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.a6c74ad6-0e51-4a89-baf7-0063055df802",
+            "status": {
+              "type": "active"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          },
+          "employeeId": {
+            "description": "Foreign key to the Employee holding this assignment.",
+            "displayName": "Employee ID",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.bee08e30-6776-4c8e-b3bb-7c3c114ecd1f",
+            "status": {
+              "type": "active"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          },
+          "endDate": {
+            "description": "Date the assignment ended; null while active.",
+            "displayName": "End Date",
+            "dataType": {
+              "type": "date"
+            },
+            "rid": "ri.ontology.main.property.a27457eb-284e-4b1a-99b3-9f7e67607f46",
+            "status": {
+              "type": "active"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": []
+          },
+          "floorId": {
+            "description": "Foreign key to the Floor.",
+            "displayName": "Floor ID",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.71684cf7-1613-471c-9e7f-7b020719436e",
+            "status": {
+              "type": "active"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          },
+          "function": {
+            "description": "Team / function for the assignment.",
+            "displayName": "Function",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.b603d4f9-464a-421f-92a3-f55d027ff9d6",
+            "status": {
+              "type": "active"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          },
+          "managerId": {
+            "description": "Foreign key to the Manager.",
+            "displayName": "Manager ID",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.63075ac9-edf4-4dbc-873f-f3dd0ab4c5fc",
+            "status": {
+              "type": "active"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          },
+          "officeId": {
+            "description": "Foreign key to the Office.",
+            "displayName": "Office ID",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.2b1feda2-6ed1-44c3-8015-59b641540fda",
+            "status": {
+              "type": "active"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          },
+          "startDate": {
+            "description": "Date the assignment started.",
+            "displayName": "Start Date",
+            "dataType": {
+              "type": "date"
+            },
+            "rid": "ri.ontology.main.property.d7869a44-c756-4df6-9c7d-b349990a72b1",
+            "status": {
+              "type": "active"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": []
+          },
+          "tenureDays": {
+            "description": "Length of the assignment in days.",
+            "displayName": "Tenure Days",
+            "dataType": {
+              "type": "double"
+            },
+            "rid": "ri.ontology.main.property.04829a0d-63e9-4664-8437-4c1b03754756",
+            "status": {
+              "type": "active"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": []
+          },
+          "title": {
+            "description": "Role title for the assignment.",
+            "displayName": "Title",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.48982e3f-efd0-4f76-9d54-63b1e89814e2",
+            "status": {
+              "type": "active"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          }
+        },
+        "rid": "ri.ontology.main.object-type.6720b526-a510-456d-b328-73bfeb8471d7",
+        "titleProperty": "assignmentId",
+        "visibility": "PROMINENT"
+      },
+      "linkTypes": [
+        {
+          "apiName": "employee",
+          "displayName": "Employee",
+          "status": "ACTIVE",
+          "objectTypeApiName": "Employee",
+          "cardinality": "ONE",
+          "foreignKeyPropertyApiName": "employeeId",
+          "linkTypeRid": "ri.ontology.main.relation.d0047f31-ab89-4f83-99a4-81d637ec095d"
+        },
+        {
+          "apiName": "floor",
+          "displayName": "Floor",
+          "status": "ACTIVE",
+          "objectTypeApiName": "Floor",
+          "cardinality": "ONE",
+          "foreignKeyPropertyApiName": "floorId",
+          "linkTypeRid": "ri.ontology.main.relation.55a9eab9-75ed-475e-aeae-77edfe829d94"
+        },
+        {
+          "apiName": "manager",
+          "displayName": "Manager",
+          "status": "ACTIVE",
+          "objectTypeApiName": "Manager",
+          "cardinality": "ONE",
+          "foreignKeyPropertyApiName": "managerId",
+          "linkTypeRid": "ri.ontology.main.relation.1d90b1a7-c4ac-41c4-9fd1-74893531cad2"
+        },
+        {
+          "apiName": "office",
+          "displayName": "Office",
+          "status": "ACTIVE",
+          "objectTypeApiName": "Office",
+          "cardinality": "ONE",
+          "foreignKeyPropertyApiName": "officeId",
+          "linkTypeRid": "ri.ontology.main.relation.542cba81-82a1-43e0-afa9-72cabd763162"
+        },
+        {
+          "apiName": "statusUpdate",
+          "displayName": "Status Update",
+          "status": "ACTIVE",
+          "objectTypeApiName": "StatusUpdate",
+          "cardinality": "MANY",
+          "linkTypeRid": "ri.ontology.main.relation.6ba8030c-ce91-4994-8409-f17dfe7f82ef"
+        }
+      ],
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {},
+      "sharedPropertyTypeMapping": {}
+    },
+    "Employee": {
+      "objectType": {
+        "apiName": "Employee",
+        "displayName": "Employee",
+        "status": "ACTIVE",
+        "description": "A person employed by the company. One Employee can hold many Assignments over time.",
+        "pluralDisplayName": "Employees",
+        "icon": {
+          "type": "blueprint",
+          "color": "#2D72D2",
+          "name": "person"
+        },
+        "primaryKey": "employeeId",
+        "properties": {
+          "email": {
+            "description": "Work email address.",
+            "displayName": "Email",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.c270686d-0d8b-4ec0-bb4c-f33ba8282815",
+            "status": {
+              "type": "active"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          },
+          "employeeId": {
+            "description": "Unique identifier for the employee.",
+            "displayName": "Employee ID",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.848d2bba-0175-4376-a93f-9d33537a7a66",
+            "status": {
+              "type": "active"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          },
+          "fullName": {
+            "description": "The employee's full display name.",
+            "displayName": "Full Name",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.6d46ed36-e417-4a1e-86d6-328e8b5e378a",
+            "status": {
+              "type": "active"
+            },
+            "visibility": "PROMINENT",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          },
+          "homeRegion": {
+            "description": "Region the employee is based in.",
+            "displayName": "Home Region",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.52e2d194-50e8-4d72-a448-201ad411f762",
+            "status": {
+              "type": "active"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          },
+          "joinedDate": {
+            "description": "Date the employee joined the company.",
+            "displayName": "Joined Date",
+            "dataType": {
+              "type": "date"
+            },
+            "rid": "ri.ontology.main.property.d561ec2e-646b-467b-a58e-f55a29456ce7",
+            "status": {
+              "type": "active"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": []
+          }
+        },
+        "rid": "ri.ontology.main.object-type.679d471d-610f-4d7c-915f-c67060c5d4c0",
+        "titleProperty": "fullName",
+        "visibility": "NORMAL"
+      },
+      "linkTypes": [
+        {
+          "apiName": "assignments",
+          "displayName": "Assignment",
+          "status": "ACTIVE",
+          "objectTypeApiName": "Assignment",
+          "cardinality": "MANY",
+          "linkTypeRid": "ri.ontology.main.relation.d0047f31-ab89-4f83-99a4-81d637ec095d"
+        }
+      ],
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {},
+      "sharedPropertyTypeMapping": {}
+    },
+    "Floor": {
+      "objectType": {
+        "apiName": "Floor",
+        "displayName": "Floor",
+        "status": "ACTIVE",
+        "description": "A floor (sub-location) within an Office. Reference/lookup data that Assignments point to.",
+        "pluralDisplayName": "Floors",
+        "icon": {
+          "type": "blueprint",
+          "color": "#5C7080",
+          "name": "layer"
+        },
+        "primaryKey": "floorId",
+        "properties": {
+          "deskCapacity": {
+            "description": "Number of desks on this floor.",
+            "displayName": "Desk Capacity",
+            "dataType": {
+              "type": "integer"
+            },
+            "rid": "ri.ontology.main.property.1399637a-60a2-4bbf-8839-fde5e724f4fd",
+            "status": {
+              "type": "active"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": []
+          },
+          "floorId": {
+            "description": "Unique identifier for the floor.",
+            "displayName": "Floor ID",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.6389afa9-c1f9-4877-9aa3-6435c6840850",
+            "status": {
+              "type": "active"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          },
+          "isExcluded": {
+            "description": "Filter-exclusion flag for the floor (enum 'Yes' | 'No').",
+            "displayName": "Is Excluded",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.7a8e2219-f057-4552-9d72-7fc1d1c334da",
+            "status": {
+              "type": "active"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          },
+          "name": {
+            "description": "Human-readable name of the floor (e.g. '3rd Floor').",
+            "displayName": "Floor Name",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.b0458e05-3d65-41f0-b803-d64a6b9b9397",
+            "status": {
+              "type": "active"
+            },
+            "visibility": "PROMINENT",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          },
+          "officeId": {
+            "description": "Foreign key to the Office this floor belongs to.",
+            "displayName": "Office ID",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.2a977ab5-9093-4927-bb9f-75edbcc15aca",
+            "status": {
+              "type": "active"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          }
+        },
+        "rid": "ri.ontology.main.object-type.eafe2bc2-26d3-4d05-a01a-a563c4b538a5",
+        "titleProperty": "name",
+        "visibility": "NORMAL"
+      },
+      "linkTypes": [
+        {
+          "apiName": "assignments",
+          "displayName": "Assignment",
+          "status": "ACTIVE",
+          "objectTypeApiName": "Assignment",
+          "cardinality": "MANY",
+          "linkTypeRid": "ri.ontology.main.relation.55a9eab9-75ed-475e-aeae-77edfe829d94"
+        },
+        {
+          "apiName": "office",
+          "displayName": "Office",
+          "status": "ACTIVE",
+          "objectTypeApiName": "Office",
+          "cardinality": "ONE",
+          "foreignKeyPropertyApiName": "officeId",
+          "linkTypeRid": "ri.ontology.main.relation.24a7e71e-c2b3-4833-901e-43429dae56bb"
+        }
+      ],
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {},
+      "sharedPropertyTypeMapping": {}
+    },
+    "Manager": {
+      "objectType": {
+        "apiName": "Manager",
+        "displayName": "Manager",
+        "status": "ACTIVE",
+        "description": "A manager / team lead responsible for one or more Assignments.",
+        "pluralDisplayName": "Managers",
+        "icon": {
+          "type": "blueprint",
+          "color": "#2D72D2",
+          "name": "hat"
+        },
+        "primaryKey": "managerId",
+        "properties": {
+          "email": {
+            "description": "Work email address.",
+            "displayName": "Email",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.73016c23-20d0-4776-aad4-87c70874657d",
+            "status": {
+              "type": "active"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          },
+          "fullName": {
+            "description": "The manager's full display name.",
+            "displayName": "Full Name",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.9696ca96-faed-4559-87d2-f29c8fab7262",
+            "status": {
+              "type": "active"
+            },
+            "visibility": "PROMINENT",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          },
+          "managerId": {
+            "description": "Unique identifier for the manager.",
+            "displayName": "Manager ID",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.480f6e10-2210-4cd2-9917-b602bb928d56",
+            "status": {
+              "type": "active"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          },
+          "title": {
+            "description": "The manager's job title.",
+            "displayName": "Title",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.6f19f374-ac64-4bfc-bb6f-62743c3b2b9f",
+            "status": {
+              "type": "active"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          }
+        },
+        "rid": "ri.ontology.main.object-type.a63ba05c-d155-4a05-9e06-aed231a64571",
+        "titleProperty": "fullName",
+        "visibility": "NORMAL"
+      },
+      "linkTypes": [
+        {
+          "apiName": "assignments",
+          "displayName": "Assignment",
+          "status": "ACTIVE",
+          "objectTypeApiName": "Assignment",
+          "cardinality": "MANY",
+          "linkTypeRid": "ri.ontology.main.relation.1d90b1a7-c4ac-41c4-9fd1-74893531cad2"
+        }
+      ],
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {},
+      "sharedPropertyTypeMapping": {}
+    },
+    "Office": {
+      "objectType": {
+        "apiName": "Office",
+        "displayName": "Office",
+        "status": "ACTIVE",
+        "description": "A top-level company location (building/campus). Contains Floors and hosts Assignments.",
+        "pluralDisplayName": "Offices",
+        "icon": {
+          "type": "blueprint",
+          "color": "#5C7080",
+          "name": "office"
+        },
+        "primaryKey": "officeId",
+        "properties": {
+          "city": {
+            "description": "City where the office is located.",
+            "displayName": "City",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.22073dda-f9a4-4c4c-8aa7-a87b16aa4d72",
+            "status": {
+              "type": "active"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          },
+          "name": {
+            "description": "Human-readable name of the office.",
+            "displayName": "Office Name",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.8074f946-4a1e-4076-9a93-3b6df2c8ece7",
+            "status": {
+              "type": "active"
+            },
+            "visibility": "PROMINENT",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          },
+          "officeId": {
+            "description": "Unique identifier for the office.",
+            "displayName": "Office ID",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.ba07fb44-c35d-4640-a48f-42b5d9337452",
+            "status": {
+              "type": "active"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          },
+          "region": {
+            "description": "Region the office belongs to.",
+            "displayName": "Region",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.5b42eb35-3d2e-4919-84f3-31f5754f6672",
+            "status": {
+              "type": "active"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          }
+        },
+        "rid": "ri.ontology.main.object-type.a8feaba1-2c21-4aaa-9533-f76eac796c55",
+        "titleProperty": "name",
+        "visibility": "NORMAL"
+      },
+      "linkTypes": [
+        {
+          "apiName": "assignments",
+          "displayName": "Assignment",
+          "status": "ACTIVE",
+          "objectTypeApiName": "Assignment",
+          "cardinality": "MANY",
+          "linkTypeRid": "ri.ontology.main.relation.542cba81-82a1-43e0-afa9-72cabd763162"
+        },
+        {
+          "apiName": "floors",
+          "displayName": "Floor",
+          "status": "ACTIVE",
+          "objectTypeApiName": "Floor",
+          "cardinality": "MANY",
+          "linkTypeRid": "ri.ontology.main.relation.24a7e71e-c2b3-4833-901e-43429dae56bb"
+        }
+      ],
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {},
+      "sharedPropertyTypeMapping": {}
+    },
+    "StatusUpdate": {
+      "objectType": {
+        "apiName": "StatusUpdate",
+        "displayName": "Status Update",
+        "status": "ACTIVE",
+        "description": "A typed, timestamped status row hung off an Assignment (the one-to-many timeline being stress-tested). The latest value per type is derived by max-aggregating timestampEpochMs over this link.",
+        "pluralDisplayName": "Status Updates",
+        "icon": {
+          "type": "blueprint",
+          "color": "#2D72D2",
+          "name": "timeline-events"
+        },
+        "primaryKey": "statusUpdateId",
+        "properties": {
+          "assignmentId": {
+            "description": "Foreign key to the owning Assignment (StatusUpdate is the many side of the one-to-many).",
+            "displayName": "Assignment ID",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.3256d3ff-f141-4a3d-b385-59a809198081",
+            "status": {
+              "type": "active"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          },
+          "comment": {
+            "description": "Optional free-text note.",
+            "displayName": "Comment",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.ab680762-e076-466d-9e8f-80e5173ed861",
+            "status": {
+              "type": "active"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          },
+          "isExcluded": {
+            "description": "Whether this status row is excluded by the metrics layer. Orthogonal to the latest-value derivation; defaults to false.",
+            "displayName": "Is Excluded",
+            "dataType": {
+              "type": "boolean"
+            },
+            "rid": "ri.ontology.main.property.425257cc-66ff-4d44-89d4-012fd4127d84",
+            "status": {
+              "type": "active"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "LOW_CARDINALITY"
+              }
+            ]
+          },
+          "recordedBy": {
+            "description": "User who recorded the status.",
+            "displayName": "Recorded By",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.7929fea2-6e74-4273-bfb5-5a74c7b74381",
+            "status": {
+              "type": "active"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          },
+          "statusUpdateId": {
+            "description": "Unique identifier for the status update row.",
+            "displayName": "Status Update ID",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.5538f0ec-789d-4aa4-b747-363e26b2ceb4",
+            "status": {
+              "type": "active"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          },
+          "timestamp": {
+            "description": "When the status was recorded (display).",
+            "displayName": "Timestamp",
+            "dataType": {
+              "type": "timestamp"
+            },
+            "rid": "ri.ontology.main.property.105cdb69-c690-4b70-90f6-da8868e6de38",
+            "status": {
+              "type": "active"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": []
+          },
+          "timestampEpochMs": {
+            "description": "Millisecond epoch of the timestamp. Numeric (Long) so it can be max-aggregated and subtracted to derive the latest value per type.",
+            "displayName": "Timestamp Epoch Ms",
+            "dataType": {
+              "type": "long"
+            },
+            "rid": "ri.ontology.main.property.1547789c-d9a3-4eb2-a6b2-baabbd89df42",
+            "status": {
+              "type": "active"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": []
+          },
+          "type": {
+            "description": "Status category, e.g. WorkMode, RemoteEligible, AccessLevel.",
+            "displayName": "Type",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.3b0aa7a3-ee56-402d-aed0-b21e0d85633b",
+            "status": {
+              "type": "active"
+            },
+            "visibility": "PROMINENT",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          },
+          "typeValue": {
+            "description": "Combined '{type} - {value}' string used for filter dropdowns. Separator is ' - ' (space-hyphen-space); split on the last separator.",
+            "displayName": "Type Value",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.754bde45-2940-4646-b343-5468d0112555",
+            "status": {
+              "type": "active"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          },
+          "value": {
+            "description": "Status value within the type, e.g. Remote, Yes, Elevated.",
+            "displayName": "Value",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.5c31436a-f709-4e1b-a446-d8358a2f8b46",
+            "status": {
+              "type": "active"
+            },
+            "visibility": "PROMINENT",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          }
+        },
+        "rid": "ri.ontology.main.object-type.586dc2cc-44d2-4a82-8831-bd529c6f2042",
+        "titleProperty": "typeValue",
+        "visibility": "NORMAL"
+      },
+      "linkTypes": [
+        {
+          "apiName": "assignment",
+          "displayName": "Assignment",
+          "status": "ACTIVE",
+          "objectTypeApiName": "Assignment",
+          "cardinality": "ONE",
+          "foreignKeyPropertyApiName": "assignmentId",
+          "linkTypeRid": "ri.ontology.main.relation.6ba8030c-ce91-4994-8409-f17dfe7f82ef"
+        }
+      ],
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {},
+      "sharedPropertyTypeMapping": {}
+    }
+  },
+  "actionTypes": {
+    "end-assignment": {
+      "apiName": "end-assignment",
+      "description": "End an assignment: set assignmentStatus to Ended and record the endDate. Blocked if the assignment is already Ended.",
+      "displayName": "End Assignment",
+      "status": "ACTIVE",
+      "parameters": {
+        "assignment": {
+          "displayName": "Assignment",
+          "description": "The assignment to end.",
+          "dataType": {
+            "type": "object",
+            "objectApiName": "Assignment",
+            "objectTypeApiName": "Assignment"
+          },
+          "required": true,
+          "typeClasses": []
+        },
+        "endDate": {
+          "displayName": "End Date",
+          "description": "Date the assignment ended.",
+          "dataType": {
+            "type": "date"
+          },
+          "required": true,
+          "typeClasses": []
+        }
+      },
+      "rid": "ri.actions.main.action-type.c48066c1-30e5-443d-824c-7ae4631c87c1",
+      "operations": [
+        {
+          "type": "modifyObject",
+          "objectTypeApiName": "Assignment"
+        }
+      ]
+    },
+    "record-status-update": {
+      "apiName": "record-status-update",
+      "description": "Create a new Status Update row on an Assignment. The caller must pass timestamp, timestampEpochMs and typeValue consistently, since declarative actions cannot convert Timestamp<->Long or concatenate strings.",
+      "displayName": "Record Status Update",
+      "status": "ACTIVE",
+      "parameters": {
+        "assignment": {
+          "displayName": "Assignment",
+          "description": "The assignment this status update belongs to.",
+          "dataType": {
+            "type": "object",
+            "objectApiName": "Assignment",
+            "objectTypeApiName": "Assignment"
+          },
+          "required": true,
+          "typeClasses": []
+        },
+        "comment": {
+          "displayName": "Comment",
+          "description": "Optional free-text note.",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false,
+          "typeClasses": []
+        },
+        "isExcluded": {
+          "displayName": "Is Excluded",
+          "description": "Whether the row is excluded by the metrics layer. Defaults to false.",
+          "dataType": {
+            "type": "boolean"
+          },
+          "required": false,
+          "typeClasses": []
+        },
+        "recordedBy": {
+          "displayName": "Recorded By",
+          "description": "User who recorded the status.",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false,
+          "typeClasses": []
+        },
+        "statusUpdateId": {
+          "displayName": "Status Update ID",
+          "description": "Primary key for the new status update row.",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true,
+          "typeClasses": []
+        },
+        "timestamp": {
+          "displayName": "Timestamp",
+          "description": "When the status was recorded (display).",
+          "dataType": {
+            "type": "timestamp"
+          },
+          "required": true,
+          "typeClasses": []
+        },
+        "timestampEpochMs": {
+          "displayName": "Timestamp Epoch Ms",
+          "description": "Millisecond epoch matching the timestamp. Must equal the timestamp in epoch ms.",
+          "dataType": {
+            "type": "long"
+          },
+          "required": true,
+          "typeClasses": []
+        },
+        "type": {
+          "displayName": "Type",
+          "description": "Status category.",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true,
+          "typeClasses": []
+        },
+        "typeValue": {
+          "displayName": "Type Value",
+          "description": "Combined '{type} - {value}' string (space-hyphen-space separator).",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true,
+          "typeClasses": []
+        },
+        "value": {
+          "displayName": "Value",
+          "description": "Status value within the type (e.g. Remote, Yes, Elevated).",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true,
+          "typeClasses": []
+        }
+      },
+      "rid": "ri.actions.main.action-type.603fc1ee-9432-41c3-9249-8b192dc5f2c3",
+      "operations": [
+        {
+          "type": "createObject",
+          "objectTypeApiName": "StatusUpdate"
+        }
+      ]
+    },
+    "toggle-status-exclusion": {
+      "apiName": "toggle-status-exclusion",
+      "description": "Flip the isExcluded flag on a Status Update row. The flag is pre-filled with the current value; flipping it toggles the exclusion. Orthogonal to the latest-value derivation.",
+      "displayName": "Toggle Status Exclusion",
+      "status": "ACTIVE",
+      "parameters": {
+        "isExcluded": {
+          "displayName": "Is Excluded",
+          "description": "The new exclusion state. Pre-filled with the current value; flip it to toggle.",
+          "dataType": {
+            "type": "boolean"
+          },
+          "required": true,
+          "typeClasses": []
+        },
+        "statusUpdate": {
+          "displayName": "Status Update",
+          "description": "The status update row to toggle.",
+          "dataType": {
+            "type": "object",
+            "objectApiName": "StatusUpdate",
+            "objectTypeApiName": "StatusUpdate"
+          },
+          "required": true,
+          "typeClasses": []
+        }
+      },
+      "rid": "ri.actions.main.action-type.f577dd07-fada-4ada-bb57-d240c13e1dbb",
+      "operations": [
+        {
+          "type": "modifyObject",
+          "objectTypeApiName": "StatusUpdate"
+        }
+      ]
+    },
+    "update-assignment": {
+      "apiName": "update-assignment",
+      "description": "Edit an assignment's role details (title, function) and location/ownership (officeId, floorId, managerId).",
+      "displayName": "Update Assignment",
+      "status": "ACTIVE",
+      "parameters": {
+        "assignment": {
+          "displayName": "Assignment",
+          "description": "The assignment to update.",
+          "dataType": {
+            "type": "object",
+            "objectApiName": "Assignment",
+            "objectTypeApiName": "Assignment"
+          },
+          "required": true,
+          "typeClasses": []
+        },
+        "floorId": {
+          "displayName": "Floor ID",
+          "description": "Foreign key to the Floor.",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false,
+          "typeClasses": []
+        },
+        "function": {
+          "displayName": "Function",
+          "description": "Team / function.",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false,
+          "typeClasses": []
+        },
+        "managerId": {
+          "displayName": "Manager ID",
+          "description": "Foreign key to the Manager.",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false,
+          "typeClasses": []
+        },
+        "officeId": {
+          "displayName": "Office ID",
+          "description": "Foreign key to the Office.",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false,
+          "typeClasses": []
+        },
+        "title": {
+          "displayName": "Title",
+          "description": "Role title.",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false,
+          "typeClasses": []
+        }
+      },
+      "rid": "ri.actions.main.action-type.2a3aeb47-9da0-4b3b-a2fc-506144d36ab6",
+      "operations": [
+        {
+          "type": "modifyObject",
+          "objectTypeApiName": "Assignment"
+        }
+      ]
+    }
+  },
+  "queryTypes": {},
+  "interfaceTypes": {},
+  "sharedPropertyTypes": {},
+  "valueTypes": {}
+}

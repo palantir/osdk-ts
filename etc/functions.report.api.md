@@ -25,6 +25,7 @@ import type { OsdkObjectCreatePropertyType } from '@osdk/client';
 import { Point } from 'geojson';
 import { Polygon } from 'geojson';
 import type { PropertyKeys } from '@osdk/client';
+import type { QueryDefinition } from '@osdk/client';
 import { Range as Range_2 } from '@osdk/client';
 import { ThreeDimensionalAggregation } from '@osdk/client';
 import { TwoDimensionalAggregation } from '@osdk/client';
@@ -42,6 +43,11 @@ declare namespace Aliases {
 }
 
 export { Attachment }
+
+// @public (undocumented)
+export type Byte<T extends number = number> = T & {
+    	__byteBrand?: void
+};
 
 // @public (undocumented)
 export type ClassificationMarking<T extends string = string> = T & {
@@ -148,6 +154,18 @@ export type Float<T extends number = number> = T & {
     	__floatBrand?: void
 };
 
+// @public (undocumented)
+export interface FunctionConfig {
+    	// (undocumented)
+    apiName?: string;
+    	// Warning: (ae-forgotten-export) The symbol "Scope" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    scope?: Scope;
+    	// (undocumented)
+    sources?: string[];
+}
+
 export { Geometry }
 
 export { GeometryCollection }
@@ -253,6 +271,11 @@ export interface RidLinkTarget {
     	// (undocumented)
     type: "rid";
 }
+
+// @public (undocumented)
+export type Short<T extends number = number> = T & {
+    	_shortBrand?: void
+};
 
 // @public (undocumented)
 interface Source {
