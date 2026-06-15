@@ -1,3 +1,7 @@
+---
+toc_inline: true
+---
+
 # ObjectTable examples
 
 > **Generated file** — do not edit by hand. Edit the chunks in

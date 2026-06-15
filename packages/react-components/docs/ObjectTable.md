@@ -1,6 +1,7 @@
 ---
 title: ObjectTable
 description: An OSDK-aware data table for ontology objects. Renders rows from an object type, ObjectSet, or interface, with built-in column configuration, selection, sorting, pinning, resizing, and inline editing.
+toc_inline: true
 ---
 
 > **Beta** — exported from `@osdk/react-components/experimental/object-table`.

@@ -123,7 +123,9 @@ function buildMarkdown() {
     return `## ${title}\n\n${chunks.join("\n\n")}`;
   });
 
-  return `# ObjectTable examples\n\n${HEADER}\n\n${INTRO}\n\n${
+  // `toc_inline` front matter opts this page into the top-of-page table of
+  // contents rendered by the Docusaurus DocItem/Content theme wrapper.
+  return `---\ntoc_inline: true\n---\n\n# ObjectTable examples\n\n${HEADER}\n\n${INTRO}\n\n${
     sections.join("\n\n")
   }\n`;
 }
