@@ -21,7 +21,6 @@ import { FilterList } from "@osdk/react-components/experimental/filter-list";
 import type { ColumnDefinition } from "@osdk/react-components/experimental/object-table";
 import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import React, { useCallback, useMemo, useState } from "react";
-import { useObservableClient } from "@osdk/react";
 import { Button } from "../../components/Button.js";
 import { $ } from "../../foundryClient.js";
 import {
@@ -251,7 +250,6 @@ export const EmployeeActionFormFilterListReproPage = React.memo(
         text: `Department update failed: ${formatFormError(error)}`,
       });
     }, []);
-    const oc = useObservableClient();
     const handleAssignLeadSuccess = useCallback(
       function handleAssignLeadSuccess() {
         setStatusMessage({
@@ -259,8 +257,6 @@ export const EmployeeActionFormFilterListReproPage = React.memo(
           text: "Lead assignment submitted.",
         });
         setIsAssignLeadDialogOpen(false);
-        // does not fix
-        // await oc.invalidateAll();
       },
       [],
     );
