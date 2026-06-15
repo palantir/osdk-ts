@@ -196,6 +196,11 @@ describe("rdpFieldOperations", () => {
   });
 
   it("mergeObjectFields clears a shared RDP field that the source computed but left undefined", () => {
+    // Regression guard: a previous version of the merge-back loop had a
+    // `|| newProps[field] === undefined` clause that re-filled an undefined
+    // source RDP from the target. That overrides the source's authority over
+    // its own declared RDP fields and resurrects stale data when the derived
+    // value becomes null (wire omits the key).
     const source = createTestObject({
       employeeId: 50030,
       fullName: "John Doe",
