@@ -170,12 +170,12 @@ export function mergeObjectFields(
   targetRdpFields: ReadonlySet<string>,
   targetCurrentValue: ObjectHolder | undefined,
 ): ObjectHolder {
-  // Case: The destination (target) query does not need RDP
+  // When the destination (target) query does not need RDP
   if (targetRdpFields.size === 0) {
     return stripRdpFields(sourceValue, sourceRdpFields);
   }
 
-  // Case: Source contains more than the required RDP fields
+  // When source contains more than the required RDP fields
   if (isSuperset(sourceRdpFields, targetRdpFields)) {
     if (sourceRdpFields.size === targetRdpFields.size) {
       return sourceValue;

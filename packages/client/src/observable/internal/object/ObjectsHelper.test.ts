@@ -192,11 +192,6 @@ describe("ObjectsHelper.propagateWrite RDP merge", () => {
   });
 
   it("clears an RDP value when the canonical query refetches and the new value omits it", () => {
-    // The canonical owner of an RDP cache key is authoritative for the RDPs
-    // the key expects to compute. When a refetch returns the object with the
-    // derived value omitted (which is how a now-null derived value arrives
-    // over the wire) the cell must clear instead of retaining the stale
-    // previously cached value.
     const rdpConfig = createFakeRdpConfig("fieldA");
     const queryWithRdp = store.objects.getQuery({
       apiName: Employee,
@@ -227,11 +222,6 @@ describe("ObjectsHelper.propagateWrite RDP merge", () => {
   });
 
   it("preserves the cached RDP value when a no-RDP sibling query writes", () => {
-    // ActionForm scenario: a separate query that does not need the RDP field
-    // (e.g. loadObjects with no withProperties) writes the same object to its
-    // own cache key. The write propagates to the sibling RDP cache key — and
-    // because the source query did not compute the RDP, the sibling's cached
-    // derived value must be preserved, not clobbered.
     const rdpConfig = createFakeRdpConfig("fieldA");
     const queryWithRdp = store.objects.getQuery({
       apiName: Employee,
