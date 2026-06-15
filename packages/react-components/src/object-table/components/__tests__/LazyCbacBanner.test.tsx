@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -44,7 +44,7 @@ describe("LazyCbacBanner", () => {
     );
   });
 
-  it("degrades to an empty cell (no crash) when the chunk fails to load", async () => {
+  it("falls back to the raw marking ids (no crash) when the chunk fails to load", async () => {
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
     vi.doMock("../../../cbac-picker/CbacBanner.js", () => ({
       // Accessing the named export throws, so the dynamic import inside
@@ -57,14 +57,14 @@ describe("LazyCbacBanner", () => {
 
     render(
       <div data-testid="host">
-        <LazyCbacBanner markingIds={["m-1"]} />
+        <LazyCbacBanner markingIds={["m-1", "m-2"]} />
       </div>,
     );
 
-    // The fallback resolves to an empty render; the host stays mounted and the
-    // failure is logged exactly once rather than thrown.
-    await waitFor(() => expect(warnSpy).toHaveBeenCalledTimes(1));
-    expect(screen.getByTestId("host")).toBeTruthy();
+    // The fallback renders the raw marking ids rather than crashing or hiding
+    // them, and the failure is logged exactly once rather than thrown.
+    expect(await screen.findByText("m-1, m-2")).toBeTruthy();
+    expect(warnSpy).toHaveBeenCalledTimes(1);
     expect(screen.queryByTestId("cbac-banner")).toBeNull();
   });
 });

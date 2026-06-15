@@ -20,10 +20,12 @@ import type { CbacBannerProps } from "../../cbac-picker/CbacBanner.js";
 // Rendered when the CbacBanner chunk can't be loaded. CbacBanner pulls in
 // `@osdk/react/platform-apis`, whose admin hooks depend on the optional
 // `@osdk/foundry.admin` peer; if that chunk fails to load (peer not installed,
-// or a transient network error), degrade to an empty cell rather than letting
-// the failure propagate up and take down the whole table.
-function CbacBannerUnavailable(_props: CbacBannerProps): null {
-  return null;
+// or a transient network error), fall back to the raw marking ids rather than
+// hiding the markings entirely or letting the failure take down the table.
+function CbacBannerUnavailable(
+  { markingIds, className }: CbacBannerProps,
+): React.ReactElement {
+  return <span className={className}>{markingIds.join(", ")}</span>;
 }
 
 // Lazily import CbacBanner so ObjectTable consumers don't pull the CBAC picker
@@ -47,7 +49,8 @@ const CbacBannerLazy = React.lazy<React.ComponentType<CbacBannerProps>>(() =>
 
 /**
  * Suspense-wrapped, lazily-loaded {@link CbacBanner}. Same props as
- * `CbacBanner`; renders nothing while the chunk loads or if it fails to load.
+ * `CbacBanner`; renders nothing while the chunk loads, and falls back to the
+ * raw marking ids if the chunk fails to load.
  */
 export function LazyCbacBanner(props: CbacBannerProps): React.ReactElement {
   return (
