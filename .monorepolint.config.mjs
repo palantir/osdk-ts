@@ -254,6 +254,21 @@ const archetypeRules = archetypes(
       oxc: true,
     },
   )
+  // React packages migrated to the oxc toolchain. Same as "oxc migrated
+  // libraries" but with `react: true` (happy-dom vitest env + react tsconfig).
+  // @osdk/widget.client-react is the first React package on oxc (batch 3),
+  // validating the Ultracite React preset for the rest of the repo. See #3031.
+  .addArchetype(
+    "oxc migrated react libraries",
+    [
+      "@osdk/widget.client-react",
+    ],
+    {
+      ...LIBRARY_RULES,
+      react: true,
+      oxc: true,
+    },
+  )
   .addArchetype(
     "internal libraries / templates with modern tooling ES2023",
     [
@@ -357,16 +372,6 @@ const archetypeRules = archetypes(
       react: true,
       output: OUTPUT_ESM_ONLY,
       extraPublishFiles: ["build/site"],
-    },
-  )
-  .addArchetype(
-    "reactLibrary",
-    [
-      "@osdk/widget.client-react",
-    ],
-    {
-      ...LIBRARY_RULES,
-      react: true,
     },
   )
   .addArchetype(
