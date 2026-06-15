@@ -217,8 +217,7 @@ export function mergeObjectFields(
     }
   }
 
-  // For each RDP needed in target, assign the existing value only when the source does not have the field.
-  // When the source has it, the value should always come from the source, and that should have b
+  // For each RDP needed in target, assign the existing value when the source query did not declare this RDP in its intent
   if (targetCurrentValue) {
     const targetUnderlying =
       targetCurrentValue[UnderlyingOsdkObject] as SimpleOsdkProperties;
