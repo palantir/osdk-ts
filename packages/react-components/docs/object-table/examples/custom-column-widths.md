@@ -5,7 +5,11 @@ Set `width` (and optionally `minWidth` / `maxWidth`) per column to control sizin
 ```tsx
 const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
   { locator: { type: "property", id: "fullName" }, width: 250 },
-  { locator: { type: "property", id: "department" }, width: 300, minWidth: 150 },
+  {
+    locator: { type: "property", id: "department" },
+    width: 300,
+    minWidth: 150,
+  },
   { locator: { type: "property", id: "jobTitle" }, width: 150 },
 ];
 

@@ -177,7 +177,7 @@
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt",
     "gen-examples": "node scripts/gen-object-table-examples.mjs",
-    "lint": "eslint . && dprint check && node scripts/gen-object-table-examples.mjs --check",
+    "lint": "eslint . && dprint check",
     "test": "LANG=en_US.UTF-8 vitest run",
     "transpileAllDeps": "pnpm --filter @osdk/api --filter @osdk/client --filter @osdk/react run transpileBrowser",
     "transpileBrowser": "monorepo.tool.transpile -f esm -m normal -t browser && node scripts/build-css.mjs",

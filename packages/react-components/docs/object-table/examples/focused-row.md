@@ -3,8 +3,8 @@
 Highlight the "last interacted" row with `focusedRow` (a primary key) and observe changes via `onFocusedRowChanged`. When controlled, outside clicks don't auto-clear — the caller owns clearing.
 
 ```tsx
-import { useState } from "react";
 import type { Osdk } from "@osdk/api";
+import { useState } from "react";
 
 function EmployeesTable() {
   const [focused, setFocused] = useState<Osdk.Instance<typeof Employee> | null>(

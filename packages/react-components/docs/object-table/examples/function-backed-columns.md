@@ -12,7 +12,11 @@ import {
 type EmployeeFunctionColumns = { metrics: typeof getEmployeeMetrics };
 
 const columnDefinitions: Array<
-  ColumnDefinition<typeof Employee, Record<string, never>, EmployeeFunctionColumns>
+  ColumnDefinition<
+    typeof Employee,
+    Record<string, never>,
+    EmployeeFunctionColumns
+  >
 > = [
   { locator: { type: "property", id: "fullName" } },
   {
@@ -22,7 +26,8 @@ const columnDefinitions: Array<
       queryDefinition: getEmployeeMetrics,
       getFunctionParams: (objectSet) => ({ employees: objectSet }),
       getKey: (employee) => `${employee.$objectType}:${employee.$primaryKey}`,
-      getValue: (cellData) => (cellData as { score: number } | undefined)?.score,
+      getValue: (cellData) =>
+        (cellData as { score: number } | undefined)?.score,
     },
     columnName: "Performance score",
   },
