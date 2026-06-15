@@ -466,6 +466,9 @@ const PRIMITIVE_LIST_TYPES: Record<string, ActionParameter["type"]> = {
   "timestamp": "timestampList",
   "attachment": "attachmentList",
   "decimal": "decimalList",
+  "geoshape": "geoshapeList",
+  "mediaReference": "mediaReferenceList",
+  "marking": "markingList",
 };
 
 function dataTypeToActionParameterListType(
