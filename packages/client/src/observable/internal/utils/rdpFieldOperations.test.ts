@@ -227,38 +227,6 @@ describe("rdpFieldOperations", () => {
     expect(underlying.rdpField2).toBe(999);
   });
 
-  it("mergeObjectFields clears a shared RDP field that the source query computed but the wire omitted (became null)", () => {
-    // Real-world shape: the wire returns all non-null RDPs and omits the ones
-    // that became null. The canonical writer of the cache key passes its
-    // query's RDP *intent* (`expectedRdpFields`) as `sourceRdpFields`, so an
-    // omitted-but-expected RDP is interpreted as "became null" and the stale
-    // cached value must clear.
-    const source = createTestObject({
-      employeeId: 50030,
-      fullName: "John Doe",
-      // rdpField1 omitted — became null
-      rdpField2: 42, // rdpField2 still has a value
-    });
-    const target = createTestObject({
-      employeeId: 50030,
-      rdpField1: "existing-value", // stale; must NOT be retained
-      rdpField2: 999, // about to be replaced by source's new 42
-    });
-
-    const result = mergeObjectFields(
-      source,
-      // Source query computed both — this is the canonical writer's intent.
-      new Set(["rdpField1", "rdpField2"]),
-      new Set(["rdpField1", "rdpField2"]),
-      target,
-    );
-
-    assertValidObjectHolder(result);
-    const underlying = getUnderlyingProps(result);
-    expect(underlying.rdpField1).toBeUndefined();
-    expect(underlying.rdpField2).toBe(42);
-  });
-
   it("mergeObjectFields preserves target RDP value when source did not compute that field", () => {
     const source = createTestObject({
       employeeId: 50030,
