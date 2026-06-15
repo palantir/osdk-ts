@@ -77,11 +77,10 @@ describe("ObjectsHelper.propagateWrite RDP merge", () => {
   });
 
   it("skips merge when incoming object already has all expected RDP fields", () => {
-    // Use "fullName" as RDP field — it exists on the Employee object,
+    // Use "fullName" as RDP field: it exists on the Employee object,
     // so actualRdpFields.size === expectedRdpFields.size and merge is skipped.
     const rdpConfig = createFakeRdpConfig("fullName");
 
-    // Create key B (with RDP for "fullName") and seed it
     const queryB = store.objects.getQuery({
       apiName: Employee,
       pk: 1,
@@ -90,9 +89,8 @@ describe("ObjectsHelper.propagateWrite RDP merge", () => {
       queryB.writeToStore(emp as any, "loaded", batch);
     });
 
-    // Write an updated object directly to key B — since the Employee
-    // object already has "fullName", all expected RDP fields are present
-    // and the merge short-circuit should fire.
+    // The Employee object already has "fullName", so all expected RDP fields
+    // are present and the merge short-circuit fires.
     const updated = emp.$clone({ fullName: "Bob" });
     store.batch({}, (batch) => {
       queryB.writeToStore(updated as any, "loaded", batch);
@@ -111,13 +109,12 @@ describe("ObjectsHelper.propagateWrite RDP merge", () => {
   it("does not merge on first write to an RDP key (no existing value)", () => {
     const rdpConfig = createFakeRdpConfig("derivedAddress");
 
-    // Create key B (with RDP for "derivedAddress") — no prior write
     const queryB = store.objects.getQuery({
       apiName: Employee,
       pk: 1,
     }, rdpConfig);
 
-    // First write — there is no existing value so the merge guard
+    // First write: there is no existing value so the merge guard
     // (existing?.value) is false and the value is written as-is.
     store.batch({}, (batch) => {
       queryB.writeToStore(emp as any, "loaded", batch);
@@ -133,8 +130,8 @@ describe("ObjectsHelper.propagateWrite RDP merge", () => {
   });
 
   it("does not merge for a non-RDP cache key", () => {
-    // Create a plain (no RDP) key and write twice — the merge block
-    // should be skipped because expectedRdpFields is empty.
+    // A plain (no RDP) key written twice skips the merge block because
+    // expectedRdpFields is empty.
     const query = store.objects.getQuery({
       apiName: Employee,
       pk: 1,
@@ -159,12 +156,11 @@ describe("ObjectsHelper.propagateWrite RDP merge", () => {
   });
 
   it("merges when incoming object is missing expected RDP fields", () => {
-    // Use "derivedAddress" as RDP field — it does NOT exist on the Employee
+    // Use "derivedAddress" as RDP field: it does NOT exist on the Employee
     // object, so actualRdpFields.size < expectedRdpFields.size and merge runs
     // to preserve the cached RDP value.
     const rdpConfig = createFakeRdpConfig("derivedAddress");
 
-    // Create key B (with RDP for "derivedAddress") and seed it
     const queryB = store.objects.getQuery({
       apiName: Employee,
       pk: 1,
@@ -173,9 +169,8 @@ describe("ObjectsHelper.propagateWrite RDP merge", () => {
       queryB.writeToStore(emp as any, "loaded", batch);
     });
 
-    // Write an updated object directly to key B — since "derivedAddress"
-    // is NOT on the Employee object, actualRdpFields < expectedRdpFields
-    // and merge runs to preserve cached RDP values.
+    // "derivedAddress" is NOT on the Employee object, so actualRdpFields <
+    // expectedRdpFields and merge runs to preserve cached RDP values.
     const updated = emp.$clone({ fullName: "Charlie" });
     store.batch({}, (batch) => {
       queryB.writeToStore(updated as any, "loaded", batch);
@@ -208,7 +203,7 @@ describe("ObjectsHelper.propagateWrite RDP merge", () => {
     ).toBe("alice-rdp");
 
     // Refetch: the same canonical query writes an object without fieldA
-    // (server returned null → wire omitted the key).
+    // (server returned null so the wire omitted the key).
     const empWithoutFieldA = emp.$clone({ fullName: "Bob" });
     store.batch({}, (batch) => {
       queryWithRdp.writeToStore(empWithoutFieldA as any, "loaded", batch);
@@ -216,7 +211,7 @@ describe("ObjectsHelper.propagateWrite RDP merge", () => {
 
     const valueAfter = store.getValue(queryWithRdp.cacheKey)?.value as any;
     expect(valueAfter?.fullName).toBe("Bob");
-    // The derived value became null — the cache must reflect that, not the
+    // The derived value became null, so the cache must reflect that, not the
     // stale "alice-rdp" value.
     expect(valueAfter?.fieldA).toBeUndefined();
   });
@@ -251,7 +246,7 @@ describe("ObjectsHelper.propagateWrite RDP merge", () => {
     const rdpValueAfter = store.getValue(queryWithRdp.cacheKey)?.value as any;
     // Base field updated by sibling propagation
     expect(rdpValueAfter?.fullName).toBe("Bob");
-    // Derived value preserved — the no-RDP source query did not compute it.
+    // Derived value preserved: the no-RDP source query did not compute it.
     expect(rdpValueAfter?.fieldA).toBe("alice-rdp");
 
     store.cacheKeys.release(queryWithRdp.cacheKey);
@@ -319,7 +314,7 @@ describe("ObjectsHelper.isKeyActive", () => {
     // Simulate pending cleanup (React unmount-remount cycle)
     store.pendingCleanup.set(queryB.cacheKey, 1);
 
-    // Write through key A — should propagate to B due to pending cleanup
+    // Write through key A, which should propagate to B due to pending cleanup
     const updated = emp.$clone({ fullName: "Bob" });
     updateObject(store, updated);
 
@@ -428,7 +423,7 @@ describe("ObjectsHelper.isKeyActive", () => {
     // Write new data while pending cleanup is active
     updateObject(store, emp.$clone({ fullName: "Updated" }));
 
-    // Re-subscribe (remount) — should see updated data
+    // Re-subscribe (remount), which should see updated data
     const subFn = mockSingleSubCallback();
     store.cacheKeys.retain(queryB.cacheKey);
     const sub2 = subjectB.subscribe(
@@ -572,7 +567,7 @@ describe("Two variants with different RDP configs - GC of one should not affect 
       1,
     )).toBe(1);
 
-    // Update via base variant — should still propagate to A
+    // Update via base variant, which should still propagate to A
     updateObject(store, emp.$clone({ fullName: "Bob" }));
 
     const valueA = store.getValue(queryA.cacheKey);

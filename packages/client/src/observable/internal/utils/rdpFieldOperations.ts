@@ -36,12 +36,10 @@ export function extractRdpFieldNames(
 }
 
 /**
- * Throws a clear, actionable error if `objectDef` is undefined. The RDP merge
- * path operates on concrete `ObjectHolder`s only; if an `InterfaceHolder` ever
- * leaks through without being unwrapped via `storeOsdkInstances`, the missing
- * ObjectDefRef would surface as a confusing "cannot read property 'properties'
- * of undefined" crash. Use this helper to gate access to `objectDef.properties`
- * so the failure mode names the actual invariant violation.
+ * The RDP merge path operates on concrete `ObjectHolder`s only. If an
+ * `InterfaceHolder` leaks through unwrapped, `ObjectDefRef` is undefined; this
+ * gate names the invariant violation instead of crashing later on
+ * `objectDef.properties`.
  */
 export function requireObjectDef(
   objectDef: FetchedObjectTypeDefinition | undefined,
@@ -62,7 +60,7 @@ export function requireObjectDef(
 /**
  * Build the system (`$`-prefixed) property bag shared by every merged object.
  * `ridFallback` lets a caller borrow `$rid` from a prior value when the primary
- * source omits it (a partial `$select` fetch can lack it).
+ * source omits it, as a partial `$select` fetch can lack it.
  */
 function systemFields(
   primary: SimpleOsdkProperties,
@@ -94,9 +92,9 @@ function sameMembers(
 
 /**
  * Copy the fields the source query is authoritative for: every base property,
- * plus the RDP fields it computed that the target query also wants. RDP fields
- * the source computed but the target does not want are skipped so they don't
- * leak into the target's cache entry.
+ * plus the RDP fields it computed that the target also wants. RDP fields the
+ * source computed but the target does not want are skipped so they don't leak
+ * into the target's cache entry.
  */
 function copyAuthoritativeSourceFields(
   into: SimpleOsdkProperties,
@@ -173,10 +171,10 @@ export function mergeSelectFields(
 
 /**
  * Merge a freshly fetched object (computed under `sourceRdpFields`) into a cache
- * entry that wants `targetRdpFields`. The source query is authoritative for every
- * base property and for the RDP fields it computed, including clearing an RDP
- * whose derived value became null. RDP fields the source did not compute are kept
- * from `targetCurrentValue`; RDP fields the target does not want are dropped.
+ * entry that wants `targetRdpFields`. The source is authoritative for every base
+ * property and for the RDP fields it computed, including clearing one whose
+ * derived value became null. RDP fields the source did not compute are kept from
+ * `targetCurrentValue`; RDP fields the target does not want are dropped.
  */
 export function mergeObjectFields(
   sourceValue: ObjectHolder,
@@ -184,7 +182,7 @@ export function mergeObjectFields(
   targetRdpFields: ReadonlySet<string>,
   targetCurrentValue: ObjectHolder | undefined,
 ): ObjectHolder {
-  // Identical RDP intent → the source is wholly authoritative; keep its identity.
+  // Identical RDP intent: the source is wholly authoritative, keep its identity.
   if (sameMembers(sourceRdpFields, targetRdpFields)) {
     return sourceValue;
   }
