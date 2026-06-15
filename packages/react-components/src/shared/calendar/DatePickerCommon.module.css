@@ -20,8 +20,8 @@
     color: var(--osdk-datetime-input-placeholder-color);
   }
 
-  &:focus-visible {
-    outline: var(--osdk-datetime-input-focus-outline);
+  &:focus {
+    outline: none;
   }
 }
 
