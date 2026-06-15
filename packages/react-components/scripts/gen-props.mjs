@@ -46,7 +46,7 @@ import { execFileSync } from "child_process";
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "fs";
 import path from "path";
 import ts from "typescript";
-import { fileURLToPath } from "url";
+import { fileURLToPath, pathToFileURL } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PKG_ROOT = path.join(__dirname, "..");
@@ -63,7 +63,7 @@ function startMarker(src, interfaceName) {
 /** Read a `key=value` attribute (value runs until whitespace) from a marker.
  * Anchored on whitespace (or start) so e.g. reading `src` doesn't match a
  * suffix inside a hypothetical `default-src=...`. */
-function getAttr(attrs, key) {
+export function getAttr(attrs, key) {
   const match = new RegExp(`(?:^|\\s)${key}=(\\S+)`).exec(attrs);
   return match ? match[1] : undefined;
 }
@@ -86,7 +86,7 @@ function entityNameToString(name) {
  * that's what the author wrote for the reader. Otherwise the target name is
  * used.
  */
-function renderComment(comment) {
+export function renderComment(comment) {
   if (comment == null) return "";
   if (typeof comment === "string") return comment;
   return comment
@@ -122,7 +122,7 @@ function renderComment(comment) {
  *
  * Remaining whitespace runs collapse to one space, and the ends are trimmed.
  */
-function collapseProse(text) {
+export function collapseProse(text) {
   return text
     .replace(/\r\n/g, "\n") // normalize line endings
     .replace(/\n[ \t]*\n+/g, "<br /><br />") // blank line(s) -> paragraph break
@@ -136,7 +136,7 @@ function collapseProse(text) {
  * leave behind (e.g. `Record< string, never >` -> `Record<string, never>`,
  * `( arg: T, ) => U` -> `(arg: T) => U`), and strip block comments that inline
  * object-type literals carry in their source text. */
-function collapseType(text) {
+export function collapseType(text) {
   return text
     .replace(/\/\*[\s\S]*?\*\//g, " ")
     .replace(/\s+/g, " ")
@@ -450,9 +450,8 @@ function membersOfType(typeNode, sourceFile, seen) {
       return result;
     }
     // A named type we were asked to pull members from but couldn't resolve
-    // (external/bare import, re-export, or aliased import). Surface it — a
-    // silently-incomplete table is the worst outcome for a drift checker.
-    console.warn(
+    // (external/bare import, re-export, or aliased import).
+    console.error(
       `gen-props: could not resolve \`${ref.name}\` — any props it `
         + `contributes will be missing from the generated table.`,
     );
@@ -471,7 +470,7 @@ function renderTypeParam(tp) {
   return escapeCell(collapseType(text));
 }
 
-function resolveProps(sourceFile, typeName) {
+export function resolveProps(sourceFile, typeName) {
   const found = lookupName(typeName, sourceFile);
   if (found == null) return undefined;
   const seen = new Set([`${found.sourceFile.fileName}#${typeName}`]);
@@ -481,7 +480,7 @@ function resolveProps(sourceFile, typeName) {
   };
 }
 
-function buildRows(entries) {
+export function buildRows(entries) {
   const rows = [];
   for (const { name, member, forcedOptional } of entries) {
     const type = escapeCell(collapseType(memberTypeText(member)));
@@ -515,7 +514,7 @@ function buildBlock(rows, typeParams, src, interfaceName) {
 }
 
 const sourceCache = new Map();
-function getSourceFile(absPath) {
+export function getSourceFile(absPath) {
   let sourceFile = sourceCache.get(absPath);
   if (sourceFile == null) {
     const text = readFileSync(absPath, "utf8");
@@ -548,11 +547,33 @@ function findMarkdownFiles(dir) {
   return out;
 }
 
+/** Canonical form of an AUTOGEN block for change detection: drop the
+ * column-alignment whitespace and separator dash-runs that `dprint` owns, so a
+ * freshly built (unaligned) block compares equal to its committed, dprint-
+ * aligned form when the underlying props are unchanged. Cell *content* never
+ * varies by whitespace alone (descriptions/types are pre-collapsed), so this
+ * can't mask a real diff. */
+export function tableSignature(block) {
+  return block
+    .replace(/[ \t]+/g, "")
+    .replace(/-+/g, "-");
+}
+
+/** Run a doc through `dprint` so its table alignment and surrounding
+ * whitespace match the repo style the pre-commit hook enforces. */
+function dprintFormat(input, docPath) {
+  return execFileSync("npx", ["dprint", "fmt", "--stdin", docPath], {
+    input,
+    encoding: "utf8",
+  });
+}
+
 /**
  * Regenerate every AUTOGEN:props block in `docPath` and return the formatted
- * doc, or `null` if the doc has no markers.
+ * doc, or `null` if the doc has no markers. `format` is injectable so tests can
+ * observe whether the (expensive) `dprint` step ran without spawning it.
  */
-function renderDoc(docPath) {
+export function renderDoc(docPath, format = dprintFormat) {
   const original = readFileSync(docPath, "utf8");
   if (!original.includes("<!-- AUTOGEN:props START")) return null;
 
@@ -561,6 +582,7 @@ function renderDoc(docPath) {
   const blockRe =
     /<!-- AUTOGEN:props START\b([^>]*?)-->[\s\S]*?<!-- AUTOGEN:props END -->/g;
   const rel = path.relative(PKG_ROOT, docPath);
+  let blockChanged = false;
   const replaced = original.replace(blockRe, (_match, attrs) => {
     const src = getAttr(attrs, "src");
     const interfaceName = getAttr(attrs, "interface");
@@ -583,22 +605,25 @@ function renderDoc(docPath) {
         `${interfaceName} in ${src} resolved to no documentable props.`,
       );
     }
-    return buildBlock(
+    const block = buildBlock(
       buildRows(resolved.entries),
       resolved.typeParams,
       src,
       interfaceName,
     );
+    if (tableSignature(block) !== tableSignature(_match)) {
+      blockChanged = true;
+    }
+    return block;
   });
 
-  // Run the whole doc through dprint so the table alignment and surrounding
-  // whitespace match the repo style the pre-commit hook enforces.
-  const formatted = execFileSync(
-    "npx",
-    ["dprint", "fmt", "--stdin", docPath],
-    { input: replaced, encoding: "utf8" },
-  );
-  return { rel, original, formatted };
+  // Fast path: regeneration touched no block (ignoring the alignment
+  // whitespace `dprint` owns), so the committed doc — already dprint-formatted
+  // by the pre-commit hook — is up to date. Skip the per-doc `dprint`
+  // subprocess, which otherwise dominates this script's runtime.
+  if (!blockChanged) return { rel, original, formatted: original };
+
+  return { rel, original, formatted: format(replaced, docPath) };
 }
 
 function main() {
@@ -644,9 +669,14 @@ function main() {
   );
 }
 
-try {
-  main();
-} catch (error) {
-  console.error(error instanceof Error ? error.message : error);
-  process.exit(1);
+// Only run when invoked as a script (`node scripts/gen-props.mjs`); stay inert
+// when imported (e.g. by the unit tests) so the exported helpers can be
+// exercised in isolation.
+if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {
+  try {
+    main();
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : error);
+    process.exit(1);
+  }
 }
