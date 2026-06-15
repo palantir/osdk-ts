@@ -24,7 +24,14 @@ const sidebars: SidebarsConfig = {
       label: "@osdk/react-components",
       collapsed: false,
       items: [
-        "ObjectTable",
+        {
+          type: "category",
+          label: "ObjectTable",
+          link: { type: "doc", id: "ObjectTable" },
+          items: [
+            { type: "doc", id: "ObjectTableExamples", label: "Examples" },
+          ],
+        },
         "FilterList",
         "ActionForm",
         "PdfViewer",
