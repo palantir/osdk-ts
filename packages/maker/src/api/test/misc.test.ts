@@ -105,6 +105,7 @@ describe("Miscellaneous Tests", () => {
             "interfaceTypes": {
               "com.palantir.myInterface": {
                 "interfaceType": {
+                  "actionTypeConstraints": [],
                   "apiName": "com.palantir.myInterface",
                   "displayMetadata": {
                     "description": "myInterface",
@@ -119,6 +120,7 @@ describe("Miscellaneous Tests", () => {
                   },
                   "extendsInterfaces": [],
                   "extendsInterfacesMetadata": [],
+                  "linkedInterfaces": [],
                   "links": [],
                   "permission": undefined,
                   "properties": [],
@@ -279,6 +281,7 @@ describe("Miscellaneous Tests", () => {
             "interfaceTypes": {
               "com.palantir.myInterface": {
                 "interfaceType": {
+                  "actionTypeConstraints": [],
                   "apiName": "com.palantir.myInterface",
                   "displayMetadata": {
                     "description": "myInterface",
@@ -293,6 +296,7 @@ describe("Miscellaneous Tests", () => {
                   },
                   "extendsInterfaces": [],
                   "extendsInterfacesMetadata": [],
+                  "linkedInterfaces": [],
                   "links": [],
                   "permission": undefined,
                   "properties": [],
@@ -431,7 +435,9 @@ describe("Miscellaneous Tests", () => {
             "description": "myInterface"
           },
           "extendsInterfaces": [],
+          "linkedInterfaces": [],
           "links": [],
+          "actionTypeConstraints": [],
           "status": {
             "type": "active",
             "active": {}
@@ -521,7 +527,9 @@ describe("Miscellaneous Tests", () => {
                   "description": "myInterface"
                 },
                 "extendsInterfaces": [],
+                "linkedInterfaces": [],
                 "links": [],
+                "actionTypeConstraints": [],
                 "status": {
                   "type": "active",
                   "active": {}
@@ -681,7 +689,9 @@ describe("Miscellaneous Tests", () => {
                 "description": "parentInterface"
               },
               "extendsInterfaces": [],
+              "linkedInterfaces": [],
               "links": [],
+              "actionTypeConstraints": [],
               "status": {
                 "type": "active",
                 "active": {}
@@ -734,7 +744,9 @@ describe("Miscellaneous Tests", () => {
               "__type": OntologyEntityTypeEnum.INTERFACE_TYPE
             }
           ],
+          "linkedInterfaces": [],
           "links": [],
+          "actionTypeConstraints": [],
           "status": {
             "type": "active",
             "active": {}
@@ -875,6 +887,7 @@ describe("Miscellaneous Tests", () => {
             "interfaceTypes": {
               "com.palantir.childInterface": {
                 "interfaceType": {
+                  "actionTypeConstraints": [],
                   "apiName": "com.palantir.childInterface",
                   "displayMetadata": {
                     "description": "childInterface",
@@ -892,6 +905,7 @@ describe("Miscellaneous Tests", () => {
                   ],
                   "extendsInterfacesMetadata": [
                     {
+                      "actionTypeConstraints": [],
                       "apiName": "com.palantir.parentInterface",
                       "displayMetadata": {
                         "description": "parentInterface",
@@ -906,6 +920,7 @@ describe("Miscellaneous Tests", () => {
                       },
                       "extendsInterfaces": [],
                       "extendsInterfacesMetadata": [],
+                      "linkedInterfaces": [],
                       "links": [],
                       "permission": undefined,
                       "properties": [],
@@ -997,6 +1012,7 @@ describe("Miscellaneous Tests", () => {
                       },
                     },
                   ],
+                  "linkedInterfaces": [],
                   "links": [],
                   "permission": undefined,
                   "properties": [],
@@ -1090,6 +1106,7 @@ describe("Miscellaneous Tests", () => {
               },
               "com.palantir.parentInterface": {
                 "interfaceType": {
+                  "actionTypeConstraints": [],
                   "apiName": "com.palantir.parentInterface",
                   "displayMetadata": {
                     "description": "parentInterface",
@@ -1104,6 +1121,7 @@ describe("Miscellaneous Tests", () => {
                   },
                   "extendsInterfaces": [],
                   "extendsInterfacesMetadata": [],
+                  "linkedInterfaces": [],
                   "links": [],
                   "permission": undefined,
                   "properties": [],
@@ -1248,6 +1266,7 @@ describe("Miscellaneous Tests", () => {
                   },
                   "implementsInterfaces2": [
                     {
+                      "actionTypes": {},
                       "interfaceTypeApiName": "com.palantir.childInterface",
                       "linksV2": {},
                       "properties": {},

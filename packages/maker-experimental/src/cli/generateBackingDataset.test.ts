@@ -32,6 +32,7 @@ import {
   generateBackingDatasetBlockResultForLink,
   getNonEditOnlyProperties,
   propertyTypeToSchemaType,
+  typeToFieldSchema,
 } from "./generateBackingDataset.js";
 
 function makePropertyType(
@@ -175,6 +176,126 @@ describe("propertyTypeToSchemaType", () => {
     expect(() => propertyTypeToSchemaType({ type: "geopoint" })).toThrow(
       /Unsupported property type "geopoint".*empty backing datasource/,
     );
+  });
+});
+
+const DECIMAL_PROPERTY_TYPE: Type = {
+  type: "decimal",
+  decimal: { precision: 10, scale: 2 },
+};
+
+function makeArrayType(subtype: Type): Type {
+  return { type: "array", array: { reducers: [], subtype } };
+}
+
+function makeStructType(
+  fields: Array<{ apiName: string; fieldType: Type }>,
+): Type {
+  return {
+    type: "struct",
+    struct: {
+      structFields: fields.map((f) => ({
+        aliases: [],
+        apiName: f.apiName,
+        displayMetadata: { displayName: f.apiName },
+        fieldType: f.fieldType,
+        structFieldRid: `ri.struct-field.${f.apiName}`,
+        typeClasses: [],
+      })),
+    },
+  };
+}
+
+describe("typeToFieldSchema", () => {
+  it("builds a primitive field schema with the given name", () => {
+    expect(typeToFieldSchema(STRING_PROPERTY_TYPE, "id")).toEqual({
+      type: "STRING",
+      name: "id",
+      nullable: null,
+      userDefinedTypeClass: null,
+      customMetadata: {},
+      arraySubtype: null,
+      precision: null,
+      scale: null,
+      mapKeyType: null,
+      mapValueType: null,
+      subSchemas: null,
+    });
+  });
+
+  it("defaults name to null when omitted", () => {
+    expect(typeToFieldSchema(STRING_PROPERTY_TYPE).name).toBeNull();
+  });
+
+  it("populates precision and scale for decimal", () => {
+    const schema = typeToFieldSchema(DECIMAL_PROPERTY_TYPE, "amount");
+    expect(schema.type).toBe("DECIMAL");
+    expect(schema.precision).toBe(10);
+    expect(schema.scale).toBe(2);
+  });
+
+  it("describes array elements via arraySubtype with a null name", () => {
+    const schema = typeToFieldSchema(
+      makeArrayType(STRING_PROPERTY_TYPE),
+      "tags",
+    );
+    expect(schema.type).toBe("ARRAY");
+    expect(schema.subSchemas).toBeNull();
+    expect(schema.arraySubtype).toEqual({
+      type: "STRING",
+      name: null,
+      nullable: null,
+      userDefinedTypeClass: null,
+      customMetadata: {},
+      arraySubtype: null,
+      precision: null,
+      scale: null,
+      mapKeyType: null,
+      mapValueType: null,
+      subSchemas: null,
+    });
+  });
+
+  it("describes struct fields via named subSchemas", () => {
+    const schema = typeToFieldSchema(
+      makeStructType([
+        { apiName: "a", fieldType: STRING_PROPERTY_TYPE },
+        { apiName: "b", fieldType: INTEGER_PROPERTY_TYPE },
+      ]),
+      "info",
+    );
+    expect(schema.type).toBe("STRUCT");
+    expect(schema.arraySubtype).toBeNull();
+    expect(schema.subSchemas?.map((s) => [s.name, s.type])).toEqual([
+      ["a", "STRING"],
+      ["b", "INTEGER"],
+    ]);
+  });
+
+  it("recurses through nested struct/array combinations", () => {
+    // struct field that is itself an array
+    const structOfArray = typeToFieldSchema(
+      makeStructType([
+        { apiName: "items", fieldType: makeArrayType(INTEGER_PROPERTY_TYPE) },
+      ]),
+      "info",
+    );
+    const itemsField = structOfArray.subSchemas?.[0];
+    expect(itemsField?.name).toBe("items");
+    expect(itemsField?.type).toBe("ARRAY");
+    expect(itemsField?.arraySubtype?.type).toBe("INTEGER");
+    expect(itemsField?.arraySubtype?.name).toBeNull();
+
+    // array whose element is a struct: element name is null, inner fields keep names
+    const arrayOfStruct = typeToFieldSchema(
+      makeArrayType(
+        makeStructType([{ apiName: "x", fieldType: STRING_PROPERTY_TYPE }]),
+      ),
+      "rows",
+    );
+    expect(arrayOfStruct.arraySubtype?.name).toBeNull();
+    expect(arrayOfStruct.arraySubtype?.type).toBe("STRUCT");
+    expect(arrayOfStruct.arraySubtype?.subSchemas?.[0].name).toBe("x");
   });
 });
 

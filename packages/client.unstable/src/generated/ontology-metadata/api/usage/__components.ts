@@ -219,9 +219,10 @@ export interface GetUsageSettingsByUserResponse {
   enabled: boolean;
 }
 /**
- * Marker type indicating previously incorrectly reported provenance.
+ * Indicates that at least one function in the action type previously reported incorrect provenance during execution.
  */
 export interface IncorrectProvenanceRecorded {
+  undeclaredEntities: UndeclaredEntities;
 }
 /**
  * Marker type indicating no function rules to check.
@@ -352,6 +353,13 @@ export interface SetUsageSettingsByOrganizationRequest {
  * Response to SetUsageSettingsByOrganizationRequest. Intentionally left empty.
  */
 export interface SetUsageSettingsByOrganizationResponse {
+}
+/**
+ * Entities that were affected during action execution but were not declared in the function's provenance.
+ */
+export interface UndeclaredEntities {
+  linkTypes: Array<_api_LinkTypeRid>;
+  objectTypes: Array<_api_ObjectTypeRid>;
 }
 export interface UsageOverall {
   uniqueUsersCount: number;

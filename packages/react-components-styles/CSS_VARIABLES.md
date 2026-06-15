@@ -462,27 +462,25 @@ Styling for date and time picker components.
 
 #### Input
 
-| Variable                                    | Default Value                                                               | Description                |
-| ------------------------------------------- | --------------------------------------------------------------------------- | -------------------------- |
-| `--osdk-datetime-input-error-border-color`  | `var(--osdk-intent-danger-rest)`                                            | Input error border color   |
-| `--osdk-datetime-input-min-height`          | `var(--osdk-input-min-height)`                                              | Input minimum height       |
-| `--osdk-datetime-input-padding`             | `var(--osdk-input-padding)`                                                 | Input padding              |
-| `--osdk-datetime-input-border-radius`       | `var(--osdk-input-border-radius)`                                           | Input border radius        |
-| `--osdk-datetime-input-bg`                  | `var(--osdk-input-bg)`                                                      | Input background           |
-| `--osdk-datetime-input-bg-hover`            | `var(--osdk-input-bg-hover)`                                                | Input hover background     |
-| `--osdk-datetime-input-color`               | `var(--osdk-input-color)`                                                   | Input text color           |
-| `--osdk-datetime-input-font-family`         | `var(--osdk-input-font-family)`                                             | Input font family          |
-| `--osdk-datetime-input-font-size`           | `var(--osdk-input-font-size)`                                               | Input font size            |
-| `--osdk-datetime-input-line-height`         | `var(--osdk-input-line-height, var(--osdk-typography-line-height-default))` | Input line height          |
-| `--osdk-datetime-input-placeholder-color`   | `var(--osdk-input-placeholder-color)`                                       | Input placeholder color    |
-| `--osdk-datetime-input-border-width`        | `var(--osdk-input-border-width)`                                            | Input border width         |
-| `--osdk-datetime-input-border-color`        | `var(--osdk-input-border-color)`                                            | Input border color         |
-| `--osdk-datetime-input-border-color-focus`  | `var(--osdk-input-border-color-focus)`                                      | Input focused border color |
-| `--osdk-datetime-input-focus-width`         | `var(--osdk-input-focus-width)`                                             | Input focus ring width     |
-| `--osdk-datetime-input-focus-color`         | `var(--osdk-input-focus-color)`                                             | Input focus ring color     |
-| `--osdk-datetime-input-focus-offset`        | `var(--osdk-input-focus-offset)`                                            | Input focus ring offset    |
-| `--osdk-datetime-input-transition-duration` | `var(--osdk-input-transition-duration)`                                     | Input transition duration  |
-| `--osdk-datetime-input-transition-ease`     | `var(--osdk-input-transition-ease)`                                         | Input transition easing    |
+| Variable                                    | Default Value                                                               | Description               |
+| ------------------------------------------- | --------------------------------------------------------------------------- | ------------------------- |
+| `--osdk-datetime-input-min-height`          | `var(--osdk-input-min-height)`                                              | Input minimum height      |
+| `--osdk-datetime-input-padding`             | `var(--osdk-input-padding)`                                                 | Input padding             |
+| `--osdk-datetime-input-border-radius`       | `var(--osdk-input-border-radius)`                                           | Input border radius       |
+| `--osdk-datetime-input-bg`                  | `var(--osdk-input-bg)`                                                      | Input background          |
+| `--osdk-datetime-input-bg-hover`            | `var(--osdk-input-bg-hover)`                                                | Input hover background    |
+| `--osdk-datetime-input-color`               | `var(--osdk-input-color)`                                                   | Input text color          |
+| `--osdk-datetime-input-font-family`         | `var(--osdk-input-font-family)`                                             | Input font family         |
+| `--osdk-datetime-input-font-size`           | `var(--osdk-input-font-size)`                                               | Input font size           |
+| `--osdk-datetime-input-line-height`         | `var(--osdk-input-line-height, var(--osdk-typography-line-height-default))` | Input line height         |
+| `--osdk-datetime-input-placeholder-color`   | `var(--osdk-input-placeholder-color)`                                       | Input placeholder color   |
+| `--osdk-datetime-input-shadow`              | `var(--osdk-input-shadow)`                                                  | Input inset shadow        |
+| `--osdk-datetime-input-shadow-error`        | `var(--osdk-input-shadow-error)`                                            | Input error shadow        |
+| `--osdk-datetime-input-focus-outline`       | `var(--osdk-input-focus-outline)`                                           | Input focus outline       |
+| `--osdk-datetime-input-focus-shadow`        | `var(--osdk-input-focus-shadow)`                                            | Input focus shadow        |
+| `--osdk-datetime-input-focus-shadow-error`  | `var(--osdk-input-focus-shadow-error)`                                      | Danger focus shadow       |
+| `--osdk-datetime-input-transition-duration` | `var(--osdk-input-transition-duration)`                                     | Input transition duration |
+| `--osdk-datetime-input-transition-ease`     | `var(--osdk-input-transition-ease)`                                         | Input transition easing   |
 
 #### Popover
 
@@ -572,28 +570,35 @@ Styling for file picker components.
 
 #### Trigger
 
-| Variable                                        | Default Value                                                         | Description                  |
-| ----------------------------------------------- | --------------------------------------------------------------------- | ---------------------------- |
-| `--osdk-file-picker-trigger-height`             | `var(--osdk-input-min-height)`                                        | Trigger height               |
-| `--osdk-file-picker-trigger-padding`            | `var(--osdk-input-padding)`                                           | Trigger padding              |
-| `--osdk-file-picker-trigger-border-radius`      | `var(--osdk-input-border-radius)`                                     | Trigger border radius        |
-| `--osdk-file-picker-trigger-border`             | `var(--osdk-input-border-width) solid var(--osdk-input-border-color)` | Trigger border               |
-| `--osdk-file-picker-trigger-border-color-focus` | `var(--osdk-input-border-color-focus)`                                | Trigger focused border color |
-| `--osdk-file-picker-trigger-border-color-error` | `var(--osdk-input-border-color-error)`                                | Trigger error border color   |
-| `--osdk-file-picker-trigger-bg`                 | `var(--osdk-input-bg)`                                                | Trigger background           |
-| `--osdk-file-picker-trigger-bg-hover`           | `var(--osdk-input-bg-hover)`                                          | Trigger hover background     |
-| `--osdk-file-picker-trigger-color`              | `var(--osdk-input-color)`                                             | Trigger text color           |
-| `--osdk-file-picker-trigger-font-size`          | `var(--osdk-input-font-size)`                                         | Trigger font size            |
-| `--osdk-file-picker-trigger-font-family`        | `var(--osdk-input-font-family)`                                       | Trigger font family          |
-| `--osdk-file-picker-trigger-placeholder-color`  | `var(--osdk-input-placeholder-color)`                                 | Trigger placeholder color    |
+| Variable                                        | Default Value                          | Description               |
+| ----------------------------------------------- | -------------------------------------- | ------------------------- |
+| `--osdk-file-picker-trigger-height`             | `var(--osdk-input-min-height)`         | Trigger height            |
+| `--osdk-file-picker-trigger-padding`            | `var(--osdk-input-padding)`            | Trigger padding           |
+| `--osdk-file-picker-trigger-border-radius`      | `var(--osdk-input-border-radius)`      | Trigger border radius     |
+| `--osdk-file-picker-trigger-border`             | `none`                                 | Trigger border            |
+| `--osdk-file-picker-trigger-shadow`             | `var(--osdk-input-shadow)`             | Trigger inset shadow      |
+| `--osdk-file-picker-trigger-shadow-error`       | `var(--osdk-input-shadow-error)`       | Trigger error shadow      |
+| `--osdk-file-picker-trigger-focus-shadow`       | `var(--osdk-input-focus-shadow)`       | Trigger focus shadow      |
+| `--osdk-file-picker-trigger-focus-shadow-error` | `var(--osdk-input-focus-shadow-error)` | Danger focus shadow       |
+| `--osdk-file-picker-trigger-bg`                 | `var(--osdk-input-bg)`                 | Trigger background        |
+| `--osdk-file-picker-trigger-bg-hover`           | `var(--osdk-input-bg-hover)`           | Trigger hover background  |
+| `--osdk-file-picker-trigger-color`              | `var(--osdk-input-color)`              | Trigger text color        |
+| `--osdk-file-picker-trigger-font-size`          | `var(--osdk-input-font-size)`          | Trigger font size         |
+| `--osdk-file-picker-trigger-font-family`        | `var(--osdk-input-font-family)`        | Trigger font family       |
+| `--osdk-file-picker-trigger-placeholder-color`  | `var(--osdk-input-placeholder-color)`  | Trigger placeholder color |
 
 #### Focus Ring
 
-| Variable                                  | Default Value                    | Description       |
-| ----------------------------------------- | -------------------------------- | ----------------- |
-| `--osdk-file-picker-trigger-focus-width`  | `var(--osdk-input-focus-width)`  | Focus ring width  |
-| `--osdk-file-picker-trigger-focus-color`  | `var(--osdk-input-focus-color)`  | Focus ring color  |
-| `--osdk-file-picker-trigger-focus-offset` | `var(--osdk-input-focus-offset)` | Focus ring offset |
+| Variable                                  | Default Value                                                             | Description                 |
+| ----------------------------------------- | ------------------------------------------------------------------------- | --------------------------- |
+| `--osdk-file-picker-clear-outline`        | `var(--osdk-emphasis-focus-width) solid var(--osdk-emphasis-focus-color)` | Clear button focus outline  |
+| `--osdk-file-picker-browse-focus-outline` | `none`                                                                    | Browse button focus outline |
+
+#### Browse Button
+
+| Variable                             | Default Value                           | Description                    |
+| ------------------------------------ | --------------------------------------- | ------------------------------ |
+| `--osdk-file-picker-browse-bg-hover` | `var(--osdk-button-secondary-bg-hover)` | Browse button hover background |
 
 #### Transitions
 
@@ -604,12 +609,14 @@ Styling for file picker components.
 
 #### Clear Button
 
-| Variable                               | Default Value                               | Description              |
-| -------------------------------------- | ------------------------------------------- | ------------------------ |
-| `--osdk-file-picker-clear-size`        | `calc(var(--osdk-surface-spacing) * 4)`     | Clear button size        |
-| `--osdk-file-picker-clear-margin`      | `0 calc(var(--osdk-surface-spacing) * 1)`   | Clear button margin      |
-| `--osdk-file-picker-clear-color`       | `var(--osdk-typography-color-muted)`        | Clear button color       |
-| `--osdk-file-picker-clear-color-hover` | `var(--osdk-typography-color-default-rest)` | Clear button hover color |
+| Variable                                 | Default Value                               | Description                |
+| ---------------------------------------- | ------------------------------------------- | -------------------------- |
+| `--osdk-file-picker-clear-size`          | `calc(var(--osdk-surface-spacing) * 4)`     | Clear button size          |
+| `--osdk-file-picker-clear-margin`        | `0 calc(var(--osdk-surface-spacing) * 1)`   | Clear button margin        |
+| `--osdk-file-picker-clear-padding`       | `var(--osdk-surface-spacing)`               | Clear button padding       |
+| `--osdk-file-picker-clear-border-radius` | `var(--osdk-surface-border-radius)`         | Clear button border radius |
+| `--osdk-file-picker-clear-color`         | `var(--osdk-typography-color-muted)`        | Clear button color         |
+| `--osdk-file-picker-clear-color-hover`   | `var(--osdk-typography-color-default-rest)` | Clear button hover color   |
 
 ### Filter List
 
@@ -1034,27 +1041,29 @@ Styling for form components.
 
 Shared styling for input components.
 
-| Variable                           | Default Value                                                                     | Description             |
-| ---------------------------------- | --------------------------------------------------------------------------------- | ----------------------- |
-| `--osdk-input-min-height`          | `30px`                                                                            | Input minimum height    |
-| `--osdk-input-padding`             | `calc(var(--osdk-surface-spacing) * 1.5) calc(var(--osdk-surface-spacing) * 2.5)` | Input padding           |
-| `--osdk-input-border-radius`       | `var(--osdk-surface-border-radius)`                                               | Input border radius     |
-| `--osdk-input-border-width`        | `var(--osdk-surface-border-width)`                                                | Input border width      |
-| `--osdk-input-border-color`        | `var(--osdk-surface-border-color-default)`                                        | Input border color      |
-| `--osdk-input-border-color-focus`  | `var(--osdk-intent-primary-rest)`                                                 | Input focused border    |
-| `--osdk-input-border-color-error`  | `var(--osdk-intent-danger-rest)`                                                  | Input error border      |
-| `--osdk-input-bg`                  | `var(--osdk-surface-background-color-default-rest)`                               | Input background        |
-| `--osdk-input-bg-hover`            | `var(--osdk-surface-background-color-default-hover)`                              | Input hover background  |
-| `--osdk-input-color`               | `var(--osdk-typography-color-default-rest)`                                       | Input text color        |
-| `--osdk-input-placeholder-color`   | `var(--osdk-typography-color-muted)`                                              | Input placeholder color |
-| `--osdk-input-font-size`           | `var(--osdk-typography-size-body-medium)`                                         | Input font size         |
-| `--osdk-input-font-family`         | `var(--osdk-typography-family-default)`                                           | Input font family       |
-| `--osdk-input-transition-duration` | `var(--osdk-emphasis-transition-duration)`                                        | Transition duration     |
-| `--osdk-input-transition-ease`     | `var(--osdk-emphasis-ease-default)`                                               | Transition easing       |
-| `--osdk-input-focus-width`         | `var(--osdk-emphasis-focus-width)`                                                | Focus ring width        |
-| `--osdk-input-focus-color`         | `var(--osdk-emphasis-focus-color)`                                                | Focus ring color        |
-| `--osdk-input-focus-offset`        | `var(--osdk-emphasis-focus-offset)`                                               | Focus ring offset       |
-| `--osdk-input-disabled-opacity`    | `var(--osdk-disabled-opacity)`                                                    | Input disabled opacity  |
+| Variable                           | Default Value                                                                                                                                                                                                                                                                                    | Description             |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------- |
+| `--osdk-input-min-height`          | `30px`                                                                                                                                                                                                                                                                                           | Input minimum height    |
+| `--osdk-input-padding`             | `calc(var(--osdk-surface-spacing) * 1.5) calc(var(--osdk-surface-spacing) * 2.5)`                                                                                                                                                                                                                | Input padding           |
+| `--osdk-input-border-radius`       | `var(--osdk-surface-border-radius)`                                                                                                                                                                                                                                                              | Input border radius     |
+| `--osdk-input-border-width`        | `var(--osdk-surface-border-width)`                                                                                                                                                                                                                                                               | Input border width      |
+| `--osdk-input-border-color`        | `var(--osdk-surface-border-color-default)`                                                                                                                                                                                                                                                       | Input border color      |
+| `--osdk-input-border-color-focus`  | `var(--osdk-intent-primary-rest)`                                                                                                                                                                                                                                                                | Input focused border    |
+| `--osdk-input-border-color-error`  | `var(--osdk-intent-danger-rest)`                                                                                                                                                                                                                                                                 | Input error border      |
+| `--osdk-input-shadow`              | `inset 0 0 0 var(--osdk-input-border-width) var(--osdk-input-border-color), 0 0 0 0 transparent, inset 0 1px 1px var(--osdk-surface-border-color-default)`                                                                                                                                       | Input inset shadow      |
+| `--osdk-input-bg`                  | `var(--osdk-surface-background-color-default-rest)`                                                                                                                                                                                                                                              | Input background        |
+| `--osdk-input-bg-hover`            | `var(--osdk-input-bg)`                                                                                                                                                                                                                                                                           | Input hover background  |
+| `--osdk-input-color`               | `var(--osdk-typography-color-default-rest)`                                                                                                                                                                                                                                                      | Input text color        |
+| `--osdk-input-placeholder-color`   | `var(--osdk-typography-color-muted)`                                                                                                                                                                                                                                                             | Input placeholder color |
+| `--osdk-input-font-size`           | `var(--osdk-typography-size-body-medium)`                                                                                                                                                                                                                                                        | Input font size         |
+| `--osdk-input-font-family`         | `var(--osdk-typography-family-default)`                                                                                                                                                                                                                                                          | Input font family       |
+| `--osdk-input-transition-duration` | `var(--osdk-emphasis-transition-duration)`                                                                                                                                                                                                                                                       | Transition duration     |
+| `--osdk-input-transition-ease`     | `var(--osdk-emphasis-ease-default)`                                                                                                                                                                                                                                                              | Transition easing       |
+| `--osdk-input-focus-outline`       | `none`                                                                                                                                                                                                                                                                                           | Focus outline           |
+| `--osdk-input-focus-shadow`        | `inset 0 0 0 var(--osdk-input-border-width) color-mix(in srgb, var(--osdk-input-border-color-focus) 75%, transparent), 0 0 0 var(--osdk-input-border-width) color-mix(in srgb, var(--osdk-input-border-color-focus) 75%, transparent), inset 0 1px 1px var(--osdk-surface-border-color-default)` | Focus shadow            |
+| `--osdk-input-focus-shadow-error`  | `inset 0 0 0 var(--osdk-input-border-width) color-mix(in srgb, var(--osdk-input-border-color-error) 75%, transparent), 0 0 0 var(--osdk-input-border-width) color-mix(in srgb, var(--osdk-input-border-color-error) 75%, transparent), inset 0 1px 1px var(--osdk-surface-border-color-default)` | Danger focus shadow     |
+| `--osdk-input-shadow-error`        | `inset 0 0 0 var(--osdk-input-border-width) var(--osdk-input-border-color-error), 0 0 0 0 transparent, inset 0 1px 1px var(--osdk-surface-border-color-default)`                                                                                                                                 | Input error shadow      |
+| `--osdk-input-disabled-opacity`    | `var(--osdk-disabled-opacity)`                                                                                                                                                                                                                                                                   | Input disabled opacity  |
 
 ### Markdown Renderer
 
@@ -1318,22 +1327,25 @@ Styling for column resize handles.
 
 Styling for time picker components.
 
-| Variable                                      | Default Value                                                         | Description          |
-| --------------------------------------------- | --------------------------------------------------------------------- | -------------------- |
-| `--osdk-time-picker-margin-top`               | `calc(var(--osdk-surface-spacing) * 2)`                               | Top margin           |
-| `--osdk-time-picker-padding-top`              | `calc(var(--osdk-surface-spacing) * 2)`                               | Top padding          |
-| `--osdk-time-picker-border-top`               | `var(--osdk-surface-border)`                                          | Top border           |
-| `--osdk-time-picker-gap`                      | `calc(var(--osdk-surface-spacing) * 4)`                               | Gap between elements |
-| `--osdk-time-picker-input-font-family`        | `var(--osdk-input-font-family)`                                       | Input font family    |
-| `--osdk-time-picker-input-font-size`          | `var(--osdk-input-font-size)`                                         | Input font size      |
-| `--osdk-time-picker-input-padding`            | `var(--osdk-input-padding)`                                           | Input padding        |
-| `--osdk-time-picker-input-border`             | `var(--osdk-input-border-width) solid var(--osdk-input-border-color)` | Input border         |
-| `--osdk-time-picker-input-border-radius`      | `var(--osdk-input-border-radius)`                                     | Input border radius  |
-| `--osdk-time-picker-input-bg`                 | `var(--osdk-input-bg)`                                                | Input background     |
-| `--osdk-time-picker-input-color`              | `var(--osdk-input-color)`                                             | Input text color     |
-| `--osdk-time-picker-input-border-color-focus` | `var(--osdk-input-border-color-focus)`                                | Focused border color |
-| `--osdk-time-picker-input-focus-outline`      | `var(--osdk-input-focus-width) solid var(--osdk-input-focus-color)`   | Focus outline        |
-| `--osdk-time-picker-input-focus-offset`       | `var(--osdk-input-focus-offset)`                                      | Focus offset         |
+| Variable                                      | Default Value                                                                                                                                                                                                                                                                                                            | Description          |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------- |
+| `--osdk-time-picker-margin-top`               | `calc(var(--osdk-surface-spacing) * 2)`                                                                                                                                                                                                                                                                                  | Top margin           |
+| `--osdk-time-picker-padding-top`              | `calc(var(--osdk-surface-spacing) * 2)`                                                                                                                                                                                                                                                                                  | Top padding          |
+| `--osdk-time-picker-border-top`               | `var(--osdk-surface-border)`                                                                                                                                                                                                                                                                                             | Top border           |
+| `--osdk-time-picker-gap`                      | `calc(var(--osdk-surface-spacing) * 4)`                                                                                                                                                                                                                                                                                  | Gap between elements |
+| `--osdk-time-picker-input-font-family`        | `var(--osdk-input-font-family)`                                                                                                                                                                                                                                                                                          | Input font family    |
+| `--osdk-time-picker-input-font-size`          | `var(--osdk-input-font-size)`                                                                                                                                                                                                                                                                                            | Input font size      |
+| `--osdk-time-picker-input-padding`            | `var(--osdk-input-padding)`                                                                                                                                                                                                                                                                                              | Input padding        |
+| `--osdk-time-picker-input-border`             | `none`                                                                                                                                                                                                                                                                                                                   | Input border         |
+| `--osdk-time-picker-input-border-radius`      | `var(--osdk-input-border-radius)`                                                                                                                                                                                                                                                                                        | Input border radius  |
+| `--osdk-time-picker-input-bg`                 | `var(--osdk-input-bg)`                                                                                                                                                                                                                                                                                                   | Input background     |
+| `--osdk-time-picker-input-color`              | `var(--osdk-input-color)`                                                                                                                                                                                                                                                                                                | Input text color     |
+| `--osdk-time-picker-input-focus-outline`      | `var(--osdk-input-focus-outline)`                                                                                                                                                                                                                                                                                        | Input focus outline  |
+| `--osdk-time-picker-input-shadow`             | `var(--osdk-input-shadow)`                                                                                                                                                                                                                                                                                               | Input shadow         |
+| `--osdk-time-picker-input-shadow-error`       | `inset 0 0 0 var(--osdk-input-border-width) var(--osdk-time-picker-input-border-color-error), 0 0 0 0 transparent, inset 0 1px 1px var(--osdk-surface-border-color-default)`                                                                                                                                             | Input error shadow   |
+| `--osdk-time-picker-input-focus-shadow`       | `var(--osdk-input-focus-shadow)`                                                                                                                                                                                                                                                                                         | Input focus shadow   |
+| `--osdk-time-picker-input-border-color-error` | `var(--osdk-input-border-color-error)`                                                                                                                                                                                                                                                                                   | Error border color   |
+| `--osdk-time-picker-input-focus-shadow-error` | `inset 0 0 0 var(--osdk-input-border-width) color-mix(in srgb, var(--osdk-time-picker-input-border-color-error) 75%, transparent), 0 0 0 var(--osdk-input-border-width) color-mix(in srgb, var(--osdk-time-picker-input-border-color-error) 75%, transparent), inset 0 1px 1px var(--osdk-surface-border-color-default)` | Danger focus shadow  |
 
 ### Tooltip
 

@@ -653,6 +653,8 @@ export interface FetchPageArgs<
     $nextPageToken?: string;
     	// (undocumented)
     $pageSize?: number;
+    	// Warning: (tsdoc-undefined-tag) The TSDoc tag "@default" is not defined in this configuration
+    $snapshot?: boolean;
 }
 
 // Warning: (ae-forgotten-export) The symbol "ExtractOptions" needs to be exported by the entry point index.d.ts

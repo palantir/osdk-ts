@@ -340,6 +340,7 @@ class BaseParameterTypeConverter {
 function convertShapeDataType(
   dataType: IDataType,
   objectTypeIds: Record<string, string>,
+  interfaceTypes: Record<string, string>,
   ridGenerator: OntologyRidGenerator,
 ): { type: string; [key: string]: unknown } {
   switch (dataType.type) {
@@ -363,6 +364,25 @@ function convertShapeDataType(
         objectSet: { objectTypeId: blockId },
       };
     }
+    case "interface": {
+      const blockId = interfaceTypes[
+        (dataType.interface as { interfaceTypeRid: string }).interfaceTypeRid
+      ];
+      return {
+        type: "interface",
+        interface: { interfaceTypeReference: blockId },
+      };
+    }
+    case "interfaceObjectSet": {
+      const blockId = interfaceTypes[
+        (dataType.interfaceObjectSet as { interfaceTypeRid: string })
+          .interfaceTypeRid
+      ];
+      return {
+        type: "interfaceObjectSet",
+        interfaceObjectSet: { interfaceTypeReference: blockId },
+      };
+    }
     case "list": {
       const list = dataType.list as
         | { elementsType: { type: string; [key: string]: unknown } }
@@ -374,6 +394,7 @@ function convertShapeDataType(
             elementsType: convertShapeDataType(
               list.elementsType,
               objectTypeIds,
+              interfaceTypes,
               ridGenerator,
             ),
           },
@@ -392,6 +413,7 @@ function convertShapeDataType(
             elementsType: convertShapeDataType(
               set.elementsType,
               objectTypeIds,
+              interfaceTypes,
               ridGenerator,
             ),
           },
@@ -410,6 +432,7 @@ function convertShapeDataType(
             wrappedType: convertShapeDataType(
               opt.wrappedType,
               objectTypeIds,
+              interfaceTypes,
               ridGenerator,
             ),
           },
@@ -429,6 +452,7 @@ function buildFunctionShape(
   knownIdentifiers: KnownMarketplaceIdentifiers,
 ): FunctionShape {
   const objectTypeIds = knownIdentifiers.objectTypeIds ?? {};
+  const interfaceTypes = knownIdentifiers.interfaceTypes ?? {};
 
   const inputs: FunctionInputType[] = discoveredFunction.inputs.map(input => {
     let dataType = input.dataType as { type: string; [key: string]: unknown };
@@ -450,7 +474,12 @@ function buildFunctionShape(
         "",
       ),
       inputName: input.name,
-      dataType: convertShapeDataType(dataType, objectTypeIds, ridGenerator),
+      dataType: convertShapeDataType(
+        dataType,
+        objectTypeIds,
+        interfaceTypes,
+        ridGenerator,
+      ),
       required,
     };
   });
@@ -473,6 +502,7 @@ function buildFunctionShape(
         dataType: convertShapeDataType(
           outputDataType,
           objectTypeIds,
+          interfaceTypes,
           ridGenerator,
         ),
       },

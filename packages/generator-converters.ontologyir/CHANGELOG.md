@@ -1,5 +1,34 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.33.0
+
+### Minor Changes
+
+- a9de941: Fix interfaces in function discovery
+
+### Patch Changes
+
+- @osdk/client.unstable@2.33.0
+
+## 2.32.0
+
+### Minor Changes
+
+- b5d0a61: transitive OAC imports
+- 833f47a: add support for interface action type constraint in ontology as code
+
+### Patch Changes
+
+- Updated dependencies [b5d0a61]
+- Updated dependencies [833f47a]
+  - @osdk/client.unstable@2.32.0
+
+## 2.31.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.31.0
+
 ## 2.30.0
 
 ### Patch Changes

@@ -1,0 +1,65 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  border: none;
+  padding: 0;
+  background: rgba(16, 22, 26, 0.4);
+  cursor: pointer;
+}
+
+.panel {
+  position: relative;
+  width: 540px;
+  max-width: 90vw;
+  height: 100%;
+  background: var(--oa-surface);
+  border-left: 1px solid var(--oa-border);
+  box-shadow: -8px 0 24px rgba(16, 22, 26, 0.12);
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--oa-border);
+}
+
+.title {
+  font-size: 15px;
+  font-weight: 600;
+  min-width: 0;
+}
+
+.closeButton {
+  flex: none;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--oa-text-secondary);
+  padding: 4px 8px;
+  border-radius: var(--oa-radius);
+}
+
+.closeButton:hover {
+  background: var(--oa-border-muted);
+  color: var(--oa-text);
+}
+
+.body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px;
+}

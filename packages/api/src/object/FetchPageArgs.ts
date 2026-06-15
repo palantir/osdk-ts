@@ -128,6 +128,11 @@ export interface FetchPageArgs<
     & ApplyModifiersArg<Q>
     & MODIFIERS
     & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>]: never };
+  /**
+   * Ensures paging consistency by freezing the view at the time of query to prevent duplicate or missing items. Setting $snapshot to false ensures that you will always get the latest results.
+   * @default false
+   */
+  $snapshot?: boolean;
 }
 
 export interface AsyncIterArgs<

@@ -33,7 +33,6 @@ import { isScenarioClient } from "../scenarios/ScenarioClient.js";
 import { isInterfaceActionParam } from "./interfaceUtils.js";
 import { isObjectSpecifiersObject } from "./isObjectSpecifiersObject.js";
 import { isOntologyObjectV2 } from "./isOntologyObjectV2.js";
-import { isPoint } from "./isPoint.js";
 import { isWireObjectSet } from "./WireObjectSet.js";
 
 /**
@@ -125,14 +124,6 @@ export async function toDataValue(
 
   if (isObjectSpecifiersObject(value)) {
     return await toDataValue(value.$primaryKey, client, actionMetadata);
-  }
-
-  if (isPoint(value)) {
-    return await toDataValue(
-      `${value.coordinates[1]},${value.coordinates[0]}`,
-      client,
-      actionMetadata,
-    );
   }
 
   // object set (the rid as a string (passes through the last return), or the ObjectSet definition directly)

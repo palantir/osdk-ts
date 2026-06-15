@@ -33,6 +33,7 @@ export { loadAllOntologies } from "./generated/ontology-metadata/api/OntologyMet
 export * from "./generated/ontology-metadata/api/__components.js";
 
 export type {
+  OntologyIrBaseParameterConstraintType,
   OntologyIrBaseParameterType,
   OntologyIrBaseParameterType_decimal,
   OntologyIrBaseParameterType_decimalList,
