@@ -42,6 +42,10 @@ export function OfficeSelector({
       await $(modifyEmployee).applyAction({
         employee,
         primary_office_id,
+        // modifyEmployee now models emailPrimaryWork as a required parameter;
+        // pass the employee's current email so this office-assignment call
+        // leaves it unchanged.
+        emailPrimaryWork: employee.emailPrimaryWork ?? "",
       });
 
       setAssignSuccess(true);

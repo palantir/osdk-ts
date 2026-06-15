@@ -1,4 +1,8 @@
-import type { WhereClause } from "@osdk/api";
+import type {
+  ActionEditResponse,
+  DerivedProperty,
+  WhereClause,
+} from "@osdk/api";
 import type {
   ActionDefinition,
   ActionParam,
@@ -9,6 +13,7 @@ import type {
 import type {
   FormError,
   FormFieldDefinition,
+  FormState,
 } from "@osdk/react-components/experimental/action-form";
 import { ActionForm } from "@osdk/react-components/experimental/action-form";
 import type { FilterDefinitionUnion } from "@osdk/react-components/experimental/filter-list";
@@ -18,7 +23,11 @@ import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import React, { useCallback, useMemo, useState } from "react";
 import { Button } from "../../components/Button.js";
 import { $ } from "../../foundryClient.js";
-import { Employee, modifyEmployee } from "../../generatedNoCheck2/index.js";
+import {
+  assignLead,
+  Employee,
+  modifyEmployee,
+} from "../../generatedNoCheck2/index.js";
 import "./page.css";
 
 interface ModifyEmployeeDepartmentAction
@@ -103,6 +112,15 @@ const EMPLOYEE_COLUMNS: Array<ColumnDefinition<Employee>> = [
     width: 220,
   },
   {
+    locator: {
+      type: "rdp",
+      id: "managerName",
+      creator: (baseObjectSet: DerivedProperty.Builder<Employee, false>) =>
+        baseObjectSet.pivotTo("lead").selectProperty("fullName"),
+    },
+    columnName: "Derived Manager Name",
+  },
+  {
     locator: { type: "property", id: "department" },
     columnName: "Department",
     width: 180,
@@ -159,6 +177,31 @@ const MODIFY_EMPLOYEE_FIELDS = [
   },
 ] satisfies ReadonlyArray<FormFieldDefinition<typeof modifyEmployeeDepartment>>;
 
+const ASSIGN_LEAD_FIELDS = [
+  {
+    fieldKey: "employee",
+    fieldComponent: "OBJECT_SELECT",
+    label: "Employee",
+    isRequired: true,
+    helperText: "Pick the employee whose lead should change.",
+    helperTextPlacement: "bottom",
+    fieldComponentProps: {
+      objectType: Employee,
+      placeholder: "Search employees…",
+    },
+  },
+  {
+    fieldKey: "leadEmployeeNumber",
+    fieldComponent: "NUMBER_INPUT",
+    label: "New lead employee number",
+    isRequired: false,
+    placeholder: "Leave blank to clear",
+    helperText: "Leave blank to submit null and unassign the lead.",
+    helperTextPlacement: "bottom",
+    fieldComponentProps: {},
+  },
+] satisfies ReadonlyArray<FormFieldDefinition<typeof assignLead>>;
+
 interface StatusMessage {
   kind: "success" | "error";
   text: string;
@@ -170,6 +213,7 @@ export const EmployeeActionFormFilterListReproPage = React.memo(
       {},
     );
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isAssignLeadDialogOpen, setIsAssignLeadDialogOpen] = useState(false);
     const [statusMessage, setStatusMessage] = useState<StatusMessage>();
     const employeeObjectSet = useMemo(() => $(Employee), []);
 
@@ -179,6 +223,14 @@ export const EmployeeActionFormFilterListReproPage = React.memo(
 
     const closeDialog = useCallback(function closeDialog() {
       setIsDialogOpen(false);
+    }, []);
+
+    const openAssignLeadDialog = useCallback(function openAssignLeadDialog() {
+      setIsAssignLeadDialogOpen(true);
+    }, []);
+
+    const closeAssignLeadDialog = useCallback(function closeAssignLeadDialog() {
+      setIsAssignLeadDialogOpen(false);
     }, []);
 
     const handleActionSuccess = useCallback(function handleActionSuccess() {
@@ -198,6 +250,47 @@ export const EmployeeActionFormFilterListReproPage = React.memo(
         text: `Department update failed: ${formatFormError(error)}`,
       });
     }, []);
+    const handleAssignLeadSuccess = useCallback(
+      function handleAssignLeadSuccess() {
+        setStatusMessage({
+          kind: "success",
+          text: "Lead assignment submitted.",
+        });
+        setIsAssignLeadDialogOpen(false);
+      },
+      [],
+    );
+
+    const handleAssignLeadError = useCallback(function handleAssignLeadError(
+      error: FormError,
+    ) {
+      setStatusMessage({
+        kind: "error",
+        text: `Lead assignment failed: ${formatFormError(error)}`,
+      });
+    }, []);
+
+    const handleAssignLeadSubmit = useCallback(
+      async function handleAssignLeadSubmit(
+        formState: FormState<typeof assignLead>,
+        applyAction: (
+          args: assignLead.ParamsDefinition,
+        ) => Promise<ActionEditResponse | undefined>,
+      ) {
+        if (formState.employee == null) {
+          return;
+        }
+        const applyAssignLead = applyAction as unknown as (
+          args: assignLead.Params,
+        ) => Promise<ActionEditResponse | undefined>;
+        await applyAssignLead({
+          employee: formState.employee,
+          leadEmployeeNumber: formState.leadEmployeeNumber ?? null,
+        });
+        handleAssignLeadSuccess();
+      },
+      [handleAssignLeadSuccess],
+    );
 
     return (
       <div className="actionFormFilterListReproPage">
@@ -212,6 +305,7 @@ export const EmployeeActionFormFilterListReproPage = React.memo(
             </p>
           </div>
           <Button onClick={openDialog}>Open department update form</Button>
+          <Button onClick={openAssignLeadDialog}>Open assign lead form</Button>
         </div>
 
         {statusMessage != null && (
@@ -272,6 +366,37 @@ export const EmployeeActionFormFilterListReproPage = React.memo(
                 formFieldDefinitions={MODIFY_EMPLOYEE_FIELDS}
                 onSuccess={handleActionSuccess}
                 onError={handleActionError}
+              />
+            </div>
+          </div>
+        )}
+
+        {isAssignLeadDialogOpen && (
+          <div
+            className="actionFormFilterListReproDialogBackdrop"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="assign-lead-dialog-title"
+          >
+            <div className="actionFormFilterListReproDialog">
+              <div className="actionFormFilterListReproDialogHeader">
+                <h3
+                  id="assign-lead-dialog-title"
+                  className="actionFormFilterListReproDialogTitle"
+                >
+                  Assign lead
+                </h3>
+                <Button variant="secondary" onClick={closeAssignLeadDialog}>
+                  Close
+                </Button>
+              </div>
+
+              <ActionForm
+                actionDefinition={assignLead}
+                formFieldDefinitions={ASSIGN_LEAD_FIELDS}
+                onSubmit={handleAssignLeadSubmit}
+                onSuccess={handleAssignLeadSuccess}
+                onError={handleAssignLeadError}
               />
             </div>
           </div>

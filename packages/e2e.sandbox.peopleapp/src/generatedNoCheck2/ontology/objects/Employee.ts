@@ -45,6 +45,8 @@ export namespace Employee {
     | 'preferredNameFirst'
     | 'preferredNameLast'
     | 'primaryOfficeId'
+    | 'salary'
+    | 'stockOptions'
     | 'team'
     | 'workerType';
 
@@ -162,7 +164,7 @@ export namespace Employee {
      *
      *   property status: experimental
      *
-     *   display name: 'Full Name'
+     *   display name: 'Name'
      */
     readonly fullName: $PropType['string'] | undefined;
     /**
@@ -284,6 +286,22 @@ export namespace Employee {
      *
      *   property status: experimental
      *
+     *   display name: 'Salary'
+     */
+    readonly salary: $PropType['decimal'] | undefined;
+    /**
+     * @experimental
+     *
+     *   property status: experimental
+     *
+     *   display name: 'Stock Options'
+     */
+    readonly stockOptions: $PropType['long'] | undefined;
+    /**
+     * @experimental
+     *
+     *   property status: experimental
+     *
      *   display name: 'Team'
      */
     readonly team: $PropType['string'] | undefined;
@@ -331,9 +349,29 @@ export interface Employee extends $ObjectTypeDefinition {
       color: '#EC9A3C';
       name: 'person';
     };
-    implements: [];
-    interfaceMap: {};
-    inverseInterfaceMap: {};
+    implements: ['Person', 'Worker'];
+    interfaceMap: {
+      Person: {
+        email: 'emailPrimaryWork';
+        employeeNumber: 'employeeNumber';
+      };
+      Worker: {
+        name: 'fullName';
+        email: 'emailPrimaryWork';
+        employeeNumber: 'employeeNumber';
+      };
+    };
+    inverseInterfaceMap: {
+      Person: {
+        emailPrimaryWork: 'email';
+        employeeNumber: 'employeeNumber';
+      };
+      Worker: {
+        fullName: 'name';
+        emailPrimaryWork: 'email';
+        employeeNumber: 'employeeNumber';
+      };
+    };
     links: {
       lead: $ObjectMetadata.Link<Employee, false>;
       peeps: $ObjectMetadata.Link<Employee, true>;
@@ -450,7 +488,7 @@ export interface Employee extends $ObjectTypeDefinition {
        *
        *   property status: experimental
        *
-       *   display name: 'Full Name'
+       *   display name: 'Name'
        */
       fullName: $PropertyDef<'string', 'nullable', 'single'>;
       /**
@@ -476,7 +514,7 @@ export interface Employee extends $ObjectTypeDefinition {
        *
        *   display name: 'Latest Venture '
        */
-      latestVenture: $PropertyDef<{ venture: 'string'; days: 'integer' }, 'nullable', 'single'>;
+      latestVenture: $PropertyDef<{ venture: 'string'; days: 'integer' }, 'nullable', 'single', ['days'], false>;
       /**
        * @experimental
        *
@@ -565,6 +603,22 @@ export interface Employee extends $ObjectTypeDefinition {
        *   display name: 'Primary Office ID'
        */
       primaryOfficeId: $PropertyDef<'string', 'nullable', 'single'>;
+      /**
+       * @experimental
+       *
+       *   property status: experimental
+       *
+       *   display name: 'Salary'
+       */
+      salary: $PropertyDef<'decimal', 'nullable', 'single'>;
+      /**
+       * @experimental
+       *
+       *   property status: experimental
+       *
+       *   display name: 'Stock Options'
+       */
+      stockOptions: $PropertyDef<'long', 'nullable', 'single'>;
       /**
        * @experimental
        *
