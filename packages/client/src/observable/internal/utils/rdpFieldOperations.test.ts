@@ -195,7 +195,7 @@ describe("rdpFieldOperations", () => {
     expect(underlying.rdpField2).toBe(999);
   });
 
-  it("mergeObjectFields preserves target RDP value when source has undefined for shared field", () => {
+  it("mergeObjectFields clears a shared RDP field that the source computed but left undefined", () => {
     const source = createTestObject({
       employeeId: 50030,
       fullName: "John Doe",
@@ -218,8 +218,71 @@ describe("rdpFieldOperations", () => {
     const underlying = getUnderlyingProps(result);
     expect(underlying.employeeId).toBe(50030);
     expect(underlying.fullName).toBe("John Doe");
-    // Target's non-null value should be preserved when source has undefined
-    expect(underlying.rdpField1).toBe("existing-value");
+    // The source query computed rdpField1, so it is authoritative: an undefined
+    // value means the derived value became null and the stale target value must
+    // be cleared rather than retained.
+    expect(underlying.rdpField1).toBeUndefined();
+    // rdpField2 was not computed by the source query, so the target's value is
+    // preserved.
+    expect(underlying.rdpField2).toBe(999);
+  });
+
+  it("mergeObjectFields clears a shared RDP field that the source query computed but the wire omitted (became null)", () => {
+    // Real-world shape: the wire returns all non-null RDPs and omits the ones
+    // that became null. The canonical writer of the cache key passes its
+    // query's RDP *intent* (`expectedRdpFields`) as `sourceRdpFields`, so an
+    // omitted-but-expected RDP is interpreted as "became null" and the stale
+    // cached value must clear.
+    const source = createTestObject({
+      employeeId: 50030,
+      fullName: "John Doe",
+      // rdpField1 omitted — became null
+      rdpField2: 42, // rdpField2 still has a value
+    });
+    const target = createTestObject({
+      employeeId: 50030,
+      rdpField1: "existing-value", // stale; must NOT be retained
+      rdpField2: 999, // about to be replaced by source's new 42
+    });
+
+    const result = mergeObjectFields(
+      source,
+      // Source query computed both — this is the canonical writer's intent.
+      new Set(["rdpField1", "rdpField2"]),
+      new Set(["rdpField1", "rdpField2"]),
+      target,
+    );
+
+    assertValidObjectHolder(result);
+    const underlying = getUnderlyingProps(result);
+    expect(underlying.rdpField1).toBeUndefined();
+    expect(underlying.rdpField2).toBe(42);
+  });
+
+  it("mergeObjectFields preserves target RDP value when source did not compute that field", () => {
+    const source = createTestObject({
+      employeeId: 50030,
+      fullName: "John Doe",
+      rdpField1: "source-value",
+    });
+    const target = createTestObject({
+      employeeId: 50030,
+      rdpField1: "old-value",
+      rdpField2: 999,
+    });
+
+    const result = mergeObjectFields(
+      source,
+      // Source only computed rdpField1; rdpField2 is left untouched.
+      new Set(["rdpField1"]),
+      new Set(["rdpField1", "rdpField2"]),
+      target,
+    );
+
+    assertValidObjectHolder(result);
+    const underlying = getUnderlyingProps(result);
+    expect(underlying.rdpField1).toBe("source-value");
+    // rdpField2 was not in the source query, so the target's value survives.
     expect(underlying.rdpField2).toBe(999);
   });
 
