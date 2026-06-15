@@ -136,7 +136,6 @@ const archetypeRules = archetypes(
     [
       "@osdk/foundry-config-json",
       "@osdk/generator-converters",
-      "@osdk/language-models",
       "@osdk/generator-converters.ontologyir",
       "@osdk/generator-converters.preview",
       "@osdk/generator-utils",
@@ -147,8 +146,6 @@ const archetypeRules = archetypes(
       "@osdk/seed-compiler",
       "@osdk/seed-helpers",
       "@osdk/oauth",
-      "@osdk/react-sdk-docs",
-      "@osdk/typescript-sdk-docs",
       "@osdk/widget.api",
       "@osdk/widget.client",
       "@osdk/vite-plugin-oac",
@@ -244,10 +241,13 @@ const archetypeRules = archetypes(
   .addArchetype(
     "oxc migrated libraries",
     [
+      "@osdk/language-models",
+      "@osdk/react-sdk-docs",
       "@osdk/shared.client.impl",
       "@osdk/shared.net.errors",
       "@osdk/shared.net.fetch",
       "@osdk/shared.net",
+      "@osdk/typescript-sdk-docs",
     ],
     {
       ...LIBRARY_RULES,

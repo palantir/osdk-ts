@@ -11,6 +11,11 @@ export default defineConfig({
     ...(ultracite.ignorePatterns ?? []),
     "**/package.json",
     "**/tsconfig.json",
+    // YAML is not formatted by dprint either (no yaml plugin); some packages keep
+    // significant-whitespace data here (e.g. mustache templates in
+    // typescript-sdk-docs/src/documentation.yml) that reformatting would corrupt.
+    "**/*.yml",
+    "**/*.yaml",
     // generated/owned by monorepolint (dprint-formatted)
     "**/vitest.config.mts",
     "**/changelog/",
