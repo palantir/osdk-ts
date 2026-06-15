@@ -26,12 +26,13 @@ export interface PlatformClient extends SharedClientContext {}
  * If you already have an OSDK Client (from `createClient`), you do not need to
  * create one of these - those clients can be used with Platform APIs as well.
  *
- * @param options - Currently unused, reserved for future use.
+ * @param options - Optional client configuration. `concurrency.maxConcurrentRequests` caps the
+ *   number of in-flight requests (default 10, `Infinity` to disable throttling).
  */
 export function createPlatformClient(
   baseUrl: string,
   tokenProvider: () => Promise<string>,
-  options: undefined = undefined,
+  options?: { concurrency?: { maxConcurrentRequests?: number } },
   fetchFn: typeof globalThis.fetch = fetch,
 ): PlatformClient {
   return createSharedClientContext(
@@ -39,5 +40,7 @@ export function createPlatformClient(
     tokenProvider,
     USER_AGENT,
     fetchFn,
+    undefined,
+    options?.concurrency?.maxConcurrentRequests,
   );
 }

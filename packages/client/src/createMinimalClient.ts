@@ -43,6 +43,7 @@ export function createMinimalClient(
     scenarioRid?: string;
     branch?: string;
     headers?: Record<string, string>;
+    concurrency?: { maxConcurrentRequests?: number };
   } = {},
   fetchFn: (
     input: Request | URL | string,
@@ -72,6 +73,7 @@ export function createMinimalClient(
       USER_AGENT,
       fetchFn,
       options.headers,
+      options.concurrency?.maxConcurrentRequests,
     ),
     objectSetFactory,
     objectFactory: convertWireToOsdkObjects,

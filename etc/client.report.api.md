@@ -120,13 +120,20 @@ export const createClient: (baseUrl: string, ontologyRid: string | Promise<strin
     	logger?: Logger
     	UNSTABLE_DO_NOT_USE_BRANCH?: string
     	headers?: Record<string, string>
+    	concurrency?: {
+        		maxConcurrentRequests?: number
+        	}
 } | undefined, fetchFn?: typeof fetch | undefined) => Client;
 
 // @public
 export function createObjectSpecifierFromPrimaryKey<Q extends ObjectTypeDefinition>(objectDef: Q, primaryKey: PrimaryKeyType<Q>): ObjectSpecifier<Q>;
 
 // @public
-export function createPlatformClient(baseUrl: string, tokenProvider: () => Promise<string>, options?: undefined, fetchFn?: typeof globalThis.fetch): PlatformClient;
+export function createPlatformClient(baseUrl: string, tokenProvider: () => Promise<string>, options?: {
+    	concurrency?: {
+        		maxConcurrentRequests?: number
+        	}
+}, fetchFn?: typeof globalThis.fetch): PlatformClient;
 
 export { DerivedProperty }
 
