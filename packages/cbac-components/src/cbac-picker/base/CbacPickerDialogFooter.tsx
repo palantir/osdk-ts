@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ActionButton, Tooltip } from "@osdk/react-components/primitives";
+import { ActionButton, Tooltip } from "@osdk/react-components/internal";
 import React from "react";
 import styles from "./CbacPickerDialogFooter.module.css";
 

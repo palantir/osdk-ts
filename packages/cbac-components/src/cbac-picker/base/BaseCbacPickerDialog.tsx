@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Dialog } from "@osdk/react-components/primitives";
+import { Dialog } from "@osdk/react-components/internal";
 import React from "react";
 import { BaseCbacPicker } from "./BaseCbacPicker.js";
 import type { BaseCbacPickerProps } from "./BaseCbacPicker.js";

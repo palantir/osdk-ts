@@ -16,7 +16,7 @@
 
 import { Popover } from "@base-ui/react/popover";
 import { CaretDown, CaretUp, WarningSign } from "@blueprintjs/icons";
-import { ActionButton, SkeletonBar } from "@osdk/react-components/primitives";
+import { ActionButton, SkeletonBar } from "@osdk/react-components/internal";
 import classnames from "classnames";
 import React from "react";
 import {

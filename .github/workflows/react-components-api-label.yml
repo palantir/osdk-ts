@@ -1,0 +1,61 @@
+name: React Components API label
+
+# Labels a PR with `api-change` when it modifies the committed API Extractor
+# report for @osdk/react-components. The report is regenerated and enforced by
+# the `check-api` task (see ci.yml's `git diff --exit-code`), so any change to
+# the committed report means the package's public API surface drifted. The label
+# is removed again if a later push reverts the report to match base.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: react-components-api-label-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  label-api-drift:
+    name: Label react-components API drift
+    # Fork PRs run with a read-only token and cannot edit labels; the hard
+    # check-api drift check in ci.yml still covers them. Mirror the bundle-size
+    # job's fork gate.
+    if: github.event.pull_request.head.repo.fork == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+    steps:
+      - name: Add or remove the api-change label
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          LABEL: api-change
+          REPORT: etc/react-components.experimental.report.api.md
+        run: |
+          set -euo pipefail
+
+          # Capture first so a failed API call aborts the job (visibly) instead
+          # of silently falling through and clearing the label.
+          files="$(gh api "repos/$GH_REPO/pulls/$PR_NUMBER/files" --paginate --jq '.[].filename')"
+
+          if grep -qx "$REPORT" <<<"$files"; then
+            echo "react-components API report changed; adding '$LABEL' label."
+            # Idempotent: create the label if it does not exist yet.
+            gh label create "$LABEL" \
+              --color FBCA04 \
+              --description "PR changes a committed public API report (etc/*.report.api.md)" \
+              --force >/dev/null 2>&1 || true
+            gh pr edit "$PR_NUMBER" --add-label "$LABEL"
+          else
+            echo "No react-components API report change; removing '$LABEL' label if present."
+            gh pr edit "$PR_NUMBER" --remove-label "$LABEL" 2>/dev/null || true
+          fi

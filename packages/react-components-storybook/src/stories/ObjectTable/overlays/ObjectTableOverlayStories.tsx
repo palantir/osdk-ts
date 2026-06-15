@@ -19,7 +19,7 @@ import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import type {
   ObjectTableProps,
 } from "@osdk/react-components/experimental/object-table";
-import { Dialog as BaseUIDialog } from "@osdk/react-components/primitives";
+import { Dialog as BaseUIDialog } from "@osdk/react-components/internal";
 import React, { memo, useCallback, useState } from "react";
 import type { Employee } from "../../../types/Employee.js";
 import styles from "./ObjectTableOverlayStories.module.css";

@@ -25,14 +25,14 @@
       "require": "./build/cjs/public/experimental.cjs",
       "default": "./build/browser/public/experimental.js"
     },
-    "./primitives": {
-      "browser": "./build/browser/public/primitives.js",
+    "./internal": {
+      "browser": "./build/browser/public/internal.js",
       "import": {
-        "types": "./build/types/public/primitives.d.ts",
-        "default": "./build/esm/public/primitives.js"
+        "types": "./build/types/public/internal.d.ts",
+        "default": "./build/esm/public/internal.js"
       },
-      "require": "./build/cjs/public/primitives.cjs",
-      "default": "./build/browser/public/primitives.js"
+      "require": "./build/cjs/public/internal.cjs",
+      "default": "./build/browser/public/internal.js"
     },
     "./experimental/action-form": {
       "browser": "./build/browser/public/experimental/action-form.js",
@@ -172,6 +172,7 @@
     }
   },
   "scripts": {
+    "check-api": "api-extractor run -c api-extractor.experimental.json --verbose --local",
     "check-attw": "attw --pack . --exclude-entrypoints ./styles.css ./experimental/action-form ./experimental/aip-agent-chat ./experimental/cbac-picker ./experimental/document-viewer ./experimental/email-viewer ./experimental/excel-viewer ./experimental/filter-list ./experimental/image-viewer ./experimental/markdown-renderer ./experimental/object-table ./experimental/pdf-viewer ./experimental/theme ./experimental/tiff-renderer ./experimental/video-viewer ./experimental/xml-viewer",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
@@ -216,6 +217,7 @@
     "react-dom": "^17 || ^18 || ^19"
   },
   "devDependencies": {
+    "@microsoft/api-extractor": "^7.52.11",
     "@osdk/api": "workspace:*",
     "@osdk/client": "workspace:*",
     "@osdk/monorepo.api-extractor": "workspace:~",

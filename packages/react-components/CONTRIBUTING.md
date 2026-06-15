@@ -149,7 +149,7 @@ Components in this package favour **minimum configuration**. A consumer should b
 4. Create the **OSDK wrapper** that handles data fetching and type conversion.
 5. Keep the Base component API simple using primitive types.
 6. For complex components, consider a building blocks tier with sub-components and hooks.
-7. **Reuse before writing.** Check `src/base-components/` for existing primitives, and consult `src/public/primitives.ts` (the sanctioned-reuse barrel) before creating new UI primitives. If a primitive is reusable across components, add it to `src/base-components/` rather than co-locating it in the component folder.
+7. **Reuse before writing.** Check `src/base-components/` for existing primitives, and consult `src/public/internal.ts` (the sanctioned-reuse barrel) before creating new UI primitives. If a primitive is reusable across components, add it to `src/base-components/` rather than co-locating it in the component folder.
 8. Export the OSDK component (and optionally the Base component) from `src/public/experimental/<name>.ts`.
 9. **Update documentation:**
    - Add `docs/<Name>.md` with usage and a minimal example, matching the structure of existing per-component docs
@@ -175,7 +175,7 @@ src/my-component/
 
 - **OSDK components** are exported through per-component files in `src/public/experimental/<name>.ts`. Check `package.json` `exports` first — the existing wildcard pattern (`"./experimental/*"`) may already cover the new sub-path; only add an explicit entry if the wildcard doesn't resolve to it
 - **Base components** may be exported for advanced use cases
-- **UI primitives** in `src/base-components/` are internal and must **not** be exported. The sanctioned reuse list is `src/public/primitives.ts`
+- **UI primitives** in `src/base-components/` are internal and must **not** be exported. The sanctioned reuse list is `src/public/internal.ts`
 
 ## Styling Guidelines
 

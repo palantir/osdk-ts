@@ -4750,6 +4750,9 @@ importers:
         specifier: 0.20.3
         version: 0.20.3
     devDependencies:
+      '@microsoft/api-extractor':
+        specifier: ^7.52.11
+        version: 7.52.11(@types/node@24.12.0)
       '@osdk/api':
         specifier: workspace:*
         version: link:../api

@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export * from "./build/types/public/primitives.js";
+export * from "./build/types/public/internal.js";
