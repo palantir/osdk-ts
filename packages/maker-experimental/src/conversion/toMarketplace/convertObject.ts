@@ -177,8 +177,8 @@ export function convertObject(
                 ];
               },
             )),
-          actionTypes: {},
           properties: {},
+          actionTypes: {},
         });
       }),
       allImplementsInterfaces: {},
