@@ -52,6 +52,10 @@ const config: Config = {
         path: "../packages/react-components/docs",
         routeBasePath: "/react-components",
         sidebarPath: "./sidebarsReactComponents.ts",
+        // The per-feature example chunks and the generated ObjectTableExamples.md
+        // are standard-markdown artifacts (HTML comments, partial fragments)
+        // consumed by Storybook and GitHub, not Docusaurus MDX pages.
+        exclude: ["object-table/**", "ObjectTableExamples.md"],
         editUrl:
           "https://github.com/palantir/osdk-ts/tree/main/packages/react-components/docs/",
       },

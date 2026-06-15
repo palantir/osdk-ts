@@ -14,9 +14,70 @@
  * limitations under the License.
  */}
 
-import { Meta, Markdown } from "@storybook/addon-docs/blocks";
+{/*
+  One-pager docs. The title + description come from the YAML frontmatter of the
+  published docs/ObjectTable.md, so there is a single rendered heading (this
+  MDX owns it) and the Markdown body is rendered below the demo + table of
+  contents. Everything except the live demo stays in the reusable .md.
+*/}
+
+import { Canvas, Markdown, Meta } from "@storybook/addon-docs/blocks";
 import objectTableDocs from "@docs/ObjectTable.md?raw";
+import * as ObjectTableStories from "./ObjectTable.stories";
 
-<Meta title="Components/ObjectTable/Docs" tags={["beta"]}/>
+<Meta title="Components/ObjectTable/Docs" tags={["beta"]} />
 
-<Markdown>{objectTableDocs}</Markdown>
+export const doc = (() => {
+  // Split YAML frontmatter (--- name / description ---) from the Markdown body.
+  const match = objectTableDocs.match(/^---\n([\s\S]*?)\n---\n/);
+  const meta = {};
+  let body = objectTableDocs;
+  if (match) {
+    body = objectTableDocs.slice(match[0].length);
+    for (const line of match[1].split("\n")) {
+      const idx = line.indexOf(":");
+      if (idx > 0) meta[line.slice(0, idx).trim()] = line.slice(idx + 1).trim();
+    }
+  }
+  // Build a table of contents from the top-level (##) sections, skipping any
+  // that appear inside fenced code blocks. The slug matches markdown-to-jsx's
+  // default heading id (strip non [a-z0-9- ], spaces -> "-", lowercased).
+  const toc = [];
+  let inFence = false;
+  for (const line of body.split("\n")) {
+    if (line.startsWith("```")) {
+      inFence = !inFence;
+      continue;
+    }
+    if (!inFence && line.startsWith("## ")) {
+      const title = line.slice(3).trim();
+      const slug = title.replace(/[^a-z0-9- ]/gi, "").replace(/ /g, "-")
+        .toLowerCase();
+      toc.push({ title, slug });
+    }
+  }
+  return {
+    title: meta.title ?? "",
+    description: meta.description ?? "",
+    body,
+    toc,
+  };
+})();
+
+<h1>{doc.title}</h1>
+
+<p>{doc.description}</p>
+
+<Canvas of={ObjectTableStories.Default} />
+
+## Contents
+
+<ul>
+  {doc.toc.map((item) => (
+    <li key={item.slug}>
+      <a href={`#${item.slug}`}>{item.title}</a>
+    </li>
+  ))}
+</ul>
+
+<Markdown>{doc.body}</Markdown>

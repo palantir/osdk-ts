@@ -15,18 +15,21 @@
  */
 
 import {
-  Default as DefaultStory,
+  ControlledFocusedRow as ControlledFocusedRowStory,
+  ControlledSelection as ControlledSelectionStory,
+  MultipleSelection as MultipleSelectionStory,
   objectTableMeta,
-} from "./objectTableStoryDefs.js";
+  SingleSelection as SingleSelectionStory,
+} from "../objectTableStoryDefs.js";
 
-// The primary landing demo, pinned to the top of the ObjectTable tree by the
-// storySort in .storybook/preview.tsx. Lives at the component root so it sits
-// above Docs/Examples/Features in the sidebar.
 const meta = {
   ...objectTableMeta,
-  title: "Components/ObjectTable",
+  title: "Components/ObjectTable/Features/Selection & focus",
 };
 
 export default meta;
 
-export const Default = DefaultStory;
+export const SingleSelection = SingleSelectionStory;
+export const MultipleSelection = MultipleSelectionStory;
+export const ControlledSelection = ControlledSelectionStory;
+export const ControlledFocusedRow = ControlledFocusedRowStory;

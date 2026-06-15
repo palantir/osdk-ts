@@ -4,31 +4,26 @@ sidebar_position: 1
 
 # Prerequisites
 
-Setup required before using `@osdk/react-components` or `@osdk/cbac-components`.
+Setup required before using `@osdk/react-components`.
 
 ## Install dependencies
 
 > **Tip:** If your tooling already installs dependencies, skip this step.
 
-Use whichever package manager your project uses (`# if using CBAC components` lines are optional):
-
 ```bash
 # npm
-npm install @osdk/api@beta @osdk/client@beta @osdk/react@beta
+npm install @osdk/api @osdk/client @osdk/react
 npm install @osdk/react-components
-npm install @osdk/cbac-components # if using CBAC components
 npm install react react-dom classnames
 
 # pnpm
-pnpm add @osdk/api@beta @osdk/client@beta @osdk/react@beta
+pnpm add @osdk/api @osdk/client @osdk/react
 pnpm add @osdk/react-components
-pnpm add @osdk/cbac-components # if using CBAC components
 pnpm add react react-dom classnames
 
 # yarn
-yarn add @osdk/api@beta @osdk/client@beta @osdk/react@beta
+yarn add @osdk/api @osdk/client @osdk/react
 yarn add @osdk/react-components
-yarn add @osdk/cbac-components # if using CBAC components
 yarn add react react-dom classnames
 ```
 

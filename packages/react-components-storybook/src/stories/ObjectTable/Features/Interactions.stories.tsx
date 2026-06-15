@@ -15,18 +15,17 @@
  */
 
 import {
-  Default as DefaultStory,
+  EventListeners as EventListenersStory,
   objectTableMeta,
-} from "./objectTableStoryDefs.js";
+  WithContextMenu as WithContextMenuStory,
+} from "../objectTableStoryDefs.js";
 
-// The primary landing demo, pinned to the top of the ObjectTable tree by the
-// storySort in .storybook/preview.tsx. Lives at the component root so it sits
-// above Docs/Examples/Features in the sidebar.
 const meta = {
   ...objectTableMeta,
-  title: "Components/ObjectTable",
+  title: "Components/ObjectTable/Features/Interactions & events",
 };
 
 export default meta;
 
-export const Default = DefaultStory;
+export const WithContextMenu = WithContextMenuStory;
+export const EventListeners = EventListenersStory;

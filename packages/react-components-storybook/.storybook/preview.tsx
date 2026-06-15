@@ -91,14 +91,63 @@ const preview: Preview = {
           if (ao !== bo) return ao - bo;
         }
 
-        // Within "Components" — same component folder: "Docs" entry first
+        // Within "Components" — same component folder
         if (
           aParts[0] === "Components" && bParts[0] === "Components"
           && aParts[1] === bParts[1]
         ) {
-          const aIsDoc = aParts[2] === "Docs";
-          const bIsDoc = bParts[2] === "Docs";
-          if (aIsDoc !== bIsDoc) return aIsDoc ? -1 : 1;
+          // Sub-section order within a component: the Docs page, the Examples
+          // page, then component-root stories (e.g. the Default landing demo),
+          // then Features, then anything else, with internal "Building Blocks"
+          // always pinned last.
+          // NOTE: storySort is eval()'d as plain JS by Storybook's
+          // getStorySortParameter, so this body must not contain TypeScript
+          // type syntax (no `: Type` annotations). The logic below is written
+          // to type-check without them — array indexOf instead of an untyped
+          // helper or dynamic object indexing.
+          //
+          // Sub-section order within a component: Docs, Examples, then
+          // component-root stories (e.g. the Default landing demo), then
+          // Features, then anything else, with internal "Building Blocks" last.
+          const sectionOrder = ["Docs", "Examples", "__root__", "Features"];
+          const aSub = aParts.length > 2 ? aParts[2] : "__root__";
+          const bSub = bParts.length > 2 ? bParts[2] : "__root__";
+          const aRank = aSub === "Building Blocks"
+            ? 99
+            : sectionOrder.indexOf(aSub) === -1
+            ? 50
+            : sectionOrder.indexOf(aSub);
+          const bRank = bSub === "Building Blocks"
+            ? 99
+            : sectionOrder.indexOf(bSub) === -1
+            ? 50
+            : sectionOrder.indexOf(bSub);
+          if (aRank !== bRank) return aRank - bRank;
+
+          // Within "Features", order the sub-groups to match the Examples doc.
+          if (aParts[2] === "Features" && bParts[2] === "Features") {
+            const featureOrder = [
+              "Data Sources",
+              "Columns",
+              "Sorting",
+              "Selection & focus",
+              "Editing",
+              "Interactions & events",
+              "Display & states",
+              "Overlays",
+              "Advanced",
+            ];
+            const ai = featureOrder.indexOf(aParts[3]);
+            const bi = featureOrder.indexOf(bParts[3]);
+            const ao = ai === -1 ? featureOrder.length : ai;
+            const bo = bi === -1 ? featureOrder.length : bi;
+            if (ao !== bo) return ao - bo;
+          }
+
+          // Pin the "Default" story to the top of its leaf.
+          const aDefault = a.name === "Default";
+          const bDefault = b.name === "Default";
+          if (aDefault !== bDefault) return aDefault ? -1 : 1;
         }
 
         // Default: alphabetical
