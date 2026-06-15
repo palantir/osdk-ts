@@ -93,7 +93,7 @@
 
   &:focus-visible {
     outline: var(--osdk-input-focus-outline);
-    outline-offset: var(--osdk-input-focus-outline-offset, 0px);
+    outline-offset: var(--osdk-input-focus-outline-offset);
   }
 
   &[data-popup-open]:focus-visible {

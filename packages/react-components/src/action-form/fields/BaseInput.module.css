@@ -20,7 +20,7 @@
   min-height: var(--osdk-input-min-height);
   padding: var(--osdk-input-padding);
   border-radius: var(--osdk-input-border-radius);
-  border: var(--osdk-input-border-width) solid var(--osdk-input-border-color);
+  border: none;
   box-shadow: var(--osdk-input-shadow);
   background-color: var(--osdk-input-bg);
   color: var(--osdk-input-color);
@@ -47,7 +47,7 @@
 
   &:focus-visible {
     outline: var(--osdk-input-focus-outline);
-    outline-offset: var(--osdk-input-focus-outline-offset, 0px);
+    outline-offset: var(--osdk-input-focus-outline-offset);
     box-shadow: var(--osdk-input-focus-shadow);
   }
 

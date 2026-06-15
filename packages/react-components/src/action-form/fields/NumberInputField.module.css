@@ -15,8 +15,7 @@
  */
 
 .osdkNumberInputWrapper {
-  display: grid;
-  grid-template-columns: 1fr auto;
+  display: flex;
   align-items: stretch;
   gap: calc(var(--osdk-surface-spacing) * 0.5);
 }
@@ -45,6 +44,7 @@
 }
 
 .osdkNumberInputField {
+  flex: 1;
   min-width: 0;
   min-height: var(--osdk-input-min-height);
   padding: var(--osdk-input-padding);
@@ -81,7 +81,7 @@
 
   &:focus-visible {
     outline: var(--osdk-input-focus-outline);
-    outline-offset: var(--osdk-input-focus-outline-offset, 0px);
+    outline-offset: var(--osdk-input-focus-outline-offset);
   }
 }
 

@@ -20,6 +20,9 @@
     color: var(--osdk-datetime-input-placeholder-color);
   }
 
+  /* Inner input suppresses its own outline — the wrapper
+     (.osdkDatePickerInputWrapper :focus-within) provides the
+     visible focus ring for keyboard interaction. */
   &:focus-visible {
     outline: none;
   }
@@ -82,7 +85,7 @@
   &:focus-within {
     box-shadow: var(--osdk-datetime-input-focus-shadow);
     outline: var(--osdk-input-focus-outline);
-    outline-offset: var(--osdk-input-focus-outline-offset, 0px);
+    outline-offset: var(--osdk-input-focus-outline-offset);
   }
 
   &[data-disabled] {
