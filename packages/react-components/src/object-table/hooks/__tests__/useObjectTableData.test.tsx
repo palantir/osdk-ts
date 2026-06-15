@@ -637,6 +637,7 @@ describe(useObjectTableData, () => {
       },
     ];
 
+    // todo(ksethi): verify that this actually tests what we think it'll test
     it("reflects an RDP field becoming null when a later snapshot omits the key", () => {
       vi.mocked(useFunctionColumnsData).mockReturnValue({});
 

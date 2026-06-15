@@ -325,6 +325,37 @@ describe("rdpFieldOperations", () => {
     expect(underlying.rdpField1).toBe("source-rdp1");
     expect(underlying.rdpField2).toBeUndefined();
   });
+
+  it("mergeObjectFields handles the full mixed case in one merge", () => {
+    const source = createTestObject({
+      employeeId: 50030,
+      fullName: "John Doe",
+      rdpField1: "source-shared",
+      rdpField3: "source-only",
+    });
+    const target = createTestObject({
+      employeeId: 50030,
+      rdpField1: "target-shared-stale",
+      rdpField2: 999,
+    });
+
+    const result = mergeObjectFields(
+      source,
+      new Set(["rdpField1", "rdpField3"]),
+      new Set(["rdpField1", "rdpField2"]),
+      target,
+    );
+
+    assertValidObjectHolder(result);
+    const underlying = getUnderlyingProps(result);
+    expect(underlying.fullName).toBe("John Doe");
+    // Shared RDP: the source query is authoritative.
+    expect(underlying.rdpField1).toBe("source-shared");
+    // Source-only RDP the target did not ask for: dropped.
+    expect(underlying.rdpField3).toBeUndefined();
+    // Target-only RDP the source did not compute: preserved.
+    expect(underlying.rdpField2).toBe(999);
+  });
 });
 
 describe("mergeSelectFields", () => {

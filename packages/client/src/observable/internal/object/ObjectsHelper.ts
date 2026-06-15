@@ -169,27 +169,10 @@ export class ObjectsHelper extends AbstractHelper<
       );
     }
 
-    if (
-      valueToWrite !== tombstone
-      && existing?.value
-      && this.isObjectHolder(existing.value)
-    ) {
-      const expectedRdpFields = this.store.objectCacheKeyRegistry
-        .getRdpFieldSet(sourceCacheKey);
-
-      // When the sourceCacheKey contains RDP fields, it intentionally requires the set of RDPs
-      if (expectedRdpFields.size > 0) {
-        // Passing expectedRdpFields as both sourceRdpFields and targetRdpFields so the rdp keys match exactly
-        // In mergeObjectFields it hits the isSuperset short-circuit (sizes equal, identical sets) and return sourceValue as-is
-        valueToWrite = mergeObjectFields(
-          valueToWrite,
-          expectedRdpFields,
-          expectedRdpFields,
-          existing.value,
-        );
-      }
-    }
-
+    // A query writing to its own cache key is fully authoritative for the RDP
+    // fields it computed, so the fresh value is written as-is. Reconciling RDP
+    // fields against sibling queries that compute a different set happens during
+    // propagation below, via mergeForTarget.
     batch.write(sourceCacheKey, valueToWrite, status);
 
     if (value === tombstone) {

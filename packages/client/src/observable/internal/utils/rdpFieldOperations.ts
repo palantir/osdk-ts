@@ -59,72 +59,85 @@ export function requireObjectDef(
   return objectDef;
 }
 
-function stripRdpFields(
-  value: ObjectHolder,
-  rdpFields: ReadonlySet<string>,
-): ObjectHolder {
-  if (rdpFields.size === 0) {
-    return value;
-  }
-
-  const underlying = value[UnderlyingOsdkObject] as SimpleOsdkProperties;
-  const objectDef = requireObjectDef(value[ObjectDefRef], underlying);
-
-  const newProps: SimpleOsdkProperties = {
-    $apiName: underlying.$apiName,
-    $objectType: underlying.$objectType,
-    $primaryKey: underlying.$primaryKey,
-    $title: underlying.$title,
-    $rid: underlying.$rid,
+/**
+ * Build the system (`$`-prefixed) property bag shared by every merged object.
+ * `ridFallback` lets a caller borrow `$rid` from a prior value when the primary
+ * source omits it (a partial `$select` fetch can lack it).
+ */
+function systemFields(
+  primary: SimpleOsdkProperties,
+  ridFallback?: SimpleOsdkProperties,
+): SimpleOsdkProperties {
+  return {
+    $apiName: primary.$apiName,
+    $objectType: primary.$objectType,
+    $primaryKey: primary.$primaryKey,
+    $title: primary.$title,
+    $rid: primary.$rid ?? ridFallback?.$rid,
   };
-
-  for (const key of Object.keys(underlying)) {
-    if (key in objectDef.properties && !rdpFields.has(key)) {
-      newProps[key] = underlying[key];
-    }
-  }
-
-  return createOsdkObject(value[ClientRef], objectDef, newProps);
 }
 
-function isSuperset(
-  superset: ReadonlySet<string>,
-  subset: ReadonlySet<string>,
+function sameMembers(
+  a: ReadonlySet<string>,
+  b: ReadonlySet<string>,
 ): boolean {
-  for (const field of subset) {
-    if (!superset.has(field)) {
+  if (a.size !== b.size) {
+    return false;
+  }
+  for (const field of a) {
+    if (!b.has(field)) {
       return false;
     }
   }
   return true;
 }
 
-function filterToRdpFields(
-  value: ObjectHolder,
-  rdpFieldsToKeep: ReadonlySet<string>, // old
-  sourceRdpFields: ReadonlySet<string>, // new
-): ObjectHolder {
-  const underlying = value[UnderlyingOsdkObject] as SimpleOsdkProperties;
-  const objectDef = requireObjectDef(value[ObjectDefRef], underlying);
-
-  const newProps: SimpleOsdkProperties = {
-    $apiName: underlying.$apiName,
-    $objectType: underlying.$objectType,
-    $primaryKey: underlying.$primaryKey,
-    $title: underlying.$title,
-    $rid: underlying.$rid,
-  };
-
-  for (const key of Object.keys(underlying)) {
-    if (key in objectDef.properties) {
-      const isRdpField = sourceRdpFields.has(key);
-      if (!isRdpField || rdpFieldsToKeep.has(key)) {
-        newProps[key] = underlying[key];
-      }
+/**
+ * Copy the fields the source query is authoritative for: every base property,
+ * plus the RDP fields it computed that the target query also wants. RDP fields
+ * the source computed but the target does not want are skipped so they don't
+ * leak into the target's cache entry.
+ */
+function copyAuthoritativeSourceFields(
+  into: SimpleOsdkProperties,
+  source: SimpleOsdkProperties,
+  objectDef: FetchedObjectTypeDefinition,
+  sourceRdpFields: ReadonlySet<string>,
+  targetRdpFields: ReadonlySet<string>,
+): void {
+  for (const key of Object.keys(source)) {
+    if (!(key in objectDef.properties)) {
+      continue;
+    }
+    const isSourceRdp = sourceRdpFields.has(key);
+    if (!isSourceRdp || targetRdpFields.has(key)) {
+      into[key] = source[key];
     }
   }
+}
 
-  return createOsdkObject(value[ClientRef], objectDef, newProps);
+/**
+ * Restore the RDP fields the target wants but the source query did not compute.
+ * The source has no opinion on those, so the cached value survives. RDP fields
+ * the source did compute are left exactly as the source set them, which is what
+ * clears a derived value that became null.
+ */
+function preserveTargetOnlyRdps(
+  into: SimpleOsdkProperties,
+  targetCurrentValue: ObjectHolder | undefined,
+  sourceRdpFields: ReadonlySet<string>,
+  targetRdpFields: ReadonlySet<string>,
+): void {
+  if (!targetCurrentValue) {
+    return;
+  }
+  const target =
+    targetCurrentValue[UnderlyingOsdkObject] as SimpleOsdkProperties;
+  for (const field of targetRdpFields) {
+    if (!sourceRdpFields.has(field) && field in target) {
+      into[field] = target[field];
+    }
+  }
 }
 
 export function mergeSelectFields(
@@ -141,13 +154,7 @@ export function mergeSelectFields(
     sourceUnderlying,
   );
 
-  const newProps: SimpleOsdkProperties = {
-    $apiName: sourceUnderlying.$apiName,
-    $objectType: sourceUnderlying.$objectType,
-    $primaryKey: sourceUnderlying.$primaryKey,
-    $title: sourceUnderlying.$title,
-    $rid: sourceUnderlying.$rid ?? existingUnderlying.$rid,
-  };
+  const newProps = systemFields(sourceUnderlying, existingUnderlying);
 
   for (const key of Object.keys(existingUnderlying)) {
     if (key in objectDef.properties) {
@@ -164,75 +171,41 @@ export function mergeSelectFields(
   return createOsdkObject(sourceValue[ClientRef], objectDef, newProps);
 }
 
+/**
+ * Merge a freshly fetched object (computed under `sourceRdpFields`) into a cache
+ * entry that wants `targetRdpFields`. The source query is authoritative for every
+ * base property and for the RDP fields it computed, including clearing an RDP
+ * whose derived value became null. RDP fields the source did not compute are kept
+ * from `targetCurrentValue`; RDP fields the target does not want are dropped.
+ */
 export function mergeObjectFields(
   sourceValue: ObjectHolder,
   sourceRdpFields: ReadonlySet<string>,
   targetRdpFields: ReadonlySet<string>,
   targetCurrentValue: ObjectHolder | undefined,
 ): ObjectHolder {
-  // When the destination (target) query does not need RDP
-  if (targetRdpFields.size === 0) {
-    return stripRdpFields(sourceValue, sourceRdpFields);
+  // Identical RDP intent → the source is wholly authoritative; keep its identity.
+  if (sameMembers(sourceRdpFields, targetRdpFields)) {
+    return sourceValue;
   }
 
-  // When source contains more than the required RDP fields
-  if (isSuperset(sourceRdpFields, targetRdpFields)) {
-    if (sourceRdpFields.size === targetRdpFields.size) {
-      return sourceValue;
-    }
-    // Filter to return only the RDP fields that are needed by target
-    return filterToRdpFields(sourceValue, targetRdpFields, sourceRdpFields);
-  }
+  const source = sourceValue[UnderlyingOsdkObject] as SimpleOsdkProperties;
+  const objectDef = requireObjectDef(sourceValue[ObjectDefRef], source);
 
-  /**
-   * Mixed case: each side has RDP fields the other doesn't
-   */
-  const sourceUnderlying =
-    sourceValue[UnderlyingOsdkObject] as SimpleOsdkProperties;
-  const objectDef = requireObjectDef(
-    sourceValue[ObjectDefRef],
-    sourceUnderlying,
-  );
-
-  // Create a new property bag
-  const newProps: SimpleOsdkProperties = {
-    $apiName: sourceUnderlying.$apiName,
-    $objectType: sourceUnderlying.$objectType,
-    $primaryKey: sourceUnderlying.$primaryKey,
-    $title: sourceUnderlying.$title,
-    $rid: sourceUnderlying.$rid,
-  };
-
-  // For every key on the source data
-  for (const key of Object.keys(sourceUnderlying)) {
-    // Only add to newProps if it is an object property AND
-    //  Either it is not an RDP in the source
-    //  Or it is an RDP that the target needs
-    // --> This skips source's RDP fields that the target doesn't care about.
-    if (
-      key in objectDef.properties
-      && (!sourceRdpFields.has(key) || targetRdpFields.has(key))
-    ) {
-      newProps[key] = sourceUnderlying[key];
-    }
-  }
-
-  // For each RDP needed in target, assign the existing value when the source query did not declare this RDP in its intent
-  if (targetCurrentValue) {
-    const targetUnderlying =
-      targetCurrentValue[UnderlyingOsdkObject] as SimpleOsdkProperties;
-    for (const field of targetRdpFields) {
-      if (field in targetUnderlying) {
-        if (!sourceRdpFields.has(field)) {
-          newProps[field] = targetUnderlying[field];
-        }
-      }
-    }
-  }
-
-  return createOsdkObject(
-    sourceValue[ClientRef],
-    objectDef,
+  const newProps = systemFields(source);
+  copyAuthoritativeSourceFields(
     newProps,
+    source,
+    objectDef,
+    sourceRdpFields,
+    targetRdpFields,
   );
+  preserveTargetOnlyRdps(
+    newProps,
+    targetCurrentValue,
+    sourceRdpFields,
+    targetRdpFields,
+  );
+
+  return createOsdkObject(sourceValue[ClientRef], objectDef, newProps);
 }
