@@ -6,4 +6,4 @@ export const $ontologyRid = 'ri.ontology.main.ontology.dep';
  * The RID of the Foundry branch this SDK was generated against, or
  * `undefined` if it was generated against the main branch.
  */
-export const $branchRid: string | undefined = undefined;
+export const $branch: string | undefined = undefined;

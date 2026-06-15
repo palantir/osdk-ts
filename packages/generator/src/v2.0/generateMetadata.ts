@@ -40,7 +40,7 @@ export async function generateOntologyMetadataFile(
          * The RID of the Foundry branch this SDK was generated against, or
          * \`undefined\` if it was generated against the main branch.
          */
-        export const $branchRid: string | undefined = ${
+        export const $branch: string | undefined = ${
             ontology.raw.branch != null
               ? `"${ontology.raw.branch.rid}"`
               : "undefined"

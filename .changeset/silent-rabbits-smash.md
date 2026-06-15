@@ -2,4 +2,4 @@
 "@osdk/generator": minor
 ---
 
-Export branchRid from generated SDK
+Always export `$branch` from the generated SDK root.
