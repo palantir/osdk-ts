@@ -14,33 +14,45 @@
  * limitations under the License.
  */
 
+import { ThemeClassNames } from "@docusaurus/theme-common";
 import { useDoc } from "@docusaurus/theme-common/internal";
-import type { WrapperProps } from "@docusaurus/types";
-import Content from "@theme-original/DocItem/Content";
-import type ContentType from "@theme/DocItem/Content";
+import type { Props } from "@theme/DocItem/Content";
 import Heading from "@theme/Heading";
+import MDXContent from "@theme/MDXContent";
 import TOCInline from "@theme/TOCInline";
 import React, { type ReactNode } from "react";
 
-type Props = WrapperProps<typeof ContentType>;
+// Re-implements the stock DocItem/Content so we can render an inline table of
+// contents *between* the page title and the body for docs that opt in with
+// `toc_inline: true` front matter (ObjectTable and its Examples page). Mirrors
+// the upstream synthetic-title behavior; all other docs render unchanged.
+function useSyntheticTitle(): string | null {
+  const { metadata, frontMatter, contentTitle } = useDoc();
+  const shouldRender = !frontMatter.hide_title
+    && typeof contentTitle === "undefined";
+  return shouldRender ? metadata.title : null;
+}
 
-// Render an inline table of contents at the top of the page for docs that opt
-// in with `toc_inline: true` in their front matter (e.g. ObjectTable and its
-// Examples page). All other docs are rendered unchanged.
-export default function ContentWrapper(props: Props): ReactNode {
+export default function DocItemContent({ children }: Props): ReactNode {
   const { frontMatter, toc } = useDoc();
+  const syntheticTitle = useSyntheticTitle();
   const tocInline =
     (frontMatter as { toc_inline?: boolean }).toc_inline === true;
 
   return (
-    <>
+    <div className={`${ThemeClassNames.docs.docMarkdown} markdown`}>
+      {syntheticTitle && (
+        <header>
+          <Heading as="h1">{syntheticTitle}</Heading>
+        </header>
+      )}
       {tocInline && toc.length > 0 && (
-        <section className="markdown">
+        <>
           <Heading as="h2" id="contents">Contents</Heading>
           <TOCInline toc={toc} />
-        </section>
+        </>
       )}
-      <Content {...props} />
-    </>
+      <MDXContent>{children}</MDXContent>
+    </div>
   );
 }

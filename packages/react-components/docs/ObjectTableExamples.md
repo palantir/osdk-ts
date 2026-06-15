@@ -1,8 +1,7 @@
 ---
+title: ObjectTable examples
 toc_inline: true
 ---
-
-# ObjectTable examples
 
 > **Generated file** — do not edit by hand. Edit the chunks in
 > `docs/object-table/examples/` and run
