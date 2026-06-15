@@ -114,7 +114,9 @@
 
   --osdk-datetime-input-shadow: var(--osdk-input-shadow);
   --osdk-datetime-input-shadow-error: var(--osdk-input-shadow-error);
-  --osdk-datetime-input-focus-outline: var(--osdk-input-focus-outline);
+  /* Inner input suppresses its own outline — the wrapper's :focus-within
+     provides the visible focus ring via --osdk-input-focus-outline */
+  --osdk-datetime-input-focus-outline: none;
   --osdk-datetime-input-focus-shadow: var(--osdk-input-focus-shadow);
   --osdk-datetime-input-focus-shadow-error: var(
     --osdk-input-focus-shadow-error
