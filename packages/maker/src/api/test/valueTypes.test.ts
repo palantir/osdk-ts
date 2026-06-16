@@ -87,7 +87,7 @@ describe("Value Types", () => {
     const ontology = dumpOntologyFullMetadata();
     const objectPropertyType =
       ontology.ontology.objectTypes["com.palantir.testObject"]
-        .objectType.propertyTypes.constrainedString;
+        .objectType.propertyTypes["constrainedString"];
 
     expect(objectPropertyType.valueType).toEqual({
       apiName: "stringWithConstraints",

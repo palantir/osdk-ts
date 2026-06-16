@@ -90,7 +90,7 @@ export const IssueCard: React.FC<IssueCardProps> = ({
         <div className={styles.meta}>
           {issue.componentName && (
             <Tag
-              minimal={true}
+              minimal
               className={styles.componentTag}
               interactive={!!onComponentClick && !!issue.componentId}
               onClick={(e: React.MouseEvent) => {

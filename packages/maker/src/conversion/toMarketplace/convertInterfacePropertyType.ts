@@ -39,7 +39,7 @@ export function convertInterfaceProperty(
     return [apiName, {
       type: "interfaceDefinedPropertyType",
       interfaceDefinedPropertyType: {
-        apiName,
+        apiName: apiName,
         displayMetadata: {
           displayName: prop.displayName ?? apiName,
           visibility: prop.visibility ?? "NORMAL",

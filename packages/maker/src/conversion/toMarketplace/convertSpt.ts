@@ -59,7 +59,7 @@ export function convertSpt(
     aliases: aliases ?? [],
     baseFormatter,
     dataConstraints: dataConstraint,
-    gothamMapping,
+    gothamMapping: gothamMapping,
     indexedForSearch: true,
     typeClasses: typeClasses ?? [],
     valueType: valueType === undefined ? undefined : {

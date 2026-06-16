@@ -51,7 +51,7 @@ export function OfficeSelector({
           backgroundSize: "1rem",
         }}
       >
-        <option value="" disabled={true}>
+        <option value="" disabled>
           {isLoading ? "Loading..." : "Select Office"}
         </option>
         {offices.map((office) => (

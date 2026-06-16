@@ -205,7 +205,7 @@ export const DegradationNotice: React.FC<DegradationNoticeProps> = ({
           <Tag
             key={feature}
             intent={Intent.WARNING}
-            minimal={true}
+            minimal
             title={FEATURE_DESCRIPTIONS[feature]}
           >
             {FEATURE_LABELS[feature]}

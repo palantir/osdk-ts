@@ -93,7 +93,7 @@ function GrabbedFlash(
 
   return (
     <div
-      data-osdk-devtools-ignore={true}
+      data-osdk-devtools-ignore
       style={{
         position: "fixed",
         left: bounds.x,
@@ -163,7 +163,7 @@ export function InspectorOverlay({
   }
 
   return (
-    <div data-osdk-devtools-ignore={true} style={containerStyle}>
+    <div data-osdk-devtools-ignore style={containerStyle}>
       <GrabbedFlash bounds={selectionBounds} trigger={isFrozen} />
 
       <SelectionHighlight

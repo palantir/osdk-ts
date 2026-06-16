@@ -124,7 +124,7 @@ export const HookRow: React.FC<HookRowProps> = ({
         return (
           <Tooltip content="Loading data...">
             <Tag
-              minimal={true}
+              minimal
               intent="primary"
               icon="refresh"
               className={styles.statusBadge}
@@ -140,7 +140,7 @@ export const HookRow: React.FC<HookRowProps> = ({
               content={`Last updated ${formatRelativeTime(status.lastUpdate)}`}
             >
               <Tag
-                minimal={true}
+                minimal
                 intent="success"
                 icon="tick"
                 className={styles.statusBadge}
@@ -159,7 +159,7 @@ export const HookRow: React.FC<HookRowProps> = ({
               })`}
             >
               <Tag
-                minimal={true}
+                minimal
                 intent="warning"
                 icon="time"
                 className={styles.statusBadge}
@@ -173,7 +173,7 @@ export const HookRow: React.FC<HookRowProps> = ({
         return (
           <Tooltip content={status.errorMessage || "Error loading data"}>
             <Tag
-              minimal={true}
+              minimal
               intent="danger"
               icon="error"
               className={styles.statusBadge}

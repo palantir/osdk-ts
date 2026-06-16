@@ -77,5 +77,5 @@ export function SelectionHighlight({
     opacity: visible ? 1 : 0,
   };
 
-  return <div data-osdk-devtools-ignore={true} style={style} />;
+  return <div data-osdk-devtools-ignore style={style} />;
 }

@@ -183,13 +183,13 @@ export function defineValueType(
     apiName,
     packageNamespace: namespace.substring(0, namespace.length - 1),
     displayMetadata: {
-      displayName,
+      displayName: displayName,
       description: description ?? "",
     },
     status: convertUserValueTypeStatusToValueTypeStatus(valueTypeDef.status),
-    version,
-    baseType,
-    constraints,
+    version: version,
+    baseType: baseType,
+    constraints: constraints,
     exampleValues: [],
     __type: OntologyEntityTypeEnum.VALUE_TYPE,
   };
