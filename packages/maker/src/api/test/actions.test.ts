@@ -30,6 +30,7 @@ import { defineCreateOrModifyObjectAction } from "../defineCreateOrModifyObjectA
 import { defineDeleteInterfaceObjectAction } from "../defineDeleteInterfaceObjectAction.js";
 import { defineDeleteObjectAction } from "../defineDeleteObjectAction.js";
 import { defineInterface } from "../defineInterface.js";
+import { defineInterfaceLinkConstraint } from "../defineInterfaceLinkConstraint.js";
 import { defineModifyInterfaceObjectAction } from "../defineModifyInterfaceObjectAction.js";
 import { defineModifyObjectAction } from "../defineModifyObjectAction.js";
 import { defineObject } from "../defineObject.js";
@@ -16688,6 +16689,216 @@ describe("Action Types", () => {
         }
       `);
     });
+  });
+
+  it("Interface link actions are properly defined", () => {
+    const personInterface = defineInterface({
+      apiName: "person",
+      displayName: "Person",
+      properties: {},
+    });
+    const companyInterface = defineInterface({
+      apiName: "company",
+      displayName: "Company",
+      properties: {},
+    });
+    defineInterfaceLinkConstraint({
+      apiName: "employer",
+      from: personInterface,
+      toOne: companyInterface,
+    });
+
+    defineAction({
+      apiName: "link-person-to-company",
+      displayName: "Link person to company",
+      status: "active",
+      rules: [{
+        type: "addInterfaceLinkRuleV2",
+        addInterfaceLinkRuleV2: {
+          interfaceTypeRid: "person",
+          interfaceLinkTypeRid: "employer",
+          sourceObjects: [{
+            type: "existingObject",
+            existingObject: "sourceParam",
+          }],
+          targetObjects: [{
+            type: "existingObject",
+            existingObject: "targetParam",
+          }],
+        },
+      }],
+      parameters: [
+        {
+          id: "sourceParam",
+          displayName: "Source",
+          type: {
+            type: "interfaceReference",
+            interfaceReference: { interfaceTypeRid: "com.palantir.person" },
+          },
+          validation: {
+            required: true,
+            allowedValues: { type: "interfaceObjectQuery" },
+          },
+        },
+        {
+          id: "targetParam",
+          displayName: "Target",
+          type: {
+            type: "interfaceReference",
+            interfaceReference: { interfaceTypeRid: "com.palantir.company" },
+          },
+          validation: {
+            required: true,
+            allowedValues: { type: "interfaceObjectQuery" },
+          },
+        },
+      ],
+    });
+
+    const dumped = dumpOntologyFullMetadata();
+    const rule =
+      dumped.ontology.actionTypes["com.palantir.link-person-to-company"]
+        .actionType.actionTypeLogic.logic.rules[0];
+    expect(rule).toMatchInlineSnapshot(`
+      {
+        "addInterfaceLinkRuleV2": {
+          "interfaceLinkTypeRid": "com.palantir.employer",
+          "interfaceTypeRid": "com.palantir.person",
+          "sourceObjects": [
+            {
+              "existingObject": "sourceParam",
+              "type": "existingObject",
+            },
+          ],
+          "targetObjects": [
+            {
+              "existingObject": "targetParam",
+              "type": "existingObject",
+            },
+          ],
+        },
+        "type": "addInterfaceLinkRuleV2",
+      }
+    `);
+  });
+
+  it("Interface link action referencing an undefined parameter throws", () => {
+    const personInterface = defineInterface({
+      apiName: "person",
+      displayName: "Person",
+      properties: {},
+    });
+    const companyInterface = defineInterface({
+      apiName: "company",
+      displayName: "Company",
+      properties: {},
+    });
+    defineInterfaceLinkConstraint({
+      apiName: "employer",
+      from: personInterface,
+      toOne: companyInterface,
+    });
+
+    expect(() =>
+      defineAction({
+        apiName: "link-person-to-company",
+        displayName: "Link person to company",
+        status: "active",
+        rules: [{
+          type: "addInterfaceLinkRuleV2",
+          addInterfaceLinkRuleV2: {
+            interfaceTypeRid: "person",
+            interfaceLinkTypeRid: "employer",
+            sourceObjects: [{
+              type: "existingObject",
+              existingObject: "sourceParam",
+            }],
+            targetObjects: [{
+              type: "existingObject",
+              existingObject: "missingTargetParam",
+            }],
+          },
+        }],
+        parameters: [
+          {
+            id: "sourceParam",
+            displayName: "Source",
+            type: {
+              type: "interfaceReference",
+              interfaceReference: { interfaceTypeRid: "com.palantir.person" },
+            },
+            validation: {
+              required: true,
+              allowedValues: { type: "interfaceObjectQuery" },
+            },
+          },
+        ],
+      })
+    ).toThrow(/referenced but not defined/);
+  });
+
+  it("Interface link action with unknown ILC throws", () => {
+    const personInterface = defineInterface({
+      apiName: "person",
+      displayName: "Person",
+      properties: {},
+    });
+    defineInterface({
+      apiName: "company",
+      displayName: "Company",
+      properties: {},
+    });
+    // NOTE: no defineInterfaceLinkConstraint — the ILC "employer" does not exist
+    void personInterface;
+
+    expect(() =>
+      defineAction({
+        apiName: "link-person-to-company",
+        displayName: "Link person to company",
+        status: "active",
+        rules: [{
+          type: "addInterfaceLinkRuleV2",
+          addInterfaceLinkRuleV2: {
+            interfaceTypeRid: "person",
+            interfaceLinkTypeRid: "employer",
+            sourceObjects: [{
+              type: "existingObject",
+              existingObject: "sourceParam",
+            }],
+            targetObjects: [{
+              type: "existingObject",
+              existingObject: "targetParam",
+            }],
+          },
+        }],
+        parameters: [
+          {
+            id: "sourceParam",
+            displayName: "Source",
+            type: {
+              type: "interfaceReference",
+              interfaceReference: { interfaceTypeRid: "com.palantir.person" },
+            },
+            validation: {
+              required: true,
+              allowedValues: { type: "interfaceObjectQuery" },
+            },
+          },
+          {
+            id: "targetParam",
+            displayName: "Target",
+            type: {
+              type: "interfaceReference",
+              interfaceReference: { interfaceTypeRid: "com.palantir.company" },
+            },
+            validation: {
+              required: true,
+              allowedValues: { type: "interfaceObjectQuery" },
+            },
+          },
+        ],
+      })
+    ).toThrow(/Interface link type .* does not exist on interface/);
   });
 
   it("serializes publicProject permission on action type", async () => {
