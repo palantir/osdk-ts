@@ -1,5 +1,11 @@
 # @osdk/maker
 
+## 0.38.0
+
+### Minor Changes
+
+- 90c415f: Support interface link actions
+
 ## 0.37.0
 
 ### Minor Changes
