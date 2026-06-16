@@ -1,5 +1,18 @@
 # @osdk/shared.test
 
+## 0.27.0
+
+### Minor Changes
+
+- ab19740: Add `Media.fetchFullMetadata()` returning a `MediaFullMetadata` wrapper around the type-specific `MediaItemMetadata` discriminated union (parity with python-osdk's `get_media_full_metadata`).
+
+### Patch Changes
+
+- Updated dependencies [db028a0]
+- Updated dependencies [ab19740]
+  - @osdk/generator-converters@2.34.0
+  - @osdk/api@2.34.0
+
 ## 0.26.0
 
 ### Minor Changes

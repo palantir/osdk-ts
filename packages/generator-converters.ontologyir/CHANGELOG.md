@@ -1,5 +1,17 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.34.0
+
+### Minor Changes
+
+- 07eaaff: Fix function backed actions with interfaces
+- 4a25731: fix interface osdk and function gen for superrepo
+- 48eb46e: Fix full metadata link gen
+
+### Patch Changes
+
+- @osdk/client.unstable@2.34.0
+
 ## 2.33.0
 
 ### Minor Changes

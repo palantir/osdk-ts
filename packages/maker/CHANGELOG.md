@@ -1,5 +1,21 @@
 # @osdk/maker
 
+## 0.37.0
+
+### Minor Changes
+
+- 07eaaff: Fix function backed actions with interfaces
+
+### Patch Changes
+
+- Updated dependencies [07eaaff]
+- Updated dependencies [4a25731]
+- Updated dependencies [db028a0]
+- Updated dependencies [48eb46e]
+- Updated dependencies [ab19740]
+  - @osdk/generator-converters.ontologyir@2.34.0
+  - @osdk/api@2.34.0
+
 ## 0.36.0
 
 ### Minor Changes

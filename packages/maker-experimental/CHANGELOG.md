@@ -1,5 +1,26 @@
 # @osdk/maker-experimental
 
+## 0.27.0
+
+### Minor Changes
+
+- 07eaaff: Fix function backed actions with interfaces
+- d9a1c65: Fix FBA metadata
+- 5957560: Fix parameter required validation for function backed actions
+
+### Patch Changes
+
+- Updated dependencies [07eaaff]
+- Updated dependencies [4a25731]
+- Updated dependencies [db028a0]
+- Updated dependencies [48eb46e]
+- Updated dependencies [ab19740]
+  - @osdk/generator-converters.ontologyir@2.34.0
+  - @osdk/maker@0.37.0
+  - @osdk/api@2.34.0
+  - @osdk/client.unstable@2.34.0
+  - @osdk/generator-converters.preview@0.21.0
+
 ## 0.26.0
 
 ### Minor Changes
