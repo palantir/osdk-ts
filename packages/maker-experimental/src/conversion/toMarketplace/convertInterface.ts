@@ -105,8 +105,8 @@ export function convertInterface(
           parameters: Object.fromEntries(
             Object.entries(constraint.parameters ?? {}).map(
               ([paramApiName, paramConstraint]) => {
-                const paramDisplayApiName =
-                  paramConstraint.displayMetadata?.apiName ?? paramApiName;
+                const paramDisplayApiName = paramConstraint.displayMetadata
+                  .apiName!;
                 return [
                   ridGenerator.generateRidForInterfaceParameterConstraint(
                     constraint.metadata.apiName,

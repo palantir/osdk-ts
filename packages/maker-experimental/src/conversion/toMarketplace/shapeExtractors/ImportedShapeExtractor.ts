@@ -494,8 +494,7 @@ function extractImportedInterfaceTypes(
       const parameterConstraintRefs: string[] = Object.entries(
         actionTypeConstraint.parameters ?? {},
       ).map(([paramRid, paramConstraint]) => {
-        const paramDisplayApiName = paramConstraint.displayMetadata?.apiName
-          ?? paramRid;
+        const paramDisplayApiName = paramConstraint.displayMetadata.apiName!;
         return ridGenerator.toBlockInternalId(
           ReadableIdGenerator.getForInterfaceParameterConstraint(
             interfaceType.apiName,
@@ -527,8 +526,7 @@ function extractImportedInterfaceTypes(
           actionTypeConstraint.parameters ?? {},
         )
       ) {
-        const paramDisplayApiName = paramConstraint.displayMetadata?.apiName
-          ?? paramRid;
+        const paramDisplayApiName = paramConstraint.displayMetadata.apiName!;
         const paramReadableId = ReadableIdGenerator
           .getForInterfaceParameterConstraint(
             interfaceType.apiName,

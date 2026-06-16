@@ -684,7 +684,7 @@ export function extractValueTypeInputShapeIfPresent(
  * Get title and description for shared property type
  */
 function getTitleAndDescriptionForSharedPropertyType(
-  sharedPropertyType: SharedPropertyType,
+  sharedPropertyType: SharedPropertyType | any,
 ): LocalizedTitleAndDescription {
   return createLocalizedAbout(
     sharedPropertyType.displayMetadata.displayName,
