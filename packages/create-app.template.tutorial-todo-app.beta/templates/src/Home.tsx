@@ -39,7 +39,7 @@ function Home() {
         </div>
       </div>
       <div className={css.projectSelect}>
-        <span>Project:</span>
+        <label htmlFor="project-select">Project:</label>
         <ProjectSelect
           project={project}
           projects={projects ?? []}

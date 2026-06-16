@@ -54,14 +54,15 @@ function doNothing() {}
 function fillOutListener<
   Q extends ObjectOrInterfaceDefinition,
   P extends PropertyKeys<Q>,
+  R extends boolean = false,
 >(
   {
     onChange = doNothing,
     onError = doNothing,
     onOutOfDate = doNothing,
     onSuccessfulSubscription = doNothing,
-  }: ObjectSetSubscription.Listener<Q, P>,
-): Required<ObjectSetSubscription.Listener<Q, P>> {
+  }: ObjectSetSubscription.Listener<Q, P, R>,
+): Required<ObjectSetSubscription.Listener<Q, P, R>> {
   return { onChange, onError, onOutOfDate, onSuccessfulSubscription };
 }
 
@@ -86,6 +87,7 @@ interface Subscription<
 
   interfaceApiName?: string;
   primaryKeyPropertyName?: string;
+  loadRids: boolean;
 }
 
 function isReady<
@@ -189,6 +191,7 @@ export class ObjectSetListenerWebsocket {
     objectSet: ObjectSet,
     listener: ObjectSetSubscription.Listener<Q, P>,
     properties: Array<P> = [],
+    shouldLoadRids: boolean = false,
   ): Promise<() => void> {
     const objOrInterfaceDef = objectType.type === "object"
       ? await this.#client.ontologyProvider.getObjectDefinition(
@@ -206,11 +209,13 @@ export class ObjectSetListenerWebsocket {
     }
 
     objectProperties = properties.filter((p) =>
-      objOrInterfaceDef.properties[p].type !== "geotimeSeriesReference"
+      p in objOrInterfaceDef.properties
+      && objOrInterfaceDef.properties[p].type !== "geotimeSeriesReference"
     );
 
     referenceProperties = properties.filter((p) =>
-      objOrInterfaceDef.properties[p].type === "geotimeSeriesReference"
+      p in objOrInterfaceDef.properties
+      && objOrInterfaceDef.properties[p].type === "geotimeSeriesReference"
     );
 
     const sub: Subscription<Q, P> = {
@@ -228,12 +233,50 @@ export class ObjectSetListenerWebsocket {
       interfaceApiName: objOrInterfaceDef.type === "object"
         ? undefined
         : objOrInterfaceDef.apiName,
+      loadRids: shouldLoadRids,
     };
 
     this.#subscriptions.set(sub.subscriptionId, sub);
 
     // actually prepares the subscription, ensures the ws is ready, and sends
     // a subscribe message. We don't want to block on this.
+    void this.#initiateSubscribe(sub);
+
+    return () => {
+      this.#unsubscribe(sub);
+    };
+  }
+
+  /**
+   * Subscribes to a wire object set without an ontology type lookup.
+   *
+   * Used when the caller has only an object set RID and does not know (or care
+   * about) the underlying object/interface type. No properties are requested,
+   * so emitted `object` payloads carry only `$apiName` (and `$rid` when
+   * `shouldLoadRids` is true). `$primaryKey` will be `undefined`.
+   */
+  subscribeWithoutType(
+    objectSet: ObjectSet,
+    listener: ObjectSetSubscription.Listener<
+      ObjectOrInterfaceDefinition,
+      never
+    >,
+    shouldLoadRids: boolean = false,
+  ): () => void {
+    const sub: Subscription<ObjectOrInterfaceDefinition, never> = {
+      listener: fillOutListener(listener),
+      objectSet,
+      primaryKeyPropertyName: undefined,
+      requestedProperties: [],
+      requestedReferenceProperties: [],
+      status: "preparing",
+      subscriptionId: `TMP-${nextUuid()}}`,
+      interfaceApiName: undefined,
+      loadRids: shouldLoadRids,
+    };
+
+    this.#subscriptions.set(sub.subscriptionId, sub);
+
     void this.#initiateSubscribe(sub);
 
     return () => {
@@ -278,6 +321,11 @@ export class ObjectSetListenerWebsocket {
     if (process.env.NODE_ENV !== "production") {
       this.#logger?.debug("#sendSubscribeMessage()");
     }
+
+    if (this.#ws?.readyState !== WebSocket.OPEN) {
+      return;
+    }
+
     // If two calls to `.subscribe()` happen at once (or if the connection is reset),
     // we may have multiple subscriptions that don't have a subscriptionId yet,
     // so we filter those out.
@@ -300,9 +348,10 @@ export class ObjectSetListenerWebsocket {
         },
       ) => {
         return {
-          objectSet: objectSet,
+          objectSet,
           propertySet: requestedProperties,
           referenceSet: requestedReferenceProperties,
+          objectLoadingResponseOptions: { shouldLoadObjectRids: true },
         };
       }),
     };
@@ -313,7 +362,7 @@ export class ObjectSetListenerWebsocket {
         "sending subscribe message",
       );
     }
-    this.#ws?.send(JSON.stringify(subscribe));
+    this.#ws.send(JSON.stringify(subscribe));
   }
 
   #unsubscribe<Q extends ObjectOrInterfaceDefinition>(
@@ -486,7 +535,7 @@ export class ObjectSetListenerWebsocket {
     );
     const osdkObjectsWithReferenceUpdates = await Promise.all(
       referenceUpdates.map(async (o) => {
-        const osdkObjectArray = await this.#client.objectFactory2(
+        const osdkObjectArray = await this.#client.objectFactory(
           this.#client,
           [{
             __apiName: o.objectType,
@@ -498,6 +547,7 @@ export class ObjectSetListenerWebsocket {
           }],
           sub.interfaceApiName,
           {},
+          undefined,
           false,
           undefined,
           false,
@@ -535,11 +585,12 @@ export class ObjectSetListenerWebsocket {
         delete o.object[key];
       }
 
-      const osdkObjectArray = await this.#client.objectFactory2(
+      const osdkObjectArray = await this.#client.objectFactory(
         this.#client,
         [o.object],
         sub.interfaceApiName,
         {},
+        undefined,
         false,
         undefined,
         false,
@@ -549,11 +600,20 @@ export class ObjectSetListenerWebsocket {
         ),
       ) as Array<Osdk.Instance<any>>;
       const singleOsdkObject = osdkObjectArray[0] ?? undefined;
+
+      const rid = singleOsdkObject.$rid as string | undefined;
+
       return singleOsdkObject != null
-        ? {
-          object: singleOsdkObject,
-          state: o.state,
-        }
+        ? rid === undefined
+          ? {
+            object: singleOsdkObject,
+            state: o.state,
+          }
+          : {
+            object: singleOsdkObject,
+            state: o.state,
+            rid,
+          }
         : undefined;
     }));
 
@@ -713,7 +773,7 @@ export class ObjectSetListenerWebsocket {
     error: any,
   ) => {
     try {
-      sub.listener.onError({ subscriptionClosed: subscriptionClosed, error });
+      sub.listener.onError({ subscriptionClosed, error });
     } catch (onErrorError) {
       // eslint-disable-next-line no-console
       console.error(

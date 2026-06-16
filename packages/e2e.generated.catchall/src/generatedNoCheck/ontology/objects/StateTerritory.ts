@@ -16,7 +16,7 @@ import type {
 } from '@osdk/client';
 
 export namespace StateTerritory {
-  export type PropertyKeys = 'airportStateName' | 'airportStateCode' | 'country';
+  export type PropertyKeys = 'airportStateCode' | 'airportStateName' | 'country';
 
   export interface Links {
     readonly country1: $SingleLinkAccessor<Country_1>;
@@ -56,6 +56,8 @@ export interface StateTerritory extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'StateTerritory';
+  primaryKeyApiName: 'airportStateName';
+  primaryKeyType: 'string';
   __DefinitionMetadata?: {
     objectSet: StateTerritory.ObjectSet;
     props: StateTerritory.Props;
@@ -104,6 +106,8 @@ export const StateTerritory = {
   type: 'object',
   apiName: 'StateTerritory',
   osdkMetadata: $osdkMetadata,
+  primaryKeyApiName: 'airportStateName',
+  primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.98f324e1-b8f4-42ef-aee7-5c4a1494ce5e',
   },

@@ -2,7 +2,31 @@
 
 - NEVER use `any` without asking the user first. If you think you need `any`, you probably don't understand the problem
 - Projects are ESM/TypeScript - look for `.ts`/`.tsx` files, not `.js`
-- To check compilation: `cd packages/the-package && pnpm turbo typecheck`
+
+## Running Turbo Commands
+
+- NEVER use `pnpm --dir /path turbo` or `cd /path && pnpm turbo`. The `--dir` flag breaks turbo (pnpm misinterprets the path as the command to spawn).
+- Use turbo's `--filter` flag to target packages: `pnpm turbo typecheck --filter=@osdk/react`
+- To typecheck a specific package: `pnpm turbo typecheck --filter=@osdk/the-package`
+- To run tests in a package: `pnpm turbo test --filter=@osdk/the-package`
+- For vitest directly: `pnpm --dir packages/the-package vitest run`
+
+## Changesets
+
+- Every PR that changes published package code needs exactly ONE changeset per branch
+- Create manually: add `.changeset/<descriptive-name>.md` with YAML front matter listing `"@osdk/package-name": patch|minor|major` and a one-line summary
+- Check `.changeset/` before creating - do NOT create duplicate changesets on the same branch
+- Changeset summaries should be specific ("add drag-and-drop reordering to filter list" not "update filter list")
+- CI will fail if a changeset is missing for changed packages
+
+## Formatting
+
+- Format only your changed files before committing — never run bare `npx dprint fmt`, which reformats the entire repo:
+  ```sh
+  git ls-files --modified --others --exclude-standard | xargs npx dprint fmt
+  ```
+- The pre-commit hook runs `dprint check` and will reject unformatted code
+- To check without fixing: `npx dprint check`
 
 ## React Best Practices
 
@@ -26,6 +50,31 @@
 
 - Monorepo: run tests from individual packages, not root
 
+## API Extractor
+
+- When making changes to a package's public API (exports, types, function signatures), run API extractor: `pnpm turbo check-api --filter=@osdk/the-package`
+- This updates the API report in `etc/<package>.report.api.md` — commit the updated report
+- API extractor requires transpiled types, so `transpileTypes` runs automatically as a dependency
+
+## Quickinfo Snapshot Tests
+
+- `@osdk/api` has a quickinfo snapshot harness at `packages/api/src/__quickinfo_snapshot__/` that pins the hover-tooltip type strings for high-traffic SDK surfaces (ObjectSet methods, Osdk.Instance, AggregationsResults, Actions, Queries, …)
+- If a snapshot test fails after a type-graph refactor: run `pnpm updateSnapshots --filter=@osdk/api`, inspect the resulting `__snapshots__/*.snap` diff, and confirm the change is intentional before committing
+- Read `packages/api/src/__quickinfo_snapshot__/README.md` before adding new probes — the "Philosophy" section spells out the load-bearing rule (probes must render the same string TS shows on hover; no `Expand<T>`/`Force<T>`-style helpers)
+
+## Pre-Push Verification
+
+- Before pushing to a PR, run `pnpm turbo transpile` globally to ensure all packages compile
+- This catches cross-package build issues that per-package checks may miss
+
 ## Code Maintenance Best Practices
 
 - Do not fix diagnostic warnings in old code
+
+## Updating Platform SDKs
+
+- `@osdk/foundry.*` and `@osdk/internal.foundry.*` versions are pinned in the `foundry-platform-typescript` catalog in `pnpm-workspace.yaml`
+- To bump: update the catalog versions, run `pnpm install`, then fix type errors iteratively with `pnpm turbo typecheck` until all packages pass
+- Common breakages: new variants in `QueryDataType` discriminated unions (find exhaustive switches via `const _: never`), new required fields on types like `QueryTypeV2` in test stubs, and fields becoming optional
+- After fixing types, update snapshots with `pnpm vitest run --update` in affected packages
+- Validate with `pnpm check` before finalizing the PR

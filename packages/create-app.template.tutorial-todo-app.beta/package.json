@@ -1,7 +1,7 @@
 {
   "name": "@osdk/create-app.template.tutorial-todo-app.beta",
   "private": true,
-  "version": "2.7.0-beta.8",
+  "version": "2.33.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -27,8 +27,8 @@
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "codegen": "create-app.template-packager",
-    "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
-    "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "fix-lint": "eslint . --fix && dprint fmt",
+    "lint": "eslint . && dprint check",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
     "transpileTypes": "monorepo.tool.transpile -f esm -m types -t node",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
@@ -58,7 +58,7 @@
     "globals": "^15.15.0",
     "typescript": "~5.5.4",
     "typescript-eslint": "^8.43.0",
-    "vite": "^6.3.6",
+    "vite": "^7.3.1",
     "vitest": "^3.2.4"
   },
   "publishConfig": {

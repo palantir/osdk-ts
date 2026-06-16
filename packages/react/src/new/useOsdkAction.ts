@@ -23,9 +23,10 @@ import { ActionValidationError } from "@osdk/client";
 import type {
   ActionSignatureFromDef,
   ObservableClient,
-} from "@osdk/client/unstable-do-not-use";
+} from "@osdk/client/observable";
 import React from "react";
-import { OsdkContext2 } from "./OsdkContext2.js";
+import { useDevToolsMetadata } from "./makeExternalStore.js";
+import { OsdkContext } from "./OsdkContext.js";
 
 type ApplyActionParams<Q extends ActionDefinition<any>> =
   & Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0]
@@ -67,7 +68,8 @@ export interface UseOsdkActionResult<Q extends ActionDefinition<any>> {
 export function useOsdkAction<Q extends ActionDefinition<any>>(
   actionDef: Q,
 ): UseOsdkActionResult<Q> {
-  const { observableClient } = React.useContext(OsdkContext2);
+  const { observableClient, devtoolsEnabled } = React.useContext(OsdkContext);
+  useDevToolsMetadata(devtoolsEnabled, "useOsdkAction", actionDef.apiName);
   const [error, setError] = React.useState<UseOsdkActionResult<Q>["error"]>();
   const [data, setData] = React.useState<ActionEditResponse | undefined>();
   const [isPending, setPending] = React.useState(false);
@@ -128,6 +130,7 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
       } else {
         setError({ unknown: e });
       }
+      throw e;
     } finally {
       setPending(false);
     }
@@ -143,9 +146,7 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
       }
 
       // Abort any existing validation
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
+      abortControllerRef.current?.abort();
 
       // Create new AbortController
       const abortController = new AbortController();
@@ -185,13 +186,11 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
   // Cleanup on unmount
   React.useEffect(() => {
     return () => {
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
+      abortControllerRef.current?.abort();
     };
   }, []);
 
-  return {
+  return React.useMemo(() => ({
     applyAction,
     validateAction,
     error,
@@ -199,5 +198,13 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
     isPending,
     isValidating,
     validationResult,
-  };
+  }), [
+    applyAction,
+    validateAction,
+    error,
+    data,
+    isPending,
+    isValidating,
+    validationResult,
+  ]);
 }

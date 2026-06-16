@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { __EXPERIMENTAL__NOT_SUPPORTED_YET__subscribeToNoTypeObjectSet } from "@osdk/api/unstable";
+import { createAndFetchTempObjectSetRid } from "@osdk/client/internal";
 import {
   $Actions,
   MtaBus,
@@ -22,10 +24,11 @@ import {
 } from "@osdk/e2e.generated.catchall";
 import { client, dsClient } from "./client.js";
 
-export function runSubscriptionsTest(): void {
+export async function runSubscriptionsTest(): Promise<void> {
   normalSubscription();
   interfaceSubscription();
   referenceUpdateSubscription();
+  await noTypeObjectSetSubscription();
 }
 
 function normalSubscription() {
@@ -70,7 +73,7 @@ function normalSubscription() {
           });
         },
       },
-      { properties: ["stringProperty"] },
+      { properties: ["stringProperty"], includeRid: true },
     );
 }
 
@@ -133,6 +136,42 @@ function referenceUpdateSubscription() {
         }, 10000);
       },
     },
+  );
+}
+
+async function noTypeObjectSetSubscription() {
+  const objectSetRid = await createAndFetchTempObjectSetRid(
+    client,
+    client(OsdkTestObject),
+  );
+  const subscription = client(
+    __EXPERIMENTAL__NOT_SUPPORTED_YET__subscribeToNoTypeObjectSet,
+  ).subscribeToNoTypeObjectSet(
+    objectSetRid,
+    {
+      onChange(object) {
+        console.log(
+          "No-type object set change for $apiName ",
+          object.object.$apiName,
+          " $rid ",
+          object.object.$rid,
+        );
+      },
+      onError(err) {
+        console.error("Error in no-type object set subscription: ", err);
+      },
+      onOutOfDate() {
+        console.log("No-type object set subscription out of date");
+      },
+      onSuccessfulSubscription() {
+        console.log("Subscribed to no-type object set ", objectSetRid);
+        setTimeout(() => {
+          console.log("Unsubscribing from no-type object set");
+          subscription.unsubscribe();
+        }, 10000);
+      },
+    },
+    { includeRid: true },
   );
 }
 

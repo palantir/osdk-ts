@@ -50,16 +50,19 @@ export interface deleteOsdkTestObject extends ActionDefinition<deleteOsdkTestObj
     rid: 'ri.actions.main.action-type.3858bab4-49c7-4fdf-a780-6ccbc359d817';
     status: 'EXPERIMENTAL';
     type: 'action';
+    unsanitizedApiName: 'delete-osdk-test-object';
 
     signatures: deleteOsdkTestObject.Signatures;
   };
   apiName: 'deleteOsdkTestObject';
   type: 'action';
+  unsanitizedApiName: 'delete-osdk-test-object';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const deleteOsdkTestObject: deleteOsdkTestObject = {
   apiName: 'deleteOsdkTestObject',
   type: 'action',
+  unsanitizedApiName: 'delete-osdk-test-object',
   osdkMetadata: $osdkMetadata,
 };

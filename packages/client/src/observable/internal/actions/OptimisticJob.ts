@@ -88,7 +88,7 @@ export class OptimisticJob {
         return this;
       },
       createObject(type, pk, properties) {
-        const create = store.client[additionalContext].objectFactory2(
+        const create = store.client[additionalContext].objectFactory(
           store.client[additionalContext],
           [{
             $primaryKey: pk,
@@ -98,6 +98,7 @@ export class OptimisticJob {
           }],
           undefined,
           {},
+          undefined,
         ).then(objs => {
           return objs[0];
         });

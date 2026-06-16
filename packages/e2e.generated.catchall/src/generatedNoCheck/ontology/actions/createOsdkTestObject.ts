@@ -72,16 +72,19 @@ export interface createOsdkTestObject extends ActionDefinition<createOsdkTestObj
     rid: 'ri.actions.main.action-type.75c72b90-815b-48df-a3b3-314af2e9e2eb';
     status: 'EXPERIMENTAL';
     type: 'action';
+    unsanitizedApiName: 'create-osdk-test-object';
 
     signatures: createOsdkTestObject.Signatures;
   };
   apiName: 'createOsdkTestObject';
   type: 'action';
+  unsanitizedApiName: 'create-osdk-test-object';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const createOsdkTestObject: createOsdkTestObject = {
   apiName: 'createOsdkTestObject',
   type: 'action',
+  unsanitizedApiName: 'create-osdk-test-object',
   osdkMetadata: $osdkMetadata,
 };

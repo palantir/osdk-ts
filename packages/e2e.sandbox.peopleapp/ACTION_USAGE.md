@@ -11,7 +11,7 @@ There are two main ways to use actions in your app:
 The `useOsdkAction` hook is the recommended approach for most use cases. It provides built-in state management, error handling, and support for optimistic updates.
 
 ```tsx
-import { useOsdkAction } from "@osdk/react/experimental";
+import { useOsdkAction } from "@osdk/react";
 import { modifyEmployee } from "../generatedNoCheck2/index.js";
 
 function AssignOfficeButton({ employee }) {
@@ -154,7 +154,7 @@ function AssignOfficeButton({ employee }) {
 ## Example: Complete Implementation with useOsdkAction
 
 ```tsx
-import { useOsdkAction } from "@osdk/react/experimental";
+import { useOsdkAction } from "@osdk/react";
 import { useCallback, useState } from "react";
 import { Employee, modifyEmployee } from "../generatedNoCheck2/index.js";
 

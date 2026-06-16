@@ -44,17 +44,17 @@ export namespace moveOffice {
     /**
      * The office's new physical address (not necessarily shipping address)
      */
-    readonly newAddress?: ActionParam.PrimitiveType<'string'>;
+    readonly newAddress?: ActionParam.PrimitiveType<'string'> | null;
     /**
      * The maximum seated-at-desk capacity of the new office (maximum fire-safe capacity may be higher)
      */
-    readonly newCapacity?: ActionParam.PrimitiveType<'integer'>;
+    readonly newCapacity?: ActionParam.PrimitiveType<'integer'> | null;
 
     readonly officeId: ActionParam.PrimitiveType<'string'>;
     /**
      * A list of all office names
      */
-    readonly officeNames?: ReadonlyArray<ActionParam.PrimitiveType<'integer'>>;
+    readonly officeNames?: ReadonlyArray<ActionParam.PrimitiveType<'integer'>> | null;
   }
 
   // Represents a fqn of the action
@@ -76,6 +76,11 @@ export namespace moveOffice {
 
 /**
  * Update an office's physical location
+ *
+ * **Note on null values:** _For optional parameters, explicitly providing a null value instead of undefined
+ * can change the behavior of the applied action. If prefills are configured, null prevents them
+ * from being applied. If a parameter modifies an object's property, null will clear the data from
+ * the object, whereas undefined would not modify that property._
  * @param {ActionParam.PrimitiveType<"string">} [newAddress] The office's new physical address (not necessarily shipping address)
  * @param {ActionParam.PrimitiveType<"integer">} [newCapacity] The maximum seated-at-desk capacity of the new office (maximum fire-safe capacity may be higher)
  * @param {ActionParam.PrimitiveType<"string">} officeId
@@ -95,16 +100,19 @@ export interface moveOffice extends ActionDefinition<moveOffice.Signatures> {
     rid: 'ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2';
     status: 'ACTIVE';
     type: 'action';
+    unsanitizedApiName: 'move-office';
 
     signatures: moveOffice.Signatures;
   };
   apiName: 'moveOffice';
   type: 'action';
+  unsanitizedApiName: 'move-office';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const moveOffice: moveOffice = {
   apiName: 'moveOffice',
   type: 'action',
+  unsanitizedApiName: 'move-office',
   osdkMetadata: $osdkMetadata,
 };

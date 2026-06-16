@@ -38,19 +38,41 @@ export namespace ObserveLinks {
     L extends keyof CompileTimeMetadata<Q>["links"] & string,
   > extends CommonObserveOptions, ObserveOptions {
     srcType: Pick<Q, "type" | "apiName">;
+    sourceUnderlyingObjectType: string;
     pk: PrimaryKeyType<Q>;
     linkName: L;
     where?: WhereClause<CompileTimeMetadata<Q>["links"][L]["targetType"]>;
+    select?: readonly string[];
     pageSize?: number;
     orderBy?: OrderBy<CompileTimeMetadata<Q>["links"][L]["targetType"]>;
     invalidationMode?: InvalidationMode;
     expectedLength?: number;
+
+    /**
+     * When true, includes all properties of the underlying concrete object type
+     * when the link target is an interface. Has no effect for non-interface
+     * targets.
+     */
+    $includeAllBaseObjectProperties?: boolean;
+
+    /**
+     * When traversing to linked objects via an interface link target, return
+     * the full concrete object type instances instead of interface views.
+     * Has no effect when the link target is already an object type.
+     *
+     * @default false
+     */
+    resolveToObjectType?: boolean;
   }
 
   export interface CallbackArgs<
     T extends ObjectTypeDefinition | InterfaceDefinition,
   > {
-    resolvedList: Osdk.Instance<T>[];
+    resolvedList: Osdk.Instance<T, "$allBaseProperties">[] | undefined;
+    linkedObjectsBySourcePrimaryKey: ReadonlyMap<
+      string | number,
+      ReadonlyArray<Osdk.Instance<T, "$allBaseProperties">>
+    >;
     isOptimistic: boolean;
     lastUpdated: number;
     fetchMore: () => Promise<void>;
@@ -66,7 +88,10 @@ export interface ObserveLinks {
   >(
     objects: Osdk.Instance<T> | ReadonlyArray<Osdk.Instance<T>>,
     linkName: L,
-    options: Omit<ObserveLinks.Options<T, L>, "srcType" | "pk">,
+    options: Omit<
+      ObserveLinks.Options<T, L>,
+      "srcType" | "pk" | "sourceUnderlyingObjectType"
+    >,
     subFn: Observer<
       ObserveLinks.CallbackArgs<
         CompileTimeMetadata<T>["links"][L]["targetType"]

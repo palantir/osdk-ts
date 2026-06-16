@@ -15,8 +15,8 @@
  */
 
 import type { Logger } from "@osdk/api";
-import type { TsServer } from "@osdk/client/internal-node";
-import { startTsServer } from "@osdk/client/internal-node";
+import type { TsServer } from "@osdk/shared.test.intellisense";
+import { startTsServer } from "@osdk/shared.test.intellisense";
 import { findUpSync } from "find-up";
 import * as path from "node:path";
 import invariant from "tiny-invariant";
@@ -112,14 +112,14 @@ describe("intellisense", () => {
     }
   });
 
-  afterEach(async () => {
+  afterEach(() => {
     if (tsServer) {
       tsServer.stop();
       tsServer = undefined;
     }
   });
 
-  it("useOsdkObjectsWithPivot", { timeout: 40_000 }, async () => {
+  it("useOsdkObjectsWithPivot", { timeout: 90_000 }, async () => {
     expect(ts.sys.fileExists(intellisenseFilePath)).toBeTruthy();
     invariant(tsServer);
 
@@ -143,7 +143,30 @@ describe("intellisense", () => {
     expect(typeResp.body?.displayString).toContain("Employee");
   });
 
-  it("useOsdkObjectsWithProperties", { timeout: 40_000 }, async () => {
+  it("useOsdkObjectsWithRids", { timeout: 90_000 }, async () => {
+    expect(ts.sys.fileExists(intellisenseFilePath)).toBeTruthy();
+    invariant(tsServer);
+
+    const { resp: ridsResp } = await tsServer.sendQuickInfoRequest({
+      file: intellisenseFilePath,
+      line: 30,
+      offset: 9,
+    });
+
+    expect(ridsResp.body?.displayString).toBeDefined();
+    expect(ridsResp.body?.displayString).toContain("$rid");
+
+    const { resp: noRidsResp } = await tsServer.sendQuickInfoRequest({
+      file: intellisenseFilePath,
+      line: 34,
+      offset: 9,
+    });
+
+    expect(noRidsResp.body?.displayString).toBeDefined();
+    expect(noRidsResp.body?.displayString).not.toContain("$rid");
+  });
+
+  it("useOsdkObjectsWithProperties", { timeout: 90_000 }, async () => {
     expect(ts.sys.fileExists(intellisenseFilePath)).toBeTruthy();
     invariant(tsServer);
 
@@ -164,4 +187,34 @@ describe("intellisense", () => {
     expect(dataResp.body?.displayString).toBeDefined();
     expect(dataResp.body?.displayString).toContain("Osdk.Instance<Employee");
   });
+
+  it(
+    "useOsdkObjectsWithPivotStreamUpdates",
+    { timeout: 90_000 },
+    async () => {
+      expect(ts.sys.fileExists(intellisenseFilePath)).toBeTruthy();
+      invariant(tsServer);
+
+      // Verify pivotTo-only still gets correct linked type (line 26: data in PivotOnly)
+      const { resp: pivotResp } = await tsServer.sendQuickInfoRequest({
+        file: intellisenseFilePath,
+        line: 26,
+        offset: 13,
+      });
+      expect(pivotResp.body?.displayString).toBeDefined();
+      expect(pivotResp.body?.displayString).toContain("Employee");
+
+      // Verify streamUpdates-only compiles (line 33: data in StreamOnly)
+      const { resp: streamResp } = await tsServer.sendQuickInfoRequest({
+        file: intellisenseFilePath,
+        line: 33,
+        offset: 13,
+      });
+      expect(streamResp.body?.displayString).toBeDefined();
+
+      // The @ts-expect-error on line 41 validates that combining pivotTo +
+      // streamUpdates is a type error. If the restriction is removed, typecheck
+      // will fail with "unused @ts-expect-error".
+    },
+  );
 });

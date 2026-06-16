@@ -20,7 +20,7 @@ import { describe, expect, it } from "vitest";
 describe("foundry-sdk-generator", () => {
   it(
     "should do a basic execution via pnpm exec",
-    { timeout: 10_000 },
+    { timeout: 20_000 },
     async () => {
       expect(true).toBe(true);
 

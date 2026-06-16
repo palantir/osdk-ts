@@ -1,5 +1,197 @@
 # @osdk/functions
 
+## 1.13.0
+
+### Minor Changes
+
+- c4d39ed: Added support for Byte and Short types in @osdk/functions
+- b6f0fc3: Added FunctionConfig and Scope experimental types
+- 79f8a6e: Stop serializing GeoJSON `Point` geometries into a `"lat,lon"` string when sending object property/parameter values. This broke geoshape values that are Points (the transaction edits and action endpoints rejected `"lat,lon"` with `InvalidTransactionEditPropertyValue` / invalid parameter for `GeoShape`). GeoJSON values are now passed through as objects, which the server accepts for both geoshape and geopoint/geohash targets. The FauxFoundry geohash action-parameter validator now also accepts GeoJSON objects, matching the real server.
+
+### Patch Changes
+
+- Updated dependencies [06adca1]
+- Updated dependencies [79f8a6e]
+  - @osdk/client@2.32.0
+
+## 1.12.0
+
+### Minor Changes
+
+- 13132b8: Fix writeable client reads not flushing staged edits: persist `flushEdits` onto the client context and wire it to the EditRequestManager so awaiting a read (fetchOne/fetchPage/aggregate/query) flushes pending creates/updates first.
+
+### Patch Changes
+
+- Updated dependencies [a5066b5]
+- Updated dependencies [3e03544]
+- Updated dependencies [13132b8]
+  - @osdk/client@2.28.0
+
+## 1.11.0
+
+### Minor Changes
+
+- 21003f1: Export additional GeoJSON subtypes (GeometryCollection, LineString, MultiLineString, MultiPoint, MultiPolygon, Polygon) alongside Geometry and Point.
+
+### Patch Changes
+
+- @osdk/client@2.26.0
+
+## 1.10.0
+
+### Minor Changes
+
+- 51b3bce: Modify uploadMedia to return a Media object
+
+### Patch Changes
+
+- Updated dependencies [f90a2da]
+- Updated dependencies [9eb67e4]
+- Updated dependencies [51b3bce]
+- Updated dependencies [75f877f]
+  - @osdk/client@2.20.0
+
+## 1.9.0
+
+### Minor Changes
+
+- 56c5630: Drop redundant `--config $(find-up dprint.json)` from `lint`, `fix-lint`, and `format` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the substitution was a no-op anyway since `find-up` is an npm package, not a CLI. Also fix the `uploadMediaOntologyEdits` documentation example so its `// @ts-ignore` survives dprint reformatting (the broken `format` step had been masking this).
+
+### Patch Changes
+
+- Updated dependencies [56c5630]
+- Updated dependencies [17d7ba2]
+  - @osdk/client@2.16.0
+
+## 1.8.0
+
+### Minor Changes
+
+- 2c51525: Add `Aliases.source` API for resolving egress connection aliases
+
+### Patch Changes
+
+- Updated dependencies [f12977d]
+- Updated dependencies [eb36e21]
+- Updated dependencies [d892397]
+- Updated dependencies [c5a6047]
+- Updated dependencies [45be476]
+- Updated dependencies [20e9678]
+  - @osdk/client@2.14.0
+
+## 1.7.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [29ab35a]
+- Updated dependencies [0fb9c8a]
+- Updated dependencies [f01a8f4]
+- Updated dependencies [f34a1ce]
+- Updated dependencies [7e7f70b]
+  - @osdk/client@2.10.0
+
+## 1.6.0
+
+### Minor Changes
+
+- 776ae8a: Simulated release
+- 7538b79: Allow link/unlink edits for ONE direction links
+- 0a0d7cb: Filter out $ prefixed properties when creating or updating objects in writeable client
+- 35f2f1a: Add Media inputs/outputs for Queries
+- 34a5ad2: Add helper functions for resolving custom and model aliases in functions
+
+### Patch Changes
+
+- Updated dependencies [322c5bc]
+- Updated dependencies [c40444b]
+- Updated dependencies [09e5659]
+- Updated dependencies [abb0e0f]
+- Updated dependencies [fceb4ce]
+- Updated dependencies [520398c]
+- Updated dependencies [73e617e]
+- Updated dependencies [cbfa135]
+- Updated dependencies [c8384de]
+- Updated dependencies [f294f5a]
+- Updated dependencies [dfc8019]
+- Updated dependencies [599426b]
+- Updated dependencies [e64bf0b]
+- Updated dependencies [27a5902]
+- Updated dependencies [f4604c2]
+- Updated dependencies [642be5f]
+- Updated dependencies [baba327]
+- Updated dependencies [8825f8c]
+- Updated dependencies [2b01323]
+- Updated dependencies [8c60682]
+- Updated dependencies [dda14be]
+- Updated dependencies [ffc6efe]
+- Updated dependencies [2855223]
+- Updated dependencies [15e1686]
+- Updated dependencies [26cec61]
+- Updated dependencies [d1ad4d1]
+- Updated dependencies [0d174a2]
+- Updated dependencies [d284bf2]
+- Updated dependencies [4ef6adc]
+- Updated dependencies [2ebe62c]
+- Updated dependencies [60b5ffb]
+- Updated dependencies [abb0e0f]
+- Updated dependencies [8c30908]
+- Updated dependencies [4cd7389]
+- Updated dependencies [92e7297]
+- Updated dependencies [35f2f1a]
+- Updated dependencies [c9d954d]
+- Updated dependencies [044eb80]
+- Updated dependencies [9d234b9]
+- Updated dependencies [f5f95e2]
+- Updated dependencies [46f0a47]
+- Updated dependencies [4470c0d]
+- Updated dependencies [d80c234]
+- Updated dependencies [61e33ab]
+- Updated dependencies [71e28ef]
+- Updated dependencies [5848e3c]
+  - @osdk/client@2.8.0
+
+## 1.6.0-beta.4
+
+### Minor Changes
+
+- 7538b79: Allow link/unlink edits for ONE direction links
+- 34a5ad2: Add helper functions for resolving custom and model aliases in functions
+
+### Patch Changes
+
+- Updated dependencies [09e5659]
+- Updated dependencies [2ebe62c]
+  - @osdk/client@2.8.0-beta.16
+
+## 1.6.0-beta.3
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+### Patch Changes
+
+- Updated dependencies [e64bf0b]
+- Updated dependencies [baba327]
+- Updated dependencies [d1ad4d1]
+- Updated dependencies [35f2f1a]
+- Updated dependencies [71e28ef]
+  - @osdk/client@2.8.0-beta.14
+
+## 1.6.0-beta.2
+
+### Minor Changes
+
+- 0a0d7cb: Filter out $ prefixed properties when creating or updating objects in writeable client
+
+### Patch Changes
+
+- @osdk/client@2.8.0-beta.8
+
 ## 1.5.0-beta.4
 
 ### Minor Changes

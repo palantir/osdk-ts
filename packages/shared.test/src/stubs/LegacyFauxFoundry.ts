@@ -21,6 +21,7 @@ import { registerLazyActions } from "./actions.js";
 import { ActionTypeWithUnsupportedTypes, editTodo } from "./actionTypes.js";
 import { BarInterface, FooInterface } from "./interfaceTypes.js";
 import {
+  basicPropertySecurities,
   employee1 as employee_John_50030,
   employee2 as employee_Jane_50031,
   employee3,
@@ -31,7 +32,9 @@ import {
   objectWithAllPropertyTypes1,
   objectWithAllPropertyTypes2,
   objectWithAllPropertyTypesEmptyEntries,
+  securedEmployee,
   travisPlayer,
+  unsecuredEmployee,
 } from "./objects.js";
 import { objectTypesWithLinkTypes } from "./objectTypesWithLinkTypes.js";
 import { defaultOntologyMetadata } from "./ontologies/defaultOntologyMetadata.js";
@@ -98,6 +101,12 @@ export class LegacyFauxFoundry extends FauxFoundry {
       employee_Jane_50031,
       "peeps",
     );
+    legacyFauxDataStore.registerObjectWithPropertySecurities(
+      unsecuredEmployee,
+      securedEmployee,
+      basicPropertySecurities,
+    );
+
     legacyFauxDataStore.registerLink(
       employee3,
       "lead",

@@ -21,6 +21,7 @@ import * as crypto from "node:crypto";
 import { OntologyNotFoundError } from "../errors.js";
 import { createFauxFoundryHandlers } from "../handlers/createFauxFoundryHandlers.js";
 import { OpenApiCallError } from "../handlers/util/handleOpenApiCall.js";
+import { FauxAdmin } from "./FauxAdmin.js";
 import { FauxAttachmentStore } from "./FauxAttachmentStore.js";
 import { FauxDataStore } from "./FauxDataStore.js";
 import { FauxOntology } from "./FauxOntology.js";
@@ -33,6 +34,7 @@ export class FauxFoundry {
 
   #handlers: RequestHandler[];
 
+  readonly admin: FauxAdmin = new FauxAdmin();
   readonly attachments: FauxAttachmentStore = new FauxAttachmentStore();
   readonly baseUrl: string;
   readonly defaultOntologyRid: any;
@@ -67,6 +69,10 @@ export class FauxFoundry {
 
   getDefaultDataStore(): FauxDataStore {
     return this.getDataStore(this.defaultOntologyRid);
+  }
+
+  getAdmin(): FauxAdmin {
+    return this.admin;
   }
 
   createOntology(metadata: OntologyV2): FauxOntology {

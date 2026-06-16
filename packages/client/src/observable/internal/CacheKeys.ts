@@ -95,23 +95,13 @@ export class CacheKeys<TCacheKey extends CacheKey> {
     type: K["type"],
     ...args: K["__cacheKey"]["args"]
   ): K {
-    // Normalize trailing undefined values to ensure consistent cache key creation
-    // This makes get("object", "Foo", 1, undefined) === get("object", "Foo", 1)
-    const normalizedArgs = [...args];
-    while (
-      normalizedArgs.length > 0
-      && normalizedArgs[normalizedArgs.length - 1] === undefined
-    ) {
-      normalizedArgs.pop();
-    }
-
-    const cacheKeyArgs = [type, ...normalizedArgs];
+    const cacheKeyArgs = this.#normalizeArgs(type, args);
     if (process.env.NODE_ENV !== "production" && DEBUG_CACHE_KEYS) {
       // eslint-disable-next-line no-console
       console.debug(
         `CacheKeys.get([${type},
         ${
-          normalizedArgs.map(x => JSON.stringify(x)).join(", ")
+          cacheKeyArgs.slice(1).map(x => JSON.stringify(x)).join(", ")
         }]) - already exists? `,
         this.#cacheKeys.peekArray(cacheKeyArgs) != null,
       );
@@ -126,6 +116,35 @@ export class CacheKeys<TCacheKey extends CacheKey> {
     this.#refCounts.register(cacheKey);
 
     return cacheKey;
+  }
+
+  /**
+   * Look up an existing cache key without creating or registering it.
+   * Returns undefined if the key does not exist in the trie.
+   */
+  peek<K extends TCacheKey>(
+    type: K["type"],
+    ...args: K["__cacheKey"]["args"]
+  ): K | undefined {
+    return this.#cacheKeys.peekArray(
+      this.#normalizeArgs(type, args),
+    ) as K | undefined;
+  }
+
+  #normalizeArgs(
+    type: TCacheKey["type"],
+    args: unknown[],
+  ): unknown[] {
+    // Normalize trailing undefined values to ensure consistent cache key lookup
+    // This makes ("object", "Foo", 1, undefined) equivalent to ("object", "Foo", 1)
+    const normalizedArgs = [...args];
+    while (
+      normalizedArgs.length > 0
+      && normalizedArgs[normalizedArgs.length - 1] === undefined
+    ) {
+      normalizedArgs.pop();
+    }
+    return [type, ...normalizedArgs];
   }
 
   retain(cacheKey: TCacheKey): void {

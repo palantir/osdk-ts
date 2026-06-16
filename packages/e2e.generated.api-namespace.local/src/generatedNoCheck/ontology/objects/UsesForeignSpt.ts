@@ -15,7 +15,7 @@ import type {
 } from '@osdk/client';
 
 export namespace UsesForeignSpt {
-  export type PropertyKeys = 'id' | 'body';
+  export type PropertyKeys = 'body' | 'id';
 
   export type Links = {};
 
@@ -49,6 +49,8 @@ export interface UsesForeignSpt extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'UsesForeignSpt';
+  primaryKeyApiName: 'id';
+  primaryKeyType: 'integer';
   __DefinitionMetadata?: {
     objectSet: UsesForeignSpt.ObjectSet;
     props: UsesForeignSpt.Props;
@@ -91,6 +93,8 @@ export const UsesForeignSpt = {
   type: 'object',
   apiName: 'UsesForeignSpt',
   osdkMetadata: $osdkMetadata,
+  primaryKeyApiName: 'id',
+  primaryKeyType: 'integer',
   internalDoNotUseMetadata: {
     rid: 'theRid',
   },

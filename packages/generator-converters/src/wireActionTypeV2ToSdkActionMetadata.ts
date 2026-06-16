@@ -20,6 +20,7 @@ import type {
   ActionParameterV2,
   ActionTypeV2,
 } from "@osdk/foundry.ontologies";
+import { GeneratorError } from "./GeneratorError.js";
 import { getModifiedEntityTypes } from "./getEditedEntities.js";
 import {
   ensureStringEnumSupportedOrUndefined,
@@ -28,13 +29,17 @@ import {
 
 export function wireActionTypeV2ToSdkActionMetadata(
   input: ActionTypeV2,
+  unsanitizedApiName?: string,
 ): ActionMetadata {
   const modifiedEntityTypes = getModifiedEntityTypes(input);
   return {
     type: "action",
     apiName: input.apiName,
+    unsanitizedApiName: unsanitizedApiName ?? input.apiName,
     parameters: Object.fromEntries(
-      Object.entries(input.parameters).map((
+      Object.entries(input.parameters).sort(
+        ([a], [b]) => a.localeCompare(b),
+      ).map((
         [key, value],
       ) => [key, wireActionParameterV2ToSdkParameterDefinition(value)]),
     ),
@@ -95,6 +100,8 @@ function actionPropertyToSdkPropertyDefinition(
         type: "interface",
         interface: parameterType.interfaceTypeApiName,
       };
+    case "scenarioReference":
+      return "scenarioReference";
     case "struct":
       return {
         type: "struct",
@@ -121,9 +128,9 @@ function actionPropertyToSdkPropertyDefinition(
         ),
       };
     default:
-      throw new Error(
-        `Unsupported action parameter type: ${JSON.stringify(parameterType)}`,
-      );
+      throw new GeneratorError("Unsupported action parameter type", {
+        parameterType: JSON.stringify(parameterType),
+      });
   }
 }
 

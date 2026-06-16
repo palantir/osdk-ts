@@ -20,22 +20,27 @@ import type {
   SharedPropertyTypeGothamMapping,
   Visibility,
 } from "@osdk/client.unstable";
+import type { EntityPermission } from "../common/EntityPermission.js";
 import type { OntologyEntityBase } from "../common/OntologyEntityBase.js";
 import type { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";
 import type { TypeClass } from "../common/TypeClass.js";
 import type { Nullability } from "./Nullability.js";
 import type { PropertyTypeType } from "./PropertyTypeType.js";
+import type { ReducerType } from "./ReducerType.js";
 
 export interface SharedPropertyType extends OntologyEntityBase, PropertyType {
   apiName: string;
   nonNameSpacedApiName: string;
+  aliases?: Array<string>;
   gothamMapping?: SharedPropertyTypeGothamMapping;
   baseFormatter?: OntologyIrBaseFormatter;
+  permission?: EntityPermission;
   __type: OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE;
 }
 export interface PropertyType {
   type: PropertyTypeType;
   array?: boolean;
+  reducers?: Array<ReducerType>;
   description?: string;
   displayName?: string;
   valueType?: OntologyIrValueTypeReferenceWithMetadata;

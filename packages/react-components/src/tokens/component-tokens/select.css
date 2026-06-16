@@ -1,0 +1,7 @@
+:root {
+  /* Select popup: cap long dropdowns so they scroll inside the popup instead
+     of growing to fill the available viewport/dialog height. The component
+     still respects Base UI's `--available-height`, so short viewports can use
+     a smaller cap when there is less room around the trigger. */
+  --osdk-select-popup-max-height: 320px;
+}

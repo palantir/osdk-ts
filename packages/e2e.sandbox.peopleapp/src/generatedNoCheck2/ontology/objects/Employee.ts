@@ -189,7 +189,7 @@ export namespace Employee {
      *   display name: 'Latest Venture '
      */
     readonly latestVenture:
-      | { venture: $PropType['string'] | undefined; days: $PropType['integer'] | undefined }
+      | { days: $PropType['integer'] | undefined; venture: $PropType['string'] | undefined }
       | undefined;
     /**
      * @experimental
@@ -316,6 +316,8 @@ export interface Employee extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'Employee';
+  primaryKeyApiName: 'employeeNumber';
+  primaryKeyType: 'integer';
   __DefinitionMetadata?: {
     objectSet: Employee.ObjectSet;
     props: Employee.Props;
@@ -592,6 +594,8 @@ export const Employee = {
   type: 'object',
   apiName: 'Employee',
   osdkMetadata: $osdkMetadata,
+  primaryKeyApiName: 'employeeNumber',
+  primaryKeyType: 'integer',
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.ade16a88-ecc4-4f96-9751-ca1799247d64',
   },

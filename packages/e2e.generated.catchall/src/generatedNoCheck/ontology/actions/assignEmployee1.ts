@@ -72,16 +72,19 @@ export interface assignEmployee1 extends ActionDefinition<assignEmployee1.Signat
     rid: 'ri.a.b.c.d';
     status: 'ACTIVE';
     type: 'action';
+    unsanitizedApiName: 'assign-employee-1';
 
     signatures: assignEmployee1.Signatures;
   };
   apiName: 'assignEmployee1';
   type: 'action';
+  unsanitizedApiName: 'assign-employee-1';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const assignEmployee1: assignEmployee1 = {
   apiName: 'assignEmployee1',
   type: 'action',
+  unsanitizedApiName: 'assign-employee-1',
   osdkMetadata: $osdkMetadata,
 };

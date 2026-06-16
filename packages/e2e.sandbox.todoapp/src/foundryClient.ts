@@ -10,17 +10,19 @@ invariant(
 );
 invariant(import.meta.env.VITE_FOUNDRY_URL, "VITE_FOUNDRY_URL is required");
 
+const logger = new BrowserLogger({}, { level: "debug" });
+
 const auth = createPublicOauthClient(
   import.meta.env.VITE_FOUNDRY_CLIENT_ID,
   // import.meta.env.VITE_FOUNDRY_URL,
   "http://localhost:8080",
   "http://localhost:8080/auth/callback",
-  { useHistory: true },
+  { useHistory: true, logger },
 );
 
 export const $ = createClient(
   "http://localhost:8080",
   $ontologyRid,
   auth,
-  { logger: new BrowserLogger({}, { level: "debug" }) },
+  { logger },
 );

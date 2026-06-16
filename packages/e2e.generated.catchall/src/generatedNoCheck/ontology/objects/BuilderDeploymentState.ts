@@ -15,7 +15,7 @@ import type {
 } from '@osdk/client';
 
 export namespace BuilderDeploymentState {
-  export type PropertyKeys = 'skuId' | 'date' | 'currentTimestamp';
+  export type PropertyKeys = 'currentTimestamp' | 'date' | 'skuId';
 
   export type Links = {};
 
@@ -53,6 +53,8 @@ export interface BuilderDeploymentState extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'BuilderDeploymentState';
+  primaryKeyApiName: 'skuId';
+  primaryKeyType: 'string';
   __DefinitionMetadata?: {
     objectSet: BuilderDeploymentState.ObjectSet;
     props: BuilderDeploymentState.Props;
@@ -99,6 +101,8 @@ export const BuilderDeploymentState = {
   type: 'object',
   apiName: 'BuilderDeploymentState',
   osdkMetadata: $osdkMetadata,
+  primaryKeyApiName: 'skuId',
+  primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },

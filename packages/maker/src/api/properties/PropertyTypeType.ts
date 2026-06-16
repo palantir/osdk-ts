@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { StructFieldType } from "@osdk/client.unstable";
+import type { Analyzer, StructFieldType } from "@osdk/client.unstable";
 
 export type PropertyTypeType =
   | PropertyTypeTypePrimitive
@@ -31,7 +31,8 @@ export type PropertyTypeTypePrimitive =
   | "long"
   | "short"
   | "string"
-  | "timestamp";
+  | "timestamp"
+  | "attachment";
 
 export type PropertyTypeTypeExotic =
   | "geopoint"
@@ -56,6 +57,11 @@ export type PropertyTypeTypeStruct = {
       | StructPropertyType
       | Exclude<PropertyTypeTypesWithoutStruct, PropertyTypeTypeMarking>;
   };
+  mainValue?: {
+    fields: string | Array<string>;
+    // TODO(ethana): we can infer this type from fields
+    type: PropertyTypeType;
+  };
 };
 
 type PropertyTypeTypeString = {
@@ -65,6 +71,7 @@ type PropertyTypeTypeString = {
   supportsExactMatching?: boolean;
   supportsFullTextRegex?: boolean;
   enableAsciiFolding?: boolean;
+  analyzerOverride?: Analyzer;
 };
 
 type PropertyTypeTypeDecimal = {
@@ -99,7 +106,9 @@ export function isExotic(
       type,
     );
   } else if (typeof type === "object" && type != null) {
-    return type.type === "marking" || type.type === "struct";
+    return type.type === "marking" || type.type === "struct"
+      || type.type === "string"
+      || type.type === "decimal";
   }
   return false;
 }
@@ -121,4 +130,5 @@ export interface StructPropertyType extends
   >
 {
   fieldType: PropertyTypeTypesWithoutStruct;
+  requireImplementation?: boolean;
 }

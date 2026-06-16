@@ -14,21 +14,27 @@
  * limitations under the License.
  */
 
-import type { LinkedType, LinkNames } from "@osdk/api";
 import type {
-  InterfaceDefinition,
-  ObjectTypeDefinition,
-  Osdk,
-  PropertyKeys,
-  WhereClause,
-} from "@osdk/client";
-import type { ObserveLinks } from "@osdk/client/unstable-do-not-use";
+  LinkedType,
+  LinkNames,
+  ObjectOrInterfaceDefinition,
+} from "@osdk/api";
+import type { Osdk, PropertyKeys, WhereClause } from "@osdk/client";
+import type { ObserveLinks } from "@osdk/client/observable";
 import React from "react";
-import { makeExternalStore } from "./makeExternalStore.js";
-import { OsdkContext2 } from "./OsdkContext2.js";
+import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
+import { devToolsMetadata, makeExternalStore } from "./makeExternalStore.js";
+import { OsdkContext } from "./OsdkContext.js";
+import type { ResolveToObjectTypeOption } from "./useOsdkObjects.js";
 
-export interface UseLinksOptions<
-  T extends ObjectTypeDefinition | InterfaceDefinition,
+export type UseLinksOptions<
+  T extends ObjectOrInterfaceDefinition,
+> =
+  & UseLinksBaseOptions<T>
+  & ResolveToObjectTypeOption<T>;
+
+interface UseLinksBaseOptions<
+  T extends ObjectOrInterfaceDefinition,
 > {
   /**
    * Standard OSDK Where clause for filtering linked objects
@@ -46,12 +52,27 @@ export interface UseLinksOptions<
   };
 
   /**
+   * Restrict which properties are returned for each linked object.
+   * When provided, only the specified properties will be fetched,
+   * reducing payload sizes for list views.
+   */
+  $select?: readonly PropertyKeys<T>[];
+
+  /**
    * The mode to use for fetching data.
    * - undefined: Fetch data if not already in cache
    * - "force": Always fetch fresh data
    * - "offline": Only use cached data, don't make network requests
    */
   mode?: "force" | "offline";
+
+  /**
+   * The number of milliseconds to wait after the last observed link change.
+   *
+   * Two uses of `useLinks` with the same parameters will only trigger one
+   * network request if the second is within `dedupeIntervalMs`.
+   */
+  dedupeIntervalMs?: number;
 
   /**
    * Enable or disable the query.
@@ -66,19 +87,37 @@ export interface UseLinksOptions<
    *
    * @default true
    * @example
+   * ```tsx
    * // Dependent query - wait for employee data
    * const { object: employee } = useOsdkObject(Employee, employeeId);
    * const { links: reports } = useLinks(employee, "reports", {
-   *   enabled: !!employee
+   *   enabled: !!employee,
    * });
+   * ```
    */
   enabled?: boolean;
+
+  /**
+   * When true, includes all properties of the underlying concrete object type
+   * for interface link targets. Has no effect when the link target is a plain
+   * object type.
+   */
+  $includeAllBaseObjectProperties?: boolean;
 }
 
-export interface UseLinksResult<
-  Q extends ObjectTypeDefinition | InterfaceDefinition,
-> {
-  links: Osdk.Instance<Q>[] | undefined;
+export interface UseLinksResult<Q extends ObjectOrInterfaceDefinition> {
+  links: Osdk.Instance<Q, "$allBaseProperties">[] | undefined;
+
+  /**
+   * Maps each source object's primary key to its linked object instances.
+   * Useful when observing links from multiple source objects to determine
+   * which source links to which targets.
+   */
+  linkedObjectsBySourcePrimaryKey: ReadonlyMap<
+    string | number,
+    ReadonlyArray<Osdk.Instance<Q, "$allBaseProperties">>
+  >;
+
   isLoading: boolean;
   error: Error | undefined;
 
@@ -99,6 +138,7 @@ export interface UseLinksResult<
 }
 
 const emptyArray = Object.freeze([]);
+const emptyMap: ReadonlyMap<string | number, ReadonlyArray<never>> = new Map();
 
 /**
  * Hook to observe links from an object or array of objects.
@@ -109,16 +149,33 @@ const emptyArray = Object.freeze([]);
  * @returns UseLinksResult with links data and metadata
  */
 export function useLinks<
-  T extends ObjectTypeDefinition,
+  T extends ObjectOrInterfaceDefinition,
   L extends LinkNames<T>,
 >(
   objects: Osdk.Instance<T> | Array<Osdk.Instance<T>> | undefined,
   linkName: L,
   options: UseLinksOptions<LinkedType<T, L>> = {},
 ): UseLinksResult<LinkedType<T, L>> {
-  const { observableClient } = React.useContext(OsdkContext2);
+  const { observableClient } = React.useContext(OsdkContext);
 
-  const { enabled = true, ...otherOptions } = options;
+  const {
+    enabled = true,
+    $includeAllBaseObjectProperties,
+    resolveToObjectType,
+    ...otherOptions
+  } = options;
+
+  const canonOptions = observableClient.canonicalizeOptions({
+    where: otherOptions.where,
+    orderBy: otherOptions.orderBy,
+    $select: otherOptions.$select,
+  });
+
+  const objectsKey = React.useMemo(() => {
+    if (objects === undefined) return "";
+    const arr = Array.isArray(objects) ? objects : [objects];
+    return arr.map(obj => `${obj.$apiName}:${obj.$primaryKey}`).join(",");
+  }, [objects]);
 
   // Convert single object to array for consistent handling
   const objectsArray: ReadonlyArray<Osdk.Instance<T>> = React.useMemo(() => {
@@ -127,50 +184,63 @@ export function useLinks<
       : Array.isArray(objects)
       ? objects
       : [objects];
-  }, [objects]);
+  }, [objectsKey, objects]);
 
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
       if (!enabled) {
-        return makeExternalStore<ObserveLinks.CallbackArgs<T>>(
+        return makeExternalStore<
+          ObserveLinks.CallbackArgs<LinkedType<T, L>>
+        >(
           () => ({ unsubscribe: () => {} }),
-          `links ${linkName} for ${
-            objectsArray.map(obj => `${obj.$apiName}:${obj.$primaryKey}`).join(
-              ",",
-            )
-          } [DISABLED]`,
+          devToolsMetadata({
+            hookType: "useLinks",
+            sourceObjectType: objectsArray[0]?.$apiName,
+            linkName,
+          }),
         );
       }
-      return makeExternalStore<ObserveLinks.CallbackArgs<T>>(
+      return makeExternalStore<
+        ObserveLinks.CallbackArgs<LinkedType<T, L>>
+      >(
         (observer) =>
-          observableClient.observeLinks(
+          observableClient.observeLinks<T, L>(
             objectsArray,
             linkName,
             {
               linkName,
-              where: otherOptions.where,
+              where: canonOptions.where,
               pageSize: otherOptions.pageSize,
-              orderBy: otherOptions.orderBy,
+              orderBy: canonOptions.orderBy,
               mode: otherOptions.mode,
+              dedupeInterval: otherOptions.dedupeIntervalMs ?? 2_000,
+              $includeAllBaseObjectProperties,
+              resolveToObjectType,
+              ...(canonOptions.$select ? { select: canonOptions.$select } : {}),
             },
             observer,
           ),
-        `links ${linkName} for ${
-          objectsArray.map(obj => `${obj.$apiName}:${obj.$primaryKey}`).join(
-            ",",
-          )
-        }`,
+        devToolsMetadata({
+          hookType: "useLinks",
+          sourceObjectType: objectsArray[0]?.$apiName,
+          linkName,
+        }),
       );
     },
     [
       enabled,
       observableClient,
       objectsArray,
+      objectsKey,
       linkName,
-      otherOptions.where,
+      canonOptions.where,
       otherOptions.pageSize,
-      otherOptions.orderBy,
+      canonOptions.orderBy,
       otherOptions.mode,
+      otherOptions.dedupeIntervalMs,
+      canonOptions.$select,
+      $includeAllBaseObjectProperties,
+      !!resolveToObjectType,
     ],
   );
 
@@ -179,15 +249,14 @@ export function useLinks<
     getSnapShot,
   );
 
-  return {
+  return React.useMemo(() => ({
     links: payload?.resolvedList,
-    isLoading: enabled
-      ? (payload?.status === "loading" || payload?.status === "init"
-        || !payload)
-      : false,
+    linkedObjectsBySourcePrimaryKey: payload?.linkedObjectsBySourcePrimaryKey
+      ?? emptyMap,
+    isLoading: isPayloadLoading(payload, enabled),
     isOptimistic: payload?.isOptimistic ?? false,
-    error: payload?.error,
-    fetchMore: payload?.fetchMore,
+    error: extractPayloadError(payload, "Failed to load links"),
+    fetchMore: payload?.hasMore ? payload?.fetchMore : undefined,
     hasMore: payload?.hasMore ?? false,
-  };
+  }), [payload, enabled]);
 }

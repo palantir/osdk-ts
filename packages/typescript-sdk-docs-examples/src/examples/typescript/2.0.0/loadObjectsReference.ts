@@ -21,11 +21,11 @@
 
 import { Employee } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
-import { client } from "./client.js";
 import type { Osdk, PageResult } from "@osdk/client";
+import { client } from "./client.js";
 try {
-    const responseNoErrorWrapper: PageResult<Osdk.Instance<Employee>>
-        = await client(Employee).fetchPage({ $pageSize: 30 });
+  const responseNoErrorWrapper: PageResult<Osdk.Instance<Employee>> =
+    await client(Employee).fetchPage({ $pageSize: 30 });
 } catch (e) {
-    throw e;
+  throw e;
 }

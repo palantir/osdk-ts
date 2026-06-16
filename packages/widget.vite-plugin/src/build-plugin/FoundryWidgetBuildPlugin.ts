@@ -27,11 +27,14 @@ import {
   MODULE_EVALUATION_MODE,
 } from "../common/constants.js";
 import { getInputHtmlEntrypoints } from "../common/getInputHtmlEntrypoints.js";
+import type { FoundryWidgetPluginOptions } from "../index.js";
 import { buildWidgetSetManifest } from "./buildWidgetSetManifest.js";
 import { getWidgetBuildOutputs } from "./getWidgetBuildOutputs.js";
 import { getWidgetSetInputSpec } from "./getWidgetSetInputSpec.js";
 
-export function FoundryWidgetBuildPlugin(): Plugin {
+export function FoundryWidgetBuildPlugin(
+  options?: FoundryWidgetPluginOptions,
+): Plugin {
   // The root HTML entrypoints of the build process
   let htmlEntrypoints: string[];
   // Store the resolved Vite config for use in later build steps
@@ -93,6 +96,7 @@ export function FoundryWidgetBuildPlugin(): Plugin {
           widgetSetVersion,
           widgetBuilds,
           widgetSetInputSpec,
+          options,
         );
 
         // Write the manifest to the dist directory

@@ -24,4 +24,5 @@ export const fooSpt: SharedPropertyType = {
   },
   displayName: "Foo",
   description: "A foo",
+  typeClasses: [],
 } satisfies SharedPropertyType;

@@ -13,7 +13,7 @@ const STEPS: INextStep[] = [
       "Use the Ontology SDK to interact with your Ontology and the Platform SDK to access Foundry APIs. Configure your SDKs from the <strong>Ontology SDK</strong> and <strong>Platform SDK</strong> tabs in Developer Console.",
   },
   {
-    icon: "tag",
+    icon: "rocket",
     title: "Deploy your application",
     subtitle:
       'To deploy a new version of your application, tag a new version of your repository or use the command line to run <code class="code">npx @osdk/cli@latest site deploy</code>. <a href="https://www.npmjs.com/package/@osdk/cli" class="learn-more" target="_blank" rel="noreferrer">Learn more.</a>',
@@ -25,7 +25,7 @@ const STEPS: INextStep[] = [
   <div class="next-steps">
     <h5 class="next-steps-header">Next steps</h5>
     <div v-for="step in STEPS" :key="step.title" class="next-step">
-      <img :src="`/${step.icon}.svg`" class="icon" :alt="step.icon" />
+      <img :src="`/${step.icon}.svg`" class="icon" alt="" />
       <div class="next-step-content">
         <h6 class="title">{{ step.title }}</h6>
         <div class="subtitle" v-html="step.subtitle" />

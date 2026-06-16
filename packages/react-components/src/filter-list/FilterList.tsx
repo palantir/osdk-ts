@@ -1,0 +1,248 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import type { ObjectTypeDefinition } from "@osdk/api";
+import React, { useCallback, useMemo } from "react";
+import { AddFilterPopover } from "./base/AddFilterPopover.js";
+import { BaseFilterList } from "./base/BaseFilterList.js";
+import type { RenderFilterInput } from "./base/BaseFilterListApi.js";
+import { FilterInput } from "./FilterInput.js";
+import type {
+  FilterDefinitionUnion,
+  FilterKey,
+  FilterListProps,
+} from "./FilterListApi.js";
+import { useFilterListState } from "./hooks/useFilterListState.js";
+import { useFilterVisibility } from "./hooks/useFilterVisibility.js";
+import { EMPTY_LINKED_FILTERS } from "./types/LinkedFilterTypes.js";
+import { getEmptyDisplayState } from "./utils/emptyFilterDisplayState.js";
+import { getFilterKey } from "./utils/getFilterKey.js";
+import { getFilterLabel } from "./utils/getFilterLabel.js";
+
+const EMPTY_WHERE = {};
+
+export function FilterList<Q extends ObjectTypeDefinition>(
+  props: FilterListProps<Q>,
+): React.ReactElement {
+  const {
+    objectType,
+    objectSet,
+    title,
+    titleIcon,
+    collapsed,
+    onCollapsedChange,
+    filterDefinitions,
+    addFilterMode = "uncontrolled",
+    showResetButton = false,
+    onReset,
+    showActiveFilterCount = false,
+    showFilteredOutValues = false,
+    className,
+    enableSorting,
+    onFilterAdded,
+    onFilterRemoved,
+    onFilterVisibilityChange,
+    renderAddFilterButton,
+  } = props;
+
+  const {
+    filterStates,
+    setFilterState,
+    clearFilterState,
+    perFilterWhereClauses,
+    perFilterLinkedFilters,
+    activeFilterCount,
+    hasChangesFromInitial,
+    reset,
+  } = useFilterListState(props);
+
+  const uncontrolledAddFilterMode = addFilterMode === "uncontrolled";
+
+  const handleVisibilityChange = useCallback(
+    (visibleKeys: string[], hiddenKeys: string[]) => {
+      if (!onFilterVisibilityChange) {
+        return;
+      }
+      const states: Array<{ filterKey: FilterKey<Q>; isVisible: boolean }> = [
+        ...visibleKeys.map((key) => ({
+          filterKey: key as FilterKey<Q>,
+          isVisible: true,
+        })),
+        ...hiddenKeys.map((key) => ({
+          filterKey: key as FilterKey<Q>,
+          isVisible: false,
+        })),
+      ];
+      onFilterVisibilityChange(states);
+    },
+    [onFilterVisibilityChange],
+  );
+
+  const {
+    visibleDefinitions: managedVisibleDefinitions,
+    hiddenDefinitions: managedHiddenDefinitions,
+    showFilter,
+    hideFilter,
+    reorderVisible,
+    hasVisibilityChanges,
+    resetVisibility,
+  } = useFilterVisibility(
+    filterDefinitions,
+    uncontrolledAddFilterMode ? handleVisibilityChange : undefined,
+  );
+
+  const canReset = hasChangesFromInitial || hasVisibilityChanges;
+
+  const handleReset = useCallback(() => {
+    reset();
+    resetVisibility();
+    onReset?.();
+  }, [reset, resetVisibility, onReset]);
+
+  const simpleVisibleDefinitions = useMemo(() => {
+    if (filterDefinitions == null) {
+      return undefined;
+    }
+    return filterDefinitions.filter(
+      (def: FilterDefinitionUnion<Q>) => def.isVisible !== false,
+    );
+  }, [filterDefinitions]);
+
+  const effectiveVisibleDefinitions = uncontrolledAddFilterMode
+    ? managedVisibleDefinitions
+    : simpleVisibleDefinitions;
+
+  const handleFilterRemoved = useCallback(
+    (filterKey: string) => {
+      clearFilterState(filterKey);
+      if (uncontrolledAddFilterMode) {
+        hideFilter(filterKey);
+      }
+      onFilterRemoved?.(filterKey);
+    },
+    [clearFilterState, uncontrolledAddFilterMode, hideFilter, onFilterRemoved],
+  );
+
+  const handleFilterShown = useCallback(
+    (filterKey: string) => {
+      showFilter(filterKey);
+      onFilterAdded?.(filterKey, filterDefinitions ?? []);
+    },
+    [showFilter, onFilterAdded, filterDefinitions],
+  );
+
+  const handleOrderChange = useCallback(
+    (orderedKeys: string[]) => {
+      reorderVisible(orderedKeys);
+    },
+    [reorderVisible],
+  );
+
+  const hiddenFilterItems = useMemo(
+    () =>
+      managedHiddenDefinitions.map((def) => ({
+        key: getFilterKey(def),
+        label: getFilterLabel(def),
+      })),
+    [managedHiddenDefinitions],
+  );
+
+  const effectiveRenderAddFilterButton = useMemo(() => {
+    if (uncontrolledAddFilterMode) {
+      if (managedHiddenDefinitions.length === 0) {
+        return undefined;
+      }
+      return () => (
+        <AddFilterPopover
+          hiddenDefinitions={hiddenFilterItems}
+          onShowFilter={handleFilterShown}
+          renderTrigger={renderAddFilterButton}
+        />
+      );
+    }
+    return renderAddFilterButton;
+  }, [
+    uncontrolledAddFilterMode,
+    managedHiddenDefinitions.length,
+    hiddenFilterItems,
+    handleFilterShown,
+    renderAddFilterButton,
+  ]);
+
+  const effectiveOnFilterRemoved = uncontrolledAddFilterMode
+    ? handleFilterRemoved
+    : onFilterRemoved;
+
+  const renderInput = useCallback<RenderFilterInput<FilterDefinitionUnion<Q>>>(
+    (
+      {
+        definition,
+        filterKey,
+        filterState,
+        onFilterStateChanged,
+        searchQuery,
+        excludeRowOpen,
+      },
+    ) => (
+      <FilterInput
+        objectType={objectType}
+        objectSet={objectSet}
+        definition={definition}
+        filterState={filterState}
+        onFilterStateChanged={onFilterStateChanged}
+        whereClause={perFilterWhereClauses.get(filterKey) ?? EMPTY_WHERE}
+        linkedFilters={perFilterLinkedFilters.get(filterKey)
+          ?? EMPTY_LINKED_FILTERS}
+        showFilteredOutValues={showFilteredOutValues}
+        searchQuery={searchQuery}
+        excludeRowOpen={excludeRowOpen}
+      />
+    ),
+    [
+      objectType,
+      objectSet,
+      perFilterWhereClauses,
+      perFilterLinkedFilters,
+      showFilteredOutValues,
+    ],
+  );
+
+  return (
+    <BaseFilterList
+      title={title}
+      titleIcon={titleIcon}
+      collapsed={collapsed}
+      onCollapsedChange={onCollapsedChange}
+      filterDefinitions={effectiveVisibleDefinitions}
+      filterStates={filterStates}
+      onFilterStateChanged={setFilterState}
+      renderInput={renderInput}
+      getFilterKey={getFilterKey}
+      getFilterLabel={getFilterLabel}
+      getEmptyDisplayState={getEmptyDisplayState}
+      activeFilterCount={activeFilterCount}
+      onReset={handleReset}
+      showResetButton={showResetButton}
+      showActiveFilterCount={showActiveFilterCount}
+      canReset={canReset}
+      enableSorting={enableSorting}
+      onFilterRemoved={effectiveOnFilterRemoved}
+      onOrderChange={handleOrderChange}
+      className={className}
+      renderAddFilterButton={effectiveRenderAddFilterButton}
+    />
+  );
+}

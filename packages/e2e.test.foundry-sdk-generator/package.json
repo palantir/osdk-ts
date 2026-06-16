@@ -1,7 +1,7 @@
 {
   "name": "@osdk/e2e.test.foundry-sdk-generator",
   "private": true,
-  "version": "0.8.0-beta.1",
+  "version": "0.9.0-beta.1",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -31,8 +31,8 @@
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "codegen": "node ./generateMockOntology.js",
-    "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
-    "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "fix-lint": "eslint . --fix && dprint fmt",
+    "lint": "eslint . && dprint check",
     "test": "vitest run --pool=forks",
     "transpileBrowser": "monorepo.tool.transpile -f esm -m normal -t browser",
     "transpileCjs": "monorepo.tool.transpile -f cjs -m bundle -t node",

@@ -15,7 +15,7 @@ import type {
 } from '@osdk/client';
 
 export namespace MnayanOsdkMediaObject {
-  export type PropertyKeys = 'id' | 'path' | 'mediaReference';
+  export type PropertyKeys = 'id' | 'mediaReference' | 'path';
 
   export type Links = {};
 
@@ -53,6 +53,8 @@ export interface MnayanOsdkMediaObject extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'MnayanOsdkMediaObject';
+  primaryKeyApiName: 'id';
+  primaryKeyType: 'string';
   __DefinitionMetadata?: {
     objectSet: MnayanOsdkMediaObject.ObjectSet;
     props: MnayanOsdkMediaObject.Props;
@@ -99,6 +101,8 @@ export const MnayanOsdkMediaObject = {
   type: 'object',
   apiName: 'MnayanOsdkMediaObject',
   osdkMetadata: $osdkMetadata,
+  primaryKeyApiName: 'id',
+  primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },

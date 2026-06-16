@@ -1,0 +1,3161 @@
+{
+  "ontology": {
+    "apiName": "ontology-d097f725-ab77-46cf-83c0-e3cb9186bff1",
+    "displayName": "EA Ontology",
+    "description": " Ontology",
+    "rid": "ri.ontology.main.ontology.a35bb7f9-2c57-4199-a1cd-af461d88bd6e"
+  },
+  "objectTypes": {
+    "Employee": {
+      "objectType": {
+        "apiName": "Employee",
+        "displayName": "Employee",
+        "status": "EXPERIMENTAL",
+        "description": "",
+        "pluralDisplayName": "Employees",
+        "icon": {
+          "type": "blueprint",
+          "color": "#EC9A3C",
+          "name": "person"
+        },
+        "primaryKey": "employeeNumber",
+        "properties": {
+          "adUsername": {
+            "displayName": "Ad Username",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.155f0acb-1d4b-4e53-b952-e5e693de7773",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "businessArea": {
+            "displayName": "Business Area",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.b88c1035-10f9-44db-8eca-454571989e0f",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "businessTitle": {
+            "displayName": "Business Title",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.88f079c4-0131-4b43-aa9c-2949e96e94bf",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "department": {
+            "displayName": "Department",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.07692b78-e555-47df-ba98-ed982ecfb024",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "emailPrimaryWork": {
+            "displayName": "Email",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.bcd62f25-7678-4c29-bd9e-88a58d6815e8",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "employeeDocuments": {
+            "displayName": "employeeDocuments",
+            "dataType": {
+              "type": "mediaReference"
+            },
+            "rid": "ri.ontology.main.property.85c5ca7b-62f0-4cc4-8f7f-42e766f9d42d",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "employeeFile": {
+            "displayName": "Employee File",
+            "dataType": {
+              "type": "attachment"
+            },
+            "rid": "ri.ontology.main.property.36448a21-e6d4-4505-b166-c5d7579fda33",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "employeeMedia": {
+            "displayName": "Media",
+            "dataType": {
+              "type": "mediaReference"
+            },
+            "rid": "ri.ontology.main.property.250e9145-60fa-4385-aa28-95748f1e8c65",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "employeeNumber": {
+            "displayName": "Employee Number",
+            "dataType": {
+              "type": "integer"
+            },
+            "rid": "ri.ontology.main.property.feb75375-575a-4c8f-8393-2aefdad649b8",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "favoritePlaceArea": {
+            "displayName": "Favorite Place Area",
+            "dataType": {
+              "type": "geoshape"
+            },
+            "rid": "ri.ontology.main.property.6164fcb9-9973-498a-996c-69493fc0a21b",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "favPlace": {
+            "displayName": "Favorite Place",
+            "dataType": {
+              "type": "geopoint"
+            },
+            "rid": "ri.ontology.main.property.526b2272-927d-4169-a99d-96ce7d46cbc2",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "firstFullTimeStartDate": {
+            "displayName": "First Full Time Start Date",
+            "dataType": {
+              "type": "date"
+            },
+            "rid": "ri.ontology.main.property.abab33ff-3906-4857-a471-640ca86aafea",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "firstInternStartDate": {
+            "displayName": "First Intern Start Date",
+            "dataType": {
+              "type": "date"
+            },
+            "rid": "ri.ontology.main.property.48aa0c31-f9e6-4bcf-9b94-f32d519987e7",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "fullName": {
+            "displayName": "Name",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.540462d2-e23f-4a8a-9d24-a667f40d2cf9",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "PROMINENT"
+          },
+          "jobProfile": {
+            "displayName": "Job Profile",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.7524bfa6-730f-4264-a23e-0f3894b28db8",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "jobTitle": {
+            "displayName": "Job Title",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.06a8a9ef-2152-4e68-b5ec-95df84f43630",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "latestVenture": {
+            "displayName": "Latest Venture ",
+            "dataType": {
+              "type": "struct",
+              "structFieldTypes": [
+                {
+                  "apiName": "venture",
+                  "rid": "ri.ontology.main.struct-field.d53cef37-32c5-45fc-90c2-7b8bf674e0af",
+                  "dataType": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "apiName": "days",
+                  "rid": "ri.ontology.main.struct-field.fa69e97b-5b11-44fd-b6e9-629b960dd87c",
+                  "dataType": {
+                    "type": "integer"
+                  }
+                }
+              ]
+            },
+            "rid": "ri.ontology.main.property.24b2f036-9125-47c4-8025-54b9a7325df6",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "leadEmployeeNumber": {
+            "displayName": "Lead Employee Number",
+            "dataType": {
+              "type": "integer"
+            },
+            "rid": "ri.ontology.main.property.de185c6f-5ec6-42d2-aa54-0d920993fc6e",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "locationCity": {
+            "displayName": "Location City",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.df02d355-a626-468f-a274-cd0157613836",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "locationCountry": {
+            "displayName": "Location Country",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.a1ba0bca-26d2-4cee-821c-a23d47a181db",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "locationName": {
+            "displayName": "Location Name",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.ae4c1137-f978-424a-af97-4f78d76e2a17",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "locationRegion": {
+            "displayName": "Location Region",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.0cb19cfe-dddf-4041-87bb-a4aa89bcd225",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "locationType": {
+            "displayName": "Location Type",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.191eecb3-d6e6-430a-a174-1517046b037c",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "mentorEmployeeNumber": {
+            "displayName": "Mentor Employee Number",
+            "dataType": {
+              "type": "integer"
+            },
+            "rid": "ri.ontology.main.property.567984e8-5017-49f9-b3e4-0cb6842d56df",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "newProperty1": {
+            "displayName": "New property 1",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.5e8ce4e8-2356-47cc-80c2-406aa198fb01",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "preferredNameFirst": {
+            "displayName": "Preferred Name First",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.cfb065b0-58d0-47de-afb5-87e2bae07b9b",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "preferredNameLast": {
+            "displayName": "Preferred Name Last",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.bdd483cf-9064-49a9-b1b3-a3aeed097466",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "primaryOfficeId": {
+            "displayName": "Primary Office ID",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.4f41c0cc-9879-4b5d-85f5-6acf2616df6d",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "team": {
+            "displayName": "Team",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.d72f784b-f920-4fa6-8adf-ac54b39e45fe",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "workerType": {
+            "displayName": "Worker Type",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.f1f63351-46e2-411f-8ce1-3050e13ec9b6",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          }
+        },
+        "rid": "ri.ontology.main.object-type.ade16a88-ecc4-4f96-9751-ca1799247d64",
+        "titleProperty": "fullName",
+        "visibility": "NORMAL"
+      },
+      "linkTypes": [
+        {
+          "apiName": "lead",
+          "displayName": "Lead",
+          "status": "EXPERIMENTAL",
+          "objectTypeApiName": "Employee",
+          "cardinality": "ONE",
+          "foreignKeyPropertyApiName": "leadEmployeeNumber",
+          "linkTypeRid": "ri.ontology.main.relation.a5c9bbf2-f26b-40c3-bfbd-e45df4691d88"
+        },
+        {
+          "apiName": "peeps",
+          "displayName": "Peep",
+          "status": "EXPERIMENTAL",
+          "objectTypeApiName": "Employee",
+          "cardinality": "MANY",
+          "linkTypeRid": "ri.ontology.main.relation.a5c9bbf2-f26b-40c3-bfbd-e45df4691d88"
+        },
+        {
+          "apiName": "primaryOffice",
+          "displayName": "Primary Office",
+          "status": "EXPERIMENTAL",
+          "objectTypeApiName": "Office",
+          "cardinality": "ONE",
+          "foreignKeyPropertyApiName": "primaryOfficeId",
+          "linkTypeRid": "ri.ontology.main.relation.3df7c685-c2e1-42ad-9de2-38b505a58980"
+        }
+      ],
+      "implementsInterfaces": [
+        "Worker",
+        "Person"
+      ],
+      "implementsInterfaces2": {
+        "Person": {
+          "apiName": "Person",
+          "rid": "ri.ontology.main.interface.353734ce-ae2d-4e49-8070-163b2126af5a",
+          "properties": {
+            "email": "emailPrimaryWork",
+            "employeeNumber": "employeeNumber"
+          },
+          "propertiesV2": {
+            "email": {
+              "type": "localPropertyImplementation",
+              "propertyApiName": "emailPrimaryWork"
+            },
+            "employeeNumber": {
+              "type": "localPropertyImplementation",
+              "propertyApiName": "employeeNumber"
+            }
+          },
+          "links": {}
+        },
+        "Worker": {
+          "apiName": "Worker",
+          "rid": "ri.ontology.main.interface.777ffb22-9b3c-4fb6-908f-56d23c3a5198",
+          "properties": {
+            "email": "emailPrimaryWork",
+            "name": "fullName",
+            "employeeNumber": "employeeNumber"
+          },
+          "propertiesV2": {
+            "email": {
+              "type": "localPropertyImplementation",
+              "propertyApiName": "emailPrimaryWork"
+            },
+            "name": {
+              "type": "localPropertyImplementation",
+              "propertyApiName": "fullName"
+            },
+            "employeeNumber": {
+              "type": "localPropertyImplementation",
+              "propertyApiName": "employeeNumber"
+            }
+          },
+          "links": {}
+        }
+      },
+      "sharedPropertyTypeMapping": {
+        "email": "emailPrimaryWork",
+        "employeeNumber": "employeeNumber",
+        "media": "employeeMedia",
+        "name": "fullName"
+      }
+    },
+    "ExampleEw03osdkTodoProject": {
+      "objectType": {
+        "apiName": "ExampleEw03osdkTodoProject",
+        "displayName": "[Example ew03] Osdk Todo Project",
+        "status": "EXPERIMENTAL",
+        "description": "Osdk Project is a collection of tasks which are managed together",
+        "pluralDisplayName": "[Example ew03] Osdk Todo Projects",
+        "icon": {
+          "type": "blueprint",
+          "color": "#EC9A3C",
+          "name": "gantt-chart"
+        },
+        "primaryKey": "pk",
+        "properties": {
+          "budget": {
+            "displayName": "Budget",
+            "dataType": {
+              "type": "integer"
+            },
+            "rid": "ri.ontology.main.property.61e29705-ceac-474c-a3b3-40a2992f9c5d",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "description": {
+            "displayName": "Description",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.6a487a35-e16b-4da6-a94a-379f67b7e71b",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "name": {
+            "displayName": "Name",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.d8f3134f-e456-451a-b7eb-5e90059d10fc",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "pk": {
+            "displayName": "Pk",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.7a2a061c-10db-46e4-9ffe-3f0152c0f0c3",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          }
+        },
+        "rid": "ri.ontology.main.object-type.fd5bdc1a-eef1-47ab-8b14-c8155d2890a8",
+        "titleProperty": "name",
+        "visibility": "NORMAL"
+      },
+      "linkTypes": [
+        {
+          "apiName": "exampleEw03OsdkTodoTasks",
+          "displayName": "[Example ew03] Osdk Todo Task",
+          "status": "EXPERIMENTAL",
+          "objectTypeApiName": "ExampleEw03osdkTodoTask",
+          "cardinality": "MANY",
+          "linkTypeRid": "ri.ontology.main.relation.5e95ce61-06be-4980-a9f8-5f441e95f015"
+        }
+      ],
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {},
+      "sharedPropertyTypeMapping": {}
+    },
+    "ExampleEw03osdkTodoTask": {
+      "objectType": {
+        "apiName": "ExampleEw03osdkTodoTask",
+        "displayName": "[Example ew03] Osdk Todo Task",
+        "status": "EXPERIMENTAL",
+        "description": "Osdk task is an activity I have to complete in the given timeframe",
+        "pluralDisplayName": "[Example ew03] Osdk Todo Tasks",
+        "icon": {
+          "type": "blueprint",
+          "color": "#EC9A3C",
+          "name": "form"
+        },
+        "primaryKey": "pk",
+        "properties": {
+          "assignedTo": {
+            "displayName": "Assigned To",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.01a00ab9-d41c-4675-a5a2-e572d6d22f68",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "knownType",
+              "knownType": "USER_OR_GROUP_ID"
+            }
+          },
+          "createdAt": {
+            "displayName": "Created At",
+            "dataType": {
+              "type": "timestamp"
+            },
+            "rid": "ri.ontology.main.property.58d19247-d6df-4a15-906b-4e3d7ba5a93b",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "timestamp",
+              "format": {
+                "type": "localizedFormat",
+                "format": "DATE_FORMAT_DATE_TIME"
+              },
+              "displayTimezone": {
+                "type": "user"
+              }
+            }
+          },
+          "createdBy": {
+            "displayName": "Created By",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.70fa816f-9ae6-44cc-9143-02ccd88c193d",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "knownType",
+              "knownType": "USER_OR_GROUP_ID"
+            }
+          },
+          "description": {
+            "displayName": "Description",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.15414875-c019-4f71-b5c0-51ccfa0fe28e",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "dueDate": {
+            "displayName": "Due Date",
+            "dataType": {
+              "type": "date"
+            },
+            "rid": "ri.ontology.main.property.a1af3366-2a84-4a51-a27d-a78870a18618",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "date",
+              "format": {
+                "type": "localizedFormat",
+                "format": "DATE_FORMAT_DATE_TIME_SHORT"
+              }
+            }
+          },
+          "pk": {
+            "displayName": "Pk",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.a146bae3-3e1d-4473-879d-71801a7fa821",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "projectId": {
+            "displayName": "Project Id",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.cbf248c2-a854-4300-9495-a7e39adfe7cb",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "startDate": {
+            "displayName": "Start Date",
+            "dataType": {
+              "type": "date"
+            },
+            "rid": "ri.ontology.main.property.5bfde563-5795-4d32-9d6f-9da842c756b2",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "date",
+              "format": {
+                "type": "localizedFormat",
+                "format": "DATE_FORMAT_DATE_TIME_SHORT"
+              }
+            }
+          },
+          "status": {
+            "displayName": "Status",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.3a96a8a3-63bd-46e3-ab4c-93086bcc605c",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "title": {
+            "displayName": "Title",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.60c37d77-8a95-4c2c-b485-8a057ed51f7a",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          }
+        },
+        "rid": "ri.ontology.main.object-type.b1e19a30-7f1b-43d9-889c-496d281f5510",
+        "titleProperty": "title",
+        "visibility": "NORMAL"
+      },
+      "linkTypes": [
+        {
+          "apiName": "exampleEw03OsdkTodoProject",
+          "displayName": "[Example ew03] Osdk Todo Project",
+          "status": "EXPERIMENTAL",
+          "objectTypeApiName": "ExampleEw03osdkTodoProject",
+          "cardinality": "ONE",
+          "foreignKeyPropertyApiName": "projectId",
+          "linkTypeRid": "ri.ontology.main.relation.5e95ce61-06be-4980-a9f8-5f441e95f015"
+        }
+      ],
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {},
+      "sharedPropertyTypeMapping": {}
+    },
+    "ExampleObjects": {
+      "objectType": {
+        "apiName": "ExampleObjects",
+        "displayName": "Example Objects",
+        "status": "EXPERIMENTAL",
+        "description": "",
+        "pluralDisplayName": "Example Objects",
+        "icon": {
+          "type": "blueprint",
+          "color": "#4C90F0",
+          "name": "cube"
+        },
+        "primaryKey": "primaryKey_",
+        "properties": {
+          "primaryKey_": {
+            "displayName": "id",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.82078e46-36ad-4a05-8ed8-508fea2fed1f",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "type": {
+            "displayName": "type",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.789165cd-e793-42c8-9a57-0c893f8dc2d8",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          }
+        },
+        "rid": "ri.ontology.main.object-type.9bd216ec-22a2-48dc-8c61-63db7c4e1fc8",
+        "titleProperty": "primaryKey_",
+        "visibility": "NORMAL"
+      },
+      "linkTypes": [],
+      "implementsInterfaces": [
+        "ExampleInterface"
+      ],
+      "implementsInterfaces2": {
+        "ExampleInterface": {
+          "apiName": "ExampleInterface",
+          "rid": "ri.ontology.main.interface.05598367-c4f3-455b-b050-12f6c90041db",
+          "properties": {
+            "id": "primaryKey_",
+            "type": "type"
+          },
+          "propertiesV2": {
+            "id": {
+              "type": "localPropertyImplementation",
+              "propertyApiName": "primaryKey_"
+            },
+            "type": {
+              "type": "localPropertyImplementation",
+              "propertyApiName": "type"
+            }
+          },
+          "links": {}
+        }
+      },
+      "sharedPropertyTypeMapping": {
+        "id": "primaryKey_",
+        "type": "type"
+      }
+    },
+    "lowerCaseApiDataset": {
+      "objectType": {
+        "apiName": "lowerCaseApiDataset",
+        "displayName": "lower Case Api Dataset",
+        "status": "EXPERIMENTAL",
+        "description": "lowerCase testing",
+        "pluralDisplayName": "lower Case Api Datasets",
+        "icon": {
+          "type": "blueprint",
+          "color": "#4C90F0",
+          "name": "cube"
+        },
+        "primaryKey": "primaryKey_",
+        "properties": {
+          "primaryKey_": {
+            "displayName": "Primary Key",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.4a398570-9293-4cb9-9761-e7c8cd9a9753",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          }
+        },
+        "rid": "ri.ontology.main.object-type.11923958-97ff-42a5-80e7-16f34e620d1c",
+        "titleProperty": "primaryKey_",
+        "visibility": "NORMAL"
+      },
+      "linkTypes": [],
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {},
+      "sharedPropertyTypeMapping": {}
+    },
+    "Office": {
+      "objectType": {
+        "apiName": "Office",
+        "displayName": "Office",
+        "status": "EXPERIMENTAL",
+        "description": "",
+        "pluralDisplayName": "Offices",
+        "icon": {
+          "type": "blueprint",
+          "color": "#4C90F0",
+          "name": "cube"
+        },
+        "primaryKey": "primaryKey_",
+        "properties": {
+          "location": {
+            "displayName": "Location",
+            "dataType": {
+              "type": "geopoint"
+            },
+            "rid": "ri.ontology.main.property.d4eee188-477d-47e3-b170-59df9d3d36e4",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "name": {
+            "displayName": "Name",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.006b0bc0-2aeb-4332-b309-e92a866428f0",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "primaryKey_": {
+            "displayName": "Primary Key",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.b37fe505-9a6f-44dc-9175-2ee3d6d4d8cc",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          }
+        },
+        "rid": "ri.ontology.main.object-type.bbca9c02-5c6a-4d3a-8bf1-e4db0177ab5f",
+        "titleProperty": "name",
+        "visibility": "NORMAL"
+      },
+      "linkTypes": [
+        {
+          "apiName": "occupants",
+          "displayName": "Occupant",
+          "status": "EXPERIMENTAL",
+          "objectTypeApiName": "Employee",
+          "cardinality": "MANY",
+          "linkTypeRid": "ri.ontology.main.relation.3df7c685-c2e1-42ad-9de2-38b505a58980"
+        }
+      ],
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {},
+      "sharedPropertyTypeMapping": {}
+    },
+    "ThreadsEmbeddedPdfChunk": {
+      "objectType": {
+        "apiName": "ThreadsEmbeddedPdfChunk",
+        "displayName": "[Threads] Embedded PDF Chunk",
+        "status": "EXPERIMENTAL",
+        "description": "",
+        "pluralDisplayName": "[Threads] Embedded PDF Chunks",
+        "icon": {
+          "type": "blueprint",
+          "color": "#4C90F0",
+          "name": "document"
+        },
+        "primaryKey": "chunkId",
+        "properties": {
+          "chunk": {
+            "displayName": "Chunk",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.8f71747b-f06d-4963-b6fb-30f0e758c785",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "PROMINENT"
+          },
+          "chunkId": {
+            "displayName": "Chunk Id",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.5e1a8d6c-b5fc-4bd0-a757-636cefeec4e5",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "chunkPosition": {
+            "displayName": "Chunk Position",
+            "dataType": {
+              "type": "integer"
+            },
+            "rid": "ri.ontology.main.property.87bba7ed-545c-4520-9630-a292bc81c6d0",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "embedding": {
+            "displayName": "Embedding",
+            "dataType": {
+              "type": "vector",
+              "dimension": 1536,
+              "supportsSearchWith": [
+                {
+                  "value": "COSINE_SIMILARITY"
+                }
+              ],
+              "embeddingModel": {
+                "type": "lms",
+                "value": "OPENAI_TEXT_EMBEDDING_ADA_002"
+              }
+            },
+            "rid": "ri.ontology.main.property.8af3781a-fd77-4af2-8265-45999f7b7a2a",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "HIDDEN"
+          },
+          "mediaItemRid": {
+            "displayName": "Media Item Rid",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.5e931221-4944-4d79-8496-ccc8d6fed7a4",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "mediaReference": {
+            "displayName": "Media Reference",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.0c4a28aa-48d0-4dee-a13a-edd720f2a891",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "page": {
+            "displayName": "Page",
+            "dataType": {
+              "type": "integer"
+            },
+            "rid": "ri.ontology.main.property.0b305d6c-ae65-4727-a3e9-c0092f1fad22",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "path": {
+            "displayName": "Path",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.a742b81b-3a01-4d03-a53a-042d349f9452",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "searchQuery": {
+            "displayName": "Search Query",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.322554c9-d0b8-408c-8e6e-24d5a81cac16",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "timestamp": {
+            "displayName": "Timestamp",
+            "dataType": {
+              "type": "timestamp"
+            },
+            "rid": "ri.ontology.main.property.eacae36f-da4a-4a69-97c6-d948c493e834",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          }
+        },
+        "rid": "ri.ontology.main.object-type.17be51b8-9929-43a9-83c7-f105c44eb168",
+        "titleProperty": "chunk",
+        "visibility": "NORMAL"
+      },
+      "linkTypes": [],
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {},
+      "sharedPropertyTypeMapping": {}
+    },
+    "ThreadsEmbeddedPdfChunk_1": {
+      "objectType": {
+        "apiName": "ThreadsEmbeddedPdfChunk_1",
+        "displayName": "[Threads] Embedded PDF Chunk",
+        "status": "EXPERIMENTAL",
+        "description": "",
+        "pluralDisplayName": "[Threads] Embedded PDF Chunks",
+        "icon": {
+          "type": "blueprint",
+          "color": "#4C90F0",
+          "name": "document"
+        },
+        "primaryKey": "chunkId",
+        "properties": {
+          "chunk": {
+            "displayName": "Chunk",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.98cdbf82-4fd1-401e-813e-c32252044dd0",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "PROMINENT"
+          },
+          "chunkId": {
+            "displayName": "Chunk Id",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.551f7c27-a628-4f84-968f-2bbe0b3ea0c7",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "chunkPosition": {
+            "displayName": "Chunk Position",
+            "dataType": {
+              "type": "integer"
+            },
+            "rid": "ri.ontology.main.property.e6783589-55ce-4930-aa8d-29b5efd891f4",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "embedding": {
+            "displayName": "Embedding",
+            "dataType": {
+              "type": "vector",
+              "dimension": 1536,
+              "supportsSearchWith": [
+                {
+                  "value": "COSINE_SIMILARITY"
+                }
+              ],
+              "embeddingModel": {
+                "type": "lms",
+                "value": "OPENAI_TEXT_EMBEDDING_ADA_002"
+              }
+            },
+            "rid": "ri.ontology.main.property.8be97412-1e94-44bb-b306-34320fa47bfe",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "HIDDEN"
+          },
+          "mediaItemRid": {
+            "displayName": "Media Item Rid",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.de970f41-1a6d-4fc2-9b54-807bb26034e5",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "mediaReference": {
+            "displayName": "Media Reference",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.374605d1-185a-4e05-976e-1e587d3a7fcb",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "page": {
+            "displayName": "Page",
+            "dataType": {
+              "type": "integer"
+            },
+            "rid": "ri.ontology.main.property.27283a16-2c32-451c-b64f-aba9a8de4a00",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "path": {
+            "displayName": "Path",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.5addff3c-a40a-4d5e-874f-427082ace8c3",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "searchQuery": {
+            "displayName": "Search Query",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.75f2f73a-2d83-44f2-95ff-79fc0d265236",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "timestamp": {
+            "displayName": "Timestamp",
+            "dataType": {
+              "type": "timestamp"
+            },
+            "rid": "ri.ontology.main.property.d08f23b1-c51a-4482-b411-8df78abbc377",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          }
+        },
+        "rid": "ri.ontology.main.object-type.5dc7b30d-c39e-4d99-9814-8d7539c51a74",
+        "titleProperty": "chunk",
+        "visibility": "NORMAL"
+      },
+      "linkTypes": [],
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {},
+      "sharedPropertyTypeMapping": {}
+    },
+    "Todo": {
+      "objectType": {
+        "apiName": "Todo",
+        "displayName": "Todo",
+        "status": "EXPERIMENTAL",
+        "description": "",
+        "pluralDisplayName": "Todos",
+        "icon": {
+          "type": "blueprint",
+          "color": "#4C90F0",
+          "name": "confirm"
+        },
+        "primaryKey": "id",
+        "properties": {
+          "id": {
+            "displayName": "Id",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.13141fd9-e8a2-43bd-89f8-6d2e9068af64",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "isComplete": {
+            "displayName": "Is Complete",
+            "dataType": {
+              "type": "boolean"
+            },
+            "rid": "ri.ontology.main.property.c0ff9395-ab66-40ca-8e9f-53d039d6bb66",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "location": {
+            "displayName": "location",
+            "dataType": {
+              "type": "geopoint"
+            },
+            "rid": "ri.ontology.main.property.37477f74-9ca4-4450-9707-3a6f6b3a03d1",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "title": {
+            "displayName": "Title",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.0cfaf423-6364-4439-8ae2-db19d5723457",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          }
+        },
+        "rid": "ri.ontology.main.object-type.a3fcfef9-ec11-4f2d-8a4c-dc010de837bf",
+        "titleProperty": "title",
+        "visibility": "NORMAL"
+      },
+      "linkTypes": [],
+      "implementsInterfaces": [
+        "TodoLike"
+      ],
+      "implementsInterfaces2": {
+        "TodoLike": {
+          "apiName": "TodoLike",
+          "rid": "ri.ontology.main.interface.fe6b2917-915d-4952-b89d-1231dad224e0",
+          "properties": {
+            "name": "title",
+            "isComplete": "isComplete"
+          },
+          "propertiesV2": {
+            "name": {
+              "type": "localPropertyImplementation",
+              "propertyApiName": "title"
+            },
+            "isComplete": {
+              "type": "localPropertyImplementation",
+              "propertyApiName": "isComplete"
+            }
+          },
+          "links": {}
+        }
+      },
+      "sharedPropertyTypeMapping": {}
+    },
+    "WontDo": {
+      "objectType": {
+        "apiName": "WontDo",
+        "displayName": "Wont Do",
+        "status": "EXPERIMENTAL",
+        "description": "",
+        "pluralDisplayName": "Wont Dos",
+        "icon": {
+          "type": "blueprint",
+          "color": "#4C90F0",
+          "name": "cube"
+        },
+        "primaryKey": "wontDoName",
+        "properties": {
+          "isComplete": {
+            "displayName": "isComplete",
+            "dataType": {
+              "type": "boolean"
+            },
+            "rid": "ri.ontology.main.property.5e0bf7c5-d639-4e0a-a769-675e5a10bb99",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "wontDoName": {
+            "displayName": "wontDoName",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.fac989cb-81d6-4d86-bc18-7fedae2ee21c",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          }
+        },
+        "rid": "ri.ontology.main.object-type.0f6f78a8-c31c-43d3-8de9-b7df7a98d232",
+        "titleProperty": "wontDoName",
+        "visibility": "NORMAL"
+      },
+      "linkTypes": [],
+      "implementsInterfaces": [
+        "TodoLike"
+      ],
+      "implementsInterfaces2": {
+        "TodoLike": {
+          "apiName": "TodoLike",
+          "rid": "ri.ontology.main.interface.fe6b2917-915d-4952-b89d-1231dad224e0",
+          "properties": {
+            "name": "wontDoName",
+            "isComplete": "isComplete"
+          },
+          "propertiesV2": {
+            "name": {
+              "type": "localPropertyImplementation",
+              "propertyApiName": "wontDoName"
+            },
+            "isComplete": {
+              "type": "localPropertyImplementation",
+              "propertyApiName": "isComplete"
+            }
+          },
+          "links": {}
+        }
+      },
+      "sharedPropertyTypeMapping": {}
+    }
+  },
+  "actionTypes": {
+    "add-employee-attachment": {
+      "apiName": "add-employee-attachment",
+      "displayName": "addEmployeeAttachment",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "employee": {
+          "displayName": "Employee",
+          "dataType": {
+            "type": "object",
+            "objectApiName": "Employee",
+            "objectTypeApiName": "Employee"
+          },
+          "required": true
+        },
+        "employee_file": {
+          "displayName": "Employee File",
+          "dataType": {
+            "type": "attachment"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.f0db7733-e549-4ce5-8ff5-d2a6d0e4ba17",
+      "operations": [
+        {
+          "type": "modifyObject",
+          "objectTypeApiName": "Employee"
+        }
+      ]
+    },
+    "add-media": {
+      "apiName": "add-media",
+      "description": "addMediaToEmployee",
+      "displayName": "Add Media",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "Employee": {
+          "displayName": "Employee",
+          "dataType": {
+            "type": "object",
+            "objectApiName": "Employee",
+            "objectTypeApiName": "Employee"
+          },
+          "required": true
+        },
+        "employee_media": {
+          "displayName": "Employee Media",
+          "dataType": {
+            "type": "mediaReference"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.43aadae8-9dc7-4085-8cb9-de6634d31e1f",
+      "operations": [
+        {
+          "type": "modifyObject",
+          "objectTypeApiName": "Employee"
+        }
+      ]
+    },
+    "add-struct-to-employee": {
+      "apiName": "add-struct-to-employee",
+      "displayName": "Add Struct to Employee",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "employee": {
+          "displayName": "Employee",
+          "dataType": {
+            "type": "object",
+            "objectApiName": "Employee",
+            "objectTypeApiName": "Employee"
+          },
+          "required": true
+        },
+        "latest_venture": {
+          "displayName": "Latest Venture ",
+          "dataType": {
+            "type": "struct",
+            "fields": [
+              {
+                "name": "venture",
+                "fieldType": {
+                  "type": "string"
+                },
+                "required": false
+              },
+              {
+                "name": "days",
+                "fieldType": {
+                  "type": "integer"
+                },
+                "required": false
+              }
+            ]
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.9441fc5f-6bf1-41d0-9934-0296d841f509",
+      "operations": [
+        {
+          "type": "modifyObject",
+          "objectTypeApiName": "Employee"
+        }
+      ]
+    },
+    "change-favorite-place": {
+      "apiName": "change-favorite-place",
+      "displayName": "changeFavoritePlace",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "Employee": {
+          "displayName": "Employee",
+          "dataType": {
+            "type": "object",
+            "objectApiName": "Employee",
+            "objectTypeApiName": "Employee"
+          },
+          "required": true
+        },
+        "favorite-place-area": {
+          "displayName": "Favorite Place Area",
+          "dataType": {
+            "type": "geoshape"
+          },
+          "required": true
+        },
+        "favplace": {
+          "displayName": "Favorite Place",
+          "dataType": {
+            "type": "geohash"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.a35f9aa1-a7a1-44bd-99bf-b988bb5bf750",
+      "operations": [
+        {
+          "type": "modifyObject",
+          "objectTypeApiName": "Employee"
+        }
+      ]
+    },
+    "complete-todo": {
+      "apiName": "complete-todo",
+      "description": "Marks Todo complete/incomplete",
+      "displayName": "Complete To Do",
+      "status": "ACTIVE",
+      "parameters": {
+        "is_complete": {
+          "displayName": "Is Complete",
+          "dataType": {
+            "type": "boolean"
+          },
+          "required": true
+        },
+        "Todo": {
+          "displayName": "Todo",
+          "dataType": {
+            "type": "object",
+            "objectApiName": "Todo",
+            "objectTypeApiName": "Todo"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.b8ed5dbd-6d22-4b6d-8ab4-3b63c6007df9",
+      "operations": [
+        {
+          "type": "modifyObject",
+          "objectTypeApiName": "Todo"
+        }
+      ]
+    },
+    "create-employee": {
+      "apiName": "create-employee",
+      "displayName": "createPerson",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "ad_username": {
+          "displayName": "Ad Username",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "business_area": {
+          "displayName": "Business Area",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "business_title": {
+          "displayName": "Business Title",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "department": {
+          "displayName": "Department",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "email_primary_work": {
+          "displayName": "Email Primary Work",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "employee_number": {
+          "displayName": "Employee Number",
+          "dataType": {
+            "type": "integer"
+          },
+          "required": true
+        },
+        "first_full_time_start_date": {
+          "displayName": "First Full Time Start Date",
+          "dataType": {
+            "type": "date"
+          },
+          "required": true
+        },
+        "first_intern_start_date": {
+          "displayName": "First Intern Start Date",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "full_name": {
+          "displayName": "Full Name",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "job_profile": {
+          "displayName": "Job Profile",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "job_title": {
+          "displayName": "Job Title",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "lead_employee_number": {
+          "displayName": "Lead Employee Number",
+          "dataType": {
+            "type": "integer"
+          },
+          "required": true
+        },
+        "location_city": {
+          "displayName": "Location City",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "location_country": {
+          "displayName": "Location Country",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "location_name": {
+          "displayName": "Location Name",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "location_region": {
+          "displayName": "Location Region",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "location_type": {
+          "displayName": "Location Type",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "mentor_employee_number": {
+          "displayName": "Mentor Employee Number",
+          "dataType": {
+            "type": "integer"
+          },
+          "required": true
+        },
+        "preferred_name_first": {
+          "displayName": "Preferred Name First",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "preferred_name_last": {
+          "displayName": "Preferred Name Last",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "team": {
+          "displayName": "Team",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "worker_type": {
+          "displayName": "Worker Type",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.685e6665-54a3-47c9-968e-544fa5e1107d",
+      "operations": [
+        {
+          "type": "createObject",
+          "objectTypeApiName": "Employee"
+        }
+      ]
+    },
+    "create-employee-test": {
+      "apiName": "create-employee-test",
+      "displayName": "Create Employee Test",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "employee_number": {
+          "displayName": "Employee Number",
+          "dataType": {
+            "type": "integer"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.bf65fdab-3a54-4935-af97-448f101b1d27",
+      "operations": [
+        {
+          "type": "createObject",
+          "objectTypeApiName": "Employee"
+        }
+      ]
+    },
+    "create-example-interface": {
+      "apiName": "create-example-interface",
+      "displayName": "Create Example Interface",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "example_interface_type": {
+          "displayName": "Example Interface Type",
+          "dataType": {
+            "type": "objectType"
+          },
+          "required": true
+        },
+        "type": {
+          "displayName": "type",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        }
+      },
+      "rid": "ri.actions.main.action-type.7f51d3e6-f6c9-4f6b-ae24-5e9513961411",
+      "operations": [
+        {
+          "type": "createInterfaceObject",
+          "interfaceTypeApiName": "ExampleInterface"
+        }
+      ]
+    },
+    "create-example-objects": {
+      "apiName": "create-example-objects",
+      "displayName": "Create Example Objects",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "type": {
+          "displayName": "type",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        }
+      },
+      "rid": "ri.actions.main.action-type.597dbf43-b002-4cfd-ba1f-277b6b6a833b",
+      "operations": [
+        {
+          "type": "createObject",
+          "objectTypeApiName": "ExampleObjects"
+        }
+      ]
+    },
+    "create-lower-case": {
+      "apiName": "create-lower-case",
+      "displayName": "createLowerCase",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "IdParam": {
+          "displayName": "Id Param",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.0ede6e39-734c-4c2e-910f-1cb6037d6785",
+      "operations": [
+        {
+          "type": "createObject",
+          "objectTypeApiName": "lowerCaseApiDataset"
+        }
+      ]
+    },
+    "create-office": {
+      "apiName": "create-office",
+      "displayName": "Create Office",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "location": {
+          "displayName": "Location",
+          "dataType": {
+            "type": "geohash"
+          },
+          "required": true
+        },
+        "name": {
+          "displayName": "Name",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.1149ae48-9a4a-45f1-92ba-90e046f7b3c7",
+      "operations": [
+        {
+          "type": "createObject",
+          "objectTypeApiName": "Office"
+        }
+      ]
+    },
+    "create-person-interface": {
+      "apiName": "create-person-interface",
+      "displayName": "Create Person Interface",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "email": {
+          "displayName": "Email",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "employeeNumber": {
+          "displayName": "Employee Number",
+          "dataType": {
+            "type": "integer"
+          },
+          "required": true
+        },
+        "media": {
+          "displayName": "Media",
+          "dataType": {
+            "type": "mediaReference"
+          },
+          "required": false
+        },
+        "person_type": {
+          "displayName": "Person Type",
+          "dataType": {
+            "type": "objectType"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.9e084d64-0bd4-498d-9041-5299db87e441",
+      "operations": [
+        {
+          "type": "createInterfaceObject",
+          "interfaceTypeApiName": "Person"
+        }
+      ]
+    },
+    "create-todo": {
+      "apiName": "create-todo",
+      "description": "Creates Todo",
+      "displayName": "Create Todo",
+      "status": "ACTIVE",
+      "parameters": {
+        "is_complete": {
+          "displayName": "Is Complete",
+          "dataType": {
+            "type": "boolean"
+          },
+          "required": true
+        },
+        "location": {
+          "displayName": "location",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "Todo": {
+          "displayName": "Todo",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.1913052f-0395-4643-9d37-62fc7f74289d",
+      "operations": [
+        {
+          "type": "createObject",
+          "objectTypeApiName": "Todo"
+        }
+      ]
+    },
+    "create-todo3": {
+      "apiName": "create-todo3",
+      "displayName": "Create Todo",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "title": {
+          "displayName": "Title",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.503d6ed5-c30a-41e5-a82f-b3a455d5f6e8",
+      "operations": [
+        {
+          "type": "createObject",
+          "objectTypeApiName": "Todo"
+        }
+      ]
+    },
+    "create-worker": {
+      "apiName": "create-worker",
+      "displayName": "Create Worker",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "email": {
+          "displayName": "Email",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "employeeNumber": {
+          "displayName": "Employee Number",
+          "dataType": {
+            "type": "integer"
+          },
+          "required": true
+        },
+        "name": {
+          "displayName": "Name",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "worker_type": {
+          "displayName": "Worker Type",
+          "dataType": {
+            "type": "objectType"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.e4c1ab71-a36a-44b4-9334-392604a81438",
+      "operations": [
+        {
+          "type": "createInterfaceObject",
+          "interfaceTypeApiName": "Worker"
+        }
+      ]
+    },
+    "delete-example-objects": {
+      "apiName": "delete-example-objects",
+      "displayName": "Delete Example Objects",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "ExampleObjects": {
+          "displayName": "Example Objects",
+          "dataType": {
+            "type": "object",
+            "objectApiName": "ExampleObjects",
+            "objectTypeApiName": "ExampleObjects"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.e1698e4f-b789-478a-97bb-8da0865a2513",
+      "operations": [
+        {
+          "type": "deleteObject",
+          "objectTypeApiName": "ExampleObjects"
+        }
+      ]
+    },
+    "delete-office": {
+      "apiName": "delete-office",
+      "displayName": "Delete Office",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "Office": {
+          "displayName": "Office",
+          "dataType": {
+            "type": "object",
+            "objectApiName": "Office",
+            "objectTypeApiName": "Office"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.72b40fca-42b6-4e09-99d1-a3d701808ce7",
+      "operations": [
+        {
+          "type": "deleteObject",
+          "objectTypeApiName": "Office"
+        }
+      ]
+    },
+    "delete-todo": {
+      "apiName": "delete-todo",
+      "displayName": "Delete Todo",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "todo": {
+          "displayName": "Todo",
+          "dataType": {
+            "type": "object",
+            "objectApiName": "Todo",
+            "objectTypeApiName": "Todo"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.83a9d1a9-4132-4837-ae84-c9973a3a2e1e",
+      "operations": [
+        {
+          "type": "deleteObject",
+          "objectTypeApiName": "Todo"
+        }
+      ]
+    },
+    "delete-worker": {
+      "apiName": "delete-worker",
+      "displayName": "Delete Worker",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "Worker": {
+          "displayName": "Worker",
+          "dataType": {
+            "type": "interfaceObject",
+            "interfaceTypeApiName": "Worker"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.556053de-16d1-41bd-8dde-908899ad0af9",
+      "operations": [
+        {
+          "type": "deleteInterfaceObject",
+          "interfaceTypeApiName": "Worker"
+        }
+      ]
+    },
+    "edit-office": {
+      "apiName": "edit-office",
+      "displayName": "Edit Office",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "location": {
+          "displayName": "Location",
+          "dataType": {
+            "type": "geohash"
+          },
+          "required": true
+        },
+        "name": {
+          "displayName": "Name",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "Office": {
+          "displayName": "Office",
+          "dataType": {
+            "type": "object",
+            "objectApiName": "Office",
+            "objectTypeApiName": "Office"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.ae41d87b-933d-4983-ad91-fce7f4ff9f59",
+      "operations": [
+        {
+          "type": "modifyObject",
+          "objectTypeApiName": "Office"
+        }
+      ]
+    },
+    "example-ew03-create-osdk-todo-project": {
+      "apiName": "example-ew03-create-osdk-todo-project",
+      "description": "Create a new Osdk Project",
+      "displayName": "[Example ew03] create-osdk-todo-project",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "budget": {
+          "displayName": "Budget",
+          "dataType": {
+            "type": "integer"
+          },
+          "required": false
+        },
+        "description": {
+          "displayName": "Description",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "name": {
+          "displayName": "Name",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "osdkTodoProject": {
+          "displayName": "Osdk Todo Project",
+          "dataType": {
+            "type": "object",
+            "objectApiName": "ExampleEw03osdkTodoProject",
+            "objectTypeApiName": "ExampleEw03osdkTodoProject"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.5750778f-3abd-4076-8ece-0b80c096f499",
+      "operations": [
+        {
+          "type": "createObject",
+          "objectTypeApiName": "ExampleEw03osdkTodoProject"
+        }
+      ]
+    },
+    "example-ew03-create-osdk-todo-task": {
+      "apiName": "example-ew03-create-osdk-todo-task",
+      "description": "Create a new task item",
+      "displayName": "[Example ew03] create-osdk-todo-task",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "assigned_to": {
+          "displayName": "Assigned To",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "description": {
+          "displayName": "Description",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "due_date": {
+          "displayName": "Due Date",
+          "dataType": {
+            "type": "date"
+          },
+          "required": false
+        },
+        "osdkTodoTask": {
+          "displayName": "Osdk Todo Task",
+          "dataType": {
+            "type": "object",
+            "objectApiName": "ExampleEw03osdkTodoTask",
+            "objectTypeApiName": "ExampleEw03osdkTodoTask"
+          },
+          "required": true
+        },
+        "project_id": {
+          "displayName": "Project Id",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "start_date": {
+          "displayName": "Start Date",
+          "dataType": {
+            "type": "date"
+          },
+          "required": false
+        },
+        "status": {
+          "displayName": "Status",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "title": {
+          "displayName": "Title",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.9bcd1484-de72-4c5d-8432-e2b876eacaf1",
+      "operations": [
+        {
+          "type": "createObject",
+          "objectTypeApiName": "ExampleEw03osdkTodoTask"
+        }
+      ]
+    },
+    "example-ew03-delete-osdk-todo-project": {
+      "apiName": "example-ew03-delete-osdk-todo-project",
+      "description": "Delete a todo project",
+      "displayName": "[Example ew03] delete-osdk-todo-project",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "osdkTodoProject": {
+          "displayName": "Osdk Todo Project",
+          "dataType": {
+            "type": "object",
+            "objectApiName": "ExampleEw03osdkTodoProject",
+            "objectTypeApiName": "ExampleEw03osdkTodoProject"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.a66504e0-8b1a-4ba7-a7ad-bbe64d3f3662",
+      "operations": [
+        {
+          "type": "deleteObject",
+          "objectTypeApiName": "ExampleEw03osdkTodoProject"
+        }
+      ]
+    },
+    "example-ew03-delete-osdk-todo-task": {
+      "apiName": "example-ew03-delete-osdk-todo-task",
+      "description": "Delete a given todo task",
+      "displayName": "[Example ew03] delete-osdk-todo-task",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "osdkTodoTask": {
+          "displayName": "Osdk Todo Task",
+          "dataType": {
+            "type": "object",
+            "objectApiName": "ExampleEw03osdkTodoTask",
+            "objectTypeApiName": "ExampleEw03osdkTodoTask"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.84cd3ff8-870b-4c74-886b-e2fabdc5bcec",
+      "operations": [
+        {
+          "type": "deleteObject",
+          "objectTypeApiName": "ExampleEw03osdkTodoTask"
+        }
+      ]
+    },
+    "map-between-media-sets": {
+      "apiName": "map-between-media-sets",
+      "displayName": "MapBetweenMediaSets",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "Employee": {
+          "displayName": "Employee",
+          "dataType": {
+            "type": "object",
+            "objectApiName": "Employee",
+            "objectTypeApiName": "Employee"
+          },
+          "required": true
+        },
+        "employee_documents": {
+          "displayName": "employeeDocuments",
+          "dataType": {
+            "type": "mediaReference"
+          },
+          "required": false
+        },
+        "employee_media": {
+          "displayName": "Employee Media",
+          "dataType": {
+            "type": "mediaReference"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.d023c57d-fd92-440b-8906-721f660630ee",
+      "operations": [
+        {
+          "type": "modifyObject",
+          "objectTypeApiName": "Employee"
+        }
+      ]
+    },
+    "modify-employee": {
+      "apiName": "modify-employee",
+      "displayName": "Modify Employee",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "adUsername": {
+          "displayName": "Ad Username",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "businessArea": {
+          "displayName": "Business Area",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "businessTitle": {
+          "displayName": "Business Title",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "department": {
+          "displayName": "Department",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "emailPrimaryWork": {
+          "displayName": "Email",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "employee": {
+          "displayName": "Employee",
+          "dataType": {
+            "type": "object",
+            "objectApiName": "Employee",
+            "objectTypeApiName": "Employee"
+          },
+          "required": true
+        },
+        "employeeDocuments": {
+          "displayName": "employeeDocuments",
+          "dataType": {
+            "type": "mediaReference"
+          },
+          "required": false
+        },
+        "employeeFile": {
+          "displayName": "Employee File",
+          "dataType": {
+            "type": "attachment"
+          },
+          "required": false
+        },
+        "employeeMedia": {
+          "displayName": "Media",
+          "dataType": {
+            "type": "mediaReference"
+          },
+          "required": false
+        },
+        "favoritePlaceArea": {
+          "displayName": "Favorite Place Area",
+          "dataType": {
+            "type": "geoshape"
+          },
+          "required": false
+        },
+        "favPlace": {
+          "displayName": "Favorite Place",
+          "dataType": {
+            "type": "geohash"
+          },
+          "required": false
+        },
+        "firstFullTimeStartDate": {
+          "displayName": "First Full Time Start Date",
+          "dataType": {
+            "type": "date"
+          },
+          "required": false
+        },
+        "firstInternStartDate": {
+          "displayName": "First Intern Start Date",
+          "dataType": {
+            "type": "date"
+          },
+          "required": false
+        },
+        "fullName": {
+          "displayName": "Name",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "jobProfile": {
+          "displayName": "Job Profile",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "jobTitle": {
+          "displayName": "Job Title",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "latestVenture": {
+          "displayName": "Latest Venture ",
+          "dataType": {
+            "type": "struct",
+            "fields": [
+              {
+                "name": "venture",
+                "fieldType": {
+                  "type": "string"
+                },
+                "required": false
+              },
+              {
+                "name": "days",
+                "fieldType": {
+                  "type": "integer"
+                },
+                "required": false
+              }
+            ]
+          },
+          "required": false
+        },
+        "leadEmployeeNumber": {
+          "displayName": "Lead Employee Number",
+          "dataType": {
+            "type": "integer"
+          },
+          "required": false
+        },
+        "locationCity": {
+          "displayName": "Location City",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "locationCountry": {
+          "displayName": "Location Country",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "locationName": {
+          "displayName": "Location Name",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "locationRegion": {
+          "displayName": "Location Region",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "locationType": {
+          "displayName": "Location Type",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "mentorEmployeeNumber": {
+          "displayName": "Mentor Employee Number",
+          "dataType": {
+            "type": "integer"
+          },
+          "required": false
+        },
+        "newProperty1": {
+          "displayName": "New property 1",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "preferredNameFirst": {
+          "displayName": "Preferred Name First",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "preferredNameLast": {
+          "displayName": "Preferred Name Last",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "primary_office_id": {
+          "displayName": "Primary Office ID",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "team": {
+          "displayName": "Team",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "workerType": {
+          "displayName": "Worker Type",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        }
+      },
+      "rid": "ri.actions.main.action-type.1e59bc2b-4f3a-47d1-82d2-7d0516c7c4ee",
+      "operations": [
+        {
+          "type": "modifyObject",
+          "objectTypeApiName": "Employee"
+        }
+      ]
+    },
+    "modify-example-interface": {
+      "apiName": "modify-example-interface",
+      "displayName": "Modify Example Interface",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "ExampleInterface": {
+          "displayName": "Example Interface",
+          "dataType": {
+            "type": "interfaceObject",
+            "interfaceTypeApiName": "ExampleInterface"
+          },
+          "required": true
+        },
+        "type": {
+          "displayName": "type",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        }
+      },
+      "rid": "ri.actions.main.action-type.265950e6-0651-41d8-95e9-040c7d30130b",
+      "operations": [
+        {
+          "type": "modifyInterfaceObject",
+          "interfaceTypeApiName": "ExampleInterface"
+        }
+      ]
+    },
+    "modify-person": {
+      "apiName": "modify-person",
+      "displayName": "Create Person V2",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "email": {
+          "displayName": "Email",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "employeeNumber": {
+          "displayName": "Employee Number",
+          "dataType": {
+            "type": "integer"
+          },
+          "required": true
+        },
+        "person_type": {
+          "displayName": "Person Type",
+          "dataType": {
+            "type": "objectType"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.76528413-40a3-4718-98d4-aba385a815a2",
+      "operations": [
+        {
+          "type": "createInterfaceObject",
+          "interfaceTypeApiName": "Person"
+        }
+      ]
+    },
+    "modify-person-fafe32": {
+      "apiName": "modify-person-fafe32",
+      "displayName": "Modify Person V2",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "email": {
+          "displayName": "Email",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "Person": {
+          "displayName": "Person",
+          "dataType": {
+            "type": "interfaceObject",
+            "interfaceTypeApiName": "Person"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.ef6ee138-e07d-4721-8a22-b8cd2e507997",
+      "operations": [
+        {
+          "type": "modifyInterfaceObject",
+          "interfaceTypeApiName": "Person"
+        }
+      ]
+    },
+    "modify-team": {
+      "apiName": "modify-team",
+      "displayName": "modifyTeam",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "department": {
+          "displayName": "Department",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "Employee": {
+          "displayName": "Employee",
+          "dataType": {
+            "type": "object",
+            "objectApiName": "Employee",
+            "objectTypeApiName": "Employee"
+          },
+          "required": true
+        },
+        "team": {
+          "displayName": "Team",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.3558f5f6-74d4-4d9d-8925-c002b13258f2",
+      "operations": [
+        {
+          "type": "modifyObject",
+          "objectTypeApiName": "Employee"
+        }
+      ]
+    },
+    "modify-todo-like": {
+      "apiName": "modify-todo-like",
+      "displayName": "Create TodoLike",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "isComplete": {
+          "displayName": "isComplete",
+          "dataType": {
+            "type": "boolean"
+          },
+          "required": false
+        },
+        "name": {
+          "displayName": "Name",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "todo_like_type": {
+          "displayName": "TodoLike Type",
+          "dataType": {
+            "type": "objectType"
+          },
+          "required": true
+        },
+        "TodoLike": {
+          "displayName": "TodoLike",
+          "dataType": {
+            "type": "interfaceObject",
+            "interfaceTypeApiName": "TodoLike"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.353f4e63-0d68-4d9c-9afd-66150ec24e04",
+      "operations": [
+        {
+          "type": "createInterfaceObject",
+          "interfaceTypeApiName": "TodoLike"
+        }
+      ]
+    },
+    "modify-worker": {
+      "apiName": "modify-worker",
+      "displayName": "Modify Worker",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "email": {
+          "displayName": "Email",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "name": {
+          "displayName": "Name",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "Worker": {
+          "displayName": "Worker",
+          "dataType": {
+            "type": "interfaceObject",
+            "interfaceTypeApiName": "Worker"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.0b1e5427-b2c5-46f6-8d1f-980a69ca6dae",
+      "operations": [
+        {
+          "type": "modifyInterfaceObject",
+          "interfaceTypeApiName": "Worker"
+        }
+      ]
+    }
+  },
+  "queryTypes": {
+    "fooEa": {
+      "apiName": "fooEa",
+      "displayName": "doStuff",
+      "parameters": {},
+      "output": {
+        "type": "integer"
+      },
+      "rid": "ri.function-registry.main.function.04836386-b392-4b70-a302-38415dbf9f60",
+      "version": "0.0.3"
+    },
+    "functionCallsLoadObjectSetWithSelect": {
+      "apiName": "functionCallsLoadObjectSetWithSelect",
+      "displayName": "functionCallsLoadObjectSetWithSelect",
+      "parameters": {},
+      "output": {
+        "type": "integer"
+      },
+      "rid": "ri.function-registry.main.function.47a14477-a4da-45b0-a0f2-b02e6c28f6ed",
+      "version": "0.2.0"
+    }
+  },
+  "interfaceTypes": {
+    "ExampleInterface": {
+      "rid": "ri.ontology.main.interface.05598367-c4f3-455b-b050-12f6c90041db",
+      "apiName": "ExampleInterface",
+      "displayName": "Example Interface",
+      "description": "",
+      "properties": {
+        "id": {
+          "rid": "ri.ontology.main.shared-property.bce1dd5c-edae-4f7e-90f7-51077f886c4d",
+          "apiName": "id",
+          "displayName": "id",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "type": {
+          "rid": "ri.ontology.main.shared-property.971ef747-7c06-4750-91d8-10e59eb4b360",
+          "apiName": "type",
+          "displayName": "type",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        }
+      },
+      "allProperties": {
+        "id": {
+          "rid": "ri.ontology.main.shared-property.bce1dd5c-edae-4f7e-90f7-51077f886c4d",
+          "apiName": "id",
+          "displayName": "id",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "type": {
+          "rid": "ri.ontology.main.shared-property.971ef747-7c06-4750-91d8-10e59eb4b360",
+          "apiName": "type",
+          "displayName": "type",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        }
+      },
+      "propertiesV2": {
+        "id": {
+          "type": "interfaceSharedPropertyType",
+          "rid": "ri.ontology.main.shared-property.bce1dd5c-edae-4f7e-90f7-51077f886c4d",
+          "apiName": "id",
+          "displayName": "id",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "type": {
+          "type": "interfaceSharedPropertyType",
+          "rid": "ri.ontology.main.shared-property.971ef747-7c06-4750-91d8-10e59eb4b360",
+          "apiName": "type",
+          "displayName": "type",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        }
+      },
+      "allPropertiesV2": {
+        "id": {
+          "rid": "ri.ontology.main.interface-property.bce1dd5c-edae-4f7e-90f7-51077f886c4d",
+          "apiName": "id",
+          "displayName": "id",
+          "dataType": {
+            "type": "string"
+          },
+          "requireImplementation": true
+        },
+        "type": {
+          "rid": "ri.ontology.main.interface-property.971ef747-7c06-4750-91d8-10e59eb4b360",
+          "apiName": "type",
+          "displayName": "type",
+          "dataType": {
+            "type": "string"
+          },
+          "requireImplementation": true
+        }
+      },
+      "extendsInterfaces": [],
+      "allExtendsInterfaces": [],
+      "implementedByObjectTypes": [
+        "ExampleObjects"
+      ],
+      "links": {},
+      "allLinks": {}
+    },
+    "Person": {
+      "rid": "ri.ontology.main.interface.353734ce-ae2d-4e49-8070-163b2126af5a",
+      "apiName": "Person",
+      "displayName": "Person",
+      "description": "",
+      "properties": {
+        "email": {
+          "rid": "ri.ontology.main.shared-property.2645943a-6870-4fe3-ac30-a27ff1c77b69",
+          "apiName": "email",
+          "displayName": "Email",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "employeeNumber": {
+          "rid": "ri.ontology.main.shared-property.631f0dd2-4e78-4c2a-8487-c767a448d227",
+          "apiName": "employeeNumber",
+          "displayName": "Employee Number",
+          "dataType": {
+            "type": "integer"
+          },
+          "required": true
+        }
+      },
+      "allProperties": {
+        "email": {
+          "rid": "ri.ontology.main.shared-property.2645943a-6870-4fe3-ac30-a27ff1c77b69",
+          "apiName": "email",
+          "displayName": "Email",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "employeeNumber": {
+          "rid": "ri.ontology.main.shared-property.631f0dd2-4e78-4c2a-8487-c767a448d227",
+          "apiName": "employeeNumber",
+          "displayName": "Employee Number",
+          "dataType": {
+            "type": "integer"
+          },
+          "required": true
+        }
+      },
+      "propertiesV2": {
+        "email": {
+          "type": "interfaceSharedPropertyType",
+          "rid": "ri.ontology.main.shared-property.2645943a-6870-4fe3-ac30-a27ff1c77b69",
+          "apiName": "email",
+          "displayName": "Email",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "employeeNumber": {
+          "type": "interfaceSharedPropertyType",
+          "rid": "ri.ontology.main.shared-property.631f0dd2-4e78-4c2a-8487-c767a448d227",
+          "apiName": "employeeNumber",
+          "displayName": "Employee Number",
+          "dataType": {
+            "type": "integer"
+          },
+          "required": true
+        }
+      },
+      "allPropertiesV2": {
+        "email": {
+          "rid": "ri.ontology.main.interface-property.2645943a-6870-4fe3-ac30-a27ff1c77b69",
+          "apiName": "email",
+          "displayName": "Email",
+          "dataType": {
+            "type": "string"
+          },
+          "requireImplementation": true
+        },
+        "employeeNumber": {
+          "rid": "ri.ontology.main.interface-property.631f0dd2-4e78-4c2a-8487-c767a448d227",
+          "apiName": "employeeNumber",
+          "displayName": "Employee Number",
+          "dataType": {
+            "type": "integer"
+          },
+          "requireImplementation": true
+        }
+      },
+      "extendsInterfaces": [],
+      "allExtendsInterfaces": [],
+      "implementedByObjectTypes": [
+        "Employee"
+      ],
+      "links": {},
+      "allLinks": {}
+    },
+    "TodoLike": {
+      "rid": "ri.ontology.main.interface.fe6b2917-915d-4952-b89d-1231dad224e0",
+      "apiName": "TodoLike",
+      "displayName": "TodoLike",
+      "description": "",
+      "properties": {
+        "isComplete": {
+          "rid": "ri.ontology.main.shared-property.99e85c50-c360-473e-951b-2bb919418aaf",
+          "apiName": "isComplete",
+          "displayName": "isComplete",
+          "dataType": {
+            "type": "boolean"
+          },
+          "required": true
+        },
+        "name": {
+          "rid": "ri.ontology.main.shared-property.f709f271-4788-4120-a8fb-b9e4166967c5",
+          "apiName": "name",
+          "displayName": "Name",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        }
+      },
+      "allProperties": {
+        "name": {
+          "rid": "ri.ontology.main.shared-property.f709f271-4788-4120-a8fb-b9e4166967c5",
+          "apiName": "name",
+          "displayName": "Name",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "isComplete": {
+          "rid": "ri.ontology.main.shared-property.99e85c50-c360-473e-951b-2bb919418aaf",
+          "apiName": "isComplete",
+          "displayName": "isComplete",
+          "dataType": {
+            "type": "boolean"
+          },
+          "required": true
+        }
+      },
+      "propertiesV2": {
+        "name": {
+          "type": "interfaceSharedPropertyType",
+          "rid": "ri.ontology.main.shared-property.f709f271-4788-4120-a8fb-b9e4166967c5",
+          "apiName": "name",
+          "displayName": "Name",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "isComplete": {
+          "type": "interfaceSharedPropertyType",
+          "rid": "ri.ontology.main.shared-property.99e85c50-c360-473e-951b-2bb919418aaf",
+          "apiName": "isComplete",
+          "displayName": "isComplete",
+          "dataType": {
+            "type": "boolean"
+          },
+          "required": true
+        }
+      },
+      "allPropertiesV2": {
+        "name": {
+          "rid": "ri.ontology.main.interface-property.f709f271-4788-4120-a8fb-b9e4166967c5",
+          "apiName": "name",
+          "displayName": "Name",
+          "dataType": {
+            "type": "string"
+          },
+          "requireImplementation": true
+        },
+        "isComplete": {
+          "rid": "ri.ontology.main.interface-property.99e85c50-c360-473e-951b-2bb919418aaf",
+          "apiName": "isComplete",
+          "displayName": "isComplete",
+          "dataType": {
+            "type": "boolean"
+          },
+          "requireImplementation": true
+        }
+      },
+      "extendsInterfaces": [],
+      "allExtendsInterfaces": [],
+      "implementedByObjectTypes": [
+        "WontDo",
+        "Todo"
+      ],
+      "links": {},
+      "allLinks": {}
+    },
+    "Worker": {
+      "rid": "ri.ontology.main.interface.777ffb22-9b3c-4fb6-908f-56d23c3a5198",
+      "apiName": "Worker",
+      "displayName": "Worker",
+      "description": "",
+      "properties": {
+        "email": {
+          "rid": "ri.ontology.main.shared-property.2645943a-6870-4fe3-ac30-a27ff1c77b69",
+          "apiName": "email",
+          "displayName": "Email",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "employeeNumber": {
+          "rid": "ri.ontology.main.shared-property.631f0dd2-4e78-4c2a-8487-c767a448d227",
+          "apiName": "employeeNumber",
+          "displayName": "Employee Number",
+          "dataType": {
+            "type": "integer"
+          },
+          "required": true
+        },
+        "name": {
+          "rid": "ri.ontology.main.shared-property.f709f271-4788-4120-a8fb-b9e4166967c5",
+          "apiName": "name",
+          "displayName": "Name",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        }
+      },
+      "allProperties": {
+        "email": {
+          "rid": "ri.ontology.main.shared-property.2645943a-6870-4fe3-ac30-a27ff1c77b69",
+          "apiName": "email",
+          "displayName": "Email",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "name": {
+          "rid": "ri.ontology.main.shared-property.f709f271-4788-4120-a8fb-b9e4166967c5",
+          "apiName": "name",
+          "displayName": "Name",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "employeeNumber": {
+          "rid": "ri.ontology.main.shared-property.631f0dd2-4e78-4c2a-8487-c767a448d227",
+          "apiName": "employeeNumber",
+          "displayName": "Employee Number",
+          "dataType": {
+            "type": "integer"
+          },
+          "required": true
+        }
+      },
+      "propertiesV2": {
+        "email": {
+          "type": "interfaceSharedPropertyType",
+          "rid": "ri.ontology.main.shared-property.2645943a-6870-4fe3-ac30-a27ff1c77b69",
+          "apiName": "email",
+          "displayName": "Email",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "name": {
+          "type": "interfaceSharedPropertyType",
+          "rid": "ri.ontology.main.shared-property.f709f271-4788-4120-a8fb-b9e4166967c5",
+          "apiName": "name",
+          "displayName": "Name",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "employeeNumber": {
+          "type": "interfaceSharedPropertyType",
+          "rid": "ri.ontology.main.shared-property.631f0dd2-4e78-4c2a-8487-c767a448d227",
+          "apiName": "employeeNumber",
+          "displayName": "Employee Number",
+          "dataType": {
+            "type": "integer"
+          },
+          "required": true
+        }
+      },
+      "allPropertiesV2": {
+        "email": {
+          "rid": "ri.ontology.main.interface-property.2645943a-6870-4fe3-ac30-a27ff1c77b69",
+          "apiName": "email",
+          "displayName": "Email",
+          "dataType": {
+            "type": "string"
+          },
+          "requireImplementation": true
+        },
+        "name": {
+          "rid": "ri.ontology.main.interface-property.f709f271-4788-4120-a8fb-b9e4166967c5",
+          "apiName": "name",
+          "displayName": "Name",
+          "dataType": {
+            "type": "string"
+          },
+          "requireImplementation": true
+        },
+        "employeeNumber": {
+          "rid": "ri.ontology.main.interface-property.631f0dd2-4e78-4c2a-8487-c767a448d227",
+          "apiName": "employeeNumber",
+          "displayName": "Employee Number",
+          "dataType": {
+            "type": "integer"
+          },
+          "requireImplementation": true
+        }
+      },
+      "extendsInterfaces": [],
+      "allExtendsInterfaces": [],
+      "implementedByObjectTypes": [
+        "Employee"
+      ],
+      "links": {},
+      "allLinks": {}
+    }
+  },
+  "sharedPropertyTypes": {},
+  "valueTypes": {}
+}

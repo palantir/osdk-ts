@@ -20,7 +20,12 @@ import type {
   ObjectIdentifiers,
   ObjectOrInterfaceDefinition,
 } from "@osdk/api";
-import * as OntologiesV2 from "@osdk/foundry.ontologies";
+import type {
+  LoadObjectSetLinksResponseV2,
+  ObjectSet,
+  OntologyObjectV2,
+} from "@osdk/foundry.ontologies";
+import * as OntologyObjectSets from "@osdk/foundry.ontologies/OntologyObjectSet";
 import type { MinimalClient } from "../MinimalClientContext.js";
 
 /** @internal */
@@ -30,7 +35,7 @@ export const fetchLinksPage = async <
 >(
   client: MinimalClient,
   objectType: Q,
-  objectSet: OntologiesV2.ObjectSet,
+  objectSet: ObjectSet,
   links: LINK_TYPES[],
 ): Promise<FetchLinksPageResult<Q, LINK_TYPES>> => {
   if (objectType.type === "interface") {
@@ -41,7 +46,7 @@ export const fetchLinksPage = async <
     () => {},
   );
 
-  const result = await OntologiesV2.OntologyObjectSets.loadLinks(
+  const result = await OntologyObjectSets.loadLinks(
     client,
     await client.ontologyRid,
     {
@@ -59,7 +64,7 @@ export const remapLinksPage = <
   Q extends ObjectOrInterfaceDefinition,
   LINK_TYPES extends LinkTypeApiNamesFor<Q>,
 >(
-  wireLinksPage: OntologiesV2.LoadObjectSetLinksResponseV2,
+  wireLinksPage: LoadObjectSetLinksResponseV2,
 ): FetchLinksPageResult<Q, LINK_TYPES> => {
   return {
     ...wireLinksPage,
@@ -75,7 +80,7 @@ export const remapLinksPage = <
 
 /** @internal */
 export const remapObjectLocator = <Q extends ObjectOrInterfaceDefinition>(
-  wireObjectLocator: OntologiesV2.OntologyObjectV2,
+  wireObjectLocator: OntologyObjectV2,
 ): ObjectIdentifiers<Q> => ({
   $apiName: wireObjectLocator.__apiName,
   $primaryKey: wireObjectLocator.__primaryKey,

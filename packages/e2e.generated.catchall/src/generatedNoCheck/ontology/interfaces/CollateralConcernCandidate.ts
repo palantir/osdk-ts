@@ -7,6 +7,7 @@ import type {
   ObjectSet as $ObjectSet,
   Osdk as $Osdk,
   PropertyValueWireToClient as $PropType,
+  SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
 
 export interface OsdkObjectLinks$CollateralConcernCandidate {
@@ -14,7 +15,7 @@ export interface OsdkObjectLinks$CollateralConcernCandidate {
 }
 
 export namespace CollateralConcernCandidate {
-  export type PropertyKeys = 'collateralConcernName' | 'collateralConcernDescription';
+  export type PropertyKeys = 'collateralConcernDescription' | 'collateralConcernName';
 
   export interface Props {
     /**
@@ -85,8 +86,11 @@ export interface CollateralConcernCandidate extends $InterfaceDefinition {
   };
 }
 
-export const CollateralConcernCandidate: CollateralConcernCandidate = {
+export const CollateralConcernCandidate = {
   type: 'interface',
   apiName: 'com.palantir.pcl.civpro.collateral-concern-core.CollateralConcernCandidate',
   osdkMetadata: $osdkMetadata,
-};
+  internalDoNotUseMetadata: {
+    rid: 'ri.ontology.main.interface.81202dc9-3dcb-4031-b102-bfdb01a0e17c',
+  },
+} satisfies CollateralConcernCandidate & { internalDoNotUseMetadata: { rid: string } } as CollateralConcernCandidate;

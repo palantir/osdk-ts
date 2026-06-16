@@ -15,6 +15,8 @@
  */
 
 import type { Logger } from "@osdk/api";
+import type { TsServer } from "@osdk/shared.test.intellisense";
+import { startTsServer } from "@osdk/shared.test.intellisense";
 import { findUpSync } from "find-up";
 import * as path from "node:path";
 import invariant from "tiny-invariant";
@@ -28,8 +30,6 @@ import {
   it,
   vi,
 } from "vitest";
-import type { TsServer } from "./tsserver.js";
-import { startTsServer } from "./tsserver.js";
 
 // it needs to be hoisted because its referenced from our mocked WebSocket
 // which must be hoisted to work
@@ -123,6 +123,45 @@ describe("intellisense", () => {
     );
   });
 
+  it("interfaceObjectSetIntellisense", { timeout: 40_000 }, async () => {
+    const subscribeCompletions = await tsServer.sendCompletionsRequest({
+      file: intellisenseFilePath,
+      line: 30,
+      offset: 28,
+      triggerKind: ts.CompletionTriggerKind.Invoked,
+    });
+    expect(subscribeCompletions.resp.body?.entries.map(e => e.name)).toContain(
+      "subscribe",
+    );
+
+    const subscribeHover = await tsServer.sendQuickInfoRequest({
+      file: intellisenseFilePath,
+      line: 30,
+      offset: 28,
+    });
+    expect(subscribeHover.resp.body?.documentation).toContain(
+      "Request updates when the objects in an object set are added",
+    );
+
+    const narrowToTypeHover = await tsServer.sendQuickInfoRequest({
+      file: intellisenseFilePath,
+      line: 32,
+      offset: 27,
+    });
+    expect(narrowToTypeHover.resp.body?.displayString).toContain("Employee");
+    expect(narrowToTypeHover.resp.body?.displayString).toContain("Person");
+
+    const instanceCompletions = await tsServer.sendCompletionsRequest({
+      file: intellisenseFilePath,
+      line: 34,
+      offset: 18,
+      triggerKind: ts.CompletionTriggerKind.Invoked,
+    });
+    expect(instanceCompletions.resp.body?.entries.map(e => e.name)).toEqual(
+      expect.arrayContaining(["$as", "$objectType"]),
+    );
+  });
+
   it("orderBySuggestionIsRight", { timeout: 40_000 }, async () => {
     const { resp } = await tsServer.sendCompletionsRequest({
       file: intellisenseFilePath,
@@ -134,10 +173,13 @@ describe("intellisense", () => {
       "class",
       "employeeId",
       "employeeLocation",
+      "employeeProfile",
       "employeeSensor",
       "employeeStatus",
+      "favoriteRestaurants",
       "fullName",
       "office",
+      "performanceScores",
       "skillSet",
       "skillSetEmbedding",
       "startDate",
@@ -161,5 +203,28 @@ describe("intellisense", () => {
     expect(resp3.body?.entries.map(e => e.name)).toEqual([
       "relevance",
     ]);
+  });
+
+  it("fetchPageByRidLoadPropertySecurityMetadata", {
+    timeout: 40_000,
+  }, async () => {
+    const { resp } = await tsServer.sendCompletionsRequest({
+      file: intellisenseFilePath,
+      line: 32,
+      offset: 5,
+      triggerKind: ts.CompletionTriggerKind.Invoked,
+    });
+    expect(resp.body?.entries.map(e => e.name)).toContain(
+      "$loadPropertySecurityMetadata",
+    );
+
+    const { resp: hover } = await tsServer.sendQuickInfoRequest({
+      file: intellisenseFilePath,
+      line: 32,
+      offset: 8,
+    });
+    expect(hover.body?.displayString).toContain(
+      "$loadPropertySecurityMetadata",
+    );
   });
 });

@@ -15,11 +15,17 @@
  */
 
 import { beforeEach, describe, expect, it } from "vitest";
+import { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";
 import { defineInterface } from "../defineInterface.js";
 import { defineInterfaceLinkConstraint } from "../defineInterfaceLinkConstraint.js";
 import { defineLink } from "../defineLink.js";
 import { defineObject } from "../defineObject.js";
-import { defineOntology, dumpOntologyFullMetadata } from "../defineOntology.js";
+import {
+  defineOntology,
+  dumpOntologyFullMetadata,
+  getOntologyDefinition,
+  sanitizeTypes,
+} from "../defineOntology.js";
 import { type InterfaceType } from "../interface/InterfaceType.js";
 
 describe("Link Types", () => {
@@ -49,7 +55,7 @@ describe("Link Types", () => {
       defineLink({
         apiName: "fizzToFoo",
         one: {
-          object: object,
+          object,
           metadata: {
             apiName: "fizzes",
             displayName: "Foo",
@@ -68,311 +74,325 @@ describe("Link Types", () => {
       });
 
       expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`
-          {
+        {
+          "actionTypes": {},
+          "blockPermissionInformation": {
             "actionTypes": {},
-            "blockPermissionInformation": {
-              "actionTypes": {},
-              "linkTypes": {},
-              "objectTypes": {},
-            },
             "interfaceTypes": {},
-            "linkTypes": {
-              "fizz-to-foo": {
-                "datasources": [],
-                "entityMetadata": {
-                  "arePatchesEnabled": false,
-                },
-                "linkType": {
-                  "definition": {
-                    "oneToMany": {
-                      "cardinalityHint": "ONE_TO_MANY",
-                      "manyToOneLinkMetadata": {
-                        "apiName": "foos",
-                        "displayMetadata": {
-                          "displayName": "Fizz",
-                          "groupDisplayName": "",
-                          "pluralDisplayName": "Fizzes",
-                          "visibility": "NORMAL",
-                        },
-                        "typeClasses": [],
-                      },
-                      "objectTypeRidManySide": "com.palantir.fizz",
-                      "objectTypeRidOneSide": "com.palantir.foo",
-                      "oneSidePrimaryKeyToManySidePropertyMapping": [
-                        {
-                          "from": {
-                            "apiName": "bar",
-                            "object": "com.palantir.foo",
-                          },
-                          "to": {
-                            "apiName": "bar",
-                            "object": "com.palantir.fizz",
-                          },
-                        },
-                      ],
-                      "oneToManyLinkMetadata": {
-                        "apiName": "fizzes",
-                        "displayMetadata": {
-                          "displayName": "Foo",
-                          "groupDisplayName": "",
-                          "pluralDisplayName": "Foos",
-                          "visibility": "NORMAL",
-                        },
-                        "typeClasses": [],
-                      },
-                    },
-                    "type": "oneToMany",
-                  },
-                  "id": "fizz-to-foo",
-                  "redacted": false,
-                  "status": {
-                    "active": {},
-                    "type": "active",
-                  },
-                },
-              },
-            },
-            "objectTypes": {
-              "com.palantir.fizz": {
-                "datasources": [
-                  {
-                    "datasource": {
-                      "datasetV2": {
-                        "datasetRid": "com.palantir.fizz",
-                        "propertyMapping": {
-                          "bar": {
-                            "column": "bar",
-                            "type": "column",
-                          },
-                          "fizz": {
-                            "column": "fizz",
-                            "type": "column",
-                          },
-                        },
-                      },
-                      "type": "datasetV2",
-                    },
-                    "datasourceName": "com.palantir.fizz",
-                    "editsConfiguration": {
-                      "onlyAllowPrivilegedEdits": false,
-                    },
-                    "redacted": false,
-                  },
-                ],
-                "entityMetadata": {
-                  "arePatchesEnabled": false,
-                },
-                "objectType": {
-                  "allImplementsInterfaces": {},
-                  "apiName": "com.palantir.fizz",
-                  "displayMetadata": {
-                    "description": undefined,
-                    "displayName": "Fizz",
-                    "groupDisplayName": undefined,
-                    "icon": {
-                      "blueprint": {
-                        "color": "#2D72D2",
-                        "locator": "cube",
-                      },
-                      "type": "blueprint",
-                    },
-                    "pluralDisplayName": "Fizz",
-                    "visibility": "NORMAL",
-                  },
-                  "implementsInterfaces2": [],
-                  "primaryKeys": [
-                    "fizz",
-                  ],
-                  "propertyTypes": {
-                    "bar": {
-                      "apiName": "bar",
-                      "baseFormatter": undefined,
-                      "dataConstraints": undefined,
-                      "displayMetadata": {
-                        "description": undefined,
-                        "displayName": "Bar",
-                        "visibility": "NORMAL",
-                      },
-                      "indexedForSearch": true,
-                      "inlineAction": undefined,
-                      "ruleSetBinding": undefined,
-                      "sharedPropertyTypeApiName": undefined,
-                      "sharedPropertyTypeRid": undefined,
-                      "status": {
-                        "active": {},
-                        "type": "active",
-                      },
-                      "type": {
-                        "string": {
-                          "analyzerOverride": undefined,
-                          "enableAsciiFolding": undefined,
-                          "isLongText": false,
-                          "supportsEfficientLeadingWildcard": false,
-                          "supportsExactMatching": true,
-                        },
-                        "type": "string",
-                      },
-                      "typeClasses": [
-                        {
-                          "kind": "render_hint",
-                          "name": "SELECTABLE",
-                        },
-                        {
-                          "kind": "render_hint",
-                          "name": "SORTABLE",
-                        },
-                      ],
-                      "valueType": undefined,
-                    },
-                    "fizz": {
-                      "apiName": "fizz",
-                      "baseFormatter": undefined,
-                      "dataConstraints": undefined,
-                      "displayMetadata": {
-                        "description": undefined,
-                        "displayName": "Fizz",
-                        "visibility": "NORMAL",
-                      },
-                      "indexedForSearch": true,
-                      "inlineAction": undefined,
-                      "ruleSetBinding": undefined,
-                      "sharedPropertyTypeApiName": undefined,
-                      "sharedPropertyTypeRid": undefined,
-                      "status": {
-                        "active": {},
-                        "type": "active",
-                      },
-                      "type": {
-                        "string": {
-                          "analyzerOverride": undefined,
-                          "enableAsciiFolding": undefined,
-                          "isLongText": false,
-                          "supportsEfficientLeadingWildcard": false,
-                          "supportsExactMatching": true,
-                        },
-                        "type": "string",
-                      },
-                      "typeClasses": [
-                        {
-                          "kind": "render_hint",
-                          "name": "SELECTABLE",
-                        },
-                        {
-                          "kind": "render_hint",
-                          "name": "SORTABLE",
-                        },
-                      ],
-                      "valueType": undefined,
-                    },
-                  },
-                  "redacted": false,
-                  "status": {
-                    "active": {},
-                    "type": "active",
-                  },
-                  "titlePropertyTypeRid": "fizz",
-                },
-              },
-              "com.palantir.foo": {
-                "datasources": [
-                  {
-                    "datasource": {
-                      "datasetV2": {
-                        "datasetRid": "com.palantir.foo",
-                        "propertyMapping": {
-                          "bar": {
-                            "column": "bar",
-                            "type": "column",
-                          },
-                        },
-                      },
-                      "type": "datasetV2",
-                    },
-                    "datasourceName": "com.palantir.foo",
-                    "editsConfiguration": {
-                      "onlyAllowPrivilegedEdits": false,
-                    },
-                    "redacted": false,
-                  },
-                ],
-                "entityMetadata": {
-                  "arePatchesEnabled": false,
-                },
-                "objectType": {
-                  "allImplementsInterfaces": {},
-                  "apiName": "com.palantir.foo",
-                  "displayMetadata": {
-                    "description": undefined,
-                    "displayName": "Foo",
-                    "groupDisplayName": undefined,
-                    "icon": {
-                      "blueprint": {
-                        "color": "#2D72D2",
-                        "locator": "cube",
-                      },
-                      "type": "blueprint",
-                    },
-                    "pluralDisplayName": "Foo",
-                    "visibility": "NORMAL",
-                  },
-                  "implementsInterfaces2": [],
-                  "primaryKeys": [
-                    "bar",
-                  ],
-                  "propertyTypes": {
-                    "bar": {
-                      "apiName": "bar",
-                      "baseFormatter": undefined,
-                      "dataConstraints": undefined,
-                      "displayMetadata": {
-                        "description": undefined,
-                        "displayName": "Bar",
-                        "visibility": "NORMAL",
-                      },
-                      "indexedForSearch": true,
-                      "inlineAction": undefined,
-                      "ruleSetBinding": undefined,
-                      "sharedPropertyTypeApiName": undefined,
-                      "sharedPropertyTypeRid": undefined,
-                      "status": {
-                        "active": {},
-                        "type": "active",
-                      },
-                      "type": {
-                        "string": {
-                          "analyzerOverride": undefined,
-                          "enableAsciiFolding": undefined,
-                          "isLongText": false,
-                          "supportsEfficientLeadingWildcard": false,
-                          "supportsExactMatching": true,
-                        },
-                        "type": "string",
-                      },
-                      "typeClasses": [
-                        {
-                          "kind": "render_hint",
-                          "name": "SELECTABLE",
-                        },
-                        {
-                          "kind": "render_hint",
-                          "name": "SORTABLE",
-                        },
-                      ],
-                      "valueType": undefined,
-                    },
-                  },
-                  "redacted": false,
-                  "status": {
-                    "active": {},
-                    "type": "active",
-                  },
-                  "titlePropertyTypeRid": "bar",
-                },
-              },
-            },
+            "linkTypes": {},
+            "objectTypes": {},
             "sharedPropertyTypes": {},
-          }
-        `);
+          },
+          "interfaceTypes": {},
+          "linkTypes": {
+            "fizz-to-foo": {
+              "datasources": [],
+              "entityMetadata": {
+                "arePatchesEnabled": false,
+              },
+              "linkType": {
+                "definition": {
+                  "oneToMany": {
+                    "cardinalityHint": "ONE_TO_MANY",
+                    "manyToOneLinkMetadata": {
+                      "apiName": "foos",
+                      "displayMetadata": {
+                        "displayName": "Fizz",
+                        "groupDisplayName": "",
+                        "pluralDisplayName": "Fizzes",
+                        "visibility": "NORMAL",
+                      },
+                      "typeClasses": [],
+                    },
+                    "objectTypeRidManySide": "com.palantir.fizz",
+                    "objectTypeRidOneSide": "com.palantir.foo",
+                    "oneSidePrimaryKeyToManySidePropertyMapping": [
+                      {
+                        "from": {
+                          "apiName": "bar",
+                          "object": "com.palantir.foo",
+                        },
+                        "to": {
+                          "apiName": "bar",
+                          "object": "com.palantir.fizz",
+                        },
+                      },
+                    ],
+                    "oneToManyLinkMetadata": {
+                      "apiName": "fizzes",
+                      "displayMetadata": {
+                        "displayName": "Foo",
+                        "groupDisplayName": "",
+                        "pluralDisplayName": "Foos",
+                        "visibility": "NORMAL",
+                      },
+                      "typeClasses": [],
+                    },
+                  },
+                  "type": "oneToMany",
+                },
+                "id": "fizz-to-foo",
+                "redacted": false,
+                "status": {
+                  "active": {},
+                  "type": "active",
+                },
+              },
+            },
+          },
+          "objectTypes": {
+            "com.palantir.fizz": {
+              "datasources": [
+                {
+                  "datasource": {
+                    "datasetV2": {
+                      "datasetRid": "com.palantir.fizz",
+                      "propertyMapping": {
+                        "bar": {
+                          "column": "bar",
+                          "type": "column",
+                        },
+                        "fizz": {
+                          "column": "fizz",
+                          "type": "column",
+                        },
+                      },
+                    },
+                    "type": "datasetV2",
+                  },
+                  "datasourceName": "com.palantir.fizz",
+                  "editsConfiguration": {
+                    "onlyAllowPrivilegedEdits": false,
+                  },
+                  "redacted": false,
+                },
+              ],
+              "entityMetadata": {
+                "aliases": [],
+                "arePatchesEnabled": false,
+                "editsHistory": undefined,
+              },
+              "objectType": {
+                "allImplementsInterfaces": {},
+                "apiName": "com.palantir.fizz",
+                "displayMetadata": {
+                  "description": undefined,
+                  "displayName": "Fizz",
+                  "groupDisplayName": undefined,
+                  "icon": {
+                    "blueprint": {
+                      "color": "#2D72D2",
+                      "locator": "cube",
+                    },
+                    "type": "blueprint",
+                  },
+                  "pluralDisplayName": "Fizz",
+                  "visibility": "NORMAL",
+                },
+                "implementsInterfaces2": [],
+                "primaryKeys": [
+                  "fizz",
+                ],
+                "propertyTypes": {
+                  "bar": {
+                    "apiName": "bar",
+                    "baseFormatter": undefined,
+                    "dataConstraints": undefined,
+                    "displayMetadata": {
+                      "description": undefined,
+                      "displayName": "Bar",
+                      "visibility": "NORMAL",
+                    },
+                    "indexedForSearch": true,
+                    "inlineAction": undefined,
+                    "ruleSetBinding": undefined,
+                    "sharedPropertyTypeApiName": undefined,
+                    "sharedPropertyTypeRid": undefined,
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                    "type": {
+                      "string": {
+                        "analyzerOverride": undefined,
+                        "enableAsciiFolding": undefined,
+                        "isLongText": false,
+                        "supportsEfficientLeadingWildcard": false,
+                        "supportsExactMatching": true,
+                      },
+                      "type": "string",
+                    },
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE",
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE",
+                      },
+                    ],
+                    "valueType": undefined,
+                  },
+                  "fizz": {
+                    "apiName": "fizz",
+                    "baseFormatter": undefined,
+                    "dataConstraints": undefined,
+                    "displayMetadata": {
+                      "description": undefined,
+                      "displayName": "Fizz",
+                      "visibility": "NORMAL",
+                    },
+                    "indexedForSearch": true,
+                    "inlineAction": undefined,
+                    "ruleSetBinding": undefined,
+                    "sharedPropertyTypeApiName": undefined,
+                    "sharedPropertyTypeRid": undefined,
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                    "type": {
+                      "string": {
+                        "analyzerOverride": undefined,
+                        "enableAsciiFolding": undefined,
+                        "isLongText": false,
+                        "supportsEfficientLeadingWildcard": false,
+                        "supportsExactMatching": true,
+                      },
+                      "type": "string",
+                    },
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE",
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE",
+                      },
+                    ],
+                    "valueType": undefined,
+                  },
+                },
+                "redacted": false,
+                "status": {
+                  "active": {},
+                  "type": "active",
+                },
+                "titlePropertyTypeRid": "fizz",
+              },
+              "propertySecurityGroupPackagingVersion": {
+                "type": "v2",
+                "v2": {},
+              },
+            },
+            "com.palantir.foo": {
+              "datasources": [
+                {
+                  "datasource": {
+                    "datasetV2": {
+                      "datasetRid": "com.palantir.foo",
+                      "propertyMapping": {
+                        "bar": {
+                          "column": "bar",
+                          "type": "column",
+                        },
+                      },
+                    },
+                    "type": "datasetV2",
+                  },
+                  "datasourceName": "com.palantir.foo",
+                  "editsConfiguration": {
+                    "onlyAllowPrivilegedEdits": false,
+                  },
+                  "redacted": false,
+                },
+              ],
+              "entityMetadata": {
+                "aliases": [],
+                "arePatchesEnabled": false,
+                "editsHistory": undefined,
+              },
+              "objectType": {
+                "allImplementsInterfaces": {},
+                "apiName": "com.palantir.foo",
+                "displayMetadata": {
+                  "description": undefined,
+                  "displayName": "Foo",
+                  "groupDisplayName": undefined,
+                  "icon": {
+                    "blueprint": {
+                      "color": "#2D72D2",
+                      "locator": "cube",
+                    },
+                    "type": "blueprint",
+                  },
+                  "pluralDisplayName": "Foo",
+                  "visibility": "NORMAL",
+                },
+                "implementsInterfaces2": [],
+                "primaryKeys": [
+                  "bar",
+                ],
+                "propertyTypes": {
+                  "bar": {
+                    "apiName": "bar",
+                    "baseFormatter": undefined,
+                    "dataConstraints": undefined,
+                    "displayMetadata": {
+                      "description": undefined,
+                      "displayName": "Bar",
+                      "visibility": "NORMAL",
+                    },
+                    "indexedForSearch": true,
+                    "inlineAction": undefined,
+                    "ruleSetBinding": undefined,
+                    "sharedPropertyTypeApiName": undefined,
+                    "sharedPropertyTypeRid": undefined,
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                    "type": {
+                      "string": {
+                        "analyzerOverride": undefined,
+                        "enableAsciiFolding": undefined,
+                        "isLongText": false,
+                        "supportsEfficientLeadingWildcard": false,
+                        "supportsExactMatching": true,
+                      },
+                      "type": "string",
+                    },
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE",
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE",
+                      },
+                    ],
+                    "valueType": undefined,
+                  },
+                },
+                "redacted": false,
+                "status": {
+                  "active": {},
+                  "type": "active",
+                },
+                "titlePropertyTypeRid": "bar",
+              },
+              "propertySecurityGroupPackagingVersion": {
+                "type": "v2",
+                "v2": {},
+              },
+            },
+          },
+          "sharedPropertyTypes": {},
+        }
+      `);
     });
 
     it("Many To Many Links are properly defined", () => {
@@ -397,7 +417,7 @@ describe("Link Types", () => {
       defineLink({
         apiName: "fizzToFoo",
         many: {
-          object: object,
+          object,
           metadata: {
             displayName: "Foo",
             pluralDisplayName: "Foos",
@@ -414,356 +434,565 @@ describe("Link Types", () => {
         },
       });
       expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`
-      {
-        "actionTypes": {},
-        "blockPermissionInformation": {
+        {
           "actionTypes": {},
-          "linkTypes": {},
-          "objectTypes": {},
-        },
-        "interfaceTypes": {},
-        "linkTypes": {
-          "fizz-to-foo": {
-            "datasources": [
-              {
-                "datasource": {
-                  "dataset": {
-                    "datasetRid": "link-fizzToFoo",
-                    "objectTypeAPrimaryKeyMapping": [
+          "blockPermissionInformation": {
+            "actionTypes": {},
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {},
+          },
+          "interfaceTypes": {},
+          "linkTypes": {
+            "fizz-to-foo": {
+              "datasources": [
+                {
+                  "datasource": {
+                    "dataset": {
+                      "datasetRid": "link-fizzToFoo",
+                      "objectTypeAPrimaryKeyMapping": [
+                        {
+                          "column": "bar",
+                          "property": {
+                            "apiName": "bar",
+                            "object": "com.palantir.foo",
+                          },
+                        },
+                      ],
+                      "objectTypeBPrimaryKeyMapping": [
+                        {
+                          "column": "fizz",
+                          "property": {
+                            "apiName": "fizz",
+                            "object": "com.palantir.fizz",
+                          },
+                        },
+                      ],
+                      "writebackDatasetRid": undefined,
+                    },
+                    "type": "dataset",
+                  },
+                  "datasourceName": "fizzToFoo",
+                  "editsConfiguration": {
+                    "onlyAllowPrivilegedEdits": false,
+                  },
+                  "redacted": undefined,
+                },
+              ],
+              "entityMetadata": {
+                "arePatchesEnabled": false,
+              },
+              "linkType": {
+                "definition": {
+                  "manyToMany": {
+                    "objectTypeAPrimaryKeyPropertyMapping": [
                       {
-                        "column": "bar",
-                        "property": {
+                        "from": {
+                          "apiName": "bar",
+                          "object": "com.palantir.foo",
+                        },
+                        "to": {
                           "apiName": "bar",
                           "object": "com.palantir.foo",
                         },
                       },
                     ],
-                    "objectTypeBPrimaryKeyMapping": [
+                    "objectTypeAToBLinkMetadata": {
+                      "apiName": "fizzes",
+                      "displayMetadata": {
+                        "displayName": "Foo",
+                        "groupDisplayName": "",
+                        "pluralDisplayName": "Foos",
+                        "visibility": "NORMAL",
+                      },
+                      "typeClasses": [],
+                    },
+                    "objectTypeBPrimaryKeyPropertyMapping": [
                       {
-                        "column": "fizz",
-                        "property": {
+                        "from": {
+                          "apiName": "fizz",
+                          "object": "com.palantir.fizz",
+                        },
+                        "to": {
                           "apiName": "fizz",
                           "object": "com.palantir.fizz",
                         },
                       },
                     ],
-                    "writebackDatasetRid": undefined,
-                  },
-                  "type": "dataset",
-                },
-                "datasourceName": "fizzToFoo",
-                "editsConfiguration": {
-                  "onlyAllowPrivilegedEdits": false,
-                },
-                "redacted": undefined,
-              },
-            ],
-            "entityMetadata": {
-              "arePatchesEnabled": false,
-            },
-            "linkType": {
-              "definition": {
-                "manyToMany": {
-                  "objectTypeAPrimaryKeyPropertyMapping": [
-                    {
-                      "from": {
-                        "apiName": "bar",
-                        "object": "com.palantir.foo",
+                    "objectTypeBToALinkMetadata": {
+                      "apiName": "foos",
+                      "displayMetadata": {
+                        "displayName": "Fizz",
+                        "groupDisplayName": "",
+                        "pluralDisplayName": "Fizzes",
+                        "visibility": "NORMAL",
                       },
-                      "to": {
-                        "apiName": "bar",
-                        "object": "com.palantir.foo",
+                      "typeClasses": [],
+                    },
+                    "objectTypeRidA": "com.palantir.foo",
+                    "objectTypeRidB": "com.palantir.fizz",
+                    "peeringMetadata": undefined,
+                  },
+                  "type": "manyToMany",
+                },
+                "id": "fizz-to-foo",
+                "redacted": false,
+                "status": {
+                  "active": {},
+                  "type": "active",
+                },
+              },
+            },
+          },
+          "objectTypes": {
+            "com.palantir.fizz": {
+              "datasources": [
+                {
+                  "datasource": {
+                    "datasetV2": {
+                      "datasetRid": "com.palantir.fizz",
+                      "propertyMapping": {
+                        "bar": {
+                          "column": "bar",
+                          "type": "column",
+                        },
+                        "fizz": {
+                          "column": "fizz",
+                          "type": "column",
+                        },
                       },
                     },
-                  ],
-                  "objectTypeAToBLinkMetadata": {
-                    "apiName": "fizzes",
+                    "type": "datasetV2",
+                  },
+                  "datasourceName": "com.palantir.fizz",
+                  "editsConfiguration": {
+                    "onlyAllowPrivilegedEdits": false,
+                  },
+                  "redacted": false,
+                },
+              ],
+              "entityMetadata": {
+                "aliases": [],
+                "arePatchesEnabled": false,
+                "editsHistory": undefined,
+              },
+              "objectType": {
+                "allImplementsInterfaces": {},
+                "apiName": "com.palantir.fizz",
+                "displayMetadata": {
+                  "description": undefined,
+                  "displayName": "Fizz",
+                  "groupDisplayName": undefined,
+                  "icon": {
+                    "blueprint": {
+                      "color": "#2D72D2",
+                      "locator": "cube",
+                    },
+                    "type": "blueprint",
+                  },
+                  "pluralDisplayName": "Fizz",
+                  "visibility": "NORMAL",
+                },
+                "implementsInterfaces2": [],
+                "primaryKeys": [
+                  "fizz",
+                ],
+                "propertyTypes": {
+                  "bar": {
+                    "apiName": "bar",
+                    "baseFormatter": undefined,
+                    "dataConstraints": undefined,
                     "displayMetadata": {
-                      "displayName": "Foo",
-                      "groupDisplayName": "",
-                      "pluralDisplayName": "Foos",
+                      "description": undefined,
+                      "displayName": "Bar",
                       "visibility": "NORMAL",
                     },
-                    "typeClasses": [],
-                  },
-                  "objectTypeBPrimaryKeyPropertyMapping": [
-                    {
-                      "from": {
-                        "apiName": "fizz",
-                        "object": "com.palantir.fizz",
-                      },
-                      "to": {
-                        "apiName": "fizz",
-                        "object": "com.palantir.fizz",
-                      },
+                    "indexedForSearch": true,
+                    "inlineAction": undefined,
+                    "ruleSetBinding": undefined,
+                    "sharedPropertyTypeApiName": undefined,
+                    "sharedPropertyTypeRid": undefined,
+                    "status": {
+                      "active": {},
+                      "type": "active",
                     },
-                  ],
-                  "objectTypeBToALinkMetadata": {
-                    "apiName": "foos",
+                    "type": {
+                      "string": {
+                        "analyzerOverride": undefined,
+                        "enableAsciiFolding": undefined,
+                        "isLongText": false,
+                        "supportsEfficientLeadingWildcard": false,
+                        "supportsExactMatching": true,
+                      },
+                      "type": "string",
+                    },
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE",
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE",
+                      },
+                    ],
+                    "valueType": undefined,
+                  },
+                  "fizz": {
+                    "apiName": "fizz",
+                    "baseFormatter": undefined,
+                    "dataConstraints": undefined,
                     "displayMetadata": {
+                      "description": undefined,
                       "displayName": "Fizz",
-                      "groupDisplayName": "",
-                      "pluralDisplayName": "Fizzes",
                       "visibility": "NORMAL",
                     },
-                    "typeClasses": [],
-                  },
-                  "objectTypeRidA": "com.palantir.foo",
-                  "objectTypeRidB": "com.palantir.fizz",
-                  "peeringMetadata": undefined,
-                },
-                "type": "manyToMany",
-              },
-              "id": "fizz-to-foo",
-              "redacted": false,
-              "status": {
-                "active": {},
-                "type": "active",
-              },
-            },
-          },
-        },
-        "objectTypes": {
-          "com.palantir.fizz": {
-            "datasources": [
-              {
-                "datasource": {
-                  "datasetV2": {
-                    "datasetRid": "com.palantir.fizz",
-                    "propertyMapping": {
-                      "bar": {
-                        "column": "bar",
-                        "type": "column",
-                      },
-                      "fizz": {
-                        "column": "fizz",
-                        "type": "column",
-                      },
+                    "indexedForSearch": true,
+                    "inlineAction": undefined,
+                    "ruleSetBinding": undefined,
+                    "sharedPropertyTypeApiName": undefined,
+                    "sharedPropertyTypeRid": undefined,
+                    "status": {
+                      "active": {},
+                      "type": "active",
                     },
+                    "type": {
+                      "string": {
+                        "analyzerOverride": undefined,
+                        "enableAsciiFolding": undefined,
+                        "isLongText": false,
+                        "supportsEfficientLeadingWildcard": false,
+                        "supportsExactMatching": true,
+                      },
+                      "type": "string",
+                    },
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE",
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE",
+                      },
+                    ],
+                    "valueType": undefined,
                   },
-                  "type": "datasetV2",
-                },
-                "datasourceName": "com.palantir.fizz",
-                "editsConfiguration": {
-                  "onlyAllowPrivilegedEdits": false,
                 },
                 "redacted": false,
+                "status": {
+                  "active": {},
+                  "type": "active",
+                },
+                "titlePropertyTypeRid": "fizz",
               },
-            ],
-            "entityMetadata": {
-              "arePatchesEnabled": false,
+              "propertySecurityGroupPackagingVersion": {
+                "type": "v2",
+                "v2": {},
+              },
             },
-            "objectType": {
-              "allImplementsInterfaces": {},
-              "apiName": "com.palantir.fizz",
-              "displayMetadata": {
-                "description": undefined,
-                "displayName": "Fizz",
-                "groupDisplayName": undefined,
-                "icon": {
-                  "blueprint": {
-                    "color": "#2D72D2",
-                    "locator": "cube",
-                  },
-                  "type": "blueprint",
-                },
-                "pluralDisplayName": "Fizz",
-                "visibility": "NORMAL",
-              },
-              "implementsInterfaces2": [],
-              "primaryKeys": [
-                "fizz",
-              ],
-              "propertyTypes": {
-                "bar": {
-                  "apiName": "bar",
-                  "baseFormatter": undefined,
-                  "dataConstraints": undefined,
-                  "displayMetadata": {
-                    "description": undefined,
-                    "displayName": "Bar",
-                    "visibility": "NORMAL",
-                  },
-                  "indexedForSearch": true,
-                  "inlineAction": undefined,
-                  "ruleSetBinding": undefined,
-                  "sharedPropertyTypeApiName": undefined,
-                  "sharedPropertyTypeRid": undefined,
-                  "status": {
-                    "active": {},
-                    "type": "active",
-                  },
-                  "type": {
-                    "string": {
-                      "analyzerOverride": undefined,
-                      "enableAsciiFolding": undefined,
-                      "isLongText": false,
-                      "supportsEfficientLeadingWildcard": false,
-                      "supportsExactMatching": true,
-                    },
-                    "type": "string",
-                  },
-                  "typeClasses": [
-                    {
-                      "kind": "render_hint",
-                      "name": "SELECTABLE",
-                    },
-                    {
-                      "kind": "render_hint",
-                      "name": "SORTABLE",
-                    },
-                  ],
-                  "valueType": undefined,
-                },
-                "fizz": {
-                  "apiName": "fizz",
-                  "baseFormatter": undefined,
-                  "dataConstraints": undefined,
-                  "displayMetadata": {
-                    "description": undefined,
-                    "displayName": "Fizz",
-                    "visibility": "NORMAL",
-                  },
-                  "indexedForSearch": true,
-                  "inlineAction": undefined,
-                  "ruleSetBinding": undefined,
-                  "sharedPropertyTypeApiName": undefined,
-                  "sharedPropertyTypeRid": undefined,
-                  "status": {
-                    "active": {},
-                    "type": "active",
-                  },
-                  "type": {
-                    "string": {
-                      "analyzerOverride": undefined,
-                      "enableAsciiFolding": undefined,
-                      "isLongText": false,
-                      "supportsEfficientLeadingWildcard": false,
-                      "supportsExactMatching": true,
-                    },
-                    "type": "string",
-                  },
-                  "typeClasses": [
-                    {
-                      "kind": "render_hint",
-                      "name": "SELECTABLE",
-                    },
-                    {
-                      "kind": "render_hint",
-                      "name": "SORTABLE",
-                    },
-                  ],
-                  "valueType": undefined,
-                },
-              },
-              "redacted": false,
-              "status": {
-                "active": {},
-                "type": "active",
-              },
-              "titlePropertyTypeRid": "fizz",
-            },
-          },
-          "com.palantir.foo": {
-            "datasources": [
-              {
-                "datasource": {
-                  "datasetV2": {
-                    "datasetRid": "com.palantir.foo",
-                    "propertyMapping": {
-                      "bar": {
-                        "column": "bar",
-                        "type": "column",
+            "com.palantir.foo": {
+              "datasources": [
+                {
+                  "datasource": {
+                    "datasetV2": {
+                      "datasetRid": "com.palantir.foo",
+                      "propertyMapping": {
+                        "bar": {
+                          "column": "bar",
+                          "type": "column",
+                        },
                       },
                     },
+                    "type": "datasetV2",
                   },
-                  "type": "datasetV2",
+                  "datasourceName": "com.palantir.foo",
+                  "editsConfiguration": {
+                    "onlyAllowPrivilegedEdits": false,
+                  },
+                  "redacted": false,
                 },
-                "datasourceName": "com.palantir.foo",
-                "editsConfiguration": {
-                  "onlyAllowPrivilegedEdits": false,
+              ],
+              "entityMetadata": {
+                "aliases": [],
+                "arePatchesEnabled": false,
+                "editsHistory": undefined,
+              },
+              "objectType": {
+                "allImplementsInterfaces": {},
+                "apiName": "com.palantir.foo",
+                "displayMetadata": {
+                  "description": undefined,
+                  "displayName": "Foo",
+                  "groupDisplayName": undefined,
+                  "icon": {
+                    "blueprint": {
+                      "color": "#2D72D2",
+                      "locator": "cube",
+                    },
+                    "type": "blueprint",
+                  },
+                  "pluralDisplayName": "Foo",
+                  "visibility": "NORMAL",
+                },
+                "implementsInterfaces2": [],
+                "primaryKeys": [
+                  "bar",
+                ],
+                "propertyTypes": {
+                  "bar": {
+                    "apiName": "bar",
+                    "baseFormatter": undefined,
+                    "dataConstraints": undefined,
+                    "displayMetadata": {
+                      "description": undefined,
+                      "displayName": "Bar",
+                      "visibility": "NORMAL",
+                    },
+                    "indexedForSearch": true,
+                    "inlineAction": undefined,
+                    "ruleSetBinding": undefined,
+                    "sharedPropertyTypeApiName": undefined,
+                    "sharedPropertyTypeRid": undefined,
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                    "type": {
+                      "string": {
+                        "analyzerOverride": undefined,
+                        "enableAsciiFolding": undefined,
+                        "isLongText": false,
+                        "supportsEfficientLeadingWildcard": false,
+                        "supportsExactMatching": true,
+                      },
+                      "type": "string",
+                    },
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE",
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE",
+                      },
+                    ],
+                    "valueType": undefined,
+                  },
                 },
                 "redacted": false,
-              },
-            ],
-            "entityMetadata": {
-              "arePatchesEnabled": false,
-            },
-            "objectType": {
-              "allImplementsInterfaces": {},
-              "apiName": "com.palantir.foo",
-              "displayMetadata": {
-                "description": undefined,
-                "displayName": "Foo",
-                "groupDisplayName": undefined,
-                "icon": {
-                  "blueprint": {
-                    "color": "#2D72D2",
-                    "locator": "cube",
-                  },
-                  "type": "blueprint",
+                "status": {
+                  "active": {},
+                  "type": "active",
                 },
-                "pluralDisplayName": "Foo",
-                "visibility": "NORMAL",
+                "titlePropertyTypeRid": "bar",
               },
-              "implementsInterfaces2": [],
-              "primaryKeys": [
-                "bar",
-              ],
-              "propertyTypes": {
-                "bar": {
-                  "apiName": "bar",
-                  "baseFormatter": undefined,
-                  "dataConstraints": undefined,
-                  "displayMetadata": {
-                    "description": undefined,
-                    "displayName": "Bar",
-                    "visibility": "NORMAL",
-                  },
-                  "indexedForSearch": true,
-                  "inlineAction": undefined,
-                  "ruleSetBinding": undefined,
-                  "sharedPropertyTypeApiName": undefined,
-                  "sharedPropertyTypeRid": undefined,
-                  "status": {
-                    "active": {},
-                    "type": "active",
-                  },
-                  "type": {
-                    "string": {
-                      "analyzerOverride": undefined,
-                      "enableAsciiFolding": undefined,
-                      "isLongText": false,
-                      "supportsEfficientLeadingWildcard": false,
-                      "supportsExactMatching": true,
-                    },
-                    "type": "string",
-                  },
-                  "typeClasses": [
-                    {
-                      "kind": "render_hint",
-                      "name": "SELECTABLE",
-                    },
-                    {
-                      "kind": "render_hint",
-                      "name": "SORTABLE",
-                    },
-                  ],
-                  "valueType": undefined,
-                },
+              "propertySecurityGroupPackagingVersion": {
+                "type": "v2",
+                "v2": {},
               },
-              "redacted": false,
-              "status": {
-                "active": {},
-                "type": "active",
-              },
-              "titlePropertyTypeRid": "bar",
             },
           },
+          "sharedPropertyTypes": {},
+        }
+      `);
+    });
+
+    it("Self-referential Many To Many Links deduplicate column names", () => {
+      const person = defineObject({
+        titlePropertyApiName: "name",
+        displayName: "Person",
+        pluralDisplayName: "People",
+        apiName: "person",
+        primaryKeyPropertyApiName: "id",
+        properties: { "id": { type: "string" }, "name": { type: "string" } },
+      });
+
+      defineLink({
+        apiName: "personToFriend",
+        many: {
+          object: person,
+          metadata: {
+            displayName: "Friends",
+            pluralDisplayName: "Friends",
+            apiName: "friends",
+          },
         },
-        "sharedPropertyTypes": {},
-      }
-    `);
+        toMany: {
+          object: person,
+          metadata: {
+            displayName: "Friend Of",
+            pluralDisplayName: "Friends Of",
+            apiName: "friendOf",
+          },
+        },
+      });
+
+      const metadata = dumpOntologyFullMetadata();
+      const linkDatasource =
+        metadata.ontology.linkTypes["person-to-friend"].datasources[0];
+      expect(
+        linkDatasource.datasource.dataset.objectTypeAPrimaryKeyMapping[0]
+          .column,
+      ).toBe("id_from");
+      expect(
+        linkDatasource.datasource.dataset.objectTypeBPrimaryKeyMapping[0]
+          .column,
+      ).toBe("id_to");
+    });
+
+    it("Many To Many Links with same PK name deduplicate column names", () => {
+      const object = defineObject({
+        titlePropertyApiName: "id",
+        displayName: "Foo",
+        pluralDisplayName: "Foos",
+        apiName: "foo",
+        primaryKeyPropertyApiName: "id",
+        properties: { "id": { type: "string" } },
+      });
+
+      const otherObject = defineObject({
+        titlePropertyApiName: "id",
+        displayName: "Bar",
+        pluralDisplayName: "Bars",
+        apiName: "bar",
+        primaryKeyPropertyApiName: "id",
+        properties: { "id": { type: "string" } },
+      });
+
+      defineLink({
+        apiName: "fooToBar",
+        many: {
+          object,
+          metadata: {
+            displayName: "Bars",
+            pluralDisplayName: "Bars",
+            apiName: "bars",
+          },
+        },
+        toMany: {
+          object: otherObject,
+          metadata: {
+            displayName: "Foos",
+            pluralDisplayName: "Foos",
+            apiName: "foos",
+          },
+        },
+      });
+
+      const metadata = dumpOntologyFullMetadata();
+      const linkDatasource =
+        metadata.ontology.linkTypes["foo-to-bar"].datasources[0];
+      expect(
+        linkDatasource.datasource.dataset.objectTypeAPrimaryKeyMapping[0]
+          .column,
+      ).toBe("id_from");
+      expect(
+        linkDatasource.datasource.dataset.objectTypeBPrimaryKeyMapping[0]
+          .column,
+      ).toBe("id_to");
+    });
+
+    it("Many To Many Links with different PK names do not suffix columns", () => {
+      const object = defineObject({
+        titlePropertyApiName: "fooId",
+        displayName: "Foo",
+        pluralDisplayName: "Foos",
+        apiName: "foo",
+        primaryKeyPropertyApiName: "fooId",
+        properties: { "fooId": { type: "string" } },
+      });
+
+      const otherObject = defineObject({
+        titlePropertyApiName: "barId",
+        displayName: "Bar",
+        pluralDisplayName: "Bars",
+        apiName: "bar",
+        primaryKeyPropertyApiName: "barId",
+        properties: { "barId": { type: "string" } },
+      });
+
+      defineLink({
+        apiName: "fooToBar",
+        many: {
+          object,
+          metadata: {
+            displayName: "Bars",
+            pluralDisplayName: "Bars",
+            apiName: "bars",
+          },
+        },
+        toMany: {
+          object: otherObject,
+          metadata: {
+            displayName: "Foos",
+            pluralDisplayName: "Foos",
+            apiName: "foos",
+          },
+        },
+      });
+
+      const metadata = dumpOntologyFullMetadata();
+      const linkDatasource =
+        metadata.ontology.linkTypes["foo-to-bar"].datasources[0];
+      expect(
+        linkDatasource.datasource.dataset.objectTypeAPrimaryKeyMapping[0]
+          .column,
+      ).toBe("fooId");
+      expect(
+        linkDatasource.datasource.dataset.objectTypeBPrimaryKeyMapping[0]
+          .column,
+      ).toBe("barId");
+    });
+
+    it("Many To Many Links with includeEmptyBackingDatasource passes through", () => {
+      const object = defineObject({
+        titlePropertyApiName: "bar",
+        displayName: "Foo",
+        pluralDisplayName: "Foos",
+        apiName: "foo",
+        primaryKeyPropertyApiName: "bar",
+        properties: { "bar": { type: "string" } },
+      });
+
+      const otherObject = defineObject({
+        titlePropertyApiName: "fizz",
+        displayName: "Fizz",
+        pluralDisplayName: "Fizzes",
+        apiName: "fizz",
+        primaryKeyPropertyApiName: "fizz",
+        properties: { "fizz": { type: "string" } },
+      });
+
+      defineLink({
+        apiName: "fizzToFoo",
+        many: {
+          object,
+          metadata: {
+            displayName: "Foo",
+            pluralDisplayName: "Foos",
+            apiName: "fizzes",
+          },
+        },
+        toMany: {
+          object: otherObject,
+          metadata: {
+            displayName: "Fizz",
+            pluralDisplayName: "Fizzes",
+            apiName: "foos",
+          },
+        },
+        includeEmptyBackingDatasource: true,
+      });
+
+      const ontology = getOntologyDefinition();
+      const link = ontology[OntologyEntityTypeEnum.LINK_TYPE].fizzToFoo;
+      expect(
+        "many" in link && !("intermediaryObjectType" in link)
+          && link.includeEmptyBackingDatasource,
+      ).toBe(true);
     });
 
     it("Intermediary link types are properly defined", () => {
@@ -863,549 +1092,569 @@ describe("Link Types", () => {
         intermediaryObjectType: intermediaryObject,
       });
       expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`
-      {
-        "actionTypes": {},
-        "blockPermissionInformation": {
+        {
           "actionTypes": {},
-          "linkTypes": {},
-          "objectTypes": {},
-        },
-        "interfaceTypes": {},
-        "linkTypes": {
-          "bar-to-buzz": {
-            "datasources": [],
-            "entityMetadata": {
-              "arePatchesEnabled": false,
+          "blockPermissionInformation": {
+            "actionTypes": {},
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {},
+          },
+          "interfaceTypes": {},
+          "linkTypes": {
+            "bar-to-buzz": {
+              "datasources": [],
+              "entityMetadata": {
+                "arePatchesEnabled": false,
+              },
+              "linkType": {
+                "definition": {
+                  "oneToMany": {
+                    "cardinalityHint": "ONE_TO_MANY",
+                    "manyToOneLinkMetadata": {
+                      "apiName": "bars",
+                      "displayMetadata": {
+                        "displayName": "Bar",
+                        "groupDisplayName": "",
+                        "pluralDisplayName": "Bars",
+                        "visibility": "NORMAL",
+                      },
+                      "typeClasses": [],
+                    },
+                    "objectTypeRidManySide": "com.palantir.buzzObject",
+                    "objectTypeRidOneSide": "com.palantir.barObject",
+                    "oneSidePrimaryKeyToManySidePropertyMapping": [
+                      {
+                        "from": {
+                          "apiName": "bar",
+                          "object": "com.palantir.barObject",
+                        },
+                        "to": {
+                          "apiName": "barBuzz",
+                          "object": "com.palantir.buzzObject",
+                        },
+                      },
+                    ],
+                    "oneToManyLinkMetadata": {
+                      "apiName": "buzz1",
+                      "displayMetadata": {
+                        "displayName": "Buzz",
+                        "groupDisplayName": "",
+                        "pluralDisplayName": "Buzz",
+                        "visibility": "NORMAL",
+                      },
+                      "typeClasses": [],
+                    },
+                  },
+                  "type": "oneToMany",
+                },
+                "id": "bar-to-buzz",
+                "redacted": false,
+                "status": {
+                  "active": {},
+                  "type": "active",
+                },
+              },
             },
-            "linkType": {
-              "definition": {
-                "oneToMany": {
-                  "cardinalityHint": "ONE_TO_MANY",
-                  "manyToOneLinkMetadata": {
-                    "apiName": "bars",
+            "fizz-to-bar": {
+              "datasources": [],
+              "entityMetadata": {
+                "arePatchesEnabled": false,
+              },
+              "linkType": {
+                "definition": {
+                  "intermediary": {
+                    "aToIntermediaryLinkTypeRid": "bar-to-buzz",
+                    "intermediaryObjectTypeRid": "com.palantir.buzzObject",
+                    "intermediaryToBLinkTypeRid": "fizz-to-buzz",
+                    "objectTypeAToBLinkMetadata": {
+                      "apiName": "fizzes1",
+                      "displayMetadata": {
+                        "displayName": "Fizz",
+                        "groupDisplayName": "",
+                        "pluralDisplayName": "Fizzes",
+                        "visibility": "NORMAL",
+                      },
+                      "typeClasses": [],
+                    },
+                    "objectTypeBToALinkMetadata": {
+                      "apiName": "bars1",
+                      "displayMetadata": {
+                        "displayName": "Bar",
+                        "groupDisplayName": "",
+                        "pluralDisplayName": "Bars",
+                        "visibility": "NORMAL",
+                      },
+                      "typeClasses": [],
+                    },
+                    "objectTypeRidA": "com.palantir.barObject",
+                    "objectTypeRidB": "com.palantir.fizzObject",
+                  },
+                  "type": "intermediary",
+                },
+                "id": "fizz-to-bar",
+                "redacted": false,
+                "status": {
+                  "active": {},
+                  "type": "active",
+                },
+              },
+            },
+            "fizz-to-buzz": {
+              "datasources": [],
+              "entityMetadata": {
+                "arePatchesEnabled": false,
+              },
+              "linkType": {
+                "definition": {
+                  "oneToMany": {
+                    "cardinalityHint": "ONE_TO_MANY",
+                    "manyToOneLinkMetadata": {
+                      "apiName": "fizzes",
+                      "displayMetadata": {
+                        "displayName": "Fizz",
+                        "groupDisplayName": "",
+                        "pluralDisplayName": "Fizzes",
+                        "visibility": "NORMAL",
+                      },
+                      "typeClasses": [],
+                    },
+                    "objectTypeRidManySide": "com.palantir.buzzObject",
+                    "objectTypeRidOneSide": "com.palantir.fizzObject",
+                    "oneSidePrimaryKeyToManySidePropertyMapping": [
+                      {
+                        "from": {
+                          "apiName": "fizz",
+                          "object": "com.palantir.fizzObject",
+                        },
+                        "to": {
+                          "apiName": "fizzBuzz",
+                          "object": "com.palantir.buzzObject",
+                        },
+                      },
+                    ],
+                    "oneToManyLinkMetadata": {
+                      "apiName": "buzz2",
+                      "displayMetadata": {
+                        "displayName": "Buzz",
+                        "groupDisplayName": "",
+                        "pluralDisplayName": "Buzz",
+                        "visibility": "NORMAL",
+                      },
+                      "typeClasses": [],
+                    },
+                  },
+                  "type": "oneToMany",
+                },
+                "id": "fizz-to-buzz",
+                "redacted": false,
+                "status": {
+                  "active": {},
+                  "type": "active",
+                },
+              },
+            },
+          },
+          "objectTypes": {
+            "com.palantir.barObject": {
+              "datasources": [
+                {
+                  "datasource": {
+                    "datasetV2": {
+                      "datasetRid": "com.palantir.barObject",
+                      "propertyMapping": {
+                        "bar": {
+                          "column": "bar",
+                          "type": "column",
+                        },
+                      },
+                    },
+                    "type": "datasetV2",
+                  },
+                  "datasourceName": "com.palantir.barObject",
+                  "editsConfiguration": {
+                    "onlyAllowPrivilegedEdits": false,
+                  },
+                  "redacted": false,
+                },
+              ],
+              "entityMetadata": {
+                "aliases": [],
+                "arePatchesEnabled": false,
+                "editsHistory": undefined,
+              },
+              "objectType": {
+                "allImplementsInterfaces": {},
+                "apiName": "com.palantir.barObject",
+                "displayMetadata": {
+                  "description": undefined,
+                  "displayName": "Bar",
+                  "groupDisplayName": undefined,
+                  "icon": {
+                    "blueprint": {
+                      "color": "#2D72D2",
+                      "locator": "cube",
+                    },
+                    "type": "blueprint",
+                  },
+                  "pluralDisplayName": "Bar",
+                  "visibility": "NORMAL",
+                },
+                "implementsInterfaces2": [],
+                "primaryKeys": [
+                  "bar",
+                ],
+                "propertyTypes": {
+                  "bar": {
+                    "apiName": "bar",
+                    "baseFormatter": undefined,
+                    "dataConstraints": undefined,
                     "displayMetadata": {
+                      "description": undefined,
                       "displayName": "Bar",
-                      "groupDisplayName": "",
-                      "pluralDisplayName": "Bars",
                       "visibility": "NORMAL",
                     },
-                    "typeClasses": [],
-                  },
-                  "objectTypeRidManySide": "com.palantir.buzzObject",
-                  "objectTypeRidOneSide": "com.palantir.barObject",
-                  "oneSidePrimaryKeyToManySidePropertyMapping": [
-                    {
-                      "from": {
-                        "apiName": "bar",
-                        "object": "com.palantir.barObject",
+                    "indexedForSearch": true,
+                    "inlineAction": undefined,
+                    "ruleSetBinding": undefined,
+                    "sharedPropertyTypeApiName": undefined,
+                    "sharedPropertyTypeRid": undefined,
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                    "type": {
+                      "string": {
+                        "analyzerOverride": undefined,
+                        "enableAsciiFolding": undefined,
+                        "isLongText": false,
+                        "supportsEfficientLeadingWildcard": false,
+                        "supportsExactMatching": true,
                       },
-                      "to": {
-                        "apiName": "barBuzz",
-                        "object": "com.palantir.buzzObject",
+                      "type": "string",
+                    },
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE",
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE",
+                      },
+                    ],
+                    "valueType": undefined,
+                  },
+                },
+                "redacted": false,
+                "status": {
+                  "active": {},
+                  "type": "active",
+                },
+                "titlePropertyTypeRid": "bar",
+              },
+              "propertySecurityGroupPackagingVersion": {
+                "type": "v2",
+                "v2": {},
+              },
+            },
+            "com.palantir.buzzObject": {
+              "datasources": [
+                {
+                  "datasource": {
+                    "datasetV2": {
+                      "datasetRid": "com.palantir.buzzObject",
+                      "propertyMapping": {
+                        "barBuzz": {
+                          "column": "barBuzz",
+                          "type": "column",
+                        },
+                        "buzz": {
+                          "column": "buzz",
+                          "type": "column",
+                        },
+                        "fizzBuzz": {
+                          "column": "fizzBuzz",
+                          "type": "column",
+                        },
                       },
                     },
-                  ],
-                  "oneToManyLinkMetadata": {
-                    "apiName": "buzz1",
+                    "type": "datasetV2",
+                  },
+                  "datasourceName": "com.palantir.buzzObject",
+                  "editsConfiguration": {
+                    "onlyAllowPrivilegedEdits": false,
+                  },
+                  "redacted": false,
+                },
+              ],
+              "entityMetadata": {
+                "aliases": [],
+                "arePatchesEnabled": false,
+                "editsHistory": undefined,
+              },
+              "objectType": {
+                "allImplementsInterfaces": {},
+                "apiName": "com.palantir.buzzObject",
+                "displayMetadata": {
+                  "description": undefined,
+                  "displayName": "Buzz",
+                  "groupDisplayName": undefined,
+                  "icon": {
+                    "blueprint": {
+                      "color": "#2D72D2",
+                      "locator": "cube",
+                    },
+                    "type": "blueprint",
+                  },
+                  "pluralDisplayName": "Buzz",
+                  "visibility": "NORMAL",
+                },
+                "implementsInterfaces2": [],
+                "primaryKeys": [
+                  "buzz",
+                ],
+                "propertyTypes": {
+                  "barBuzz": {
+                    "apiName": "barBuzz",
+                    "baseFormatter": undefined,
+                    "dataConstraints": undefined,
                     "displayMetadata": {
+                      "description": undefined,
+                      "displayName": "BarBuzz",
+                      "visibility": "NORMAL",
+                    },
+                    "indexedForSearch": true,
+                    "inlineAction": undefined,
+                    "ruleSetBinding": undefined,
+                    "sharedPropertyTypeApiName": undefined,
+                    "sharedPropertyTypeRid": undefined,
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                    "type": {
+                      "string": {
+                        "analyzerOverride": undefined,
+                        "enableAsciiFolding": undefined,
+                        "isLongText": false,
+                        "supportsEfficientLeadingWildcard": false,
+                        "supportsExactMatching": true,
+                      },
+                      "type": "string",
+                    },
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE",
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE",
+                      },
+                    ],
+                    "valueType": undefined,
+                  },
+                  "buzz": {
+                    "apiName": "buzz",
+                    "baseFormatter": undefined,
+                    "dataConstraints": undefined,
+                    "displayMetadata": {
+                      "description": undefined,
                       "displayName": "Buzz",
-                      "groupDisplayName": "",
-                      "pluralDisplayName": "Buzz",
                       "visibility": "NORMAL",
                     },
-                    "typeClasses": [],
+                    "indexedForSearch": true,
+                    "inlineAction": undefined,
+                    "ruleSetBinding": undefined,
+                    "sharedPropertyTypeApiName": undefined,
+                    "sharedPropertyTypeRid": undefined,
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                    "type": {
+                      "string": {
+                        "analyzerOverride": undefined,
+                        "enableAsciiFolding": undefined,
+                        "isLongText": false,
+                        "supportsEfficientLeadingWildcard": false,
+                        "supportsExactMatching": true,
+                      },
+                      "type": "string",
+                    },
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE",
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE",
+                      },
+                    ],
+                    "valueType": undefined,
+                  },
+                  "fizzBuzz": {
+                    "apiName": "fizzBuzz",
+                    "baseFormatter": undefined,
+                    "dataConstraints": undefined,
+                    "displayMetadata": {
+                      "description": undefined,
+                      "displayName": "FizzBuzz",
+                      "visibility": "NORMAL",
+                    },
+                    "indexedForSearch": true,
+                    "inlineAction": undefined,
+                    "ruleSetBinding": undefined,
+                    "sharedPropertyTypeApiName": undefined,
+                    "sharedPropertyTypeRid": undefined,
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                    "type": {
+                      "string": {
+                        "analyzerOverride": undefined,
+                        "enableAsciiFolding": undefined,
+                        "isLongText": false,
+                        "supportsEfficientLeadingWildcard": false,
+                        "supportsExactMatching": true,
+                      },
+                      "type": "string",
+                    },
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE",
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE",
+                      },
+                    ],
+                    "valueType": undefined,
                   },
                 },
-                "type": "oneToMany",
+                "redacted": false,
+                "status": {
+                  "active": {},
+                  "type": "active",
+                },
+                "titlePropertyTypeRid": "buzz",
               },
-              "id": "bar-to-buzz",
-              "redacted": false,
-              "status": {
-                "active": {},
-                "type": "active",
+              "propertySecurityGroupPackagingVersion": {
+                "type": "v2",
+                "v2": {},
               },
             },
-          },
-          "fizz-to-bar": {
-            "datasources": [],
-            "entityMetadata": {
-              "arePatchesEnabled": false,
-            },
-            "linkType": {
-              "definition": {
-                "intermediary": {
-                  "aToIntermediaryLinkTypeRid": "bar-to-buzz",
-                  "intermediaryObjectTypeRid": "com.palantir.buzzObject",
-                  "intermediaryToBLinkTypeRid": "fizz-to-buzz",
-                  "objectTypeAToBLinkMetadata": {
-                    "apiName": "fizzes1",
+            "com.palantir.fizzObject": {
+              "datasources": [
+                {
+                  "datasource": {
+                    "datasetV2": {
+                      "datasetRid": "com.palantir.fizzObject",
+                      "propertyMapping": {
+                        "fizz": {
+                          "column": "fizz",
+                          "type": "column",
+                        },
+                      },
+                    },
+                    "type": "datasetV2",
+                  },
+                  "datasourceName": "com.palantir.fizzObject",
+                  "editsConfiguration": {
+                    "onlyAllowPrivilegedEdits": false,
+                  },
+                  "redacted": false,
+                },
+              ],
+              "entityMetadata": {
+                "aliases": [],
+                "arePatchesEnabled": false,
+                "editsHistory": undefined,
+              },
+              "objectType": {
+                "allImplementsInterfaces": {},
+                "apiName": "com.palantir.fizzObject",
+                "displayMetadata": {
+                  "description": undefined,
+                  "displayName": "Fizz",
+                  "groupDisplayName": undefined,
+                  "icon": {
+                    "blueprint": {
+                      "color": "#2D72D2",
+                      "locator": "cube",
+                    },
+                    "type": "blueprint",
+                  },
+                  "pluralDisplayName": "Fizz",
+                  "visibility": "NORMAL",
+                },
+                "implementsInterfaces2": [],
+                "primaryKeys": [
+                  "fizz",
+                ],
+                "propertyTypes": {
+                  "fizz": {
+                    "apiName": "fizz",
+                    "baseFormatter": undefined,
+                    "dataConstraints": undefined,
                     "displayMetadata": {
+                      "description": undefined,
                       "displayName": "Fizz",
-                      "groupDisplayName": "",
-                      "pluralDisplayName": "Fizzes",
                       "visibility": "NORMAL",
                     },
-                    "typeClasses": [],
-                  },
-                  "objectTypeBToALinkMetadata": {
-                    "apiName": "bars1",
-                    "displayMetadata": {
-                      "displayName": "Bar",
-                      "groupDisplayName": "",
-                      "pluralDisplayName": "Bars",
-                      "visibility": "NORMAL",
+                    "indexedForSearch": true,
+                    "inlineAction": undefined,
+                    "ruleSetBinding": undefined,
+                    "sharedPropertyTypeApiName": undefined,
+                    "sharedPropertyTypeRid": undefined,
+                    "status": {
+                      "active": {},
+                      "type": "active",
                     },
-                    "typeClasses": [],
-                  },
-                  "objectTypeRidA": "com.palantir.barObject",
-                  "objectTypeRidB": "com.palantir.fizzObject",
-                },
-                "type": "intermediary",
-              },
-              "id": "fizz-to-bar",
-              "redacted": false,
-              "status": {
-                "active": {},
-                "type": "active",
-              },
-            },
-          },
-          "fizz-to-buzz": {
-            "datasources": [],
-            "entityMetadata": {
-              "arePatchesEnabled": false,
-            },
-            "linkType": {
-              "definition": {
-                "oneToMany": {
-                  "cardinalityHint": "ONE_TO_MANY",
-                  "manyToOneLinkMetadata": {
-                    "apiName": "fizzes",
-                    "displayMetadata": {
-                      "displayName": "Fizz",
-                      "groupDisplayName": "",
-                      "pluralDisplayName": "Fizzes",
-                      "visibility": "NORMAL",
-                    },
-                    "typeClasses": [],
-                  },
-                  "objectTypeRidManySide": "com.palantir.buzzObject",
-                  "objectTypeRidOneSide": "com.palantir.fizzObject",
-                  "oneSidePrimaryKeyToManySidePropertyMapping": [
-                    {
-                      "from": {
-                        "apiName": "fizz",
-                        "object": "com.palantir.fizzObject",
+                    "type": {
+                      "string": {
+                        "analyzerOverride": undefined,
+                        "enableAsciiFolding": undefined,
+                        "isLongText": false,
+                        "supportsEfficientLeadingWildcard": false,
+                        "supportsExactMatching": true,
                       },
-                      "to": {
-                        "apiName": "fizzBuzz",
-                        "object": "com.palantir.buzzObject",
+                      "type": "string",
+                    },
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE",
                       },
-                    },
-                  ],
-                  "oneToManyLinkMetadata": {
-                    "apiName": "buzz2",
-                    "displayMetadata": {
-                      "displayName": "Buzz",
-                      "groupDisplayName": "",
-                      "pluralDisplayName": "Buzz",
-                      "visibility": "NORMAL",
-                    },
-                    "typeClasses": [],
-                  },
-                },
-                "type": "oneToMany",
-              },
-              "id": "fizz-to-buzz",
-              "redacted": false,
-              "status": {
-                "active": {},
-                "type": "active",
-              },
-            },
-          },
-        },
-        "objectTypes": {
-          "com.palantir.barObject": {
-            "datasources": [
-              {
-                "datasource": {
-                  "datasetV2": {
-                    "datasetRid": "com.palantir.barObject",
-                    "propertyMapping": {
-                      "bar": {
-                        "column": "bar",
-                        "type": "column",
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE",
                       },
-                    },
+                    ],
+                    "valueType": undefined,
                   },
-                  "type": "datasetV2",
-                },
-                "datasourceName": "com.palantir.barObject",
-                "editsConfiguration": {
-                  "onlyAllowPrivilegedEdits": false,
                 },
                 "redacted": false,
-              },
-            ],
-            "entityMetadata": {
-              "arePatchesEnabled": false,
-            },
-            "objectType": {
-              "allImplementsInterfaces": {},
-              "apiName": "com.palantir.barObject",
-              "displayMetadata": {
-                "description": undefined,
-                "displayName": "Bar",
-                "groupDisplayName": undefined,
-                "icon": {
-                  "blueprint": {
-                    "color": "#2D72D2",
-                    "locator": "cube",
-                  },
-                  "type": "blueprint",
+                "status": {
+                  "active": {},
+                  "type": "active",
                 },
-                "pluralDisplayName": "Bar",
-                "visibility": "NORMAL",
+                "titlePropertyTypeRid": "fizz",
               },
-              "implementsInterfaces2": [],
-              "primaryKeys": [
-                "bar",
-              ],
-              "propertyTypes": {
-                "bar": {
-                  "apiName": "bar",
-                  "baseFormatter": undefined,
-                  "dataConstraints": undefined,
-                  "displayMetadata": {
-                    "description": undefined,
-                    "displayName": "Bar",
-                    "visibility": "NORMAL",
-                  },
-                  "indexedForSearch": true,
-                  "inlineAction": undefined,
-                  "ruleSetBinding": undefined,
-                  "sharedPropertyTypeApiName": undefined,
-                  "sharedPropertyTypeRid": undefined,
-                  "status": {
-                    "active": {},
-                    "type": "active",
-                  },
-                  "type": {
-                    "string": {
-                      "analyzerOverride": undefined,
-                      "enableAsciiFolding": undefined,
-                      "isLongText": false,
-                      "supportsEfficientLeadingWildcard": false,
-                      "supportsExactMatching": true,
-                    },
-                    "type": "string",
-                  },
-                  "typeClasses": [
-                    {
-                      "kind": "render_hint",
-                      "name": "SELECTABLE",
-                    },
-                    {
-                      "kind": "render_hint",
-                      "name": "SORTABLE",
-                    },
-                  ],
-                  "valueType": undefined,
-                },
+              "propertySecurityGroupPackagingVersion": {
+                "type": "v2",
+                "v2": {},
               },
-              "redacted": false,
-              "status": {
-                "active": {},
-                "type": "active",
-              },
-              "titlePropertyTypeRid": "bar",
             },
           },
-          "com.palantir.buzzObject": {
-            "datasources": [
-              {
-                "datasource": {
-                  "datasetV2": {
-                    "datasetRid": "com.palantir.buzzObject",
-                    "propertyMapping": {
-                      "barBuzz": {
-                        "column": "barBuzz",
-                        "type": "column",
-                      },
-                      "buzz": {
-                        "column": "buzz",
-                        "type": "column",
-                      },
-                      "fizzBuzz": {
-                        "column": "fizzBuzz",
-                        "type": "column",
-                      },
-                    },
-                  },
-                  "type": "datasetV2",
-                },
-                "datasourceName": "com.palantir.buzzObject",
-                "editsConfiguration": {
-                  "onlyAllowPrivilegedEdits": false,
-                },
-                "redacted": false,
-              },
-            ],
-            "entityMetadata": {
-              "arePatchesEnabled": false,
-            },
-            "objectType": {
-              "allImplementsInterfaces": {},
-              "apiName": "com.palantir.buzzObject",
-              "displayMetadata": {
-                "description": undefined,
-                "displayName": "Buzz",
-                "groupDisplayName": undefined,
-                "icon": {
-                  "blueprint": {
-                    "color": "#2D72D2",
-                    "locator": "cube",
-                  },
-                  "type": "blueprint",
-                },
-                "pluralDisplayName": "Buzz",
-                "visibility": "NORMAL",
-              },
-              "implementsInterfaces2": [],
-              "primaryKeys": [
-                "buzz",
-              ],
-              "propertyTypes": {
-                "barBuzz": {
-                  "apiName": "barBuzz",
-                  "baseFormatter": undefined,
-                  "dataConstraints": undefined,
-                  "displayMetadata": {
-                    "description": undefined,
-                    "displayName": "BarBuzz",
-                    "visibility": "NORMAL",
-                  },
-                  "indexedForSearch": true,
-                  "inlineAction": undefined,
-                  "ruleSetBinding": undefined,
-                  "sharedPropertyTypeApiName": undefined,
-                  "sharedPropertyTypeRid": undefined,
-                  "status": {
-                    "active": {},
-                    "type": "active",
-                  },
-                  "type": {
-                    "string": {
-                      "analyzerOverride": undefined,
-                      "enableAsciiFolding": undefined,
-                      "isLongText": false,
-                      "supportsEfficientLeadingWildcard": false,
-                      "supportsExactMatching": true,
-                    },
-                    "type": "string",
-                  },
-                  "typeClasses": [
-                    {
-                      "kind": "render_hint",
-                      "name": "SELECTABLE",
-                    },
-                    {
-                      "kind": "render_hint",
-                      "name": "SORTABLE",
-                    },
-                  ],
-                  "valueType": undefined,
-                },
-                "buzz": {
-                  "apiName": "buzz",
-                  "baseFormatter": undefined,
-                  "dataConstraints": undefined,
-                  "displayMetadata": {
-                    "description": undefined,
-                    "displayName": "Buzz",
-                    "visibility": "NORMAL",
-                  },
-                  "indexedForSearch": true,
-                  "inlineAction": undefined,
-                  "ruleSetBinding": undefined,
-                  "sharedPropertyTypeApiName": undefined,
-                  "sharedPropertyTypeRid": undefined,
-                  "status": {
-                    "active": {},
-                    "type": "active",
-                  },
-                  "type": {
-                    "string": {
-                      "analyzerOverride": undefined,
-                      "enableAsciiFolding": undefined,
-                      "isLongText": false,
-                      "supportsEfficientLeadingWildcard": false,
-                      "supportsExactMatching": true,
-                    },
-                    "type": "string",
-                  },
-                  "typeClasses": [
-                    {
-                      "kind": "render_hint",
-                      "name": "SELECTABLE",
-                    },
-                    {
-                      "kind": "render_hint",
-                      "name": "SORTABLE",
-                    },
-                  ],
-                  "valueType": undefined,
-                },
-                "fizzBuzz": {
-                  "apiName": "fizzBuzz",
-                  "baseFormatter": undefined,
-                  "dataConstraints": undefined,
-                  "displayMetadata": {
-                    "description": undefined,
-                    "displayName": "FizzBuzz",
-                    "visibility": "NORMAL",
-                  },
-                  "indexedForSearch": true,
-                  "inlineAction": undefined,
-                  "ruleSetBinding": undefined,
-                  "sharedPropertyTypeApiName": undefined,
-                  "sharedPropertyTypeRid": undefined,
-                  "status": {
-                    "active": {},
-                    "type": "active",
-                  },
-                  "type": {
-                    "string": {
-                      "analyzerOverride": undefined,
-                      "enableAsciiFolding": undefined,
-                      "isLongText": false,
-                      "supportsEfficientLeadingWildcard": false,
-                      "supportsExactMatching": true,
-                    },
-                    "type": "string",
-                  },
-                  "typeClasses": [
-                    {
-                      "kind": "render_hint",
-                      "name": "SELECTABLE",
-                    },
-                    {
-                      "kind": "render_hint",
-                      "name": "SORTABLE",
-                    },
-                  ],
-                  "valueType": undefined,
-                },
-              },
-              "redacted": false,
-              "status": {
-                "active": {},
-                "type": "active",
-              },
-              "titlePropertyTypeRid": "buzz",
-            },
-          },
-          "com.palantir.fizzObject": {
-            "datasources": [
-              {
-                "datasource": {
-                  "datasetV2": {
-                    "datasetRid": "com.palantir.fizzObject",
-                    "propertyMapping": {
-                      "fizz": {
-                        "column": "fizz",
-                        "type": "column",
-                      },
-                    },
-                  },
-                  "type": "datasetV2",
-                },
-                "datasourceName": "com.palantir.fizzObject",
-                "editsConfiguration": {
-                  "onlyAllowPrivilegedEdits": false,
-                },
-                "redacted": false,
-              },
-            ],
-            "entityMetadata": {
-              "arePatchesEnabled": false,
-            },
-            "objectType": {
-              "allImplementsInterfaces": {},
-              "apiName": "com.palantir.fizzObject",
-              "displayMetadata": {
-                "description": undefined,
-                "displayName": "Fizz",
-                "groupDisplayName": undefined,
-                "icon": {
-                  "blueprint": {
-                    "color": "#2D72D2",
-                    "locator": "cube",
-                  },
-                  "type": "blueprint",
-                },
-                "pluralDisplayName": "Fizz",
-                "visibility": "NORMAL",
-              },
-              "implementsInterfaces2": [],
-              "primaryKeys": [
-                "fizz",
-              ],
-              "propertyTypes": {
-                "fizz": {
-                  "apiName": "fizz",
-                  "baseFormatter": undefined,
-                  "dataConstraints": undefined,
-                  "displayMetadata": {
-                    "description": undefined,
-                    "displayName": "Fizz",
-                    "visibility": "NORMAL",
-                  },
-                  "indexedForSearch": true,
-                  "inlineAction": undefined,
-                  "ruleSetBinding": undefined,
-                  "sharedPropertyTypeApiName": undefined,
-                  "sharedPropertyTypeRid": undefined,
-                  "status": {
-                    "active": {},
-                    "type": "active",
-                  },
-                  "type": {
-                    "string": {
-                      "analyzerOverride": undefined,
-                      "enableAsciiFolding": undefined,
-                      "isLongText": false,
-                      "supportsEfficientLeadingWildcard": false,
-                      "supportsExactMatching": true,
-                    },
-                    "type": "string",
-                  },
-                  "typeClasses": [
-                    {
-                      "kind": "render_hint",
-                      "name": "SELECTABLE",
-                    },
-                    {
-                      "kind": "render_hint",
-                      "name": "SORTABLE",
-                    },
-                  ],
-                  "valueType": undefined,
-                },
-              },
-              "redacted": false,
-              "status": {
-                "active": {},
-                "type": "active",
-              },
-              "titlePropertyTypeRid": "fizz",
-            },
-          },
-        },
-        "sharedPropertyTypes": {},
-      }
-    `);
+          "sharedPropertyTypes": {},
+        }
+      `);
     });
 
     it("Minimal link definitions are properly defined", () => {
@@ -1430,7 +1679,7 @@ describe("Link Types", () => {
       defineLink({
         apiName: "fizzToFoo",
         one: {
-          object: object,
+          object,
           metadata: {
             apiName: "fizzes",
           },
@@ -1445,311 +1694,325 @@ describe("Link Types", () => {
       });
 
       expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`
-      {
-        "actionTypes": {},
-        "blockPermissionInformation": {
+        {
           "actionTypes": {},
-          "linkTypes": {},
-          "objectTypes": {},
-        },
-        "interfaceTypes": {},
-        "linkTypes": {
-          "fizz-to-foo": {
-            "datasources": [],
-            "entityMetadata": {
-              "arePatchesEnabled": false,
+          "blockPermissionInformation": {
+            "actionTypes": {},
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {},
+          },
+          "interfaceTypes": {},
+          "linkTypes": {
+            "fizz-to-foo": {
+              "datasources": [],
+              "entityMetadata": {
+                "arePatchesEnabled": false,
+              },
+              "linkType": {
+                "definition": {
+                  "oneToMany": {
+                    "cardinalityHint": "ONE_TO_MANY",
+                    "manyToOneLinkMetadata": {
+                      "apiName": "foos",
+                      "displayMetadata": {
+                        "displayName": "Foos",
+                        "groupDisplayName": "",
+                        "pluralDisplayName": "Foos",
+                        "visibility": "NORMAL",
+                      },
+                      "typeClasses": [],
+                    },
+                    "objectTypeRidManySide": "com.palantir.fizz",
+                    "objectTypeRidOneSide": "com.palantir.foo",
+                    "oneSidePrimaryKeyToManySidePropertyMapping": [
+                      {
+                        "from": {
+                          "apiName": "bar",
+                          "object": "com.palantir.foo",
+                        },
+                        "to": {
+                          "apiName": "bar",
+                          "object": "com.palantir.fizz",
+                        },
+                      },
+                    ],
+                    "oneToManyLinkMetadata": {
+                      "apiName": "fizzes",
+                      "displayMetadata": {
+                        "displayName": "Fizzes",
+                        "groupDisplayName": "",
+                        "pluralDisplayName": "Fizzes",
+                        "visibility": "NORMAL",
+                      },
+                      "typeClasses": [],
+                    },
+                  },
+                  "type": "oneToMany",
+                },
+                "id": "fizz-to-foo",
+                "redacted": false,
+                "status": {
+                  "active": {},
+                  "type": "active",
+                },
+              },
             },
-            "linkType": {
-              "definition": {
-                "oneToMany": {
-                  "cardinalityHint": "ONE_TO_MANY",
-                  "manyToOneLinkMetadata": {
-                    "apiName": "foos",
+          },
+          "objectTypes": {
+            "com.palantir.fizz": {
+              "datasources": [
+                {
+                  "datasource": {
+                    "datasetV2": {
+                      "datasetRid": "com.palantir.fizz",
+                      "propertyMapping": {
+                        "bar": {
+                          "column": "bar",
+                          "type": "column",
+                        },
+                        "fizz": {
+                          "column": "fizz",
+                          "type": "column",
+                        },
+                      },
+                    },
+                    "type": "datasetV2",
+                  },
+                  "datasourceName": "com.palantir.fizz",
+                  "editsConfiguration": {
+                    "onlyAllowPrivilegedEdits": false,
+                  },
+                  "redacted": false,
+                },
+              ],
+              "entityMetadata": {
+                "aliases": [],
+                "arePatchesEnabled": false,
+                "editsHistory": undefined,
+              },
+              "objectType": {
+                "allImplementsInterfaces": {},
+                "apiName": "com.palantir.fizz",
+                "displayMetadata": {
+                  "description": undefined,
+                  "displayName": "Fizz",
+                  "groupDisplayName": undefined,
+                  "icon": {
+                    "blueprint": {
+                      "color": "#2D72D2",
+                      "locator": "cube",
+                    },
+                    "type": "blueprint",
+                  },
+                  "pluralDisplayName": "Fizz",
+                  "visibility": "NORMAL",
+                },
+                "implementsInterfaces2": [],
+                "primaryKeys": [
+                  "fizz",
+                ],
+                "propertyTypes": {
+                  "bar": {
+                    "apiName": "bar",
+                    "baseFormatter": undefined,
+                    "dataConstraints": undefined,
                     "displayMetadata": {
-                      "displayName": "Foos",
-                      "groupDisplayName": "",
-                      "pluralDisplayName": "Foos",
+                      "description": undefined,
+                      "displayName": "Bar",
                       "visibility": "NORMAL",
                     },
-                    "typeClasses": [],
-                  },
-                  "objectTypeRidManySide": "com.palantir.fizz",
-                  "objectTypeRidOneSide": "com.palantir.foo",
-                  "oneSidePrimaryKeyToManySidePropertyMapping": [
-                    {
-                      "from": {
-                        "apiName": "bar",
-                        "object": "com.palantir.foo",
-                      },
-                      "to": {
-                        "apiName": "bar",
-                        "object": "com.palantir.fizz",
-                      },
+                    "indexedForSearch": true,
+                    "inlineAction": undefined,
+                    "ruleSetBinding": undefined,
+                    "sharedPropertyTypeApiName": undefined,
+                    "sharedPropertyTypeRid": undefined,
+                    "status": {
+                      "active": {},
+                      "type": "active",
                     },
-                  ],
-                  "oneToManyLinkMetadata": {
-                    "apiName": "fizzes",
+                    "type": {
+                      "string": {
+                        "analyzerOverride": undefined,
+                        "enableAsciiFolding": undefined,
+                        "isLongText": false,
+                        "supportsEfficientLeadingWildcard": false,
+                        "supportsExactMatching": true,
+                      },
+                      "type": "string",
+                    },
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE",
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE",
+                      },
+                    ],
+                    "valueType": undefined,
+                  },
+                  "fizz": {
+                    "apiName": "fizz",
+                    "baseFormatter": undefined,
+                    "dataConstraints": undefined,
                     "displayMetadata": {
-                      "displayName": "Fizzes",
-                      "groupDisplayName": "",
-                      "pluralDisplayName": "Fizzes",
+                      "description": undefined,
+                      "displayName": "Fizz",
                       "visibility": "NORMAL",
                     },
-                    "typeClasses": [],
-                  },
-                },
-                "type": "oneToMany",
-              },
-              "id": "fizz-to-foo",
-              "redacted": false,
-              "status": {
-                "active": {},
-                "type": "active",
-              },
-            },
-          },
-        },
-        "objectTypes": {
-          "com.palantir.fizz": {
-            "datasources": [
-              {
-                "datasource": {
-                  "datasetV2": {
-                    "datasetRid": "com.palantir.fizz",
-                    "propertyMapping": {
-                      "bar": {
-                        "column": "bar",
-                        "type": "column",
-                      },
-                      "fizz": {
-                        "column": "fizz",
-                        "type": "column",
-                      },
+                    "indexedForSearch": true,
+                    "inlineAction": undefined,
+                    "ruleSetBinding": undefined,
+                    "sharedPropertyTypeApiName": undefined,
+                    "sharedPropertyTypeRid": undefined,
+                    "status": {
+                      "active": {},
+                      "type": "active",
                     },
+                    "type": {
+                      "string": {
+                        "analyzerOverride": undefined,
+                        "enableAsciiFolding": undefined,
+                        "isLongText": false,
+                        "supportsEfficientLeadingWildcard": false,
+                        "supportsExactMatching": true,
+                      },
+                      "type": "string",
+                    },
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE",
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE",
+                      },
+                    ],
+                    "valueType": undefined,
                   },
-                  "type": "datasetV2",
-                },
-                "datasourceName": "com.palantir.fizz",
-                "editsConfiguration": {
-                  "onlyAllowPrivilegedEdits": false,
                 },
                 "redacted": false,
+                "status": {
+                  "active": {},
+                  "type": "active",
+                },
+                "titlePropertyTypeRid": "fizz",
               },
-            ],
-            "entityMetadata": {
-              "arePatchesEnabled": false,
+              "propertySecurityGroupPackagingVersion": {
+                "type": "v2",
+                "v2": {},
+              },
             },
-            "objectType": {
-              "allImplementsInterfaces": {},
-              "apiName": "com.palantir.fizz",
-              "displayMetadata": {
-                "description": undefined,
-                "displayName": "Fizz",
-                "groupDisplayName": undefined,
-                "icon": {
-                  "blueprint": {
-                    "color": "#2D72D2",
-                    "locator": "cube",
-                  },
-                  "type": "blueprint",
-                },
-                "pluralDisplayName": "Fizz",
-                "visibility": "NORMAL",
-              },
-              "implementsInterfaces2": [],
-              "primaryKeys": [
-                "fizz",
-              ],
-              "propertyTypes": {
-                "bar": {
-                  "apiName": "bar",
-                  "baseFormatter": undefined,
-                  "dataConstraints": undefined,
-                  "displayMetadata": {
-                    "description": undefined,
-                    "displayName": "Bar",
-                    "visibility": "NORMAL",
-                  },
-                  "indexedForSearch": true,
-                  "inlineAction": undefined,
-                  "ruleSetBinding": undefined,
-                  "sharedPropertyTypeApiName": undefined,
-                  "sharedPropertyTypeRid": undefined,
-                  "status": {
-                    "active": {},
-                    "type": "active",
-                  },
-                  "type": {
-                    "string": {
-                      "analyzerOverride": undefined,
-                      "enableAsciiFolding": undefined,
-                      "isLongText": false,
-                      "supportsEfficientLeadingWildcard": false,
-                      "supportsExactMatching": true,
-                    },
-                    "type": "string",
-                  },
-                  "typeClasses": [
-                    {
-                      "kind": "render_hint",
-                      "name": "SELECTABLE",
-                    },
-                    {
-                      "kind": "render_hint",
-                      "name": "SORTABLE",
-                    },
-                  ],
-                  "valueType": undefined,
-                },
-                "fizz": {
-                  "apiName": "fizz",
-                  "baseFormatter": undefined,
-                  "dataConstraints": undefined,
-                  "displayMetadata": {
-                    "description": undefined,
-                    "displayName": "Fizz",
-                    "visibility": "NORMAL",
-                  },
-                  "indexedForSearch": true,
-                  "inlineAction": undefined,
-                  "ruleSetBinding": undefined,
-                  "sharedPropertyTypeApiName": undefined,
-                  "sharedPropertyTypeRid": undefined,
-                  "status": {
-                    "active": {},
-                    "type": "active",
-                  },
-                  "type": {
-                    "string": {
-                      "analyzerOverride": undefined,
-                      "enableAsciiFolding": undefined,
-                      "isLongText": false,
-                      "supportsEfficientLeadingWildcard": false,
-                      "supportsExactMatching": true,
-                    },
-                    "type": "string",
-                  },
-                  "typeClasses": [
-                    {
-                      "kind": "render_hint",
-                      "name": "SELECTABLE",
-                    },
-                    {
-                      "kind": "render_hint",
-                      "name": "SORTABLE",
-                    },
-                  ],
-                  "valueType": undefined,
-                },
-              },
-              "redacted": false,
-              "status": {
-                "active": {},
-                "type": "active",
-              },
-              "titlePropertyTypeRid": "fizz",
-            },
-          },
-          "com.palantir.foo": {
-            "datasources": [
-              {
-                "datasource": {
-                  "datasetV2": {
-                    "datasetRid": "com.palantir.foo",
-                    "propertyMapping": {
-                      "bar": {
-                        "column": "bar",
-                        "type": "column",
+            "com.palantir.foo": {
+              "datasources": [
+                {
+                  "datasource": {
+                    "datasetV2": {
+                      "datasetRid": "com.palantir.foo",
+                      "propertyMapping": {
+                        "bar": {
+                          "column": "bar",
+                          "type": "column",
+                        },
                       },
                     },
+                    "type": "datasetV2",
                   },
-                  "type": "datasetV2",
+                  "datasourceName": "com.palantir.foo",
+                  "editsConfiguration": {
+                    "onlyAllowPrivilegedEdits": false,
+                  },
+                  "redacted": false,
                 },
-                "datasourceName": "com.palantir.foo",
-                "editsConfiguration": {
-                  "onlyAllowPrivilegedEdits": false,
+              ],
+              "entityMetadata": {
+                "aliases": [],
+                "arePatchesEnabled": false,
+                "editsHistory": undefined,
+              },
+              "objectType": {
+                "allImplementsInterfaces": {},
+                "apiName": "com.palantir.foo",
+                "displayMetadata": {
+                  "description": undefined,
+                  "displayName": "Foo",
+                  "groupDisplayName": undefined,
+                  "icon": {
+                    "blueprint": {
+                      "color": "#2D72D2",
+                      "locator": "cube",
+                    },
+                    "type": "blueprint",
+                  },
+                  "pluralDisplayName": "Foo",
+                  "visibility": "NORMAL",
+                },
+                "implementsInterfaces2": [],
+                "primaryKeys": [
+                  "bar",
+                ],
+                "propertyTypes": {
+                  "bar": {
+                    "apiName": "bar",
+                    "baseFormatter": undefined,
+                    "dataConstraints": undefined,
+                    "displayMetadata": {
+                      "description": undefined,
+                      "displayName": "Bar",
+                      "visibility": "NORMAL",
+                    },
+                    "indexedForSearch": true,
+                    "inlineAction": undefined,
+                    "ruleSetBinding": undefined,
+                    "sharedPropertyTypeApiName": undefined,
+                    "sharedPropertyTypeRid": undefined,
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                    "type": {
+                      "string": {
+                        "analyzerOverride": undefined,
+                        "enableAsciiFolding": undefined,
+                        "isLongText": false,
+                        "supportsEfficientLeadingWildcard": false,
+                        "supportsExactMatching": true,
+                      },
+                      "type": "string",
+                    },
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE",
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE",
+                      },
+                    ],
+                    "valueType": undefined,
+                  },
                 },
                 "redacted": false,
-              },
-            ],
-            "entityMetadata": {
-              "arePatchesEnabled": false,
-            },
-            "objectType": {
-              "allImplementsInterfaces": {},
-              "apiName": "com.palantir.foo",
-              "displayMetadata": {
-                "description": undefined,
-                "displayName": "Foo",
-                "groupDisplayName": undefined,
-                "icon": {
-                  "blueprint": {
-                    "color": "#2D72D2",
-                    "locator": "cube",
-                  },
-                  "type": "blueprint",
+                "status": {
+                  "active": {},
+                  "type": "active",
                 },
-                "pluralDisplayName": "Foo",
-                "visibility": "NORMAL",
+                "titlePropertyTypeRid": "bar",
               },
-              "implementsInterfaces2": [],
-              "primaryKeys": [
-                "bar",
-              ],
-              "propertyTypes": {
-                "bar": {
-                  "apiName": "bar",
-                  "baseFormatter": undefined,
-                  "dataConstraints": undefined,
-                  "displayMetadata": {
-                    "description": undefined,
-                    "displayName": "Bar",
-                    "visibility": "NORMAL",
-                  },
-                  "indexedForSearch": true,
-                  "inlineAction": undefined,
-                  "ruleSetBinding": undefined,
-                  "sharedPropertyTypeApiName": undefined,
-                  "sharedPropertyTypeRid": undefined,
-                  "status": {
-                    "active": {},
-                    "type": "active",
-                  },
-                  "type": {
-                    "string": {
-                      "analyzerOverride": undefined,
-                      "enableAsciiFolding": undefined,
-                      "isLongText": false,
-                      "supportsEfficientLeadingWildcard": false,
-                      "supportsExactMatching": true,
-                    },
-                    "type": "string",
-                  },
-                  "typeClasses": [
-                    {
-                      "kind": "render_hint",
-                      "name": "SELECTABLE",
-                    },
-                    {
-                      "kind": "render_hint",
-                      "name": "SORTABLE",
-                    },
-                  ],
-                  "valueType": undefined,
-                },
+              "propertySecurityGroupPackagingVersion": {
+                "type": "v2",
+                "v2": {},
               },
-              "redacted": false,
-              "status": {
-                "active": {},
-                "type": "active",
-              },
-              "titlePropertyTypeRid": "bar",
             },
           },
-        },
-        "sharedPropertyTypes": {},
-      }
-    `);
+          "sharedPropertyTypes": {},
+        }
+      `);
     });
   });
 
@@ -1771,71 +2034,47 @@ describe("Link Types", () => {
       });
 
       expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`
-            {
-              "actionTypes": {},
-              "blockPermissionInformation": {
-                "actionTypes": {},
-                "linkTypes": {},
-                "objectTypes": {},
-              },
-              "interfaceTypes": {
-                "com.palantir.A": {
-                  "interfaceType": {
-                    "apiName": "com.palantir.A",
-                    "displayMetadata": {
-                      "description": "A",
-                      "displayName": "A",
-                      "icon": {
-                        "blueprint": {
-                          "color": "#4C90F0",
-                          "locator": "layout-hierarchy",
-                        },
-                        "type": "blueprint",
-                      },
+        {
+          "actionTypes": {},
+          "blockPermissionInformation": {
+            "actionTypes": {},
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {},
+          },
+          "interfaceTypes": {
+            "com.palantir.A": {
+              "interfaceType": {
+                "actionTypeConstraints": [],
+                "apiName": "com.palantir.A",
+                "displayMetadata": {
+                  "description": "A",
+                  "displayName": "A",
+                  "icon": {
+                    "blueprint": {
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
                     },
-                    "extendsInterfaces": [],
-                    "links": [
-                      {
-                        "cardinality": "SINGLE",
-                        "linkedEntityTypeId": {
-                          "interfaceType": "com.palantir.B",
-                          "type": "interfaceType",
-                        },
-                        "metadata": {
-                          "apiName": "com.palantir.singleLink",
-                          "description": "singleLink",
-                          "displayName": "singleLink",
-                        },
-                        "required": true,
-                      },
-                    ],
-                    "properties": [],
-                    "propertiesV2": {},
-                    "propertiesV3": {},
-                    "searchable": true,
-                    "status": {
-                      "active": {},
-                      "type": "active",
-                    },
+                    "type": "blueprint",
                   },
                 },
-                "com.palantir.B": {
-                  "interfaceType": {
+                "extendsInterfaces": [],
+                "extendsInterfacesMetadata": [],
+                "linkedInterfaces": [
+                  {
+                    "__type": "INTERFACE_TYPE",
+                    "actionTypeConstraints": [],
                     "apiName": "com.palantir.B",
                     "displayMetadata": {
                       "description": "B",
                       "displayName": "B",
-                      "icon": {
-                        "blueprint": {
-                          "color": "#4C90F0",
-                          "locator": "layout-hierarchy",
-                        },
-                        "type": "blueprint",
-                      },
+                      "icon": undefined,
                     },
                     "extendsInterfaces": [],
+                    "linkedInterfaces": [],
                     "links": [],
-                    "properties": [],
+                    "permission": undefined,
                     "propertiesV2": {},
                     "propertiesV3": {},
                     "searchable": true,
@@ -1844,13 +2083,69 @@ describe("Link Types", () => {
                       "type": "active",
                     },
                   },
+                ],
+                "links": [
+                  {
+                    "cardinality": "SINGLE",
+                    "linkedEntityTypeId": {
+                      "interfaceType": "com.palantir.B",
+                      "type": "interfaceType",
+                    },
+                    "metadata": {
+                      "apiName": "com.palantir.singleLink",
+                      "description": "singleLink",
+                      "displayName": "singleLink",
+                    },
+                    "required": true,
+                  },
+                ],
+                "permission": undefined,
+                "properties": [],
+                "propertiesV2": {},
+                "propertiesV3": {},
+                "searchable": true,
+                "status": {
+                  "active": {},
+                  "type": "active",
                 },
               },
-              "linkTypes": {},
-              "objectTypes": {},
-              "sharedPropertyTypes": {},
-            }
-          `);
+            },
+            "com.palantir.B": {
+              "interfaceType": {
+                "actionTypeConstraints": [],
+                "apiName": "com.palantir.B",
+                "displayMetadata": {
+                  "description": "B",
+                  "displayName": "B",
+                  "icon": {
+                    "blueprint": {
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
+                    },
+                    "type": "blueprint",
+                  },
+                },
+                "extendsInterfaces": [],
+                "extendsInterfacesMetadata": [],
+                "linkedInterfaces": [],
+                "links": [],
+                "permission": undefined,
+                "properties": [],
+                "propertiesV2": {},
+                "propertiesV3": {},
+                "searchable": true,
+                "status": {
+                  "active": {},
+                  "type": "active",
+                },
+              },
+            },
+          },
+          "linkTypes": {},
+          "objectTypes": {},
+          "sharedPropertyTypes": {},
+        }
+      `);
     });
 
     it("many link works", () => {
@@ -1861,71 +2156,47 @@ describe("Link Types", () => {
       });
 
       expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`
-            {
-              "actionTypes": {},
-              "blockPermissionInformation": {
-                "actionTypes": {},
-                "linkTypes": {},
-                "objectTypes": {},
-              },
-              "interfaceTypes": {
-                "com.palantir.A": {
-                  "interfaceType": {
-                    "apiName": "com.palantir.A",
-                    "displayMetadata": {
-                      "description": "A",
-                      "displayName": "A",
-                      "icon": {
-                        "blueprint": {
-                          "color": "#4C90F0",
-                          "locator": "layout-hierarchy",
-                        },
-                        "type": "blueprint",
-                      },
+        {
+          "actionTypes": {},
+          "blockPermissionInformation": {
+            "actionTypes": {},
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {},
+          },
+          "interfaceTypes": {
+            "com.palantir.A": {
+              "interfaceType": {
+                "actionTypeConstraints": [],
+                "apiName": "com.palantir.A",
+                "displayMetadata": {
+                  "description": "A",
+                  "displayName": "A",
+                  "icon": {
+                    "blueprint": {
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
                     },
-                    "extendsInterfaces": [],
-                    "links": [
-                      {
-                        "cardinality": "MANY",
-                        "linkedEntityTypeId": {
-                          "interfaceType": "com.palantir.B",
-                          "type": "interfaceType",
-                        },
-                        "metadata": {
-                          "apiName": "com.palantir.manyLink",
-                          "description": "manyLink",
-                          "displayName": "manyLink",
-                        },
-                        "required": true,
-                      },
-                    ],
-                    "properties": [],
-                    "propertiesV2": {},
-                    "propertiesV3": {},
-                    "searchable": true,
-                    "status": {
-                      "active": {},
-                      "type": "active",
-                    },
+                    "type": "blueprint",
                   },
                 },
-                "com.palantir.B": {
-                  "interfaceType": {
+                "extendsInterfaces": [],
+                "extendsInterfacesMetadata": [],
+                "linkedInterfaces": [
+                  {
+                    "__type": "INTERFACE_TYPE",
+                    "actionTypeConstraints": [],
                     "apiName": "com.palantir.B",
                     "displayMetadata": {
                       "description": "B",
                       "displayName": "B",
-                      "icon": {
-                        "blueprint": {
-                          "color": "#4C90F0",
-                          "locator": "layout-hierarchy",
-                        },
-                        "type": "blueprint",
-                      },
+                      "icon": undefined,
                     },
                     "extendsInterfaces": [],
+                    "linkedInterfaces": [],
                     "links": [],
-                    "properties": [],
+                    "permission": undefined,
                     "propertiesV2": {},
                     "propertiesV3": {},
                     "searchable": true,
@@ -1934,13 +2205,174 @@ describe("Link Types", () => {
                       "type": "active",
                     },
                   },
+                ],
+                "links": [
+                  {
+                    "cardinality": "MANY",
+                    "linkedEntityTypeId": {
+                      "interfaceType": "com.palantir.B",
+                      "type": "interfaceType",
+                    },
+                    "metadata": {
+                      "apiName": "com.palantir.manyLink",
+                      "description": "manyLink",
+                      "displayName": "manyLink",
+                    },
+                    "required": true,
+                  },
+                ],
+                "permission": undefined,
+                "properties": [],
+                "propertiesV2": {},
+                "propertiesV3": {},
+                "searchable": true,
+                "status": {
+                  "active": {},
+                  "type": "active",
                 },
               },
-              "linkTypes": {},
-              "objectTypes": {},
-              "sharedPropertyTypes": {},
-            }
-          `);
+            },
+            "com.palantir.B": {
+              "interfaceType": {
+                "actionTypeConstraints": [],
+                "apiName": "com.palantir.B",
+                "displayMetadata": {
+                  "description": "B",
+                  "displayName": "B",
+                  "icon": {
+                    "blueprint": {
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
+                    },
+                    "type": "blueprint",
+                  },
+                },
+                "extendsInterfaces": [],
+                "extendsInterfacesMetadata": [],
+                "linkedInterfaces": [],
+                "links": [],
+                "permission": undefined,
+                "properties": [],
+                "propertiesV2": {},
+                "propertiesV3": {},
+                "searchable": true,
+                "status": {
+                  "active": {},
+                  "type": "active",
+                },
+              },
+            },
+          },
+          "linkTypes": {},
+          "objectTypes": {},
+          "sharedPropertyTypes": {},
+        }
+      `);
+    });
+  });
+
+  it("serializes roles permission on link type", async () => {
+    await defineOntology("com.palantir.", () => {
+      const objA = defineObject({
+        apiName: "objA",
+        displayName: "ObjA",
+        pluralDisplayName: "ObjAs",
+        primaryKeyPropertyApiName: "id",
+        titlePropertyApiName: "id",
+        properties: { "id": { type: "string" } },
+      });
+      const objB = defineObject({
+        apiName: "objB",
+        displayName: "ObjB",
+        pluralDisplayName: "ObjBs",
+        primaryKeyPropertyApiName: "id",
+        titlePropertyApiName: "id",
+        properties: {
+          "id": { type: "string" },
+          "fk": { type: "string" },
+        },
+      });
+
+      defineLink({
+        apiName: "aToB",
+        one: { object: objA, metadata: { apiName: "objAs" } },
+        toMany: { object: objB, metadata: { apiName: "objBs" } },
+        manyForeignKeyProperty: "fk",
+        permission: "roles",
+      });
+
+      const bpi = dumpOntologyFullMetadata().ontology
+        .blockPermissionInformation!;
+      const ltPerms = Object.values(bpi.linkTypes);
+      expect(ltPerms).toHaveLength(1);
+      expect(ltPerms[0].restrictionStatus).toEqual({
+        restrictedByDatasources: false,
+        editRestrictedByDatasources: false,
+        publicProject: false,
+        ontologyPackageRid: null,
+      });
+    }, "/tmp/");
+  });
+
+  describe("Self-referential interface link constraints", () => {
+    it("serializes objects and links that reach a self-referential interface", () => {
+      const node = defineInterface({
+        apiName: "treeNode",
+        properties: {
+          parentId: {
+            displayName: "Parent Id",
+            type: "string",
+            required: true,
+          },
+        },
+      });
+
+      defineInterfaceLinkConstraint({
+        apiName: "parent",
+        from: node,
+        toOne: node,
+      });
+
+      const object = defineObject({
+        apiName: "treeObject",
+        displayName: "Tree Object",
+        pluralDisplayName: "Tree Objects",
+        titlePropertyApiName: "id",
+        primaryKeyPropertyApiName: "id",
+        properties: {
+          id: { type: "string" },
+          parentId: { type: "string" },
+        },
+        implementsInterfaces: [
+          {
+            implements: node,
+            propertyMapping: [
+              { interfaceProperty: "parentId", mapsTo: "parentId" },
+            ],
+          },
+        ],
+      });
+
+      defineLink({
+        apiName: "objectToObject",
+        one: { object, metadata: { apiName: "parents" } },
+        toMany: { object, metadata: { apiName: "children" } },
+        manyForeignKeyProperty: "parentId",
+      });
+
+      const definition = getOntologyDefinition();
+      const objectEntity = definition[OntologyEntityTypeEnum.OBJECT_TYPE][
+        "com.palantir.treeObject"
+      ];
+      // Link types are stored under their raw apiName (defineLink does not
+      // prepend the namespace, unlike objects/interfaces).
+      const linkEntity =
+        definition[OntologyEntityTypeEnum.LINK_TYPE].objectToObject;
+
+      expect(() => JSON.stringify(sanitizeTypes(objectEntity)))
+        .not.toThrow();
+      expect(() => JSON.stringify(sanitizeTypes(linkEntity)))
+        .not.toThrow();
     });
   });
 });

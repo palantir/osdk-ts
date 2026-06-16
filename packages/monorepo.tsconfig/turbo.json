@@ -1,0 +1,9 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "typecheck": {
+      "outputLogs": "new-only",
+      "inputs": ["tsconfig.base.json"]
+    }
+  }
+}

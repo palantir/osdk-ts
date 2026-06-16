@@ -1,0 +1,120 @@
+@use 'tokens' as t;
+@use 'mixins' as m;
+
+.issueCard {
+  @include m.dt-entrance;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: background-color t.$transition-fast;
+  border-bottom: 1px solid t.$border-subtle;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+
+  &:hover {
+    background: t.$bg-hover;
+    box-shadow: none;
+  }
+}
+
+.severityError {
+  border-left: 2px solid t.$red;
+}
+
+.severityWarning {
+  border-left: 2px solid t.$orange;
+}
+
+.severityInfo {
+  border-left: 2px solid t.$blue;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+}
+
+.topRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.category {
+  @include m.dt-label;
+  font-size: t.$font-size-xs;
+  flex-shrink: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: t.$font-size-md;
+  font-weight: t.$font-weight-bold;
+  color: t.$text-primary;
+}
+
+.message {
+  font-size: t.$font-size-base;
+  color: t.$text-secondary;
+  margin-bottom: 4px;
+}
+
+.suggestion {
+  font-size: t.$font-size-base;
+  color: t.$text-tertiary;
+
+  &::before {
+    content: "\2192 ";
+  }
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.componentTag {
+  font-size: t.$font-size-xs;
+  font-family: t.$font-mono;
+}
+
+.timestamp {
+  font-size: t.$font-size-sm;
+  color: t.$text-tertiary;
+  font-family: t.$font-mono;
+  white-space: nowrap;
+}
+
+.expandButton {
+  flex-shrink: 0;
+}
+
+.details {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid t.$border-subtle;
+
+  h6 {
+    @include m.dt-label;
+    margin: 0 0 8px 0;
+  }
+}
+
+.codeBlock {
+  @include m.dt-code-block;
+  margin: 0 0 12px 0;
+}

@@ -24,7 +24,7 @@ import { Employee } from "../../../generatedNoCheck/index.js";
 import { client } from "./client.js";
 
 const groupedEmployee = await client(Employee)
-    .aggregate({
-        $select: { $count: "unordered" },
-        $groupBy: { salary: { $ranges: [[100, 200 ]]} }
-    });
+  .aggregate({
+    $select: { $count: "unordered" },
+    $groupBy: { salary: { $ranges: [[100, 200]] } },
+  });

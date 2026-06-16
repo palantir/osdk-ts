@@ -33,7 +33,7 @@ import { createCollectionConnectable as actualCreateCollectionConnectable } from
 
 // Test payload type for our collection
 interface TestPayload {
-  data: any[];
+  data: any[] | undefined;
   status: Status;
   isOptimistic: boolean;
   lastUpdated: number;
@@ -92,7 +92,7 @@ describe("createCollectionConnectable", () => {
       status: params.status,
       isOptimistic: params.isOptimistic,
       lastUpdated: params.lastUpdated,
-      count: params.resolvedData.length,
+      count: params.resolvedData?.length ?? 0,
     }));
   });
 
@@ -241,7 +241,7 @@ describe("createCollectionConnectable", () => {
 
       expect(observer.next).toHaveBeenCalledWith(
         expect.objectContaining({
-          data: [],
+          data: undefined,
           status: "loaded",
           isOptimistic: false,
           count: 0,
@@ -742,10 +742,10 @@ describe("createCollectionConnectable", () => {
 
       await waitForCall(observer);
 
-      // Should handle undefined object entry gracefully by filtering it out
+      // Should handle undefined object entry gracefully
       expect(observer.next).toHaveBeenCalledWith(
         expect.objectContaining({
-          data: [undefined], // The function maps the undefined value from the store
+          data: [undefined],
           status: "loaded",
           count: 1,
         }),

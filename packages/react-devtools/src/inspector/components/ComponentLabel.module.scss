@@ -1,0 +1,86 @@
+.label {
+  position: fixed;
+  z-index: 2147483647;
+  pointer-events: auto;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+    monospace;
+  font-size: 12px;
+  line-height: 1.4;
+  background-color: rgba(30, 30, 30, 0.95);
+  color: #fff;
+  border-radius: 6px;
+  padding: 8px 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+  max-width: 400px;
+  transition: opacity 150ms ease-out;
+}
+
+.arrow {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+}
+
+.componentName {
+  font-weight: 600;
+  color: #7dd3fc;
+  margin-bottom: 4px;
+}
+
+.sourceLocation {
+  font-size: 11px;
+  color: #a1a1aa;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  &:hover {
+    color: #60a5fa;
+    text-decoration: underline;
+  }
+}
+
+.sourceRow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.hookBadge {
+  display: inline-block;
+  font-size: 10px;
+  background-color: rgba(124, 58, 237, 0.3);
+  color: #c4b5fd;
+  border-radius: 4px;
+  padding: 2px 6px;
+  margin-left: 8px;
+}
+
+.copyButton {
+  background: none;
+  border: none;
+  padding: 2px;
+  cursor: pointer;
+  color: #a1a1aa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+  transition: color 150ms ease-out, background-color 150ms ease-out;
+
+  &:hover {
+    color: #60a5fa;
+    background-color: rgba(96, 165, 250, 0.1);
+  }
+}
+
+.copiedText {
+  font-size: 10px;
+  color: #22c55e;
+  margin-left: 4px;
+  font-weight: 500;
+}

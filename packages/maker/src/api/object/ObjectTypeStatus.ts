@@ -17,6 +17,7 @@
 export type ObjectTypeStatus =
   | "active"
   | "experimental"
+  | "example"
   | {
     type: "deprecated";
     message: string;

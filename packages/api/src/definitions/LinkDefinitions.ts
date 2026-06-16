@@ -25,7 +25,6 @@ import type {
 import type {
   CompileTimeMetadata,
   ObjectMetadata,
-  ObjectTypeDefinition,
   ObjectTypeLinkKeysFrom2,
 } from "../ontology/ObjectTypeDefinition.js";
 import type { ExtractOptions, Osdk } from "../OsdkObjectFrom.js";
@@ -45,7 +44,9 @@ export type OsdkObjectLinksEntry<
     M extends false ? SingleLinkAccessor<T> : ObjectSet<T>
   )
   : CompileTimeMetadata<Q>["links"][L] extends
-    InterfaceMetadata.Link<infer T, infer M> ? ObjectSet<T>
+    InterfaceMetadata.Link<infer T, infer M> ? (
+      M extends false ? SingleLinkAccessor<T> : ObjectSet<T>
+    )
   : never;
 
 export type DefaultToFalse<B extends boolean | undefined> = false extends B
@@ -54,7 +55,7 @@ export type DefaultToFalse<B extends boolean | undefined> = false extends B
   : true;
 
 export interface SingleLinkAccessor<
-  T extends ObjectTypeDefinition,
+  T extends ObjectOrInterfaceDefinition,
 > {
   /** Load the linked object
    */

@@ -15,7 +15,7 @@
  */
 
 import { TypeHelpers as TH } from "@osdk/faux";
-import type { ActionTypeV2, ObjectTypeApiName } from "@osdk/foundry.ontologies";
+import type { ActionTypeV2 } from "@osdk/foundry.ontologies";
 import { BarInterface, FooInterface } from "./interfaceTypes.js";
 import { employeeObjectType, officeObjectType } from "./objectTypes.js";
 
@@ -39,6 +39,7 @@ export const PromoteEmployee: ActionTypeV2 = {
         type: "integer",
       },
       required: true,
+      typeClasses: [],
     },
     newTitle: {
       "displayName": "New Title",
@@ -46,6 +47,7 @@ export const PromoteEmployee: ActionTypeV2 = {
         type: "string",
       },
       required: true,
+      typeClasses: [],
     },
     newCompensation: {
       "displayName": "New Compensation",
@@ -53,6 +55,7 @@ export const PromoteEmployee: ActionTypeV2 = {
         type: "double",
       },
       required: true,
+      typeClasses: [],
     },
   },
   rid: "ri.ontology.main.action-type.7ed72754-7491-428a-bb18-4d7296eb2167",
@@ -75,6 +78,7 @@ export const PromoteEmployeeObject: ActionTypeV2 = {
         objectTypeApiName: employeeObjectType.apiName,
       },
       required: true,
+      typeClasses: [],
     },
     newTitle: {
       displayName: "New Title",
@@ -82,6 +86,7 @@ export const PromoteEmployeeObject: ActionTypeV2 = {
         type: "string",
       },
       required: true,
+      typeClasses: [],
     },
     newCompensation: {
       displayName: "New Compensation",
@@ -89,6 +94,7 @@ export const PromoteEmployeeObject: ActionTypeV2 = {
         type: "double",
       },
       required: true,
+      typeClasses: [],
     },
   },
   rid: "ri.ontology.main.action-type.7ed72754-7491-428a-bb18-4d7296eb2168",
@@ -109,6 +115,7 @@ export const CreateOffice: ActionTypeV2 = {
         type: "string",
       },
       required: true,
+      typeClasses: [],
     },
     address: {
       displayName: "Address",
@@ -118,6 +125,7 @@ export const CreateOffice: ActionTypeV2 = {
         type: "string",
       },
       required: false,
+      typeClasses: [],
     },
     capacity: {
       displayName: "Capacity",
@@ -127,6 +135,7 @@ export const CreateOffice: ActionTypeV2 = {
         type: "integer",
       },
       required: false,
+      typeClasses: [],
     },
     officeNames: {
       displayName: "Office Names",
@@ -138,6 +147,7 @@ export const CreateOffice: ActionTypeV2 = {
         },
       },
       required: false,
+      typeClasses: [],
     },
   },
   rid: "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f1",
@@ -158,6 +168,7 @@ export const CreateOfficeAndEmployee: ActionTypeV2 = {
         type: "string",
       },
       required: true,
+      typeClasses: [],
     },
     address: {
       displayName: "Address",
@@ -167,6 +178,7 @@ export const CreateOfficeAndEmployee: ActionTypeV2 = {
         type: "string",
       },
       required: false,
+      typeClasses: [],
     },
     capacity: {
       displayName: "Capacity",
@@ -176,6 +188,7 @@ export const CreateOfficeAndEmployee: ActionTypeV2 = {
         type: "integer",
       },
       required: false,
+      typeClasses: [],
     },
     officeNames: {
       displayName: "Office Names",
@@ -187,6 +200,7 @@ export const CreateOfficeAndEmployee: ActionTypeV2 = {
         },
       },
       required: false,
+      typeClasses: [],
     },
     employeeId: {
       displayName: "Employee ID",
@@ -195,6 +209,7 @@ export const CreateOfficeAndEmployee: ActionTypeV2 = {
         type: "integer",
       },
       required: true,
+      typeClasses: [],
     },
   },
   rid: "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2",
@@ -205,60 +220,7 @@ export const CreateOfficeAndEmployee: ActionTypeV2 = {
   status: "ACTIVE",
 };
 
-interface MoveOfficeActionDef {
-  readonly apiName: "moveOffice";
-  readonly description: "Update an office's physical location";
-  readonly displayName: "move-office";
-  readonly parameters: {
-    readonly officeId: {
-      readonly dataType: {
-        readonly type: "string";
-      };
-      readonly displayName: string;
-      readonly required: true;
-    };
-    readonly newAddress: {
-      readonly description:
-        "The office's new physical address (not necessarily shipping address)";
-      readonly dataType: {
-        readonly type: "string";
-      };
-      readonly displayName: string;
-      readonly required: false;
-    };
-    readonly newCapacity: {
-      readonly description:
-        "The maximum seated-at-desk capacity of the new office (maximum fire-safe capacity may be higher)";
-      readonly dataType: {
-        readonly type: "integer";
-      };
-      readonly displayName: string;
-      readonly required: false;
-    };
-    readonly officeNames: {
-      readonly description: "A list of all office names";
-      readonly dataType: {
-        readonly type: "array";
-        readonly subType: {
-          readonly type: "integer";
-        };
-      };
-      readonly displayName: string;
-      readonly required: false;
-    };
-  };
-  readonly rid:
-    "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2";
-  readonly operations: [
-    {
-      readonly type: "modifyObject";
-      readonly objectTypeApiName: ObjectTypeApiName;
-    },
-  ];
-  readonly status: "ACTIVE";
-}
-
-export const MoveOffice: MoveOfficeActionDef = {
+export const MoveOffice: ActionTypeV2 = {
   apiName: "moveOffice",
   description: "Update an office's physical location",
   displayName: "move-office",
@@ -269,6 +231,7 @@ export const MoveOffice: MoveOfficeActionDef = {
         type: "string",
       },
       required: true,
+      typeClasses: [],
     },
     newAddress: {
       displayName: "New Address",
@@ -278,6 +241,7 @@ export const MoveOffice: MoveOfficeActionDef = {
         type: "string",
       },
       required: false,
+      typeClasses: [],
     },
     newCapacity: {
       displayName: "New Capacity",
@@ -287,6 +251,7 @@ export const MoveOffice: MoveOfficeActionDef = {
         type: "integer",
       },
       required: false,
+      typeClasses: [],
     },
     officeNames: {
       displayName: "Office Names",
@@ -298,6 +263,7 @@ export const MoveOffice: MoveOfficeActionDef = {
         },
       },
       required: false,
+      typeClasses: [],
     },
   },
   rid: "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2",
@@ -306,7 +272,7 @@ export const MoveOffice: MoveOfficeActionDef = {
     objectTypeApiName: officeObjectType.apiName,
   }],
   status: "ACTIVE",
-} as const satisfies ActionTypeV2;
+};
 
 export const ActionTakesObjectSet: ActionTypeV2 = {
   apiName: "actionTakesObjectSet",
@@ -320,6 +286,7 @@ export const ActionTakesObjectSet: ActionTypeV2 = {
         objectApiName: employeeObjectType.apiName,
       },
       required: true,
+      typeClasses: [],
     },
   },
   rid: "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2",
@@ -327,23 +294,7 @@ export const ActionTakesObjectSet: ActionTypeV2 = {
   status: "ACTIVE",
 };
 
-export const ActionTakesAttachment: {
-  readonly apiName: "actionTakesAttachment";
-  readonly description: "An action which takes an attachment";
-  readonly parameters: {
-    readonly attachment: {
-      readonly dataType: {
-        readonly type: "attachment";
-      };
-      readonly displayName: string;
-      readonly required: true;
-    };
-  };
-  readonly rid:
-    "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f3";
-  readonly operations: [];
-  readonly status: "ACTIVE";
-} = {
+export const ActionTakesAttachment: ActionTypeV2 = {
   apiName: "actionTakesAttachment",
   description: "An action which takes an attachment",
   parameters: {
@@ -353,12 +304,13 @@ export const ActionTakesAttachment: {
         type: "attachment",
       },
       required: true,
+      typeClasses: [],
     },
   },
   rid: "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f3",
   operations: [],
   status: "ACTIVE",
-} as const satisfies ActionTypeV2;
+};
 
 export const ActionTakesMedia: ActionTypeV2 = {
   apiName: "actionTakesMedia",
@@ -370,6 +322,7 @@ export const ActionTakesMedia: ActionTypeV2 = {
         type: "mediaReference",
       },
       required: true,
+      typeClasses: [],
     },
   },
   rid: "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f3",
@@ -387,6 +340,7 @@ export const ActionTypeWithUnsupportedTypes: ActionTypeV2 = {
         type: "unsupportedType" as "integer",
       },
       required: false,
+      typeClasses: [],
     },
     unsupportedObject: {
       displayName: "Unsupported Object",
@@ -396,6 +350,7 @@ export const ActionTypeWithUnsupportedTypes: ActionTypeV2 = {
         objectTypeApiName: "unsupported",
       },
       required: false,
+      typeClasses: [],
     },
   },
   rid: "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2",
@@ -415,6 +370,7 @@ export const ActionTakesInterface: ActionTypeV2 = {
         interfaceTypeApiName: FooInterface.apiName,
       },
       required: true,
+      typeClasses: [],
     },
   },
   rid: "ri.actions.main.action-type.3828bab4-49c7-4fdf-a780-6ccbc359d817",
@@ -438,6 +394,7 @@ export const ActionTakesAnotherInterface: ActionTypeV2 = {
         interfaceTypeApiName: BarInterface.apiName,
       },
       required: true,
+      typeClasses: [],
     },
   },
   rid: "ri.actions.main.action-type.3828bab4-4ac7-4fdf-a780-6ccbc359d817",
@@ -460,6 +417,7 @@ export const ActionCreatesInterface: ActionTypeV2 = {
         type: "objectType",
       },
       required: true,
+      typeClasses: [],
     },
   },
   rid: "ri.actions.main.action-type.3828bab4-49c7-4fdf-a780-6ccbc359d817",
@@ -481,6 +439,7 @@ export const ActionTakesStruct: ActionTypeV2 = {
         type: "string",
       },
       required: true,
+      typeClasses: [],
     },
     address: {
       displayName: "Address",
@@ -511,6 +470,7 @@ export const ActionTakesStruct: ActionTypeV2 = {
         ],
       },
       required: false,
+      typeClasses: [],
     },
   },
   rid: "ri.ontology.main.action-type.9f24017d-cf17-4fa8-84c3-8e01e5d594f2",
@@ -529,6 +489,7 @@ export const ActionTakesGeoshape: ActionTypeV2 = {
         type: "geoshape",
       },
       required: true,
+      typeClasses: [],
     },
     geohashParam: {
       displayName: "Geohash Param",
@@ -536,6 +497,7 @@ export const ActionTakesGeoshape: ActionTypeV2 = {
         type: "geohash",
       },
       required: true,
+      typeClasses: [],
     },
   },
   rid: "ri.actions.main.action-type.5828bab4-49c7-4fdf-a780-6ccbc359d817",

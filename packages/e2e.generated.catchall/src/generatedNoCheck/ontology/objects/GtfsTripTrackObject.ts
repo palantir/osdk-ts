@@ -53,6 +53,8 @@ export interface GtfsTripTrackObject extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'GtfsTripTrackObject';
+  primaryKeyApiName: 'entityId';
+  primaryKeyType: 'string';
   __DefinitionMetadata?: {
     objectSet: GtfsTripTrackObject.ObjectSet;
     props: GtfsTripTrackObject.Props;
@@ -99,6 +101,8 @@ export const GtfsTripTrackObject = {
   type: 'object',
   apiName: 'GtfsTripTrackObject',
   osdkMetadata: $osdkMetadata,
+  primaryKeyApiName: 'entityId',
+  primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
   },

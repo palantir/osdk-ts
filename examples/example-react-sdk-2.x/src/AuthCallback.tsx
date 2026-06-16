@@ -1,6 +1,6 @@
+import { auth } from "@/client";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth } from "./client";
 
 /**
  * Component to render at `/auth/callback`
@@ -16,7 +16,13 @@ function AuthCallback(): React.ReactElement {
     auth
       .signIn()
       .then(() => navigate("/", { replace: true }))
-      .catch((e: unknown) => setError((e as Error).message ?? e));
+      .catch((e: unknown) => {
+        if (e instanceof Error) {
+          setError(e.message);
+        } else {
+          setError(String(e));
+        }
+      });
   }, [navigate]);
   return <div>{error != null ? error : "Authenticating…"}</div>;
 }

@@ -1,5 +1,82 @@
 # @osdk/typescript-sdk-docs
 
+## 0.13.0
+
+### Minor Changes
+
+- 5ff7aa5: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.61.0` to `2.63.0`. The OntologyScenarios endpoints now expose a `preview` query-param slot, so `createScenario` and the `EXPERIMENTAL_ScenarioClient` read methods pass `{ preview: true }` directly instead of relying on a fetch-level URL rewrite.
+
+## 0.12.0
+
+### Minor Changes
+
+- 8965bdf: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+
+## 0.11.0
+
+### Minor Changes
+
+- 60aff19: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+
+## 0.10.0
+
+### Minor Changes
+
+- 56c5630: Drop redundant `--config $(find-up dprint.json)` from `lint`, `fix-lint`, and `format` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the substitution was a no-op anyway since `find-up` is an npm package, not a CLI. Also fix the `uploadMediaOntologyEdits` documentation example so its `// @ts-ignore` survives dprint reformatting (the broken `format` step had been masking this).
+
+## 0.9.0
+
+### Minor Changes
+
+- f522327: Render the object-action-parameter alternative hint as a block comment so the trailing comma the template appends after non-last entries isn't swallowed by a line comment
+
+## 0.8.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+## 0.7.0
+
+### Minor Changes
+
+- 776ae8a: Simulated release
+- beba0cd: Simplify actionParameter docs generation code
+- 8561a8b: Render custom type fields in function doc snippets instead of empty `{}`
+- c4d7052: Fix OSDK docs showing invalid { \_\_primaryKey } format for object action parameters
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+## 0.7.0-beta.4
+
+### Minor Changes
+
+- 8561a8b: Render custom type fields in function doc snippets instead of empty `{}`
+
+## 0.7.0-beta.3
+
+### Minor Changes
+
+- beba0cd: Simplify actionParameter docs generation code
+- c4d7052: Fix OSDK docs showing invalid { \_\_primaryKey } format for object action parameters
+
+## 0.7.0-beta.2
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+## 0.6.0-beta.5
+
+### Minor Changes
+
+- 7572644: Bump @osdk/docs-spec-core to 0.6.0
+
+## 0.6.0-beta.4
+
+### Minor Changes
+
+- 3bfde5a: Add rendering support for objectSet action parameters
+
 ## 0.6.0-beta.3
 
 ### Minor Changes

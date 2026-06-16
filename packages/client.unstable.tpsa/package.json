@@ -1,6 +1,6 @@
 {
   "name": "@osdk/client.unstable.tpsa",
-  "version": "0.9.0-beta.1",
+  "version": "0.13.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -28,10 +28,11 @@
   },
   "scripts": {
     "check-attw": "attw --pack .",
+    "check-bundle": "monorepo.tool.check-bundle",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
-    "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
-    "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "fix-lint": "eslint . --fix && dprint fmt",
+    "lint": "eslint . && dprint check",
     "transpileBrowser": "monorepo.tool.transpile -f esm -m bundle -t browser",
     "transpileCjs": "monorepo.tool.transpile -f cjs -m bundle -t node",
     "transpileEsm": "monorepo.tool.transpile -f esm -m bundle -t node",
@@ -43,6 +44,7 @@
   },
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",
+    "@osdk/monorepo.tool.check-bundle": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "typescript": "~5.5.4"
   },

@@ -96,19 +96,20 @@ function CreateTaskDialog(
             <div className={css.task}>
               <label className={css.label}>
                 Task name:{" "}
+                <input
+                  type="text"
+                  value={name}
+                  onChange={handleChangeTaskName}
+                  className={css.input}
+                />
               </label>
-              <input
-                type="text"
-                value={name}
-                onChange={handleChangeTaskName}
-                className={css.input}
-              />
 
-              <label className={css.label}>
+              <label className={css.label} htmlFor="task-description">
                 Task description:{" "}
               </label>
               <div className={css.container}>
                 <textarea
+                  id="task-description"
                   ref={textAreaRef}
                   value={description}
                   onChange={handleChangeTaskDescription}
@@ -122,11 +123,7 @@ function CreateTaskDialog(
                   type="button"
                   onClick={handleTaskDescriptionRecommendation}
                 >
-                  <img
-                    src={aipLogo}
-                    alt="AIP"
-                    className={css.image}
-                  />
+                  <img src={aipLogo} alt="AIP Logo" className={css.image} />
                 </button>
               </div>
             </div>

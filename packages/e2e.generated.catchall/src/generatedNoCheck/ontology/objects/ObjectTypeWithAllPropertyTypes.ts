@@ -16,36 +16,36 @@ import type {
 
 export namespace ObjectTypeWithAllPropertyTypes {
   export type PropertyKeys =
-    | 'id'
-    | 'string'
-    | 'boolean'
-    | 'date'
-    | 'dateTime'
-    | 'decimal'
-    | 'integer'
-    | 'long'
-    | 'short'
-    | 'float'
-    | 'double'
-    | 'byte'
     | 'attachment'
-    | 'geoPoint'
-    | 'geoShape'
-    | 'stringArray'
-    | 'booleanArray'
-    | 'dateArray'
-    | 'dateTimeArray'
-    | 'decimalArray'
-    | 'integerArray'
-    | 'longArray'
-    | 'shortArray'
-    | 'floatArray'
-    | 'doubleArray'
-    | 'byteArray'
     | 'attachmentArray'
+    | 'boolean'
+    | 'booleanArray'
+    | 'byte'
+    | 'byteArray'
+    | 'date'
+    | 'dateArray'
+    | 'dateTime'
+    | 'dateTimeArray'
+    | 'decimal'
+    | 'decimalArray'
+    | 'double'
+    | 'doubleArray'
+    | 'float'
+    | 'floatArray'
+    | 'geoPoint'
     | 'geoPointArray'
+    | 'geoShape'
     | 'geoShapeArray'
+    | 'id'
+    | 'integer'
+    | 'integerArray'
+    | 'long'
+    | 'longArray'
     | 'numericTimeseries'
+    | 'short'
+    | 'shortArray'
+    | 'string'
+    | 'stringArray'
     | 'stringTimeseries';
 
   export type Links = {};
@@ -197,6 +197,8 @@ export interface ObjectTypeWithAllPropertyTypes extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'ObjectTypeWithAllPropertyTypes';
+  primaryKeyApiName: 'id';
+  primaryKeyType: 'integer';
   __DefinitionMetadata?: {
     objectSet: ObjectTypeWithAllPropertyTypes.ObjectSet;
     props: ObjectTypeWithAllPropertyTypes.Props;
@@ -355,6 +357,8 @@ export const ObjectTypeWithAllPropertyTypes = {
   type: 'object',
   apiName: 'ObjectTypeWithAllPropertyTypes',
   osdkMetadata: $osdkMetadata,
+  primaryKeyApiName: 'id',
+  primaryKeyType: 'integer',
   internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },

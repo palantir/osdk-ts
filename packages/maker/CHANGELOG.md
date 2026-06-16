@@ -1,5 +1,496 @@
 # @osdk/maker
 
+## 0.36.0
+
+### Minor Changes
+
+- cae84bd: Fix optional inputs for OAC FBA
+- 9e602f2: allow require implementation for interface action type constraint
+- 0032d94: fix cyclical interfaces on all internal types
+
+### Patch Changes
+
+- Updated dependencies [a9de941]
+  - @osdk/generator-converters.ontologyir@2.33.0
+  - @osdk/api@2.33.0
+
+## 0.35.0
+
+### Minor Changes
+
+- b5d0a61: transitive OAC imports
+- 833f47a: add support for interface action type constraint in ontology as code
+
+### Patch Changes
+
+- Updated dependencies [b5d0a61]
+- Updated dependencies [06adca1]
+- Updated dependencies [833f47a]
+  - @osdk/generator-converters.ontologyir@2.32.0
+  - @osdk/api@2.32.0
+
+## 0.34.0
+
+### Patch Changes
+
+- Updated dependencies [57cbc6d]
+  - @osdk/api@2.31.0
+  - @osdk/generator-converters.ontologyir@2.31.0
+
+## 0.33.0
+
+### Patch Changes
+
+- Updated dependencies [08e921c]
+  - @osdk/api@2.29.0
+  - @osdk/generator-converters.ontologyir@2.29.0
+
+## 0.32.0
+
+### Minor Changes
+
+- 1bc01d1: Add property validation for direct datasources
+
+### Patch Changes
+
+- @osdk/api@2.28.0
+- @osdk/generator-converters.ontologyir@2.28.0
+
+## 0.31.0
+
+### Patch Changes
+
+- Updated dependencies [8965bdf]
+- Updated dependencies [bd90dba]
+  - @osdk/generator-converters.ontologyir@2.25.0
+  - @osdk/typescript-sdk-docs@0.12.0
+  - @osdk/api@2.25.0
+
+## 0.30.0
+
+### Patch Changes
+
+- Updated dependencies [a492285]
+- Updated dependencies [60aff19]
+- Updated dependencies [d087189]
+  - @osdk/api@2.24.0
+  - @osdk/generator-converters.ontologyir@2.24.0
+  - @osdk/typescript-sdk-docs@0.11.0
+
+## 0.29.0
+
+### Minor Changes
+
+- 56c2c9f: write static object file
+
+### Patch Changes
+
+- Updated dependencies [198f219]
+- Updated dependencies [ef156b6]
+- Updated dependencies [8290dd7]
+  - @osdk/api@2.23.0
+  - @osdk/generator-converters.ontologyir@2.23.0
+
+## 0.28.0
+
+### Minor Changes
+
+- dea392c: Fix maker experimental imports
+
+### Patch Changes
+
+- Updated dependencies [dea392c]
+- Updated dependencies [d8f3dfd]
+  - @osdk/generator-converters.ontologyir@2.22.0
+  - @osdk/api@2.22.0
+
+## 0.27.0
+
+### Minor Changes
+
+- 6bca4fd: fix cbac default nullability
+
+### Patch Changes
+
+- Updated dependencies [1a07c91]
+- Updated dependencies [5b89f25]
+- Updated dependencies [b98e084]
+  - @osdk/api@2.21.0
+  - @osdk/generator-converters.ontologyir@2.21.0
+
+## 0.26.0
+
+### Patch Changes
+
+- Updated dependencies [9eb67e4]
+  - @osdk/api@2.20.0
+  - @osdk/generator-converters.ontologyir@2.20.0
+
+## 0.25.0
+
+### Patch Changes
+
+- Updated dependencies [02c796c]
+- Updated dependencies [46c553f]
+- Updated dependencies [d962309]
+  - @osdk/api@2.19.0
+  - @osdk/generator-converters.ontologyir@2.19.0
+
+## 0.24.0
+
+### Minor Changes
+
+- 56c5630: Drop redundant `--config $(find-up dprint.json)` from `lint`, `fix-lint`, and `format` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the substitution was a no-op anyway since `find-up` is an npm package, not a CLI. Also fix the `uploadMediaOntologyEdits` documentation example so its `// @ts-ignore` survives dprint reformatting (the broken `format` step had been masking this).
+- ebc5f0c: Experimental function backed actions in OAC
+
+### Patch Changes
+
+- Updated dependencies [56c5630]
+- Updated dependencies [ebc5f0c]
+- Updated dependencies [17d7ba2]
+  - @osdk/api@2.16.0
+  - @osdk/generator-converters.ontologyir@2.16.0
+  - @osdk/typescript-sdk-docs@0.10.0
+
+## 0.23.0
+
+### Patch Changes
+
+- @osdk/api@2.15.0
+- @osdk/generator-converters.ontologyir@2.15.0
+
+## 0.22.0
+
+### Minor Changes
+
+- 02a5765: fix ts discovery api break
+- 2f40eee: Support edits history
+
+### Patch Changes
+
+- Updated dependencies [02a5765]
+- Updated dependencies [20e9678]
+  - @osdk/generator-converters.ontologyir@2.14.0
+  - @osdk/api@2.14.0
+
+## 0.21.0
+
+### Patch Changes
+
+- Updated dependencies [f522327]
+  - @osdk/typescript-sdk-docs@0.9.0
+  - @osdk/api@2.13.0
+  - @osdk/generator-converters.ontologyir@2.13.0
+
+## 0.20.0
+
+### Minor Changes
+
+- 9225ee3: interface property string analyzers
+
+### Patch Changes
+
+- Updated dependencies [91f34a9]
+  - @osdk/api@2.12.0
+  - @osdk/generator-converters.ontologyir@2.12.0
+
+## 0.19.0
+
+### Minor Changes
+
+- a6f4208: configure entity perms in OAC
+
+### Patch Changes
+
+- Updated dependencies [a6f4208]
+  - @osdk/generator-converters.ontologyir@2.11.0
+  - @osdk/api@2.11.0
+
+## 0.18.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+- 151d258: Wire typeclasses to links and actions
+- b1b8a8b: Support string analyzers
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+  - @osdk/generator-converters.ontologyir@2.10.0
+  - @osdk/typescript-sdk-docs@0.8.0
+  - @osdk/api@2.10.0
+
+## 0.17.0
+
+### Minor Changes
+
+- b90fb8e: Fix typo
+- 492db18: Expand the set of types acceptable in references
+
+### Patch Changes
+
+- Updated dependencies [cbc8e9c]
+- Updated dependencies [e8d14a0]
+- Updated dependencies [3390ea2]
+- Updated dependencies [2394ca7]
+  - @osdk/api@2.9.0
+  - @osdk/generator-converters.ontologyir@2.9.0
+
+## 0.16.0
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+- cc7f505: Add maximum length validation (100 characters) for API names to match server-side constraints
+- 8f92197: update code snippet to have interface dependent properties
+- 963626f: Add function discovery support (TypeScript and Python) and generate intermediate OSDK from CLI for use by function definitions
+- f487a6a: Maker experimental
+- e462938: Support PSGs in OAC
+- 6499ff9: Support reducers and struct main values in oac
+- 0e45a37: Add better api name validation for OAC
+- fcf81ba: Validate link api names
+- ab50d31: Remove propertiesV2 from code-snippets
+- 034081a: oac direct datasources
+- 77aa4a9: Detect imported objects for OAC links
+- fd3f6d3: Add support for empty backing datasources
+- 9ee82f4: Dedupe many-to-many PK property names in datasource
+- 5b938ef: Enforce OT and prop statuses match
+- 7fa6de3: Revert breaking change
+- 2b15836: Disallow ILCs on imported interfaces
+- 684b6c6: Always use valid import path
+- acb4ed6: Support custom decimal types
+- e8ca289: Fix key resolution
+- 35f2f1a: Add Media inputs/outputs for Queries
+- e0ba9eb: Shallow clone arrays in definition when passed in to defineFoo methods
+- 972bda6: Support assumed markings for oac PSGs
+- 6941b4f: extendsInterfaceMetadata on the IR to fix interface impl
+- e9f9f58: Allow primitive struct main values to be title props
+- eac64f4: Link backing dataset generation
+
+### Patch Changes
+
+- Updated dependencies [322c5bc]
+- Updated dependencies [150da1a]
+- Updated dependencies [776ae8a]
+- Updated dependencies [4bb9769]
+- Updated dependencies [abb0e0f]
+- Updated dependencies [4762f4b]
+- Updated dependencies [beba0cd]
+- Updated dependencies [8561a8b]
+- Updated dependencies [f294f5a]
+- Updated dependencies [908b519]
+- Updated dependencies [c4d7052]
+- Updated dependencies [0df859a]
+- Updated dependencies [d284bf2]
+- Updated dependencies [4ef6adc]
+- Updated dependencies [60b5ffb]
+- Updated dependencies [8c30908]
+- Updated dependencies [4a856cb]
+- Updated dependencies [b68cebd]
+- Updated dependencies [35f2f1a]
+- Updated dependencies [cde6b85]
+- Updated dependencies [32c6a0c]
+- Updated dependencies [12fe33f]
+- Updated dependencies [46f0a47]
+- Updated dependencies [61e33ab]
+  - @osdk/api@2.8.0
+  - @osdk/generator-converters.ontologyir@2.8.0
+  - @osdk/typescript-sdk-docs@0.7.0
+
+## 0.16.0-beta.15
+
+### Minor Changes
+
+- e8ca289: Fix key resolution
+
+## 0.16.0-beta.14
+
+### Minor Changes
+
+- 684b6c6: Always use valid import path
+
+### Patch Changes
+
+- Updated dependencies [f294f5a]
+- Updated dependencies [d284bf2]
+- Updated dependencies [b68cebd]
+- Updated dependencies [12fe33f]
+  - @osdk/api@2.8.0-beta.28
+  - @osdk/generator-converters.ontologyir@2.8.0-beta.28
+
+## 0.16.0-beta.13
+
+### Minor Changes
+
+- 9ee82f4: Dedupe many-to-many PK property names in datasource
+
+### Patch Changes
+
+- Updated dependencies [60b5ffb]
+- Updated dependencies [61e33ab]
+  - @osdk/api@2.8.0-beta.26
+  - @osdk/generator-converters.ontologyir@2.8.0-beta.26
+
+## 0.16.0-beta.12
+
+### Minor Changes
+
+- 77aa4a9: Detect imported objects for OAC links
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.24
+- @osdk/generator-converters.ontologyir@2.8.0-beta.24
+
+## 0.16.0-beta.11
+
+### Minor Changes
+
+- cc7f505: Add maximum length validation (100 characters) for API names to match server-side constraints
+- 0e45a37: Add better api name validation for OAC
+- fcf81ba: Validate link api names
+- fd3f6d3: Add support for empty backing datasources
+
+### Patch Changes
+
+- Updated dependencies [4bb9769]
+- Updated dependencies [beba0cd]
+- Updated dependencies [c4d7052]
+- Updated dependencies [32c6a0c]
+  - @osdk/api@2.8.0-beta.23
+  - @osdk/typescript-sdk-docs@0.7.0-beta.3
+  - @osdk/generator-converters.ontologyir@2.8.0-beta.23
+
+## 0.16.0-beta.10
+
+### Minor Changes
+
+- 6941b4f: extendsInterfaceMetadata on the IR to fix interface impl
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.16
+- @osdk/generator-converters.ontologyir@2.8.0-beta.16
+
+## 0.16.0-beta.9
+
+### Minor Changes
+
+- 7fa6de3: Revert breaking change
+
+## 0.16.0-beta.8
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+### Patch Changes
+
+- Updated dependencies [35f2f1a]
+  - @osdk/api@2.8.0-beta.14
+  - @osdk/generator-converters.ontologyir@2.8.0-beta.14
+  - @osdk/typescript-sdk-docs@0.7.0-beta.2
+
+## 0.16.0-beta.7
+
+### Minor Changes
+
+- f487a6a: Maker experimental
+- acb4ed6: Support custom decimal types
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.11
+- @osdk/generator-converters.ontologyir@2.8.0-beta.11
+
+## 0.16.0-beta.6
+
+### Minor Changes
+
+- 963626f: Add function discovery support (TypeScript and Python) and generate intermediate OSDK from CLI for use by function definitions
+- 972bda6: Support assumed markings for oac PSGs
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.10
+- @osdk/generator-converters.ontologyir@2.8.0-beta.10
+
+## 0.16.0-beta.5
+
+### Minor Changes
+
+- 034081a: oac direct datasources
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.7
+
+## 0.16.0-beta.4
+
+### Minor Changes
+
+- ab50d31: Remove propertiesV2 from code-snippets
+- 2b15836: Disallow ILCs on imported interfaces
+- e0ba9eb: Shallow clone arrays in definition when passed in to defineFoo methods
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.6
+
+## 0.16.0-beta.3
+
+### Minor Changes
+
+- 8f92197: update code snippet to have interface dependent properties
+- 6499ff9: Support reducers and struct main values in oac
+- 5b938ef: Enforce OT and prop statuses match
+- e9f9f58: Allow primitive struct main values to be title props
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.5
+
+## 0.16.0-beta.2
+
+### Minor Changes
+
+- e462938: Support PSGs in OAC
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.2
+
+## 0.15.0-beta.9
+
+### Minor Changes
+
+- ace2d68: Allow custom "then" configuration on visibility overrides
+- 044f478: Wire propertiesV2 to implementsInterface
+- 3693275: Add flag to add namespace prefix to value type api names
+
+## 0.15.0-beta.8
+
+### Minor Changes
+
+- c773e8f: Expose more status options on OAC
+
+### Patch Changes
+
+- Updated dependencies [bb9d25c]
+  - @osdk/api@2.7.0-beta.12
+
+## 0.15.0-beta.7
+
+### Minor Changes
+
+- 8381ac2: Alias and render hint overrides for oac
+- c95f3bc: Support IDPs in OAC
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.9
+
 ## 0.15.0-beta.6
 
 ### Minor Changes

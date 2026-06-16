@@ -1,5 +1,208 @@
 # @osdk/cli
 
+## 0.57.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.30.0
+
+## 0.56.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.29.0
+
+## 0.55.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.28.0
+
+## 0.54.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.27.0
+
+## 0.53.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.26.0
+
+## 0.52.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.25.0
+
+## 0.51.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.24.0
+
+## 0.50.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.23.0
+
+## 0.49.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.22.0
+
+## 0.48.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.21.0
+
+## 0.47.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.20.0
+
+## 0.46.0
+
+### Patch Changes
+
+- Updated dependencies [2f3aa7b]
+  - @osdk/widget.api@3.19.0
+
+## 0.45.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.18.0
+
+## 0.44.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.17.0
+
+## 0.43.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.16.0
+
+## 0.42.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.15.0
+
+## 0.41.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.14.0
+
+## 0.40.0
+
+### Minor Changes
+
+- 56c5630: Drop redundant `--config $(find-up dprint.json)` from `lint`, `fix-lint`, and `format` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the substitution was a no-op anyway since `find-up` is an npm package, not a CLI. Also fix the `uploadMediaOntologyEdits` documentation example so its `// @ts-ignore` survives dprint reformatting (the broken `format` step had been masking this).
+
+### Patch Changes
+
+- Updated dependencies [56c5630]
+  - @osdk/foundry-config-json@1.9.0
+  - @osdk/shared.net.errors@2.10.0
+  - @osdk/shared.net.fetch@1.10.0
+  - @osdk/widget.api@3.13.0
+
+## 0.39.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.12.0
+
+## 0.38.0
+
+### Minor Changes
+
+- bab1421: Add check for bundling to ensure entry points work even if dev deps change.
+
+### Patch Changes
+
+- @osdk/widget.api@3.11.0
+
+## 0.37.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.10.0
+
+## 0.36.0
+
+### Minor Changes
+
+- df1a4f8: Build API URLs in site and widgetset commands via the URL constructor. The `foundryUrl` argument coerce now ensures a trailing slash (previously stripped it), so base URLs with path prefixes resolve correctly.
+
+### Patch Changes
+
+- @osdk/widget.api@3.9.0
+
+## 0.35.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.8.0
+
+## 0.34.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+  - @osdk/foundry-config-json@1.8.0
+  - @osdk/shared.net.errors@2.9.0
+  - @osdk/shared.net.fetch@1.9.0
+  - @osdk/widget.api@3.7.0
+
+## 0.33.0
+
+### Minor Changes
+
+- 40fe279: Fix cli by making referenced packages bundled
+
+### Patch Changes
+
+- @osdk/widget.api@3.6.0
+
+## 0.32.0
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+- ef0cd72: Handle ScanningInProgress error for site deploy command
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+## 0.32.0-beta.5
+
+## 0.32.0-beta.4
+
+## 0.32.0-beta.3
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+## 0.32.0-beta.2
+
+### Minor Changes
+
+- ef0cd72: Handle ScanningInProgress error for site deploy command
+
 ## 0.31.0-beta.2
 
 ## 0.30.0-beta.5

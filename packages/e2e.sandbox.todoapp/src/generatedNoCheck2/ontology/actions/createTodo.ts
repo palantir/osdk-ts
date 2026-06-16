@@ -37,7 +37,7 @@ export namespace createTodo {
   export interface Params {
     readonly is_complete: ActionParam.PrimitiveType<'boolean'>;
 
-    readonly location?: ActionParam.PrimitiveType<'string'>;
+    readonly location?: ActionParam.PrimitiveType<'string'> | null;
 
     readonly Todo: ActionParam.PrimitiveType<'string'>;
   }
@@ -61,6 +61,11 @@ export namespace createTodo {
 
 /**
  * Creates Todo
+ *
+ * **Note on null values:** _For optional parameters, explicitly providing a null value instead of undefined
+ * can change the behavior of the applied action. If prefills are configured, null prevents them
+ * from being applied. If a parameter modifies an object's property, null will clear the data from
+ * the object, whereas undefined would not modify that property._
  * @param {ActionParam.PrimitiveType<"boolean">} is_complete
  * @param {ActionParam.PrimitiveType<"string">} [location]
  * @param {ActionParam.PrimitiveType<"string">} Todo
@@ -80,16 +85,19 @@ export interface createTodo extends ActionDefinition<createTodo.Signatures> {
     rid: 'ri.actions.main.action-type.1913052f-0395-4643-9d37-62fc7f74289d';
     status: 'ACTIVE';
     type: 'action';
+    unsanitizedApiName: 'create-todo';
 
     signatures: createTodo.Signatures;
   };
   apiName: 'createTodo';
   type: 'action';
+  unsanitizedApiName: 'create-todo';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const createTodo: createTodo = {
   apiName: 'createTodo',
   type: 'action',
+  unsanitizedApiName: 'create-todo',
   osdkMetadata: $osdkMetadata,
 };

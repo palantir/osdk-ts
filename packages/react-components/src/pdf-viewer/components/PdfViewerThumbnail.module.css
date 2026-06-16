@@ -1,0 +1,26 @@
+.thumbnailContainer {
+  position: relative;
+  cursor: pointer;
+  border: 2px solid transparent;
+  border-radius: var(--osdk-surface-border-radius);
+  box-shadow: var(--osdk-pdf-viewer-page-shadow);
+  overflow: hidden;
+  transition: border-color var(--osdk-emphasis-transition-duration)
+    var(--osdk-emphasis-ease-default);
+}
+
+.thumbnailContainer:hover {
+  border-color: var(--osdk-pdf-viewer-sidebar-border);
+}
+
+.active {
+  border-color: var(--osdk-pdf-viewer-sidebar-active-border);
+}
+
+.active:hover {
+  border-color: var(--osdk-pdf-viewer-sidebar-active-border);
+}
+
+.canvas {
+  display: block;
+}

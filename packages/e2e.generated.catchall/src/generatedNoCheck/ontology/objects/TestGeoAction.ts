@@ -57,6 +57,8 @@ export interface TestGeoAction extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'TestGeoAction';
+  primaryKeyApiName: 'geoPk';
+  primaryKeyType: 'string';
   __DefinitionMetadata?: {
     objectSet: TestGeoAction.ObjectSet;
     props: TestGeoAction.Props;
@@ -107,6 +109,8 @@ export const TestGeoAction = {
   type: 'object',
   apiName: 'TestGeoAction',
   osdkMetadata: $osdkMetadata,
+  primaryKeyApiName: 'geoPk',
+  primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
   },

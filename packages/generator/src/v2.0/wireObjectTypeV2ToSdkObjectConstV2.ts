@@ -23,7 +23,10 @@ import type {
   ValueTypeApiName,
   ValueTypeConstraint,
 } from "@osdk/foundry.ontologies";
-import { wireObjectTypeFullMetadataToSdkObjectMetadata } from "@osdk/generator-converters";
+import {
+  GeneratorError,
+  wireObjectTypeFullMetadataToSdkObjectMetadata,
+} from "@osdk/generator-converters";
 import consola from "consola";
 import { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";
 import { EnhancedObjectType } from "../GenerateContext/EnhancedObjectType.js";
@@ -33,6 +36,7 @@ import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
 import { getObjectImports } from "../shared/getObjectImports.js";
 import { propertyJsdoc } from "../shared/propertyJsdoc.js";
 import { stringify } from "../util/stringify.js";
+import { stringUnionFrom } from "../util/stringUnionFrom.js";
 
 type PropertyApiNameUnion = PropertyApiName | SharedPropertyTypeApiName;
 
@@ -137,6 +141,8 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
       type: "${object instanceof EnhancedObjectType ? "object" : "interface"}",
       apiName: "${object.fullApiName}",
       osdkMetadata: $osdkMetadata,
+      primaryKeyApiName: "${definition.primaryKeyApiName}",
+      primaryKeyType: "${definition.primaryKeyType}",
       internalDoNotUseMetadata: {
         rid: "${definition.rid}",
       },
@@ -297,7 +303,13 @@ export function createDefinition(
   } {
       osdkMetadata: typeof $osdkMetadata;
       type: "${object instanceof EnhancedObjectType ? "object" : "interface"}";
-      apiName: "${object.fullApiName}";
+      apiName: "${object.fullApiName}";${
+    object instanceof EnhancedObjectType && definition.type === "object"
+      ? `
+      primaryKeyApiName: "${definition.primaryKeyApiName}";
+      primaryKeyType: "${definition.primaryKeyType}";`
+      : ""
+  }
       __DefinitionMetadata?: {
       objectSet: ${objectSetIdentifier};
       props: ${osdkObjectPropsIdentifier};
@@ -334,8 +346,20 @@ export function createDefinition(
       properties: (_value) => (`{
         ${
         stringify(definition.properties, {
-          "*": (propertyDefinition, _, apiName) =>
-            [
+          "*": (propertyDefinition, _, apiName) => {
+            const hasMainValue = propertyDefinition.mainValue?.fields != null;
+            const hasReducers = propertyDefinition.hasReducers === true;
+
+            let extraParams = "";
+            if (hasMainValue || hasReducers) {
+              const mainValueParam = hasMainValue
+                ? JSON.stringify(propertyDefinition.mainValue!.fields)
+                : "undefined";
+              const hasReducersParam = hasReducers ? "true" : "false";
+              extraParams = `, ${mainValueParam}, ${hasReducersParam}`;
+            }
+
+            return [
               `${
                 propertyJsdoc(
                   propertyDefinition,
@@ -349,8 +373,11 @@ export function createDefinition(
               }"${maybeStripNamespace(object, apiName)}"`,
               `$PropertyDef<${JSON.stringify(propertyDefinition.type)}, "${
                 propertyDefinition.nullable ? "nullable" : "non-nullable"
-              }", "${propertyDefinition.multiplicity ? "array" : "single"}">`,
-            ] as [string, string],
+              }", "${
+                propertyDefinition.multiplicity ? "array" : "single"
+              }"${extraParams}>`,
+            ] as [string, string];
+          },
         })
       }
       }`),
@@ -402,21 +429,20 @@ ${
 export function createPropertyKeys(
   type: EnhancedObjectType | EnhancedInterfaceType,
 ) {
-  const properties = Object.keys(type.getCleanedUpDefinition(true).properties);
+  const properties = Object.keys(type.getCleanedUpDefinition(true).properties)
+    .sort((a, b) => a.localeCompare(b));
   return `export type PropertyKeys = ${
-    properties.length === 0
-      ? "never"
-      : properties.map(
-        (a) => maybeStripNamespace(type, a),
-      ).map(a => `"${a}"`).join("|")
+    stringUnionFrom(
+      properties.map((a) => maybeStripNamespace(type, a)),
+    )
   };`;
 }
 
 function remapStructType(structType: Record<string, any>): string {
   let output = `{`;
-  Object.entries(structType).map(([key, value]) =>
-    output += `${key}:$PropType[${JSON.stringify(value)}]|undefined;`
-  );
+  Object.entries(structType).sort(([a], [b]) => a.localeCompare(b)).map((
+    [key, value],
+  ) => output += `${key}:$PropType[${JSON.stringify(value)}]|undefined;`);
   output += "}";
   return output;
 }
@@ -432,14 +458,18 @@ function getPropTypeOrValueTypeEnum(
     !(propertyDefinition.type === "string"
       || propertyDefinition.type === "boolean")
     || !propertyDefinition.valueTypeApiName
-    || valueTypeMetadata[propertyDefinition.valueTypeApiName] == null
   ) {
     return defaultPropString;
   }
   const valueType = valueTypeMetadata[propertyDefinition.valueTypeApiName];
+  if (valueType == null || valueType.constraints.length === 0) {
+    return defaultPropString;
+  }
   if (valueType.constraints.length !== 1) {
-    throw new Error(
-      `Expected exactly one constraint for value type ${propertyDefinition.valueTypeApiName} but got ${valueType.constraints.length}`,
+    throw new GeneratorError(
+      "Expected exactly one constraint for value type",
+      { valueTypeApiName: propertyDefinition.valueTypeApiName },
+      { constraintCount: valueType.constraints.length },
     );
   }
 
@@ -470,9 +500,7 @@ function maybeGetEnumString(
     return undefined;
   }
   if (propertyDefinition.type === "string") {
-    return constraint.options.map(x => `"${x}"`).join(
-      " | ",
-    );
+    return stringUnionFrom(constraint.options.map(x => String(x)));
   }
   if (propertyDefinition.type === "boolean") {
     return constraint.options.map(value => {

@@ -594,7 +594,50 @@
       ]
     }
   },
-  "queryTypes": {},
+  "queryTypes": {
+    "getEmployeeDaysSinceStart": {
+      "apiName": "getEmployeeDaysSinceStart",
+      "displayName": "getEmployeeDaysSinceStart",
+      "parameters": {
+        "employees": {
+          "dataType": {
+            "type": "objectSet",
+            "objectApiName": "Employee",
+            "objectTypeApiName": "Employee"
+          }
+        }
+      },
+      "output": {
+        "type": "entrySet",
+        "keyType": {
+          "type": "object",
+          "objectApiName": "Employee",
+          "objectTypeApiName": "Employee"
+        },
+        "valueType": {
+          "type": "struct",
+          "fields": [
+            {
+              "name": "daysSinceStart",
+              "fieldType": {
+                "type": "union",
+                "unionTypes": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "rid": "ri.function-registry.main.function.5d6a29bd-20ea-46ad-9e8a-e6e7f28b7c02",
+      "version": "0.1.0"
+    }
+  },
   "interfaceTypes": {},
   "sharedPropertyTypes": {}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,8 @@ import type {
  * Gets all the action types that the interface type is associated with. E.g. actions that create an interface
  * object, edit an interface object, or use the interface as a parameter. Also returns actions that are
  * associated with an interface type that the interface type extends.
+ *
+ * This endpoint is deprecated and the bulk endpoint is preferred.
  */
 export async function getActionTypesForInterfaceType(
   ctx: ConjureContext,

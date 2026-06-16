@@ -29,9 +29,13 @@ export interface ListQueryOptions<
   >,
 > extends CommonObserveOptions {
   pageSize?: number;
+  select?: readonly string[];
   autoFetchMore?: boolean | number;
   intersectWith?: Array<{
     where: WhereClause<Q, RDPs>;
   }>;
   pivotTo?: string;
+  $loadPropertySecurityMetadata?: boolean;
+  $includeAllBaseObjectProperties?: boolean;
+  resolveToObjectType?: boolean;
 }

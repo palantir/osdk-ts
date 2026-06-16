@@ -1,0 +1,94 @@
+@use 'tokens' as t;
+
+.hookRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 4px 8px;
+  background: t.$bg-base;
+  border-radius: t.$radius-sm;
+  font-size: t.$font-size-base;
+  margin-bottom: 4px;
+  transition: background-color t.$transition-fast;
+
+  &:hover {
+    background: t.$bg-hover;
+  }
+}
+
+.hookBadge {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 6px;
+  border-radius: t.$radius-sm;
+  font-weight: t.$font-weight-semi;
+  white-space: nowrap;
+  font-size: t.$font-size-xs;
+  letter-spacing: 0.03em;
+}
+
+.hookType {
+  font-size: t.$font-size-sm;
+}
+
+.hookObject {
+  background: var(--dt-hook-object-bg);
+  color: var(--dt-hook-object-color);
+}
+
+.hookObjects {
+  background: var(--dt-hook-objects-bg);
+  color: var(--dt-hook-objects-color);
+}
+
+.hookAction {
+  background: t.$orange-bg;
+  color: t.$orange;
+}
+
+.hookLinks {
+  background: var(--dt-hook-links-bg);
+  color: var(--dt-hook-links-color);
+}
+
+.hookObjectSet {
+  background: t.$green-bg;
+  color: t.$green;
+}
+
+.querySignature {
+  flex: 1;
+  min-width: 120px;
+  color: t.$text-secondary;
+  font-family: t.$font-mono;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.locationButton {
+  color: t.$text-tertiary;
+  font-size: t.$font-size-sm;
+  transition: color t.$transition-fast;
+
+  &:hover {
+    color: t.$blue;
+  }
+}
+
+.performance {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: t.$text-tertiary;
+  font-size: t.$font-size-sm;
+  white-space: nowrap;
+}
+
+.statusBadge {
+  font-size: t.$font-size-xs;
+  padding: 2px 6px;
+  white-space: nowrap;
+}

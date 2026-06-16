@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,8 @@ export type {
   GeotimeSeriesIntegrationName,
   InstallLocationBlockShapeId,
   InterfaceTypeBlockDataV2,
+  InterfaceTypePermissionInformation,
+  InterfaceTypeRestrictionStatus,
   IsOnlyDatasource,
   KnownMarketplaceIdentifiers,
   LinkTypeBlockDataV2,
@@ -96,11 +98,16 @@ export type {
   PostOntologyBlockDataResponse,
   PropertyPredicate,
   PropertyRid,
+  PropertySecurityGroupPackagingV1,
+  PropertySecurityGroupPackagingV2,
+  PropertySecurityGroupPackagingVersion,
   RestrictedViewName,
   SchemaConfiguration,
   SchemaMigrationBlockData,
   SchemaTransitionsWithSchemaVersion,
   SharedPropertyTypeBlockDataV2,
+  SharedPropertyTypePermissionInformation,
+  SharedPropertyTypeRestrictionStatus,
   StreamName,
   TimeSeriesSyncName,
   ValidationRuleIndex,

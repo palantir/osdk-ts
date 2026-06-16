@@ -15,7 +15,7 @@ import type {
 } from '@osdk/client';
 
 export namespace McAirportStruct {
-  export type PropertyKeys = 'airportName' | 'city' | 'airportStruct' | 'state' | 'originDate';
+  export type PropertyKeys = 'airportName' | 'airportStruct' | 'city' | 'originDate' | 'state';
 
   export type Links = {};
 
@@ -67,6 +67,8 @@ export interface McAirportStruct extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'McAirportStruct';
+  primaryKeyApiName: 'airportName';
+  primaryKeyType: 'string';
   __DefinitionMetadata?: {
     objectSet: McAirportStruct.ObjectSet;
     props: McAirportStruct.Props;
@@ -121,6 +123,8 @@ export const McAirportStruct = {
   type: 'object',
   apiName: 'McAirportStruct',
   osdkMetadata: $osdkMetadata,
+  primaryKeyApiName: 'airportName',
+  primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },

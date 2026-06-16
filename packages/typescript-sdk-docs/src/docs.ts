@@ -374,14 +374,24 @@ function renderType(
         ? "\"primaryKeyValue\""
         : "primaryKeyValue";
       if (context === "actionParameter") {
-        return majorVersion >= SdkMajorVersion.V2
-          ? `"primaryKeyValue" // or myObjectInstance`
-          : `{ __primaryKey: ${primaryKeyValue}, /* other properties */ }`;
+        return `${primaryKeyValue} /* or myObjectInstance */`;
       }
       return primaryKeyValue;
+    case "objectSet":
+      return `client(${type.objectTypeApiName}).where({ /* filter conditions */ })`;
     case "anonymousCustomType":
-    case "customType":
+    case "customType": {
+      const entries = Object.entries(type.parameters ?? {});
+      if (entries.length > 0) {
+        const rendered = entries
+          .map(([name, value]) =>
+            `"${name}": ${renderType(value, majorVersion, context)}`
+          )
+          .join(`,${indentedNewLine(8)}`);
+        return `{${indentedNewLine(8)}${rendered}${indentedNewLine(4)}}`;
+      }
       return "{}";
+    }
     case "attachment":
       return type.hasAttachments ? "attachment" : "{}";
     case "interface":

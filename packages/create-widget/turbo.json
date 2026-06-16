@@ -4,6 +4,9 @@
     "codegen": {
       "inputs": ["codegen.mjs"],
       "outputs": ["src/generatedNoCheck/**/*"]
+    },
+    "transpileEsm": {
+      "dependsOn": ["^transpileEsm"]
     }
   }
 }

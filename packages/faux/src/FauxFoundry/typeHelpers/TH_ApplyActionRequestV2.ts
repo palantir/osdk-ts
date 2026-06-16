@@ -26,6 +26,7 @@ import type {
 
 type TH_ActionParameterType_Primitive<X extends ActionParameterType> = X extends
   { type: "attachment" } ? AttachmentRid
+  : X extends { type: "scenarioReference" } ? { scenarioRid: string }
   : ActionParam.PrimitiveType<
     Exclude<
       X["type"],
@@ -35,6 +36,7 @@ type TH_ActionParameterType_Primitive<X extends ActionParameterType> = X extends
       | "interfaceObject"
       | "attachment"
       | "vector"
+      | "scenarioReference"
     >
   >;
 
@@ -45,6 +47,7 @@ type TH_ActionParameterType<X extends ActionParameterType> = X extends
   : X extends { type: "objectSet" } ? string
   : X extends { type: "interfaceObject" }
     ? { objectTypeApiName: string; primaryKeyValue: string }
+  : X extends { type: "scenarioReference" } ? { scenarioRid: string }
   : TH_ActionParameterType_Primitive<X>;
 
 type TH_Parameters<X extends Record<ParameterId, ActionParameterV2>> =

@@ -23,6 +23,7 @@ import type {
   ObjectSetArgs,
 } from "./object/FetchPageArgs.js";
 import type { UnionIfTrue } from "./object/FetchPageResult.js";
+import type { PropertySecurity } from "./object/PropertySecurity.js";
 import type {
   InterfaceDefinition,
   InterfaceMetadata,
@@ -36,6 +37,13 @@ import type {
   ObjectMetadata,
   ObjectTypeDefinition,
 } from "./ontology/ObjectTypeDefinition.js";
+import type {
+  ApplyModifiersToProps,
+  PropertyModifierValue,
+  PropsWithBoth,
+  PropsWithOnlyMainValue,
+  PropsWithOnlyReducers,
+} from "./ontology/PropertyModifiers.js";
 import type { SimplePropertyDef } from "./ontology/SimplePropertyDef.js";
 import type { OsdkBase } from "./OsdkBase.js";
 
@@ -78,7 +86,11 @@ export type MapPropNamesToObjectType<
   FROM extends ObjectOrInterfaceDefinition,
   TO extends ObjectTypeDefinition,
   P extends ValidOsdkPropParams<FROM>,
-  OPTIONS extends never | "$rid" | "$allBaseProperties" = never,
+  OPTIONS extends
+    | never
+    | "$rid"
+    | "$allBaseProperties"
+    | "$propertySecurities" = never,
 > = "$allBaseProperties" extends OPTIONS
   ? PropertyKeys<FROM> extends P ? PropertyKeys<TO>
   : PropMapToObject<
@@ -129,7 +141,11 @@ export type ConvertProps<
   FROM extends ObjectOrInterfaceDefinition,
   TO extends ValidToFrom<FROM>,
   P extends ValidOsdkPropParams<FROM>,
-  OPTIONS extends never | "$rid" | "$allBaseProperties" = never,
+  OPTIONS extends
+    | never
+    | "$rid"
+    | "$allBaseProperties"
+    | "$propertySecurities" = never,
 > = TO extends FROM ? P
   : TO extends ObjectTypeDefinition ? (
       UnionIfTrue<
@@ -201,19 +217,58 @@ export type MaybeScore<
   ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<any>,
 > = ORDER_BY_OPTIONS extends "relevance" ? T & { $score: number } : T;
 
+type ReducedValues<Q extends ObjectOrInterfaceDefinition> =
+  | `${PropsWithOnlyMainValue<Q> & string}:applyMainValue`
+  | `${PropsWithOnlyReducers<Q> & string}:applyReducers`
+  | `${PropsWithBoth<Q> & string}:applyMainValue`
+  | `${PropsWithBoth<Q> & string}:applyReducers`
+  | `${PropsWithBoth<Q> & string}:applyReducersAndExtractMainValue`;
+
+type ExtractPropNameFromP<S> = S extends `${infer Prop}:${string}` ? Prop : S;
+
+type GetPropNamesFromP<P> = [P] extends [string] ? ExtractPropNameFromP<P>
+  : never;
+
+type HasAnyModifiers<P> = P extends `${string}:${string}` ? true : never;
+type HasModifiers<P> = IsAny<P> extends true ? false
+  : [HasAnyModifiers<P>] extends [never] ? false
+  : true;
+
+type BuildModifiersFromP<P> = {
+  [K in P as K extends `${infer Prop}:${string}` ? Prop : never]: K extends
+    `${string}:${infer Mod extends PropertyModifierValue}` ? Mod : never;
+};
+
 export namespace Osdk {
   export type Instance<
     Q extends ObjectOrInterfaceDefinition,
-    OPTIONS extends never | "$rid" | "$allBaseProperties" = never,
-    P extends PropertyKeys<Q> = PropertyKeys<Q>,
+    OPTIONS extends
+      | never
+      | "$rid"
+      | "$allBaseProperties"
+      | "$propertySecurities" = never,
+    P extends PropertyKeys<Q> | ReducedValues<Q> = PropertyKeys<Q>,
     R extends Record<string, SimplePropertyDef> = {},
   > =
     & OsdkBase<Q>
-    & Pick<
-      CompileTimeMetadata<Q>["props"],
-      // If there aren't any additional properties, then we want GetPropsKeys to default to PropertyKeys<Q>
-      GetPropsKeys<Q, P, [R] extends [{}] ? false : true>
-    >
+    // When P is just property keys (no `:modifier` strings), the deferred
+    // `HasModifiers<P>` conditional in the modifier path keeps the resulting
+    // Instance symbolic — this blocks structural assignability checks across
+    // package boundaries (e.g. `Osdk.Instance<Employee> extends
+    // ObjectLocator<Employee>` in `@osdk/functions`' edit-batch inference).
+    // Short-circuit to the plain `Pick<Compile, ...>` shape for that case so
+    // Instance simplifies eagerly; only fall through to the modifier path when
+    // P actually carries modifier strings.
+    & ([P] extends [PropertyKeys<Q>] ? Pick<
+        CompileTimeMetadata<Q>["props"],
+        GetPropsKeys<Q, P, [R] extends [{}] ? false : true>
+      >
+      : Pick<
+        HasModifiers<P> extends true
+          ? ApplyModifiersToProps<Q, BuildModifiersFromP<P>>
+          : CompileTimeMetadata<Q>["props"],
+        GetPropsKeys<Q, GetPropNamesFromP<P>, [R] extends [{}] ? false : true>
+      >)
     & ([R] extends [never] ? {}
       : { [A in keyof R]: SimplePropertyDef.ToRuntimeProperty<R[A]> })
     & {
@@ -255,12 +310,27 @@ export namespace Osdk {
         options?: { locale?: string; timezoneId?: string },
       ) => string | undefined;
     }
+    & (IsNever<OPTIONS> extends true ? {}
+      : IsAny<OPTIONS> extends true ? {}
+      : "$propertySecurities" extends OPTIONS ? {
+          readonly $propertySecurities: ObjectPropertySecurities<
+            Q,
+            GetPropsKeys<
+              Q,
+              P,
+              [R] extends [{}] ? false : true
+            >
+          >;
+        }
+      : {})
     // We are hiding the $rid field if it wasn't requested as we want to discourage its use
     & (IsNever<OPTIONS> extends true ? {}
       : IsAny<OPTIONS> extends true ? {}
       : "$rid" extends OPTIONS ? { readonly $rid: string }
       : {});
 }
+
+type HasKeys<T> = keyof T extends never ? false : true;
 
 /**
  * NOT EXPORTED FROM PACKAGE
@@ -285,6 +355,11 @@ export type ExtractRidOption<R extends boolean> = // comment for readability
     : DefaultToFalse<R> extends false ? never
     : "$rid";
 
+export type ExtractPropertySecurityOption<S extends boolean> = // comment for readability
+  IsNever<S> extends true ? never
+    : DefaultToFalse<S> extends false ? never
+    : "$propertySecurities";
+
 export type ExtractAllPropertiesOption<T extends boolean> = // comment for readability
   IsNever<T> extends true ? never
     : DefaultToFalse<T> extends false ? never
@@ -292,7 +367,24 @@ export type ExtractAllPropertiesOption<T extends boolean> = // comment for reada
 
 // not exported from package
 export type ExtractOptions<
-  R extends boolean,
-  S extends NullabilityAdherence = NullabilityAdherence.Default,
-  T extends boolean = false,
-> = ExtractRidOption<R> | ExtractAllPropertiesOption<T>;
+  RID extends boolean,
+  UNUSED extends NullabilityAdherence = NullabilityAdherence.Default,
+  ALL_PROPERTIES extends boolean = false,
+  PROPERTY_SECURITIES extends boolean = false,
+> =
+  | ExtractRidOption<RID>
+  | ExtractAllPropertiesOption<ALL_PROPERTIES>
+  | ExtractPropertySecurityOption<PROPERTY_SECURITIES>;
+
+type ObjectPropertySecurities<
+  Q extends ObjectOrInterfaceDefinition,
+  T extends PropertyKeys<Q>,
+> = {
+  [K in T | "$primaryKey" | "$title"]: K extends "$primaryKey" | "$title"
+    ? PropertySecurity[]
+    : K extends PropertyKeys<Q>
+      ? CompileTimeMetadata<Q>["properties"][K]["multiplicity"] extends true
+        ? PropertySecurity[][]
+      : PropertySecurity[]
+    : never;
+};

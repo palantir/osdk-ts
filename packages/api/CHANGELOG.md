@@ -1,5 +1,273 @@
 # @osdk/api
 
+## 2.33.0
+
+## 2.32.0
+
+### Minor Changes
+
+- 06adca1: add $snapshot option to fetchPage
+
+## 2.31.0
+
+### Minor Changes
+
+- 57cbc6d: Stop shipping Node-only test infrastructure in the browser builds of `@osdk/api` and `@osdk/client`.
+  - `@osdk/api`: the `__quickinfo_snapshot__/` test harness (formerly `probeUtils.ts` + `probes/*.ts`) is renamed under the existing `testUtils.` prefix convention so the transpile tool drops it from every build target. Pure test infrastructure; no runtime surface change.
+  - `@osdk/client`: the `./internal-node` subpath export is removed. The TypeScript-language-server harness it pointed at (`tsserver.ts`) has moved to a new private workspace package, `@osdk/shared.test.intellisense`, which both `@osdk/client` and `@osdk/react` consume as a dev dependency. This eliminates the `node:events` / `node:fs/promises` / `node:path` imports from the browser build and removes the project-internal subpath from the published client API.
+
+## 2.30.0
+
+## 2.29.0
+
+### Minor Changes
+
+- 08e921c: Bump `foundry-platform-typescript` catalog to 2.63.0 and surface the new CBAC/MANDATORY marking subtype on `ObjectMetadata.Property` via a new `typeMetadata` discriminated-union field. For marking properties, `typeMetadata` is `{ type: "marking"; subtype?: "CBAC" | "MANDATORY" }`, letting consumers distinguish classification-based markings from mandatory markings on object property columns. Future per-`type` metadata should be added as additional variants of `typeMetadata` rather than as new top-level optionals on `Property`.
+
+## 2.28.0
+
+## 2.27.0
+
+## 2.26.0
+
+## 2.25.0
+
+### Minor Changes
+
+- bd90dba: Add end-to-end support for `scenarioReference` action parameters:
+  - `@osdk/api` adds `"scenarioReference"` to `ActionMetadata.DataType.BaseActionParameterTypes` and a matching `scenarioReference: ScenarioClient` entry in `DataValueClientToWire` (structurally typed as `{ getScenarioReference(): { scenarioRid } }` to avoid a circular dep on `@osdk/client`).
+  - `@osdk/generator-converters` maps the wire `scenarioReference` variant into the primitive type.
+  - Generated SDKs now emit `ActionParam.PrimitiveType<"scenarioReference">` (resolves to `ScenarioClient`) for scenarioReference parameters, instead of throwing at SDK build time.
+  - `@osdk/client`'s `toDataValue` accepts a `ScenarioClient` and serializes it to the rid string the platform expects.
+  - `@osdk/react-components`'s ActionForm renders scenarioReference parameters as `UNSUPPORTED` for now.
+
+  Enables `client(ScenarioMerge).applyAction({ scenario })` end-to-end in generated SDKs.
+
+## 2.24.0
+
+### Minor Changes
+
+- a492285: Add $title and $primaryKey special property filters to where clauses
+
+## 2.23.0
+
+### Minor Changes
+
+- 198f219: add quickinfo snapshot tests for high-traffic SDK surfaces (`ObjectSet`, `Osdk.Instance`, `AggregationsResults`, `Actions`, `Queries`, `DerivedProperty` builder, per-property `WhereClause` filter unions, subscribe message variants). internal-only — exercises `checker.typeToString` against curated probes and snapshots the formatted output, so future type-graph changes surface as snapshot diffs in code review. no published surface affected.
+- ef156b6: Short-circuit `MergeObjectSet<Q, D>` to `Q` when `D` has no keys. Removes `WithDerivedProperties<Q, {}>` from hover output for `where`, `subscribe`, and other ObjectSet method signatures on the common no-derived-properties path. No runtime change; structurally equivalent type.
+- 8290dd7: Unwrap `$primaryKey` and `$title` when they are returned as secured property values, and include them as keys in `$propertySecurities` (both at the type level and at runtime, including interface views).
+
+## 2.22.0
+
+## 2.21.0
+
+### Minor Changes
+
+- 1a07c91: Clean up unstable interface code: remove the `$__UNSTABLE_useOldInterfaceApis` fetch option and its old `OntologyInterfaces.search`-based code path, consolidate `convertWireToOsdkObjects` / `convertWireToOsdkObjects2` into a single factory backed by `loadMultipleObjectTypes`, and rename `__UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition` / `__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst` (the latter is generator-internal). The unused `v2` parameter on `wireInterfaceTypeV2ToSdkObjectDefinition` is also removed.
+
+## 2.20.0
+
+### Minor Changes
+
+- 9eb67e4: Add experimental support for streaming queries via the `__EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction` marker.
+
+## 2.19.0
+
+### Minor Changes
+
+- 02c796c: Array Reducers and Struct Main Value support
+- d962309: Add ability to subscribe to an object set RID without a type, experimentally.
+
+## 2.18.0
+
+## 2.17.0
+
+### Minor Changes
+
+- 147166c: fix typing so `$loadPropertySecurityMetadata: true` is accepted on the experimental `fetchPageByRid` client method, and `$propertySecurities` is properly typed on returned objects.
+
+## 2.16.0
+
+### Minor Changes
+
+- 56c5630: Drop redundant `--config $(find-up dprint.json)` from `lint`, `fix-lint`, and `format` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the substitution was a no-op anyway since `find-up` is an npm package, not a CLI. Also fix the `uploadMediaOntologyEdits` documentation example so its `// @ts-ignore` survives dprint reformatting (the broken `format` step had been masking this).
+- 17d7ba2: Fill in missing `@param`, `@example`, and `@returns` tags on JSDoc across the public surface of `@osdk/api` and `@osdk/client`: `ObjectSet` methods, the derived-property `Builder` chain and `NumericExpressions` / `DatetimeExpressions` chains, the `Logger` interface, `Attachment` and `Media` accessors, `TimeSeriesProperty` / `GeotimeSeriesProperty` single-point methods, the top-level `Client` callable and `fetchMetadata`, and the `createClient` factory.
+
+## 2.15.0
+
+## 2.14.0
+
+### Minor Changes
+
+- 20e9678: Wrap `@example` JSDoc blocks in fenced ts/tsx code blocks so VS Code's Markdown renderer preserves whitespace and applies syntax highlighting.
+
+## 2.13.0
+
+## 2.12.0
+
+### Minor Changes
+
+- 91f34a9: expose .subscribe() on interface-typed object sets returned by client()
+
+## 2.11.0
+
+## 2.10.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+## 2.9.0
+
+### Minor Changes
+
+- cbc8e9c: Add recursive query support
+- e8d14a0: Expose an experimental helper to add media transformation capabilities via transformAndWait
+- 2394ca7: Adding regex matching for string filters.
+
+## 2.8.0
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+- 4bb9769: Add primaryKeyApiName and primaryKeyType to object type const for runtime access
+- f294f5a: Remove literal support before GA.
+- 0df859a: Read primaryKeyApiName from object type const instead of options, move links into options, and add createMockAttachment helper
+- d284bf2: add media types, caching, and metadata query
+- 4ef6adc: Fix interface links off of objects
+- 60b5ffb: Add `platformApiName` field to actions to preserve the original API name used by the Foundry platform
+- 8c30908: Add support for lt and gt strings.
+- 4a856cb: add shape builder and inline config converter
+- b68cebd: add shape type definitions with opaque internal fields and shapes-internal export path
+- 35f2f1a: Add Media inputs/outputs for Queries
+- 61e33ab: Add support for interval queries
+
+## 2.8.0-beta.32
+
+## 2.8.0-beta.31
+
+## 2.8.0-beta.30
+
+### Minor Changes
+
+- 4ef6adc: Fix interface links off of objects
+
+## 2.8.0-beta.29
+
+### Minor Changes
+
+- 4a856cb: add shape builder and inline config converter
+
+## 2.8.0-beta.28
+
+### Minor Changes
+
+- f294f5a: Remove literal support before GA.
+- d284bf2: add media types, caching, and metadata query
+- b68cebd: add shape type definitions with opaque internal fields and shapes-internal export path
+
+## 2.8.0-beta.27
+
+## 2.8.0-beta.26
+
+### Minor Changes
+
+- 60b5ffb: Add `platformApiName` field to actions to preserve the original API name used by the Foundry platform
+- 61e33ab: Add support for interval queries
+
+## 2.8.0-beta.25
+
+### Minor Changes
+
+- 0df859a: Read primaryKeyApiName from object type const instead of options, move links into options, and add createMockAttachment helper
+
+## 2.8.0-beta.24
+
+## 2.8.0-beta.23
+
+### Minor Changes
+
+- 4bb9769: Add primaryKeyApiName and primaryKeyType to object type const for runtime access
+
+## 2.8.0-beta.22
+
+## 2.8.0-beta.21
+
+## 2.8.0-beta.20
+
+## 2.8.0-beta.19
+
+## 2.8.0-beta.18
+
+## 2.8.0-beta.17
+
+### Minor Changes
+
+- 8c30908: Add support for lt and gt strings.
+
+## 2.8.0-beta.16
+
+## 2.8.0-beta.15
+
+## 2.8.0-beta.14
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+## 2.8.0-beta.13
+
+## 2.8.0-beta.12
+
+## 2.8.0-beta.11
+
+## 2.8.0-beta.10
+
+## 2.8.0-beta.9
+
+## 2.8.0-beta.8
+
+## 2.8.0-beta.7
+
+## 2.8.0-beta.6
+
+## 2.8.0-beta.5
+
+## 2.8.0-beta.4
+
+## 2.8.0-beta.3
+
+## 2.8.0-beta.2
+
+## 2.7.0-beta.14
+
+## 2.7.0-beta.13
+
+### Minor Changes
+
+- fb83808: Allow arrays to use all subtype filters
+
+## 2.7.0-beta.12
+
+### Minor Changes
+
+- bb9d25c: Allow requesting rids for OSW updates
+
+## 2.7.0-beta.11
+
+### Minor Changes
+
+- d5cfc38: Add null option to actions to allow clearing data
+
+## 2.7.0-beta.10
+
+### Minor Changes
+
+- db44f6b: Add property security metadata to objects when requested
+- 24a1e29: Remove multiplicity tag from query param types
+
+## 2.7.0-beta.9
+
 ## 2.7.0-beta.8
 
 ## 2.7.0-beta.7

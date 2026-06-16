@@ -225,7 +225,7 @@ export class OntologyMetadataResolver {
       const ontologyFullMetadata = await OntologiesV2.getFullMetadata(
         this.getClientContext(),
         ontology.rid as OntologyIdentifier,
-        { branch: branch },
+        { branch },
       );
 
       if ((ontologyFullMetadata as any).errorName != null) {
@@ -384,7 +384,7 @@ export class OntologyMetadataResolver {
         },
         {
           preview: true,
-          branch: branch,
+          branch,
         },
       );
 
@@ -494,6 +494,17 @@ export class OntologyMetadataResolver {
         }`,
       );
     }
+
+    for (const [objectApiName, linkNames] of expectedEntities.linkTypes) {
+      if (!expectedEntities.objectTypes.has(objectApiName)) {
+        errors.push(
+          `Link types were specified for Object Type ${objectApiName} (${
+            [...linkNames].join(", ")
+          }), but it was not included in --objectTypes. Please add --objectTypes ${objectApiName}`,
+        );
+      }
+    }
+
     const missingInterfaceTypes: string[] = [];
     for (const expectedInterface of expectedEntities.interfaceTypes) {
       if (!loadedInterfaceTypes[expectedInterface]) {
@@ -725,11 +736,16 @@ export class OntologyMetadataResolver {
       case "float":
       case "integer":
       case "long":
+      case "mediaReference":
       case "threeDimensionalAggregation":
       case "timestamp":
       case "twoDimensionalAggregation":
+      case "typeReference":
       case "null":
+      case "void":
         return Result.ok({});
+      case "mediaReference":
+      case "typeReference":
       case "unsupported":
         return Result.err([
           `Unable to load query ${queryApiName} because it takes an unsupported parameter type: ${
@@ -818,6 +834,7 @@ export class OntologyMetadataResolver {
       case "marking":
       case "geohash":
       case "geoshape":
+      case "scenarioReference":
         return Result.ok({});
 
       case "vector":

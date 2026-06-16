@@ -1,0 +1,9 @@
+/**
+ * Component-specific style overrides for ObjectTable
+
+ */
+
+.officeTable {
+  /* Override header background color to a light blue for this table only */
+  --osdk-table-header-bg: var(--bp-palette-blue-5);
+}

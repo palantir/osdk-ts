@@ -15,7 +15,7 @@ import type {
 } from '@osdk/client';
 
 export namespace Thing {
-  export type PropertyKeys = 'id' | 'body';
+  export type PropertyKeys = 'body' | 'id';
 
   export type Links = {};
 
@@ -49,6 +49,8 @@ export interface Thing extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'Thing';
+  primaryKeyApiName: 'id';
+  primaryKeyType: 'integer';
   __DefinitionMetadata?: {
     objectSet: Thing.ObjectSet;
     props: Thing.Props;
@@ -99,6 +101,8 @@ export const Thing = {
   type: 'object',
   apiName: 'Thing',
   osdkMetadata: $osdkMetadata,
+  primaryKeyApiName: 'id',
+  primaryKeyType: 'integer',
   internalDoNotUseMetadata: {
     rid: 'ridForThing',
   },

@@ -16,6 +16,7 @@
 
 import { convertMappingValue } from "../conversion/toMarketplace/convertMappingValue.js";
 import { type ActionType } from "./action/ActionType.js";
+import { cloneDefinition } from "./cloneDefinition.js";
 import type { ActionTypeUserDefinition } from "./defineAction.js";
 import {
   convertValidationRule,
@@ -28,19 +29,26 @@ import {
   validateActionParameters,
   validateParameterOrdering,
 } from "./defineAction.js";
+import {
+  getProperty,
+  getPropertyKeys,
+  toPropertyMap,
+} from "./object/objectPropertyHelpers.js";
 
 export function defineModifyObjectAction(
-  def: ActionTypeUserDefinition,
+  defInput: ActionTypeUserDefinition,
 ): ActionType {
+  const def = cloneDefinition(defInput);
+  const propertyKeys = getPropertyKeys(def.objectType);
   validateActionParameters(
     def,
-    Object.keys(def.objectType.properties ?? {}),
+    propertyKeys,
     def.objectType.apiName,
   );
-  const propertyParameters = Object.keys(def.objectType.properties ?? {})
+  const propertyParameters = propertyKeys
     .filter(
       id =>
-        isPropertyParameter(def, id, def.objectType.properties?.[id].type!)
+        isPropertyParameter(def, id, getProperty(def.objectType, id)?.type!)
         && id !== def.objectType.primaryKeyPropertyApiName,
     );
   const parameterNames = new Set(propertyParameters);
@@ -64,13 +72,13 @@ export function defineModifyObjectAction(
   }
   const parameters = createParameters(
     def,
-    def.objectType.properties ?? {},
+    toPropertyMap(def.objectType),
     parameterNames,
   );
   parameters.forEach(
     p => {
       // create prefilled parameters for object type properties unless overridden
-      if (def.objectType.properties?.[p.id] && p.defaultValue === undefined) {
+      if (getProperty(def.objectType, p.id) && p.defaultValue === undefined) {
         p.defaultValue = {
           type: "objectParameterPropertyValue",
           objectParameterPropertyValue: {
@@ -91,7 +99,7 @@ export function defineModifyObjectAction(
   return defineAction({
     apiName: actionApiName,
     displayName: def.displayName ?? `Modify ${def.objectType.displayName}`,
-    parameters: parameters,
+    parameters,
     status: def.status ?? "active",
     rules: [{
       type: "modifyObjectRule",
@@ -117,7 +125,7 @@ export function defineModifyObjectAction(
     parameterOrdering: def.parameterOrdering
       ?? createDefaultParameterOrdering(
         def,
-        Object.keys(def.objectType.properties ?? {}),
+        propertyKeys,
         parameters,
         MODIFY_OBJECT_PARAMETER,
       ),
@@ -145,6 +153,7 @@ export function defineModifyObjectAction(
       }),
     ...(def.submissionMetadata
       && { submissionMetadata: def.submissionMetadata }),
+    ...(def.permission && { permission: def.permission }),
     ...(def.icon && { icon: def.icon }),
   });
 }

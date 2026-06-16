@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,19 +17,22 @@
 import type { CollectionStorageData } from "../base-list/BaseCollectionQuery.js";
 import type { CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
+import type { Rdp } from "../RdpCanonicalizer.js";
 import type { ObjectSetQuery } from "./ObjectSetQuery.js";
 
 export interface ObjectSetStorageData extends CollectionStorageData {}
 
 export interface ObjectSetOperations {
   where?: Canonical<any>;
-  withProperties?: string[];
+  withProperties?: Canonical<Rdp>;
   union?: string[];
   intersect?: string[];
   subtract?: string[];
   pivotTo?: string;
   orderBy?: Canonical<Record<string, "asc" | "desc" | undefined>>;
+  select?: Canonical<readonly string[]>;
   pageSize?: number;
+  loadPropertySecurity?: true;
 }
 
 export interface ObjectSetCacheKey extends

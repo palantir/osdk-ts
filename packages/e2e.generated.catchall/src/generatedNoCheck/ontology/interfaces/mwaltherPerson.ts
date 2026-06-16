@@ -7,6 +7,7 @@ import type {
   ObjectSet as $ObjectSet,
   Osdk as $Osdk,
   PropertyValueWireToClient as $PropType,
+  SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
 
 export type OsdkObjectLinks$mwaltherPerson = {};
@@ -70,8 +71,11 @@ export interface mwaltherPerson extends $InterfaceDefinition {
   };
 }
 
-export const mwaltherPerson: mwaltherPerson = {
+export const mwaltherPerson = {
   type: 'interface',
   apiName: 'mwaltherPerson',
   osdkMetadata: $osdkMetadata,
-};
+  internalDoNotUseMetadata: {
+    rid: 'ri.ontology.main.interface.2bf99935-b656-4c38-87ff-5970ccb3f2a7',
+  },
+} satisfies mwaltherPerson & { internalDoNotUseMetadata: { rid: string } } as mwaltherPerson;

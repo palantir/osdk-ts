@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import type {
   GroupId as _api_GroupId,
   InterfaceTypeRid as _api_InterfaceTypeRid,
   LinkTypeRid as _api_LinkTypeRid,
+  MarkingId as _api_MarkingId,
   ObjectTypeRid as _api_ObjectTypeRid,
   OntologyBranchRid as _api_OntologyBranchRid,
   OntologyPackageRid as _api_OntologyPackageRid,
@@ -80,11 +81,11 @@ export interface BulkUpdateEntityRolesResponse {
 export interface DatasourceDerived {
 }
 /**
- * Permissions to edit the entity is primarily controlled by datasource access.
+ * Permissions to edit the entity are primarily controlled by datasource access.
  *
  * The entity is viewable by users that satisfy the markings of the ontology and editable by users who have
- * access to a datasource and Ontology Editor or Ontology Owner role on the ontology. Only users with the
- * appropriate permissions can make view or edit the entity.
+ * access to a datasource *and* Ontology Editor or Ontology Owner role on the ontology. Only users with the
+ * appropriate permissions can view or edit the entity.
  */
 export interface EditRestrictedByDatasourcesPermissionModel {
 }
@@ -514,13 +515,52 @@ export interface ManyToManyLinkTypeDatasourcePermissions {
   canDelete: boolean;
   canEdit: boolean;
 }
+/**
+ * Indicates all entities migrated to the targetFolder, but we failed to update the markings on one or more of
+ * the entities afterwards.
+ */
+export interface MigrateEntitiesToProjectsFailure {
+  errorMessage: string;
+}
 export interface MigrateEntitiesToProjectsRequest {
   entitiesToMove: Record<_api_CompassFolderRid, Array<_api_ProjectEntityRid>>;
+  entitiesToMoveV2: Record<
+    _api_CompassFolderRid,
+    Array<MigrateEntityToProjectRequest>
+  >;
 }
 /**
- * Response to MoveEntitiesToProjectsRequest. Intentionally left empty for future extensibility.
+ * Response to MoveEntitiesToProjectsRequest. Receiving this response back indicates that all entities were
+ * successfully migrated to their provided folders. However, there may still have been issues with updating
+ * entity markings after the move.
  */
 export interface MigrateEntitiesToProjectsResponse {
+  migrationResults: Record<
+    _api_CompassFolderRid,
+    MigrateEntitiesToProjectsResult
+  >;
+}
+export interface MigrateEntitiesToProjectsResult_success {
+  type: "success";
+  success: MigrateEntitiesToProjectsSuccess;
+}
+
+export interface MigrateEntitiesToProjectsResult_failure {
+  type: "failure";
+  failure: MigrateEntitiesToProjectsFailure;
+}
+export type MigrateEntitiesToProjectsResult =
+  | MigrateEntitiesToProjectsResult_success
+  | MigrateEntitiesToProjectsResult_failure;
+
+/**
+ * Indicates all entities migrated to the targetFolder and successfully updated any markings.
+ */
+export interface MigrateEntitiesToProjectsSuccess {
+}
+export interface MigrateEntityToProjectRequest {
+  markings: Array<_api_MarkingId>;
+  rid: _api_ProjectEntityRid;
 }
 /**
  * The operations the user has on a datasource.
@@ -701,11 +741,11 @@ export interface PropertySecurityGroupPermissions {
   canEdit: boolean;
 }
 /**
- * Entities in Compass projects. Permissions are entirely delegated to Compass project.
+ * Entities in Compass projects. Permissions are entirely delegated to the Compass project.
  *
- * The entity's visibility and editability is entirely controlled by the Compass project it belongs to. OMS does
- * not keep track of which project an entity is in; all permission resolution is delegated to Compass based on
- * project membership and roles.
+ * The entity's visibility and editability are entirely controlled by the Compass project it belongs to. OMS
+ * does not perform its own permission checks for these entities; all permission resolution is delegated to
+ * Compass based on project membership and roles.
  *
  * This is the modern approach for organizing and securing ontology entities. Entities are managed within Compass
  * projects, and permissions are determined by the user's access to those projects.
@@ -769,14 +809,7 @@ export interface TypeGroupPermissionModel_roles {
   type: "roles";
   roles: RolesPermissionModel;
 }
-
-export interface TypeGroupPermissionModel_publicProject {
-  type: "publicProject";
-  publicProject: PublicProjectPermissionModel;
-}
-export type TypeGroupPermissionModel =
-  | TypeGroupPermissionModel_roles
-  | TypeGroupPermissionModel_publicProject;
+export type TypeGroupPermissionModel = TypeGroupPermissionModel_roles;
 
 /**
  * Adds or removes the requested entities to/from a package. Removing means moving the resources to the default
@@ -826,11 +859,11 @@ export interface UserPrincipal {
   user: _api_UserId;
 }
 /**
- * Permissions to view or edit the entity is primarily controlled by datasource access.
+ * Permissions to view or edit the entity are primarily controlled by datasource access.
  *
- * The entity is viewable by users that have access to a datasource and editable by users who have have access to
+ * The entity is viewable by users that have access to a datasource and editable by users who have access to
  * a datasource *and* Ontology Editor or Ontology Owner role on the ontology. Only users with the appropriate
- * permissions can make view or edit the entity.
+ * permissions can view or edit the entity.
  */
 export interface ViewRestrictedByDatasourcesPermissionModel {
 }

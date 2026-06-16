@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,12 @@ export interface ActionTypeProvenanceSource_marketplace {
  */
 export type ActionTypeProvenanceSource = ActionTypeProvenanceSource_marketplace;
 
+/**
+ * Owning direct writer originating from a Builder pipeline.
+ */
+export interface BuilderDirectWriter {
+  pipelineRid: _api_BuilderPipelineRid;
+}
 /**
  * Provenance of an entity originating from Builder pipeline.
  */
@@ -131,3 +137,11 @@ export type OntologyIrEntityProvenanceSource =
  */
 export interface OntologyMetadataAppEntityProvenance {
 }
+export interface OwningDirectWriter_builder {
+  type: "builder";
+  builder: BuilderDirectWriter;
+}
+/**
+ * Information describing the owning direct writer for a direct datasource, modeled as an extensible union.
+ */
+export type OwningDirectWriter = OwningDirectWriter_builder;

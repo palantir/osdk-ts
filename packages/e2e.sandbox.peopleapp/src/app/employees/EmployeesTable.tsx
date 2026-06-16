@@ -1,32 +1,76 @@
 import type { DerivedProperty, Osdk } from "@osdk/api";
-import type { ColumnDefinition } from "@osdk/react-components/experimental";
-import { ObjectTable } from "@osdk/react-components/experimental";
-import { $ } from "../../foundryClient.js";
-import { Employee } from "../../generatedNoCheck2/index.js";
+import { useOsdkClient } from "@osdk/react";
+import type {
+  ColumnDefinition,
+  ObjectTableHandle,
+} from "@osdk/react-components/experimental/object-table";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
+import {
+  type OsdkThemeMode,
+  OsdkThemeProvider,
+  useOsdkTheme,
+} from "@osdk/react-components/experimental/theme";
+import React, { useCallback, useRef } from "react";
+import {
+  Employee,
+  getEmployeeDaysSinceStart,
+} from "../../generatedNoCheck2/index.js";
+import "./EmployeesTable.css";
+import { Button } from "../../components/Button.js";
+import { DownloadEmployeesButton } from "./DownloadEmployeesButton.js";
 
 type RDPs = {
   managerName: "string";
 };
 
-const columnDefinitions: ColumnDefinition<
-  Employee,
-  RDPs,
-  {}
->[] = [
-  // With renderHeader prop
+type FunctionColumns = {
+  daysSinceStart: typeof getEmployeeDaysSinceStart;
+};
+
+const columnDefinitions: Array<
+  ColumnDefinition<
+    Employee,
+    RDPs,
+    FunctionColumns
+  >
+> = [
   {
     locator: {
       type: "property",
       id: "fullName",
     },
-    renderHeader: () => <div style={{ color: "red" }}>My Name</div>,
+    columnName: "My Name",
+    validateEdit: async (value: unknown) => {
+      if (typeof value !== "string" || !value.trim()) {
+        return "Name cannot be empty";
+      }
+      return undefined;
+    },
   },
-  // With isVisible prop
+  // Function-backed column
+  {
+    locator: {
+      type: "function",
+      id: "daysSinceStart",
+      queryDefinition: getEmployeeDaysSinceStart,
+      getFunctionParams: (objectSet) => ({ employees: objectSet }),
+      getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
+      getValue: (data) =>
+        (data as { daysSinceStart?: number } | undefined)?.daysSinceStart,
+    },
+    columnName: "Days Since Start",
+    width: 150,
+  },
+  {
+    locator: {
+      type: "property",
+      id: "employeeNumber",
+    },
+    columnName: "Employee Number",
+  },
   {
     locator: { type: "property", id: "jobTitle" },
-    isVisible: false,
   },
-  // With renderHeader, renderCell, width prop
   {
     locator: { type: "property", id: "firstFullTimeStartDate" },
     width: 300,
@@ -34,8 +78,8 @@ const columnDefinitions: ColumnDefinition<
     renderCell: (object: Osdk.Instance<Employee>) => {
       return (
         <div>
-          {object["firstFullTimeStartDate"]
-            ? new Date(object["firstFullTimeStartDate"]).toISOString()
+          {object.firstFullTimeStartDate
+            ? new Date(object.firstFullTimeStartDate).toISOString()
             : "No value"}
         </div>
       );
@@ -49,31 +93,106 @@ const columnDefinitions: ColumnDefinition<
       creator: (baseObjectSet: DerivedProperty.Builder<Employee, false>) =>
         baseObjectSet.pivotTo("lead").selectProperty("fullName"),
     },
-    renderHeader: () => "Derived Manager Name",
-    renderCell: (object: Osdk.Instance<Employee>) => {
-      if ("managerName" in object) {
-        return object["managerName"] as string;
-      }
-      return "No Value";
+    columnName: "Derived Manager Name",
+  },
+  // Custom
+  {
+    locator: {
+      type: "custom",
+      id: "Custom Column",
     },
+    renderHeader: () => "Custom",
+    renderCell: (object: Osdk.Instance<Employee>) => {
+      return (
+        <button onClick={() => alert(`Clicked ${object.$title}`)}>
+          Click me
+        </button>
+      );
+    },
+    orderable: false,
   },
 ];
 
-export function EmployeesTable() {
-  const employeesObjectSet = $(Employee);
+const THEME_MODES: readonly OsdkThemeMode[] = ["light", "dark", "system"];
 
+function ThemeToggle(): React.ReactElement {
+  const { theme, resolvedTheme, setTheme } = useOsdkTheme();
   return (
     <div
       style={{
-        height: "500px",
-        overflow: "auto",
+        display: "flex",
+        gap: 8,
+        alignItems: "center",
+        marginBottom: 8,
+        fontSize: 12,
       }}
     >
-      <ObjectTable<Employee, { managerName: "string" }>
-        objectSet={employeesObjectSet}
-        objectType={Employee}
-        columnDefinitions={columnDefinitions}
-      />
+      <span style={{ color: "#666" }}>
+        Theme: <strong>{theme}</strong>
+        {theme === "system" ? ` (resolved: ${resolvedTheme})` : ""}
+      </span>
+      {THEME_MODES.map((mode) => (
+        <Button
+          key={mode}
+          type="button"
+          onClick={() => setTheme(mode)}
+          disabled={theme === mode}
+        >
+          {mode}
+        </Button>
+      ))}
     </div>
+  );
+}
+
+export function EmployeesTable(): React.ReactElement {
+  const handleSubmitEdits = useCallback(
+    async () => {
+      alert(`Submitting edits...`);
+      return true;
+    },
+    [],
+  );
+
+  const client = useOsdkClient();
+
+  const os = client(Employee);
+
+  const tableRef = useRef<ObjectTableHandle<Employee, RDPs>>(null);
+
+  return (
+    <OsdkThemeProvider>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          width: "100%",
+        }}
+      >
+        <ThemeToggle />
+        <div style={{ marginBottom: 8 }}>
+          <DownloadEmployeesButton tableRef={tableRef} />
+        </div>
+        <div
+          style={{
+            height: "300px",
+            overflow: "hidden",
+          }}
+        >
+          <ObjectTable<Employee, RDPs, FunctionColumns>
+            objectSet={os}
+            objectType={Employee}
+            columnDefinitions={columnDefinitions}
+            selectionMode={"multiple"}
+            defaultOrderBy={[{
+              property: "firstFullTimeStartDate",
+              direction: "desc",
+            }]}
+            onSubmitEdits={handleSubmitEdits}
+            tableRef={tableRef}
+          />
+        </div>
+      </div>
+    </OsdkThemeProvider>
   );
 }

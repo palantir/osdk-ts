@@ -32,6 +32,7 @@ import invariant from "tiny-invariant";
 import { fullyQualifyPropName } from "./fullyQualifyPropName.js";
 import { makeGeoFilterIntersects } from "./makeGeoFilterIntersects.js";
 import { makeGeoFilterWithin } from "./makeGeoFilterWithin.js";
+import { toIntervalQueryRule } from "./toIntervalQuery.js";
 
 type DropDollarSign<T extends `$${string}`> = T extends `$${infer U}` ? U
   : never;
@@ -75,6 +76,11 @@ export function modernToLegacyWhereClause<
   const parts = Object.entries(whereClause).map(([key, value]) => ({
     [key]: value,
   })) as WhereClause<T, RDPs>[];
+  invariant(
+    parts.length > 0,
+    "Cannot convert an empty where clause to a filter. "
+      + "Skip the .where() call entirely when no conditions are provided.",
+  );
   if (parts.length === 1) {
     return modernToLegacyWhereClauseInner(
       whereClause,
@@ -133,6 +139,36 @@ export function modernToLegacyWhereClauseInner<
   return handleWherePair(parts[0], objectOrInterface, undefined, rdpNames);
 }
 
+function resolvePropertyIdentifier(
+  fieldName: string,
+  objectOrInterface: ObjectOrInterfaceDefinition,
+  isTitleProperty: boolean,
+  isPrimaryKeyProperty: boolean,
+  isRdp: boolean | undefined,
+  structFieldSelector?: { propertyApiName: string; structFieldApiName: string },
+): PropertyIdentifier | undefined {
+  if (isTitleProperty) {
+    return { type: "titleProperty" } as PropertyIdentifier;
+  } else if (isPrimaryKeyProperty) {
+    return { type: "primaryKeyProperty" } as PropertyIdentifier;
+  } else if (isRdp) {
+    return {
+      type: "property",
+      apiName: fieldName,
+    };
+  } else if (structFieldSelector != null) {
+    return {
+      type: "structField",
+      ...structFieldSelector,
+      propertyApiName: fullyQualifyPropName(
+        structFieldSelector.propertyApiName,
+        objectOrInterface,
+      ),
+    };
+  }
+  return undefined;
+}
+
 function handleWherePair(
   [fieldName, filter]: [string, any],
   objectOrInterface: ObjectOrInterfaceDefinition,
@@ -141,28 +177,27 @@ function handleWherePair(
 ): SearchJsonQueryV2 {
   invariant(
     filter != null,
-    "Defined key values are only allowed when they are not undefined.",
+    `Cannot filter on property "${fieldName}" with an undefined or null value. `
+      + `If the value might be undefined, check it before adding to the where clause.`,
   );
 
-  const isRdp = !structFieldSelector && rdpNames?.has(fieldName);
+  const isTitleProperty = fieldName === "$title";
+  const isPrimaryKeyProperty = fieldName === "$primaryKey";
+  const isSpecialProperty = isTitleProperty || isPrimaryKeyProperty;
 
-  const propertyIdentifier: PropertyIdentifier | undefined = isRdp
-    ? {
-      type: "property",
-      apiName: fieldName,
-    }
-    : structFieldSelector != null
-    ? {
-      type: "structField",
-      ...structFieldSelector,
-      propertyApiName: fullyQualifyPropName(
-        structFieldSelector.propertyApiName,
-        objectOrInterface,
-      ),
-    }
-    : undefined;
+  const isRdp = !structFieldSelector && !isSpecialProperty
+    && rdpNames?.has(fieldName);
 
-  const field = !isRdp && structFieldSelector == null
+  const propertyIdentifier = resolvePropertyIdentifier(
+    fieldName,
+    objectOrInterface,
+    isTitleProperty,
+    isPrimaryKeyProperty,
+    isRdp,
+    structFieldSelector,
+  );
+
+  const field = !isRdp && !isSpecialProperty && structFieldSelector == null
     ? fullyQualifyPropName(fieldName, objectOrInterface)
     : undefined;
 
@@ -213,19 +248,32 @@ function handleWherePair(
   const firstKey = keysOfFilter[0] as PossibleWhereClauseFilters;
   invariant(filter[firstKey] != null);
 
-  // Struct array
   if (firstKey === "$contains" && filter[firstKey] instanceof Object) {
-    const structFilter: [string, any][] = Object.entries(filter[firstKey]);
-    invariant(
-      structFilter.length === 1,
-      "Cannot filter on more than one struct field in the same clause, need to use an and clause",
-    );
-    const structFieldApiName = structFilter[0][0];
+    const containsValue = filter[firstKey];
+    const containsKeys = Object.keys(containsValue);
 
-    return handleWherePair(structFilter[0], objectOrInterface, {
-      propertyApiName: fieldName,
-      structFieldApiName,
-    });
+    const isFilterObject = containsKeys.some(key => key.startsWith("$"));
+
+    if (isFilterObject) {
+      return handleWherePair(
+        [fieldName, containsValue],
+        objectOrInterface,
+        structFieldSelector,
+        rdpNames,
+      );
+    } else {
+      const structFilter: [string, any][] = Object.entries(containsValue);
+      invariant(
+        structFilter.length === 1,
+        "Cannot filter on more than one struct field in the same clause, need to use an and clause",
+      );
+      const structFieldApiName = structFilter[0][0];
+
+      return handleWherePair(structFilter[0], objectOrInterface, {
+        propertyApiName: fieldName,
+        structFieldApiName,
+      });
+    }
   }
 
   if (firstKey === "$ne") {
@@ -254,10 +302,28 @@ function handleWherePair(
       field,
       value: typeof filter[firstKey] === "string"
         ? filter[firstKey]
-        : filter[firstKey]["term"],
+        : filter[firstKey].term,
       fuzzy: typeof filter[firstKey] === "string"
         ? false
-        : filter[firstKey]["fuzzySearch"] ?? false,
+        : filter[firstKey].fuzzySearch ?? false,
+    };
+  }
+
+  if (firstKey === "$matchesRegex") {
+    return {
+      type: "regex",
+      ...(propertyIdentifier != null && { propertyIdentifier }),
+      field,
+      value: filter[firstKey],
+    };
+  }
+
+  if (firstKey === "$interval") {
+    return {
+      type: "interval",
+      ...(propertyIdentifier != null && { propertyIdentifier }),
+      field,
+      rule: toIntervalQueryRule(filter[firstKey]),
     };
   }
 

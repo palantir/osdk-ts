@@ -24,6 +24,6 @@ import { Employee } from "../../../generatedNoCheck/index.js";
 import { client } from "./client.js";
 
 const EmployeeObjectSet = client(Employee)
-    .where({
-        fullName: { $containsAnyTerm: "foo bar" }
-    })
+  .where({
+    fullName: { $containsAnyTerm: "foo bar" },
+  });

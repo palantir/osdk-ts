@@ -1,0 +1,5 @@
+:root {
+  /* Video Viewer - Container */
+  --osdk-video-viewer-bg: var(--osdk-background-primary);
+  --osdk-video-viewer-border: var(--osdk-surface-border);
+}

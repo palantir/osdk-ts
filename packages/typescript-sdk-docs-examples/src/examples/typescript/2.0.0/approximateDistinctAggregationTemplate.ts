@@ -24,6 +24,6 @@ import { Employee } from "../../../generatedNoCheck/index.js";
 import { client } from "./client.js";
 
 const distinctEmployee = await client(Employee)
-    .aggregate({
-        $select: { "department:approximateDistinct" : "unordered" },
-    });
+  .aggregate({
+    $select: { "department:approximateDistinct": "unordered" },
+  });

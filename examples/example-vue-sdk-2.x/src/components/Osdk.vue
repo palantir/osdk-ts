@@ -23,6 +23,7 @@
   align-self: baseline;
   display: flex;
   justify-content: space-between;
+  align-items: center;
   width: 800px;
 }
 

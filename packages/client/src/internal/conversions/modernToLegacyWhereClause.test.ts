@@ -765,6 +765,125 @@ describe(modernToLegacyWhereClause, () => {
         }
       `);
       });
+      it("converts $interval $match", () => {
+        expect(modernToLegacyWhereClause<ObjAllProps>({
+          string: {
+            $interval: {
+              $match: "test phrase",
+              $maxGaps: 1,
+              $ordered: true,
+            },
+          },
+        }, objectTypeWithAllPropertyTypes)).toMatchInlineSnapshot(`
+        {
+          "field": "string",
+          "rule": {
+            "maxGaps": 1,
+            "ordered": true,
+            "query": "test phrase",
+            "type": "match",
+          },
+          "type": "interval",
+        }
+      `);
+      });
+      it("converts $interval $prefixOnLastTerm", () => {
+        expect(modernToLegacyWhereClause<ObjAllProps>({
+          string: {
+            $interval: {
+              $match: "test phr",
+              $prefixOnLastTerm: true,
+            },
+          },
+        }, objectTypeWithAllPropertyTypes)).toMatchInlineSnapshot(`
+        {
+          "field": "string",
+          "rule": {
+            "query": "test phr",
+            "type": "prefixOnLastToken",
+          },
+          "type": "interval",
+        }
+      `);
+      });
+      it("converts $interval $and", () => {
+        expect(modernToLegacyWhereClause<ObjAllProps>({
+          string: {
+            $interval: {
+              $and: [{
+                $match: "test",
+                $ordered: true,
+              }, {
+                $match: "phrase",
+                $ordered: true,
+              }],
+              $maxGaps: 0,
+              $ordered: true,
+            },
+          },
+        }, objectTypeWithAllPropertyTypes)).toMatchInlineSnapshot(`
+          {
+            "field": "string",
+            "rule": {
+              "maxGaps": 0,
+              "ordered": true,
+              "rules": [
+                {
+                  "maxGaps": undefined,
+                  "ordered": true,
+                  "query": "test",
+                  "type": "match",
+                },
+                {
+                  "maxGaps": undefined,
+                  "ordered": true,
+                  "query": "phrase",
+                  "type": "match",
+                },
+              ],
+              "type": "allOf",
+            },
+            "type": "interval",
+          }
+        `);
+      });
+      it("converts $interval $or", () => {
+        expect(modernToLegacyWhereClause<ObjAllProps>({
+          string: {
+            $interval: {
+              $or: [{
+                $match: "test",
+                $ordered: true,
+              }, {
+                $match: "phrase",
+                $ordered: true,
+              }],
+            },
+          },
+        }, objectTypeWithAllPropertyTypes)).toMatchInlineSnapshot(`
+          {
+            "field": "string",
+            "rule": {
+              "rules": [
+                {
+                  "maxGaps": undefined,
+                  "ordered": true,
+                  "query": "test",
+                  "type": "match",
+                },
+                {
+                  "maxGaps": undefined,
+                  "ordered": true,
+                  "query": "phrase",
+                  "type": "match",
+                },
+              ],
+              "type": "anyOf",
+            },
+            "type": "interval",
+          }
+        `);
+      });
       it("converts struct where clauses correctly", () => {
         expect(modernToLegacyWhereClause<structObj>({
           address: { state: { $eq: "NJ" } },
@@ -913,6 +1032,71 @@ describe(modernToLegacyWhereClause, () => {
               ],
             }
           `);
+      });
+
+      it("converts primitive arrays with nested filters correctly", () => {
+        expect(
+          modernToLegacyWhereClause<ObjAllProps>({
+            integerArray: { $contains: { $lt: 5 } },
+          }, objectTypeWithAllPropertyTypes),
+        ).toMatchInlineSnapshot(`
+          {
+            "field": "integerArray",
+            "type": "lt",
+            "value": 5,
+          }
+        `);
+
+        expect(
+          modernToLegacyWhereClause<ObjAllProps>({
+            stringArray: { $contains: { $startsWith: "test" } },
+          }, objectTypeWithAllPropertyTypes),
+        ).toMatchInlineSnapshot(`
+          {
+            "field": "stringArray",
+            "type": "startsWith",
+            "value": "test",
+          }
+        `);
+
+        expect(
+          modernToLegacyWhereClause<ObjAllProps>({
+            booleanArray: { $contains: { $eq: true } },
+          }, objectTypeWithAllPropertyTypes),
+        ).toMatchInlineSnapshot(`
+          {
+            "field": "booleanArray",
+            "type": "eq",
+            "value": true,
+          }
+        `);
+      });
+
+      it("converts primitive arrays with multiple nested filter conditions", () => {
+        expect(
+          modernToLegacyWhereClause<ObjAllProps>({
+            $and: [
+              { integerArray: { $contains: { $gte: 1 } } },
+              { integerArray: { $contains: { $lt: 10 } } },
+            ],
+          }, objectTypeWithAllPropertyTypes),
+        ).toMatchInlineSnapshot(`
+          {
+            "type": "and",
+            "value": [
+              {
+                "field": "integerArray",
+                "type": "gte",
+                "value": 1,
+              },
+              {
+                "field": "integerArray",
+                "type": "lt",
+                "value": 10,
+              },
+            ],
+          }
+        `);
       });
     });
 
@@ -1269,6 +1453,214 @@ describe(modernToLegacyWhereClause, () => {
                 },
               ],
             },
+          ],
+        }
+      `);
+    });
+  });
+
+  describe("special properties ($title and $primaryKey)", () => {
+    const mockObjectType = {
+      type: "object" as const,
+      apiName: "Employee",
+      __DefinitionMetadata: {
+        type: "object" as const,
+        apiName: "Employee",
+        displayName: "Employee",
+        description: undefined,
+        properties: {
+          employeeId: { type: "integer" as const },
+          fullName: { type: "string" as const },
+          department: { type: "string" as const },
+        },
+        rid: "test-rid",
+        primaryKeyApiName: "employeeId",
+        titleProperty: "fullName",
+        links: {},
+        primaryKeyType: "integer" as const,
+        icon: undefined,
+        visibility: undefined,
+        pluralDisplayName: "Employees",
+        status: undefined,
+        interfaceMap: {},
+        inverseInterfaceMap: {},
+      },
+    };
+
+    it("should handle $title with explicit $eq filter", () => {
+      const result = modernToLegacyWhereClause<typeof mockObjectType>(
+        { $title: { $eq: "John" } },
+        mockObjectType,
+      );
+
+      expect(result).toMatchInlineSnapshot(`
+        {
+          "field": undefined,
+          "propertyIdentifier": {
+            "type": "titleProperty",
+          },
+          "type": "eq",
+          "value": "John",
+        }
+      `);
+    });
+
+    it("should handle $title with shorthand string value", () => {
+      const result = modernToLegacyWhereClause<typeof mockObjectType>(
+        { $title: "John" },
+        mockObjectType,
+      );
+
+      expect(result).toMatchInlineSnapshot(`
+        {
+          "field": undefined,
+          "propertyIdentifier": {
+            "type": "titleProperty",
+          },
+          "type": "eq",
+          "value": "John",
+        }
+      `);
+    });
+
+    it("should handle $primaryKey with $eq filter", () => {
+      const result = modernToLegacyWhereClause<typeof mockObjectType>(
+        { $primaryKey: { $eq: 42 } },
+        mockObjectType,
+      );
+
+      expect(result).toMatchInlineSnapshot(`
+        {
+          "field": undefined,
+          "propertyIdentifier": {
+            "type": "primaryKeyProperty",
+          },
+          "type": "eq",
+          "value": 42,
+        }
+      `);
+    });
+
+    it("should handle $primaryKey with $gt filter", () => {
+      const result = modernToLegacyWhereClause<typeof mockObjectType>(
+        { $primaryKey: { $gt: 100 } },
+        mockObjectType,
+      );
+
+      expect(result).toMatchInlineSnapshot(`
+        {
+          "field": undefined,
+          "propertyIdentifier": {
+            "type": "primaryKeyProperty",
+          },
+          "type": "gt",
+          "value": 100,
+        }
+      `);
+    });
+
+    it("should handle $title combined with regular property", () => {
+      const result = modernToLegacyWhereClause<typeof mockObjectType>(
+        { $title: { $eq: "John" }, department: "Engineering" },
+        mockObjectType,
+      );
+
+      expect(result).toMatchInlineSnapshot(`
+        {
+          "type": "and",
+          "value": [
+            {
+              "field": undefined,
+              "propertyIdentifier": {
+                "type": "titleProperty",
+              },
+              "type": "eq",
+              "value": "John",
+            },
+            {
+              "field": "department",
+              "type": "eq",
+              "value": "Engineering",
+            },
+          ],
+        }
+      `);
+    });
+
+    it("should handle $title and $primaryKey in $and clause", () => {
+      const result = modernToLegacyWhereClause<typeof mockObjectType>(
+        {
+          $and: [
+            { $title: { $startsWith: "J" } },
+            { $primaryKey: { $gt: 10 } },
+          ],
+        },
+        mockObjectType,
+      );
+
+      expect(result).toMatchInlineSnapshot(`
+        {
+          "type": "and",
+          "value": [
+            {
+              "field": undefined,
+              "propertyIdentifier": {
+                "type": "titleProperty",
+              },
+              "type": "startsWith",
+              "value": "J",
+            },
+            {
+              "field": undefined,
+              "propertyIdentifier": {
+                "type": "primaryKeyProperty",
+              },
+              "type": "gt",
+              "value": 10,
+            },
+          ],
+        }
+      `);
+    });
+
+    it("should handle $title in $not clause", () => {
+      const result = modernToLegacyWhereClause<typeof mockObjectType>(
+        { $not: { $title: { $eq: "Admin" } } },
+        mockObjectType,
+      );
+
+      expect(result).toMatchInlineSnapshot(`
+        {
+          "type": "not",
+          "value": {
+            "field": undefined,
+            "propertyIdentifier": {
+              "type": "titleProperty",
+            },
+            "type": "eq",
+            "value": "Admin",
+          },
+        }
+      `);
+    });
+
+    it("should handle $primaryKey with $in filter", () => {
+      const result = modernToLegacyWhereClause<typeof mockObjectType>(
+        { $primaryKey: { $in: [1, 2, 3] } },
+        mockObjectType,
+      );
+
+      expect(result).toMatchInlineSnapshot(`
+        {
+          "field": undefined,
+          "propertyIdentifier": {
+            "type": "primaryKeyProperty",
+          },
+          "type": "in",
+          "value": [
+            1,
+            2,
+            3,
           ],
         }
       `);

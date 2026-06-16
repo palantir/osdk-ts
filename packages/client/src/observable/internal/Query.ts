@@ -173,18 +173,20 @@ export abstract class Query<
       return;
     }
 
-    const minDedupeInterval = this.getMinimumDedupeInterval();
-    if (
-      minDedupeInterval > 0 && (
-        this.lastFetchStarted != null
-        && Date.now() - this.lastFetchStarted < minDedupeInterval
-      )
-    ) {
-      if (process.env.NODE_ENV !== "production") {
-        logger?.debug("Within dupeInterval, aborting revalidate");
-      }
+    if (!force) {
+      const minDedupeInterval = this.getMinimumDedupeInterval();
+      if (
+        minDedupeInterval > 0 && (
+          this.lastFetchStarted != null
+          && Date.now() - this.lastFetchStarted < minDedupeInterval
+        )
+      ) {
+        if (process.env.NODE_ENV !== "production") {
+          logger?.debug("Within dupeInterval, aborting revalidate");
+        }
 
-      return Promise.resolve();
+        return Promise.resolve();
+      }
     }
 
     if (process.env.NODE_ENV !== "production") {

@@ -125,6 +125,23 @@ describe("FetchMetadata", () => {
             "valueFormatting": undefined,
             "valueTypeApiName": undefined,
           },
+          "employeeProfile": {
+            "description": "Employee profile with main value being the bio",
+            "displayName": undefined,
+            "mainValue": {
+              "fields": [
+                "bio",
+              ],
+            },
+            "multiplicity": false,
+            "nullable": true,
+            "type": {
+              "bio": "string",
+              "yearsExperience": "integer",
+            },
+            "valueFormatting": undefined,
+            "valueTypeApiName": undefined,
+          },
           "employeeSensor": {
             "description": "TimeSeries sensor of the status of the employee",
             "displayName": undefined,
@@ -140,6 +157,16 @@ describe("FetchMetadata", () => {
             "multiplicity": false,
             "nullable": true,
             "type": "stringTimeseries",
+            "valueFormatting": undefined,
+            "valueTypeApiName": undefined,
+          },
+          "favoriteRestaurants": {
+            "description": undefined,
+            "displayName": undefined,
+            "hasReducers": false,
+            "multiplicity": true,
+            "nullable": true,
+            "type": "string",
             "valueFormatting": undefined,
             "valueTypeApiName": undefined,
           },
@@ -159,6 +186,16 @@ describe("FetchMetadata", () => {
             "multiplicity": false,
             "nullable": true,
             "type": "string",
+            "valueFormatting": undefined,
+            "valueTypeApiName": undefined,
+          },
+          "performanceScores": {
+            "description": "Array of performance scores with reducers",
+            "displayName": undefined,
+            "hasReducers": true,
+            "multiplicity": true,
+            "nullable": true,
+            "type": "double",
             "valueFormatting": undefined,
             "valueTypeApiName": undefined,
           },
@@ -298,6 +335,7 @@ describe("FetchMetadata", () => {
         "rid": "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2",
         "status": "ACTIVE",
         "type": "action",
+        "unsanitizedApiName": "moveOffice",
       }
     `);
   });
@@ -329,6 +367,7 @@ describe("FetchMetadata", () => {
         },
         "rid": "ri.function-registry.main.function.9b55870a-63c7-4d48-8f06-9627c0805968",
         "type": "query",
+        "typeReferences": undefined,
         "version": "0.11.0",
       }
     `);

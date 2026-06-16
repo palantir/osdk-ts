@@ -1,0 +1,163 @@
+@mixin dt-dark-theme {
+  // Surfaces
+  --dt-bg-base: #111418;
+  --dt-bg-surface: #1c2127;
+  --dt-bg-raised: #1a1f25;
+  --dt-bg-elevated: #252a31;
+  --dt-bg-hover: #2a3038;
+  --dt-bg-active: #323a44;
+
+  // Borders
+  --dt-border-subtle: #252b33;
+  --dt-border-default: #2d343c;
+  --dt-border-hover: rgba(255, 255, 255, 0.14);
+  --dt-border-focus: #2d8cf0;
+
+  // Text
+  --dt-text-primary: #e1e8ed;
+  --dt-text-secondary: #8a9ba8;
+  --dt-text-tertiary: #5c6b77;
+  --dt-text-value: #f5f8fa;
+
+  // Accent
+  --dt-blue: #2d8cf0;
+  --dt-blue-muted: #1a5fa8;
+  --dt-blue-bg: rgba(45, 140, 240, 0.12);
+  --dt-blue-hover: #3a96f5;
+
+  // Status
+  --dt-green: #32a467;
+  --dt-green-bg: rgba(50, 164, 103, 0.12);
+  --dt-red: #e05252;
+  --dt-red-bg: rgba(224, 82, 82, 0.12);
+  --dt-orange: #d4880f;
+  --dt-orange-bg: rgba(212, 136, 15, 0.12);
+  --dt-gray: #6b7785;
+
+  // Shadows
+  --dt-shadow-panel: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 1px rgba(0, 0, 0, 0.3);
+  --dt-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.2);
+  --dt-shadow-hover: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+  // Scrollbar
+  --dt-scrollbar-track: rgba(255, 255, 255, 0.03);
+  --dt-scrollbar-thumb: rgba(255, 255, 255, 0.12);
+  --dt-scrollbar-thumb-hover: rgba(255, 255, 255, 0.2);
+
+  // Skeleton
+  --dt-skeleton-from: rgba(255, 255, 255, 0.04);
+  --dt-skeleton-to: rgba(255, 255, 255, 0.08);
+
+  // Intent borders (for BlueprintJS overrides)
+  --dt-blue-border: rgba(45, 140, 240, 0.25);
+  --dt-red-border: rgba(224, 82, 82, 0.3);
+  --dt-green-border: rgba(50, 164, 103, 0.3);
+  --dt-orange-border: rgba(212, 136, 15, 0.3);
+
+  // Intent hover backgrounds
+  --dt-red-hover-bg: rgba(224, 82, 82, 0.2);
+  --dt-green-hover-bg: rgba(50, 164, 103, 0.2);
+  --dt-orange-hover-bg: rgba(212, 136, 15, 0.2);
+  --dt-blue-resize-hover: rgba(45, 140, 240, 0.2);
+
+  // Revalidation
+  --dt-revalidation-bg: rgba(45, 140, 240, 0.6);
+
+  // Minimized hover glow
+  --dt-minimized-glow: 0 0 12px rgba(45, 140, 240, 0.15);
+
+  // Hook row colors
+  --dt-hook-object-bg: rgba(45, 140, 240, 0.15);
+  --dt-hook-object-color: #5aa3f0;
+  --dt-hook-objects-bg: rgba(100, 160, 240, 0.15);
+  --dt-hook-objects-color: #7db8ff;
+  --dt-hook-links-bg: rgba(130, 100, 190, 0.12);
+  --dt-hook-links-color: #a98cd9;
+
+  // Improvement level borders
+  --dt-red-border-strong: rgba(224, 82, 82, 0.3);
+  --dt-orange-border-strong: rgba(212, 136, 15, 0.3);
+  --dt-blue-border-strong: rgba(45, 140, 240, 0.3);
+}
+
+@mixin dt-light-theme {
+  // Surfaces
+  --dt-bg-base: #f6f7f9;
+  --dt-bg-surface: #ffffff;
+  --dt-bg-raised: #f0f2f5;
+  --dt-bg-elevated: #ffffff;
+  --dt-bg-hover: #e8ecf0;
+  --dt-bg-active: #dce1e6;
+
+  // Borders
+  --dt-border-subtle: #dce1e6;
+  --dt-border-default: #c5cdd4;
+  --dt-border-hover: rgba(0, 0, 0, 0.2);
+  --dt-border-focus: #2d72d2;
+
+  // Text
+  --dt-text-primary: #1c2127;
+  --dt-text-secondary: #5f6b7c;
+  --dt-text-tertiary: #8f99a8;
+  --dt-text-value: #1c2127;
+
+  // Accent
+  --dt-blue: #2d72d2;
+  --dt-blue-muted: #4580e6;
+  --dt-blue-bg: rgba(45, 114, 210, 0.1);
+  --dt-blue-hover: #215db0;
+
+  // Status
+  --dt-green: #238551;
+  --dt-green-bg: rgba(35, 133, 81, 0.1);
+  --dt-red: #cd4246;
+  --dt-red-bg: rgba(205, 66, 70, 0.1);
+  --dt-orange: #c87619;
+  --dt-orange-bg: rgba(200, 118, 25, 0.1);
+  --dt-gray: #8f99a8;
+
+  // Shadows
+  --dt-shadow-panel: 0 4px 16px rgba(0, 0, 0, 0.12), 0 0 1px rgba(0, 0, 0, 0.1);
+  --dt-shadow-card: 0 1px 2px rgba(0, 0, 0, 0.08);
+  --dt-shadow-hover: 0 2px 6px rgba(0, 0, 0, 0.1);
+
+  // Scrollbar
+  --dt-scrollbar-track: rgba(0, 0, 0, 0.04);
+  --dt-scrollbar-thumb: rgba(0, 0, 0, 0.15);
+  --dt-scrollbar-thumb-hover: rgba(0, 0, 0, 0.25);
+
+  // Skeleton
+  --dt-skeleton-from: rgba(0, 0, 0, 0.04);
+  --dt-skeleton-to: rgba(0, 0, 0, 0.08);
+
+  // Intent borders
+  --dt-blue-border: rgba(45, 114, 210, 0.3);
+  --dt-red-border: rgba(205, 66, 70, 0.3);
+  --dt-green-border: rgba(35, 133, 81, 0.3);
+  --dt-orange-border: rgba(200, 118, 25, 0.3);
+
+  // Intent hover backgrounds
+  --dt-red-hover-bg: rgba(205, 66, 70, 0.15);
+  --dt-green-hover-bg: rgba(35, 133, 81, 0.15);
+  --dt-orange-hover-bg: rgba(200, 118, 25, 0.15);
+  --dt-blue-resize-hover: rgba(45, 114, 210, 0.2);
+
+  // Revalidation
+  --dt-revalidation-bg: rgba(45, 114, 210, 0.6);
+
+  // Minimized hover glow
+  --dt-minimized-glow: 0 0 12px rgba(45, 114, 210, 0.2);
+
+  // Hook row colors
+  --dt-hook-object-bg: rgba(45, 114, 210, 0.12);
+  --dt-hook-object-color: #2d72d2;
+  --dt-hook-objects-bg: rgba(45, 114, 210, 0.08);
+  --dt-hook-objects-color: #4580e6;
+  --dt-hook-links-bg: rgba(100, 70, 170, 0.1);
+  --dt-hook-links-color: #7157b8;
+
+  // Improvement level borders
+  --dt-red-border-strong: rgba(205, 66, 70, 0.35);
+  --dt-orange-border-strong: rgba(200, 118, 25, 0.35);
+  --dt-blue-border-strong: rgba(45, 114, 210, 0.35);
+}

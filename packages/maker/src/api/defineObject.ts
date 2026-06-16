@@ -16,6 +16,13 @@
 
 import invariant from "tiny-invariant";
 import { getObject } from "../conversion/toMarketplace/convertLink.js";
+import {
+  API_NAME_PATTERN,
+  isValidApiName,
+  isValidObjectApiName,
+  OBJECT_API_NAME_PATTERN,
+} from "../util/ApiNameValidator.js";
+import { cloneDefinition } from "./cloneDefinition.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import {
   addNamespaceIfNone,
@@ -23,9 +30,14 @@ import {
   namespace,
   ontologyDefinition,
   updateOntology,
+  withoutNamespace,
 } from "./defineOntology.js";
 import { getFlattenedInterfaceProperties } from "./interface/getFlattenedInterfaceProperties.js";
-import type { InterfacePropertyType } from "./interface/InterfacePropertyType.js";
+import {
+  getInterfacePropertyTypeType,
+  type InterfacePropertyType,
+  isInterfaceSharedPropertyType,
+} from "./interface/InterfacePropertyType.js";
 import type { ObjectPropertyType } from "./object/ObjectPropertyType.js";
 import type { ObjectPropertyTypeUserDefinition } from "./object/ObjectPropertyTypeUserDefinition.js";
 import type { ObjectType } from "./object/ObjectType.js";
@@ -35,10 +47,9 @@ import type {
   ObjectTypeDatasourceDefinition_stream,
 } from "./object/ObjectTypeDatasourceDefinition.js";
 import type { ObjectTypeDefinition } from "./object/ObjectTypeDefinition.js";
+import type { ObjectTypeStatus } from "./object/ObjectTypeStatus.js";
 import type { PropertyTypeType } from "./properties/PropertyTypeType.js";
-import { isExotic } from "./properties/PropertyTypeType.js";
-import type { SharedPropertyType } from "./properties/SharedPropertyType.js";
-
+import { isExotic, isStruct } from "./properties/PropertyTypeType.js";
 // From https://stackoverflow.com/a/79288714
 const ISO_8601_DURATION =
   /^P(?!$)(?:(?:((?:\d+Y)|(?:\d+(?:\.|,)\d+Y$))?((?:\d+M)|(?:\d+(?:\.|,)\d+M$))?((?:\d+D)|(?:\d+(?:\.|,)\d+D$))?(T((?:\d+H)|(?:\d+(?:\.|,)\d+H$))?((?:\d+M)|(?:\d+(?:\.|,)\d+M$))?((?:\d+S)|(?:\d+(?:\.|,)\d+S$))?)?)|(?:\d+(?:(?:\.|,)\d+)?W))$/;
@@ -47,11 +58,10 @@ const ISO_8601_DURATION =
 const ISO_8601_DATETIME =
   /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})?)?$/;
 
-const API_NAME_PATTERN = /^([a-zA-Z][a-zA-Z0-9\\-]*)$/;
-
 export function defineObject(
-  objectDef: ObjectTypeDefinition,
+  objectDefInput: ObjectTypeDefinition,
 ): ObjectTypeDefinition {
+  const objectDef = cloneDefinition(objectDefInput);
   const apiName = namespace + objectDef.apiName;
   const propertyApiNames = objectDef.properties
     ? Object.keys(objectDef.properties)
@@ -65,9 +75,15 @@ export function defineObject(
     );
   }
   invariant(
-    API_NAME_PATTERN.test(objectDef.apiName),
-    `Invalid API name ${objectDef.apiName}. API names must match the regex ${API_NAME_PATTERN}.`,
+    isValidObjectApiName(objectDef.apiName),
+    `Invalid API name ${objectDef.apiName}. API names must match the regex ${OBJECT_API_NAME_PATTERN}.`,
   );
+  propertyApiNames.forEach(apiName => {
+    invariant(
+      isValidApiName(apiName),
+      `Invalid API name ${apiName} for property on object ${objectDef.apiName}. API names must match the regex ${API_NAME_PATTERN}.`,
+    );
+  });
   invariant(
     propertyApiNames.includes(objectDef.titlePropertyApiName),
     `Title property ${objectDef.titlePropertyApiName} is not defined on object ${objectDef.apiName}`,
@@ -81,6 +97,19 @@ export function defineObject(
     !(objectDef.properties?.[objectDef.primaryKeyPropertyApiName]?.editOnly),
     `Primary key property ${objectDef.primaryKeyPropertyApiName} on object ${objectDef.apiName} cannot be edit-only`,
   );
+
+  if (objectDef.includeEmptyBackingDatasource && objectDef.datasources) {
+    const nonDatasetDatasources = objectDef.datasources.filter(
+      ds => ds.type !== "dataset",
+    );
+    invariant(
+      nonDatasetDatasources.length === 0,
+      `Object type "${objectDef.apiName}" has non-dataset datasources (${
+        nonDatasetDatasources.map(ds => ds.type).join(", ")
+      }) and cannot use includeEmptyBackingDatasource. `
+        + `Empty backing datasources are only supported for object types with dataset datasources.`,
+    );
+  }
 
   const retentionPeriods =
     ((objectDef.datasources ?? []).filter(ds =>
@@ -109,20 +138,31 @@ export function defineObject(
     derivedDatasources.forEach(ds => validateDerivedDatasource(objectDef, ds));
   }
 
-  // Validate that if object status is experimental, no property can have a status of active
-  if (objectDef.status === "experimental") {
-    const activeProperties: string[] = [];
+  // Validate property statuses match the object status.
+  // An experimental object can only have experimental properties.
+  // A deprecated object can only have deprecated properties.
+  // An example object can only have example properties.
+  // There is no restriction on property statuses of an active object.
+  const objectStatusType = getStatusType(objectDef.status);
+  if (
+    objectStatusType === "experimental" || objectStatusType === "deprecated"
+    || objectStatusType === "example"
+  ) {
+    const mismatchedProperties: string[] = [];
     Object.entries(objectDef.properties ?? {}).forEach(
       ([apiName, property]) => {
-        if (property.status === "active") {
-          activeProperties.push(apiName);
+        if (property.status !== undefined) {
+          const propertyStatusType = getStatusType(property.status);
+          if (propertyStatusType !== objectStatusType) {
+            mismatchedProperties.push(apiName);
+          }
         }
       },
     );
     invariant(
-      activeProperties.length === 0,
-      `When object "${objectDef.apiName}" has experimental status, no properties can have "active" status, but found active properties: ${
-        activeProperties.join(", ")
+      mismatchedProperties.length === 0,
+      `Object "${objectDef.apiName}" has "${objectStatusType}" status, but the following properties have a different status: ${
+        mismatchedProperties.join(", ")
       }`,
     );
   }
@@ -138,8 +178,12 @@ export function defineObject(
       `Deprecated status deadline "${deadline}" on object "${objectDef.apiName}" is not a valid ISO 8601 datetime string`,
     );
   }
+  const titleProp = objectDef.properties?.[objectDef.titlePropertyApiName]
+    ?.type;
   invariant(
-    !isExotic(objectDef.properties?.[objectDef.titlePropertyApiName]?.type),
+    !isExotic(titleProp)
+      || (isStruct(titleProp) && titleProp.mainValue
+        && !isExotic(titleProp.mainValue.type)),
     `Title property ${objectDef.titlePropertyApiName} must be a primitive type`,
   );
   invariant(
@@ -157,6 +201,8 @@ export function defineObject(
       .propertyMapping.map(val => val.interfaceProperty).filter(
         interfaceProperty =>
           allInterfaceProperties[addNamespaceIfNone(interfaceProperty)]
+            === undefined
+          && allInterfaceProperties[withoutNamespace(interfaceProperty)]
             === undefined,
       ).map(interfaceProp => ({
         type: "invalid",
@@ -167,7 +213,7 @@ export function defineObject(
     const interfaceToObjectProperties = Object.fromEntries(
       interfaceImpl.propertyMapping.map(
         mapping => [
-          addNamespaceIfNone(mapping.interfaceProperty),
+          mapping.interfaceProperty,
           mapping.mapsTo,
         ],
       ),
@@ -175,21 +221,21 @@ export function defineObject(
     const validateProperty = (
       interfaceProp: [string, InterfacePropertyType],
     ): ValidationResult => {
-      if (
-        interfaceProp[1].sharedPropertyType.apiName
-          in interfaceToObjectProperties
-      ) {
+      const apiName = isInterfaceSharedPropertyType(interfaceProp[1])
+        ? interfaceProp[1].sharedPropertyType.apiName
+        : interfaceProp[0];
+      if (apiName in interfaceToObjectProperties) {
         return validateInterfaceImplProperty(
-          interfaceProp[1].sharedPropertyType,
+          interfaceProp[1],
+          apiName,
           interfaceToObjectProperties[interfaceProp[0]],
           objectDef,
         );
       }
       return {
         type: "invalid",
-        reason: `Interface property ${
-          interfaceProp[1].sharedPropertyType.apiName
-        } not implemented by ${objectDef.apiName} object definition`,
+        reason:
+          `Interface spt ${apiName} not implemented by ${objectDef.apiName} object definition`,
       };
     };
     const validations = Object.entries(
@@ -212,7 +258,7 @@ export function defineObject(
 
   const finalObject: ObjectType = {
     ...objectDef,
-    apiName: apiName,
+    apiName,
     __type: OntologyEntityTypeEnum.OBJECT_TYPE,
     properties: flattenedProperties,
   };
@@ -231,7 +277,8 @@ function formatValidationErrors(
 
 // Validate that the object and the interface property match up
 function validateInterfaceImplProperty(
-  spt: SharedPropertyType,
+  type: InterfacePropertyType,
+  apiName: string,
   mappedObjectProp: string,
   object: ObjectTypeDefinition,
 ): ValidationResult {
@@ -243,11 +290,12 @@ function validateInterfaceImplProperty(
         `Object property mapped to interface does not exist. Object Property Mapped: ${mappedObjectProp}`,
     };
   }
-  if (JSON.stringify(spt.type) !== JSON.stringify(objProp?.type)) {
+  const propertyType = getInterfacePropertyTypeType(type);
+  if (JSON.stringify(propertyType) !== JSON.stringify(objProp?.type)) {
     return {
       type: "invalid",
       reason:
-        `Object property type does not match the interface property it is mapped to. Interface Property: ${spt.apiName}, objectProperty: ${mappedObjectProp}`,
+        `Object property type does not match the interface property it is mapped to. Interface Property: ${apiName}, objectProperty: ${mappedObjectProp}`,
     };
   }
 
@@ -279,7 +327,7 @@ function convertUserObjectPropertyType(
   property.displayName = property.displayName ?? uppercaseFirstLetter(apiName);
   return {
     ...property,
-    apiName: apiName,
+    apiName,
     displayName: property.displayName ?? uppercaseFirstLetter(apiName),
     type: property.type,
   };
@@ -328,7 +376,7 @@ function validateDerivedDatasource(
  * the target object is the same as the object being defined (not yet in registry).
  */
 function getPropertiesForValidation(
-  linkObject: string | ObjectTypeDefinition,
+  linkObject: string | ObjectTypeDefinition | ObjectType,
   objectDef: ObjectTypeDefinition,
 ): { apiName: string; hasProperty: (propName: string) => boolean } {
   const targetApiName = typeof linkObject === "string"
@@ -458,7 +506,7 @@ function isCollectible(property: ObjectPropertyTypeUserDefinition): boolean {
     "geoshape",
     "integer",
     "long",
-    "mediareference",
+    "mediaReference",
     "short",
     "string",
     "struct",
@@ -492,4 +540,14 @@ function isPrimitive(type: PropertyTypeType): boolean {
     "string",
     "timestamp",
   ].includes(typeType);
+}
+
+function getStatusType(status: ObjectTypeStatus | undefined): string {
+  if (status === undefined) {
+    return "active";
+  }
+  if (typeof status === "string") {
+    return status;
+  }
+  return status.type;
 }

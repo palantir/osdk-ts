@@ -8,22 +8,46 @@ import { Attachment } from '@osdk/client';
 import type { Client } from '@osdk/client';
 import type { CompileTimeMetadata } from '@osdk/client';
 import { Geometry } from 'geojson';
+import { GeometryCollection } from 'geojson';
 import type { GroupId as GroupId_2 } from '@osdk/foundry.core';
 import type { InterfaceDefinition } from '@osdk/client';
+import { LineString } from 'geojson';
+import type { Media } from '@osdk/client';
 import { MediaReference } from '@osdk/client';
 import { MediaUpload } from '@osdk/client';
+import { MultiLineString } from 'geojson';
+import { MultiPoint } from 'geojson';
+import { MultiPolygon } from 'geojson';
 import type { ObjectMetadata } from '@osdk/client';
 import type { ObjectTypeDefinition } from '@osdk/client';
 import type { Osdk } from '@osdk/client';
 import type { OsdkObjectCreatePropertyType } from '@osdk/client';
 import { Point } from 'geojson';
+import { Polygon } from 'geojson';
 import type { PropertyKeys } from '@osdk/client';
+import type { QueryDefinition } from '@osdk/client';
 import { Range as Range_2 } from '@osdk/client';
 import { ThreeDimensionalAggregation } from '@osdk/client';
 import { TwoDimensionalAggregation } from '@osdk/client';
 import type { UserId as UserId_2 } from '@osdk/foundry.core';
 
+declare namespace Aliases {
+    export {
+        custom,
+        Custom,
+        model,
+        Model,
+        source,
+        Source
+    }
+}
+
 export { Attachment }
+
+// @public (undocumented)
+export type Byte<T extends number = number> = T & {
+    	__byteBrand?: void
+};
 
 // @public (undocumented)
 export type ClassificationMarking<T extends string = string> = T & {
@@ -34,6 +58,14 @@ export type ClassificationMarking<T extends string = string> = T & {
 //
 // @public (undocumented)
 export function createEditBatch<T extends AnyEdit = never>(_client: Client): EditBatch<T>;
+
+// @public (undocumented)
+type Custom = string & {
+    	readonly __brand: "Custom"
+};
+
+// @public (undocumented)
+function custom(alias: string): Custom;
 
 // @public (undocumented)
 export type DateISOString<T extends string = string> = T & {
@@ -122,7 +154,21 @@ export type Float<T extends number = number> = T & {
     	__floatBrand?: void
 };
 
+// @public (undocumented)
+export interface FunctionConfig {
+    	// (undocumented)
+    apiName?: string;
+    	// Warning: (ae-forgotten-export) The symbol "Scope" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    scope?: Scope;
+    	// (undocumented)
+    sources?: string[];
+}
+
 export { Geometry }
+
+export { GeometryCollection }
 
 // @public (undocumented)
 export type GroupId = GroupId_2 & {
@@ -133,6 +179,8 @@ export type GroupId = GroupId_2 & {
 export type Integer<T extends number = number> = T & {
     	__integerBrand?: void
 };
+
+export { LineString }
 
 // @public (undocumented)
 export type Long<T extends string = string> = T & {
@@ -147,6 +195,21 @@ export type MandatoryMarking<T extends string = string> = T & {
 export { MediaReference }
 
 export { MediaUpload }
+
+// @public (undocumented)
+interface Model {
+    	// (undocumented)
+    rid: string;
+}
+
+// @public (undocumented)
+function model(alias: string): Model;
+
+export { MultiLineString }
+
+export { MultiPoint }
+
+export { MultiPolygon }
 
 // @public (undocumented)
 interface Notification_2 {
@@ -188,6 +251,8 @@ export interface PlatformNotification {
 
 export { Point }
 
+export { Polygon }
+
 // @public (undocumented)
 export type Principal = {
     	type: "user"
@@ -207,6 +272,20 @@ export interface RidLinkTarget {
     type: "rid";
 }
 
+// @public (undocumented)
+export type Short<T extends number = number> = T & {
+    	_shortBrand?: void
+};
+
+// @public (undocumented)
+interface Source {
+    	// (undocumented)
+    rid: string;
+}
+
+// @public (undocumented)
+function source(alias: string): Source;
+
 export { ThreeDimensionalAggregation }
 
 // @public (undocumented)
@@ -217,7 +296,7 @@ export type TimestampISOString<T extends string = string> = T & {
 export { TwoDimensionalAggregation }
 
 // @public (undocumented)
-export function uploadMedia(client: Client, mediaUpload: MediaUpload): Promise<MediaReference>;
+export function uploadMedia(client: Client, mediaUpload: MediaUpload): Promise<Media>;
 
 // @public (undocumented)
 export interface UrlLinkTarget {

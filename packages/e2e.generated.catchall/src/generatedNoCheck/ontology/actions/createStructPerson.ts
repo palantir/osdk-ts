@@ -35,7 +35,7 @@ export namespace createStructPerson {
     readonly address?: ActionParam.StructType<{
       city: { type: 'string'; nullable: false };
       state: { type: 'string'; nullable: false };
-    }>;
+    }> | null;
 
     readonly name: ActionParam.PrimitiveType<'string'>;
   }
@@ -59,6 +59,11 @@ export namespace createStructPerson {
 
 /**
  * Create a struct
+ *
+ * **Note on null values:** _For optional parameters, explicitly providing a null value instead of undefined
+ * can change the behavior of the applied action. If prefills are configured, null prevents them
+ * from being applied. If a parameter modifies an object's property, null will clear the data from
+ * the object, whereas undefined would not modify that property._
  * @param {ActionParam.StructType<{"city":{"type":"string","nullable":false},"state":{"type":"string","nullable":false}}>} [address]
  * @param {ActionParam.PrimitiveType<"string">} name
  */
@@ -76,16 +81,19 @@ export interface createStructPerson extends ActionDefinition<createStructPerson.
     rid: 'ri.a.b.c.d';
     status: 'ACTIVE';
     type: 'action';
+    unsanitizedApiName: 'create-struct-person';
 
     signatures: createStructPerson.Signatures;
   };
   apiName: 'createStructPerson';
   type: 'action';
+  unsanitizedApiName: 'create-struct-person';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const createStructPerson: createStructPerson = {
   apiName: 'createStructPerson',
   type: 'action',
+  unsanitizedApiName: 'create-struct-person',
   osdkMetadata: $osdkMetadata,
 };

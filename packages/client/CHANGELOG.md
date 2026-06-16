@@ -1,5 +1,1020 @@
 # @osdk/client
 
+## 2.33.0
+
+### Patch Changes
+
+- @osdk/api@2.33.0
+- @osdk/client.unstable@2.33.0
+- @osdk/generator-converters@2.33.0
+
+## 2.32.0
+
+### Minor Changes
+
+- 06adca1: add $snapshot option to fetchPage
+- 79f8a6e: Stop serializing GeoJSON `Point` geometries into a `"lat,lon"` string when sending object property/parameter values. This broke geoshape values that are Points (the transaction edits and action endpoints rejected `"lat,lon"` with `InvalidTransactionEditPropertyValue` / invalid parameter for `GeoShape`). GeoJSON values are now passed through as objects, which the server accepts for both geoshape and geopoint/geohash targets. The FauxFoundry geohash action-parameter validator now also accepts GeoJSON objects, matching the real server.
+
+### Patch Changes
+
+- Updated dependencies [b5d0a61]
+- Updated dependencies [06adca1]
+- Updated dependencies [833f47a]
+  - @osdk/client.unstable@2.32.0
+  - @osdk/api@2.32.0
+  - @osdk/generator-converters@2.32.0
+  - @osdk/shared.test@2.24.0
+
+## 2.31.0
+
+### Minor Changes
+
+- 57cbc6d: Stop shipping Node-only test infrastructure in the browser builds of `@osdk/api` and `@osdk/client`.
+  - `@osdk/api`: the `__quickinfo_snapshot__/` test harness (formerly `probeUtils.ts` + `probes/*.ts`) is renamed under the existing `testUtils.` prefix convention so the transpile tool drops it from every build target. Pure test infrastructure; no runtime surface change.
+  - `@osdk/client`: the `./internal-node` subpath export is removed. The TypeScript-language-server harness it pointed at (`tsserver.ts`) has moved to a new private workspace package, `@osdk/shared.test.intellisense`, which both `@osdk/client` and `@osdk/react` consume as a dev dependency. This eliminates the `node:events` / `node:fs/promises` / `node:path` imports from the browser build and removes the project-internal subpath from the published client API.
+
+### Patch Changes
+
+- Updated dependencies [57cbc6d]
+  - @osdk/api@2.31.0
+  - @osdk/client.unstable@2.31.0
+  - @osdk/generator-converters@2.31.0
+  - @osdk/shared.test@2.23.0
+
+## 2.30.0
+
+### Minor Changes
+
+- db8df24: Allow `invalidateObjects` to accept interface instances (`Osdk.Instance<ObjectOrInterfaceDefinition>`).
+
+### Patch Changes
+
+- @osdk/api@2.30.0
+- @osdk/client.unstable@2.30.0
+- @osdk/generator-converters@2.30.0
+
+## 2.29.0
+
+### Minor Changes
+
+- 08e921c: Bump `foundry-platform-typescript` catalog to 2.63.0 and surface the new CBAC/MANDATORY marking subtype on `ObjectMetadata.Property` via a new `typeMetadata` discriminated-union field. For marking properties, `typeMetadata` is `{ type: "marking"; subtype?: "CBAC" | "MANDATORY" }`, letting consumers distinguish classification-based markings from mandatory markings on object property columns. Future per-`type` metadata should be added as additional variants of `typeMetadata` rather than as new top-level optionals on `Property`.
+- 4b38963: extend resolveToObjectType support to useLinks for interface link targets
+- 9081e32: use $title/$primaryKey special filters in object components and harden the observable matcher
+
+  ObjectSelectField now searches via the generic $title filter instead of resolving the title property from object metadata, and ObjectTable derives its row-selection object set via $primaryKey so interface-typed tables also produce a derived set on partial selection. The observable where-clause matcher no longer throws when $startsWith is evaluated against a null $title.
+
+### Patch Changes
+
+- Updated dependencies [08e921c]
+  - @osdk/api@2.29.0
+  - @osdk/generator-converters@2.29.0
+  - @osdk/shared.test@2.22.0
+  - @osdk/client.unstable@2.29.0
+
+## 2.28.0
+
+### Minor Changes
+
+- a5066b5: add resolveToObjectType option to useOsdkObjects so interface queries return full concrete object-type instances
+- 3e03544: fix crash when useLinks is called with an interface-typed source object
+- 13132b8: Fix writeable client reads not flushing staged edits: persist `flushEdits` onto the client context and wire it to the EditRequestManager so awaiting a read (fetchOne/fetchPage/aggregate/query) flushes pending creates/updates first.
+
+### Patch Changes
+
+- @osdk/shared.test@2.21.0
+- @osdk/api@2.28.0
+- @osdk/client.unstable@2.28.0
+- @osdk/generator-converters@2.28.0
+
+## 2.27.0
+
+### Minor Changes
+
+- 5ff7aa5: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.61.0` to `2.63.0`. The OntologyScenarios endpoints now expose a `preview` query-param slot, so `createScenario` and the `EXPERIMENTAL_ScenarioClient` read methods pass `{ preview: true }` directly instead of relying on a fetch-level URL rewrite.
+
+### Patch Changes
+
+- Updated dependencies [5ff7aa5]
+  - @osdk/generator-converters@2.27.0
+  - @osdk/api@2.27.0
+  - @osdk/client.unstable@2.27.0
+
+## 2.26.0
+
+### Patch Changes
+
+- @osdk/api@2.26.0
+- @osdk/client.unstable@2.26.0
+- @osdk/generator-converters@2.26.0
+
+## 2.25.0
+
+### Minor Changes
+
+- 8965bdf: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+- 8965bdf: Add `withScenario(client, scenarioRid)` and `createScenario(client)` helpers in `@osdk/client/unstable-do-not-use` for attaching to or minting an ontology scenario, and plumb `scenarioRid` through the client to `applyAction`, `fetchPage`, `aggregate`, and `applyQuery`. Beta — surface may change.
+- bd90dba: Add end-to-end support for `scenarioReference` action parameters:
+  - `@osdk/api` adds `"scenarioReference"` to `ActionMetadata.DataType.BaseActionParameterTypes` and a matching `scenarioReference: ScenarioClient` entry in `DataValueClientToWire` (structurally typed as `{ getScenarioReference(): { scenarioRid } }` to avoid a circular dep on `@osdk/client`).
+  - `@osdk/generator-converters` maps the wire `scenarioReference` variant into the primitive type.
+  - Generated SDKs now emit `ActionParam.PrimitiveType<"scenarioReference">` (resolves to `ScenarioClient`) for scenarioReference parameters, instead of throwing at SDK build time.
+  - `@osdk/client`'s `toDataValue` accepts a `ScenarioClient` and serializes it to the rid string the platform expects.
+  - `@osdk/react-components`'s ActionForm renders scenarioReference parameters as `UNSUPPORTED` for now.
+
+  Enables `client(ScenarioMerge).applyAction({ scenario })` end-to-end in generated SDKs.
+
+- 643c450: Add `getEditedEntityTypes`, `getEditedEntities` (paginated), and `editedEntitiesAsyncIter` (auto-paginating, deduped) methods to `ScenarioClient`. Lets consumers discover which object types and primary keys have been edited within a scenario for diff and merge workflows. Beta — surface may change.
+- d0845dd: Add `getEditedLinkTypes`, `getEditedLinks` (paginated, flattened to directed link triples), and `editedLinksAsyncIter` (auto-paginating, deduped by source/target pk) methods to `ScenarioClient`. Mirrors the existing `experimental_asyncIterLinks` shape on ObjectSet. Many-to-many only — one-to-many edits surface via `getEditedEntities` on the FK-owning object type. Beta — surface may change.
+
+### Patch Changes
+
+- Updated dependencies [8965bdf]
+- Updated dependencies [bd90dba]
+  - @osdk/generator-converters@2.25.0
+  - @osdk/api@2.25.0
+  - @osdk/shared.test@2.20.0
+  - @osdk/client.unstable@2.25.0
+
+## 2.24.0
+
+### Minor Changes
+
+- a492285: Add $title and $primaryKey special property filters to where clauses
+- 60aff19: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+- 35ad6d1: Resolve action applications before broad cache invalidation refreshes complete.
+- 6923158: Fix empty filter case
+
+### Patch Changes
+
+- Updated dependencies [a492285]
+- Updated dependencies [60aff19]
+  - @osdk/api@2.24.0
+  - @osdk/generator-converters@2.24.0
+  - @osdk/shared.test@2.19.0
+  - @osdk/client.unstable@2.24.0
+
+## 2.23.0
+
+### Minor Changes
+
+- 8290dd7: Unwrap `$primaryKey` and `$title` when they are returned as secured property values, and include them as keys in `$propertySecurities` (both at the type level and at runtime, including interface views).
+
+### Patch Changes
+
+- Updated dependencies [9fb5afb]
+- Updated dependencies [198f219]
+- Updated dependencies [ef156b6]
+- Updated dependencies [8290dd7]
+  - @osdk/generator-converters@2.23.0
+  - @osdk/api@2.23.0
+  - @osdk/client.unstable@2.23.0
+  - @osdk/shared.test@2.18.0
+
+## 2.22.0
+
+### Patch Changes
+
+- @osdk/api@2.22.0
+- @osdk/client.unstable@2.22.0
+- @osdk/generator-converters@2.22.0
+
+## 2.21.0
+
+### Minor Changes
+
+- 1a07c91: Clean up unstable interface code: remove the `$__UNSTABLE_useOldInterfaceApis` fetch option and its old `OntologyInterfaces.search`-based code path, consolidate `convertWireToOsdkObjects` / `convertWireToOsdkObjects2` into a single factory backed by `loadMultipleObjectTypes`, and rename `__UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition` / `__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst` (the latter is generator-internal). The unused `v2` parameter on `wireInterfaceTypeV2ToSdkObjectDefinition` is also removed.
+- 2db1450: Fix ObjectSetQuery not revalidating when an action edits a type that the query's RDP traverses. Previously only ListQuery (used by useOsdkObjects) checked the RDP invalidation set; ObjectSetQuery (used by useObjectSet) only matched the base object type, leaving RDP columns stale after actions edited a linked type such as Office.
+
+### Patch Changes
+
+- Updated dependencies [1a07c91]
+  - @osdk/api@2.21.0
+  - @osdk/generator-converters@2.21.0
+  - @osdk/shared.test@2.17.0
+  - @osdk/client.unstable@2.21.0
+
+## 2.20.0
+
+### Minor Changes
+
+- f90a2da: fix $as on objects fetched with $loadPropertySecurityMetadata
+- 9eb67e4: Add experimental support for streaming queries via the `__EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction` marker.
+- 51b3bce: Modify uploadMedia to return a Media object
+- 75f877f: `createClientFromWriteableClient` now accepts an optional `options` argument to override `transactionId`, `baseUrl`, `ontologyRid`, or `tokenProvider` from the source client. `applyAction` also now throws when batch actions are invoked on a client with an active transaction id, since batch actions are not supported for staged edit functions.
+
+### Patch Changes
+
+- Updated dependencies [9eb67e4]
+  - @osdk/api@2.20.0
+  - @osdk/generator-converters@2.20.0
+  - @osdk/shared.test@2.16.0
+  - @osdk/client.unstable@2.20.0
+
+## 2.19.0
+
+### Minor Changes
+
+- 02c796c: Array Reducers and Struct Main Value support
+- 2a2b672: Add `@osdk/client/experimental` entry point exposing `createClientWithTransaction` and a new `createClientFromWriteableClient` that clones a writeable client's base URL, ontology, token provider, and transaction id while discarding its fetch implementation.
+- d962309: Add ability to subscribe to an object set RID without a type, experimentally.
+
+### Patch Changes
+
+- Updated dependencies [02c796c]
+- Updated dependencies [d962309]
+  - @osdk/generator-converters@2.19.0
+  - @osdk/shared.test@2.15.0
+  - @osdk/api@2.19.0
+  - @osdk/client.unstable@2.19.0
+
+## 2.18.0
+
+### Minor Changes
+
+- 69ebc43: Fix function-backed columns and lists with derived properties rendering stale values after an action edits a related object. ObjectTable's `useFunctionColumnsData` now passes the page's row PKs as `dependsOnObjects` to the underlying `useOsdkFunctions`, and function `ColumnDefinition` locators now accept an optional `dependsOn: string[]` for declaring linked object types the function reads server-side. Lists whose `withProperties` traverse linked types now also revalidate when an action edits one of those linked types. The action invalidation path fans out per-type invalidation in a single walk while the optimistic layer is still on top, so fresh values land in truth before the optimistic layer drops.
+- 85a248d: fix list hooks emitting undefined entries during deletes
+
+  • register `changes.deleted` when `propagateWrite` writes a tombstone, so list/objectset queries drop the cache key in the same batch (fixes `useOsdkObjects` + `applyAction(delete)` and optimistic deletes)
+  • same fix applied to streaming-driven removals in `BaseListQuery.onOswRemoved`
+
+### Patch Changes
+
+- @osdk/shared.test@2.14.0
+- @osdk/api@2.18.0
+- @osdk/client.unstable@2.18.0
+- @osdk/generator-converters@2.18.0
+
+## 2.17.0
+
+### Minor Changes
+
+- 147166c: fix typing so `$loadPropertySecurityMetadata: true` is accepted on the experimental `fetchPageByRid` client method, and `$propertySecurities` is properly typed on returned objects.
+
+### Patch Changes
+
+- Updated dependencies [147166c]
+  - @osdk/api@2.17.0
+  - @osdk/client.unstable@2.17.0
+  - @osdk/generator-converters@2.17.0
+
+## 2.16.0
+
+### Minor Changes
+
+- 56c5630: Drop redundant `--config $(find-up dprint.json)` from `lint`, `fix-lint`, and `format` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the substitution was a no-op anyway since `find-up` is an npm package, not a CLI. Also fix the `uploadMediaOntologyEdits` documentation example so its `// @ts-ignore` survives dprint reformatting (the broken `format` step had been masking this).
+- 17d7ba2: Fill in missing `@param`, `@example`, and `@returns` tags on JSDoc across the public surface of `@osdk/api` and `@osdk/client`: `ObjectSet` methods, the derived-property `Builder` chain and `NumericExpressions` / `DatetimeExpressions` chains, the `Logger` interface, `Attachment` and `Media` accessors, `TimeSeriesProperty` / `GeotimeSeriesProperty` single-point methods, the top-level `Client` callable and `fetchMetadata`, and the `createClient` factory.
+
+### Patch Changes
+
+- Updated dependencies [56c5630]
+- Updated dependencies [ebc5f0c]
+- Updated dependencies [17d7ba2]
+  - @osdk/api@2.16.0
+  - @osdk/client.unstable@2.16.0
+  - @osdk/generator-converters@2.16.0
+  - @osdk/shared.client.impl@1.12.0
+  - @osdk/shared.net.errors@2.10.0
+  - @osdk/shared.net.fetch@1.10.0
+  - @osdk/shared.test@2.14.0
+
+## 2.15.0
+
+### Minor Changes
+
+- 203331e: GA: promote modern hooks from `@osdk/react/experimental` to the main entry, rename `@osdk/react/experimental/admin` → `@osdk/react/platform-apis`, consolidate to a single `OsdkProvider`. Promote `ObservableClient` and supporting types out of `@osdk/client/unstable-do-not-use` to a new stable `@osdk/client/observable` entry so the GA hooks no longer depend on a "do not use" entry point. The previous import paths and symbol names are kept as `@deprecated` shims so 0.x consumers can upgrade without code changes.
+
+  #### `@osdk/client` (minor)
+  - new stable entry point `@osdk/client/observable` exposes `createObservableClient`, `ObservableClient` (and its `CacheEntry`, `CacheSnapshot`, `CanonicalizedOptions`, `CanonicalizeOptionsInput`, `Observer`, `ObserveLinks`, `ObserveAggregationArgs`, `ObserveFunctionCallbackArgs`, `ObserveFunctionOptions`, `ObserveObjectCallbackArgs`, `ObserveObjectsCallbackArgs`, `ObserveObjectSetArgs`, `Unsubscribable` types), and the supporting `ActionSignatureFromDef`, `QueryParameterType`, `QueryReturnType` types
+  - these symbols are still re-exported from `@osdk/client/unstable-do-not-use` as `@deprecated` shims; new code should import from `@osdk/client/observable`
+
+  #### `@osdk/react` (minor)
+  - `OsdkProvider`, `useOsdkObjects`, `useOsdkObject`, `useOsdkAction`, `useLinks`, `useObjectSet`, `useOsdkAggregation`, `useOsdkFunction`, `useOsdkFunctions`, `useStableObjectSet`, `useRegisterUserAgent`, `useDebouncedCallback`, devtools registry re-exports are now exported directly from `@osdk/react`
+  - admin / CBAC platform hooks (`useFoundryUser`, `useCurrentFoundryUser`, `useFoundryUsersList`, `useMarkings`, `useMarkingCategories`, `useUserViewMarkings`, `useCbacBanner`, `useCbacMarkingRestrictions`) now live at `@osdk/react/platform-apis` and still require the optional `@osdk/foundry.admin` + `@osdk/foundry.core` peers
+  - the previous `OsdkProvider2` is now just `OsdkProvider`. The legacy `OsdkProvider` body is gone, but `useOsdkClient` and `useOsdkMetadata` keep working since the new provider supplies the same `client` shape
+  - `<OsdkProvider>` no longer accepts an `observableClient` prop. The provider always derives its `ObservableClient` from `client` so the two cannot diverge. Tests that need to stub the observable layer should import `TestOsdkProvider` from `@osdk/react/testing`. `OsdkProvider2` (the deprecated alias) inherits this — it also no longer accepts `observableClient`
+  - `useOsdkClient2` is unified into `useOsdkClient`; the unified hook now reads from the modern context (same `client` shape)
+  - `peerDependencies` on `@osdk/api` and `@osdk/client` resolve to `^2.15.0` so `@osdk/react@2.15` cannot install against a `@osdk/client` that lacks the new `./observable` entry
+
+  #### `@osdk/react-components` (patch)
+  - update internal imports for `@osdk/react` GA — `@osdk/react/experimental` → `@osdk/react` and `@osdk/react/experimental/admin` → `@osdk/react/platform-apis`
+  - update `QueryParameterType` import from `@osdk/client/unstable-do-not-use` → `@osdk/client/observable`
+  - bump `@osdk/react` peer range to `^2.15.0`
+
+  #### `@osdk/react-devtools` (patch)
+  - update observable-related imports from `@osdk/client/unstable-do-not-use` → `@osdk/client/observable`
+
+  #### `@osdk/cbac-components` (patch)
+  - update internal imports for `@osdk/react` GA — `@osdk/react/experimental` → `@osdk/react` and `@osdk/react/experimental/admin` → `@osdk/react/platform-apis`
+
+  #### Compatibility shims
+
+  These keep working in `@osdk/react@2.15` and `@osdk/client@2.15`, marked `@deprecated` so editors surface a strikethrough:
+  - `import { ... } from "@osdk/react/experimental"` re-exports everything now exported from `@osdk/react`, plus `OsdkProvider as OsdkProvider2` and `useOsdkClient as useOsdkClient2`
+  - `import { ... } from "@osdk/react/experimental/admin"` re-exports everything now exported from `@osdk/react/platform-apis`
+  - `import { createObservableClient, ObservableClient, ... } from "@osdk/client/unstable-do-not-use"` re-exports the symbols now in `@osdk/client/observable`
+  - `import { ... } from "@osdk/react/experimental/aip"` is unchanged — AIP is still in beta
+
+  These shims will be removed in a future major.
+
+  #### Migration
+
+  For consumers upgrading from `@osdk/react@0.x`:
+  - `import { ... } from "@osdk/react/experimental"` → `import { ... } from "@osdk/react"`
+  - `import { ... } from "@osdk/react/experimental/admin"` → `import { ... } from "@osdk/react/platform-apis"` (still requires the optional `@osdk/foundry.admin` + `@osdk/foundry.core` peers)
+  - `<OsdkProvider2 ...>` → `<OsdkProvider ...>` (the modern provider takes the bare name)
+  - if you were passing `observableClient={...}` to `<OsdkProvider>` or `<OsdkProvider2>` (in tests), import `TestOsdkProvider` from `@osdk/react/testing` and use that instead — production code does not need to change
+  - `useOsdkClient2()` → `useOsdkClient()` (the unified hook reads from the modern context — same `client` shape, no API change at the call site)
+  - bump `@osdk/client` and `@osdk/api` to `^2.15.0` to satisfy the new peer ranges
+
+  For consumers reaching directly into `@osdk/client/unstable-do-not-use` for observable APIs:
+  - `import { createObservableClient, ObservableClient, ... } from "@osdk/client/unstable-do-not-use"` → `import { ... } from "@osdk/client/observable"`
+  - the symbols moved: `createObservableClient`, `ObservableClient`, `CacheEntry`, `CacheSnapshot`, `CanonicalizedOptions`, `CanonicalizeOptionsInput`, `Observer`, `ObserveLinks`, `ObserveAggregationArgs`, `ObserveFunctionCallbackArgs`, `ObserveFunctionOptions`, `ObserveObjectCallbackArgs`, `ObserveObjectsCallbackArgs`, `ObserveObjectSetArgs`, `Unsubscribable`, `ActionSignatureFromDef`, `QueryParameterType`, `QueryReturnType`
+
+### Patch Changes
+
+- @osdk/api@2.15.0
+- @osdk/client.unstable@2.15.0
+- @osdk/generator-converters@2.15.0
+- @osdk/shared.test@2.13.0
+
+## 2.14.0
+
+### Minor Changes
+
+- f12977d: fix useOsdkObject returning stale data when two hooks request the same object with different $select
+- eb36e21: internal plumbing for upcoming `$includeAllBaseObjectProperties` option on observable hooks; no public behavior change. adds a no-op getter on `BaseListQuery` (subclasses opt in), threads the flag through `ObjectsHelper.storeOsdkInstances`, and exposes a `$includeAllBaseObjectProperties` field on `ObserveObjectOptions` that has no consumer yet.
+- d892397: expose `$includeAllBaseObjectProperties` on `useLinks` and on the underlying `ObservableClient.observeLinks`. When set against a link whose target is an interface, the server returns the underlying concrete object's full property set so `obj.$as(ConcreteType)` yields a fully-populated concrete object. The flag is dropped at fetch time when the link target is an object type and does not narrow the returned `Osdk.Instance` type.
+- c5a6047: expose `$includeAllBaseObjectProperties` on `useOsdkObject` and on the underlying `ObservableClient.observeObject`. When set against an interface query, the server returns the underlying concrete object's full property set so `obj.$as(ConcreteType)` yields a fully-populated concrete object. The flag is dropped for non-interface queries and does not narrow the returned `Osdk.Instance` type.
+- 45be476: expose `$includeAllBaseObjectProperties` on `useOsdkObjects` and on the underlying `ObservableClient.observeList`. When set against an interface query, the server returns the underlying concrete object's full property set so `obj.$as(ConcreteType)` yields a fully-populated concrete object. The flag is dropped for non-interface queries and does not narrow the returned `Osdk.Instance` type.
+- 20e9678: Wrap `@example` JSDoc blocks in fenced ts/tsx code blocks so VS Code's Markdown renderer preserves whitespace and applies syntax highlighting.
+
+### Patch Changes
+
+- Updated dependencies [bab1421]
+- Updated dependencies [2f40eee]
+- Updated dependencies [20e9678]
+  - @osdk/client.unstable@2.14.0
+  - @osdk/api@2.14.0
+  - @osdk/generator-converters@2.14.0
+  - @osdk/shared.test@2.12.0
+
+## 2.13.0
+
+### Minor Changes
+
+- 7b457a5: Fix function column with derived properties
+
+### Patch Changes
+
+- @osdk/api@2.13.0
+- @osdk/client.unstable@2.13.0
+- @osdk/generator-converters@2.13.0
+- @osdk/shared.test@2.11.0
+
+## 2.12.0
+
+### Minor Changes
+
+- 19b7913: fix link query refresh for per-pk invalidation and interface-typed targets
+  - kick `specificLink` queries from `Store.invalidateObject` so per-pk invalidation refreshes link queries (was only handled at type-level)
+  - fix `SpecificLinkQuery.invalidateObjectType` so interface-implementation matching on object-type targets isn't silently skipped
+  - fix `BaseListQuery.rdpConfig` index collision (`SpecificLinkCacheKey.otherKeys[4]` is the link name, not the rdp config); make `rdpConfig` abstract with concrete overrides per subclass
+
+- 01fbb74: fix infinite re-render loop when passing inline withProperties RDPs to useOsdkObjects, useObjectSet, and useOsdkAggregation
+- df1a4f8: Normalize `baseUrl` inside `createSharedClientContext` so it always ends with `/`, enabling RFC 3986-correct URL resolution at call sites. `createPlatformClient` and `createMinimalClient` rely on this normalization instead of duplicating it.
+- 46a00bc: Export `createMediaFromReference` from `@osdk/client/internal` for hydrating a `Media` object from a `MediaReference` outside of an object property context.
+- 267f324: warn and ignore streamUpdates when combined with withProperties
+
+### Patch Changes
+
+- Updated dependencies [91f34a9]
+- Updated dependencies [df1a4f8]
+  - @osdk/api@2.12.0
+  - @osdk/shared.client.impl@1.11.0
+  - @osdk/generator-converters@2.12.0
+  - @osdk/shared.test@2.10.0
+  - @osdk/client.unstable@2.12.0
+
+## 2.11.0
+
+### Minor Changes
+
+- 58248f8: Move @osdk/client.test.ontology from peerDependencies to devDependencies to fix npm resolution errors in consuming repos
+- e456da5: Add Fetch-User-Agent tracing headers for React layer network calls
+
+### Patch Changes
+
+- Updated dependencies [a6f4208]
+  - @osdk/client.unstable@2.11.0
+  - @osdk/api@2.11.0
+  - @osdk/generator-converters@2.11.0
+
+## 2.10.0
+
+### Minor Changes
+
+- 29ab35a: Use workspace:^ for peer dependencies to prevent changesets from propagating major bumps when a peer dep receives a minor version change. The internal codegen (`osdk-unstable-typescript generate --internal`) now emits `workspace:^` for peer deps while keeping `workspace:~` for regular/dev deps.
+- 0fb9c8a: fix invalidateObjectType to match queries where the result type differs from apiName (e.g. link traversal queries)
+- f01a8f4: improvements(build): significant reduction in build task graphs
+- f34a1ce: prevent streamUpdates from being used with pivotTo since the server does not support websocket subscriptions for link-traversal queries
+- 7e7f70b: Fix sorting on ObjectTable when the object set contains a reference type (e.g., intersect with a temporary object set)
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+  - @osdk/client.test.ontology@2.10.0
+  - @osdk/generator-converters@2.10.0
+  - @osdk/shared.client.impl@1.10.0
+  - @osdk/shared.net.errors@2.9.0
+  - @osdk/shared.net.fetch@1.9.0
+  - @osdk/client.unstable@2.10.0
+  - @osdk/shared.test@2.9.0
+  - @osdk/api@2.10.0
+
+## 2.9.0
+
+### Minor Changes
+
+- f8b9f12: Cache results from useOsdkFunctions
+- bcf359f: Add new headers options for OSDK clients
+- 0b349bd: Fix returned objectSet in ObjectSetQuery
+- 12f9b36: add devtools interfaces and hook metadata for react-devtools integration
+- cbc8e9c: Add recursive query support
+- 9171453: Alphabetize code generation for sdk.
+- e8d14a0: Expose an experimental helper to add media transformation capabilities via transformAndWait
+- 51ccca8: Refactor hooks to use canonicalizeOptions for stable memo keys, add objectSet/hasMore/refetch to useOsdkObjects return, support undefined objectSet in useObjectSet
+- fb85818: add MediaHelper and client media wiring
+- ec06b26: revert build improvements from #2987
+- 2394ca7: Adding regex matching for string filters.
+
+### Patch Changes
+
+- Updated dependencies [bcf359f]
+- Updated dependencies [cbc8e9c]
+- Updated dependencies [9171453]
+- Updated dependencies [e8d14a0]
+- Updated dependencies [2394ca7]
+  - @osdk/shared.client.impl@1.9.0
+  - @osdk/generator-converters@2.9.0
+  - @osdk/api@2.9.0
+  - @osdk/client.unstable@2.9.0
+
+## 2.8.0
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+- c40444b: Add linkedObjectsBySourcePrimaryKey to link observation responses
+- 09e5659: add $select support to observable client and react hooks
+- abb0e0f: Bump Platform SDK dependencies
+- fceb4ce: Fix canonicalization for order-independent where clauses and orderBy keys, add ObjectSetArrayCanonicalizer for set operations, improve ObjectSetQuery with in-memory updates and deletion handling
+- 520398c: Add canonicalizeOptions API to ObservableClient for stable memo keys in React hooks, add objectSet to list payload
+- 73e617e: expose dedupeInterval on useLinks and fix forced revalidation bypassing dedupeInterval
+- cbfa135: Fix aggregation return type for empty object sets
+- c8384de: Add experimental branch param.
+- f294f5a: Remove literal support before GA.
+- dfc8019: Preserve derived property values when subscription updates write to RDP cache keys
+- 599426b: expose $loadPropertySecurityMetadata option in observable client and react hooks
+- e64bf0b: Expose getWireObjectSet, isObjectSet, and WireObjectSet type for reading wire object set definitions
+- 27a5902: Filter derived property keys from websocket object set subscriptions
+- f4604c2: fix aggregate endpoint errors crashing instead of surfacing server error
+- 642be5f: fix divide() sending wrong wire type and clean up list query view
+- baba327: return data=undefined during initial loading instead of data=[] to distinguish no data loaded yet from empty results
+- 8825f8c: fix InterfaceListQuery ignoring rids option when creating object sets
+- 2b01323: fix ObjectCacheKeyRegistry leak where unregister was never called during GC cleanup
+- 8c60682: Fix shared ListQuery pageSize not respected for late-joining views
+- dda14be: Fix pagination sort shuffling by using declarative update types
+- ffc6efe: Fix query map parsing to allow nullable values in map entries
+- 2855223: fix autoFetchMore not working when another subscriber creates the shared query first
+- 15e1686: support rids with pivotTo in observable list queries
+- 26cec61: Improves invalid where clause undefined key error message
+- d1ad4d1: Fix remapping query responses with structs that have null fields.
+- 0d174a2: useOsdkFunction typing updates
+- d284bf2: add media types, caching, and metadata query
+- 4ef6adc: Fix interface links off of objects
+- 2ebe62c: package and bundle size optimizations
+- 60b5ffb: Add `platformApiName` field to actions to preserve the original API name used by the Foundry platform
+- abb0e0f: Add transactionId to Actions.apply call
+- 8c30908: Add support for lt and gt strings.
+- 4cd7389: Remove delay dependency
+- 92e7297: add shape transformations, link resolution, and observable support
+- 35f2f1a: Add Media inputs/outputs for Queries
+- c9d954d: Add `tokenStorage` option to `createPublicOauthClient` to control refresh token storage. Supports `'localStorage'` (default), `'sessionStorage'` (recommended for shared devices), or `'none'` (most secure, re-authenticates on every page load).
+- 044eb80: unify RDP canonicalization between useOsdkObjects and useObjectSet
+- 9d234b9: support multi object usage in useLinks
+- f5f95e2: support interface link constraints
+- 46f0a47: Update platform SDK to 2.57.0 and handle new typeReference query data type
+- 4470c0d: Add support to execute queries on branches.
+- d80c234: add interface support to useOsdkObject
+- 61e33ab: Add support for interval queries
+- 71e28ef: Allow interface object sets in useObjectSet
+- 5848e3c: add a new View abstraction layer to fix a pageSize caching bug where multiple subscribers with different pageSize values would share cached data incorrectly
+
+### Patch Changes
+
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [4bb9769]
+- Updated dependencies [abb0e0f]
+- Updated dependencies [f294f5a]
+- Updated dependencies [4a79eb1]
+- Updated dependencies [f487a6a]
+- Updated dependencies [e462938]
+- Updated dependencies [6499ff9]
+- Updated dependencies [034081a]
+- Updated dependencies [0df859a]
+- Updated dependencies [d284bf2]
+- Updated dependencies [4ef6adc]
+- Updated dependencies [60b5ffb]
+- Updated dependencies [8c30908]
+- Updated dependencies [4a856cb]
+- Updated dependencies [b68cebd]
+- Updated dependencies [35f2f1a]
+- Updated dependencies [972bda6]
+- Updated dependencies [6941b4f]
+- Updated dependencies [46f0a47]
+- Updated dependencies [4470c0d]
+- Updated dependencies [61e33ab]
+  - @osdk/api@2.8.0
+  - @osdk/client.unstable@2.8.0
+  - @osdk/generator-converters@2.8.0
+  - @osdk/shared.client.impl@1.8.0
+  - @osdk/shared.net.errors@2.8.0
+  - @osdk/shared.net.fetch@1.8.0
+
+## 2.8.0-beta.32
+
+### Minor Changes
+
+- 46f0a47: Update platform SDK to 2.57.0 and handle new typeReference query data type
+
+### Patch Changes
+
+- Updated dependencies [46f0a47]
+  - @osdk/generator-converters@2.8.0-beta.32
+  - @osdk/api@2.8.0-beta.32
+  - @osdk/client.unstable@2.8.0-beta.32
+
+## 2.8.0-beta.31
+
+### Minor Changes
+
+- 2b01323: fix ObjectCacheKeyRegistry leak where unregister was never called during GC cleanup
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.31
+- @osdk/client.unstable@2.8.0-beta.31
+- @osdk/generator-converters@2.8.0-beta.31
+
+## 2.8.0-beta.30
+
+### Minor Changes
+
+- 4ef6adc: Fix interface links off of objects
+
+### Patch Changes
+
+- Updated dependencies [4ef6adc]
+  - @osdk/api@2.8.0-beta.30
+  - @osdk/client.unstable@2.8.0-beta.30
+  - @osdk/generator-converters@2.8.0-beta.30
+
+## 2.8.0-beta.29
+
+### Minor Changes
+
+- 520398c: Add canonicalizeOptions API to ObservableClient for stable memo keys in React hooks, add objectSet to list payload
+- ffc6efe: Fix query map parsing to allow nullable values in map entries
+
+### Patch Changes
+
+- Updated dependencies [4a856cb]
+  - @osdk/api@2.8.0-beta.29
+  - @osdk/client.unstable@2.8.0-beta.29
+  - @osdk/generator-converters@2.8.0-beta.29
+
+## 2.8.0-beta.28
+
+### Minor Changes
+
+- f294f5a: Remove literal support before GA.
+- 2855223: fix autoFetchMore not working when another subscriber creates the shared query first
+- d284bf2: add media types, caching, and metadata query
+
+### Patch Changes
+
+- Updated dependencies [f294f5a]
+- Updated dependencies [d284bf2]
+- Updated dependencies [b68cebd]
+  - @osdk/api@2.8.0-beta.28
+  - @osdk/client.unstable@2.8.0-beta.28
+  - @osdk/generator-converters@2.8.0-beta.28
+
+## 2.8.0-beta.27
+
+### Minor Changes
+
+- fceb4ce: Fix canonicalization for order-independent where clauses and orderBy keys, add ObjectSetArrayCanonicalizer for set operations, improve ObjectSetQuery with in-memory updates and deletion handling
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.27
+- @osdk/client.unstable@2.8.0-beta.27
+- @osdk/generator-converters@2.8.0-beta.27
+
+## 2.8.0-beta.26
+
+### Minor Changes
+
+- 599426b: expose $loadPropertySecurityMetadata option in observable client and react hooks
+- 60b5ffb: Add `platformApiName` field to actions to preserve the original API name used by the Foundry platform
+- 61e33ab: Add support for interval queries
+
+### Patch Changes
+
+- Updated dependencies [60b5ffb]
+- Updated dependencies [61e33ab]
+  - @osdk/api@2.8.0-beta.26
+  - @osdk/generator-converters@2.8.0-beta.26
+  - @osdk/client.unstable@2.8.0-beta.26
+
+## 2.8.0-beta.25
+
+### Patch Changes
+
+- Updated dependencies [0df859a]
+  - @osdk/api@2.8.0-beta.25
+  - @osdk/client.unstable@2.8.0-beta.25
+  - @osdk/generator-converters@2.8.0-beta.25
+
+## 2.8.0-beta.24
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.24
+- @osdk/client.unstable@2.8.0-beta.24
+- @osdk/generator-converters@2.8.0-beta.24
+
+## 2.8.0-beta.23
+
+### Patch Changes
+
+- Updated dependencies [4bb9769]
+  - @osdk/api@2.8.0-beta.23
+  - @osdk/client.unstable@2.8.0-beta.23
+  - @osdk/generator-converters@2.8.0-beta.23
+
+## 2.8.0-beta.22
+
+### Minor Changes
+
+- cbfa135: Fix aggregation return type for empty object sets
+- f4604c2: fix aggregate endpoint errors crashing instead of surfacing server error
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.22
+- @osdk/client.unstable@2.8.0-beta.22
+- @osdk/generator-converters@2.8.0-beta.22
+
+## 2.8.0-beta.21
+
+### Minor Changes
+
+- c40444b: Add linkedObjectsBySourcePrimaryKey to link observation responses
+- dda14be: Fix pagination sort shuffling by using declarative update types
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.21
+- @osdk/client.unstable@2.8.0-beta.21
+- @osdk/generator-converters@2.8.0-beta.21
+
+## 2.8.0-beta.20
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.20
+- @osdk/client.unstable@2.8.0-beta.20
+- @osdk/generator-converters@2.8.0-beta.20
+
+## 2.8.0-beta.19
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.19
+- @osdk/client.unstable@2.8.0-beta.19
+- @osdk/generator-converters@2.8.0-beta.19
+
+## 2.8.0-beta.18
+
+### Minor Changes
+
+- c8384de: Add experimental branch param.
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.18
+- @osdk/client.unstable@2.8.0-beta.18
+- @osdk/generator-converters@2.8.0-beta.18
+
+## 2.8.0-beta.17
+
+### Minor Changes
+
+- 8c30908: Add support for lt and gt strings.
+
+### Patch Changes
+
+- Updated dependencies [8c30908]
+  - @osdk/api@2.8.0-beta.17
+  - @osdk/client.unstable@2.8.0-beta.17
+  - @osdk/generator-converters@2.8.0-beta.17
+
+## 2.8.0-beta.16
+
+### Minor Changes
+
+- 09e5659: add $select support to observable client and react hooks
+- 2ebe62c: package and bundle size optimizations
+
+### Patch Changes
+
+- Updated dependencies [6941b4f]
+  - @osdk/client.unstable@2.8.0-beta.16
+  - @osdk/api@2.8.0-beta.16
+  - @osdk/generator-converters@2.8.0-beta.16
+
+## 2.8.0-beta.15
+
+### Minor Changes
+
+- dfc8019: Preserve derived property values when subscription updates write to RDP cache keys
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.15
+- @osdk/client.unstable@2.8.0-beta.15
+- @osdk/generator-converters@2.8.0-beta.15
+
+## 2.8.0-beta.14
+
+### Minor Changes
+
+- e64bf0b: Expose getWireObjectSet, isObjectSet, and WireObjectSet type for reading wire object set definitions
+- baba327: return data=undefined during initial loading instead of data=[] to distinguish no data loaded yet from empty results
+- d1ad4d1: Fix remapping query responses with structs that have null fields.
+- 35f2f1a: Add Media inputs/outputs for Queries
+- 71e28ef: Allow interface object sets in useObjectSet
+
+### Patch Changes
+
+- Updated dependencies [35f2f1a]
+  - @osdk/api@2.8.0-beta.14
+  - @osdk/client.unstable@2.8.0-beta.14
+  - @osdk/generator-converters@2.8.0-beta.14
+  - @osdk/shared.client.impl@1.8.0-beta.2
+  - @osdk/shared.net.errors@2.8.0-beta.2
+  - @osdk/shared.net.fetch@1.8.0-beta.2
+
+## 2.8.0-beta.13
+
+### Minor Changes
+
+- 4470c0d: Add support to execute queries on branches.
+
+### Patch Changes
+
+- Updated dependencies [4470c0d]
+  - @osdk/generator-converters@2.8.0-beta.13
+  - @osdk/api@2.8.0-beta.13
+  - @osdk/client.unstable@2.8.0-beta.13
+
+## 2.8.0-beta.12
+
+### Minor Changes
+
+- 8825f8c: fix InterfaceListQuery ignoring rids option when creating object sets
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.12
+- @osdk/client.unstable@2.8.0-beta.12
+- @osdk/generator-converters@2.8.0-beta.12
+
+## 2.8.0-beta.11
+
+### Minor Changes
+
+- 642be5f: fix divide() sending wrong wire type and clean up list query view
+- 525f277: update useOsdkAggregation to support composed object sets, async
+- f5f95e2: support interface link constraints
+- d80c234: add interface support to useOsdkObject
+
+### Patch Changes
+
+- Updated dependencies [f487a6a]
+  - @osdk/client.unstable@2.8.0-beta.11
+  - @osdk/api@2.8.0-beta.11
+  - @osdk/generator-converters@2.8.0-beta.11
+
+## 2.8.0-beta.10
+
+### Minor Changes
+
+- 27a5902: Filter derived property keys from websocket object set subscriptions
+
+### Patch Changes
+
+- Updated dependencies [972bda6]
+  - @osdk/client.unstable@2.8.0-beta.10
+  - @osdk/api@2.8.0-beta.10
+  - @osdk/generator-converters@2.8.0-beta.10
+
+## 2.8.0-beta.9
+
+### Minor Changes
+
+- abb0e0f: Bump Platform SDK dependencies
+- abb0e0f: Add transactionId to Actions.apply call
+
+### Patch Changes
+
+- Updated dependencies [abb0e0f]
+  - @osdk/generator-converters@2.8.0-beta.9
+  - @osdk/api@2.8.0-beta.9
+  - @osdk/client.unstable@2.8.0-beta.9
+
+## 2.8.0-beta.8
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.8
+- @osdk/client.unstable@2.8.0-beta.8
+- @osdk/generator-converters@2.8.0-beta.8
+
+## 2.8.0-beta.7
+
+### Minor Changes
+
+- 4cd7389: Remove delay dependency
+
+### Patch Changes
+
+- Updated dependencies [034081a]
+  - @osdk/client.unstable@2.8.0-beta.7
+  - @osdk/api@2.8.0-beta.7
+  - @osdk/generator-converters@2.8.0-beta.7
+
+## 2.8.0-beta.6
+
+### Minor Changes
+
+- 8c60682: Fix shared ListQuery pageSize not respected for late-joining views
+- 15e1686: support rids with pivotTo in observable list queries
+- c9d954d: Add `tokenStorage` option to `createPublicOauthClient` to control refresh token storage. Supports `'localStorage'` (default), `'sessionStorage'` (recommended for shared devices), or `'none'` (most secure, re-authenticates on every page load).
+- 044eb80: unify RDP canonicalization between useOsdkObjects and useObjectSet
+- 9d234b9: support multi object usage in useLinks
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.6
+- @osdk/client.unstable@2.8.0-beta.6
+- @osdk/generator-converters@2.8.0-beta.6
+
+## 2.8.0-beta.5
+
+### Patch Changes
+
+- Updated dependencies [6499ff9]
+  - @osdk/client.unstable@2.8.0-beta.5
+  - @osdk/api@2.8.0-beta.5
+  - @osdk/generator-converters@2.8.0-beta.5
+
+## 2.8.0-beta.4
+
+### Minor Changes
+
+- 73e617e: expose dedupeInterval on useLinks and fix forced revalidation bypassing dedupeInterval
+- 5848e3c: add a new View abstraction layer to fix a pageSize caching bug where multiple subscribers with different pageSize values would share cached data incorrectly
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.4
+- @osdk/client.unstable@2.8.0-beta.4
+- @osdk/generator-converters@2.8.0-beta.4
+
+## 2.8.0-beta.3
+
+### Minor Changes
+
+- 26cec61: Improves invalid where clause undefined key error message
+- 0d174a2: useOsdkFunction typing updates
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.3
+- @osdk/client.unstable@2.8.0-beta.3
+- @osdk/generator-converters@2.8.0-beta.3
+
+## 2.8.0-beta.2
+
+### Patch Changes
+
+- Updated dependencies [e462938]
+  - @osdk/client.unstable@2.8.0-beta.2
+  - @osdk/api@2.8.0-beta.2
+  - @osdk/generator-converters@2.8.0-beta.2
+
+## 2.7.0-beta.14
+
+### Minor Changes
+
+- 24730c7: fix rdp pivot behavior
+- ecd18e2: fix pivotTo with where usage
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.14
+- @osdk/client.unstable@2.7.0-beta.14
+- @osdk/generator-converters@2.7.0-beta.14
+
+## 2.7.0-beta.13
+
+### Minor Changes
+
+- fb83808: Allow arrays to use all subtype filters
+
+### Patch Changes
+
+- Updated dependencies [fb83808]
+  - @osdk/api@2.7.0-beta.13
+  - @osdk/client.unstable@2.7.0-beta.13
+  - @osdk/generator-converters@2.7.0-beta.13
+
+## 2.7.0-beta.12
+
+### Minor Changes
+
+- 3fc5fe6: fix interface loading
+- bb9d25c: Allow requesting rids for OSW updates
+
+### Patch Changes
+
+- Updated dependencies [bb9d25c]
+  - @osdk/api@2.7.0-beta.12
+  - @osdk/client.unstable@2.7.0-beta.12
+  - @osdk/generator-converters@2.7.0-beta.12
+
+## 2.7.0-beta.11
+
+### Minor Changes
+
+- 6cfe14a: add new useOsdkFunction hook and supporting client infrastructure
+- ec6ad57: guard against empty ontology edits in actions
+- 38d5958: fix order by via key stabilization
+- d5cfc38: Add null option to actions to allow clearing data
+
+### Patch Changes
+
+- Updated dependencies [d5cfc38]
+  - @osdk/api@2.7.0-beta.11
+  - @osdk/client.unstable@2.7.0-beta.11
+  - @osdk/generator-converters@2.7.0-beta.11
+
+## 2.7.0-beta.10
+
+### Minor Changes
+
+- db44f6b: Add property security metadata to objects when requested
+- 266b901: Fix queries that return arrays of objects.
+
+### Patch Changes
+
+- Updated dependencies [db44f6b]
+- Updated dependencies [24a1e29]
+  - @osdk/api@2.7.0-beta.10
+  - @osdk/client.unstable@2.7.0-beta.10
+  - @osdk/generator-converters@2.7.0-beta.10
+
+## 2.7.0-beta.9
+
+### Minor Changes
+
+- 6b27d8a: fix sorting strategy initialization for ListQuery and ObjectSetQuery
+
+### Patch Changes
+
+- Updated dependencies [8381ac2]
+- Updated dependencies [c95f3bc]
+  - @osdk/client.unstable@2.7.0-beta.9
+  - @osdk/api@2.7.0-beta.9
+  - @osdk/generator-converters@2.7.0-beta.9
+
 ## 2.7.0-beta.8
 
 ### Minor Changes

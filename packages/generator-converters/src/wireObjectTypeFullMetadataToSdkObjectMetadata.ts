@@ -20,6 +20,7 @@ import type {
   PropertyApiName,
   PropertyV2,
 } from "@osdk/foundry.ontologies";
+import { GeneratorError } from "./GeneratorError.js";
 import { wirePropertyV2ToSdkPrimaryKeyTypeDefinition } from "./wirePropertyV2ToSdkPrimaryKeyTypeDefinition.js";
 import { wirePropertyV2ToSdkPropertyDefinition } from "./wirePropertyV2ToSdkPropertyDefinition.js";
 
@@ -36,9 +37,10 @@ export function wireObjectTypeFullMetadataToSdkObjectMetadata(
     objectTypeWithLink.objectType
       .properties[objectTypeWithLink.objectType.primaryKey] === undefined
   ) {
-    throw new Error(
-      `Primary key ${objectTypeWithLink.objectType.primaryKey} not found in ${objectTypeWithLink.objectType.apiName}`,
-    );
+    throw new GeneratorError("Primary key not found in object type", {
+      primaryKey: objectTypeWithLink.objectType.primaryKey,
+      objectTypeApiName: objectTypeWithLink.objectType.apiName,
+    });
   }
 
   // saved ontology.json files may not have this implementsInterfaces2 so we need to handle
@@ -53,7 +55,9 @@ export function wireObjectTypeFullMetadataToSdkObjectMetadata(
 
   const interfaceMap = objectTypeWithLink.implementsInterfaces2
     ? Object.fromEntries(
-      Object.entries(objectTypeWithLink.implementsInterfaces2).map(
+      Object.entries(objectTypeWithLink.implementsInterfaces2).sort(
+        ([a], [b]) => a.localeCompare(b),
+      ).map(
         ([interfaceApiName, impl]) => {
           // prefer V2 if available and non-empty
           if (
@@ -108,7 +112,8 @@ export function wireObjectTypeFullMetadataToSdkObjectMetadata(
           !(v2 && objectTypeWithLink.objectType.primaryKey === key),
           log,
         ),
-      ]).filter(([_, value]) => value != null),
+      ]).filter(([_, value]) => value != null)
+        .sort(([a], [b]) => (a as string).localeCompare(b as string)),
     ),
     implements: objectTypeWithLink.implementsInterfaces
       ? [...objectTypeWithLink.implementsInterfaces].sort((a, b) =>

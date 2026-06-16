@@ -84,10 +84,10 @@ export function getObjectsFromSet(
 
           if (!match) {
             set.delete(obj);
-          } else if (obj["$propsToReturn"] || match["$propsToReturn"]) {
-            obj["$propsToReturn"] = {
-              ...obj["$propsToReturn"],
-              ...match["$propsToReturn"],
+          } else if (obj.$propsToReturn || match.$propsToReturn) {
+            obj.$propsToReturn = {
+              ...obj.$propsToReturn,
+              ...match.$propsToReturn,
             };
           }
         }
@@ -191,8 +191,11 @@ export function getObjectsFromSet(
       return set.slice(0, numNeighbors);
 
     case "reference":
-      throw new Error(
-        `Unhandled objectSet type ${JSON.stringify(objectSet)} in shared.test`,
+      const objectSetRid = objectSet.reference;
+      return getObjectsFromSet(
+        ds,
+        ds.getObjectSetOrThrow(objectSetRid),
+        methodInput,
       );
   }
 

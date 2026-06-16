@@ -15,7 +15,7 @@ import type {
 } from '@osdk/client';
 
 export namespace SotSensor {
-  export type PropertyKeys = 'isEnum' | 'timeSeriesProperty' | 'sensorName' | 'seriesId' | 'wellId';
+  export type PropertyKeys = 'isEnum' | 'sensorName' | 'seriesId' | 'timeSeriesProperty' | 'wellId';
 
   export type Links = {};
 
@@ -61,6 +61,8 @@ export interface SotSensor extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'SotSensor';
+  primaryKeyApiName: 'seriesId';
+  primaryKeyType: 'string';
   __DefinitionMetadata?: {
     objectSet: SotSensor.ObjectSet;
     props: SotSensor.Props;
@@ -115,6 +117,8 @@ export const SotSensor = {
   type: 'object',
   apiName: 'SotSensor',
   osdkMetadata: $osdkMetadata,
+  primaryKeyApiName: 'seriesId',
+  primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },

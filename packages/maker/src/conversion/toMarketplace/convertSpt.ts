@@ -17,18 +17,21 @@
 import type { OntologyIrSharedPropertyType } from "@osdk/client.unstable";
 import type { SharedPropertyType } from "../../api/properties/SharedPropertyType.js";
 import { convertNullabilityToDataConstraint } from "./convertNullabilityToDataConstraint.js";
+import { convertReducers } from "./convertReducers.js";
 import { propertyTypeTypeToOntologyIrType } from "./propertyTypeTypeToOntologyIrType.js";
 
 export function convertSpt(
   {
     type,
     array,
+    reducers,
     description,
     apiName,
     displayName,
     visibility,
     gothamMapping,
     typeClasses,
+    aliases,
     valueType,
     nullability,
     baseFormatter,
@@ -48,14 +51,15 @@ export function convertSpt(
       ? {
         type: "array" as const,
         array: {
-          subtype: propertyTypeTypeToOntologyIrType(type),
+          subtype: propertyTypeTypeToOntologyIrType(type, apiName),
+          reducers: convertReducers(type, apiName, reducers),
         },
       }
-      : propertyTypeTypeToOntologyIrType(type),
-    aliases: [],
+      : propertyTypeTypeToOntologyIrType(type, apiName),
+    aliases: aliases ?? [],
     baseFormatter,
     dataConstraints: dataConstraint,
-    gothamMapping: gothamMapping,
+    gothamMapping,
     indexedForSearch: true,
     typeClasses: typeClasses ?? [],
     valueType: valueType === undefined ? undefined : {

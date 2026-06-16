@@ -35,6 +35,7 @@ export function createAction<P extends Record<ParameterId, ActionParameterV2>>(
     operations = [],
     status = "ACTIVE",
     description,
+    displayName,
   }: Partial<Omit<ActionTypeV2, "apiName" | "parameters">> & {
     apiName: ActionTypeApiName;
     parameters: P;
@@ -47,5 +48,6 @@ export function createAction<P extends Record<ParameterId, ActionParameterV2>>(
     operations,
     status,
     description: description ?? `Action ${apiName}`,
+    ...(displayName === undefined ? {} : { displayName }),
   } as const;
 }

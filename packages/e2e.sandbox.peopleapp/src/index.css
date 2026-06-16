@@ -1,1 +1,17 @@
-@import 'tailwindcss';
+/**
+ * CSS Layer setup
+ */
+@layer tailwind, osdk.components, custom.theme;
+
+/* OSDK styles (tokens + components) */
+@import "@osdk/react-components/styles.css" layer(osdk.components);
+
+/* Import theme overrides (e.g., change primary intent to green) */
+/* @import "./theme-overrides.css" layer(custom.theme); */
+
+/* Tailwind for utility classes */
+@import "tailwindcss" layer(tailwind);
+
+#root {
+  isolation: isolate;
+}

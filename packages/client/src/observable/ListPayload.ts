@@ -25,5 +25,5 @@ export interface ListPayload<
     WirePropertyTypes | undefined | Array<WirePropertyTypes>
   > = {},
 > extends Omit<ObserveObjectsCallbackArgs<any, RDPs>, "resolvedList"> {
-  resolvedList: Array<ObjectHolder | InterfaceHolder>;
+  resolvedList: Array<ObjectHolder | InterfaceHolder> | undefined;
 }

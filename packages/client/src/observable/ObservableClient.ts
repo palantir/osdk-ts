@@ -20,14 +20,15 @@ import type {
   ActionValidationResponse,
   AggregateOpts,
   AggregationsResults,
+  CompileTimeMetadata,
   DerivedProperty,
-  InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
   Osdk,
   PrimaryKeyType,
   PropertyKeys,
+  QueryDefinition,
   SimplePropertyDef,
   WhereClause,
   WirePropertyTypes,
@@ -36,6 +37,7 @@ import { createFetchHeaderMutator } from "@osdk/shared.net.fetch";
 import type { ActionSignatureFromDef } from "../actions/applyAction.js";
 import { additionalContext, type Client } from "../Client.js";
 import { createClientFromContext } from "../createClient.js";
+import type { QueryReturnType } from "../queries/types.js";
 import { OBSERVABLE_USER_AGENT } from "../util/UserAgent.js";
 import type { Canonical } from "./internal/Canonical.js";
 import type { ObserveObjectSetOptions } from "./internal/objectset/ObjectSetQueryOptions.js";
@@ -48,6 +50,11 @@ import type {
   Observer,
   Status,
 } from "./ObservableClient/common.js";
+import type {
+  MediaMetadataObserveOptions,
+  MediaMetadataPayload,
+} from "./ObservableClient/MediaObservableTypes.js";
+import type { MediaPropertyLocation } from "./ObservableClient/MediaTypes.js";
 import type { ObserveLinks } from "./ObservableClient/ObserveLink.js";
 import type { OptimisticBuilder } from "./OptimisticBuilder.js";
 
@@ -57,15 +64,57 @@ export namespace ObservableClient {
   }
 }
 
+export interface CacheSnapshot {
+  entries: CacheEntry[];
+  stats: {
+    totalEntries: number;
+    totalSize: number;
+    totalHits?: number;
+  };
+}
+
+interface CacheEntryMetadata {
+  timestamp: number;
+  status: "init" | "loading" | "loaded" | "error";
+  hitCount?: number;
+  size: number;
+  isOptimistic?: boolean;
+}
+
+interface CacheEntryBase {
+  key: string;
+  objectType: string;
+  metadata: CacheEntryMetadata;
+  data?: unknown;
+}
+
+export type CacheEntry =
+  | CacheEntryBase & { type: "object" }
+  | CacheEntryBase & {
+    type: "list";
+    where?: unknown;
+    orderBy?: unknown;
+    pageSize?: number;
+  }
+  | CacheEntryBase & { type: "link"; linkName?: string }
+  | CacheEntryBase & { type: "objectSet" };
+
 export interface ObserveObjectOptions<
-  T extends ObjectTypeDefinition | InterfaceDefinition,
+  T extends ObjectOrInterfaceDefinition,
 > extends ObserveOptions {
   apiName: T["apiName"] | T;
   pk: PrimaryKeyType<T>;
-  select?: PropertyKeys<T>[];
+  select?: readonly PropertyKeys<T>[];
+  $loadPropertySecurityMetadata?: boolean;
+
+  /**
+   * When true, includes all properties of the underlying concrete object type
+   * for interface queries. Has no effect for non-interface queries.
+   */
+  $includeAllBaseObjectProperties?: boolean;
 }
 
-export type OrderBy<Q extends ObjectTypeDefinition | InterfaceDefinition> = {
+export type OrderBy<Q extends ObjectOrInterfaceDefinition> = {
   [K in PropertyKeys<Q>]?: "asc" | "desc" | undefined;
 };
 
@@ -79,8 +128,63 @@ export interface ObserveListOptions<
   orderBy?: OrderBy<Q>;
   invalidationMode?: InvalidationMode;
   expectedLength?: number;
+
+  /**
+   * Enable streaming updates via websocket subscription.
+   *
+   * Cannot be combined with `pivotTo`. The server does not support
+   * websocket subscriptions for link-traversal queries.
+   *
+   * Cannot be combined with `withProperties`. The server does not support
+   * websocket subscriptions for object sets that include derived properties;
+   * in that case `streamUpdates` is ignored and a warning is logged in
+   * development.
+   */
   streamUpdates?: boolean;
   withProperties?: DerivedProperty.Clause<Q>;
+
+  /**
+   * Fetch objects by their Resource Identifiers (RIDs).
+   * When provided, starts with a static objectset containing these RIDs.
+   * Can be combined with `where` to filter the RID set, and with `orderBy` to sort results.
+   *
+   * @example
+   * ```ts
+   * // Fetch specific objects by RID
+   * observeList({ type: Employee, rids: ['ri.foo.123', 'ri.foo.456'] }, observer);
+   * ```
+   *
+   * @example
+   * ```ts
+   * // Fetch specific objects by RID, filtered by status
+   * observeList({
+   *   type: Employee,
+   *   rids: ['ri.foo.123', 'ri.foo.456', 'ri.foo.789'],
+   *   where: { status: 'active' },
+   * }, observer);
+   * ```
+   */
+  rids?: readonly string[];
+
+  /**
+   * Restrict which properties are returned for each object.
+   * When provided, only the specified properties will be fetched,
+   * reducing payload sizes for list views.
+   */
+  select?: readonly PropertyKeys<Q>[];
+
+  /**
+   * When true, loads per-property security metadata (marking requirements)
+   * alongside each object. The returned objects will have `$propertySecurities`
+   * populated with conjunctive/disjunctive marking requirements per property.
+   */
+  $loadPropertySecurityMetadata?: boolean;
+
+  /**
+   * When true, includes all properties of the underlying concrete object type
+   * for interface queries. Has no effect for non-interface queries.
+   */
+  $includeAllBaseObjectProperties?: boolean;
 
   /**
    * Automatically fetch additional pages on initial load.
@@ -90,63 +194,95 @@ export interface ObserveListOptions<
    * - `undefined` (default): Only fetch the first page, user must call fetchMore()
    *
    * @example
+   * ```ts
    * // Fetch all todos at once
-   * observeList({ type: Todo, autoFetchMore: true }, observer)
+   * observeList({ type: Todo, autoFetchMore: true }, observer);
+   * ```
    *
    * @example
+   * ```ts
    * // Fetch at least 100 todos
-   * observeList({ type: Todo, autoFetchMore: 100, pageSize: 25 }, observer)
+   * observeList({ type: Todo, autoFetchMore: 100, pageSize: 25 }, observer);
+   * ```
    */
   autoFetchMore?: boolean | number;
   intersectWith?: Array<{
     where: WhereClause<Q, RDPs>;
   }>;
+
+  /**
+   * Traverse to linked objects. Cannot be combined with `streamUpdates`.
+   * The server does not support websocket subscriptions for link-traversal
+   * queries.
+   */
   pivotTo?: string;
+
+  /**
+   * When loading objects via an interface type, return the full concrete
+   * object type instances instead of interface views.
+   *
+   * By default, interface queries return objects narrowed to interface
+   * properties only. With `resolveToObjectType: true`, returned objects
+   * include all properties from the implementing object type (e.g. `$title`,
+   * custom properties not on the interface).
+   *
+   * Only has an effect when `type` is an interface.
+   *
+   * @default false
+   */
+  resolveToObjectType?: boolean;
 }
 
-export interface ObserveObjectCallbackArgs<T extends ObjectTypeDefinition> {
-  object: Osdk.Instance<T> | undefined;
+export interface ObserveObjectCallbackArgs<
+  T extends ObjectOrInterfaceDefinition,
+> {
+  object: Osdk.Instance<T, "$allBaseProperties"> | undefined;
   isOptimistic: boolean;
   status: Status;
   lastUpdated: number;
 }
 
 export interface ObserveObjectsCallbackArgs<
-  T extends ObjectTypeDefinition | InterfaceDefinition,
+  T extends ObjectOrInterfaceDefinition,
   RDPs extends Record<
     string,
     WirePropertyTypes | undefined | Array<WirePropertyTypes>
   > = {},
 > {
-  resolvedList: Array<
-    Osdk.Instance<T, "$allBaseProperties", PropertyKeys<T>, RDPs>
-  >;
+  resolvedList:
+    | Array<Osdk.Instance<T, "$allBaseProperties", PropertyKeys<T>, RDPs>>
+    | undefined;
   isOptimistic: boolean;
   lastUpdated: number;
   fetchMore: () => Promise<void>;
   hasMore: boolean;
   status: Status;
+  totalCount?: string;
+  objectSet: ObjectSet<T, RDPs>;
 }
 
 export interface ObserveObjectSetArgs<
-  T extends ObjectTypeDefinition | InterfaceDefinition,
+  T extends ObjectOrInterfaceDefinition,
   RDPs extends Record<
     string,
     WirePropertyTypes | undefined | Array<WirePropertyTypes>
   > = {},
 > {
-  resolvedList: Array<
-    Osdk.Instance<T, "$allBaseProperties", PropertyKeys<T>, RDPs>
-  >;
+  resolvedList:
+    | Array<
+      Osdk.Instance<T, "$allBaseProperties", PropertyKeys<T>, RDPs>
+    >
+    | undefined;
   isOptimistic: boolean;
   lastUpdated: number;
   fetchMore: () => Promise<void>;
   hasMore: boolean;
   status: Status;
   objectSet: ObjectSet<T, RDPs>;
+  totalCount?: string;
 }
 
-export interface ObserveAggregationOptions<
+interface ObserveAggregationBaseOptions<
   T extends ObjectOrInterfaceDefinition,
   A extends AggregateOpts<T>,
   RDPs extends Record<string, SimplePropertyDef> = {},
@@ -160,6 +296,31 @@ export interface ObserveAggregationOptions<
   aggregate: A;
 }
 
+/**
+ * Options for observeAggregation without an ObjectSet (synchronous).
+ */
+export interface ObserveAggregationOptions<
+  T extends ObjectOrInterfaceDefinition,
+  A extends AggregateOpts<T>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> extends ObserveAggregationBaseOptions<T, A, RDPs> {
+  objectSet?: undefined;
+}
+
+/**
+ * Options for observeAggregation with an ObjectSet (asynchronous).
+ *
+ * When objectSet is provided, the aggregation is performed on that ObjectSet
+ * instead of the base type, enabling aggregation on pivoted or filtered sets.
+ */
+export interface ObserveAggregationOptionsWithObjectSet<
+  T extends ObjectOrInterfaceDefinition,
+  A extends AggregateOpts<T>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> extends ObserveAggregationBaseOptions<T, A, RDPs> {
+  objectSet: ObjectSet<T>;
+}
+
 export interface ObserveAggregationArgs<
   T extends ObjectOrInterfaceDefinition,
   A extends AggregateOpts<T>,
@@ -170,18 +331,52 @@ export interface ObserveAggregationArgs<
   error?: Error;
 }
 
+export interface ObserveFunctionOptions extends CommonObserveOptions {
+  /**
+   * Object types this function depends on.
+   * When actions modify these types, the function will refetch.
+   */
+  dependsOn?: Array<ObjectTypeDefinition | string>;
+
+  /**
+   * Specific object instances or ObjectSets this function depends on.
+   * When these objects change, the function will refetch.
+   *
+   * For ObjectSets, the object type is extracted asynchronously and added
+   * to the dependency list. Changes to any object of that type will trigger
+   * a refetch.
+   */
+  dependsOnObjects?: Array<
+    Osdk.Instance<ObjectTypeDefinition> | ObjectSet<ObjectTypeDefinition>
+  >;
+}
+
+export interface ObserveFunctionCallbackArgs<
+  Q extends QueryDefinition<unknown>,
+> {
+  result: QueryReturnType<CompileTimeMetadata<Q>["output"]> | undefined;
+  status: Status;
+  lastUpdated: number;
+  error?: Error;
+}
+
 /**
  * User facing callback args for `observeLink`
  */
 export interface ObserveLinkCallbackArgs<
-  T extends ObjectTypeDefinition | InterfaceDefinition,
+  T extends ObjectOrInterfaceDefinition,
 > {
-  resolvedList: Osdk.Instance<T>[];
+  resolvedList: Osdk.Instance<T, "$allBaseProperties">[] | undefined;
+  linkedObjectsBySourcePrimaryKey: ReadonlyMap<
+    string | number,
+    ReadonlyArray<Osdk.Instance<T, "$allBaseProperties">>
+  >;
   isOptimistic: boolean;
   lastUpdated: number;
   fetchMore: () => Promise<void>;
   hasMore: boolean;
   status: Status;
+  totalCount?: string;
 }
 
 /**
@@ -196,9 +391,9 @@ export interface ObserveLinkCallbackArgs<
  */
 export interface ObservableClient extends ObserveLinks {
   /**
-   * Observe a single object with automatic updates when it changes.
+   * Observe a single object or interface instance with automatic updates when it changes.
    *
-   * @param apiName - The object type definition or name
+   * @param apiName - The object type or interface definition, or its API name
    * @param pk - The object's primary key
    * @param options - Observation options including deduplication interval
    * @param subFn - Observer that receives object state updates
@@ -210,10 +405,12 @@ export interface ObservableClient extends ObserveLinks {
    * - Updates when the object changes
    * - Error state if fetch fails
    */
-  observeObject<T extends ObjectTypeDefinition>(
+  observeObject<T extends ObjectOrInterfaceDefinition>(
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
-    options: ObserveOptions,
+    options:
+      & ObserveOptions
+      & Omit<ObserveObjectOptions<T>, "apiName" | "pk">,
     subFn: Observer<ObserveObjectCallbackArgs<T>>,
   ): Unsubscribable;
 
@@ -231,7 +428,7 @@ export interface ObservableClient extends ObserveLinks {
    * - Automatic updates when any matching object changes
    */
   observeList<
-    T extends ObjectTypeDefinition | InterfaceDefinition,
+    T extends ObjectOrInterfaceDefinition,
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(
     options: ObserveListOptions<T, RDPs>,
@@ -254,7 +451,7 @@ export interface ObservableClient extends ObserveLinks {
    * - Sorting and pagination
    */
   observeObjectSet<
-    T extends ObjectTypeDefinition,
+    T extends ObjectOrInterfaceDefinition,
     RDPs extends Record<
       string,
       WirePropertyTypes | undefined | Array<WirePropertyTypes>
@@ -266,18 +463,8 @@ export interface ObservableClient extends ObserveLinks {
   ): Unsubscribable;
 
   /**
-   * Observe an aggregation query with automatic updates when underlying data changes.
-   *
-   * @param options - Aggregation configuration including where, aggregate spec, and derived properties
-   * @param subFn - Observer that receives aggregation result updates
-   * @returns Subscription that can be unsubscribed to stop updates
-   *
-   * Supports:
-   * - Filtering with where clauses
-   * - Derived properties (RDPs) via withProperties
-   * - Set intersections
-   * - GroupBy and metric aggregations
-   * - Automatic updates when source data changes
+   * @deprecated Use the async overload with `objectSet` parameter instead.
+   * Pass `objectSet: client(YourType)` to get the base object set.
    */
   observeAggregation<
     T extends ObjectOrInterfaceDefinition,
@@ -286,6 +473,60 @@ export interface ObservableClient extends ObserveLinks {
   >(
     options: ObserveAggregationOptions<T, A, RDPs>,
     subFn: Observer<ObserveAggregationArgs<T, A>>,
+  ): Unsubscribable;
+
+  /**
+   * Observe an aggregation query on a custom ObjectSet with automatic updates.
+   *
+   * This overload accepts an ObjectSet parameter, enabling aggregation on pivoted,
+   * filtered, or composed ObjectSets. Returns a Promise because invalidation type
+   * computation is async (requires lookups for link targets).
+   *
+   * @param options - Aggregation configuration including objectSet, where, aggregate spec
+   * @param subFn - Observer that receives aggregation result updates
+   * @returns Promise resolving to subscription that can be unsubscribed
+   *
+   * @example
+   * ```typescript
+   * const sub = await observableClient.observeAggregation(
+   *   {
+   *     type: Office,
+   *     objectSet: $(Employee).pivotTo("primaryOffice"),
+   *     aggregate: { $select: { $count: "unordered" } }
+   *   },
+   *   observer
+   * );
+   * ```
+   */
+  observeAggregation<
+    T extends ObjectOrInterfaceDefinition,
+    A extends AggregateOpts<T>,
+    RDPs extends Record<string, SimplePropertyDef> = {},
+  >(
+    options: ObserveAggregationOptionsWithObjectSet<T, A, RDPs>,
+    subFn: Observer<ObserveAggregationArgs<T, A>>,
+  ): Promise<Unsubscribable>;
+
+  /**
+   * Observe a function execution with automatic updates.
+   *
+   * @param queryDef - The QueryDefinition to execute
+   * @param params - Parameters to pass to the function (undefined if no params)
+   * @param options - Observation options including invalidation configuration
+   * @param subFn - Observer that receives function result updates
+   * @returns Subscription that can be unsubscribed to stop updates
+   *
+   * Supports:
+   * - Automatic caching and deduplication
+   * - Dependency-based invalidation (dependsOn object types)
+   * - Instance-based invalidation (dependsOnObjects)
+   * - Manual refetch via invalidateFunction()
+   */
+  observeFunction<Q extends QueryDefinition<unknown>>(
+    queryDef: Q,
+    params: Record<string, unknown> | undefined,
+    options: ObserveFunctionOptions,
+    subFn: Observer<ObserveFunctionCallbackArgs<Q>>,
   ): Unsubscribable;
 
   /**
@@ -335,12 +576,14 @@ export interface ObservableClient extends ObserveLinks {
 
   /**
    * Invalidates specific objects in the cache.
+   *
+   * Interface instances invalidate their backing concrete object.
    * @param objects - Single object or array of objects to invalidate
    */
   invalidateObjects(
     objects:
-      | Osdk.Instance<ObjectTypeDefinition>
-      | ReadonlyArray<Osdk.Instance<ObjectTypeDefinition>>,
+      | Osdk.Instance<ObjectOrInterfaceDefinition>
+      | ReadonlyArray<Osdk.Instance<ObjectOrInterfaceDefinition>>,
   ): Promise<void>;
 
   /**
@@ -357,15 +600,72 @@ export interface ObservableClient extends ObserveLinks {
     type: T | T["apiName"],
   ): Promise<void>;
 
+  /**
+   * Invalidate function queries.
+   * - If params undefined, invalidates ALL queries for this function
+   * - If params provided, invalidates only the query with exact params match
+   *
+   * @param apiName - Function API name string or QueryDefinition
+   * @param params - Optional params for exact match
+   */
+  invalidateFunction(
+    apiName: string | QueryDefinition<unknown>,
+    params?: Record<string, unknown>,
+  ): Promise<void>;
+
+  /**
+   * Invalidate functions that depend on a specific object instance.
+   *
+   * @param apiName - Object type API name
+   * @param primaryKey - Object primary key
+   */
+  invalidateFunctionsByObject(
+    apiName: string,
+    primaryKey: string | number,
+  ): Promise<void>;
+
+  getCacheSnapshot(): Promise<CacheSnapshot>;
+
   canonicalizeWhereClause: <
-    T extends ObjectTypeDefinition | InterfaceDefinition,
+    T extends ObjectOrInterfaceDefinition,
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(
     where: WhereClause<T, RDPs>,
   ) => Canonical<WhereClause<T, RDPs>>;
+
+  canonicalizeOptions: <OS, T extends CanonicalizeOptionsInput<OS>>(
+    options: T,
+  ) => CanonicalizedOptions<T>;
+
+  observeMediaMetadata(
+    coords: MediaPropertyLocation,
+    options: MediaMetadataObserveOptions,
+    observer: Observer<MediaMetadataPayload>,
+  ): Unsubscribable;
 }
 
-export function createObservableClient(client: Client): ObservableClient {
+export interface CanonicalizeOptionsInput<OS = ObjectSet<any, any>> {
+  where?: object;
+  withProperties?: object;
+  orderBy?: Record<string, "asc" | "desc" | undefined>;
+  aggregate?: object;
+  intersectWith?: Array<{ where: object }>;
+  union?: ReadonlyArray<OS>;
+  intersect?: ReadonlyArray<OS>;
+  subtract?: ReadonlyArray<OS>;
+  $select?: ReadonlyArray<string>;
+}
+
+export type CanonicalizedOptions<
+  T extends CanonicalizeOptionsInput<any>,
+> = {
+  [K in keyof T]: T[K];
+};
+
+export function createObservableClient(
+  client: Client,
+  extraUserAgents?: () => string[],
+): ObservableClient {
   // First we need a modified client that adds an extra header so we know its
   // an observable client
   const tweakedClient = createClientFromContext({
@@ -379,6 +679,7 @@ export function createObservableClient(client: Client): ObservableClient {
           [
             headers.get("Fetch-User-Agent"),
             OBSERVABLE_USER_AGENT,
+            ...(extraUserAgents?.() ?? []),
           ].filter(x => x && x?.length > 0).join(" "),
         );
         return headers;

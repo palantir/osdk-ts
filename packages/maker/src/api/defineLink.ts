@@ -15,6 +15,9 @@
  */
 
 import type { LinkTypeMetadata } from "@osdk/client.unstable";
+import invariant from "tiny-invariant";
+import { isValidApiName } from "../util/ApiNameValidator.js";
+import { cloneDefinition } from "./cloneDefinition.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import {
   convertToPluralDisplayName,
@@ -34,8 +37,9 @@ import type {
 } from "./links/LinkType.js";
 
 export function defineLink(
-  linkDefinition: LinkTypeDefinition,
+  linkDefinitionInput: LinkTypeDefinition,
 ): LinkType {
+  const linkDefinition = cloneDefinition(linkDefinitionInput);
   // NOTE: we would normally do validation here, but because of circular dependencies
   // we have to wait to validate until everything has been defined. The code for validation
   // was moved to convertLink.ts.
@@ -106,6 +110,10 @@ function convertUserIntermediaryLinkDefinition(
 function convertLinkTypeMetadata(
   metadata: LinkTypeMetadataUserDefinition,
 ): LinkTypeMetadata {
+  invariant(
+    isValidApiName(metadata.apiName),
+    `Invalid API name for link: ${metadata.apiName}`,
+  );
   return {
     apiName: metadata.apiName,
     displayMetadata: {
@@ -116,6 +124,6 @@ function convertLinkTypeMetadata(
       visibility: metadata.visibility ?? "NORMAL",
       groupDisplayName: metadata.groupDisplayName ?? "",
     },
-    typeClasses: [],
+    typeClasses: metadata.typeClasses ?? [],
   };
 }

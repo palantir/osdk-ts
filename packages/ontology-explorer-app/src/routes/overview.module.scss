@@ -1,0 +1,5 @@
+@use "@blueprintjs/core/lib/scss/variables.scss" as bp;
+
+.page {
+  padding: 4 * bp.$pt-spacing 10 * bp.$pt-spacing;
+}

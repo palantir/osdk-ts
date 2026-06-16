@@ -100,7 +100,34 @@ export namespace ObjectMetadata {
     nullable?: boolean;
     valueTypeApiName?: string;
     valueFormatting?: PropertyValueFormattingRule;
+    mainValue?: {
+      fields: readonly string[];
+    };
+    hasReducers?: boolean;
+    /**
+     * Per-`type` metadata, discriminated on the wire property `type`.
+     *
+     * New per-type fields should be added as variants of {@link PropertyTypeMetadata}
+     * rather than as new top-level optionals on `Property`, so that the shape
+     * stays narrow and illegal combinations (e.g. a marking subtype on a `double`)
+     * are not representable.
+     */
+    typeMetadata?: PropertyTypeMetadata;
   }
+
+  /**
+   * Discriminated union of per-`type` property metadata. Narrow on
+   * `typeMetadata.type` to access the variant-specific fields.
+   */
+  export type PropertyTypeMetadata = {
+    /**
+     * Marking subtype: `"CBAC"` for classification-based access control,
+     * `"MANDATORY"` for mandatory markings. Absent for marking properties
+     * whose subtype is not exposed by the platform.
+     */
+    type: "marking";
+    markingType?: "CBAC" | "MANDATORY";
+  };
 
   export interface Link<
     Q extends ObjectTypeDefinition,
@@ -115,6 +142,8 @@ export namespace ObjectMetadata {
 export interface ObjectTypeDefinition {
   type: "object";
   apiName: string;
+  primaryKeyApiName?: string;
+  primaryKeyType?: PrimaryKeyTypes;
   osdkMetadata?: OsdkMetadata;
   __DefinitionMetadata?:
     & ObjectMetadata
@@ -131,10 +160,16 @@ export interface PropertyDef<
   T extends WirePropertyTypes,
   N extends "nullable" | "non-nullable" = "nullable",
   M extends "array" | "single" = "single",
+  MAIN_VALUE_FIELDS extends readonly string[] | undefined = undefined,
+  HAS_REDUCERS extends boolean = false,
 > extends ObjectMetadata.Property {
   type: T;
   multiplicity: M extends "array" ? true : false;
   nullable: N extends "nullable" ? true : false;
+  mainValue: MAIN_VALUE_FIELDS extends readonly string[]
+    ? { fields: MAIN_VALUE_FIELDS }
+    : undefined;
+  hasReducers: HAS_REDUCERS;
 }
 
 export type ReleaseStatus =

@@ -48,13 +48,14 @@ export function createWriteableClient<
 ): WriteableClient<X> {
   const ontologyRid = args[1];
 
+  let editRequestManager: EditRequestManager;
   const client = createClientWithTransaction(
     transactionId,
-    async () => {},
+    () => editRequestManager.flushPendingEdits(),
     ...args,
   ) as Client;
 
-  const editRequestManager = new EditRequestManager(
+  editRequestManager = new EditRequestManager(
     client as WriteableClient<any>, // This cast is safe because we create the writeable client properties below.
   );
 
@@ -63,7 +64,7 @@ export function createWriteableClient<
     client,
     {
       link: {
-        value: function<
+        value<
           SOL extends AddLinkSources<X>,
           A extends AddLinkApiNames<X, SOL>,
         >(
@@ -97,7 +98,7 @@ export function createWriteableClient<
         },
       },
       unlink: {
-        value: function<
+        value<
           SOL extends RemoveLinkSources<X>,
           A extends RemoveLinkApiNames<X, SOL>,
         >(
@@ -128,12 +129,13 @@ export function createWriteableClient<
         },
       },
       create: {
-        value: async function<OTD extends CreatableObjectOrInterfaceTypes<X>>(
+        async value<OTD extends CreatableObjectOrInterfaceTypes<X>>(
           obj: OTD,
           properties: CreatableObjectOrInterfaceTypeProperties<X, OTD>,
         ): Promise<void> {
           const propertyMap: { [propertyName: string]: unknown } = {};
           for (const [key, value] of Object.entries(properties)) {
+            if (key.startsWith("$")) continue;
             propertyMap[key] = toPropertyDataValue(value);
           }
           return editRequestManager.postEdit({
@@ -144,7 +146,7 @@ export function createWriteableClient<
         },
       },
       update: {
-        value: function<
+        value<
           SOL extends UpdatableObjectOrInterfaceLocators<X>,
           OTD extends UpdatableObjectOrInterfaceLocatorProperties<X, SOL>,
         >(
@@ -153,6 +155,7 @@ export function createWriteableClient<
         ): Promise<void> {
           const propertyMap: { [propertyName: string]: unknown } = {};
           for (const [key, value] of Object.entries(properties)) {
+            if (key.startsWith("$")) continue;
             propertyMap[key] = toPropertyDataValue(value);
           }
           return editRequestManager.postEdit({
@@ -164,7 +167,7 @@ export function createWriteableClient<
         },
       },
       delete: {
-        value: function<OL extends DeletableObjectOrInterfaceLocators<X>>(
+        value<OL extends DeletableObjectOrInterfaceLocators<X>>(
           obj: OL,
         ): Promise<void> {
           return editRequestManager.postEdit({

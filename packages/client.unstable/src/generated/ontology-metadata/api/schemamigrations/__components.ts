@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 
 import type {
-  DatasourceIdentifier as _api_DatasourceIdentifier,
+  DatasourceMigrationTarget as _api_DatasourceMigrationTarget,
   DatasourceRid as _api_DatasourceRid,
   ObjectTypeApiName as _api_ObjectTypeApiName,
   ObjectTypeFieldApiName as _api_ObjectTypeFieldApiName,
@@ -515,7 +515,7 @@ export interface RenameDatasourceMigration {
  */
 export interface RenameDatasourceMigrationModification {
   source: _api_DatasourceRid;
-  target: _api_DatasourceIdentifier;
+  target: _api_DatasourceMigrationTarget;
 }
 /**
  * Migration to rename one property to another.
@@ -546,6 +546,8 @@ export interface RenameStructFieldMigrationModification {
   property: _api_PropertyTypeRid;
   sourceStructField: _api_StructFieldRid;
   targetStructField: _api_StructFieldApiNameOrRid;
+}
+export interface ResetSchemaMigrationsAndDropEditParameters {
 }
 /**
  * Revert a previous migration.

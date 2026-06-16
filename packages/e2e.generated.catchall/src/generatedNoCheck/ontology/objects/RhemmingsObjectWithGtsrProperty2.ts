@@ -15,7 +15,7 @@ import type {
 } from '@osdk/client';
 
 export namespace RhemmingsObjectWithGtsrProperty2 {
-  export type PropertyKeys = 'id' | 'type' | 'location' | 'gtsr' | 'timestamp';
+  export type PropertyKeys = 'gtsr' | 'id' | 'location' | 'timestamp' | 'type';
 
   export type Links = {};
 
@@ -62,6 +62,8 @@ export interface RhemmingsObjectWithGtsrProperty2 extends $ObjectTypeDefinition 
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'RhemmingsObjectWithGtsrProperty2';
+  primaryKeyApiName: 'id';
+  primaryKeyType: 'string';
   __DefinitionMetadata?: {
     objectSet: RhemmingsObjectWithGtsrProperty2.ObjectSet;
     props: RhemmingsObjectWithGtsrProperty2.Props;
@@ -116,6 +118,8 @@ export const RhemmingsObjectWithGtsrProperty2 = {
   type: 'object',
   apiName: 'RhemmingsObjectWithGtsrProperty2',
   osdkMetadata: $osdkMetadata,
+  primaryKeyApiName: 'id',
+  primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
   },

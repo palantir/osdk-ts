@@ -83,13 +83,24 @@ const archetypeRules = archetypes(
   .addArchetype(
     "checkApiPackages",
     [
-      "@osdk/client",
       "@osdk/api",
       "@osdk/functions",
+      "@osdk/unit-testing",
     ],
     {
       ...LIBRARY_RULES,
       checkApi: true,
+    },
+  )
+  .addArchetype(
+    "clientPackage",
+    [
+      "@osdk/client",
+    ],
+    {
+      ...LIBRARY_RULES,
+      checkApi: true,
+      typecheckProject: "tsconfig.typecheck.json",
     },
   )
   .addArchetype(
@@ -107,10 +118,12 @@ const archetypeRules = archetypes(
   .addArchetype(
     "minimal packages",
     [
+      "@osdk/aip-core",
       "@osdk/e2e.generated.1.1.x",
       "@osdk/examples.*",
       "@psdk/examples.*",
       "@osdk/monorepo.*",
+      "@osdk/react-components-storybook",
     ],
     {
       ...LIBRARY_RULES,
@@ -123,20 +136,28 @@ const archetypeRules = archetypes(
     [
       "@osdk/foundry-config-json",
       "@osdk/generator-converters",
+      "@osdk/language-models",
       "@osdk/generator-converters.ontologyir",
+      "@osdk/generator-converters.preview",
       "@osdk/generator-utils",
       "@osdk/generator",
       "@osdk/maker",
       "@osdk/maker-experimental",
+      "@osdk/maker-import",
+      "@osdk/seed-compiler",
+      "@osdk/seed-helpers",
       "@osdk/oauth",
       "@osdk/shared.client.impl",
       "@osdk/shared.net.errors",
       "@osdk/shared.net.fetch",
       "@osdk/shared.net",
+      "@osdk/react-sdk-docs",
       "@osdk/typescript-sdk-docs",
       "@osdk/widget.api",
       "@osdk/widget.client",
       "@osdk/vite-plugin-oac",
+      "@osdk/vite-plugin-superrepo",
+      "@osdk/vite-plugin-status-reporter",
       "@osdk/faux",
       "@osdk/osdk-docs-context",
     ],
@@ -160,6 +181,22 @@ const archetypeRules = archetypes(
         esm: "bundle",
       },
       fixedDepsOnly: true,
+    },
+  )
+  .addArchetype(
+    "consumerCliWithSite",
+    [
+      "@osdk/ontology-explorer-server",
+    ],
+    {
+      ...LIBRARY_RULES,
+      output: {
+        browser: undefined,
+        cjs: undefined,
+        esm: "bundle",
+      },
+      fixedDepsOnly: true,
+      extraPublishFiles: ["build/site"],
     },
   )
   .addArchetype(
@@ -196,6 +233,7 @@ const archetypeRules = archetypes(
       "@osdk/create-app.template.*",
       "@osdk/create-widget.template.*",
       "@osdk/shared.test",
+      "@osdk/shared.test.intellisense",
     ],
     {
       ...INTERNAL_LIBRARY_RULES,
@@ -240,6 +278,8 @@ const archetypeRules = archetypes(
   .addArchetype(
     "viteSandboxes",
     [
+      "@osdk/e2e.sandbox.officeassignment",
+      "@osdk/e2e.sandbox.officenetwork",
       "@osdk/e2e.sandbox.todowidget",
       "@osdk/e2e.sandbox.todoapp",
       "@osdk/e2e.sandbox.peopleapp",
@@ -251,6 +291,23 @@ const archetypeRules = archetypes(
       react: true,
       extraTsConfigCompilerOptions: {
         "isolatedDeclarations": false,
+      },
+    },
+  )
+  .addArchetype(
+    "viteReactAppsWithScss",
+    [
+      "@osdk/ontology-explorer-app",
+    ],
+    {
+      ...INTERNAL_LIBRARY_RULES,
+      skipTypes: true,
+      react: true,
+      extraTsConfigCompilerOptions: {
+        "isolatedDeclarations": false,
+        "plugins": [{ "name": "typescript-plugin-css-modules" }],
+        "rootDirs": ["./src", "./build/scss-types"],
+        "allowArbitraryExtensions": true,
       },
     },
   )
@@ -291,12 +348,82 @@ const archetypeRules = archetypes(
     "reactLibrary",
     [
       "@osdk/widget.client-react",
-      "@osdk/react",
+    ],
+    {
+      ...LIBRARY_RULES,
+      react: true,
+    },
+  )
+  .addArchetype(
+    "reactLibraryWithCss",
+    [
+      "@osdk/cbac-components",
+    ],
+    {
+      ...LIBRARY_RULES,
+      react: true,
+      cssExport: ["styles.css"],
+      extraPublishFiles: ["AGENTS.md", "docs"],
+      setupFiles: ["./src/test/setupPolyfills.ts"],
+    },
+  )
+  .addArchetype(
+    "reactComponentsLibrary",
+    [
       "@osdk/react-components",
     ],
     {
       ...LIBRARY_RULES,
       react: true,
+      cssExport: ["styles.css"],
+      extraPublishFiles: ["AGENTS.md", "docs"],
+      attwExcludeEntrypoints: [
+        "./experimental/action-form",
+        "./experimental/aip-agent-chat",
+        "./experimental/cbac-picker",
+        "./experimental/document-viewer",
+        "./experimental/email-viewer",
+        "./experimental/excel-viewer",
+        "./experimental/filter-list",
+        "./experimental/image-viewer",
+        "./experimental/markdown-renderer",
+        "./experimental/object-table",
+        "./experimental/pdf-viewer",
+        "./experimental/theme",
+        "./experimental/tiff-renderer",
+        "./experimental/video-viewer",
+        "./experimental/xml-viewer",
+      ],
+      setupFiles: ["./src/test/setupPolyfills.ts"],
+      vitestEnv: {
+        TZ: "UTC",
+        LANG: "en_US.UTF-8",
+      },
+      vitestPool: "threads",
+    },
+  )
+  .addArchetype(
+    "reactLibraryWithDocs",
+    [
+      "@osdk/react",
+    ],
+    {
+      ...LIBRARY_RULES,
+      react: true,
+      extraPublishFiles: ["AGENTS.md", "docs", "experimental"],
+      customTsconfigExcludes: ["./src/intellisense.test.helpers/**"],
+    },
+  )
+  .addArchetype(
+    "esmReactLibraryWithCss",
+    [
+      "@osdk/react-devtools",
+    ],
+    {
+      ...LIBRARY_RULES,
+      react: true,
+      output: OUTPUT_ESM_ONLY,
+      cssExport: ["styles.css"],
     },
   )
   .addArchetype(
@@ -309,11 +436,23 @@ const archetypeRules = archetypes(
       minimalChangesOnly: true,
       private: true,
     },
+  )
+  .addArchetype(
+    "cssOnlyPackage",
+    [
+      "@osdk/react-components-styles",
+    ],
+    {
+      repositoryUrl: "https://github.com/palantir/osdk-ts.git",
+      private: false,
+      output: OUTPUT_NONE,
+      minimalChangesOnly: true,
+    },
   );
 
 /**
- * We don't want to allow `workspace:^` in our dependencies because our current release branch
- * strategy only allows for patch changes in the release branch and minors elsewhere.
+ * We don't want to allow `workspace:^` in our regular dependencies because our current release
+ * branch strategy only allows for patch changes in the release branch and minors elsewhere.
  *
  * If we were to allow `workspace:^`, then the follow scenario causes issues:
  *   - Suppose we have a Foo and a Bar package and Bar depends on Foo.
@@ -325,6 +464,15 @@ const archetypeRules = archetypes(
  * on Foo @ `^1.1.0` would be satisfied by the shipped `Foo@1.2.0`.
  *
  * Using `workspace:~` prevents this as `~` can only resolve patch changes.
+ *
+ * However, peerDependencies are the exception: they MUST use `workspace:^`. With `workspace:~`,
+ * a minor bump in a peer dep (e.g. @osdk/api 2.8.0 -> 2.9.0) falls outside the tilde range
+ * (`~2.8.0`), so changesets treats it as a breaking change and forces a major bump on the
+ * consuming package. Using `workspace:^` keeps minor bumps in range (`^2.8.0` accepts `2.9.0`).
+ * Additionally, this is how most of our public packages with peer dependencies are treated. They
+ * should be compatible with any higher version of the dependency, and anything else would be a break
+ * for users.
+ * See: https://github.com/palantir/osdk-ts/pull/3020
  */
 const disallowWorkspaceCaret = createRuleFactory({
   name: "disallowWorkspaceCaret",
@@ -348,11 +496,10 @@ const disallowWorkspaceCaret = createRuleFactory({
                 // always refetch in fixer since another fixer may have already changed the file
                 let packageJson = context.getPackageJson();
                 if (packageJson[d]) {
-                  packageJson[d] = Object.assign(
-                    {},
-                    packageJson[d],
-                    { [dep]: expected },
-                  );
+                  packageJson[d] = {
+                    ...packageJson[d],
+                    [dep]: expected,
+                  };
 
                   context.host.writeJson(
                     context.getPackageJsonPath(),
@@ -362,7 +509,30 @@ const disallowWorkspaceCaret = createRuleFactory({
               },
             });
           }
-        } else if (version === "workspace:^") {
+        } else if (d === "peerDependencies" && version === "workspace:~") {
+          const message =
+            `'workspace:~' not allowed in peerDependencies (${d}['${dep}']).`;
+          context.addError({
+            message,
+            longMessage:
+              `${message} Use 'workspace:^' for peerDependencies to avoid major bumps when peer deps receive minor version changes.`,
+            file: context.getPackageJsonPath(),
+            fixer: () => {
+              let packageJson = context.getPackageJson();
+              if (packageJson[d]?.[dep] === "workspace:~") {
+                packageJson[d] = {
+                  ...packageJson[d],
+                  [dep]: "workspace:^",
+                };
+
+                context.host.writeJson(
+                  context.getPackageJsonPath(),
+                  packageJson,
+                );
+              }
+            },
+          });
+        } else if (version === "workspace:^" && d !== "peerDependencies") {
           if (
             dep === "@osdk/shared.client2"
             // Since this package is only being used internally, it's fine to keep this relaxed to ^ so it can use newer client versions without bumping everything
@@ -378,11 +548,10 @@ const disallowWorkspaceCaret = createRuleFactory({
               // always refetch in fixer since another fixer may have already changed the file
               let packageJson = context.getPackageJson();
               if (packageJson[d]?.[dep] === "workspace:^") {
-                packageJson[d] = Object.assign(
-                  {},
-                  packageJson[d],
-                  { [dep]: "workspace:~" },
-                );
+                packageJson[d] = {
+                  ...packageJson[d],
+                  [dep]: "workspace:~",
+                };
 
                 context.host.writeJson(
                   context.getPackageJsonPath(),
@@ -402,7 +571,7 @@ const disallowWorkspaceCaret = createRuleFactory({
 // of typescript which broke code formatting. This rule is to make sure we don't experience that again.
 // (note devDeps are only happening at buildtime so they should be fine)
 const fixedDepsOnly = createRuleFactory({
-  name: "disallowWorkspaceCaret",
+  name: "fixedDepsOnly",
   check: async (context) => {
     const packageJson = context.getPackageJson();
 
@@ -414,6 +583,7 @@ const fixedDepsOnly = createRuleFactory({
         if (version === "catalog:foundry-platform-typescript") continue;
         if (version[0] >= "0" && version[0] <= "9") continue;
         if (dep === "typescript" && version[0] === "~") continue;
+        if (dep === "rollup" && version[0] === "^") continue; // we want rollup CVE fixes
 
         const message =
           `May only have fixed dependencies (found ${d}['${dep}'] == '${version}').`;
@@ -466,7 +636,8 @@ async function dirExists(dirPath) {
 /**
  * @type {import("@monorepolint/rules").RuleFactoryFn< {
  *   browser?: boolean,
- *   cjs?: boolean
+ *   cjs?: boolean,
+ *   cssExports?: string[]
  * }>}
  */
 const ourExportsConvention = createRuleFactory({
@@ -527,14 +698,23 @@ const ourExportsConvention = createRuleFactory({
         const q of await fs.readdir(publicPath, {
           withFileTypes: true,
           encoding: "utf8",
+          recursive: true,
         })
       ) {
         if (!q.isFile()) continue;
         if (!q.name.endsWith(".ts")) continue;
 
-        const b = path.basename(q.name, ".ts");
+        const fullPath = path.join(q.parentPath, q.name);
+        const rel = path.relative(publicPath, fullPath);
+        const b = rel.replace(/\.ts$/, "");
         expectedExports.exports["./" + b] = makeExport(b);
       }
+    }
+
+    // add CSS exports if any (must come before the wildcard)
+    const cssDir = options.browser ? "build/browser" : "build/esm";
+    for (const cssFile of options.cssExports ?? []) {
+      expectedExports.exports[`./${cssFile}`] = `./${cssDir}/${cssFile}`;
     }
 
     // include the fallback for the * for now, as it will make development easier
@@ -763,6 +943,9 @@ function minimalPackageRules(shared, options) {
  * @property { string[] } [extraPublishFiles]
  * * @property { boolean } [skipBuildInFiles]
  * @property { "happy-dom" } [vitestEnvironment]
+ * @property { string[] } [setupFiles]
+ * @property { Record<string, string> } [vitestEnv]
+ * @property { "forks" | "threads" } [vitestPool]
  * @property { boolean } [skipTsconfigReferences]
  * @property { boolean } [aliasConsola]
  * @property { Record<"esm" | "cjs" | "browser", "bundle" | "normal" | undefined>} output
@@ -774,6 +957,9 @@ function minimalPackageRules(shared, options) {
  * @property { boolean } [minimalChangesOnly]
  * @property { "vite" | undefined } [framework]
  * @property { import("typescript").CompilerOptions} [extraTsConfigCompilerOptions]
+ * @property { string[] } [cssExport]
+ * @property { string[] } [attwExcludeEntrypoints]
+ * @property { string } [typecheckProject]
  */
 
 /**
@@ -782,11 +968,38 @@ function minimalPackageRules(shared, options) {
  * @returns {import("@monorepolint/config").RuleModule[]}
  */
 function standardPackageRules(shared, options) {
+  /** @type {string[]} */
+  const cssExports = options.cssExport ?? [];
+
   options = {
     ...options,
     vitestEnvironment: options.vitestEnvironment
       ?? (options.react ? "happy-dom" : undefined),
     skipAttw: options.skipAttw ?? options.skipTypes,
+  };
+
+  // CSS bundling runs from the leaf transpile step. For ESM-only packages it
+  // hooks onto transpileEsm; for browser-targeted packages it hooks onto
+  // transpileBrowser so the browser build sees the freshly-bundled CSS.
+  const buildCssSuffix = cssExports.length > 0
+    ? " && node scripts/build-css.mjs"
+    : "";
+
+  const getTranspileEsmScript = () => {
+    if (!options.output.esm) {
+      return DELETE_SCRIPT_ENTRY;
+    }
+    const base =
+      `monorepo.tool.transpile -f esm -m ${options.output.esm} -t node`;
+    return options.output.browser ? base : base + buildCssSuffix;
+  };
+
+  const getTranspileBrowserScript = () => {
+    if (!options.output.browser) {
+      return DELETE_SCRIPT_ENTRY;
+    }
+    return `monorepo.tool.transpile -f esm -m ${options.output.esm} -t browser`
+      + buildCssSuffix;
   };
 
   if (options.minimalChangesOnly) {
@@ -851,6 +1064,9 @@ function standardPackageRules(shared, options) {
         devDependencies: {
           "@osdk/monorepo.tsconfig": "workspace:~",
           "@osdk/monorepo.api-extractor": "workspace:~",
+          ...(options.output.esm === "bundle"
+            ? { "@osdk/monorepo.tool.check-bundle": "workspace:~" }
+            : {}),
         },
       },
     }),
@@ -862,17 +1078,24 @@ function standardPackageRules(shared, options) {
           "check-spelling": "cspell --quiet .",
           "check-attw": options.skipAttw
             ? DELETE_SCRIPT_ENTRY
-            : `attw${options.output.cjs ? "" : " --profile esm-only"} --pack .`,
-          lint: "eslint . && dprint check  --config $(find-up dprint.json)",
-          "fix-lint":
-            "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
+            : `attw${options.output.cjs ? "" : " --profile esm-only"} --pack .${
+              cssExports.length > 0 || options.attwExcludeEntrypoints?.length
+                ? ` --exclude-entrypoints ${
+                  [
+                    ...cssExports.map(f => `./${f}`),
+                    ...(options.attwExcludeEntrypoints ?? []),
+                  ].join(" ")
+                }`
+                : ""
+            }`,
+          "check-bundle": options.output.esm === "bundle"
+            ? "monorepo.tool.check-bundle"
+            : DELETE_SCRIPT_ENTRY,
+          lint: "eslint . && dprint check",
+          "fix-lint": "eslint . --fix && dprint fmt",
           transpile: DELETE_SCRIPT_ENTRY,
-          transpileEsm: options.output.esm
-            ? `monorepo.tool.transpile -f esm -m ${options.output.esm} -t node`
-            : DELETE_SCRIPT_ENTRY,
-          transpileBrowser: options.output.browser
-            ? `monorepo.tool.transpile -f esm -m ${options.output.esm} -t browser`
-            : DELETE_SCRIPT_ENTRY,
+          transpileEsm: getTranspileEsmScript(),
+          transpileBrowser: getTranspileBrowserScript(),
           transpileCjs: options.output.cjs === "bundle"
             ? "monorepo.tool.transpile -f cjs -m bundle -t node"
             : DELETE_SCRIPT_ENTRY,
@@ -880,7 +1103,9 @@ function standardPackageRules(shared, options) {
           transpileTypes: options.skipTypes
             ? DELETE_SCRIPT_ENTRY
             : "monorepo.tool.transpile -f esm -m types -t node",
-          typecheck: "tsc --noEmit --emitDeclarationOnly false",
+          typecheck: options.typecheckProject
+            ? `tsc -p ${options.typecheckProject} --noEmit --emitDeclarationOnly false`
+            : "tsc --noEmit --emitDeclarationOnly false",
         },
       },
     }),
@@ -889,6 +1114,7 @@ function standardPackageRules(shared, options) {
       options: {
         cjs: !!options.output.cjs,
         browser: !!options.output.browser,
+        cssExports,
       },
     }),
     packageEntry({
@@ -983,10 +1209,24 @@ function standardPackageRules(shared, options) {
               },`
               : ""
           }
-              pool: "forks",
+              pool: "${options.vitestPool ?? "forks"}",
               exclude: [...configDefaults.exclude, "**/build/**/*"],${
             options.vitestEnvironment
               ? `\n            environment: "${options.vitestEnvironment}",`
+              : ""
+          }${
+            options.setupFiles && options.setupFiles.length > 0
+              ? `\n            setupFiles: ${
+                JSON.stringify(options.setupFiles)
+              },`
+              : ""
+          }${
+            options.vitestEnv
+              ? `\n            env: {\n${
+                Object.entries(options.vitestEnv)
+                  .map(([k, v]) => `              ${k}: ${JSON.stringify(v)},`)
+                  .join("\n")
+              }\n            },`
               : ""
           }
               fakeTimers: {
@@ -994,7 +1234,7 @@ function standardPackageRules(shared, options) {
               },
             },
           });
-     
+
           `,
           "js",
         ),

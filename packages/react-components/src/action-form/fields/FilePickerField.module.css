@@ -1,0 +1,169 @@
+/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* Outer wrapper — looks like an input field */
+.osdkFilePickerTrigger {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: var(--osdk-file-picker-trigger-height);
+  border: var(--osdk-file-picker-trigger-border);
+  border-radius: var(--osdk-file-picker-trigger-border-radius);
+  box-shadow: var(--osdk-file-picker-trigger-shadow);
+  background-color: var(--osdk-file-picker-trigger-bg);
+  font-family: var(--osdk-file-picker-trigger-font-family);
+  font-size: var(--osdk-file-picker-trigger-font-size);
+  box-sizing: border-box;
+  overflow: hidden;
+  transition:
+    background-color var(--osdk-file-picker-transition-duration)
+      var(--osdk-file-picker-transition-ease),
+    box-shadow var(--osdk-file-picker-transition-duration)
+      var(--osdk-file-picker-transition-ease);
+}
+
+.osdkFilePickerTrigger:hover .osdkFilePickerBrowse {
+  --osdk-button-secondary-bg: var(--osdk-file-picker-browse-bg-hover);
+}
+
+/* :focus-within fires on both mouse and keyboard focus for the trigger's
+   internal controls, matching DatePicker's wrapper-level focus shadow. */
+.osdkFilePickerTrigger:focus-within {
+  box-shadow: var(--osdk-file-picker-trigger-focus-shadow);
+}
+
+.osdkFilePickerTrigger[aria-invalid] {
+  box-shadow: var(--osdk-file-picker-trigger-shadow-error);
+}
+
+.osdkFilePickerTrigger[aria-invalid]:focus-within {
+  box-shadow: var(--osdk-file-picker-trigger-focus-shadow-error);
+}
+
+/* display: none fully removes the input from the a11y tree, avoiding
+   nested-interactive inside the role="button" trigger. Programmatic
+   .click() still opens the file dialog. */
+.osdkFilePickerHiddenInput {
+  display: none;
+}
+
+/* File name text (left section) */
+.osdkFilePickerText {
+  flex: 1;
+  align-self: stretch;
+  min-width: 0;
+  padding: var(--osdk-file-picker-trigger-padding);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+  color: var(--osdk-file-picker-trigger-color);
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: var(--osdk-input-disabled-opacity);
+  }
+
+  &:focus {
+    /* Suppress the browser default outline on mouse click. The outer
+       .osdkFilePickerTrigger renders the focus border instead. */
+    outline: none;
+  }
+}
+
+.osdkFilePickerPlaceholder {
+  color: var(--osdk-file-picker-trigger-placeholder-color);
+}
+
+/* Clear ✕ button */
+.osdkFilePickerClear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--osdk-file-picker-clear-size);
+  height: var(--osdk-file-picker-clear-size);
+  margin: var(--osdk-file-picker-clear-margin);
+  padding: var(--osdk-file-picker-clear-padding);
+  border: none;
+  background: none;
+  color: var(--osdk-file-picker-clear-color);
+  border-radius: var(--osdk-file-picker-clear-border-radius);
+  cursor: pointer;
+  transition:
+    color var(--osdk-file-picker-transition-duration)
+      var(--osdk-file-picker-transition-ease),
+    background-color var(--osdk-file-picker-transition-duration)
+      var(--osdk-file-picker-transition-ease);
+
+  &:hover {
+    color: var(--osdk-file-picker-clear-color-hover);
+    background-color: var(--osdk-file-picker-trigger-bg-hover);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: var(--osdk-input-disabled-opacity);
+  }
+
+  &:disabled:hover {
+    color: var(--osdk-file-picker-clear-color);
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-file-picker-clear-outline);
+  }
+}
+
+/* Browse button (right section) */
+.osdkFilePickerBrowse {
+  --osdk-button-min-height: 0;
+  --osdk-button-secondary-bg-hover: var(--osdk-file-picker-browse-bg-hover);
+  /* ActionButton reads --osdk-focus-outline for its focus style; route it
+     through a file-picker-owned token so consumers do not have to override
+     ActionButton internals directly. */
+  --osdk-focus-outline: var(--osdk-file-picker-browse-focus-outline);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-height: 0;
+  margin-block-start: calc(var(--osdk-surface-spacing) * 0.5);
+  margin-block-end: calc(var(--osdk-surface-spacing) * 0.5);
+  margin-inline-start: calc(var(--osdk-surface-spacing) * 0.5);
+  margin-inline-end: calc(var(--osdk-surface-spacing) * 0.5);
+  font-family: var(--osdk-file-picker-trigger-font-family);
+  font-size: var(--osdk-file-picker-trigger-font-size);
+
+  &:focus {
+    /* Browse is visually part of the file picker field. The outer trigger
+       renders the focus indication so the button does not draw a second ring. */
+    outline: none;
+  }
+}
+
+/* Doubled selector to beat the base Button's padding specificity. */
+.osdkFilePickerBrowse.osdkFilePickerBrowse {
+  padding-block: calc(var(--osdk-surface-spacing) * 0.5);
+  padding-inline: calc(var(--osdk-surface-spacing) * 3);
+}

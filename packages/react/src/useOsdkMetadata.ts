@@ -15,6 +15,8 @@
  */
 
 import type {
+  ActionDefinition,
+  ActionMetadata,
   InterfaceDefinition,
   InterfaceMetadata,
   ObjectMetadata,
@@ -24,18 +26,23 @@ import type {
 import React from "react";
 import { useOsdkClient } from "./useOsdkClient.js";
 
-type MetadataFor<T extends ObjectOrInterfaceDefinition> = T extends
-  InterfaceDefinition ? InterfaceMetadata
-  : T extends ObjectTypeDefinition ? ObjectMetadata
+type MetadataFetchableDefinition =
+  | ObjectOrInterfaceDefinition
+  | ActionDefinition<any>;
+
+type MetadataFor<T extends MetadataFetchableDefinition> = T extends
+  ObjectTypeDefinition ? ObjectMetadata
+  : T extends InterfaceDefinition ? InterfaceMetadata
+  : T extends ActionDefinition<any> ? ActionMetadata
   : never;
 
-export interface UseOsdkMetadataResult<T extends ObjectOrInterfaceDefinition> {
+export interface UseOsdkMetadataResult<T extends MetadataFetchableDefinition> {
   loading: boolean;
   metadata?: MetadataFor<T>;
   error?: string;
 }
 
-export function useOsdkMetadata<T extends ObjectOrInterfaceDefinition>(
+export function useOsdkMetadata<T extends MetadataFetchableDefinition>(
   type: T,
 ): UseOsdkMetadataResult<T> {
   const client = useOsdkClient();

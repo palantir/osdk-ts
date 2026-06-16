@@ -24,7 +24,10 @@ import { Employee } from "../../../generatedNoCheck/index.js";
 import { client } from "./client.js";
 
 const sumEmployee = await client(Employee)
-    .withProperties({
-      "newPropertyName": (baseObjectSet) =>
-        baseObjectSet.pivotTo("assignedEquipment").aggregate("purchasePrice:approximatePercentile", { percentile: 95 })
-    }).fetchPage();
+  .withProperties({
+    "newPropertyName": (baseObjectSet) =>
+      baseObjectSet.pivotTo("assignedEquipment").aggregate(
+        "purchasePrice:approximatePercentile",
+        { percentile: 95 },
+      ),
+  }).fetchPage();

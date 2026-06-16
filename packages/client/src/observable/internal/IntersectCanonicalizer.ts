@@ -54,6 +54,7 @@ export class IntersectCanonicalizer extends CachingCanonicalizer<
 
     const structuralKey = canonicalClauses
       .map((clause) => JSON.stringify(clause))
+      .sort()
       .join("||");
 
     let canonical = this.structuralCache.get(structuralKey);

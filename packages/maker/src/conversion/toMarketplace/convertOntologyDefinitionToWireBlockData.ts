@@ -16,13 +16,23 @@
 
 import type {
   ActionTypePermissionInformation,
+  ActionTypeRestrictionStatus,
+  InterfaceTypePermissionInformation,
+  InterfaceTypeRestrictionStatus,
+  LinkTypePermissionInformation,
+  LinkTypeRestrictionStatus,
+  ObjectTypePermissionInformation,
+  ObjectTypeRestrictionStatus,
   OntologyIrActionTypeBlockDataV2,
   OntologyIrInterfaceTypeBlockDataV2,
   OntologyIrLinkTypeBlockDataV2,
   OntologyIrObjectTypeBlockDataV2,
   OntologyIrOntologyBlockDataV2,
   OntologyIrSharedPropertyTypeBlockDataV2,
+  SharedPropertyTypePermissionInformation,
+  SharedPropertyTypeRestrictionStatus,
 } from "@osdk/client.unstable";
+import type { EntityPermission } from "../../api/common/EntityPermission.js";
 import { type OntologyDefinition } from "../../api/common/OntologyDefinition.js";
 import { OntologyEntityTypeEnum } from "../../api/common/OntologyEntityTypeEnum.js";
 import {
@@ -33,6 +43,56 @@ import { convertInterface } from "./convertInterface.js";
 import { convertLink } from "./convertLink.js";
 import { convertObject } from "./convertObject.js";
 import { convertSpt } from "./convertSpt.js";
+
+function toActionTypeRestrictionStatus(
+  p: EntityPermission,
+): ActionTypeRestrictionStatus {
+  return {
+    hasRolesApplied: true,
+    publicProject: p === "publicProject",
+    ontologyPackageRid: typeof p === "object" ? p.ontologyPackageRid : null,
+  };
+}
+
+function toObjectTypeRestrictionStatus(
+  p: EntityPermission,
+): ObjectTypeRestrictionStatus {
+  return {
+    restrictedByDatasources: false,
+    editRestrictedByDatasources: false,
+    publicProject: p === "publicProject",
+    ontologyPackageRid: typeof p === "object" ? p.ontologyPackageRid : null,
+  };
+}
+
+function toLinkTypeRestrictionStatus(
+  p: EntityPermission,
+): LinkTypeRestrictionStatus {
+  return {
+    restrictedByDatasources: false,
+    editRestrictedByDatasources: false,
+    publicProject: p === "publicProject",
+    ontologyPackageRid: typeof p === "object" ? p.ontologyPackageRid : null,
+  };
+}
+
+function toInterfaceTypeRestrictionStatus(
+  p: EntityPermission,
+): InterfaceTypeRestrictionStatus {
+  return {
+    publicProject: p === "publicProject",
+    ontologyPackageRid: typeof p === "object" ? p.ontologyPackageRid : null,
+  };
+}
+
+function toSharedPropertyTypeRestrictionStatus(
+  p: EntityPermission,
+): SharedPropertyTypeRestrictionStatus {
+  return {
+    publicProject: p === "publicProject",
+    ontologyPackageRid: typeof p === "object" ? p.ontologyPackageRid : null,
+  };
+}
 
 export function convertOntologyDefinitionToWireBlockData(
   ontology: OntologyDefinition,
@@ -82,21 +142,69 @@ export function convertOntologyDefinitionToWireBlockData(
     blockPermissionInformation: {
       actionTypes: Object.fromEntries(
         Object.entries(ontology[OntologyEntityTypeEnum.ACTION_TYPE])
-          .filter(([apiName, action]) => action.validation)
+          .filter(([_, action]) => action.validation || action.permission)
           .map<
             [string, ActionTypePermissionInformation]
           >(([apiName, action]) => {
             return [apiName, {
-              restrictionStatus: {
-                hasRolesApplied: true,
-                ontologyPackageRid: null,
-                publicProject: false,
-              },
+              restrictionStatus: toActionTypeRestrictionStatus(
+                action.permission ?? "roles",
+              ),
             }];
           }),
       ),
-      linkTypes: {},
-      objectTypes: {},
+      objectTypes: Object.fromEntries(
+        Object.entries(ontology[OntologyEntityTypeEnum.OBJECT_TYPE])
+          .filter(([_, objectType]) => objectType.permission != null)
+          .map<
+            [string, ObjectTypePermissionInformation]
+          >(([apiName, objectType]) => {
+            return [apiName, {
+              restrictionStatus: toObjectTypeRestrictionStatus(
+                objectType.permission!,
+              ),
+            }];
+          }),
+      ),
+      linkTypes: Object.fromEntries(
+        Object.entries(ontology[OntologyEntityTypeEnum.LINK_TYPE])
+          .filter(([_, link]) => link.permission != null)
+          .map<
+            [string, LinkTypePermissionInformation]
+          >(([id, link]) => {
+            return [cleanAndValidateLinkTypeId(id), {
+              restrictionStatus: toLinkTypeRestrictionStatus(
+                link.permission!,
+              ),
+            }];
+          }),
+      ),
+      interfaceTypes: Object.fromEntries(
+        Object.entries(ontology[OntologyEntityTypeEnum.INTERFACE_TYPE])
+          .filter(([_, iface]) => iface.permission != null)
+          .map<
+            [string, InterfaceTypePermissionInformation]
+          >(([apiName, iface]) => {
+            return [apiName, {
+              restrictionStatus: toInterfaceTypeRestrictionStatus(
+                iface.permission!,
+              ),
+            }];
+          }),
+      ),
+      sharedPropertyTypes: Object.fromEntries(
+        Object.entries(ontology[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE])
+          .filter(([_, spt]) => spt.permission != null)
+          .map<
+            [string, SharedPropertyTypePermissionInformation]
+          >(([apiName, spt]) => {
+            return [apiName, {
+              restrictionStatus: toSharedPropertyTypeRestrictionStatus(
+                spt.permission!,
+              ),
+            }];
+          }),
+      ),
     },
   });
 }

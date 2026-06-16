@@ -15,7 +15,7 @@
  */
 
 import type { Attachment, AttachmentUpload } from "../object/Attachment.js";
-import type { MediaReference, MediaUpload } from "../object/Media.js";
+import type { Media, MediaReference, MediaUpload } from "../object/Media.js";
 
 /**
  * Map from the DataValue type to the typescript type that we return
@@ -50,6 +50,7 @@ export interface DataValueWireToClient {
   objectType: string;
   geohash: GeoJSON.Point;
   geoshape: GeoJSON.GeoJSON;
+  scenarioReference: never;
 }
 
 /**
@@ -72,7 +73,13 @@ export interface DataValueClientToWire {
   string: string;
   timestamp: string;
   set: Set<any>;
-  mediaReference: MediaReference | MediaUpload;
+  mediaReference: MediaReference | MediaUpload | Media;
+  /**
+   * Structurally typed as the object that exposes `getScenarioReference()` — matches the `EXPERIMENTAL_ScenarioClient`
+   * returned by `withScenario` / `createScenario` in `@osdk/client/unstable-do-not-use`. Defined inline to
+   * avoid a circular dependency on `@osdk/client`.
+   */
+  scenarioReference: { getScenarioReference(): string };
   twoDimensionalAggregation: {
     key: AllowedBucketKeyTypes;
     value: AllowedBucketTypes;

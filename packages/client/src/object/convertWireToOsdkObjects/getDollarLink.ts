@@ -102,6 +102,10 @@ export function get$linkForInterface(
             )
             .pivotTo(linkName);
 
+        const linkTargetDef = linkDef.targetType === "object"
+          ? { type: "object" as const, apiName: linkDef.targetTypeApiName }
+          : { type: "interface" as const, apiName: linkDef.targetTypeApiName };
+
         const value = !linkDef.multiplicity
           ? {
             fetchOne: <A extends SelectArg<any, any, any, any>>(
@@ -109,7 +113,7 @@ export function get$linkForInterface(
             ) =>
               fetchSingle(
                 client,
-                objDef,
+                linkTargetDef,
                 options ?? {},
                 getWireObjectSet(objectSet),
               ),
@@ -118,7 +122,7 @@ export function get$linkForInterface(
             ) =>
               fetchSingleWithErrors(
                 client,
-                objDef,
+                linkTargetDef,
                 options ?? {},
                 getWireObjectSet(objectSet),
               ),

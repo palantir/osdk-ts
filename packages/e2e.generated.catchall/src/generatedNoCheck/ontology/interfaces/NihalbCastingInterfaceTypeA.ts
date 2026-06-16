@@ -7,6 +7,7 @@ import type {
   ObjectSet as $ObjectSet,
   Osdk as $Osdk,
   PropertyValueWireToClient as $PropType,
+  SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
 
 export interface OsdkObjectLinks$NihalbCastingInterfaceTypeA {
@@ -66,8 +67,11 @@ export interface NihalbCastingInterfaceTypeA extends $InterfaceDefinition {
   };
 }
 
-export const NihalbCastingInterfaceTypeA: NihalbCastingInterfaceTypeA = {
+export const NihalbCastingInterfaceTypeA = {
   type: 'interface',
   apiName: 'NihalbCastingInterfaceTypeA',
   osdkMetadata: $osdkMetadata,
-};
+  internalDoNotUseMetadata: {
+    rid: 'ri.ontology.main.interface.daed91f9-ee83-4e6c-bfc7-a17c8ff9433c',
+  },
+} satisfies NihalbCastingInterfaceTypeA & { internalDoNotUseMetadata: { rid: string } } as NihalbCastingInterfaceTypeA;

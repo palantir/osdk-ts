@@ -17,8 +17,8 @@
 import type {
   DerivedProperty,
   LinkNames,
+  ObjectOrInterfaceDefinition,
   ObjectSet,
-  ObjectTypeDefinition,
   PropertyKeys,
   WhereClause,
   WirePropertyTypes,
@@ -26,7 +26,7 @@ import type {
 import type { CommonObserveOptions } from "../../ObservableClient/common.js";
 
 export interface ObserveObjectSetOptions<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<
     string,
     WirePropertyTypes | undefined | Array<WirePropertyTypes>
@@ -37,9 +37,22 @@ export interface ObserveObjectSetOptions<
   union?: ObjectSet<Q>[];
   intersect?: ObjectSet<Q>[];
   subtract?: ObjectSet<Q>[];
+
+  /**
+   * Traverse to linked objects. Cannot be combined with `streamUpdates`.
+   * The server does not support websocket subscriptions for link-traversal
+   * queries.
+   */
   pivotTo?: LinkNames<Q>;
   pageSize?: number;
   orderBy?: { [K in PropertyKeys<Q>]?: "asc" | "desc" };
+
+  /**
+   * Restrict which properties are returned for each object.
+   * When provided, only the specified properties will be fetched,
+   * reducing payload sizes for list views.
+   */
+  select?: readonly PropertyKeys<Q>[];
 
   /**
    * Automatically fetch additional pages on initial load.
@@ -55,9 +68,24 @@ export interface ObserveObjectSetOptions<
    * When true, the object set will automatically update when matching objects are
    * added, updated, or removed.
    *
+   * Cannot be combined with `pivotTo`. The server does not support
+   * websocket subscriptions for link-traversal queries.
+   *
+   * Cannot be combined with `withProperties` (or a `baseObjectSet` that already
+   * has derived properties applied). The server does not support websocket
+   * subscriptions for object sets that include derived properties; in that
+   * case `streamUpdates` is ignored and a warning is logged in development.
+   *
    * @default false
    */
   streamUpdates?: boolean;
+
+  /**
+   * When true, loads per-property security metadata (marking requirements)
+   * alongside each object. The returned objects will have `$propertySecurities`
+   * populated with conjunctive/disjunctive marking requirements per property.
+   */
+  $loadPropertySecurityMetadata?: boolean;
 }
 
 export interface ObjectSetQueryOptions

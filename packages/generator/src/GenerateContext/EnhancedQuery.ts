@@ -35,6 +35,10 @@ export class EnhancedQuery extends EnhancedBase<QueryTypeV2> {
     return this.raw.output;
   }
 
+  get typeReferences(): QueryTypeV2["typeReferences"] {
+    return this.raw.typeReferences;
+  }
+
   get paramsIdentifier() {
     return `${this.shortApiName}.Parameters`;
   }

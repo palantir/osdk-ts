@@ -1,0 +1,191 @@
+.osdkEditableCell {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--osdk-surface-spacing);
+
+  padding: var(--osdk-surface-spacing) calc(var(--osdk-surface-spacing) * 3);
+  border-radius: var(--osdk-surface-border-radius);
+  border: var(--osdk-surface-border-width) solid transparent;
+  background: inherit;
+
+  tr[data-focused="true"] & {
+    border: var(--osdk-table-cell-editable-border);
+    background: var(--osdk-table-cell-input-bg);
+
+    &.osdkEditedInput {
+      border: var(--osdk-table-cell-edited-border);
+    }
+
+    &:focus-within,
+    &.osdkEditedInput:focus-within {
+      border: var(--osdk-emphasis-focus-width) solid
+        var(--osdk-emphasis-focus-color);
+    }
+
+    &.error {
+      border: var(--osdk-table-cell-edited-border-error);
+
+      &:focus-within {
+        border: var(--osdk-emphasis-focus-width) solid
+          var(--osdk-intent-danger-rest);
+      }
+    }
+  }
+
+  &.error {
+    background: var(--osdk-table-cell-input-bg);
+    border: var(--osdk-table-cell-edited-border-error);
+  }
+}
+
+.osdkEditableCellTrigger {
+  width: 100%;
+}
+
+.osdkEditableCellDropdown {
+  /* Override the default borders in dropdown */
+  --osdk-select-border-color: transparent;
+  --osdk-combobox-border-color: transparent;
+  --osdk-combobox-focus-border-color: transparent;
+
+  /* Match the text-input editable cell background so the row reads as a
+     single field strip instead of mixed surface colors. */
+  --osdk-select-trigger-bg: var(--osdk-table-cell-input-bg);
+  --osdk-combobox-trigger-bg: var(--osdk-table-cell-input-bg);
+
+  --osdk-combobox-input-padding: var(--osdk-surface-spacing)
+    calc(var(--osdk-surface-spacing) * 3);
+
+  --osdk-select-trigger-padding: var(--osdk-surface-spacing)
+    calc(var(--osdk-surface-spacing) * 3);
+
+  border-radius: var(--osdk-surface-border-radius);
+
+  tr[data-focused="true"] & {
+    border: var(--osdk-table-cell-editable-border);
+    background: var(--osdk-table-cell-input-bg);
+
+    &.osdkEditedInput {
+      border: var(--osdk-table-cell-edited-border);
+    }
+
+    &:focus-within,
+    &.osdkEditedInput:focus-within {
+      border: var(--osdk-emphasis-focus-width) solid
+        var(--osdk-emphasis-focus-color);
+    }
+
+    &.error {
+      border: var(--osdk-table-cell-edited-border-error);
+
+      &:focus-within {
+        border: var(--osdk-emphasis-focus-width) solid
+          var(--osdk-intent-danger-rest);
+      }
+    }
+  }
+
+  &.error {
+    background: var(--osdk-table-cell-input-bg);
+    border: var(--osdk-table-cell-edited-border-error);
+  }
+}
+
+.osdkEditableCellDatePicker {
+  /* Override the default borders/shadow in date picker so the cell wrapper
+     is the only thing painting a border on focus. Without these overrides
+     the date picker's own input-wrapper draws a box-shadow on top of the
+     cell border, masking the cell's :focus-within outline. */
+  --osdk-datetime-input-bg: transparent;
+  --osdk-datetime-input-bg-hover: transparent;
+  --osdk-datetime-input-shadow: none;
+  --osdk-datetime-input-shadow-error: none;
+  --osdk-datetime-input-focus-shadow: none;
+  --osdk-datetime-input-focus-shadow-error: none;
+
+  --osdk-datetime-input-padding: var(--osdk-surface-spacing)
+    calc(var(--osdk-surface-spacing) * 3);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: var(--osdk-surface-border-radius);
+  /* Reserve space for the focus border so layout doesn't shift on focus,
+     matching .osdkEditableCell. */
+  border: var(--osdk-surface-border-width) solid transparent;
+
+  tr[data-focused="true"] & {
+    border: var(--osdk-table-cell-editable-border);
+    background: var(--osdk-table-cell-input-bg);
+
+    &.osdkEditedInput {
+      border: var(--osdk-table-cell-edited-border);
+    }
+
+    &:focus-within,
+    &.osdkEditedInput:focus-within {
+      border: var(--osdk-emphasis-focus-width) solid
+        var(--osdk-emphasis-focus-color);
+    }
+
+    &.error {
+      border: var(--osdk-table-cell-edited-border-error);
+
+      &:focus-within {
+        border: var(--osdk-emphasis-focus-width) solid
+          var(--osdk-intent-danger-rest);
+      }
+    }
+  }
+
+  &.error {
+    background: var(--osdk-table-cell-input-bg);
+    border: var(--osdk-table-cell-edited-border-error);
+  }
+}
+
+.readonlyDisplayCell {
+  padding: calc(var(--osdk-surface-spacing) * 0.5) 0;
+  min-height: 1lh;
+}
+
+.nonEditableCellInEditMode {
+  padding-left: calc(var(--osdk-surface-spacing) * 3);
+}
+
+.osdkEditableInput {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+  background: inherit;
+  color: var(--osdk-typography-color-default-rest);
+  border: none;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.osdkEditedInput {
+  border-radius: var(--osdk-surface-border-radius);
+  border: var(--osdk-table-cell-edited-border);
+  background: var(--osdk-table-cell-input-bg);
+}
+
+.validationError {
+  display: flex;
+  align-items: center;
+  gap: var(--osdk-surface-spacing);
+}
+
+.errorIcon {
+  color: var(--osdk-intent-danger-rest);
+}
+
+.errorIconWrapper {
+  margin-right: calc(var(--osdk-surface-spacing) * 3);
+}

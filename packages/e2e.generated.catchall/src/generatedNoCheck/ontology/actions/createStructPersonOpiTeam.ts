@@ -43,7 +43,7 @@ export namespace createStructPersonOpiTeam {
       city: { type: 'string'; nullable: false };
       state: { type: 'string'; nullable: false };
       zipcode: { type: 'integer'; nullable: true };
-    }>;
+    }> | null;
 
     readonly age: ActionParam.PrimitiveType<'integer'>;
 
@@ -69,6 +69,11 @@ export namespace createStructPersonOpiTeam {
 
 /**
  * Create a struct person on the OPI team
+ *
+ * **Note on null values:** _For optional parameters, explicitly providing a null value instead of undefined
+ * can change the behavior of the applied action. If prefills are configured, null prevents them
+ * from being applied. If a parameter modifies an object's property, null will clear the data from
+ * the object, whereas undefined would not modify that property._
  * @param {ActionParam.StructType<{"city":{"type":"string","nullable":false},"state":{"type":"string","nullable":false},"zipcode":{"type":"integer","nullable":true}}>} [address]
  * @param {ActionParam.PrimitiveType<"integer">} age
  * @param {ActionParam.PrimitiveType<"string">} id
@@ -87,16 +92,19 @@ export interface createStructPersonOpiTeam extends ActionDefinition<createStruct
     rid: 'ri.a.b.c.d';
     status: 'ACTIVE';
     type: 'action';
+    unsanitizedApiName: 'create-struct-person-opi-team';
 
     signatures: createStructPersonOpiTeam.Signatures;
   };
   apiName: 'createStructPersonOpiTeam';
   type: 'action';
+  unsanitizedApiName: 'create-struct-person-opi-team';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const createStructPersonOpiTeam: createStructPersonOpiTeam = {
   apiName: 'createStructPersonOpiTeam',
   type: 'action',
+  unsanitizedApiName: 'create-struct-person-opi-team',
   osdkMetadata: $osdkMetadata,
 };

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { InterfaceDefinition, ObjectTypeDefinition } from "@osdk/api";
+import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { ListPayload } from "../../ListPayload.js";
 import type { ObserveListOptions } from "../../ObservableClient.js";
 import type { Observer } from "../../ObservableClient/common.js";
@@ -26,6 +26,8 @@ import type { OrderByCanonicalizer } from "../OrderByCanonicalizer.js";
 import type { PivotCanonicalizer } from "../PivotCanonicalizer.js";
 import type { QuerySubscription } from "../QuerySubscription.js";
 import type { RdpCanonicalizer } from "../RdpCanonicalizer.js";
+import type { RidListCanonicalizer } from "../RidListCanonicalizer.js";
+import type { SelectCanonicalizer } from "../SelectCanonicalizer.js";
 import type { Store } from "../Store.js";
 import type { WhereClauseCanonicalizer } from "../WhereClauseCanonicalizer.js";
 import { InterfaceListQuery } from "./InterfaceListQuery.js";
@@ -35,13 +37,15 @@ import { ObjectListQuery } from "./ObjectListQuery.js";
 
 export class ListsHelper extends AbstractHelper<
   ListQuery,
-  ObserveListOptions<ObjectTypeDefinition | InterfaceDefinition>
+  ObserveListOptions<ObjectOrInterfaceDefinition, {}>
 > {
   whereCanonicalizer: WhereClauseCanonicalizer;
   orderByCanonicalizer: OrderByCanonicalizer;
   rdpCanonicalizer: RdpCanonicalizer;
   intersectCanonicalizer: IntersectCanonicalizer;
   pivotCanonicalizer: PivotCanonicalizer;
+  ridListCanonicalizer: RidListCanonicalizer;
+  selectCanonicalizer: SelectCanonicalizer;
 
   constructor(
     store: Store,
@@ -51,6 +55,8 @@ export class ListsHelper extends AbstractHelper<
     rdpCanonicalizer: RdpCanonicalizer,
     intersectCanonicalizer: IntersectCanonicalizer,
     pivotCanonicalizer: PivotCanonicalizer,
+    ridListCanonicalizer: RidListCanonicalizer,
+    selectCanonicalizer: SelectCanonicalizer,
   ) {
     super(store, cacheKeys);
 
@@ -59,22 +65,44 @@ export class ListsHelper extends AbstractHelper<
     this.rdpCanonicalizer = rdpCanonicalizer;
     this.intersectCanonicalizer = intersectCanonicalizer;
     this.pivotCanonicalizer = pivotCanonicalizer;
+    this.ridListCanonicalizer = ridListCanonicalizer;
+    this.selectCanonicalizer = selectCanonicalizer;
   }
 
-  observe<T extends ObjectTypeDefinition | InterfaceDefinition>(
-    options: ObserveListOptions<T>,
+  observe<T extends ObjectOrInterfaceDefinition>(
+    options: ObserveListOptions<T, {}>,
     subFn: Observer<ListPayload>,
   ): QuerySubscription<ListQuery> {
     const ret = super.observe(options, subFn);
 
     if (options.streamUpdates) {
-      ret.query.registerStreamUpdates(ret.subscription);
+      if (options.pivotTo) {
+        if (process.env.NODE_ENV !== "production") {
+          // eslint-disable-next-line no-console
+          console.warn(
+            "[@osdk/client] streamUpdates is not supported with pivotTo. "
+              + "The server does not support websocket subscriptions for "
+              + "link-traversal queries. Ignoring streamUpdates.",
+          );
+        }
+      } else if (options.withProperties) {
+        if (process.env.NODE_ENV !== "production") {
+          // eslint-disable-next-line no-console
+          console.warn(
+            "[@osdk/client] streamUpdates is not supported with withProperties. "
+              + "The server does not support websocket subscriptions for "
+              + "object sets that include derived properties. Ignoring streamUpdates.",
+          );
+        }
+      } else {
+        ret.query.registerStreamUpdates(ret.subscription);
+      }
     }
     return ret;
   }
 
-  getQuery<T extends ObjectTypeDefinition | InterfaceDefinition>(
-    options: ObserveListOptions<T>,
+  getQuery<T extends ObjectOrInterfaceDefinition>(
+    options: ObserveListOptions<T, {}>,
   ): ListQuery {
     const {
       type: typeDefinition,
@@ -83,8 +111,21 @@ export class ListsHelper extends AbstractHelper<
       withProperties,
       intersectWith,
       pivotTo,
+      rids,
+      select,
+      $loadPropertySecurityMetadata,
+      resolveToObjectType,
     } = options;
     const { apiName, type } = typeDefinition;
+    // The flag is interface-only on the server. Drop it for object queries so
+    // they don't fragment the cache.
+    const $includeAllBaseObjectProperties =
+      type === "interface" && options.$includeAllBaseObjectProperties
+        ? true
+        : undefined;
+    const canonResolveToObjectType = type === "interface" && resolveToObjectType
+      ? true
+      : undefined;
 
     const canonWhere = this.whereCanonicalizer.canonicalize(where ?? {});
     const canonOrderBy = this.orderByCanonicalizer.canonicalize(orderBy ?? {});
@@ -97,7 +138,15 @@ export class ListsHelper extends AbstractHelper<
       : undefined;
 
     const canonPivot = pivotTo
-      ? this.pivotCanonicalizer.canonicalize(apiName, pivotTo)
+      ? this.pivotCanonicalizer.canonicalize(apiName, type, pivotTo)
+      : undefined;
+
+    const canonRids = rids != null
+      ? this.ridListCanonicalizer.canonicalize(rids)
+      : undefined;
+
+    const canonSelect = select && select.length > 0
+      ? this.selectCanonicalizer.canonicalize(select)
       : undefined;
 
     const listCacheKey = this.cacheKeys.get<ListCacheKey>(
@@ -109,6 +158,11 @@ export class ListsHelper extends AbstractHelper<
       canonRdp,
       canonIntersect,
       canonPivot,
+      canonRids,
+      canonSelect,
+      $loadPropertySecurityMetadata ? true : undefined,
+      $includeAllBaseObjectProperties,
+      canonResolveToObjectType,
     );
 
     return this.store.queries.get(listCacheKey, () => {

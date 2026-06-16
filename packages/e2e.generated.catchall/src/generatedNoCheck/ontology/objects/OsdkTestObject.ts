@@ -15,7 +15,7 @@ import type {
 } from '@osdk/client';
 
 export namespace OsdkTestObject {
-  export type PropertyKeys = 'structArray' | 'description' | 'osdkObjectName' | 'primaryKey_' | 'stringProperty';
+  export type PropertyKeys = 'description' | 'osdkObjectName' | 'primaryKey_' | 'stringProperty' | 'structArray';
 
   export type Links = {};
 
@@ -35,7 +35,7 @@ export namespace OsdkTestObject {
     /**
      *   display name: 'String Property'
      */
-    readonly stringProperty: 'brown' | 'found.com' | undefined;
+    readonly stringProperty: 'brown' | 'found.com' | 'it\'s "cool"' | undefined;
     /**
      * @experimental
      *
@@ -45,9 +45,9 @@ export namespace OsdkTestObject {
      */
     readonly structArray:
       | {
+          number: $PropType['integer'] | undefined;
           string1: $PropType['string'] | undefined;
           string2: $PropType['string'] | undefined;
-          number: $PropType['integer'] | undefined;
         }[]
       | undefined;
   }
@@ -71,6 +71,8 @@ export interface OsdkTestObject extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'OsdkTestObject';
+  primaryKeyApiName: 'primaryKey_';
+  primaryKeyType: 'string';
   __DefinitionMetadata?: {
     objectSet: OsdkTestObject.ObjectSet;
     props: OsdkTestObject.Props;
@@ -145,6 +147,8 @@ export const OsdkTestObject = {
   type: 'object',
   apiName: 'OsdkTestObject',
   osdkMetadata: $osdkMetadata,
+  primaryKeyApiName: 'primaryKey_',
+  primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.ba4a949c-547a-45de-9c78-b772bb55acfb',
   },

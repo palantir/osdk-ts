@@ -19,14 +19,17 @@ import type {
   ActionEditResponse,
   ActionValidationResponse,
   Logger,
+  ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
   Osdk,
   PrimaryKeyType,
+  QueryDefinition,
 } from "@osdk/api";
 import invariant from "tiny-invariant";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import { additionalContext, type Client } from "../../Client.js";
 import { DEBUG_REFCOUNTS } from "../DebugFlags.js";
+import type { CacheEntry, CacheSnapshot } from "../ObservableClient.js";
 import type { OptimisticBuilder } from "../OptimisticBuilder.js";
 import { ActionApplication } from "./actions/ActionApplication.js";
 import {
@@ -43,16 +46,22 @@ import {
   createChangedObjects,
   DEBUG_ONLY__changesToString,
 } from "./Changes.js";
+import { FunctionsHelper } from "./function/FunctionsHelper.js";
+import { GenericCanonicalizer } from "./GenericCanonicalizer.js";
 import { IntersectCanonicalizer } from "./IntersectCanonicalizer.js";
 import type { KnownCacheKey } from "./KnownCacheKey.js";
 import type { Entry } from "./Layer.js";
 import { Layers } from "./Layers.js";
 import { LinksHelper } from "./links/LinksHelper.js";
 import {
+  SOURCE_API_NAME_IDX as LINK_API_NAME_IDX,
+} from "./links/SpecificLinkCacheKey.js";
+import {
   API_NAME_IDX as LIST_API_NAME_IDX,
   RDP_IDX as LIST_RDP_IDX,
 } from "./list/ListCacheKey.js";
 import { ListsHelper } from "./list/ListsHelper.js";
+import { MediaHelper } from "./media/MediaHelper.js";
 import {
   API_NAME_IDX as OBJECT_API_NAME_IDX,
   RDP_CONFIG_IDX as OBJECT_RDP_CONFIG_IDX,
@@ -60,11 +69,14 @@ import {
 import { ObjectCacheKeyRegistry } from "./object/ObjectCacheKeyRegistry.js";
 import { ObjectsHelper } from "./object/ObjectsHelper.js";
 import { ObjectSetHelper } from "./objectset/ObjectSetHelper.js";
+import { ObjectSetArrayCanonicalizer } from "./ObjectSetArrayCanonicalizer.js";
 import { type OptimisticId } from "./OptimisticId.js";
 import { OrderByCanonicalizer } from "./OrderByCanonicalizer.js";
 import { PivotCanonicalizer } from "./PivotCanonicalizer.js";
 import { Queries } from "./Queries.js";
 import { type Rdp, RdpCanonicalizer } from "./RdpCanonicalizer.js";
+import { RidListCanonicalizer } from "./RidListCanonicalizer.js";
+import { SelectCanonicalizer } from "./SelectCanonicalizer.js";
 import type { Subjects } from "./Subjects.js";
 import { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
 
@@ -79,6 +91,9 @@ export namespace Store {
     - Subjects are one per type per store (by cache key)
     - Data is one per layer per cache key
 */
+
+const __DEV__ = typeof process === "undefined"
+  || process.env.NODE_ENV !== "production";
 
 /**
  * Central data store with layered cache architecture.
@@ -95,6 +110,13 @@ export class Store {
   readonly intersectCanonicalizer: IntersectCanonicalizer =
     new IntersectCanonicalizer(this.whereCanonicalizer);
   readonly pivotCanonicalizer: PivotCanonicalizer = new PivotCanonicalizer();
+  readonly ridListCanonicalizer: RidListCanonicalizer =
+    new RidListCanonicalizer();
+  readonly selectCanonicalizer: SelectCanonicalizer = new SelectCanonicalizer();
+  readonly objectSetArrayCanonicalizer: ObjectSetArrayCanonicalizer =
+    new ObjectSetArrayCanonicalizer();
+  readonly genericCanonicalizer: GenericCanonicalizer =
+    new GenericCanonicalizer();
 
   readonly client: Client;
 
@@ -103,6 +125,19 @@ export class Store {
 
   readonly cacheKeys: CacheKeys<KnownCacheKey>;
   readonly queries: Queries = new Queries();
+
+  /**
+   * Tracks cache keys with deferred cleanup. During React unmount-remount
+   * cycles, a subscription may be cleaned up and immediately re-created.
+   * By deferring cleanup to a microtask, we prevent propagateWrite from
+   * skipping keys that are momentarily between subscriptions.
+   *
+   * The value is a count (not a boolean) so multiple unsubscribes within the
+   * same tick schedule the correct number of releases.
+   * @internal
+   */
+  readonly pendingCleanup: Map<KnownCacheKey, number> = new Map();
+
   readonly objectCacheKeyRegistry: ObjectCacheKeyRegistry =
     new ObjectCacheKeyRegistry();
 
@@ -114,9 +149,11 @@ export class Store {
 
   // these are hopefully temporary
   readonly aggregations: AggregationsHelper;
+  readonly functions: FunctionsHelper;
   readonly lists: ListsHelper;
   readonly objects: ObjectsHelper;
   readonly links: LinksHelper;
+  readonly media: MediaHelper;
   readonly objectSets: ObjectSetHelper;
 
   constructor(client: Client) {
@@ -134,7 +171,9 @@ export class Store {
       this.cacheKeys,
       this.whereCanonicalizer,
       this.rdpCanonicalizer,
+      this.intersectCanonicalizer,
     );
+    this.functions = new FunctionsHelper(this, this.cacheKeys);
     this.lists = new ListsHelper(
       this,
       this.cacheKeys,
@@ -143,6 +182,8 @@ export class Store {
       this.rdpCanonicalizer,
       this.intersectCanonicalizer,
       this.pivotCanonicalizer,
+      this.ridListCanonicalizer,
+      this.selectCanonicalizer,
     );
     this.objects = new ObjectsHelper(this, this.cacheKeys);
     this.links = new LinksHelper(
@@ -150,12 +191,17 @@ export class Store {
       this.cacheKeys,
       this.whereCanonicalizer,
       this.orderByCanonicalizer,
+      this.selectCanonicalizer,
     );
+    this.media = new MediaHelper(this, this.cacheKeys);
     this.objectSets = new ObjectSetHelper(
       this,
       this.cacheKeys,
       this.whereCanonicalizer,
       this.orderByCanonicalizer,
+      this.rdpCanonicalizer,
+      this.selectCanonicalizer,
+      this.objectSetArrayCanonicalizer,
     );
   }
 
@@ -185,6 +231,10 @@ export class Store {
 
     this.subjects.delete(key);
     this.queries.delete(key);
+
+    if (key.type === "object") {
+      this.objectCacheKeyRegistry.unregister(key);
+    }
   };
 
   applyAction: <Q extends ActionDefinition<any>>(
@@ -260,7 +310,46 @@ export class Store {
       }
     }
 
+    // Per-PK invalidation doesn't propagate to specificLink queries (they're
+    // keyed on srcType+srcPk+linkName, not the linked object's pk).
+    promises.push(this.invalidateLinkQueriesForType(apiName));
+
+    // Function queries with explicit `dependsOnObjects` need to be told the
+    // edited PK directly — they aren't object-cache variants and so aren't
+    // reachable via objectCacheKeyRegistry.
+    promises.push(this.functions.invalidateFunctionsByObject(apiName, pk));
+
     return Promise.allSettled(promises);
+  }
+
+  /**
+   * Force every cached `specificLink` query to re-evaluate against the given
+   * apiName. Link queries are keyed on `(srcType, srcPk, linkName, ...)` rather
+   * than the linked object's pk, so per-object propagation never marks them
+   * as modified.
+   *
+   * TODO: make SpecificLinkQuery self-invalidate from per-type changes so
+   * callers don't need this manual kick.
+   */
+  public invalidateLinkQueriesForType(apiName: string): Promise<void> {
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.child({ methodName: "invalidateLinkQueriesForType" }).debug(
+        apiName,
+      );
+    }
+
+    const promises: Array<Promise<void>> = [];
+    for (const cacheKey of this.queries.keys()) {
+      if (cacheKey.type !== "specificLink") {
+        continue;
+      }
+      const query = this.queries.peek(cacheKey);
+      if (!query) {
+        continue;
+      }
+      promises.push(query.invalidateObjectType(apiName, undefined));
+    }
+    return Promise.allSettled(promises).then(() => void 0);
   }
 
   async #maybeRevalidateQueries(
@@ -371,6 +460,22 @@ export class Store {
     cacheKey: KnownCacheKey,
     changes: Changes,
   ): boolean {
+    if (cacheKey.type === "objectSet" || cacheKey.type === "list") {
+      const query = this.queries.peek(cacheKey);
+      // Both ObjectSetQuery and ListQuery expose objectTypes: ReadonlySet<string>
+      if (query && "objectTypes" in query) {
+        for (
+          const objectType of (query as { objectTypes: ReadonlySet<string> })
+            .objectTypes
+        ) {
+          if (this.#changesAffectObjectType(changes, objectType)) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+
     const queryObjectType = this.#getQueryObjectType(cacheKey);
     if (!queryObjectType) {
       return false;
@@ -409,6 +514,13 @@ export class Store {
         return cacheKey.otherKeys[LIST_RDP_IDX];
       } else if (cacheKey.type === "aggregation") {
         return cacheKey.otherKeys[AGGREGATION_RDP_IDX];
+      } else if (cacheKey.type === "objectSet") {
+        const query = this.queries.peek(cacheKey);
+        if (query) {
+          return query.rdpConfig;
+        }
+      } else if (cacheKey.type === "mediaMetadata") {
+        return undefined;
       }
       // Links and other types would also be at LIST_RDP_IDX
     }
@@ -429,6 +541,8 @@ export class Store {
         return cacheKey.otherKeys[LIST_API_NAME_IDX];
       } else if (cacheKey.type === "aggregation") {
         return cacheKey.otherKeys[AGGREGATION_API_NAME_IDX];
+      } else if (cacheKey.type === "mediaMetadata") {
+        return cacheKey.otherKeys[0];
       }
       // Links would have apiName at a different position
     }
@@ -453,6 +567,15 @@ export class Store {
     const modifiedForType = changes.modifiedObjects.get(objectType);
     if (modifiedForType && modifiedForType.length > 0) {
       return true;
+    }
+
+    for (const deletedKey of changes.deleted) {
+      if (
+        deletedKey.type === "object"
+        && deletedKey.otherKeys[OBJECT_API_NAME_IDX] === objectType
+      ) {
+        return true;
+      }
     }
 
     return false;
@@ -485,7 +608,11 @@ export class Store {
     const promises: Array<Promise<void>> = [];
 
     for (const cacheKey of this.layers.truth.keys()) {
-      if (changes && changes.modified.has(cacheKey)) {
+      if (
+        cacheKey.type !== "mediaMetadata"
+        && changes
+        && changes.modified.has(cacheKey)
+      ) {
         continue;
       }
       const query = this.queries.peek(cacheKey);
@@ -512,8 +639,8 @@ export class Store {
 
   public async invalidateObjects(
     objects:
-      | Osdk.Instance<ObjectTypeDefinition>
-      | ReadonlyArray<Osdk.Instance<ObjectTypeDefinition>>,
+      | Osdk.Instance<ObjectOrInterfaceDefinition>
+      | ReadonlyArray<Osdk.Instance<ObjectOrInterfaceDefinition>>,
   ): Promise<void> {
     const objectsArray = Array.isArray(objects) ? objects : [objects];
     const promises: Array<Promise<unknown>> = [];
@@ -524,5 +651,106 @@ export class Store {
 
     // we use allSettled here because we don't care if it succeeds or fails, just that they all complete.
     return Promise.allSettled(promises).then(() => void 0);
+  }
+
+  public async invalidateFunction(
+    apiName: string | QueryDefinition<unknown>,
+    params?: Record<string, unknown>,
+  ): Promise<void> {
+    return this.functions.invalidateFunction(apiName, params);
+  }
+
+  public async invalidateFunctionsByObject(
+    apiName: string,
+    primaryKey: string | number,
+  ): Promise<void> {
+    return this.functions.invalidateFunctionsByObject(apiName, primaryKey);
+  }
+
+  #sizeCache: WeakMap<object, number> | undefined;
+
+  public getCacheSnapshot(): CacheSnapshot {
+    if (__DEV__) {
+      const sizeCache = this.#sizeCache ??= new WeakMap<object, number>();
+      const entries: CacheEntry[] = [];
+      let totalSize = 0;
+
+      for (const cacheKey of this.layers.truth.keys()) {
+        const entry = this.layers.top.get(cacheKey);
+        if (!entry) {
+          continue;
+        }
+
+        let entryType: CacheEntry["type"] | undefined;
+        let objectType = "";
+
+        if (cacheKey.type === "object") {
+          entryType = "object";
+          objectType = cacheKey.otherKeys[OBJECT_API_NAME_IDX];
+        } else if (cacheKey.type === "list") {
+          entryType = "list";
+          objectType = cacheKey.otherKeys[LIST_API_NAME_IDX];
+        } else if (cacheKey.type === "specificLink") {
+          entryType = "link";
+          objectType = cacheKey.otherKeys[LINK_API_NAME_IDX];
+        } else if (cacheKey.type === "objectSet") {
+          entryType = "objectSet";
+          objectType = "";
+        }
+
+        if (!entryType) {
+          continue;
+        }
+
+        let estimatedSize = 0;
+        if (entry.value != null && typeof entry.value === "object") {
+          const objectValue = entry.value;
+          const cached = sizeCache.get(objectValue);
+          if (cached !== undefined) {
+            estimatedSize = cached;
+          } else {
+            try {
+              estimatedSize = JSON.stringify(entry.value).length * 2;
+            } catch {
+              // TODO: surface unserializable entries to devtools users
+              estimatedSize = 0;
+            }
+            sizeCache.set(objectValue, estimatedSize);
+          }
+        } else if (entry.value != null) {
+          try {
+            estimatedSize = JSON.stringify(entry.value).length * 2;
+          } catch {
+            estimatedSize = 0;
+          }
+        }
+        totalSize += estimatedSize;
+
+        entries.push({
+          key: DEBUG_ONLY__cacheKeyToString(cacheKey),
+          type: entryType,
+          objectType,
+          metadata: {
+            timestamp: entry.lastUpdated,
+            status: entry.status,
+            size: estimatedSize,
+          },
+          data: entry.value,
+        });
+      }
+
+      return {
+        entries,
+        stats: {
+          totalEntries: entries.length,
+          totalSize,
+        },
+      };
+    }
+
+    return {
+      entries: [],
+      stats: { totalEntries: 0, totalSize: 0 },
+    };
   }
 }

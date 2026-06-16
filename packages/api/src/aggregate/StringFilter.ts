@@ -15,6 +15,7 @@
  */
 
 import type { BaseFilterOptions, CatchThemAll } from "./BaseFilter.js";
+import type { IntervalRule } from "./IntervalRule.js";
 import type { Just } from "./Just.js";
 
 interface StringFilterOptions extends BaseFilterOptions<string> {
@@ -22,10 +23,20 @@ interface StringFilterOptions extends BaseFilterOptions<string> {
   "$containsAllTermsInOrder": string;
   "$containsAnyTerm": string | { term: string; fuzzySearch?: boolean };
   "$containsAllTerms": string | { term: string; fuzzySearch?: boolean };
+  "$interval": IntervalRule;
   /**
    * Matches any of the provided values. If an empty array is provided, the filter will match all objects.
    */
   "$in": ReadonlyArray<string>;
+  "$gt": string;
+  "$gte": string;
+  "$lt": string;
+  "$lte": string;
+  /**
+   * @beta
+   * For supported regex expressions, refer to https://www.palantir.com/docs/foundry/ontology/search-syntax
+   */
+  "$matchesRegex": string;
 }
 
 export namespace StringFilter {
@@ -48,7 +59,16 @@ export namespace StringFilter {
     extends Just<"$containsAllTerms", StringFilterOptions>
   {
   }
+  export interface $interval extends Just<"$interval", StringFilterOptions> {}
   export interface $in extends Just<"$in", StringFilterOptions> {}
+  export interface $gt extends Just<"$gt", StringFilterOptions> {}
+  export interface $gte extends Just<"$gte", StringFilterOptions> {}
+  export interface $lt extends Just<"$lt", StringFilterOptions> {}
+  export interface $lte extends Just<"$lte", StringFilterOptions> {}
+  export interface $matchesRegex
+    extends Just<"$matchesRegex", StringFilterOptions>
+  {
+  }
 }
 
 export type StringFilter =
@@ -60,7 +80,13 @@ export type StringFilter =
   | StringFilter.$startsWith
   | StringFilter.$containsAllTermsInOrder
   | StringFilter.$containsAnyTerm
-  | StringFilter.$containsAllTerms;
+  | StringFilter.$containsAllTerms
+  | StringFilter.$interval
+  | StringFilter.$gt
+  | StringFilter.$gte
+  | StringFilter.$lt
+  | StringFilter.$lte
+  | StringFilter.$matchesRegex;
 
 /** @internal */
 function _typeCheck() {

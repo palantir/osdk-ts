@@ -1,5 +1,5 @@
 import type { Osdk, PropertyKeys } from "@osdk/api";
-import { useOsdkObjects } from "@osdk/react/experimental";
+import { useOsdkObjects } from "@osdk/react";
 import { useState } from "react";
 import { List } from "../../components/List.js";
 import { ListItem } from "../../components/ListItem.js";

@@ -18,7 +18,7 @@ import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
 import { renderHook } from "@testing-library/react";
 import * as React from "react";
 import { beforeEach, describe, expect, it, vitest } from "vitest";
-import { OsdkContext2 } from "../src/new/OsdkContext2.js";
+import { OsdkContext } from "../src/new/OsdkContext.js";
 import { useOsdkObject } from "../src/new/useOsdkObject.js";
 
 // Mock object type definition
@@ -40,13 +40,15 @@ describe("useOsdkObject enabled option", () => {
   const createWrapper = () => {
     const observableClient = {
       observeObject: mockObserveObject,
-      canonicalizeWhereClause: vitest.fn((w) => w),
+      canonicalizeOptions: vitest.fn((opts) => opts),
     } as any;
 
     return ({ children }: React.PropsWithChildren) => (
-      <OsdkContext2.Provider value={{ observableClient }}>
+      <OsdkContext.Provider
+        value={{ observableClient, devtoolsEnabled: false }}
+      >
         {children}
-      </OsdkContext2.Provider>
+      </OsdkContext.Provider>
     );
   };
 
@@ -93,7 +95,7 @@ describe("useOsdkObject enabled option", () => {
     );
   });
 
-  it("should NOT use offline mode for type signature", () => {
+  it("should NOT use offline mode for type signature and pass full definition", () => {
     const wrapper = createWrapper();
 
     renderHook(
@@ -102,7 +104,7 @@ describe("useOsdkObject enabled option", () => {
     );
 
     expect(mockObserveObject).toHaveBeenCalledWith(
-      "MockObject",
+      MockObjectType,
       "pk-222",
       { mode: undefined },
       expect.any(Object),
@@ -125,5 +127,21 @@ describe("useOsdkObject enabled option", () => {
     rerender({ enabled: true });
 
     expect(mockObserveObject).toHaveBeenCalledTimes(1);
+  });
+
+  it("should forward $includeAllBaseObjectProperties to observeObject", () => {
+    const wrapper = createWrapper();
+
+    renderHook(
+      () =>
+        useOsdkObject(MockObjectType, "pk-777", {
+          $includeAllBaseObjectProperties: true,
+        }),
+      { wrapper },
+    );
+
+    expect(mockObserveObject).toHaveBeenCalledTimes(1);
+    const options = mockObserveObject.mock.calls[0][2];
+    expect(options.$includeAllBaseObjectProperties).toBe(true);
   });
 });

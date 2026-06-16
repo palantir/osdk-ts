@@ -1,0 +1,75 @@
+/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--osdk-surface-spacing) * 4);
+  padding: calc(var(--osdk-surface-spacing) * 3)
+    calc(var(--osdk-surface-spacing) * 4);
+  border-bottom: var(--osdk-surface-border);
+  background: var(--osdk-background-primary);
+}
+
+.iconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(var(--osdk-surface-spacing) * 7);
+  height: calc(var(--osdk-surface-spacing) * 7);
+  padding: 0;
+  border: var(--osdk-surface-border);
+  border-radius: var(--osdk-surface-border-radius);
+  background: transparent;
+  cursor: pointer;
+  color: var(--osdk-typography-color-muted);
+}
+
+.iconButtonGroup {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--osdk-surface-spacing) * 2);
+  margin-left: auto;
+}
+
+/* Wider than .iconButton (square at * 7) to fit the icon + "Layers" label. */
+.layersButton {
+  width: calc(var(--osdk-surface-spacing) * 11);
+  gap: var(--osdk-surface-spacing);
+}
+
+.inlineFieldGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--osdk-filter-popover-stack-gap);
+}
+
+.label {
+  flex-shrink: 0;
+  font-family: var(--osdk-filter-popover-label-font-family);
+  font-size: var(--osdk-filter-popover-label-font-size);
+  color: var(--osdk-filter-popover-label-color);
+}
+
+.inlineInputWrapper {
+  display: block;
+  width: var(--osdk-filter-popover-trigger-width);
+}
+
+.inlineInputWrapper > * {
+  width: 100%;
+}

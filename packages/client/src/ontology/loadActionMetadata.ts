@@ -15,22 +15,22 @@
  */
 
 import type { ActionMetadata } from "@osdk/api";
-import * as OntologiesV2 from "@osdk/foundry.ontologies";
-import {
-  wireActionTypeV2ToSdkActionMetadata,
-} from "@osdk/generator-converters";
+import * as ActionTypesV2 from "@osdk/foundry.ontologies/ActionTypeV2";
 import type { MinimalClient } from "../MinimalClientContext.js";
 
 export async function loadActionMetadata(
   client: MinimalClient,
   actionType: string,
 ): Promise<ActionMetadata> {
-  const r = await OntologiesV2.ActionTypesV2.get(
+  const r = await ActionTypesV2.get(
     client,
     await client.ontologyRid,
     actionType,
     { branch: client.branch },
   );
 
+  const { wireActionTypeV2ToSdkActionMetadata } = await import(
+    "@osdk/generator-converters"
+  );
   return wireActionTypeV2ToSdkActionMetadata(r);
 }

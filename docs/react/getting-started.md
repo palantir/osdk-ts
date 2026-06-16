@@ -6,72 +6,56 @@ sidebar_position: 1
 
 This guide covers installation, setup, and your first OSDK React application.
 
-:::info Beta Release
-`@osdk/react` is currently in beta. While the package is suitable for production use, you may encounter minor bugs as we continue development. We welcome bug reports and feedback.
-:::
-
 ## Installation
 
-### 1. Install Beta Packages
+### 1. Install `@osdk/react`
 
-Using `latest` doesn't always install actual latest versions for beta packages. Specify them explicitly.
-
-:::warning Version Compatibility
-All `@osdk/*` packages must use **compatible versions**. Mismatched versions (e.g., mixing an old `@osdk/client` with a newer `@osdk/react`) will cause TypeScript errors.
+:::tip If your tooling already installs dependencies, skip this step.
 :::
 
-```json
-{
-  "dependencies": {
-    "@osdk/client": "^2.6.0-beta.11",
-    "@osdk/oauth": "^1.3.0-beta.1",
-    "@osdk/react": "^0.8.0-beta.4",
-    "@osdk/api": "^2.6.0-beta.11"
-  }
-}
+Use whichever package manager your project uses:
+
+```bash
+# npm
+npm install @osdk/api @osdk/client @osdk/react
+
+# pnpm
+pnpm add @osdk/api @osdk/client @osdk/react
+
+# yarn
+yarn add @osdk/api @osdk/client @osdk/react
 ```
 
-Check for newer versions on npm:
+:::warning Version Compatibility
+All `@osdk/*` packages must use **compatible versions**. Mismatched versions (e.g., mixing an old `@osdk/client` with a newer `@osdk/react`) will cause TypeScript errors. See [troubleshooting](#property-store-is-missing-with-osdkprovider) if you encounter issues.
+:::
+
+You can find the latest versions on npm:
 
 - [@osdk/react versions](https://www.npmjs.com/package/@osdk/react?activeTab=versions)
 - [@osdk/client versions](https://www.npmjs.com/package/@osdk/client?activeTab=versions)
 - [@osdk/api versions](https://www.npmjs.com/package/@osdk/api?activeTab=versions)
 
-### 2. Generate Your SDK with Beta Features
+### 2. Generate Your SDK
 
 If you haven't generated an SDK yet:
 
 1. Open Developer Console for your Foundry
 2. Click "SDK versions" tab (tag icon in left navbar)
-3. Click "Settings" → enable beta features for TypeScript
-4. Click "Generate new version" → check "npm" checkbox → select latest `-beta` generator
-5. Add the generated SDK to your package.json:
+3. Click "Generate new version" → check "npm" checkbox → select the latest generator
+4. Add the generated SDK to your package.json:
 
 ```json
 {
   "dependencies": {
-    "@your-app/sdk": "^0.4.0"
+    "@my/osdk": "^0.4.0"
   }
 }
 ```
 
 ## Provider Setup
 
-### Stable vs Experimental
-
-`@osdk/react` has two entry points:
-
-|                   | `@osdk/react`               | `@osdk/react/experimental`                    |
-| ----------------- | --------------------------- | --------------------------------------------- |
-| **Use when**      | You only need client access | You want reactive data hooks (most apps)      |
-| **Features**      | Client provider, metadata   | Queries, actions, caching, optimistic updates |
-| **API stability** | Stable                      | APIs may change between releases              |
-
-**We recommend starting with experimental.** The "experimental" label indicates the API surface may evolve, not that the features are unstable or buggy. Most applications benefit from the reactive hooks, automatic caching, and optimistic update support.
-
-### Stable Features (`@osdk/react`)
-
-For basic client access only:
+Wrap your app with `OsdkProvider` at the root. Every hook in `@osdk/react` reads from it.
 
 ```tsx
 import { OsdkProvider } from "@osdk/react";
@@ -84,58 +68,30 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 );
 ```
 
-Stable exports (use with `OsdkProvider`):
+Available exports from `@osdk/react`:
 
-- `OsdkProvider` - Provider component for basic client access
-- `useOsdkClient` - Access the OSDK client directly
-- `useOsdkMetadata` - Fetch type metadata
-
-:::note
-`useOsdkClient` and `useOsdkMetadata` are available from both `@osdk/react` (stable) and `@osdk/react/experimental`. When using experimental features with `OsdkProvider2`, import from `@osdk/react/experimental` for consistency.
-:::
-
-### Experimental Features (`@osdk/react/experimental`)
-
-For reactive data management, cache, and optimistic updates.
-
-:::tip About Experimental Hooks
-The hooks in `@osdk/react/experimental` are production-ready and recommended for new projects. They are labeled "experimental" because they represent a newer architecture that is under active development. Once stabilized, these hooks will be promoted to the main `@osdk/react` package.
-:::
-
-```tsx
-import { OsdkProvider2 } from "@osdk/react/experimental";
-import client from "./client";
-
-ReactDOM.createRoot(document.getElementById("root")!).render(
-  <OsdkProvider2 client={client}>
-    <App />
-  </OsdkProvider2>,
-);
-```
-
-**All experimental hooks require `OsdkProvider2` at your app root.**
-
-Experimental exports:
-
-- `OsdkProvider2` - Provider for experimental features
+- `OsdkProvider` - Provider, required at the app root
 - `useOsdkObjects` - Query collections of objects
 - `useOsdkObject` - Query single objects
 - `useOsdkAction` - Execute and validate actions
 - `useLinks` - Navigate object relationships
 - `useObjectSet` - Advanced queries with set operations
 - `useOsdkAggregation` - Server-side aggregations
+- `useOsdkFunction` - Execute and observe OSDK functions
 - `useDebouncedCallback` - Debounce callbacks
 - `useOsdkClient` - Access the OSDK client
-- `useOsdkMetadata` - Fetch type metadata (also available from stable)
+- `useOsdkMetadata` - Fetch type metadata
+
+Platform APIs (admin/CBAC) live in a separate entry point at `@osdk/react/platform-apis`. See [Platform APIs](/react/platform-apis).
 
 ## Quick Start Checklist
 
-Before using experimental hooks:
+Before using the data hooks:
 
-- [ ] App wrapped in `<OsdkProvider2 client={client}>`
-- [ ] OsdkProvider2 at app root (not nested inside components)
-- [ ] Passing configured OSDK client to OsdkProvider2
-- [ ] All components using experimental hooks inside the provider
+- [ ] App wrapped in `<OsdkProvider client={client}>`
+- [ ] OsdkProvider at app root (not nested inside components)
+- [ ] Passing configured OSDK client to OsdkProvider
+- [ ] All components using the hooks inside the provider
 
 ## First Query
 
@@ -145,7 +101,7 @@ Throughout this documentation, `@my/osdk` refers to **your generated SDK package
 
 ```tsx
 import { Todo } from "@my/osdk";
-import { useOsdkObjects } from "@osdk/react/experimental";
+import { useOsdkObjects } from "@osdk/react";
 
 function TodoList() {
   const { data, isLoading, error } = useOsdkObjects(Todo, {
@@ -158,7 +114,7 @@ function TodoList() {
   }
 
   if (error) {
-    return <div>Error: {JSON.stringify(error)}</div>;
+    return <div>Error: {error.message}</div>;
   }
 
   return (
@@ -174,13 +130,11 @@ See [Querying Data](/react/querying-data) for filtering, pagination, real-time u
 ## First Action
 
 ```tsx
-import { $Actions, Todo } from "@my/osdk";
-import { useOsdkAction } from "@osdk/react/experimental";
+import { completeTodo, Todo } from "@my/osdk";
+import { useOsdkAction } from "@osdk/react";
 
 function CompleteTodoButton({ todo }: { todo: Todo.OsdkInstance }) {
-  const { applyAction, isPending, error } = useOsdkAction(
-    $Actions.completeTodo,
-  );
+  const { applyAction, isPending, error } = useOsdkAction(completeTodo);
 
   const handleClick = () => {
     applyAction({ todo, isComplete: true });
@@ -191,7 +145,12 @@ function CompleteTodoButton({ todo }: { todo: Todo.OsdkInstance }) {
       <button onClick={handleClick} disabled={isPending}>
         {isPending ? "Saving..." : "Complete"}
       </button>
-      {error && <div>Error: {JSON.stringify(error)}</div>}
+      {error && (
+        <div>
+          Error: {error.actionValidation?.message
+            ?? (error.unknown ? String(error.unknown) : "Unknown error")}
+        </div>
+      )}
     </div>
   );
 }
@@ -201,37 +160,21 @@ See [Actions](/react/actions) for validation, batch actions, and optimistic upda
 
 ## Troubleshooting
 
-### "Property 'store' is missing" with OsdkProvider2
+### "Property 'store' is missing" with OsdkProvider
 
 This error occurs when your `@osdk/client` version is incompatible with `@osdk/react`. The versions must match.
 
-**Fix:** Ensure all `@osdk/*` packages use compatible beta versions:
-
-1. Go to **Developer Console** → **SDK versions** → **Settings**
-2. Enable **beta features** for TypeScript
-3. Generate a new SDK version with the latest beta generator
-4. Check the **Installation instructions** for the compatible `@osdk/client` version
-5. Update your package.json to use matching versions:
-
-```json
-{
-  "dependencies": {
-    "@osdk/client": "^2.6.0-beta.11",
-    "@osdk/react": "^0.8.0-beta.4",
-    "@osdk/api": "^2.6.0-beta.11"
-  }
-}
-```
+**Fix:** Ensure all `@osdk/*` packages use compatible versions. Generate a fresh SDK against the same `@osdk/client` line that `@osdk/react` was published against, and update your package.json so `@osdk/api`, `@osdk/client`, and `@osdk/react` all resolve to compatible majors.
 
 ### "Cannot read property 'observableClient' of undefined"
 
-The component is outside `<OsdkProvider2>`. Move OsdkProvider2 higher in your component tree.
+The component is outside `<OsdkProvider>`. Move OsdkProvider higher in your component tree.
 
 **Wrong:**
 
 ```tsx
 function App() {
-  return <TodoList />; // No OsdkProvider2!
+  return <TodoList />; // No OsdkProvider!
 }
 ```
 
@@ -239,15 +182,15 @@ function App() {
 
 ```tsx
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <OsdkProvider2 client={client}>
+  <OsdkProvider client={client}>
     <TodoList />
-  </OsdkProvider2>,
+  </OsdkProvider>,
 );
 ```
 
 ### Only some components work with hooks
 
-OsdkProvider2 is not at the root.
+OsdkProvider is not at the root.
 
 **Wrong:**
 
@@ -256,9 +199,9 @@ function App() {
   return (
     <>
       <Header /> {/* Can't use hooks */}
-      <OsdkProvider2 client={client}>
+      <OsdkProvider client={client}>
         <Content /> {/* Only this can use hooks */}
-      </OsdkProvider2>
+      </OsdkProvider>
     </>
   );
 }
@@ -268,9 +211,9 @@ function App() {
 
 ```tsx
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <OsdkProvider2 client={client}>
+  <OsdkProvider client={client}>
     <App /> {/* All components can use hooks */}
-  </OsdkProvider2>,
+  </OsdkProvider>,
 );
 ```
 
@@ -281,14 +224,14 @@ Ensure you're passing the same client instance, not creating a new one:
 **Wrong:**
 
 ```tsx
-<OsdkProvider2 client={createNewClient()}> {/* New instance each render */}
+<OsdkProvider client={createNewClient()}> {/* New instance each render */}
 ```
 
 **Correct:**
 
 ```tsx
 import client from "./client"; // Created once
-<OsdkProvider2 client={client}>
+<OsdkProvider client={client}>
 ```
 
 ### "Hooks cannot be conditionally called"
@@ -313,15 +256,57 @@ const { data } = useOsdkObjects(Todo, {
 
 ## NPM Peer Dependency Issues
 
-If NPM has trouble resolving peer dependencies with beta packages, add to package.json:
+If NPM has trouble resolving peer dependencies, add to package.json:
 
 ```json
 {
   "overrides": {
     "@osdk/client": "$@osdk/client",
-    "@osdk/oauth": "$@osdk/oauth",
     "@osdk/react": "$@osdk/react"
   }
+}
+```
+
+## FAQ
+
+### When should I use `@osdk/react` vs React Query?
+
+**Use `@osdk/react`** when your application primarily works with OSDK data:
+
+- Querying Foundry objects and ontology data
+- Executing actions on Foundry objects
+- Taking advantage of automatic cache management for OSDK objects
+- Real-time updates via WebSocket subscriptions
+
+**Use React Query** when you need to make requests to third-party APIs or non-OSDK endpoints:
+
+- External REST APIs
+- GraphQL services not backed by Foundry
+- Custom backend services
+
+**You can use both together.** `@osdk/react` hooks work independently from React Query. For applications that mix OSDK data with external services, use `@osdk/react` for Foundry operations and React Query for external APIs.
+
+```tsx
+import { Todo } from "@my/osdk";
+import { useOsdkObjects } from "@osdk/react";
+import { useQuery } from "@tanstack/react-query";
+
+function Dashboard() {
+  // Use @osdk/react for Foundry data
+  const { data: todos } = useOsdkObjects(Todo);
+
+  // Use React Query for external APIs
+  const { data: weatherData } = useQuery({
+    queryKey: ["weather"],
+    queryFn: () => fetch("https://api.weather.com/current").then(r => r.json()),
+  });
+
+  return (
+    <div>
+      <TodoList todos={todos} />
+      <WeatherWidget data={weatherData} />
+    </div>
+  );
 }
 ```
 

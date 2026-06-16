@@ -99,7 +99,6 @@ describe.each([
       },
     );
 
-    // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
     const undefinedResult = await client(createOffice).applyAction({
       officeId: "NYC",
       address: "123 Main Street",
@@ -257,7 +256,6 @@ describe.each([
         };
       }));
 
-      // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
       const result = await client(actionTakesAttachment).applyAction({
         attachment: "ri.some.rid",
       });
@@ -309,12 +307,10 @@ describe.each([
     // Mimics the Web file API (https://developer.mozilla.org/en-US/docs/Web/API/File). The File constructor is only available in Node 19.2.0 and above
     const fileAttachment = Object.assign(blob, { name: "file1.txt" });
 
-    // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
     const result = await client(actionTakesAttachment).applyAction({
       attachment,
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
     const result2 = await client(actionTakesAttachment).applyAction({
       attachment: fileAttachment,
     });
@@ -557,6 +553,31 @@ describe.each([
         "type": "edits",
       },
     );
+  });
+
+  it("nullable parameters work with nullish coalescing", () => {
+    const clientBoundAction = client(
+      createOffice,
+    ).applyAction;
+
+    type InferredParamType = Parameters<
+      typeof clientBoundAction
+    >[0];
+
+    expectTypeOf<
+      {
+        officeId: string;
+        address: string | null;
+        capacity: number | null;
+      }
+    >().toMatchTypeOf<
+      InferredParamType
+    >();
+
+    const params: InferredParamType = { officeId: "HQ", address: null };
+
+    const address: string = params.address ?? "address";
+    expect(address).toBe("address");
   });
 });
 

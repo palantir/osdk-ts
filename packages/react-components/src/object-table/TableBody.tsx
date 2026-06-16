@@ -14,30 +14,52 @@
  * limitations under the License.
  */
 
-import type { Row, RowData } from "@tanstack/react-table";
+import type { Cell, HeaderGroup, Row, RowData } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import React, { useLayoutEffect } from "react";
+import { LoadingRow } from "./LoadingRow.js";
+import styles from "./TableBody.module.css";
 import { TableRow } from "./TableRow.js";
+import { DEFAULT_ROW_HEIGHT, VIRTUALIZER_OVERSCAN } from "./utils/constants.js";
 
 interface TableBodyProps<TData extends RowData> {
   rows: Array<Row<TData>>;
   tableContainerRef: React.RefObject<HTMLDivElement>;
   onRowClick?: (row: TData) => void;
   rowHeight?: number;
+  renderCellContextMenu?: (
+    row: TData,
+    cell: Cell<TData, unknown>,
+  ) => React.ReactNode;
+  isLoadingMore?: boolean;
+  headerGroups?: Array<HeaderGroup<TData>>;
+  focusedRowId?: string | null;
+  setFocusedRowId?: (id: string | null) => void;
+  isInEditMode?: boolean;
+  getRowAttributes?: (
+    object: TData,
+  ) => Record<string, string | undefined>;
 }
 
 export function TableBody<TData extends RowData>({
   rows,
   tableContainerRef,
   onRowClick,
-  rowHeight = 40,
+  renderCellContextMenu,
+  rowHeight = DEFAULT_ROW_HEIGHT,
+  isLoadingMore = false,
+  headerGroups = [],
+  focusedRowId,
+  setFocusedRowId,
+  isInEditMode,
+  getRowAttributes,
 }: TableBodyProps<TData>): React.ReactElement {
   // Important: Keep the row virtualizer in the lowest component possible to avoid unnecessary re-renders.
   const rowVirtualizer = useVirtualizer<HTMLDivElement, HTMLTableRowElement>({
     count: rows.length,
     estimateSize: () => rowHeight,
     getScrollElement: () => tableContainerRef.current,
-    overscan: 5,
+    overscan: VIRTUALIZER_OVERSCAN,
   });
 
   // Measure the virtualizer after the DOM has been laid out to ensure proper dimensions
@@ -45,12 +67,18 @@ export function TableBody<TData extends RowData>({
     rowVirtualizer.measure();
   }, [rowVirtualizer, rows.length]);
 
+  const totalSize = rowVirtualizer.getTotalSize();
+  const bodyHeight = isLoadingMore
+    ? totalSize + rowHeight
+    : totalSize;
+
+  const headers = headerGroups[0]?.headers ?? [];
+
   return (
     <tbody
+      className={styles.osdkTableBody}
       style={{
-        display: "grid",
-        position: "relative",
-        height: `${rowVirtualizer.getTotalSize()}px`,
+        height: `${bodyHeight}px`,
       }}
     >
       {rowVirtualizer.getVirtualItems().map((virtualRow) => {
@@ -62,9 +90,22 @@ export function TableBody<TData extends RowData>({
             row={row}
             virtualRow={virtualRow}
             onRowClick={onRowClick}
+            renderCellContextMenu={renderCellContextMenu}
+            isFocused={focusedRowId === row.id}
+            setFocusedRowId={setFocusedRowId}
+            isInEditMode={isInEditMode}
+            getRowAttributes={getRowAttributes}
           />
         );
       })}
+      {isLoadingMore && (
+        <LoadingRow
+          headers={headers}
+          translateY={totalSize}
+          rowHeight={rowHeight}
+          columnCount={headers.length}
+        />
+      )}
     </tbody>
   );
 }

@@ -1,6 +1,11 @@
 {
   "extends": ["//"],
   "tasks": {
+    "build": {
+      "inputs": ["src/**/*", "vite.config.ts", "index.html"],
+      "dependsOn": ["transpile", "typecheck"]
+    },
+
     "codegen": {
       "inputs": ["ontology.json"],
       "outputs": ["src/generatedNoCheck2/**/*"],

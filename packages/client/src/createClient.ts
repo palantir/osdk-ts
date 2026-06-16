@@ -19,11 +19,14 @@ import type {
   FetchPageArgs,
   InterfaceDefinition,
   Logger,
+  MediaReference,
   NullabilityAdherence,
   ObjectOrInterfaceDefinition,
   ObjectSet,
+  ObjectSetSubscription,
   ObjectTypeDefinition,
   Osdk,
+  OsdkBase,
   PropertyKeys,
   QueryDefinition,
   SelectArg,
@@ -31,29 +34,34 @@ import type {
 import type {
   Experiment,
   ExperimentFns,
+  MediaTransformation,
   MinimalObjectSet,
+  TransformOptions,
 } from "@osdk/api/unstable";
 import {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
+  __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
+  __EXPERIMENTAL__NOT_SUPPORTED_YET__subscribeToNoTypeObjectSet,
+  __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait,
 } from "@osdk/api/unstable";
 import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
-import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import { symbolClientContext as oldSymbolClientContext } from "@osdk/shared.client";
-import { createBulkLinksAsyncIterFactory } from "./__unstable/createBulkLinksAsyncIterFactory.js";
 import type { ActionSignatureFromDef } from "./actions/applyAction.js";
 import { applyAction } from "./actions/applyAction.js";
 import { additionalContext, type Client } from "./Client.js";
 import { createMinimalClient } from "./createMinimalClient.js";
 import { fetchMetadataInternal } from "./fetchMetadata.js";
+import { makeMediaTransformation } from "./internal/conversions/makeMediaTransformation.js";
 import { MinimalLogger } from "./logger/MinimalLogger.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
 import { fetchPage, fetchStaticRidPage } from "./object/fetchPage.js";
 import { fetchSingle } from "./object/fetchSingle.js";
 import { createObjectSet } from "./objectSet/createObjectSet.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
+import { ObjectSetListenerWebsocket } from "./objectSet/ObjectSetListenerWebsocket.js";
 import { applyQuery } from "./queries/applyQuery.js";
 import type { QuerySignatureFromDef } from "./queries/types.js";
 
@@ -103,10 +111,17 @@ export function createClientInternal(
   objectSetFactory: ObjectSetFactory<any, any>,
   transactionRid: string | undefined,
   flushEdits: (() => Promise<void>) | undefined,
+  scenarioRid: string | undefined,
   baseUrl: string,
   ontologyRid: string | Promise<string>,
   tokenProvider: () => Promise<string>,
-  options: { logger?: Logger; branch?: string } | undefined = undefined,
+  options:
+    | {
+      logger?: Logger;
+      UNSTABLE_DO_NOT_USE_BRANCH?: string;
+      headers?: Record<string, string>;
+    }
+    | undefined = undefined,
   fetchFn: typeof globalThis.fetch = fetch,
 ): Client {
   if (typeof ontologyRid === "string") {
@@ -132,7 +147,8 @@ export function createClientInternal(
       logger: options?.logger ?? new MinimalLogger(),
       transactionId: transactionRid,
       flushEdits,
-      branch: options?.branch,
+      scenarioRid,
+      branch: options?.UNSTABLE_DO_NOT_USE_BRANCH,
     },
     fetchFn,
     objectSetFactory,
@@ -151,13 +167,18 @@ export function createClientFromContext(clientCtx: MinimalClient) {
       | ActionDefinition<any>
       | QueryDefinition<any>
       | Experiment<"2.0.8">
-      | Experiment<"2.1.0">,
+      | Experiment<"2.1.0">
+      | Experiment<"2.8.0">
+      | Experiment<"2.19.0">,
   >(o: T): T extends ObjectTypeDefinition ? ObjectSet<T>
     : T extends InterfaceDefinition ? MinimalObjectSet<T>
     : T extends ActionDefinition<any> ? ActionSignatureFromDef<T>
     : T extends QueryDefinition<any> ? QuerySignatureFromDef<T>
-    : T extends Experiment<"2.0.8"> | Experiment<"2.1.0">
-      ? { invoke: ExperimentFns<T> }
+    : T extends
+      | Experiment<"2.0.8">
+      | Experiment<"2.1.0">
+      | Experiment<"2.8.0">
+      | Experiment<"2.19.0"> ? { invoke: ExperimentFns<T> }
     : never
   {
     if (o.type === "object" || o.type === "interface") {
@@ -178,11 +199,32 @@ export function createClientFromContext(clientCtx: MinimalClient) {
         : never) as any;
     } else if (o.type === "experiment") {
       switch (o.name) {
+        case __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction.name:
+          return {
+            async *executeStreamingFunction(
+              query: QueryDefinition<any>,
+              params?: Record<string, any>,
+            ) {
+              const { applyStreamingQuery } = await import(
+                "./queries/applyStreamingQuery.js"
+              );
+              yield* applyStreamingQuery(clientCtx, query, params);
+            },
+          } as any;
         case __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks.name:
           return {
-            getBulkLinks: createBulkLinksAsyncIterFactory(
-              clientCtx,
-            ),
+            async *getBulkLinks(
+              objs: Array<OsdkBase<any>>,
+              linkTypes: string[],
+            ) {
+              const { createBulkLinksAsyncIterFactory } = await import(
+                "./__unstable/createBulkLinksAsyncIterFactory.js"
+              );
+              yield* createBulkLinksAsyncIterFactory(clientCtx)(
+                objs,
+                linkTypes,
+              );
+            },
           } as any;
         case __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid.name:
           return {
@@ -218,7 +260,10 @@ export function createClientFromContext(clientCtx: MinimalClient) {
               propertyType: L;
             }) => {
               const { data, fileName, objectType, propertyType } = args;
-              return await OntologiesV2.MediaReferenceProperties.upload(
+              const { upload } = await import(
+                "@osdk/foundry.ontologies/MediaReferenceProperty"
+              );
+              return await upload(
                 clientCtx,
                 await clientCtx.ontologyRid,
                 objectType.apiName,
@@ -239,10 +284,22 @@ export function createClientFromContext(clientCtx: MinimalClient) {
               const L extends PropertyKeys<Q>,
               const R extends boolean,
               const S extends false | "throw" = NullabilityAdherence.Default,
+              const T extends boolean = false,
+              const PROPERTY_SECURITIES extends boolean = false,
             >(
               objectOrInterfaceType: Q,
               rids: string[],
-              options: FetchPageArgs<Q, L, R, any, S> = {},
+              options: FetchPageArgs<
+                Q,
+                L,
+                R,
+                any,
+                S,
+                T,
+                never,
+                {},
+                PROPERTY_SECURITIES
+              > = {},
             ) => {
               return await fetchPage(
                 clientCtx,
@@ -255,6 +312,7 @@ export function createClientFromContext(clientCtx: MinimalClient) {
               const R extends boolean,
               const S extends NullabilityAdherence,
               const T extends boolean,
+              const PROPERTY_SECURITIES extends boolean = false,
             >(
               rids: readonly string[],
               options?: FetchPageArgs<
@@ -263,13 +321,65 @@ export function createClientFromContext(clientCtx: MinimalClient) {
                 R,
                 any,
                 S,
-                T
+                T,
+                never,
+                {},
+                PROPERTY_SECURITIES
               >,
             ) => {
               return await fetchStaticRidPage(
                 clientCtx,
                 rids,
                 options ?? {},
+              );
+            },
+          } as any;
+
+        case __EXPERIMENTAL__NOT_SUPPORTED_YET__subscribeToNoTypeObjectSet
+          .name:
+          return {
+            subscribeToNoTypeObjectSet: <R extends boolean = false>(
+              rid: string,
+              listener: ObjectSetSubscription.Listener<
+                ObjectOrInterfaceDefinition,
+                never,
+                R
+              >,
+              opts?: { includeRid?: R },
+            ) => {
+              const unsubscribe = ObjectSetListenerWebsocket
+                .getInstance(clientCtx)
+                .subscribeWithoutType(
+                  { type: "reference", reference: rid },
+                  listener as ObjectSetSubscription.Listener<
+                    ObjectOrInterfaceDefinition,
+                    never
+                  >,
+                  opts?.includeRid ?? false,
+                );
+              return { unsubscribe };
+            },
+          } as any;
+
+        case __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait.name:
+          return {
+            transformAndWait: async (args: {
+              mediaReference: MediaReference;
+              transformation: MediaTransformation;
+              options?: TransformOptions;
+            }) => {
+              const { transformAndWaitInternal } = await import(
+                "./util/transformAndWaitInternal.js"
+              );
+              const { mediaSetRid, mediaItemRid, token } =
+                args.mediaReference.reference.mediaSetViewItem;
+              return transformAndWaitInternal(
+                clientCtx,
+                mediaSetRid,
+                mediaItemRid,
+                makeMediaTransformation(args.transformation),
+                token,
+                args.options,
               );
             },
           } as any;
@@ -309,18 +419,55 @@ export function createClientFromContext(clientCtx: MinimalClient) {
   return client;
 }
 
+/**
+ * Creates a {@link Client} for interacting with a Foundry Ontology. This is the primary entry point for
+ * the OSDK and is typically called once per application during setup. The returned client is then used
+ * to load object sets, apply actions, and execute queries against the configured ontology.
+ * @param baseUrl - The base URL of the Foundry stack (e.g. `"https://example.palantirfoundry.com"`).
+ * @param ontologyRid - The ontology RID to scope the client to. May be provided directly or as a `Promise`
+ *   that resolves to the RID. Typically the generated `$ontologyRid` export from your generated SDK is passed here.
+ * @param tokenProvider - A function returning a `Promise` that resolves to a bearer token used to authenticate
+ *   requests. Typically the OAuth client returned by `createPublicOauthClient` or `createConfidentialOauthClient`
+ *   from `@osdk/oauth`, which handles caching and refresh; you can also provide a custom function if you
+ *   manage tokens yourself.
+ * @param options - Optional client configuration: a custom `logger`, an experimental `UNSTABLE_DO_NOT_USE_BRANCH`
+ *   for branch-aware requests, and additional `headers` to include on every request.
+ * @param fetchFn - An optional `fetch` implementation to use for all requests. Defaults to the global `fetch`.
+ * @example
+ * ```ts
+ * import { createClient, type Client } from "@osdk/client";
+ * import { createPublicOauthClient } from "@osdk/oauth";
+ * import { $ontologyRid } from "./generatedNoCheck/index.js";
+ *
+ * const auth = createPublicOauthClient(
+ *   "<your-client-id>",
+ *   "https://example.palantirfoundry.com",
+ *   `${window.location.origin}/auth/callback`,
+ * );
+ *
+ * export const client: Client = createClient(
+ *   "https://example.palantirfoundry.com",
+ *   $ontologyRid,
+ *   auth,
+ * );
+ * ```
+ * @returns a {@link Client} configured to talk to the given Foundry stack and ontology
+ */
 export const createClient: (
   baseUrl: string,
   ontologyRid: string | Promise<string>,
   tokenProvider: () => Promise<string>,
   options?: {
     logger?: Logger;
-    branch?: string;
+    /** @beta This is an experimental feature subject to change */
+    UNSTABLE_DO_NOT_USE_BRANCH?: string;
+    headers?: Record<string, string>;
   } | undefined,
   fetchFn?: typeof fetch | undefined,
 ) => Client = createClientInternal.bind(
   undefined,
   createObjectSet,
+  undefined,
   undefined,
   undefined,
 );
@@ -334,6 +481,20 @@ export const createClientWithTransaction: (
     createObjectSet,
     transactionRid,
     flushEdits,
+    undefined,
+    ...args,
+  ) as Client;
+
+/** @internal */
+export const createClientWithScenario: (
+  scenarioRid: string,
+  ...args: Parameters<typeof createClient>
+) => Client = (scenarioRid, ...args) =>
+  createClientInternal(
+    createObjectSet,
+    undefined,
+    undefined,
+    scenarioRid,
     ...args,
   ) as Client;
 

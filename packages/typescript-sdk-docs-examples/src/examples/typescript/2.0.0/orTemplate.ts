@@ -24,7 +24,9 @@ import { Employee } from "../../../generatedNoCheck/index.js";
 import { client } from "./client.js";
 
 const EmployeeObjectSet = client(Employee)
-    .where({ $or:[
-        { $not: { employeeId: { $isNull: true }}},
-        { fullName: { $eq: "John Doe" }}
-    ]});
+  .where({
+    $or: [
+      { $not: { employeeId: { $isNull: true } } },
+      { fullName: { $eq: "John Doe" } },
+    ],
+  });

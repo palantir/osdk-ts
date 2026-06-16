@@ -1,5 +1,90 @@
 # @osdk/cli.common
 
+## 0.57.0
+
+## 0.56.0
+
+## 0.55.0
+
+## 0.54.0
+
+## 0.53.0
+
+## 0.52.0
+
+## 0.51.0
+
+## 0.50.0
+
+## 0.49.0
+
+## 0.48.0
+
+## 0.47.0
+
+## 0.46.0
+
+## 0.45.0
+
+## 0.44.0
+
+## 0.43.0
+
+## 0.42.0
+
+## 0.41.0
+
+## 0.40.0
+
+### Minor Changes
+
+- 56c5630: Drop redundant `--config $(find-up dprint.json)` from `lint`, `fix-lint`, and `format` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the substitution was a no-op anyway since `find-up` is an npm package, not a CLI. Also fix the `uploadMediaOntologyEdits` documentation example so its `// @ts-ignore` survives dprint reformatting (the broken `format` step had been masking this).
+
+## 0.39.0
+
+## 0.38.0
+
+## 0.37.0
+
+## 0.36.0
+
+### Minor Changes
+
+- df1a4f8: Build OAuth authorize and token URLs via the URL constructor instead of `node:path/posix.join`, which is not URL-aware.
+
+## 0.35.0
+
+## 0.34.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+## 0.33.0
+
+### Minor Changes
+
+- 40fe279: Fix cli by making referenced packages bundled
+
+## 0.32.0
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+## 0.32.0-beta.5
+
+## 0.32.0-beta.4
+
+## 0.32.0-beta.3
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+## 0.32.0-beta.2
+
 ## 0.31.0-beta.2
 
 ## 0.30.0-beta.5

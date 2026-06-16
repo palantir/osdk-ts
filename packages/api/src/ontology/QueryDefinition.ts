@@ -27,6 +27,7 @@ export interface QueryMetadata {
   parameters: Record<string, QueryParameterDefinition<any>>;
   output: QueryDataTypeDefinition;
   rid: string;
+  typeReferences?: Record<string, QueryDataTypeDefinition>;
 }
 
 export interface QueryCompileTimeMetadata<T> {
@@ -64,11 +65,10 @@ export type QueryDataTypeDefinition<
   | TwoDimensionalAggregationDataType
   | ThreeDimensionalAggregationDataType
   | MapDataType
-  | ArrayQueryDataType;
+  | ArrayQueryDataType
+  | TypeReferenceQueryDataType;
 
 export type BaseQueryDataTypeDefinition<T extends string> = {
-  /** @deprecated use T["type"] extends "array" instead */
-  multiplicity?: boolean;
   nullable?: boolean;
   type: T;
 };
@@ -82,7 +82,8 @@ export type WireQueryDataTypes =
   | "string"
   | "date"
   | "timestamp"
-  | "attachment";
+  | "attachment"
+  | "mediaReference";
 
 export type PrimitiveDataType<
   Q extends WireQueryDataTypes = WireQueryDataTypes,
@@ -124,8 +125,6 @@ export interface ArrayQueryDataType
   extends BaseQueryDataTypeDefinition<"array">
 {
   array: QueryDataTypeDefinition;
-  /** @deprecated use T["type"] extends "array" instead */
-  multiplicity?: true;
 }
 export interface UnionQueryDataType
   extends BaseQueryDataTypeDefinition<"union">
@@ -154,6 +153,12 @@ export interface ThreeDimensionalAggregationDataType
 export interface MapDataType extends BaseQueryDataTypeDefinition<"map"> {
   keyType: QueryDataTypeDefinition;
   valueType: QueryDataTypeDefinition;
+}
+
+export interface TypeReferenceQueryDataType
+  extends BaseQueryDataTypeDefinition<"typeReference">
+{
+  typeId: string;
 }
 
 export type AggregationKeyDataType<V = any> =

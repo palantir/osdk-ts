@@ -35,6 +35,14 @@ export const getMediaContent: CallFactory<
   ["ontologyApiName", "objectType", "primaryKey", "propertyName"],
 );
 
+export const getFullMediaMetadata: CallFactory<
+  "mediaSetRid" | "mediaItemRid",
+  typeof MediaSets.metadata
+> = handleOpenApiCall(
+  MediaSets.metadata,
+  ["mediaSetRid", "mediaItemRid"],
+);
+
 export const upload: CallFactory<
   "ontologyApiName" | "objectType" | "propertyName",
   typeof MediaReferenceProperties.upload
@@ -49,4 +57,28 @@ export const uploadMedia: CallFactory<
 > = handleOpenApiCall(
   MediaSets.uploadMedia,
   [],
+);
+
+export const transform: CallFactory<
+  "mediaSetRid" | "mediaItemRid",
+  typeof MediaSets.transform
+> = handleOpenApiCall(
+  MediaSets.transform,
+  ["mediaSetRid", "mediaItemRid"],
+);
+
+export const getTransformStatus: CallFactory<
+  "mediaSetRid" | "mediaItemRid" | "transformationJobId",
+  typeof MediaSets.getStatus
+> = handleOpenApiCall(
+  MediaSets.getStatus,
+  ["mediaSetRid", "mediaItemRid", "transformationJobId"],
+);
+
+export const getTransformResult: CallFactory<
+  "mediaSetRid" | "mediaItemRid" | "transformationJobId",
+  typeof MediaSets.getResult
+> = handleOpenApiCall(
+  MediaSets.getResult,
+  ["mediaSetRid", "mediaItemRid", "transformationJobId"],
 );

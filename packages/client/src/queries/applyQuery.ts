@@ -29,8 +29,9 @@ import type {
   QueryParameterDefinition,
 } from "@osdk/api";
 import type { DataValue } from "@osdk/foundry.ontologies";
-import * as OntologiesV2 from "@osdk/foundry.ontologies";
+import * as Queries from "@osdk/foundry.ontologies/Query";
 import invariant from "tiny-invariant";
+import { createMediaFromReferenceInternal } from "../createMediaFromReference.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { createObjectSet } from "../objectSet/createObjectSet.js";
 import { hydrateAttachmentFromRidInternal } from "../public-utils/hydrateAttachmentFromRid.js";
@@ -63,7 +64,7 @@ export async function applyQuery<
     await client.flushEdits();
   }
 
-  const response = await OntologiesV2.Queries.execute(
+  const response = await Queries.execute(
     addUserAgentAndRequestContextHeaders(
       augmentRequestContext(client, _ => ({ finalMethodCall: "applyQuery" })),
       query,
@@ -82,6 +83,8 @@ export async function applyQuery<
     {
       version: query.isFixedVersion ? query.version : undefined,
       transactionId: client.transactionId,
+      scenarioRid: client.scenarioRid,
+      branch: client.branch,
     },
   );
 
@@ -98,7 +101,7 @@ export async function applyQuery<
   return remappedResponse as QueryReturnType<CompileTimeMetadata<QD>["output"]>;
 }
 
-async function remapQueryParams(
+export async function remapQueryParams(
   params: { [parameterId: string]: any },
   client: MinimalClient,
   paramTypes: Record<string, QueryParameterDefinition<any>>,
@@ -114,7 +117,7 @@ async function remapQueryParams(
   return parameterMap;
 }
 
-async function remapQueryResponse<
+export async function remapQueryResponse<
   Q extends ObjectTypeDefinition,
   T extends QueryDataTypeDefinition<Q | never>,
 >(
@@ -168,6 +171,15 @@ async function remapQueryResponse<
         client,
         responseValue,
       ) as QueryReturnType<
+        typeof responseDataType
+      >;
+    }
+
+    case "mediaReference": {
+      return createMediaFromReferenceInternal(
+        client,
+        responseValue,
+      ) as unknown as QueryReturnType<
         typeof responseDataType
       >;
     }
@@ -232,7 +244,7 @@ async function remapQueryResponse<
     case "struct": {
       // figure out what keys need to be fixed up
       for (const [key, subtype] of Object.entries(responseDataType.struct)) {
-        if (requiresConversion(subtype)) {
+        if (requiresConversion(subtype) || responseValue[key] == null) {
           responseValue[key] = await remapQueryResponse(
             client,
             subtype,
@@ -251,7 +263,10 @@ async function remapQueryResponse<
       invariant(Array.isArray(responseValue), "Expected array entry");
       for (const entry of responseValue) {
         invariant(entry.key != null, "Expected key");
-        invariant(entry.value != null, "Expected value");
+        invariant(
+          responseDataType.valueType.nullable || entry.value != null,
+          "Expected value",
+        );
         const key = responseDataType.keyType.type === "object"
           ? getObjectSpecifier(
             entry.key,
@@ -300,7 +315,7 @@ async function remapQueryResponse<
   return responseValue as QueryReturnType<typeof responseDataType>;
 }
 
-async function getRequiredDefinitions(
+export async function getRequiredDefinitions(
   dataType: QueryDataTypeDefinition,
   client: MinimalClient,
 ): Promise<Map<string, ObjectOrInterfaceDefinition>> {
@@ -311,6 +326,13 @@ async function getRequiredDefinitions(
         dataType.objectSet,
       );
       result.set(dataType.objectSet, objectDef);
+      break;
+    }
+    case "interfaceObjectSet": {
+      const interfaceDef = await client.ontologyProvider.getInterfaceDefinition(
+        dataType.objectSet,
+      );
+      result.set(dataType.objectSet, interfaceDef);
       break;
     }
     case "object": {
@@ -331,6 +353,9 @@ async function getRequiredDefinitions(
 
     case "set": {
       return getRequiredDefinitions(dataType.set, client);
+    }
+    case "array": {
+      return getRequiredDefinitions(dataType.array, client);
     }
 
     case "map": {
@@ -369,12 +394,18 @@ async function getRequiredDefinitions(
     case "float":
     case "integer":
     case "long":
+    case "mediaReference":
     case "string":
     case "threeDimensionalAggregation":
     case "timestamp":
     case "twoDimensionalAggregation":
+    case "typeReference":
     case "union":
       break;
+    default: {
+      const _: never = dataType;
+      break;
+    }
   }
 
   return result;
@@ -401,6 +432,7 @@ function requiresConversion(dataType: QueryDataTypeDefinition) {
       return requiresConversion(dataType.set);
 
     case "attachment":
+    case "mediaReference":
     case "objectSet":
     case "twoDimensionalAggregation":
     case "threeDimensionalAggregation":

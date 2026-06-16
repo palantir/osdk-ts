@@ -15,11 +15,13 @@
  */
 
 export type {
+  Byte,
   DateISOString,
   Double,
   Float,
   Integer,
   Long,
+  Short,
   TimestampISOString,
 } from "./PrimitiveTypes.js";
 
@@ -32,6 +34,7 @@ export type {
   TwoDimensionalAggregation,
 } from "@osdk/client";
 
+export * as Aliases from "./aliases/index.js";
 export { createEditBatch } from "./edits/createEditBatch.js";
 export type { EditBatch } from "./edits/EditBatch.js";
 export type { Edits } from "./edits/types.js";
@@ -49,7 +52,17 @@ export type {
   UrlLinkTarget,
 } from "./Notification.js";
 
+export type { FunctionConfig } from "./FunctionConfig.js";
 export type { ClassificationMarking, MandatoryMarking } from "./Markings.js";
 export type { GroupId, Principal, UserId } from "./UserGroup.js";
 
-export type { Geometry, Point } from "geojson";
+export type {
+  Geometry,
+  GeometryCollection,
+  LineString,
+  MultiLineString,
+  MultiPoint,
+  MultiPolygon,
+  Point,
+  Polygon,
+} from "geojson";

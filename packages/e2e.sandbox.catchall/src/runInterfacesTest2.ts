@@ -20,6 +20,7 @@ import {
   Athlete,
   CollateralConcernCandidate,
   EsongInterfaceA,
+  MwaltherTestIdp,
   NbaPlayer,
   NihalbCastingInterfaceB,
   NihalbCastingInterfaceTypeA,
@@ -28,7 +29,7 @@ import {
 import invariant from "tiny-invariant";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
-import { client, dsClient } from "./client.js";
+import { client, dsClient, ontologyClient } from "./client.js";
 
 export async function runInterfacesTest2(): Promise<void> {
   const athletes = await dsClient(Athlete).where({
@@ -102,7 +103,28 @@ export async function runInterfacesTest2(): Promise<void> {
   const interfaceA = await dsClient(EsongInterfaceA).fetchPage();
   console.log("interfaceA instances: ", interfaceA);
 
-  const huh3 = await interfaceA.data[0].$link.esongPds.fetchPage();
+  const interfaceAFilteredByTitle = await dsClient(EsongInterfaceA).where({
+    "$title": {
+      $in: [
+        "Support link presence filter",
+        "Plan remainder of real-time updates work in API Gateway",
+      ],
+    },
+  }).fetchPage({ $includeAllBaseObjectProperties: true });
+  console.log(
+    "interfaceA filtered by title instances: ",
+    interfaceAFilteredByTitle,
+  );
+
+  const interfaceAFilteredByPk = await dsClient(EsongInterfaceA).where({
+    "$primaryKey": { $in: [5320, 5323] },
+  }).fetchPage({ $includeAllBaseObjectProperties: true });
+  console.log(
+    "interfaceA filtered by title instances: ",
+    interfaceAFilteredByPk,
+  );
+
+  const huh3 = await interfaceA.data[0].$link.esongPds.fetchOne();
 
   const implementObjectTypeAAndB = await client(
     NihalbCastingInterfaceTypeA,
@@ -157,6 +179,33 @@ export async function runInterfacesTest2(): Promise<void> {
     linkedToObjectTypeBAsInterface.data[0].$as(
       $Objects.NihalbCastingLinkedObjectTypeA,
     ),
+  );
+
+  const myInterfaceIdpData = await ontologyClient(MwaltherTestIdp).fetchPage();
+  const myFilteredInterfaceIdpData = await ontologyClient(MwaltherTestIdp)
+    .where({
+      $or: [{ idpAge: { $lt: 30 } }, {
+        mwaltherName: { $eq: "different combined" },
+      }],
+    }).fetchPage();
+
+  console.log(
+    "We get all data loading by interface with IDP: ",
+    myInterfaceIdpData.data,
+  );
+  console.log(
+    "property accessors work on idp and then spt with namespace: ",
+    myInterfaceIdpData.data[0].idpAge,
+    myInterfaceIdpData.data[1].mwaltherName,
+  );
+  console.log(
+    "We get all data loading by interface with simple filter IDP: ",
+    myFilteredInterfaceIdpData.data,
+  );
+  console.log(
+    "property accessors STILL work on idp and then spt with namespace: ",
+    myFilteredInterfaceIdpData.data[0].idpAge,
+    myFilteredInterfaceIdpData.data[1].mwaltherName,
   );
 }
 

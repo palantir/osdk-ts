@@ -24,6 +24,6 @@ import { Employee } from "../../../generatedNoCheck/index.js";
 import { client } from "./client.js";
 
 const EmployeeObjectSet = client(Employee)
-    .where({
-        salary: { $lt: 100 }
-    });
+  .where({
+    salary: { $lt: 100 },
+  });

@@ -63,16 +63,19 @@ export interface createUnstructuredImageExample extends ActionDefinition<createU
     rid: 'ri.actions.main.action-type.9d28a423-b11e-485f-8a4c-f8b4131c0b85';
     status: 'EXPERIMENTAL';
     type: 'action';
+    unsanitizedApiName: 'create-unstructured-image-example';
 
     signatures: createUnstructuredImageExample.Signatures;
   };
   apiName: 'createUnstructuredImageExample';
   type: 'action';
+  unsanitizedApiName: 'create-unstructured-image-example';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const createUnstructuredImageExample: createUnstructuredImageExample = {
   apiName: 'createUnstructuredImageExample',
   type: 'action',
+  unsanitizedApiName: 'create-unstructured-image-example',
   osdkMetadata: $osdkMetadata,
 };

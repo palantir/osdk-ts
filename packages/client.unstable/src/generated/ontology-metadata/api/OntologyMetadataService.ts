@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,15 @@
 export { bulkLoadOntologyEntities } from "./OntologyMetadataService/bulkLoadOntologyEntities.js";
 export { bulkLoadOntologyEntitiesByDatasources } from "./OntologyMetadataService/bulkLoadOntologyEntitiesByDatasources.js";
 export { getActionTypesForInterfaceType } from "./OntologyMetadataService/getActionTypesForInterfaceType.js";
+export { getActionTypesForInterfaceTypes } from "./OntologyMetadataService/getActionTypesForInterfaceTypes.js";
 export { getActionTypesForObjectType } from "./OntologyMetadataService/getActionTypesForObjectType.js";
+export { getActionTypesForObjectTypes } from "./OntologyMetadataService/getActionTypesForObjectTypes.js";
 export { getEntityDelegateDataset } from "./OntologyMetadataService/getEntityDelegateDataset.js";
 export { getEntityQueryableSource } from "./OntologyMetadataService/getEntityQueryableSource.js";
 export { getFeatureConfigurations } from "./OntologyMetadataService/getFeatureConfigurations.js";
 export { getLinkMetadataForObjectTypes } from "./OntologyMetadataService/getLinkMetadataForObjectTypes.js";
 export { getLinkTypesForObjectTypes } from "./OntologyMetadataService/getLinkTypesForObjectTypes.js";
+export { getLinkTypesForObjectTypesV2 } from "./OntologyMetadataService/getLinkTypesForObjectTypesV2.js";
 export { getObjectTypesForInterfaceTypes } from "./OntologyMetadataService/getObjectTypesForInterfaceTypes.js";
 export { getObjectTypesForSharedPropertyTypes } from "./OntologyMetadataService/getObjectTypesForSharedPropertyTypes.js";
 export { getObjectTypesForTypeGroups } from "./OntologyMetadataService/getObjectTypesForTypeGroups.js";
@@ -39,6 +42,7 @@ export { loadAllOntology } from "./OntologyMetadataService/loadAllOntology.js";
 export { loadAllOntologyEntities } from "./OntologyMetadataService/loadAllOntologyEntities.js";
 export { loadAllSharedPropertyTypesFromOntology } from "./OntologyMetadataService/loadAllSharedPropertyTypesFromOntology.js";
 export { loadAllTypeGroupsFromOntology } from "./OntologyMetadataService/loadAllTypeGroupsFromOntology.js";
+export { loadMergedRebaseState } from "./OntologyMetadataService/loadMergedRebaseState.js";
 export { loadOntology } from "./OntologyMetadataService/loadOntology.js";
 export { loadOntologyDatasources } from "./OntologyMetadataService/loadOntologyDatasources.js";
 export { loadOntologyEntities } from "./OntologyMetadataService/loadOntologyEntities.js";

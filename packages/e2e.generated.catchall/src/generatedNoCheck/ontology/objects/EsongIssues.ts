@@ -17,14 +17,14 @@ import type {
 
 export namespace EsongIssues {
   export type PropertyKeys =
+    | 'createdAt'
     | 'id'
+    | 'label'
     | 'numComments'
     | 'pdsTicket'
-    | 'status'
     | 'pdsTicketId'
-    | 'title'
-    | 'label'
-    | 'createdAt';
+    | 'status'
+    | 'title';
 
   export interface Links {
     readonly esongPds: $SingleLinkAccessor<EsongPds>;
@@ -117,6 +117,8 @@ export interface EsongIssues extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'EsongIssues';
+  primaryKeyApiName: 'id';
+  primaryKeyType: 'integer';
   __DefinitionMetadata?: {
     objectSet: EsongIssues.ObjectSet;
     props: EsongIssues.Props;
@@ -132,25 +134,25 @@ export interface EsongIssues extends $ObjectTypeDefinition {
     };
     implements: ['EsongInterfaceA', 'EsongInterfaceC', 'EsongInterfaceWithIlts'];
     interfaceMap: {
+      EsongInterfaceA: {
+        esongSptA: 'label';
+      };
       EsongInterfaceC: {
         esongId: 'label';
       };
       EsongInterfaceWithIlts: {
         esongId: 'title';
       };
-      EsongInterfaceA: {
-        esongSptA: 'label';
-      };
     };
     inverseInterfaceMap: {
+      EsongInterfaceA: {
+        label: 'esongSptA';
+      };
       EsongInterfaceC: {
         label: 'esongId';
       };
       EsongInterfaceWithIlts: {
         title: 'esongId';
-      };
-      EsongInterfaceA: {
-        label: 'esongSptA';
       };
     };
     links: {
@@ -238,6 +240,8 @@ export const EsongIssues = {
   type: 'object',
   apiName: 'EsongIssues',
   osdkMetadata: $osdkMetadata,
+  primaryKeyApiName: 'id',
+  primaryKeyType: 'integer',
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.9e50a0d3-5b89-41f5-a894-b0e9bb388950',
   },

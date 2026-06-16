@@ -22,7 +22,6 @@ export type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from "./actions/Actions.js";
-export { NULL_VALUE } from "./actions/NullValue.js";
 export type { ValidAggregationKeys } from "./aggregate/AggregatableKeys.js";
 export type { AggregateOpts } from "./aggregate/AggregateOpts.js";
 export type { AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy } from "./aggregate/AggregateOptsThatErrors.js";
@@ -31,6 +30,7 @@ export type { AggregationResultsWithoutGroups } from "./aggregate/AggregationRes
 export type { AggregationClause } from "./aggregate/AggregationsClause.js";
 export type { AggregationsResults } from "./aggregate/AggregationsResults.js";
 export type { GeoFilterOptions } from "./aggregate/GeoFilter.js";
+export type { IntervalRule } from "./aggregate/IntervalRule.js";
 export { DistanceUnitMapping } from "./aggregate/WhereClause.js";
 export type {
   AndWhereClause,
@@ -66,7 +66,11 @@ export type {
 export type {
   PropertyValueWireToClient,
 } from "./mapping/PropertyValueMapping.js";
-export type { Attachment, AttachmentUpload } from "./object/Attachment.js";
+export type {
+  Attachment,
+  AttachmentMetadata,
+  AttachmentUpload,
+} from "./object/Attachment.js";
 export type {
   AsyncIterArgs,
   Augment,
@@ -82,11 +86,67 @@ export type {
   SingleOsdkResult,
 } from "./object/FetchPageResult.js";
 export type {
+  AffineTransform,
+  AudioDecodeFormat,
+  AudioMediaItemMetadata,
+  AudioSpecification,
+  BandInfo,
+  ColorInterpretation,
+  CommonDicomDataElements,
+  CoordinateReferenceSystem,
+  DataType,
+  DicomDataElementKey,
+  DicomMediaItemMetadata,
+  DicomMediaType,
+  DicomMetaInformation,
+  DicomMetaInformationV1,
+  Dimensions,
+  DocumentDecodeFormat,
+  DocumentMediaItemMetadata,
+  EmailAttachment,
+  EmailDecodeFormat,
+  EmailMediaItemMetadata,
+  FlipAxis,
+  GcpList,
+  GeoMetadata,
+  GpsMetadata,
+  GroundControlPoint,
+  Group,
+  GroupWrapper,
+  ImageAttributeDomain,
+  ImageAttributeKey,
+  ImageryDecodeFormat,
+  ImageryMediaItemMetadata,
+  Mailbox,
+  MailboxOrGroup,
+  MailboxWrapper,
   Media,
+  MediaFullMetadata,
+  MediaItemMetadata,
   MediaMetadata,
+  MediaPropertyLocation,
   MediaReference,
   MediaUpload,
+  Modality,
+  Model3dDecodeFormat,
+  Model3dMediaItemMetadata,
+  Model3dType,
+  Orientation,
+  PaletteInterpretation,
+  RotationAngle,
+  SpreadsheetDecodeFormat,
+  SpreadsheetMediaItemMetadata,
+  UnitInterpretation,
+  UnknownMediaItemMetadata,
+  UntypedMediaItemMetadata,
+  VideoDecodeFormat,
+  VideoMediaItemMetadata,
+  VideoSpecification,
 } from "./object/Media.js";
+export type {
+  PropertyMarkings,
+  PropertySecurity,
+} from "./object/PropertySecurity.js";
 export { isOk } from "./object/Result.js";
 export type { Result } from "./object/Result.js";
 export type { BaseObjectSet } from "./objectSet/BaseObjectSet.js";

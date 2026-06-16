@@ -41,15 +41,17 @@ export function evaluateFilter(
     case "$ne":
       return realValue !== expected;
     case "$in":
-      return expected.$in.includes(realValue);
+      return Array.isArray(expected) && expected.includes(realValue);
     case "$isNull":
       return realValue == null;
     case "$startsWith":
-      return realValue.startsWith(expected);
+      return typeof realValue === "string" && realValue.startsWith(expected);
     case "$contains":
     case "$containsAllTerms":
     case "$containsAllTermsInOrder":
     case "$containsAnyTerm":
+    case "$interval":
+    case "$matchesRegex":
     case "$intersects":
     case "$within":
       // for these we will strictly say no and loosely say yes

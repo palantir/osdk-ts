@@ -18,7 +18,7 @@ import type { ObjectTypeDefinition } from "@osdk/api";
 import { renderHook } from "@testing-library/react";
 import * as React from "react";
 import { beforeEach, describe, expect, it, vitest } from "vitest";
-import { OsdkContext2 } from "../src/new/OsdkContext2.js";
+import { OsdkContext } from "../src/new/OsdkContext.js";
 import { useOsdkObjects } from "../src/new/useOsdkObjects.js";
 
 const MockObjectType = {
@@ -32,13 +32,16 @@ describe("useOsdkObjects enabled option", () => {
   const createWrapper = () => {
     const observableClient = {
       observeList: mockObserveList,
-      canonicalizeWhereClause: vitest.fn((w) => w),
+      canonicalizeOptions: vitest.fn((opts) => opts),
+      invalidateObjectType: vitest.fn().mockResolvedValue(undefined),
     } as any;
 
     return ({ children }: React.PropsWithChildren) => (
-      <OsdkContext2.Provider value={{ observableClient }}>
+      <OsdkContext.Provider
+        value={{ observableClient, devtoolsEnabled: false }}
+      >
         {children}
-      </OsdkContext2.Provider>
+      </OsdkContext.Provider>
     );
   };
 

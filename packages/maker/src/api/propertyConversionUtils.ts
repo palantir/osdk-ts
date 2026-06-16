@@ -24,7 +24,7 @@ export const defaultTypeClasses: TypeClass[] = [{
 
 // ExperimentalTimeDependentV1 and Attachment types should be included here once supported
 export function shouldNotHaveRenderHints(type: PropertyTypeType): boolean {
-  return ["struct", "mediaReference", "geotimeSeries"].includes(
+  return ["struct", "mediaReference", "geotimeSeries", "attachment"].includes(
     getPropertyTypeName(type),
   );
 }
@@ -37,4 +37,13 @@ export function hasRenderHints(typeClasses: TypeClass[] | undefined): boolean {
 
 export function getPropertyTypeName(type: PropertyTypeType): string {
   return typeof type === "object" ? type.type : type;
+}
+
+export function shouldBeIndexedForSearch(
+  type: PropertyTypeType,
+): boolean {
+  const typeName = getPropertyTypeName(type);
+  return !["attachment"].includes(
+    getPropertyTypeName(type),
+  );
 }

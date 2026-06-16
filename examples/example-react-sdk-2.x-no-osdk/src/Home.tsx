@@ -1,7 +1,7 @@
 import React from "react";
 import css from "./Home.module.css";
-import Header from "./components/Header";
-import NextSteps from "./components/NextSteps";
+import Header from "@/components/Header";
+import NextSteps from "@/components/NextSteps";
 
 function Home(): React.ReactElement {
   return (

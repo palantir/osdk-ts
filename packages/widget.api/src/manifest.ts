@@ -19,6 +19,7 @@ import type {
   ManifestParameterDefinition,
   ParameterConfig,
 } from "./config.js";
+import type { BrowserPermission } from "./permissions.js";
 
 export interface WidgetSetManifestV1 {
   manifestVersion: "1.0.0";
@@ -99,6 +100,22 @@ export interface WidgetManifestConfigV1 {
    * The map of events to their definition. Any parameter IDs referenced must be defined in the `parameters` field
    */
   events: Record<string, EventDefinition<ParameterConfig>>;
+
+  /**
+   * The additional browser permissions requested by this widget. This does not guarantee the widget
+   * will have access to the browser permission at runtime. For example, the user may need to also
+   * accept a browser prompt depending on the particular permission and browser settings.
+   * @optional
+   */
+  permissions?: BrowserPermission[];
+
+  /**
+   * Whether the host should refresh any Ontology data passed in to the widget (currently only applicable to
+   * object set parameters) when the custom widget is thought to have updated the Ontology by applying an
+   * action using Ontology APIs.
+   * @optional
+   */
+  refreshHostDataOnAction?: boolean;
 }
 
 export interface WidgetSetInputSpecV1 {

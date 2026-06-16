@@ -1,6 +1,6 @@
+import AuthCallback from "@/AuthCallback";
+import Home from "@/Home";
 import { createBrowserRouter } from "react-router-dom";
-import AuthCallback from "./AuthCallback";
-import Home from "./Home";
 
 export const router = createBrowserRouter(
   [

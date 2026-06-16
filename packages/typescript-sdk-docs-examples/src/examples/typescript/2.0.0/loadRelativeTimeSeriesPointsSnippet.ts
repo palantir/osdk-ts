@@ -24,8 +24,8 @@ import { type Employee } from "../../../generatedNoCheck/index.js";
 
 // Only supports ranges in the past
 function getRelativeTimeSeriesPoints(obj: Osdk.Instance<Employee>) {
-    return obj.employeeStatus?.getAllPoints({
-        $before: 1,
-        $unit: "hours",
-    })
+  return obj.employeeStatus?.getAllPoints({
+    $before: 1,
+    $unit: "hours",
+  });
 }

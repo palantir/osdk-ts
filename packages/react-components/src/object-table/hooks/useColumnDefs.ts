@@ -16,7 +16,7 @@
 
 import type {
   ObjectMetadata,
-  ObjectTypeDefinition,
+  ObjectOrInterfaceDefinition,
   Osdk,
   PropertyKeys,
   QueryDefinition,
@@ -25,14 +25,13 @@ import type {
 import { useOsdkMetadata } from "@osdk/react";
 import type { AccessorColumnDef } from "@tanstack/react-table";
 import { useMemo } from "react";
+import { renderDefaultCell } from "../DefaultCellRenderer.js";
 import type { ColumnDefinition } from "../ObjectTableApi.js";
+import { shouldShowEditableCell } from "../utils/shouldShowEditableCell.js";
 
 interface UseColumnDefsResult<
-  Q extends ObjectTypeDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<
-    string,
-    never
-  >,
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 > {
   columns: AccessorColumnDef<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
@@ -47,7 +46,7 @@ interface UseColumnDefsResult<
  * Hook which builds column definitions for tanstack-table given the objectSet
  */
 export function useColumnDefs<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<
     string,
     never
@@ -62,7 +61,9 @@ export function useColumnDefs<
 ): UseColumnDefsResult<Q, RDPs> {
   const { metadata, loading, error } = useOsdkMetadata(objectType);
 
-  const columns = useMemo(() => {
+  const columns: AccessorColumnDef<
+    Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
+  >[] = useMemo(() => {
     const objectProperties = metadata?.properties;
     // If columnDefinitions is provided, construct colDefs with it
     if (columnDefinitions) {
@@ -80,7 +81,7 @@ export function useColumnDefs<
 }
 
 function getColumnsFromColumnDefinitions<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<
     string,
     never
@@ -106,9 +107,14 @@ function getColumnsFromColumnDefinitions<
       resizable,
       orderable,
       filterable,
+      editable,
       renderCell,
       renderHeader,
+      columnName,
     } = col;
+
+    const editFieldConfig = col.editable ? col.editFieldConfig : undefined;
+    const validateEdit = col.editable ? col.validateEdit : undefined;
 
     const propertyMetadata = locator.type === "property"
       ? objectProperties?.[locator.id]
@@ -116,17 +122,37 @@ function getColumnsFromColumnDefinitions<
 
     const colKey = locator.id as string;
 
+    const dataType =
+      propertyMetadata?.type && typeof propertyMetadata.type === "string"
+        ? propertyMetadata.type
+        : undefined;
+
+    const markingType = propertyMetadata?.typeMetadata?.type === "marking"
+      ? propertyMetadata.typeMetadata.markingType
+      : undefined;
+
     const colDef: AccessorColumnDef<
       Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
     > = {
       id: colKey,
       accessorKey: colKey,
-      header: renderHeader ?? propertyMetadata?.displayName,
+      header: renderHeader ?? (columnName || propertyMetadata?.displayName),
+      meta: {
+        columnName: columnName || propertyMetadata?.displayName,
+        isAsyncColumn: locator.type === "function",
+        isVisible: col.isVisible !== false,
+        editable,
+        editFieldConfig,
+        dataType,
+        markingType,
+        validateEdit,
+      },
       size: width,
-      minSize: minWidth,
-      maxSize: maxWidth,
+      ...(minWidth ? { minSize: minWidth } : {}),
+      ...(maxWidth ? { maxSize: maxWidth } : {}),
       enableResizing: resizable,
-      enableSorting: orderable,
+      // Function-backed columns must be sorted on the frontend, so disable sorting for now
+      enableSorting: locator.type === "function" ? false : orderable,
       enableColumnFilter: filterable,
       cell: (cellContext) => {
         const object: Osdk.Instance<
@@ -136,9 +162,20 @@ function getColumnsFromColumnDefinitions<
           RDPs
         > = cellContext.row.original;
 
-        return renderCell
-          ? renderCell(object, locator)
-          : cellContext.getValue();
+        const meta = cellContext.table.options.meta;
+        const isEditable = shouldShowEditableCell<
+          Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
+        >(
+          editable,
+          meta?.onCellEdit,
+          meta?.isInEditMode,
+        );
+
+        if (renderCell && !isEditable) {
+          return renderCell(object, locator);
+        }
+
+        return renderDefaultCell(cellContext);
       },
     };
 
@@ -147,7 +184,7 @@ function getColumnsFromColumnDefinitions<
 }
 
 function getDefaultColumns<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<
     string,
     never

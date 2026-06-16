@@ -1,6 +1,6 @@
 {
   "name": "@osdk/react-components",
-  "version": "0.1.0-beta.1",
+  "version": "0.30.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -25,6 +25,142 @@
       "require": "./build/cjs/public/experimental.cjs",
       "default": "./build/browser/public/experimental.js"
     },
+    "./primitives": {
+      "browser": "./build/browser/public/primitives.js",
+      "import": {
+        "types": "./build/types/public/primitives.d.ts",
+        "default": "./build/esm/public/primitives.js"
+      },
+      "require": "./build/cjs/public/primitives.cjs",
+      "default": "./build/browser/public/primitives.js"
+    },
+    "./experimental/action-form": {
+      "browser": "./build/browser/public/experimental/action-form.js",
+      "import": {
+        "types": "./build/types/public/experimental/action-form.d.ts",
+        "default": "./build/esm/public/experimental/action-form.js"
+      },
+      "require": "./build/cjs/public/experimental/action-form.cjs",
+      "default": "./build/browser/public/experimental/action-form.js"
+    },
+    "./experimental/cbac-picker": {
+      "browser": "./build/browser/public/experimental/cbac-picker.js",
+      "import": {
+        "types": "./build/types/public/experimental/cbac-picker.d.ts",
+        "default": "./build/esm/public/experimental/cbac-picker.js"
+      },
+      "require": "./build/cjs/public/experimental/cbac-picker.cjs",
+      "default": "./build/browser/public/experimental/cbac-picker.js"
+    },
+    "./experimental/document-viewer": {
+      "browser": "./build/browser/public/experimental/document-viewer.js",
+      "import": {
+        "types": "./build/types/public/experimental/document-viewer.d.ts",
+        "default": "./build/esm/public/experimental/document-viewer.js"
+      },
+      "require": "./build/cjs/public/experimental/document-viewer.cjs",
+      "default": "./build/browser/public/experimental/document-viewer.js"
+    },
+    "./experimental/email-viewer": {
+      "browser": "./build/browser/public/experimental/email-viewer.js",
+      "import": {
+        "types": "./build/types/public/experimental/email-viewer.d.ts",
+        "default": "./build/esm/public/experimental/email-viewer.js"
+      },
+      "require": "./build/cjs/public/experimental/email-viewer.cjs",
+      "default": "./build/browser/public/experimental/email-viewer.js"
+    },
+    "./experimental/excel-viewer": {
+      "browser": "./build/browser/public/experimental/excel-viewer.js",
+      "import": {
+        "types": "./build/types/public/experimental/excel-viewer.d.ts",
+        "default": "./build/esm/public/experimental/excel-viewer.js"
+      },
+      "require": "./build/cjs/public/experimental/excel-viewer.cjs",
+      "default": "./build/browser/public/experimental/excel-viewer.js"
+    },
+    "./experimental/filter-list": {
+      "browser": "./build/browser/public/experimental/filter-list.js",
+      "import": {
+        "types": "./build/types/public/experimental/filter-list.d.ts",
+        "default": "./build/esm/public/experimental/filter-list.js"
+      },
+      "require": "./build/cjs/public/experimental/filter-list.cjs",
+      "default": "./build/browser/public/experimental/filter-list.js"
+    },
+    "./experimental/image-viewer": {
+      "browser": "./build/browser/public/experimental/image-viewer.js",
+      "import": {
+        "types": "./build/types/public/experimental/image-viewer.d.ts",
+        "default": "./build/esm/public/experimental/image-viewer.js"
+      },
+      "require": "./build/cjs/public/experimental/image-viewer.cjs",
+      "default": "./build/browser/public/experimental/image-viewer.js"
+    },
+    "./experimental/markdown-renderer": {
+      "browser": "./build/browser/public/experimental/markdown-renderer.js",
+      "import": {
+        "types": "./build/types/public/experimental/markdown-renderer.d.ts",
+        "default": "./build/esm/public/experimental/markdown-renderer.js"
+      },
+      "require": "./build/cjs/public/experimental/markdown-renderer.cjs",
+      "default": "./build/browser/public/experimental/markdown-renderer.js"
+    },
+    "./experimental/object-table": {
+      "browser": "./build/browser/public/experimental/object-table.js",
+      "import": {
+        "types": "./build/types/public/experimental/object-table.d.ts",
+        "default": "./build/esm/public/experimental/object-table.js"
+      },
+      "require": "./build/cjs/public/experimental/object-table.cjs",
+      "default": "./build/browser/public/experimental/object-table.js"
+    },
+    "./experimental/pdf-viewer": {
+      "browser": "./build/browser/public/experimental/pdf-viewer.js",
+      "import": {
+        "types": "./build/types/public/experimental/pdf-viewer.d.ts",
+        "default": "./build/esm/public/experimental/pdf-viewer.js"
+      },
+      "require": "./build/cjs/public/experimental/pdf-viewer.cjs",
+      "default": "./build/browser/public/experimental/pdf-viewer.js"
+    },
+    "./experimental/theme": {
+      "browser": "./build/browser/public/experimental/theme.js",
+      "import": {
+        "types": "./build/types/public/experimental/theme.d.ts",
+        "default": "./build/esm/public/experimental/theme.js"
+      },
+      "require": "./build/cjs/public/experimental/theme.cjs",
+      "default": "./build/browser/public/experimental/theme.js"
+    },
+    "./experimental/tiff-renderer": {
+      "browser": "./build/browser/public/experimental/tiff-renderer.js",
+      "import": {
+        "types": "./build/types/public/experimental/tiff-renderer.d.ts",
+        "default": "./build/esm/public/experimental/tiff-renderer.js"
+      },
+      "require": "./build/cjs/public/experimental/tiff-renderer.cjs",
+      "default": "./build/browser/public/experimental/tiff-renderer.js"
+    },
+    "./experimental/video-viewer": {
+      "browser": "./build/browser/public/experimental/video-viewer.js",
+      "import": {
+        "types": "./build/types/public/experimental/video-viewer.d.ts",
+        "default": "./build/esm/public/experimental/video-viewer.js"
+      },
+      "require": "./build/cjs/public/experimental/video-viewer.cjs",
+      "default": "./build/browser/public/experimental/video-viewer.js"
+    },
+    "./experimental/xml-viewer": {
+      "browser": "./build/browser/public/experimental/xml-viewer.js",
+      "import": {
+        "types": "./build/types/public/experimental/xml-viewer.d.ts",
+        "default": "./build/esm/public/experimental/xml-viewer.js"
+      },
+      "require": "./build/cjs/public/experimental/xml-viewer.cjs",
+      "default": "./build/browser/public/experimental/xml-viewer.js"
+    },
+    "./styles.css": "./build/browser/styles.css",
     "./*": {
       "browser": "./build/browser/public/*.js",
       "import": {
@@ -36,23 +172,46 @@
     }
   },
   "scripts": {
-    "check-attw": "attw --pack .",
+    "check-attw": "attw --pack . --exclude-entrypoints ./styles.css ./experimental/action-form ./experimental/aip-agent-chat ./experimental/cbac-picker ./experimental/document-viewer ./experimental/email-viewer ./experimental/excel-viewer ./experimental/filter-list ./experimental/image-viewer ./experimental/markdown-renderer ./experimental/object-table ./experimental/pdf-viewer ./experimental/theme ./experimental/tiff-renderer ./experimental/video-viewer ./experimental/xml-viewer",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
-    "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
-    "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
-    "test": "vitest run",
-    "transpileBrowser": "monorepo.tool.transpile -f esm -m normal -t browser",
+    "fix-lint": "eslint . --fix && dprint fmt",
+    "lint": "eslint . && dprint check",
+    "test": "LANG=en_US.UTF-8 vitest run",
+    "transpileAllDeps": "pnpm --filter @osdk/api --filter @osdk/client --filter @osdk/react run transpileBrowser",
+    "transpileBrowser": "monorepo.tool.transpile -f esm -m normal -t browser && node scripts/build-css.mjs",
     "transpileCjs": "monorepo.tool.transpile -f cjs -m bundle -t node",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
     "transpileTypes": "monorepo.tool.transpile -f esm -m types -t node",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
+  "dependencies": {
+    "@base-ui/react": "^1.0.0",
+    "@blueprintjs/icons": "^6.7.0",
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
+    "@tanstack/react-table": "^8.21.3",
+    "@tanstack/react-virtual": "^3.13.13",
+    "date-fns": "^2.28.0",
+    "date-fns-tz": "^2.0.0",
+    "fast-deep-equal": "^3.1.3",
+    "lodash-es": "^4.17.21",
+    "pdfjs-dist": "~4.8.69",
+    "postal-mime": "^2.7.4",
+    "react-day-picker": "^8.10.0",
+    "react-hook-form": "^7.54.0",
+    "react-markdown": "^9.0.3",
+    "remark-gfm": "^4.0.1",
+    "utif": "^3.1.0",
+    "xlsx-republish": "0.20.3"
+  },
   "peerDependencies": {
-    "@osdk/api": "*",
-    "@osdk/client": "*",
-    "@osdk/react": "*",
+    "@osdk/api": "^2.8.0",
+    "@osdk/client": "^2.8.0",
+    "@osdk/react": "^2.8.0",
     "@types/react": "^17 || ^18 || ^19",
+    "classnames": "^2.0.0",
     "react": "^17 || ^18 || ^19",
     "react-dom": "^17 || ^18 || ^19"
   },
@@ -62,19 +221,24 @@
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/react": "workspace:*",
-    "@tanstack/react-table": "^8.21.3",
-    "@tanstack/react-virtual": "^3.13.13",
     "@testing-library/react": "^16.3.0",
+    "@types/lodash-es": "^4.17.12",
     "@types/react": "^18.3.24",
+    "@types/react-dom": "^18.3.7",
     "eslint-plugin-react-hooks": "^5.2.0",
     "p-defer": "^4.0.1",
+    "postcss-import": "^16.0.0",
+    "postcss-modules": "^6.0.1",
     "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "typescript": "~5.5.4"
   },
   "publishConfig": {
     "access": "public"
   },
   "files": [
+    "AGENTS.md",
+    "docs",
     "build/cjs",
     "build/esm",
     "build/browser",
@@ -87,5 +251,8 @@
   "main": "./build/cjs/index.cjs",
   "module": "./build/esm/index.js",
   "types": "./build/cjs/index.d.cts",
+  "sideEffects": [
+    "**/*.css"
+  ],
   "type": "module"
 }

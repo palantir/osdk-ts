@@ -30,6 +30,7 @@ import {
   ObjectTypeDoesNotExistError,
   QueryNotFoundError,
 } from "../errors.js";
+import { camelize } from "../handlers/util/camelize.js";
 import { OpenApiCallError } from "../handlers/util/handleOpenApiCall.js";
 import type { FauxActionImpl } from "./FauxActionImpl.js";
 import type { FauxQueryImpl } from "./FauxQueryImpl.js";
@@ -151,7 +152,7 @@ export class FauxOntology {
   }
 
   public getActionDef(actionTypeApiName: string): OntologiesV2.ActionTypeV2 {
-    const actionType = this.#ontology.actionTypes[actionTypeApiName];
+    const actionType = this.#ontology.actionTypes[camelize(actionTypeApiName)];
     if (actionType === undefined) {
       throw new OpenApiCallError(
         404,
@@ -162,7 +163,7 @@ export class FauxOntology {
   }
 
   public getActionImpl(actionTypeApiName: string): FauxActionImpl {
-    const impl = this.#actionImpl.get(actionTypeApiName);
+    const impl = this.#actionImpl.get(camelize(actionTypeApiName));
     invariant(impl, "Action implementation not found for " + actionTypeApiName);
     return impl;
   }

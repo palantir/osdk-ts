@@ -52,6 +52,14 @@ await yargs(hideBin(process.argv))
   })
   .parseAsync();
 
+function isTestFile(relativePath) {
+  const segments = relativePath.split(path.sep);
+  return segments.some(s =>
+    s.includes(".test.") || s.includes(".test") || s === "testUtils"
+    || s.startsWith("testUtils.")
+  );
+}
+
 async function transformTypes() {
   const { isolatedDeclaration } = await import("oxc-transform");
 
@@ -83,6 +91,7 @@ async function transformTypes() {
       relative,
     );
     if (f.isDirectory()) continue;
+    if (isTestFile(relative)) continue;
     if (!fileEndingsToCompile.some(e => f.name.endsWith(e))) {
       continue;
     }
@@ -147,6 +156,8 @@ async function transpileWithTsup(format, target) {
   await rm(outDir, { recursive: true, force: true });
   await mkdir(outDir, { recursive: true });
 
+  const pkgJson = JSON.parse(await readFile("package.json", "utf-8"));
+
   const [
     { build },
     { default: babel },
@@ -157,34 +168,57 @@ async function transpileWithTsup(format, target) {
   ] = await Promise.all([
     import("tsup"),
     import("esbuild-plugin-babel"),
-    readFile("package.json", "utf-8").then(f => JSON.parse(f).version),
+    Promise.resolve(pkgJson.version),
     readPackageVersion("packages/api"),
     readPackageVersion("packages/client"),
     readPackageVersion("packages/cli"),
   ]);
+
+  const noExternalList = [
+    "@osdk/cli.cmd.typescript",
+    "@osdk/cli.common",
+    "@osdk/foundry.ontologies",
+    "@osdk/foundry.mediasets",
+    "@osdk/foundry.functions",
+    "@osdk/shared.client",
+    "@osdk/shared.client2",
+    "oauth4webapi",
+    "p-defer",
+    // create-app templates (private, must be bundled)
+    "@osdk/create-app.template.expo.v2",
+    "@osdk/create-app.template.react",
+    "@osdk/create-app.template.react.beta",
+    "@osdk/create-app.template.tutorial-todo-aip-app",
+    "@osdk/create-app.template.tutorial-todo-aip-app.beta",
+    "@osdk/create-app.template.tutorial-todo-app",
+    "@osdk/create-app.template.tutorial-todo-app.beta",
+    "@osdk/create-app.template.vue",
+    "@osdk/create-app.template.vue.v2",
+    // create-widget templates (private, must be bundled)
+    "@osdk/create-widget.template.minimal-react.v2",
+    "@osdk/create-widget.template.react.v2",
+  ];
+
+  const devDepNames = Object.keys(pkgJson.devDependencies ?? {});
+  const externalDevDeps = devDepNames.filter(d => !noExternalList.includes(d));
 
   await build({
     entry: [
       "src/index.ts",
       "src/public/*.ts",
       "src/public/*.mts",
+      "src/public/**/*.ts",
+      "src/public/**/*.mts",
     ],
 
     // don't try to load config files from disk
     config: false,
 
     // these packages are not CJS compatible so we need to bundle them up when we do tsup with cjs
-    noExternal: format === "cjs"
-      ? [
-        "@osdk/foundry.ontologies",
-        "@osdk/foundry.mediasets",
-        "@osdk/shared.client",
-        "@osdk/shared.client2",
-        "delay",
-        "oauth4webapi",
-        "p-defer",
-      ]
-      : [],
+    noExternal: format === "cjs" ? noExternalList : [],
+
+    // prevent devDependencies from being inlined into the bundle
+    external: externalDevDeps,
     format: [format],
     outExtension: ({ format }) => {
       return {
@@ -211,7 +245,6 @@ async function transpileWithTsup(format, target) {
     keepNames: false,
     treeshake: true,
     target: "es2022",
-
     esbuildPlugins: [
       /** @type {any} */ (babel({
         config: {
@@ -266,7 +299,13 @@ async function transpileWithBabel(format, target) {
     MODE: process.env.production ? "production" : "development",
   });
 
-  const fileEndingsToCopy = [".d.ts", ".d.ts.map", ".d.mts", ".d.mts.map"];
+  const fileEndingsToCopy = [
+    ".d.ts",
+    ".d.ts.map",
+    ".d.mts",
+    ".d.mts.map",
+    ".css",
+  ];
 
   const extMap = {
     ".js": ".js",
@@ -295,6 +334,7 @@ async function transpileWithBabel(format, target) {
       relative,
     );
     if (f.isDirectory()) continue;
+    if (isTestFile(relative)) continue;
     if (fileEndingsToCopy.some(e => f.name.endsWith(e))) {
       await mkdir(path.dirname(destPathWrongExt), { recursive: true });
       await copyFile(fullFilePath, destPathWrongExt);

@@ -19,7 +19,10 @@ import { renderHook, waitFor } from "@testing-library/react";
 import pDefer from "p-defer";
 import * as React from "react";
 import { describe, expect, it, vitest } from "vitest";
-import { OsdkContext } from "../src/OsdkContext.js";
+import {
+  fakeObservableClient,
+  TestOsdkProvider,
+} from "../src/public/testing.js";
 import { useOsdkMetadata } from "../src/useOsdkMetadata.js";
 
 describe(useOsdkMetadata, () => {
@@ -31,17 +34,14 @@ describe(useOsdkMetadata, () => {
       }),
     } as any as Client;
 
-    const wrapper = ({ children }: React.PropsWithChildren) => {
-      return (
-        <OsdkContext.Provider
-          value={{
-            client: fakeClient,
-          }}
-        >
-          {children}
-        </OsdkContext.Provider>
-      );
-    };
+    const wrapper = ({ children }: React.PropsWithChildren) => (
+      <TestOsdkProvider
+        client={fakeClient}
+        observableClient={fakeObservableClient}
+      >
+        {children}
+      </TestOsdkProvider>
+    );
 
     const FooObjectDef = { type: "object", apiName: "foo" } as const;
 

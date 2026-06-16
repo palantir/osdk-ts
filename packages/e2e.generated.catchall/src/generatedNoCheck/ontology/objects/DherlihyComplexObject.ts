@@ -53,6 +53,8 @@ export interface DherlihyComplexObject extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'DherlihyComplexObject';
+  primaryKeyApiName: 'id';
+  primaryKeyType: 'string';
   __DefinitionMetadata?: {
     objectSet: DherlihyComplexObject.ObjectSet;
     props: DherlihyComplexObject.Props;
@@ -99,6 +101,8 @@ export const DherlihyComplexObject = {
   type: 'object',
   apiName: 'DherlihyComplexObject',
   osdkMetadata: $osdkMetadata,
+  primaryKeyApiName: 'id',
+  primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },

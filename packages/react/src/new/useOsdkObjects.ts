@@ -16,45 +16,104 @@
 
 import type {
   DerivedProperty,
-  InterfaceDefinition,
   LinkedType,
   LinkNames,
-  ObjectTypeDefinition,
+  ObjectOrInterfaceDefinition,
+  ObjectSet,
   Osdk,
   PropertyKeys,
   SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
-import type { ObserveObjectsCallbackArgs } from "@osdk/client/unstable-do-not-use";
+import type { ObserveObjectsCallbackArgs } from "@osdk/client/observable";
 import React from "react";
-import { makeExternalStore } from "./makeExternalStore.js";
-import { OsdkContext2 } from "./OsdkContext2.js";
-import type { InferRdpTypes } from "./types.js";
+import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
+import { devToolsMetadata, makeExternalStore } from "./makeExternalStore.js";
+import { OsdkContext } from "./OsdkContext.js";
 
-export interface UseOsdkObjectsOptions<
-  T extends ObjectTypeDefinition | InterfaceDefinition,
-  WithProps extends DerivedProperty.Clause<T> | undefined = undefined,
+/**
+ * Restricts `resolveToObjectType` to interface queries only.
+ * Object-type queries cannot pass this option.
+ */
+export type ResolveToObjectTypeOption<T extends ObjectOrInterfaceDefinition> =
+  T extends { type: "interface" } ? { resolveToObjectType?: boolean }
+    : { resolveToObjectType?: never };
+
+export type UseOsdkObjectsOptions<
+  T extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> =
+  & UseOsdkObjectsBaseOptions<T, RDPs>
+  & ResolveToObjectTypeOption<T>;
+
+interface UseOsdkObjectsBaseOptions<
+  T extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > {
   /**
-   * Standard OSDK Where with RDP support
+   * Fetch objects by their RIDs (Resource Identifiers).
+   * When provided, starts with a static objectset containing these RIDs.
+   * Can be combined with `where` to filter the RID set, and with `orderBy` to sort results.
+   *
+   * @example
+   * ```tsx
+   * // Fetch specific objects by RID
+   * useOsdkObjects(Employee, { rids: ['ri.foo.123', 'ri.foo.456'] });
+   * ```
+   *
+   * @example
+   * ```tsx
+   * // Fetch specific objects by RID, filtered by status
+   * useOsdkObjects(Employee, {
+   *   rids: ['ri.foo.123', 'ri.foo.456', 'ri.foo.789'],
+   *   where: { status: 'active' },
+   * });
+   * ```
    */
-  where?: WhereClause<T, InferRdpTypes<T, WithProps>>;
+  rids?: readonly string[];
 
   /**
-   *  The preferred page size for the list.
+   * Standard OSDK Where clause with RDP support.
+   * When used with `rids`, filters the RID set.
+   * When used alone, filters all objects of the type.
    */
-  pageSize?: number;
+  where?: WhereClause<T, RDPs>;
 
-  /** */
+  /**
+   * Sort results by one or more properties.
+   */
   orderBy?: {
     [K in PropertyKeys<T>]?: "asc" | "desc";
   };
 
   /**
+   * The preferred page size for the list.
+   */
+  pageSize?: number;
+
+  /**
    * Define derived properties (RDPs) to be computed server-side and attached to each object.
    * These properties will be available on the returned objects alongside their regular properties.
    */
-  withProperties?: WithProps;
+  withProperties?: { [K in keyof RDPs]: DerivedProperty.Creator<T, RDPs[K]> };
+
+  /**
+   * The number of milliseconds to wait after the last observed list change.
+   *
+   * Two uses of `useOsdkObjects` with the same parameters will only trigger one
+   * network request if the second is within `dedupeIntervalMs`.
+   */
+  dedupeIntervalMs?: number;
+
+  /**
+   * Enable or disable the query.
+   *
+   * When `false`, the query will not automatically execute. It will still
+   * return any cached data, but will not fetch from the server.
+   *
+   * @default true
+   */
+  enabled?: boolean;
 
   /**
    * Intersect the results with additional object sets.
@@ -62,12 +121,15 @@ export interface UseOsdkObjectsOptions<
    * The final result will only include objects that match ALL conditions.
    */
   intersectWith?: Array<{
-    where: WhereClause<T, InferRdpTypes<T, WithProps>>;
+    where: WhereClause<T, RDPs>;
   }>;
 
   /**
    * Pivot to related objects through a link.
    * This changes the return type from T to the linked object type.
+   *
+   * Cannot be combined with `streamUpdates`. The server does not support
+   * websocket subscriptions for link-traversal queries.
    */
   pivotTo?: LinkNames<T>;
 
@@ -79,88 +141,74 @@ export interface UseOsdkObjectsOptions<
    * - `true`: Fetch all available pages automatically
    * - `number`: Fetch pages until at least this many items are loaded
    * - `undefined` (default): Only fetch the first page, user must call fetchMore()
-   *
-   * Note: When using `autoFetchMore: true` with large datasets, the initial
-   * load may take significant time. Consider using a specific number instead
-   * or implementing virtual scrolling.
-   *
-   * @example
-   * // Fetch all todos at once
-   * const { data } = useOsdkObjects(Todo, { autoFetchMore: true })
-   *
-   * @example
-   * // Fetch at least 100 todos (with 25 per page, fetches 4 pages)
-   * const { data } = useOsdkObjects(Todo, {
-   *   autoFetchMore: 100,
-   *   pageSize: 25
-   * })
    */
   autoFetchMore?: boolean | number;
 
   /**
-   * Upon a list being revalidated, this option determines how the component
-   * will be re-rendered with the data.
+   * Enable streaming updates via websocket subscription.
    *
-   * An example to help understand the options:
-   *
-   * Suppose pageSize is 10 and we have called `fetchMore()` twice. The list is
-   * now 30 items long.
-   *
-   * Upon revalidation, we get the first 10 items of the list. The options behave
-   * as follows:
-   *
-   * - `"in-place"`: The first 10 items of the list are replaced with the new 10
-   *   items. The list is now 30 items long, but only the first 10 items are valid.
-   * - `"wait"`: The old list is returned until after the next 20 items are loaded
-   *   (which will happen automatically). The list is now 30 items long.
-   * - `"reset"`: The entire list is replaced with the new 10 items. The list is
-   *   now 10 items long.
+   * Cannot be combined with `pivotTo`. The server does not support
+   * websocket subscriptions for link-traversal queries.
    */
-  // invalidationMode?: "in-place" | "wait" | "reset";
-
-  /**
-   * The number of milliseconds to wait after the last observed list change.
-   *
-   * Two uses of `useOsdkObjects` with the where clause will only trigger one
-   * network request if the second is within `dedupeIntervalMs`.
-   */
-  dedupeIntervalMs?: number;
-
   streamUpdates?: boolean;
 
   /**
-   * Enable or disable the query.
+   * Restrict which properties are returned for each object.
+   * When provided, only the specified properties will be fetched,
+   * reducing payload sizes for list views.
    *
-   * When `false`, the query will not automatically execute. It will still
-   * return any cached data, but will not fetch from the server.
-   *
-   * This is useful for:
-   * - Lazy/on-demand queries that should wait for user interaction
-   * - Dependent queries that need data from another query first
-   * - Conditional queries based on component state
-   *
-   * @default true
    * @example
-   * // Dependent query - wait for parent data
-   * const { data: employee } = useOsdkObject(Employee, employeeId);
-   * const { data: reports } = useOsdkObjects(Employee, {
-   *   where: { managerId: employee?.id },
-   *   enabled: !!employee
-   * });
+   * ```tsx
+   * // Only fetch name and status properties
+   * useOsdkObjects(Employee, { $select: ["name", "status"] });
+   * ```
    */
-  enabled?: boolean;
+  $select?: readonly PropertyKeys<T>[];
+
+  /**
+   * When true, loads per-property security metadata (marking requirements)
+   * alongside each object. The returned objects will have `$propertySecurities`
+   * populated with conjunctive/disjunctive marking requirements per property.
+   */
+  $loadPropertySecurityMetadata?: boolean;
+
+  /**
+   * When true, includes all properties of the underlying concrete object type
+   * for interface queries. Has no effect for non-interface queries.
+   */
+  $includeAllBaseObjectProperties?: boolean;
 }
 
 export interface UseOsdkListResult<
-  T extends ObjectTypeDefinition | InterfaceDefinition,
+  T extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
+  EXTRA_OPTIONS extends never | "$rid" = never,
 > {
+  /**
+   * Function to fetch more pages (undefined if no more pages)
+   */
   fetchMore: (() => Promise<void>) | undefined;
+
+  /**
+   * The fetched data with derived properties
+   */
   data:
-    | Osdk.Instance<T, "$allBaseProperties", PropertyKeys<T>, RDPs>[]
+    | Osdk.Instance<
+      T,
+      "$allBaseProperties" | EXTRA_OPTIONS,
+      PropertyKeys<T>,
+      RDPs
+    >[]
     | undefined;
+
+  /**
+   * Whether data is currently being loaded
+   */
   isLoading: boolean;
 
+  /**
+   * Any error that occurred during fetching
+   */
   error: Error | undefined;
 
   /**
@@ -171,146 +219,196 @@ export interface UseOsdkListResult<
    * do that on a per object basis with useOsdkObject
    */
   isOptimistic: boolean;
+
+  /**
+   * The total count of objects matching the query (if available from the API)
+   */
+  totalCount?: string;
+
+  hasMore: boolean;
+
+  objectSet: ObjectSet<T, RDPs> | undefined;
+
+  refetch: () => Promise<void>;
 }
 
-declare const process: {
-  env: {
-    NODE_ENV: "development" | "production";
-  };
-};
-
+// pivotTo overloads: streamUpdates is forbidden (the server does not support
+// websocket subscriptions for link-traversal queries).
 export function useOsdkObjects<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   L extends LinkNames<Q>,
 >(
   type: Q,
-  options: UseOsdkObjectsOptions<Q> & { pivotTo: L },
-): UseOsdkListResult<LinkedType<Q, L>>;
+  options: UseOsdkObjectsOptions<Q, {}> & {
+    pivotTo: L;
+    rids: readonly string[];
+    streamUpdates?: never;
+  },
+): UseOsdkListResult<LinkedType<Q, L>, {}, "$rid">;
 
 export function useOsdkObjects<
-  Q extends ObjectTypeDefinition | InterfaceDefinition,
-  WP extends DerivedProperty.Clause<Q> | undefined,
+  Q extends ObjectOrInterfaceDefinition,
+  L extends LinkNames<Q>,
 >(
   type: Q,
-  options?: UseOsdkObjectsOptions<Q, WP>,
-): UseOsdkListResult<Q, InferRdpTypes<Q, WP>>;
+  options: UseOsdkObjectsOptions<Q, {}> & {
+    pivotTo: L;
+    streamUpdates?: never;
+  },
+): UseOsdkListResult<LinkedType<Q, L>, {}>;
+
+// Non-pivotTo overloads: pivotTo is forbidden to prevent fallthrough from the
+// pivotTo overloads above (which would give the wrong return type).
+export function useOsdkObjects<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+>(
+  type: Q,
+  options: UseOsdkObjectsOptions<Q, RDPs> & {
+    rids: readonly string[];
+    pivotTo?: never;
+  },
+): UseOsdkListResult<Q, RDPs, "$rid">;
 
 export function useOsdkObjects<
-  Q extends ObjectTypeDefinition | InterfaceDefinition,
-  WP extends DerivedProperty.Clause<Q> | undefined,
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   type: Q,
-  options?: UseOsdkObjectsOptions<Q, WP>,
+  options?:
+    & UseOsdkObjectsOptions<Q, RDPs>
+    & { pivotTo?: never },
+): UseOsdkListResult<Q, RDPs>;
+
+export function useOsdkObjects<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+>(
+  type: Q,
+  options?: UseOsdkObjectsOptions<Q, RDPs>,
 ):
-  | UseOsdkListResult<Q, InferRdpTypes<Q, WP>>
-  | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>>
+  | UseOsdkListResult<Q, RDPs>
+  | UseOsdkListResult<Q, RDPs, "$rid">
+  | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>, {}>
+  | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>, {}, "$rid">
 {
+  const { observableClient } = React.useContext(OsdkContext);
+
   const {
     pageSize,
-    orderBy,
     dedupeIntervalMs,
-    where = {},
-    streamUpdates,
     withProperties,
+    enabled = true,
+    rids,
+    where,
+    orderBy,
+    streamUpdates,
     autoFetchMore,
     intersectWith,
     pivotTo,
-    enabled = true,
+    $select,
+    $loadPropertySecurityMetadata,
+    $includeAllBaseObjectProperties,
+    resolveToObjectType,
   } = options ?? {};
-  const { observableClient } = React.useContext(OsdkContext2);
 
-  /*  We want the canonical where clause so that the use of `React.useMemo`
-      is stable. No real added cost as we canonicalize internal to
-      the ObservableClient anyway.
-   */
-  const canonWhere = observableClient.canonicalizeWhereClause<
-    Q,
-    InferRdpTypes<Q, WP>
-  >(where ?? {});
+  const canonOptions = observableClient.canonicalizeOptions({
+    where,
+    withProperties,
+    orderBy,
+    intersectWith,
+    $select,
+  });
 
-  const stableWithProperties = React.useMemo(
-    () => withProperties,
-    [JSON.stringify(withProperties)],
-  );
-
-  const stableIntersectWith = React.useMemo(
-    () => intersectWith,
-    [JSON.stringify(intersectWith)],
-  );
-
-  const stableOrderBy = React.useMemo(
-    () => orderBy,
-    [JSON.stringify(orderBy)],
+  const stableRids = React.useMemo(
+    () => rids,
+    [JSON.stringify(rids)],
   );
 
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
       if (!enabled) {
-        return makeExternalStore<
-          ObserveObjectsCallbackArgs<Q, InferRdpTypes<Q, WP>>
-        >(
+        return makeExternalStore<ObserveObjectsCallbackArgs<Q, RDPs>>(
           () => ({ unsubscribe: () => {} }),
-          process.env.NODE_ENV !== "production"
-            ? `list ${type.apiName} ${JSON.stringify(canonWhere)} [DISABLED]`
-            : void 0,
+          devToolsMetadata({
+            hookType: "useOsdkObjects",
+            objectType: type.apiName,
+          }),
         );
       }
-      return makeExternalStore<
-        ObserveObjectsCallbackArgs<Q, InferRdpTypes<Q, WP>>
-      >(
+
+      return makeExternalStore<ObserveObjectsCallbackArgs<Q, RDPs>>(
         (observer) =>
-          observableClient.observeList({
+          observableClient.observeList<Q, RDPs>({
             type,
-            where: canonWhere,
+            rids: stableRids,
+            where: canonOptions.where,
             dedupeInterval: dedupeIntervalMs ?? 2_000,
             pageSize,
-            orderBy: stableOrderBy,
+            orderBy: canonOptions.orderBy,
             streamUpdates,
-            withProperties: stableWithProperties,
+            withProperties: canonOptions.withProperties,
             autoFetchMore,
-            ...(stableIntersectWith
-              ? { intersectWith: stableIntersectWith }
+            $includeAllBaseObjectProperties,
+            ...(canonOptions.intersectWith
+              ? { intersectWith: canonOptions.intersectWith }
               : {}),
             ...(pivotTo ? { pivotTo } : {}),
+            ...(canonOptions.$select ? { select: canonOptions.$select } : {}),
+            ...($loadPropertySecurityMetadata
+              ? { $loadPropertySecurityMetadata }
+              : {}),
+            ...(resolveToObjectType ? { resolveToObjectType: true } : {}),
           }, observer),
-        process.env.NODE_ENV !== "production"
-          ? `list ${type.apiName} ${JSON.stringify(canonWhere)}`
-          : void 0,
+        devToolsMetadata({
+          hookType: "useOsdkObjects",
+          objectType: type.apiName,
+          where: canonOptions.where,
+          orderBy: canonOptions.orderBy,
+          pageSize,
+        }),
       );
     },
     [
       enabled,
       observableClient,
-      type,
-      canonWhere,
+      type.apiName,
+      type.type,
+      stableRids,
+      canonOptions.where,
       dedupeIntervalMs,
       pageSize,
-      stableOrderBy,
+      canonOptions.orderBy,
       streamUpdates,
-      stableWithProperties,
+      canonOptions.withProperties,
       autoFetchMore,
-      stableIntersectWith,
+      canonOptions.intersectWith,
       pivotTo,
+      canonOptions.$select,
+      $loadPropertySecurityMetadata,
+      $includeAllBaseObjectProperties,
+      !!resolveToObjectType,
     ],
   );
 
   const listPayload = React.useSyncExternalStore(subscribe, getSnapShot);
 
-  let error: Error | undefined;
-  if (listPayload && "error" in listPayload && listPayload.error) {
-    error = listPayload.error;
-  } else if (listPayload?.status === "error") {
-    error = new Error("Failed to load objects");
-  }
+  const refetch = React.useCallback(async () => {
+    await observableClient.invalidateObjectType(type.apiName);
+  }, [observableClient, type.apiName]);
 
-  return {
-    fetchMore: listPayload?.hasMore ? listPayload.fetchMore : undefined,
-    error,
-    data: listPayload?.resolvedList,
-    isLoading: enabled
-      ? (listPayload?.status === "loading" || listPayload?.status === "init"
-        || !listPayload)
-      : false,
-    isOptimistic: listPayload?.isOptimistic ?? false,
-  };
+  return React.useMemo<UseOsdkListResult<Q, RDPs>>(
+    () => ({
+      fetchMore: listPayload?.hasMore ? listPayload.fetchMore : undefined,
+      error: extractPayloadError(listPayload, "Failed to load objects"),
+      data: listPayload?.resolvedList,
+      isLoading: isPayloadLoading(listPayload, enabled),
+      isOptimistic: listPayload?.isOptimistic ?? false,
+      totalCount: listPayload?.totalCount,
+      hasMore: listPayload?.hasMore ?? false,
+      objectSet: listPayload?.objectSet,
+      refetch,
+    }),
+    [listPayload, enabled, refetch],
+  );
 }

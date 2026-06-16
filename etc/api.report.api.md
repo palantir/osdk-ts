@@ -23,6 +23,8 @@ export interface ActionDefinition<T_signatures = never> {
     osdkMetadata?: OsdkMetadata;
     	// (undocumented)
     type: "action";
+    	// (undocumented)
+    unsanitizedApiName?: string;
 }
 
 // Warning: (ae-forgotten-export) The symbol "ActionResults" needs to be exported by the entry point index.d.ts
@@ -53,6 +55,8 @@ export interface ActionMetadata {
     status: ReleaseStatus | undefined;
     	// (undocumented)
     type: "action";
+    	// (undocumented)
+    unsanitizedApiName?: string;
 }
 
 // @public (undocumented)
@@ -60,7 +64,7 @@ export namespace ActionMetadata {
     	// (undocumented)
     export namespace DataType {
         		// (undocumented)
-        export type BaseActionParameterTypes = "boolean" | "string" | "integer" | "long" | "double" | "datetime" | "timestamp" | "attachment" | "marking" | "mediaReference" | "objectType" | "geoshape" | "geohash";
+        export type BaseActionParameterTypes = "boolean" | "string" | "integer" | "long" | "double" | "datetime" | "timestamp" | "attachment" | "marking" | "mediaReference" | "scenarioReference" | "objectType" | "geoshape" | "geohash";
         		// (undocumented)
         export interface Interface<T_Target extends InterfaceDefinition = never> {
             			// (undocumented)
@@ -123,7 +127,9 @@ export namespace ActionParam {
             		} ? (U extends ReadonlyArray<never> ? string : U extends ReadonlyArray<string> ? U[number] : string) : string
         		$primaryKey: string | number
         	};
-    	// (undocumented)
+    	// Warning: (ae-forgotten-export) The symbol "NULL_VALUE" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
     export type NullValueType = typeof NULL_VALUE;
     	// (undocumented)
     export type ObjectSetType<T extends ObjectTypeDefinition> = ObjectSet<T>;
@@ -163,6 +169,22 @@ export type ActionReturnTypeForOptions<Op extends ApplyActionOptions | ApplyBatc
 //
 // @public (undocumented)
 export type ActionValidationResponse = ValidateActionResponseV2;
+
+// @public (undocumented)
+export interface AffineTransform {
+    	// (undocumented)
+    xScale?: number;
+    	// (undocumented)
+    xShear?: number;
+    	// (undocumented)
+    xTranslate?: number;
+    	// (undocumented)
+    yScale?: number;
+    	// (undocumented)
+    yShear?: number;
+    	// (undocumented)
+    yTranslate?: number;
+}
 
 // @public (undocumented)
 export interface Affix {
@@ -263,6 +285,7 @@ export type ApplyBatchActionOptions = {
     	$returnEdits?: boolean
 };
 
+// Warning: (ae-forgotten-export) The symbol "ApplyModifiersArg" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "OrderByArg" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -274,10 +297,12 @@ export interface AsyncIterArgs<
 	S extends NullabilityAdherence = NullabilityAdherence.Default,
 	T extends boolean = false,
 	RDP_KEYS extends string = never,
-	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = never
-> extends SelectArg<Q, K, R, S, RDP_KEYS>, OrderByArg<Q, PropertyKeys<Q> | RDP_KEYS, ORDER_BY_OPTIONS> {
+	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = never,
+	PROPERTY_SECURITIES extends boolean = false,
+	MODIFIERS extends ApplyModifiersArg<Q> = {}
+> extends SelectArg<Q, K, R, S, RDP_KEYS, PROPERTY_SECURITIES>, OrderByArg<Q, PropertyKeys<Q> | RDP_KEYS, ORDER_BY_OPTIONS> {
     	// (undocumented)
-    $__UNSTABLE_useOldInterfaceApis?: boolean;
+    $applyModifiers?: ApplyModifiersArg<Q> & MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>] : never };
     	// (undocumented)
     $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
 }
@@ -285,10 +310,20 @@ export interface AsyncIterArgs<
 // @public (undocumented)
 export interface Attachment {
     	fetchContents(): Promise<Response>;
-    	// Warning: (ae-forgotten-export) The symbol "AttachmentMetadata" needs to be exported by the entry point index.d.ts
-    fetchMetadata(): Promise<AttachmentMetadata>;
+    	fetchMetadata(): Promise<AttachmentMetadata>;
+    	rid: string;
+}
+
+// @public (undocumented)
+export interface AttachmentMetadata {
+    	// (undocumented)
+    filename: string;
+    	// (undocumented)
+    mediaType: string;
     	// (undocumented)
     rid: string;
+    	// (undocumented)
+    sizeBytes: number;
 }
 
 // @public (undocumented)
@@ -297,6 +332,29 @@ export interface AttachmentUpload {
     readonly data: Blob;
     	// (undocumented)
     readonly name: string;
+}
+
+// @public (undocumented)
+export type AudioDecodeFormat = "FLAC" | "MP2" | "MP3" | "MP4" | "NIST_SPHERE" | "OGG" | "WAV" | "WEBM";
+
+// @public (undocumented)
+export interface AudioMediaItemMetadata {
+    	// (undocumented)
+    format: AudioDecodeFormat;
+    	// (undocumented)
+    sizeBytes: number;
+    	// (undocumented)
+    specification: AudioSpecification;
+}
+
+// @public (undocumented)
+export interface AudioSpecification {
+    	// (undocumented)
+    bitRate: number;
+    	// (undocumented)
+    durationSeconds: number;
+    	// (undocumented)
+    numberOfChannels?: number;
 }
 
 // @public (undocumented)
@@ -309,6 +367,18 @@ export type Augment<
 export type Augments = Record<string, string[]>;
 
 // @public (undocumented)
+export interface BandInfo {
+    	// (undocumented)
+    colorInterpretation?: ColorInterpretation;
+    	// (undocumented)
+    dataType?: DataType;
+    	// (undocumented)
+    paletteInterpretation?: PaletteInterpretation;
+    	// (undocumented)
+    unitInterpretation?: UnitInterpretation;
+}
+
+// @public (undocumented)
 export interface BaseObjectSet<Q extends ObjectOrInterfaceDefinition> {
     	// (undocumented)
     readonly $objectSetInternals: {
@@ -318,6 +388,29 @@ export interface BaseObjectSet<Q extends ObjectOrInterfaceDefinition> {
 
 // @public (undocumented)
 export type BaseWirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "mediaReference" | "numericTimeseries" | "stringTimeseries" | "sensorTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference" | "vector";
+
+// @public (undocumented)
+export type ColorInterpretation = "UNDEFINED" | "GRAY" | "PALETTE_INDEX" | "RED" | "GREEN" | "BLUE" | "ALPHA" | "HUE" | "SATURATION" | "LIGHTNESS" | "CYAN" | "MAGENTA" | "YELLOW" | "BLACK" | "Y_CB_CR_SPACE_Y" | "Y_CB_CR_SPACE_CB" | "Y_CB_CR_SPACE_CR";
+
+// @public (undocumented)
+export interface CommonDicomDataElements {
+    	// (undocumented)
+    modality?: Modality;
+    	// (undocumented)
+    numberFrames?: number;
+    	// (undocumented)
+    patientId?: string;
+    	// (undocumented)
+    seriesTime?: string;
+    	// (undocumented)
+    seriesUid?: string;
+    	// (undocumented)
+    studyId?: string;
+    	// (undocumented)
+    studyTime?: string;
+    	// (undocumented)
+    studyUid?: string;
+}
 
 // @public (undocumented)
 export type CompileTimeMetadata<T extends {
@@ -335,8 +428,17 @@ export type ConvertProps<
 	FROM extends ObjectOrInterfaceDefinition,
 	TO extends ValidToFrom<FROM>,
 	P extends ValidOsdkPropParams<FROM>,
-	OPTIONS extends never | "$rid" | "$allBaseProperties" = never
+	OPTIONS extends never | "$rid" | "$allBaseProperties" | "$propertySecurities" = never
 > = TO extends FROM ? P : TO extends ObjectTypeDefinition ? (UnionIfTrue<MapPropNamesToObjectType<FROM, TO, P, OPTIONS>, P extends "$rid" ? true : false, "$rid">) : TO extends InterfaceDefinition ? FROM extends ObjectTypeDefinition ? (UnionIfTrue<MapPropNamesToInterface<FROM, TO, P>, P extends "$rid" ? true : false, "$rid">) : never : never;
+
+// @public (undocumented)
+export interface CoordinateReferenceSystem {
+    	// (undocumented)
+    wkt?: string;
+}
+
+// @public (undocumented)
+export type DataType = "UNDEFINED" | "BYTE" | "UINT16" | "INT16" | "UINT32" | "INT32" | "FLOAT32" | "FLOAT64" | "COMPLEX_INT16" | "COMPLEX_INT32" | "COMPLEX_FLOAT32" | "COMPLEX_FLOAT64" | "UINT64" | "INT64" | "INT8";
 
 // @public
 export interface DataValueClientToWire {
@@ -369,11 +471,14 @@ export interface DataValueClientToWire {
     	// (undocumented)
     marking: string;
     	// (undocumented)
-    mediaReference: MediaReference | MediaUpload;
+    mediaReference: MediaReference | MediaUpload | Media;
     	// (undocumented)
     null: null;
     	// (undocumented)
     objectType: string;
+    	scenarioReference: {
+        		getScenarioReference(): string
+        	};
     	// (undocumented)
     set: Set<any>;
     	// (undocumented)
@@ -433,6 +538,8 @@ export interface DataValueWireToClient {
     null: null;
     	// (undocumented)
     objectType: string;
+    	// (undocumented)
+    scenarioReference: never;
     	// (undocumented)
     set: Set<any>;
     	// (undocumented)
@@ -515,13 +622,12 @@ export namespace DerivedProperty {
     		CONSTRAINED extends boolean
     	> extends Filterable<Q, CONSTRAINED>, Pivotable<Q, CONSTRAINED> {}
     	// Warning: (ae-forgotten-export) The symbol "Selectable" needs to be exported by the entry point index.d.ts
-    // Warning: (ae-forgotten-export) The symbol "Constant" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
     export interface Builder<
     		Q extends ObjectOrInterfaceDefinition,
     		CONSTRAINED extends boolean
-    	> extends BaseBuilder<Q, CONSTRAINED>, Selectable<Q>, Constant<Q> {}
+    	> extends BaseBuilder<Q, CONSTRAINED>, Selectable<Q> {}
     	// (undocumented)
     export type Clause<Q extends ObjectOrInterfaceDefinition> = {
         		[key: string]: Creator<Q, SimplePropertyDef>
@@ -564,6 +670,49 @@ export namespace DerivedProperty {
 }
 
 // @public (undocumented)
+export type DicomDataElementKey = string;
+
+// @public (undocumented)
+export interface DicomMediaItemMetadata {
+    	// (undocumented)
+    commonDataElements: CommonDicomDataElements;
+    	// (undocumented)
+    mediaType: DicomMediaType;
+    	// (undocumented)
+    metaInformation: DicomMetaInformation;
+    	// (undocumented)
+    otherDataElements: Record<DicomDataElementKey, any>;
+    	// (undocumented)
+    sizeBytes: number;
+}
+
+// @public (undocumented)
+export type DicomMediaType = "IMAGE" | "MULTI_FRAME_IMAGE" | "VIDEO" | "STRUCTURED_REPORT";
+
+// @public (undocumented)
+export type DicomMetaInformation = {
+    	type: "v1"
+} & DicomMetaInformationV1;
+
+// @public (undocumented)
+export interface DicomMetaInformationV1 {
+    	// (undocumented)
+    mediaStorageSop: string;
+    	// (undocumented)
+    mediaStorageSopInstance: string;
+    	// (undocumented)
+    transferSyntax: string;
+}
+
+// @public (undocumented)
+export interface Dimensions {
+    	// (undocumented)
+    height: number;
+    	// (undocumented)
+    width: number;
+}
+
+// @public (undocumented)
 export const DistanceUnitMapping: {
     	centimeter: "CENTIMETERS"
     	centimeters: "CENTIMETERS"
@@ -586,6 +735,23 @@ export const DistanceUnitMapping: {
     	nauticalMile: "NAUTICAL_MILES"
     	"nautical miles": "NAUTICAL_MILES"
 };
+
+// @public (undocumented)
+export type DocumentDecodeFormat = "PDF" | "DOC" | "DOCX" | "TXT" | "PPTX" | "RTF";
+
+// @public (undocumented)
+export interface DocumentMediaItemMetadata {
+    	// (undocumented)
+    author?: string;
+    	// (undocumented)
+    format: DocumentDecodeFormat;
+    	// (undocumented)
+    pages?: number;
+    	// (undocumented)
+    sizeBytes: number;
+    	// (undocumented)
+    title?: string;
+}
 
 // @public (undocumented)
 export type DurationBaseValue = "SECONDS" | "MILLISECONDS";
@@ -623,6 +789,41 @@ export const DurationMapping: {
 export type DurationPrecision = "DAYS" | "HOURS" | "MINUTES" | "SECONDS" | "AUTO";
 
 // @public (undocumented)
+export interface EmailAttachment {
+    	// (undocumented)
+    attachmentIndex: number;
+    	// (undocumented)
+    fileName?: string;
+    	// (undocumented)
+    mimeType: string;
+}
+
+// @public (undocumented)
+export type EmailDecodeFormat = "EML";
+
+// @public (undocumented)
+export interface EmailMediaItemMetadata {
+    	// (undocumented)
+    attachmentCount: number;
+    	// (undocumented)
+    attachments: Array<EmailAttachment>;
+    	// (undocumented)
+    cc: Array<MailboxOrGroup>;
+    	// (undocumented)
+    date: string;
+    	// (undocumented)
+    format: EmailDecodeFormat;
+    	// (undocumented)
+    sender: Array<Mailbox>;
+    	// (undocumented)
+    sizeBytes: number;
+    	// (undocumented)
+    subject?: string;
+    	// (undocumented)
+    to: Array<MailboxOrGroup>;
+}
+
+// @public (undocumented)
 export type FetchLinksPageResult<
 	Q extends ObjectOrInterfaceDefinition,
 	LINK_TYPE extends LinkTypeApiNamesFor<Q>
@@ -640,15 +841,22 @@ export interface FetchPageArgs<
 	S extends NullabilityAdherence = NullabilityAdherence.Default,
 	T extends boolean = false,
 	RDP_KEYS extends string = never,
-	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = {}
-> extends AsyncIterArgs<Q, K, R, A, S, T, RDP_KEYS, ORDER_BY_OPTIONS> {
+	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = {},
+	PROPERTY_SECURITIES extends boolean = false,
+	MODIFIERS extends ApplyModifiersArg<Q> = {}
+> extends AsyncIterArgs<Q, K, R, A, S, T, RDP_KEYS, ORDER_BY_OPTIONS, PROPERTY_SECURITIES, MODIFIERS> {
+    	// (undocumented)
+    $applyModifiers?: ApplyModifiersArg<Q> & MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>] : never };
     	// (undocumented)
     $nextPageToken?: string;
     	// (undocumented)
     $pageSize?: number;
+    	// Warning: (tsdoc-undefined-tag) The TSDoc tag "@default" is not defined in this configuration
+    $snapshot?: boolean;
 }
 
 // Warning: (ae-forgotten-export) The symbol "ExtractOptions" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "ModifiersToSelectStrings_2" needs to be exported by the entry point index.d.ts
 //
 // @public
 export type FetchPageResult<
@@ -657,8 +865,19 @@ export type FetchPageResult<
 	R extends boolean,
 	S extends NullabilityAdherence,
 	T extends boolean = false,
-	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {}
-> = PageResult<MaybeScore<Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q> extends L ? never : L>, ORDER_BY_OPTIONS>>;
+	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
+	PROPERTY_SECURITIES extends boolean = false,
+	MODIFIERS extends ApplyModifiersArg<Q> = {}
+> = PageResult<MaybeScore<Osdk.Instance<Q, ExtractOptions<R, S, T, PROPERTY_SECURITIES>, Exclude<PropertyKeys<Q> extends L ? never : L, keyof MODIFIERS> | ModifiersToSelectStrings_2<MODIFIERS>, {}>, ORDER_BY_OPTIONS>>;
+
+// @public (undocumented)
+export type FlipAxis = "HORIZONTAL" | "VERTICAL" | "UNKNOWN";
+
+// @public (undocumented)
+export interface GcpList {
+    	// (undocumented)
+    gcps: Array<GroundControlPoint>;
+}
 
 // @public (undocumented)
 export type GeoFilter_Intersects = {
@@ -723,17 +942,55 @@ export interface GeoFilterOptions {
 }
 
 // @public (undocumented)
+export interface GeoMetadata {
+    	// (undocumented)
+    crs?: CoordinateReferenceSystem;
+    	// (undocumented)
+    gcpInfo?: GcpList;
+    	// (undocumented)
+    geotransform?: AffineTransform;
+    	// (undocumented)
+    gpsData?: GpsMetadata;
+}
+
+// @public (undocumented)
 export interface GeotimeSeriesProperty<T extends GeoJSON.Point> {
-    	// Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-    readonly asyncIterValues: (query?: TimeSeriesQuery) => AsyncGenerator<TimeSeriesPoint<T>>;
-    	// Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-    readonly getAllValues: (query?: TimeSeriesQuery) => Promise<Array<TimeSeriesPoint<T>>>;
+    	readonly asyncIterValues: (query?: TimeSeriesQuery) => AsyncGenerator<TimeSeriesPoint<T>>;
+    	readonly getAllValues: (query?: TimeSeriesQuery) => Promise<Array<TimeSeriesPoint<T>>>;
     	readonly getLatestValue: () => Promise<TimeSeriesPoint<T> | undefined>;
     	readonly lastFetchedValue: TimeSeriesPoint<T> | undefined;
+}
+
+// @public (undocumented)
+export interface GpsMetadata {
+    	// (undocumented)
+    altitude?: number;
+    	// (undocumented)
+    latitude?: number;
+    	// (undocumented)
+    longitude?: number;
+}
+
+// @public (undocumented)
+export interface GroundControlPoint {
+    	// (undocumented)
+    pixX?: number;
+    	// (undocumented)
+    pixY?: number;
+    	// (undocumented)
+    projX?: number;
+    	// (undocumented)
+    projY?: number;
+    	// (undocumented)
+    projZ?: number;
+}
+
+// @public (undocumented)
+export interface Group {
+    	// (undocumented)
+    groupName: string;
+    	// (undocumented)
+    mailboxes: Array<Mailbox>;
 }
 
 // Warning: (ae-forgotten-export) The symbol "GroupByEntry" needs to be exported by the entry point index.d.ts
@@ -745,11 +1002,48 @@ export type GroupByClause<Q extends ObjectOrInterfaceDefinition> = { [P in Aggre
 export type GroupByRange<T> = [T, T];
 
 // @public (undocumented)
+export interface GroupWrapper {
+    	// (undocumented)
+    group: Group;
+}
+
+// @public (undocumented)
 export interface HumanReadableFormat {
     	// (undocumented)
     showFullUnits?: boolean;
     	// (undocumented)
     type: "humanReadable";
+}
+
+// @public (undocumented)
+export type ImageAttributeDomain = string;
+
+// @public (undocumented)
+export type ImageAttributeKey = string;
+
+// @public (undocumented)
+export type ImageryDecodeFormat = "BMP" | "TIFF" | "NITF" | "JP2K" | "JPG" | "PNG" | "WEBP";
+
+// @public (undocumented)
+export interface ImageryMediaItemMetadata {
+    	// (undocumented)
+    attributes: Record<ImageAttributeDomain, Record<ImageAttributeKey, string>>;
+    	// (undocumented)
+    bands: Array<BandInfo>;
+    	// (undocumented)
+    dimensions?: Dimensions;
+    	// (undocumented)
+    format: ImageryDecodeFormat;
+    	// (undocumented)
+    geo?: GeoMetadata;
+    	// (undocumented)
+    iccProfile?: string;
+    	// (undocumented)
+    orientation?: Orientation;
+    	// (undocumented)
+    pages?: number;
+    	// (undocumented)
+    sizeBytes: number;
 }
 
 // @public (undocumented)
@@ -806,6 +1100,54 @@ export interface InterfaceQueryDataType<T_Target extends ObjectOrInterfaceDefini
     interface: string;
 }
 
+// @public (undocumented)
+export type IntervalRule = {
+    	$match: string
+    	$maxGaps?: number
+    	$ordered: boolean
+    	$prefixOnLastTerm?: never
+    	$and?: never
+    	$or?: never
+    	$fuzzy?: never
+    	$fuzziness?: never
+} | {
+    	$match: string
+    	$prefixOnLastTerm: true
+    	$maxGaps?: never
+    	$ordered?: never
+    	$and?: never
+    	$or?: never
+    	$fuzzy?: never
+    	$fuzziness?: never
+} | {
+    	$and: IntervalRule[]
+    	$maxGaps?: number
+    	$ordered: boolean
+    	$match?: never
+    	$prefixOnLastTerm?: never
+    	$or?: never
+    	$fuzzy?: never
+    	$fuzziness?: never
+} | {
+    	$or: IntervalRule[]
+    	$match?: never
+    	$prefixOnLastTerm?: never
+    	$and?: never
+    	$fuzzy?: never
+    	$fuzziness?: never
+    	$maxGaps?: never
+    	$ordered?: never
+} | {
+    	$fuzzy: string
+    	$fuzziness?: number
+    	$match?: never
+    	$prefixOnLastTerm?: never
+    	$and?: never
+    	$or?: never
+    	$maxGaps?: never
+    	$ordered?: never
+};
+
 // Warning: (ae-forgotten-export) The symbol "OkResult" needs to be exported by the entry point index.d.ts
 //
 // @public
@@ -828,25 +1170,17 @@ export type LinkTypeApiNamesFor<Q extends ObjectOrInterfaceDefinition> = Extract
 
 // @public (undocumented)
 export interface Logger {
-    	// (undocumented)
-    child(bindings: Record<string, any>, options?: {
+    	child(bindings: Record<string, any>, options?: {
         		level?: string
         		msgPrefix?: string
         	}): Logger;
-    	// (undocumented)
-    debug: Logger.LogFn;
-    	// (undocumented)
-    error: Logger.LogFn;
-    	// (undocumented)
-    fatal: Logger.LogFn;
-    	// (undocumented)
-    info: Logger.LogFn;
-    	// (undocumented)
-    isLevelEnabled(level: string): boolean;
-    	// (undocumented)
-    trace: Logger.LogFn;
-    	// (undocumented)
-    warn: Logger.LogFn;
+    	debug: Logger.LogFn;
+    	error: Logger.LogFn;
+    	fatal: Logger.LogFn;
+    	info: Logger.LogFn;
+    	isLevelEnabled(level: string): boolean;
+    	trace: Logger.LogFn;
+    	warn: Logger.LogFn;
 }
 
 // @public (undocumented)
@@ -861,6 +1195,27 @@ export namespace Logger {
 }
 
 // @public (undocumented)
+export interface Mailbox {
+    	// (undocumented)
+    displayName?: string;
+    	// (undocumented)
+    emailAddress: string;
+}
+
+// @public (undocumented)
+export type MailboxOrGroup = ({
+    	type: "mailbox"
+} & MailboxWrapper) | ({
+    	type: "group"
+} & GroupWrapper);
+
+// @public (undocumented)
+export interface MailboxWrapper {
+    	// (undocumented)
+    mailbox: Mailbox;
+}
+
+// @public (undocumented)
 export type MaybeScore<
 	T extends Osdk.Instance<any>,
 	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<any>
@@ -871,9 +1226,39 @@ export type MaybeScore<
 // @public (undocumented)
 export interface Media {
     	fetchContents(): Promise<Response>;
+    	// @beta
+    fetchFullMetadata?(): Promise<MediaFullMetadata>;
     	fetchMetadata(): Promise<MediaMetadata_2>;
     	getMediaReference(): MediaReference;
+    	// (undocumented)
+    getMediaSourceLocation?(): MediaPropertyLocation;
 }
+
+// @public
+export interface MediaFullMetadata {
+    	itemMetadata: MediaItemMetadata | UnknownMediaItemMetadata;
+}
+
+// @public
+export type MediaItemMetadata = ({
+    	type: "document"
+} & DocumentMediaItemMetadata) | ({
+    	type: "imagery"
+} & ImageryMediaItemMetadata) | ({
+    	type: "audio"
+} & AudioMediaItemMetadata) | ({
+    	type: "video"
+} & VideoMediaItemMetadata) | ({
+    	type: "dicom"
+} & DicomMediaItemMetadata) | ({
+    	type: "email"
+} & EmailMediaItemMetadata) | ({
+    	type: "model3d"
+} & Model3dMediaItemMetadata) | ({
+    	type: "spreadsheet"
+} & SpreadsheetMediaItemMetadata) | ({
+    	type: "untyped"
+} & UntypedMediaItemMetadata);
 
 // @public
 interface MediaMetadata_2 {
@@ -885,6 +1270,16 @@ interface MediaMetadata_2 {
     sizeBytes: number;
 }
 export { MediaMetadata_2 as MediaMetadata }
+
+// @public
+export interface MediaPropertyLocation {
+    	// (undocumented)
+    objectType: string;
+    	// (undocumented)
+    primaryKey: string | number;
+    	// (undocumented)
+    propertyName: string;
+}
 
 // @public
 export interface MediaReference {
@@ -922,16 +1317,30 @@ export type MinimalDirectedObjectLinkInstance<
 };
 
 // @public (undocumented)
+export type Modality = "AR" | "ASMT" | "AU" | "BDUS" | "BI" | "BMD" | "CR" | "CT" | "CTPROTOCOL" | "DG" | "DOC" | "DX" | "ECG" | "EPS" | "ES" | "FID" | "GM" | "HC" | "HD" | "IO" | "IOL" | "IVOCT" | "IVUS" | "KER" | "KO" | "LEN" | "LS" | "MG" | "MR" | "M3D" | "NM" | "OAM" | "OCT" | "OP" | "OPM" | "OPT" | "OPTBSV" | "OPTENF" | "OPV" | "OSS" | "OT" | "PLAN" | "PR" | "PT" | "PX" | "REG" | "RESP" | "RF" | "RG" | "RTDOSE" | "RTIMAGE" | "RTINTENT" | "RTPLAN" | "RTRAD" | "RTRECORD" | "RTSEGANN" | "RTSTRUCT" | "RWV" | "SEG" | "SM" | "SMR" | "SR" | "SRF" | "STAIN" | "TEXTUREMAP" | "TG" | "US" | "VA" | "XA" | "XC" | "AS" | "CD" | "CF" | "CP" | "CS" | "DD" | "DF" | "DM" | "DS" | "EC" | "FA" | "FS" | "LP" | "MA" | "MS" | "OPR" | "ST" | "VF";
+
+// @public (undocumented)
+export type Model3dDecodeFormat = "LAS" | "PLY" | "OBJ";
+
+// @public (undocumented)
+export interface Model3dMediaItemMetadata {
+    	// (undocumented)
+    format: Model3dDecodeFormat;
+    	// (undocumented)
+    modelType: Model3dType;
+    	// (undocumented)
+    sizeBytes: number;
+}
+
+// @public (undocumented)
+export type Model3dType = "POINT_CLOUD" | "MESH";
+
+// @public (undocumented)
 export type NotWhereClause<
 	T extends ObjectOrInterfaceDefinition,
 	RDPs extends Record<string, SimplePropertyDef> = {}
 > = {
     	$not: WhereClause<T, RDPs>
-};
-
-// @public (undocumented)
-export const NULL_VALUE: symbol & {
-    	__type: "NULL_VALUE"
 };
 
 // @public (undocumented)
@@ -1127,6 +1536,12 @@ export namespace ObjectMetadata {
         		// (undocumented)
         displayName?: string;
         		// (undocumented)
+        hasReducers?: boolean;
+        		// (undocumented)
+        mainValue?: {
+            			fields: readonly string[]
+            		};
+        		// (undocumented)
         multiplicity?: boolean;
         		// (undocumented)
         nullable?: boolean;
@@ -1134,11 +1549,17 @@ export namespace ObjectMetadata {
         readonly?: boolean;
         		// (undocumented)
         type: WirePropertyTypes;
+        		typeMetadata?: PropertyTypeMetadata;
         		// (undocumented)
         valueFormatting?: PropertyValueFormattingRule;
         		// (undocumented)
         valueTypeApiName?: string;
         	}
+    	// (undocumented)
+    export type PropertyTypeMetadata = {
+        		type: "marking"
+        		markingType?: "CBAC" | "MANDATORY"
+        	};
 }
 
 // @public (undocumented)
@@ -1172,8 +1593,6 @@ export namespace ObjectSetArgs {
     		RDP_KEYS extends string = never,
     		ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = never
     	> extends Select<K, RDP_KEYS>, OrderBy<ORDER_BY_OPTIONS, K> {
-        		// (undocumented)
-        $__UNSTABLE_useOldInterfaceApis?: boolean;
         		// (undocumented)
         $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
         	}
@@ -1225,10 +1644,11 @@ export namespace ObjectSetSubscription {
     	// (undocumented)
     export interface Listener<
     		O extends ObjectOrInterfaceDefinition,
-    		P extends PropertyKeys<O> = PropertyKeys<O>
+    		P extends PropertyKeys<O> = PropertyKeys<O>,
+    		R extends boolean = false
     	> {
         		// Warning: (ae-forgotten-export) The symbol "ObjectUpdate" needs to be exported by the entry point index.d.ts
-        onChange?: (objectUpdate: ObjectUpdate<O, P>) => void;
+        onChange?: (objectUpdate: ObjectUpdate<O, P, R>) => void;
         		onError?: (errors: {
             			subscriptionClosed: boolean
             			error: any
@@ -1239,10 +1659,13 @@ export namespace ObjectSetSubscription {
     	// (undocumented)
     export interface Options<
     		O extends ObjectOrInterfaceDefinition,
-    		P extends PropertyKeys<O> = PropertyKeys<O>
+    		P extends PropertyKeys<O> = PropertyKeys<O>,
+    		R extends boolean = false
     	> {
-        		// (undocumented)
-        properties?: Array<P>;
+        		// Warning: (ae-forgotten-export) The symbol "AllFalse" needs to be exported by the entry point index.d.ts
+        // Warning: (ae-forgotten-export) The symbol "PropertyTypesOnDefMatchesType" needs to be exported by the entry point index.d.ts
+        includeRid?: AllFalse<PropertyTypesOnDefMatchesType<O, P, "geotimeSeriesReference">> extends true ? R : false;
+        		properties?: Array<P>;
         	}
 }
 
@@ -1260,6 +1683,10 @@ export interface ObjectTypeDefinition {
     	// (undocumented)
     osdkMetadata?: OsdkMetadata;
     	// (undocumented)
+    primaryKeyApiName?: string;
+    	// (undocumented)
+    primaryKeyType?: PrimaryKeyTypes;
+    	// (undocumented)
     type: "object";
 }
 
@@ -1273,6 +1700,14 @@ export interface OntologyMetadata<_NEVER_USED_KEPT_FOR_BACKCOMPAT = any> {
     ontologyRid: string;
     	// (undocumented)
     userAgent: string;
+}
+
+// @public (undocumented)
+export interface Orientation {
+    	// (undocumented)
+    flipAxis?: FlipAxis;
+    	// (undocumented)
+    rotationAngle?: RotationAngle;
 }
 
 // @public (undocumented)
@@ -1296,15 +1731,20 @@ export type Osdk<
 
 // @public (undocumented)
 export namespace Osdk {
-    	// Warning: (ae-forgotten-export) The symbol "GetPropsKeys" needs to be exported by the entry point index.d.ts
+    	// Warning: (ae-forgotten-export) The symbol "ReducedValues" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "GetPropsKeys" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "HasModifiers" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "ApplyModifiersToProps" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "BuildModifiersFromP" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "GetPropNamesFromP" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
     export type Instance<
     		Q extends ObjectOrInterfaceDefinition,
-    		OPTIONS extends never | "$rid" | "$allBaseProperties" = never,
-    		P extends PropertyKeys<Q> = PropertyKeys<Q>,
+    		OPTIONS extends never | "$rid" | "$allBaseProperties" | "$propertySecurities" = never,
+    		P extends PropertyKeys<Q> | ReducedValues<Q> = PropertyKeys<Q>,
     		R extends Record<string, SimplePropertyDef> = {}
-    	> = OsdkBase<Q> & Pick<CompileTimeMetadata<Q>["props"], GetPropsKeys<Q, P, [R] extends [{}] ? false : true>> & ([R] extends [never] ? {} : { [A in keyof R] : SimplePropertyDef.ToRuntimeProperty<R[A]> }) & {
+    	> = OsdkBase<Q> & ([P] extends [PropertyKeys<Q>] ? Pick<CompileTimeMetadata<Q>["props"], GetPropsKeys<Q, P, [R] extends [{}] ? false : true>> : Pick<HasModifiers<P> extends true ? ApplyModifiersToProps<Q, BuildModifiersFromP<P>> : CompileTimeMetadata<Q>["props"], GetPropsKeys<Q, GetPropNamesFromP<P>, [R] extends [{}] ? false : true>>) & ([R] extends [never] ? {} : { [A in keyof R] : SimplePropertyDef.ToRuntimeProperty<R[A]> }) & {
         		readonly $link: Q extends {
             			linksType?: any
             		} ? Q["linksType"] : Q extends ObjectOrInterfaceDefinition ? OsdkObjectLinksObject<Q> : never
@@ -1320,7 +1760,9 @@ export namespace Osdk {
             			locale?: string
             			timezoneId?: string
             		}) => string | undefined
-        	} & (IsNever<OPTIONS> extends true ? {} : IsAny<OPTIONS> extends true ? {} : "$rid" extends OPTIONS ? {
+        	} & (IsNever<OPTIONS> extends true ? {} : IsAny<OPTIONS> extends true ? {} : "$propertySecurities" extends OPTIONS ? {
+        		readonly $propertySecurities: ObjectPropertySecurities<Q, GetPropsKeys<Q, P, [R] extends [{}] ? false : true>>
+        	} : {}) & (IsNever<OPTIONS> extends true ? {} : IsAny<OPTIONS> extends true ? {} : "$rid" extends OPTIONS ? {
         		readonly $rid: string
         	} : {});
 }
@@ -1339,12 +1781,6 @@ export type OsdkObject<N extends string> = {
     	readonly $primaryKey: PropertyValueWireToClient[PrimaryKeyTypes]
 };
 
-// Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-// Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-// Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
 // Warning: (ae-forgotten-export) The symbol "MaybeArray" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "GetCreatePropertyValueFromWire" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "MaybeNullable" needs to be exported by the entry point index.d.ts
@@ -1361,12 +1797,6 @@ export type OsdkObjectCreatePropertyType<
 // @public
 export type OsdkObjectLinksObject<O extends ObjectOrInterfaceDefinition> = ObjectTypeLinkKeysFrom2<O> extends never ? never : { readonly [L in ObjectTypeLinkKeysFrom2<O>] : OsdkObjectLinksEntry<O, L> };
 
-// Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-// Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-// Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
 // Warning: (ae-forgotten-export) The symbol "GetClientPropertyValueFromWire" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -1386,7 +1816,10 @@ export interface PageResult<T> {
 }
 
 // @public (undocumented)
-export type PossibleWhereClauseFilters = "$gt" | "$eq" | "$ne" | "$isNull" | "$contains" | "$gte" | "$lt" | "$lte" | "$within" | "$in" | "$intersects" | "$startsWith" | "$containsAllTermsInOrder" | "$containsAnyTerm" | "$containsAllTerms";
+export type PaletteInterpretation = "GRAY" | "RGB" | "RGBA" | "CMYK" | "HLS";
+
+// @public (undocumented)
+export type PossibleWhereClauseFilters = "$gt" | "$eq" | "$ne" | "$isNull" | "$contains" | "$gte" | "$lt" | "$lte" | "$within" | "$in" | "$intersects" | "$startsWith" | "$containsAllTermsInOrder" | "$containsAnyTerm" | "$containsAllTerms" | "$interval" | "$matchesRegex";
 
 // @public (undocumented)
 export type PrimaryKeyType<Q extends ObjectOrInterfaceDefinition> = (Q extends ObjectTypeDefinition ? OsdkObjectPrimaryKeyType<Q> : unknown) & PropertyValueWireToClient[PrimaryKeyTypes];
@@ -1416,8 +1849,16 @@ export interface PropertyDateFormattingRule {
 export interface PropertyDef<
 	T extends WirePropertyTypes,
 	N extends "nullable" | "non-nullable" = "nullable",
-	M extends "array" | "single" = "single"
+	M extends "array" | "single" = "single",
+	MAIN_VALUE_FIELDS extends readonly string[] | undefined = undefined,
+	HAS_REDUCERS extends boolean = false
 > extends ObjectMetadata.Property {
+    	// (undocumented)
+    hasReducers: HAS_REDUCERS;
+    	// (undocumented)
+    mainValue: MAIN_VALUE_FIELDS extends readonly string[] ? {
+        		fields: MAIN_VALUE_FIELDS
+        	} : undefined;
     	// (undocumented)
     multiplicity: M extends "array" ? true : false;
     	// (undocumented)
@@ -1450,6 +1891,15 @@ export interface PropertyKnownTypeFormattingRule {
     type: "knownType";
 }
 
+// @public
+export interface PropertyMarkings {
+    	// Warning: (ae-forgotten-export) The symbol "MarkingId" needs to be exported by the entry point index.d.ts
+    conjunctive?: Array<MarkingId>;
+    	containerConjunctive?: Array<MarkingId>;
+    	containerDisjunctive?: Array<Array<MarkingId>>;
+    	disjunctive?: Array<Array<MarkingId>>;
+}
+
 // @public (undocumented)
 export interface PropertyNumberFormattingRule {
     	// (undocumented)
@@ -1460,6 +1910,15 @@ export interface PropertyNumberFormattingRule {
 
 // @public (undocumented)
 export type PropertyNumberFormattingRuleType = NumberFormatStandard | NumberFormatFixedValues | NumberFormatCurrency | NumberFormatStandardUnit | NumberFormatCustomUnit | NumberFormatAffix | NumberFormatDuration | NumberFormatScale | NumberFormatRatio;
+
+// @public
+export type PropertySecurity = ({
+    	type: "propertyMarkings"
+} & PropertyMarkings) | ({
+    	type: "unsupportedPolicy"
+}) | ({
+    	type: "errorComputingSecurity"
+});
 
 // @public (undocumented)
 export interface PropertyTimestampFormattingRule {
@@ -1540,9 +1999,10 @@ export interface PropertyValueWireToClient {
 // Warning: (ae-forgotten-export) The symbol "ThreeDimensionalAggregationDataType" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "MapDataType" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "ArrayQueryDataType" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "TypeReferenceQueryDataType" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export type QueryDataTypeDefinition<T_Target extends ObjectOrInterfaceDefinition = any> = PrimitiveDataType | ObjectQueryDataType<T_Target> | InterfaceQueryDataType<T_Target> | ObjectSetQueryDataType<T_Target> | InterfaceObjectSetQueryDataType<T_Target> | SetQueryDataType | UnionQueryDataType | StructQueryDataType | TwoDimensionalAggregationDataType | ThreeDimensionalAggregationDataType | MapDataType | ArrayQueryDataType;
+export type QueryDataTypeDefinition<T_Target extends ObjectOrInterfaceDefinition = any> = PrimitiveDataType | ObjectQueryDataType<T_Target> | InterfaceQueryDataType<T_Target> | ObjectSetQueryDataType<T_Target> | InterfaceObjectSetQueryDataType<T_Target> | SetQueryDataType | UnionQueryDataType | StructQueryDataType | TwoDimensionalAggregationDataType | ThreeDimensionalAggregationDataType | MapDataType | ArrayQueryDataType | TypeReferenceQueryDataType;
 
 // @public (undocumented)
 export interface QueryDefinition<T = any> {
@@ -1578,6 +2038,8 @@ export interface QueryMetadata {
     rid: string;
     	// (undocumented)
     type: "query";
+    	// (undocumented)
+    typeReferences?: Record<string, QueryDataTypeDefinition>;
     	// (undocumented)
     version: string;
 }
@@ -1634,6 +2096,8 @@ export namespace QueryResult {
     	// (undocumented)
     export type InterfaceType<T extends ObjectOrInterfaceDefinition> = OsdkBase<T>;
     	// (undocumented)
+    export type MediaType = Media;
+    	// (undocumented)
     export type ObjectSetType<T extends ObjectOrInterfaceDefinition> = ObjectSet<T>;
     	// (undocumented)
     export type ObjectType<T extends ObjectOrInterfaceDefinition> = OsdkBase<T>;
@@ -1676,15 +2140,21 @@ export { Range_2 as Range }
 export type Result<V> = OkResult<V> | ErrorResult;
 
 // @public (undocumented)
+export type RotationAngle = "DEGREE_90" | "DEGREE_180" | "DEGREE_270" | "UNKNOWN";
+
+// @public (undocumented)
 export interface SelectArg<
 	Q extends ObjectOrInterfaceDefinition,
 	L extends string = PropertyKeys<Q>,
 	R extends boolean = false,
 	S extends NullabilityAdherence = NullabilityAdherence.Default,
-	RDP_KEYS extends string = never
+	RDP_KEYS extends string = never,
+	PROPERTY_SECURITIES extends boolean = false
 > {
     	// (undocumented)
     $includeRid?: R;
+    	// (undocumented)
+    $loadPropertySecurityMetadata?: PROPERTY_SECURITIES;
     	// (undocumented)
     $select?: readonly L[];
 }
@@ -1723,7 +2193,7 @@ export namespace SimplePropertyDef {
 }
 
 // @public (undocumented)
-export interface SingleLinkAccessor<T extends ObjectTypeDefinition> {
+export interface SingleLinkAccessor<T extends ObjectOrInterfaceDefinition> {
     	fetchOne: <const A extends SelectArg<T, PropertyKeys<T>, boolean>>(options?: A) => Promise<A extends FetchPageArgs<T, infer L, infer R, any, infer S> ? Osdk.Instance<T, ExtractOptions<R, S>, L & PropertyKeys<T>> : Osdk.Instance<T>>;
     	fetchOneWithErrors: <const A extends SelectArg<T, PropertyKeys<T>, boolean>>(options?: A) => Promise<Result<A extends FetchPageArgs<T, infer L, infer R, any, infer S> ? Osdk.Instance<T, ExtractOptions<R, S>, L> : Osdk.Instance<T>>>;
 }
@@ -1738,6 +2208,23 @@ export type SingleOsdkResult<
 	T extends boolean = false,
 	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {}
 > = MaybeScore<Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L, { [K in Extract<keyof RDPs, L>] : RDPs[K] }>, ORDER_BY_OPTIONS>;
+
+// @public (undocumented)
+export type SpreadsheetDecodeFormat = "XLSX";
+
+// @public (undocumented)
+export interface SpreadsheetMediaItemMetadata {
+    	// (undocumented)
+    author?: string;
+    	// (undocumented)
+    format: SpreadsheetDecodeFormat;
+    	// (undocumented)
+    sheetNames: Array<string>;
+    	// (undocumented)
+    sizeBytes: number;
+    	// (undocumented)
+    title?: string;
+}
 
 // @public (undocumented)
 export interface StringConstant {
@@ -1809,14 +2296,8 @@ export interface TimeSeriesPoint<T extends string | number | GeoJSON.Point> {
 
 // @public (undocumented)
 export interface TimeSeriesProperty<T extends number | string> {
-    	// Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-    readonly asyncIterPoints: (query?: TimeSeriesQuery) => AsyncGenerator<TimeSeriesPoint<T>>;
-    	// Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-    readonly getAllPoints: (query?: TimeSeriesQuery) => Promise<Array<TimeSeriesPoint<T>>>;
+    	readonly asyncIterPoints: (query?: TimeSeriesQuery) => AsyncGenerator<TimeSeriesPoint<T>>;
+    	readonly getAllPoints: (query?: TimeSeriesQuery) => Promise<Array<TimeSeriesPoint<T>>>;
     	readonly getFirstPoint: () => Promise<TimeSeriesPoint<T>>;
     	readonly getLastPoint: () => Promise<TimeSeriesPoint<T>>;
 }
@@ -1860,6 +2341,33 @@ export type TwoDimensionalAggregation<
 // @public (undocumented)
 export type TwoDimensionalQueryAggregationDefinition = AggregationKeyDataType<AggregationValueTypes>;
 
+// @public (undocumented)
+export interface UnitInterpretation {
+    	// (undocumented)
+    offset?: number;
+    	// (undocumented)
+    scale?: number;
+    	// (undocumented)
+    unit?: string;
+}
+
+// @public
+export interface UnknownMediaItemMetadata {
+    	// (undocumented)
+    raw: {
+        		type: string
+        		[key: string]: unknown
+        	};
+    	// (undocumented)
+    type: "unknown";
+}
+
+// @public (undocumented)
+export interface UntypedMediaItemMetadata {
+    	// (undocumented)
+    sizeBytes: number;
+}
+
 // Warning: (ae-forgotten-export) The symbol "AGG_FOR_TYPE" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "WITH_PROPERTIES_AGG_FOR_TYPE" needs to be exported by the entry point index.d.ts
 //
@@ -1879,6 +2387,27 @@ export interface VersionBound<V extends VersionString<any, any, any>> {
     __expectedClientVersion?: V;
 }
 
+// @public (undocumented)
+export type VideoDecodeFormat = "MP4" | "MKV" | "MOV" | "TS";
+
+// @public (undocumented)
+export interface VideoMediaItemMetadata {
+    	// (undocumented)
+    format: VideoDecodeFormat;
+    	// (undocumented)
+    sizeBytes: number;
+    	// (undocumented)
+    specification: VideoSpecification;
+}
+
+// @public (undocumented)
+export interface VideoSpecification {
+    	// (undocumented)
+    bitRate: number;
+    	// (undocumented)
+    durationSeconds: number;
+}
+
 // Warning: (ae-forgotten-export) The symbol "MergedPropertyWhereClause" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -1892,15 +2421,15 @@ export type WirePropertyTypes = BaseWirePropertyTypes | Record<string, BaseWireP
 
 // Warnings were encountered during analysis:
 //
-// src/Definitions.ts:42:52 - (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// src/Definitions.ts:42:52 - (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-// src/Definitions.ts:42:52 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-// src/Definitions.ts:42:52 - (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
+// src/OsdkObjectFrom.ts:315:49 - (ae-forgotten-export) The symbol "ObjectPropertySecurities" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "UnorderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "OrderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregationResultsWithGroups.ts:36:5 - (ae-forgotten-export) The symbol "MaybeNullable_2" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregationResultsWithGroups.ts:36:5 - (ae-forgotten-export) The symbol "OsdkObjectPropertyTypeNotUndefined" needs to be exported by the entry point index.d.ts
 // src/objectSet/ObjectSetLinks.ts:36:3 - (ae-forgotten-export) The symbol "LinkedObjectType" needs to be exported by the entry point index.d.ts
+// src/ontology/PropertyModifiers.ts:76:9 - (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
+// src/ontology/PropertyModifiers.ts:77:8 - (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
+// src/ontology/PropertyModifiers.ts:78:27 - (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
 
 // (No @packageDocumentation comment for this package)
 

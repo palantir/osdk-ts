@@ -36,4 +36,21 @@
   "[markdown]": {
     "editor.defaultFormatter": "dprint.dprint"
   },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  // This opens a prompt in the VS Code GUI asking developers if they want to
+  // apply the "typescript.tsdk" option below. The "typescript.tsdk" option
+  // does not apply automatically for security reasons and needs an explicit
+  // user GUI action.
+  //
+  // Using the repo's copy of TypeScript is usually desirable since:
+  //
+  //  1. VS Code's copy of TypeScript may be a different version. This can
+  //     create confusing compile errors that show on CI but not in the editor
+  //     and vice-versa.
+  //  2. It reduces strange TypeScript bugs such as
+  //     https://github.com/microsoft/TypeScript/issues/55427
+  "js/ts.tsdk.promptToUseWorkspaceVersion": true,
+  "js/ts.tsdk.path": ".vscode/../node_modules/typescript/lib",
 }

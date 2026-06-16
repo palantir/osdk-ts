@@ -1,0 +1,288 @@
+/* DateCalendar — DayPicker classNames.
+   All values reference --osdk-datetime-calendar-* tokens defined in
+   react-components-styles/tokens/datetime-picker.css. */
+
+.calendar {
+  position: relative;
+  width: 100%;
+  font-family: var(--osdk-datetime-calendar-font-family);
+  font-size: var(--osdk-datetime-calendar-font-size);
+}
+
+.calendarMonths {
+  display: flex;
+  gap: var(--osdk-datetime-calendar-months-gap);
+}
+
+.calendarMonthGrid {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.calendarWeekday {
+  padding: var(--osdk-datetime-calendar-gap);
+  font-size: var(--osdk-datetime-calendar-weekday-font-size);
+  color: var(--osdk-datetime-calendar-weekday-color);
+  text-align: center;
+  width: var(--osdk-datetime-calendar-cell-size);
+}
+
+.calendarDay {
+  position: relative;
+  padding: var(--osdk-datetime-calendar-gap);
+  text-align: center;
+}
+
+.calendarDayButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--osdk-datetime-calendar-cell-size);
+  height: var(--osdk-datetime-calendar-cell-size);
+  border: none;
+  border-radius: var(--osdk-datetime-calendar-day-border-radius);
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  color: var(--osdk-datetime-calendar-day-color);
+
+  &:hover {
+    background: var(--osdk-datetime-calendar-day-hover-bg);
+    color: var(--osdk-datetime-calendar-day-hover-color);
+  }
+
+  &:active {
+    background: var(--osdk-datetime-calendar-day-active-bg);
+    color: var(--osdk-datetime-calendar-day-hover-color);
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-datetime-calendar-focus-outline);
+    outline-offset: -2px;
+  }
+}
+
+/* :not([disabled]) bumps specificity to (0,4,0) — matching rdp's default
+   .rdp-button:hover:not([disabled]):not(.rdp-day_selected) rule so our
+   styles win by source order. Without this, rdp overrides the selected
+   background on hover because we remap day_selected and its :not() always matches. */
+.calendarDayButton.calendarSelected {
+  background: var(--osdk-datetime-calendar-selected-bg);
+  color: var(--osdk-datetime-calendar-selected-color);
+
+  &:hover:not([disabled]) {
+    background: var(--osdk-datetime-calendar-selected-hover-bg);
+    color: var(--osdk-datetime-calendar-selected-color);
+  }
+
+  &:active:not([disabled]) {
+    color: var(--osdk-datetime-calendar-selected-color);
+  }
+}
+
+.calendarDayButton.calendarToday {
+  border: var(--osdk-datetime-calendar-today-border);
+}
+
+.calendarDayButton.calendarOutside {
+  color: var(--osdk-datetime-calendar-outside-color);
+  opacity: var(--osdk-datetime-calendar-outside-opacity);
+}
+
+.calendarDayButton.calendarDisabled {
+  color: var(--osdk-datetime-calendar-disabled-color);
+  cursor: default;
+
+  &:hover {
+    background: transparent;
+  }
+}
+
+/* Range selection styles — shared base for start/end endpoints */
+.calendarRangeEndpoint {
+  background: var(--osdk-datetime-calendar-selected-bg);
+  color: var(--osdk-datetime-calendar-selected-color);
+
+  &:hover:not([disabled]) {
+    background: var(--osdk-datetime-calendar-selected-hover-bg);
+    color: var(--osdk-datetime-calendar-selected-color);
+  }
+
+  &:active:not([disabled]) {
+    color: var(--osdk-datetime-calendar-selected-color);
+  }
+}
+
+/* Day buttons are inset by cell padding; paint the range on the table cell too
+   so the range spans horizontal gaps while staying the same height as a day. */
+.calendarDay:has(.calendarRangeStart)::before,
+.calendarDay:has(.calendarRangeMiddle)::before,
+.calendarDay:has(.calendarRangeEnd)::before {
+  content: "";
+  position: absolute;
+  inset-block: var(--osdk-datetime-calendar-gap);
+  background: var(--osdk-datetime-calendar-range-middle-bg);
+  pointer-events: none;
+}
+
+.calendarDay:has(.calendarRangeStart)::before {
+  inset-inline-start: 50%;
+  inset-inline-end: 0;
+}
+
+.calendarDay:has(.calendarRangeMiddle)::before {
+  inset-inline: 0;
+}
+
+.calendarDay:has(.calendarRangeEnd)::before {
+  inset-inline-start: 0;
+  inset-inline-end: 50%;
+}
+
+.calendarDay:has(.calendarRangeStart.calendarRangeEnd)::before {
+  content: none;
+}
+
+/* The table cell owns the translucent range fill. Keeping the middle button
+   transparent avoids alpha-stacking the same token over itself. */
+.calendarDayButton.calendarRangeMiddle {
+  background: transparent;
+  color: var(--osdk-datetime-calendar-day-color);
+  border-radius: 0;
+
+  &:hover {
+    background: transparent;
+    color: var(--osdk-datetime-calendar-day-hover-color);
+  }
+
+  &:active {
+    color: var(--osdk-datetime-calendar-day-hover-color);
+  }
+}
+
+.calendarRangeFooter {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: var(--osdk-datetime-calendar-months-gap);
+  justify-items: center;
+  padding-block-start: var(--osdk-time-picker-padding-top);
+}
+
+.calendarHidden {
+  visibility: hidden;
+}
+
+/* Calendar navigation — dissolve the nav wrapper so buttons become
+   direct flex children of the caption row. This lets order: -1 move
+   the prev button before the dropdowns while next stays after. */
+.calendarNav {
+  display: contents;
+}
+
+/* Shared nav button base — small, matching dropdown caret scale */
+.calendarNavButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--osdk-datetime-calendar-nav-button-size);
+  height: var(--osdk-datetime-calendar-nav-button-size);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: var(--osdk-datetime-calendar-nav-button-border-radius);
+  padding: 0;
+  color: inherit;
+
+  &:hover {
+    background: var(--osdk-datetime-calendar-nav-button-hover-bg);
+  }
+
+  &:disabled {
+    color: var(--osdk-datetime-calendar-nav-disabled-color);
+    cursor: default;
+    opacity: 1; /* Override browser default disabled opacity */
+
+    &:hover {
+      background: transparent;
+    }
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-datetime-calendar-focus-outline);
+    outline-offset: -1px;
+  }
+}
+
+/* Hide the default SVG chevron icon — Blueprint icons rendered inline instead */
+.calendarChevron {
+  display: none;
+}
+
+.calendarNavPrev {
+  order: -1;
+}
+
+.calendarMonthCaption {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--osdk-datetime-calendar-nav-button-size);
+}
+
+/* Visually hidden — used for accessibility-only text (caption label, dropdown labels) */
+.calendarVhidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+
+/* Caption dropdowns container */
+.calendarCaptionDropdowns {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--osdk-datetime-calendar-caption-gap);
+}
+
+/* Month/year selects — borderless, matching caption text weight */
+.calendarDropdown {
+  /* Native selects otherwise reserve room for the longest option, which makes
+     the month caret drift away from short month names like "May". */
+  field-sizing: content;
+  font-family: var(--osdk-datetime-calendar-font-family);
+  font-size: var(--osdk-datetime-calendar-caption-font-size);
+  font-weight: var(--osdk-datetime-calendar-caption-font-weight);
+  color: inherit;
+  background: transparent;
+  border: none;
+  padding: var(--osdk-datetime-calendar-dropdown-padding);
+  cursor: pointer;
+  border-radius: var(--osdk-datetime-calendar-dropdown-border-radius);
+
+  &:focus-visible {
+    outline: var(--osdk-datetime-calendar-focus-outline);
+    outline-offset: 1px;
+  }
+}
+
+
+.calendarTimeFooter {
+  display: flex;
+  justify-content: center;
+  padding-block-start: var(--osdk-time-picker-padding-top);
+}
+
+.calendarActionBar {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--osdk-surface-spacing);
+  padding-block-start: var(--osdk-time-picker-padding-top);
+  padding-inline: var(--osdk-datetime-popover-padding);
+  margin-block-start: var(--osdk-time-picker-margin-top);
+  margin-inline: calc(var(--osdk-datetime-popover-padding) * -1);
+  border-block-start: var(--osdk-time-picker-border-top);
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import { InterfaceDefinitions } from "../../../ontology/OntologyProvider.js";
 import {
   extractRdpFieldNames,
   mergeObjectFields,
+  mergeSelectFields,
 } from "./rdpFieldOperations.js";
 
 const mockClient = {} as MinimalClient;
@@ -194,6 +195,85 @@ describe("rdpFieldOperations", () => {
     expect(underlying.rdpField2).toBe(999);
   });
 
+  it("mergeObjectFields preserves target RDP value when source has undefined for shared field", () => {
+    const source = createTestObject({
+      employeeId: 50030,
+      fullName: "John Doe",
+      rdpField1: undefined,
+    });
+    const target = createTestObject({
+      employeeId: 50030,
+      rdpField1: "existing-value",
+      rdpField2: 999,
+    });
+
+    const result = mergeObjectFields(
+      source,
+      new Set(["rdpField1"]),
+      new Set(["rdpField1", "rdpField2"]),
+      target,
+    );
+
+    assertValidObjectHolder(result);
+    const underlying = getUnderlyingProps(result);
+    expect(underlying.employeeId).toBe(50030);
+    expect(underlying.fullName).toBe("John Doe");
+    // Target's non-null value should be preserved when source has undefined
+    expect(underlying.rdpField1).toBe("existing-value");
+    expect(underlying.rdpField2).toBe(999);
+  });
+
+  it("mergeObjectFields uses source RDP value when both source and target have non-null", () => {
+    const source = createTestObject({
+      employeeId: 50030,
+      fullName: "John Doe",
+      rdpField1: "source-value",
+    });
+    const target = createTestObject({
+      employeeId: 50030,
+      rdpField1: "target-value",
+      rdpField2: 999,
+    });
+
+    const result = mergeObjectFields(
+      source,
+      new Set(["rdpField1"]),
+      new Set(["rdpField1", "rdpField2"]),
+      target,
+    );
+
+    assertValidObjectHolder(result);
+    const underlying = getUnderlyingProps(result);
+    // Source's non-null value takes precedence when both are non-null
+    expect(underlying.rdpField1).toBe("source-value");
+    expect(underlying.rdpField2).toBe(999);
+  });
+
+  it("mergeObjectFields propagates null RDP values from source", () => {
+    const source = createTestObject({
+      employeeId: 50030,
+      fullName: "John Doe",
+      rdpField1: null as unknown as string,
+    });
+    const target = createTestObject({
+      employeeId: 50030,
+      rdpField1: "target-value",
+      rdpField2: 999,
+    });
+
+    const result = mergeObjectFields(
+      source,
+      new Set(["rdpField1"]),
+      new Set(["rdpField1", "rdpField2"]),
+      target,
+    );
+
+    assertValidObjectHolder(result);
+    const underlying = getUnderlyingProps(result);
+    expect(underlying.rdpField1).toBeNull();
+    expect(underlying.rdpField2).toBe(999);
+  });
+
   it("mergeObjectFields handles undefined target", () => {
     const source = createTestObject({
       employeeId: 50030,
@@ -213,5 +293,31 @@ describe("rdpFieldOperations", () => {
     expect(underlying.employeeId).toBe(50030);
     expect(underlying.rdpField1).toBe("source-rdp1");
     expect(underlying.rdpField2).toBeUndefined();
+  });
+});
+
+describe("mergeSelectFields", () => {
+  it("merges selected fields from source, preserves existing for unselected", () => {
+    const source = createTestObject({
+      employeeId: 50030,
+      fullName: "Updated Name",
+      office: "SF",
+    });
+    const existing = createTestObject({
+      employeeId: 50030,
+      fullName: "Old Name",
+      office: "NYC",
+      rdpField1: "existing-rdp",
+    });
+
+    const selectFields = new Set(["fullName", "office"]);
+    const result = mergeSelectFields(source, selectFields, existing);
+
+    assertValidObjectHolder(result);
+    const underlying = getUnderlyingProps(result);
+    expect(underlying.fullName).toBe("Updated Name");
+    expect(underlying.office).toBe("SF");
+    expect(underlying.rdpField1).toBe("existing-rdp");
+    expect(underlying.employeeId).toBe(50030);
   });
 });

@@ -40,6 +40,11 @@ export function mapSimplifiedStatusToInterfaceTypeStatus(
         type: "experimental",
         experimental: {},
       };
+    case "example":
+      return {
+        type: "example",
+        example: {},
+      };
     default:
       throw new Error(`Invalid status type: ${(status as any).type}`);
   }

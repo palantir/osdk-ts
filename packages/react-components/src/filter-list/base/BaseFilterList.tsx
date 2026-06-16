@@ -1,0 +1,148 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { Button } from "@base-ui/react/button";
+import classnames from "classnames";
+import React, { useCallback, useState } from "react";
+import type { FilterDefinitionControls } from "../FilterListItemApi.js";
+import type { BaseFilterListProps } from "./BaseFilterListApi.js";
+import { ExpandIcon } from "./FilterIcons.js";
+import styles from "./FilterList.module.css";
+import { FilterListBoundaryProvider } from "./FilterListBoundaryContext.js";
+import { FilterListContent } from "./FilterListContent.js";
+import { FilterListHeader } from "./FilterListHeader.js";
+
+export function BaseFilterList<D extends FilterDefinitionControls>(
+  props: BaseFilterListProps<D>,
+): React.ReactElement {
+  const {
+    title,
+    titleIcon,
+    collapsed = false,
+    onCollapsedChange,
+    filterDefinitions,
+    filterStates,
+    onFilterStateChanged,
+    renderInput,
+    getFilterKey,
+    getFilterLabel,
+    getEmptyDisplayState,
+    activeFilterCount,
+    onReset,
+    onFilterAdded,
+    onFilterRemoved,
+    onOrderChange,
+    showResetButton = false,
+    showActiveFilterCount = false,
+    canReset,
+    // eslint-disable-next-line @typescript-eslint/no-deprecated -- consumed as a backwards-compatible fallback when canReset is not provided
+    hasVisibilityChanges,
+    enableSorting,
+    className,
+    renderAddFilterButton,
+  } = props;
+
+  const [boundaryElement, setBoundaryElement] = useState<HTMLDivElement | null>(
+    null,
+  );
+
+  const showHeader = title || titleIcon || showResetButton
+    || showActiveFilterCount || onCollapsedChange;
+
+  const showAddButton = renderAddFilterButton != null || onFilterAdded != null;
+
+  const handleExpand = useCallback(() => {
+    onCollapsedChange?.(false);
+  }, [onCollapsedChange]);
+
+  const isCollapsed = collapsed && onCollapsedChange != null;
+
+  return (
+    <div className={classnames(styles.filterList, className)}>
+      {isCollapsed && (
+        <div
+          className={styles.filterListCollapsed}
+          data-collapsed="true"
+        >
+          <Button
+            className={styles.expandButton}
+            onClick={handleExpand}
+            aria-label="Expand filters"
+          >
+            <ExpandIcon />
+          </Button>
+          <span className={styles.collapsedLabel}>{title ?? "Filters"}</span>
+        </div>
+      )}
+      <div
+        ref={setBoundaryElement}
+        className={classnames(
+          styles.expandedContent,
+          isCollapsed && styles.hiddenContent,
+        )}
+        data-active-count={activeFilterCount}
+      >
+        <FilterListBoundaryProvider value={boundaryElement}>
+          {showHeader && (
+            <FilterListHeader
+              title={title}
+              titleIcon={titleIcon}
+              collapsed={collapsed}
+              onCollapsedChange={onCollapsedChange}
+              showResetButton={showResetButton}
+              onReset={onReset}
+              showActiveFilterCount={showActiveFilterCount}
+              activeFilterCount={activeFilterCount}
+              canReset={canReset}
+              hasVisibilityChanges={hasVisibilityChanges}
+            />
+          )}
+
+          <div className={styles.scrollableContent}>
+            <FilterListContent
+              filterDefinitions={filterDefinitions}
+              filterStates={filterStates}
+              onFilterStateChanged={onFilterStateChanged}
+              onFilterRemoved={onFilterRemoved}
+              onOrderChange={onOrderChange}
+              renderInput={renderInput}
+              getFilterKey={getFilterKey}
+              getFilterLabel={getFilterLabel}
+              getEmptyDisplayState={getEmptyDisplayState}
+              enableSorting={enableSorting}
+            />
+          </div>
+
+          {showAddButton && (
+            <div className={styles.addButtonContainer}>
+              {renderAddFilterButton
+                ? renderAddFilterButton()
+                : (
+                  <Button
+                    type="button"
+                    className={styles.addButton}
+                    onClick={onFilterAdded}
+                  >
+                    + Add filter
+                  </Button>
+                )}
+            </div>
+          )}
+        </FilterListBoundaryProvider>
+      </div>
+    </div>
+  );
+}

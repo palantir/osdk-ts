@@ -15,14 +15,18 @@
  */
 
 import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
+import { hasWithProperties } from "../../../util/extractRdpDefinition.js";
 import type { ObjectSetPayload } from "../../ObjectSetPayload.js";
 import type { Observer } from "../../ObservableClient/common.js";
 import { AbstractHelper } from "../AbstractHelper.js";
 import type { CacheKeys } from "../CacheKeys.js";
 import type { Canonical } from "../Canonical.js";
 import type { KnownCacheKey } from "../KnownCacheKey.js";
+import type { ObjectSetArrayCanonicalizer } from "../ObjectSetArrayCanonicalizer.js";
 import type { OrderByCanonicalizer } from "../OrderByCanonicalizer.js";
 import type { QuerySubscription } from "../QuerySubscription.js";
+import type { RdpCanonicalizer } from "../RdpCanonicalizer.js";
+import type { SelectCanonicalizer } from "../SelectCanonicalizer.js";
 import type { Store } from "../Store.js";
 import type { WhereClauseCanonicalizer } from "../WhereClauseCanonicalizer.js";
 import type {
@@ -38,17 +42,26 @@ export class ObjectSetHelper extends AbstractHelper<
 > {
   whereCanonicalizer: WhereClauseCanonicalizer;
   orderByCanonicalizer: OrderByCanonicalizer;
+  rdpCanonicalizer: RdpCanonicalizer;
+  selectCanonicalizer: SelectCanonicalizer;
+  objectSetArrayCanonicalizer: ObjectSetArrayCanonicalizer;
 
   constructor(
     store: Store,
     cacheKeys: CacheKeys<KnownCacheKey>,
     whereCanonicalizer: WhereClauseCanonicalizer,
     orderByCanonicalizer: OrderByCanonicalizer,
+    rdpCanonicalizer: RdpCanonicalizer,
+    selectCanonicalizer: SelectCanonicalizer,
+    objectSetArrayCanonicalizer: ObjectSetArrayCanonicalizer,
   ) {
     super(store, cacheKeys);
 
     this.whereCanonicalizer = whereCanonicalizer;
     this.orderByCanonicalizer = orderByCanonicalizer;
+    this.rdpCanonicalizer = rdpCanonicalizer;
+    this.selectCanonicalizer = selectCanonicalizer;
+    this.objectSetArrayCanonicalizer = objectSetArrayCanonicalizer;
   }
 
   observe(
@@ -58,7 +71,30 @@ export class ObjectSetHelper extends AbstractHelper<
     const ret = super.observe(options, subFn);
 
     if (options.streamUpdates) {
-      ret.query.registerStreamUpdates(ret.subscription);
+      if (options.pivotTo) {
+        if (process.env.NODE_ENV !== "production") {
+          // eslint-disable-next-line no-console
+          console.warn(
+            "[@osdk/client] streamUpdates is not supported with pivotTo. "
+              + "The server does not support websocket subscriptions for "
+              + "link-traversal queries. Ignoring streamUpdates.",
+          );
+        }
+      } else if (
+        options.withProperties
+        || hasWithProperties(getWireObjectSet(options.baseObjectSet))
+      ) {
+        if (process.env.NODE_ENV !== "production") {
+          // eslint-disable-next-line no-console
+          console.warn(
+            "[@osdk/client] streamUpdates is not supported with withProperties. "
+              + "The server does not support websocket subscriptions for "
+              + "object sets that include derived properties. Ignoring streamUpdates.",
+          );
+        }
+      } else {
+        ret.query.registerStreamUpdates(ret.subscription);
+      }
     }
     return ret;
   }
@@ -96,25 +132,29 @@ export class ObjectSetHelper extends AbstractHelper<
     }
 
     if (options.withProperties) {
-      operations.withProperties = Object.keys(options.withProperties).sort();
+      operations.withProperties = this.rdpCanonicalizer.canonicalize(
+        options.withProperties,
+      );
     }
 
     if (options.union && options.union.length > 0) {
-      operations.union = options.union.map(os =>
-        JSON.stringify(getWireObjectSet(os))
+      operations.union = this.objectSetArrayCanonicalizer.canonicalizeUnion(
+        options.union.map(os => JSON.stringify(getWireObjectSet(os))),
       );
     }
 
     if (options.intersect && options.intersect.length > 0) {
-      operations.intersect = options.intersect.map(os =>
-        JSON.stringify(getWireObjectSet(os))
-      );
+      operations.intersect = this.objectSetArrayCanonicalizer
+        .canonicalizeIntersect(
+          options.intersect.map(os => JSON.stringify(getWireObjectSet(os))),
+        );
     }
 
     if (options.subtract && options.subtract.length > 0) {
-      operations.subtract = options.subtract.map(os =>
-        JSON.stringify(getWireObjectSet(os))
-      );
+      operations.subtract = this.objectSetArrayCanonicalizer
+        .canonicalizeSubtract(
+          options.subtract.map(os => JSON.stringify(getWireObjectSet(os))),
+        );
     }
 
     if (options.pivotTo) {
@@ -127,8 +167,16 @@ export class ObjectSetHelper extends AbstractHelper<
       );
     }
 
+    if (options.select && options.select.length > 0) {
+      operations.select = this.selectCanonicalizer.canonicalize(options.select);
+    }
+
     if (options.pageSize) {
       operations.pageSize = options.pageSize;
+    }
+
+    if (options.$loadPropertySecurityMetadata) {
+      operations.loadPropertySecurity = true;
     }
 
     return operations as Canonical<ObjectSetOperations>;

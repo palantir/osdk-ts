@@ -1,6 +1,6 @@
 {
   "name": "@osdk/e2e.generated.catchall",
-  "version": "0.5.0-beta.1",
+  "version": "0.6.0-beta.1",
   "description": "",
   "license": "Apache-2.0",
   "repository": {
@@ -31,8 +31,8 @@
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "codegen": "rm -rf src/generatedNoCheck/* && osdk-unstable-typescript generate --outDir src/generatedNoCheck --ontologyPath ontology.json --beta true --packageType module --version dev --internal",
-    "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
-    "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "fix-lint": "eslint . --fix && dprint fmt",
+    "lint": "eslint . && dprint check",
     "transpileBrowser": "monorepo.tool.transpile -f esm -m normal -t browser",
     "transpileCjs": "monorepo.tool.transpile -f cjs -m bundle -t node",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
@@ -43,8 +43,8 @@
     "@osdk/client": "workspace:~"
   },
   "peerDependencies": {
-    "@osdk/api": "workspace:~",
-    "@osdk/client": "workspace:~"
+    "@osdk/api": "workspace:^",
+    "@osdk/client": "workspace:^"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.17.4",

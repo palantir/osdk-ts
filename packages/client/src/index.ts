@@ -16,7 +16,7 @@
 
 /* eslint-disable @typescript-eslint/no-deprecated */
 
-export { isOk, NULL_VALUE } from "@osdk/api";
+export { isOk } from "@osdk/api";
 export type {
   ActionDefinition,
   ActionEditResponse,
@@ -32,6 +32,10 @@ export type {
   InterfaceDefinition,
   InterfaceMetadata,
   Logger,
+  Media,
+  MediaFullMetadata,
+  MediaItemMetadata,
+  MediaMetadata,
   MediaReference,
   MediaUpload,
   ObjectMetadata,
@@ -54,6 +58,7 @@ export type {
   SingleLinkAccessor,
   ThreeDimensionalAggregation,
   TwoDimensionalAggregation,
+  UnknownMediaItemMetadata,
   VersionBound,
   WhereClause,
 } from "@osdk/api";
@@ -66,6 +71,9 @@ export { createPlatformClient } from "./createPlatformClient.js";
 export type { PlatformClient } from "./createPlatformClient.js";
 export { createAttachmentUpload } from "./object/AttachmentUpload.js";
 export type { ResultOrError } from "./ResultOrError.js";
+
+export type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
+export { getWireObjectSet, isObjectSet } from "./objectSet/createObjectSet.js";
 
 export {
   extractDate,

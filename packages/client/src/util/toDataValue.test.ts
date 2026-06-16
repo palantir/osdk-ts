@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { NULL_VALUE } from "@osdk/api";
-import type { ActionMetadata, MediaUpload } from "@osdk/api";
+import type { ActionMetadata, Media, MediaUpload } from "@osdk/api";
 import { Employee, Task } from "@osdk/client.test.ontology";
 import type { MediaReference } from "@osdk/foundry.core";
 import type { SetupServer } from "@osdk/shared.test";
@@ -34,6 +33,7 @@ import type { MinimalClient } from "../MinimalClientContext.js";
 import { createAttachmentUpload } from "../object/AttachmentUpload.js";
 import { isMediaReference } from "../object/mediaUpload.js";
 import { getWireObjectSet } from "../objectSet/createObjectSet.js";
+import { withScenario } from "../scenarios/withScenario.js";
 import { toDataValue } from "./toDataValue.js";
 
 describe(toDataValue, () => {
@@ -124,6 +124,24 @@ describe(toDataValue, () => {
     expect(recursiveConversion).toEqual({
       inner: { attachment: "rid" },
     });
+  });
+
+  it("passes GeoJSON geometries through as objects", async () => {
+    const point: GeoJSON.Point = {
+      type: "Point",
+      coordinates: [-74.0, 40.7],
+    };
+    const polygon: GeoJSON.Polygon = {
+      type: "Polygon",
+      coordinates: [[[0, 0], [1, 0], [1, 1], [0, 0]]],
+    };
+
+    expect(await toDataValue(point, clientCtx, mockActionMetadata)).toEqual(
+      point,
+    );
+    expect(await toDataValue(polygon, clientCtx, mockActionMetadata)).toEqual(
+      polygon,
+    );
   });
 
   it("maps an ontology object into just its primary key", async () => {
@@ -268,24 +286,55 @@ describe(toDataValue, () => {
     expect(converted).toEqual(mediaReference);
   });
 
-  it("Converts NULL_VALUE to null", async () => {
+  it("passes through nulls correctly", async () => {
     const converted = await toDataValue(
-      NULL_VALUE,
+      null,
       clientCtx,
       mockActionMetadata,
     );
     expect(converted).toBeNull();
   });
 
-  it("Converts NULL_VALUE equivalents to null", async () => {
-    const clearData = Symbol.for("NULL_VALUE") as symbol & {
-      __type: "NULL_VALUE";
+  it("converts Media type directly to MediaReference", async () => {
+    const expectedMediaReference: MediaReference = {
+      mimeType: "image/png",
+      reference: {
+        type: "mediaSetViewItem",
+        mediaSetViewItem: {
+          mediaItemRid: "test-media-item-rid",
+          mediaSetRid: "test-media-set-rid",
+          mediaSetViewRid: "test-media-set-view-rid",
+        },
+      },
     };
+
+    const mockMedia: Media = {
+      fetchMetadata: async () => ({
+        sizeBytes: 1024,
+        mediaType: "image/png",
+      }),
+      fetchContents: async () => new Response(),
+      getMediaReference: () => expectedMediaReference,
+    };
+
     const converted = await toDataValue(
-      clearData,
+      mockMedia,
       clientCtx,
       mockActionMetadata,
     );
-    expect(converted).toEqual(null);
+
+    expect(converted).toEqual(expectedMediaReference);
+    expect(isMediaReference(converted)).toBe(true);
+  });
+
+  it("converts a ScenarioClient into the rid string", async () => {
+    const scenario = withScenario(client, "ri.actions..scenario.abc");
+
+    const converted = await toDataValue(
+      scenario,
+      clientCtx,
+      mockActionMetadata,
+    );
+    expect(converted).toBe("ri.actions..scenario.abc");
   });
 });

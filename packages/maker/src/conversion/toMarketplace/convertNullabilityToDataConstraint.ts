@@ -27,7 +27,10 @@ export function convertNullabilityToDataConstraint(
       return {
         propertyTypeConstraints: [],
         nullability: undefined,
-        nullabilityV2: { noEmptyCollections: true, noNulls: true },
+        nullabilityV2: {
+          noNulls: true,
+          noEmptyCollections: true,
+        },
       };
     }
     invariant(

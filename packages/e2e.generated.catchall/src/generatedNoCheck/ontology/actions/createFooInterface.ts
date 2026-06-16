@@ -49,16 +49,19 @@ export interface createFooInterface extends ActionDefinition<createFooInterface.
     rid: 'ri.actions.main.action-type.3828bab4-49c7-4fdf-a780-6ccbc359d817';
     status: 'EXPERIMENTAL';
     type: 'action';
+    unsanitizedApiName: 'create-foo-interface';
 
     signatures: createFooInterface.Signatures;
   };
   apiName: 'createFooInterface';
   type: 'action';
+  unsanitizedApiName: 'create-foo-interface';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const createFooInterface: createFooInterface = {
   apiName: 'createFooInterface',
   type: 'action',
+  unsanitizedApiName: 'create-foo-interface',
   osdkMetadata: $osdkMetadata,
 };

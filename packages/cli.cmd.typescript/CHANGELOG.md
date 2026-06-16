@@ -1,5 +1,293 @@
 # @osdk/cli.cmd.typescript
 
+## 0.57.0
+
+### Patch Changes
+
+- @osdk/generator@2.33.0
+- @osdk/cli.common@0.57.0
+
+## 0.56.0
+
+### Patch Changes
+
+- @osdk/generator@2.32.0
+- @osdk/cli.common@0.56.0
+
+## 0.55.0
+
+### Patch Changes
+
+- @osdk/generator@2.31.0
+- @osdk/cli.common@0.55.0
+
+## 0.54.0
+
+### Patch Changes
+
+- @osdk/generator@2.30.0
+- @osdk/cli.common@0.54.0
+
+## 0.53.0
+
+### Minor Changes
+
+- 08e921c: Bump `foundry-platform-typescript` catalog to 2.63.0 and surface the new CBAC/MANDATORY marking subtype on `ObjectMetadata.Property` via a new `typeMetadata` discriminated-union field. For marking properties, `typeMetadata` is `{ type: "marking"; subtype?: "CBAC" | "MANDATORY" }`, letting consumers distinguish classification-based markings from mandatory markings on object property columns. Future per-`type` metadata should be added as additional variants of `typeMetadata` rather than as new top-level optionals on `Property`.
+
+### Patch Changes
+
+- Updated dependencies [08e921c]
+  - @osdk/generator@2.29.0
+  - @osdk/cli.common@0.53.0
+
+## 0.52.0
+
+### Patch Changes
+
+- @osdk/generator@2.28.0
+- @osdk/cli.common@0.52.0
+
+## 0.51.0
+
+### Patch Changes
+
+- Updated dependencies [5ff7aa5]
+  - @osdk/generator@2.27.0
+  - @osdk/cli.common@0.51.0
+
+## 0.50.0
+
+### Patch Changes
+
+- @osdk/generator@2.26.0
+- @osdk/cli.common@0.50.0
+
+## 0.49.0
+
+### Patch Changes
+
+- Updated dependencies [8965bdf]
+  - @osdk/generator@2.25.0
+  - @osdk/cli.common@0.49.0
+
+## 0.48.0
+
+### Patch Changes
+
+- Updated dependencies [60aff19]
+  - @osdk/generator@2.24.0
+  - @osdk/cli.common@0.48.0
+
+## 0.47.0
+
+### Patch Changes
+
+- Updated dependencies [9fb5afb]
+  - @osdk/generator@2.23.0
+  - @osdk/cli.common@0.47.0
+
+## 0.46.0
+
+### Patch Changes
+
+- @osdk/generator@2.22.0
+- @osdk/cli.common@0.46.0
+
+## 0.45.0
+
+### Patch Changes
+
+- Updated dependencies [1a07c91]
+  - @osdk/generator@2.21.0
+  - @osdk/cli.common@0.45.0
+
+## 0.44.0
+
+### Patch Changes
+
+- @osdk/generator@2.20.0
+- @osdk/cli.common@0.44.0
+
+## 0.43.0
+
+### Patch Changes
+
+- Updated dependencies [02c796c]
+  - @osdk/generator@2.19.0
+  - @osdk/cli.common@0.43.0
+
+## 0.42.0
+
+### Patch Changes
+
+- @osdk/generator@2.18.0
+- @osdk/cli.common@0.42.0
+
+## 0.41.0
+
+### Patch Changes
+
+- @osdk/generator@2.17.0
+- @osdk/cli.common@0.41.0
+
+## 0.40.0
+
+### Minor Changes
+
+- 56c5630: Drop redundant `--config $(find-up dprint.json)` from `lint`, `fix-lint`, and `format` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the substitution was a no-op anyway since `find-up` is an npm package, not a CLI. Also fix the `uploadMediaOntologyEdits` documentation example so its `// @ts-ignore` survives dprint reformatting (the broken `format` step had been masking this).
+
+### Patch Changes
+
+- Updated dependencies [56c5630]
+  - @osdk/cli.common@0.40.0
+  - @osdk/generator@2.16.0
+  - @osdk/shared.client.impl@1.12.0
+
+## 0.39.0
+
+### Patch Changes
+
+- @osdk/generator@2.15.0
+- @osdk/cli.common@0.39.0
+
+## 0.38.0
+
+### Patch Changes
+
+- @osdk/generator@2.14.0
+- @osdk/cli.common@0.38.0
+
+## 0.37.0
+
+### Patch Changes
+
+- @osdk/generator@2.13.0
+- @osdk/cli.common@0.37.0
+
+## 0.36.0
+
+### Patch Changes
+
+- Updated dependencies [df1a4f8]
+- Updated dependencies [df1a4f8]
+  - @osdk/cli.common@0.36.0
+  - @osdk/shared.client.impl@1.11.0
+  - @osdk/generator@2.12.0
+
+## 0.35.0
+
+### Patch Changes
+
+- @osdk/generator@2.11.0
+- @osdk/cli.common@0.35.0
+
+## 0.34.0
+
+### Minor Changes
+
+- 29ab35a: Use workspace:^ for peer dependencies to prevent changesets from propagating major bumps when a peer dep receives a minor version change. The internal codegen (`osdk-unstable-typescript generate --internal`) now emits `workspace:^` for peer deps while keeping `workspace:~` for regular/dev deps.
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [29ab35a]
+- Updated dependencies [f01a8f4]
+  - @osdk/generator@2.10.0
+  - @osdk/shared.client.impl@1.10.0
+  - @osdk/cli.common@0.34.0
+
+## 0.33.0
+
+### Minor Changes
+
+- 9171453: Alphabetize code generation for sdk.
+- 40fe279: Fix cli by making referenced packages bundled
+
+### Patch Changes
+
+- Updated dependencies [bcf359f]
+- Updated dependencies [cbc8e9c]
+- Updated dependencies [9171453]
+- Updated dependencies [40fe279]
+- Updated dependencies [3390ea2]
+- Updated dependencies [48e0cab]
+  - @osdk/shared.client.impl@1.9.0
+  - @osdk/generator@2.9.0
+  - @osdk/cli.common@0.33.0
+
+## 0.32.0
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+- 9eb20ee: Filter out queries that are ontology edit functions before generating.
+- 35f2f1a: Add Media inputs/outputs for Queries
+- 46f0a47: Update platform SDK to 2.57.0 and handle new typeReference query data type
+
+### Patch Changes
+
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [4bb9769]
+- Updated dependencies [abb0e0f]
+- Updated dependencies [1706c79]
+- Updated dependencies [4ef6adc]
+- Updated dependencies [60b5ffb]
+- Updated dependencies [35f2f1a]
+- Updated dependencies [d607557]
+- Updated dependencies [60531c9]
+- Updated dependencies [46f0a47]
+- Updated dependencies [7775359]
+- Updated dependencies [4470c0d]
+  - @osdk/cli.common@0.32.0
+  - @osdk/generator@2.8.0
+  - @osdk/shared.client.impl@1.8.0
+
+## 0.32.0-beta.5
+
+### Minor Changes
+
+- 46f0a47: Update platform SDK to 2.57.0 and handle new typeReference query data type
+
+### Patch Changes
+
+- Updated dependencies [d607557]
+- Updated dependencies [46f0a47]
+  - @osdk/generator@2.8.0-beta.32
+  - @osdk/cli.common@0.32.0-beta.5
+
+## 0.32.0-beta.4
+
+### Minor Changes
+
+- 9eb20ee: Filter out queries that are ontology edit functions before generating.
+
+### Patch Changes
+
+- Updated dependencies [7775359]
+  - @osdk/generator@2.8.0-beta.27
+  - @osdk/cli.common@0.32.0-beta.4
+
+## 0.32.0-beta.3
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+### Patch Changes
+
+- Updated dependencies [35f2f1a]
+  - @osdk/cli.common@0.32.0-beta.3
+  - @osdk/generator@2.8.0-beta.14
+  - @osdk/shared.client.impl@1.8.0-beta.2
+
+## 0.32.0-beta.2
+
+### Patch Changes
+
+- @osdk/cli.common@0.32.0-beta.2
+
 ## 0.31.0-beta.2
 
 ### Minor Changes

@@ -54,16 +54,19 @@ export interface createMediaViaFunction extends ActionDefinition<createMediaViaF
     rid: 'ri.actions.main.action-type.55c19ac6-47a4-46f6-9bab-b97f9016ff92';
     status: 'EXPERIMENTAL';
     type: 'action';
+    unsanitizedApiName: 'create-media-via-function';
 
     signatures: createMediaViaFunction.Signatures;
   };
   apiName: 'createMediaViaFunction';
   type: 'action';
+  unsanitizedApiName: 'create-media-via-function';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const createMediaViaFunction: createMediaViaFunction = {
   apiName: 'createMediaViaFunction',
   type: 'action',
+  unsanitizedApiName: 'create-media-via-function',
   osdkMetadata: $osdkMetadata,
 };

@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
+import type { PropertySecurity } from "@osdk/api";
 import type { MediaReference } from "@osdk/foundry.core";
-import type { Attachment, ReferenceValue } from "@osdk/foundry.ontologies";
+import type {
+  Attachment,
+  PropertySecurities,
+  PropertySecurity as WirePropertySecurity,
+  ReferenceValue,
+  SecuredPropertyValue,
+} from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import { GeotimeSeriesPropertyImpl } from "../../createGeotimeSeriesProperty.js";
 import { MediaReferencePropertyImpl } from "../../createMediaReferenceProperty.js";
@@ -35,6 +42,7 @@ import { get$link } from "./getDollarLink.js";
 import {
   ClientRef,
   ObjectDefRef,
+  PropertySecuritiesRef,
   UnderlyingOsdkObject,
 } from "./InternalSymbols.js";
 import type { ObjectHolder } from "./ObjectHolder.js";
@@ -50,21 +58,23 @@ const specialPropertyTypes = new Set(
   ],
 );
 
+const securableSpecialKeys = new Set(["$primaryKey", "$title"]);
+
 // kept separate so we are not redefining these functions
 // every time an object is created.
 const basePropDefs = {
   "$as": {
-    get: function(this: ObjectHolder) {
+    get(this: ObjectHolder) {
       return get$as(this[ObjectDefRef]);
     },
   },
   "$link": {
-    get: function(this: ObjectHolder) {
+    get(this: ObjectHolder) {
       return get$link(this);
     },
   },
   "$clone": {
-    value: function(
+    value(
       this: ObjectHolder,
       update: Record<string, any> | undefined,
     ) {
@@ -94,7 +104,7 @@ const basePropDefs = {
     },
   },
   "$objectSpecifier": {
-    get: function(this: ObjectHolder) {
+    get(this: ObjectHolder) {
       const rawObj = this[UnderlyingOsdkObject];
       return createObjectSpecifierFromPrimaryKey(
         this[ObjectDefRef],
@@ -103,8 +113,14 @@ const basePropDefs = {
     },
     enumerable: true,
   },
+  "$propertySecurities": {
+    get(this: ObjectHolder) {
+      return this[PropertySecuritiesRef];
+    },
+    enumerable: true,
+  },
   "$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata": {
-    get: function(this: ObjectHolder) {
+    get(this: ObjectHolder) {
       return {
         ObjectMetadata: this[ObjectDefRef],
       };
@@ -112,7 +128,7 @@ const basePropDefs = {
     enumerable: false,
   },
   "$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue": {
-    value: function(
+    value(
       this: ObjectHolder,
       propertyApiName: string,
       options?: FormatPropertyOptions,
@@ -143,15 +159,27 @@ export function createOsdkObject(
   objectDef: FetchedObjectTypeDefinition,
   simpleOsdkProperties: SimpleOsdkProperties,
   derivedPropertyTypeByName: DerivedPropertyRuntimeMetadata = {},
+  wirePropertySecurities: PropertySecurities[] | undefined = [],
 ): ObjectHolder {
+  const { parsedObject, clientPropertySecurities } = parseWhenSecuritiesLoaded(
+    wirePropertySecurities,
+    simpleOsdkProperties,
+    objectDef,
+    derivedPropertyTypeByName,
+  );
+
   // updates the object's "hidden class/map".
-  const rawObj = simpleOsdkProperties as ObjectHolder;
+  const rawObj = parsedObject as ObjectHolder;
   Object.defineProperties(
     rawObj,
     {
       [UnderlyingOsdkObject]: {
         enumerable: false,
         value: simpleOsdkProperties,
+      },
+      [PropertySecuritiesRef]: {
+        enumerable: false,
+        value: clientPropertySecurities,
       },
       [ObjectDefRef]: { value: objectDef, enumerable: false }, // TODO: Potentially update when GA metadata field
       [ClientRef]: { value: client, enumerable: false },
@@ -307,5 +335,113 @@ function createSpecialProperty(
       propertyName: p as string,
       mediaReference: rawValue as MediaReference,
     });
+  }
+}
+
+function parseWhenSecuritiesLoaded(
+  wirePropertySecurities: PropertySecurities[] | undefined,
+  rawObject: SimpleOsdkProperties,
+  objectDef: FetchedObjectTypeDefinition,
+  derivedPropertyTypeByName: DerivedPropertyRuntimeMetadata = {},
+): {
+  parsedObject: SimpleOsdkProperties;
+  clientPropertySecurities:
+    | { [propName: string]: PropertySecurity[] | PropertySecurity[][] }
+    | undefined;
+} {
+  if (wirePropertySecurities == null || wirePropertySecurities.length === 0) {
+    return { parsedObject: rawObject, clientPropertySecurities: undefined };
+  }
+
+  const parsedObject: SimpleOsdkProperties = rawObject;
+  const clientPropertySecurities: {
+    [propName: string]: PropertySecurity[] | PropertySecurity[][];
+  } = {};
+
+  for (const propKey of Object.keys(rawObject)) {
+    if (
+      propKey in objectDef.properties
+      || propKey in derivedPropertyTypeByName
+      || securableSpecialKeys.has(propKey)
+    ) {
+      const value = rawObject[propKey];
+
+      if (Array.isArray(value)) {
+        const newVal: any[] = [];
+        const newSecurities: PropertySecurity[][] = [];
+        value.forEach(spv => {
+          invariant(
+            typeof spv === "object"
+              && spv != null
+              && "value" in spv
+              && "propertySecurityIndex" in spv,
+            "Expected destructured secured property value object in array",
+          );
+          const securedValue = spv as SecuredPropertyValue;
+          newVal.push(securedValue.value);
+          const securityIndex = securedValue.propertySecurityIndex;
+          invariant(
+            securityIndex != null,
+            "Expected property security index to be defined",
+          );
+          invariant(
+            securityIndex < wirePropertySecurities.length,
+            "Expected property security index to be within bounds",
+          );
+          newSecurities.push(
+            wirePropertySecurities[securityIndex].disjunction
+              .map(wireToClientPropertySecurities),
+          );
+        });
+        parsedObject[propKey] = newVal;
+        clientPropertySecurities[propKey] = newSecurities;
+      } // Check if this is a secured property value object
+      else if (
+        typeof value === "object"
+        && value != null
+        && "value" in value
+        && "propertySecurityIndex" in value
+      ) {
+        const securedValue = value as SecuredPropertyValue;
+        parsedObject[propKey] = securedValue.value;
+
+        const securityIndex = securedValue.propertySecurityIndex;
+        invariant(
+          securityIndex != null,
+          "Expected property security index to be defined",
+        );
+        invariant(
+          securityIndex < wirePropertySecurities.length,
+          "Expected property security index to be within bounds",
+        );
+        clientPropertySecurities[propKey] =
+          wirePropertySecurities[securityIndex].disjunction
+            .map(wireToClientPropertySecurities);
+      } else {
+        // Regular property without security
+        parsedObject[propKey] = value;
+      }
+    }
+  }
+
+  return { parsedObject, clientPropertySecurities };
+}
+
+function wireToClientPropertySecurities(
+  propertySecurity: WirePropertySecurity,
+): PropertySecurity {
+  switch (propertySecurity.type) {
+    case "propertyMarkingSummary":
+      return {
+        type: "propertyMarkings",
+        conjunctive: propertySecurity.conjunctive,
+        containerConjunctive: propertySecurity.containerConjunctive,
+        disjunctive: propertySecurity.disjunctive,
+        containerDisjunctive: propertySecurity.containerDisjunctive,
+      };
+    case "errorComputingSecurity":
+      return { type: "errorComputingSecurity" };
+    case "unsupportedPolicy":
+      return { type: "unsupportedPolicy" };
   }
 }

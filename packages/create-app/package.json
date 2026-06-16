@@ -1,6 +1,6 @@
 {
   "name": "@osdk/create-app",
-  "version": "2.7.0-beta.8",
+  "version": "2.33.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -26,11 +26,12 @@
   },
   "scripts": {
     "check-attw": "attw --profile esm-only --pack .",
+    "check-bundle": "monorepo.tool.check-bundle",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "codegen": "node codegen.mjs",
-    "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
-    "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "fix-lint": "eslint . --fix && dprint fmt",
+    "lint": "eslint . && dprint check",
     "test": "vitest run --pool=forks",
     "test:watch": "vitest",
     "transpileEsm": "monorepo.tool.transpile -f esm -m bundle -t node",
@@ -38,6 +39,7 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
+    "@osdk/generator-utils": "workspace:*",
     "consola": "3.4.2",
     "find-up": "7.0.0",
     "handlebars": "4.7.8",
@@ -53,8 +55,8 @@
     "@osdk/create-app.template.tutorial-todo-app.beta": "workspace:*",
     "@osdk/create-app.template.vue": "workspace:*",
     "@osdk/create-app.template.vue.v2": "workspace:*",
-    "@osdk/generator-utils": "workspace:*",
     "@osdk/monorepo.api-extractor": "workspace:~",
+    "@osdk/monorepo.tool.check-bundle": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@types/node": "^18.0.0",
     "@types/tmp": "^0.2.6",

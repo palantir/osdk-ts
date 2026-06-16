@@ -7,6 +7,7 @@ import type {
   ObjectSet as $ObjectSet,
   Osdk as $Osdk,
   PropertyValueWireToClient as $PropType,
+  SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
 
 export type OsdkObjectLinks$OsdkTestInterface = {};
@@ -62,8 +63,11 @@ export interface OsdkTestInterface extends $InterfaceDefinition {
   };
 }
 
-export const OsdkTestInterface: OsdkTestInterface = {
+export const OsdkTestInterface = {
   type: 'interface',
   apiName: 'OsdkTestInterface',
   osdkMetadata: $osdkMetadata,
-};
+  internalDoNotUseMetadata: {
+    rid: 'ri.ontology.main.interface.06c534fd-4f68-44d9-b268-72729a47eaab',
+  },
+} satisfies OsdkTestInterface & { internalDoNotUseMetadata: { rid: string } } as OsdkTestInterface;

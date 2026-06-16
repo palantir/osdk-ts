@@ -39,20 +39,6 @@ export async function runInterfacesTest(): Promise<void> {
   const fooLimitedToEmployees = await client(FooInterface).fetchPage();
   invariant(fooLimitedToEmployees.data.length > 0);
 
-  // const fooLimitedToOther = await client(FooInterface).fetchPage({
-  //   $__UNSTABLE_useOldInterfaceApis: true,
-  // });
-  // invariant(fooLimitedToOther.data.length === 0);
-  // const fooLimitedToEmployees = await client(FooInterface).fetchPage({
-  //   $__EXPERIMENTAL_selectedObjectTypes: ["Employee"],
-  // });
-  // invariant(fooLimitedToEmployees.data.length > 0);
-
-  // const fooLimitedToOther = await client(FooInterface).fetchPage({
-  //   $__EXPERIMENTAL_selectedObjectTypes: ["Other"],
-  // });
-  // invariant(fooLimitedToOther.data.length === 0);
-
   const r = await client(FooInterface)
     .where({ name: { $ne: "Patti" } })
     .where({ name: { $ne: "Roth" } })

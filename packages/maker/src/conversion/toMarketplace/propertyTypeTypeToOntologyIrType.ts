@@ -19,10 +19,14 @@ import type {
   OntologyIrType,
 } from "@osdk/client.unstable";
 import type { PropertyTypeType } from "../../api/properties/PropertyTypeType.js";
+import type { SharedPropertyType } from "../../api/properties/SharedPropertyType.js";
 import { distributeTypeHelper } from "../toConjure/distributeTypeHelper.js";
+import { convertMainValue } from "./convertMainValue.js";
 
 export function propertyTypeTypeToOntologyIrType(
   type: PropertyTypeType,
+  apiName?: string,
+  sharedPropertyType?: SharedPropertyType,
 ): OntologyIrType {
   switch (true) {
     case (typeof type === "object" && type.type === "marking"):
@@ -53,6 +57,8 @@ export function propertyTypeTypeToOntologyIrType(
               fieldType: propertyTypeTypeToOntologyIrType(
                 fieldTypeDefinition.fieldType,
               ),
+              displayMetadata: fieldTypeDefinition.displayMetadata
+                ?? { displayName: key, description: undefined },
               typeClasses: fieldTypeDefinition.typeClasses ?? [],
               aliases: fieldTypeDefinition.aliases ?? [],
             };
@@ -72,14 +78,17 @@ export function propertyTypeTypeToOntologyIrType(
 
       return {
         type: "struct",
-        struct: { structFields },
+        struct: {
+          structFields,
+          mainValue: convertMainValue(type, apiName, sharedPropertyType),
+        },
       };
 
     case (typeof type === "object" && type.type === "string"):
       return {
         "type": "string",
         "string": {
-          analyzerOverride: undefined,
+          analyzerOverride: type.analyzerOverride,
           enableAsciiFolding: type.enableAsciiFolding,
           isLongText: type.isLongText ?? false,
           supportsEfficientLeadingWildcard:
@@ -118,7 +127,7 @@ export function propertyTypeTypeToOntologyIrType(
 
     case (type === "mediaReference"):
       return {
-        type: type,
+        type,
         mediaReference: {},
       };
 
@@ -126,6 +135,11 @@ export function propertyTypeTypeToOntologyIrType(
       return {
         type: "geotimeSeriesReference",
         geotimeSeriesReference: {},
+      };
+    case (type === "attachment"):
+      return {
+        type: "attachment",
+        attachment: {},
       };
 
     default:

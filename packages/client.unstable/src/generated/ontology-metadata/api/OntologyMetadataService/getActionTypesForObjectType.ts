@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,8 @@ import type {
  * Gets all the action types that the object type is associated with. E.g. actions that create an object, edit
  * an object, or use the object as a parameter. Also returns actions that are associated with an interface type
  * that the object type implements.
+ *
+ * This endpoint is deprecated and the bulk endpoint is preferred.
  */
 export async function getActionTypesForObjectType(
   ctx: ConjureContext,

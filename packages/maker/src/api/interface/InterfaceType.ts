@@ -18,9 +18,13 @@ import type {
   InterfaceTypeStatus,
   OntologyIrMarketplaceInterfaceType,
 } from "@osdk/client.unstable";
+import type { EntityPermission } from "../common/EntityPermission.js";
 import type { OntologyEntityBase } from "../common/OntologyEntityBase.js";
 import type { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";
-import type { InterfacePropertyType } from "./InterfacePropertyType.js";
+import type {
+  InterfacePropertyType,
+  InterfaceSharedPropertyType,
+} from "./InterfacePropertyType.js";
 
 export interface InterfaceType extends
   OntologyEntityBase,
@@ -32,10 +36,14 @@ export interface InterfaceType extends
     | "propertiesV2"
     | "propertiesV3"
     | "extendsInterfaces"
+    | "extendsInterfacesMetadata"
   >
 {
-  propertiesV2: Record<string, InterfacePropertyType>;
+  propertiesV2: Record<string, InterfaceSharedPropertyType>;
+  propertiesV3: Record<string, InterfacePropertyType>;
   extendsInterfaces: Array<InterfaceType>;
+  linkedInterfaces?: Array<InterfaceType | string>; // full metadata of linked entities used for X-OAC imports
+  permission?: EntityPermission;
   status: InterfaceTypeStatus;
   __type: OntologyEntityTypeEnum.INTERFACE_TYPE;
 }

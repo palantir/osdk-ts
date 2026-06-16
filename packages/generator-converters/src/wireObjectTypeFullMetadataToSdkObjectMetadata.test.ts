@@ -37,13 +37,22 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
         icon: { type: "blueprint", name: "blueprint", color: "blue" },
         primaryKey: "primaryKey",
         properties: {
-          primaryKey: { dataType: { type: "string" }, "rid": "rid" },
+          primaryKey: {
+            dataType: { type: "string" },
+            "rid": "rid",
+            typeClasses: [],
+          },
           otherKey: {
             nullable: false,
             dataType: { type: "string" },
             rid: "rid",
+            typeClasses: [],
           },
-          defaulted: { dataType: { type: "string" }, rid: "rid" },
+          defaulted: {
+            dataType: { type: "string" },
+            rid: "rid",
+            typeClasses: [],
+          },
         },
         rid: "rid",
         status: "ACTIVE",
@@ -53,13 +62,13 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
     }, true);
 
     // PK is never nullable
-    expect(result.properties["primaryKey"].nullable).toBe(false);
+    expect(result.properties.primaryKey.nullable).toBe(false);
 
     // was specified above
-    expect(result.properties["otherKey"].nullable).toBe(false);
+    expect(result.properties.otherKey.nullable).toBe(false);
 
     // was unspecified, so should be nullable
-    expect(result.properties["defaulted"].nullable).toBe(true);
+    expect(result.properties.defaulted.nullable).toBe(true);
   });
 
   it("Is up to date with the enums from API", () => {
@@ -107,13 +116,22 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
         } as any,
         primaryKey: "primaryKey",
         properties: {
-          primaryKey: { dataType: { type: "string" }, "rid": "rid" },
+          primaryKey: {
+            dataType: { type: "string" },
+            "rid": "rid",
+            typeClasses: [],
+          },
           otherKey: {
             nullable: false,
             dataType: { type: "string" },
             rid: "rid",
+            typeClasses: [],
           },
-          defaulted: { dataType: { type: "string" }, rid: "rid" },
+          defaulted: {
+            dataType: { type: "string" },
+            rid: "rid",
+            typeClasses: [],
+          },
         },
         rid: "rid",
         status: "INVALID_NOT_IN_API" as any,
@@ -145,7 +163,11 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
         icon: { type: "blueprint", name: "blueprint", color: "blue" },
         primaryKey: "primaryKey",
         properties: {
-          primaryKey: { dataType: { type: "string" }, "rid": "rid" },
+          primaryKey: {
+            dataType: { type: "string" },
+            "rid": "rid",
+            typeClasses: [],
+          },
         },
         rid: "rid",
         status: "ACTIVE",
@@ -200,7 +222,11 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
         icon: { type: "blueprint", name: "blueprint", color: "blue" },
         primaryKey: "primaryKey",
         properties: {
-          primaryKey: { dataType: { type: "string" }, "rid": "rid" },
+          primaryKey: {
+            dataType: { type: "string" },
+            "rid": "rid",
+            typeClasses: [],
+          },
         },
         rid: "rid",
         status: "ACTIVE",
@@ -216,6 +242,85 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
     expect(linkKeys).toEqual(["linkA", "linkC", "linkZ"]);
   });
 
+  it("forwards marking subtype via typeMetadata on marking properties", () => {
+    const result = wireObjectTypeFullMetadataToSdkObjectMetadata({
+      implementsInterfaces: [],
+      implementsInterfaces2: {},
+      linkTypes: [],
+      objectType: {
+        apiName: "apiName",
+        description: "description",
+        displayName: "displayName",
+        pluralDisplayName: "displayNames",
+        icon: { type: "blueprint", name: "blueprint", color: "blue" },
+        primaryKey: "primaryKey",
+        properties: {
+          primaryKey: {
+            dataType: { type: "string" },
+            rid: "rid",
+            typeClasses: [],
+          },
+          cbacMarking: {
+            dataType: { type: "marking", markingType: "CBAC" },
+            rid: "rid",
+            typeClasses: [],
+          },
+          mandatoryMarking: {
+            dataType: { type: "marking", markingType: "MANDATORY" },
+            rid: "rid",
+            typeClasses: [],
+          },
+          unspecifiedMarking: {
+            dataType: { type: "marking" },
+            rid: "rid",
+            typeClasses: [],
+          },
+          arrayOfMandatoryMarkings: {
+            dataType: {
+              type: "array",
+              subType: { type: "marking", markingType: "MANDATORY" },
+              reducers: [],
+            },
+            rid: "rid",
+            typeClasses: [],
+          },
+          unknownMarking: {
+            dataType: {
+              type: "marking",
+              markingType: "INVALID_NOT_IN_API",
+            } as any,
+            rid: "rid",
+            typeClasses: [],
+          },
+        },
+        rid: "rid",
+        status: "ACTIVE",
+        titleProperty: "primaryKey",
+      },
+      sharedPropertyTypeMapping: {},
+    }, true);
+
+    expect(result.properties.cbacMarking.typeMetadata).toEqual({
+      type: "marking",
+      markingType: "CBAC",
+    });
+    expect(result.properties.mandatoryMarking.typeMetadata).toEqual({
+      type: "marking",
+      markingType: "MANDATORY",
+    });
+    expect(result.properties.unspecifiedMarking.typeMetadata).toEqual({
+      type: "marking",
+    });
+    expect(result.properties.arrayOfMandatoryMarkings.typeMetadata).toEqual({
+      type: "marking",
+      markingType: "MANDATORY",
+    });
+    // unknown markingType is dropped, not forwarded
+    expect(result.properties.unknownMarking.typeMetadata).toEqual({
+      type: "marking",
+    });
+  });
+
   it("preserves empty arrays", () => {
     const result = wireObjectTypeFullMetadataToSdkObjectMetadata({
       implementsInterfaces: [],
@@ -229,7 +334,11 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
         icon: { type: "blueprint", name: "blueprint", color: "blue" },
         primaryKey: "primaryKey",
         properties: {
-          primaryKey: { dataType: { type: "string" }, "rid": "rid" },
+          primaryKey: {
+            dataType: { type: "string" },
+            "rid": "rid",
+            typeClasses: [],
+          },
         },
         rid: "rid",
         status: "ACTIVE",

@@ -15,7 +15,7 @@ import type {
 } from '@osdk/client';
 
 export namespace Employee {
-  export type PropertyKeys = 'employeeId' | 'class' | 'fullName' | 'office' | 'startDate' | 'employeeStatus';
+  export type PropertyKeys = 'class' | 'employeeId' | 'employeeStatus' | 'fullName' | 'office' | 'startDate';
 
   export interface Links {
     readonly lead: $SingleLinkAccessor<Employee>;
@@ -68,6 +68,8 @@ export interface Employee extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'Employee';
+  primaryKeyApiName: 'employeeId';
+  primaryKeyType: 'integer';
   __DefinitionMetadata?: {
     objectSet: Employee.ObjectSet;
     props: Employee.Props;
@@ -129,6 +131,8 @@ export const Employee = {
   type: 'object',
   apiName: 'Employee',
   osdkMetadata: $osdkMetadata,
+  primaryKeyApiName: 'employeeId',
+  primaryKeyType: 'integer',
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0aa912b9efb44',
   },

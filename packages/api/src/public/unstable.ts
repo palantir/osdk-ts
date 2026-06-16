@@ -17,12 +17,82 @@
 export type { Experiment, ExperimentFns } from "../experimental/Experiment.js";
 
 export { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "../experimental/createMediaReference.js";
+export { __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction } from "../experimental/executeStreamingFunction.js";
 export { __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid } from "../experimental/fetchOneByRid.js";
 export {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
   type FetchPageByRidPayload,
 } from "../experimental/fetchPageByRid.js";
 export { __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks } from "../experimental/getBulkLinks.js";
+export type {
+  AudioEncoding,
+  AudioOperation,
+  AudioToTextOperation,
+  DicomToImageOperation,
+  DocumentTextExtractionConfig,
+  DocumentToDocumentOperation,
+  DocumentToImageOperation,
+  DocumentToTextOperation,
+  EmailToAttachmentOperation,
+  EmailToTextOperation,
+  ImageOperation,
+  ImageSpec,
+  ImageToDocumentOperation,
+  ImageToEmbeddingOperation,
+  ImageToTextOperation,
+  LayoutAwareExtractionParameters,
+  LlmSpec,
+  MediaTransformation,
+  OcrLanguageOrScript,
+  OcrOutputFormat,
+  OcrParameters,
+  PageRange,
+  SpreadsheetToTextOperation,
+  TranscribeOutputFormat,
+  VideoOperation,
+  VideoToArchiveOperation,
+  VideoToAudioOperation,
+  VideoToImageOperation,
+  VideoToTextOperation,
+  VlmPreprocessingConfig,
+} from "../experimental/MediaTransformation.js";
+export { __EXPERIMENTAL__NOT_SUPPORTED_YET__subscribeToNoTypeObjectSet } from "../experimental/subscribeToNoTypeObjectSet.js";
+export {
+  __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait,
+  type TransformOptions,
+} from "../experimental/transformAndWait.js";
+export {
+  MediaTransformationError,
+  MediaTransformationFailedError,
+  MediaTransformationTimeoutError,
+} from "../object/MediaTransformationErrors.js";
 
 export type { EXPERIMENTAL_BulkLinkResult } from "../objectSet/BulkLinkResult.js";
 export type { MinimalObjectSet } from "../objectSet/ObjectSet.js";
+
+// Shapes (unstable — will graduate to @osdk/api/shapes when stable)
+export {
+  configToShapeDefinition,
+  createShapeBuilder,
+  isSourcePkSymbol,
+  ShapeNullabilityError,
+  SourcePrimaryKeySymbol,
+} from "../shapes/index.js";
+
+export type {
+  InferShapeDefinition,
+  InlineLinkConfig,
+  InlineShapeConfig,
+  LinkLoadConfig,
+  LinkStatus,
+  NullabilityViolation,
+  PropertyType,
+  RequiredProperty,
+  ShapeBaseType,
+  ShapeBuilder,
+  ShapeDefinition,
+  ShapeDerivedLinks,
+  ShapeInstance,
+  ShapeLinkBuilder,
+  ShapeLinkResult,
+} from "../shapes/index.js";

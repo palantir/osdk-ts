@@ -19,6 +19,7 @@ import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/Obje
 import type { BatchContext } from "../BatchContext.js";
 import type { Canonical } from "../Canonical.js";
 import type { ObjectCacheKey } from "../object/ObjectCacheKey.js";
+import { PK_IDX } from "../object/ObjectCacheKey.js";
 
 /**
  * Strategy interface for collection sorting
@@ -86,7 +87,9 @@ export class OrderBySortingStrategy implements SortingStrategy {
           return ret;
         }
       }
-      return 0;
+      const aPk = a.otherKeys[PK_IDX];
+      const bPk = b.otherKeys[PK_IDX];
+      return aPk < bPk ? -1 : aPk > bPk ? 1 : 0;
     });
   }
 }

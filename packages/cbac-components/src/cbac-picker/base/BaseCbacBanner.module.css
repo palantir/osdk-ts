@@ -1,0 +1,74 @@
+/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.bannerRow {
+  display: flex;
+  align-items: center;
+  border-radius: var(--osdk-cbac-banner-border-radius);
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--osdk-cbac-banner-bg);
+  color: var(--osdk-cbac-banner-color);
+}
+
+.banner {
+  flex: 1;
+  padding: var(--osdk-cbac-banner-padding);
+  font-size: var(--osdk-cbac-banner-font-size);
+  font-weight: var(--osdk-cbac-banner-font-weight);
+  text-align: var(--osdk-cbac-banner-text-align);
+  font-family: inherit;
+  border: none;
+  background: transparent;
+  color: inherit;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.clickable:focus-visible {
+  outline: var(--osdk-focus-outline);
+  outline-offset: var(--osdk-focus-visible-outline-offset);
+}
+
+.clickable:hover {
+  filter: brightness(0.9);
+  text-decoration: underline;
+}
+
+.dismissButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(var(--osdk-surface-spacing) * 1);
+  margin-right: calc(var(--osdk-surface-spacing) * 1);
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  border-radius: var(--osdk-surface-border-radius);
+  flex-shrink: 0;
+}
+
+.dismissButton:hover {
+  filter: brightness(0.8);
+}
+
+.dismissButton:focus-visible {
+  outline: var(--osdk-focus-outline);
+  outline-offset: var(--osdk-focus-visible-outline-offset);
+}

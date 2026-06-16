@@ -1,4 +1,4 @@
-import { useLinks } from "@osdk/react/experimental";
+import { useLinks } from "@osdk/react";
 import React from "react";
 import { ErrorMessage } from "../../components/ErrorMessage.js";
 import { H2 } from "../../components/headers.js";

@@ -27,9 +27,11 @@ import type { AggregationQuery } from "./AggregationQuery.js";
 
 export const TYPE_IDX = 0;
 export const API_NAME_IDX = 1;
-export const WHERE_IDX = 2;
-export const RDP_IDX = 3;
-export const AGGREGATE_IDX = 4;
+export const WIRE_OBJECT_SET_IDX = 2;
+export const WHERE_IDX = 3;
+export const RDP_IDX = 4;
+export const INTERSECT_IDX = 5;
+export const AGGREGATE_IDX = 6;
 
 export interface AggregationCacheKey extends
   CacheKey<
@@ -43,8 +45,10 @@ export interface AggregationCacheKey extends
     [
       type: "object" | "interface",
       apiName: string,
+      wireObjectSet: string | undefined,
       whereClause: Canonical<SimpleWhereClause>,
       rdpConfig: Canonical<Rdp> | undefined,
+      intersectWith: Canonical<Array<Canonical<SimpleWhereClause>>> | undefined,
       aggregateOpts: Canonical<AggregateOpts<ObjectOrInterfaceDefinition>>,
     ]
   >

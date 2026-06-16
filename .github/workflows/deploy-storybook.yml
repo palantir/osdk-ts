@@ -1,0 +1,70 @@
+name: Deploy Storybook to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'packages/react-components/**'
+      - 'packages/react-components-storybook/**'
+      - '.github/workflows/deploy-storybook.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    concurrency:
+      # Serialize gh-pages writers so force-push deploys do not clobber each other.
+      # queue: max keeps every pending preview deploy instead of replacing older pending runs.
+      group: storybook-gh-pages
+      queue: max
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4.3.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build dependencies for Storybook
+        run: pnpm --filter "@osdk/*" transpileBrowser
+
+      - name: Build Storybook
+        run: pnpm --filter react-components-storybook build
+
+      - name: Deploy to gh-pages branch
+        run: |
+          # Clone existing gh-pages to preserve other content
+          git clone --branch gh-pages --single-branch --depth 1 https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git gh-pages-temp
+
+          # Preserve PR previews nested under storybook/pr-* while replacing
+          # the main Storybook build.
+          previews_temp="$(mktemp -d)"
+          if [ -d "gh-pages-temp/storybook" ]; then
+            find gh-pages-temp/storybook -mindepth 1 -maxdepth 1 -type d -name 'pr-*' -exec cp -R {} "$previews_temp/" \;
+          fi
+
+          # Update storybook content
+          rm -rf gh-pages-temp/storybook
+          mkdir gh-pages-temp/storybook
+          cp -R packages/react-components-storybook/storybook-static/. gh-pages-temp/storybook/
+          find "$previews_temp" -mindepth 1 -maxdepth 1 -type d -exec cp -R {} gh-pages-temp/storybook/ \;
+          rm -rf "$previews_temp"
+          touch gh-pages-temp/storybook/.nojekyll
+
+          # Commit and push changes
+          cd gh-pages-temp
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Deploy Storybook" || echo "No changes to commit"
+          git push -f https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git gh-pages

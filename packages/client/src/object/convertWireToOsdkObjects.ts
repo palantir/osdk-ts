@@ -25,6 +25,7 @@ import type {
   InterfaceToObjectTypeMappingsV2,
   InterfaceTypeApiName,
   OntologyObjectV2,
+  PropertySecurities,
 } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import type { DerivedPropertyRuntimeMetadata } from "../derivedProperties/derivedPropertyRuntimeMetadata.js";
@@ -56,80 +57,9 @@ import type { SimpleOsdkProperties } from "./SimpleOsdkProperties.js";
 export async function convertWireToOsdkObjects(
   client: MinimalClient,
   objects: OntologyObjectV2[],
-  interfaceApiName: string | undefined,
-  forceRemoveRid: boolean = false,
-  derivedPropertyTypesByName: DerivedPropertyRuntimeMetadata,
-  selectedProps?: ReadonlyArray<string>,
-  strictNonNull: NullabilityAdherence = false,
-): Promise<Array<ObjectHolder | InterfaceHolder>> {
-  // remove the __ prefixed properties and convert them to $ prefixed.
-  // updates in place
-  fixObjectPropertiesInPlace(objects, forceRemoveRid);
-
-  const ifaceDef = interfaceApiName
-    ? await client.ontologyProvider.getInterfaceDefinition(interfaceApiName)
-    : undefined;
-  const ifaceSelected = ifaceDef
-    ? (selectedProps ?? Object.keys(ifaceDef.properties))
-    : undefined;
-
-  const ret = [];
-  for (const rawObj of objects) {
-    const objectDef = await client.ontologyProvider.getObjectDefinition(
-      rawObj.$apiName,
-    );
-    invariant(objectDef, `Missing definition for '${rawObj.$apiName}'`);
-
-    // default value for when we are checking an object
-    let objProps;
-
-    let conforming = true;
-    if (ifaceDef && ifaceSelected) {
-      // API returns interface spt names but we cache by real values
-      invariantInterfacesAsViews(objectDef, ifaceDef.apiName, client);
-
-      conforming &&= isConforming(client, ifaceDef, rawObj, ifaceSelected);
-
-      reframeAsObjectInPlace(objectDef, ifaceDef.apiName, rawObj);
-
-      objProps = convertInterfacePropNamesToObjectPropNames(
-        objectDef,
-        ifaceDef.apiName,
-        ifaceSelected,
-      );
-    } else {
-      objProps = selectedProps ?? Object.keys(objectDef.properties);
-    }
-
-    conforming &&= isConforming(client, objectDef, rawObj, objProps);
-
-    if (strictNonNull === "throw" && !conforming) {
-      throw new Error(
-        "Unable to safely convert objects as some non nullable properties are null",
-      );
-    } else if (strictNonNull === "drop" && !conforming) {
-      continue;
-    }
-
-    let osdkObject: ObjectHolder | InterfaceHolder = createOsdkObject(
-      client,
-      objectDef,
-      rawObj,
-      derivedPropertyTypesByName,
-    );
-    if (interfaceApiName) osdkObject = osdkObject.$as(interfaceApiName);
-
-    ret.push(osdkObject);
-  }
-
-  return ret;
-}
-
-export async function convertWireToOsdkObjects2(
-  client: MinimalClient,
-  objects: OntologyObjectV2[],
   interfaceApiName: string,
   derivedPropertyTypeByName: DerivedPropertyRuntimeMetadata,
+  propertySecurities: PropertySecurities[] | undefined,
   forceRemoveRid?: boolean,
   selectedProps?: ReadonlyArray<string>,
   strictNonNull?: NullabilityAdherence,
@@ -142,11 +72,12 @@ export async function convertWireToOsdkObjects2(
     InterfaceToObjectTypeMappingsV2
   >,
 ): Promise<Array<InterfaceHolder>>;
-export async function convertWireToOsdkObjects2(
+export async function convertWireToOsdkObjects(
   client: MinimalClient,
   objects: OntologyObjectV2[],
   interfaceApiName: undefined,
   derivedPropertyTypeByName: DerivedPropertyRuntimeMetadata,
+  propertySecurities: PropertySecurities[] | undefined,
   forceRemoveRid?: boolean,
   selectedProps?: ReadonlyArray<string>,
   strictNonNull?: NullabilityAdherence,
@@ -159,11 +90,12 @@ export async function convertWireToOsdkObjects2(
     InterfaceToObjectTypeMappingsV2
   >,
 ): Promise<Array<ObjectHolder>>;
-export async function convertWireToOsdkObjects2(
+export async function convertWireToOsdkObjects(
   client: MinimalClient,
   objects: OntologyObjectV2[],
   interfaceApiName: string | undefined,
   derivedPropertyTypeByName: DerivedPropertyRuntimeMetadata,
+  propertySecurities: PropertySecurities[] | undefined,
   forceRemoveRid?: boolean,
   selectedProps?: ReadonlyArray<string>,
   strictNonNull?: NullabilityAdherence,
@@ -179,11 +111,12 @@ export async function convertWireToOsdkObjects2(
 /**
  * @internal
  */
-export async function convertWireToOsdkObjects2(
+export async function convertWireToOsdkObjects(
   client: MinimalClient,
   objects: OntologyObjectV2[],
   interfaceApiName: string | undefined,
   derivedPropertyTypeByName: DerivedPropertyRuntimeMetadata,
+  propertySecurities: PropertySecurities[] | undefined,
   forceRemoveRid: boolean = false,
   selectedProps?: ReadonlyArray<string>,
   strictNonNull: NullabilityAdherence = false,
@@ -260,6 +193,7 @@ export async function convertWireToOsdkObjects2(
       objectDef,
       rawObj,
       derivedPropertyTypeByName,
+      propertySecurities,
     );
     if (
       interfaceApiName && isInterfaceScoped
@@ -269,56 +203,6 @@ export async function convertWireToOsdkObjects2(
   }
 
   return ret;
-}
-
-/**
- * @internal
- *
- * Utility function that lets us take down selected property names from an interface
- * and convert them to an array of property names on an object.
- */
-export function convertInterfacePropNamesToObjectPropNames(
-  objectDef: FetchedObjectTypeDefinition,
-  interfaceApiName: string,
-  ifacePropsToMap: readonly string[],
-): string[] {
-  return ifacePropsToMap.map((ifaceProp) =>
-    objectDef.interfaceMap[interfaceApiName][ifaceProp]
-  );
-}
-
-/**
- * Takes a raw object from the wire (contextually as an interface) and
- * updates the fields to reflect the underlying objectDef instead
- * @param objectDef
- * @param interfaceApiName
- * @param client
- * @param rawObj
- */
-function reframeAsObjectInPlace(
-  objectDef: FetchedObjectTypeDefinition,
-  interfaceApiName: string,
-  rawObj: OntologyObjectV2,
-) {
-  const newProps: Record<string, any> = {};
-  for (
-    const [sptProp, regularProp] of Object.entries(
-      objectDef.interfaceMap[interfaceApiName],
-    )
-  ) {
-    if (sptProp in rawObj) {
-      const value = rawObj[sptProp];
-      delete rawObj[sptProp];
-      if (value !== undefined) {
-        newProps[regularProp] = value;
-      }
-    }
-  }
-  Object.assign(rawObj, newProps);
-
-  if (!(objectDef.primaryKeyApiName in rawObj)) {
-    rawObj[objectDef.primaryKeyApiName] = rawObj.$primaryKey;
-  }
 }
 
 function isConforming(
@@ -338,9 +222,9 @@ function isConforming(
         client.logger?.debug(
           {
             obj: {
-              $apiName: obj["$apiName"],
-              $objectType: obj["$objectType"],
-              $primaryKey: obj["$primaryKey"],
+              $apiName: obj.$apiName,
+              $objectType: obj.$objectType,
+              $primaryKey: obj.$primaryKey,
             },
           },
           `Found object that does not conform to its definition. Expected ${def.apiName}'s ${propName} to not be null.`,

@@ -18,30 +18,46 @@ import type {
   AggregateOpts,
   AggregationsResults,
   DerivedProperty,
+  ObjectOrInterfaceDefinition,
+  ObjectSet,
+  SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
-import type { ObjectTypeDefinition } from "@osdk/client";
-import type { ObserveAggregationArgs } from "@osdk/client/unstable-do-not-use";
+import { getWireObjectSet, type ObjectTypeDefinition } from "@osdk/client";
+import type { ObserveAggregationArgs } from "@osdk/client/observable";
 import React from "react";
-import { makeExternalStore } from "./makeExternalStore.js";
-import { OsdkContext2 } from "./OsdkContext2.js";
-import type { InferRdpTypes } from "./types.js";
+import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
+import {
+  devToolsMetadata,
+  makeExternalStore,
+  makeExternalStoreAsync,
+} from "./makeExternalStore.js";
+import { OsdkContext } from "./OsdkContext.js";
 
-export interface UseOsdkAggregationOptions<
-  T extends ObjectTypeDefinition,
+interface UseOsdkAggregationBaseOptions<
+  T extends ObjectOrInterfaceDefinition,
   A extends AggregateOpts<T>,
-  WithProps extends DerivedProperty.Clause<T> | undefined = undefined,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > {
   /**
    * Standard OSDK Where clause to filter objects before aggregation
    */
-  where?: WhereClause<T, InferRdpTypes<T, WithProps>>;
+  where?: WhereClause<T, RDPs>;
 
   /**
    * Define derived properties (RDPs) to be computed server-side.
    * The derived properties can be used in the where clause and aggregation groupBy/select.
    */
-  withProperties?: WithProps;
+  withProperties?: { [K in keyof RDPs]: DerivedProperty.Creator<T, RDPs[K]> };
+
+  /**
+   * Intersect the main query with additional filtered object sets.
+   * Each entry creates a separate object set with its own where clause,
+   * and the final result is the intersection of all sets.
+   */
+  intersectWith?: Array<{
+    where: WhereClause<T, RDPs>;
+  }>;
 
   /**
    * Aggregation options including groupBy and select
@@ -57,21 +73,32 @@ export interface UseOsdkAggregationOptions<
   dedupeIntervalMs?: number;
 }
 
-export interface UseOsdkAggregationResult<
+export interface UseOsdkAggregationOptions<
+  T extends ObjectOrInterfaceDefinition,
+  A extends AggregateOpts<T>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> extends UseOsdkAggregationBaseOptions<T, A, RDPs> {}
+
+export interface UseOsdkAggregationOptionsWithObjectSet<
   T extends ObjectTypeDefinition,
+  A extends AggregateOpts<T>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> extends UseOsdkAggregationBaseOptions<T, A, RDPs> {
+  /**
+   * The ObjectSet to aggregate on. Enables aggregation on pivoted, filtered, or composed ObjectSets.
+   */
+  objectSet: ObjectSet<T>;
+}
+
+export interface UseOsdkAggregationResult<
+  T extends ObjectOrInterfaceDefinition,
   A extends AggregateOpts<T>,
 > {
   data: AggregationsResults<T, A> | undefined;
   isLoading: boolean;
   error: Error | undefined;
-  refetch: () => void;
+  refetch: () => Promise<void>;
 }
-
-declare const process: {
-  env: {
-    NODE_ENV: "development" | "production";
-  };
-};
 
 /**
  * React hook for performing aggregations on OSDK object sets.
@@ -85,6 +112,7 @@ declare const process: {
  *
  * @example
  * ```tsx
+ * // Basic aggregation without ObjectSet
  * const { data, isLoading, error } = useOsdkAggregation(Employee, {
  *   where: { department: "Engineering" },
  *   aggregate: {
@@ -95,82 +123,137 @@ declare const process: {
  *     }
  *   }
  * });
+ *
+ * // With a pivoted ObjectSet
+ * const pivotedSet = useMemo(() => $(Employee).pivotTo("primaryOffice"), []);
+ * const { data } = useOsdkAggregation(Office, {
+ *   objectSet: pivotedSet,
+ *   aggregate: { $select: { $count: "unordered" } }
+ * });
  * ```
  */
 export function useOsdkAggregation<
-  Q extends ObjectTypeDefinition,
-  A extends AggregateOpts<Q>,
-  WP extends DerivedProperty.Clause<Q> | undefined = undefined,
+  Q extends ObjectOrInterfaceDefinition,
+  const A extends AggregateOpts<Q>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   type: Q,
-  {
-    where = {},
+  options: UseOsdkAggregationOptions<Q, A, RDPs>,
+): UseOsdkAggregationResult<Q, A>;
+export function useOsdkAggregation<
+  Q extends ObjectTypeDefinition,
+  const A extends AggregateOpts<Q>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+>(
+  type: Q,
+  options: UseOsdkAggregationOptionsWithObjectSet<Q, A, RDPs>,
+): UseOsdkAggregationResult<Q, A>;
+export function useOsdkAggregation<
+  Q extends ObjectTypeDefinition,
+  const A extends AggregateOpts<Q>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+>(
+  type: Q,
+  options:
+    | UseOsdkAggregationOptions<Q, A, RDPs>
+    | UseOsdkAggregationOptionsWithObjectSet<Q, A, RDPs>,
+): UseOsdkAggregationResult<Q, A> {
+  const {
+    where,
     withProperties,
+    intersectWith,
     aggregate,
     dedupeIntervalMs,
-  }: UseOsdkAggregationOptions<Q, A, WP>,
-): UseOsdkAggregationResult<Q, A> {
-  const { observableClient } = React.useContext(OsdkContext2);
+  } = options;
+  const objectSet = "objectSet" in options ? options.objectSet : undefined;
 
-  const canonWhere = observableClient.canonicalizeWhereClause<Q>(where ?? {});
+  const { observableClient } = React.useContext(OsdkContext);
 
-  const stableWithProperties = React.useMemo(
-    () => withProperties,
-    [JSON.stringify(withProperties)],
-  );
+  const canonOptions = observableClient.canonicalizeOptions({
+    where,
+    withProperties,
+    aggregate,
+    intersectWith,
+  });
 
-  const stableAggregate = React.useMemo(
-    () => aggregate,
-    [JSON.stringify(aggregate)],
-  );
+  const objectSetKey = objectSet
+    ? JSON.stringify(getWireObjectSet(objectSet as ObjectSet<Q>))
+    : undefined;
+
+  const objectSetRef = React.useRef(objectSet);
+  objectSetRef.current = objectSet;
 
   const { subscribe, getSnapShot } = React.useMemo(
-    () =>
-      makeExternalStore<ObserveAggregationArgs<Q, A>>(
+    () => {
+      const currentObjectSet = objectSetRef.current;
+      if (currentObjectSet) {
+        return makeExternalStoreAsync<ObserveAggregationArgs<Q, A>>(
+          (observer) =>
+            observableClient.observeAggregation(
+              {
+                type,
+                objectSet: currentObjectSet,
+                where: canonOptions.where,
+                withProperties: canonOptions.withProperties,
+                intersectWith: canonOptions.intersectWith,
+                aggregate: canonOptions.aggregate,
+                dedupeInterval: dedupeIntervalMs ?? 2_000,
+              },
+              observer,
+            ),
+          devToolsMetadata({
+            hookType: "useOsdkAggregation",
+            objectType: type.apiName,
+            where: canonOptions.where,
+            aggregate: canonOptions.aggregate,
+          }),
+        );
+      }
+      return makeExternalStore<ObserveAggregationArgs<Q, A>>(
         (observer) =>
+          // eslint-disable-next-line @typescript-eslint/no-deprecated
           observableClient.observeAggregation(
             {
-              type: type,
-              where: canonWhere,
-              withProperties: stableWithProperties,
-              aggregate: stableAggregate,
+              type,
+              where: canonOptions.where,
+              withProperties: canonOptions.withProperties,
+              intersectWith: canonOptions.intersectWith,
+              aggregate: canonOptions.aggregate,
               dedupeInterval: dedupeIntervalMs ?? 2_000,
             },
             observer,
           ),
-        process.env.NODE_ENV !== "production"
-          ? `aggregation ${type.apiName} ${JSON.stringify(canonWhere)}`
-          : void 0,
-      ),
+        devToolsMetadata({
+          hookType: "useOsdkAggregation",
+          objectType: type.apiName,
+          where: canonOptions.where,
+          aggregate: canonOptions.aggregate,
+        }),
+      );
+    },
     [
       observableClient,
       type.apiName,
       type.type,
-      canonWhere,
-      stableWithProperties,
-      stableAggregate,
+      objectSetKey,
+      canonOptions.where,
+      canonOptions.withProperties,
+      canonOptions.intersectWith,
+      canonOptions.aggregate,
       dedupeIntervalMs,
     ],
   );
 
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);
 
-  let error: Error | undefined;
-  if (payload && "error" in payload && payload.error) {
-    error = payload.error;
-  } else if (payload?.status === "error") {
-    error = new Error("Failed to execute aggregation");
-  }
-
   const refetch = React.useCallback(async () => {
     await observableClient.invalidateObjectType(type.apiName);
   }, [observableClient, type.apiName]);
 
-  return {
+  return React.useMemo(() => ({
     data: payload?.result as AggregationsResults<Q, A> | undefined,
-    isLoading: payload?.status === "loading" || payload?.status === "init"
-      || !payload,
-    error,
+    isLoading: isPayloadLoading(payload, true),
+    error: extractPayloadError(payload, "Failed to execute aggregation"),
     refetch,
-  };
+  }), [payload, refetch]);
 }

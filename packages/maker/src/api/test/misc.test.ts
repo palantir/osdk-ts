@@ -52,8 +52,10 @@ describe("Miscellaneous Tests", () => {
             "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {},
             "linkTypes": {},
@@ -95,12 +97,15 @@ describe("Miscellaneous Tests", () => {
             "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {
               "com.palantir.myInterface": {
                 "interfaceType": {
+                  "actionTypeConstraints": [],
                   "apiName": "com.palantir.myInterface",
                   "displayMetadata": {
                     "description": "myInterface",
@@ -114,7 +119,10 @@ describe("Miscellaneous Tests", () => {
                     },
                   },
                   "extendsInterfaces": [],
+                  "extendsInterfacesMetadata": [],
+                  "linkedInterfaces": [],
                   "links": [],
+                  "permission": undefined,
                   "properties": [],
                   "propertiesV2": {
                     "com.palantir.core.ontology.types.id": {
@@ -146,7 +154,39 @@ describe("Miscellaneous Tests", () => {
                       },
                     },
                   },
-                  "propertiesV3": {},
+                  "propertiesV3": {
+                    "com.palantir.core.ontology.types.id": {
+                      "sharedPropertyBasedPropertyType": {
+                        "requireImplementation": true,
+                        "sharedPropertyType": {
+                          "aliases": [],
+                          "apiName": "com.palantir.core.ontology.types.id",
+                          "baseFormatter": undefined,
+                          "dataConstraints": undefined,
+                          "displayMetadata": {
+                            "description": undefined,
+                            "displayName": "com.palantir.core.ontology.types.id",
+                            "visibility": "NORMAL",
+                          },
+                          "gothamMapping": undefined,
+                          "indexedForSearch": true,
+                          "type": {
+                            "string": {
+                              "analyzerOverride": undefined,
+                              "enableAsciiFolding": undefined,
+                              "isLongText": false,
+                              "supportsEfficientLeadingWildcard": false,
+                              "supportsExactMatching": true,
+                            },
+                            "type": "string",
+                          },
+                          "typeClasses": [],
+                          "valueType": undefined,
+                        },
+                      },
+                      "type": "sharedPropertyBasedPropertyType",
+                    },
+                  },
                   "searchable": true,
                   "status": {
                     "active": {},
@@ -188,8 +228,10 @@ describe("Miscellaneous Tests", () => {
             "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {},
             "linkTypes": {},
@@ -231,12 +273,15 @@ describe("Miscellaneous Tests", () => {
             "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {
               "com.palantir.myInterface": {
                 "interfaceType": {
+                  "actionTypeConstraints": [],
                   "apiName": "com.palantir.myInterface",
                   "displayMetadata": {
                     "description": "myInterface",
@@ -250,7 +295,10 @@ describe("Miscellaneous Tests", () => {
                     },
                   },
                   "extendsInterfaces": [],
+                  "extendsInterfacesMetadata": [],
+                  "linkedInterfaces": [],
                   "links": [],
+                  "permission": undefined,
                   "properties": [],
                   "propertiesV2": {
                     "com.other.package.spt": {
@@ -282,7 +330,39 @@ describe("Miscellaneous Tests", () => {
                       },
                     },
                   },
-                  "propertiesV3": {},
+                  "propertiesV3": {
+                    "com.other.package.spt": {
+                      "sharedPropertyBasedPropertyType": {
+                        "requireImplementation": true,
+                        "sharedPropertyType": {
+                          "aliases": [],
+                          "apiName": "com.other.package.spt",
+                          "baseFormatter": undefined,
+                          "dataConstraints": undefined,
+                          "displayMetadata": {
+                            "description": undefined,
+                            "displayName": "com.other.package.spt",
+                            "visibility": "NORMAL",
+                          },
+                          "gothamMapping": undefined,
+                          "indexedForSearch": true,
+                          "type": {
+                            "string": {
+                              "analyzerOverride": undefined,
+                              "enableAsciiFolding": undefined,
+                              "isLongText": false,
+                              "supportsEfficientLeadingWildcard": false,
+                              "supportsExactMatching": true,
+                            },
+                            "type": "string",
+                          },
+                          "typeClasses": [],
+                          "valueType": undefined,
+                        },
+                      },
+                      "type": "sharedPropertyBasedPropertyType",
+                    },
+                  },
                   "searchable": true,
                   "status": {
                     "active": {},
@@ -355,13 +435,37 @@ describe("Miscellaneous Tests", () => {
             "description": "myInterface"
           },
           "extendsInterfaces": [],
+          "linkedInterfaces": [],
           "links": [],
+          "actionTypeConstraints": [],
           "status": {
             "type": "active",
             "active": {}
           },
           "propertiesV2": {
             "com.my.package.mySpt": {
+              "required": true,
+              "sharedPropertyType": {
+                "apiName": "com.my.package.mySpt",
+                "type": "string",
+                "nonNameSpacedApiName": "mySpt",
+                "displayName": "mySpt",
+                "typeClasses": [
+                  {
+                    "kind": "render_hint",
+                    "name": "SELECTABLE"
+                  },
+                  {
+                    "kind": "render_hint",
+                    "name": "SORTABLE"
+                  }
+                ],
+                "__type": OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE
+              }
+            }
+          },
+          "propertiesV3": {
+            "mySpt": {
               "required": true,
               "sharedPropertyType": {
                 "apiName": "com.my.package.mySpt",
@@ -423,13 +527,37 @@ describe("Miscellaneous Tests", () => {
                   "description": "myInterface"
                 },
                 "extendsInterfaces": [],
+                "linkedInterfaces": [],
                 "links": [],
+                "actionTypeConstraints": [],
                 "status": {
                   "type": "active",
                   "active": {}
                 },
                 "propertiesV2": {
                   "com.my.package.mySpt": {
+                    "required": true,
+                    "sharedPropertyType": {
+                      "apiName": "com.my.package.mySpt",
+                      "type": "string",
+                      "nonNameSpacedApiName": "mySpt",
+                      "displayName": "mySpt",
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE"
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE"
+                        }
+                      ],
+                      "__type": OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE
+                    }
+                  }
+                },
+                "propertiesV3": {
+                  "mySpt": {
                     "required": true,
                     "sharedPropertyType": {
                       "apiName": "com.my.package.mySpt",
@@ -513,16 +641,24 @@ describe("Miscellaneous Tests", () => {
         "extended_interfaces_are_propagated_to_the_static_objects",
       ));
       await defineOntology("com.palantir.", () => {
+        const property1 = defineSharedPropertyType({
+          apiName: "property1",
+          type: "string",
+        });
+        const property2 = defineSharedPropertyType({
+          apiName: "property2",
+          type: "string",
+        });
         const parentInterface = defineInterface({
           apiName: "parentInterface",
           properties: {
-            property1: "string",
+            property1,
           },
         });
         const childInterface = defineInterface({
           apiName: "childInterface",
           properties: {
-            property2: "string",
+            property2,
           },
           extends: [parentInterface],
         });
@@ -553,7 +689,9 @@ describe("Miscellaneous Tests", () => {
                 "description": "parentInterface"
               },
               "extendsInterfaces": [],
+              "linkedInterfaces": [],
               "links": [],
+              "actionTypeConstraints": [],
               "status": {
                 "type": "active",
                 "active": {}
@@ -563,10 +701,31 @@ describe("Miscellaneous Tests", () => {
                   "required": true,
                   "sharedPropertyType": {
                     "apiName": "com.palantir.property1",
-                    "displayName": "property1",
                     "type": "string",
-                    "array": false,
                     "nonNameSpacedApiName": "property1",
+                    "displayName": "property1",
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE"
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE"
+                      }
+                    ],
+                    "__type": OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE
+                  }
+                }
+              },
+              "propertiesV3": {
+                "property1": {
+                  "required": true,
+                  "sharedPropertyType": {
+                    "apiName": "com.palantir.property1",
+                    "type": "string",
+                    "nonNameSpacedApiName": "property1",
+                    "displayName": "property1",
                     "typeClasses": [
                       {
                         "kind": "render_hint",
@@ -585,7 +744,9 @@ describe("Miscellaneous Tests", () => {
               "__type": OntologyEntityTypeEnum.INTERFACE_TYPE
             }
           ],
+          "linkedInterfaces": [],
           "links": [],
+          "actionTypeConstraints": [],
           "status": {
             "type": "active",
             "active": {}
@@ -595,10 +756,31 @@ describe("Miscellaneous Tests", () => {
               "required": true,
               "sharedPropertyType": {
                 "apiName": "com.palantir.property2",
-                "displayName": "property2",
                 "type": "string",
-                "array": false,
                 "nonNameSpacedApiName": "property2",
+                "displayName": "property2",
+                "typeClasses": [
+                  {
+                    "kind": "render_hint",
+                    "name": "SELECTABLE"
+                  },
+                  {
+                    "kind": "render_hint",
+                    "name": "SORTABLE"
+                  }
+                ],
+                "__type": OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE
+              }
+            }
+          },
+          "propertiesV3": {
+            "property2": {
+              "required": true,
+              "sharedPropertyType": {
+                "apiName": "com.palantir.property2",
+                "type": "string",
+                "nonNameSpacedApiName": "property2",
+                "displayName": "property2",
                 "typeClasses": [
                   {
                     "kind": "render_hint",
@@ -626,16 +808,24 @@ describe("Miscellaneous Tests", () => {
       });
     });
     it("Extended interface properties are checked in object type property mapping", () => {
+      const iProperty1 = defineSharedPropertyType({
+        apiName: "iProperty1",
+        type: "string",
+      });
+      const iProperty2 = defineSharedPropertyType({
+        apiName: "iProperty2",
+        type: "string",
+      });
       const parentInterface = defineInterface({
         apiName: "parentInterface",
         properties: {
-          iProperty1: "string",
+          iProperty1,
         },
       });
       const childInterface = defineInterface({
         apiName: "childInterface",
         properties: {
-          iProperty2: "string",
+          iProperty2,
         },
         extends: [parentInterface],
       });
@@ -672,8 +862,10 @@ describe("Miscellaneous Tests", () => {
             "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {},
             "linkTypes": {},
@@ -687,12 +879,15 @@ describe("Miscellaneous Tests", () => {
             "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {
               "com.palantir.childInterface": {
                 "interfaceType": {
+                  "actionTypeConstraints": [],
                   "apiName": "com.palantir.childInterface",
                   "displayMetadata": {
                     "description": "childInterface",
@@ -708,7 +903,118 @@ describe("Miscellaneous Tests", () => {
                   "extendsInterfaces": [
                     "com.palantir.parentInterface",
                   ],
+                  "extendsInterfacesMetadata": [
+                    {
+                      "actionTypeConstraints": [],
+                      "apiName": "com.palantir.parentInterface",
+                      "displayMetadata": {
+                        "description": "parentInterface",
+                        "displayName": "parentInterface",
+                        "icon": {
+                          "blueprint": {
+                            "color": "#4C90F0",
+                            "locator": "layout-hierarchy",
+                          },
+                          "type": "blueprint",
+                        },
+                      },
+                      "extendsInterfaces": [],
+                      "extendsInterfacesMetadata": [],
+                      "linkedInterfaces": [],
+                      "links": [],
+                      "permission": undefined,
+                      "properties": [],
+                      "propertiesV2": {
+                        "com.palantir.iProperty1": {
+                          "required": true,
+                          "sharedPropertyType": {
+                            "aliases": [],
+                            "apiName": "com.palantir.iProperty1",
+                            "baseFormatter": undefined,
+                            "dataConstraints": undefined,
+                            "displayMetadata": {
+                              "description": undefined,
+                              "displayName": "iProperty1",
+                              "visibility": "NORMAL",
+                            },
+                            "gothamMapping": undefined,
+                            "indexedForSearch": true,
+                            "type": {
+                              "string": {
+                                "analyzerOverride": undefined,
+                                "enableAsciiFolding": undefined,
+                                "isLongText": false,
+                                "supportsEfficientLeadingWildcard": false,
+                                "supportsExactMatching": true,
+                              },
+                              "type": "string",
+                            },
+                            "typeClasses": [
+                              {
+                                "kind": "render_hint",
+                                "name": "SELECTABLE",
+                              },
+                              {
+                                "kind": "render_hint",
+                                "name": "SORTABLE",
+                              },
+                            ],
+                            "valueType": undefined,
+                          },
+                        },
+                      },
+                      "propertiesV3": {
+                        "com.palantir.iProperty1": {
+                          "sharedPropertyBasedPropertyType": {
+                            "requireImplementation": true,
+                            "sharedPropertyType": {
+                              "aliases": [],
+                              "apiName": "com.palantir.iProperty1",
+                              "baseFormatter": undefined,
+                              "dataConstraints": undefined,
+                              "displayMetadata": {
+                                "description": undefined,
+                                "displayName": "iProperty1",
+                                "visibility": "NORMAL",
+                              },
+                              "gothamMapping": undefined,
+                              "indexedForSearch": true,
+                              "type": {
+                                "string": {
+                                  "analyzerOverride": undefined,
+                                  "enableAsciiFolding": undefined,
+                                  "isLongText": false,
+                                  "supportsEfficientLeadingWildcard": false,
+                                  "supportsExactMatching": true,
+                                },
+                                "type": "string",
+                              },
+                              "typeClasses": [
+                                {
+                                  "kind": "render_hint",
+                                  "name": "SELECTABLE",
+                                },
+                                {
+                                  "kind": "render_hint",
+                                  "name": "SORTABLE",
+                                },
+                              ],
+                              "valueType": undefined,
+                            },
+                          },
+                          "type": "sharedPropertyBasedPropertyType",
+                        },
+                      },
+                      "searchable": true,
+                      "status": {
+                        "active": {},
+                        "type": "active",
+                      },
+                    },
+                  ],
+                  "linkedInterfaces": [],
                   "links": [],
+                  "permission": undefined,
                   "properties": [],
                   "propertiesV2": {
                     "com.palantir.iProperty2": {
@@ -749,7 +1055,48 @@ describe("Miscellaneous Tests", () => {
                       },
                     },
                   },
-                  "propertiesV3": {},
+                  "propertiesV3": {
+                    "com.palantir.iProperty2": {
+                      "sharedPropertyBasedPropertyType": {
+                        "requireImplementation": true,
+                        "sharedPropertyType": {
+                          "aliases": [],
+                          "apiName": "com.palantir.iProperty2",
+                          "baseFormatter": undefined,
+                          "dataConstraints": undefined,
+                          "displayMetadata": {
+                            "description": undefined,
+                            "displayName": "iProperty2",
+                            "visibility": "NORMAL",
+                          },
+                          "gothamMapping": undefined,
+                          "indexedForSearch": true,
+                          "type": {
+                            "string": {
+                              "analyzerOverride": undefined,
+                              "enableAsciiFolding": undefined,
+                              "isLongText": false,
+                              "supportsEfficientLeadingWildcard": false,
+                              "supportsExactMatching": true,
+                            },
+                            "type": "string",
+                          },
+                          "typeClasses": [
+                            {
+                              "kind": "render_hint",
+                              "name": "SELECTABLE",
+                            },
+                            {
+                              "kind": "render_hint",
+                              "name": "SORTABLE",
+                            },
+                          ],
+                          "valueType": undefined,
+                        },
+                      },
+                      "type": "sharedPropertyBasedPropertyType",
+                    },
+                  },
                   "searchable": true,
                   "status": {
                     "active": {},
@@ -759,6 +1106,7 @@ describe("Miscellaneous Tests", () => {
               },
               "com.palantir.parentInterface": {
                 "interfaceType": {
+                  "actionTypeConstraints": [],
                   "apiName": "com.palantir.parentInterface",
                   "displayMetadata": {
                     "description": "parentInterface",
@@ -772,7 +1120,10 @@ describe("Miscellaneous Tests", () => {
                     },
                   },
                   "extendsInterfaces": [],
+                  "extendsInterfacesMetadata": [],
+                  "linkedInterfaces": [],
                   "links": [],
+                  "permission": undefined,
                   "properties": [],
                   "propertiesV2": {
                     "com.palantir.iProperty1": {
@@ -813,7 +1164,48 @@ describe("Miscellaneous Tests", () => {
                       },
                     },
                   },
-                  "propertiesV3": {},
+                  "propertiesV3": {
+                    "com.palantir.iProperty1": {
+                      "sharedPropertyBasedPropertyType": {
+                        "requireImplementation": true,
+                        "sharedPropertyType": {
+                          "aliases": [],
+                          "apiName": "com.palantir.iProperty1",
+                          "baseFormatter": undefined,
+                          "dataConstraints": undefined,
+                          "displayMetadata": {
+                            "description": undefined,
+                            "displayName": "iProperty1",
+                            "visibility": "NORMAL",
+                          },
+                          "gothamMapping": undefined,
+                          "indexedForSearch": true,
+                          "type": {
+                            "string": {
+                              "analyzerOverride": undefined,
+                              "enableAsciiFolding": undefined,
+                              "isLongText": false,
+                              "supportsEfficientLeadingWildcard": false,
+                              "supportsExactMatching": true,
+                            },
+                            "type": "string",
+                          },
+                          "typeClasses": [
+                            {
+                              "kind": "render_hint",
+                              "name": "SELECTABLE",
+                            },
+                            {
+                              "kind": "render_hint",
+                              "name": "SORTABLE",
+                            },
+                          ],
+                          "valueType": undefined,
+                        },
+                      },
+                      "type": "sharedPropertyBasedPropertyType",
+                    },
+                  },
                   "searchable": true,
                   "status": {
                     "active": {},
@@ -851,7 +1243,9 @@ describe("Miscellaneous Tests", () => {
                   },
                 ],
                 "entityMetadata": {
+                  "aliases": [],
                   "arePatchesEnabled": false,
+                  "editsHistory": undefined,
                 },
                 "objectType": {
                   "allImplementsInterfaces": {},
@@ -872,17 +1266,20 @@ describe("Miscellaneous Tests", () => {
                   },
                   "implementsInterfaces2": [
                     {
+                      "actionTypes": {},
                       "interfaceTypeApiName": "com.palantir.childInterface",
                       "linksV2": {},
-                      "properties": {
+                      "properties": {},
+                      "propertiesV2": {
                         "com.palantir.iProperty1": {
                           "propertyTypeRid": "property1",
+                          "type": "propertyTypeRid",
                         },
                         "com.palantir.iProperty2": {
                           "propertyTypeRid": "property2",
+                          "type": "propertyTypeRid",
                         },
                       },
-                      "propertiesV2": {},
                     },
                   ],
                   "primaryKeys": [
@@ -976,6 +1373,10 @@ describe("Miscellaneous Tests", () => {
                     "type": "active",
                   },
                   "titlePropertyTypeRid": "property1",
+                },
+                "propertySecurityGroupPackagingVersion": {
+                  "type": "v2",
+                  "v2": {},
                 },
               },
             },
@@ -1078,7 +1479,7 @@ describe("Miscellaneous Tests", () => {
           defineInterface({
             apiName: "myInterface",
             properties: {
-              property1: "string",
+              property1: { type: "string" },
             },
           });
         },

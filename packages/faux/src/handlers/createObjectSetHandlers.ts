@@ -15,7 +15,9 @@
  */
 
 import type { RequestHandler } from "msw";
+import { aggregateObjects } from "../FauxFoundry/aggregateObjects.js";
 import type { FauxFoundry } from "../FauxFoundry/FauxFoundry.js";
+import { getObjectsFromSet } from "../FauxFoundry/getObjectsFromSet.js";
 import { OntologiesV2 } from "../mock/index.js";
 
 export const createObjectSetHandlers = (
@@ -28,9 +30,10 @@ export const createObjectSetHandlers = (
   OntologiesV2.OntologyObjectSets.load(
     baseUrl,
     async ({ request, params }) => {
-      return fauxFoundry
+      const a = fauxFoundry
         .getDataStore(params.ontologyApiName)
         .getObjectsFromObjectSet(await request.json());
+      return a;
     },
   ),
 
@@ -39,8 +42,16 @@ export const createObjectSetHandlers = (
    */
   OntologiesV2.OntologyObjectSets.aggregate(
     baseUrl,
-    async ({ request }) => {
-      throw new Error("Not implemented");
+    async ({ request, params }) => {
+      const body = await request.json();
+      const ds = fauxFoundry.getDataStore(params.ontologyApiName);
+      const objects = getObjectsFromSet(ds, body.objectSet, undefined);
+
+      return aggregateObjects(
+        objects,
+        body.aggregation,
+        body.groupBy,
+      );
     },
   ),
 
@@ -62,6 +73,7 @@ export const createObjectSetHandlers = (
           .getInterfaceToObjectTypeMappings(objectApiNames),
         interfaceToObjectTypeMappingsV2: {},
         ...pagedResponse,
+        propertySecurities: [],
       };
     },
   ),

@@ -63,16 +63,19 @@ export interface setTaskBody extends ActionDefinition<setTaskBody.Signatures> {
     rid: 'ri.a.b.c.d';
     status: 'ACTIVE';
     type: 'action';
+    unsanitizedApiName: 'setTaskBody';
 
     signatures: setTaskBody.Signatures;
   };
   apiName: 'setTaskBody';
   type: 'action';
+  unsanitizedApiName: 'setTaskBody';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const setTaskBody: setTaskBody = {
   apiName: 'setTaskBody',
   type: 'action',
+  unsanitizedApiName: 'setTaskBody',
   osdkMetadata: $osdkMetadata,
 };

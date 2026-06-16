@@ -16,6 +16,7 @@
 
 import { exit } from "process";
 import type { Arguments, Argv, CommandModule } from "yargs";
+import { logDuration, SlsLogger } from "../logging/index.js";
 import { OntologyMetadataResolver } from "../ontologyMetadata/index.js";
 import { isValidSemver } from "../utils/index.js";
 import { generatePackage } from "./betaClient/generatePackage.js";
@@ -158,8 +159,10 @@ export class GeneratePackageCommand
         type: "string",
         demandOption: false,
         description:
-          `The branch rid of the ontology to generate from. Example Usage: --branch ri.branch..branch.0000000-0000-0000-0000-0000000000`,
+          `The branch rid of the ontology to generate from.This is still an experimental feature and only has beta support, use with caution. Example Usage: --branch ri.branch..branch.0000000-0000-0000-0000-0000000000`,
         default: undefined,
+        // experimental for now
+        hidden: true,
         defaultDescription:
           `By default, no arguments will load data from the main branch of the ontology you selected`,
       })
@@ -182,67 +185,87 @@ export class GeneratePackageCommand
   public handler = async (
     args: Arguments<generatePackageCommandArgs>,
   ): Promise<void> => {
-    const { consola } = await import("consola");
-    consola.start(
-      `Generating OSDK: ${args.packageName} at version: ${args.packageVersion}`,
-    );
+    const logger = new SlsLogger();
+
     const ontologyRid = args.ontology as string;
+    const baseSafeParams = { ontologyRid, packageVersion: args.packageVersion };
+    const baseUnsafeParams = { packageName: args.packageName };
+
+    if (!isValidSemver(args.packageVersion as string)) {
+      logger.error(
+        "Invalid argument provided for packageVersion, expected valid semver",
+        { unsafeParams: { packageVersion: args.packageVersion } },
+      );
+      exit(1);
+    }
+
     const ontologyMetadataResolver = new OntologyMetadataResolver(
       args.authToken as string,
       args.foundryHostname as string,
     );
 
-    if (!isValidSemver(args.packageVersion as string)) {
-      consola.error(
-        new Error(
-          `Invalid argument provided for packageVersion: ${args.packageVersion}, expected valid semver`,
-        ),
-      );
-      exit(1);
-    }
+    await logDuration(
+      logger,
+      "OSDK generation",
+      async () => {
+        const packageInfo = await logDuration(
+          logger,
+          "Loading package info",
+          () =>
+            ontologyMetadataResolver.getInfoForPackages(
+              args.sdkPackages ?? new Map(),
+            ),
+          { params: { externalSdkCount: args.sdkPackages?.size ?? 0 } },
+        );
 
-    const packageInfo = await ontologyMetadataResolver.getInfoForPackages(
-      args.sdkPackages ?? new Map(),
+        const wireOntologyDefinition = await logDuration(
+          logger,
+          "Loading ontology metadata",
+          () =>
+            ontologyMetadataResolver.getWireOntologyDefinition(
+              ontologyRid,
+              {
+                objectTypesApiNamesToLoad: transformArrayArg(args.objectTypes),
+                actionTypesApiNamesToLoad: transformArrayArg(args.actionTypes),
+                queryTypesApiNamesToLoad: transformArrayArg(args.queryTypes),
+                interfaceTypesApiNamesToLoad: transformArrayArg(
+                  args.interfaceTypes,
+                ),
+                linkTypesApiNamesToLoad: transformArrayArg(args.linkTypes),
+              },
+              packageInfo,
+              args.branch,
+            ),
+          { params: { ontologyRid } },
+        );
+
+        if (wireOntologyDefinition.isErr()) {
+          logger.error("Failed loading ontology metadata", {
+            unsafeParams: { errors: wireOntologyDefinition.error },
+          });
+          exit(1);
+        }
+
+        // Narrowing doesn't carry into the closure below, so extract here.
+        const ontologyInfo = wireOntologyDefinition.value;
+
+        await logDuration(
+          logger,
+          "Rendering OSDK",
+          () =>
+            generatePackage(ontologyInfo, {
+              packageName: args.packageName,
+              packageVersion: args.packageVersion,
+              outputDir: args.outputDir,
+              beta: !!args.beta,
+              ontologyJsonOnly:
+                args.experimentalFeatures?.includes("ontologyJsonOnly")
+                  ?? false,
+              packageRid: args.packageRid,
+            }, logger),
+        );
+      },
+      { params: baseSafeParams, unsafeParams: baseUnsafeParams },
     );
-
-    const timeStart = Date.now();
-
-    const wireOntologyDefinition = await ontologyMetadataResolver
-      .getWireOntologyDefinition(
-        ontologyRid,
-        {
-          objectTypesApiNamesToLoad: transformArrayArg(args.objectTypes),
-          actionTypesApiNamesToLoad: transformArrayArg(args.actionTypes),
-          queryTypesApiNamesToLoad: transformArrayArg(args.queryTypes),
-          interfaceTypesApiNamesToLoad: transformArrayArg(args.interfaceTypes),
-          linkTypesApiNamesToLoad: transformArrayArg(args.linkTypes),
-        },
-        packageInfo,
-        args.branch,
-      );
-
-    if (wireOntologyDefinition.isErr()) {
-      wireOntologyDefinition.error.forEach(err => {
-        consola.error(err);
-      });
-      consola.error("Failed generating package");
-      exit(1);
-    }
-
-    await generatePackage(wireOntologyDefinition.value, {
-      packageName: args.packageName,
-      packageVersion: args.packageVersion,
-      outputDir: args.outputDir,
-      beta: !!args.beta,
-      ontologyJsonOnly: args.experimentalFeatures?.includes("ontologyJsonOnly")
-        ?? false,
-      packageRid: args.packageRid,
-    });
-
-    const elapsedTime = Date.now() - timeStart;
-    consola.success(
-      `Finished generating package in ${(elapsedTime / 1000).toFixed(2)}s`,
-    );
-    return;
   };
 }

@@ -1,0 +1,6 @@
+/* DatetimePickerField — component-specific overrides.
+   Wrapper doubles as Popover.Trigger — suppress its own outline since
+   :focus-within handles the focus indicator when the inner input is focused. */
+.osdkDatetimeInputWrapper {
+  outline: none;
+}

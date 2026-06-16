@@ -1,7 +1,7 @@
 <script setup lang="ts"></script>
 
 <template>
-  <div class="header">
+  <header class="header">
     <div class="logos">
       <a
         href="https://www.palantir.com/docs/foundry/ontology-sdk/overview/"
@@ -10,12 +10,12 @@
       >
         <img src="/palantir.svg" class="logo" alt="Palantir logo" />
       </a>
-      <a href="https://react.dev" target="_blank" rel="noreferrer">
-        <img src="/vue.svg" class="logo" alt="React logo" />
+      <a href="https://vuejs.org/" target="_blank" rel="noreferrer">
+        <img src="/vue.svg" class="logo" alt="Vue logo" />
       </a>
     </div>
-    <h2 class="heading">Build your React application with Foundry!</h2>
-  </div>
+    <h2 class="heading">Build your Vue application with Foundry!</h2>
+  </header>
 </template>
 
 <style scoped>

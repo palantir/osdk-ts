@@ -20,10 +20,17 @@ import type {
   DataConstraintWrapper,
   FailureMessage,
   ValueTypeDataConstraint,
+  ValueTypeRid,
+  ValueTypeStatus,
 } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
+import { cloneDefinition } from "./cloneDefinition.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
-import { namespace, updateOntology } from "./defineOntology.js";
+import {
+  namespace,
+  ontologyDefinition,
+  updateOntology,
+} from "./defineOntology.js";
 import { type ValueTypeDefinitionVersion } from "./values/ValueTypeDefinitionVersion.js";
 import { type ValueTypeType } from "./values/ValueTypeType.js";
 
@@ -118,15 +125,41 @@ export type ValueTypeDefinition = {
   description?: string;
   type: NewValueTypeDefinition;
   version: string;
+  status?: UserValueTypeStatus;
+  namespacePrefix?: boolean;
+};
+
+export type UserValueTypeStatus = "active" | {
+  type: "deprecated";
+  message: string;
+  deadline: string;
+  replacedBy?: ValueTypeRid;
 };
 
 export function defineValueType(
-  valueTypeDef: ValueTypeDefinition,
+  valueTypeDefInput: ValueTypeDefinition,
 ): ValueTypeDefinitionVersion {
-  const { apiName, displayName, description, type, version } = valueTypeDef;
+  const valueTypeDef = cloneDefinition(valueTypeDefInput);
+  const {
+    apiName: inputApiName,
+    displayName,
+    description,
+    type,
+    version,
+    namespacePrefix,
+  } = valueTypeDef;
+  const apiName = namespacePrefix ? namespace + inputApiName : inputApiName;
   const semverValidation =
     /^((([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)$/;
   invariant(semverValidation.test(version), "Version is not a valid semver");
+
+  const existingVersions =
+    ontologyDefinition[OntologyEntityTypeEnum.VALUE_TYPE][apiName] ?? [];
+  const duplicateVersion = existingVersions.find(vt => vt.version === version);
+  invariant(
+    duplicateVersion === undefined,
+    `Value type with apiName ${apiName} and version ${version} is already defined`,
+  );
 
   const typeName: TypeNames = typeof type.type === "string"
     ? type.type
@@ -150,16 +183,32 @@ export function defineValueType(
     apiName,
     packageNamespace: namespace.substring(0, namespace.length - 1),
     displayMetadata: {
-      displayName: displayName,
+      displayName,
       description: description ?? "",
     },
-    status: { type: "active", active: {} },
-    version: version,
-    baseType: baseType,
-    constraints: constraints,
+    status: convertUserValueTypeStatusToValueTypeStatus(valueTypeDef.status),
+    version,
+    baseType,
+    constraints,
     exampleValues: [],
     __type: OntologyEntityTypeEnum.VALUE_TYPE,
   };
   updateOntology(vt);
   return vt;
+}
+
+export function convertUserValueTypeStatusToValueTypeStatus(
+  status: UserValueTypeStatus | undefined,
+): ValueTypeStatus {
+  if (typeof status === "object" && status.type === "deprecated") {
+    return {
+      type: "deprecated",
+      deprecated: {
+        message: status.message,
+        deadline: status.deadline,
+        replacedBy: status.replacedBy,
+      },
+    };
+  }
+  return { type: "active", active: {} };
 }

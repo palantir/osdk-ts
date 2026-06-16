@@ -16,35 +16,84 @@
 
 import type {
   DerivedProperty,
+  ObjectOrInterfaceDefinition,
   ObjectSet,
-  ObjectTypeDefinition,
+  PropertyKeys,
   QueryDefinition,
   SimplePropertyDef,
+  WhereClause,
 } from "@osdk/api";
-import { useObjectSet } from "@osdk/react/experimental";
+import {
+  useObjectSet,
+  type UseOsdkListResult,
+  useOsdkObjects,
+} from "@osdk/react";
+import type { SortingState } from "@tanstack/react-table";
 import { useMemo } from "react";
-import type { ColumnDefinition } from "../ObjectTableApi.js";
+import type { ColumnDefinition, ObjectSetOptions } from "../ObjectTableApi.js";
+import type { AsyncCellData } from "../utils/AsyncCellData.js";
+import {
+  DEFAULT_OBJECT_TABLE_DEDUPE_INTERVAL_MS,
+  DEFAULT_PAGE_SIZE,
+} from "../utils/constants.js";
+import { useFunctionColumnsData } from "./useFunctionColumnsData.js";
 
-const PAGE_SIZE = 50;
+type WithProperties<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<
+    string,
+    never
+  >,
+> = {
+  [K in keyof RDPs]: DerivedProperty.Creator<Q, RDPs[K]>;
+};
 
+interface UseObjectTableDataResult<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+> extends Omit<UseOsdkListResult<Q, RDPs>, "isOptimistic"> {}
 /**
- * This hook is a wrapper around useObjectSet
- * It extracts RDP locators from columnDefinitions and calls useObjectSet + withProperties
+ * This hook is a wrapper that conditionally uses either useObjectSet or useOsdkObjects
+ * based on whether an objectSet prop is provided.
+ * It extracts RDP locators from columnDefinitions and applies withProperties
  * to return data containing the derived properties.
  */
-
 export function useObjectTableData<
-  Q extends ObjectTypeDefinition,
-  RDPs extends Record<string, SimplePropertyDef>,
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<
+    string,
+    never
+  >,
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
   >,
 >(
-  objectSet: ObjectSet<Q>,
+  objectOrInterfaceType: Q,
   columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>,
-): ReturnType<typeof useObjectSet<Q, never, RDPs>> {
-  // Extract derived properties definition to be passed to useObjectSet hook
+  filter?: WhereClause<Q, RDPs>,
+  sorting?: SortingState,
+  objectSet?: ObjectSet<Q>,
+  objectSetOptions?: ObjectSetOptions<Q>,
+  dedupeIntervalMs: number = DEFAULT_OBJECT_TABLE_DEDUPE_INTERVAL_MS,
+  pageSize: number = DEFAULT_PAGE_SIZE,
+  streamUpdates?: boolean,
+): UseObjectTableDataResult<Q, RDPs> {
+  const orderBy = useMemo(() => {
+    if (!sorting || sorting.length === 0) {
+      return undefined;
+    }
+
+    return sorting.reduce<{ [K in PropertyKeys<Q>]?: "asc" | "desc" }>(
+      (acc, sort) => {
+        acc[sort.id as PropertyKeys<Q>] = sort.desc ? "desc" : "asc";
+        return acc;
+      },
+      {},
+    );
+  }, [sorting]);
+
+  // Extract derived properties definition
   const withProperties = useMemo(() => {
     if (!columnDefinitions) {
       return;
@@ -56,26 +105,97 @@ export function useObjectTableData<
       },
     );
 
-    return rdpColumns.reduce<
-      { [K in keyof RDPs]: DerivedProperty.Creator<Q, RDPs[K]> }
-    >(
+    if (!rdpColumns.length) {
+      return;
+    }
+
+    return rdpColumns.reduce<WithProperties<Q, RDPs>>(
       (acc, cur) => {
         return {
           ...acc,
           [cur.id]: cur.creator,
         };
       },
-      {} as {
-        [K in keyof RDPs]: DerivedProperty.Creator<Q, RDPs[K]>;
-      },
+      {} as WithProperties<Q, RDPs>,
     );
   }, [columnDefinitions]);
 
-  return useObjectSet<Q, never, RDPs>(
-    objectSet,
+  // When objectSet is provided and it's an object type, use useObjectSet. Otherwise, use useOsdkObjects.
+  const isObjectType = objectOrInterfaceType.type === "object";
+  const shouldUseObjectSet = !!objectSet && isObjectType;
+
+  // When shouldUseObjectSet is true, we know objectSet is defined
+  // and objectOrInterfaceType is an ObjectTypeDefinition
+  const objectSetResult = useObjectSet(
+    shouldUseObjectSet ? objectSet as ObjectSet<Q, RDPs> : undefined as any,
     {
-      withProperties,
-      pageSize: PAGE_SIZE,
+      ...(objectSetOptions as ObjectSetOptions<Q>),
+      withProperties: withProperties as WithProperties<
+        Q,
+        RDPs
+      >,
+      where: filter,
+      orderBy,
+      pageSize,
+      enabled: shouldUseObjectSet,
+      dedupeIntervalMs,
+      streamUpdates,
     },
   );
+
+  const osdkObjectsResult = useOsdkObjects<
+    Q,
+    RDPs
+  >(
+    objectOrInterfaceType,
+    {
+      withProperties,
+      pageSize,
+      where: filter,
+      orderBy,
+      enabled: !shouldUseObjectSet,
+      dedupeIntervalMs,
+      streamUpdates,
+    },
+  );
+
+  // Get the result from the appropriate hook
+  const baseResult = shouldUseObjectSet ? objectSetResult : osdkObjectsResult;
+
+  // Call useFunctionColumnsData to get function column data
+  const functionColumnData = useFunctionColumnsData<Q, RDPs, FunctionColumns>({
+    objectOrInterfaceType,
+    objects: baseResult.data,
+    columnDefinitions,
+    pageSize,
+  });
+
+  // Merge function column data into each object
+  const mergedData = useMemo(() => {
+    if (!baseResult.data) return baseResult.data;
+
+    return baseResult.data.map(obj => {
+      const objKey = String(obj.$primaryKey);
+      const functionData: Record<string, AsyncCellData> = {};
+
+      // Collect all function column data for this object
+      Object.entries(functionColumnData).forEach(([columnId, columnData]) => {
+        if (columnData[objKey]) {
+          functionData[columnId] = columnData[objKey];
+        }
+      });
+
+      // Return object with function data merged in
+      return {
+        ...obj,
+        ...functionData,
+      };
+    });
+  }, [baseResult.data, functionColumnData]);
+
+  // Return the result with merged data
+  return {
+    ...baseResult,
+    data: mergedData,
+  } as UseObjectTableDataResult<Q, RDPs>;
 }

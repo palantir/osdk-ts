@@ -15,7 +15,7 @@
  */
 
 import type { CliCommonArgs } from "@osdk/cli.common";
-import { YargsCheckError } from "@osdk/cli.common";
+import { ensureTrailingSlash, YargsCheckError } from "@osdk/cli.common";
 import type { CommandModule } from "yargs";
 import type { ThirdPartyAppRid } from "../../net/ThirdPartyAppRid.js";
 import configLoader from "../../util/configLoader.js";
@@ -43,7 +43,7 @@ const command: CommandModule<CliCommonArgs, CommonSiteArgs> = {
           description: "Application resource identifier (rid)",
         },
         foundryUrl: {
-          coerce: (foundryUrl) => foundryUrl.replace(/\/$/, ""),
+          coerce: ensureTrailingSlash,
           type: "string",
           ...foundryUrl
             ? { default: foundryUrl }

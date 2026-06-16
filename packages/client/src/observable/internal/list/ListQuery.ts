@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,15 @@
  */
 
 import type {
+  DerivedProperty,
+  InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
   Osdk,
   PageResult,
   PropertyKeys,
+  WhereClause,
 } from "@osdk/api";
 import type { Observable, Subscription } from "rxjs";
 import invariant from "tiny-invariant";
@@ -32,6 +35,7 @@ import type {
 import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
 import type { ListPayload } from "../../ListPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
+import type { CollectionConnectableParams } from "../base-list/BaseCollectionQuery.js";
 import { BaseListQuery } from "../base-list/BaseListQuery.js";
 import type { BatchContext } from "../BatchContext.js";
 import { type CacheKey } from "../CacheKey.js";
@@ -39,26 +43,36 @@ import type { Canonical } from "../Canonical.js";
 import { type Changes, DEBUG_ONLY__changesToString } from "../Changes.js";
 import { getObjectTypesThatInvalidate } from "../getObjectTypesThatInvalidate.js";
 import type { Entry } from "../Layer.js";
-import { type ObjectCacheKey } from "../object/ObjectCacheKey.js";
+import {
+  API_NAME_IDX as OBJECT_API_NAME_IDX,
+  type ObjectCacheKey,
+} from "../object/ObjectCacheKey.js";
 import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "../objectMatchesWhereClause.js";
 import type { OptimisticId } from "../OptimisticId.js";
 import type { PivotInfo } from "../PivotCanonicalizer.js";
+import type { Rdp } from "../RdpCanonicalizer.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import { OrderBySortingStrategy } from "../sorting/SortingStrategy.js";
 import type { Store } from "../Store.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
 import {
+  INCLUDE_ALL_BASE_PROPERTIES_IDX,
   INTERSECT_IDX,
   type ListCacheKey,
   ORDER_BY_IDX,
   PIVOT_IDX,
+  RDP_IDX,
+  SELECT_IDX,
   WHERE_IDX,
 } from "./ListCacheKey.js";
 export {
   API_NAME_IDX,
+  INCLUDE_ALL_BASE_PROPERTIES_IDX,
   INTERSECT_IDX,
   PIVOT_IDX,
   RDP_IDX,
+  RIDS_IDX,
+  SELECT_IDX,
 } from "./ListCacheKey.js";
 import type { ListQueryOptions } from "./ListQueryOptions.js";
 
@@ -85,11 +99,27 @@ export abstract class ListQuery extends BaseListQuery<
   protected apiName: string;
   #whereClause: Canonical<SimpleWhereClause>;
 
-  // Using base class minResultsToLoad instead of a private property
   #orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>;
+  #select: Canonical<readonly string[]> | undefined;
   #intersectWith: Canonical<Array<Canonical<SimpleWhereClause>>> | undefined;
   #pivotInfo: Canonical<PivotInfo> | undefined;
   #objectSet: ObjectSet<ObjectTypeDefinition>;
+  #pivotIntersectApplied = false;
+
+  // The actual type of objects this query returns, resolved on first fetch
+  // via getObjectTypesThatInvalidate. For simple queries this equals apiName.
+  // For transformed queries (e.g. link traversal) it may differ -- e.g.
+  // Employee.pivotTo(Office) has apiName "Employee" but fetches Office objects.
+  #fetchedObjectType: string | undefined;
+  #objectTypesCache: ReadonlySet<string> | undefined;
+
+  // Object types this query's RDPs traverse; an edit to any of these triggers
+  // revalidation. Undefined for ObjectSets the walker doesn't support.
+  #rdpInvalidationSet: ReadonlySet<string> | undefined;
+
+  public override get rdpConfig(): Canonical<Rdp> | undefined {
+    return this.cacheKey.otherKeys[RDP_IDX];
+  }
 
   /**
    * Register changes to the cache specific to ListQuery
@@ -124,9 +154,12 @@ export abstract class ListQuery extends BaseListQuery<
     this.apiName = apiName;
     this.#whereClause = cacheKey.otherKeys[WHERE_IDX];
     this.#orderBy = cacheKey.otherKeys[ORDER_BY_IDX];
+    this.#select = cacheKey.otherKeys[SELECT_IDX];
     this.#intersectWith = cacheKey.otherKeys[INTERSECT_IDX];
     this.#pivotInfo = cacheKey.otherKeys[PIVOT_IDX];
+
     this.#objectSet = this.createObjectSet(store);
+    this.#objectTypesCache = new Set([this.apiName]);
 
     // Only initialize the sorting strategy here if there's no pivotTo.
     // When pivotTo is used, the target type differs from apiName, so we
@@ -137,18 +170,18 @@ export abstract class ListQuery extends BaseListQuery<
         this.#orderBy,
       );
     }
-
-    if (opts.autoFetchMore === true) {
-      this.minResultsToLoad = Number.MAX_SAFE_INTEGER;
-    } else if (typeof opts.autoFetchMore === "number") {
-      this.minResultsToLoad = Math.max(0, opts.autoFetchMore);
-    } else {
-      this.minResultsToLoad = 0;
-    }
   }
 
   get canonicalWhere(): Canonical<SimpleWhereClause> {
     return this.#whereClause;
+  }
+
+  get canonicalSelect(): Canonical<readonly string[]> | undefined {
+    return this.#select;
+  }
+
+  protected get rawSelect(): Canonical<readonly string[]> | undefined {
+    return this.#select;
   }
 
   get canonicalIntersectWith():
@@ -162,9 +195,30 @@ export abstract class ListQuery extends BaseListQuery<
     return this.#pivotInfo;
   }
 
-  /**
-   * Create the ObjectSet for this query.
-   */
+  public override get includeAllBaseObjectProperties(): boolean {
+    return this.cacheKey.otherKeys[INCLUDE_ALL_BASE_PROPERTIES_IDX] === true;
+  }
+
+  get objectTypes(): ReadonlySet<string> {
+    return this.#objectTypesCache ?? new Set([this.apiName]);
+  }
+
+  #updateFetchedObjectType(fetchedApiName: string): void {
+    this.#fetchedObjectType = fetchedApiName;
+    this.#objectTypesCache = fetchedApiName !== this.apiName
+      ? new Set([this.apiName, fetchedApiName])
+      : new Set([this.apiName]);
+  }
+
+  protected createPayload(
+    params: CollectionConnectableParams,
+  ): ListPayload {
+    return {
+      ...super.createPayload(params),
+      objectSet: this.#objectSet,
+    } as ListPayload;
+  }
+
   protected abstract createObjectSet(
     store: Store,
   ): ObjectSet<ObjectTypeDefinition>;
@@ -176,29 +230,106 @@ export abstract class ListQuery extends BaseListQuery<
   protected async fetchPageData(
     signal: AbortSignal | undefined,
   ): Promise<PageResult<Osdk.Instance<any>>> {
-    if (
-      Object.keys(this.#orderBy).length > 0
-      && !(this.sortingStrategy instanceof OrderBySortingStrategy)
-    ) {
+    const needsResultType = (Object.keys(this.#orderBy).length > 0
+      && !(this.sortingStrategy instanceof OrderBySortingStrategy))
+      || (this.#pivotInfo != null && this.#intersectWith != null
+        && this.#intersectWith.length > 0 && !this.#pivotIntersectApplied);
+
+    if (needsResultType) {
       const wireObjectSet = getWireObjectSet(this.#objectSet);
-      const { resultType } = await getObjectTypesThatInvalidate(
-        this.store.client[additionalContext],
-        wireObjectSet,
-      );
-      this.sortingStrategy = new OrderBySortingStrategy(
-        resultType.apiName,
-        this.#orderBy,
-      );
+      const { resultType, invalidationSet } =
+        await getObjectTypesThatInvalidate(
+          this.store.client[additionalContext],
+          wireObjectSet,
+        );
+
+      this.#updateFetchedObjectType(resultType.apiName);
+      this.#rdpInvalidationSet = invalidationSet;
+
+      if (
+        Object.keys(this.#orderBy).length > 0
+        && !(this.sortingStrategy instanceof OrderBySortingStrategy)
+      ) {
+        this.sortingStrategy = new OrderBySortingStrategy(
+          resultType.apiName,
+          this.#orderBy,
+        );
+      }
+
+      if (
+        this.#pivotInfo != null && this.#intersectWith != null
+        && this.#intersectWith.length > 0 && !this.#pivotIntersectApplied
+      ) {
+        const rdpConfig = this.cacheKey.otherKeys[RDP_IDX];
+        const intersectSets = this.#intersectWith.map(whereClause => {
+          if (resultType.type === "object") {
+            let objectSet = this.store.client({
+              type: "object",
+              apiName: resultType.apiName,
+            } as ObjectTypeDefinition);
+
+            if (rdpConfig != null) {
+              objectSet = objectSet.withProperties(
+                rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
+              );
+            }
+
+            return objectSet.where(whereClause as WhereClause<any>);
+          }
+
+          return this.store.client({
+            type: "interface",
+            apiName: resultType.apiName,
+          } as InterfaceDefinition).where(
+            whereClause as WhereClause<any>,
+          );
+        });
+
+        this.#objectSet = this.#objectSet.intersect(
+          ...intersectSets,
+        );
+        this.#pivotIntersectApplied = true;
+      }
     }
 
-    // Fetch the data with pagination
+    // Resolve the actual result type on first fetch so revalidateObjectType
+    // can match against it. For simple queries this equals apiName; for
+    // transformed queries (link traversal, etc.) it may differ.
+    // Some ObjectSet types (static, reference) don't support result type
+    // resolution, so we fall back to apiName.
+    if (this.#fetchedObjectType == null) {
+      try {
+        const wireObjectSet = getWireObjectSet(this.#objectSet);
+        const { resultType, invalidationSet } =
+          await getObjectTypesThatInvalidate(
+            this.store.client[additionalContext],
+            wireObjectSet,
+          );
+        this.#updateFetchedObjectType(resultType.apiName);
+        this.#rdpInvalidationSet = invalidationSet;
+      } catch {
+        this.#updateFetchedObjectType(this.apiName);
+      }
+    }
+
+    // Fetch the data with pagination using effective pageSize (max of all subscribers)
     const resp = await this.#objectSet.fetchPage({
       $nextPageToken: this.nextPageToken,
-      $pageSize: this.options.pageSize,
+      $pageSize: this.getEffectiveFetchPageSize(),
+      $includeRid: true,
+      ...(this.#select && this.#select.length > 0
+        ? { $select: this.#select }
+        : {}),
       // For now this keeps the shared test code from falling apart
       // but shouldn't be needed ideally
       ...(Object.keys(this.#orderBy).length > 0
         ? { $orderBy: this.#orderBy }
+        : {}),
+      ...(this.options.$loadPropertySecurityMetadata
+        ? { $loadPropertySecurityMetadata: true }
+        : {}),
+      ...(this.includeAllBaseObjectProperties
+        ? { $includeAllBaseObjectProperties: true }
         : {}),
     });
 
@@ -228,17 +359,27 @@ export abstract class ListQuery extends BaseListQuery<
 
     // We don't call super.handleFetchError because ListQuery has special error handling
     // but we still use writeToStore to create a properly structured Entry
-    return this.writeToStore({ data: [] }, "error", batch);
+    const existingTotalCount = batch.read(this.cacheKey)?.value?.totalCount;
+    return this.writeToStore(
+      { data: [], totalCount: existingTotalCount },
+      "error",
+      batch,
+    );
   }
 
   /**
-   * Will revalidate the list if its query is affected by invalidating the
-   * apiName of the object type passed in.
-   *
-   * @param apiName to invalidate
-   * @returns
+   * Determines if this query's results are affected by changes to the
+   * given object type. Base checks apiName (source type) and
+   * fetchedObjectType (actual result type when they differ).
+   * Subclasses override to add type-specific logic (e.g. interface
+   * implementation checks).
    */
-  abstract revalidateObjectType(apiName: string): Promise<void>;
+  async revalidateObjectType(objectType: string): Promise<boolean> {
+    return this.apiName === objectType
+      || (this.#fetchedObjectType != null
+        && this.#fetchedObjectType === objectType)
+      || (this.#rdpInvalidationSet?.has(objectType) ?? false);
+  }
 
   /**
    * Postprocess fetched data.
@@ -251,8 +392,7 @@ export abstract class ListQuery extends BaseListQuery<
     objectType: string,
     changes: Changes | undefined,
   ): Promise<void> => {
-    if (this.apiName === objectType) {
-      // Only invalidate lists for the matching apiName
+    if (await this.revalidateObjectType(objectType)) {
       changes?.modified.add(this.cacheKey);
       return this.revalidate(true);
     }
@@ -284,6 +424,31 @@ export abstract class ListQuery extends BaseListQuery<
     if (changes.modified.has(this.cacheKey)) return;
     // mark ourselves as updated so we don't infinite recurse.
     changes.modified.add(this.cacheKey);
+
+    // When the fetched object type differs from apiName (e.g. a query that
+    // traverses a link), we can't locally evaluate whether result-type
+    // changes affect this query -- that depends on link relationships the
+    // client doesn't have. Fall back to a full server revalidation.
+    if (
+      this.#fetchedObjectType != null
+      && this.#fetchedObjectType !== this.apiName
+    ) {
+      const fetchedType = this.#fetchedObjectType;
+      if (
+        (changes.addedObjects.get(fetchedType)?.length ?? 0) > 0
+        || (changes.modifiedObjects.get(fetchedType)?.length ?? 0) > 0
+      ) {
+        return this.revalidate(true);
+      }
+      for (const key of changes.deleted) {
+        if (
+          key.type === "object"
+          && key.otherKeys[OBJECT_API_NAME_IDX] === fetchedType
+        ) {
+          return this.revalidate(true);
+        }
+      }
+    }
 
     try {
       const relevantObjects = this._extractAndCategorizeRelevantObjects(
@@ -354,11 +519,13 @@ export abstract class ListQuery extends BaseListQuery<
           newList.push(this.getObjectCacheKey(obj));
         }
 
+        const existingTotalCount = batch.read(this.cacheKey)?.value?.totalCount;
         this._updateList(
           newList,
           status,
           batch,
-          /* append */ false,
+          { type: "clientOrdered" },
+          existingTotalCount,
         );
       });
 
@@ -440,6 +607,8 @@ export abstract class ListQuery extends BaseListQuery<
           [object as Osdk.Instance<any>],
           batch,
           this.rdpConfig,
+          undefined,
+          this.includeAllBaseObjectProperties,
         );
       });
     } else if (state === "REMOVED") {
@@ -471,9 +640,10 @@ export abstract class ListQuery extends BaseListQuery<
         // updated (or didn't exist, which is nonsensical)
         if (newObjects?.length !== existing.value?.data.length) {
           batch.changes.registerList(this.cacheKey);
+          const existingTotalCount = existing.value?.totalCount;
           batch.write(
             this.cacheKey,
-            { data: newObjects ?? [] },
+            { data: newObjects ?? [], totalCount: existingTotalCount },
             "loaded",
           );
           // Should there be an else for this case? Do we need to invalidate
@@ -507,13 +677,10 @@ export abstract class ListQuery extends BaseListQuery<
     });
   }
 
-  /**
-   * Get cache key for object.
-   */
   private getObjectCacheKey(
-    obj: { $objectType: string; $primaryKey: string | number | boolean },
+    obj: { $objectType: string; $primaryKey: string | number },
   ): ObjectCacheKey {
-    const pk = obj.$primaryKey as string | number;
+    const pk = obj.$primaryKey;
     return this.cacheKeys.get<ObjectCacheKey>(
       "object",
       obj.$objectType,

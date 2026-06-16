@@ -15,7 +15,7 @@
  */
 
 import type { Client, ObjectSet } from "@osdk/client";
-import type { ObjectType } from "@osdk/widget.api";
+import type { AllowedObjectSetParameterType } from "@osdk/widget.api";
 import {
   type AsyncValue,
   createFoundryWidgetClient,
@@ -38,8 +38,8 @@ import { transformEmitEventPayload } from "./utils/transformEmitEventPayload.js"
 
 type ExtractObjectTypes<C extends WidgetConfig<C["parameters"]>> =
   C["parameters"][keyof C["parameters"]] extends infer Param
-    ? Param extends { type: "objectSet"; objectType: infer OT }
-      ? OT extends ObjectType ? OT
+    ? Param extends { type: "objectSet"; allowedType: infer AT }
+      ? AT extends AllowedObjectSetParameterType ? AT
       : never
     : never
     : never;
@@ -254,9 +254,17 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
     });
     resizeObserver.observe(document.body, { box: "border-box" });
 
+    const handleFullReload = () => client.reload();
+    if (import.meta.hot?.on) {
+      import.meta.hot.on("vite:beforeFullReload", handleFullReload);
+    }
+
     return () => {
       client.unsubscribe();
       resizeObserver.disconnect();
+      if (import.meta.hot?.off) {
+        import.meta.hot.off("vite:beforeFullReload", handleFullReload);
+      }
     };
   }, []);
 

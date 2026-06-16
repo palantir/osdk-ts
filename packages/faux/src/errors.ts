@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-//
-
+import type {
+  GetCurrentUserPermissionDenied,
+  UserDeleted,
+  UserIsActive,
+  UserNotFound,
+} from "@osdk/foundry.admin";
+import type { InvalidPageToken } from "@osdk/foundry.core";
+import type { ObjectSetNotFound } from "@osdk/foundry.ontologies";
 import type {
   ActionNotFound,
   ApplyActionFailed,
@@ -101,6 +107,21 @@ export function ObjectNotFoundError(
   };
 }
 
+export function ObjectSetNotFoundError(
+  objectSetRid: string,
+): ObjectSetNotFound {
+  return {
+    errorCode: "NOT_FOUND",
+    errorName: "ObjectSetNotFound",
+    errorDescription:
+      "The requested object set is not found, or the client token does not have access to it.",
+    errorInstanceId,
+    parameters: {
+      objectSetRid,
+    },
+  };
+}
+
 export function QueryNotFoundError(queryApiName: string): QueryNotFound {
   return {
     errorCode: "NOT_FOUND",
@@ -130,6 +151,15 @@ export function ActionNotFoundError(): ActionNotFound {
 export function InvalidRequest(errorName: string): BaseAPIError {
   return {
     errorCode: "INVALID_REQUEST",
+    errorName,
+    errorInstanceId,
+    parameters: {},
+  };
+}
+
+export function InvalidArgument(errorName: string): BaseAPIError {
+  return {
+    errorCode: "INVALID_ARGUMENT",
     errorName,
     errorInstanceId,
     parameters: {},
@@ -190,3 +220,58 @@ export const AttachmentNotFoundError: AttachmentNotFound = {
       "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a80",
   },
 };
+
+export const CurrentUserPermissionDeniedError: GetCurrentUserPermissionDenied =
+  {
+    errorCode: "PERMISSION_DENIED",
+    errorName: "GetCurrentUserPermissionDenied",
+    errorInstanceId,
+    parameters: {},
+    errorDescription: "Could not getCurrent the User.",
+  };
+
+export const GetUserNotFoundError = (userId: string): UserNotFound => ({
+  errorCode: "NOT_FOUND",
+  errorName: "UserNotFound",
+  errorInstanceId,
+  parameters: {
+    userId,
+  },
+  errorDescription: "The given User could not be found.",
+});
+
+export const GetUserDeletedStatusError = (
+  userId: string,
+): UserDeleted => ({
+  errorCode: "INVALID_ARGUMENT",
+  errorName: "UserDeleted",
+  errorInstanceId,
+  parameters: {
+    principalId: userId,
+  },
+  errorDescription: "The user is deleted.",
+});
+
+export const GetUserActiveStatusError = (
+  userId: string,
+): UserIsActive => ({
+  errorCode: "INVALID_ARGUMENT",
+  errorName: "UserIsActive",
+  errorInstanceId,
+  parameters: {
+    principalId: userId,
+  },
+  errorDescription: "The user is an active user.",
+});
+
+export const GetInvalidPageTokenError = (
+  pageToken: string,
+): InvalidPageToken => ({
+  errorCode: "INVALID_ARGUMENT",
+  errorName: "InvalidPageToken",
+  errorDescription: "The provided page token is invalid.",
+  errorInstanceId,
+  parameters: {
+    pageToken,
+  },
+});

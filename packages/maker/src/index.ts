@@ -14,17 +14,28 @@
  * limitations under the License.
  */
 
-export { default as default } from "./cli/main.js";
-
-export type { ActionParameterValidation } from "./api/action/ActionParameter.js";
+export type { ActionLevelValidationDefinition } from "./api/action/ActionLevelValidationDefinition.js";
+export type {
+  ActionParameter,
+  ActionParameterValidation,
+} from "./api/action/ActionParameter.js";
 export type {
   ActionParameterAllowedValues,
 } from "./api/action/ActionParameterAllowedValues.js";
 export type { ActionParameterConditionalOverride } from "./api/action/ActionParameterConditionalOverride.js";
-export type { ActionParameterConfiguration } from "./api/action/ActionParameterConfiguration.js";
+export type {
+  ActionParameterConfiguration,
+  ActionParameterRequirementConstraint,
+} from "./api/action/ActionParameterConfiguration.js";
+export type { ActionParameterType } from "./api/action/ActionParameterType.js";
+export {
+  isActionParameterTypePrimitive,
+} from "./api/action/ActionParameterType.js";
 export type { ActionSection } from "./api/action/ActionSection.js";
+export type { ActionStatus } from "./api/action/ActionStatus.js";
 export type { ActionType } from "./api/action/ActionType.js";
 export type { ConditionDefinition } from "./api/action/ConditionDefinition.js";
+export type { DefaultFormat } from "./api/action/DefaultFormat.js";
 export type {
   CurrentTimeMappingValue,
   CurrentUserMappingValue,
@@ -34,13 +45,19 @@ export type {
 } from "./api/action/MappingValue.js";
 export type { SectionConditionalOverride } from "./api/action/SectionConditionalOverride.js";
 export type { SubmissionMetadata } from "./api/action/SubmissionMetadata.js";
+export type { TableConfiguration } from "./api/action/TableConfiguration.js";
 export { addDependency } from "./api/addDependency.js";
+export type { BlueprintIcon } from "./api/common/BlueprintIcons.js";
+export type { EntityPermission } from "./api/common/EntityPermission.js";
+export type { OntologyDefinition } from "./api/common/OntologyDefinition.js";
 export { OntologyEntityTypeEnum } from "./api/common/OntologyEntityTypeEnum.js";
 export {
   CREATE_INTERFACE_OBJECT_PARAMETER,
   CREATE_OR_MODIFY_OBJECT_PARAMETER,
   defineAction,
   DELETE_OBJECT_PARAMETER,
+  extractAllowedValuesFromActionParameterType,
+  kebab,
   MODIFY_INTERFACE_OBJECT_PARAMETER,
   MODIFY_OBJECT_PARAMETER,
 } from "./api/defineAction.js";
@@ -50,6 +67,7 @@ export { defineCreateOrModifyObjectAction } from "./api/defineCreateOrModifyObje
 export { defineDeleteInterfaceObjectAction } from "./api/defineDeleteInterfaceObjectAction.js";
 export { defineDeleteObjectAction } from "./api/defineDeleteObjectAction.js";
 export { defineInterface } from "./api/defineInterface.js";
+export { defineInterfaceActionTypeConstraint } from "./api/defineInterfaceActionTypeConstraint.js";
 export { defineInterfaceLinkConstraint } from "./api/defineInterfaceLinkConstraint.js";
 export { defineLink } from "./api/defineLink.js";
 export { defineModifyInterfaceObjectAction } from "./api/defineModifyInterfaceObjectAction.js";
@@ -57,23 +75,61 @@ export { defineModifyObjectAction } from "./api/defineModifyObjectAction.js";
 export {
   convertToPluralDisplayName,
   defineObject,
+  uppercaseFirstLetter,
   uppercaseFirstLetter as convertToDisplayName,
 } from "./api/defineObject.js";
 export {
   addNamespaceIfNone,
+  cleanAndValidateLinkTypeId,
+  convertObjectStatus,
   defineOntology,
   dumpOntologyFullMetadata,
+  extractNamespace,
+  getImportedTypes,
+  getNamespace,
+  getOntologyDefinition,
+  initializeOntologyState,
+  withoutNamespace,
+  writeStaticObjects,
 } from "./api/defineOntology.js";
 export { defineSharedPropertyType } from "./api/defineSpt.js";
 export { defineValueType } from "./api/defineValueType.js";
 export { importOntologyEntity } from "./api/importOntologyEntity.js";
 export { importSharedPropertyType } from "./api/importSharedPropertyType.js";
+export type {
+  InterfaceDefinedProperty,
+  InterfacePropertyType,
+} from "./api/interface/InterfacePropertyType.js";
+export { isInterfaceSharedPropertyType } from "./api/interface/InterfacePropertyType.js";
 export type { InterfaceType } from "./api/interface/InterfaceType.js";
-export type { LinkType } from "./api/links/LinkType.js";
+export type {
+  LinkType,
+  OneToManyLinkTypeDefinition,
+  UserLinkTypeStatus,
+} from "./api/links/LinkType.js";
+export type { EditsHistoryConfig } from "./api/object/EditsHistoryConfig.js";
 export type { ObjectPropertyType } from "./api/object/ObjectPropertyType.js";
 export type { ObjectType } from "./api/object/ObjectType.js";
+export type {
+  DerivedPropertyAggregation,
+  ObjectTypeDatasourceDefinition_dataset,
+  ObjectTypeDatasourceDefinition_derived,
+  ObjectTypeDatasourceDefinition_direct,
+} from "./api/object/ObjectTypeDatasourceDefinition.js";
+export type { ObjectTypeDefinition } from "./api/object/ObjectTypeDefinition.js";
+export type { SecurityConditionDefinition } from "./api/object/SecurityCondition.js";
+export type { Nullability } from "./api/properties/Nullability.js";
 export type { PropertyTypeType } from "./api/properties/PropertyTypeType.js";
+export { isExotic } from "./api/properties/PropertyTypeType.js";
 export type { SharedPropertyType } from "./api/properties/SharedPropertyType.js";
+export {
+  defaultTypeClasses,
+  getPropertyTypeName,
+  hasRenderHints,
+  shouldBeIndexedForSearch,
+  shouldNotHaveRenderHints,
+} from "./api/propertyConversionUtils.js";
 export type { ValueTypeDefinitionVersion } from "./api/values/ValueTypeDefinitionVersion.js";
 export { wrapWithProxy } from "./api/wrapWithProxy.js";
+export { default } from "./cli/main.js";
 export { propertyTypeTypeToOntologyIrType as convertType } from "./conversion/toMarketplace/propertyTypeTypeToOntologyIrType.js";

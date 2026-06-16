@@ -15,7 +15,7 @@ import type {
 } from '@osdk/client';
 
 export namespace BgaoNflPlayer {
-  export type PropertyKeys = 'id' | 'gamesPlayed' | 'name' | 'number' | 'wikiUrl' | 'address';
+  export type PropertyKeys = 'address' | 'gamesPlayed' | 'id' | 'name' | 'number' | 'wikiUrl';
 
   export type Links = {};
 
@@ -73,6 +73,8 @@ export interface BgaoNflPlayer extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'BgaoNflPlayer';
+  primaryKeyApiName: 'id';
+  primaryKeyType: 'string';
   __DefinitionMetadata?: {
     objectSet: BgaoNflPlayer.ObjectSet;
     props: BgaoNflPlayer.Props;
@@ -135,6 +137,8 @@ export const BgaoNflPlayer = {
   type: 'object',
   apiName: 'BgaoNflPlayer',
   osdkMetadata: $osdkMetadata,
+  primaryKeyApiName: 'id',
+  primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
   },

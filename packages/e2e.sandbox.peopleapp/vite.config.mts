@@ -19,6 +19,12 @@ export default defineConfig(({ mode }) => {
     ],
     server: {
       port: 8080,
+      // Turbo watch rebuilds upstream packages on change, which briefly
+      // produces incomplete builds that Vite picks up as errors. The overlay
+      // flashes on every rebuild cycle, so we disable it.
+      hmr: {
+        overlay: false,
+      },
       proxy: {
         "/api/v2/ontologySubscriptions": {
           ws: true,

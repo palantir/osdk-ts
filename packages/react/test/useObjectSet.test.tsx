@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
+import type {
+  InterfaceDefinition,
+  ObjectSet,
+  ObjectTypeDefinition,
+} from "@osdk/api";
 import { act, renderHook } from "@testing-library/react";
 import * as React from "react";
 import { beforeEach, describe, expect, it, vitest } from "vitest";
-import { OsdkContext2 } from "../src/new/OsdkContext2.js";
+import { OsdkContext } from "../src/new/OsdkContext.js";
 import { useObjectSet } from "../src/new/useObjectSet.js";
 
 const MockObjectType = {
@@ -31,7 +35,19 @@ const MockObjectType2 = {
   primaryKeyType: "string",
 } as unknown as ObjectTypeDefinition;
 
+const MockInterfaceType = {
+  apiName: "MockInterface",
+  type: "interface",
+} as unknown as InterfaceDefinition;
+
 const createMockObjectSet = (type: ObjectTypeDefinition) =>
+  ({
+    $__EXPERIMENTAL_objectSet: true,
+    type,
+    $objectSetInternals: { def: type },
+  }) as unknown as ObjectSet<typeof type>;
+
+const createMockInterfaceObjectSet = (type: InterfaceDefinition) =>
   ({
     $__EXPERIMENTAL_objectSet: true,
     type,
@@ -46,17 +62,21 @@ describe(useObjectSet, () => {
     error: (err: any) => void;
   } | null = null;
   const mockObserveObjectSet = vitest.fn();
+  const mockInvalidateObjectType = vitest.fn().mockResolvedValue(undefined);
 
   const createWrapper = () => {
     const observableClient = {
       observeObjectSet: mockObserveObjectSet,
-      canonicalizeWhereClause: vitest.fn((w) => w),
+      canonicalizeOptions: vitest.fn((opts) => opts),
+      invalidateObjectType: mockInvalidateObjectType,
     } as any;
 
     return ({ children }: React.PropsWithChildren) => (
-      <OsdkContext2.Provider value={{ observableClient }}>
+      <OsdkContext.Provider
+        value={{ observableClient, devtoolsEnabled: false }}
+      >
         {children}
-      </OsdkContext2.Provider>
+      </OsdkContext.Provider>
     );
   };
 
@@ -220,6 +240,29 @@ describe(useObjectSet, () => {
 
       expect(result.current.fetchMore).toBe(mockFetchMore);
     });
+
+    it("should not return fetchMore when hasMore is false", () => {
+      const wrapper = createWrapper();
+
+      const { result } = renderHook(
+        () => useObjectSet(mockObjectSet),
+        { wrapper },
+      );
+
+      const mockFetchMore = vitest.fn();
+      const mockData = {
+        resolvedList: [{ $primaryKey: "1", name: "Test" }],
+        status: "loaded",
+        fetchMore: mockFetchMore,
+        hasMore: false,
+      };
+
+      act(() => {
+        capturedObserver?.next(mockData);
+      });
+
+      expect(result.current.fetchMore).toBeUndefined();
+    });
   });
 
   describe("error handling", () => {
@@ -255,6 +298,192 @@ describe(useObjectSet, () => {
       });
 
       expect(result.current.isLoading).toBe(false);
+    });
+  });
+
+  describe("interface-based object sets", () => {
+    it("should accept an InterfaceDefinition-typed object set", () => {
+      const wrapper = createWrapper();
+      const interfaceObjectSet = createMockInterfaceObjectSet(
+        MockInterfaceType,
+      );
+
+      const { result } = renderHook(
+        () => useObjectSet(interfaceObjectSet),
+        { wrapper },
+      );
+
+      expect(mockObserveObjectSet).toHaveBeenCalledTimes(1);
+      expect(result.current.data).toBeUndefined();
+      expect(result.current.isLoading).toBe(true);
+    });
+  });
+
+  describe("isLoading when disabled", () => {
+    it("should return isLoading false when disabled", () => {
+      const wrapper = createWrapper();
+
+      const { result } = renderHook(
+        () => useObjectSet(mockObjectSet, { enabled: false }),
+        { wrapper },
+      );
+
+      expect(result.current.isLoading).toBe(false);
+    });
+  });
+
+  describe("isOptimistic", () => {
+    it("should return isOptimistic from payload", () => {
+      const wrapper = createWrapper();
+
+      const { result } = renderHook(
+        () => useObjectSet(mockObjectSet),
+        { wrapper },
+      );
+
+      const mockData = {
+        resolvedList: [{ $primaryKey: "1", name: "Test" }],
+        status: "loaded",
+        isOptimistic: true,
+      };
+
+      act(() => {
+        capturedObserver?.next(mockData);
+      });
+
+      expect(result.current.isOptimistic).toBe(true);
+    });
+
+    it("should default isOptimistic to false", () => {
+      const wrapper = createWrapper();
+
+      const { result } = renderHook(
+        () => useObjectSet(mockObjectSet),
+        { wrapper },
+      );
+
+      expect(result.current.isOptimistic).toBe(false);
+    });
+  });
+
+  describe("hasMore", () => {
+    it("should return hasMore from payload", () => {
+      const wrapper = createWrapper();
+
+      const { result } = renderHook(
+        () => useObjectSet(mockObjectSet),
+        { wrapper },
+      );
+
+      const mockData = {
+        resolvedList: [{ $primaryKey: "1", name: "Test" }],
+        status: "loaded",
+        hasMore: true,
+        fetchMore: vitest.fn(),
+      };
+
+      act(() => {
+        capturedObserver?.next(mockData);
+      });
+
+      expect(result.current.hasMore).toBe(true);
+    });
+
+    it("should default hasMore to false", () => {
+      const wrapper = createWrapper();
+
+      const { result } = renderHook(
+        () => useObjectSet(mockObjectSet),
+        { wrapper },
+      );
+
+      expect(result.current.hasMore).toBe(false);
+    });
+  });
+
+  describe("refetch", () => {
+    it("should call invalidateObjectType when refetch is called", async () => {
+      const wrapper = createWrapper();
+
+      const { result } = renderHook(
+        () => useObjectSet(mockObjectSet),
+        { wrapper },
+      );
+
+      await act(async () => {
+        await result.current.refetch();
+      });
+
+      expect(mockInvalidateObjectType).toHaveBeenCalledWith("MockObject");
+    });
+  });
+
+  describe("orderBy deduplication", () => {
+    it("should only call observeObjectSet once when rerendered with the same orderBy", () => {
+      const canonicalizedOrderBy = { name: "asc" as const };
+      const observableClient = {
+        observeObjectSet: mockObserveObjectSet,
+        canonicalizeOptions: vitest.fn((_opts) => ({
+          ..._opts,
+          orderBy: canonicalizedOrderBy,
+        })),
+        invalidateObjectType: mockInvalidateObjectType,
+      } as any;
+
+      const wrapper = ({ children }: React.PropsWithChildren) => (
+        <OsdkContext.Provider value={{ observableClient }}>
+          {children}
+        </OsdkContext.Provider>
+      );
+
+      const { rerender } = renderHook(
+        ({ orderBy }) => useObjectSet(mockObjectSet, { orderBy }),
+        {
+          wrapper,
+          initialProps: { orderBy: { name: "asc" as const } },
+        },
+      );
+
+      expect(mockObserveObjectSet).toHaveBeenCalledTimes(1);
+
+      // Rerender with a new object that is structurally identical
+      rerender({ orderBy: { name: "asc" as const } });
+
+      expect(mockObserveObjectSet).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe("undefined objectSet", () => {
+    it("should not call observeObjectSet when objectSet is undefined", () => {
+      const wrapper = createWrapper();
+
+      const { result } = renderHook(
+        () => useObjectSet(undefined),
+        { wrapper },
+      );
+
+      expect(mockObserveObjectSet).not.toHaveBeenCalled();
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    it("should start observing when objectSet becomes defined", () => {
+      const wrapper = createWrapper();
+
+      const { rerender } = renderHook(
+        ({ objectSet }) => useObjectSet(objectSet),
+        {
+          wrapper,
+          initialProps: {
+            objectSet: undefined as typeof mockObjectSet | undefined,
+          },
+        },
+      );
+
+      expect(mockObserveObjectSet).not.toHaveBeenCalled();
+
+      rerender({ objectSet: mockObjectSet });
+
+      expect(mockObserveObjectSet).toHaveBeenCalledTimes(1);
     });
   });
 });

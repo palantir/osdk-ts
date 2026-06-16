@@ -15,7 +15,7 @@ import type {
 } from '@osdk/client';
 
 export namespace Todo {
-  export type PropertyKeys = 'id' | 'title' | 'isComplete';
+  export type PropertyKeys = 'id' | 'isComplete' | 'title';
 
   export type Links = {};
 
@@ -55,6 +55,8 @@ export interface Todo extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'Todo';
+  primaryKeyApiName: 'id';
+  primaryKeyType: 'string';
   __DefinitionMetadata?: {
     objectSet: Todo.ObjectSet;
     props: Todo.Props;
@@ -103,6 +105,8 @@ export const Todo = {
   type: 'object',
   apiName: 'Todo',
   osdkMetadata: $osdkMetadata,
+  primaryKeyApiName: 'id',
+  primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ridForTodo',
   },

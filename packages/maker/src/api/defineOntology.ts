@@ -46,6 +46,14 @@ import { createCodeSnippets } from "./code-snippets/createCodeSnippets.js";
 import type { OntologyDefinition } from "./common/OntologyDefinition.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import type { OntologyEntityType } from "./common/OntologyEntityTypeMapping.js";
+import type { InterfaceType } from "./interface/InterfaceType.js";
+import type {
+  IntermediaryObjectLinkReference,
+  LinkType,
+} from "./links/LinkType.js";
+import type { InterfaceImplementation } from "./object/InterfaceImplementation.js";
+import type { ObjectType } from "./object/ObjectType.js";
+import type { ObjectTypeDefinition } from "./object/ObjectTypeDefinition.js";
 
 // type -> apiName -> entity
 /** @internal */
@@ -179,7 +187,11 @@ export function writeStaticObjects(outputDir: string): void {
               : "");
           const filePath = path.join(typeDirPath, `${entityFileNameBase}.ts`);
           const entityTypeName = getEntityTypeName(ontologyTypeEnumKey);
-          const entityJSON = JSON.stringify(entity, null, 2).replace(
+          const entityJSON = JSON.stringify(
+            sanitizeTypes(entity),
+            null,
+            2,
+          ).replace(
             /("__type"\s*:\s*)"([^"]*)"/g,
             (_, prefix, value) => `${prefix}OntologyEntityTypeEnum.${value}`,
           );
@@ -251,6 +263,134 @@ export function buildDatasource(
   });
 }
 
+export function sanitizeTypes(
+  entity: OntologyEntityType,
+): OntologyEntityType {
+  switch (entity.__type) {
+    case OntologyEntityTypeEnum.INTERFACE_TYPE:
+      return filterCyclicReferences({
+        ...entity,
+        linkedInterfaces: (entity.linkedInterfaces ?? []).map(
+          interfaceTypeOrApiName =>
+            typeof interfaceTypeOrApiName === "string"
+              ? ontologyDefinition[OntologyEntityTypeEnum.INTERFACE_TYPE][
+                interfaceTypeOrApiName
+              ]
+              : interfaceTypeOrApiName,
+        ),
+      });
+    case OntologyEntityTypeEnum.OBJECT_TYPE:
+      return entity.implementsInterfaces === undefined
+        ? entity
+        : {
+          ...entity,
+          implementsInterfaces: sanitizeImplements(entity.implementsInterfaces),
+        };
+    case OntologyEntityTypeEnum.LINK_TYPE:
+      return sanitizeLinkInterfaces(entity);
+    default:
+      return entity;
+  }
+}
+
+function sanitizeImplements(
+  implementsInterfaces: Array<InterfaceImplementation>,
+): Array<InterfaceImplementation> {
+  return implementsInterfaces.map(impl => ({
+    ...impl,
+    implements: filterCyclicReferences(impl.implements),
+  }));
+}
+
+function sanitizeImplementer(
+  object: ObjectTypeDefinition | ObjectType,
+): ObjectTypeDefinition | ObjectType {
+  return object.implementsInterfaces === undefined
+    ? object
+    : {
+      ...object,
+      implementsInterfaces: sanitizeImplements(object.implementsInterfaces),
+    };
+}
+
+function sanitizeLinkSideObject(
+  object: ObjectTypeDefinition | ObjectType | string,
+): ObjectTypeDefinition | ObjectType | string {
+  return typeof object === "string" ? object : sanitizeImplementer(object);
+}
+
+function sanitizeLinkInterfaces(link: LinkType): LinkType {
+  if ("one" in link) {
+    return {
+      ...link,
+      one: { ...link.one, object: sanitizeLinkSideObject(link.one.object) },
+      toMany: {
+        ...link.toMany,
+        object: sanitizeLinkSideObject(link.toMany.object),
+      },
+    };
+  }
+  if ("intermediaryObjectType" in link) {
+    return {
+      ...link,
+      intermediaryObjectType: sanitizeImplementer(link.intermediaryObjectType),
+      many: sanitizeIntermediarySide(link.many),
+      toMany: sanitizeIntermediarySide(link.toMany),
+    };
+  }
+  return {
+    ...link,
+    many: { ...link.many, object: sanitizeLinkSideObject(link.many.object) },
+    toMany: {
+      ...link.toMany,
+      object: sanitizeLinkSideObject(link.toMany.object),
+    },
+  };
+}
+
+function sanitizeIntermediarySide(
+  side: IntermediaryObjectLinkReference,
+): IntermediaryObjectLinkReference {
+  return {
+    ...side,
+    object: sanitizeLinkSideObject(side.object),
+    linkToIntermediary: sanitizeLinkInterfaces(side.linkToIntermediary),
+  };
+}
+
+function filterCyclicReferences(
+  iface: InterfaceType,
+  ancestors = new Set<string>(),
+  expanded = new Set<string>(),
+): InterfaceType {
+  ancestors.add(iface.apiName);
+
+  const processLinked = (
+    linked: InterfaceType | string,
+  ): InterfaceType | string => {
+    if (typeof linked === "string") return linked;
+    if (ancestors.has(linked.apiName)) return linked.apiName;
+    if (expanded.has(linked.apiName)) {
+      const { linkedInterfaces: _, extendsInterfaces: __, ...shallow } = linked;
+      return {
+        ...shallow,
+        linkedInterfaces: [],
+        extendsInterfaces: [],
+      } as InterfaceType;
+    }
+    return filterCyclicReferences(linked, new Set(ancestors), expanded);
+  };
+
+  expanded.add(iface.apiName);
+  return {
+    ...iface,
+    linkedInterfaces: (iface.linkedInterfaces ?? []).map(processLinked),
+    extendsInterfaces: iface.extendsInterfaces.map(
+      parent => processLinked(parent) as InterfaceType,
+    ),
+  };
+}
+
 export function cleanAndValidateLinkTypeId(apiName: string): string {
   // Insert a dash before any uppercase letter that follows a lowercase letter or digit
   const step1 = apiName.replace(/([a-z0-9])([A-Z])/g, "$1-$2");
@@ -296,6 +436,13 @@ export function convertObjectStatus(status: any): any {
     return {
       type: "experimental",
       experimental: {},
+    };
+  }
+
+  if (status === "example") {
+    return {
+      type: "example",
+      example: {},
     };
   }
 
@@ -360,6 +507,7 @@ export function convertAction(
             }]
             : [],
           typeClasses: action.typeClasses ?? [],
+          applyingMessage: [],
           ...(action.submissionMetadata?.submitButtonDisplayMetadata
             && {
               submitButtonDisplayMetadata:
@@ -371,7 +519,7 @@ export function convertAction(
                 action.submissionMetadata.undoButtonConfiguration,
             }),
         },
-        parameterOrdering: parameterOrdering,
+        parameterOrdering,
         formContentOrdering: getFormContentOrdering(action, parameterOrdering),
         parameters: actionParameters,
         sections: actionSections,
@@ -430,13 +578,13 @@ export function extractAllowedValues(
           text: {
             ...(minLength === undefined
               ? {}
-              : { minLength: minLength }),
+              : { minLength }),
             ...(maxLength === undefined
               ? {}
-              : { maxLength: maxLength }),
+              : { maxLength }),
             ...(regex === undefined
               ? {}
-              : { regex: { regex: regex, failureMessage: "Invalid input" } }),
+              : { regex: { regex, failureMessage: "Invalid input" } }),
           },
         },
       };
@@ -650,4 +798,37 @@ addDependency("${namespaceNoDot}", new URL(import.meta.url).pathname);
 
 export function addNamespaceIfNone(apiName: string): string {
   return apiName.includes(".") ? apiName : namespace + apiName;
+}
+
+export function initializeOntologyState(ns: string): void {
+  namespace = ns;
+  dependencies = {};
+  ontologyDefinition = {
+    OBJECT_TYPE: {},
+    ACTION_TYPE: {},
+    LINK_TYPE: {},
+    INTERFACE_TYPE: {},
+    SHARED_PROPERTY_TYPE: {},
+    VALUE_TYPE: {},
+  };
+  importedTypes = {
+    SHARED_PROPERTY_TYPE: {},
+    OBJECT_TYPE: {},
+    ACTION_TYPE: {},
+    LINK_TYPE: {},
+    INTERFACE_TYPE: {},
+    VALUE_TYPE: {},
+  };
+}
+
+export function getOntologyDefinition(): OntologyDefinition {
+  return ontologyDefinition;
+}
+
+export function getImportedTypes(): OntologyDefinition {
+  return importedTypes;
+}
+
+export function getNamespace(): string {
+  return namespace;
 }

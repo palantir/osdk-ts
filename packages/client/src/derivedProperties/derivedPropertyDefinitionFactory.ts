@@ -105,7 +105,7 @@ export function derivedPropertyDefinitionFactory(
         value,
       ) {
         return derivedPropertyDefinitionFactory({
-          "type": "subtract",
+          "type": "divide",
           "left": wireDefinition,
           "right": getDefinitionFromMap(value, definitionMap),
         }, definitionMap);

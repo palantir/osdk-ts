@@ -15,12 +15,14 @@
  */
 
 import type { ActionType } from "./action/ActionType.js";
+import { cloneDefinition } from "./cloneDefinition.js";
 import type { InterfaceActionTypeUserDefinition } from "./defineAction.js";
 import { defineAction, kebab } from "./defineAction.js";
 
 export function defineDeleteInterfaceObjectAction(
-  def: InterfaceActionTypeUserDefinition,
+  defInput: InterfaceActionTypeUserDefinition,
 ): ActionType {
+  const def = cloneDefinition(defInput);
   return defineAction({
     apiName: def.apiName
       ?? `delete-interface-object-${
@@ -58,6 +60,7 @@ export function defineDeleteInterfaceObjectAction(
       affectedLinkTypes: [],
       typeGroups: [],
     },
+    ...(def.permission && { permission: def.permission }),
     ...(def.icon && { icon: def.icon }),
   });
 }

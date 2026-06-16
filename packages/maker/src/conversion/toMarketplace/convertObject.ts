@@ -17,17 +17,19 @@
 import type {
   OntologyIrDerivedPropertiesDefinition,
   OntologyIrDerivedPropertyAggregation,
+  OntologyIrEditsHistory,
   OntologyIrObjectTypeBlockDataV2,
   OntologyIrObjectTypeDatasource,
   OntologyIrObjectTypeDatasourceDefinition,
   OntologyIrPropertyType,
 } from "@osdk/client.unstable";
+import invariant from "tiny-invariant";
 import {
-  addNamespaceIfNone,
   buildDatasource,
   cleanAndValidateLinkTypeId,
   convertObjectStatus,
 } from "../../api/defineOntology.js";
+import type { EditsHistoryConfig } from "../../api/object/EditsHistoryConfig.js";
 import type { ObjectPropertyType } from "../../api/object/ObjectPropertyType.js";
 import type { ObjectType } from "../../api/object/ObjectType.js";
 import type {
@@ -81,6 +83,19 @@ export function convertObject(
 
   const implementations = objectType.implementsInterfaces ?? [];
 
+  for (const impl of implementations) {
+    const requiredConstraints = (impl.implements.actionTypeConstraints ?? [])
+      .filter(constraint => constraint.requireImplementation);
+    invariant(
+      requiredConstraints.length === 0,
+      `Object "${objectType.apiName}" implements interface "${impl.implements.apiName}" which has required action type constraints: ${
+        requiredConstraints.map(constraint => constraint.metadata.apiName).join(
+          ", ",
+        )
+      }. Action type constraint implementation is not yet supported in OAC. Set requireImplementation to false and manually implement the constraint after installation.`,
+    );
+  }
+
   return {
     objectType: {
       displayMetadata: {
@@ -107,14 +122,15 @@ export function convertObject(
       implementsInterfaces2: implementations.map(impl => ({
         interfaceTypeApiName: impl.implements.apiName,
         linksV2: {},
-        propertiesV2: {},
-        properties: Object.fromEntries(
-          impl.propertyMapping.map(
-            mapping => [addNamespaceIfNone(mapping.interfaceProperty), {
-              propertyTypeRid: mapping.mapsTo,
+        propertiesV2: Object.fromEntries(impl.propertyMapping
+          .map(
+            mappings => [mappings.interfaceProperty, {
+              type: "propertyTypeRid",
+              propertyTypeRid: mappings.mapsTo,
             }],
-          ),
-        ),
+          )),
+        properties: {},
+        actionTypes: {},
       })),
       allImplementsInterfaces: {},
     },
@@ -123,7 +139,18 @@ export function convertObject(
       ...derivedDatasources,
       objectDatasource,
     ],
-    entityMetadata: { arePatchesEnabled: objectType.editsEnabled ?? false },
+    entityMetadata: {
+      arePatchesEnabled: objectType.editsEnabled ?? false,
+      aliases: objectType.aliases ?? [],
+      editsHistory: convertEditsHistory(
+        objectType.apiName,
+        objectType.editsHistoryConfig,
+      ),
+    },
+    propertySecurityGroupPackagingVersion: {
+      type: "v2",
+      v2: {},
+    },
   };
 }
 
@@ -172,6 +199,7 @@ export function extractPropertyDatasource(
           assumedMarkings: [],
           mediaSetViewLocator: identifier,
           properties: [property.apiName],
+          uploadProperties: [],
         },
       };
       return [buildDatasource(property.apiName, mediaSetDefinition)];
@@ -188,6 +216,17 @@ function extractDerivedDatasources(
 } {
   const inputDerivedDatasources = (objectType.datasources ?? []).filter(ds =>
     ds.type === "derived"
+  );
+  const propertyApiNames = new Set(
+    (objectType.properties ?? []).map(prop => prop.apiName),
+  );
+  inputDerivedDatasources.forEach(ds =>
+    Object.keys(ds.propertyMapping).forEach(prop =>
+      invariant(
+        propertyApiNames.has(prop),
+        `Property '${prop}' used in derived datasource for object '${objectType.apiName}' is not defined.`,
+      )
+    )
   );
   const derivedDatasources = inputDerivedDatasources.map((ds, i) =>
     buildDerivedDatasource(ds, i, objectType.apiName)
@@ -268,13 +307,13 @@ function buildAggregation(
   const innerDef: any = {};
   if (type !== "count") {
     if (["collectList", "collectSet"].includes(type)) {
-      innerDef["linkedProperty"] = {
+      innerDef.linkedProperty = {
         type: "propertyType",
         propertyType: foreignProperty,
       };
-      innerDef["limit"] = limit;
+      innerDef.limit = limit;
     } else {
-      innerDef["property"] = {
+      innerDef.property = {
         type: "propertyType",
         propertyType: foreignProperty,
       };
@@ -284,4 +323,25 @@ function buildAggregation(
     type,
     [type]: innerDef,
   } as unknown as OntologyIrDerivedPropertyAggregation;
+}
+
+function convertEditsHistory(
+  apiName: string,
+  config?: EditsHistoryConfig,
+): OntologyIrEditsHistory | undefined {
+  if (config) {
+    return config.enabled
+      ? {
+        type: "config",
+        config: {
+          store: apiName,
+          storeAllPreviousProperties: config.storeAllPreviousProperties,
+        },
+      }
+      : {
+        type: "none",
+        none: {},
+      };
+  }
+  return undefined;
 }

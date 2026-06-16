@@ -4,6 +4,7 @@ consola
 dprint
 Emittery
 execa
+genai
 immer
 jiti
 luxon
@@ -17,5 +18,7 @@ Momentjs
 monorepolint
 ngeohash
 npmjs
+trivago
 tsup
 timecode
+utif

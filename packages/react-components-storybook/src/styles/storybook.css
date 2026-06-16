@@ -1,0 +1,139 @@
+/* Global styles for Storybook */
+body {
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Needed for BaseUI popover - creates stacking context */
+.root {
+  isolation: isolate;
+}
+
+/* Status tag styles */
+.status-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-tag.active {
+  background-color: #10b981;
+  color: white;
+}
+
+.status-tag.inactive {
+  background-color: #ef4444;
+  color: white;
+}
+
+/* Header link styles */
+.header-link {
+  color: #3b82f6;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.header-link:hover {
+  color: #2563eb;
+}
+
+.osdkFormCard {
+  --osdk-form-label-font-size: var(--osdk-typography-size-body-small);
+  --osdk-form-content-padding-inline: calc(var(--osdk-surface-spacing) * 4);
+  --osdk-form-content-padding-block: calc(var(--osdk-surface-spacing) * 4);
+
+  max-width: 480px;
+  width: 100%;
+  background: var(--osdk-background-primary);
+  border: var(--osdk-surface-border-width) solid
+    var(--osdk-surface-border-color-default);
+  border-radius: var(--osdk-surface-border-radius);
+  color: var(--osdk-typography-color-default-rest);
+}
+
+.osdkFormStorySpacing {
+  margin-bottom: calc(var(--osdk-surface-spacing) * 4);
+}
+
+.osdkBlueprintDialogForm {
+  --osdk-form-content-padding-inline: calc(var(--osdk-surface-spacing) * 4);
+  --osdk-form-content-padding-block: calc(var(--osdk-surface-spacing) * 4);
+
+  width: min(480px, calc(100vw - calc(var(--osdk-surface-spacing) * 8)));
+  max-height: calc(100vh - calc(var(--osdk-surface-spacing) * 16));
+}
+
+.osdkCustomChoiceGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--osdk-surface-spacing) * 2);
+}
+
+.osdkCustomChoiceButton {
+  padding: var(--osdk-surface-spacing) calc(var(--osdk-surface-spacing) * 2);
+  border: var(--osdk-surface-border-width) solid
+    var(--osdk-surface-border-color-default);
+  border-radius: var(--osdk-surface-border-radius);
+  background: var(--osdk-surface-background-color-default-rest);
+  color: var(--osdk-typography-color-default-rest);
+  font: inherit;
+}
+
+.osdkCustomChoiceButtonSelected {
+  background: var(--osdk-background-secondary);
+  border-color: var(--osdk-typography-color-muted);
+}
+
+.osdkCustomChoiceButton:disabled {
+  cursor: not-allowed;
+  opacity: var(--osdk-disabled-opacity);
+}
+
+/* Row highlight for RowAttributesForStyling story */
+.customTableStyling {
+  tr[data-highlight-row="true"] {
+    --osdk-table-row-bg-default: #f0f8ff;
+    --osdk-table-row-bg-alternate: #e8f4ff;
+    --osdk-table-row-bg-hover: #e0f0ff;
+  }
+}
+
+/* Dark-mode highlight values for the same rows. Activated by the
+   `data-bp-color-scheme="dark"` attribute that `<OsdkThemeProvider>`
+   writes onto the document root. */
+[data-bp-color-scheme="dark"] .customTableStyling {
+  tr[data-highlight-row="true"] {
+    --osdk-table-row-bg-default: #1c2a3a;
+    --osdk-table-row-bg-alternate: #182230;
+    --osdk-table-row-bg-hover: #213548;
+  }
+}
+
+.osdkCodeOutput {
+  margin: 0;
+  padding: calc(var(--osdk-surface-spacing) * 3);
+  border-radius: var(--osdk-surface-border-radius);
+  background: var(--osdk-background-secondary);
+  color: var(--osdk-typography-color-default-rest);
+  overflow: auto;
+  font-size: var(--osdk-typography-size-body-small);
+  max-height: 300px;
+}
+
+.osdkRichDropdownLabel {
+  display: inline-flex;
+  flex-direction: column;
+  gap: calc(var(--osdk-surface-spacing) * 0.5);
+  min-width: 0;
+}
+
+.osdkRichDropdownDescription {
+  color: var(--osdk-typography-color-muted);
+  font-size: var(--osdk-typography-size-body-small);
+}

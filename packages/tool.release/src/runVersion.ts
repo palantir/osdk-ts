@@ -56,7 +56,7 @@ import {
   getChangelogEntry,
   sortChangelogEntries,
 } from "@changesets/release-utils";
-import type { Config } from "@changesets/types";
+import type { ComprehensiveRelease, Config } from "@changesets/types";
 import { getPackages } from "@manypkg/get-packages";
 import { consola } from "consola";
 import * as fs from "node:fs";
@@ -202,7 +202,10 @@ export async function runVersion({
     originalVersionsByDirectory,
   );
 
-  const finalPrTitle = `${prTitle}${!!preState ? ` (${preState.tag})` : ""}`;
+  const mainPackageVersion = getMainPackageVersion(releasePlan.releases);
+  const finalPrTitle = `${prTitle}${
+    mainPackageVersion ? ` ${mainPackageVersion}` : ""
+  }${!!preState ? ` (${preState.tag})` : ""}`;
 
   if (!runGitCommands) {
     consola.warn("Skipping: commit, push, createPr");
@@ -272,6 +275,22 @@ async function getSortedChangedPackagesInfo(
   return changedPackagesInfo
     .filter((x) => x)
     .sort(sortChangelogEntries);
+}
+
+const MAIN_PACKAGES = ["@osdk/client", "@osdk/api"] as const;
+
+function getMainPackageVersion(
+  releases: ReadonlyArray<ComprehensiveRelease>,
+): string | undefined {
+  for (const name of MAIN_PACKAGES) {
+    const release = releases.find(
+      (r) => r.name === name && r.type !== "none",
+    );
+    if (release) {
+      return release.newVersion;
+    }
+  }
+  return undefined;
 }
 
 export async function getExistingPr(

@@ -57,6 +57,15 @@ export interface LocalStorageState {
   requestedScopes?: string;
 }
 
+/**
+ * Specifies where to store refresh tokens.
+ *
+ * - `'localStorage'`: Tokens persist across browser sessions. Best UX but vulnerable on shared devices without browser separation.
+ * - `'sessionStorage'`: Tokens cleared when browser/tab closes. Recommended for shared devices.
+ * - `'none'`: Tokens never stored. Users re-authenticate on every page load.
+ */
+export type TokenStorageType = "localStorage" | "sessionStorage" | "none";
+
 export type SessionStorageState =
   // when we are going to the login page
   | {
@@ -81,25 +90,52 @@ function localStorageKey(client: Client) {
   return `@osdk/oauth : refresh : ${client.client_id}`;
 }
 
-export function saveLocal(client: Client, x: LocalStorageState): void {
-  // MUST `localStorage?` as nodejs does not have localStorage
-  globalThis.localStorage?.setItem(
+/**
+ * Returns the appropriate Storage object based on the storage type.
+ * Returns undefined if storage type is 'none' or if running in Node.js (where storage APIs don't exist).
+ *
+ * Call this once at client initialization and pass the result to storage functions.
+ */
+export function getStorage(
+  storageType: TokenStorageType,
+): Storage | undefined {
+  if (storageType === "none") return undefined;
+
+  // Node.js doesn't have Web Storage APIs
+  if (process.env.TARGET !== "browser") {
+    return undefined;
+  }
+
+  if (storageType === "sessionStorage") return globalThis.sessionStorage;
+  return globalThis.localStorage;
+}
+
+export function saveLocal(
+  client: Client,
+  x: LocalStorageState,
+  storage: Storage | undefined,
+): void {
+  storage?.setItem(
     localStorageKey(client),
     JSON.stringify(x),
   );
 }
 
-export function removeLocal(client: Client): void {
-  // MUST `localStorage?` as nodejs does not have localStorage
-  globalThis.localStorage?.removeItem(
+export function removeLocal(
+  client: Client,
+  storage: Storage | undefined,
+): void {
+  storage?.removeItem(
     localStorageKey(client),
   );
 }
 
-export function readLocal(client: Client): LocalStorageState {
+export function readLocal(
+  client: Client,
+  storage: Storage | undefined,
+): LocalStorageState {
   return JSON.parse(
-    // MUST `localStorage?` as nodejs does not have localStorage
-    globalThis.localStorage?.getItem(
+    storage?.getItem(
       localStorageKey(client),
     )
       ?? "{}",
@@ -141,6 +177,7 @@ export function common<
   refresh: R,
   refreshTokenMarker: string | undefined,
   scopes: string,
+  storage: Storage | undefined,
 ): {
   getToken: BaseOauthClient<keyof Events & string> & { refresh: R };
   makeTokenAndSaveRefresh: (
@@ -161,7 +198,7 @@ export function common<
       refresh_token,
       refreshTokenMarker,
       requestedScopes: scopes,
-    });
+    }, storage);
     token = {
       refresh_token,
       expires_in,
@@ -208,7 +245,7 @@ export function common<
     rmTimeout();
 
     // Clean up
-    removeLocal(client);
+    removeLocal(client, storage);
     token = undefined;
     throwIfError(result);
     eventTarget.dispatchTypedEvent("signOut", new Event("signOut"));

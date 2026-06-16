@@ -1,0 +1,129 @@
+# @osdk/cbac-components
+
+> **DEPRECATED / RELOCATED**: The CBAC components have been merged into [`@osdk/react-components`](https://github.com/palantir/osdk-ts/tree/main/packages/react-components) and are now exported from `@osdk/react-components/experimental/cbac-picker`. This package is kept in the repository for legacy reference only and is no longer the source of truth. **New consumers should import from `@osdk/react-components`.** See [`packages/react-components/docs/CbacPicker.md`](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/CbacPicker.md) for usage.
+
+> **Beta Release**: This package is currently in beta. Please use the latest beta version for the most up-to-date features and fixes.
+
+React components for managing [classification-based access control (CBAC)](https://www.palantir.com/docs/foundry/security/classification-based-access-controls/) markings. CBAC markings control who can access data — each piece of data can be tagged with markings from different categories, and the combination determines its access restrictions.
+
+These components are OSDK-aware — pass in marking IDs, and they handle data loading, restriction computation, and banner display automatically. Built on top of [@osdk/react](../react).
+
+## Installation
+
+> If your tooling already installs dependencies, skip this section.
+
+Use whichever package manager your project uses:
+
+```sh
+# npm
+npm install @osdk/cbac-components@beta
+
+# pnpm
+pnpm add @osdk/cbac-components@beta
+
+# yarn
+yarn add @osdk/cbac-components@beta
+```
+
+**Peer Dependencies:**
+
+```sh
+# npm
+npm install react react-dom classnames @osdk/react @osdk/react-components
+
+# pnpm
+pnpm add react react-dom classnames @osdk/react @osdk/react-components
+
+# yarn
+yarn add react react-dom classnames @osdk/react @osdk/react-components
+```
+
+- `react`, `@types/react`, `react-dom` - React 17, 18, or 19
+- `classnames` - Utility for conditionally joining CSS class names
+- `@osdk/react` - OSDK React hooks for data fetching
+- `@osdk/react-components` - Shared primitives (Dialog)
+
+**Prerequisites:**
+
+- A configured OSDK client
+- An OsdkProvider wrapping your application
+
+## Setup
+
+### App Setup
+
+**REQUIRED:** Wrap app with OsdkProvider:
+
+```tsx
+import { createClient } from "@osdk/client";
+import { OsdkProvider } from "@osdk/react";
+
+const client = createClient(/* config */);
+
+function App() {
+  return <OsdkProvider client={client}>{/* components */}</OsdkProvider>;
+}
+```
+
+### CSS Setup
+
+Add the CBAC component styles to your application's entry CSS file:
+
+```css
+@import "@osdk/cbac-components/styles.css";
+```
+
+If using CSS layers with `@osdk/react-components`:
+
+```css
+@layer osdk.styles;
+
+@import "@osdk/react-components/styles.css" layer(osdk.styles);
+@import "@osdk/cbac-components/styles.css" layer(osdk.styles);
+```
+
+## Components
+
+| Component          | Description                                                                   | Documentation                 |
+| ------------------ | ----------------------------------------------------------------------------- | ----------------------------- |
+| `CbacPicker`       | Inline marking picker with selection, restrictions, and classification banner | [Guide](./docs/CbacPicker.md) |
+| `CbacPickerDialog` | Dialog wrapper for the picker with confirm/cancel and validation              | [Guide](./docs/CbacPicker.md) |
+
+## Component Architecture
+
+This package follows the same layered architecture as `@osdk/react-components`:
+
+### OSDK Component Layer (e.g., `CbacPicker`, `CbacPickerDialog`)
+
+- Handles data fetching using `@osdk/react` hooks (`useMarkingCategories`, `useMarkings`, `useCbacBanner`, `useCbacMarkingRestrictions`)
+- Computes derived state (marking states, validation, required groups)
+- Passes primitive data to the base component
+
+### Base Component Layer (e.g., `BaseCbacPicker`, `BaseCbacBanner`, `BaseCbacPickerDialog`)
+
+- Pure components with no OSDK imports
+- Contains all UI interactions and styling
+- Accepts primitive props (strings, arrays, Maps)
+- Can be reused with custom data fetching
+
+## Quick Example
+
+```tsx
+import { CbacPicker } from "@osdk/cbac-components/experimental";
+import { useState } from "react";
+
+function ClassificationForm() {
+  const [markingIds, setMarkingIds] = useState<string[]>([]);
+
+  return (
+    <CbacPicker
+      initialMarkingIds={markingIds}
+      onChange={setMarkingIds}
+    />
+  );
+}
+```
+
+## License
+
+Apache 2.0

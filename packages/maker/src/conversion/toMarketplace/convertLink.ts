@@ -17,15 +17,17 @@
 import type {
   OntologyIrLinkDefinition,
   OntologyIrLinkTypeBlockDataV2,
+  OntologyIrLinkTypeStatus,
   OntologyIrManyToManyLinkTypeDatasource,
 } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
 import { OntologyEntityTypeEnum } from "../../api/common/OntologyEntityTypeEnum.js";
 import {
   cleanAndValidateLinkTypeId,
+  importedTypes,
   ontologyDefinition,
 } from "../../api/defineOntology.js";
-import type { LinkType } from "../../api/links/LinkType.js";
+import type { LinkType, UserLinkTypeStatus } from "../../api/links/LinkType.js";
 import type { ObjectType } from "../../api/object/ObjectType.js";
 import type { ObjectTypeDefinition } from "../../api/object/ObjectTypeDefinition.js";
 import { convertCardinality } from "./convertCardinality.js";
@@ -35,8 +37,7 @@ export function convertLink(
 ): OntologyIrLinkTypeBlockDataV2 {
   validateLink(linkType);
   let definition: OntologyIrLinkDefinition;
-  let datasource: OntologyIrManyToManyLinkTypeDatasource | undefined =
-    undefined;
+  let datasource: OntologyIrManyToManyLinkTypeDatasource | undefined;
   if ("one" in linkType) {
     const { apiName: oneObjectApiName, object: oneObject } = getObject(
       linkType.one.object,
@@ -94,6 +95,13 @@ export function convertLink(
     const { apiName: toManyObjectApiName, object: toManyObject } = getObject(
       linkType.toMany.object,
     );
+
+    const columnA = manyObject.primaryKeyPropertyApiName;
+    const columnB = toManyObject.primaryKeyPropertyApiName;
+    const hasCollision = columnA === columnB;
+    const resolvedColumnA = hasCollision ? `${columnA}_from` : columnA;
+    const resolvedColumnB = hasCollision ? `${columnB}_to` : columnB;
+
     definition = {
       type: "manyToMany",
       manyToMany: {
@@ -137,14 +145,14 @@ export function convertLink(
               apiName: manyObject.primaryKeyPropertyApiName,
               object: manyObjectApiName,
             },
-            column: manyObject.primaryKeyPropertyApiName,
+            column: resolvedColumnA,
           }],
           objectTypeBPrimaryKeyMapping: [{
             property: {
               apiName: toManyObject.primaryKeyPropertyApiName,
               object: toManyObjectApiName,
             },
-            column: toManyObject.primaryKeyPropertyApiName,
+            column: resolvedColumnB,
           }],
         },
       },
@@ -157,9 +165,9 @@ export function convertLink(
 
   return {
     linkType: {
-      definition: definition,
+      definition,
       id: cleanAndValidateLinkTypeId(linkType.apiName),
-      status: linkType.status ?? { type: "active", active: {} },
+      status: convertLinkStatus(linkType.status),
       redacted: linkType.redacted ?? false,
     },
     datasources: datasource !== undefined ? [datasource] : [],
@@ -247,14 +255,41 @@ function validateLink(linkDefinition: LinkType) {
 }
 
 export function getObject(
-  object: string | ObjectTypeDefinition,
+  object: string | ObjectTypeDefinition | ObjectType,
 ): { apiName: string; object: ObjectType } {
   const objectApiName = typeof object === "string" ? object : object.apiName;
   const fullObject =
-    ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE][objectApiName];
+    ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE][objectApiName]
+      ?? importedTypes[OntologyEntityTypeEnum.OBJECT_TYPE][objectApiName];
   invariant(
     fullObject !== undefined,
     `Object ${objectApiName} is not defined`,
   );
   return { apiName: objectApiName, object: fullObject };
+}
+
+export function convertLinkStatus(
+  status: UserLinkTypeStatus | undefined,
+): OntologyIrLinkTypeStatus {
+  if (
+    typeof status === "object" && "type" in status
+    && status.type === "deprecated"
+  ) {
+    return {
+      type: "deprecated",
+      deprecated: {
+        message: status.message,
+        deadline: status.deadline,
+      },
+    };
+  }
+  switch (status) {
+    case "experimental":
+      return { type: "experimental", experimental: {} };
+    case "example":
+      return { type: "example", example: {} };
+    case "active":
+    default:
+      return { type: "active", active: {} };
+  }
 }

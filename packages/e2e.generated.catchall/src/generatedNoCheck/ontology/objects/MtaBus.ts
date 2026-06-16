@@ -15,7 +15,7 @@ import type {
 } from '@osdk/client';
 
 export namespace MtaBus {
-  export type PropertyKeys = 'vehicleId' | 'nextStopId' | 'routeId' | 'positionId';
+  export type PropertyKeys = 'nextStopId' | 'positionId' | 'routeId' | 'vehicleId';
 
   export type Links = {};
 
@@ -57,6 +57,8 @@ export interface MtaBus extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'MtaBus';
+  primaryKeyApiName: 'vehicleId';
+  primaryKeyType: 'string';
   __DefinitionMetadata?: {
     objectSet: MtaBus.ObjectSet;
     props: MtaBus.Props;
@@ -107,6 +109,8 @@ export const MtaBus = {
   type: 'object',
   apiName: 'MtaBus',
   osdkMetadata: $osdkMetadata,
+  primaryKeyApiName: 'vehicleId',
+  primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
   },

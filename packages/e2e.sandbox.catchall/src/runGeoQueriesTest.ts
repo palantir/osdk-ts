@@ -139,6 +139,11 @@ export async function runGeoQueriesTest(
       },
     });
   }
+
+  const statesContainingAko = await client(BoundariesUsState).where({
+    "name": { $matchesRegex: ".{0,}ako.{0,}" },
+  }).fetchPage();
+  console.log(statesContainingAko.data.map(data => data.name));
 }
 
 void runGeoQueriesTest();

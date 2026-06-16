@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export { createMediaFromReference } from "../createMediaFromReference.js";
 export { createAndFetchTempObjectSetRid } from "../public-utils/createAndFetchTempObjectSetRid.js";
 export { hydrateAttachmentFromRid } from "../public-utils/hydrateAttachmentFromRid.js";
 export { hydrateObjectSetFromObjectRids } from "../public-utils/hydrateObjectSetFromObjectRids.js";

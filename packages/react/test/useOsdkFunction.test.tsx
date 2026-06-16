@@ -1,0 +1,257 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import type { ObjectTypeDefinition, Osdk, QueryDefinition } from "@osdk/api";
+import type { ObservableClient } from "@osdk/client/observable";
+import { act, renderHook } from "@testing-library/react";
+import * as React from "react";
+import { beforeEach, describe, expect, it, vi, vitest } from "vitest";
+import { OsdkContext } from "../src/new/OsdkContext.js";
+import { useOsdkFunction } from "../src/new/useOsdkFunction.js";
+
+vi.mock("@osdk/client", async (importOriginal) => {
+  const actual = await importOriginal<{}>();
+  const MOCK_WIRE_FORM = Symbol.for("test.mockWireForm");
+  return {
+    ...actual,
+    isObjectSet: (o: unknown): boolean =>
+      o != null && typeof o === "object"
+      && (o as Record<symbol, unknown>)[MOCK_WIRE_FORM] !== undefined,
+    getWireObjectSet: (o: unknown): unknown =>
+      (o as Record<symbol, unknown>)[MOCK_WIRE_FORM],
+  };
+});
+
+const MockQueryDef: QueryDefinition<unknown> = {
+  type: "query",
+  apiName: "mockFunction",
+  version: "1.0.0",
+  isFixedVersion: false,
+  parameters: {},
+  output: { type: "integer" },
+};
+
+const MockObjectType: ObjectTypeDefinition = {
+  type: "object",
+  apiName: "MockObject",
+  primaryKeyApiName: "id",
+  primaryKeyType: "string",
+  properties: {},
+  links: {},
+};
+
+describe("useOsdkFunction", () => {
+  const mockObserveFunction = vitest.fn();
+  const mockInvalidateFunction = vitest.fn();
+
+  const createWrapper = () => {
+    const observableClient: Partial<ObservableClient> = {
+      observeFunction: mockObserveFunction,
+      invalidateFunction: mockInvalidateFunction,
+    };
+
+    return ({ children }: React.PropsWithChildren) => (
+      <OsdkContext.Provider
+        value={{
+          observableClient: observableClient as ObservableClient,
+          devtoolsEnabled: false,
+        }}
+      >
+        {children}
+      </OsdkContext.Provider>
+    );
+  };
+
+  beforeEach(() => {
+    mockObserveFunction.mockClear();
+    mockInvalidateFunction.mockClear();
+    mockObserveFunction.mockReturnValue({ unsubscribe: vitest.fn() });
+    mockInvalidateFunction.mockResolvedValue(undefined);
+  });
+
+  it("should NOT call observeFunction when enabled is false", () => {
+    const wrapper = createWrapper();
+
+    renderHook(
+      () => useOsdkFunction(MockQueryDef, { enabled: false }),
+      { wrapper },
+    );
+
+    expect(mockObserveFunction).not.toHaveBeenCalled();
+  });
+
+  it("should start observing when enabled changes from false to true", () => {
+    const wrapper = createWrapper();
+
+    const { rerender } = renderHook(
+      ({ enabled }) => useOsdkFunction(MockQueryDef, { enabled }),
+      {
+        wrapper,
+        initialProps: { enabled: false },
+      },
+    );
+
+    expect(mockObserveFunction).not.toHaveBeenCalled();
+
+    rerender({ enabled: true });
+
+    expect(mockObserveFunction).toHaveBeenCalledTimes(1);
+  });
+
+  it("should call observeFunction with correct arguments", () => {
+    const wrapper = createWrapper();
+
+    const mockObject: Osdk.Instance<ObjectTypeDefinition> = {
+      $apiName: "MockObject",
+      $primaryKey: "pk-123",
+      $objectType: "MockObject",
+      $title: "Mock Object",
+    };
+
+    renderHook(
+      () =>
+        useOsdkFunction(MockQueryDef, {
+          params: { id: "123" },
+          dependsOn: [MockObjectType],
+          dependsOnObjects: [mockObject],
+          dedupeIntervalMs: 5000,
+        }),
+      { wrapper },
+    );
+
+    expect(mockObserveFunction).toHaveBeenCalledTimes(1);
+    expect(mockObserveFunction).toHaveBeenCalledWith(
+      MockQueryDef,
+      { id: "123" },
+      expect.objectContaining({
+        dependsOn: [MockObjectType],
+        dependsOnObjects: [mockObject],
+        dedupeInterval: 5000,
+      }),
+      expect.any(Object),
+    );
+  });
+
+  it("should call invalidateFunction when refetch is called", () => {
+    const wrapper = createWrapper();
+
+    const { result } = renderHook(
+      () => useOsdkFunction(MockQueryDef, { params: { id: "123" } }),
+      { wrapper },
+    );
+
+    act(() => {
+      result.current.refetch();
+    });
+
+    expect(mockInvalidateFunction).toHaveBeenCalledTimes(1);
+    expect(mockInvalidateFunction).toHaveBeenCalledWith(
+      MockQueryDef,
+      { id: "123" },
+    );
+  });
+
+  it("should return isLoading true when status is loading", () => {
+    const wrapper = createWrapper();
+
+    const { result } = renderHook(
+      () => useOsdkFunction(MockQueryDef, { params: { id: "123" } }),
+      { wrapper },
+    );
+
+    const observer = mockObserveFunction.mock.calls[0][3];
+
+    act(() => {
+      observer.next({ status: "loading", result: undefined, lastUpdated: 0 });
+    });
+
+    expect(result.current.isLoading).toBe(true);
+    expect(result.current.data).toBeUndefined();
+  });
+
+  it("should return error when payload has error", () => {
+    const wrapper = createWrapper();
+
+    const { result } = renderHook(
+      () => useOsdkFunction(MockQueryDef, { params: { id: "123" } }),
+      { wrapper },
+    );
+
+    const observer = mockObserveFunction.mock.calls[0][3];
+    const testError = new Error("Test error");
+
+    act(() => {
+      observer.next({
+        status: "error",
+        result: undefined,
+        lastUpdated: 0,
+        error: testError,
+      });
+    });
+
+    expect(result.current.error).toBe(testError);
+    expect(result.current.isLoading).toBe(false);
+    expect(result.current.data).toBeUndefined();
+  });
+
+  describe("params memoization", () => {
+    const MOCK_WIRE_FORM = Symbol.for("test.mockWireForm");
+
+    function makeMockObjectSet(wireForm: object): object {
+      const o: Record<PropertyKey, unknown> = {};
+      Object.defineProperty(o, MOCK_WIRE_FORM, {
+        enumerable: false,
+        configurable: true,
+        writable: true,
+        value: wireForm,
+      });
+      return o;
+    }
+
+    it(
+      "should re-subscribe when params contains ObjectSets with different "
+        + "filter chains",
+      () => {
+        const wrapper = createWrapper();
+
+        const osA = makeMockObjectSet({
+          type: "filter",
+          objectSet: { type: "base", objectType: "Employee" },
+          where: { type: "eq", field: "dept", value: "A" },
+        });
+        const osB = makeMockObjectSet({
+          type: "filter",
+          objectSet: { type: "base", objectType: "Employee" },
+          where: { type: "eq", field: "dept", value: "B" },
+        });
+
+        const { rerender } = renderHook(
+          ({ os }: { os: object }) =>
+            useOsdkFunction(MockQueryDef, {
+              params: { someInput: os } as unknown as Record<string, unknown>,
+            }),
+          { wrapper, initialProps: { os: osA } },
+        );
+
+        expect(mockObserveFunction).toHaveBeenCalledTimes(1);
+
+        rerender({ os: osB });
+
+        expect(mockObserveFunction).toHaveBeenCalledTimes(2);
+      },
+    );
+  });
+});

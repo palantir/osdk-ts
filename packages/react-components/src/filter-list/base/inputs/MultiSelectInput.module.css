@@ -1,0 +1,92 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.multiSelect {
+  display: flex;
+  flex-direction: column;
+  gap: var(--osdk-filter-multiselect-gap);
+  transition: opacity var(--osdk-filter-content-fade-duration);
+}
+
+.multiSelect[data-loading="true"] {
+  opacity: 0.5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .multiSelect {
+    transition: none;
+  }
+}
+
+.itemLabel {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.itemCount {
+  font-family: var(--osdk-filter-multiselect-count-font-family);
+  font-size: var(--osdk-filter-multiselect-count-font-size);
+  font-variant-numeric: tabular-nums;
+  color: var(--osdk-filter-multiselect-count-color);
+  flex-shrink: 0;
+}
+
+/* Muted styling for filtered-out (count=0) entries. */
+.filteredOutItem {
+  --osdk-filter-multiselect-count-color: var(
+    --osdk-filter-filtered-out-item-color
+  );
+
+  color: var(--osdk-filter-filtered-out-item-color);
+}
+
+.inlineInput {
+  font-family: var(--osdk-filter-input-font-family);
+  font-size: var(--osdk-filter-input-font-size);
+  padding: var(--osdk-filter-input-padding);
+  border: var(--osdk-filter-input-border);
+  border-radius: var(--osdk-filter-input-border-radius);
+  background: var(--osdk-filter-input-bg);
+  color: var(--osdk-filter-input-color);
+  outline: none;
+  width: 100%;
+
+  &:focus {
+    border-color: var(--osdk-filter-input-focus-border);
+    outline: var(--osdk-filter-input-focus-outline-width) solid var(--osdk-filter-input-focus-outline-color);
+    outline-offset: var(--osdk-filter-input-focus-outline-offset);
+  }
+
+  &::placeholder {
+    color: var(--osdk-filter-input-placeholder-color);
+  }
+}
+
+.inlineEmpty {
+  font-family: var(--osdk-filter-message-font-family);
+  font-size: var(--osdk-filter-message-font-size);
+  padding: var(--osdk-filter-message-padding);
+  color: var(--osdk-filter-message-color-muted);
+}
+
+.inlineList {
+  display: flex;
+  flex-direction: column;
+  outline: none;
+}

@@ -22,6 +22,7 @@ import {
 } from "../../../object/convertWireToOsdkObjects/InternalSymbols.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { SimpleOsdkProperties } from "../../../object/SimpleOsdkProperties.js";
+import type { FetchedObjectTypeDefinition } from "../../../ontology/OntologyProvider.js";
 import type { Canonical } from "../Canonical.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
 
@@ -34,6 +35,30 @@ export function extractRdpFieldNames(
   return new Set(Object.keys(rdpConfig));
 }
 
+/**
+ * Throws a clear, actionable error if `objectDef` is undefined. The RDP merge
+ * path operates on concrete `ObjectHolder`s only; if an `InterfaceHolder` ever
+ * leaks through without being unwrapped via `storeOsdkInstances`, the missing
+ * ObjectDefRef would surface as a confusing "cannot read property 'properties'
+ * of undefined" crash. Use this helper to gate access to `objectDef.properties`
+ * so the failure mode names the actual invariant violation.
+ */
+export function requireObjectDef(
+  objectDef: FetchedObjectTypeDefinition | undefined,
+  instance: { $apiName?: string; $objectType?: string },
+): FetchedObjectTypeDefinition {
+  if (objectDef === undefined) {
+    throw new Error(
+      `Internal invariant violated: missing ObjectDefRef for $apiName=${
+        instance.$apiName ?? "?"
+      } $objectType=${instance.$objectType ?? "?"}. `
+        + `This likely means an InterfaceHolder leaked into the RDP merge path `
+        + `without being unwrapped via storeOsdkInstances.`,
+    );
+  }
+  return objectDef;
+}
+
 function stripRdpFields(
   value: ObjectHolder,
   rdpFields: ReadonlySet<string>,
@@ -43,13 +68,14 @@ function stripRdpFields(
   }
 
   const underlying = value[UnderlyingOsdkObject] as SimpleOsdkProperties;
-  const objectDef = value[ObjectDefRef];
+  const objectDef = requireObjectDef(value[ObjectDefRef], underlying);
 
   const newProps: SimpleOsdkProperties = {
     $apiName: underlying.$apiName,
     $objectType: underlying.$objectType,
     $primaryKey: underlying.$primaryKey,
     $title: underlying.$title,
+    $rid: underlying.$rid,
   };
 
   for (const key of Object.keys(underlying)) {
@@ -79,13 +105,14 @@ function filterToRdpFields(
   sourceRdpFields: ReadonlySet<string>,
 ): ObjectHolder {
   const underlying = value[UnderlyingOsdkObject] as SimpleOsdkProperties;
-  const objectDef = value[ObjectDefRef];
+  const objectDef = requireObjectDef(value[ObjectDefRef], underlying);
 
   const newProps: SimpleOsdkProperties = {
     $apiName: underlying.$apiName,
     $objectType: underlying.$objectType,
     $primaryKey: underlying.$primaryKey,
     $title: underlying.$title,
+    $rid: underlying.$rid,
   };
 
   for (const key of Object.keys(underlying)) {
@@ -98,6 +125,43 @@ function filterToRdpFields(
   }
 
   return createOsdkObject(value[ClientRef], objectDef, newProps);
+}
+
+export function mergeSelectFields(
+  sourceValue: ObjectHolder,
+  selectFields: ReadonlySet<string>,
+  existingValue: ObjectHolder,
+): ObjectHolder {
+  const sourceUnderlying =
+    sourceValue[UnderlyingOsdkObject] as SimpleOsdkProperties;
+  const existingUnderlying =
+    existingValue[UnderlyingOsdkObject] as SimpleOsdkProperties;
+  const objectDef = requireObjectDef(
+    sourceValue[ObjectDefRef],
+    sourceUnderlying,
+  );
+
+  const newProps: SimpleOsdkProperties = {
+    $apiName: sourceUnderlying.$apiName,
+    $objectType: sourceUnderlying.$objectType,
+    $primaryKey: sourceUnderlying.$primaryKey,
+    $title: sourceUnderlying.$title,
+    $rid: sourceUnderlying.$rid ?? existingUnderlying.$rid,
+  };
+
+  for (const key of Object.keys(existingUnderlying)) {
+    if (key in objectDef.properties) {
+      newProps[key] = existingUnderlying[key];
+    }
+  }
+
+  for (const key of Object.keys(sourceUnderlying)) {
+    if (key in objectDef.properties && selectFields.has(key)) {
+      newProps[key] = sourceUnderlying[key];
+    }
+  }
+
+  return createOsdkObject(sourceValue[ClientRef], objectDef, newProps);
 }
 
 export function mergeObjectFields(
@@ -119,13 +183,17 @@ export function mergeObjectFields(
 
   const sourceUnderlying =
     sourceValue[UnderlyingOsdkObject] as SimpleOsdkProperties;
-  const objectDef = sourceValue[ObjectDefRef];
+  const objectDef = requireObjectDef(
+    sourceValue[ObjectDefRef],
+    sourceUnderlying,
+  );
 
   const newProps: SimpleOsdkProperties = {
     $apiName: sourceUnderlying.$apiName,
     $objectType: sourceUnderlying.$objectType,
     $primaryKey: sourceUnderlying.$primaryKey,
     $title: sourceUnderlying.$title,
+    $rid: sourceUnderlying.$rid,
   };
 
   for (const key of Object.keys(sourceUnderlying)) {
@@ -141,8 +209,16 @@ export function mergeObjectFields(
     const targetUnderlying =
       targetCurrentValue[UnderlyingOsdkObject] as SimpleOsdkProperties;
     for (const field of targetRdpFields) {
-      if (!sourceRdpFields.has(field) && field in targetUnderlying) {
-        newProps[field] = targetUnderlying[field];
+      if (field in targetUnderlying) {
+        // Preserve target's value when:
+        // 1. Source doesn't have this RDP field at all, OR
+        // 2. Source hasn't provided the value (undefined)
+        if (
+          !sourceRdpFields.has(field)
+          || newProps[field] === undefined
+        ) {
+          newProps[field] = targetUnderlying[field];
+        }
       }
     }
   }

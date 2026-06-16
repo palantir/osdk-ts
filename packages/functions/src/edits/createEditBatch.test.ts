@@ -148,6 +148,8 @@ describe(createEditBatch, () => {
       "occupants",
       [employeeInstance, { $apiName: "Employee", $primaryKey: 3 }],
     );
+    editBatch.link(taskInstance, "RP", personInstance);
+    editBatch.unlink(taskInstance, "RP", personInstance);
 
     expect(editBatch.getEdits()).toEqual([
       {
@@ -315,20 +317,24 @@ describe(createEditBatch, () => {
         source: { $apiName: "Office", $primaryKey: "Denver" },
         target: { $apiName: "Employee", $primaryKey: 3 },
       },
+      {
+        type: "addLink",
+        apiName: "RP",
+        source: { $apiName: "Task", $primaryKey: 2 },
+        target: { $apiName: "Person", $primaryKey: 2 },
+      },
+      {
+        type: "removeLink",
+        apiName: "RP",
+        source: { $apiName: "Task", $primaryKey: 2 },
+        target: { $apiName: "Person", $primaryKey: 2 },
+      },
     ]);
   });
 
   it("prevents bad link edits", () => {
     // @ts-expect-error
     editBatch.link(taskInstance, "RP", officeInstance); // Linking to Office instead of Person
-
-    editBatch.link(
-      taskInstance,
-      "RP",
-      // @ts-expect-error
-      personInstance,
-    );
-    // Trying to traverse ONE direction
 
     editBatch.link(
       { $apiName: "Task", $primaryKey: 2 },

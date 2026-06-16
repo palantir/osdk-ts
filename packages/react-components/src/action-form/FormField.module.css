@@ -1,0 +1,86 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.osdkFormField {
+  display: flex;
+  flex-direction: column;
+  gap: var(--osdk-form-field-gap);
+}
+
+.osdkFormFieldLabel {
+  font-size: var(--osdk-form-label-font-size);
+  font-weight: var(--osdk-form-label-font-weight);
+  color: var(--osdk-form-label-color);
+}
+
+.osdkFormFieldRequired {
+  color: var(--osdk-form-required-color);
+}
+
+.osdkFormFieldError {
+  font-size: var(--osdk-form-error-font-size);
+  line-height: var(--osdk-form-error-line-height);
+  color: var(--osdk-form-error-color);
+}
+
+.osdkFormFieldErrorSlot {
+  min-block-size: var(--osdk-form-error-reserved-block-size);
+}
+
+.osdkFormFieldLabelRow {
+  display: flex;
+  align-items: center;
+  gap: var(--osdk-form-label-row-gap);
+  /* Reserve the edited pill's block size so showing it does not grow the label row. */
+  min-block-size: var(--osdk-form-label-row-min-block-size);
+}
+
+.osdkFormFieldEditedTag {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-inline-start: auto;
+  padding-block: var(--osdk-form-edited-tag-padding-block);
+  padding-inline: var(--osdk-form-edited-tag-padding-inline);
+  border-radius: var(--osdk-form-edited-tag-border-radius);
+  background-color: var(--osdk-form-edited-tag-bg);
+  color: var(--osdk-form-edited-tag-color);
+  font-size: var(--osdk-form-edited-tag-font-size);
+  font-weight: var(--osdk-form-edited-tag-font-weight);
+  line-height: var(--osdk-form-edited-tag-line-height);
+}
+
+.osdkFormFieldInfoIcon {
+  display: inline-flex;
+  align-items: center;
+  color: var(--osdk-form-info-icon-color);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.osdkFormFieldInfoPopup {
+  padding: var(--osdk-form-info-popup-padding);
+  background-color: var(--osdk-form-info-popup-bg);
+  border-radius: var(--osdk-surface-border-radius);
+  box-shadow: var(--osdk-form-info-popup-shadow);
+  max-width: var(--osdk-form-info-popup-max-width);
+  font-size: var(--osdk-form-info-popup-font-size);
+}
+
+.osdkFormFieldHelperText {
+  font-size: var(--osdk-typography-size-body-small);
+  color: var(--osdk-typography-color-muted);
+}

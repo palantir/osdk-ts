@@ -65,6 +65,11 @@ const cspell = {
     "*.snap",
     "typedoc.jsonc",
 
+    // Storybook setup
+    "mockServiceWorker.js",
+    "**/.storybook/**",
+    "packages/react-components-storybook/src/mocks/**",
+
     // Dictionary files have words that are only used in certain contexts so they implicitly
     // won't pass the generic case.
     "dict.*.txt",
@@ -78,6 +83,7 @@ const cspell = {
     ".lintstagedrc.mjs",
     ".envrc.sample",
     ".monorepolint.config.mjs",
+    ".syncpackrc",
 
     // don't bother with any build directories
     "examples-extra/*/{build,dist}/**/*",
@@ -89,6 +95,9 @@ const cspell = {
     "packages/e2e.test.foundry-sdk-generator/src/generatedNoCheck/**/*",
     "packages/create-app.template.*/src/generatedNoCheck/**/*",
     "CHANGELOG.md",
+    "CONTRIBUTING.md",
+    "CLAUDE.md",
+    "SKILL.md",
   ],
   dictionaryDefinitions: [
     ...getDictionaryDefinitions(),
@@ -120,6 +129,7 @@ const cspell = {
     "foundry-words",
     "normal-dev-words",
     "oauth",
+    "css",
   ],
   words: ["todoapp"],
   suggestWords: [],
@@ -137,6 +147,18 @@ const cspell = {
       filename: ["**/*.{mts,cts,ts,tsx}"],
       dictionaries: ["osdk-code"],
       words: [
+        // react-devtools words
+        "DEDUP",
+        "Keymap",
+        "reactroot",
+        "reentrancy",
+        "refetches",
+        "revalidations",
+        "unregisters",
+        "unsub",
+        "unsuppress",
+        "visx",
+
         // used in a regex
         "0123456789bcdefghjkmnpqrstuvwxyz",
 
@@ -210,6 +232,11 @@ const cspell = {
         "Dherlihy",
         "Mnayan",
         "Matthewvs",
+        "hier",
+        "nums",
+        "carto",
+        "emps",
+        "officenetwork",
       ],
     },
   ],

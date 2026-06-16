@@ -22,7 +22,10 @@ export const createMultipassServerHandlers: FauxFoundryHandlersFactory = (
   fauxFoundry,
 ) => [
   http.post(
-    `${baseUrl}/multipass/api/oauth2/token`,
+    new URL(
+      "multipass/api/oauth2/token",
+      baseUrl.endsWith("/") ? baseUrl : baseUrl + "/",
+    ).toString(),
     async (req) => {
       const body = await req.request.text();
       const parsedBody = new URLSearchParams(body);

@@ -63,7 +63,19 @@ export class WhereClauseCanonicalizer {
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(
     where: WhereClause<T, RDPs> | SimpleWhereClause,
-  ): Canonical<SimpleWhereClause> {
+  ): Canonical<SimpleWhereClause>;
+  public canonicalize(
+    where: object | undefined,
+  ): Canonical<SimpleWhereClause> | undefined;
+  public canonicalize<
+    T extends ObjectOrInterfaceDefinition,
+    RDPs extends Record<string, SimplePropertyDef> = {},
+  >(
+    where: WhereClause<T, RDPs> | SimpleWhereClause | undefined,
+  ): Canonical<SimpleWhereClause> | undefined {
+    if (where == null) {
+      return undefined;
+    }
     // fastest shortcut
     if (this.#cache.has(where)) {
       return this.#cache.get(where)!;
@@ -132,7 +144,7 @@ export class WhereClauseCanonicalizer {
           if (
             k !== "$not" && typeof v === "object" && v != null && "$eq" in v
           ) {
-            return [k, v["$eq"]];
+            return [k, v.$eq];
           }
           return [k, v];
         }),

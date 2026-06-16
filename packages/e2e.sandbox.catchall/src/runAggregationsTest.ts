@@ -18,6 +18,7 @@ import {
   BoundariesUsState,
   OsdkTestObject,
 } from "@osdk/e2e.generated.catchall";
+import invariant from "tiny-invariant";
 import { client } from "./client.js";
 
 export async function runAggregationsTest(): Promise<void> {
@@ -139,6 +140,26 @@ export async function runAggregationsTest(): Promise<void> {
   );
 
   console.log("Exact match with null bucket:", testExactMatchWithNullBucket);
+
+  // Aggregate over 0 objects — result shape should still be fully formed
+  const testAggregateZeroObjects = await client(BoundariesUsState)
+    .where({ usState: { $eq: "__no_such_state__" } })
+    .aggregate({
+      $select: {
+        $count: "unordered",
+        "latitude:max": "unordered",
+        "latitude:min": "unordered",
+      },
+    });
+
+  invariant(testAggregateZeroObjects.$count === 0, "Expected $count to be 0");
+  invariant(
+    "latitude" in testAggregateZeroObjects
+      && "max" in testAggregateZeroObjects.latitude
+      && "min" in testAggregateZeroObjects.latitude,
+    "Expected latitude with max/min keys to be present",
+  );
+  console.log("Zero objects aggregation result:", testAggregateZeroObjects);
 }
 
 void runAggregationsTest();

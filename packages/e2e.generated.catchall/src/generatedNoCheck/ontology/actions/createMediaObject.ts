@@ -63,16 +63,19 @@ export interface createMediaObject extends ActionDefinition<createMediaObject.Si
     rid: 'ri.actions.main.action-type.55c19ac6-47a4-46f6-9bab-b97f9016ff92';
     status: 'EXPERIMENTAL';
     type: 'action';
+    unsanitizedApiName: 'create-media-object';
 
     signatures: createMediaObject.Signatures;
   };
   apiName: 'createMediaObject';
   type: 'action';
+  unsanitizedApiName: 'create-media-object';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const createMediaObject: createMediaObject = {
   apiName: 'createMediaObject',
   type: 'action',
+  unsanitizedApiName: 'create-media-object',
   osdkMetadata: $osdkMetadata,
 };

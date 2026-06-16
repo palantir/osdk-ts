@@ -15,7 +15,9 @@
  */
 
 import { beforeEach, describe, expect, it } from "vitest";
+import { defineCreateObjectAction } from "../defineCreateObjectAction.js";
 import { defineInterface } from "../defineInterface.js";
+import { defineObject } from "../defineObject.js";
 import { defineOntology, dumpOntologyFullMetadata } from "../defineOntology.js";
 import { defineSharedPropertyType } from "../defineSpt.js";
 describe("SPTs", () => {
@@ -55,121 +57,168 @@ describe("SPTs", () => {
     });
 
     expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`
-          {
-            "actionTypes": {},
-            "blockPermissionInformation": {
-              "actionTypes": {},
-              "linkTypes": {},
-              "objectTypes": {},
-            },
-            "interfaceTypes": {
-              "com.palantir.FooInterface": {
-                "interfaceType": {
-                  "apiName": "com.palantir.FooInterface",
-                  "displayMetadata": {
-                    "description": "Foo Interface",
-                    "displayName": "Foo Interface",
-                    "icon": {
-                      "blueprint": {
-                        "color": "#00000",
-                        "locator": "airplane",
-                      },
-                      "type": "blueprint",
-                    },
+      {
+        "actionTypes": {},
+        "blockPermissionInformation": {
+          "actionTypes": {},
+          "interfaceTypes": {},
+          "linkTypes": {},
+          "objectTypes": {},
+          "sharedPropertyTypes": {},
+        },
+        "interfaceTypes": {
+          "com.palantir.FooInterface": {
+            "interfaceType": {
+              "actionTypeConstraints": [],
+              "apiName": "com.palantir.FooInterface",
+              "displayMetadata": {
+                "description": "Foo Interface",
+                "displayName": "Foo Interface",
+                "icon": {
+                  "blueprint": {
+                    "color": "#00000",
+                    "locator": "airplane",
                   },
-                  "extendsInterfaces": [],
-                  "links": [],
-                  "properties": [],
-                  "propertiesV2": {
-                    "com.palantir.fooSpt": {
-                      "required": true,
-                      "sharedPropertyType": {
-                        "aliases": [],
-                        "apiName": "com.palantir.fooSpt",
-                        "baseFormatter": undefined,
-                        "dataConstraints": undefined,
-                        "displayMetadata": {
-                          "description": undefined,
-                          "displayName": "fooSpt",
-                          "visibility": "NORMAL",
-                        },
-                        "gothamMapping": undefined,
-                        "indexedForSearch": true,
-                        "type": {
-                          "string": {
-                            "analyzerOverride": undefined,
-                            "enableAsciiFolding": undefined,
-                            "isLongText": false,
-                            "supportsEfficientLeadingWildcard": false,
-                            "supportsExactMatching": true,
-                          },
-                          "type": "string",
-                        },
-                        "typeClasses": [
-                          {
-                            "kind": "render_hint",
-                            "name": "SELECTABLE",
-                          },
-                          {
-                            "kind": "render_hint",
-                            "name": "SORTABLE",
-                          },
-                        ],
-                        "valueType": undefined,
-                      },
+                  "type": "blueprint",
+                },
+              },
+              "extendsInterfaces": [],
+              "extendsInterfacesMetadata": [],
+              "linkedInterfaces": [],
+              "links": [],
+              "permission": undefined,
+              "properties": [],
+              "propertiesV2": {
+                "com.palantir.fooSpt": {
+                  "required": true,
+                  "sharedPropertyType": {
+                    "aliases": [],
+                    "apiName": "com.palantir.fooSpt",
+                    "baseFormatter": undefined,
+                    "dataConstraints": undefined,
+                    "displayMetadata": {
+                      "description": undefined,
+                      "displayName": "fooSpt",
+                      "visibility": "NORMAL",
                     },
-                  },
-                  "propertiesV3": {},
-                  "searchable": true,
-                  "status": {
-                    "active": {},
-                    "type": "active",
+                    "gothamMapping": undefined,
+                    "indexedForSearch": true,
+                    "type": {
+                      "string": {
+                        "analyzerOverride": undefined,
+                        "enableAsciiFolding": undefined,
+                        "isLongText": false,
+                        "supportsEfficientLeadingWildcard": false,
+                        "supportsExactMatching": true,
+                      },
+                      "type": "string",
+                    },
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE",
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE",
+                      },
+                    ],
+                    "valueType": undefined,
                   },
                 },
               },
-            },
-            "linkTypes": {},
-            "objectTypes": {},
-            "sharedPropertyTypes": {
-              "com.palantir.fooSpt": {
-                "sharedPropertyType": {
-                  "aliases": [],
-                  "apiName": "com.palantir.fooSpt",
-                  "baseFormatter": undefined,
-                  "dataConstraints": undefined,
-                  "displayMetadata": {
-                    "description": undefined,
-                    "displayName": "fooSpt",
-                    "visibility": "NORMAL",
+              "propertiesV3": {
+                "com.palantir.fooSpt": {
+                  "sharedPropertyBasedPropertyType": {
+                    "requireImplementation": true,
+                    "sharedPropertyType": {
+                      "aliases": [],
+                      "apiName": "com.palantir.fooSpt",
+                      "baseFormatter": undefined,
+                      "dataConstraints": undefined,
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "fooSpt",
+                        "visibility": "NORMAL",
+                      },
+                      "gothamMapping": undefined,
+                      "indexedForSearch": true,
+                      "type": {
+                        "string": {
+                          "analyzerOverride": undefined,
+                          "enableAsciiFolding": undefined,
+                          "isLongText": false,
+                          "supportsEfficientLeadingWildcard": false,
+                          "supportsExactMatching": true,
+                        },
+                        "type": "string",
+                      },
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE",
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE",
+                        },
+                      ],
+                      "valueType": undefined,
+                    },
                   },
-                  "gothamMapping": undefined,
-                  "indexedForSearch": true,
-                  "type": {
-                    "string": {
-                      "analyzerOverride": undefined,
-                      "enableAsciiFolding": undefined,
-                      "isLongText": false,
-                      "supportsEfficientLeadingWildcard": false,
-                      "supportsExactMatching": true,
-                    },
-                    "type": "string",
-                  },
-                  "typeClasses": [
-                    {
-                      "kind": "render_hint",
-                      "name": "SELECTABLE",
-                    },
-                    {
-                      "kind": "render_hint",
-                      "name": "SORTABLE",
-                    },
-                  ],
-                  "valueType": undefined,
+                  "type": "sharedPropertyBasedPropertyType",
                 },
               },
+              "searchable": true,
+              "status": {
+                "active": {},
+                "type": "active",
+              },
             },
-          }
-        `);
+          },
+        },
+        "linkTypes": {},
+        "objectTypes": {},
+        "sharedPropertyTypes": {
+          "com.palantir.fooSpt": {
+            "sharedPropertyType": {
+              "aliases": [],
+              "apiName": "com.palantir.fooSpt",
+              "baseFormatter": undefined,
+              "dataConstraints": undefined,
+              "displayMetadata": {
+                "description": undefined,
+                "displayName": "fooSpt",
+                "visibility": "NORMAL",
+              },
+              "gothamMapping": undefined,
+              "indexedForSearch": true,
+              "type": {
+                "string": {
+                  "analyzerOverride": undefined,
+                  "enableAsciiFolding": undefined,
+                  "isLongText": false,
+                  "supportsEfficientLeadingWildcard": false,
+                  "supportsExactMatching": true,
+                },
+                "type": "string",
+              },
+              "typeClasses": [
+                {
+                  "kind": "render_hint",
+                  "name": "SELECTABLE",
+                },
+                {
+                  "kind": "render_hint",
+                  "name": "SORTABLE",
+                },
+              ],
+              "valueType": undefined,
+            },
+          },
+        },
+      }
+    `);
   });
 
   it("properly serializes both types of struct SPTs", () => {
@@ -191,70 +240,73 @@ describe("SPTs", () => {
     });
 
     expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`
-                  {
-                    "actionTypes": {},
-                    "blockPermissionInformation": {
-                      "actionTypes": {},
-                      "linkTypes": {},
-                      "objectTypes": {},
-                    },
-                    "interfaceTypes": {},
-                    "linkTypes": {},
-                    "objectTypes": {},
-                    "sharedPropertyTypes": {
-                      "com.palantir.fooSpt": {
-                        "sharedPropertyType": {
-                          "aliases": [],
-                          "apiName": "com.palantir.fooSpt",
-                          "baseFormatter": undefined,
-                          "dataConstraints": undefined,
-                          "displayMetadata": {
-                            "description": undefined,
-                            "displayName": "fooSpt",
-                            "visibility": "NORMAL",
-                          },
-                          "gothamMapping": undefined,
-                          "indexedForSearch": true,
-                          "type": {
-                            "struct": {
-                              "structFields": [
-                                {
-                                  "aliases": [],
-                                  "apiName": "simpleProperty",
-                                  "displayMetadata": {
-                                    "description": undefined,
-                                    "displayName": "simpleProperty",
-                                  },
-                                  "fieldType": {
-                                    "boolean": {},
-                                    "type": "boolean",
-                                  },
-                                  "typeClasses": [],
-                                },
-                                {
-                                  "aliases": [],
-                                  "apiName": "complexProperty",
-                                  "displayMetadata": {
-                                    "description": undefined,
-                                    "displayName": "complex property",
-                                  },
-                                  "fieldType": {
-                                    "date": {},
-                                    "type": "date",
-                                  },
-                                  "typeClasses": [],
-                                },
-                              ],
-                            },
-                            "type": "struct",
-                          },
-                          "typeClasses": [],
-                          "valueType": undefined,
-                        },
+      {
+        "actionTypes": {},
+        "blockPermissionInformation": {
+          "actionTypes": {},
+          "interfaceTypes": {},
+          "linkTypes": {},
+          "objectTypes": {},
+          "sharedPropertyTypes": {},
+        },
+        "interfaceTypes": {},
+        "linkTypes": {},
+        "objectTypes": {},
+        "sharedPropertyTypes": {
+          "com.palantir.fooSpt": {
+            "sharedPropertyType": {
+              "aliases": [],
+              "apiName": "com.palantir.fooSpt",
+              "baseFormatter": undefined,
+              "dataConstraints": undefined,
+              "displayMetadata": {
+                "description": undefined,
+                "displayName": "fooSpt",
+                "visibility": "NORMAL",
+              },
+              "gothamMapping": undefined,
+              "indexedForSearch": true,
+              "type": {
+                "struct": {
+                  "mainValue": undefined,
+                  "structFields": [
+                    {
+                      "aliases": [],
+                      "apiName": "simpleProperty",
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "simpleProperty",
                       },
+                      "fieldType": {
+                        "boolean": {},
+                        "type": "boolean",
+                      },
+                      "typeClasses": [],
                     },
-                  }
-          `);
+                    {
+                      "aliases": [],
+                      "apiName": "complexProperty",
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "complex property",
+                      },
+                      "fieldType": {
+                        "date": {},
+                        "type": "date",
+                      },
+                      "typeClasses": [],
+                    },
+                  ],
+                },
+                "type": "struct",
+              },
+              "typeClasses": [],
+              "valueType": undefined,
+            },
+          },
+        },
+      }
+    `);
   });
 
   it("Custom string fields properly set", () => {
@@ -278,12 +330,15 @@ describe("SPTs", () => {
         "actionTypes": {},
         "blockPermissionInformation": {
           "actionTypes": {},
+          "interfaceTypes": {},
           "linkTypes": {},
           "objectTypes": {},
+          "sharedPropertyTypes": {},
         },
         "interfaceTypes": {
           "com.palantir.interface": {
             "interfaceType": {
+              "actionTypeConstraints": [],
               "apiName": "com.palantir.interface",
               "displayMetadata": {
                 "description": "interface",
@@ -297,7 +352,10 @@ describe("SPTs", () => {
                 },
               },
               "extendsInterfaces": [],
+              "extendsInterfacesMetadata": [],
+              "linkedInterfaces": [],
               "links": [],
+              "permission": undefined,
               "properties": [],
               "propertiesV2": {
                 "com.palantir.foo": {
@@ -339,7 +397,49 @@ describe("SPTs", () => {
                   },
                 },
               },
-              "propertiesV3": {},
+              "propertiesV3": {
+                "com.palantir.foo": {
+                  "sharedPropertyBasedPropertyType": {
+                    "requireImplementation": true,
+                    "sharedPropertyType": {
+                      "aliases": [],
+                      "apiName": "com.palantir.foo",
+                      "baseFormatter": undefined,
+                      "dataConstraints": undefined,
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "foo",
+                        "visibility": "NORMAL",
+                      },
+                      "gothamMapping": undefined,
+                      "indexedForSearch": true,
+                      "type": {
+                        "string": {
+                          "analyzerOverride": undefined,
+                          "enableAsciiFolding": undefined,
+                          "isLongText": true,
+                          "supportsEfficientLeadingWildcard": true,
+                          "supportsExactMatching": false,
+                          "supportsFullTextRegex": undefined,
+                        },
+                        "type": "string",
+                      },
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE",
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE",
+                        },
+                      ],
+                      "valueType": undefined,
+                    },
+                  },
+                  "type": "sharedPropertyBasedPropertyType",
+                },
+              },
               "searchable": true,
               "status": {
                 "active": {},
@@ -414,8 +514,10 @@ describe("SPTs", () => {
         "actionTypes": {},
         "blockPermissionInformation": {
           "actionTypes": {},
+          "interfaceTypes": {},
           "linkTypes": {},
           "objectTypes": {},
+          "sharedPropertyTypes": {},
         },
         "interfaceTypes": {},
         "linkTypes": {},
@@ -491,6 +593,24 @@ describe("SPTs", () => {
       }
     `);
   });
+  it("Object decimal property with precision/scale works in actions", () => {
+    const obj = defineObject({
+      apiName: "decimalTest",
+      displayName: "Decimal Test",
+      pluralDisplayName: "Decimal Tests",
+      primaryKeyPropertyApiName: "id",
+      titlePropertyApiName: "id",
+      properties: {
+        id: { type: "string" },
+        price: {
+          type: { type: "decimal", precision: 10, scale: 2 },
+        },
+      },
+    });
+    const action = defineCreateObjectAction({ objectType: obj });
+    const priceParam = action.parameters?.find(p => p.id === "price");
+    expect(priceParam?.type).toBe("decimal");
+  });
   it("Number formatting works", () => {
     const spt = defineSharedPropertyType({
       apiName: "foo",
@@ -511,8 +631,10 @@ describe("SPTs", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {},
@@ -526,8 +648,10 @@ describe("SPTs", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {},
@@ -579,5 +703,88 @@ describe("SPTs", () => {
         },
       }
     `);
+  });
+  it("Aliases properly set", () => {
+    const spt = defineSharedPropertyType({
+      apiName: "foo",
+      type: { type: "string" },
+      aliases: ["alias1", "alias2"],
+    });
+    expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`
+      {
+        "actionTypes": {},
+        "blockPermissionInformation": {
+          "actionTypes": {},
+          "interfaceTypes": {},
+          "linkTypes": {},
+          "objectTypes": {},
+          "sharedPropertyTypes": {},
+        },
+        "interfaceTypes": {},
+        "linkTypes": {},
+        "objectTypes": {},
+        "sharedPropertyTypes": {
+          "com.palantir.foo": {
+            "sharedPropertyType": {
+              "aliases": [
+                "alias1",
+                "alias2",
+              ],
+              "apiName": "com.palantir.foo",
+              "baseFormatter": undefined,
+              "dataConstraints": undefined,
+              "displayMetadata": {
+                "description": undefined,
+                "displayName": "foo",
+                "visibility": "NORMAL",
+              },
+              "gothamMapping": undefined,
+              "indexedForSearch": true,
+              "type": {
+                "string": {
+                  "analyzerOverride": undefined,
+                  "enableAsciiFolding": undefined,
+                  "isLongText": false,
+                  "supportsEfficientLeadingWildcard": false,
+                  "supportsExactMatching": true,
+                  "supportsFullTextRegex": undefined,
+                },
+                "type": "string",
+              },
+              "typeClasses": [
+                {
+                  "kind": "render_hint",
+                  "name": "SELECTABLE",
+                },
+                {
+                  "kind": "render_hint",
+                  "name": "SORTABLE",
+                },
+              ],
+              "valueType": undefined,
+            },
+          },
+        },
+      }
+    `);
+  });
+
+  it("serializes publicProject permission on shared property type", async () => {
+    await defineOntology("com.palantir.", () => {
+      defineSharedPropertyType({
+        apiName: "mySpt",
+        type: "string",
+        permission: "publicProject",
+      });
+
+      const bpi = dumpOntologyFullMetadata().ontology
+        .blockPermissionInformation!;
+      const sptPerms = Object.values(bpi.sharedPropertyTypes);
+      expect(sptPerms).toHaveLength(1);
+      expect(sptPerms[0].restrictionStatus).toEqual({
+        publicProject: true,
+        ontologyPackageRid: null,
+      });
+    }, "/tmp/");
   });
 });

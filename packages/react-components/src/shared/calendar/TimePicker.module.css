@@ -1,0 +1,48 @@
+/* TimePicker — HH:mm control. Outer layout is owned by the parent. */
+
+.osdkTimePickerRoot {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--osdk-surface-spacing);
+}
+
+.osdkTimePickerInput {
+  width: calc(var(--osdk-surface-spacing) * 10);
+  font-family: var(--osdk-time-picker-input-font-family);
+  font-size: var(--osdk-time-picker-input-font-size);
+  line-height: var(
+    --osdk-input-line-height,
+    var(--osdk-typography-line-height-default)
+  );
+  text-align: center;
+  padding: var(--osdk-time-picker-input-padding);
+  border: var(--osdk-time-picker-input-border);
+  border-radius: var(--osdk-time-picker-input-border-radius);
+  background: var(--osdk-time-picker-input-bg);
+  color: var(--osdk-time-picker-input-color);
+  box-sizing: border-box;
+  box-shadow: var(--osdk-time-picker-input-shadow);
+
+  &:focus-visible {
+    outline: var(--osdk-time-picker-input-focus-outline);
+    box-shadow: var(--osdk-time-picker-input-focus-shadow);
+  }
+
+  &[aria-invalid] {
+    box-shadow: var(--osdk-time-picker-input-shadow-error);
+  }
+
+  &[aria-invalid]:focus-visible {
+    box-shadow: var(--osdk-time-picker-input-focus-shadow-error);
+  }
+}
+
+.osdkTimePickerSeparator {
+  color: var(--osdk-typography-color-muted);
+  font-family: var(--osdk-time-picker-input-font-family);
+  font-size: var(--osdk-time-picker-input-font-size);
+  line-height: var(
+    --osdk-input-line-height,
+    var(--osdk-typography-line-height-default)
+  );
+}

@@ -37,6 +37,7 @@ export const TodoWireOntology: WireOntologyDefinition = {
             objectTypeApiName: "Todo",
           },
           required: false,
+          typeClasses: [],
         },
       },
       rid: "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2",
@@ -63,6 +64,7 @@ export const TodoWireOntology: WireOntologyDefinition = {
             },
           },
           required: false,
+          typeClasses: [],
         },
       },
       rid: "ri.ontology.main.action-type.8f94017d-cf17-4fa8-84c3-8e01e5d594f2",
@@ -90,6 +92,7 @@ export const TodoWireOntology: WireOntologyDefinition = {
             },
             rid: "rid",
             valueTypeApiName: "numericValueType",
+            typeClasses: [],
           },
           body: {
             dataType: {
@@ -98,12 +101,14 @@ export const TodoWireOntology: WireOntologyDefinition = {
             description: "The text of the todo",
             displayName: "Body",
             rid: "rid",
+            typeClasses: [],
           },
           complete: {
             dataType: {
               type: "boolean",
             },
             rid: "rid",
+            typeClasses: [],
           },
           array: {
             dataType: {
@@ -115,6 +120,7 @@ export const TodoWireOntology: WireOntologyDefinition = {
             },
             valueTypeApiName: "arrayValueType",
             rid: "rid",
+            typeClasses: [],
           },
         },
         status: "ACTIVE",
@@ -157,6 +163,7 @@ export const TodoWireOntology: WireOntologyDefinition = {
             },
             rid: "rid",
             valueTypeApiName: "emailValueType",
+            typeClasses: [],
           },
         },
 
@@ -184,10 +191,11 @@ export const TodoWireOntology: WireOntologyDefinition = {
         type: "integer",
       },
       parameters: {
-        completed: { dataType: { type: "boolean" } },
+        completed: { dataType: { type: "boolean" }, required: true },
       },
       rid: "rid.query.1",
       version: "1.1.0",
+      typeReferences: {},
     },
     "returnsTodo": {
       apiName: "returnsTodo",
@@ -204,10 +212,12 @@ export const TodoWireOntology: WireOntologyDefinition = {
             objectApiName: "Todo",
             objectTypeApiName: "Todo",
           },
+          required: true,
         },
       },
       rid: "rid.query.2",
       version: "3.2.0",
+      typeReferences: {},
     },
   },
   interfaceTypes: {
@@ -224,6 +234,7 @@ export const TodoWireOntology: WireOntologyDefinition = {
           },
           rid: "idk2",
           required: false,
+          typeClasses: [],
         },
       },
       propertiesV2: {},
@@ -242,6 +253,7 @@ export const TodoWireOntology: WireOntologyDefinition = {
           },
           rid: "idk2",
           required: false,
+          typeClasses: [],
         },
       },
       allPropertiesV2: {},
@@ -258,6 +270,7 @@ export const TodoWireOntology: WireOntologyDefinition = {
         type: "string",
       },
       rid: "idk2",
+      typeClasses: [],
     },
   },
   valueTypes: {
@@ -289,7 +302,7 @@ export const TodoWireOntology: WireOntologyDefinition = {
       },
       constraints: [{
         type: "array",
-        valueConstraint: { type: "enum", options: ["a", "b", "c"] },
+        valueConstraint: { type: "enum", options: ["a", "b\"c", "d'e"] },
         uniqueValues: false,
       }],
     },

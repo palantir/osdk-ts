@@ -15,8 +15,7 @@
  */
 
 import type { QueryMetadata } from "@osdk/api";
-import * as OntologiesV2 from "@osdk/foundry.ontologies";
-import { wireQueryTypeV2ToSdkQueryMetadata } from "@osdk/generator-converters";
+import * as QueryTypes from "@osdk/foundry.ontologies/QueryType";
 import type { MinimalClient } from "../MinimalClientContext.js";
 
 export async function loadQueryMetadata(
@@ -24,12 +23,15 @@ export async function loadQueryMetadata(
   queryTypeApiNameAndVersion: string,
 ): Promise<QueryMetadata> {
   const [apiName, version] = queryTypeApiNameAndVersion.split(":");
-  const r = await OntologiesV2.QueryTypes.get(
+  const r = await QueryTypes.get(
     client,
     await client.ontologyRid,
     apiName,
     { version },
   );
 
+  const { wireQueryTypeV2ToSdkQueryMetadata } = await import(
+    "@osdk/generator-converters"
+  );
   return wireQueryTypeV2ToSdkQueryMetadata(r);
 }

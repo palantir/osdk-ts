@@ -18,6 +18,7 @@ import type {
   Attachment,
   CompileTimeMetadata,
   ConvertProps,
+  FetchPageArgs,
   FetchPageResult,
   InterfaceDefinition,
   ObjectOrInterfaceDefinition,
@@ -25,6 +26,7 @@ import type {
   ObjectTypeDefinition,
   Osdk,
   PropertyKeys,
+  PropertySecurity,
   Result,
 } from "@osdk/api";
 import { isOk } from "@osdk/api";
@@ -48,6 +50,12 @@ import {
 import { beforeAll, describe, expect, expectTypeOf, it } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
+import { fetchPage } from "../object/fetchPage.js";
+import {
+  createMockCaptureClient,
+  getLastObjectSetRequest,
+} from "../util/mockCaptureClient.js";
+import { getWireObjectSet } from "./createObjectSet.js";
 
 type ApiNameAsString<
   T extends ObjectOrInterfaceDefinition,
@@ -141,7 +149,7 @@ describe("ObjectSet", () => {
       pks.add(emp.$primaryKey);
     }
 
-    expect(pks.size).toEqual(6);
+    expect(pks.size).toEqual(7);
     expect(pks.has(stubData.employee1.employeeId)).toBe(true);
     expect(pks.has(stubData.employee2.employeeId)).toBe(true);
     expect(pks.has(stubData.employee3.employeeId)).toBe(true);
@@ -179,7 +187,7 @@ describe("ObjectSet", () => {
       pks.add(emp.$primaryKey);
     }
 
-    expect(pks.size).toEqual(6);
+    expect(pks.size).toEqual(7);
     expect(pks.has(stubData.employee1.employeeId)).toBe(true);
     expect(pks.has(stubData.employee2.employeeId)).toBe(true);
     expect(pks.has(stubData.employee3.employeeId)).toBe(true);
@@ -199,6 +207,7 @@ describe("ObjectSet", () => {
 
     expect(employees.map(e => e.$primaryKey))
       .toEqual([
+        20003,
         50030,
         50031,
         50032,
@@ -293,6 +302,43 @@ describe("ObjectSet", () => {
     >;
     expect(employees.data[0].$primaryKey).toBe(stubData.employee2.employeeId);
     expect(employees.data[1].$primaryKey).toBe(stubData.employee3.employeeId);
+  });
+
+  it("allows fetchPageByRid with $loadPropertySecurityMetadata", async () => {
+    const employees = await client(
+      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
+    ).fetchPageByRid(
+      Employee,
+      [stubData.unsecuredEmployee.__rid],
+      { $loadPropertySecurityMetadata: true },
+    );
+
+    expectTypeOf(employees.data[0].$propertySecurities).toMatchObjectType<
+      {
+        $primaryKey: PropertySecurity[];
+        $title: PropertySecurity[];
+        class: PropertySecurity[];
+        employeeId: PropertySecurity[];
+        fullName: PropertySecurity[];
+        office: PropertySecurity[];
+        startDate: PropertySecurity[];
+        employeeLocation: PropertySecurity[];
+        employeeSensor: PropertySecurity[];
+        employeeStatus: PropertySecurity[];
+        skillSet: PropertySecurity[];
+        skillSetEmbedding: PropertySecurity[];
+      }
+    >();
+
+    expectTypeOf(employees.data[0].$propertySecurities.class)
+      .toMatchTypeOf<PropertySecurity[]>();
+
+    expectTypeOf(employees.data[0].$propertySecurities.favoriteRestaurants)
+      .toMatchTypeOf<PropertySecurity[][]>();
+
+    expect(employees.data[0].$primaryKey).toBe(
+      stubData.unsecuredEmployee.__primaryKey,
+    );
   });
 
   it("check struct parsing", async () => {
@@ -435,7 +481,7 @@ describe("ObjectSet", () => {
       pks.add(emp.$primaryKey);
     }
 
-    expect(pks.size).toEqual(6);
+    expect(pks.size).toEqual(7);
     expect(pks.has(stubData.employee1.employeeId)).toBe(true);
     expect(pks.has(stubData.employee2.employeeId)).toBe(true);
     expect(pks.has(stubData.employee3.employeeId)).toBe(true);
@@ -450,6 +496,11 @@ describe("ObjectSet", () => {
       employeeId: { $in: ids },
     });
     expect(objectSet).toBeDefined();
+  });
+
+  it(".where({}) is a no-op (no empty-AND filter on the wire)", () => {
+    const base = client(Employee);
+    expect(getWireObjectSet(base.where({}))).toEqual(getWireObjectSet(base));
   });
 
   it("does not allow arbitrary keys when no properties", () => {
@@ -496,6 +547,119 @@ describe("ObjectSet", () => {
     client(BarInterface).where({
       // @ts-expect-error
       nonExistentProp: "",
+    });
+  });
+
+  it("type checking interval", () => {
+    client(Employee).where({
+      fullName: {
+        $interval: {
+          $match: "John Smith",
+          $maxGaps: 1,
+          $ordered: true,
+        },
+      },
+    });
+
+    client(Employee).where({
+      fullName: {
+        $interval: {
+          $match: "John Smi",
+          $prefixOnLastTerm: true,
+        },
+      },
+    });
+
+    client(Employee).where({
+      fullName: {
+        $interval: {
+          $and: [{
+            $match: "John",
+            $ordered: true,
+          }, {
+            $match: "Smith",
+            $ordered: true,
+          }],
+          $maxGaps: 0,
+          $ordered: true,
+        },
+      },
+    });
+
+    client(Employee).where({
+      fullName: {
+        $interval: {
+          $or: [{
+            $match: "John",
+            $ordered: true,
+          }, {
+            $match: "Jane",
+            $ordered: true,
+          }],
+        },
+      },
+    });
+
+    client(Employee).where({
+      fullName: {
+        $interval: {
+          $fuzzy: "Smith",
+          $fuzziness: 1,
+        },
+      },
+    });
+
+    client(Employee).where({
+      fullName: {
+        $interval: {
+          $match: "John Smi",
+          $prefixOnLastTerm: true,
+          // @ts-expect-error - $ordered not allowed with $prefixOnLastTerm
+          $ordered: true,
+        },
+      },
+    });
+
+    client(Employee).where({
+      fullName: {
+        // @ts-expect-error - $maxGaps not allowed with $prefixOnLastTerm
+        $interval: { $match: "John Smi", $prefixOnLastTerm: true, $maxGaps: 1 },
+      },
+    });
+
+    client(Employee).where({
+      fullName: {
+        $interval: {
+          $match: "John",
+          $ordered: true,
+          // @ts-expect-error - can't mix $match with $or
+          $or: [{ $match: "Smith", $ordered: true }],
+        },
+      },
+    });
+
+    client(Employee).where({
+      fullName: {
+        $interval: {
+          $match: "John",
+          $ordered: true,
+          // @ts-expect-error - can't mix $match with $fuzzy
+          $fuzzy: "Smith",
+          // @ts-expect-error - can't mix $match with $fuzziness
+          $fuzziness: 3,
+        },
+      },
+    });
+
+    client(Employee).where({
+      fullName: {
+        $interval: {
+          $and: [{ $match: "John", $ordered: true }],
+          $ordered: true,
+          // @ts-expect-error - can't mix $and with $or
+          $or: [{ $match: "Smith", $ordered: true }],
+        },
+      },
     });
   });
 
@@ -569,7 +733,7 @@ describe("ObjectSet", () => {
             ? await client(Employee).fetchPage(opts)
             : (await client(Employee).fetchPageWithErrors(opts)).value!;
 
-          expect(result.data).toHaveLength(6);
+          expect(result.data).toHaveLength(7);
           expectTypeOf(result.data[0]).branded.toEqualTypeOf<
             Osdk<Employee, "$all" | "$notStrict" | "$rid">
           >();
@@ -585,7 +749,7 @@ describe("ObjectSet", () => {
             ? await client(Employee).fetchPage(opts)
             : (await client(Employee).fetchPageWithErrors(opts)).value!;
 
-          expect(result.data).toHaveLength(6);
+          expect(result.data).toHaveLength(7);
           expectTypeOf(result.data[0]).branded.toEqualTypeOf<
             Osdk<Employee, "$all" | "$notStrict">
           >();
@@ -1085,6 +1249,9 @@ describe("ObjectSet", () => {
             | "employeeSensor"
             | "skillSet"
             | "skillSetEmbedding"
+            | "favoriteRestaurants"
+            | "employeeProfile"
+            | "performanceScores"
           >();
 
         expectTypeOf<
@@ -1116,6 +1283,9 @@ describe("ObjectSet", () => {
             | "employeeLocation"
             | "skillSet"
             | "skillSetEmbedding"
+            | "favoriteRestaurants"
+            | "employeeProfile"
+            | "performanceScores"
           >();
 
         // We don't have a proper definition that has
@@ -1138,6 +1308,32 @@ describe("ObjectSet", () => {
 
         cheesedFooNotStrict.fooSpt;
       });
+    });
+  });
+
+  describe("snapshot", () => {
+    it("exposes $snapshot to client (type)", () => {
+      expectTypeOf<FetchPageArgs<Employee>>().toHaveProperty("$snapshot");
+    });
+    it("sets snapshot = false by default", async () => {
+      const { client, fetchFn } = createMockCaptureClient();
+      await fetchPage(client, Employee, {});
+      expect(
+        (getLastObjectSetRequest(fetchFn) as { snapshot: boolean }).snapshot,
+      ).toBe(false);
+    });
+    it("properly generates fetch request when $snapshot is true", async () => {
+      const { client, fetchFn } = createMockCaptureClient();
+      await fetchPage(client, Employee, { $snapshot: true });
+      expect(
+        (getLastObjectSetRequest(fetchFn) as { snapshot: boolean }).snapshot,
+      ).toBe(true);
+    });
+    it("strips $snapshot from the wire request body", async () => {
+      const { client, fetchFn } = createMockCaptureClient();
+      await fetchPage(client, Employee, { $snapshot: true });
+      expect(getLastObjectSetRequest(fetchFn) as { snapshot: boolean }).not
+        .toHaveProperty("$snapshot");
     });
   });
 });

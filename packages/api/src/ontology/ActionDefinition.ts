@@ -24,6 +24,7 @@ import type {
 export interface ActionMetadata {
   type: "action";
   apiName: string;
+  unsanitizedApiName?: string;
   description?: string;
   displayName?: string;
   parameters: Record<any, ActionMetadata.Parameter<any>>;
@@ -64,6 +65,7 @@ export namespace ActionMetadata {
       | "attachment"
       | "marking"
       | "mediaReference"
+      | "scenarioReference"
       | "objectType"
       | "geoshape"
       | "geohash";
@@ -118,6 +120,7 @@ export interface ActionDefinition<
 > {
   type: "action";
   apiName: string;
+  unsanitizedApiName?: string;
   osdkMetadata?: OsdkMetadata;
   __DefinitionMetadata?:
     & ActionCompileTimeMetadata<T_signatures>
