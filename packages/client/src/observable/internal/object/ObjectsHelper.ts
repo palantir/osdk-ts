@@ -30,10 +30,7 @@ import type { Canonical } from "../Canonical.js";
 import type { QuerySubscription } from "../QuerySubscription.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
 import { tombstone } from "../tombstone.js";
-import {
-  mergeObjectFields,
-  mergeSelectFields,
-} from "../utils/rdpFieldOperations.js";
+import { reconcileObject } from "../utils/rdpFieldOperations.js";
 import { type ObjectCacheKey } from "./ObjectCacheKey.js";
 import { ObjectQuery } from "./ObjectQuery.js";
 
@@ -152,27 +149,28 @@ export class ObjectsHelper extends AbstractHelper<
 
     let valueToWrite = !dataChanged && existing ? existing.value : value;
 
-    // When a $select-filtered fetch returns partial objects, merge with
-    // existing cached data to preserve fields not in the select set.
+    // A partial $select fetch only carries the base props it selected, so
+    // reconcile it with the existing value at this key to keep unselected base
+    // props and derived fields. A full fetch is written as-is: it is
+    // authoritative for everything, so an omitted field is a genuine clear.
     const existingHolder = existing?.value;
-    const canMergeSelectFields = dataChanged
+    if (
+      dataChanged
+      && valueToWrite !== tombstone
       && selectFields
       && selectFields.size > 0
       && existingHolder
-      && this.isObjectHolder(existingHolder);
-
-    if (canMergeSelectFields && valueToWrite !== tombstone) {
-      valueToWrite = mergeSelectFields(
-        valueToWrite,
-        selectFields,
-        existingHolder,
+      && this.isObjectHolder(existingHolder)
+    ) {
+      const rdpFields = this.store.objectCacheKeyRegistry.getRdpFieldSet(
+        sourceCacheKey,
+      );
+      valueToWrite = reconcileObject(
+        { value: valueToWrite, rdpFields, selectFields },
+        { value: existingHolder, rdpFields },
       );
     }
 
-    // A query writing to its own cache key is fully authoritative for the RDP
-    // fields it computed, so the fresh value is written as-is. Reconciling RDP
-    // fields against sibling queries that compute a different set happens during
-    // propagation below, via mergeForTarget.
     batch.write(sourceCacheKey, valueToWrite, status);
 
     if (value === tombstone) {
@@ -210,18 +208,12 @@ export class ObjectsHelper extends AbstractHelper<
           ? targetCurrentValue
           : undefined;
 
-      // Preserve target-only fields when a partial-select fetch propagates
-      // to a sibling variant, so different-select variants converge to the
-      // union rather than clobbering each other.
-      let merged = value;
-      if (selectFields?.size && targetHolder) {
-        merged = mergeSelectFields(merged, selectFields, targetHolder);
-      }
-      merged = this.mergeForTarget(
-        merged,
+      const merged = this.mergeForTarget(
+        value,
         targetHolder,
         sourceCacheKey,
         targetKey,
+        selectFields,
       );
 
       batch.write(targetKey, merged, status);
@@ -252,13 +244,16 @@ export class ObjectsHelper extends AbstractHelper<
   }
 
   /**
-   * Merge object data for a specific target cache key, preserving RDP fields
+   * Reconcile a freshly written object into the value cached at a sibling cache
+   * key, resolving base props by schema authority and derived fields by the two
+   * keys' rdp sets.
    */
   private mergeForTarget(
     sourceValue: ObjectHolder,
     targetCurrentValue: ObjectHolder | undefined,
     sourceCacheKey: ObjectCacheKey,
     targetCacheKey: ObjectCacheKey,
+    selectFields: ReadonlySet<string> | undefined,
   ): ObjectHolder {
     const sourceRdpFields = this.store.objectCacheKeyRegistry.getRdpFieldSet(
       sourceCacheKey,
@@ -267,11 +262,9 @@ export class ObjectsHelper extends AbstractHelper<
       targetCacheKey,
     );
 
-    return mergeObjectFields(
-      sourceValue,
-      sourceRdpFields,
-      targetRdpFields,
-      targetCurrentValue,
+    return reconcileObject(
+      { value: sourceValue, rdpFields: sourceRdpFields, selectFields },
+      { value: targetCurrentValue, rdpFields: targetRdpFields },
     );
   }
 }

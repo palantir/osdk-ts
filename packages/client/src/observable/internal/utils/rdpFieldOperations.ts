@@ -36,6 +36,28 @@ export function extractRdpFieldNames(
 }
 
 /**
+ * The fresh value being written, paired with the two things that define which
+ * of its keys are derived (RDP) fields and which it is authoritative for:
+ * `rdpFields` is the derived-field set of its cache key, and `selectFields`, if
+ * present, is the base properties it actually loaded (a partial `$select`).
+ */
+export interface ReconcileSource {
+  value: ObjectHolder;
+  rdpFields: ReadonlySet<string>;
+  selectFields?: ReadonlySet<string>;
+}
+
+/**
+ * The cache entry being written into. `value` is its current cached value (may
+ * be undefined on first write) and `rdpFields` is the derived-field set its
+ * cache key owns, which determines the derived fields the result carries.
+ */
+export interface ReconcileTarget {
+  value: ObjectHolder | undefined;
+  rdpFields: ReadonlySet<string>;
+}
+
+/**
  * The RDP merge path operates on concrete `ObjectHolder`s only. If an
  * `InterfaceHolder` leaks through unwrapped, `ObjectDefRef` is undefined; this
  * gate names the invariant violation instead of crashing later on
@@ -57,14 +79,9 @@ export function requireObjectDef(
   return objectDef;
 }
 
-/**
- * Build the system (`$`-prefixed) property bag shared by every merged object.
- * `ridFallback` lets a caller borrow `$rid` from a prior value when the primary
- * source omits it, as a partial `$select` fetch can lack it.
- */
 function systemFields(
   primary: SimpleOsdkProperties,
-  ridFallback?: SimpleOsdkProperties,
+  ridFallback: SimpleOsdkProperties | undefined,
 ): SimpleOsdkProperties {
   return {
     $apiName: primary.$apiName,
@@ -91,112 +108,104 @@ function sameMembers(
 }
 
 /**
- * Copy the base properties the source loaded. RDP fields are resolved
- * separately: their authority is the rdp sets, not objectDef.properties (RDP
- * names do not appear there at runtime), so they are skipped here even when
- * present on the source.
+ * Base properties (those defined by the object schema) resolve by union with
+ * the source winning: the target's loaded base props are the baseline so a
+ * partial source does not drop fields loaded under a wider select, then the
+ * source overlays the base props it loaded. When the source carries a
+ * `selectFields` set, only those source base props are authoritative.
+ *
+ * Derived (RDP) field names never appear in `objectDef.properties` at runtime,
+ * so this never touches them; that is handled by `assignDerivedFields`.
  */
-function copyBaseProperties(
+function assignBaseProperties(
   into: SimpleOsdkProperties,
-  source: SimpleOsdkProperties,
   objectDef: FetchedObjectTypeDefinition,
-  sourceRdpFields: ReadonlySet<string>,
+  source: ReconcileSource,
+  sourceProps: SimpleOsdkProperties,
+  target: ReconcileTarget,
+  targetProps: SimpleOsdkProperties | undefined,
 ): void {
-  for (const key of Object.keys(source)) {
-    if (key in objectDef.properties && !sourceRdpFields.has(key)) {
-      into[key] = source[key];
+  if (targetProps) {
+    for (const key of Object.keys(targetProps)) {
+      if (key in objectDef.properties && !target.rdpFields.has(key)) {
+        into[key] = targetProps[key];
+      }
+    }
+  }
+
+  for (const key of Object.keys(sourceProps)) {
+    const authoritative = source.selectFields === undefined
+      || source.selectFields.has(key);
+    if (
+      key in objectDef.properties && !source.rdpFields.has(key)
+      && authoritative
+    ) {
+      into[key] = sourceProps[key];
     }
   }
 }
 
 /**
- * Merge the RDP fields the target query wants, keyed off the rdp sets rather
- * than objectDef.properties. A field the source computed is taken from the
- * source, including the absent case, which clears a derived value that became
- * null. A field only the target wants keeps its cached value.
+ * Derived (RDP) fields resolve by the rdp sets, the only authority for them at
+ * runtime. The result carries exactly the target's derived fields:
+ *   shared (in both sets): the source wins, including the absent case, which
+ *     clears a derived value that became null;
+ *   target-only: the source never computed it, so the cached value is kept.
+ * A field only the source computed is not in the result's set, so it is dropped.
  */
-function mergeRdpFields(
+function assignDerivedFields(
   into: SimpleOsdkProperties,
-  source: SimpleOsdkProperties,
-  targetCurrentValue: ObjectHolder | undefined,
-  sourceRdpFields: ReadonlySet<string>,
-  targetRdpFields: ReadonlySet<string>,
+  source: ReconcileSource,
+  sourceProps: SimpleOsdkProperties,
+  target: ReconcileTarget,
+  targetProps: SimpleOsdkProperties | undefined,
 ): void {
-  const target = targetCurrentValue?.[UnderlyingOsdkObject] as
+  for (const field of target.rdpFields) {
+    if (source.rdpFields.has(field)) {
+      if (field in sourceProps) {
+        into[field] = sourceProps[field];
+      }
+    } else if (targetProps && field in targetProps) {
+      into[field] = targetProps[field];
+    }
+  }
+}
+
+/**
+ * Reconcile a freshly written `source` object into the `target` currently
+ * cached at some key. Every property resolves by its universe: base properties
+ * by schema authority (union, source wins), derived fields by the rdp sets. The
+ * result is the source's identity when reconciling would be a no-op.
+ */
+export function reconcileObject(
+  source: ReconcileSource,
+  target: ReconcileTarget,
+): ObjectHolder {
+  if (
+    target.value === undefined
+    && source.selectFields === undefined
+    && sameMembers(source.rdpFields, target.rdpFields)
+  ) {
+    return source.value;
+  }
+
+  const sourceProps = source
+    .value[UnderlyingOsdkObject] as SimpleOsdkProperties;
+  const targetProps = target.value?.[UnderlyingOsdkObject] as
     | SimpleOsdkProperties
     | undefined;
-  for (const field of targetRdpFields) {
-    if (sourceRdpFields.has(field)) {
-      if (field in source) {
-        into[field] = source[field];
-      }
-    } else if (target && field in target) {
-      into[field] = target[field];
-    }
-  }
-}
+  const objectDef = requireObjectDef(source.value[ObjectDefRef], sourceProps);
 
-export function mergeSelectFields(
-  sourceValue: ObjectHolder,
-  selectFields: ReadonlySet<string>,
-  existingValue: ObjectHolder,
-): ObjectHolder {
-  const sourceUnderlying =
-    sourceValue[UnderlyingOsdkObject] as SimpleOsdkProperties;
-  const existingUnderlying =
-    existingValue[UnderlyingOsdkObject] as SimpleOsdkProperties;
-  const objectDef = requireObjectDef(
-    sourceValue[ObjectDefRef],
-    sourceUnderlying,
-  );
-
-  const newProps = systemFields(sourceUnderlying, existingUnderlying);
-
-  for (const key of Object.keys(existingUnderlying)) {
-    if (key in objectDef.properties) {
-      newProps[key] = existingUnderlying[key];
-    }
-  }
-
-  for (const key of Object.keys(sourceUnderlying)) {
-    if (key in objectDef.properties && selectFields.has(key)) {
-      newProps[key] = sourceUnderlying[key];
-    }
-  }
-
-  return createOsdkObject(sourceValue[ClientRef], objectDef, newProps);
-}
-
-/**
- * Merge a freshly fetched object (computed under `sourceRdpFields`) into a cache
- * entry that wants `targetRdpFields`. Base properties come from the source. RDP
- * fields are resolved by the rdp sets: a field the source computed is taken from
- * the source (including clearing a now-null value), a field only the target
- * wants keeps its cached value, and a field only the source computed is dropped.
- */
-export function mergeObjectFields(
-  sourceValue: ObjectHolder,
-  sourceRdpFields: ReadonlySet<string>,
-  targetRdpFields: ReadonlySet<string>,
-  targetCurrentValue: ObjectHolder | undefined,
-): ObjectHolder {
-  // Identical RDP intent: the source is wholly authoritative, keep its identity.
-  if (sameMembers(sourceRdpFields, targetRdpFields)) {
-    return sourceValue;
-  }
-
-  const source = sourceValue[UnderlyingOsdkObject] as SimpleOsdkProperties;
-  const objectDef = requireObjectDef(sourceValue[ObjectDefRef], source);
-
-  const newProps = systemFields(source);
-  copyBaseProperties(newProps, source, objectDef, sourceRdpFields);
-  mergeRdpFields(
+  const newProps = systemFields(sourceProps, targetProps);
+  assignBaseProperties(
     newProps,
+    objectDef,
     source,
-    targetCurrentValue,
-    sourceRdpFields,
-    targetRdpFields,
+    sourceProps,
+    target,
+    targetProps,
   );
+  assignDerivedFields(newProps, source, sourceProps, target, targetProps);
 
-  return createOsdkObject(sourceValue[ClientRef], objectDef, newProps);
+  return createOsdkObject(source.value[ClientRef], objectDef, newProps);
 }
