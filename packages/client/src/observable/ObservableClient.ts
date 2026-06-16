@@ -704,6 +704,20 @@ export interface ObservableClientOptions {
       cacheKeys?: boolean;
     };
   };
+
+  /**
+   * Default dedupe interval, in milliseconds, applied to subscriptions that do
+   * not specify their own. While a query has fetched within this window, repeat
+   * revalidations are skipped. A subscription's own `dedupeInterval` overrides
+   * it. Defaults to 0 (no deduping).
+   */
+  defaultDedupeInterval?: number;
+
+  /**
+   * Default page size for list subscriptions that do not specify their own
+   * `pageSize`. A subscription's own `pageSize` overrides it. Defaults to 100.
+   */
+  defaultPageSize?: number;
 }
 
 /**

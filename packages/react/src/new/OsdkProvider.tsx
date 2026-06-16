@@ -41,6 +41,16 @@ interface OsdkProviderOptions {
    * internals.
    */
   devMode?: ObservableClientOptions["devMode"];
+  /**
+   * Default dedupe interval, in milliseconds, for subscriptions that do not set
+   * their own. Defaults to 0 (no deduping).
+   */
+  defaultDedupeInterval?: ObservableClientOptions["defaultDedupeInterval"];
+  /**
+   * Default page size for list subscriptions that do not set their own.
+   * Defaults to 100.
+   */
+  defaultPageSize?: ObservableClientOptions["defaultPageSize"];
 }
 
 export function OsdkProvider({
@@ -48,6 +58,8 @@ export function OsdkProvider({
   client,
   enableDevTools,
   devMode,
+  defaultDedupeInterval,
+  defaultPageSize,
 }: OsdkProviderOptions): React.JSX.Element {
   const devtoolsEnabled = __DEV__
     && (enableDevTools ?? getRegisteredDevTools() != null);
@@ -76,9 +88,19 @@ export function OsdkProvider({
             logLevel,
             debug: { refCounts: debugRefCounts, cacheKeys: debugCacheKeys },
           },
+          defaultDedupeInterval,
+          defaultPageSize,
         },
       ),
-    [client, actionDelayMs, logLevel, debugRefCounts, debugCacheKeys],
+    [
+      client,
+      actionDelayMs,
+      logLevel,
+      debugRefCounts,
+      debugCacheKeys,
+      defaultDedupeInterval,
+      defaultPageSize,
+    ],
   );
 
   const { client: devToolsClient, wrapChildren } = useDevToolsClient(

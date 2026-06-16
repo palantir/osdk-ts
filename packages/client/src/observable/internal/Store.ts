@@ -141,6 +141,18 @@ export class Store {
    */
   #debugRefCounts: boolean;
 
+  /**
+   * Default dedupe interval (ms) for subscriptions that do not set their own.
+   * @internal
+   */
+  readonly defaultDedupeInterval: number;
+
+  /**
+   * Default list page size for subscriptions that do not set their own.
+   * @internal
+   */
+  readonly defaultPageSize: number;
+
   readonly cacheKeys: CacheKeys<KnownCacheKey>;
   readonly queries: Queries = new Queries();
 
@@ -183,6 +195,8 @@ export class Store {
     this.devModeActionDelayMs = options?.devMode?.actionDelayMs ?? 1000;
     this.#debugRefCounts = options?.devMode?.debug?.refCounts
       ?? DEBUG_REFCOUNTS;
+    this.defaultDedupeInterval = options?.defaultDedupeInterval ?? 0;
+    this.defaultPageSize = options?.defaultPageSize ?? 100;
 
     this.cacheKeys = new CacheKeys<KnownCacheKey>({
       onDestroy: this.#cleanupCacheKey,

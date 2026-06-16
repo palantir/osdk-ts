@@ -131,7 +131,7 @@ export abstract class AbstractHelper<
     const sub = useView
       ? new ListQueryView<PAYLOAD & BaseListPayloadShape>(
         query,
-        listOptions.pageSize ?? 100,
+        listOptions.pageSize ?? this.store.defaultPageSize,
         listOptions.autoFetchMore,
       ).subscribe(subFn as Observer<PAYLOAD & BaseListPayloadShape>)
       : query.subscribe(subFn);

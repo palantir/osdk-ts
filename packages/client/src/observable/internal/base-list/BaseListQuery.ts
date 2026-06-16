@@ -397,7 +397,7 @@ export abstract class BaseListQuery<
     if (this.#subscriberPageSizes.size > 0) {
       return Math.max(...this.#subscriberPageSizes.values());
     }
-    return this.options.pageSize ?? 100;
+    return this.options.pageSize ?? this.store.defaultPageSize;
   }
 
   /**

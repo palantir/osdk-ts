@@ -68,6 +68,18 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 );
 ```
 
+### Client-Wide Defaults
+
+`OsdkProvider` accepts defaults that apply to every hook, so you don't have to thread the same value through each call:
+
+```tsx
+<OsdkProvider client={client} defaultPageSize={50} defaultDedupeInterval={5000}>
+  <App />
+</OsdkProvider>;
+```
+
+`defaultPageSize` (default 100) sets the list page size for subscriptions that don't pass their own `pageSize`. `defaultDedupeInterval` (default 0) sets how long, in milliseconds, a query skips repeat fetches after one completes when a subscription doesn't pass its own `dedupeInterval`. A hook's own option always overrides the default.
+
 Available exports from `@osdk/react`:
 
 - `OsdkProvider` - Provider, required at the app root

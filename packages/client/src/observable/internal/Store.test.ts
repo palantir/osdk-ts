@@ -3271,6 +3271,27 @@ describe("Store dev-mode logLevel and debug forwarding", () => {
   });
 });
 
+describe("Store runtime defaults", () => {
+  it("defaults defaultDedupeInterval to 0 and defaultPageSize to 100", () => {
+    const { client } = createClientMockHelper();
+    const store = new Store(client);
+
+    expect(store.defaultDedupeInterval).toBe(0);
+    expect(store.defaultPageSize).toBe(100);
+  });
+
+  it("resolves configured defaults from options", () => {
+    const { client } = createClientMockHelper();
+    const store = new Store(client, {
+      defaultDedupeInterval: 2000,
+      defaultPageSize: 25,
+    });
+
+    expect(store.defaultDedupeInterval).toBe(2000);
+    expect(store.defaultPageSize).toBe(25);
+  });
+});
+
 export function asBsoStub(
   x: ObjectHolder<any> | Osdk.Instance<any>,
 ): BaseServerObject {

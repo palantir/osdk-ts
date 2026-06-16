@@ -137,7 +137,7 @@ export abstract class Query<
    */
   private getMinimumDedupeInterval(): number {
     if (this.#subscriptionDedupeIntervals.size === 0) {
-      return this.options.dedupeInterval ?? 0;
+      return this.options.dedupeInterval ?? this.store.defaultDedupeInterval;
     }
 
     return Math.min(...this.#subscriptionDedupeIntervals.values());
