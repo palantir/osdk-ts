@@ -662,9 +662,26 @@ export type CanonicalizedOptions<
   [K in keyof T]: T[K];
 };
 
+export interface ObservableClientOptions {
+  /**
+   * Dev-only behaviors of the observable client. These options have no effect
+   * in production builds, where the relevant code is stripped at build time.
+   */
+  devMode?: {
+    /**
+     * Artificial delay, in milliseconds, applied to single action results in
+     * dev mode so optimistic updates are visible before the server response
+     * lands. Only applied when an optimistic update is provided to the action.
+     * Set to 0 to disable. Defaults to 1000.
+     */
+    actionDelayMs?: number;
+  };
+}
+
 export function createObservableClient(
   client: Client,
   extraUserAgents?: () => string[],
+  options?: ObservableClientOptions,
 ): ObservableClient {
   // First we need a modified client that adds an extra header so we know its
   // an observable client
@@ -689,7 +706,7 @@ export function createObservableClient(
 
   // Then we use that client instead. Because the `client` does not hold
   // any real state, this whole thing works.
-  return new ObservableClientImpl(new Store(tweakedClient));
+  return new ObservableClientImpl(new Store(tweakedClient, options));
 }
 
 export interface Unsubscribable {

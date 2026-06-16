@@ -20,8 +20,6 @@ import { API_NAME_IDX } from "../list/ListCacheKey.js";
 import type { Store } from "../Store.js";
 import { runOptimisticJob } from "./OptimisticJob.js";
 
-const ACTION_DELAY = process.env.NODE_ENV === "production" ? 0 : 1000;
-
 export class ActionApplication {
   constructor(private store: Store) {}
 
@@ -65,11 +63,12 @@ export class ActionApplication {
         );
 
         if (process.env.NODE_ENV !== "production") {
-          if (ACTION_DELAY > 0) {
+          // Skip when there's no optimistic update to surface (e.g. FBAs).
+          const delayMs = this.store.devModeActionDelayMs;
+          if (optimisticUpdate != null && delayMs > 0) {
+            this.store.maybeWarnDevModeDelayApplied();
             logger?.debug("action done, pausing", actionResults);
-            await new Promise<void>(resolve =>
-              setTimeout(resolve, ACTION_DELAY)
-            );
+            await new Promise<void>(resolve => setTimeout(resolve, delayMs));
             logger?.debug("action done, pausing done");
           }
         }
