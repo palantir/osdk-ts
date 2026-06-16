@@ -35,6 +35,14 @@ export const getMediaContent: CallFactory<
   ["ontologyApiName", "objectType", "primaryKey", "propertyName"],
 );
 
+export const getFullMediaMetadata: CallFactory<
+  "mediaSetRid" | "mediaItemRid",
+  typeof MediaSets.metadata
+> = handleOpenApiCall(
+  MediaSets.metadata,
+  ["mediaSetRid", "mediaItemRid"],
+);
+
 export const upload: CallFactory<
   "ontologyApiName" | "objectType" | "propertyName",
   typeof MediaReferenceProperties.upload

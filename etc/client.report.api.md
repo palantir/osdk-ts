@@ -26,6 +26,8 @@ import type { InterfaceQueryDataType } from '@osdk/api';
 import { isOk } from '@osdk/api';
 import { Logger } from '@osdk/api';
 import { Media } from '@osdk/api';
+import { MediaFullMetadata } from '@osdk/api';
+import { MediaItemMetadata } from '@osdk/api';
 import { MediaMetadata as MediaMetadata_2 } from '@osdk/api';
 import { MediaReference } from '@osdk/api';
 import { MediaUpload } from '@osdk/api';
@@ -60,6 +62,7 @@ import type { SharedClientContext } from '@osdk/shared.client2';
 import { SingleLinkAccessor } from '@osdk/api';
 import { ThreeDimensionalAggregation } from '@osdk/api';
 import { TwoDimensionalAggregation } from '@osdk/api';
+import { UnknownMediaItemMetadata } from '@osdk/api';
 import type { ValidateActionResponseV2 } from '@osdk/foundry.ontologies';
 import { VersionBound } from '@osdk/api';
 import { WhereClause } from '@osdk/api';
@@ -158,6 +161,10 @@ export { Logger }
 
 export { Media }
 
+export { MediaFullMetadata }
+
+export { MediaItemMetadata }
+
 export { MediaMetadata_2 as MediaMetadata }
 
 export { MediaReference }
@@ -218,6 +225,8 @@ export { SingleLinkAccessor }
 export { ThreeDimensionalAggregation }
 
 export { TwoDimensionalAggregation }
+
+export { UnknownMediaItemMetadata }
 
 export { VersionBound }
 

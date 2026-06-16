@@ -63,6 +63,21 @@ export const createMediaRefHandlers: FauxFoundryHandlersFactory = (
     },
   ),
 
+  /**
+   * Load full (type-specific) media metadata via MediaSets.metadata.
+   *
+   * The faux data store is keyed by ontology object identity, not by media-item RID, so this
+   * mock returns a stable `untyped` variant for any RID. Sufficient for testing that the
+   * `fetchFullMetadata` wiring resolves a `MediaFullMetadata` wrapper end-to-end.
+   */
+  OntologiesV2.MediaReferenceProperties.getFullMediaMetadata(
+    baseUrl,
+    async () => ({
+      type: "untyped" as const,
+      sizeBytes: 25,
+    }),
+  ),
+
   OntologiesV2.MediaReferenceProperties.upload(
     baseUrl,
     async (

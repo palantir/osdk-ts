@@ -27,6 +27,16 @@ export interface Media {
    */
   fetchMetadata(): Promise<MediaMetadata>;
   /**
+   * Fetches type-specific metadata for this media item, i.e. page count for documents,
+   * dimensions for imagery, duration for audio/video, etc.
+   *
+   * Returns a `MediaFullMetadata` that can be narrowed on `result.itemMetadata.type`
+   * to access variant-specific fields.
+   *
+   * @beta
+   */
+  fetchFullMetadata?(): Promise<MediaFullMetadata>;
+  /**
    * Fetches content of a media reference property
    * @example
    * ```ts
@@ -94,4 +104,436 @@ export interface MediaMetadata {
   path?: string;
   sizeBytes: number;
   mediaType: string;
+}
+
+/**
+ * Metadata for a media item, returned by `Media.fetchFullMetadata`.
+ */
+export interface MediaFullMetadata {
+  /**
+   * Type-specific metadata. Narrow on `itemMetadata.type` to access variant-specific fields.
+   *
+   * If the platform returns a `type` value not modeled by this SDK version, `itemMetadata`
+   * will be an `UnknownMediaItemMetadata` instead, with the raw wire payload preserved on
+   * `raw` for inspection.
+   */
+  itemMetadata: MediaItemMetadata | UnknownMediaItemMetadata;
+}
+
+/**
+ * Type-specific metadata for a media item, discriminated by `type`. Narrow on
+ * `result.itemMetadata.type` to access variant-specific fields with full IntelliSense.
+ *
+ * Note: mio currently supports a `streamingVideo` variant internally, but it is not yet exposed
+ * on the platform API and is therefore absent here. When the platform API adds it, the variant
+ * will be appended here as a non-breaking change.
+ */
+export type MediaItemMetadata =
+  | ({ type: "document" } & DocumentMediaItemMetadata)
+  | ({ type: "imagery" } & ImageryMediaItemMetadata)
+  | ({ type: "audio" } & AudioMediaItemMetadata)
+  | ({ type: "video" } & VideoMediaItemMetadata)
+  | ({ type: "dicom" } & DicomMediaItemMetadata)
+  | ({ type: "email" } & EmailMediaItemMetadata)
+  | ({ type: "model3d" } & Model3dMediaItemMetadata)
+  | ({ type: "spreadsheet" } & SpreadsheetMediaItemMetadata)
+  | ({ type: "untyped" } & UntypedMediaItemMetadata);
+
+/**
+ * Fallback variant emitted by the SDK when the platform returns a `MediaItemMetadata.type`
+ * value not modeled by this version of `@osdk/foundry.mediasets`. The raw wire payload is
+ * preserved on `raw` so callers can inspect it. Bump `@osdk/client` to promote the new
+ * variant into `MediaItemMetadata` proper.
+ *
+ * Distinct from the `untyped` variant of `MediaItemMetadata`, which is a real platform schema
+ * type for multimodal media.
+ */
+export interface UnknownMediaItemMetadata {
+  type: "unknown";
+  raw: { type: string; [key: string]: unknown };
+}
+
+// ─── Variant interfaces ──────────────────────────────────────────────────────
+
+export interface DocumentMediaItemMetadata {
+  format: DocumentDecodeFormat;
+  pages?: number;
+  sizeBytes: number;
+  title?: string;
+  author?: string;
+}
+
+export interface ImageryMediaItemMetadata {
+  format: ImageryDecodeFormat;
+  dimensions?: Dimensions;
+  bands: Array<BandInfo>;
+  attributes: Record<ImageAttributeDomain, Record<ImageAttributeKey, string>>;
+  iccProfile?: string;
+  geo?: GeoMetadata;
+  pages?: number;
+  orientation?: Orientation;
+  sizeBytes: number;
+}
+
+export interface AudioMediaItemMetadata {
+  format: AudioDecodeFormat;
+  specification: AudioSpecification;
+  sizeBytes: number;
+}
+
+export interface VideoMediaItemMetadata {
+  format: VideoDecodeFormat;
+  specification: VideoSpecification;
+  sizeBytes: number;
+}
+
+export interface DicomMediaItemMetadata {
+  metaInformation: DicomMetaInformation;
+  mediaType: DicomMediaType;
+  commonDataElements: CommonDicomDataElements;
+  otherDataElements: Record<DicomDataElementKey, any>;
+  sizeBytes: number;
+}
+
+export interface EmailMediaItemMetadata {
+  format: EmailDecodeFormat;
+  sizeBytes: number;
+  sender: Array<Mailbox>;
+  date: string;
+  attachmentCount: number;
+  to: Array<MailboxOrGroup>;
+  cc: Array<MailboxOrGroup>;
+  subject?: string;
+  attachments: Array<EmailAttachment>;
+}
+
+export interface Model3dMediaItemMetadata {
+  format: Model3dDecodeFormat;
+  modelType: Model3dType;
+  sizeBytes: number;
+}
+
+export interface SpreadsheetMediaItemMetadata {
+  format: SpreadsheetDecodeFormat;
+  sheetNames: Array<string>;
+  sizeBytes: number;
+  title?: string;
+  author?: string;
+}
+
+export interface UntypedMediaItemMetadata {
+  sizeBytes: number;
+}
+
+// ─── Format enums ────────────────────────────────────────────────────────────
+
+export type AudioDecodeFormat =
+  | "FLAC"
+  | "MP2"
+  | "MP3"
+  | "MP4"
+  | "NIST_SPHERE"
+  | "OGG"
+  | "WAV"
+  | "WEBM";
+
+export type VideoDecodeFormat = "MP4" | "MKV" | "MOV" | "TS";
+
+export type DocumentDecodeFormat =
+  | "PDF"
+  | "DOC"
+  | "DOCX"
+  | "TXT"
+  | "PPTX"
+  | "RTF";
+
+export type SpreadsheetDecodeFormat = "XLSX";
+
+export type ImageryDecodeFormat =
+  | "BMP"
+  | "TIFF"
+  | "NITF"
+  | "JP2K"
+  | "JPG"
+  | "PNG"
+  | "WEBP";
+
+export type EmailDecodeFormat = "EML";
+
+export type DicomMediaType =
+  | "IMAGE"
+  | "MULTI_FRAME_IMAGE"
+  | "VIDEO"
+  | "STRUCTURED_REPORT";
+
+export type Model3dDecodeFormat = "LAS" | "PLY" | "OBJ";
+
+export type Model3dType = "POINT_CLOUD" | "MESH";
+
+// ─── Audio / video specification ─────────────────────────────────────────────
+
+export interface AudioSpecification {
+  bitRate: number;
+  durationSeconds: number;
+  numberOfChannels?: number;
+}
+
+export interface VideoSpecification {
+  bitRate: number;
+  durationSeconds: number;
+}
+
+// ─── Imagery support types ───────────────────────────────────────────────────
+
+export interface Dimensions {
+  width: number;
+  height: number;
+}
+
+export interface BandInfo {
+  dataType?: DataType;
+  colorInterpretation?: ColorInterpretation;
+  paletteInterpretation?: PaletteInterpretation;
+  unitInterpretation?: UnitInterpretation;
+}
+
+export type DataType =
+  | "UNDEFINED"
+  | "BYTE"
+  | "UINT16"
+  | "INT16"
+  | "UINT32"
+  | "INT32"
+  | "FLOAT32"
+  | "FLOAT64"
+  | "COMPLEX_INT16"
+  | "COMPLEX_INT32"
+  | "COMPLEX_FLOAT32"
+  | "COMPLEX_FLOAT64"
+  | "UINT64"
+  | "INT64"
+  | "INT8";
+
+export type ColorInterpretation =
+  | "UNDEFINED"
+  | "GRAY"
+  | "PALETTE_INDEX"
+  | "RED"
+  | "GREEN"
+  | "BLUE"
+  | "ALPHA"
+  | "HUE"
+  | "SATURATION"
+  | "LIGHTNESS"
+  | "CYAN"
+  | "MAGENTA"
+  | "YELLOW"
+  | "BLACK"
+  | "Y_CB_CR_SPACE_Y"
+  | "Y_CB_CR_SPACE_CB"
+  | "Y_CB_CR_SPACE_CR";
+
+export type PaletteInterpretation = "GRAY" | "RGB" | "RGBA" | "CMYK" | "HLS";
+
+export interface UnitInterpretation {
+  unit?: string;
+  scale?: number;
+  offset?: number;
+}
+
+export type ImageAttributeDomain = string;
+export type ImageAttributeKey = string;
+
+export interface GeoMetadata {
+  crs?: CoordinateReferenceSystem;
+  geotransform?: AffineTransform;
+  gcpInfo?: GcpList;
+  gpsData?: GpsMetadata;
+}
+
+export interface CoordinateReferenceSystem {
+  wkt?: string;
+}
+
+export interface AffineTransform {
+  xTranslate?: number;
+  xScale?: number;
+  xShear?: number;
+  yTranslate?: number;
+  yShear?: number;
+  yScale?: number;
+}
+
+export interface GcpList {
+  gcps: Array<GroundControlPoint>;
+}
+
+export interface GroundControlPoint {
+  pixX?: number;
+  pixY?: number;
+  projX?: number;
+  projY?: number;
+  projZ?: number;
+}
+
+export interface GpsMetadata {
+  latitude?: number;
+  longitude?: number;
+  altitude?: number;
+}
+
+export interface Orientation {
+  rotationAngle?: RotationAngle;
+  flipAxis?: FlipAxis;
+}
+
+export type RotationAngle =
+  | "DEGREE_90"
+  | "DEGREE_180"
+  | "DEGREE_270"
+  | "UNKNOWN";
+
+export type FlipAxis = "HORIZONTAL" | "VERTICAL" | "UNKNOWN";
+
+// ─── DICOM support types ─────────────────────────────────────────────────────
+
+export type DicomMetaInformation = { type: "v1" } & DicomMetaInformationV1;
+
+export interface DicomMetaInformationV1 {
+  mediaStorageSop: string;
+  mediaStorageSopInstance: string;
+  transferSyntax: string;
+}
+
+export interface CommonDicomDataElements {
+  numberFrames?: number;
+  modality?: Modality;
+  patientId?: string;
+  studyId?: string;
+  studyUid?: string;
+  seriesUid?: string;
+  studyTime?: string;
+  seriesTime?: string;
+}
+
+export type DicomDataElementKey = string;
+
+export type Modality =
+  | "AR"
+  | "ASMT"
+  | "AU"
+  | "BDUS"
+  | "BI"
+  | "BMD"
+  | "CR"
+  | "CT"
+  | "CTPROTOCOL"
+  | "DG"
+  | "DOC"
+  | "DX"
+  | "ECG"
+  | "EPS"
+  | "ES"
+  | "FID"
+  | "GM"
+  | "HC"
+  | "HD"
+  | "IO"
+  | "IOL"
+  | "IVOCT"
+  | "IVUS"
+  | "KER"
+  | "KO"
+  | "LEN"
+  | "LS"
+  | "MG"
+  | "MR"
+  | "M3D"
+  | "NM"
+  | "OAM"
+  | "OCT"
+  | "OP"
+  | "OPM"
+  | "OPT"
+  | "OPTBSV"
+  | "OPTENF"
+  | "OPV"
+  | "OSS"
+  | "OT"
+  | "PLAN"
+  | "PR"
+  | "PT"
+  | "PX"
+  | "REG"
+  | "RESP"
+  | "RF"
+  | "RG"
+  | "RTDOSE"
+  | "RTIMAGE"
+  | "RTINTENT"
+  | "RTPLAN"
+  | "RTRAD"
+  | "RTRECORD"
+  | "RTSEGANN"
+  | "RTSTRUCT"
+  | "RWV"
+  | "SEG"
+  | "SM"
+  | "SMR"
+  | "SR"
+  | "SRF"
+  | "STAIN"
+  | "TEXTUREMAP"
+  | "TG"
+  | "US"
+  | "VA"
+  | "XA"
+  | "XC"
+  | "AS"
+  | "CD"
+  | "CF"
+  | "CP"
+  | "CS"
+  | "DD"
+  | "DF"
+  | "DM"
+  | "DS"
+  | "EC"
+  | "FA"
+  | "FS"
+  | "LP"
+  | "MA"
+  | "MS"
+  | "OPR"
+  | "ST"
+  | "VF";
+
+// ─── Email support types ─────────────────────────────────────────────────────
+
+export interface Mailbox {
+  displayName?: string;
+  emailAddress: string;
+}
+
+export interface MailboxWrapper {
+  mailbox: Mailbox;
+}
+
+export interface Group {
+  groupName: string;
+  mailboxes: Array<Mailbox>;
+}
+
+export interface GroupWrapper {
+  group: Group;
+}
+
+export type MailboxOrGroup =
+  | ({ type: "mailbox" } & MailboxWrapper)
+  | ({ type: "group" } & GroupWrapper);
+
+export interface EmailAttachment {
+  attachmentIndex: number;
+  fileName?: string;
+  mimeType: string;
 }

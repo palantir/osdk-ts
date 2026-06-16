@@ -33,6 +33,8 @@ export type {
   InterfaceMetadata,
   Logger,
   Media,
+  MediaFullMetadata,
+  MediaItemMetadata,
   MediaMetadata,
   MediaReference,
   MediaUpload,
@@ -56,6 +58,7 @@ export type {
   SingleLinkAccessor,
   ThreeDimensionalAggregation,
   TwoDimensionalAggregation,
+  UnknownMediaItemMetadata,
   VersionBound,
   WhereClause,
 } from "@osdk/api";
