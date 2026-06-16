@@ -259,13 +259,14 @@ export function FoundryWidgetDevPlugin(
       const standardizedFile = standardizePathAndFileExtension(file);
       if (configFileToEntrypoint[standardizedFile] != null) {
         const reapplyInstruction = isCodeWorkspacesMode(server.config.mode)
-          ? "Make sure to refresh the preview panel to see the changes you've made."
-          : `Make sure to re-enter the developer mode setup URL to use the changes you've made: ${
-            getBaseHref(server)
-          }${SETUP_PATH}/`;
+          ? "   Refresh the preview panel to see your changes.\n"
+          : `   Re-enter the developer mode setup URL to apply your changes:\n`
+            + `   ${color.green(`${getBaseHref(server)}${SETUP_PATH}/`)}\n`;
         server.config.logger.warn(
           color.yellow(
-            `Detected a change to widget config file ${file}. ${reapplyInstruction}`,
+            `\n⚠️  Detected a change to widget config file:\n`
+              + `   ${file}\n\n`
+              + reapplyInstruction,
           ),
         );
         return [];
