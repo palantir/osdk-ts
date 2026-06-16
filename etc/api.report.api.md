@@ -93,11 +93,18 @@ export namespace ActionMetadata {
             type: "objectSet";
             		}
         		// (undocumented)
-        export interface Struct<T extends Record<string, DataType.BaseActionParameterTypes>> {
+        export interface Struct<T extends Record<string, DataType.BaseActionParameterTypes | DataType.StructField>> {
             			// (undocumented)
             struct: T;
             			// (undocumented)
             type: "struct";
+            		}
+        		// (undocumented)
+        export interface StructField<T extends DataType.BaseActionParameterTypes = DataType.BaseActionParameterTypes> {
+            			// (undocumented)
+            nullable?: boolean;
+            			// (undocumented)
+            type: T;
             		}
         	}
     	// (undocumented)
@@ -115,6 +122,8 @@ export namespace ActionMetadata {
 
 // @public
 export namespace ActionParam {
+    	// (undocumented)
+    export type FlattenIntersection<T> = { [K in keyof T] : T[K] };
     	// (undocumented)
     export type InterfaceType<T extends InterfaceDefinition> = {
         		$objectType: CompileTimeMetadata<T> extends {
@@ -135,7 +144,20 @@ export namespace ActionParam {
     	// (undocumented)
     export type PrimitiveType<T extends keyof DataValueClientToWire> = DataValueClientToWire[T];
     	// (undocumented)
-    export type StructType<T extends Record<string, keyof DataValueClientToWire>> = { [K in keyof T] : DataValueClientToWire[T[K]] };
+    export type StructFieldType = keyof DataValueClientToWire | {
+        		type: keyof DataValueClientToWire
+        		nullable?: boolean
+        	};
+    	// (undocumented)
+    export type StructFieldValue<E extends StructFieldType> = E extends keyof DataValueClientToWire ? DataValueClientToWire[E] : E extends {
+        		type: infer P extends keyof DataValueClientToWire
+        	} ? DataValueClientToWire[P] : never;
+    	// (undocumented)
+    export type StructType<T extends Record<string, StructFieldType>> = FlattenIntersection<{ [K in keyof T as T[K] extends {
+            		nullable: true
+            	} ? never : K] : StructFieldValue<T[K]> } & { [K in keyof T as T[K] extends {
+            		nullable: true
+            	} ? K : never]? : StructFieldValue<T[K]> | null }>;
 }
 
 // @public (undocumented)

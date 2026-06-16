@@ -53,6 +53,13 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
                   "name": "zipcode",
                   "required": true,
                 },
+                {
+                  "fieldType": {
+                    "type": "string",
+                  },
+                  "name": "streetName",
+                  "required": false,
+                },
               ],
               "type": "struct",
             },

@@ -73,9 +73,43 @@ export namespace ActionParam {
     $primaryKey: string | number;
   };
 
+  /**
+   * Encoding of a single struct parameter field. The bare
+   * `keyof DataValueClientToWire` string form declares a required field; the
+   * object form additionally carries the field's nullability.
+   */
+  export type StructFieldType =
+    | keyof DataValueClientToWire
+    | { type: keyof DataValueClientToWire; nullable?: boolean };
+
+  /**
+   * Helper type to convert action definition struct parameter fields to
+   * typescript types. Fields declared `nullable: true` may be omitted or
+   * passed as `null`, mirroring top-level optional parameters.
+   */
   export type StructType<
-    T extends Record<string, keyof DataValueClientToWire>,
-  > = { [K in keyof T]: DataValueClientToWire[T[K]] };
+    T extends Record<string, StructFieldType>,
+  > = FlattenIntersection<
+    & {
+      [K in keyof T as T[K] extends { nullable: true } ? never : K]:
+        StructFieldValue<T[K]>;
+    }
+    & {
+      [K in keyof T as T[K] extends { nullable: true } ? K : never]?:
+        | StructFieldValue<T[K]>
+        | null;
+    }
+  >;
+
+  /** Resolves a {@link StructFieldType} encoding to its client-side typescript type. */
+  export type StructFieldValue<E extends StructFieldType> = E extends
+    keyof DataValueClientToWire ? DataValueClientToWire[E]
+    : E extends { type: infer P extends keyof DataValueClientToWire }
+      ? DataValueClientToWire[P]
+    : never;
+
+  /** Collapses an intersection of object types into a single object type for display. */
+  export type FlattenIntersection<T> = { [K in keyof T]: T[K] };
 
   /**
    * Type of the symbol that indicates that a "null" value should be passed for the action parameter.

@@ -246,10 +246,21 @@ function validateActionParameterType(
 
       for (const { name, fieldType, required } of dataType.fields) {
         const fieldValue = (value as Record<string, unknown>)[name];
-        if (
-          (required && fieldValue == null)
-          || !matchesOntologyDataType(fieldType, fieldValue)
-        ) {
+        // Optional struct fields may be omitted or passed as null, matching
+        // Foundry's behavior for absent top-level optional parameters.
+        if (fieldValue == null) {
+          if (!required) {
+            continue;
+          }
+          ret.result = "INVALID";
+          ret.parameters[paramKey] = {
+            ...baseParam,
+          };
+
+          return;
+        }
+
+        if (!matchesOntologyDataType(fieldType, fieldValue)) {
           ret.result = "INVALID";
           ret.parameters[paramKey] = {
             ...baseParam,

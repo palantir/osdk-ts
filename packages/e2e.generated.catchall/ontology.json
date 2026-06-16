@@ -460,6 +460,13 @@
                   "type": "string"
                 },
                 "required": true
+              },
+              {
+                "name": "streetName",
+                "fieldType": {
+                  "type": "string"
+                },
+                "required": false
               }
             ]
           },

@@ -35,6 +35,12 @@ type actionParam_primitiveType_string = string;
 /** A struct-typed action parameter — fields are mapped through DataValueClientToWire. */
 type actionParam_structType = { name: string; age: number; joined: string };
 
+/** A struct-typed action parameter with a nullable field — it may be omitted or passed as null. */
+type actionParam_structType_nullableField = {
+  name: string;
+  nickname?: string | null | undefined;
+};
+
 /** The validation-only response returned when $validateOnly: true. */
 type actionValidationResponse = ValidateActionResponseV2;
 

@@ -213,12 +213,65 @@ describe.each([
         InferredParamType
       >();
 
+    // Nullable struct fields may be provided, passed as null, or omitted entirely
+    expectTypeOf<
+      {
+        name: string;
+        address: {
+          city: string;
+          state: string;
+          zipcode: number;
+          streetName: string;
+        };
+      }
+    >()
+      .toMatchTypeOf<
+        InferredParamType
+      >();
+    expectTypeOf<
+      {
+        name: string;
+        address: {
+          city: string;
+          state: string;
+          zipcode: number;
+          streetName: null;
+        };
+      }
+    >()
+      .toMatchTypeOf<
+        InferredParamType
+      >();
+
+    // Required struct fields cannot be omitted
+    expectTypeOf<
+      {
+        name: string;
+        address: { city: string; state: string };
+      }
+    >()
+      .not.toMatchTypeOf<
+      InferredParamType
+    >();
+
     const result = await client(createStructPerson).applyAction({
       name: "testMan",
       address: { city: "NYC", state: "NY", zipcode: 12345 },
     });
     expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
     expect(result).toBeUndefined();
+
+    // A provided nullable struct field round-trips through the faux server
+    const resultWithStreet = await client(createStructPerson).applyAction({
+      name: "testMan",
+      address: {
+        city: "NYC",
+        state: "NY",
+        zipcode: 12345,
+        streetName: "Main St",
+      },
+    });
+    expect(resultWithStreet).toBeUndefined();
   });
 
   it("Accepts attachments", async () => {

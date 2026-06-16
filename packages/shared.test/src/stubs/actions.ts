@@ -128,6 +128,19 @@ export const actionRequestWithStruct: ApplyActionRequestV2 = {
   },
 };
 
+export const actionRequestWithStructOptionalField: ApplyActionRequestV2 = {
+  options: { mode: "VALIDATE_AND_EXECUTE", returnEdits: "NONE" },
+  parameters: {
+    name: "testMan",
+    address: {
+      city: "NYC",
+      state: "NY",
+      zipcode: 12345,
+      streetName: "Main St",
+    },
+  },
+};
+
 export const actionRequestWithGeoshape: ApplyActionRequestV2 = {
   options: { mode: "VALIDATE_AND_EXECUTE", returnEdits: "NONE" },
   parameters: {
@@ -293,6 +306,7 @@ export function registerLazyActions(fauxOntology: FauxOntology): void {
     ActionTakesStruct,
     createLazyDoNothingActionImpl([
       [actionRequestWithStruct, actionResponse],
+      [actionRequestWithStructOptionalField, actionResponse],
     ]),
   );
 
