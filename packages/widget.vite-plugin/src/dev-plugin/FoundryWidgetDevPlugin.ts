@@ -258,9 +258,14 @@ export function FoundryWidgetDevPlugin(
     handleHotUpdate({ file, server }) {
       const standardizedFile = standardizePathAndFileExtension(file);
       if (configFileToEntrypoint[standardizedFile] != null) {
+        const reapplyInstruction = isCodeWorkspacesMode(server.config.mode)
+          ? "Make sure to refresh the preview panel to see the changes you've made."
+          : `Make sure to re-enter the developer mode setup URL to use the changes you've made: ${
+            getBaseHref(server)
+          }${SETUP_PATH}/`;
         server.config.logger.warn(
           color.yellow(
-            `Detected a change to widget config file ${file}. Make sure to publish your changes in order to use the changes you've made.`,
+            `Detected a change to widget config file ${file}. ${reapplyInstruction}`,
           ),
         );
         return [];
@@ -286,7 +291,7 @@ function printSetupPageUrl(server: ViteDevServer) {
     server.config.logger.info(
       `  ${color.green("➜")}  ${
         color.bold(
-          "Select a widget from the preview panel to enter developer mode",
+          "Open the preview panel to enter developer mode",
         )
       }`,
     );
