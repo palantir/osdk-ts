@@ -1,5 +1,18 @@
 # @osdk/shared.test
 
+## 2.25.0
+
+### Minor Changes
+
+- db028a0: Add optional struct param support for actions.
+
+### Patch Changes
+
+- Updated dependencies [db028a0]
+- Updated dependencies [ab19740]
+  - @osdk/generator-converters@2.34.0
+  - @osdk/api@2.34.0
+
 ## 2.24.0
 
 ### Patch Changes
