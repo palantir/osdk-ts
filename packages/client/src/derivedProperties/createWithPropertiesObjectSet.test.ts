@@ -32,7 +32,7 @@ describe(createWithPropertiesObjectSet, () => {
         base.pivotTo("lead").selectProperty("employeeId"),
     } satisfies DerivedProperty.Clause<Employee>;
 
-    const result = clause["derivedPropertyName"](deriveObjectSet);
+    const result = clause.derivedPropertyName(deriveObjectSet);
     const definition = map.get(result);
     expect(definition).toMatchInlineSnapshot(`
         {
@@ -67,7 +67,7 @@ describe(createWithPropertiesObjectSet, () => {
       "derivedPropertyName": (base) => base.selectProperty("employeeId"),
     } satisfies DerivedProperty.Clause<Employee>;
 
-    const result = clause["derivedPropertyName"](deriveObjectSet);
+    const result = clause.derivedPropertyName(deriveObjectSet);
     const definition = map.get(result);
     expect(definition).toMatchInlineSnapshot(`
       {
@@ -95,10 +95,10 @@ describe(createWithPropertiesObjectSet, () => {
         }),
     };
 
-    const result = clause["derivedPropertyName"](deriveObjectSet);
+    const result = clause.derivedPropertyName(deriveObjectSet);
     const definition = map.get(result);
 
-    const secondResult = clause["secondaryDerivedPropertyName"](
+    const secondResult = clause.secondaryDerivedPropertyName(
       deriveObjectSet,
     );
     const secondDefinition = map.get(secondResult);
@@ -161,7 +161,7 @@ describe(createWithPropertiesObjectSet, () => {
         //   base.pivotTo("lead").aggregate("employeeId:avg").divide("employeeId", 2),
       };
 
-      const result = clause["derivedPropertyName"](deriveObjectSet);
+      const result = clause.derivedPropertyName(deriveObjectSet);
       const definition = map.get(result);
 
       expect(definition).toMatchInlineSnapshot(`
@@ -207,7 +207,7 @@ describe(createWithPropertiesObjectSet, () => {
           ),
       };
 
-      const result = clause["derivedPropertyName"](deriveObjectSet);
+      const result = clause.derivedPropertyName(deriveObjectSet);
       const definition = map.get(result);
 
       expect(definition).toMatchInlineSnapshot(`
@@ -251,7 +251,7 @@ describe(createWithPropertiesObjectSet, () => {
           ),
       };
 
-      const result = clause["derivedPropertyName"](deriveObjectSet);
+      const result = clause.derivedPropertyName(deriveObjectSet);
       const definition = map.get(result);
 
       expect(definition).toMatchInlineSnapshot(`
@@ -295,7 +295,7 @@ describe(createWithPropertiesObjectSet, () => {
           ),
       };
 
-      const result = clause["derivedPropertyName"](deriveObjectSet);
+      const result = clause.derivedPropertyName(deriveObjectSet);
       const definition = map.get(result);
 
       expect(definition).toMatchInlineSnapshot(`
@@ -339,7 +339,7 @@ describe(createWithPropertiesObjectSet, () => {
           ),
       };
 
-      const result = clause["derivedPropertyName"](deriveObjectSet);
+      const result = clause.derivedPropertyName(deriveObjectSet);
       const definition = map.get(result);
 
       expect(definition).toMatchInlineSnapshot(`
@@ -395,7 +395,7 @@ describe(createWithPropertiesObjectSet, () => {
         ),
     };
 
-    const result = clause["derivedPropertyName"](deriveObjectSet);
+    const result = clause.derivedPropertyName(deriveObjectSet);
     const definition = map.get(result);
 
     expect(definition).toMatchInlineSnapshot(`
