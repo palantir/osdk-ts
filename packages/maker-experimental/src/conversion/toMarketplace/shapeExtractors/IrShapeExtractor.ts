@@ -16,6 +16,8 @@
 
 import type {
   GroupId,
+  InterfaceActionTypeConstraint,
+  InterfaceParameterConstraint,
   InterfaceTypeBlockDataV2,
   KnownMarketplaceIdentifiers,
   MarketplaceInterfaceLinkType,
@@ -250,7 +252,7 @@ function extractInterfaceType(
     ),
     actionTypeConstraints: (interfaceType.actionTypeConstraints ?? [])
       .map(
-        (constraint: any) => {
+        (constraint) => {
           const constraintId = knownMarketplaceIdentifiers
             .interfaceActionTypeConstraints?.[constraint.rid];
           return constraintId ?? constraint.rid;
@@ -365,7 +367,7 @@ function extractInterfaceType(
         knownMarketplaceIdentifiers,
         actionTypeConstraint,
         paramRid,
-        paramConstraint as any,
+        paramConstraint,
         ridGenerator,
       );
       outputShapeMap.set(paramOutputShape.id, paramOutputShape.outputShape);
@@ -537,7 +539,7 @@ function getInterfaceLinkTypeOutputShape(
 function getInterfaceActionTypeConstraintOutputShape(
   knownMarketplaceIdentifiers: KnownMarketplaceIdentifiers,
   interfaceType: MarketplaceInterfaceType,
-  actionTypeConstraint: any,
+  actionTypeConstraint: InterfaceActionTypeConstraint,
   ridGenerator: OntologyRidGenerator,
 ): { id: ReadableId; outputShape: OutputShape } {
   const interfaceReadableId = getReadableIdForInterface(interfaceType.apiName);
@@ -582,9 +584,9 @@ function getInterfaceActionTypeConstraintOutputShape(
  */
 function getInterfaceParameterConstraintOutputShape(
   knownMarketplaceIdentifiers: KnownMarketplaceIdentifiers,
-  actionTypeConstraint: any,
+  actionTypeConstraint: InterfaceActionTypeConstraint,
   paramRid: string,
-  paramConstraint: any,
+  paramConstraint: InterfaceParameterConstraint,
   ridGenerator: OntologyRidGenerator,
 ): { id: ReadableId; outputShape: OutputShape } {
   const actionTypeConstraintId = knownMarketplaceIdentifiers
@@ -595,10 +597,8 @@ function getInterfaceParameterConstraintOutputShape(
 
   const shape: InterfaceParameterConstraintShape = {
     about: createLocalizedAbout(
-      paramConstraint.displayMetadata?.displayName
-        ?? paramConstraint.metadata?.displayName ?? "",
-      paramConstraint.displayMetadata?.description
-        ?? paramConstraint.metadata?.description ?? "",
+      paramConstraint.displayMetadata.displayName,
+      paramConstraint.displayMetadata.displayName,
     ),
     actionTypeConstraint: actionTypeConstraintRef,
     requireImplementation: paramConstraint.requireImplementation,
@@ -684,7 +684,7 @@ export function extractValueTypeInputShapeIfPresent(
  * Get title and description for shared property type
  */
 function getTitleAndDescriptionForSharedPropertyType(
-  sharedPropertyType: SharedPropertyType | any,
+  sharedPropertyType: SharedPropertyType,
 ): LocalizedTitleAndDescription {
   return createLocalizedAbout(
     sharedPropertyType.displayMetadata.displayName,

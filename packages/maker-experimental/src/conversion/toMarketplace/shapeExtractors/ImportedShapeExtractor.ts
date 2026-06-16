@@ -343,7 +343,7 @@ function extractImportedInterfaceTypes(
     // Build actionTypeConstraints list
     const actionTypeConstraints: string[] =
       (interfaceType.actionTypeConstraints ?? []).map(
-        (constraint: any) => {
+        (constraint) => {
           const constraintId = knownIdentifiers
             .interfaceActionTypeConstraints
             ?.[constraint.rid];
@@ -493,9 +493,9 @@ function extractImportedInterfaceTypes(
 
       const parameterConstraintRefs: string[] = Object.entries(
         actionTypeConstraint.parameters ?? {},
-      ).map(([paramApiName, _paramConstraint]: [string, any]) => {
-        const paramDisplayApiName = _paramConstraint.displayMetadata?.apiName
-          ?? paramApiName;
+      ).map(([paramRid, paramConstraint]) => {
+        const paramDisplayApiName = paramConstraint.displayMetadata?.apiName
+          ?? paramRid;
         return ridGenerator.toBlockInternalId(
           ReadableIdGenerator.getForInterfaceParameterConstraint(
             interfaceType.apiName,
@@ -523,12 +523,12 @@ function extractImportedInterfaceTypes(
 
       // Generate interface parameter constraint input shapes
       for (
-        const [paramApiName, paramConstraint] of Object.entries(
+        const [paramRid, paramConstraint] of Object.entries(
           actionTypeConstraint.parameters ?? {},
         )
       ) {
-        const pc = paramConstraint as any;
-        const paramDisplayApiName = pc.displayMetadata?.apiName ?? paramApiName;
+        const paramDisplayApiName = paramConstraint.displayMetadata?.apiName
+          ?? paramRid;
         const paramReadableId = ReadableIdGenerator
           .getForInterfaceParameterConstraint(
             interfaceType.apiName,
@@ -538,14 +538,14 @@ function extractImportedInterfaceTypes(
 
         const paramInputShape: InterfaceParameterConstraintShape = {
           about: createLocalizedAbout(
-            pc.displayMetadata?.displayName ?? pc.metadata?.displayName ?? "",
-            pc.displayMetadata?.description ?? pc.metadata?.description ?? "",
+            paramConstraint.displayMetadata.displayName,
+            paramConstraint.displayMetadata.displayName,
           ),
           actionTypeConstraint: ridGenerator.toBlockInternalId(
             constraintReadableId,
           ),
-          requireImplementation: pc.requireImplementation,
-          type: pc.type,
+          requireImplementation: paramConstraint.requireImplementation,
+          type: paramConstraint.type,
         };
 
         blockShapes.inputShapes.set(paramReadableId, {

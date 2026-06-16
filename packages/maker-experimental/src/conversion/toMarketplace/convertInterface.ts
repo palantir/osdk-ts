@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import type { MarketplaceInterfaceType } from "@osdk/client.unstable";
+import type {
+  MarketplaceInterfaceType,
+  OntologyIrInterfaceActionTypeConstraint,
+} from "@osdk/client.unstable";
 import type { InterfaceType } from "@osdk/maker";
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { convertInterfaceProperty } from "./convertInterfacePropertyType.js";
@@ -93,7 +96,7 @@ export function convertInterface(
     })),
     actionTypeConstraints: (interfaceType.actionTypeConstraints ?? [])
       .map(
-        (constraint: any) => ({
+        (constraint: OntologyIrInterfaceActionTypeConstraint) => ({
           ...constraint,
           rid: ridGenerator.generateRidForInterfaceActionTypeConstraint(
             constraint.metadata.apiName,
@@ -101,9 +104,9 @@ export function convertInterface(
           ),
           parameters: Object.fromEntries(
             Object.entries(constraint.parameters ?? {}).map(
-              ([_paramApiName, paramConstraint]: [string, any]) => {
+              ([paramApiName, paramConstraint]) => {
                 const paramDisplayApiName =
-                  paramConstraint.displayMetadata?.apiName ?? _paramApiName;
+                  paramConstraint.displayMetadata?.apiName ?? paramApiName;
                 return [
                   ridGenerator.generateRidForInterfaceParameterConstraint(
                     constraint.metadata.apiName,
