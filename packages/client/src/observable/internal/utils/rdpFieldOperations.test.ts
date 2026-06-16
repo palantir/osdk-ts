@@ -356,6 +356,36 @@ describe("rdpFieldOperations", () => {
     // Target-only RDP the source did not compute: preserved.
     expect(underlying.rdpField2).toBe(999);
   });
+
+  it("keeps a shared RDP whose name is not a base property (production shape)", () => {
+    // In production, RDP field names never appear in objectDef.properties; the
+    // rdp sets are their only authority. computedScore is deliberately not a
+    // property of employeeObjectDef. sourceRdp is a strict superset of targetRdp
+    // so the merge runs past the identity fast path.
+    const source = createTestObject({
+      employeeId: 50030,
+      fullName: "John Doe",
+      computedScore: 42,
+    });
+    const target = createTestObject({
+      employeeId: 50030,
+      computedScore: 7,
+    });
+
+    const result = mergeObjectFields(
+      source,
+      new Set(["computedScore", "extraDerived"]),
+      new Set(["computedScore"]),
+      target,
+    );
+
+    assertValidObjectHolder(result);
+    const underlying = getUnderlyingProps(result);
+    expect(underlying.fullName).toBe("John Doe");
+    // The source computed computedScore, so it must survive the merge even
+    // though the name is not in objectDef.properties.
+    expect(underlying.computedScore).toBe(42);
+  });
 });
 
 describe("mergeSelectFields", () => {

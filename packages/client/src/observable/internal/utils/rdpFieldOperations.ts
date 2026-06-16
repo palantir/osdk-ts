@@ -91,48 +91,46 @@ function sameMembers(
 }
 
 /**
- * Copy the fields the source query is authoritative for: every base property,
- * plus the RDP fields it computed that the target also wants. RDP fields the
- * source computed but the target does not want are skipped so they don't leak
- * into the target's cache entry.
+ * Copy the base properties the source loaded. RDP fields are resolved
+ * separately: their authority is the rdp sets, not objectDef.properties (RDP
+ * names do not appear there at runtime), so they are skipped here even when
+ * present on the source.
  */
-function copyAuthoritativeSourceFields(
+function copyBaseProperties(
   into: SimpleOsdkProperties,
   source: SimpleOsdkProperties,
   objectDef: FetchedObjectTypeDefinition,
   sourceRdpFields: ReadonlySet<string>,
-  targetRdpFields: ReadonlySet<string>,
 ): void {
   for (const key of Object.keys(source)) {
-    if (!(key in objectDef.properties)) {
-      continue;
-    }
-    const isSourceRdp = sourceRdpFields.has(key);
-    if (!isSourceRdp || targetRdpFields.has(key)) {
+    if (key in objectDef.properties && !sourceRdpFields.has(key)) {
       into[key] = source[key];
     }
   }
 }
 
 /**
- * Restore the RDP fields the target wants but the source query did not compute.
- * The source has no opinion on those, so the cached value survives. RDP fields
- * the source did compute are left exactly as the source set them, which is what
- * clears a derived value that became null.
+ * Merge the RDP fields the target query wants, keyed off the rdp sets rather
+ * than objectDef.properties. A field the source computed is taken from the
+ * source, including the absent case, which clears a derived value that became
+ * null. A field only the target wants keeps its cached value.
  */
-function preserveTargetOnlyRdps(
+function mergeRdpFields(
   into: SimpleOsdkProperties,
+  source: SimpleOsdkProperties,
   targetCurrentValue: ObjectHolder | undefined,
   sourceRdpFields: ReadonlySet<string>,
   targetRdpFields: ReadonlySet<string>,
 ): void {
-  if (!targetCurrentValue) {
-    return;
-  }
-  const target =
-    targetCurrentValue[UnderlyingOsdkObject] as SimpleOsdkProperties;
+  const target = targetCurrentValue?.[UnderlyingOsdkObject] as
+    | SimpleOsdkProperties
+    | undefined;
   for (const field of targetRdpFields) {
-    if (!sourceRdpFields.has(field) && field in target) {
+    if (sourceRdpFields.has(field)) {
+      if (field in source) {
+        into[field] = source[field];
+      }
+    } else if (target && field in target) {
       into[field] = target[field];
     }
   }
@@ -171,10 +169,10 @@ export function mergeSelectFields(
 
 /**
  * Merge a freshly fetched object (computed under `sourceRdpFields`) into a cache
- * entry that wants `targetRdpFields`. The source is authoritative for every base
- * property and for the RDP fields it computed, including clearing one whose
- * derived value became null. RDP fields the source did not compute are kept from
- * `targetCurrentValue`; RDP fields the target does not want are dropped.
+ * entry that wants `targetRdpFields`. Base properties come from the source. RDP
+ * fields are resolved by the rdp sets: a field the source computed is taken from
+ * the source (including clearing a now-null value), a field only the target
+ * wants keeps its cached value, and a field only the source computed is dropped.
  */
 export function mergeObjectFields(
   sourceValue: ObjectHolder,
@@ -191,15 +189,10 @@ export function mergeObjectFields(
   const objectDef = requireObjectDef(sourceValue[ObjectDefRef], source);
 
   const newProps = systemFields(source);
-  copyAuthoritativeSourceFields(
+  copyBaseProperties(newProps, source, objectDef, sourceRdpFields);
+  mergeRdpFields(
     newProps,
     source,
-    objectDef,
-    sourceRdpFields,
-    targetRdpFields,
-  );
-  preserveTargetOnlyRdps(
-    newProps,
     targetCurrentValue,
     sourceRdpFields,
     targetRdpFields,
