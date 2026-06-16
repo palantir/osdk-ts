@@ -24,6 +24,9 @@ import { RefCounts } from "./RefCounts.js";
  * - Uses Trie structure for efficient storage and lookup
  */
 export class CacheKeys<TCacheKey extends CacheKey> {
+  #debugRefCounts: boolean;
+  #debugCacheKeys: boolean;
+
   #cacheKeys = new Trie<TCacheKey>(false, (keys) => {
     const cacheKey = {
       type: keys[0],
@@ -31,7 +34,7 @@ export class CacheKeys<TCacheKey extends CacheKey> {
     } as unknown as TCacheKey;
     this.#onCreate?.(cacheKey);
 
-    if (DEBUG_REFCOUNTS) {
+    if (process.env.NODE_ENV !== "production" && this.#debugRefCounts) {
       // eslint-disable-next-line no-console
       console.log(
         `CacheKeys.onCreate(${cacheKey.type}, ${
@@ -51,10 +54,7 @@ export class CacheKeys<TCacheKey extends CacheKey> {
     return cacheKey;
   });
 
-  #refCounts = new RefCounts<TCacheKey>(
-    DEBUG_REFCOUNTS ? 15_000 : 60_000,
-    (k) => this.#cleanupCacheKey(k),
-  );
+  #refCounts: RefCounts<TCacheKey>;
 
   // we are currently only using this for debug logging and should just remove it in the future if that
   // continues to be true
@@ -64,13 +64,22 @@ export class CacheKeys<TCacheKey extends CacheKey> {
   #onDestroy?: (cacheKey: TCacheKey) => void;
 
   constructor(
-    { onCreate, onDestroy }: {
+    { onCreate, onDestroy, debug }: {
       onCreate?: (cacheKey: TCacheKey) => void;
       onDestroy?: (cacheKey: TCacheKey) => void;
+      debug?: { refCounts?: boolean; cacheKeys?: boolean };
     },
   ) {
     this.#onCreate = onCreate;
     this.#onDestroy = onDestroy;
+    this.#debugRefCounts = debug?.refCounts ?? DEBUG_REFCOUNTS;
+    this.#debugCacheKeys = debug?.cacheKeys ?? DEBUG_CACHE_KEYS;
+
+    this.#refCounts = new RefCounts<TCacheKey>(
+      this.#debugRefCounts ? 15_000 : 60_000,
+      (k) => this.#cleanupCacheKey(k),
+      this.#debugRefCounts,
+    );
 
     setInterval(() => {
       this.#refCounts.gc();
@@ -96,7 +105,7 @@ export class CacheKeys<TCacheKey extends CacheKey> {
     ...args: K["__cacheKey"]["args"]
   ): K {
     const cacheKeyArgs = this.#normalizeArgs(type, args);
-    if (process.env.NODE_ENV !== "production" && DEBUG_CACHE_KEYS) {
+    if (process.env.NODE_ENV !== "production" && this.#debugCacheKeys) {
       // eslint-disable-next-line no-console
       console.debug(
         `CacheKeys.get([${type},

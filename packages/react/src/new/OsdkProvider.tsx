@@ -35,7 +35,10 @@ interface OsdkProviderOptions {
   /**
    * Dev-only behaviors of the underlying observable client. Has no effect in
    * production builds. Use `devMode={{ actionDelayMs: 0 }}` to disable the
-   * artificial action delay that makes optimistic updates visible in dev.
+   * artificial action delay that makes optimistic updates visible in dev,
+   * `devMode={{ logLevel: "debug" }}` to surface the observable client's debug
+   * tracing, or `devMode={{ debug: { refCounts: true } }}` to log cache
+   * internals.
    */
   devMode?: ObservableClientOptions["devMode"];
 }
@@ -59,14 +62,23 @@ export function OsdkProvider({
   }, []);
 
   const actionDelayMs = devMode?.actionDelayMs;
+  const logLevel = devMode?.logLevel;
+  const debugRefCounts = devMode?.debug?.refCounts;
+  const debugCacheKeys = devMode?.debug?.cacheKeys;
   const baseObservableClient = useMemo(
     () =>
       createObservableClient(
         client,
         () => [...userAgentsRef.current],
-        { devMode: { actionDelayMs } },
+        {
+          devMode: {
+            actionDelayMs,
+            logLevel,
+            debug: { refCounts: debugRefCounts, cacheKeys: debugCacheKeys },
+          },
+        },
       ),
-    [client, actionDelayMs],
+    [client, actionDelayMs, logLevel, debugRefCounts, debugCacheKeys],
   );
 
   const { client: devToolsClient, wrapChildren } = useDevToolsClient(
