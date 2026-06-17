@@ -43,7 +43,7 @@ import {
   Office,
 } from "@osdk/client.test.ontology";
 import {
-  FauxFoundry,
+  type FauxFoundry,
   LegacyFauxFoundry,
   startNodeApiServer,
   stubData,
