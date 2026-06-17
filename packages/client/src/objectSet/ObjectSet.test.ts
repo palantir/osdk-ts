@@ -223,7 +223,7 @@ describe("ObjectSet", () => {
     const employee = await client(Employee).fetchOne(
       stubData.employee1.employeeId,
     );
-    expectTypeOf<typeof employee>().toMatchTypeOf<
+    expectTypeOf<typeof employee>().toExtend<
       Osdk<Employee, PropertyKeys<Employee>>
     >;
     expect(employee.$primaryKey).toBe(stubData.employee1.employeeId);
@@ -236,7 +236,7 @@ describe("ObjectSet", () => {
       Employee,
       stubData.employee1.__rid,
     );
-    expectTypeOf<typeof employee>().toMatchTypeOf<
+    expectTypeOf<typeof employee>().toExtend<
       Osdk<Employee, PropertyKeys<Employee>>
     >;
     expect(employee.$primaryKey).toBe(stubData.employee1.employeeId);
@@ -250,7 +250,7 @@ describe("ObjectSet", () => {
       [stubData.employee1.__rid, stubData.employee2.__rid],
       {},
     );
-    expectTypeOf<typeof employees>().toMatchTypeOf<
+    expectTypeOf<typeof employees>().toExtend<
       FetchPageResult<Employee, PropertyKeys<Employee>, boolean, any, any>
     >;
     expect(employees.data[0].$primaryKey).toBe(stubData.employee1.employeeId);
@@ -264,7 +264,7 @@ describe("ObjectSet", () => {
       [stubData.employee1.__rid, stubData.employee2.__rid],
       {},
     );
-    expectTypeOf<typeof employees>().toMatchTypeOf<
+    expectTypeOf<typeof employees>().toExtend<
       FetchPageResult<
         ObjectOrInterfaceDefinition,
         PropertyKeys<ObjectOrInterfaceDefinition>,
@@ -285,7 +285,7 @@ describe("ObjectSet", () => {
       stubData.employee2.__rid,
       { $select: ["fullName"] },
     );
-    expectTypeOf<typeof employee>().toMatchTypeOf<
+    expectTypeOf<typeof employee>().toExtend<
       Osdk<Employee, "fullName">
     >;
     expect(employee.$primaryKey).toBe(stubData.employee2.employeeId);
@@ -299,7 +299,7 @@ describe("ObjectSet", () => {
       [stubData.employee2.__rid, stubData.employee3.__rid],
       { $select: ["fullName"] },
     );
-    expectTypeOf<typeof employees>().toMatchTypeOf<
+    expectTypeOf<typeof employees>().toExtend<
       FetchPageResult<Employee, "fullName", boolean, any, any>
     >;
     expect(employees.data[0].$primaryKey).toBe(stubData.employee2.employeeId);
@@ -333,10 +333,10 @@ describe("ObjectSet", () => {
     >();
 
     expectTypeOf(employees.data[0].$propertySecurities.class)
-      .toMatchTypeOf<PropertySecurity[]>();
+      .toExtend<PropertySecurity[]>();
 
     expectTypeOf(employees.data[0].$propertySecurities.favoriteRestaurants)
-      .toMatchTypeOf<PropertySecurity[][]>();
+      .toExtend<PropertySecurity[][]>();
 
     expect(employees.data[0].$primaryKey).toBe(
       stubData.unsecuredEmployee.__primaryKey,
@@ -347,10 +347,10 @@ describe("ObjectSet", () => {
     const player = await client(BgaoNflPlayer).fetchOne(
       "tkelce",
     );
-    expectTypeOf<typeof player>().toMatchTypeOf<
+    expectTypeOf<typeof player>().toExtend<
       Osdk<BgaoNflPlayer, PropertyKeys<BgaoNflPlayer>>
     >;
-    expectTypeOf<typeof player.address>().toMatchTypeOf<
+    expectTypeOf<typeof player.address>().toExtend<
       {
         addressLine1: string | undefined;
         addressLine2: string | undefined;
@@ -361,31 +361,31 @@ describe("ObjectSet", () => {
     >;
 
     const address1 = player.address!.addressLine1;
-    expectTypeOf<typeof address1>().toMatchTypeOf<
+    expectTypeOf<typeof address1>().toExtend<
       string | undefined
     >;
     expect(address1).toEqual("15 Muppets Lane");
 
     const address2 = player.address?.addressLine2;
-    expectTypeOf<typeof address2>().toMatchTypeOf<
+    expectTypeOf<typeof address2>().toExtend<
       string | undefined
     >;
     expect(address2).toEqual("Resort No 4");
 
     const city = player.address?.city;
-    expectTypeOf<typeof city>().toMatchTypeOf<
+    expectTypeOf<typeof city>().toExtend<
       string | undefined
     >;
     expect(city).toEqual("Memphis");
 
     const state = player.address?.state;
-    expectTypeOf<typeof state>().toMatchTypeOf<
+    expectTypeOf<typeof state>().toExtend<
       string | undefined
     >;
     expect(state).toEqual("TN");
 
     const zipCode = player.address?.zipCode;
-    expectTypeOf<typeof zipCode>().toMatchTypeOf<
+    expectTypeOf<typeof zipCode>().toExtend<
       number | undefined
     >;
     expect(zipCode).toEqual(11100);
@@ -399,7 +399,7 @@ describe("ObjectSet", () => {
       .fetchOneWithErrors(
         stubData.employee1.employeeId,
       );
-    expectTypeOf<typeof employeeResult>().toMatchTypeOf<
+    expectTypeOf<typeof employeeResult>().toExtend<
       Result<Osdk<Employee, PropertyKeys<Employee>>>
     >;
 
