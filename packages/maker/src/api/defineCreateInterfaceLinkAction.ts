@@ -71,7 +71,7 @@ export function defineCreateInterfaceLinkAction(
   invariant(
     linkConstraint === undefined
       || def.from === undefined
-      || def.from === linkConstraint.from,
+      || def.from.apiName === linkConstraint.from.apiName,
     `"from" ("${def.from?.apiName}") does not match the interface ("${linkConstraint?.from.apiName}") that interface link constraint "${linkConstraint?.apiName}" was defined on. Omit "from" to use the constraint's own interface.`,
   );
   const from = def.from ?? linkConstraint?.from;
