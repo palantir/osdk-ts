@@ -47,6 +47,7 @@ import { createWithPropertiesObjectSet } from "../derivedProperties/createWithPr
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { aggregate } from "../object/aggregate.js";
+import { extractObjectOrInterfaceType } from "../util/extractObjectOrInterfaceType.js";
 import {
   fetchPageInternal,
   fetchPageWithErrorsInternal,
@@ -414,8 +415,14 @@ async function createWithPk(
   objectSet: WireObjectSet,
   primaryKey: PrimaryKeyType<ObjectTypeDefinition>,
 ) {
+  // `objectType` is the source carried by `createObjectSet`'s closure
+  // and can drift from the actual target after `pivotTo`
+  const resolved = await extractObjectOrInterfaceType(clientCtx, objectSet);
+  const targetApiName = resolved?.type === "object"
+    ? resolved.apiName
+    : objectType.apiName;
   const objDef = await clientCtx.ontologyProvider.getObjectDefinition(
-    objectType.apiName,
+    targetApiName,
   );
 
   const withPk: WireObjectSet = {
