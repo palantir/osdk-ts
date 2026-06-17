@@ -1,5 +1,16 @@
 # @osdk/maker
 
+## 0.39.0
+
+### Minor Changes
+
+- 59115b1: Add `defineCreateInterfaceLinkAction`
+
+### Patch Changes
+
+- @osdk/api@2.35.0
+- @osdk/generator-converters.ontologyir@2.35.0
+
 ## 0.38.0
 
 ### Minor Changes
