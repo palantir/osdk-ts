@@ -25,6 +25,27 @@ describe("defineCreateInterfaceLinkAction", () => {
     await defineOntology("com.palantir.", () => {}, "/tmp/");
   });
 
+  it("defineInterfaceLinkConstraint returns a handle describing the constraint", () => {
+    const person = defineInterface({
+      apiName: "Person",
+      displayName: "Person",
+      properties: {},
+    });
+    const company = defineInterface({
+      apiName: "Company",
+      displayName: "Company",
+      properties: {},
+    });
+    const handle = defineInterfaceLinkConstraint({
+      apiName: "employer",
+      from: person,
+      toOne: company,
+    });
+    expect(handle.apiName).toBe("com.palantir.employer");
+    expect(handle.cardinality).toBe("SINGLE");
+    expect(handle.from).toBe(person);
+  });
+
   it("creates a SINGLE interface-link action derived from the ILC", () => {
     const person = defineInterface({
       apiName: "Person",
@@ -238,6 +259,46 @@ describe("defineCreateInterfaceLinkAction", () => {
     `);
   });
 
+  it("accepts an InterfaceLinkConstraint handle for interfaceLink", () => {
+    const person = defineInterface({
+      apiName: "Person",
+      displayName: "Person",
+      properties: {},
+    });
+    const company = defineInterface({
+      apiName: "Company",
+      displayName: "Company",
+      properties: {},
+    });
+    const employer = defineInterfaceLinkConstraint({
+      apiName: "employer",
+      from: person,
+      toOne: company,
+    });
+
+    defineCreateInterfaceLinkAction({ interfaceLink: employer });
+
+    const actionType = dumpOntologyFullMetadata().ontology
+      .actionTypes["com.palantir.link-person-employer"].actionType; // "person" in the default apiName proves from was derived
+    const rule = actionType.actionTypeLogic.logic.rules[0];
+    if (rule.type !== "addInterfaceLinkRuleV2") {
+      throw new Error("expected addInterfaceLinkRuleV2");
+    }
+    expect(rule.addInterfaceLinkRuleV2.interfaceTypeRid).toBe(
+      "com.palantir.Person",
+    );
+    expect(rule.addInterfaceLinkRuleV2.interfaceLinkTypeRid).toBe(
+      "com.palantir.employer",
+    );
+    const sourceParam = actionType.metadata.parameters.source;
+    if (sourceParam.type.type !== "interfaceReference") {
+      throw new Error("expected interfaceReference");
+    }
+    expect(sourceParam.type.interfaceReference.interfaceTypeRid).toBe(
+      "com.palantir.Person",
+    );
+  });
+
   it("respects apiName and parameter overrides", () => {
     const person = defineInterface({
       apiName: "Person",
@@ -367,5 +428,55 @@ describe("defineCreateInterfaceLinkAction", () => {
         interfaceLink: "employer",
       })
     ).toThrow(/Target interface .* is not defined/);
+  });
+
+  it("throws when an explicit from does not match the handle's interface", () => {
+    const person = defineInterface({
+      apiName: "Person",
+      displayName: "Person",
+      properties: {},
+    });
+    const company = defineInterface({
+      apiName: "Company",
+      displayName: "Company",
+      properties: {},
+    });
+    const other = defineInterface({
+      apiName: "Other",
+      displayName: "Other",
+      properties: {},
+    });
+    const employer = defineInterfaceLinkConstraint({
+      apiName: "employer",
+      from: person,
+      toOne: company,
+    });
+
+    expect(() =>
+      defineCreateInterfaceLinkAction({ from: other, interfaceLink: employer })
+    ).toThrow(/does not match/);
+  });
+
+  it("throws when interfaceLink is a string and from is omitted", () => {
+    const person = defineInterface({
+      apiName: "Person",
+      displayName: "Person",
+      properties: {},
+    });
+    const company = defineInterface({
+      apiName: "Company",
+      displayName: "Company",
+      properties: {},
+    });
+    defineInterfaceLinkConstraint({
+      apiName: "employer",
+      from: person,
+      toOne: company,
+    });
+
+    expect(() =>
+      // @ts-expect-error "from" is required when interfaceLink is a string
+      defineCreateInterfaceLinkAction({ interfaceLink: "employer" })
+    ).toThrow(/"from" is required/);
   });
 });
