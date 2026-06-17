@@ -149,10 +149,14 @@ export class ObjectsHelper extends AbstractHelper<
 
     let valueToWrite = !dataChanged && existing ? existing.value : value;
 
-    // A partial $select fetch only carries the base props it selected, so
-    // reconcile it with the existing value at this key to keep unselected base
-    // props and derived fields. A full fetch is written as-is: it is
-    // authoritative for everything, so an omitted field is a genuine clear.
+    const sourceRdpFields = this.store.objectCacheKeyRegistry.getRdpFieldSet(
+      sourceCacheKey,
+    );
+
+    // A partial load only carries the base props it fetched, so reconcile it
+    // with the existing value at this key to keep the props it did not load and
+    // any derived fields. A full load is written as-is: it owns every field, so
+    // an omitted one is a genuine clear.
     const existingHolder = existing?.value;
     if (
       dataChanged
@@ -162,12 +166,13 @@ export class ObjectsHelper extends AbstractHelper<
       && existingHolder
       && this.isObjectHolder(existingHolder)
     ) {
-      const rdpFields = this.store.objectCacheKeyRegistry.getRdpFieldSet(
-        sourceCacheKey,
-      );
       valueToWrite = reconcileObject(
-        { value: valueToWrite, rdpFields, selectFields },
-        { value: existingHolder, rdpFields },
+        {
+          value: valueToWrite,
+          rdpFields: sourceRdpFields,
+          loadedBaseFields: selectFields,
+        },
+        { value: existingHolder, rdpFields: sourceRdpFields },
       );
     }
 
@@ -211,7 +216,7 @@ export class ObjectsHelper extends AbstractHelper<
       const merged = this.mergeForTarget(
         value,
         targetHolder,
-        sourceCacheKey,
+        sourceRdpFields,
         targetKey,
         selectFields,
       );
@@ -251,19 +256,20 @@ export class ObjectsHelper extends AbstractHelper<
   private mergeForTarget(
     sourceValue: ObjectHolder,
     targetCurrentValue: ObjectHolder | undefined,
-    sourceCacheKey: ObjectCacheKey,
+    sourceRdpFields: ReadonlySet<string>,
     targetCacheKey: ObjectCacheKey,
     selectFields: ReadonlySet<string> | undefined,
   ): ObjectHolder {
-    const sourceRdpFields = this.store.objectCacheKeyRegistry.getRdpFieldSet(
-      sourceCacheKey,
-    );
     const targetRdpFields = this.store.objectCacheKeyRegistry.getRdpFieldSet(
       targetCacheKey,
     );
 
     return reconcileObject(
-      { value: sourceValue, rdpFields: sourceRdpFields, selectFields },
+      {
+        value: sourceValue,
+        rdpFields: sourceRdpFields,
+        loadedBaseFields: selectFields,
+      },
       { value: targetCurrentValue, rdpFields: targetRdpFields },
     );
   }

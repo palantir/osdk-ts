@@ -372,8 +372,33 @@ describe("reconcileObject", () => {
     expect(underlying.computedScore).toBe(42);
   });
 
-  describe("with a partial $select source", () => {
-    it("overlays the selected base props and preserves unselected ones", () => {
+  it("clears a base prop the target cached but a full load omitted", () => {
+    // No loadedBaseFields means a full load that owns every base prop. office is
+    // absent from the source, so it must clear rather than resurrect the cached
+    // value.
+    const source = createTestObject({
+      employeeId: 50030,
+      fullName: "John Doe",
+    });
+    const target = createTestObject({
+      employeeId: 50030,
+      fullName: "John Doe",
+      office: "NYC",
+    });
+
+    const result = reconcileObject(
+      { value: source, rdpFields: new Set() },
+      { value: target, rdpFields: new Set() },
+    );
+
+    assertValidObjectHolder(result);
+    const underlying = getUnderlyingProps(result);
+    expect(underlying.fullName).toBe("John Doe");
+    expect(underlying.office).toBeUndefined();
+  });
+
+  describe("with a partial load", () => {
+    it("overlays the loaded base props and keeps the rest", () => {
       const source = createTestObject({
         employeeId: 50030,
         fullName: "Updated Name",
@@ -389,7 +414,7 @@ describe("reconcileObject", () => {
         {
           value: source,
           rdpFields: new Set(),
-          selectFields: new Set(["fullName"]),
+          loadedBaseFields: new Set(["fullName"]),
         },
         { value: existing, rdpFields: new Set() },
       );
@@ -397,15 +422,16 @@ describe("reconcileObject", () => {
       assertValidObjectHolder(result);
       const underlying = getUnderlyingProps(result);
       expect(underlying.fullName).toBe("Updated Name");
-      // office was not selected, so the existing value is kept.
+      // office was not loaded, so the existing value is kept.
       expect(underlying.office).toBe("NYC");
       expect(underlying.employeeId).toBe(50030);
     });
 
     it("carries derived fields through the merge instead of dropping them", () => {
-      // A query with both $select and a derived property used to lose the
-      // derived field on a partial-select write, because the select merge only
-      // kept keys in objectDef.properties (rdp names are not there at runtime).
+      // A query that loads only some base props alongside a derived property
+      // used to lose the derived field on a partial write, because the base
+      // merge only kept keys in objectDef.properties (rdp names are not there at
+      // runtime).
       const source = createTestObject({
         employeeId: 50030,
         fullName: "Updated Name",
@@ -422,7 +448,7 @@ describe("reconcileObject", () => {
         {
           value: source,
           rdpFields: new Set(["computedScore"]),
-          selectFields: new Set(["fullName"]),
+          loadedBaseFields: new Set(["fullName"]),
         },
         { value: existing, rdpFields: new Set(["computedScore"]) },
       );
@@ -433,6 +459,34 @@ describe("reconcileObject", () => {
       expect(underlying.office).toBe("NYC");
       // The source recomputed the derived field; it must survive.
       expect(underlying.computedScore).toBe(42);
+    });
+
+    it("clears a loaded base prop the source omitted", () => {
+      // fullName was loaded but its value cleared, so it is absent from the
+      // payload; it must clear rather than retain the cached value, while a
+      // prop that was not loaded is kept.
+      const source = createTestObject({
+        employeeId: 50030,
+      });
+      const existing = createTestObject({
+        employeeId: 50030,
+        fullName: "Old Name",
+        office: "NYC",
+      });
+
+      const result = reconcileObject(
+        {
+          value: source,
+          rdpFields: new Set(),
+          loadedBaseFields: new Set(["fullName"]),
+        },
+        { value: existing, rdpFields: new Set() },
+      );
+
+      assertValidObjectHolder(result);
+      const underlying = getUnderlyingProps(result);
+      expect(underlying.fullName).toBeUndefined();
+      expect(underlying.office).toBe("NYC");
     });
   });
 });

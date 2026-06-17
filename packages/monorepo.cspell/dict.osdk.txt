@@ -3,7 +3,6 @@ dpaquin
 ethana
 forwardslash
 haptics
-ksethi
 listogram
 mediaset
 multisort
