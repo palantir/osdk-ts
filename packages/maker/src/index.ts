@@ -61,6 +61,7 @@ export {
   MODIFY_INTERFACE_OBJECT_PARAMETER,
   MODIFY_OBJECT_PARAMETER,
 } from "./api/defineAction.js";
+export { defineCreateInterfaceLinkAction } from "./api/defineCreateInterfaceLinkAction.js";
 export { defineCreateInterfaceObjectAction } from "./api/defineCreateInterfaceObjectAction.js";
 export { defineCreateObjectAction } from "./api/defineCreateObjectAction.js";
 export { defineCreateOrModifyObjectAction } from "./api/defineCreateOrModifyObjectAction.js";
