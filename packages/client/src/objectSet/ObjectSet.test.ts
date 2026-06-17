@@ -43,6 +43,7 @@ import {
   Office,
 } from "@osdk/client.test.ontology";
 import {
+  FauxFoundry,
   LegacyFauxFoundry,
   startNodeApiServer,
   stubData,
@@ -91,10 +92,11 @@ export type PropMapToObject<
 
 describe("ObjectSet", () => {
   let client: Client;
+  let fauxFoundry: FauxFoundry;
 
   beforeAll(() => {
     const testSetup = startNodeApiServer(new LegacyFauxFoundry(), createClient);
-    ({ client } = testSetup);
+    ({ client, fauxFoundry } = testSetup);
     return () => {
       testSetup.apiServer.close();
     };
@@ -1334,6 +1336,33 @@ describe("ObjectSet", () => {
       await fetchPage(client, Employee, { $snapshot: true });
       expect(getLastObjectSetRequest(fetchFn) as { snapshot: boolean }).not
         .toHaveProperty("$snapshot");
+    });
+  });
+
+  describe("fetchOneWithErrors", () => {
+    beforeAll(() => {
+      fauxFoundry.getDefaultDataStore().registerLink(
+        stubData.employee1,
+        "officeLink",
+        stubData.nycOffice,
+        "occupants",
+      );
+    });
+
+    // Office's primary key is `officeId` (string); Employee's is `employeeId` (integer).
+    // Pivoting from Office through the many-cardinality `occupants` link yields an Employee set,
+    // and `fetchOneWithErrors(employeeId)` must build a PK filter against `employeeId` — not `officeId`.
+    it("uses the target's primary key when fetching by PK from a cross-type pivoted object set", async () => {
+      const result = await client(Office)
+        .where({ officeId: stubData.nycOffice.officeId })
+        .pivotTo("occupants")
+        .fetchOneWithErrors(stubData.employee1.employeeId);
+
+      expect(isOk(result)).toBe(true);
+      if (isOk(result)) {
+        expect(result.value.$primaryKey).toBe(stubData.employee1.employeeId);
+        expect(result.value.$apiName).toBe("Employee");
+      }
     });
   });
 });
