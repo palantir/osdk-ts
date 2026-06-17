@@ -117,6 +117,11 @@ export function isStruct(
 ): type is PropertyTypeTypeStruct {
   return typeof type === "object" && type.type === "struct";
 }
+export function isExoticString(
+  type: PropertyTypeType,
+): type is PropertyTypeTypeString {
+  return typeof type === "object" && type.type === "string";
+}
 
 type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
 
