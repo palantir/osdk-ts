@@ -15,18 +15,23 @@
  */
 
 import {
-  Default as DefaultStory,
+  CustomColumnWidths as CustomColumnWidthsStory,
+  CustomEmptyState as CustomEmptyStateStory,
+  CustomRowHeight as CustomRowHeightStory,
+  DisableAllHeaderMenuFeatures as DisableAllHeaderMenuFeaturesStory,
   objectTableMeta,
-} from "./objectTableStoryDefs.js";
+  RowAttributesForStyling as RowAttributesForStylingStory,
+} from "../objectTableStoryDefs.js";
 
-// The primary landing demo, pinned to the top of the ObjectTable tree by the
-// storySort in .storybook/preview.tsx. Lives at the component root so it sits
-// above Docs/Examples/Features in the sidebar.
 const meta = {
   ...objectTableMeta,
-  title: "Components/ObjectTable",
+  title: "Components/ObjectTable/Features/Display & states",
 };
 
 export default meta;
 
-export const Default = DefaultStory;
+export const CustomColumnWidths = CustomColumnWidthsStory;
+export const CustomRowHeight = CustomRowHeightStory;
+export const CustomEmptyState = CustomEmptyStateStory;
+export const RowAttributesForStyling = RowAttributesForStylingStory;
+export const DisableAllHeaderMenuFeatures = DisableAllHeaderMenuFeaturesStory;

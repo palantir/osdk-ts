@@ -1,0 +1,153 @@
+{/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */}
+
+{/*
+  ObjectTable examples — one live demo per feature.
+
+  Each feature is a reusable chunk in
+  packages/react-components/docs/object-table/examples/<feature>.md
+  (the same chunks compose the published docs/ObjectTableExamples.md).
+  Here every chunk is paired with its live Storybook story: the chunk's
+  title + description render on top, the live <Canvas> demo in the middle,
+  the chunk's code snippet below, then a link to open the full story.
+  Keep this list in sync with the GROUPS manifest in
+  scripts/gen-object-table-examples.mjs and the Features/* story groups.
+*/}
+
+{/* cspell:ignore objecttable */}
+
+import { Canvas, Markdown, Meta } from "@storybook/addon-docs/blocks";
+import * as Root from "./ObjectTable.stories";
+import * as DataSources from "./Features/DataSources.stories";
+import * as Columns from "./Features/Columns.stories";
+import * as Sorting from "./Features/Sorting.stories";
+import * as Selection from "./Features/Selection.stories";
+import * as Editing from "./Features/Editing.stories";
+import * as Interactions from "./Features/Interactions.stories";
+import * as Display from "./Features/Display.stories";
+import * as MarkingStories from "./MarkingColumns.stories";
+import * as ConfigureStories from "./Recipes/WithConfigureColumnsButton.stories";
+import * as DownloadStories from "./Recipes/WithLoadedDataDownload.stories";
+
+import basicTable from "@docs/object-table/examples/basic-table.md?raw";
+import fromObjectSet from "@docs/object-table/examples/from-object-set.md?raw";
+import interfaceTypes from "@docs/object-table/examples/interface-types.md?raw";
+import columnPinning from "@docs/object-table/examples/column-pinning.md?raw";
+import derivedPropertyColumns from "@docs/object-table/examples/derived-property-columns.md?raw";
+import functionBackedColumns from "@docs/object-table/examples/function-backed-columns.md?raw";
+import customColumnType from "@docs/object-table/examples/custom-column-type.md?raw";
+import customCellAndHeaderRenderers from "@docs/object-table/examples/custom-cell-and-header-renderers.md?raw";
+import defaultSorting from "@docs/object-table/examples/default-sorting.md?raw";
+import controlledSorting from "@docs/object-table/examples/controlled-sorting.md?raw";
+import singleSelection from "@docs/object-table/examples/single-selection.md?raw";
+import multipleSelection from "@docs/object-table/examples/multiple-selection.md?raw";
+import controlledSelection from "@docs/object-table/examples/controlled-selection.md?raw";
+import focusedRow from "@docs/object-table/examples/focused-row.md?raw";
+import editableTable from "@docs/object-table/examples/editable-table.md?raw";
+import editValidation from "@docs/object-table/examples/edit-validation.md?raw";
+import submitEdits from "@docs/object-table/examples/submit-edits.md?raw";
+import perRowEditable from "@docs/object-table/examples/per-row-editable.md?raw";
+import cellContextMenu from "@docs/object-table/examples/cell-context-menu.md?raw";
+import eventListeners from "@docs/object-table/examples/event-listeners.md?raw";
+import customColumnWidths from "@docs/object-table/examples/custom-column-widths.md?raw";
+import customRowHeight from "@docs/object-table/examples/custom-row-height.md?raw";
+import customEmptyState from "@docs/object-table/examples/custom-empty-state.md?raw";
+import rowAttributes from "@docs/object-table/examples/row-attributes.md?raw";
+import disableHeaderMenu from "@docs/object-table/examples/disable-header-menu.md?raw";
+import markingColumns from "@docs/object-table/examples/marking-columns.md?raw";
+import columnConfigDialog from "@docs/object-table/examples/column-config-dialog.md?raw";
+import exportingData from "@docs/object-table/examples/exporting-data.md?raw";
+import streamUpdates from "@docs/object-table/examples/stream-updates.md?raw";
+
+<Meta title="Components/ObjectTable/Examples" tags={["beta"]} />
+
+export const Example = ({ raw, story }) => {
+  // Split the chunk at its first fenced code block: prose (### title +
+  // description) renders above the live demo; the code block and the
+  // "Open the … story →" link (authored in the chunk .md) render below it.
+  const fence = raw.indexOf("\n```");
+  const intro = fence === -1 ? raw : raw.slice(0, fence);
+  const code = fence === -1 ? "" : raw.slice(fence + 1);
+  return (
+    <>
+      <Markdown>{intro}</Markdown>
+      {story ? <Canvas of={story} sourceState="none" /> : null}
+      {code ? <Markdown>{code}</Markdown> : null}
+    </>
+  );
+};
+
+# ObjectTable examples
+
+A catalog of ObjectTable features. Each example below is a self-contained chunk
+in `docs/object-table/examples/` — the same chunks compose the published
+[ObjectTableExamples.md](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/ObjectTableExamples.md).
+Use the link under each demo to open the full story in isolation.
+
+> Examples use `@my/osdk` as a placeholder for your generated SDK package.
+
+## Data sources
+
+<Example raw={basicTable} story={Root.Default} />
+<Example raw={fromObjectSet} story={DataSources.WithObjectSet} />
+<Example raw={interfaceTypes} story={DataSources.WithInterfaceType} />
+
+## Columns
+
+<Example raw={columnPinning} story={Columns.WithDefaultColumnPinning} />
+<Example raw={derivedPropertyColumns} story={Columns.WithDerivedPropertyOrderingAndFilter} />
+<Example raw={functionBackedColumns} story={Columns.WithFunctionColumn} />
+<Example raw={customColumnType} story={Columns.WithCustomColumn} />
+<Example raw={customCellAndHeaderRenderers} story={Columns.WithCustomRenderers} />
+
+## Sorting
+
+<Example raw={defaultSorting} story={Sorting.WithDefaultSorting} />
+<Example raw={controlledSorting} story={Sorting.ControlledSorting} />
+
+## Selection & focus
+
+<Example raw={singleSelection} story={Selection.SingleSelection} />
+<Example raw={multipleSelection} story={Selection.MultipleSelection} />
+<Example raw={controlledSelection} story={Selection.ControlledSelection} />
+<Example raw={focusedRow} story={Selection.ControlledFocusedRow} />
+
+## Editing
+
+<Example raw={editableTable} story={Editing.EditableTable} />
+<Example raw={editValidation} story={Editing.EditableWithValidation} />
+<Example raw={submitEdits} story={Editing.WithSubmitEditsButton} />
+<Example raw={perRowEditable} story={Editing.PerRowEditableAndFieldConfig} />
+
+## Interactions & events
+
+<Example raw={cellContextMenu} story={Interactions.WithContextMenu} />
+<Example raw={eventListeners} story={Interactions.EventListeners} />
+
+## Display & states
+
+<Example raw={customColumnWidths} story={Display.CustomColumnWidths} />
+<Example raw={customRowHeight} story={Display.CustomRowHeight} />
+<Example raw={customEmptyState} story={Display.CustomEmptyState} />
+<Example raw={rowAttributes} story={Display.RowAttributesForStyling} />
+<Example raw={disableHeaderMenu} story={Display.DisableAllHeaderMenuFeatures} />
+
+## Advanced
+
+<Example raw={markingColumns} story={MarkingStories.MarkingColumns} />
+<Example raw={columnConfigDialog} story={ConfigureStories.WithConfigureColumnsButton} />
+<Example raw={exportingData} story={DownloadStories.WithLoadedDataDownload} />
+<Example raw={streamUpdates} />

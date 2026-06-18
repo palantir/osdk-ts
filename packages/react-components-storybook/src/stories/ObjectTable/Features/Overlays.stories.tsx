@@ -15,18 +15,23 @@
  */
 
 import {
-  Default as DefaultStory,
+  HeaderMenuInsideBaseUIDialog as HeaderMenuInsideBaseUIDialogStory,
+  HeaderMenuInsideBlueprintDialog as HeaderMenuInsideBlueprintDialogStory,
+  HeaderMenuInsideBlueprintDrawer as HeaderMenuInsideBlueprintDrawerStory,
   objectTableMeta,
-} from "./objectTableStoryDefs.js";
+} from "../objectTableStoryDefs.js";
 
-// The primary landing demo, pinned to the top of the ObjectTable tree by the
-// storySort in .storybook/preview.tsx. Lives at the component root so it sits
-// above Docs/Examples/Features in the sidebar.
+// QA scenarios verifying the header-menu dropdown renders above overlay
+// containers (Blueprint Drawer/Dialog, Base UI Dialog).
 const meta = {
   ...objectTableMeta,
-  title: "Components/ObjectTable",
+  title: "Components/ObjectTable/Features/Overlays",
 };
 
 export default meta;
 
-export const Default = DefaultStory;
+export const HeaderMenuInsideBlueprintDrawer =
+  HeaderMenuInsideBlueprintDrawerStory;
+export const HeaderMenuInsideBlueprintDialog =
+  HeaderMenuInsideBlueprintDialogStory;
+export const HeaderMenuInsideBaseUIDialog = HeaderMenuInsideBaseUIDialogStory;

@@ -15,18 +15,21 @@
  */
 
 import {
-  Default as DefaultStory,
+  EditableTable as EditableTableStory,
+  EditableWithValidation as EditableWithValidationStory,
   objectTableMeta,
-} from "./objectTableStoryDefs.js";
+  PerRowEditableAndFieldConfig as PerRowEditableAndFieldConfigStory,
+  WithSubmitEditsButton as WithSubmitEditsButtonStory,
+} from "../objectTableStoryDefs.js";
 
-// The primary landing demo, pinned to the top of the ObjectTable tree by the
-// storySort in .storybook/preview.tsx. Lives at the component root so it sits
-// above Docs/Examples/Features in the sidebar.
 const meta = {
   ...objectTableMeta,
-  title: "Components/ObjectTable",
+  title: "Components/ObjectTable/Features/Editing",
 };
 
 export default meta;
 
-export const Default = DefaultStory;
+export const EditableTable = EditableTableStory;
+export const EditableWithValidation = EditableWithValidationStory;
+export const WithSubmitEditsButton = WithSubmitEditsButtonStory;
+export const PerRowEditableAndFieldConfig = PerRowEditableAndFieldConfigStory;
