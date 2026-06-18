@@ -32,6 +32,7 @@ import { MediaMetadata as MediaMetadata_2 } from '@osdk/api';
 import { MediaReference } from '@osdk/api';
 import { MediaUpload } from '@osdk/api';
 import type { MinimalObjectSet } from '@osdk/api/unstable';
+import { NonEmptyWhereClause } from '@osdk/api';
 import { ObjectMetadata } from '@osdk/api';
 import type { ObjectOrInterfaceDefinition } from '@osdk/api';
 import type { ObjectQueryDataType } from '@osdk/api';
@@ -170,6 +171,8 @@ export { MediaMetadata_2 as MediaMetadata }
 export { MediaReference }
 
 export { MediaUpload }
+
+export { NonEmptyWhereClause }
 
 export { ObjectMetadata }
 
