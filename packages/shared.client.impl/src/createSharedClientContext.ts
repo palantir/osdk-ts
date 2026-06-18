@@ -19,6 +19,7 @@ import { PalantirApiError } from "@osdk/shared.net.errors";
 import {
   createFetchHeaderMutator,
   createFetchOrThrow,
+  createLimitedFetch,
   createRetryingFetch,
 } from "@osdk/shared.net.fetch";
 
@@ -75,13 +76,15 @@ export function createSharedClientContext(
     },
   );
 
+  const limitedFetch = createLimitedFetch(retryingFetchWithAuthOrThrow);
+
   // because this is async await it preserves stack traces, which the retrying fetch does not
   const fetchWrapper = async (
     input: RequestInfo | URL,
     init?: RequestInit | undefined,
   ) => {
     try {
-      return await retryingFetchWithAuthOrThrow(input, init);
+      return await limitedFetch(input, init);
     } catch (e: any) {
       const betterError = (e instanceof PalantirApiError)
         ? new PalantirApiError(

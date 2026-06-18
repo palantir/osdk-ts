@@ -16,4 +16,5 @@
 
 export { createFetchHeaderMutator } from "./createFetchHeaderMutator.js";
 export { createFetchOrThrow } from "./createFetchOrThrow.js";
+export { createLimitedFetch } from "./createLimitedFetch.js";
 export { createRetryingFetch } from "./createRetryingFetch.js";

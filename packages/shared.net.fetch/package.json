@@ -40,7 +40,8 @@
   },
   "dependencies": {
     "@osdk/shared.net.errors": "workspace:~",
-    "fetch-retry": "^6.0.0"
+    "fetch-retry": "^6.0.0",
+    "p-limit": "^3.1.0"
   },
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",
