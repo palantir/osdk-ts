@@ -85,3 +85,5 @@ export {
   createObjectSpecifierFromPrimaryKey,
   extractPrimaryKeyFromObjectSpecifier,
 } from "./util/objectSpecifierUtils.js";
+
+export { getActiveTraceId } from "./util/addTraceContextHeader.js";

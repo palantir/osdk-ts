@@ -123,6 +123,7 @@ export const createClient: (baseUrl: string, ontologyRid: string | Promise<strin
     	logger?: Logger
     	UNSTABLE_DO_NOT_USE_BRANCH?: string
     	headers?: Record<string, string>
+    	applicationRid?: string
 } | undefined, fetchFn?: typeof fetch | undefined) => Client;
 
 // @public
@@ -144,6 +145,9 @@ export const extractDateInUTC: (date: Date) => string;
 
 // @public
 export function extractPrimaryKeyFromObjectSpecifier(ObjectSpecifier: ObjectSpecifier<any>): string;
+
+// @public
+export function getActiveTraceId(): string | undefined;
 
 // @public (undocumented)
 export function getWireObjectSet(objectSet: ObjectSet<any> | MinimalObjectSet<any>): WireObjectSet;

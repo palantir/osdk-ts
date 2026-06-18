@@ -131,7 +131,14 @@ const cspell = {
     "oauth",
     "css",
   ],
-  words: ["todoapp"],
+  words: [
+    "todoapp",
+    // W3C trace-context headers and Foundry trace attribution keys (@osdk/telemetry)
+    "traceparent",
+    "tracestate",
+    "owningrid",
+    "callerrid",
+  ],
   suggestWords: [],
   ignoreWords: [],
   import: [],
@@ -147,6 +154,15 @@ const cspell = {
       filename: ["**/*.{mts,cts,ts,tsx}"],
       dictionaries: ["osdk-code"],
       words: [
+        // @osdk/telemetry: matches OpenTelemetry's *Millis config naming
+        "Millis",
+        // back/forward cache (pagehide lifecycle docs)
+        "bfcache",
+        // @osdk/telemetry: OTLP key-value list attribute shape
+        "kvlist",
+        // @osdk/telemetry: the redaction-hook record view type
+        "Redactable",
+
         // react-devtools words
         "DEDUP",
         "Keymap",

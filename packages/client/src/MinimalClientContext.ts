@@ -19,6 +19,7 @@ import type { SharedClientContext } from "@osdk/shared.client2";
 import type { convertWireToOsdkObjects } from "./object/convertWireToOsdkObjects.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
 import type { OntologyProvider } from "./ontology/OntologyProvider.js";
+import type { TraceSource } from "./util/traceContext.js";
 
 declare const tag: unique symbol;
 
@@ -33,6 +34,17 @@ export interface MinimalClient extends SharedClientContext {
   ontologyProvider: OntologyProvider;
   logger?: Logger;
   branch?: string;
+  /**
+   * The RID of the application that owns this client. When set, it is used as
+   * the single-rid attribution header and as the owning/producing resource for
+   * telemetry emitted by `@osdk/telemetry`.
+   */
+  applicationRid?: string;
+  /**
+   * Per-client page-scoped trace source. Outbound action/query/function calls
+   * and `@osdk/telemetry` logs read it so they share a trace id and correlate.
+   */
+  traceSource?: TraceSource;
   /** @internal */
   objectSetFactory: ObjectSetFactory<any, any>;
   /** @internal */

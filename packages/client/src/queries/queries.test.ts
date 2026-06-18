@@ -62,14 +62,17 @@ import {
 } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
+import { ATTRIBUTION_RID_HEADER } from "../util/addAttributionHeader.js";
 
 describe("queries", () => {
   let client: Client;
   let apiServer: SetupServer;
+  let defaultOntologyRid: string;
 
   beforeAll(() => {
     const testSetup = startNodeApiServer(new LegacyFauxFoundry(), createClient);
     ({ client, apiServer } = testSetup);
+    defaultOntologyRid = testSetup.fauxFoundry.defaultOntologyRid;
     return () => {
       testSetup.apiServer.close();
     };
@@ -78,6 +81,28 @@ describe("queries", () => {
   it("simple query works", async () => {
     const result = await client(addOne).executeFunction({ n: 2 });
     expect(result).toBe(3);
+  });
+
+  describe("attribution header", () => {
+    it("sends the single-rid attribution header on a query call", async () => {
+      let attributionRid: string | null = null;
+      const listener = ({ request }: { request: Request }) => {
+        if (
+          request.url.includes("/queries/") && request.url.includes("/execute")
+        ) {
+          attributionRid = request.headers.get(ATTRIBUTION_RID_HEADER);
+        }
+      };
+      apiServer.events.on("request:start", listener);
+
+      try {
+        await client(addOne).executeFunction({ n: 2 });
+      } finally {
+        apiServer.events.removeListener("request:start", listener);
+      }
+
+      expect(attributionRid).toBe(defaultOntologyRid);
+    });
   });
 
   describe("Queries that accept objects work do not break", () => {
