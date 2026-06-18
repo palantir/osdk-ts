@@ -26,8 +26,9 @@ import {
  * Mint a fresh ontology scenario and return a client scoped to it.
  *
  * @param client - The base {@link Client} to derive context (`baseUrl`, `ontologyRid`, `tokenProvider`, `branch`, …)
- *   from. Throws at runtime if the client is already scoped to a scenario or transaction. When the base client has a
- *   branch set, the newly minted scenario uses that branch as its base.
+ *   from. Throws at runtime if the client is already scoped to a scenario. If the client has an active transaction,
+ *   the transaction is ignored (a warning is logged) and the client is scoped to the new scenario. When the base
+ *   client has a branch set, the newly minted scenario uses that branch as its base.
  * @returns a {@link EXPERIMENTAL_ScenarioClient} bound to the freshly minted scenario RID.
  *
  * @beta This is an experimental, unstable feature subject to change.
@@ -45,11 +46,6 @@ export async function createScenario(
 ): Promise<EXPERIMENTAL_ScenarioClient> {
   const ctx: MinimalClient = client[additionalContext];
 
-  if (ctx.transactionId != null) {
-    throw new Error(
-      "createScenario: the supplied client already has an active transaction. Scenarios cannot be nested on transactions.",
-    );
-  }
   if (ctx.scenarioRid != null) {
     throw new Error(
       "createScenario: the supplied client already has an active scenario. Scenarios cannot be nested.",

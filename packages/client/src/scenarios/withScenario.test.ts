@@ -67,7 +67,8 @@ describe("withScenario", () => {
     );
   });
 
-  it("rejects a client with an active transaction at runtime", () => {
+  it("warns and ignores an active transaction, scoping to the scenario", () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
     const txClient = createClientWithTransaction(
       "ri.transactions..transaction.xyz",
       async () => {},
@@ -77,9 +78,12 @@ describe("withScenario", () => {
       {},
       fetchFunction,
     );
-    expect(() => withScenario(txClient, "ri.actions..scenario.abc")).toThrow(
-      /transaction/,
+    const scenario = withScenario(txClient, "ri.actions..scenario.abc");
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringMatching(/transaction/),
     );
+    expect(scenario.getScenarioReference()).toBe("ri.actions..scenario.abc");
+    warnSpy.mockRestore();
   });
 
   it("rejects a client already scoped to a scenario at runtime", () => {
