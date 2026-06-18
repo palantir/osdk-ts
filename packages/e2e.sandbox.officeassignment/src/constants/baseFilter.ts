@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-import type { WhereClause } from "@osdk/api";
+import type { NonEmptyWhereClause } from "@osdk/api";
 import type { Assignment } from "../generatedNoCheck2/index.js";
 
 /**
  * The app only ever looks at active, permanent assignments. Both tabs scope their object sets to
- * this base filter before any user filtering is applied.
+ * this base filter before any user filtering is applied. Typed as {@link NonEmptyWhereClause} so it
+ * can be used directly as an `$and` operand.
  */
-export const ASSIGNMENT_BASE_WHERE: WhereClause<Assignment> = {
+export const ASSIGNMENT_BASE_WHERE: NonEmptyWhereClause<Assignment> = {
   assignmentType: { $eq: "Permanent" },
   assignmentStatus: { $eq: "Active" },
 };

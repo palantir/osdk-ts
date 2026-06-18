@@ -78,8 +78,10 @@ export function modernToLegacyWhereClause<
   })) as WhereClause<T, RDPs>[];
   invariant(
     parts.length > 0,
-    "Cannot convert an empty where clause to a filter. "
-      + "Skip the .where() call entirely when no conditions are provided.",
+    "Cannot convert an empty where clause `{}` to a filter. "
+      + "If this came from an `$and`/`$or` operand, remove the empty `{}` element "
+      + "(this is now a compile-time error). For a top-level no-op, omit the .where() "
+      + "call entirely when no conditions are provided.",
   );
   if (parts.length === 1) {
     return modernToLegacyWhereClauseInner(
@@ -110,17 +112,31 @@ export function modernToLegacyWhereClauseInner<
   invariant(parts.length === 1, "Invalid where clause provided.");
 
   if (isAndClause(whereClause)) {
+    const operands = whereClause.$and as WhereClause<T, RDPs>[];
+    invariant(
+      operands.length > 0,
+      "Cannot convert an empty `$and` array to a filter. An empty combinator has no "
+        + "meaning and is rejected by some object-storage backends; remove it or prune "
+        + "empty arrays from dynamic builders before querying.",
+    );
     return {
       type: "and",
-      value: (whereClause.$and as WhereClause<T, RDPs>[]).map(
+      value: operands.map(
         (clause) =>
           modernToLegacyWhereClause(clause, objectOrInterface, rdpNames),
       ),
     };
   } else if (isOrClause(whereClause)) {
+    const operands = whereClause.$or as WhereClause<T, RDPs>[];
+    invariant(
+      operands.length > 0,
+      "Cannot convert an empty `$or` array to a filter. An empty combinator has no "
+        + "meaning and is rejected by some object-storage backends; remove it or prune "
+        + "empty arrays from dynamic builders before querying.",
+    );
     return {
       type: "or",
-      value: (whereClause.$or as WhereClause<T, RDPs>[]).map(
+      value: operands.map(
         (clause) =>
           modernToLegacyWhereClause(clause, objectOrInterface, rdpNames),
       ),

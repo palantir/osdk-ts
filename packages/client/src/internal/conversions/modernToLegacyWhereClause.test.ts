@@ -1666,4 +1666,52 @@ describe(modernToLegacyWhereClause, () => {
       `);
     });
   });
+
+  describe("empty clauses", () => {
+    // These shapes are now compile-time errors (see the ObjectSet type tests); the casts
+    // exercise the runtime backstop that protects JS / `as any` callers from shipping an
+    // empty AND, which some object-storage backends reject (Core:InvalidAndFilter).
+    it("throws on an empty `{}` operand nested in a non-empty $and", () => {
+      expect(() =>
+        modernToLegacyWhereClause<ObjAllProps>(
+          { $and: [{ string: { $eq: "a" } }, {} as any] },
+          objectTypeWithAllPropertyTypes,
+        )
+      ).toThrowError(/empty where clause/);
+    });
+
+    it("throws on an empty $and array instead of emitting an empty AND", () => {
+      expect(() =>
+        modernToLegacyWhereClause<ObjAllProps>(
+          { $and: [] } as any,
+          objectTypeWithAllPropertyTypes,
+        )
+      ).toThrowError(/empty combinator/);
+    });
+
+    it("throws on an empty $or array", () => {
+      expect(() =>
+        modernToLegacyWhereClause<ObjAllProps>(
+          { $or: [] } as any,
+          objectTypeWithAllPropertyTypes,
+        )
+      ).toThrowError(/empty combinator/);
+    });
+
+    it("throws on the bug-report shape rather than silently emitting an empty AND", () => {
+      // Models `where({ $and: [a, b, cond ? c : {}] })` when the ternary falls to `{}`.
+      expect(() =>
+        modernToLegacyWhereClause<ObjAllProps>(
+          {
+            $and: [
+              { string: { $eq: "a" } },
+              { integer: { $eq: 1 } },
+              {} as any,
+            ],
+          },
+          objectTypeWithAllPropertyTypes,
+        )
+      ).toThrowError(/empty where clause/);
+    });
+  });
 });

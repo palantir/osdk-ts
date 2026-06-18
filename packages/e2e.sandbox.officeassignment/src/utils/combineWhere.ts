@@ -14,16 +14,21 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
+import type {
+  NonEmptyWhereClause,
+  ObjectTypeDefinition,
+  WhereClause,
+} from "@osdk/api";
 
 /**
  * True when the clause is present and has at least one condition. The OSDK rejects an empty
  * `.where({})`, and components such as FilterList emit `{}` when no filter is active, so callers
- * use this to coerce empty clauses to `undefined`.
+ * use this to coerce empty clauses to `undefined`. Narrows to {@link NonEmptyWhereClause} so the
+ * result can be used as a `$and`/`$or` operand.
  */
 export function isNonEmptyWhere<Q extends ObjectTypeDefinition>(
   clause: WhereClause<Q> | undefined,
-): clause is WhereClause<Q> {
+): clause is NonEmptyWhereClause<Q> {
   return clause != null && Object.keys(clause).length > 0;
 }
 
@@ -34,7 +39,9 @@ export function isNonEmptyWhere<Q extends ObjectTypeDefinition>(
 export function combineWhere<Q extends ObjectTypeDefinition>(
   clauses: Array<WhereClause<Q> | undefined>,
 ): WhereClause<Q> | undefined {
-  const nonEmpty: Array<WhereClause<Q>> = clauses.filter(isNonEmptyWhere);
+  const nonEmpty: Array<NonEmptyWhereClause<Q>> = clauses.filter(
+    isNonEmptyWhere,
+  );
   if (nonEmpty.length === 0) {
     return undefined;
   }

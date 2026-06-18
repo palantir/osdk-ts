@@ -16,6 +16,7 @@
 
 import type {
   DerivedProperty,
+  NonEmptyWhereClause,
   SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
@@ -41,6 +42,14 @@ export type StatusRdpWhereClause = WhereClause<
   Assignment,
   Record<string, SimplePropertyDef>
 >;
+/**
+ * The non-empty form of {@link StatusRdpWhereClause}, used for the elements of `$and`/`$or`
+ * arrays we build dynamically (an empty `{}` operand is a compile-time error).
+ */
+export type NonEmptyStatusRdpWhereClause = NonEmptyWhereClause<
+  Assignment,
+  Record<string, SimplePropertyDef>
+>;
 
 /**
  * The derived properties plus the where clause that, together, select the assignments whose latest
@@ -49,7 +58,7 @@ export type StatusRdpWhereClause = WhereClause<
  */
 export interface LatestStatusQuery {
   readonly withProperties: StatusRdpCreators;
-  readonly where: StatusRdpWhereClause;
+  readonly where: NonEmptyStatusRdpWhereClause;
 }
 
 // Deterministic, collision-free suffix per (type, value): same selections always produce the same
@@ -124,7 +133,7 @@ function buildCountOfTypeRdp(
 function latestValueCondition(
   targetMaxKey: string,
   diffKey: string,
-): StatusRdpWhereClause {
+): NonEmptyStatusRdpWhereClause {
   return {
     $or: [
       { [diffKey]: { $gte: 0 } },
@@ -168,11 +177,11 @@ export function buildLatestStatusQuery(
   }
 
   let withProperties: StatusRdpCreators = {};
-  const perTypeConditions: StatusRdpWhereClause[] = [];
+  const perTypeConditions: NonEmptyStatusRdpWhereClause[] = [];
 
   for (const [type, values] of byType) {
     const noRecordValue = getNoRecordValue(type);
-    const withinTypeConditions: StatusRdpWhereClause[] = [];
+    const withinTypeConditions: NonEmptyStatusRdpWhereClause[] = [];
 
     for (const value of values) {
       const uid = uidFor(type, value);
@@ -197,7 +206,7 @@ export function buildLatestStatusQuery(
     );
   }
 
-  let where: StatusRdpWhereClause;
+  let where: NonEmptyStatusRdpWhereClause;
   if (perTypeConditions.length === 1) {
     where = perTypeConditions[0];
   } else if (composeAcrossTypes === "$and") {

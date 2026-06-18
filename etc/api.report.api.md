@@ -268,7 +268,7 @@ export type AndWhereClause<
 	T extends ObjectOrInterfaceDefinition,
 	RDPs extends Record<string, SimplePropertyDef> = {}
 > = {
-    	$and: WhereClause<T, RDPs>[]
+    	$and: NonEmptyWhereClause<T, RDPs>[]
 };
 
 // @public (undocumented)
@@ -1335,12 +1335,21 @@ export interface Model3dMediaItemMetadata {
 // @public (undocumented)
 export type Model3dType = "POINT_CLOUD" | "MESH";
 
+// Warning: (ae-forgotten-export) The symbol "IsNever" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "NonEmptyPropertyWhereClause" needs to be exported by the entry point index.d.ts
+//
+// @public
+export type NonEmptyWhereClause<
+	T extends ObjectOrInterfaceDefinition,
+	RDPs extends Record<string, SimplePropertyDef> = {}
+> = OrWhereClause<T, RDPs> | AndWhereClause<T, RDPs> | NotWhereClause<T, RDPs> | (IsNever<keyof CompileTimeMetadata<T>["properties"]> extends true ? never : NonEmptyPropertyWhereClause<T, RDPs>);
+
 // @public (undocumented)
 export type NotWhereClause<
 	T extends ObjectOrInterfaceDefinition,
 	RDPs extends Record<string, SimplePropertyDef> = {}
 > = {
-    	$not: WhereClause<T, RDPs>
+    	$not: NonEmptyWhereClause<T, RDPs>
 };
 
 // @public (undocumented)
@@ -1715,10 +1724,9 @@ export type OrWhereClause<
 	T extends ObjectOrInterfaceDefinition,
 	RDPs extends Record<string, SimplePropertyDef> = {}
 > = {
-    	$or: WhereClause<T, RDPs>[]
+    	$or: NonEmptyWhereClause<T, RDPs>[]
 };
 
-// Warning: (ae-forgotten-export) The symbol "IsNever" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "IsAny" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "ExtractPropsKeysFromOldPropsStyle" needs to be exported by the entry point index.d.ts
 //

@@ -36,6 +36,7 @@ export type {
   AndWhereClause,
   GeoFilter_Intersects,
   GeoFilter_Within,
+  NonEmptyWhereClause,
   NotWhereClause,
   OrWhereClause,
   PossibleWhereClauseFilters,

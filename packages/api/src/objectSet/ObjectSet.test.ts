@@ -1454,6 +1454,70 @@ describe("ObjectSet", () => {
     });
   });
 
+  describe("where clause empty operands", () => {
+    it("allows a top-level empty clause as a no-op", () => {
+      fauxObjectSet.where({});
+    });
+
+    it("allows non-empty operands of $and/$or/$not", () => {
+      fauxObjectSet.where({
+        $and: [{ employeeId: { $eq: 1 } }, { class: "x" }],
+      });
+      fauxObjectSet.where({ $or: [{ employeeId: { $eq: 1 } }] });
+      fauxObjectSet.where({ $not: { class: "x" } });
+      // multi-key, struct, array, and special-property operands
+      fauxObjectSet.where({ $and: [{ class: "x", fullName: "y" }] });
+      fauxObjectSet.where({
+        $and: [{ addressStruct: { city: { $eq: "x" } } }],
+      });
+      fauxObjectSet.where({ $and: [{ salaryHistory: { $contains: 5 } }] });
+      fauxObjectSet.where({
+        $and: [{ $title: { $eq: "x" } }, { $primaryKey: { $eq: 1 } }],
+      });
+      // nested boolean operators
+      fauxObjectSet.where({ $or: [{ $and: [{ class: "x" }] }] });
+    });
+
+    it("allows empty $and/$or arrays at the type level (runtime no-op/guard)", () => {
+      fauxObjectSet.where({ $and: [] });
+      fauxObjectSet.where({ $or: [] });
+    });
+
+    it("rejects an empty {} operand of $and", () => {
+      fauxObjectSet.where({
+        $and: [
+          { employeeId: { $eq: 1 } },
+          // @ts-expect-error an empty {} operand is meaningless and not allowed
+          {},
+        ],
+      });
+    });
+
+    it("rejects an empty {} operand of $or", () => {
+      fauxObjectSet.where({
+        // @ts-expect-error an empty {} operand is meaningless and not allowed
+        $or: [{}],
+      });
+    });
+
+    it("rejects an empty {} operand of $not", () => {
+      fauxObjectSet.where({
+        // @ts-expect-error an empty {} operand is meaningless and not allowed
+        $not: {},
+      });
+    });
+
+    it("rejects a conditional that can fall through to {}", () => {
+      const cond = true as boolean;
+      fauxObjectSet.where({
+        $and: [
+          // @ts-expect-error the {} branch of the ternary is not a valid operand
+          cond ? { class: "x" } : {},
+        ],
+      });
+    });
+  });
+
   describe("asyncIterLinks", async () => {
     it("typechecks self-referential one link", async () => {
       for await (

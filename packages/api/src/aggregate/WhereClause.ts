@@ -198,21 +198,21 @@ export type AndWhereClause<
   T extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
 > = {
-  $and: WhereClause<T, RDPs>[];
+  $and: NonEmptyWhereClause<T, RDPs>[];
 };
 
 export type OrWhereClause<
   T extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
 > = {
-  $or: WhereClause<T, RDPs>[];
+  $or: NonEmptyWhereClause<T, RDPs>[];
 };
 
 export type NotWhereClause<
   T extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
 > = {
-  $not: WhereClause<T, RDPs>;
+  $not: NonEmptyWhereClause<T, RDPs>;
 };
 
 export type PropertyWhereClause<T extends ObjectOrInterfaceDefinition> = {
@@ -229,6 +229,48 @@ type MergedPropertyWhereClause<
     DerivedObjectOrInterfaceDefinition.WithDerivedProperties<T, RDPs>
   >
   | SpecialPropertyWhereClause<T>;
+
+/**
+ * Given an object type with all-optional keys, produce the union of variants that
+ * each require at least one key to be present. Used to forbid an empty `{}` operand:
+ * because `{}` is structurally assignable to an all-optional object, the only way to
+ * reject it is to require a key.
+ */
+type RequireAtLeastOne<T> = {
+  [K in keyof T]-?:
+    & Required<Pick<T, K>>
+    & Partial<Pick<T, Exclude<keyof T, K>>>;
+}[keyof T];
+
+/**
+ * The non-empty form of {@link MergedPropertyWhereClause}. `RequireAtLeastOne` must be
+ * distributed across each member of the union: `keyof (A | B)` is `keyof A & keyof B`,
+ * which would collapse to `never` for the property/special-property union and reject
+ * every clause.
+ */
+type NonEmptyPropertyWhereClause<
+  T extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> = MergedPropertyWhereClause<T, RDPs> extends infer M
+  ? (M extends unknown ? RequireAtLeastOne<M> : never)
+  : never;
+
+/**
+ * A {@link WhereClause} that may not be the empty object `{}`. This is the operand type
+ * for the `$and`/`$or`/`$not` boolean operators: an empty operand is meaningless (it lowers to
+ * an empty AND on the wire, which some object-storage backends reject) and is almost
+ * always a bug, so it is rejected at compile time. Top-level `.where({})` remains a legal
+ * no-op because the `where` argument is typed as {@link WhereClause}, not this type.
+ */
+export type NonEmptyWhereClause<
+  T extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> =
+  | OrWhereClause<T, RDPs>
+  | AndWhereClause<T, RDPs>
+  | NotWhereClause<T, RDPs>
+  | (IsNever<keyof CompileTimeMetadata<T>["properties"]> extends true ? never
+    : NonEmptyPropertyWhereClause<T, RDPs>);
 
 export type WhereClause<
   T extends ObjectOrInterfaceDefinition,
