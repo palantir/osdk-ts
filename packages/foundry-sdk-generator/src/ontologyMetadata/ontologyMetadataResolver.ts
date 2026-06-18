@@ -699,18 +699,16 @@ export class OntologyMetadataResolver {
 
         return Result.coalesce(results);
       case "union":
-        if (
-          baseType.unionTypes.find(unionTypes => unionTypes.type === "null")
-        ) {
-          return Result.ok({});
-        }
-        return Result.err([
-          `Unable to load query ${queryApiName} because it takes an unsupported parameter type: ${
-            JSON.stringify(
-              baseType,
-            )
-          } in parameter ${propertyName}`,
-        ]);
+        const unionResults = baseType.unionTypes.map(unionType =>
+          this.visitSupportedQueryTypes(
+            queryApiName,
+            propertyName,
+            unionType,
+            loadedObjectApiNames,
+            loadedInterfaceApiNames,
+          )
+        );
+        return Result.coalesce(unionResults);
       case "entrySet":
         return Result.coalesce([
           this.visitSupportedQueryTypes(
