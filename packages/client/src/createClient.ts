@@ -120,7 +120,6 @@ export function createClientInternal(
       logger?: Logger;
       UNSTABLE_DO_NOT_USE_BRANCH?: string;
       headers?: Record<string, string>;
-      concurrency?: { maxConcurrentRequests?: number };
     }
     | undefined = undefined,
   fetchFn: typeof globalThis.fetch = fetch,
@@ -432,9 +431,7 @@ export function createClientFromContext(clientCtx: MinimalClient) {
  *   from `@osdk/oauth`, which handles caching and refresh; you can also provide a custom function if you
  *   manage tokens yourself.
  * @param options - Optional client configuration: a custom `logger`, an experimental `UNSTABLE_DO_NOT_USE_BRANCH`
- *   for branch-aware requests, additional `headers` to include on every request, and
- *   `concurrency.maxConcurrentRequests` to cap the number of in-flight requests (default 10,
- *   `Infinity` to disable throttling).
+ *   for branch-aware requests, and additional `headers` to include on every request.
  * @param fetchFn - An optional `fetch` implementation to use for all requests. Defaults to the global `fetch`.
  * @example
  * ```ts
@@ -465,12 +462,6 @@ export const createClient: (
     /** @beta This is an experimental feature subject to change */
     UNSTABLE_DO_NOT_USE_BRANCH?: string;
     headers?: Record<string, string>;
-    /**
-     * Caps the number of HTTP requests the client keeps in flight at once.
-     * Additional requests queue until a slot frees up. Defaults to 10.
-     * Pass `Infinity` to disable throttling.
-     */
-    concurrency?: { maxConcurrentRequests?: number };
   } | undefined,
   fetchFn?: typeof fetch | undefined,
 ) => Client = createClientInternal.bind(

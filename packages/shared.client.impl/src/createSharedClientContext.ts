@@ -21,7 +21,6 @@ import {
   createFetchOrThrow,
   createLimitedFetch,
   createRetryingFetch,
-  DEFAULT_MAX_CONCURRENT_REQUESTS,
 } from "@osdk/shared.net.fetch";
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
@@ -34,7 +33,6 @@ export function createSharedClientContext(
   userAgent: string,
   fetchFn: typeof globalThis.fetch = fetch,
   customHeaders?: Record<string, string>,
-  concurrencyLimit: number = DEFAULT_MAX_CONCURRENT_REQUESTS,
 ): SharedClientContext & OldSharedClientContext {
   if (baseUrl.length === 0) {
     throw new Error("baseUrl cannot be empty");
@@ -78,10 +76,7 @@ export function createSharedClientContext(
     },
   );
 
-  const limitedFetch = createLimitedFetch(
-    retryingFetchWithAuthOrThrow,
-    concurrencyLimit,
-  );
+  const limitedFetch = createLimitedFetch(retryingFetchWithAuthOrThrow);
 
   // because this is async await it preserves stack traces, which the retrying fetch does not
   const fetchWrapper = async (

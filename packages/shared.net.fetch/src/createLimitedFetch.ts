@@ -16,7 +16,7 @@
 
 import pLimit from "p-limit";
 
-export const DEFAULT_MAX_CONCURRENT_REQUESTS = 10;
+const DEFAULT_MAX_CONCURRENT_REQUESTS = 10;
 
 /**
  * Wraps a fetch function so that no more than `maxConcurrent` requests are

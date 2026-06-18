@@ -112,32 +112,6 @@ describe(createClient, () => {
     });
   });
 
-  describe("concurrency option", () => {
-    it("forwards maxConcurrentRequests to createSharedClientContext", () => {
-      const spy = vi.spyOn(SharedClientContext, "createSharedClientContext");
-
-      createClient(
-        "https://mock.com",
-        ontologyRid,
-        async () => "Token",
-        { concurrency: { maxConcurrentRequests: 3 } },
-        fetchFunction,
-      );
-      // signature: (baseUrl, tokenProvider, userAgent, fetchFn, headers, concurrencyLimit)
-      expect(spy.mock.calls.at(-1)?.[5]).toBe(3);
-
-      createClient(
-        "https://mock.com",
-        ontologyRid,
-        async () => "Token",
-        undefined,
-        fetchFunction,
-      );
-      // Unset → undefined, so createSharedClientContext applies its default.
-      expect(spy.mock.calls.at(-1)?.[5]).toBeUndefined();
-    });
-  });
-
   describe("check url formatting", () => {
     it("urls are correctly formatted", async () => {
       const spy = vi.spyOn(SharedClientContext, "createSharedClientContext");

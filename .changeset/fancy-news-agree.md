@@ -4,4 +4,4 @@
 "@osdk/client": minor
 ---
 
-Add client-side concurrency limit (defaults to 10)
+Add client-side concurrency limit of 10 in-flight requests
