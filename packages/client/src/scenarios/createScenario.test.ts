@@ -74,7 +74,8 @@ describe("createScenario", () => {
     expect(url.searchParams.get("scenarioRid")).toBe(newScenarioRid);
   });
 
-  it("rejects a client with an active transaction at runtime", async () => {
+  it("warns and ignores an active transaction, scoping to the new scenario", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
     const txClient = createClientWithTransaction(
       "ri.transactions..transaction.xyz",
       async () => {},
@@ -84,7 +85,19 @@ describe("createScenario", () => {
       {},
       fetchFunction,
     );
-    await expect(createScenario(txClient)).rejects.toThrow(/transaction/);
+    const newScenarioRid = "ri.actions..scenario.new";
+    const createResponse: CreateOntologyScenarioResponse = {
+      scenarioRid: newScenarioRid,
+    };
+    mockFetchResponse(fetchFunction, createResponse);
+
+    const scenario = await createScenario(txClient);
+
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringMatching(/transaction/),
+    );
+    expect(scenario.getScenarioReference()).toBe(newScenarioRid);
+    warnSpy.mockRestore();
   });
 
   it("rejects a client already scoped to a scenario at runtime", async () => {
