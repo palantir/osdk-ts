@@ -30,10 +30,7 @@ import type { Canonical } from "../Canonical.js";
 import type { QuerySubscription } from "../QuerySubscription.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
 import { tombstone } from "../tombstone.js";
-import {
-  mergeObjectFields,
-  mergeSelectFields,
-} from "../utils/rdpFieldOperations.js";
+import { reconcileObject } from "../utils/rdpFieldOperations.js";
 import { type ObjectCacheKey } from "./ObjectCacheKey.js";
 import { ObjectQuery } from "./ObjectQuery.js";
 
@@ -152,52 +149,31 @@ export class ObjectsHelper extends AbstractHelper<
 
     let valueToWrite = !dataChanged && existing ? existing.value : value;
 
-    // When a $select-filtered fetch returns partial objects, merge with
-    // existing cached data to preserve fields not in the select set.
+    const sourceRdpFields = this.store.objectCacheKeyRegistry.getRdpFieldSet(
+      sourceCacheKey,
+    );
+
+    // A partial load only carries the base props it fetched, so reconcile it
+    // with the existing value at this key to keep the props it did not load and
+    // any derived fields. A full load is written as-is: it owns every field, so
+    // an omitted one is a genuine clear.
     const existingHolder = existing?.value;
-    const canMergeSelectFields = dataChanged
+    if (
+      dataChanged
+      && valueToWrite !== tombstone
       && selectFields
       && selectFields.size > 0
       && existingHolder
-      && this.isObjectHolder(existingHolder);
-
-    if (canMergeSelectFields && valueToWrite !== tombstone) {
-      valueToWrite = mergeSelectFields(
-        valueToWrite,
-        selectFields,
-        existingHolder,
-      );
-    }
-
-    // When an object (e.g. from a subscription update) is written to a cache
-    // key that has RDP configuration, the incoming value may lack derived
-    // property values. Merge with the existing cached value so that RDP fields
-    // not present in the incoming object are preserved.
-    if (
-      valueToWrite !== tombstone
-      && existing?.value
-      && this.isObjectHolder(existing.value)
+      && this.isObjectHolder(existingHolder)
     ) {
-      const expectedRdpFields = this.store.objectCacheKeyRegistry
-        .getRdpFieldSet(sourceCacheKey);
-      if (expectedRdpFields.size > 0) {
-        const underlying = valueToWrite[UnderlyingOsdkObject];
-        const actualRdpFields = new Set<string>();
-        for (const field of expectedRdpFields) {
-          if (underlying && field in underlying) {
-            actualRdpFields.add(field);
-          }
-        }
-
-        if (actualRdpFields.size !== expectedRdpFields.size) {
-          valueToWrite = mergeObjectFields(
-            valueToWrite,
-            actualRdpFields,
-            expectedRdpFields,
-            existing.value,
-          );
-        }
-      }
+      valueToWrite = reconcileObject(
+        {
+          value: valueToWrite,
+          rdpFields: sourceRdpFields,
+          loadedBaseFields: selectFields,
+        },
+        { value: existingHolder, rdpFields: sourceRdpFields },
+      );
     }
 
     batch.write(sourceCacheKey, valueToWrite, status);
@@ -212,6 +188,7 @@ export class ObjectsHelper extends AbstractHelper<
       sourceCacheKey,
     );
 
+    // Propagate write to sibling cache keys that observe the same (apiName, pk)
     const relatedKeys = metadata
       ? this.store.objectCacheKeyRegistry.getVariants(
         metadata.apiName,
@@ -236,18 +213,12 @@ export class ObjectsHelper extends AbstractHelper<
           ? targetCurrentValue
           : undefined;
 
-      // Preserve target-only fields when a partial-select fetch propagates
-      // to a sibling variant, so different-select variants converge to the
-      // union rather than clobbering each other.
-      let merged = value;
-      if (selectFields?.size && targetHolder) {
-        merged = mergeSelectFields(merged, selectFields, targetHolder);
-      }
-      merged = this.mergeForTarget(
-        merged,
+      const merged = this.mergeForTarget(
+        value,
         targetHolder,
-        sourceCacheKey,
+        sourceRdpFields,
         targetKey,
+        selectFields,
       );
 
       batch.write(targetKey, merged, status);
@@ -255,11 +226,10 @@ export class ObjectsHelper extends AbstractHelper<
   }
 
   /**
-   * Check if a cache key is actively observed or pending cleanup.
-   * During React unmount-remount cycles, a key may be momentarily
-   * unobserved while its cleanup is deferred to a microtask.
-   * We still propagate to such keys to prevent stale data when
-   * the subscription is re-established.
+   * A cache key counts as active if it is observed or pending cleanup. During
+   * React unmount-remount cycles a key can be momentarily unobserved while its
+   * cleanup is deferred to a microtask; propagating to it keeps data fresh for
+   * when the subscription is re-established.
    */
   private isKeyActive(key: ObjectCacheKey): boolean {
     const subject = this.store.subjects.peek(key);
@@ -269,9 +239,6 @@ export class ObjectsHelper extends AbstractHelper<
     return (this.store.pendingCleanup.get(key) ?? 0) > 0;
   }
 
-  /**
-   * Type guard to check if a value is an ObjectHolder
-   */
   private isObjectHolder(
     value: ObjectHolder | undefined,
   ): value is ObjectHolder {
@@ -282,26 +249,28 @@ export class ObjectsHelper extends AbstractHelper<
   }
 
   /**
-   * Merge object data for a specific target cache key, preserving RDP fields
+   * Reconcile a freshly written object into the value cached at a sibling cache
+   * key, resolving base props by schema authority and derived fields by the two
+   * keys' rdp sets.
    */
   private mergeForTarget(
     sourceValue: ObjectHolder,
     targetCurrentValue: ObjectHolder | undefined,
-    sourceCacheKey: ObjectCacheKey,
+    sourceRdpFields: ReadonlySet<string>,
     targetCacheKey: ObjectCacheKey,
+    selectFields: ReadonlySet<string> | undefined,
   ): ObjectHolder {
-    const sourceRdpFields = this.store.objectCacheKeyRegistry.getRdpFieldSet(
-      sourceCacheKey,
-    );
     const targetRdpFields = this.store.objectCacheKeyRegistry.getRdpFieldSet(
       targetCacheKey,
     );
 
-    return mergeObjectFields(
-      sourceValue,
-      sourceRdpFields,
-      targetRdpFields,
-      targetCurrentValue,
+    return reconcileObject(
+      {
+        value: sourceValue,
+        rdpFields: sourceRdpFields,
+        loadedBaseFields: selectFields,
+      },
+      { value: targetCurrentValue, rdpFields: targetRdpFields },
     );
   }
 }

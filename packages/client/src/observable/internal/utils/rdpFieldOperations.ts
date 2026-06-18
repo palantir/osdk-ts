@@ -36,12 +36,33 @@ export function extractRdpFieldNames(
 }
 
 /**
- * Throws a clear, actionable error if `objectDef` is undefined. The RDP merge
- * path operates on concrete `ObjectHolder`s only; if an `InterfaceHolder` ever
- * leaks through without being unwrapped via `storeOsdkInstances`, the missing
- * ObjectDefRef would surface as a confusing "cannot read property 'properties'
- * of undefined" crash. Use this helper to gate access to `objectDef.properties`
- * so the failure mode names the actual invariant violation.
+ * The fresh value being written, paired with what the source query is
+ * authoritative for: `rdpFields` is the derived-field set it computed, and
+ * `loadedBaseFields`, if present, is the base properties it actually loaded.
+ * `undefined` means a full load that owns every base property, so an omitted
+ * base property is a genuine clear rather than a field that was never fetched.
+ */
+export interface ReconcileSource {
+  value: ObjectHolder;
+  rdpFields: ReadonlySet<string>;
+  loadedBaseFields?: ReadonlySet<string>;
+}
+
+/**
+ * The cache entry being written into. `value` is its current cached value (may
+ * be undefined on first write) and `rdpFields` is the derived-field set its
+ * cache key owns, which determines the derived fields the result carries.
+ */
+export interface ReconcileTarget {
+  value: ObjectHolder | undefined;
+  rdpFields: ReadonlySet<string>;
+}
+
+/**
+ * The RDP merge path operates on concrete `ObjectHolder`s only. If an
+ * `InterfaceHolder` leaks through unwrapped, `ObjectDefRef` is undefined; this
+ * gate names the invariant violation instead of crashing later on
+ * `objectDef.properties`.
  */
 export function requireObjectDef(
   objectDef: FetchedObjectTypeDefinition | undefined,
@@ -59,173 +80,133 @@ export function requireObjectDef(
   return objectDef;
 }
 
-function stripRdpFields(
-  value: ObjectHolder,
-  rdpFields: ReadonlySet<string>,
-): ObjectHolder {
-  if (rdpFields.size === 0) {
-    return value;
-  }
-
-  const underlying = value[UnderlyingOsdkObject] as SimpleOsdkProperties;
-  const objectDef = requireObjectDef(value[ObjectDefRef], underlying);
-
-  const newProps: SimpleOsdkProperties = {
-    $apiName: underlying.$apiName,
-    $objectType: underlying.$objectType,
-    $primaryKey: underlying.$primaryKey,
-    $title: underlying.$title,
-    $rid: underlying.$rid,
+function systemFields(
+  primary: SimpleOsdkProperties,
+  ridFallback: SimpleOsdkProperties | undefined,
+): SimpleOsdkProperties {
+  return {
+    $apiName: primary.$apiName,
+    $objectType: primary.$objectType,
+    $primaryKey: primary.$primaryKey,
+    $title: primary.$title,
+    $rid: primary.$rid ?? ridFallback?.$rid,
   };
-
-  for (const key of Object.keys(underlying)) {
-    if (key in objectDef.properties && !rdpFields.has(key)) {
-      newProps[key] = underlying[key];
-    }
-  }
-
-  return createOsdkObject(value[ClientRef], objectDef, newProps);
 }
 
-function isSuperset(
-  superset: ReadonlySet<string>,
-  subset: ReadonlySet<string>,
+function sameMembers(
+  a: ReadonlySet<string>,
+  b: ReadonlySet<string>,
 ): boolean {
-  for (const field of subset) {
-    if (!superset.has(field)) {
+  if (a.size !== b.size) {
+    return false;
+  }
+  for (const field of a) {
+    if (!b.has(field)) {
       return false;
     }
   }
   return true;
 }
 
-function filterToRdpFields(
-  value: ObjectHolder,
-  rdpFieldsToKeep: ReadonlySet<string>,
-  sourceRdpFields: ReadonlySet<string>,
+/**
+ * A base property is one defined by the object schema and not a derived (RDP)
+ * field of the relevant cache key. The rdp set, not schema membership, is the
+ * authority for what is derived: a name can be both a schema property and an
+ * rdp field, and when it is the rdp set wins.
+ */
+function isBaseProperty(
+  key: string,
+  objectDef: FetchedObjectTypeDefinition,
+  rdpFields: ReadonlySet<string>,
+): boolean {
+  return key in objectDef.properties && !rdpFields.has(key);
+}
+
+/**
+ * Resolve each of `fields` into `into`. A field the source owns
+ * (`ownedBySource === undefined` means it owns all of them) is taken from the
+ * source, where an omitted field is left unset so a value that became null
+ * clears rather than retaining the stale cached one. A field the source does
+ * not own keeps the target's cached value.
+ */
+function resolveFields(
+  into: SimpleOsdkProperties,
+  fields: Iterable<string>,
+  ownedBySource: ReadonlySet<string> | undefined,
+  sourceProps: SimpleOsdkProperties,
+  targetProps: SimpleOsdkProperties | undefined,
+): void {
+  for (const field of fields) {
+    if (ownedBySource === undefined || ownedBySource.has(field)) {
+      if (field in sourceProps) {
+        into[field] = sourceProps[field];
+      }
+    } else if (targetProps && field in targetProps) {
+      into[field] = targetProps[field];
+    }
+  }
+}
+
+/**
+ * Reconcile a freshly written `source` object into the `target` currently
+ * cached at some key. One rule governs every field: the source wins for a field
+ * it owns (an omitted owned field clears), otherwise the target keeps its cached
+ * value. The rule runs over the base properties present on either side, then
+ * over the target key's derived fields. The result is the source's identity when
+ * reconciling would be a no-op.
+ */
+export function reconcileObject(
+  source: ReconcileSource,
+  target: ReconcileTarget,
 ): ObjectHolder {
-  const underlying = value[UnderlyingOsdkObject] as SimpleOsdkProperties;
-  const objectDef = requireObjectDef(value[ObjectDefRef], underlying);
+  if (
+    target.value === undefined
+    && source.loadedBaseFields === undefined
+    && sameMembers(source.rdpFields, target.rdpFields)
+  ) {
+    return source.value;
+  }
 
-  const newProps: SimpleOsdkProperties = {
-    $apiName: underlying.$apiName,
-    $objectType: underlying.$objectType,
-    $primaryKey: underlying.$primaryKey,
-    $title: underlying.$title,
-    $rid: underlying.$rid,
-  };
+  const sourceProps = source
+    .value[UnderlyingOsdkObject] as SimpleOsdkProperties;
+  const targetProps = target.value?.[UnderlyingOsdkObject] as
+    | SimpleOsdkProperties
+    | undefined;
+  const objectDef = requireObjectDef(source.value[ObjectDefRef], sourceProps);
 
-  for (const key of Object.keys(underlying)) {
-    if (key in objectDef.properties) {
-      const isRdpField = sourceRdpFields.has(key);
-      if (!isRdpField || rdpFieldsToKeep.has(key)) {
-        newProps[key] = underlying[key];
+  const result = systemFields(sourceProps, targetProps);
+
+  // Base properties present on either side; the source's loaded set owns them,
+  // and a full load (undefined) owns all of them.
+  const baseFields = new Set<string>();
+  for (const key of Object.keys(sourceProps)) {
+    if (isBaseProperty(key, objectDef, source.rdpFields)) {
+      baseFields.add(key);
+    }
+  }
+  if (targetProps) {
+    for (const key of Object.keys(targetProps)) {
+      if (isBaseProperty(key, objectDef, target.rdpFields)) {
+        baseFields.add(key);
       }
     }
   }
-
-  return createOsdkObject(value[ClientRef], objectDef, newProps);
-}
-
-export function mergeSelectFields(
-  sourceValue: ObjectHolder,
-  selectFields: ReadonlySet<string>,
-  existingValue: ObjectHolder,
-): ObjectHolder {
-  const sourceUnderlying =
-    sourceValue[UnderlyingOsdkObject] as SimpleOsdkProperties;
-  const existingUnderlying =
-    existingValue[UnderlyingOsdkObject] as SimpleOsdkProperties;
-  const objectDef = requireObjectDef(
-    sourceValue[ObjectDefRef],
-    sourceUnderlying,
+  resolveFields(
+    result,
+    baseFields,
+    source.loadedBaseFields,
+    sourceProps,
+    targetProps,
   );
 
-  const newProps: SimpleOsdkProperties = {
-    $apiName: sourceUnderlying.$apiName,
-    $objectType: sourceUnderlying.$objectType,
-    $primaryKey: sourceUnderlying.$primaryKey,
-    $title: sourceUnderlying.$title,
-    $rid: sourceUnderlying.$rid ?? existingUnderlying.$rid,
-  };
-
-  for (const key of Object.keys(existingUnderlying)) {
-    if (key in objectDef.properties) {
-      newProps[key] = existingUnderlying[key];
-    }
-  }
-
-  for (const key of Object.keys(sourceUnderlying)) {
-    if (key in objectDef.properties && selectFields.has(key)) {
-      newProps[key] = sourceUnderlying[key];
-    }
-  }
-
-  return createOsdkObject(sourceValue[ClientRef], objectDef, newProps);
-}
-
-export function mergeObjectFields(
-  sourceValue: ObjectHolder,
-  sourceRdpFields: ReadonlySet<string>,
-  targetRdpFields: ReadonlySet<string>,
-  targetCurrentValue: ObjectHolder | undefined,
-): ObjectHolder {
-  if (targetRdpFields.size === 0) {
-    return stripRdpFields(sourceValue, sourceRdpFields);
-  }
-
-  if (isSuperset(sourceRdpFields, targetRdpFields)) {
-    if (sourceRdpFields.size === targetRdpFields.size) {
-      return sourceValue;
-    }
-    return filterToRdpFields(sourceValue, targetRdpFields, sourceRdpFields);
-  }
-
-  const sourceUnderlying =
-    sourceValue[UnderlyingOsdkObject] as SimpleOsdkProperties;
-  const objectDef = requireObjectDef(
-    sourceValue[ObjectDefRef],
-    sourceUnderlying,
+  // Derived fields the target key carries; the source owns the ones it computed.
+  resolveFields(
+    result,
+    target.rdpFields,
+    source.rdpFields,
+    sourceProps,
+    targetProps,
   );
 
-  const newProps: SimpleOsdkProperties = {
-    $apiName: sourceUnderlying.$apiName,
-    $objectType: sourceUnderlying.$objectType,
-    $primaryKey: sourceUnderlying.$primaryKey,
-    $title: sourceUnderlying.$title,
-    $rid: sourceUnderlying.$rid,
-  };
-
-  for (const key of Object.keys(sourceUnderlying)) {
-    if (
-      key in objectDef.properties
-      && (!sourceRdpFields.has(key) || targetRdpFields.has(key))
-    ) {
-      newProps[key] = sourceUnderlying[key];
-    }
-  }
-
-  if (targetCurrentValue) {
-    const targetUnderlying =
-      targetCurrentValue[UnderlyingOsdkObject] as SimpleOsdkProperties;
-    for (const field of targetRdpFields) {
-      if (field in targetUnderlying) {
-        // Preserve target's value when:
-        // 1. Source doesn't have this RDP field at all, OR
-        // 2. Source hasn't provided the value (undefined)
-        if (
-          !sourceRdpFields.has(field)
-          || newProps[field] === undefined
-        ) {
-          newProps[field] = targetUnderlying[field];
-        }
-      }
-    }
-  }
-
-  return createOsdkObject(
-    sourceValue[ClientRef],
-    objectDef,
-    newProps,
-  );
+  return createOsdkObject(source.value[ClientRef], objectDef, result);
 }

@@ -26,11 +26,7 @@ import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/Obje
 import type { SimpleOsdkProperties } from "../../../object/SimpleOsdkProperties.js";
 import type { FetchedObjectTypeDefinition } from "../../../ontology/OntologyProvider.js";
 import { InterfaceDefinitions } from "../../../ontology/OntologyProvider.js";
-import {
-  extractRdpFieldNames,
-  mergeObjectFields,
-  mergeSelectFields,
-} from "./rdpFieldOperations.js";
+import { extractRdpFieldNames, reconcileObject } from "./rdpFieldOperations.js";
 
 const mockClient = {} as MinimalClient;
 
@@ -90,23 +86,44 @@ function getUnderlyingProps(obj: ObjectHolder): SimpleOsdkProperties {
   return obj[UnderlyingOsdkObject] as SimpleOsdkProperties;
 }
 
-describe("rdpFieldOperations", () => {
-  it("extractRdpFieldNames returns empty set for undefined", () => {
+describe("extractRdpFieldNames", () => {
+  it("returns empty set for undefined", () => {
     expect(extractRdpFieldNames(undefined)).toEqual(new Set());
   });
+});
 
-  it("mergeObjectFields returns same object when source has no rdp fields", () => {
+describe("reconcileObject", () => {
+  it("returns the source identity when neither side has rdp fields", () => {
     const source = createTestObject({
       employeeId: 50030,
       fullName: "John Doe",
     });
 
-    const result = mergeObjectFields(source, new Set(), new Set(), undefined);
+    const result = reconcileObject(
+      { value: source, rdpFields: new Set() },
+      { value: undefined, rdpFields: new Set() },
+    );
 
     expect(result).toBe(source);
   });
 
-  it("mergeObjectFields strips rdp fields from source", () => {
+  it("returns the source identity when the rdp sets are equal", () => {
+    const source = createTestObject({
+      employeeId: 50030,
+      rdpField1: "value",
+      rdpField2: 42,
+    });
+    const rdpFields = new Set(["rdpField1", "rdpField2"]);
+
+    const result = reconcileObject(
+      { value: source, rdpFields },
+      { value: undefined, rdpFields },
+    );
+
+    expect(result).toBe(source);
+  });
+
+  it("drops source rdp fields the target does not want", () => {
     const source = createTestObject({
       employeeId: 50030,
       fullName: "John Doe",
@@ -114,11 +131,9 @@ describe("rdpFieldOperations", () => {
       rdpField2: 42,
     });
 
-    const result = mergeObjectFields(
-      source,
-      new Set(["rdpField1", "rdpField2"]),
-      new Set(),
-      undefined,
+    const result = reconcileObject(
+      { value: source, rdpFields: new Set(["rdpField1", "rdpField2"]) },
+      { value: undefined, rdpFields: new Set() },
     );
 
     assertValidObjectHolder(result);
@@ -129,20 +144,7 @@ describe("rdpFieldOperations", () => {
     expect(underlying.rdpField2).toBeUndefined();
   });
 
-  it("mergeObjectFields returns source unchanged when rdp field sets are equal", () => {
-    const source = createTestObject({
-      employeeId: 50030,
-      rdpField1: "value",
-      rdpField2: 42,
-    });
-    const rdpFields = new Set(["rdpField1", "rdpField2"]);
-
-    const result = mergeObjectFields(source, rdpFields, rdpFields, undefined);
-
-    expect(result).toBe(source);
-  });
-
-  it("mergeObjectFields filters to target rdp fields when source is strict superset", () => {
+  it("filters to the target rdp fields when the source is a strict superset", () => {
     const source = createTestObject({
       employeeId: 50030,
       fullName: "John Doe",
@@ -151,11 +153,12 @@ describe("rdpFieldOperations", () => {
       rdpField3: "value3",
     });
 
-    const result = mergeObjectFields(
-      source,
-      new Set(["rdpField1", "rdpField2", "rdpField3"]),
-      new Set(["rdpField1"]),
-      undefined,
+    const result = reconcileObject(
+      {
+        value: source,
+        rdpFields: new Set(["rdpField1", "rdpField2", "rdpField3"]),
+      },
+      { value: undefined, rdpFields: new Set(["rdpField1"]) },
     );
 
     assertValidObjectHolder(result);
@@ -167,7 +170,7 @@ describe("rdpFieldOperations", () => {
     expect(underlying.rdpField3).toBeUndefined();
   });
 
-  it("mergeObjectFields merges source and target rdp fields", () => {
+  it("merges the source and target rdp fields", () => {
     const source = createTestObject({
       employeeId: 50030,
       fullName: "John Doe",
@@ -179,11 +182,9 @@ describe("rdpFieldOperations", () => {
       rdpField2: 999,
     });
 
-    const result = mergeObjectFields(
-      source,
-      new Set(["rdpField1"]),
-      new Set(["rdpField1", "rdpField2"]),
-      target,
+    const result = reconcileObject(
+      { value: source, rdpFields: new Set(["rdpField1"]) },
+      { value: target, rdpFields: new Set(["rdpField1", "rdpField2"]) },
     );
 
     assertValidObjectHolder(result);
@@ -195,7 +196,7 @@ describe("rdpFieldOperations", () => {
     expect(underlying.rdpField2).toBe(999);
   });
 
-  it("mergeObjectFields preserves target RDP value when source has undefined for shared field", () => {
+  it("clears a shared rdp field that the source computed but left undefined", () => {
     const source = createTestObject({
       employeeId: 50030,
       fullName: "John Doe",
@@ -207,23 +208,49 @@ describe("rdpFieldOperations", () => {
       rdpField2: 999,
     });
 
-    const result = mergeObjectFields(
-      source,
-      new Set(["rdpField1"]),
-      new Set(["rdpField1", "rdpField2"]),
-      target,
+    const result = reconcileObject(
+      { value: source, rdpFields: new Set(["rdpField1"]) },
+      { value: target, rdpFields: new Set(["rdpField1", "rdpField2"]) },
     );
 
     assertValidObjectHolder(result);
     const underlying = getUnderlyingProps(result);
     expect(underlying.employeeId).toBe(50030);
     expect(underlying.fullName).toBe("John Doe");
-    // Target's non-null value should be preserved when source has undefined
-    expect(underlying.rdpField1).toBe("existing-value");
+    // The source query computed rdpField1, so it is authoritative: an undefined
+    // value means the derived value became null and the stale target value must
+    // be cleared rather than retained.
+    expect(underlying.rdpField1).toBeUndefined();
+    // rdpField2 was not computed by the source query, so the target's value is
+    // preserved.
     expect(underlying.rdpField2).toBe(999);
   });
 
-  it("mergeObjectFields uses source RDP value when both source and target have non-null", () => {
+  it("preserves a target rdp value the source did not compute", () => {
+    const source = createTestObject({
+      employeeId: 50030,
+      fullName: "John Doe",
+      rdpField1: "source-value",
+    });
+    const target = createTestObject({
+      employeeId: 50030,
+      rdpField1: "old-value",
+      rdpField2: 999,
+    });
+
+    const result = reconcileObject(
+      { value: source, rdpFields: new Set(["rdpField1"]) },
+      { value: target, rdpFields: new Set(["rdpField1", "rdpField2"]) },
+    );
+
+    assertValidObjectHolder(result);
+    const underlying = getUnderlyingProps(result);
+    expect(underlying.rdpField1).toBe("source-value");
+    // rdpField2 was not in the source query, so the target's value survives.
+    expect(underlying.rdpField2).toBe(999);
+  });
+
+  it("uses the source rdp value when both sides have a non-null value", () => {
     const source = createTestObject({
       employeeId: 50030,
       fullName: "John Doe",
@@ -235,21 +262,18 @@ describe("rdpFieldOperations", () => {
       rdpField2: 999,
     });
 
-    const result = mergeObjectFields(
-      source,
-      new Set(["rdpField1"]),
-      new Set(["rdpField1", "rdpField2"]),
-      target,
+    const result = reconcileObject(
+      { value: source, rdpFields: new Set(["rdpField1"]) },
+      { value: target, rdpFields: new Set(["rdpField1", "rdpField2"]) },
     );
 
     assertValidObjectHolder(result);
     const underlying = getUnderlyingProps(result);
-    // Source's non-null value takes precedence when both are non-null
     expect(underlying.rdpField1).toBe("source-value");
     expect(underlying.rdpField2).toBe(999);
   });
 
-  it("mergeObjectFields propagates null RDP values from source", () => {
+  it("propagates an explicit null rdp value from the source", () => {
     const source = createTestObject({
       employeeId: 50030,
       fullName: "John Doe",
@@ -261,11 +285,9 @@ describe("rdpFieldOperations", () => {
       rdpField2: 999,
     });
 
-    const result = mergeObjectFields(
-      source,
-      new Set(["rdpField1"]),
-      new Set(["rdpField1", "rdpField2"]),
-      target,
+    const result = reconcileObject(
+      { value: source, rdpFields: new Set(["rdpField1"]) },
+      { value: target, rdpFields: new Set(["rdpField1", "rdpField2"]) },
     );
 
     assertValidObjectHolder(result);
@@ -274,18 +296,16 @@ describe("rdpFieldOperations", () => {
     expect(underlying.rdpField2).toBe(999);
   });
 
-  it("mergeObjectFields handles undefined target", () => {
+  it("handles an undefined target", () => {
     const source = createTestObject({
       employeeId: 50030,
       fullName: "John Doe",
       rdpField1: "source-rdp1",
     });
 
-    const result = mergeObjectFields(
-      source,
-      new Set(["rdpField1"]),
-      new Set(["rdpField1", "rdpField2"]),
-      undefined,
+    const result = reconcileObject(
+      { value: source, rdpFields: new Set(["rdpField1"]) },
+      { value: undefined, rdpFields: new Set(["rdpField1", "rdpField2"]) },
     );
 
     assertValidObjectHolder(result);
@@ -294,30 +314,179 @@ describe("rdpFieldOperations", () => {
     expect(underlying.rdpField1).toBe("source-rdp1");
     expect(underlying.rdpField2).toBeUndefined();
   });
-});
 
-describe("mergeSelectFields", () => {
-  it("merges selected fields from source, preserves existing for unselected", () => {
+  it("handles the full mixed case in one merge", () => {
     const source = createTestObject({
       employeeId: 50030,
-      fullName: "Updated Name",
-      office: "SF",
+      fullName: "John Doe",
+      rdpField1: "source-shared",
+      rdpField3: "source-only",
     });
-    const existing = createTestObject({
+    const target = createTestObject({
       employeeId: 50030,
-      fullName: "Old Name",
-      office: "NYC",
-      rdpField1: "existing-rdp",
+      rdpField1: "target-shared-stale",
+      rdpField2: 999,
     });
 
-    const selectFields = new Set(["fullName", "office"]);
-    const result = mergeSelectFields(source, selectFields, existing);
+    const result = reconcileObject(
+      { value: source, rdpFields: new Set(["rdpField1", "rdpField3"]) },
+      { value: target, rdpFields: new Set(["rdpField1", "rdpField2"]) },
+    );
 
     assertValidObjectHolder(result);
     const underlying = getUnderlyingProps(result);
-    expect(underlying.fullName).toBe("Updated Name");
-    expect(underlying.office).toBe("SF");
-    expect(underlying.rdpField1).toBe("existing-rdp");
-    expect(underlying.employeeId).toBe(50030);
+    expect(underlying.fullName).toBe("John Doe");
+    // Shared rdp: the source query is authoritative.
+    expect(underlying.rdpField1).toBe("source-shared");
+    // Source-only rdp the target did not ask for: dropped.
+    expect(underlying.rdpField3).toBeUndefined();
+    // Target-only rdp the source did not compute: preserved.
+    expect(underlying.rdpField2).toBe(999);
+  });
+
+  it("keeps a shared rdp whose name is not a base property (production shape)", () => {
+    // In production, rdp field names never appear in objectDef.properties; the
+    // rdp sets are their only authority. computedScore is deliberately not a
+    // property of employeeObjectDef. The source rdp set is a strict superset of
+    // the target's so the merge runs past the identity fast path.
+    const source = createTestObject({
+      employeeId: 50030,
+      fullName: "John Doe",
+      computedScore: 42,
+    });
+    const target = createTestObject({
+      employeeId: 50030,
+      computedScore: 7,
+    });
+
+    const result = reconcileObject(
+      { value: source, rdpFields: new Set(["computedScore", "extraDerived"]) },
+      { value: target, rdpFields: new Set(["computedScore"]) },
+    );
+
+    assertValidObjectHolder(result);
+    const underlying = getUnderlyingProps(result);
+    expect(underlying.fullName).toBe("John Doe");
+    // The source computed computedScore, so it must survive the merge even
+    // though the name is not in objectDef.properties.
+    expect(underlying.computedScore).toBe(42);
+  });
+
+  it("clears a base prop the target cached but a full load omitted", () => {
+    // No loadedBaseFields means a full load that owns every base prop. office is
+    // absent from the source, so it must clear rather than resurrect the cached
+    // value.
+    const source = createTestObject({
+      employeeId: 50030,
+      fullName: "John Doe",
+    });
+    const target = createTestObject({
+      employeeId: 50030,
+      fullName: "John Doe",
+      office: "NYC",
+    });
+
+    const result = reconcileObject(
+      { value: source, rdpFields: new Set() },
+      { value: target, rdpFields: new Set() },
+    );
+
+    assertValidObjectHolder(result);
+    const underlying = getUnderlyingProps(result);
+    expect(underlying.fullName).toBe("John Doe");
+    expect(underlying.office).toBeUndefined();
+  });
+
+  describe("with a partial load", () => {
+    it("overlays the loaded base props and keeps the rest", () => {
+      const source = createTestObject({
+        employeeId: 50030,
+        fullName: "Updated Name",
+        office: "SF",
+      });
+      const existing = createTestObject({
+        employeeId: 50030,
+        fullName: "Old Name",
+        office: "NYC",
+      });
+
+      const result = reconcileObject(
+        {
+          value: source,
+          rdpFields: new Set(),
+          loadedBaseFields: new Set(["fullName"]),
+        },
+        { value: existing, rdpFields: new Set() },
+      );
+
+      assertValidObjectHolder(result);
+      const underlying = getUnderlyingProps(result);
+      expect(underlying.fullName).toBe("Updated Name");
+      // office was not loaded, so the existing value is kept.
+      expect(underlying.office).toBe("NYC");
+      expect(underlying.employeeId).toBe(50030);
+    });
+
+    it("carries derived fields through the merge instead of dropping them", () => {
+      // A query that loads only some base props alongside a derived property
+      // used to lose the derived field on a partial write, because the base
+      // merge only kept keys in objectDef.properties (rdp names are not there at
+      // runtime).
+      const source = createTestObject({
+        employeeId: 50030,
+        fullName: "Updated Name",
+        computedScore: 42,
+      });
+      const existing = createTestObject({
+        employeeId: 50030,
+        fullName: "Old Name",
+        office: "NYC",
+        computedScore: 7,
+      });
+
+      const result = reconcileObject(
+        {
+          value: source,
+          rdpFields: new Set(["computedScore"]),
+          loadedBaseFields: new Set(["fullName"]),
+        },
+        { value: existing, rdpFields: new Set(["computedScore"]) },
+      );
+
+      assertValidObjectHolder(result);
+      const underlying = getUnderlyingProps(result);
+      expect(underlying.fullName).toBe("Updated Name");
+      expect(underlying.office).toBe("NYC");
+      // The source recomputed the derived field; it must survive.
+      expect(underlying.computedScore).toBe(42);
+    });
+
+    it("clears a loaded base prop the source omitted", () => {
+      // fullName was loaded but its value cleared, so it is absent from the
+      // payload; it must clear rather than retain the cached value, while a
+      // prop that was not loaded is kept.
+      const source = createTestObject({
+        employeeId: 50030,
+      });
+      const existing = createTestObject({
+        employeeId: 50030,
+        fullName: "Old Name",
+        office: "NYC",
+      });
+
+      const result = reconcileObject(
+        {
+          value: source,
+          rdpFields: new Set(),
+          loadedBaseFields: new Set(["fullName"]),
+        },
+        { value: existing, rdpFields: new Set() },
+      );
+
+      assertValidObjectHolder(result);
+      const underlying = getUnderlyingProps(result);
+      expect(underlying.fullName).toBeUndefined();
+      expect(underlying.office).toBe("NYC");
+    });
   });
 });

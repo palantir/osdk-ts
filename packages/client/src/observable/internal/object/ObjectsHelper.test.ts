@@ -76,49 +76,15 @@ describe("ObjectsHelper.propagateWrite RDP merge", () => {
     };
   });
 
-  it("skips merge when incoming object already has all expected RDP fields", () => {
-    // Use "fullName" as RDP field — it exists on the Employee object,
-    // so actualRdpFields.size === expectedRdpFields.size and merge is skipped.
-    const rdpConfig = createFakeRdpConfig("fullName");
-
-    // Create key B (with RDP for "fullName") and seed it
-    const queryB = store.objects.getQuery({
-      apiName: Employee,
-      pk: 1,
-    }, rdpConfig);
-    store.batch({}, (batch) => {
-      queryB.writeToStore(emp as any, "loaded", batch);
-    });
-
-    // Write an updated object directly to key B — since the Employee
-    // object already has "fullName", all expected RDP fields are present
-    // and the merge short-circuit should fire.
-    const updated = emp.$clone({ fullName: "Bob" });
-    store.batch({}, (batch) => {
-      queryB.writeToStore(updated as any, "loaded", batch);
-    });
-
-    // Key B should have the updated value (merge was skipped)
-    const valueB = store.getValue(queryB.cacheKey);
-    expect(valueB?.value).toEqual(
-      expect.objectContaining({
-        $primaryKey: 1,
-        fullName: "Bob",
-      }),
-    );
-  });
-
-  it("does not merge on first write to an RDP key (no existing value)", () => {
+  it("writes the value as-is on first write to an RDP key", () => {
     const rdpConfig = createFakeRdpConfig("derivedAddress");
 
-    // Create key B (with RDP for "derivedAddress") — no prior write
     const queryB = store.objects.getQuery({
       apiName: Employee,
       pk: 1,
     }, rdpConfig);
 
-    // First write — there is no existing value so the merge guard
-    // (existing?.value) is false and the value is written as-is.
+    // With no existing value, the first write is stored as-is.
     store.batch({}, (batch) => {
       queryB.writeToStore(emp as any, "loaded", batch);
     });
@@ -132,9 +98,8 @@ describe("ObjectsHelper.propagateWrite RDP merge", () => {
     );
   });
 
-  it("does not merge for a non-RDP cache key", () => {
-    // Create a plain (no RDP) key and write twice — the merge block
-    // should be skipped because expectedRdpFields is empty.
+  it("writes the latest value for a non-RDP cache key", () => {
+    // A plain (no RDP) key written twice keeps the latest value.
     const query = store.objects.getQuery({
       apiName: Employee,
       pk: 1,
@@ -158,37 +123,70 @@ describe("ObjectsHelper.propagateWrite RDP merge", () => {
     );
   });
 
-  it("merges when incoming object is missing expected RDP fields", () => {
-    // Use "derivedAddress" as RDP field — it does NOT exist on the Employee
-    // object, so actualRdpFields.size < expectedRdpFields.size and merge runs
-    // to preserve the cached RDP value.
-    const rdpConfig = createFakeRdpConfig("derivedAddress");
-
-    // Create key B (with RDP for "derivedAddress") and seed it
-    const queryB = store.objects.getQuery({
+  it("clears an RDP value when the canonical query refetches and the new value omits it", () => {
+    const rdpConfig = createFakeRdpConfig("fieldA");
+    const queryWithRdp = store.objects.getQuery({
       apiName: Employee,
       pk: 1,
     }, rdpConfig);
+
+    // Seed: object has fieldA = "alice-rdp"
+    const empWithFieldA = emp.$clone({ fieldA: "alice-rdp" } as any);
     store.batch({}, (batch) => {
-      queryB.writeToStore(emp as any, "loaded", batch);
+      queryWithRdp.writeToStore(empWithFieldA as any, "loaded", batch);
+    });
+    expect(
+      (store.getValue(queryWithRdp.cacheKey)?.value as any)?.fieldA,
+    ).toBe("alice-rdp");
+
+    // Refetch: the same canonical query writes an object without fieldA
+    // (server returned null so the wire omitted the key).
+    const empWithoutFieldA = emp.$clone({ fullName: "Bob" });
+    store.batch({}, (batch) => {
+      queryWithRdp.writeToStore(empWithoutFieldA as any, "loaded", batch);
     });
 
-    // Write an updated object directly to key B — since "derivedAddress"
-    // is NOT on the Employee object, actualRdpFields < expectedRdpFields
-    // and merge runs to preserve cached RDP values.
-    const updated = emp.$clone({ fullName: "Charlie" });
+    const valueAfter = store.getValue(queryWithRdp.cacheKey)?.value as any;
+    expect(valueAfter?.fullName).toBe("Bob");
+    // The derived value became null, so the cache must reflect that, not the
+    // stale "alice-rdp" value.
+    expect(valueAfter?.fieldA).toBeUndefined();
+  });
+
+  it("preserves the cached RDP value when a no-RDP sibling query writes", () => {
+    const rdpConfig = createFakeRdpConfig("fieldA");
+    const queryWithRdp = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+    }, rdpConfig);
+    const queryNoRdp = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+    }, undefined);
+
+    // Make the RDP cache key active so sibling propagation reaches it.
+    store.cacheKeys.retain(queryWithRdp.cacheKey);
+    store.subjects.get(queryWithRdp.cacheKey).subscribe(() => {});
+
+    // Seed the RDP cache key with fieldA = "alice-rdp"
+    const empWithFieldA = emp.$clone({ fieldA: "alice-rdp" } as any);
     store.batch({}, (batch) => {
-      queryB.writeToStore(updated as any, "loaded", batch);
+      queryWithRdp.writeToStore(empWithFieldA as any, "loaded", batch);
     });
 
-    // Key B should have the updated base fields via merge
-    const valueB = store.getValue(queryB.cacheKey);
-    expect(valueB?.value).toEqual(
-      expect.objectContaining({
-        $primaryKey: 1,
-        fullName: "Charlie",
-      }),
-    );
+    // The no-RDP query writes an updated object (no fieldA in the payload).
+    const empBob = emp.$clone({ fullName: "Bob" });
+    store.batch({}, (batch) => {
+      queryNoRdp.writeToStore(empBob as any, "loaded", batch);
+    });
+
+    const rdpValueAfter = store.getValue(queryWithRdp.cacheKey)?.value as any;
+    // Base field updated by sibling propagation
+    expect(rdpValueAfter?.fullName).toBe("Bob");
+    // Derived value preserved: the no-RDP source query did not compute it.
+    expect(rdpValueAfter?.fieldA).toBe("alice-rdp");
+
+    store.cacheKeys.release(queryWithRdp.cacheKey);
   });
 });
 
@@ -253,7 +251,7 @@ describe("ObjectsHelper.isKeyActive", () => {
     // Simulate pending cleanup (React unmount-remount cycle)
     store.pendingCleanup.set(queryB.cacheKey, 1);
 
-    // Write through key A — should propagate to B due to pending cleanup
+    // Write through key A, which should propagate to B due to pending cleanup
     const updated = emp.$clone({ fullName: "Bob" });
     updateObject(store, updated);
 
@@ -362,7 +360,7 @@ describe("ObjectsHelper.isKeyActive", () => {
     // Write new data while pending cleanup is active
     updateObject(store, emp.$clone({ fullName: "Updated" }));
 
-    // Re-subscribe (remount) — should see updated data
+    // Re-subscribe (remount), which should see updated data
     const subFn = mockSingleSubCallback();
     store.cacheKeys.retain(queryB.cacheKey);
     const sub2 = subjectB.subscribe(
@@ -506,7 +504,7 @@ describe("Two variants with different RDP configs - GC of one should not affect 
       1,
     )).toBe(1);
 
-    // Update via base variant — should still propagate to A
+    // Update via base variant, which should still propagate to A
     updateObject(store, emp.$clone({ fullName: "Bob" }));
 
     const valueA = store.getValue(queryA.cacheKey);
@@ -720,16 +718,14 @@ describe("ObjectsHelper.storeOsdkInstances interface unwrap", () => {
     expect(InterfaceDefRef in cached).toBe(false);
   });
 
-  it("unwraps an InterfaceHolder when storing through the rdpConfig merge path", () => {
-    // Use an RDP field that is NOT present on the Employee object so the
-    // propagateWrite merge branch runs (actualRdpFields < expectedRdpFields).
-    // The merge path reads objectDef.properties from the incoming holder; if
-    // an InterfaceHolder slips through unwrapped, ObjectDefRef is undefined
-    // and the merge crashes. This test would FAIL on the pre-PR code.
+  it("unwraps an InterfaceHolder when storing to an RDP cache key", () => {
+    // storeOsdkInstances must unwrap an InterfaceHolder to its concrete object
+    // before caching. If one slipped through, ObjectDefRef would be undefined
+    // and downstream RDP handling (requireObjectDef) would throw.
     const rdpConfig = createFakeRdpConfig("derivedAddress");
 
     // Seed the cache key for (Employee, pk=1, rdpConfig) with a concrete
-    // Employee value so that the second write goes through the merge branch.
+    // Employee value, then write the same object via an InterfaceHolder.
     const queryEmp = store.objects.getQuery({
       apiName: Employee,
       pk: 1,
