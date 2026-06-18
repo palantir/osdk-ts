@@ -38,7 +38,6 @@ import {
 } from "../utils/AsyncCellData.js";
 import {
   DEFAULT_FUNCTION_COLUMN_DEDUPE_INTERVAL_MS,
-  DEFAULT_MAX_CONCURRENT_REQUESTS,
   DEFAULT_PAGE_SIZE,
 } from "../utils/constants.js";
 import {
