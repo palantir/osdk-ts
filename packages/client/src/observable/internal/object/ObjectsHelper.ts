@@ -30,24 +30,9 @@ import type { Canonical } from "../Canonical.js";
 import type { QuerySubscription } from "../QuerySubscription.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
 import { tombstone } from "../tombstone.js";
-import {
-  mergeObjectFields,
-  mergeSelectFields,
-} from "../utils/rdpFieldOperations.js";
+import { reconcileObject } from "../utils/rdpFieldOperations.js";
 import { type ObjectCacheKey } from "./ObjectCacheKey.js";
 import { ObjectQuery } from "./ObjectQuery.js";
-
-function isSuperset(
-  a: ReadonlySet<string>,
-  b: ReadonlySet<string>,
-): boolean {
-  for (const field of b) {
-    if (!a.has(field)) {
-      return false;
-    }
-  }
-  return true;
-}
 
 export class ObjectsHelper extends AbstractHelper<
   ObjectQuery,
@@ -125,7 +110,6 @@ export class ObjectsHelper extends AbstractHelper<
     rdpConfig?: Canonical<Rdp> | null,
     selectFields?: ReadonlySet<string>,
     includeAllBaseObjectProperties?: boolean,
-    computedRdpFields?: ReadonlySet<string>,
   ): ObjectCacheKey[] {
     const holders: ReadonlyArray<ObjectHolder | InterfaceHolder> =
       values as ReadonlyArray<ObjectHolder | InterfaceHolder>;
@@ -136,13 +120,7 @@ export class ObjectsHelper extends AbstractHelper<
         apiName: v.$objectType ?? v.$apiName,
         pk: v.$primaryKey,
         $includeAllBaseObjectProperties: includeAllBaseObjectProperties,
-      }, rdpConfig).writeToStore(
-        concreteHolder,
-        "loaded",
-        batch,
-        selectFields,
-        computedRdpFields,
-      )
+      }, rdpConfig).writeToStore(concreteHolder, "loaded", batch, selectFields)
         .cacheKey;
     });
   }
@@ -157,7 +135,6 @@ export class ObjectsHelper extends AbstractHelper<
     status: Status,
     batch: BatchContext,
     selectFields?: ReadonlySet<string>,
-    computedRdpFields?: ReadonlySet<string>,
   ): void {
     const existing = batch.read(sourceCacheKey);
     const dataChanged = !existing
@@ -172,38 +149,29 @@ export class ObjectsHelper extends AbstractHelper<
 
     let valueToWrite = !dataChanged && existing ? existing.value : value;
 
-    // derived fields the key tracks vs derived fields this write computed.
-    const trackedRdpFields = this.store.objectCacheKeyRegistry.getRdpFieldSet(
+    const sourceRdpFields = this.store.objectCacheKeyRegistry.getRdpFieldSet(
       sourceCacheKey,
     );
-    const sourceRdpFields = computedRdpFields ?? trackedRdpFields;
 
-    // a $select carries only some base props, and a write that computed only
-    // some derived fields leaves the rest out; either way merge to keep the
-    // cached values. a write that computed every tracked field is stored as-is,
-    // so an omitted field clears.
+    // A partial load carries only the base props it fetched, so reconcile to keep
+    // the rest; a full load is written as-is, so an omitted field clears.
     const existingHolder = existing?.value;
     if (
       dataChanged
       && valueToWrite !== tombstone
+      && selectFields
+      && selectFields.size > 0
       && existingHolder
       && this.isObjectHolder(existingHolder)
     ) {
-      if (selectFields && selectFields.size > 0) {
-        valueToWrite = mergeSelectFields(
-          valueToWrite,
-          selectFields,
-          existingHolder,
-          sourceRdpFields,
-        );
-      } else if (!isSuperset(sourceRdpFields, trackedRdpFields)) {
-        valueToWrite = mergeObjectFields(
-          valueToWrite,
-          sourceRdpFields,
-          trackedRdpFields,
-          existingHolder,
-        );
-      }
+      valueToWrite = reconcileObject(
+        {
+          value: valueToWrite,
+          rdpFields: sourceRdpFields,
+          loadedBaseFields: selectFields,
+        },
+        { value: existingHolder, rdpFields: sourceRdpFields },
+      );
     }
 
     batch.write(sourceCacheKey, valueToWrite, status);
@@ -218,6 +186,7 @@ export class ObjectsHelper extends AbstractHelper<
       sourceCacheKey,
     );
 
+    // Propagate write to sibling cache keys that observe the same (apiName, pk)
     const relatedKeys = metadata
       ? this.store.objectCacheKeyRegistry.getVariants(
         metadata.apiName,
@@ -242,23 +211,12 @@ export class ObjectsHelper extends AbstractHelper<
           ? targetCurrentValue
           : undefined;
 
-      // Preserve target-only fields when a partial-select fetch propagates
-      // to a sibling variant, so different-select variants converge to the
-      // union rather than clobbering each other.
-      let merged = value;
-      if (selectFields?.size && targetHolder) {
-        merged = mergeSelectFields(
-          merged,
-          selectFields,
-          targetHolder,
-          sourceRdpFields,
-        );
-      }
-      merged = this.mergeForTarget(
-        merged,
+      const merged = this.mergeForTarget(
+        value,
         targetHolder,
         sourceRdpFields,
         targetKey,
+        selectFields,
       );
 
       batch.write(targetKey, merged, status);
@@ -266,11 +224,10 @@ export class ObjectsHelper extends AbstractHelper<
   }
 
   /**
-   * Check if a cache key is actively observed or pending cleanup.
-   * During React unmount-remount cycles, a key may be momentarily
-   * unobserved while its cleanup is deferred to a microtask.
-   * We still propagate to such keys to prevent stale data when
-   * the subscription is re-established.
+   * A cache key counts as active if it is observed or pending cleanup. During
+   * React unmount-remount cycles a key can be momentarily unobserved while its
+   * cleanup is deferred to a microtask; propagating to it keeps data fresh for
+   * when the subscription is re-established.
    */
   private isKeyActive(key: ObjectCacheKey): boolean {
     const subject = this.store.subjects.peek(key);
@@ -280,9 +237,6 @@ export class ObjectsHelper extends AbstractHelper<
     return (this.store.pendingCleanup.get(key) ?? 0) > 0;
   }
 
-  /**
-   * Type guard to check if a value is an ObjectHolder
-   */
   private isObjectHolder(
     value: ObjectHolder | undefined,
   ): value is ObjectHolder {
@@ -293,23 +247,28 @@ export class ObjectsHelper extends AbstractHelper<
   }
 
   /**
-   * Merge object data for a specific target cache key, preserving RDP fields
+   * Reconcile a freshly written object into the value cached at a sibling cache
+   * key, resolving base props by schema authority and derived fields by the two
+   * keys' rdp sets.
    */
   private mergeForTarget(
     sourceValue: ObjectHolder,
     targetCurrentValue: ObjectHolder | undefined,
     sourceRdpFields: ReadonlySet<string>,
     targetCacheKey: ObjectCacheKey,
+    selectFields: ReadonlySet<string> | undefined,
   ): ObjectHolder {
     const targetRdpFields = this.store.objectCacheKeyRegistry.getRdpFieldSet(
       targetCacheKey,
     );
 
-    return mergeObjectFields(
-      sourceValue,
-      sourceRdpFields,
-      targetRdpFields,
-      targetCurrentValue,
+    return reconcileObject(
+      {
+        value: sourceValue,
+        rdpFields: sourceRdpFields,
+        loadedBaseFields: selectFields,
+      },
+      { value: targetCurrentValue, rdpFields: targetRdpFields },
     );
   }
 }
