@@ -88,6 +88,11 @@ export const BrandThemeDecorator: Decorator = (Story, context) => {
     // overridden values above.
     overrides.push(
       "  --osdk-input-focus-outline: 1px solid var(--osdk-intent-primary-rest);",
+      "  --osdk-surface-border: var(--osdk-surface-border-width) solid var(--osdk-surface-border-color-default);",
+      "  --osdk-input-shadow: inset 0 0 0 var(--osdk-surface-border-width) var(--osdk-surface-border-color-default);",
+      "  --osdk-input-shadow-error: inset 0 0 0 var(--osdk-surface-border-width) var(--osdk-intent-danger-rest);",
+      "  --osdk-input-focus-shadow: inset 0 0 0 var(--osdk-surface-border-width) var(--osdk-surface-border-color-default);",
+      "  --osdk-input-focus-shadow-error: inset 0 0 0 var(--osdk-surface-border-width) var(--osdk-intent-danger-rest);",
     );
 
     // Use :root:root (doubled specificity) to override theme layers.
