@@ -312,6 +312,7 @@ const ToolbarButton = styled.button(({ theme }) => ({
 }));
 
 const ToolbarLabel = styled.span({
+  fontSize: 13,
   maxWidth: 120,
   overflow: "hidden",
   textOverflow: "ellipsis",
@@ -343,6 +344,7 @@ const Dropdown = styled.div<{ dropdownPosition: DropdownPosition }>((
   borderWidth: 1,
   boxShadow: "0 12px 32px rgba(0,0,0,0.24)",
   color: theme.color.defaultText,
+  fontSize: 13,
   inlineSize: 340,
   insetBlockStart: dropdownPosition.blockStart,
   insetInlineStart: dropdownPosition.inlineStart,
@@ -414,6 +416,7 @@ const PresetButton = styled.button<{ selected: boolean }>(
     color: theme.color.defaultText,
     cursor: "pointer",
     display: "flex",
+    fontSize: 13,
     gap: 10,
     minHeight: 36,
     paddingBlock: 6,
