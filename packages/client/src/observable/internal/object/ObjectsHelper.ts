@@ -152,52 +152,28 @@ export class ObjectsHelper extends AbstractHelper<
 
     let valueToWrite = !dataChanged && existing ? existing.value : value;
 
-    // When a $select-filtered fetch returns partial objects, merge with
-    // existing cached data to preserve fields not in the select set.
+    const sourceRdpFields = this.store.objectCacheKeyRegistry.getRdpFieldSet(
+      sourceCacheKey,
+    );
+
+    // A $select fetch carries only the base props it selected, so merge it with
+    // the cached value. A full write owns every field and is stored as-is, so an
+    // omitted derived value clears instead of being refilled from stale cache.
     const existingHolder = existing?.value;
-    const canMergeSelectFields = dataChanged
+    if (
+      dataChanged
+      && valueToWrite !== tombstone
       && selectFields
       && selectFields.size > 0
       && existingHolder
-      && this.isObjectHolder(existingHolder);
-
-    if (canMergeSelectFields && valueToWrite !== tombstone) {
+      && this.isObjectHolder(existingHolder)
+    ) {
       valueToWrite = mergeSelectFields(
         valueToWrite,
         selectFields,
         existingHolder,
+        sourceRdpFields,
       );
-    }
-
-    // When an object (e.g. from a subscription update) is written to a cache
-    // key that has RDP configuration, the incoming value may lack derived
-    // property values. Merge with the existing cached value so that RDP fields
-    // not present in the incoming object are preserved.
-    if (
-      valueToWrite !== tombstone
-      && existing?.value
-      && this.isObjectHolder(existing.value)
-    ) {
-      const expectedRdpFields = this.store.objectCacheKeyRegistry
-        .getRdpFieldSet(sourceCacheKey);
-      if (expectedRdpFields.size > 0) {
-        const underlying = valueToWrite[UnderlyingOsdkObject];
-        const actualRdpFields = new Set<string>();
-        for (const field of expectedRdpFields) {
-          if (underlying && field in underlying) {
-            actualRdpFields.add(field);
-          }
-        }
-
-        if (actualRdpFields.size !== expectedRdpFields.size) {
-          valueToWrite = mergeObjectFields(
-            valueToWrite,
-            actualRdpFields,
-            expectedRdpFields,
-            existing.value,
-          );
-        }
-      }
     }
 
     batch.write(sourceCacheKey, valueToWrite, status);
@@ -241,7 +217,12 @@ export class ObjectsHelper extends AbstractHelper<
       // union rather than clobbering each other.
       let merged = value;
       if (selectFields?.size && targetHolder) {
-        merged = mergeSelectFields(merged, selectFields, targetHolder);
+        merged = mergeSelectFields(
+          merged,
+          selectFields,
+          targetHolder,
+          sourceRdpFields,
+        );
       }
       merged = this.mergeForTarget(
         merged,
