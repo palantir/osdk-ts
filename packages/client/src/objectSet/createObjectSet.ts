@@ -415,8 +415,6 @@ async function createWithPk(
   objectSet: WireObjectSet,
   primaryKey: PrimaryKeyType<ObjectTypeDefinition>,
 ) {
-  // `objectType` is the source carried by `createObjectSet`'s closure
-  // and can drift from the actual target after `pivotTo`
   const resolved = await extractObjectOrInterfaceType(clientCtx, objectSet);
   const targetApiName = resolved?.type === "object"
     ? resolved.apiName

@@ -1349,9 +1349,6 @@ describe("ObjectSet", () => {
       );
     });
 
-    // Office's primary key is `officeId` (string); Employee's is `employeeId` (integer).
-    // Pivoting from Office through the many-cardinality `occupants` link yields an Employee set,
-    // and `fetchOneWithErrors(employeeId)` must build a PK filter against `employeeId` — not `officeId`.
     it("uses the target's primary key when fetching by PK from a cross-type pivoted object set", async () => {
       const result = await client(Office)
         .where({ officeId: stubData.nycOffice.officeId })
