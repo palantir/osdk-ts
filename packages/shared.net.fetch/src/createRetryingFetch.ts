@@ -18,20 +18,17 @@ import { PalantirApiError } from "@osdk/shared.net.errors";
 import type { RequestInitRetryParams } from "fetch-retry";
 import fetchRetry from "fetch-retry";
 
-const INITIAL_DELAY = 1_000;
+const INITIAL_DELAY = 1000;
 const JITTER_FACTOR = 0.5;
 const MAX_RETRIES = 3;
 
 export function createRetryingFetch(
-  fetch: typeof globalThis.fetch,
+  fetch: typeof globalThis.fetch
 ): (
   input: RequestInfo | URL,
   init?:
-    | (
-      & RequestInit
-      & RequestInitRetryParams<typeof globalThis.fetch>
-    )
-    | undefined,
+    | (RequestInit & RequestInitRetryParams<typeof globalThis.fetch>)
+    | undefined
 ) => ReturnType<typeof globalThis.fetch> {
   return fetchRetry(fetch, {
     retryDelay(attempt) {
@@ -42,10 +39,10 @@ export function createRetryingFetch(
     retryOn(attempt, error, response) {
       const status = response?.status ?? 0;
       return (
-        !(status >= 200 && status < 300)
-        && isRetryable(error)
-        && attempt < MAX_RETRIES
-        && response?.headers.get(QOS_RETRY_HINT_HEADER) !== DO_NOT_RETRY_HINT
+        !(status >= 200 && status < 300) &&
+        isRetryable(error) &&
+        attempt < MAX_RETRIES &&
+        response?.headers.get(QOS_RETRY_HINT_HEADER) !== DO_NOT_RETRY_HINT
       );
     },
   });
@@ -54,8 +51,8 @@ export function createRetryingFetch(
 function isRetryable(e: any): boolean {
   if (e instanceof PalantirApiError) {
     if (
-      e.statusCode !== SERVICE_UNAVAILABLE
-      && e.statusCode !== TOO_MANY_REQUESTS
+      e.statusCode !== SERVICE_UNAVAILABLE &&
+      e.statusCode !== TOO_MANY_REQUESTS
     ) {
       return false;
     }
