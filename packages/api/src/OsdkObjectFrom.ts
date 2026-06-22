@@ -145,14 +145,12 @@ type OtHasNonLocalInterfaceImpl<
     >[ApiNameAsString<FROM>]
     : undefined,
 > = Implementations extends undefined ? false
-  : true extends (
-    {
-      [K in keyof Implementations]: Implementations[K] extends
-        { type: "localProperty" } ? false
-        : true;
-    }[keyof Implementations]
-  ) ? true
-  : false;
+  : {
+    [K in keyof Implementations]: Implementations[K] extends
+      { type: "localProperty" } ? never
+      : K;
+  }[keyof Implementations] extends never ? false
+  : true;
 /**
  * Older version of this helper that allows for `$rid` and co in
  * the properties field.

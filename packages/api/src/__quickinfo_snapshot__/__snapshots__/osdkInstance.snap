@@ -25,60 +25,10 @@ type osdkInstance_$as_to_interface_result =
             CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
           >["FooInterface"]
           : undefined) extends undefined ? false
-          : true extends
-            {
-              [
-                K
-                  in keyof ("FooInterface" extends
-                    keyof NonNullable<
-                      CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
-                    >
-                    ? NonNullable<
-                      CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
-                    >["FooInterface"]
-                    : undefined)
-              ]: ("FooInterface" extends
-                keyof NonNullable<
-                  CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
-                >
-                ? NonNullable<
-                  CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
-                >["FooInterface"]
-                : undefined)[K] extends { type: "localProperty" } ? false
-                : true;
-            }[
-              keyof ("FooInterface" extends
-                keyof NonNullable<
-                  CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
-                >
-                ? NonNullable<
-                  CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
-                >["FooInterface"]
-                : undefined)
-            ]
-            ?
-              & {
-                [
-                  K
-                    in keyof ("FooInterface" extends
-                      keyof NonNullable<
-                        CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
-                      >
-                      ? NonNullable<
-                        CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
-                      >["FooInterface"]
-                      : undefined)
-                ]: ("FooInterface" extends
-                  keyof NonNullable<
-                    CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
-                  >
-                  ? NonNullable<
-                    CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
-                  >["FooInterface"]
-                  : undefined)[K] extends { type: "localProperty" } ? false
-                  : true;
-              }[
-                keyof ("FooInterface" extends
+          : {
+            [
+              K
+                in keyof ("FooInterface" extends
                   keyof NonNullable<
                     CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
                   >
@@ -86,9 +36,25 @@ type osdkInstance_$as_to_interface_result =
                     CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
                   >["FooInterface"]
                   : undefined)
-              ]
-              & true
-          : false) extends true ? never : string | NEW_Q
+            ]: ("FooInterface" extends
+              keyof NonNullable<
+                CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
+              >
+              ? NonNullable<
+                CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
+              >["FooInterface"]
+              : undefined)[K] extends { type: "localProperty" } ? never : K;
+          }[
+            keyof ("FooInterface" extends
+              keyof NonNullable<
+                CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
+              >
+              ? NonNullable<
+                CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
+              >["FooInterface"]
+              : undefined)
+          ] extends never ? false
+          : true) extends true ? never : string | NEW_Q
         : string | NEW_Q,
     ) => Osdk.Instance<
       NEW_Q,
@@ -280,60 +246,10 @@ type osdkInstance_interface_default =
             CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
           >["FooInterface"]
           : undefined) extends undefined ? false
-          : true extends
-            {
-              [
-                K
-                  in keyof ("FooInterface" extends
-                    keyof NonNullable<
-                      CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
-                    >
-                    ? NonNullable<
-                      CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
-                    >["FooInterface"]
-                    : undefined)
-              ]: ("FooInterface" extends
-                keyof NonNullable<
-                  CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
-                >
-                ? NonNullable<
-                  CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
-                >["FooInterface"]
-                : undefined)[K] extends { type: "localProperty" } ? false
-                : true;
-            }[
-              keyof ("FooInterface" extends
-                keyof NonNullable<
-                  CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
-                >
-                ? NonNullable<
-                  CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
-                >["FooInterface"]
-                : undefined)
-            ]
-            ?
-              & {
-                [
-                  K
-                    in keyof ("FooInterface" extends
-                      keyof NonNullable<
-                        CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
-                      >
-                      ? NonNullable<
-                        CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
-                      >["FooInterface"]
-                      : undefined)
-                ]: ("FooInterface" extends
-                  keyof NonNullable<
-                    CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
-                  >
-                  ? NonNullable<
-                    CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
-                  >["FooInterface"]
-                  : undefined)[K] extends { type: "localProperty" } ? false
-                  : true;
-              }[
-                keyof ("FooInterface" extends
+          : {
+            [
+              K
+                in keyof ("FooInterface" extends
                   keyof NonNullable<
                     CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
                   >
@@ -341,9 +257,25 @@ type osdkInstance_interface_default =
                     CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
                   >["FooInterface"]
                   : undefined)
-              ]
-              & true
-          : false) extends true ? never : string | NEW_Q
+            ]: ("FooInterface" extends
+              keyof NonNullable<
+                CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
+              >
+              ? NonNullable<
+                CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
+              >["FooInterface"]
+              : undefined)[K] extends { type: "localProperty" } ? never : K;
+          }[
+            keyof ("FooInterface" extends
+              keyof NonNullable<
+                CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
+              >
+              ? NonNullable<
+                CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
+              >["FooInterface"]
+              : undefined)
+          ] extends never ? false
+          : true) extends true ? never : string | NEW_Q
         : string | NEW_Q,
     ) => Osdk.Instance<
       NEW_Q,
