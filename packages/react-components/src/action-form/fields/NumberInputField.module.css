@@ -104,7 +104,7 @@
   padding: 0 calc(var(--osdk-surface-spacing) * 1.5);
   border: none;
   background: transparent;
-  color: var(--osdk-input-color);
+  color: var(--osdk-iconography-color-muted);
   cursor: pointer;
   line-height: 0;
   transition: background-color var(--osdk-input-transition-duration)
