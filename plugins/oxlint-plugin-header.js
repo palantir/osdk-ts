@@ -18,6 +18,14 @@
  * oxlint JS plugin that enforces Apache 2.0 license headers.
  *
  * Equivalent to the eslint-plugin-header rule previously used in this repo.
+ *
+ * Why a custom plugin rather than reusing eslint-plugin-header / eslint-plugin-headers:
+ * oxlint has no built-in header/license rule, and there is no oxlint-native header
+ * plugin published. The existing ESLint header plugins are configured entirely via
+ * rule *options* (comment style + header text/path), but oxlint's JS plugin system
+ * does not support passing options to plugin rules ("Rule does not accept options"),
+ * so they cannot be driven from oxlint. Hence this small self-contained rule with the
+ * header baked in.
  */
 
 const HEADER_PATTERN =
