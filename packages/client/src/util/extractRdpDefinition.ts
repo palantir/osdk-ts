@@ -110,6 +110,8 @@ async function extractRdpDefinitionInternal(
           case "collectList":
           case "collectSet":
           case "get":
+          case "min":
+          case "max":
             // This is the object set construction for the derived property definition construction. We pass in childObjectType so that when we reach MethodInputObjectSet, we know where to start looking.
             const { childObjectType: operationLevelObjectType } =
               await extractRdpDefinitionInternal(

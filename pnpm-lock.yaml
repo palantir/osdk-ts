@@ -1953,6 +1953,9 @@ importers:
       '@wry/trie':
         specifier: ^0.5.0
         version: 0.5.0
+      big.js:
+        specifier: ^5.1.2
+        version: 5.2.2
       conjure-lite:
         specifier: 0.7.3
         version: 0.7.3
@@ -1996,6 +1999,9 @@ importers:
       '@osdk/shared.test.intellisense':
         specifier: workspace:~
         version: link:../shared.test.intellisense
+      '@types/big.js':
+        specifier: ^4.0.5
+        version: 4.0.5
       '@types/ws':
         specifier: ^8.18.1
         version: 8.18.1
@@ -11660,6 +11666,9 @@ packages:
 
   '@types/babel__traverse@7.28.0':
     resolution: {integrity: sha512-8PvcXf70gTDZBgt9ptxJ8elBeBjcLOAcOtoO/mPJjtji1+CdGbHgm77om1GrsPxsiE+uXIpNSK64UYaIwQXd4Q==}
+
+  '@types/big.js@4.0.5':
+    resolution: {integrity: sha512-D9KFrAt05FDSqLo7PU9TDHfDgkarlwdkuwFsg7Zm4xl62tTNaz+zN+Tkcdx2wGLBbSMf8BnoMhOVeUGUaJfLKg==}
 
   '@types/body-parser@1.19.6':
     resolution: {integrity: sha512-HLFeCYgz89uk22N5Qg3dvGvsv46B8GLvKKo1zKG4NybA8U2DiEO3w9lqGg29t/tfLRJpJ6iQxnVw4OnB7MoM9g==}
@@ -29568,6 +29577,8 @@ snapshots:
   '@types/babel__traverse@7.28.0':
     dependencies:
       '@babel/types': 7.28.4
+
+  '@types/big.js@4.0.5': {}
 
   '@types/body-parser@1.19.6':
     dependencies:
