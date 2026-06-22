@@ -37,6 +37,18 @@ import {
 import { type ObjectCacheKey } from "./ObjectCacheKey.js";
 import { ObjectQuery } from "./ObjectQuery.js";
 
+function isSuperset(
+  a: ReadonlySet<string>,
+  b: ReadonlySet<string>,
+): boolean {
+  for (const field of b) {
+    if (!a.has(field)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 export class ObjectsHelper extends AbstractHelper<
   ObjectQuery,
   ObserveObjectOptions<any>
@@ -113,6 +125,7 @@ export class ObjectsHelper extends AbstractHelper<
     rdpConfig?: Canonical<Rdp> | null,
     selectFields?: ReadonlySet<string>,
     includeAllBaseObjectProperties?: boolean,
+    computedRdpFields?: ReadonlySet<string>,
   ): ObjectCacheKey[] {
     const holders: ReadonlyArray<ObjectHolder | InterfaceHolder> =
       values as ReadonlyArray<ObjectHolder | InterfaceHolder>;
@@ -123,7 +136,13 @@ export class ObjectsHelper extends AbstractHelper<
         apiName: v.$objectType ?? v.$apiName,
         pk: v.$primaryKey,
         $includeAllBaseObjectProperties: includeAllBaseObjectProperties,
-      }, rdpConfig).writeToStore(concreteHolder, "loaded", batch, selectFields)
+      }, rdpConfig).writeToStore(
+        concreteHolder,
+        "loaded",
+        batch,
+        selectFields,
+        computedRdpFields,
+      )
         .cacheKey;
     });
   }
@@ -138,6 +157,7 @@ export class ObjectsHelper extends AbstractHelper<
     status: Status,
     batch: BatchContext,
     selectFields?: ReadonlySet<string>,
+    computedRdpFields?: ReadonlySet<string>,
   ): void {
     const existing = batch.read(sourceCacheKey);
     const dataChanged = !existing
@@ -152,28 +172,38 @@ export class ObjectsHelper extends AbstractHelper<
 
     let valueToWrite = !dataChanged && existing ? existing.value : value;
 
-    const sourceRdpFields = this.store.objectCacheKeyRegistry.getRdpFieldSet(
+    // derived fields the key tracks vs derived fields this write computed.
+    const trackedRdpFields = this.store.objectCacheKeyRegistry.getRdpFieldSet(
       sourceCacheKey,
     );
+    const sourceRdpFields = computedRdpFields ?? trackedRdpFields;
 
-    // A $select fetch carries only the base props it selected, so merge it with
-    // the cached value. A full write owns every field and is stored as-is, so an
-    // omitted derived value clears instead of being refilled from stale cache.
+    // a $select carries only some base props, and a write that computed only
+    // some derived fields leaves the rest out; either way merge to keep the
+    // cached values. a write that computed every tracked field is stored as-is,
+    // so an omitted field clears.
     const existingHolder = existing?.value;
     if (
       dataChanged
       && valueToWrite !== tombstone
-      && selectFields
-      && selectFields.size > 0
       && existingHolder
       && this.isObjectHolder(existingHolder)
     ) {
-      valueToWrite = mergeSelectFields(
-        valueToWrite,
-        selectFields,
-        existingHolder,
-        sourceRdpFields,
-      );
+      if (selectFields && selectFields.size > 0) {
+        valueToWrite = mergeSelectFields(
+          valueToWrite,
+          selectFields,
+          existingHolder,
+          sourceRdpFields,
+        );
+      } else if (!isSuperset(sourceRdpFields, trackedRdpFields)) {
+        valueToWrite = mergeObjectFields(
+          valueToWrite,
+          sourceRdpFields,
+          trackedRdpFields,
+          existingHolder,
+        );
+      }
     }
 
     batch.write(sourceCacheKey, valueToWrite, status);
@@ -227,7 +257,7 @@ export class ObjectsHelper extends AbstractHelper<
       merged = this.mergeForTarget(
         merged,
         targetHolder,
-        sourceCacheKey,
+        sourceRdpFields,
         targetKey,
       );
 
@@ -268,12 +298,9 @@ export class ObjectsHelper extends AbstractHelper<
   private mergeForTarget(
     sourceValue: ObjectHolder,
     targetCurrentValue: ObjectHolder | undefined,
-    sourceCacheKey: ObjectCacheKey,
+    sourceRdpFields: ReadonlySet<string>,
     targetCacheKey: ObjectCacheKey,
   ): ObjectHolder {
-    const sourceRdpFields = this.store.objectCacheKeyRegistry.getRdpFieldSet(
-      sourceCacheKey,
-    );
     const targetRdpFields = this.store.objectCacheKeyRegistry.getRdpFieldSet(
       targetCacheKey,
     );

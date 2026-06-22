@@ -26,6 +26,9 @@ import type { FetchedObjectTypeDefinition } from "../../../ontology/OntologyProv
 import type { Canonical } from "../Canonical.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
 
+/** shared empty set for writes that compute no derived fields. */
+export const EMPTY_RDP_SET: ReadonlySet<string> = new Set();
+
 export function extractRdpFieldNames(
   rdpConfig: Canonical<Rdp> | undefined,
 ): ReadonlySet<string> {

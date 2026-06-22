@@ -38,6 +38,7 @@ import type { SortingStrategy } from "../sorting/SortingStrategy.js";
 import { NoOpSortingStrategy } from "../sorting/SortingStrategy.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
 import type { ObjectUpdate } from "../types/ObjectUpdate.js";
+import { EMPTY_RDP_SET } from "../utils/rdpFieldOperations.js";
 import type {
   CollectionConnectableParams,
   CollectionStorageData,
@@ -772,12 +773,14 @@ export abstract class BaseListQuery<
 
     if (state === "ADDED_OR_UPDATED") {
       this.store.batch({}, (batch) => {
+        // the stream carries base props only and computes no derived fields.
         this.store.objects.storeOsdkInstances(
           [object as Osdk.Instance<ObjectTypeDefinition>],
           batch,
           this.rdpConfig, // Safe - null for queries without RDPs
           undefined,
           this.includeAllBaseObjectProperties,
+          EMPTY_RDP_SET,
         );
       });
     } else if (state === "REMOVED") {

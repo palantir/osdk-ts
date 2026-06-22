@@ -275,6 +275,36 @@ describe("ObjectsHelper.propagateWrite RDP merge", () => {
     expect(valueB?.fullName).toBe("Bob");
     expect(valueB?.derivedAddress).toBe("new-addr");
   });
+
+  it("preserves the cached derived value when a same-key write computed no derived fields", () => {
+    const rdpConfig = createFakeRdpConfig("derivedAddress");
+    const queryB = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+    }, rdpConfig);
+
+    const seeded = emp.$clone({ derivedAddress: "123 Main St" } as any);
+    store.batch({}, (batch) => {
+      queryB.writeToStore(seeded as any, "loaded", batch);
+    });
+
+    // A write that computed no derived fields (empty set) carries base props
+    // only, so the cached derived value must survive.
+    const updated = emp.$clone({ fullName: "Bob" });
+    store.batch({}, (batch) => {
+      queryB.writeToStore(
+        updated as any,
+        "loaded",
+        batch,
+        undefined,
+        new Set<string>(),
+      );
+    });
+
+    const valueB = store.getValue(queryB.cacheKey)?.value as any;
+    expect(valueB?.fullName).toBe("Bob");
+    expect(valueB?.derivedAddress).toBe("123 Main St");
+  });
 });
 
 describe("ObjectsHelper.isKeyActive", () => {
