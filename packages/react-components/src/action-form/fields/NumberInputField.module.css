@@ -110,14 +110,6 @@
   transition: background-color var(--osdk-input-transition-duration)
     var(--osdk-input-transition-ease);
 
-  &:first-child {
-    border-radius: var(--osdk-input-border-radius) var(--osdk-input-border-radius) 0 0;
-  }
-
-  &:last-child {
-    border-radius: 0 0 var(--osdk-input-border-radius) var(--osdk-input-border-radius);
-  }
-
   &:hover {
     background-color: var(--osdk-button-secondary-bg-hover);
   }
