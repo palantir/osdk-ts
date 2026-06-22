@@ -1,5 +1,11 @@
 # @osdk/typescript-sdk-docs
 
+## 0.14.0
+
+### Minor Changes
+
+- 0bd4a2e: Document array element-subtype filters via $contains
+
 ## 0.13.0
 
 ### Minor Changes
