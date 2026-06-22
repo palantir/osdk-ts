@@ -450,4 +450,83 @@ describe("ActionApplication invalidation", () => {
 
     subscription.unsubscribe();
   });
+
+  describe("dev-mode action delay", () => {
+    const noopOptimistic = () => {};
+
+    it("defaults the resolved delay to 1000ms", () => {
+      expect(new Store(client).devModeActionDelayMs).toBe(1000);
+    });
+
+    it("resolves a configured delay from options", () => {
+      expect(
+        new Store(client, { devMode: { actionDelayMs: 0 } })
+          .devModeActionDelayMs,
+      ).toBe(0);
+      expect(
+        new Store(client, { devMode: { actionDelayMs: 250 } })
+          .devModeActionDelayMs,
+      ).toBe(250);
+    });
+
+    it("skips the delay when no optimistic update is provided", async () => {
+      const warnSpy = vi.spyOn(store, "maybeWarnDevModeDelayApplied");
+
+      await store.applyAction(editTodo, { id: 0, text: "no-optimistic" });
+
+      expect(warnSpy).not.toHaveBeenCalled();
+    });
+
+    it("applies the delay when an optimistic update is provided", async () => {
+      const fastStore = new Store(client, { devMode: { actionDelayMs: 20 } });
+      const warnSpy = vi.spyOn(fastStore, "maybeWarnDevModeDelayApplied");
+      const setTimeoutSpy = vi.spyOn(globalThis, "setTimeout");
+
+      await fastStore.applyAction(editTodo, { id: 0, text: "optimistic" }, {
+        optimisticUpdate: noopOptimistic,
+      });
+
+      expect(warnSpy).toHaveBeenCalledTimes(1);
+      expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 20);
+
+      setTimeoutSpy.mockRestore();
+    });
+
+    it("does not delay when the configured delay is 0", async () => {
+      const noDelayStore = new Store(client, {
+        devMode: { actionDelayMs: 0 },
+      });
+      const warnSpy = vi.spyOn(
+        noDelayStore,
+        "maybeWarnDevModeDelayApplied",
+      );
+
+      await noDelayStore.applyAction(editTodo, { id: 0, text: "instant" }, {
+        optimisticUpdate: noopOptimistic,
+      });
+
+      expect(warnSpy).not.toHaveBeenCalled();
+    });
+
+    it("warns at most once per store", async () => {
+      const fastStore = new Store(client, { devMode: { actionDelayMs: 20 } });
+      const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(
+        () => {},
+      );
+
+      await fastStore.applyAction(editTodo, { id: 0, text: "first" }, {
+        optimisticUpdate: noopOptimistic,
+      });
+      await fastStore.applyAction(editTodo, { id: 0, text: "second" }, {
+        optimisticUpdate: noopOptimistic,
+      });
+
+      const devModeWarnings = consoleWarnSpy.mock.calls.filter(
+        ([first]) => typeof first === "string" && first.includes("dev-mode"),
+      );
+      expect(devModeWarnings).toHaveLength(1);
+
+      consoleWarnSpy.mockRestore();
+    });
+  });
 });
