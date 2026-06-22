@@ -81,6 +81,20 @@ export const BrandThemeDecorator: Decorator = (Story, context) => {
 
     if (overrides.length === 0) return "";
 
+    // Re-assert compound tokens that depend on reset properties.
+    // The reset above sets e.g. --osdk-intent-primary-rest to `initial`,
+    // which breaks tokens like --osdk-input-focus-outline that reference
+    // it via var(). Re-asserting them here lets them resolve against the
+    // overridden values above.
+    overrides.push(
+      "  --osdk-input-focus-outline: 1px solid var(--osdk-intent-primary-rest);",
+      "  --osdk-surface-border: var(--osdk-surface-border-width) solid var(--osdk-surface-border-color-default);",
+      "  --osdk-input-shadow: inset 0 0 0 var(--osdk-surface-border-width) var(--osdk-surface-border-color-default);",
+      "  --osdk-input-shadow-error: inset 0 0 0 var(--osdk-surface-border-width) var(--osdk-intent-danger-rest);",
+      "  --osdk-input-focus-shadow: inset 0 0 0 var(--osdk-surface-border-width) var(--osdk-surface-border-color-default);",
+      "  --osdk-input-focus-shadow-error: inset 0 0 0 var(--osdk-surface-border-width) var(--osdk-intent-danger-rest);",
+    );
+
     // Use :root:root (doubled specificity) to override theme layers.
     // Reset block reverts stale tokens; override block applies the new theme.
     return `:root:root {\n${resets.join("\n")}\n${overrides.join("\n")}\n}`;

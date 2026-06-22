@@ -174,6 +174,8 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
       "--osdk-table-border-color",
       // Checkbox border color
       "--osdk-checkbox-border-color",
+      // Input border (transparent by default; shadow provides visual border)
+      "--osdk-input-border-color",
     ],
   },
   {
