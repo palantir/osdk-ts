@@ -79,16 +79,22 @@ export const ThemeToolbar = React.memo(function ThemeToolbarFn() {
     () => selectedPreset?.swatches ?? getCustomSwatches(themeState),
     [selectedPreset?.swatches, themeState],
   );
-  const visiblePresets = useMemo(() => {
+  const { builtInPresets, customPresets } = useMemo(() => {
     const normalizedQuery = searchQuery.trim().toLowerCase();
-    if (normalizedQuery === "") {
-      return THEME_PRESETS;
-    }
+    const filtered = normalizedQuery === ""
+      ? THEME_PRESETS
+      : THEME_PRESETS.filter((preset) =>
+        preset.label.toLowerCase().includes(normalizedQuery)
+      );
 
-    return THEME_PRESETS.filter((preset) =>
-      preset.label.toLowerCase().includes(normalizedQuery)
-    );
+    const builtIn: ThemePreset[] = [];
+    const custom: ThemePreset[] = [];
+    for (const p of filtered) {
+      (p.category === "built-in" ? builtIn : custom).push(p);
+    }
+    return { builtInPresets: builtIn, customPresets: custom };
   }, [searchQuery]);
+  const totalVisible = builtInPresets.length + customPresets.length;
 
   useEffect(function closeDropdownOnOutsidePointerDown() {
     if (!open) {
@@ -162,13 +168,13 @@ export const ThemeToolbar = React.memo(function ThemeToolbarFn() {
     (preset: ThemePreset) => {
       const nextState = createThemeStateForMode({
         presetId: preset.id,
-        colorMode: themeState.colorMode,
+        colorMode: preset.colorMode ?? "light",
       });
       updateGlobals({ [GLOBALS_KEY]: stringifyBrandThemeState(nextState) });
       setOpen(false);
       setSearchQuery("");
     },
-    [themeState.colorMode, updateGlobals],
+    [updateGlobals],
   );
 
   return (
@@ -210,20 +216,40 @@ export const ThemeToolbar = React.memo(function ThemeToolbarFn() {
           </SearchRow>
 
           <DropdownHeaderRow>
-            <DropdownCount>{visiblePresets.length} themes</DropdownCount>
+            <DropdownCount>{totalVisible} themes</DropdownCount>
           </DropdownHeaderRow>
 
-          <SectionLabel>Built-in themes</SectionLabel>
-          <PresetList role="listbox" aria-label="Theme presets">
-            {visiblePresets.map((preset) => (
-              <PresetOption
-                key={preset.id}
-                preset={preset}
-                selected={preset.id === themeState.selectedPresetId}
-                onSelect={selectPreset}
-              />
-            ))}
-          </PresetList>
+          {builtInPresets.length > 0 && (
+            <>
+              <SectionLabel>Built-in themes</SectionLabel>
+              <PresetList role="listbox" aria-label="Built-in theme presets">
+                {builtInPresets.map((preset) => (
+                  <PresetOption
+                    key={preset.id}
+                    preset={preset}
+                    selected={preset.id === themeState.selectedPresetId}
+                    onSelect={selectPreset}
+                  />
+                ))}
+              </PresetList>
+            </>
+          )}
+
+          {customPresets.length > 0 && (
+            <>
+              <SectionLabel>Custom themes</SectionLabel>
+              <PresetList role="listbox" aria-label="Custom theme presets">
+                {customPresets.map((preset) => (
+                  <PresetOption
+                    key={preset.id}
+                    preset={preset}
+                    selected={preset.id === themeState.selectedPresetId}
+                    onSelect={selectPreset}
+                  />
+                ))}
+              </PresetList>
+            </>
+          )}
         </Dropdown>,
         document.body,
       )}
@@ -286,6 +312,7 @@ const ToolbarButton = styled.button(({ theme }) => ({
 }));
 
 const ToolbarLabel = styled.span({
+  fontSize: 13,
   maxWidth: 120,
   overflow: "hidden",
   textOverflow: "ellipsis",
@@ -317,6 +344,7 @@ const Dropdown = styled.div<{ dropdownPosition: DropdownPosition }>((
   borderWidth: 1,
   boxShadow: "0 12px 32px rgba(0,0,0,0.24)",
   color: theme.color.defaultText,
+  fontSize: 13,
   inlineSize: 340,
   insetBlockStart: dropdownPosition.blockStart,
   insetInlineStart: dropdownPosition.inlineStart,
@@ -388,6 +416,7 @@ const PresetButton = styled.button<{ selected: boolean }>(
     color: theme.color.defaultText,
     cursor: "pointer",
     display: "flex",
+    fontSize: 13,
     gap: 10,
     minHeight: 36,
     paddingBlock: 6,

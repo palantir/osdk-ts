@@ -1,5 +1,23 @@
 # @osdk/generator
 
+## 2.36.0
+
+### Patch Changes
+
+- @osdk/api@2.36.0
+- @osdk/generator-converters@2.36.0
+
+## 2.35.0
+
+### Minor Changes
+
+- 54dc175: Always export `$branch` from the generated SDK root.
+
+### Patch Changes
+
+- @osdk/api@2.35.0
+- @osdk/generator-converters@2.35.0
+
 ## 2.34.0
 
 ### Patch Changes

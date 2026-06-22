@@ -37,14 +37,13 @@
   --osdk-dark-bp-typography-color-default-active: #54575d;
 
   /* --osdk-* dark values (single source of truth) */
+  --osdk-dark-surface-shadow-2: var(--osdk-dark-bp-surface-shadow-2);
   --osdk-dark-background-primary: #111418;
   --osdk-dark-background-secondary: #1c2127;
   --osdk-dark-background-tertiary: #1c2127;
   --osdk-dark-typography-color-muted: #8f99a8;
   --osdk-dark-intent-default-rest: #8f99a8;
   --osdk-dark-intent-default-foreground: #f6f7f9;
-  --osdk-dark-button-secondary-bg: #252a31;
-  --osdk-dark-button-secondary-color: #f6f7f9;
   --osdk-dark-table-row-bg-default: #111418;
   --osdk-dark-table-header-bg: #1c2127;
   --osdk-dark-table-header-color: #a5aab3;
@@ -64,14 +63,14 @@
      token derived from --bp-* (see base.css) cascades correctly. We only
      set --osdk-* tokens that have no --bp-* counterpart or that
      intentionally diverge from Blueprint's value. */
+  --osdk-surface-shadow-2: var(--osdk-dark-surface-shadow-2);
+  --osdk-surface-border-color-default: var(--osdk-dark-bp-surface-border-color-default);
   --osdk-background-primary: var(--osdk-dark-background-primary);
   --osdk-background-secondary: var(--osdk-dark-background-secondary);
   --osdk-background-tertiary: var(--osdk-dark-background-tertiary);
   --osdk-typography-color-muted: var(--osdk-dark-typography-color-muted);
   --osdk-intent-default-rest: var(--osdk-dark-intent-default-rest);
   --osdk-intent-default-foreground: var(--osdk-dark-intent-default-foreground);
-  --osdk-button-secondary-bg: var(--osdk-dark-button-secondary-bg);
-  --osdk-button-secondary-color: var(--osdk-dark-button-secondary-color);
   --osdk-table-row-bg-default: var(--osdk-dark-table-row-bg-default);
   --osdk-table-header-bg: var(--osdk-dark-table-header-bg);
   --osdk-table-header-color: var(--osdk-dark-table-header-color);

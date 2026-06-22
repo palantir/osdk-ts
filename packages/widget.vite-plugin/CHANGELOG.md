@@ -1,5 +1,21 @@
 # @osdk/widget.vite-plugin
 
+## 3.33.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.33.0
+
+## 3.32.0
+
+### Minor Changes
+
+- fbb0949: Update dev plugin copy
+
+### Patch Changes
+
+- @osdk/widget.api@3.32.0
+
 ## 3.31.0
 
 ### Patch Changes

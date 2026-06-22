@@ -1,5 +1,26 @@
 # @osdk/client
 
+## 2.36.0
+
+### Minor Changes
+
+- 83d2603: withScenario / createScenario now ignore an active transaction on the supplied client (logging a console.warn and scoping to the scenario) instead of throwing.
+
+### Patch Changes
+
+- @osdk/api@2.36.0
+- @osdk/client.unstable@2.36.0
+- @osdk/generator-converters@2.36.0
+
+## 2.35.0
+
+### Patch Changes
+
+- @osdk/api@2.35.0
+- @osdk/client.unstable@2.35.0
+- @osdk/generator-converters@2.35.0
+- @osdk/shared.test@2.26.0
+
 ## 2.34.0
 
 ### Minor Changes

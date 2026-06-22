@@ -31,7 +31,7 @@ export function createSharedClientContext(
   tokenProvider: () => Promise<string>,
   userAgent: string,
   fetchFn: typeof globalThis.fetch = fetch,
-  customHeaders?: Record<string, string>,
+  customHeaders?: Record<string, string>
 ): SharedClientContext & OldSharedClientContext {
   if (baseUrl.length === 0) {
     throw new Error("baseUrl cannot be empty");
@@ -58,44 +58,45 @@ export function createSharedClientContext(
       headers.set("Authorization", `Bearer ${token}`);
 
       const customUserAgent = customHeaders
-        ? Object.entries(customHeaders)
-          .find(([k]) => k.toLowerCase() === USER_AGENT_HEADER.toLowerCase())
-          ?.[1]
+        ? Object.entries(customHeaders).find(
+            ([k]) => k.toLowerCase() === USER_AGENT_HEADER.toLowerCase()
+          )?.[1]
         : undefined;
 
       headers.set(
         USER_AGENT_HEADER,
-        [
-          headers.get(USER_AGENT_HEADER),
-          userAgent,
-          customUserAgent,
-        ].filter(x => x && x?.length > 0).join(" "),
+        [headers.get(USER_AGENT_HEADER), userAgent, customUserAgent]
+          .filter((x) => x && x?.length > 0)
+          .join(" ")
       );
       return headers;
-    },
+    }
   );
 
   // because this is async await it preserves stack traces, which the retrying fetch does not
   const fetchWrapper = async (
     input: RequestInfo | URL,
-    init?: RequestInit | undefined,
+    init?: RequestInit | undefined
   ) => {
     try {
       return await retryingFetchWithAuthOrThrow(input, init);
-    } catch (e: any) {
-      const betterError = (e instanceof PalantirApiError)
-        ? new PalantirApiError(
-          e.message,
-          e.errorName,
-          e.errorCode,
-          e.errorDescription,
-          e.statusCode,
-          e.errorInstanceId,
-          e.parameters,
-        )
-        : new Error("Captured stack trace for error: " + (e.message ?? e));
+    } catch (error: any) {
+      const betterError =
+        error instanceof PalantirApiError
+          ? new PalantirApiError(
+              error.message,
+              error.errorName,
+              error.errorCode,
+              error.errorDescription,
+              error.statusCode,
+              error.errorInstanceId,
+              error.parameters
+            )
+          : new Error(
+              `Captured stack trace for error: ${error.message ?? error}`
+            );
 
-      (betterError as any).cause = e;
+      (betterError as any).cause = error;
       throw betterError;
     }
   };
