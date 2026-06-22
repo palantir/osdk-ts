@@ -188,6 +188,66 @@ describe("ObjectsHelper.propagateWrite RDP merge", () => {
 
     store.cacheKeys.release(queryWithRdp.cacheKey);
   });
+
+  it("preserves the cached RDP value when a write to the same key computed no derived fields", () => {
+    const rdpConfig = createFakeRdpConfig("fieldA");
+    const queryWithRdp = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+    }, rdpConfig);
+
+    // Seed: a full fetch computed fieldA = "alice-rdp".
+    const empWithFieldA = emp.$clone({ fieldA: "alice-rdp" } as any);
+    store.batch({}, (batch) => {
+      queryWithRdp.writeToStore(empWithFieldA as any, "loaded", batch);
+    });
+
+    // A write that computed no derived fields (empty set) carries base props
+    // only, so the cached derived value must survive.
+    const empBaseOnly = emp.$clone({ fullName: "Bob" });
+    store.batch({}, (batch) => {
+      queryWithRdp.writeToStore(
+        empBaseOnly as any,
+        "loaded",
+        batch,
+        undefined,
+        new Set<string>(),
+      );
+    });
+
+    const valueAfter = store.getValue(queryWithRdp.cacheKey)?.value as any;
+    expect(valueAfter?.fullName).toBe("Bob");
+    expect(valueAfter?.fieldA).toBe("alice-rdp");
+  });
+
+  it("clears the RDP value when a write claims it computed the field but omits it", () => {
+    const rdpConfig = createFakeRdpConfig("fieldA");
+    const queryWithRdp = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+    }, rdpConfig);
+
+    const empWithFieldA = emp.$clone({ fieldA: "alice-rdp" } as any);
+    store.batch({}, (batch) => {
+      queryWithRdp.writeToStore(empWithFieldA as any, "loaded", batch);
+    });
+
+    // The write computed fieldA but the value came back null, so it must clear.
+    const empWithoutFieldA = emp.$clone({ fullName: "Bob" });
+    store.batch({}, (batch) => {
+      queryWithRdp.writeToStore(
+        empWithoutFieldA as any,
+        "loaded",
+        batch,
+        undefined,
+        new Set<string>(["fieldA"]),
+      );
+    });
+
+    const valueAfter = store.getValue(queryWithRdp.cacheKey)?.value as any;
+    expect(valueAfter?.fullName).toBe("Bob");
+    expect(valueAfter?.fieldA).toBeUndefined();
+  });
 });
 
 describe("ObjectsHelper.isKeyActive", () => {
