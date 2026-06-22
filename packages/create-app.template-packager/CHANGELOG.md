@@ -1,5 +1,7 @@
 # @osdk/create-app.template-packager
 
+## 2.33.0
+
 ## 2.32.0
 
 ## 2.31.0

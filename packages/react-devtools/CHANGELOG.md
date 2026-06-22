@@ -1,5 +1,11 @@
 # @osdk/react-devtools
 
+## 0.10.0
+
+### Minor Changes
+
+- 890ae19: Widen vite peer dependency range to include vite 7 so installs no longer warn on vite 7 projects
+
 ## 0.9.0
 
 ### Minor Changes

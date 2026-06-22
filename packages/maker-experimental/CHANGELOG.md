@@ -1,5 +1,23 @@
 # @osdk/maker-experimental
 
+## 0.26.0
+
+### Minor Changes
+
+- cae84bd: Fix optional inputs for OAC FBA
+- cf7c06b: Add more type support for empty backing datasets
+
+### Patch Changes
+
+- Updated dependencies [cae84bd]
+- Updated dependencies [9e602f2]
+- Updated dependencies [0032d94]
+- Updated dependencies [a9de941]
+  - @osdk/maker@0.36.0
+  - @osdk/generator-converters.ontologyir@2.33.0
+  - @osdk/api@2.33.0
+  - @osdk/client.unstable@2.33.0
+
 ## 0.25.0
 
 ### Minor Changes

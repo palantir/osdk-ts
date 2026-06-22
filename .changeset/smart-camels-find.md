@@ -2,4 +2,4 @@
 "@osdk/generator-converters.ontologyir": patch
 ---
 
-Fix interfaces in function discovery
+Fix full metadata link gen
