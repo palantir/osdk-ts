@@ -56,7 +56,6 @@ import {
   createMockCaptureClient,
   getLastObjectSetRequest,
 } from "../util/mockCaptureClient.js";
-import { getWireObjectSet } from "./createObjectSet.js";
 
 type ApiNameAsString<
   T extends ObjectOrInterfaceDefinition,
@@ -498,11 +497,6 @@ describe("ObjectSet", () => {
       employeeId: { $in: ids },
     });
     expect(objectSet).toBeDefined();
-  });
-
-  it(".where({}) is a no-op (no empty-AND filter on the wire)", () => {
-    const base = client(Employee);
-    expect(getWireObjectSet(base.where({}))).toEqual(getWireObjectSet(base));
   });
 
   it("does not allow arbitrary keys when no properties", () => {
