@@ -89,9 +89,9 @@
 .osdkNumberInputStepper {
   display: flex;
   flex-direction: column;
-  border: 1px solid color-mix(in oklch, var(--bp-palette-black) 20%, transparent);
+  border: 1px solid var(--osdk-button-border-color);
   border-radius: var(--osdk-input-border-radius);
-  box-shadow: 0 1px 1px color-mix(in oklch, var(--bp-palette-black) 10%, transparent);
+  box-shadow: 0 1px 1px var(--osdk-button-drop-shadow-color);
   background-color: var(--osdk-button-secondary-bg);
   overflow: hidden;
 }
@@ -125,6 +125,6 @@
 
   & + & {
     border-block-start: var(--osdk-input-border-width) solid
-      color-mix(in oklch, var(--bp-palette-black) 20%, transparent);
+      var(--osdk-button-border-color);
   }
 }

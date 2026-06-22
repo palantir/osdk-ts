@@ -251,9 +251,10 @@ Styling for button components. Buttons use `border: none` with `box-shadow` for 
 | Variable                     | Default Value                                                                                          | Description           |
 | ---------------------------- | ------------------------------------------------------------------------------------------------------ | --------------------- |
 | `--osdk-button-min-height`   | `calc(var(--osdk-surface-spacing) * 7.5)`                                                              | Button minimum height |
-| `--osdk-button-border-color` | `transparent`                                                                                          | Button border color   |
-| `--osdk-button-border`       | `none`                                                                                                 | Button border         |
-| `--osdk-button-shadow`       | `inset 0 0 0 1px color-mix(…, --bp-palette-black 20%), 0 1px 1px color-mix(…, --bp-palette-black 10%)` | Button box-shadow     |
+| `--osdk-button-border-color`      | `color-mix(in oklch, var(--bp-palette-black) 20%, transparent)`                            | Button border color      |
+| `--osdk-button-border`            | `none`                                                                                     | Button border            |
+| `--osdk-button-drop-shadow-color` | `color-mix(in oklch, var(--bp-palette-black) 10%, transparent)`                            | Button drop shadow color |
+| `--osdk-button-shadow`            | `inset 0 0 0 1px var(--osdk-button-border-color), 0 1px 1px var(--osdk-button-drop-shadow-color)` | Button box-shadow        |
 
 #### Primary Button
 
