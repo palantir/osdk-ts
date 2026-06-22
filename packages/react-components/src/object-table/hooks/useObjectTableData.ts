@@ -120,12 +120,11 @@ export function useObjectTableData<
     );
   }, [columnDefinitions]);
 
-  // When objectSet is provided and it's an object type, use useObjectSet. Otherwise, use useOsdkObjects.
-  const isObjectType = objectOrInterfaceType.type === "object";
-  const shouldUseObjectSet = !!objectSet && isObjectType;
+  // Use the caller's objectSet whenever provided (object or interface types), else fetch
+  // by type. For an interface objectSet, rows carry interface-declared props (+ withProperties)
+  // only, not the full underlying object — see the objectSet prop docs.
+  const shouldUseObjectSet = !!objectSet;
 
-  // When shouldUseObjectSet is true, we know objectSet is defined
-  // and objectOrInterfaceType is an ObjectTypeDefinition
   const objectSetResult = useObjectSet(
     shouldUseObjectSet ? objectSet as ObjectSet<Q, RDPs> : undefined as any,
     {
