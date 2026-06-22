@@ -169,10 +169,6 @@ export class ObjectsHelper extends AbstractHelper<
       );
     }
 
-    // When an object (e.g. from a subscription update) is written to a cache
-    // key that has RDP configuration, the incoming value may lack derived
-    // property values. Merge with the existing cached value so that RDP fields
-    // not present in the incoming object are preserved.
     if (
       valueToWrite !== tombstone
       && existing?.value
@@ -180,23 +176,17 @@ export class ObjectsHelper extends AbstractHelper<
     ) {
       const expectedRdpFields = this.store.objectCacheKeyRegistry
         .getRdpFieldSet(sourceCacheKey);
-      if (expectedRdpFields.size > 0) {
-        const underlying = valueToWrite[UnderlyingOsdkObject];
-        const actualRdpFields = new Set<string>();
-        for (const field of expectedRdpFields) {
-          if (underlying && field in underlying) {
-            actualRdpFields.add(field);
-          }
-        }
 
-        if (actualRdpFields.size !== expectedRdpFields.size) {
-          valueToWrite = mergeObjectFields(
-            valueToWrite,
-            actualRdpFields,
-            expectedRdpFields,
-            existing.value,
-          );
-        }
+      // When the sourceCacheKey contains RDP fields, it intentionally requires the set of RDPs
+      if (expectedRdpFields.size > 0) {
+        // Passing expectedRdpFields as both sourceRdpFields and targetRdpFields so the rdp keys match exactly
+        // In mergeObjectFields it hits the isSuperset short-circuit (sizes equal, identical sets) and return sourceValue as-is
+        valueToWrite = mergeObjectFields(
+          valueToWrite,
+          expectedRdpFields,
+          expectedRdpFields,
+          existing.value,
+        );
       }
     }
 
@@ -212,6 +202,7 @@ export class ObjectsHelper extends AbstractHelper<
       sourceCacheKey,
     );
 
+    // Propagate write to sibling cache keys that observe the same (apiName, pk)
     const relatedKeys = metadata
       ? this.store.objectCacheKeyRegistry.getVariants(
         metadata.apiName,

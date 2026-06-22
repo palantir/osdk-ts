@@ -195,7 +195,12 @@ describe("rdpFieldOperations", () => {
     expect(underlying.rdpField2).toBe(999);
   });
 
-  it("mergeObjectFields preserves target RDP value when source has undefined for shared field", () => {
+  it("mergeObjectFields clears a shared RDP field that the source computed but left undefined", () => {
+    // Regression guard: a previous version of the merge-back loop had a
+    // `|| newProps[field] === undefined` clause that re-filled an undefined
+    // source RDP from the target. That overrides the source's authority over
+    // its own declared RDP fields and resurrects stale data when the derived
+    // value becomes null (wire omits the key).
     const source = createTestObject({
       employeeId: 50030,
       fullName: "John Doe",
@@ -218,8 +223,39 @@ describe("rdpFieldOperations", () => {
     const underlying = getUnderlyingProps(result);
     expect(underlying.employeeId).toBe(50030);
     expect(underlying.fullName).toBe("John Doe");
-    // Target's non-null value should be preserved when source has undefined
-    expect(underlying.rdpField1).toBe("existing-value");
+    // The source query computed rdpField1, so it is authoritative: an undefined
+    // value means the derived value became null and the stale target value must
+    // be cleared rather than retained.
+    expect(underlying.rdpField1).toBeUndefined();
+    // rdpField2 was not computed by the source query, so the target's value is
+    // preserved.
+    expect(underlying.rdpField2).toBe(999);
+  });
+
+  it("mergeObjectFields preserves target RDP value when source did not compute that field", () => {
+    const source = createTestObject({
+      employeeId: 50030,
+      fullName: "John Doe",
+      rdpField1: "source-value",
+    });
+    const target = createTestObject({
+      employeeId: 50030,
+      rdpField1: "old-value",
+      rdpField2: 999,
+    });
+
+    const result = mergeObjectFields(
+      source,
+      // Source only computed rdpField1; rdpField2 is left untouched.
+      new Set(["rdpField1"]),
+      new Set(["rdpField1", "rdpField2"]),
+      target,
+    );
+
+    assertValidObjectHolder(result);
+    const underlying = getUnderlyingProps(result);
+    expect(underlying.rdpField1).toBe("source-value");
+    // rdpField2 was not in the source query, so the target's value survives.
     expect(underlying.rdpField2).toBe(999);
   });
 

@@ -190,6 +190,72 @@ describe("ObjectsHelper.propagateWrite RDP merge", () => {
       }),
     );
   });
+
+  it("clears an RDP value when the canonical query refetches and the new value omits it", () => {
+    const rdpConfig = createFakeRdpConfig("fieldA");
+    const queryWithRdp = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+    }, rdpConfig);
+
+    // Seed: object has fieldA = "alice-rdp"
+    const empWithFieldA = emp.$clone({ fieldA: "alice-rdp" } as any);
+    store.batch({}, (batch) => {
+      queryWithRdp.writeToStore(empWithFieldA as any, "loaded", batch);
+    });
+    expect(
+      (store.getValue(queryWithRdp.cacheKey)?.value as any)?.fieldA,
+    ).toBe("alice-rdp");
+
+    // Refetch: the same canonical query writes an object without fieldA
+    // (server returned null → wire omitted the key).
+    const empWithoutFieldA = emp.$clone({ fullName: "Bob" });
+    store.batch({}, (batch) => {
+      queryWithRdp.writeToStore(empWithoutFieldA as any, "loaded", batch);
+    });
+
+    const valueAfter = store.getValue(queryWithRdp.cacheKey)?.value as any;
+    expect(valueAfter?.fullName).toBe("Bob");
+    // The derived value became null — the cache must reflect that, not the
+    // stale "alice-rdp" value.
+    expect(valueAfter?.fieldA).toBeUndefined();
+  });
+
+  it("preserves the cached RDP value when a no-RDP sibling query writes", () => {
+    const rdpConfig = createFakeRdpConfig("fieldA");
+    const queryWithRdp = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+    }, rdpConfig);
+    const queryNoRdp = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+    }, undefined);
+
+    // Make the RDP cache key active so sibling propagation reaches it.
+    store.cacheKeys.retain(queryWithRdp.cacheKey);
+    store.subjects.get(queryWithRdp.cacheKey).subscribe(() => {});
+
+    // Seed the RDP cache key with fieldA = "alice-rdp"
+    const empWithFieldA = emp.$clone({ fieldA: "alice-rdp" } as any);
+    store.batch({}, (batch) => {
+      queryWithRdp.writeToStore(empWithFieldA as any, "loaded", batch);
+    });
+
+    // The no-RDP query writes an updated object (no fieldA in the payload).
+    const empBob = emp.$clone({ fullName: "Bob" });
+    store.batch({}, (batch) => {
+      queryNoRdp.writeToStore(empBob as any, "loaded", batch);
+    });
+
+    const rdpValueAfter = store.getValue(queryWithRdp.cacheKey)?.value as any;
+    // Base field updated by sibling propagation
+    expect(rdpValueAfter?.fullName).toBe("Bob");
+    // Derived value preserved — the no-RDP source query did not compute it.
+    expect(rdpValueAfter?.fieldA).toBe("alice-rdp");
+
+    store.cacheKeys.release(queryWithRdp.cacheKey);
+  });
 });
 
 describe("ObjectsHelper.isKeyActive", () => {

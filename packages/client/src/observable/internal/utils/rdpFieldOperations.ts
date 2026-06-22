@@ -101,8 +101,8 @@ function isSuperset(
 
 function filterToRdpFields(
   value: ObjectHolder,
-  rdpFieldsToKeep: ReadonlySet<string>,
-  sourceRdpFields: ReadonlySet<string>,
+  rdpFieldsToKeep: ReadonlySet<string>, // old
+  sourceRdpFields: ReadonlySet<string>, // new
 ): ObjectHolder {
   const underlying = value[UnderlyingOsdkObject] as SimpleOsdkProperties;
   const objectDef = requireObjectDef(value[ObjectDefRef], underlying);
@@ -170,17 +170,23 @@ export function mergeObjectFields(
   targetRdpFields: ReadonlySet<string>,
   targetCurrentValue: ObjectHolder | undefined,
 ): ObjectHolder {
+  // When the destination (target) query does not need RDP
   if (targetRdpFields.size === 0) {
     return stripRdpFields(sourceValue, sourceRdpFields);
   }
 
+  // When source contains more than the required RDP fields
   if (isSuperset(sourceRdpFields, targetRdpFields)) {
     if (sourceRdpFields.size === targetRdpFields.size) {
       return sourceValue;
     }
+    // Filter to return only the RDP fields that are needed by target
     return filterToRdpFields(sourceValue, targetRdpFields, sourceRdpFields);
   }
 
+  /**
+   * Mixed case: each side has RDP fields the other doesn't
+   */
   const sourceUnderlying =
     sourceValue[UnderlyingOsdkObject] as SimpleOsdkProperties;
   const objectDef = requireObjectDef(
@@ -188,6 +194,7 @@ export function mergeObjectFields(
     sourceUnderlying,
   );
 
+  // Create a new property bag
   const newProps: SimpleOsdkProperties = {
     $apiName: sourceUnderlying.$apiName,
     $objectType: sourceUnderlying.$objectType,
@@ -196,7 +203,12 @@ export function mergeObjectFields(
     $rid: sourceUnderlying.$rid,
   };
 
+  // For every key on the source data
   for (const key of Object.keys(sourceUnderlying)) {
+    // Only add to newProps if it is an object property AND
+    //  Either it is not an RDP in the source
+    //  Or it is an RDP that the target needs
+    // --> This skips source's RDP fields that the target doesn't care about.
     if (
       key in objectDef.properties
       && (!sourceRdpFields.has(key) || targetRdpFields.has(key))
@@ -205,18 +217,13 @@ export function mergeObjectFields(
     }
   }
 
+  // For each RDP needed in target, assign the existing value when the source query did not declare this RDP in its intent
   if (targetCurrentValue) {
     const targetUnderlying =
       targetCurrentValue[UnderlyingOsdkObject] as SimpleOsdkProperties;
     for (const field of targetRdpFields) {
       if (field in targetUnderlying) {
-        // Preserve target's value when:
-        // 1. Source doesn't have this RDP field at all, OR
-        // 2. Source hasn't provided the value (undefined)
-        if (
-          !sourceRdpFields.has(field)
-          || newProps[field] === undefined
-        ) {
+        if (!sourceRdpFields.has(field)) {
           newProps[field] = targetUnderlying[field];
         }
       }
