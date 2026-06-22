@@ -164,13 +164,13 @@ export class ObjectsHelper extends AbstractHelper<
       && existingHolder
       && this.isObjectHolder(existingHolder)
     ) {
-      valueToWrite = reconcileObject(
-        {
-          value: valueToWrite,
-          rdpFields: sourceRdpFields,
-          loadedBaseFields: selectFields,
-        },
-        { value: existingHolder, rdpFields: sourceRdpFields },
+      // Same cache key, so the target carries the same derived fields as the source.
+      valueToWrite = this.mergeInto(
+        valueToWrite,
+        existingHolder,
+        sourceRdpFields,
+        sourceRdpFields,
+        selectFields,
       );
     }
 
@@ -211,11 +211,14 @@ export class ObjectsHelper extends AbstractHelper<
           ? targetCurrentValue
           : undefined;
 
-      const merged = this.mergeForTarget(
+      const targetRdpFields = this.store.objectCacheKeyRegistry.getRdpFieldSet(
+        targetKey,
+      );
+      const merged = this.mergeInto(
         value,
         targetHolder,
         sourceRdpFields,
-        targetKey,
+        targetRdpFields,
         selectFields,
       );
 
@@ -246,29 +249,17 @@ export class ObjectsHelper extends AbstractHelper<
       && "$primaryKey" in value;
   }
 
-  /**
-   * Reconcile a freshly written object into the value cached at a sibling cache
-   * key, resolving base props by schema authority and derived fields by the two
-   * keys' rdp sets.
-   */
-  private mergeForTarget(
-    sourceValue: ObjectHolder,
-    targetCurrentValue: ObjectHolder | undefined,
+  /** Merge a freshly written object into the value cached at a key. */
+  private mergeInto(
+    value: ObjectHolder,
+    cached: ObjectHolder | undefined,
     sourceRdpFields: ReadonlySet<string>,
-    targetCacheKey: ObjectCacheKey,
-    selectFields: ReadonlySet<string> | undefined,
+    targetRdpFields: ReadonlySet<string>,
+    loadedBaseFields: ReadonlySet<string> | undefined,
   ): ObjectHolder {
-    const targetRdpFields = this.store.objectCacheKeyRegistry.getRdpFieldSet(
-      targetCacheKey,
-    );
-
     return reconcileObject(
-      {
-        value: sourceValue,
-        rdpFields: sourceRdpFields,
-        loadedBaseFields: selectFields,
-      },
-      { value: targetCurrentValue, rdpFields: targetRdpFields },
+      { value, rdpFields: sourceRdpFields, loadedBaseFields },
+      { value: cached, rdpFields: targetRdpFields },
     );
   }
 }

@@ -38,31 +38,21 @@ export function extractRdpFieldNames(
   return new Set(Object.keys(rdpConfig));
 }
 
-/**
- * The fresh value being written. `rdpFields` is the derived-field set the source
- * computed; `loadedBaseFields` is the base props it loaded, or `undefined` for a
- * full load that owns every base prop (so an omitted base prop clears).
- */
+/** A newly written value, with its derived fields and the base props it loaded. */
 export interface ReconcileSource {
   value: ObjectHolder;
   rdpFields: ReadonlySet<string>;
+  /** Undefined means a full load that owns every base prop, so a missing prop clears. */
   loadedBaseFields?: ReadonlySet<string>;
 }
 
-/**
- * The cache entry being written into: its current `value` (undefined on first
- * write) and the derived-field set its key carries.
- */
+/** The cache entry being written into, with the derived fields its key carries. */
 export interface ReconcileTarget {
   value: ObjectHolder | undefined;
   rdpFields: ReadonlySet<string>;
 }
 
-/**
- * Gates access to `objectDef.properties`: the merge path takes concrete
- * `ObjectHolder`s only, and a leaked unwrapped `InterfaceHolder` has no
- * ObjectDefRef.
- */
+/** The merge path only takes ObjectHolders; a leaked InterfaceHolder has no ObjectDefRef. */
 export function requireObjectDef(
   objectDef: FetchedObjectTypeDefinition | undefined,
   instance: { $apiName?: string; $objectType?: string },
@@ -94,50 +84,72 @@ function sameMembers(
   return true;
 }
 
-/**
- * A schema property that is not a derived field of this key. The rdp set wins:
- * a name that is both a schema prop and an rdp field counts as derived.
- */
-function isBaseProperty(
-  key: string,
-  objectDef: FetchedObjectTypeDefinition,
-  rdpFields: ReadonlySet<string>,
-): boolean {
-  return key in objectDef.properties && !rdpFields.has(key);
-}
-
-/**
- * Resolve `fields` into `into`: a field the source owns (all of them when
- * `ownedBySource` is undefined) comes from the source, where an omitted field
- * clears; otherwise the target's cached value is kept.
- */
-function resolveFields(
+/** Copy one property from the side that owns it. Absent means left out, which clears it. */
+function copyProperty(
+  name: string,
+  from: SimpleOsdkProperties | undefined,
   into: SimpleOsdkProperties,
-  fields: Iterable<string>,
-  ownedBySource: ReadonlySet<string> | undefined,
-  sourceProps: SimpleOsdkProperties,
-  targetProps: SimpleOsdkProperties | undefined,
 ): void {
-  for (const field of fields) {
-    if (ownedBySource === undefined || ownedBySource.has(field)) {
-      if (field in sourceProps) {
-        into[field] = sourceProps[field];
-      }
-    } else if (targetProps && field in targetProps) {
-      into[field] = targetProps[field];
-    }
+  if (from && name in from) {
+    into[name] = from[name];
   }
 }
 
 /**
- * Reconcile a freshly written `source` into the `target` cached at a key. One
- * rule: the source wins for a field it owns (an omitted owned field clears),
- * else the target keeps its value. Returns the source as-is when it is a no-op.
+ * The schema properties present on either side. A derived-property name is
+ * never a schema property, so schema membership alone separates base from
+ * derived fields.
+ */
+function baseProperties(
+  objectDef: FetchedObjectTypeDefinition,
+  sourceProps: SimpleOsdkProperties,
+  targetProps: SimpleOsdkProperties | undefined,
+): Set<string> {
+  const names = new Set<string>();
+  for (const name of Object.keys(sourceProps)) {
+    if (name in objectDef.properties) {
+      names.add(name);
+    }
+  }
+  if (targetProps) {
+    for (const name of Object.keys(targetProps)) {
+      if (name in objectDef.properties) {
+        names.add(name);
+      }
+    }
+  }
+  return names;
+}
+
+/** Did this load fetch this base property? A full load (no `$select`) fetched all of them. */
+function sourceLoadedBaseProperty(
+  source: ReconcileSource,
+  name: string,
+): boolean {
+  return source.loadedBaseFields === undefined
+    || source.loadedBaseFields.has(name);
+}
+
+/**
+ * Merge a freshly written object (`source`) into the value cached for a query
+ * (`target`). Each field is taken from whichever side owns it:
+ *
+ *   - the source owns the base properties it loaded and the derived properties
+ *     it computed; a field it owns but did not return is now empty, so it is
+ *     cleared;
+ *   - the target keeps every field the source does not own.
+ *
+ * The result is stored for the target query, so it carries only that query's
+ * derived properties; a derived property the source computed for a different
+ * query is dropped.
  */
 export function reconcileObject(
   source: ReconcileSource,
   target: ReconcileTarget,
 ): ObjectHolder {
+  // Nothing to merge: the first write to this key, already matching it (a full
+  // load with the same derived properties). Return it as-is to keep the same
+  // reference for subscribers.
   if (
     target.value === undefined
     && source.loadedBaseFields === undefined
@@ -161,36 +173,19 @@ export function reconcileObject(
     $rid: sourceProps.$rid ?? targetProps?.$rid,
   };
 
-  // Base props from either side; the source's loaded set owns them.
-  const baseFields = new Set<string>();
-  for (const key of Object.keys(sourceProps)) {
-    if (isBaseProperty(key, objectDef, source.rdpFields)) {
-      baseFields.add(key);
-    }
+  // Base properties: the source owns the ones it loaded; the target keeps the rest.
+  for (const name of baseProperties(objectDef, sourceProps, targetProps)) {
+    const owner = sourceLoadedBaseProperty(source, name)
+      ? sourceProps
+      : targetProps;
+    copyProperty(name, owner, result);
   }
-  if (targetProps) {
-    for (const key of Object.keys(targetProps)) {
-      if (isBaseProperty(key, objectDef, target.rdpFields)) {
-        baseFields.add(key);
-      }
-    }
-  }
-  resolveFields(
-    result,
-    baseFields,
-    source.loadedBaseFields,
-    sourceProps,
-    targetProps,
-  );
 
-  // Derived fields the target key carries; the source owns the ones it computed.
-  resolveFields(
-    result,
-    target.rdpFields,
-    source.rdpFields,
-    sourceProps,
-    targetProps,
-  );
+  // Derived properties the target query carries: the source owns the ones it recomputed.
+  for (const name of target.rdpFields) {
+    const owner = source.rdpFields.has(name) ? sourceProps : targetProps;
+    copyProperty(name, owner, result);
+  }
 
   return createOsdkObject(source.value[ClientRef], objectDef, result);
 }

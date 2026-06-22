@@ -48,13 +48,13 @@ const employeeObjectDef = {
   links: {},
   implements: [],
   [InterfaceDefinitions]: {},
+  // Derived-property names (rdpField1/2/3, computedScore, ...) are deliberately
+  // absent here: in production an RDP name is never a schema property, and the
+  // merge relies on that to tell base properties from derived ones.
   properties: {
     employeeId: { type: "integer" },
     fullName: { type: "string" },
     office: { type: "string" },
-    rdpField1: { type: "string" },
-    rdpField2: { type: "double" },
-    rdpField3: { type: "string" },
   },
 } satisfies FetchedObjectTypeDefinition;
 
