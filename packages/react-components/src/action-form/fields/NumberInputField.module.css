@@ -29,7 +29,21 @@
 }
 
 .osdkNumberInputWrapper[aria-invalid] .osdkNumberInputStepper {
-  box-shadow: var(--osdk-input-shadow-error);
+  border-color: var(--osdk-button-border-color);
+  box-shadow: 0 1px 1px var(--osdk-button-drop-shadow-color);
+  background-color: var(--osdk-button-danger-bg);
+}
+
+.osdkNumberInputWrapper[aria-invalid] .osdkNumberInputStepButton {
+  color: var(--osdk-button-danger-color);
+
+  &:hover {
+    background-color: var(--osdk-button-danger-bg-hover);
+  }
+
+  &:active {
+    background-color: var(--osdk-button-danger-bg-active);
+  }
 }
 
 .osdkNumberInputWrapper[aria-invalid]:focus-within .osdkNumberInputField {
@@ -39,8 +53,7 @@
 .osdkNumberInputWrapper[aria-invalid]
   .osdkNumberInputStepButton
   + .osdkNumberInputStepButton {
-  box-shadow: inset 0 var(--osdk-input-border-width) 0
-    var(--osdk-input-border-color-error);
+  border-block-start-color: var(--osdk-button-border-color);
 }
 
 .osdkNumberInputField {
