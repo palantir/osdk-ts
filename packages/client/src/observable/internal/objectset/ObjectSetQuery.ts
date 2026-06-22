@@ -263,6 +263,9 @@ export class ObjectSetQuery extends BaseListQuery<
       ...(this.options.$loadPropertySecurityMetadata
         ? { $loadPropertySecurityMetadata: true }
         : {}),
+      ...(this.options.$signMediaReferences
+        ? { $signMediaReferences: true }
+        : {}),
     });
 
     if (signal?.aborted) {

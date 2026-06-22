@@ -2157,6 +2157,7 @@ export interface SelectArg<
     $loadPropertySecurityMetadata?: PROPERTY_SECURITIES;
     	// (undocumented)
     $select?: readonly L[];
+    	$signMediaReferences?: boolean;
 }
 
 // @public (undocumented)

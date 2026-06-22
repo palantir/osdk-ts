@@ -342,6 +342,9 @@ export abstract class ListQuery extends BaseListQuery<
       ...(this.includeAllBaseObjectProperties
         ? { $includeAllBaseObjectProperties: true }
         : {}),
+      ...(this.options.$signMediaReferences
+        ? { $signMediaReferences: true }
+        : {}),
     });
 
     if (signal?.aborted) {

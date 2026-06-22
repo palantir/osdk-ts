@@ -81,6 +81,14 @@ export interface SelectArg<
   $select?: readonly L[];
   $includeRid?: R;
   $loadPropertySecurityMetadata?: PROPERTY_SECURITIES;
+  /**
+   * When true, requests that the server populate the `token` field on
+   * `MediaReference` properties returned by this query. Allows the client
+   * to perform media operations on the referenced items even when the
+   * caller lacks direct view permission on the underlying media set view.
+   * Defaults to false.
+   */
+  $signMediaReferences?: boolean;
 }
 
 export interface OrderByArg<

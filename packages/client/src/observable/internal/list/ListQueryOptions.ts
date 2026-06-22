@@ -38,4 +38,5 @@ export interface ListQueryOptions<
   $loadPropertySecurityMetadata?: boolean;
   $includeAllBaseObjectProperties?: boolean;
   resolveToObjectType?: boolean;
+  $signMediaReferences?: boolean;
 }

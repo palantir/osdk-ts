@@ -187,6 +187,14 @@ export interface ObserveListOptions<
   $includeAllBaseObjectProperties?: boolean;
 
   /**
+   * When true, requests that the server populate the `token` field on
+   * `MediaReference` properties returned by this query, allowing media
+   * operations on the referenced items even when the caller lacks direct
+   * view permission on the underlying media set view. Defaults to false.
+   */
+  $signMediaReferences?: boolean;
+
+  /**
    * Automatically fetch additional pages on initial load.
    *
    * - `true`: Fetch all available pages automatically

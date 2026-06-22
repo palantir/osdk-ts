@@ -112,3 +112,68 @@ describe("ObjectSetHelper RDP canonicalization", () => {
     expect(query.rdpConfig).toBeUndefined();
   });
 });
+
+describe("ObjectSetHelper $signMediaReferences cache key", () => {
+  let client: Client;
+  let store: Store;
+
+  beforeAll(() => {
+    const testSetup = startNodeApiServer(
+      new FauxFoundry("https://stack.palantir.com/"),
+      createClient,
+    );
+    client = testSetup.client;
+
+    const fauxOntology = testSetup.fauxFoundry.getDefaultOntology();
+    ontologies.addEmployeeOntology(fauxOntology);
+
+    return () => {
+      testSetup.apiServer.close();
+    };
+  });
+
+  beforeEach(() => {
+    store = new Store(client);
+    return () => {
+      store = undefined!;
+    };
+  });
+
+  it("getQuery distinguishes cache keys by $signMediaReferences", () => {
+    const baseObjectSet = client(Employee) as ObjectSet<any>;
+
+    const withoutSigning = store.objectSets.getQuery({
+      baseObjectSet,
+      mode: "offline",
+    });
+    const withSigning = store.objectSets.getQuery({
+      baseObjectSet,
+      mode: "offline",
+      $signMediaReferences: true,
+    });
+
+    // Object-set cache keys embed their canonical operations by value but are
+    // not reference-interned across getQuery calls (unlike list keys), so
+    // compare structurally. The signing flag must change the key, otherwise an
+    // unsigned (null-token) result could be served to a caller that asked for
+    // signed media references.
+    expect(withSigning.cacheKey).not.toStrictEqual(withoutSigning.cacheKey);
+  });
+
+  it("getQuery produces an equal cache key for repeated $signMediaReferences requests", () => {
+    const baseObjectSet = client(Employee) as ObjectSet<any>;
+
+    const first = store.objectSets.getQuery({
+      baseObjectSet,
+      mode: "offline",
+      $signMediaReferences: true,
+    });
+    const second = store.objectSets.getQuery({
+      baseObjectSet,
+      mode: "offline",
+      $signMediaReferences: true,
+    });
+
+    expect(first.cacheKey).toStrictEqual(second.cacheKey);
+  });
+});

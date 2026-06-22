@@ -86,6 +86,12 @@ export interface ObserveObjectSetOptions<
    * populated with conjunctive/disjunctive marking requirements per property.
    */
   $loadPropertySecurityMetadata?: boolean;
+
+  /**
+   * When true, requests that the server populate the `token` field on
+   * `MediaReference` properties returned by this query.
+   */
+  $signMediaReferences?: boolean;
 }
 
 export interface ObjectSetQueryOptions
