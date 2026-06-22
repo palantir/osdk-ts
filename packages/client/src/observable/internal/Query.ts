@@ -120,7 +120,7 @@ export abstract class Query<
     subscriptionId: string,
     dedupeInterval: number | undefined,
   ): void {
-    if (dedupeInterval != null && dedupeInterval > 0) {
+    if (dedupeInterval != null) {
       this.#subscriptionDedupeIntervals.set(subscriptionId, dedupeInterval);
     }
   }

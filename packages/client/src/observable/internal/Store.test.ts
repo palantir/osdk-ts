@@ -82,6 +82,7 @@ import {
   updateList,
   updateObject,
   waitForCall,
+  waitForPayload,
 } from "./testUtils.js";
 import { invalidateList } from "./testUtils/invalidateList.js";
 import { expectStandardObserveLink } from "./testUtils/observeLink/expectStandardObserveLink.js";
@@ -495,6 +496,62 @@ describe(Store, () => {
       expectSingleLinkCallAndClear(linkSubFn, [], {
         status: "loaded",
       });
+    });
+
+    it("subscription dedupeInterval 0 overrides a non-zero defaultDedupeInterval", async () => {
+      const localStore = new Store(client, { defaultDedupeInterval: 60_000 });
+
+      const { payload: emp1Payload } = await expectStandardObserveObject({
+        cache: localStore,
+        type: Employee,
+        primaryKey: 2,
+      });
+      const emp2 = emp1Payload?.object;
+      invariant(emp2);
+
+      const linkSubFn1 = mockLinkSubCallback();
+      const sub1 = localStore.links.observe({
+        linkName: "peeps",
+        srcType: { type: "object", apiName: emp2.$apiName },
+        sourceUnderlyingObjectType: emp2.$objectType,
+        pk: emp2.$primaryKey,
+        dedupeInterval: 0,
+      }, linkSubFn1);
+
+      await waitForCall(linkSubFn1);
+      expectSingleLinkCallAndClear(linkSubFn1, undefined, {
+        status: "loading",
+      });
+
+      await waitForCall(linkSubFn1);
+      expectSingleLinkCallAndClear(linkSubFn1, [], {
+        status: "loaded",
+      });
+
+      sub1.unsubscribe();
+
+      // The store's defaultDedupeInterval is 60s, but the subscription's own
+      // dedupeInterval of 0 opts out, so re-subscribing refetches instead of
+      // serving the deduped value. A deduped re-subscribe would emit a single
+      // "loaded" with no "loading" state.
+      const linkSubFn2 = mockLinkSubCallback();
+      defer(localStore.links.observe({
+        linkName: "peeps",
+        srcType: { type: "object", apiName: emp2.$apiName },
+        sourceUnderlyingObjectType: emp2.$objectType,
+        pk: emp2.$primaryKey,
+        dedupeInterval: 0,
+      }, linkSubFn2));
+
+      await waitForPayload(
+        linkSubFn2,
+        (payload) => payload.status === "loaded",
+      );
+
+      const statuses = linkSubFn2.next.mock.calls.map(([payload]) =>
+        payload.status
+      );
+      expect(statuses).toContain("loading");
     });
 
     describe("multi-object observeLinks", () => {
