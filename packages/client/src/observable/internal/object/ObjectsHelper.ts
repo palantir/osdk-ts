@@ -153,8 +153,9 @@ export class ObjectsHelper extends AbstractHelper<
       sourceCacheKey,
     );
 
-    // A partial load carries only the base props it fetched, so reconcile to keep
-    // the rest; a full load is written as-is, so an omitted field clears.
+    // a partial load only carries the base props it fetched so we reconcile to
+    // keep the rest. a full load is written straight through, so a field it left
+    // out clears.
     const existingHolder = existing?.value;
     if (
       dataChanged
@@ -164,7 +165,7 @@ export class ObjectsHelper extends AbstractHelper<
       && existingHolder
       && this.isObjectHolder(existingHolder)
     ) {
-      // Same cache key, so the target carries the same derived fields as the source.
+      // same cache key so the target tracks the same derived fields as the source.
       valueToWrite = this.mergeInto(
         valueToWrite,
         existingHolder,
@@ -249,7 +250,7 @@ export class ObjectsHelper extends AbstractHelper<
       && "$primaryKey" in value;
   }
 
-  /** Merge a freshly written object into the value cached at a key. */
+  /** merges a freshly written object into whatever is cached at a key. */
   private mergeInto(
     value: ObjectHolder,
     cached: ObjectHolder | undefined,

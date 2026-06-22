@@ -38,21 +38,21 @@ export function extractRdpFieldNames(
   return new Set(Object.keys(rdpConfig));
 }
 
-/** A newly written value, with its derived fields and the base props it loaded. */
+/** a newly written value, with the derived fields and base props it loaded. */
 export interface ReconcileSource {
   value: ObjectHolder;
   rdpFields: ReadonlySet<string>;
-  /** Undefined means a full load that owns every base prop, so a missing prop clears. */
+  /** undefined means a full load that owns every base prop, so a missing one clears. */
   loadedBaseFields?: ReadonlySet<string>;
 }
 
-/** The cache entry being written into, with the derived fields its key carries. */
+/** the cache entry we're writing into, with the derived fields its key carries. */
 export interface ReconcileTarget {
   value: ObjectHolder | undefined;
   rdpFields: ReadonlySet<string>;
 }
 
-/** The merge path only takes ObjectHolders; a leaked InterfaceHolder has no ObjectDefRef. */
+/** the merge path only takes object holders. a leaked interface holder has no object def. */
 export function requireObjectDef(
   objectDef: FetchedObjectTypeDefinition | undefined,
   instance: { $apiName?: string; $objectType?: string },
@@ -84,7 +84,7 @@ function sameMembers(
   return true;
 }
 
-/** Copy one property from the side that owns it. Absent means left out, which clears it. */
+/** copy a prop from whichever side owns it. if that side left it out we drop it and it clears. */
 function copyProperty(
   name: string,
   from: SimpleOsdkProperties | undefined,
@@ -95,11 +95,7 @@ function copyProperty(
   }
 }
 
-/**
- * The schema properties present on either side. A derived-property name is
- * never a schema property, so schema membership alone separates base from
- * derived fields.
- */
+/** the schema props found on either side. */
 function baseProperties(
   objectDef: FetchedObjectTypeDefinition,
   sourceProps: SimpleOsdkProperties,
@@ -121,7 +117,6 @@ function baseProperties(
   return names;
 }
 
-/** Did this load fetch this base property? A full load (no `$select`) fetched all of them. */
 function sourceLoadedBaseProperty(
   source: ReconcileSource,
   name: string,
@@ -131,25 +126,21 @@ function sourceLoadedBaseProperty(
 }
 
 /**
- * Merge a freshly written object (`source`) into the value cached for a query
- * (`target`). Each field is taken from whichever side owns it:
+ * merges a freshly written object into the value cached for a query. every field
+ * comes from whichever side owns it. the source owns the base props it loaded and
+ * the derived props it computed, and if it owns a field but sent nothing back that
+ * field is now empty so we clear it. the target keeps everything the source does
+ * not own.
  *
- *   - the source owns the base properties it loaded and the derived properties
- *     it computed; a field it owns but did not return is now empty, so it is
- *     cleared;
- *   - the target keeps every field the source does not own.
- *
- * The result is stored for the target query, so it carries only that query's
- * derived properties; a derived property the source computed for a different
- * query is dropped.
+ * the merged value gets stored for the target query so it only carries that query's
+ * derived props. a derived prop the source computed for some other query gets dropped.
  */
 export function reconcileObject(
   source: ReconcileSource,
   target: ReconcileTarget,
 ): ObjectHolder {
-  // Nothing to merge: the first write to this key, already matching it (a full
-  // load with the same derived properties). Return it as-is to keep the same
-  // reference for subscribers.
+  // nothing to merge here. the first write to a key already matches when it's a
+  // full load with the same derived props, so we hand back the same object.
   if (
     target.value === undefined
     && source.loadedBaseFields === undefined
@@ -173,7 +164,7 @@ export function reconcileObject(
     $rid: sourceProps.$rid ?? targetProps?.$rid,
   };
 
-  // Base properties: the source owns the ones it loaded; the target keeps the rest.
+  // base props come from the source when it loaded them, otherwise we keep what's cached.
   for (const name of baseProperties(objectDef, sourceProps, targetProps)) {
     const owner = sourceLoadedBaseProperty(source, name)
       ? sourceProps
@@ -181,7 +172,8 @@ export function reconcileObject(
     copyProperty(name, owner, result);
   }
 
-  // Derived properties the target query carries: the source owns the ones it recomputed.
+  // derived props the target tracks come from the source when it recomputed them,
+  // otherwise we keep the cache.
   for (const name of target.rdpFields) {
     const owner = source.rdpFields.has(name) ? sourceProps : targetProps;
     copyProperty(name, owner, result);
