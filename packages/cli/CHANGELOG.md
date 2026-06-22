@@ -1,5 +1,14 @@
 # @osdk/cli
 
+## 0.61.0
+
+### Patch Changes
+
+- Updated dependencies [ff11b06]
+  - @osdk/shared.net.errors@2.11.0
+  - @osdk/shared.net.fetch@1.11.0
+  - @osdk/widget.api@3.34.0
+
 ## 0.60.0
 
 ### Patch Changes

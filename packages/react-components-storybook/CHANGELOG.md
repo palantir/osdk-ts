@@ -1,5 +1,15 @@
 # @osdk/react-components-storybook
 
+## 0.30.0
+
+### Minor Changes
+
+- c24b0cf: Align OSDK component tokens with Blueprint styling: use box-shadow instead of border for inputs, buttons, and selects; add proper dark mode token overrides; group Storybook theme presets into built-in and custom categories
+
+### Patch Changes
+
+- @osdk/faux@0.29.0
+
 ## 0.29.0
 
 ### Patch Changes

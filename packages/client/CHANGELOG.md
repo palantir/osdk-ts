@@ -1,5 +1,25 @@
 # @osdk/client
 
+## 2.37.0
+
+### Minor Changes
+
+- b174a28: Make the dev-mode action delay smart, configurable, and discoverable. The delay now only applies to actions with an optimistic update (function-backed actions stay fast), is tunable via `OsdkProvider`'s `devMode={{ actionDelayMs }}` prop and the `createObservableClient` `devMode.actionDelayMs` option (0 disables), and logs a one-time message explaining it.
+- 75a5c26: Add test for fetchOneWithErrors with cross-type pivot to validate correct primary key usage
+- 915d245: Sort decimal and long properties numerically in observable client orderBy, including derived (RDP) get and min/max properties, instead of lexicographically
+- 01bea93: Fix runtime-derived-property (RDP) cache merges dropping or stale-serving derived values. A write now declares the derived fields it actually computed, so: a derived value that becomes null clears instead of retaining the stale cached value; a derived field shared by two queries with overlapping rdp sets is no longer dropped when one propagates to the other; a query using both `$select` and a derived property keeps the derived field on a partial write; and a subscription update, which carries base props only, preserves the cached derived values instead of clearing them on every tick.
+
+### Patch Changes
+
+- Updated dependencies [ff11b06]
+  - @osdk/shared.net.errors@2.11.0
+  - @osdk/shared.client.impl@1.13.0
+  - @osdk/shared.net.fetch@1.11.0
+  - @osdk/api@2.37.0
+  - @osdk/client.unstable@2.37.0
+  - @osdk/generator-converters@2.37.0
+  - @osdk/shared.test@2.27.0
+
 ## 2.36.0
 
 ### Minor Changes
