@@ -116,7 +116,7 @@ function filterToRdpFields(
   };
 
   for (const key of Object.keys(underlying)) {
-    // Derived names are not in objectDef.properties, so gate them on the rdp set.
+    // keep the target's derived fields and every base prop.
     if (sourceRdpFields.has(key)) {
       if (rdpFieldsToKeep.has(key)) {
         newProps[key] = underlying[key];
@@ -203,17 +203,13 @@ export function mergeObjectFields(
   };
 
   for (const key of Object.keys(sourceUnderlying)) {
-    if (
-      key in objectDef.properties
-      && (!sourceRdpFields.has(key) || targetRdpFields.has(key))
-    ) {
+    if (key in objectDef.properties) {
       newProps[key] = sourceUnderlying[key];
     }
   }
 
-  // Carry the source's derived fields the target wants (the base loop skips them
-  // since their names are not schema props). An omitted owned field stays unset,
-  // so a value that became null clears rather than refilling from stale cache.
+  // take the source's derived fields the target wants. if the source left one
+  // out then it just clears.
   for (const field of sourceRdpFields) {
     if (targetRdpFields.has(field) && field in sourceUnderlying) {
       newProps[field] = sourceUnderlying[field];
