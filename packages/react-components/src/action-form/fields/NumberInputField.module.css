@@ -89,10 +89,10 @@
 .osdkNumberInputStepper {
   display: flex;
   flex-direction: column;
-  border: none;
+  border: 1px solid color-mix(in oklch, var(--bp-palette-black) 20%, transparent);
   border-radius: var(--osdk-input-border-radius);
-  box-shadow: var(--osdk-input-shadow);
-  background-color: var(--osdk-input-bg);
+  box-shadow: 0 1px 1px color-mix(in oklch, var(--bp-palette-black) 10%, transparent);
+  background-color: var(--osdk-button-secondary-bg);
   overflow: hidden;
 }
 
@@ -107,16 +107,19 @@
   color: var(--osdk-input-color);
   cursor: pointer;
   line-height: 0;
-  transition:
-    background-color var(--osdk-input-transition-duration)
-      var(--osdk-input-transition-ease),
-    box-shadow var(--osdk-input-transition-duration)
-      var(--osdk-input-transition-ease);
+  transition: background-color var(--osdk-input-transition-duration)
+    var(--osdk-input-transition-ease);
+
+  &:first-child {
+    border-radius: var(--osdk-input-border-radius) var(--osdk-input-border-radius) 0 0;
+  }
+
+  &:last-child {
+    border-radius: 0 0 var(--osdk-input-border-radius) var(--osdk-input-border-radius);
+  }
 
   &:hover {
-    background-color: var(--osdk-button-secondary-bg-active);
-    box-shadow: inset 0 0 0 var(--osdk-input-border-width)
-      var(--osdk-input-border-color);
+    background-color: var(--osdk-button-secondary-bg-hover);
   }
 
   &:active {
@@ -130,6 +133,6 @@
 
   & + & {
     border-block-start: var(--osdk-input-border-width) solid
-      var(--osdk-input-border-color);
+      color-mix(in oklch, var(--bp-palette-black) 20%, transparent);
   }
 }
