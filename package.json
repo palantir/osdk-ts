@@ -82,7 +82,7 @@
     "typescript": "~5.5.4",
     "typescript-eslint": "^8.43.0",
     "ultracite": "7.8.2",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.6"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
