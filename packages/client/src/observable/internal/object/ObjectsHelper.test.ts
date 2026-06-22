@@ -190,6 +190,121 @@ describe("ObjectsHelper.propagateWrite RDP merge", () => {
       }),
     );
   });
+
+  it("clears a derived value when a same-key refetch omits it", () => {
+    const rdpConfig = createFakeRdpConfig("derivedAddress");
+    const queryB = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+    }, rdpConfig);
+
+    const seeded = emp.$clone({ derivedAddress: "123 Main St" } as any);
+    store.batch({}, (batch) => {
+      queryB.writeToStore(seeded as any, "loaded", batch);
+    });
+    expect(
+      (store.getValue(queryB.cacheKey)?.value as any)?.derivedAddress,
+    ).toBe("123 Main St");
+
+    store.batch({}, (batch) => {
+      queryB.writeToStore(emp as any, "loaded", batch);
+    });
+
+    const valueB = store.getValue(queryB.cacheKey)?.value as any;
+    expect(valueB?.fullName).toBe("Alice");
+    expect(valueB?.derivedAddress).toBeUndefined();
+  });
+
+  it("preserves the cached derived value when a no-RDP sibling writes", () => {
+    // The sibling did not compute the derived field, so it must survive.
+    const rdpConfig = createFakeRdpConfig("derivedAddress");
+    const queryWithRdp = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+    }, rdpConfig);
+    const queryNoRdp = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+    }, undefined);
+
+    store.cacheKeys.retain(queryWithRdp.cacheKey);
+    store.subjects.get(queryWithRdp.cacheKey).subscribe(() => {});
+
+    const seeded = emp.$clone({ derivedAddress: "123 Main St" } as any);
+    store.batch({}, (batch) => {
+      queryWithRdp.writeToStore(seeded as any, "loaded", batch);
+    });
+
+    const updated = emp.$clone({ fullName: "Bob" });
+    store.batch({}, (batch) => {
+      queryNoRdp.writeToStore(updated as any, "loaded", batch);
+    });
+
+    const rdpValue = store.getValue(queryWithRdp.cacheKey)?.value as any;
+    expect(rdpValue?.fullName).toBe("Bob");
+    expect(rdpValue?.derivedAddress).toBe("123 Main St");
+
+    store.cacheKeys.release(queryWithRdp.cacheKey);
+  });
+
+  it("keeps the recomputed derived value on a $select refetch", () => {
+    const rdpConfig = createFakeRdpConfig("derivedAddress");
+    const queryB = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+    }, rdpConfig);
+
+    const seeded = emp.$clone({ derivedAddress: "old-addr" } as any);
+    store.batch({}, (batch) => {
+      queryB.writeToStore(seeded as any, "loaded", batch);
+    });
+
+    const reloaded = emp.$clone(
+      { fullName: "Bob", derivedAddress: "new-addr" } as any,
+    );
+    store.batch({}, (batch) => {
+      queryB.writeToStore(
+        reloaded as any,
+        "loaded",
+        batch,
+        new Set(["fullName"]),
+      );
+    });
+
+    const valueB = store.getValue(queryB.cacheKey)?.value as any;
+    expect(valueB?.fullName).toBe("Bob");
+    expect(valueB?.derivedAddress).toBe("new-addr");
+  });
+
+  it("preserves the cached derived value when a same-key write computed no derived fields", () => {
+    const rdpConfig = createFakeRdpConfig("derivedAddress");
+    const queryB = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+    }, rdpConfig);
+
+    const seeded = emp.$clone({ derivedAddress: "123 Main St" } as any);
+    store.batch({}, (batch) => {
+      queryB.writeToStore(seeded as any, "loaded", batch);
+    });
+
+    // A write that computed no derived fields (empty set) carries base props
+    // only, so the cached derived value must survive.
+    const updated = emp.$clone({ fullName: "Bob" });
+    store.batch({}, (batch) => {
+      queryB.writeToStore(
+        updated as any,
+        "loaded",
+        batch,
+        undefined,
+        new Set<string>(),
+      );
+    });
+
+    const valueB = store.getValue(queryB.cacheKey)?.value as any;
+    expect(valueB?.fullName).toBe("Bob");
+    expect(valueB?.derivedAddress).toBe("123 Main St");
+  });
 });
 
 describe("ObjectsHelper.isKeyActive", () => {

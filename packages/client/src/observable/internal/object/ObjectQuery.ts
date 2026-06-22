@@ -38,6 +38,7 @@ import { Query } from "../Query.js";
 import type { Store } from "../Store.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
 import { tombstone } from "../tombstone.js";
+import { extractRdpFieldNames } from "../utils/rdpFieldOperations.js";
 import { type ObjectCacheKey, RDP_CONFIG_IDX } from "./ObjectCacheKey.js";
 
 export class ObjectQuery extends Query<
@@ -183,6 +184,7 @@ export class ObjectQuery extends Query<
     status: Status,
     batch: BatchContext,
     selectFields?: ReadonlySet<string>,
+    computedRdpFields?: ReadonlySet<string>,
   ): Entry<ObjectCacheKey> {
     const entry = batch.read(this.cacheKey);
     const rdpConfig = this.cacheKey.otherKeys[RDP_CONFIG_IDX];
@@ -194,12 +196,17 @@ export class ObjectQuery extends Query<
       rdpConfig,
     );
 
+    // a caller passes the derived fields it computed. when it doesn't, default
+    // to every derived field the key tracks.
+    const computed = computedRdpFields ?? extractRdpFieldNames(rdpConfig);
+
     this.store.objects.propagateWrite(
       this.cacheKey,
       data,
       status,
       batch,
       selectFields,
+      computed,
     );
 
     return batch.read(this.cacheKey)!;

@@ -56,6 +56,7 @@ import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import { OrderBySortingStrategy } from "../sorting/SortingStrategy.js";
 import type { Store } from "../Store.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
+import { EMPTY_RDP_SET } from "../utils/rdpFieldOperations.js";
 import {
   INCLUDE_ALL_BASE_PROPERTIES_IDX,
   INTERSECT_IDX,
@@ -613,12 +614,14 @@ export abstract class ListQuery extends BaseListQuery<
           : objOrIface) as unknown as ObjectHolder;
 
       this.store.batch({}, (batch) => {
+        // the stream carries base props only and computes no derived fields.
         this.store.objects.storeOsdkInstances(
           [object as Osdk.Instance<any>],
           batch,
           this.rdpConfig,
           undefined,
           this.includeAllBaseObjectProperties,
+          EMPTY_RDP_SET,
         );
       });
     } else if (state === "REMOVED") {
