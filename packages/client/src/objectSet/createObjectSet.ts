@@ -53,6 +53,7 @@ import {
 } from "../object/fetchPage.js";
 import { fetchSingle, fetchSingleWithErrors } from "../object/fetchSingle.js";
 import { augmentRequestContext } from "../util/augmentRequestContext.js";
+import { extractObjectOrInterfaceType } from "../util/extractObjectOrInterfaceType.js";
 import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
 import { isWireObjectSet } from "../util/WireObjectSet.js";
 import { fetchLinksPage } from "./fetchLinksPage.js";
@@ -414,8 +415,12 @@ async function createWithPk(
   objectSet: WireObjectSet,
   primaryKey: PrimaryKeyType<ObjectTypeDefinition>,
 ) {
+  const resolved = await extractObjectOrInterfaceType(clientCtx, objectSet);
+  const targetApiName = resolved?.type === "object"
+    ? resolved.apiName
+    : objectType.apiName;
   const objDef = await clientCtx.ontologyProvider.getObjectDefinition(
-    objectType.apiName,
+    targetApiName,
   );
 
   const withPk: WireObjectSet = {
