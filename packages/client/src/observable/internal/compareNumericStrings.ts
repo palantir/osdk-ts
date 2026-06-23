@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Big } from "big.js";
+import Big from "big.js";
 
 /**
  * Compares two numeric strings (the wire encoding for `decimal` and `long`) by
