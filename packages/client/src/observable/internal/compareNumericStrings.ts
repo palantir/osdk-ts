@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import Big from "big.js";
+import BigDefault from "big.js";
+import type { Big as BigNumber, BigConstructor } from "big.js";
+
+// `@types/big.js@4` models the default import as the module namespace under
+// NodeNext, but the runtime default export is the constructor in both the ESM
+// entry and the CommonJS interop path. Keep the assertion local so call sites
+// see the precise constructor/type surface.
+const Big = BigDefault as unknown as BigConstructor;
 
 /**
  * Compares two numeric strings (the wire encoding for `decimal` and `long`) by
@@ -52,7 +59,7 @@ export function compareNumericStrings(a: string, b: string): number {
   return aBig.cmp(bBig);
 }
 
-function tryParseBig(s: string): Big | undefined {
+function tryParseBig(s: string): BigNumber | undefined {
   try {
     return new Big(s);
   } catch {
