@@ -373,7 +373,7 @@ describe(useObjectTableData, () => {
     );
   });
 
-  it("when objectSet is provided but type is interface, only enables useOsdkObjects ", () => {
+  it("when objectSet is provided for an interface, enables useObjectSet (not useOsdkObjects)", () => {
     renderHook(
       () =>
         useObjectTableData(
@@ -386,16 +386,16 @@ describe(useObjectTableData, () => {
       { wrapper },
     );
 
-    expect(useOsdkObjects).toHaveBeenCalledWith(
-      TestInterfaceType,
+    expect(useObjectSet).toHaveBeenCalledWith(
+      mockObjectSet,
       expect.objectContaining({
         enabled: true,
         pageSize: 50,
       }),
     );
 
-    expect(useObjectSet).toHaveBeenCalledWith(
-      undefined,
+    expect(useOsdkObjects).toHaveBeenCalledWith(
+      TestInterfaceType,
       expect.objectContaining({
         enabled: false,
         pageSize: 50,

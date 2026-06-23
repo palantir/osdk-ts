@@ -297,7 +297,12 @@ export interface ObjectTableProps<
 
   /**
    * The set of objects to show in the table.
-   * If provided and the objectType is not an interface, the table will use objectSet to fetch objects instead of fetching based on objectType.
+   * If provided, the table fetches through this object set instead of fetching based on
+   * objectType. Supported for both object and interface types.
+   *
+   * For an interface object set, rows expose the interface's declared properties (plus any
+   * `withProperties` derived from `rdp` column locators); the underlying concrete object's
+   * non-interface properties are not loaded. Use objectType-based fetching if you need those.
    */
   objectSet?: ObjectSet<Q>;
 
