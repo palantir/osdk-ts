@@ -1,5 +1,19 @@
 # @osdk/functions
 
+## 1.13.0
+
+### Minor Changes
+
+- c4d39ed: Added support for Byte and Short types in @osdk/functions
+- b6f0fc3: Added FunctionConfig and Scope experimental types
+- 79f8a6e: Stop serializing GeoJSON `Point` geometries into a `"lat,lon"` string when sending object property/parameter values. This broke geoshape values that are Points (the transaction edits and action endpoints rejected `"lat,lon"` with `InvalidTransactionEditPropertyValue` / invalid parameter for `GeoShape`). GeoJSON values are now passed through as objects, which the server accepts for both geoshape and geopoint/geohash targets. The FauxFoundry geohash action-parameter validator now also accepts GeoJSON objects, matching the real server.
+
+### Patch Changes
+
+- Updated dependencies [06adca1]
+- Updated dependencies [79f8a6e]
+  - @osdk/client@2.32.0
+
 ## 1.12.0
 
 ### Minor Changes

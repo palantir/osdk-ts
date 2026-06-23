@@ -307,7 +307,11 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
         if (!state.hasLink) {
           break;
         }
-        clauses.push({ [definition.linkName]: { $isNotNull: true } });
+        const hasLinkClause = { [definition.linkName]: { $isNotNull: true } };
+        // "Excluding" keeps objects that do NOT have the link.
+        clauses.push(
+          state.isExcluding ? { $not: hasLinkClause } : hasLinkClause,
+        );
         break;
       }
 

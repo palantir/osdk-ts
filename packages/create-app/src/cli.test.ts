@@ -180,7 +180,12 @@ async function runTest(
     fs.readFileSync(path.join(process.cwd(), project, "package.json"), "utf-8"),
   );
 
-  if (sdkVersion === "2.x") {
+  // The TypeScript library template is a hidden, non-OSDK scaffold: it ships no
+  // @osdk/client dependency, so the version-pinning assertions below don't apply.
+  // Assert the absence instead so a regression that started injecting it is caught.
+  if (template.id === "template-typescript-library") {
+    expect(packageJson.dependencies?.["@osdk/client"]).toBeUndefined();
+  } else if (sdkVersion === "2.x") {
     // Since the example-generator needs to set the version to `workspace:*`,
     // we cannot use PRs to check that the version is being generated correctly.
 

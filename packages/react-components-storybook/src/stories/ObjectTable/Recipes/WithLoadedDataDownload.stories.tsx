@@ -17,7 +17,6 @@
 import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import type {
   ColumnDefinition,
-  ObjectTableDataCell,
   ObjectTableDataColumn,
   ObjectTableDataRow,
   ObjectTableHandle,
@@ -32,8 +31,16 @@ type EmployeeTableProps = ObjectTableProps<typeof Employee>;
 
 type EmployeeRow = ObjectTableDataRow<typeof Employee>;
 
-const MAX_DOWNLOAD_ROWS = 500;
 const PAGE_SIZE = 5;
+
+const downloadButtonStyle: React.CSSProperties = {
+  padding: "8px 16px",
+  backgroundColor: "#3b82f6",
+  color: "white",
+  border: "none",
+  borderRadius: "4px",
+  cursor: "pointer",
+};
 
 const employeeColumns: Array<ColumnDefinition<Employee>> = [
   {
@@ -69,12 +76,11 @@ export const WithLoadedDataDownload: Story = {
     docs: {
       description: {
         story:
-          "Uses `tableRef.current.getSnapshot()` to build and download a CSV from visible ObjectTable data. Passing a `rowLimit` explicitly fetches more rows before creating the CSV; it is a pagination threshold, so the snapshot can contain more rows when a full page crosses the threshold. The Full name column uses `renderCell`, but the CSV reads the column's accessor value rather than the rendered React element.",
+          "Uses `tableRef.current.getSnapshot()` to build and download a CSV from the ObjectTable's data. The Full name column uses `renderCell`, but the CSV reads the column's accessor value rather than the rendered React element. Function-backed column failures surface as an `Error` instance from `row.getValue`, which the CSV renders as a literal marker.",
       },
       source: {
         code:
           `const tableRef = useRef<ObjectTableHandle<typeof Employee>>(null);
-const MAX_DOWNLOAD_ROWS = ${MAX_DOWNLOAD_ROWS};
 const PAGE_SIZE = ${PAGE_SIZE};
 
 const handleDownload = async () => {
@@ -84,30 +90,12 @@ const handleDownload = async () => {
   }
 
   const csv = toCsv(snapshot.columns, snapshot.rows);
-  downloadCsv(csv, "employees-loaded-rows.csv");
-};
-
-const handleDownloadUpToLimit = async () => {
-  const snapshot = await tableRef.current?.getSnapshot({
-    rowLimit: ${MAX_DOWNLOAD_ROWS},
-  });
-  if (!snapshot) {
-    return;
-  }
-
-  const csv = toCsv(
-    snapshot.columns,
-    snapshot.rows.slice(0, ${MAX_DOWNLOAD_ROWS}),
-  );
-  downloadCsv(csv, "employees-loaded-rows-capped.csv");
+  downloadCsv(csv, "employees.csv");
 };
 
 return (
   <>
-    <button onClick={handleDownload}>Download loaded rows as CSV</button>
-    <button onClick={handleDownloadUpToLimit}>
-      Download up to ${MAX_DOWNLOAD_ROWS} rows as CSV
-    </button>
+    <button onClick={handleDownload}>Download as CSV</button>
     <ObjectTable
       objectType={Employee}
       columnDefinitions={employeeColumns}
@@ -136,26 +124,7 @@ function LoadedDataDownloadExample(): React.ReactElement {
 
       await downloadCsv(
         toCsv(snapshot.columns, snapshot.rows),
-        "employees-loaded-rows.csv",
-      );
-    } finally {
-      setIsDownloading(false);
-    }
-  }, []);
-
-  const handleDownloadUpToLimit = useCallback(async () => {
-    setIsDownloading(true);
-    try {
-      const snapshot = await tableRef.current?.getSnapshot({
-        rowLimit: MAX_DOWNLOAD_ROWS,
-      });
-      if (!snapshot) {
-        return;
-      }
-
-      await downloadCsv(
-        toCsv(snapshot.columns, snapshot.rows),
-        "employees-loaded-rows-capped.csv",
+        "employees.csv",
       );
     } finally {
       setIsDownloading(false);
@@ -172,17 +141,14 @@ function LoadedDataDownloadExample(): React.ReactElement {
           disabled={isDownloading}
           onClick={handleDownload}
           type="button"
+          style={{
+            ...downloadButtonStyle,
+            ...(isDownloading
+              ? { cursor: "not-allowed", opacity: 0.6 }
+              : null),
+          }}
         >
-          Download loaded rows as CSV
-        </button>{" "}
-        <button
-          disabled={isDownloading}
-          onClick={handleDownloadUpToLimit}
-          type="button"
-        >
-          {isDownloading
-            ? "Downloading…"
-            : `Download up to ${MAX_DOWNLOAD_ROWS} rows as CSV`}
+          {isDownloading ? "Downloading…" : "Download as CSV"}
         </button>
       </div>
       <ObjectTable
@@ -208,21 +174,15 @@ function toCsv(columns: ObjectTableDataColumn[], rows: EmployeeRow[]): string {
   ].join("\n");
 }
 
-function formatCellValue(cell: ObjectTableDataCell | undefined): string {
-  if (cell == null) {
-    return "";
-  }
-
-  if (cell.status === "error" && cell.value == null) {
-    return "";
-  }
-
-  return formatUnknownValue(cell.value);
-}
-
-function formatUnknownValue(value: unknown): string {
+function formatCellValue(value: unknown): string {
   if (value == null) {
     return "";
+  }
+
+  // Function-column failures surface as the thrown Error instance; render a
+  // literal marker so users can tell a failure from a legitimately empty cell.
+  if (value instanceof Error) {
+    return "Error";
   }
 
   if (typeof value === "string") {

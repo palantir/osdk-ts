@@ -1,0 +1,21 @@
+# {{project}}
+
+A TypeScript library generated with [`@osdk/create-app`](https://www.npmjs.com/package/@osdk/create-app).
+
+## Local development
+
+```sh
+npm install
+npm run build
+```
+
+Write your library code under `src/`. The `src/index.ts` file is the package entrypoint, and whatever it exports is the public API of the library. Tests live alongside the source in `src/**/__tests__`.
+
+## Scripts
+
+- `npm run build` — type-check and emit ESM + declaration files to `dist/` with `tsc`.
+- `npm test` — run the test suite with [Vitest](https://vitest.dev).
+- `npm run check` — check formatting and lint with [Ultracite](https://www.npmjs.com/package/ultracite) (oxlint + oxfmt).
+- `npm run fix` — auto-fix formatting and lint issues.
+
+Only the compiled output in `dist/` is included when the package is published.

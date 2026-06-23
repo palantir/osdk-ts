@@ -24,6 +24,7 @@ import {
   defineOntology,
   dumpOntologyFullMetadata,
   getOntologyDefinition,
+  sanitizeTypes,
 } from "../defineOntology.js";
 import { type InterfaceType } from "../interface/InterfaceType.js";
 
@@ -2045,6 +2046,7 @@ describe("Link Types", () => {
           "interfaceTypes": {
             "com.palantir.A": {
               "interfaceType": {
+                "actionTypeConstraints": [],
                 "apiName": "com.palantir.A",
                 "displayMetadata": {
                   "description": "A",
@@ -2059,6 +2061,29 @@ describe("Link Types", () => {
                 },
                 "extendsInterfaces": [],
                 "extendsInterfacesMetadata": [],
+                "linkedInterfaces": [
+                  {
+                    "__type": "INTERFACE_TYPE",
+                    "actionTypeConstraints": [],
+                    "apiName": "com.palantir.B",
+                    "displayMetadata": {
+                      "description": "B",
+                      "displayName": "B",
+                      "icon": undefined,
+                    },
+                    "extendsInterfaces": [],
+                    "linkedInterfaces": [],
+                    "links": [],
+                    "permission": undefined,
+                    "propertiesV2": {},
+                    "propertiesV3": {},
+                    "searchable": true,
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                  },
+                ],
                 "links": [
                   {
                     "cardinality": "SINGLE",
@@ -2087,6 +2112,7 @@ describe("Link Types", () => {
             },
             "com.palantir.B": {
               "interfaceType": {
+                "actionTypeConstraints": [],
                 "apiName": "com.palantir.B",
                 "displayMetadata": {
                   "description": "B",
@@ -2101,6 +2127,7 @@ describe("Link Types", () => {
                 },
                 "extendsInterfaces": [],
                 "extendsInterfacesMetadata": [],
+                "linkedInterfaces": [],
                 "links": [],
                 "permission": undefined,
                 "properties": [],
@@ -2141,6 +2168,7 @@ describe("Link Types", () => {
           "interfaceTypes": {
             "com.palantir.A": {
               "interfaceType": {
+                "actionTypeConstraints": [],
                 "apiName": "com.palantir.A",
                 "displayMetadata": {
                   "description": "A",
@@ -2155,6 +2183,29 @@ describe("Link Types", () => {
                 },
                 "extendsInterfaces": [],
                 "extendsInterfacesMetadata": [],
+                "linkedInterfaces": [
+                  {
+                    "__type": "INTERFACE_TYPE",
+                    "actionTypeConstraints": [],
+                    "apiName": "com.palantir.B",
+                    "displayMetadata": {
+                      "description": "B",
+                      "displayName": "B",
+                      "icon": undefined,
+                    },
+                    "extendsInterfaces": [],
+                    "linkedInterfaces": [],
+                    "links": [],
+                    "permission": undefined,
+                    "propertiesV2": {},
+                    "propertiesV3": {},
+                    "searchable": true,
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                  },
+                ],
                 "links": [
                   {
                     "cardinality": "MANY",
@@ -2183,6 +2234,7 @@ describe("Link Types", () => {
             },
             "com.palantir.B": {
               "interfaceType": {
+                "actionTypeConstraints": [],
                 "apiName": "com.palantir.B",
                 "displayMetadata": {
                   "description": "B",
@@ -2197,6 +2249,7 @@ describe("Link Types", () => {
                 },
                 "extendsInterfaces": [],
                 "extendsInterfacesMetadata": [],
+                "linkedInterfaces": [],
                 "links": [],
                 "permission": undefined,
                 "properties": [],
@@ -2259,5 +2312,67 @@ describe("Link Types", () => {
         ontologyPackageRid: null,
       });
     }, "/tmp/");
+  });
+
+  describe("Self-referential interface link constraints", () => {
+    it("serializes objects and links that reach a self-referential interface", () => {
+      const node = defineInterface({
+        apiName: "treeNode",
+        properties: {
+          parentId: {
+            displayName: "Parent Id",
+            type: "string",
+            required: true,
+          },
+        },
+      });
+
+      defineInterfaceLinkConstraint({
+        apiName: "parent",
+        from: node,
+        toOne: node,
+      });
+
+      const object = defineObject({
+        apiName: "treeObject",
+        displayName: "Tree Object",
+        pluralDisplayName: "Tree Objects",
+        titlePropertyApiName: "id",
+        primaryKeyPropertyApiName: "id",
+        properties: {
+          id: { type: "string" },
+          parentId: { type: "string" },
+        },
+        implementsInterfaces: [
+          {
+            implements: node,
+            propertyMapping: [
+              { interfaceProperty: "parentId", mapsTo: "parentId" },
+            ],
+          },
+        ],
+      });
+
+      defineLink({
+        apiName: "objectToObject",
+        one: { object, metadata: { apiName: "parents" } },
+        toMany: { object, metadata: { apiName: "children" } },
+        manyForeignKeyProperty: "parentId",
+      });
+
+      const definition = getOntologyDefinition();
+      const objectEntity = definition[OntologyEntityTypeEnum.OBJECT_TYPE][
+        "com.palantir.treeObject"
+      ];
+      // Link types are stored under their raw apiName (defineLink does not
+      // prepend the namespace, unlike objects/interfaces).
+      const linkEntity =
+        definition[OntologyEntityTypeEnum.LINK_TYPE].objectToObject;
+
+      expect(() => JSON.stringify(sanitizeTypes(objectEntity)))
+        .not.toThrow();
+      expect(() => JSON.stringify(sanitizeTypes(linkEntity)))
+        .not.toThrow();
+    });
   });
 });

@@ -26,6 +26,9 @@ import type { FetchedObjectTypeDefinition } from "../../../ontology/OntologyProv
 import type { Canonical } from "../Canonical.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
 
+/** shared empty set for writes that compute no derived fields. */
+export const EMPTY_RDP_SET: ReadonlySet<string> = new Set();
+
 export function extractRdpFieldNames(
   rdpConfig: Canonical<Rdp> | undefined,
 ): ReadonlySet<string> {
@@ -116,11 +119,13 @@ function filterToRdpFields(
   };
 
   for (const key of Object.keys(underlying)) {
-    if (key in objectDef.properties) {
-      const isRdpField = sourceRdpFields.has(key);
-      if (!isRdpField || rdpFieldsToKeep.has(key)) {
+    // keep the target's derived fields and every base prop.
+    if (sourceRdpFields.has(key)) {
+      if (rdpFieldsToKeep.has(key)) {
         newProps[key] = underlying[key];
       }
+    } else if (key in objectDef.properties) {
+      newProps[key] = underlying[key];
     }
   }
 
@@ -131,6 +136,7 @@ export function mergeSelectFields(
   sourceValue: ObjectHolder,
   selectFields: ReadonlySet<string>,
   existingValue: ObjectHolder,
+  sourceRdpFields: ReadonlySet<string>,
 ): ObjectHolder {
   const sourceUnderlying =
     sourceValue[UnderlyingOsdkObject] as SimpleOsdkProperties;
@@ -156,7 +162,10 @@ export function mergeSelectFields(
   }
 
   for (const key of Object.keys(sourceUnderlying)) {
-    if (key in objectDef.properties && selectFields.has(key)) {
+    // Take the source's derived fields, plus the base props it selected.
+    if (sourceRdpFields.has(key)) {
+      newProps[key] = sourceUnderlying[key];
+    } else if (key in objectDef.properties && selectFields.has(key)) {
       newProps[key] = sourceUnderlying[key];
     }
   }
@@ -197,28 +206,26 @@ export function mergeObjectFields(
   };
 
   for (const key of Object.keys(sourceUnderlying)) {
-    if (
-      key in objectDef.properties
-      && (!sourceRdpFields.has(key) || targetRdpFields.has(key))
-    ) {
+    if (key in objectDef.properties) {
       newProps[key] = sourceUnderlying[key];
+    }
+  }
+
+  // take the source's derived fields the target wants. if the source left one
+  // out then it just clears.
+  for (const field of sourceRdpFields) {
+    if (targetRdpFields.has(field) && field in sourceUnderlying) {
+      newProps[field] = sourceUnderlying[field];
     }
   }
 
   if (targetCurrentValue) {
     const targetUnderlying =
       targetCurrentValue[UnderlyingOsdkObject] as SimpleOsdkProperties;
+    // Keep the target's value for derived fields the source did not compute.
     for (const field of targetRdpFields) {
-      if (field in targetUnderlying) {
-        // Preserve target's value when:
-        // 1. Source doesn't have this RDP field at all, OR
-        // 2. Source hasn't provided the value (undefined)
-        if (
-          !sourceRdpFields.has(field)
-          || newProps[field] === undefined
-        ) {
-          newProps[field] = targetUnderlying[field];
-        }
+      if (!sourceRdpFields.has(field) && field in targetUnderlying) {
+        newProps[field] = targetUnderlying[field];
       }
     }
   }

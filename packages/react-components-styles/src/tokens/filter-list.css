@@ -346,15 +346,18 @@
     var(--osdk-surface-spacing) * 0.5
   );
   --osdk-filter-item-header-action-color: var(--osdk-typography-color-muted);
+  --osdk-filter-item-header-action-color-active: var(
+    --osdk-typography-color-default-rest
+  );
   --osdk-filter-item-header-action-bg-hover: var(--osdk-custom-color-gray-1);
+  --osdk-filter-item-header-action-bg-active: var(
+    --osdk-surface-background-color-default-active
+  );
   --osdk-filter-item-header-action-border-radius: var(
     --osdk-surface-border-radius
   );
 
   /* Exclude Dropdown */
-  --osdk-filter-item-exclude-dropdown-font-family: var(
-    --osdk-typography-family-default
-  );
   --osdk-filter-item-exclude-dropdown-font-size: var(
     --osdk-typography-size-body-small
   );

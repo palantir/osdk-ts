@@ -53,6 +53,7 @@ import {
 } from "../object/fetchPage.js";
 import { fetchSingle, fetchSingleWithErrors } from "../object/fetchSingle.js";
 import { augmentRequestContext } from "../util/augmentRequestContext.js";
+import { extractObjectOrInterfaceType } from "../util/extractObjectOrInterfaceType.js";
 import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
 import { isWireObjectSet } from "../util/WireObjectSet.js";
 import { fetchLinksPage } from "./fetchLinksPage.js";
@@ -131,9 +132,6 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     ) as ObjectSet<Q>["fetchPageWithErrors"],
 
     where: (clause) => {
-      if (clause == null || Object.keys(clause).length === 0) {
-        return clientCtx.objectSetFactory(objectType, clientCtx, objectSet);
-      }
       return clientCtx.objectSetFactory(objectType, clientCtx, {
         type: "filter",
         objectSet,
@@ -225,8 +223,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
           ),
           objectType,
           objectSet,
-          { ...args, $pageSize: 10000, $nextPageToken },
-          true,
+          { ...args, $pageSize: 10000, $nextPageToken, $snapshot: true },
         );
         $nextPageToken = result.nextPageToken;
 
@@ -415,8 +412,12 @@ async function createWithPk(
   objectSet: WireObjectSet,
   primaryKey: PrimaryKeyType<ObjectTypeDefinition>,
 ) {
+  const resolved = await extractObjectOrInterfaceType(clientCtx, objectSet);
+  const targetApiName = resolved?.type === "object"
+    ? resolved.apiName
+    : objectType.apiName;
   const objDef = await clientCtx.ontologyProvider.getObjectDefinition(
-    objectType.apiName,
+    targetApiName,
   );
 
   const withPk: WireObjectSet = {

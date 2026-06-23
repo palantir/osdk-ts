@@ -508,7 +508,7 @@
                 "fieldType": {
                   "type": "integer"
                 },
-                "required": true
+                "required": false
               }
             ]
           },

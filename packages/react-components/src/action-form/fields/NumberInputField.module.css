@@ -16,29 +16,31 @@
 
 .osdkNumberInputWrapper {
   display: flex;
-  border-radius: var(--osdk-input-border-radius);
-  border: var(--osdk-input-border-width) solid var(--osdk-input-border-color);
-  box-shadow: var(--osdk-input-shadow);
-  background-color: var(--osdk-input-bg);
-  transition:
-    background-color var(--osdk-input-transition-duration)
-      var(--osdk-input-transition-ease),
-    border-color var(--osdk-input-transition-duration)
-      var(--osdk-input-transition-ease);
+  align-items: stretch;
+  gap: calc(var(--osdk-surface-spacing) * 0.5);
+}
 
-  &:hover {
-    background-color: var(--osdk-input-bg-hover);
-  }
+.osdkNumberInputWrapper:focus-within .osdkNumberInputField {
+  box-shadow: var(--osdk-input-focus-shadow);
+}
 
-  &:focus-within {
-    outline: var(--osdk-input-focus-width) solid var(--osdk-input-focus-color);
-    outline-offset: var(--osdk-input-focus-offset);
-    border-color: var(--osdk-input-border-color-focus);
-  }
+.osdkNumberInputWrapper[aria-invalid] .osdkNumberInputField {
+  box-shadow: var(--osdk-input-shadow-error);
+}
 
-  &[aria-invalid] {
-    border-color: var(--osdk-input-border-color-error);
-  }
+.osdkNumberInputWrapper[aria-invalid] .osdkNumberInputStepper {
+  box-shadow: var(--osdk-input-shadow-error);
+}
+
+.osdkNumberInputWrapper[aria-invalid]:focus-within .osdkNumberInputField {
+  box-shadow: var(--osdk-input-focus-shadow-error);
+}
+
+.osdkNumberInputWrapper[aria-invalid]
+  .osdkNumberInputStepButton
+  + .osdkNumberInputStepButton {
+  box-shadow: inset 0 var(--osdk-input-border-width) 0
+    var(--osdk-input-border-color-error);
 }
 
 .osdkNumberInputField {
@@ -46,10 +48,10 @@
   min-width: 0;
   min-height: var(--osdk-input-min-height);
   padding: var(--osdk-input-padding);
+  border-radius: var(--osdk-input-border-radius);
   border: none;
-  border-radius: var(--osdk-input-border-radius) 0 0
-    var(--osdk-input-border-radius);
-  background: transparent;
+  box-shadow: var(--osdk-input-shadow);
+  background-color: var(--osdk-input-bg);
   color: var(--osdk-input-color);
   font-family: var(--osdk-input-font-family);
   font-size: var(--osdk-input-font-size);
@@ -57,6 +59,16 @@
     --osdk-input-line-height,
     var(--osdk-typography-line-height-default)
   );
+  box-sizing: border-box;
+  transition:
+    background-color var(--osdk-input-transition-duration)
+      var(--osdk-input-transition-ease),
+    box-shadow var(--osdk-input-transition-duration)
+      var(--osdk-input-transition-ease);
+
+  &:hover {
+    background-color: var(--osdk-input-bg-hover);
+  }
 
   &::placeholder {
     color: var(--osdk-input-placeholder-color);
@@ -68,15 +80,20 @@
   }
 
   &:focus-visible {
-    outline: none;
+    outline: var(--osdk-input-focus-outline);
+    outline-offset: var(--osdk-input-focus-outline-offset);
   }
 }
 
+/* Not applying an outline on focus on the stepper to match the Blueprint behaviour */
 .osdkNumberInputStepper {
   display: flex;
   flex-direction: column;
-  border-left: var(--osdk-input-border-width) solid
-    var(--osdk-input-border-color);
+  border: none;
+  border-radius: var(--osdk-input-border-radius);
+  box-shadow: var(--osdk-input-shadow);
+  background-color: var(--osdk-input-bg);
+  overflow: hidden;
 }
 
 .osdkNumberInputStepButton {
@@ -90,13 +107,20 @@
   color: var(--osdk-input-color);
   cursor: pointer;
   line-height: 0;
+  transition:
+    background-color var(--osdk-input-transition-duration)
+      var(--osdk-input-transition-ease),
+    box-shadow var(--osdk-input-transition-duration)
+      var(--osdk-input-transition-ease);
 
   &:hover {
-    background-color: var(--osdk-input-bg-hover);
+    background-color: var(--osdk-button-secondary-bg-active);
+    box-shadow: inset 0 0 0 var(--osdk-input-border-width)
+      var(--osdk-input-border-color);
   }
 
   &:active {
-    background-color: var(--osdk-input-border-color);
+    background-color: var(--osdk-button-secondary-bg-active);
   }
 
   &:disabled {
@@ -105,7 +129,7 @@
   }
 
   & + & {
-    border-top: var(--osdk-input-border-width) solid
+    border-block-start: var(--osdk-input-border-width) solid
       var(--osdk-input-border-color);
   }
 }

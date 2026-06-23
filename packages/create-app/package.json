@@ -1,6 +1,6 @@
 {
   "name": "@osdk/create-app",
-  "version": "2.29.0",
+  "version": "2.37.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -53,6 +53,7 @@
     "@osdk/create-app.template.tutorial-todo-aip-app.beta": "workspace:*",
     "@osdk/create-app.template.tutorial-todo-app": "workspace:*",
     "@osdk/create-app.template.tutorial-todo-app.beta": "workspace:*",
+    "@osdk/create-app.template.typescript-library.beta": "workspace:*",
     "@osdk/create-app.template.vue": "workspace:*",
     "@osdk/create-app.template.vue.v2": "workspace:*",
     "@osdk/monorepo.api-extractor": "workspace:~",

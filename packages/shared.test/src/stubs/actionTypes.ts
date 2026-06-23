@@ -465,7 +465,7 @@ export const ActionTakesStruct: ActionTypeV2 = {
             fieldType: {
               type: "integer",
             },
-            required: true,
+            required: false,
           },
         ],
       },

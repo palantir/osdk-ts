@@ -206,10 +206,38 @@ export async function setupFauxFoundry(): Promise<void> {
     () => undefined,
   );
 
-  // Add mock data from JSON file
+  // Add mock data from JSON file. We synthesize marking values so the
+  // ObjectTable marking column story has data to render — each employee is
+  // assigned a classification (cycling unclassified → top-secret) and a
+  // CBAC clearance set (compartments + releasability) varying by index.
   const dataStore = fauxFoundry.getDefaultDataStore();
-  employeeData.forEach((employee) => {
-    dataStore.registerObject(employee);
+  const classificationCycle = [
+    "m-unclassified",
+    "m-confidential",
+    "m-secret",
+    "m-top-secret",
+  ];
+  const compartmentPool = ["m-alpha", "m-bravo", "m-charlie"];
+  const releasabilityPool = [
+    "m-rel-usa",
+    "m-rel-allied",
+    "m-no-foreign",
+  ];
+  employeeData.forEach((employee, index) => {
+    const classificationMarking = classificationCycle[
+      index % classificationCycle.length
+    ];
+    const compartmentCount = (index % compartmentPool.length) + 1;
+    const releasabilityCount = (index % releasabilityPool.length) + 1;
+    const clearanceMarking = [
+      ...compartmentPool.slice(0, compartmentCount),
+      ...releasabilityPool.slice(0, releasabilityCount),
+    ];
+    dataStore.registerObject({
+      ...employee,
+      classificationMarking,
+      clearanceMarking,
+    });
   });
 
   // Register sample PDF media for an employee's employeeDocuments property
@@ -359,17 +387,40 @@ export async function setupFauxFoundry(): Promise<void> {
     admin.registerMarking(marking);
   }
 
+  const categoryColors: Record<string, { textColor: string; bg: string }> = {
+    "cat-compartment": { textColor: "#FFFFFF", bg: "#5B3F8A" },
+    "cat-releasability": { textColor: "#FFFFFF", bg: "#1F6FB5" },
+  };
+
   admin.setBannerResolver((markingIds, markings) => {
+    if (markingIds.length === 0) {
+      return {
+        classificationString: "UNMARKED",
+        textColor: "#FFFFFF",
+        backgroundColors: ["#8F99A8"],
+      };
+    }
+
     const markingMap = new Map(markings.map((m) => [m.id, m]));
     const classificationId = markingIds.find(
       (id) => markingMap.get(id)?.categoryId === "cat-classification",
     );
 
     if (classificationId == null) {
+      // No classification marking — label with the joined marking names so
+      // CBAC compartment / releasability columns render meaningfully on
+      // their own. Color tracks the first marking's category.
+      const resolved = markingIds.map((id) => markingMap.get(id)?.name ?? id);
+      const firstCategoryId = markingIds
+        .map((id) => markingMap.get(id)?.categoryId)
+        .find((cid): cid is string => cid != null);
+      const swatch = firstCategoryId != null
+        ? categoryColors[firstCategoryId]
+        : undefined;
       return {
-        classificationString: "UNMARKED",
-        textColor: "#FFFFFF",
-        backgroundColors: ["#8F99A8"],
+        classificationString: resolved.join(", "),
+        textColor: swatch?.textColor ?? "#FFFFFF",
+        backgroundColors: [swatch?.bg ?? "#8F99A8"],
       };
     }
 

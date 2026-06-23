@@ -29,7 +29,11 @@ import invariant from "tiny-invariant";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import { additionalContext, type Client } from "../../Client.js";
 import { DEBUG_REFCOUNTS } from "../DebugFlags.js";
-import type { CacheEntry, CacheSnapshot } from "../ObservableClient.js";
+import type {
+  CacheEntry,
+  CacheSnapshot,
+  ObservableClientOptions,
+} from "../ObservableClient.js";
 import type { OptimisticBuilder } from "../OptimisticBuilder.js";
 import { ActionApplication } from "./actions/ActionApplication.js";
 import {
@@ -123,6 +127,14 @@ export class Store {
   /** @internal */
   readonly logger?: Logger;
 
+  /**
+   * Resolved dev-mode action delay in ms (0 disables); only read in dev builds.
+   * @internal
+   */
+  readonly devModeActionDelayMs: number;
+
+  #devModeDelayWarned = false;
+
   readonly cacheKeys: CacheKeys<KnownCacheKey>;
   readonly queries: Queries = new Queries();
 
@@ -156,11 +168,12 @@ export class Store {
   readonly media: MediaHelper;
   readonly objectSets: ObjectSetHelper;
 
-  constructor(client: Client) {
+  constructor(client: Client, options?: ObservableClientOptions) {
     this.logger = client[additionalContext].logger?.child({}, {
       msgPrefix: "Store",
     });
     this.client = client;
+    this.devModeActionDelayMs = options?.devMode?.actionDelayMs ?? 1000;
 
     this.cacheKeys = new CacheKeys<KnownCacheKey>({
       onDestroy: this.#cleanupCacheKey,
@@ -203,6 +216,26 @@ export class Store {
       this.selectCanonicalizer,
       this.objectSetArrayCanonicalizer,
     );
+  }
+
+  /**
+   * Logs the dev-mode delay explanation once per store. No-op in production.
+   * @internal
+   */
+  maybeWarnDevModeDelayApplied(): void {
+    if (process.env.NODE_ENV !== "production" && !this.#devModeDelayWarned) {
+      this.#devModeDelayWarned = true;
+      // eslint-disable-next-line no-console
+      console.warn(
+        `[@osdk/client] Applied a ${this.devModeActionDelayMs}ms dev-mode `
+          + `delay to an action with an optimistic update so the optimistic `
+          + `state is visible before the server responds. This only happens `
+          + `in dev mode and only for actions with an optimistic update. Tune `
+          + `it via the OsdkProvider \`devMode={{ actionDelayMs }}\` prop `
+          + `(or the createObservableClient \`devMode.actionDelayMs\` option); `
+          + `set it to 0 to disable.`,
+      );
+    }
   }
 
   /**

@@ -184,8 +184,9 @@ export function isScenarioClient(
 }
 
 /**
- * Shared internal builder used by both {@link withScenario} and {@link createScenario}. Validates the parent client
- * is not already inside a scenario or transaction, then constructs a fresh {@link Client} via
+ * Shared internal builder used by both {@link withScenario} and {@link createScenario}. Throws if the parent client
+ * is already inside a scenario. If the parent client has an active transaction, the transaction is ignored (a warning
+ * is logged) and the client is scoped to the scenario instead. Constructs a fresh {@link Client} via
  * `createClientWithScenario` and decorates it with {@link EXPERIMENTAL_ScenarioClient}-only methods.
  *
  * @internal
@@ -197,8 +198,9 @@ export function buildScenarioClient(
   const ctx: MinimalClient = parent[additionalContext];
 
   if (ctx.transactionId != null) {
-    throw new Error(
-      "withScenario / createScenario: the supplied client already has an active transaction. Scenarios cannot be nested on transactions.",
+    // eslint-disable-next-line no-console
+    console.warn(
+      "withScenario / createScenario: the supplied client has an active transaction. Ignoring the transaction and scoping to the scenario instead.",
     );
   }
   if (ctx.scenarioRid != null) {

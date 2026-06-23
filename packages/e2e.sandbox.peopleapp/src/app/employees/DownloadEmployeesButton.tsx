@@ -1,26 +1,29 @@
+import type { ObjectOrInterfaceDefinition, SimplePropertyDef } from "@osdk/api";
 import type {
-  ObjectTableDataCell,
   ObjectTableHandle,
   ObjectTableSnapshot,
 } from "@osdk/react-components/experimental/object-table";
 import type { RefObject } from "react";
 import React, { useCallback, useState } from "react";
 import { Button } from "../../components/Button.js";
-import type { Employee } from "../../generatedNoCheck2/index.js";
 
-// Mirrors the RDP set EmployeesTable passes to ObjectTable, so the handle type
-// lines up.
-type RDPs = { managerName: "string" };
-
-// Bound pagination work so a large object set can't pull unbounded pages into
-// the client. This is a fetch threshold, not a CSV row cap: getSnapshot keeps
-// already-loaded rows and fetches full pages, so the CSV can contain more rows.
+// Guard against pulling a very large object set into the client.
+// `getSnapshot` rejects when the total row count exceeds this value;
+// otherwise it loads every matching row.
 const MAX_DOWNLOAD_ROWS = 10_000;
 
-export function DownloadEmployeesButton(
-  { tableRef }: {
-    tableRef: RefObject<ObjectTableHandle<Employee, RDPs> | null>;
-  },
+interface DownloadEmployeesButtonProps<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+> {
+  tableRef: RefObject<ObjectTableHandle<Q, RDPs> | null>;
+}
+
+export function DownloadEmployeesButton<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+>(
+  { tableRef }: DownloadEmployeesButtonProps<Q, RDPs>,
 ): React.ReactElement {
   const [isDownloading, setIsDownloading] = useState(false);
 
@@ -30,10 +33,9 @@ export function DownloadEmployeesButton(
       const snapshot = await tableRef.current?.getSnapshot({
         rowLimit: MAX_DOWNLOAD_ROWS,
       });
-      if (!snapshot) {
+      if (snapshot == null) {
         return;
       }
-
       await downloadCsv(snapshotToCsv(snapshot), "employees.csv");
     } finally {
       setIsDownloading(false);
@@ -47,7 +49,12 @@ export function DownloadEmployeesButton(
   );
 }
 
-function snapshotToCsv(snapshot: ObjectTableSnapshot<Employee, RDPs>): string {
+function snapshotToCsv<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef>,
+>(
+  snapshot: ObjectTableSnapshot<Q, RDPs>,
+): string {
   const { columns, rows } = snapshot;
   return [
     columns.map((column) => escapeCsvCell(column.name)).join(","),
@@ -61,30 +68,25 @@ function snapshotToCsv(snapshot: ObjectTableSnapshot<Employee, RDPs>): string {
   ].join("\n");
 }
 
-function formatCellValue(cell: ObjectTableDataCell | undefined): string {
+function formatCellValue(cell: unknown): string {
   if (cell == null) {
     return "";
   }
-  if (cell.status === "error" && cell.value == null) {
-    return "";
+  // Function-column failures surface as the thrown Error instance; render a
+  // literal marker so users can tell a failure from a legitimately empty cell.
+  if (cell instanceof Error) {
+    return "Error";
   }
-  return formatUnknownValue(cell.value);
-}
-
-function formatUnknownValue(value: unknown): string {
-  if (value == null) {
-    return "";
+  if (typeof cell === "string") {
+    return cell;
   }
-  if (typeof value === "string") {
-    return value;
-  }
-  if (typeof value === "number" || typeof value === "boolean") {
-    return String(value);
+  if (typeof cell === "number" || typeof cell === "boolean") {
+    return String(cell);
   }
   try {
-    return JSON.stringify(value) ?? "";
+    return JSON.stringify(cell) ?? "";
   } catch {
-    return String(value);
+    return String(cell);
   }
 }
 
@@ -105,8 +107,8 @@ async function downloadCsv(csv: string, fileName: string): Promise<void> {
   link.click();
   link.remove();
   // click() only queues the download; the browser reads the blob from the
-  // object URL on a later tick. Wait a tick before revoking so the download has
-  // started and the awaiting caller keeps its loading state until then.
+  // object URL on a later tick. Wait a tick before revoking so the download
+  // has started and the awaiting caller keeps its loading state until then.
   await new Promise((resolve) => setTimeout(resolve, 0));
   URL.revokeObjectURL(url);
 }

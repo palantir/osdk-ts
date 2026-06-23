@@ -242,6 +242,22 @@ export function defineAction(actionDefInput: ActionTypeDefinition): ActionType {
         );
       });
     }
+    if (rule.type === "addInterfaceLinkRuleV2") {
+      const ilr = rule.addInterfaceLinkRuleV2;
+      const interfaceType =
+        ontologyDefinition.INTERFACE_TYPE[ilr.interfaceTypeRid]
+          ?? importedTypes.INTERFACE_TYPE[ilr.interfaceTypeRid];
+      invariant(
+        interfaceType !== undefined,
+        `Interface type ${ilr.interfaceTypeRid} does not exist`,
+      );
+      invariant(
+        interfaceType.links.some(link =>
+          link.metadata.apiName === ilr.interfaceLinkTypeRid
+        ),
+        `Interface link type ${ilr.interfaceLinkTypeRid} does not exist on interface ${ilr.interfaceTypeRid}`,
+      );
+    }
   });
 
   const fullAction = {
@@ -637,12 +653,47 @@ function referencedParameterIds(
           },
         );
         break;
+      case "addInterfaceLinkRuleV2":
+        rule.addInterfaceLinkRuleV2.interfaceTypeRid = sanitize(
+          rule.addInterfaceLinkRuleV2.interfaceTypeRid,
+        );
+        rule.addInterfaceLinkRuleV2.interfaceLinkTypeRid = sanitize(
+          rule.addInterfaceLinkRuleV2.interfaceLinkTypeRid,
+        );
+        [
+          ...rule.addInterfaceLinkRuleV2.sourceObjects,
+          ...rule.addInterfaceLinkRuleV2.targetObjects,
+        ].forEach(ref => {
+          switch (ref.type) {
+            case "existingObject":
+              parameterIds.add(ref.existingObject);
+              break;
+            case "createdInterfaceObjectReferenceByPk":
+              parameterIds.add(
+                ref.createdInterfaceObjectReferenceByPk.objectType,
+              );
+              parameterIds.add(
+                ref.createdInterfaceObjectReferenceByPk.primaryKey,
+              );
+              break;
+            case "createdInterfaceObjectReferenceByUniqueIdentifier":
+              parameterIds.add(
+                ref.createdInterfaceObjectReferenceByUniqueIdentifier
+                  .objectType,
+              );
+              break;
+            case "createdObjectReference":
+              // references another logic rule by LogicRuleRid, not a parameter
+              break;
+          }
+        });
+        break;
     }
   });
   return parameterIds;
 }
 
-function extractAllowedValuesFromActionParameterType(
+export function extractAllowedValuesFromActionParameterType(
   type: ActionParameterType,
 ): ActionParameterAllowedValues {
   if (typeof type === "object") {
@@ -650,6 +701,11 @@ function extractAllowedValuesFromActionParameterType(
       case "objectReference":
       case "objectReferenceList":
         return { type: "objectQuery" };
+      case "interfaceReference":
+      case "interfaceReferenceList":
+        return { type: "interfaceObjectQuery" };
+      case "objectSetRid":
+        return { type: "objectSetRid" };
       case "struct":
       case "structList":
         throw new Error("Structs are not supported yet");

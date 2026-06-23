@@ -22,6 +22,7 @@ export type {
   CanonicalizedOptions,
   CanonicalizeOptionsInput,
   ObservableClient,
+  ObservableClientOptions,
   ObserveAggregationArgs,
   ObserveFunctionCallbackArgs,
   ObserveFunctionOptions,

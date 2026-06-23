@@ -31,7 +31,7 @@ import type {
 } from "@osdk/react-components/experimental/object-table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useState } from "react";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 import { fauxFoundry } from "../../mocks/fauxFoundry.js";
 import { Employee } from "../../types/Employee.js";
 import { WorkerInterface } from "../../types/WorkerInterface.js";
@@ -206,6 +206,19 @@ const meta: Meta<EmployeeTableProps> = {
     onRowSelectionChanged: {
       description:
         "Called when the row selection changes, with a RowSelectionChange payload (selectedRows, isSelectAll, derived objectSet). Preferred over the deprecated onRowSelection callback.",
+      control: false,
+      table: {
+        category: "Events",
+      },
+    },
+    focusedRow: {
+      description:
+        "The primary key of the row to render as visually focused. When provided, focus is controlled.",
+      control: false,
+    },
+    onFocusedRowChanged: {
+      description:
+        "Called when the focused row changes — fires in both controlled and uncontrolled modes so callers can observe focus without taking it over.",
       control: false,
       table: {
         category: "Events",
@@ -687,6 +700,57 @@ export const MultipleSelection: Story = {
       <ObjectTable {...args} />
     </div>
   ),
+  // Storybook "Interactions" test: the play function drives the rendered
+  // component with simulated user input and asserts on the result. It runs
+  // automatically in the Interactions panel and as part of the test runner.
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+
+    // Re-query fresh each time: toggling the header re-renders the rows, so
+    // checkbox refs captured earlier could go stale.
+    const rowCheckboxes = () =>
+      canvas.findAllByRole("checkbox", { name: /select row/i });
+    const deselectAllCheckbox = () =>
+      canvas.findByRole("checkbox", { name: /deselect all rows/i });
+
+    // Wait for the (MSW-mocked) rows to load, then grab the per-row checkboxes.
+    const [firstRow, secondRow] = await rowCheckboxes();
+
+    // Selecting one row checks it and notifies the consumer.
+    await userEvent.click(firstRow);
+    await expect(firstRow).toBeChecked();
+    await waitFor(() => expect(args.onRowSelectionChanged).toHaveBeenCalled());
+
+    // In "multiple" mode a second row can be selected without clearing the
+    // first — both stay checked.
+    await userEvent.click(secondRow);
+    await expect(firstRow).toBeChecked();
+    await expect(secondRow).toBeChecked();
+
+    // The header checkbox toggles every row. Once rows are selected its label
+    // flips to "Deselect all rows", so clicking it clears the selection.
+    await userEvent.click(await deselectAllCheckbox());
+    for (const rowCheckbox of await rowCheckboxes()) {
+      await expect(rowCheckbox).not.toBeChecked();
+    }
+
+    // With nothing selected the header label flips back to "Select all rows"
+    // (exact-string match so it doesn't also match "Deselect all rows").
+    // Clicking it now selects every row.
+    await userEvent.click(
+      await canvas.findByRole("checkbox", { name: "Select all rows" }),
+    );
+    for (const rowCheckbox of await rowCheckboxes()) {
+      await expect(rowCheckbox).toBeChecked();
+    }
+
+    // Everything is selected, so the header label is "Deselect all rows" again.
+    // Clicking it clears the entire selection.
+    await userEvent.click(await deselectAllCheckbox());
+    for (const rowCheckbox of await rowCheckboxes()) {
+      await expect(rowCheckbox).not.toBeChecked();
+    }
+  },
 };
 
 export const WithContextMenu: Story = {
@@ -969,6 +1033,7 @@ export const EventListeners: Story = {
     onColumnVisibilityChanged: fn(),
     onColumnsPinnedChanged: fn(),
     onColumnResize: fn(),
+    onFocusedRowChanged: fn(),
   } as EmployeeTableProps,
   parameters: {
     docs: {
@@ -979,6 +1044,9 @@ export const EventListeners: Story = {
   selectionMode="multiple"
   onRowClick={(employee) => {
     console.log("Row clicked:", employee);
+  }}
+  onFocusedRowChanged={(employee) => {
+    console.log("Row focused:", employee);
   }}
   onColumnHeaderClick={(columnId) => {
     console.log("Column header clicked:", columnId);
@@ -1262,6 +1330,109 @@ return (
             selectedRows={selectedRows}
             isAllSelected={isSelectAll}
             onRowSelectionChanged={handleRowSelectionChanged}
+          />
+        </div>
+      </div>
+    );
+  },
+};
+
+export const ControlledFocusedRow: Story = {
+  args: {
+    objectType: Employee,
+    columnDefinitions: defaultEmployeeColumns,
+    onFocusedRowChanged: fn(),
+  } as EmployeeTableProps,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates the `focusedRow` / `onFocusedRowChanged` API. Click any row to focus it; "
+          + "the focused employee is shown in the banner above and persists until cleared by the caller. "
+          + "Because focus is controlled, outside clicks no longer auto-clear — the caller owns clearing.",
+      },
+      source: {
+        code:
+          `const [focusedRow, setFocusedRow] = useState<Osdk.Instance<Employee> | null>(null);
+
+return (
+  <>
+    <div>
+      Focused employee: {focusedRow?.fullName ?? "none"}
+      <button
+        onClick={() => setFocusedRow(null)}
+        disabled={focusedRow == null}
+      >
+        Clear focus
+      </button>
+    </div>
+    <ObjectTable
+      objectType={Employee}
+      focusedRow={focusedRow?.$primaryKey ?? null}
+      onFocusedRowChanged={setFocusedRow}
+    />
+  </>
+);`,
+      },
+    },
+  },
+  render: (args) => {
+    // `focusedRow` (the prop) is now a primary key, but the
+    // `onFocusedRowChanged` callback still delivers the full row, so the
+    // banner keeps a full object in state and passes its key back down.
+    type FocusedEmployee = NonNullable<
+      Parameters<NonNullable<EmployeeTableProps["onFocusedRowChanged"]>>[0]
+    >;
+    const [focusedRow, setFocusedRow] = useState<FocusedEmployee | null>(null);
+
+    const handleFocusedRowChanged = useCallback(
+      (row: FocusedEmployee | null) => {
+        args.onFocusedRowChanged?.(row);
+        setFocusedRow(row);
+      },
+      [args],
+    );
+
+    return (
+      <div>
+        <div
+          style={{
+            marginBottom: "16px",
+            padding: "12px",
+            backgroundColor: "#f0f9ff",
+            borderRadius: "4px",
+            border: "1px solid #bfdbfe",
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+          }}
+        >
+          <span>
+            <strong>Focused employee:</strong> {focusedRow == null
+              ? "none"
+              : `${focusedRow.fullName} (#${focusedRow.employeeNumber})`}
+          </span>
+          <button
+            type="button"
+            style={{
+              padding: "4px 8px",
+              fontSize: "12px",
+              border: "1px solid #d1d5db",
+              borderRadius: "4px",
+              background: "white",
+              cursor: focusedRow == null ? "not-allowed" : "pointer",
+            }}
+            onClick={() => setFocusedRow(null)}
+            disabled={focusedRow == null}
+          >
+            Clear focus
+          </button>
+        </div>
+        <div className="object-table-container" style={{ height: "600px" }}>
+          <ObjectTable
+            {...args}
+            focusedRow={focusedRow?.$primaryKey ?? null}
+            onFocusedRowChanged={handleFocusedRowChanged}
           />
         </div>
       </div>

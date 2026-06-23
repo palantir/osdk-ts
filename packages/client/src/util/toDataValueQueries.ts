@@ -144,7 +144,7 @@ export async function toDataValueQueries(
         const promiseArray = Array.from(
           value,
           async (innerValue) =>
-            await toDataValueQueries(innerValue, client, desiredType["set"]),
+            await toDataValueQueries(innerValue, client, desiredType.set),
         );
         return Promise.all(promiseArray);
       }
@@ -207,7 +207,7 @@ export async function toDataValueQueries(
           structMap[key] = await toDataValueQueries(
             structValue,
             client,
-            desiredType["struct"][key],
+            desiredType.struct[key],
           );
         }
         return structMap;

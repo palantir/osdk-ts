@@ -93,4 +93,4 @@ export {
 } from './ontology/queries.js';
 export * as $Queries from './ontology/queries.js';
 export { $osdkMetadata } from './OntologyMetadata.js';
-export { $ontologyRid } from './OntologyMetadata.js';
+export { $branch, $ontologyRid } from './OntologyMetadata.js';

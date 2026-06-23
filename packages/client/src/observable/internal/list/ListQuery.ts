@@ -33,6 +33,7 @@ import type {
   ObjectHolder,
 } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
+import { extractRdpDefinition } from "../../../util/extractRdpDefinition.js";
 import type { ListPayload } from "../../ListPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
 import type { CollectionConnectableParams } from "../base-list/BaseCollectionQuery.js";
@@ -55,6 +56,7 @@ import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import { OrderBySortingStrategy } from "../sorting/SortingStrategy.js";
 import type { Store } from "../Store.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
+import { EMPTY_RDP_SET } from "../utils/rdpFieldOperations.js";
 import {
   INCLUDE_ALL_BASE_PROPERTIES_IDX,
   INTERSECT_IDX,
@@ -161,10 +163,12 @@ export abstract class ListQuery extends BaseListQuery<
     this.#objectSet = this.createObjectSet(store);
     this.#objectTypesCache = new Set([this.apiName]);
 
-    // Only initialize the sorting strategy here if there's no pivotTo.
-    // When pivotTo is used, the target type differs from apiName, so we
-    // defer initialization to fetchPageData where we can resolve the actual type.
-    if (!this.#pivotInfo) {
+    // Only initialize the sorting strategy here if there's no pivotTo and no
+    // derived properties. When pivotTo is used the target type differs from
+    // apiName, and when derived (RDP) properties are present we need the
+    // derived-property type metadata to sort string-encoded numerics by value;
+    // both are resolved asynchronously in fetchPageData.
+    if (!this.#pivotInfo && this.cacheKey.otherKeys[RDP_IDX] == null) {
       this.sortingStrategy = new OrderBySortingStrategy(
         this.apiName,
         this.#orderBy,
@@ -253,6 +257,13 @@ export abstract class ListQuery extends BaseListQuery<
         this.sortingStrategy = new OrderBySortingStrategy(
           resultType.apiName,
           this.#orderBy,
+          // Carries derived-property type metadata so string-encoded numeric
+          // derived properties (decimal/long) sort by value. Returns {} when
+          // there are no derived properties.
+          await extractRdpDefinition(
+            this.store.client[additionalContext],
+            wireObjectSet,
+          ),
         );
       }
 
@@ -603,12 +614,14 @@ export abstract class ListQuery extends BaseListQuery<
           : objOrIface) as unknown as ObjectHolder;
 
       this.store.batch({}, (batch) => {
+        // the stream carries base props only and computes no derived fields.
         this.store.objects.storeOsdkInstances(
           [object as Osdk.Instance<any>],
           batch,
           this.rdpConfig,
           undefined,
           this.includeAllBaseObjectProperties,
+          EMPTY_RDP_SET,
         );
       });
     } else if (state === "REMOVED") {

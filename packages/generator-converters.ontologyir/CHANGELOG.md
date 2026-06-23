@@ -1,5 +1,70 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.37.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.37.0
+
+## 2.36.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.36.0
+
+## 2.35.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.35.0
+
+## 2.34.0
+
+### Minor Changes
+
+- 07eaaff: Fix function backed actions with interfaces
+- 4a25731: fix interface osdk and function gen for superrepo
+- 48eb46e: Fix full metadata link gen
+
+### Patch Changes
+
+- @osdk/client.unstable@2.34.0
+
+## 2.33.0
+
+### Minor Changes
+
+- a9de941: Fix interfaces in function discovery
+
+### Patch Changes
+
+- @osdk/client.unstable@2.33.0
+
+## 2.32.0
+
+### Minor Changes
+
+- b5d0a61: transitive OAC imports
+- 833f47a: add support for interface action type constraint in ontology as code
+
+### Patch Changes
+
+- Updated dependencies [b5d0a61]
+- Updated dependencies [833f47a]
+  - @osdk/client.unstable@2.32.0
+
+## 2.31.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.31.0
+
+## 2.30.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.30.0
+
 ## 2.29.0
 
 ### Minor Changes

@@ -28,6 +28,13 @@ import { combineApiNamespaceIfMissing } from "./namespace/combineApiNamespaceIfM
 type Meta = { apiName: string; displayName?: string; description?: string };
 type ApiNameOrInterfaceType = string | InterfaceType;
 
+export interface InterfaceLinkConstraint {
+  apiName: string;
+  from: InterfaceType;
+  to: ApiNameOrInterfaceType;
+  cardinality: "SINGLE" | "MANY";
+}
+
 type Many = {
   apiName: string;
   from: InterfaceType;
@@ -49,7 +56,7 @@ type One = {
 
 export function defineInterfaceLinkConstraint(
   linkDefInput: One | Many,
-): void {
+): InterfaceLinkConstraint {
   const linkDef = cloneDefinition(linkDefInput);
 
   invariant(
@@ -66,12 +73,23 @@ export function defineInterfaceLinkConstraint(
     `Link with apiName ${fromLinkMeta.apiName} already exists on ${linkDef.apiName}`,
   );
 
+  const cardinality = linkDef.toMany ? "MANY" : "SINGLE";
+  const to = linkDef.toMany ?? linkDef.toOne;
+
   linkDef.from.links.push({
-    cardinality: linkDef.toMany ? "MANY" : "SINGLE",
-    linkedEntityTypeId: getLinkedType(linkDef.toMany ?? linkDef.toOne),
+    cardinality,
+    linkedEntityTypeId: getLinkedType(to),
     metadata: fromLinkMeta,
     required: linkDef.required ?? true,
   });
+  linkDef.from.linkedInterfaces?.push(to);
+
+  return {
+    apiName: fromLinkMeta.apiName,
+    from: linkDef.from,
+    to,
+    cardinality,
+  };
 }
 
 function getLinkedType(t: string | InterfaceType) {

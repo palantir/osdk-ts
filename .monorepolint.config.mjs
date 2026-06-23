@@ -136,7 +136,6 @@ const archetypeRules = archetypes(
     [
       "@osdk/foundry-config-json",
       "@osdk/generator-converters",
-      "@osdk/language-models",
       "@osdk/generator-converters.ontologyir",
       "@osdk/generator-converters.preview",
       "@osdk/generator-utils",
@@ -147,12 +146,6 @@ const archetypeRules = archetypes(
       "@osdk/seed-compiler",
       "@osdk/seed-helpers",
       "@osdk/oauth",
-      "@osdk/shared.client.impl",
-      "@osdk/shared.net.errors",
-      "@osdk/shared.net.fetch",
-      "@osdk/shared.net",
-      "@osdk/react-sdk-docs",
-      "@osdk/typescript-sdk-docs",
       "@osdk/widget.api",
       "@osdk/widget.client",
       "@osdk/vite-plugin-oac",
@@ -232,10 +225,33 @@ const archetypeRules = archetypes(
       "@osdk/client.test.ontology",
       "@osdk/create-app.template.*",
       "@osdk/create-widget.template.*",
+      // @osdk/shared.test and its companion @osdk/shared.test.intellisense are
+      // intentionally left on ESLint/dprint in this increment (deferred from the
+      // oxc migration); they move to oxc when linting goes global. See #3031.
       "@osdk/shared.test",
+      "@osdk/shared.test.intellisense",
     ],
     {
       ...INTERNAL_LIBRARY_RULES,
+    },
+  )
+  // Packages migrated to the oxc toolchain (oxlint + oxfmt). As more packages
+  // are migrated, add them here (taking care not to capture generated
+  // namespace-prefix children via monorepolint's archetype matching). See #3031.
+  .addArchetype(
+    "oxc migrated libraries",
+    [
+      "@osdk/language-models",
+      "@osdk/react-sdk-docs",
+      "@osdk/shared.client.impl",
+      "@osdk/shared.net.errors",
+      "@osdk/shared.net.fetch",
+      "@osdk/shared.net",
+      "@osdk/typescript-sdk-docs",
+    ],
+    {
+      ...LIBRARY_RULES,
+      oxc: true,
     },
   )
   .addArchetype(
@@ -277,6 +293,7 @@ const archetypeRules = archetypes(
   .addArchetype(
     "viteSandboxes",
     [
+      "@osdk/e2e.sandbox.officeassignment",
       "@osdk/e2e.sandbox.officenetwork",
       "@osdk/e2e.sandbox.todowidget",
       "@osdk/e2e.sandbox.todoapp",
@@ -953,6 +970,7 @@ function minimalPackageRules(shared, options) {
  * @property { boolean } [fixedDepsOnly]
  * @property { boolean } [checkApi]
  * @property { boolean } [minimalChangesOnly]
+ * @property { boolean } [oxc]
  * @property { "vite" | undefined } [framework]
  * @property { import("typescript").CompilerOptions} [extraTsConfigCompilerOptions]
  * @property { string[] } [cssExport]
@@ -1089,8 +1107,12 @@ function standardPackageRules(shared, options) {
           "check-bundle": options.output.esm === "bundle"
             ? "monorepo.tool.check-bundle"
             : DELETE_SCRIPT_ENTRY,
-          lint: "eslint . && dprint check",
-          "fix-lint": "eslint . --fix && dprint fmt",
+          lint: options.oxc
+            ? "oxlint -c ../../oxlint.config.ts . && oxfmt -c ../../oxfmt.config.ts --check ."
+            : "eslint . && dprint check",
+          "fix-lint": options.oxc
+            ? "oxlint -c ../../oxlint.config.ts --fix . && oxfmt -c ../../oxfmt.config.ts ."
+            : "eslint . --fix && dprint fmt",
           transpile: DELETE_SCRIPT_ENTRY,
           transpileEsm: getTranspileEsmScript(),
           transpileBrowser: getTranspileBrowserScript(),

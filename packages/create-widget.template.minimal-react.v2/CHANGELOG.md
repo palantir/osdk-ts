@@ -1,5 +1,25 @@
 # @osdk/create-widget.template.react.v2
 
+## 3.34.0
+
+## 3.33.0
+
+## 3.32.0
+
+## 3.31.0
+
+## 3.30.0
+
+## 3.29.0
+
+## 3.28.0
+
+## 3.27.0
+
+### Minor Changes
+
+- b73f9b1: Bump widget library versions in create-widget templates to ^3.26.0
+
 ## 3.26.0
 
 ## 3.25.0

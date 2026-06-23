@@ -287,21 +287,28 @@ describe("useFunctionColumnsData", () => {
       },
     });
 
-    expect(useOsdkFunctions).toHaveBeenCalledWith({
-      queries: [
-        {
-          queryDefinition: mockQueryDefinition,
-          options: {
-            dedupeIntervalMs: DEFAULT_FUNCTION_COLUMN_DEDUPE_INTERVAL_MS,
-            dependsOn: undefined,
-            dependsOnObjects: mockObjects,
-            params: { [OBJ_SET_KEY]: mockObjectSet },
-          },
-        },
-      ],
-      enabled: true,
-      maxConcurrent: DEFAULT_MAX_CONCURRENT_REQUESTS,
-    });
+    expect(useOsdkFunctions).toHaveBeenCalledWith(
+      expect.objectContaining({
+        queries: [
+          expect.objectContaining({
+            queryDefinition: mockQueryDefinition,
+            options: expect.objectContaining({
+              dedupeIntervalMs: DEFAULT_FUNCTION_COLUMN_DEDUPE_INTERVAL_MS,
+              dependsOn: undefined,
+              dependsOnObjects: mockObjects,
+              params: {
+                [OBJ_SET_KEY]: expect.objectContaining({
+                  __filteredObjectSet: true,
+                  whereClause: { $primaryKey: { $in: ["obj1", "obj2"] } },
+                }),
+              },
+            }),
+          }),
+        ],
+        enabled: true,
+        maxConcurrent: DEFAULT_MAX_CONCURRENT_REQUESTS,
+      }),
+    );
   });
 
   it("should extract value using getValue function when specified", async () => {
@@ -372,8 +379,6 @@ describe("useFunctionColumnsData", () => {
         $primaryKey: "obj1",
       },
     ] as Osdk.Instance<TestObject, "$allBaseProperties", TestObjectKeys, {}>[];
-
-    const mockObjectSet = {} as ObjectSet<TestObject>;
 
     const mockResult1 = {
       "TestObject:obj1": {
@@ -467,30 +472,36 @@ describe("useFunctionColumnsData", () => {
     });
 
     // Should make two queries since columns use different query definitions
-    expect(useOsdkFunctions).toHaveBeenCalledWith({
-      queries: [
-        {
-          queryDefinition: mockQueryDefinition,
-          options: {
-            params: { [OBJ_SET_KEY]: mockObjectSet },
-            dedupeIntervalMs: DEFAULT_FUNCTION_COLUMN_DEDUPE_INTERVAL_MS,
-            dependsOn: undefined,
-            dependsOnObjects: mockObjects,
-          },
-        },
-        {
-          queryDefinition: mockQueryDefinition2,
-          options: {
-            params: { [OBJ_SET_KEY]: mockObjectSet },
-            dedupeIntervalMs: DEFAULT_FUNCTION_COLUMN_DEDUPE_INTERVAL_MS,
-            dependsOn: undefined,
-            dependsOnObjects: mockObjects,
-          },
-        },
-      ],
-      enabled: true,
-      maxConcurrent: DEFAULT_MAX_CONCURRENT_REQUESTS,
+    const expectedFilteredSet = expect.objectContaining({
+      __filteredObjectSet: true,
+      whereClause: { $primaryKey: { $in: ["obj1"] } },
     });
+    expect(useOsdkFunctions).toHaveBeenCalledWith(
+      expect.objectContaining({
+        queries: [
+          expect.objectContaining({
+            queryDefinition: mockQueryDefinition,
+            options: expect.objectContaining({
+              params: { [OBJ_SET_KEY]: expectedFilteredSet },
+              dedupeIntervalMs: DEFAULT_FUNCTION_COLUMN_DEDUPE_INTERVAL_MS,
+              dependsOn: undefined,
+              dependsOnObjects: mockObjects,
+            }),
+          }),
+          expect.objectContaining({
+            queryDefinition: mockQueryDefinition2,
+            options: expect.objectContaining({
+              params: { [OBJ_SET_KEY]: expectedFilteredSet },
+              dedupeIntervalMs: DEFAULT_FUNCTION_COLUMN_DEDUPE_INTERVAL_MS,
+              dependsOn: undefined,
+              dependsOnObjects: mockObjects,
+            }),
+          }),
+        ],
+        enabled: true,
+        maxConcurrent: DEFAULT_MAX_CONCURRENT_REQUESTS,
+      }),
+    );
   });
 
   it("should handle missing object in the result", async () => {
@@ -671,8 +682,6 @@ describe("useFunctionColumnsData", () => {
   });
 
   describe("paginated object sets", () => {
-    const PRIMARY_KEY_API_NAME = "id";
-
     function makeObjects(count: number) {
       return Array.from({ length: count }, (_, i) => ({
         $objectType: "TestObject",
@@ -686,40 +695,7 @@ describe("useFunctionColumnsData", () => {
       >[];
     }
 
-    it("should pass full object set when primaryKeyApiName is not provided", () => {
-      vi.mocked(useOsdkFunctions).mockReturnValue([
-        {
-          data: {},
-          error: undefined,
-          isLoading: false,
-          lastUpdated: Date.now(),
-        },
-      ] as unknown as UseOsdkFunctionsResult);
-
-      renderHook(() =>
-        useFunctionColumnsData({
-          objectOrInterfaceType: TestObjectType,
-          objects: mockObjects,
-          columnDefinitions,
-        })
-      );
-
-      expect(useOsdkFunctions).toHaveBeenCalledWith(
-        expect.objectContaining({
-          queries: [
-            expect.objectContaining({
-              queryDefinition: mockQueryDefinition,
-              options: expect.objectContaining({
-                params: { [OBJ_SET_KEY]: mockObjectSet },
-              }),
-            }),
-          ],
-          enabled: true,
-        }),
-      );
-    });
-
-    it("should chunk objects into paginated object sets when primaryKeyApiName is provided", () => {
+    it("should chunk objects into paginated object sets via $primaryKey", () => {
       const pageSize = 2;
       const objects = makeObjects(5);
 
@@ -737,7 +713,6 @@ describe("useFunctionColumnsData", () => {
           objectOrInterfaceType: TestObjectType,
           objects,
           columnDefinitions,
-          primaryKeyApiName: PRIMARY_KEY_API_NAME,
           pageSize,
         })
       );
@@ -767,7 +742,7 @@ describe("useFunctionColumnsData", () => {
           __filteredObjectSet: true,
           objectOrInterfaceType: TestObjectType,
           whereClause: {
-            [PRIMARY_KEY_API_NAME]: { $in: ["obj0", "obj1"] },
+            $primaryKey: { $in: ["obj0", "obj1"] },
           },
         }),
       );
@@ -778,7 +753,7 @@ describe("useFunctionColumnsData", () => {
           __filteredObjectSet: true,
           objectOrInterfaceType: TestObjectType,
           whereClause: {
-            [PRIMARY_KEY_API_NAME]: { $in: ["obj2", "obj3"] },
+            $primaryKey: { $in: ["obj2", "obj3"] },
           },
         }),
       );
@@ -789,7 +764,7 @@ describe("useFunctionColumnsData", () => {
           __filteredObjectSet: true,
           objectOrInterfaceType: TestObjectType,
           whereClause: {
-            [PRIMARY_KEY_API_NAME]: { $in: ["obj4"] },
+            $primaryKey: { $in: ["obj4"] },
           },
         }),
       );
@@ -812,7 +787,6 @@ describe("useFunctionColumnsData", () => {
           objectOrInterfaceType: TestObjectType,
           objects,
           columnDefinitions,
-          primaryKeyApiName: PRIMARY_KEY_API_NAME,
         })
       );
 
@@ -874,7 +848,6 @@ describe("useFunctionColumnsData", () => {
           objectOrInterfaceType: TestObjectType,
           objects,
           columnDefinitions: multiColumnDefs,
-          primaryKeyApiName: PRIMARY_KEY_API_NAME,
           pageSize,
         })
       );
@@ -896,7 +869,7 @@ describe("useFunctionColumnsData", () => {
       expect(page0Col0Params[OBJ_SET_KEY]).toEqual(
         expect.objectContaining({
           whereClause: {
-            [PRIMARY_KEY_API_NAME]: { $in: ["obj0", "obj1"] },
+            $primaryKey: { $in: ["obj0", "obj1"] },
           },
         }),
       );
@@ -909,7 +882,7 @@ describe("useFunctionColumnsData", () => {
       expect(page1Col0Params[OBJ_SET_KEY]).toEqual(
         expect.objectContaining({
           whereClause: {
-            [PRIMARY_KEY_API_NAME]: { $in: ["obj2"] },
+            $primaryKey: { $in: ["obj2"] },
           },
         }),
       );
@@ -946,7 +919,6 @@ describe("useFunctionColumnsData", () => {
           objectOrInterfaceType: TestObjectType,
           objects,
           columnDefinitions,
-          primaryKeyApiName: PRIMARY_KEY_API_NAME,
           pageSize,
         })
       );

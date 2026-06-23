@@ -15,6 +15,7 @@
  */
 
 import type { Client } from "@osdk/client";
+import type { ObservableClientOptions } from "@osdk/client/observable";
 import { createObservableClient } from "@osdk/client/observable";
 import React, { useCallback, useMemo, useRef } from "react";
 import { getRegisteredDevTools } from "../public/devtools-registry.js";
@@ -31,12 +32,19 @@ interface OsdkProviderOptions {
   children: React.ReactNode;
   client: Client;
   enableDevTools?: boolean;
+  /**
+   * Dev-only behaviors of the underlying observable client. Has no effect in
+   * production builds. Use `devMode={{ actionDelayMs: 0 }}` to disable the
+   * artificial action delay that makes optimistic updates visible in dev.
+   */
+  devMode?: ObservableClientOptions["devMode"];
 }
 
 export function OsdkProvider({
   children,
   client,
   enableDevTools,
+  devMode,
 }: OsdkProviderOptions): React.JSX.Element {
   const devtoolsEnabled = __DEV__
     && (enableDevTools ?? getRegisteredDevTools() != null);
@@ -50,13 +58,15 @@ export function OsdkProvider({
     };
   }, []);
 
+  const actionDelayMs = devMode?.actionDelayMs;
   const baseObservableClient = useMemo(
     () =>
       createObservableClient(
         client,
         () => [...userAgentsRef.current],
+        { devMode: { actionDelayMs } },
       ),
-    [client],
+    [client, actionDelayMs],
   );
 
   const { client: devToolsClient, wrapChildren } = useDevToolsClient(

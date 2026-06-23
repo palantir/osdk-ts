@@ -212,3 +212,12 @@
     box-sizing: border-box;
   }
 }
+
+/* Override Blueprint's global :focus { outline } rule.
+   When consumed inside a CSS layer (e.g. @layer osdk.tokens),
+   this beats Blueprint's earlier layer. */
+:focus,
+:focus-visible {
+  outline: none;
+}
+

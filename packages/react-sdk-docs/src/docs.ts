@@ -23,15 +23,16 @@ import type {
   PropertySampleIR,
   PropertySampleValueTypeIR,
 } from "@osdk/docs-spec-sdk";
+
 import { snippets } from "./generatedNoCheck/docsNoComputedVariables.js";
 
 export const REACT_OSDK_SNIPPETS: SdkSnippets<typeof OSDK_SNIPPETS_SPEC> = {
   ...snippets,
   computedVariables: {
     actionParameterSampleValuesV2: handleActionParameterSampleValuesV2,
-    propertyValueV2: handlePropertyValueV2,
-    primaryKeyPropertyV2: handlePrimaryKeyPropertyV2,
     linkedPrimaryKeyPropertyV2: handleLinkedPrimaryKeyPropertyV2,
+    primaryKeyPropertyV2: handlePrimaryKeyPropertyV2,
+    propertyValueV2: handlePropertyValueV2,
   },
 };
 
@@ -39,15 +40,15 @@ function handleActionParameterSampleValuesV2({
   rawActionTypeParameterValues,
 }: {
   rawActionTypeParameterValues?: ActionParameterSampleValuesIR;
-}): Array<{ key: string; value: string; last: boolean }> {
+}): { key: string; value: string; last: boolean }[] {
   if (rawActionTypeParameterValues == null) {
     throw new Error("Cannot render a null rawActionTypeParameterValues");
   }
 
   return rawActionTypeParameterValues.map((param, index, array) => ({
     key: param.key,
-    value: renderType(param.value),
     last: index === array.length - 1,
+    value: renderType(param.value),
   }));
 }
 
@@ -89,13 +90,13 @@ function handleLinkedPrimaryKeyPropertyV2({
 
   return {
     apiName: rawLinkedPrimaryKeyProperty.apiName,
-    value: renderPropertyValue(rawLinkedPrimaryKeyProperty.value),
     type: rawLinkedPrimaryKeyProperty.type,
+    value: renderPropertyValue(rawLinkedPrimaryKeyProperty.value),
   };
 }
 
 function renderPropertyValue(
-  propertyValue: PropertySampleValueTypeIR | undefined,
+  propertyValue: PropertySampleValueTypeIR | undefined
 ): string {
   if (propertyValue == null) {
     throw new Error("Cannot render a null property value");
@@ -108,7 +109,7 @@ function renderType(
   type:
     | ActionParameterSampleValueTypeIR
     | FunctionSampleValueTypeIR
-    | PropertySampleValueTypeIR,
+    | PropertySampleValueTypeIR
 ): string {
   if (type == null) {
     throw new Error("Cannot render a null type value");
@@ -117,19 +118,23 @@ function renderType(
   switch (type.type) {
     case "array":
     case "set":
-    case "list":
+    case "list": {
       return `[${renderType(type.subtype)}]`;
-    case "boolean":
+    }
+    case "boolean": {
       return type.value ? "true" : "false";
+    }
     case "byte":
     case "integer":
     case "long":
-    case "short":
+    case "short": {
       return type.value.toString();
+    }
     case "decimal":
     case "double":
-    case "float":
+    case "float": {
       return type.value.toString();
+    }
     case "date": {
       const offsetDate = new Date();
       offsetDate.setDate(offsetDate.getDate() + (type.daysOffset ?? 0));
@@ -140,10 +145,12 @@ function renderType(
       offsetDate.setDate(offsetDate.getDate() + (type.daysOffset ?? 0));
       return `"${offsetDate.toISOString()}"`;
     }
-    case "object":
+    case "object": {
       return `"primaryKeyValue" /* or myObjectInstance */`;
-    case "objectSet":
+    }
+    case "objectSet": {
       return `client(${type.objectTypeApiName}).where({ /* filter conditions */ })`;
+    }
     case "anonymousCustomType":
     case "customType": {
       const entries = Object.entries(type.parameters ?? {});
@@ -156,20 +163,27 @@ function renderType(
       return "{}";
     }
     case "interface":
-    case "marking":
+    case "marking": {
       return "{}";
-    case "attachment":
+    }
+    case "attachment": {
       return type.hasAttachments ? "attachment" : "{}";
-    case "mediaReference":
+    }
+    case "mediaReference": {
       return "mediaUpload";
-    case "objectType":
+    }
+    case "objectType": {
       return `"${type.objectTypeApiName}"`;
-    case "map":
+    }
+    case "map": {
       return `{key: ${renderType(type.valueType)}}`;
-    case "string":
+    }
+    case "string": {
       return `"${type.value ?? "value"}"`;
+    }
     case "unknown":
-    default:
+    default: {
       return `"value"`;
+    }
   }
 }

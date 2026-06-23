@@ -1,6 +1,6 @@
 {
   "name": "@osdk/typescript-sdk-docs",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -31,8 +31,8 @@
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "codegen": "node codegen.mjs",
-    "fix-lint": "eslint . --fix && dprint fmt",
-    "lint": "eslint . && dprint check",
+    "fix-lint": "oxlint -c ../../oxlint.config.ts --fix . && oxfmt -c ../../oxfmt.config.ts .",
+    "lint": "oxlint -c ../../oxlint.config.ts . && oxfmt -c ../../oxfmt.config.ts --check .",
     "transpileBrowser": "monorepo.tool.transpile -f esm -m normal -t browser",
     "transpileCjs": "monorepo.tool.transpile -f cjs -m bundle -t node",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",

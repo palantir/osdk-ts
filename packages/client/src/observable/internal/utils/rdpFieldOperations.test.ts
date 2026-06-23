@@ -56,9 +56,6 @@ const employeeObjectDef = {
     employeeId: { type: "integer" },
     fullName: { type: "string" },
     office: { type: "string" },
-    rdpField1: { type: "string" },
-    rdpField2: { type: "double" },
-    rdpField3: { type: "string" },
   },
 } satisfies FetchedObjectTypeDefinition;
 
@@ -195,7 +192,7 @@ describe("rdpFieldOperations", () => {
     expect(underlying.rdpField2).toBe(999);
   });
 
-  it("mergeObjectFields preserves target RDP value when source has undefined for shared field", () => {
+  it("mergeObjectFields clears a shared field the source owns but left undefined", () => {
     const source = createTestObject({
       employeeId: 50030,
       fullName: "John Doe",
@@ -218,8 +215,7 @@ describe("rdpFieldOperations", () => {
     const underlying = getUnderlyingProps(result);
     expect(underlying.employeeId).toBe(50030);
     expect(underlying.fullName).toBe("John Doe");
-    // Target's non-null value should be preserved when source has undefined
-    expect(underlying.rdpField1).toBe("existing-value");
+    expect(underlying.rdpField1).toBeUndefined();
     expect(underlying.rdpField2).toBe(999);
   });
 
@@ -301,23 +297,47 @@ describe("mergeSelectFields", () => {
     const source = createTestObject({
       employeeId: 50030,
       fullName: "Updated Name",
-      office: "SF",
     });
     const existing = createTestObject({
       employeeId: 50030,
       fullName: "Old Name",
       office: "NYC",
-      rdpField1: "existing-rdp",
     });
 
-    const selectFields = new Set(["fullName", "office"]);
-    const result = mergeSelectFields(source, selectFields, existing);
+    const selectFields = new Set(["fullName"]);
+    const result = mergeSelectFields(source, selectFields, existing, new Set());
 
     assertValidObjectHolder(result);
     const underlying = getUnderlyingProps(result);
     expect(underlying.fullName).toBe("Updated Name");
-    expect(underlying.office).toBe("SF");
-    expect(underlying.rdpField1).toBe("existing-rdp");
+    expect(underlying.office).toBe("NYC");
     expect(underlying.employeeId).toBe(50030);
+  });
+
+  it("keeps the source's derived field on a partial write", () => {
+    const source = createTestObject({
+      employeeId: 50030,
+      fullName: "Updated Name",
+      computedScore: 42,
+    });
+    const existing = createTestObject({
+      employeeId: 50030,
+      fullName: "Old Name",
+      office: "NYC",
+      computedScore: 7,
+    });
+
+    const result = mergeSelectFields(
+      source,
+      new Set(["fullName"]),
+      existing,
+      new Set(["computedScore"]),
+    );
+
+    assertValidObjectHolder(result);
+    const underlying = getUnderlyingProps(result);
+    expect(underlying.fullName).toBe("Updated Name");
+    expect(underlying.office).toBe("NYC");
+    expect(underlying.computedScore).toBe(42);
   });
 });

@@ -22,7 +22,15 @@
     "examples-extra/**/dist",
     "**/tsup.config.bundled_*",
     "**/api-docs/",
-    "**/*.report.api.md"
+    "**/*.report.api.md",
+    // The shared.* packages below are formatted by oxfmt, not dprint (oxc migration, see oxfmt.config.ts)
+    "packages/shared.net.errors/",
+    "packages/shared.client.impl/",
+    "packages/shared.net.fetch/",
+    "packages/shared.net/",
+    "packages/language-models/",
+    "packages/react-sdk-docs/",
+    "packages/typescript-sdk-docs/"
   ],
   "plugins": [
     "https://plugins.dprint.dev/typescript-0.90.4.wasm",
