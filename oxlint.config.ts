@@ -109,6 +109,28 @@ export default defineConfig({
     "unicorn/prefer-dom-node-remove": "off",
     "unicorn/prefer-dom-node-append": "off",
     "promise/avoid-new": "off",
+
+    // --- Rules not enforced by the repo's prior ESLint config whose autofix
+    // would be churn or change a published type/runtime. Kept off / at prior
+    // severity so the migration stays behavior-preserving. ---
+    // Prior ESLint had `@typescript-eslint/no-shadow: warn`; these are
+    // deliberate nested namespaces (e.g. `WidgetMessage.Payload.Ready` vs
+    // `WidgetMessage.Ready`) and enum/namespace merges. Keep at warn.
+    "no-shadow": "warn",
+    // Branded message types are intentionally empty interfaces (e.g.
+    // `interface Reload {}`, interfaces that only extend WidgetBaseMessage);
+    // rewriting them to type aliases would change the public API shape.
+    "typescript/no-empty-interface": "off",
+    // `@optional` is a repo JSDoc convention tag, not a standard tag name.
+    "jsdoc/check-tag-names": "off",
+    // TODO/FIXME comments are allowed (prior ESLint did not flag them).
+    "no-warning-comments": "off",
+    // Bare `@ts-expect-error` directives (no trailing description) are common in
+    // the existing test suites; prior ESLint did not require descriptions.
+    "typescript/ban-ts-comment": "off",
+    // Method-signature vs property-signature is stylistic, and the switch flips
+    // strict variance checking on published interfaces — leave as authored.
+    "typescript/method-signature-style": "off",
   },
 
   ignorePatterns: [

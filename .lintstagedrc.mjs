@@ -18,6 +18,8 @@ const OXC_PACKAGES = [
   "react-sdk-docs",
   "typescript-sdk-docs",
   "widget.client-react",
+  "widget.api",
+  "widget.client",
 ];
 const OXC_PACKAGE_GLOB = `packages/{${
   OXC_PACKAGES.join(",")

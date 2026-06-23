@@ -61,30 +61,33 @@ export namespace WidgetMessage {
   /**
    * Emit when the widget is ready to start receiving messages from the host Foundry UI
    */
-  export interface Ready
-    extends WidgetBaseMessage<"widget.ready", Payload.Ready>
-  {}
+  export interface Ready extends WidgetBaseMessage<
+    "widget.ready",
+    Payload.Ready
+  > {}
 
   /**
    * Emit when the widget should reload (e.g. for a full reload during hot module replacement)
    */
-  export interface Reload
-    extends WidgetBaseMessage<"widget.reload", Payload.Reload>
-  {}
+  export interface Reload extends WidgetBaseMessage<
+    "widget.reload",
+    Payload.Reload
+  > {}
 
   /**
    * Emit when the widget document body element resizes
    */
-  export interface Resize
-    extends WidgetBaseMessage<"widget.resize", Payload.Resize>
-  {}
+  export interface Resize extends WidgetBaseMessage<
+    "widget.resize",
+    Payload.Resize
+  > {}
 
   /**
    * Event payload that the widget sends to the host Foundry UI
    */
-  export interface EmitEvent<C extends WidgetConfig<C["parameters"]>>
-    extends WidgetBaseMessage<"widget.emit-event", Payload.EmitEvent<C>>
-  {}
+  export interface EmitEvent<
+    C extends WidgetConfig<C["parameters"]>,
+  > extends WidgetBaseMessage<"widget.emit-event", Payload.EmitEvent<C>> {}
 }
 
 export type WidgetMessage<C extends WidgetConfig<C["parameters"]>> =
@@ -94,19 +97,19 @@ export type WidgetMessage<C extends WidgetConfig<C["parameters"]>> =
   | WidgetMessage.EmitEvent<C>;
 
 export function isWidgetReadyMessage<C extends WidgetConfig<C["parameters"]>>(
-  event: WidgetMessage<C>,
+  event: WidgetMessage<C>
 ): event is WidgetMessage.Ready {
   return event.type === "widget.ready";
 }
 
 export function isWidgetReloadMessage<C extends WidgetConfig<C["parameters"]>>(
-  event: WidgetMessage<C>,
+  event: WidgetMessage<C>
 ): event is WidgetMessage.Reload {
   return event.type === "widget.reload";
 }
 
 export function isWidgetResizeMessage<C extends WidgetConfig<C["parameters"]>>(
-  event: WidgetMessage<C>,
+  event: WidgetMessage<C>
 ): event is WidgetMessage.Resize {
   return event.type === "widget.resize";
 }
@@ -117,22 +120,21 @@ export function isWidgetEmitEventMessage<
   return event.type === "widget.emit-event";
 }
 
-type WidgetMessageVisitor<C extends WidgetConfig<C["parameters"]>> =
-  & {
-    [T in WidgetMessage<C>["type"]]: (
-      payload: Extract<WidgetMessage<C>, { type: T }> extends {
-        payload: infer P;
-      } ? P
-        : never,
-    ) => void;
-  }
-  & {
-    _unknown: (type: string) => void;
-  };
+type WidgetMessageVisitor<C extends WidgetConfig<C["parameters"]>> = {
+  [T in WidgetMessage<C>["type"]]: (
+    payload: Extract<WidgetMessage<C>, { type: T }> extends {
+      payload: infer P;
+    }
+      ? P
+      : never
+  ) => void;
+} & {
+  _unknown: (type: string) => void;
+};
 
 export function visitWidgetMessage<C extends WidgetConfig<C["parameters"]>>(
   message: WidgetMessage<C>,
-  visitor: WidgetMessageVisitor<C>,
+  visitor: WidgetMessageVisitor<C>
 ): void {
   const { type, payload } = message;
   const handler = visitor[type];

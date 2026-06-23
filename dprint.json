@@ -31,7 +31,9 @@
     "packages/language-models/",
     "packages/react-sdk-docs/",
     "packages/typescript-sdk-docs/",
-    "packages/widget.client-react/"
+    "packages/widget.client-react/",
+    "packages/widget.api/",
+    "packages/widget.client/"
   ],
   "plugins": [
     "https://plugins.dprint.dev/typescript-0.90.4.wasm",

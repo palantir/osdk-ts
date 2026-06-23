@@ -146,8 +146,6 @@ const archetypeRules = archetypes(
       "@osdk/seed-compiler",
       "@osdk/seed-helpers",
       "@osdk/oauth",
-      "@osdk/widget.api",
-      "@osdk/widget.client",
       "@osdk/vite-plugin-oac",
       "@osdk/vite-plugin-superrepo",
       "@osdk/vite-plugin-status-reporter",
@@ -248,6 +246,8 @@ const archetypeRules = archetypes(
       "@osdk/shared.net.fetch",
       "@osdk/shared.net",
       "@osdk/typescript-sdk-docs",
+      "@osdk/widget.api",
+      "@osdk/widget.client",
     ],
     {
       ...LIBRARY_RULES,
@@ -256,8 +256,8 @@ const archetypeRules = archetypes(
   )
   // React packages migrated to the oxc toolchain. Same as "oxc migrated
   // libraries" but with `react: true` (happy-dom vitest env + react tsconfig).
-  // @osdk/widget.client-react is the first React package on oxc (batch 3),
-  // validating the Ultracite React preset for the rest of the repo. See #3031.
+  // @osdk/widget.client-react is the first React package on oxc, validating
+  // the Ultracite React preset for the rest of the repo. See #3031.
   .addArchetype(
     "oxc migrated react libraries",
     [
