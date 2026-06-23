@@ -1,0 +1,39 @@
+{
+  "name": "@osdk/examples.typescript-library-sdk-2.x",
+  "private": true,
+  "version": "0.0.0",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/palantir/osdk-ts.git"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "check": "ultracite check",
+    "clean": "rm -rf dist",
+    "fix": "ultracite fix",
+    "format": "oxfmt .",
+    "lint": "oxlint",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "oxfmt": "^0.52.0",
+    "oxlint": "^1.67.0",
+    "typescript": "~5.5.4",
+    "ultracite": "^7.8.0",
+    "vitest": "^4.1.7"
+  },
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "type": "module"
+}

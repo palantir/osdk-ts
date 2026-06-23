@@ -543,9 +543,12 @@ This project was generated with [\`@osdk/create-app\`](https://www.npmjs.com/pac
 To quickly create your own version of this template run the following command and answer the prompts based on your Developer Console application:
 
 \`\`\`
-npm create @osdk/app@latest -- --template ${
-    templateCanonicalId(template)
-  } --sdkVersion ${sdkVersion}${!isUsingOsdk ? " --skipOsdk" : ""}
+npm create @osdk/app@latest -- --template ${templateCanonicalId(template)}${
+    // Only surface --sdkVersion when the template offers more than one version;
+    // for single-version templates create-app defaults to the only version.
+    Object.keys(template.files).length > 1
+      ? ` --sdkVersion ${sdkVersion}`
+      : ""}${!isUsingOsdk ? " --skipOsdk" : ""}
 \`\`\`
 
 Alternatively check out the Developer Console docs for a full guide on creating and deploying frontend applications with the Ontology SDK.
