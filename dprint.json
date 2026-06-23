@@ -27,7 +27,10 @@
     "packages/shared.net.errors/",
     "packages/shared.client.impl/",
     "packages/shared.net.fetch/",
-    "packages/shared.net/"
+    "packages/shared.net/",
+    "packages/language-models/",
+    "packages/react-sdk-docs/",
+    "packages/typescript-sdk-docs/"
   ],
   "plugins": [
     "https://plugins.dprint.dev/typescript-0.90.4.wasm",

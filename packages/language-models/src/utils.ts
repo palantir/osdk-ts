@@ -51,7 +51,7 @@ function resolveContext(client: Client | PlatformClient): PlatformClient {
  * ```
  */
 export function createFetch(
-  client: Client | PlatformClient,
+  client: Client | PlatformClient
 ): typeof globalThis.fetch {
   return resolveContext(client).fetch;
 }
@@ -68,7 +68,7 @@ export function createFetch(
  * ```
  */
 export async function getFoundryToken(
-  client: Client | PlatformClient,
+  client: Client | PlatformClient
 ): Promise<string> {
   return resolveContext(client).tokenProvider();
 }
@@ -88,7 +88,7 @@ export async function getFoundryToken(
 export function getAnthropicBaseUrl(client: Client | PlatformClient): string {
   return new URL(
     "api/v2/llm/proxy/anthropic",
-    resolveContext(client).baseUrl,
+    resolveContext(client).baseUrl
   ).toString();
 }
 
@@ -107,7 +107,7 @@ export function getAnthropicBaseUrl(client: Client | PlatformClient): string {
 export function getOpenAiBaseUrl(client: Client | PlatformClient): string {
   return new URL(
     "api/v2/llm/proxy/openai/v1",
-    resolveContext(client).baseUrl,
+    resolveContext(client).baseUrl
   ).toString();
 }
 
@@ -134,6 +134,6 @@ export function getOpenAiBaseUrl(client: Client | PlatformClient): string {
 export function getGoogleBaseUrl(client: Client | PlatformClient): string {
   return new URL(
     "api/v2/llm/proxy/google",
-    resolveContext(client).baseUrl,
+    resolveContext(client).baseUrl
   ).toString();
 }

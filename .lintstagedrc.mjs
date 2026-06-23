@@ -14,6 +14,9 @@ const OXC_PACKAGES = [
   "shared.client.impl",
   "shared.net.fetch",
   "shared.net",
+  "language-models",
+  "react-sdk-docs",
+  "typescript-sdk-docs",
 ];
 const OXC_PACKAGE_GLOB = `packages/{${
   OXC_PACKAGES.join(",")

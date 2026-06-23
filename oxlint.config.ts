@@ -26,6 +26,13 @@ export default defineConfig({
     "unicorn/no-lonely-if": "off",
     "jsdoc/require-param-description": "off",
     "jsdoc/require-returns-description": "off",
+    // Cyclomatic-complexity ceiling; the large discriminated-union switch helpers
+    // in the docs packages exceed it. Splitting them up is pure churn here.
+    "complexity": "off",
+    // Several switches list known discriminant values (e.g. "string", "unknown")
+    // that share the `default` body. Keeping the explicit cases documents intent;
+    // removing them would be churn with no behavioral change.
+    "unicorn/no-useless-switch-case": "off",
 
     // Rules whose autofix would change behavior or the public API of these
     // already-published packages. Kept at prior severity / disabled so the
@@ -37,6 +44,9 @@ export default defineConfig({
     "default-param-last": "off",
     "require-await": "off",
     "typescript/require-await": "off",
+    // Adding the `u` flag to an existing regex can change its matching semantics;
+    // leave published runtime regexes untouched in this tooling migration.
+    "require-unicode-regexp": "off",
   },
 
   ignorePatterns: [
