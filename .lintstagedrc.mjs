@@ -20,6 +20,7 @@ const OXC_PACKAGES = [
   "widget.client-react",
   "widget.api",
   "widget.client",
+  "cbac-components",
 ];
 const OXC_PACKAGE_GLOB = `packages/{${
   OXC_PACKAGES.join(",")
