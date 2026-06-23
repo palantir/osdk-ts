@@ -23,7 +23,9 @@ import type {
   GroupId,
   InputShape,
   InputShapeMetadata,
+  InterfaceActionTypeConstraintRid,
   InterfaceLinkTypeRid,
+  InterfaceParameterConstraintRid,
   InterfacePropertyTypeRid,
   InterfaceTypeRid,
   LinkTypeRid,
@@ -107,6 +109,23 @@ export interface OntologyRidGenerator {
     apiName: string,
     interfaceTypeApiName: string,
   ): InterfaceLinkTypeRid;
+  generateRidForInterfaceActionTypeConstraint(
+    apiName: string,
+    interfaceTypeApiName: string,
+  ): InterfaceActionTypeConstraintRid;
+  generateRidForInterfaceParameterConstraint(
+    constraintApiName: string,
+    interfaceTypeApiName: string,
+    paramApiName: string,
+  ): InterfaceParameterConstraintRid;
+  getInterfaceActionTypeConstraintRids(): BiMap<
+    ReadableId,
+    InterfaceActionTypeConstraintRid
+  >;
+  getInterfaceParameterConstraintRids(): BiMap<
+    ReadableId,
+    InterfaceParameterConstraintRid
+  >;
   generateRidForObjectType(apiName: string): ObjectTypeRid;
   generateRidForValueType(apiName: string, version: string): ValueTypeReference;
   generateRidForTimeSeriesSync(name: string): TimeSeriesSyncRid;
@@ -336,6 +355,21 @@ export class ReadableIdGenerator {
     return `interface-link-type-${interfaceApiName}-${interfaceLinkTypeApiName}` as ReadableId;
   }
 
+  static getForInterfaceActionTypeConstraint(
+    interfaceApiName: string,
+    constraintApiName: string,
+  ): ReadableId {
+    return `interface-action-type-constraint-${interfaceApiName}-${constraintApiName}` as ReadableId;
+  }
+
+  static getForInterfaceParameterConstraint(
+    interfaceApiName: string,
+    constraintApiName: string,
+    paramApiName: string,
+  ): ReadableId {
+    return `interface-parameter-constraint-${interfaceApiName}-${constraintApiName}-${paramApiName}` as ReadableId;
+  }
+
   static getForMarking(
     markingId: string,
     supportedMarkingsType: "CBAC" | "MANDATORY",
@@ -406,6 +440,14 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
     ReadableId,
     InterfaceLinkTypeRid
   >;
+  private readonly interfaceActionTypeConstraintRids: BiMap<
+    ReadableId,
+    InterfaceActionTypeConstraintRid
+  >;
+  private readonly interfaceParameterConstraintRids: BiMap<
+    ReadableId,
+    InterfaceParameterConstraintRid
+  >;
   private readonly interfacePropertyTypeRids: BiMap<
     ReadableId,
     InterfacePropertyTypeRid
@@ -453,6 +495,8 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
     this.randomnessUuid = randomnessUuid;
     this.geotimeSeriesIntegrationRids = BiMapImpl.create();
     this.interfaceLinkTypeRids = BiMapImpl.create();
+    this.interfaceActionTypeConstraintRids = BiMapImpl.create();
+    this.interfaceParameterConstraintRids = BiMapImpl.create();
     this.interfacePropertyTypeRids = BiMapImpl.create();
     this.interfaceRids = BiMapImpl.create();
     this.actionTypeRids = BiMapImpl.create();
@@ -526,6 +570,20 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
 
   getInterfaceLinkTypeRids(): BiMap<ReadableId, InterfaceLinkTypeRid> {
     return this.interfaceLinkTypeRids;
+  }
+
+  getInterfaceActionTypeConstraintRids(): BiMap<
+    ReadableId,
+    InterfaceActionTypeConstraintRid
+  > {
+    return this.interfaceActionTypeConstraintRids;
+  }
+
+  getInterfaceParameterConstraintRids(): BiMap<
+    ReadableId,
+    InterfaceParameterConstraintRid
+  > {
+    return this.interfaceParameterConstraintRids;
   }
 
   getInterfacePropertyTypeRids(): BiMap<ReadableId, InterfacePropertyTypeRid> {
@@ -617,6 +675,40 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
       this.hashString(readableId)
     }` as InterfaceLinkTypeRid;
     this.interfaceLinkTypeRids.put(readableId, rid);
+    return rid;
+  }
+
+  // Interface Action Type Constraints
+  generateRidForInterfaceActionTypeConstraint(
+    apiName: string,
+    interfaceTypeApiName: string,
+  ): InterfaceActionTypeConstraintRid {
+    const readableId = ReadableIdGenerator.getForInterfaceActionTypeConstraint(
+      interfaceTypeApiName,
+      apiName,
+    );
+    const rid = `ri.ontology-metadata.temp.interface-action-type-constraint.${
+      this.hashString(readableId)
+    }` as InterfaceActionTypeConstraintRid;
+    this.interfaceActionTypeConstraintRids.put(readableId, rid);
+    return rid;
+  }
+
+  // Interface Parameter Constraints
+  generateRidForInterfaceParameterConstraint(
+    constraintApiName: string,
+    interfaceTypeApiName: string,
+    paramApiName: string,
+  ): InterfaceParameterConstraintRid {
+    const readableId = ReadableIdGenerator.getForInterfaceParameterConstraint(
+      interfaceTypeApiName,
+      constraintApiName,
+      paramApiName,
+    );
+    const rid = `ri.ontology-metadata.temp.interface-parameter-constraint.${
+      this.hashString(readableId)
+    }` as InterfaceParameterConstraintRid;
+    this.interfaceParameterConstraintRids.put(readableId, rid);
     return rid;
   }
 

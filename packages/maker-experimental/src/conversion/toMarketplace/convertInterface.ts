@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import type { MarketplaceInterfaceType } from "@osdk/client.unstable";
+import type {
+  MarketplaceInterfaceType,
+  OntologyIrInterfaceActionTypeConstraint,
+} from "@osdk/client.unstable";
 import type { InterfaceType } from "@osdk/maker";
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { convertInterfaceProperty } from "./convertInterfacePropertyType.js";
@@ -24,13 +27,8 @@ export function convertInterface(
   interfaceType: InterfaceType,
   ridGenerator: OntologyRidGenerator,
 ): MarketplaceInterfaceType {
-  const {
-    __type,
-    status,
-    actionTypeConstraints: _actionTypeConstraints,
-    linkedInterfaces: _linkedInterfaces,
-    ...other
-  } = interfaceType;
+  const { __type, status, linkedInterfaces: _linkedInterfaces, ...other } =
+    interfaceType;
   // Normalize deprecated deadline format to match Java (strip .000 milliseconds)
   const normalizedStatus = status?.type === "deprecated"
     ? {
@@ -91,8 +89,32 @@ export function convertInterface(
         interfaceType.apiName,
       ),
     })),
-    // TODO: Add support for interface action type constraints and parameter constraints
-    actionTypeConstraints: [],
+    actionTypeConstraints: (interfaceType.actionTypeConstraints ?? [])
+      .map(
+        (constraint: OntologyIrInterfaceActionTypeConstraint) => ({
+          ...constraint,
+          rid: ridGenerator.generateRidForInterfaceActionTypeConstraint(
+            constraint.metadata.apiName,
+            interfaceType.apiName,
+          ),
+          parameters: Object.fromEntries(
+            Object.entries(constraint.parameters ?? {}).map(
+              ([paramApiName, paramConstraint]) => {
+                const paramDisplayApiName = paramConstraint.displayMetadata
+                  .apiName!;
+                return [
+                  ridGenerator.generateRidForInterfaceParameterConstraint(
+                    constraint.metadata.apiName,
+                    interfaceType.apiName,
+                    paramDisplayApiName,
+                  ),
+                  paramConstraint,
+                ];
+              },
+            ),
+          ),
+        }),
+      ),
     // these are omitted from our internal types but we need to re-add them for the final json
     properties: [],
     propertiesV3: Object.fromEntries(

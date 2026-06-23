@@ -158,6 +158,19 @@ function createMockRidGenerator(
       `ri.ontology-metadata.temp.section.${sectionId}`,
     generatePropertySecurityGroupRid: (groupName: string) =>
       `ri.ontology-metadata.temp.property-security-group.${groupName}`,
+    generateRidForInterfaceActionTypeConstraint: (
+      apiName: string,
+      interfaceTypeApiName: string,
+    ) =>
+      `interface-action-type-constraint.${interfaceTypeApiName}.${apiName}` as any,
+    generateRidForInterfaceParameterConstraint: (
+      constraintApiName: string,
+      interfaceTypeApiName: string,
+      paramApiName: string,
+    ) =>
+      `interface-parameter-constraint.${interfaceTypeApiName}.${constraintApiName}.${paramApiName}` as any,
+    getInterfaceActionTypeConstraintRids: () => new MockBiMap([]) as any,
+    getInterfaceParameterConstraintRids: () => new MockBiMap([]) as any,
     ...overrides,
   };
 }

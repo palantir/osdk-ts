@@ -308,6 +308,28 @@ function buildKnownIdentifiers(
       ]),
   );
 
+  // Interface action type constraints: InterfaceActionTypeConstraintRid -> BlockInternalId
+  const interfaceActionTypeConstraintMappings = Object.fromEntries(
+    Array.from(
+      ridGenerator.getInterfaceActionTypeConstraintRids().inverse().entries(),
+    )
+      .map(([rid, readableId]) => [
+        rid,
+        ridGenerator.toBlockInternalId(readableId),
+      ]),
+  );
+
+  // Interface parameter constraints: InterfaceParameterConstraintRid -> BlockInternalId
+  const interfaceParameterConstraintMappings = Object.fromEntries(
+    Array.from(
+      ridGenerator.getInterfaceParameterConstraintRids().inverse().entries(),
+    )
+      .map(([rid, readableId]) => [
+        rid,
+        ridGenerator.toBlockInternalId(readableId),
+      ]),
+  );
+
   // Datasources: BlockInternalId -> DatasourceLocator
   const backingDatasourceMappings = Object.fromEntries(
     Array.from(ridGenerator.getDatasourceLocators().entries()).map((
@@ -551,10 +573,9 @@ function buildKnownIdentifiers(
     functions: {},
     geotimeSeriesSyncs,
     groupIds: groupMappings,
-    // TODO: Add support for interface action type constraints and parameter constraints
-    interfaceActionTypeConstraints: {},
+    interfaceActionTypeConstraints: interfaceActionTypeConstraintMappings,
     interfaceLinkTypes: interfaceLinkMappings,
-    interfaceParameterConstraints: {},
+    interfaceParameterConstraints: interfaceParameterConstraintMappings,
     interfacePropertyTypes: {},
     interfaceTypes: interfaceMappings,
     linkTypeIds,
