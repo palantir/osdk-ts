@@ -242,8 +242,6 @@ async function writeJson(
   filePath: string,
   body: unknown,
 ) {
-  // consola.info(`Writing ${filePath}`);
-  // consola.debug(`Writing ${filePath} with body`, body);
   return void await minimalFs.writeFile(
     filePath,
     JSON.stringify(body, undefined, 2) + "\n",
