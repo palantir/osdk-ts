@@ -16,7 +16,7 @@
 
 import { findUp } from "find-up";
 import { promises as fsPromises } from "node:fs";
-import { valid } from "semver";
+import { inc, valid } from "semver";
 import type { AutoVersionConfig } from "./config.js";
 import { execAsync } from "./execAsync.js";
 
@@ -36,18 +36,52 @@ export class AutoVersionError extends Error {
  * @returns A promise that resolves to the version string.
  * @throws An error if the version string is not SemVer compliant or if the version cannot be determined.
  */
-export async function autoVersion(config: AutoVersionConfig): Promise<string> {
+export async function autoVersion(
+  config: AutoVersionConfig,
+  priorVersion?: string,
+): Promise<string> {
   switch (config.type) {
     case "git-describe":
       return gitDescribeAutoVersion(config.tagPrefix);
     case "package-json":
       return packageJsonAutoVersion();
+    case "increment":
+      return incrementAutoVersion(config.increment, priorVersion);
     default:
       const value: never = config;
       throw new Error(
         `Unexpected auto version config: (${JSON.stringify(value)})`,
       );
   }
+}
+
+function incrementAutoVersion(
+  increment?: "patch" | "minor" | "major",
+  priorVersion?: string,
+): string {
+  if (!increment) {
+    throw new Error(
+      `No increment specified`,
+    );
+  }
+
+  if (!priorVersion) {
+    throw new Error(
+      `No prior version to increment`,
+    );
+  }
+
+  validateVersion(priorVersion);
+
+  const nextVersion = inc(priorVersion, increment);
+
+  if (!nextVersion) {
+    throw new Error(
+      `Could not increment: (${priorVersion})`,
+    );
+  }
+
+  return nextVersion;
 }
 
 async function gitDescribeAutoVersion(tagPrefix: string = ""): Promise<string> {

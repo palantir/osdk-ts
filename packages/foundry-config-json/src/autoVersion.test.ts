@@ -29,6 +29,26 @@ describe("autoVersion", () => {
   const execMock = vi.mocked(execAsync);
   const execReturnValue = (out: string) => ({ stdout: out, stderr: "" });
 
+  it("should increment properly from the prior version", async () => {
+    const patchVersion = await autoVersion({
+      type: "increment",
+      increment: "patch",
+    }, "1.0.1");
+    expect(patchVersion).toBe("1.0.2");
+
+    const minorVersion = await autoVersion({
+      type: "increment",
+      increment: "minor",
+    }, "1.0.1");
+    expect(minorVersion).toBe("1.1.0");
+
+    const majorVersion = await autoVersion({
+      type: "increment",
+      increment: "major",
+    }, "1.0.1");
+    expect(majorVersion).toBe("2.0.0");
+  });
+
   it("should return a valid SemVer version from package.json", async () => {
     const validPackageJsonVersion = "1.2.3";
     vi.mocked(findUp).mockResolvedValue("/path/package.json");
@@ -83,13 +103,18 @@ describe("autoVersion", () => {
     expect(version).toBe("1.2.3-package");
   });
 
-  it("should throw an error if git describe returns a non-SemVer string", async () => {
+  it("should throw an error if git describe or the prior version returns a non-SemVer string", async () => {
     const nonSemVerGitVersion = "not-semver";
     execMock.mockResolvedValue(execReturnValue(nonSemVerGitVersion));
 
     await expect(autoVersion({
       type: "git-describe",
     })).rejects.toThrowError();
+
+    await expect(autoVersion({
+      type: "increment",
+      increment: "patch",
+    }, nonSemVerGitVersion)).rejects.toThrowError();
   });
 
   it("should throw an error if git isn't found", async () => {
