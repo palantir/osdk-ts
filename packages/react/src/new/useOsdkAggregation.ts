@@ -73,10 +73,11 @@ interface UseOsdkAggregationBaseOptions<
   dedupeIntervalMs?: number;
 
   /**
-   * Enable or disable the query.
+   * Enable or disable the aggregation.
    *
-   * When `false`, the query will not automatically execute. It will still
-   * return any cached data, but will not fetch from the server.
+   * When `false`, the hook does not subscribe or fetch from the server and
+   * reports `data: undefined`, `isLoading: false`, and `error: undefined`.
+   * Setting it back to `true` re-subscribes and fetches.
    *
    * @default true
    */
