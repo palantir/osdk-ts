@@ -29,8 +29,8 @@
 }
 
 .osdkNumberInputWrapper[aria-invalid] .osdkNumberInputStepper {
-  border-color: var(--osdk-button-border-color);
-  box-shadow: 0 1px 1px var(--osdk-button-drop-shadow-color);
+  border-color: var(--osdk-number-input-stepper-border-color);
+  box-shadow: var(--osdk-number-input-stepper-shadow);
   background-color: var(--osdk-button-danger-bg);
 }
 
@@ -102,9 +102,10 @@
 .osdkNumberInputStepper {
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--osdk-button-border-color);
+  border: var(--osdk-number-input-stepper-border-width) solid
+    var(--osdk-number-input-stepper-border-color);
   border-radius: var(--osdk-input-border-radius);
-  box-shadow: 0 1px 1px var(--osdk-button-drop-shadow-color);
+  box-shadow: var(--osdk-number-input-stepper-shadow);
   background-color: var(--osdk-button-secondary-bg);
   overflow: hidden;
 }
@@ -137,7 +138,7 @@
   }
 
   & + & {
-    border-block-start: var(--osdk-input-border-width) solid
-      var(--osdk-button-border-color);
+    border-block-start: var(--osdk-number-input-stepper-border-width) solid
+      var(--osdk-number-input-stepper-border-color);
   }
 }
