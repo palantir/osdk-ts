@@ -1108,11 +1108,11 @@ Shared styling for input components. Inputs use `box-shadow` for visual borders 
 
 Styling for the stepper (increment / decrement button group) beside the number input field.
 
-| Variable                                    | Default Value                                                                                                                     | Description                    |
-| ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
-| `--osdk-number-input-stepper-border-width`  | `1px`                                                                                                                             | Stepper border width           |
-| `--osdk-number-input-stepper-border-color`  | `var(--osdk-button-border-color)`                                                                                                 | Stepper border color           |
-| `--osdk-number-input-stepper-shadow`        | `0 var(--osdk-number-input-stepper-border-width) var(--osdk-number-input-stepper-border-width) var(--osdk-button-drop-shadow-color)` | Stepper drop shadow            |
+| Variable                                   | Default Value                                                                                                                        | Description          |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ | -------------------- |
+| `--osdk-number-input-stepper-border-width` | `1px`                                                                                                                                | Stepper border width |
+| `--osdk-number-input-stepper-border-color` | `var(--osdk-button-border-color)`                                                                                                    | Stepper border color |
+| `--osdk-number-input-stepper-shadow`       | `0 var(--osdk-number-input-stepper-border-width) var(--osdk-number-input-stepper-border-width) var(--osdk-button-drop-shadow-color)` | Stepper drop shadow  |
 
 ### Markdown Renderer
 
