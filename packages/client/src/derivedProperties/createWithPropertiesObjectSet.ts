@@ -42,13 +42,6 @@ export function createWithPropertiesObjectSet<
       }, definitionMap);
     },
     where: (clause) => {
-      if (clause == null || Object.keys(clause).length === 0) {
-        return createWithPropertiesObjectSet(
-          objectType,
-          objectSet,
-          definitionMap,
-        );
-      }
       const rdpNames = new Set(definitionMap.keys());
       return createWithPropertiesObjectSet(objectType, {
         type: "filter",
