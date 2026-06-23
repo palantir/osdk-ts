@@ -71,6 +71,16 @@ interface UseOsdkAggregationBaseOptions<
    * network request if the second is within `dedupeIntervalMs`.
    */
   dedupeIntervalMs?: number;
+
+  /**
+   * Enable or disable the query.
+   *
+   * When `false`, the query will not automatically execute. It will still
+   * return any cached data, but will not fetch from the server.
+   *
+   * @default true
+   */
+  enabled?: boolean;
 }
 
 export interface UseOsdkAggregationOptions<
@@ -164,6 +174,7 @@ export function useOsdkAggregation<
     intersectWith,
     aggregate,
     dedupeIntervalMs,
+    enabled = true,
   } = options;
   const objectSet = "objectSet" in options ? options.objectSet : undefined;
 
@@ -185,6 +196,16 @@ export function useOsdkAggregation<
 
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
+      if (!enabled) {
+        return makeExternalStore<ObserveAggregationArgs<Q, A>>(
+          () => ({ unsubscribe: () => {} }),
+          devToolsMetadata({
+            hookType: "useOsdkAggregation",
+            objectType: type.apiName,
+          }),
+        );
+      }
+
       const currentObjectSet = objectSetRef.current;
       if (currentObjectSet) {
         return makeExternalStoreAsync<ObserveAggregationArgs<Q, A>>(
@@ -232,6 +253,7 @@ export function useOsdkAggregation<
       );
     },
     [
+      enabled,
       observableClient,
       type.apiName,
       type.type,
@@ -252,8 +274,8 @@ export function useOsdkAggregation<
 
   return React.useMemo(() => ({
     data: payload?.result as AggregationsResults<Q, A> | undefined,
-    isLoading: isPayloadLoading(payload, true),
+    isLoading: isPayloadLoading(payload, enabled),
     error: extractPayloadError(payload, "Failed to execute aggregation"),
     refetch,
-  }), [payload, refetch]);
+  }), [payload, enabled, refetch]);
 }
