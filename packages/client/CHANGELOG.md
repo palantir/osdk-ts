@@ -1,5 +1,19 @@
 # @osdk/client
 
+## 2.38.0
+
+### Minor Changes
+
+- 11c7eb8: Revert the empty-where-clause runtime checks added in #3348. `modernToLegacyWhereClause` no longer throws on an empty clause, and `.where({})` no longer short-circuits to a no-op, restoring the pre-#3348 behavior where an empty clause lowers to an empty AND. Note: this reintroduces the original behavior where a `.where({})` (including no-filter `useOsdkObjects`/`useOsdkAggregation` queries via the observable layer) emits an empty AND on the wire, which some object-storage backends reject on the aggregate path.
+- bbb89ce: Fix `SyntaxError: The requested module 'big.js' does not provide an export named 'Big'`
+
+### Patch Changes
+
+- @osdk/api@2.38.0
+- @osdk/client.unstable@2.38.0
+- @osdk/generator-converters@2.38.0
+- @osdk/shared.test@2.28.0
+
 ## 2.37.0
 
 ### Minor Changes

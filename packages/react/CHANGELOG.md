@@ -1,5 +1,7 @@
 # @osdkkit/react
 
+## 2.38.0
+
 ## 2.37.0
 
 ### Minor Changes
