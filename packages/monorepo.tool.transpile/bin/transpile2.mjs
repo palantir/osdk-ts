@@ -188,6 +188,7 @@ async function transpileWithTsup(format, target) {
     "@osdk/create-app.template.expo.v2",
     "@osdk/create-app.template.react",
     "@osdk/create-app.template.react.beta",
+    "@osdk/create-app.template.react-public.beta",
     "@osdk/create-app.template.tutorial-todo-aip-app",
     "@osdk/create-app.template.tutorial-todo-aip-app.beta",
     "@osdk/create-app.template.tutorial-todo-app",
