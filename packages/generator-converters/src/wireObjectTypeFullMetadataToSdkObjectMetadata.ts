@@ -228,7 +228,7 @@ function convertInterfacePropertyImplementation(
       return { type: "reduced", implementation: inner };
     }
     default:
-      wire satisfies never;
+      const _: never = wire;
       return undefined;
   }
 }
