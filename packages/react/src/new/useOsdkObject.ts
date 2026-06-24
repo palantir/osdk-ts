@@ -16,14 +16,28 @@
 
 import type {
   ObjectOrInterfaceDefinition,
+  ObjectTypeDefinition,
   Osdk,
   PrimaryKeyType,
   PropertyKeys,
 } from "@osdk/api";
+import type {
+  InferShapeDefinition,
+  InlineShapeConfig,
+  LinkLoadConfig,
+  LinkStatus,
+  NullabilityViolation,
+  ShapeDefinition,
+  ShapeDerivedLinks,
+  ShapeInstance,
+} from "@osdk/api/unstable";
 import type { ObserveObjectCallbackArgs } from "@osdk/client/observable";
 import React from "react";
 import { devToolsMetadata, makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext } from "./OsdkContext.js";
+import type { UseShapeResult } from "./shapes/useShape.js";
+import { useShapeSingle } from "./shapes/useShape.js";
+import { useStableShapeDefinition } from "./shapes/useStableShapeDefinition.js";
 
 export interface UseOsdkObjectResult<
   Q extends ObjectOrInterfaceDefinition,
@@ -38,6 +52,48 @@ export interface UseOsdkObjectResult<
    */
   isOptimistic: boolean;
   forceUpdate: () => void;
+}
+
+/**
+ * Options for useOsdkObject with inline shape config.
+ */
+export interface UseOsdkObjectShapeOptions<
+  Q extends ObjectTypeDefinition,
+  C extends InlineShapeConfig<Q>,
+> {
+  shape: C;
+  enabled?: boolean;
+  links?: Partial<Record<string, LinkLoadConfig>>;
+}
+
+/**
+ * Result type for useOsdkObject with inline shape config.
+ */
+export interface UseOsdkObjectShapeResult<
+  Q extends ObjectTypeDefinition,
+  C extends InlineShapeConfig<Q>,
+> {
+  data: ShapeInstance<InferShapeDefinition<Q, C>> | undefined;
+  shape: InferShapeDefinition<Q, C>;
+  isLoading: boolean;
+  error: Error | undefined;
+  isOptimistic: boolean;
+  droppedDueToNullability: boolean;
+  nullabilityViolations: readonly NullabilityViolation[];
+  linkStatus: Partial<
+    {
+      [K in keyof ShapeDerivedLinks<InferShapeDefinition<Q, C>>]: LinkStatus;
+    }
+  >;
+  loadDeferred: (
+    linkName: keyof ShapeDerivedLinks<InferShapeDefinition<Q, C>>,
+  ) => void;
+  retry: (
+    linkName?: keyof ShapeDerivedLinks<InferShapeDefinition<Q, C>>,
+  ) => void;
+  invalidate: (
+    linkName?: keyof ShapeDerivedLinks<InferShapeDefinition<Q, C>>,
+  ) => void;
 }
 
 export interface UseOsdkObjectOptions<
@@ -93,11 +149,44 @@ export function useOsdkObject<
   primaryKey: PrimaryKeyType<Q>,
   options?: UseOsdkObjectOptions<Q>,
 ): UseOsdkObjectResult<Q>;
+/**
+ * Loads an object by type and primary key with an inline shape config.
+ * The shape defines nullability constraints, defaults, transforms, and derived links.
+ *
+ * @param type
+ * @param primaryKey
+ * @param options Options including the inline shape config
+ */
+export function useOsdkObject<
+  Q extends ObjectTypeDefinition,
+  const C extends InlineShapeConfig<Q>,
+>(
+  type: Q,
+  primaryKey: PrimaryKeyType<Q>,
+  options: UseOsdkObjectShapeOptions<Q, C>,
+): UseOsdkObjectShapeResult<Q, C>;
+/**
+ * Loads an object by type and primary key with a pre-built ShapeDefinition.
+ */
+export function useOsdkObject<
+  S extends ShapeDefinition<ObjectTypeDefinition>,
+>(
+  type: S extends ShapeDefinition<infer Q> ? Q : ObjectTypeDefinition,
+  primaryKey: PrimaryKeyType<
+    S extends ShapeDefinition<infer Q> ? Q : ObjectTypeDefinition
+  >,
+  options: {
+    shape: S;
+    enabled?: boolean;
+    links?: Partial<Record<string, LinkLoadConfig>>;
+  },
+): UseShapeResult<S>;
 /*
     Implementation of useOsdkObject
  */
 export function useOsdkObject<
   Q extends ObjectOrInterfaceDefinition,
+  C extends InlineShapeConfig<Q> = InlineShapeConfig<Q>,
 >(
   ...args:
     | [obj: Osdk.Instance<Q>, enabled?: boolean]
@@ -107,22 +196,159 @@ export function useOsdkObject<
       primaryKey: PrimaryKeyType<Q>,
       options?: UseOsdkObjectOptions<Q>,
     ]
+    | [
+      type: Q,
+      primaryKey: PrimaryKeyType<Q>,
+      options: UseOsdkObjectShapeOptions<
+        Q & ObjectTypeDefinition,
+        C & InlineShapeConfig<Q & ObjectTypeDefinition>
+      >,
+    ]
+    | [
+      type: Q,
+      primaryKey: PrimaryKeyType<Q>,
+      options: {
+        shape: ShapeDefinition<Q>;
+        enabled?: boolean;
+        links?: Partial<Record<string, LinkLoadConfig>>;
+      },
+    ]
+):
+  | UseOsdkObjectResult<Q>
+  | UseOsdkObjectShapeResult<
+    Q & ObjectTypeDefinition,
+    C & InlineShapeConfig<Q & ObjectTypeDefinition>
+  >
+  | UseShapeResult<ShapeDefinition<Q>>
+{
+  const isInstanceSignature = "$objectType" in args[0];
+
+  const hasShapeOptions = !isInstanceSignature
+    && args.length >= 3
+    && typeof args[2] === "object"
+    && args[2] != null
+    && "shape" in args[2];
+
+  const modeRef = React.useRef(hasShapeOptions);
+  if (modeRef.current !== hasShapeOptions) {
+    throw new Error(
+      "useOsdkObject: cannot switch between shape/non-shape mode",
+    );
+  }
+
+  if (hasShapeOptions) {
+    return useOsdkObjectWithShape(
+      args[0] as Q,
+      args[1] as PrimaryKeyType<Q>,
+      args[2] as {
+        shape: C | ShapeDefinition<Q>;
+        enabled?: boolean;
+        links?: Partial<Record<string, LinkLoadConfig>>;
+      },
+    );
+  }
+
+  // Original overloads (instance or type+pk)
+
+  return useOsdkObjectBase(
+    args as
+      | [obj: Osdk.Instance<Q>, enabled?: boolean]
+      | [type: Q, primaryKey: PrimaryKeyType<Q>, enabled?: boolean]
+      | [
+        type: Q,
+        primaryKey: PrimaryKeyType<Q>,
+        options?: UseOsdkObjectOptions<Q>,
+      ],
+  );
+}
+
+function useOsdkObjectWithShape<
+  Q extends ObjectOrInterfaceDefinition,
+  C extends InlineShapeConfig<Q> = InlineShapeConfig<Q>,
+>(
+  type: Q,
+  primaryKey: PrimaryKeyType<Q>,
+  options: {
+    shape: C | ShapeDefinition<Q>;
+    enabled?: boolean;
+    links?: Partial<Record<string, LinkLoadConfig>>;
+  },
+):
+  | UseOsdkObjectShapeResult<
+    Q & ObjectTypeDefinition,
+    C & InlineShapeConfig<Q & ObjectTypeDefinition>
+  >
+  | UseShapeResult<ShapeDefinition<Q>>
+{
+  const rawShape = options.shape;
+
+  const isPreBuilt = typeof rawShape === "object" && rawShape != null
+    && "__shapeId" in rawShape;
+
+  const shapeDef = useStableShapeDefinition(type, rawShape);
+
+  const result = useShapeSingle(
+    shapeDef,
+    primaryKey,
+    { enabled: options.enabled, links: options.links },
+  );
+
+  if (isPreBuilt) {
+    return result;
+  }
+
+  type ResolvedC = C & InlineShapeConfig<Q & ObjectTypeDefinition>;
+  type ResolvedQ = Q & ObjectTypeDefinition;
+
+  return {
+    data: result.data as
+      | ShapeInstance<InferShapeDefinition<ResolvedQ, ResolvedC>>
+      | undefined,
+    shape: shapeDef as InferShapeDefinition<ResolvedQ, ResolvedC>,
+    isLoading: result.isLoading,
+    error: result.error,
+    isOptimistic: result.isOptimistic,
+    droppedDueToNullability: result.droppedDueToNullability,
+    nullabilityViolations: result.nullabilityViolations,
+    linkStatus: result.linkStatus as UseOsdkObjectShapeResult<
+      ResolvedQ,
+      ResolvedC
+    >["linkStatus"],
+    loadDeferred: result.loadDeferred as UseOsdkObjectShapeResult<
+      ResolvedQ,
+      ResolvedC
+    >["loadDeferred"],
+    retry: result.retry as UseOsdkObjectShapeResult<
+      ResolvedQ,
+      ResolvedC
+    >["retry"],
+    invalidate: result.invalidate as UseOsdkObjectShapeResult<
+      ResolvedQ,
+      ResolvedC
+    >["invalidate"],
+  };
+}
+
+function useOsdkObjectBase<Q extends ObjectOrInterfaceDefinition>(
+  args:
+    | [obj: Osdk.Instance<Q>, enabled?: boolean]
+    | [type: Q, primaryKey: PrimaryKeyType<Q>, enabled?: boolean]
+    | [
+      type: Q,
+      primaryKey: PrimaryKeyType<Q>,
+      options?: UseOsdkObjectOptions<Q>,
+    ],
 ): UseOsdkObjectResult<Q> {
   const { observableClient } = React.useContext(OsdkContext);
 
-  // Check if first arg is an instance to discriminate signatures
-  // TypeScript cannot narrow rest parameter unions with optional parameters,
-  // so we must use type assertions after runtime discrimination
   const isInstanceSignature = "$objectType" in args[0];
 
-  // Extract options object if provided (3rd arg is an object with $select or enabled)
   const optionsArg = !isInstanceSignature
       && args[2] != null
       && typeof args[2] === "object"
     ? args[2]
     : undefined;
 
-  // Extract enabled flag - 2nd param for instance signature, 3rd for type signature
   const enabled = isInstanceSignature
     ? (typeof args[1] === "boolean" ? args[1] : true)
     : optionsArg
