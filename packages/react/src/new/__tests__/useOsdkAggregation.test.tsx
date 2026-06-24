@@ -17,8 +17,8 @@
 import type { ObjectSet } from "@osdk/api";
 import type { Client } from "@osdk/client";
 import { Employee } from "@osdk/client.test.ontology";
-import type { ObservableClient } from "@osdk/client/observable";
-import { renderHook } from "@testing-library/react";
+import type { ObservableClient, Observer } from "@osdk/client/observable";
+import { act, renderHook } from "@testing-library/react";
 import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { OsdkContext } from "../OsdkContext.js";
@@ -30,7 +30,11 @@ function createMockObservableClient(): {
   client: ObservableClient;
   observeAggregation: ReturnType<typeof vi.fn>;
 } {
-  const observeAggregation = vi.fn(() => ({ unsubscribe: vi.fn() }));
+  const observeAggregation = vi.fn(
+    (_args: unknown, _observer: Observer<unknown>) => ({
+      unsubscribe: vi.fn(),
+    }),
+  );
   const client = {
     observeAggregation,
     canonicalizeOptions: vi.fn((opts: unknown) => opts),
@@ -115,6 +119,40 @@ describe("useOsdkAggregation", () => {
       rerender({ enabled: true });
 
       expect(observeAggregation).toHaveBeenCalledTimes(1);
+    });
+
+    it("clears data when enabled flips from true to false", () => {
+      const unsubscribe = vi.fn();
+      let observer: Observer<unknown> | undefined;
+      observeAggregation.mockImplementation((_args, obs: Observer<unknown>) => {
+        observer = obs;
+        return { unsubscribe };
+      });
+
+      const { result, rerender } = renderHook(
+        ({ enabled }) =>
+          useOsdkAggregation(Employee, { aggregate: AGGREGATE, enabled }),
+        {
+          wrapper: createWrapper(observableClient),
+          initialProps: { enabled: true },
+        },
+      );
+
+      act(() => {
+        observer?.next({ status: "loaded", result: { $count: 5 } });
+      });
+
+      expect(observeAggregation).toHaveBeenCalledTimes(1);
+      expect(result.current.data).toEqual({ $count: 5 });
+      expect(result.current.isLoading).toBe(false);
+
+      rerender({ enabled: false });
+
+      expect(unsubscribe).toHaveBeenCalledTimes(1);
+      expect(observeAggregation).toHaveBeenCalledTimes(1);
+      expect(result.current.data).toBeUndefined();
+      expect(result.current.isLoading).toBe(false);
+      expect(result.current.error).toBeUndefined();
     });
 
     it("does not call observeAggregation when enabled is false even with an objectSet", () => {
