@@ -29,18 +29,20 @@ const AGGREGATE = { $select: { $count: "unordered" } } as const;
 function createMockObservableClient(): {
   client: ObservableClient;
   observeAggregation: ReturnType<typeof vi.fn>;
+  invalidateObjectType: ReturnType<typeof vi.fn>;
 } {
   const observeAggregation = vi.fn(
     (_args: unknown, _observer: Observer<unknown>) => ({
       unsubscribe: vi.fn(),
     }),
   );
+  const invalidateObjectType = vi.fn().mockResolvedValue(undefined);
   const client = {
     observeAggregation,
     canonicalizeOptions: vi.fn((opts: unknown) => opts),
-    invalidateObjectType: vi.fn().mockResolvedValue(undefined),
+    invalidateObjectType,
   } as unknown as ObservableClient;
-  return { client, observeAggregation };
+  return { client, observeAggregation, invalidateObjectType };
 }
 
 function createWrapper(observableClient: ObservableClient) {
@@ -62,9 +64,10 @@ function createWrapper(observableClient: ObservableClient) {
 describe("useOsdkAggregation", () => {
   let observableClient: ObservableClient;
   let observeAggregation: ReturnType<typeof vi.fn>;
+  let invalidateObjectType: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
-    ({ client: observableClient, observeAggregation } =
+    ({ client: observableClient, observeAggregation, invalidateObjectType } =
       createMockObservableClient());
   });
 
@@ -169,6 +172,39 @@ describe("useOsdkAggregation", () => {
       );
 
       expect(observeAggregation).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("refetch", () => {
+    it("invalidates the object type when enabled is true", async () => {
+      const { result } = renderHook(
+        () =>
+          useOsdkAggregation(Employee, { aggregate: AGGREGATE, enabled: true }),
+        { wrapper: createWrapper(observableClient) },
+      );
+
+      await act(async () => {
+        await result.current.refetch();
+      });
+
+      expect(invalidateObjectType).toHaveBeenCalledTimes(1);
+    });
+
+    it("does not invalidate the object type when enabled is false", async () => {
+      const { result } = renderHook(
+        () =>
+          useOsdkAggregation(Employee, {
+            aggregate: AGGREGATE,
+            enabled: false,
+          }),
+        { wrapper: createWrapper(observableClient) },
+      );
+
+      await act(async () => {
+        await result.current.refetch();
+      });
+
+      expect(invalidateObjectType).not.toHaveBeenCalled();
     });
   });
 });

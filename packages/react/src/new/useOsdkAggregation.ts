@@ -77,7 +77,9 @@ interface UseOsdkAggregationBaseOptions<
    *
    * When `false`, the hook does not subscribe or fetch from the server and
    * reports `data: undefined`, `isLoading: false`, and `error: undefined`.
-   * Setting it back to `true` re-subscribes and fetches.
+   * `refetch()` is also a no-op while disabled, so it will not invalidate the
+   * object type or trigger network requests. Setting it back to `true`
+   * re-subscribes and fetches.
    *
    * @default true
    */
@@ -270,8 +272,11 @@ export function useOsdkAggregation<
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);
 
   const refetch = React.useCallback(async () => {
+    if (!enabled) {
+      return;
+    }
     await observableClient.invalidateObjectType(type.apiName);
-  }, [observableClient, type.apiName]);
+  }, [observableClient, type.apiName, enabled]);
 
   return React.useMemo(() => ({
     data: payload?.result as AggregationsResults<Q, A> | undefined,
