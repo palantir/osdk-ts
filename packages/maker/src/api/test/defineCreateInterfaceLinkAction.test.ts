@@ -389,6 +389,119 @@ describe("defineCreateInterfaceLinkAction", () => {
     expect(params.source.type.type).toBe("interfaceReference");
   });
 
+  it("emits listLengthValidation for a MANY (list-type) target", () => {
+    const person = defineInterface({
+      apiName: "Person",
+      displayName: "Person",
+      properties: {},
+    });
+    const company = defineInterface({
+      apiName: "Company",
+      displayName: "Company",
+      properties: {},
+    });
+    defineInterfaceLinkConstraint({
+      apiName: "employers",
+      from: person,
+      toMany: company,
+    });
+
+    defineCreateInterfaceLinkAction({
+      from: person,
+      interfaceLink: "employers",
+    });
+
+    const validations = dumpOntologyFullMetadata().ontology
+      .actionTypes["com.palantir.link-person-employers"].actionType
+      .actionTypeLogic.validation.parameterValidations;
+
+    // A list-type parameter must use listLengthValidation, not scalar required.
+    expect(
+      validations.target.defaultValidation.validation.required,
+    ).toEqual({
+      type: "listLengthValidation",
+      listLengthValidation: { minLength: 1, maxLength: undefined },
+    });
+
+    // The singular source stays a scalar required configuration.
+    expect(
+      validations.source.defaultValidation.validation.required,
+    ).toEqual({
+      type: "required",
+      required: {},
+    });
+  });
+
+  it("propagates required: false on a MANY target as an unconstrained list", () => {
+    const person = defineInterface({
+      apiName: "Person",
+      displayName: "Person",
+      properties: {},
+    });
+    const company = defineInterface({
+      apiName: "Company",
+      displayName: "Company",
+      properties: {},
+    });
+    defineInterfaceLinkConstraint({
+      apiName: "employers",
+      from: person,
+      toMany: company,
+      required: false,
+    });
+
+    defineCreateInterfaceLinkAction({
+      from: person,
+      interfaceLink: "employers",
+    });
+
+    const validations = dumpOntologyFullMetadata().ontology
+      .actionTypes["com.palantir.link-person-employers"].actionType
+      .actionTypeLogic.validation.parameterValidations;
+
+    expect(
+      validations.target.defaultValidation.validation.required,
+    ).toEqual({
+      type: "listLengthValidation",
+      listLengthValidation: { minLength: undefined, maxLength: undefined },
+    });
+  });
+
+  it("propagates required: false on a SINGLE target as notRequired", () => {
+    const person = defineInterface({
+      apiName: "Person",
+      displayName: "Person",
+      properties: {},
+    });
+    const company = defineInterface({
+      apiName: "Company",
+      displayName: "Company",
+      properties: {},
+    });
+    defineInterfaceLinkConstraint({
+      apiName: "employer",
+      from: person,
+      toOne: company,
+      required: false,
+    });
+
+    defineCreateInterfaceLinkAction({
+      from: person,
+      interfaceLink: "employer",
+    });
+
+    const validations = dumpOntologyFullMetadata().ontology
+      .actionTypes["com.palantir.link-person-employer"].actionType
+      .actionTypeLogic.validation.parameterValidations;
+
+    expect(
+      validations.target.defaultValidation.validation.required,
+    ).toEqual({
+      type: "notRequired",
+      notRequired: {},
+    });
+  });
+
   it("throws when the ILC does not exist on the from interface", () => {
     const person = defineInterface({
       apiName: "Person",

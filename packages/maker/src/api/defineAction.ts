@@ -473,7 +473,7 @@ function getTargetParameters(
           },
         validation: {
           ...def.parameterConfiguration?.[name],
-          required: true,
+          required: def.parameterConfiguration?.[name]?.required ?? true,
           allowedValues: def.objectType === undefined
             ? {
               type: "objectTypeReference",
@@ -516,7 +516,7 @@ function getTargetParameters(
           },
         validation: {
           ...def.parameterConfiguration?.[name],
-          required: true,
+          required: def.parameterConfiguration?.[name]?.required ?? true,
           allowedValues: def.objectType === undefined
             ? { type: "interfaceObjectQuery" }
             : {
@@ -556,7 +556,7 @@ function getTargetParameters(
           },
         validation: {
           ...def.parameterConfiguration?.[name],
-          required: true,
+          required: def.parameterConfiguration?.[name]?.required ?? true,
           allowedValues: def.objectType === undefined
             ? { type: "interfaceObjectQuery" }
             : {
