@@ -54,7 +54,7 @@ export function useDualScopeAggregation<
   Q extends ObjectTypeDefinition,
   K extends PropertyKeys<Q>,
 >(
-  objectType: Q,
+  objectType: Q | undefined,
   propertyKey: K,
   scopedObjectSet: ObjectSet<Q> | undefined,
   emptySourceObjectSet: ObjectSet<Q> | undefined,

@@ -87,8 +87,9 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   /**
    * The object type definition for the objects being filtered.
    * Used for metadata resolution (property types, display names).
+   * When undefined, filter inputs render their loading skeletons.
    */
-  objectType: Q;
+  objectType: Q | undefined;
 
   /**
    * Optional object set to scope aggregation queries. When omitted,

@@ -28,7 +28,7 @@ import { StaticValuesFilterInput } from "./inputs/StaticValuesFilterInput.js";
 import type { LinkedFilter } from "./types/LinkedFilterTypes.js";
 
 export interface FilterInputProps<Q extends ObjectTypeDefinition> {
-  objectType: Q;
+  objectType: Q | undefined;
   objectSet?: ObjectSet<Q>;
   definition: FilterDefinitionUnion<Q>;
   filterState: FilterState | undefined;
@@ -107,6 +107,9 @@ function FilterInputInner<Q extends ObjectTypeDefinition>({
         return (
           <div data-unsupported="true">Custom filter missing renderInput</div>
         );
+      }
+      if (objectType === undefined) {
+        return <></>;
       }
       const customFilterState = filterState?.type === "custom"
         ? filterState

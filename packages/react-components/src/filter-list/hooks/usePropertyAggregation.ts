@@ -54,7 +54,7 @@ export function usePropertyAggregation<
   Q extends ObjectTypeDefinition,
   K extends PropertyKeys<Q>,
 >(
-  objectType: Q,
+  objectType: Q | undefined,
   propertyKey: K,
   objectSet: ObjectSet<Q> | undefined,
   options?: UsePropertyAggregationOptions<Q>,

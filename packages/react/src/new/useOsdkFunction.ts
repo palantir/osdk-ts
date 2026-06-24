@@ -164,7 +164,7 @@ export interface UseOsdkFunctionResult<Q extends QueryDefinition<unknown>> {
  * ```
  */
 export function useOsdkFunction<Q extends QueryDefinition<unknown>>(
-  queryDef: Q,
+  queryDef: Q | undefined,
   options: UseOsdkFunctionOptions<Q> = {},
 ): UseOsdkFunctionResult<Q> {
   const { observableClient } = React.useContext(OsdkContext);
@@ -175,6 +175,9 @@ export function useOsdkFunction<Q extends QueryDefinition<unknown>>(
     dedupeIntervalMs,
     enabled = true,
   } = options;
+
+  const apiName = queryDef?.apiName;
+  const version = queryDef?.version;
 
   const stableParams = React.useMemo(
     () => params,
@@ -205,12 +208,12 @@ export function useOsdkFunction<Q extends QueryDefinition<unknown>>(
 
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
-      if (!enabled) {
+      if (queryDef === undefined || !enabled) {
         return makeExternalStore<ObserveFunctionCallbackArgs<Q>>(
           () => ({ unsubscribe: () => {} }),
           devToolsMetadata({
             hookType: "useOsdkFunction",
-            objectType: queryDef.apiName,
+            objectType: apiName,
           }),
         );
       }
@@ -228,14 +231,14 @@ export function useOsdkFunction<Q extends QueryDefinition<unknown>>(
           ),
         devToolsMetadata({
           hookType: "useOsdkFunction",
-          objectType: queryDef.apiName,
+          objectType: apiName,
         }),
       );
     },
     [
       observableClient,
-      queryDef.apiName,
-      queryDef.version,
+      apiName,
+      version,
       paramsForApi,
       stableDependsOn,
       stableDependsOnObjects,
@@ -247,6 +250,9 @@ export function useOsdkFunction<Q extends QueryDefinition<unknown>>(
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);
 
   const refetch = React.useCallback(async () => {
+    if (queryDef === undefined) {
+      return;
+    }
     await observableClient.invalidateFunction(queryDef, paramsForApi);
   }, [observableClient, queryDef, paramsForApi]);
 
@@ -258,10 +264,10 @@ export function useOsdkFunction<Q extends QueryDefinition<unknown>>(
 
     return {
       data: payload?.result as UseOsdkFunctionResult<Q>["data"],
-      isLoading: payload?.status === "loading",
+      isLoading: queryDef === undefined || payload?.status === "loading",
       error,
       lastUpdated: payload?.lastUpdated ?? 0,
       refetch,
     };
-  }, [payload, refetch]);
+  }, [payload, refetch, queryDef]);
 }

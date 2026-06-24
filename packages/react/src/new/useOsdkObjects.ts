@@ -238,7 +238,7 @@ export function useOsdkObjects<
   Q extends ObjectOrInterfaceDefinition,
   L extends LinkNames<Q>,
 >(
-  type: Q,
+  type: Q | undefined,
   options: UseOsdkObjectsOptions<Q, {}> & {
     pivotTo: L;
     rids: readonly string[];
@@ -250,7 +250,7 @@ export function useOsdkObjects<
   Q extends ObjectOrInterfaceDefinition,
   L extends LinkNames<Q>,
 >(
-  type: Q,
+  type: Q | undefined,
   options: UseOsdkObjectsOptions<Q, {}> & {
     pivotTo: L;
     streamUpdates?: never;
@@ -263,7 +263,7 @@ export function useOsdkObjects<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
 >(
-  type: Q,
+  type: Q | undefined,
   options: UseOsdkObjectsOptions<Q, RDPs> & {
     rids: readonly string[];
     pivotTo?: never;
@@ -274,7 +274,7 @@ export function useOsdkObjects<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
 >(
-  type: Q,
+  type: Q | undefined,
   options?:
     & UseOsdkObjectsOptions<Q, RDPs>
     & { pivotTo?: never },
@@ -284,7 +284,7 @@ export function useOsdkObjects<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
 >(
-  type: Q,
+  type: Q | undefined,
   options?: UseOsdkObjectsOptions<Q, RDPs>,
 ):
   | UseOsdkListResult<Q, RDPs>
@@ -325,14 +325,17 @@ export function useOsdkObjects<
     [JSON.stringify(rids)],
   );
 
+  const apiName = type?.apiName;
+  const typeKind = type?.type;
+
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
-      if (!enabled) {
+      if (type === undefined || !enabled) {
         return makeExternalStore<ObserveObjectsCallbackArgs<Q, RDPs>>(
           () => ({ unsubscribe: () => {} }),
           devToolsMetadata({
             hookType: "useOsdkObjects",
-            objectType: type.apiName,
+            objectType: apiName,
           }),
         );
       }
@@ -362,7 +365,7 @@ export function useOsdkObjects<
           }, observer),
         devToolsMetadata({
           hookType: "useOsdkObjects",
-          objectType: type.apiName,
+          objectType: apiName,
           where: canonOptions.where,
           orderBy: canonOptions.orderBy,
           pageSize,
@@ -372,8 +375,8 @@ export function useOsdkObjects<
     [
       enabled,
       observableClient,
-      type.apiName,
-      type.type,
+      apiName,
+      typeKind,
       stableRids,
       canonOptions.where,
       dedupeIntervalMs,
@@ -394,8 +397,11 @@ export function useOsdkObjects<
   const listPayload = React.useSyncExternalStore(subscribe, getSnapShot);
 
   const refetch = React.useCallback(async () => {
-    await observableClient.invalidateObjectType(type.apiName);
-  }, [observableClient, type.apiName]);
+    if (apiName === undefined) {
+      return;
+    }
+    await observableClient.invalidateObjectType(apiName);
+  }, [observableClient, apiName]);
 
   return React.useMemo<UseOsdkListResult<Q, RDPs>>(
     () => ({

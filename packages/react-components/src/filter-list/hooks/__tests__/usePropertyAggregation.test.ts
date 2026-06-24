@@ -182,4 +182,29 @@ describe("usePropertyAggregation activeValues", () => {
       { value: "Marketing", count: 5 },
     ]);
   });
+
+  describe("when objectType is undefined", () => {
+    it("forwards undefined to useOsdkAggregation and returns an empty result", () => {
+      vi.mocked(useOsdkAggregation).mockReturnValue({
+        data: undefined,
+        isLoading: true,
+        error: null,
+        refetch: vi.fn(),
+      } as unknown as ReturnType<typeof useOsdkAggregation>);
+
+      const { result } = renderHook(() =>
+        usePropertyAggregation(
+          undefined,
+          "name" as PropertyKeys<typeof MockObjectType>,
+          undefined,
+        )
+      );
+
+      expect(vi.mocked(useOsdkAggregation).mock.calls.at(-1)?.[0])
+        .toBeUndefined();
+      expect(result.current.data).toEqual([]);
+      expect(result.current.maxCount).toBe(0);
+      expect(result.current.isLoading).toBe(true);
+    });
+  });
 });

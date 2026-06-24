@@ -27,7 +27,7 @@ import {
 } from "../utils/aggregationHelpers.js";
 
 interface DateRangeFilterInputProps<Q extends ObjectTypeDefinition> {
-  objectType: Q;
+  objectType: Q | undefined;
   objectSet?: ObjectSet<Q>;
   propertyKey: string;
   filterState: FilterState | undefined;

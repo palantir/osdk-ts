@@ -36,7 +36,7 @@ import { TimelineFilterInput } from "./TimelineFilterInput.js";
 import { ToggleFilterInput } from "./ToggleFilterInput.js";
 
 interface PropertyFilterInputProps<Q extends ObjectTypeDefinition> {
-  objectType: Q;
+  objectType: Q | undefined;
   objectSet?: ObjectSet<Q>;
   definition: PropertyFilterDefinition<Q>;
   filterState: FilterState | undefined;
