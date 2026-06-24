@@ -17,9 +17,11 @@
 import type { PossibleWhereClauseFilters } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
 import invariant from "tiny-invariant";
+import type { DerivedPropertyRuntimeMetadata } from "../../derivedProperties/derivedPropertyRuntimeMetadata.js";
 import type { InterfaceHolder } from "../../object/convertWireToOsdkObjects/InterfaceHolder.js";
 import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import { evaluateFilter } from "./evaluateFilter.js";
+import { resolvePropertyType } from "./resolvePropertyType.js";
 import type { SimpleWhereClause } from "./SimpleWhereClause.js";
 
 function is$and(
@@ -77,6 +79,12 @@ export function objectSortaMatchesWhereClause(
   o: ObjectHolder | InterfaceHolder,
   whereClause: SimpleWhereClause,
   strict: boolean,
+  // Derived-property runtime metadata used to resolve string-encoded numeric
+  // types for derived properties. This is the matcher-side seam: callers can
+  // pass derived metadata directly so a derived long/decimal compares
+  // numerically. NOTE: the query classes (ListQuery/ObjectSetQuery) do not yet
+  // thread derived filters end-to-end -- that plumbing is a follow-up.
+  derivedPropertyMetadata: DerivedPropertyRuntimeMetadata = {},
 ): boolean {
   if (deepEqual({}, whereClause)) {
     return true;
@@ -84,16 +92,21 @@ export function objectSortaMatchesWhereClause(
 
   if (is$and(whereClause)) {
     return whereClause.$and.every(w =>
-      objectSortaMatchesWhereClause(o, w, strict)
+      objectSortaMatchesWhereClause(o, w, strict, derivedPropertyMetadata)
     );
   }
   if (is$or(whereClause)) {
     return whereClause.$or.some(w =>
-      objectSortaMatchesWhereClause(o, w, strict)
+      objectSortaMatchesWhereClause(o, w, strict, derivedPropertyMetadata)
     );
   }
   if (is$not(whereClause)) {
-    return !objectSortaMatchesWhereClause(o, whereClause.$not, strict);
+    return !objectSortaMatchesWhereClause(
+      o,
+      whereClause.$not,
+      strict,
+      derivedPropertyMetadata,
+    );
   }
 
   return Object.entries(whereClause).every(([key, filter]) => {
@@ -101,7 +114,8 @@ export function objectSortaMatchesWhereClause(
       const realValue: any = o[key as keyof typeof o];
       const [f] = Object.keys(filter) as Array<PossibleWhereClauseFilters>;
       const expected = (filter as any)[f];
-      return evaluateFilter(f, realValue, expected, strict);
+      const propertyType = resolvePropertyType(o, key, derivedPropertyMetadata);
+      return evaluateFilter(f, realValue, expected, strict, propertyType);
     }
 
     if (key in o) {

@@ -16,6 +16,8 @@
 
 import type { PossibleWhereClauseFilters } from "@osdk/api";
 import invariant from "tiny-invariant";
+import { compareNumericStrings } from "./compareNumericStrings.js";
+import { isStringEncodedNumericType } from "./resolvePropertyType.js";
 
 /**
  * Evaluates a where clause filter against a value.
@@ -26,22 +28,47 @@ export function evaluateFilter(
   realValue: any,
   expected: any,
   strict: boolean,
+  // Declared property type (e.g. "long"/"decimal"). When it's a string-encoded
+  // numeric type, value comparisons route through compareNumericStrings so they
+  // compare by value rather than lexicographically/precision-sensitively.
+  propertyType?: string,
 ): boolean {
+  // `long`/`decimal` arrive over the wire as strings, so the value-comparison
+  // filters must compare them by value rather than lexicographically ("10" <
+  // "2") and precision-sensitively ("5.30" !== "5.3"). `numeric` selects that
+  // path per operator below; keeping a single switch means a new filter only
+  // has to be handled in one place.
+  const numeric = isStringEncodedNumericType(propertyType);
   switch (f) {
     case "$eq":
-      return realValue === expected;
+      return numeric
+        ? numericCompare(realValue, expected) === 0
+        : realValue === expected;
     case "$gt":
-      return realValue > expected;
+      return numeric
+        ? numericCompare(realValue, expected) > 0
+        : realValue > expected;
     case "$lt":
-      return realValue < expected;
+      return numeric
+        ? numericCompare(realValue, expected) < 0
+        : realValue < expected;
     case "$gte":
-      return realValue >= expected;
+      return numeric
+        ? numericCompare(realValue, expected) >= 0
+        : realValue >= expected;
     case "$lte":
-      return realValue <= expected;
+      return numeric
+        ? numericCompare(realValue, expected) <= 0
+        : realValue <= expected;
     case "$ne":
-      return realValue !== expected;
+      return numeric
+        ? numericCompare(realValue, expected) !== 0
+        : realValue !== expected;
     case "$in":
-      return Array.isArray(expected) && expected.includes(realValue);
+      return Array.isArray(expected)
+        && (numeric
+          ? expected.some(e => numericCompare(realValue, e) === 0)
+          : expected.includes(realValue));
     case "$isNull":
       return realValue == null;
     case "$startsWith":
@@ -67,4 +94,21 @@ export function evaluateFilter(
       }
       return !strict;
   }
+}
+
+/**
+ * Compares two values from a string-encoded numeric column by value, returning
+ * the usual comparator sign (negative / 0 / positive). Coerces via String() so
+ * a cross-type expected (e.g. `$eq("10", 10)`) still compares numerically.
+ *
+ * Returns NaN when either side has no value (null/undefined). NaN is
+ * incomparable, so every ordered comparison against it is false and `=== 0` is
+ * false, while `!== 0` is true -- i.e. a missing value matches nothing and is
+ * "not equal" to a present one, with no special-casing needed at the call site.
+ */
+function numericCompare(a: unknown, b: unknown): number {
+  if (a == null || b == null) {
+    return NaN;
+  }
+  return compareNumericStrings(String(a), String(b));
 }

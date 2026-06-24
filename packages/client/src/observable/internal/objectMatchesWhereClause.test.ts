@@ -14,9 +14,21 @@
  * limitations under the License.
  */
 
-import type { Osdk, WhereClause } from "@osdk/api";
+import type {
+  InterfaceMetadata,
+  ObjectMetadata,
+  Osdk,
+  WhereClause,
+} from "@osdk/api";
 import type { objectTypeWithAllPropertyTypes } from "@osdk/client.test.ontology";
+import type { DerivedPropertyDefinition } from "@osdk/foundry.ontologies";
 import { describe, expect, expectTypeOf, it } from "vitest";
+import type { DerivedPropertyRuntimeMetadata } from "../../derivedProperties/derivedPropertyRuntimeMetadata.js";
+import type { InterfaceHolder } from "../../object/convertWireToOsdkObjects/InterfaceHolder.js";
+import {
+  InterfaceDefRef,
+  ObjectDefRef,
+} from "../../object/convertWireToOsdkObjects/InternalSymbols.js";
 import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import { objectSortaMatchesWhereClause } from "./objectMatchesWhereClause.js";
 
@@ -222,4 +234,159 @@ describe(objectSortaMatchesWhereClause, () => {
         .toBe(nonStrictExpected);
     },
   );
+});
+
+// `long`/`decimal` arrive over the wire as strings, so a holder with long "10"
+// and clause `{long:{$gt:"2"}}` is lexicographically false but numerically
+// true. The matcher must compare numerically when the declared type (resolved
+// off the holder metadata or the derived metadata arg) says it's numeric.
+//
+// These fixtures genuinely carry ObjectDefRef / InterfaceDefRef so
+// resolvePropertyType returns a real type (the base fauxObject above is cast
+// without metadata, so it resolves to undefined and stays lexicographic).
+type AnyHolder = ObjectHolder | InterfaceHolder;
+
+function objectHolder(
+  values: Record<string, unknown>,
+  properties: Record<string, ObjectMetadata.Property>,
+): AnyHolder {
+  return {
+    ...values,
+    [ObjectDefRef]: { properties } as ObjectMetadata,
+  } as unknown as AnyHolder;
+}
+
+function interfaceHolder(
+  values: Record<string, unknown>,
+  apiName: string,
+  properties: Record<string, InterfaceMetadata.Property>,
+): AnyHolder {
+  return {
+    ...values,
+    [InterfaceDefRef]: { apiName, properties } as InterfaceMetadata,
+  } as unknown as AnyHolder;
+}
+
+describe("objectSortaMatchesWhereClause numeric-string comparison", () => {
+  // Behavior 6: OBJECT holder path.
+  describe("object holder", () => {
+    const holder = objectHolder(
+      { long: "10", decimal: "5.3", boolean: true },
+      { long: { type: "long" }, decimal: { type: "decimal" } },
+    );
+
+    it.each([true, false])(
+      "{long:{$gt:\"2\"}} matches long \"10\" numerically (strict=%s)",
+      (strict) => {
+        expect(
+          objectSortaMatchesWhereClause(holder, { long: { $gt: "2" } }, strict),
+        ).toBe(true);
+      },
+    );
+
+    it("{decimal:{$eq:\"5.30\"}} matches decimal \"5.3\" (precision-insensitive)", () => {
+      expect(
+        objectSortaMatchesWhereClause(
+          holder,
+          { decimal: { $eq: "5.30" } },
+          true,
+        ),
+      ).toBe(true);
+    });
+
+    it("falls back to lexicographic when the holder carries no metadata", () => {
+      // No ObjectDefRef => resolvePropertyType is undefined => raw operators =>
+      // "10" > "2" is lexicographically false. Documents the dependency.
+      const noMeta = { long: "10" } as unknown as AnyHolder;
+      expect(
+        objectSortaMatchesWhereClause(noMeta, { long: { $gt: "2" } }, true),
+      ).toBe(false);
+    });
+  });
+
+  // Behavior 7: INTERFACE holder path, including a namespaced apiName re-qualify.
+  describe("interface holder", () => {
+    it("compares an interface long property numerically", () => {
+      const holder = interfaceHolder(
+        { amount: "10" },
+        "IFoo",
+        { amount: { type: "long" } },
+      );
+      // Lexicographically "10" >= "9" is FALSE ("1" < "9"); numerically TRUE.
+      expect(
+        objectSortaMatchesWhereClause(holder, { amount: { $gte: "9" } }, true),
+      ).toBe(true);
+    });
+
+    it("compares a namespaced interface decimal property numerically", () => {
+      // The view exposes the namespace-stripped key ("amount") but the metadata
+      // is keyed by the full wire apiName ("a.amount"); resolution re-qualifies.
+      const holder = interfaceHolder(
+        { amount: "10" },
+        "a.IFoo",
+        { "a.amount": { type: "long" } },
+      );
+      // Lexicographically "10" >= "9" is FALSE ("1" < "9"); numerically TRUE.
+      expect(
+        objectSortaMatchesWhereClause(holder, { amount: { $gte: "9" } }, true),
+      ).toBe(true);
+    });
+  });
+
+  // Behavior 8: regression + nested composites thread the metadata through.
+  describe("nested composites", () => {
+    const holder = objectHolder(
+      { long: "10", decimal: "5.3", boolean: true },
+      { long: { type: "long" }, decimal: { type: "decimal" } },
+    );
+
+    it("$and with a numeric-string leaf and a boolean leaf resolves true", () => {
+      expect(
+        objectSortaMatchesWhereClause(
+          holder,
+          { $and: [{ long: { $gt: "2" } }, { boolean: true }] },
+          true,
+        ),
+      ).toBe(true);
+    });
+
+    it("$not over a numeric-string leaf resolves correctly", () => {
+      // long "10" is NOT < "2" numerically, so $not(...) is true.
+      expect(
+        objectSortaMatchesWhereClause(
+          holder,
+          { $not: { long: { $lt: "2" } } },
+          true,
+        ),
+      ).toBe(true);
+    });
+  });
+
+  // Behavior 9: derived-metadata matcher slice -- the 4th arg drives numeric
+  // comparison for a derived property with NO query-class wiring involved.
+  describe("derived property metadata (matcher slice)", () => {
+    it("uses the derivedPropertyMetadata arg to compare a derived long numerically", () => {
+      // myDerived is not in the object metadata; its type comes from the arg.
+      const holder = objectHolder(
+        { myDerived: "10" },
+        {},
+      );
+      const derivedMetadata: DerivedPropertyRuntimeMetadata = {
+        myDerived: {
+          selectedOrCollectedPropertyType: { type: "long" },
+          definition: { type: "selection" } as DerivedPropertyDefinition,
+        },
+      };
+      expect(
+        objectSortaMatchesWhereClause(
+          holder,
+          { myDerived: { $gt: "2" } } as unknown as WhereClause<
+            objectTypeWithAllPropertyTypes
+          >,
+          true,
+          derivedMetadata,
+        ),
+      ).toBe(true);
+    });
+  });
 });
