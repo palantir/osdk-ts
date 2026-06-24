@@ -1,12 +1,17 @@
 import { defineConfig } from "oxlint";
 import core from "ultracite/oxlint/core";
+import react from "ultracite/oxlint/react";
 
 // Ultracite drives the oxlint ruleset (strict, "opt-out" preset). On top of it
 // we keep this repo's Apache-2.0 license-header rule, our ignore patterns, and a
 // small set of overrides for conventions that differ from Ultracite's defaults.
 // See #3031 (incremental ESLint -> oxlint / dprint -> oxfmt migration).
+//
+// The React preset (react / react-perf / jsx-a11y / react-hooks) is added
+// globally: its rules only target JSX/.tsx code, so non-React packages are
+// unaffected.
 export default defineConfig({
-  extends: [core],
+  extends: [core, react],
 
   // Apache license header enforcement (Ultracite does not provide this).
   jsPlugins: ["./plugins/oxlint-plugin-header.js"],
@@ -47,6 +52,63 @@ export default defineConfig({
     // Adding the `u` flag to an existing regex can change its matching semantics;
     // leave published runtime regexes untouched in this tooling migration.
     "require-unicode-regexp": "off",
+
+    // --- Repo-wide cosmetic / high-churn policy ---
+    // These rules from Ultracite's strict preset are auto-fixable but purely
+    // cosmetic: enabling them forces enormous, behavior-neutral diffs across
+    // the codebase (e.g. `sort-keys` fires in nearly every file). They catch
+    // no bugs and change no behavior, so they are disabled repo-wide. Revisit
+    // as a group in a dedicated formatting-only PR if desired.
+    "sort-keys": "off",
+    "curly": "off",
+    "prefer-destructuring": "off",
+    "arrow-body-style": "off",
+    "no-else-return": "off",
+    "no-useless-return": "off",
+    "no-negated-condition": "off",
+    "unicorn/no-negated-condition": "off",
+    "unicorn/prefer-ternary": "off",
+    "unicorn/switch-case-braces": "off",
+    "unicorn/no-useless-undefined": "off",
+    "unicorn/numeric-separators-style": "off",
+    "typescript/array-type": "off",
+    "typescript/consistent-type-definitions": "off",
+    "typescript/consistent-indexed-object-style": "off",
+    "import/consistent-type-specifier-style": "off",
+
+    // --- React hooks: surface hook-dependency issues as warnings rather than
+    // rewriting hooks to satisfy them (a rewrite risks changing render/effect
+    // behavior). Other react/* and jsx-a11y rules stay at the preset's severity.
+    "react-hooks/exhaustive-deps": "warn",
+
+    // --- Rules whose autofix would be pure churn or would change a deliberate
+    // runtime / type / API pattern. Disabled (or kept at warn) so linting does
+    // not pressure code into behavior changes; each comment notes the pattern
+    // the rule would otherwise break. ---
+    // for-in loops here iterate freshly-built own-key objects, so the
+    // hasOwnProperty guard is redundant; warn rather than force it.
+    "guard-for-in": "warn",
+    // Intentional no-op default callbacks (e.g. `emitEvent: () => {}`).
+    "no-empty-function": "off",
+    // The `someContextHook.withTypes` style merges a namespace onto a function
+    // to expose a typed helper; a deliberate, published API pattern.
+    "typescript/no-namespace": "off",
+    // Deliberate `{}` in a conditional type ("no extra props"); rewriting it
+    // would change the type, not just its style.
+    "typescript/no-empty-object-type": "off",
+    "typescript/ban-types": "off",
+    // Stylistic (`x = x ?? y` vs `x ??= y`); leave runtime untouched.
+    "logical-assignment-operators": "off",
+    // Test setup legitimately runs a statement (e.g. IS_REACT_ACT_ENVIRONMENT)
+    // before imports; reordering would change evaluation order.
+    "import/first": "off",
+    // Hoisting test helpers / using forEach / `new Promise` / removeChild /
+    // appendChild are fine; disabling avoids large behavior-neutral rewrites.
+    "unicorn/consistent-function-scoping": "off",
+    "unicorn/no-array-for-each": "off",
+    "unicorn/prefer-dom-node-remove": "off",
+    "unicorn/prefer-dom-node-append": "off",
+    "promise/avoid-new": "off",
   },
 
   ignorePatterns: [

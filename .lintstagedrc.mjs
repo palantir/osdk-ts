@@ -17,6 +17,7 @@ const OXC_PACKAGES = [
   "language-models",
   "react-sdk-docs",
   "typescript-sdk-docs",
+  "widget.client-react",
 ];
 const OXC_PACKAGE_GLOB = `packages/{${
   OXC_PACKAGES.join(",")

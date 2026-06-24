@@ -30,7 +30,8 @@
     "packages/shared.net/",
     "packages/language-models/",
     "packages/react-sdk-docs/",
-    "packages/typescript-sdk-docs/"
+    "packages/typescript-sdk-docs/",
+    "packages/widget.client-react/"
   ],
   "plugins": [
     "https://plugins.dprint.dev/typescript-0.90.4.wasm",

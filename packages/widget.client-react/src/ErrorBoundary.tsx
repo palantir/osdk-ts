@@ -35,9 +35,10 @@ export class ErrorBoundary extends React.Component<
 
   render(): React.ReactNode {
     if (this.state.error) {
-      const errorDetails = this.state.error instanceof Error
-        ? this.state.error.stack
-        : "See browser console for more details.";
+      const errorDetails =
+        this.state.error instanceof Error
+          ? this.state.error.stack
+          : "See browser console for more details.";
 
       return (
         <section style={{ padding: "16px" }}>
