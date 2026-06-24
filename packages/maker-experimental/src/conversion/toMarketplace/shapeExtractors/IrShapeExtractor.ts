@@ -16,6 +16,8 @@
 
 import type {
   GroupId,
+  InterfaceActionTypeConstraint,
+  InterfaceParameterConstraint,
   InterfaceTypeBlockDataV2,
   KnownMarketplaceIdentifiers,
   MarketplaceInterfaceLinkType,
@@ -30,7 +32,9 @@ import type {
   AllowOntologySchemaMigrationsShape,
   InputShape,
   InputShapeMetadata,
+  InterfaceActionTypeConstraintShape,
   InterfaceLinkTypeOutputShape,
+  InterfaceParameterConstraintShape,
   InterfacePropertyTypeOutputShape,
   InterfaceTypeOutputShape,
   LocalizedTitleAndDescription,
@@ -246,6 +250,14 @@ function extractInterfaceType(
         return itId ?? it;
       },
     ),
+    actionTypeConstraints: (interfaceType.actionTypeConstraints ?? [])
+      .map(
+        (constraint) => {
+          const constraintId = knownMarketplaceIdentifiers
+            .interfaceActionTypeConstraints?.[constraint.rid];
+          return constraintId ?? constraint.rid;
+        },
+      ),
   };
 
   // Add shared property type input shapes for properties not in output,
@@ -328,6 +340,38 @@ function extractInterfaceType(
       ridGenerator,
     );
     outputShapeMap.set(outputShape.id, outputShape.outputShape);
+  }
+
+  // Add action type constraint and parameter constraint output shapes
+  for (
+    const actionTypeConstraint of interfaceType.actionTypeConstraints
+      ?? []
+  ) {
+    const constraintOutputShape = getInterfaceActionTypeConstraintOutputShape(
+      knownMarketplaceIdentifiers,
+      interfaceType,
+      actionTypeConstraint,
+      ridGenerator,
+    );
+    outputShapeMap.set(
+      constraintOutputShape.id,
+      constraintOutputShape.outputShape,
+    );
+
+    for (
+      const [paramRid, paramConstraint] of Object.entries(
+        actionTypeConstraint.parameters ?? {},
+      )
+    ) {
+      const paramOutputShape = getInterfaceParameterConstraintOutputShape(
+        knownMarketplaceIdentifiers,
+        actionTypeConstraint,
+        paramRid,
+        paramConstraint,
+        ridGenerator,
+      );
+      outputShapeMap.set(paramOutputShape.id, paramOutputShape.outputShape);
+    }
   }
 
   // Add interface type output shape
@@ -485,6 +529,95 @@ function getInterfaceLinkTypeOutputShape(
     outputShape: {
       type: "interfaceLinkType",
       interfaceLinkType: shape,
+    },
+  };
+}
+
+/**
+ * Get interface action type constraint output shape
+ */
+function getInterfaceActionTypeConstraintOutputShape(
+  knownMarketplaceIdentifiers: KnownMarketplaceIdentifiers,
+  interfaceType: MarketplaceInterfaceType,
+  actionTypeConstraint: InterfaceActionTypeConstraint,
+  ridGenerator: OntologyRidGenerator,
+): { id: ReadableId; outputShape: OutputShape } {
+  const interfaceReadableId = getReadableIdForInterface(interfaceType.apiName);
+  const interfaceTypeRef = ridGenerator.toBlockInternalId(interfaceReadableId);
+
+  const parameterConstraintRefs: string[] = Object.keys(
+    actionTypeConstraint.parameters ?? {},
+  ).map((paramRid: string) => {
+    const paramId = knownMarketplaceIdentifiers
+      .interfaceParameterConstraints
+      ?.[paramRid];
+    return paramId ?? paramRid;
+  });
+
+  const shape: InterfaceActionTypeConstraintShape = {
+    about: createLocalizedAbout(
+      actionTypeConstraint.metadata.displayName,
+      actionTypeConstraint.metadata.description
+        ?? actionTypeConstraint.metadata.displayName,
+    ),
+    interfaceType: interfaceTypeRef,
+    parameterConstraints: parameterConstraintRefs,
+    requireImplementation: actionTypeConstraint.requireImplementation,
+  };
+
+  const readableId = ReadableIdGenerator.getForInterfaceActionTypeConstraint(
+    interfaceType.apiName,
+    actionTypeConstraint.metadata.apiName,
+  );
+
+  return {
+    id: readableId,
+    outputShape: {
+      type: "interfaceActionTypeConstraint",
+      interfaceActionTypeConstraint: shape,
+    },
+  };
+}
+
+/**
+ * Get interface parameter constraint output shape
+ */
+function getInterfaceParameterConstraintOutputShape(
+  knownMarketplaceIdentifiers: KnownMarketplaceIdentifiers,
+  actionTypeConstraint: InterfaceActionTypeConstraint,
+  paramRid: string,
+  paramConstraint: InterfaceParameterConstraint,
+  ridGenerator: OntologyRidGenerator,
+): { id: ReadableId; outputShape: OutputShape } {
+  const actionTypeConstraintId = knownMarketplaceIdentifiers
+    .interfaceActionTypeConstraints
+    ?.[actionTypeConstraint.rid];
+  const actionTypeConstraintRef = actionTypeConstraintId
+    ?? actionTypeConstraint.rid;
+
+  const shape: InterfaceParameterConstraintShape = {
+    about: createLocalizedAbout(
+      paramConstraint.displayMetadata.displayName,
+      paramConstraint.displayMetadata.displayName,
+    ),
+    actionTypeConstraint: actionTypeConstraintRef,
+    requireImplementation: paramConstraint.requireImplementation,
+    type: paramConstraint.type,
+  };
+
+  const paramReadableId = ridGenerator
+    .getInterfaceParameterConstraintRids().inverse().get(paramRid);
+  if (!paramReadableId) {
+    throw new Error(
+      `Missing readable ID for interface parameter constraint RID ${paramRid}`,
+    );
+  }
+
+  return {
+    id: paramReadableId,
+    outputShape: {
+      type: "interfaceParameterConstraint",
+      interfaceParameterConstraint: shape,
     },
   };
 }

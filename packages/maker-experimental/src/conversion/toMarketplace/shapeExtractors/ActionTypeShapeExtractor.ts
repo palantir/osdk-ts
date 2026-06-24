@@ -23,8 +23,8 @@ import type {
   ActionTypeParameterShape,
   ActionTypeShape,
   BaseParameterType,
+  FunctionInputShape,
   FunctionInputType,
-  FunctionShape,
   InputShape,
   LocalizedTitleAndDescription,
   OutputShape,
@@ -450,11 +450,11 @@ function buildFunctionShape(
   discoveredFunction: IDiscoveredFunction,
   ridGenerator: OntologyRidGenerator,
   knownIdentifiers: KnownMarketplaceIdentifiers,
-): FunctionShape {
+): FunctionInputShape {
   const objectTypeIds = knownIdentifiers.objectTypeIds ?? {};
   const interfaceTypes = knownIdentifiers.interfaceTypes ?? {};
 
-  const inputs: FunctionInputType[] = discoveredFunction.inputs.map(input => {
+  const inputs = discoveredFunction.inputs.map(input => {
     let dataType = input.dataType as { type: string; [key: string]: unknown };
     let required = true;
 
@@ -482,7 +482,7 @@ function buildFunctionShape(
       ),
       required,
     };
-  });
+  }) as unknown as FunctionInputType[];
 
   const outputDataType = discoveredFunction.output.single.dataType as {
     type: string;
@@ -507,9 +507,10 @@ function buildFunctionShape(
         ),
       },
     },
-    customTypes: discoveredFunction.customTypes as FunctionShape["customTypes"],
+    customTypes: discoveredFunction
+      .customTypes as FunctionInputShape["customTypes"],
     contracts: [],
-  };
+  } as unknown as FunctionInputShape;
 }
 
 /**

@@ -133,7 +133,9 @@ export function defineCreateInterfaceLinkAction(
         interfaceReference: { interfaceTypeRid: targetApiName },
       },
     validation: {
-      required: true,
+      required: link.cardinality === "MANY"
+        ? { listLength: link.required ? { min: 1 } : {} }
+        : link.required,
       allowedValues: { type: "interfaceObjectQuery" },
     },
   };

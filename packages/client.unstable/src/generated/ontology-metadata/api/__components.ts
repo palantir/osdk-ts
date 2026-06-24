@@ -773,10 +773,6 @@ export interface ActionTypeCreate {
   actionLogConfiguration?: ActionLogConfiguration | null | undefined;
   apiName: ActionTypeApiName;
   branchSettings?: ActionTypeBranchSettingsModification | null | undefined;
-  dataSecurityRequirement?:
-    | DataSecurityRequirementModification
-    | null
-    | undefined;
   displayMetadata: ActionTypeDisplayMetadataModification;
   effects?: ActionEffectsModification | null | undefined;
   formContentOrdering: Array<FormContent>;
@@ -789,6 +785,7 @@ export interface ActionTypeCreate {
   parameters: Record<ParameterId, PutParameterRequestModification>;
   projectRid?: CompassFolderRid | null | undefined;
   provenance?: ActionTypeProvenanceModification | null | undefined;
+  readAuthorization?: AuthorizationModification | null | undefined;
   revert?: ActionRevert | null | undefined;
   scenarioSettings?: ActionTypeScenarioSettingsModification | null | undefined;
   sections: Record<SectionId, PutSectionRequestModification>;
@@ -798,6 +795,7 @@ export interface ActionTypeCreate {
   validations: Record<ValidationRuleIdInRequest, ValidationRuleModification>;
   validationsOrdering: Array<ValidationRuleIdInRequest>;
   webhooks?: ActionWebhooksModification | null | undefined;
+  writeAuthorization?: AuthorizationModification | null | undefined;
 }
 export interface ActionTypeCreatedEvent {
   actionTypeRid: ActionTypeRid;
@@ -997,9 +995,10 @@ export type ActionTypeIdInRequest = string;
  */
 export type ActionTypeInputManagerRid = string;
 export interface ActionTypeLevelValidation {
-  dataSecurityRequirement?: DataSecurityRequirement | null | undefined;
   ordering: Array<ValidationRuleRid>;
+  readAuthorization?: Authorization | null | undefined;
   rules: Record<ValidationRuleRid, ValidationRule>;
+  writeAuthorization?: Authorization | null | undefined;
 }
 /**
  * Request to batch load ActionTypes. If any of the requested ActionTypes are not available in the specified
@@ -1297,10 +1296,6 @@ export interface ActionTypeUpdate {
   actionLogConfiguration?: ActionLogConfiguration | null | undefined;
   apiName: ActionTypeApiName;
   branchSettings?: ActionTypeBranchSettingsModification | null | undefined;
-  dataSecurityRequirement?:
-    | DataSecurityRequirementModification
-    | null
-    | undefined;
   displayMetadata: ActionTypeDisplayMetadataModification;
   effects?: ActionEffectsModification | null | undefined;
   formContentOrdering?: Array<FormContent> | null | undefined;
@@ -1328,6 +1323,7 @@ export interface ActionTypeUpdate {
   validationsToDelete: Array<ValidationRuleRid>;
   validationsToUpdate: Record<ValidationRuleRid, ValidationRuleModification>;
   webhooks?: ActionWebhooksModification | null | undefined;
+  writeAuthorization?: AuthorizationModification | null | undefined;
 }
 export interface ActionTypeUpdatedEvent {
   actionTypeRid: ActionTypeRid;
@@ -2320,6 +2316,41 @@ export interface Attribution {
   author: string;
   date: string;
 }
+export interface Authorization_none {
+  type: "none";
+  none: None;
+}
+
+export interface Authorization_markingIds {
+  type: "markingIds";
+  markingIds: Array<MarkingId>;
+}
+
+export interface Authorization_redacted {
+  type: "redacted";
+  redacted: Redacted;
+}
+/**
+ * Contains an authorization for data read or edited / created by the action type.
+ */
+export type Authorization =
+  | Authorization_none
+  | Authorization_markingIds
+  | Authorization_redacted;
+
+export interface AuthorizationModification_markingIds {
+  type: "markingIds";
+  markingIds: Array<MarkingId>;
+}
+
+export interface AuthorizationModification_none {
+  type: "none";
+  none: None;
+}
+export type AuthorizationModification =
+  | AuthorizationModification_markingIds
+  | AuthorizationModification_none;
+
 export interface BaseFormatter_knownFormatter {
   type: "knownFormatter";
   knownFormatter: KnownFormatter;
@@ -2963,17 +2994,6 @@ export interface DataNullabilityV2 {
 export interface DataSecurity {
   classificationConstraint?: ClassificationConstraint | null | undefined;
   markingConstraint?: MandatoryMarkingConstraint | null | undefined;
-}
-/**
- * Security requirements of the data being written or modified.
- */
-export interface DataSecurityRequirement {
-  mandatoryMarkingRequirement: MandatoryMarkingRequirement;
-  minClassificationRequirement: MinClassificationRequirement;
-}
-export interface DataSecurityRequirementModification {
-  mandatoryMarkingRequirement: MandatoryMarkingRequirementModification;
-  minClassificationRequirement: MinClassificationRequirementModification;
 }
 /**
  * An rid identifying a Foundry dataset. This rid is a randomly generated identifier and is safe to log.
@@ -5096,6 +5116,11 @@ export interface InterfaceTypesAlreadyExistError {
   interfaceTypeRids: Array<InterfaceTypeRid>;
 }
 /**
+ * Identifier for an InterfaceType schema migration.
+ */
+export type InterfaceTypeSchemaMigrationRid = string;
+
+/**
  * The InterfaceTypes were not found.
  */
 export interface InterfaceTypesNotFoundError {
@@ -6146,41 +6171,6 @@ export interface MandatoryMarkingConstraint {
   allowEmptyMarkings?: boolean | null | undefined;
   markingIds: Array<MarkingId>;
 }
-export interface MandatoryMarkingRequirement_none {
-  type: "none";
-  none: None;
-}
-
-export interface MandatoryMarkingRequirement_markingIds {
-  type: "markingIds";
-  markingIds: Array<MarkingId>;
-}
-
-export interface MandatoryMarkingRequirement_redacted {
-  type: "redacted";
-  redacted: Redacted;
-}
-/**
- * Contains required mandatory markings for data edited or created by the action type.
- */
-export type MandatoryMarkingRequirement =
-  | MandatoryMarkingRequirement_none
-  | MandatoryMarkingRequirement_markingIds
-  | MandatoryMarkingRequirement_redacted;
-
-export interface MandatoryMarkingRequirementModification_none {
-  type: "none";
-  none: None;
-}
-
-export interface MandatoryMarkingRequirementModification_markingIds {
-  type: "markingIds";
-  markingIds: Array<MarkingId>;
-}
-export type MandatoryMarkingRequirementModification =
-  | MandatoryMarkingRequirementModification_none
-  | MandatoryMarkingRequirementModification_markingIds;
-
 export interface ManyToManyJoinDefinition {
   editsConfiguration?: EditsConfiguration | null | undefined;
   joinTableDatasetRid: string;
@@ -6365,41 +6355,6 @@ export interface MediaSourceRid_datasetRid {
 export type MediaSourceRid =
   | MediaSourceRid_mediaSetRid
   | MediaSourceRid_datasetRid;
-
-export interface MinClassificationRequirement_none {
-  type: "none";
-  none: None;
-}
-
-export interface MinClassificationRequirement_classification {
-  type: "classification";
-  classification: Array<MarkingId>;
-}
-
-export interface MinClassificationRequirement_redacted {
-  type: "redacted";
-  redacted: Redacted;
-}
-/**
- * Contains the minimum classification requirements for data edited or created by the action type.
- */
-export type MinClassificationRequirement =
-  | MinClassificationRequirement_none
-  | MinClassificationRequirement_classification
-  | MinClassificationRequirement_redacted;
-
-export interface MinClassificationRequirementModification_none {
-  type: "none";
-  none: None;
-}
-
-export interface MinClassificationRequirementModification_classification {
-  type: "classification";
-  classification: Array<MarkingId>;
-}
-export type MinClassificationRequirementModification =
-  | MinClassificationRequirementModification_none
-  | MinClassificationRequirementModification_classification;
 
 export type MioEmbeddingModel = "GOOGLE_SIGLIP_2";
 export interface MissingAffectedObjectTypesForFunctionRule {
@@ -8137,11 +8092,9 @@ export interface OntologyIrActionTypeEntities {
   typeGroups: Array<TypeGroupRid>;
 }
 export interface OntologyIrActionTypeLevelValidation {
-  dataSecurityRequirement?:
-    | OntologyIrDataSecurityRequirement
-    | null
-    | undefined;
+  readAuthorization?: OntologyIrAuthorization | null | undefined;
   rules: Record<_api_blockdata_ValidationRuleIndex, OntologyIrValidationRule>;
+  writeAuthorization?: OntologyIrAuthorization | null | undefined;
 }
 export interface OntologyIrActionTypeLogic {
   logic: OntologyIrActionLogic;
@@ -8534,6 +8487,28 @@ export type OntologyIrAsynchronousPostWritebackWebhook =
   | OntologyIrAsynchronousPostWritebackWebhook_staticDirectInput
   | OntologyIrAsynchronousPostWritebackWebhook_staticFunctionInput;
 
+export interface OntologyIrAuthorization_none {
+  type: "none";
+  none: None;
+}
+
+export interface OntologyIrAuthorization_markingIds {
+  type: "markingIds";
+  markingIds: Array<MarkingId>;
+}
+
+export interface OntologyIrAuthorization_redacted {
+  type: "redacted";
+  redacted: Redacted;
+}
+/**
+ * Contains an authorization for data read or edited / created by the action type.
+ */
+export type OntologyIrAuthorization =
+  | OntologyIrAuthorization_none
+  | OntologyIrAuthorization_markingIds
+  | OntologyIrAuthorization_redacted;
+
 export interface OntologyIrBaseFormatter_knownFormatter {
   type: "knownFormatter";
   knownFormatter: KnownFormatter;
@@ -8735,13 +8710,6 @@ export interface OntologyIrDataSecurity {
     | null
     | undefined;
   markingConstraint?: OntologyIrMandatoryMarkingConstraint | null | undefined;
-}
-/**
- * Security requirements of the data being written or modified.
- */
-export interface OntologyIrDataSecurityRequirement {
-  mandatoryMarkingRequirement: OntologyIrMandatoryMarkingRequirement;
-  minClassificationRequirement: OntologyIrMinClassificationRequirement;
 }
 export interface OntologyIrDateBetweenOperation {
   leftDate: OntologyIrParameterTransformPrefillValue;
@@ -9447,28 +9415,6 @@ export interface OntologyIrMandatoryMarkingConstraint {
   allowEmptyMarkings?: boolean | null | undefined;
   markingGroupName: _api_blockdata_MarkingGroupName;
 }
-export interface OntologyIrMandatoryMarkingRequirement_none {
-  type: "none";
-  none: None;
-}
-
-export interface OntologyIrMandatoryMarkingRequirement_markingIds {
-  type: "markingIds";
-  markingIds: Array<MarkingId>;
-}
-
-export interface OntologyIrMandatoryMarkingRequirement_redacted {
-  type: "redacted";
-  redacted: Redacted;
-}
-/**
- * Contains required mandatory markings for data edited or created by the action type.
- */
-export type OntologyIrMandatoryMarkingRequirement =
-  | OntologyIrMandatoryMarkingRequirement_none
-  | OntologyIrMandatoryMarkingRequirement_markingIds
-  | OntologyIrMandatoryMarkingRequirement_redacted;
-
 export interface OntologyIrManyToManyLinkDefinition {
   objectTypeAPrimaryKeyPropertyMapping: Array<
     _api_blockdata_OntologyIrPropertyToPropertyMapping
@@ -9545,28 +9491,6 @@ export interface OntologyIrMediaSourceRid_datasetRid {
 export type OntologyIrMediaSourceRid =
   | OntologyIrMediaSourceRid_mediaSetRid
   | OntologyIrMediaSourceRid_datasetRid;
-
-export interface OntologyIrMinClassificationRequirement_none {
-  type: "none";
-  none: None;
-}
-
-export interface OntologyIrMinClassificationRequirement_classification {
-  type: "classification";
-  classification: Array<MarkingId>;
-}
-
-export interface OntologyIrMinClassificationRequirement_redacted {
-  type: "redacted";
-  redacted: Redacted;
-}
-/**
- * Contains the minimum classification requirements for data edited or created by the action type.
- */
-export type OntologyIrMinClassificationRequirement =
-  | OntologyIrMinClassificationRequirement_none
-  | OntologyIrMinClassificationRequirement_classification
-  | OntologyIrMinClassificationRequirement_redacted;
 
 export interface OntologyIrModifyInterfaceRule {
   interfaceApiName: InterfaceTypeApiName;
@@ -14138,7 +14062,7 @@ export type ScheduleRid = string;
 export interface ScheduleRunRidValue {
 }
 /**
- * Identifier for a schema migration.
+ * Identifier for an ObjectType schema migration.
  */
 export type SchemaMigrationRid = string;
 
@@ -15972,6 +15896,14 @@ export interface TypeGroupsSummary {
  */
 export interface UniqueIdentifier {
   linkId?: string | null | undefined;
+}
+/**
+ * Pairs a block's input shape id with the OutputReference that pointed to a missing upstream output during
+ * marketplace bulk validate.
+ */
+export interface UnresolvableInputReference {
+  inputBlockShapeId: any;
+  outputReference: any;
 }
 /**
  * Unresolved properties provided in an ontology spark read.

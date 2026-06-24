@@ -51,6 +51,7 @@ import type {
     as _api_ArrayPropertyTypeReducerSortDirection,
   AttachmentPropertyType as _api_AttachmentPropertyType,
   Attribution as _api_Attribution,
+  AuthorizationModification as _api_AuthorizationModification,
   BaseFormatter as _api_BaseFormatter,
   BooleanPropertyType as _api_BooleanPropertyType,
   BytePropertyType as _api_BytePropertyType,
@@ -59,8 +60,6 @@ import type {
   DataNullability as _api_DataNullability,
   DataNullabilityV2 as _api_DataNullabilityV2,
   DataSecurity as _api_DataSecurity,
-  DataSecurityRequirementModification
-    as _api_DataSecurityRequirementModification,
   DatasetRid as _api_DatasetRid,
   DatasourceRid as _api_DatasourceRid,
   DataType as _api_DataType,
@@ -300,10 +299,6 @@ export interface ActionTypeModification {
   actionLogConfiguration?: _api_ActionLogConfiguration | null | undefined;
   apiName: _api_ActionTypeApiName;
   branchSettings?: _api_ActionTypeBranchSettingsModification | null | undefined;
-  dataSecurityRequirement?:
-    | _api_DataSecurityRequirementModification
-    | null
-    | undefined;
   displayMetadata: _api_ActionTypeDisplayMetadataModification;
   effects?: _api_ActionEffectsModification | null | undefined;
   entities?: _api_ActionTypeEntities | null | undefined;
@@ -349,6 +344,7 @@ export interface ActionTypeModification {
     _api_ValidationRuleModification
   >;
   webhooks?: _api_ActionWebhooksModification | null | undefined;
+  writeAuthorization?: _api_AuthorizationModification | null | undefined;
 }
 /**
  * This status indicates that the PropertyType will not change on short notice and should thus be safe to use in user facing workflows. They will not be removed without first being deprecated.

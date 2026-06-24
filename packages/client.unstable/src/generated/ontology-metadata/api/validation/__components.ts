@@ -651,6 +651,11 @@ export interface ActionTypePrimaryKeyInAddObjectRuleDoesNotUseValidLogicRuleValu
 export interface ActionTypePropertyTypeDoesNotMatchMappedLogicRuleValue {
 }
 /**
+ * ActionType logic rules reference archived link types.
+ */
+export interface ActionTypeReferencesArchivedLinkTypes {
+}
+/**
  * ActionType logic rules reference archived object types.
  */
 export interface ActionTypeReferencesArchivedObjectTypes {
@@ -884,6 +889,11 @@ export interface ActionTypeValidationsOrderingContainsDuplicates {
  * Validation ordering does not exactly match the set of validation rules.
  */
 export interface ActionTypeValidationsOrderingNotExactlySameAsValidationRuleSet {
+}
+/**
+ * An archived link type can only be modified if the modification also unarchives it.
+ */
+export interface ArchivedLinkTypeCannotBeModified {
 }
 /**
  * Branch indexing config can only be set for many to many link types, as it isn't applicable for other link type types
@@ -4555,6 +4565,43 @@ export interface ErrorType_objectTypeCannotBeArchivedOnBranch {
   objectTypeCannotBeArchivedOnBranch: ObjectTypeCannotBeArchivedOnBranch;
 }
 
+export interface ErrorType_objectTypeCannotBeArchivedWhileMigrating {
+  type: "objectTypeCannotBeArchivedWhileMigrating";
+  objectTypeCannotBeArchivedWhileMigrating:
+    ObjectTypeCannotBeArchivedWhileMigrating;
+}
+
+export interface ErrorType_linkTypeCannotBeArchivedWhileMigrating {
+  type: "linkTypeCannotBeArchivedWhileMigrating";
+  linkTypeCannotBeArchivedWhileMigrating:
+    LinkTypeCannotBeArchivedWhileMigrating;
+}
+
+export interface ErrorType_linkTypeCannotBeArchivedOnBranch {
+  type: "linkTypeCannotBeArchivedOnBranch";
+  linkTypeCannotBeArchivedOnBranch: LinkTypeCannotBeArchivedOnBranch;
+}
+
+export interface ErrorType_archivedLinkTypeCannotBeModified {
+  type: "archivedLinkTypeCannotBeModified";
+  archivedLinkTypeCannotBeModified: ArchivedLinkTypeCannotBeModified;
+}
+
+export interface ErrorType_objectTypeCannotBeCreatedAsArchived {
+  type: "objectTypeCannotBeCreatedAsArchived";
+  objectTypeCannotBeCreatedAsArchived: ObjectTypeCannotBeCreatedAsArchived;
+}
+
+export interface ErrorType_linkTypeCannotBeCreatedAsArchived {
+  type: "linkTypeCannotBeCreatedAsArchived";
+  linkTypeCannotBeCreatedAsArchived: LinkTypeCannotBeCreatedAsArchived;
+}
+
+export interface ErrorType_actionTypeReferencesArchivedLinkTypes {
+  type: "actionTypeReferencesArchivedLinkTypes";
+  actionTypeReferencesArchivedLinkTypes: ActionTypeReferencesArchivedLinkTypes;
+}
+
 export interface ErrorType_objectTypeOwningDirectWriterOnNonDirectDatasource {
   type: "objectTypeOwningDirectWriterOnNonDirectDatasource";
   objectTypeOwningDirectWriterOnNonDirectDatasource:
@@ -5216,6 +5263,13 @@ export type ErrorType =
   | ErrorType_maxClassificationConstraintMustBeNonEmptyIfAllowEmptyMarkingsIsFalse
   | ErrorType_objectTypeArchivedObjectTypeCannotBeModified
   | ErrorType_objectTypeCannotBeArchivedOnBranch
+  | ErrorType_objectTypeCannotBeArchivedWhileMigrating
+  | ErrorType_linkTypeCannotBeArchivedWhileMigrating
+  | ErrorType_linkTypeCannotBeArchivedOnBranch
+  | ErrorType_archivedLinkTypeCannotBeModified
+  | ErrorType_objectTypeCannotBeCreatedAsArchived
+  | ErrorType_linkTypeCannotBeCreatedAsArchived
+  | ErrorType_actionTypeReferencesArchivedLinkTypes
   | ErrorType_objectTypeOwningDirectWriterOnNonDirectDatasource
   | ErrorType_objectTypeCannotModifyDatasourcesOnBuilderOwned
   | ErrorType_objectTypeAssumedMarkingSpecifiedWithEditsOnlyBackingResource
@@ -5689,6 +5743,21 @@ export interface LinkTypeBeingDeletedIsAnEnabledActionLogLinkType {
 export interface LinkTypeBranchIndexingConfigCanOnlyBeSetOnNonDefaultBranches {
 }
 /**
+ * Link types can only be archived on the default branch.
+ */
+export interface LinkTypeCannotBeArchivedOnBranch {
+}
+/**
+ * A link type cannot be archived while a storage migration is in progress.
+ */
+export interface LinkTypeCannotBeArchivedWhileMigrating {
+}
+/**
+ * A new link type cannot be created in an archived state.
+ */
+export interface LinkTypeCannotBeCreatedAsArchived {
+}
+/**
  * The user does not have permissions to edit privileged provenance on ontology entities metadata.
  */
 export interface LinkTypeCannotEditPrivilegedProvenance {
@@ -6048,6 +6117,16 @@ export interface ObjectTypeBranchIndexingConfigCanOnlyBeSetOnNonDefaultBranches 
  * Object types can only be archived on the default branch.
  */
 export interface ObjectTypeCannotBeArchivedOnBranch {
+}
+/**
+ * An object type cannot be archived while a storage migration is in progress.
+ */
+export interface ObjectTypeCannotBeArchivedWhileMigrating {
+}
+/**
+ * A new object type cannot be created in an archived state.
+ */
+export interface ObjectTypeCannotBeCreatedAsArchived {
 }
 /**
  * MDOs (Multi-Datasource Object Types) cannot be backed by a streaming datasource.

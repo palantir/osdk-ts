@@ -1,5 +1,11 @@
 # @osdk/react-sdk-docs
 
+## 0.10.0
+
+### Minor Changes
+
+- 58b3367: Migrate @osdk/language-models, @osdk/react-sdk-docs, and @osdk/typescript-sdk-docs to lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint (second increment of the repo-wide oxc migration)
+
 ## 0.9.0
 
 ### Minor Changes

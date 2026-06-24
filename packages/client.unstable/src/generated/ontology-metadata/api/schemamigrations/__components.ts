@@ -17,6 +17,9 @@
 import type {
   DatasourceMigrationTarget as _api_DatasourceMigrationTarget,
   DatasourceRid as _api_DatasourceRid,
+  InterfacePropertyTypeRid as _api_InterfacePropertyTypeRid,
+  InterfaceTypeRid as _api_InterfaceTypeRid,
+  InterfaceTypeSchemaMigrationRid as _api_InterfaceTypeSchemaMigrationRid,
   ObjectTypeApiName as _api_ObjectTypeApiName,
   ObjectTypeFieldApiName as _api_ObjectTypeFieldApiName,
   ObjectTypeRid as _api_ObjectTypeRid,
@@ -122,6 +125,22 @@ export interface EditsWinToLatestTimestamp {
   timestampPropertyRid: _api_PropertyTypeRid;
   timestampValue: any;
 }
+export interface GracePeriod_daysAfterActivation {
+  type: "daysAfterActivation";
+  daysAfterActivation: number;
+}
+
+export interface GracePeriod_deadline {
+  type: "deadline";
+  deadline: string;
+}
+/**
+ * Time period for an InterfaceTypeSchemaTransition - either dynamic at install time or a fixed date. Prefer daysAfterActivation to prevent instant failed installs through marketplace.
+ */
+export type GracePeriod =
+  | GracePeriod_daysAfterActivation
+  | GracePeriod_deadline;
+
 export interface InitializationSource_backup {
   type: "backup";
   backup: PatchBackup;
@@ -150,6 +169,49 @@ export interface InitializePatchesMigrationModification {
   initializationSource: InitializationSource;
   primaryKeyRenames: PrimaryKeyRenamesModification;
   propertyRenames: Array<RenamePropertyMigrationModification>;
+}
+/**
+ * Migration to add a required property to an interface
+ */
+export interface InterfaceTypeAddRequiredPropertyMigration {
+  propertyTypeRid: _api_InterfacePropertyTypeRid;
+}
+/**
+ * An InterfaceTypeSchemaMigrationInstruction with a unique identifier.
+ */
+export interface InterfaceTypeSchemaMigration {
+  instruction: InterfaceTypeSchemaMigrationInstruction;
+  rid: _api_InterfaceTypeSchemaMigrationRid;
+}
+export interface InterfaceTypeSchemaMigrationInstruction_addRequiredProperty {
+  type: "addRequiredProperty";
+  addRequiredProperty: InterfaceTypeAddRequiredPropertyMigration;
+}
+/**
+ * Instruction on how to transition from one InterfaceType version to another.
+ */
+export type InterfaceTypeSchemaMigrationInstruction =
+  InterfaceTypeSchemaMigrationInstruction_addRequiredProperty;
+
+/**
+ * Instructions on how to transition from one InterfaceType schema version to another.
+ */
+export interface InterfaceTypeSchemaTransition {
+  description?: string | null | undefined;
+  gracePeriod?: GracePeriod | null | undefined;
+  migrations: Array<InterfaceTypeSchemaMigration>;
+  source: _api_SchemaVersion;
+  target: _api_SchemaVersion;
+  title?: string | null | undefined;
+}
+/**
+ * The transitions for a given InterfaceType defined up to the requested ontology version.
+ */
+export interface InterfaceTypeSchemaTransitions {
+  interfaceTypeRid: _api_InterfaceTypeRid;
+  ontologyVersion: _api_OntologyVersion;
+  schemaTransitions: Array<InterfaceTypeSchemaTransition>;
+  schemaVersion: _api_SchemaVersion;
 }
 /**
  * Type that represents the latest schema version
@@ -352,7 +414,7 @@ export interface OntologyIrRenameStructFieldMigration {
   targetStructField: _api_StructFieldRid;
 }
 /**
- * A SchemaMigrationInstruction with a unique identifier.
+ * A SchemaMigrationInstruction for ObjectTypes with a unique identifier.
  */
 export interface OntologyIrSchemaMigration {
   instruction: OntologyIrSchemaMigrationInstruction;
@@ -419,7 +481,7 @@ export interface OntologyIrSchemaMigrationInstruction_updateEditsResolutionStrat
     OntologyIrUpdateEditsResolutionStrategyMigration;
 }
 /**
- * One out of potentially many instructions on how to transition from one version to another.
+ * One out of potentially many instructions on how to transition from one ObjectType version to another.
  */
 export type OntologyIrSchemaMigrationInstruction =
   | OntologyIrSchemaMigrationInstruction_dropProperty
@@ -436,7 +498,7 @@ export type OntologyIrSchemaMigrationInstruction =
   | OntologyIrSchemaMigrationInstruction_updateEditsResolutionStrategy;
 
 /**
- * Instructions on how to transition from one schema version to another.
+ * Instructions on how to transition from one ObjectType schema version to another.
  */
 export interface OntologyIrSchemaTransition {
   migrations: Array<OntologyIrSchemaMigration>;
@@ -556,7 +618,7 @@ export interface RevertMigration {
   revert: _api_SchemaMigrationRid;
 }
 /**
- * A SchemaMigrationInstruction with a unique identifier.
+ * A SchemaMigrationInstruction for ObjectTypes with a unique identifier.
  */
 export interface SchemaMigration {
   instruction: SchemaMigrationInstruction;
@@ -625,7 +687,7 @@ export interface SchemaMigrationInstruction_updateEditsResolutionStrategy {
   updateEditsResolutionStrategy: UpdateEditsResolutionStrategyMigration;
 }
 /**
- * One out of potentially many instructions on how to transition from one version to another.
+ * One out of potentially many instructions on how to transition from one ObjectType version to another.
  */
 export type SchemaMigrationInstruction =
   | SchemaMigrationInstruction_dropProperty
@@ -731,7 +793,7 @@ export interface SchemaMigrationModification {
   transitions: Array<SchemaTransitionModification>;
 }
 /**
- * Instructions on how to transition from one schema version to another.
+ * Instructions on how to transition from one ObjectType schema version to another.
  */
 export interface SchemaTransition {
   migrations: Array<SchemaMigration>;

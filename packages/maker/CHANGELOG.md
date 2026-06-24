@@ -1,5 +1,25 @@
 # @osdk/maker
 
+## 0.42.0
+
+### Minor Changes
+
+- 1796140: Fix list-type action parameters being generated with a scalar required/notRequired configuration.
+
+### Patch Changes
+
+- @osdk/api@2.39.0
+- @osdk/generator-converters.ontologyir@2.39.0
+
+## 0.41.0
+
+### Patch Changes
+
+- Updated dependencies [58b3367]
+  - @osdk/typescript-sdk-docs@0.15.0
+  - @osdk/api@2.38.0
+  - @osdk/generator-converters.ontologyir@2.38.0
+
 ## 0.40.0
 
 ### Patch Changes

@@ -94,6 +94,25 @@ export interface EntityAndGrantPatches {
   grantPatches: Array<RoleGrantPatch>;
   parent?: EntityParent | null | undefined;
 }
+/**
+ * The entity's public-project migration has recorded a terminal error.
+ */
+export interface EntityMigrationFailed {
+  error: string;
+  migrationId: string;
+}
+/**
+ * The entity has an active public-project migration that has not yet recorded a terminal error.
+ */
+export interface EntityMigrationInProgress {
+  migrationId: string;
+}
+/**
+ * The entity has no public-project migration record. This means that the entity is either not migrating at
+ * the moment: they were either successfully migrated, or not migrated at all.
+ */
+export interface EntityMigrationNotMigrating {
+}
 export interface EntityParent_package {
   type: "package";
   package: PackageParent;
@@ -338,6 +357,37 @@ export interface GetEditorsForObjectTypeRequest {
 export interface GetEditorsForObjectTypeResponse {
   userIds: Array<_api_UserId>;
 }
+/**
+ * Request to look up the public-project migration status of a single entity. Used by the FE to surface
+ * stuck or failed migrations so users can resolve them or alert us.
+ */
+export interface GetEntityProjectsMigrationStatusRequest {
+  rid: _api_ProjectEntityRid;
+}
+export interface GetEntityProjectsMigrationStatusResponse_notMigrating {
+  type: "notMigrating";
+  notMigrating: EntityMigrationNotMigrating;
+}
+
+export interface GetEntityProjectsMigrationStatusResponse_inProgress {
+  type: "inProgress";
+  inProgress: EntityMigrationInProgress;
+}
+
+export interface GetEntityProjectsMigrationStatusResponse_failed {
+  type: "failed";
+  failed: EntityMigrationFailed;
+}
+/**
+ * The migration status of an entity. Each variant of this union maps to one of the states an entity can
+ * be in with respect to public-project migration: not migrating (no record in the migration store),
+ * in progress (record present, no error), or failed (record present with an error).
+ */
+export type GetEntityProjectsMigrationStatusResponse =
+  | GetEntityProjectsMigrationStatusResponse_notMigrating
+  | GetEntityProjectsMigrationStatusResponse_inProgress
+  | GetEntityProjectsMigrationStatusResponse_failed;
+
 /**
  * The operations the user has on the provided InterfaceType.
  */

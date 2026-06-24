@@ -1,5 +1,30 @@
 # @osdk/maker-experimental
 
+## 0.31.0
+
+### Minor Changes
+
+- 397ce96: support interface action type constraint in maker experimental
+
+### Patch Changes
+
+- Updated dependencies [397ce96]
+- Updated dependencies [1796140]
+  - @osdk/client.unstable@2.39.0
+  - @osdk/maker@0.42.0
+  - @osdk/api@2.39.0
+  - @osdk/generator-converters.ontologyir@2.39.0
+
+## 0.30.0
+
+### Patch Changes
+
+- @osdk/api@2.38.0
+- @osdk/client.unstable@2.38.0
+- @osdk/generator-converters.ontologyir@2.38.0
+- @osdk/maker@0.41.0
+- @osdk/generator-converters.preview@0.24.0
+
 ## 0.29.0
 
 ### Patch Changes
