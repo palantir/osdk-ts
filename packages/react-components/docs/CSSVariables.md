@@ -30,6 +30,7 @@ Complete reference of all CSS custom properties (variables) used in `@osdk/react
   - [Filter List](#filter-list)
   - [Form](#form)
   - [Input](#input)
+  - [Number Input](#number-input)
   - [Markdown Renderer](#markdown-renderer)
   - [Object Set](#object-set)
   - [PDF Viewer](#pdf-viewer)
@@ -248,12 +249,13 @@ Styling for button components. Buttons use `border: none` with `box-shadow` for 
 
 #### Shared
 
-| Variable                     | Default Value                                                                                          | Description           |
-| ---------------------------- | ------------------------------------------------------------------------------------------------------ | --------------------- |
-| `--osdk-button-min-height`   | `calc(var(--osdk-surface-spacing) * 7.5)`                                                              | Button minimum height |
-| `--osdk-button-border-color` | `transparent`                                                                                          | Button border color   |
-| `--osdk-button-border`       | `none`                                                                                                 | Button border         |
-| `--osdk-button-shadow`       | `inset 0 0 0 1px color-mix(…, --bp-palette-black 20%), 0 1px 1px color-mix(…, --bp-palette-black 10%)` | Button box-shadow     |
+| Variable                          | Default Value                                                                                     | Description              |
+| --------------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------ |
+| `--osdk-button-min-height`        | `calc(var(--osdk-surface-spacing) * 7.5)`                                                         | Button minimum height    |
+| `--osdk-button-border-color`      | `color-mix(in oklch, var(--bp-palette-black) 20%, transparent)`                                   | Button border color      |
+| `--osdk-button-border`            | `none`                                                                                            | Button border            |
+| `--osdk-button-drop-shadow-color` | `color-mix(in oklch, var(--bp-palette-black) 10%, transparent)`                                   | Button drop shadow color |
+| `--osdk-button-shadow`            | `inset 0 0 0 1px var(--osdk-button-border-color), 0 1px 1px var(--osdk-button-drop-shadow-color)` | Button box-shadow        |
 
 #### Primary Button
 
@@ -1101,6 +1103,16 @@ Shared styling for input components. Inputs use `box-shadow` for visual borders 
 | `--osdk-input-focus-shadow-error`   | `var(--osdk-input-shadow-error)`                                                                                                                                 | Danger focus shadow     |
 | `--osdk-input-shadow-error`         | `inset 0 0 0 var(--osdk-input-border-width) var(--osdk-input-border-color-error), 0 0 0 0 transparent, inset 0 1px 1px var(--osdk-surface-border-color-default)` | Input error shadow      |
 | `--osdk-input-disabled-opacity`     | `var(--osdk-disabled-opacity)`                                                                                                                                   | Input disabled opacity  |
+
+### Number Input
+
+Styling for the stepper (increment / decrement button group) beside the number input field.
+
+| Variable                                   | Default Value                                                                                                                        | Description          |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ | -------------------- |
+| `--osdk-number-input-stepper-border-width` | `1px`                                                                                                                                | Stepper border width |
+| `--osdk-number-input-stepper-border-color` | `var(--osdk-button-border-color)`                                                                                                    | Stepper border color |
+| `--osdk-number-input-stepper-shadow`       | `0 var(--osdk-number-input-stepper-border-width) var(--osdk-number-input-stepper-border-width) var(--osdk-button-drop-shadow-color)` | Stepper drop shadow  |
 
 ### Markdown Renderer
 

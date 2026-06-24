@@ -184,11 +184,12 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     category: "color",
     inputType: "color",
     cssProperties: [
-      // Rest only — hover/active derive from CSS defaults
+      // Rest only — hover/active derive from CSS defaults.
+      // Foreground tokens (--osdk-intent-danger-foreground) intentionally
+      // excluded — they must stay white (or contrasting) so text/icons
+      // remain visible on the danger background.
       "--osdk-intent-danger-rest",
       "--bp-intent-danger-rest",
-      "--osdk-intent-danger-foreground",
-      "--bp-intent-danger-foreground",
     ],
   },
   {
@@ -197,11 +198,10 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     category: "color",
     inputType: "color",
     cssProperties: [
-      // Rest only — hover/active derive from CSS defaults
+      // Rest only — hover/active derive from CSS defaults.
+      // Foreground tokens excluded for the same contrast reason as danger.
       "--osdk-intent-success-rest",
       "--bp-intent-success-rest",
-      "--osdk-intent-success-foreground",
-      "--bp-intent-success-foreground",
     ],
   },
   {
@@ -210,10 +210,9 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     category: "color",
     inputType: "color",
     cssProperties: [
+      // Foreground tokens excluded for the same contrast reason as danger.
       "--osdk-intent-warning-rest",
       "--bp-intent-warning-rest",
-      "--osdk-intent-warning-foreground",
-      "--bp-intent-warning-foreground",
     ],
   },
 
