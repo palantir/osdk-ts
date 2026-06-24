@@ -24,20 +24,6 @@ To get started with the maker package, install it as a dependency in your projec
 npm install @osdk/maker
 ```
 
-## Defining an Ontology
-
-An ontology serves as a container for all your type definitions. You define an ontology using the `defineOntology` function:
-
-```typescript
-import { defineOntology } from "@osdk/maker";
-
-await defineOntology("com.example.", async () => {
-  // Define your ontology entities here
-}, "path/to/output/directory");
-```
-
-The namespace parameter (`"com.example."` in this example) prefixes all entity names to avoid naming conflicts.
-
 ## Defining Shared Property Types
 
 Shared Property Types (SPTs) are reusable property definitions that can be used across different object types and interfaces.
