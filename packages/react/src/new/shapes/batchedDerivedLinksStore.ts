@@ -127,9 +127,10 @@ type ObserveLinksUntyped = (
   }>,
 ) => Unsubscribable;
 
-// Adapter to bridge the strongly-typed observeLinks signature to the
-// untyped ObserveLinksUntyped used internally. The any casts are
-// contained here instead of spread through call sites.
+// Bridges observeLinks, whose generics require the concrete object and link
+// types, to the erased-type alias shapes operate on (string link names,
+// untyped instances). The casts are confined to this one adapter instead of
+// being repeated at every call site.
 function adaptObserveLinks(
   observeLinks: ObservableClient["observeLinks"],
 ): ObserveLinksUntyped {
@@ -141,6 +142,25 @@ function adaptObserveLinks(
       subFn as Parameters<ObservableClient["observeLinks"]>[3],
     );
   };
+}
+
+function sameSourcePkSet(
+  a: ReadonlyArray<Osdk.Instance<ObjectOrInterfaceDefinition>>,
+  b: ReadonlyArray<Osdk.Instance<ObjectOrInterfaceDefinition>>,
+): boolean {
+  if (a.length !== b.length) {
+    return false;
+  }
+  const seen = new Set<string | number>();
+  for (const obj of a) {
+    seen.add(obj.$primaryKey);
+  }
+  for (const obj of b) {
+    if (!seen.has(obj.$primaryKey)) {
+      return false;
+    }
+  }
+  return true;
 }
 
 export function createBatchedDerivedLinksStore<
@@ -170,6 +190,7 @@ export function createBatchedDerivedLinksStore<
 
   let currentSourceObjects: Osdk.Instance<ObjectOrInterfaceDefinition>[] = [];
   let destroyed = false;
+  let observationsActive = false;
 
   const observeLinksUntyped = adaptObserveLinks(observableClient.observeLinks);
 
@@ -203,6 +224,16 @@ export function createBatchedDerivedLinksStore<
 
   function cleanupAll(): void {
     teardownBatchedSubscriptions();
+    observationsActive = false;
+  }
+
+  function startAllNonDeferred(): void {
+    for (const state of linkStates.values()) {
+      if (state.status !== "deferred") {
+        startObserveLinks(state, currentSourceObjects);
+      }
+    }
+    observationsActive = true;
   }
 
   function startObserveLinks(
@@ -279,13 +310,19 @@ export function createBatchedDerivedLinksStore<
     if (destroyed) {
       return;
     }
-    currentSourceObjects = sourceObjects;
-
-    for (const state of linkStates.values()) {
-      if (state.status !== "deferred") {
-        startObserveLinks(state, sourceObjects);
-      }
+    // observeLinks is keyed by source primary key, so a new list reference
+    // carrying the same pks (revalidation, stream update) resolves the exact
+    // same links. Restarting in that case tears down and re-subscribes every
+    // link and flashes a loading state, so skip it when the pk set is unchanged.
+    if (
+      observationsActive
+      && sameSourcePkSet(currentSourceObjects, sourceObjects)
+    ) {
+      currentSourceObjects = sourceObjects;
+      return;
     }
+    currentSourceObjects = sourceObjects;
+    startAllNonDeferred();
     notifySubscribers();
   }
 
@@ -334,9 +371,24 @@ export function createBatchedDerivedLinksStore<
           anyError = true;
         }
 
+        // Subscription errors live on the state; shape transformation
+        // violations live per source pk. Surface either one in the aggregate
+        // so a require/transform violation isn't invisible to consumers that
+        // only read aggregatedLinkStatus (matches the per-source statuses and
+        // the per-item store's link error fidelity).
+        let linkError = state.error;
+        if (linkError == null) {
+          for (const transformed of state.transformedBySourcePk.values()) {
+            if (transformed.error != null) {
+              linkError = transformed.error;
+              break;
+            }
+          }
+        }
+
         aggregatedLinkStatus[linkName] = {
           isLoading: isLoadingOrInit,
-          error: state.error,
+          error: linkError,
           hasMore: state.hasMore,
           fetchMore: state.fetchMore,
         };
@@ -352,7 +404,22 @@ export function createBatchedDerivedLinksStore<
     });
   }
 
-  const subscribe = createStoreSubscribe(subscribers, () => {}, cleanupAll);
+  // The first subscribe arrives after updateSourceObjects has already started
+  // observation. A later re-subscribe (remount / StrictMode) finds the
+  // subscriptions torn down by cleanupAll on the previous last-unsubscribe, so
+  // re-arm from the retained source objects instead of going dormant forever.
+  function onResubscribe(): void {
+    if (!observationsActive && currentSourceObjects.length > 0) {
+      startAllNonDeferred();
+      notifySubscribers();
+    }
+  }
+
+  const subscribe = createStoreSubscribe(
+    subscribers,
+    onResubscribe,
+    cleanupAll,
+  );
 
   function loadDeferred(
     sourcePk: string | number,
