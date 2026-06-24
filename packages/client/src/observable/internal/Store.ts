@@ -135,6 +135,12 @@ export class Store {
 
   #devModeDelayWarned = false;
 
+  /**
+   * Resolved dev-mode refcount debug flag; only read in dev builds.
+   * @internal
+   */
+  #debugRefCounts: boolean;
+
   readonly cacheKeys: CacheKeys<KnownCacheKey>;
   readonly queries: Queries = new Queries();
 
@@ -171,12 +177,16 @@ export class Store {
   constructor(client: Client, options?: ObservableClientOptions) {
     this.logger = client[additionalContext].logger?.child({}, {
       msgPrefix: "Store",
+      level: options?.devMode?.logLevel,
     });
     this.client = client;
     this.devModeActionDelayMs = options?.devMode?.actionDelayMs ?? 1000;
+    this.#debugRefCounts = options?.devMode?.debug?.refCounts
+      ?? DEBUG_REFCOUNTS;
 
     this.cacheKeys = new CacheKeys<KnownCacheKey>({
       onDestroy: this.#cleanupCacheKey,
+      debug: options?.devMode?.debug,
     });
 
     this.aggregations = new AggregationsHelper(
@@ -245,7 +255,7 @@ export class Store {
   #cleanupCacheKey = (key: KnownCacheKey) => {
     const subject = this.subjects.peek(key);
 
-    if (DEBUG_REFCOUNTS) {
+    if (process.env.NODE_ENV !== "production" && this.#debugRefCounts) {
       // eslint-disable-next-line no-console
       console.log(
         `CacheKey cleaning up (${

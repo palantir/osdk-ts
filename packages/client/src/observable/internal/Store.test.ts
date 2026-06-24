@@ -46,7 +46,7 @@ import {
 } from "vitest";
 import type { BaseServerObject } from "../../../../faux/build/types/FauxFoundry/BaseServerObject.js";
 import { ActionValidationError } from "../../actions/ActionValidationError.js";
-import { type Client } from "../../Client.js";
+import { additionalContext, type Client } from "../../Client.js";
 import { createClient } from "../../createClient.js";
 import { TestLogger } from "../../logger/TestLogger.js";
 import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
@@ -3180,6 +3180,94 @@ describe(Store, () => {
         );
       }
     });
+  });
+});
+
+describe("Store dev-mode logLevel and debug forwarding", () => {
+  it("forwards devMode.logLevel to the root logger", () => {
+    const { client } = createClientMockHelper();
+    const rootLogger = client[additionalContext].logger;
+    invariant(rootLogger);
+    const childSpy = vi.mocked(rootLogger.child);
+    childSpy.mockClear();
+
+    new Store(client, { devMode: { logLevel: "debug" } });
+
+    expect(childSpy).toHaveBeenCalledWith({}, {
+      msgPrefix: "Store",
+      level: "debug",
+    });
+  });
+
+  it("leaves the logger level unset when no logLevel is given", () => {
+    const { client } = createClientMockHelper();
+    const rootLogger = client[additionalContext].logger;
+    invariant(rootLogger);
+    const childSpy = vi.mocked(rootLogger.child);
+    childSpy.mockClear();
+
+    new Store(client);
+
+    expect(childSpy).toHaveBeenCalledWith({}, {
+      msgPrefix: "Store",
+      level: undefined,
+    });
+  });
+
+  it("logs cache-key creation when devMode.debug.refCounts is on", () => {
+    const { client } = createClientMockHelper();
+    const store = new Store(client, {
+      devMode: { debug: { refCounts: true } },
+    });
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+
+    store.cacheKeys.get("object", "Employee", 1);
+
+    const onCreateLogs = logSpy.mock.calls.filter(
+      ([first]) =>
+        typeof first === "string" && first.includes("CacheKeys.onCreate"),
+    );
+    expect(onCreateLogs).toHaveLength(1);
+
+    logSpy.mockRestore();
+  });
+
+  it("logs cache-key lookups when devMode.debug.cacheKeys is on", () => {
+    const { client } = createClientMockHelper();
+    const store = new Store(client, {
+      devMode: { debug: { cacheKeys: true } },
+    });
+    const debugSpy = vi.spyOn(console, "debug").mockImplementation(() => {});
+
+    store.cacheKeys.get("object", "Employee", 1);
+
+    const getLogs = debugSpy.mock.calls.filter(
+      ([first]) =>
+        typeof first === "string" && first.includes("CacheKeys.get("),
+    );
+    expect(getLogs).toHaveLength(1);
+
+    debugSpy.mockRestore();
+  });
+
+  it("does not log cache internals by default", () => {
+    const { client } = createClientMockHelper();
+    const store = new Store(client);
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    const debugSpy = vi.spyOn(console, "debug").mockImplementation(() => {});
+
+    store.cacheKeys.get("object", "Employee", 1);
+
+    const cacheLogs = [...logSpy.mock.calls, ...debugSpy.mock.calls].filter(
+      ([first]) =>
+        typeof first === "string"
+        && (first.includes("CacheKeys.onCreate")
+          || first.includes("CacheKeys.get(")),
+    );
+    expect(cacheLogs).toHaveLength(0);
+
+    logSpy.mockRestore();
+    debugSpy.mockRestore();
   });
 });
 

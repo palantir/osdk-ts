@@ -675,8 +675,48 @@ export interface ObservableClientOptions {
      * Set to 0 to disable. Defaults to 1000.
      */
     actionDelayMs?: number;
+
+    /**
+     * Log level for the observable client in dev mode. The client's loggers
+     * default to `"error"`, which hides the `debug`-level tracing the observable
+     * layer emits; set this to `"debug"` (or lower) to surface that tracing.
+     * Inherited by every child logger the observable client creates.
+     */
+    logLevel?: ObservableClientLogLevel;
+
+    /**
+     * Verbose cache-internals logging in dev mode, off by default. These logs
+     * are written with `console` directly and are stripped from production
+     * builds.
+     */
+    debug?: {
+      /**
+       * Logs cache-entry reference-count lifecycle: creation, live counts,
+       * time-to-live countdown, cleanup, and finalization. Also shortens the
+       * retention window so cleanup is observable sooner.
+       */
+      refCounts?: boolean;
+
+      /**
+       * Logs cache-key canonicalization lookups, reporting whether each looked
+       * up key already existed in the trie.
+       */
+      cacheKeys?: boolean;
+    };
   };
 }
+
+/**
+ * Log levels accepted by {@link ObservableClientOptions.devMode}'s `logLevel`,
+ * ordered from most to least verbose.
+ */
+export type ObservableClientLogLevel =
+  | "trace"
+  | "debug"
+  | "info"
+  | "warn"
+  | "error"
+  | "fatal";
 
 export function createObservableClient(
   client: Client,
