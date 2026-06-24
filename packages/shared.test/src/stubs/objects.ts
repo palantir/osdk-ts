@@ -281,6 +281,7 @@ export const objectWithAllPropertyTypes1 = {
       },
     },
   },
+  cipherText: "ciphertext-encrypted-value",
 } as const;
 
 export const objectWithAllPropertyTypesEmptyEntries = {
@@ -366,6 +367,7 @@ export const objectWithAllPropertyTypes2 = {
     },
   ],
   mediaReference: "ri.MediaReferencePlaceholder2",
+  cipherText: "ciphertext-encrypted-value",
 } as const;
 
 export const basicPropertySecurities: PropertySecurities[] = [

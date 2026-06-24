@@ -387,7 +387,12 @@ export interface BaseObjectSet<Q extends ObjectOrInterfaceDefinition> {
 }
 
 // @public (undocumented)
-export type BaseWirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "mediaReference" | "numericTimeseries" | "stringTimeseries" | "sensorTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference" | "vector";
+export type BaseWirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "cipherText" | "mediaReference" | "numericTimeseries" | "stringTimeseries" | "sensorTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference" | "vector";
+
+// @public
+export interface CipherText<T extends string = string> {
+    	decrypt(): Promise<T>;
+}
 
 // @public (undocumented)
 export type ColorInterpretation = "UNDEFINED" | "GRAY" | "PALETTE_INDEX" | "RED" | "GREEN" | "BLUE" | "ALPHA" | "HUE" | "SATURATION" | "LIGHTNESS" | "CYAN" | "MAGENTA" | "YELLOW" | "BLACK" | "Y_CB_CR_SPACE_Y" | "Y_CB_CR_SPACE_CB" | "Y_CB_CR_SPACE_CR";
@@ -1952,6 +1957,8 @@ export interface PropertyValueWireToClient {
     boolean: boolean;
     	// (undocumented)
     byte: number;
+    	// (undocumented)
+    cipherText: CipherText;
     	// (undocumented)
     datetime: string;
     	// (undocumented)

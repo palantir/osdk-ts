@@ -14,6 +14,7 @@ import { ApplyActionOptions } from '@osdk/api';
 import { ApplyBatchActionOptions } from '@osdk/api';
 import { Attachment } from '@osdk/api';
 import type { AttachmentUpload } from '@osdk/api';
+import { CipherText } from '@osdk/api';
 import { CompileTimeMetadata } from '@osdk/api';
 import type { DataValueClientToWire } from '@osdk/api';
 import type { DataValueWireToClient } from '@osdk/api';
@@ -92,6 +93,8 @@ export { ApplyActionOptions }
 export { ApplyBatchActionOptions }
 
 export { Attachment }
+
+export { CipherText }
 
 // Warning: (ae-forgotten-export) The symbol "OldSharedClient" needs to be exported by the entry point index.d.ts
 //

@@ -27,6 +27,7 @@ export type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
   Attachment,
+  CipherText,
   CompileTimeMetadata,
   DerivedProperty,
   InterfaceDefinition,

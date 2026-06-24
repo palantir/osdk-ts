@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { PropertySecurity } from "@osdk/api";
+import type { BaseWirePropertyTypes, PropertySecurity } from "@osdk/api";
 import type { MediaReference } from "@osdk/foundry.core";
 import type {
   Attachment,
@@ -24,6 +24,7 @@ import type {
   SecuredPropertyValue,
 } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
+import { CipherTextPropertyImpl } from "../../createCipherTextProperty.js";
 import { GeotimeSeriesPropertyImpl } from "../../createGeotimeSeriesProperty.js";
 import { MediaReferencePropertyImpl } from "../../createMediaReferenceProperty.js";
 import { TimeSeriesPropertyImpl } from "../../createTimeseriesProperty.js";
@@ -47,9 +48,10 @@ import {
 } from "./InternalSymbols.js";
 import type { ObjectHolder } from "./ObjectHolder.js";
 
-const specialPropertyTypes = new Set(
+const specialPropertyTypes = new Set<BaseWirePropertyTypes>(
   [
     "attachment",
+    "cipherText",
     "geotimeSeriesReference",
     "mediaReference",
     "numericTimeseries",
@@ -292,7 +294,18 @@ function createSpecialProperty(
       (rawValue as Attachment).rid,
     );
   }
-
+  if (propDef.type === "cipherText") {
+    return new CipherTextPropertyImpl(
+      {
+        client,
+        objectApiName: objectDef.apiName,
+        primaryKey: rawObject[
+          objectDef.primaryKeyApiName as string
+        ],
+        propertyName: p as string,
+      },
+    );
+  }
   if (
     propDef.type === "numericTimeseries"
     || propDef.type === "stringTimeseries"

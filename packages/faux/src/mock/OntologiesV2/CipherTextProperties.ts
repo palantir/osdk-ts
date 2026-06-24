@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,30 +14,14 @@
  * limitations under the License.
  */
 
-export type WirePropertyTypes =
-  | BaseWirePropertyTypes
-  | Record<string, BaseWirePropertyTypes>;
+import { CipherTextProperties } from "@osdk/foundry.ontologies";
+import type { CallFactory } from "../../handlers/util/handleOpenApiCall.js";
+import { handleOpenApiCall } from "../../handlers/util/handleOpenApiCall.js";
 
-export type BaseWirePropertyTypes =
-  | "string"
-  | "datetime"
-  | "double"
-  | "boolean"
-  | "integer"
-  | "timestamp"
-  | "short"
-  | "long"
-  | "float"
-  | "decimal"
-  | "byte"
-  | "marking"
-  | "cipherText"
-  | "mediaReference"
-  | "numericTimeseries"
-  | "stringTimeseries"
-  | "sensorTimeseries"
-  | "attachment"
-  | "geopoint"
-  | "geoshape"
-  | "geotimeSeriesReference"
-  | "vector";
+export const decrypt: CallFactory<
+  "ontologyApiName" | "objectType" | "primaryKey" | "propertyName",
+  typeof CipherTextProperties.decrypt
+> = handleOpenApiCall(
+  CipherTextProperties.decrypt,
+  ["ontologyApiName", "objectType", "primaryKey", "propertyName"],
+);
