@@ -91,3 +91,15 @@ export interface TokenRoleDefinition {
   inputType: "color" | "text" | "px" | "number" | "ms" | "shadow" | "font";
   defaultValue?: string;
 }
+
+/** Entry from the auto-generated token inventory (see extract-tokens.mjs). */
+export interface TokenInventoryEntry {
+  /** CSS custom property name, e.g. "--osdk-button-primary-bg" */
+  variable: string;
+  /** Default value as declared in the CSS source */
+  defaultValue: string;
+  /** Relative path from tokens/ root, e.g. "tokens/component-tokens/button.css" */
+  sourceFile: string;
+  /** Category derived from filename, e.g. "button", "base", "input" */
+  category: string;
+}

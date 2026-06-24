@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { useGlobals } from "storybook/manager-api";
 import { styled } from "storybook/theming";
 import { autoMapColors } from "./auto-mapper.js";
@@ -28,6 +28,7 @@ import {
 import { extractColorsFromImage } from "./kmeans.js";
 import { PaletteGrid } from "./PaletteGrid.js";
 import { parseBrandThemeState, stringifyBrandThemeState } from "./state.js";
+import { getUnmappedTokens } from "./token-map.js";
 import { TokenMappingTable } from "./TokenMappingTable.js";
 import type {
   BrandThemeGlobals,
@@ -213,6 +214,49 @@ const SectionDivider = styled.div(({ theme }) => ({
   margin: "4px 0",
 }));
 
+const UnmappedBadge = styled.span(({ theme }) => ({
+  fontSize: 10,
+  fontWeight: 600,
+  padding: "1px 6px",
+  borderRadius: 8,
+  backgroundColor: theme.color.warning,
+  color: "#fff",
+  marginLeft: 6,
+}));
+
+const UnmappedList = styled.div(({ theme }) => ({
+  fontSize: 11,
+  lineHeight: 1.6,
+  color: theme.color.defaultText,
+  padding: "4px 0 8px",
+}));
+
+const UnmappedRow = styled.div(({ theme }) => ({
+  display: "flex",
+  gap: 8,
+  padding: "2px 0",
+  borderBottom: `1px solid ${theme.appBorderColor}`,
+  alignItems: "baseline",
+  flexWrap: "wrap",
+}));
+
+const UnmappedVariable = styled.code(({ theme }) => ({
+  fontSize: 11,
+  fontFamily: theme.typography.fonts.mono,
+  color: theme.color.defaultText,
+  flex: "1 1 200px",
+  minWidth: 0,
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
+}));
+
+const UnmappedMeta = styled.span(({ theme }) => ({
+  fontSize: 10,
+  color: theme.color.mediumdark,
+  flex: "0 0 auto",
+}));
+
 // ── Components ────────────────────────────────────────────
 
 export function Panel({ active }: PanelProps): React.ReactElement | null {
@@ -232,6 +276,7 @@ function PanelContent(): React.ReactElement {
 
   const [extractionOpen, setExtractionOpen] = useState(true);
   const [exportOpen, setExportOpen] = useState(true);
+  const [unmappedOpen, setUnmappedOpen] = useState(false);
   const [urlValue, setUrlValue] = useState("");
   const [webpageUrl, setWebpageUrl] = useState("");
   const [loading, setLoading] = useState(false);
@@ -340,6 +385,8 @@ function PanelContent(): React.ReactElement {
     },
     [state.assignments, updateState],
   );
+
+  const unmappedTokens = useMemo(() => getUnmappedTokens(), []);
 
   const handleToggle = useCallback(() => {
     updateState({ active: !state.active });
@@ -485,6 +532,35 @@ function PanelContent(): React.ReactElement {
         onAssignmentChange={handleAssignmentChange}
         onReset={handleReset}
       />
+
+      {/* Unmapped tokens — tokens in source CSS not covered by any role */}
+      {unmappedTokens.length > 0 && (
+        <>
+          <SectionDivider />
+          <SectionToggle
+            open={unmappedOpen}
+            onClick={() => setUnmappedOpen(!unmappedOpen)}
+          >
+            <span>&#x25BE;</span>
+            <span>Unmapped Tokens</span>
+            <UnmappedBadge>{unmappedTokens.length} unmapped</UnmappedBadge>
+          </SectionToggle>
+
+          {unmappedOpen && (
+            <UnmappedList>
+              {unmappedTokens.map((entry) => (
+                <UnmappedRow key={entry.variable}>
+                  <UnmappedVariable title={entry.variable}>
+                    {entry.variable}
+                  </UnmappedVariable>
+                  <UnmappedMeta>{entry.defaultValue}</UnmappedMeta>
+                  <UnmappedMeta>{entry.sourceFile}</UnmappedMeta>
+                </UnmappedRow>
+              ))}
+            </UnmappedList>
+          )}
+        </>
+      )}
     </PanelWrapper>
   );
 }

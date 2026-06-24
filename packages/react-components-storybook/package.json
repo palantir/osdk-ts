@@ -11,6 +11,7 @@
     "build": "storybook build",
     "dev": "trap 'kill 0' EXIT; pnpm turbo watch transpileBrowser --filter='@osdk/react-components-storybook^...' & storybook dev -p 6006",
     "fix-lint": "eslint . --fix && dprint fmt",
+    "generate-tokens": "node .storybook/addons/brand-theme-extractor/scripts/extract-tokens.mjs",
     "lint": "eslint . && dprint check",
     "test-storybook": "vitest run",
     "transpileAllDeps": "pnpm --filter @osdk/* transpileBrowser",
