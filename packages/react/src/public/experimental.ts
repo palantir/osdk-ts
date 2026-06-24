@@ -75,6 +75,7 @@ export type {
 export type {
   UseOsdkListResult,
   UseOsdkObjectsOptions,
+  UseOsdkObjectsShapeResult,
 } from "../new/useOsdkObjects.js";
 
 /** @deprecated Import from `@osdk/react` instead. */
