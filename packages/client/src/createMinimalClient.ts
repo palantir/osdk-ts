@@ -29,6 +29,7 @@ import {
   createStandardOntologyProviderFactory,
   type OntologyCachingOptions,
 } from "./ontology/StandardOntologyProvider.js";
+import type { SubscribeFn } from "./SubscribeFn.js";
 import { USER_AGENT } from "./util/UserAgent.js";
 
 /** @internal */
@@ -43,6 +44,7 @@ export function createMinimalClient(
     scenarioRid?: string;
     branch?: string;
     headers?: Record<string, string>;
+    subscribeFn?: SubscribeFn;
   } = {},
   fetchFn: (
     input: Request | URL | string,
@@ -86,12 +88,31 @@ export function createMinimalClient(
     narrowTypeInterfaceOrObjectMapping: {},
   } satisfies Omit<
     MinimalClient,
-    "ontologyProvider"
+    "ontologyProvider" | "subscribeFn"
   > as any;
 
   return Object.freeze(Object.assign(minimalClient, {
     ontologyProvider: createOntologyProviderFactory(
       options,
     )(minimalClient),
+    subscribeFn: options.subscribeFn ?? ((
+      objectType,
+      objectSet,
+      listener,
+      properties,
+      shouldLoadRids,
+    ) =>
+      import("./objectSet/ObjectSetListenerWebsocket.js").then((
+        { ObjectSetListenerWebsocket },
+      ) =>
+        ObjectSetListenerWebsocket.getInstance(minimalClient)
+          .subscribe(
+            objectType,
+            objectSet,
+            listener,
+            properties,
+            shouldLoadRids,
+          )
+      )) satisfies SubscribeFn,
   }));
 }

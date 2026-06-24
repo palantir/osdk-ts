@@ -64,6 +64,7 @@ import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
 import { ObjectSetListenerWebsocket } from "./objectSet/ObjectSetListenerWebsocket.js";
 import { applyQuery } from "./queries/applyQuery.js";
 import type { QuerySignatureFromDef } from "./queries/types.js";
+import type { SubscribeFn } from "./SubscribeFn.js";
 
 // We import it this way to keep compatible with CJS. If we referenced the
 // value of `symbolClientContext` directly, then we would have to a dynamic import
@@ -112,6 +113,7 @@ export function createClientInternal(
   transactionRid: string | undefined,
   flushEdits: (() => Promise<void>) | undefined,
   scenarioRid: string | undefined,
+  subscribeFn: SubscribeFn | undefined,
   baseUrl: string,
   ontologyRid: string | Promise<string>,
   tokenProvider: () => Promise<string>,
@@ -149,6 +151,7 @@ export function createClientInternal(
       flushEdits,
       scenarioRid,
       branch: options?.UNSTABLE_DO_NOT_USE_BRANCH,
+      subscribeFn,
     },
     fetchFn,
     objectSetFactory,
@@ -470,6 +473,7 @@ export const createClient: (
   undefined,
   undefined,
   undefined,
+  undefined,
 );
 
 export const createClientWithTransaction: (
@@ -482,6 +486,31 @@ export const createClientWithTransaction: (
     transactionRid,
     flushEdits,
     undefined,
+    undefined,
+    ...args,
+  ) as Client;
+
+/**
+ * Creates a {@link Client} whose `objectSet.subscribe()` calls are routed through a caller-supplied
+ * `subscribeFn` instead of the default WebSocket implementation. This is the subscribe analogue of
+ * the `fetchFn` parameter on {@link createClient}: it lets an embedder (e.g. an embedded backend)
+ * capture the original subscribe request — `objectType`, the wire `objectSet`, the requested
+ * `properties`, and `shouldLoadRids` — rather than the resulting WebSocket traffic.
+ *
+ * @param subscribeFn - The subscribe implementation to use for all `objectSet.subscribe()` calls.
+ * @param args - The remaining {@link createClient} arguments (`baseUrl`, `ontologyRid`,
+ *   `tokenProvider`, `options`, `fetchFn`).
+ */
+export const createClientWithSubscribe: (
+  subscribeFn: SubscribeFn,
+  ...args: Parameters<typeof createClient>
+) => Client = (subscribeFn, ...args) =>
+  createClientInternal(
+    createObjectSet,
+    undefined,
+    undefined,
+    undefined,
+    subscribeFn,
     ...args,
   ) as Client;
 
@@ -495,6 +524,7 @@ export const createClientWithScenario: (
     undefined,
     undefined,
     scenarioRid,
+    undefined,
     ...args,
   ) as Client;
 
