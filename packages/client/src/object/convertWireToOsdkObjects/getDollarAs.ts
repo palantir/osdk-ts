@@ -22,7 +22,7 @@ import {
 import { createSimpleCache } from "../SimpleCache.js";
 import { createOsdkInterface } from "./createOsdkInterface.js";
 import type { InterfaceHolder } from "./InterfaceHolder.js";
-import { UnderlyingOsdkObject } from "./InternalSymbols.js";
+import { InterfaceDefRef, UnderlyingOsdkObject } from "./InternalSymbols.js";
 import type { ObjectHolder } from "./ObjectHolder.js";
 
 /** @internal */
@@ -52,6 +52,29 @@ const osdkObjectToInterfaceView = createSimpleCache(
     >(),
 );
 
+function assertInterfaceToOtCastIsPermitted(
+  holder: { [InterfaceDefRef]?: unknown },
+  objDef: FetchedObjectTypeDefinition,
+): void {
+  const interfaceDef = holder[InterfaceDefRef] as
+    | { apiName: string }
+    | undefined;
+  if (interfaceDef == null) return;
+  const implementations = objDef.interfaceImplementations
+    ?.[interfaceDef.apiName];
+  if (implementations == null) return;
+
+  for (const [iptApiName, impl] of Object.entries(implementations)) {
+    if (impl.type === "localProperty") continue;
+    throw new Error(
+      `Cannot cast interface view of '${interfaceDef.apiName}' to `
+        + `'${objDef.apiName}': property '${iptApiName}' has a non-local `
+        + `implementation (${impl.type}), so the underlying object type cannot `
+        + `be faithfully represented. Load the object type directly.`,
+    );
+  }
+}
+
 function $asFactory(
   objDef: FetchedObjectTypeDefinition,
 ): DollarAsFn {
@@ -60,13 +83,17 @@ function $asFactory(
   return function $as<
     NEW_Q extends ObjectOrInterfaceDefinition,
   >(
-    this: OsdkBase<any> & { [UnderlyingOsdkObject]: any },
+    this: OsdkBase<any> & {
+      [UnderlyingOsdkObject]: any;
+      [InterfaceDefRef]?: unknown;
+    },
     targetMinDef: NEW_Q | string,
   ): OsdkBase<any> {
     let targetInterfaceApiName: string;
 
     if (typeof targetMinDef === "string") {
       if (targetMinDef === objDef.apiName) {
+        assertInterfaceToOtCastIsPermitted(this, objDef);
         return this[UnderlyingOsdkObject];
       }
 
@@ -79,6 +106,7 @@ function $asFactory(
 
       targetInterfaceApiName = targetMinDef;
     } else if (targetMinDef.apiName === objDef.apiName) {
+      assertInterfaceToOtCastIsPermitted(this, objDef);
       return this[UnderlyingOsdkObject];
     } else {
       if (targetMinDef.type === "object") {

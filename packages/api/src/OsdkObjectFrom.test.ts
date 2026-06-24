@@ -30,6 +30,8 @@ import type {
   Osdk,
 } from "./OsdkObjectFrom.js";
 import type { EmployeeApiTest } from "./test/EmployeeApiTest.js";
+import type { FooInterfaceApiTest } from "./test/FooInterfaceApiTest.js";
+import type { ReducerInterfaceApiTest } from "./test/ReducerInterfaceApiTest.js";
 
 describe("ExtractOptions", () => {
   describe("NullabilityAdherence Generic", () => {
@@ -852,6 +854,25 @@ describe("ExtractOptions", () => {
           },
         });
       });
+    });
+  });
+
+  describe("$as from interface to OT", () => {
+    it("all localProperty implementations is always allowed and yields the plain OT type", async () => {
+      const ifaceObj = (await createMockObjectSet<FooInterfaceApiTest>()
+        .fetchPage()).data[0];
+
+      const result = ifaceObj.$as({} as EmployeeApiTest);
+      expectTypeOf(result.fullName).toEqualTypeOf<string | undefined>();
+    });
+
+    it("interface → OT: any non-local impl rejects the cast", async () => {
+      const ifaceObj = (await createMockObjectSet<ReducerInterfaceApiTest>()
+        .fetchPage()).data[0];
+
+      // @ts-expect-error — ReducerInterface has structField / reduced
+      // implementations on Employee.
+      ifaceObj.$as({} as EmployeeApiTest);
     });
   });
 });
