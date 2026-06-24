@@ -3,7 +3,6 @@
   "ui": "stream",
   "tasks": {
     "codegen": {
-      "dependsOn": ["^transpileEsm"],
       "outputLogs": "new-only"
     }, // empty for overriding
     "fix-lint": {
