@@ -71,6 +71,19 @@ interface UseOsdkAggregationBaseOptions<
    * network request if the second is within `dedupeIntervalMs`.
    */
   dedupeIntervalMs?: number;
+
+  /**
+   * Enable or disable the aggregation.
+   *
+   * When `false`, the hook does not subscribe or fetch from the server and
+   * reports `data: undefined`, `isLoading: false`, and `error: undefined`.
+   * `refetch()` is also a no-op while disabled, so it will not invalidate the
+   * object type or trigger network requests. Setting it back to `true`
+   * re-subscribes and fetches.
+   *
+   * @default true
+   */
+  enabled?: boolean;
 }
 
 export interface UseOsdkAggregationOptions<
@@ -164,6 +177,7 @@ export function useOsdkAggregation<
     intersectWith,
     aggregate,
     dedupeIntervalMs,
+    enabled = true,
   } = options;
   const objectSet = "objectSet" in options ? options.objectSet : undefined;
 
@@ -185,6 +199,16 @@ export function useOsdkAggregation<
 
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
+      if (!enabled) {
+        return makeExternalStore<ObserveAggregationArgs<Q, A>>(
+          () => ({ unsubscribe: () => {} }),
+          devToolsMetadata({
+            hookType: "useOsdkAggregation",
+            objectType: type.apiName,
+          }),
+        );
+      }
+
       const currentObjectSet = objectSetRef.current;
       if (currentObjectSet) {
         return makeExternalStoreAsync<ObserveAggregationArgs<Q, A>>(
@@ -232,6 +256,7 @@ export function useOsdkAggregation<
       );
     },
     [
+      enabled,
       observableClient,
       type.apiName,
       type.type,
@@ -247,13 +272,16 @@ export function useOsdkAggregation<
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);
 
   const refetch = React.useCallback(async () => {
+    if (!enabled) {
+      return;
+    }
     await observableClient.invalidateObjectType(type.apiName);
-  }, [observableClient, type.apiName]);
+  }, [observableClient, type.apiName, enabled]);
 
   return React.useMemo(() => ({
     data: payload?.result as AggregationsResults<Q, A> | undefined,
-    isLoading: isPayloadLoading(payload, true),
+    isLoading: isPayloadLoading(payload, enabled),
     error: extractPayloadError(payload, "Failed to execute aggregation"),
     refetch,
-  }), [payload, refetch]);
+  }), [payload, enabled, refetch]);
 }
