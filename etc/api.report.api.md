@@ -390,8 +390,8 @@ export interface BaseObjectSet<Q extends ObjectOrInterfaceDefinition> {
 export type BaseWirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "cipherText" | "mediaReference" | "numericTimeseries" | "stringTimeseries" | "sensorTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference" | "vector";
 
 // @public
-export interface CipherText<T extends string = string> {
-    	decrypt(): Promise<T>;
+export interface CipherText {
+    	decrypt(): Promise<string>;
 }
 
 // @public (undocumented)
