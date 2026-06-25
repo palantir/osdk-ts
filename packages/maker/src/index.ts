@@ -65,6 +65,7 @@ export { defineCreateInterfaceLinkAction } from "./api/defineCreateInterfaceLink
 export { defineCreateInterfaceObjectAction } from "./api/defineCreateInterfaceObjectAction.js";
 export { defineCreateObjectAction } from "./api/defineCreateObjectAction.js";
 export { defineCreateOrModifyObjectAction } from "./api/defineCreateOrModifyObjectAction.js";
+export { defineDeleteInterfaceLinkAction } from "./api/defineDeleteInterfaceLinkAction.js";
 export { defineDeleteInterfaceObjectAction } from "./api/defineDeleteInterfaceObjectAction.js";
 export { defineDeleteObjectAction } from "./api/defineDeleteObjectAction.js";
 export { defineInterface } from "./api/defineInterface.js";

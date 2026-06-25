@@ -688,6 +688,16 @@ function referencedParameterIds(
           }
         });
         break;
+      case "deleteInterfaceLinkRule":
+        rule.deleteInterfaceLinkRule.interfaceTypeRid = sanitize(
+          rule.deleteInterfaceLinkRule.interfaceTypeRid,
+        );
+        rule.deleteInterfaceLinkRule.interfaceLinkTypeRid = sanitize(
+          rule.deleteInterfaceLinkRule.interfaceLinkTypeRid,
+        );
+        parameterIds.add(rule.deleteInterfaceLinkRule.sourceObject);
+        parameterIds.add(rule.deleteInterfaceLinkRule.targetObject);
+        break;
     }
   });
   return parameterIds;

@@ -119,6 +119,115 @@ export type ActionApplyClientPreferences =
 export interface ActionApplyDisallowedClients {
   disallowedFrontendConsumer: Array<ActionTypeFrontendConsumer>;
 }
+export interface ActionEditsValidation {
+  condition: ActionEditsValidationCondition;
+}
+export interface ActionEditsValidationAndCondition {
+  conditions: Array<ActionEditsValidationCondition>;
+}
+export interface ActionEditsValidationCondition_modification {
+  type: "modification";
+  modification: ActionEditsValidationModificationCondition;
+}
+
+export interface ActionEditsValidationCondition_creation {
+  type: "creation";
+  creation: ActionEditsValidationCreationCondition;
+}
+
+export interface ActionEditsValidationCondition_deletion {
+  type: "deletion";
+  deletion: ActionEditsValidationDeletionCondition;
+}
+
+export interface ActionEditsValidationCondition_and {
+  type: "and";
+  and: ActionEditsValidationAndCondition;
+}
+
+export interface ActionEditsValidationCondition_or {
+  type: "or";
+  or: ActionEditsValidationOrCondition;
+}
+
+export interface ActionEditsValidationCondition_not {
+  type: "not";
+  not: ActionEditsValidationNotCondition;
+}
+export type ActionEditsValidationCondition =
+  | ActionEditsValidationCondition_modification
+  | ActionEditsValidationCondition_creation
+  | ActionEditsValidationCondition_deletion
+  | ActionEditsValidationCondition_and
+  | ActionEditsValidationCondition_or
+  | ActionEditsValidationCondition_not;
+
+export interface ActionEditsValidationConditionSubject_parameter {
+  type: "parameter";
+  parameter: ParameterId;
+}
+
+export interface ActionEditsValidationConditionSubject_objectType {
+  type: "objectType";
+  objectType: ObjectTypeId;
+}
+
+export interface ActionEditsValidationConditionSubject_allEdits {
+  type: "allEdits";
+  allEdits: ActionEditsValidationConditionSubjectAllEdits;
+}
+/**
+ * Selects which objects' edits are subject to a transition validation.
+ */
+export type ActionEditsValidationConditionSubject =
+  | ActionEditsValidationConditionSubject_parameter
+  | ActionEditsValidationConditionSubject_objectType
+  | ActionEditsValidationConditionSubject_allEdits;
+
+export interface ActionEditsValidationConditionSubjectAllEdits {
+}
+export interface ActionEditsValidationCreationCondition {
+  requireEdit: boolean;
+  subject: ActionEditsValidationConditionSubject;
+  to?: ActionEditsValidationSubjectState | null | undefined;
+}
+export interface ActionEditsValidationDeletionCondition {
+  from?: ActionEditsValidationSubjectState | null | undefined;
+  requireEdit: boolean;
+  subject: ActionEditsValidationConditionSubject;
+}
+export interface ActionEditsValidationModification_none {
+  type: "none";
+  none: None;
+}
+
+export interface ActionEditsValidationModification_value {
+  type: "value";
+  value: ActionEditsValidation;
+}
+export type ActionEditsValidationModification =
+  | ActionEditsValidationModification_none
+  | ActionEditsValidationModification_value;
+
+export interface ActionEditsValidationModificationCondition {
+  from?: ActionEditsValidationSubjectState | null | undefined;
+  requireEdit: boolean;
+  subject: ActionEditsValidationConditionSubject;
+  to?: ActionEditsValidationSubjectState | null | undefined;
+}
+export interface ActionEditsValidationNotCondition {
+  condition: ActionEditsValidationCondition;
+}
+export interface ActionEditsValidationOrCondition {
+  conditions: Array<ActionEditsValidationCondition>;
+}
+export interface ActionEditsValidationSubjectState_objectSetMembership {
+  type: "objectSetMembership";
+  objectSetMembership: ObjectSetRid;
+}
+export type ActionEditsValidationSubjectState =
+  ActionEditsValidationSubjectState_objectSetMembership;
+
 /**
  * Contains the definition for platform effects that are executed as part of running an Action.
  */
@@ -770,6 +879,7 @@ export type ActionTypeBranchWebhooksMode =
  */
 export interface ActionTypeCreate {
   actionApplyClientSettings?: ActionApplyClientPreferences | null | undefined;
+  actionEditsValidation?: ActionEditsValidation | null | undefined;
   actionLogConfiguration?: ActionLogConfiguration | null | undefined;
   apiName: ActionTypeApiName;
   branchSettings?: ActionTypeBranchSettingsModification | null | undefined;
@@ -1293,6 +1403,7 @@ export type ActionTypeStatus =
  */
 export interface ActionTypeUpdate {
   actionApplyClientSettings?: ActionApplyClientPreferences | null | undefined;
+  actionEditsValidation?: ActionEditsValidationModification | null | undefined;
   actionLogConfiguration?: ActionLogConfiguration | null | undefined;
   apiName: ActionTypeApiName;
   branchSettings?: ActionTypeBranchSettingsModification | null | undefined;
@@ -1307,6 +1418,7 @@ export interface ActionTypeUpdate {
   parametersToDelete: Array<ParameterRid>;
   parametersToUpdate: Record<ParameterRid, EditParameterRequestModification>;
   provenance?: ActionTypeProvenanceModification | null | undefined;
+  readAuthorization?: AuthorizationModification | null | undefined;
   revert?: ActionRevert | null | undefined;
   scenarioSettings?: ActionTypeScenarioSettingsModification | null | undefined;
   sectionsToCreate: Record<SectionId, PutSectionRequestModification>;
@@ -1338,11 +1450,13 @@ export interface ActionTypeUpdatedEvent {
  */
 export type ActionTypeVersion = string;
 export interface ActionValidation {
+  actionEditsValidation?: ActionEditsValidation | null | undefined;
   actionTypeLevelValidation: ActionTypeLevelValidation;
   parameterValidations: Record<ParameterId, ConditionalValidationBlock>;
   sectionValidations: Record<SectionId, SectionDisplayBlock>;
 }
 export interface ActionValidationRequest {
+  actionEditsValidation?: ActionEditsValidation | null | undefined;
   actionTypeLevelValidation: ActionTypeLevelValidation;
   parameterValidations: Record<ParameterId, ConditionalValidationBlockRequest>;
   sectionValidations: Record<SectionId, SectionDisplayBlock>;
@@ -2351,6 +2465,13 @@ export type AuthorizationModification =
   | AuthorizationModification_markingIds
   | AuthorizationModification_none;
 
+/**
+ * Metadata about a RestrictedView materialized by an Object Storage service (Phonograph2 / Funnel) as the
+ * backing data source for an ObjectType.
+ */
+export interface BackingRestrictedViewInfo {
+  restrictedViewTransactionRid: RestrictedViewTransactionRid;
+}
 export interface BaseFormatter_knownFormatter {
   type: "knownFormatter";
   knownFormatter: KnownFormatter;
@@ -2950,6 +3071,18 @@ export type ConditionValueModification =
   | ConditionValueModification_parameterLength;
 
 /**
+ * Only mandatory markings are supported for constant marking conditions in PropertySecurityGroups
+ */
+export type ConstantMarkingType = "MANDATORY";
+
+/**
+ * Contains the set of markings referenced by constant marking conditions in granular policies on this
+ * datasource.
+ */
+export interface ConstantPolicyMarkings {
+  markingIds: Array<MarkingId>;
+}
+/**
  * References a newly created object of interface by its type and primary key. Used to support creating
  * a new object and linking it to another object in the same action type for a parameter - primary key
  * mapping.
@@ -2988,10 +3121,22 @@ export interface DataNullabilityV2 {
   noNulls?: boolean | null | undefined;
 }
 /**
- * Contains information about the different security controls applied on data in this datasource. Note that
- * currently this is only allowed on Restricted View-like datasources.
+ * Contains information about the different security controls applied on data in this datasource.
+ * This information comes from the allowed markings in mandatory control properties or constant markings in
+ * granular conditions of PropertySecurityGroups. Note that currently this is only allowed on
+ * Restricted View-like datasources.
  */
 export interface DataSecurity {
+  classificationConstraint?: ClassificationConstraint | null | undefined;
+  constantPolicyMarkings?: ConstantPolicyMarkings | null | undefined;
+  markingConstraint?: MandatoryMarkingConstraint | null | undefined;
+}
+/**
+ * Contains information about the different security controls applied on data in this datasource.
+ * This configures the allowed markings in mandatory control properties. Constant markings from
+ * granular policies are derived server-side and exposed on DataSecurity.
+ */
+export interface DataSecurityModification {
   classificationConstraint?: ClassificationConstraint | null | undefined;
   markingConstraint?: MandatoryMarkingConstraint | null | undefined;
 }
@@ -3565,8 +3710,28 @@ export interface DeletingAndEditingTheSameActionTypeError {
   actionTypeRid: ActionTypeRid;
 }
 export interface DeletionMetadata {
+  deletionType?: DeletionType | null | undefined;
   isHardDeleted: boolean;
 }
+export interface DeletionType_hardDeletion {
+  type: "hardDeletion";
+  hardDeletion: HardDeletion;
+}
+
+export interface DeletionType_softDeletion {
+  type: "softDeletion";
+  softDeletion: SoftDeletion;
+}
+
+export interface DeletionType_trashing {
+  type: "trashing";
+  trashing: Trashing;
+}
+export type DeletionType =
+  | DeletionType_hardDeletion
+  | DeletionType_softDeletion
+  | DeletionType_trashing;
+
 /**
  * Response for ActionTypeGetOrganizationsRequest. Please note that this will contain
  * OrganizationRid(s) only for ActionTypeRid(s) that are visible to the user.
@@ -4509,6 +4674,12 @@ export type GroupId = string;
  * should contain at most 100 characters, and is case sensitive.
  */
 export type HandlebarsInputName = string;
+
+/**
+ * Permanent deletion; data is wiped.
+ */
+export interface HardDeletion {
+}
 export interface HumanReadableFormat {
   showFullUnits?: boolean | null | undefined;
 }
@@ -5074,9 +5245,16 @@ export interface InterfaceTypeError_interfaceTypesAlreadyExist {
   type: "interfaceTypesAlreadyExist";
   interfaceTypesAlreadyExist: InterfaceTypesAlreadyExistError;
 }
+
+export interface InterfaceTypeError_interfaceTypeSchemaMigrationOnBranch {
+  type: "interfaceTypeSchemaMigrationOnBranch";
+  interfaceTypeSchemaMigrationOnBranch:
+    InterfaceTypeSchemaMigrationOnBranchError;
+}
 export type InterfaceTypeError =
   | InterfaceTypeError_interfaceTypesNotFound
-  | InterfaceTypeError_interfaceTypesAlreadyExist;
+  | InterfaceTypeError_interfaceTypesAlreadyExist
+  | InterfaceTypeError_interfaceTypeSchemaMigrationOnBranch;
 
 /**
  * Reference to an interface in a request. Used to reference an interface in the same request it is created in.
@@ -5114,6 +5292,9 @@ export type InterfaceTypeRidOrIdInRequest =
  */
 export interface InterfaceTypesAlreadyExistError {
   interfaceTypeRids: Array<InterfaceTypeRid>;
+}
+export interface InterfaceTypeSchemaMigrationOnBranchError {
+  interfaceTypeRid: InterfaceTypeRid;
 }
 /**
  * Identifier for an InterfaceType schema migration.
@@ -5674,6 +5855,7 @@ export type LoadAllInterfaceTypesPageToken = string;
  * Request to load a page of all ObjectTypes visible to the user in an Ontology.
  */
 export interface LoadAllObjectTypesFromOntologyPageRequest {
+  entityMetadata?: EntityMetadataLoadRequest | null | undefined;
   includeObjectTypesWithoutSearchableDatasources?: boolean | null | undefined;
   loadRedacted?: boolean | null | undefined;
   ontologyRid: OntologyRid;
@@ -5692,12 +5874,17 @@ export interface LoadAllObjectTypesFromOntologyPageResponse {
  * A single entry in the LoadAllObjectTypesPageResponse.
  */
 export interface LoadAllObjectTypesPageItem {
+  entityMetadata?:
+    | _api_entitymetadata_ObjectTypeEntityMetadata
+    | null
+    | undefined;
   objectType: ObjectType;
 }
 /**
  * Request to load a page of all ObjectTypes visible to the user in an Ontology.
  */
 export interface LoadAllObjectTypesPageRequest {
+  entityMetadata?: EntityMetadataLoadRequest | null | undefined;
   includeObjectTypesWithoutSearchableDatasources?: boolean | null | undefined;
   loadRedacted?: boolean | null | undefined;
   pageSizeLimit: number;
@@ -6304,6 +6491,22 @@ export type MarkingType = "MANDATORY" | "CBAC";
 export interface MarkingTypesFilter {
   markingTypes: Array<MarkingType>;
 }
+export interface MaterializationIdentifier_restrictedViewRid {
+  type: "restrictedViewRid";
+  restrictedViewRid: RestrictedViewRid;
+}
+
+export interface MaterializationIdentifier_writebackDatasetRid {
+  type: "writebackDatasetRid";
+  writebackDatasetRid: DatasetRid;
+}
+/**
+ * Identifier for a materialization.
+ */
+export type MaterializationIdentifier =
+  | MaterializationIdentifier_restrictedViewRid
+  | MaterializationIdentifier_writebackDatasetRid;
+
 /**
  * An rid identifying a specific item within a media set. This rid is a randomly generated identifier and is
  * safe to log.
@@ -6994,6 +7197,7 @@ export interface ObjectQueryPropertyValueModification {
  * The rid for an Object. Safe to log.
  */
 export type ObjectRid = string;
+export type ObjectSetRid = string;
 
 /**
  * Generates an ObjectSetRid, from the provided ObjectSet definition, that would be used as the default value
@@ -7455,6 +7659,7 @@ export interface ObjectTypeMediaDatasource {
  */
 export interface ObjectTypeMediaSetViewDatasource {
   assumedMarkings: Array<MarkingId>;
+  clearOnDeleteProperties: Array<PropertyTypeRid>;
   mediaSetViewLocator: MediaSetViewLocator;
   properties: Array<PropertyTypeRid>;
   uploadProperties: Array<PropertyTypeRid>;
@@ -7833,6 +8038,93 @@ export interface OntologyInformation {
   description: string;
   displayName: string;
 }
+export interface OntologyIrActionEditsValidation {
+  condition: OntologyIrActionEditsValidationCondition;
+}
+export interface OntologyIrActionEditsValidationAndCondition {
+  conditions: Array<OntologyIrActionEditsValidationCondition>;
+}
+export interface OntologyIrActionEditsValidationCondition_modification {
+  type: "modification";
+  modification: OntologyIrActionEditsValidationModificationCondition;
+}
+
+export interface OntologyIrActionEditsValidationCondition_creation {
+  type: "creation";
+  creation: OntologyIrActionEditsValidationCreationCondition;
+}
+
+export interface OntologyIrActionEditsValidationCondition_deletion {
+  type: "deletion";
+  deletion: OntologyIrActionEditsValidationDeletionCondition;
+}
+
+export interface OntologyIrActionEditsValidationCondition_and {
+  type: "and";
+  and: OntologyIrActionEditsValidationAndCondition;
+}
+
+export interface OntologyIrActionEditsValidationCondition_or {
+  type: "or";
+  or: OntologyIrActionEditsValidationOrCondition;
+}
+
+export interface OntologyIrActionEditsValidationCondition_not {
+  type: "not";
+  not: OntologyIrActionEditsValidationNotCondition;
+}
+export type OntologyIrActionEditsValidationCondition =
+  | OntologyIrActionEditsValidationCondition_modification
+  | OntologyIrActionEditsValidationCondition_creation
+  | OntologyIrActionEditsValidationCondition_deletion
+  | OntologyIrActionEditsValidationCondition_and
+  | OntologyIrActionEditsValidationCondition_or
+  | OntologyIrActionEditsValidationCondition_not;
+
+export interface OntologyIrActionEditsValidationConditionSubject_parameter {
+  type: "parameter";
+  parameter: ParameterId;
+}
+
+export interface OntologyIrActionEditsValidationConditionSubject_objectType {
+  type: "objectType";
+  objectType: ObjectTypeApiName;
+}
+
+export interface OntologyIrActionEditsValidationConditionSubject_allEdits {
+  type: "allEdits";
+  allEdits: ActionEditsValidationConditionSubjectAllEdits;
+}
+/**
+ * Selects which objects' edits are subject to a transition validation.
+ */
+export type OntologyIrActionEditsValidationConditionSubject =
+  | OntologyIrActionEditsValidationConditionSubject_parameter
+  | OntologyIrActionEditsValidationConditionSubject_objectType
+  | OntologyIrActionEditsValidationConditionSubject_allEdits;
+
+export interface OntologyIrActionEditsValidationCreationCondition {
+  requireEdit: boolean;
+  subject: OntologyIrActionEditsValidationConditionSubject;
+  to?: ActionEditsValidationSubjectState | null | undefined;
+}
+export interface OntologyIrActionEditsValidationDeletionCondition {
+  from?: ActionEditsValidationSubjectState | null | undefined;
+  requireEdit: boolean;
+  subject: OntologyIrActionEditsValidationConditionSubject;
+}
+export interface OntologyIrActionEditsValidationModificationCondition {
+  from?: ActionEditsValidationSubjectState | null | undefined;
+  requireEdit: boolean;
+  subject: OntologyIrActionEditsValidationConditionSubject;
+  to?: ActionEditsValidationSubjectState | null | undefined;
+}
+export interface OntologyIrActionEditsValidationNotCondition {
+  condition: OntologyIrActionEditsValidationCondition;
+}
+export interface OntologyIrActionEditsValidationOrCondition {
+  conditions: Array<OntologyIrActionEditsValidationCondition>;
+}
 /**
  * Contains the definition for platform effects that are executed as part of running an Action.
  */
@@ -8158,6 +8450,7 @@ export type OntologyIrActionTypeStatus =
   | OntologyIrActionTypeStatus_example;
 
 export interface OntologyIrActionValidation {
+  actionEditsValidation?: OntologyIrActionEditsValidation | null | undefined;
   actionTypeLevelValidation: OntologyIrActionTypeLevelValidation;
   parameterValidations: Record<
     ParameterId,
@@ -8701,14 +8994,24 @@ export type OntologyIrConditionValue =
   | OntologyIrConditionValue_parameterLength;
 
 /**
- * Contains information about the different security controls applied on data in this datasource. Note that
- * currently this is only allowed on Restricted View-like datasources.
+ * Contains the set of markings referenced by constant marking conditions in granular policies on this
+ * datasource.
+ */
+export interface OntologyIrConstantPolicyMarkings {
+  markingIds: Array<MarkingId>;
+}
+/**
+ * Contains information about the different security controls applied on data in this datasource.
+ * This information comes from the allowed markings in mandatory control properties or constant markings in
+ * granular conditions of PropertySecurityGroups. Note that currently this is only allowed on
+ * Restricted View-like datasources.
  */
 export interface OntologyIrDataSecurity {
   classificationConstraint?:
     | OntologyIrClassificationConstraint
     | null
     | undefined;
+  constantPolicyMarkings?: OntologyIrConstantPolicyMarkings | null | undefined;
   markingConstraint?: OntologyIrMandatoryMarkingConstraint | null | undefined;
 }
 export interface OntologyIrDateBetweenOperation {
@@ -9321,6 +9624,11 @@ export interface OntologyIrLogicRule_addInterfaceLinkRuleV2 {
   addInterfaceLinkRuleV2: OntologyIrAddInterfaceLinkRuleV2;
 }
 
+export interface OntologyIrLogicRule_deleteInterfaceLinkRule {
+  type: "deleteInterfaceLinkRule";
+  deleteInterfaceLinkRule: OntologyIrDeleteInterfaceLinkRule;
+}
+
 export interface OntologyIrLogicRule_functionRule {
   type: "functionRule";
   functionRule: OntologyIrFunctionRule;
@@ -9340,6 +9648,7 @@ export type OntologyIrLogicRule =
   | OntologyIrLogicRule_addLinkRule
   | OntologyIrLogicRule_deleteLinkRule
   | OntologyIrLogicRule_addInterfaceLinkRuleV2
+  | OntologyIrLogicRule_deleteInterfaceLinkRule
   | OntologyIrLogicRule_functionRule
   | OntologyIrLogicRule_scenarioRule;
 
@@ -10035,6 +10344,7 @@ export interface OntologyIrObjectTypeMediaDatasource {
  */
 export interface OntologyIrObjectTypeMediaSetViewDatasource {
   assumedMarkings: Array<MarkingId>;
+  clearOnDeleteProperties: Array<ObjectTypeFieldApiName>;
   mediaSetViewLocator: _api_blockdata_MediaSetViewName;
   properties: Array<ObjectTypeFieldApiName>;
   uploadProperties: Array<ObjectTypeFieldApiName>;
@@ -10783,6 +11093,13 @@ export type OntologyIrSecurityGroupComparisonValue =
   | OntologyIrSecurityGroupComparisonValue_property
   | OntologyIrSecurityGroupComparisonValue_userProperty;
 
+/**
+ * Condition that evaluates a user's markings against a constant set of markings.
+ */
+export interface OntologyIrSecurityGroupConstantMarkingsCondition {
+  markings: Array<MarkingId>;
+  markingType: ConstantMarkingType;
+}
 export interface OntologyIrSecurityGroupGranularCondition_not {
   type: "not";
   not: OntologyIrSecurityGroupNotCondition;
@@ -10808,6 +11125,11 @@ export interface OntologyIrSecurityGroupGranularCondition_markings {
   markings: OntologyIrSecurityGroupMarkingsCondition;
 }
 
+export interface OntologyIrSecurityGroupGranularCondition_constantMarkings {
+  type: "constantMarkings";
+  constantMarkings: OntologyIrSecurityGroupConstantMarkingsCondition;
+}
+
 export interface OntologyIrSecurityGroupGranularCondition_comparison {
   type: "comparison";
   comparison: OntologyIrSecurityGroupComparisonCondition;
@@ -10822,6 +11144,7 @@ export type OntologyIrSecurityGroupGranularCondition =
   | OntologyIrSecurityGroupGranularCondition_and
   | OntologyIrSecurityGroupGranularCondition_or
   | OntologyIrSecurityGroupGranularCondition_markings
+  | OntologyIrSecurityGroupGranularCondition_constantMarkings
   | OntologyIrSecurityGroupGranularCondition_comparison;
 
 /**
@@ -11777,7 +12100,14 @@ export interface OntologySparkQueryableSource {
   sourceRid: string;
 }
 /**
- * The version of an Ontology.
+ * The version of an ontology. Identifies a point in the history of an ontology; every modification produces a
+ * new, unique version. Ontology versions are monotonically increasing in commit order.
+ *
+ * Notes:
+ * - Order of ontology versions is only meaningful within a single stack. Versions obtained from different
+ * stacks are not comparable.
+ * - Compare whole values only. Only the most significant bits carry the ordering information and the low bits
+ * are random for uniqueness.
  */
 export type OntologyVersion = string;
 export interface OrCondition {
@@ -13795,6 +14125,16 @@ export interface ResolvedNonDefaultBranch {
   rid: OntologyBranchRid;
 }
 /**
+ * Properties populated by the ObjectTypeInputManager on the resolved DatasetLocator so that callers can read
+ * security-relevant metadata about the ObjectType's backing data sources without re-querying OMS.
+ */
+export interface ResolvedObjectTypeProperties {
+  backingRestrictedViews?:
+    | Record<RestrictedViewRid, BackingRestrictedViewInfo>
+    | null
+    | undefined;
+}
+/**
  * An rid identifying a Foundry restricted view. This rid is a randomly generated identifier and is safe to log.
  */
 export type RestrictedViewRid = string;
@@ -14292,6 +14632,17 @@ export type SecurityGroupComparisonValueModification =
   | SecurityGroupComparisonValueModification_property
   | SecurityGroupComparisonValueModification_userProperty;
 
+/**
+ * Condition that evaluates a user's markings against a constant set of markings.
+ */
+export interface SecurityGroupConstantMarkingsCondition {
+  markings: Array<MarkingId>;
+  markingType: ConstantMarkingType;
+}
+export interface SecurityGroupConstantMarkingsConditionModification {
+  markings: Array<MarkingId>;
+  markingType: ConstantMarkingType;
+}
 export interface SecurityGroupGranularCondition_not {
   type: "not";
   not: SecurityGroupNotCondition;
@@ -14317,6 +14668,11 @@ export interface SecurityGroupGranularCondition_markings {
   markings: SecurityGroupMarkingsCondition;
 }
 
+export interface SecurityGroupGranularCondition_constantMarkings {
+  type: "constantMarkings";
+  constantMarkings: SecurityGroupConstantMarkingsCondition;
+}
+
 export interface SecurityGroupGranularCondition_comparison {
   type: "comparison";
   comparison: SecurityGroupComparisonCondition;
@@ -14331,6 +14687,7 @@ export type SecurityGroupGranularCondition =
   | SecurityGroupGranularCondition_and
   | SecurityGroupGranularCondition_or
   | SecurityGroupGranularCondition_markings
+  | SecurityGroupGranularCondition_constantMarkings
   | SecurityGroupGranularCondition_comparison;
 
 export interface SecurityGroupGranularConditionModification_not {
@@ -14358,6 +14715,11 @@ export interface SecurityGroupGranularConditionModification_markings {
   markings: SecurityGroupMarkingsConditionModification;
 }
 
+export interface SecurityGroupGranularConditionModification_constantMarkings {
+  type: "constantMarkings";
+  constantMarkings: SecurityGroupConstantMarkingsConditionModification;
+}
+
 export interface SecurityGroupGranularConditionModification_comparison {
   type: "comparison";
   comparison: SecurityGroupComparisonConditionModification;
@@ -14368,6 +14730,7 @@ export type SecurityGroupGranularConditionModification =
   | SecurityGroupGranularConditionModification_and
   | SecurityGroupGranularConditionModification_or
   | SecurityGroupGranularConditionModification_markings
+  | SecurityGroupGranularConditionModification_constantMarkings
   | SecurityGroupGranularConditionModification_comparison;
 
 /**
@@ -14770,6 +15133,11 @@ export interface SingleKeyJoinDefinition {
   foreignKeyObjectTypeId: ObjectTypeId;
   foreignKeyPropertyId: PropertyId;
   primaryKeyObjectTypeId: ObjectTypeId;
+}
+/**
+ * Non-recoverable deletion that does not wipe data, for entities trashing does not support (e.g. non-Compass entities, OSv1 OTs, etc.).
+ */
+export interface SoftDeletion {
 }
 /**
  * A mapping from a property of the given ObjectType to the property of another.
@@ -15219,14 +15587,29 @@ export interface StructPropertyFieldType_boolean {
   boolean: BooleanPropertyType;
 }
 
+export interface StructPropertyFieldType_byte {
+  type: "byte";
+  byte: BytePropertyType;
+}
+
 export interface StructPropertyFieldType_date {
   type: "date";
   date: DatePropertyType;
 }
 
+export interface StructPropertyFieldType_decimal {
+  type: "decimal";
+  decimal: DecimalPropertyType;
+}
+
 export interface StructPropertyFieldType_double {
   type: "double";
   double: DoublePropertyType;
+}
+
+export interface StructPropertyFieldType_float {
+  type: "float";
+  float: FloatPropertyType;
 }
 
 export interface StructPropertyFieldType_geohash {
@@ -15249,6 +15632,11 @@ export interface StructPropertyFieldType_long {
   long: LongPropertyType;
 }
 
+export interface StructPropertyFieldType_short {
+  type: "short";
+  short: ShortPropertyType;
+}
+
 export interface StructPropertyFieldType_string {
   type: "string";
   string: StringPropertyType;
@@ -15265,12 +15653,16 @@ export interface StructPropertyFieldType_timestamp {
  */
 export type StructPropertyFieldType =
   | StructPropertyFieldType_boolean
+  | StructPropertyFieldType_byte
   | StructPropertyFieldType_date
+  | StructPropertyFieldType_decimal
   | StructPropertyFieldType_double
+  | StructPropertyFieldType_float
   | StructPropertyFieldType_geohash
   | StructPropertyFieldType_geoshape
   | StructPropertyFieldType_integer
   | StructPropertyFieldType_long
+  | StructPropertyFieldType_short
   | StructPropertyFieldType_string
   | StructPropertyFieldType_timestamp;
 
@@ -15589,6 +15981,12 @@ export type TimestampTypeDataValue = string;
 export interface TimestampTypeRangeConstraint {
   max?: TimestampTypeDataValue | null | undefined;
   min?: TimestampTypeDataValue | null | undefined;
+}
+/**
+ * Recoverable deletion for OSv2 entities stored in public projects. Trashed entities will be recoverable from the Compass trash.
+ */
+export interface Trashing {
+  preTrashVersion: OntologyVersion;
 }
 export interface TrueCondition {
   displayMetadata?: ConditionDisplayMetadata | null | undefined;
