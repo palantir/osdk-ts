@@ -251,6 +251,7 @@ export function extractPropertyDatasource(
         type: "mediaSetView",
         mediaSetView: {
           assumedMarkings: [],
+          clearOnDeleteProperties: [],
           mediaSetViewLocator: ridGenerator.generateMediaSetViewLocator(
             identifier,
           ),
