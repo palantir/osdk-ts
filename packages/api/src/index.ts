@@ -71,6 +71,7 @@ export type {
   AttachmentMetadata,
   AttachmentUpload,
 } from "./object/Attachment.js";
+export type { CipherText } from "./object/CipherText.js";
 export type {
   AsyncIterArgs,
   Augment,

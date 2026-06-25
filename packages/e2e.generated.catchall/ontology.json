@@ -5776,6 +5776,97 @@
         }
       },
       "sharedPropertyTypeMapping": {}
+    },
+    "CipherTextTest": {
+      "objectType": {
+        "apiName": "CipherTextTest",
+        "displayName": "CipherTextTest",
+        "status": "EXPERIMENTAL",
+        "description": "",
+        "pluralDisplayName": "CipherTextTests",
+        "icon": {
+          "type": "blueprint",
+          "color": "#4C90F0",
+          "name": "cube"
+        },
+        "primaryKey": "pk",
+        "properties": {
+          "encrypted": {
+            "displayName": "encrypted",
+            "dataType": {
+              "type": "cipherText"
+            },
+            "rid": "ri.ontology.main.property.65b638f4-00b2-4a21-ae85-4b6a730daae4",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": []
+          },
+          "hashed": {
+            "displayName": "hashed",
+            "dataType": {
+              "type": "cipherText"
+            },
+            "rid": "ri.ontology.main.property.8792e5f4-3547-4faf-8c02-779163dabf7c",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": []
+          },
+          "plaintext": {
+            "displayName": "plaintext",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.62a94791-6be7-4457-827f-9dc41d8ad954",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          },
+          "pk": {
+            "displayName": "pk",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.48147c7b-beb8-4d22-98e2-4c9c1b61ca70",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          }
+        },
+        "rid": "ri.ontology.main.object-type.583bebf4-2a64-4af4-8c86-8068ef5a5371",
+        "titleProperty": "pk",
+        "visibility": "NORMAL",
+        "aliases": []
+      },
+      "linkTypes": [],
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {},
+      "sharedPropertyTypeMapping": {}
     }
   },
   "queryTypes": {
