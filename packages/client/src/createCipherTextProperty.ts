@@ -20,7 +20,7 @@ import type { MinimalClient } from "./MinimalClientContext.js";
 
 export class CipherTextPropertyImpl implements CipherText {
   #client: MinimalClient;
-  #triplet: [string, any, string];
+  #locator: [string, any, string];
 
   constructor(args: {
     client: MinimalClient;
@@ -30,7 +30,7 @@ export class CipherTextPropertyImpl implements CipherText {
   }) {
     const { client, objectApiName, primaryKey, propertyName } = args;
     this.#client = client;
-    this.#triplet = [objectApiName, primaryKey, propertyName];
+    this.#locator = [objectApiName, primaryKey, propertyName];
   }
 
   async decrypt(): Promise<string | undefined> {
@@ -38,7 +38,7 @@ export class CipherTextPropertyImpl implements CipherText {
     const result = await cipherTextDecrypt(
       this.#client,
       ontologyRid,
-      ...this.#triplet,
+      ...this.#locator,
     );
     return result.plaintext;
   }

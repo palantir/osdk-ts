@@ -73,7 +73,7 @@ export const mjClient: Client = createClient(
   loggingFetch,
 );
 
-export const eaOntologyClient: Client = createClient(
+export const cipherTextOntologyClient: Client = createClient(
   process.env.FOUNDRY_STACK,
   "ri.ontology.main.ontology.a35bb7f9-2c57-4199-a1cd-af461d88bd6e",
   async () => process.env.FOUNDRY_USER_TOKEN!,
