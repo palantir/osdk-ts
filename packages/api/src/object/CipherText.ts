@@ -15,7 +15,7 @@
  */
 
 /**
- * The client-side representation of a `cipherText` property. The encrypted
+ * Representation of a `cipherText` property. The encrypted
  * value is not stored; call {@link CipherText.decrypt} to retrieve the
  * decrypted plaintext on backend.
  *
