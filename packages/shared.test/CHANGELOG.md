@@ -1,5 +1,17 @@
 # @osdk/shared.test
 
+## 2.29.0
+
+### Minor Changes
+
+- 3e915ee: Array Reducers and Struct Main Value support
+
+### Patch Changes
+
+- Updated dependencies [3e915ee]
+  - @osdk/generator-converters@2.40.0
+  - @osdk/api@2.40.0
+
 ## 2.28.0
 
 ### Patch Changes

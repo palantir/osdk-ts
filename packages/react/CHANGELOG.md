@@ -1,5 +1,12 @@
 # @osdkkit/react
 
+## 2.40.0
+
+### Minor Changes
+
+- 70839ec: add an `enabled` option to `useOsdkAggregation` to conditionally defer the aggregation
+- 742fe69: Add dev-mode observable client debugging knobs. `devMode.logLevel` raises the client's log level so its `debug` tracing is visible, and `devMode.debug.refCounts` / `devMode.debug.cacheKeys` turn on cache-internals logging. They are exposed through `createObservableClient`'s `devMode` option and the `OsdkProvider` `devMode` prop, and are stripped from production builds.
+
 ## 2.39.0
 
 ## 2.38.0

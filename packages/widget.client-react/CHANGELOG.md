@@ -1,5 +1,19 @@
 # @osdk/widget.client-react
 
+## 3.37.0
+
+### Minor Changes
+
+- 010b126: Migrate @osdk/widget.client-react to lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint (third increment of the repo-wide oxc migration; first React package, validating the Ultracite React preset)
+
+### Patch Changes
+
+- Updated dependencies [3e915ee]
+- Updated dependencies [742fe69]
+- Updated dependencies [ac0303b]
+  - @osdk/client@2.40.0
+  - @osdk/widget.client@3.37.0
+
 ## 3.36.0
 
 ### Patch Changes

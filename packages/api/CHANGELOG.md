@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.40.0
+
+### Minor Changes
+
+- 3e915ee: Array Reducers and Struct Main Value support
+
 ## 2.39.0
 
 ## 2.38.0

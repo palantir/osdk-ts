@@ -1,5 +1,18 @@
 # @osdk/functions
 
+## 1.14.0
+
+### Minor Changes
+
+- 9186c14: Added datasets and mediaSets to ScopeResources
+
+### Patch Changes
+
+- Updated dependencies [3e915ee]
+- Updated dependencies [742fe69]
+- Updated dependencies [ac0303b]
+  - @osdk/client@2.40.0
+
 ## 1.13.0
 
 ### Minor Changes
