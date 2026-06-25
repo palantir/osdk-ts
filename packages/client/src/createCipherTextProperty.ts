@@ -21,12 +21,12 @@ import type { MinimalClient } from "./MinimalClientContext.js";
 
 export class CipherTextPropertyImpl implements CipherText {
   #client: MinimalClient;
-  #triplet: [string, unknown, string];
+  #triplet: [string, any, string];
 
   constructor(args: {
     client: MinimalClient;
     objectApiName: string;
-    primaryKey: unknown;
+    primaryKey: any;
     propertyName: string;
   }) {
     const { client, objectApiName, primaryKey, propertyName } = args;
@@ -35,14 +35,11 @@ export class CipherTextPropertyImpl implements CipherText {
   }
 
   async decrypt(): Promise<string> {
-    const [objectApiName, primaryKey, propertyName] = this.#triplet;
     const ontologyRid = await this.#client.ontologyRid;
     const result = await cipherTextDecrypt(
       this.#client,
       ontologyRid,
-      objectApiName,
-      primaryKey as string,
-      propertyName,
+      ...this.#triplet,
     );
     invariant(
       typeof result.plaintext !== "undefined",
