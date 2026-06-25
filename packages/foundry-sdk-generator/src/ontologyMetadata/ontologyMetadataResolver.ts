@@ -838,7 +838,6 @@ export class OntologyMetadataResolver {
         return Result.ok({});
 
       case "vector":
-      case "scenarioReference":
         return Result.err([
           `Unable to load action ${actionApiName} because it takes an unsupported parameter: ${
             JSON.stringify(

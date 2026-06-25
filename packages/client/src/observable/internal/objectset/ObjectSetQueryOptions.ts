@@ -88,8 +88,10 @@ export interface ObserveObjectSetOptions<
   $loadPropertySecurityMetadata?: boolean;
 
   /**
-   * When true, requests that the server populate the `token` field on
-   * `MediaReference` properties returned by this query.
+   * When true, returns signed tokens for `MediaReference` properties fetched
+   * by this query.
+   *
+   * @default false
    */
   $signMediaReferences?: boolean;
 }

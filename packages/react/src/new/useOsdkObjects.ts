@@ -179,10 +179,10 @@ interface UseOsdkObjectsBaseOptions<
   $includeAllBaseObjectProperties?: boolean;
 
   /**
-   * When true, requests that the server populate the `token` field on
-   * `MediaReference` properties returned by this query, allowing media
-   * operations on the referenced items even when the caller lacks direct
-   * view permission on the underlying media set view. Defaults to false.
+   * When true, returns signed tokens for `MediaReference` properties fetched
+   * by this query.
+   *
+   * @default false
    */
   $signMediaReferences?: boolean;
 }

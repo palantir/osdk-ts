@@ -639,7 +639,7 @@ async function applyFetchArgs<
     pageToken?: PageToken;
     pageSize?: PageSize;
     loadPropertySecurities?: boolean;
-    referenceSigningOptions?: ReferenceSigningOptions | undefined;
+    referenceSigningOptions?: ReferenceSigningOptions;
   },
 >(
   args: FetchPageArgs<
