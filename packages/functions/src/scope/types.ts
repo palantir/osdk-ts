@@ -37,6 +37,7 @@ export interface ScopeResources {
   models?: string[];
   datasets?: string[];
   mediaSets?: string[];
+  streams?: string[];
 }
 
 /**
