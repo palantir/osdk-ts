@@ -16,6 +16,7 @@
 
 import type { CipherText } from "@osdk/api";
 import { decrypt as cipherTextDecrypt } from "@osdk/foundry.ontologies/CipherTextProperty";
+import invariant from "tiny-invariant";
 import type { MinimalClient } from "./MinimalClientContext.js";
 
 export class CipherTextPropertyImpl implements CipherText {
@@ -33,13 +34,17 @@ export class CipherTextPropertyImpl implements CipherText {
     this.#locator = [objectApiName, primaryKey, propertyName];
   }
 
-  async decrypt(): Promise<string | undefined> {
+  async decrypt(): Promise<string> {
     const ontologyRid = await this.#client.ontologyRid;
     const result = await cipherTextDecrypt(
       this.#client,
       ontologyRid,
       ...this.#locator,
     );
-    return result.plaintext;
+    invariant(
+      Object.hasOwn(result, "plaintext"),
+      "Expected decryption result to have plaintext value",
+    );
+    return result.plaintext!;
   }
 }
