@@ -40,6 +40,6 @@ export class CipherTextPropertyImpl implements CipherText {
       ontologyRid,
       ...this.#triplet,
     );
-    return result.plaintext!;
+    return result.plaintext;
   }
 }
