@@ -38,11 +38,15 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
+    "@ai-sdk/provider": "^3.0.8",
+    "@ai-sdk/react": "^3.0.170",
+    "@osdk/aip-core": "workspace:~",
     "@osdk/api": "workspace:~",
     "@osdk/client": "workspace:~",
     "@osdk/oauth": "workspace:~",
     "@osdk/react": "workspace:~",
     "@osdk/react-components": "workspace:~",
+    "ai": "^6.0.168",
     "core-js": "^3.45.1",
     "maplibre-gl": "^5.7.1",
     "react": "^18.3.1",

@@ -118,7 +118,6 @@ const archetypeRules = archetypes(
   .addArchetype(
     "minimal packages",
     [
-      "@osdk/aip-core",
       "@osdk/e2e.generated.1.1.x",
       "@osdk/examples.*",
       "@psdk/examples.*",
@@ -134,6 +133,7 @@ const archetypeRules = archetypes(
   .addArchetype(
     "standardLibraries",
     [
+      "@osdk/aip-core",
       "@osdk/foundry-config-json",
       "@osdk/generator-converters",
       "@osdk/generator-converters.ontologyir",
