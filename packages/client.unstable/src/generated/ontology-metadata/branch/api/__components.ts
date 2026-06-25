@@ -299,6 +299,13 @@ export interface CreateOntologyServiceBranchResponse {
   ontologyBranch: OntologyBranch;
   ontologyBranchRid: _api_OntologyBranchRid;
 }
+/**
+ * A datasource specifies a property security group configuration with no property security groups.
+ */
+export interface DatasourceHasEmptyPropertySecurityGroupsConstraintError {
+  datasourceRid: _api_DatasourceRid;
+  objectTypeRid: _api_ObjectTypeRid;
+}
 export interface DatasourceModificationConstraintError_objectTypeDatasourceWithoutPrimaryKeyColumn {
   type: "objectTypeDatasourceWithoutPrimaryKeyColumn";
   objectTypeDatasourceWithoutPrimaryKeyColumn:
@@ -373,6 +380,12 @@ export interface DatasourceModificationConstraintError_derivedPropertyBaseTypeCh
   type: "derivedPropertyBaseTypeChangedWhenObjectTypeIsNotModified";
   derivedPropertyBaseTypeChangedWhenObjectTypeIsNotModified:
     DerivedPropertyBaseTypeChangedWhenObjectTypeIsNotModifiedError;
+}
+
+export interface DatasourceModificationConstraintError_derivedPropertyValueTypeChangedWhenObjectTypeIsNotModified {
+  type: "derivedPropertyValueTypeChangedWhenObjectTypeIsNotModified";
+  derivedPropertyValueTypeChangedWhenObjectTypeIsNotModified:
+    DerivedPropertyValueTypeChangedWhenObjectTypeIsNotModifiedError;
 }
 
 export interface DatasourceModificationConstraintError_derivedPropertyDefinitionDoesNotMatchSharedPropertyType {
@@ -483,6 +496,7 @@ export type DatasourceModificationConstraintError =
   | DatasourceModificationConstraintError_markingPropertiesMustBeReferencedInGranularPolicy
   | DatasourceModificationConstraintError_markingPropertiesMustHaveAssociatedMarkingConstraints
   | DatasourceModificationConstraintError_derivedPropertyBaseTypeChangedWhenObjectTypeIsNotModified
+  | DatasourceModificationConstraintError_derivedPropertyValueTypeChangedWhenObjectTypeIsNotModified
   | DatasourceModificationConstraintError_derivedPropertyDefinitionDoesNotMatchSharedPropertyType
   | DatasourceModificationConstraintError_derivedPropertyLinkDefinitionInvalid
   | DatasourceModificationConstraintError_derivedPropertyLinkDoesNotFormChain
@@ -617,6 +631,19 @@ export interface DerivedPropertyTypeDependOnAnotherDerivedPropertyError {
   objectTypeRid?: _api_ObjectTypeRid | null | undefined;
   propertyTypeId?: _api_PropertyTypeId | null | undefined;
   propertyTypeRid?: _api_PropertyTypeRid | null | undefined;
+}
+/**
+ * The derived property's value type has changed because the value type of the property it derives from has
+ * changed. However the object type it belongs to is not part of the modification, so this change is not allowed.
+ *
+ * The object type must be modified in the same request for it to accept the new derived property value type.
+ * A no-op modification suffices.
+ */
+export interface DerivedPropertyValueTypeChangedWhenObjectTypeIsNotModifiedError {
+  newValueType?: _api_ValueTypeReference | null | undefined;
+  objectTypeRid: _api_ObjectTypeRid;
+  previousValueType?: _api_ValueTypeReference | null | undefined;
+  propertyTypeRid: _api_PropertyTypeRid;
 }
 export interface DiscardChangesErrorStatus {
   errors: Array<_api_validation_OntologyValidationError>;
@@ -1898,9 +1925,9 @@ export type NumberOfDatasourcesConstraintError =
   | NumberOfDatasourcesConstraintError_linkTypesHaveMultipleDatasources;
 
 /**
- * Object type property API name conflicts with interface property API name. Properties may only share an API
- * name if the object property directly implements the interface property (not through reducers, struct fields,
- * or partial struct mappings).
+ * An object type implements an interface by explicitly mapping properties. One of the SPTs on the interface has
+ * the same API name as a local property on the object type without the two being explicitly mapped. This is
+ * disallowed.
  */
 export interface ObjectAndInterfacePropertyTypesConflictingApiNamesError {
   interfaceTypeRidOrIdInRequest: _api_InterfaceTypeRidOrIdInRequest;
@@ -2277,6 +2304,12 @@ export interface PropertySecurityGroupsConstraintError_datasourceTypeDowngradeWi
   datasourceTypeDowngradeWithPropertySecurityGroups:
     DatasourceTypeDowngradeWithPropertySecurityGroupsConstraintError;
 }
+
+export interface PropertySecurityGroupsConstraintError_datasourceHasEmptyPropertySecurityGroups {
+  type: "datasourceHasEmptyPropertySecurityGroups";
+  datasourceHasEmptyPropertySecurityGroups:
+    DatasourceHasEmptyPropertySecurityGroupsConstraintError;
+}
 /**
  * Errors related to validation of property security groups.
  */
@@ -2288,7 +2321,8 @@ export type PropertySecurityGroupsConstraintError =
   | PropertySecurityGroupsConstraintError_nonUniquePropertySecurityGroupNames
   | PropertySecurityGroupsConstraintError_nonUniquePropertySecurityGroupSecurityPolicies
   | PropertySecurityGroupsConstraintError_unexpectedPropertyTypeReferencedInSecurityGroupGranularPolicyError
-  | PropertySecurityGroupsConstraintError_datasourceTypeDowngradeWithPropertySecurityGroups;
+  | PropertySecurityGroupsConstraintError_datasourceTypeDowngradeWithPropertySecurityGroups
+  | PropertySecurityGroupsConstraintError_datasourceHasEmptyPropertySecurityGroups;
 
 /**
  * Validation error using a value type with a property type.

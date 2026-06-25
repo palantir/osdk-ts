@@ -268,6 +268,13 @@ export type ActionTypeStatusFilter =
   | "ACTIVE"
   | "DEPRECATED"
   | "EXAMPLE";
+
+/**
+ * Filter entities by archive state. ARCHIVED matches only archived entities; NOT_ARCHIVED matches only
+ * un-archived entities; ALL matches both. When no archive filter is supplied, search excludes archived
+ * entities by default.
+ */
+export type ArchiveStateFilter = "ARCHIVED" | "NOT_ARCHIVED" | "ALL";
 export type CombinedEntityTypeInclude =
   | "INCLUDE_OBJECT_TYPES"
   | "INCLUDE_INTERFACE_TYPES";
@@ -695,6 +702,11 @@ export interface LinkTypeClause_targetStorageBackend {
   type: "targetStorageBackend";
   targetStorageBackend: LinkTypeTargetStorageBackendFilter;
 }
+
+export interface LinkTypeClause_archiveStateFilter {
+  type: "archiveStateFilter";
+  archiveStateFilter: ArchiveStateFilter;
+}
 /**
  * Data structure to represent search query for LinkTypes. Supports filters for various LinkType features.
  */
@@ -721,7 +733,8 @@ export type LinkTypeClause =
   | LinkTypeClause_status
   | LinkTypeClause_permissionModel
   | LinkTypeClause_hasEditsEnabled
-  | LinkTypeClause_targetStorageBackend;
+  | LinkTypeClause_targetStorageBackend
+  | LinkTypeClause_archiveStateFilter;
 
 /**
  * Filter by LinkType definition type
@@ -1025,6 +1038,11 @@ export interface ObjectTypeClause_hasDerivedProperties {
   type: "hasDerivedProperties";
   hasDerivedProperties: boolean;
 }
+
+export interface ObjectTypeClause_archiveStateFilter {
+  type: "archiveStateFilter";
+  archiveStateFilter: ArchiveStateFilter;
+}
 /**
  * Data structure to represent search query for ObjectTypes. Supports filters for various ObjectType features.
  */
@@ -1063,7 +1081,8 @@ export type ObjectTypeClause =
   | ObjectTypeClause_mediaSourceRid
   | ObjectTypeClause_sharedPropertyTypeRid
   | ObjectTypeClause_structFieldRid
-  | ObjectTypeClause_hasDerivedProperties;
+  | ObjectTypeClause_hasDerivedProperties
+  | ObjectTypeClause_archiveStateFilter;
 
 /**
  * Filter by object type entity provenance source
