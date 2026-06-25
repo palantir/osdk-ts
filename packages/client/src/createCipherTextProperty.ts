@@ -16,7 +16,6 @@
 
 import type { CipherText } from "@osdk/api";
 import { decrypt as cipherTextDecrypt } from "@osdk/foundry.ontologies/CipherTextProperty";
-import invariant from "tiny-invariant";
 import type { MinimalClient } from "./MinimalClientContext.js";
 
 export class CipherTextPropertyImpl implements CipherText {
@@ -34,17 +33,13 @@ export class CipherTextPropertyImpl implements CipherText {
     this.#triplet = [objectApiName, primaryKey, propertyName];
   }
 
-  async decrypt(): Promise<string> {
+  async decrypt(): Promise<string | undefined> {
     const ontologyRid = await this.#client.ontologyRid;
     const result = await cipherTextDecrypt(
       this.#client,
       ontologyRid,
       ...this.#triplet,
     );
-    invariant(
-      typeof result.plaintext !== "undefined",
-      "Expected decryption to return non-empty value",
-    );
-    return result.plaintext;
+    return result.plaintext!;
   }
 }
