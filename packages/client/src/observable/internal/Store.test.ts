@@ -2627,6 +2627,280 @@ describe(Store, () => {
       expect(sub.error).not.toHaveBeenCalled();
     });
 
+    describe("interface base object set", () => {
+      beforeEach(() => {
+        fauxFoundry.getDefaultDataStore().clear();
+      });
+
+      function registerSanta() {
+        return fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+          $apiName: "Employee",
+          employeeId: 50050,
+          fullName: "Santa Claus",
+          office: "NYC",
+        });
+      }
+
+      it("projects to the interface view (fooSpt), not the underlying property (fullName)", async () => {
+        registerSanta();
+
+        const sub = mockObserver<ObjectSetPayload | undefined>();
+        defer(
+          store.objectSets.observe({
+            baseObjectSet: client(FooInterface) as ObjectSet<FooInterface>,
+          }, sub),
+        );
+
+        await vi.waitFor(() => {
+          expect(sub.next).toHaveBeenLastCalledWith(
+            expect.objectContaining({ status: "loaded" }),
+          );
+        }, { timeout: 5000 });
+
+        expect(sub.next).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            status: "loaded",
+            resolvedList: [
+              expect.objectContaining({
+                $apiName: "FooInterface",
+                $objectType: "Employee",
+                fooSpt: "Santa Claus",
+              }),
+            ],
+          }),
+        );
+
+        const obj = sub.next.mock.calls.at(-1)?.[0]?.resolvedList?.[0];
+        expect(obj).not.toHaveProperty("fullName");
+        expect(sub.error).not.toHaveBeenCalled();
+      });
+
+      it("returns raw object instances when resolveToObjectType is set", async () => {
+        registerSanta();
+
+        const sub = mockObserver<ObjectSetPayload | undefined>();
+        defer(
+          store.objectSets.observe({
+            baseObjectSet: client(FooInterface) as ObjectSet<FooInterface>,
+            resolveToObjectType: true,
+          }, sub),
+        );
+
+        await vi.waitFor(() => {
+          expect(sub.next).toHaveBeenLastCalledWith(
+            expect.objectContaining({ status: "loaded" }),
+          );
+        }, { timeout: 5000 });
+
+        expect(sub.next).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            status: "loaded",
+            resolvedList: [
+              expect.objectContaining({
+                $apiName: "Employee",
+                $objectType: "Employee",
+                fullName: "Santa Claus",
+              }),
+            ],
+          }),
+        );
+      });
+
+      it("projects the interface view with a where clause", async () => {
+        registerSanta();
+
+        const sub = mockObserver<ObjectSetPayload | undefined>();
+        defer(
+          store.objectSets.observe({
+            baseObjectSet: client(FooInterface).where({
+              fooSpt: "Santa Claus",
+            }),
+          }, sub),
+        );
+
+        await vi.waitFor(() => {
+          expect(sub.next).toHaveBeenLastCalledWith(
+            expect.objectContaining({ status: "loaded" }),
+          );
+        }, { timeout: 5000 });
+
+        expect(sub.next).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            status: "loaded",
+            resolvedList: [
+              expect.objectContaining({
+                $apiName: "FooInterface",
+                fooSpt: "Santa Claus",
+              }),
+            ],
+          }),
+        );
+      });
+
+      it("projects the interface view with orderBy", async () => {
+        registerSanta();
+        fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+          $apiName: "Employee",
+          employeeId: 50051,
+          fullName: "Aaron Aardvark",
+          office: "LA",
+        });
+
+        const sub = mockObserver<ObjectSetPayload | undefined>();
+        defer(
+          store.objectSets.observe({
+            baseObjectSet: client(FooInterface) as ObjectSet<FooInterface>,
+            orderBy: { fooSpt: "asc" },
+          }, sub),
+        );
+
+        await vi.waitFor(() => {
+          expect(sub.next).toHaveBeenLastCalledWith(
+            expect.objectContaining({ status: "loaded" }),
+          );
+        }, { timeout: 5000 });
+
+        const payload = sub.next.mock.calls.at(-1)?.[0];
+        expect(payload?.resolvedList?.[0]).toMatchObject({
+          $apiName: "FooInterface",
+          fooSpt: "Aaron Aardvark",
+        });
+      });
+
+      it("does not project object-type base object sets", async () => {
+        registerSanta();
+
+        const sub = mockObserver<ObjectSetPayload | undefined>();
+        defer(
+          store.objectSets.observe({
+            baseObjectSet: client(Employee) as ObjectSet<Employee>,
+          }, sub),
+        );
+
+        await vi.waitFor(() => {
+          expect(sub.next).toHaveBeenLastCalledWith(
+            expect.objectContaining({ status: "loaded" }),
+          );
+        }, { timeout: 5000 });
+
+        expect(sub.next).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            resolvedList: [
+              expect.objectContaining({
+                $apiName: "Employee",
+                fullName: "Santa Claus",
+              }),
+            ],
+          }),
+        );
+      });
+
+      it("reflects optimistic additions, projected and where-matched", async () => {
+        fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+          $apiName: "Employee",
+          employeeId: 60000,
+          fullName: "Keep Me",
+          office: "NYC",
+        });
+
+        const sub = mockObserver<ObjectSetPayload | undefined>();
+        defer(
+          store.objectSets.observe({
+            baseObjectSet: client(FooInterface) as ObjectSet<FooInterface>,
+            where: { fooSpt: "Keep Me" },
+          }, sub),
+        );
+
+        await vi.waitFor(() => {
+          expect(sub.next).toHaveBeenLastCalledWith(
+            expect.objectContaining({ status: "loaded" }),
+          );
+        }, { timeout: 5000 });
+
+        sub.next.mockClear();
+
+        const rollback = runOptimisticJob(store, (b) => {
+          b.createObject(Employee, 60001, {
+            employeeId: 60001,
+            fullName: "Keep Me",
+            office: "LA",
+          });
+          b.createObject(Employee, 60002, {
+            employeeId: 60002,
+            fullName: "Drop Me",
+            office: "LA",
+          });
+        });
+
+        await vi.waitFor(() => {
+          expect(sub.next).toHaveBeenCalled();
+        }, { timeout: 5000 });
+
+        const payload = sub.next.mock.calls.at(-1)?.[0];
+        expect(payload?.isOptimistic).toBe(true);
+        const ids = payload?.resolvedList?.map((o) => o.$primaryKey) ?? [];
+        expect(ids).toContain(60000);
+        expect(ids).toContain(60001);
+        expect(ids).not.toContain(60002);
+        for (const o of payload?.resolvedList ?? []) {
+          expect(o.$apiName).toBe("FooInterface");
+        }
+
+        await rollback();
+      });
+
+      it("revalidates when an implementing concrete type is invalidated", async () => {
+        registerSanta();
+
+        const sub = mockObserver<ObjectSetPayload | undefined>();
+        defer(
+          store.objectSets.observe({
+            baseObjectSet: client(FooInterface) as ObjectSet<FooInterface>,
+          }, sub),
+        );
+
+        await vi.waitFor(() => {
+          expect(sub.next).toHaveBeenLastCalledWith(
+            expect.objectContaining({ status: "loaded" }),
+          );
+        }, { timeout: 5000 });
+
+        fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+          $apiName: "Employee",
+          employeeId: 50052,
+          fullName: "New Saint",
+          office: "SF",
+        });
+
+        sub.next.mockClear();
+        await store.invalidateObjectType(Employee, undefined);
+
+        await vi.waitFor(() => {
+          expect(sub.next).toHaveBeenLastCalledWith(
+            expect.objectContaining({
+              status: "loaded",
+              resolvedList: expect.arrayContaining([
+                expect.objectContaining({ fooSpt: "Santa Claus" }),
+                expect.objectContaining({ fooSpt: "New Saint" }),
+              ]),
+            }),
+          );
+        }, { timeout: 5000 });
+      });
+
+      it("does not fragment the cache key on resolveToObjectType", () => {
+        const baseObjectSet = client(FooInterface) as ObjectSet<FooInterface>;
+        const queryWithoutFlag = store.objectSets.getQuery({ baseObjectSet });
+        const queryWithFlag = store.objectSets.getQuery({
+          baseObjectSet,
+          resolveToObjectType: true,
+        });
+        expect(queryWithFlag.cacheKey.otherKeys).toEqual(
+          queryWithoutFlag.cacheKey.otherKeys,
+        );
+      });
+    });
+
     describe("ObjectSetQuery maybeUpdateAndRevalidate", () => {
       it("should update list in-memory when strict-matching object is added", async () => {
         fauxFoundry.getDefaultDataStore().clear();
