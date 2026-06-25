@@ -16,11 +16,11 @@
 
 import { CipherTextTest } from "@osdk/e2e.generated.catchall";
 import invariant from "tiny-invariant";
-import { eaOntologyClient } from "./client.js";
+import { cipherTextOntologyClient } from "./client.js";
 
 export async function runCipherTextTest(): Promise<void> {
   const nonNullPk = "784691a7-2203-4088-8c0c-43b5cb25e563";
-  const result = await eaOntologyClient(CipherTextTest).fetchOne(
+  const result = await cipherTextOntologyClient(CipherTextTest).fetchOne(
     nonNullPk,
   );
   const plaintextTruth = result.plaintext;
@@ -30,7 +30,7 @@ export async function runCipherTextTest(): Promise<void> {
     "Expected plaintext == plaintextTruth",
   );
 
-  const { data: nullFilterTestData } = await eaOntologyClient(
+  const { data: nullFilterTestData } = await cipherTextOntologyClient(
     CipherTextTest,
   ).where({
     encrypted: {
@@ -43,7 +43,9 @@ export async function runCipherTextTest(): Promise<void> {
     "Expected null object to have empty plaintext",
   );
 
-  const { data: nonNullFilterTestData } = await eaOntologyClient(CipherTextTest)
+  const { data: nonNullFilterTestData } = await cipherTextOntologyClient(
+    CipherTextTest,
+  )
     .where({
       encrypted: {
         $eq:
