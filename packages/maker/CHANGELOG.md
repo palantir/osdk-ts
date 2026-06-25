@@ -1,5 +1,17 @@
 # @osdk/maker
 
+## 0.43.0
+
+### Minor Changes
+
+- fcde4c0: Add `defineDeleteInterfaceLinkAction`.
+
+### Patch Changes
+
+- Updated dependencies [3e915ee]
+  - @osdk/api@2.40.0
+  - @osdk/generator-converters.ontologyir@2.40.0
+
 ## 0.42.0
 
 ### Minor Changes

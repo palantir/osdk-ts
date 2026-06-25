@@ -1,5 +1,16 @@
 # @osdk/generator-converters
 
+## 2.40.0
+
+### Minor Changes
+
+- 3e915ee: Array Reducers and Struct Main Value support
+
+### Patch Changes
+
+- Updated dependencies [3e915ee]
+  - @osdk/api@2.40.0
+
 ## 2.39.0
 
 ### Patch Changes

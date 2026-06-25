@@ -1,5 +1,23 @@
 # @osdk/foundry-sdk-generator
 
+## 2.40.0
+
+### Minor Changes
+
+- 3e915ee: Array Reducers and Struct Main Value support
+
+### Patch Changes
+
+- Updated dependencies [3e915ee]
+- Updated dependencies [742fe69]
+- Updated dependencies [ac0303b]
+  - @osdk/generator-converters@2.40.0
+  - @osdk/generator@2.40.0
+  - @osdk/client@2.40.0
+  - @osdk/api@2.40.0
+  - @osdk/client.unstable@2.40.0
+  - @osdk/generator-utils@2.40.0
+
 ## 2.39.0
 
 ### Patch Changes

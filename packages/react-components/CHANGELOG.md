@@ -1,5 +1,11 @@
 # @osdk/react-components
 
+## 0.33.0
+
+### Minor Changes
+
+- bcf7007: Style number input stepper buttons with button appearance instead of input styling
+
 ## 0.32.0
 
 ### Minor Changes
