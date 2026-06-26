@@ -1,5 +1,12 @@
 # @osdk/api
 
+## 2.41.0
+
+### Minor Changes
+
+- 9b150d7: Add nullity check for decrypt
+- 15a35f2: Add CipherText support for codegen and implement decryption interface
+
 ## 2.40.0
 
 ### Minor Changes
