@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { type User, Users } from "@osdk/foundry.admin";
+import type { User } from "@osdk/foundry.admin";
 import React from "react";
 import { usePlatformQuery } from "../../../utils/usePlatformQuery.js";
 import { OsdkContext } from "../../OsdkContext.js";
+import { importFoundryAdmin } from "./importFoundryAdmin.js";
 
 export interface UseCurrentFoundryUserOptions {
   /**
@@ -55,7 +56,10 @@ export function useCurrentFoundryUser(
   const { client } = React.useContext(OsdkContext);
 
   const handleQuery = React.useCallback(
-    () => Users.getCurrent(client),
+    async () => {
+      const { Users } = await importFoundryAdmin();
+      return Users.getCurrent(client);
+    },
     [client],
   );
 

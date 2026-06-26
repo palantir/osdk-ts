@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { Users } from "@osdk/foundry.admin";
 import React from "react";
 import { usePlatformQuery } from "../../../utils/usePlatformQuery.js";
 import { OsdkContext } from "../../OsdkContext.js";
+import { importFoundryAdmin } from "./importFoundryAdmin.js";
 
 export interface UseUserViewMarkingsOptions {
   /**
@@ -61,6 +61,7 @@ export function useUserViewMarkings(
   const { client } = React.useContext(OsdkContext);
 
   const handleQuery = React.useCallback(async () => {
+    const { Users } = await importFoundryAdmin();
     const resolvedUserId = userId
       ?? (await Users.getCurrent(client)).id;
     return Users.getMarkings(client, resolvedUserId);

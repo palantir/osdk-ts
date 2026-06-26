@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { type ListUsersResponse, Users } from "@osdk/foundry.admin";
+import type { ListUsersResponse } from "@osdk/foundry.admin";
 import type { UserStatus } from "@osdk/foundry.core";
 import React from "react";
 import { usePlatformQuery } from "../../../utils/usePlatformQuery.js";
 import { OsdkContext } from "../../OsdkContext.js";
+import { importFoundryAdmin } from "./importFoundryAdmin.js";
 
 export interface UseFoundryUsersListOptions {
   /**
@@ -82,7 +83,8 @@ export function useFoundryUsersList(
 ): UseFoundryUsersListResult {
   const { client } = React.useContext(OsdkContext);
 
-  const handleQuery = React.useCallback(() => {
+  const handleQuery = React.useCallback(async () => {
+    const { Users } = await importFoundryAdmin();
     return Users.list(client, { include, pageSize, pageToken });
   }, [client, include, pageSize, pageToken]);
 
