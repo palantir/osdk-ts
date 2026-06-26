@@ -269,6 +269,25 @@ const archetypeRules = archetypes(
       oxc: true,
     },
   )
+  // React packages with CSS exports migrated to the oxc toolchain. Same as
+  // "oxc migrated react libraries" but additionally carries the cssExport,
+  // extraPublishFiles, and setupFiles options. @osdk/cbac-components is the
+  // first React package with CSS exports on oxc, validating the cssExport
+  // archetype path ahead of @osdk/react-components. See #3031.
+  .addArchetype(
+    "oxc migrated react libraries with css",
+    [
+      "@osdk/cbac-components",
+    ],
+    {
+      ...LIBRARY_RULES,
+      react: true,
+      oxc: true,
+      cssExport: ["styles.css"],
+      extraPublishFiles: ["AGENTS.md", "docs"],
+      setupFiles: ["./src/test/setupPolyfills.ts"],
+    },
+  )
   .addArchetype(
     "internal libraries / templates with modern tooling ES2023",
     [
@@ -372,19 +391,6 @@ const archetypeRules = archetypes(
       react: true,
       output: OUTPUT_ESM_ONLY,
       extraPublishFiles: ["build/site"],
-    },
-  )
-  .addArchetype(
-    "reactLibraryWithCss",
-    [
-      "@osdk/cbac-components",
-    ],
-    {
-      ...LIBRARY_RULES,
-      react: true,
-      cssExport: ["styles.css"],
-      extraPublishFiles: ["AGENTS.md", "docs"],
-      setupFiles: ["./src/test/setupPolyfills.ts"],
     },
   )
   .addArchetype(

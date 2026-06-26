@@ -131,6 +131,32 @@ export default defineConfig({
     // Method-signature vs property-signature is stylistic, and the switch flips
     // strict variance checking on published interfaces — leave as authored.
     "typescript/method-signature-style": "off",
+
+    // --- Rules first surfaced by React packages with CSS exports
+    // (@osdk/cbac-components): not enforced by the repo's prior ESLint config,
+    // and whose autofix would be churn or change a deliberate pattern. Kept off
+    // so the migration stays behavior-preserving. ---
+    // The package's `index.ts` is an intentional placeholder entry point
+    // (components are published via export subpaths); it holds only the
+    // license header. Not an error worth fabricating code to satisfy.
+    "unicorn/no-empty-file": "off",
+    // The `Promise.withResolvers` polyfill assigns the outer `resolve`/`reject`
+    // from the inner constructor's `(res, rej)` params; renaming the params to
+    // match would shadow those bindings and break the polyfill.
+    "promise/param-names": "off",
+    // Nested/chained ternaries in JSX render branches; rewriting to if/else (or
+    // wrapping in parens) would be structural churn with no behavioral change
+    // (cf. the cosmetic policy). Both the eslint and unicorn variants fire.
+    "no-nested-ternary": "off",
+    "unicorn/no-nested-ternary": "off",
+    // Switches over closed string unions are exhaustive and TS-checked; adding
+    // a `default` case would be churn and could mask a future missing variant.
+    "default-case": "off",
+    // Components are deliberately authored as named function expressions inside
+    // `React.memo(function Name(){})` so the name surfaces as the DevTools
+    // displayName / in stack traces; the autofix to an anonymous arrow would
+    // drop that name. Not enforced by prior ESLint.
+    "prefer-arrow-callback": "off",
   },
 
   ignorePatterns: [

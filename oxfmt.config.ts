@@ -16,6 +16,16 @@ export default defineConfig({
     // typescript-sdk-docs/src/documentation.yml) that reformatting would corrupt.
     "**/*.yml",
     "**/*.yaml",
+    // Markdown is dprint's domain (it has a markdown plugin); oxfmt would only
+    // reformat embedded code fences. Leave docs/README to their authors so the
+    // tooling migration touches only .ts/.tsx. See #3031.
+    "**/*.md",
+    // CSS / SCSS are not formatted by dprint either (no css plugin); component
+    // packages hand-maintain these stylesheets (e.g. @osdk/cbac-components and,
+    // ahead, @osdk/react-components). Leave them to their authors so the tooling
+    // migration touches only .ts/.tsx. See #3031.
+    "**/*.css",
+    "**/*.scss",
     // generated/owned by monorepolint (dprint-formatted)
     "**/vitest.config.mts",
     "**/changelog/",

@@ -18,9 +18,11 @@ import { Button } from "@base-ui/react/button";
 import { Popover } from "@base-ui/react/popover";
 import classnames from "classnames";
 import React from "react";
+
 import type { MarkingSelectionState } from "../types.js";
-import styles from "./OverflowButton.module.css";
 import { OverflowItem } from "./OverflowItem.js";
+
+import styles from "./OverflowButton.module.css";
 
 export interface OverflowButtonProps {
   overflowMarkings: ReadonlyArray<{
@@ -48,7 +50,7 @@ export function OverflowButton({
           <Button
             className={classnames(
               styles.moreButton,
-              hasActiveOverflow && styles.moreButtonActive,
+              hasActiveOverflow && styles.moreButtonActive
             )}
           >
             +{overflowMarkings.length} more
