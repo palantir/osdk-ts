@@ -41,7 +41,7 @@ const rootPackageJson = JSON.parse(
   ),
 );
 
-const LATEST_TYPESCRIPT_DEP = "~5.5.4";
+const LATEST_TYPESCRIPT_DEP = "~6.0.3";
 
 const DELETE_SCRIPT_ENTRY = { options: [undefined], fixValue: undefined };
 

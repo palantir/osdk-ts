@@ -568,7 +568,17 @@ export class ObservableClientMonitor {
         ...cleanupCallbacks,
       };
 
-      const unsubscribable = original(
+      // TypeScript 6 can no longer re-infer observeObject's generic when every
+      // argument is itself typed by the same generic signature. Forward through a
+      // concrete (non-generic) view of `original` whose parameters match the
+      // values we already hold.
+      const forwardOriginal = original as (
+        a: typeof apiName,
+        pk: typeof primaryKey,
+        opts: typeof options,
+        obs: typeof wrappedObserver,
+      ) => Unsubscribable;
+      const unsubscribable = forwardOriginal(
         apiName,
         primaryKey,
         options,

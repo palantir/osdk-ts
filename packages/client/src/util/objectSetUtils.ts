@@ -23,10 +23,10 @@ export function resolveBaseObjectSetType(
   return objectType.type === "interface"
     ? {
       type: "interfaceBase",
-      interfaceType: objectType["apiName"] as string,
+      interfaceType: objectType.apiName as string,
     }
     : {
       type: "base",
-      objectType: objectType["apiName"] as string,
+      objectType: objectType.apiName as string,
     };
 }

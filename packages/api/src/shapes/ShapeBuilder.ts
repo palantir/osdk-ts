@@ -154,7 +154,11 @@ class ShapeBuilderImpl<
       this.#state.baseTypeApiName,
     );
     const linkResult = builder(linkBuilder);
-    return new ShapeBuilderImpl({
+    return new ShapeBuilderImpl<
+      BASE,
+      PROPS,
+      LINKS & { [K in NAME]: TARGET_SHAPE }
+    >({
       ...this.#state,
       props: { ...this.#state.props },
       derivedLinks: [
