@@ -1,0 +1,56 @@
+:root {
+  /* Container */
+  --osdk-aip-agent-chat-background: var(--osdk-background-primary);
+  --osdk-aip-agent-chat-border-color: var(--osdk-surface-border-color-default);
+  --osdk-aip-agent-chat-border-radius: var(--osdk-surface-border-radius);
+
+  /* Spacing */
+  --osdk-aip-agent-chat-padding: calc(var(--osdk-surface-spacing) * 5);
+  --osdk-aip-agent-chat-message-gap: calc(var(--osdk-surface-spacing) * 5);
+  --osdk-aip-agent-chat-section-gap: calc(var(--osdk-surface-spacing) * 2.5);
+
+  /* Message bubble */
+  --osdk-aip-agent-chat-bubble-padding: calc(var(--osdk-surface-spacing) * 3);
+  --osdk-aip-agent-chat-bubble-border-radius: var(--osdk-surface-border-radius);
+  --osdk-aip-agent-chat-bubble-max-width: 80%;
+
+  --osdk-aip-agent-chat-user-bubble-background: var(--osdk-intent-primary-rest);
+  --osdk-aip-agent-chat-user-bubble-color: var(
+    --osdk-intent-primary-foreground
+  );
+
+  --osdk-aip-agent-chat-assistant-bubble-background: var(
+    --osdk-background-secondary
+  );
+  --osdk-aip-agent-chat-assistant-bubble-color: var(
+    --osdk-typography-color-default-rest
+  );
+
+  /* Composer */
+  --osdk-aip-agent-chat-composer-background: var(
+    --osdk-surface-background-color-default-rest
+  );
+  --osdk-aip-agent-chat-composer-border-color: var(
+    --osdk-surface-border-color-default
+  );
+  --osdk-aip-agent-chat-composer-textarea-min-height: calc(
+    var(--osdk-surface-spacing) * 14
+  );
+  --osdk-aip-agent-chat-composer-textarea-max-height: 200px;
+
+  /* Empty state */
+  --osdk-aip-agent-chat-empty-color: var(--osdk-typography-color-muted);
+  --osdk-aip-agent-chat-empty-icon-color: var(--osdk-intent-primary-rest);
+  --osdk-aip-agent-chat-empty-icon-size: calc(var(--osdk-surface-spacing) * 12);
+
+  /* Loader (3-dot bouncing) */
+  --osdk-aip-agent-chat-loader-color: var(--osdk-typography-color-muted);
+  --osdk-aip-agent-chat-loader-dot-size: calc(
+    var(--osdk-surface-spacing) * 1.5
+  );
+  --osdk-aip-agent-chat-loader-dot-gap: calc(var(--osdk-surface-spacing) * 0.5);
+
+  /* Error banner */
+  --osdk-aip-agent-chat-error-color: var(--osdk-intent-danger-foreground);
+  --osdk-aip-agent-chat-error-background: var(--osdk-intent-danger-rest);
+}

@@ -43,6 +43,15 @@
       "require": "./build/cjs/public/experimental/action-form.cjs",
       "default": "./build/browser/public/experimental/action-form.js"
     },
+    "./experimental/aip-agent-chat": {
+      "browser": "./build/browser/public/experimental/aip-agent-chat.js",
+      "import": {
+        "types": "./build/types/public/experimental/aip-agent-chat.d.ts",
+        "default": "./build/esm/public/experimental/aip-agent-chat.js"
+      },
+      "require": "./build/cjs/public/experimental/aip-agent-chat.cjs",
+      "default": "./build/browser/public/experimental/aip-agent-chat.js"
+    },
     "./experimental/cbac-picker": {
       "browser": "./build/browser/public/experimental/cbac-picker.js",
       "import": {
@@ -207,6 +216,7 @@
     "xlsx-republish": "0.20.3"
   },
   "peerDependencies": {
+    "@osdk/aip-core": "workspace:^",
     "@osdk/api": "^2.8.0",
     "@osdk/client": "^2.8.0",
     "@osdk/react": "^2.8.0",
@@ -215,7 +225,13 @@
     "react": "^17 || ^18 || ^19",
     "react-dom": "^17 || ^18 || ^19"
   },
+  "peerDependenciesMeta": {
+    "@osdk/aip-core": {
+      "optional": true
+    }
+  },
   "devDependencies": {
+    "@osdk/aip-core": "workspace:*",
     "@osdk/api": "workspace:*",
     "@osdk/client": "workspace:*",
     "@osdk/monorepo.api-extractor": "workspace:~",
