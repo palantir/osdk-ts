@@ -15,6 +15,7 @@
  */
 
 import type { CacheEntry, CacheSnapshot } from "@osdk/client/observable";
+
 import type { MetricsStore } from "../store/MetricsStore.js";
 
 export interface NetworkMetrics {
@@ -55,36 +56,37 @@ export interface CacheEfficiencyMetrics {
 export class CacheEfficiencyAnalyzer {
   constructor(
     private metricsStore: MetricsStore,
-    private coldThresholdMs: number = 5 * 60 * 1000, // 5 minutes
+    private coldThresholdMs: number = 5 * 60 * 1000 // 5 minutes
   ) {}
 
   analyze(cacheSnapshot: CacheSnapshot): CacheEfficiencyMetrics {
     const snapshot = this.metricsStore.getSnapshot();
     const metrics = snapshot.aggregates;
 
-    const totalRequests = metrics.cacheHits + metrics.cacheMisses
-      + metrics.revalidations;
-    const hitRate = totalRequests > 0
-      ? (metrics.cacheHits + metrics.revalidations) / totalRequests
-      : 0;
+    const totalRequests =
+      metrics.cacheHits + metrics.cacheMisses + metrics.revalidations;
+    const hitRate =
+      totalRequests > 0
+        ? (metrics.cacheHits + metrics.revalidations) / totalRequests
+        : 0;
     const cacheMissRate = 1 - hitRate;
 
     const avgNetworkTime = this.estimateAverageNetworkTime(metrics);
-    const cacheSavings = (metrics.cacheHits + metrics.revalidations)
-      * avgNetworkTime;
+    const cacheSavings =
+      (metrics.cacheHits + metrics.revalidations) * avgNetworkTime;
 
     const entries = cacheSnapshot.entries || [];
-    const sortedByAccess = [...entries].sort((a, b) =>
-      (b.metadata.hitCount || 0) - (a.metadata.hitCount || 0)
+    const sortedByAccess = [...entries].sort(
+      (a, b) => (b.metadata.hitCount || 0) - (a.metadata.hitCount || 0)
     );
     const hotEntries = sortedByAccess.slice(0, 10);
-    const coldEntries = entries.filter(e =>
-      Date.now() - (e.metadata.timestamp || 0) > this.coldThresholdMs
+    const coldEntries = entries.filter(
+      (e) => Date.now() - (e.metadata.timestamp || 0) > this.coldThresholdMs
     );
 
     const totalSize = entries.reduce(
       (sum, e) => sum + (e.metadata.size || 0),
-      0,
+      0
     );
     const avgSize = entries.length > 0 ? totalSize / entries.length : 0;
 
@@ -100,17 +102,16 @@ export class CacheEfficiencyAnalyzer {
         revalidations: metrics.revalidations,
         deduplications: metrics.deduplications,
       },
-      cacheSnapshot,
+      cacheSnapshot
     );
 
     const score = this.calculateEfficiencyScore({
       hitRate,
-      coldEntriesRatio: entries.length > 0
-        ? coldEntries.length / entries.length
-        : 0,
+      coldEntriesRatio:
+        entries.length > 0 ? coldEntries.length / entries.length : 0,
       totalSizeBytes: totalSize,
-      recommendationCount: recommendations.filter(r =>
-        r.level === "warning" || r.level === "critical"
+      recommendationCount: recommendations.filter(
+        (r) => r.level === "warning" || r.level === "critical"
       ).length,
     });
 
@@ -162,33 +163,33 @@ export class CacheEfficiencyAnalyzer {
       revalidations: number;
       deduplications: number;
     },
-    cacheSnapshot: CacheSnapshot,
+    cacheSnapshot: CacheSnapshot
   ): CacheRecommendation[] {
     const recommendations: CacheRecommendation[] = [];
 
     if (
-      metrics.hitRate < 0.3
-      && metrics.cacheHits + metrics.cacheMisses + metrics.revalidations > 20
+      metrics.hitRate < 0.3 &&
+      metrics.cacheHits + metrics.cacheMisses + metrics.revalidations > 20
     ) {
       recommendations.push({
         level: "critical",
         title: "Very low cache hit rate",
-        message: `Only ${
-          (metrics.hitRate * 100).toFixed(1)
-        }% of queries are served from cache`,
+        message: `Only ${(metrics.hitRate * 100).toFixed(
+          1
+        )}% of queries are served from cache`,
         suggestion:
           "Consider increasing cache TTL, prefetching related data, or memoizing components",
       });
     } else if (
-      metrics.hitRate < 0.5
-      && metrics.cacheHits + metrics.cacheMisses + metrics.revalidations > 20
+      metrics.hitRate < 0.5 &&
+      metrics.cacheHits + metrics.cacheMisses + metrics.revalidations > 20
     ) {
       recommendations.push({
         level: "warning",
         title: "Low cache hit rate",
-        message: `Only ${
-          (metrics.hitRate * 100).toFixed(1)
-        }% of queries are served from cache`,
+        message: `Only ${(metrics.hitRate * 100).toFixed(
+          1
+        )}% of queries are served from cache`,
         suggestion:
           "Enable prefetching or increase cache TTL for frequently accessed data",
       });
@@ -204,13 +205,13 @@ export class CacheEfficiencyAnalyzer {
         suggestion: "Consider implementing automatic cache eviction policy",
       });
     } else if (
-      metrics.coldEntries > 20 && metrics.coldEntries > metrics.totalEntries / 2
+      metrics.coldEntries > 20 &&
+      metrics.coldEntries > metrics.totalEntries / 2
     ) {
       recommendations.push({
         level: "info",
         title: "Many cold cache entries",
-        message:
-          `${metrics.coldEntries}/${metrics.totalEntries} entries are not actively used`,
+        message: `${metrics.coldEntries}/${metrics.totalEntries} entries are not actively used`,
         suggestion:
           "You can safely evict cold entries if memory is constrained",
       });
@@ -220,9 +221,11 @@ export class CacheEfficiencyAnalyzer {
       recommendations.push({
         level: "critical",
         title: "Very large cache",
-        message: `Cache is using ${
-          (metrics.totalSizeBytes / 1024 / 1024).toFixed(1)
-        }MB - potential memory pressure`,
+        message: `Cache is using ${(
+          metrics.totalSizeBytes /
+          1024 /
+          1024
+        ).toFixed(1)}MB - potential memory pressure`,
         suggestion:
           "Implement cache size limits, TTL-based eviction, or LRU eviction policy",
       });
@@ -230,9 +233,11 @@ export class CacheEfficiencyAnalyzer {
       recommendations.push({
         level: "warning",
         title: "Large cache",
-        message: `Cache is using ${
-          (metrics.totalSizeBytes / 1024 / 1024).toFixed(1)
-        }MB`,
+        message: `Cache is using ${(
+          metrics.totalSizeBytes /
+          1024 /
+          1024
+        ).toFixed(1)}MB`,
         suggestion:
           "Monitor memory usage and consider implementing cache size limits if not present",
       });
@@ -242,8 +247,7 @@ export class CacheEfficiencyAnalyzer {
       recommendations.push({
         level: "success",
         title: "Good query deduplication",
-        message:
-          `${metrics.deduplications} duplicate queries deduplicated - cache is working well!`,
+        message: `${metrics.deduplications} duplicate queries deduplicated - cache is working well!`,
         suggestion:
           "Keep current architecture - components are efficiently sharing cache",
       });
@@ -253,16 +257,16 @@ export class CacheEfficiencyAnalyzer {
       recommendations.push({
         level: "success",
         title: "Excellent cache hit rate",
-        message: `${
-          (metrics.hitRate * 100).toFixed(1)
-        }% of queries served from cache`,
+        message: `${(metrics.hitRate * 100).toFixed(
+          1
+        )}% of queries served from cache`,
         suggestion: "Cache configuration is optimal for your app",
       });
     }
 
     if (
-      metrics.cacheHits + metrics.cacheMisses + metrics.revalidations === 0
-      && metrics.totalEntries > 0
+      metrics.cacheHits + metrics.cacheMisses + metrics.revalidations === 0 &&
+      metrics.totalEntries > 0
     ) {
       recommendations.push({
         level: "info",

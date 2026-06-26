@@ -33,8 +33,7 @@ export function validateFiberAccess(): ValidationResult {
   const errors: ValidationError[] = [];
   let reactVersion: string | null = null;
 
-  const hookInstalled =
-    typeof globalThis.__REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined";
+  const hookInstalled = globalThis.__REACT_DEVTOOLS_GLOBAL_HOOK__ !== undefined;
   manager.setCapability("hookInstalled", hookInstalled);
 
   if (!hookInstalled) {
@@ -111,10 +110,10 @@ function testFiberAccess(): boolean {
     const trackedRoots = getAllFiberRoots();
     for (const fiberRoot of trackedRoots) {
       if (
-        fiberRoot.current
-        && typeof fiberRoot.current === "object"
-        && "tag" in fiberRoot.current
-        && typeof fiberRoot.current.tag === "number"
+        fiberRoot.current &&
+        typeof fiberRoot.current === "object" &&
+        "tag" in fiberRoot.current &&
+        typeof fiberRoot.current.tag === "number"
       ) {
         return true;
       }
@@ -124,10 +123,10 @@ function testFiberAccess(): boolean {
     for (const root of domRoots) {
       const fiber = getFiberFromRoot(root);
       if (
-        fiber
-        && typeof fiber === "object"
-        && "tag" in fiber
-        && typeof fiber.tag === "number"
+        fiber &&
+        typeof fiber === "object" &&
+        "tag" in fiber &&
+        typeof fiber.tag === "number"
       ) {
         return true;
       }
@@ -152,8 +151,8 @@ const COMMON_ROOT_SELECTORS = [
 function hasReactInternals(element: Element): boolean {
   for (const key in element) {
     if (
-      key.startsWith("__reactContainer$")
-      || key.startsWith("_reactRootContainer")
+      key.startsWith("__reactContainer$") ||
+      key.startsWith("_reactRootContainer")
     ) {
       return true;
     }
@@ -194,7 +193,9 @@ function getFiberFromRoot(element: Element): unknown {
     if (key.startsWith("__reactContainer$")) {
       const container = elementWithInternals[key];
       if (
-        container && typeof container === "object" && "current" in container
+        container &&
+        typeof container === "object" &&
+        "current" in container
       ) {
         return (container as { current: unknown }).current;
       }
@@ -204,8 +205,8 @@ function getFiberFromRoot(element: Element): unknown {
   if ("_reactRootContainer" in element) {
     const legacyRoot = elementWithInternals._reactRootContainer;
     if (legacyRoot && typeof legacyRoot === "object") {
-      const internalRoot =
-        (legacyRoot as Record<string, unknown>)._internalRoot;
+      const internalRoot = (legacyRoot as Record<string, unknown>)
+        ._internalRoot;
       if (internalRoot && typeof internalRoot === "object") {
         return (internalRoot as { current: unknown }).current;
       }

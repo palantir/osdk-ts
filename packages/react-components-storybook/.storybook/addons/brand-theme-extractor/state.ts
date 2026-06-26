@@ -37,9 +37,10 @@ export function getDefaultBrandThemeState(): BrandThemeGlobals {
   });
 }
 
-export function createThemeStateForMode(
-  { presetId, colorMode }: CreateThemeStateParams,
-): BrandThemeGlobals {
+export function createThemeStateForMode({
+  presetId,
+  colorMode,
+}: CreateThemeStateParams): BrandThemeGlobals {
   const preset = findThemePreset(presetId) ?? THEME_PRESETS[0];
   if (!preset) {
     return {
@@ -78,7 +79,7 @@ export function parseBrandThemeState(raw: unknown): BrandThemeGlobals {
     colorMode: getThemeColorMode(parsed.colorMode),
     selectedPresetId: getString(
       parsed.selectedPresetId,
-      defaults.selectedPresetId,
+      defaults.selectedPresetId
     ),
     palette: getExtractedColors(parsed.palette),
     assignments: getTokenAssignments(parsed.assignments),
@@ -135,13 +136,15 @@ function isExtractedColor(value: unknown): value is ExtractedColor {
     return false;
   }
 
-  return Array.isArray(value.rgb)
-    && value.rgb.length === 3
-    && value.rgb.every((channel) => typeof channel === "number")
-    && typeof value.hex === "string"
-    && typeof value.luminance === "number"
-    && typeof value.chroma === "number"
-    && typeof value.count === "number";
+  return (
+    Array.isArray(value.rgb) &&
+    value.rgb.length === 3 &&
+    value.rgb.every((channel) => typeof channel === "number") &&
+    typeof value.hex === "string" &&
+    typeof value.luminance === "number" &&
+    typeof value.chroma === "number" &&
+    typeof value.count === "number"
+  );
 }
 
 function getTokenAssignments(value: unknown): TokenAssignment[] {
@@ -157,10 +160,9 @@ function isTokenAssignment(value: unknown): value is TokenAssignment {
     return false;
   }
 
-  return typeof value.role === "string"
-    && typeof value.colorIndex === "number"
-    && (
-      value.customValue === undefined
-      || typeof value.customValue === "string"
-    );
+  return (
+    typeof value.role === "string" &&
+    typeof value.colorIndex === "number" &&
+    (value.customValue === undefined || typeof value.customValue === "string")
+  );
 }

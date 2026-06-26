@@ -53,10 +53,12 @@ const INTERNAL_FRAME_PATTERN =
 // because devtools monitors the same operations through its own instrumentation.
 const BROWSER_LOGGER_CSS = "border: 1px solid";
 function isBrowserLoggerCall(args: unknown[]): boolean {
-  return typeof args[0] === "string"
-    && args[0].startsWith("%c")
-    && typeof args[1] === "string"
-    && args[1].includes(BROWSER_LOGGER_CSS);
+  return (
+    typeof args[0] === "string" &&
+    args[0].startsWith("%c") &&
+    typeof args[1] === "string" &&
+    args[1].includes(BROWSER_LOGGER_CSS)
+  );
 }
 
 const CHROME_FRAME_REGEX_PAREN = /at\s+.*?\((.*?):(\d+):\d+\)/;
@@ -66,7 +68,7 @@ const FIREFOX_FRAME_REGEX = /@(.*?):(\d+):\d+/;
 function serializeValue(
   value: unknown,
   depth: number,
-  seen: WeakSet<object>,
+  seen: WeakSet<object>
 ): string {
   if (value == null) {
     return String(value);
@@ -132,7 +134,7 @@ function serializeValue(
       const val = serializeValue(
         (obj as Record<string, unknown>)[key],
         depth + 1,
-        seen,
+        seen
       );
       entries.push(`"${key}":${val}`);
     }
@@ -148,7 +150,7 @@ function serializeArg(arg: unknown): string {
   const seen = new WeakSet<object>();
   const result = serializeValue(arg, 0, seen);
   if (result.length > MAX_STRING_SIZE) {
-    return result.slice(0, MAX_STRING_SIZE) + "...truncated";
+    return `${result.slice(0, MAX_STRING_SIZE)}...truncated`;
   }
   return result;
 }
@@ -196,7 +198,7 @@ function capEntrySize(args: string[]): string[] {
     return args;
   }
 
-  const result = args.slice();
+  const result = [...args];
   while (totalSize > MAX_TOTAL_SIZE) {
     let longestIndex = 0;
     let longestLength = 0;
@@ -268,8 +270,8 @@ export class ConsoleLogStore extends SubscribableStore {
         // captured (one extra entry, no infinite loop). Strict synchronous
         // reentrancy guarding is incompatible with the microtask deferral that
         // makes the source attribution improvement possible.
-        const skipCapture = store.suppressed || store.capturing
-          || isBrowserLoggerCall(args);
+        const skipCapture =
+          store.suppressed || store.capturing || isBrowserLoggerCall(args);
         const source = skipCapture ? undefined : getCallerLocation();
 
         Function.prototype.apply.call(original, this ?? console, args);
@@ -318,7 +320,8 @@ export class ConsoleLogStore extends SubscribableStore {
     for (const level of CONSOLE_LEVELS) {
       const original = this.originals.get(level);
       const ourWrapper = this.wrappers.get(level);
-      if (original && ourWrapper && console[level] === ourWrapper) { // eslint-disable-line no-console
+      if (original && ourWrapper && console[level] === ourWrapper) {
+        // eslint-disable-line no-console
         console[level] = original; // eslint-disable-line no-console
       }
     }

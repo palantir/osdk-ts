@@ -17,6 +17,7 @@
 import { setProjectAnnotations } from "@storybook/react-vite";
 import { configure } from "storybook/test";
 import { beforeAll } from "vitest";
+
 import * as previewAnnotations from "./preview.js";
 
 // Interaction tests drive real (MSW-mocked) async round-trips — an action

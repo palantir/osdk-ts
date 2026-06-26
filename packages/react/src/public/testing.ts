@@ -17,6 +17,7 @@
 import type { Client } from "@osdk/client";
 import type { ObservableClient } from "@osdk/client/observable";
 import * as React from "react";
+
 import { OsdkContext } from "../new/OsdkContext.js";
 
 const FAKE_OBSERVABLE_CLIENT_MESSAGE =
@@ -40,7 +41,7 @@ export const fakeObservableClient: ObservableClient = new Proxy(
         throw new Error(FAKE_OBSERVABLE_CLIENT_MESSAGE);
       };
     },
-  },
+  }
 );
 
 /**
@@ -62,7 +63,7 @@ export function TestOsdkProvider({
 }): React.JSX.Element {
   const value = React.useMemo(
     () => ({ client, observableClient, devtoolsEnabled: false }),
-    [client, observableClient],
+    [client, observableClient]
   );
   return React.createElement(OsdkContext.Provider, { value }, children);
 }

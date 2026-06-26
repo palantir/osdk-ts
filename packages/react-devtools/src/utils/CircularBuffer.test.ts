@@ -15,6 +15,7 @@
  */
 
 import { beforeEach, describe, expect, it } from "vitest";
+
 import { CircularBuffer } from "./CircularBuffer.js";
 
 describe("CircularBuffer", () => {
@@ -28,13 +29,13 @@ describe("CircularBuffer", () => {
 
     it("should throw error for zero capacity", () => {
       expect(() => new CircularBuffer<number>(0)).toThrow(
-        "CircularBuffer capacity must be positive",
+        "CircularBuffer capacity must be positive"
       );
     });
 
     it("should throw error for negative capacity", () => {
       expect(() => new CircularBuffer<number>(-5)).toThrow(
-        "CircularBuffer capacity must be positive",
+        "CircularBuffer capacity must be positive"
       );
     });
   });
@@ -310,7 +311,10 @@ describe("CircularBuffer", () => {
       buffer.push([4, 5, 6]);
 
       const items = buffer.toArray();
-      expect(items).toEqual([[1, 2, 3], [4, 5, 6]]);
+      expect(items).toEqual([
+        [1, 2, 3],
+        [4, 5, 6],
+      ]);
     });
   });
 });

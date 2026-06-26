@@ -29,9 +29,7 @@ export interface ChatStore {
   /** Subscribe to state changes. Returns the unsubscribe function. */
   subscribe: (notify: () => void) => () => void;
   /** Replace state and notify subscribers synchronously. */
-  setState: (
-    next: ChatState | ((prev: ChatState) => ChatState),
-  ) => void;
+  setState: (next: ChatState | ((prev: ChatState) => ChatState)) => void;
   /**
    * Replace state and coalesce subscriber notifications across rapid calls.
    * Notifications fire `throttleMs` after the first change in a quiet window.
@@ -39,7 +37,7 @@ export interface ChatStore {
    * change is wasteful.
    */
   setStateThrottled: (
-    next: ChatState | ((prev: ChatState) => ChatState),
+    next: ChatState | ((prev: ChatState) => ChatState)
   ) => void;
 }
 

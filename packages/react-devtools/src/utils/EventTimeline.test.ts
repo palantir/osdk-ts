@@ -15,6 +15,7 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import {
   type ActionCompleteEvent,
   type ActionStartEvent,
@@ -383,7 +384,7 @@ describe("EventTimeline", () => {
 
     it("should throw error if action start not found", () => {
       expect(() => timeline.buildActionCausality("missing")).toThrow(
-        "Action start event not found",
+        "Action start event not found"
       );
     });
 
@@ -396,7 +397,7 @@ describe("EventTimeline", () => {
       });
 
       expect(() => timeline.buildActionCausality("incomplete")).toThrow(
-        "Action complete event not found",
+        "Action complete event not found"
       );
     });
 
@@ -495,9 +496,9 @@ describe("EventTimeline", () => {
     });
 
     it("should handle subscriber errors gracefully", () => {
-      const consoleSpy = vi.spyOn(console, "error").mockImplementation(
-        () => {},
-      );
+      const consoleSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
       const failingCallback = vi.fn().mockImplementation(() => {
         throw new Error("Subscriber error");
       });
@@ -516,7 +517,7 @@ describe("EventTimeline", () => {
       expect(workingCallback).toHaveBeenCalled();
       expect(consoleSpy).toHaveBeenCalledWith(
         "[EventTimeline] Subscriber error:",
-        expect.any(Error),
+        expect.any(Error)
       );
 
       consoleSpy.mockRestore();

@@ -16,7 +16,7 @@
 
 export function extractPayloadError(
   payload: { error?: Error; status?: string } | undefined | null,
-  fallbackMessage: string,
+  fallbackMessage: string
 ): Error | undefined {
   if (payload && "error" in payload && payload.error) {
     return payload.error;
@@ -29,11 +29,12 @@ export function extractPayloadError(
 
 export function isPayloadLoading(
   payload: { status?: string } | undefined | null,
-  enabled: boolean,
+  enabled: boolean
 ): boolean {
   if (!enabled) {
     return false;
   }
-  return payload?.status === "loading" || payload?.status === "init"
-    || !payload;
+  return (
+    payload?.status === "loading" || payload?.status === "init" || !payload
+  );
 }

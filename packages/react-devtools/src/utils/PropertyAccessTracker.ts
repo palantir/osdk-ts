@@ -45,7 +45,7 @@ export class PropertyAccessTracker {
     obj: T,
     objectKey: string,
     componentId: string,
-    depth: number = 0,
+    depth: number = 0
   ): T {
     if (this.wrappedObjects.has(obj)) {
       return obj;
@@ -75,18 +75,18 @@ export class PropertyAccessTracker {
         }
 
         if (
-          value
-          && typeof value === "object"
-          && !Array.isArray(value)
-          && typeof prop === "string"
-          && !prop.startsWith("$")
-          && depth < this.maxProxyDepth
+          value &&
+          typeof value === "object" &&
+          !Array.isArray(value) &&
+          typeof prop === "string" &&
+          !prop.startsWith("$") &&
+          depth < this.maxProxyDepth
         ) {
           return this.wrapObject(
             value,
             `${objectKey}.${prop}`,
             componentId,
-            depth + 1,
+            depth + 1
           );
         }
 
@@ -129,16 +129,13 @@ export class PropertyAccessTracker {
     this.componentNames.set(componentId, componentName);
   }
 
-  getAccessedProperties(
-    componentId: string,
-    objectKey: string,
-  ): Set<string> {
+  getAccessedProperties(componentId: string, objectKey: string): Set<string> {
     const properties = new Set<string>();
 
     for (const access of this.accesses.toArray()) {
       if (
-        access.componentId === componentId
-        && access.objectKey === objectKey
+        access.componentId === componentId &&
+        access.objectKey === objectKey
       ) {
         properties.add(access.property);
       }
@@ -150,7 +147,7 @@ export class PropertyAccessTracker {
   getUnusedPropertiesForObject(
     componentId: string,
     objectKey: string,
-    availableProperties: string[],
+    availableProperties: string[]
   ): string[] {
     const accessed = this.getAccessedProperties(componentId, objectKey);
     return availableProperties.filter((prop) => !accessed.has(prop));
@@ -188,13 +185,10 @@ export class PropertyAccessTracker {
       }
     }
 
-    return Array.from(objectAccesses.entries()).map(([objectKey, data]) => {
+    return [...objectAccesses.entries()].map(([objectKey, data]) => {
       const totalRenders = data.renderCycles.size;
       const propertiesAccessed = data.accessedProperties.size;
-      const wastedRenders = Math.max(
-        0,
-        totalRenders - propertiesAccessed,
-      );
+      const wastedRenders = Math.max(0, totalRenders - propertiesAccessed);
 
       return {
         objectKey,
@@ -206,7 +200,7 @@ export class PropertyAccessTracker {
   }
 
   getRecentAccesses(limit: number = 100): PropertyAccessEvent[] {
-    return this.accesses.getLast(limit).slice();
+    return [...this.accesses.getLast(limit)];
   }
 
   getAccessesByComponent(componentId: string): PropertyAccessEvent[] {
@@ -219,18 +213,18 @@ export class PropertyAccessTracker {
 
   getAccessFrequency(
     componentId: string,
-    objectKey: string,
+    objectKey: string
   ): Map<string, number> {
     const frequency = new Map<string, number>();
 
     for (const access of this.accesses.toArray()) {
       if (
-        access.componentId === componentId
-        && access.objectKey === objectKey
+        access.componentId === componentId &&
+        access.objectKey === objectKey
       ) {
         frequency.set(
           access.property,
-          (frequency.get(access.property) || 0) + 1,
+          (frequency.get(access.property) || 0) + 1
         );
       }
     }
@@ -244,9 +238,9 @@ export class PropertyAccessTracker {
   }
 
   clearComponent(componentId: string): void {
-    const remaining = this.accesses.toArray().filter(
-      (a) => a.componentId !== componentId,
-    );
+    const remaining = this.accesses
+      .toArray()
+      .filter((a) => a.componentId !== componentId);
     this.accesses.clear();
     for (const item of remaining) {
       this.accesses.push(item);
@@ -269,15 +263,15 @@ export class PropertyAccessTracker {
     for (const access of this.accesses.toArray()) {
       componentCounts.set(
         access.componentId,
-        (componentCounts.get(access.componentId) || 0) + 1,
+        (componentCounts.get(access.componentId) || 0) + 1
       );
       objectCounts.set(
         access.objectKey,
-        (objectCounts.get(access.objectKey) || 0) + 1,
+        (objectCounts.get(access.objectKey) || 0) + 1
       );
       propertyCounts.set(
         access.property,
-        (propertyCounts.get(access.property) || 0) + 1,
+        (propertyCounts.get(access.property) || 0) + 1
       );
     }
 
@@ -286,7 +280,7 @@ export class PropertyAccessTracker {
       uniqueComponents: componentCounts.size,
       uniqueObjects: objectCounts.size,
       uniqueProperties: propertyCounts.size,
-      mostAccessedProperties: Array.from(propertyCounts.entries())
+      mostAccessedProperties: [...propertyCounts.entries()]
         .sort((a, b) => b[1] - a[1])
         .slice(0, 10),
       trackedComponents: this.componentRenderCycles.size,
@@ -311,8 +305,8 @@ export class PropertyAccessTracker {
     }
 
     for (const [componentId, totalRenders] of this.componentRenders) {
-      const rendersWithAccess = componentRenderAccess.get(componentId)?.size
-        || 0;
+      const rendersWithAccess =
+        componentRenderAccess.get(componentId)?.size || 0;
       const wastedCount = totalRenders - rendersWithAccess;
 
       if (wastedCount > 0 && totalRenders > 5) {
@@ -352,8 +346,8 @@ export class PropertyAccessTracker {
           if (accessCount < totalRenders * 0.1) {
             unused.push({
               componentId,
-              componentName: this.componentNames.get(componentId)
-                || componentId,
+              componentName:
+                this.componentNames.get(componentId) || componentId,
               propertyName: property,
               totalRenders,
               accessCount,

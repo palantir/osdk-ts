@@ -15,6 +15,7 @@
  */
 
 import { FauxFoundry, TypeHelpers } from "@osdk/faux";
+
 import type { Employee } from "../types/Employee.js";
 import { employeeData } from "./employeeData.js";
 import { employeeMetadata } from "./employeeMetadata.js";
@@ -29,33 +30,30 @@ export const fauxFoundry: FauxFoundry = new FauxFoundry(baseUrl, {
   rid: "ri.ontology.main.ontology.storybook-demo",
 });
 
-const SAMPLE_PDF_PATH =
-  `${import.meta.env.BASE_URL}compressed.tracemonkey-pldi-09.pdf`;
+const SAMPLE_PDF_PATH = `${import.meta.env.BASE_URL}compressed.tracemonkey-pldi-09.pdf`;
 
 export const MEDIA_EMPLOYEE_PK = 657495071;
 
-export const updateEmployeeStoryAction = TypeHelpers
-  .actionTypeBuilder(
-    TypeHelpers.createActionType({
-      apiName: "updateEmployeeStoryAction",
-      displayName: "Update employee",
-      parameters: {},
-    }),
-  )
+export const updateEmployeeStoryAction = TypeHelpers.actionTypeBuilder(
+  TypeHelpers.createActionType({
+    apiName: "updateEmployeeStoryAction",
+    displayName: "Update employee",
+    parameters: {},
+  })
+)
   .addParameter("fullName", "string", true)
   .addParameter("yearsExperience", "integer", false)
   .addParameter("isRemote", "boolean", false)
   .addParameter("isFullTime", "boolean", false)
   .build();
 
-export const toggleRemoteStoryAction = TypeHelpers
-  .actionTypeBuilder(
-    TypeHelpers.createActionType({
-      apiName: "toggleRemoteStoryAction",
-      displayName: "Toggle remote status",
-      parameters: {},
-    }),
-  )
+export const toggleRemoteStoryAction = TypeHelpers.actionTypeBuilder(
+  TypeHelpers.createActionType({
+    apiName: "toggleRemoteStoryAction",
+    displayName: "Toggle remote status",
+    parameters: {},
+  })
+)
   .addParameter("isRemote", "boolean", false)
   .build();
 
@@ -116,15 +114,13 @@ const generatedFieldsActionParameters = {
   },
 } satisfies ActionParameterMap;
 
-export const generatedFieldsStoryAction = TypeHelpers
-  .actionTypeBuilder(
-    TypeHelpers.createActionType({
-      apiName: "generatedFieldsStoryAction",
-      displayName: "Create employee profile",
-      parameters: generatedFieldsActionParameters,
-    }),
-  )
-  .build();
+export const generatedFieldsStoryAction = TypeHelpers.actionTypeBuilder(
+  TypeHelpers.createActionType({
+    apiName: "generatedFieldsStoryAction",
+    displayName: "Create employee profile",
+    parameters: generatedFieldsActionParameters,
+  })
+).build();
 
 const unsupportedFieldsActionParameters = {
   structPayload: {
@@ -162,15 +158,13 @@ const unsupportedFieldsActionParameters = {
   },
 } satisfies ActionParameterMap;
 
-export const unsupportedFieldsStoryAction = TypeHelpers
-  .actionTypeBuilder(
-    TypeHelpers.createActionType({
-      apiName: "unsupportedFieldsStoryAction",
-      displayName: "Review unsupported fields",
-      parameters: unsupportedFieldsActionParameters,
-    }),
-  )
-  .build();
+export const unsupportedFieldsStoryAction = TypeHelpers.actionTypeBuilder(
+  TypeHelpers.createActionType({
+    apiName: "unsupportedFieldsStoryAction",
+    displayName: "Review unsupported fields",
+    parameters: unsupportedFieldsActionParameters,
+  })
+).build();
 
 let isInitialized = false;
 
@@ -185,26 +179,31 @@ export async function setupFauxFoundry(): Promise<void> {
   });
 
   // Register Employee object type using metadata from JSON
-  fauxFoundry.getDefaultOntology().registerObjectType<Employee>(
-    employeeMetadata,
-  );
+  fauxFoundry
+    .getDefaultOntology()
+    .registerObjectType<Employee>(employeeMetadata);
 
-  fauxFoundry.getDefaultOntology().registerActionType(
-    updateEmployeeStoryAction.actionTypeV2,
-    () => undefined,
-  );
-  fauxFoundry.getDefaultOntology().registerActionType(
-    toggleRemoteStoryAction.actionTypeV2,
-    () => undefined,
-  );
-  fauxFoundry.getDefaultOntology().registerActionType(
-    generatedFieldsStoryAction.actionTypeV2,
-    () => undefined,
-  );
-  fauxFoundry.getDefaultOntology().registerActionType(
-    unsupportedFieldsStoryAction.actionTypeV2,
-    () => undefined,
-  );
+  fauxFoundry
+    .getDefaultOntology()
+    .registerActionType(
+      updateEmployeeStoryAction.actionTypeV2,
+      () => undefined
+    );
+  fauxFoundry
+    .getDefaultOntology()
+    .registerActionType(toggleRemoteStoryAction.actionTypeV2, () => undefined);
+  fauxFoundry
+    .getDefaultOntology()
+    .registerActionType(
+      generatedFieldsStoryAction.actionTypeV2,
+      () => undefined
+    );
+  fauxFoundry
+    .getDefaultOntology()
+    .registerActionType(
+      unsupportedFieldsStoryAction.actionTypeV2,
+      () => undefined
+    );
 
   // Add mock data from JSON file. We synthesize marking values so the
   // ObjectTable marking column story has data to render — each employee is
@@ -218,15 +217,10 @@ export async function setupFauxFoundry(): Promise<void> {
     "m-top-secret",
   ];
   const compartmentPool = ["m-alpha", "m-bravo", "m-charlie"];
-  const releasabilityPool = [
-    "m-rel-usa",
-    "m-rel-allied",
-    "m-no-foreign",
-  ];
+  const releasabilityPool = ["m-rel-usa", "m-rel-allied", "m-no-foreign"];
   employeeData.forEach((employee, index) => {
-    const classificationMarking = classificationCycle[
-      index % classificationCycle.length
-    ];
+    const classificationMarking =
+      classificationCycle[index % classificationCycle.length];
     const compartmentCount = (index % compartmentPool.length) + 1;
     const releasabilityCount = (index % releasabilityPool.length) + 1;
     const clearanceMarking = [
@@ -249,12 +243,9 @@ export async function setupFauxFoundry(): Promise<void> {
     buffer,
     "application/pdf",
     // cspell:disable-next-line
-    "compressed.tracemonkey-pldi-09.pdf",
+    "compressed.tracemonkey-pldi-09.pdf"
   );
-  const employee = dataStore.getObjectOrThrow(
-    "Employee",
-    MEDIA_EMPLOYEE_PK,
-  );
+  const employee = dataStore.getObjectOrThrow("Employee", MEDIA_EMPLOYEE_PK);
   dataStore.replaceObjectOrThrow({
     ...employee,
     employeeDocuments: mediaRef,
@@ -403,7 +394,7 @@ export async function setupFauxFoundry(): Promise<void> {
 
     const markingMap = new Map(markings.map((m) => [m.id, m]));
     const classificationId = markingIds.find(
-      (id) => markingMap.get(id)?.categoryId === "cat-classification",
+      (id) => markingMap.get(id)?.categoryId === "cat-classification"
     );
 
     if (classificationId == null) {
@@ -414,9 +405,8 @@ export async function setupFauxFoundry(): Promise<void> {
       const firstCategoryId = markingIds
         .map((id) => markingMap.get(id)?.categoryId)
         .find((cid): cid is string => cid != null);
-      const swatch = firstCategoryId != null
-        ? categoryColors[firstCategoryId]
-        : undefined;
+      const swatch =
+        firstCategoryId != null ? categoryColors[firstCategoryId] : undefined;
       return {
         classificationString: resolved.join(", "),
         textColor: swatch?.textColor ?? "#FFFFFF",
@@ -482,30 +472,29 @@ export async function setupFauxFoundry(): Promise<void> {
       },
     },
     (req, fauxDataStore) => {
-      const objects = Array.from(
-        fauxDataStore.getObjectsOfType("Employee"),
-      );
+      const objects = [...fauxDataStore.getObjectsOfType("Employee")];
       const result: Record<string, string> = {};
       for (const obj of objects) {
         const pk = String(obj.employeeNumber);
         const startDate = obj.firstFullTimeStartDate as string | undefined;
         if (startDate) {
-          const years = (Date.now() - new Date(startDate).getTime())
-            / (365.25 * 24 * 60 * 60 * 1000);
+          const years =
+            (Date.now() - new Date(startDate).getTime()) /
+            (365.25 * 24 * 60 * 60 * 1000);
           result[pk] = years >= 2 ? "Senior" : years >= 1 ? "Mid" : "Junior";
         } else {
           result[pk] = "Unknown";
         }
       }
       return { value: result };
-    },
+    }
   );
 
   // Log registered objects for debugging
   // eslint-disable-next-line no-console
   console.log(
     `FauxFoundry: Registered ${employeeData.length} employees`,
-    Array.from(dataStore.getObjectsOfType("Employee")).length,
+    [...dataStore.getObjectsOfType("Employee")].length
   );
 
   isInitialized = true;

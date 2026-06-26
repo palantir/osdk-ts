@@ -55,7 +55,7 @@ export class ComputeStore extends SubscribableStore {
   }
 
   createPendingRequest(
-    request: Omit<PendingComputeRequest, "type" | "id">,
+    request: Omit<PendingComputeRequest, "type" | "id">
   ): string {
     const id = crypto.randomUUID();
     const pendingRequest: PendingComputeRequest = {
@@ -77,7 +77,7 @@ export class ComputeStore extends SubscribableStore {
       responsePayloadBytes: number;
       responsePayloadHash: number;
       responsePayload: string;
-    },
+    }
   ): void {
     const pending = this.requestMap.get(requestId);
 
@@ -110,7 +110,7 @@ export class ComputeStore extends SubscribableStore {
       responsePayloadBytes: number;
       responsePayloadHash: number;
       responsePayload: string;
-    },
+    }
   ): void {
     const pending = this.requestMap.get(requestId);
 
@@ -161,9 +161,7 @@ export class ComputeStore extends SubscribableStore {
   }
 
   setIsRecording(isRecording: boolean): void {
-    if (
-      this.lastRecordingEvent?.type === "started" && isRecording
-    ) {
+    if (this.lastRecordingEvent?.type === "started" && isRecording) {
       return;
     }
 
@@ -228,8 +226,8 @@ export class ComputeStore extends SubscribableStore {
     }
 
     const requestsFromBuffer = this.requests.toArray();
-    const newRequests = requestsFromBuffer.map(req =>
-      this.requestMap.get(req.id) ?? req
+    const newRequests = requestsFromBuffer.map(
+      (req) => this.requestMap.get(req.id) ?? req
     );
 
     if (this.arraysReferentiallyEqual(this.cachedRequests, newRequests)) {
@@ -271,18 +269,21 @@ export class ComputeStore extends SubscribableStore {
     for (const req of recentRequests) {
       const current = this.requestMap.get(req.id) ?? req;
       if (
-        current.type === "fulfilled"
-        && current.responseTimestamp.getTime() >= oneMinuteAgo
+        current.type === "fulfilled" &&
+        current.responseTimestamp.getTime() >= oneMinuteAgo
       ) {
         lastMinuteUsage += current.computeUsage;
       }
     }
 
-    const requestCount = this.fulfilledCount + this.fulfilledWithoutUsageCount
-      + this.failedCount + this.pendingCount;
+    const requestCount =
+      this.fulfilledCount +
+      this.fulfilledWithoutUsageCount +
+      this.failedCount +
+      this.pendingCount;
 
-    const completedWithResponseBytes = this.fulfilledCount
-      + this.fulfilledWithoutUsageCount;
+    const completedWithResponseBytes =
+      this.fulfilledCount + this.fulfilledWithoutUsageCount;
 
     const newMetrics: ComputeMetrics = {
       totalUsage: Math.round(this.totalUsage),
@@ -292,16 +293,19 @@ export class ComputeStore extends SubscribableStore {
       fulfilledWithoutUsageCount: this.fulfilledWithoutUsageCount,
       failedCount: this.failedCount,
       pendingCount: this.pendingCount,
-      averageUsagePerRequest: this.fulfilledCount > 0
-        ? Math.round(this.totalUsage / this.fulfilledCount)
-        : 0,
-      averageResponseBytes: completedWithResponseBytes > 0
-        ? Math.round(this.totalResponseBytes / completedWithResponseBytes)
-        : 0,
+      averageUsagePerRequest:
+        this.fulfilledCount > 0
+          ? Math.round(this.totalUsage / this.fulfilledCount)
+          : 0,
+      averageResponseBytes:
+        completedWithResponseBytes > 0
+          ? Math.round(this.totalResponseBytes / completedWithResponseBytes)
+          : 0,
     };
 
     if (
-      this.cachedMetrics && this.metricsEqual(this.cachedMetrics, newMetrics)
+      this.cachedMetrics &&
+      this.metricsEqual(this.cachedMetrics, newMetrics)
     ) {
       this.cachedMetricsVersion = this.version;
       return this.cachedMetrics;
@@ -339,7 +343,7 @@ export class ComputeStore extends SubscribableStore {
 
   private arraysReferentiallyEqual(
     a: ReadonlyArray<ComputeRequest>,
-    b: ReadonlyArray<ComputeRequest>,
+    b: ReadonlyArray<ComputeRequest>
   ): boolean {
     if (a.length !== b.length) {
       return false;
@@ -353,14 +357,16 @@ export class ComputeStore extends SubscribableStore {
   }
 
   private metricsEqual(a: ComputeMetrics, b: ComputeMetrics): boolean {
-    return a.totalUsage === b.totalUsage
-      && a.lastMinuteUsage === b.lastMinuteUsage
-      && a.requestCount === b.requestCount
-      && a.fulfilledCount === b.fulfilledCount
-      && a.fulfilledWithoutUsageCount === b.fulfilledWithoutUsageCount
-      && a.failedCount === b.failedCount
-      && a.pendingCount === b.pendingCount
-      && a.averageUsagePerRequest === b.averageUsagePerRequest
-      && a.averageResponseBytes === b.averageResponseBytes;
+    return (
+      a.totalUsage === b.totalUsage &&
+      a.lastMinuteUsage === b.lastMinuteUsage &&
+      a.requestCount === b.requestCount &&
+      a.fulfilledCount === b.fulfilledCount &&
+      a.fulfilledWithoutUsageCount === b.fulfilledWithoutUsageCount &&
+      a.failedCount === b.failedCount &&
+      a.pendingCount === b.pendingCount &&
+      a.averageUsagePerRequest === b.averageUsagePerRequest &&
+      a.averageResponseBytes === b.averageResponseBytes
+    );
   }
 }

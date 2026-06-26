@@ -17,6 +17,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it } from "vitest";
+
 import { createMockMonitorStore } from "./testHelpers.js";
 
 const { PerformanceTab } = await import("./PerformanceTab.js");
@@ -51,7 +52,7 @@ describe("PerformanceTab", () => {
     const metricsStore = store.getMetricsStore();
 
     const { container } = render(
-      <PerformanceTab metricsStore={metricsStore} monitorStore={store} />,
+      <PerformanceTab metricsStore={metricsStore} monitorStore={store} />
     );
 
     expect(container.firstChild).not.toBeNull();

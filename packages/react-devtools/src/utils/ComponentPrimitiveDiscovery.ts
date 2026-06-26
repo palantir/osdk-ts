@@ -107,7 +107,7 @@ export class ComponentPrimitiveDiscovery {
 
   private buildPrimitivesFromMetadata(
     metadata: OsdkHookMetadata[],
-    componentName: string,
+    componentName: string
   ): DiscoveredPrimitives {
     const primitives: DiscoveredPrimitives = {
       componentId: componentName,
@@ -141,9 +141,7 @@ export class ComponentPrimitiveDiscovery {
           primitives.objectSets.push({
             type: meta.objectType ?? "Unknown",
             whereClause: meta.where as Record<string, unknown> | undefined,
-            orderBy: meta.orderBy as
-              | Record<string, "asc" | "desc">
-              | undefined,
+            orderBy: meta.orderBy as Record<string, "asc" | "desc"> | undefined,
             pageSize: meta.pageSize,
             location,
             hookIndex: idx,
@@ -193,9 +191,7 @@ export class ComponentPrimitiveDiscovery {
           primitives.objectSets.push({
             type: meta.objectType ?? "Unknown",
             whereClause: meta.where as Record<string, unknown> | undefined,
-            orderBy: meta.orderBy as
-              | Record<string, "asc" | "desc">
-              | undefined,
+            orderBy: meta.orderBy as Record<string, "asc" | "desc"> | undefined,
             pageSize: meta.pageSize,
             location,
             hookIndex: idx,
@@ -241,12 +237,12 @@ export class ComponentPrimitiveDiscovery {
   getPrimitiveCount(fiber: Fiber): number {
     const primitives = this.discoverPrimitives(fiber);
     return (
-      primitives.actions.length
-      + primitives.objectSets.length
-      + primitives.objects.length
-      + primitives.links.length
-      + primitives.queries.length
-      + primitives.aggregations.length
+      primitives.actions.length +
+      primitives.objectSets.length +
+      primitives.objects.length +
+      primitives.links.length +
+      primitives.queries.length +
+      primitives.aggregations.length
     );
   }
 }

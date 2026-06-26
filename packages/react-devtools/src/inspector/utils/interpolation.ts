@@ -17,7 +17,7 @@
 export function interpolate(
   start: number,
   end: number,
-  factor: number,
+  factor: number
 ): number {
   return start + (end - start) * factor;
 }

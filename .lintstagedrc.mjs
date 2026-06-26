@@ -7,7 +7,8 @@ const CSPELL_CMD = "cspell --quiet --no-must-find-files";
 /*
  * Packages migrated to the oxc toolchain (oxlint + oxfmt) instead of
  * ESLint + dprint. Add a package here as it is migrated; everything else
- * continues to use the dprint + eslint path below.
+ * continues to use the dprint + eslint path below. These lint against the
+ * shared root oxlint.config.ts.
  */
 const OXC_PACKAGES = [
   "shared.net.errors",
@@ -21,11 +22,29 @@ const OXC_PACKAGES = [
   "widget.api",
   "widget.client",
   "cbac-components",
+  "react",
+  "react-devtools",
 ];
 const OXC_PACKAGE_GLOB = `packages/{${
   OXC_PACKAGES.join(",")
 }}/**/*.{js,jsx,ts,tsx,mjs,cjs}`;
-const OXC_PACKAGE_EXCLUDES = OXC_PACKAGES.map((p) => `**/packages/${p}/**`);
+
+/*
+ * oxc packages that carry their own nested oxlint config (which `extends` the
+ * root config and adds package-specific overrides). They lint with `-c` pointed
+ * at that nested config instead of the root one. Map of package dir -> config.
+ */
+const OXC_NESTED_CONFIG_PACKAGES = {
+  "react-components-storybook":
+    "packages/react-components-storybook/oxlint.config.ts",
+};
+
+// All oxc packages (root-config + nested-config) are excluded from the ESLint +
+// dprint path below.
+const OXC_PACKAGE_EXCLUDES = [
+  ...OXC_PACKAGES,
+  ...Object.keys(OXC_NESTED_CONFIG_PACKAGES),
+].map((p) => `**/packages/${p}/**`);
 
 /*
  * Overview:
@@ -52,6 +71,22 @@ export default {
       `${CSPELL_CMD} ${files.join(" ")}`,
     ];
   },
+  // Same as the OXC_PACKAGE_GLOB handler above, but `-c` points at each
+  // package's nested oxlint config (which extends the root). Mirrors those
+  // packages' fix-lint scripts.
+  ...Object.fromEntries(
+    Object.entries(OXC_NESTED_CONFIG_PACKAGES).map(([pkg, config]) => [
+      `packages/${pkg}/**/*.{js,jsx,ts,tsx,mjs,cjs}`,
+      (files) => {
+        if (files.length === 0) return [];
+        return [
+          `oxlint -c ${config} --fix ${files.join(" ")}`,
+          `oxfmt -c oxfmt.config.ts ${files.join(" ")}`,
+          `${CSPELL_CMD} ${files.join(" ")}`,
+        ];
+      },
+    ]),
+  ),
   "packages/**/*.{js,jsx,ts,tsx,mjs,cjs}": (
     files,
   ) => {
