@@ -216,7 +216,7 @@
     "xlsx-republish": "0.20.3"
   },
   "peerDependencies": {
-    "@osdk/aip-core": "workspace:^",
+    "@osdk/aip-core": ">=0.5.0 <1.0.0",
     "@osdk/api": "^2.8.0",
     "@osdk/client": "^2.8.0",
     "@osdk/react": "^2.8.0",
