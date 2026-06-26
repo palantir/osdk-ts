@@ -25,7 +25,7 @@ function stripTranslateFromTransform(element: Element): string {
   }
 
   const matrixMatch = transform.match(
-    /matrix\(([^,]+),\s*([^,]+),\s*([^,]+),\s*([^,]+),\s*[^,]+,\s*[^)]+\)/,
+    /matrix\(([^,]+),\s*([^,]+),\s*([^,]+),\s*([^,]+),\s*[^,]+,\s*[^)]+\)/
   );
 
   if (matrixMatch) {
@@ -67,7 +67,7 @@ export function createElementBounds(element: Element): OverlayBounds {
 export function getElementAtPosition(
   clientX: number,
   clientY: number,
-  ignoreSelector?: string,
+  ignoreSelector?: string
 ): Element | null {
   const elementsAtPoint = document.elementsFromPoint(clientX, clientY);
 
@@ -82,12 +82,12 @@ export function getElementAtPosition(
 
     const tagName = element.tagName.toLowerCase();
     if (
-      tagName === "script"
-      || tagName === "style"
-      || tagName === "link"
-      || tagName === "meta"
-      || tagName === "head"
-      || tagName === "html"
+      tagName === "script" ||
+      tagName === "style" ||
+      tagName === "link" ||
+      tagName === "meta" ||
+      tagName === "head" ||
+      tagName === "html"
     ) {
       continue;
     }

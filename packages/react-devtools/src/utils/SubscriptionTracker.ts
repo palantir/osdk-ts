@@ -26,9 +26,7 @@ export class SubscriptionTracker {
   private signatureToSubscriptions = new Map<string, Set<string>>();
   private nextSubscriptionId = 0;
 
-  constructor(
-    private readonly cacheThresholdMs: number = 10,
-  ) {}
+  constructor(private readonly cacheThresholdMs: number = 10) {}
 
   startSubscription(signature: string): string {
     const subscriptionId = `sub-${this.nextSubscriptionId++}`;
@@ -58,7 +56,7 @@ export class SubscriptionTracker {
     hasData: boolean,
     isOptimistic: boolean,
     optimisticId?: string | number,
-    timestamp: number = Date.now(),
+    timestamp: number = Date.now()
   ): void {
     const metadata = this.subscriptions.get(subscriptionId);
     if (!metadata) return;
@@ -81,10 +79,10 @@ export class SubscriptionTracker {
 
   private isValidStatus(status: string): status is EmissionStatus {
     return (
-      status === "init"
-      || status === "loading"
-      || status === "loaded"
-      || status === "error"
+      status === "init" ||
+      status === "loading" ||
+      status === "loaded" ||
+      status === "error"
     );
   }
 
@@ -118,29 +116,30 @@ export class SubscriptionTracker {
     let lastOptimisticTimestamp: number | undefined;
     let firstNonOptimisticAfterOptimisticTimestamp: number | undefined;
 
-    wasOptimistic = emissions.some(e => e.isOptimistic);
+    wasOptimistic = emissions.some((e) => e.isOptimistic);
     if (wasOptimistic) {
-      const optimisticEmissions = emissions.filter(e => e.isOptimistic);
+      const optimisticEmissions = emissions.filter((e) => e.isOptimistic);
       firstOptimisticTimestamp = optimisticEmissions[0]?.timestamp;
       lastOptimisticTimestamp =
-        optimisticEmissions[optimisticEmissions.length - 1]
-          ?.timestamp;
-      firstNonOptimisticAfterOptimisticTimestamp = emissions.find((e) =>
-        !e.isOptimistic
-        && firstOptimisticTimestamp != null
-        && e.timestamp >= firstOptimisticTimestamp
+        optimisticEmissions[optimisticEmissions.length - 1]?.timestamp;
+      firstNonOptimisticAfterOptimisticTimestamp = emissions.find(
+        (e) =>
+          !e.isOptimistic &&
+          firstOptimisticTimestamp != null &&
+          e.timestamp >= firstOptimisticTimestamp
       )?.timestamp;
     }
 
     const subscribeTime = metadata.subscribeTime;
     const firstEmission = emissions[0];
-    const loadedEmission = emissions.find(e => e.status === "loaded");
+    const loadedEmission = emissions.find((e) => e.status === "loaded");
 
     if (loadedEmission) {
       loadTime = loadedEmission.timestamp - subscribeTime;
 
       if (
-        firstEmission.status === "loaded" && loadTime < this.cacheThresholdMs
+        firstEmission.status === "loaded" &&
+        loadTime < this.cacheThresholdMs
       ) {
         wasCached = true;
       } else {
@@ -168,8 +167,9 @@ export class SubscriptionTracker {
   }
 
   getActiveSubscriptions(): SubscriptionMetadata[] {
-    return Array.from(this.subscriptions.values())
-      .filter(s => s.unsubscribeTime === undefined);
+    return [...this.subscriptions.values()].filter(
+      (s) => s.unsubscribeTime === undefined
+    );
   }
 
   cleanup(maxAge: number = 5 * 60 * 1000): void {
@@ -177,14 +177,11 @@ export class SubscriptionTracker {
     const toDelete: string[] = [];
 
     for (const [id, metadata] of this.subscriptions) {
-      if (
-        metadata.unsubscribeTime
-        && now - metadata.unsubscribeTime > maxAge
-      ) {
+      if (metadata.unsubscribeTime && now - metadata.unsubscribeTime > maxAge) {
         toDelete.push(id);
       }
     }
 
-    toDelete.forEach(id => this.subscriptions.delete(id));
+    toDelete.forEach((id) => this.subscriptions.delete(id));
   }
 }

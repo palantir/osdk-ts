@@ -21,6 +21,7 @@ import type { ObservableClient, Observer } from "@osdk/client/observable";
 import { act, renderHook } from "@testing-library/react";
 import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { OsdkContext } from "../OsdkContext.js";
 import { useOsdkAggregation } from "../useOsdkAggregation.js";
 
@@ -34,7 +35,7 @@ function createMockObservableClient(): {
   const observeAggregation = vi.fn(
     (_args: unknown, _observer: Observer<unknown>) => ({
       unsubscribe: vi.fn(),
-    }),
+    })
   );
   const invalidateObjectType = vi.fn().mockResolvedValue(undefined);
   const client = {
@@ -67,8 +68,11 @@ describe("useOsdkAggregation", () => {
   let invalidateObjectType: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
-    ({ client: observableClient, observeAggregation, invalidateObjectType } =
-      createMockObservableClient());
+    ({
+      client: observableClient,
+      observeAggregation,
+      invalidateObjectType,
+    } = createMockObservableClient());
   });
 
   describe("enabled option", () => {
@@ -79,7 +83,7 @@ describe("useOsdkAggregation", () => {
             aggregate: AGGREGATE,
             enabled: false,
           }),
-        { wrapper: createWrapper(observableClient) },
+        { wrapper: createWrapper(observableClient) }
       );
 
       expect(observeAggregation).not.toHaveBeenCalled();
@@ -92,17 +96,16 @@ describe("useOsdkAggregation", () => {
       renderHook(
         () =>
           useOsdkAggregation(Employee, { aggregate: AGGREGATE, enabled: true }),
-        { wrapper: createWrapper(observableClient) },
+        { wrapper: createWrapper(observableClient) }
       );
 
       expect(observeAggregation).toHaveBeenCalledTimes(1);
     });
 
     it("calls observeAggregation by default when enabled is omitted", () => {
-      renderHook(
-        () => useOsdkAggregation(Employee, { aggregate: AGGREGATE }),
-        { wrapper: createWrapper(observableClient) },
-      );
+      renderHook(() => useOsdkAggregation(Employee, { aggregate: AGGREGATE }), {
+        wrapper: createWrapper(observableClient),
+      });
 
       expect(observeAggregation).toHaveBeenCalledTimes(1);
     });
@@ -114,7 +117,7 @@ describe("useOsdkAggregation", () => {
         {
           wrapper: createWrapper(observableClient),
           initialProps: { enabled: false },
-        },
+        }
       );
 
       expect(observeAggregation).not.toHaveBeenCalled();
@@ -138,7 +141,7 @@ describe("useOsdkAggregation", () => {
         {
           wrapper: createWrapper(observableClient),
           initialProps: { enabled: true },
-        },
+        }
       );
 
       act(() => {
@@ -168,7 +171,7 @@ describe("useOsdkAggregation", () => {
             aggregate: AGGREGATE,
             enabled: false,
           }),
-        { wrapper: createWrapper(observableClient) },
+        { wrapper: createWrapper(observableClient) }
       );
 
       expect(observeAggregation).not.toHaveBeenCalled();
@@ -180,7 +183,7 @@ describe("useOsdkAggregation", () => {
       const { result } = renderHook(
         () =>
           useOsdkAggregation(Employee, { aggregate: AGGREGATE, enabled: true }),
-        { wrapper: createWrapper(observableClient) },
+        { wrapper: createWrapper(observableClient) }
       );
 
       await act(async () => {
@@ -197,7 +200,7 @@ describe("useOsdkAggregation", () => {
             aggregate: AGGREGATE,
             enabled: false,
           }),
-        { wrapper: createWrapper(observableClient) },
+        { wrapper: createWrapper(observableClient) }
       );
 
       await act(async () => {

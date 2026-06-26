@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it, vi } from "vitest";
+
 import type { ComputeStore } from "../store/ComputeStore.js";
 import { ComputeMonitor } from "./ComputeMonitor.js";
 import type { EventTimeline } from "./EventTimeline.js";
@@ -133,11 +134,11 @@ describe("ComputeMonitor", () => {
     });
 
     expect(store.createPendingRequest).toHaveBeenCalledWith(
-      expect.objectContaining({ requestUrl: expect.any(String) }),
+      expect.objectContaining({ requestUrl: expect.any(String) })
     );
     expect(store.fulfillRequest).toHaveBeenCalledWith(
       "req-1",
-      expect.objectContaining({ computeUsage: 42 }),
+      expect.objectContaining({ computeUsage: 42 })
     );
   });
 
@@ -154,7 +155,7 @@ describe("ComputeMonitor", () => {
     });
 
     const passedBody = JSON.parse(
-      (mockFetch.mock.calls[0][1] as RequestInit).body as string,
+      (mockFetch.mock.calls[0][1] as RequestInit).body as string
     );
     expect(passedBody.includeComputeUsage).toBe(true);
   });
@@ -169,7 +170,7 @@ describe("ComputeMonitor", () => {
     await expect(
       intercepted(LOAD_OBJECTS_URL, {
         body: JSON.stringify({ objectType: "Employee" }),
-      }),
+      })
     ).rejects.toThrow("OSDK network requests are paused");
 
     expect(store.failRequest).toHaveBeenCalledWith("req-1", {
@@ -189,7 +190,7 @@ describe("ComputeMonitor", () => {
     await expect(
       intercepted(LOAD_OBJECTS_URL, {
         body: JSON.stringify({ objectType: "Employee" }),
-      }),
+      })
     ).rejects.toThrow("OSDK network requests are paused");
 
     expect(mockFetch).not.toHaveBeenCalled();
@@ -208,7 +209,7 @@ describe("ComputeMonitor", () => {
     await expect(
       intercepted(actionUrl, {
         body: JSON.stringify({ parameters: {} }),
-      }),
+      })
     ).rejects.toThrow("OSDK network requests are paused");
 
     expect(mockFetch).not.toHaveBeenCalled();
@@ -239,7 +240,7 @@ describe("ComputeMonitor", () => {
       store,
       undefined,
       mockFetch,
-      eventTimeline,
+      eventTimeline
     );
     const intercepted = monitor.createInterceptedFetch();
 
@@ -248,14 +249,14 @@ describe("ComputeMonitor", () => {
     await expect(
       intercepted(actionUrl, {
         body: JSON.stringify({ parameters: {} }),
-      }),
+      })
     ).rejects.toThrow();
 
     expect(eventTimeline.record).toHaveBeenCalledWith(
       expect.objectContaining({
         type: "OSDK_PAUSE_BLOCK",
         pathname: "/api/v2/ontologies/ri.test/actions/applyAction",
-      }),
+      })
     );
   });
 
@@ -275,7 +276,7 @@ describe("ComputeMonitor", () => {
       "req-1",
       expect.objectContaining({
         responsePayloadBytes: expect.any(Number),
-      }),
+      })
     );
     expect(store.failRequest).not.toHaveBeenCalled();
   });
@@ -320,7 +321,7 @@ describe("ComputeMonitor", () => {
 
     expect(store.failRequest).toHaveBeenCalledWith(
       "req-1",
-      expect.objectContaining({ type: "http-error", status: 404 }),
+      expect.objectContaining({ type: "http-error", status: 404 })
     );
   });
 
@@ -333,7 +334,7 @@ describe("ComputeMonitor", () => {
     await expect(
       intercepted(LOAD_OBJECTS_URL, {
         body: JSON.stringify({ objectType: "Employee" }),
-      }),
+      })
     ).rejects.toThrow("Network failure");
 
     expect(store.failRequest).toHaveBeenCalledWith("req-1", {

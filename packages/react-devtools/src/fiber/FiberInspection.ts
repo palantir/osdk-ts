@@ -19,10 +19,10 @@ import { safeFiberOperation } from "./SafeFiberOperation.js";
 import type { Fiber, SourceLocation } from "./types.js";
 
 export function getComponentName(fiber: Fiber): string {
-  return safeFiberOperation(
-    () => getComponentNameUnsafe(fiber),
-    { fallback: "Unknown", feature: "component-inspection" },
-  );
+  return safeFiberOperation(() => getComponentNameUnsafe(fiber), {
+    fallback: "Unknown",
+    feature: "component-inspection",
+  });
 }
 
 function getComponentNameUnsafe(fiber: Fiber): string {
@@ -103,15 +103,14 @@ export function getComponentId(fiber: Fiber): string {
       }
 
       const name = getComponentNameUnsafe(fiber);
-      const typeHash = typeof fiber.type === "function"
-        ? fiber.type.toString().length
-        : 0;
+      const typeHash =
+        typeof fiber.type === "function" ? fiber.type.toString().length : 0;
       return `fiber-${name}-${typeHash}`;
     },
     {
       fallback: `fiber-unknown-${Date.now()}`,
       feature: "component-inspection",
-    },
+    }
   );
 }
 
@@ -127,7 +126,7 @@ export function getSourceLocation(fiber: Fiber): SourceLocation | null {
       }
       return null;
     },
-    { fallback: null, feature: "component-inspection" },
+    { fallback: null, feature: "component-inspection" }
   );
 }
 
@@ -139,7 +138,7 @@ export function getProps(fiber: Fiber): Record<string, unknown> {
       }
       return {};
     },
-    { fallback: {}, feature: "component-inspection" },
+    { fallback: {}, feature: "component-inspection" }
   );
 }
 
@@ -156,6 +155,6 @@ export function getHookStates(fiber: Fiber): unknown[] {
 
       return states;
     },
-    { fallback: [], feature: "state-inspection" },
+    { fallback: [], feature: "state-inspection" }
   );
 }

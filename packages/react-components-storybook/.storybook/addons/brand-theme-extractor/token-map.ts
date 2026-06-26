@@ -304,20 +304,14 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     label: "Spacing",
     category: "surface",
     inputType: "px",
-    cssProperties: [
-      "--osdk-surface-spacing",
-      "--bp-surface-spacing",
-    ],
+    cssProperties: ["--osdk-surface-spacing", "--bp-surface-spacing"],
   },
   {
     role: "border-width",
     label: "Border Width",
     category: "surface",
     inputType: "px",
-    cssProperties: [
-      "--osdk-surface-border-width",
-      "--bp-surface-border-width",
-    ],
+    cssProperties: ["--osdk-surface-border-width", "--bp-surface-border-width"],
   },
   {
     role: "shadow",
@@ -340,10 +334,7 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     label: "Focus Width",
     category: "emphasis",
     inputType: "px",
-    cssProperties: [
-      "--osdk-emphasis-focus-width",
-      "--bp-emphasis-focus-width",
-    ],
+    cssProperties: ["--osdk-emphasis-focus-width", "--bp-emphasis-focus-width"],
   },
   {
     role: "focus-offset",
@@ -368,8 +359,6 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
 ];
 
 /** Lookup a token role definition by role name */
-export function getTokenRole(
-  role: string,
-): TokenRoleDefinition | undefined {
+export function getTokenRole(role: string): TokenRoleDefinition | undefined {
   return TOKEN_ROLES.find((t) => t.role === role);
 }

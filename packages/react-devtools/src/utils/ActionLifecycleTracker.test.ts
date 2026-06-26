@@ -15,6 +15,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import type { MetricsStore } from "../store/MetricsStore.js";
 import { ActionLifecycleTracker } from "./ActionLifecycleTracker.js";
 import type { EventTimeline } from "./EventTimeline.js";
@@ -85,7 +86,7 @@ describe("ActionLifecycleTracker", () => {
       expect.objectContaining({
         type: "ACTION_START",
         actionName: "createTodo",
-      }),
+      })
     );
   });
 
@@ -106,7 +107,7 @@ describe("ActionLifecycleTracker", () => {
       expect.objectContaining({
         signature: "action:deleteTodo",
         rollback: false,
-      }),
+      })
     );
   });
 
@@ -123,7 +124,7 @@ describe("ActionLifecycleTracker", () => {
     });
 
     expect(metricsStore.recordActionLifecycle).toHaveBeenCalledWith(
-      expect.objectContaining({ rollback: true }),
+      expect.objectContaining({ rollback: true })
     );
   });
 
@@ -149,7 +150,7 @@ describe("ActionLifecycleTracker", () => {
       expect.objectContaining({
         optimisticLayerCount: 2,
         rollback: false,
-      }),
+      })
     );
   });
 

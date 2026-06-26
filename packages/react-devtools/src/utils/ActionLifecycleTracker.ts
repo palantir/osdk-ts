@@ -71,7 +71,7 @@ export class ActionLifecycleTracker {
 
   constructor(
     private readonly metricsStore: MetricsStore,
-    private readonly eventTimeline?: EventTimeline,
+    private readonly eventTimeline?: EventTimeline
   ) {}
 
   startAction(options: StartActionOptions): string {
@@ -156,8 +156,8 @@ export class ActionLifecycleTracker {
 
       action.optimisticSeen = true;
       if (
-        action.optimisticRenderTimestamp === undefined
-        || timestamp < action.optimisticRenderTimestamp
+        action.optimisticRenderTimestamp === undefined ||
+        timestamp < action.optimisticRenderTimestamp
       ) {
         action.optimisticRenderTimestamp = timestamp;
       }
@@ -210,8 +210,8 @@ export class ActionLifecycleTracker {
     action.rollback = !options.succeeded;
 
     if (action.firstConfirmationTimestamp === undefined) {
-      action.firstConfirmationTimestamp = action.lastLayerClearedTimestamp
-        ?? options.completedAt;
+      action.firstConfirmationTimestamp =
+        action.lastLayerClearedTimestamp ?? options.completedAt;
     }
 
     if (this.eventTimeline) {
@@ -229,19 +229,21 @@ export class ActionLifecycleTracker {
   private finalizeAction(action: ActionLifecycleData): void {
     const completedAt = action.completedAt ?? Date.now();
     const serverRoundTripTime = completedAt - action.startedAt;
-    const optimisticRenderTime = action.optimisticRenderTimestamp != null
-      ? action.optimisticRenderTimestamp - action.startedAt
-      : undefined;
-    const perceivedSpeedup = optimisticRenderTime != null
-      ? serverRoundTripTime - optimisticRenderTime
-      : undefined;
-    const renderGapBeforeServer = action.optimisticRenderTimestamp != null
-        && action.firstConfirmationTimestamp != null
-      ? action.firstConfirmationTimestamp
-        - action.optimisticRenderTimestamp
-      : undefined;
-    const optimisticObserved = action.optimisticLayerCount > 0
-      || action.optimisticSeen;
+    const optimisticRenderTime =
+      action.optimisticRenderTimestamp != null
+        ? action.optimisticRenderTimestamp - action.startedAt
+        : undefined;
+    const perceivedSpeedup =
+      optimisticRenderTime != null
+        ? serverRoundTripTime - optimisticRenderTime
+        : undefined;
+    const renderGapBeforeServer =
+      action.optimisticRenderTimestamp != null &&
+      action.firstConfirmationTimestamp != null
+        ? action.firstConfirmationTimestamp - action.optimisticRenderTimestamp
+        : undefined;
+    const optimisticObserved =
+      action.optimisticLayerCount > 0 || action.optimisticSeen;
 
     this.metricsStore.recordActionLifecycle({
       id: action.actionId,

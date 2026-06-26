@@ -27,10 +27,7 @@ function makeId(): string {
   return `msg-${nextId++}`;
 }
 
-function makeMessage(
-  role: UIMessage["role"],
-  text: string,
-): UIMessage {
+function makeMessage(role: UIMessage["role"], text: string): UIMessage {
   return {
     id: makeId(),
     role,
@@ -42,12 +39,12 @@ const SAMPLE_CONVERSATION: UIMessage[] = [
   makeMessage("user", "What can you help me with?"),
   makeMessage(
     "assistant",
-    "I can assist you with a wide range of tasks! For example, I can help answer questions, analyze data, write content, brainstorm ideas, and more. What would you like to work on today?",
+    "I can assist you with a wide range of tasks! For example, I can help answer questions, analyze data, write content, brainstorm ideas, and more. What would you like to work on today?"
   ),
   makeMessage("user", "Can you summarize the latest sales report?"),
   makeMessage(
     "assistant",
-    "Based on the Q1 sales report:\n\n- Total revenue: $2.4M (up 12% QoQ)\n- New customers: 148 (up 23%)\n- Average deal size: $16.2K\n- Top performing region: Northeast\n\nThe main growth driver was enterprise expansion deals. Would you like me to dig into any specific area?",
+    "Based on the Q1 sales report:\n\n- Total revenue: $2.4M (up 12% QoQ)\n- New customers: 148 (up 23%)\n- Average deal size: $16.2K\n- Top performing region: Northeast\n\nThe main growth driver was enterprise expansion deals. Would you like me to dig into any specific area?"
   ),
 ];
 
@@ -56,20 +53,18 @@ const SAMPLE_CONVERSATION: UIMessage[] = [
  * responses so the story behaves like a real chat.
  */
 function InteractiveChat(
-  props:
-    & Omit<
-      BaseAipAgentChatProps,
-      | "messages"
-      | "status"
-      | "error"
-      | "onSendMessage"
-      | "onStop"
-      | "onClearError"
-    >
-    & {
-      initialMessages?: UIMessage[];
-      simulateError?: boolean;
-    },
+  props: Omit<
+    BaseAipAgentChatProps,
+    | "messages"
+    | "status"
+    | "error"
+    | "onSendMessage"
+    | "onStop"
+    | "onClearError"
+  > & {
+    initialMessages?: UIMessage[];
+    simulateError?: boolean;
+  }
 ) {
   const { initialMessages = [], simulateError = false, ...rest } = props;
   const [messages, setMessages] = React.useState<UIMessage[]>(initialMessages);
@@ -79,18 +74,18 @@ function InteractiveChat(
   const [error, setError] = React.useState<Error | undefined>(
     simulateError
       ? new Error("Connection timed out. Please try again.")
-      : undefined,
+      : undefined
   );
   const abortRef = React.useRef(false);
 
   const onSendMessage = React.useCallback(async (text: string) => {
     const userMsg = makeMessage("user", text);
-    setMessages(prev => [...prev, userMsg]);
+    setMessages((prev) => [...prev, userMsg]);
     setStatus("submitted");
     abortRef.current = false;
 
     // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 600));
+    await new Promise((resolve) => setTimeout(resolve, 600));
     if (abortRef.current) {
       setStatus("ready");
       return;
@@ -98,7 +93,7 @@ function InteractiveChat(
 
     setStatus("streaming");
     const assistantMsg = makeMessage("assistant", "");
-    setMessages(prev => [...prev, assistantMsg]);
+    setMessages((prev) => [...prev, assistantMsg]);
 
     const response =
       "Thanks for your message! This is a simulated response that streams in token by token to demonstrate the chat experience.";
@@ -106,9 +101,9 @@ function InteractiveChat(
 
     for (let i = 0; i < words.length; i++) {
       if (abortRef.current) break;
-      await new Promise(resolve => setTimeout(resolve, 50));
+      await new Promise((resolve) => setTimeout(resolve, 50));
       const partialText = words.slice(0, i + 1).join(" ");
-      setMessages(prev => {
+      setMessages((prev) => {
         const updated = [...prev];
         const last = updated[updated.length - 1];
         updated[updated.length - 1] = {

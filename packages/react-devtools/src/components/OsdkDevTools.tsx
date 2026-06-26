@@ -15,6 +15,7 @@
  */
 
 import React, { useContext } from "react";
+
 import { DevToolsContext } from "../DevToolsContext.js";
 import type { MonitorStore } from "../store/MonitorStore.js";
 import { MonitoringPanel } from "./MonitoringPanel.js";
@@ -22,16 +23,13 @@ import { MonitoringPanel } from "./MonitoringPanel.js";
 const GLOBAL_STORE_KEY = "__OSDK_DEVTOOLS_MONITOR_STORE__";
 
 function getGlobalMonitorStore(): MonitorStore | undefined {
-  if (
-    typeof globalThis !== "undefined"
-    && GLOBAL_STORE_KEY in globalThis
-  ) {
+  if (typeof globalThis !== "undefined" && GLOBAL_STORE_KEY in globalThis) {
     const candidate = (globalThis as Record<string, unknown>)[GLOBAL_STORE_KEY];
     if (
-      typeof candidate === "object"
-      && candidate != null
-      && "getMetricsStore" in candidate
-      && "getComputeStore" in candidate
+      typeof candidate === "object" &&
+      candidate != null &&
+      "getMetricsStore" in candidate &&
+      "getComputeStore" in candidate
     ) {
       return candidate as MonitorStore;
     }
@@ -41,9 +39,7 @@ function getGlobalMonitorStore(): MonitorStore | undefined {
 
 export function OsdkDevTools(): React.ReactElement | null {
   const contextStore = useContext(DevToolsContext);
-  const monitorStore = contextStore
-    ?? getGlobalMonitorStore()
-    ?? null;
+  const monitorStore = contextStore ?? getGlobalMonitorStore() ?? null;
 
   if (!monitorStore) {
     return null;

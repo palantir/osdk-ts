@@ -26,6 +26,7 @@ import type {
   QueryParameterType,
 } from "@osdk/client/observable";
 import React from "react";
+
 import { stableSerialize } from "./core/stableSerialize.js";
 import { devToolsMetadata, makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext } from "./OsdkContext.js";
@@ -104,8 +105,8 @@ export interface UseOsdkFunctionResult<Q extends QueryDefinition<unknown>> {
    */
   data:
     | (CompileTimeMetadata<Q>["signature"] extends (...args: never[]) => infer R
-      ? Awaited<R>
-      : never)
+        ? Awaited<R>
+        : never)
     | undefined;
 
   /**
@@ -165,7 +166,7 @@ export interface UseOsdkFunctionResult<Q extends QueryDefinition<unknown>> {
  */
 export function useOsdkFunction<Q extends QueryDefinition<unknown>>(
   queryDef: Q,
-  options: UseOsdkFunctionOptions<Q> = {},
+  options: UseOsdkFunctionOptions<Q> = {}
 ): UseOsdkFunctionResult<Q> {
   const { observableClient } = React.useContext(OsdkContext);
   const {
@@ -179,70 +180,71 @@ export function useOsdkFunction<Q extends QueryDefinition<unknown>>(
   const stableParams = React.useMemo(
     () => params,
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [stableSerialize(params)],
+    [stableSerialize(params)]
   );
   const stableDependsOn = React.useMemo(
     () => dependsOn,
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [stableSerialize(
-      dependsOn?.map(d => typeof d === "string" ? d : d.apiName),
-    )],
+    [
+      stableSerialize(
+        dependsOn?.map((d) => (typeof d === "string" ? d : d.apiName))
+      ),
+    ]
   );
   const stableDependsOnObjects = React.useMemo(
     () => dependsOnObjects,
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [stableSerialize(
-      dependsOnObjects?.map(item =>
-        "$apiName" in item
-          ? { $apiName: item.$apiName, $primaryKey: item.$primaryKey }
-          : item
+    [
+      stableSerialize(
+        dependsOnObjects?.map((item) =>
+          "$apiName" in item
+            ? { $apiName: item.$apiName, $primaryKey: item.$primaryKey }
+            : item
+        )
       ),
-    )],
+    ]
   );
 
   // Record<string, unknown> required as typing is figured out at runtime
   const paramsForApi = stableParams as Record<string, unknown> | undefined;
 
-  const { subscribe, getSnapShot } = React.useMemo(
-    () => {
-      if (!enabled) {
-        return makeExternalStore<ObserveFunctionCallbackArgs<Q>>(
-          () => ({ unsubscribe: () => {} }),
-          devToolsMetadata({
-            hookType: "useOsdkFunction",
-            objectType: queryDef.apiName,
-          }),
-        );
-      }
+  const { subscribe, getSnapShot } = React.useMemo(() => {
+    if (!enabled) {
       return makeExternalStore<ObserveFunctionCallbackArgs<Q>>(
-        (observer) =>
-          observableClient.observeFunction(
-            queryDef,
-            paramsForApi,
-            {
-              dependsOn: stableDependsOn,
-              dependsOnObjects: stableDependsOnObjects,
-              dedupeInterval: dedupeIntervalMs ?? 2_000,
-            },
-            observer,
-          ),
+        () => ({ unsubscribe: () => {} }),
         devToolsMetadata({
           hookType: "useOsdkFunction",
           objectType: queryDef.apiName,
-        }),
+        })
       );
-    },
-    [
-      observableClient,
-      queryDef.apiName,
-      queryDef.version,
-      paramsForApi,
-      stableDependsOn,
-      stableDependsOnObjects,
-      dedupeIntervalMs,
-      enabled,
-    ],
-  );
+    }
+    return makeExternalStore<ObserveFunctionCallbackArgs<Q>>(
+      (observer) =>
+        observableClient.observeFunction(
+          queryDef,
+          paramsForApi,
+          {
+            dependsOn: stableDependsOn,
+            dependsOnObjects: stableDependsOnObjects,
+            dedupeInterval: dedupeIntervalMs ?? 2_000,
+          },
+          observer
+        ),
+      devToolsMetadata({
+        hookType: "useOsdkFunction",
+        objectType: queryDef.apiName,
+      })
+    );
+  }, [
+    observableClient,
+    queryDef.apiName,
+    queryDef.version,
+    paramsForApi,
+    stableDependsOn,
+    stableDependsOnObjects,
+    dedupeIntervalMs,
+    enabled,
+  ]);
 
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);
 
@@ -251,8 +253,9 @@ export function useOsdkFunction<Q extends QueryDefinition<unknown>>(
   }, [observableClient, queryDef, paramsForApi]);
 
   return React.useMemo(() => {
-    const error = payload?.error
-      ?? (payload?.status === "error"
+    const error =
+      payload?.error ??
+      (payload?.status === "error"
         ? new Error("Failed to execute function")
         : undefined);
 

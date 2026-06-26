@@ -73,7 +73,7 @@ export class LinkTraversalTracker {
       visited.add(currentKey);
 
       const traversal = this.traversals.find(
-        (t) => `${t.sourceObjectType}:${t.sourceObjectKey}` === currentKey,
+        (t) => `${t.sourceObjectType}:${t.sourceObjectKey}` === currentKey
       );
 
       if (traversal) {
@@ -92,9 +92,7 @@ export class LinkTraversalTracker {
     return chain;
   }
 
-  findRedundantTraversals(
-    windowMs: number = 5000,
-  ): Array<{
+  findRedundantTraversals(windowMs: number = 5000): Array<{
     linkKey: string;
     count: number;
     componentIds: Set<string>;
@@ -122,7 +120,7 @@ export class LinkTraversalTracker {
       counts.set(key, existing);
     }
 
-    return Array.from(counts.entries())
+    return [...counts.entries()]
       .filter(([_, data]) => data.count > 1)
       .map(([linkKey, data]) => ({ linkKey, ...data }))
       .sort((a, b) => b.count - a.count);
@@ -158,13 +156,13 @@ export class LinkTraversalTracker {
     for (const traversal of this.traversals) {
       linkCounts.set(
         traversal.linkName,
-        (linkCounts.get(traversal.linkName) || 0) + 1,
+        (linkCounts.get(traversal.linkName) || 0) + 1
       );
 
       if (traversal.componentId) {
         componentCounts.set(
           traversal.componentId,
-          (componentCounts.get(traversal.componentId) || 0) + 1,
+          (componentCounts.get(traversal.componentId) || 0) + 1
         );
       }
     }
@@ -173,7 +171,7 @@ export class LinkTraversalTracker {
       totalTraversals: this.traversals.length,
       uniqueLinks: linkCounts.size,
       uniqueComponents: componentCounts.size,
-      mostUsedLinks: Array.from(linkCounts.entries())
+      mostUsedLinks: [...linkCounts.entries()]
         .sort((a, b) => b[1] - a[1])
         .slice(0, 5),
       linkedObjectsTracked: this.linkedObjects.size,

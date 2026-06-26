@@ -17,6 +17,7 @@
 import { Button } from "@blueprintjs/core";
 import classNames from "classnames";
 import React, { useMemo } from "react";
+
 import {
   useComputeMetrics,
   useComputeNetworkPaused,
@@ -27,6 +28,7 @@ import type { ComputeStore } from "../store/ComputeStore.js";
 import type { ComputeRequest } from "../types/compute.js";
 import { formatBytes, formatNumber } from "../utils/format.js";
 import { BubbleChart } from "./BubbleChart.js";
+
 import styles from "./MonitoringPanel.module.scss";
 
 export interface ComputeTabProps {
@@ -90,33 +92,31 @@ export const ComputeTab: React.FC<ComputeTabProps> = ({ computeStore }) => {
 
   const recentRequests = useMemo(
     () => requests.slice(-50).reverse(),
-    [requests],
+    [requests]
   );
 
   return (
     <>
       <div className={styles.computeControls}>
-        {isRecording
-          ? (
-            <Button
-              onClick={() => computeStore.setIsRecording(false)}
-              icon="stop"
-              intent="danger"
-              size="small"
-            >
-              Stop Recording
-            </Button>
-          )
-          : (
-            <Button
-              onClick={() => computeStore.setIsRecording(true)}
-              icon="record"
-              intent="primary"
-              size="small"
-            >
-              Start Recording
-            </Button>
-          )}
+        {isRecording ? (
+          <Button
+            onClick={() => computeStore.setIsRecording(false)}
+            icon="stop"
+            intent="danger"
+            size="small"
+          >
+            Stop Recording
+          </Button>
+        ) : (
+          <Button
+            onClick={() => computeStore.setIsRecording(true)}
+            icon="record"
+            intent="primary"
+            size="small"
+          >
+            Start Recording
+          </Button>
+        )}
         <Button
           onClick={() => computeStore.toggleNetworkPaused()}
           icon={isNetworkPaused ? "play" : "pause"}
@@ -147,34 +147,34 @@ export const ComputeTab: React.FC<ComputeTabProps> = ({ computeStore }) => {
       )}
 
       <div className={styles.operationsList}>
-        {recentRequests.length > 0
-          ? recentRequests.map((req) => (
+        {recentRequests.length > 0 ? (
+          recentRequests.map((req) => (
             <ComputeRequestItem
               key={req.id}
               request={req}
               isSelected={selectedIdSet.has(req.id)}
             />
           ))
-          : (
-            <div className={styles.emptyState}>
-              {isRecording
-                ? "No compute requests yet"
-                : "Start recording to track compute usage"}
-            </div>
-          )}
+        ) : (
+          <div className={styles.emptyState}>
+            {isRecording
+              ? "No compute requests yet"
+              : "Start recording to track compute usage"}
+          </div>
+        )}
       </div>
     </>
   );
 };
 
 const REQUEST_DISPLAY: Record<string, { icon: string; class: string }> = {
-  "fulfilled": { icon: "\u2713", class: styles.computeFulfilled },
+  fulfilled: { icon: "\u2713", class: styles.computeFulfilled },
   "fulfilled-without-usage": {
-    icon: "\u00b7",
+    icon: "\u00B7",
     class: styles.computeFulfilledWithoutUsage,
   },
-  "failed": { icon: "\u00d7", class: styles.computeFailed },
-  "pending": { icon: "\u22ef", class: styles.computePending },
+  failed: { icon: "\u00D7", class: styles.computeFailed },
+  pending: { icon: "\u22EF", class: styles.computePending },
 };
 
 const DEFAULT_REQUEST_DISPLAY = { icon: "\u2022", class: "" };
@@ -211,9 +211,7 @@ const ComputeRequestItem: React.FC<ComputeRequestItemProps> = ({
         {requestIcon}
       </span>
       <div className={styles.operationDetails}>
-        <div className={styles.operationSignature}>
-          {request.requestUrl}
-        </div>
+        <div className={styles.operationSignature}>{request.requestUrl}</div>
         <div className={styles.operationTime}>
           {new Date(request.requestTimestamp).toLocaleTimeString()}
         </div>
@@ -223,7 +221,7 @@ const ComputeRequestItem: React.FC<ComputeRequestItemProps> = ({
               <span
                 className={classNames(
                   styles.operationMetric,
-                  getUsageClass(request.computeUsage),
+                  getUsageClass(request.computeUsage)
                 )}
               >
                 {formatNumber(request.computeUsage)} CU
@@ -235,9 +233,7 @@ const ComputeRequestItem: React.FC<ComputeRequestItemProps> = ({
           )}
           {request.type === "fulfilled-without-usage" && (
             <>
-              <span className={styles.operationMetric}>
-                no usage data
-              </span>
+              <span className={styles.operationMetric}>no usage data</span>
               <span className={styles.operationMetric}>
                 {formatBytes(request.responsePayloadBytes)}
               </span>
@@ -249,9 +245,7 @@ const ComputeRequestItem: React.FC<ComputeRequestItemProps> = ({
             </span>
           )}
           {request.type === "pending" && (
-            <span className={styles.operationMetric}>
-              Loading...
-            </span>
+            <span className={styles.operationMetric}>Loading...</span>
           )}
         </div>
       </div>

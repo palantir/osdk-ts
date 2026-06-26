@@ -16,12 +16,12 @@
 
 import { Button, Dialog as BlueprintDialog, Drawer } from "@blueprintjs/core";
 import { ObjectTable } from "@osdk/react-components/experimental/object-table";
-import type {
-  ObjectTableProps,
-} from "@osdk/react-components/experimental/object-table";
+import type { ObjectTableProps } from "@osdk/react-components/experimental/object-table";
 import { Dialog as BaseUIDialog } from "@osdk/react-components/primitives";
 import React, { memo, useCallback, useState } from "react";
+
 import type { Employee } from "../../../types/Employee.js";
+
 import styles from "./ObjectTableOverlayStories.module.css";
 
 type EmployeeTableProps = ObjectTableProps<typeof Employee>;
@@ -79,7 +79,7 @@ export const ObjectTableInBlueprintDrawer = memo(
         </Drawer>
       </>
     );
-  },
+  }
 );
 
 export const ObjectTableInBlueprintDialog = memo(
@@ -115,7 +115,7 @@ export const ObjectTableInBlueprintDialog = memo(
         </BlueprintDialog>
       </>
     );
-  },
+  }
 );
 
 export const ObjectTableInBaseUIDialog = memo(
@@ -149,5 +149,5 @@ export const ObjectTableInBaseUIDialog = memo(
         </BaseUIDialog>
       </>
     );
-  },
+  }
 );

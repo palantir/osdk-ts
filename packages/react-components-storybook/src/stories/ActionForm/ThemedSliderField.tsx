@@ -16,6 +16,7 @@
 
 import type { BaseFormFieldProps } from "@osdk/react-components/experimental";
 import React, { memo, useCallback } from "react";
+
 import styles from "./ThemedSliderField.module.css";
 
 export const THEMED_SLIDER_DEFAULT_VALUE = 50;
@@ -33,7 +34,7 @@ export const ThemedSliderField = memo(function ThemedSliderFieldFn({
     (event: React.ChangeEvent<HTMLInputElement>) => {
       onChange?.(event.currentTarget.valueAsNumber);
     },
-    [onChange],
+    [onChange]
   );
 
   return (

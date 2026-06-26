@@ -26,6 +26,7 @@ import type {
 import { getWireObjectSet, type ObjectTypeDefinition } from "@osdk/client";
 import type { ObserveAggregationArgs } from "@osdk/client/observable";
 import React from "react";
+
 import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
 import {
   devToolsMetadata,
@@ -151,7 +152,7 @@ export function useOsdkAggregation<
   RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   type: Q,
-  options: UseOsdkAggregationOptions<Q, A, RDPs>,
+  options: UseOsdkAggregationOptions<Q, A, RDPs>
 ): UseOsdkAggregationResult<Q, A>;
 export function useOsdkAggregation<
   Q extends ObjectTypeDefinition,
@@ -159,7 +160,7 @@ export function useOsdkAggregation<
   RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   type: Q,
-  options: UseOsdkAggregationOptionsWithObjectSet<Q, A, RDPs>,
+  options: UseOsdkAggregationOptionsWithObjectSet<Q, A, RDPs>
 ): UseOsdkAggregationResult<Q, A>;
 export function useOsdkAggregation<
   Q extends ObjectTypeDefinition,
@@ -169,7 +170,7 @@ export function useOsdkAggregation<
   type: Q,
   options:
     | UseOsdkAggregationOptions<Q, A, RDPs>
-    | UseOsdkAggregationOptionsWithObjectSet<Q, A, RDPs>,
+    | UseOsdkAggregationOptionsWithObjectSet<Q, A, RDPs>
 ): UseOsdkAggregationResult<Q, A> {
   const {
     where,
@@ -197,77 +198,74 @@ export function useOsdkAggregation<
   const objectSetRef = React.useRef(objectSet);
   objectSetRef.current = objectSet;
 
-  const { subscribe, getSnapShot } = React.useMemo(
-    () => {
-      if (!enabled) {
-        return makeExternalStore<ObserveAggregationArgs<Q, A>>(
-          () => ({ unsubscribe: () => {} }),
-          devToolsMetadata({
-            hookType: "useOsdkAggregation",
-            objectType: type.apiName,
-          }),
-        );
-      }
-
-      const currentObjectSet = objectSetRef.current;
-      if (currentObjectSet) {
-        return makeExternalStoreAsync<ObserveAggregationArgs<Q, A>>(
-          (observer) =>
-            observableClient.observeAggregation(
-              {
-                type,
-                objectSet: currentObjectSet,
-                where: canonOptions.where,
-                withProperties: canonOptions.withProperties,
-                intersectWith: canonOptions.intersectWith,
-                aggregate: canonOptions.aggregate,
-                dedupeInterval: dedupeIntervalMs ?? 2_000,
-              },
-              observer,
-            ),
-          devToolsMetadata({
-            hookType: "useOsdkAggregation",
-            objectType: type.apiName,
-            where: canonOptions.where,
-            aggregate: canonOptions.aggregate,
-          }),
-        );
-      }
+  const { subscribe, getSnapShot } = React.useMemo(() => {
+    if (!enabled) {
       return makeExternalStore<ObserveAggregationArgs<Q, A>>(
+        () => ({ unsubscribe: () => {} }),
+        devToolsMetadata({
+          hookType: "useOsdkAggregation",
+          objectType: type.apiName,
+        })
+      );
+    }
+
+    const currentObjectSet = objectSetRef.current;
+    if (currentObjectSet) {
+      return makeExternalStoreAsync<ObserveAggregationArgs<Q, A>>(
         (observer) =>
-          // eslint-disable-next-line @typescript-eslint/no-deprecated
           observableClient.observeAggregation(
             {
               type,
+              objectSet: currentObjectSet,
               where: canonOptions.where,
               withProperties: canonOptions.withProperties,
               intersectWith: canonOptions.intersectWith,
               aggregate: canonOptions.aggregate,
               dedupeInterval: dedupeIntervalMs ?? 2_000,
             },
-            observer,
+            observer
           ),
         devToolsMetadata({
           hookType: "useOsdkAggregation",
           objectType: type.apiName,
           where: canonOptions.where,
           aggregate: canonOptions.aggregate,
-        }),
+        })
       );
-    },
-    [
-      enabled,
-      observableClient,
-      type.apiName,
-      type.type,
-      objectSetKey,
-      canonOptions.where,
-      canonOptions.withProperties,
-      canonOptions.intersectWith,
-      canonOptions.aggregate,
-      dedupeIntervalMs,
-    ],
-  );
+    }
+    return makeExternalStore<ObserveAggregationArgs<Q, A>>(
+      (observer) =>
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
+        observableClient.observeAggregation(
+          {
+            type,
+            where: canonOptions.where,
+            withProperties: canonOptions.withProperties,
+            intersectWith: canonOptions.intersectWith,
+            aggregate: canonOptions.aggregate,
+            dedupeInterval: dedupeIntervalMs ?? 2_000,
+          },
+          observer
+        ),
+      devToolsMetadata({
+        hookType: "useOsdkAggregation",
+        objectType: type.apiName,
+        where: canonOptions.where,
+        aggregate: canonOptions.aggregate,
+      })
+    );
+  }, [
+    enabled,
+    observableClient,
+    type.apiName,
+    type.type,
+    objectSetKey,
+    canonOptions.where,
+    canonOptions.withProperties,
+    canonOptions.intersectWith,
+    canonOptions.aggregate,
+    dedupeIntervalMs,
+  ]);
 
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);
 
@@ -278,10 +276,13 @@ export function useOsdkAggregation<
     await observableClient.invalidateObjectType(type.apiName);
   }, [observableClient, type.apiName, enabled]);
 
-  return React.useMemo(() => ({
-    data: payload?.result as AggregationsResults<Q, A> | undefined,
-    isLoading: isPayloadLoading(payload, enabled),
-    error: extractPayloadError(payload, "Failed to execute aggregation"),
-    refetch,
-  }), [payload, enabled, refetch]);
+  return React.useMemo(
+    () => ({
+      data: payload?.result as AggregationsResults<Q, A> | undefined,
+      isLoading: isPayloadLoading(payload, enabled),
+      error: extractPayloadError(payload, "Failed to execute aggregation"),
+      refetch,
+    }),
+    [payload, enabled, refetch]
+  );
 }

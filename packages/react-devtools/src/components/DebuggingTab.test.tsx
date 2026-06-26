@@ -17,6 +17,7 @@
 import { cleanup, render, screen, within } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import type { ConsoleLogEntry } from "../store/ConsoleLogStore.js";
 import type { WindowErrorEntry } from "../store/WindowErrorStore.js";
 import { createMockMonitorStore } from "./testHelpers.js";
@@ -24,7 +25,7 @@ import { createMockMonitorStore } from "./testHelpers.js";
 const { DebuggingTab } = await import("./DebuggingTab.js");
 
 function consoleEntry(
-  partial: Partial<ConsoleLogEntry> & { args: readonly string[] },
+  partial: Partial<ConsoleLogEntry> & { args: readonly string[] }
 ): ConsoleLogEntry {
   return {
     id: partial.id ?? "c1",
@@ -36,7 +37,7 @@ function consoleEntry(
 }
 
 function windowError(
-  partial: Partial<WindowErrorEntry> & { message: string },
+  partial: Partial<WindowErrorEntry> & { message: string }
 ): WindowErrorEntry {
   return {
     id: partial.id ?? "w1",
@@ -92,7 +93,7 @@ describe("DebuggingTab", () => {
 
     expect(getErrorsCount()).toBe(1);
     expect(screen.getAllByText("thrown-from-handler").length).toBeGreaterThan(
-      0,
+      0
     );
   });
 

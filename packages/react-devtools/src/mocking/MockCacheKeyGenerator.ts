@@ -83,7 +83,7 @@ export class MockCacheKeyGenerator {
   }
 
   private static generateObjectSetCacheKey(
-    data: ObjectSetCacheKeyData,
+    data: ObjectSetCacheKeyData
   ): CacheKey {
     const whereClause = data.whereClause || {};
     const orderBy = data.orderBy || [];
@@ -92,7 +92,7 @@ export class MockCacheKeyGenerator {
       type: "list",
       apiName: data.type,
       where: whereClause,
-      orderBy: orderBy,
+      orderBy,
       otherKeys: [
         data.type,
         this.canonicalizeWhereClause(whereClause),
@@ -111,7 +111,7 @@ export class MockCacheKeyGenerator {
       sourcePk: data.sourcePk,
       linkName: data.linkName,
       where: whereClause,
-      orderBy: orderBy,
+      orderBy,
       otherKeys: [
         data.sourceType,
         data.sourcePk,
@@ -123,7 +123,7 @@ export class MockCacheKeyGenerator {
   }
 
   private static generateAggregationCacheKey(
-    data: AggregationCacheKeyData,
+    data: AggregationCacheKeyData
   ): CacheKey {
     const whereClause = data.whereClause || {};
     const aggregate = data.aggregate || {};
@@ -132,7 +132,7 @@ export class MockCacheKeyGenerator {
       type: "aggregation",
       apiName: data.type,
       where: whereClause,
-      aggregate: aggregate,
+      aggregate,
       otherKeys: [
         "object",
         data.type,
@@ -144,7 +144,7 @@ export class MockCacheKeyGenerator {
   }
 
   private static canonicalizeWhereClause(
-    where: Record<string, unknown>,
+    where: Record<string, unknown>
   ): string {
     if (!where || Object.keys(where).length === 0) {
       return "{}";
@@ -160,7 +160,7 @@ export class MockCacheKeyGenerator {
   }
 
   private static canonicalizeOrderBy(
-    orderBy: OrderByValue | undefined,
+    orderBy: OrderByValue | undefined
   ): string {
     if (!orderBy || (Array.isArray(orderBy) && orderBy.length === 0)) {
       return "[]";

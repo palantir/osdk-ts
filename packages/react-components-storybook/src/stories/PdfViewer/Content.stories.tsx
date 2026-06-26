@@ -61,7 +61,7 @@ export const Default: Story = {};
 
 export const ZoomedIn: Story = {
   args: {
-    initialScale: 2.0,
+    initialScale: 2,
   },
 };
 

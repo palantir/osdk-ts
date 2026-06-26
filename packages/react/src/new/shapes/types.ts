@@ -41,16 +41,16 @@ export const NOOP_FETCH_MORE = async (): Promise<void> => {};
 
 export function violationsToError(
   shape: ShapeDefinition<ObjectOrInterfaceDefinition>,
-  violations: readonly { property: string; constraint: string }[],
+  violations: readonly { property: string; constraint: string }[]
 ): Error | undefined {
-  if (violations.some(v => v.constraint === "require")) {
+  if (violations.some((v) => v.constraint === "require")) {
     return new ShapeNullabilityError(
       shape,
       violations as readonly {
         property: string;
         primaryKey: unknown;
         constraint: "require" | "dropIfNull" | "transformError";
-      }[],
+      }[]
     );
   }
   return undefined;
@@ -72,7 +72,7 @@ export interface LinkEntry {
 export function createLinkEntry(
   linkDef: ShapeDerivedLinkDef,
   sourceObject: Osdk.Instance<ObjectOrInterfaceDefinition>,
-  configDefer?: boolean,
+  configDefer?: boolean
 ): LinkEntry {
   const isDeferred = linkDef.config.defer ?? configDefer ?? false;
   return {
@@ -139,7 +139,7 @@ export function cleanupNestedMap(map: Map<string, LinkEntry>): void {
 
 export function buildDataWithNestedLinks(
   entry: LinkEntry,
-  transformedData: AnyShapeInstance[],
+  transformedData: AnyShapeInstance[]
 ): AnyShapeInstance[] {
   const targetShape = entry.linkDef.targetShape;
   if (targetShape.__derivedLinks.length === 0) {
@@ -157,7 +157,7 @@ export function buildDataWithNestedLinks(
     for (const [linkName, nestedEntry] of nestedMap) {
       nestedLinks[linkName] = buildDataWithNestedLinks(
         nestedEntry,
-        nestedEntry.data,
+        nestedEntry.data
       );
     }
 
@@ -174,12 +174,12 @@ export function buildDataWithNestedLinks(
 export function isBatchableLink(linkDef: ShapeDerivedLinkDef): boolean {
   const def = linkDef.objectSetDef;
   return (
-    def.segments.length === 1
-    && def.segments[0].type === "pivotTo"
-    && (!def.setOperations || def.setOperations.length === 0)
-    && !def.where
-    && !def.orderBy
-    && def.limit == null
-    && !def.distinct
+    def.segments.length === 1 &&
+    def.segments[0].type === "pivotTo" &&
+    (!def.setOperations || def.setOperations.length === 0) &&
+    !def.where &&
+    !def.orderBy &&
+    def.limit == null &&
+    !def.distinct
   );
 }

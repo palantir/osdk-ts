@@ -77,8 +77,8 @@ export class ComponentContextCapture {
 
         if (sourceLocation) {
           const shortPath =
-            sourceLocation.fileName?.split("/").slice(-2).join("/")
-            || "unknown";
+            sourceLocation.fileName?.split("/").slice(-2).join("/") ||
+            "unknown";
           id = `fiber-${name}-${shortPath}-${sourceLocation.lineNumber || 0}`;
         } else {
           id = `fiber-${name}-${this.idCounter++}`;
@@ -92,9 +92,9 @@ export class ComponentContextCapture {
 
   private getFiberDisplayName(fiber: Fiber): string | undefined {
     if (
-      typeof fiber.type === "function"
-      && "displayName" in fiber.type
-      && typeof fiber.type.displayName === "string"
+      typeof fiber.type === "function" &&
+      "displayName" in fiber.type &&
+      typeof fiber.type.displayName === "string"
     ) {
       return fiber.type.displayName;
     }
@@ -107,8 +107,8 @@ export class ComponentContextCapture {
 
     const parsed = this.parseStackTrace(stack);
 
-    const shortPath = parsed.filePath?.split("/").slice(-2).join("/")
-      || "unknown";
+    const shortPath =
+      parsed.filePath?.split("/").slice(-2).join("/") || "unknown";
     const id = `stack-${parsed.componentName || "Unknown"}-${shortPath}-${
       parsed.lineNumber || 0
     }`;
@@ -174,18 +174,17 @@ export class ComponentContextCapture {
           return false;
         }
       }
-      return /\.(tsx?|jsx?)(\?|:|$)/.test(filePath)
-        && !/node_modules/.test(filePath);
+      return (
+        /\.(tsx?|jsx?)(\?|:|$)/.test(filePath) && !/node_modules/.test(filePath)
+      );
     };
 
-    const extractComponentNameFromPath = (
-      filePath: string,
-    ): string | null => {
-      const match = filePath.match(/\/([A-Z][a-zA-Z0-9]*)\.(tsx?|jsx?)[\?:]/);
+    const extractComponentNameFromPath = (filePath: string): string | null => {
+      const match = filePath.match(/\/([A-Z][a-zA-Z0-9]*)\.(tsx?|jsx?)[?:]/);
       if (match) {
         return match[1];
       }
-      const match2 = filePath.match(/([A-Z][a-zA-Z0-9]*)\.(tsx?|jsx?)[\?:]?$/);
+      const match2 = filePath.match(/([A-Z][a-zA-Z0-9]*)\.(tsx?|jsx?)[?:]?$/);
       if (match2) {
         return match2[1];
       }
@@ -204,8 +203,8 @@ export class ComponentContextCapture {
           return {
             componentName: funcName,
             filePath,
-            lineNumber: parseInt(lineNum, 10),
-            columnNumber: parseInt(colNum, 10),
+            lineNumber: Number.parseInt(lineNum, 10),
+            columnNumber: Number.parseInt(colNum, 10),
           };
         }
         continue;
@@ -218,8 +217,8 @@ export class ComponentContextCapture {
           return {
             componentName: funcName,
             filePath,
-            lineNumber: parseInt(lineNum, 10),
-            columnNumber: parseInt(colNum, 10),
+            lineNumber: Number.parseInt(lineNum, 10),
+            columnNumber: Number.parseInt(colNum, 10),
           };
         }
         continue;
@@ -230,7 +229,7 @@ export class ComponentContextCapture {
       const line = lines[i];
 
       const fileMatch = line.match(
-        /\((https?:\/\/[^)]+|\/[^)]+)\)|at\s+(https?:\/\/\S+|\/\S+)/,
+        /\((https?:\/\/[^)]+|\/[^)]+)\)|at\s+(https?:\/\/\S+|\/\S+)/
       );
       if (fileMatch) {
         const filePath = fileMatch[1] || fileMatch[2];
@@ -242,10 +241,10 @@ export class ComponentContextCapture {
               componentName,
               filePath,
               lineNumber: locationMatch
-                ? parseInt(locationMatch[1], 10)
+                ? Number.parseInt(locationMatch[1], 10)
                 : undefined,
               columnNumber: locationMatch
-                ? parseInt(locationMatch[2], 10)
+                ? Number.parseInt(locationMatch[2], 10)
                 : undefined,
             };
           }
@@ -260,16 +259,16 @@ export class ComponentContextCapture {
       if (anyFuncMatch) {
         const [, funcName, filePath, lineNum, colNum] = anyFuncMatch;
         if (
-          funcName.length >= 3
-          && !internalFuncNames.has(funcName)
-          && isAppFilePath(filePath)
+          funcName.length >= 3 &&
+          !internalFuncNames.has(funcName) &&
+          isAppFilePath(filePath)
         ) {
           const pathName = extractComponentNameFromPath(filePath);
           return {
             componentName: pathName || funcName,
             filePath,
-            lineNumber: parseInt(lineNum, 10),
-            columnNumber: parseInt(colNum, 10),
+            lineNumber: Number.parseInt(lineNum, 10),
+            columnNumber: Number.parseInt(colNum, 10),
           };
         }
       }

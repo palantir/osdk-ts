@@ -26,11 +26,13 @@ import {
 } from "@blueprintjs/core";
 import type { CacheEntry } from "@osdk/client/observable";
 import React, { useMemo, useState } from "react";
+
 import { createPollingStore } from "../hooks/createPollingStore.js";
 import type { MonitorStore } from "../store/MonitorStore.js";
 import { formatBytes, formatRelativeTime } from "../utils/format.js";
-import styles from "./CacheInspectorTab.module.scss";
 import { CopyableCodeBlock } from "./CopyableCodeBlock.js";
+
+import styles from "./CacheInspectorTab.module.scss";
 
 function getTypeColor(type: string) {
   switch (type) {
@@ -95,9 +97,9 @@ const emptySnapshot: CacheSnapshot = {
   stats: { totalEntries: 0, totalSize: 0, totalHits: 0 },
 };
 
-export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = (
-  { monitorStore },
-) => {
+export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = ({
+  monitorStore,
+}) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedKeys, setExpandedKeys] = useState<Set<string>>(new Set());
   const snapshotStore = React.useMemo(
@@ -106,11 +108,11 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = (
         const entries = await monitorStore.loadCacheEntries();
         const totalSize = entries.reduce(
           (sum: number, e: CacheEntry) => sum + e.metadata.size,
-          0,
+          0
         );
         const totalHits = entries.reduce(
           (sum: number, e: CacheEntry) => sum + (e.metadata.hitCount ?? 0),
-          0,
+          0
         );
         return {
           entries,
@@ -121,27 +123,30 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = (
           },
         };
       }, 2000),
-    [monitorStore],
+    [monitorStore]
   );
   const polledSnapshot = React.useSyncExternalStore(
     snapshotStore.subscribe,
-    snapshotStore.getSnapshot,
+    snapshotStore.getSnapshot
   );
 
   const snapshot: CacheSnapshot = polledSnapshot ?? emptySnapshot;
 
-  const filteredEntries = useMemo(() =>
-    snapshot.entries.filter(entry => {
-      if (!searchQuery.trim()) {
-        return true;
-      }
-      const query = searchQuery.toLowerCase();
-      return (
-        entry.key.toLowerCase().includes(query)
-        || entry.objectType.toLowerCase().includes(query)
-        || entry.type.toLowerCase().includes(query)
-      );
-    }), [snapshot.entries, searchQuery]);
+  const filteredEntries = useMemo(
+    () =>
+      snapshot.entries.filter((entry) => {
+        if (!searchQuery.trim()) {
+          return true;
+        }
+        const query = searchQuery.toLowerCase();
+        return (
+          entry.key.toLowerCase().includes(query) ||
+          entry.objectType.toLowerCase().includes(query) ||
+          entry.type.toLowerCase().includes(query)
+        );
+      }),
+    [snapshot.entries, searchQuery]
+  );
 
   const toggleExpanded = (key: string) => {
     const newSet = new Set(expandedKeys);
@@ -162,7 +167,7 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = (
       snapshotStore.forceRefresh();
     } catch (error) {
       setInvalidateError(
-        error instanceof Error ? error : new Error(String(error)),
+        error instanceof Error ? error : new Error(String(error))
       );
     }
   };
@@ -177,7 +182,7 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = (
         snapshotStore.forceRefresh();
       } catch (error) {
         setInvalidateError(
-          error instanceof Error ? error : new Error(String(error)),
+          error instanceof Error ? error : new Error(String(error))
         );
       }
     }
@@ -330,9 +335,9 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = (
                     </Tag>
                   </Tooltip>
                   <Tooltip
-                    content={`Last updated: ${
-                      new Date(entry.metadata.timestamp).toLocaleString()
-                    }`}
+                    content={`Last updated: ${new Date(
+                      entry.metadata.timestamp
+                    ).toLocaleString()}`}
                   >
                     <span className={styles.age}>
                       {formatRelativeTime(entry.metadata.timestamp)}
@@ -364,23 +369,23 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = (
                     </CopyableCodeBlock>
                   </div>
 
-                  {entry.type === "list"
-                    && (entry.where != null || entry.orderBy != null) && (
-                    <div className={styles.section}>
-                      <h4>Query Parameters</h4>
-                      <CopyableCodeBlock className={styles.codeBlock}>
-                        {JSON.stringify(
-                          {
-                            where: entry.where,
-                            orderBy: entry.orderBy,
-                            pageSize: entry.pageSize,
-                          },
-                          null,
-                          2,
-                        )}
-                      </CopyableCodeBlock>
-                    </div>
-                  )}
+                  {entry.type === "list" &&
+                    (entry.where != null || entry.orderBy != null) && (
+                      <div className={styles.section}>
+                        <h4>Query Parameters</h4>
+                        <CopyableCodeBlock className={styles.codeBlock}>
+                          {JSON.stringify(
+                            {
+                              where: entry.where,
+                              orderBy: entry.orderBy,
+                              pageSize: entry.pageSize,
+                            },
+                            null,
+                            2
+                          )}
+                        </CopyableCodeBlock>
+                      </div>
+                    )}
 
                   {entry.type === "link" && entry.linkName != null && (
                     <div className={styles.section}>

@@ -45,7 +45,7 @@ function baseDefaults(overrides?: {
   return [
     valueAssignment(
       "font-family",
-      "Inter, system-ui, -apple-system, sans-serif",
+      "Inter, system-ui, -apple-system, sans-serif"
     ),
     valueAssignment("font-size-small", "12"),
     valueAssignment("font-size-medium", "14"),
@@ -58,8 +58,8 @@ function baseDefaults(overrides?: {
     valueAssignment("border-width", "1"),
     valueAssignment(
       "shadow",
-      overrides?.shadow
-        ?? "0 1px 3px oklch(0 0 0 / 0.12), 0 1px 2px oklch(0 0 0 / 0.08)",
+      overrides?.shadow ??
+        "0 1px 3px oklch(0 0 0 / 0.12), 0 1px 2px oklch(0 0 0 / 0.08)"
     ),
     valueAssignment("focus-width", "2"),
     valueAssignment("focus-offset", "2"),

@@ -15,6 +15,7 @@
  */
 
 import { beforeEach, describe, expect, it } from "vitest";
+
 import { ComponentContextCapture } from "./ComponentContextCapture.js";
 
 interface ParseStackTraceResult {
@@ -29,7 +30,7 @@ interface ComponentContextCaptureTestAccess {
 }
 
 function getTestAccess(
-  capture: ComponentContextCapture,
+  capture: ComponentContextCapture
 ): ComponentContextCaptureTestAccess {
   // @ts-expect-error Accessing private methods for testing
   return capture;
@@ -77,7 +78,7 @@ describe("ComponentContextCapture", () => {
     at getCurrentContext (file.ts:10:15)
     at useOsdkObject (hook.ts:20:25)
     at TodoItem (http://localhost:3000/src/App.tsx:42:15)
-    at renderComponent (react.js:100:20)`,
+    at renderComponent (react.js:100:20)`
       );
 
       expect(result.componentName).toBe("TodoItem");
@@ -92,7 +93,7 @@ describe("ComponentContextCapture", () => {
 getCurrentContext@file.ts:10:15
 useOsdkObject@hook.ts:20:25
 TodoItem@http://localhost:3000/src/App.tsx:42:15
-renderComponent@react.js:100:20`,
+renderComponent@react.js:100:20`
       );
 
       expect(result.componentName).toBe("TodoItem");
@@ -106,7 +107,7 @@ renderComponent@react.js:100:20`,
         `Error
     at getCurrentContext
     at useOsdkObject
-    at TodoItem`,
+    at TodoItem`
       );
 
       expect(result.componentName).toBe("TodoItem");
@@ -118,7 +119,7 @@ renderComponent@react.js:100:20`,
       const result = testAccess.parseStackTrace(
         `Error
     at anonymous
-    at <unknown>`,
+    at <unknown>`
       );
 
       expect(result.componentName).toBeNull();

@@ -35,8 +35,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import React, { useCallback, useMemo, useState } from "react";
 
 // cspell:ignore tracemonkey pldi
-const SAMPLE_PDF_URL =
-  `${import.meta.env.BASE_URL}compressed.tracemonkey-pldi-09.pdf`;
+const SAMPLE_PDF_URL = `${import.meta.env.BASE_URL}compressed.tracemonkey-pldi-09.pdf`;
 
 // Stable empty array to avoid re-render loops
 const EMPTY_ANNOTATIONS: PdfAnnotation[] = [];
@@ -237,8 +236,8 @@ function ConnectedPdfView(): React.ReactElement {
           <div ref={ctx.containerRef} style={scrollContainerStyles}>
             <div ref={ctx.viewerRef} className="pdfViewer" />
             {ctx.portalTargets.map((target) => {
-              const pageAnnotations = ctx.annotationsByPage[target.pageNumber]
-                ?? EMPTY_ANNOTATIONS;
+              const pageAnnotations =
+                ctx.annotationsByPage[target.pageNumber] ?? EMPTY_ANNOTATIONS;
               if (pageAnnotations.length === 0) {
                 return null;
               }
@@ -291,7 +290,7 @@ function AnnotationSidebarItem({
 
   const handleMouseEnter = useCallback(
     () => onHover(annotation.id),
-    [onHover, annotation.id],
+    [onHover, annotation.id]
   );
 
   const handleMouseLeave = useCallback(() => onHover(null), [onHover]);
@@ -303,7 +302,7 @@ function AnnotationSidebarItem({
         ? "var(--osdk-palette-blue-100, #e3f2fd)"
         : "transparent",
     }),
-    [isHovered],
+    [isHovered]
   );
 
   return (
@@ -347,12 +346,10 @@ function AnnotationSidebar({
   );
 }
 
-function AnnotationExplorerDemo(
-  { src }: { src: string },
-): React.ReactElement {
-  const [hoveredAnnotationId, setHoveredAnnotationId] = useState<
-    string | null
-  >(null);
+function AnnotationExplorerDemo({ src }: { src: string }): React.ReactElement {
+  const [hoveredAnnotationId, setHoveredAnnotationId] = useState<string | null>(
+    null
+  );
 
   const visibleAnnotations = useMemo(() => {
     if (hoveredAnnotationId == null) return EMPTY_ANNOTATIONS;
@@ -364,12 +361,9 @@ function AnnotationExplorerDemo(
     annotations: visibleAnnotations,
   });
 
-  const handleAnnotationHover = useCallback(
-    (annotationId: string | null) => {
-      setHoveredAnnotationId(annotationId);
-    },
-    [],
-  );
+  const handleAnnotationHover = useCallback((annotationId: string | null) => {
+    setHoveredAnnotationId(annotationId);
+  }, []);
 
   return (
     <PdfViewerProvider value={viewer}>

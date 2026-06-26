@@ -17,6 +17,7 @@
 import type { ChatTransport, UIMessage, UIMessageChunk } from "@osdk/aip-core";
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { useChat } from "./useChat.js";
 
 interface MockTransport {
@@ -47,33 +48,34 @@ function createMockTransport(): MockTransport {
     abortSignal: AbortSignal | undefined;
   }> = [];
 
-  const sendMessages = vi.fn(async (args: {
-    trigger: "submit-message" | "regenerate-message";
-    chatId: string;
-    messageId: string;
-    messages: Array<UIMessage>;
-    abortSignal: AbortSignal | undefined;
-  }) => {
-    calls.push({
-      trigger: args.trigger,
-      chatId: args.chatId,
-      messageId: args.messageId,
-      messages: args.messages,
-      abortSignal: args.abortSignal,
-    });
-    return new ReadableStream<UIMessageChunk>({
-      start(c) {
-        controller = c;
-      },
-    });
-  });
+  const sendMessages = vi.fn(
+    async (args: {
+      trigger: "submit-message" | "regenerate-message";
+      chatId: string;
+      messageId: string;
+      messages: Array<UIMessage>;
+      abortSignal: AbortSignal | undefined;
+    }) => {
+      calls.push({
+        trigger: args.trigger,
+        chatId: args.chatId,
+        messageId: args.messageId,
+        messages: args.messages,
+        abortSignal: args.abortSignal,
+      });
+      return new ReadableStream<UIMessageChunk>({
+        start(c) {
+          controller = c;
+        },
+      });
+    }
+  );
   const reconnect = vi.fn(async () => null);
 
   const transport: ChatTransport<UIMessage> = {
     sendMessages: sendMessages as ChatTransport<UIMessage>["sendMessages"],
-    reconnectToStream: reconnect as ChatTransport<
-      UIMessage
-    >["reconnectToStream"],
+    reconnectToStream:
+      reconnect as ChatTransport<UIMessage>["reconnectToStream"],
   };
 
   return {
@@ -92,7 +94,7 @@ afterEach(() => {
 
 function assertDefined<T>(
   value: T,
-  label: string,
+  label: string
 ): asserts value is NonNullable<T> {
   if (value == null) {
     throw new Error(`${label} was unexpectedly null/undefined`);
@@ -440,11 +442,13 @@ describe("useChat", () => {
       const { result } = renderHook(() =>
         useChat({ transport: m.transport, experimentalThrottle: 0 })
       );
-      const next: Array<UIMessage> = [{
-        id: "x",
-        role: "user",
-        parts: [{ type: "text", text: "set" }],
-      }];
+      const next: Array<UIMessage> = [
+        {
+          id: "x",
+          role: "user",
+          parts: [{ type: "text", text: "set" }],
+        },
+      ];
 
       act(() => result.current.setMessages(next));
       expect(result.current.messages).toEqual(next);
@@ -455,11 +459,13 @@ describe("useChat", () => {
       const { result } = renderHook(() =>
         useChat({
           transport: m.transport,
-          messages: [{
-            id: "u-1",
-            role: "user",
-            parts: [{ type: "text", text: "a" }],
-          }],
+          messages: [
+            {
+              id: "u-1",
+              role: "user",
+              parts: [{ type: "text", text: "a" }],
+            },
+          ],
           experimentalThrottle: 0,
         })
       );
@@ -539,8 +545,9 @@ describe("useChat", () => {
 
   describe("validation", () => {
     it("throws when neither model nor transport is provided", () => {
-      expect(() => renderHook(() => useChat({ experimentalThrottle: 0 })))
-        .toThrow(/`model` is required/);
+      expect(() =>
+        renderHook(() => useChat({ experimentalThrottle: 0 }))
+      ).toThrow(/`model` is required/);
     });
   });
 });
