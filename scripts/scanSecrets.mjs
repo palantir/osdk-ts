@@ -6,7 +6,10 @@
 
 // Three base64url segments, each with an 8-char floor, separated by dots. The
 // 3-segment + length-floor shape is load-bearing: it rejects near-misses like
-// `eyJabc.def` while matching real JWTs anywhere within a line.
+// `eyJabc.def` while matching typical compact JWTs anywhere within a line. This
+// is a heuristic, not a parser: it won't catch alg:none tokens (empty 3rd
+// segment), segments under the floor, or a token split across lines.
+// cspell:ignore Jabc
 const JWT_RE = /eyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}/g;
 
 /**

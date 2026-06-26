@@ -12,24 +12,30 @@
  * rotate it. That is safe here because this runs LOCALLY on pre-commit only —
  * do not pipe this output anywhere persistent (CI logs, shared transcripts).
  *
- * Guardrail, not a guarantee: bypassable with `git commit --no-verify`, and it
- * scans staged changes only, not history.
+ * Guardrail, not a guarantee: it can be bypassed with `git commit --no-verify`
+ * and it never scans history. It scans the FULL staged content of each changed
+ * file (not just the added hunks), so editing a file that already contains a
+ * token will flag it. A staged file it cannot read is failed closed, not skipped.
  */
 
 import { execFileSync } from "node:child_process";
 import { scanText } from "./scanSecrets.mjs";
 
-/** @returns {string[]} staged file paths (added/copied/modified/renamed) */
+/** @returns {string[]} staged file paths (added/copied/modified/renamed/type-changed) */
+// cspell:ignore ACMRT
 function getStagedFiles() {
   const out = execFileSync(
     "git",
-    ["diff", "--cached", "--name-only", "--diff-filter=ACMR", "-z"],
+    ["diff", "--cached", "--name-only", "--diff-filter=ACMRT", "-z"],
     { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 },
   );
   return out.split("\0").filter((f) => f.length > 0);
 }
 
-/** @returns {Buffer | null} the staged blob for a path, or null if unreadable */
+/**
+ * @returns {Buffer | null} the staged blob, or null if it could not be read
+ *   (git errored, or the blob exceeds maxBuffer). Callers fail closed on null.
+ */
 function getStagedContent(path) {
   try {
     return execFileSync("git", ["show", `:${path}`], {
@@ -41,10 +47,17 @@ function getStagedContent(path) {
 }
 
 const findings = [];
+let unreadable = false;
 
 for (const file of getStagedFiles()) {
   const buf = getStagedContent(file);
   if (buf == null) {
+    // Fail closed: a staged file we cannot read might hide a secret, so refuse
+    // it rather than skipping it silently.
+    console.error(
+      `✖ Could not read staged content of ${file} — refusing to pass it through without scanning.`,
+    );
+    unreadable = true;
     continue;
   }
   // Skip binary files (a NUL byte is a good-enough heuristic).
@@ -67,5 +80,8 @@ if (findings.length > 0) {
   console.error(
     "To bypass intentionally (discouraged): commit with --no-verify.\n",
   );
+}
+
+if (findings.length > 0 || unreadable) {
   process.exit(1);
 }
