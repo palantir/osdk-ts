@@ -30,10 +30,7 @@ import type { Canonical } from "../Canonical.js";
 import type { QuerySubscription } from "../QuerySubscription.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
 import { tombstone } from "../tombstone.js";
-import {
-  mergeObjectFields,
-  mergeSelectFields,
-} from "../utils/rdpFieldOperations.js";
+import { reconcileObject } from "../utils/rdpFieldOperations.js";
 import { type ObjectCacheKey } from "./ObjectCacheKey.js";
 import { ObjectQuery } from "./ObjectQuery.js";
 
@@ -178,9 +175,9 @@ export class ObjectsHelper extends AbstractHelper<
     );
     const sourceRdpFields = computedRdpFields ?? trackedRdpFields;
 
-    // a $select carries only some base props, and a write that computed only
-    // some derived fields leaves the rest out; either way merge to keep the
-    // cached values. a write that computed every tracked field is stored as-is,
+    // merge to keep cached fields the write didn't load: a $select carries only
+    // some base props, and a write that computed only some derived fields leaves
+    // the rest out. a write that computed every tracked field is written as-is,
     // so an omitted field clears.
     const existingHolder = existing?.value;
     if (
@@ -188,22 +185,18 @@ export class ObjectsHelper extends AbstractHelper<
       && valueToWrite !== tombstone
       && existingHolder
       && this.isObjectHolder(existingHolder)
+      && (
+        (selectFields && selectFields.size > 0)
+        || !isSuperset(sourceRdpFields, trackedRdpFields)
+      )
     ) {
-      if (selectFields && selectFields.size > 0) {
-        valueToWrite = mergeSelectFields(
-          valueToWrite,
-          selectFields,
-          existingHolder,
-          sourceRdpFields,
-        );
-      } else if (!isSuperset(sourceRdpFields, trackedRdpFields)) {
-        valueToWrite = mergeObjectFields(
-          valueToWrite,
-          sourceRdpFields,
-          trackedRdpFields,
-          existingHolder,
-        );
-      }
+      valueToWrite = this.mergeInto(
+        valueToWrite,
+        existingHolder,
+        sourceRdpFields,
+        trackedRdpFields,
+        selectFields,
+      );
     }
 
     batch.write(sourceCacheKey, valueToWrite, status);
@@ -218,6 +211,7 @@ export class ObjectsHelper extends AbstractHelper<
       sourceCacheKey,
     );
 
+    // Propagate write to sibling cache keys that observe the same (apiName, pk)
     const relatedKeys = metadata
       ? this.store.objectCacheKeyRegistry.getVariants(
         metadata.apiName,
@@ -242,23 +236,15 @@ export class ObjectsHelper extends AbstractHelper<
           ? targetCurrentValue
           : undefined;
 
-      // Preserve target-only fields when a partial-select fetch propagates
-      // to a sibling variant, so different-select variants converge to the
-      // union rather than clobbering each other.
-      let merged = value;
-      if (selectFields?.size && targetHolder) {
-        merged = mergeSelectFields(
-          merged,
-          selectFields,
-          targetHolder,
-          sourceRdpFields,
-        );
-      }
-      merged = this.mergeForTarget(
-        merged,
+      const targetRdpFields = this.store.objectCacheKeyRegistry.getRdpFieldSet(
+        targetKey,
+      );
+      const merged = this.mergeInto(
+        value,
         targetHolder,
         sourceRdpFields,
-        targetKey,
+        targetRdpFields,
+        selectFields,
       );
 
       batch.write(targetKey, merged, status);
@@ -266,11 +252,10 @@ export class ObjectsHelper extends AbstractHelper<
   }
 
   /**
-   * Check if a cache key is actively observed or pending cleanup.
-   * During React unmount-remount cycles, a key may be momentarily
-   * unobserved while its cleanup is deferred to a microtask.
-   * We still propagate to such keys to prevent stale data when
-   * the subscription is re-established.
+   * A cache key counts as active if it is observed or pending cleanup. During
+   * React unmount-remount cycles a key can be momentarily unobserved while its
+   * cleanup is deferred to a microtask; propagating to it keeps data fresh for
+   * when the subscription is re-established.
    */
   private isKeyActive(key: ObjectCacheKey): boolean {
     const subject = this.store.subjects.peek(key);
@@ -280,9 +265,6 @@ export class ObjectsHelper extends AbstractHelper<
     return (this.store.pendingCleanup.get(key) ?? 0) > 0;
   }
 
-  /**
-   * Type guard to check if a value is an ObjectHolder
-   */
   private isObjectHolder(
     value: ObjectHolder | undefined,
   ): value is ObjectHolder {
@@ -292,24 +274,17 @@ export class ObjectsHelper extends AbstractHelper<
       && "$primaryKey" in value;
   }
 
-  /**
-   * Merge object data for a specific target cache key, preserving RDP fields
-   */
-  private mergeForTarget(
-    sourceValue: ObjectHolder,
-    targetCurrentValue: ObjectHolder | undefined,
+  /** merges a freshly written object into whatever is cached at a key. */
+  private mergeInto(
+    value: ObjectHolder,
+    cached: ObjectHolder | undefined,
     sourceRdpFields: ReadonlySet<string>,
-    targetCacheKey: ObjectCacheKey,
+    targetRdpFields: ReadonlySet<string>,
+    loadedBaseFields: ReadonlySet<string> | undefined,
   ): ObjectHolder {
-    const targetRdpFields = this.store.objectCacheKeyRegistry.getRdpFieldSet(
-      targetCacheKey,
-    );
-
-    return mergeObjectFields(
-      sourceValue,
-      sourceRdpFields,
-      targetRdpFields,
-      targetCurrentValue,
+    return reconcileObject(
+      { value, rdpFields: sourceRdpFields, loadedBaseFields },
+      { value: cached, rdpFields: targetRdpFields },
     );
   }
 }
