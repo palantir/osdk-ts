@@ -155,7 +155,7 @@ export namespace ActionParam {
             	} ? R extends true ? K : never : never]? : T[K] extends {
             		type: infer U
             		nullable: infer R
-            	} ? U extends keyof DataValueClientToWire ? R extends true ? DataValueClientToWire[U] | undefined : never : never : never };
+            	} ? U extends keyof DataValueClientToWire ? R extends true ? DataValueClientToWire[U] | null : never : never : never };
 }
 
 // @public (undocumented)
