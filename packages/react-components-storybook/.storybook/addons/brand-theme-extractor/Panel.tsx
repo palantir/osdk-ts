@@ -14,11 +14,17 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { useGlobals } from "storybook/manager-api";
 import { styled } from "storybook/theming";
 import { GLOBALS_KEY } from "./constants.js";
 import { ExportButtons } from "./ExportButtons.js";
+import {
+  autoMapFromPalette,
+  type ExtractedPalette,
+  extractPalette,
+  type PaletteSwatch,
+} from "./palette-extractor.js";
 import {
   findMatchingPreset,
   parseBrandThemeState,
@@ -38,6 +44,15 @@ const STYLE_PRESETS: StylePreset[] = [
   { label: "Default", radius: "4", spacing: "4" },
   { label: "Rounded", radius: "8", spacing: "5" },
   { label: "Pill", radius: "16", spacing: "6" },
+];
+
+const SWATCH_LABELS: Array<{ key: keyof ExtractedPalette; label: string }> = [
+  { key: "vibrant", label: "Vibrant" },
+  { key: "darkVibrant", label: "Dark Vibrant" },
+  { key: "lightVibrant", label: "Light Vibrant" },
+  { key: "muted", label: "Muted" },
+  { key: "darkMuted", label: "Dark Muted" },
+  { key: "lightMuted", label: "Light Muted" },
 ];
 
 interface PanelProps {
@@ -124,6 +139,30 @@ const InputRow = styled.div({
   flexWrap: "wrap",
 });
 
+const ActionButton = styled.button<{ disabled?: boolean }>(
+  ({ theme, disabled }) => ({
+    fontSize: 11,
+    padding: "5px 12px",
+    border: `1px solid ${theme.appBorderColor}`,
+    borderRadius: 4,
+    background: theme.background.content,
+    color: theme.color.defaultText,
+    cursor: disabled ? "not-allowed" : "pointer",
+    fontWeight: 500,
+    opacity: disabled ? 0.5 : 1,
+    transition: "background 150ms ease",
+    "&:hover": disabled ? {} : {
+      background: theme.background.hoverable,
+    },
+  }),
+);
+
+const ErrorMessage = styled.div(({ theme }) => ({
+  color: theme.color.negative,
+  fontSize: 11,
+  padding: "4px 0",
+}));
+
 const PresetLabel = styled.div(({ theme }) => ({
   fontSize: 11,
   fontWeight: 600,
@@ -154,6 +193,38 @@ const SectionDivider = styled.div(({ theme }) => ({
   margin: "4px 0",
 }));
 
+const SwatchRow = styled.div({
+  display: "flex",
+  gap: 6,
+  padding: "6px 0",
+  flexWrap: "wrap",
+});
+
+const SwatchItem = styled.div({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  gap: 2,
+});
+
+const SwatchColor = styled.div<{ color: string }>(({ color, theme }) => ({
+  width: 32,
+  height: 32,
+  borderRadius: 4,
+  backgroundColor: color,
+  border: `1px solid ${theme.appBorderColor}`,
+}));
+
+const SwatchLabel = styled.span(({ theme }) => ({
+  fontSize: 9,
+  color: theme.color.mediumdark,
+  textAlign: "center" as const,
+  maxWidth: 40,
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap" as const,
+}));
+
 // ── Components ────────────────────────────────────────────
 
 export function Panel({ active }: PanelProps): React.ReactElement | null {
@@ -171,7 +242,12 @@ function PanelContent(): React.ReactElement {
     [globals],
   );
 
+  const [extractionOpen, setExtractionOpen] = useState(true);
   const [exportOpen, setExportOpen] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [palette, setPalette] = useState<ExtractedPalette | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const updateState = useCallback(
     (partial: Partial<BrandThemeGlobals>) => {
@@ -186,6 +262,37 @@ function PanelContent(): React.ReactElement {
       return findMatchingPreset(assignments, state.colorMode);
     },
     [state.colorMode],
+  );
+
+  const handleFileUpload = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      setLoading(true);
+      setError(null);
+      try {
+        const extracted = await extractPalette(file);
+        setPalette(extracted);
+        const assignments = autoMapFromPalette(extracted, state.colorMode);
+        updateState({
+          assignments,
+          active: true,
+          selectedPresetId: "custom",
+        });
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "Failed to extract colors",
+        );
+      } finally {
+        setLoading(false);
+        // Reset file input so the same file can be re-selected
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+      }
+    },
+    [state.colorMode, updateState],
   );
 
   const handleAssignmentChange = useCallback(
@@ -253,6 +360,39 @@ function PanelContent(): React.ReactElement {
         </ToggleRow>
       </HeaderRow>
 
+      {/* Collapsible extraction section */}
+      <SectionToggle
+        open={extractionOpen}
+        onClick={() => setExtractionOpen(!extractionOpen)}
+      >
+        <span>&#x25BE;</span>
+        <span>Extract from Image</span>
+      </SectionToggle>
+
+      {extractionOpen && (
+        <div>
+          <InputRow>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleFileUpload}
+              style={{ display: "none" }}
+            />
+            <ActionButton
+              onClick={() => fileInputRef.current?.click()}
+              disabled={loading}
+            >
+              {loading ? "Extracting..." : "Upload Image"}
+            </ActionButton>
+          </InputRow>
+          {error && <ErrorMessage>{error}</ErrorMessage>}
+          {palette && <PaletteSwatches palette={palette} />}
+        </div>
+      )}
+
+      <SectionDivider />
+
       {/* Style presets — quick way to set radius/spacing */}
       <div>
         <PresetLabel>Style</PresetLabel>
@@ -299,5 +439,24 @@ function PanelContent(): React.ReactElement {
         </>
       )}
     </PanelWrapper>
+  );
+}
+
+function PaletteSwatches(
+  { palette }: { palette: ExtractedPalette },
+): React.ReactElement {
+  return (
+    <SwatchRow>
+      {SWATCH_LABELS.map(({ key, label }) => {
+        const swatch: PaletteSwatch | null = palette[key];
+        if (!swatch) return null;
+        return (
+          <SwatchItem key={key}>
+            <SwatchColor color={swatch.hex} title={`${label}: ${swatch.hex}`} />
+            <SwatchLabel>{label}</SwatchLabel>
+          </SwatchItem>
+        );
+      })}
+    </SwatchRow>
   );
 }

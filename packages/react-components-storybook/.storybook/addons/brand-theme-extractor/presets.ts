@@ -32,12 +32,12 @@ export interface ThemePreset {
   assignments: TokenAssignment[];
 }
 
-function valueAssignment(role: string, value: string): TokenAssignment {
+export function valueAssignment(role: string, value: string): TokenAssignment {
   return { role, colorIndex: -1, customValue: value };
 }
 
 /** Shared non-color defaults used across most presets */
-function baseDefaults(overrides?: {
+export function baseDefaults(overrides?: {
   radius?: string;
   spacing?: string;
   shadow?: string;
