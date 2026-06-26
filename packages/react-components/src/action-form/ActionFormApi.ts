@@ -36,7 +36,15 @@ import type {
  */
 export type ActionFormProps<Q extends ActionDefinition<unknown>> =
   | (ActionFormConfigProps<Q> & {
+    /**
+     * Current form values (controlled mode). Provide together with
+     * `onFormStateChange`; omit both for uncontrolled mode.
+     */
     formState: FormState<Q>;
+    /**
+     * Called with a state updater whenever a field value changes. Required
+     * in controlled mode.
+     */
     onFormStateChange: (
       updater: (prevState: FormState<Q>) => FormState<Q>,
     ) => void;
@@ -66,8 +74,8 @@ interface ActionFormConfigProps<Q extends ActionDefinition<unknown>>
   formFieldDefinitions?: ReadonlyArray<FormFieldDefinition<Q>>;
 
   /**
-   * If supplied, this will override the default submit action
-   * By default, the action's applyAction will be called
+   * If supplied, this will override the default submit action.
+   * By default, the action's applyAction will be called.
    *
    * @param formState all field values when onSubmit is called
    * @param applyAction the function to execute the action

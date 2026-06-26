@@ -23,10 +23,36 @@ import { EMPTY_ARRAY } from "./utils/cbacPickerUtils.js";
 import { toggleMarking } from "./utils/selectionLogic.js";
 
 export interface CbacPickerProps {
+  /**
+   * Initial set of selected marking IDs.
+   *
+   * @default []
+   */
   initialMarkingIds?: string[];
+
+  /**
+   * Called when the selection changes.
+   *
+   * @param markingIds The currently selected marking IDs
+   */
   onChange: (markingIds: string[]) => void;
+
+  /**
+   * Optional constraint capping the maximum classification a user may select.
+   * When set, the picker surfaces a callout if the selection exceeds it.
+   */
   maxClassificationConstraint?: MaxClassificationConstraint;
+
+  /**
+   * Disables marking toggle interactions.
+   *
+   * @default false
+   */
   readOnly?: boolean;
+
+  /**
+   * CSS class for the picker container.
+   */
   className?: string;
 }
 
