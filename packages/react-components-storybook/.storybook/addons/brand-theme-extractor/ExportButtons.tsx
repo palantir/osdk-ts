@@ -1,0 +1,157 @@
+/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import React, { useCallback, useMemo, useState } from "react";
+import { styled } from "storybook/theming";
+import { generateCss, generateMarkdown } from "./export.js";
+import type { TokenAssignment } from "./types.js";
+
+interface ExportButtonsProps {
+  assignments: TokenAssignment[];
+}
+
+const ButtonRow = styled.div({
+  display: "flex",
+  flexWrap: "wrap",
+  gap: 8,
+  padding: "0.5em 0",
+});
+
+const PrimaryExportButton = styled.button(({ theme }) => ({
+  fontSize: 12,
+  fontWeight: 600,
+  padding: "8px 16px",
+  border: "none",
+  borderRadius: 4,
+  background: theme.color.secondary,
+  color: "#fff",
+  cursor: "pointer",
+  transition: "background 150ms ease, opacity 150ms ease",
+  "&:hover": {
+    opacity: 0.9,
+  },
+  "&:active": {
+    opacity: 0.8,
+  },
+}));
+
+const SecondaryExportButton = styled.button(({ theme }) => ({
+  fontSize: 11,
+  fontWeight: 500,
+  padding: "6px 12px",
+  border: `1px solid ${theme.appBorderColor}`,
+  borderRadius: 4,
+  background: theme.background.content,
+  color: theme.color.defaultText,
+  cursor: "pointer",
+  transition: "background 150ms ease, border-color 150ms ease",
+  "&:hover": {
+    background: theme.background.hoverable,
+    borderColor: theme.color.medium,
+  },
+  "&:active": {
+    background: theme.background.hoverable,
+  },
+}));
+
+export function ExportButtons({
+  assignments,
+}: ExportButtonsProps): React.ReactElement {
+  const [copied, setCopied] = useState<string | null>(null);
+
+  const copyToClipboard = useCallback(
+    async (content: string, label: string) => {
+      try {
+        if (navigator.clipboard) {
+          await navigator.clipboard.writeText(content);
+        } else {
+          copyWithTextAreaFallback(content);
+        }
+        setCopied(label);
+      } catch {
+        setCopied("Failed");
+      } finally {
+        window.setTimeout(() => setCopied(null), 2000);
+      }
+    },
+    [],
+  );
+
+  const download = useCallback(
+    (content: string, filename: string, mime: string) => {
+      const blob = new Blob([content], { type: mime });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      a.rel = "noopener";
+      // Some browsers ignore programmatic downloads unless the anchor is in the
+      // document. Keep it attached until after the click has been processed.
+      document.body.appendChild(a);
+      a.click();
+      window.setTimeout(() => {
+        a.remove();
+        URL.revokeObjectURL(url);
+      }, 0);
+    },
+    [],
+  );
+
+  const css = useMemo(() => generateCss(assignments), [assignments]);
+  const md = useMemo(() => generateMarkdown(assignments), [assignments]);
+
+  return (
+    <ButtonRow>
+      <PrimaryExportButton
+        onClick={() => download(css, "tokens.css", "text/css")}
+      >
+        Download tokens.css
+      </PrimaryExportButton>
+      <PrimaryExportButton
+        onClick={() => download(md, "design.md", "text/markdown")}
+      >
+        Download design.md
+      </PrimaryExportButton>
+      <SecondaryExportButton
+        onClick={() => copyToClipboard(css, "CSS")}
+      >
+        {copied === "CSS" ? "Copied!" : "Copy CSS"}
+      </SecondaryExportButton>
+      <SecondaryExportButton
+        onClick={() => copyToClipboard(md, "Markdown")}
+      >
+        {copied === "Markdown" ? "Copied!" : "Copy Markdown"}
+      </SecondaryExportButton>
+    </ButtonRow>
+  );
+}
+
+function copyWithTextAreaFallback(content: string): void {
+  const textArea = document.createElement("textarea");
+  textArea.value = content;
+  textArea.setAttribute("readonly", "");
+  textArea.style.position = "fixed";
+  textArea.style.insetBlockStart = "0";
+  textArea.style.insetInlineStart = "-9999px";
+  document.body.appendChild(textArea);
+  textArea.select();
+
+  try {
+    document.execCommand("copy");
+  } finally {
+    textArea.remove();
+  }
+}

@@ -14,17 +14,9 @@
  * limitations under the License.
  */
 
-export interface ExtractedColor {
-  rgb: [number, number, number];
-  hex: string;
-  luminance: number;
-  chroma: number;
-  count: number;
-}
-
 export interface TokenAssignment {
   role: string;
-  /** Index into the palette array, or -1 for a custom value */
+  /** Legacy field, always -1. Kept for state compatibility. */
   colorIndex: number;
   /** Custom value (hex for colors, string for other tokens) */
   customValue?: string;
@@ -36,7 +28,6 @@ export interface BrandThemeGlobals {
   active: boolean;
   colorMode: ThemeColorMode;
   selectedPresetId: string;
-  palette: ExtractedColor[];
   assignments: TokenAssignment[];
 }
 
