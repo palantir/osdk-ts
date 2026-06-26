@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import type { ActionMetadata } from "@osdk/api";
 import { MediaSets } from "@osdk/foundry.mediasets";
 import { type DataValue } from "@osdk/foundry.ontologies";
 import * as Attachments from "@osdk/foundry.ontologies/Attachment";
@@ -44,7 +43,6 @@ import { isWireObjectSet } from "./WireObjectSet.js";
 export async function toDataValue(
   value: unknown,
   client: MinimalClient,
-  actionMetadata: ActionMetadata,
 ): Promise<DataValue> {
   if (value == null) {
     // typeof null is 'object' so do this first
@@ -62,14 +60,13 @@ export async function toDataValue(
     ) {
       const converted = [];
       for (const value of values) {
-        converted.push(await toDataValue(value, client, actionMetadata));
+        converted.push(await toDataValue(value, client));
       }
       return converted;
     }
     const promiseArray = Array.from(
       value,
-      async (innerValue) =>
-        await toDataValue(innerValue, client, actionMetadata),
+      async (innerValue) => await toDataValue(innerValue, client),
     );
     return Promise.all(promiseArray);
   }
@@ -83,7 +80,7 @@ export async function toDataValue(
         filename: value.name,
       },
     );
-    return await toDataValue(attachment.rid, client, actionMetadata);
+    return await toDataValue(attachment.rid, client);
   }
 
   if (isAttachmentFile(value)) {
@@ -94,7 +91,7 @@ export async function toDataValue(
         filename: value.name as string,
       },
     );
-    return await toDataValue(attachment.rid, client, actionMetadata);
+    return await toDataValue(attachment.rid, client);
   }
 
   if (isMediaUpload(value)) {
@@ -106,7 +103,7 @@ export async function toDataValue(
         preview: true,
       },
     );
-    return await toDataValue(mediaRef, client, actionMetadata);
+    return await toDataValue(mediaRef, client);
   }
 
   if (isMedia(value)) {
@@ -119,11 +116,11 @@ export async function toDataValue(
 
   // objects just send the JSON'd primaryKey
   if (isOntologyObjectV2(value)) {
-    return await toDataValue(value.__primaryKey, client, actionMetadata);
+    return await toDataValue(value.__primaryKey, client);
   }
 
   if (isObjectSpecifiersObject(value)) {
-    return await toDataValue(value.$primaryKey, client, actionMetadata);
+    return await toDataValue(value.$primaryKey, client);
   }
 
   // object set (the rid as a string (passes through the last return), or the ObjectSet definition directly)
@@ -154,7 +151,7 @@ export async function toDataValue(
     return Object.entries(value).reduce(
       async (promisedAcc, [key, structValue]) => {
         const acc = await promisedAcc;
-        acc[key] = await toDataValue(structValue, client, actionMetadata);
+        acc[key] = await toDataValue(structValue, client);
         return acc;
       },
       Promise.resolve({} as { [key: string]: DataValue }),
