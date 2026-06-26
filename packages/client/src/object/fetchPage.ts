@@ -37,6 +37,7 @@ import type {
   LoadObjectSetV2MultipleObjectTypesRequest,
   ObjectSet,
   OntologyObjectV2,
+  ReferenceSigningOptions,
   SearchJsonQueryV2,
   SearchOrderByV2,
 } from "@osdk/foundry.ontologies";
@@ -638,6 +639,7 @@ async function applyFetchArgs<
     pageToken?: PageToken;
     pageSize?: PageSize;
     loadPropertySecurities?: boolean;
+    referenceSigningOptions?: ReferenceSigningOptions;
   },
 >(
   args: FetchPageArgs<
@@ -665,6 +667,10 @@ async function applyFetchArgs<
 
   if (args?.$loadPropertySecurityMetadata) {
     body.loadPropertySecurities = true;
+  }
+
+  if (args?.$signMediaReferences) {
+    body.referenceSigningOptions = { signMediaReferences: true };
   }
 
   const orderBy = args?.$orderBy;

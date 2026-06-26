@@ -86,6 +86,14 @@ export interface ObserveObjectSetOptions<
    * populated with conjunctive/disjunctive marking requirements per property.
    */
   $loadPropertySecurityMetadata?: boolean;
+
+  /**
+   * When true, returns signed tokens for `MediaReference` properties fetched
+   * by this query.
+   *
+   * @default false
+   */
+  $signMediaReferences?: boolean;
 }
 
 export interface ObjectSetQueryOptions

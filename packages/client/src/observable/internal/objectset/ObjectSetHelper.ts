@@ -179,6 +179,10 @@ export class ObjectSetHelper extends AbstractHelper<
       operations.loadPropertySecurity = true;
     }
 
+    if (options.$signMediaReferences) {
+      operations.signMediaReferences = true;
+    }
+
     return operations as Canonical<ObjectSetOperations>;
   }
 }

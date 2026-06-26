@@ -177,6 +177,14 @@ interface UseOsdkObjectsBaseOptions<
    * for interface queries. Has no effect for non-interface queries.
    */
   $includeAllBaseObjectProperties?: boolean;
+
+  /**
+   * When true, returns signed tokens for `MediaReference` properties fetched
+   * by this query.
+   *
+   * @default false
+   */
+  $signMediaReferences?: boolean;
 }
 
 export interface UseOsdkListResult<
@@ -310,6 +318,7 @@ export function useOsdkObjects<
     $loadPropertySecurityMetadata,
     $includeAllBaseObjectProperties,
     resolveToObjectType,
+    $signMediaReferences,
   } = options ?? {};
 
   const canonOptions = observableClient.canonicalizeOptions({
@@ -359,6 +368,9 @@ export function useOsdkObjects<
               ? { $loadPropertySecurityMetadata }
               : {}),
             ...(resolveToObjectType ? { resolveToObjectType: true } : {}),
+            ...($signMediaReferences
+              ? { $signMediaReferences }
+              : {}),
           }, observer),
         devToolsMetadata({
           hookType: "useOsdkObjects",
@@ -388,6 +400,7 @@ export function useOsdkObjects<
       $loadPropertySecurityMetadata,
       $includeAllBaseObjectProperties,
       !!resolveToObjectType,
+      $signMediaReferences,
     ],
   );
 

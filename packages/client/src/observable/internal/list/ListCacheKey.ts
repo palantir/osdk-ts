@@ -35,6 +35,7 @@ export const SELECT_IDX = 8;
 export const LOAD_PROPERTY_SECURITY_IDX = 9;
 export const INCLUDE_ALL_BASE_PROPERTIES_IDX = 10;
 export const RESOLVE_TO_OBJECT_TYPE_IDX = 11;
+export const SIGN_MEDIA_REFERENCES_IDX = 12;
 
 export interface ListStorageData extends CollectionStorageData {}
 
@@ -58,6 +59,7 @@ export interface ListCacheKey extends
       loadPropertySecurity?: true | undefined,
       includeAllBaseObjectProperties?: true | undefined,
       resolveToObjectType?: true | undefined,
+      signMediaReferences?: true | undefined,
     ]
   >
 {

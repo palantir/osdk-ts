@@ -81,6 +81,7 @@ export interface SelectArg<
   $select?: readonly L[];
   $includeRid?: R;
   $loadPropertySecurityMetadata?: PROPERTY_SECURITIES;
+  $signMediaReferences?: boolean;
 }
 
 export interface OrderByArg<

@@ -187,6 +187,14 @@ export interface ObserveListOptions<
   $includeAllBaseObjectProperties?: boolean;
 
   /**
+   * When true, returns signed tokens for `MediaReference` properties fetched
+   * by this query.
+   *
+   * @default false
+   */
+  $signMediaReferences?: boolean;
+
+  /**
    * Automatically fetch additional pages on initial load.
    *
    * - `true`: Fetch all available pages automatically
