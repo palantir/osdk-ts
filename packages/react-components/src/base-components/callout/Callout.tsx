@@ -49,9 +49,9 @@ export interface CalloutProps {
   actions?: React.ReactNode;
 
   /**
-   * Override the default intent icon. Pass `false` to hide the icon.
+   * Override the default intent icon.
    */
-  icon?: React.ComponentType<{ size?: number }> | false;
+  icon?: React.ComponentType<{ size?: number }>;
 
   className?: string;
 }
@@ -86,9 +86,7 @@ export const Callout: React.NamedExoticComponent<CalloutProps> = React.memo(
     icon,
     className,
   }) {
-    const IconComponent = icon !== false
-      ? (icon ?? DEFAULT_ICONS[intent])
-      : undefined;
+    const IconComponent = icon ?? DEFAULT_ICONS[intent];
 
     return (
       <div
