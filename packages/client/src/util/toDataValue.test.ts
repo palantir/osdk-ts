@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ActionMetadata, Media, MediaUpload } from "@osdk/api";
+import type { Media, MediaUpload } from "@osdk/api";
 import { Employee, Task } from "@osdk/client.test.ontology";
 import type { MediaReference } from "@osdk/foundry.core";
 import type { SetupServer } from "@osdk/shared.test";
@@ -39,7 +39,6 @@ import { toDataValue } from "./toDataValue.js";
 describe(toDataValue, () => {
   let client: Client;
   let clientCtx: MinimalClient;
-  let mockActionMetadata: ActionMetadata;
   let apiServer: SetupServer;
 
   const mockFetch: MockedFunction<typeof globalThis.fetch> = vi.fn();
@@ -56,12 +55,6 @@ describe(toDataValue, () => {
       testSetup.auth,
       {},
     );
-
-    // toDataValue only needs the apiName right now, update this if that changes
-    const fakeActionMetadata = {
-      apiName: "createUnstructuredImageExampleObject",
-    };
-    mockActionMetadata = fakeActionMetadata as ActionMetadata;
 
     return () => {
       testSetup.apiServer.close();
@@ -81,7 +74,6 @@ describe(toDataValue, () => {
     const convertedBasic = await toDataValue(
       basic,
       clientCtx,
-      mockActionMetadata,
     );
     expect(convertedBasic).toEqual(basic);
   });
@@ -98,7 +90,6 @@ describe(toDataValue, () => {
         attachmentSet,
       },
       clientCtx,
-      mockActionMetadata,
     );
 
     expect(recursiveConversion).toEqual({
@@ -118,7 +109,6 @@ describe(toDataValue, () => {
     const recursiveConversion = await toDataValue(
       struct,
       clientCtx,
-      mockActionMetadata,
     );
 
     expect(recursiveConversion).toEqual({
@@ -136,10 +126,10 @@ describe(toDataValue, () => {
       coordinates: [[[0, 0], [1, 0], [1, 1], [0, 0]]],
     };
 
-    expect(await toDataValue(point, clientCtx, mockActionMetadata)).toEqual(
+    expect(await toDataValue(point, clientCtx)).toEqual(
       point,
     );
-    expect(await toDataValue(polygon, clientCtx, mockActionMetadata)).toEqual(
+    expect(await toDataValue(polygon, clientCtx)).toEqual(
       polygon,
     );
   });
@@ -149,7 +139,6 @@ describe(toDataValue, () => {
     const ontologyConversion = await toDataValue(
       employee,
       clientCtx,
-      mockActionMetadata,
     );
     expect(ontologyConversion).toEqual(
       stubData.employee1.__primaryKey,
@@ -161,7 +150,6 @@ describe(toDataValue, () => {
     const ontologyConversion = await toDataValue(
       task,
       clientCtx,
-      mockActionMetadata,
     );
     expect(ontologyConversion).toEqual(
       task.$primaryKey,
@@ -189,7 +177,6 @@ describe(toDataValue, () => {
     const objectSetConversion = await toDataValue(
       clientObjectSet,
       clientCtx,
-      mockActionMetadata,
     );
     expect(objectSetConversion).toMatchInlineSnapshot(
       expected,
@@ -198,7 +185,6 @@ describe(toDataValue, () => {
     const definitionConversion = await toDataValue(
       definition,
       clientCtx,
-      mockActionMetadata,
     );
     expect(definitionConversion).toMatchInlineSnapshot(expected);
   });
@@ -209,7 +195,6 @@ describe(toDataValue, () => {
     const converted = await toDataValue(
       attachmentUpload,
       clientCtx,
-      mockActionMetadata,
     );
 
     expect(converted).toMatch(/ri\.attachments.main.attachment\.[a-z0-9\-]+/i);
@@ -226,7 +211,7 @@ describe(toDataValue, () => {
       { name: "file1.txt" },
     );
 
-    const converted = await toDataValue(file, clientCtx, mockActionMetadata);
+    const converted = await toDataValue(file, clientCtx);
     expect(converted).toMatch(/ri\.attachments.main.attachment\.[a-z0-9\-]+/i);
   });
 
@@ -260,7 +245,7 @@ describe(toDataValue, () => {
           },
         ),
       );
-      const converted = await toDataValue(file, clientCtx, mockActionMetadata);
+      const converted = await toDataValue(file, clientCtx);
       expect(isMediaReference(converted)).toBe(true);
     });
   });
@@ -281,7 +266,6 @@ describe(toDataValue, () => {
     const converted = await toDataValue(
       mediaReference,
       clientCtx,
-      mockActionMetadata,
     );
     expect(converted).toEqual(mediaReference);
   });
@@ -290,7 +274,6 @@ describe(toDataValue, () => {
     const converted = await toDataValue(
       null,
       clientCtx,
-      mockActionMetadata,
     );
     expect(converted).toBeNull();
   });
@@ -320,7 +303,6 @@ describe(toDataValue, () => {
     const converted = await toDataValue(
       mockMedia,
       clientCtx,
-      mockActionMetadata,
     );
 
     expect(converted).toEqual(expectedMediaReference);
@@ -333,7 +315,6 @@ describe(toDataValue, () => {
     const converted = await toDataValue(
       scenario,
       clientCtx,
-      mockActionMetadata,
     );
     expect(converted).toBe("ri.actions..scenario.abc");
   });
