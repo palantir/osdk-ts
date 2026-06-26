@@ -391,7 +391,7 @@ export type BaseWirePropertyTypes = "string" | "datetime" | "double" | "boolean"
 
 // @public
 export interface CipherText {
-    	decrypt(): Promise<string | undefined>;
+    	decrypt(): Promise<string>;
 }
 
 // @public (undocumented)

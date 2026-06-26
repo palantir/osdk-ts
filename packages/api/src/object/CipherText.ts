@@ -31,5 +31,5 @@ export interface CipherText {
    * Decrypts the ciphertext and resolves to the plaintext value.
    * @returns the decrypted plaintext
    */
-  decrypt(): Promise<string | undefined>;
+  decrypt(): Promise<string>;
 }
