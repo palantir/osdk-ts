@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, Osdk, PageResult } from "@osdk/api";
+import type { InterfaceMetadata, ObjectSet, Osdk, PageResult } from "@osdk/api";
 import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
 import type { Observable, Subscription } from "rxjs";
 import { additionalContext } from "../../../Client.js";
 import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
+import { ObjectDefRef } from "../../../object/convertWireToOsdkObjects/InternalSymbols.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
+import type { FetchedObjectTypeDefinition } from "../../../ontology/OntologyProvider.js";
 import { extractRdpDefinition } from "../../../util/extractRdpDefinition.js";
 import type { ObjectSetPayload } from "../../ObjectSetPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
@@ -59,6 +61,17 @@ export class ObjectSetQuery extends BaseListQuery<
   #objectTypes: Set<string>;
   #requiresServerEvaluation: boolean;
   #resultTypeApiName: string;
+
+  // The interface api name to project resolved objects to, or undefined when the
+  // result type is a concrete object type. The store caches the underlying
+  // concrete object, so interface results must be re-projected via `$as` on the
+  // way out (mirrors InterfaceListQuery). A base set that reduces to an
+  // interfaceBase leaf (directly or through filter/nearestNeighbors wrappers) is
+  // resolved synchronously in the constructor; composed or pivoted base sets
+  // resolve their result type during the first fetch, where the type may differ
+  // from any single leaf.
+  #projectToInterfaceApiName: string | undefined;
+  #projectionResolved = false;
 
   // Object types this query's RDPs traverse; an edit to any of these triggers
   // revalidation. Lazily populated on first fetch when `withProperties` is set.
@@ -104,6 +117,23 @@ export class ObjectSetQuery extends BaseListQuery<
 
     this.#resultTypeApiName =
       ObjectSetQuery.#extractTypeFromWireObjectSet(baseWire) ?? "";
+
+    // A direct or filter-wrapped interfaceBase leaf has a result type equal to
+    // that interface (filter/nearestNeighbors preserve the result type), so it
+    // resolves synchronously; this is what lets optimistic updates project
+    // correctly before the first fetch completes. A direct base leaf is a
+    // concrete object type (resolved, no projection). Anything else (a composed
+    // base set, a search-around, or a pivot operation) has its result type
+    // resolved during the first fetch via getObjectTypesThatInvalidate.
+    if (!operations.pivotTo) {
+      const leafInterface = ObjectSetQuery.#findInterfaceLeaf(baseWire);
+      if (leafInterface != null) {
+        this.#projectToInterfaceApiName = leafInterface;
+        this.#projectionResolved = true;
+      } else if (baseWire.type === "base") {
+        this.#projectionResolved = true;
+      }
+    }
 
     if (opts.autoFetchMore === true) {
       this.minResultsToLoad = Number.MAX_SAFE_INTEGER;
@@ -201,11 +231,39 @@ export class ObjectSetQuery extends BaseListQuery<
     return undefined;
   }
 
+  // Walks filter/nearestNeighbors wrappers (which preserve the result type) to
+  // an interfaceBase leaf, returning its interface api name. Returns undefined
+  // when the leaf is not an interfaceBase (a concrete base, a composition, a
+  // search-around, or another set whose type cannot be determined statically).
+  static #findInterfaceLeaf(wire: WireObjectSet): string | undefined {
+    switch (wire.type) {
+      case "interfaceBase":
+        return wire.interfaceType;
+      case "filter":
+      case "nearestNeighbors":
+        return ObjectSetQuery.#findInterfaceLeaf(wire.objectSet);
+      default:
+        return undefined;
+    }
+  }
+
   /**
    * Register changes to the cache specific to ObjectSetQuery
    */
   protected registerCacheChanges(batch: BatchContext): void {
     batch.changes.registerObjectSet(this.cacheKey);
+  }
+
+  // Records the interface to project resolved objects to (or undefined for a
+  // concrete object-type result) once the result type is known. An undefined
+  // resultType (e.g. when it could not be resolved) is treated as no projection.
+  #resolveProjection(
+    resultType: FetchedObjectTypeDefinition | InterfaceMetadata | undefined,
+  ): void {
+    this.#projectToInterfaceApiName = resultType?.type === "interface"
+      ? resultType.apiName
+      : undefined;
+    this.#projectionResolved = true;
   }
 
   /**
@@ -235,6 +293,10 @@ export class ObjectSetQuery extends BaseListQuery<
         ),
       );
       this.#rdpInvalidationSet = invalidationSet;
+
+      if (!this.#projectionResolved) {
+        this.#resolveProjection(resultType);
+      }
     }
 
     if (
@@ -245,6 +307,29 @@ export class ObjectSetQuery extends BaseListQuery<
       this.#rdpInvalidationSet = await this.#computeInvalidationTypes(
         wireObjectSet,
       );
+    }
+
+    // Resolve the interface projection target for composed/pivoted base sets
+    // whose result type was not resolved in the constructor or above (may be an
+    // object type, in which case we do not project). These are server-evaluated,
+    // so this resolves before the first store write and createPayload always
+    // sees the final value. getObjectTypesThatInvalidate throws for object sets
+    // whose result type is not statically determinable (e.g. static, reference);
+    // there is no interface to project to in that case, so apply no projection.
+    if (!this.#projectionResolved) {
+      try {
+        const { resultType } = await getObjectTypesThatInvalidate(
+          this.store.client[additionalContext],
+          getWireObjectSet(this.#composedObjectSet),
+        );
+        this.#resolveProjection(resultType);
+      } catch (error) {
+        this.store.logger?.error(
+          "Failed to resolve interface projection for object set query, applying no projection",
+          error,
+        );
+        this.#resolveProjection(undefined);
+      }
     }
 
     // Fetch the data with pagination
@@ -356,18 +441,39 @@ export class ObjectSetQuery extends BaseListQuery<
     | { addedObjects: ObjectHolder[]; modifiedObjects: ObjectHolder[] }
     | undefined
   {
-    const resultApiName = this.#resultTypeApiName;
-    const addedObjects = changes.addedObjects.get(resultApiName) ?? [];
-    const modifiedObjects = changes.modifiedObjects.get(resultApiName) ?? [];
+    const interfaceApiName = this.#projectToInterfaceApiName;
 
+    let addedObjects: ObjectHolder[];
+    let modifiedObjects: ObjectHolder[];
     let hasRelevantDeletions = false;
-    for (const key of changes.deleted) {
-      if (
-        key.type === "object"
-        && key.otherKeys[OBJECT_API_NAME_IDX] === resultApiName
-      ) {
-        hasRelevantDeletions = true;
-        break;
+
+    if (interfaceApiName != null) {
+      // Objects are cached by concrete type, so collect every changed holder
+      // whose object type implements this interface (mirrors
+      // InterfaceListQuery.extractRelevantObjects). Deletions are keyed by the
+      // concrete type too; the precise removal is handled against the current
+      // list in reconcileListChanges, so any deletion is potentially relevant.
+      addedObjects = ObjectSetQuery.#filterImplementing(
+        changes.addedObjects,
+        interfaceApiName,
+      );
+      modifiedObjects = ObjectSetQuery.#filterImplementing(
+        changes.modifiedObjects,
+        interfaceApiName,
+      );
+      hasRelevantDeletions = changes.deleted.size > 0;
+    } else {
+      const resultApiName = this.#resultTypeApiName;
+      addedObjects = changes.addedObjects.get(resultApiName) ?? [];
+      modifiedObjects = changes.modifiedObjects.get(resultApiName) ?? [];
+      for (const key of changes.deleted) {
+        if (
+          key.type === "object"
+          && key.otherKeys[OBJECT_API_NAME_IDX] === resultApiName
+        ) {
+          hasRelevantDeletions = true;
+          break;
+        }
       }
     }
 
@@ -379,6 +485,19 @@ export class ObjectSetQuery extends BaseListQuery<
     }
 
     return { addedObjects, modifiedObjects };
+  }
+
+  static #filterImplementing(
+    objects: Iterable<readonly [string, ObjectHolder]>,
+    interfaceApiName: string,
+  ): ObjectHolder[] {
+    const result: ObjectHolder[] = [];
+    for (const [, holder] of objects) {
+      if (interfaceApiName in holder[ObjectDefRef].interfaceMap) {
+        result.push(holder);
+      }
+    }
+    return result;
   }
 
   #handleLocalUpdate(
@@ -454,12 +573,19 @@ export class ObjectSetQuery extends BaseListQuery<
     definite: ReadonlySet<ObjectHolder | InterfaceHolder>;
     uncertain: ReadonlySet<ObjectHolder | InterfaceHolder>;
   } {
+    const interfaceApiName = this.#projectToInterfaceApiName;
     const definite = new Set<ObjectHolder | InterfaceHolder>();
     const uncertain = new Set<ObjectHolder | InterfaceHolder>();
     for (const obj of objects) {
-      if (objectMatchesWhereClause(obj, whereClause, true)) {
+      // Match against the interface view so a where-clause written in interface
+      // property names reads the projected values, but keep the original holder
+      // in the result so cache-key derivation stays on the concrete type.
+      const toMatch = interfaceApiName != null
+        ? obj.$as(interfaceApiName)
+        : obj;
+      if (objectMatchesWhereClause(toMatch, whereClause, true)) {
         definite.add(obj);
-      } else if (objectMatchesWhereClause(obj, whereClause, false)) {
+      } else if (objectMatchesWhereClause(toMatch, whereClause, false)) {
         uncertain.add(obj);
       }
     }
@@ -470,16 +596,25 @@ export class ObjectSetQuery extends BaseListQuery<
     wireObjectSet: WireObjectSet,
   ): Promise<Set<string>> {
     try {
-      const { invalidationSet } = await getObjectTypesThatInvalidate(
-        this.store.client[additionalContext],
-        wireObjectSet,
-      );
+      const { invalidationSet, resultType } =
+        await getObjectTypesThatInvalidate(
+          this.store.client[additionalContext],
+          wireObjectSet,
+        );
+      // Resolve the interface projection from the same call to avoid a second
+      // getObjectTypesThatInvalidate traversal in the projection block below.
+      if (!this.#projectionResolved) {
+        this.#resolveProjection(resultType);
+      }
       return invalidationSet;
     } catch (error) {
       this.store.logger?.error(
         "Failed to compute invalidation types for object set query, falling back to empty set",
         error,
       );
+      if (!this.#projectionResolved) {
+        this.#resolveProjection(undefined);
+      }
       return new Set();
     }
   }
@@ -507,6 +642,28 @@ export class ObjectSetQuery extends BaseListQuery<
       changes?.modified.add(this.cacheKey);
       return this.revalidate(true);
     }
+
+    // For interface results, an edit to any implementing concrete type must
+    // revalidate this set. The implementing types are not known statically, so
+    // check the invalidated type's metadata (mirrors InterfaceListQuery).
+    const interfaceApiName = this.#projectToInterfaceApiName;
+    if (interfaceApiName != null && interfaceApiName !== objectType) {
+      let implementsInterface: boolean;
+      try {
+        const metadata = await this.store.client.fetchMetadata({
+          type: "object",
+          apiName: objectType,
+        });
+        implementsInterface = interfaceApiName in metadata.interfaceMap;
+      } catch {
+        // If metadata can't be loaded, revalidate to be safe.
+        implementsInterface = true;
+      }
+      if (implementsInterface) {
+        changes?.modified.add(this.cacheKey);
+        return this.revalidate(true);
+      }
+    }
     return Promise.resolve();
   };
 
@@ -519,8 +676,16 @@ export class ObjectSetQuery extends BaseListQuery<
       totalCount?: string;
     },
   ): ObjectSetPayload {
+    // The store caches the concrete underlying object, so an interface result
+    // must be re-projected to the interface view here (mirrors
+    // InterfaceListQuery.wrapObject). resolveToObjectType opts out.
+    const interfaceApiName = this.#projectToInterfaceApiName;
+    const resolvedList =
+      interfaceApiName != null && !this.options.resolveToObjectType
+        ? params.resolvedData?.map((o: ObjectHolder) => o.$as(interfaceApiName))
+        : params.resolvedData;
     return {
-      resolvedList: params.resolvedData,
+      resolvedList,
       isOptimistic: params.isOptimistic,
       fetchMore: this.fetchMore,
       hasMore: this.nextPageToken != null,

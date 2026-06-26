@@ -86,6 +86,21 @@ export interface ObserveObjectSetOptions<
    * populated with conjunctive/disjunctive marking requirements per property.
    */
   $loadPropertySecurityMetadata?: boolean;
+
+  /**
+   * When the object set's result type is an interface, return the full concrete
+   * object type instances instead of interface views.
+   *
+   * By default, interface object sets return objects narrowed to the interface's
+   * shared property types. With `resolveToObjectType: true`, returned objects
+   * include all properties of the implementing object type under their underlying
+   * property names.
+   *
+   * Only has an effect when the result type is an interface.
+   *
+   * @default false
+   */
+  resolveToObjectType?: boolean;
 }
 
 export interface ObjectSetQueryOptions
