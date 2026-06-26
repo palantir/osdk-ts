@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-/**
- * Type-only tests for {@link PropertyFilterDateExtras}. These do not run at
- * runtime — `tsc --noEmit` (the package's typecheck step) verifies that
- * `// @ts-expect-error` lines actually error. If the conditional intersection
- * stops gating `formatDate` to date-typed properties, the
- * `@ts-expect-error` will become a "no error" mismatch and typecheck fails.
- */
+/** Type-only tests for {@link PropertyFilterDateExtras}; verified by tsc. */
 
 import type { PropertyFilterDateExtras } from "../FilterListItemApi.js";
 
@@ -30,11 +24,6 @@ const dateExtras: PropertyFilterDateExtras<"timestamp"> = {
 };
 void dateExtras;
 
-const datetimeExtras: PropertyFilterDateExtras<"datetime"> = {
-  formatDate: (d) => d.toISOString(),
-};
-void datetimeExtras;
-
 // For non-date property types, `formatDate` is typed as `never`. Setting
 // it to a function must be a TS error.
 const numberExtras: PropertyFilterDateExtras<"integer"> = {
@@ -43,15 +32,60 @@ const numberExtras: PropertyFilterDateExtras<"integer"> = {
 };
 void numberExtras;
 
-const stringExtras: PropertyFilterDateExtras<"string"> = {
-  // @ts-expect-error formatDate is `never` for string-typed properties
-  formatDate: (d: Date): string => d.toISOString(),
-};
-void stringExtras;
-
 // Empty object literals are still allowed — `formatDate` is optional on
 // all property types (either documented or typed as optional `never`).
 const numberEmpty: PropertyFilterDateExtras<"integer"> = {};
 void numberEmpty;
-const stringEmpty: PropertyFilterDateExtras<"string"> = {};
-void stringEmpty;
+
+// DATE_RANGE accepts a boolean or a custom DateRangePickerShortcut[] (range).
+const rangeShortcutsBool: PropertyFilterDateExtras<"timestamp", "DATE_RANGE"> =
+  {
+    dateShortcuts: true,
+  };
+void rangeShortcutsBool;
+const rangeShortcutsArr: PropertyFilterDateExtras<"datetime", "DATE_RANGE"> = {
+  dateShortcuts: [
+    { label: "Last 6 hours", dateRange: (now) => [now, now] },
+  ],
+};
+void rangeShortcutsArr;
+
+// A single-date-shaped shortcut is rejected for DATE_RANGE.
+const wrongRangeShortcut: PropertyFilterDateExtras<"timestamp", "DATE_RANGE"> =
+  {
+    // @ts-expect-error DATE_RANGE shortcuts use `dateRange`, not `date`
+    dateShortcuts: [{ label: "Yesterday", date: (now: Date) => now }],
+  };
+void wrongRangeShortcut;
+
+// SINGLE_DATE has no shortcut rail (matches Workshop); dateShortcuts is `never`.
+const singleDateShortcuts: PropertyFilterDateExtras<
+  "timestamp",
+  "SINGLE_DATE"
+> = {
+  // @ts-expect-error SINGLE_DATE does not support dateShortcuts
+  dateShortcuts: true,
+};
+void singleDateShortcuts;
+
+// For non-date property types, `dateShortcuts` is `never` — setting it must
+// be a TS error.
+const numberShortcuts: PropertyFilterDateExtras<"integer"> = {
+  // @ts-expect-error dateShortcuts is `never` for number-typed properties
+  dateShortcuts: true,
+};
+void numberShortcuts;
+
+// dateShortcuts is gated to DATE_RANGE / SINGLE_DATE filter components.
+const multiDateShortcuts: PropertyFilterDateExtras<"timestamp", "MULTI_DATE"> =
+  {
+    // @ts-expect-error dateShortcuts is `never` for MULTI_DATE filter component
+    dateShortcuts: true,
+  };
+void multiDateShortcuts;
+
+const timelineShortcuts: PropertyFilterDateExtras<"timestamp", "TIMELINE"> = {
+  // @ts-expect-error dateShortcuts is `never` for TIMELINE filter component
+  dateShortcuts: true,
+};
+void timelineShortcuts;

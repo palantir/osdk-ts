@@ -28,6 +28,8 @@
  * UTC-to-local conversion before passing values to these functions.
  */
 
+import { subDays, subHours, subMonths, subWeeks, subYears } from "date-fns";
+
 export function formatDateForInput(date: Date | undefined | null): string {
   if (date == null) return "";
   const year = date.getFullYear();
@@ -122,4 +124,60 @@ export function parseTimeString(
 /** Returns the "HH:mm" time value for a date, defaulting to "00:00" when null. */
 export function getTimeValue(date: Date | null): string {
   return date != null ? formatTime(date) : "00:00";
+}
+
+/**
+ * A date range represented as a start/end tuple. Either element may be
+ * `null` when the range is partially selected.
+ */
+export type DateRange = readonly [Date | null, Date | null];
+
+/**
+ * A user-defined shortcut for a date-range picker. The picker renders a button
+ * labeled {@link label}; clicking it computes a {@link DateRange} and applies
+ * both bounds at once. The returned range is applied verbatim — the picker does
+ * not reorder or validate the bounds, so a shortcut should return
+ * `[start, end]` with `start <= end`.
+ */
+export interface DateRangePickerShortcut {
+  /** Text shown on the shortcut button. */
+  label: string;
+  /** Computes the date range this shortcut selects, given the current time. */
+  dateRange: (now: Date) => DateRange;
+}
+
+/**
+ * Built-in range shortcuts used when a date-range picker's `dateShortcuts: true`.
+ * Labels follow Workshop's relative-range wording; each resolves to
+ * `[now - period, now]`. Exported so consumers can spread and extend them, e.g.
+ * `[...DEFAULT_DATE_RANGE_SHORTCUTS, { label: "Last 6 hours", dateRange }]`.
+ */
+export const DEFAULT_DATE_RANGE_SHORTCUTS: readonly DateRangePickerShortcut[] =
+  [
+    { label: "Past hour", dateRange: (now) => [subHours(now, 1), now] },
+    { label: "Past 24 hours", dateRange: (now) => [subDays(now, 1), now] },
+    { label: "Past week", dateRange: (now) => [subWeeks(now, 1), now] },
+    { label: "Past month", dateRange: (now) => [subMonths(now, 1), now] },
+    { label: "Past 3 months", dateRange: (now) => [subMonths(now, 3), now] },
+    { label: "Past 6 months", dateRange: (now) => [subMonths(now, 6), now] },
+    { label: "Past year", dateRange: (now) => [subYears(now, 1), now] },
+    { label: "Past 2 years", dateRange: (now) => [subYears(now, 2), now] },
+  ];
+
+/**
+ * Resolves a date-range `dateShortcuts` prop to a shortcut list, or `undefined`
+ * to hide the rail. `true` yields {@link DEFAULT_DATE_RANGE_SHORTCUTS}; a
+ * non-empty array is returned as-is; `false` / empty array / `undefined` hide
+ * the rail.
+ */
+export function resolveDateRangeShortcuts(
+  prop: boolean | DateRangePickerShortcut[] | undefined,
+): readonly DateRangePickerShortcut[] | undefined {
+  if (prop === true) {
+    return DEFAULT_DATE_RANGE_SHORTCUTS;
+  }
+  if (Array.isArray(prop) && prop.length > 0) {
+    return prop;
+  }
+  return undefined;
 }

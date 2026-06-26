@@ -23,6 +23,8 @@
   display: flex;
   align-items: center;
   gap: var(--osdk-filter-select-container-gap);
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .input {

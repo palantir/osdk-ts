@@ -17,6 +17,7 @@
 import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import { useOsdkAggregation } from "@osdk/react";
 import React, { memo, useCallback, useMemo } from "react";
+import type { DateRangePickerShortcut } from "../../shared/dateUtils.js";
 import { DateRangeHistogramInput } from "../base/inputs/DateRangeHistogramInput.js";
 import { NullValueWrapper } from "../base/inputs/NullValueWrapper.js";
 import type { FilterState } from "../FilterListItemApi.js";
@@ -35,6 +36,7 @@ interface DateRangeFilterInputProps<Q extends ObjectTypeDefinition> {
   whereClause: WhereClause<Q>;
   formatDate?: (date: Date) => string;
   clickToFilter?: boolean;
+  dateShortcuts?: boolean | DateRangePickerShortcut[];
 }
 
 function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -46,6 +48,7 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
   whereClause,
   formatDate,
   clickToFilter,
+  dateShortcuts,
 }: DateRangeFilterInputProps<Q>): React.ReactElement {
   const dateRangeState = filterState?.type === "DATE_RANGE"
     ? filterState
@@ -168,6 +171,7 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
         onChange={handleRangeChange}
         formatDate={formatDate}
         clickToFilter={clickToFilter}
+        dateShortcuts={dateShortcuts}
       />
     </NullValueWrapper>
   );

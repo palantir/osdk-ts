@@ -16,6 +16,8 @@
 
 import { describe, expect, it } from "vitest";
 import {
+  type DateRangePickerShortcut,
+  DEFAULT_DATE_RANGE_SHORTCUTS,
   formatDateForDisplay,
   formatDateForInput,
   formatDatetimeForInput,
@@ -26,6 +28,7 @@ import {
   parseDateFromISO,
   parseDatetimeFromInput,
   parseTimeString,
+  resolveDateRangeShortcuts,
 } from "../dateUtils.js";
 
 describe("formatDateForInput", () => {
@@ -169,5 +172,74 @@ describe("getTimeValue", () => {
 
   it("returns 00:00 for null", () => {
     expect(getTimeValue(null)).toBe("00:00");
+  });
+});
+
+describe("date shortcuts", () => {
+  function rangeFor(label: string, now: Date): [Date, Date] {
+    const shortcut = DEFAULT_DATE_RANGE_SHORTCUTS.find((s) =>
+      s.label === label
+    );
+    if (shortcut == null) {
+      throw new Error(`no default range shortcut labeled "${label}"`);
+    }
+    const [min, max] = shortcut.dateRange(now);
+    if (min == null || max == null) {
+      throw new Error(`range shortcut "${label}" produced a null bound`);
+    }
+    return [min, max];
+  }
+
+  it("resolves a range shortcut's [start, end] relative to now", () => {
+    const now = new Date(2024, 5, 15, 12, 0, 0, 0);
+    const [min, max] = rangeFor("Past week", now);
+    expect(max.getTime()).toBe(now.getTime());
+    expect(max.getTime() - min.getTime()).toBe(7 * 24 * 60 * 60 * 1000);
+  });
+
+  it("exposes the default range shortcuts in order with English labels", () => {
+    expect(DEFAULT_DATE_RANGE_SHORTCUTS.map((s) => s.label)).toEqual([
+      "Past hour",
+      "Past 24 hours",
+      "Past week",
+      "Past month",
+      "Past 3 months",
+      "Past 6 months",
+      "Past year",
+      "Past 2 years",
+    ]);
+  });
+
+  it("clamps Past month from a 31st to the last day of the prior shorter month", () => {
+    // Mar 31 - 1 month should land on Feb 29 in a leap year (date-fns clamps).
+    const [min] = rangeFor("Past month", new Date(2024, 2, 31, 12, 0, 0, 0));
+    expect(min.getFullYear()).toBe(2024);
+    expect(min.getMonth()).toBe(1);
+    expect(min.getDate()).toBe(29);
+  });
+
+  it("clamps Past year from Feb 29 to Feb 28 of the prior non-leap year", () => {
+    // Feb 29 2024 - 1 year should land on Feb 28 2023.
+    const [min] = rangeFor("Past year", new Date(2024, 1, 29, 12, 0, 0, 0));
+    expect(min.getFullYear()).toBe(2023);
+    expect(min.getMonth()).toBe(1);
+    expect(min.getDate()).toBe(28);
+  });
+
+  it("resolveDateRangeShortcuts maps true to defaults and false/empty to undefined", () => {
+    expect(resolveDateRangeShortcuts(true)).toBe(DEFAULT_DATE_RANGE_SHORTCUTS);
+    expect(resolveDateRangeShortcuts(false)).toBeUndefined();
+    expect(resolveDateRangeShortcuts(undefined)).toBeUndefined();
+    expect(resolveDateRangeShortcuts([])).toBeUndefined();
+  });
+
+  it("resolveDateRangeShortcuts returns a custom shortcut array verbatim", () => {
+    const custom: DateRangePickerShortcut[] = [
+      {
+        label: "Last 6 hours",
+        dateRange: (now) => [new Date(now.getTime() - 6 * 60 * 60 * 1000), now],
+      },
+    ];
+    expect(resolveDateRangeShortcuts(custom)).toBe(custom);
   });
 });

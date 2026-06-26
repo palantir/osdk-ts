@@ -62,6 +62,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
   excludeRowOpen,
   layout,
 }: PropertyFilterInputProps<Q>): React.ReactElement {
+  const { filterComponent } = definition;
   switch (definition.filterComponent) {
     case "CONTAINS_TEXT":
       return (
@@ -110,6 +111,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           whereClause={whereClause}
           formatDate={definition.formatDate}
           clickToFilter={definition.clickToFilter}
+          dateShortcuts={definition.dateShortcuts}
         />
       );
 
@@ -218,7 +220,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
     default:
       return (
         <div data-unsupported="true">
-          Unsupported filter component: {definition.filterComponent}
+          Unsupported filter component: {filterComponent}
         </div>
       );
   }

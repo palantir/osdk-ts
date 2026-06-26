@@ -15,7 +15,10 @@
  */
 
 import React, { memo, useMemo } from "react";
-import { formatDateForInput } from "../../../shared/dateUtils.js";
+import {
+  type DateRangePickerShortcut,
+  formatDateForInput,
+} from "../../../shared/dateUtils.js";
 import { createDateHistogramBuckets } from "./createDateHistogramBuckets.js";
 import { RangeInput, type RangeInputConfig } from "./RangeInput.js";
 
@@ -50,11 +53,15 @@ interface DateRangeHistogramInputProps {
    */
   formatDate?: (date: Date) => string;
   clickToFilter?: boolean;
+  /** Optional relative-range shortcut rail. */
+  dateShortcuts?: boolean | DateRangePickerShortcut[];
 }
 
 function DateRangeHistogramInputInner({
   formatDate,
   valueCountPairs,
+  dateShortcuts,
+  onChange,
   ...rest
 }: DateRangeHistogramInputProps): React.ReactElement {
   const config = useMemo<RangeInputConfig<Date>>(
@@ -101,9 +108,11 @@ function DateRangeHistogramInputInner({
   return (
     <RangeInput
       {...rest}
+      onChange={onChange}
       valueCountPairs={valueCountPairs}
       config={config}
       histogramData={histogramData}
+      dateShortcuts={dateShortcuts}
     />
   );
 }

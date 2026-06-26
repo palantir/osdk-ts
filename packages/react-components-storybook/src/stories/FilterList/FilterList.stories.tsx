@@ -318,6 +318,177 @@ export const Default: Story = {
   },
 };
 
+export const WithDateShortcuts: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Opt-in `dateShortcuts` rail for DATE_RANGE filters. `true` ships the "
+          + "built-in defaults; an array supplies custom `DateRangePickerShortcut`s "
+          + "(e.g. \"Last 6 hours\"). Single-date filters have no shortcut rail, "
+          + "matching Workshop.",
+      },
+    },
+  },
+  render: ({ objectType: _ot, objectSet: _os, ...args }) => {
+    const filterDefinitions = useMemo(
+      (): FilterDefinitionUnion<Employee>[] => [
+        {
+          type: "PROPERTY",
+          id: "startDate-range-shortcuts",
+          key: "firstFullTimeStartDate",
+          label: "Start Date (DATE_RANGE, default shortcuts)",
+          filterComponent: "DATE_RANGE",
+          filterState: { type: "DATE_RANGE" },
+          dateShortcuts: true,
+        },
+        {
+          type: "PROPERTY",
+          id: "startDate-range-custom-shortcuts",
+          key: "firstFullTimeStartDate",
+          label: "Start Date (DATE_RANGE, custom shortcuts)",
+          filterComponent: "DATE_RANGE",
+          filterState: { type: "DATE_RANGE" },
+          dateShortcuts: [
+            {
+              label: "Last 6 hours",
+              dateRange: (now) => [
+                new Date(now.getTime() - 6 * 60 * 60 * 1000),
+                now,
+              ],
+            },
+            {
+              label: "Past week",
+              dateRange: (now) => [
+                new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000),
+                now,
+              ],
+            },
+          ],
+        },
+        {
+          type: "PROPERTY",
+          id: "startDate-single-plain",
+          key: "firstFullTimeStartDate",
+          label: "Start Date (SINGLE_DATE, no shortcut rail)",
+          filterComponent: "SINGLE_DATE",
+          filterState: { type: "SELECT", selectedValues: [] },
+        },
+      ],
+      [],
+    );
+    return (
+      <div style={SIDEBAR_STYLE}>
+        <FilterList
+          objectType={Employee}
+          filterDefinitions={filterDefinitions}
+          {...args}
+        />
+      </div>
+    );
+  },
+};
+
+const CAPTURED_STATE_PANEL_STYLE = {
+  marginTop: 8,
+  padding: 8,
+  background: "#f5f5f5",
+  borderRadius: 4,
+  fontSize: 11,
+  whiteSpace: "pre" as const,
+  fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+} as const;
+
+const VERIFICATION_RANGE_FILTER_ID = "startDate-range-shortcuts-verification";
+const VERIFICATION_SINGLE_FILTER_ID = "startDate-single-shortcuts-verification";
+
+function WithDateShortcutsVerificationStory(
+  args: Partial<EmployeeFilterListProps>,
+) {
+  const { onFilterStateChanged: argsOnFilterStateChanged } = args;
+  const [rangeState, setRangeState] = useState<FilterState | undefined>(
+    undefined,
+  );
+  const [singleState, setSingleState] = useState<FilterState | undefined>(
+    undefined,
+  );
+
+  const filterDefinitions = useMemo(
+    (): FilterDefinitionUnion<Employee>[] => [
+      {
+        type: "PROPERTY",
+        id: VERIFICATION_RANGE_FILTER_ID,
+        key: "firstFullTimeStartDate",
+        label: "Start Date (DATE_RANGE, all shortcuts)",
+        filterComponent: "DATE_RANGE",
+        filterState: { type: "DATE_RANGE" },
+        dateShortcuts: true,
+      },
+      {
+        type: "PROPERTY",
+        id: VERIFICATION_SINGLE_FILTER_ID,
+        key: "firstFullTimeStartDate",
+        label: "Start Date (SINGLE_DATE, no shortcut rail)",
+        filterComponent: "SINGLE_DATE",
+        filterState: { type: "SELECT", selectedValues: [] },
+      },
+    ],
+    [],
+  );
+
+  const handleFilterStateChanged = useCallback(
+    (definition: FilterDefinitionUnion<Employee>, newState: FilterState) => {
+      if (definition.id === VERIFICATION_RANGE_FILTER_ID) {
+        setRangeState(newState);
+      }
+      if (definition.id === VERIFICATION_SINGLE_FILTER_ID) {
+        setSingleState(newState);
+      }
+      if (argsOnFilterStateChanged != null) {
+        argsOnFilterStateChanged(definition, newState);
+      }
+    },
+    [argsOnFilterStateChanged],
+  );
+
+  return (
+    <div style={SIDEBAR_STYLE}>
+      <FilterList
+        objectType={Employee}
+        filterDefinitions={filterDefinitions}
+        {...args}
+        onFilterStateChanged={handleFilterStateChanged}
+      />
+      <div
+        data-testid="captured-filter-state-range"
+        style={CAPTURED_STATE_PANEL_STYLE}
+      >
+        {rangeState == null ? "" : JSON.stringify(rangeState)}
+      </div>
+      <div
+        data-testid="captured-filter-state-single"
+        style={CAPTURED_STATE_PANEL_STYLE}
+      >
+        {singleState == null ? "" : JSON.stringify(singleState)}
+      </div>
+    </div>
+  );
+}
+
+export const WithDateShortcutsVerification: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: "Verification harness for relative date shortcuts. "
+          + "Exposes the captured FilterState for both a DATE_RANGE and a "
+          + "SINGLE_DATE filter via `data-testid` panels so the resolved "
+          + "range can be inspected after clicking a shortcut.",
+      },
+    },
+  },
+  render: (args) => <WithDateShortcutsVerificationStory {...args} />,
+};
+
 export const IntegerNumberRangeRounding: Story = {
   parameters: {
     docs: {

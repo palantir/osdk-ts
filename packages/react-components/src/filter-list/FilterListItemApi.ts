@@ -22,12 +22,18 @@ import type {
   WirePropertyTypes,
 } from "@osdk/api";
 import type { ReactNode } from "react";
+import {
+  type DateRangePickerShortcut,
+  DEFAULT_DATE_RANGE_SHORTCUTS,
+} from "../shared/dateUtils.js";
 import type { CustomFilterState } from "./types/CustomRendererTypes.js";
 import type { KeywordSearchFilterState } from "./types/KeywordSearchTypes.js";
 import type {
   HasLinkFilterState,
   LinkedPropertyFilterState,
 } from "./types/LinkedFilterTypes.js";
+
+export { type DateRangePickerShortcut, DEFAULT_DATE_RANGE_SHORTCUTS };
 
 /**
  * Helper type to extract the property type from an ObjectTypeDefinition given a property key
@@ -242,14 +248,29 @@ export interface DateFormattingProps {
   formatDate?: (date: Date) => string;
 }
 
+export interface RangeDateShortcutsProps {
+  /**
+   * Opt-in relative-range shortcut rail above the From / To inputs.
+   * `true` renders {@link DEFAULT_DATE_RANGE_SHORTCUTS}; an array renders
+   * exactly those {@link DateRangePickerShortcut}s in order, letting you
+   * supply custom labels and ranges (e.g. "Last 6 hours").
+   */
+  dateShortcuts?: boolean | DateRangePickerShortcut[];
+}
+
 /**
- * Conditionally adds `formatDate` to a property filter definition only for
- * `datetime` / `timestamp` properties. For other property types this field
- * is typed as `never` so attempting to set it is a TypeScript error.
+ * Adds `formatDate` for date-typed properties, plus `dateShortcuts` for the
+ * DATE_RANGE component (relative-range shortcuts). Single-date pickers do not
+ * have a shortcut rail, matching Workshop.
  */
-export type PropertyFilterDateExtras<P extends WirePropertyTypes> = P extends
-  "datetime" | "timestamp" ? DateFormattingProps
-  : { formatDate?: never };
+export type PropertyFilterDateExtras<
+  P extends WirePropertyTypes,
+  C extends FilterComponentType = FilterComponentType,
+> = P extends "datetime" | "timestamp" ?
+    & DateFormattingProps
+    & (C extends "DATE_RANGE" ? RangeDateShortcutsProps
+      : { dateShortcuts?: never })
+  : { formatDate?: never; dateShortcuts?: never };
 
 interface PropertyFilterDefinitionBase<
   Q extends ObjectTypeDefinition,
@@ -354,8 +375,8 @@ interface PropertyFilterDefinitionBase<
  * For example, boolean properties can only use LISTOGRAM or SINGLE_SELECT,
  * while string properties can use LISTOGRAM, TEXT_TAGS, CONTAINS_TEXT, SINGLE_SELECT, or MULTI_SELECT.
  *
- * Date and datetime properties may additionally specify `formatDate` — see
- * {@link PropertyFilterDateExtras}.
+ * Date and datetime properties may additionally specify `formatDate` and
+ * `dateShortcuts` — see {@link PropertyFilterDateExtras}.
  */
 export type PropertyFilterDefinition<
   Q extends ObjectTypeDefinition,
@@ -363,9 +384,10 @@ export type PropertyFilterDefinition<
   C extends ValidComponentsForPropertyType<
     PropertyTypeFromKey<Q, K>
   > = ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>>,
-> =
-  & PropertyFilterDefinitionBase<Q, K, C>
-  & PropertyFilterDateExtras<PropertyTypeFromKey<Q, K>>;
+> = C extends FilterComponentType ?
+    & PropertyFilterDefinitionBase<Q, K, C>
+    & PropertyFilterDateExtras<PropertyTypeFromKey<Q, K>, C>
+  : never;
 
 /**
  * Props for a single filter list item component.

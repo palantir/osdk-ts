@@ -16,7 +16,7 @@
 
 import type { WhereClause } from "@osdk/api";
 import { useOsdkAggregation } from "@osdk/react";
-import { cleanup, render } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { DateRangeFilterInput } from "../inputs/DateRangeFilterInput.js";
@@ -31,8 +31,19 @@ vi.mock("@osdk/react", () => ({
   useRegisterUserAgent: vi.fn(),
 }));
 
+// Render the range calendar synchronously so the picker popover mounts in
+// happy-dom without resolving React.lazy.
+vi.mock("../../shared/calendar/LazyDateRangeCalendar.js", async () => {
+  const { default: DateRangeCalendar } = await vi.importActual<
+    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+    typeof import("../../shared/calendar/DateRangeCalendar.js")
+  >("../../shared/calendar/DateRangeCalendar.js");
+  return { LazyDateRangeCalendar: DateRangeCalendar };
+});
+
 afterEach(() => {
   cleanup();
+  vi.useRealTimers();
   vi.clearAllMocks();
 });
 
@@ -59,6 +70,43 @@ describe("DateRangeFilterInput", () => {
     );
     expect(histogramCall).toBeDefined();
     expect(histogramCall![1]).toHaveProperty("where", whereClause);
+  });
+
+  it("emits a DATE_RANGE state when a shortcut is clicked", () => {
+    // Mid-year date avoids DST boundary drift.
+    vi.useFakeTimers({ now: new Date(2024, 5, 15, 12, 0, 0, 0) });
+    const whereClause = {} as WhereClause<typeof MockObjectType>;
+    const onFilterStateChanged = vi.fn();
+    render(
+      <DateRangeFilterInput
+        objectType={MockObjectType}
+        propertyKey="createdAt"
+        filterState={undefined}
+        onFilterStateChanged={onFilterStateChanged}
+        whereClause={whereClause}
+        dateShortcuts={[
+          {
+            label: "Past 24 hours",
+            dateRange: (n) => [new Date(n.getTime() - 24 * 60 * 60 * 1000), n],
+          },
+        ]}
+      />,
+    );
+    // The shortcut rail lives inside the range picker popover, so open it by
+    // focusing the start input before clicking the shortcut.
+    fireEvent.focus(screen.getByLabelText("Start date"));
+    fireEvent.click(screen.getByRole("button", { name: "Past 24 hours" }));
+    expect(onFilterStateChanged).toHaveBeenCalledTimes(1);
+    const state = onFilterStateChanged.mock.calls[0][0];
+    expect(state.type).toBe("DATE_RANGE");
+    if (
+      !(state.minValue instanceof Date) || !(state.maxValue instanceof Date)
+    ) {
+      throw new Error("expected minValue and maxValue to be Dates");
+    }
+    expect(state.maxValue.getTime() - state.minValue.getTime()).toBe(
+      24 * 60 * 60 * 1000,
+    );
   });
 
   it("combines whereClause with null-check in the null count query", () => {
