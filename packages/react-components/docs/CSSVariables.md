@@ -236,33 +236,53 @@ Component-specific semantic tokens that may reference Blueprint tokens or define
 
 Tokens for the `AipAgentChat` chat surface (container, message bubbles, composer, empty state, loader, error banner).
 
-| Variable                                             | Default Value                                       | Description                                 |
-| ---------------------------------------------------- | --------------------------------------------------- | ------------------------------------------- |
-| `--osdk-aip-agent-chat-background`                   | `var(--osdk-background-primary)`                    | Chat container background                   |
-| `--osdk-aip-agent-chat-border-color`                 | `var(--osdk-surface-border-color-default)`          | Container, error, composer separator color  |
-| `--osdk-aip-agent-chat-border-radius`                | `var(--osdk-surface-border-radius)`                 | Container and bubble corner radius          |
-| `--osdk-aip-agent-chat-padding`                      | `calc(var(--osdk-surface-spacing) * 5)`             | Outer padding for message list and composer |
-| `--osdk-aip-agent-chat-message-gap`                  | `calc(var(--osdk-surface-spacing) * 5)`             | Vertical gap between messages               |
-| `--osdk-aip-agent-chat-section-gap`                  | `calc(var(--osdk-surface-spacing) * 2.5)`           | Gap between composer rows / footer items    |
-| `--osdk-aip-agent-chat-bubble-padding`               | `calc(var(--osdk-surface-spacing) * 3)`             | Padding inside each message bubble          |
-| `--osdk-aip-agent-chat-bubble-border-radius`         | `var(--osdk-surface-border-radius)`                 | Bubble corner radius                        |
-| `--osdk-aip-agent-chat-bubble-max-width`             | `80%`                                               | Maximum bubble width                        |
-| `--osdk-aip-agent-chat-user-bubble-background`       | `var(--osdk-intent-primary-rest)`                   | User-message bubble background              |
-| `--osdk-aip-agent-chat-user-bubble-color`            | `var(--osdk-intent-primary-foreground)`             | User-message text color                     |
-| `--osdk-aip-agent-chat-assistant-bubble-background`  | `var(--osdk-background-secondary)`                  | Assistant-message bubble background         |
-| `--osdk-aip-agent-chat-assistant-bubble-color`       | `var(--osdk-typography-color-default-rest)`         | Assistant-message text color                |
-| `--osdk-aip-agent-chat-composer-background`          | `var(--osdk-surface-background-color-default-rest)` | Composer background                         |
-| `--osdk-aip-agent-chat-composer-border-color`        | `var(--osdk-surface-border-color-default)`          | Composer top-border color                   |
-| `--osdk-aip-agent-chat-composer-textarea-min-height` | `calc(var(--osdk-surface-spacing) * 14)`            | Textarea minimum height                     |
-| `--osdk-aip-agent-chat-composer-textarea-max-height` | `200px`                                             | Textarea maximum height                     |
-| `--osdk-aip-agent-chat-empty-color`                  | `var(--osdk-typography-color-muted)`                | Empty-state subtext color                   |
-| `--osdk-aip-agent-chat-empty-icon-color`             | `var(--osdk-intent-primary-rest)`                   | Empty-state icon color                      |
-| `--osdk-aip-agent-chat-empty-icon-size`              | `calc(var(--osdk-surface-spacing) * 12)`            | Empty-state icon size                       |
-| `--osdk-aip-agent-chat-loader-color`                 | `var(--osdk-typography-color-muted)`                | 3-dot streaming loader color                |
-| `--osdk-aip-agent-chat-loader-dot-size`              | `calc(var(--osdk-surface-spacing) * 1.5)`           | Loader dot diameter                         |
-| `--osdk-aip-agent-chat-loader-dot-gap`               | `calc(var(--osdk-surface-spacing) * 0.5)`           | Loader dot gap                              |
-| `--osdk-aip-agent-chat-error-color`                  | `var(--osdk-typography-color-danger-rest)`          | Error banner text color                     |
-| `--osdk-aip-agent-chat-error-background`             | `var(--osdk-surface-background-color-danger-rest)`  | Error banner background                     |
+| Variable                                             | Default Value                                                                                             | Description                                         |
+| ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| `--osdk-aip-agent-chat-background`                   | `var(--osdk-background-primary)`                                                                          | Chat container background                           |
+| `--osdk-aip-agent-chat-border-color`                 | `var(--osdk-surface-border-color-default)`                                                                | Container and composer separator color              |
+| `--osdk-aip-agent-chat-border-radius`                | `var(--osdk-surface-border-radius)`                                                                       | Container corner radius                             |
+| `--osdk-aip-agent-chat-padding`                      | `calc(var(--osdk-surface-spacing) * 5)`                                                                   | Outer padding for message list and composer         |
+| `--osdk-aip-agent-chat-message-gap`                  | `calc(var(--osdk-surface-spacing) * 5)`                                                                   | Vertical gap between messages                       |
+| `--osdk-aip-agent-chat-section-gap`                  | `calc(var(--osdk-surface-spacing) * 2.5)`                                                                 | Gap between composer rows / footer items            |
+| `--osdk-aip-agent-chat-content-max-width`            | `780px`                                                                                                   | Maximum width of the chat content area              |
+| `--osdk-aip-agent-chat-bubble-padding`               | `calc(var(--osdk-surface-spacing) * 3)`                                                                   | Padding inside each message bubble                  |
+| `--osdk-aip-agent-chat-bubble-border-radius`         | `var(--osdk-surface-border-radius)`                                                                       | Bubble corner radius                                |
+| `--osdk-aip-agent-chat-bubble-max-width`             | `80%`                                                                                                     | Maximum bubble width                                |
+| `--osdk-aip-agent-chat-user-bubble-background`       | `var(--osdk-background-secondary)`                                                                        | User-message bubble background                      |
+| `--osdk-aip-agent-chat-user-bubble-color`            | `var(--osdk-typography-color-default-rest)`                                                               | User-message text color                             |
+| `--osdk-aip-agent-chat-user-bubble-border-radius`    | `var(--osdk-surface-border-radius) var(--osdk-surface-border-radius) 0 var(--osdk-surface-border-radius)` | User-message bubble corner radius (chat-tail shape) |
+| `--osdk-aip-agent-chat-assistant-bubble-color`       | `var(--osdk-typography-color-default-rest)`                                                               | Assistant-message text color                        |
+| `--osdk-aip-agent-chat-composer-border-radius`       | `calc(var(--osdk-surface-spacing) * 2.5)`                                                                 | Composer input border radius                        |
+| `--osdk-aip-agent-chat-composer-background`          | `var(--osdk-surface-background-color-default-rest)`                                                       | Composer background                                 |
+| `--osdk-aip-agent-chat-composer-textarea-min-height` | `calc(var(--osdk-surface-spacing) * 14)`                                                                  | Textarea minimum height                             |
+| `--osdk-aip-agent-chat-composer-textarea-max-height` | `200px`                                                                                                   | Textarea maximum height                             |
+| `--osdk-aip-agent-chat-empty-color`                  | `var(--osdk-typography-color-muted)`                                                                      | Empty-state subtext color                           |
+| `--osdk-aip-agent-chat-empty-icon-color`             | `var(--osdk-intent-primary-rest)`                                                                         | Empty-state icon color                              |
+| `--osdk-aip-agent-chat-empty-icon-size`              | `calc(var(--osdk-surface-spacing) * 12)`                                                                  | Empty-state icon size                               |
+| `--osdk-aip-agent-chat-loader-color`                 | `var(--osdk-typography-color-muted)`                                                                      | 3-dot streaming loader color                        |
+| `--osdk-aip-agent-chat-loader-dot-size`              | `calc(var(--osdk-surface-spacing) * 1.5)`                                                                 | Loader dot diameter                                 |
+| `--osdk-aip-agent-chat-loader-dot-gap`               | `calc(var(--osdk-surface-spacing) * 0.5)`                                                                 | Loader dot gap                                      |
+
+### Callout
+
+Tokens for the `Callout` component used for error, warning, success, and info banners. In dark mode, the intent text colors switch to brighter `--rest` shades for readability.
+
+| Variable                            | Default Value                                                                | Description               |
+| ----------------------------------- | ---------------------------------------------------------------------------- | ------------------------- |
+| `--osdk-callout-padding`            | `calc(var(--osdk-surface-spacing) * 4)`                                      | Inner padding             |
+| `--osdk-callout-gap`                | `calc(var(--osdk-surface-spacing) * 2)`                                      | Gap between icon and text |
+| `--osdk-callout-border-radius`      | `var(--osdk-surface-border-radius)`                                          | Corner radius             |
+| `--osdk-callout-title-font-size`    | `var(--osdk-typography-size-body-medium)`                                    | Title font size           |
+| `--osdk-callout-title-font-weight`  | `var(--osdk-typography-weight-bold)`                                         | Title font weight         |
+| `--osdk-callout-message-font-size`  | `var(--osdk-typography-size-body-small)`                                     | Message body font size    |
+| `--osdk-callout-error-background`   | `color-mix(in srgb, var(--osdk-intent-danger-rest) 10%, transparent)`        | Error intent background   |
+| `--osdk-callout-error-color`        | `var(--osdk-intent-danger-hover)` (dark: `var(--osdk-intent-danger-rest)`)   | Error intent text color   |
+| `--osdk-callout-warning-background` | `color-mix(in srgb, var(--osdk-intent-warning-rest) 10%, transparent)`       | Warning intent background |
+| `--osdk-callout-warning-color`      | `var(--osdk-intent-warning-hover)` (dark: `var(--osdk-intent-warning-rest)`) | Warning intent text color |
+| `--osdk-callout-success-background` | `color-mix(in srgb, var(--osdk-intent-success-rest) 10%, transparent)`       | Success intent background |
+| `--osdk-callout-success-color`      | `var(--osdk-intent-success-hover)` (dark: `var(--osdk-intent-success-rest)`) | Success intent text color |
+| `--osdk-callout-info-background`    | `color-mix(in srgb, var(--osdk-intent-primary-rest) 10%, transparent)`       | Info intent background    |
+| `--osdk-callout-info-color`         | `var(--osdk-intent-primary-hover)` (dark: `var(--osdk-intent-primary-rest)`) | Info intent text color    |
 
 ### Drag Handle
 

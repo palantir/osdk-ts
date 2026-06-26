@@ -14,24 +14,28 @@
   --osdk-aip-agent-chat-bubble-border-radius: var(--osdk-surface-border-radius);
   --osdk-aip-agent-chat-bubble-max-width: 80%;
 
-  --osdk-aip-agent-chat-user-bubble-background: var(--osdk-intent-primary-rest);
+  --osdk-aip-agent-chat-user-bubble-background: var(--osdk-background-secondary);
   --osdk-aip-agent-chat-user-bubble-color: var(
-    --osdk-intent-primary-foreground
+    --osdk-typography-color-default-rest
   );
+  --osdk-aip-agent-chat-user-bubble-border-radius: var(
+    --osdk-surface-border-radius
+  )
+    var(--osdk-surface-border-radius) 0 var(--osdk-surface-border-radius);
 
-  --osdk-aip-agent-chat-assistant-bubble-background: var(
-    --osdk-background-secondary
-  );
   --osdk-aip-agent-chat-assistant-bubble-color: var(
     --osdk-typography-color-default-rest
   );
 
+  --osdk-aip-agent-chat-composer-border-radius: calc(
+    var(--osdk-surface-spacing) * 2.5
+  );
+
+  --osdk-aip-agent-chat-content-max-width: 780px;
+
   /* Composer */
   --osdk-aip-agent-chat-composer-background: var(
     --osdk-surface-background-color-default-rest
-  );
-  --osdk-aip-agent-chat-composer-border-color: var(
-    --osdk-surface-border-color-default
   );
   --osdk-aip-agent-chat-composer-textarea-min-height: calc(
     var(--osdk-surface-spacing) * 14
@@ -49,8 +53,4 @@
     var(--osdk-surface-spacing) * 1.5
   );
   --osdk-aip-agent-chat-loader-dot-gap: calc(var(--osdk-surface-spacing) * 0.5);
-
-  /* Error banner */
-  --osdk-aip-agent-chat-error-color: var(--osdk-intent-danger-foreground);
-  --osdk-aip-agent-chat-error-background: var(--osdk-intent-danger-rest);
 }

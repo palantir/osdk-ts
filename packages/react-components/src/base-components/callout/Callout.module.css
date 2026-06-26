@@ -1,0 +1,59 @@
+.callout {
+  align-items: flex-start;
+  border-radius: var(--osdk-callout-border-radius);
+  display: flex;
+  gap: var(--osdk-callout-gap);
+  padding: var(--osdk-callout-padding);
+}
+
+.error {
+  background: var(--osdk-callout-error-background);
+  color: var(--osdk-callout-error-color);
+}
+
+.warning {
+  background: var(--osdk-callout-warning-background);
+  color: var(--osdk-callout-warning-color);
+}
+
+.success {
+  background: var(--osdk-callout-success-background);
+  color: var(--osdk-callout-success-color);
+}
+
+.info {
+  background: var(--osdk-callout-info-background);
+  color: var(--osdk-callout-info-color);
+}
+
+.icon {
+  flex: 0 0 auto;
+  line-height: 0;
+  padding-top: 1px;
+}
+
+.body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: calc(var(--osdk-surface-spacing) * 1);
+  min-width: 0;
+}
+
+.title {
+  font-size: var(--osdk-callout-title-font-size);
+  font-weight: var(--osdk-callout-title-font-weight);
+}
+
+.message {
+  font-size: var(--osdk-callout-message-font-size);
+  word-break: break-word;
+}
+
+.actions {
+  align-items: center;
+  align-self: stretch;
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: center;
+}
