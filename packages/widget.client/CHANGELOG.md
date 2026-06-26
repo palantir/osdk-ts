@@ -1,5 +1,16 @@
 # @osdk/widget.client
 
+## 3.38.0
+
+### Minor Changes
+
+- 2f91c0e: Migrate @osdk/widget.api and @osdk/widget.client to lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint (fourth increment of the repo-wide oxc migration)
+
+### Patch Changes
+
+- Updated dependencies [2f91c0e]
+  - @osdk/widget.api@3.38.0
+
 ## 3.37.0
 
 ### Patch Changes
