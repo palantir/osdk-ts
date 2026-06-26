@@ -39,6 +39,8 @@ function expectedOptions(
     logLevel?: string;
     refCounts?: boolean;
     cacheKeys?: boolean;
+    defaultDedupeInterval?: number;
+    defaultPageSize?: number;
   },
 ) {
   return {
@@ -50,6 +52,8 @@ function expectedOptions(
         cacheKeys: overrides?.cacheKeys,
       },
     },
+    defaultDedupeInterval: overrides?.defaultDedupeInterval,
+    defaultPageSize: overrides?.defaultPageSize,
   };
 }
 
@@ -102,6 +106,51 @@ describe("OsdkProvider", () => {
       expect.any(Function),
       expectedOptions({ logLevel: "debug", refCounts: true }),
     );
+  });
+
+  it("passes defaultDedupeInterval and defaultPageSize through to createObservableClient", () => {
+    render(
+      <OsdkProvider
+        client={mockClient}
+        defaultDedupeInterval={2000}
+        defaultPageSize={50}
+      >
+        <div />
+      </OsdkProvider>,
+    );
+
+    expect(createObservableClientMock).toHaveBeenLastCalledWith(
+      mockClient,
+      expect.any(Function),
+      expectedOptions({ defaultDedupeInterval: 2000, defaultPageSize: 50 }),
+    );
+  });
+
+  it("does not recreate the observable client when defaults are unchanged", () => {
+    const { rerender } = render(
+      <OsdkProvider client={mockClient} defaultPageSize={50}>
+        <div />
+      </OsdkProvider>,
+    );
+
+    expect(createObservableClientMock).toHaveBeenCalledTimes(1);
+
+    rerender(
+      <OsdkProvider client={mockClient} defaultPageSize={50}>
+        <div />
+      </OsdkProvider>,
+    );
+
+    expect(createObservableClientMock).toHaveBeenCalledTimes(1);
+
+    // Changing the default re-creates the client.
+    rerender(
+      <OsdkProvider client={mockClient} defaultPageSize={25}>
+        <div />
+      </OsdkProvider>,
+    );
+
+    expect(createObservableClientMock).toHaveBeenCalledTimes(2);
   });
 
   it("does not recreate the observable client when actionDelayMs is unchanged", () => {

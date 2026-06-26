@@ -120,7 +120,7 @@ export abstract class Query<
     subscriptionId: string,
     dedupeInterval: number | undefined,
   ): void {
-    if (dedupeInterval != null && dedupeInterval > 0) {
+    if (dedupeInterval != null) {
       this.#subscriptionDedupeIntervals.set(subscriptionId, dedupeInterval);
     }
   }
@@ -137,7 +137,7 @@ export abstract class Query<
    */
   private getMinimumDedupeInterval(): number {
     if (this.#subscriptionDedupeIntervals.size === 0) {
-      return this.options.dedupeInterval ?? 0;
+      return this.options.dedupeInterval ?? this.store.defaultDedupeInterval;
     }
 
     return Math.min(...this.#subscriptionDedupeIntervals.values());

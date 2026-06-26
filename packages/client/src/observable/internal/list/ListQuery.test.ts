@@ -235,6 +235,37 @@ describe("ListQuery autoFetchMore tests", () => {
     expectNoMoreCalls(listSub);
   });
 
+  it("uses the client defaultPageSize when no pageSize is provided", async () => {
+    setupTodos(fauxFoundry, 100);
+    const localStore = new Store(client, { defaultPageSize: 5 });
+
+    testStage("Observe a list with no pageSize");
+    const listSub = mockListSubCallback();
+    defer(
+      localStore.lists.observe(
+        {
+          type: Todo,
+          where: {},
+          orderBy: {},
+        },
+        listSub,
+      ),
+    );
+
+    testStage("Initial loading state");
+    await waitForCall(listSub.next, 1);
+    expectSingleListCallAndClear(listSub, undefined, { status: "loading" });
+
+    testStage("First page loads at the default page size");
+    await waitForCall(listSub.next, 1);
+    const payload = expectSingleListCallAndClear(listSub, expect.anything(), {
+      status: "loaded",
+    });
+
+    expect(payload?.resolvedList?.length).toBe(5);
+    expect(payload?.hasMore).toBe(true);
+  });
+
   it("autoFetchMore stops at last page when fewer items than threshold", async () => {
     setupTodos(fauxFoundry, 100);
 

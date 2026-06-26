@@ -391,13 +391,14 @@ export abstract class BaseListQuery<
 
   /**
    * Get the effective fetch pageSize (max across all subscribers).
-   * Falls back to options.pageSize or 100 if no subscribers have registered.
+   * Falls back to options.pageSize, then the store's defaultPageSize, if no
+   * subscribers have registered.
    */
   getEffectiveFetchPageSize(): number {
     if (this.#subscriberPageSizes.size > 0) {
       return Math.max(...this.#subscriberPageSizes.values());
     }
-    return this.options.pageSize ?? 100;
+    return this.options.pageSize ?? this.store.defaultPageSize;
   }
 
   /**
