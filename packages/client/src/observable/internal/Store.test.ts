@@ -50,6 +50,7 @@ import { additionalContext, type Client } from "../../Client.js";
 import { createClient } from "../../createClient.js";
 import { TestLogger } from "../../logger/TestLogger.js";
 import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import { createObjectSet } from "../../objectSet/createObjectSet.js";
 import type { SpecificLinkPayload } from "../LinkPayload.js";
 import type { ObjectSetPayload } from "../ObjectSetPayload.js";
 import type {
@@ -2888,7 +2889,11 @@ describe(Store, () => {
         }, { timeout: 5000 });
       });
 
-      it("does not fragment the cache key on resolveToObjectType", () => {
+      it("keeps resolveToObjectType out of the canonicalized operations", () => {
+        // resolveToObjectType is a view-level concern, not a query identity, so
+        // it must not appear in the operations half of the cache key (the wire +
+        // operations). Two queries differing only in the flag therefore carry
+        // identical operations.
         const baseObjectSet = client(FooInterface) as ObjectSet<FooInterface>;
         const queryWithoutFlag = store.objectSets.getQuery({ baseObjectSet });
         const queryWithFlag = store.objectSets.getQuery({
@@ -2898,6 +2903,91 @@ describe(Store, () => {
         expect(queryWithFlag.cacheKey.otherKeys).toEqual(
           queryWithoutFlag.cacheKey.otherKeys,
         );
+      });
+
+      it("loads a static base object set without erroring (no projection)", async () => {
+        // A pure static (or reference) base set has no statically determinable
+        // result type, so projection resolution throws; it must be caught and
+        // the set served without projection rather than driven into an error state.
+        const rid = "ri.phonograph2-objects.main.object.static-employee-50060";
+        fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+          $apiName: "Employee",
+          $rid: rid,
+          employeeId: 50060,
+          fullName: "Static Employee",
+          office: "NYC",
+        });
+
+        const staticSet = createObjectSet(
+          Employee,
+          client[additionalContext],
+          { type: "static", objects: [rid] },
+        );
+
+        const sub = mockObserver<ObjectSetPayload | undefined>();
+        defer(store.objectSets.observe({ baseObjectSet: staticSet }, sub));
+
+        await vi.waitFor(() => {
+          expect(sub.next).toHaveBeenLastCalledWith(
+            expect.objectContaining({ status: "loaded" }),
+          );
+        }, { timeout: 5000 });
+
+        expect(sub.error).not.toHaveBeenCalled();
+        expect(sub.next).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            resolvedList: [
+              expect.objectContaining({
+                $apiName: "Employee",
+                fullName: "Static Employee",
+              }),
+            ],
+          }),
+        );
+      });
+
+      it("projects optimistic additions on a filtered interface base set", async () => {
+        fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+          $apiName: "Employee",
+          employeeId: 60100,
+          fullName: "Prefiltered",
+          office: "NYC",
+        });
+
+        const sub = mockObserver<ObjectSetPayload | undefined>();
+        defer(
+          store.objectSets.observe({
+            baseObjectSet: client(FooInterface).where({
+              fooSpt: "Prefiltered",
+            }),
+          }, sub),
+        );
+
+        // Apply the optimistic add before the first fetch resolves. The
+        // projection target for a filtered interface base must be resolved
+        // synchronously in the constructor for the add to be projected rather
+        // than dropped against the (empty) concrete result type name.
+        const rollback = runOptimisticJob(store, (b) => {
+          b.createObject(Employee, 60101, {
+            employeeId: 60101,
+            fullName: "Prefiltered",
+            office: "LA",
+          });
+        });
+
+        await vi.waitFor(() => {
+          const ids = sub.next.mock.calls.at(-1)?.[0]?.resolvedList?.map((o) =>
+            o.$primaryKey
+          ) ?? [];
+          expect(ids).toContain(60101);
+        }, { timeout: 5000 });
+
+        const payload = sub.next.mock.calls.at(-1)?.[0];
+        for (const o of payload?.resolvedList ?? []) {
+          expect(o.$apiName).toBe("FooInterface");
+        }
+
+        await rollback();
       });
     });
 

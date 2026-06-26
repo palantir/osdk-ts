@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, Osdk, PageResult } from "@osdk/api";
+import type { InterfaceMetadata, ObjectSet, Osdk, PageResult } from "@osdk/api";
 import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
 import type { Observable, Subscription } from "rxjs";
 import { additionalContext } from "../../../Client.js";
@@ -22,6 +22,7 @@ import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/I
 import { ObjectDefRef } from "../../../object/convertWireToOsdkObjects/InternalSymbols.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
+import type { FetchedObjectTypeDefinition } from "../../../ontology/OntologyProvider.js";
 import { extractRdpDefinition } from "../../../util/extractRdpDefinition.js";
 import type { ObjectSetPayload } from "../../ObjectSetPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
@@ -64,10 +65,11 @@ export class ObjectSetQuery extends BaseListQuery<
   // The interface api name to project resolved objects to, or undefined when the
   // result type is a concrete object type. The store caches the underlying
   // concrete object, so interface results must be re-projected via `$as` on the
-  // way out (mirrors InterfaceListQuery). A direct base/interfaceBase leaf (the
-  // common hook input) is resolved synchronously in the constructor; filtered,
-  // composed, or pivoted base sets resolve their result type during the first
-  // fetch, where the type may differ from any single leaf.
+  // way out (mirrors InterfaceListQuery). A base set that reduces to an
+  // interfaceBase leaf (directly or through filter/nearestNeighbors wrappers) is
+  // resolved synchronously in the constructor; composed or pivoted base sets
+  // resolve their result type during the first fetch, where the type may differ
+  // from any single leaf.
   #projectToInterfaceApiName: string | undefined;
   #projectionResolved = false;
 
@@ -116,15 +118,21 @@ export class ObjectSetQuery extends BaseListQuery<
     this.#resultTypeApiName =
       ObjectSetQuery.#extractTypeFromWireObjectSet(baseWire) ?? "";
 
-    // A direct interfaceBase/base leaf with no pivot has a result type equal to
-    // the base, so it resolves synchronously. Anything else (a pre-filtered or
-    // composed base set, or a pivot) has its result type resolved during the
-    // first fetch via getObjectTypesThatInvalidate.
-    if (!operations.pivotTo && baseWire.type === "interfaceBase") {
-      this.#projectToInterfaceApiName = baseWire.interfaceType;
-      this.#projectionResolved = true;
-    } else if (!operations.pivotTo && baseWire.type === "base") {
-      this.#projectionResolved = true;
+    // A direct or filter-wrapped interfaceBase leaf has a result type equal to
+    // that interface (filter/nearestNeighbors preserve the result type), so it
+    // resolves synchronously; this is what lets optimistic updates project
+    // correctly before the first fetch completes. A direct base leaf is a
+    // concrete object type (resolved, no projection). Anything else (a composed
+    // base set, a search-around, or a pivot operation) has its result type
+    // resolved during the first fetch via getObjectTypesThatInvalidate.
+    if (!operations.pivotTo) {
+      const leafInterface = ObjectSetQuery.#findInterfaceLeaf(baseWire);
+      if (leafInterface != null) {
+        this.#projectToInterfaceApiName = leafInterface;
+        this.#projectionResolved = true;
+      } else if (baseWire.type === "base") {
+        this.#projectionResolved = true;
+      }
     }
 
     if (opts.autoFetchMore === true) {
@@ -223,11 +231,39 @@ export class ObjectSetQuery extends BaseListQuery<
     return undefined;
   }
 
+  // Walks filter/nearestNeighbors wrappers (which preserve the result type) to
+  // an interfaceBase leaf, returning its interface api name. Returns undefined
+  // when the leaf is not an interfaceBase (a concrete base, a composition, a
+  // search-around, or another set whose type cannot be determined statically).
+  static #findInterfaceLeaf(wire: WireObjectSet): string | undefined {
+    switch (wire.type) {
+      case "interfaceBase":
+        return wire.interfaceType;
+      case "filter":
+      case "nearestNeighbors":
+        return ObjectSetQuery.#findInterfaceLeaf(wire.objectSet);
+      default:
+        return undefined;
+    }
+  }
+
   /**
    * Register changes to the cache specific to ObjectSetQuery
    */
   protected registerCacheChanges(batch: BatchContext): void {
     batch.changes.registerObjectSet(this.cacheKey);
+  }
+
+  // Records the interface to project resolved objects to (or undefined for a
+  // concrete object-type result) once the result type is known. An undefined
+  // resultType (e.g. when it could not be resolved) is treated as no projection.
+  #resolveProjection(
+    resultType: FetchedObjectTypeDefinition | InterfaceMetadata | undefined,
+  ): void {
+    this.#projectToInterfaceApiName = resultType?.type === "interface"
+      ? resultType.apiName
+      : undefined;
+    this.#projectionResolved = true;
   }
 
   /**
@@ -259,10 +295,7 @@ export class ObjectSetQuery extends BaseListQuery<
       this.#rdpInvalidationSet = invalidationSet;
 
       if (!this.#projectionResolved) {
-        this.#projectToInterfaceApiName = resultType.type === "interface"
-          ? resultType.apiName
-          : undefined;
-        this.#projectionResolved = true;
+        this.#resolveProjection(resultType);
       }
     }
 
@@ -277,19 +310,26 @@ export class ObjectSetQuery extends BaseListQuery<
     }
 
     // Resolve the interface projection target for composed/pivoted base sets
-    // whose result type was not a direct leaf in the constructor (may be an
+    // whose result type was not resolved in the constructor or above (may be an
     // object type, in which case we do not project). These are server-evaluated,
     // so this resolves before the first store write and createPayload always
-    // sees the final value.
+    // sees the final value. getObjectTypesThatInvalidate throws for object sets
+    // whose result type is not statically determinable (e.g. static, reference);
+    // there is no interface to project to in that case, so apply no projection.
     if (!this.#projectionResolved) {
-      const { resultType } = await getObjectTypesThatInvalidate(
-        this.store.client[additionalContext],
-        getWireObjectSet(this.#composedObjectSet),
-      );
-      this.#projectToInterfaceApiName = resultType.type === "interface"
-        ? resultType.apiName
-        : undefined;
-      this.#projectionResolved = true;
+      try {
+        const { resultType } = await getObjectTypesThatInvalidate(
+          this.store.client[additionalContext],
+          getWireObjectSet(this.#composedObjectSet),
+        );
+        this.#resolveProjection(resultType);
+      } catch (error) {
+        this.store.logger?.error(
+          "Failed to resolve interface projection for object set query, applying no projection",
+          error,
+        );
+        this.#resolveProjection(undefined);
+      }
     }
 
     // Fetch the data with pagination
@@ -556,16 +596,25 @@ export class ObjectSetQuery extends BaseListQuery<
     wireObjectSet: WireObjectSet,
   ): Promise<Set<string>> {
     try {
-      const { invalidationSet } = await getObjectTypesThatInvalidate(
-        this.store.client[additionalContext],
-        wireObjectSet,
-      );
+      const { invalidationSet, resultType } =
+        await getObjectTypesThatInvalidate(
+          this.store.client[additionalContext],
+          wireObjectSet,
+        );
+      // Resolve the interface projection from the same call to avoid a second
+      // getObjectTypesThatInvalidate traversal in the projection block below.
+      if (!this.#projectionResolved) {
+        this.#resolveProjection(resultType);
+      }
       return invalidationSet;
     } catch (error) {
       this.store.logger?.error(
         "Failed to compute invalidation types for object set query, falling back to empty set",
         error,
       );
+      if (!this.#projectionResolved) {
+        this.#resolveProjection(undefined);
+      }
       return new Set();
     }
   }
