@@ -211,7 +211,7 @@ describe.each([
     type InferredParamType = Parameters<typeof clientBoundActionTakesStruct>[0];
     expectTypeOf<{
       name: string;
-      address: { city: string; state: string; zipcode?: number | undefined };
+      address: { city: string; state: string; zipcode?: number | null };
     }>().toMatchTypeOf<InferredParamType>();
 
     const result = void (await client(createStructPerson).applyAction({
@@ -220,6 +220,19 @@ describe.each([
     }));
     expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
     expect(result).toBeUndefined();
+
+    // Nullable struct fields accept null (to clear the value), undefined, or omission.
+    const nullFieldResult = await client(createStructPerson).applyAction({
+      name: "testMan",
+      address: { city: "NYC", state: "NY", zipcode: null },
+    });
+    expect(nullFieldResult).toBeUndefined();
+
+    const omittedFieldResult = await client(createStructPerson).applyAction({
+      name: "testMan",
+      address: { city: "NYC", state: "NY" },
+    });
+    expect(omittedFieldResult).toBeUndefined();
   });
 
   it("Accepts attachments", async () => {

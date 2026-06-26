@@ -105,7 +105,7 @@ export namespace ActionParam {
       : never]?: T[K] extends { type: infer U; nullable: infer R }
       ? U extends keyof DataValueClientToWire
         ? R extends true
-          ? DataValueClientToWire[U] | undefined
+          ? DataValueClientToWire[U] | null
           : never
         : never
       : never;
