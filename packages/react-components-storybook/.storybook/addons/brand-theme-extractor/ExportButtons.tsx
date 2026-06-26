@@ -17,10 +17,9 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { styled } from "storybook/theming";
 import { generateCss, generateMarkdown } from "./export.js";
-import type { ExtractedColor, TokenAssignment } from "./types.js";
+import type { TokenAssignment } from "./types.js";
 
 interface ExportButtonsProps {
-  palette: ExtractedColor[];
   assignments: TokenAssignment[];
 }
 
@@ -31,15 +30,33 @@ const ButtonRow = styled.div({
   padding: "0.5em 0",
 });
 
-const ExportButton = styled.button(({ theme }) => ({
+const PrimaryExportButton = styled.button(({ theme }) => ({
+  fontSize: 12,
+  fontWeight: 600,
+  padding: "8px 16px",
+  border: "none",
+  borderRadius: 4,
+  background: theme.color.secondary,
+  color: "#fff",
+  cursor: "pointer",
+  transition: "background 150ms ease, opacity 150ms ease",
+  "&:hover": {
+    opacity: 0.9,
+  },
+  "&:active": {
+    opacity: 0.8,
+  },
+}));
+
+const SecondaryExportButton = styled.button(({ theme }) => ({
   fontSize: 11,
+  fontWeight: 500,
   padding: "6px 12px",
   border: `1px solid ${theme.appBorderColor}`,
   borderRadius: 4,
   background: theme.background.content,
   color: theme.color.defaultText,
   cursor: "pointer",
-  fontWeight: 500,
   transition: "background 150ms ease, border-color 150ms ease",
   "&:hover": {
     background: theme.background.hoverable,
@@ -51,7 +68,6 @@ const ExportButton = styled.button(({ theme }) => ({
 }));
 
 export function ExportButtons({
-  palette,
   assignments,
 }: ExportButtonsProps): React.ReactElement {
   const [copied, setCopied] = useState<string | null>(null);
@@ -94,37 +110,31 @@ export function ExportButtons({
     [],
   );
 
-  const css = useMemo(() => generateCss(palette, assignments), [
-    palette,
-    assignments,
-  ]);
-  const md = useMemo(() => generateMarkdown(palette, assignments), [
-    palette,
-    assignments,
-  ]);
+  const css = useMemo(() => generateCss(assignments), [assignments]);
+  const md = useMemo(() => generateMarkdown(assignments), [assignments]);
 
   return (
     <ButtonRow>
-      <ExportButton
+      <PrimaryExportButton
         onClick={() => download(css, "tokens.css", "text/css")}
       >
         Download tokens.css
-      </ExportButton>
-      <ExportButton
+      </PrimaryExportButton>
+      <PrimaryExportButton
         onClick={() => download(md, "design.md", "text/markdown")}
       >
         Download design.md
-      </ExportButton>
-      <ExportButton
+      </PrimaryExportButton>
+      <SecondaryExportButton
         onClick={() => copyToClipboard(css, "CSS")}
       >
         {copied === "CSS" ? "Copied!" : "Copy CSS"}
-      </ExportButton>
-      <ExportButton
+      </SecondaryExportButton>
+      <SecondaryExportButton
         onClick={() => copyToClipboard(md, "Markdown")}
       >
         {copied === "Markdown" ? "Copied!" : "Copy Markdown"}
-      </ExportButton>
+      </SecondaryExportButton>
     </ButtonRow>
   );
 }

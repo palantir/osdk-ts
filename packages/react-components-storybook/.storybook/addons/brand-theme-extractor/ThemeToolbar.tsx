@@ -74,6 +74,7 @@ export const ThemeToolbar = React.memo(function ThemeToolbarFn() {
     () => findThemePreset(themeState.selectedPresetId),
     [themeState.selectedPresetId],
   );
+  const isCustom = themeState.selectedPresetId === "custom";
   const selectedLabel = selectedPreset?.label ?? "Custom";
   const selectedSwatches = useMemo(
     () => selectedPreset?.swatches ?? getCustomSwatches(themeState),
@@ -94,7 +95,11 @@ export const ThemeToolbar = React.memo(function ThemeToolbarFn() {
     }
     return { builtInPresets: builtIn, customPresets: custom };
   }, [searchQuery]);
-  const totalVisible = builtInPresets.length + customPresets.length;
+  const showCustomInSearch = isCustom
+    && (searchQuery.trim() === ""
+      || "custom".includes(searchQuery.trim().toLowerCase()));
+  const totalVisible = builtInPresets.length + customPresets.length
+    + (showCustomInSearch ? 1 : 0);
 
   useEffect(function closeDropdownOnOutsidePointerDown() {
     if (!open) {
@@ -219,6 +224,17 @@ export const ThemeToolbar = React.memo(function ThemeToolbarFn() {
             <DropdownCount>{totalVisible} themes</DropdownCount>
           </DropdownHeaderRow>
 
+          {showCustomInSearch && (
+            <>
+              <SectionLabel>Current</SectionLabel>
+              <PresetList role="listbox" aria-label="Current custom theme">
+                <CustomOption
+                  swatches={selectedSwatches}
+                />
+              </PresetList>
+            </>
+          )}
+
           {builtInPresets.length > 0 && (
             <>
               <SectionLabel>Built-in themes</SectionLabel>
@@ -271,7 +287,7 @@ const PresetOption = React.memo(function PresetOptionFn(
   }, [onSelect, preset]);
 
   return (
-    <PresetButton
+    <PresetButtonStyled
       type="button"
       role="option"
       aria-selected={selected}
@@ -284,11 +300,34 @@ const PresetOption = React.memo(function PresetOptionFn(
           <PresetSwatch key={swatch} color={swatch} />
         ))}
       </SwatchGroup>
-      <PresetLabel>{preset.label}</PresetLabel>
+      <PresetLabelStyled>{preset.label}</PresetLabelStyled>
       {selected && <CheckIcon />}
-    </PresetButton>
+    </PresetButtonStyled>
   );
 });
+
+interface CustomOptionProps {
+  swatches: [string, string, string];
+}
+
+function CustomOption(
+  { swatches }: CustomOptionProps,
+): React.ReactElement {
+  return (
+    <CustomIndicator
+      role="option"
+      aria-selected={true}
+      title="Custom theme — edit in the Brand Theme panel"
+    >
+      <SwatchGroup aria-hidden="true">
+        {swatches.map((swatch) => <PresetSwatch key={swatch} color={swatch} />)}
+      </SwatchGroup>
+      <PresetLabelStyled>Custom</PresetLabelStyled>
+      <CustomHint>edit in panel</CustomHint>
+      <CheckIcon />
+    </CustomIndicator>
+  );
+}
 
 const ToolbarRoot = styled.div({
   position: "relative",
@@ -407,7 +446,7 @@ const PresetList = styled.div({
   overflowY: "auto",
 });
 
-const PresetButton = styled.button<{ selected: boolean }>(
+const PresetButtonStyled = styled.button<{ selected: boolean }>(
   ({ selected, theme }) => ({
     alignItems: "center",
     backgroundColor: selected ? theme.background.hoverable : "transparent",
@@ -441,39 +480,45 @@ const PresetSwatch = styled.span<{ color: string }>(({ color, theme }) => ({
   width: 14,
 }));
 
-const PresetLabel = styled.span({
+const PresetLabelStyled = styled.span({
   overflow: "hidden",
   textOverflow: "ellipsis",
   whiteSpace: "nowrap",
 });
+
+const CustomIndicator = styled.div(({ theme }) => ({
+  alignItems: "center",
+  backgroundColor: theme.background.hoverable,
+  borderRadius: 4,
+  color: theme.color.defaultText,
+  display: "flex",
+  fontSize: 13,
+  gap: 10,
+  minHeight: 36,
+  paddingBlock: 6,
+  paddingInline: 8,
+  "& > svg": {
+    marginInlineStart: "auto",
+  },
+}));
+
+const CustomHint = styled.span(({ theme }) => ({
+  color: theme.color.mediumdark,
+  fontSize: 11,
+  fontStyle: "italic",
+  marginInlineStart: "auto",
+}));
 
 function getCustomSwatches(
   themeState: BrandThemeGlobals,
 ): [string, string, string] {
   const [backgroundFallback, primaryFallback, textFallback] = DEFAULT_SWATCHES;
   return [
-    resolveAssignmentColor(themeState, "background", backgroundFallback),
-    resolveAssignmentColor(themeState, "primary", primaryFallback),
-    resolveAssignmentColor(themeState, "text", textFallback),
+    themeState.assignments.find((a) => a.role === "background")?.customValue
+      ?? backgroundFallback,
+    themeState.assignments.find((a) => a.role === "primary")?.customValue
+      ?? primaryFallback,
+    themeState.assignments.find((a) => a.role === "text")?.customValue
+      ?? textFallback,
   ];
-}
-
-function resolveAssignmentColor(
-  themeState: BrandThemeGlobals,
-  role: string,
-  fallback: string,
-): string {
-  const assignment = themeState.assignments.find((item) => item.role === role);
-  if (!assignment) {
-    return fallback;
-  }
-
-  if (assignment.colorIndex >= 0) {
-    const paletteColor = themeState.palette[assignment.colorIndex];
-    if (paletteColor) {
-      return paletteColor.hex;
-    }
-  }
-
-  return assignment.customValue ?? fallback;
 }

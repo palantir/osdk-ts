@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-/** Convert RGB (0-255) to hex string */
-export function rgbToHex(r: number, g: number, b: number): string {
-  const toHex = (c: number) => Math.round(c).toString(16).padStart(2, "0");
-  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
-}
-
 /** Linearize an sRGB channel (0-255 to 0-1 linear) */
 function linearize(c: number): number {
   const s = c / 255;
@@ -27,7 +21,7 @@ function linearize(c: number): number {
 }
 
 /** WCAG relative luminance (0-1) from RGB (0-255) */
-export function relativeLuminance(
+function relativeLuminance(
   r: number,
   g: number,
   b: number,
@@ -49,7 +43,7 @@ export const WCAG_AA_NORMAL = 4.5;
 export const WCAG_AA_LARGE = 3;
 
 /** Parse hex color to RGB tuple */
-export function hexToRgb(hex: string): [number, number, number] | null {
+function hexToRgb(hex: string): [number, number, number] | null {
   const match = /^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex);
   if (!match) return null;
   return [
@@ -64,76 +58,4 @@ export function luminanceFromHex(hex: string): number | null {
   const rgb = hexToRgb(hex);
   if (!rgb) return null;
   return relativeLuminance(rgb[0], rgb[1], rgb[2]);
-}
-
-/**
- * Adjust a hex color to meet a target contrast ratio against a background.
- * Darkens or lightens the color as needed.
- */
-export function adjustForContrast(
-  hex: string,
-  bgLuminance: number,
-  targetRatio: number,
-): string {
-  const rgb = hexToRgb(hex);
-  if (!rgb) return hex;
-
-  const fgLuminance = relativeLuminance(rgb[0], rgb[1], rgb[2]);
-  const currentRatio = contrastRatio(fgLuminance, bgLuminance);
-
-  if (currentRatio >= targetRatio) return hex;
-
-  // Move fg *away* from bg to increase contrast. If fg is darker, darken
-  // further; if lighter, lighten further. When both are very dark (or both
-  // very light), prefer the direction with more headroom.
-  let [r, g, b] = rgb;
-  const darkenHeadroom = fgLuminance;
-  const lightenHeadroom = 1 - fgLuminance;
-  const step = fgLuminance < bgLuminance
-    ? (darkenHeadroom > 0.05 ? -3 : 3)
-    : (lightenHeadroom > 0.05 ? 3 : -3);
-
-  // Iteratively adjust until contrast is met (max 100 steps)
-  for (let i = 0; i < 100; i++) {
-    r = Math.max(0, Math.min(255, r + step));
-    g = Math.max(0, Math.min(255, g + step));
-    b = Math.max(0, Math.min(255, b + step));
-
-    const newLum = relativeLuminance(r, g, b);
-    if (contrastRatio(newLum, bgLuminance) >= targetRatio) {
-      break;
-    }
-  }
-
-  return rgbToHex(r, g, b);
-}
-
-/**
- * Compute chroma (saturation proxy) via OKLab color space.
- * Only the relative ranking matters for auto-mapping heuristics.
- */
-export function chromaFromRgb(
-  r: number,
-  g: number,
-  b: number,
-): number {
-  const lr = linearize(r);
-  const lg = linearize(g);
-  const lb = linearize(b);
-
-  // Linear RGB to LMS
-  const l = 0.4122214708 * lr + 0.5363325363 * lg + 0.0514459929 * lb;
-  const m = 0.2119034982 * lr + 0.6806995451 * lg + 0.1073969566 * lb;
-  const s = 0.0883024619 * lr + 0.2817188376 * lg + 0.6299787005 * lb;
-
-  // LMS to cube root
-  const lc = Math.cbrt(l);
-  const mc = Math.cbrt(m);
-  const sc = Math.cbrt(s);
-
-  // LMS cube root to OKLab a, b
-  const a = 1.9779984951 * lc - 2.4285922050 * mc + 0.4505937099 * sc;
-  const okb = 0.0259040371 * lc + 0.7827717662 * mc - 0.8086757660 * sc;
-
-  return Math.sqrt(a * a + okb * okb);
 }

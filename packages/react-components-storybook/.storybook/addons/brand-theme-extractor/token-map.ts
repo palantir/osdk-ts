@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { TOKEN_INVENTORY } from "./generated-token-inventory.js";
-import type { TokenInventoryEntry, TokenRoleDefinition } from "./types.js";
+import type { TokenRoleDefinition } from "./types.js";
 
 /**
  * Complete token role definitions mapping friendly role names
@@ -374,14 +373,4 @@ export function getTokenRole(
   role: string,
 ): TokenRoleDefinition | undefined {
   return TOKEN_ROLES.find((t) => t.role === role);
-}
-
-/**
- * Returns inventory entries whose CSS variable doesn't appear in any
- * TOKEN_ROLES[*].cssProperties — i.e. tokens that exist in the source
- * CSS but aren't mapped to a brand-theme role.
- */
-export function getUnmappedTokens(): TokenInventoryEntry[] {
-  const mapped = new Set(TOKEN_ROLES.flatMap((r) => r.cssProperties));
-  return TOKEN_INVENTORY.filter((entry) => !mapped.has(entry.variable));
 }

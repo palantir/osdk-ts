@@ -14,27 +14,18 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useGlobals } from "storybook/manager-api";
 import { styled } from "storybook/theming";
-import { autoMapColors } from "./auto-mapper.js";
 import { GLOBALS_KEY } from "./constants.js";
 import { ExportButtons } from "./ExportButtons.js";
 import {
-  loadImageFromFile,
-  loadImageFromUrl,
-  loadScreenshotFromUrl,
-} from "./image-loader.js";
-import { extractColorsFromImage } from "./kmeans.js";
-import { PaletteGrid } from "./PaletteGrid.js";
-import { parseBrandThemeState, stringifyBrandThemeState } from "./state.js";
-import { getUnmappedTokens } from "./token-map.js";
+  findMatchingPreset,
+  parseBrandThemeState,
+  stringifyBrandThemeState,
+} from "./state.js";
 import { TokenMappingTable } from "./TokenMappingTable.js";
-import type {
-  BrandThemeGlobals,
-  ExtractedColor,
-  TokenAssignment,
-} from "./types.js";
+import type { BrandThemeGlobals, TokenAssignment } from "./types.js";
 
 interface StylePreset {
   label: string;
@@ -125,12 +116,6 @@ const SectionToggle = styled.div<{ open: boolean }>(({ theme, open }) => ({
   },
 }));
 
-const SectionCount = styled.span(({ theme }) => ({
-  fontSize: 10,
-  color: theme.color.mediumdark,
-  fontWeight: 400,
-}));
-
 const InputRow = styled.div({
   display: "flex",
   gap: 8,
@@ -138,51 +123,6 @@ const InputRow = styled.div({
   padding: "4px 0",
   flexWrap: "wrap",
 });
-
-const UrlInput = styled.input(({ theme }) => ({
-  flex: 1,
-  minWidth: 140,
-  fontSize: 12,
-  padding: "5px 8px",
-  border: `1px solid ${theme.appBorderColor}`,
-  borderRadius: 4,
-  background: theme.input.background,
-  color: theme.input.color,
-  outline: "none",
-  "&:focus": {
-    borderColor: theme.color.secondary,
-    boxShadow: `${theme.color.secondary}33 0 0 0 1px`,
-  },
-}));
-
-const ActionButton = styled.button<{ disabled?: boolean }>(
-  ({ theme, disabled }) => ({
-    fontSize: 11,
-    padding: "5px 12px",
-    border: `1px solid ${theme.appBorderColor}`,
-    borderRadius: 4,
-    background: theme.background.content,
-    color: theme.color.defaultText,
-    cursor: disabled ? "not-allowed" : "pointer",
-    fontWeight: 500,
-    opacity: disabled ? 0.5 : 1,
-    transition: "background 150ms ease",
-    "&:hover": disabled ? {} : {
-      background: theme.background.hoverable,
-    },
-  }),
-);
-
-const Separator = styled.span(({ theme }) => ({
-  fontSize: 11,
-  color: theme.color.mediumdark,
-}));
-
-const ErrorMessage = styled.div(({ theme }) => ({
-  color: theme.color.negative,
-  fontSize: 11,
-  padding: "4px 0",
-}));
 
 const PresetLabel = styled.div(({ theme }) => ({
   fontSize: 11,
@@ -214,49 +154,6 @@ const SectionDivider = styled.div(({ theme }) => ({
   margin: "4px 0",
 }));
 
-const UnmappedBadge = styled.span(({ theme }) => ({
-  fontSize: 10,
-  fontWeight: 600,
-  padding: "1px 6px",
-  borderRadius: 8,
-  backgroundColor: theme.color.warning,
-  color: "#fff",
-  marginLeft: 6,
-}));
-
-const UnmappedList = styled.div(({ theme }) => ({
-  fontSize: 11,
-  lineHeight: 1.6,
-  color: theme.color.defaultText,
-  padding: "4px 0 8px",
-}));
-
-const UnmappedRow = styled.div(({ theme }) => ({
-  display: "flex",
-  gap: 8,
-  padding: "2px 0",
-  borderBottom: `1px solid ${theme.appBorderColor}`,
-  alignItems: "baseline",
-  flexWrap: "wrap",
-}));
-
-const UnmappedVariable = styled.code(({ theme }) => ({
-  fontSize: 11,
-  fontFamily: theme.typography.fonts.mono,
-  color: theme.color.defaultText,
-  flex: "1 1 200px",
-  minWidth: 0,
-  overflow: "hidden",
-  textOverflow: "ellipsis",
-  whiteSpace: "nowrap",
-}));
-
-const UnmappedMeta = styled.span(({ theme }) => ({
-  fontSize: 10,
-  color: theme.color.mediumdark,
-  flex: "0 0 auto",
-}));
-
 // ── Components ────────────────────────────────────────────
 
 export function Panel({ active }: PanelProps): React.ReactElement | null {
@@ -269,19 +166,13 @@ function PanelContent(): React.ReactElement {
 
   // Storybook globals can lose nested object fields during serialization.
   // Store the full state as a JSON string to preserve structure.
-  const state: BrandThemeGlobals = React.useMemo(
+  const state: BrandThemeGlobals = useMemo(
     () => parseBrandThemeState(globals[GLOBALS_KEY]),
     [globals],
   );
 
-  const [extractionOpen, setExtractionOpen] = useState(true);
   const [exportOpen, setExportOpen] = useState(true);
-  const [unmappedOpen, setUnmappedOpen] = useState(false);
-  const [urlValue, setUrlValue] = useState("");
-  const [webpageUrl, setWebpageUrl] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const updateState = useCallback(
     (partial: Partial<BrandThemeGlobals>) => {
       const newState = { ...state, ...partial };
@@ -290,76 +181,12 @@ function PanelContent(): React.ReactElement {
     [state, updateGlobals],
   );
 
-  const handleExtraction = useCallback(
-    (palette: ExtractedColor[]) => {
-      const assignments = autoMapColors(palette);
-      updateState({
-        palette,
-        assignments,
-        active: true,
-        selectedPresetId: "custom",
-      });
+  const resolvePresetId = useCallback(
+    (assignments: TokenAssignment[]): string => {
+      return findMatchingPreset(assignments, state.colorMode);
     },
-    [updateState],
+    [state.colorMode],
   );
-
-  const handleFileUpload = useCallback(
-    async (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
-
-      setLoading(true);
-      setError(null);
-      try {
-        const img = await loadImageFromFile(file);
-        const palette = extractColorsFromImage(img);
-        handleExtraction(palette);
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Failed to process image",
-        );
-      } finally {
-        setLoading(false);
-      }
-    },
-    [handleExtraction],
-  );
-
-  const handleUrlExtract = useCallback(async () => {
-    if (!urlValue.trim()) return;
-
-    setLoading(true);
-    setError(null);
-    try {
-      const img = await loadImageFromUrl(urlValue.trim());
-      const palette = extractColorsFromImage(img);
-      handleExtraction(palette);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to load image",
-      );
-    } finally {
-      setLoading(false);
-    }
-  }, [urlValue, handleExtraction]);
-
-  const handleWebpageCapture = useCallback(async () => {
-    if (!webpageUrl.trim()) return;
-
-    setLoading(true);
-    setError(null);
-    try {
-      const img = await loadScreenshotFromUrl(webpageUrl.trim());
-      const palette = extractColorsFromImage(img);
-      handleExtraction(palette);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to capture webpage",
-      );
-    } finally {
-      setLoading(false);
-    }
-  }, [webpageUrl, handleExtraction]);
 
   const handleAssignmentChange = useCallback(
     (role: string, partial: Partial<TokenAssignment>) => {
@@ -370,23 +197,25 @@ function PanelContent(): React.ReactElement {
         colorIndex: partial.colorIndex ?? current?.colorIndex ?? -1,
         customValue: partial.customValue ?? current?.customValue,
       };
+      const newAssignments = [...existing, updated];
       updateState({
-        assignments: [...existing, updated],
-        selectedPresetId: "custom",
+        assignments: newAssignments,
+        selectedPresetId: resolvePresetId(newAssignments),
       });
     },
-    [state.assignments, updateState],
+    [state.assignments, updateState, resolvePresetId],
   );
 
   const handleReset = useCallback(
     (role: string) => {
-      const filtered = state.assignments.filter((a) => a.role !== role);
-      updateState({ assignments: filtered, selectedPresetId: "custom" });
+      const newAssignments = state.assignments.filter((a) => a.role !== role);
+      updateState({
+        assignments: newAssignments,
+        selectedPresetId: resolvePresetId(newAssignments),
+      });
     },
-    [state.assignments, updateState],
+    [state.assignments, updateState, resolvePresetId],
   );
-
-  const unmappedTokens = useMemo(() => getUnmappedTokens(), []);
 
   const handleToggle = useCallback(() => {
     updateState({ active: !state.active });
@@ -401,9 +230,12 @@ function PanelContent(): React.ReactElement {
         { role: "border-radius", colorIndex: -1, customValue: preset.radius },
         { role: "spacing", colorIndex: -1, customValue: preset.spacing },
       );
-      updateState({ assignments: updated, selectedPresetId: "custom" });
+      updateState({
+        assignments: updated,
+        selectedPresetId: resolvePresetId(updated),
+      });
     },
-    [state.assignments, updateState],
+    [state.assignments, updateState, resolvePresetId],
   );
 
   return (
@@ -421,72 +253,36 @@ function PanelContent(): React.ReactElement {
         </ToggleRow>
       </HeaderRow>
 
-      {/* Collapsible extraction section */}
-      <SectionToggle
-        open={extractionOpen}
-        onClick={() => setExtractionOpen(!extractionOpen)}
-      >
-        <span>&#x25BE;</span>
-        <span>Extract from Image or Webpage</span>
-        {state.palette.length > 0 && (
-          <SectionCount>({state.palette.length} colors)</SectionCount>
-        )}
-      </SectionToggle>
+      {/* Style presets — quick way to set radius/spacing */}
+      <div>
+        <PresetLabel>Style</PresetLabel>
+        <InputRow>
+          {STYLE_PRESETS.map((preset) => (
+            <PresetButton
+              key={preset.label}
+              radius={preset.radius}
+              onClick={() => applyPreset(preset)}
+              title={`Radius: ${preset.radius}px, Spacing: ${preset.spacing}px`}
+            >
+              {preset.label}
+            </PresetButton>
+          ))}
+        </InputRow>
+      </div>
 
-      {extractionOpen && (
-        <div>
-          <InputRow>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleFileUpload}
-              style={{ display: "none" }}
-            />
-            <ActionButton
-              onClick={() => fileInputRef.current?.click()}
-              disabled={loading}
-            >
-              Upload Image
-            </ActionButton>
-            <Separator>or</Separator>
-            <UrlInput
-              type="text"
-              placeholder="Paste image URL..."
-              value={urlValue}
-              onChange={(e) => setUrlValue(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleUrlExtract()}
-            />
-            <ActionButton
-              onClick={handleUrlExtract}
-              disabled={loading || !urlValue.trim()}
-            >
-              {loading ? "Loading..." : "Extract"}
-            </ActionButton>
-          </InputRow>
-          <InputRow>
-            <UrlInput
-              type="text"
-              placeholder="Paste webpage URL to capture..."
-              value={webpageUrl}
-              onChange={(e) => setWebpageUrl(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleWebpageCapture()}
-            />
-            <ActionButton
-              onClick={handleWebpageCapture}
-              disabled={loading || !webpageUrl.trim()}
-            >
-              {loading ? "Capturing..." : "Capture"}
-            </ActionButton>
-          </InputRow>
-          {error && <ErrorMessage>{error}</ErrorMessage>}
-          <PaletteGrid palette={state.palette} />
-        </div>
-      )}
+      <SectionDivider />
+
+      {/* Token editor */}
+      <TokenMappingTable
+        assignments={state.assignments}
+        onAssignmentChange={handleAssignmentChange}
+        onReset={handleReset}
+      />
 
       {/* Collapsible export section */}
       {state.assignments.length > 0 && (
         <>
+          <SectionDivider />
           <SectionToggle
             open={exportOpen}
             onClick={() => setExportOpen(!exportOpen)}
@@ -497,67 +293,8 @@ function PanelContent(): React.ReactElement {
 
           {exportOpen && (
             <ExportButtons
-              palette={state.palette}
               assignments={state.assignments}
             />
-          )}
-        </>
-      )}
-
-      {/* Style presets — quick way to set radius/spacing */}
-      {state.palette.length > 0 && (
-        <div>
-          <PresetLabel>Style</PresetLabel>
-          <InputRow>
-            {STYLE_PRESETS.map((preset) => (
-              <PresetButton
-                key={preset.label}
-                radius={preset.radius}
-                onClick={() => applyPreset(preset)}
-                title={`Radius: ${preset.radius}px, Spacing: ${preset.spacing}px`}
-              >
-                {preset.label}
-              </PresetButton>
-            ))}
-          </InputRow>
-        </div>
-      )}
-
-      <SectionDivider />
-
-      {/* Token editor */}
-      <TokenMappingTable
-        palette={state.palette}
-        assignments={state.assignments}
-        onAssignmentChange={handleAssignmentChange}
-        onReset={handleReset}
-      />
-
-      {/* Unmapped tokens — tokens in source CSS not covered by any role */}
-      {unmappedTokens.length > 0 && (
-        <>
-          <SectionDivider />
-          <SectionToggle
-            open={unmappedOpen}
-            onClick={() => setUnmappedOpen(!unmappedOpen)}
-          >
-            <span>&#x25BE;</span>
-            <span>Unmapped Tokens</span>
-            <UnmappedBadge>{unmappedTokens.length} unmapped</UnmappedBadge>
-          </SectionToggle>
-
-          {unmappedOpen && (
-            <UnmappedList>
-              {unmappedTokens.map((entry) => (
-                <UnmappedRow key={entry.variable}>
-                  <UnmappedVariable title={entry.variable}>
-                    {entry.variable}
-                  </UnmappedVariable>
-                  <UnmappedMeta>{entry.defaultValue}</UnmappedMeta>
-                  <UnmappedMeta>{entry.sourceFile}</UnmappedMeta>
-                </UnmappedRow>
-              ))}
-            </UnmappedList>
           )}
         </>
       )}

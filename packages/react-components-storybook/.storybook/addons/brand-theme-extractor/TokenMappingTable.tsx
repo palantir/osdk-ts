@@ -24,7 +24,6 @@ import {
 } from "./color-utils.js";
 import { TOKEN_ROLES } from "./token-map.js";
 import type {
-  ExtractedColor,
   TokenAssignment,
   TokenCategory,
   TokenRoleDefinition,
@@ -77,7 +76,6 @@ const FONT_PRESETS: Array<{ label: string; value: string }> = [
 ];
 
 interface TokenMappingTableProps {
-  palette: ExtractedColor[];
   assignments: TokenAssignment[];
   onAssignmentChange: (
     role: string,
@@ -259,21 +257,14 @@ interface ContrastInfo {
 function getContrastInfo(
   role: string,
   assignments: TokenAssignment[],
-  palette: ExtractedColor[],
 ): ContrastInfo | undefined {
   let worst: ContrastInfo | undefined;
 
   for (const [fgRole, bgRole, minRatio] of CONTRAST_PAIRS) {
     if (fgRole !== role) continue;
 
-    const fgValue = resolveHex(
-      assignments.find((a) => a.role === fgRole),
-      palette,
-    );
-    const bgValue = resolveHex(
-      assignments.find((a) => a.role === bgRole),
-      palette,
-    );
+    const fgValue = assignments.find((a) => a.role === fgRole)?.customValue;
+    const bgValue = assignments.find((a) => a.role === bgRole)?.customValue;
     if (!fgValue || !bgValue) continue;
 
     const fgLum = luminanceFromHex(fgValue);
@@ -295,21 +286,9 @@ function getContrastInfo(
   return worst;
 }
 
-function resolveHex(
-  assignment: TokenAssignment | undefined,
-  palette: ExtractedColor[],
-): string | undefined {
-  if (!assignment) return undefined;
-  if (assignment.colorIndex >= 0 && palette[assignment.colorIndex]) {
-    return palette[assignment.colorIndex].hex;
-  }
-  return assignment.customValue;
-}
-
 // ── Main Component ────────────────────────────────────────
 
 export function TokenMappingTable({
-  palette,
   assignments,
   onAssignmentChange,
   onReset,
@@ -325,7 +304,6 @@ export function TokenMappingTable({
               <TokenRow
                 key={roleDef.role}
                 roleDef={roleDef}
-                palette={palette}
                 assignments={assignments}
                 assignment={assignments.find((a) => a.role === roleDef.role)}
                 onAssignmentChange={onAssignmentChange}
@@ -343,7 +321,6 @@ export function TokenMappingTable({
 
 interface TokenRowProps {
   roleDef: TokenRoleDefinition;
-  palette: ExtractedColor[];
   assignments: TokenAssignment[];
   assignment: TokenAssignment | undefined;
   onAssignmentChange: (
@@ -355,20 +332,19 @@ interface TokenRowProps {
 
 function TokenRow({
   roleDef,
-  palette,
   assignments,
   assignment,
   onAssignmentChange,
   onReset,
 }: TokenRowProps): React.ReactElement {
-  const currentValue = resolveValue(assignment, palette);
+  const currentValue = assignment?.customValue;
 
   const contrast = useMemo(
     () =>
       roleDef.inputType === "color"
-        ? getContrastInfo(roleDef.role, assignments, palette)
+        ? getContrastInfo(roleDef.role, assignments)
         : undefined,
-    [roleDef.role, roleDef.inputType, assignments, palette],
+    [roleDef.role, roleDef.inputType, assignments],
   );
 
   const handleValueChange = useCallback(
@@ -379,26 +355,6 @@ function TokenRow({
       });
     },
     [roleDef.role, onAssignmentChange],
-  );
-
-  const handleSelectChange = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const val = e.target.value;
-      if (val === "custom") {
-        onAssignmentChange(roleDef.role, {
-          colorIndex: -1,
-          customValue: currentValue || "",
-        });
-      } else {
-        const parsed = Number(val);
-        if (Number.isNaN(parsed)) return;
-        onAssignmentChange(roleDef.role, {
-          colorIndex: parsed,
-          customValue: undefined,
-        });
-      }
-    },
-    [roleDef.role, onAssignmentChange, currentValue],
   );
 
   const handleReset = useCallback(
@@ -474,22 +430,6 @@ function TokenRow({
                 placeholder="theme default"
                 style={{ width: 90 }}
               />
-              {palette.length > 0 && (
-                <SelectInput
-                  value={assignment?.colorIndex != null
-                      && assignment.colorIndex >= 0
-                    ? String(assignment.colorIndex)
-                    : "custom"}
-                  onChange={handleSelectChange}
-                >
-                  <option value="custom">custom</option>
-                  {palette.map((c, i) => (
-                    <option key={i} value={String(i)}>
-                      {c.hex}
-                    </option>
-                  ))}
-                </SelectInput>
-              )}
             </>
           )
           : roleDef.inputType === "font"
@@ -554,15 +494,4 @@ function TokenRow({
       </Controls>
     </Row>
   );
-}
-
-function resolveValue(
-  assignment: TokenAssignment | undefined,
-  palette: ExtractedColor[],
-): string | undefined {
-  if (!assignment) return undefined;
-  if (assignment.colorIndex >= 0 && palette[assignment.colorIndex]) {
-    return palette[assignment.colorIndex].hex;
-  }
-  return assignment.customValue;
 }

@@ -14,17 +14,9 @@
  * limitations under the License.
  */
 
-export interface ExtractedColor {
-  rgb: [number, number, number];
-  hex: string;
-  luminance: number;
-  chroma: number;
-  count: number;
-}
-
 export interface TokenAssignment {
   role: string;
-  /** Index into the palette array, or -1 for a custom value */
+  /** Legacy field, always -1. Kept for state compatibility. */
   colorIndex: number;
   /** Custom value (hex for colors, string for other tokens) */
   customValue?: string;
@@ -36,7 +28,6 @@ export interface BrandThemeGlobals {
   active: boolean;
   colorMode: ThemeColorMode;
   selectedPresetId: string;
-  palette: ExtractedColor[];
   assignments: TokenAssignment[];
 }
 
@@ -90,16 +81,4 @@ export interface TokenRoleDefinition {
   cssProperties: string[];
   inputType: "color" | "text" | "px" | "number" | "ms" | "shadow" | "font";
   defaultValue?: string;
-}
-
-/** Entry from the auto-generated token inventory (see extract-tokens.mjs). */
-export interface TokenInventoryEntry {
-  /** CSS custom property name, e.g. "--osdk-button-primary-bg" */
-  variable: string;
-  /** Default value as declared in the CSS source */
-  defaultValue: string;
-  /** Relative path from tokens/ root, e.g. "tokens/component-tokens/button.css" */
-  sourceFile: string;
-  /** Category derived from filename, e.g. "button", "base", "input" */
-  category: string;
 }

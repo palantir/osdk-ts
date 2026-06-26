@@ -55,15 +55,7 @@ export const BrandThemeDecorator: Decorator = (Story, context) => {
       const roleDef = getTokenRole(assignment.role);
       if (!roleDef) continue;
 
-      let value: string | undefined;
-      if (
-        assignment.colorIndex >= 0
-        && brandTheme.palette?.[assignment.colorIndex]
-      ) {
-        value = brandTheme.palette[assignment.colorIndex].hex;
-      } else if (assignment.customValue) {
-        value = assignment.customValue;
-      }
+      let value: string | undefined = assignment.customValue;
 
       if (!value) continue;
 

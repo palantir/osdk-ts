@@ -17,7 +17,6 @@
 import { THEME_PRESETS, type ThemePreset } from "./presets.js";
 import type {
   BrandThemeGlobals,
-  ExtractedColor,
   ThemeColorMode,
   TokenAssignment,
 } from "./types.js";
@@ -46,7 +45,6 @@ export function createThemeStateForMode(
       active: false,
       colorMode,
       selectedPresetId: "",
-      palette: [],
       assignments: [],
     };
   }
@@ -57,7 +55,6 @@ export function createThemeStateForMode(
     active: true,
     colorMode: effectiveColorMode,
     selectedPresetId: preset.id,
-    palette: [],
     assignments: preset.assignments,
   };
 }
@@ -80,7 +77,6 @@ export function parseBrandThemeState(raw: unknown): BrandThemeGlobals {
       parsed.selectedPresetId,
       defaults.selectedPresetId,
     ),
-    palette: getExtractedColors(parsed.palette),
     assignments: getTokenAssignments(parsed.assignments),
   };
 }
@@ -91,6 +87,41 @@ export function stringifyBrandThemeState(state: BrandThemeGlobals): string {
 
 export function findThemePreset(presetId: string): ThemePreset | undefined {
   return THEME_PRESETS.find((preset) => preset.id === presetId);
+}
+
+/**
+ * Compare current assignments against all presets and return the matching
+ * preset id, or "custom" if no preset matches.
+ */
+export function findMatchingPreset(
+  assignments: TokenAssignment[],
+  colorMode: ThemeColorMode,
+): string {
+  for (const preset of THEME_PRESETS) {
+    if (preset.colorMode != null && preset.colorMode !== colorMode) continue;
+    if (assignmentsMatch(assignments, preset.assignments)) {
+      return preset.id;
+    }
+  }
+  return "custom";
+}
+
+function assignmentsMatch(
+  a: TokenAssignment[],
+  b: TokenAssignment[],
+): boolean {
+  if (a.length !== b.length) return false;
+
+  const mapA = new Map(a.map((x) => [x.role, x.customValue ?? ""]));
+  const mapB = new Map(b.map((x) => [x.role, x.customValue ?? ""]));
+
+  if (mapA.size !== mapB.size) return false;
+
+  for (const [role, value] of mapA) {
+    if (mapB.get(role) !== value) return false;
+  }
+
+  return true;
 }
 
 function parseRawState(raw: unknown): Record<string, unknown> | undefined {
@@ -120,28 +151,6 @@ function getString(value: unknown, fallback: string): string {
 
 function getThemeColorMode(value: unknown): ThemeColorMode {
   return value === "dark" ? "dark" : DEFAULT_COLOR_MODE;
-}
-
-function getExtractedColors(value: unknown): ExtractedColor[] {
-  if (!Array.isArray(value)) {
-    return [];
-  }
-
-  return value.filter(isExtractedColor);
-}
-
-function isExtractedColor(value: unknown): value is ExtractedColor {
-  if (!isRecord(value)) {
-    return false;
-  }
-
-  return Array.isArray(value.rgb)
-    && value.rgb.length === 3
-    && value.rgb.every((channel) => typeof channel === "number")
-    && typeof value.hex === "string"
-    && typeof value.luminance === "number"
-    && typeof value.chroma === "number"
-    && typeof value.count === "number";
 }
 
 function getTokenAssignments(value: unknown): TokenAssignment[] {
