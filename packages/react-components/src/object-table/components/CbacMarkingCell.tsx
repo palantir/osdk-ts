@@ -15,8 +15,8 @@
  */
 
 import React from "react";
-import { CbacBanner } from "../../cbac-picker/CbacBanner.js";
 import { toMarkingIdArray } from "../utils/markingValue.js";
+import { LazyCbacBanner } from "./LazyCbacBanner.js";
 
 export interface CbacMarkingCellProps {
   value: unknown;
@@ -29,5 +29,5 @@ export function CbacMarkingCell({
   if (markingIds.length === 0) {
     return null;
   }
-  return <CbacBanner markingIds={markingIds} />;
+  return <LazyCbacBanner markingIds={markingIds} />;
 }
