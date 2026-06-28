@@ -121,9 +121,9 @@ export function ExportButtons({
         Download tokens.css
       </PrimaryExportButton>
       <PrimaryExportButton
-        onClick={() => download(md, "design.md", "text/markdown")}
+        onClick={() => download(md, "DESIGN.md", "text/markdown")}
       >
-        Download design.md
+        Download DESIGN.md
       </PrimaryExportButton>
       <SecondaryExportButton
         onClick={() => copyToClipboard(css, "CSS")}
