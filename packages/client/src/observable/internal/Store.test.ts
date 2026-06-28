@@ -2676,6 +2676,37 @@ describe(Store, () => {
         expect(sub.error).not.toHaveBeenCalled();
       });
 
+      it("returns raw object instances when resolveToObjectType is set", async () => {
+        registerSanta();
+
+        const sub = mockObserver<ObjectSetPayload | undefined>();
+        defer(
+          store.objectSets.observe({
+            baseObjectSet: client(FooInterface) as ObjectSet<FooInterface>,
+            resolveToObjectType: true,
+          }, sub),
+        );
+
+        await vi.waitFor(() => {
+          expect(sub.next).toHaveBeenLastCalledWith(
+            expect.objectContaining({ status: "loaded" }),
+          );
+        }, { timeout: 5000 });
+
+        expect(sub.next).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            status: "loaded",
+            resolvedList: [
+              expect.objectContaining({
+                $apiName: "Employee",
+                $objectType: "Employee",
+                fullName: "Santa Claus",
+              }),
+            ],
+          }),
+        );
+      });
+
       it("projects the interface view with a where clause", async () => {
         registerSanta();
 
@@ -2856,6 +2887,22 @@ describe(Store, () => {
             }),
           );
         }, { timeout: 5000 });
+      });
+
+      it("keeps resolveToObjectType out of the canonicalized operations", () => {
+        // resolveToObjectType is a view-level concern, not a query identity, so
+        // it must not appear in the operations half of the cache key (the wire +
+        // operations). Two queries differing only in the flag therefore carry
+        // identical operations.
+        const baseObjectSet = client(FooInterface) as ObjectSet<FooInterface>;
+        const queryWithoutFlag = store.objectSets.getQuery({ baseObjectSet });
+        const queryWithFlag = store.objectSets.getQuery({
+          baseObjectSet,
+          resolveToObjectType: true,
+        });
+        expect(queryWithFlag.cacheKey.otherKeys).toEqual(
+          queryWithoutFlag.cacheKey.otherKeys,
+        );
       });
 
       it("loads a static base object set without erroring (no projection)", async () => {

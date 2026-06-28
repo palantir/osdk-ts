@@ -657,10 +657,12 @@ export class ObjectSetQuery extends BaseListQuery<
   ): ObjectSetPayload {
     // The store caches the concrete object, so re-project interface results to
     // the interface view here (mirrors InterfaceListQuery.wrapObject).
+    // resolveToObjectType opts out.
     const interfaceApiName = this.#projectToInterfaceApiName;
-    const resolvedList = interfaceApiName != null
-      ? params.resolvedData?.map((o: ObjectHolder) => o.$as(interfaceApiName))
-      : params.resolvedData;
+    const resolvedList =
+      interfaceApiName != null && !this.options.resolveToObjectType
+        ? params.resolvedData?.map((o: ObjectHolder) => o.$as(interfaceApiName))
+        : params.resolvedData;
     return {
       resolvedList,
       isOptimistic: params.isOptimistic,

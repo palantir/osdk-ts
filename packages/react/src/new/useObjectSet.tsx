@@ -35,6 +35,7 @@ import {
   type Snapshot,
 } from "./makeExternalStore.js";
 import { OsdkContext } from "./OsdkContext.js";
+import type { ResolveToObjectTypeOption } from "./useOsdkObjects.js";
 
 export interface UseObjectSetOptions<
   Q extends ObjectOrInterfaceDefinition,
@@ -205,10 +206,13 @@ export function useObjectSet<
   RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   baseObjectSet: ObjectSet<Q, BaseRDPs> | undefined,
-  options: UseObjectSetOptions<Q, RDPs> & {
-    pivotTo: LinkNames<Q>;
-    streamUpdates?: never;
-  },
+  options:
+    & UseObjectSetOptions<Q, RDPs>
+    & ResolveToObjectTypeOption<Q>
+    & {
+      pivotTo: LinkNames<Q>;
+      streamUpdates?: never;
+    },
 ): UseObjectSetResult<Q, RDPs>;
 
 // Non-pivotTo overload: pivotTo is forbidden to prevent fallthrough.
@@ -218,7 +222,10 @@ export function useObjectSet<
   RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   baseObjectSet: ObjectSet<Q, BaseRDPs> | undefined,
-  options?: UseObjectSetOptions<Q, RDPs> & { pivotTo?: never },
+  options?:
+    & UseObjectSetOptions<Q, RDPs>
+    & ResolveToObjectTypeOption<Q>
+    & { pivotTo?: never },
 ): UseObjectSetResult<Q, RDPs>;
 
 export function useObjectSet<
@@ -227,12 +234,17 @@ export function useObjectSet<
   RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   baseObjectSet: ObjectSet<Q, BaseRDPs> | undefined,
-  options: UseObjectSetOptions<Q, RDPs> = {},
+  options: UseObjectSetOptions<Q, RDPs> & { resolveToObjectType?: boolean } =
+    {},
 ): UseObjectSetResult<Q, RDPs> {
   const { observableClient } = React.useContext(OsdkContext);
 
-  const { enabled: enabledOption = true, streamUpdates, ...otherOptions } =
-    options;
+  const {
+    enabled: enabledOption = true,
+    streamUpdates,
+    resolveToObjectType,
+    ...otherOptions
+  } = options;
   const enabled = enabledOption && baseObjectSet != null;
 
   // Track object type to detect when we switch to a different object type
@@ -308,6 +320,7 @@ export function useObjectSet<
               dedupeInterval: otherOptions.dedupeIntervalMs ?? 2_000,
               autoFetchMore: otherOptions.autoFetchMore,
               streamUpdates,
+              resolveToObjectType,
               select: canonOptions.$select,
             },
             observer,
@@ -337,6 +350,7 @@ export function useObjectSet<
       otherOptions.autoFetchMore,
       otherOptions.dedupeIntervalMs,
       streamUpdates,
+      resolveToObjectType,
       objectTypeKey,
     ],
   );
