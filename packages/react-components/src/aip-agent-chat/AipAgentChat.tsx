@@ -31,7 +31,6 @@ import { AipAgentChatModelPicker } from "./components/AipAgentChatModelPicker.js
 export type { AipAgentChatProps } from "./AipAgentChatApi.js";
 
 const FALLBACK_MODEL_API_NAME = "gpt-4o";
-const DEFAULT_CONTEXT_PAGE_SIZE = 25;
 const EMPTY_SELECTION: ReadonlyArray<string> = [];
 const EMPTY_LOADED: Readonly<Record<string, ReadonlyArray<unknown>>> = {};
 
@@ -49,7 +48,6 @@ export function AipAgentChat({
   onModelChange,
   system,
   objectTypes,
-  contextPageSize = DEFAULT_CONTEXT_PAGE_SIZE,
   defaultSelectedObjectTypes,
   onSelectedObjectTypesChanged,
   initialMessages,
@@ -246,7 +244,6 @@ export function AipAgentChat({
           <AipAgentChatContextLoader
             key={apiName}
             objectType={objectType}
-            pageSize={contextPageSize}
             onLoaded={handleObjectsLoaded}
           />
         );

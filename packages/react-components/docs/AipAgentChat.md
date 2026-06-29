@@ -89,7 +89,6 @@ import { Employee, Office } from "./generatedNoCheck2/index.js";
 <AipAgentChat
   client={platformClient}
   objectTypes={[Employee, Office]}
-  contextPageSize={25} // max objects loaded per selected type (default 25)
   defaultSelectedObjectTypes={["Employee"]} // optional initial selection
   onSelectedObjectTypesChanged={(apiNames) => analytics.track({ apiNames })}
 />;
@@ -104,8 +103,6 @@ Requirements and behavior:
   deselecting a type drops it from the prompt.
 - Selection is uncontrolled: seed it with `defaultSelectedObjectTypes`
   and observe changes via `onSelectedObjectTypesChanged`.
-- Object snapshots are capped at `contextPageSize` per type to keep
-  requests within the model's context window.
 
 ### Custom render
 
@@ -225,7 +222,7 @@ optional props:
 
 - `availableModels` + `onModelChange` — render a model picker in the
   composer footer.
-- `objectTypes` + `contextPageSize` + `defaultSelectedObjectTypes` +
+- `objectTypes` + `defaultSelectedObjectTypes` +
   `onSelectedObjectTypesChanged` — render an object-type context picker
   in the composer footer; selected types are fetched via
   `useOsdkObjects` and folded into the system prompt. Requires

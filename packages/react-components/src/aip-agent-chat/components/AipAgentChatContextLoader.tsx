@@ -48,10 +48,9 @@ export interface AipAgentChatContextLoaderProps {
  */
 export function AipAgentChatContextLoader({
   objectType,
-  pageSize,
   onLoaded,
 }: AipAgentChatContextLoaderProps): null {
-  const { data } = useOsdkObjects(objectType, { pageSize });
+  const { data } = useOsdkObjects(objectType);
   const apiName = objectType.apiName;
 
   React.useEffect(() => {

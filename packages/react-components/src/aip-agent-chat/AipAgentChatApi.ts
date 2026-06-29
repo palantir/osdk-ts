@@ -127,17 +127,6 @@ export interface AipAgentChatProps {
   objectTypes?: ReadonlyArray<ObjectOrInterfaceDefinition>;
 
   /**
-   * Maximum number of objects fetched per selected object type. Caps how
-   * much data is serialized into the system prompt to keep requests within
-   * the model's context window.
-   *
-   * Only relevant when {@link AipAgentChatProps.objectTypes} is provided.
-   *
-   * @default 25
-   */
-  contextPageSize?: number;
-
-  /**
    * Uncontrolled seed: object type API names selected on mount. The
    * component owns selection state thereafter, updating it as the user
    * picks types from the footer multi-select.
