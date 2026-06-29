@@ -15,6 +15,7 @@
  */
 
 import { useCallback, useState } from "react";
+
 import { useIsMounted } from "./useIsMounted.js";
 
 interface AsyncActionState<Args extends unknown[]> {
@@ -33,7 +34,7 @@ interface AsyncActionState<Args extends unknown[]> {
  * - `clearError` resets the error to undefined
  */
 export function useAsyncAction<Args extends unknown[]>(
-  action: (...args: Args) => Promise<void> | void,
+  action: (...args: Args) => Promise<void> | void
 ): AsyncActionState<Args> {
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<unknown>(undefined);
@@ -56,7 +57,7 @@ export function useAsyncAction<Args extends unknown[]>(
         }
       }
     },
-    [action, isMountedRef],
+    [action, isMountedRef]
   );
 
   const clearError = useCallback(() => {
