@@ -15,5 +15,5 @@
  */
 
 export function camelize(name: string): string {
-  return name.replace(/-./g, segment => segment[1].toUpperCase());
+  return name.replace(/-./g, (segment) => segment[1].toUpperCase());
 }

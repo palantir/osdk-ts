@@ -31,7 +31,7 @@ import { getUIMessageText, type UIMessage } from "../uiMessage.js";
  */
 export function uiMessagesToModelMessages(
   ui: ReadonlyArray<UIMessage>,
-  system?: string,
+  system?: string
 ): Array<ModelMessage> {
   const out: Array<ModelMessage> = [];
   const transportSystemSet = system != null && system.length > 0;

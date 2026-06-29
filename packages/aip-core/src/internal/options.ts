@@ -28,11 +28,11 @@ export function resolveMessages(
   callerLabel: string,
   system: SystemOption,
   prompt: PromptOption,
-  messages: Array<ModelMessage> | undefined,
+  messages: Array<ModelMessage> | undefined
 ): Array<ModelMessage> {
   if (prompt != null && messages != null) {
     throw new Error(
-      `${callerLabel}: cannot specify both \`prompt\` and \`messages\`: choose one.`,
+      `${callerLabel}: cannot specify both \`prompt\` and \`messages\`: choose one.`
     );
   }
 
@@ -41,7 +41,7 @@ export function resolveMessages(
 
   if (sys.length === 0 && body.length === 0) {
     throw new Error(
-      `${callerLabel}: must provide at least one of \`system\`, \`prompt\`, or \`messages\`.`,
+      `${callerLabel}: must provide at least one of \`system\`, \`prompt\`, or \`messages\`.`
     );
   }
 
@@ -63,7 +63,7 @@ function resolveSystem(system: SystemOption): Array<SystemModelMessage> {
 
 function resolveBody(
   prompt: PromptOption,
-  messages: Array<ModelMessage> | undefined,
+  messages: Array<ModelMessage> | undefined
 ): Array<ModelMessage> {
   if (messages != null) {
     return messages;

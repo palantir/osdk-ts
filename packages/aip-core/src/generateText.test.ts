@@ -16,6 +16,7 @@
 
 import type { PlatformClient } from "@osdk/client";
 import { describe, expect, it, vi } from "vitest";
+
 import { generateText } from "./generateText.js";
 import {
   assertDefined,
@@ -55,11 +56,13 @@ function defaultResponse(): unknown {
     object: "chat.completion",
     created: 1_700_000_000,
     model: "gpt-4o",
-    choices: [{
-      index: 0,
-      message: { role: "assistant", content: "Hello!" },
-      finish_reason: "stop",
-    }],
+    choices: [
+      {
+        index: 0,
+        message: { role: "assistant", content: "Hello!" },
+        finish_reason: "stop",
+      },
+    ],
     usage: {
       prompt_tokens: 10,
       completion_tokens: 5,
@@ -86,7 +89,7 @@ describe("generateText", () => {
     assertDefined(firstCall, "fetch.mock.calls[0]");
     const [url, init] = firstCall;
     expect(url).toBe(
-      "https://example.palantirfoundry.com/api/v2/llm/proxy/openai/v1/chat/completions",
+      "https://example.palantirfoundry.com/api/v2/llm/proxy/openai/v1/chat/completions"
     );
     expect(init?.method).toBe("POST");
     const headers = init?.headers as Record<string, string>;
@@ -138,22 +141,26 @@ describe("generateText", () => {
         object: "chat.completion",
         created: 1_700_000_000,
         model: "gpt-4o",
-        choices: [{
-          index: 0,
-          message: {
-            role: "assistant",
-            content: null,
-            tool_calls: [{
-              id: "call-1",
-              type: "function",
-              function: {
-                name: "getWeather",
-                arguments: "{\"city\":\"SF\"}",
-              },
-            }],
+        choices: [
+          {
+            index: 0,
+            message: {
+              role: "assistant",
+              content: null,
+              tool_calls: [
+                {
+                  id: "call-1",
+                  type: "function",
+                  function: {
+                    name: "getWeather",
+                    arguments: '{"city":"SF"}',
+                  },
+                },
+              ],
+            },
+            finish_reason: "tool_calls",
           },
-          finish_reason: "tool_calls",
-        }],
+        ],
         usage: { prompt_tokens: 20, completion_tokens: 8, total_tokens: 28 },
       },
     });
@@ -175,12 +182,14 @@ describe("generateText", () => {
     });
 
     expect(result.finishReason).toBe("tool-calls");
-    expect(result.toolCalls).toEqual([{
-      type: "tool-call",
-      toolCallId: "call-1",
-      toolName: "getWeather",
-      input: { city: "SF" },
-    }]);
+    expect(result.toolCalls).toEqual([
+      {
+        type: "tool-call",
+        toolCallId: "call-1",
+        toolName: "getWeather",
+        input: { city: "SF" },
+      },
+    ]);
     expect(result.text).toBe("");
   });
 
@@ -215,7 +224,7 @@ describe("generateText", () => {
         model,
         prompt: "hi",
         messages: [{ role: "user", content: "also hi" }],
-      }),
+      })
     ).rejects.toThrow(/cannot specify both/);
   });
 
@@ -228,7 +237,7 @@ describe("generateText", () => {
     const model = foundryModel({ client, model: "gpt-4o" });
 
     await expect(generateText({ model, prompt: "hi" })).rejects.toThrow(
-      /500.*Internal Server Error/,
+      /500.*Internal Server Error/
     );
   });
 

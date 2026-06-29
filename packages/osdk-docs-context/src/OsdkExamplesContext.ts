@@ -51,8 +51,10 @@ export class OsdkExamplesContext {
    * Get all example names for a specific version
    */
   static getExamplesForVersion(version: string): string[] {
-    const versionData = TYPESCRIPT_OSDK_EXAMPLES
-      .versions[version as keyof typeof TYPESCRIPT_OSDK_EXAMPLES.versions];
+    const versionData =
+      TYPESCRIPT_OSDK_EXAMPLES.versions[
+        version as keyof typeof TYPESCRIPT_OSDK_EXAMPLES.versions
+      ];
     return versionData ? Object.keys(versionData.examples) : [];
   }
 
@@ -61,14 +63,15 @@ export class OsdkExamplesContext {
    */
   static getExample(
     version: string,
-    exampleName: string,
+    exampleName: string
   ): ExampleMetadata | undefined {
-    const versionData = TYPESCRIPT_OSDK_EXAMPLES
-      .versions[version as keyof typeof TYPESCRIPT_OSDK_EXAMPLES.versions];
-    return versionData
-      ?.examples[exampleName as keyof typeof versionData.examples] as
-        | ExampleMetadata
-        | undefined;
+    const versionData =
+      TYPESCRIPT_OSDK_EXAMPLES.versions[
+        version as keyof typeof TYPESCRIPT_OSDK_EXAMPLES.versions
+      ];
+    return versionData?.examples[
+      exampleName as keyof typeof versionData.examples
+    ] as ExampleMetadata | undefined;
   }
 
   /**
@@ -76,7 +79,7 @@ export class OsdkExamplesContext {
    */
   static getExampleCode(
     version: string,
-    exampleName: string,
+    exampleName: string
   ): string | undefined {
     const example = this.getExample(version, exampleName);
     return example?.code;
@@ -85,24 +88,24 @@ export class OsdkExamplesContext {
   /**
    * Search for examples by name pattern across all versions
    */
-  static searchExamples(
-    pattern: string,
-  ): Array<
-    { version: string; exampleName: string; metadata: ExampleMetadata }
-  > {
-    const results: Array<
-      { version: string; exampleName: string; metadata: ExampleMetadata }
-    > = [];
+  static searchExamples(pattern: string): Array<{
+    version: string;
+    exampleName: string;
+    metadata: ExampleMetadata;
+  }> {
+    const results: Array<{
+      version: string;
+      exampleName: string;
+      metadata: ExampleMetadata;
+    }> = [];
     const regex = new RegExp(pattern, "i");
 
-    for (
-      const [version, versionData] of Object.entries(
-        TYPESCRIPT_OSDK_EXAMPLES.versions,
-      )
-    ) {
-      for (
-        const [exampleName, metadata] of Object.entries(versionData.examples)
-      ) {
+    for (const [version, versionData] of Object.entries(
+      TYPESCRIPT_OSDK_EXAMPLES.versions
+    )) {
+      for (const [exampleName, metadata] of Object.entries(
+        versionData.examples
+      )) {
         if (regex.test(exampleName)) {
           results.push({
             version,
@@ -119,24 +122,24 @@ export class OsdkExamplesContext {
   /**
    * Get examples that contain specific code patterns
    */
-  static findExamplesByCodePattern(
-    pattern: string,
-  ): Array<
-    { version: string; exampleName: string; metadata: ExampleMetadata }
-  > {
-    const results: Array<
-      { version: string; exampleName: string; metadata: ExampleMetadata }
-    > = [];
+  static findExamplesByCodePattern(pattern: string): Array<{
+    version: string;
+    exampleName: string;
+    metadata: ExampleMetadata;
+  }> {
+    const results: Array<{
+      version: string;
+      exampleName: string;
+      metadata: ExampleMetadata;
+    }> = [];
     const regex = new RegExp(pattern, "i");
 
-    for (
-      const [version, versionData] of Object.entries(
-        TYPESCRIPT_OSDK_EXAMPLES.versions,
-      )
-    ) {
-      for (
-        const [exampleName, metadata] of Object.entries(versionData.examples)
-      ) {
+    for (const [version, versionData] of Object.entries(
+      TYPESCRIPT_OSDK_EXAMPLES.versions
+    )) {
+      for (const [exampleName, metadata] of Object.entries(
+        versionData.examples
+      )) {
         const typedMetadata = metadata as ExampleMetadata;
         if (regex.test(typedMetadata.code)) {
           results.push({

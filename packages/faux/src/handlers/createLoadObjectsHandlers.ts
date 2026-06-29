@@ -29,23 +29,24 @@ import { pageThroughResponseSearchParams } from "./util/pageThroughResponseSearc
 
 export const createLoadObjectsHandlers: FauxFoundryHandlersFactory = (
   baseUrl,
-  fauxFoundry,
+  fauxFoundry
 ) => [
   /**
    * Load object
    */
   OntologiesV2.OntologyObjectsV2.get(
     baseUrl,
-    async (
-      { request, params: { ontologyApiName, objectType, primaryKey } },
-    ) => {
+    async ({
+      request,
+      params: { ontologyApiName, objectType, primaryKey },
+    }) => {
       return subSelectPropertiesUrl(
         fauxFoundry
           .getDataStore(ontologyApiName)
           .getObjectOrThrow(objectType, primaryKey),
-        new URL(request.url),
+        new URL(request.url)
       );
-    },
+    }
   ),
 
   /**
@@ -55,18 +56,16 @@ export const createLoadObjectsHandlers: FauxFoundryHandlersFactory = (
     baseUrl,
     async ({ request, params: { ontologyApiName, objectType } }) => {
       const loadObjects = pageThroughResponseSearchParams(
-        fauxFoundry
-          .getDataStore(ontologyApiName)
-          .getObjectsOfType(objectType),
+        fauxFoundry.getDataStore(ontologyApiName).getObjectsOfType(objectType),
         getPaginationParamsFromUrl(request),
-        true,
+        true
       );
 
       if (loadObjects) {
         return subSelectProperties(loadObjects, new URL(request.url), true);
       }
       throw new OpenApiCallError(400, InvalidRequest("Invalid Request"));
-    },
+    }
   ),
 
   /**
@@ -74,12 +73,10 @@ export const createLoadObjectsHandlers: FauxFoundryHandlersFactory = (
    */
   OntologiesV2.LinkedObjectsV2.listLinkedObjects(
     baseUrl,
-    async (
-      {
-        request,
-        params: { primaryKey, linkType, objectType, ontologyApiName },
-      },
-    ) => {
+    async ({
+      request,
+      params: { primaryKey, linkType, objectType, ontologyApiName },
+    }) => {
       const linkResults = fauxFoundry
         .getDataStore(ontologyApiName)
         .getLinksOrThrow(objectType, primaryKey, linkType);
@@ -87,14 +84,14 @@ export const createLoadObjectsHandlers: FauxFoundryHandlersFactory = (
       const objects = pageThroughResponseSearchParams(
         linkResults,
         getPaginationParamsFromUrl(request),
-        true,
+        true
       );
 
       if (objects) {
         return subSelectProperties(objects, new URL(request.url), false);
       }
       throw new OpenApiCallError(400, InvalidRequest("Invalid Request"));
-    },
+    }
   ),
 
   /**
@@ -103,26 +100,21 @@ export const createLoadObjectsHandlers: FauxFoundryHandlersFactory = (
 
   OntologiesV2.LinkedObjectsV2.getLinkedObject(
     baseUrl,
-    async (
-      {
-        request,
-        params: {
-          ontologyApiName,
-          objectType,
-          primaryKey,
-          linkType,
-          targetPrimaryKey,
-        },
+    async ({
+      request,
+      params: {
+        ontologyApiName,
+        objectType,
+        primaryKey,
+        linkType,
+        targetPrimaryKey,
       },
-    ) => {
+    }) => {
       const object = fauxFoundry
         .getDataStore(ontologyApiName)
         .getLinkOrThrow(objectType, primaryKey, linkType, targetPrimaryKey);
 
-      return subSelectPropertiesUrl(
-        object,
-        new URL(request.url),
-      );
-    },
+      return subSelectPropertiesUrl(object, new URL(request.url));
+    }
   ),
 ];

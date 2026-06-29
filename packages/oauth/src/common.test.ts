@@ -15,6 +15,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import {
   common,
   createAuthorizationServer,
@@ -50,16 +51,16 @@ describe("local functions", () => {
     saveLocal(client, {}, storage);
 
     expect(vi.mocked(globalThis.localStorage.getItem)).toBeCalledWith(
-      oldLocalStorageKey,
+      oldLocalStorageKey
     );
 
     expect(vi.mocked(globalThis.localStorage.setItem)).toBeCalledWith(
       oldLocalStorageKey,
-      expect.anything(),
+      expect.anything()
     );
 
     expect(vi.mocked(globalThis.localStorage.removeItem)).toBeCalledWith(
-      oldLocalStorageKey,
+      oldLocalStorageKey
     );
   });
 
@@ -74,7 +75,7 @@ describe("local functions", () => {
 
     const authServer = createAuthorizationServer(
       "multipass",
-      "https://stack.palantir.com",
+      "https://stack.palantir.com"
     );
 
     const { makeTokenAndSaveRefresh } = common(
@@ -85,15 +86,18 @@ describe("local functions", () => {
       refresh,
       "marker marker",
       "yay:my-fun-scope sad:my-boring-scope",
-      storage,
+      storage
     );
 
-    makeTokenAndSaveRefresh({
-      refresh_token: "refresh",
-      access_token: "access",
-      token_type: "idk",
-      expires_in: 10_000,
-    }, "signIn");
+    makeTokenAndSaveRefresh(
+      {
+        refresh_token: "refresh",
+        access_token: "access",
+        token_type: "idk",
+        expires_in: 10_000,
+      },
+      "signIn"
+    );
 
     expect(globalThis.localStorage.setItem).toBeCalledWith(
       `@osdk/oauth : refresh : ${client.client_id}`,
@@ -101,7 +105,7 @@ describe("local functions", () => {
         refresh_token: "refresh",
         refreshTokenMarker: "marker marker",
         requestedScopes: "yay:my-fun-scope sad:my-boring-scope",
-      }),
+      })
     );
   });
 });

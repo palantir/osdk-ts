@@ -21,24 +21,23 @@ import type { FauxFoundryHandlersFactory } from "./createFauxFoundryHandlers.js"
 
 export const createCipherTextHandlers: FauxFoundryHandlersFactory = (
   baseUrl,
-  fauxFoundry,
+  fauxFoundry
 ) => [
   /**
    * Decrypt a ciphertext property value.
    */
   OntologiesV2.CipherTextProperties.decrypt(
     baseUrl,
-    async (
-      { params: { ontologyApiName, objectType, primaryKey, propertyName } },
-    ) => {
-      fauxFoundry.getDataStore(ontologyApiName).getObjectOrThrow(
-        objectType,
-        primaryKey,
-      );
+    async ({
+      params: { ontologyApiName, objectType, primaryKey, propertyName },
+    }) => {
+      fauxFoundry
+        .getDataStore(ontologyApiName)
+        .getObjectOrThrow(objectType, primaryKey);
       return {
         // Just return a deterministic string that acts as plaintext
         plaintext: `decrypted:${objectType}:${primaryKey}:${propertyName}`,
       };
-    },
+    }
   ),
 ];

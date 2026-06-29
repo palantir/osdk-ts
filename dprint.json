@@ -47,7 +47,14 @@
     "packages/maker-import/",
     "packages/api/",
     "packages/functions/",
-    "packages/unit-testing/"
+    "packages/unit-testing/",
+    "packages/aip-core/",
+    "packages/foundry-config-json/",
+    "packages/seed-compiler/",
+    "packages/seed-helpers/",
+    "packages/oauth/",
+    "packages/faux/",
+    "packages/osdk-docs-context/"
   ],
   "plugins": [
     "https://plugins.dprint.dev/typescript-0.90.4.wasm",

@@ -36,7 +36,7 @@ export function mockPlatformClient(args: {
 /** Throws with a labelled error if `value` is null/undefined. */
 export function assertDefined<T>(
   value: T,
-  label: string,
+  label: string
 ): asserts value is NonNullable<T> {
   if (value == null) {
     throw new Error(`${label} was unexpectedly null/undefined`);

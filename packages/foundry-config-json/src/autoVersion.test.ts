@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import { findUp } from "find-up";
 import { promises as fsPromises } from "node:fs";
+
+import { findUp } from "find-up";
 import { describe, expect, it, vi } from "vitest";
+
 import { autoVersion } from "./autoVersion.js";
 import { execAsync } from "./execAsync.js";
 
@@ -33,7 +35,7 @@ describe("autoVersion", () => {
     const validPackageJsonVersion = "1.2.3";
     vi.mocked(findUp).mockResolvedValue("/path/package.json");
     vi.mocked(fsPromises.readFile).mockResolvedValue(
-      JSON.stringify({ version: validPackageJsonVersion }),
+      JSON.stringify({ version: validPackageJsonVersion })
     );
     const version = await autoVersion({
       type: "package-json",
@@ -87,9 +89,11 @@ describe("autoVersion", () => {
     const nonSemVerGitVersion = "not-semver";
     execMock.mockResolvedValue(execReturnValue(nonSemVerGitVersion));
 
-    await expect(autoVersion({
-      type: "git-describe",
-    })).rejects.toThrowError();
+    await expect(
+      autoVersion({
+        type: "git-describe",
+      })
+    ).rejects.toThrowError();
   });
 
   it("should throw an error if git isn't found", async () => {
@@ -97,11 +101,11 @@ describe("autoVersion", () => {
       throw new Error("Command not found");
     });
 
-    await expect(autoVersion({
-      type: "git-describe",
-    })).rejects.toThrowError(
-      "git is not installed",
-    );
+    await expect(
+      autoVersion({
+        type: "git-describe",
+      })
+    ).rejects.toThrowError("git is not installed");
   });
 
   it("should throw an error if the current directory is not a git repository", async () => {
@@ -109,11 +113,11 @@ describe("autoVersion", () => {
       throw new Error("fatal: not a git repository");
     });
 
-    await expect(autoVersion({
-      type: "git-describe",
-    })).rejects.toThrowError(
-      "the current directory is not a git repository",
-    );
+    await expect(
+      autoVersion({
+        type: "git-describe",
+      })
+    ).rejects.toThrowError("the current directory is not a git repository");
   });
 
   it("should throw an error if no git tags are found", async () => {
@@ -121,10 +125,10 @@ describe("autoVersion", () => {
       throw new Error("fatal: no names found, cannot describe anything.");
     });
 
-    await expect(autoVersion({
-      type: "git-describe",
-    })).rejects.toThrowError(
-      "no matching tags were found.",
-    );
+    await expect(
+      autoVersion({
+        type: "git-describe",
+      })
+    ).rejects.toThrowError("no matching tags were found.");
   });
 });

@@ -35,13 +35,14 @@ import type {
   QueryEncounteredUserFacingError,
   QueryNotFound,
 } from "@osdk/internal.foundry.ontologies";
+
 import type { BaseAPIError } from "./BaseError.js";
 
 const errorInstanceId = "errorInstanceId";
 const objectTypeRid = "ri.foundry.main.objectType.1";
 
 export function ObjectTypeDoesNotExistError(
-  objectType: string,
+  objectType: string
 ): ObjectTypeNotFound {
   return {
     errorCode: "NOT_FOUND",
@@ -58,7 +59,7 @@ export function ObjectTypeDoesNotExistError(
 
 export function LinkTypeNotFound(
   objectType: string,
-  linkType: string,
+  linkType: string
 ): OGLinkTypeNotFound {
   return {
     errorCode: "NOT_FOUND",
@@ -74,9 +75,7 @@ export function LinkTypeNotFound(
   };
 }
 
-export function OntologyNotFoundError(
-  ontology: string,
-): OntologyNotFound {
+export function OntologyNotFoundError(ontology: string): OntologyNotFound {
   return {
     errorCode: "NOT_FOUND",
     errorName: "OntologyNotFound",
@@ -92,7 +91,7 @@ export function OntologyNotFoundError(
 
 export function ObjectNotFoundError(
   objectType: string,
-  primaryKey: string,
+  primaryKey: string
 ): ObjectNotFound {
   return {
     errorCode: "NOT_FOUND",
@@ -108,7 +107,7 @@ export function ObjectNotFoundError(
 }
 
 export function ObjectSetNotFoundError(
-  objectSetRid: string,
+  objectSetRid: string
 ): ObjectSetNotFound {
   return {
     errorCode: "NOT_FOUND",
@@ -240,9 +239,7 @@ export const GetUserNotFoundError = (userId: string): UserNotFound => ({
   errorDescription: "The given User could not be found.",
 });
 
-export const GetUserDeletedStatusError = (
-  userId: string,
-): UserDeleted => ({
+export const GetUserDeletedStatusError = (userId: string): UserDeleted => ({
   errorCode: "INVALID_ARGUMENT",
   errorName: "UserDeleted",
   errorInstanceId,
@@ -252,9 +249,7 @@ export const GetUserDeletedStatusError = (
   errorDescription: "The user is deleted.",
 });
 
-export const GetUserActiveStatusError = (
-  userId: string,
-): UserIsActive => ({
+export const GetUserActiveStatusError = (userId: string): UserIsActive => ({
   errorCode: "INVALID_ARGUMENT",
   errorName: "UserIsActive",
   errorInstanceId,
@@ -265,7 +260,7 @@ export const GetUserActiveStatusError = (
 });
 
 export const GetInvalidPageTokenError = (
-  pageToken: string,
+  pageToken: string
 ): InvalidPageToken => ({
   errorCode: "INVALID_ARGUMENT",
   errorName: "InvalidPageToken",

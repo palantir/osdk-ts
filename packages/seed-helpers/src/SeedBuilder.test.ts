@@ -15,6 +15,7 @@
  */
 
 import { beforeEach, describe, expect, it } from "vitest";
+
 import { createSeed, SeedBuilder } from "./SeedBuilder.js";
 
 // Minimal runtime shapes matching ObjectTypeDefinition. They do NOT carry
@@ -102,8 +103,9 @@ describe("SeedBuilder", () => {
     it("throws on duplicate primary key within the same type", () => {
       builder.add(Employee, { employeeId: "emp-001" });
 
-      expect(() => builder.add(Employee, { employeeId: "emp-001" }))
-        .toThrow("[Employee] Duplicate primary key 'emp-001'");
+      expect(() => builder.add(Employee, { employeeId: "emp-001" })).toThrow(
+        "[Employee] Duplicate primary key 'emp-001'"
+      );
     });
 
     it("allows the same primary key on different types", () => {
@@ -116,26 +118,26 @@ describe("SeedBuilder", () => {
     });
 
     it("throws on null primary key", () => {
-      expect(() => builder.add(Employee, { employeeId: null }))
-        .toThrow("[Employee] Primary key 'employeeId' is null or undefined");
+      expect(() => builder.add(Employee, { employeeId: null })).toThrow(
+        "[Employee] Primary key 'employeeId' is null or undefined"
+      );
     });
 
     it("throws on undefined (missing) primary key", () => {
-      expect(() => builder.add(Employee, {}))
-        .toThrow("[Employee] Primary key 'employeeId' is null or undefined");
+      expect(() => builder.add(Employee, {})).toThrow(
+        "[Employee] Primary key 'employeeId' is null or undefined"
+      );
     });
 
     it("throws if the object type is missing apiName", () => {
-      expect(() => builder.add({ type: "object" } as any, { id: "1" }))
-        .toThrow("Object type is missing apiName");
+      expect(() => builder.add({ type: "object" } as any, { id: "1" })).toThrow(
+        "Object type is missing apiName"
+      );
     });
 
     it("throws if the object type is missing primaryKeyApiName", () => {
       expect(() =>
-        builder.add(
-          { type: "object", apiName: "Broken" } as any,
-          { id: "1" },
-        )
+        builder.add({ type: "object", apiName: "Broken" } as any, { id: "1" })
       ).toThrow("[Broken] Object type is missing primaryKeyApiName");
     });
   });
@@ -165,8 +167,7 @@ describe("SeedBuilder", () => {
 
       expect(() =>
         (builder.link as any)("bad", fake, "department", dept, "employees")
-      )
-        .toThrow("Source 'Employee:emp-999' not registered (link 'bad')");
+      ).toThrow("Source 'Employee:emp-999' not registered (link 'bad')");
     });
 
     it("throws if target ref was not registered", () => {
@@ -178,8 +179,7 @@ describe("SeedBuilder", () => {
 
       expect(() =>
         (builder.link as any)("bad", emp, "department", fake, "employees")
-      )
-        .toThrow("Target 'Department:dept-999' not registered (link 'bad')");
+      ).toThrow("Target 'Department:dept-999' not registered (link 'bad')");
     });
   });
 
@@ -195,7 +195,7 @@ describe("SeedBuilder", () => {
         "department",
         Department,
         "dept-001",
-        "employees",
+        "employees"
       );
 
       const output = builder.build();
@@ -221,7 +221,7 @@ describe("SeedBuilder", () => {
         "department",
         Department,
         "dept-001",
-        "products",
+        "products"
       );
 
       const link = builder.build().links[0]!;
@@ -240,7 +240,7 @@ describe("SeedBuilder", () => {
           "department",
           Department,
           "dept-001",
-          "employees",
+          "employees"
         )
       ).toThrow("Source 'Employee:emp-999' not registered (link 'bad')");
     });
@@ -256,7 +256,7 @@ describe("SeedBuilder", () => {
           "department",
           Department,
           "dept-999",
-          "employees",
+          "employees"
         )
       ).toThrow("Target 'Department:dept-999' not registered (link 'bad')");
     });
@@ -276,7 +276,7 @@ describe("SeedBuilder", () => {
         "department",
         Department,
         "dept-001",
-        "employees",
+        "employees"
       );
 
       const links = builder.build().links;
@@ -351,7 +351,7 @@ describe("SeedBuilder", () => {
           wrongRef,
           "employees",
           builder.add(Department, { departmentId: "dept-002" }),
-          "department",
+          "department"
         )
       ).toThrow("Source 'Department:emp-001' not registered");
     });

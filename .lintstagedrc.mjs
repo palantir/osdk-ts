@@ -47,6 +47,13 @@ const OXC_NESTED_CONFIG_PACKAGES = {
   "api": "packages/api/oxlint.config.ts",
   "functions": "packages/functions/oxlint.config.ts",
   "unit-testing": "packages/unit-testing/oxlint.config.ts",
+  "aip-core": "packages/aip-core/oxlint.config.ts",
+  "foundry-config-json": "packages/foundry-config-json/oxlint.config.ts",
+  "seed-compiler": "packages/seed-compiler/oxlint.config.ts",
+  "seed-helpers": "packages/seed-helpers/oxlint.config.ts",
+  "oauth": "packages/oauth/oxlint.config.ts",
+  "faux": "packages/faux/oxlint.config.ts",
+  "osdk-docs-context": "packages/osdk-docs-context/oxlint.config.ts",
 };
 
 // All oxc packages (root-config + nested-config) are excluded from the ESLint +
