@@ -33,7 +33,7 @@
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "codegen": "generate-osdk-context --output-dir . && pnpm run format",
     "fix-lint": "oxlint -c ./oxlint.config.ts --fix . && oxfmt -c ../../oxfmt.config.ts .",
-    "format": "npx dprint fmt",
+    "format": "oxfmt -c ../../oxfmt.config.ts .",
     "lint": "oxlint -c ./oxlint.config.ts . && oxfmt -c ../../oxfmt.config.ts --check .",
     "test": "vitest run --pool=forks",
     "test:watch": "vitest",
