@@ -17,7 +17,7 @@
 /** Linearize an sRGB channel (0-255 to 0-1 linear) */
 function linearize(c: number): number {
   const s = c / 255;
-  return s <= 0.04045 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
+  return s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
 }
 
 /** WCAG relative luminance (0-1) from RGB (0-255) */
