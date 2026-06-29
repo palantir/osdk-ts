@@ -16,7 +16,9 @@
 
 import classnames from "classnames";
 import React, { useCallback, useMemo } from "react";
+
 import type { PdfAnnotation, PdfCustomAnnotation, PdfRect } from "../types.js";
+
 import styles from "./PdfViewerAnnotationLayer.module.css";
 
 export interface PdfViewerAnnotationLayerProps {
@@ -41,7 +43,7 @@ interface CustomAnnotationItemProps extends AnnotationItemProps {
 
 function applyTransform(
   point: readonly [number, number],
-  m: readonly number[],
+  m: readonly number[]
 ): [number, number] {
   return [
     m[0] * point[0] + m[2] * point[1] + m[4],
@@ -53,12 +55,12 @@ function applyTransform(
 function computeRectStyle(
   rect: PdfRect,
   transform: readonly number[],
-  color: string | undefined,
+  color: string | undefined
 ): React.CSSProperties {
   const [x1, y1] = applyTransform([rect.x, rect.y], transform);
   const [x2, y2] = applyTransform(
     [rect.x + rect.width, rect.y + rect.height],
-    transform,
+    transform
   );
   return {
     left: Math.min(x1, x2),
@@ -66,14 +68,14 @@ function computeRectStyle(
     width: Math.abs(x2 - x1),
     height: Math.abs(y2 - y1),
     ...(color != null
-      ? { "--osdk-pdf-annotation-color": color } as React.CSSProperties
+      ? ({ "--osdk-pdf-annotation-color": color } as React.CSSProperties)
       : {}),
   };
 }
 
 function useAnnotationHandlers(
   annotation: PdfAnnotation,
-  onClick?: (annotation: PdfAnnotation) => void,
+  onClick?: (annotation: PdfAnnotation) => void
 ) {
   const handleClick = useCallback(() => {
     onClick?.(annotation);
@@ -86,7 +88,7 @@ function useAnnotationHandlers(
         onClick?.(annotation);
       }
     },
-    [onClick, annotation],
+    [onClick, annotation]
   );
 
   return { handleClick, handleKeyDown };
@@ -99,20 +101,17 @@ function AnnotationItem({
 }: AnnotationItemProps): React.ReactElement {
   const { handleClick, handleKeyDown } = useAnnotationHandlers(
     annotation,
-    onClick,
+    onClick
   );
 
-  const className = classnames(
-    styles.annotation,
-    styles[annotation.type],
-  );
+  const className = classnames(styles.annotation, styles[annotation.type]);
 
   const multiRects = annotation.rects;
   const hasMultipleRects = multiRects != null && multiRects.length > 1;
 
   const style = useMemo(
     () => computeRectStyle(annotation.rect, transform, annotation.color),
-    [annotation, transform],
+    [annotation, transform]
   );
 
   // Multi-rect: render a group wrapper with one div per rect
@@ -163,17 +162,17 @@ function CustomAnnotationItem({
 }: CustomAnnotationItemProps): React.ReactElement {
   const { handleClick, handleKeyDown } = useAnnotationHandlers(
     annotation,
-    onClick,
+    onClick
   );
 
   const style = useMemo(
     () => computeRectStyle(annotation.rect, transform, undefined),
-    [annotation, transform],
+    [annotation, transform]
   );
 
   const renderProps = useMemo(
     () => ({ annotation, scale, pageHeight, transform }),
-    [annotation, scale, pageHeight, transform],
+    [annotation, scale, pageHeight, transform]
   );
 
   return (
@@ -202,25 +201,23 @@ export function PdfViewerAnnotationLayer({
   return (
     <div className={styles.annotationLayer}>
       {annotations.map((annotation) =>
-        annotation.type === "custom"
-          ? (
-            <CustomAnnotationItem
-              key={annotation.id}
-              annotation={annotation}
-              pageHeight={pageHeight}
-              scale={scale}
-              transform={transform}
-              onClick={onAnnotationClick}
-            />
-          )
-          : (
-            <AnnotationItem
-              key={annotation.id}
-              annotation={annotation}
-              transform={transform}
-              onClick={onAnnotationClick}
-            />
-          )
+        annotation.type === "custom" ? (
+          <CustomAnnotationItem
+            key={annotation.id}
+            annotation={annotation}
+            pageHeight={pageHeight}
+            scale={scale}
+            transform={transform}
+            onClick={onAnnotationClick}
+          />
+        ) : (
+          <AnnotationItem
+            key={annotation.id}
+            annotation={annotation}
+            transform={transform}
+            onClick={onAnnotationClick}
+          />
+        )
       )}
     </div>
   );

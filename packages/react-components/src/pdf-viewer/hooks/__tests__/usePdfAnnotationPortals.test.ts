@@ -19,6 +19,7 @@ import type { PDFDocumentProxy } from "pdfjs-dist";
 import type { EventBus, PDFViewer } from "pdfjs-dist/web/pdf_viewer.mjs";
 import type { RefObject } from "react";
 import { describe, expect, it, vi } from "vitest";
+
 import { usePdfAnnotationPortals } from "../usePdfAnnotationPortals.js";
 
 type Listener = (...args: unknown[]) => void;
@@ -369,7 +370,7 @@ describe("usePdfAnnotationPortals", () => {
       expect(result.current).toHaveLength(1);
       expect(result.current[0].scale).toBe(2.0);
       expect(result.current[0].width).toBe(1224);
-    },
+    }
   );
 
   it("should coalesce repeated scalechanging events into one remeasure", async () => {
@@ -412,9 +413,11 @@ describe("usePdfAnnotationPortals", () => {
   });
 
   it("should cancel pending remeasure RAF on unmount", () => {
-    const rafSpy = vi.spyOn(globalThis, "requestAnimationFrame")
+    const rafSpy = vi
+      .spyOn(globalThis, "requestAnimationFrame")
       .mockImplementation(() => 42 as unknown as number);
-    const cancelSpy = vi.spyOn(globalThis, "cancelAnimationFrame")
+    const cancelSpy = vi
+      .spyOn(globalThis, "cancelAnimationFrame")
       .mockImplementation(() => {});
 
     try {

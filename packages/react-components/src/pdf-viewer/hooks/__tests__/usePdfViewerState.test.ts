@@ -23,6 +23,7 @@ import type {
 } from "pdfjs-dist/web/pdf_viewer.mjs";
 import type { RefObject } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { MAX_SCALE, MIN_SCALE, SCALE_STEP } from "../../constants.js";
 import { usePdfViewerState } from "../usePdfViewerState.js";
 
@@ -67,9 +68,9 @@ function createMockCoreResult(overrides: { scale?: number } = {}) {
     autoSize: false,
     setAutoSize: vi.fn(),
     portalTargets: [],
-    pdfViewerRef: { current: { pagesRotation: 0 } } as unknown as RefObject<
-      PDFViewer
-    >,
+    pdfViewerRef: {
+      current: { pagesRotation: 0 },
+    } as unknown as RefObject<PDFViewer>,
     eventBusRef: { current: null } as RefObject<EventBus | null>,
     findControllerRef: {
       current: null,
@@ -92,12 +93,14 @@ function createMockSearchResult() {
 }
 
 describe("usePdfViewerState", () => {
-  function setup(options: {
-    initialScale?: number;
-    initialSidebarOpen?: boolean;
-    sidebarMode?: "thumbnails" | "outline";
-    coreScale?: number;
-  } = {}) {
+  function setup(
+    options: {
+      initialScale?: number;
+      initialSidebarOpen?: boolean;
+      sidebarMode?: "thumbnails" | "outline";
+      coreScale?: number;
+    } = {}
+  ) {
     const coreResult = createMockCoreResult({
       scale: options.coreScale ?? options.initialScale,
     });
@@ -126,7 +129,7 @@ describe("usePdfViewerState", () => {
           initialSidebarOpen: options.initialSidebarOpen,
           sidebarMode: options.sidebarMode,
         },
-      },
+      }
     );
 
     return { result, rerender, coreResult, searchResult, outlineItems };
@@ -382,7 +385,7 @@ describe("usePdfViewerState", () => {
 
   async function expectDownloadFilename(
     src: string | ArrayBuffer,
-    expectedFilename: string,
+    expectedFilename: string
   ) {
     const onDownload = vi.fn();
     const coreResult = createMockCoreResult();
@@ -409,14 +412,14 @@ describe("usePdfViewerState", () => {
   it("should derive the download filename from the src URL basename", async () => {
     await expectDownloadFilename(
       "https://example.com/files/report-2024.pdf",
-      "report-2024.pdf",
+      "report-2024.pdf"
     );
   });
 
   it("should strip the query string when deriving the filename from src", async () => {
     await expectDownloadFilename(
       "https://example.com/files/report.pdf?token=abc&page=1",
-      "report.pdf",
+      "report.pdf"
     );
   });
 
