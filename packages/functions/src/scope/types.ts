@@ -27,7 +27,7 @@ import type {
  * - A string alias from resources.json (e.g. `"myObject"`)
  * - An OSDK type reference imported from your generated ontology SDK (e.g. `Employee`)
  *
- * For `links`, and `models`, only string aliases are supported.
+ * For `links`, `datasets`, `streams`, `mediasets` and `models`, only string aliases are supported.
  */
 export interface ScopeResources {
   queries?: Array<string | QueryDefinition>;
@@ -35,6 +35,9 @@ export interface ScopeResources {
   interfaces?: Array<string | InterfaceDefinition>;
   links?: string[];
   models?: string[];
+  datasets?: string[];
+  mediasets?: string[];
+  streams?: string[];
 }
 
 /**

@@ -19,12 +19,13 @@ import { createClient, isObjectSet } from "@osdk/client";
 import { Employee } from "@osdk/client.test.ontology";
 import { renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
+
 import { useStableObjectSet } from "../core/useStableObjectSet.js";
 
 const client = createClient(
   "https://stack.palantir.com/",
   "ri.ontology.main.ontology.dummy",
-  async () => "token",
+  async () => "token"
 );
 
 type EmployeeSet = ObjectSet<typeof Employee>;
@@ -42,7 +43,7 @@ describe("useStableObjectSet", () => {
     const { result, rerender } = renderHook(
       ({ value }: { value: EmployeeSet | undefined }) =>
         useStableObjectSet(value as ObjectSet<ObjectTypeDefinition>),
-      { initialProps: { value: os } },
+      { initialProps: { value: os } }
     );
 
     const first = result.current;
@@ -51,8 +52,8 @@ describe("useStableObjectSet", () => {
   });
 
   it(
-    "returns a stable reference for two different ObjectSet instances with "
-      + "equal wire forms",
+    "returns a stable reference for two different ObjectSet instances with " +
+      "equal wire forms",
     () => {
       const osA = client(Employee) as EmployeeSet;
       const osB = client(Employee) as EmployeeSet;
@@ -64,7 +65,7 @@ describe("useStableObjectSet", () => {
       const { result, rerender } = renderHook(
         ({ value }: { value: EmployeeSet }) =>
           useStableObjectSet(value as ObjectSet<ObjectTypeDefinition>),
-        { initialProps: { value: osA } },
+        { initialProps: { value: osA } }
       );
 
       const first = result.current;
@@ -72,12 +73,12 @@ describe("useStableObjectSet", () => {
 
       // Wire forms are equal
       expect(result.current).toBe(first);
-    },
+    }
   );
 
   it(
-    "returns a new reference when the wire form changes (e.g. different "
-      + "filter chains)",
+    "returns a new reference when the wire form changes (e.g. different " +
+      "filter chains)",
     () => {
       const osA = client(Employee).where({ employeeId: 1 }) as EmployeeSet;
       const osB = client(Employee).where({ employeeId: 2 }) as EmployeeSet;
@@ -87,7 +88,7 @@ describe("useStableObjectSet", () => {
       const { result, rerender } = renderHook(
         ({ value }: { value: EmployeeSet }) =>
           useStableObjectSet(value as ObjectSet<ObjectTypeDefinition>),
-        { initialProps: { value: osA } },
+        { initialProps: { value: osA } }
       );
 
       const first = result.current;
@@ -97,7 +98,7 @@ describe("useStableObjectSet", () => {
 
       expect(result.current).toBe(osB);
       expect(result.current).not.toBe(first);
-    },
+    }
   );
 
   it("transitions between undefined and a defined ObjectSet", () => {
@@ -108,7 +109,7 @@ describe("useStableObjectSet", () => {
         useStableObjectSet(value as ObjectSet<ObjectTypeDefinition>),
       {
         initialProps: { value: undefined as EmployeeSet | undefined },
-      },
+      }
     );
 
     expect(result.current).toBeUndefined();

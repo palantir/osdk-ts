@@ -27,6 +27,7 @@ import type {
 } from "@osdk/api";
 import type { ObserveObjectsCallbackArgs } from "@osdk/client/observable";
 import React from "react";
+
 import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
 import { devToolsMetadata, makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext } from "./OsdkContext.js";
@@ -36,15 +37,14 @@ import { OsdkContext } from "./OsdkContext.js";
  * Object-type queries cannot pass this option.
  */
 export type ResolveToObjectTypeOption<T extends ObjectOrInterfaceDefinition> =
-  T extends { type: "interface" } ? { resolveToObjectType?: boolean }
+  T extends { type: "interface" }
+    ? { resolveToObjectType?: boolean }
     : { resolveToObjectType?: never };
 
 export type UseOsdkObjectsOptions<
   T extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
-> =
-  & UseOsdkObjectsBaseOptions<T, RDPs>
-  & ResolveToObjectTypeOption<T>;
+> = UseOsdkObjectsBaseOptions<T, RDPs> & ResolveToObjectTypeOption<T>;
 
 interface UseOsdkObjectsBaseOptions<
   T extends ObjectOrInterfaceDefinition,
@@ -194,11 +194,11 @@ export interface UseOsdkListResult<
    */
   data:
     | Osdk.Instance<
-      T,
-      "$allBaseProperties" | EXTRA_OPTIONS,
-      PropertyKeys<T>,
-      RDPs
-    >[]
+        T,
+        "$allBaseProperties" | EXTRA_OPTIONS,
+        PropertyKeys<T>,
+        RDPs
+      >[]
     | undefined;
 
   /**
@@ -243,7 +243,7 @@ export function useOsdkObjects<
     pivotTo: L;
     rids: readonly string[];
     streamUpdates?: never;
-  },
+  }
 ): UseOsdkListResult<LinkedType<Q, L>, {}, "$rid">;
 
 export function useOsdkObjects<
@@ -254,7 +254,7 @@ export function useOsdkObjects<
   options: UseOsdkObjectsOptions<Q, {}> & {
     pivotTo: L;
     streamUpdates?: never;
-  },
+  }
 ): UseOsdkListResult<LinkedType<Q, L>, {}>;
 
 // Non-pivotTo overloads: pivotTo is forbidden to prevent fallthrough from the
@@ -267,7 +267,7 @@ export function useOsdkObjects<
   options: UseOsdkObjectsOptions<Q, RDPs> & {
     rids: readonly string[];
     pivotTo?: never;
-  },
+  }
 ): UseOsdkListResult<Q, RDPs, "$rid">;
 
 export function useOsdkObjects<
@@ -275,9 +275,7 @@ export function useOsdkObjects<
   RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   type: Q,
-  options?:
-    & UseOsdkObjectsOptions<Q, RDPs>
-    & { pivotTo?: never },
+  options?: UseOsdkObjectsOptions<Q, RDPs> & { pivotTo?: never }
 ): UseOsdkListResult<Q, RDPs>;
 
 export function useOsdkObjects<
@@ -285,13 +283,12 @@ export function useOsdkObjects<
   RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   type: Q,
-  options?: UseOsdkObjectsOptions<Q, RDPs>,
+  options?: UseOsdkObjectsOptions<Q, RDPs>
 ):
   | UseOsdkListResult<Q, RDPs>
   | UseOsdkListResult<Q, RDPs, "$rid">
   | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>, {}>
-  | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>, {}, "$rid">
-{
+  | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>, {}, "$rid"> {
   const { observableClient } = React.useContext(OsdkContext);
 
   const {
@@ -320,26 +317,23 @@ export function useOsdkObjects<
     $select,
   });
 
-  const stableRids = React.useMemo(
-    () => rids,
-    [JSON.stringify(rids)],
-  );
+  const stableRids = React.useMemo(() => rids, [JSON.stringify(rids)]);
 
-  const { subscribe, getSnapShot } = React.useMemo(
-    () => {
-      if (!enabled) {
-        return makeExternalStore<ObserveObjectsCallbackArgs<Q, RDPs>>(
-          () => ({ unsubscribe: () => {} }),
-          devToolsMetadata({
-            hookType: "useOsdkObjects",
-            objectType: type.apiName,
-          }),
-        );
-      }
-
+  const { subscribe, getSnapShot } = React.useMemo(() => {
+    if (!enabled) {
       return makeExternalStore<ObserveObjectsCallbackArgs<Q, RDPs>>(
-        (observer) =>
-          observableClient.observeList<Q, RDPs>({
+        () => ({ unsubscribe: () => {} }),
+        devToolsMetadata({
+          hookType: "useOsdkObjects",
+          objectType: type.apiName,
+        })
+      );
+    }
+
+    return makeExternalStore<ObserveObjectsCallbackArgs<Q, RDPs>>(
+      (observer) =>
+        observableClient.observeList<Q, RDPs>(
+          {
             type,
             rids: stableRids,
             where: canonOptions.where,
@@ -359,37 +353,37 @@ export function useOsdkObjects<
               ? { $loadPropertySecurityMetadata }
               : {}),
             ...(resolveToObjectType ? { resolveToObjectType: true } : {}),
-          }, observer),
-        devToolsMetadata({
-          hookType: "useOsdkObjects",
-          objectType: type.apiName,
-          where: canonOptions.where,
-          orderBy: canonOptions.orderBy,
-          pageSize,
-        }),
-      );
-    },
-    [
-      enabled,
-      observableClient,
-      type.apiName,
-      type.type,
-      stableRids,
-      canonOptions.where,
-      dedupeIntervalMs,
-      pageSize,
-      canonOptions.orderBy,
-      streamUpdates,
-      canonOptions.withProperties,
-      autoFetchMore,
-      canonOptions.intersectWith,
-      pivotTo,
-      canonOptions.$select,
-      $loadPropertySecurityMetadata,
-      $includeAllBaseObjectProperties,
-      !!resolveToObjectType,
-    ],
-  );
+          },
+          observer
+        ),
+      devToolsMetadata({
+        hookType: "useOsdkObjects",
+        objectType: type.apiName,
+        where: canonOptions.where,
+        orderBy: canonOptions.orderBy,
+        pageSize,
+      })
+    );
+  }, [
+    enabled,
+    observableClient,
+    type.apiName,
+    type.type,
+    stableRids,
+    canonOptions.where,
+    dedupeIntervalMs,
+    pageSize,
+    canonOptions.orderBy,
+    streamUpdates,
+    canonOptions.withProperties,
+    autoFetchMore,
+    canonOptions.intersectWith,
+    pivotTo,
+    canonOptions.$select,
+    $loadPropertySecurityMetadata,
+    $includeAllBaseObjectProperties,
+    !!resolveToObjectType,
+  ]);
 
   const listPayload = React.useSyncExternalStore(subscribe, getSnapShot);
 
@@ -409,6 +403,6 @@ export function useOsdkObjects<
       objectSet: listPayload?.objectSet,
       refetch,
     }),
-    [listPayload, enabled, refetch],
+    [listPayload, enabled, refetch]
   );
 }

@@ -19,12 +19,11 @@ import type { ObservableClient } from "@osdk/client/observable";
 import { render } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { OsdkProvider } from "../OsdkProvider.js";
 
 const { createObservableClientMock } = vi.hoisted(() => ({
-  createObservableClientMock: vi.fn(
-    () => ({}) as unknown as ObservableClient,
-  ),
+  createObservableClientMock: vi.fn(() => ({}) as unknown as ObservableClient),
 }));
 
 vi.mock("@osdk/client/observable", () => ({
@@ -32,6 +31,24 @@ vi.mock("@osdk/client/observable", () => ({
 }));
 
 const mockClient = {} as unknown as Client;
+
+function expectedOptions(overrides?: {
+  actionDelayMs?: number;
+  logLevel?: string;
+  refCounts?: boolean;
+  cacheKeys?: boolean;
+}) {
+  return {
+    devMode: {
+      actionDelayMs: overrides?.actionDelayMs,
+      logLevel: overrides?.logLevel,
+      debug: {
+        refCounts: overrides?.refCounts,
+        cacheKeys: overrides?.cacheKeys,
+      },
+    },
+  };
+}
 
 describe("OsdkProvider", () => {
   afterEach(() => {
@@ -42,28 +59,45 @@ describe("OsdkProvider", () => {
     render(
       <OsdkProvider client={mockClient} devMode={{ actionDelayMs: 0 }}>
         <div />
-      </OsdkProvider>,
+      </OsdkProvider>
     );
 
     expect(createObservableClientMock).toHaveBeenCalledTimes(1);
     expect(createObservableClientMock).toHaveBeenLastCalledWith(
       mockClient,
       expect.any(Function),
-      { devMode: { actionDelayMs: 0 } },
+      expectedOptions({ actionDelayMs: 0 })
     );
   });
 
-  it("defaults actionDelayMs to undefined when devMode is omitted", () => {
+  it("defaults the devMode fields to undefined when devMode is omitted", () => {
     render(
       <OsdkProvider client={mockClient}>
         <div />
-      </OsdkProvider>,
+      </OsdkProvider>
     );
 
     expect(createObservableClientMock).toHaveBeenLastCalledWith(
       mockClient,
       expect.any(Function),
-      { devMode: { actionDelayMs: undefined } },
+      expectedOptions()
+    );
+  });
+
+  it("passes logLevel and debug flags through to createObservableClient", () => {
+    render(
+      <OsdkProvider
+        client={mockClient}
+        devMode={{ logLevel: "debug", debug: { refCounts: true } }}
+      >
+        <div />
+      </OsdkProvider>
+    );
+
+    expect(createObservableClientMock).toHaveBeenLastCalledWith(
+      mockClient,
+      expect.any(Function),
+      expectedOptions({ logLevel: "debug", refCounts: true })
     );
   });
 
@@ -71,7 +105,7 @@ describe("OsdkProvider", () => {
     const { rerender } = render(
       <OsdkProvider client={mockClient} devMode={{ actionDelayMs: 250 }}>
         <div />
-      </OsdkProvider>,
+      </OsdkProvider>
     );
 
     expect(createObservableClientMock).toHaveBeenCalledTimes(1);
@@ -80,7 +114,7 @@ describe("OsdkProvider", () => {
     rerender(
       <OsdkProvider client={mockClient} devMode={{ actionDelayMs: 250 }}>
         <div />
-      </OsdkProvider>,
+      </OsdkProvider>
     );
 
     expect(createObservableClientMock).toHaveBeenCalledTimes(1);
@@ -89,7 +123,44 @@ describe("OsdkProvider", () => {
     rerender(
       <OsdkProvider client={mockClient} devMode={{ actionDelayMs: 0 }}>
         <div />
-      </OsdkProvider>,
+      </OsdkProvider>
+    );
+
+    expect(createObservableClientMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("does not recreate the observable client when logLevel and debug are unchanged", () => {
+    const { rerender } = render(
+      <OsdkProvider
+        client={mockClient}
+        devMode={{ logLevel: "debug", debug: { refCounts: true } }}
+      >
+        <div />
+      </OsdkProvider>
+    );
+
+    expect(createObservableClientMock).toHaveBeenCalledTimes(1);
+
+    // New devMode and debug object literals, same values: must not re-create.
+    rerender(
+      <OsdkProvider
+        client={mockClient}
+        devMode={{ logLevel: "debug", debug: { refCounts: true } }}
+      >
+        <div />
+      </OsdkProvider>
+    );
+
+    expect(createObservableClientMock).toHaveBeenCalledTimes(1);
+
+    // Changing logLevel re-creates the client.
+    rerender(
+      <OsdkProvider
+        client={mockClient}
+        devMode={{ logLevel: "trace", debug: { refCounts: true } }}
+      >
+        <div />
+      </OsdkProvider>
     );
 
     expect(createObservableClientMock).toHaveBeenCalledTimes(2);

@@ -97,9 +97,7 @@ export namespace Employee {
     readonly locationType: $PropType["string"] | undefined;
     readonly isRemote: $PropType["boolean"] | undefined;
     readonly classificationMarking: $PropType["marking"] | undefined;
-    readonly clearanceMarking:
-      | ReadonlyArray<$PropType["marking"]>
-      | undefined;
+    readonly clearanceMarking: ReadonlyArray<$PropType["marking"]> | undefined;
   }
 
   export interface StrictProps {
@@ -135,9 +133,7 @@ export namespace Employee {
     readonly locationType: $PropType["string"] | undefined;
     readonly isRemote: $PropType["boolean"] | undefined;
     readonly classificationMarking: $PropType["marking"] | undefined;
-    readonly clearanceMarking:
-      | ReadonlyArray<$PropType["marking"]>
-      | undefined;
+    readonly clearanceMarking: ReadonlyArray<$PropType["marking"]> | undefined;
   }
 
   export interface ObjectSet extends $ObjectSet<Employee, Employee.ObjectSet> {}

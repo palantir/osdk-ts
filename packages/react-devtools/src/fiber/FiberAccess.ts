@@ -20,22 +20,22 @@ import type { Fiber } from "./types.js";
 
 function isValidFiber(value: unknown): value is Fiber {
   return (
-    typeof value === "object"
-    && value != null
-    && "tag" in value
-    && "stateNode" in value
-    && "return" in value
-    && "child" in value
-    && "sibling" in value
-    && "flags" in value
+    typeof value === "object" &&
+    value != null &&
+    "tag" in value &&
+    "stateNode" in value &&
+    "return" in value &&
+    "child" in value &&
+    "sibling" in value &&
+    "flags" in value
   );
 }
 
 export function getFiberFromElement(element: Element): Fiber | null {
-  return safeFiberOperation(
-    () => getFiberFromElementUnsafe(element),
-    { fallback: null, feature: "component-inspection" },
-  );
+  return safeFiberOperation(() => getFiberFromElementUnsafe(element), {
+    fallback: null,
+    feature: "component-inspection",
+  });
 }
 
 function getFiberFromElementUnsafe(element: Element): Fiber | null {
@@ -51,8 +51,8 @@ function getFiberFromElementUnsafe(element: Element): Fiber | null {
 
   const legacyRoot = (element as unknown as Record<string, unknown>)
     ._reactRootContainer as
-      | { _internalRoot?: { current?: { child?: unknown } } }
-      | undefined;
+    | { _internalRoot?: { current?: { child?: unknown } } }
+    | undefined;
   if (legacyRoot?._internalRoot?.current?.child) {
     const fiber = legacyRoot._internalRoot.current.child;
     if (isValidFiber(fiber)) {

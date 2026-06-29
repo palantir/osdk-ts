@@ -107,15 +107,52 @@ export interface EmployeeApiTest extends $ObjectTypeDefinition {
       color: "blue";
       name: "person";
     };
-    implements: ["FooInterface"];
+    implements: ["FooInterface", "ReducerInterface"];
     interfaceMap: {
       FooInterface: {
         fooSpt: "fullName";
+      };
+      ReducerInterface: {
+        ifaceAddress: "addressStruct";
+        ifaceSalary: "salaryHistory";
+        ifaceBonus: "bonusHistory";
       };
     };
     inverseInterfaceMap: {
       FooInterface: {
         fullName: "fooSpt";
+      };
+      ReducerInterface: {
+        addressStruct: "ifaceAddress";
+        salaryHistory: "ifaceSalary";
+        bonusHistory: "ifaceBonus";
+      };
+    };
+    interfaceImplementations: {
+      FooInterface: {
+        fooSpt: { type: "localProperty"; propertyApiName: "fullName" };
+      };
+      ReducerInterface: {
+        ifaceAddress: {
+          type: "structField";
+          propertyApiName: "addressStruct";
+          structFieldApiName: "city";
+        };
+        ifaceSalary: {
+          type: "reduced";
+          implementation: {
+            type: "localProperty";
+            propertyApiName: "salaryHistory";
+          };
+        };
+        ifaceBonus: {
+          type: "reduced";
+          implementation: {
+            type: "structField";
+            propertyApiName: "bonusHistory";
+            structFieldApiName: "amount";
+          };
+        };
       };
     };
     links: {

@@ -200,6 +200,7 @@ describe.each([
       const objects = Object.keys($Objects);
       expect(objects.sort()).toStrictEqual([
         "BgaoNflPlayer",
+        "ComplexImplementationObject",
         "Employee",
         "ObjectWithTimestampPrimaryKey",
         "Office",

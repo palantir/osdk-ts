@@ -17,6 +17,7 @@
 import { Button } from "@blueprintjs/core";
 import classNames from "classnames";
 import React, { useCallback, useRef, useState } from "react";
+
 import styles from "./CopyableCodeBlock.module.scss";
 
 interface CopyableCodeBlockProps {
@@ -32,16 +33,14 @@ export const CopyableCodeBlock: React.FC<CopyableCodeBlockProps> = ({
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const handleCopy = useCallback(async () => {
-    const text = typeof children === "string"
-      ? children
-      : String(children ?? "");
+    const text =
+      typeof children === "string" ? children : String(children ?? "");
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
       clearTimeout(copyTimeoutRef.current);
       copyTimeoutRef.current = setTimeout(() => setCopied(false), 1500);
-    } catch {
-    }
+    } catch {}
   }, [children]);
 
   return (

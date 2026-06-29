@@ -22,6 +22,7 @@ import type {
 } from "../../workflow/api/__components.js";
 import type {
   ActionApplyClientPreferences as _api_ActionApplyClientPreferences,
+  ActionEditsValidationModification as _api_ActionEditsValidationModification,
   ActionEffectsModification as _api_ActionEffectsModification,
   ActionLogConfiguration as _api_ActionLogConfiguration,
   ActionLogicModification as _api_ActionLogicModification,
@@ -59,7 +60,7 @@ import type {
   CompassFolderRid as _api_CompassFolderRid,
   DataNullability as _api_DataNullability,
   DataNullabilityV2 as _api_DataNullabilityV2,
-  DataSecurity as _api_DataSecurity,
+  DataSecurityModification as _api_DataSecurityModification,
   DatasetRid as _api_DatasetRid,
   DatasourceRid as _api_DatasourceRid,
   DataType as _api_DataType,
@@ -227,6 +228,8 @@ import type {
   RoleGrantPatch as _api_permissions_RoleGrantPatch,
 } from "../permissions/__components.js";
 import type {
+  InterfaceTypeSchemaMigrationModification
+    as _api_schemamigrations_InterfaceTypeSchemaMigrationModification,
   ResetSchemaMigrationsAndDropEditParameters
     as _api_schemamigrations_ResetSchemaMigrationsAndDropEditParameters,
   SchemaMigrationInitialization
@@ -296,6 +299,10 @@ export interface ActionTypeModification {
     | _api_ActionApplyClientPreferences
     | null
     | undefined;
+  actionEditsValidation?:
+    | _api_ActionEditsValidationModification
+    | null
+    | undefined;
   actionLogConfiguration?: _api_ActionLogConfiguration | null | undefined;
   apiName: _api_ActionTypeApiName;
   branchSettings?: _api_ActionTypeBranchSettingsModification | null | undefined;
@@ -318,6 +325,7 @@ export interface ActionTypeModification {
     _api_EditParameterRequestModification
   >;
   provenance?: _api_ActionTypeProvenanceModification | null | undefined;
+  readAuthorization?: _api_AuthorizationModification | null | undefined;
   revert?: _api_ActionRevert | null | undefined;
   scenarioSettings?:
     | _api_ActionTypeScenarioSettingsModification
@@ -1286,7 +1294,7 @@ export interface ObjectTypeDatasetDatasourceV3ModificationInternal {
     | undefined;
 }
 export interface ObjectTypeDatasourceCreate {
-  dataSecurity?: _api_DataSecurity | null | undefined;
+  dataSecurity?: _api_DataSecurityModification | null | undefined;
   editsConfiguration?: _api_EditsConfiguration | null | undefined;
   objectTypeDatasourceDefinition: ObjectTypeDatasourceModificationDefinition;
 }
@@ -1529,7 +1537,7 @@ export type ObjectTypeDatasourceModifyRequest =
   | ObjectTypeDatasourceModifyRequest_delete;
 
 export interface ObjectTypeDatasourceUpdate {
-  dataSecurity?: _api_DataSecurity | null | undefined;
+  dataSecurity?: _api_DataSecurityModification | null | undefined;
   editsConfiguration?: _api_EditsConfiguration | null | undefined;
   objectTypeDatasourceDefinition: ObjectTypeDatasourceModificationDefinition;
   rid: _api_DatasourceRid;
@@ -1658,6 +1666,7 @@ export interface ObjectTypeMediaDatasourceModification {
  */
 export interface ObjectTypeMediaSetViewDatasourceModification {
   assumedMarkings: Array<_api_MarkingId>;
+  clearOnDeleteProperties: Array<_api_PropertyTypeId>;
   mediaSetViewLocator: _api_MediaSetViewLocator;
   properties: Array<_api_PropertyTypeId>;
   uploadProperties: Array<_api_PropertyTypeId>;
@@ -1983,6 +1992,10 @@ export interface OntologyModificationRequest {
   compassDeletionParameters?: CompassDeletionParameters | null | undefined;
   expectedLastRebasedOntologyVersion?: _api_OntologyVersion | null | undefined;
   expectedOntologyVersion?: _api_OntologyVersion | null | undefined;
+  interfaceTypeSchemaMigrations: Record<
+    _api_InterfaceTypeRid,
+    _api_schemamigrations_InterfaceTypeSchemaMigrationModification
+  >;
   interfaceTypesToCreate: Record<
     _api_InterfaceTypeIdInRequest,
     InterfaceTypeModification

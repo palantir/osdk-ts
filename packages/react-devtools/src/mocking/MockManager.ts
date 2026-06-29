@@ -99,14 +99,14 @@ export class MockManager {
     mockId: string,
     objectType: string,
     primaryKey: string | number,
-    objectData: Record<string, unknown>,
+    objectData: Record<string, unknown>
   ): void {
     const objectMockId = `${mockId}-object-${primaryKey}`;
     this.mocks.set(objectMockId, {
       id: objectMockId,
       type: "object",
       matcher: {
-        objectType: objectType,
+        objectType,
         primaryKey: String(primaryKey),
       },
       response: {
@@ -118,7 +118,7 @@ export class MockManager {
       cacheKey: {
         type: "object",
         apiName: objectType,
-        primaryKey: primaryKey,
+        primaryKey,
         otherKeys: [objectType, primaryKey],
       },
     });
@@ -164,8 +164,9 @@ export class MockManager {
   }
 
   registerMock(mock: MockResponse): string {
-    const id = mock.id
-      || `mock-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+    const id =
+      mock.id ||
+      `mock-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
 
     if (mock.primitive) {
       const cacheKey = MockCacheKeyGenerator.generateCacheKey(mock.primitive);
@@ -233,7 +234,8 @@ export class MockManager {
     if (matcher.primaryKey) {
       if (matcher.primaryKey instanceof RegExp) {
         if (
-          !request.primaryKey || !matcher.primaryKey.test(request.primaryKey)
+          !request.primaryKey ||
+          !matcher.primaryKey.test(request.primaryKey)
         ) {
           return false;
         }
@@ -248,8 +250,8 @@ export class MockManager {
 
     if (matcher.whereClause) {
       if (
-        JSON.stringify(matcher.whereClause)
-          !== JSON.stringify(request.whereClause)
+        JSON.stringify(matcher.whereClause) !==
+        JSON.stringify(request.whereClause)
       ) {
         return false;
       }
@@ -275,7 +277,7 @@ export class MockManager {
   }
 
   getMocks(): MockResponse[] {
-    return Array.from(this.mocks.values());
+    return [...this.mocks.values()];
   }
 
   getMock(id: string): MockResponse | undefined {
@@ -315,16 +317,16 @@ export class MockManager {
     return true;
   }
 
-  findMockByCacheKey(
-    cacheKey: CacheKey,
-  ):
-    | { id: string; response: unknown; metadata?: Record<string, unknown> }
-    | null
-  {
+  findMockByCacheKey(cacheKey: CacheKey): {
+    id: string;
+    response: unknown;
+    metadata?: Record<string, unknown>;
+  } | null {
     for (const mock of this.mocks.values()) {
       if (
-        mock.enabled && mock.cacheKey
-        && MockCacheKeyGenerator.cacheKeysMatch(mock.cacheKey, cacheKey)
+        mock.enabled &&
+        mock.cacheKey &&
+        MockCacheKeyGenerator.cacheKeysMatch(mock.cacheKey, cacheKey)
       ) {
         let response: unknown;
 
@@ -361,7 +363,7 @@ export class MockManager {
   }
 
   exportMocks(): string {
-    return JSON.stringify(Array.from(this.mocks.values()), null, 2);
+    return JSON.stringify([...this.mocks.values()], null, 2);
   }
 
   importMocks(json: string): number {
@@ -400,8 +402,9 @@ export class MockManager {
       }
     }
 
-    const matchedRequests =
-      this.requestLog.filter((entry) => entry.matchedMock).length;
+    const matchedRequests = this.requestLog.filter(
+      (entry) => entry.matchedMock
+    ).length;
 
     return {
       totalMocks: this.mocks.size,

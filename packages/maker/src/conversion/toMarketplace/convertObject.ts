@@ -197,6 +197,7 @@ export function extractPropertyDatasource(
         type: "mediaSetView",
         mediaSetView: {
           assumedMarkings: [],
+          clearOnDeleteProperties: [],
           mediaSetViewLocator: identifier,
           properties: [property.apiName],
           uploadProperties: [],

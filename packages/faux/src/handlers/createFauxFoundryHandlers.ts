@@ -19,6 +19,7 @@ import type { FauxFoundry } from "../FauxFoundry/FauxFoundry.js";
 import { createActionHandlers } from "./createActionHandlers.js";
 import { createAdminHandlers } from "./createAdminHandlers.js";
 import { createAttachmentHandlers } from "./createAttachmentHandlers.js";
+import { createCipherTextHandlers } from "./createCipherTextHandlers.js";
 import { createLoadObjectsHandlers } from "./createLoadObjectsHandlers.js";
 import { createMediaRefHandlers } from "./createMediaRefHandlers.js";
 import { createMultipassServerHandlers } from "./createMultipassServerHandlers.js";
@@ -46,6 +47,7 @@ export function createFauxFoundryHandlers(
     createTimeseriesAndGeotimeHandlers,
     createAttachmentHandlers,
     createMediaRefHandlers,
+    createCipherTextHandlers,
     createAdminHandlers,
   ].flatMap(x => x(baseUrl, fauxFoundry));
 }

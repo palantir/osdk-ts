@@ -44,6 +44,38 @@ describe("Action Types", () => {
   beforeEach(async () => {
     await defineOntology("com.palantir.", () => {}, "/tmp/");
   });
+  it("pairs a listLength interface target with listLengthValidation, not scalar required", () => {
+    const person = defineInterface({
+      apiName: "Person",
+      displayName: "Person",
+      properties: {},
+    });
+
+    defineModifyInterfaceObjectAction({
+      interfaceType: person,
+      parameterConfiguration: {
+        [MODIFY_INTERFACE_OBJECT_PARAMETER]: {
+          required: { listLength: { min: 1, max: 5 } },
+        },
+      },
+    });
+
+    const actionType = dumpOntologyFullMetadata().ontology
+      .actionTypes["com.palantir.modify-person"].actionType;
+    const param =
+      actionType.metadata.parameters[MODIFY_INTERFACE_OBJECT_PARAMETER];
+    const validation = actionType.actionTypeLogic.validation
+      .parameterValidations[MODIFY_INTERFACE_OBJECT_PARAMETER]
+      .defaultValidation.validation;
+
+    // Opting the target into a list must produce a listLengthValidation, not a
+    // scalar required configuration (OMS rejects scalar required on list types).
+    expect(param.type.type).toBe("interfaceReferenceList");
+    expect(validation.required).toEqual({
+      type: "listLengthValidation",
+      listLengthValidation: { minLength: 1, maxLength: 5 },
+    });
+  });
   it("Concrete actions are properly defined", () => {
     const exampleAction = defineAction({
       apiName: "foo",

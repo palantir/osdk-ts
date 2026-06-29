@@ -55,6 +55,12 @@
     var(--osdk-intent-primary-rest) 25%,
     var(--osdk-background-primary)
   );
+
+  /* Callout: use brighter rest shade for readability on dark backgrounds */
+  --osdk-dark-callout-error-color: var(--osdk-intent-danger-rest);
+  --osdk-dark-callout-warning-color: var(--osdk-intent-warning-rest);
+  --osdk-dark-callout-success-color: var(--osdk-intent-success-rest);
+  --osdk-dark-callout-info-color: var(--osdk-intent-primary-rest);
 }
 
 [data-bp-color-scheme="dark"],
@@ -81,4 +87,8 @@
     var(--osdk-table-border-color);
   --osdk-table-row-bg-hover: var(--osdk-dark-table-row-bg-hover);
   --osdk-table-row-bg-active: var(--osdk-dark-table-row-bg-hover);
+  --osdk-callout-error-color: var(--osdk-dark-callout-error-color);
+  --osdk-callout-warning-color: var(--osdk-dark-callout-warning-color);
+  --osdk-callout-success-color: var(--osdk-dark-callout-success-color);
+  --osdk-callout-info-color: var(--osdk-dark-callout-info-color);
 }

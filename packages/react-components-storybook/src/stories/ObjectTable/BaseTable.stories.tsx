@@ -29,6 +29,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useState } from "react";
+
 import { fauxFoundry } from "../../mocks/fauxFoundry.js";
 
 type Person = {
@@ -301,10 +302,7 @@ return <BaseTable table={table} headerMenuFeatureFlags={headerMenuFeatureFlags} 
 
     return (
       <div style={{ height: "400px" }}>
-        <BaseTable
-          {...args}
-          table={table}
-        />
+        <BaseTable {...args} table={table} />
       </div>
     );
   },
@@ -371,10 +369,7 @@ return <BaseTable table={table} headerMenuFeatureFlags={headerMenuFeatureFlags} 
 
     return (
       <div style={{ height: "400px" }}>
-        <BaseTable
-          {...args}
-          table={table}
-        />
+        <BaseTable {...args} table={table} />
       </div>
     );
   },
@@ -439,10 +434,7 @@ return <BaseTable table={table} headerMenuFeatureFlags={headerMenuFeatureFlags} 
 
     return (
       <div style={{ height: "400px" }}>
-        <BaseTable
-          {...args}
-          table={table}
-        />
+        <BaseTable {...args} table={table} />
       </div>
     );
   },
@@ -498,7 +490,7 @@ return <BaseTable table={table} headerMenuFeatureFlags={headerMenuFeatureFlags} 
           ...acc,
           [col.accessorKey]: true,
         };
-      }, {}),
+      }, {})
     );
 
     const table = useReactTable({
@@ -514,10 +506,7 @@ return <BaseTable table={table} headerMenuFeatureFlags={headerMenuFeatureFlags} 
 
     return (
       <div style={{ height: "400px" }}>
-        <BaseTable
-          {...args}
-          table={table}
-        />
+        <BaseTable {...args} table={table} />
       </div>
     );
   },

@@ -16,6 +16,7 @@
 
 import React from "react";
 import { createRoot, type Root } from "react-dom/client";
+
 import { InspectorBanner } from "./components/InspectorBanner.js";
 import { InspectorOverlay } from "./components/InspectorOverlay.js";
 import { createInspectorController } from "./inspectorController.js";
@@ -55,10 +56,10 @@ export class ClickToInspectSystem {
   private overlayContainer: HTMLDivElement | null = null;
   private overlayRoot: Root | null = null;
   private stateUnsubscribe: (() => void) | null = null;
-  private eventHandlers: Map<
+  private eventHandlers = new Map<
     string,
     { eventType: string; handler: EventListener }
-  > = new Map();
+  >();
 
   constructor(options: ClickToInspectOptions = {}) {
     this.options = options;
@@ -116,7 +117,7 @@ export class ClickToInspectSystem {
       this.stateUnsubscribe = this.inspectorController.subscribe(
         (controllerState) => {
           this.renderOverlay(controllerState);
-        },
+        }
       );
 
       this.renderOverlay(this.inspectorController.getState());
@@ -131,7 +132,7 @@ export class ClickToInspectSystem {
     this.overlayRoot.render(
       React.createElement(InspectorOverlay, {
         state: controllerState,
-      }),
+      })
     );
   }
 
@@ -157,7 +158,7 @@ export class ClickToInspectSystem {
             labelStatus: "idle",
             viewportVersion: 0,
           },
-        }),
+        })
       );
     }
   }
@@ -173,14 +174,14 @@ export class ClickToInspectSystem {
     }
 
     this.bannerRoot?.render(
-      React.createElement(InspectorBanner, { visible: true }),
+      React.createElement(InspectorBanner, { visible: true })
     );
   }
 
   private hideBanner(): void {
     if (this.bannerRoot) {
       this.bannerRoot.render(
-        React.createElement(InspectorBanner, { visible: false }),
+        React.createElement(InspectorBanner, { visible: false })
       );
     }
   }
@@ -231,8 +232,9 @@ export class ClickToInspectSystem {
       const keyEvent = e as KeyboardEvent;
 
       if (
-        (keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.shiftKey
-        && keyEvent.key === "C"
+        (keyEvent.ctrlKey || keyEvent.metaKey) &&
+        keyEvent.shiftKey &&
+        keyEvent.key === "C"
       ) {
         keyEvent.preventDefault();
         keyEvent.stopPropagation();

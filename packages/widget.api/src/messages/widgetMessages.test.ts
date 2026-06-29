@@ -15,6 +15,7 @@
  */
 
 import { describe, expectTypeOf, it } from "vitest";
+
 import { defineConfig } from "../config.js";
 import type { WidgetMessage } from "./widgetMessages.js";
 

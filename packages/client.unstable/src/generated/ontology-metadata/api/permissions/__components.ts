@@ -802,6 +802,57 @@ export interface PropertySecurityGroupPermissions {
  */
 export interface PublicProjectPermissionModel {
 }
+export interface RevertPublicProjectActionTypeRequest {
+  actionTypeRid: _api_ActionTypeRid;
+  revertToRoles: boolean;
+}
+export interface RevertPublicProjectEntityRequest_objectType {
+  type: "objectType";
+  objectType: RevertPublicProjectObjectTypeRequest;
+}
+
+export interface RevertPublicProjectEntityRequest_linkType {
+  type: "linkType";
+  linkType: RevertPublicProjectLinkTypeRequest;
+}
+
+export interface RevertPublicProjectEntityRequest_actionType {
+  type: "actionType";
+  actionType: RevertPublicProjectActionTypeRequest;
+}
+
+export interface RevertPublicProjectEntityRequest_sharedPropertyType {
+  type: "sharedPropertyType";
+  sharedPropertyType: RevertPublicProjectSharedPropertyTypeRequest;
+}
+
+export interface RevertPublicProjectEntityRequest_interfaceType {
+  type: "interfaceType";
+  interfaceType: RevertPublicProjectInterfaceTypeRequest;
+}
+export type RevertPublicProjectEntityRequest =
+  | RevertPublicProjectEntityRequest_objectType
+  | RevertPublicProjectEntityRequest_linkType
+  | RevertPublicProjectEntityRequest_actionType
+  | RevertPublicProjectEntityRequest_sharedPropertyType
+  | RevertPublicProjectEntityRequest_interfaceType;
+
+export interface RevertPublicProjectEntityResponse {
+}
+export interface RevertPublicProjectInterfaceTypeRequest {
+  interfaceTypeRid: _api_InterfaceTypeRid;
+}
+export interface RevertPublicProjectLinkTypeRequest {
+  linkTypeRid: _api_LinkTypeRid;
+  revertToRoles: boolean;
+}
+export interface RevertPublicProjectObjectTypeRequest {
+  objectTypeRid: _api_ObjectTypeRid;
+  revertToRoles: boolean;
+}
+export interface RevertPublicProjectSharedPropertyTypeRequest {
+  sharedPropertyTypeRid: _api_SharedPropertyTypeRid;
+}
 /**
  * The role to add/remove and to which principal
  */

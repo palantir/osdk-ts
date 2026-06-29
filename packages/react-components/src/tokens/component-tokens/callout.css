@@ -1,0 +1,40 @@
+:root {
+  /* Layout */
+  --osdk-callout-padding: calc(var(--osdk-surface-spacing) * 4);
+  --osdk-callout-gap: calc(var(--osdk-surface-spacing) * 2);
+  --osdk-callout-border-radius: var(--osdk-surface-border-radius);
+
+  /* Typography */
+  --osdk-callout-title-font-size: var(--osdk-typography-size-body-medium);
+  --osdk-callout-title-font-weight: var(--osdk-typography-weight-bold);
+  --osdk-callout-message-font-size: var(--osdk-typography-size-body-small);
+
+  /* Intent backgrounds: 10% tint of the intent rest color.
+     rgba() with semi-transparency naturally adapts to light/dark backgrounds. */
+  --osdk-callout-error-background: color-mix(
+    in srgb,
+    var(--osdk-intent-danger-rest) 10%,
+    transparent
+  );
+  --osdk-callout-warning-background: color-mix(
+    in srgb,
+    var(--osdk-intent-warning-rest) 10%,
+    transparent
+  );
+  --osdk-callout-success-background: color-mix(
+    in srgb,
+    var(--osdk-intent-success-rest) 10%,
+    transparent
+  );
+  --osdk-callout-info-background: color-mix(
+    in srgb,
+    var(--osdk-intent-primary-rest) 10%,
+    transparent
+  );
+
+  /* Intent text: darker hover shade for light mode */
+  --osdk-callout-error-color: var(--osdk-intent-danger-hover);
+  --osdk-callout-warning-color: var(--osdk-intent-warning-hover);
+  --osdk-callout-success-color: var(--osdk-intent-success-hover);
+  --osdk-callout-info-color: var(--osdk-intent-primary-hover);
+}

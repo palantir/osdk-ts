@@ -16,6 +16,7 @@
 
 import { Button, Callout, Intent, Tag } from "@blueprintjs/core";
 import React from "react";
+
 import {
   type FiberCapabilities,
   type FiberFeature,
@@ -77,12 +78,12 @@ export const DegradationNotice: React.FC<DegradationNoticeProps> = ({
   const capabilities = React.useSyncExternalStore(
     subscribeToCapabilities,
     getCapabilitiesSnapshot,
-    getCapabilitiesSnapshot,
+    getCapabilitiesSnapshot
   );
 
-  const disabledFeatures = Array.from(capabilities.disabledFeatures);
-  const hasIssues = !capabilities.fiberAccessWorking
-    || disabledFeatures.length > 0;
+  const disabledFeatures = [...capabilities.disabledFeatures];
+  const hasIssues =
+    !capabilities.fiberAccessWorking || disabledFeatures.length > 0;
 
   if (!hasIssues && !showWhenHealthy) {
     return null;
@@ -171,11 +172,7 @@ export const DegradationNotice: React.FC<DegradationNoticeProps> = ({
           </p>
         )}
         {onRetry && (
-          <Button
-            size="small"
-            intent={Intent.PRIMARY}
-            onClick={onRetry}
-          >
+          <Button size="small" intent={Intent.PRIMARY} onClick={onRetry}>
             Retry
           </Button>
         )}
@@ -214,10 +211,9 @@ export const DegradationNotice: React.FC<DegradationNoticeProps> = ({
       </div>
       {capabilities.errorCount > 0 && (
         <p style={{ margin: "0 0 8px 0", fontSize: "12px", color: "#5c7080" }}>
-          {capabilities.errorCount}{" "}
-          error{capabilities.errorCount > 1 ? "s" : ""}{" "}
-          recorded. Features will auto-recover after 30 seconds of successful
-          operation.
+          {capabilities.errorCount} error
+          {capabilities.errorCount > 1 ? "s" : ""} recorded. Features will
+          auto-recover after 30 seconds of successful operation.
         </p>
       )}
       {onRetry && (
@@ -248,6 +244,6 @@ export function useFiberCapabilities(): FiberCapabilities {
   return React.useSyncExternalStore(
     subscribeToCapabilitiesSimple,
     getCapabilitiesSnapshot,
-    getCapabilitiesSnapshot,
+    getCapabilitiesSnapshot
   );
 }

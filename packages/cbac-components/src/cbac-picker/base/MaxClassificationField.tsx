@@ -16,7 +16,9 @@
 
 import classnames from "classnames";
 import React from "react";
+
 import { BaseCbacBanner } from "./BaseCbacBanner.js";
+
 import styles from "./MaxClassificationField.module.css";
 
 export interface MaxClassificationFieldProps {

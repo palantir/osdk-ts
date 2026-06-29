@@ -16,6 +16,7 @@
 
 import type { CacheSnapshot } from "@osdk/client/observable";
 import { describe, expect, it, vi } from "vitest";
+
 import type { MetricsStore } from "../store/MetricsStore.js";
 import type { ComponentQueryRegistry } from "./ComponentQueryRegistry.js";
 import type { EventTimeline } from "./EventTimeline.js";
@@ -94,7 +95,7 @@ describe("PerformanceRecommendationEngine", () => {
     const engine = new PerformanceRecommendationEngine(
       createMockMetricsStore(),
       createMockRegistry(),
-      createMockTimeline(),
+      createMockTimeline()
     );
 
     const recs = engine.generateRecommendations(emptyCacheSnapshot);
@@ -105,7 +106,7 @@ describe("PerformanceRecommendationEngine", () => {
     const engine = new PerformanceRecommendationEngine(
       createMockMetricsStore(),
       createMockRegistry(),
-      createMockTimeline(),
+      createMockTimeline()
     );
 
     const score = engine.calculatePerformanceScore(emptyCacheSnapshot);
@@ -122,20 +123,20 @@ describe("PerformanceRecommendationEngine", () => {
     const engine = new PerformanceRecommendationEngine(
       createMockMetricsStore(),
       createMockRegistry(),
-      createMockTimeline(),
+      createMockTimeline()
     );
 
     engine.dismissRecommendation("some-id");
     const recs = engine.generateRecommendations(emptyCacheSnapshot);
 
-    expect(recs.every(r => r.id !== "some-id")).toBe(true);
+    expect(recs.every((r) => r.id !== "some-id")).toBe(true);
   });
 
   it("clearDismissed resets dismissed state", () => {
     const engine = new PerformanceRecommendationEngine(
       createMockMetricsStore(),
       createMockRegistry(),
-      createMockTimeline(),
+      createMockTimeline()
     );
 
     engine.dismissRecommendation("x");
@@ -149,7 +150,7 @@ describe("PerformanceRecommendationEngine", () => {
     const engine = new PerformanceRecommendationEngine(
       createMockMetricsStore(),
       createMockRegistry(),
-      createMockTimeline(),
+      createMockTimeline()
     );
 
     const summary = engine.getSummary(emptyCacheSnapshot);

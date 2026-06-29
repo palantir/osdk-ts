@@ -73,6 +73,14 @@ export const mjClient: Client = createClient(
   loggingFetch,
 );
 
+export const cipherTextOntologyClient: Client = createClient(
+  process.env.FOUNDRY_STACK,
+  "ri.ontology.main.ontology.a35bb7f9-2c57-4199-a1cd-af461d88bd6e",
+  async () => process.env.FOUNDRY_USER_TOKEN!,
+  { logger },
+  loggingFetch,
+);
+
 /**
  * Generally consumers wont need this and will use their createClient() but
  * I want to use this to be sure everything works.

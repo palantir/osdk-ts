@@ -68,10 +68,10 @@ function isOsdkContextConsumer(fiber: Fiber): boolean {
         while (ctx) {
           const value = ctx.memoizedValue;
           if (
-            value != null
-            && typeof value === "object"
-            && "observableClient" in value
-            && "client" in value
+            value != null &&
+            typeof value === "object" &&
+            "observableClient" in value &&
+            "client" in value
           ) {
             return true;
           }
@@ -80,7 +80,7 @@ function isOsdkContextConsumer(fiber: Fiber): boolean {
       }
       return false;
     },
-    { fallback: false, feature: "hook-discovery" },
+    { fallback: false, feature: "hook-discovery" }
   );
 }
 
@@ -91,8 +91,8 @@ function getSourceBasedId(fiber: Fiber): string | null {
     return null;
   }
 
-  const shortPath = source.fileName?.split("/").slice(-2).join("/")
-    || "unknown";
+  const shortPath =
+    source.fileName?.split("/").slice(-2).join("/") || "unknown";
   return `fiber-${name}-${shortPath}-${source.lineNumber || 0}`;
 }
 
@@ -124,14 +124,14 @@ function isOsdkFunctionComponent(fiber: Fiber): boolean {
 
 export function findOsdkConsumersInAncestors(
   fiber: Fiber,
-  maxDepth = 50,
+  maxDepth = 50
 ): OsdkConsumerFiber[] {
   return traverseAllFibers(
     fiber,
     (node) => isOsdkFunctionComponent(node),
     /* ascending */ true,
     /* maxResults */ undefined,
-    maxDepth,
+    maxDepth
   ).map(buildConsumerInfo);
 }
 
@@ -168,15 +168,17 @@ function createSearchBudget(scope: SearchScope): SearchBudget {
   return {
     nodesVisited: 0,
     resultsFound: 0,
-    maxNodes: scope.maxAncestorLevels * scope.maxChildDepth
-      * scope.maxSiblingsPerLevel,
+    maxNodes:
+      scope.maxAncestorLevels * scope.maxChildDepth * scope.maxSiblingsPerLevel,
     maxResults: scope.maxTotalResults,
   };
 }
 
 function isBudgetExhausted(budget: SearchBudget): boolean {
-  return budget.nodesVisited >= budget.maxNodes
-    || budget.resultsFound >= budget.maxResults;
+  return (
+    budget.nodesVisited >= budget.maxNodes ||
+    budget.resultsFound >= budget.maxResults
+  );
 }
 
 const DEFAULT_SEARCH_SCOPE: SearchScope = {
@@ -188,7 +190,7 @@ const DEFAULT_SEARCH_SCOPE: SearchScope = {
 
 export function findOsdkConsumersInSiblings(
   fiber: Fiber,
-  scope: SearchScope = DEFAULT_SEARCH_SCOPE,
+  scope: SearchScope = DEFAULT_SEARCH_SCOPE
 ): OsdkConsumerFiber[] {
   return safeFiberOperation(
     () => {
@@ -207,16 +209,16 @@ export function findOsdkConsumersInSiblings(
       let ancestorLevel = 0;
 
       while (
-        currentAncestor
-        && ancestorLevel < scope.maxAncestorLevels
-        && !isBudgetExhausted(budget)
+        currentAncestor &&
+        ancestorLevel < scope.maxAncestorLevels &&
+        !isBudgetExhausted(budget)
       ) {
         let child: Fiber | null = currentAncestor.child;
         let siblingCount = 0;
         while (
-          child
-          && siblingCount < scope.maxSiblingsPerLevel
-          && !isBudgetExhausted(budget)
+          child &&
+          siblingCount < scope.maxSiblingsPerLevel &&
+          !isBudgetExhausted(budget)
         ) {
           if (!ancestorPath.has(child)) {
             const remaining = budget.maxResults - budget.resultsFound;
@@ -232,7 +234,7 @@ export function findOsdkConsumersInSiblings(
               },
               /* ascending */ false,
               /* maxResults */ remaining,
-              scope.maxChildDepth,
+              scope.maxChildDepth
             );
 
             for (const match of subtreeMatches) {
@@ -250,13 +252,13 @@ export function findOsdkConsumersInSiblings(
 
       return consumers;
     },
-    { fallback: [], feature: "hook-discovery" },
+    { fallback: [], feature: "hook-discovery" }
   );
 }
 
 export function findOsdkConsumersInDescendants(
   fiber: Fiber,
-  scope: SearchScope = DEFAULT_SEARCH_SCOPE,
+  scope: SearchScope = DEFAULT_SEARCH_SCOPE
 ): OsdkConsumerFiber[] {
   return safeFiberOperation(
     () => {
@@ -265,9 +267,9 @@ export function findOsdkConsumersInDescendants(
       let child: Fiber | null = fiber.child;
       let siblingCount = 0;
       while (
-        child
-        && siblingCount < scope.maxSiblingsPerLevel
-        && consumers.length < scope.maxTotalResults
+        child &&
+        siblingCount < scope.maxSiblingsPerLevel &&
+        consumers.length < scope.maxTotalResults
       ) {
         const remaining = scope.maxTotalResults - consumers.length;
         const matches = traverseAllFibers(
@@ -275,7 +277,7 @@ export function findOsdkConsumersInDescendants(
           (node) => isOsdkFunctionComponent(node),
           /* ascending */ false,
           remaining,
-          scope.maxChildDepth,
+          scope.maxChildDepth
         );
         for (const match of matches) {
           consumers.push(buildConsumerInfo(match));
@@ -286,25 +288,25 @@ export function findOsdkConsumersInDescendants(
 
       return consumers;
     },
-    { fallback: [], feature: "hook-discovery" },
+    { fallback: [], feature: "hook-discovery" }
   );
 }
 
 function isOsdkHookMetadata(value: unknown): value is OsdkHookMetadata {
   return (
-    value != null
-    && typeof value === "object"
-    && OSDK_HOOK_METADATA in value
-    && (value as Record<symbol, unknown>)[OSDK_HOOK_METADATA] === true
+    value != null &&
+    typeof value === "object" &&
+    OSDK_HOOK_METADATA in value &&
+    (value as Record<symbol, unknown>)[OSDK_HOOK_METADATA] === true
   );
 }
 
 function isRefStorage(value: unknown): value is { current: unknown } {
   return (
-    value != null
-    && typeof value === "object"
-    && "current" in value
-    && Object.keys(value as object).length <= 2
+    value != null &&
+    typeof value === "object" &&
+    "current" in value &&
+    Object.keys(value as object).length <= 2
   );
 }
 
@@ -340,23 +342,22 @@ export function extractOsdkMetadataFromFiber(fiber: Fiber): OsdkHookMetadata[] {
         // The memoizedValue is the makeExternalStore return object
         // which has OSDK_HOOK_METADATA as a non-enumerable symbol property
         if (
-          Array.isArray(state)
-          && state[0] != null
-          && typeof state[0] === "object"
+          Array.isArray(state) &&
+          state[0] != null &&
+          typeof state[0] === "object"
         ) {
           const memoValue = state[0];
           if (OSDK_HOOK_METADATA in memoValue) {
             // `in` validates the key exists; TS can't narrow symbol keys
-            const meta =
-              (memoValue as Record<symbol, unknown>)[OSDK_HOOK_METADATA];
+            const meta = (memoValue as Record<symbol, unknown>)[
+              OSDK_HOOK_METADATA
+            ];
             if (
-              meta != null
-              && typeof meta === "object"
-              && "hookType" in meta
-              && typeof (meta as { hookType: unknown }).hookType === "string"
-              && isValidHookType(
-                (meta as { hookType: string }).hookType,
-              )
+              meta != null &&
+              typeof meta === "object" &&
+              "hookType" in meta &&
+              typeof (meta as { hookType: unknown }).hookType === "string" &&
+              isValidHookType((meta as { hookType: string }).hookType)
             ) {
               const validated = meta as {
                 hookType: OsdkHookMetadata["hookType"];
@@ -365,26 +366,32 @@ export function extractOsdkMetadataFromFiber(fiber: Fiber): OsdkHookMetadata[] {
               results.push({
                 [OSDK_HOOK_METADATA]: true,
                 hookType: validated.hookType,
-                actionName: typeof validated.actionName === "string"
-                  ? validated.actionName
-                  : undefined,
-                objectType: typeof validated.objectType === "string"
-                  ? validated.objectType
-                  : undefined,
-                primaryKey: typeof validated.primaryKey === "string"
-                  ? validated.primaryKey
-                  : undefined,
-                sourceObjectType: typeof validated.sourceObjectType === "string"
-                  ? validated.sourceObjectType
-                  : undefined,
-                linkName: typeof validated.linkName === "string"
-                  ? validated.linkName
-                  : undefined,
+                actionName:
+                  typeof validated.actionName === "string"
+                    ? validated.actionName
+                    : undefined,
+                objectType:
+                  typeof validated.objectType === "string"
+                    ? validated.objectType
+                    : undefined,
+                primaryKey:
+                  typeof validated.primaryKey === "string"
+                    ? validated.primaryKey
+                    : undefined,
+                sourceObjectType:
+                  typeof validated.sourceObjectType === "string"
+                    ? validated.sourceObjectType
+                    : undefined,
+                linkName:
+                  typeof validated.linkName === "string"
+                    ? validated.linkName
+                    : undefined,
                 where: validated.where,
                 orderBy: validated.orderBy,
-                pageSize: typeof validated.pageSize === "number"
-                  ? validated.pageSize
-                  : undefined,
+                pageSize:
+                  typeof validated.pageSize === "number"
+                    ? validated.pageSize
+                    : undefined,
                 aggregate: validated.aggregate,
               });
             }
@@ -396,7 +403,7 @@ export function extractOsdkMetadataFromFiber(fiber: Fiber): OsdkHookMetadata[] {
 
       return results;
     },
-    { fallback: [], feature: "metadata-extraction" },
+    { fallback: [], feature: "metadata-extraction" }
   );
 }
 
@@ -408,7 +415,7 @@ export interface DiscoveredComponent {
 }
 
 export function discoverOsdkComponentsFromRoot(
-  fiberRoot: FiberRoot,
+  fiberRoot: FiberRoot
 ): Map<string, DiscoveredComponent> {
   return safeFiberOperation(
     () => {
@@ -441,6 +448,6 @@ export function discoverOsdkComponentsFromRoot(
 
       return components;
     },
-    { fallback: new Map(), feature: "fiber-discovery" },
+    { fallback: new Map(), feature: "fiber-discovery" }
   );
 }

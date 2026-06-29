@@ -18,6 +18,7 @@ import { useOsdkObject } from "@osdk/react";
 import type { PdfViewerMediaProps } from "@osdk/react-components/experimental/pdf-viewer";
 import { PdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
+
 import { MEDIA_EMPLOYEE_PK } from "../../mocks/fauxFoundry.js";
 import { Employee } from "../../types/Employee.js";
 
@@ -37,7 +38,7 @@ export const Default: Story = {
   render: () => {
     const { object: employee, isLoading } = useOsdkObject(
       Employee,
-      MEDIA_EMPLOYEE_PK,
+      MEDIA_EMPLOYEE_PK
     );
 
     if (isLoading || !employee?.employeeDocuments) {
@@ -53,8 +54,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code:
-          `import { PdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
+        code: `import { PdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 
 // Access media from an OSDK object's media reference property
 const employee = useOsdkObject(Employee, employeePk);

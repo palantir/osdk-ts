@@ -95,8 +95,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code:
-          `import { ColumnConfigDialog } from "@osdk/react-components/experimental/object-table";
+        code: `import { ColumnConfigDialog } from "@osdk/react-components/experimental/object-table";
 
 const [isOpen, setIsOpen] = useState(false);
 
@@ -164,7 +163,7 @@ function WithValidationStory() {
       const visibleCount = columns.filter((c) => c.isVisible).length;
       return visibleCount >= 2;
     },
-    [],
+    []
   );
 
   return (

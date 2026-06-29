@@ -1419,6 +1419,7 @@ describe("Object Types", () => {
                   "datasource": {
                     "mediaSetView": {
                       "assumedMarkings": [],
+                      "clearOnDeleteProperties": [],
                       "mediaSetViewLocator": "com.palantir.fizz.fizz",
                       "properties": [
                         "fizz",

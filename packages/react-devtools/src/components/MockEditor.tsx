@@ -26,10 +26,12 @@ import {
   TextArea,
 } from "@blueprintjs/core";
 import React from "react";
+
 import type { MockResponse } from "../mocking/MockManager.js";
 import type { InterceptAction, MockConfiguration } from "./InterceptTab.js";
-import styles from "./InterceptTab.module.scss";
 import type { SelectedPrimitive } from "./PrimitiveSelectionPanel.js";
+
+import styles from "./InterceptTab.module.scss";
 
 type MockWithConfig = MockResponse & { config: MockConfiguration };
 
@@ -102,7 +104,8 @@ export const MockEditor: React.FC<MockEditorProps> = ({
                 type: "SET_RESPONSE_TYPE",
                 responseType: e.currentTarget
                   .value as MockConfiguration["responseType"],
-              })}
+              })
+            }
             selectedValue={responseType}
           >
             <Radio label="Success" value="success" />
@@ -117,7 +120,8 @@ export const MockEditor: React.FC<MockEditorProps> = ({
               dispatch({
                 type: "SET_MOCK_TYPE",
                 mockType: e.target.value as MockConfiguration["mockType"],
-              })}
+              })
+            }
             fill={true}
             options={[
               { label: "Static Data", value: "static" },
@@ -138,7 +142,8 @@ export const MockEditor: React.FC<MockEditorProps> = ({
                 dispatch({
                   type: "SET_USE_PAYLOAD",
                   usePayload: e.currentTarget.checked,
-                })}
+                })
+              }
               label="Use Payload"
             />
             {usePayload && (
@@ -152,7 +157,8 @@ export const MockEditor: React.FC<MockEditorProps> = ({
                     dispatch({
                       type: "SET_MOCK_PAYLOAD",
                       mockPayload: e.target.value,
-                    })}
+                    })
+                  }
                   fill={true}
                   rows={4}
                   className={styles.codeEditor}
@@ -168,7 +174,8 @@ export const MockEditor: React.FC<MockEditorProps> = ({
             dispatch({
               type: "SET_USE_RESPONSE",
               useResponse: e.currentTarget.checked,
-            })}
+            })
+          }
           label="Use Response"
         />
 
@@ -185,7 +192,8 @@ export const MockEditor: React.FC<MockEditorProps> = ({
                     dispatch({
                       type: "SET_ERROR_MESSAGE",
                       errorMessage: e.target.value,
-                    })}
+                    })
+                  }
                   fill={true}
                   rows={2}
                 />
@@ -203,7 +211,8 @@ export const MockEditor: React.FC<MockEditorProps> = ({
                     dispatch({
                       type: "SET_STATIC_DATA",
                       staticData: e.target.value,
-                    })}
+                    })
+                  }
                   fill={true}
                   rows={8}
                   className={styles.codeEditor}
@@ -222,7 +231,8 @@ export const MockEditor: React.FC<MockEditorProps> = ({
                     dispatch({
                       type: "SET_FUNCTION_CODE",
                       functionCode: e.target.value,
-                    })}
+                    })
+                  }
                   fill={true}
                   rows={10}
                   className={styles.codeEditor}
@@ -240,11 +250,7 @@ export const MockEditor: React.FC<MockEditorProps> = ({
         )}
 
         <div className={styles.editorActions}>
-          <Button
-            intent="primary"
-            icon="floppy-disk"
-            onClick={onSaveMock}
-          >
+          <Button intent="primary" icon="floppy-disk" onClick={onSaveMock}>
             {editingMock ? "Update Mock" : "Create Mock"}
           </Button>
           <Button variant="minimal" onClick={onCancel}>
@@ -353,23 +359,27 @@ export function createMatcherFromPrimitive(primitive: SelectedPrimitive): {
 
 export function createResponseFromConfig(
   primitive: SelectedPrimitive,
-  mockData: unknown,
-): {
-  type: "action";
-  result: unknown;
-} | {
-  type: "list";
-  list: unknown[];
-  hasMore: boolean;
-} | {
-  type: "object";
-  object: unknown;
-} {
+  mockData: unknown
+):
+  | {
+      type: "action";
+      result: unknown;
+    }
+  | {
+      type: "list";
+      list: unknown[];
+      hasMore: boolean;
+    }
+  | {
+      type: "object";
+      object: unknown;
+    } {
   if (primitive.type === "action") {
     return { type: "action" as const, result: mockData };
   } else if (
-    primitive.type === "objectSet" || primitive.type === "link"
-    || primitive.type === "aggregation"
+    primitive.type === "objectSet" ||
+    primitive.type === "link" ||
+    primitive.type === "aggregation"
   ) {
     return {
       type: "list" as const,
@@ -449,7 +459,7 @@ export const MockItem: React.FC<MockItemProps> = React.memo(
         </div>
       </div>
     );
-  },
+  }
 );
 
 MockItem.displayName = "MockItem";

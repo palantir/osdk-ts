@@ -214,6 +214,7 @@ export function createClientMockHelper(): MockClientHelper {
     },
     tokenProvider: vitest.fn(),
     objectSetFactory: vitest.fn(),
+    subscribeFn: vitest.fn(),
     fetch: vitest.fn(),
     clientCacheKey: {} as any,
     requestContext: {},

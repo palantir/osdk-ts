@@ -41,9 +41,10 @@ function nextId(): string {
   return `windowError-${++entryCounter}-${Date.now()}`;
 }
 
-function describeRejectionReason(
-  reason: unknown,
-): { message: string; stack?: string } {
+function describeRejectionReason(reason: unknown): {
+  message: string;
+  stack?: string;
+} {
   if (reason instanceof Error) {
     return { message: reason.message, stack: reason.stack };
   }
@@ -65,9 +66,8 @@ export class WindowErrorStore extends SubscribableStore {
   private notifyScheduled = false;
 
   private errorListener: ((event: ErrorEvent) => void) | null = null;
-  private rejectionListener:
-    | ((event: PromiseRejectionEvent) => void)
-    | null = null;
+  private rejectionListener: ((event: PromiseRejectionEvent) => void) | null =
+    null;
 
   constructor(capacity: number = 1000) {
     super();
@@ -86,11 +86,11 @@ export class WindowErrorStore extends SubscribableStore {
       if (this.suppressed) {
         return;
       }
-      const message = event.message
-        || (event.error instanceof Error ? event.error.message : "Error");
-      const stack = event.error instanceof Error
-        ? event.error.stack
-        : undefined;
+      const message =
+        event.message ||
+        (event.error instanceof Error ? event.error.message : "Error");
+      const stack =
+        event.error instanceof Error ? event.error.stack : undefined;
       const entry: WindowErrorEntry = {
         id: nextId(),
         kind: "error",
@@ -139,7 +139,7 @@ export class WindowErrorStore extends SubscribableStore {
       if (this.rejectionListener) {
         window.removeEventListener(
           "unhandledrejection",
-          this.rejectionListener,
+          this.rejectionListener
         );
       }
     }

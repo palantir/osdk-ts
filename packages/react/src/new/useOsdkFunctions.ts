@@ -16,6 +16,7 @@
 
 import type { QueryDefinition } from "@osdk/api";
 import React from "react";
+
 import { stableSerialize } from "./core/stableSerialize.js";
 import {
   createCompositeExternalStore,
@@ -77,15 +78,19 @@ export type UseOsdkFunctionsResult = Array<
  * @param options - Configuration options containing the queries to execute
  * @returns Array of results in the same order as input queries, each with the same shape as useOsdkFunction
  */
-export function useOsdkFunctions(
-  { queries, enabled = true, maxConcurrent }: UseOsdkFunctionsProps,
-): UseOsdkFunctionsResult {
+export function useOsdkFunctions({
+  queries,
+  enabled = true,
+  maxConcurrent,
+}: UseOsdkFunctionsProps): UseOsdkFunctionsResult {
   const { observableClient } = React.useContext(OsdkContext);
 
-  const stableQueriesKey = stableSerialize(queries.map(q => ({
-    apiName: q.queryDefinition.apiName,
-    ...q.options,
-  })));
+  const stableQueriesKey = stableSerialize(
+    queries.map((q) => ({
+      apiName: q.queryDefinition.apiName,
+      ...q.options,
+    }))
+  );
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const stableQueries = React.useMemo(() => queries, [stableQueriesKey]);
@@ -95,11 +100,11 @@ export function useOsdkFunctions(
       !enabled || stableQueries.length === 0
         ? EMPTY_STORE
         : createCompositeExternalStore(
-          stableQueries,
-          observableClient,
-          maxConcurrent,
-        ),
-    [enabled, maxConcurrent, observableClient, stableQueries],
+            stableQueries,
+            observableClient,
+            maxConcurrent
+          ),
+    [enabled, maxConcurrent, observableClient, stableQueries]
   );
 
   const payloads = React.useSyncExternalStore(subscribe, getSnapshot);
@@ -109,33 +114,34 @@ export function useOsdkFunctions(
       stableQueries.map((query) => async () => {
         await observableClient.invalidateFunction(
           query.queryDefinition,
-          query.options?.params as Record<string, unknown> | undefined,
+          query.options?.params as Record<string, unknown> | undefined
         );
       }),
-    [stableQueries, observableClient],
+    [stableQueries, observableClient]
   );
 
   return React.useMemo(
     () =>
-      stableQueries.map((_, index): UseOsdkFunctionResult<
-        QueryDefinition<unknown>
-      > => {
-        const payload = payloads[index];
-        const error = payload?.error
-          ?? (payload?.status === "error"
-            ? new Error("Failed to execute function")
-            : undefined);
+      stableQueries.map(
+        (_, index): UseOsdkFunctionResult<QueryDefinition<unknown>> => {
+          const payload = payloads[index];
+          const error =
+            payload?.error ??
+            (payload?.status === "error"
+              ? new Error("Failed to execute function")
+              : undefined);
 
-        return {
-          data: payload?.result as UseOsdkFunctionResult<
-            QueryDefinition<unknown>
-          >["data"],
-          isLoading: payload?.status === "loading",
-          error,
-          lastUpdated: payload?.lastUpdated ?? 0,
-          refetch: refetches[index],
-        };
-      }),
-    [stableQueries, payloads, refetches],
+          return {
+            data: payload?.result as UseOsdkFunctionResult<
+              QueryDefinition<unknown>
+            >["data"],
+            isLoading: payload?.status === "loading",
+            error,
+            lastUpdated: payload?.lastUpdated ?? 0,
+            refetch: refetches[index],
+          };
+        }
+      ),
+    [stableQueries, payloads, refetches]
   );
 }

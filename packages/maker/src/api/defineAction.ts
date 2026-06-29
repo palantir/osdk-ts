@@ -473,7 +473,7 @@ function getTargetParameters(
           },
         validation: {
           ...def.parameterConfiguration?.[name],
-          required: true,
+          required: def.parameterConfiguration?.[name]?.required ?? true,
           allowedValues: def.objectType === undefined
             ? {
               type: "objectTypeReference",
@@ -516,7 +516,7 @@ function getTargetParameters(
           },
         validation: {
           ...def.parameterConfiguration?.[name],
-          required: true,
+          required: def.parameterConfiguration?.[name]?.required ?? true,
           allowedValues: def.objectType === undefined
             ? { type: "interfaceObjectQuery" }
             : {
@@ -556,7 +556,7 @@ function getTargetParameters(
           },
         validation: {
           ...def.parameterConfiguration?.[name],
-          required: true,
+          required: def.parameterConfiguration?.[name]?.required ?? true,
           allowedValues: def.objectType === undefined
             ? { type: "interfaceObjectQuery" }
             : {
@@ -687,6 +687,16 @@ function referencedParameterIds(
               break;
           }
         });
+        break;
+      case "deleteInterfaceLinkRule":
+        rule.deleteInterfaceLinkRule.interfaceTypeRid = sanitize(
+          rule.deleteInterfaceLinkRule.interfaceTypeRid,
+        );
+        rule.deleteInterfaceLinkRule.interfaceLinkTypeRid = sanitize(
+          rule.deleteInterfaceLinkRule.interfaceLinkTypeRid,
+        );
+        parameterIds.add(rule.deleteInterfaceLinkRule.sourceObject);
+        parameterIds.add(rule.deleteInterfaceLinkRule.targetObject);
         break;
     }
   });

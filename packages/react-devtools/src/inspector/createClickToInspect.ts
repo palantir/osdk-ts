@@ -22,7 +22,7 @@ import {
 export type { ClickToInspectOptions } from "./ClickToInspectSystem.js";
 
 export function createClickToInspect(
-  options: ClickToInspectOptions = {},
+  options: ClickToInspectOptions = {}
 ): ClickToInspectSystem {
   return new ClickToInspectSystem(options);
 }

@@ -23,7 +23,7 @@ interface SafeOperationOptions<T> {
 
 export function safeFiberOperation<T>(
   operation: () => T,
-  options: SafeOperationOptions<T>,
+  options: SafeOperationOptions<T>
 ): T {
   const manager = getCapabilitiesManager();
   const caps = manager.getCapabilities();
