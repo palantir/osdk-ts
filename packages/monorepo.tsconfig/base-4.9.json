@@ -15,8 +15,6 @@
     "resolveJsonModule": true,
     "stripInternal": true,
     "jsx": "react-jsx",
-    "ignoreDeprecations": "6.0",
-    "types": ["*"],
-    "noUncheckedSideEffectImports": false
+    "types": ["*"]
   }
 }
