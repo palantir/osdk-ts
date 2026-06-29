@@ -15,16 +15,18 @@
  */
 
 import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
+
 import type { LinkedFilter } from "../types/LinkedFilterTypes.js";
 
 export function narrowObjectSet<Q extends ObjectTypeDefinition>(
   objectSet: ObjectSet<Q>,
   whereClause: WhereClause<Q>,
-  linkedFilters: ReadonlyArray<LinkedFilter<Q>>,
+  linkedFilters: ReadonlyArray<LinkedFilter<Q>>
 ): ObjectSet<Q> {
-  let narrowed = Object.keys(whereClause).length === 0
-    ? objectSet
-    : objectSet.where(whereClause);
+  let narrowed =
+    Object.keys(whereClause).length === 0
+      ? objectSet
+      : objectSet.where(whereClause);
   for (const filter of linkedFilters) {
     narrowed = narrowed.intersect(applyLinkedFilter(narrowed, filter));
   }
@@ -33,7 +35,7 @@ export function narrowObjectSet<Q extends ObjectTypeDefinition>(
 
 function applyLinkedFilter<Q extends ObjectTypeDefinition>(
   base: ObjectSet<Q>,
-  filter: LinkedFilter<Q>,
+  filter: LinkedFilter<Q>
 ): ObjectSet<Q> {
   // reverseLinkName's pointing back to Q is a semantic invariant we can't encode
   // in the type system, so the final result is cast to ObjectSet<Q>.
@@ -47,7 +49,7 @@ export function computeDualScopes<Q extends ObjectTypeDefinition>(
   objectSet: ObjectSet<Q> | undefined,
   whereClause: WhereClause<Q>,
   linkedFilters: ReadonlyArray<LinkedFilter<Q>>,
-  showFilteredOutValues: boolean | undefined,
+  showFilteredOutValues: boolean | undefined
 ): {
   scoped: ObjectSet<Q> | undefined;
   emptySource: ObjectSet<Q> | undefined;

@@ -17,6 +17,7 @@
 import PostalMime from "postal-mime";
 import type { Email } from "postal-mime";
 import { describe, expect, it, vi } from "vitest";
+
 import { parseEmailFromResponse } from "../parseEmail.js";
 
 vi.mock("postal-mime", () => ({
@@ -42,15 +43,17 @@ function baseEmail(overrides: Partial<Email> = {}): Email {
 
 describe("parseEmailFromResponse", () => {
   it("parses a complete email with all fields", async () => {
-    mockedParse.mockResolvedValue(baseEmail({
-      subject: "Hello",
-      from: { name: "Alice", address: "alice@example.com" },
-      to: [{ name: "Bob", address: "bob@example.com" }],
-      cc: [{ name: "Carol", address: "carol@example.com" }],
-      date: "2026-01-01T00:00:00Z",
-      html: "<p>Hello</p>",
-      text: "Hello",
-    }));
+    mockedParse.mockResolvedValue(
+      baseEmail({
+        subject: "Hello",
+        from: { name: "Alice", address: "alice@example.com" },
+        to: [{ name: "Bob", address: "bob@example.com" }],
+        cc: [{ name: "Carol", address: "carol@example.com" }],
+        date: "2026-01-01T00:00:00Z",
+        html: "<p>Hello</p>",
+        text: "Hello",
+      })
+    );
 
     const result = await parseEmailFromResponse(mockResponse());
 
@@ -66,9 +69,11 @@ describe("parseEmailFromResponse", () => {
   });
 
   it("handles missing optional fields", async () => {
-    mockedParse.mockResolvedValue(baseEmail({
-      subject: "",
-    }));
+    mockedParse.mockResolvedValue(
+      baseEmail({
+        subject: "",
+      })
+    );
 
     const result = await parseEmailFromResponse(mockResponse());
 
@@ -84,20 +89,22 @@ describe("parseEmailFromResponse", () => {
   });
 
   it("handles group addresses in to field", async () => {
-    mockedParse.mockResolvedValue(baseEmail({
-      subject: "Group test",
-      from: { name: "Sender", address: "sender@example.com" },
-      to: [
-        {
-          name: "Team",
-          group: [
-            { name: "Alice", address: "alice@example.com" },
-            { name: "Bob", address: "bob@example.com" },
-          ],
-        },
-      ],
-      text: "test",
-    }));
+    mockedParse.mockResolvedValue(
+      baseEmail({
+        subject: "Group test",
+        from: { name: "Sender", address: "sender@example.com" },
+        to: [
+          {
+            name: "Team",
+            group: [
+              { name: "Alice", address: "alice@example.com" },
+              { name: "Bob", address: "bob@example.com" },
+            ],
+          },
+        ],
+        text: "test",
+      })
+    );
 
     const result = await parseEmailFromResponse(mockResponse());
 
@@ -108,17 +115,17 @@ describe("parseEmailFromResponse", () => {
   });
 
   it("handles multiple recipients in to and cc", async () => {
-    mockedParse.mockResolvedValue(baseEmail({
-      subject: "Multi",
-      from: { name: "Sender", address: "sender@example.com" },
-      to: [
-        { name: "A", address: "a@example.com" },
-        { name: "B", address: "b@example.com" },
-      ],
-      cc: [
-        { name: "C", address: "c@example.com" },
-      ],
-    }));
+    mockedParse.mockResolvedValue(
+      baseEmail({
+        subject: "Multi",
+        from: { name: "Sender", address: "sender@example.com" },
+        to: [
+          { name: "A", address: "a@example.com" },
+          { name: "B", address: "b@example.com" },
+        ],
+        cc: [{ name: "C", address: "c@example.com" }],
+      })
+    );
 
     const result = await parseEmailFromResponse(mockResponse());
 
@@ -127,13 +134,15 @@ describe("parseEmailFromResponse", () => {
   });
 
   it("returns undefined for from when address is a group", async () => {
-    mockedParse.mockResolvedValue(baseEmail({
-      subject: "From group",
-      from: {
-        name: "Group",
-        group: [{ name: "Alice", address: "alice@example.com" }],
-      },
-    }));
+    mockedParse.mockResolvedValue(
+      baseEmail({
+        subject: "From group",
+        from: {
+          name: "Group",
+          group: [{ name: "Alice", address: "alice@example.com" }],
+        },
+      })
+    );
 
     const result = await parseEmailFromResponse(mockResponse());
 

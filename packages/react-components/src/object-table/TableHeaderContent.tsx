@@ -17,21 +17,24 @@
 import { flexRender, type Header, type RowData } from "@tanstack/react-table";
 import type { ReactNode } from "react";
 import React from "react";
+
 import styles from "./TableHeaderContent.module.css";
 
 interface TableHeaderContentProps<TData extends RowData> {
   header: Header<TData, unknown>;
 }
 
-export function TableHeaderContent<TData extends RowData>(
-  { header }: TableHeaderContentProps<TData>,
-): React.ReactElement {
+export function TableHeaderContent<TData extends RowData>({
+  header,
+}: TableHeaderContentProps<TData>): React.ReactElement {
   return (
     <div className={styles.osdkHeaderContent}>
-      {flexRender(
-        header.column.columnDef.header,
-        header.getContext(),
-      ) as ReactNode}
+      {
+        flexRender(
+          header.column.columnDef.header,
+          header.getContext()
+        ) as ReactNode
+      }
     </div>
   );
 }

@@ -15,6 +15,7 @@
  */
 
 import React, { memo } from "react";
+
 import { RangeInput, type RangeInputConfig } from "./RangeInput.js";
 
 function formatNumber(value: number | undefined): string {
@@ -54,11 +55,11 @@ interface NumberRangeInputProps {
 }
 
 function NumberRangeInputInner(
-  props: NumberRangeInputProps,
+  props: NumberRangeInputProps
 ): React.ReactElement {
   return <RangeInput {...props} config={numberConfig} />;
 }
 
 export const NumberRangeInput = memo(
-  NumberRangeInputInner,
+  NumberRangeInputInner
 ) as typeof NumberRangeInputInner;

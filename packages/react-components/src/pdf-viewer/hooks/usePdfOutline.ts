@@ -16,6 +16,7 @@
 
 import type { PDFDocumentProxy } from "pdfjs-dist";
 import { useEffect, useState } from "react";
+
 import {
   OUTLINE_HEADING_SIZE_RATIO,
   OUTLINE_MAX_HEADING_LENGTH,
@@ -25,11 +26,10 @@ import type { OutlineItem } from "../types.js";
 const EMPTY_OUTLINE: OutlineItem[] = [];
 
 export function usePdfOutline(
-  document: PDFDocumentProxy | undefined,
+  document: PDFDocumentProxy | undefined
 ): OutlineItem[] {
-  const [outlineItems, setOutlineItems] = useState<OutlineItem[]>(
-    EMPTY_OUTLINE,
-  );
+  const [outlineItems, setOutlineItems] =
+    useState<OutlineItem[]>(EMPTY_OUTLINE);
 
   useEffect(
     function loadOutline() {
@@ -71,7 +71,7 @@ export function usePdfOutline(
         cancelled = true;
       };
     },
-    [document],
+    [document]
   );
 
   return outlineItems;
@@ -81,13 +81,13 @@ type BookmarkNode = Awaited<ReturnType<PDFDocumentProxy["getOutline"]>>[number];
 
 async function resolveBookmarkOutline(
   document: PDFDocumentProxy,
-  outline: BookmarkNode[],
+  outline: BookmarkNode[]
 ): Promise<OutlineItem[]> {
   const items: OutlineItem[] = [];
 
   const resolveItems = async (
     nodes: BookmarkNode[],
-    depth: number,
+    depth: number
   ): Promise<void> => {
     for (const node of nodes) {
       let pageNumber = 1;
@@ -142,7 +142,7 @@ interface TextItemLike {
 }
 
 function isTextItem(
-  item: Record<string, unknown>,
+  item: Record<string, unknown>
 ): item is Record<string, unknown> & TextItemLike {
   return "str" in item && "transform" in item;
 }
@@ -163,25 +163,21 @@ function getFontSize(item: TextItemLike): number {
   }
   const transform = item.transform;
   if (Array.isArray(transform) && transform.length >= 4) {
-    return Math.sqrt(
-      (transform[2]) * (transform[2])
-        + (transform[3]) * (transform[3]),
-    );
+    return Math.sqrt(transform[2] * transform[2] + transform[3] * transform[3]);
   }
   return 0;
 }
 
 async function extractHeadingsFromText(
-  document: PDFDocumentProxy,
+  document: PDFDocumentProxy
 ): Promise<OutlineItem[]> {
   const numPages = document.numPages;
 
   // Fetch all pages' text content in parallel
   const pageContents = await Promise.all(
-    Array.from(
-      { length: numPages },
-      (_, i) => document.getPage(i + 1).then(page => page.getTextContent()),
-    ),
+    Array.from({ length: numPages }, (_, i) =>
+      document.getPage(i + 1).then((page) => page.getTextContent())
+    )
   );
 
   // Collect font size frequencies across all pages
@@ -268,7 +264,10 @@ async function extractHeadingsFromText(
       }
 
       if (totalChars > 0 && headingChars / totalChars > 0.5) {
-        const fullText = lineItems.map((li) => li.text).join("").trim();
+        const fullText = lineItems
+          .map((li) => li.text)
+          .join("")
+          .trim();
         if (fullText.length > 0) {
           candidateHeadings.push({
             text: fullText,
@@ -322,9 +321,9 @@ async function extractHeadingsFromText(
   for (const heading of candidateHeadings) {
     const prev = mergedHeadings[mergedHeadings.length - 1];
     if (
-      prev != null
-      && heading.contiguous
-      && Math.abs(prev.fontSize - heading.fontSize) < 0.1
+      prev != null &&
+      heading.contiguous &&
+      Math.abs(prev.fontSize - heading.fontSize) < 0.1
     ) {
       prev.text += " " + heading.text;
     } else {
@@ -333,8 +332,8 @@ async function extractHeadingsFromText(
   }
 
   return mergedHeadings
-    .filter((heading) =>
-      heading.text.trim().length <= OUTLINE_MAX_HEADING_LENGTH
+    .filter(
+      (heading) => heading.text.trim().length <= OUTLINE_MAX_HEADING_LENGTH
     )
     .map((heading) => ({
       title: heading.text.trim(),

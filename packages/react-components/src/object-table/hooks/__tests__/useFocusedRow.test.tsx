@@ -16,6 +16,7 @@
 
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+
 import { useFocusedRow } from "../useFocusedRow.js";
 
 interface TestRow {
@@ -123,7 +124,7 @@ describe("useFocusedRow", () => {
             focusedRowId,
             getRowById: makeGetRowById([r1, r3, row("row-2")]),
           }),
-        { initialProps: { focusedRowId: "row-1" } },
+        { initialProps: { focusedRowId: "row-1" } }
       );
       act(() => result.current.setFocusedRowId("row-2"));
       // Effective id still reflects controlled prop, not internal state

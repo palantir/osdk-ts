@@ -19,6 +19,7 @@ import classnames from "classnames";
 import React, { useCallback, useMemo } from "react";
 import type { ClassNames } from "react-day-picker";
 import { DayPicker } from "react-day-picker";
+
 import { ActionButton } from "../../base-components/action-button/ActionButton.js";
 import { isDateInRange } from "../../shared/dateUtils.js";
 import {
@@ -26,8 +27,9 @@ import {
   DEFAULT_FROM_YEAR,
   DEFAULT_TO_YEAR,
 } from "./calendarShared.js";
-import styles from "./DateCalendar.module.css";
 import { TimePicker } from "./TimePicker.js";
+
+import styles from "./DateCalendar.module.css";
 
 export const CLASS_NAMES: ClassNames = {
   root: styles.calendar,
@@ -44,7 +46,7 @@ export const CLASS_NAMES: ClassNames = {
   nav: styles.calendarNav,
   nav_button_previous: classnames(
     styles.calendarNavButton,
-    styles.calendarNavPrev,
+    styles.calendarNavPrev
   ),
   nav_button_next: classnames(styles.calendarNavButton, styles.calendarNavNext),
   caption: styles.calendarMonthCaption,
@@ -109,7 +111,7 @@ export default function DateCalendar({
   const todayMidnight = new Date(
     today.getFullYear(),
     today.getMonth(),
-    today.getDate(),
+    today.getDate()
   );
   const isTodaySelectable = isDateInRange(todayMidnight, min, max);
   const applySelectedTime = useCallback(
@@ -128,13 +130,13 @@ export default function DateCalendar({
       date.setHours(dateSelected.getHours(), dateSelected.getMinutes(), 0, 0);
       return date;
     },
-    [dateSelected, showTime],
+    [dateSelected, showTime]
   );
   const handleSelect = useCallback(
     (selected: Date | undefined) => {
       onSelect(selected == null ? undefined : applySelectedTime(selected));
     },
-    [applySelectedTime, onSelect],
+    [applySelectedTime, onSelect]
   );
   const handleTodayClick = useCallback(() => {
     if (!isTodaySelectable) {

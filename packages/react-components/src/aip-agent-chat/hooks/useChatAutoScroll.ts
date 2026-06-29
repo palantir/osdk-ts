@@ -27,7 +27,7 @@ import * as React from "react";
  */
 export function useChatAutoScroll<T extends HTMLElement>(
   signal: string,
-  enabled: boolean,
+  enabled: boolean
 ): React.RefCallback<T> {
   const elRef = React.useRef<T | null>(null);
   const cleanupRef = React.useRef<(() => void) | null>(null);
@@ -41,8 +41,8 @@ export function useChatAutoScroll<T extends HTMLElement>(
       return;
     }
     const onScroll = () => {
-      const distanceFromBottom = el.scrollHeight - el.scrollTop
-        - el.clientHeight;
+      const distanceFromBottom =
+        el.scrollHeight - el.scrollTop - el.clientHeight;
       isPinnedRef.current = distanceFromBottom <= NEAR_BOTTOM_THRESHOLD_PX;
     };
     el.addEventListener("scroll", onScroll, { passive: true });

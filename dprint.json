@@ -37,7 +37,8 @@
     "packages/cbac-components/",
     "packages/react/",
     "packages/react-devtools/",
-    "packages/react-components-storybook/"
+    "packages/react-components-storybook/",
+    "packages/react-components/"
   ],
   "plugins": [
     "https://plugins.dprint.dev/typescript-0.90.4.wasm",

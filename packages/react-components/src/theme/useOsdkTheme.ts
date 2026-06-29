@@ -15,6 +15,7 @@
  */
 
 import { useContext } from "react";
+
 import { OsdkThemeContext } from "./OsdkThemeContext.js";
 import type { OsdkThemeContextValue } from "./types.js";
 
@@ -35,9 +36,7 @@ import type { OsdkThemeContextValue } from "./types.js";
 export function useOsdkTheme(): OsdkThemeContextValue {
   const ctx = useContext(OsdkThemeContext);
   if (ctx == null) {
-    throw new Error(
-      "useOsdkTheme must be used within an <OsdkThemeProvider>.",
-    );
+    throw new Error("useOsdkTheme must be used within an <OsdkThemeProvider>.");
   }
   return ctx;
 }

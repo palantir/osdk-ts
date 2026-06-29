@@ -24,6 +24,7 @@ import {
 } from "@base-ui/react/tooltip";
 import classnames from "classnames";
 import React from "react";
+
 import styles from "./Tooltip.module.css";
 
 export interface TooltipProps extends Omit<TooltipRootProps, "className"> {}
@@ -32,9 +33,10 @@ function TooltipRoot({ children, ...rest }: TooltipProps): React.ReactElement {
   return <BaseUITooltip.Root {...rest}>{children}</BaseUITooltip.Root>;
 }
 
-interface TooltipProviderComponentProps
-  extends Omit<TooltipProviderProps, "className">
-{
+interface TooltipProviderComponentProps extends Omit<
+  TooltipProviderProps,
+  "className"
+> {
   className?: string;
 }
 
@@ -45,9 +47,10 @@ function TooltipProvider({
   return <BaseUITooltip.Provider {...rest}>{children}</BaseUITooltip.Provider>;
 }
 
-interface TooltipTriggerComponentProps
-  extends Omit<TooltipTriggerProps, "className">
-{
+interface TooltipTriggerComponentProps extends Omit<
+  TooltipTriggerProps,
+  "className"
+> {
   className?: string;
 }
 
@@ -71,9 +74,10 @@ function TooltipTrigger({
   );
 }
 
-interface TooltipPositionerComponentProps
-  extends Omit<TooltipPositionerProps, "className">
-{
+interface TooltipPositionerComponentProps extends Omit<
+  TooltipPositionerProps,
+  "className"
+> {
   className?: string;
 }
 
@@ -94,9 +98,10 @@ function TooltipPositioner({
   );
 }
 
-interface TooltipPopupComponentProps
-  extends Omit<TooltipPopupProps, "className">
-{
+interface TooltipPopupComponentProps extends Omit<
+  TooltipPopupProps,
+  "className"
+> {
   className?: string;
 }
 

@@ -17,7 +17,9 @@
 import { WarningSign } from "@blueprintjs/icons";
 import classnames from "classnames";
 import React from "react";
+
 import type { RequiredMarkingGroup } from "../types.js";
+
 import styles from "./ValidationWarning.module.css";
 
 export interface ValidationWarningProps {
@@ -43,7 +45,9 @@ export function ValidationWarning({
           <li key={group.markingNames.join(",")} className={styles.groupItem}>
             <span className={styles.groupNumber}>{index + 1}.</span>
             {group.markingNames.map((name) => (
-              <span key={name} className={styles.chip}>{name}</span>
+              <span key={name} className={styles.chip}>
+                {name}
+              </span>
             ))}
           </li>
         ))}

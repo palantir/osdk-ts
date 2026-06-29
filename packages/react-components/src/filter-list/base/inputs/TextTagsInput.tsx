@@ -17,11 +17,13 @@
 import { Button } from "@base-ui/react/button";
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo, useState } from "react";
+
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
 import { useFilterListBoundary } from "../FilterListBoundaryContext.js";
 import { getOptionLabelText, OptionLabel } from "./OptionLabel.js";
 import { SelectInputSkeleton } from "./SelectInputSkeleton.js";
+
 import sharedStyles from "./shared.module.css";
 import styles from "./TextTagsInput.module.css";
 
@@ -90,9 +92,8 @@ function TextTagsInputInner({
     return suggestions
       .filter(
         (s) =>
-          (!inputValue.trim()
-            || s.value.toLowerCase().includes(lowerInput))
-          && !tags.includes(s.value),
+          (!inputValue.trim() || s.value.toLowerCase().includes(lowerInput)) &&
+          !tags.includes(s.value)
       )
       .slice(0, suggestionLimit);
   }, [suggestions, inputValue, tags, suggestionLimit]);
@@ -105,29 +106,26 @@ function TextTagsInputInner({
       }
       setInputValue("");
     },
-    [tags, onChange],
+    [tags, onChange]
   );
 
   const removeTag = useCallback(
     (tag: string) => {
       onChange(tags.filter((t) => t !== tag));
     },
-    [tags, onChange],
+    [tags, onChange]
   );
 
   const handleValueChange = useCallback(
     (newTags: string[] | null) => {
       onChange(newTags ?? []);
     },
-    [onChange],
+    [onChange]
   );
 
-  const handleInputValueChange = useCallback(
-    (value: string) => {
-      setInputValue(value);
-    },
-    [],
-  );
+  const handleInputValueChange = useCallback((value: string) => {
+    setInputValue(value);
+  }, []);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -143,7 +141,7 @@ function TextTagsInputInner({
         removeTag(tags[tags.length - 1]);
       }
     },
-    [inputValue, tags, addTag, removeTag, allowCustomTags, filteredSuggestions],
+    [inputValue, tags, addTag, removeTag, allowCustomTags, filteredSuggestions]
   );
 
   const handlePaste = useCallback(
@@ -160,7 +158,7 @@ function TextTagsInputInner({
         }
       }
     },
-    [tags, onChange],
+    [tags, onChange]
   );
 
   return (
@@ -205,27 +203,23 @@ function TextTagsInputInner({
         <Combobox.Portal>
           <Combobox.Positioner collisionBoundary={collisionBoundary}>
             <Combobox.Popup>
-              {filteredSuggestions.length === 0
-                ? (
-                  allowCustomTags && inputValue.trim()
-                    ? (
-                      <Combobox.Empty>
-                        Press Enter to add "{inputValue}"
-                      </Combobox.Empty>
-                    )
-                    : (
-                      <Combobox.Empty>
-                        {suggestionLimit
-                          ? "No suggestions"
-                          : "Type to add a tag"}
-                      </Combobox.Empty>
-                    )
+              {filteredSuggestions.length === 0 ? (
+                allowCustomTags && inputValue.trim() ? (
+                  <Combobox.Empty>
+                    Press Enter to add "{inputValue}"
+                  </Combobox.Empty>
+                ) : (
+                  <Combobox.Empty>
+                    {suggestionLimit ? "No suggestions" : "Type to add a tag"}
+                  </Combobox.Empty>
                 )
-                : filteredSuggestions.map(({ value, count }) => (
+              ) : (
+                filteredSuggestions.map(({ value, count }) => (
                   <Combobox.Item key={value} value={value}>
                     <OptionLabel value={value} /> ({count.toLocaleString()})
                   </Combobox.Item>
-                ))}
+                ))
+              )}
             </Combobox.Popup>
           </Combobox.Positioner>
         </Combobox.Portal>
@@ -239,5 +233,5 @@ function TextTagsInputInner({
 }
 
 export const TextTagsInput = memo(
-  TextTagsInputInner,
+  TextTagsInputInner
 ) as typeof TextTagsInputInner;

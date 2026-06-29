@@ -21,6 +21,7 @@ import type {
   WhereClause,
 } from "@osdk/api";
 import { useMemo } from "react";
+
 import type { LinkedFilter } from "../types/LinkedFilterTypes.js";
 import { computeDualScopes } from "../utils/narrowObjectSet.js";
 import { useDualScopeAggregation } from "./useDualScopeAggregation.js";
@@ -42,7 +43,7 @@ export function useFilterPropertyAggregation<
   objectSet: ObjectSet<Q> | undefined,
   whereClause: WhereClause<Q>,
   linkedFilters: ReadonlyArray<LinkedFilter<Q>>,
-  options: UseFilterPropertyAggregationOptions = {},
+  options: UseFilterPropertyAggregationOptions = {}
 ): UsePropertyAggregationResult {
   const { sortBy, selectedValues, limit, showFilteredOutValues } = options;
 
@@ -52,16 +53,14 @@ export function useFilterPropertyAggregation<
         objectSet,
         whereClause,
         linkedFilters,
-        showFilteredOutValues,
+        showFilteredOutValues
       ),
-    [objectSet, whereClause, linkedFilters, showFilteredOutValues],
+    [objectSet, whereClause, linkedFilters, showFilteredOutValues]
   );
 
-  return useDualScopeAggregation(
-    objectType,
-    propertyKey,
-    scoped,
-    emptySource,
-    { sortBy, selectedValues, limit },
-  );
+  return useDualScopeAggregation(objectType, propertyKey, scoped, emptySource, {
+    sortBy,
+    selectedValues,
+    limit,
+  });
 }

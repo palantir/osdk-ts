@@ -25,6 +25,7 @@ import type {
 } from "@osdk/api";
 import type { Client } from "@osdk/client";
 import { chunk } from "lodash-es";
+
 import type {
   ColumnDefinition,
   FunctionColumnLocator,
@@ -50,14 +51,15 @@ export function extractFunctionLocators<
 >(
   columnDefinitions:
     | Array<ColumnDefinition<Q, RDPs, FunctionColumns>>
-    | undefined,
+    | undefined
 ): FunctionColumnLocator<Q, RDPs, FunctionColumns>[] {
   if (!columnDefinitions) return [];
 
   return columnDefinitions
-    .filter(colDef => colDef.locator.type === "function")
-    .map(colDef =>
-      colDef.locator as FunctionColumnLocator<Q, RDPs, FunctionColumns>
+    .filter((colDef) => colDef.locator.type === "function")
+    .map(
+      (colDef) =>
+        colDef.locator as FunctionColumnLocator<Q, RDPs, FunctionColumns>
     );
 }
 
@@ -77,22 +79,22 @@ export function buildPagedObjectSets<
   client: Client,
   objectOrInterfaceType: Q,
   objects: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[],
-  pageSize: number,
+  pageSize: number
 ): PagedObjects<Q, RDPs>[] {
   const isObjectType = objectOrInterfaceType.type === "object";
 
   const baseObjectSet = isObjectType
-    ? client(objectOrInterfaceType) as ObjectSet<Q, RDPs>
+    ? (client(objectOrInterfaceType) as ObjectSet<Q, RDPs>)
     : undefined;
 
   if (!baseObjectSet) {
     return [];
   }
 
-  return chunk(objects, pageSize).map(page => {
+  return chunk(objects, pageSize).map((page) => {
     const whereClause = {
       $primaryKey: {
-        $in: page.map(obj => obj.$primaryKey),
+        $in: page.map((obj) => obj.$primaryKey),
       },
     } as unknown as WhereClause<Q, RDPs>;
 

@@ -17,16 +17,18 @@
 import { Button } from "@base-ui/react/button";
 import classnames from "classnames";
 import React, { useCallback, useState } from "react";
+
 import type { FilterDefinitionControls } from "../FilterListItemApi.js";
 import type { BaseFilterListProps } from "./BaseFilterListApi.js";
 import { ExpandIcon } from "./FilterIcons.js";
-import styles from "./FilterList.module.css";
 import { FilterListBoundaryProvider } from "./FilterListBoundaryContext.js";
 import { FilterListContent } from "./FilterListContent.js";
 import { FilterListHeader } from "./FilterListHeader.js";
 
+import styles from "./FilterList.module.css";
+
 export function BaseFilterList<D extends FilterDefinitionControls>(
-  props: BaseFilterListProps<D>,
+  props: BaseFilterListProps<D>
 ): React.ReactElement {
   const {
     title,
@@ -56,11 +58,15 @@ export function BaseFilterList<D extends FilterDefinitionControls>(
   } = props;
 
   const [boundaryElement, setBoundaryElement] = useState<HTMLDivElement | null>(
-    null,
+    null
   );
 
-  const showHeader = title || titleIcon || showResetButton
-    || showActiveFilterCount || onCollapsedChange;
+  const showHeader =
+    title ||
+    titleIcon ||
+    showResetButton ||
+    showActiveFilterCount ||
+    onCollapsedChange;
 
   const showAddButton = renderAddFilterButton != null || onFilterAdded != null;
 
@@ -73,10 +79,7 @@ export function BaseFilterList<D extends FilterDefinitionControls>(
   return (
     <div className={classnames(styles.filterList, className)}>
       {isCollapsed && (
-        <div
-          className={styles.filterListCollapsed}
-          data-collapsed="true"
-        >
+        <div className={styles.filterListCollapsed} data-collapsed="true">
           <Button
             className={styles.expandButton}
             onClick={handleExpand}
@@ -91,7 +94,7 @@ export function BaseFilterList<D extends FilterDefinitionControls>(
         ref={setBoundaryElement}
         className={classnames(
           styles.expandedContent,
-          isCollapsed && styles.hiddenContent,
+          isCollapsed && styles.hiddenContent
         )}
         data-active-count={activeFilterCount}
       >
@@ -128,17 +131,17 @@ export function BaseFilterList<D extends FilterDefinitionControls>(
 
           {showAddButton && (
             <div className={styles.addButtonContainer}>
-              {renderAddFilterButton
-                ? renderAddFilterButton()
-                : (
-                  <Button
-                    type="button"
-                    className={styles.addButton}
-                    onClick={onFilterAdded}
-                  >
-                    + Add filter
-                  </Button>
-                )}
+              {renderAddFilterButton ? (
+                renderAddFilterButton()
+              ) : (
+                <Button
+                  type="button"
+                  className={styles.addButton}
+                  onClick={onFilterAdded}
+                >
+                  + Add filter
+                </Button>
+              )}
             </div>
           )}
         </FilterListBoundaryProvider>

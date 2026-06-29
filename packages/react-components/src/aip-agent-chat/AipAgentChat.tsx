@@ -17,6 +17,7 @@
 import { foundryModel } from "@osdk/aip-core";
 import { useChat } from "@osdk/react/experimental/aip";
 import * as React from "react";
+
 import type { AipAgentChatProps } from "./AipAgentChatApi.js";
 import { BaseAipAgentChat } from "./BaseAipAgentChat.js";
 import { AipAgentChatModelPicker } from "./components/AipAgentChatModelPicker.js";
@@ -52,10 +53,10 @@ export function AipAgentChat({
   // → first entry of `availableModels` → `FALLBACK_MODEL_API_NAME`.
   const [internalModel, setInternalModel] = React.useState<string>(
     () =>
-      controlledModel
-        ?? defaultModel
-        ?? availableModels?.[0]
-        ?? FALLBACK_MODEL_API_NAME,
+      controlledModel ??
+      defaultModel ??
+      availableModels?.[0] ??
+      FALLBACK_MODEL_API_NAME
   );
 
   const isControlled = controlledModel != null;
@@ -68,22 +69,15 @@ export function AipAgentChat({
       }
       onModelChange?.(next);
     },
-    [isControlled, onModelChange],
+    [isControlled, onModelChange]
   );
 
   const model = React.useMemo(
     () => foundryModel({ client, model: activeModel }),
-    [client, activeModel],
+    [client, activeModel]
   );
 
-  const {
-    messages,
-    status,
-    error,
-    sendMessage,
-    stop,
-    clearError,
-  } = useChat({
+  const { messages, status, error, sendMessage, stop, clearError } = useChat({
     model,
     system,
     messages: initialMessages,
@@ -95,7 +89,9 @@ export function AipAgentChat({
   // current selection isn't in `availableModels` (e.g. on first async resolve).
   React.useEffect(() => {
     if (
-      isControlled || availableModels == null || availableModels.length === 0
+      isControlled ||
+      availableModels == null ||
+      availableModels.length === 0
     ) {
       return;
     }
@@ -108,21 +104,20 @@ export function AipAgentChat({
     (text: string) => {
       return sendMessage({ text });
     },
-    [sendMessage],
+    [sendMessage]
   );
 
   const isInFlight = status === "submitted" || status === "streaming";
 
-  const composerFooter = availableModels != null && availableModels.length > 0
-    ? (
+  const composerFooter =
+    availableModels != null && availableModels.length > 0 ? (
       <AipAgentChatModelPicker
         activeModel={activeModel}
         models={availableModels}
         onModelChange={handleModelChange}
         disabled={isInFlight}
       />
-    )
-    : undefined;
+    ) : undefined;
 
   return (
     <BaseAipAgentChat

@@ -17,7 +17,9 @@
 import type { Cell, Row, RowData } from "@tanstack/react-table";
 import type { VirtualItem } from "@tanstack/react-virtual";
 import React, { useCallback, useMemo } from "react";
+
 import { TableCell } from "./TableCell.js";
+
 import styles from "./TableRow.module.css";
 
 interface TableRowProps<TData extends RowData> {
@@ -26,14 +28,12 @@ interface TableRowProps<TData extends RowData> {
   onRowClick?: (row: TData) => void;
   renderCellContextMenu?: (
     row: TData,
-    cell: Cell<TData, unknown>,
+    cell: Cell<TData, unknown>
   ) => React.ReactNode;
   isFocused: boolean;
   setFocusedRowId?: (id: string | null) => void;
   isInEditMode?: boolean;
-  getRowAttributes?: (
-    object: TData,
-  ) => Record<string, string | undefined>;
+  getRowAttributes?: (object: TData) => Record<string, string | undefined>;
 }
 
 export function TableRow<TData extends RowData>({
@@ -63,8 +63,9 @@ export function TableRow<TData extends RowData>({
       return;
     }
     return Object.fromEntries(
-      Object.entries(getRowAttributes(row.original))
-        .filter((entry): entry is [string, string] => entry[1] != null),
+      Object.entries(getRowAttributes(row.original)).filter(
+        (entry): entry is [string, string] => entry[1] != null
+      )
     );
   }, [getRowAttributes, row.original]);
 

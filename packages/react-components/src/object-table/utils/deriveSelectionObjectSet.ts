@@ -21,6 +21,7 @@ import type {
   SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
+
 import type { UseRowSelectionChange } from "../hooks/useRowSelection.js";
 
 /**
@@ -38,7 +39,7 @@ export function deriveSelectionObjectSet<
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 >(
   resultingObjectSet: ObjectSet<Q, RDPs> | undefined,
-  change: UseRowSelectionChange<Q, RDPs>,
+  change: UseRowSelectionChange<Q, RDPs>
 ): ObjectSet<Q, RDPs> | undefined {
   if (!resultingObjectSet) {
     return undefined;
@@ -47,7 +48,7 @@ export function deriveSelectionObjectSet<
     return resultingObjectSet;
   }
   const whereClause: Record<string, { $in: Array<PrimaryKeyType<Q>> }> = {
-    $primaryKey: { $in: change.selectedRows.map(r => r.$primaryKey) },
+    $primaryKey: { $in: change.selectedRows.map((r) => r.$primaryKey) },
   };
   return resultingObjectSet.where(whereClause as WhereClause<Q, RDPs>);
 }

@@ -22,6 +22,7 @@ import {
 } from "@blueprintjs/icons";
 import classNames from "classnames";
 import * as React from "react";
+
 import styles from "./Callout.module.css";
 
 export type CalloutIntent = "error" | "warning" | "success" | "info";
@@ -78,24 +79,13 @@ const INTENT_STYLES: Record<CalloutIntent, string> = {
  * title, message body, and action slot.
  */
 export const Callout: React.NamedExoticComponent<CalloutProps> = React.memo(
-  function Callout({
-    intent,
-    title,
-    children,
-    actions,
-    icon,
-    className,
-  }) {
+  function Callout({ intent, title, children, actions, icon, className }) {
     const IconComponent = icon ?? DEFAULT_ICONS[intent];
 
     return (
       <div
         aria-live="polite"
-        className={classNames(
-          styles.callout,
-          INTENT_STYLES[intent],
-          className,
-        )}
+        className={classNames(styles.callout, INTENT_STYLES[intent], className)}
         role="alert"
       >
         {IconComponent != null && (
@@ -110,5 +100,5 @@ export const Callout: React.NamedExoticComponent<CalloutProps> = React.memo(
         {actions != null && <div className={styles.actions}>{actions}</div>}
       </div>
     );
-  },
+  }
 );

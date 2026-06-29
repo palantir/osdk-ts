@@ -17,23 +17,25 @@
 /* cspell:words defval */
 
 import { read, utils } from "xlsx-republish";
+
 import type { ParsedSpreadsheet, SheetData } from "./ExcelViewerApi.js";
 
 export async function parseSpreadsheetFromResponse(
-  response: Response,
+  response: Response
 ): Promise<ParsedSpreadsheet> {
   const buffer = await response.arrayBuffer();
   const workbook = read(buffer, { type: "array" });
 
   const sheets: SheetData[] = workbook.SheetNames.map((name) => {
     const sheet = workbook.Sheets[name];
-    const rows: string[][] = sheet != null
-      ? utils.sheet_to_json<string[]>(sheet, {
-        header: 1,
-        defval: "",
-        raw: false,
-      })
-      : [];
+    const rows: string[][] =
+      sheet != null
+        ? utils.sheet_to_json<string[]>(sheet, {
+            header: 1,
+            defval: "",
+            raw: false,
+          })
+        : [];
     return { name, rows };
   });
 

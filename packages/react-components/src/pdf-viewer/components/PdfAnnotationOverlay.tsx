@@ -15,6 +15,7 @@
  */
 
 import React, { useMemo } from "react";
+
 import type { AnnotationPortalTarget } from "../hooks/usePdfAnnotationPortals.js";
 import type { PdfAnnotation } from "../types.js";
 import { PdfViewerAnnotationLayer } from "./PdfViewerAnnotationLayer.js";
@@ -30,15 +31,18 @@ export const PdfAnnotationOverlay: React.FC<PdfAnnotationOverlayProps> = ({
   annotations,
   onAnnotationClick,
 }) => {
-  const style = useMemo<React.CSSProperties>(() => ({
-    position: "absolute",
-    left: target.left,
-    top: target.top,
-    width: target.width,
-    height: target.height,
-    pointerEvents: "none",
-    zIndex: 1,
-  }), [target.left, target.top, target.width, target.height]);
+  const style = useMemo<React.CSSProperties>(
+    () => ({
+      position: "absolute",
+      left: target.left,
+      top: target.top,
+      width: target.width,
+      height: target.height,
+      pointerEvents: "none",
+      zIndex: 1,
+    }),
+    [target.left, target.top, target.width, target.height]
+  );
 
   return (
     <div style={style}>

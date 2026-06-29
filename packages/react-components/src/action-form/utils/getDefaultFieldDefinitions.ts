@@ -15,6 +15,7 @@
  */
 
 import type { ActionMetadata } from "@osdk/api";
+
 import { assertUnreachable } from "../../shared/assertUnreachable.js";
 import type { RendererFieldDefinition } from "../FormFieldApi.js";
 
@@ -25,10 +26,10 @@ import type { RendererFieldDefinition } from "../FormFieldApi.js";
  * correct fieldComponent and default fieldComponentProps.
  */
 export function getDefaultFieldDefinitions(
-  metadata: ActionMetadata,
+  metadata: ActionMetadata
 ): ReadonlyArray<RendererFieldDefinition> {
-  return Object.entries(metadata.parameters).map(
-    ([key, param]) => buildFieldDefinition(key, param),
+  return Object.entries(metadata.parameters).map(([key, param]) =>
+    buildFieldDefinition(key, param)
   );
 }
 
@@ -40,7 +41,7 @@ export function getDefaultFieldDefinitions(
  */
 function buildFieldDefinition(
   key: string,
-  param: ActionMetadata.Parameter,
+  param: ActionMetadata.Parameter
 ): RendererFieldDefinition {
   const base = {
     fieldKey: key,
@@ -105,10 +106,13 @@ function buildFieldDefinition(
         ...base,
         fieldComponent: "RADIO_BUTTONS",
         fieldComponentProps: {
-          options: [{ label: "True", value: true }, {
-            label: "False",
-            value: false,
-          }],
+          options: [
+            { label: "True", value: true },
+            {
+              label: "False",
+              value: false,
+            },
+          ],
         },
       };
     case "integer":

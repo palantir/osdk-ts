@@ -15,7 +15,9 @@
  */
 
 import React from "react";
+
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
+
 import styles from "./MultiSelectInput.module.css";
 
 interface MultiSelectInlineLayoutProps {
@@ -39,9 +41,7 @@ export function MultiSelectInlineLayout({
       <Combobox.Empty className={styles.inlineEmpty}>
         No matching options
       </Combobox.Empty>
-      <Combobox.List className={styles.inlineList}>
-        {renderItem}
-      </Combobox.List>
+      <Combobox.List className={styles.inlineList}>{renderItem}</Combobox.List>
     </>
   );
 }

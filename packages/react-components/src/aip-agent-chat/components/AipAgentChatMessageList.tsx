@@ -18,10 +18,12 @@ import { Chat } from "@blueprintjs/icons";
 import { getUIMessageText, type UIMessage } from "@osdk/aip-core";
 import classNames from "classnames";
 import * as React from "react";
-import styles from "../AipAgentChat.module.css";
+
 import { useChatAutoScroll } from "../hooks/useChatAutoScroll.js";
 import { AipAgentChatLoader } from "./AipAgentChatLoader.js";
 import { AipAgentChatMessage } from "./AipAgentChatMessage.js";
+
+import styles from "../AipAgentChat.module.css";
 
 export interface AipAgentChatMessageListProps {
   messages: ReadonlyArray<UIMessage>;
@@ -49,14 +51,13 @@ export function AipAgentChatMessageList({
   renderMessage,
 }: AipAgentChatMessageListProps): React.ReactElement {
   const lastMessage = messages.at(-1);
-  const lastMessageTextLength = lastMessage != null
-    ? getUIMessageText(lastMessage).length
-    : 0;
+  const lastMessageTextLength =
+    lastMessage != null ? getUIMessageText(lastMessage).length : 0;
   const scrollSignal = `${messages.length}:${lastMessageTextLength}`;
 
   const setContainerRef = useChatAutoScroll<HTMLDivElement>(
     scrollSignal,
-    enableAutoScroll,
+    enableAutoScroll
   );
 
   const isEmpty = messages.length === 0 && !isStreaming;
@@ -68,35 +69,41 @@ export function AipAgentChatMessageList({
       className={classNames(
         styles.messageList,
         isEmpty && styles.empty,
-        className,
+        className
       )}
       ref={setContainerRef}
       role={isEmpty ? undefined : "log"}
     >
-      {isEmpty
-        ? (renderEmptyState != null ? renderEmptyState() : DEFAULT_EMPTY_STATE)
-        : (
-          <>
-            {messages.map(message => (
-              <React.Fragment key={message.id}>
-                {renderMessage != null
-                  ? renderMessage(message)
-                  : <AipAgentChatMessage message={message} />}
-              </React.Fragment>
-            ))}
-            {showLoader && (
+      {isEmpty ? (
+        renderEmptyState != null ? (
+          renderEmptyState()
+        ) : (
+          DEFAULT_EMPTY_STATE
+        )
+      ) : (
+        <>
+          {messages.map((message) => (
+            <React.Fragment key={message.id}>
+              {renderMessage != null ? (
+                renderMessage(message)
+              ) : (
+                <AipAgentChatMessage message={message} />
+              )}
+            </React.Fragment>
+          ))}
+          {showLoader && (
+            <div
+              className={classNames(styles.message, styles.assistantMessage)}
+            >
               <div
-                className={classNames(styles.message, styles.assistantMessage)}
+                className={classNames(styles.bubble, styles.assistantBubble)}
               >
-                <div
-                  className={classNames(styles.bubble, styles.assistantBubble)}
-                >
-                  <AipAgentChatLoader />
-                </div>
+                <AipAgentChatLoader />
               </div>
-            )}
-          </>
-        )}
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }

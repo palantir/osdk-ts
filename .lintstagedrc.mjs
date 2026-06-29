@@ -37,6 +37,7 @@ const OXC_PACKAGE_GLOB = `packages/{${
 const OXC_NESTED_CONFIG_PACKAGES = {
   "react-components-storybook":
     "packages/react-components-storybook/oxlint.config.ts",
+  "react-components": "packages/react-components/oxlint.config.ts",
 };
 
 // All oxc packages (root-config + nested-config) are excluded from the ESLint +

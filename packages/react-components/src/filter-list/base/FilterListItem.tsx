@@ -22,6 +22,7 @@ import type {
 } from "@dnd-kit/core";
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo, useState } from "react";
+
 import { ErrorBoundary } from "../../shared/ErrorBoundary.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import {
@@ -33,6 +34,7 @@ import {
 import type { RenderFilterInput } from "./BaseFilterListApi.js";
 import { DragHandleIcon } from "./DragHandleIcon.js";
 import { OverflowMenuIcon, RemoveIcon, SearchIcon } from "./FilterIcons.js";
+
 import styles from "./FilterListItem.module.css";
 
 interface FilterListItemProps<D> {
@@ -40,10 +42,7 @@ interface FilterListItemProps<D> {
   filterKey: string;
   label: string;
   filterState: FilterState | undefined;
-  onFilterStateChanged: (
-    filterKey: string,
-    state: FilterState,
-  ) => void;
+  onFilterStateChanged: (filterKey: string, state: FilterState) => void;
   onFilterRemoved?: (filterKey: string) => void;
   renderInput: RenderFilterInput<D>;
   searchField?: boolean;
@@ -76,7 +75,7 @@ function FilterListItemInner<D>({
     (newState: FilterState) => {
       onFilterStateChanged(filterKey, newState);
     },
-    [filterKey, onFilterStateChanged],
+    [filterKey, onFilterStateChanged]
   );
 
   const handleToggleSearch = useCallback(() => {
@@ -89,7 +88,7 @@ function FilterListItemInner<D>({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setSearchState({ type: "open", query: e.target.value });
     },
-    [],
+    []
   );
 
   const handleSearchClear = useCallback(() => {
@@ -110,7 +109,7 @@ function FilterListItemInner<D>({
 
   const effectiveState = useMemo(
     () => getEffectiveFilterState(filterState),
-    [filterState],
+    [filterState]
   );
 
   const showExcludeDropdown = supportsExcluding(effectiveState);
@@ -120,9 +119,8 @@ function FilterListItemInner<D>({
 
   const searchOpen = searchState.type === "open";
   const searchQuery = searchState.type === "open" ? searchState.query : "";
-  const searchQueryForInput = searchState.type === "open"
-    ? searchState.query
-    : undefined;
+  const searchQueryForInput =
+    searchState.type === "open" ? searchState.query : undefined;
 
   return (
     <div
@@ -141,11 +139,7 @@ function FilterListItemInner<D>({
             <DragHandleIcon />
           </Button>
         )}
-        <span
-          className={styles.itemLabel}
-        >
-          {label}
-        </span>
+        <span className={styles.itemLabel}>{label}</span>
         {showSearch && (
           <Button
             className={styles.headerActionButton}
@@ -218,5 +212,5 @@ function FilterListItemInner<D>({
 }
 
 export const FilterListItem = memo(
-  FilterListItemInner,
+  FilterListItemInner
 ) as typeof FilterListItemInner;

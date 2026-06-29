@@ -16,7 +16,9 @@
 
 import { Button } from "@base-ui/react/button";
 import React, { memo, type ReactNode, useCallback } from "react";
+
 import { CollapseIcon, ResetIcon } from "./FilterIcons.js";
+
 import styles from "./FilterListHeader.module.css";
 
 interface FilterListHeaderProps {
@@ -50,27 +52,18 @@ function FilterListHeaderInner({
     onCollapsedChange?.(!collapsed);
   }, [onCollapsedChange, collapsed]);
 
-  const resetDisabled = canReset != null
-    ? !canReset
-    : activeFilterCount === 0 && !hasVisibilityChanges;
+  const resetDisabled =
+    canReset != null
+      ? !canReset
+      : activeFilterCount === 0 && !hasVisibilityChanges;
 
   return (
     <div className={styles.header}>
       <div className={styles.titleContainer}>
-        {titleIcon && (
-          <span className={styles.titleIcon}>
-            {titleIcon}
-          </span>
-        )}
-        {title && (
-          <span className={styles.title}>
-            {title}
-          </span>
-        )}
+        {titleIcon && <span className={styles.titleIcon}>{titleIcon}</span>}
+        {title && <span className={styles.title}>{title}</span>}
         {showActiveFilterCount && activeFilterCount > 0 && (
-          <span className={styles.activeCount}>
-            ({activeFilterCount})
-          </span>
+          <span className={styles.activeCount}>({activeFilterCount})</span>
         )}
       </div>
 

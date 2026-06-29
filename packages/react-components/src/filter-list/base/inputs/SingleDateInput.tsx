@@ -17,7 +17,9 @@
 import { Button } from "@base-ui/react/button";
 import classnames from "classnames";
 import React, { memo, useCallback } from "react";
+
 import { DatePicker } from "../../../shared/calendar/index.js";
+
 import styles from "./SingleDateInput.module.css";
 
 interface SingleDateInputProps {
@@ -52,7 +54,7 @@ function SingleDateInputInner({
     (value: Date | null) => {
       onChange(value ?? undefined);
     },
-    [onChange],
+    [onChange]
   );
 
   return (

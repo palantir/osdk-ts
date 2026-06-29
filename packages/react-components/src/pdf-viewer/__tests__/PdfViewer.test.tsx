@@ -16,6 +16,7 @@
 
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { usePdfViewerState } from "../hooks/usePdfViewerState.js";
 import { BasePdfViewer } from "../PdfViewer.js";
 
@@ -94,7 +95,7 @@ describe("BasePdfViewer download wiring", () => {
         src="x.pdf"
         enableDownload={true}
         downloadFileName="custom.pdf"
-      />,
+      />
     );
     fireEvent.click(screen.getByLabelText("Download"));
 

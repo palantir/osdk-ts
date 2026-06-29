@@ -17,11 +17,12 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it } from "vitest";
+
 import type { FormSectionDefinition } from "../ActionFormApi.js";
 import { FormSection } from "../FormSection.js";
 
 function makeDefinition(
-  overrides?: Partial<FormSectionDefinition>,
+  overrides?: Partial<FormSectionDefinition>
 ): FormSectionDefinition {
   return {
     title: "Test Section",
@@ -41,7 +42,7 @@ describe("FormSection", () => {
           errorCount={0}
         >
           <div data-testid="child-field">Field content</div>
-        </FormSection>,
+        </FormSection>
       );
 
       expect(screen.getByText("Personal Info")).toBeDefined();
@@ -50,12 +51,9 @@ describe("FormSection", () => {
 
     it("collapses when trigger is clicked", () => {
       render(
-        <FormSection
-          definition={makeDefinition()}
-          errorCount={0}
-        >
+        <FormSection definition={makeDefinition()} errorCount={0}>
           <div data-testid="child-field">Field content</div>
-        </FormSection>,
+        </FormSection>
       );
 
       // Content is visible initially
@@ -66,8 +64,9 @@ describe("FormSection", () => {
       fireEvent.click(trigger);
 
       // Content should be hidden (panel closed)
-      expect(screen.getByTestId("child-field").closest("[hidden]")).not
-        .toBeNull();
+      expect(
+        screen.getByTestId("child-field").closest("[hidden]")
+      ).not.toBeNull();
     });
 
     it("starts collapsed when collapsedByDefault is true", () => {
@@ -77,12 +76,13 @@ describe("FormSection", () => {
           errorCount={0}
         >
           <div data-testid="child-field">Field content</div>
-        </FormSection>,
+        </FormSection>
       );
 
       // Content should be hidden initially
-      expect(screen.getByTestId("child-field").closest("[hidden]")).not
-        .toBeNull();
+      expect(
+        screen.getByTestId("child-field").closest("[hidden]")
+      ).not.toBeNull();
     });
 
     it("expands when trigger is clicked on a collapsed section", () => {
@@ -92,12 +92,13 @@ describe("FormSection", () => {
           errorCount={0}
         >
           <div data-testid="child-field">Field content</div>
-        </FormSection>,
+        </FormSection>
       );
 
       // Initially collapsed
-      expect(screen.getByTestId("child-field").closest("[hidden]")).not
-        .toBeNull();
+      expect(
+        screen.getByTestId("child-field").closest("[hidden]")
+      ).not.toBeNull();
 
       // Click to expand
       const trigger = screen.getByRole("button", { name: /test section/i });
@@ -114,7 +115,7 @@ describe("FormSection", () => {
           errorCount={0}
         >
           <div>content</div>
-        </FormSection>,
+        </FormSection>
       );
 
       expect(screen.getByText("Fill in your details")).toBeDefined();
@@ -127,7 +128,7 @@ describe("FormSection", () => {
           errorCount={2}
         >
           <div>content</div>
-        </FormSection>,
+        </FormSection>
       );
 
       expect(screen.getByText("2 errors")).toBeDefined();
@@ -135,12 +136,9 @@ describe("FormSection", () => {
 
     it("shows singular error badge when errorCount is 1", () => {
       render(
-        <FormSection
-          definition={makeDefinition()}
-          errorCount={1}
-        >
+        <FormSection definition={makeDefinition()} errorCount={1}>
           <div>content</div>
-        </FormSection>,
+        </FormSection>
       );
 
       expect(screen.getByText("1 error")).toBeDefined();
@@ -148,12 +146,9 @@ describe("FormSection", () => {
 
     it("hides error badge when errorCount is 0", () => {
       render(
-        <FormSection
-          definition={makeDefinition()}
-          errorCount={0}
-        >
+        <FormSection definition={makeDefinition()} errorCount={0}>
           <div>content</div>
-        </FormSection>,
+        </FormSection>
       );
 
       expect(screen.queryByText(/error/)).toBeNull();
@@ -166,7 +161,7 @@ describe("FormSection", () => {
           errorCount={0}
         >
           <div data-testid="child-field">Field content</div>
-        </FormSection>,
+        </FormSection>
       );
 
       // No trigger button, no title text
@@ -185,7 +180,7 @@ describe("FormSection", () => {
           errorCount={0}
         >
           <div data-testid="child-field">Field content</div>
-        </FormSection>,
+        </FormSection>
       );
 
       expect(screen.getByText("Details")).toBeDefined();
@@ -204,7 +199,7 @@ describe("FormSection", () => {
           errorCount={0}
         >
           <div>content</div>
-        </FormSection>,
+        </FormSection>
       );
 
       expect(screen.getByText("Some info")).toBeDefined();
@@ -221,7 +216,7 @@ describe("FormSection", () => {
           <div data-testid="field-1">Field 1</div>
           <div data-testid="field-2">Field 2</div>
           <div data-testid="field-3">Field 3</div>
-        </FormSection>,
+        </FormSection>
       );
 
       expect(screen.getByTestId("field-1")).toBeDefined();

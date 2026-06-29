@@ -16,6 +16,7 @@
 
 import classNames from "classnames";
 import * as React from "react";
+
 import styles from "../AipAgentChat.module.css";
 
 export interface AipAgentChatLoaderProps {
@@ -26,9 +27,10 @@ export interface AipAgentChatLoaderProps {
 /**
  * Three-dot bouncing animation rendered while the agent is responding.
  */
-export function AipAgentChatLoader(
-  { className, label = "Assistant is responding" }: AipAgentChatLoaderProps,
-): React.ReactElement {
+export function AipAgentChatLoader({
+  className,
+  label = "Assistant is responding",
+}: AipAgentChatLoaderProps): React.ReactElement {
   return (
     <div
       aria-label={label}

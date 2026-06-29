@@ -26,6 +26,6 @@ describe("AipAgentChat (OSDK wrapper)", () => {
   it.todo("calls useChat with the configured model");
   it.todo("wires sendMessage from useChat into BaseAipAgentChat");
   it.todo(
-    "wraps activeModel and availableModels into a model picker rendered in composer footer",
+    "wraps activeModel and availableModels into a model picker rendered in composer footer"
   );
 });

@@ -16,6 +16,7 @@
 
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { FilePickerField } from "../fields/FilePickerField.js";
 
 describe("FilePickerField", () => {
@@ -62,7 +63,7 @@ describe("FilePickerField", () => {
       render(<FilePickerField value={file} />);
 
       expect(
-        screen.getByRole("button", { name: "Clear selection" }),
+        screen.getByRole("button", { name: "Clear selection" })
       ).toBeDefined();
     });
 
@@ -70,7 +71,7 @@ describe("FilePickerField", () => {
       render(<FilePickerField value={null} />);
 
       expect(
-        screen.queryByRole("button", { name: "Clear selection" }),
+        screen.queryByRole("button", { name: "Clear selection" })
       ).toBeNull();
     });
 
@@ -90,7 +91,7 @@ describe("FilePickerField", () => {
       const file = new File(["content"], "report.pdf");
 
       render(
-        <FilePickerField value={file} onChange={onChange} disabled={true} />,
+        <FilePickerField value={file} onChange={onChange} disabled={true} />
       );
 
       const clearButton = screen.getByRole("button", {
@@ -226,7 +227,7 @@ describe("FilePickerField", () => {
     it("calls onChange with File[] when isMulti is true", () => {
       const onChange = vi.fn();
       render(
-        <FilePickerField value={null} onChange={onChange} isMulti={true} />,
+        <FilePickerField value={null} onChange={onChange} isMulti={true} />
       );
 
       const files = [

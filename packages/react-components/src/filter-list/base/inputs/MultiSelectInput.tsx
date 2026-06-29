@@ -16,17 +16,19 @@
 
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
+
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
 import { useFilterListBoundary } from "../FilterListBoundaryContext.js";
 import { createRenderValueFilter } from "./comboboxFilter.js";
 import { MultiSelectDropdownLayout } from "./MultiSelectDropdownLayout.js";
 import { MultiSelectInlineLayout } from "./MultiSelectInlineLayout.js";
-import styles from "./MultiSelectInput.module.css";
 import { getOptionLabelText, OptionLabel } from "./OptionLabel.js";
 import { SelectInputSkeleton } from "./SelectInputSkeleton.js";
-import sharedStyles from "./shared.module.css";
 import { useStableData } from "./useStableData.js";
+
+import styles from "./MultiSelectInput.module.css";
+import sharedStyles from "./shared.module.css";
 
 /**
  * Layout for the value list:
@@ -75,37 +77,33 @@ function MultiSelectInputInner({
     (newValues: string[] | null) => {
       onChange(newValues ?? []);
     },
-    [onChange],
+    [onChange]
   );
 
   const stableValues = useStableData(values, isLoading);
 
   const items = useMemo(
     () => stableValues.map(({ value }) => value),
-    [stableValues],
+    [stableValues]
   );
 
   const countByValue = useMemo(
     () => new Map(stableValues.map(({ value, count }) => [value, count])),
-    [stableValues],
+    [stableValues]
   );
 
-  const selectedSet = useMemo(
-    () => new Set(selectedValues),
-    [selectedValues],
-  );
+  const selectedSet = useMemo(() => new Set(selectedValues), [selectedValues]);
 
   const comboboxFilter = useMemo(
-    () => renderValue ? createRenderValueFilter(renderValue) : undefined,
-    [renderValue],
+    () => (renderValue ? createRenderValueFilter(renderValue) : undefined),
+    [renderValue]
   );
 
   const renderItem = useCallback(
     (value: string) => {
       const count = countByValue.get(value) ?? 0;
-      const isFilteredOut = showFilteredOutValues
-        && count === 0
-        && !selectedSet.has(value);
+      const isFilteredOut =
+        showFilteredOutValues && count === 0 && !selectedSet.has(value);
       return (
         <Combobox.Item
           key={value}
@@ -117,14 +115,12 @@ function MultiSelectInputInner({
             <OptionLabel value={value} renderValue={renderValue} />
           </span>
           {showCounts && (
-            <span className={styles.itemCount}>
-              ({count.toLocaleString()})
-            </span>
+            <span className={styles.itemCount}>({count.toLocaleString()})</span>
           )}
         </Combobox.Item>
       );
     },
-    [countByValue, selectedSet, showCounts, showFilteredOutValues, renderValue],
+    [countByValue, selectedSet, showCounts, showFilteredOutValues, renderValue]
   );
 
   const renderChips = useCallback(
@@ -132,10 +128,7 @@ function MultiSelectInputInner({
       <>
         {selectedItems.map((value) => {
           return (
-            <Combobox.Chip
-              key={value}
-              aria-label={getOptionLabelText(value)}
-            >
+            <Combobox.Chip key={value} aria-label={getOptionLabelText(value)}>
               <OptionLabel value={value} renderValue={renderValue} />
               <Combobox.ChipRemove />
             </Combobox.Chip>
@@ -147,7 +140,7 @@ function MultiSelectInputInner({
         />
       </>
     ),
-    [placeholder, ariaLabel, renderValue],
+    [placeholder, ariaLabel, renderValue]
   );
 
   const isNoData = !error && stableValues.length === 0;
@@ -171,9 +164,7 @@ function MultiSelectInputInner({
 
       {isNoData && isLoading && <SelectInputSkeleton />}
       {isNoData && !isLoading && (
-        <div className={sharedStyles.emptyMessage}>
-          No options available
-        </div>
+        <div className={sharedStyles.emptyMessage}>No options available</div>
       )}
 
       {stableValues.length > 0 && (
@@ -184,21 +175,19 @@ function MultiSelectInputInner({
           items={items}
           filter={comboboxFilter}
         >
-          {layout === "inline"
-            ? (
-              <MultiSelectInlineLayout
-                placeholder={placeholder}
-                ariaLabel={ariaLabel}
-                renderItem={renderItem}
-              />
-            )
-            : (
-              <MultiSelectDropdownLayout
-                renderChips={renderChips}
-                renderItem={renderItem}
-                collisionBoundary={collisionBoundary}
-              />
-            )}
+          {layout === "inline" ? (
+            <MultiSelectInlineLayout
+              placeholder={placeholder}
+              ariaLabel={ariaLabel}
+              renderItem={renderItem}
+            />
+          ) : (
+            <MultiSelectDropdownLayout
+              renderChips={renderChips}
+              renderItem={renderItem}
+              collisionBoundary={collisionBoundary}
+            />
+          )}
         </Combobox.Root>
       )}
     </div>
@@ -206,5 +195,5 @@ function MultiSelectInputInner({
 }
 
 export const MultiSelectInput = memo(
-  MultiSelectInputInner,
+  MultiSelectInputInner
 ) as typeof MultiSelectInputInner;
