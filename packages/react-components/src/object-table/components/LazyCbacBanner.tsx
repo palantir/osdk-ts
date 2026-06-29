@@ -16,6 +16,7 @@
 
 import React, { Suspense } from "react";
 import type { CbacBannerProps } from "../../cbac-picker/CbacBanner.js";
+import styles from "./LazyCbacBanner.module.css";
 
 // Rendered when the CbacBanner chunk can't be loaded. CbacBanner pulls in
 // `@osdk/react/platform-apis`, whose admin hooks depend on the optional
@@ -49,12 +50,13 @@ const CbacBannerLazy = React.lazy<React.ComponentType<CbacBannerProps>>(() =>
 
 /**
  * Suspense-wrapped, lazily-loaded {@link CbacBanner}. Same props as
- * `CbacBanner`; renders nothing while the chunk loads, and falls back to the
- * raw marking ids if the chunk fails to load.
+ * `CbacBanner`; renders a height-reserving placeholder while the chunk loads
+ * (so the first paint doesn't flash and shift), and falls back to the raw
+ * marking ids if the chunk fails to load.
  */
 export function LazyCbacBanner(props: CbacBannerProps): React.ReactElement {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<span className={styles.fallback} aria-hidden={true} />}>
       <CbacBannerLazy {...props} />
     </Suspense>
   );
