@@ -21,6 +21,7 @@ import { __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait } from "@osdk/api/u
 import { useOsdkClient } from "@osdk/react";
 import { useEffect, useRef, useState } from "react";
 import * as UTIF from "utif";
+
 import { ViewerType } from "../DocumentViewerApi.js";
 
 export interface UseTiffToPdfResult {
@@ -48,7 +49,7 @@ const DISABLED_RESULT: UseTiffToPdfResult = {
  */
 export function useTiffToPdf(
   media: Media,
-  enabled: boolean,
+  enabled: boolean
 ): UseTiffToPdfResult {
   const client = useOsdkClient();
   const [result, setResult] = useState<UseTiffToPdfResult>(DISABLED_RESULT);
@@ -97,7 +98,7 @@ export function useTiffToPdf(
       // Step 2: Multi-page TIFF — convert to PDF via MIO transform
       const mediaReference = currentMedia.getMediaReference();
       const pdfResponse = await client(
-        __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait,
+        __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait
       ).transformAndWait({
         mediaReference,
         transformation: {
@@ -124,7 +125,7 @@ export function useTiffToPdf(
         // eslint-disable-next-line no-console
         console.warn(
           "TIFF to PDF conversion failed, falling back to TIFF renderer:",
-          err,
+          err
         );
         setResult({
           viewerType: ViewerType.Tiff,
