@@ -28,4 +28,16 @@ describe("AipAgentChat (OSDK wrapper)", () => {
   it.todo(
     "wraps activeModel and availableModels into a model picker rendered in composer footer",
   );
+  it.todo(
+    "renders the object-type context picker when objectTypes is provided",
+  );
+  it.todo(
+    "mounts a context loader per selected object type and none for unselected types",
+  );
+  it.todo(
+    "appends loaded objects to the system prompt passed to useChat",
+  );
+  it.todo(
+    "seeds selection from defaultSelectedObjectTypes, dropping unknown api names",
+  );
 });

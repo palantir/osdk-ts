@@ -19,11 +19,21 @@ import { useChat } from "@osdk/react/experimental/aip";
 import * as React from "react";
 import type { AipAgentChatProps } from "./AipAgentChatApi.js";
 import { BaseAipAgentChat } from "./BaseAipAgentChat.js";
+import {
+  buildObjectContext,
+  combineSystemPrompt,
+  type LoadedObjectContext,
+} from "./buildObjectContext.js";
+import { AipAgentChatContextLoader } from "./components/AipAgentChatContextLoader.js";
+import { AipAgentChatContextPicker } from "./components/AipAgentChatContextPicker.js";
 import { AipAgentChatModelPicker } from "./components/AipAgentChatModelPicker.js";
 
 export type { AipAgentChatProps } from "./AipAgentChatApi.js";
 
 const FALLBACK_MODEL_API_NAME = "gpt-4o";
+const DEFAULT_CONTEXT_PAGE_SIZE = 25;
+const EMPTY_SELECTION: ReadonlyArray<string> = [];
+const EMPTY_LOADED: Readonly<Record<string, ReadonlyArray<unknown>>> = {};
 
 /**
  * OSDK-aware chat surface backed by Foundry's Language Model Service.
@@ -38,6 +48,10 @@ export function AipAgentChat({
   availableModels,
   onModelChange,
   system,
+  objectTypes,
+  contextPageSize = DEFAULT_CONTEXT_PAGE_SIZE,
+  defaultSelectedObjectTypes,
+  onSelectedObjectTypesChanged,
   initialMessages,
   className,
   placeholder,
@@ -76,6 +90,84 @@ export function AipAgentChat({
     [client, activeModel],
   );
 
+  // Map api name -> object type definition, plus the list of api names the
+  // picker offers. Both are stable for a given `objectTypes` array.
+  const objectTypeByApiName = React.useMemo(() => {
+    const map = new Map<
+      string,
+      NonNullable<typeof objectTypes>[number]
+    >();
+    for (const objectType of objectTypes ?? []) {
+      map.set(objectType.apiName, objectType);
+    }
+    return map;
+  }, [objectTypes]);
+
+  const availableObjectTypeApiNames = React.useMemo(
+    () => Array.from(objectTypeByApiName.keys()),
+    [objectTypeByApiName],
+  );
+
+  // Selection is uncontrolled: seed from `defaultSelectedObjectTypes`,
+  // dropping any api names not present in `objectTypes`.
+  const [selectedObjectTypes, setSelectedObjectTypes] = React.useState<
+    ReadonlyArray<string>
+  >(
+    () =>
+      (defaultSelectedObjectTypes ?? EMPTY_SELECTION).filter((apiName) =>
+        objectTypeByApiName.has(apiName)
+      ),
+  );
+
+  const handleSelectedObjectTypesChange = React.useCallback(
+    (next: ReadonlyArray<string>) => {
+      setSelectedObjectTypes(next);
+      onSelectedObjectTypesChanged?.(next);
+    },
+    [onSelectedObjectTypesChanged],
+  );
+
+  // Objects loaded per selected type, lifted from the per-type loaders.
+  const [loadedByType, setLoadedByType] = React.useState<
+    Readonly<Record<string, ReadonlyArray<unknown>>>
+  >(EMPTY_LOADED);
+
+  const handleObjectsLoaded = React.useCallback(
+    (apiName: string, objects: ReadonlyArray<unknown> | undefined) => {
+      setLoadedByType((prev) => {
+        if (objects == null) {
+          if (!(apiName in prev)) {
+            return prev;
+          }
+          const next = { ...prev };
+          delete next[apiName];
+          return next;
+        }
+        if (prev[apiName] === objects) {
+          return prev;
+        }
+        return { ...prev, [apiName]: objects };
+      });
+    },
+    [],
+  );
+
+  const objectContext = React.useMemo(() => {
+    const loaded: Array<LoadedObjectContext> = [];
+    for (const apiName of selectedObjectTypes) {
+      const objects = loadedByType[apiName];
+      if (objects != null) {
+        loaded.push({ apiName, objects });
+      }
+    }
+    return buildObjectContext(loaded);
+  }, [selectedObjectTypes, loadedByType]);
+
+  const augmentedSystem = React.useMemo(
+    () => combineSystemPrompt(system, objectContext),
+    [system, objectContext],
+  );
+
   const {
     messages,
     status,
@@ -85,7 +177,7 @@ export function AipAgentChat({
     clearError,
   } = useChat({
     model,
-    system,
+    system: augmentedSystem,
     messages: initialMessages,
     onError,
     onFinish,
@@ -113,31 +205,66 @@ export function AipAgentChat({
 
   const isInFlight = status === "submitted" || status === "streaming";
 
-  const composerFooter = availableModels != null && availableModels.length > 0
+  const hasModelPicker = availableModels != null && availableModels.length > 0;
+  const hasContextPicker = availableObjectTypeApiNames.length > 0;
+
+  const composerFooter = hasModelPicker || hasContextPicker
     ? (
-      <AipAgentChatModelPicker
-        activeModel={activeModel}
-        models={availableModels}
-        onModelChange={handleModelChange}
-        disabled={isInFlight}
-      />
+      <>
+        {hasContextPicker && (
+          <AipAgentChatContextPicker
+            objectTypes={availableObjectTypeApiNames}
+            selected={selectedObjectTypes}
+            onChange={handleSelectedObjectTypesChange}
+            disabled={isInFlight}
+          />
+        )}
+        {hasModelPicker && (
+          <AipAgentChatModelPicker
+            activeModel={activeModel}
+            models={availableModels}
+            onModelChange={handleModelChange}
+            disabled={isInFlight}
+          />
+        )}
+      </>
     )
     : undefined;
 
   return (
-    <BaseAipAgentChat
-      className={className}
-      composerFooter={composerFooter}
-      enableAutoScroll={enableAutoScroll}
-      messages={messages}
-      status={status}
-      error={error}
-      onClearError={clearError}
-      onSendMessage={handleSendMessage}
-      onStop={stop}
-      placeholder={placeholder}
-      renderEmptyState={renderEmptyState}
-      renderMessage={renderMessage}
-    />
+    <>
+      {
+        /* One headless loader per selected type; mounting/unmounting is what
+          gates fetching, keeping the rules of hooks satisfied. */
+      }
+      {selectedObjectTypes.map((apiName) => {
+        const objectType = objectTypeByApiName.get(apiName);
+        if (objectType == null) {
+          return null;
+        }
+        return (
+          <AipAgentChatContextLoader
+            key={apiName}
+            objectType={objectType}
+            pageSize={contextPageSize}
+            onLoaded={handleObjectsLoaded}
+          />
+        );
+      })}
+      <BaseAipAgentChat
+        className={className}
+        composerFooter={composerFooter}
+        enableAutoScroll={enableAutoScroll}
+        messages={messages}
+        status={status}
+        error={error}
+        onClearError={clearError}
+        onSendMessage={handleSendMessage}
+        onStop={stop}
+        placeholder={placeholder}
+        renderEmptyState={renderEmptyState}
+        renderMessage={renderMessage}
+      />
+    </>
   );
 }

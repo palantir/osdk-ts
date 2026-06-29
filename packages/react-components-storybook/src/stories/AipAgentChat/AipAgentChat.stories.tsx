@@ -18,9 +18,14 @@ import type {
   BaseAipAgentChatProps,
   UIMessage,
 } from "@osdk/react-components/experimental/aip-agent-chat";
-import { BaseAipAgentChat } from "@osdk/react-components/experimental/aip-agent-chat";
+import {
+  AipAgentChatContextPicker,
+  AipAgentChatModelPicker,
+  BaseAipAgentChat,
+} from "@osdk/react-components/experimental/aip-agent-chat";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import * as React from "react";
+import type { JSX } from "react/jsx-runtime";
 
 let nextId = 1;
 function makeId(): string {
@@ -65,7 +70,7 @@ function InteractiveChat(
     initialMessages?: UIMessage[];
     simulateError?: boolean;
   }
-) {
+): JSX.Element {
   const { initialMessages = [], simulateError = false, ...rest } = props;
   const [messages, setMessages] = React.useState<UIMessage[]>(initialMessages);
   const [status, setStatus] = React.useState<
@@ -135,6 +140,13 @@ function InteractiveChat(
       onSendMessage={onSendMessage}
       onStop={onStop}
       status={status}
+      composerFooter={
+        <AipAgentChatModelPicker
+          activeModel={"model-1"}
+          models={["model-1", "model-2"]}
+          onModelChange={() => {}}
+        />
+      }
     />
   );
 }
@@ -153,6 +165,7 @@ const meta: Meta<typeof InteractiveChat> = {
 };
 
 export default meta;
+
 type Story = StoryObj<typeof meta>;
 
 /** Empty chat with the default welcome state. Type a message to start a simulated conversation. */
@@ -178,4 +191,45 @@ export const CustomPlaceholder: Story = {
   args: {
     placeholder: "Ask me anything about your data...",
   },
+};
+
+const SAMPLE_OBJECT_TYPES = ["Employee", "Office", "Project"];
+
+/**
+ * Stateful demo of the object-type context picker rendered in the composer
+ * footer. In the OSDK-wired `AipAgentChat`, selecting types here fetches
+ * those objects via `useOsdkObjects` and folds them into the system prompt;
+ * here we just show the multi-select UI with stub object type names.
+ */
+function ContextPickerDemo(): JSX.Element {
+  const [selected, setSelected] = React.useState<ReadonlyArray<string>>([]);
+  return (
+    <BaseAipAgentChat
+      messages={[]}
+      status="ready"
+      error={undefined}
+      onSendMessage={async () => {}}
+      onStop={() => {}}
+      onClearError={() => {}}
+      composerFooter={
+        <AipAgentChatContextPicker
+          objectTypes={SAMPLE_OBJECT_TYPES}
+          selected={selected}
+          onChange={setSelected}
+        />
+      }
+    />
+  );
+}
+
+/**
+ * Chat with the object-type context multi-select in the composer footer.
+ * Pick one or more object types to load their objects as context.
+ */
+export const WithObjectContextPicker: Story = {
+  render: () => (
+    <div style={{ height: "600px", maxWidth: "700px" }}>
+      <ContextPickerDemo />
+    </div>
+  ),
 };

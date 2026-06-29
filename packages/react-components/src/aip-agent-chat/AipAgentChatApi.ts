@@ -15,6 +15,7 @@
  */
 
 import type { UIMessage } from "@osdk/aip-core";
+import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { PlatformClient } from "@osdk/client";
 import type * as React from "react";
 
@@ -102,8 +103,67 @@ export interface AipAgentChatProps {
 
   /**
    * System prompt prepended to every request.
+   *
+   * When {@link AipAgentChatProps.objectTypes} is provided and the user
+   * selects one or more object types, a serialized snapshot of those
+   * objects is appended to this prompt so the model can answer questions
+   * grounded in the data.
    */
   system?: string;
+
+  /**
+   * Object types the user may load into the conversation as context.
+   * Pass OSDK object (or interface) definitions, the same shape accepted
+   * by `ObjectTable`'s `objectType` prop.
+   *
+   * When non-empty, a multi-select picker is rendered in the composer
+   * footer. Selecting a type fetches its objects via `useOsdkObjects`
+   * (lazily — nothing is fetched until selected) and appends a serialized
+   * snapshot to the system prompt. Requires the app to be wrapped in
+   * `OsdkProvider`, since `useOsdkObjects` reads the OSDK client from
+   * React context. If omitted, no picker is rendered and the chat behaves
+   * exactly as before.
+   */
+  objectTypes?: ReadonlyArray<ObjectOrInterfaceDefinition>;
+
+  /**
+   * Maximum number of objects fetched per selected object type. Caps how
+   * much data is serialized into the system prompt to keep requests within
+   * the model's context window.
+   *
+   * Only relevant when {@link AipAgentChatProps.objectTypes} is provided.
+   *
+   * @default 25
+   */
+  contextPageSize?: number;
+
+  /**
+   * Uncontrolled seed: object type API names selected on mount. The
+   * component owns selection state thereafter, updating it as the user
+   * picks types from the footer multi-select.
+   * {@link AipAgentChatProps.onSelectedObjectTypesChanged} still fires so
+   * callers can observe.
+   *
+   * Only relevant when {@link AipAgentChatProps.objectTypes} is provided.
+   * Api names not present in `objectTypes` on the first render are dropped,
+   * so `objectTypes` must already include them at mount for the seed to
+   * take effect.
+   *
+   * @default [] (no object types selected)
+   */
+  defaultSelectedObjectTypes?: ReadonlyArray<string>;
+
+  /**
+   * Listener fired when the user changes the set of selected object types
+   * via the footer multi-select. Non-controlling — the component still
+   * owns and mutates the selection regardless. Use this for analytics or
+   * to persist the user's choice.
+   *
+   * Only relevant when {@link AipAgentChatProps.objectTypes} is provided.
+   *
+   * @param apiNames The object type API names now selected.
+   */
+  onSelectedObjectTypesChanged?: (apiNames: ReadonlyArray<string>) => void;
 
   /**
    * Seed messages — used as the initial conversation snapshot. Forwarded

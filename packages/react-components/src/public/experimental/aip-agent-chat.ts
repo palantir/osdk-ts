@@ -27,3 +27,8 @@ export type { UIMessage, UIMessageRole } from "@osdk/aip-core";
 export { getUIMessageText } from "@osdk/aip-core";
 
 export type { ChatStatus } from "@osdk/react/experimental/aip";
+
+export { AipAgentChatModelPicker } from "../../aip-agent-chat/components/AipAgentChatModelPicker.js";
+
+export { AipAgentChatContextPicker } from "../../aip-agent-chat/components/AipAgentChatContextPicker.js";
+export type { AipAgentChatContextPickerProps } from "../../aip-agent-chat/components/AipAgentChatContextPicker.js";
