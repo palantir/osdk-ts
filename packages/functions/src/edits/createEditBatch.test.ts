@@ -23,6 +23,7 @@ import {
   Task,
 } from "@osdk/client.test.ontology";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { createEditBatch } from "./createEditBatch.js";
 import type { EditBatch } from "./EditBatch.js";
 import type { Edits } from "./types.js";
@@ -96,9 +97,12 @@ describe(createEditBatch, () => {
     editBatch.create(Task, { id: 3 });
     editBatch.delete({ $apiName: "Task", $primaryKey: 0 });
     editBatch.delete(taskInstance);
-    editBatch.update({ $apiName: "Task", $primaryKey: 0 }, {
-      name: "My New Task Name",
-    });
+    editBatch.update(
+      { $apiName: "Task", $primaryKey: 0 },
+      {
+        name: "My New Task Name",
+      }
+    );
     editBatch.update(taskInstance, { name: "My Very New Task Name" });
     editBatch.update({ $apiName: "Task", $primaryKey: 3 }, {});
     editBatch.create(Task, { id: 0, name: "My Task Name" });
@@ -109,11 +113,14 @@ describe(createEditBatch, () => {
       fooSpt: "created interface",
     });
     editBatch.update(fooInterfaceInstance, { fooSpt: "fooSpt" });
-    editBatch.update({
-      $apiName: "FooInterface",
-      $objectType: "FooObjectType",
-      $primaryKey: 22,
-    }, { fooSpt: "fooSpt2" });
+    editBatch.update(
+      {
+        $apiName: "FooInterface",
+        $objectType: "FooObjectType",
+        $primaryKey: 22,
+      },
+      { fooSpt: "fooSpt2" }
+    );
     editBatch.delete(fooInterfaceInstance);
 
     editBatch.link({ $apiName: "Employee", $primaryKey: 0 }, "visitedOffices", {
@@ -131,7 +138,7 @@ describe(createEditBatch, () => {
       {
         $apiName: "Office",
         $primaryKey: "New York",
-      },
+      }
     );
     editBatch.link(taskInstance, "Todos", { $apiName: "Todo", $primaryKey: 0 });
     editBatch.link(taskInstance, "Todos", [
@@ -146,7 +153,7 @@ describe(createEditBatch, () => {
     editBatch.unlink(
       { $apiName: "Office", $primaryKey: "Denver" },
       "occupants",
-      [employeeInstance, { $apiName: "Employee", $primaryKey: 3 }],
+      [employeeInstance, { $apiName: "Employee", $primaryKey: 3 }]
     );
     editBatch.link(taskInstance, "RP", personInstance);
     editBatch.unlink(taskInstance, "RP", personInstance);
@@ -340,14 +347,14 @@ describe(createEditBatch, () => {
       { $apiName: "Task", $primaryKey: 2 },
       // @ts-expect-error
       "occupants",
-      employeeInstance,
+      employeeInstance
     ); // Using Office link
 
     editBatch.link(
       { $apiName: "Office", $primaryKey: "2" },
       "occupants",
       // @ts-expect-error
-      personInstance,
+      personInstance
     ); // Linking to Person instead of Employee
 
     // @ts-expect-error
@@ -365,21 +372,21 @@ describe(createEditBatch, () => {
       taskInstance,
       "RP",
       // @ts-expect-error
-      [personInstance],
+      [personInstance]
     ); // Using list for non-multiplicity link
 
     editBatch.unlink(
       { $apiName: "Task", $primaryKey: 2 },
       // @ts-expect-error
       "occupants",
-      employeeInstance,
+      employeeInstance
     ); // Using Office link
 
     editBatch.unlink(
       { $apiName: "Office", $primaryKey: "2" },
       "occupants",
       // @ts-expect-error
-      personInstance,
+      personInstance
     ); // Unlinking Person instead of Employee
 
     // @ts-expect-error

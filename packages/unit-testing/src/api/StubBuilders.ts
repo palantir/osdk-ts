@@ -35,14 +35,21 @@ export interface QueryStubBuilder<T> {
 
 type IsOsdkObject<T> = T extends { $apiName: string } ? true : false;
 
-export type StubBuilderFor<T> = T extends Promise<infer R> ? StubBuilderFor<R>
-  : T extends AsyncIterableIterator<infer U> ? FetchPageStubBuilder<U>
-  : T extends PageResult<infer U> ? FetchPageStubBuilder<U>
-  : T extends { value: PageResult<infer U>; error?: never }
-    ? FetchPageStubBuilder<U>
-  : T extends { value: infer U; error?: never }
-    ? (IsOsdkObject<U> extends true ? FetchOneStubBuilder<U>
-      : AggregateStubBuilder<U>)
-  : T extends { error: Error; value?: never } ? never
-  : IsOsdkObject<T> extends true ? FetchOneStubBuilder<T>
-  : AggregateStubBuilder<T>;
+export type StubBuilderFor<T> =
+  T extends Promise<infer R>
+    ? StubBuilderFor<R>
+    : T extends AsyncIterableIterator<infer U>
+      ? FetchPageStubBuilder<U>
+      : T extends PageResult<infer U>
+        ? FetchPageStubBuilder<U>
+        : T extends { value: PageResult<infer U>; error?: never }
+          ? FetchPageStubBuilder<U>
+          : T extends { value: infer U; error?: never }
+            ? IsOsdkObject<U> extends true
+              ? FetchOneStubBuilder<U>
+              : AggregateStubBuilder<U>
+            : T extends { error: Error; value?: never }
+              ? never
+              : IsOsdkObject<T> extends true
+                ? FetchOneStubBuilder<T>
+                : AggregateStubBuilder<T>;

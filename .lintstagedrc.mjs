@@ -44,6 +44,9 @@ const OXC_NESTED_CONFIG_PACKAGES = {
   "maker": "packages/maker/oxlint.config.ts",
   "maker-experimental": "packages/maker-experimental/oxlint.config.ts",
   "maker-import": "packages/maker-import/oxlint.config.ts",
+  "api": "packages/api/oxlint.config.ts",
+  "functions": "packages/functions/oxlint.config.ts",
+  "unit-testing": "packages/unit-testing/oxlint.config.ts",
 };
 
 // All oxc packages (root-config + nested-config) are excluded from the ESLint +

@@ -19,7 +19,7 @@ import type { Client } from "@osdk/client";
 import { Employee } from "@osdk/client.test.ontology";
 
 export async function basicFetchPage(
-  client: Client,
+  client: Client
 ): Promise<Osdk.Instance<Employee>> {
   const objects = await client(Employee).fetchPage();
   const object = objects.data[0];
