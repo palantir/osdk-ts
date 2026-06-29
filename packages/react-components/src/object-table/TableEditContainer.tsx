@@ -17,20 +17,18 @@
 import { Error } from "@blueprintjs/icons";
 import type { RowData } from "@tanstack/react-table";
 import React, { type ReactElement, useCallback, useState } from "react";
+
 import { ActionButton } from "../base-components/action-button/ActionButton.js";
-import styles from "./TableEditContainer.module.css";
 import type { EditableConfig } from "./utils/types.js";
 
-interface TableEditContainerProps<
-  TData extends RowData,
-> {
+import styles from "./TableEditContainer.module.css";
+
+interface TableEditContainerProps<TData extends RowData> {
   editableConfig: EditableConfig<TData, unknown>;
   hasFocusedRow?: boolean;
 }
 
-export function TableEditContainer<
-  TData extends RowData,
->({
+export function TableEditContainer<TData extends RowData>({
   editableConfig,
   hasFocusedRow,
 }: TableEditContainerProps<TData>): ReactElement {
@@ -79,46 +77,35 @@ export function TableEditContainer<
 
   return (
     <div className={styles.tableEditContainer}>
-      {hasEdits || hasValidationError
-        ? (
-          <div className={styles.editsInfoContainer}>
-            {hasEdits && (
-              <div className={styles.modificationCount}>
-                {`${
-                  cellEdits ? Object.keys(cellEdits).length : 0
-                } modifications`}
-              </div>
-            )}
-            {hasEdits && hasValidationError && (
-              <div className={styles.divider} />
-            )}
-            {hasValidationError && (
-              <div className={styles.validationError}>
-                <Error className={styles.errorIcon} />
-                Validation error
-              </div>
-            )}
-          </div>
+      {hasEdits || hasValidationError ? (
+        <div className={styles.editsInfoContainer}>
+          {hasEdits && (
+            <div className={styles.modificationCount}>
+              {`${cellEdits ? Object.keys(cellEdits).length : 0} modifications`}
+            </div>
+          )}
+          {hasEdits && hasValidationError && <div className={styles.divider} />}
+          {hasValidationError && (
+            <div className={styles.validationError}>
+              <Error className={styles.errorIcon} />
+              Validation error
+            </div>
+          )}
+        </div>
+      ) : (
+        isInEditMode &&
+        !hasFocusedRow && (
+          <div className={styles.placeholder}>Select a row to edit data…</div>
         )
-        : (isInEditMode && !hasFocusedRow && (
-          <div className={styles.placeholder}>
-            Select a row to edit data…
-          </div>
-        ))}
+      )}
       <div className={styles.editButtons}>
         {!isInEditMode && canToggleEditMode && (
-          <ActionButton
-            variant="primary"
-            onClick={handleEnterEditMode}
-          >
+          <ActionButton variant="primary" onClick={handleEnterEditMode}>
             Edit Table
           </ActionButton>
         )}
         {isInEditMode && canToggleEditMode && (
-          <ActionButton
-            variant="secondary"
-            onClick={handleCancelEdits}
-          >
+          <ActionButton variant="secondary" onClick={handleCancelEdits}>
             Cancel
           </ActionButton>
         )}
