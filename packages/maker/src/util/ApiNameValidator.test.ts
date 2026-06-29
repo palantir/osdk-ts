@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import { isValidApiName, isValidObjectApiName } from "./ApiNameValidator.js";
 
 describe("isValidApiName", () => {

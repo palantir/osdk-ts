@@ -15,6 +15,7 @@
  */
 
 import invariant from "tiny-invariant";
+
 import type { ActionLevelValidationDefinition } from "./action/ActionLevelValidationDefinition.js";
 import type { ActionParameter } from "./action/ActionParameter.js";
 import type { ActionSection } from "./action/ActionSection.js";
@@ -54,60 +55,60 @@ type DeleteInterfaceLinkActionBaseDefinition = {
 };
 
 export type DeleteInterfaceLinkActionUserDefinition =
-  & DeleteInterfaceLinkActionBaseDefinition
-  & (
-    | { interfaceLink: InterfaceLinkConstraint; from?: InterfaceType }
-    | { interfaceLink: string; from: InterfaceType }
-  );
+  DeleteInterfaceLinkActionBaseDefinition &
+    (
+      | { interfaceLink: InterfaceLinkConstraint; from?: InterfaceType }
+      | { interfaceLink: string; from: InterfaceType }
+    );
 
 export function defineDeleteInterfaceLinkAction(
-  defInput: DeleteInterfaceLinkActionUserDefinition,
+  defInput: DeleteInterfaceLinkActionUserDefinition
 ): ActionType {
   const def = cloneDefinition(defInput);
 
-  const linkConstraint = typeof def.interfaceLink === "string"
-    ? undefined
-    : def.interfaceLink;
+  const linkConstraint =
+    typeof def.interfaceLink === "string" ? undefined : def.interfaceLink;
   invariant(
-    linkConstraint === undefined
-      || def.from === undefined
-      || def.from.apiName === linkConstraint.from.apiName,
-    `"from" ("${def.from?.apiName}") does not match the interface ("${linkConstraint?.from.apiName}") that interface link constraint "${linkConstraint?.apiName}" was defined on. Omit "from" to use the constraint's own interface.`,
+    linkConstraint === undefined ||
+      def.from === undefined ||
+      def.from.apiName === linkConstraint.from.apiName,
+    `"from" ("${def.from?.apiName}") does not match the interface ("${linkConstraint?.from.apiName}") that interface link constraint "${linkConstraint?.apiName}" was defined on. Omit "from" to use the constraint's own interface.`
   );
   const from = def.from ?? linkConstraint?.from;
   invariant(
     from !== undefined,
-    `"from" is required when "interfaceLink" is provided as a string (the api name).`,
+    `"from" is required when "interfaceLink" is provided as a string (the api name).`
   );
 
-  const interfaceLinkApiName = typeof def.interfaceLink === "string"
-    ? def.interfaceLink
-    : def.interfaceLink.apiName;
+  const interfaceLinkApiName =
+    typeof def.interfaceLink === "string"
+      ? def.interfaceLink
+      : def.interfaceLink.apiName;
   const linkApiName = combineApiNamespaceIfMissing(
     namespace,
-    interfaceLinkApiName,
+    interfaceLinkApiName
   );
-  const link = from.links.find(l => l.metadata.apiName === linkApiName);
+  const link = from.links.find((l) => l.metadata.apiName === linkApiName);
   invariant(
     link !== undefined,
-    `Interface link constraint "${interfaceLinkApiName}" not found on interface "${from.apiName}". Define it with defineInterfaceLinkConstraint first.`,
+    `Interface link constraint "${interfaceLinkApiName}" not found on interface "${from.apiName}". Define it with defineInterfaceLinkConstraint first.`
   );
   invariant(
     link.linkedEntityTypeId.type === "interfaceType",
-    `Interface link constraint "${interfaceLinkApiName}" on "${from.apiName}" does not link to an interface type.`,
+    `Interface link constraint "${interfaceLinkApiName}" on "${from.apiName}" does not link to an interface type.`
   );
   const targetApiName = link.linkedEntityTypeId.interfaceType;
   invariant(
-    ontologyDefinition.INTERFACE_TYPE[targetApiName] !== undefined
-      || importedTypes.INTERFACE_TYPE[targetApiName] !== undefined,
-    `Target interface "${targetApiName}" of interface link constraint "${interfaceLinkApiName}" is not defined.`,
+    ontologyDefinition.INTERFACE_TYPE[targetApiName] !== undefined ||
+      importedTypes.INTERFACE_TYPE[targetApiName] !== undefined,
+    `Target interface "${targetApiName}" of interface link constraint "${interfaceLinkApiName}" is not defined.`
   );
 
   const sourceId = def.sourceParameter?.id ?? "source";
   const targetId = def.targetParameter?.id ?? "target";
   invariant(
     sourceId !== targetId,
-    `"sourceParameter.id" and "targetParameter.id" must differ, but both resolved to "${sourceId}".`,
+    `"sourceParameter.id" and "targetParameter.id" must differ, but both resolved to "${sourceId}".`
   );
 
   // A delete operates on a single existing link (one source, one target), so
@@ -115,8 +116,8 @@ export function defineDeleteInterfaceLinkAction(
   // cardinality.
   const sourceParam: ActionParameter = {
     id: sourceId,
-    displayName: def.sourceParameter?.displayName
-      ?? from.displayMetadata.displayName,
+    displayName:
+      def.sourceParameter?.displayName ?? from.displayMetadata.displayName,
     type: {
       type: "interfaceReference",
       interfaceReference: { interfaceTypeRid: from.apiName },
@@ -128,8 +129,8 @@ export function defineDeleteInterfaceLinkAction(
   };
   const targetParam: ActionParameter = {
     id: targetId,
-    displayName: def.targetParameter?.displayName
-      ?? withoutNamespace(targetApiName),
+    displayName:
+      def.targetParameter?.displayName ?? withoutNamespace(targetApiName),
     type: {
       type: "interfaceReference",
       interfaceReference: { interfaceTypeRid: targetApiName },
@@ -142,12 +143,13 @@ export function defineDeleteInterfaceLinkAction(
   const parameters = [sourceParam, targetParam];
 
   return defineAction({
-    apiName: def.apiName
-      ?? `delete-interface-link-${kebab(withoutNamespace(from.apiName))}-${
-        kebab(withoutNamespace(interfaceLinkApiName))
-      }`,
-    displayName: def.displayName
-      ?? `Delete ${from.displayMetadata.displayName} link`,
+    apiName:
+      def.apiName ??
+      `delete-interface-link-${kebab(withoutNamespace(from.apiName))}-${kebab(
+        withoutNamespace(interfaceLinkApiName)
+      )}`,
+    displayName:
+      def.displayName ?? `Delete ${from.displayMetadata.displayName} link`,
     status: def.status ?? "active",
     entities: {
       affectedInterfaceTypes: [from.apiName, targetApiName],
@@ -156,33 +158,39 @@ export function defineDeleteInterfaceLinkAction(
       typeGroups: [],
     },
     parameters,
-    rules: [{
-      type: "deleteInterfaceLinkRule",
-      deleteInterfaceLinkRule: {
-        interfaceTypeRid: from.apiName,
-        interfaceLinkTypeRid: linkApiName,
-        sourceObject: sourceId,
-        targetObject: targetId,
+    rules: [
+      {
+        type: "deleteInterfaceLinkRule",
+        deleteInterfaceLinkRule: {
+          interfaceTypeRid: from.apiName,
+          interfaceLinkTypeRid: linkApiName,
+          sourceObject: sourceId,
+          targetObject: targetId,
+        },
       },
-    }],
+    ],
     parameterOrdering: [sourceId, targetId],
     ...(def.actionLevelValidation
       ? {
-        validation: convertValidationRule(
-          def.actionLevelValidation,
-          parameters,
-        ),
-      }
+          validation: convertValidationRule(
+            def.actionLevelValidation,
+            parameters
+          ),
+        }
       : {}),
     ...(def.defaultFormat && { defaultFormat: def.defaultFormat }),
-    ...(def.enableLayoutSwitch
-      && { enableLayoutSwitch: def.enableLayoutSwitch }),
-    ...(def.tableConfiguration
-      && { displayAndFormat: { table: def.tableConfiguration } }),
-    ...(def.sections
-      && { sections: Object.fromEntries(def.sections.map(s => [s.id, s])) }),
-    ...(def.submissionMetadata
-      && { submissionMetadata: def.submissionMetadata }),
+    ...(def.enableLayoutSwitch && {
+      enableLayoutSwitch: def.enableLayoutSwitch,
+    }),
+    ...(def.tableConfiguration && {
+      displayAndFormat: { table: def.tableConfiguration },
+    }),
+    ...(def.sections && {
+      sections: Object.fromEntries(def.sections.map((s) => [s.id, s])),
+    }),
+    ...(def.submissionMetadata && {
+      submissionMetadata: def.submissionMetadata,
+    }),
     ...(def.permission && { permission: def.permission }),
     ...(def.icon && { icon: def.icon }),
   });

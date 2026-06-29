@@ -19,18 +19,14 @@ export type {
   ActionParameter,
   ActionParameterValidation,
 } from "./api/action/ActionParameter.js";
-export type {
-  ActionParameterAllowedValues,
-} from "./api/action/ActionParameterAllowedValues.js";
+export type { ActionParameterAllowedValues } from "./api/action/ActionParameterAllowedValues.js";
 export type { ActionParameterConditionalOverride } from "./api/action/ActionParameterConditionalOverride.js";
 export type {
   ActionParameterConfiguration,
   ActionParameterRequirementConstraint,
 } from "./api/action/ActionParameterConfiguration.js";
 export type { ActionParameterType } from "./api/action/ActionParameterType.js";
-export {
-  isActionParameterTypePrimitive,
-} from "./api/action/ActionParameterType.js";
+export { isActionParameterTypePrimitive } from "./api/action/ActionParameterType.js";
 export type { ActionSection } from "./api/action/ActionSection.js";
 export type { ActionStatus } from "./api/action/ActionStatus.js";
 export type { ActionType } from "./api/action/ActionType.js";

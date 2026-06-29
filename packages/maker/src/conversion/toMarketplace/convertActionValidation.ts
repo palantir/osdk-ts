@@ -18,6 +18,7 @@ import type {
   OntologyIrActionValidation,
   ParameterRequiredConfiguration,
 } from "@osdk/client.unstable";
+
 import type { ActionParameterRequirementConstraint } from "../../api/action/ActionParameterConfiguration.js";
 import type { ActionType } from "../../api/action/ActionType.js";
 import {
@@ -29,91 +30,92 @@ import { convertActionVisibility } from "./convertActionVisibility.js";
 import { convertSectionConditionalOverride } from "./convertSectionConditionalOverride.js";
 
 export function convertActionValidation(
-  action: ActionType,
+  action: ActionType
 ): OntologyIrActionValidation {
   return {
     actionTypeLevelValidation: {
       rules: Object.fromEntries(
-        (action.validation
-          ?? [{
-            condition: { type: "true", true: {} },
-            displayMetadata: { failureMessage: "", typeClasses: [] },
-          }]).map((rule, idx) => [idx, rule]),
+        (
+          action.validation ?? [
+            {
+              condition: { type: "true", true: {} },
+              displayMetadata: { failureMessage: "", typeClasses: [] },
+            },
+          ]
+        ).map((rule, idx) => [idx, rule])
       ),
     },
     parameterValidations: Object.fromEntries(
-      (action.parameters ?? []).map(p => {
+      (action.parameters ?? []).map((p) => {
         return [
           p.id,
           {
             defaultValidation: {
               display: {
-                renderHint: p.renderHint
-                  ?? renderHintFromBaseType(p, p.validation),
+                renderHint:
+                  p.renderHint ?? renderHintFromBaseType(p, p.validation),
                 visibility: convertActionVisibility(
-                  p.validation.defaultVisibility,
+                  p.validation.defaultVisibility
                 ),
-                ...p.defaultValue
-                  && { prefill: p.defaultValue },
+                ...(p.defaultValue && { prefill: p.defaultValue }),
               },
               validation: {
                 allowedValues: extractAllowedValues(
-                  p.validation.allowedValues!,
+                  p.validation.allowedValues!
                 ),
                 required: convertParameterRequirementConstraint(
-                  p.validation.required!,
+                  p.validation.required!
                 ),
               },
             },
-            conditionalOverrides: p.validation.conditionalOverrides?.map(
-              (override) =>
+            conditionalOverrides:
+              p.validation.conditionalOverrides?.map((override) =>
                 convertActionParameterConditionalOverride(
                   override,
                   p.validation,
-                  action.parameters,
-                ),
-            ) ?? [],
+                  action.parameters
+                )
+              ) ?? [],
           },
         ];
-      }),
+      })
     ),
     sectionValidations: {
       ...Object.fromEntries(
-        Object.entries(action.sections ?? {}).map((
-          [sectionId, section],
-        ) => [
+        Object.entries(action.sections ?? {}).map(([sectionId, section]) => [
           section.id,
           {
-            defaultDisplayMetadata: section.defaultVisibility === "hidden"
-              ? {
-                visibility: {
-                  type: "hidden",
-                  hidden: {},
-                },
-              }
-              : {
-                visibility: {
-                  type: "visible",
-                  visible: {},
-                },
-              },
-            conditionalOverrides: section.conditionalOverrides?.map(
-              (override) =>
+            defaultDisplayMetadata:
+              section.defaultVisibility === "hidden"
+                ? {
+                    visibility: {
+                      type: "hidden",
+                      hidden: {},
+                    },
+                  }
+                : {
+                    visibility: {
+                      type: "visible",
+                      visible: {},
+                    },
+                  },
+            conditionalOverrides:
+              section.conditionalOverrides?.map((override) =>
                 convertSectionConditionalOverride(
                   override,
                   section.defaultVisibility ?? "visible",
-                  action.parameters,
-                ),
-            ) ?? [],
+                  action.parameters
+                )
+              ) ?? [],
           },
-        ]),
+        ])
       ),
     },
   };
 }
 
 function convertParameterRequirementConstraint(
-  required: ActionParameterRequirementConstraint,
+  required: ActionParameterRequirementConstraint
 ): ParameterRequiredConfiguration {
   if (typeof required === "boolean") {
     return required

@@ -15,6 +15,7 @@
  */
 
 import type { OntologyIrBaseParameterConstraintType } from "@osdk/client.unstable";
+
 import type { InterfaceType } from "./interface/InterfaceType.js";
 
 export interface ParameterConstraintDefinition {

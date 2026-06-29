@@ -23,6 +23,7 @@ import type {
   BlockSetVersionRange,
   InputShape,
 } from "@osdk/client.unstable/api";
+
 import type {
   GeneratedBlockExternalRecommendations,
   ReadableIdMappingPair,
@@ -59,7 +60,7 @@ function getExternalRecommendationsForType<T>(
   items: Iterable<T>,
   getApiName: (item: T) => string,
   getReadableId: (apiName: string) => ReadableId,
-  packageNameOverride?: string,
+  packageNameOverride?: string
 ): GeneratedBlockExternalRecommendations[] {
   const groups = new Map<string, ReadableIdMappingPair[]>();
 
@@ -88,17 +89,17 @@ function getExternalRecommendationsForType<T>(
 }
 
 function externalRecsForInterfaces(
-  importedOntology: OntologyBlockDataV2,
+  importedOntology: OntologyBlockDataV2
 ): GeneratedBlockExternalRecommendations[] {
   return getExternalRecommendationsForType(
     Object.values(importedOntology.interfaceTypes),
     (i) => i.interfaceType.apiName,
-    (apiName) => ReadableIdGenerator.getForInterface(apiName),
+    (apiName) => ReadableIdGenerator.getForInterface(apiName)
   );
 }
 
 function externalRecsForInterfaceLinks(
-  importedOntology: OntologyBlockDataV2,
+  importedOntology: OntologyBlockDataV2
 ): GeneratedBlockExternalRecommendations[] {
   const results: GeneratedBlockExternalRecommendations[] = [];
 
@@ -113,10 +114,10 @@ function externalRecsForInterfaceLinks(
         (linkApiName) =>
           ReadableIdGenerator.getForInterfaceLinkType(
             interfaceApiName,
-            linkApiName,
+            linkApiName
           ),
-        getPackage(interfaceApiName),
-      ),
+        getPackage(interfaceApiName)
+      )
     );
   }
 
@@ -124,7 +125,7 @@ function externalRecsForInterfaceLinks(
 }
 
 function externalRecsForSpts(
-  importedOntology: OntologyBlockDataV2,
+  importedOntology: OntologyBlockDataV2
 ): GeneratedBlockExternalRecommendations[] {
   // Collect SPTs from standalone shared property types
   const sptApiNames: string[] = [];
@@ -135,14 +136,12 @@ function externalRecsForSpts(
 
   // Collect SPTs embedded in interface propertiesV3
   for (const interfaceBlock of Object.values(importedOntology.interfaceTypes)) {
-    for (
-      const property of Object.values(
-        interfaceBlock.interfaceType.propertiesV3 ?? {},
-      )
-    ) {
+    for (const property of Object.values(
+      interfaceBlock.interfaceType.propertiesV3 ?? {}
+    )) {
       if (property.type === "sharedPropertyBasedPropertyType") {
         sptApiNames.push(
-          property.sharedPropertyBasedPropertyType.sharedPropertyType.apiName,
+          property.sharedPropertyBasedPropertyType.sharedPropertyType.apiName
         );
       }
     }
@@ -151,23 +150,24 @@ function externalRecsForSpts(
   return getExternalRecommendationsForType(
     sptApiNames,
     (apiName) => apiName,
-    (apiName) => ReadableIdGenerator.getForSpt(apiName),
+    (apiName) => ReadableIdGenerator.getForSpt(apiName)
   );
 }
 
 function externalRecsForObjects(
-  importedOntology: OntologyBlockDataV2,
+  importedOntology: OntologyBlockDataV2
 ): GeneratedBlockExternalRecommendations[] {
   return getExternalRecommendationsForType(
-    Object.values(importedOntology.objectTypes)
-      .filter((o) => o.objectType.apiName != null),
+    Object.values(importedOntology.objectTypes).filter(
+      (o) => o.objectType.apiName != null
+    ),
     (o) => o.objectType.apiName as string,
-    (apiName) => ReadableIdGenerator.getForObjectType(apiName),
+    (apiName) => ReadableIdGenerator.getForObjectType(apiName)
   );
 }
 
 function externalRecsForProperties(
-  importedOntology: OntologyBlockDataV2,
+  importedOntology: OntologyBlockDataV2
 ): GeneratedBlockExternalRecommendations[] {
   const results: GeneratedBlockExternalRecommendations[] = [];
 
@@ -175,8 +175,9 @@ function externalRecsForProperties(
     const objectApiName = objectBlock.objectType.apiName;
     if (objectApiName == null) continue;
 
-    const properties = Object.values(objectBlock.objectType.propertyTypes)
-      .filter((p) => p.apiName != null);
+    const properties = Object.values(
+      objectBlock.objectType.propertyTypes
+    ).filter((p) => p.apiName != null);
 
     results.push(
       ...getExternalRecommendationsForType(
@@ -184,8 +185,8 @@ function externalRecsForProperties(
         (p) => p.apiName as string,
         (propApiName) =>
           ReadableIdGenerator.getForObjectProperty(objectApiName, propApiName),
-        getPackage(objectApiName),
-      ),
+        getPackage(objectApiName)
+      )
     );
   }
 
@@ -193,35 +194,35 @@ function externalRecsForProperties(
 }
 
 function externalRecsForLinks(
-  importedOntology: OntologyBlockDataV2,
+  importedOntology: OntologyBlockDataV2
 ): GeneratedBlockExternalRecommendations[] {
   return getExternalRecommendationsForType(
     Object.values(importedOntology.linkTypes),
     (l) => l.linkType.id,
-    (id) => ReadableIdGenerator.getForLinkType(id),
+    (id) => ReadableIdGenerator.getForLinkType(id)
   );
 }
 
 function externalRecsForActions(
-  importedOntology: OntologyBlockDataV2,
+  importedOntology: OntologyBlockDataV2
 ): GeneratedBlockExternalRecommendations[] {
   return getExternalRecommendationsForType(
     Object.values(importedOntology.actionTypes),
     (a) => (a.actionType as ActionType).metadata.apiName,
-    (apiName) => ReadableIdGenerator.getForActionType(apiName),
+    (apiName) => ReadableIdGenerator.getForActionType(apiName)
   );
 }
 
 function externalRecsForActionParams(
-  importedOntology: OntologyBlockDataV2,
+  importedOntology: OntologyBlockDataV2
 ): GeneratedBlockExternalRecommendations[] {
   const results: GeneratedBlockExternalRecommendations[] = [];
 
   for (const actionBlock of Object.values(importedOntology.actionTypes)) {
     const actionApiName = (actionBlock.actionType as ActionType).metadata
       .apiName;
-    const parameters =
-      (actionBlock.actionType as ActionType).metadata.parameters;
+    const parameters = (actionBlock.actionType as ActionType).metadata
+      .parameters;
     if (!parameters) continue;
 
     results.push(
@@ -230,8 +231,8 @@ function externalRecsForActionParams(
         (paramId) => paramId,
         (paramId) =>
           ReadableIdGenerator.getForParameter(actionApiName, paramId),
-        getPackage(actionApiName),
-      ),
+        getPackage(actionApiName)
+      )
     );
   }
 
@@ -248,7 +249,7 @@ function externalRecsForActionParams(
 function getConsumedValueTypes(
   producedValueTypes: ValueTypeBlockData[],
   importedValueTypes: ValueTypeBlockData[],
-  inputShapes: Map<string, InputShape>,
+  inputShapes: Map<string, InputShape>
 ): Map<string, { version: string; packageNamespace: string }[]> {
   const consumed = new Map<
     string,
@@ -258,7 +259,7 @@ function getConsumedValueTypes(
   function addConsumed(
     apiName: string,
     version: string,
-    packageNamespace: string,
+    packageNamespace: string
   ): void {
     const existing = consumed.get(apiName);
     if (existing) {
@@ -274,7 +275,7 @@ function getConsumedValueTypes(
     const firstVersion = entry.versions[0].version;
     const consumedId = ReadableIdGenerator.getForConsumedValueType(
       apiName,
-      firstVersion,
+      firstVersion
     );
     if (inputShapes.has(consumedId)) {
       const packageNamespace = getPackage(apiName);
@@ -290,16 +291,16 @@ function getConsumedValueTypes(
 function externalRecsForValueTypes(
   producedValueTypes: ValueTypeBlockData[],
   importedValueTypes: ValueTypeBlockData[],
-  inputShapes: Map<string, InputShape>,
+  inputShapes: Map<string, InputShape>
 ): GeneratedBlockExternalRecommendations[] {
   const producedApiNames = new Set(
-    producedValueTypes.map(vt => vt.metadata.apiName as string),
+    producedValueTypes.map((vt) => vt.metadata.apiName as string)
   );
 
   const consumed = getConsumedValueTypes(
     producedValueTypes,
     importedValueTypes,
-    inputShapes,
+    inputShapes
   );
 
   const results: GeneratedBlockExternalRecommendations[] = [];
@@ -310,11 +311,11 @@ function externalRecsForValueTypes(
     const mappings: ReadableIdMappingPair[] = versions.map((v) => ({
       targetInputReadableId: ReadableIdGenerator.getForConsumedValueType(
         apiName,
-        v.version,
+        v.version
       ),
       upstreamOutputReadableId: ReadableIdGenerator.getForProducedValueType(
         apiName,
-        v.version,
+        v.version
       ),
     }));
 
@@ -336,7 +337,7 @@ export function getExternalRecommendations(
   importedOntology: OntologyBlockDataV2,
   producedValueTypes: ValueTypeBlockData[],
   importedValueTypes: ValueTypeBlockData[],
-  inputShapes: Map<string, InputShape>,
+  inputShapes: Map<string, InputShape>
 ): GeneratedBlockExternalRecommendations[] {
   return [
     ...externalRecsForInterfaces(importedOntology),
@@ -350,7 +351,7 @@ export function getExternalRecommendations(
     ...externalRecsForValueTypes(
       producedValueTypes,
       importedValueTypes,
-      inputShapes,
+      inputShapes
     ),
   ];
 }

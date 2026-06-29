@@ -32,6 +32,7 @@ import type {
   SecurityConditionDefinition,
 } from "@osdk/maker";
 import invariant from "tiny-invariant";
+
 import {
   type OntologyRidGenerator,
   ReadableIdGenerator,
@@ -40,15 +41,15 @@ import {
 export function convertDatasourceDefinition(
   objectType: ObjectType,
   properties: ObjectPropertyType[],
-  ridGenerator: OntologyRidGenerator,
+  ridGenerator: OntologyRidGenerator
 ): ObjectTypeDatasourceDefinition {
-  const baseDatasource = objectType.datasources?.find(ds =>
+  const baseDatasource = objectType.datasources?.find((ds) =>
     ["dataset", "stream", "restrictedView"].includes(ds.type)
   );
 
   // Helper to get column names from properties
   const getColumnNames = (props: ObjectPropertyType[]): Set<string> => {
-    return new Set(props.map(p => p.apiName));
+    return new Set(props.map((p) => p.apiName));
   };
 
   switch (baseDatasource?.type) {
@@ -63,19 +64,14 @@ export function convertDatasourceDefinition(
       // Use generateStreamLocator instead of generateRid
       const streamLocator = ridGenerator.generateStreamLocator(
         objectType.apiName,
-        getColumnNames(properties),
+        getColumnNames(properties)
       );
 
       const propertyMapping = Object.fromEntries(
-        properties.map((
-          prop,
-        ) => [
-          ridGenerator.generatePropertyRid(
-            prop.apiName,
-            objectType.apiName,
-          ),
+        properties.map((prop) => [
+          ridGenerator.generatePropertyRid(prop.apiName, objectType.apiName),
           prop.apiName,
-        ]),
+        ])
       );
 
       return {
@@ -95,7 +91,7 @@ export function convertDatasourceDefinition(
       // Use generateRestrictedViewLocator instead of generateRid
       const restrictedViewLocator = ridGenerator.generateRestrictedViewLocator(
         objectType.apiName,
-        getColumnNames(properties),
+        getColumnNames(properties)
       );
 
       return {
@@ -105,7 +101,7 @@ export function convertDatasourceDefinition(
           propertyMapping: buildPropertyMapping(
             properties,
             objectType.apiName,
-            ridGenerator,
+            ridGenerator
           ),
         },
       };
@@ -114,7 +110,7 @@ export function convertDatasourceDefinition(
       // Use generateLocator for dataset datasources
       const derivedDatasetLocator = ridGenerator.generateDatasetLocator(
         objectType.apiName,
-        getColumnNames(properties),
+        getColumnNames(properties)
       );
 
       return {
@@ -125,7 +121,7 @@ export function convertDatasourceDefinition(
           propertyMapping: buildPropertyMapping(
             properties,
             objectType.apiName,
-            ridGenerator,
+            ridGenerator
           ),
         },
       };
@@ -135,15 +131,16 @@ export function convertDatasourceDefinition(
       // Use generateLocator for dataset datasources
       const datasetLocator = ridGenerator.generateDatasetLocator(
         objectType.apiName,
-        getColumnNames(properties),
+        getColumnNames(properties)
       );
 
       if (
-        objectType.properties?.some(prop =>
-          typeof prop.type === "object" && prop.type.type === "marking"
-        )
-        || baseDatasource?.objectSecurityPolicy
-        || baseDatasource?.propertySecurityGroups
+        objectType.properties?.some(
+          (prop) =>
+            typeof prop.type === "object" && prop.type.type === "marking"
+        ) ||
+        baseDatasource?.objectSecurityPolicy ||
+        baseDatasource?.propertySecurityGroups
       ) {
         return {
           type: "datasetV3",
@@ -152,7 +149,7 @@ export function convertDatasourceDefinition(
             propertyMapping: buildPropertyMapping(
               properties,
               objectType.apiName,
-              ridGenerator,
+              ridGenerator
             ),
             branchId: datasetLocator.branchId,
             propertySecurityGroups: convertPropertySecurityGroups(
@@ -160,7 +157,7 @@ export function convertDatasourceDefinition(
               properties,
               objectType.primaryKeyPropertyApiName,
               objectType.apiName,
-              ridGenerator,
+              ridGenerator
             ),
           },
         };
@@ -173,7 +170,7 @@ export function convertDatasourceDefinition(
           propertyMapping: buildPropertyMapping(
             properties,
             objectType.apiName,
-            ridGenerator,
+            ridGenerator
           ),
         },
       };
@@ -188,14 +185,14 @@ function convertPropertySecurityGroups(
   properties: ObjectPropertyType[],
   primaryKeyPropertyApiName: string,
   objectTypeApiName: string,
-  ridGenerator: OntologyRidGenerator,
+  ridGenerator: OntologyRidGenerator
 ): PropertySecurityGroups {
   if (
-    !ds
-    || (!("objectSecurityPolicy" in ds) && !("propertySecurityGroups" in ds))
+    !ds ||
+    (!("objectSecurityPolicy" in ds) && !("propertySecurityGroups" in ds))
   ) {
     // Default security group - use property RIDs
-    const propertyRids = properties.map(prop =>
+    const propertyRids = properties.map((prop) =>
       ridGenerator.generatePropertyRid(prop.apiName, objectTypeApiName)
     );
 
@@ -230,7 +227,7 @@ function convertPropertySecurityGroups(
     };
   }
 
-  const validPropertyNames = new Set(properties.map(prop => prop.apiName));
+  const validPropertyNames = new Set(properties.map((prop) => prop.apiName));
   const usedPropertyApiNames = new Set<string>();
 
   // Collect and register group IDs (matching Java's collectSecurityGroupIds)
@@ -242,10 +239,9 @@ function convertPropertySecurityGroups(
         case "group":
           // Register group ID with the ridGenerator
           const groupId = condition.name;
-          ridGenerator.getGroupIds().put(
-            ReadableIdGenerator.getForGroup(groupId),
-            groupId,
-          );
+          ridGenerator
+            .getGroupIds()
+            .put(ReadableIdGenerator.getForGroup(groupId), groupId);
           break;
         case "and":
         case "or":
@@ -265,24 +261,24 @@ function convertPropertySecurityGroups(
   }
 
   // Validate and collect property security groups
-  ds.propertySecurityGroups?.forEach(psg => {
+  ds.propertySecurityGroups?.forEach((psg) => {
     // Collect group IDs from property security groups
     if (psg.granularPolicy) {
       collectGroupIds(psg.granularPolicy);
     }
 
-    psg.properties.forEach(propertyName => {
+    psg.properties.forEach((propertyName) => {
       invariant(
         validPropertyNames.has(propertyName),
-        `Property "${propertyName}" in property security group ${psg.name} does not exist in the properties list`,
+        `Property "${propertyName}" in property security group ${psg.name} does not exist in the properties list`
       );
       invariant(
         !usedPropertyApiNames.has(propertyName),
-        `Property "${propertyName}" is used in multiple property security groups`,
+        `Property "${propertyName}" is used in multiple property security groups`
       );
       invariant(
         propertyName !== primaryKeyPropertyApiName,
-        `Property "${propertyName}" in property security group ${psg.name} cannot be the primary key`,
+        `Property "${propertyName}" in property security group ${psg.name} cannot be the primary key`
       );
       usedPropertyApiNames.add(propertyName);
     });
@@ -290,16 +286,16 @@ function convertPropertySecurityGroups(
 
   // Build property RID mapping
   const propertyApiNameToRid = new Map<string, string>();
-  properties.forEach(prop => {
+  properties.forEach((prop) => {
     propertyApiNameToRid.set(
       prop.apiName,
-      ridGenerator.generatePropertyRid(prop.apiName, objectTypeApiName),
+      ridGenerator.generatePropertyRid(prop.apiName, objectTypeApiName)
     );
   });
 
   const objectSecurityPolicyGroup: PropertySecurityGroup = {
     rid: ridGenerator.generatePropertySecurityGroupRid(
-      ds.objectSecurityPolicy?.name || "defaultObjectSecurityPolicy",
+      ds.objectSecurityPolicy?.name || "defaultObjectSecurityPolicy"
     ),
     security: {
       type: "granular",
@@ -308,7 +304,7 @@ function convertPropertySecurityGroups(
         ds.objectSecurityPolicy?.appliedMarkings,
         ds.objectSecurityPolicy?.assumedMarkings,
         ridGenerator,
-        objectTypeApiName,
+        objectTypeApiName
       ),
     },
     type: {
@@ -316,13 +312,13 @@ function convertPropertySecurityGroups(
       primaryKey: {},
     },
     properties: properties
-      .filter(prop => !usedPropertyApiNames.has(prop.apiName))
-      .map(prop => propertyApiNameToRid.get(prop.apiName)!),
+      .filter((prop) => !usedPropertyApiNames.has(prop.apiName))
+      .map((prop) => propertyApiNameToRid.get(prop.apiName)!),
   };
 
   return {
     groups: [
-      ...(ds.propertySecurityGroups?.map(psg => ({
+      ...(ds.propertySecurityGroups?.map((psg) => ({
         rid: ridGenerator.generatePropertySecurityGroupRid(psg.name),
         security: {
           type: "granular" as const,
@@ -331,7 +327,7 @@ function convertPropertySecurityGroups(
             psg.appliedMarkings,
             psg.assumedMarkings,
             ridGenerator,
-            objectTypeApiName,
+            objectTypeApiName
           ),
         },
         type: {
@@ -340,8 +336,8 @@ function convertPropertySecurityGroups(
             name: psg.name,
           },
         },
-        properties: psg.properties.map(apiName =>
-          propertyApiNameToRid.get(apiName)!
+        properties: psg.properties.map(
+          (apiName) => propertyApiNameToRid.get(apiName)!
         ),
       })) ?? []),
       objectSecurityPolicyGroup,
@@ -354,22 +350,22 @@ function convertGranularPolicy(
   appliedMarkings?: Record<string, MarkingType>,
   assumedMarkings?: Record<string, MarkingType>,
   ridGenerator?: OntologyRidGenerator,
-  objectTypeApiName?: string,
+  objectTypeApiName?: string
 ): SecurityGroupGranularSecurityDefinition {
   return {
     viewPolicy: {
       granularPolicyCondition: granularPolicy
         ? convertSecurityCondition(
-          granularPolicy,
-          ridGenerator,
-          objectTypeApiName,
-        )
+            granularPolicy,
+            ridGenerator,
+            objectTypeApiName
+          )
         : {
-          type: "and",
-          and: {
-            conditions: [],
+            type: "and",
+            and: {
+              conditions: [],
+            },
           },
-        },
       additionalMandatory: {
         markings: Object.keys(appliedMarkings ?? {}),
         assumedMarkings: Object.keys(assumedMarkings ?? {}),
@@ -381,7 +377,7 @@ function convertGranularPolicy(
 function convertSecurityCondition(
   condition: SecurityConditionDefinition,
   ridGenerator?: OntologyRidGenerator,
-  objectTypeApiName?: string,
+  objectTypeApiName?: string
 ): SecurityGroupGranularCondition {
   switch (condition.type) {
     case "and":
@@ -389,7 +385,7 @@ function convertSecurityCondition(
         return {
           type: "and",
           and: {
-            conditions: condition.conditions.map(c =>
+            conditions: condition.conditions.map((c) =>
               convertSecurityCondition(c, ridGenerator, objectTypeApiName)
             ),
           },
@@ -402,7 +398,7 @@ function convertSecurityCondition(
         return {
           type: "or",
           or: {
-            conditions: condition.conditions.map(c =>
+            conditions: condition.conditions.map((c) =>
               convertSecurityCondition(c, ridGenerator, objectTypeApiName)
             ),
           },
@@ -414,12 +410,13 @@ function convertSecurityCondition(
       return {
         type: "markings",
         markings: {
-          property: ridGenerator && objectTypeApiName
-            ? ridGenerator.generatePropertyRid(
-              condition.property,
-              objectTypeApiName,
-            )
-            : condition.property,
+          property:
+            ridGenerator && objectTypeApiName
+              ? ridGenerator.generatePropertyRid(
+                  condition.property,
+                  objectTypeApiName
+                )
+              : condition.property,
         },
       };
     case "groupProperty":
@@ -436,12 +433,13 @@ function convertSecurityCondition(
           },
           right: {
             type: "property",
-            property: ridGenerator && objectTypeApiName
-              ? ridGenerator.generatePropertyRid(
-                condition.property,
-                objectTypeApiName,
-              )
-              : condition.property,
+            property:
+              ridGenerator && objectTypeApiName
+                ? ridGenerator.generatePropertyRid(
+                    condition.property,
+                    objectTypeApiName
+                  )
+                : condition.property,
           },
         },
       };
@@ -461,9 +459,7 @@ function convertSecurityCondition(
             type: "constant",
             constant: {
               type: "strings",
-              strings: [
-                condition.name,
-              ],
+              strings: [condition.name],
             },
           },
         },
@@ -481,7 +477,7 @@ function convertSecurityCondition(
  */
 function convertToJavaDurationFormat(iso8601: string): string {
   const match = iso8601.match(
-    /^P(?:(\d+)W)?(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?)?$/,
+    /^P(?:(\d+)W)?(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?)?$/
   );
   if (!match) return iso8601;
 
@@ -504,14 +500,14 @@ function convertToJavaDurationFormat(iso8601: string): string {
 function buildPropertyMapping(
   properties: ObjectPropertyType[],
   objectTypeApiName: string,
-  ridGenerator: OntologyRidGenerator,
+  ridGenerator: OntologyRidGenerator
 ): Record<string, PropertyTypeMappingInfo> {
   // TODO: Convert property mappings to use RIDs as keys
   return Object.fromEntries(
     properties.map((prop) => {
       const propertyRid = ridGenerator.generatePropertyRid(
         prop.apiName,
-        objectTypeApiName,
+        objectTypeApiName
       );
       // editOnly
       if (prop.editOnly) {
@@ -527,7 +523,7 @@ function buildPropertyMapping(
               Object.keys(prop.type.structDefinition).map((fieldName) => [
                 fieldName,
                 { apiName: fieldName, mappings: {} },
-              ]),
+              ])
             ),
           },
         };
@@ -535,6 +531,6 @@ function buildPropertyMapping(
       }
       // default: column mapping
       return [propertyRid, { type: "column", column: prop.apiName }];
-    }),
+    })
   );
 }

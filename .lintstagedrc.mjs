@@ -41,6 +41,9 @@ const OXC_NESTED_CONFIG_PACKAGES = {
   "client.unstable": "packages/client.unstable/oxlint.config.ts",
   "client.unstable.tpsa": "packages/client.unstable.tpsa/oxlint.config.ts",
   "client": "packages/client/oxlint.config.ts",
+  "maker": "packages/maker/oxlint.config.ts",
+  "maker-experimental": "packages/maker-experimental/oxlint.config.ts",
+  "maker-import": "packages/maker-import/oxlint.config.ts",
 };
 
 // All oxc packages (root-config + nested-config) are excluded from the ESLint +

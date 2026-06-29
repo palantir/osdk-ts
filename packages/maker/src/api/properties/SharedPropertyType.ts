@@ -20,6 +20,7 @@ import type {
   SharedPropertyTypeGothamMapping,
   Visibility,
 } from "@osdk/client.unstable";
+
 import type { EntityPermission } from "../common/EntityPermission.js";
 import type { OntologyEntityBase } from "../common/OntologyEntityBase.js";
 import type { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";

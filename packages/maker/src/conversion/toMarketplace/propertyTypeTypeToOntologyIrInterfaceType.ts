@@ -18,22 +18,21 @@ import type {
   OntologyIrInterfacePropertyTypeType,
   OntologyIrInterfaceStructFieldType,
 } from "@osdk/client.unstable";
-import type {
-  PropertyTypeType,
-} from "../../api/properties/PropertyTypeType.js";
+
+import type { PropertyTypeType } from "../../api/properties/PropertyTypeType.js";
 import { distributeTypeHelper } from "../toConjure/distributeTypeHelper.js";
 
 export function propertyTypeTypeToOntologyIrInterfaceType(
-  type: PropertyTypeType,
+  type: PropertyTypeType
 ): OntologyIrInterfacePropertyTypeType {
   switch (true) {
-    case (typeof type === "object" && type.type === "marking"):
+    case typeof type === "object" && type.type === "marking":
       return {
-        "type": "marking",
+        type: "marking",
         marking: { markingType: type.markingType },
       };
 
-    case (typeof type === "object" && type.type === "struct"):
+    case typeof type === "object" && type.type === "struct":
       const structFields: Array<OntologyIrInterfaceStructFieldType> =
         new Array();
       for (const key in type.structDefinition) {
@@ -45,29 +44,30 @@ export function propertyTypeTypeToOntologyIrInterfaceType(
             displayMetadata: { displayName: key, description: undefined },
             typeClasses: [],
             aliases: [],
-            fieldType: propertyTypeTypeToOntologyIrInterfaceType(
-              fieldTypeDefinition,
-            ),
+            fieldType:
+              propertyTypeTypeToOntologyIrInterfaceType(fieldTypeDefinition),
             requireImplementation: true,
           };
         } else {
           // If it is a full form type definition then process it as such
           if (
-            typeof fieldTypeDefinition === "object"
-            && "fieldType" in fieldTypeDefinition
+            typeof fieldTypeDefinition === "object" &&
+            "fieldType" in fieldTypeDefinition
           ) {
             field = {
               ...fieldTypeDefinition,
               apiName: key,
               fieldType: propertyTypeTypeToOntologyIrInterfaceType(
-                fieldTypeDefinition.fieldType,
+                fieldTypeDefinition.fieldType
               ),
-              displayMetadata: fieldTypeDefinition.displayMetadata
-                ?? { displayName: key, description: undefined },
+              displayMetadata: fieldTypeDefinition.displayMetadata ?? {
+                displayName: key,
+                description: undefined,
+              },
               typeClasses: fieldTypeDefinition.typeClasses ?? [],
               aliases: fieldTypeDefinition.aliases ?? [],
-              requireImplementation: fieldTypeDefinition.requireImplementation
-                ?? true,
+              requireImplementation:
+                fieldTypeDefinition.requireImplementation ?? true,
             };
           } else {
             field = {
@@ -75,9 +75,8 @@ export function propertyTypeTypeToOntologyIrInterfaceType(
               displayMetadata: { displayName: key, description: undefined },
               typeClasses: [],
               aliases: [],
-              fieldType: propertyTypeTypeToOntologyIrInterfaceType(
-                fieldTypeDefinition,
-              ),
+              fieldType:
+                propertyTypeTypeToOntologyIrInterfaceType(fieldTypeDefinition),
               requireImplementation: true,
             };
           }
@@ -91,10 +90,10 @@ export function propertyTypeTypeToOntologyIrInterfaceType(
         struct: { structFields },
       };
 
-    case (typeof type === "object" && type.type === "string"):
+    case typeof type === "object" && type.type === "string":
       return {
-        "type": "string",
-        "string": {
+        type: "string",
+        string: {
           analyzerOverride: type.analyzerOverride,
           enableAsciiFolding: type.enableAsciiFolding,
           isLongText: type.isLongText ?? false,
@@ -105,22 +104,22 @@ export function propertyTypeTypeToOntologyIrInterfaceType(
         },
       };
 
-    case (typeof type === "object" && type.type === "decimal"):
+    case typeof type === "object" && type.type === "decimal":
       return {
-        "type": "decimal",
-        "decimal": {
+        type: "decimal",
+        decimal: {
           precision: type.precision,
           scale: type.scale,
         },
       };
 
-    case (type === "geopoint"):
+    case type === "geopoint":
       return { type: "geohash", geohash: {} };
 
-    case (type === "decimal"):
+    case type === "decimal":
       return { type, [type]: { precision: undefined, scale: undefined } };
 
-    case (type === "string"):
+    case type === "string":
       return {
         type,
         [type]: {
@@ -132,13 +131,13 @@ export function propertyTypeTypeToOntologyIrInterfaceType(
         },
       };
 
-    case (type === "mediaReference"):
+    case type === "mediaReference":
       return {
         type,
         mediaReference: {},
       };
 
-    case (type === "geotimeSeries"):
+    case type === "geotimeSeries":
       return {
         type: "geotimeSeriesReference",
         geotimeSeriesReference: {},

@@ -25,12 +25,12 @@ import type { ObjectTypeDefinition } from "./ObjectTypeDefinition.js";
  */
 export function getProperty(
   obj: ObjectTypeDefinition | ObjectType,
-  propertyId: string,
+  propertyId: string
 ): ObjectPropertyType | ObjectPropertyTypeUserDefinition | undefined {
   const props = obj.properties;
   if (props == null) return undefined;
   if (Array.isArray(props)) {
-    return props.find(prop => prop.apiName === propertyId);
+    return props.find((prop) => prop.apiName === propertyId);
   }
   return propertyId in props ? props[propertyId] : undefined;
 }
@@ -39,12 +39,12 @@ export function getProperty(
  * Gets all property apiNames from either format.
  */
 export function getPropertyKeys(
-  obj: ObjectTypeDefinition | ObjectType,
+  obj: ObjectTypeDefinition | ObjectType
 ): string[] {
   const props = obj.properties;
   if (props == null) return [];
   if (Array.isArray(props)) {
-    return props.map(prop => prop.apiName);
+    return props.map((prop) => prop.apiName);
   }
   return Object.keys(props);
 }
@@ -53,12 +53,12 @@ export function getPropertyKeys(
  * Converts properties from either format to a Record keyed by apiName.
  */
 export function toPropertyMap(
-  obj: ObjectTypeDefinition | ObjectType,
+  obj: ObjectTypeDefinition | ObjectType
 ): Record<string, ObjectPropertyType | ObjectPropertyTypeUserDefinition> {
   const props = obj.properties;
   if (props == null) return {};
   if (Array.isArray(props)) {
-    return Object.fromEntries(props.map(prop => [prop.apiName, prop]));
+    return Object.fromEntries(props.map((prop) => [prop.apiName, prop]));
   }
   return props;
 }

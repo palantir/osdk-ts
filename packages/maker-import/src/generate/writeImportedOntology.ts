@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import type * as Ontologies from "@osdk/foundry.ontologies";
-import { OntologyEntityTypeEnum } from "@osdk/maker";
 import * as fs from "node:fs";
 import * as path from "node:path";
+
+import type * as Ontologies from "@osdk/foundry.ontologies";
+import { OntologyEntityTypeEnum } from "@osdk/maker";
+
 import { convertActionType } from "./convertActionType.js";
 import { convertInterfaceType } from "./convertInterfaceType.js";
 import { convertObjectType } from "./convertObjectType.js";
@@ -53,7 +55,7 @@ interface EntityEntry {
  * a numeric suffix.
  */
 export function resolveVarNames(apiNames: string[]): string[] {
-  const shortNames = apiNames.map(n => camel(withoutNamespace(n)));
+  const shortNames = apiNames.map((n) => camel(withoutNamespace(n)));
 
   // Find which short names appear more than once
   const counts = new Map<string, number>();
@@ -90,7 +92,7 @@ export function resolveVarNames(apiNames: string[]): string[] {
  */
 export function writeImportedOntology(
   metadata: Ontologies.OntologyFullMetadata,
-  outputDir: string,
+  outputDir: string
 ): void {
   const codegenDir = path.resolve(outputDir, "codegen");
 
@@ -145,7 +147,7 @@ export function writeImportedOntology(
   }
 
   // Pass 2: Resolve unique variable names across all entities
-  const varNames = resolveVarNames(entries.map(e => e.apiName));
+  const varNames = resolveVarNames(entries.map((e) => e.apiName));
 
   // Pass 3: Write files with resolved names
   const topLevelExports: string[] = [];
@@ -155,7 +157,7 @@ export function writeImportedOntology(
       entries[i].entityType,
       entries[i].entity,
       varNames[i],
-      topLevelExports,
+      topLevelExports
     );
   }
 
@@ -172,18 +174,17 @@ function writeEntityFile(
   entityType: OntologyEntityTypeEnum,
   entity: unknown,
   varName: string,
-  topLevelExports: string[],
+  topLevelExports: string[]
 ): void {
   const typeName = TYPE_NAME_MAP[entityType];
   const dirName = DIR_NAME_MAP[entityType];
 
   const entityJSON = JSON.stringify(entity, null, 2).replace(
     /("__type"\s*:\s*)"([^"]*)"/g,
-    (_, prefix, value) => `${prefix}OntologyEntityTypeEnum.${value}`,
+    (_, prefix, value) => `${prefix}OntologyEntityTypeEnum.${value}`
   );
 
-  const content =
-    `import { wrapWithProxy, OntologyEntityTypeEnum } from '@osdk/maker';
+  const content = `import { wrapWithProxy, OntologyEntityTypeEnum } from '@osdk/maker';
 import type { ${typeName} } from '@osdk/maker';
 
 /** @type {import('@osdk/maker').${typeName}} */
@@ -196,6 +197,6 @@ export const ${varName}: ${typeName} = wrapWithProxy(${varName}_base);
   fs.writeFileSync(filePath, content, { flag: "w" });
 
   topLevelExports.push(
-    `export { ${varName} } from "./codegen/${dirName}/${varName}.js";`,
+    `export { ${varName} } from "./codegen/${dirName}/${varName}.js";`
   );
 }
