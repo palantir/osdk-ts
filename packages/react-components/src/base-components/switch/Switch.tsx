@@ -21,6 +21,7 @@ import {
 } from "@base-ui/react/switch";
 import classnames from "classnames";
 import React from "react";
+
 import styles from "./Switch.module.css";
 
 interface SwitchProps extends Omit<SwitchRootProps, "className"> {
