@@ -38,27 +38,22 @@ export const RESOLVE_TO_OBJECT_TYPE_IDX = 11;
 
 export interface ListStorageData extends CollectionStorageData {}
 
-export interface ListCacheKey extends
-  CacheKey<
-    "list",
-    ListStorageData,
-    ListQuery,
-    [
-      type: "object" | "interface",
-      apiName: string,
-      whereClause: Canonical<SimpleWhereClause>,
-      orderByClause: Canonical<Record<string, "asc" | "desc" | undefined>>,
-      rdpConfig?: Canonical<Rdp> | undefined,
-      intersectWith?:
-        | Canonical<Array<Canonical<SimpleWhereClause>>>
-        | undefined,
-      pivotInfo?: Canonical<PivotInfo> | undefined,
-      rids?: Canonical<string[]> | undefined,
-      select?: Canonical<readonly string[]> | undefined,
-      loadPropertySecurity?: true | undefined,
-      includeAllBaseObjectProperties?: true | undefined,
-      resolveToObjectType?: true | undefined,
-    ]
-  >
-{
-}
+export interface ListCacheKey extends CacheKey<
+  "list",
+  ListStorageData,
+  ListQuery,
+  [
+    type: "object" | "interface",
+    apiName: string,
+    whereClause: Canonical<SimpleWhereClause>,
+    orderByClause: Canonical<Record<string, "asc" | "desc" | undefined>>,
+    rdpConfig?: Canonical<Rdp> | undefined,
+    intersectWith?: Canonical<Array<Canonical<SimpleWhereClause>>> | undefined,
+    pivotInfo?: Canonical<PivotInfo> | undefined,
+    rids?: Canonical<string[]> | undefined,
+    select?: Canonical<readonly string[]> | undefined,
+    loadPropertySecurity?: true | undefined,
+    includeAllBaseObjectProperties?: true | undefined,
+    resolveToObjectType?: true | undefined,
+  ]
+> {}

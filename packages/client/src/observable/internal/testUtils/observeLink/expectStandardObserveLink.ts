@@ -17,6 +17,7 @@
 import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
 import type { Observer } from "type-fest";
 import type { MockedObject } from "vitest";
+
 import type { ObjectHolder } from "../../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { SpecificLinkPayload } from "../../../LinkPayload.js";
 import type { Store } from "../../Store.js";
@@ -52,43 +53,40 @@ const defer = createDefer();
 export async function expectStandardObserveLink<
   S extends ObjectTypeDefinition,
   T extends ObjectTypeDefinition,
->(
-  {
-    store,
-    srcObject,
-    srcLinkName,
-    targetType,
-    expected,
-  }: {
-    /** The Store instance to use for observation */
-    store: Store;
-    /** The source object that contains the link */
-    srcObject: Osdk.Instance<S>;
-    /** The name of the link field to observe */
-    srcLinkName: string;
-    /** The type definition of the linked objects */
-    targetType: T;
-    /** The expected linked objects that should be returned */
-    expected: ObjectHolder<Osdk.Instance<T>>[];
-  },
-): Promise<{
+>({
+  store,
+  srcObject,
+  srcLinkName,
+  targetType,
+  expected,
+}: {
+  /** The Store instance to use for observation */
+  store: Store;
+  /** The source object that contains the link */
+  srcObject: Osdk.Instance<S>;
+  /** The name of the link field to observe */
+  srcLinkName: string;
+  /** The type definition of the linked objects */
+  targetType: T;
+  /** The expected linked objects that should be returned */
+  expected: ObjectHolder<Osdk.Instance<T>>[];
+}): Promise<{
   /** The link payload containing the linked objects and metadata */
   payload: SpecificLinkPayload | undefined;
   /** The mocked subscription callback for further testing assertions */
-  linkSubFn: MockedObject<
-    Observer<
-      SpecificLinkPayload | undefined
-    >
-  >;
+  linkSubFn: MockedObject<Observer<SpecificLinkPayload | undefined>>;
 }> {
   const linkSubFn = mockLinkSubCallback();
   defer(
-    store.links.observe({
-      linkName: srcLinkName,
-      srcType: { type: "object", apiName: srcObject.$apiName },
-      sourceUnderlyingObjectType: srcObject.$objectType,
-      pk: srcObject.$primaryKey,
-    }, linkSubFn),
+    store.links.observe(
+      {
+        linkName: srcLinkName,
+        srcType: { type: "object", apiName: srcObject.$apiName },
+        sourceUnderlyingObjectType: srcObject.$objectType,
+        pk: srcObject.$primaryKey,
+      },
+      linkSubFn
+    )
   );
 
   await waitForCall(linkSubFn);

@@ -15,6 +15,7 @@
  */
 
 import type { QueryDefinition } from "@osdk/api";
+
 import type { FunctionPayload } from "../../FunctionPayload.js";
 import type { Observer } from "../../ObservableClient/common.js";
 import { AbstractHelper } from "../AbstractHelper.js";
@@ -50,7 +51,7 @@ export class FunctionsHelper extends AbstractHelper<
 
   observe(
     options: ObserveFunctionOptions,
-    subFn: Observer<FunctionPayload>,
+    subFn: Observer<FunctionPayload>
   ): QuerySubscription<FunctionQuery> {
     return super.observe(options, subFn);
   }
@@ -66,19 +67,22 @@ export class FunctionsHelper extends AbstractHelper<
       "function",
       apiName,
       version,
-      canonicalParams,
+      canonicalParams
     );
 
-    return this.store.queries.get(functionCacheKey, () =>
-      new FunctionQuery(
-        this.store,
-        this.store.subjects.get(functionCacheKey),
-        queryDef,
-        params,
-        functionCacheKey,
-        observeOpts,
-        objectSetTypesPromise,
-      ));
+    return this.store.queries.get(
+      functionCacheKey,
+      () =>
+        new FunctionQuery(
+          this.store,
+          this.store.subjects.get(functionCacheKey),
+          queryDef,
+          params,
+          functionCacheKey,
+          observeOpts,
+          objectSetTypesPromise
+        )
+    );
   }
 
   *#functionQueries(): IterableIterator<FunctionQuery> {
@@ -97,11 +101,10 @@ export class FunctionsHelper extends AbstractHelper<
 
   async invalidateFunction(
     apiName: string | QueryDefinition<unknown>,
-    params?: FunctionParams,
+    params?: FunctionParams
   ): Promise<void> {
-    const functionApiName = typeof apiName === "string"
-      ? apiName
-      : apiName.apiName;
+    const functionApiName =
+      typeof apiName === "string" ? apiName : apiName.apiName;
 
     let canonicalParams: Canonical<CanonicalFunctionParams> | undefined;
     if (params !== undefined) {
@@ -127,7 +130,7 @@ export class FunctionsHelper extends AbstractHelper<
 
   async invalidateFunctionsByObject(
     apiName: string,
-    primaryKey: PrimaryKeyValue,
+    primaryKey: PrimaryKeyValue
   ): Promise<void> {
     const promises: Array<Promise<void>> = [];
     for (const query of this.#functionQueries()) {

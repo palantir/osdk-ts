@@ -17,6 +17,7 @@
 import type { ObjectMetadata } from "@osdk/api";
 import type { ObjectSet } from "@osdk/foundry.ontologies";
 import { describe, expect, it } from "vitest";
+
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { extractRdpDefinition } from "./extractRdpDefinition.js";
 
@@ -29,7 +30,7 @@ describe("extractRdpDefinition", () => {
             links: {
               testLink1: {
                 targetType: "SecondType",
-                "multiplicity": "many",
+                multiplicity: "many",
               } satisfies ObjectMetadata.Link<any, any>,
             },
           };
@@ -38,7 +39,7 @@ describe("extractRdpDefinition", () => {
             links: {
               testLink2: {
                 targetType: "ThirdType",
-                "multiplicity": "many",
+                multiplicity: "many",
               } satisfies ObjectMetadata.Link<any, any>,
             },
           };
@@ -81,10 +82,7 @@ describe("extractRdpDefinition", () => {
   };
 
   it("handles 'withProperties' object set type", async () => {
-    const result = await extractRdpDefinition(
-      mockClientCtx,
-      objectSetWithRdps,
-    );
+    const result = await extractRdpDefinition(mockClientCtx, objectSetWithRdps);
 
     expect(result).toMatchInlineSnapshot(
       `
@@ -109,7 +107,7 @@ describe("extractRdpDefinition", () => {
           },
         },
       }
-    `,
+    `
     );
   });
 
@@ -151,7 +149,7 @@ describe("extractRdpDefinition", () => {
 
     const result = await extractRdpDefinition(
       mockClientCtx,
-      objectSetWithMinMax,
+      objectSetWithMinMax
     );
 
     // min/max preserve the aggregated property's type, so the type is captured
@@ -199,10 +197,7 @@ describe("extractRdpDefinition", () => {
       },
     };
 
-    const result = await extractRdpDefinition(
-      mockClientCtx,
-      nestedObjectSet,
-    );
+    const result = await extractRdpDefinition(mockClientCtx, nestedObjectSet);
 
     expect(result).toMatchInlineSnapshot(`
       {
@@ -278,8 +273,8 @@ describe("extractRdpDefinition", () => {
           objectSet: { type: "base", objectType: "BaseType" },
           link: "testLink1",
         },
-        { type: "static", "objects": ["object1", "object2"] },
-        { type: "reference", "reference": "rid.os.1234" },
+        { type: "static", objects: ["object1", "object2"] },
+        { type: "reference", reference: "rid.os.1234" },
       ],
     };
 
@@ -304,7 +299,7 @@ describe("extractRdpDefinition", () => {
 
     const result = await extractRdpDefinition(
       mockClientCtx,
-      RdpWithIntersectionBaseObjectSet,
+      RdpWithIntersectionBaseObjectSet
     );
 
     expect(result).toMatchInlineSnapshot(
@@ -330,23 +325,26 @@ describe("extractRdpDefinition", () => {
           },
         },
       }
-    `,
+    `
     );
   });
 
   it("throws with intersect, subtract, or union having nested RDPs", async () => {
     const intersectionObjectSetWithNestedRdps: ObjectSet = {
       type: "intersect",
-      objectSets: [objectSetWithRdps, {
-        type: "base",
-        objectType: "ThirdType",
-      }],
+      objectSets: [
+        objectSetWithRdps,
+        {
+          type: "base",
+          objectType: "ThirdType",
+        },
+      ],
     };
 
     await expect(
-      extractRdpDefinition(mockClientCtx, intersectionObjectSetWithNestedRdps),
+      extractRdpDefinition(mockClientCtx, intersectionObjectSetWithNestedRdps)
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Object sets combined using intersect, subtract, or union must not contain any derived property definitions]`,
+      `[Error: Invariant failed: Object sets combined using intersect, subtract, or union must not contain any derived property definitions]`
     );
   });
 
@@ -383,9 +381,9 @@ describe("extractRdpDefinition", () => {
     };
 
     await expect(
-      extractRdpDefinition(mockClientCtx, RdpWithIntersectionBaseObjectSet),
+      extractRdpDefinition(mockClientCtx, RdpWithIntersectionBaseObjectSet)
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: All object sets in an intersect, subtract, or union must have the same child object type]`,
+      `[Error: Invariant failed: All object sets in an intersect, subtract, or union must have the same child object type]`
     );
   });
 });

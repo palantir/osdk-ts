@@ -22,10 +22,9 @@ import type {
 import { PalantirApiError } from "@osdk/shared.net.errors";
 import type { DeferredPromise } from "p-defer";
 import pDefer from "p-defer";
+
 import { additionalContext, type Client } from "../../Client.js";
-import type {
-  ObjectHolder,
-} from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { DefType } from "../../util/interfaceUtils.js";
 import { DefaultMap } from "./collections/DefaultMap.js";
 import { DefaultWeakMap } from "./collections/DefaultWeakMap.js";
@@ -48,8 +47,8 @@ interface Accumulator extends Partial<LoadParams> {
   timer?: ReturnType<typeof setTimeout>;
 }
 
-const weakCache = new DefaultWeakMap<Client, BulkObjectLoader>(c =>
-  new BulkObjectLoader(c)
+const weakCache = new DefaultWeakMap<Client, BulkObjectLoader>(
+  (c) => new BulkObjectLoader(c)
 );
 
 export function getBulkObjectLoader(client: Client): BulkObjectLoader {
@@ -80,7 +79,7 @@ export class BulkObjectLoader {
     defType: DefType = "object",
     select?: readonly string[],
     loadPropertySecurityMetadata?: boolean,
-    includeAllBaseObjectProperties?: boolean,
+    includeAllBaseObjectProperties?: boolean
   ): Promise<ObjectHolder> {
     const params: LoadParams = {
       apiName,
@@ -114,8 +113,8 @@ export class BulkObjectLoader {
     } else if (entry.defType !== defType) {
       deferred.reject(
         new PalantirApiError(
-          `Conflicting defType for ${apiName}: existing=${entry.defType}, new=${defType}`,
-        ),
+          `Conflicting defType for ${apiName}: existing=${entry.defType}, new=${defType}`
+        )
       );
       return deferred.promise;
     }
@@ -138,18 +137,19 @@ export class BulkObjectLoader {
     const securitySuffix = params.loadPropertySecurityMetadata ? "\0sec" : "";
     const baseSuffix = params.includeAllBaseObjectProperties ? "\0base" : "";
     return params.select && params.select.length > 0
-      ? `${params.apiName}\0${
-        [...params.select].sort().join(",")
-      }${securitySuffix}${baseSuffix}`
+      ? `${params.apiName}\0${[...params.select]
+          .sort()
+          .join(",")}${securitySuffix}${baseSuffix}`
       : `${params.apiName}${securitySuffix}${baseSuffix}`;
   }
 
   #loadObjects(arr: InternalValue[], params: LoadParams) {
     this.#m.delete(this.#buildSelectKey(params));
 
-    const loadFn = params.defType === "interface"
-      ? this.#loadInterfaceObjects(arr, params)
-      : this.#loadObjectTypeObjects(arr, params);
+    const loadFn =
+      params.defType === "interface"
+        ? this.#loadInterfaceObjects(arr, params)
+        : this.#loadObjectTypeObjects(arr, params);
 
     loadFn.catch((e: unknown) => {
       this.#logger?.error("Unhandled exception", e);
@@ -157,8 +157,8 @@ export class BulkObjectLoader {
         const errorMessage = e instanceof Error ? e.message : String(e);
         deferred.reject(
           new PalantirApiError(
-            `Failed to load ${params.apiName} with pk ${primaryKey}: ${errorMessage}`,
-          ),
+            `Failed to load ${params.apiName} with pk ${primaryKey}: ${errorMessage}`
+          )
         );
       }
     });
@@ -171,44 +171,46 @@ export class BulkObjectLoader {
     } as ObjectTypeDefinition;
     const objMetadata = await this.#client.fetchMetadata(objectDef);
 
-    const pks = arr.map(x => x.primaryKey);
+    const pks = arr.map((x) => x.primaryKey);
 
     // Use $eq for single object fetches (this is for public app compatibility)
     // Use $in for batch fetches
-    const whereClause = pks.length === 1
-      ? { [objMetadata.primaryKeyApiName]: { $eq: pks[0] } }
-      : { [objMetadata.primaryKeyApiName]: { $in: pks } };
+    const whereClause =
+      pks.length === 1
+        ? { [objMetadata.primaryKeyApiName]: { $eq: pks[0] } }
+        : { [objMetadata.primaryKeyApiName]: { $in: pks } };
 
     const { data } = await this.#client(objectDef)
-      .where(whereClause).fetchPage({
+      .where(whereClause)
+      .fetchPage({
         $pageSize: pks.length,
         $includeRid: true,
         ...(params.select && params.select.length > 0
           ? { $select: params.select }
           : {}),
-        $loadPropertySecurityMetadata: params.loadPropertySecurityMetadata
-          ?? false,
+        $loadPropertySecurityMetadata:
+          params.loadPropertySecurityMetadata ?? false,
         ...(params.includeAllBaseObjectProperties
           ? { $includeAllBaseObjectProperties: true }
           : {}),
       });
 
     for (const { primaryKey, deferred } of arr) {
-      const object = data.find(x => x.$primaryKey === primaryKey) as
+      const object = data.find((x) => x.$primaryKey === primaryKey) as
         | ObjectHolder
         | undefined;
       if (object) {
         deferred.resolve(object);
       } else {
         deferred.reject(
-          new PalantirApiError(`Object not found: ${primaryKey}`),
+          new PalantirApiError(`Object not found: ${primaryKey}`)
         );
       }
     }
   }
 
   async #loadInterfaceObjects(arr: InternalValue[], params: LoadParams) {
-    const pks = arr.map(x => x.primaryKey);
+    const pks = arr.map((x) => x.primaryKey);
 
     const interfaceDef = {
       type: "interface",
@@ -227,23 +229,25 @@ export class BulkObjectLoader {
       } as ObjectTypeDefinition;
       const objMetadata = await this.#client.fetchMetadata(objectDef);
 
-      const remainingPks = pks.filter(pk => !foundObjects.has(pk));
+      const remainingPks = pks.filter((pk) => !foundObjects.has(pk));
       if (remainingPks.length === 0) {
         break;
       }
 
-      const whereClause = remainingPks.length === 1
-        ? { [objMetadata.primaryKeyApiName]: { $eq: remainingPks[0] } }
-        : { [objMetadata.primaryKeyApiName]: { $in: remainingPks } };
+      const whereClause =
+        remainingPks.length === 1
+          ? { [objMetadata.primaryKeyApiName]: { $eq: remainingPks[0] } }
+          : { [objMetadata.primaryKeyApiName]: { $in: remainingPks } };
 
       const { data } = await this.#client(objectDef)
-        .where(whereClause).fetchPage({
+        .where(whereClause)
+        .fetchPage({
           $pageSize: remainingPks.length,
           ...(params.select && params.select.length > 0
             ? { $select: params.select }
             : {}),
-          $loadPropertySecurityMetadata:
-            (params.loadPropertySecurityMetadata ?? false) as boolean,
+          $loadPropertySecurityMetadata: (params.loadPropertySecurityMetadata ??
+            false) as boolean,
           ...(params.includeAllBaseObjectProperties
             ? { $includeAllBaseObjectProperties: true }
             : {}),
@@ -261,8 +265,8 @@ export class BulkObjectLoader {
       } else {
         deferred.reject(
           new PalantirApiError(
-            `Interface ${params.apiName} object not found: ${primaryKey}`,
-          ),
+            `Interface ${params.apiName} object not found: ${primaryKey}`
+          )
         );
       }
     }

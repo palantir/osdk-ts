@@ -25,7 +25,7 @@ export function evaluateFilter(
   f: PossibleWhereClauseFilters,
   realValue: any,
   expected: any,
-  strict: boolean,
+  strict: boolean
 ): boolean {
   switch (f) {
     case "$eq":

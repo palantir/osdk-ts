@@ -15,6 +15,7 @@
  */
 
 import { Trie } from "@wry/trie";
+
 import { DEBUG_CACHE_KEYS, DEBUG_REFCOUNTS } from "../DebugFlags.js";
 import type { CacheKey } from "./CacheKey.js";
 import { RefCounts } from "./RefCounts.js";
@@ -37,17 +38,17 @@ export class CacheKeys<TCacheKey extends CacheKey> {
     if (process.env.NODE_ENV !== "production" && this.#debugRefCounts) {
       // eslint-disable-next-line no-console
       console.log(
-        `CacheKeys.onCreate(${cacheKey.type}, ${
-          JSON.stringify(cacheKey.otherKeys)
-        })`,
+        `CacheKeys.onCreate(${cacheKey.type}, ${JSON.stringify(
+          cacheKey.otherKeys
+        )})`
       );
 
       this.#finalizationRegistry.register(cacheKey, () => {
         // eslint-disable-next-line no-console
         console.log(
-          `CacheKey Finalization(${cacheKey.type}, ${
-            JSON.stringify(cacheKey.otherKeys)
-          })`,
+          `CacheKey Finalization(${cacheKey.type}, ${JSON.stringify(
+            cacheKey.otherKeys
+          )})`
         );
       });
     }
@@ -63,13 +64,15 @@ export class CacheKeys<TCacheKey extends CacheKey> {
   #onCreate?: (cacheKey: TCacheKey) => void;
   #onDestroy?: (cacheKey: TCacheKey) => void;
 
-  constructor(
-    { onCreate, onDestroy, debug }: {
-      onCreate?: (cacheKey: TCacheKey) => void;
-      onDestroy?: (cacheKey: TCacheKey) => void;
-      debug?: { refCounts?: boolean; cacheKeys?: boolean };
-    },
-  ) {
+  constructor({
+    onCreate,
+    onDestroy,
+    debug,
+  }: {
+    onCreate?: (cacheKey: TCacheKey) => void;
+    onDestroy?: (cacheKey: TCacheKey) => void;
+    debug?: { refCounts?: boolean; cacheKeys?: boolean };
+  }) {
     this.#onCreate = onCreate;
     this.#onDestroy = onDestroy;
     this.#debugRefCounts = debug?.refCounts ?? DEBUG_REFCOUNTS;
@@ -78,7 +81,7 @@ export class CacheKeys<TCacheKey extends CacheKey> {
     this.#refCounts = new RefCounts<TCacheKey>(
       this.#debugRefCounts ? 15_000 : 60_000,
       (k) => this.#cleanupCacheKey(k),
-      this.#debugRefCounts,
+      this.#debugRefCounts
     );
 
     setInterval(() => {
@@ -93,10 +96,10 @@ export class CacheKeys<TCacheKey extends CacheKey> {
           // eslint-disable-next-line no-console
           console.error(
             "Caught an error while running a finalization callback",
-            e,
+            e
           );
         }
-      },
+      }
     );
   }
 
@@ -109,16 +112,15 @@ export class CacheKeys<TCacheKey extends CacheKey> {
       // eslint-disable-next-line no-console
       console.debug(
         `CacheKeys.get([${type},
-        ${
-          cacheKeyArgs.slice(1).map(x => JSON.stringify(x)).join(", ")
-        }]) - already exists? `,
-        this.#cacheKeys.peekArray(cacheKeyArgs) != null,
+        ${cacheKeyArgs
+          .slice(1)
+          .map((x) => JSON.stringify(x))
+          .join(", ")}]) - already exists? `,
+        this.#cacheKeys.peekArray(cacheKeyArgs) != null
       );
     }
 
-    const cacheKey = this.#cacheKeys.lookupArray(
-      cacheKeyArgs,
-    ) as K;
+    const cacheKey = this.#cacheKeys.lookupArray(cacheKeyArgs) as K;
 
     // This is an idempotent call that ensures the cache key is registered for
     // cleanup. If already registered, this does nothing.
@@ -135,21 +137,18 @@ export class CacheKeys<TCacheKey extends CacheKey> {
     type: K["type"],
     ...args: K["__cacheKey"]["args"]
   ): K | undefined {
-    return this.#cacheKeys.peekArray(
-      this.#normalizeArgs(type, args),
-    ) as K | undefined;
+    return this.#cacheKeys.peekArray(this.#normalizeArgs(type, args)) as
+      | K
+      | undefined;
   }
 
-  #normalizeArgs(
-    type: TCacheKey["type"],
-    args: unknown[],
-  ): unknown[] {
+  #normalizeArgs(type: TCacheKey["type"], args: unknown[]): unknown[] {
     // Normalize trailing undefined values to ensure consistent cache key lookup
     // This makes ("object", "Foo", 1, undefined) equivalent to ("object", "Foo", 1)
     const normalizedArgs = [...args];
     while (
-      normalizedArgs.length > 0
-      && normalizedArgs[normalizedArgs.length - 1] === undefined
+      normalizedArgs.length > 0 &&
+      normalizedArgs[normalizedArgs.length - 1] === undefined
     ) {
       normalizedArgs.pop();
     }

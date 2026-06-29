@@ -15,6 +15,7 @@
  */
 
 import type { ObjectMetadata, PropertyValueFormattingRule } from "@osdk/api";
+
 import type { SimpleOsdkProperties } from "../SimpleOsdkProperties.js";
 import { formatBoolean } from "./formatBoolean.js";
 import { formatDateTime } from "./formatDateTime.js";
@@ -50,7 +51,7 @@ export function applyPropertyFormatter(
   propertyValue: PropertyValue,
   propertyDefinition: ObjectMetadata.Property | undefined,
   objectData: SimpleOsdkProperties,
-  options: FormatPropertyOptions = {},
+  options: FormatPropertyOptions = {}
 ): string | undefined {
   if (propertyDefinition?.valueFormatting == null || propertyValue == null) {
     return undefined;
@@ -59,7 +60,7 @@ export function applyPropertyFormatter(
     propertyValue,
     propertyDefinition.valueFormatting,
     objectData,
-    options,
+    options
   );
 }
 
@@ -67,7 +68,7 @@ function formatPropertyValue(
   value: DefinedPropertyValue,
   rule: PropertyValueFormattingRule,
   objectData: SimpleOsdkProperties,
-  options: FormatPropertyOptions,
+  options: FormatPropertyOptions
 ): string | undefined {
   switch (rule.type) {
     case "boolean":
@@ -83,7 +84,7 @@ function formatPropertyValue(
         value,
         rule.numberType,
         objectData,
-        options.locale ?? getBrowserLocale(),
+        options.locale ?? getBrowserLocale()
       );
     case "date":
     case "timestamp":
@@ -96,7 +97,7 @@ function formatPropertyValue(
         rule.type === "timestamp" ? rule.displayTimezone : undefined,
         objectData,
         options.locale ?? getBrowserLocale(),
-        options.timezoneId,
+        options.timezoneId
       );
     default:
       return undefined;

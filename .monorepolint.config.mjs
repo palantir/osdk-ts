@@ -101,6 +101,11 @@ const archetypeRules = archetypes(
       ...LIBRARY_RULES,
       checkApi: true,
       typecheckProject: "tsconfig.typecheck.json",
+      // Migrated to the oxc toolchain (oxlint + oxfmt). Carries a nested oxlint
+      // config (oxcConfig) holding behavior-preserving carve-outs for the
+      // error-level Ultracite rules this hand-written package first surfaces.
+      oxc: true,
+      oxcConfig: "./oxlint.config.ts",
     },
   )
   .addArchetype(
@@ -187,16 +192,6 @@ const archetypeRules = archetypes(
       },
       fixedDepsOnly: true,
       extraPublishFiles: ["build/site"],
-    },
-  )
-  .addArchetype(
-    "forceBundle",
-    [
-      "@osdk/client.unstable.tpsa",
-    ],
-    {
-      ...LIBRARY_RULES,
-      output: OUTPUT_BUNDLE_ALL,
     },
   )
   .addArchetype(
@@ -337,14 +332,13 @@ const archetypeRules = archetypes(
     },
   )
   // Force-bundle library migrated to the oxc toolchain. Same as "oxc migrated
-  // libraries" but carries OUTPUT_BUNDLE_ALL (bundled cjs/esm/browser) like the
-  // forceBundle archetype. @osdk/client.unstable is the repo's largest package
-  // (~943 files), but almost all of it is conjure-generated code under
+  // libraries" but carries OUTPUT_BUNDLE_ALL (bundled cjs/esm/browser), which is
+  // what the former forceBundle archetype provided (now removed; its two members
+  // are split between this archetype and the carve-out variant below).
+  // @osdk/client.unstable is almost entirely conjure-generated code under
   // src/generated, which the shared Ultracite preset ignores (`**/generated`),
   // so only the handful of hand-written files are linted/formatted and no
-  // package-specific carve-outs (nested config) are needed. Its sibling
-  // @osdk/client.unstable.tpsa stays in the forceBundle archetype (ESLint/dprint)
-  // until a later batch.
+  // package-specific carve-outs (nested config) are needed.
   .addArchetype(
     "oxc migrated force-bundle libraries",
     [
@@ -354,6 +348,25 @@ const archetypeRules = archetypes(
       ...LIBRARY_RULES,
       output: OUTPUT_BUNDLE_ALL,
       oxc: true,
+    },
+  )
+  // Same as "oxc migrated force-bundle libraries" but with a nested oxlint config
+  // (oxcConfig) for package-specific carve-outs. @osdk/client.unstable.tpsa is
+  // also mostly conjure-generated, but its hand-written src/index.ts is a barrel
+  // that re-exports the generated tree, surfacing a few error-level rules (e.g.
+  // oxc/no-barrel-file) that the prior ESLint config did not enforce; those are
+  // turned off in packages/client.unstable.tpsa/oxlint.config.ts to keep the
+  // migration behavior-preserving.
+  .addArchetype(
+    "oxc migrated force-bundle libraries with carve-outs",
+    [
+      "@osdk/client.unstable.tpsa",
+    ],
+    {
+      ...LIBRARY_RULES,
+      output: OUTPUT_BUNDLE_ALL,
+      oxc: true,
+      oxcConfig: "./oxlint.config.ts",
     },
   )
   .addArchetype(

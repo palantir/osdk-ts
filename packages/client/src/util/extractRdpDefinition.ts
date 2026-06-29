@@ -16,23 +16,19 @@
 
 import type { ObjectSet } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
+
 import type { DerivedPropertyRuntimeMetadata } from "../derivedProperties/derivedPropertyRuntimeMetadata.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 
 export async function extractRdpDefinition(
   clientCtx: MinimalClient,
-  objectSet: ObjectSet,
-): Promise<
-  DerivedPropertyRuntimeMetadata
-> {
+  objectSet: ObjectSet
+): Promise<DerivedPropertyRuntimeMetadata> {
   if (!hasWithProperties(objectSet)) {
     return {};
   }
-  return (await extractRdpDefinitionInternal(
-    clientCtx,
-    objectSet,
-    undefined,
-  )).definitions;
+  return (await extractRdpDefinitionInternal(clientCtx, objectSet, undefined))
+    .definitions;
 }
 
 export function hasWithProperties(objectSet: ObjectSet): boolean {
@@ -49,33 +45,30 @@ export function hasWithProperties(objectSet: ObjectSet): boolean {
 }
 
 /* @internal
-* Returns a tuple of the derived property definitions and the object type that the derived property is defined on.
-*/
+ * Returns a tuple of the derived property definitions and the object type that the derived property is defined on.
+ */
 async function extractRdpDefinitionInternal(
   clientCtx: MinimalClient,
   objectSet: ObjectSet,
-  methodInputObjectType: string | undefined,
-): Promise<
-  {
-    definitions: DerivedPropertyRuntimeMetadata;
-    childObjectType?: string;
-  }
-> {
+  methodInputObjectType: string | undefined
+): Promise<{
+  definitions: DerivedPropertyRuntimeMetadata;
+  childObjectType?: string;
+}> {
   switch (objectSet.type) {
     case "searchAround": {
       const { definitions, childObjectType } =
         await extractRdpDefinitionInternal(
           clientCtx,
           objectSet.objectSet,
-          methodInputObjectType,
+          methodInputObjectType
         );
 
       if (childObjectType === undefined || childObjectType === "") {
         return { definitions: {} };
       }
-      const objDef = await clientCtx.ontologyProvider.getObjectDefinition(
-        childObjectType,
-      );
+      const objDef =
+        await clientCtx.ontologyProvider.getObjectDefinition(childObjectType);
       const linkDef = objDef.links[objectSet.link];
       invariant(linkDef, `Missing link definition for '${objectSet.link}'`);
       return {
@@ -89,15 +82,15 @@ async function extractRdpDefinitionInternal(
         await extractRdpDefinitionInternal(
           clientCtx,
           objectSet.objectSet,
-          methodInputObjectType,
+          methodInputObjectType
         );
       if (childObjectType === undefined || childObjectType === "") {
         return { definitions: {} };
       }
 
-      for (
-        const [name, definition] of Object.entries(objectSet.derivedProperties)
-      ) {
+      for (const [name, definition] of Object.entries(
+        objectSet.derivedProperties
+      )) {
         if (definition.type !== "selection") {
           definitions[name] = {
             selectedOrCollectedPropertyType: undefined,
@@ -117,16 +110,16 @@ async function extractRdpDefinitionInternal(
               await extractRdpDefinitionInternal(
                 clientCtx,
                 definition.objectSet,
-                childObjectType,
+                childObjectType
               );
             if (
-              operationLevelObjectType === undefined
-              || operationLevelObjectType === ""
+              operationLevelObjectType === undefined ||
+              operationLevelObjectType === ""
             ) {
               return { definitions: {} };
             }
             const objDef = await clientCtx.ontologyProvider.getObjectDefinition(
-              operationLevelObjectType,
+              operationLevelObjectType
             );
 
             definitions[name] = {
@@ -158,7 +151,7 @@ async function extractRdpDefinitionInternal(
       return extractRdpDefinitionInternal(
         clientCtx,
         objectSet.objectSet,
-        methodInputObjectType,
+        methodInputObjectType
       );
     // These will throw in OSS so we should throw here so no request is made
     case "intersect":
@@ -167,33 +160,29 @@ async function extractRdpDefinitionInternal(
       const objectSets = objectSet.objectSets;
       const objectSetTypes = await Promise.all(
         objectSets.map((os) =>
-          extractRdpDefinitionInternal(
-            clientCtx,
-            os,
-            methodInputObjectType,
-          )
-        ),
+          extractRdpDefinitionInternal(clientCtx, os, methodInputObjectType)
+        )
       );
 
       const definitions = objectSetTypes.reduce(
         (acc, { definitions }) => ({ ...acc, ...definitions }),
-        {},
+        {}
       );
       invariant(
         Object.keys(definitions).length === 0,
-        "Object sets combined using intersect, subtract, or union must not contain any derived property definitions",
+        "Object sets combined using intersect, subtract, or union must not contain any derived property definitions"
       );
 
       const firstValidChildObjectType = objectSetTypes.find(
-        ({ childObjectType }) => childObjectType != null,
+        ({ childObjectType }) => childObjectType != null
       )?.childObjectType;
       invariant(
         objectSetTypes.every(
           ({ childObjectType }) =>
-            childObjectType === firstValidChildObjectType
-            || childObjectType == null,
+            childObjectType === firstValidChildObjectType ||
+            childObjectType == null
         ),
-        "All object sets in an intersect, subtract, or union must have the same child object type",
+        "All object sets in an intersect, subtract, or union must have the same child object type"
       );
 
       return {
@@ -208,13 +197,13 @@ async function extractRdpDefinitionInternal(
     case "interfaceLinkSearchAround":
       invariant(
         false,
-        `Unsupported object set type for Runtime Derived Properties`,
+        `Unsupported object set type for Runtime Derived Properties`
       );
     default:
       const _: never = objectSet;
       invariant(
         false,
-        `Unsupported object set type for Runtime Derived Properties`,
+        `Unsupported object set type for Runtime Derived Properties`
       );
   }
 }

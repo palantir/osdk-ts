@@ -36,5 +36,5 @@ export type SubscribeFn = <
   objectSet: WireObjectSet,
   listener: ObjectSetSubscription.Listener<Q, P>,
   properties?: Array<P>,
-  shouldLoadRids?: boolean,
+  shouldLoadRids?: boolean
 ) => Promise<() => void>;

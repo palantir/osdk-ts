@@ -28,7 +28,7 @@ export class PivotCanonicalizer {
   canonicalize(
     sourceType: string,
     sourceTypeKind: "object" | "interface",
-    linkName: string,
+    linkName: string
   ): Canonical<PivotInfo> {
     const key = `${sourceTypeKind}:${sourceType}::${linkName}`;
 

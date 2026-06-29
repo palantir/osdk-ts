@@ -35,7 +35,7 @@ const _knownVariantKeys: Record<MediaItemMetadata["type"], true> = {
 };
 
 const KNOWN_VARIANTS: ReadonlySet<string> = new Set(
-  Object.keys(_knownVariantKeys),
+  Object.keys(_knownVariantKeys)
 );
 
 /**
@@ -48,9 +48,9 @@ const KNOWN_VARIANTS: ReadonlySet<string> = new Set(
  * `UnknownMediaItemMetadata` with the raw wire payload preserved on `raw`, so callers can
  * handle the forward-compat case explicitly instead of relying on a runtime throw.
  */
-export function validateMediaItemMetadata(
-  raw: { type: string },
-): MediaItemMetadata | UnknownMediaItemMetadata {
+export function validateMediaItemMetadata(raw: {
+  type: string;
+}): MediaItemMetadata | UnknownMediaItemMetadata {
   if (KNOWN_VARIANTS.has(raw.type)) {
     return raw as MediaItemMetadata;
   }

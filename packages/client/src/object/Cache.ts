@@ -40,11 +40,7 @@ export interface AsyncClientCache<K, V> {
    * @param value the value or a promise to the value
    * @returns a new promise to the resolved value
    */
-  set: (
-    client: MinimalClient,
-    key: K,
-    value: V | Promise<V>,
-  ) => Promise<V>;
+  set: (client: MinimalClient, key: K, value: V | Promise<V>) => Promise<V>;
 }
 
 /** @internal */
@@ -64,13 +60,13 @@ export function createClientCache<K, V extends {}>(): ClientCache<
  * @param fn A factory function that will be used to create the value if it does not exist in the cache.
  */
 export function createClientCache<K, V extends {}>(
-  fn: Factory<K, V>,
+  fn: Factory<K, V>
 ): ClientCache<K, V>;
 export function createClientCache<K, V extends {}>(
-  fn?: Factory<K, V>,
-): typeof fn extends undefined ? ClientCache<K, V | undefined>
-  : ClientCache<K, V>
-{
+  fn?: Factory<K, V>
+): typeof fn extends undefined
+  ? ClientCache<K, V | undefined>
+  : ClientCache<K, V> {
   const cache = new WeakMap<
     ClientCacheKey,
     typeof fn extends undefined ? Map<K, V | undefined> : Map<K, V>
@@ -108,7 +104,7 @@ export function createClientCache<K, V extends {}>(
 /** @internal */
 export type AsyncFactory<K, V extends {}> = (
   client: MinimalClient,
-  key: K,
+  key: K
 ) => Promise<V>;
 
 /**
@@ -119,7 +115,7 @@ export type AsyncFactory<K, V extends {}> = (
  */
 export function createAsyncClientCache<K, V extends {}>(
   fn: AsyncFactory<K, V>,
-  createCacheLocal: typeof createClientCache = createClientCache,
+  createCacheLocal: typeof createClientCache = createClientCache
 ): AsyncClientCache<K, V> {
   const cache = createCacheLocal<K, V>();
   const inProgress = createCacheLocal<K, Promise<V> | V>();
@@ -130,8 +126,11 @@ export function createAsyncClientCache<K, V extends {}>(
     },
 
     get: async function get(client: MinimalClient, key: K) {
-      return cache.get(client, key) ?? inProgress.get(client, key)
-        ?? ret.set(client, key, fn(client, key));
+      return (
+        cache.get(client, key) ??
+        inProgress.get(client, key) ??
+        ret.set(client, key, fn(client, key))
+      );
     },
 
     set: async function set(client: MinimalClient, k: K, v: V | Promise<V>) {

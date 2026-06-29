@@ -16,6 +16,7 @@
 
 import type { Logger } from "@osdk/api";
 import { BehaviorSubject } from "rxjs";
+
 import { createInitEntry } from "./createInitEntry.js";
 import type { KnownCacheKey } from "./KnownCacheKey.js";
 import type { Entry } from "./Layer.js";
@@ -40,21 +41,18 @@ export class Subjects {
   }
 
   peek = <KEY extends KnownCacheKey>(
-    cacheKey: KEY,
-  ):
-    | BehaviorSubject<SubjectPayload<KEY>>
-    | undefined =>
-  {
+    cacheKey: KEY
+  ): BehaviorSubject<SubjectPayload<KEY>> | undefined => {
     return this.#cacheKeyToSubject.get(cacheKey);
   };
 
   get = <KEY extends KnownCacheKey>(
-    cacheKey: KEY,
+    cacheKey: KEY
   ): BehaviorSubject<SubjectPayload<KEY>> => {
     let subject = this.#cacheKeyToSubject.get(cacheKey);
     if (!subject) {
-      const initialValue: Entry<KEY> = this.#layers.top.get(cacheKey)
-        ?? createInitEntry(cacheKey);
+      const initialValue: Entry<KEY> =
+        this.#layers.top.get(cacheKey) ?? createInitEntry(cacheKey);
 
       subject = new BehaviorSubject({
         ...initialValue,
@@ -67,9 +65,7 @@ export class Subjects {
     return subject;
   };
 
-  delete = <KEY extends KnownCacheKey>(
-    cacheKey: KEY,
-  ): void => {
+  delete = <KEY extends KnownCacheKey>(cacheKey: KEY): void => {
     const subject = this.peek(cacheKey);
     if (subject) {
       subject.complete();

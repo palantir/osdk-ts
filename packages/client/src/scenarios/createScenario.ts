@@ -15,6 +15,7 @@
  */
 
 import { OntologyScenarios } from "@osdk/foundry.ontologies";
+
 import { additionalContext, type Client } from "../Client.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import {
@@ -42,23 +43,21 @@ import {
  * ```
  */
 export async function createScenario(
-  client: Client,
+  client: Client
 ): Promise<EXPERIMENTAL_ScenarioClient> {
   const ctx: MinimalClient = client[additionalContext];
 
   if (ctx.scenarioRid != null) {
     throw new Error(
-      "createScenario: the supplied client already has an active scenario. Scenarios cannot be nested.",
+      "createScenario: the supplied client already has an active scenario. Scenarios cannot be nested."
     );
   }
 
   const response = await OntologyScenarios.createScenario(
     ctx,
     await ctx.ontologyRid,
-    ctx.branch != null
-      ? { base: { type: "branch", branch: ctx.branch } }
-      : {},
-    { preview: true },
+    ctx.branch != null ? { base: { type: "branch", branch: ctx.branch } } : {},
+    { preview: true }
   );
 
   return buildScenarioClient(client, response.scenarioRid);

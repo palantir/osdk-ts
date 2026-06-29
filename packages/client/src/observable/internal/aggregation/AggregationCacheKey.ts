@@ -19,6 +19,7 @@ import type {
   AggregationsResults,
   ObjectOrInterfaceDefinition,
 } from "@osdk/api";
+
 import type { CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
@@ -33,24 +34,21 @@ export const RDP_IDX = 4;
 export const INTERSECT_IDX = 5;
 export const AGGREGATE_IDX = 6;
 
-export interface AggregationCacheKey extends
-  CacheKey<
-    "aggregation",
-    | AggregationsResults<
+export interface AggregationCacheKey extends CacheKey<
+  "aggregation",
+  | AggregationsResults<
       ObjectOrInterfaceDefinition,
       AggregateOpts<ObjectOrInterfaceDefinition>
     >
-    | undefined,
-    AggregationQuery,
-    [
-      type: "object" | "interface",
-      apiName: string,
-      wireObjectSet: string | undefined,
-      whereClause: Canonical<SimpleWhereClause>,
-      rdpConfig: Canonical<Rdp> | undefined,
-      intersectWith: Canonical<Array<Canonical<SimpleWhereClause>>> | undefined,
-      aggregateOpts: Canonical<AggregateOpts<ObjectOrInterfaceDefinition>>,
-    ]
-  >
-{
-}
+  | undefined,
+  AggregationQuery,
+  [
+    type: "object" | "interface",
+    apiName: string,
+    wireObjectSet: string | undefined,
+    whereClause: Canonical<SimpleWhereClause>,
+    rdpConfig: Canonical<Rdp> | undefined,
+    intersectWith: Canonical<Array<Canonical<SimpleWhereClause>>> | undefined,
+    aggregateOpts: Canonical<AggregateOpts<ObjectOrInterfaceDefinition>>,
+  ]
+> {}

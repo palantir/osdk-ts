@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import { compareNumericStrings } from "./compareNumericStrings.js";
 
 describe(compareNumericStrings, () => {
@@ -25,22 +26,20 @@ describe(compareNumericStrings, () => {
 
   it("orders integers/longs by value, not lexicographically", () => {
     // Lexicographically this would be 10, 100, 2, 9.
-    expect(sortedAsc(["10", "9", "100", "2"])).toEqual([
-      "2",
-      "9",
-      "10",
-      "100",
-    ]);
+    expect(sortedAsc(["10", "9", "100", "2"])).toEqual(["2", "9", "10", "100"]);
   });
 
   it("preserves precision for longs beyond Number.MAX_SAFE_INTEGER", () => {
     // 2^53 and 2^53 + 1 are indistinguishable as JS numbers.
-    expect(compareNumericStrings("9007199254740993", "9007199254740992"))
-      .toBe(1);
-    expect(compareNumericStrings("9007199254740992", "9007199254740993"))
-      .toBe(-1);
-    expect(compareNumericStrings("9007199254740992", "9007199254740992"))
-      .toBe(0);
+    expect(compareNumericStrings("9007199254740993", "9007199254740992")).toBe(
+      1
+    );
+    expect(compareNumericStrings("9007199254740992", "9007199254740993")).toBe(
+      -1
+    );
+    expect(compareNumericStrings("9007199254740992", "9007199254740992")).toBe(
+      0
+    );
   });
 
   it("orders decimals by value", () => {
@@ -55,11 +54,13 @@ describe(compareNumericStrings, () => {
   it("preserves precision for large non-integer decimals beyond a double", () => {
     // These differ only in the 17th significant digit, which a double can't
     // represent: Number("9007199254740993.5") === Number("9007199254740993.6").
-    expect(sortedAsc([
-      "9007199254740993.6",
-      "9007199254740993.5",
-      "9007199254740993.55",
-    ])).toEqual([
+    expect(
+      sortedAsc([
+        "9007199254740993.6",
+        "9007199254740993.5",
+        "9007199254740993.55",
+      ])
+    ).toEqual([
       "9007199254740993.5",
       "9007199254740993.55",
       "9007199254740993.6",

@@ -15,6 +15,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import type { MinimalClient } from "../../MinimalClientContext.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
 import { InterfaceDefinitions } from "../../ontology/OntologyProvider.js";
@@ -462,7 +463,7 @@ describe("getFormattedValue", () => {
   it("formats boolean true with custom label", () => {
     const obj = getObject();
     const formatted = obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
-      "booleanPropertyCustomLabels",
+      "booleanPropertyCustomLabels"
     );
 
     expect(formatted).toBe("Active");
@@ -471,7 +472,7 @@ describe("getFormattedValue", () => {
   it("formats boolean false with custom label", () => {
     const obj = getObject({ booleanPropertyCustomLabels: false });
     const formatted = obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
-      "booleanPropertyCustomLabels",
+      "booleanPropertyCustomLabels"
     );
 
     expect(formatted).toBe("Inactive");
@@ -480,7 +481,7 @@ describe("getFormattedValue", () => {
   it("returns undefined for property without formatting rules", () => {
     const obj = getObject();
     const formatted = obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
-      "stringPropertyNoFormatting",
+      "stringPropertyNoFormatting"
     );
 
     expect(formatted).toBeUndefined();
@@ -489,7 +490,7 @@ describe("getFormattedValue", () => {
   it("returns undefined for undefined values", () => {
     const obj = getObject();
     const formatted = obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
-      "nullableBooleanProperty",
+      "nullableBooleanProperty"
     );
 
     expect(formatted).toBeUndefined();
@@ -501,8 +502,8 @@ describe("getFormattedValue", () => {
       expect(
         obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "priceStandard",
-          EN_US,
-        ),
+          EN_US
+        )
       ).toBe("1,234.56");
     });
 
@@ -511,8 +512,8 @@ describe("getFormattedValue", () => {
       expect(
         obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "priceWithParenthesis",
-          EN_US,
-        ),
+          EN_US
+        )
       ).toBe("(1,234.56)");
     });
 
@@ -521,8 +522,8 @@ describe("getFormattedValue", () => {
       expect(
         obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "amount",
-          EN_US,
-        ),
+          EN_US
+        )
       ).toBe("$1,234.56");
     });
 
@@ -531,8 +532,8 @@ describe("getFormattedValue", () => {
       expect(
         obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "dynamicCurrencyAmount",
-          EN_US,
-        ),
+          EN_US
+        )
       ).toBe("€1,234.56");
     });
 
@@ -541,8 +542,8 @@ describe("getFormattedValue", () => {
       expect(
         obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "dynamicCurrencyAmount",
-          EN_US,
-        ),
+          EN_US
+        )
       ).toBe("1,234.56");
     });
 
@@ -551,8 +552,8 @@ describe("getFormattedValue", () => {
       expect(
         obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "distance",
-          EN_US,
-        ),
+          EN_US
+        )
       ).toBe("42.7 km");
     });
 
@@ -561,8 +562,8 @@ describe("getFormattedValue", () => {
       expect(
         obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "customQuantity",
-          EN_US,
-        ),
+          EN_US
+        )
       ).toBe("150 widgets");
     });
 
@@ -571,8 +572,8 @@ describe("getFormattedValue", () => {
       expect(
         obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "prefixedNumber",
-          EN_US,
-        ),
+          EN_US
+        )
       ).toBe("ID-0042-END");
     });
 
@@ -581,8 +582,8 @@ describe("getFormattedValue", () => {
       expect(
         obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "largeNumber",
-          EN_US,
-        ),
+          EN_US
+        )
       ).toBe("5.00M");
     });
 
@@ -591,8 +592,8 @@ describe("getFormattedValue", () => {
       expect(
         obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "largeNumber",
-          DE_DE,
-        ),
+          DE_DE
+        )
       ).toBe("5,00Mio.");
     });
 
@@ -601,8 +602,8 @@ describe("getFormattedValue", () => {
       expect(
         obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "thousandsNumber",
-          EN_US,
-        ),
+          EN_US
+        )
       ).toBe("5.0K");
     });
 
@@ -611,8 +612,8 @@ describe("getFormattedValue", () => {
       expect(
         obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "billionsNumber",
-          FR_FR,
-        ),
+          FR_FR
+        )
       ).toBe("3,00Md");
     });
 
@@ -621,8 +622,8 @@ describe("getFormattedValue", () => {
       expect(
         obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "percentage",
-          EN_US,
-        ),
+          EN_US
+        )
       ).toBe("12.5%");
     });
 
@@ -631,8 +632,8 @@ describe("getFormattedValue", () => {
       expect(
         obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "basisPoints",
-          EN_US,
-        ),
+          EN_US
+        )
       ).toBe("1,250 bps");
     });
   });
@@ -640,10 +641,10 @@ describe("getFormattedValue", () => {
   describe("Date and time formatting", () => {
     it("formats date without timezone", () => {
       const obj = getObject();
-      const formatted = obj
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      const formatted =
+        obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "createdDate",
-          EN_US,
+          EN_US
         );
 
       expect(formatted).toBe("Wed, Jan 15, 2025");
@@ -651,10 +652,10 @@ describe("getFormattedValue", () => {
 
     it("formats date in different locale", () => {
       const obj = getObject();
-      const formatted = obj
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      const formatted =
+        obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "createdDate",
-          DE_DE,
+          DE_DE
         );
 
       expect(formatted).toBe("Mi., 15. Jan. 2025");
@@ -662,10 +663,10 @@ describe("getFormattedValue", () => {
 
     it("formats timestamp with static timezone (America/New_York)", () => {
       const obj = getObject();
-      const formatted = obj
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      const formatted =
+        obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "createdDateTime",
-          EN_US,
+          EN_US
         );
 
       // Should show time in EST (UTC-5), so 14:30 UTC = 9:30 AM EST
@@ -674,10 +675,10 @@ describe("getFormattedValue", () => {
 
     it("formats timestamp short with static timezone (America/Los_Angeles)", () => {
       const obj = getObject();
-      const formatted = obj
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      const formatted =
+        obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "createdDateTimeShort",
-          EN_US,
+          EN_US
         );
 
       // Should show time in PST (UTC-8), so 14:30 UTC = 6:30 AM PST
@@ -686,10 +687,10 @@ describe("getFormattedValue", () => {
 
     it("formats time only with UTC timezone", () => {
       const obj = getObject();
-      const formatted = obj
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      const formatted =
+        obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "createdTime",
-          EN_US,
+          EN_US
         );
 
       // Should show 14:30:00 in UTC as 2:30:00 PM
@@ -698,10 +699,10 @@ describe("getFormattedValue", () => {
 
     it("formats year and month only", () => {
       const obj = getObject();
-      const formatted = obj
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      const formatted =
+        obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "yearMonth",
-          EN_US,
+          EN_US
         );
 
       expect(formatted).toBe("Jan 2025");
@@ -709,10 +710,10 @@ describe("getFormattedValue", () => {
 
     it("formats ISO instant", () => {
       const obj = getObject();
-      const formatted = obj
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      const formatted =
+        obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "isoInstant",
-          EN_US,
+          EN_US
         );
 
       expect(formatted).toBe("2025-01-15T14:30:00.000Z");
@@ -720,10 +721,10 @@ describe("getFormattedValue", () => {
 
     it("formats timestamp with user timezone (no override)", () => {
       const obj = getObject();
-      const formatted = obj
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      const formatted =
+        obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "timestampWithUserTimezone",
-          EN_US,
+          EN_US
         );
 
       // Without an override, should use the browser's default timezone
@@ -734,10 +735,10 @@ describe("getFormattedValue", () => {
 
     it("formats timestamp with user timezone override", () => {
       const obj = getObject();
-      const formatted = obj
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      const formatted =
+        obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "timestampWithUserTimezone",
-          EN_US_TOKYO,
+          EN_US_TOKYO
         );
 
       // With Asia/Tokyo override (UTC+9), 14:30 UTC = 23:30 JST
@@ -746,10 +747,10 @@ describe("getFormattedValue", () => {
 
     it("formats timestamp with dynamic timezone from property", () => {
       const obj = getObject({ timezoneId: "Europe/London" });
-      const formatted = obj
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      const formatted =
+        obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "timestampWithDynamicTimezone",
-          EN_US,
+          EN_US
         );
 
       // Europe/London in January is GMT (UTC+0), so same as UTC: 14:30 = 2:30 PM
@@ -758,10 +759,10 @@ describe("getFormattedValue", () => {
 
     it("formats timestamp with dynamic timezone from property (different timezone)", () => {
       const obj = getObject({ timezoneId: "Australia/Sydney" });
-      const formatted = obj
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      const formatted =
+        obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "timestampWithDynamicTimezone",
-          EN_US,
+          EN_US
         );
 
       // Australia/Sydney in January is UTC+11, so 14:30 UTC = 1:30 AM next day
@@ -770,10 +771,10 @@ describe("getFormattedValue", () => {
 
     it("formats timestamp when dynamic timezone property is null", () => {
       const obj = getObject({ timezoneId: undefined });
-      const formatted = obj
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      const formatted =
+        obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "timestampWithDynamicTimezone",
-          EN_US,
+          EN_US
         );
 
       // Should fall back to no timezone (browser default)
@@ -784,10 +785,10 @@ describe("getFormattedValue", () => {
 
     it("handles invalid date strings gracefully", () => {
       const obj = getObject({ createdDate: "invalid-date" });
-      const formatted = obj
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      const formatted =
+        obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "createdDate",
-          EN_US,
+          EN_US
         );
 
       expect(formatted).toBeUndefined();
@@ -806,10 +807,10 @@ describe("getFormattedValue", () => {
 
     it("formats time 45 seconds ago", () => {
       const obj = getObject({ relativeDateTime: "2025-01-15T11:59:15.000Z" });
-      const formatted = obj
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      const formatted =
+        obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "relativeDateTime",
-          EN_US,
+          EN_US
         );
 
       expect(formatted).toBe("45 seconds ago");
@@ -817,10 +818,10 @@ describe("getFormattedValue", () => {
 
     it("formats time 30 minutes from now", () => {
       const obj = getObject({ relativeDateTime: "2025-01-15T12:30:00.000Z" });
-      const formatted = obj
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      const formatted =
+        obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "relativeDateTime",
-          EN_US,
+          EN_US
         );
 
       expect(formatted).toBe("in 30 minutes");
@@ -828,10 +829,10 @@ describe("getFormattedValue", () => {
 
     it("formats time 3 hours ago", () => {
       const obj = getObject({ relativeDateTime: "2025-01-15T09:00:00.000Z" });
-      const formatted = obj
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      const formatted =
+        obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "relativeDateTime",
-          EN_US,
+          EN_US
         );
 
       expect(formatted).toBe("3 hours ago");
@@ -839,10 +840,10 @@ describe("getFormattedValue", () => {
 
     it("formats now", () => {
       const obj = getObject({ relativeDateTime: "2025-01-15T12:00:00.000Z" });
-      const formatted = obj
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      const formatted =
+        obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "relativeDateTime",
-          EN_US,
+          EN_US
         );
 
       expect(formatted).toBe("now");
@@ -850,10 +851,10 @@ describe("getFormattedValue", () => {
 
     it("falls back to absolute date formatting for times more than 1 day ago", () => {
       const obj = getObject({ relativeDateTime: "2025-01-10T08:00:00.000Z" });
-      const formatted = obj
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      const formatted =
+        obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "relativeDateTime",
-          EN_US_TOKYO,
+          EN_US_TOKYO
         );
 
       expect(formatted).toBe("Fri, Jan 10, 2025, 5:00 PM");

@@ -17,6 +17,7 @@
 import type { Attachment, Media } from "@osdk/api";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { additionalContext } from "../../../Client.js";
 import type { MediaPropertyLocation } from "../../ObservableClient/MediaTypes.js";
 import type { CacheKeys } from "../CacheKeys.js";
@@ -129,11 +130,13 @@ describe("MediaHelper", () => {
     mediaHelper.clearCache(coords);
     expect(mockStore.queries.delete).toHaveBeenCalled();
 
-    mockStore.queries.keys = vi.fn().mockReturnValue([
-      { type: "mediaMetadata" },
-      { type: "otherType" },
-      { type: "mediaMetadata" },
-    ]);
+    mockStore.queries.keys = vi
+      .fn()
+      .mockReturnValue([
+        { type: "mediaMetadata" },
+        { type: "otherType" },
+        { type: "mediaMetadata" },
+      ]);
 
     mediaHelper.clearAll();
     expect(mockStore.queries.delete).toHaveBeenCalledTimes(3);
@@ -173,12 +176,12 @@ describe("MediaHelper", () => {
 
     function mockFetchResponse(): void {
       const mockGetMediaContent = vi.mocked(
-        OntologiesV2.MediaReferenceProperties.getMediaContent,
+        OntologiesV2.MediaReferenceProperties.getMediaContent
       );
       mockGetMediaContent.mockResolvedValue(
         new Response("fake-image-data", {
           headers: { "content-type": "image/png" },
-        }),
+        })
       );
     }
 

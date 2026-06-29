@@ -18,6 +18,10 @@ import type { OntologyObjectV2 } from "@osdk/foundry.ontologies";
 
 /** @internal */
 export function isOntologyObjectV2(o: any): o is OntologyObjectV2 {
-  return o && typeof o === "object" && typeof o.__apiName === "string"
-    && o.__primaryKey != null;
+  return (
+    o &&
+    typeof o === "object" &&
+    typeof o.__apiName === "string" &&
+    o.__primaryKey != null
+  );
 }
