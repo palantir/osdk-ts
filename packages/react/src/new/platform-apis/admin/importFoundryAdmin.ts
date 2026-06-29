@@ -17,6 +17,11 @@
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
 type FoundryAdminModule = typeof import("@osdk/foundry.admin");
 
+const MISSING_PEER_MESSAGE =
+  "@osdk/react: the optional peer dependency \"@osdk/foundry.admin\" is "
+  + "required to use the admin platform-api hooks (e.g. useCbacBanner, "
+  + "useMarkings, useFoundryUser). Install it to use these hooks.";
+
 /**
  * Lazily import the optional `@osdk/foundry.admin` peer dependency used by the
  * admin platform-api hooks.
@@ -26,16 +31,21 @@ type FoundryAdminModule = typeof import("@osdk/foundry.admin");
  * fail their bundler build when it's absent. If the peer is missing, the import
  * rejects with a clear, actionable error instead of an opaque module-resolution
  * failure; that error surfaces through the hook's `error` state.
+ *
+ * Some bundlers resolve a missing optional peer to an empty stub module rather
+ * than failing, so the import succeeds but the expected exports are absent. We
+ * validate a known export (`Users`) post-import to surface the same actionable
+ * error instead of an opaque `TypeError` at the hook call site.
  */
 export async function importFoundryAdmin(): Promise<FoundryAdminModule> {
+  let mod: FoundryAdminModule;
   try {
-    return await import("@osdk/foundry.admin");
+    mod = await import("@osdk/foundry.admin");
   } catch (cause) {
-    throw new Error(
-      "@osdk/react: the optional peer dependency \"@osdk/foundry.admin\" is "
-        + "required to use the admin platform-api hooks (e.g. useCbacBanner, "
-        + "useMarkings, useFoundryUser). Install it to use these hooks.",
-      { cause },
-    );
+    throw new Error(MISSING_PEER_MESSAGE, { cause });
   }
+  if (mod?.Users == null) {
+    throw new Error(MISSING_PEER_MESSAGE);
+  }
+  return mod;
 }
