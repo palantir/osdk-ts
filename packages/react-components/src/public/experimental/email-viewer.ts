@@ -28,5 +28,5 @@ import { EmailViewer as _EmailViewer } from "../../email-viewer/EmailViewer.js";
 import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
 export const EmailViewer: typeof _EmailViewer = withOsdkMetrics(
   _EmailViewer,
-  "EmailViewer",
+  "EmailViewer"
 );
