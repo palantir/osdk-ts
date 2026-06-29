@@ -28,7 +28,7 @@
     "oxlint": "^1.67.0",
     "typescript": "~5.5.4",
     "ultracite": "^7.8.0",
-    "vitest": "^4.1.7"
+    "vitest": "^3.2.6"
   },
   "files": [
     "dist"
