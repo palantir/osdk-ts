@@ -16,6 +16,7 @@
 
 import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import { describe, expect, it, vi } from "vitest";
+
 import type { LinkedFilter } from "../../types/LinkedFilterTypes.js";
 import { narrowObjectSet } from "../narrowObjectSet.js";
 
@@ -36,7 +37,7 @@ describe("narrowObjectSet", () => {
   it("returns the base unchanged for an empty where clause and no linked filters", () => {
     const base = createMockSet();
     expect(
-      narrowObjectSet(base, {} as WhereClause<ObjectTypeDefinition>, []),
+      narrowObjectSet(base, {} as WhereClause<ObjectTypeDefinition>, [])
     ).toBe(base);
     expect(base.where).not.toHaveBeenCalled();
     expect(base.pivotTo).not.toHaveBeenCalled();
@@ -44,9 +45,9 @@ describe("narrowObjectSet", () => {
 
   it("calls .where() exactly once with a non-empty where clause", () => {
     const base = createMockSet();
-    const clause = { name: "Alice" } as unknown as WhereClause<
-      ObjectTypeDefinition
-    >;
+    const clause = {
+      name: "Alice",
+    } as unknown as WhereClause<ObjectTypeDefinition>;
     narrowObjectSet(base, clause, []);
     expect(base.where).toHaveBeenCalledTimes(1);
     expect(base.where).toHaveBeenCalledWith(clause);
@@ -57,9 +58,9 @@ describe("narrowObjectSet", () => {
     const linked: LinkedFilter<ObjectTypeDefinition> = {
       linkName: "lead",
       reverseLinkName: "peeps",
-      innerWhere: { fullName: "Alice" } as unknown as WhereClause<
-        ObjectTypeDefinition
-      >,
+      innerWhere: {
+        fullName: "Alice",
+      } as unknown as WhereClause<ObjectTypeDefinition>,
     };
     narrowObjectSet(base, {} as WhereClause<ObjectTypeDefinition>, [linked]);
 
@@ -78,21 +79,21 @@ describe("narrowObjectSet", () => {
     const linked1: LinkedFilter<ObjectTypeDefinition> = {
       linkName: "lead",
       reverseLinkName: "peeps",
-      innerWhere: { fullName: "Alice" } as unknown as WhereClause<
-        ObjectTypeDefinition
-      >,
+      innerWhere: {
+        fullName: "Alice",
+      } as unknown as WhereClause<ObjectTypeDefinition>,
     };
     const linked2: LinkedFilter<ObjectTypeDefinition> = {
       linkName: "manager",
       reverseLinkName: "reports",
-      innerWhere: { role: "Director" } as unknown as WhereClause<
-        ObjectTypeDefinition
-      >,
+      innerWhere: {
+        role: "Director",
+      } as unknown as WhereClause<ObjectTypeDefinition>,
     };
     narrowObjectSet(
       base,
       { active: true } as unknown as WhereClause<ObjectTypeDefinition>,
-      [linked1, linked2],
+      [linked1, linked2]
     );
 
     // First step applies the property where. The first linked filter

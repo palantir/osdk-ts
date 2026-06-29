@@ -15,9 +15,11 @@
  */
 
 import React, { memo } from "react";
+
 import { SearchableMenu } from "../../base-components/searchable-menu/SearchableMenu.js";
-import styles from "./AddFilterPopover.module.css";
 import { useFilterListBoundary } from "./FilterListBoundaryContext.js";
+
+import styles from "./AddFilterPopover.module.css";
 
 interface HiddenFilterItem {
   key: string;

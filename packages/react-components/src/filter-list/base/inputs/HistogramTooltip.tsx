@@ -16,6 +16,7 @@
 
 import React, { memo, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+
 import styles from "./RangeInput.module.css";
 
 export interface HistogramTooltipProps {
@@ -43,9 +44,10 @@ function HistogramTooltipInner({
   svgElement,
 }: HistogramTooltipProps): React.ReactElement | null {
   const tooltipRef = useRef<HTMLDivElement | null>(null);
-  const [position, setPosition] = useState<
-    { left: number; top: number } | null
-  >(null);
+  const [position, setPosition] = useState<{
+    left: number;
+    top: number;
+  } | null>(null);
 
   // Portal-positioned tooltip: needs the SVG's viewport rect plus the
   // rendered tooltip's height to flip above/below the bar without
@@ -77,16 +79,17 @@ function HistogramTooltipInner({
       ref={tooltipRef}
       className={styles.tooltip}
       data-state={position == null ? "hidden" : "visible"}
-      style={position == null
-        ? { left: 0, top: 0 }
-        : { left: position.left, top: position.top }}
+      style={
+        position == null
+          ? { left: 0, top: 0 }
+          : { left: position.left, top: position.top }
+      }
     >
       {text}
     </div>,
-    document.body,
+    document.body
   );
 }
 
-export const HistogramTooltip: React.NamedExoticComponent<
-  HistogramTooltipProps
-> = memo(HistogramTooltipInner);
+export const HistogramTooltip: React.NamedExoticComponent<HistogramTooltipProps> =
+  memo(HistogramTooltipInner);

@@ -22,6 +22,7 @@ import type {
   WhereClause,
 } from "@osdk/api";
 import type { ReactNode } from "react";
+
 import type {
   BaseFilterState,
   FilterDefinitionControls,
@@ -59,9 +60,9 @@ export interface HasLinkFilterState extends BaseFilterState {
  * State for linked property filter
  * Wraps the filter state of the linked property
  */
-export interface LinkedPropertyFilterState<S extends FilterState = FilterState>
-  extends BaseFilterState
-{
+export interface LinkedPropertyFilterState<
+  S extends FilterState = FilterState,
+> extends BaseFilterState {
   type: "linkedProperty";
   linkedFilterState: S;
 }

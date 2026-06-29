@@ -16,9 +16,11 @@
 
 import classnames from "classnames";
 import React, { memo, useCallback } from "react";
+
 import { Checkbox } from "../../../base-components/checkbox/Checkbox.js";
 import { formatCompactCount } from "./formatCompactCount.js";
 import { NoValueLabel } from "./NoValueLabel.js";
+
 import styles from "./NullValueWrapper.module.css";
 import sharedStyles from "./shared.module.css";
 
@@ -63,10 +65,7 @@ function NullValueWrapperInner({
           <NoValueLabel className={styles.noValueLabel} />
         </label>
         {showNullCount && !error && (
-          <span
-            className={styles.count}
-            title={nullCount.toLocaleString()}
-          >
+          <span className={styles.count} title={nullCount.toLocaleString()}>
             {formatCompactCount(nullCount)}
           </span>
         )}
@@ -81,5 +80,5 @@ function NullValueWrapperInner({
 }
 
 export const NullValueWrapper = memo(
-  NullValueWrapperInner,
+  NullValueWrapperInner
 ) as typeof NullValueWrapperInner;

@@ -27,6 +27,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+
 import { DatePicker } from "../../../shared/calendar/index.js";
 import {
   createHistogramBuckets,
@@ -35,9 +36,10 @@ import {
   niceTicks,
 } from "./createHistogramBuckets.js";
 import { HistogramTooltip } from "./HistogramTooltip.js";
+import { useStableData } from "./useStableData.js";
+
 import styles from "./RangeInput.module.css";
 import sharedStyles from "./shared.module.css";
-import { useStableData } from "./useStableData.js";
 
 const DEBOUNCE_MS = 300;
 
@@ -83,13 +85,8 @@ function niceStep(rough: number): number {
   }
   const exponent = Math.floor(Math.log10(rough));
   const fraction = rough / Math.pow(10, exponent);
-  const niceFraction = fraction <= 1
-    ? 1
-    : fraction <= 2
-    ? 2
-    : fraction <= 5
-    ? 5
-    : 10;
+  const niceFraction =
+    fraction <= 1 ? 1 : fraction <= 2 ? 2 : fraction <= 5 ? 5 : 10;
   return niceFraction * Math.pow(10, exponent);
 }
 
@@ -101,11 +98,7 @@ function niceStep(rough: number): number {
  */
 function formatTickAdaptive(value: number, step: number): string {
   const absValue = Math.abs(value);
-  if (
-    absValue < 10_000
-    && Number.isInteger(value)
-    && Number.isInteger(step)
-  ) {
+  if (absValue < 10_000 && Number.isInteger(value) && Number.isInteger(step)) {
     return String(value);
   }
   if (absValue >= 1000) {
@@ -115,7 +108,7 @@ function formatTickAdaptive(value: number, step: number): string {
     if (compactStep >= 0.05) {
       const decimals = Math.max(
         0,
-        Math.min(2, Math.ceil(-Math.log10(compactStep))),
+        Math.min(2, Math.ceil(-Math.log10(compactStep)))
       );
       return value.toLocaleString(undefined, {
         notation: "compact",
@@ -194,10 +187,10 @@ function RangeInputInner<T>({
   const maxInputId = useId();
 
   const [localMin, setLocalMin] = useState<string>(
-    config.formatValue(minValue),
+    config.formatValue(minValue)
   );
   const [localMax, setLocalMax] = useState<string>(
-    config.formatValue(maxValue),
+    config.formatValue(maxValue)
   );
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
@@ -212,7 +205,7 @@ function RangeInputInner<T>({
         const parsed = config.parseValue(newValue);
         onChangeRef.current(parsed, maxValueRef.current);
       }, DEBOUNCE_MS),
-    [config],
+    [config]
   );
 
   const debouncedMaxChange = useMemo(
@@ -221,7 +214,7 @@ function RangeInputInner<T>({
         const parsed = config.parseValue(newValue);
         onChangeRef.current(minValueRef.current, parsed);
       }, DEBOUNCE_MS),
-    [config],
+    [config]
   );
 
   // Date branch handlers — only invoked when `config.inputType === "date"`,
@@ -262,11 +255,11 @@ function RangeInputInner<T>({
     }
     const min = displayPairs.reduce(
       (acc, p) => Math.min(acc, config.toNumber(p.value)),
-      Infinity,
+      Infinity
     );
     const max = displayPairs.reduce(
       (acc, p) => Math.max(acc, config.toNumber(p.value)),
-      -Infinity,
+      -Infinity
     );
     return {
       min: config.fromNumber(min),
@@ -274,20 +267,23 @@ function RangeInputInner<T>({
     };
   }, [displayPairs, config]);
 
-  const dataRange = useMemo(() => ({
-    dataMin: computedRange.min,
-    dataMax: computedRange.max,
-  }), [computedRange.min, computedRange.max]);
+  const dataRange = useMemo(
+    () => ({
+      dataMin: computedRange.min,
+      dataMax: computedRange.max,
+    }),
+    [computedRange.min, computedRange.max]
+  );
 
   const buckets = useMemo<Array<HistogramBucket<T>>>(() => {
     if (histogramData) {
       return histogramData.buckets;
     }
     if (
-      !showHistogram
-      || displayPairs.length === 0
-      || computedRange.min === undefined
-      || computedRange.max === undefined
+      !showHistogram ||
+      displayPairs.length === 0 ||
+      computedRange.min === undefined ||
+      computedRange.max === undefined
     ) {
       return [];
     }
@@ -295,15 +291,9 @@ function RangeInputInner<T>({
       displayPairs,
       { min: computedRange.min, max: computedRange.max },
       config.toNumber,
-      config.fromNumber,
+      config.fromNumber
     );
-  }, [
-    histogramData,
-    showHistogram,
-    displayPairs,
-    computedRange,
-    config,
-  ]);
+  }, [histogramData, showHistogram, displayPairs, computedRange, config]);
 
   const subtitle = histogramData?.subtitle ?? "";
 
@@ -313,7 +303,7 @@ function RangeInputInner<T>({
 
   const barLayout = useMemo(
     () => computeBarLayout(buckets.length),
-    [buckets.length],
+    [buckets.length]
   );
 
   const dataBounds = useMemo<{ minN: number; maxN: number } | null>(() => {
@@ -378,7 +368,7 @@ function RangeInputInner<T>({
       const stride = Math.ceil(buckets.length / COUNT_LABEL_THRESHOLD);
       return i % stride !== 0;
     },
-    [buckets.length],
+    [buckets.length]
   );
 
   // Drag range tracked in a ref so synchronous read/write across
@@ -389,9 +379,10 @@ function RangeInputInner<T>({
   // clear an in-band filter) instead of a single-bucket drag commit.
   const dragRangeRef = useRef<{ start: number; end: number } | null>(null);
   const dragStartCoordsRef = useRef<{ x: number; y: number } | null>(null);
-  const [dragRange, setDragRange] = useState<
-    { start: number; end: number } | null
-  >(null);
+  const [dragRange, setDragRange] = useState<{
+    start: number;
+    end: number;
+  } | null>(null);
 
   const bucketsRef = useRef(buckets);
   bucketsRef.current = buckets;
@@ -401,9 +392,10 @@ function RangeInputInner<T>({
   // Bucket-index bounds [lo, hi] for the translucent selection band that sits
   // behind the bars. During a drag we use the live drag range; otherwise we
   // map the committed minValue/maxValue back to the buckets they cover.
-  const selectionBandIndices = useMemo<
-    { lo: number; hi: number } | null
-  >(() => {
+  const selectionBandIndices = useMemo<{
+    lo: number;
+    hi: number;
+  } | null>(() => {
     if (dragRange != null) {
       return {
         lo: Math.min(dragRange.start, dragRange.end),
@@ -411,9 +403,9 @@ function RangeInputInner<T>({
       };
     }
     if (
-      minValue === undefined
-      || maxValue === undefined
-      || buckets.length === 0
+      minValue === undefined ||
+      maxValue === undefined ||
+      buckets.length === 0
     ) {
       return null;
     }
@@ -459,10 +451,10 @@ function RangeInputInner<T>({
       const currentMin = minValueRef.current;
       const currentMax = maxValueRef.current;
       if (
-        treatAsClick
-        && start === end
-        && currentMin !== undefined
-        && currentMax !== undefined
+        treatAsClick &&
+        start === end &&
+        currentMin !== undefined &&
+        currentMax !== undefined
       ) {
         const minN = currentConfig.toNumber(currentMin);
         const maxN = currentConfig.toNumber(currentMax);
@@ -476,7 +468,7 @@ function RangeInputInner<T>({
       }
       onChangeRef.current(minBucket.min, maxBucket.max);
     },
-    [],
+    []
   );
 
   // Distance (in client px) below which a pointerup is treated as a click
@@ -512,7 +504,7 @@ function RangeInputInner<T>({
       const idx = Math.round((localX - barW / 2) / slotW);
       return Math.max(0, Math.min(bucketCount - 1, idx));
     },
-    [],
+    []
   );
 
   const bucketIndexFromTarget = useCallback(
@@ -527,7 +519,7 @@ function RangeInputInner<T>({
       const parsed = parseInt(dataIdx, 10);
       return Number.isNaN(parsed) ? null : parsed;
     },
-    [],
+    []
   );
 
   const handlePlotPointerDown = useCallback(
@@ -539,8 +531,9 @@ function RangeInputInner<T>({
       // for the common case (also avoids `getScreenCTM` coord math). Fall
       // back to client-coord math when the press lands on the empty plot
       // background between bars.
-      const startIdx = bucketIndexFromTarget(e.target)
-        ?? bucketIndexAtClient(e.clientX, e.clientY);
+      const startIdx =
+        bucketIndexFromTarget(e.target) ??
+        bucketIndexAtClient(e.clientX, e.clientY);
       if (startIdx == null) {
         return;
       }
@@ -555,7 +548,7 @@ function RangeInputInner<T>({
       dragRangeRef.current = { start: startIdx, end: startIdx };
       setDragRange({ start: startIdx, end: startIdx });
     },
-    [clickToFilter, bucketIndexFromTarget, bucketIndexAtClient],
+    [clickToFilter, bucketIndexFromTarget, bucketIndexAtClient]
   );
 
   const handlePlotPointerMove = useCallback(
@@ -563,8 +556,9 @@ function RangeInputInner<T>({
       // Prefer the bucket-index attribute on the bar; fall back to client
       // coords for moves that land on the empty plot background between
       // bars (or that cross gaps during a drag).
-      const idx = bucketIndexFromTarget(e.target)
-        ?? bucketIndexAtClient(e.clientX, e.clientY);
+      const idx =
+        bucketIndexFromTarget(e.target) ??
+        bucketIndexAtClient(e.clientX, e.clientY);
       if (idx == null) {
         return;
       }
@@ -576,7 +570,7 @@ function RangeInputInner<T>({
       dragRangeRef.current = next;
       setDragRange(next);
     },
-    [bucketIndexFromTarget, bucketIndexAtClient],
+    [bucketIndexFromTarget, bucketIndexAtClient]
   );
 
   const handlePlotPointerUp = useCallback(
@@ -594,7 +588,7 @@ function RangeInputInner<T>({
       const treatAsClick = dx * dx + dy * dy < DRAG_VS_CLICK_THRESHOLD_SQ;
       commitDragRange(current.start, current.end, treatAsClick);
     },
-    [commitDragRange],
+    [commitDragRange]
   );
 
   const handlePlotPointerCancel = useCallback(() => {
@@ -620,7 +614,7 @@ function RangeInputInner<T>({
       setLocalMin(next);
       debouncedMinChange(next);
     },
-    [debouncedMinChange],
+    [debouncedMinChange]
   );
 
   const handleMaxChange = useCallback(
@@ -628,7 +622,7 @@ function RangeInputInner<T>({
       setLocalMax(next);
       debouncedMaxChange(next);
     },
-    [debouncedMaxChange],
+    [debouncedMaxChange]
   );
 
   return (
@@ -638,9 +632,7 @@ function RangeInputInner<T>({
       data-loading={isLoading}
     >
       {showHistogram && buckets.length === 0 && !isLoading && (
-        <div className={sharedStyles.emptyMessage}>
-          No values available
-        </div>
+        <div className={sharedStyles.emptyMessage}>No values available</div>
       )}
 
       <Button
@@ -664,9 +656,9 @@ function RangeInputInner<T>({
             aria-label="Histogram of value counts"
             onPointerDown={clickToFilter ? handlePlotPointerDown : undefined}
             onPointerUp={clickToFilter ? handlePlotPointerUp : undefined}
-            onPointerCancel={clickToFilter
-              ? handlePlotPointerCancel
-              : undefined}
+            onPointerCancel={
+              clickToFilter ? handlePlotPointerCancel : undefined
+            }
             onPointerMove={handlePlotPointerMove}
             onPointerLeave={handlePlotPointerLeave}
           >
@@ -702,9 +694,11 @@ function RangeInputInner<T>({
                 className={styles.selectionBand}
                 x={barLayout.xLeft(selectionBandIndices.lo)}
                 y={PAD_TOP}
-                width={barLayout.xLeft(selectionBandIndices.hi)
-                  + barLayout.barW
-                  - barLayout.xLeft(selectionBandIndices.lo)}
+                width={
+                  barLayout.xLeft(selectionBandIndices.hi) +
+                  barLayout.barW -
+                  barLayout.xLeft(selectionBandIndices.lo)
+                }
                 height={PLOT_H}
                 data-dragging={dragRange != null || undefined}
               />
@@ -713,22 +707,21 @@ function RangeInputInner<T>({
             <g className={styles.bars}>
               {buckets.map((bucket, index) => {
                 const x = barLayout.xLeft(index);
-                const heightFrac = yTopValue > 0
-                  ? bucket.count / yTopValue
-                  : 0;
+                const heightFrac = yTopValue > 0 ? bucket.count / yTopValue : 0;
                 const barH = Math.max(0, heightFrac * PLOT_H);
                 const y = PAD_TOP + PLOT_H - barH;
                 // Buckets are half-open [min, max). Strict inequality on the
                 // shared endpoints keeps adjacent buckets out of the active
                 // styling when the filter starts/ends exactly on a boundary.
-                const isInRange = (minValue === undefined
-                  || config.toNumber(bucket.max) > config.toNumber(minValue))
-                  && (maxValue === undefined
-                    || config.toNumber(bucket.min)
-                      < config.toNumber(maxValue));
-                const isInDragRange = dragRange != null
-                  && index >= Math.min(dragRange.start, dragRange.end)
-                  && index <= Math.max(dragRange.start, dragRange.end);
+                const isInRange =
+                  (minValue === undefined ||
+                    config.toNumber(bucket.max) > config.toNumber(minValue)) &&
+                  (maxValue === undefined ||
+                    config.toNumber(bucket.min) < config.toNumber(maxValue));
+                const isInDragRange =
+                  dragRange != null &&
+                  index >= Math.min(dragRange.start, dragRange.end) &&
+                  index <= Math.max(dragRange.start, dragRange.end);
                 return (
                   <rect
                     key={index}
@@ -746,7 +739,7 @@ function RangeInputInner<T>({
                       {config.formatTooltip(
                         bucket.min,
                         bucket.max,
-                        bucket.count,
+                        bucket.count
                       )}
                     </title>
                   </rect>
@@ -763,9 +756,7 @@ function RangeInputInner<T>({
                   return null;
                 }
                 const cx = barLayout.xCenter(index);
-                const heightFrac = yTopValue > 0
-                  ? bucket.count / yTopValue
-                  : 0;
+                const heightFrac = yTopValue > 0 ? bucket.count / yTopValue : 0;
                 const barH = heightFrac * PLOT_H;
                 const barTop = PAD_TOP + PLOT_H - barH;
                 // If the label would render above the SVG's content area,
@@ -793,45 +784,46 @@ function RangeInputInner<T>({
             <g className={styles.xTicks}>
               {isDateLike
                 ? buckets.map((bucket, index) => {
-                  if (bucket.tickLabel == null) {
-                    return null;
-                  }
-                  if (
-                    buckets.length > COUNT_LABEL_THRESHOLD
-                    && skipCountLabel(index)
-                  ) {
-                    return null;
-                  }
-                  return (
-                    <text
-                      key={index}
-                      className={styles.xTickLabel}
-                      x={barLayout.xCenter(index)}
-                      y={X_TICK_LABEL_Y}
-                      textAnchor="middle"
-                    >
-                      {bucket.tickLabel}
-                    </text>
-                  );
-                })
+                    if (bucket.tickLabel == null) {
+                      return null;
+                    }
+                    if (
+                      buckets.length > COUNT_LABEL_THRESHOLD &&
+                      skipCountLabel(index)
+                    ) {
+                      return null;
+                    }
+                    return (
+                      <text
+                        key={index}
+                        className={styles.xTickLabel}
+                        x={barLayout.xCenter(index)}
+                        y={X_TICK_LABEL_Y}
+                        textAnchor="middle"
+                      >
+                        {bucket.tickLabel}
+                      </text>
+                    );
+                  })
                 : dataBounds != null
-                ? numericTicks.map(({ value, label }, i) => {
-                  const xFrac = (value - dataBounds.minN)
-                    / (dataBounds.maxN - dataBounds.minN);
-                  const x = PAD_LEFT + xFrac * PLOT_W;
-                  return (
-                    <text
-                      key={i}
-                      className={styles.xTickLabel}
-                      x={x}
-                      y={X_TICK_LABEL_Y}
-                      textAnchor="middle"
-                    >
-                      {label}
-                    </text>
-                  );
-                })
-                : null}
+                  ? numericTicks.map(({ value, label }, i) => {
+                      const xFrac =
+                        (value - dataBounds.minN) /
+                        (dataBounds.maxN - dataBounds.minN);
+                      const x = PAD_LEFT + xFrac * PLOT_W;
+                      return (
+                        <text
+                          key={i}
+                          className={styles.xTickLabel}
+                          x={x}
+                          y={X_TICK_LABEL_Y}
+                          textAnchor="middle"
+                        >
+                          {label}
+                        </text>
+                      );
+                    })
+                  : null}
             </g>
 
             {subtitle && (
@@ -845,88 +837,90 @@ function RangeInputInner<T>({
               </text>
             )}
           </svg>
-          {hoveredIndex != null && dragRange == null
-            && buckets[hoveredIndex] != null && (
-            <HistogramTooltip
-              text={config.formatTooltip(
-                buckets[hoveredIndex].min,
-                buckets[hoveredIndex].max,
-                buckets[hoveredIndex].count,
-              )}
-              cx={barLayout.xCenter(hoveredIndex)}
-              barTop={PAD_TOP + PLOT_H
-                - (yTopValue > 0
+          {hoveredIndex != null &&
+            dragRange == null &&
+            buckets[hoveredIndex] != null && (
+              <HistogramTooltip
+                text={config.formatTooltip(
+                  buckets[hoveredIndex].min,
+                  buckets[hoveredIndex].max,
+                  buckets[hoveredIndex].count
+                )}
+                cx={barLayout.xCenter(hoveredIndex)}
+                barTop={
+                  PAD_TOP +
+                  PLOT_H -
+                  (yTopValue > 0
                     ? buckets[hoveredIndex].count / yTopValue
-                    : 0) * PLOT_H}
-              svgWidth={SVG_W}
-              svgHeight={SVG_H}
-              svgElement={svgRef.current}
-            />
-          )}
+                    : 0) *
+                    PLOT_H
+                }
+                svgWidth={SVG_W}
+                svgHeight={SVG_H}
+                svgElement={svgRef.current}
+              />
+            )}
         </div>
       )}
 
-      {config.inputType === "date"
-        ? (
-          <DateRangeInputs
-            minValue={minValue as Date | undefined}
-            maxValue={maxValue as Date | undefined}
-            onMinChange={handleDateMinChange}
-            onMaxChange={handleDateMaxChange}
-            formatDate={config.formatDate}
-            minLabel={config.minLabel}
-            maxLabel={config.maxLabel}
-          />
-        )
-        : (
-          <div className={styles.rangeInputs}>
-            <div className={styles.inputWrapper}>
-              <label htmlFor={minInputId} className={styles.inputLabel}>
-                {config.minLabel}
-              </label>
-              <RangeBoundInput
-                id={minInputId}
-                value={localMin}
-                onChange={handleMinChange}
-                placeholder={dataRange.dataMin !== undefined
-                    && config.formatPlaceholder
+      {config.inputType === "date" ? (
+        <DateRangeInputs
+          minValue={minValue as Date | undefined}
+          maxValue={maxValue as Date | undefined}
+          onMinChange={handleDateMinChange}
+          onMaxChange={handleDateMaxChange}
+          formatDate={config.formatDate}
+          minLabel={config.minLabel}
+          maxLabel={config.maxLabel}
+        />
+      ) : (
+        <div className={styles.rangeInputs}>
+          <div className={styles.inputWrapper}>
+            <label htmlFor={minInputId} className={styles.inputLabel}>
+              {config.minLabel}
+            </label>
+            <RangeBoundInput
+              id={minInputId}
+              value={localMin}
+              onChange={handleMinChange}
+              placeholder={
+                dataRange.dataMin !== undefined && config.formatPlaceholder
                   ? config.formatPlaceholder(dataRange.dataMin)
-                  : undefined}
-                inputProps={config.inputProps}
-                ariaLabel={config.minLabel}
-              />
-            </div>
-
-            <span className={styles.separator} aria-hidden="true">
-              –
-            </span>
-
-            <div className={styles.inputWrapper}>
-              <label htmlFor={maxInputId} className={styles.inputLabel}>
-                {config.maxLabel}
-              </label>
-              <RangeBoundInput
-                id={maxInputId}
-                value={localMax}
-                onChange={handleMaxChange}
-                placeholder={dataRange.dataMax !== undefined
-                    && config.formatPlaceholder
-                  ? config.formatPlaceholder(dataRange.dataMax)
-                  : undefined}
-                inputProps={config.inputProps}
-                ariaLabel={config.maxLabel}
-              />
-            </div>
+                  : undefined
+              }
+              inputProps={config.inputProps}
+              ariaLabel={config.minLabel}
+            />
           </div>
-        )}
+
+          <span className={styles.separator} aria-hidden="true">
+            –
+          </span>
+
+          <div className={styles.inputWrapper}>
+            <label htmlFor={maxInputId} className={styles.inputLabel}>
+              {config.maxLabel}
+            </label>
+            <RangeBoundInput
+              id={maxInputId}
+              value={localMax}
+              onChange={handleMaxChange}
+              placeholder={
+                dataRange.dataMax !== undefined && config.formatPlaceholder
+                  ? config.formatPlaceholder(dataRange.dataMax)
+                  : undefined
+              }
+              inputProps={config.inputProps}
+              ariaLabel={config.maxLabel}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-type RangeOnChange<T> = (
-  min: T | undefined,
-  max: T | undefined,
-) => void;
+type RangeOnChange<T> = (min: T | undefined, max: T | undefined) => void;
 
 interface DateRangeInputsProps {
   minValue: Date | undefined;
@@ -990,7 +984,7 @@ function RangeBoundInput({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       onChange(e.target.value);
     },
-    [onChange],
+    [onChange]
   );
   return (
     <Input

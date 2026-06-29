@@ -17,15 +17,17 @@
 import { Button } from "@base-ui/react/button";
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo, useState } from "react";
+
 import { Checkbox } from "../../../base-components/checkbox/Checkbox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
 import { filterValuesBySearch, isNoValue } from "../../utils/filterValues.js";
 import { formatCompactCount } from "./formatCompactCount.js";
-import styles from "./ListogramInput.module.css";
 import { ListogramSkeleton } from "./ListogramSkeleton.js";
 import { OptionLabel } from "./OptionLabel.js";
-import sharedStyles from "./shared.module.css";
 import { useStableData } from "./useStableData.js";
+
+import styles from "./ListogramInput.module.css";
+import sharedStyles from "./shared.module.css";
 
 export type ListogramDisplayMode = "full" | "count" | "minimal";
 
@@ -80,19 +82,15 @@ function ListogramInputInner({
         onChange([...selectedValues, value]);
       }
     },
-    [selectedValues, selectedSet, onChange],
+    [selectedValues, selectedSet, onChange]
   );
 
   const filteredValues = useMemo(() => {
     if (searchQuery) {
-      return filterValuesBySearch(
-        stableValues,
-        searchQuery,
-        (v) => {
-          const rendered = renderValue?.(v.value);
-          return typeof rendered === "string" ? rendered : v.value;
-        },
-      );
+      return filterValuesBySearch(stableValues, searchQuery, (v) => {
+        const rendered = renderValue?.(v.value);
+        return typeof rendered === "string" ? rendered : v.value;
+      });
     }
     return stableValues;
   }, [stableValues, searchQuery, renderValue]);
@@ -108,8 +106,8 @@ function ListogramInputInner({
     return sortedValues.slice(0, maxVisibleItems);
   }, [sortedValues, maxVisibleItems, isExpanded]);
 
-  const hasMore = maxVisibleItems != null
-    && sortedValues.length > maxVisibleItems;
+  const hasMore =
+    maxVisibleItems != null && sortedValues.length > maxVisibleItems;
 
   return (
     <div
@@ -137,9 +135,8 @@ function ListogramInputInner({
             const perRowColor = colorMap?.[value];
             const isEmpty = isNoValue(value) || value === "";
 
-            const isFilteredOut = showFilteredOutValues
-              && count === 0
-              && !selectedSet.has(value);
+            const isFilteredOut =
+              showFilteredOutValues && count === 0 && !selectedSet.has(value);
             return (
               <Button
                 key={value}
@@ -149,16 +146,20 @@ function ListogramInputInner({
                 // eslint-disable-next-line react/jsx-no-bind
                 onClick={() => toggleValue(value)}
                 aria-pressed={selectedSet.has(value)}
-                style={perRowColor || percentage > 0
-                  ? ({
-                    "--osdk-filter-listogram-bar-fill-scale": percentage / 100,
-                    ...(perRowColor
-                      ? {
-                        "--osdk-filter-listogram-row-bar-color": perRowColor,
-                      }
-                      : undefined),
-                  } as React.CSSProperties)
-                  : undefined}
+                style={
+                  perRowColor || percentage > 0
+                    ? ({
+                        "--osdk-filter-listogram-bar-fill-scale":
+                          percentage / 100,
+                        ...(perRowColor
+                          ? {
+                              "--osdk-filter-listogram-row-bar-color":
+                                perRowColor,
+                            }
+                          : undefined),
+                      } as React.CSSProperties)
+                    : undefined
+                }
               >
                 <span
                   className={styles.checkbox}
@@ -173,8 +174,9 @@ function ListogramInputInner({
                 </span>
                 <span
                   className={styles.label}
-                  data-excluding={(isExcluding && selectedSet.has(value))
-                    || undefined}
+                  data-excluding={
+                    (isExcluding && selectedSet.has(value)) || undefined
+                  }
                 >
                   <OptionLabel
                     value={value}
@@ -183,10 +185,7 @@ function ListogramInputInner({
                   />
                 </span>
                 {showCount && displayMode !== "minimal" && (
-                  <span
-                    className={styles.count}
-                    title={count.toLocaleString()}
-                  >
+                  <span className={styles.count} title={count.toLocaleString()}>
                     {formatCompactCount(count)}
                   </span>
                 )}
@@ -216,5 +215,5 @@ function ListogramInputInner({
 }
 
 export const ListogramInput = memo(
-  ListogramInputInner,
+  ListogramInputInner
 ) as typeof ListogramInputInner;

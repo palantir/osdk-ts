@@ -18,6 +18,7 @@ import type { ObjectSet } from "@osdk/api";
 import { useOsdkAggregation } from "@osdk/react";
 import { renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { mockAggregationByObjectSetKind } from "../../__tests__/aggregationMocks.js";
 import { MockObjectType } from "../../__tests__/testUtils.js";
 import { useDualScopeAggregation } from "../useDualScopeAggregation.js";
@@ -49,8 +50,9 @@ describe("useDualScopeAggregation", () => {
     );
 
     expect(result.current.data.map((d) => d.value)).toEqual(["Engineering"]);
-    expect(result.current.data.find((d) => d.value === "Engineering")?.count)
-      .toBe(3);
+    expect(
+      result.current.data.find((d) => d.value === "Engineering")?.count
+    ).toBe(3);
   });
 
   it("merges emptySource-only values into the result as count=0 filtered-out rows", () => {
@@ -70,7 +72,7 @@ describe("useDualScopeAggregation", () => {
     expect(values).toContain("Engineering");
     expect(values).toContain("Marketing");
     expect(
-      result.current.data.find((d) => d.value === "Marketing")?.count,
+      result.current.data.find((d) => d.value === "Marketing")?.count
     ).toBe(0);
   });
 
@@ -107,20 +109,16 @@ describe("useDualScopeAggregation", () => {
     });
 
     const { result } = renderHook(() =>
-      useDualScopeAggregation(
-        MockObjectType,
-        "name",
-        scopedSet,
-        undefined,
-        { selectedValues: ["Marketing"] },
-      )
+      useDualScopeAggregation(MockObjectType, "name", scopedSet, undefined, {
+        selectedValues: ["Marketing"],
+      })
     );
 
     const values = result.current.data.map((d) => d.value);
     expect(values).toContain("Engineering");
     expect(values).toContain("Marketing");
     expect(
-      result.current.data.find((d) => d.value === "Marketing")?.count,
+      result.current.data.find((d) => d.value === "Marketing")?.count
     ).toBe(0);
   });
 });

@@ -24,6 +24,7 @@ import {
   startOfMonth,
   startOfYear,
 } from "date-fns";
+
 import type { HistogramBucket } from "./createHistogramBuckets.js";
 
 const SHORT_MONTH_FORMATTER = new Intl.DateTimeFormat(undefined, {
@@ -73,23 +74,17 @@ export function createDateHistogramBuckets(
   formatDate?: (date: Date) => string,
   formatTickLabel?: (
     date: Date,
-    granularity: DateHistogramGranularity,
-  ) => string,
+    granularity: DateHistogramGranularity
+  ) => string
 ): DateHistogramData {
   if (pairs.length === 0) {
     return { buckets: [], subtitle: "", granularity: "day" };
   }
 
-  const span = Math.max(
-    0,
-    differenceInCalendarDays(range.max, range.min),
-  );
+  const span = Math.max(0, differenceInCalendarDays(range.max, range.min));
 
-  const granularity: DateHistogramGranularity = span <= 31
-    ? "day"
-    : span <= 365
-    ? "month"
-    : "year";
+  const granularity: DateHistogramGranularity =
+    span <= 31 ? "day" : span <= 365 ? "month" : "year";
 
   const buckets: Array<HistogramBucket<Date>> = [];
 
@@ -110,9 +105,10 @@ export function createDateHistogramBuckets(
         min,
         max,
         count: counts[i],
-        tickLabel: formatTickLabel != null
-          ? formatTickLabel(min, "day")
-          : format(min, "d"),
+        tickLabel:
+          formatTickLabel != null
+            ? formatTickLabel(min, "day")
+            : format(min, "d"),
       });
     }
   } else if (granularity === "month") {
@@ -138,9 +134,10 @@ export function createDateHistogramBuckets(
         min: monthStart,
         max: addMonths(monthStart, 1),
         count: counts[i],
-        tickLabel: formatTickLabel != null
-          ? formatTickLabel(monthStart, "month")
-          : SHORT_MONTH_FORMATTER.format(monthStart),
+        tickLabel:
+          formatTickLabel != null
+            ? formatTickLabel(monthStart, "month")
+            : SHORT_MONTH_FORMATTER.format(monthStart),
       });
     }
   } else {
@@ -166,9 +163,10 @@ export function createDateHistogramBuckets(
         min: yearStart,
         max: addYears(yearStart, 1),
         count: counts[i],
-        tickLabel: formatTickLabel != null
-          ? formatTickLabel(yearStart, "year")
-          : format(yearStart, "yyyy"),
+        tickLabel:
+          formatTickLabel != null
+            ? formatTickLabel(yearStart, "year")
+            : format(yearStart, "yyyy"),
       });
     }
   }
@@ -177,7 +175,7 @@ export function createDateHistogramBuckets(
     range.min,
     range.max,
     granularity,
-    formatDate,
+    formatDate
   );
   return { buckets, subtitle, granularity };
 }
@@ -186,13 +184,14 @@ function computeSubtitle(
   rangeMin: Date,
   rangeMax: Date,
   granularity: DateHistogramGranularity,
-  formatDate?: (date: Date) => string,
+  formatDate?: (date: Date) => string
 ): string {
   if (granularity === "day") {
     // Daily within one month: "2020-05". Across months: the year(s) when
     // the data still fits inside one calendar year.
-    const sameMonth = rangeMin.getFullYear() === rangeMax.getFullYear()
-      && rangeMin.getMonth() === rangeMax.getMonth();
+    const sameMonth =
+      rangeMin.getFullYear() === rangeMax.getFullYear() &&
+      rangeMin.getMonth() === rangeMax.getMonth();
     if (sameMonth) {
       return formatDate != null
         ? formatDate(rangeMin)

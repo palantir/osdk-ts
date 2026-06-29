@@ -16,6 +16,7 @@
 
 import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import React, { memo } from "react";
+
 import { FilterInputExcludeRow } from "../base/FilterInputExcludeRow.js";
 import type { MultiSelectInputLayout } from "../base/inputs/MultiSelectInput.js";
 import type {
@@ -225,5 +226,5 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
 }
 
 export const PropertyFilterInput: typeof PropertyFilterInputInner = memo(
-  PropertyFilterInputInner,
+  PropertyFilterInputInner
 ) as typeof PropertyFilterInputInner;

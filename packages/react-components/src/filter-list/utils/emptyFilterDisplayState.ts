@@ -15,6 +15,7 @@
  */
 
 import type { ObjectTypeDefinition } from "@osdk/api";
+
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterComponentType, FilterState } from "../FilterListItemApi.js";
 
@@ -25,7 +26,7 @@ import type { FilterComponentType, FilterState } from "../FilterListItemApi.js";
  * the components that wrap their input in `FilterInputExcludeRow`.
  */
 function emptyOverflowStateForComponent(
-  component: FilterComponentType,
+  component: FilterComponentType
 ): FilterState | undefined {
   switch (component) {
     case "MULTI_SELECT":
@@ -62,7 +63,7 @@ function emptyOverflowStateForComponent(
  * map, so an untouched filter stays empty (no where-clause, not counted active).
  */
 export function getEmptyDisplayState<Q extends ObjectTypeDefinition>(
-  definition: FilterDefinitionUnion<Q>,
+  definition: FilterDefinitionUnion<Q>
 ): FilterState | undefined {
   switch (definition.type) {
     case "PROPERTY":
@@ -70,7 +71,7 @@ export function getEmptyDisplayState<Q extends ObjectTypeDefinition>(
       return emptyOverflowStateForComponent(definition.filterComponent);
     case "LINKED_PROPERTY": {
       const inner = emptyOverflowStateForComponent(
-        definition.linkedFilterComponent,
+        definition.linkedFilterComponent
       );
       return inner == null
         ? undefined
