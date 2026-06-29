@@ -31,15 +31,13 @@ function readFromStorage<T>(key: string, defaultValue: T): T {
 
 export function usePersistedState<T>(
   key: string,
-  defaultValue: T,
+  defaultValue: T
 ): [T, (value: T | ((prev: T) => T)) => void] {
-  const storeRef = React.useRef<
-    {
-      key: string;
-      value: T;
-      listeners: Set<() => void>;
-    } | null
-  >(null);
+  const storeRef = React.useRef<{
+    key: string;
+    value: T;
+    listeners: Set<() => void>;
+  } | null>(null);
 
   if (storeRef.current == null || storeRef.current.key !== key) {
     storeRef.current = {
@@ -64,8 +62,7 @@ export function usePersistedState<T>(
             for (const listener of store.listeners) {
               listener();
             }
-          } catch {
-          }
+          } catch {}
         }
       };
 
@@ -80,18 +77,15 @@ export function usePersistedState<T>(
         }
       };
     },
-    [key],
+    [key]
   );
 
-  const getSnapshot = React.useCallback(
-    (): T => {
-      if (storeRef.current == null) {
-        return defaultValue;
-      }
-      return storeRef.current.value;
-    },
-    [defaultValue],
-  );
+  const getSnapshot = React.useCallback((): T => {
+    if (storeRef.current == null) {
+      return defaultValue;
+    }
+    return storeRef.current.value;
+  }, [defaultValue]);
 
   const value = React.useSyncExternalStore(subscribe, getSnapshot);
 
@@ -102,24 +96,24 @@ export function usePersistedState<T>(
         return;
       }
 
-      const resolvedValue = typeof newValue === "function"
-        ? (newValue as (prev: T) => T)(store.value)
-        : newValue;
+      const resolvedValue =
+        typeof newValue === "function"
+          ? (newValue as (prev: T) => T)(store.value)
+          : newValue;
 
       store.value = resolvedValue;
 
       if (typeof window !== "undefined") {
         try {
           localStorage.setItem(key, JSON.stringify(resolvedValue));
-        } catch {
-        }
+        } catch {}
       }
 
       for (const listener of store.listeners) {
         listener();
       }
     },
-    [key],
+    [key]
   );
 
   return [value, setPersistedValue];

@@ -122,7 +122,6 @@ const archetypeRules = archetypes(
       "@osdk/examples.*",
       "@psdk/examples.*",
       "@osdk/monorepo.*",
-      "@osdk/react-components-storybook",
     ],
     {
       ...LIBRARY_RULES,
@@ -225,7 +224,7 @@ const archetypeRules = archetypes(
       "@osdk/create-widget.template.*",
       // @osdk/shared.test and its companion @osdk/shared.test.intellisense are
       // intentionally left on ESLint/dprint in this increment (deferred from the
-      // oxc migration); they move to oxc when linting goes global. See #3031.
+      // oxc migration); they move to oxc when linting goes global.
       "@osdk/shared.test",
       "@osdk/shared.test.intellisense",
     ],
@@ -235,7 +234,7 @@ const archetypeRules = archetypes(
   )
   // Packages migrated to the oxc toolchain (oxlint + oxfmt). As more packages
   // are migrated, add them here (taking care not to capture generated
-  // namespace-prefix children via monorepolint's archetype matching). See #3031.
+  // namespace-prefix children via monorepolint's archetype matching).
   .addArchetype(
     "oxc migrated libraries",
     [
@@ -257,7 +256,7 @@ const archetypeRules = archetypes(
   // React packages migrated to the oxc toolchain. Same as "oxc migrated
   // libraries" but with `react: true` (happy-dom vitest env + react tsconfig).
   // @osdk/widget.client-react is the first React package on oxc, validating
-  // the Ultracite React preset for the rest of the repo. See #3031.
+  // the Ultracite React preset for the rest of the repo.
   .addArchetype(
     "oxc migrated react libraries",
     [
@@ -273,7 +272,7 @@ const archetypeRules = archetypes(
   // "oxc migrated react libraries" but additionally carries the cssExport,
   // extraPublishFiles, and setupFiles options. @osdk/cbac-components is the
   // first React package with CSS exports on oxc, validating the cssExport
-  // archetype path ahead of @osdk/react-components. See #3031.
+  // archetype path ahead of @osdk/react-components.
   .addArchetype(
     "oxc migrated react libraries with css",
     [
@@ -286,6 +285,56 @@ const archetypeRules = archetypes(
       cssExport: ["styles.css"],
       extraPublishFiles: ["AGENTS.md", "docs"],
       setupFiles: ["./src/test/setupPolyfills.ts"],
+    },
+  )
+  // React package with bundled docs migrated to the oxc toolchain. Same as
+  // "oxc migrated react libraries" but additionally carries the extraPublishFiles
+  // and customTsconfigExcludes options. @osdk/react is the React family's core
+  // hooks package.
+  .addArchetype(
+    "oxc migrated react libraries with docs",
+    [
+      "@osdk/react",
+    ],
+    {
+      ...LIBRARY_RULES,
+      react: true,
+      oxc: true,
+      extraPublishFiles: ["AGENTS.md", "docs", "experimental"],
+      customTsconfigExcludes: ["./src/intellisense.test.helpers/**"],
+    },
+  )
+  // ESM-only React package with CSS exports migrated to the oxc toolchain. Same
+  // as "oxc migrated react libraries with css" but ESM-only output and without
+  // the extra publish/setup files. @osdk/react-devtools.
+  .addArchetype(
+    "oxc migrated esm react libraries with css",
+    [
+      "@osdk/react-devtools",
+    ],
+    {
+      ...LIBRARY_RULES,
+      react: true,
+      oxc: true,
+      output: OUTPUT_ESM_ONLY,
+      cssExport: ["styles.css"],
+    },
+  )
+  // Private, minimal-change packages migrated to the oxc toolchain. Mirrors the
+  // "minimal packages" archetype (minimalChangesOnly + private) but on oxc.
+  // @osdk/react-components-storybook is the storybook for
+  // @osdk/react-components; its lint scripts are not monorepolint-managed (see
+  // minimalPackageRules), so they are set directly in its package.json.
+  .addArchetype(
+    "oxc migrated minimal packages",
+    [
+      "@osdk/react-components-storybook",
+    ],
+    {
+      ...LIBRARY_RULES,
+      minimalChangesOnly: true,
+      private: true,
+      oxc: true,
     },
   )
   .addArchetype(
@@ -426,30 +475,6 @@ const archetypeRules = archetypes(
         LANG: "en_US.UTF-8",
       },
       vitestPool: "threads",
-    },
-  )
-  .addArchetype(
-    "reactLibraryWithDocs",
-    [
-      "@osdk/react",
-    ],
-    {
-      ...LIBRARY_RULES,
-      react: true,
-      extraPublishFiles: ["AGENTS.md", "docs", "experimental"],
-      customTsconfigExcludes: ["./src/intellisense.test.helpers/**"],
-    },
-  )
-  .addArchetype(
-    "esmReactLibraryWithCss",
-    [
-      "@osdk/react-devtools",
-    ],
-    {
-      ...LIBRARY_RULES,
-      react: true,
-      output: OUTPUT_ESM_ONLY,
-      cssExport: ["styles.css"],
     },
   )
   .addArchetype(

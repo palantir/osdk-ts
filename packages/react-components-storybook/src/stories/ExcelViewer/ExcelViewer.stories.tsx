@@ -88,8 +88,7 @@ const SAMPLE_SPREADSHEET: ParsedSpreadsheet = {
   ],
 };
 
-const SAMPLE_XLSX_URL =
-  `${import.meta.env.BASE_URL}notional-excel-example.xlsx`;
+const SAMPLE_XLSX_URL = `${import.meta.env.BASE_URL}notional-excel-example.xlsx`;
 
 function createMockMediaFromUrl(url: string, filename: string): Media {
   const mimeType =
@@ -136,7 +135,7 @@ function createMockExcelMedia(): Media {
             "Content-Type":
               "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
           },
-        }),
+        })
       ),
     fetchMetadata: () =>
       Promise.resolve({
@@ -202,8 +201,7 @@ export const Default: StoryObj<ExcelViewerMediaProps> = {
   parameters: {
     docs: {
       source: {
-        code:
-          `import { ExcelViewer } from "@osdk/react-components/experimental/excel-viewer";
+        code: `import { ExcelViewer } from "@osdk/react-components/experimental/excel-viewer";
 
 <ExcelViewer media={myOsdkMedia} />`,
       },
@@ -215,8 +213,7 @@ export const WithSpreadsheet: Story = {
   parameters: {
     docs: {
       source: {
-        code:
-          `import { BaseExcelViewer } from "@osdk/react-components/experimental/excel-viewer";
+        code: `import { BaseExcelViewer } from "@osdk/react-components/experimental/excel-viewer";
 
 <BaseExcelViewer spreadsheet={parsedSpreadsheet} />`,
       },
@@ -236,7 +233,7 @@ export const WithRealFile: StoryObj<ExcelViewerMediaProps> = {
   args: {
     media: createMockMediaFromUrl(
       SAMPLE_XLSX_URL,
-      "notional-excel-example.xlsx",
+      "notional-excel-example.xlsx"
     ),
   },
   render: (args: ExcelViewerMediaProps) => (

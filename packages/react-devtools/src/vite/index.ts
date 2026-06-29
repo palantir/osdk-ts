@@ -16,11 +16,13 @@
 
 import { dirname, resolve as resolvePath } from "node:path";
 import { fileURLToPath } from "node:url";
+
 import type { Plugin } from "vite";
+
 import { PLUGIN_NAME } from "./constants.js";
 import { generateHookInstallationScript } from "./hookInstaller.js";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const __dirname = import.meta.dirname;
 const CSS_PATH = resolvePath(__dirname, "../styles.css");
 
 export interface OsdkDevToolsOptions {
@@ -79,8 +81,7 @@ export function osdkDevTools(options: OsdkDevToolsOptions = {}): Plugin {
 
         const hookScript = generateHookInstallationScript(verbose);
 
-        const registerScript =
-          `\n  <script type="module">import '@osdk/react-devtools';</script>`;
+        const registerScript = `\n  <script type="module">import '@osdk/react-devtools';</script>`;
 
         let cssTag = "";
         if (injectCSS) {
@@ -102,7 +103,7 @@ export function osdkDevTools(options: OsdkDevToolsOptions = {}): Plugin {
         } else if (verbose) {
           // eslint-disable-next-line no-console
           console.log(
-            `[${PLUGIN_NAME}] Warning: Could not find </head> or </body> tag for injection`,
+            `[${PLUGIN_NAME}] Warning: Could not find </head> or </body> tag for injection`
           );
         }
 

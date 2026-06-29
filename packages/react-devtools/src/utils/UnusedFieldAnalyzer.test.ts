@@ -16,6 +16,7 @@
 
 import type { CacheSnapshot } from "@osdk/client/observable";
 import { describe, expect, it, vi } from "vitest";
+
 import type {
   ComponentHookBinding,
   ComponentQueryRegistry,
@@ -24,7 +25,7 @@ import type { PropertyAccessTrackerWithAnalysis } from "./UnusedFieldAnalyzer.js
 import { UnusedFieldAnalyzer } from "./UnusedFieldAnalyzer.js";
 
 function makeBinding(
-  overrides: Partial<ComponentHookBinding> = {},
+  overrides: Partial<ComponentHookBinding> = {}
 ): ComponentHookBinding {
   return {
     componentId: "comp-1",
@@ -54,7 +55,7 @@ function createMockRegistry(bindings: ComponentHookBinding[]) {
 }
 
 function createMockTracker(
-  accessedProps: Set<string>,
+  accessedProps: Set<string>
 ): PropertyAccessTrackerWithAnalysis {
   return {
     getAccessedProperties: vi.fn().mockReturnValue(accessedProps),

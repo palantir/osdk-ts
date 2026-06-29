@@ -15,12 +15,14 @@
  */
 
 import React, { useCallback, useRef, useState } from "react";
+
 import type { SourceLocation } from "../../fiber/types.js";
 import type { ComponentLabelProps, LabelPosition } from "../types.js";
 import {
   computeLabelPosition,
   OFFSCREEN_POSITION,
 } from "../utils/labelPositioning.js";
+
 import styles from "./ComponentLabel.module.scss";
 
 const ARROW_HEIGHT = 8;
@@ -34,34 +36,37 @@ interface SizeSnapshot {
 const EMPTY_SIZE: SizeSnapshot = { width: 0, height: 0 };
 
 function useElementSize(
-  ref: React.RefObject<HTMLDivElement | null>,
+  ref: React.RefObject<HTMLDivElement | null>
 ): SizeSnapshot {
   const sizeRef = useRef<SizeSnapshot>(EMPTY_SIZE);
 
-  const subscribe = React.useCallback((onStoreChange: () => void) => {
-    const el = ref.current;
-    if (!el) {
-      return () => {};
-    }
-
-    const measure = () => {
-      const rect = el.getBoundingClientRect();
-      const next = { width: rect.width, height: rect.height };
-      if (
-        next.width !== sizeRef.current.width
-        || next.height !== sizeRef.current.height
-      ) {
-        sizeRef.current = next;
-        onStoreChange();
+  const subscribe = React.useCallback(
+    (onStoreChange: () => void) => {
+      const el = ref.current;
+      if (!el) {
+        return () => {};
       }
-    };
 
-    measure();
+      const measure = () => {
+        const rect = el.getBoundingClientRect();
+        const next = { width: rect.width, height: rect.height };
+        if (
+          next.width !== sizeRef.current.width ||
+          next.height !== sizeRef.current.height
+        ) {
+          sizeRef.current = next;
+          onStoreChange();
+        }
+      };
 
-    const observer = new ResizeObserver(measure);
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [ref]);
+      measure();
+
+      const observer = new ResizeObserver(measure);
+      observer.observe(el);
+      return () => observer.disconnect();
+    },
+    [ref]
+  );
 
   const getSnapshot = React.useCallback(() => sizeRef.current, []);
 
@@ -91,7 +96,7 @@ export function ComponentLabel({
       bounds,
       measuredSize.width,
       measuredSize.height,
-      mouseX,
+      mouseX
     );
   }, [bounds, measuredSize.width, measuredSize.height, mouseX]);
 
@@ -111,18 +116,20 @@ export function ComponentLabel({
       ? `${loc.fileName}:${loc.lineNumber}:${loc.columnNumber}`
       : `${loc.fileName}:${loc.lineNumber}`;
 
-    navigator.clipboard.writeText(fullPath).then(() => {
-      if (copyTimeoutRef.current) {
-        clearTimeout(copyTimeoutRef.current);
-      }
+    navigator.clipboard
+      .writeText(fullPath)
+      .then(() => {
+        if (copyTimeoutRef.current) {
+          clearTimeout(copyTimeoutRef.current);
+        }
 
-      setShowCopied(true);
-      copyTimeoutRef.current = setTimeout(() => {
-        setShowCopied(false);
-        copyTimeoutRef.current = null;
-      }, COPY_FEEDBACK_DURATION_MS);
-    }).catch(() => {
-    });
+        setShowCopied(true);
+        copyTimeoutRef.current = setTimeout(() => {
+          setShowCopied(false);
+          copyTimeoutRef.current = null;
+        }, COPY_FEEDBACK_DURATION_MS);
+      })
+      .catch(() => {});
   }, [component?.sourceLocation]);
 
   if (!component || !visible) {
@@ -133,13 +140,13 @@ export function ComponentLabel({
     left: `${position.arrowLeft - 8}px`,
     ...(position.arrowPosition === "bottom"
       ? {
-        top: `-${ARROW_HEIGHT}px`,
-        borderBottom: "8px solid rgba(30, 30, 30, 0.95)",
-      }
+          top: `-${ARROW_HEIGHT}px`,
+          borderBottom: "8px solid rgba(30, 30, 30, 0.95)",
+        }
       : {
-        bottom: `-${ARROW_HEIGHT}px`,
-        borderTop: "8px solid rgba(30, 30, 30, 0.95)",
-      }),
+          bottom: `-${ARROW_HEIGHT}px`,
+          borderTop: "8px solid rgba(30, 30, 30, 0.95)",
+        }),
   };
 
   const formatSourceLocation = (loc: SourceLocation): string => {
@@ -173,10 +180,7 @@ export function ComponentLabel({
       </div>
       {component.sourceLocation && (
         <div className={styles.sourceRow}>
-          <div
-            className={styles.sourceLocation}
-            onClick={handleSourceClick}
-          >
+          <div className={styles.sourceLocation} onClick={handleSourceClick}>
             <svg
               width="12"
               height="12"
@@ -196,32 +200,30 @@ export function ComponentLabel({
             onClick={handleCopySourceLocation}
             title="Copy source location"
           >
-            {showCopied
-              ? (
-                <svg
-                  width="12"
-                  height="12"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="#22c55e"
-                  strokeWidth="2"
-                >
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-              )
-              : (
-                <svg
-                  width="12"
-                  height="12"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                </svg>
-              )}
+            {showCopied ? (
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#22c55e"
+                strokeWidth="2"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            ) : (
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+              </svg>
+            )}
           </button>
           {showCopied && <span className={styles.copiedText}>Copied!</span>}
         </div>

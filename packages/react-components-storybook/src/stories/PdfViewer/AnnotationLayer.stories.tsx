@@ -60,7 +60,7 @@ const meta: Meta<PdfViewerAnnotationLayerProps> = {
   args: {
     annotations: MIXED_ANNOTATIONS,
     pageHeight: 792,
-    scale: 1.0,
+    scale: 1,
     onAnnotationClick: fn(),
   },
   render: (args: PdfViewerAnnotationLayerProps) => (
@@ -140,6 +140,6 @@ export const HighlightsOnly: Story = {
 
 export const ZoomedIn: Story = {
   args: {
-    scale: 2.0,
+    scale: 2,
   },
 };

@@ -17,6 +17,7 @@
 import type { TagBadgeParameters } from "storybook-addon-tag-badges/manager-helpers";
 import type { API } from "storybook/manager-api";
 import { addons, types } from "storybook/manager-api";
+
 import { ADDON_ID } from "./addons/brand-theme-extractor/constants.js";
 import { ThemeToolbar } from "./addons/brand-theme-extractor/ThemeToolbar.js";
 
@@ -56,19 +57,16 @@ function redirectToWelcomeIfNoStorySelected() {
 }
 
 // Redirect to the Welcome docs page if we're at the root
-addons.register(
-  "redirect-to-first-story",
-  (api: Pick<API, "on">) => {
-    api.on("STORY_RENDERED", () => {
-      redirectToWelcomeIfNoStorySelected();
-    });
+addons.register("redirect-to-first-story", (api: Pick<API, "on">) => {
+  api.on("STORY_RENDERED", () => {
+    redirectToWelcomeIfNoStorySelected();
+  });
 
-    // Allow Storybook's initial render cycle to complete
-    setTimeout(() => {
-      redirectToWelcomeIfNoStorySelected();
-    }, 100);
-  },
-);
+  // Allow Storybook's initial render cycle to complete
+  setTimeout(() => {
+    redirectToWelcomeIfNoStorySelected();
+  }, 100);
+});
 
 // Brand Theme Extractor toolbar
 addons.register(ADDON_ID, () => {

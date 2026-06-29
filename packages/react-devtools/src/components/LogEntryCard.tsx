@@ -17,8 +17,10 @@
 import { Icon } from "@blueprintjs/core";
 import classNames from "classnames";
 import React, { useState } from "react";
+
 import type { ConsoleLogEntry } from "../store/ConsoleLogStore.js";
 import { formatRelativeTime } from "../utils/format.js";
+
 import styles from "./LogEntryCard.module.scss";
 
 export interface LogEntryCardProps {

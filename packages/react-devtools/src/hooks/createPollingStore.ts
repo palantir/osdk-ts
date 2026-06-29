@@ -16,7 +16,7 @@
 
 export function createPollingStore<T>(
   fetchFn: () => T | Promise<T>,
-  intervalMs: number,
+  intervalMs: number
 ): {
   subscribe: (callback: () => void) => () => void;
   getSnapshot: () => T | undefined;
@@ -36,10 +36,12 @@ export function createPollingStore<T>(
     try {
       const result = fetchFn();
       if (result instanceof Promise) {
-        result.then((value) => {
-          currentValue = value;
-          notify();
-        }).catch(() => {});
+        result
+          .then((value) => {
+            currentValue = value;
+            notify();
+          })
+          .catch(() => {});
       } else {
         currentValue = result;
         notify();
@@ -54,10 +56,12 @@ export function createPollingStore<T>(
   try {
     const result = fetchFn();
     if (result instanceof Promise) {
-      result.then((value) => {
-        currentValue = value;
-        notify();
-      }).catch(() => {});
+      result
+        .then((value) => {
+          currentValue = value;
+          notify();
+        })
+        .catch(() => {});
     } else {
       currentValue = result;
     }

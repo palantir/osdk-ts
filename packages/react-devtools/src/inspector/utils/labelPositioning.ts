@@ -25,7 +25,7 @@ export function computeLabelPosition(
   selectionBounds: OverlayBounds,
   labelWidth: number,
   labelHeight: number,
-  mouseX: number,
+  mouseX: number
 ): LabelPosition {
   const viewportWidth = window.innerWidth;
   const viewportHeight = window.innerHeight;
@@ -64,7 +64,7 @@ export function computeLabelPosition(
 
   const arrowLeft = Math.max(
     MIN_ARROW_OFFSET,
-    Math.min(cursorX - positionLeft, labelWidth - MIN_ARROW_OFFSET),
+    Math.min(cursorX - positionLeft, labelWidth - MIN_ARROW_OFFSET)
   );
 
   return {

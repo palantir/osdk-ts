@@ -17,21 +17,22 @@
 import { Button, Code, Collapse, Icon } from "@blueprintjs/core";
 import classNames from "classnames";
 import React, { useState } from "react";
+
 import { useRecommendations } from "../hooks/useRecommendations.js";
 import type { MonitorStore } from "../store/MonitorStore.js";
 import type { Recommendation } from "../utils/PerformanceRecommendationEngine.js";
+
 import styles from "./ImprovementsTab.module.scss";
 
 interface ImprovementsTabProps {
   monitorStore: MonitorStore;
 }
 
-export const ImprovementsTab: React.FC<ImprovementsTabProps> = (
-  { monitorStore },
-) => {
-  const { recommendations, isLoading, dismiss, refresh } = useRecommendations(
-    monitorStore,
-  );
+export const ImprovementsTab: React.FC<ImprovementsTabProps> = ({
+  monitorStore,
+}) => {
+  const { recommendations, isLoading, dismiss, refresh } =
+    useRecommendations(monitorStore);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
   const toggleExpanded = (id: string) => {
@@ -63,21 +64,17 @@ export const ImprovementsTab: React.FC<ImprovementsTabProps> = (
 
   return (
     <div className={styles.improvementsTab}>
-      {isLoading && recommendations.length === 0
-        ? <div className={styles.emptyState}>Analyzing...</div>
-        : recommendations.length === 0
-        ? (
-          <div className={styles.emptyState}>
-            <div className={styles.emptyIcon}>
-              <Icon icon="tick-circle" intent="success" size={32} />
-            </div>
-            <div>No improvements found</div>
-            <div className={styles.emptySubtext}>
-              Your app is looking good!
-            </div>
+      {isLoading && recommendations.length === 0 ? (
+        <div className={styles.emptyState}>Analyzing...</div>
+      ) : recommendations.length === 0 ? (
+        <div className={styles.emptyState}>
+          <div className={styles.emptyIcon}>
+            <Icon icon="tick-circle" intent="success" size={32} />
           </div>
-        )
-        : null}
+          <div>No improvements found</div>
+          <div className={styles.emptySubtext}>Your app is looking good!</div>
+        </div>
+      ) : null}
 
       {recommendations.length > 0 && (
         <>
@@ -113,7 +110,7 @@ export const ImprovementsTab: React.FC<ImprovementsTabProps> = (
                   <span
                     className={classNames(
                       styles.improvementLevel,
-                      styles[`level-${rec.level}`],
+                      styles[`level-${rec.level}`]
                     )}
                   >
                     {rec.level.toUpperCase()}

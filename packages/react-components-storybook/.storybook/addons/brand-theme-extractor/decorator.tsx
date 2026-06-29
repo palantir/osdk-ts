@@ -16,6 +16,7 @@
 
 import type { Decorator } from "@storybook/react-vite";
 import { useEffect, useMemo } from "react";
+
 import { GLOBALS_KEY } from "./constants.js";
 import { parseBrandThemeState } from "./state.js";
 import { getTokenRole } from "./token-map.js";
@@ -30,7 +31,7 @@ const STYLE_ID = "brand-theme-overrides";
 export const BrandThemeDecorator: Decorator = (Story, context) => {
   const brandTheme = useMemo(
     () => parseBrandThemeState(context.globals[GLOBALS_KEY]),
-    [context.globals[GLOBALS_KEY]],
+    [context.globals[GLOBALS_KEY]]
   );
 
   const cssText = useMemo(() => {
@@ -54,8 +55,8 @@ export const BrandThemeDecorator: Decorator = (Story, context) => {
 
       let value: string | undefined;
       if (
-        assignment.colorIndex >= 0
-        && brandTheme.palette?.[assignment.colorIndex]
+        assignment.colorIndex >= 0 &&
+        brandTheme.palette?.[assignment.colorIndex]
       ) {
         value = brandTheme.palette[assignment.colorIndex].hex;
       } else if (assignment.customValue) {
@@ -65,8 +66,8 @@ export const BrandThemeDecorator: Decorator = (Story, context) => {
       if (!value) continue;
 
       if (
-        (roleDef.inputType === "px" || roleDef.inputType === "ms")
-        && /^\d+(\.\d+)?$/.test(value)
+        (roleDef.inputType === "px" || roleDef.inputType === "ms") &&
+        /^\d+(\.\d+)?$/.test(value)
       ) {
         value = `${value}${roleDef.inputType}`;
       }
@@ -87,45 +88,53 @@ export const BrandThemeDecorator: Decorator = (Story, context) => {
       "  --osdk-input-shadow-error: inset 0 0 0 var(--osdk-surface-border-width) var(--osdk-intent-danger-rest);",
       "  --osdk-input-focus-shadow: inset 0 0 0 var(--osdk-surface-border-width) var(--osdk-surface-border-color-default);",
       "  --osdk-input-focus-shadow-error: inset 0 0 0 var(--osdk-surface-border-width) var(--osdk-intent-danger-rest);",
-      "  --osdk-button-shadow: inset 0 0 0 var(--osdk-surface-border-width) var(--osdk-surface-border-color-default);",
+      "  --osdk-button-shadow: inset 0 0 0 var(--osdk-surface-border-width) var(--osdk-surface-border-color-default);"
     );
 
     // Use :root:root (doubled specificity) to override theme layers.
     return `:root:root {\n${overrides.join("\n")}\n}`;
   }, [brandTheme]);
 
-  useEffect(function syncBrandThemeOverrideStyle() {
-    let styleEl = document.getElementById(STYLE_ID) as HTMLStyleElement | null;
+  useEffect(
+    function syncBrandThemeOverrideStyle() {
+      let styleEl = document.querySelector(
+        `#${STYLE_ID}`
+      ) as HTMLStyleElement | null;
 
-    if (cssText) {
-      if (!styleEl) {
-        styleEl = document.createElement("style");
-        styleEl.id = STYLE_ID;
-        document.head.appendChild(styleEl);
+      if (cssText) {
+        if (!styleEl) {
+          styleEl = document.createElement("style");
+          styleEl.id = STYLE_ID;
+          document.head.appendChild(styleEl);
+        }
+        styleEl.textContent = cssText;
+      } else if (styleEl) {
+        styleEl.remove();
       }
-      styleEl.textContent = cssText;
-    } else if (styleEl) {
-      styleEl.remove();
-    }
 
-    return () => {
-      const el = document.getElementById(STYLE_ID);
-      if (el) el.remove();
-    };
-  }, [cssText]);
+      return () => {
+        const el = document.querySelector(`#${STYLE_ID}`);
+        if (el) el.remove();
+      };
+    },
+    [cssText]
+  );
 
-  useEffect(function applyBlueprintColorMode() {
-    const root = document.documentElement;
-    if (brandTheme.colorMode === "dark") {
-      root.setAttribute("data-bp-color-scheme", "dark");
-    } else {
-      root.removeAttribute("data-bp-color-scheme");
-    }
+  useEffect(
+    function applyBlueprintColorMode() {
+      const root = document.documentElement;
+      if (brandTheme.colorMode === "dark") {
+        root.setAttribute("data-bp-color-scheme", "dark");
+      } else {
+        root.removeAttribute("data-bp-color-scheme");
+      }
 
-    return () => {
-      root.removeAttribute("data-bp-color-scheme");
-    };
-  }, [brandTheme.colorMode]);
+      return () => {
+        root.removeAttribute("data-bp-color-scheme");
+      };
+    },
+    [brandTheme.colorMode]
+  );
 
   return <Story />;
 };

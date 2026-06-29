@@ -18,12 +18,10 @@ import type { Observer, Unsubscribable } from "@osdk/client/observable";
 import React from "react";
 
 declare const process: { env: { NODE_ENV: string } };
-const __DEV__ = typeof process === "undefined"
-  || process.env.NODE_ENV !== "production";
+const __DEV__ =
+  typeof process === "undefined" || process.env.NODE_ENV !== "production";
 
-export const OSDK_HOOK_METADATA: symbol = Symbol.for(
-  "__OSDK_HOOK_METADATA__",
-);
+export const OSDK_HOOK_METADATA: symbol = Symbol.for("__OSDK_HOOK_METADATA__");
 
 export interface OsdkStoreMetadata {
   hookType: string;
@@ -39,7 +37,7 @@ export interface OsdkStoreMetadata {
 }
 
 export const devToolsMetadata: (
-  meta: OsdkStoreMetadata,
+  meta: OsdkStoreMetadata
 ) => OsdkStoreMetadata | undefined = __DEV__
   ? (meta) => meta
   : (_meta) => undefined;
@@ -47,11 +45,13 @@ export const devToolsMetadata: (
 export function useDevToolsMetadata(
   devtoolsEnabled: boolean,
   hookType: string,
-  key: string,
+  key: string
 ): void {
-  const ref = React.useRef<
-    { [k: symbol]: true; hookType: string; key: string } | null
-  >(null);
+  const ref = React.useRef<{
+    [k: symbol]: true;
+    hookType: string;
+    key: string;
+  } | null>(null);
   if (devtoolsEnabled) {
     if (ref.current == null || ref.current.key !== key) {
       ref.current = { [OSDK_HOOK_METADATA]: true, hookType, key };
@@ -62,14 +62,14 @@ export function useDevToolsMetadata(
 }
 
 export type Snapshot<X> =
-  | X & { error?: Error }
+  | (X & { error?: Error })
   | (Partial<X> & { error?: Error })
   | undefined;
 
 export function makeExternalStore<X>(
   createObservation: (callback: Observer<X | undefined>) => Unsubscribable,
   _metadata?: OsdkStoreMetadata,
-  initialValue?: Snapshot<X>,
+  initialValue?: Snapshot<X>
 ): {
   subscribe: (notifyUpdate: () => void) => () => void;
   getSnapShot: () => Snapshot<X>;
@@ -88,7 +88,7 @@ export function makeExternalStore<X>(
       },
       error: (error: unknown) => {
         lastResult = {
-          ...(lastResult ?? {}),
+          ...lastResult,
           error: error instanceof Error ? error : new Error(String(error)),
         } as Snapshot<X>;
         notifyUpdate();
@@ -120,10 +120,10 @@ export function makeExternalStore<X>(
  */
 export function makeExternalStoreAsync<X>(
   createObservation: (
-    callback: Observer<X | undefined>,
+    callback: Observer<X | undefined>
   ) => Promise<Unsubscribable>,
   _metadata?: OsdkStoreMetadata,
-  initialValue?: Snapshot<X>,
+  initialValue?: Snapshot<X>
 ): {
   subscribe: (notifyUpdate: () => void) => () => void;
   getSnapShot: () => Snapshot<X>;
@@ -148,7 +148,7 @@ export function makeExternalStoreAsync<X>(
       error: (error: unknown) => {
         if (isActive) {
           lastResult = {
-            ...(lastResult ?? {}),
+            ...lastResult,
             error: error instanceof Error ? error : new Error(String(error)),
           } as Snapshot<X>;
           notifyUpdate();
@@ -157,21 +157,23 @@ export function makeExternalStoreAsync<X>(
       complete: () => {},
     });
 
-    subscriptionPromise.then((sub) => {
-      if (isActive) {
-        currentSubscription = sub;
-      } else {
-        sub.unsubscribe();
-      }
-    }).catch((error: unknown) => {
-      if (isActive) {
-        lastResult = {
-          ...(lastResult ?? {}),
-          error: error instanceof Error ? error : new Error(String(error)),
-        } as Snapshot<X>;
-        notifyUpdate();
-      }
-    });
+    subscriptionPromise
+      .then((sub) => {
+        if (isActive) {
+          currentSubscription = sub;
+        } else {
+          sub.unsubscribe();
+        }
+      })
+      .catch((error: unknown) => {
+        if (isActive) {
+          lastResult = {
+            ...lastResult,
+            error: error instanceof Error ? error : new Error(String(error)),
+          } as Snapshot<X>;
+          notifyUpdate();
+        }
+      });
 
     return (): void => {
       isActive = false;

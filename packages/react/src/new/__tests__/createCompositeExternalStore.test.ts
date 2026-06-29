@@ -17,6 +17,7 @@
 import type { QueryDefinition } from "@osdk/api";
 import type { ObservableClient } from "@osdk/client/observable";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import { createCompositeExternalStore } from "../createCompositeExternalStore.js";
 import type { FunctionQueryParams } from "../useOsdkFunctions.js";
 
@@ -46,7 +47,7 @@ type Observer = {
 
 function makeQuery(
   def: QueryDefinition<unknown>,
-  options?: FunctionQueryParams<QueryDefinition<unknown>>["options"],
+  options?: FunctionQueryParams<QueryDefinition<unknown>>["options"]
 ): FunctionQueryParams<QueryDefinition<unknown>> {
   return { queryDefinition: def, options };
 }
@@ -60,19 +61,21 @@ function createMockClient(): {
   const unsubscribes: ReturnType<typeof vi.fn>[] = [];
 
   const client = {
-    observeFunction: vi.fn().mockImplementation(
-      (
-        _def: unknown,
-        _params: unknown,
-        _opts: unknown,
-        observer: Observer,
-      ) => {
-        observers.push(observer);
-        const unsub = vi.fn();
-        unsubscribes.push(unsub);
-        return { unsubscribe: unsub };
-      },
-    ),
+    observeFunction: vi
+      .fn()
+      .mockImplementation(
+        (
+          _def: unknown,
+          _params: unknown,
+          _opts: unknown,
+          observer: Observer
+        ) => {
+          observers.push(observer);
+          const unsub = vi.fn();
+          unsubscribes.push(unsub);
+          return { unsubscribe: unsub };
+        }
+      ),
   } as unknown as ObservableClient;
 
   return { client, observers, unsubscribes };
@@ -93,7 +96,7 @@ describe("createCompositeExternalStore", () => {
     const store = createCompositeExternalStore(
       [makeQuery(QUERY_DEF_A), makeQuery(QUERY_DEF_B)],
       mock.client,
-      undefined,
+      undefined
     );
 
     expect(store.getSnapshot()).toEqual([undefined, undefined]);
@@ -103,7 +106,7 @@ describe("createCompositeExternalStore", () => {
     const store = createCompositeExternalStore(
       [makeQuery(QUERY_DEF_A), makeQuery(QUERY_DEF_B)],
       mock.client,
-      undefined,
+      undefined
     );
 
     const notify = vi.fn();
@@ -116,7 +119,7 @@ describe("createCompositeExternalStore", () => {
     const store = createCompositeExternalStore(
       [makeQuery(QUERY_DEF_A), makeQuery(QUERY_DEF_B)],
       mock.client,
-      undefined,
+      undefined
     );
 
     const notify = vi.fn();
@@ -141,7 +144,7 @@ describe("createCompositeExternalStore", () => {
     const store = createCompositeExternalStore(
       [makeQuery(QUERY_DEF_A)],
       mock.client,
-      undefined,
+      undefined
     );
 
     store.subscribe(vi.fn());
@@ -161,7 +164,7 @@ describe("createCompositeExternalStore", () => {
     const store = createCompositeExternalStore(
       [makeQuery(QUERY_DEF_A)],
       mock.client,
-      undefined,
+      undefined
     );
 
     const notify = vi.fn();
@@ -178,7 +181,7 @@ describe("createCompositeExternalStore", () => {
     const store = createCompositeExternalStore(
       [makeQuery(QUERY_DEF_A)],
       mock.client,
-      undefined,
+      undefined
     );
 
     store.subscribe(vi.fn());
@@ -193,7 +196,7 @@ describe("createCompositeExternalStore", () => {
     const store = createCompositeExternalStore(
       [makeQuery(QUERY_DEF_A), makeQuery(QUERY_DEF_B)],
       mock.client,
-      undefined,
+      undefined
     );
 
     const cleanup = store.subscribe(vi.fn());
@@ -205,12 +208,9 @@ describe("createCompositeExternalStore", () => {
 
   it("should skip disabled queries", () => {
     const store = createCompositeExternalStore(
-      [
-        makeQuery(QUERY_DEF_A, { enabled: false }),
-        makeQuery(QUERY_DEF_B),
-      ],
+      [makeQuery(QUERY_DEF_A, { enabled: false }), makeQuery(QUERY_DEF_B)],
       mock.client,
-      undefined,
+      undefined
     );
 
     store.subscribe(vi.fn());
@@ -220,7 +220,7 @@ describe("createCompositeExternalStore", () => {
       QUERY_DEF_B,
       undefined,
       expect.anything(),
-      expect.anything(),
+      expect.anything()
     );
   });
 
@@ -228,7 +228,7 @@ describe("createCompositeExternalStore", () => {
     const store = createCompositeExternalStore(
       [makeQuery(QUERY_DEF_A, { dedupeIntervalMs: 5000 })],
       mock.client,
-      undefined,
+      undefined
     );
 
     store.subscribe(vi.fn());
@@ -237,7 +237,7 @@ describe("createCompositeExternalStore", () => {
       QUERY_DEF_A,
       undefined,
       expect.objectContaining({ dedupeInterval: 5000 }),
-      expect.anything(),
+      expect.anything()
     );
   });
 
@@ -245,7 +245,7 @@ describe("createCompositeExternalStore", () => {
     const store = createCompositeExternalStore(
       [makeQuery(QUERY_DEF_A)],
       mock.client,
-      undefined,
+      undefined
     );
 
     store.subscribe(vi.fn());
@@ -254,7 +254,7 @@ describe("createCompositeExternalStore", () => {
       QUERY_DEF_A,
       undefined,
       expect.objectContaining({ dedupeInterval: 2_000 }),
-      expect.anything(),
+      expect.anything()
     );
   });
 
@@ -267,7 +267,7 @@ describe("createCompositeExternalStore", () => {
           makeQuery(QUERY_DEF_C),
         ],
         mock.client,
-        1,
+        1
       );
 
       store.subscribe(vi.fn());
@@ -277,7 +277,7 @@ describe("createCompositeExternalStore", () => {
         QUERY_DEF_A,
         undefined,
         expect.anything(),
-        expect.anything(),
+        expect.anything()
       );
     });
 
@@ -289,7 +289,7 @@ describe("createCompositeExternalStore", () => {
           makeQuery(QUERY_DEF_C),
         ],
         mock.client,
-        1,
+        1
       );
 
       store.subscribe(vi.fn());
@@ -308,7 +308,7 @@ describe("createCompositeExternalStore", () => {
         QUERY_DEF_B,
         undefined,
         expect.anything(),
-        expect.anything(),
+        expect.anything()
       );
 
       // Settle second query
@@ -324,7 +324,7 @@ describe("createCompositeExternalStore", () => {
         QUERY_DEF_C,
         undefined,
         expect.anything(),
-        expect.anything(),
+        expect.anything()
       );
     });
 
@@ -332,7 +332,7 @@ describe("createCompositeExternalStore", () => {
       const store = createCompositeExternalStore(
         [makeQuery(QUERY_DEF_A), makeQuery(QUERY_DEF_B)],
         mock.client,
-        1,
+        1
       );
 
       store.subscribe(vi.fn());
@@ -351,7 +351,7 @@ describe("createCompositeExternalStore", () => {
       const store = createCompositeExternalStore(
         [makeQuery(QUERY_DEF_A), makeQuery(QUERY_DEF_B)],
         mock.client,
-        1,
+        1
       );
 
       store.subscribe(vi.fn());
@@ -366,7 +366,7 @@ describe("createCompositeExternalStore", () => {
       const store = createCompositeExternalStore(
         [makeQuery(QUERY_DEF_A), makeQuery(QUERY_DEF_B)],
         mock.client,
-        1,
+        1
       );
 
       store.subscribe(vi.fn());
@@ -389,7 +389,7 @@ describe("createCompositeExternalStore", () => {
           makeQuery(QUERY_DEF_C),
         ],
         mock.client,
-        2,
+        2
       );
 
       store.subscribe(vi.fn());
@@ -415,7 +415,7 @@ describe("createCompositeExternalStore", () => {
           makeQuery(QUERY_DEF_C),
         ],
         mock.client,
-        1,
+        1
       );
 
       store.subscribe(vi.fn());
@@ -426,7 +426,7 @@ describe("createCompositeExternalStore", () => {
         QUERY_DEF_B,
         undefined,
         expect.anything(),
-        expect.anything(),
+        expect.anything()
       );
 
       // Settle B — C should start
@@ -441,7 +441,7 @@ describe("createCompositeExternalStore", () => {
         QUERY_DEF_C,
         undefined,
         expect.anything(),
-        expect.anything(),
+        expect.anything()
       );
     });
 
@@ -449,7 +449,7 @@ describe("createCompositeExternalStore", () => {
       const store = createCompositeExternalStore(
         [makeQuery(QUERY_DEF_A)],
         mock.client,
-        1,
+        1
       );
 
       store.subscribe(vi.fn());
@@ -469,7 +469,7 @@ describe("createCompositeExternalStore", () => {
     const store = createCompositeExternalStore(
       [makeQuery(QUERY_DEF_A)],
       mock.client,
-      undefined,
+      undefined
     );
 
     store.subscribe(vi.fn());
@@ -491,11 +491,7 @@ describe("createCompositeExternalStore", () => {
   });
 
   it("should handle empty queries array", () => {
-    const store = createCompositeExternalStore(
-      [],
-      mock.client,
-      undefined,
-    );
+    const store = createCompositeExternalStore([], mock.client, undefined);
 
     expect(store.getSnapshot()).toEqual([]);
 

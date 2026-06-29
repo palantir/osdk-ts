@@ -16,6 +16,7 @@
 
 import { Button, Collapse, Icon } from "@blueprintjs/core";
 import React, { useState } from "react";
+
 import type {
   DiscoveredAction,
   DiscoveredAggregation,
@@ -25,6 +26,7 @@ import type {
   DiscoveredPrimitives,
   DiscoveredQuery,
 } from "../utils/ComponentPrimitiveDiscovery.js";
+
 import styles from "./PrimitiveSelectionPanel.module.scss";
 
 export type PrimitiveType =
@@ -49,15 +51,11 @@ export interface PrimitiveSelectionPanelProps {
   onClose: () => void;
 }
 
-export const PrimitiveSelectionPanel: React.FC<PrimitiveSelectionPanelProps> = (
-  {
-    primitives,
-    onSelectPrimitive,
-    onClose,
-  },
-) => {
+export const PrimitiveSelectionPanel: React.FC<
+  PrimitiveSelectionPanelProps
+> = ({ primitives, onSelectPrimitive, onClose }) => {
   const [openSections, setOpenSections] = useState<Set<PrimitiveType>>(
-    new Set(["action", "objectSet", "object", "link", "query", "aggregation"]),
+    new Set(["action", "objectSet", "object", "link", "query", "aggregation"])
   );
 
   const toggleSection = (section: PrimitiveType) => {
@@ -70,12 +68,13 @@ export const PrimitiveSelectionPanel: React.FC<PrimitiveSelectionPanelProps> = (
     setOpenSections(newSections);
   };
 
-  const totalCount = primitives.actions.length
-    + primitives.objectSets.length
-    + primitives.objects.length
-    + primitives.links.length
-    + primitives.queries.length
-    + primitives.aggregations.length;
+  const totalCount =
+    primitives.actions.length +
+    primitives.objectSets.length +
+    primitives.objects.length +
+    primitives.links.length +
+    primitives.queries.length +
+    primitives.aggregations.length;
 
   return (
     <div className={styles.panel}>
@@ -85,8 +84,8 @@ export const PrimitiveSelectionPanel: React.FC<PrimitiveSelectionPanelProps> = (
           <div>
             <div className={styles.headerTitle}>Discovered OSDK Usage</div>
             <div className={styles.headerSubtitle}>
-              {primitives.componentName} · {totalCount}{" "}
-              item{totalCount !== 1 ? "s" : ""}
+              {primitives.componentName} · {totalCount} item
+              {totalCount !== 1 ? "s" : ""}
             </div>
           </div>
         </div>
@@ -125,7 +124,8 @@ export const PrimitiveSelectionPanel: React.FC<PrimitiveSelectionPanelProps> = (
                 title={action.name}
                 subtitle={action.location}
                 onClick={() =>
-                  onSelectPrimitive({ type: "action", data: action })}
+                  onSelectPrimitive({ type: "action", data: action })
+                }
               />
             ))}
           </PrimitiveSection>
@@ -151,7 +151,8 @@ export const PrimitiveSelectionPanel: React.FC<PrimitiveSelectionPanelProps> = (
                   objectSet.pageSize && `${objectSet.pageSize}/page`,
                 ].filter((x): x is string => Boolean(x))}
                 onClick={() =>
-                  onSelectPrimitive({ type: "objectSet", data: objectSet })}
+                  onSelectPrimitive({ type: "objectSet", data: objectSet })
+                }
               />
             ))}
           </PrimitiveSection>
@@ -173,7 +174,8 @@ export const PrimitiveSelectionPanel: React.FC<PrimitiveSelectionPanelProps> = (
                 subtitle={object.location}
                 metadata={object.primaryKey ? [object.primaryKey] : undefined}
                 onClick={() =>
-                  onSelectPrimitive({ type: "object", data: object })}
+                  onSelectPrimitive({ type: "object", data: object })
+                }
               />
             ))}
           </PrimitiveSection>
@@ -216,7 +218,8 @@ export const PrimitiveSelectionPanel: React.FC<PrimitiveSelectionPanelProps> = (
                 subtitle={query.location}
                 metadata={[query.signature]}
                 onClick={() =>
-                  onSelectPrimitive({ type: "query", data: query })}
+                  onSelectPrimitive({ type: "query", data: query })
+                }
               />
             ))}
           </PrimitiveSection>
@@ -244,7 +247,8 @@ export const PrimitiveSelectionPanel: React.FC<PrimitiveSelectionPanelProps> = (
                   onSelectPrimitive({
                     type: "aggregation",
                     data: aggregation,
-                  })}
+                  })
+                }
               />
             ))}
           </PrimitiveSection>
@@ -279,11 +283,7 @@ const PrimitiveSection: React.FC<PrimitiveSectionProps> = ({
 }) => {
   return (
     <div className={styles.section}>
-      <button
-        type="button"
-        className={styles.sectionHeader}
-        onClick={onToggle}
-      >
+      <button type="button" className={styles.sectionHeader} onClick={onToggle}>
         <Icon icon={isOpen ? "chevron-down" : "chevron-right"} size={12} />
         <Icon icon={icon} />
         <span className={styles.sectionTitle}>{title}</span>
@@ -318,11 +318,7 @@ const PrimitiveItem: React.FC<PrimitiveItemProps> = ({
   onClick,
 }) => {
   return (
-    <button
-      type="button"
-      className={styles.item}
-      onClick={onClick}
-    >
+    <button type="button" className={styles.item} onClick={onClick}>
       <Icon icon={icon} size={14} />
       <div className={styles.itemContent}>
         <div className={styles.itemTitle}>{title}</div>

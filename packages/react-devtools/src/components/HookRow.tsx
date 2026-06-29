@@ -17,10 +17,12 @@
 import { Button, Icon, Tag, Tooltip } from "@blueprintjs/core";
 import classNames from "classnames";
 import React, { useMemo } from "react";
+
 import { useSharedTick } from "../hooks/useSharedTick.js";
 import type { MonitorStore } from "../store/MonitorStore.js";
 import type { ComponentHookBinding } from "../utils/ComponentQueryRegistry.js";
 import { formatRelativeTime } from "../utils/format.js";
+
 import styles from "./HookRow.module.scss";
 
 function getHookIcon(hookType: string) {
@@ -134,41 +136,35 @@ export const HookRow: React.FC<HookRowProps> = ({
           </Tooltip>
         );
       case "success":
-        return status.lastUpdate != null
-          ? (
-            <Tooltip
-              content={`Last updated ${formatRelativeTime(status.lastUpdate)}`}
+        return status.lastUpdate != null ? (
+          <Tooltip
+            content={`Last updated ${formatRelativeTime(status.lastUpdate)}`}
+          >
+            <Tag
+              minimal
+              intent="success"
+              icon="tick"
+              className={styles.statusBadge}
             >
-              <Tag
-                minimal
-                intent="success"
-                icon="tick"
-                className={styles.statusBadge}
-              >
-                {formatRelativeTime(status.lastUpdate)}
-              </Tag>
-            </Tooltip>
-          )
-          : null;
+              {formatRelativeTime(status.lastUpdate)}
+            </Tag>
+          </Tooltip>
+        ) : null;
       case "stale":
-        return status.lastUpdate != null
-          ? (
-            <Tooltip
-              content={`Data is stale (${
-                formatRelativeTime(status.lastUpdate)
-              })`}
+        return status.lastUpdate != null ? (
+          <Tooltip
+            content={`Data is stale (${formatRelativeTime(status.lastUpdate)})`}
+          >
+            <Tag
+              minimal
+              intent="warning"
+              icon="time"
+              className={styles.statusBadge}
             >
-              <Tag
-                minimal
-                intent="warning"
-                icon="time"
-                className={styles.statusBadge}
-              >
-                Stale
-              </Tag>
-            </Tooltip>
-          )
-          : null;
+              Stale
+            </Tag>
+          </Tooltip>
+        ) : null;
       case "error":
         return (
           <Tooltip content={status.errorMessage || "Error loading data"}>
@@ -194,7 +190,7 @@ export const HookRow: React.FC<HookRowProps> = ({
         <div
           className={classNames(
             styles.hookBadge,
-            getHookColor(binding.hookType),
+            getHookColor(binding.hookType)
           )}
         >
           <Icon icon={getHookIcon(binding.hookType)} size={12} />
@@ -207,18 +203,18 @@ export const HookRow: React.FC<HookRowProps> = ({
       <Tooltip content={binding.querySignature}>
         <div
           className={styles.querySignature}
-          title={binding.querySignature.length > 50
-            ? binding.querySignature
-            : undefined}
+          title={
+            binding.querySignature.length > 50
+              ? binding.querySignature
+              : undefined
+          }
         >
           {truncateSignature(binding.querySignature)}
         </div>
       </Tooltip>
 
       {binding.filePath && (
-        <Tooltip
-          content={`${binding.filePath}:${binding.lineNumber}`}
-        >
+        <Tooltip content={`${binding.filePath}:${binding.lineNumber}`}>
           <Button
             variant="minimal"
             size="small"
@@ -232,9 +228,9 @@ export const HookRow: React.FC<HookRowProps> = ({
 
       {binding.renderCount > 0 && (
         <Tooltip
-          content={`Renders: ${binding.renderCount}, Avg: ${
-            formatTime(binding.avgRenderDuration)
-          }`}
+          content={`Renders: ${binding.renderCount}, Avg: ${formatTime(
+            binding.avgRenderDuration
+          )}`}
         >
           <div className={styles.performance}>
             <Icon icon="time" size={10} />

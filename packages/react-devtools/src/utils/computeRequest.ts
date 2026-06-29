@@ -16,18 +16,12 @@
 
 import type { ComputeRequest } from "../types/compute.js";
 
-type FulfilledComputeRequest = Extract<
-  ComputeRequest,
-  { type: "fulfilled" }
->;
+type FulfilledComputeRequest = Extract<ComputeRequest, { type: "fulfilled" }>;
 type FulfilledWithoutUsageComputeRequest = Extract<
   ComputeRequest,
   { type: "fulfilled-without-usage" }
 >;
-type PendingComputeRequest = Extract<
-  ComputeRequest,
-  { type: "pending" }
->;
+type PendingComputeRequest = Extract<ComputeRequest, { type: "pending" }>;
 type FailedComputeRequest = Extract<ComputeRequest, { type: "failed" }>;
 
 export const visitComputeRequest = <T>(
@@ -37,7 +31,7 @@ export const visitComputeRequest = <T>(
     failed: (request: FailedComputeRequest) => T;
     fulfilled: (request: FulfilledComputeRequest) => T;
     fulfilledWithoutUsage: (request: FulfilledWithoutUsageComputeRequest) => T;
-  },
+  }
 ): T => {
   if (request.type === "pending") {
     return visitor.pending(request);

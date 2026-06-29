@@ -113,7 +113,7 @@ export class MetricsStore extends SubscribableStore {
     signature: string,
     responseTime: number,
     metadata?: OperationMetadata,
-    objectCount: number = 1,
+    objectCount: number = 1
   ): void {
     const operation: Operation = {
       id: crypto.randomUUID(),
@@ -133,7 +133,7 @@ export class MetricsStore extends SubscribableStore {
     signature: string,
     responseTime: number,
     metadata?: OperationMetadata,
-    objectCount: number = 1,
+    objectCount: number = 1
   ): void {
     const operation: Operation = {
       id: crypto.randomUUID(),
@@ -152,7 +152,7 @@ export class MetricsStore extends SubscribableStore {
     signature: string,
     responseTime: number,
     metadata?: OperationMetadata,
-    objectCount: number = 1,
+    objectCount: number = 1
   ): void {
     const operation: Operation = {
       id: crypto.randomUUID(),
@@ -167,10 +167,7 @@ export class MetricsStore extends SubscribableStore {
     this.queueOperation(operation);
   }
 
-  recordDeduplication(
-    signature: string,
-    metadata?: OperationMetadata,
-  ): void {
+  recordDeduplication(signature: string, metadata?: OperationMetadata): void {
     const operation: Operation = {
       id: crypto.randomUUID(),
       type: "deduplication",
@@ -185,7 +182,7 @@ export class MetricsStore extends SubscribableStore {
 
   recordOptimisticUpdate(
     signature: string,
-    metadata?: OperationMetadata,
+    metadata?: OperationMetadata
   ): void {
     const operation: Operation = {
       id: crypto.randomUUID(),
@@ -206,7 +203,7 @@ export class MetricsStore extends SubscribableStore {
   recordActionValidation(
     signature: string,
     duration: number,
-    metadata?: OperationMetadata,
+    metadata?: OperationMetadata
   ): void {
     const operation: Operation = {
       id: crypto.randomUUID(),
@@ -357,7 +354,7 @@ export class MetricsStore extends SubscribableStore {
         if (operation.saved) {
           this.aggregates.requestsSaved++;
           this.aggregates.bytesServedFromCache += this.estimateBytes(
-            operation.signature,
+            operation.signature
           );
         }
         break;
@@ -430,54 +427,60 @@ export class MetricsStore extends SubscribableStore {
   }
 
   private calculateRates(): MetricRates {
-    const total = this.aggregates.cacheHits + this.aggregates.cacheMisses
-      + this.aggregates.revalidations;
+    const total =
+      this.aggregates.cacheHits +
+      this.aggregates.cacheMisses +
+      this.aggregates.revalidations;
     const totalRequests = total + this.aggregates.deduplications;
     const actionCount = this.aggregates.actionCount;
     const optimisticActionCount = this.aggregates.optimisticActionCount;
-    const averageValidationTime = this.aggregates.validationCount > 0
-      ? this.aggregates.totalValidationTime / this.aggregates.validationCount
-      : 0;
-    const averageServerRoundTripTime = actionCount > 0
-      ? this.aggregates.totalServerRoundTripTime / actionCount
-      : 0;
+    const averageValidationTime =
+      this.aggregates.validationCount > 0
+        ? this.aggregates.totalValidationTime / this.aggregates.validationCount
+        : 0;
+    const averageServerRoundTripTime =
+      actionCount > 0
+        ? this.aggregates.totalServerRoundTripTime / actionCount
+        : 0;
 
     return {
-      cacheHitRate: total > 0
-        ? (this.aggregates.cacheHits + this.aggregates.revalidations) / total
-        : 0,
-      deduplicationRate: totalRequests > 0
-        ? this.aggregates.deduplications / totalRequests
-        : 0,
-      optimisticUpdateRate: totalRequests > 0
-        ? this.aggregates.optimisticUpdates / totalRequests
-        : 0,
-      averageResponseTime: total > 0
-        ? this.aggregates.totalResponseTime / total
-        : 0,
-      averageCachedResponseTime: this.aggregates.cacheHits > 0
-        ? this.aggregates.cachedResponseTime / this.aggregates.cacheHits
-        : 0,
-      optimisticActionCoverage: actionCount > 0
-        ? optimisticActionCount / actionCount
-        : 0,
-      configuredOptimisticActionRate: actionCount > 0
-        ? this.aggregates.configuredOptimisticActionCount / actionCount
-        : 0,
-      rollbackRate: actionCount > 0
-        ? this.aggregates.rollbackActionCount / actionCount
-        : 0,
-      averageOptimisticRenderTime: optimisticActionCount > 0
-        ? this.aggregates.totalOptimisticRenderTime / optimisticActionCount
-        : 0,
+      cacheHitRate:
+        total > 0
+          ? (this.aggregates.cacheHits + this.aggregates.revalidations) / total
+          : 0,
+      deduplicationRate:
+        totalRequests > 0 ? this.aggregates.deduplications / totalRequests : 0,
+      optimisticUpdateRate:
+        totalRequests > 0
+          ? this.aggregates.optimisticUpdates / totalRequests
+          : 0,
+      averageResponseTime:
+        total > 0 ? this.aggregates.totalResponseTime / total : 0,
+      averageCachedResponseTime:
+        this.aggregates.cacheHits > 0
+          ? this.aggregates.cachedResponseTime / this.aggregates.cacheHits
+          : 0,
+      optimisticActionCoverage:
+        actionCount > 0 ? optimisticActionCount / actionCount : 0,
+      configuredOptimisticActionRate:
+        actionCount > 0
+          ? this.aggregates.configuredOptimisticActionCount / actionCount
+          : 0,
+      rollbackRate:
+        actionCount > 0 ? this.aggregates.rollbackActionCount / actionCount : 0,
+      averageOptimisticRenderTime:
+        optimisticActionCount > 0
+          ? this.aggregates.totalOptimisticRenderTime / optimisticActionCount
+          : 0,
       averageServerRoundTripTime,
-      averagePerceivedSpeedup: optimisticActionCount > 0
-        ? this.aggregates.totalPerceivedSpeedup / optimisticActionCount
-        : 0,
+      averagePerceivedSpeedup:
+        optimisticActionCount > 0
+          ? this.aggregates.totalPerceivedSpeedup / optimisticActionCount
+          : 0,
       averageValidationTime,
       validationTimeSaved: Math.max(
         0,
-        averageServerRoundTripTime - averageValidationTime,
+        averageServerRoundTripTime - averageValidationTime
       ),
     };
   }
@@ -508,7 +511,8 @@ export class MetricsStore extends SubscribableStore {
 
     for (const op of recentOps) {
       if (
-        op.timestamp >= currentSecond - 1000 && op.timestamp < currentSecond
+        op.timestamp >= currentSecond - 1000 &&
+        op.timestamp < currentSecond
       ) {
         switch (op.type) {
           case "cache-hit":
@@ -539,13 +543,14 @@ export class MetricsStore extends SubscribableStore {
 
   private estimateNetworkTime(_signature: string): number {
     if (this.networkTimeDirty) {
-      const recentMisses = this.operations.getLast(100)
-        .filter(op => op.type === "cache-miss" && op.responseTime != null);
+      const recentMisses = this.operations
+        .getLast(100)
+        .filter((op) => op.type === "cache-miss" && op.responseTime != null);
 
       if (recentMisses.length > 0) {
         const totalTime = recentMisses.reduce(
           (sum, op) => sum + (op.responseTime ?? 0),
-          0,
+          0
         );
         this.cachedAvgNetworkTime = totalTime / recentMisses.length;
       }
@@ -556,19 +561,19 @@ export class MetricsStore extends SubscribableStore {
 
   private estimateBytes(_signature: string): number {
     if (this.bytesPerObjectDirty) {
-      const recentMisses = this.operations.getLast(100)
+      const recentMisses = this.operations
+        .getLast(100)
         .filter(
-          op =>
-            op.type === "cache-miss"
-            && op.objectCount != null
-            && op.objectCount > 0,
+          (op) =>
+            op.type === "cache-miss" &&
+            op.objectCount != null &&
+            op.objectCount > 0
         );
 
       if (recentMisses.length > 0) {
-        const avgObjectCount = recentMisses.reduce(
-          (sum, op) => sum + (op.objectCount ?? 0),
-          0,
-        ) / recentMisses.length;
+        const avgObjectCount =
+          recentMisses.reduce((sum, op) => sum + (op.objectCount ?? 0), 0) /
+          recentMisses.length;
         this.cachedAvgBytesPerObject = avgObjectCount * 1024;
       }
       this.bytesPerObjectDirty = false;
@@ -591,8 +596,10 @@ export class MetricsStore extends SubscribableStore {
   }
 
   getCacheHitRate(): number {
-    const total = this.aggregates.cacheHits + this.aggregates.cacheMisses
-      + this.aggregates.revalidations;
+    const total =
+      this.aggregates.cacheHits +
+      this.aggregates.cacheMisses +
+      this.aggregates.revalidations;
     return total > 0
       ? (this.aggregates.cacheHits + this.aggregates.revalidations) / total
       : 0;

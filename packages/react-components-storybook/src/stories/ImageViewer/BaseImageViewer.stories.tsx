@@ -89,8 +89,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code:
-          `import { BaseImageViewer } from "@osdk/react-components/experimental/image-viewer";
+        code: `import { BaseImageViewer } from "@osdk/react-components/experimental/image-viewer";
 
 <BaseImageViewer src={imageUrl} alt="My image" />`,
       },

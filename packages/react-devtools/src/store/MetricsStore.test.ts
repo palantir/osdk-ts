@@ -15,6 +15,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import type { ActionError, Operation } from "../types/index.js";
 import { MetricsStore } from "./MetricsStore.js";
 
@@ -28,13 +29,16 @@ describe("MetricsStore", () => {
   beforeEach(() => {
     vi.useFakeTimers();
 
-    if (typeof globalThis.requestIdleCallback === "undefined") {
+    if (globalThis.requestIdleCallback === undefined) {
       globalThis.requestIdleCallback = ((cb: IdleRequestCallback) => {
-        return setTimeout(() =>
-          cb({
-            didTimeout: false,
-            timeRemaining: () => 50,
-          }), 0) as unknown as number;
+        return setTimeout(
+          () =>
+            cb({
+              didTimeout: false,
+              timeRemaining: () => 50,
+            }),
+          0
+        ) as unknown as number;
       }) as typeof globalThis.requestIdleCallback;
       globalThis.cancelIdleCallback = ((id: number) => {
         clearTimeout(id);
@@ -153,9 +157,7 @@ describe("MetricsStore", () => {
       timestamp: Date.now(),
       message: "Validation failed",
       parameters: { name: "Test" },
-      validationErrors: [
-        { field: "name", message: "Too short", value: "T" },
-      ],
+      validationErrors: [{ field: "name", message: "Too short", value: "T" }],
     };
 
     store.recordActionError(error);

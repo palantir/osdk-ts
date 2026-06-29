@@ -16,8 +16,8 @@
 
 import type { Context } from "react";
 import { createContext } from "react";
+
 import type { MonitorStore } from "./store/MonitorStore.js";
 
-export const DevToolsContext: Context<MonitorStore | null> = createContext<
-  MonitorStore | null
->(null);
+export const DevToolsContext: Context<MonitorStore | null> =
+  createContext<MonitorStore | null>(null);

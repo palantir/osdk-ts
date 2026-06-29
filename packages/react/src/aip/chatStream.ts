@@ -21,6 +21,7 @@ import {
   type UIMessageChunk,
 } from "@osdk/aip-core";
 import type React from "react";
+
 import type { ChatStore } from "./chatStore.js";
 
 /**
@@ -34,9 +35,9 @@ export interface StreamContext {
   stoppedRef: React.MutableRefObject<boolean>;
   onFinish:
     | ((event: {
-      message: UIMessage;
-      messages: ReadonlyArray<UIMessage>;
-    }) => void)
+        message: UIMessage;
+        messages: ReadonlyArray<UIMessage>;
+      }) => void)
     | undefined;
   onError: ((error: Error) => void) | undefined;
 }
@@ -46,7 +47,7 @@ export async function runChatStream(
   transport: ChatTransport<UIMessage>,
   chatId: string,
   seed: ReadonlyArray<UIMessage>,
-  trigger: "submit-message" | "regenerate-message",
+  trigger: "submit-message" | "regenerate-message"
 ): Promise<void> {
   ctx.abortRef.current?.abort();
   const ctrl = new AbortController();
@@ -59,7 +60,7 @@ export async function runChatStream(
       trigger,
       chatId,
       messageId: assistantId,
-      messages: seed.slice(),
+      messages: [...seed],
       abortSignal: ctrl.signal,
     });
     await drainStream(ctx, stream, assistantId, ctrl);
@@ -72,7 +73,7 @@ export async function drainStream(
   ctx: StreamContext,
   stream: ReadableStream<UIMessageChunk>,
   assistantMessageId: string,
-  capturedCtrl: AbortController,
+  capturedCtrl: AbortController
 ): Promise<void> {
   const { store } = ctx;
   const reader = stream.getReader();
@@ -85,8 +86,9 @@ export async function drainStream(
   // Treat as "the consumer no longer wants this stream" — quietly stop.
   const isOrphaned = (): boolean => {
     const messages = store.getSnapshot().messages;
-    return textBuf.length > 0
-      && !messages.some((m) => m.id === assistantMessageId);
+    return (
+      textBuf.length > 0 && !messages.some((m) => m.id === assistantMessageId)
+    );
   };
 
   try {
@@ -121,7 +123,7 @@ export async function drainStream(
     store.setState((prev) => ({ ...prev, status: "ready" }));
     const finalSnap = store.getSnapshot();
     const finalMessage = finalSnap.messages.find(
-      (m) => m.id === assistantMessageId,
+      (m) => m.id === assistantMessageId
     );
     if (finalMessage != null && ctx.onFinish != null) {
       ctx.onFinish({ message: finalMessage, messages: finalSnap.messages });
@@ -136,24 +138,24 @@ export async function drainStream(
 function upsertAssistantText(
   store: ChatStore,
   assistantMessageId: string,
-  text: string,
+  text: string
 ): void {
   store.setStateThrottled((prev) => {
     const exists = prev.messages.some((m) => m.id === assistantMessageId);
     const messages = exists
       ? prev.messages.map((m) =>
-        m.id === assistantMessageId
-          ? { ...m, parts: [{ type: "text" as const, text }] }
-          : m
-      )
+          m.id === assistantMessageId
+            ? { ...m, parts: [{ type: "text" as const, text }] }
+            : m
+        )
       : [
-        ...prev.messages,
-        {
-          id: assistantMessageId,
-          role: "assistant" as const,
-          parts: [{ type: "text" as const, text }],
-        },
-      ];
+          ...prev.messages,
+          {
+            id: assistantMessageId,
+            role: "assistant" as const,
+            parts: [{ type: "text" as const, text }],
+          },
+        ];
     return { ...prev, status: "streaming", messages };
   });
 }
@@ -161,16 +163,16 @@ function upsertAssistantText(
 function handleStreamError(
   ctx: StreamContext,
   err: unknown,
-  capturedCtrl: AbortController,
+  capturedCtrl: AbortController
 ): void {
   if (ctx.abortRef.current != null && ctx.abortRef.current !== capturedCtrl) {
     return;
   }
   const error = err instanceof Error ? err : new Error(String(err));
   if (
-    ctx.stoppedRef.current
-    || error.name === "AbortError"
-    || capturedCtrl.signal.aborted
+    ctx.stoppedRef.current ||
+    error.name === "AbortError" ||
+    capturedCtrl.signal.aborted
   ) {
     ctx.store.setState((prev) => ({
       ...prev,

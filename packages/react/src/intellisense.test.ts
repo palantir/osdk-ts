@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
+import * as path from "node:path";
+
 import type { Logger } from "@osdk/api";
 import type { TsServer } from "@osdk/shared.test.intellisense";
 import { startTsServer } from "@osdk/shared.test.intellisense";
 import { findUpSync } from "find-up";
-import * as path from "node:path";
 import invariant from "tiny-invariant";
 import * as ts from "typescript";
 import {
@@ -46,17 +47,19 @@ const rootLogger = await vi.hoisted(async (): Promise<Logger> => {
       console.log(a);
     }
   }
-  return Promise.resolve(pino(
-    { level: "info" },
-    (pinoPretty.build)({
-      sync: true,
-      timestampKey: undefined,
-      errorLikeObjectKeys: ["error", "err", "exception"],
-      errorProps: "stack,cause,properties",
-      ignore: "time,hostname,pid",
-      destination: new PinoConsoleLogDestination(),
-    }),
-  ));
+  return Promise.resolve(
+    pino(
+      { level: "info" },
+      pinoPretty.build({
+        sync: true,
+        timestampKey: undefined,
+        errorLikeObjectKeys: ["error", "err", "exception"],
+        errorProps: "stack,cause,properties",
+        ignore: "time,hostname,pid",
+        destination: new PinoConsoleLogDestination(),
+      })
+    )
+  );
 });
 
 /**
@@ -73,10 +76,7 @@ describe("intellisense", () => {
     });
     console.log({ reactPackageJson });
     invariant(reactPackageJson != null);
-    packagesDir = path.join(
-      path.dirname(reactPackageJson),
-      "..",
-    );
+    packagesDir = path.join(path.dirname(reactPackageJson), "..");
 
     reactPackagePath = path.join(packagesDir, "react");
   });
@@ -89,7 +89,7 @@ describe("intellisense", () => {
       reactPackagePath,
       "src",
       "intellisense.test.helpers",
-      `${a.task.name}.ts`,
+      `${a.task.name}.ts`
     );
 
     console.log(intellisenseFilePath);
@@ -130,7 +130,7 @@ describe("intellisense", () => {
       triggerKind: ts.CompletionTriggerKind.Invoked,
     });
 
-    const completions = resp.body?.entries.map(e => e.name) ?? [];
+    const completions = resp.body?.entries.map((e) => e.name) ?? [];
     expect(completions).toContain("lead");
 
     const { resp: typeResp } = await tsServer.sendQuickInfoRequest({
@@ -188,33 +188,29 @@ describe("intellisense", () => {
     expect(dataResp.body?.displayString).toContain("Osdk.Instance<Employee");
   });
 
-  it(
-    "useOsdkObjectsWithPivotStreamUpdates",
-    { timeout: 90_000 },
-    async () => {
-      expect(ts.sys.fileExists(intellisenseFilePath)).toBeTruthy();
-      invariant(tsServer);
+  it("useOsdkObjectsWithPivotStreamUpdates", { timeout: 90_000 }, async () => {
+    expect(ts.sys.fileExists(intellisenseFilePath)).toBeTruthy();
+    invariant(tsServer);
 
-      // Verify pivotTo-only still gets correct linked type (line 26: data in PivotOnly)
-      const { resp: pivotResp } = await tsServer.sendQuickInfoRequest({
-        file: intellisenseFilePath,
-        line: 26,
-        offset: 13,
-      });
-      expect(pivotResp.body?.displayString).toBeDefined();
-      expect(pivotResp.body?.displayString).toContain("Employee");
+    // Verify pivotTo-only still gets correct linked type (line 26: data in PivotOnly)
+    const { resp: pivotResp } = await tsServer.sendQuickInfoRequest({
+      file: intellisenseFilePath,
+      line: 26,
+      offset: 13,
+    });
+    expect(pivotResp.body?.displayString).toBeDefined();
+    expect(pivotResp.body?.displayString).toContain("Employee");
 
-      // Verify streamUpdates-only compiles (line 33: data in StreamOnly)
-      const { resp: streamResp } = await tsServer.sendQuickInfoRequest({
-        file: intellisenseFilePath,
-        line: 33,
-        offset: 13,
-      });
-      expect(streamResp.body?.displayString).toBeDefined();
+    // Verify streamUpdates-only compiles (line 33: data in StreamOnly)
+    const { resp: streamResp } = await tsServer.sendQuickInfoRequest({
+      file: intellisenseFilePath,
+      line: 33,
+      offset: 13,
+    });
+    expect(streamResp.body?.displayString).toBeDefined();
 
-      // The @ts-expect-error on line 41 validates that combining pivotTo +
-      // streamUpdates is a type error. If the restriction is removed, typecheck
-      // will fail with "unused @ts-expect-error".
-    },
-  );
+    // The @ts-expect-error on line 41 validates that combining pivotTo +
+    // streamUpdates is a type error. If the restriction is removed, typecheck
+    // will fail with "unused @ts-expect-error".
+  });
 });

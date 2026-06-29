@@ -15,7 +15,7 @@
  */
 
 export function generateHookInstallationScript(
-  verbose: boolean = false,
+  verbose: boolean = false
 ): string {
   return `
 <script type="module">
@@ -31,10 +31,10 @@ export function generateHookInstallationScript(
     // If hook already exists (React DevTools extension), cooperate with it
     if (window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
       ${
-    verbose
-      ? `console.log('[OSDK DevTools] Hook already exists (browser extension detected)');`
-      : ""
-  }
+        verbose
+          ? `console.log('[OSDK DevTools] Hook already exists (browser extension detected)');`
+          : ""
+      }
       return;
     }
 
@@ -58,16 +58,16 @@ export function generateHookInstallationScript(
         fiberRootsByRenderer.set(id, new Set());
 
         ${
-    verbose
-      ? `
+          verbose
+            ? `
         console.log('[OSDK DevTools] React renderer injected:', {
           id,
           version: renderer.version,
           package: renderer.rendererPackageName
         });
         `
-      : ""
-  }
+            : ""
+        }
 
         return id;
       },
@@ -103,10 +103,10 @@ export function generateHookInstallationScript(
     };
 
     ${
-    verbose
-      ? `console.log('[OSDK DevTools] Hook installed successfully via Vite plugin');`
-      : ""
-  }
+      verbose
+        ? `console.log('[OSDK DevTools] Hook installed successfully via Vite plugin');`
+        : ""
+    }
   })();
 </script>`;
 }

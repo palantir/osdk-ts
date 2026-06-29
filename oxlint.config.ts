@@ -5,7 +5,7 @@ import react from "ultracite/oxlint/react";
 // Ultracite drives the oxlint ruleset (strict, "opt-out" preset). On top of it
 // we keep this repo's Apache-2.0 license-header rule, our ignore patterns, and a
 // small set of overrides for conventions that differ from Ultracite's defaults.
-// See #3031 (incremental ESLint -> oxlint / dprint -> oxfmt migration).
+// (Incremental ESLint -> oxlint / dprint -> oxfmt migration.)
 //
 // The React preset (react / react-perf / jsx-a11y / react-hooks) is added
 // globally: its rules only target JSX/.tsx code, so non-React packages are
@@ -14,7 +14,13 @@ export default defineConfig({
   extends: [core, react],
 
   // Apache license header enforcement (Ultracite does not provide this).
-  jsPlugins: ["./plugins/oxlint-plugin-header.js"],
+  // Resolved to an absolute path (rather than "./plugins/...") so the path stays
+  // correct when this config is pulled in via `extends` from a package-level
+  // nested config (oxlint rejects relative JS-plugin specifiers in extended
+  // configs). See packages/react-components-storybook/oxlint.config.ts.
+  jsPlugins: [
+    new URL("./plugins/oxlint-plugin-header.js", import.meta.url).pathname,
+  ],
 
   rules: {
     "palantir-header/header": "error",
@@ -157,6 +163,137 @@ export default defineConfig({
     // displayName / in stack traces; the autofix to an anonymous arrow would
     // drop that name. Not enforced by prior ESLint.
     "prefer-arrow-callback": "off",
+
+    // --- Rules not enforced by the repo's prior ESLint config whose autofix
+    // would be churn or change a deliberate runtime/type/API pattern. Kept off
+    // (or at the prior ESLint severity) so the migration stays
+    // behavior-preserving. ---
+    // Prior ESLint enforced only unused *imports* (unused-imports/no-unused-imports
+    // as error, autofixed). It never flagged unused locals/params/functions. Many
+    // here are deliberate: the intellisense.test.helpers/** fixtures declare
+    // components/vars purely to pin hover-tooltip types at hard-coded line numbers
+    // (rewriting them would break those tests). Keep at warn, not error.
+    "no-unused-vars": "warn",
+    // Prior ESLint had `@typescript-eslint/unified-signatures: warn`; preserve it.
+    // (Merging the published hook overloads would also change the API surface.)
+    "typescript/unified-signatures": "warn",
+    // `await foo().then(...)` / callback-style helpers: the autofix restructures
+    // control flow. Not enforced by prior ESLint. (cf. promise/avoid-new off.)
+    "promise/prefer-await-to-then": "off",
+    "promise/prefer-await-to-callbacks": "off",
+    // `i++` in counters/loops; autofix to `i += 1` is pure churn. Not prior.
+    "no-plusplus": "off",
+    // Accessing a member off an await expression (`(await x).y`) reads fine here;
+    // the autofix introduces an intermediate variable (churn). Not prior.
+    "unicorn/no-await-expression-member": "off",
+    // EventEmitter is used deliberately (Node test harness); swapping to
+    // EventTarget would change runtime behavior. Not prior.
+    "unicorn/prefer-event-target": "off",
+    // default-vs-named import style for `node:path` is stylistic. Not prior.
+    "unicorn/import-style": "off",
+    // `void` inside a union (e.g. `onMount?: () => void | Promise<void>`) is a
+    // deliberate callback return type; rewriting changes the type. Not prior.
+    "typescript/no-invalid-void-type": "off",
+    // Explicit type annotation kept for a published const's documented type;
+    // removing it is churn. Not prior. (cf. widget.vite-plugin override list.)
+    "typescript/no-inferrable-types": "off",
+    // Node callback-return convention; the existing helpers invoke callbacks
+    // mid-function intentionally. Autofix is churn. Not prior.
+    "node/callback-return": "off",
+    // `new Promise((resolve) => setTimeout(resolve, n))` in tests returns the
+    // timer handle; harmless. Not prior.
+    "no-promise-executor-return": "off",
+    // A test helper trims a parameter in place; renaming/copying is churn and the
+    // file pins hard-coded line numbers. Not prior.
+    "no-param-reassign": "off",
+    // A small class method does not reference `this`; converting to static would
+    // change the call site. Not prior.
+    "class-methods-use-this": "off",
+
+    // -- react-devtools (the largest React-family package) surfaces more. Rules
+    // that prior ESLint kept at `warn` are preserved at warn; the rest are new
+    // Ultracite-preset rules whose (auto)fix would churn or change behavior. --
+    // Prior ESLint severities (preserved):
+    // Intentional bare expressions: e.g. `wrapped.name;` in PropertyAccessTracker
+    // tests deliberately triggers a Proxy getter's access-recording side effect.
+    "no-unused-expressions": "warn",
+    "no-empty": "warn",
+    // Prior `@typescript-eslint/no-extraneous-class: [warn, {allowEmpty}]` — the
+    // remaining hits are empty marker classes in tests, which prior allowed.
+    "typescript/no-extraneous-class": "warn",
+    // Prior `@typescript-eslint/no-this-alias: warn` (deliberate `const self = this`).
+    "typescript/no-this-alias": "warn",
+    "typescript/prefer-for-of": "warn",
+    "no-bitwise": "warn",
+    "radix": "warn",
+    // New Ultracite-preset rules not enforced by prior ESLint (off):
+    // Adding named capture groups to existing regexes is churn and risks changing
+    // match semantics; same rationale as widget.vite-plugin's deferred override.
+    "prefer-named-capture-group": "off",
+    // `constructor(private readonly x: T)` parameter properties are a deliberate,
+    // widely-used DI pattern here; the rule is not autofixable and rewriting to
+    // explicit field declarations would be large hand-churn.
+    "typescript/parameter-properties": "off",
+    // Anonymous functions assigned to a `type:` prop in fiber test fixtures; the
+    // name intentionally differs from the property. Renaming would be churn.
+    "func-name-matching": "off",
+    // `class C` test marker / `const self = this` capture: the unicorn variants
+    // duplicate the (warn) typescript rules above; keep off to avoid double churn.
+    "unicorn/no-this-assignment": "off",
+    // Remaining unicorn stylistic/perf rewrites whose autofix is pure churn or
+    // would alter a deliberate runtime construct. Not enforced by prior ESLint.
+    "unicorn/prefer-string-slice": "off",
+    "unicorn/error-message": "off",
+    "unicorn/prefer-native-coercion-functions": "off",
+    "unicorn/no-new-array": "off",
+    "unicorn/no-immediate-mutation": "off",
+    "unicorn/no-array-reduce": "off",
+    "unicorn/prefer-includes": "off",
+    "unicorn/empty-brace-spaces": "off",
+    "unicorn/catch-error-name": "off",
+    // A default prop that is an object/array literal is an intentional stable
+    // reference here; the rule is not autofixable and the fix changes structure.
+    "react/no-object-type-as-default-prop": "off",
+    // Remaining eslint rules whose autofix is churn or whose pattern is deliberate
+    // (custom debug `alert`, anonymous Symbol, `Object.prototype.hasOwnProperty`).
+    "symbol-description": "off",
+    "prefer-object-has-own": "off",
+    "no-lonely-if": "off",
+    "no-alert": "off",
+    // Behavior-changing autofixes that must NOT be applied: these rewrite a
+    // mutating call into an immutable ES2023 copy method, which both changes
+    // runtime semantics (in-place vs new array) AND fails to compile, since the
+    // repo targets ES2022 (`toSorted`/`toReversed` are not in the lib). Disable
+    // them so `oxlint --fix` leaves the existing `.sort()` / `.reverse()` intact.
+    "unicorn/no-array-sort": "off",
+    "unicorn/no-array-reverse": "off",
+    // Autofix rewrites `element.getAttribute("data-x")` to `element.dataset.x`,
+    // but `dataset` only exists on `HTMLElement` (not `Element`), so the fix
+    // breaks typechecking. Leave the explicit attribute access as authored.
+    "unicorn/prefer-dom-node-dataset": "off",
+    // Autofix rewrites `str.charCodeAt(i)` to `str.codePointAt(i)`, but the
+    // latter returns `number | undefined` (vs `number`), so the fix breaks
+    // typechecking under strict null checks. Leave `charCodeAt` as authored.
+    "unicorn/prefer-code-point": "off",
+    // Autofix unwraps `return Promise.resolve(x)` to `return x` in async
+    // functions. That is usually fine, but here the wrapped value is itself a
+    // thenable (a pino Logger), so unwrapping trips TS1058 ("return type of an
+    // async function must not contain a callable 'then' member"). The explicit
+    // `Promise.resolve(...)` is load-bearing; leave it as authored.
+    "unicorn/no-useless-promise-resolve-reject": "off",
+    // Autofix rewrites `typeof x === "undefined"` to `x === undefined`. For a
+    // possibly-undeclared GLOBAL (e.g. `process` in the browser, `window` in
+    // node) the `typeof` guard is load-bearing: a bare `process === undefined`
+    // throws ReferenceError where `typeof process` safely yields "undefined".
+    // This broke OsdkProvider's __DEV__ check in Storybook's browser test env.
+    // Leave `typeof` guards as authored.
+    "unicorn/no-typeof-undefined": "off",
+    // Autofix rewrites `arr[arr.length - 1]` to `arr.at(-1)`, but `.at()` returns
+    // `T | undefined` whereas the index access is typed `T` under the existing
+    // (non-strict-index) code, so the fix introduces spurious `| undefined` that
+    // breaks typechecking at the use site (e.g. spreading the result into a
+    // non-optional object type). Leave index access as authored.
+    "unicorn/prefer-at": "off",
   },
 
   ignorePatterns: [

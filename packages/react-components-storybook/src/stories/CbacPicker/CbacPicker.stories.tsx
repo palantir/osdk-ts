@@ -23,6 +23,7 @@ import {
 } from "@osdk/react-components/experimental/cbac-picker";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useMemo, useState } from "react";
+
 import {
   mockBannerGradient,
   mockBannerSecret,
@@ -55,19 +56,18 @@ const BANNER_ROW_STYLE = {
 
 const EMPTY_SELECTED: string[] = [];
 
-function InteractivePicker(
-  { initialSelection }: { initialSelection?: string[] },
-) {
+function InteractivePicker({
+  initialSelection,
+}: {
+  initialSelection?: string[];
+}) {
   const [selectedIds, setSelectedIds] = useState<string[]>(
-    initialSelection ?? EMPTY_SELECTED,
+    initialSelection ?? EMPTY_SELECTED
   );
 
   return (
     <div style={PICKER_STYLE}>
-      <CbacPicker
-        initialMarkingIds={selectedIds}
-        onChange={setSelectedIds}
-      />
+      <CbacPicker initialMarkingIds={selectedIds} onChange={setSelectedIds} />
     </div>
   );
 }
@@ -101,16 +101,16 @@ export const ReadOnly: Story = {
 };
 
 function WithBannerPicker() {
-  const [selectedIds, setSelectedIds] = useState<string[]>(
-    ["m-top-secret", "m-alpha", "m-bravo", "m-no-foreign"],
-  );
+  const [selectedIds, setSelectedIds] = useState<string[]>([
+    "m-top-secret",
+    "m-alpha",
+    "m-bravo",
+    "m-no-foreign",
+  ]);
 
   return (
     <div style={PICKER_STYLE}>
-      <CbacPicker
-        initialMarkingIds={selectedIds}
-        onChange={setSelectedIds}
-      />
+      <CbacPicker initialMarkingIds={selectedIds} onChange={setSelectedIds} />
     </div>
   );
 }
@@ -125,13 +125,8 @@ function WithImpliedAndDisallowedPicker() {
   const disallowedIds = useMemo(() => ["m-top-secret"], []);
 
   const markingStates = useMemo(
-    () =>
-      computeMarkingStates(
-        selectedIds,
-        impliedIds,
-        disallowedIds,
-      ),
-    [selectedIds, impliedIds, disallowedIds],
+    () => computeMarkingStates(selectedIds, impliedIds, disallowedIds),
+    [selectedIds, impliedIds, disallowedIds]
   );
 
   const noop = useCallback(() => {}, []);

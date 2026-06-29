@@ -57,7 +57,7 @@ function createInitialState(): InspectorState {
 
 function extractComponentInfo(
   element: Element,
-  fiber: Fiber,
+  fiber: Fiber
 ): InspectedComponent | null {
   const name = getComponentName(fiber);
   if (!name) {
@@ -79,7 +79,7 @@ function extractComponentInfo(
 }
 
 export function createInspectorController(
-  options: InspectorOptions = {},
+  options: InspectorOptions = {}
 ): InspectorController {
   const {
     containerElement = document.body,
@@ -120,7 +120,7 @@ export function createInspectorController(
     const element = getElementAtPosition(
       clientX,
       clientY,
-      "[data-osdk-devtools-ignore]",
+      "[data-osdk-devtools-ignore]"
     );
 
     if (!element) {
@@ -262,7 +262,7 @@ export function createInspectorController(
     }
     boundsRefreshIntervalId = setInterval(
       recalculateBounds,
-      boundsRefreshIntervalMs,
+      boundsRefreshIntervalMs
     );
   }
 
