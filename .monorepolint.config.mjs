@@ -442,14 +442,23 @@ const archetypeRules = archetypes(
       extraPublishFiles: ["build/site"],
     },
   )
+  // The 221-tsx component-library giant migrated to the oxc toolchain. Same
+  // options as the former "reactComponentsLibrary" archetype (react + cssExport
+  // + extraPublishFiles + the full experimental/* attw exclude list + the test
+  // setup/env/pool) plus `oxc: true`. Its package-specific carve-outs live in a
+  // nested oxlint config (packages/react-components/oxlint.config.ts, which
+  // `extends` the root), so `oxcConfig` points lint/fix-lint at that file rather
+  // than the root config.
   .addArchetype(
-    "reactComponentsLibrary",
+    "oxc migrated react components library",
     [
       "@osdk/react-components",
     ],
     {
       ...LIBRARY_RULES,
       react: true,
+      oxc: true,
+      oxcConfig: "./oxlint.config.ts",
       cssExport: ["styles.css"],
       extraPublishFiles: ["AGENTS.md", "docs"],
       attwExcludeEntrypoints: [
@@ -1007,6 +1016,7 @@ function minimalPackageRules(shared, options) {
  * @property { boolean } [checkApi]
  * @property { boolean } [minimalChangesOnly]
  * @property { boolean } [oxc]
+ * @property { string } [oxcConfig]
  * @property { "vite" | undefined } [framework]
  * @property { import("typescript").CompilerOptions} [extraTsConfigCompilerOptions]
  * @property { string[] } [cssExport]
@@ -1144,10 +1154,14 @@ function standardPackageRules(shared, options) {
             ? "monorepo.tool.check-bundle"
             : DELETE_SCRIPT_ENTRY,
           lint: options.oxc
-            ? "oxlint -c ../../oxlint.config.ts . && oxfmt -c ../../oxfmt.config.ts --check ."
+            ? `oxlint -c ${
+              options.oxcConfig ?? "../../oxlint.config.ts"
+            } . && oxfmt -c ../../oxfmt.config.ts --check .`
             : "eslint . && dprint check",
           "fix-lint": options.oxc
-            ? "oxlint -c ../../oxlint.config.ts --fix . && oxfmt -c ../../oxfmt.config.ts ."
+            ? `oxlint -c ${
+              options.oxcConfig ?? "../../oxlint.config.ts"
+            } --fix . && oxfmt -c ../../oxfmt.config.ts .`
             : "eslint . --fix && dprint fmt",
           transpile: DELETE_SCRIPT_ENTRY,
           transpileEsm: getTranspileEsmScript(),
