@@ -24,6 +24,7 @@ const OXC_PACKAGES = [
   "cbac-components",
   "react",
   "react-devtools",
+  "client.unstable",
 ];
 const OXC_PACKAGE_GLOB = `packages/{${
   OXC_PACKAGES.join(",")

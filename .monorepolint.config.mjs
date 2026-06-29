@@ -192,7 +192,6 @@ const archetypeRules = archetypes(
   .addArchetype(
     "forceBundle",
     [
-      "@osdk/client.unstable",
       "@osdk/client.unstable.tpsa",
     ],
     {
@@ -334,6 +333,26 @@ const archetypeRules = archetypes(
       ...LIBRARY_RULES,
       minimalChangesOnly: true,
       private: true,
+      oxc: true,
+    },
+  )
+  // Force-bundle library migrated to the oxc toolchain. Same as "oxc migrated
+  // libraries" but carries OUTPUT_BUNDLE_ALL (bundled cjs/esm/browser) like the
+  // forceBundle archetype. @osdk/client.unstable is the repo's largest package
+  // (~943 files), but almost all of it is conjure-generated code under
+  // src/generated, which the shared Ultracite preset ignores (`**/generated`),
+  // so only the handful of hand-written files are linted/formatted and no
+  // package-specific carve-outs (nested config) are needed. Its sibling
+  // @osdk/client.unstable.tpsa stays in the forceBundle archetype (ESLint/dprint)
+  // until a later batch.
+  .addArchetype(
+    "oxc migrated force-bundle libraries",
+    [
+      "@osdk/client.unstable",
+    ],
+    {
+      ...LIBRARY_RULES,
+      output: OUTPUT_BUNDLE_ALL,
       oxc: true,
     },
   )
