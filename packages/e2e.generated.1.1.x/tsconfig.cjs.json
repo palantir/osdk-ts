@@ -2,6 +2,11 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "module": "CommonJS",
+    // This fixture deliberately verifies that the generated SDK typechecks and
+    // emits declarations for a CommonJS consumer using classic (node10) module
+    // resolution; silence the TypeScript 6 deprecation so the intentional
+    // setting still type-checks.
+    "ignoreDeprecations": "6.0",
     "moduleResolution": "Node",
     "target": "ES6",
     "rootDir": "src",
