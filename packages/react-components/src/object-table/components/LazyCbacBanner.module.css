@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-import React from "react";
-import { toMarkingIdArray } from "../utils/markingValue.js";
-import { LazyCbacBanner } from "./LazyCbacBanner.js";
-
-export interface CbacMarkingCellProps {
-  value: unknown;
+/*
+ * Reserves the banner's intrinsic height (one line of body-small text plus the
+ * banner's vertical padding) while the CbacBanner chunk loads, so the first
+ * paint of a marking column doesn't flash empty and shift when the banner pops
+ * in. Sized purely from the shared --osdk-cbac-banner-* tokens, with a
+ * zero-content nbsp line so the box matches the real banner without hardcoding
+ * a height.
+ */
+.fallback {
+  display: block;
+  padding: var(--osdk-cbac-banner-padding);
+  font-size: var(--osdk-cbac-banner-font-size);
 }
 
-export function CbacMarkingCell({
-  value,
-}: CbacMarkingCellProps): React.ReactNode {
-  const markingIds = toMarkingIdArray(value);
-  if (markingIds.length === 0) {
-    return null;
-  }
-  return <LazyCbacBanner markingIds={markingIds} />;
+.fallback::before {
+  content: "\00a0";
 }
