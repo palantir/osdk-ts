@@ -17,6 +17,7 @@
 import { Popover } from "@base-ui/react/popover";
 import { InfoSign } from "@blueprintjs/icons";
 import React, { memo } from "react";
+
 import styles from "./FormField.module.css";
 
 interface FormFieldProps {
@@ -47,8 +48,8 @@ export const FormField: React.FC<FormFieldProps> = memo(function FormFieldFn({
   const showBottomText = hasHelperText && helperTextPlacement === "bottom";
   const showEditedTag = isEdited === true;
 
-  const labelElement = label != null
-    ? (
+  const labelElement =
+    label != null ? (
       <label className={styles.osdkFormFieldLabel} htmlFor={fieldKey}>
         {label}
         {isRequired === true && (
@@ -58,10 +59,9 @@ export const FormField: React.FC<FormFieldProps> = memo(function FormFieldFn({
           </span>
         )}
       </label>
-    )
-    : null;
-  const labelRow = labelElement != null || showTooltip || showEditedTag
-    ? (
+    ) : null;
+  const labelRow =
+    labelElement != null || showTooltip || showEditedTag ? (
       <div className={styles.osdkFormFieldLabelRow}>
         {labelElement}
         {showTooltip && <InfoTip label={label}>{helperText}</InfoTip>}
@@ -69,8 +69,7 @@ export const FormField: React.FC<FormFieldProps> = memo(function FormFieldFn({
           <span className={styles.osdkFormFieldEditedTag}>Edited</span>
         )}
       </div>
-    )
-    : null;
+    ) : null;
 
   return (
     <div className={styles.osdkFormField} onBlur={onBlur}>

@@ -15,6 +15,7 @@
  */
 
 import React from "react";
+
 import { Switch } from "../../base-components/switch/Switch.js";
 import type { SwitchFieldProps } from "../FormFieldApi.js";
 

@@ -15,20 +15,22 @@
  */
 
 import React, { useMemo } from "react";
+
 import { SkeletonBar } from "../../base-components/skeleton/SkeletonBar.js";
 import { useInfiniteScroll } from "../../shared/hooks/useInfiniteScroll.js";
 import { typedReactMemo } from "../../shared/typedMemo.js";
 import type { DropdownFieldProps } from "../FormFieldApi.js";
-import styles from "./AsyncDropdownField.module.css";
 import { DropdownField } from "./DropdownField.js";
 
-export interface AsyncDropdownFieldProps<V, Multiple extends boolean = false>
-  extends
-    Omit<
-      DropdownFieldProps<V, Multiple>,
-      "popupStatus" | "trailingItem"
-    >
-{
+import styles from "./AsyncDropdownField.module.css";
+
+export interface AsyncDropdownFieldProps<
+  V,
+  Multiple extends boolean = false,
+> extends Omit<
+  DropdownFieldProps<V, Multiple>,
+  "popupStatus" | "trailingItem"
+> {
   /** Whether the data source is currently loading. */
   isLoading: boolean;
   /** Whether the data source is currently searching. */
@@ -48,7 +50,7 @@ export interface AsyncDropdownFieldProps<V, Multiple extends boolean = false>
 }
 
 export const AsyncDropdownField: <V, Multiple extends boolean = false>(
-  props: AsyncDropdownFieldProps<V, Multiple>,
+  props: AsyncDropdownFieldProps<V, Multiple>
 ) => React.ReactElement = typedReactMemo(function AsyncDropdownFieldFn<
   V,
   Multiple extends boolean,
@@ -91,14 +93,14 @@ export const AsyncDropdownField: <V, Multiple extends boolean = false>(
       {...dropdownProps}
       isSearchable={true}
       popupStatus={popupStatus}
-      trailingItem={hasMore
-        ? (
+      trailingItem={
+        hasMore ? (
           <InfiniteScrollSentinel
             key="sentinel"
             infiniteScrollRef={infiniteScrollRef}
           />
-        )
-        : null}
+        ) : null
+      }
       disableClientSideFiltering={dropdownProps.onQueryChange != null}
     />
   );

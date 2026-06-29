@@ -16,6 +16,7 @@
 
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { RadioButtonsField } from "../fields/RadioButtonsField.js";
 
 const STRING_OPTIONS = [
@@ -42,7 +43,8 @@ describe("RadioButtonsField", () => {
     it("marks the matching radio as checked when value is provided", () => {
       render(<RadioButtonsField value="green" options={STRING_OPTIONS} />);
 
-      const greenRadio = screen.getByText("Green")
+      const greenRadio = screen
+        .getByText("Green")
         .closest("label")!
         .querySelector("[role='radio']")!;
       expect(greenRadio.getAttribute("aria-checked")).toBe("true");
@@ -55,7 +57,7 @@ describe("RadioButtonsField", () => {
           value="red"
           options={STRING_OPTIONS}
           onChange={onChange}
-        />,
+        />
       );
 
       const radios = screen.getAllByRole("radio");
@@ -72,7 +74,7 @@ describe("RadioButtonsField", () => {
           options={STRING_OPTIONS}
           onChange={onChange}
           disabled={true}
-        />,
+        />
       );
 
       const radios = screen.getAllByRole("radio");
@@ -105,7 +107,7 @@ describe("RadioButtonsField", () => {
           value="red"
           options={STRING_OPTIONS}
           orientation="horizontal"
-        />,
+        />
       );
 
       const radioGroup = screen.getByRole("radiogroup");
@@ -134,10 +136,11 @@ describe("RadioButtonsField", () => {
           value={appleValue}
           options={options}
           onChange={onChange}
-        />,
+        />
       );
 
-      const appleRadio = screen.getByText("Apple")
+      const appleRadio = screen
+        .getByText("Apple")
         .closest("label")!
         .querySelector("[role='radio']")!;
       expect(appleRadio.getAttribute("aria-checked")).toBe("true");
