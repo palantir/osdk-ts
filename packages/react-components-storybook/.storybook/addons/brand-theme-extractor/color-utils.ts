@@ -21,13 +21,8 @@ function linearize(c: number): number {
 }
 
 /** WCAG relative luminance (0-1) from RGB (0-255) */
-function relativeLuminance(
-  r: number,
-  g: number,
-  b: number,
-): number {
-  return 0.2126 * linearize(r) + 0.7152 * linearize(g)
-    + 0.0722 * linearize(b);
+function relativeLuminance(r: number, g: number, b: number): number {
+  return 0.2126 * linearize(r) + 0.7152 * linearize(g) + 0.0722 * linearize(b);
 }
 
 /** WCAG contrast ratio between two relative luminance values */

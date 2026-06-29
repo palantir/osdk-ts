@@ -24,9 +24,7 @@ interface ResolvedToken {
   cssProperties: string[];
 }
 
-function resolveTokens(
-  assignments: TokenAssignment[],
-): ResolvedToken[] {
+function resolveTokens(assignments: TokenAssignment[]): ResolvedToken[] {
   const resolved: ResolvedToken[] = [];
 
   for (const assignment of assignments) {
@@ -39,8 +37,8 @@ function resolveTokens(
 
     // Append unit suffix for px/ms inputs if the value is purely numeric
     if (
-      (roleDef.inputType === "px" || roleDef.inputType === "ms")
-      && /^\d+(\.\d+)?$/.test(value)
+      (roleDef.inputType === "px" || roleDef.inputType === "ms") &&
+      /^\d+(\.\d+)?$/.test(value)
     ) {
       value = `${value}${roleDef.inputType}`;
     }
@@ -57,9 +55,7 @@ function resolveTokens(
 }
 
 /** Generate CSS custom properties wrapped in @layer user.theme */
-export function generateCss(
-  assignments: TokenAssignment[],
-): string {
+export function generateCss(assignments: TokenAssignment[]): string {
   const tokens = resolveTokens(assignments);
   if (tokens.length === 0) return "/* No tokens configured */\n";
 
@@ -82,7 +78,7 @@ export function generateCss(
 
     lines.push("");
     lines.push(
-      `    /* ${category.charAt(0).toUpperCase() + category.slice(1)} */`,
+      `    /* ${category.charAt(0).toUpperCase() + category.slice(1)} */`
     );
 
     for (const token of categoryTokens) {
@@ -101,9 +97,7 @@ export function generateCss(
 }
 
 /** Generate a Markdown documentation table */
-export function generateMarkdown(
-  assignments: TokenAssignment[],
-): string {
+export function generateMarkdown(assignments: TokenAssignment[]): string {
   const tokens = resolveTokens(assignments);
   if (tokens.length === 0) return "No tokens configured.\n";
 

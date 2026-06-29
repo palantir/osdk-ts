@@ -17,6 +17,7 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { useGlobals } from "storybook/manager-api";
 import { styled } from "storybook/theming";
+
 import { GLOBALS_KEY } from "./constants.js";
 import { ExportButtons } from "./ExportButtons.js";
 import {
@@ -131,23 +132,21 @@ const PresetLabel = styled.div(({ theme }) => ({
   padding: "8px 0 4px",
 }));
 
-const PresetButton = styled.button<{ radius: string }>(
-  ({ theme, radius }) => ({
-    fontSize: 11,
-    padding: "4px 12px",
-    border: `1px solid ${theme.appBorderColor}`,
-    borderRadius: `${radius}px`,
-    background: theme.background.content,
-    color: theme.color.defaultText,
-    cursor: "pointer",
-    fontWeight: 500,
-    transition: "background 150ms ease, border-radius 150ms ease",
-    "&:hover": {
-      background: theme.background.hoverable,
-      borderColor: theme.color.medium,
-    },
-  }),
-);
+const PresetButton = styled.button<{ radius: string }>(({ theme, radius }) => ({
+  fontSize: 11,
+  padding: "4px 12px",
+  border: `1px solid ${theme.appBorderColor}`,
+  borderRadius: `${radius}px`,
+  background: theme.background.content,
+  color: theme.color.defaultText,
+  cursor: "pointer",
+  fontWeight: 500,
+  transition: "background 150ms ease, border-radius 150ms ease",
+  "&:hover": {
+    background: theme.background.hoverable,
+    borderColor: theme.color.medium,
+  },
+}));
 
 const SectionDivider = styled.div(({ theme }) => ({
   borderBottom: `1px solid ${theme.appBorderColor}`,
@@ -168,7 +167,7 @@ function PanelContent(): React.ReactElement {
   // Store the full state as a JSON string to preserve structure.
   const state: BrandThemeGlobals = useMemo(
     () => parseBrandThemeState(globals[GLOBALS_KEY]),
-    [globals],
+    [globals]
   );
 
   const [exportOpen, setExportOpen] = useState(true);
@@ -178,14 +177,14 @@ function PanelContent(): React.ReactElement {
       const newState = { ...state, ...partial };
       updateGlobals({ [GLOBALS_KEY]: stringifyBrandThemeState(newState) });
     },
-    [state, updateGlobals],
+    [state, updateGlobals]
   );
 
   const resolvePresetId = useCallback(
     (assignments: TokenAssignment[]): string => {
       return findMatchingPreset(assignments, state.colorMode);
     },
-    [state.colorMode],
+    [state.colorMode]
   );
 
   const handleAssignmentChange = useCallback(
@@ -203,7 +202,7 @@ function PanelContent(): React.ReactElement {
         selectedPresetId: resolvePresetId(newAssignments),
       });
     },
-    [state.assignments, updateState, resolvePresetId],
+    [state.assignments, updateState, resolvePresetId]
   );
 
   const handleReset = useCallback(
@@ -214,7 +213,7 @@ function PanelContent(): React.ReactElement {
         selectedPresetId: resolvePresetId(newAssignments),
       });
     },
-    [state.assignments, updateState, resolvePresetId],
+    [state.assignments, updateState, resolvePresetId]
   );
 
   const handleToggle = useCallback(() => {
@@ -224,18 +223,18 @@ function PanelContent(): React.ReactElement {
   const applyPreset = useCallback(
     (preset: StylePreset) => {
       const updated = state.assignments.filter(
-        (a) => a.role !== "border-radius" && a.role !== "spacing",
+        (a) => a.role !== "border-radius" && a.role !== "spacing"
       );
       updated.push(
         { role: "border-radius", colorIndex: -1, customValue: preset.radius },
-        { role: "spacing", colorIndex: -1, customValue: preset.spacing },
+        { role: "spacing", colorIndex: -1, customValue: preset.spacing }
       );
       updateState({
         assignments: updated,
         selectedPresetId: resolvePresetId(updated),
       });
     },
-    [state.assignments, updateState, resolvePresetId],
+    [state.assignments, updateState, resolvePresetId]
   );
 
   return (
@@ -291,11 +290,7 @@ function PanelContent(): React.ReactElement {
             <span>Export</span>
           </SectionToggle>
 
-          {exportOpen && (
-            <ExportButtons
-              assignments={state.assignments}
-            />
-          )}
+          {exportOpen && <ExportButtons assignments={state.assignments} />}
         </>
       )}
     </PanelWrapper>

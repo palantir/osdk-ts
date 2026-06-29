@@ -16,6 +16,7 @@
 
 import React, { useCallback, useMemo, useState } from "react";
 import { styled } from "storybook/theming";
+
 import { generateCss, generateMarkdown } from "./export.js";
 import type { TokenAssignment } from "./types.js";
 
@@ -87,7 +88,7 @@ export function ExportButtons({
         window.setTimeout(() => setCopied(null), 2000);
       }
     },
-    [],
+    []
   );
 
   const download = useCallback(
@@ -107,7 +108,7 @@ export function ExportButtons({
         URL.revokeObjectURL(url);
       }, 0);
     },
-    [],
+    []
   );
 
   const css = useMemo(() => generateCss(assignments), [assignments]);
@@ -125,14 +126,10 @@ export function ExportButtons({
       >
         Download design.md
       </PrimaryExportButton>
-      <SecondaryExportButton
-        onClick={() => copyToClipboard(css, "CSS")}
-      >
+      <SecondaryExportButton onClick={() => copyToClipboard(css, "CSS")}>
         {copied === "CSS" ? "Copied!" : "Copy CSS"}
       </SecondaryExportButton>
-      <SecondaryExportButton
-        onClick={() => copyToClipboard(md, "Markdown")}
-      >
+      <SecondaryExportButton onClick={() => copyToClipboard(md, "Markdown")}>
         {copied === "Markdown" ? "Copied!" : "Copy Markdown"}
       </SecondaryExportButton>
     </ButtonRow>
