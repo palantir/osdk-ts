@@ -16,6 +16,7 @@
 
 import classNames from "classnames";
 import * as React from "react";
+
 import styles from "../AipAgentChat.module.css";
 
 export interface AipAgentChatModelPickerProps {
@@ -44,7 +45,7 @@ export function AipAgentChatModelPicker({
     (event: React.ChangeEvent<HTMLSelectElement>) => {
       onModelChange(event.target.value);
     },
-    [onModelChange],
+    [onModelChange]
   );
 
   if (models.length === 0) {
@@ -67,7 +68,7 @@ export function AipAgentChatModelPicker({
       onChange={handleChange}
       value={activeModel}
     >
-      {models.map(modelName => (
+      {models.map((modelName) => (
         <option key={modelName} value={modelName}>
           {modelName}
         </option>
