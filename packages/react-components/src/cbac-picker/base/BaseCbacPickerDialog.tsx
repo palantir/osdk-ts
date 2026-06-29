@@ -15,6 +15,7 @@
  */
 
 import React from "react";
+
 import { Dialog } from "../../base-components/dialog/Dialog.js";
 import { BaseCbacPicker } from "./BaseCbacPicker.js";
 import type { BaseCbacPickerProps } from "./BaseCbacPicker.js";
@@ -45,7 +46,7 @@ export function BaseCbacPickerDialog({
       }
       onOpenChange(open);
     },
-    [onCancel, onOpenChange],
+    [onCancel, onOpenChange]
   );
 
   return (
