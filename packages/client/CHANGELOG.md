@@ -1,5 +1,21 @@
 # @osdk/client
 
+## 2.41.0
+
+### Minor Changes
+
+- 9b150d7: Add nullity check for decrypt
+- 15a35f2: Add CipherText support for codegen and implement decryption interface
+
+### Patch Changes
+
+- Updated dependencies [9b150d7]
+- Updated dependencies [15a35f2]
+  - @osdk/api@2.41.0
+  - @osdk/generator-converters@2.41.0
+  - @osdk/shared.test@2.30.0
+  - @osdk/client.unstable@2.41.0
+
 ## 2.40.0
 
 ### Minor Changes
