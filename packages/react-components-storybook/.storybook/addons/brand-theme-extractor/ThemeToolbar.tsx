@@ -78,7 +78,7 @@ export const ThemeToolbar = React.memo(function ThemeToolbarFn() {
   const selectedLabel = selectedPreset?.label ?? "Custom";
   const selectedSwatches = useMemo(
     () => selectedPreset?.swatches ?? getCustomSwatches(themeState),
-    [selectedPreset?.swatches, themeState]
+    [selectedPreset?.swatches, rawState]
   );
   const { builtInPresets, customPresets } = useMemo(() => {
     const normalizedQuery = searchQuery.trim().toLowerCase();

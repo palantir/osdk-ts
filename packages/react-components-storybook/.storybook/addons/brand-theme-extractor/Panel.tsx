@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useRef } from "react";
 import { useGlobals } from "storybook/manager-api";
 import { styled } from "storybook/theming";
 
@@ -128,38 +128,39 @@ function PanelContent(): React.ReactElement {
     [rawState]
   );
 
-  const css = useMemo(
-    () => generateCss(state.assignments),
-    [state.assignments]
-  );
-  const md = useMemo(
-    () => generateMarkdown(state.assignments),
-    [state.assignments]
-  );
+  // Keep a ref so callbacks read current state without re-creating.
+  const stateRef = useRef(state);
+  stateRef.current = state;
 
+  // Depend on rawState (stable string) instead of state.assignments (new ref each render).
+  const css = useMemo(() => generateCss(state.assignments), [rawState]);
+  const md = useMemo(() => generateMarkdown(state.assignments), [rawState]);
+
+  // Stable: reads state via ref, only depends on updateGlobals (stable from useGlobals).
   const updateState = useCallback(
     (partial: Partial<BrandThemeGlobals>) => {
-      const newState = { ...state, ...partial };
+      const newState = { ...stateRef.current, ...partial };
       updateGlobals({ [GLOBALS_KEY]: stringifyBrandThemeState(newState) });
     },
-    [state, updateGlobals]
+    [updateGlobals]
   );
 
   const resolvePresetId = useCallback(
     (assignments: TokenAssignment[]): string => {
-      return findMatchingPreset(assignments, state.colorMode);
+      return findMatchingPreset(assignments, stateRef.current.colorMode);
     },
-    [state.colorMode]
+    []
   );
 
   const handleAssignmentChange = useCallback(
     (role: string, partial: Partial<TokenAssignment>) => {
-      const existing = state.assignments.filter((a) => a.role !== role);
-      const current = state.assignments.find((a) => a.role === role);
+      const current = stateRef.current;
+      const existing = current.assignments.filter((a) => a.role !== role);
+      const prev = current.assignments.find((a) => a.role === role);
       const updated: TokenAssignment = {
         role,
-        colorIndex: partial.colorIndex ?? current?.colorIndex ?? -1,
-        customValue: partial.customValue ?? current?.customValue,
+        colorIndex: partial.colorIndex ?? prev?.colorIndex ?? -1,
+        customValue: partial.customValue ?? prev?.customValue,
       };
       const newAssignments = [...existing, updated];
       updateState({
@@ -167,23 +168,25 @@ function PanelContent(): React.ReactElement {
         selectedPresetId: resolvePresetId(newAssignments),
       });
     },
-    [state.assignments, updateState, resolvePresetId]
+    [updateState, resolvePresetId]
   );
 
   const handleReset = useCallback(
     (role: string) => {
-      const newAssignments = state.assignments.filter((a) => a.role !== role);
+      const newAssignments = stateRef.current.assignments.filter(
+        (a) => a.role !== role
+      );
       updateState({
         assignments: newAssignments,
         selectedPresetId: resolvePresetId(newAssignments),
       });
     },
-    [state.assignments, updateState, resolvePresetId]
+    [updateState, resolvePresetId]
   );
 
   const applyPreset = useCallback(
     (preset: StylePreset) => {
-      const updated = state.assignments.filter(
+      const updated = stateRef.current.assignments.filter(
         (a) => a.role !== "border-radius" && a.role !== "spacing"
       );
       updated.push(
@@ -195,7 +198,7 @@ function PanelContent(): React.ReactElement {
         selectedPresetId: resolvePresetId(updated),
       });
     },
-    [state.assignments, updateState, resolvePresetId]
+    [updateState, resolvePresetId]
   );
 
   return (

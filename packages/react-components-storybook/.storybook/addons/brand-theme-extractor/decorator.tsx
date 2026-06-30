@@ -32,8 +32,11 @@ export const BrandThemeDecorator: Decorator = (Story, context) => {
   const rawState = context.globals[GLOBALS_KEY];
   const brandTheme = useMemo(() => parseBrandThemeState(rawState), [rawState]);
 
+  // Depend on rawState (a stable string) instead of brandTheme.assignments
+  // (a new array reference each render) so the memo actually memoizes.
   const cssText = useMemo(() => {
-    if (!brandTheme?.assignments || brandTheme.assignments.length === 0) {
+    const parsed = parseBrandThemeState(rawState);
+    if (!parsed.assignments || parsed.assignments.length === 0) {
       return "";
     }
 
@@ -46,7 +49,7 @@ export const BrandThemeDecorator: Decorator = (Story, context) => {
     // guaranteed-invalid value, breaking the entire derivation chain.
     const overrides: string[] = [];
 
-    for (const assignment of brandTheme.assignments) {
+    for (const assignment of parsed.assignments) {
       const roleDef = getTokenRole(assignment.role);
       if (!roleDef) continue;
 
@@ -82,7 +85,7 @@ export const BrandThemeDecorator: Decorator = (Story, context) => {
 
     // Use :root:root (doubled specificity) to override theme layers.
     return `:root:root {\n${overrides.join("\n")}\n}`;
-  }, [brandTheme.assignments]);
+  }, [rawState]);
 
   useEffect(
     function syncBrandThemeOverrideStyle() {
@@ -100,8 +103,7 @@ export const BrandThemeDecorator: Decorator = (Story, context) => {
       }
 
       return () => {
-        const el = document.querySelector(`#${STYLE_ID}`);
-        if (el) el.remove();
+        if (styleEl) styleEl.remove();
       };
     },
     [cssText]
