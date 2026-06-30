@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-// Opt-in advanced plugin tabs. Import a tab and register it via registerDevToolsPlugin.
-export { cacheTab } from "./plugins/cache/cacheTab.js";
-export { computeTab } from "./plugins/compute/computeTab.js";
-export { registerDevToolsPlugin } from "./plugins/registry.js";
+import React from "react";
+
+import { ComputeTab } from "../../components/ComputeTab.js";
+import type { DevToolsPanelProps } from "../types.js";
+
+export const ComputePanel: React.FC<DevToolsPanelProps> = ({
+  monitorStore,
+}) => {
+  return <ComputeTab computeStore={monitorStore.getComputeStore()} />;
+};

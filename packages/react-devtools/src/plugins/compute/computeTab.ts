@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-// Opt-in advanced plugin tabs. Import a tab and register it via registerDevToolsPlugin.
-export { cacheTab } from "./plugins/cache/cacheTab.js";
-export { computeTab } from "./plugins/compute/computeTab.js";
-export { registerDevToolsPlugin } from "./plugins/registry.js";
+import type { DevToolsPlugin } from "../types.js";
+import { ComputePanel } from "./ComputePanel.js";
+
+export const computeTab: DevToolsPlugin = {
+  id: "compute",
+  label: "Compute",
+  icon: "calculator",
+  panel: ComputePanel,
+};
