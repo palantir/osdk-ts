@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-// WS-P1/P2/P3 + WS-M1 populate this entrypoint with cacheTab/computeTab/interceptTab.
+// Entry point for the advanced plugin tabs (cache, compute, intercept). Populated when those tabs are added.
 // eslint-disable-next-line unicorn/require-module-specifiers -- placeholder empty module until advanced plugins land
 export {};
