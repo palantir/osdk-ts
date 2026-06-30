@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { MonitorRid as _api_MonitorRid } from "../../__components.js";
 import type { GetUsageInformationResponse as _api_metrics_GetUsageInformationResponse } from "../__components.js";
 
@@ -25,11 +26,11 @@ import type { GetUsageInformationResponse as _api_metrics_GetUsageInformationRes
  */
 export async function getMonitorUsageData(
   ctx: ConjureContext,
-  monitorRid: _api_MonitorRid,
+  monitorRid: _api_MonitorRid
 ): Promise<_api_metrics_GetUsageInformationResponse> {
   return conjureFetch(
     ctx,
     `/monitorMetrics/usage-metrics/${monitorRid}`,
-    "GET",
+    "GET"
   );
 }

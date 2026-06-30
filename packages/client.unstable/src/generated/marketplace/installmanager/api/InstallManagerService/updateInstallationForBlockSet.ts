@@ -15,13 +15,13 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   ManagedInstallationName as _api_ManagedInstallationName,
   NamespaceRid as _api_NamespaceRid,
 } from "../../../api/__components.js";
 import type {
-  UpdateInstallationForBlockSetRequest
-    as _installmanager_api_UpdateInstallationForBlockSetRequest,
+  UpdateInstallationForBlockSetRequest as _installmanager_api_UpdateInstallationForBlockSetRequest,
   UpdateInstallationResponse as _installmanager_api_UpdateInstallationResponse,
 } from "../__components.js";
 
@@ -32,12 +32,12 @@ export async function updateInstallationForBlockSet(
   ctx: ConjureContext,
   namespaceRid: _api_NamespaceRid,
   installationName: _api_ManagedInstallationName,
-  request: _installmanager_api_UpdateInstallationForBlockSetRequest,
+  request: _installmanager_api_UpdateInstallationForBlockSetRequest
 ): Promise<_installmanager_api_UpdateInstallationResponse> {
   return conjureFetch(
     ctx,
     `/install-manager/namespaces/${namespaceRid}/installations/${installationName}/block-set`,
     "PUT",
-    request,
+    request
   );
 }

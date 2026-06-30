@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BlockSetVersionId as _api_BlockSetVersionId,
   FinalizeBlockSetVersionRequest as _api_FinalizeBlockSetVersionRequest,
@@ -47,12 +48,12 @@ import type {
 export async function finalizeBlockSetVersionV2(
   ctx: ConjureContext,
   blockSetVersionId: _api_BlockSetVersionId,
-  request: _api_FinalizeBlockSetVersionRequest,
+  request: _api_FinalizeBlockSetVersionRequest
 ): Promise<_api_FinalizeBlockSetVersionResponse> {
   return conjureFetch(
     ctx,
     `/block-sets/v2/pending/version/${blockSetVersionId}/finalize`,
     "POST",
-    request,
+    request
   );
 }

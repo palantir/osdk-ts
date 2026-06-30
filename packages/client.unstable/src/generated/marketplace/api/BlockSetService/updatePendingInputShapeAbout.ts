@@ -15,11 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BlockSetVersionId as _api_BlockSetVersionId,
   InputBlockSetShapeId as _api_InputBlockSetShapeId,
-  UpdatePendingInputShapeAboutRequest
-    as _api_UpdatePendingInputShapeAboutRequest,
+  UpdatePendingInputShapeAboutRequest as _api_UpdatePendingInputShapeAboutRequest,
 } from "../__components.js";
 
 /**
@@ -36,12 +36,12 @@ export async function updatePendingInputShapeAbout(
   ctx: ConjureContext,
   blockSetVersionId: _api_BlockSetVersionId,
   inputBlockSetShapeId: _api_InputBlockSetShapeId,
-  request: _api_UpdatePendingInputShapeAboutRequest,
+  request: _api_UpdatePendingInputShapeAboutRequest
 ): Promise<void> {
   return conjureFetch(
     ctx,
     `/block-sets/pending/version/${blockSetVersionId}/input/${inputBlockSetShapeId}/about`,
     "PUT",
-    request,
+    request
   );
 }

@@ -15,10 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BlockSetVersionId as _api_BlockSetVersionId,
-  GetBlockSetVersionDocumentationResponse
-    as _api_GetBlockSetVersionDocumentationResponse,
+  GetBlockSetVersionDocumentationResponse as _api_GetBlockSetVersionDocumentationResponse,
   MarketplaceRid as _api_MarketplaceRid,
 } from "../__components.js";
 
@@ -29,11 +29,11 @@ import type {
 export async function getBlockSetVersionDocumentation(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
-  blockSetVersionId: _api_BlockSetVersionId,
+  blockSetVersionId: _api_BlockSetVersionId
 ): Promise<_api_GetBlockSetVersionDocumentationResponse> {
   return conjureFetch(
     ctx,
     `/block-sets/${marketplaceRid}/version/${blockSetVersionId}/documentation`,
-    "GET",
+    "GET"
   );
 }

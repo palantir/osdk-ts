@@ -331,35 +331,21 @@ const archetypeRules = archetypes(
       oxc: true,
     },
   )
-  // Force-bundle library migrated to the oxc toolchain. Same as "oxc migrated
-  // libraries" but carries OUTPUT_BUNDLE_ALL (bundled cjs/esm/browser), which is
-  // what the former forceBundle archetype provided (now removed; its two members
-  // are split between this archetype and the carve-out variant below).
-  // @osdk/client.unstable is almost entirely conjure-generated code under
-  // src/generated, which the shared Ultracite preset ignores (`**/generated`),
-  // so only the handful of hand-written files are linted/formatted and no
-  // package-specific carve-outs (nested config) are needed.
-  .addArchetype(
-    "oxc migrated force-bundle libraries",
-    [
-      "@osdk/client.unstable",
-    ],
-    {
-      ...LIBRARY_RULES,
-      output: OUTPUT_BUNDLE_ALL,
-      oxc: true,
-    },
-  )
-  // Same as "oxc migrated force-bundle libraries" but with a nested oxlint config
-  // (oxcConfig) for package-specific carve-outs. @osdk/client.unstable.tpsa is
-  // also mostly conjure-generated, but its hand-written src/index.ts is a barrel
-  // that re-exports the generated tree, surfacing a few error-level rules (e.g.
-  // oxc/no-barrel-file) that the prior ESLint config did not enforce; those are
-  // turned off in packages/client.unstable.tpsa/oxlint.config.ts to keep the
-  // migration behavior-preserving.
+  // Force-bundle libraries migrated to the oxc toolchain. Same as "oxc migrated
+  // libraries" but carry OUTPUT_BUNDLE_ALL (bundled cjs/esm/browser), which is
+  // what the former forceBundle archetype provided (now removed; both its members
+  // live here). @osdk/client.unstable and @osdk/client.unstable.tpsa are both
+  // almost entirely conjure-generated code under src/generated; this repo treats
+  // that as first-class checked-in source (ESLint + dprint processed it before
+  // the migration), so each carries a nested oxlint config (oxcConfig) that
+  // re-includes the generated tree and turns off the few error-level rules it
+  // surfaces, keeping the migration behavior-preserving. The generated tree is
+  // also oxfmt-formatted via the root oxfmt.config.ts (which no longer ignores
+  // `**/generated`).
   .addArchetype(
     "oxc migrated force-bundle libraries with carve-outs",
     [
+      "@osdk/client.unstable",
       "@osdk/client.unstable.tpsa",
     ],
     {

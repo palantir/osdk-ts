@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   PreviewReleaseRequest as _release_api_PreviewReleaseRequest,
   PreviewReleaseResponse as _release_api_PreviewReleaseResponse,
@@ -35,7 +36,7 @@ import type {
  */
 export async function previewRelease(
   ctx: ConjureContext,
-  request: _release_api_PreviewReleaseRequest,
+  request: _release_api_PreviewReleaseRequest
 ): Promise<_release_api_PreviewReleaseResponse> {
   return conjureFetch(ctx, `/releases/preview`, "POST", request);
 }

@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   CompassProjectRid as _api_CompassProjectRid,
   ReleaseRid as _api_ReleaseRid,
@@ -29,13 +30,13 @@ import type { Release as _release_api_Release } from "../__components.js";
 export async function getRelease(
   ctx: ConjureContext,
   releaseRid: _api_ReleaseRid,
-  compassProject: _api_CompassProjectRid,
+  compassProject: _api_CompassProjectRid
 ): Promise<_release_api_Release> {
   return conjureFetch(
     ctx,
     `/releases/release/${releaseRid}`,
     "GET",
     undefined,
-    { compassProject },
+    { compassProject }
   );
 }

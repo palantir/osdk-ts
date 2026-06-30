@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { BlockVersionId as _api_BlockVersionId } from "../__components.js";
 
 /**
@@ -25,7 +26,7 @@ import type { BlockVersionId as _api_BlockVersionId } from "../__components.js";
  */
 export async function abortBlockVersion(
   ctx: ConjureContext,
-  blockVersionId: _api_BlockVersionId,
+  blockVersionId: _api_BlockVersionId
 ): Promise<void> {
   return conjureFetch(ctx, `/blocks/versions/${blockVersionId}/abort`, "POST");
 }

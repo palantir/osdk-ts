@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { BlockSetInstallationRid as _api_BlockSetInstallationRid } from "../../__components.js";
 import type {
   UpgradeRequest as _api_experimental_UpgradeRequest,
@@ -27,12 +28,12 @@ import type {
 export async function upgrade(
   ctx: ConjureContext,
   installationRid: _api_BlockSetInstallationRid,
-  request: _api_experimental_UpgradeRequest,
+  request: _api_experimental_UpgradeRequest
 ): Promise<_api_experimental_UpgradeResponse> {
   return conjureFetch(
     ctx,
     `/experimental/installations/${installationRid}/upgrade`,
     "POST",
-    request,
+    request
   );
 }

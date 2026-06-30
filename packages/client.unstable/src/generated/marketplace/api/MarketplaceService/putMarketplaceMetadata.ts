@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   MarketplaceRid as _api_MarketplaceRid,
   PutMarketplaceMetadataRequest as _api_PutMarketplaceMetadataRequest,
@@ -28,12 +29,12 @@ import type {
 export async function putMarketplaceMetadata(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
-  request: _api_PutMarketplaceMetadataRequest,
+  request: _api_PutMarketplaceMetadataRequest
 ): Promise<_api_VersionedMarketplaceMetadata> {
   return conjureFetch(
     ctx,
     `/marketplaces/${marketplaceRid}/metadata`,
     "PUT",
-    request,
+    request
   );
 }

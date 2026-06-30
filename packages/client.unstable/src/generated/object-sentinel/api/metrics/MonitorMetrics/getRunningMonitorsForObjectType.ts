@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  GetRunningMonitorsForObjectTypeRequest
-    as _api_metrics_GetRunningMonitorsForObjectTypeRequest,
-  GetRunningMonitorsForObjectTypeResponse
-    as _api_metrics_GetRunningMonitorsForObjectTypeResponse,
+  GetRunningMonitorsForObjectTypeRequest as _api_metrics_GetRunningMonitorsForObjectTypeRequest,
+  GetRunningMonitorsForObjectTypeResponse as _api_metrics_GetRunningMonitorsForObjectTypeResponse,
 } from "../__components.js";
 
 /**
@@ -27,7 +26,7 @@ import type {
  */
 export async function getRunningMonitorsForObjectType(
   ctx: ConjureContext,
-  request: _api_metrics_GetRunningMonitorsForObjectTypeRequest,
+  request: _api_metrics_GetRunningMonitorsForObjectTypeRequest
 ): Promise<_api_metrics_GetRunningMonitorsForObjectTypeResponse> {
   return conjureFetch(ctx, `/monitorMetrics/runningMonitors`, "POST", request);
 }

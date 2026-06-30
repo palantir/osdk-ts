@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BlockSetInstallationRid as _api_BlockSetInstallationRid,
   BlockSetInstallationV2 as _api_BlockSetInstallationV2,
@@ -30,11 +31,11 @@ import type {
  */
 export async function getBlockSetInstallationV2(
   ctx: ConjureContext,
-  blockSetInstallationRid: _api_BlockSetInstallationRid,
+  blockSetInstallationRid: _api_BlockSetInstallationRid
 ): Promise<_api_BlockSetInstallationV2> {
   return conjureFetch(
     ctx,
     `/block-installation/v2/block-set-installations/${blockSetInstallationRid}`,
-    "GET",
+    "GET"
   );
 }

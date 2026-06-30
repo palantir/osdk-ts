@@ -15,10 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   ActionTypeGetOrganizationsRequest as _api_ActionTypeGetOrganizationsRequest,
-  DeprecatedActionTypeGetOrganizationsResponse
-    as _api_DeprecatedActionTypeGetOrganizationsResponse,
+  DeprecatedActionTypeGetOrganizationsResponse as _api_DeprecatedActionTypeGetOrganizationsResponse,
 } from "../../__components.js";
 
 /**
@@ -30,7 +30,7 @@ import type {
  */
 export async function deprecatedGetOrganizations(
   ctx: ConjureContext,
-  request: _api_ActionTypeGetOrganizationsRequest,
+  request: _api_ActionTypeGetOrganizationsRequest
 ): Promise<_api_DeprecatedActionTypeGetOrganizationsResponse> {
   return conjureFetch(ctx, `/actions/orgs/get`, "POST", request);
 }

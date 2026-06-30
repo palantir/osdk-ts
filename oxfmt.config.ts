@@ -4,10 +4,17 @@ import ultracite from "ultracite/oxfmt";
 // Ultracite drives the oxfmt formatting preset. We extend its ignorePatterns to
 // leave files that other tooling owns untouched: package.json / tsconfig.json are
 // still managed by monorepolint + dprint, and changelog yaml is historical.
+//
+// We drop Ultracite's `**/generated` ignore: this repo treats `src/generated/`
+// (conjure-emitted code) as first-class checked-in source — only
+// `src/generatedNoCheck{,2}/` are excluded (see below), and dprint formatted
+// `src/generated/` before the oxc migration. Keeping it formatted under oxfmt
+// preserves that behavior. The other Ultracite generated-globs (`**/_generated`,
+// `**/__generated__`, `**/*.generated.*`, `**/codegen`, …) are left intact.
 export default defineConfig({
   ...ultracite,
   ignorePatterns: [
-    ...(ultracite.ignorePatterns ?? []),
+    ...(ultracite.ignorePatterns ?? []).filter((p) => p !== "**/generated"),
     "**/package.json",
     "**/tsconfig.json",
     // YAML is not formatted by dprint either (no yaml plugin); some packages keep

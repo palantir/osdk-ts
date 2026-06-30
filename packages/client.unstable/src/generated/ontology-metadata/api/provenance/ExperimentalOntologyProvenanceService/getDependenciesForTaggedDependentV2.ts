@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  GetDependenciesForTaggedDependentRequestV2
-    as _api_provenance_GetDependenciesForTaggedDependentRequestV2,
-  GetDependenciesForTaggedDependentResponseV2
-    as _api_provenance_GetDependenciesForTaggedDependentResponseV2,
+  GetDependenciesForTaggedDependentRequestV2 as _api_provenance_GetDependenciesForTaggedDependentRequestV2,
+  GetDependenciesForTaggedDependentResponseV2 as _api_provenance_GetDependenciesForTaggedDependentResponseV2,
 } from "../__components.js";
 
 /**
@@ -35,12 +34,12 @@ import type {
  */
 export async function getDependenciesForTaggedDependentV2(
   ctx: ConjureContext,
-  request: _api_provenance_GetDependenciesForTaggedDependentRequestV2,
+  request: _api_provenance_GetDependenciesForTaggedDependentRequestV2
 ): Promise<_api_provenance_GetDependenciesForTaggedDependentResponseV2> {
   return conjureFetch(
     ctx,
     `/provenance/getDependencyForResourceV2`,
     "PUT",
-    request,
+    request
   );
 }

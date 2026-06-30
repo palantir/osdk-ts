@@ -18,20 +18,20 @@ import { defineConfig } from "oxlint";
 
 import root from "../../oxlint.config.ts";
 
-// Nested oxlint config for @osdk/client.unstable.tpsa. Like @osdk/client.unstable
-// it is almost entirely conjure-generated code under src/generated. This repo
-// treats src/generated/ as first-class checked-in source (only
+// Nested oxlint config for @osdk/client.unstable (the repo's largest package,
+// ~943 files, almost entirely conjure-generated code under src/generated). This
+// repo treats src/generated/ as first-class checked-in source (only
 // src/generatedNoCheck{,2}/ are excluded, and ESLint linted src/generated before
 // the oxc migration), so this config re-includes it: the inherited Ultracite
 // preset ignores `**/generated`, which is removed from `ignorePatterns` below so
 // the generated tree is linted (and oxfmt-formatted; see the root oxfmt.config.ts)
 // just as ESLint + dprint did before.
 //
-// The error-level rules below — surfaced both by the generated tree and by the
-// hand-written src/index.ts barrel — were not enforced by the prior ESLint
-// config; turning them off keeps the ESLint -> oxlint migration behavior-
-// preserving (the package is migrated, not rewritten). cf. the nested-config
-// pattern in packages/react-components/oxlint.config.ts.
+// Linting the generated tree surfaces a couple of error-level rules that the
+// prior ESLint config did not enforce; they are turned off here to keep the
+// migration behavior-preserving (the package is migrated, not rewritten), so
+// `oxlint --fix` makes no source rewrites. (cf. the nested-config pattern in
+// packages/react-components/oxlint.config.ts.)
 //
 // `extends` only carries `rules`/`plugins`/`overrides`, so the root's
 // `ignorePatterns` are re-applied explicitly (minus `**/generated`).
@@ -42,17 +42,10 @@ export default defineConfig({
   ),
 
   rules: {
-    // Barrels: src/index.ts re-exports the generated third-party-application
-    // service tree (`export type * from "./generated/.../index.js"`), and the
-    // generated per-service index.ts files are barrels too. Barrels are
-    // intrinsic here; not enforced by prior ESLint. (cf. react-components, which
-    // disables the same rule for its published barrel.)
+    // The generated barrels (`export * from ...` in the per-service index.ts
+    // files) re-export the whole tree; barrels are intrinsic to the generated
+    // layout. Not enforced by prior ESLint.
     "oxc/no-barrel-file": "off",
-    // The hand-written `export {};` at the end of src/index.ts. Removing it is the
-    // autofix, but that is a source rewrite; keep it as authored. Not enforced by
-    // prior ESLint.
-    "typescript/no-useless-empty-export": "off",
-    "unicorn/require-module-specifiers": "off",
     // oxfmt owns import spacing in this migration; the generated files do not
     // carry a blank line after their import block. Not enforced by prior ESLint.
     "import/newline-after-import": "off",

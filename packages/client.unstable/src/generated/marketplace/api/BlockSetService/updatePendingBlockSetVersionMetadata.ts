@@ -15,12 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BlockSetVersionId as _api_BlockSetVersionId,
-  UpdatePendingBlockSetVersionMetadataRequest
-    as _api_UpdatePendingBlockSetVersionMetadataRequest,
-  UpdatePendingBlockSetVersionMetadataResponse
-    as _api_UpdatePendingBlockSetVersionMetadataResponse,
+  UpdatePendingBlockSetVersionMetadataRequest as _api_UpdatePendingBlockSetVersionMetadataRequest,
+  UpdatePendingBlockSetVersionMetadataResponse as _api_UpdatePendingBlockSetVersionMetadataResponse,
 } from "../__components.js";
 
 /**
@@ -39,12 +38,12 @@ import type {
 export async function updatePendingBlockSetVersionMetadata(
   ctx: ConjureContext,
   blockSetVersionId: _api_BlockSetVersionId,
-  request: _api_UpdatePendingBlockSetVersionMetadataRequest,
+  request: _api_UpdatePendingBlockSetVersionMetadataRequest
 ): Promise<_api_UpdatePendingBlockSetVersionMetadataResponse> {
   return conjureFetch(
     ctx,
     `/block-sets/v2/pending/version/${blockSetVersionId}/metadata`,
     "PUT",
-    request,
+    request
   );
 }

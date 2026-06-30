@@ -24,7 +24,6 @@ const OXC_PACKAGES = [
   "cbac-components",
   "react",
   "react-devtools",
-  "client.unstable",
 ];
 const OXC_PACKAGE_GLOB = `packages/{${
   OXC_PACKAGES.join(",")
@@ -39,6 +38,7 @@ const OXC_NESTED_CONFIG_PACKAGES = {
   "react-components-storybook":
     "packages/react-components-storybook/oxlint.config.ts",
   "react-components": "packages/react-components/oxlint.config.ts",
+  "client.unstable": "packages/client.unstable/oxlint.config.ts",
   "client.unstable.tpsa": "packages/client.unstable.tpsa/oxlint.config.ts",
   "client": "packages/client/oxlint.config.ts",
 };

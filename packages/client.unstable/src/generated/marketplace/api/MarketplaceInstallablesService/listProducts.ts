@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   ListProductsPageToken as _api_ListProductsPageToken,
   ListProductsResponse as _api_ListProductsResponse,
@@ -29,13 +30,13 @@ export async function listProducts(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
   pageToken: _api_ListProductsPageToken | null | undefined,
-  limit: number | null | undefined,
+  limit: number | null | undefined
 ): Promise<_api_ListProductsResponse> {
   return conjureFetch(
     ctx,
     `/installation-app-service/${marketplaceRid}/product/list`,
     "GET",
     undefined,
-    { pageToken, limit },
+    { pageToken, limit }
   );
 }

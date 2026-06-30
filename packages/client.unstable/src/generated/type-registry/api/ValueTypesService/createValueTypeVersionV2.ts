@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { CreateValueTypeVersionRequestV2 } from "../CreateValueTypeVersionRequestV2.js";
 import type { CreateValueTypeVersionResponse } from "../CreateValueTypeVersionResponse.js";
 import type { ValueTypeRid } from "../ValueTypeRid.js";
@@ -25,12 +26,12 @@ import type { ValueTypeRid } from "../ValueTypeRid.js";
 export async function createValueTypeVersionV2(
   ctx: ConjureContext,
   valueTypeRid: ValueTypeRid,
-  request: CreateValueTypeVersionRequestV2,
+  request: CreateValueTypeVersionRequestV2
 ): Promise<CreateValueTypeVersionResponse> {
   return conjureFetch(
     ctx,
     `/type-registry/value-types/version/v2/${valueTypeRid}`,
     "POST",
-    request,
+    request
   );
 }

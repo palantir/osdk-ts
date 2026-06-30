@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { UpdateValueTypeRequest } from "../UpdateValueTypeRequest.js";
 import type { ValueTypeRid } from "../ValueTypeRid.js";
 
@@ -24,12 +25,12 @@ import type { ValueTypeRid } from "../ValueTypeRid.js";
 export async function updateValueType(
   ctx: ConjureContext,
   valueTypeRid: ValueTypeRid,
-  request: UpdateValueTypeRequest,
+  request: UpdateValueTypeRequest
 ): Promise<void> {
   return conjureFetch(
     ctx,
     `/type-registry/value-types/${valueTypeRid}`,
     "PUT",
-    request,
+    request
   );
 }

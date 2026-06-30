@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   LoadAllOntologiesRequest as _api_LoadAllOntologiesRequest,
   LoadAllOntologiesResponse as _api_LoadAllOntologiesResponse,
@@ -27,12 +28,12 @@ import type {
  */
 export async function loadAllOntologies(
   ctx: ConjureContext,
-  request: _api_LoadAllOntologiesRequest,
+  request: _api_LoadAllOntologiesRequest
 ): Promise<_api_LoadAllOntologiesResponse> {
   return conjureFetch(
     ctx,
     `/ontology/ontology/ontologies/load/all`,
     "POST",
-    request,
+    request
   );
 }

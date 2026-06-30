@@ -44,8 +44,7 @@ export type BucketSize = BucketSize_interval | BucketSize_fullRange;
 export interface CurrentlyEvaluating {
   startedAt?: string | null | undefined;
 }
-export interface CurrentlyIndexing {
-}
+export interface CurrentlyIndexing {}
 /**
  * An enum to represent how automation dependencies should be traversed
  */
@@ -101,8 +100,7 @@ export interface FailingEvaluation {
   lastError?: string | null | undefined;
   startedAt?: string | null | undefined;
 }
-export interface FullRange {
-}
+export interface FullRange {}
 export interface GetAggregateBucketedDataRequest {
   bucketSize?: BucketSize | null | undefined;
   monitorRids: Array<_api_MonitorRid>;
@@ -165,10 +163,8 @@ export interface LiveEvaluationDependencySource {
   lastSourceEventId: _api_MonitorEventId;
   lastTriggeredEventId: _api_MonitorEventId;
 }
-export interface MetricsAreNotAvailable {
-}
-export interface NotSupportedForNonLive {
-}
+export interface MetricsAreNotAvailable {}
+export interface NotSupportedForNonLive {}
 export interface StalledEvaluation {
   registeredAt?: string | null | undefined;
 }

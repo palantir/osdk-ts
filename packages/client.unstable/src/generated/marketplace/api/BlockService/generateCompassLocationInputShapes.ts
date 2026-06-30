@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  GenerateCompassLocationInputShapesRequest
-    as _api_GenerateCompassLocationInputShapesRequest,
-  GenerateCompassLocationInputShapesResponse
-    as _api_GenerateCompassLocationInputShapesResponse,
+  GenerateCompassLocationInputShapesRequest as _api_GenerateCompassLocationInputShapesRequest,
+  GenerateCompassLocationInputShapesResponse as _api_GenerateCompassLocationInputShapesResponse,
 } from "../__components.js";
 
 /**
@@ -29,12 +28,12 @@ import type {
  */
 export async function generateCompassLocationInputShapes(
   ctx: ConjureContext,
-  request: _api_GenerateCompassLocationInputShapesRequest,
+  request: _api_GenerateCompassLocationInputShapesRequest
 ): Promise<_api_GenerateCompassLocationInputShapesResponse> {
   return conjureFetch(
     ctx,
     `/blocks/generate-compass-location-input-shapes`,
     "POST",
-    request,
+    request
   );
 }

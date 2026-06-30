@@ -15,9 +15,9 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  BlockSetInstallationJobCapabilities
-    as _api_BlockSetInstallationJobCapabilities,
+  BlockSetInstallationJobCapabilities as _api_BlockSetInstallationJobCapabilities,
   InstallBlocksJobRid as _api_InstallBlocksJobRid,
 } from "../__components.js";
 
@@ -27,11 +27,11 @@ import type {
  */
 export async function getBlockSetInstallationJobCapabilities(
   ctx: ConjureContext,
-  jobRid: _api_InstallBlocksJobRid,
+  jobRid: _api_InstallBlocksJobRid
 ): Promise<_api_BlockSetInstallationJobCapabilities> {
   return conjureFetch(
     ctx,
     `/block-installation/v2/block-set-installations/${jobRid}/job-capabilities`,
-    "GET",
+    "GET"
   );
 }

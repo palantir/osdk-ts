@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   DraftGroupRid as _api_DraftGroupRid,
   FinalizeDraftGroupRequest as _api_FinalizeDraftGroupRequest,
@@ -36,12 +37,12 @@ import type {
 export async function finalizeDraftGroup(
   ctx: ConjureContext,
   draftGroupRid: _api_DraftGroupRid,
-  request: _api_FinalizeDraftGroupRequest,
+  request: _api_FinalizeDraftGroupRequest
 ): Promise<_api_FinalizeDraftGroupResponse> {
   return conjureFetch(
     ctx,
     `/draft-groups/${draftGroupRid}/finalize`,
     "POST",
-    request,
+    request
   );
 }

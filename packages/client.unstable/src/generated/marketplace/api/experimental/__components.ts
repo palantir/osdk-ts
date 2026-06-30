@@ -18,8 +18,7 @@ import type {
   BlockSetId as _api_BlockSetId,
   BlockSetInstallationJobRid as _api_BlockSetInstallationJobRid,
   BlockSetInstallationRid as _api_BlockSetInstallationRid,
-  BlockSetInstallValidationErrorDetailV2
-    as _api_BlockSetInstallValidationErrorDetailV2,
+  BlockSetInstallValidationErrorDetailV2 as _api_BlockSetInstallValidationErrorDetailV2,
   BlockSetVersion as _api_BlockSetVersion,
   BlockSetVersionId as _api_BlockSetVersionId,
   CompassFolderRid as _api_CompassFolderRid,
@@ -29,8 +28,7 @@ import type {
   InstallShapeValidationError as _api_InstallShapeValidationError,
   MarketplaceRid as _api_MarketplaceRid,
   OntologyRid as _api_OntologyRid,
-  ResolvedAllowOntologySchemaMigrationsShape
-    as _api_ResolvedAllowOntologySchemaMigrationsShape,
+  ResolvedAllowOntologySchemaMigrationsShape as _api_ResolvedAllowOntologySchemaMigrationsShape,
   ResolvedEddieReplayOption as _api_ResolvedEddieReplayOption,
   ResolvedInstallPrefixShape as _api_ResolvedInstallPrefixShape,
   SecretName as _api_SecretName,
@@ -169,8 +167,7 @@ export interface SimpleResolvedInputShape_credential {
 
 export interface SimpleResolvedInputShape_allowOntologySchemaMigrations {
   type: "allowOntologySchemaMigrations";
-  allowOntologySchemaMigrations:
-    _api_ResolvedAllowOntologySchemaMigrationsShape;
+  allowOntologySchemaMigrations: _api_ResolvedAllowOntologySchemaMigrationsShape;
 }
 
 export interface SimpleResolvedInputShape_eddieReplayOption {
@@ -213,8 +210,7 @@ export interface TargetVersionSemver {
   blockSetId: _api_BlockSetId;
   version: _api_BlockSetVersion;
 }
-export interface UnsetInstallationInput {
-}
+export interface UnsetInstallationInput {}
 export interface UpgradeRequest {
   inputs?: NewInputs | null | undefined;
   targetVersion: TargetVersion;

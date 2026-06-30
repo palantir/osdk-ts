@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BlockSetInstallationRid as _api_BlockSetInstallationRid,
   GetInstallAutomationStatusResponse as _api_GetInstallAutomationStatusResponse,
@@ -27,11 +28,11 @@ import type {
  */
 export async function getInstallAutomationStatus(
   ctx: ConjureContext,
-  blockSetInstallationRid: _api_BlockSetInstallationRid,
+  blockSetInstallationRid: _api_BlockSetInstallationRid
 ): Promise<_api_GetInstallAutomationStatusResponse> {
   return conjureFetch(
     ctx,
     `/automation/status/block-set-installations/${blockSetInstallationRid}`,
-    "GET",
+    "GET"
   );
 }

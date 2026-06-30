@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BlockSetVersionDiff as _api_BlockSetVersionDiff,
   BlockSetVersionDiffRequest as _api_BlockSetVersionDiffRequest,
@@ -27,12 +28,12 @@ import type {
  */
 export async function getBlockSetVersionDiff(
   ctx: ConjureContext,
-  request: _api_BlockSetVersionDiffRequest,
+  request: _api_BlockSetVersionDiffRequest
 ): Promise<_api_BlockSetVersionDiff> {
   return conjureFetch(
     ctx,
     `/installation-app-service/block-set-diff`,
     "POST",
-    request,
+    request
   );
 }

@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BlockId as _api_BlockId,
   OwnedBlockMetadata as _api_OwnedBlockMetadata,
@@ -27,7 +28,7 @@ import type {
  */
 export async function getOwnedBlockMetadata(
   ctx: ConjureContext,
-  blockId: _api_BlockId,
+  blockId: _api_BlockId
 ): Promise<_api_OwnedBlockMetadata> {
   return conjureFetch(ctx, `/blocks/${blockId}/owned`, "GET");
 }

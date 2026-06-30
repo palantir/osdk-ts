@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { InstallBlockSetsRequest as _api_InstallBlockSetsRequest } from "../../__components.js";
 import type { InstallRequest as _api_experimental_InstallRequest } from "../__components.js";
 
@@ -23,12 +24,12 @@ import type { InstallRequest as _api_experimental_InstallRequest } from "../__co
  */
 export async function debugInstall(
   ctx: ConjureContext,
-  request: _api_experimental_InstallRequest,
+  request: _api_experimental_InstallRequest
 ): Promise<_api_InstallBlockSetsRequest> {
   return conjureFetch(
     ctx,
     `/experimental/installations/debug`,
     "POST",
-    request,
+    request
   );
 }

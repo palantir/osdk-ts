@@ -22,7 +22,7 @@ import { type ConjureContext, conjureFetch } from "conjure-lite";
  * Requires third-party-application:view-sdk-discovery on the service root node.
  */
 export async function getIsSdkGenerationEnabled(
-  ctx: ConjureContext,
+  ctx: ConjureContext
 ): Promise<boolean> {
   return conjureFetch(ctx, `/sdk-discovery/sdk-generation-enabled`, "GET");
 }

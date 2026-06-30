@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BlockSetInstallationJobRid as _api_BlockSetInstallationJobRid,
   GetResolvedJobDraftResponse as _api_GetResolvedJobDraftResponse,
@@ -30,7 +31,7 @@ import type {
  */
 export async function getResolvedJobDraft(
   ctx: ConjureContext,
-  jobRid: _api_BlockSetInstallationJobRid,
+  jobRid: _api_BlockSetInstallationJobRid
 ): Promise<_api_GetResolvedJobDraftResponse> {
   return conjureFetch(ctx, `/installation-job-draft/${jobRid}/resolved`, "GET");
 }
