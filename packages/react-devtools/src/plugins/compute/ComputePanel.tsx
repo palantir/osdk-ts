@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
-// Entry point for the opt-in advanced plugin tabs. Consumers import a plugin
-// from here and register it themselves.
-export { computeTab } from "./plugins/compute/computeTab.js";
+import React from "react";
+
+import { ComputeTab } from "../../components/ComputeTab.js";
+import type { DevToolsPanelProps } from "../types.js";
+
+export const ComputePanel: React.FC<DevToolsPanelProps> = ({
+  monitorStore,
+}) => {
+  return <ComputeTab computeStore={monitorStore.getComputeStore()} />;
+};

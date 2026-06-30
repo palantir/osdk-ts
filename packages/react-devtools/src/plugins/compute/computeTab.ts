@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
-// Entry point for the opt-in advanced plugin tabs. Consumers import a plugin
-// from here and register it themselves.
-export { computeTab } from "./plugins/compute/computeTab.js";
+import type { DevToolsPlugin } from "../types.js";
+import { ComputePanel } from "./ComputePanel.js";
+
+export const computeTab: DevToolsPlugin = {
+  id: "compute",
+  label: "Compute",
+  icon: "calculator",
+  panel: ComputePanel,
+};
