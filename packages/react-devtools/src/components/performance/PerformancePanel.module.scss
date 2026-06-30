@@ -1,0 +1,140 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 12px;
+}
+
+.metricsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.metricStat {
+  flex: 1;
+  min-width: 110px;
+  padding: 8px 10px;
+  border: 1px solid rgba(138, 155, 168, 0.2);
+  border-radius: 3px;
+}
+
+.metricStatHead {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.metricStatLabel {
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.metricStatInfo {
+  opacity: 0.5;
+  cursor: help;
+}
+
+.metricStatValue {
+  font-size: 18px;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.metricStatPending {
+  font-size: 12px;
+  opacity: 0.55;
+  margin-top: 4px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sectionHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sectionTitle {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.7;
+}
+
+.empty {
+  font-size: 12px;
+  opacity: 0.6;
+  padding: 8px 4px;
+}
+
+.recItem {
+  margin-bottom: 6px;
+}
+
+.recBody {
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+.recActions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.opList {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.opRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  padding: 2px 4px;
+}
+
+.opType {
+  flex-shrink: 0;
+  font-size: 10px;
+  text-transform: uppercase;
+  opacity: 0.6;
+  min-width: 90px;
+}
+
+.opSignature {
+  flex: 1;
+  min-width: 0;
+  font-family: monospace;
+  font-size: 11px;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.opTime {
+  flex-shrink: 0;
+  opacity: 0.7;
+}
