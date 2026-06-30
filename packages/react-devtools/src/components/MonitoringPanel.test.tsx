@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { registerDevToolsPlugin } from "../plugins/registry.js";
+import type { DevToolsPlugin } from "../plugins/types.js";
 import { createMockMonitorStore } from "./testHelpers.js";
 
 vi.mock("../fiber/DegradationNotice.js", () => ({
@@ -36,33 +38,85 @@ vi.mock("../fiber/validation.js", () => ({
 
 const { MonitoringPanel } = await import("./MonitoringPanel.js");
 
+const ACTIVE_TAB_KEY = "osdk-devtools-active-tab";
+
+function makePlugin(id: string, label: string): DevToolsPlugin {
+  return {
+    id,
+    label,
+    icon: "cube",
+    panel: () => <div data-testid={`panel-${id}`}>{`${label} panel`}</div>,
+  };
+}
+
 describe("MonitoringPanel", () => {
+  let unregisterFns: Array<() => void> = [];
+
+  function register(plugin: DevToolsPlugin): void {
+    unregisterFns.push(registerDevToolsPlugin(plugin));
+  }
+
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
   afterEach(() => {
     cleanup();
+    for (const unregister of unregisterFns) {
+      unregister();
+    }
+    unregisterFns = [];
+    localStorage.clear();
   });
 
-  it("renders the panel with title and tabs", () => {
+  it("renders one tab button per registered plugin", () => {
+    register(makePlugin("overview", "Overview"));
+    register(makePlugin("cache", "Cache"));
+    register(makePlugin("actions", "Actions"));
+
     const store = createMockMonitorStore();
     render(<MonitoringPanel monitorStore={store} />);
 
-    expect(screen.queryByText("OSDK Devtools")).not.toBeNull();
-    expect(screen.queryByText("Performance")).not.toBeNull();
-    expect(screen.queryByText("Compute")).not.toBeNull();
-    expect(screen.queryByText("Intercept")).not.toBeNull();
-    expect(screen.queryByText("Debugging")).not.toBeNull();
+    expect(screen.getAllByRole("tab")).toHaveLength(3);
+    expect(screen.getByRole("tab", { name: "Overview" })).not.toBeNull();
+    expect(screen.getByRole("tab", { name: "Cache" })).not.toBeNull();
+    expect(screen.getByRole("tab", { name: "Actions" })).not.toBeNull();
   });
 
-  it("renders the beta badge", () => {
+  it("mounts only the active tab's panel", () => {
+    register(makePlugin("overview", "Overview"));
+    register(makePlugin("cache", "Cache"));
+
     const store = createMockMonitorStore();
     render(<MonitoringPanel monitorStore={store} />);
 
-    expect(screen.queryAllByText("Beta").length).toBeGreaterThan(0);
+    expect(screen.queryByTestId("panel-overview")).not.toBeNull();
+    expect(screen.queryByTestId("panel-cache")).toBeNull();
   });
 
-  it("defaults to the performance tab", () => {
+  it("swaps the mounted panel when another tab is clicked", () => {
+    register(makePlugin("overview", "Overview"));
+    register(makePlugin("cache", "Cache"));
+
     const store = createMockMonitorStore();
     render(<MonitoringPanel monitorStore={store} />);
 
-    expect(screen.queryAllByText("Cache Hit Rate").length).toBeGreaterThan(0);
+    fireEvent.click(screen.getByRole("tab", { name: "Cache" }));
+
+    expect(screen.queryByTestId("panel-cache")).not.toBeNull();
+    expect(screen.queryByTestId("panel-overview")).toBeNull();
+  });
+
+  it("falls back to the first tab when the persisted active id is absent", () => {
+    localStorage.setItem(ACTIVE_TAB_KEY, JSON.stringify("removed-tab"));
+
+    register(makePlugin("overview", "Overview"));
+    register(makePlugin("cache", "Cache"));
+
+    const store = createMockMonitorStore();
+    render(<MonitoringPanel monitorStore={store} />);
+
+    expect(screen.queryByTestId("panel-overview")).not.toBeNull();
+    expect(screen.queryByTestId("panel-cache")).toBeNull();
   });
 });
