@@ -35,8 +35,7 @@ export const BrandThemeDecorator: Decorator = (Story, context) => {
   );
 
   const cssText = useMemo(() => {
-    if (!brandTheme?.active) return "";
-    if (!brandTheme.assignments || brandTheme.assignments.length === 0) {
+    if (!brandTheme?.assignments || brandTheme.assignments.length === 0) {
       return "";
     }
 

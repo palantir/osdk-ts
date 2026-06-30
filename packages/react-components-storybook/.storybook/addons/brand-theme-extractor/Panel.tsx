@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo } from "react";
 import { useGlobals } from "storybook/manager-api";
 import { styled } from "storybook/theming";
 
 import { GLOBALS_KEY } from "./constants.js";
-import { ExportButtons } from "./ExportButtons.js";
+import { generateCss, generateMarkdown } from "./export.js";
+import { ExportDropdown } from "./ExportButtons.js";
 import {
   findMatchingPreset,
   parseBrandThemeState,
@@ -55,66 +56,22 @@ const PanelWrapper = styled.div({
 
 const HeaderRow = styled.div({
   display: "flex",
-  justifyContent: "space-between",
   alignItems: "center",
+  gap: 8,
   marginBottom: 8,
+});
+
+const HeaderRight = styled.div({
+  display: "flex",
+  alignItems: "center",
+  gap: 6,
+  marginLeft: "auto",
 });
 
 const Title = styled.span(({ theme }) => ({
   fontWeight: 600,
   fontSize: 14,
   color: theme.color.defaultText,
-}));
-
-const ToggleRow = styled.div({
-  display: "flex",
-  alignItems: "center",
-  gap: 8,
-  cursor: "pointer",
-});
-
-const ToggleStatusLabel = styled.span(({ theme }) => ({
-  fontSize: 11,
-  color: theme.color.mediumdark,
-}));
-
-const ToggleTrack = styled.div<{ on: boolean }>(({ theme, on }) => ({
-  width: 32,
-  height: 18,
-  borderRadius: 9,
-  backgroundColor: on ? theme.color.secondary : theme.color.medium,
-  position: "relative" as const,
-  transition: "background-color 150ms ease",
-  flexShrink: 0,
-}));
-
-const ToggleThumb = styled.div<{ on: boolean }>(({ on }) => ({
-  width: 14,
-  height: 14,
-  borderRadius: "50%",
-  backgroundColor: "#fff",
-  position: "absolute" as const,
-  top: 2,
-  left: on ? 16 : 2,
-  transition: "left 150ms ease",
-  boxShadow: "0 1px 2px rgba(0,0,0,0.2)",
-}));
-
-const SectionToggle = styled.div<{ open: boolean }>(({ theme, open }) => ({
-  display: "flex",
-  alignItems: "center",
-  gap: 6,
-  cursor: "pointer",
-  fontSize: 12,
-  fontWeight: 600,
-  color: theme.color.defaultText,
-  padding: "8px 0",
-  userSelect: "none" as const,
-  "& > span:first-of-type": {
-    transition: "transform 150ms ease",
-    transform: open ? "rotate(0deg)" : "rotate(-90deg)",
-    display: "inline-block",
-  },
 }));
 
 const InputRow = styled.div({
@@ -170,7 +127,14 @@ function PanelContent(): React.ReactElement {
     [globals]
   );
 
-  const [exportOpen, setExportOpen] = useState(true);
+  const css = useMemo(
+    () => generateCss(state.assignments),
+    [state.assignments]
+  );
+  const md = useMemo(
+    () => generateMarkdown(state.assignments),
+    [state.assignments]
+  );
 
   const updateState = useCallback(
     (partial: Partial<BrandThemeGlobals>) => {
@@ -216,10 +180,6 @@ function PanelContent(): React.ReactElement {
     [state.assignments, updateState, resolvePresetId]
   );
 
-  const handleToggle = useCallback(() => {
-    updateState({ active: !state.active });
-  }, [state.active, updateState]);
-
   const applyPreset = useCallback(
     (preset: StylePreset) => {
       const updated = state.assignments.filter(
@@ -239,17 +199,24 @@ function PanelContent(): React.ReactElement {
 
   return (
     <PanelWrapper>
-      {/* Header with on/off toggle */}
       <HeaderRow>
         <Title>Brand Theme</Title>
-        <ToggleRow onClick={handleToggle}>
-          <ToggleStatusLabel>
-            {state.active ? "Override" : "Off"}
-          </ToggleStatusLabel>
-          <ToggleTrack on={state.active}>
-            <ToggleThumb on={state.active} />
-          </ToggleTrack>
-        </ToggleRow>
+        {state.assignments.length > 0 && (
+          <HeaderRight>
+            <ExportDropdown
+              label="CSS"
+              content={css}
+              filename="tokens.css"
+              mime="text/css"
+            />
+            <ExportDropdown
+              label="Design.md"
+              content={md}
+              filename="design.md"
+              mime="text/markdown"
+            />
+          </HeaderRight>
+        )}
       </HeaderRow>
 
       {/* Border style presets — quick way to set radius/spacing */}
@@ -277,22 +244,6 @@ function PanelContent(): React.ReactElement {
         onAssignmentChange={handleAssignmentChange}
         onReset={handleReset}
       />
-
-      {/* Collapsible export section */}
-      {state.assignments.length > 0 && (
-        <>
-          <SectionDivider />
-          <SectionToggle
-            open={exportOpen}
-            onClick={() => setExportOpen(!exportOpen)}
-          >
-            <span>&#x25BE;</span>
-            <span>Export</span>
-          </SectionToggle>
-
-          {exportOpen && <ExportButtons assignments={state.assignments} />}
-        </>
-      )}
     </PanelWrapper>
   );
 }
