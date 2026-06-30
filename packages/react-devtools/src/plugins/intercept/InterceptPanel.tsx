@@ -14,4 +14,14 @@
  * limitations under the License.
  */
 
-export { interceptTab } from "./plugins/intercept/interceptTab.js";
+import React from "react";
+
+import { InterceptTab } from "../../components/InterceptTab.js";
+import type { DevToolsPanelProps } from "../types.js";
+
+export const InterceptPanel: React.FC<DevToolsPanelProps> = ({
+  monitorStore,
+  theme,
+}) => {
+  return <InterceptTab monitorStore={monitorStore} theme={theme} />;
+};
