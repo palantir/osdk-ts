@@ -132,9 +132,14 @@ function PanelContent(): React.ReactElement {
   const stateRef = useRef(state);
   stateRef.current = state;
 
-  // Depend on rawState (stable string) instead of state.assignments (new ref each render).
-  const css = useMemo(() => generateCss(state.assignments), [rawState]);
-  const md = useMemo(() => generateMarkdown(state.assignments), [rawState]);
+  const css = useMemo(
+    () => generateCss(state.assignments),
+    [state.assignments]
+  );
+  const md = useMemo(
+    () => generateMarkdown(state.assignments),
+    [state.assignments]
+  );
 
   // Stable: reads state via ref, only depends on updateGlobals (stable from useGlobals).
   const updateState = useCallback(

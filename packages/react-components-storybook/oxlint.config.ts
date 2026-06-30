@@ -43,6 +43,13 @@ export default defineConfig({
     // stories are not shipped UI.
     "jsx-a11y/control-has-associated-label": "off",
     "jsx-a11y/interactive-supports-focus": "off",
+    // The brand theme toolbar uses custom styled components with ARIA roles
+    // (role="dialog", role="listbox", role="option") because native elements
+    // would break Storybook's styling constraints.
+    "jsx-a11y/prefer-tag-over-role": "off",
+    // querySelector vs getElementById is a stylistic choice; we use whichever
+    // fits the context.
+    "unicorn/prefer-query-selector": "off",
   },
 
   // eslint-plugin-storybook rules, scoped exactly as the plugin's

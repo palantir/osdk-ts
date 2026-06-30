@@ -32,8 +32,6 @@ export const BrandThemeDecorator: Decorator = (Story, context) => {
   const rawState = context.globals[GLOBALS_KEY];
   const brandTheme = useMemo(() => parseBrandThemeState(rawState), [rawState]);
 
-  // Both memos depend on rawState (a stable string) so brandTheme is
-  // always current when cssText recomputes — no double-parse needed.
   const cssText = useMemo(() => {
     if (!brandTheme.assignments || brandTheme.assignments.length === 0) {
       return "";
@@ -84,7 +82,7 @@ export const BrandThemeDecorator: Decorator = (Story, context) => {
 
     // Use :root:root (doubled specificity) to override theme layers.
     return `:root:root {\n${overrides.join("\n")}\n}`;
-  }, [rawState]);
+  }, [brandTheme.assignments]);
 
   useEffect(
     function syncBrandThemeOverrideStyle() {

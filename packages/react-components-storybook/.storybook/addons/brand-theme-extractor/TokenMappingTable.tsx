@@ -341,28 +341,12 @@ function TokenRow({
 }: TokenRowProps): React.ReactElement {
   const currentValue = assignment?.customValue;
 
-  // Build a stable dep string from only the color values that affect
-  // this role's contrast pairs, avoiding a dep on the full assignments array.
-  const contrastKey = useMemo(() => {
-    if (roleDef.inputType !== "color") return "";
-    const relevant = new Set<string>();
-    for (const [fg, bg] of CONTRAST_PAIRS) {
-      if (fg === roleDef.role) {
-        relevant.add(fg);
-        relevant.add(bg);
-      }
-    }
-    return [...relevant]
-      .map((r) => assignments.find((a) => a.role === r)?.customValue ?? "")
-      .join("|");
-  }, [roleDef.role, roleDef.inputType, assignments]);
-
   const contrast = useMemo(
     () =>
       roleDef.inputType === "color"
         ? getContrastInfo(roleDef.role, assignments)
         : undefined,
-    [contrastKey]
+    [roleDef.role, roleDef.inputType, assignments]
   );
 
   const handleValueChange = useCallback(
