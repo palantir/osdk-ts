@@ -18,9 +18,12 @@ import { cleanup, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it } from "vitest";
 
-import { createMockMonitorStore } from "./testHelpers.js";
+import { createMockMonitorStore } from "../../components/testHelpers.js";
 
-const { CacheInspectorTab } = await import("./CacheInspectorTab.js");
+const { CacheInspectorTab } =
+  await import("../../components/CacheInspectorTab.js");
+const { CachePanel } = await import("./CachePanel.js");
+const { cacheTab } = await import("./cacheTab.js");
 
 describe("CacheInspectorTab", () => {
   afterEach(() => {
@@ -49,5 +52,41 @@ describe("CacheInspectorTab", () => {
     render(<CacheInspectorTab monitorStore={store} />);
 
     expect(store.loadCacheEntries).toHaveBeenCalled();
+  });
+});
+
+describe("CachePanel", () => {
+  afterEach(() => {
+    cleanup();
+  });
+
+  it("renders the cache inspector and drives loadCacheEntries", () => {
+    const store = createMockMonitorStore();
+
+    const { container } = render(
+      <CachePanel monitorStore={store} theme="light" />
+    );
+
+    expect(container.firstChild).not.toBeNull();
+    expect(store.loadCacheEntries).toHaveBeenCalled();
+  });
+
+  it("renders in dark theme", () => {
+    const store = createMockMonitorStore();
+
+    const { container } = render(
+      <CachePanel monitorStore={store} theme="dark" />
+    );
+
+    expect(container.firstChild).not.toBeNull();
+  });
+});
+
+describe("cacheTab", () => {
+  it("exposes the cache plugin contract", () => {
+    expect(cacheTab.id).toBe("cache");
+    expect(cacheTab.label).toBe("Cache");
+    expect(cacheTab.icon).toBe("database");
+    expect(cacheTab.panel).toBe(CachePanel);
   });
 });
