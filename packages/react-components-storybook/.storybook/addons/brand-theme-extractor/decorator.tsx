@@ -32,11 +32,10 @@ export const BrandThemeDecorator: Decorator = (Story, context) => {
   const rawState = context.globals[GLOBALS_KEY];
   const brandTheme = useMemo(() => parseBrandThemeState(rawState), [rawState]);
 
-  // Depend on rawState (a stable string) instead of brandTheme.assignments
-  // (a new array reference each render) so the memo actually memoizes.
+  // Both memos depend on rawState (a stable string) so brandTheme is
+  // always current when cssText recomputes — no double-parse needed.
   const cssText = useMemo(() => {
-    const parsed = parseBrandThemeState(rawState);
-    if (!parsed.assignments || parsed.assignments.length === 0) {
+    if (!brandTheme.assignments || brandTheme.assignments.length === 0) {
       return "";
     }
 
@@ -49,7 +48,7 @@ export const BrandThemeDecorator: Decorator = (Story, context) => {
     // guaranteed-invalid value, breaking the entire derivation chain.
     const overrides: string[] = [];
 
-    for (const assignment of parsed.assignments) {
+    for (const assignment of brandTheme.assignments) {
       const roleDef = getTokenRole(assignment.role);
       if (!roleDef) continue;
 

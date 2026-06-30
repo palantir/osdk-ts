@@ -145,13 +145,6 @@ function PanelContent(): React.ReactElement {
     [updateGlobals]
   );
 
-  const resolvePresetId = useCallback(
-    (assignments: TokenAssignment[]): string => {
-      return findMatchingPreset(assignments, stateRef.current.colorMode);
-    },
-    []
-  );
-
   const handleAssignmentChange = useCallback(
     (role: string, partial: Partial<TokenAssignment>) => {
       const current = stateRef.current;
@@ -165,28 +158,28 @@ function PanelContent(): React.ReactElement {
       const newAssignments = [...existing, updated];
       updateState({
         assignments: newAssignments,
-        selectedPresetId: resolvePresetId(newAssignments),
+        selectedPresetId: findMatchingPreset(newAssignments, current.colorMode),
       });
     },
-    [updateState, resolvePresetId]
+    [updateState]
   );
 
   const handleReset = useCallback(
     (role: string) => {
-      const newAssignments = stateRef.current.assignments.filter(
-        (a) => a.role !== role
-      );
+      const current = stateRef.current;
+      const newAssignments = current.assignments.filter((a) => a.role !== role);
       updateState({
         assignments: newAssignments,
-        selectedPresetId: resolvePresetId(newAssignments),
+        selectedPresetId: findMatchingPreset(newAssignments, current.colorMode),
       });
     },
-    [updateState, resolvePresetId]
+    [updateState]
   );
 
   const applyPreset = useCallback(
     (preset: StylePreset) => {
-      const updated = stateRef.current.assignments.filter(
+      const current = stateRef.current;
+      const updated = current.assignments.filter(
         (a) => a.role !== "border-radius" && a.role !== "spacing"
       );
       updated.push(
@@ -195,10 +188,10 @@ function PanelContent(): React.ReactElement {
       );
       updateState({
         assignments: updated,
-        selectedPresetId: resolvePresetId(updated),
+        selectedPresetId: findMatchingPreset(updated, current.colorMode),
       });
     },
-    [updateState, resolvePresetId]
+    [updateState]
   );
 
   return (

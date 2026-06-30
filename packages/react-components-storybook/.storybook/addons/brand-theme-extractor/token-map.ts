@@ -479,7 +479,11 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
   },
 ];
 
-/** Lookup a token role definition by role name */
+const TOKEN_ROLE_MAP = new Map<string, TokenRoleDefinition>(
+  TOKEN_ROLES.map((t) => [t.role, t])
+);
+
+/** Lookup a token role definition by role name (O(1) via Map) */
 export function getTokenRole(role: string): TokenRoleDefinition | undefined {
-  return TOKEN_ROLES.find((t) => t.role === role);
+  return TOKEN_ROLE_MAP.get(role);
 }

@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-import { getTokenRole, TOKEN_ROLES } from "./token-map.js";
-import type { TokenAssignment } from "./types.js";
+import { getTokenRole } from "./token-map.js";
+import type { TokenAssignment, TokenCategory } from "./types.js";
 
 interface ResolvedToken {
   role: string;
   label: string;
   value: string;
   cssProperties: string[];
+  category: TokenCategory;
+  designMdKey: string;
+  designMdSection: string;
 }
 
 function resolveTokens(assignments: TokenAssignment[]): ResolvedToken[] {
@@ -48,6 +51,9 @@ function resolveTokens(assignments: TokenAssignment[]): ResolvedToken[] {
       label: roleDef.label,
       value,
       cssProperties: roleDef.cssProperties,
+      category: roleDef.category,
+      designMdKey: roleDef.designMdKey,
+      designMdSection: roleDef.designMdSection,
     });
   }
 
@@ -69,10 +75,7 @@ export function generateCss(assignments: TokenAssignment[]): string {
   const categories = ["color", "typography", "surface", "emphasis"] as const;
 
   for (const category of categories) {
-    const categoryTokens = tokens.filter((t) => {
-      const def = TOKEN_ROLES.find((r) => r.role === t.role);
-      return def?.category === category;
-    });
+    const categoryTokens = tokens.filter((t) => t.category === category);
 
     if (categoryTokens.length === 0) continue;
 
@@ -104,15 +107,13 @@ export function generateMarkdown(assignments: TokenAssignment[]): string {
   // Group tokens by their DESIGN.md section
   const sections = new Map<string, { key: string; value: string }[]>();
   for (const token of tokens) {
-    const def = TOKEN_ROLES.find((r) => r.role === token.role);
-    if (!def) continue;
-    const section = def.designMdSection;
+    const section = token.designMdSection;
     let entries = sections.get(section);
     if (!entries) {
       entries = [];
       sections.set(section, entries);
     }
-    entries.push({ key: def.designMdKey, value: token.value });
+    entries.push({ key: token.designMdKey, value: token.value });
   }
 
   const lines: string[] = ["---"];
@@ -164,10 +165,7 @@ export function generateMarkdown(assignments: TokenAssignment[]): string {
   lines.push("|-------|-------|----------------|");
 
   for (const token of tokens) {
-    const def = TOKEN_ROLES.find((r) => r.role === token.role);
-    const tokenPath = def
-      ? `{${def.designMdSection}.${def.designMdKey}}`
-      : token.role;
+    const tokenPath = `{${token.designMdSection}.${token.designMdKey}}`;
     const props = token.cssProperties.map((p) => `\`${p}\``).join(", ");
     lines.push(`| \`${tokenPath}\` | \`${token.value}\` | ${props} |`);
   }
