@@ -92,13 +92,19 @@ export function ExportDropdown({
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const copiedTimerRef = useRef<number | undefined>();
+
+  useEffect(() => {
+    return () => window.clearTimeout(copiedTimerRef.current);
+  }, []);
 
   useEffect(() => {
     if (!open) return;
     function handleClickOutside(e: MouseEvent) {
       if (
         wrapperRef.current &&
-        !wrapperRef.current.contains(e.target as Node)
+        e.target instanceof Node &&
+        !wrapperRef.current.contains(e.target)
       ) {
         setOpen(false);
       }
@@ -119,7 +125,8 @@ export function ExportDropdown({
       // ignore
     } finally {
       setOpen(false);
-      window.setTimeout(() => setCopied(false), 2000);
+      window.clearTimeout(copiedTimerRef.current);
+      copiedTimerRef.current = window.setTimeout(() => setCopied(false), 2000);
     }
   }, [content]);
 

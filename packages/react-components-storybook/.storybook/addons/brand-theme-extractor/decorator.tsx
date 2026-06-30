@@ -29,10 +29,8 @@ const STYLE_ID = "brand-theme-overrides";
  * document head. Uses :root with high specificity to override theme values.
  */
 export const BrandThemeDecorator: Decorator = (Story, context) => {
-  const brandTheme = useMemo(
-    () => parseBrandThemeState(context.globals[GLOBALS_KEY]),
-    [context.globals[GLOBALS_KEY]]
-  );
+  const rawState = context.globals[GLOBALS_KEY];
+  const brandTheme = useMemo(() => parseBrandThemeState(rawState), [rawState]);
 
   const cssText = useMemo(() => {
     if (!brandTheme?.assignments || brandTheme.assignments.length === 0) {
@@ -84,13 +82,11 @@ export const BrandThemeDecorator: Decorator = (Story, context) => {
 
     // Use :root:root (doubled specificity) to override theme layers.
     return `:root:root {\n${overrides.join("\n")}\n}`;
-  }, [brandTheme]);
+  }, [brandTheme.assignments]);
 
   useEffect(
     function syncBrandThemeOverrideStyle() {
-      let styleEl = document.querySelector(
-        `#${STYLE_ID}`
-      ) as HTMLStyleElement | null;
+      let styleEl = document.getElementById(STYLE_ID);
 
       if (cssText) {
         if (!styleEl) {

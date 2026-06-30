@@ -107,8 +107,12 @@ export function generateMarkdown(assignments: TokenAssignment[]): string {
     const def = TOKEN_ROLES.find((r) => r.role === token.role);
     if (!def) continue;
     const section = def.designMdSection;
-    if (!sections.has(section)) sections.set(section, []);
-    sections.get(section)!.push({ key: def.designMdKey, value: token.value });
+    let entries = sections.get(section);
+    if (!entries) {
+      entries = [];
+      sections.set(section, entries);
+    }
+    entries.push({ key: def.designMdKey, value: token.value });
   }
 
   const lines: string[] = ["---"];

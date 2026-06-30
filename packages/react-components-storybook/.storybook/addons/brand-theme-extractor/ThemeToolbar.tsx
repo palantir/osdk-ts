@@ -68,10 +68,8 @@ export const ThemeToolbar = React.memo(function ThemeToolbarFn() {
   const rootRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const themeState = useMemo(
-    () => parseBrandThemeState(globals[GLOBALS_KEY]),
-    [globals[GLOBALS_KEY]]
-  );
+  const rawState = globals[GLOBALS_KEY];
+  const themeState = useMemo(() => parseBrandThemeState(rawState), [rawState]);
   const selectedPreset = useMemo(
     () => findThemePreset(themeState.selectedPresetId),
     [themeState.selectedPresetId]
@@ -202,8 +200,8 @@ export const ThemeToolbar = React.memo(function ThemeToolbarFn() {
       >
         <PaintBrushIcon />
         <SwatchGroup aria-hidden="true">
-          {selectedSwatches.map((swatch) => (
-            <ToolbarSwatch key={swatch} color={swatch} />
+          {selectedSwatches.map((swatch, i) => (
+            <ToolbarSwatch key={i} color={swatch} />
           ))}
         </SwatchGroup>
         <ToolbarLabel>{selectedLabel}</ToolbarLabel>
@@ -310,8 +308,8 @@ const PresetOption = React.memo(function PresetOptionFn({
       title={preset.description}
     >
       <SwatchGroup aria-hidden="true">
-        {preset.swatches.map((swatch) => (
-          <PresetSwatch key={swatch} color={swatch} />
+        {preset.swatches.map((swatch, i) => (
+          <PresetSwatch key={i} color={swatch} />
         ))}
       </SwatchGroup>
       <PresetLabelStyled>{preset.label}</PresetLabelStyled>
@@ -341,8 +339,8 @@ function CustomOption({
       title="Open the Brand Theme panel to customize tokens"
     >
       <SwatchGroup aria-hidden="true">
-        {swatches.map((swatch) => (
-          <PresetSwatch key={swatch} color={swatch} />
+        {swatches.map((swatch, i) => (
+          <PresetSwatch key={i} color={swatch} />
         ))}
       </SwatchGroup>
       <PresetLabelStyled>Custom</PresetLabelStyled>

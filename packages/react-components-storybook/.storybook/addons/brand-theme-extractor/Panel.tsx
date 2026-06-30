@@ -119,12 +119,13 @@ export function Panel({ active }: PanelProps): React.ReactElement | null {
 
 function PanelContent(): React.ReactElement {
   const [globals, updateGlobals] = useGlobals();
+  const rawState = globals[GLOBALS_KEY];
 
   // Storybook globals can lose nested object fields during serialization.
   // Store the full state as a JSON string to preserve structure.
   const state: BrandThemeGlobals = useMemo(
-    () => parseBrandThemeState(globals[GLOBALS_KEY]),
-    [globals]
+    () => parseBrandThemeState(rawState),
+    [rawState]
   );
 
   const css = useMemo(
