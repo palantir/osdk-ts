@@ -18,8 +18,11 @@ import { Button, FormGroup, Icon, NumericInput } from "@blueprintjs/core";
 import type { ReactCodeMirrorProps } from "@uiw/react-codemirror";
 import React, { Suspense } from "react";
 
+import type {
+  InterceptAction,
+  SelectedQuery,
+} from "../plugins/intercept/types.js";
 import type { PrototypeOverride } from "../prototyping/PrototypeOverrideStore.js";
-import type { InterceptAction, SelectedQuery } from "./InterceptTab.js";
 
 import styles from "./InterceptTab.module.scss";
 

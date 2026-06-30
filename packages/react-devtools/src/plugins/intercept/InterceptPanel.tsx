@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-// Opt-in advanced plugin tabs. Import a tab and register it via registerDevToolsPlugin.
-export { cacheTab } from "./plugins/cache/cacheTab.js";
-export { computeTab } from "./plugins/compute/computeTab.js";
-export { interceptTab } from "./plugins/intercept/interceptTab.js";
-export { registerDevToolsPlugin } from "./plugins/registry.js";
+import React from "react";
+
+import { InterceptTab } from "../../components/InterceptTab.js";
+import type { DevToolsPanelProps } from "../types.js";
+
+export const InterceptPanel: React.FC<DevToolsPanelProps> = ({
+  monitorStore,
+  theme,
+}) => {
+  return <InterceptTab monitorStore={monitorStore} theme={theme} />;
+};

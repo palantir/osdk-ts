@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-// Opt-in advanced plugin tabs. Import a tab and register it via registerDevToolsPlugin.
-export { cacheTab } from "./plugins/cache/cacheTab.js";
-export { computeTab } from "./plugins/compute/computeTab.js";
-export { interceptTab } from "./plugins/intercept/interceptTab.js";
-export { registerDevToolsPlugin } from "./plugins/registry.js";
+import type { DevToolsPlugin } from "../types.js";
+import { InterceptPanel } from "./InterceptPanel.js";
+
+export const interceptTab: DevToolsPlugin = {
+  id: "intercept",
+  label: "Intercept",
+  icon: "exchange",
+  panel: InterceptPanel,
+};
