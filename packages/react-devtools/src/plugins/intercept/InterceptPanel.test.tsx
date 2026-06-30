@@ -18,11 +18,11 @@ import { cleanup, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it } from "vitest";
 
-import { createMockMonitorStore } from "./testHelpers.js";
+import { createMockMonitorStore } from "../../components/testHelpers.js";
 
-const { InterceptTab } = await import("./InterceptTab.js");
+const { InterceptPanel } = await import("./InterceptPanel.js");
 
-describe("InterceptTab", () => {
+describe("InterceptPanel", () => {
   afterEach(() => {
     cleanup();
   });
@@ -30,7 +30,9 @@ describe("InterceptTab", () => {
   it("renders without crashing", () => {
     const store = createMockMonitorStore();
 
-    const { container } = render(<InterceptTab monitorStore={store} />);
+    const { container } = render(
+      <InterceptPanel monitorStore={store} theme="light" />
+    );
 
     expect(container.firstChild).not.toBeNull();
   });
@@ -38,7 +40,7 @@ describe("InterceptTab", () => {
   it("renders the unified active intercepts section", () => {
     const store = createMockMonitorStore();
 
-    render(<InterceptTab monitorStore={store} />);
+    render(<InterceptPanel monitorStore={store} theme="light" />);
 
     expect(screen.queryByText("Active Intercepts")).not.toBeNull();
     expect(screen.queryByText("No active intercepts")).not.toBeNull();
@@ -47,7 +49,7 @@ describe("InterceptTab", () => {
   it("renders the select component button", () => {
     const store = createMockMonitorStore();
 
-    render(<InterceptTab monitorStore={store} />);
+    render(<InterceptPanel monitorStore={store} theme="light" />);
 
     const buttons = screen.queryAllByText("Select Component");
     expect(buttons.length).toBeGreaterThan(0);
@@ -56,7 +58,7 @@ describe("InterceptTab", () => {
   it("accesses the mock manager from store", () => {
     const store = createMockMonitorStore();
 
-    render(<InterceptTab monitorStore={store} />);
+    render(<InterceptPanel monitorStore={store} theme="light" />);
 
     expect(store.getMockManager).toHaveBeenCalled();
   });
@@ -64,7 +66,7 @@ describe("InterceptTab", () => {
   it("accesses the prototype override store", () => {
     const store = createMockMonitorStore();
 
-    render(<InterceptTab monitorStore={store} />);
+    render(<InterceptPanel monitorStore={store} theme="light" />);
 
     expect(store.getPrototypeOverrideStore).toHaveBeenCalled();
   });

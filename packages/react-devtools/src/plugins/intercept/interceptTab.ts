@@ -14,4 +14,12 @@
  * limitations under the License.
  */
 
-export { interceptTab } from "./plugins/intercept/interceptTab.js";
+import type { DevToolsPlugin } from "../types.js";
+import { InterceptPanel } from "./InterceptPanel.js";
+
+export const interceptTab: DevToolsPlugin = {
+  id: "intercept",
+  label: "Intercept",
+  icon: "exchange",
+  panel: InterceptPanel,
+};
