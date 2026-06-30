@@ -232,19 +232,6 @@ export const ThemeToolbar = React.memo(function ThemeToolbarFn() {
               <DropdownCount>{totalVisible} themes</DropdownCount>
             </DropdownHeaderRow>
 
-            {showCustomInSearch && (
-              <>
-                <SectionLabel>{isCustom ? "Current" : "Custom"}</SectionLabel>
-                <PresetList role="listbox" aria-label="Custom theme">
-                  <CustomOption
-                    swatches={isCustom ? selectedSwatches : DEFAULT_SWATCHES}
-                    selected={isCustom}
-                    onOpenPanel={openCustomPanel}
-                  />
-                </PresetList>
-              </>
-            )}
-
             {builtInPresets.length > 0 && (
               <>
                 <SectionLabel>Built-in themes</SectionLabel>
@@ -273,6 +260,19 @@ export const ThemeToolbar = React.memo(function ThemeToolbarFn() {
                       onSelect={selectPreset}
                     />
                   ))}
+                </PresetList>
+              </>
+            )}
+
+            {showCustomInSearch && (
+              <>
+                <SectionLabel>{isCustom ? "Current" : "Custom"}</SectionLabel>
+                <PresetList role="listbox" aria-label="Custom theme">
+                  <CustomOption
+                    swatches={isCustom ? selectedSwatches : DEFAULT_SWATCHES}
+                    selected={isCustom}
+                    onOpenPanel={openCustomPanel}
+                  />
                 </PresetList>
               </>
             )}
