@@ -16,6 +16,5 @@
 
 import type { DevToolsPlugin } from "./types.js";
 
-// WS-M1 (integration) fills this with the Overview/Components/Performance/Console
-// base tab objects. Kept empty here so the contract and registry land first.
+// Populated with the base tab objects (Overview, Components, Performance, Console) when they are added.
 export const BASE_TABS: DevToolsPlugin[] = [];
