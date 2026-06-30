@@ -252,9 +252,9 @@ function PanelContent(): React.ReactElement {
         </ToggleRow>
       </HeaderRow>
 
-      {/* Style presets — quick way to set radius/spacing */}
+      {/* Border style presets — quick way to set radius/spacing */}
       <div>
-        <PresetLabel>Style</PresetLabel>
+        <PresetLabel>Border Style</PresetLabel>
         <InputRow>
           {STYLE_PRESETS.map((preset) => (
             <PresetButton

@@ -91,38 +91,18 @@ export function ExportButtons({
     []
   );
 
-  const download = useCallback(
-    (content: string, filename: string, mime: string) => {
-      const blob = new Blob([content], { type: mime });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = filename;
-      a.rel = "noopener";
-      // Some browsers ignore programmatic downloads unless the anchor is in the
-      // document. Keep it attached until after the click has been processed.
-      document.body.appendChild(a);
-      a.click();
-      window.setTimeout(() => {
-        a.remove();
-        URL.revokeObjectURL(url);
-      }, 0);
-    },
-    []
-  );
-
   const css = useMemo(() => generateCss(assignments), [assignments]);
   const md = useMemo(() => generateMarkdown(assignments), [assignments]);
 
   return (
     <ButtonRow>
       <PrimaryExportButton
-        onClick={() => download(css, "tokens.css", "text/css")}
+        onClick={() => downloadFile(css, "tokens.css", "text/css")}
       >
         Download tokens.css
       </PrimaryExportButton>
       <PrimaryExportButton
-        onClick={() => download(md, "design.md", "text/markdown")}
+        onClick={() => downloadFile(md, "design.md", "text/markdown")}
       >
         Download design.md
       </PrimaryExportButton>
@@ -134,6 +114,23 @@ export function ExportButtons({
       </SecondaryExportButton>
     </ButtonRow>
   );
+}
+
+function downloadFile(content: string, filename: string, mime: string): void {
+  const blob = new Blob([content], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.rel = "noopener";
+  // Some browsers ignore programmatic downloads unless the anchor is in the
+  // document. Keep it attached until after the click has been processed.
+  document.body.appendChild(a);
+  a.click();
+  window.setTimeout(() => {
+    a.remove();
+    URL.revokeObjectURL(url);
+  }, 0);
 }
 
 function copyWithTextAreaFallback(content: string): void {

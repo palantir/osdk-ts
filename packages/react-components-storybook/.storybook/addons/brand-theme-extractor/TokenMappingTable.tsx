@@ -422,7 +422,7 @@ function TokenRow({
               type="text"
               value={currentValue || ""}
               onChange={handleValueChange}
-              placeholder="theme default"
+              placeholder="Default"
               style={{ width: 90 }}
             />
           </>
@@ -437,7 +437,7 @@ function TokenRow({
             }
             style={{ minWidth: 130, fontFamily: currentValue || "inherit" }}
           >
-            <option value="">theme default</option>
+            <option value="">Default</option>
             {FONT_PRESETS.map((f) => (
               <option
                 key={f.label}
@@ -459,7 +459,7 @@ function TokenRow({
             }
             style={{ minWidth: 100 }}
           >
-            <option value="">theme default</option>
+            <option value="">Default</option>
             {SHADOW_PRESETS.map((s) => (
               <option key={s.label} value={s.value}>
                 {s.label}
@@ -472,7 +472,7 @@ function TokenRow({
               type="text"
               value={currentValue || ""}
               onChange={handleValueChange}
-              placeholder="theme default"
+              placeholder="Default"
               style={{ width: roleDef.inputType === "text" ? 140 : 55 }}
             />
             {(roleDef.inputType === "px" || roleDef.inputType === "ms") && (

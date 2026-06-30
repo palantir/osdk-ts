@@ -29,10 +29,10 @@ import React, {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
-import { useGlobals } from "storybook/manager-api";
+import { useGlobals, useStorybookApi } from "storybook/manager-api";
 import { styled } from "storybook/theming";
 
-import { GLOBALS_KEY } from "./constants.js";
+import { GLOBALS_KEY, PANEL_ID } from "./constants.js";
 import { THEME_PRESETS, type ThemePreset } from "./presets.js";
 import {
   createThemeStateForMode,
@@ -58,6 +58,7 @@ interface DropdownPosition {
 
 export const ThemeToolbar = React.memo(function ThemeToolbarFn() {
   const [globals, updateGlobals] = useGlobals();
+  const api = useStorybookApi();
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [dropdownPosition, setDropdownPosition] = useState<DropdownPosition>({
@@ -98,9 +99,8 @@ export const ThemeToolbar = React.memo(function ThemeToolbarFn() {
     return { builtInPresets: builtIn, customPresets: custom };
   }, [searchQuery]);
   const showCustomInSearch =
-    isCustom &&
-    (searchQuery.trim() === "" ||
-      "custom".includes(searchQuery.trim().toLowerCase()));
+    searchQuery.trim() === "" ||
+    "custom".includes(searchQuery.trim().toLowerCase());
   const totalVisible =
     builtInPresets.length + customPresets.length + (showCustomInSearch ? 1 : 0);
 
@@ -184,6 +184,13 @@ export const ThemeToolbar = React.memo(function ThemeToolbarFn() {
     [updateGlobals]
   );
 
+  const openCustomPanel = useCallback(() => {
+    api.setSelectedPanel(PANEL_ID);
+    api.togglePanel(true);
+    setOpen(false);
+    setSearchQuery("");
+  }, [api]);
+
   return (
     <ToolbarRoot ref={rootRef}>
       <ToolbarButton
@@ -229,9 +236,13 @@ export const ThemeToolbar = React.memo(function ThemeToolbarFn() {
 
             {showCustomInSearch && (
               <>
-                <SectionLabel>Current</SectionLabel>
-                <PresetList role="listbox" aria-label="Current custom theme">
-                  <CustomOption swatches={selectedSwatches} />
+                <SectionLabel>{isCustom ? "Current" : "Custom"}</SectionLabel>
+                <PresetList role="listbox" aria-label="Custom theme">
+                  <CustomOption
+                    swatches={isCustom ? selectedSwatches : DEFAULT_SWATCHES}
+                    selected={isCustom}
+                    onOpenPanel={openCustomPanel}
+                  />
                 </PresetList>
               </>
             )}
@@ -311,14 +322,23 @@ const PresetOption = React.memo(function PresetOptionFn({
 
 interface CustomOptionProps {
   swatches: [string, string, string];
+  selected: boolean;
+  onOpenPanel: () => void;
 }
 
-function CustomOption({ swatches }: CustomOptionProps): React.ReactElement {
+function CustomOption({
+  swatches,
+  selected,
+  onOpenPanel,
+}: CustomOptionProps): React.ReactElement {
   return (
-    <CustomIndicator
+    <PresetButtonStyled
+      type="button"
       role="option"
-      aria-selected={true}
-      title="Custom theme — edit in the Brand Theme panel"
+      aria-selected={selected}
+      selected={selected}
+      onClick={onOpenPanel}
+      title="Open the Brand Theme panel to customize tokens"
     >
       <SwatchGroup aria-hidden="true">
         {swatches.map((swatch) => (
@@ -326,9 +346,8 @@ function CustomOption({ swatches }: CustomOptionProps): React.ReactElement {
         ))}
       </SwatchGroup>
       <PresetLabelStyled>Custom</PresetLabelStyled>
-      <CustomHint>edit in panel</CustomHint>
-      <CheckIcon />
-    </CustomIndicator>
+      <CustomHint>open panel</CustomHint>
+    </PresetButtonStyled>
   );
 }
 
@@ -392,8 +411,6 @@ const Dropdown = styled.div<{ dropdownPosition: DropdownPosition }>(
     paddingBlock: 8,
     paddingInline: 8,
     position: "fixed",
-    // Storybook panes create their own stacking/overflow contexts; portaling the
-    // menu keeps it above the preview without coupling to Storybook internals.
     zIndex: 10000,
   })
 );
@@ -489,22 +506,6 @@ const PresetLabelStyled = styled.span({
   whiteSpace: "nowrap",
 });
 
-const CustomIndicator = styled.div(({ theme }) => ({
-  alignItems: "center",
-  backgroundColor: theme.background.hoverable,
-  borderRadius: 4,
-  color: theme.color.defaultText,
-  display: "flex",
-  fontSize: 13,
-  gap: 10,
-  minHeight: 36,
-  paddingBlock: 6,
-  paddingInline: 8,
-  "& > svg": {
-    marginInlineStart: "auto",
-  },
-}));
-
 const CustomHint = styled.span(({ theme }) => ({
   color: theme.color.mediumdark,
   fontSize: 11,
@@ -512,16 +513,25 @@ const CustomHint = styled.span(({ theme }) => ({
   marginInlineStart: "auto",
 }));
 
+function resolveAssignmentColor(
+  themeState: BrandThemeGlobals,
+  role: string,
+  fallback: string
+): string {
+  const assignment = themeState.assignments.find((item) => item.role === role);
+  if (!assignment) {
+    return fallback;
+  }
+  return assignment.customValue ?? fallback;
+}
+
 function getCustomSwatches(
   themeState: BrandThemeGlobals
 ): [string, string, string] {
   const [backgroundFallback, primaryFallback, textFallback] = DEFAULT_SWATCHES;
   return [
-    themeState.assignments.find((a) => a.role === "background")?.customValue ??
-      backgroundFallback,
-    themeState.assignments.find((a) => a.role === "primary")?.customValue ??
-      primaryFallback,
-    themeState.assignments.find((a) => a.role === "text")?.customValue ??
-      textFallback,
+    resolveAssignmentColor(themeState, "background", backgroundFallback),
+    resolveAssignmentColor(themeState, "primary", primaryFallback),
+    resolveAssignmentColor(themeState, "text", textFallback),
   ];
 }
