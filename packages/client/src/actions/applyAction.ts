@@ -147,9 +147,6 @@ export async function applyAction<
           ? await remapBatchActionParams(
             parameters,
             client,
-            await client.ontologyProvider.getActionDefinition(
-              action.unsanitizedApiName ?? action.apiName,
-            ),
           )
           : [],
         options: {
@@ -174,9 +171,6 @@ export async function applyAction<
             CompileTimeActionMetadata<AD>["parameters"]
           >,
           client,
-          await client.ontologyProvider.getActionDefinition(
-            action.unsanitizedApiName ?? action.apiName,
-          ),
         ),
         options: {
           mode: (options as ApplyActionOptions)?.$validateOnly
@@ -216,7 +210,6 @@ async function remapActionParams<AD extends ActionDefinition<any>>(
     | OsdkActionParameters<CompileTimeActionMetadata<AD>["parameters"]>
     | undefined,
   client: MinimalClient,
-  actionMetadata: ActionMetadata,
 ): Promise<Record<string, DataValue>> {
   if (params == null) {
     return {};
@@ -224,7 +217,7 @@ async function remapActionParams<AD extends ActionDefinition<any>>(
 
   const parameterMap: { [parameterName: string]: unknown } = {};
   for (const [key, value] of Object.entries(params)) {
-    parameterMap[key] = await toDataValue(value, client, actionMetadata);
+    parameterMap[key] = await toDataValue(value, client);
   }
 
   return parameterMap;
@@ -235,12 +228,11 @@ async function remapBatchActionParams<
 >(
   params: OsdkActionParameters<CompileTimeActionMetadata<AD>["parameters"]>[],
   client: MinimalClient,
-  actionMetadata: ActionMetadata,
 ) {
   const remappedParams = await Promise.all(params.map(
     async param => {
       return {
-        parameters: await remapActionParams<AD>(param, client, actionMetadata),
+        parameters: await remapActionParams<AD>(param, client),
       };
     },
   ));
