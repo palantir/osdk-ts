@@ -71,6 +71,13 @@
   color: t.$text-tertiary;
 }
 
+// Panel body: vertical flex column that defers scrolling to its scroll parent
+@mixin dt-panel-body {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
 // Code block
 @mixin dt-code-block {
   background: t.$bg-base;
