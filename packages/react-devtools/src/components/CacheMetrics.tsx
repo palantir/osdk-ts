@@ -22,41 +22,13 @@ import { formatNumber, formatTime } from "../utils/format.js";
 
 import styles from "./MonitoringPanel.module.scss";
 
-const CACHE_HIT_EXCELLENT = 0.8;
-const CACHE_HIT_GOOD = 0.5;
-
 export interface CacheMetricsProps {
   metrics: MetricsSnapshot;
 }
 
 export const CacheMetrics: React.FC<CacheMetricsProps> = ({ metrics }) => {
-  const totalObjects =
-    metrics.aggregates.totalObjectsFromCache +
-    metrics.aggregates.totalObjectsFromNetwork;
-  const objectBasedRate =
-    totalObjects > 0
-      ? metrics.aggregates.totalObjectsFromCache / totalObjects
-      : 0;
-  const rateClass =
-    objectBasedRate >= CACHE_HIT_EXCELLENT
-      ? styles.success
-      : objectBasedRate >= CACHE_HIT_GOOD
-        ? styles.warning
-        : styles.danger;
-
   return (
     <>
-      <div className={styles.metric}>
-        <span className={styles.metricLabel}>Cache Hit Rate</span>
-        <span className={classNames(styles.metricValue, rateClass)}>
-          {(objectBasedRate * 100).toFixed(0)}%
-        </span>
-        <span className={styles.metricSubtext}>
-          {formatNumber(metrics.aggregates.totalObjectsFromCache)} /{" "}
-          {formatNumber(totalObjects)} objects
-        </span>
-      </div>
-
       <div className={styles.metric}>
         <span className={styles.metricLabel}>Cache Savings</span>
         <span className={classNames(styles.metricValue, styles.success)}>
