@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import type { DevToolsPlugin } from "./types.js";
+import { componentsTab } from "../components/components/componentsTab.js";
+import { consoleTab } from "../components/console/consoleTab.js";
+import { overviewTab } from "../components/overview/overviewTab.js";
+import { performanceTab } from "../components/performance/performanceTab.js";
 
-// Populated with the base tab objects (Overview, Components, Performance, Console) when they are added.
-export const BASE_TABS: DevToolsPlugin[] = [];
+export const BASE_TABS = [overviewTab, componentsTab, performanceTab, consoleTab];

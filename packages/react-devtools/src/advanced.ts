@@ -18,4 +18,3 @@
 export { cacheTab } from "./plugins/cache/cacheTab.js";
 export { computeTab } from "./plugins/compute/computeTab.js";
 export { interceptTab } from "./plugins/intercept/interceptTab.js";
-export { registerDevToolsPlugin } from "./plugins/registry.js";
