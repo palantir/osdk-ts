@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
-// Entry point for the advanced plugin tabs (cache, compute, intercept).
-export { cacheTab } from "./plugins/cache/cacheTab.js";
-export { registerDevToolsPlugin } from "./plugins/registry.js";
+import type { DevToolsPlugin } from "../types.js";
+import { CachePanel } from "./CachePanel.js";
+
+export const cacheTab: DevToolsPlugin = {
+  id: "cache",
+  label: "Cache",
+  icon: "database",
+  panel: CachePanel,
+};
