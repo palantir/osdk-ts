@@ -39,10 +39,6 @@ const listeners = new Set<() => void>();
 
 let snapshot: readonly DevToolsPlugin[] = [];
 
-function rebuildSnapshot(): void {
-  snapshot = [...registered];
-}
-
 function notifyListeners(): void {
   for (const listener of listeners) {
     try {
@@ -59,7 +55,7 @@ export function registerDevToolsPlugin(plugin: DevToolsPlugin): () => void {
   }
 
   registered.push(plugin);
-  rebuildSnapshot();
+  snapshot = [...registered];
 
   const store = getGlobalMonitorStore();
   if (store) {
@@ -74,7 +70,7 @@ export function registerDevToolsPlugin(plugin: DevToolsPlugin): () => void {
       return;
     }
     registered.splice(index, 1);
-    rebuildSnapshot();
+    snapshot = [...registered];
 
     const disposeStore = getGlobalMonitorStore();
     if (disposeStore) {
