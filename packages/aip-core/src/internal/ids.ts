@@ -16,7 +16,8 @@
 
 export function generateMessageId(): string {
   if (
-    typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+    typeof crypto !== "undefined" &&
+    typeof crypto.randomUUID === "function"
   ) {
     return crypto.randomUUID();
   }

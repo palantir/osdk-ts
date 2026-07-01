@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+import * as fs from "node:fs";
+import * as path from "node:path";
+
 import type { SeedLinkEntry, SeedOutput } from "@osdk/seed-helpers";
 import { consola } from "consola";
 import { createJiti } from "jiti";
-import * as fs from "node:fs";
-import * as path from "node:path";
+
 import type { SchemaMap } from "./schema.js";
 
 /**
@@ -123,7 +125,7 @@ const WIRE_TYPE_FORMAT: Record<string, { pattern: RegExp; example: string }> = {
 export async function compileSeedData(
   seedFiles: string[],
   outputPath: string,
-  schema: SchemaMap,
+  schema: SchemaMap
 ): Promise<void> {
   consola.info(`Compiling seed data from ${seedFiles.length} file(s)...`);
 
@@ -135,15 +137,17 @@ export async function compileSeedData(
   const merged = mergeSeedOutputs(outputs, schema);
   validateSeedOutput(merged, schema);
 
-  const totalObjects = Object.values(merged.objects)
-    .reduce((sum, arr) => sum + arr.length, 0);
+  const totalObjects = Object.values(merged.objects).reduce(
+    (sum, arr) => sum + arr.length,
+    0
+  );
 
   const outputDir = path.dirname(outputPath);
   await fs.promises.mkdir(outputDir, { recursive: true });
   await fs.promises.writeFile(outputPath, JSON.stringify(merged, null, 2));
 
   consola.success(
-    `Seed data compiled successfully (${totalObjects} objects, ${merged.links.length} links)`,
+    `Seed data compiled successfully (${totalObjects} objects, ${merged.links.length} links)`
   );
 }
 
@@ -163,7 +167,7 @@ export async function compileSeedData(
  */
 export function mergeSeedOutputs(
   outputs: SeedOutput[],
-  schemaMap: SchemaMap,
+  schemaMap: SchemaMap
 ): SeedOutput {
   const merged: SeedOutput = { objects: {}, links: [] };
   const seenPks = new Map<string, Set<string>>();
@@ -180,13 +184,13 @@ function mergeObjectsInto(
   merged: SeedOutput,
   source: SeedOutput["objects"],
   schemaMap: SchemaMap,
-  seenPks: Map<string, Set<string>>,
+  seenPks: Map<string, Set<string>>
 ): void {
   for (const [apiName, objects] of Object.entries(source)) {
     const schema = schemaMap.get(apiName);
     if (!schema) {
       throw new Error(
-        `Object type '${apiName}' in seed data is not defined in the ontology`,
+        `Object type '${apiName}' in seed data is not defined in the ontology`
       );
     }
 
@@ -197,7 +201,7 @@ function mergeObjectsInto(
       const pk = String(obj[schema.primaryKeyApiName] ?? "");
       if (pkSet.has(pk)) {
         throw new Error(
-          `Duplicate primary key '${pk}' for '${apiName}' across seed files`,
+          `Duplicate primary key '${pk}' for '${apiName}' across seed files`
         );
       }
       pkSet.add(pk);
@@ -209,15 +213,15 @@ function mergeObjectsInto(
 function mergeLinksInto(
   merged: SeedOutput,
   source: SeedOutput["links"],
-  seenLinks: Set<string>,
+  seenLinks: Set<string>
 ): void {
   for (const link of source) {
     const key = linkKey(link);
     if (seenLinks.has(key)) {
       consola.warn(
-        `Duplicate link deduplicated: ${link.linkType}`
-          + ` from ${link.sourceObjectType}:${link.sourceKey}`
-          + ` to ${link.targetObjectType}:${link.targetKey}`,
+        `Duplicate link deduplicated: ${link.linkType}` +
+          ` from ${link.sourceObjectType}:${link.sourceKey}` +
+          ` to ${link.targetObjectType}:${link.targetKey}`
       );
       continue;
     }
@@ -227,9 +231,11 @@ function mergeLinksInto(
 }
 
 function linkKey(link: SeedLinkEntry): string {
-  return `${link.sourceObjectType}:${link.sourceKey}`
-    + `:${link.linkType}`
-    + `:${link.targetObjectType}:${link.targetKey}`;
+  return (
+    `${link.sourceObjectType}:${link.sourceKey}` +
+    `:${link.linkType}` +
+    `:${link.targetObjectType}:${link.targetKey}`
+  );
 }
 
 function getOrInit<K, V>(map: Map<K, V>, key: K, init: () => V): V {
@@ -273,7 +279,7 @@ function getOrInit<K, V>(map: Map<K, V>, key: K, init: () => V): V {
  */
 export function validateSeedOutput(
   output: SeedOutput,
-  schemaMap: SchemaMap,
+  schemaMap: SchemaMap
 ): void {
   const errors = validateAndCollectFormatErrors(output, schemaMap);
   if (errors.length > 0) {
@@ -283,7 +289,7 @@ export function validateSeedOutput(
 
 function validateAndCollectFormatErrors(
   output: SeedOutput,
-  schemaMap: SchemaMap,
+  schemaMap: SchemaMap
 ): FormatError[] {
   const errors: FormatError[] = [];
 
@@ -291,7 +297,7 @@ function validateAndCollectFormatErrors(
     const schema = schemaMap.get(apiName);
     if (!schema) {
       throw new Error(
-        `Object type '${apiName}' in seed data is not defined in the ontology`,
+        `Object type '${apiName}' in seed data is not defined in the ontology`
       );
     }
 
@@ -300,24 +306,24 @@ function validateAndCollectFormatErrors(
         const wireType = schema.properties.get(key);
         if (wireType === undefined) {
           throw new Error(
-            `Property '${key}' on '${apiName}' object`
-              + ` (index ${i}) is not defined in the ontology`,
+            `Property '${key}' on '${apiName}' object` +
+              ` (index ${i}) is not defined in the ontology`
           );
         }
 
         if (value == null) {
           throw new Error(
-            `Property '${key}' on '${apiName}' object`
-              + ` (index ${i}) is null or undefined`,
+            `Property '${key}' on '${apiName}' object` +
+              ` (index ${i}) is null or undefined`
           );
         }
 
         const expectedJsType = EXPECTED_JS_TYPE[wireType];
         if (expectedJsType !== undefined && typeof value !== expectedJsType) {
           throw new Error(
-            `Property '${key}' on '${apiName}' object`
-              + ` (index ${i}) expects ${wireType} (a ${expectedJsType})`
-              + ` but got ${typeof value}`,
+            `Property '${key}' on '${apiName}' object` +
+              ` (index ${i}) expects ${wireType} (a ${expectedJsType})` +
+              ` but got ${typeof value}`
           );
         }
 
@@ -333,10 +339,11 @@ function validateAndCollectFormatErrors(
           objectType: apiName,
           objectIndex: i,
           field: key,
-          message: `property '${key}' has invalid ${wireType}`
-            + ` format: '${
-              String(value)
-            }'. Expected format like '${format.example}'`,
+          message:
+            `property '${key}' has invalid ${wireType}` +
+            ` format: '${String(
+              value
+            )}'. Expected format like '${format.example}'`,
         });
       }
     }
@@ -359,9 +366,11 @@ function formatValidationErrors(errors: FormatError[]): string {
   const errorWord = errors.length === 1 ? "error" : "errors";
   const typeWord = grouped.size === 1 ? "object type" : "object types";
 
-  return `Seed data validation failed `
-    + `(${errors.length} ${errorWord} across ${grouped.size} ${typeWord}`
-    + `):\n\n${body}`;
+  return (
+    `Seed data validation failed ` +
+    `(${errors.length} ${errorWord} across ${grouped.size} ${typeWord}` +
+    `):\n\n${body}`
+  );
 }
 
 /**
@@ -382,18 +391,18 @@ async function loadSeedFile(seedFile: string): Promise<SeedOutput> {
       moduleCache: false,
       debug: false,
     });
-    seedModule = await jiti.import(seedFile) as { default: SeedOutput };
+    seedModule = (await jiti.import(seedFile)) as { default: SeedOutput };
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : String(e);
     throw new Error(
-      `Seed file '${path.basename(seedFile)}' failed to compile:\n  ${message}`,
+      `Seed file '${path.basename(seedFile)}' failed to compile:\n  ${message}`
     );
   }
 
   if (!seedModule.default || typeof seedModule.default !== "object") {
     throw new Error(
-      `Seed file '${path.basename(seedFile)}' must have a default export. `
-        + `Use createSeed() from @osdk/seed-helpers.`,
+      `Seed file '${path.basename(seedFile)}' must have a default export. ` +
+        `Use createSeed() from @osdk/seed-helpers.`
     );
   }
 
@@ -401,8 +410,8 @@ async function loadSeedFile(seedFile: string): Promise<SeedOutput> {
 
   if (!output.objects || typeof output.objects !== "object") {
     throw new Error(
-      `Seed file '${path.basename(seedFile)}' default export is not a valid`
-        + ` SeedOutput. Use createSeed() from @osdk/seed-helpers.`,
+      `Seed file '${path.basename(seedFile)}' default export is not a valid` +
+        ` SeedOutput. Use createSeed() from @osdk/seed-helpers.`
     );
   }
 

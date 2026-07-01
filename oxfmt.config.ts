@@ -22,12 +22,12 @@ export default defineConfig({
     // typescript-sdk-docs/src/documentation.yml) that reformatting would corrupt.
     "**/*.yml",
     "**/*.yaml",
-    // JSON / JSONC are dprint's domain (it has a json plugin) and several are
-    // monorepolint-generated (turbo.json, etc.); leaving them out keeps the
-    // tooling migration to .ts/.tsx and avoids fighting mrl over formatting.
-    "**/*.json",
-    "**/*.jsonc",
-    "**/*.json5",
+    // JSON / JSONC ARE formatted by oxfmt (parity with dprint, which formatted
+    // them via its json plugin before the migration). EXCEPTIONS: package.json
+    // and tsconfig.json are excluded above because monorepolint owns their exact
+    // content (field order, generated tsconfig) and oxfmt's json formatter
+    // reorders/reshapes them, which fights `mrl check`. All other json
+    // (api-extractor.json, turbo.json, data fixtures, …) is oxfmt-formatted.
     // `.md` IS formatted by oxfmt (parity with dprint, which formatted markdown
     // via its markdown plugin before the migration): oxfmt normalizes markdown
     // structure and reformats embedded code fences the same way it formats source.

@@ -21,12 +21,10 @@ export type SimpleActionParamTypes = "string" | "integer" | "boolean";
 export type TH_ActionParameterV2<
   T extends SimpleActionParamTypes,
   R extends boolean,
-> =
-  & {
-    dataType: { type: T };
-    required: R;
-  }
-  & ActionParameterV2;
+> = {
+  dataType: { type: T };
+  required: R;
+} & ActionParameterV2;
 
 export function createActionParameterV2<
   T extends SimpleActionParamTypes,

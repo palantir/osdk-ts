@@ -58,7 +58,7 @@ seed.link(
   "sellers",
   Seller,
   "seller-001",
-  "products",
+  "products"
 );
 ```
 

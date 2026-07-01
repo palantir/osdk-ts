@@ -64,7 +64,7 @@ export class LmsChatTransport implements ChatTransport<UIMessage> {
   }
 
   sendMessages = async (
-    args: SendMessagesArgs,
+    args: SendMessagesArgs
   ): Promise<ReadableStream<UIMessageChunk>> => {
     const result = streamText({
       model: this.opts.model,
@@ -181,12 +181,12 @@ export class LmsChatTransport implements ChatTransport<UIMessage> {
             }
           }
         },
-      }),
+      })
     );
   };
 
   reconnectToStream = async (
-    _args: ChatTransportReconnectArgs,
+    _args: ChatTransportReconnectArgs
   ): Promise<ReadableStream<UIMessageChunk> | null> => {
     return null;
   };
@@ -194,7 +194,7 @@ export class LmsChatTransport implements ChatTransport<UIMessage> {
 
 function mergeHeaders(
   base: Record<string, string | undefined> | undefined,
-  override: Record<string, string> | undefined,
+  override: Record<string, string> | undefined
 ): Record<string, string | undefined> | undefined {
   if (base == null && override == null) {
     return undefined;

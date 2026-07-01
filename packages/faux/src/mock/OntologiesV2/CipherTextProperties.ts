@@ -15,13 +15,16 @@
  */
 
 import { CipherTextProperties } from "@osdk/foundry.ontologies";
+
 import type { CallFactory } from "../../handlers/util/handleOpenApiCall.js";
 import { handleOpenApiCall } from "../../handlers/util/handleOpenApiCall.js";
 
 export const decrypt: CallFactory<
   "ontologyApiName" | "objectType" | "primaryKey" | "propertyName",
   typeof CipherTextProperties.decrypt
-> = handleOpenApiCall(
-  CipherTextProperties.decrypt,
-  ["ontologyApiName", "objectType", "primaryKey", "propertyName"],
-);
+> = handleOpenApiCall(CipherTextProperties.decrypt, [
+  "ontologyApiName",
+  "objectType",
+  "primaryKey",
+  "propertyName",
+]);

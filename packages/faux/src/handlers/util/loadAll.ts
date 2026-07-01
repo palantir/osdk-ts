@@ -15,7 +15,7 @@
  */
 
 export async function loadAll<T>(
-  iterator: AsyncIterableIterator<T>,
+  iterator: AsyncIterableIterator<T>
 ): Promise<T[]> {
   const arr: T[] = [];
   for await (const i of iterator) {
