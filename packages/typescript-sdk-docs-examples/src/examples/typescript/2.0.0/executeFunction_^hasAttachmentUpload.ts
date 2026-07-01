@@ -19,16 +19,17 @@
 
 // Example: executeFunction (Variation: ^hasAttachmentUpload)
 
-// Edit this import if your client location differs
 import type { Osdk } from "@osdk/client";
+
 import {
   calculateTotal,
   type Equipment,
 } from "../../../generatedNoCheck/index.js";
+// Edit this import if your client location differs
 import { client } from "./client.js";
 
 async function callFunctionWithAttachmentLoaded(
-  objectWithAttachment: Osdk.Instance<Equipment>,
+  objectWithAttachment: Osdk.Instance<Equipment>
 ) {
   const attachment = objectWithAttachment.invoice?.rid;
   if (attachment == null) {

@@ -15,6 +15,7 @@
  */
 
 import type { ViteDevServer } from "vite";
+
 import {
   getCodeWorkspacesBaseHref,
   isCodeWorkspacesMode,

@@ -32,7 +32,7 @@ const DATE_FORMAT = new Intl.DateTimeFormat("en-US", {
 
 /** Formats an ISO timestamp string (or epoch ms) as a date-time. Returns "" for nullish input. */
 export function formatTimestamp(
-  value: string | number | undefined | null,
+  value: string | number | undefined | null
 ): string {
   if (value == null) {
     return "";

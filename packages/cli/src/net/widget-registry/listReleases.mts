@@ -21,12 +21,12 @@ import type { ListReleasesResponse } from "./ListReleasesResponse.mjs";
 
 export async function listReleases(
   ctx: InternalClientContext,
-  widgetSetRid: WidgetSetRid,
+  widgetSetRid: WidgetSetRid
 ): Promise<ListReleasesResponse> {
   const fetch = createFetch(ctx.tokenProvider);
   const urlObj = new URL(
     `api/v2/widgets/widgetSets/${widgetSetRid}/releases`,
-    ctx.foundryUrl,
+    ctx.foundryUrl
   );
   urlObj.searchParams.set("preview", "true");
   const url = urlObj.toString();

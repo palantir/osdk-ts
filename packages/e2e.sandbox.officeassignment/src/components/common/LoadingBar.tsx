@@ -15,6 +15,7 @@
  */
 
 import React from "react";
+
 import styles from "./common.module.css";
 
 export interface LoadingBarProps {

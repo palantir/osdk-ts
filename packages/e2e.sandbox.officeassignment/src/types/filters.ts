@@ -19,8 +19,7 @@ import type { FilterDefinitionUnion } from "@osdk/react-components/experimental/
 
 /** Filter definition with a required id — used to key per-filter UI state. */
 export type IdentifiedFilterDef<T extends ObjectTypeDefinition> =
-  & FilterDefinitionUnion<T>
-  & { id: string };
+  FilterDefinitionUnion<T> & { id: string };
 
 /**
  * Reads the `id` off a filter definition. FilterList's callbacks type the definition as the wider
@@ -28,7 +27,7 @@ export type IdentifiedFilterDef<T extends ObjectTypeDefinition> =
  * present at runtime. Narrows without a cast.
  */
 export function getFilterDefId<T extends ObjectTypeDefinition>(
-  def: FilterDefinitionUnion<T>,
+  def: FilterDefinitionUnion<T>
 ): string | undefined {
   return "id" in def && typeof def.id === "string" ? def.id : undefined;
 }

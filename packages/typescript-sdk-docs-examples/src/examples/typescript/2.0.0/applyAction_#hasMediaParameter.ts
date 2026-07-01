@@ -19,14 +19,15 @@
 
 // Example: applyAction (Variation: #hasMediaParameter)
 
-// Edit this import if your client location differs
 import type { AttachmentUpload, MediaReference } from "@osdk/api";
 import { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "@osdk/api/unstable";
 import { createAttachmentUpload } from "@osdk/client";
+
 import {
   documentEquipment,
   Equipment,
 } from "../../../generatedNoCheck/index.js";
+// Edit this import if your client location differs
 import { client } from "./client.js";
 
 async function callAction() {
@@ -35,7 +36,7 @@ async function callAction() {
   const attachmentBlob = await attachmentFile.blob();
   const attachment: AttachmentUpload = createAttachmentUpload(
     attachmentBlob,
-    "myFile",
+    "myFile"
   );
   // alternatively, you can get the Rid from the attachment property on the object type you are modifying
   // const attachmentRid = objectTypeWithAttachment.{attachmentProperty}?.rid;
@@ -43,7 +44,7 @@ async function callAction() {
   const mediaFile = await fetch("media.mp4");
   const mediaBlob = await mediaFile.blob();
   const mediaReference: MediaReference = await client(
-    __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
+    __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference
   ).createMediaReference({
     data: mediaBlob,
     fileName: "myMedia",
@@ -54,13 +55,13 @@ async function callAction() {
   // const mediaRid = objectTypeWithMedia.{mediaProperty}?.rid;
   const result = await client(documentEquipment).applyAction(
     {
-      "equipmentId": "mac-1234",
-      "documentFile": attachment,
-      "instructionalVideo": mediaReference,
+      equipmentId: "mac-1234",
+      documentFile: attachment,
+      instructionalVideo: mediaReference,
     },
     {
       $returnEdits: true,
-    },
+    }
   );
   if (result.type === "edits") {
     // use the result object to report back on action results

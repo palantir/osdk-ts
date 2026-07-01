@@ -21,6 +21,7 @@ import type {
   FilterState,
 } from "@osdk/react-components/experimental/filter-list";
 import React from "react";
+
 import { StatusUpdate } from "../generatedNoCheck2/index.js";
 import { STATUS_UPDATE_FILTER_DEFS } from "../tables/StatusUpdatesTable/StatusUpdatesFilterDefs.js";
 import { getFilterDefId, type IdentifiedFilterDef } from "../types/filters.js";
@@ -35,10 +36,10 @@ export interface UseStatusUpdateFiltersResult {
   readonly orderedFilterDefs: Array<IdentifiedFilterDef<StatusUpdate>>;
   readonly handleFilterStateChanged: (
     def: FilterDefinitionUnion<StatusUpdate>,
-    newState: FilterState,
+    newState: FilterState
   ) => void;
   readonly handleFilterVisibilityChange: (
-    newStates: Array<{ filterKey: string; isVisible: boolean }>,
+    newStates: Array<{ filterKey: string; isVisible: boolean }>
   ) => void;
   readonly resetKey: number;
   readonly handleReset: () => void;
@@ -63,7 +64,7 @@ export function useStatusUpdateFilters(): UseStatusUpdateFiltersResult {
     (clause: WhereClause<StatusUpdate>) => {
       setFilterClauseRaw(isNonEmptyWhere(clause) ? clause : undefined);
     },
-    [],
+    []
   );
 
   const orderedFilterDefs = React.useMemo(
@@ -71,9 +72,9 @@ export function useStatusUpdateFilters(): UseStatusUpdateFiltersResult {
       applyVisibilityState(
         STATUS_UPDATE_FILTER_DEFS,
         filterVisibility,
-        (def) => def.id,
+        (def) => def.id
       ),
-    [filterVisibility],
+    [filterVisibility]
   );
 
   const handleFilterStateChanged = React.useCallback(
@@ -87,7 +88,7 @@ export function useStatusUpdateFilters(): UseStatusUpdateFiltersResult {
         });
       }
     },
-    [],
+    []
   );
 
   const handleFilterVisibilityChange = React.useCallback(
@@ -96,10 +97,10 @@ export function useStatusUpdateFilters(): UseStatusUpdateFiltersResult {
         newStates.map(({ filterKey, isVisible }) => ({
           id: filterKey,
           isVisible,
-        })),
+        }))
       );
     },
-    [],
+    []
   );
 
   const handleReset = React.useCallback(() => {

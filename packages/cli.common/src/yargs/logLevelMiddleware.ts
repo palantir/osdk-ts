@@ -15,6 +15,7 @@
  */
 
 import { consola } from "consola";
+
 import type { CliCommonArgs } from "../CliCommonArgs.js";
 
 let firstTime = true;
@@ -25,9 +26,7 @@ export async function logLevelMiddleware(args: CliCommonArgs): Promise<void> {
     consola.level = 3 + args.verbose; // so 1 -v is debug logs and -vv is trace
     if (consola.level > 3) {
       consola.debug(
-        `Verbose logging enabled (${
-          consola.level === 4 ? "debug" : "trace"
-        })\n`,
+        `Verbose logging enabled (${consola.level === 4 ? "debug" : "trace"})\n`
       );
     }
   }

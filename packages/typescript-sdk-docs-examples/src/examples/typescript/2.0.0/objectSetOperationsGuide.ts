@@ -19,8 +19,8 @@
 
 // Example: objectSetOperationsGuide
 
-// Edit this import if your client location differs
 import { Employee } from "../../../generatedNoCheck/index.js";
+// Edit this import if your client location differs
 import { client } from "./client.js";
 
 const objectSetA = client(Employee).where({
@@ -35,6 +35,4 @@ const objectSetC = client(Employee).where({
 
 // Object set operations can be chained. e.g. To find all objects in objectSetA
 // that are present in objectSetB but do not exist in objectSetC:
-const result = objectSetA
-  .intersect(objectSetB)
-  .subtract(objectSetC);
+const result = objectSetA.intersect(objectSetB).subtract(objectSetC);

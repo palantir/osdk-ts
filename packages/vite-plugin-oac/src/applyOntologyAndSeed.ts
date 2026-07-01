@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import type { FauxFoundry } from "@osdk/faux";
-import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
 import * as path from "node:path";
 import { inspect } from "node:util";
+
+import type { FauxFoundry } from "@osdk/faux";
+import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
+
 import { applySeed } from "./applySeed.js";
 import { ontologyFullMetadataPath } from "./generateOntologyAssets.js";
 import { type OacContext } from "./OacContext.js";
@@ -26,12 +28,12 @@ import { readJsonFile } from "./utils/readJsonFile.js";
 
 export async function applyOntologyAndSeed(
   fauxFoundry: FauxFoundry,
-  ctx: OacContext,
+  ctx: OacContext
 ): Promise<void> {
   const ontology = fauxFoundry.getDefaultOntology();
 
   const ontologyFullMetadata = readJsonFile<OntologyFullMetadata>(
-    ontologyFullMetadataPath(ctx.workDir),
+    ontologyFullMetadataPath(ctx.workDir)
   );
   registerOntologyFullMetadata(ontology, ontologyFullMetadata);
 
@@ -43,15 +45,12 @@ export async function applyOntologyAndSeed(
     await ctx.hooks?.preSeed?.(ontology);
   } catch (e) {
     ctx.logger.error(
-      `Unhandled error from preSeed hook. Ignoring and continuing. ${
-        inspect(e)
-      }`,
+      `Unhandled error from preSeed hook. Ignoring and continuing. ${inspect(
+        e
+      )}`
     );
   }
 
   ctx.logger.debug("applying seed data");
-  await applySeed(
-    fauxFoundry,
-    path.resolve(ctx.ontologyDir, "seed.ts"),
-  );
+  await applySeed(fauxFoundry, path.resolve(ctx.ontologyDir, "seed.ts"));
 }

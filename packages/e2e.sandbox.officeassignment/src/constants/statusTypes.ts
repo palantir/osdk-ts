@@ -46,7 +46,7 @@ export const STATUS_TYPES: readonly StatusTypeSpec[] = [
 ];
 
 const STATUS_TYPE_BY_NAME: ReadonlyMap<string, StatusTypeSpec> = new Map(
-  STATUS_TYPES.map((spec) => [spec.type, spec]),
+  STATUS_TYPES.map((spec) => [spec.type, spec])
 );
 
 export function getStatusTypeSpec(type: string): StatusTypeSpec | undefined {

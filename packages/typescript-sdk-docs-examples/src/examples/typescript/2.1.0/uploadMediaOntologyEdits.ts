@@ -22,6 +22,7 @@
 import type { Client } from "@osdk/client";
 import type { Edits } from "@osdk/functions";
 import { createEditBatch, uploadMedia } from "@osdk/functions";
+
 import { Employee } from "../../../generatedNoCheck/index.js";
 
 async function createObject(client: Client): Promise<Edits.Object<Employee>[]> {

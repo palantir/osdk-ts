@@ -23,11 +23,10 @@ import { Employee } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
 import { client } from "./client.js";
 
-const EmployeeObjectSet = client(Employee)
-  .where({
-    contactInfo: {
-      entrance: {
-        $within: { $distance: [100, "miles"], $of: [-74.0060, 40.7128] },
-      },
+const EmployeeObjectSet = client(Employee).where({
+  contactInfo: {
+    entrance: {
+      $within: { $distance: [100, "miles"], $of: [-74.006, 40.7128] },
     },
-  });
+  },
+});
