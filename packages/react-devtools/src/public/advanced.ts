@@ -16,4 +16,4 @@
 
 // Entry point for the opt-in advanced plugin tabs. Consumers import a plugin
 // from here and register it themselves.
-export { computeTab } from "./plugins/compute/computeTab.js";
+export { computeTab } from "../plugins/compute/computeTab.js";
