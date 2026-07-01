@@ -38,46 +38,27 @@ function isOperatorObject(value: unknown): value is Record<string, unknown> {
   return keys.length > 0 && keys.every((key) => key.startsWith("$"));
 }
 
+const OPERATOR_SYMBOLS: Record<string, string> = {
+  $eq: "=",
+  $ne: "!=",
+  $gt: ">",
+  $gte: ">=",
+  $lt: "<",
+  $lte: "<=",
+  $contains: "contains",
+  $startsWith: "startsWith",
+  $in: "in",
+};
+
 function formatSingleOperator(
   field: string,
   op: string,
   value: unknown
 ): string {
-  switch (op) {
-    case "$eq": {
-      return `${field} = ${formatValue(value)}`;
-    }
-    case "$ne": {
-      return `${field} != ${formatValue(value)}`;
-    }
-    case "$gt": {
-      return `${field} > ${formatValue(value)}`;
-    }
-    case "$gte": {
-      return `${field} >= ${formatValue(value)}`;
-    }
-    case "$lt": {
-      return `${field} < ${formatValue(value)}`;
-    }
-    case "$lte": {
-      return `${field} <= ${formatValue(value)}`;
-    }
-    case "$isNull": {
-      return value === true ? `${field} is null` : `${field} is not null`;
-    }
-    case "$contains": {
-      return `${field} contains ${formatValue(value)}`;
-    }
-    case "$startsWith": {
-      return `${field} startsWith ${formatValue(value)}`;
-    }
-    case "$in": {
-      return `${field} in ${formatValue(value)}`;
-    }
-    default: {
-      return `${field} ${op} ${formatValue(value)}`;
-    }
+  if (op === "$isNull") {
+    return value === true ? `${field} is null` : `${field} is not null`;
   }
+  return `${field} ${OPERATOR_SYMBOLS[op] ?? op} ${formatValue(value)}`;
 }
 
 function formatOperator(
