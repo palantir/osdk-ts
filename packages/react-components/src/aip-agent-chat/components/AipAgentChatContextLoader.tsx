@@ -22,9 +22,6 @@ export interface AipAgentChatContextLoaderProps {
   /** The object type to load. */
   objectType: ObjectOrInterfaceDefinition;
 
-  /** Maximum number of objects to fetch. */
-  pageSize: number;
-
   /**
    * Called whenever the loaded objects change. Reports `undefined` on
    * unmount so the parent can drop this type's context.

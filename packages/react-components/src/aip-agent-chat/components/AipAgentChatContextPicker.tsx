@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { Database } from "@blueprintjs/icons";
 import * as React from "react";
-import { Combobox } from "../../base-components/combobox/Combobox.js";
+import { DropdownField } from "../../action-form/fields/DropdownField.js";
 import styles from "../AipAgentChat.module.css";
 
 export interface AipAgentChatContextPickerProps {
@@ -33,8 +32,14 @@ export interface AipAgentChatContextPickerProps {
   disabled?: boolean;
 }
 
+const PLACEHOLDER = "+ Add object context";
+
+function identity(apiName: string): string {
+  return apiName;
+}
+
 /**
- * Multi-select dropdown rendered in the composer footer that lets the user
+ * Multi-select dropdown rendered above the composer that lets the user
  * choose which object types to load into the conversation as context.
  * Presentational only — operates on object type API names and reports
  * selection changes upward; the OSDK wrapper handles fetching.
@@ -45,61 +50,33 @@ export function AipAgentChatContextPicker({
   onChange,
   disabled,
 }: AipAgentChatContextPickerProps): React.ReactElement | null {
-  const selectedValues = React.useMemo(() => [...selected], [selected]);
+  const items = React.useMemo(() => [...objectTypes], [objectTypes]);
+  const value = React.useMemo(() => [...selected], [selected]);
 
-  const handleValueChange = React.useCallback(
-    (next: Array<string>) => {
-      onChange(next);
+  const handleChange = React.useCallback(
+    (next: Array<string> | null) => {
+      onChange(next ?? []);
     },
     [onChange],
-  );
-
-  const renderItem = React.useCallback(
-    (apiName: string) => (
-      <Combobox.Item
-        key={apiName}
-        value={apiName}
-        className={styles.contextPickerItem}
-      >
-        <Combobox.ItemIndicator />
-        <span>{apiName}</span>
-      </Combobox.Item>
-    ),
-    [],
   );
 
   if (objectTypes.length === 0) {
     return null;
   }
 
-  const triggerLabel = selected.length === 0
-    ? "Add object context"
-    : `${selected.length} object type${selected.length === 1 ? "" : "s"}`;
-
   return (
-    <Combobox.Root<string, true>
-      multiple={true}
-      value={selectedValues}
-      onValueChange={handleValueChange}
-      items={objectTypes as Array<string>}
-      disabled={disabled}
-    >
-      <Combobox.Trigger
-        className={styles.contextPickerTrigger}
+    <div className={styles.contextPickerWrapper}>
+      <DropdownField<string, true>
+        items={items}
+        value={value}
+        onChange={handleChange}
+        isMultiple={true}
+        isSearchable={true}
+        itemToStringLabel={identity}
+        itemToKey={identity}
+        placeholder={PLACEHOLDER}
         disabled={disabled}
-      >
-        <Database className={styles.contextPickerIcon} size={14} />
-        <span className={styles.contextPickerLabel}>{triggerLabel}</span>
-        <Combobox.Icon />
-      </Combobox.Trigger>
-      <Combobox.Portal>
-        <Combobox.Positioner>
-          <Combobox.Popup>
-            <Combobox.Empty>No object types</Combobox.Empty>
-            <Combobox.List>{renderItem}</Combobox.List>
-          </Combobox.Popup>
-        </Combobox.Positioner>
-      </Combobox.Portal>
-    </Combobox.Root>
+      />
+    </div>
   );
 }

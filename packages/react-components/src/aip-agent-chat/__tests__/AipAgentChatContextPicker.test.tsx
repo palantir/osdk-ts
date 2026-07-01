@@ -40,7 +40,7 @@ describe("AipAgentChatContextPicker", () => {
     expect(container.firstChild).toBeNull();
   });
 
-  it("shows a prompt label when nothing is selected", () => {
+  it("shows the 'Add object context' placeholder when nothing is selected", () => {
     render(
       <AipAgentChatContextPicker
         objectTypes={OBJECT_TYPES}
@@ -49,10 +49,11 @@ describe("AipAgentChatContextPicker", () => {
       />,
     );
 
-    expect(screen.getByText("Add object context")).toBeDefined();
+    const trigger = screen.getByRole("combobox");
+    expect(trigger.textContent).toContain("Add object context");
   });
 
-  it("shows a singular count when one type is selected", () => {
+  it("renders the selected object type names in the trigger", () => {
     render(
       <AipAgentChatContextPicker
         objectTypes={OBJECT_TYPES}
@@ -61,10 +62,11 @@ describe("AipAgentChatContextPicker", () => {
       />,
     );
 
-    expect(screen.getByText("1 object type")).toBeDefined();
+    const trigger = screen.getByRole("combobox");
+    expect(trigger.textContent).toContain("Employee");
   });
 
-  it("shows a plural count when multiple types are selected", () => {
+  it("renders every selected type when multiple are selected", () => {
     render(
       <AipAgentChatContextPicker
         objectTypes={OBJECT_TYPES}
@@ -73,7 +75,9 @@ describe("AipAgentChatContextPicker", () => {
       />,
     );
 
-    expect(screen.getByText("2 object types")).toBeDefined();
+    const trigger = screen.getByRole("combobox");
+    expect(trigger.textContent).toContain("Employee");
+    expect(trigger.textContent).toContain("Office");
   });
 
   it("disables the trigger when disabled", () => {

@@ -206,26 +206,25 @@ export function AipAgentChat({
   const hasModelPicker = availableModels != null && availableModels.length > 0;
   const hasContextPicker = availableObjectTypeApiNames.length > 0;
 
-  const composerFooter = hasModelPicker || hasContextPicker
+  const composerActions = hasContextPicker
     ? (
-      <>
-        {hasContextPicker && (
-          <AipAgentChatContextPicker
-            objectTypes={availableObjectTypeApiNames}
-            selected={selectedObjectTypes}
-            onChange={handleSelectedObjectTypesChange}
-            disabled={isInFlight}
-          />
-        )}
-        {hasModelPicker && (
-          <AipAgentChatModelPicker
-            activeModel={activeModel}
-            models={availableModels}
-            onModelChange={handleModelChange}
-            disabled={isInFlight}
-          />
-        )}
-      </>
+      <AipAgentChatContextPicker
+        objectTypes={availableObjectTypeApiNames}
+        selected={selectedObjectTypes}
+        onChange={handleSelectedObjectTypesChange}
+        disabled={isInFlight}
+      />
+    )
+    : undefined;
+
+  const belowComposer = hasModelPicker
+    ? (
+      <AipAgentChatModelPicker
+        activeModel={activeModel}
+        models={availableModels}
+        onModelChange={handleModelChange}
+        disabled={isInFlight}
+      />
     )
     : undefined;
 
@@ -249,8 +248,9 @@ export function AipAgentChat({
         );
       })}
       <BaseAipAgentChat
+        composerActions={composerActions}
+        belowComposer={belowComposer}
         className={className}
-        composerFooter={composerFooter}
         enableAutoScroll={enableAutoScroll}
         messages={messages}
         status={status}

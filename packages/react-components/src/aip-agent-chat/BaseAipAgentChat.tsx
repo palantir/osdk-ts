@@ -59,11 +59,22 @@ export interface BaseAipAgentChatProps {
   onClearError: () => void;
 
   /**
-   * Optional content rendered in the composer footer, to the left of
-   * the send button. The OSDK wrapper uses this slot for the model
-   * picker.
+   * Optional content rendered in the composer's action row, to the left
+   * of the send button.
    */
-  composerFooter?: React.ReactNode;
+  composerActions?: React.ReactNode;
+
+  /**
+   * Optional content rendered above the composer box. The OSDK wrapper
+   * uses this slot for the object-context dropdown button.
+   */
+  aboveComposer?: React.ReactNode;
+
+  /**
+   * Optional content rendered below the composer box. The OSDK wrapper
+   * uses this slot for the model picker.
+   */
+  belowComposer?: React.ReactNode;
 
   className?: string;
 
@@ -95,7 +106,9 @@ export const BaseAipAgentChat: React.NamedExoticComponent<
   onSendMessage,
   onStop,
   onClearError,
-  composerFooter,
+  composerActions,
+  aboveComposer,
+  belowComposer,
   className,
   placeholder = "Type a message...",
   enableAutoScroll = true,
@@ -129,7 +142,9 @@ export const BaseAipAgentChat: React.NamedExoticComponent<
         renderMessage={renderMessage}
       />
       <AipAgentChatComposer
-        footerLeft={composerFooter}
+        actionsLeft={composerActions}
+        aboveComposer={aboveComposer}
+        belowComposer={belowComposer}
         isInFlight={isInFlight}
         onSendMessage={onSendMessage}
         onStop={onStop}

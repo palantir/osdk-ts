@@ -140,7 +140,7 @@ function InteractiveChat(
       onSendMessage={onSendMessage}
       onStop={onStop}
       status={status}
-      composerFooter={
+      belowComposer={
         <AipAgentChatModelPicker
           activeModel={"model-1"}
           models={["model-1", "model-2"]}
@@ -195,12 +195,6 @@ export const CustomPlaceholder: Story = {
 
 const SAMPLE_OBJECT_TYPES = ["Employee", "Office", "Project"];
 
-/**
- * Stateful demo of the object-type context picker rendered in the composer
- * footer. In the OSDK-wired `AipAgentChat`, selecting types here fetches
- * those objects via `useOsdkObjects` and folds them into the system prompt;
- * here we just show the multi-select UI with stub object type names.
- */
 function ContextPickerDemo(): JSX.Element {
   const [selected, setSelected] = React.useState<ReadonlyArray<string>>([]);
   return (
@@ -211,7 +205,7 @@ function ContextPickerDemo(): JSX.Element {
       onSendMessage={async () => {}}
       onStop={() => {}}
       onClearError={() => {}}
-      composerFooter={
+      aboveComposer={
         <AipAgentChatContextPicker
           objectTypes={SAMPLE_OBJECT_TYPES}
           selected={selected}

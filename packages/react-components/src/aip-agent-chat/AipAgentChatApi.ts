@@ -80,6 +80,8 @@ export interface AipAgentChatProps {
    * footer populated with these API names.
    *
    * If omitted, no picker is rendered.
+   *
+   * Note: As this is an experimental component, it supports open AI models only
    */
   availableModels?: ReadonlyArray<string>;
 
