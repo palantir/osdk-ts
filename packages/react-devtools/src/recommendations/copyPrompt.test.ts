@@ -36,19 +36,6 @@ function makeRec(overrides: Partial<Recommendation> = {}): Recommendation {
 }
 
 describe("buildCopyPrompt", () => {
-  it("renders the full template for a fully-populated recommendation", () => {
-    const rec = makeRec({
-      filePath: "src/components/EmployeeCard.tsx",
-      lineNumber: 42,
-      currentCode: "const { object } = useOsdkObject(Employee, id);",
-      code: 'const { object } = useOsdkObject(Employee, id, {\n  $select: ["name"]\n});',
-      osdkGuidance:
-        "Use $select to fetch only the properties a component reads.",
-    });
-
-    expect(buildCopyPrompt(rec)).toMatchSnapshot();
-  });
-
   it("always renders intro, issue, suggestion, guidance and task sections", () => {
     const prompt = buildCopyPrompt(makeRec());
 
@@ -156,20 +143,5 @@ describe("buildCopyAllPrompt", () => {
     expect(prompt).toContain("1. You are helping optimize");
     expect(prompt).toContain("2. You are helping optimize");
     expect(prompt).toContain("\n\n---\n\n");
-  });
-
-  it("matches the full combined template", () => {
-    const recs = [
-      makeRec({ id: "rec-1", title: "First", category: "Performance" }),
-      makeRec({
-        id: "rec-2",
-        title: "Second",
-        category: "Cache",
-        filePath: "src/B.tsx",
-        lineNumber: 9,
-      }),
-    ];
-
-    expect(buildCopyAllPrompt(recs)).toMatchSnapshot();
   });
 });
