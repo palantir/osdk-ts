@@ -1,17 +1,19 @@
-import { createClient, type Client } from "@osdk/client";
-import { createPublicOauthClient, type PublicOauthClient } from "@osdk/oauth";
+import { createClient } from "@osdk/client";
+import type { Client } from "@osdk/client";
+import { createPublicOauthClient } from "@osdk/oauth";
+import type { PublicOauthClient } from "@osdk/oauth";
 
 function getMetaTagContent(tagName: string): string {
   const elements = document.querySelectorAll(`meta[name="${tagName}"]`);
   const element = elements.item(elements.length - 1);
   const value = element ? element.getAttribute("content") : null;
-  if (value == null || value === "") {
+  if (value === undefined || value === null || value === "") {
     throw new Error(`Meta tag ${tagName} not found or empty`);
   }
-  if (value.match(/%.+%/)) {
+  if (/%.+%/u.test(value)) {
     throw new Error(
-      `Meta tag ${tagName} contains placeholder value. Please add ${value.replace(
-        /%/g,
+      `Meta tag ${tagName} contains placeholder value. Please add ${value.replaceAll(
+        "%",
         ""
       )} to your .env files`
     );
@@ -24,10 +26,7 @@ const clientId = getMetaTagContent("osdk-clientId");
 const redirectUrl = getMetaTagContent("osdk-redirectUrl");
 const ontologyRid = getMetaTagContent("osdk-ontologyRid");
 
-const scopes = [
-  "api:ontologies-read",
-  "api:ontologies-write",
-];
+const scopes = ["api:ontologies-read", "api:ontologies-write"];
 
 export const auth: PublicOauthClient = createPublicOauthClient(
   clientId,

@@ -1,10 +1,11 @@
-import aipLogo from "/aip-icon.svg";
 import type { ChangeEvent } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import css from "./CreateTaskDialog.module.css";
+
 import Dialog from "./Dialog";
 import type { MockProject } from "./mocks";
 import { useProjectTasks } from "./useProjectTasks";
+
+import css from "./CreateTaskDialog.module.css";
 
 interface CreateTaskDialogProps {
   project: MockProject;
@@ -13,12 +14,14 @@ interface CreateTaskDialogProps {
   onTaskCreated: (taskId: string) => void;
 }
 
-function CreateTaskDialog(
-  { project, isOpen, onClose, onTaskCreated }: CreateTaskDialogProps,
-) {
-  const { createTask, getRecommendedTaskDescription } = useProjectTasks(
-    project,
-  );
+function CreateTaskDialog({
+  project,
+  isOpen,
+  onClose,
+  onTaskCreated,
+}: CreateTaskDialogProps) {
+  const { createTask, getRecommendedTaskDescription } =
+    useProjectTasks(project);
 
   const [name, setName] = useState<string>("New task");
   const [description, setDescription] = useState<string>("");
@@ -28,12 +31,12 @@ function CreateTaskDialog(
 
   const handleChangeTaskName = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => setName(e.target.value),
-    [],
+    []
   );
 
   const handleChangeTaskDescription = useCallback(
     (e: ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value),
-    [],
+    []
   );
 
   const handleTaskDescriptionRecommendation = useCallback(async () => {
@@ -59,7 +62,7 @@ function CreateTaskDialog(
     setIsCreating(true);
     try {
       const taskId = await createTask(name, description);
-      if (taskId != null) {
+      if (taskId !== undefined && taskId !== null) {
         onTaskCreated(taskId);
       }
     } finally {
@@ -101,6 +104,7 @@ function CreateTaskDialog(
                   value={name}
                   onChange={handleChangeTaskName}
                   className={css.input}
+                  aria-label="Task name"
                 />
               </label>
 
@@ -115,6 +119,7 @@ function CreateTaskDialog(
                   onChange={handleChangeTaskDescription}
                   className={css.textArea}
                   rows={2}
+                  aria-label="Task description"
                 />
                 <button
                   disabled={isProcessing}
@@ -123,7 +128,11 @@ function CreateTaskDialog(
                   type="button"
                   onClick={handleTaskDescriptionRecommendation}
                 >
-                  <img src={aipLogo} alt="AIP Logo" className={css.image} />
+                  <img
+                    src="/aip-icon.svg"
+                    alt="AIP Logo"
+                    className={css.image}
+                  />
                 </button>
               </div>
             </div>

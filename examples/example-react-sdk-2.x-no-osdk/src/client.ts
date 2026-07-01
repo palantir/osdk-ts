@@ -1,17 +1,19 @@
-import { createPlatformClient, type PlatformClient } from "@osdk/client";
-import { createPublicOauthClient, type PublicOauthClient } from "@osdk/oauth";
+import { createPlatformClient } from "@osdk/client";
+import type { PlatformClient } from "@osdk/client";
+import { createPublicOauthClient } from "@osdk/oauth";
+import type { PublicOauthClient } from "@osdk/oauth";
 
 function getMetaTagContent(tagName: string): string {
   const elements = document.querySelectorAll(`meta[name="${tagName}"]`);
   const element = elements.item(elements.length - 1);
   const value = element ? element.getAttribute("content") : null;
-  if (value == null || value === "") {
+  if (value === undefined || value === null || value === "") {
     throw new Error(`Meta tag ${tagName} not found or empty`);
   }
-  if (value.match(/%.+%/)) {
+  if (/%.+%/u.test(value)) {
     throw new Error(
-      `Meta tag ${tagName} contains placeholder value. Please add ${value.replace(
-        /%/g,
+      `Meta tag ${tagName} contains placeholder value. Please add ${value.replaceAll(
+        "%",
         ""
       )} to your .env files`
     );
@@ -23,10 +25,7 @@ const foundryUrl = getMetaTagContent("osdk-foundryUrl");
 const clientId = getMetaTagContent("osdk-clientId");
 const redirectUrl = getMetaTagContent("osdk-redirectUrl");
 
-const scopes = [
-  "api:ontologies-read",
-  "api:ontologies-write",
-];
+const scopes = ["api:ontologies-read", "api:ontologies-write"];
 
 export const auth: PublicOauthClient = createPublicOauthClient(
   clientId,
@@ -38,7 +37,7 @@ export const auth: PublicOauthClient = createPublicOauthClient(
 /**
  * Initialize the client to interact with the Platform SDK
  *
- * If you later add an Ontology SDK to your application, follow the steps in 
+ * If you later add an Ontology SDK to your application, follow the steps in
  * https://fake.palantirfoundry.com/docs/foundry/ontology-sdk/add-osdk-to-bootstrapped-repository/
  * to correctly set it up in this project.
  */

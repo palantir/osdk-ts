@@ -1,6 +1,8 @@
 import { useCallback, useState } from "react";
+
+import type { ITask } from "./useProjectTasks";
+
 import css from "./TaskListItem.module.css";
-import { ITask } from "./useProjectTasks";
 
 interface TaskListItemProps {
   task: ITask;
@@ -30,6 +32,7 @@ function TaskListItem({ task, deleteTask }: TaskListItemProps) {
           checked={isDeleting}
           className={css.delete}
           title="Delete task"
+          aria-label="Delete task"
         />
         {task.title}
       </label>

@@ -1,20 +1,20 @@
-import { IProject } from "./useProjects";
-import { ITask } from "./useProjectTasks";
+import type { IProject } from "./useProjects";
+import type { ITask } from "./useProjectTasks";
 
 const projects: IProject[] = [
   {
     $apiName: "MockProject",
     $primaryKey: "1",
+    description: "This is a mock description",
     id: "1",
     name: "Mock project",
-    description: "This is a mock description",
   },
   {
     $apiName: "MockProject",
     $primaryKey: "2",
+    description: "This is another mock description",
     id: "2",
     name: "Yet another mock project",
-    description: "This is another mock description",
   },
 ];
 
@@ -22,40 +22,41 @@ const tasks: ITask[] = [
   {
     $apiName: "MockTask",
     $primaryKey: "1",
-    id: "1",
-    title: "Try to",
     description: "task description 1",
+    id: "1",
     projectId: "1",
+    title: "Try to",
   },
   {
     $apiName: "MockTask",
     $primaryKey: "2",
-    id: "2",
-    title: "Implement this",
     description: "task description 2",
+    id: "2",
     projectId: "1",
+    title: "Implement this",
   },
   {
     $apiName: "MockTask",
     $primaryKey: "3",
-    id: "3",
-    title: "With the Ontology SDK!",
     description: "task description 3",
+    id: "3",
     projectId: "1",
+    title: "With the Ontology SDK!",
   },
   {
     $apiName: "MockTask",
     $primaryKey: "4",
-    id: "4",
-    title: "More tasks here",
     description: "More task description",
+    id: "4",
     projectId: "2",
+    title: "More tasks here",
   },
 ];
-async function delay(): Promise<void> {
-  return new Promise((resolve) =>
-    setTimeout(() => resolve(), 500 + Math.random() * 1000)
-  );
+function delay(): Promise<void> {
+  // oxlint-disable-next-line promise/avoid-new -- a timer-based delay legitimately needs a new Promise
+  return new Promise((resolve) => {
+    setTimeout(resolve, 500 + Math.random() * 1000);
+  });
 }
 
 // Good enough random id for mocks
@@ -81,15 +82,15 @@ async function createProject({
   projects.push({
     $apiName: "MockProject",
     $primaryKey: id,
+    description: "",
     id,
     name,
-    description: "",
   });
   return id;
 }
 
 async function getRecommendedProjectDescription(
-  project: IProject,
+  project: IProject
 ): Promise<string> {
   await delay();
   const projectTasks = tasks.filter((t) => t.projectId === project.id);
@@ -99,9 +100,7 @@ async function getRecommendedProjectDescription(
   return `AIP Logic mock description for project`;
 }
 
-async function updateProjectDescription(
-  project: IProject,
-): Promise<void> {
+async function updateProjectDescription(project: IProject): Promise<void> {
   await delay();
   project.description = await getRecommendedProjectDescription(project);
 }
@@ -130,23 +129,23 @@ async function createTask({
 }): Promise<ITask["$primaryKey"]> {
   await delay();
   const project = projects.find((p) => p.id === projectId);
-  if (project == null) {
+  if (project === undefined || project === null) {
     throw new Error(`Project ${projectId} not found!`);
   }
   const id = randomId();
   tasks.unshift({
     $apiName: "MockTask",
     $primaryKey: id,
-    id,
-    title,
     description,
+    id,
     projectId,
+    title,
   });
   return id;
 }
 
 async function getRecommendedTaskDescription(
-  taskName: string,
+  taskName: string
 ): Promise<string> {
   await delay();
   if (taskName.length === 0) {
@@ -164,13 +163,13 @@ async function deleteTask(id: string): Promise<void> {
 }
 
 const Mocks = {
-  getProjects,
   createProject,
-  getRecommendedProjectDescription,
-  deleteProject,
-  getProjectTasks,
   createTask,
+  deleteProject,
   deleteTask,
+  getProjectTasks,
+  getProjects,
+  getRecommendedProjectDescription,
   getRecommendedTaskDescription,
   updateProjectDescription,
 };

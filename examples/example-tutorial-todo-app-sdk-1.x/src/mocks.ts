@@ -56,10 +56,15 @@ const projects: MockProject[] = [
   },
 ];
 
-async function delay(): Promise<void> {
-  return new Promise((resolve) =>
-    setTimeout(() => resolve(), 500 + Math.random() * 1000)
-  );
+export function sleep(ms: number): Promise<void> {
+  // oxlint-disable-next-line promise/avoid-new -- a timer-based delay legitimately needs a new Promise
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+function delay(): Promise<void> {
+  return sleep(500 + Math.random() * 1000);
 }
 
 // Good enough random id for mocks
@@ -108,7 +113,7 @@ async function createTask({
 }): Promise<MockTask["$primaryKey"]> {
   await delay();
   const project = projects.find((p) => p.id === projectId);
-  if (project == null) {
+  if (project === undefined || project === null) {
     throw new Error(`Project ${projectId} not found!`);
   }
   const id = randomId();
@@ -127,11 +132,11 @@ async function deleteTask(id: string): Promise<void> {
 }
 
 const Mocks = {
-  getProjects,
   createProject,
-  deleteProject,
   createTask,
+  deleteProject,
   deleteTask,
+  getProjects,
 };
 
 export default Mocks;
