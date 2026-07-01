@@ -1,7 +1,9 @@
 import { defineConfig } from "@osdk/widget.client";
 
-// Widget config changes are previewed in dev mode without publishing but don't hot-reload.
-// Reapply dev mode settings to see changes.
+// Updates to the widget configuration in this file require reapplying dev mode
+// to preview the changes. When developing locally, open the setup link printed
+// in your terminal again. When developing in Code Workspaces, refresh the
+// preview panel.
 
 export default defineConfig({
   id: "widgetId",
