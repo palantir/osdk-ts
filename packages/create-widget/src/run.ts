@@ -95,7 +95,7 @@ export async function run({
     osdkPackage,
   };
   const processFiles = function(dir: string) {
-    fs.readdirSync(dir).forEach(function(file) {
+    fs.readdirSync(dir).forEach((file) => {
       file = dir + "/" + file;
       const stat = fs.statSync(file);
       if (stat.isDirectory()) {
@@ -147,8 +147,6 @@ export async function run({
       + `  \`cd ${cdRelative}\`\n`
       + `  \`export FOUNDRY_TOKEN=<token>\`\n`
       + `  \`npm install\`\n`
-      + `  \`npm run build\`\n`
-      + `  \`npx @osdk/cli@latest widgetset deploy\`\n`
       + `  \`npm run dev\``,
     style: {
       padding: 2,

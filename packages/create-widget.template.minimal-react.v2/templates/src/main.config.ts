@@ -1,7 +1,7 @@
 import { defineConfig } from "@osdk/widget.client";
 
 // Updates to the widget configuration in this file require reapplying dev mode
-// to preview the changes. When developing locally, open the setup link printed
+// to preview the changes. When developing locally, open the setup URL printed
 // in your terminal again. When developing in Code Workspaces, refresh the
 // preview panel.
 
