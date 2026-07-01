@@ -37,6 +37,15 @@ export interface ExamplesHierarchy {
 }
 
 /**
+ * A single example matched by `searchExamples` / `findExamplesByCodePattern`.
+ */
+export interface ExampleSearchResult {
+  version: string;
+  exampleName: string;
+  metadata: ExampleMetadata;
+}
+
+/**
  * Utility class for working with the original flat examples structure
  */
 export class OsdkExamplesContext {
@@ -88,16 +97,8 @@ export class OsdkExamplesContext {
   /**
    * Search for examples by name pattern across all versions
    */
-  static searchExamples(pattern: string): Array<{
-    version: string;
-    exampleName: string;
-    metadata: ExampleMetadata;
-  }> {
-    const results: Array<{
-      version: string;
-      exampleName: string;
-      metadata: ExampleMetadata;
-    }> = [];
+  static searchExamples(pattern: string): Array<ExampleSearchResult> {
+    const results: Array<ExampleSearchResult> = [];
     const regex = new RegExp(pattern, "i");
 
     for (const [version, versionData] of Object.entries(
@@ -122,16 +123,10 @@ export class OsdkExamplesContext {
   /**
    * Get examples that contain specific code patterns
    */
-  static findExamplesByCodePattern(pattern: string): Array<{
-    version: string;
-    exampleName: string;
-    metadata: ExampleMetadata;
-  }> {
-    const results: Array<{
-      version: string;
-      exampleName: string;
-      metadata: ExampleMetadata;
-    }> = [];
+  static findExamplesByCodePattern(
+    pattern: string
+  ): Array<ExampleSearchResult> {
+    const results: Array<ExampleSearchResult> = [];
     const regex = new RegExp(pattern, "i");
 
     for (const [version, versionData] of Object.entries(
