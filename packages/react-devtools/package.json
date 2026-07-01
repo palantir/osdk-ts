@@ -17,10 +17,10 @@
     },
     "./advanced": {
       "import": {
-        "types": "./build/types/advanced.d.ts",
-        "default": "./build/esm/advanced.js"
+        "types": "./build/types/public/advanced.d.ts",
+        "default": "./build/esm/public/advanced.js"
       },
-      "default": "./build/esm/advanced.js"
+      "default": "./build/esm/public/advanced.js"
     },
     "./vite": {
       "import": {
