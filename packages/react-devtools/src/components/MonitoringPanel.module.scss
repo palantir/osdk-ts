@@ -2,6 +2,13 @@
 @use 'mixins' as m;
 @use 'theme' as theme;
 
+// Blueprint tooltip/popover portals mount at document.body with a low default
+// z-index, which leaves them behind the floating panel and makes the info
+// tooltips unreadable. Lift devtools overlays above the panel.
+:global(.osdk-devtools-portal) {
+  z-index: t.$z-modal;
+}
+
 .panel {
   @include theme.dt-dark-theme;
 
