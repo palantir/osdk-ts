@@ -29,7 +29,11 @@ import React, {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
-import { useGlobals, useStorybookApi } from "storybook/manager-api";
+import {
+  useGlobals,
+  useStorybookApi,
+  useStorybookState,
+} from "storybook/manager-api";
 import { styled } from "storybook/theming";
 
 import { GLOBALS_KEY, PANEL_ID } from "./constants.js";
@@ -59,6 +63,7 @@ interface DropdownPosition {
 export const ThemeToolbar = React.memo(function ThemeToolbarFn() {
   const [globals, updateGlobals] = useGlobals();
   const api = useStorybookApi();
+  const storybookState = useStorybookState();
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [dropdownPosition, setDropdownPosition] = useState<DropdownPosition>({
@@ -99,6 +104,14 @@ export const ThemeToolbar = React.memo(function ThemeToolbarFn() {
   const showCustomInSearch =
     searchQuery.trim() === "" ||
     "custom".includes(searchQuery.trim().toLowerCase());
+  const currentEntry = useMemo(() => {
+    try {
+      return api.getData(storybookState.storyId);
+    } catch {
+      return undefined;
+    }
+  }, [api, storybookState.storyId]);
+  const customDisabled = currentEntry?.type !== "story";
   const totalVisible =
     builtInPresets.length + customPresets.length + (showCustomInSearch ? 1 : 0);
 
@@ -269,6 +282,7 @@ export const ThemeToolbar = React.memo(function ThemeToolbarFn() {
                 <SectionLabel>{isCustom ? "Current" : "Custom"}</SectionLabel>
                 <PresetList role="listbox" aria-label="Custom theme">
                   <CustomOption
+                    disabled={customDisabled}
                     swatches={isCustom ? selectedSwatches : DEFAULT_SWATCHES}
                     selected={isCustom}
                     onOpenPanel={openCustomPanel}
@@ -319,12 +333,14 @@ const PresetOption = React.memo(function PresetOptionFn({
 });
 
 interface CustomOptionProps {
+  disabled: boolean;
   swatches: [string, string, string];
   selected: boolean;
   onOpenPanel: () => void;
 }
 
 function CustomOption({
+  disabled,
   swatches,
   selected,
   onOpenPanel,
@@ -334,9 +350,14 @@ function CustomOption({
       type="button"
       role="option"
       aria-selected={selected}
+      disabled={disabled}
       selected={selected}
       onClick={onOpenPanel}
-      title="Open the Brand Theme panel to customize tokens"
+      title={
+        disabled
+          ? "Custom themes are available on component stories"
+          : "Open the Brand Theme panel to customize tokens"
+      }
     >
       <SwatchGroup aria-hidden="true">
         {swatches.map((swatch, i) => (
@@ -344,7 +365,7 @@ function CustomOption({
         ))}
       </SwatchGroup>
       <PresetLabelStyled>Custom</PresetLabelStyled>
-      <CustomHint>open panel</CustomHint>
+      <CustomHint>{disabled ? "unavailable" : "open panel"}</CustomHint>
     </PresetButtonStyled>
   );
 }
@@ -464,29 +485,31 @@ const PresetList = styled.div({
   overflowY: "auto",
 });
 
-const PresetButtonStyled = styled.button<{ selected: boolean }>(
-  ({ selected, theme }) => ({
-    alignItems: "center",
-    backgroundColor: selected ? theme.background.hoverable : "transparent",
-    borderRadius: 4,
-    borderWidth: 0,
-    color: theme.color.defaultText,
-    cursor: "pointer",
-    display: "flex",
-    fontSize: 13,
-    gap: 10,
-    minHeight: 36,
-    paddingBlock: 6,
-    paddingInline: 8,
-    textAlign: "start",
-    "&:hover": {
-      backgroundColor: theme.background.hoverable,
-    },
-    "& > svg": {
-      marginInlineStart: "auto",
-    },
-  })
-);
+const PresetButtonStyled = styled.button<{
+  selected: boolean;
+  disabled?: boolean;
+}>(({ disabled, selected, theme }) => ({
+  alignItems: "center",
+  backgroundColor: selected ? theme.background.hoverable : "transparent",
+  borderRadius: 4,
+  borderWidth: 0,
+  color: disabled ? theme.color.mediumdark : theme.color.defaultText,
+  cursor: disabled ? "not-allowed" : "pointer",
+  display: "flex",
+  fontSize: 13,
+  gap: 10,
+  minHeight: 36,
+  opacity: disabled ? 0.6 : 1,
+  paddingBlock: 6,
+  paddingInline: 8,
+  textAlign: "start",
+  "&:hover:not(:disabled)": {
+    backgroundColor: theme.background.hoverable,
+  },
+  "& > svg": {
+    marginInlineStart: "auto",
+  },
+}));
 
 const PresetSwatch = styled.span<{ color: string }>(({ color, theme }) => ({
   backgroundColor: color,

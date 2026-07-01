@@ -26,6 +26,7 @@ interface ExportItem {
 
 interface ExportDropdownProps {
   items: ExportItem[];
+  disabled?: boolean;
 }
 
 const DropdownWrapper = styled.div({
@@ -33,28 +34,32 @@ const DropdownWrapper = styled.div({
   display: "inline-block",
 });
 
-const DropdownButton = styled.button(({ theme }) => ({
-  alignItems: "center",
-  background: theme.color.secondary,
-  border: `1px solid ${theme.color.secondary}`,
-  borderRadius: 6,
-  boxShadow: "0 1px 4px rgba(0,0,0,0.18)",
-  color: "#ffffff",
-  cursor: "pointer",
-  display: "flex",
-  fontSize: 12,
-  fontWeight: 700,
-  gap: 6,
-  minHeight: 30,
-  padding: "6px 12px",
-  transition:
-    "background 150ms ease, border-color 150ms ease, box-shadow 150ms ease",
-  "&:hover": {
-    background: theme.color.secondary,
-    borderColor: theme.color.secondary,
-    boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
-  },
-}));
+const DropdownButton = styled.button<{ disabled?: boolean }>(
+  ({ disabled, theme }) => ({
+    alignItems: "center",
+    background: disabled ? theme.background.content : theme.color.secondary,
+    border: `1px solid ${
+      disabled ? theme.appBorderColor : theme.color.secondary
+    }`,
+    borderRadius: 6,
+    boxShadow: disabled ? "none" : "0 1px 4px rgba(0,0,0,0.18)",
+    color: disabled ? theme.color.mediumdark : "#ffffff",
+    cursor: disabled ? "not-allowed" : "pointer",
+    display: "flex",
+    fontSize: 12,
+    fontWeight: 700,
+    gap: 6,
+    minHeight: 30,
+    padding: "6px 12px",
+    transition:
+      "background 150ms ease, border-color 150ms ease, box-shadow 150ms ease",
+    "&:hover": {
+      background: disabled ? theme.background.content : theme.color.secondary,
+      borderColor: disabled ? theme.appBorderColor : theme.color.secondary,
+      boxShadow: disabled ? "none" : "0 2px 8px rgba(0,0,0,0.2)",
+    },
+  })
+);
 
 const Menu = styled.div(({ theme }) => ({
   position: "absolute" as const,
@@ -127,12 +132,14 @@ const Chevron = styled.span({
 });
 
 export function ExportDropdown({
+  disabled = false,
   items,
 }: ExportDropdownProps): React.ReactElement {
   const [open, setOpen] = useState(false);
   const [copiedLabel, setCopiedLabel] = useState<string | undefined>();
   const wrapperRef = useRef<HTMLDivElement>(null);
   const copiedTimerRef = useRef<number | undefined>();
+  const menuOpen = open && !disabled;
 
   useEffect(() => {
     return () => window.clearTimeout(copiedTimerRef.current);
@@ -179,14 +186,16 @@ export function ExportDropdown({
   return (
     <DropdownWrapper ref={wrapperRef}>
       <DropdownButton
-        onClick={() => setOpen(!open)}
-        aria-expanded={open}
+        disabled={disabled}
+        onClick={() => setOpen((currentOpen) => !currentOpen)}
+        aria-expanded={menuOpen}
         aria-haspopup="menu"
+        title={disabled ? "Add a theme override before exporting" : undefined}
       >
         Export
-        <Chevron>{open ? "\u25B4" : "\u25BE"}</Chevron>
+        <Chevron>{menuOpen ? "\u25B4" : "\u25BE"}</Chevron>
       </DropdownButton>
-      {open && (
+      {menuOpen && (
         <Menu role="menu" aria-label="Export theme">
           {items.map((item) => (
             <ExportRow key={item.filename}>

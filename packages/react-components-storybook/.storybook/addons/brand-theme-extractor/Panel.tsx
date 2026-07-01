@@ -143,26 +143,25 @@ function PanelContent(): React.ReactElement {
     <PanelWrapper>
       <HeaderRow>
         <Title>Brand Theme</Title>
-        {state.assignments.length > 0 && (
-          <HeaderRight>
-            <ExportDropdown
-              items={[
-                {
-                  label: "CSS",
-                  content: css,
-                  filename: "tokens.css",
-                  mime: "text/css",
-                },
-                {
-                  label: "Design.md",
-                  content: md,
-                  filename: "design.md",
-                  mime: "text/markdown",
-                },
-              ]}
-            />
-          </HeaderRight>
-        )}
+        <HeaderRight>
+          <ExportDropdown
+            disabled={state.assignments.length === 0}
+            items={[
+              {
+                label: "CSS",
+                content: css,
+                filename: "tokens.css",
+                mime: "text/css",
+              },
+              {
+                label: "Design.md",
+                content: md,
+                filename: "design.md",
+                mime: "text/markdown",
+              },
+            ]}
+          />
+        </HeaderRight>
       </HeaderRow>
 
       <SectionDivider />
