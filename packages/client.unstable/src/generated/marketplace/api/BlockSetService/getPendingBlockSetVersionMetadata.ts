@@ -15,10 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BlockSetVersionId as _api_BlockSetVersionId,
-  GetPendingBlockSetVersionMetadataResponse
-    as _api_GetPendingBlockSetVersionMetadataResponse,
+  GetPendingBlockSetVersionMetadataResponse as _api_GetPendingBlockSetVersionMetadataResponse,
 } from "../__components.js";
 
 /**
@@ -31,11 +31,11 @@ import type {
  */
 export async function getPendingBlockSetVersionMetadata(
   ctx: ConjureContext,
-  blockSetVersionId: _api_BlockSetVersionId,
+  blockSetVersionId: _api_BlockSetVersionId
 ): Promise<_api_GetPendingBlockSetVersionMetadataResponse> {
   return conjureFetch(
     ctx,
     `/block-sets/v2/pending/version/${blockSetVersionId}/metadata`,
-    "GET",
+    "GET"
   );
 }

@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   MarketplaceRid as _api_MarketplaceRid,
   SetMarketplaceMavenGroupRequest as _api_SetMarketplaceMavenGroupRequest,
@@ -28,12 +29,12 @@ import type {
 export async function setMarketplaceMavenGroup(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
-  request: _api_SetMarketplaceMavenGroupRequest,
+  request: _api_SetMarketplaceMavenGroupRequest
 ): Promise<_api_SetMarketplaceMavenGroupResponse> {
   return conjureFetch(
     ctx,
     `/marketplace-maven-group/${marketplaceRid}/maven-group`,
     "PUT",
-    request,
+    request
   );
 }

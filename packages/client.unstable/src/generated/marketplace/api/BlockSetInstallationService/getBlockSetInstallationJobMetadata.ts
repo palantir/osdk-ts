@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BlockSetInstallationJobMetadata as _api_BlockSetInstallationJobMetadata,
   BlockSetInstallationJobRid as _api_BlockSetInstallationJobRid,
@@ -25,7 +26,7 @@ import type {
  */
 export async function getBlockSetInstallationJobMetadata(
   ctx: ConjureContext,
-  jobRid: _api_BlockSetInstallationJobRid,
+  jobRid: _api_BlockSetInstallationJobRid
 ): Promise<_api_BlockSetInstallationJobMetadata> {
   return conjureFetch(ctx, `/block-set-installation/jobs/${jobRid}`, "GET");
 }

@@ -33,13 +33,13 @@ export function createClientFromWriteableClient(
     baseUrl?: string;
     ontologyRid?: string | Promise<string>;
     tokenProvider?: () => Promise<string>;
-  },
+  }
 ): Client {
   const ctx = writeableClient[additionalContext];
 
   if (ctx.transactionId === undefined || ctx.flushEdits === undefined) {
     throw new Error(
-      "createClientFromWriteableClient: provided client has no active transaction",
+      "createClientFromWriteableClient: provided client has no active transaction"
     );
   }
 
@@ -48,6 +48,6 @@ export function createClientFromWriteableClient(
     ctx.flushEdits,
     options?.baseUrl ?? ctx.baseUrl,
     options?.ontologyRid ?? ctx.ontologyRid,
-    options?.tokenProvider ?? ctx.tokenProvider,
+    options?.tokenProvider ?? ctx.tokenProvider
   );
 }

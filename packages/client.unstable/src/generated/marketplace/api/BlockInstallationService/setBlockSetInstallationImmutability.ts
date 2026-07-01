@@ -15,12 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BlockSetInstallationRid as _api_BlockSetInstallationRid,
-  SetBlockSetInstallationImmutabilityRequest
-    as _api_SetBlockSetInstallationImmutabilityRequest,
-  SetBlockSetInstallationImmutabilityResponse
-    as _api_SetBlockSetInstallationImmutabilityResponse,
+  SetBlockSetInstallationImmutabilityRequest as _api_SetBlockSetInstallationImmutabilityRequest,
+  SetBlockSetInstallationImmutabilityResponse as _api_SetBlockSetInstallationImmutabilityResponse,
 } from "../__components.js";
 
 /**
@@ -45,12 +44,12 @@ import type {
 export async function setBlockSetInstallationImmutability(
   ctx: ConjureContext,
   blockSetInstallationRid: _api_BlockSetInstallationRid,
-  request: _api_SetBlockSetInstallationImmutabilityRequest,
+  request: _api_SetBlockSetInstallationImmutabilityRequest
 ): Promise<_api_SetBlockSetInstallationImmutabilityResponse> {
   return conjureFetch(
     ctx,
     `/block-installation/v2/block-set-installations/${blockSetInstallationRid}/set-immutability`,
     "POST",
-    request,
+    request
   );
 }

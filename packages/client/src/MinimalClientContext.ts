@@ -16,6 +16,7 @@
 
 import type { Logger } from "@osdk/api";
 import type { SharedClientContext } from "@osdk/shared.client2";
+
 import type { convertWireToOsdkObjects } from "./object/convertWireToOsdkObjects.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
 import type { OntologyProvider } from "./ontology/OntologyProvider.js";

@@ -21,6 +21,7 @@ import {
 } from "@osdk/api/unstable";
 import { MediaSets } from "@osdk/foundry.mediasets";
 import type { Transformation } from "@osdk/foundry.mediasets";
+
 import type { MinimalClient } from "../MinimalClientContext.js";
 
 /**
@@ -33,7 +34,7 @@ export async function transformAndWaitInternal(
   mediaItemRid: string,
   transformation: Transformation,
   token: string | undefined,
-  options?: TransformOptions,
+  options?: TransformOptions
 ): Promise<Response> {
   const pollIntervalMs = Math.max(options?.pollIntervalMs ?? 3000, 100);
   const pollTimeoutMs = Math.max(options?.pollTimeoutMs ?? 30000, 1000);
@@ -46,7 +47,7 @@ export async function transformAndWaitInternal(
     mediaItemRid,
     { transformation },
     { preview: true },
-    headerParams,
+    headerParams
   );
 
   let status = job.status;
@@ -63,7 +64,7 @@ export async function transformAndWaitInternal(
       mediaItemRid,
       jobId,
       { preview: true },
-      headerParams,
+      headerParams
     );
     status = statusResponse.status;
 
@@ -71,7 +72,7 @@ export async function transformAndWaitInternal(
       throw new MediaTransformationFailedError(jobId);
     }
     if (status !== "SUCCESSFUL") {
-      await new Promise(resolve => setTimeout(resolve, pollIntervalMs));
+      await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
     }
   }
 
@@ -81,6 +82,6 @@ export async function transformAndWaitInternal(
     mediaItemRid,
     jobId,
     { preview: true },
-    headerParams,
+    headerParams
   );
 }

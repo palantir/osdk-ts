@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { LinkTypeRid as _api_LinkTypeRid } from "../../__components.js";
 import type { GetSuggestedRolesDatasourceResponse as _api_permissions_GetSuggestedRolesDatasourceResponse } from "../__components.js";
 
@@ -30,11 +31,11 @@ import type { GetSuggestedRolesDatasourceResponse as _api_permissions_GetSuggest
  */
 export async function getSuggestedRolesForManyToManyLinkTypeDatasource(
   ctx: ConjureContext,
-  linkTypeRid: _api_LinkTypeRid,
+  linkTypeRid: _api_LinkTypeRid
 ): Promise<_api_permissions_GetSuggestedRolesDatasourceResponse> {
   return conjureFetch(
     ctx,
     `/permissions/suggestRoles/linkType/${linkTypeRid}/datasource`,
-    "GET",
+    "GET"
   );
 }

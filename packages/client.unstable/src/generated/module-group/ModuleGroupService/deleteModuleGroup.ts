@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { ModuleGroupName as _ModuleGroupName } from "../__components.js";
 
 /**
@@ -26,7 +27,7 @@ import type { ModuleGroupName as _ModuleGroupName } from "../__components.js";
  */
 export async function deleteModuleGroup(
   ctx: ConjureContext,
-  moduleGroupName: _ModuleGroupName,
+  moduleGroupName: _ModuleGroupName
 ): Promise<void> {
   return conjureFetch(ctx, `/module-group/${moduleGroupName}`, "DELETE");
 }

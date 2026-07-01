@@ -15,12 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { BlockSetInstallationRid as _api_BlockSetInstallationRid } from "../../__components.js";
 import type {
-  GetInstallationInputsRequest
-    as _api_experimental_GetInstallationInputsRequest,
-  GetInstallationInputsResponse
-    as _api_experimental_GetInstallationInputsResponse,
+  GetInstallationInputsRequest as _api_experimental_GetInstallationInputsRequest,
+  GetInstallationInputsResponse as _api_experimental_GetInstallationInputsResponse,
 } from "../__components.js";
 
 /**
@@ -30,12 +29,12 @@ import type {
 export async function getInstallationInputs(
   ctx: ConjureContext,
   installationRid: _api_BlockSetInstallationRid,
-  request: _api_experimental_GetInstallationInputsRequest,
+  request: _api_experimental_GetInstallationInputsRequest
 ): Promise<_api_experimental_GetInstallationInputsResponse> {
   return conjureFetch(
     ctx,
     `/experimental/installations/${installationRid}/inputs`,
     "POST",
-    request,
+    request
   );
 }

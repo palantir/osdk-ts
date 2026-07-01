@@ -15,12 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { ApolloEntityId as _api_ApolloEntityId } from "../../../api/__components.js";
 import type {
-  ListInstallationsForEntityIdRequest
-    as _installmanager_api_ListInstallationsForEntityIdRequest,
-  ListInstallationsForEntityIdResponse
-    as _installmanager_api_ListInstallationsForEntityIdResponse,
+  ListInstallationsForEntityIdRequest as _installmanager_api_ListInstallationsForEntityIdRequest,
+  ListInstallationsForEntityIdResponse as _installmanager_api_ListInstallationsForEntityIdResponse,
 } from "../__components.js";
 
 /**
@@ -31,12 +30,12 @@ import type {
 export async function listInstallationsForApolloEntityId(
   ctx: ConjureContext,
   apolloEntityId: _api_ApolloEntityId,
-  request: _installmanager_api_ListInstallationsForEntityIdRequest,
+  request: _installmanager_api_ListInstallationsForEntityIdRequest
 ): Promise<_installmanager_api_ListInstallationsForEntityIdResponse> {
   return conjureFetch(
     ctx,
     `/install-manager/installations/entity-id/${apolloEntityId}/list`,
     "POST",
-    request,
+    request
   );
 }

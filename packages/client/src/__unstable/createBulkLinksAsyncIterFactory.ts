@@ -24,6 +24,7 @@ import type {
 } from "@osdk/client.unstable";
 import { getBulkLinksPage } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
+
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { conjureUnionType } from "../objectSet/conjureUnionType.js";
 import { makeConjureContext } from "../ontology/makeConjureContext.js";
@@ -35,9 +36,9 @@ import {
 import { metadataCacheClient } from "./ConjureSupport.js";
 
 export function createBulkLinksAsyncIterFactory(ctx: MinimalClient) {
-  return async function*(
+  return async function* (
     objs: Array<OsdkBase<any>>,
-    linkTypes: string[],
+    linkTypes: string[]
   ): AsyncGenerator<BulkLinkResult, void, unknown> {
     if (objs.length === 0) {
       return;
@@ -46,22 +47,19 @@ export function createBulkLinksAsyncIterFactory(ctx: MinimalClient) {
     ctx.logger?.debug("Preparing to fetch bulk links");
 
     // require all objects to be the same type for now
-    invariant(objs.every(a => a.$objectType === objs[0].$objectType));
+    invariant(objs.every((a) => a.$objectType === objs[0].$objectType));
 
     const mcc = await metadataCacheClient(ctx);
     const helper = await mcc.forObjectByApiName(objs[0].$objectType);
 
     const [objectTypeRid, propertyMapping, fullLinkMapping] = await Promise.all(
-      [
-        helper.getRid(),
-        helper.getPropertyMapping(),
-        helper.getLinkMapping(),
-      ],
+      [helper.getRid(), helper.getPropertyMapping(), helper.getLinkMapping()]
     );
 
     const linkMapping = Object.fromEntries(
-      Object.entries(fullLinkMapping)
-        .filter(([apiName]) => linkTypes.includes(apiName)),
+      Object.entries(fullLinkMapping).filter(([apiName]) =>
+        linkTypes.includes(apiName)
+      )
     );
 
     // make sure the link being requested exists
@@ -86,39 +84,45 @@ export function createBulkLinksAsyncIterFactory(ctx: MinimalClient) {
       },
       pageSize: 1000,
       pageToken: undefined,
-      linksRequests: [{
-        directedLinkTypes: Object.values(linkMapping)
-          .map<DirectedLinkTypeRid>(({ directedLinkTypeRid }) =>
-            directedLinkTypeRid
+      linksRequests: [
+        {
+          directedLinkTypes: Object.values(
+            linkMapping
+          ).map<DirectedLinkTypeRid>(
+            ({ directedLinkTypeRid }) => directedLinkTypeRid
           ),
-        objects: conjureUnionType(
-          "objects",
-          objs.map<ObjectIdentifier>(o =>
-            conjureUnionType("objectLocatorV2", {
-              objectTypeRid,
-              objectPrimaryKey: {
-                [propertyMapping.pk.rid]: conjureUnionType(
-                  propertyMapping.pk.type.type as "string",
-                  o.$primaryKey as string,
-                ),
-              },
-            })
+          objects: conjureUnionType(
+            "objects",
+            objs.map<ObjectIdentifier>((o) =>
+              conjureUnionType("objectLocatorV2", {
+                objectTypeRid,
+                objectPrimaryKey: {
+                  [propertyMapping.pk.rid]: conjureUnionType(
+                    propertyMapping.pk.type.type as "string",
+                    o.$primaryKey as string
+                  ),
+                },
+              })
+            )
           ),
-        ),
-      }],
+        },
+      ],
     };
 
     const bulkLinksIter = pageRequestAsAsyncIter(
       getBulkLinksPage.bind(
         undefined,
-        makeConjureContext(ctx, "object-set-service/api"),
+        makeConjureContext(ctx, "object-set-service/api")
       ),
       getResults,
       (prevReq, prevResult) =>
-        applyPageToken({ ...prevReq, pageToken: prevResult.pageToken }, {
-          pageToken: prevResult.pageToken,
-        }),
-      req,
+        applyPageToken(
+          { ...prevReq, pageToken: prevResult.pageToken },
+          {
+            pageToken: prevResult.pageToken,
+          }
+        ),
+      req
     );
 
     for await (const item of bulkLinksIter) {
@@ -126,19 +130,17 @@ export function createBulkLinksAsyncIterFactory(ctx: MinimalClient) {
       const obj = findObject(objectIdentifier, objs);
 
       for (const link of item.links) {
-        const ref = link.link[
-          link.linkSide === "SOURCE"
-            ? "objectSideB"
-            : "objectSideA"
-        ];
+        const ref =
+          link.link[link.linkSide === "SOURCE" ? "objectSideB" : "objectSideA"];
         const pk = getPrimaryKeyOrThrow(ref);
-        const otherObjectApiName =
-          await (await mcc.forObjectByRid(pk.objectTypeRid))
-            .getApiName();
+        const otherObjectApiName = await (
+          await mcc.forObjectByRid(pk.objectTypeRid)
+        ).getApiName();
 
-        const mappedLink = Object.values(linkMapping).find(a =>
-          a.directedLinkTypeRid.linkTypeRid === link.link.linkTypeRid
-          && a.directedLinkTypeRid.linkSide === link.linkSide
+        const mappedLink = Object.values(linkMapping).find(
+          (a) =>
+            a.directedLinkTypeRid.linkTypeRid === link.link.linkTypeRid &&
+            a.directedLinkTypeRid.linkSide === link.linkSide
         );
         if (!mappedLink) throw new Error("Could not find link type"); // should not happens
 
@@ -153,33 +155,24 @@ export function createBulkLinksAsyncIterFactory(ctx: MinimalClient) {
   };
 }
 
-function findObject(
-  objectIdentifier: ObjectIdentifier,
-  objs: (OsdkBase<any>)[],
-) {
+function findObject(objectIdentifier: ObjectIdentifier, objs: OsdkBase<any>[]) {
   const { pkValue } = getPrimaryKeyOrThrow(objectIdentifier);
 
-  const obj = objs.find(o => o.$primaryKey === pkValue);
+  const obj = objs.find((o) => o.$primaryKey === pkValue);
   if (obj == null) {
-    throw new Error(
-      `Needed to find object with pk ${pkValue}} and could not`,
-    );
+    throw new Error(`Needed to find object with pk ${pkValue}} and could not`);
   }
   return obj;
 }
 
-function getPrimaryKeyOrThrow(
-  ref: FoundryObjectReference | ObjectIdentifier,
-) {
+function getPrimaryKeyOrThrow(ref: FoundryObjectReference | ObjectIdentifier) {
   if ("type" in ref && ref.type !== "objectLocatorV2") {
     throw new Error("We do not support looking up object by rid");
   }
 
   const pks = Object.entries(ref.objectLocatorV2.objectPrimaryKey);
   if (pks.length !== 1) {
-    throw new Error(
-      "Unable to support this request due to multiple pks",
-    );
+    throw new Error("Unable to support this request due to multiple pks");
   }
 
   return {

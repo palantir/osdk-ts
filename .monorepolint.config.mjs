@@ -101,6 +101,11 @@ const archetypeRules = archetypes(
       ...LIBRARY_RULES,
       checkApi: true,
       typecheckProject: "tsconfig.typecheck.json",
+      // Migrated to the oxc toolchain (oxlint + oxfmt). Carries a nested oxlint
+      // config (oxcConfig) holding behavior-preserving carve-outs for the
+      // error-level Ultracite rules this hand-written package first surfaces.
+      oxc: true,
+      oxcConfig: "./oxlint.config.ts",
     },
   )
   .addArchetype(
@@ -187,17 +192,6 @@ const archetypeRules = archetypes(
       },
       fixedDepsOnly: true,
       extraPublishFiles: ["build/site"],
-    },
-  )
-  .addArchetype(
-    "forceBundle",
-    [
-      "@osdk/client.unstable",
-      "@osdk/client.unstable.tpsa",
-    ],
-    {
-      ...LIBRARY_RULES,
-      output: OUTPUT_BUNDLE_ALL,
     },
   )
   .addArchetype(
@@ -335,6 +329,30 @@ const archetypeRules = archetypes(
       minimalChangesOnly: true,
       private: true,
       oxc: true,
+    },
+  )
+  // Force-bundle libraries migrated to the oxc toolchain. Same as "oxc migrated
+  // libraries" but carry OUTPUT_BUNDLE_ALL (bundled cjs/esm/browser), which is
+  // what the former forceBundle archetype provided (now removed; both its members
+  // live here). @osdk/client.unstable and @osdk/client.unstable.tpsa are both
+  // almost entirely conjure-generated code under src/generated; this repo treats
+  // that as first-class checked-in source (ESLint + dprint processed it before
+  // the migration), so each carries a nested oxlint config (oxcConfig) that
+  // re-includes the generated tree and turns off the few error-level rules it
+  // surfaces, keeping the migration behavior-preserving. The generated tree is
+  // also oxfmt-formatted via the root oxfmt.config.ts (which no longer ignores
+  // `**/generated`).
+  .addArchetype(
+    "oxc migrated force-bundle libraries with carve-outs",
+    [
+      "@osdk/client.unstable",
+      "@osdk/client.unstable.tpsa",
+    ],
+    {
+      ...LIBRARY_RULES,
+      output: OUTPUT_BUNDLE_ALL,
+      oxc: true,
+      oxcConfig: "./oxlint.config.ts",
     },
   )
   .addArchetype(

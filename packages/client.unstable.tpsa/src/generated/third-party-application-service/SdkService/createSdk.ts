@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { ArtifactsRepositoryRid } from "../ArtifactsRepositoryRid.js";
 import type { CreateSdkRequest } from "../CreateSdkRequest.js";
 import type { PackageName } from "../PackageName.js";
@@ -36,12 +37,12 @@ export async function createSdk(
   repositoryRid: ArtifactsRepositoryRid,
   packageName: PackageName,
   sdkVersion: SdkVersion,
-  request: CreateSdkRequest,
+  request: CreateSdkRequest
 ): Promise<Sdk> {
   return conjureFetch(
     ctx,
     `/sdks/${repositoryRid}/${packageName}/${sdkVersion}`,
     "POST",
-    request,
+    request
   );
 }

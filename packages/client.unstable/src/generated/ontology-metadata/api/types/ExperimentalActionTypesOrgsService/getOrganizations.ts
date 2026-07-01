@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   ActionTypeGetOrganizationsRequest as _api_ActionTypeGetOrganizationsRequest,
   ActionTypeGetOrganizationsResponse as _api_ActionTypeGetOrganizationsResponse,
@@ -28,7 +29,7 @@ import type {
  */
 export async function getOrganizations(
   ctx: ConjureContext,
-  request: _api_ActionTypeGetOrganizationsRequest,
+  request: _api_ActionTypeGetOrganizationsRequest
 ): Promise<_api_ActionTypeGetOrganizationsResponse> {
   return conjureFetch(ctx, `/actions/orgs/get/v2`, "POST", request);
 }

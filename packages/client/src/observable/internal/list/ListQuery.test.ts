@@ -31,6 +31,7 @@ import {
 } from "@osdk/shared.test";
 import chalk from "chalk";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
+
 import type { Client } from "../../../Client.js";
 import { createClient } from "../../../createClient.js";
 import { TestLogger } from "../../../logger/TestLogger.js";
@@ -56,9 +57,9 @@ function testStage(s: string) {
 function setupOntology(fauxFoundry: FauxFoundry) {
   const fauxOntology = fauxFoundry.getDefaultOntology();
   ontologies.addEmployeeOntology(fauxOntology);
-  fauxFoundry.getDefaultOntology().registerObjectType(
-    stubData.todoWithLinkTypes,
-  );
+  fauxFoundry
+    .getDefaultOntology()
+    .registerObjectType(stubData.todoWithLinkTypes);
   // objectTypeWithAllPropertyTypes needs a self-referential link with a foreign key;
   // the stub default omits it, which FauxFoundry (strict) rejects on registerLink.
   const allPropsApiName =
@@ -91,7 +92,7 @@ function setupOntology(fauxFoundry: FauxFoundry) {
 function setupTodos(
   fauxFoundry: FauxFoundry,
   count: number,
-  options?: { withRids?: boolean; textFn?: (i: number) => string },
+  options?: { withRids?: boolean; textFn?: (i: number) => string }
 ): string[] {
   const dataStore = fauxFoundry.getDefaultDataStore();
   dataStore.clear();
@@ -122,7 +123,7 @@ describe("ListQuery autoFetchMore tests", () => {
     const testSetup = startNodeApiServer(
       new FauxFoundry("https://stack.palantir.com/", undefined, { logger }),
       createClient,
-      { logger },
+      { logger }
     );
     ({ client, apiServer, fauxFoundry } = testSetup);
 
@@ -152,16 +153,14 @@ describe("ListQuery autoFetchMore tests", () => {
           pageSize: 20,
           autoFetchMore: 50,
         },
-        listSub,
-      ),
+        listSub
+      )
     );
 
     testStage("Wait for threshold to be met");
     const payload = await waitForPayload(
       listSub,
-      (p) =>
-        p?.status === "loaded"
-        && (p?.resolvedList?.length ?? 0) >= 50,
+      (p) => p?.status === "loaded" && (p?.resolvedList?.length ?? 0) >= 50
     );
 
     testStage("Verify final state meets threshold");
@@ -184,14 +183,14 @@ describe("ListQuery autoFetchMore tests", () => {
           pageSize: 20,
           autoFetchMore: true,
         },
-        listSub,
-      ),
+        listSub
+      )
     );
 
     testStage("Wait for all items to load");
     const payload = await waitForPayload(
       listSub,
-      (p) => p?.status === "loaded" && !(p?.hasMore),
+      (p) => p?.status === "loaded" && !p?.hasMore
     );
 
     testStage("Verify all items fetched");
@@ -212,8 +211,8 @@ describe("ListQuery autoFetchMore tests", () => {
           orderBy: {},
           pageSize: 20,
         },
-        listSub,
-      ),
+        listSub
+      )
     );
 
     testStage("Initial loading state");
@@ -239,7 +238,7 @@ describe("ListQuery autoFetchMore tests", () => {
     setupTodos(fauxFoundry, 100);
 
     testStage(
-      "Setup observation with autoFetchMore: 500 (high threshold), pageSize: 20",
+      "Setup observation with autoFetchMore: 500 (high threshold), pageSize: 20"
     );
     const listSub = mockListSubCallback();
     defer(
@@ -251,14 +250,14 @@ describe("ListQuery autoFetchMore tests", () => {
           pageSize: 20,
           autoFetchMore: 500,
         },
-        listSub,
-      ),
+        listSub
+      )
     );
 
     testStage("Wait for all data despite high threshold");
     const payload = await waitForPayload(
       listSub,
-      (p) => p?.status === "loaded" && !(p?.hasMore),
+      (p) => p?.status === "loaded" && !p?.hasMore
     );
 
     testStage("Verify all available items fetched");
@@ -279,8 +278,8 @@ describe("ListQuery autoFetchMore tests", () => {
           orderBy: { id: "desc" },
           pageSize: 20,
         },
-        listSub,
-      ),
+        listSub
+      )
     );
 
     testStage("Initial loading state");
@@ -324,8 +323,8 @@ describe("ListQuery autoFetchMore tests", () => {
           orderBy: { id: "desc" },
           pageSize: 2,
         },
-        listSub,
-      ),
+        listSub
+      )
     );
 
     testStage("Initial loading state");
@@ -372,8 +371,8 @@ describe("ListQuery autoFetchMore tests", () => {
           rids: [],
           pageSize: 10,
         },
-        listSub,
-      ),
+        listSub
+      )
     );
 
     testStage("Initial loading state");
@@ -403,7 +402,7 @@ describe("ListQuery sort stability across pages", () => {
     const testSetup = startNodeApiServer(
       new FauxFoundry("https://stack.palantir.com/", undefined, { logger }),
       createClient,
-      { logger },
+      { logger }
     );
     ({ client, apiServer, fauxFoundry } = testSetup);
 
@@ -441,8 +440,8 @@ describe("ListQuery sort stability across pages", () => {
           orderBy: { text: "asc" },
           pageSize: 5,
         },
-        listSub,
-      ),
+        listSub
+      )
     );
 
     await waitForCall(listSub.next, 1);
@@ -469,16 +468,7 @@ describe("ListQuery sort stability across pages", () => {
     // serverOrdered skips client re-sort, preserving page order
     expect(payload?.resolvedList?.length).toBe(10);
     expect(payload!.resolvedList!.map((t) => t.id)).toEqual([
-      0,
-      1,
-      2,
-      3,
-      4,
-      5,
-      6,
-      7,
-      8,
-      9,
+      0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
     ]);
   });
 
@@ -506,8 +496,8 @@ describe("ListQuery sort stability across pages", () => {
           orderBy: { text: "asc" },
           pageSize: 4,
         },
-        listSub,
-      ),
+        listSub
+      )
     );
 
     await waitForCall(listSub.next, 1);
@@ -534,14 +524,7 @@ describe("ListQuery sort stability across pages", () => {
     // Page 1 items stay before page 2 items with no interleaving
     expect(payload?.resolvedList?.length).toBe(8);
     expect(payload!.resolvedList!.map((t) => t.id)).toEqual([
-      0,
-      2,
-      4,
-      6,
-      1,
-      3,
-      5,
-      7,
+      0, 2, 4, 6, 1, 3, 5, 7,
     ]);
   });
 
@@ -573,8 +556,8 @@ describe("ListQuery sort stability across pages", () => {
           orderBy: { text: "asc" },
           pageSize: 10,
         },
-        listSub,
-      ),
+        listSub
+      )
     );
 
     // Wait for server load to complete
@@ -625,14 +608,12 @@ describe("ListQuery sort stability across pages", () => {
 
     // Fetch real instances (carry the object metadata used to resolve types).
     const fetched = await Promise.all(
-      rows.map((row) =>
-        client(objectTypeWithAllPropertyTypes).fetchOne(row.id)
-      ),
+      rows.map((row) => client(objectTypeWithAllPropertyTypes).fetchOne(row.id))
     );
 
     async function expectClientOrdered(
       orderByProp: "decimal" | "long",
-      expectedValues: string[],
+      expectedValues: string[]
     ) {
       const listSub = mockListSubCallback();
       defer(
@@ -643,8 +624,8 @@ describe("ListQuery sort stability across pages", () => {
             orderBy: { [orderByProp]: "asc" },
             pageSize: 10,
           },
-          listSub,
-        ),
+          listSub
+        )
       );
 
       await waitForCall(listSub.next, 1);
@@ -662,7 +643,7 @@ describe("ListQuery sort stability across pages", () => {
           where: {},
           orderBy: { [orderByProp]: "asc" },
         },
-        fetched,
+        fetched
       );
 
       await waitForCall(listSub.next, 1);
@@ -677,10 +658,12 @@ describe("ListQuery sort stability across pages", () => {
     // decimal asc: 2 < 9 < 10 < 100
     await expectClientOrdered("decimal", ["2", "9", "10", "100"]);
     // long asc: 42 < 100 < 2^53 < 2^53+1
-    await expectClientOrdered(
-      "long",
-      ["42", "100", "9007199254740992", "9007199254740993"],
-    );
+    await expectClientOrdered("long", [
+      "42",
+      "100",
+      "9007199254740992",
+      "9007199254740993",
+    ]);
   });
 
   it("clientOrdered sorts a DERIVED long property numerically (observeList/useOsdkObjects path)", async () => {
@@ -711,7 +694,7 @@ describe("ListQuery sort stability across pages", () => {
         { __apiName: "objectTypeWithAllPropertyTypes", __primaryKey: id },
         "linkedObjectType",
         { __apiName: "objectTypeWithAllPropertyTypes", __primaryKey: linksTo },
-        "linkedFrom",
+        "linkedFrom"
       );
     }
 
@@ -739,8 +722,8 @@ describe("ListQuery sort stability across pages", () => {
           pageSize: 10,
           withProperties,
         },
-        listSub,
-      ),
+        listSub
+      )
     );
 
     await waitForCall(listSub.next, 1);
@@ -762,7 +745,7 @@ describe("ListQuery sort stability across pages", () => {
       },
       fetched,
       {},
-      { dedupeInterval: 0, withProperties },
+      { dedupeInterval: 0, withProperties }
     );
 
     await waitForCall(listSub.next, 1);
@@ -772,7 +755,7 @@ describe("ListQuery sort stability across pages", () => {
     const resolved = payload!.resolvedList!;
     // Numeric order of the derived long ("100" must sort after "42").
     expect(
-      resolved.map((o) => (o as { derivedLong: string }).derivedLong),
+      resolved.map((o) => (o as { derivedLong: string }).derivedLong)
     ).toEqual(["1", "42", "100", "9007199254740993"]);
   });
 });
@@ -787,7 +770,7 @@ describe("ListQuery pivotTo tests", () => {
     const testSetup = startNodeApiServer(
       new FauxFoundry("https://stack.palantir.com/", undefined, { logger }),
       createClient,
-      { logger },
+      { logger }
     );
     ({ client, apiServer, fauxFoundry } = testSetup);
 
@@ -833,24 +816,15 @@ describe("ListQuery pivotTo tests", () => {
       fullName: "Employee 3",
     });
 
-    fauxFoundry.getDefaultDataStore().registerLink(
-      emp1,
-      "officeLink",
-      officeA,
-      "occupants",
-    );
-    fauxFoundry.getDefaultDataStore().registerLink(
-      emp2,
-      "officeLink",
-      officeA,
-      "occupants",
-    );
-    fauxFoundry.getDefaultDataStore().registerLink(
-      emp3,
-      "officeLink",
-      officeB,
-      "occupants",
-    );
+    fauxFoundry
+      .getDefaultDataStore()
+      .registerLink(emp1, "officeLink", officeA, "occupants");
+    fauxFoundry
+      .getDefaultDataStore()
+      .registerLink(emp2, "officeLink", officeA, "occupants");
+    fauxFoundry
+      .getDefaultDataStore()
+      .registerLink(emp3, "officeLink", officeB, "occupants");
 
     testStage("Observe with pivotTo and where clause filtering on employeeId");
     const listSub = mockListSubCallback();
@@ -862,8 +836,8 @@ describe("ListQuery pivotTo tests", () => {
           orderBy: {},
           pivotTo: "officeLink",
         },
-        listSub,
-      ),
+        listSub
+      )
     );
 
     testStage("Initial loading state");
@@ -920,24 +894,15 @@ describe("ListQuery pivotTo tests", () => {
       fullName: "Employee 3",
     });
 
-    fauxFoundry.getDefaultDataStore().registerLink(
-      emp1,
-      "officeLink",
-      officeA,
-      "occupants",
-    );
-    fauxFoundry.getDefaultDataStore().registerLink(
-      emp2,
-      "officeLink",
-      officeA,
-      "occupants",
-    );
-    fauxFoundry.getDefaultDataStore().registerLink(
-      emp3,
-      "officeLink",
-      officeB,
-      "occupants",
-    );
+    fauxFoundry
+      .getDefaultDataStore()
+      .registerLink(emp1, "officeLink", officeA, "occupants");
+    fauxFoundry
+      .getDefaultDataStore()
+      .registerLink(emp2, "officeLink", officeA, "occupants");
+    fauxFoundry
+      .getDefaultDataStore()
+      .registerLink(emp3, "officeLink", officeB, "occupants");
 
     testStage("Observe with rids for emp1 and emp3, pivotTo officeLink");
     const listSub = mockListSubCallback();
@@ -952,8 +917,8 @@ describe("ListQuery pivotTo tests", () => {
           orderBy: {},
           pivotTo: "officeLink",
         },
-        listSub,
-      ),
+        listSub
+      )
     );
 
     testStage("Initial loading state");
@@ -972,7 +937,7 @@ describe("ListQuery pivotTo tests", () => {
       expect.arrayContaining([
         expect.objectContaining({ officeId: "office-a" }),
         expect.objectContaining({ officeId: "office-b" }),
-      ]),
+      ])
     );
 
     testStage("Verify no additional calls");
@@ -1006,21 +971,15 @@ describe("ListQuery pivotTo tests", () => {
       fullName: "Employee 2",
     });
 
-    fauxFoundry.getDefaultDataStore().registerLink(
-      emp1,
-      "officeLink",
-      officeA,
-      "occupants",
-    );
-    fauxFoundry.getDefaultDataStore().registerLink(
-      emp2,
-      "officeLink",
-      officeB,
-      "occupants",
-    );
+    fauxFoundry
+      .getDefaultDataStore()
+      .registerLink(emp1, "officeLink", officeA, "occupants");
+    fauxFoundry
+      .getDefaultDataStore()
+      .registerLink(emp2, "officeLink", officeB, "occupants");
 
     testStage(
-      "Observe with rids for both employees, where filters to employeeId 1",
+      "Observe with rids for both employees, where filters to employeeId 1"
     );
     const listSub = mockListSubCallback();
     defer(
@@ -1035,8 +994,8 @@ describe("ListQuery pivotTo tests", () => {
           orderBy: {},
           pivotTo: "officeLink",
         },
-        listSub,
-      ),
+        listSub
+      )
     );
 
     testStage("Initial loading state");
@@ -1076,12 +1035,9 @@ describe("ListQuery pivotTo tests", () => {
       fullName: "Employee 1",
     });
 
-    fauxFoundry.getDefaultDataStore().registerLink(
-      emp1,
-      "officeLink",
-      officeA,
-      "occupants",
-    );
+    fauxFoundry
+      .getDefaultDataStore()
+      .registerLink(emp1, "officeLink", officeA, "occupants");
 
     testStage("Observe with empty rids + pivotTo");
     const listSub = mockListSubCallback();
@@ -1093,8 +1049,8 @@ describe("ListQuery pivotTo tests", () => {
           orderBy: {},
           pivotTo: "officeLink",
         },
-        listSub,
-      ),
+        listSub
+      )
     );
 
     testStage("Initial loading state");
@@ -1138,8 +1094,8 @@ describe("ListQuery pivotTo tests", () => {
           orderBy: {},
           pivotTo: "toBar",
         },
-        listSub,
-      ),
+        listSub
+      )
     );
 
     testStage("Initial loading state verifies query construction succeeded");
@@ -1163,12 +1119,9 @@ describe("ListQuery pivotTo tests", () => {
       employeeId: 1,
       fullName: "Employee 1",
     });
-    fauxFoundry.getDefaultDataStore().registerLink(
-      emp,
-      "officeLink",
-      office,
-      "occupants",
-    );
+    fauxFoundry
+      .getDefaultDataStore()
+      .registerLink(emp, "officeLink", office, "occupants");
 
     testStage("Observe object type with pivotTo");
     const listSub = mockListSubCallback();
@@ -1180,8 +1133,8 @@ describe("ListQuery pivotTo tests", () => {
           orderBy: {},
           pivotTo: "officeLink",
         },
-        listSub,
-      ),
+        listSub
+      )
     );
 
     await waitForCall(listSub.next, 1);
@@ -1223,18 +1176,12 @@ describe("ListQuery pivotTo tests", () => {
       fullName: "Employee 2",
     });
 
-    fauxFoundry.getDefaultDataStore().registerLink(
-      emp1,
-      "officeLink",
-      officeA,
-      "occupants",
-    );
-    fauxFoundry.getDefaultDataStore().registerLink(
-      emp2,
-      "officeLink",
-      officeB,
-      "occupants",
-    );
+    fauxFoundry
+      .getDefaultDataStore()
+      .registerLink(emp1, "officeLink", officeA, "occupants");
+    fauxFoundry
+      .getDefaultDataStore()
+      .registerLink(emp2, "officeLink", officeB, "occupants");
 
     testStage("Observe with pivotTo and no where clause");
     const listSub = mockListSubCallback();
@@ -1246,8 +1193,8 @@ describe("ListQuery pivotTo tests", () => {
           orderBy: {},
           pivotTo: "officeLink",
         },
-        listSub,
-      ),
+        listSub
+      )
     );
 
     await waitForCall(listSub.next, 1);
@@ -1260,9 +1207,10 @@ describe("ListQuery pivotTo tests", () => {
 
     testStage("Verify both linked offices are returned");
     expect(payload?.resolvedList).toHaveLength(2);
-    expect(
-      payload?.resolvedList?.map((o) => o.$primaryKey).sort(),
-    ).toEqual(["office-a", "office-b"]);
+    expect(payload?.resolvedList?.map((o) => o.$primaryKey).sort()).toEqual([
+      "office-a",
+      "office-b",
+    ]);
 
     expectNoMoreCalls(listSub);
   });
@@ -1278,7 +1226,7 @@ describe("ListQuery shared query autoFetchMore tests", () => {
     const testSetup = startNodeApiServer(
       new FauxFoundry("https://stack.palantir.com/", undefined, { logger }),
       createClient,
-      { logger },
+      { logger }
     );
     ({ client, apiServer, fauxFoundry } = testSetup);
 
@@ -1307,8 +1255,8 @@ describe("ListQuery shared query autoFetchMore tests", () => {
           orderBy: {},
           pageSize: 20,
         },
-        subA,
-      ),
+        subA
+      )
     );
 
     testStage("A gets initial loading");
@@ -1334,14 +1282,14 @@ describe("ListQuery shared query autoFetchMore tests", () => {
           pageSize: 20,
           autoFetchMore: true,
         },
-        subB,
-      ),
+        subB
+      )
     );
 
     testStage("B should eventually get all 100 items");
     const lastBPayload = await waitForPayload(
       subB,
-      (p) => p?.status === "loaded" && p?.resolvedList?.length === 100,
+      (p) => p?.status === "loaded" && p?.resolvedList?.length === 100
     );
 
     testStage("Verify B got all items");
@@ -1369,8 +1317,8 @@ describe("ListQuery shared query autoFetchMore tests", () => {
           orderBy: {},
           pageSize: 20,
         },
-        subA,
-      ),
+        subA
+      )
     );
 
     testStage("Wait for A to finish loading");
@@ -1392,14 +1340,14 @@ describe("ListQuery shared query autoFetchMore tests", () => {
           pageSize: 20,
           autoFetchMore: 60,
         },
-        subB,
-      ),
+        subB
+      )
     );
 
     testStage("B should get at least 60 items");
     const lastBPayload = await waitForPayload(
       subB,
-      (p) => p?.status === "loaded" && (p?.resolvedList?.length ?? 0) >= 60,
+      (p) => p?.status === "loaded" && (p?.resolvedList?.length ?? 0) >= 60
     );
 
     testStage("Verify B met threshold");
@@ -1420,23 +1368,21 @@ describe("ListQuery shared query autoFetchMore tests", () => {
           pageSize: 20,
           autoFetchMore: true,
         },
-        sub,
-      ),
+        sub
+      )
     );
 
     testStage("Wait for all data to load");
     const lastPayload = await waitForPayload(
       sub,
-      (p) => p?.status === "loaded" && p?.resolvedList?.length === 60,
+      (p) => p?.status === "loaded" && p?.resolvedList?.length === 60
     );
 
     testStage("Verify no status oscillation");
-    const allEmissions = sub.next.mock.calls.map(
-      (call) => ({
-        count: call[0]?.resolvedList?.length ?? 0,
-        status: call[0]?.status,
-      }),
-    );
+    const allEmissions = sub.next.mock.calls.map((call) => ({
+      count: call[0]?.resolvedList?.length ?? 0,
+      status: call[0]?.status,
+    }));
 
     let sawLoadedWithData = false;
     for (const emission of allEmissions) {

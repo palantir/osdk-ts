@@ -21,6 +21,7 @@ import type {
   SelectedPropertyOperation,
 } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
+
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
 import { derivedPropertyDefinitionFactory } from "./derivedPropertyDefinitionFactory.js";
 
@@ -31,29 +32,37 @@ export function createWithPropertiesObjectSet<
   objectType: Q,
   objectSet: WireObjectSet,
   definitionMap: Map<any, DerivedPropertyDefinition>,
-  fromBaseObjectSet: boolean = false,
+  fromBaseObjectSet: boolean = false
 ): DerivedProperty.SelectPropertyBuilder<Q, false> {
   return {
     pivotTo: (link) => {
-      return createWithPropertiesObjectSet(objectType, {
-        type: "searchAround",
-        objectSet,
-        link,
-      }, definitionMap);
+      return createWithPropertiesObjectSet(
+        objectType,
+        {
+          type: "searchAround",
+          objectSet,
+          link,
+        },
+        definitionMap
+      );
     },
     where: (clause) => {
       const rdpNames = new Set(definitionMap.keys());
-      return createWithPropertiesObjectSet(objectType, {
-        type: "filter",
-        objectSet,
-        where: modernToLegacyWhereClause(clause, objectType, rdpNames),
-      }, definitionMap);
+      return createWithPropertiesObjectSet(
+        objectType,
+        {
+          type: "filter",
+          objectSet,
+          where: modernToLegacyWhereClause(clause, objectType, rdpNames),
+        },
+        definitionMap
+      );
     },
     aggregate: (aggregation: string, opt: any) => {
       const splitAggregation = aggregation.split(":");
       invariant(
         splitAggregation.length === 2 || splitAggregation[0] === "$count",
-        "Invalid aggregation format",
+        "Invalid aggregation format"
       );
       const [aggregationPropertyName, aggregationOperation] = splitAggregation;
       let aggregationOperationDefinition: SelectedPropertyOperation;
@@ -73,7 +82,7 @@ export function createWithPropertiesObjectSet<
           aggregationOperationDefinition = {
             type: "approximatePercentile",
             selectedPropertyApiName: aggregationPropertyName,
-            approximatePercentile: opt?.percentile ?? .5,
+            approximatePercentile: opt?.percentile ?? 0.5,
           };
           break;
         case "collectSet":
@@ -94,7 +103,7 @@ export function createWithPropertiesObjectSet<
         default:
           invariant(
             false,
-            "Invalid aggregation operation " + aggregationOperation,
+            "Invalid aggregation operation " + aggregationOperation
           );
       }
       const wrappedObjectSet: DerivedPropertyDefinition = {

@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { AccessRequestRid as _api_AccessRequestRid } from "../../__components.js";
 import type {
   UpdateAccessRequestRequest as _api_accessrequest_UpdateAccessRequestRequest,
@@ -40,12 +41,12 @@ import type {
 export async function updateAccessRequest(
   ctx: ConjureContext,
   accessRequestRid: _api_AccessRequestRid,
-  updateAccessRequest: _api_accessrequest_UpdateAccessRequestRequest,
+  updateAccessRequest: _api_accessrequest_UpdateAccessRequestRequest
 ): Promise<_api_accessrequest_UpdateAccessRequestResponse> {
   return conjureFetch(
     ctx,
     `/ontology/access-request/${accessRequestRid}`,
     "PUT",
-    updateAccessRequest,
+    updateAccessRequest
   );
 }

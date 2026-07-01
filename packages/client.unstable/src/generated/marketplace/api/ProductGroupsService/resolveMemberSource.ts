@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   ResolveMemberSourceRequest as _api_ResolveMemberSourceRequest,
   ResolveMemberSourceResponse as _api_ResolveMemberSourceResponse,
@@ -26,12 +27,12 @@ import type {
  */
 export async function resolveMemberSource(
   ctx: ConjureContext,
-  request: _api_ResolveMemberSourceRequest,
+  request: _api_ResolveMemberSourceRequest
 ): Promise<_api_ResolveMemberSourceResponse> {
   return conjureFetch(
     ctx,
     `/product-groups/membership/resolve-source`,
     "POST",
-    request,
+    request
   );
 }

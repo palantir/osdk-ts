@@ -15,10 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BlockSetInstallationRid as _api_BlockSetInstallationRid,
-  GetInstallAutomationSettingsResponse
-    as _api_GetInstallAutomationSettingsResponse,
+  GetInstallAutomationSettingsResponse as _api_GetInstallAutomationSettingsResponse,
 } from "../__components.js";
 
 /**
@@ -27,11 +27,11 @@ import type {
  */
 export async function getInstallAutomationSettings(
   ctx: ConjureContext,
-  blockSetInstallationRid: _api_BlockSetInstallationRid,
+  blockSetInstallationRid: _api_BlockSetInstallationRid
 ): Promise<_api_GetInstallAutomationSettingsResponse> {
   return conjureFetch(
     ctx,
     `/automation/settings/block-set-installations/${blockSetInstallationRid}`,
-    "GET",
+    "GET"
   );
 }

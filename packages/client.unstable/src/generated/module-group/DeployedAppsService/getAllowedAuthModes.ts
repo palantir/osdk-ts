@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { ComputeModuleAuthMode as _ComputeModuleAuthMode } from "../__components.js";
 
 /**
@@ -22,11 +23,11 @@ import type { ComputeModuleAuthMode as _ComputeModuleAuthMode } from "../__compo
  */
 export async function getAllowedAuthModes(
   ctx: ConjureContext,
-  deployedAppRid: string,
+  deployedAppRid: string
 ): Promise<Array<_ComputeModuleAuthMode>> {
   return conjureFetch(
     ctx,
     `/deployed-apps/${deployedAppRid}/allowed-auth-modes`,
-    "GET",
+    "GET"
   );
 }

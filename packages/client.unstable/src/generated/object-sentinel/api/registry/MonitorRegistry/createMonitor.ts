@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   CreateMonitorRequest as _api_registry_CreateMonitorRequest,
   CreateMonitorResponse as _api_registry_CreateMonitorResponse,
@@ -32,7 +33,7 @@ import type {
  */
 export async function createMonitor(
   ctx: ConjureContext,
-  request: _api_registry_CreateMonitorRequest,
+  request: _api_registry_CreateMonitorRequest
 ): Promise<_api_registry_CreateMonitorResponse> {
   return conjureFetch(ctx, `/registry/v0/monitors`, "POST", request);
 }

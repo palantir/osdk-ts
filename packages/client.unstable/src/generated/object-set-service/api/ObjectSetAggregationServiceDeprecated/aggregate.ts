@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   AggregateRequest as _api_AggregateRequest,
   AggregateResponse as _api_AggregateResponse,
@@ -27,7 +28,7 @@ import type {
 export async function aggregate(
   ctx: ConjureContext,
   request: _api_AggregateRequest,
-  backend: _api_Backend | null | undefined,
+  backend: _api_Backend | null | undefined
 ): Promise<_api_AggregateResponse> {
   return conjureFetch(ctx, `/aggregate`, "POST", request);
 }

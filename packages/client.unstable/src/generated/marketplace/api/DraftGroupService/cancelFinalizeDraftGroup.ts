@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   CancelFinalizeDraftGroupRequest as _api_CancelFinalizeDraftGroupRequest,
   CancelFinalizeDraftGroupResponse as _api_CancelFinalizeDraftGroupResponse,
@@ -37,12 +38,12 @@ import type {
 export async function cancelFinalizeDraftGroup(
   ctx: ConjureContext,
   draftGroupRid: _api_DraftGroupRid,
-  request: _api_CancelFinalizeDraftGroupRequest,
+  request: _api_CancelFinalizeDraftGroupRequest
 ): Promise<_api_CancelFinalizeDraftGroupResponse> {
   return conjureFetch(
     ctx,
     `/draft-groups/${draftGroupRid}/finalize/cancel`,
     "POST",
-    request,
+    request
   );
 }

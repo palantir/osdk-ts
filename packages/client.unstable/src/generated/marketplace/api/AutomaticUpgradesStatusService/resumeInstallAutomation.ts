@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BlockSetInstallationRid as _api_BlockSetInstallationRid,
   Void as _api_Void,
@@ -26,11 +27,11 @@ import type {
  */
 export async function resumeInstallAutomation(
   ctx: ConjureContext,
-  blockSetInstallationRid: _api_BlockSetInstallationRid,
+  blockSetInstallationRid: _api_BlockSetInstallationRid
 ): Promise<_api_Void> {
   return conjureFetch(
     ctx,
     `/automation/status/block-set-installations/${blockSetInstallationRid}/resume`,
-    "POST",
+    "POST"
   );
 }

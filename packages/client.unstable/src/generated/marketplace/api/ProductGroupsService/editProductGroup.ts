@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   EditProductGroupRequest as _api_EditProductGroupRequest,
   EditProductGroupResponse as _api_EditProductGroupResponse,
@@ -27,12 +28,12 @@ import type {
 export async function editProductGroup(
   ctx: ConjureContext,
   productGroupRid: _api_ProductGroupRid,
-  request: _api_EditProductGroupRequest,
+  request: _api_EditProductGroupRequest
 ): Promise<_api_EditProductGroupResponse> {
   return conjureFetch(
     ctx,
     `/product-groups/${productGroupRid}`,
     "PUT",
-    request,
+    request
   );
 }

@@ -29,12 +29,9 @@ export interface ActionType {
 export interface AnonymousCustomType {
   fields: Record<CustomTypeFieldName, DataType>;
 }
-export interface AttachmentType {
-}
-export interface BinaryType {
-}
-export interface BooleanType {
-}
+export interface AttachmentType {}
+export interface BinaryType {}
+export interface BooleanType {}
 export type BooleanValue = boolean;
 export interface BucketKeyType_double {
   type: "double";
@@ -98,10 +95,8 @@ export type BucketValueType =
   | BucketValueType_timestamp
   | BucketValueType_date;
 
-export interface ByteType {
-}
-export interface ClassificationMarkingType {
-}
+export interface ByteType {}
+export interface ClassificationMarkingType {}
 export interface CustomType {
   about?: _api_LocalizedTitleAndDescription | null | undefined;
   fields: Record<CustomTypeFieldName, DataType>;
@@ -359,34 +354,27 @@ export type DataType =
   | DataType_typeReference
   | DataType_union;
 
-export interface DateType {
-}
+export interface DateType {}
 export type DateValue = string;
-export interface DecimalType {
-}
-export interface DoubleType {
-}
+export interface DecimalType {}
+export interface DoubleType {}
 export type DoubleValue = number | "NaN" | "Infinity" | "-Infinity";
 
 /**
  * This indicates an enum time series definition.
  */
-export interface EnumTimeSeriesType {
-}
-export interface FloatType {
-}
+export interface EnumTimeSeriesType {}
+export interface FloatType {}
 export type FloatValue = number | "NaN" | "Infinity" | "-Infinity";
 
 /**
  * An array of GeoShape types that may contain shapes of any kind.
  */
-export interface GeometryCollectionType {
-}
+export interface GeometryCollectionType {}
 /**
  * Represents a single geographic point.
  */
-export interface GeoPointType {
-}
+export interface GeoPointType {}
 export interface GeoShapeSubType_geoPoint {
   type: "geoPoint";
   geoPoint: GeoPointType;
@@ -439,11 +427,9 @@ export interface GeoShapeType {
 /**
  * Represents a multipass group object.
  */
-export interface GroupType {
-}
+export interface GroupType {}
 export type InputName = string;
-export interface IntegerType {
-}
+export interface IntegerType {}
 export type IntegerValue = number;
 export interface InterfaceObjectSetType {
   interfaceTypeReference: _api_InterfaceTypeReference;
@@ -454,8 +440,7 @@ export interface InterfaceType {
 /**
  * Represents a line made of two or more points.
  */
-export interface LineStringType {
-}
+export interface LineStringType {}
 export interface ListType {
   elementsType: DataType;
 }
@@ -469,11 +454,9 @@ export interface LogicalTypeReference_ontologyTypeRegistryReference {
 export type LogicalTypeReference =
   LogicalTypeReference_ontologyTypeRegistryReference;
 
-export interface LongType {
-}
+export interface LongType {}
 export type LongValue = number;
-export interface MandatoryMarkingType {
-}
+export interface MandatoryMarkingType {}
 export interface MapType {
   keysType: DataType;
   valuesType: DataType;
@@ -494,25 +477,20 @@ export type MarkingSubType =
 export interface MarkingType {
   subType: MarkingSubType;
 }
-export interface MediaReferenceType {
-}
-export interface ModelGraphType {
-}
+export interface MediaReferenceType {}
+export interface ModelGraphType {}
 /**
  * An array of unconnected, but likely related points.
  */
-export interface MultiGeoPointType {
-}
+export interface MultiGeoPointType {}
 /**
  * An array of linestrings.
  */
-export interface MultiLineStringType {
-}
+export interface MultiLineStringType {}
 /**
  * An array of polygons.
  */
-export interface MultiPolygonType {
-}
+export interface MultiPolygonType {}
 export interface NestedBucketType {
   keyType: BucketKeyType;
   subBucketType: SingleBucketType;
@@ -520,13 +498,11 @@ export interface NestedBucketType {
 /**
  * Represents a Foundry notification
  */
-export interface NotificationType {
-}
+export interface NotificationType {}
 /**
  * This indicates a numeric time series definition.
  */
-export interface NumericTimeSeriesType {
-}
+export interface NumericTimeSeriesType {}
 export interface ObjectLocatorValue {
   primaryKey: ObjectPrimaryKey;
   typeId: _api_ObjectTypeReference;
@@ -546,8 +522,7 @@ export interface ObjectSetType {
 export interface ObjectType {
   objectTypeId: _api_ObjectTypeReference;
 }
-export interface OntologyEditType {
-}
+export interface OntologyEditType {}
 export interface OptionalType {
   wrappedType: DataType;
 }
@@ -556,13 +531,11 @@ export type OutputName = string;
 /**
  * Represents a an arbitrary n sided polygon with n+1 GeoPoints.
  */
-export interface PolygonType {
-}
+export interface PolygonType {}
 /**
  * Represents a multipass principal object.
  */
-export interface PrincipalType {
-}
+export interface PrincipalType {}
 export interface RangeType_integer {
   type: "integer";
   integer: IntegerType;
@@ -594,14 +567,12 @@ export interface SetType {
 export interface SetValue {
   values: Array<Value>;
 }
-export interface ShortType {
-}
+export interface ShortType {}
 export interface SingleBucketType {
   keyType: BucketKeyType;
   valueType: BucketValueType;
 }
-export interface StringType {
-}
+export interface StringType {}
 export type StringValue = string;
 export interface ThreeDimensionalAggregationType {
   nestedBucketType: NestedBucketType;
@@ -622,8 +593,7 @@ export type TimeSeriesValueType =
   | TimeSeriesValueType_numeric
   | TimeSeriesValueType_enum;
 
-export interface TimestampType {
-}
+export interface TimestampType {}
 export type TimestampValue = string;
 export interface TwoDimensionalAggregationType {
   bucketType: SingleBucketType;
@@ -642,8 +612,7 @@ export interface UnionType {
 /**
  * Represents a multipass user object.
  */
-export interface UserType {
-}
+export interface UserType {}
 export interface Value_boolean {
   type: "boolean";
   boolean: BooleanValue;

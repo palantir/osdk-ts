@@ -16,6 +16,7 @@
 
 import type { LoadObjectSetRequestV2 } from "@osdk/foundry.ontologies";
 import { type MockedFunction, vi } from "vitest";
+
 import { createMinimalClient } from "../createMinimalClient.js";
 import type { MinimalClientParams } from "../MinimalClientContext.js";
 
@@ -29,7 +30,7 @@ import type { MinimalClientParams } from "../MinimalClientContext.js";
  *   (typically via {@link getLastObjectSetRequest}).
  */
 export function createMockCaptureClient(
-  metadata: MinimalClientParams["metadata"] = { ontologyRid: "unset" },
+  metadata: MinimalClientParams["metadata"] = { ontologyRid: "unset" }
 ) {
   const fetchFn = vi.fn() as MockedFunction<typeof globalThis.fetch>;
   fetchFn.mockResolvedValue({
@@ -42,7 +43,7 @@ export function createMockCaptureClient(
     "https://foo",
     async () => "",
     {},
-    fetchFn,
+    fetchFn
   );
   return { client, fetchFn };
 }
@@ -58,7 +59,7 @@ export function createMockCaptureClient(
  * @returns the parsed request body, or `undefined` if no object-set request was sent
  */
 export function getLastObjectSetRequest(
-  fetchFn: MockedFunction<typeof globalThis.fetch>,
+  fetchFn: MockedFunction<typeof globalThis.fetch>
 ): LoadObjectSetRequestV2 | undefined {
   const requestBody = fetchFn.mock.calls.reduceRight<string | undefined>(
     (acc, cur) => {
@@ -68,7 +69,7 @@ export function getLastObjectSetRequest(
         return body;
       }
     },
-    undefined,
+    undefined
   );
   if (!requestBody) return undefined;
   return JSON.parse(requestBody);

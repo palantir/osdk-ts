@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   ActionTypeModifyRequest as _api_ActionTypeModifyRequest,
   ActionTypeModifyResponse as _api_ActionTypeModifyResponse,
@@ -27,7 +28,7 @@ import type {
 export async function modifyActionTypes(
   ctx: ConjureContext,
   ontologyRid: _api_OntologyRid | null | undefined,
-  request: _api_ActionTypeModifyRequest,
+  request: _api_ActionTypeModifyRequest
 ): Promise<_api_ActionTypeModifyResponse> {
   return conjureFetch(ctx, `/actions/types/modify`, "POST", request, {
     ontologyRid,

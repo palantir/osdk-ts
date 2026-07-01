@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { ApplicationRid } from "../ApplicationRid.js";
 import type { CreateApiTokenRequest } from "../CreateApiTokenRequest.js";
 
@@ -27,12 +28,12 @@ import type { CreateApiTokenRequest } from "../CreateApiTokenRequest.js";
 export async function createApiToken(
   ctx: ConjureContext,
   applicationRid: ApplicationRid,
-  request: CreateApiTokenRequest,
+  request: CreateApiTokenRequest
 ): Promise<string> {
   return conjureFetch(
     ctx,
     `/application-tokens/${applicationRid}`,
     "POST",
-    request,
+    request
   );
 }

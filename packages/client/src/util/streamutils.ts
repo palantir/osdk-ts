@@ -19,7 +19,7 @@ const OBJECT_OPEN_CHAR_CODE = 123; // '{'
 const OBJECT_CLOSE_CHAR_CODE = 125; // '}'
 
 export async function* parseStreamedResponse(
-  asyncIterable: AsyncIterable<Uint8Array>,
+  asyncIterable: AsyncIterable<Uint8Array>
 ): AsyncGenerator<any, void, unknown> {
   const utf8decoder = new TextDecoder("utf-8");
 
@@ -40,8 +40,9 @@ export async function* parseStreamedResponse(
     for (; i < chunk.length; i++) {
       // if we aren't currently parsing an object, skip until we find the next object start
       while (
-        openBracesCount === 0 && chunk[i] !== OBJECT_OPEN_CHAR_CODE
-        && i < chunk.length
+        openBracesCount === 0 &&
+        chunk[i] !== OBJECT_OPEN_CHAR_CODE &&
+        i < chunk.length
       ) {
         i++;
       }
@@ -60,7 +61,7 @@ export async function* parseStreamedResponse(
             yield combineAndParse(
               utf8decoder,
               prevChunks,
-              chunk.subarray(i, j + 1),
+              chunk.subarray(i, j + 1)
             );
 
             // if there was a prevChunk, we've consumed it now
@@ -101,7 +102,7 @@ function startsWith(a: Uint8Array, b: Uint8Array) {
 function combineAndParse(
   utf8decoder: TextDecoder,
   prev: Uint8Array[],
-  curr: Uint8Array,
+  curr: Uint8Array
 ) {
   let str = "";
   for (const chunk of prev) {
@@ -113,7 +114,7 @@ function combineAndParse(
 }
 
 export async function* iterateReadableStream(
-  readableStream: ReadableStreamDefaultReader<Uint8Array>,
+  readableStream: ReadableStreamDefaultReader<Uint8Array>
 ): AsyncGenerator<Uint8Array, void, unknown> {
   let res = await readableStream.read();
   while (!res.done) {
@@ -123,7 +124,7 @@ export async function* iterateReadableStream(
 }
 
 export async function* parseNdjsonStream(
-  asyncIterable: AsyncIterable<Uint8Array>,
+  asyncIterable: AsyncIterable<Uint8Array>
 ): AsyncGenerator<any, void, unknown> {
   const decoder = new TextDecoder("utf-8");
   let buffer = "";

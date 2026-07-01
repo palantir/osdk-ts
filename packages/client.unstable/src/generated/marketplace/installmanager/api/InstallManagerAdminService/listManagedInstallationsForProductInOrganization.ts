@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   MavenProductId as _api_MavenProductId,
   OrganizationRid as _api_OrganizationRid,
@@ -30,13 +31,11 @@ import type { ListManagedInstallationsForProductInOrganizationResponse as _insta
 export async function listManagedInstallationsForProductInOrganization(
   ctx: ConjureContext,
   organizationRid: _api_OrganizationRid,
-  productId: _api_MavenProductId,
-): Promise<
-  _installmanager_api_ListManagedInstallationsForProductInOrganizationResponse
-> {
+  productId: _api_MavenProductId
+): Promise<_installmanager_api_ListManagedInstallationsForProductInOrganizationResponse> {
   return conjureFetch(
     ctx,
     `/install-manager-admin/organization/${organizationRid}/product-id/${productId}/installations/list`,
-    "POST",
+    "POST"
   );
 }

@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { ApplicationRid } from "../ApplicationRid.js";
 import type { GetRequestDurationMetricsRequest } from "../GetRequestDurationMetricsRequest.js";
 import type { GetRequestDurationMetricsResponse } from "../GetRequestDurationMetricsResponse.js";
@@ -30,12 +31,12 @@ import type { GetRequestDurationMetricsResponse } from "../GetRequestDurationMet
 export async function getRequestDurationMetrics(
   ctx: ConjureContext,
   applicationRid: ApplicationRid,
-  request: GetRequestDurationMetricsRequest,
+  request: GetRequestDurationMetricsRequest
 ): Promise<GetRequestDurationMetricsResponse> {
   return conjureFetch(
     ctx,
     `/application-metrics/${applicationRid}/requestDurationMetrics`,
     "PUT",
-    request,
+    request
   );
 }

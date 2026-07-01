@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BranchRid as _api_BranchRid,
   MonitorRid as _api_MonitorRid,
@@ -28,13 +29,13 @@ import type { GetEvaluationInformationResponse as _api_metrics_GetEvaluationInfo
 export async function getEvaluationInformation(
   ctx: ConjureContext,
   monitorRid: _api_MonitorRid,
-  branchRid: _api_BranchRid | null | undefined,
+  branchRid: _api_BranchRid | null | undefined
 ): Promise<_api_metrics_GetEvaluationInformationResponse> {
   return conjureFetch(
     ctx,
     `/monitorMetrics/evaluationInformation/${monitorRid}`,
     "GET",
     undefined,
-    { branchRid },
+    { branchRid }
   );
 }

@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   CompassProjectRid as _api_CompassProjectRid,
   ReleaseRid as _api_ReleaseRid,
@@ -39,13 +40,13 @@ export async function updateDraft(
   ctx: ConjureContext,
   releaseRid: _api_ReleaseRid,
   compassProject: _api_CompassProjectRid,
-  request: _release_api_UpdateDraftRequest,
+  request: _release_api_UpdateDraftRequest
 ): Promise<_release_api_UpdateDraftResponse> {
   return conjureFetch(
     ctx,
     `/releases/update/${releaseRid}/update-draft`,
     "POST",
     request,
-    { compassProject },
+    { compassProject }
   );
 }

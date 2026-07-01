@@ -38,7 +38,10 @@
     "packages/react/",
     "packages/react-devtools/",
     "packages/react-components-storybook/",
-    "packages/react-components/"
+    "packages/react-components/",
+    "packages/client.unstable/",
+    "packages/client.unstable.tpsa/",
+    "packages/client/"
   ],
   "plugins": [
     "https://plugins.dprint.dev/typescript-0.90.4.wasm",

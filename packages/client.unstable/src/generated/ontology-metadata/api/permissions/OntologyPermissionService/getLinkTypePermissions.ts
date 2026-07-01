@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { LinkTypeRid as _api_LinkTypeRid } from "../../__components.js";
 import type { GetLinkTypePermissionsResponse as _api_permissions_GetLinkTypePermissionsResponse } from "../__components.js";
 
@@ -23,7 +24,7 @@ import type { GetLinkTypePermissionsResponse as _api_permissions_GetLinkTypePerm
  */
 export async function getLinkTypePermissions(
   ctx: ConjureContext,
-  linkTypeRid: _api_LinkTypeRid,
+  linkTypeRid: _api_LinkTypeRid
 ): Promise<_api_permissions_GetLinkTypePermissionsResponse> {
   return conjureFetch(ctx, `/permissions/linkType/${linkTypeRid}`, "GET");
 }

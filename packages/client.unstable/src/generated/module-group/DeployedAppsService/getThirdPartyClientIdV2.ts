@@ -15,14 +15,15 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { ComputeModuleThirdParty as _ComputeModuleThirdParty } from "../__components.js";
 export async function getThirdPartyClientIdV2(
   ctx: ConjureContext,
-  deployedAppRid: string,
+  deployedAppRid: string
 ): Promise<_ComputeModuleThirdParty | null | undefined> {
   return conjureFetch(
     ctx,
     `/deployed-apps/${deployedAppRid}/client-id/v2`,
-    "GET",
+    "GET"
   );
 }

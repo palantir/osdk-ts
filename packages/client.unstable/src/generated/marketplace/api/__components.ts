@@ -210,8 +210,7 @@ export interface ActionParameterTypeShape {
 /**
  * The referenced ActionParameterTypeShape was not present in the block metadata.
  */
-export interface ActionParameterTypeShapeNotFound {
-}
+export interface ActionParameterTypeShapeNotFound {}
 /**
  * The type of the actual ActionParameterTypeShape does not match the expected type.
  */
@@ -464,45 +463,36 @@ export interface AndExpressionIdentifier {
 /**
  * A parameter constraint type requiring an interface object set without specifying the interface type.
  */
-export interface AnyInterfaceObjectSetRidType {
-}
+export interface AnyInterfaceObjectSetRidType {}
 /**
  * A parameter constraint type requiring a list of interface references without specifying the interface type.
  */
-export interface AnyInterfaceReferenceListType {
-}
+export interface AnyInterfaceReferenceListType {}
 /**
  * A parameter constraint type requiring an interface reference without specifying the interface type.
  */
-export interface AnyInterfaceReferenceType {
-}
+export interface AnyInterfaceReferenceType {}
 /**
  * A parameter constraint type requiring a list of object references without specifying the object type.
  */
-export interface AnyObjectReferenceListType {
-}
+export interface AnyObjectReferenceListType {}
 /**
  * A parameter constraint type requiring an object reference without specifying the object type.
  */
-export interface AnyObjectReferenceType {
-}
+export interface AnyObjectReferenceType {}
 /**
  * A parameter constraint type requiring an object set without specifying the object type.
  */
-export interface AnyObjectSetRidType {
-}
-export interface AnySchema {
-}
+export interface AnyObjectSetRidType {}
+export interface AnySchema {}
 /**
  * A parameter constraint type requiring a list of structs without specifying the struct field definitions.
  */
-export interface AnyStructListType {
-}
+export interface AnyStructListType {}
 /**
  * A parameter constraint type requiring a struct without specifying the struct field definitions.
  */
-export interface AnyStructType {
-}
+export interface AnyStructType {}
 export interface ApiNameResolver {
   apiName: string;
 }
@@ -769,15 +759,13 @@ export interface AttachedOutputCreatedInAnotherInstallation {
  * When attaching outputs for a block, all outputs of the block must be attached. Partial attachment of a block's
  * outputs is not supported.
  */
-export interface AttachedOutputShapeNotSpecified {
-}
+export interface AttachedOutputShapeNotSpecified {}
 export type AttachmentId = string;
 
 /**
  * AttachmentListType specifies that this parameter must be a list of Attachment rids.
  */
-export interface AttachmentListType {
-}
+export interface AttachmentListType {}
 export interface AttachmentMetadata {
   filename: Filename;
   id: AttachmentId;
@@ -786,15 +774,13 @@ export interface AttachmentMetadata {
 /**
  * AttachmentType specifies that this parameter must be the rid of an Attachment.
  */
-export interface AttachmentType {
-}
+export interface AttachmentType {}
 export interface AttachResourcesNotSupportedForBlockType {
   attachedOutputShapeIds: Array<BlockShapeId>;
 }
 export interface AttachResourceValidationErrors_attachResourcesNotSupportedForBlockType {
   type: "attachResourcesNotSupportedForBlockType";
-  attachResourcesNotSupportedForBlockType:
-    AttachResourcesNotSupportedForBlockType;
+  attachResourcesNotSupportedForBlockType: AttachResourcesNotSupportedForBlockType;
 }
 export type AttachResourceValidationErrors =
   AttachResourceValidationErrors_attachResourcesNotSupportedForBlockType;
@@ -886,16 +872,14 @@ export interface AuthoringLibraryShape {
  * publish both jobspecs and libraries
  */
 export interface AuthoringRepositoryCreateBlockRequest {
-  environmentIdentificationMethod:
-    AuthoringRepositoryEnvironmentIdentificationMethod;
+  environmentIdentificationMethod: AuthoringRepositoryEnvironmentIdentificationMethod;
   repositoryRid: AuthoringRepositoryRid;
   sourceCodePackaging?: RepositorySourceCodePackagingType | null | undefined;
 }
 export interface AuthoringRepositoryCreateBlockRequestV2 {
   commitish?: string | null | undefined;
   enableRedaction?: boolean | null | undefined;
-  environmentIdentificationMethod:
-    AuthoringRepositoryEnvironmentIdentificationMethodV2;
+  environmentIdentificationMethod: AuthoringRepositoryEnvironmentIdentificationMethodV2;
   repositoryRid: AuthoringRepositoryRid;
   sourceCodePackaging: RepositorySourceCodePackagingType;
   templatizeSourceCode?: boolean | null | undefined;
@@ -1651,8 +1635,7 @@ export interface BatchUpdatePendingBlockSetVersionMetadataRequestItemV3 {
 export interface BatchUpdatePendingBlockSetVersionMetadataRequestV3 {
   requests: Array<BatchUpdatePendingBlockSetVersionMetadataRequestItemV3>;
 }
-export interface BatchUpdatePendingBlockSetVersionMetadataResponseV3 {
-}
+export interface BatchUpdatePendingBlockSetVersionMetadataResponseV3 {}
 /**
  * Updates metadata for multiple pending input block set shapes in a single request.
  * All updates are applied atomically in a single transaction.
@@ -1660,8 +1643,7 @@ export interface BatchUpdatePendingBlockSetVersionMetadataResponseV3 {
 export interface BatchUpdatePendingInputShapeMetadataRequest {
   updates: Record<InputBlockSetShapeId, UpdatePendingInputShapeMetadataRequest>;
 }
-export interface BatchUpdatePendingInputShapeMetadataResponse {
-}
+export interface BatchUpdatePendingInputShapeMetadataResponse {}
 export interface BlobsterCreateBlockRequest {
   rid: string;
 }
@@ -1789,14 +1771,12 @@ export interface BlockInstallActionParameterTypeShapeError_shapeTypeMismatch {
 
 export interface BlockInstallActionParameterTypeShapeError_shapeTypeObjectTypeIdUnresolvable {
   type: "shapeTypeObjectTypeIdUnresolvable";
-  shapeTypeObjectTypeIdUnresolvable:
-    ActionParameterShapeTypeObjectTypeIdUnresolvable;
+  shapeTypeObjectTypeIdUnresolvable: ActionParameterShapeTypeObjectTypeIdUnresolvable;
 }
 
 export interface BlockInstallActionParameterTypeShapeError_shapeTypeInterfaceTypeRidUnresolvable {
   type: "shapeTypeInterfaceTypeRidUnresolvable";
-  shapeTypeInterfaceTypeRidUnresolvable:
-    ActionParameterShapeTypeInterfaceTypeRidUnresolvable;
+  shapeTypeInterfaceTypeRidUnresolvable: ActionParameterShapeTypeInterfaceTypeRidUnresolvable;
 }
 
 export interface BlockInstallActionParameterTypeShapeError_shapeTypeUnknown {
@@ -1822,14 +1802,12 @@ export interface BlockInstallActionTypeParameterShapeErrorV2_shapeTypeMismatch {
 
 export interface BlockInstallActionTypeParameterShapeErrorV2_shapeTypeObjectTypeIdUnresolvable {
   type: "shapeTypeObjectTypeIdUnresolvable";
-  shapeTypeObjectTypeIdUnresolvable:
-    ActionParameterShapeTypeObjectTypeIdUnresolvable;
+  shapeTypeObjectTypeIdUnresolvable: ActionParameterShapeTypeObjectTypeIdUnresolvable;
 }
 
 export interface BlockInstallActionTypeParameterShapeErrorV2_shapeTypeInterfaceTypeRidUnresolvable {
   type: "shapeTypeInterfaceTypeRidUnresolvable";
-  shapeTypeInterfaceTypeRidUnresolvable:
-    ActionParameterShapeTypeInterfaceTypeRidUnresolvable;
+  shapeTypeInterfaceTypeRidUnresolvable: ActionParameterShapeTypeInterfaceTypeRidUnresolvable;
 }
 
 export interface BlockInstallActionTypeParameterShapeErrorV2_shapeTypeUnknown {
@@ -2005,14 +1983,12 @@ export interface BlockInstallConnectionNotFoundError {
 /**
  * The connection on the input shape references a different magritteSource than the one on the resolved shape.
  */
-export interface BlockInstallConnectionReferenceMismatchError {
-}
+export interface BlockInstallConnectionReferenceMismatchError {}
 /**
  * The connection on the input shape cannot be matched with the connection on the resolved shape.
  * This is typical if the referenced Magritte source source has not been included as an input to the block.
  */
-export interface BlockInstallConnectionReferenceUnresolvableError {
-}
+export interface BlockInstallConnectionReferenceUnresolvableError {}
 export interface BlockInstallError_installFailure {
   type: "installFailure";
   installFailure: BlockInstallFailure;
@@ -2115,32 +2091,27 @@ export interface BlockInstallFunctionShapeError_doesNotSatisfyContractExpression
 
 export interface BlockInstallFunctionShapeError_customTypeDataTypeActionTypeReferencesUnsupported {
   type: "customTypeDataTypeActionTypeReferencesUnsupported";
-  customTypeDataTypeActionTypeReferencesUnsupported:
-    FunctionCustomTypeDataTypeActionTypeReferencesNotSupported;
+  customTypeDataTypeActionTypeReferencesUnsupported: FunctionCustomTypeDataTypeActionTypeReferencesNotSupported;
 }
 
 export interface BlockInstallFunctionShapeError_customTypeDataTypeCustomTypeNotFound {
   type: "customTypeDataTypeCustomTypeNotFound";
-  customTypeDataTypeCustomTypeNotFound:
-    FunctionCustomTypeDataTypeCustomTypeNotFound;
+  customTypeDataTypeCustomTypeNotFound: FunctionCustomTypeDataTypeCustomTypeNotFound;
 }
 
 export interface BlockInstallFunctionShapeError_customTypeDataTypeInterfaceTypeUnresolvable {
   type: "customTypeDataTypeInterfaceTypeUnresolvable";
-  customTypeDataTypeInterfaceTypeUnresolvable:
-    FunctionCustomTypeDataTypeInterfaceTypeUnresolvable;
+  customTypeDataTypeInterfaceTypeUnresolvable: FunctionCustomTypeDataTypeInterfaceTypeUnresolvable;
 }
 
 export interface BlockInstallFunctionShapeError_customTypeDataTypeMarkingSubTypeUnknown {
   type: "customTypeDataTypeMarkingSubTypeUnknown";
-  customTypeDataTypeMarkingSubTypeUnknown:
-    FunctionCustomTypeDataTypeMarkingSubTypeUnknown;
+  customTypeDataTypeMarkingSubTypeUnknown: FunctionCustomTypeDataTypeMarkingSubTypeUnknown;
 }
 
 export interface BlockInstallFunctionShapeError_customTypeDataTypeObjectTypeUnresolvable {
   type: "customTypeDataTypeObjectTypeUnresolvable";
-  customTypeDataTypeObjectTypeUnresolvable:
-    FunctionCustomTypeDataTypeObjectTypeUnresolvable;
+  customTypeDataTypeObjectTypeUnresolvable: FunctionCustomTypeDataTypeObjectTypeUnresolvable;
 }
 
 export interface BlockInstallFunctionShapeError_customTypeDataTypeUnknown {
@@ -2170,14 +2141,12 @@ export interface BlockInstallFunctionShapeError_incompatibleContractSemverNonBlo
 
 export interface BlockInstallFunctionShapeError_inputDataTypeActionTypeReferencesUnsupported {
   type: "inputDataTypeActionTypeReferencesUnsupported";
-  inputDataTypeActionTypeReferencesUnsupported:
-    FunctionInputDataTypeActionTypeReferencesUnsupported;
+  inputDataTypeActionTypeReferencesUnsupported: FunctionInputDataTypeActionTypeReferencesUnsupported;
 }
 
 export interface BlockInstallFunctionShapeError_inputDataTypeActionTypeReferencesUnsupportedV2 {
   type: "inputDataTypeActionTypeReferencesUnsupportedV2";
-  inputDataTypeActionTypeReferencesUnsupportedV2:
-    FunctionInputDataTypeActionTypeReferencesUnsupportedV2;
+  inputDataTypeActionTypeReferencesUnsupportedV2: FunctionInputDataTypeActionTypeReferencesUnsupportedV2;
 }
 
 export interface BlockInstallFunctionShapeError_inputDataTypeCustomTypeNotFound {
@@ -2192,20 +2161,17 @@ export interface BlockInstallFunctionShapeError_inputDataTypeCustomTypeNotFoundV
 
 export interface BlockInstallFunctionShapeError_inputDataTypeInterfaceTypeUnresolvable {
   type: "inputDataTypeInterfaceTypeUnresolvable";
-  inputDataTypeInterfaceTypeUnresolvable:
-    FunctionInputDataTypeInterfaceTypeRidUnresolvable;
+  inputDataTypeInterfaceTypeUnresolvable: FunctionInputDataTypeInterfaceTypeRidUnresolvable;
 }
 
 export interface BlockInstallFunctionShapeError_inputDataTypeMarkingSubTypeUnknown {
   type: "inputDataTypeMarkingSubTypeUnknown";
-  inputDataTypeMarkingSubTypeUnknown:
-    FunctionInputDataTypeMarkingSubTypeUnknown;
+  inputDataTypeMarkingSubTypeUnknown: FunctionInputDataTypeMarkingSubTypeUnknown;
 }
 
 export interface BlockInstallFunctionShapeError_inputDataTypeMarkingSubTypeUnknownV2 {
   type: "inputDataTypeMarkingSubTypeUnknownV2";
-  inputDataTypeMarkingSubTypeUnknownV2:
-    FunctionInputDataTypeMarkingSubTypeUnknownV2;
+  inputDataTypeMarkingSubTypeUnknownV2: FunctionInputDataTypeMarkingSubTypeUnknownV2;
 }
 
 export interface BlockInstallFunctionShapeError_inputDataTypeMismatch {
@@ -2220,14 +2186,12 @@ export interface BlockInstallFunctionShapeError_inputDataTypeMismatchV2 {
 
 export interface BlockInstallFunctionShapeError_inputDataTypeObjectTypeUnresolvable {
   type: "inputDataTypeObjectTypeUnresolvable";
-  inputDataTypeObjectTypeUnresolvable:
-    FunctionInputDataTypeObjectTypeIdUnresolvable;
+  inputDataTypeObjectTypeUnresolvable: FunctionInputDataTypeObjectTypeIdUnresolvable;
 }
 
 export interface BlockInstallFunctionShapeError_inputDataTypeObjectTypeUnresolvableV2 {
   type: "inputDataTypeObjectTypeUnresolvableV2";
-  inputDataTypeObjectTypeUnresolvableV2:
-    FunctionInputDataTypeObjectTypeIdUnresolvableV2;
+  inputDataTypeObjectTypeUnresolvableV2: FunctionInputDataTypeObjectTypeIdUnresolvableV2;
 }
 
 export interface BlockInstallFunctionShapeError_inputDataTypeUnknown {
@@ -2272,8 +2236,7 @@ export interface BlockInstallFunctionShapeError_inputNotOptionalV2 {
 
 export interface BlockInstallFunctionShapeError_outputDataTypeActionTypeReferencesUnsupported {
   type: "outputDataTypeActionTypeReferencesUnsupported";
-  outputDataTypeActionTypeReferencesUnsupported:
-    FunctionOutputDataTypeActionTypeReferencesUnsupported;
+  outputDataTypeActionTypeReferencesUnsupported: FunctionOutputDataTypeActionTypeReferencesUnsupported;
 }
 
 export interface BlockInstallFunctionShapeError_outputDataTypeCustomTypeNotFound {
@@ -2283,14 +2246,12 @@ export interface BlockInstallFunctionShapeError_outputDataTypeCustomTypeNotFound
 
 export interface BlockInstallFunctionShapeError_outputDataTypeInterfaceTypeUnresolvable {
   type: "outputDataTypeInterfaceTypeUnresolvable";
-  outputDataTypeInterfaceTypeUnresolvable:
-    FunctionOutputDataTypeInterfaceTypeRidUnresolvable;
+  outputDataTypeInterfaceTypeUnresolvable: FunctionOutputDataTypeInterfaceTypeRidUnresolvable;
 }
 
 export interface BlockInstallFunctionShapeError_outputDataTypeMarkingSubTypeUnknown {
   type: "outputDataTypeMarkingSubTypeUnknown";
-  outputDataTypeMarkingSubTypeUnknown:
-    FunctionOutputDataTypeMarkingSubTypeUnknown;
+  outputDataTypeMarkingSubTypeUnknown: FunctionOutputDataTypeMarkingSubTypeUnknown;
 }
 
 export interface BlockInstallFunctionShapeError_outputDataTypeMismatch {
@@ -2300,8 +2261,7 @@ export interface BlockInstallFunctionShapeError_outputDataTypeMismatch {
 
 export interface BlockInstallFunctionShapeError_outputDataTypeObjectTypeUnresolvable {
   type: "outputDataTypeObjectTypeUnresolvable";
-  outputDataTypeObjectTypeUnresolvable:
-    FunctionOutputDataTypeObjectTypeIdUnresolvable;
+  outputDataTypeObjectTypeUnresolvable: FunctionOutputDataTypeObjectTypeIdUnresolvable;
 }
 
 export interface BlockInstallFunctionShapeError_outputDataTypeUnknown {
@@ -2432,9 +2392,7 @@ export interface BlockInstallInputShapeUsedByInputGroup {
  */
 export interface BlockInstallInterfaceActionTypeConstraintMissingParameterConstraints {
   interfaceActionTypeConstraintRid: InterfaceActionTypeConstraintRid;
-  missingInterfaceParameterConstraintReferences: Array<
-    InterfaceParameterConstraintReference
-  >;
+  missingInterfaceParameterConstraintReferences: Array<InterfaceParameterConstraintReference>;
 }
 export interface BlockInstallInterfaceActionTypeConstraintNotFound {
   interfaceActionTypeConstraintRid: InterfaceActionTypeConstraintRid;
@@ -2452,8 +2410,7 @@ export interface BlockInstallInterfaceActionTypeConstraintShapeError_interfaceTy
 
 export interface BlockInstallInterfaceActionTypeConstraintShapeError_interfaceActionTypeConstraintRequiredMismatch {
   type: "interfaceActionTypeConstraintRequiredMismatch";
-  interfaceActionTypeConstraintRequiredMismatch:
-    InterfaceActionTypeConstraintRequiredMismatch;
+  interfaceActionTypeConstraintRequiredMismatch: InterfaceActionTypeConstraintRequiredMismatch;
 }
 export type BlockInstallInterfaceActionTypeConstraintShapeError =
   | BlockInstallInterfaceActionTypeConstraintShapeError_interfaceTypeReferenceUnresolvable
@@ -2479,8 +2436,7 @@ export interface BlockInstallInterfaceLinkTypeShapeError_interfaceTypeReferenceM
 
 export interface BlockInstallInterfaceLinkTypeShapeError_linkedInterfaceTypeReferenceUnresolvable {
   type: "linkedInterfaceTypeReferenceUnresolvable";
-  linkedInterfaceTypeReferenceUnresolvable:
-    LinkedInterfaceTypeReferenceUnresolvable;
+  linkedInterfaceTypeReferenceUnresolvable: LinkedInterfaceTypeReferenceUnresolvable;
 }
 
 export interface BlockInstallInterfaceLinkTypeShapeError_linkedInterfaceTypeReferenceMismatch {
@@ -2535,26 +2491,22 @@ export interface BlockInstallInterfaceParameterConstraintNotFound {
 }
 export interface BlockInstallInterfaceParameterConstraintShapeError_actionTypeConstraintReferenceUnresolvable {
   type: "actionTypeConstraintReferenceUnresolvable";
-  actionTypeConstraintReferenceUnresolvable:
-    InterfaceActionTypeConstraintReferenceUnresolvable;
+  actionTypeConstraintReferenceUnresolvable: InterfaceActionTypeConstraintReferenceUnresolvable;
 }
 
 export interface BlockInstallInterfaceParameterConstraintShapeError_actionTypeConstraintReferenceMismatch {
   type: "actionTypeConstraintReferenceMismatch";
-  actionTypeConstraintReferenceMismatch:
-    ResolvedInterfaceActionTypeConstraintReferenceMismatch;
+  actionTypeConstraintReferenceMismatch: ResolvedInterfaceActionTypeConstraintReferenceMismatch;
 }
 
 export interface BlockInstallInterfaceParameterConstraintShapeError_interfaceParameterConstraintRequiredMismatch {
   type: "interfaceParameterConstraintRequiredMismatch";
-  interfaceParameterConstraintRequiredMismatch:
-    InterfaceParameterConstraintRequiredMismatch;
+  interfaceParameterConstraintRequiredMismatch: InterfaceParameterConstraintRequiredMismatch;
 }
 
 export interface BlockInstallInterfaceParameterConstraintShapeError_interfaceParameterConstraintTypeMismatch {
   type: "interfaceParameterConstraintTypeMismatch";
-  interfaceParameterConstraintTypeMismatch:
-    InterfaceParameterConstraintTypeMismatch;
+  interfaceParameterConstraintTypeMismatch: InterfaceParameterConstraintTypeMismatch;
 }
 export type BlockInstallInterfaceParameterConstraintShapeError =
   | BlockInstallInterfaceParameterConstraintShapeError_actionTypeConstraintReferenceUnresolvable
@@ -2581,14 +2533,12 @@ export interface BlockInstallInterfacePropertyTypeShapeError_interfaceTypeRefere
 
 export interface BlockInstallInterfacePropertyTypeShapeError_interfacePropertyTypeRequireImplementationMismatch {
   type: "interfacePropertyTypeRequireImplementationMismatch";
-  interfacePropertyTypeRequireImplementationMismatch:
-    InterfacePropertyTypeRequireImplementationMismatch;
+  interfacePropertyTypeRequireImplementationMismatch: InterfacePropertyTypeRequireImplementationMismatch;
 }
 
 export interface BlockInstallInterfacePropertyTypeShapeError_sharedPropertyTypeReferenceMismatch {
   type: "sharedPropertyTypeReferenceMismatch";
-  sharedPropertyTypeReferenceMismatch:
-    InterfacePropertySharedPropertyTypeReferenceMismatch;
+  sharedPropertyTypeReferenceMismatch: InterfacePropertySharedPropertyTypeReferenceMismatch;
 }
 
 export interface BlockInstallInterfacePropertyTypeShapeError_typeMismatch {
@@ -2643,9 +2593,7 @@ export type BlockInstallInterfacePropertyTypeShapeError =
  */
 export interface BlockInstallInterfaceTypeMissingActionTypeConstraints {
   interfaceTypeRid: InterfaceTypeRid;
-  missingInterfaceActionTypeConstraintReferences: Array<
-    InterfaceActionTypeConstraintReference
-  >;
+  missingInterfaceActionTypeConstraintReferences: Array<InterfaceActionTypeConstraintReference>;
 }
 /**
  * The InterfaceType does not include all the necessary extended interfaces.
@@ -2724,8 +2672,7 @@ export interface BlockInstallLinkTypeShapeError_linkTypeUnknown {
 
 export interface BlockInstallLinkTypeShapeError_intermediaryLinkObjectTypeUnresolvable {
   type: "intermediaryLinkObjectTypeUnresolvable";
-  intermediaryLinkObjectTypeUnresolvable:
-    IntermediaryLinkObjectTypeReferenceUnresolvable;
+  intermediaryLinkObjectTypeUnresolvable: IntermediaryLinkObjectTypeReferenceUnresolvable;
 }
 
 export interface BlockInstallLinkTypeShapeError_intermediaryLinkObjectTypeMismatch {
@@ -2735,8 +2682,7 @@ export interface BlockInstallLinkTypeShapeError_intermediaryLinkObjectTypeMismat
 
 export interface BlockInstallLinkTypeShapeError_intermediaryLinkLinkTypeUnresolvable {
   type: "intermediaryLinkLinkTypeUnresolvable";
-  intermediaryLinkLinkTypeUnresolvable:
-    IntermediaryLinkLinkTypeReferenceUnresolvable;
+  intermediaryLinkLinkTypeUnresolvable: IntermediaryLinkLinkTypeReferenceUnresolvable;
 }
 
 export interface BlockInstallLinkTypeShapeError_intermediaryLinkLinkTypeMismatch {
@@ -2786,20 +2732,17 @@ export interface BlockInstallLinkTypeShapeError_oneToManyLinkManySideObjectTypeM
 
 export interface BlockInstallLinkTypeShapeError_resolvedManyToManyLinkObjectTypesInconsistent {
   type: "resolvedManyToManyLinkObjectTypesInconsistent";
-  resolvedManyToManyLinkObjectTypesInconsistent:
-    ResolvedManyToManyLinkObjectTypesInconsistent;
+  resolvedManyToManyLinkObjectTypesInconsistent: ResolvedManyToManyLinkObjectTypesInconsistent;
 }
 
 export interface BlockInstallLinkTypeShapeError_resolvedOneToManyLinkObjectTypesInconsistent {
   type: "resolvedOneToManyLinkObjectTypesInconsistent";
-  resolvedOneToManyLinkObjectTypesInconsistent:
-    ResolvedOneToManyLinkObjectTypesInconsistent;
+  resolvedOneToManyLinkObjectTypesInconsistent: ResolvedOneToManyLinkObjectTypesInconsistent;
 }
 
 export interface BlockInstallLinkTypeShapeError_resolvedIntermediaryLinkOntologyTypesInconsistent {
   type: "resolvedIntermediaryLinkOntologyTypesInconsistent";
-  resolvedIntermediaryLinkOntologyTypesInconsistent:
-    ResolvedIntermediaryLinkOntologyTypesInconsistent;
+  resolvedIntermediaryLinkOntologyTypesInconsistent: ResolvedIntermediaryLinkOntologyTypesInconsistent;
 }
 
 export interface BlockInstallLinkTypeShapeError_editsSupportIncompatible {
@@ -2957,8 +2900,7 @@ export interface BlockInstallMediaSetIncompatibleTransactionPolicy {
  * A media set was provided as input, but the files datasource input shape only supports datasets.
  * Opposite of `FilesDatasourceTypeNotSupported`.
  */
-export interface BlockInstallMediaSetNotSupported {
-}
+export interface BlockInstallMediaSetNotSupported {}
 export interface BlockInstallModelShapeError_serviceMismatch {
   type: "serviceMismatch";
   serviceMismatch: ModelResourceShapeServiceMismatch;
@@ -3159,14 +3101,12 @@ export interface BlockInstallPropertyTypeShapeError_sharedPropertyTypeMissing {
 
 export interface BlockInstallPropertyTypeShapeError_sharedPropertyTypeReferenceMismatch {
   type: "sharedPropertyTypeReferenceMismatch";
-  sharedPropertyTypeReferenceMismatch:
-    ResolvedSharedPropertyTypeReferenceMismatch;
+  sharedPropertyTypeReferenceMismatch: ResolvedSharedPropertyTypeReferenceMismatch;
 }
 
 export interface BlockInstallPropertyTypeShapeError_sharedPropertyTypeReferenceUnresolvable {
   type: "sharedPropertyTypeReferenceUnresolvable";
-  sharedPropertyTypeReferenceUnresolvable:
-    SharedPropertyTypeReferenceUnresolvable;
+  sharedPropertyTypeReferenceUnresolvable: SharedPropertyTypeReferenceUnresolvable;
 }
 export type BlockInstallPropertyTypeShapeError =
   | BlockInstallPropertyTypeShapeError_typeMismatch
@@ -3427,8 +3367,7 @@ export interface BlockSetInputsAccessedInReconcileCycleV2 {
  * BlockSetInternalId
  */
 export type BlockSetInputShape = InputShape;
-export interface BlockSetInputShapeAdded {
-}
+export interface BlockSetInputShapeAdded {}
 export interface BlockSetInputShapeDiff {
   diffSeverity: BlockSetInputShapeDiffSeverity;
   diffType: BlockSetInputShapeDiffType;
@@ -3456,8 +3395,7 @@ export type BlockSetInputShapeDiffType =
   | BlockSetInputShapeDiffType_inputShapeRemoved
   | BlockSetInputShapeDiffType_inputShapeModified;
 
-export interface BlockSetInputShapeModified {
-}
+export interface BlockSetInputShapeModified {}
 /**
  * DEPRECATED
  */
@@ -3477,8 +3415,7 @@ export interface BlockSetInputShapeReferencingOutputShapeV2 {
   inputShapeId: InputBlockSetShapeId;
   referencedOutputShapeId: OutputBlockSetShapeId;
 }
-export interface BlockSetInputShapeRemoved {
-}
+export interface BlockSetInputShapeRemoved {}
 export type BlockSetInputShapes = Record<
   InputBlockSetShapeId,
   InputBlockSetMappingInfo
@@ -3518,8 +3455,7 @@ export interface BlockSetInstallationAccessDisallowedRationale_localMarketplaceN
 
 export interface BlockSetInstallationAccessDisallowedRationale_installFromMarketplacePermissionDenied {
   type: "installFromMarketplacePermissionDenied";
-  installFromMarketplacePermissionDenied:
-    InstallFromMarketplacePermissionDeniedRationale;
+  installFromMarketplacePermissionDenied: InstallFromMarketplacePermissionDeniedRationale;
 }
 
 export interface BlockSetInstallationAccessDisallowedRationale_blockSetNotFound {
@@ -3539,8 +3475,7 @@ export interface BlockSetInstallationAccessDisallowedRationale_installBlockSetPe
 
 export interface BlockSetInstallationAccessDisallowedRationale_editBlockSetInstallationsPermissionDenied {
   type: "editBlockSetInstallationsPermissionDenied";
-  editBlockSetInstallationsPermissionDenied:
-    EditBlockSetInstallationsPermissionDeniedRationale;
+  editBlockSetInstallationsPermissionDenied: EditBlockSetInstallationsPermissionDeniedRationale;
 }
 
 export interface BlockSetInstallationAccessDisallowedRationale_installInOntologyPermissionDenied {
@@ -3686,8 +3621,7 @@ export interface BlockSetInstallationJobStatusInProgress {
   isPendingCancellation: boolean;
   percentageCompleted: number;
 }
-export interface BlockSetInstallationJobStatusSuccess {
-}
+export interface BlockSetInstallationJobStatusSuccess {}
 export interface BlockSetInstallationMetadata {
   appliedRecommendations: Array<AppliedExternalRecommendationV2>;
   blockSetId: BlockSetId;
@@ -3907,32 +3841,27 @@ export interface BlockSetInstallValidationErrorDetail_multipleBlockSetInstallsWi
 
 export interface BlockSetInstallValidationErrorDetail_ontologyPackageInDefaultOntologyNotAllowed {
   type: "ontologyPackageInDefaultOntologyNotAllowed";
-  ontologyPackageInDefaultOntologyNotAllowed:
-    OntologyPackageInDefaultOntologyNotAllowed;
+  ontologyPackageInDefaultOntologyNotAllowed: OntologyPackageInDefaultOntologyNotAllowed;
 }
 
 export interface BlockSetInstallValidationErrorDetail_targetInstallLocationDoesNotMatchCurrentLocation {
   type: "targetInstallLocationDoesNotMatchCurrentLocation";
-  targetInstallLocationDoesNotMatchCurrentLocation:
-    TargetInstallLocationDoesNotMatchCurrentLocation;
+  targetInstallLocationDoesNotMatchCurrentLocation: TargetInstallLocationDoesNotMatchCurrentLocation;
 }
 
 export interface BlockSetInstallValidationErrorDetail_targetOntologyIsNotLinkedToTargetNamespace {
   type: "targetOntologyIsNotLinkedToTargetNamespace";
-  targetOntologyIsNotLinkedToTargetNamespace:
-    TargetOntologyIsNotLinkedToTargetNamespace;
+  targetOntologyIsNotLinkedToTargetNamespace: TargetOntologyIsNotLinkedToTargetNamespace;
 }
 
 export interface BlockSetInstallValidationErrorDetail_newInstallationOfASingletonBlockSetThatIsAlreadyInstalled {
   type: "newInstallationOfASingletonBlockSetThatIsAlreadyInstalled";
-  newInstallationOfASingletonBlockSetThatIsAlreadyInstalled:
-    NewInstallationOfSingletonBlockSetThatIsAlreadyInstalled;
+  newInstallationOfASingletonBlockSetThatIsAlreadyInstalled: NewInstallationOfSingletonBlockSetThatIsAlreadyInstalled;
 }
 
 export interface BlockSetInstallValidationErrorDetail_upgradeOfASingletonBlockSetThatIsInstalledMultipleTimes {
   type: "upgradeOfASingletonBlockSetThatIsInstalledMultipleTimes";
-  upgradeOfASingletonBlockSetThatIsInstalledMultipleTimes:
-    UpgradeOfSingletonBlockSetThatIsInstalledMultipleTimes;
+  upgradeOfASingletonBlockSetThatIsInstalledMultipleTimes: UpgradeOfSingletonBlockSetThatIsInstalledMultipleTimes;
 }
 
 export interface BlockSetInstallValidationErrorDetail_unknownError {
@@ -4023,8 +3952,7 @@ export interface BlockSetInstallValidationErrorDetailV2_ontologyInstallLocationN
 
 export interface BlockSetInstallValidationErrorDetailV2_ontologyPackageInDefaultOntologyNotAllowed {
   type: "ontologyPackageInDefaultOntologyNotAllowed";
-  ontologyPackageInDefaultOntologyNotAllowed:
-    OntologyPackageInDefaultOntologyNotAllowed;
+  ontologyPackageInDefaultOntologyNotAllowed: OntologyPackageInDefaultOntologyNotAllowed;
 }
 
 export interface BlockSetInstallValidationErrorDetailV2_resourceUsedAsBothInputAndOutput {
@@ -4034,20 +3962,17 @@ export interface BlockSetInstallValidationErrorDetailV2_resourceUsedAsBothInputA
 
 export interface BlockSetInstallValidationErrorDetailV2_targetOntologyIsNotLinkedToTargetNamespace {
   type: "targetOntologyIsNotLinkedToTargetNamespace";
-  targetOntologyIsNotLinkedToTargetNamespace:
-    TargetOntologyIsNotLinkedToTargetNamespace;
+  targetOntologyIsNotLinkedToTargetNamespace: TargetOntologyIsNotLinkedToTargetNamespace;
 }
 
 export interface BlockSetInstallValidationErrorDetailV2_newInstallationOfASingletonBlockSetThatIsAlreadyInstalled {
   type: "newInstallationOfASingletonBlockSetThatIsAlreadyInstalled";
-  newInstallationOfASingletonBlockSetThatIsAlreadyInstalled:
-    NewInstallationOfSingletonBlockSetThatIsAlreadyInstalled;
+  newInstallationOfASingletonBlockSetThatIsAlreadyInstalled: NewInstallationOfSingletonBlockSetThatIsAlreadyInstalled;
 }
 
 export interface BlockSetInstallValidationErrorDetailV2_upgradeOfASingletonBlockSetThatIsInstalledMultipleTimes {
   type: "upgradeOfASingletonBlockSetThatIsInstalledMultipleTimes";
-  upgradeOfASingletonBlockSetThatIsInstalledMultipleTimes:
-    UpgradeOfSingletonBlockSetThatIsInstalledMultipleTimes;
+  upgradeOfASingletonBlockSetThatIsInstalledMultipleTimes: UpgradeOfSingletonBlockSetThatIsInstalledMultipleTimes;
 }
 
 export interface BlockSetInstallValidationErrorDetailV2_unknownError {
@@ -4125,8 +4050,7 @@ export interface BlockSetOutputReference {
  * BlockSetInternalId
  */
 export type BlockSetOutputShape = OutputShape;
-export interface BlockSetOutputShapeAdded {
-}
+export interface BlockSetOutputShapeAdded {}
 export interface BlockSetOutputShapeDiff {
   diffSeverity: BlockSetOutputShapeDiffSeverity;
   diffType: BlockSetOutputShapeDiffType;
@@ -4158,8 +4082,7 @@ export interface BlockSetOutputShapeMetadata {
   createdAt: string;
   createdForBlockSetVersion: BlockSetVersionId;
 }
-export interface BlockSetOutputShapeModified {
-}
+export interface BlockSetOutputShapeModified {}
 /**
  * DEPRECATED
  */
@@ -4172,8 +4095,7 @@ export interface BlockSetOutputShapeReference {
   blockInstanceId: BlockSetBlockInstanceId;
   output: BlockShapeId;
 }
-export interface BlockSetOutputShapeRemoved {
-}
+export interface BlockSetOutputShapeRemoved {}
 export type BlockSetOutputShapes = Record<
   OutputBlockSetShapeId,
   OutputBlockSetMappingInfo
@@ -4222,8 +4144,7 @@ export type BlockSetProductGroupMemberVersionPolicy =
 export interface BlockSetPublishingJobFailure {
   error?: any | null | undefined;
 }
-export interface BlockSetPublishingJobInProgress {
-}
+export interface BlockSetPublishingJobInProgress {}
 /**
  * Rid of a block set publishing job.
  */
@@ -4414,13 +4335,11 @@ export interface BlockSetVersionDiffSummary {
 /**
  * At least one output spec is required.
  */
-export interface BlockSetVersionEmptyOutputSpecsError {
-}
+export interface BlockSetVersionEmptyOutputSpecsError {}
 /**
  * The block set version's fallback title is blank.
  */
-export interface BlockSetVersionEmptyTitleError {
-}
+export interface BlockSetVersionEmptyTitleError {}
 export interface BlockSetVersionErrorRecovery_idle {
   type: "idle";
   idle: BlockSetVersionIdleError;
@@ -4471,9 +4390,8 @@ export type BlockSetVersionMissingInputsConstraintFailure = Record<
   BlockVersionId,
   Array<BlockShapeId>
 >;
-export type BlockSetVersionMissingInputsConstraintFailureV2 = Array<
-  InputBlockSetShapeId
->;
+export type BlockSetVersionMissingInputsConstraintFailureV2 =
+  Array<InputBlockSetShapeId>;
 export interface BlockSetVersionNotFoundRationale {
   blockSetVersionId: BlockSetVersionId;
   marketplaceRid: MarketplaceRid;
@@ -4593,8 +4511,7 @@ export interface BlockSetVersionValidationError {
 }
 export interface BlockSetVersionValidationErrorDetail_blockTypesNotGenerallyAvailableForTargetEnvironment {
   type: "blockTypesNotGenerallyAvailableForTargetEnvironment";
-  blockTypesNotGenerallyAvailableForTargetEnvironment:
-    BlockTypesNotGenerallyAvailableForTargetEnvironment;
+  blockTypesNotGenerallyAvailableForTargetEnvironment: BlockTypesNotGenerallyAvailableForTargetEnvironment;
 }
 
 export interface BlockSetVersionValidationErrorDetail_duplicateOutputShapes {
@@ -4614,8 +4531,7 @@ export interface BlockSetVersionValidationErrorDetail_emptyTitle {
 
 export interface BlockSetVersionValidationErrorDetail_folderInputPreventsInstallingInNewProject {
   type: "folderInputPreventsInstallingInNewProject";
-  folderInputPreventsInstallingInNewProject:
-    FolderInputPreventsInstallingInNewProject;
+  folderInputPreventsInstallingInNewProject: FolderInputPreventsInstallingInNewProject;
 }
 
 export interface BlockSetVersionValidationErrorDetail_indistinguishableInputShapes {
@@ -4670,14 +4586,12 @@ export interface BlockSetVersionValidationErrorDetail_strictFolderTrackingNoDisc
 
 export interface BlockSetVersionValidationErrorDetail_strictFolderTrackingInvalidDiscoverySpec {
   type: "strictFolderTrackingInvalidDiscoverySpec";
-  strictFolderTrackingInvalidDiscoverySpec:
-    StrictFolderTrackingInvalidDiscoverySpec;
+  strictFolderTrackingInvalidDiscoverySpec: StrictFolderTrackingInvalidDiscoverySpec;
 }
 
 export interface BlockSetVersionValidationErrorDetail_strictFolderTrackingMultipleDiscoverySpecs {
   type: "strictFolderTrackingMultipleDiscoverySpecs";
-  strictFolderTrackingMultipleDiscoverySpecs:
-    StrictFolderTrackingMultipleDiscoverySpecs;
+  strictFolderTrackingMultipleDiscoverySpecs: StrictFolderTrackingMultipleDiscoverySpecs;
 }
 
 export interface BlockSetVersionValidationErrorDetail_strictFolderTrackingInvalidProvenance {
@@ -5894,24 +5808,19 @@ export interface BlockVersionRange {
   from: BlockVersion;
   until: BlockVersionMatcher;
 }
-export interface BmpFormat {
-}
+export interface BmpFormat {}
 /**
  * BooleanListType specifies that this parameter must be a list of Booleans.
  */
-export interface BooleanListType {
-}
+export interface BooleanListType {}
 /**
  * BooleanType specifies that this parameter must be a Boolean.
  */
-export interface BooleanType {
-}
+export interface BooleanType {}
 export type BooleanValue = boolean;
 export type Branch = string;
-export interface BuildCancelled {
-}
-export interface BuildError {
-}
+export interface BuildCancelled {}
+export interface BuildError {}
 /**
  * A build was submitted as part of the install of this blocked, but this build failed or was cancelled.
  */
@@ -5952,8 +5861,7 @@ export interface BuildSettings {
  * The time marketplace saw the build(s) finish. This time is updated for both successful and failed builds.
  */
 export type BuildsFinishedAtTimestamp = string;
-export interface BuildTimedOut {
-}
+export interface BuildTimedOut {}
 /**
  * A build was submitted as part of the install of this blocked, but this build did not succeed within the
  * timeout period defined by Marketplace for an installation build.
@@ -6026,10 +5934,8 @@ export type BulkImportBlockSetsResponseV2 =
   | BulkImportBlockSetsResponseV2_invalidProductPermissions
   | BulkImportBlockSetsResponseV2_malformedFile;
 
-export interface CancelFinalizeDraftGroupRequest {
-}
-export interface CancelFinalizeDraftGroupResponse {
-}
+export interface CancelFinalizeDraftGroupRequest {}
+export interface CancelFinalizeDraftGroupResponse {}
 export interface CancelInstallationJobAllowance_allowed {
   type: "allowed";
   allowed: Void;
@@ -6098,8 +6004,7 @@ export type CanCreateBlockVersionWithOutputResultError =
   | CanCreateBlockVersionWithOutputResultError_notAuthorizedToUseMarkings
   | CanCreateBlockVersionWithOutputResultError_notAuthorizedToDeclassify;
 
-export interface CanCreateBlockVersionWithOutputResultOk {
-}
+export interface CanCreateBlockVersionWithOutputResultOk {}
 export interface CanCreateBlockVersionWithOutputsRequest {
   marketplaceRid: MarketplaceRid;
   resolvedOutputShapes: Record<BlockShapeId, ResolvedOutputShape>;
@@ -6148,8 +6053,7 @@ export interface CbacMarkingConstraint {
  * Cbac marking constraints are not allowed on this stack. Cbac marking constraints are only allowed on stacks
  * that have Cbac enabled.
  */
-export interface CbacMarkingConstraintNotAllowed {
-}
+export interface CbacMarkingConstraintNotAllowed {}
 export interface Changelog_markdown {
   type: "markdown";
   markdown: MarkdownText;
@@ -6440,8 +6344,7 @@ export interface CompassCreateBlockRequest {
   folderRid: string;
 }
 export type CompassFolderRid = string;
-export interface CompassFolderType {
-}
+export interface CompassFolderType {}
 /**
  * represents the intended purpose of the input.  An INSTALL_LOCATION will require INSTALL_IN permissions.
  * A REFERENCE would require USE_AS_INPUT permissions.
@@ -6513,8 +6416,7 @@ export interface ComputeModuleOutputSpecConfig {
 /**
  * A user-written application hosted in Compute Modules.
  */
-export interface ComputeModuleType {
-}
+export interface ComputeModuleType {}
 export interface ConcreteArrayType {
   elementType: ConcreteDataType;
 }
@@ -6688,8 +6590,7 @@ export interface ConstraintFailure_outsideMaintenanceWindows {
 
 export interface ConstraintFailure_noNewerVersionsOnReleaseChannel {
   type: "noNewerVersionsOnReleaseChannel";
-  noNewerVersionsOnReleaseChannel:
-    NoNewerVersionsOnReleaseChannelConstraintFailure;
+  noNewerVersionsOnReleaseChannel: NoNewerVersionsOnReleaseChannelConstraintFailure;
 }
 
 export interface ConstraintFailure_lastUpgradeFailed {
@@ -7279,13 +7180,11 @@ export type DataValue =
 /**
  * DateListType specifies that this parameter must be a list of Dates.
  */
-export interface DateListType {
-}
+export interface DateListType {}
 /**
  * DateType specifies that this parameter must be a Date.
  */
-export interface DateType {
-}
+export interface DateType {}
 export type DayOfWeek =
   | "SUNDAY"
   | "MONDAY"
@@ -7328,8 +7227,7 @@ export interface DecimalType {
  * This configuration is encouraged in production mode installations, but exists for backward compatibility with
  * old behavior.
  */
-export interface DeduplicateFunctionsApiStabilityConfiguration {
-}
+export interface DeduplicateFunctionsApiStabilityConfiguration {}
 export interface DefaultBlockSpecificConfiguration_v0 {
   type: "v0";
   v0: ManifestOnlyBlockSpecificConfigurationV0;
@@ -7352,8 +7250,7 @@ export interface DefaultInstallationSettings {
  * The shape does not have a default value for the preset, even though user has requested resolution
  * using a default.
  */
-export interface DefaultRequestedForShapeWithNoDefault {
-}
+export interface DefaultRequestedForShapeWithNoDefault {}
 /**
  * Resolving the default for the shape failed.
  */
@@ -7379,18 +7276,15 @@ export interface DeleteBlockSetInstallationDisallowed {
 export interface DeleteBlockSetInstallationPermissionDeniedRationale {
   blockSetInstallationRid: BlockSetInstallationRid;
 }
-export interface DeleteDraftGroupResponse {
-}
-export interface DeleteJobDraftResponse {
-}
+export interface DeleteDraftGroupResponse {}
+export interface DeleteJobDraftResponse {}
 /**
  * Includes a registered public key that will be deleted and no longer be able to verify any maven coordinates
  */
 export interface DeleteKeyRequest {
   publicKey: SigningPublicKey;
 }
-export interface DeleteKeyResponse {
-}
+export interface DeleteKeyResponse {}
 export interface DependencyProvenance {
   parent: ResolvedOutputSpec;
 }
@@ -7427,8 +7321,7 @@ export type DescriptionOverrideRequest =
   | DescriptionOverrideRequest_remove;
 
 export type DiagramRid = string;
-export interface DicomSchema {
-}
+export interface DicomSchema {}
 /**
  * The granularity at which to return a diff.
  *
@@ -7476,8 +7369,7 @@ export interface DiscoverySettings {
 export interface DiscoverySpec {
   rid: string;
 }
-export interface DocFormat {
-}
+export interface DocFormat {}
 export interface DocumentationManifestV1 {
   attachmentList: Array<AttachmentMetadata>;
   freeFormSections?: FreeFormDocumentationSections | null | undefined;
@@ -7528,18 +7420,15 @@ export type DocumentDecodeFormat =
 export interface DocumentSchema {
   format: DocumentDecodeFormat;
 }
-export interface DocxFormat {
-}
+export interface DocxFormat {}
 /**
  * DoubleListType specifies that this parameter must be a list of Doubles.
  */
-export interface DoubleListType {
-}
+export interface DoubleListType {}
 /**
  * DoubleType specifies that this parameter must be a Double.
  */
-export interface DoubleType {
-}
+export interface DoubleType {}
 export interface DraftGroup {
   createdAt: CreationTimestamp;
   createdBy: MultipassUserId;
@@ -7548,8 +7437,7 @@ export interface DraftGroup {
   rid: DraftGroupRid;
   versionIds: Array<BlockSetVersionId>;
 }
-export interface DraftGroupErrorStatus {
-}
+export interface DraftGroupErrorStatus {}
 export interface DraftGroupFinalizedStatus {
   finalized: Array<BlockSetVersionId>;
 }
@@ -7559,16 +7447,13 @@ export interface DraftGroupFinalizingStatus {
   isCancelled: boolean;
   notAttempted: Array<BlockSetVersionId>;
 }
-export interface DraftGroupGeneratingRecommendationsStatus {
-}
+export interface DraftGroupGeneratingRecommendationsStatus {}
 /**
  * UUID identifier for a draft group, used as the FSM instance ID.
  */
 export type DraftGroupId = string;
-export interface DraftGroupIdleStatus {
-}
-export interface DraftGroupProcessingStatus {
-}
+export interface DraftGroupIdleStatus {}
+export interface DraftGroupProcessingStatus {}
 /**
  * Unique identifier for a draft group of pending block set versions.
  */
@@ -7652,8 +7537,7 @@ export interface DuplicateTabularDatasources {
 /**
  * The pipeline will ignore state breaks and continue reading data if possible
  */
-export interface EddieAcknowledgeStateBreakOption {
-}
+export interface EddieAcknowledgeStateBreakOption {}
 /**
  * Creates an eddie block based on the latest version that backs the main branch.
  */
@@ -7766,9 +7650,7 @@ export type EddieInputParameterType = EddieInputParameterType_primitive;
  * Instance type: LiteralParameter
  */
 export interface EddieLiteralParameterType {
-  additionalConstraints: Array<
-    _api_eddie_transformations_api_LiteralConstraint
-  >;
+  additionalConstraints: Array<_api_eddie_transformations_api_LiteralConstraint>;
   requiredType: EddieTypeReference;
 }
 /**
@@ -7818,8 +7700,7 @@ export interface EddiePipelineShape {
 /**
  * An Eddie Pipeline that may contain various UDFs.
  */
-export interface EddiePipelineType {
-}
+export interface EddiePipelineType {}
 export interface EddiePrimitiveParameterType_literal {
   type: "literal";
   literal: EddieLiteralParameterType;
@@ -7862,8 +7743,7 @@ export interface EddieResetAndReplayFromOffsetOption {
 /**
  * The pipeline will be reset with all the data
  */
-export interface EddieResetOption {
-}
+export interface EddieResetOption {}
 export interface EddieTypeReference_explicit {
   type: "explicit";
   explicit: _api_eddie_transformations_api_ExplicitType;
@@ -8000,10 +7880,8 @@ export type EmailDecodeFormat = EmailDecodeFormat_eml;
 export interface EmailSchema {
   format: EmailDecodeFormat;
 }
-export interface EmlFormat {
-}
-export interface Empty {
-}
+export interface EmlFormat {}
+export interface Empty {}
 export type EnrollmentCreationStateMachineId = string;
 export type EnrollmentRid = string;
 
@@ -8018,9 +7896,8 @@ export interface Envelope {
 /**
  * Every reference in this set mapped to the same action type parameter at packaging time
  */
-export type EquivalentInputActionTypeParameterShapeReferences = Array<
-  BlockSetInputActionTypeParameterReference
->;
+export type EquivalentInputActionTypeParameterShapeReferences =
+  Array<BlockSetInputActionTypeParameterReference>;
 export interface EquivalentInputReferences_equivalentInputShapeReferences {
   type: "equivalentInputShapeReferences";
   equivalentInputShapeReferences: EquivalentInputShapeReferences;
@@ -8028,8 +7905,7 @@ export interface EquivalentInputReferences_equivalentInputShapeReferences {
 
 export interface EquivalentInputReferences_equivalentInputActionTypeParameterShapeReferences {
   type: "equivalentInputActionTypeParameterShapeReferences";
-  equivalentInputActionTypeParameterShapeReferences:
-    EquivalentInputActionTypeParameterShapeReferences;
+  equivalentInputActionTypeParameterShapeReferences: EquivalentInputActionTypeParameterShapeReferences;
 }
 export type EquivalentInputReferences =
   | EquivalentInputReferences_equivalentInputShapeReferences
@@ -8038,9 +7914,8 @@ export type EquivalentInputReferences =
 /**
  * Every reference in this set mapped to the same resource at packaging time
  */
-export type EquivalentInputShapeReferences = Array<
-  BlockSetInputBlockShapeReference
->;
+export type EquivalentInputShapeReferences =
+  Array<BlockSetInputBlockShapeReference>;
 export interface ErrorArg {
   isSafeForLogging: boolean;
   name: string;
@@ -8057,8 +7932,7 @@ export type ErrorInstanceId = string;
  * are non blocking. Blocking errors will disallow packaging.
  */
 export type ErrorLevel = "WARN" | "BLOCKING";
-export interface ErrorProductGroupValidationStatus {
-}
+export interface ErrorProductGroupValidationStatus {}
 export type ErrorSeverity = "BLOCKING" | "NON_BLOCKING";
 
 /**
@@ -8156,8 +8030,7 @@ export type ExportBlockRequestFileType = ExportBlockRequestFileType_zip;
 export interface ExportBlockRequestFileTypeZip {
   compressionLevel?: number | null | undefined;
 }
-export interface ExportBlockSetRequest {
-}
+export interface ExportBlockSetRequest {}
 /**
  * If the preset is compatible with exporting across stacks.
  *
@@ -8291,8 +8164,7 @@ export interface ExternalRecommendationToSelf {
  * An external recommendation was used for input, but input has
  * mandatory presets. This is disallowed.
  */
-export interface ExternalRecommendationUsedForInputShapeWithMandatoryPresets {
-}
+export interface ExternalRecommendationUsedForInputShapeWithMandatoryPresets {}
 /**
  * Backend generated recommendation from a block set -> block set version over a compatible version range
  */
@@ -8405,8 +8277,7 @@ export type FilesDatasourceReference = BlockInternalId;
  * A dataset was provided as input, but the files datasource input shape only supports media sets.
  * Opposite of `BlockInstallMediaSetNotSupported`.
  */
-export interface FilesDatasourceTypeNotSupported {
-}
+export interface FilesDatasourceTypeNotSupported {}
 export type FileSizeInBytes = number;
 
 /**
@@ -8418,26 +8289,20 @@ export interface FilesLocator {
 export interface FinalizeBlockSetVersionRequest {
   semverOverride?: SemverVersion | null | undefined;
 }
-export interface FinalizeBlockSetVersionResponse {
-}
-export interface FinalizedBlockSetVersionStatus {
-}
-export interface FinalizeDraftGroupRequest {
-}
+export interface FinalizeBlockSetVersionResponse {}
+export interface FinalizedBlockSetVersionStatus {}
+export interface FinalizeDraftGroupRequest {}
 export interface FinalizeDraftGroupResponse {
   alreadyFinalized: Array<BlockSetVersionId>;
   willBeFinalized: Array<BlockSetVersionId>;
 }
-export interface FinalizedStatusV3 {
-}
-export interface FinalizingStatusV3 {
-}
+export interface FinalizedStatusV3 {}
+export interface FinalizingStatusV3 {}
 export interface FinishedInstallPendingStatus {
   blockShapeBuildMetadata: Record<BlockShapeId, BlockShapeBuildMetadata>;
   buildsAndIndexingIds: Record<BlockShapeId, BuildsAndIndexingIds>;
 }
-export interface FlacFormat {
-}
+export interface FlacFormat {}
 export interface FlinkProfileIdentifier {
   name: FlinkProfileName;
 }
@@ -8479,8 +8344,7 @@ export interface FolderInputPreventsInstallingInNewProject {
  * There was a folder input with constraints that only support mapping the input to the root folder for the
  * installation folder. In this case we only support installing into an existing folder.
  */
-export interface FolderInputRequiresInstallingIntoExistingFolder {
-}
+export interface FolderInputRequiresInstallingIntoExistingFolder {}
 /**
  * Creates a foundry peering producer profile block for the given peer producer profile rid
  */
@@ -9099,8 +8963,7 @@ export type FunctionsApiStabilityConfiguration =
  * set must have the same API stability configuration (i.e., you can't have some functions that have API
  * stability and others that don't).
  */
-export interface FunctionsApiStabilityConfigurationInputIdentifier {
-}
+export interface FunctionsApiStabilityConfigurationInputIdentifier {}
 /**
  * See ResolvedFunctionsApiStabilityConfigurationInputShape for details.
  */
@@ -9251,8 +9114,7 @@ export interface FunctionShapeSignatureIncompatibleInputTypeChange {
 /**
  * The output type on the unresolved shape is not compatible with that of the resolved function.
  */
-export interface FunctionShapeSignatureIncompatibleOutputTypeChange {
-}
+export interface FunctionShapeSignatureIncompatibleOutputTypeChange {}
 export interface FunctionShapeSignatureIncompatibleReason_missingInput {
   type: "missingInput";
   missingInput: FunctionShapeSignatureMissingInput;
@@ -9265,14 +9127,12 @@ export interface FunctionShapeSignatureIncompatibleReason_unknownRequiredInput {
 
 export interface FunctionShapeSignatureIncompatibleReason_incompatibleInputTypeChange {
   type: "incompatibleInputTypeChange";
-  incompatibleInputTypeChange:
-    FunctionShapeSignatureIncompatibleInputTypeChange;
+  incompatibleInputTypeChange: FunctionShapeSignatureIncompatibleInputTypeChange;
 }
 
 export interface FunctionShapeSignatureIncompatibleReason_incompatibleOutputTypeChange {
   type: "incompatibleOutputTypeChange";
-  incompatibleOutputTypeChange:
-    FunctionShapeSignatureIncompatibleOutputTypeChange;
+  incompatibleOutputTypeChange: FunctionShapeSignatureIncompatibleOutputTypeChange;
 }
 export type FunctionShapeSignatureIncompatibleReason =
   | FunctionShapeSignatureIncompatibleReason_missingInput
@@ -9410,8 +9270,7 @@ export type FunctionVersionsConfiguration =
 /**
  * Deprecated: Use FunctionsApiStabilityConfigurationInputIdentifier instead.
  */
-export interface FunctionVersionsConfigurationInputIdentifier {
-}
+export interface FunctionVersionsConfigurationInputIdentifier {}
 /**
  * Deprecated: Use FunctionsApiStabilityConfigurationInputShape instead.
  *
@@ -9700,23 +9559,19 @@ export interface GenericDiffBlockInstallServiceValidationError {
 /**
  * GeohashListType specifies that this parameter must be a list of Geohashes.
  */
-export interface GeohashListType {
-}
+export interface GeohashListType {}
 /**
  * GeohashType specifies that this parameter must be a Geohash.
  */
-export interface GeohashType {
-}
+export interface GeohashType {}
 /**
  * GeoshapeListType specifies that this parameter must be a list of Geoshapes.
  */
-export interface GeoshapeListType {
-}
+export interface GeoshapeListType {}
 /**
  * GeoshapeType specifies that this parameter must be a Geoshape.
  */
-export interface GeoshapeType {
-}
+export interface GeoshapeType {}
 export type GeotimeSeriesIntegrationRid = string;
 export interface GeotimeSeriesIntegrationShape {
   about: LocalizedTitleAndDescription;
@@ -9726,15 +9581,13 @@ export interface GeotimeSeriesIntegrationShape {
  * valid allowedParameterValues: ParameterGeotimeSeriesReferenceOrEmpty
  * valid prefill DataValues: None
  */
-export interface GeotimeSeriesReferenceListType {
-}
+export interface GeotimeSeriesReferenceListType {}
 /**
  * GeotimeSeriesReferenceType specifies that this parameter must be a GeotimeSeriesReference.
  * valid allowedParameterValues: ParameterGeotimeSeriesReferenceOrEmpty
  * valid prefill DataValues: None
  */
-export interface GeotimeSeriesReferenceType {
-}
+export interface GeotimeSeriesReferenceType {}
 export interface GetBlockSetResponse {
   activeRecalls: Record<RecallId, RecallVersionsAnnouncement>;
   blockSet: BlockSet;
@@ -9941,8 +9794,7 @@ export interface GetRecallsForBlockSetResponse {
 export interface GetRecommendationsResponse {
   recommendations: Array<ExternalRecommendationV2>;
 }
-export interface GetRecommendationsResponsePending {
-}
+export interface GetRecommendationsResponsePending {}
 export interface GetRecommendationsResponseSuccess {
   recommendations: Array<ExternalRecommendationV2>;
 }
@@ -10157,8 +10009,7 @@ export interface GroupAlreadyUsedFailure {
  */
 export type GroupFilter = "ALL" | "NOT_IN_GROUP" | "IN_GROUP";
 export type GroupId = string;
-export interface GroupMalformedFailure {
-}
+export interface GroupMalformedFailure {}
 export interface GroupReference {
   blockInstance: BlockSetBlockInstanceId;
   groupId: InputGroupId;
@@ -10184,8 +10035,7 @@ export interface IdleBlockSetVersionStatus {
 /**
  * There is nothing for the automation to do. The installation is on the latest product version.
  */
-export interface IdleStatus {
-}
+export interface IdleStatus {}
 export interface IdleStatusV3 {
   hasErrors: boolean;
   hasWarnings: boolean;
@@ -10303,8 +10153,7 @@ export interface IncompatibleSemverError {
  *
  * This configuration should be avoided, but exists for backward compatibility with old behavior.
  */
-export interface IncrementMinorFunctionVersionsConfiguration {
-}
+export interface IncrementMinorFunctionVersionsConfiguration {}
 export interface IndexableEntityIds {
   indexableEntityRid: IndexableEntityRid;
 }
@@ -10370,18 +10219,15 @@ export type InferredFolderStructureSettings =
   | InferredFolderStructureSettings_enabled
   | InferredFolderStructureSettings_disabled;
 
-export interface InitializingStatusV3 {
-}
+export interface InitializingStatusV3 {}
 /**
  * The property has no associated inline ActionType whereas the shape definition requires one.
  */
 export interface InlineActionTypeMissing {
   expected: ActionTypeReference;
 }
-export interface InProgressCancelled {
-}
-export interface InProgressError {
-}
+export interface InProgressCancelled {}
+export interface InProgressError {}
 export interface InputBlockSetMappingInfo {
   backingShapes: Array<ShapeReference>;
   isOptional: boolean;
@@ -10593,8 +10439,7 @@ export interface InputEntityIdentifier_functionVersionsConfiguration {
 
 export interface InputEntityIdentifier_functionsApiStabilityConfiguration {
   type: "functionsApiStabilityConfiguration";
-  functionsApiStabilityConfiguration:
-    FunctionsApiStabilityConfigurationInputIdentifier;
+  functionsApiStabilityConfiguration: FunctionsApiStabilityConfigurationInputIdentifier;
 }
 
 export interface InputEntityIdentifier_fusionDocument {
@@ -10684,8 +10529,7 @@ export interface InputEntityIdentifier_magritteSourceConfigOverrides {
 
 export interface InputEntityIdentifier_magritteStreamingExtractConfigOverrides {
   type: "magritteStreamingExtractConfigOverrides";
-  magritteStreamingExtractConfigOverrides:
-    MagritteStreamingExtractConfigOverridesInputIdentifier;
+  magritteStreamingExtractConfigOverrides: MagritteStreamingExtractConfigOverridesInputIdentifier;
 }
 
 export interface InputEntityIdentifier_markings {
@@ -11306,8 +11150,7 @@ export interface InputShape_functionVersionsConfiguration {
 
 export interface InputShape_functionsApiStabilityConfiguration {
   type: "functionsApiStabilityConfiguration";
-  functionsApiStabilityConfiguration:
-    FunctionsApiStabilityConfigurationInputShape;
+  functionsApiStabilityConfiguration: FunctionsApiStabilityConfigurationInputShape;
 }
 
 export interface InputShape_fusionDocument {
@@ -11397,8 +11240,7 @@ export interface InputShape_magritteSourceConfigOverrides {
 
 export interface InputShape_magritteStreamingExtractConfigOverrides {
   type: "magritteStreamingExtractConfigOverrides";
-  magritteStreamingExtractConfigOverrides:
-    MagritteStreamingExtractConfigOverridesInputShape;
+  magritteStreamingExtractConfigOverrides: MagritteStreamingExtractConfigOverridesInputShape;
 }
 
 export interface InputShape_markings {
@@ -12122,8 +11964,7 @@ export type InstallationInstruction =
   | InstallationInstruction_installNewBlock
   | InstallationInstruction_installExistingBlock;
 
-export interface InstallationJobBuildAll {
-}
+export interface InstallationJobBuildAll {}
 export interface InstallationJobBuildOption_all {
   type: "all";
   all: InstallationJobBuildAll;
@@ -12137,8 +11978,7 @@ export type InstallationJobBuildOption =
   | InstallationJobBuildOption_all
   | InstallationJobBuildOption_required;
 
-export interface InstallationJobBuildRequired {
-}
+export interface InstallationJobBuildRequired {}
 export interface InstallationJobValidationError_externalRecommendationToSelf {
   type: "externalRecommendationToSelf";
   externalRecommendationToSelf: ExternalRecommendationToSelf;
@@ -12146,8 +11986,7 @@ export interface InstallationJobValidationError_externalRecommendationToSelf {
 
 export interface InstallationJobValidationError_invalidNewBlockSetInstallationReferences {
   type: "invalidNewBlockSetInstallationReferences";
-  invalidNewBlockSetInstallationReferences:
-    InvalidNewBlockSetInstallationReferences;
+  invalidNewBlockSetInstallationReferences: InvalidNewBlockSetInstallationReferences;
 }
 
 export interface InstallationJobValidationError_invalidPreallocatedJobRid {
@@ -12162,8 +12001,7 @@ export interface InstallationJobValidationError_noInstallationsInRequest {
 
 export interface InstallationJobValidationError_numberOfInstallationsInRequestLimitExceeded {
   type: "numberOfInstallationsInRequestLimitExceeded";
-  numberOfInstallationsInRequestLimitExceeded:
-    NumberOfInstallationsInRequestLimitExceeded;
+  numberOfInstallationsInRequestLimitExceeded: NumberOfInstallationsInRequestLimitExceeded;
 }
 
 export interface InstallationJobValidationError_duplicateBlockSetVersionsInRequest {
@@ -12568,8 +12406,7 @@ export interface InstallShapeValidationError_actionTypeWithNestedParameters {
 
 export interface InstallShapeValidationError_attachedOutputCreatedInAnotherInstallation {
   type: "attachedOutputCreatedInAnotherInstallation";
-  attachedOutputCreatedInAnotherInstallation:
-    AttachedOutputCreatedInAnotherInstallation;
+  attachedOutputCreatedInAnotherInstallation: AttachedOutputCreatedInAnotherInstallation;
 }
 
 export interface InstallShapeValidationError_attachedOutputShapeNotSpecified {
@@ -12604,8 +12441,7 @@ export interface InstallShapeValidationError_cipherLicenseAlgorithmMismatch {
 
 export interface InstallShapeValidationError_cipherLicenseMissingRequiredOperations {
   type: "cipherLicenseMissingRequiredOperations";
-  cipherLicenseMissingRequiredOperations:
-    CipherLicenseMissingRequiredOperations;
+  cipherLicenseMissingRequiredOperations: CipherLicenseMissingRequiredOperations;
 }
 
 export interface InstallShapeValidationError_cipherLicenseMissingRequiredPermits {
@@ -12620,8 +12456,7 @@ export interface InstallShapeValidationError_cipherLicenseTypeMismatch {
 
 export interface InstallShapeValidationError_classificationConstraintsNotSatisfied {
   type: "classificationConstraintsNotSatisfied";
-  classificationConstraintsNotSatisfied:
-    BlockInstallLocationClassificationConstraintsNotSatisfied;
+  classificationConstraintsNotSatisfied: BlockInstallLocationClassificationConstraintsNotSatisfied;
 }
 
 export interface InstallShapeValidationError_codeWorkspaceImageTypeMismatch {
@@ -12661,8 +12496,7 @@ export interface InstallShapeValidationError_connectionTypeUnsupported {
 
 export interface InstallShapeValidationError_connectionReferenceNotResolved {
   type: "connectionReferenceNotResolved";
-  connectionReferenceNotResolved:
-    BlockInstallConnectionReferenceUnresolvableError;
+  connectionReferenceNotResolved: BlockInstallConnectionReferenceUnresolvableError;
 }
 
 export interface InstallShapeValidationError_connectionReferenceMismatch {
@@ -12692,26 +12526,22 @@ export interface InstallShapeValidationError_defaultResolutionFailedError {
 
 export interface InstallShapeValidationError_eddieRemoteAndPeeredDestinationsConflictError {
   type: "eddieRemoteAndPeeredDestinationsConflictError";
-  eddieRemoteAndPeeredDestinationsConflictError:
-    EddieRemoteAndPeeredDestinationsConflictError;
+  eddieRemoteAndPeeredDestinationsConflictError: EddieRemoteAndPeeredDestinationsConflictError;
 }
 
 export interface InstallShapeValidationError_expectedDefaultNotEqualToActualDefault {
   type: "expectedDefaultNotEqualToActualDefault";
-  expectedDefaultNotEqualToActualDefault:
-    ExpectedDefaultNotEqualToActualDefault;
+  expectedDefaultNotEqualToActualDefault: ExpectedDefaultNotEqualToActualDefault;
 }
 
 export interface InstallShapeValidationError_expectedDefaultNotEqualToActualDefaultV2 {
   type: "expectedDefaultNotEqualToActualDefaultV2";
-  expectedDefaultNotEqualToActualDefaultV2:
-    ExpectedDefaultNotEqualToActualDefaultV2;
+  expectedDefaultNotEqualToActualDefaultV2: ExpectedDefaultNotEqualToActualDefaultV2;
 }
 
 export interface InstallShapeValidationError_externalRecommendationsUsedForInputShapeWithMandatoryPresets {
   type: "externalRecommendationsUsedForInputShapeWithMandatoryPresets";
-  externalRecommendationsUsedForInputShapeWithMandatoryPresets:
-    ExternalRecommendationUsedForInputShapeWithMandatoryPresets;
+  externalRecommendationsUsedForInputShapeWithMandatoryPresets: ExternalRecommendationUsedForInputShapeWithMandatoryPresets;
 }
 
 export interface InstallShapeValidationError_filesDatasourceTypeNotSupported {
@@ -12736,8 +12566,7 @@ export interface InstallShapeValidationError_folderInputExternallyRecommended {
 
 export interface InstallShapeValidationError_folderInputRequiresInstallingIntoExistingFolder {
   type: "folderInputRequiresInstallingIntoExistingFolder";
-  folderInputRequiresInstallingIntoExistingFolder:
-    FolderInputRequiresInstallingIntoExistingFolder;
+  folderInputRequiresInstallingIntoExistingFolder: FolderInputRequiresInstallingIntoExistingFolder;
 }
 
 export interface InstallShapeValidationError_functionNotFound {
@@ -12757,8 +12586,7 @@ export interface InstallShapeValidationError_functionShapeErrorV2 {
 
 export interface InstallShapeValidationError_genericDiffServiceValidationError {
   type: "genericDiffServiceValidationError";
-  genericDiffServiceValidationError:
-    GenericDiffBlockInstallServiceValidationError;
+  genericDiffServiceValidationError: GenericDiffBlockInstallServiceValidationError;
 }
 
 export interface InstallShapeValidationError_genericServiceValidationError {
@@ -12813,14 +12641,12 @@ export interface InstallShapeValidationError_interfaceTypeMissingLinks {
 
 export interface InstallShapeValidationError_interfaceTypeMissingActionTypeConstraints {
   type: "interfaceTypeMissingActionTypeConstraints";
-  interfaceTypeMissingActionTypeConstraints:
-    BlockInstallInterfaceTypeMissingActionTypeConstraints;
+  interfaceTypeMissingActionTypeConstraints: BlockInstallInterfaceTypeMissingActionTypeConstraints;
 }
 
 export interface InstallShapeValidationError_interfaceTypeMissingExtendedInterfaces {
   type: "interfaceTypeMissingExtendedInterfaces";
-  interfaceTypeMissingExtendedInterfaces:
-    BlockInstallInterfaceTypeMissingExtendedInterfaces;
+  interfaceTypeMissingExtendedInterfaces: BlockInstallInterfaceTypeMissingExtendedInterfaces;
 }
 
 export interface InstallShapeValidationError_interfaceLinkTypeNotFound {
@@ -12845,38 +12671,32 @@ export interface InstallShapeValidationError_interfacePropertyTypeShapeError {
 
 export interface InstallShapeValidationError_interfaceActionTypeConstraintMissingParameterConstraints {
   type: "interfaceActionTypeConstraintMissingParameterConstraints";
-  interfaceActionTypeConstraintMissingParameterConstraints:
-    BlockInstallInterfaceActionTypeConstraintMissingParameterConstraints;
+  interfaceActionTypeConstraintMissingParameterConstraints: BlockInstallInterfaceActionTypeConstraintMissingParameterConstraints;
 }
 
 export interface InstallShapeValidationError_interfaceActionTypeConstraintNotFound {
   type: "interfaceActionTypeConstraintNotFound";
-  interfaceActionTypeConstraintNotFound:
-    BlockInstallInterfaceActionTypeConstraintNotFound;
+  interfaceActionTypeConstraintNotFound: BlockInstallInterfaceActionTypeConstraintNotFound;
 }
 
 export interface InstallShapeValidationError_interfaceActionTypeConstraintShapeError {
   type: "interfaceActionTypeConstraintShapeError";
-  interfaceActionTypeConstraintShapeError:
-    BlockInstallInterfaceActionTypeConstraintShapeError;
+  interfaceActionTypeConstraintShapeError: BlockInstallInterfaceActionTypeConstraintShapeError;
 }
 
 export interface InstallShapeValidationError_interfaceParameterConstraintNotFound {
   type: "interfaceParameterConstraintNotFound";
-  interfaceParameterConstraintNotFound:
-    BlockInstallInterfaceParameterConstraintNotFound;
+  interfaceParameterConstraintNotFound: BlockInstallInterfaceParameterConstraintNotFound;
 }
 
 export interface InstallShapeValidationError_interfaceParameterConstraintShapeError {
   type: "interfaceParameterConstraintShapeError";
-  interfaceParameterConstraintShapeError:
-    BlockInstallInterfaceParameterConstraintShapeError;
+  interfaceParameterConstraintShapeError: BlockInstallInterfaceParameterConstraintShapeError;
 }
 
 export interface InstallShapeValidationError_inputDownstreamOfOutputsInJobSpecGraph {
   type: "inputDownstreamOfOutputsInJobSpecGraph";
-  inputDownstreamOfOutputsInJobSpecGraph:
-    InputDownstreamOfOutputsInJobSpecGraph;
+  inputDownstreamOfOutputsInJobSpecGraph: InputDownstreamOfOutputsInJobSpecGraph;
 }
 
 export interface InstallShapeValidationError_invalidCronExpression {
@@ -12911,14 +12731,12 @@ export interface InstallShapeValidationError_magritteSourceTypeMismatch {
 
 export interface InstallShapeValidationError_magritteSourceMissingRequiredSecrets {
   type: "magritteSourceMissingRequiredSecrets";
-  magritteSourceMissingRequiredSecrets:
-    BlockInstallMagritteSourceMissingRequiredSecrets;
+  magritteSourceMissingRequiredSecrets: BlockInstallMagritteSourceMissingRequiredSecrets;
 }
 
 export interface InstallShapeValidationError_magritteSourceMissingRequiredUsageRestrictions {
   type: "magritteSourceMissingRequiredUsageRestrictions";
-  magritteSourceMissingRequiredUsageRestrictions:
-    BlockInstallMagritteSourceMissingRequiredUsageRestrictions;
+  magritteSourceMissingRequiredUsageRestrictions: BlockInstallMagritteSourceMissingRequiredUsageRestrictions;
 }
 
 export interface InstallShapeValidationError_magritteSourceApiNameMismatch {
@@ -12943,8 +12761,7 @@ export interface InstallShapeValidationError_mediaSetIncompatiblePathPolicy {
 
 export interface InstallShapeValidationError_mediaSetIncompatibleTransactionPolicy {
   type: "mediaSetIncompatibleTransactionPolicy";
-  mediaSetIncompatibleTransactionPolicy:
-    BlockInstallMediaSetIncompatibleTransactionPolicy;
+  mediaSetIncompatibleTransactionPolicy: BlockInstallMediaSetIncompatibleTransactionPolicy;
 }
 
 export interface InstallShapeValidationError_mediaSetIncompatibleSchema {
@@ -12969,14 +12786,12 @@ export interface InstallShapeValidationError_notepadTemplateNotFound {
 
 export interface InstallShapeValidationError_notepadTemplateParameterNotFound {
   type: "notepadTemplateParameterNotFound";
-  notepadTemplateParameterNotFound:
-    BlockInstallNotepadTemplateParameterNotFound;
+  notepadTemplateParameterNotFound: BlockInstallNotepadTemplateParameterNotFound;
 }
 
 export interface InstallShapeValidationError_notepadTemplateParameterShapeError {
   type: "notepadTemplateParameterShapeError";
-  notepadTemplateParameterShapeError:
-    BlockInstallNotepadTemplateParameterShapeError;
+  notepadTemplateParameterShapeError: BlockInstallNotepadTemplateParameterShapeError;
 }
 
 export interface InstallShapeValidationError_objectTypeForObjectViewNotFound {
@@ -13071,14 +12886,12 @@ export interface InstallShapeValidationError_sparkProfileFamilyMismatch {
 
 export interface InstallShapeValidationError_stringParameterMaxLengthExceeded {
   type: "stringParameterMaxLengthExceeded";
-  stringParameterMaxLengthExceeded:
-    BlockInstallStringParameterMaxLengthExceeded;
+  stringParameterMaxLengthExceeded: BlockInstallStringParameterMaxLengthExceeded;
 }
 
 export interface InstallShapeValidationError_resolvedOutputShapeAttachedMultipleTimes {
   type: "resolvedOutputShapeAttachedMultipleTimes";
-  resolvedOutputShapeAttachedMultipleTimes:
-    ResolvedOutputShapeAttachedMultipleTimes;
+  resolvedOutputShapeAttachedMultipleTimes: ResolvedOutputShapeAttachedMultipleTimes;
 }
 
 export interface InstallShapeValidationError_resourceNotFound {
@@ -13088,8 +12901,7 @@ export interface InstallShapeValidationError_resourceNotFound {
 
 export interface InstallShapeValidationError_resourceIsNotChildOfTargetCompassFolder {
   type: "resourceIsNotChildOfTargetCompassFolder";
-  resourceIsNotChildOfTargetCompassFolder:
-    BlockInstallResourceNotChildOfTargetCompassFolder;
+  resourceIsNotChildOfTargetCompassFolder: BlockInstallResourceNotChildOfTargetCompassFolder;
 }
 
 export interface InstallShapeValidationError_markingNotFound {
@@ -13134,8 +12946,7 @@ export interface InstallShapeValidationError_tabularDatasourceShapeError {
 
 export interface InstallShapeValidationError_typedBlockInstallServiceValidationError {
   type: "typedBlockInstallServiceValidationError";
-  typedBlockInstallServiceValidationError:
-    TypedBlockInstallServiceValidationError;
+  typedBlockInstallServiceValidationError: TypedBlockInstallServiceValidationError;
 }
 
 export interface InstallShapeValidationError_valueTypeShapeValidationError {
@@ -13296,8 +13107,7 @@ export interface InstallValidationError {
 }
 export interface InstallValidationErrorDetail_associatedWithMultipleBlockSetInstallations {
   type: "associatedWithMultipleBlockSetInstallations";
-  associatedWithMultipleBlockSetInstallations:
-    AssociatedWithMultipleBlockSetInstallations;
+  associatedWithMultipleBlockSetInstallations: AssociatedWithMultipleBlockSetInstallations;
 }
 
 export interface InstallValidationErrorDetail_attachResourceValidationErrors {
@@ -13387,14 +13197,12 @@ export interface InstallValidationErrorDetail_shapeValidationErrors {
 
 export interface InstallValidationErrorDetail_newInstallationOfASingletonBlockSetThatIsAlreadyInstalled {
   type: "newInstallationOfASingletonBlockSetThatIsAlreadyInstalled";
-  newInstallationOfASingletonBlockSetThatIsAlreadyInstalled:
-    NewInstallationOfSingletonBlockSetThatIsAlreadyInstalled;
+  newInstallationOfASingletonBlockSetThatIsAlreadyInstalled: NewInstallationOfSingletonBlockSetThatIsAlreadyInstalled;
 }
 
 export interface InstallValidationErrorDetail_upgradeOfASingletonBlockSetThatIsInstalledMultipleTimes {
   type: "upgradeOfASingletonBlockSetThatIsInstalledMultipleTimes";
-  upgradeOfASingletonBlockSetThatIsInstalledMultipleTimes:
-    UpgradeOfSingletonBlockSetThatIsInstalledMultipleTimes;
+  upgradeOfASingletonBlockSetThatIsInstalledMultipleTimes: UpgradeOfSingletonBlockSetThatIsInstalledMultipleTimes;
 }
 export type InstallValidationErrorDetail =
   | InstallValidationErrorDetail_associatedWithMultipleBlockSetInstallations
@@ -13461,13 +13269,11 @@ export type InsufficientPermissionsErrorUnion =
 /**
  * IntegerListType specifies that this parameter must be a list of Integers.
  */
-export interface IntegerListType {
-}
+export interface IntegerListType {}
 /**
  * IntegerType specifies that this parameter must be an Integer.
  */
-export interface IntegerType {
-}
+export interface IntegerType {}
 export type IntegerValue = number;
 export type IntegerVersion = number;
 export interface IntegrationCreateBlockVersionError_unknownError {
@@ -13896,10 +13702,8 @@ export interface JobSubmittedResult {
     BlockSetInstallationRid
   >;
 }
-export interface Jpeg2000Format {
-}
-export interface JpgFormat {
-}
+export interface Jpeg2000Format {}
+export interface JpgFormat {}
 /**
  * Service-specific identifier used to ensure block internal identifiers stability
  */
@@ -13912,8 +13716,7 @@ export type LanguageModelRid = string;
 export interface LanguageModelShape {
   about: LocalizedTitleAndDescription;
 }
-export interface LasFormat {
-}
+export interface LasFormat {}
 export type LastUpdatedTimestamp = string;
 
 /**
@@ -13922,14 +13725,12 @@ export type LastUpdatedTimestamp = string;
 export interface LastUpgradeFailedConstraintFailure {
   error: InstallBlocksStatusError;
 }
-export interface LatestVersionPolicy {
-}
+export interface LatestVersionPolicy {}
 /**
  * Placeholder identifier for shapes that have not implemented support for shape generation yet. Only here for
  * legacy purposes. DO NOT USE WHEN ADDING A NEW SHAPE.
  */
-export interface LegacyNotImplementedIdentifier {
-}
+export interface LegacyNotImplementedIdentifier {}
 export interface LibraryLocatorEnvironmentIdentificationMethod_condaLocator {
   type: "condaLocator";
   condaLocator: CondaLocator;
@@ -14337,8 +14138,7 @@ export interface LocalizedTitleAndDescriptionOverride {
   descriptionOverride?: DescriptionOverride | null | undefined;
   titleOverride?: TitleOverride | null | undefined;
 }
-export interface LocalMarketplaceDefinition {
-}
+export interface LocalMarketplaceDefinition {}
 export interface LocalMarketplaceNotFoundRationale {
   marketplaceRid: MarketplaceRid;
 }
@@ -14431,13 +14231,11 @@ export interface LogicShape {
 /**
  * LongListType specifies that this parameter must be a list of Longs.
  */
-export interface LongListType {
-}
+export interface LongListType {}
 /**
  * LongType specifies that this parameter must be a Long.
  */
-export interface LongType {
-}
+export interface LongType {}
 export type LongVersion = number;
 export interface MachineryCreateBlockRequest {
   rid: string;
@@ -14750,8 +14548,7 @@ export interface MandatoryPresetNotUsed {
 export interface ManifestOnlyBlockSpecificConfigurationV0 {
   manifest: BlockDataId;
 }
-export interface ManuallyProvidedInput {
-}
+export interface ManuallyProvidedInput {}
 /**
  * An input that was manually provided by the user during installation.
  */
@@ -14849,8 +14646,7 @@ export type MarkingId = string;
 /**
  * MarkingListType specifies that this parameter must be a list of Markings.
  */
-export interface MarkingListType {
-}
+export interface MarkingListType {}
 /**
  * The marking referenced by the resolved shape was not found. This could happen if the
  * marking doesn't exist or is not visible to the user.
@@ -14917,8 +14713,7 @@ export type MarkingsType = "MANDATORY" | "CBAC" | "ORGANIZATION";
 /**
  * MarkingType specifies that this parameter must be a CBAC or Madatory Marking type.
  */
-export interface MarkingType {
-}
+export interface MarkingType {}
 /**
  * The MarkingType of the markings referenced by the resolved shape did not match the specified MarkingType.
  */
@@ -14991,13 +14786,11 @@ export type MavenProductIdOrCoordinate = string;
 /**
  * MediaReferenceListType specifies that this parameter must be a list of MediaReferences.
  */
-export interface MediaReferenceListType {
-}
+export interface MediaReferenceListType {}
 /**
  * MediaReferenceType specifies that this parameter must be a MediaReference.
  */
-export interface MediaReferenceType {
-}
+export interface MediaReferenceType {}
 export interface MediaSchema_document {
   type: "document";
   document: DocumentSchema;
@@ -15190,8 +14983,7 @@ export type MimeType = string;
  * CBAC marking constraints are required but were not provided. CBAC marking constraints must always be provided
  * for stacks that have CBAC enabled.
  */
-export interface MissingCbacMarkingConstraint {
-}
+export interface MissingCbacMarkingConstraint {}
 /**
  * The typeClass required on the column shape is missing on the resolved column.
  */
@@ -15247,8 +15039,7 @@ export interface MissingRecommendationShape {
   providers: Array<PotentialInputProvider>;
   staleRecommendations: Array<StaleRecommendation>;
 }
-export interface MkvVideoContainerFormat {
-}
+export interface MkvVideoContainerFormat {}
 export interface Model3dDecodeFormat_las {
   type: "las";
   las: LasFormat;
@@ -15459,14 +15250,10 @@ export interface MoveBlockSetInstallationsRequest {
   installationRids: Array<BlockSetInstallationRid>;
   targetMarketplaceRid: MarketplaceRid;
 }
-export interface MoveBlockSetInstallationsResponse {
-}
-export interface MovVideoContainerFormat {
-}
-export interface Mp2Format {
-}
-export interface Mp3Format {
-}
+export interface MoveBlockSetInstallationsResponse {}
+export interface MovVideoContainerFormat {}
+export interface Mp2Format {}
+export interface Mp3Format {}
 export interface Mp4AudioContainerFormat_singleStream {
   type: "singleStream";
   singleStream: SingleStreamMp4AudioContainerFormat;
@@ -15476,10 +15263,8 @@ export interface Mp4AudioContainerFormat_singleStream {
  */
 export type Mp4AudioContainerFormat = Mp4AudioContainerFormat_singleStream;
 
-export interface Mp4VideoContainerFormat {
-}
-export interface MultiModalSchema {
-}
+export interface Mp4VideoContainerFormat {}
+export interface MultiModalSchema {}
 /**
  * Unique identifier for a group in Multipass.
  */
@@ -15594,10 +15379,8 @@ export interface NewProjectV2 {
  * Although this often has the file extension .wav, it's a distinct format.
  * See https://www1.icsi.berkeley.edu/Speech/faq/wavfile-fmts.html
  */
-export interface NistSphereFormat {
-}
-export interface NitfFormat {
-}
+export interface NistSphereFormat {}
+export interface NitfFormat {}
 export type NonConstraintFailureNotificationCause =
   | "INSTALLATION_JOB_SUCCESS"
   | "INSTALLATION_JOB_FAILURE"
@@ -15626,8 +15409,7 @@ export interface NormalizationMaxClassificationOutputShape {
   about: LocalizedTitleAndDescription;
 }
 export type NormalizationMaxClassificationRid = string;
-export interface NotAuthorizedToDeclassify {
-}
+export interface NotAuthorizedToDeclassify {}
 /**
  * User did not have sufficient permissions to remove one or more markings from a resource.
  */
@@ -15773,8 +15555,7 @@ export type NotificationType =
   | "INSTALL_JOB_FAILURE"
   | "OTHER_EVENT"
   | "OTHER_FAILURE";
-export interface NotStartedInstallPendingStatus {
-}
+export interface NotStartedInstallPendingStatus {}
 export interface NpmLocator {
   name: string;
   version: string;
@@ -15925,9 +15706,7 @@ export interface ObjectTypeOutputShape {
  */
 export interface ObjectTypeOutputSpecConfig {
   interfaceImplementationsToExclude: Array<InterfaceTypeRid>;
-  interfaceLinkImplementationsToExclude: Array<
-    ObjectTypeInterfaceLinkImplementation
-  >;
+  interfaceLinkImplementationsToExclude: Array<ObjectTypeInterfaceLinkImplementation>;
 }
 export type ObjectTypePropertyReference = BlockInternalId;
 export type ObjectTypeReference = BlockInternalId;
@@ -15937,8 +15716,7 @@ export type ObjectTypeReference = BlockInternalId;
  * addInterfaceRule where you need to specify what type of object you're creating.
  * NOTE: this is NOT an object instance.
  */
-export interface ObjectTypeReferenceType {
-}
+export interface ObjectTypeReferenceType {}
 /**
  * An ObjectTypeRid was referenced for which the shape id could not be resolved. This is typical if the
  * referenced ObjectType has not been included as an input/output in the block.
@@ -15983,8 +15761,7 @@ export interface ObjectViewTabShape {
   about: LocalizedTitleAndDescription;
   objectView: ObjectViewReference;
 }
-export interface ObjFormat {
-}
+export interface ObjFormat {}
 export interface OciLocator {
   name: string;
   tagOrDigest: TagOrDigest;
@@ -16014,8 +15791,7 @@ export type OggAudioFormat = OggAudioFormat_opus | OggAudioFormat_vorbis;
  * No resolved shape was specified, even though there are preset values on the shape. Optional shapes with
  * presets are unsupported.
  */
-export interface OmittedShapeForShapeWithPresets {
-}
+export interface OmittedShapeForShapeWithPresets {}
 /**
  * This hint can be used to inform consumers whether the number of links on the many side of a
  * OneToManyLinkDefinition is intended to be one or more.
@@ -16107,8 +15883,7 @@ export interface OntologyInstallLocation {
  * A block with Ontology inputs and/or outputs was requested to be installed, but no Ontology install location
  * was defined in the request.
  */
-export interface OntologyInstallLocationNotDefined {
-}
+export interface OntologyInstallLocationNotDefined {}
 export interface OntologyInterfaceTypeNotFound {
   interfaceTypeRid?: InterfaceTypeRid | null | undefined;
 }
@@ -16116,8 +15891,7 @@ export interface OntologyInterfaceTypeNotFound {
  * OntologyInstallLocation.useOntologyPackage was set to true, but the passed OntologyRid is the default
  * Ontology's Rid which is not allowed.
  */
-export interface OntologyPackageInDefaultOntologyNotAllowed {
-}
+export interface OntologyPackageInDefaultOntologyNotAllowed {}
 export interface OntologyProjectAssociation_useProject {
   type: "useProject";
   useProject: Void;
@@ -16164,8 +15938,7 @@ export interface OntologySdkV2EntityIdentifier {
 }
 export type OntologySdkVersion = string;
 export type OntologyVersion = string;
-export interface OpusFormat {
-}
+export interface OpusFormat {}
 /**
  * A mirror of com.palantir.apollo.maven.api.OrderableMavenCoordinate.
  */
@@ -17811,8 +17584,7 @@ export type PathPolicy =
   | PathPolicy_pathRequired
   | PathPolicy_pathNotSupported;
 
-export interface PdfFormat {
-}
+export interface PdfFormat {}
 export interface PeerProducerProfileIdentifier {
   peerProducerProfileRid: PeerProducerProfileRid;
   peerProducerUri: ProducerUri;
@@ -17893,8 +17665,7 @@ export interface PendingBlockSetVersionMetadata {
   versionId: BlockSetVersionId;
   versionIncrement?: VersionIncrement | null | undefined;
 }
-export interface PendingBuildInstallPendingStatus {
-}
+export interface PendingBuildInstallPendingStatus {}
 /**
  * `StoredInputBlockSetMappingInfo` but for pending block sets. The only difference is that this data structure
  * supports input shapes that can not be merged.
@@ -17940,10 +17711,8 @@ export interface PlaceholdersLocation {
 export interface PlainTextTypeUnsupported {
   unsupportedPlainTextType: string;
 }
-export interface PlyFormat {
-}
-export interface PngFormat {
-}
+export interface PlyFormat {}
+export interface PngFormat {}
 /**
  * Port configuration used for external networking
  */
@@ -17972,8 +17741,7 @@ export interface PotentialInputProvider {
   matchingOutputShapeIds: Array<OutputBlockSetShapeId>;
   upstream: ProductGroupMemberRid;
 }
-export interface PptxFormat {
-}
+export interface PptxFormat {}
 /**
  * RESOURCE_PREALLOCATION_REQUIRED requires the resource has been preallocated already
  * by the block that owns it, resulting in the resource being available during preallocation
@@ -17985,8 +17753,7 @@ export interface PptxFormat {
  */
 export type PreallocateAccessRequirementType =
   "RESOURCE_PREALLOCATION_REQUIRED";
-export interface PreallocatingInstallPendingStatus {
-}
+export interface PreallocatingInstallPendingStatus {}
 /**
  * Deprecated: Use StableFunctionsApiStabilityConfiguration instead.
  *
@@ -18001,8 +17768,7 @@ export interface PreallocatingInstallPendingStatus {
  *
  * This is the recommended configuration to ensure stability of function versions.
  */
-export interface PreserveFunctionVersionsConfiguration {
-}
+export interface PreserveFunctionVersionsConfiguration {}
 /**
  * Whether or not resolved presets will be enforced at installation time.
  * - SUGGESTED: The presets will be suggested to the installing user, but they can chose to override the value.
@@ -18298,10 +18064,8 @@ export type PrincipalType = "EVERYONE" | "GROUP" | "USER";
 /**
  * Automation is currently planning a potential upgrade, and has nothing to report yet
  */
-export interface ProcessingStatus {
-}
-export interface ProcessingStatusV3 {
-}
+export interface ProcessingStatus {}
+export interface ProcessingStatusV3 {}
 /**
  * Each peer producer service can support one or many producer URIs. These are static, low cardinality
  * identifiers for the type of data the producer supports. For example, foundry/peering supports
@@ -18393,8 +18157,7 @@ export interface ProductGroupValidationFindingDetail_duplicateOutputs {
 
 export interface ProductGroupValidationFindingDetail_incompatibleExternalRecommendationVersionRange {
   type: "incompatibleExternalRecommendationVersionRange";
-  incompatibleExternalRecommendationVersionRange:
-    IncompatibleExternalRecommendationVersionRange;
+  incompatibleExternalRecommendationVersionRange: IncompatibleExternalRecommendationVersionRange;
 }
 
 export interface ProductGroupValidationFindingDetail_memberDependencyCycle {
@@ -18442,8 +18205,7 @@ export type ProductGroupValidationFindingRid = string;
 /**
  * Validation settings for a product group.
  */
-export interface ProductGroupValidationSettings {
-}
+export interface ProductGroupValidationSettings {}
 export interface ProductGroupValidationStatus_valid {
   type: "valid";
   valid: ValidProductGroupValidationStatus;
@@ -18739,8 +18501,7 @@ export type RecommendationEntryBody =
 export type ReconcileAccessRequirementType =
   | "RESOURCE_EXISTENCE_REQUIRED"
   | "SCHEMA_UPDATE_REQUIRED";
-export interface ReconcilingInstallPendingStatus {
-}
+export interface ReconcilingInstallPendingStatus {}
 export interface RefreshSpecsConfig_refreshAll {
   type: "refreshAll";
   refreshAll: Void;
@@ -18802,8 +18563,7 @@ export interface RegisterKeyRequest {
   mavenCoordinates: MavenCoordinates;
   publicKey: SigningPublicKey;
 }
-export interface RegisterKeyResponse {
-}
+export interface RegisterKeyResponse {}
 export type ReleaseChannel = string;
 
 /**
@@ -18831,8 +18591,7 @@ export type RequestType = "ENCRYPT" | "DECRYPT";
 /**
  * A parameter shape specified in the block metadata is missing from the ResolvedActionType.
  */
-export interface RequiredActionParameterTypeShapeMissing {
-}
+export interface RequiredActionParameterTypeShapeMissing {}
 export interface ResolvedActionTypeParameterShape {
   actionTypeRid: ActionTypeRid;
   actionTypeVersion: ActionTypeVersion;
@@ -19306,14 +19065,12 @@ export interface ResolvedInputShape_functionContract {
 
 export interface ResolvedInputShape_functionVersionsConfiguration {
   type: "functionVersionsConfiguration";
-  functionVersionsConfiguration:
-    ResolvedFunctionVersionsConfigurationInputShape;
+  functionVersionsConfiguration: ResolvedFunctionVersionsConfigurationInputShape;
 }
 
 export interface ResolvedInputShape_functionsApiStabilityConfiguration {
   type: "functionsApiStabilityConfiguration";
-  functionsApiStabilityConfiguration:
-    ResolvedFunctionsApiStabilityConfigurationInputShape;
+  functionsApiStabilityConfiguration: ResolvedFunctionsApiStabilityConfigurationInputShape;
 }
 
 export interface ResolvedInputShape_fusionDocument {
@@ -19398,14 +19155,12 @@ export interface ResolvedInputShape_magritteSource {
 
 export interface ResolvedInputShape_magritteSourceConfigOverrides {
   type: "magritteSourceConfigOverrides";
-  magritteSourceConfigOverrides:
-    ResolvedMagritteSourceConfigOverridesInputShape;
+  magritteSourceConfigOverrides: ResolvedMagritteSourceConfigOverridesInputShape;
 }
 
 export interface ResolvedInputShape_magritteStreamingExtractConfigOverrides {
   type: "magritteStreamingExtractConfigOverrides";
-  magritteStreamingExtractConfigOverrides:
-    ResolvedMagritteStreamingExtractConfigOverridesInputShape;
+  magritteStreamingExtractConfigOverrides: ResolvedMagritteStreamingExtractConfigOverridesInputShape;
 }
 
 export interface ResolvedInputShape_markings {
@@ -19665,8 +19420,7 @@ export interface ResolvedInputShape_workshopApplication {
 
 export interface ResolvedInputShape_workshopApplicationSaveLocation {
   type: "workshopApplicationSaveLocation";
-  workshopApplicationSaveLocation:
-    ResolvedWorkshopApplicationSaveLocationInputShape;
+  workshopApplicationSaveLocation: ResolvedWorkshopApplicationSaveLocationInputShape;
 }
 /**
  * Resolved versions of the ``InputShape``. These contain references to actual entities that should satisfy
@@ -21086,8 +20840,7 @@ export type RoleSetId = string;
 /**
  * Will roll forward to the latest version that can be auto-upgraded to
  */
-export interface RollForwardStrategy {
-}
+export interface RollForwardStrategy {}
 export interface RollOffStrategy_rollForward {
   type: "rollForward";
   rollForward: RollForwardStrategy;
@@ -21117,8 +20870,7 @@ export interface RosettaDocsBundleShape {
   about: LocalizedTitleAndDescription;
 }
 export type RosettaProductId = string;
-export interface RtfFormat {
-}
+export interface RtfFormat {}
 export interface SatelliteImageryModelCreateBlockRequest {
   modelRid: string;
   modelVersionRid: string;
@@ -21139,8 +20891,7 @@ export interface SavedSearchAroundV2OutputShape {
 /**
  * A parameter type of ScenarioReferenceType.
  */
-export interface ScenarioReferenceType {
-}
+export interface ScenarioReferenceType {}
 export interface ScheduleCreateBlockRequest {
   scheduleRid: string;
   scheduleVersionRid?: string | null | undefined;
@@ -21264,8 +21015,7 @@ export interface SetBlockSetInstallationImmutabilityRequest {
   immutability: BlockSetInstallationImmutability;
   rolesMap: Record<RoleId, Array<RoleId>>;
 }
-export interface SetBlockSetInstallationImmutabilityResponse {
-}
+export interface SetBlockSetInstallationImmutabilityResponse {}
 export interface SetInputPresetRequest {
   enforcement?: PresetEnforcement | null | undefined;
   isDefault?: boolean | null | undefined;
@@ -21296,10 +21046,8 @@ export interface SetManagedStoreSettingsForOrgResponse {
 export interface SetMarketplaceMavenGroupRequest {
   mavenGroup: MavenGroup;
 }
-export interface SetMarketplaceMavenGroupResponse {
-}
-export interface SetPresetFromSourceRequest {
-}
+export interface SetMarketplaceMavenGroupResponse {}
+export interface SetPresetFromSourceRequest {}
 export interface SetPresetResolvedShapesOverridesRequest {
   defaultIndex?: number | null | undefined;
   resolvedShapes: Array<ResolvedBlockSetInputShape>;
@@ -21309,8 +21057,7 @@ export interface SetProjectImmutabilityRequest {
   projectRid: CompassProjectRid;
   rolesMap: Record<RoleId, Array<RoleId>>;
 }
-export interface SetProjectImmutabilityResponse {
-}
+export interface SetProjectImmutabilityResponse {}
 export interface SetProjectMutabilityAllowance_allowed {
   type: "allowed";
   allowed: Void;
@@ -22171,8 +21918,7 @@ export interface SingleOutputTypeDisplayMetadata {
 /**
  * An mp4 container which contains a single audio stream.
  */
-export interface SingleStreamMp4AudioContainerFormat {
-}
+export interface SingleStreamMp4AudioContainerFormat {}
 /**
  * An ogg container which contains a single audio stream.
  */
@@ -22182,8 +21928,7 @@ export interface SingleStreamOggAudioContainerFormat {
 /**
  * A webm container which contains a single audio stream.
  */
-export interface SingleStreamWebmAudioContainerFormat {
-}
+export interface SingleStreamWebmAudioContainerFormat {}
 export interface SingleVersionBlockReference {
   blockId: BlockId;
   blockVersionId: BlockVersionId;
@@ -22224,8 +21969,7 @@ export interface SnapshotMemberVersion {
  * Resource is temporarily disabled/paused.
  * Applied to resources that cannot be soft deleted using other modes.
  */
-export interface SoftDeleteDisable {
-}
+export interface SoftDeleteDisable {}
 export interface SoftDeleteMode_trash {
   type: "trash";
   trash: SoftDeleteTrash;
@@ -22254,16 +21998,13 @@ export type SoftDeleteMode =
  * Applied to immutable or versioned resources that do not create any conflict while existing and
  * are generally expected by downstream consumers to never get deleted.
  */
-export interface SoftDeleteSkip {
-}
+export interface SoftDeleteSkip {}
 /**
  * Resource is trashed and can be restored with its full state.
  * Used for resources that use Compass trashing.
  */
-export interface SoftDeleteTrash {
-}
-export interface SoftDeleteUninstallOptions {
-}
+export interface SoftDeleteTrash {}
+export interface SoftDeleteUninstallOptions {}
 export interface SolutionDesignCreateBlockRequest {
   diagramVersion?: number | null | undefined;
   rid: string;
@@ -22423,8 +22164,7 @@ export type StableBlockKey = StableBlockKey_rid;
  * This configuration is encouraged in production mode installations to ensure stability of function versions
  * and API names.
  */
-export interface StableFunctionsApiStabilityConfiguration {
-}
+export interface StableFunctionsApiStabilityConfiguration {}
 /**
  * A stable identifier for a shape, provided by integrations during packaging.
  * Typically used for shapes that represent parametrization values, or when integrations want to otherwise
@@ -22457,8 +22197,7 @@ export interface StaticDatasetCreateBlockRequest {
 /**
  * A stemma code repository. Currently this type should only be used to identify external transforms.
  */
-export interface StemmaRepositoryType {
-}
+export interface StemmaRepositoryType {}
 export interface StoredProcedureCreateBlockRequest {
   specVersionUuid: string;
   storedProcedureRid: string;
@@ -22534,13 +22273,11 @@ export interface StrictFolderTrackingMultipleDiscoverySpecs {
 /**
  * In strict folder tracking mode there needs to be exactly one discovery spec. The product has none.
  */
-export interface StrictFolderTrackingNoDiscoverySpec {
-}
+export interface StrictFolderTrackingNoDiscoverySpec {}
 /**
  * StringListType specifies that this parameter must be a list of Strings.
  */
-export interface StringListType {
-}
+export interface StringListType {}
 export interface StringMismatchError {
   actual: string;
   expected: string;
@@ -22548,8 +22285,7 @@ export interface StringMismatchError {
 /**
  * StringType specifies that this parameter must be a String.
  */
-export interface StringType {
-}
+export interface StringType {}
 export type StringValue = string;
 export type StringVersion = string;
 export interface StructFieldBaseParameterType_boolean {
@@ -22668,10 +22404,8 @@ export interface StructType {
 export interface StructV2BaseType {
   structFieldTypes: Array<BaseType>;
 }
-export interface SubmitJobDraftRequest {
-}
-export interface SubmitJobDraftResponse {
-}
+export interface SubmitJobDraftRequest {}
+export interface SubmitJobDraftResponse {}
 export interface SuccessGranularOutputSpecResult {
   blockSetBlockInstanceId?: BlockSetBlockInstanceId | null | undefined;
 }
@@ -22913,13 +22647,11 @@ export type ThirdPartyApplicationRid = string;
 export interface ThirdPartyApplicationShape {
   about: LocalizedTitleAndDescription;
 }
-export interface TiffFormat {
-}
+export interface TiffFormat {}
 /**
  * TimeSeriesReferenceType specifies that this parameter must be a TimeSeriesReference.
  */
-export interface TimeSeriesReferenceType {
-}
+export interface TimeSeriesReferenceType {}
 export interface TimeSeriesSyncCreateBlockRequest {
   rid: string;
   version?: string | null | undefined;
@@ -22934,13 +22666,11 @@ export type TimeSeriesSyncType = "NUMERIC" | "CATEGORICAL";
 /**
  * TimestampListType specifies that this parameter must be a list of Timestamps.
  */
-export interface TimestampListType {
-}
+export interface TimestampListType {}
 /**
  * TimestampType specifies that this parameter must be a Timestamp.
  */
-export interface TimestampType {
-}
+export interface TimestampType {}
 /**
  * We current only provide support for overriding the fallback title, not the localized mappings.
  */
@@ -22965,8 +22695,7 @@ export interface ToBeAppliedExternalRecommendationV2 {
   upstreamBlockSet: BlockSetId;
   upstreamBlockSetInstallation: BlockSetReference;
 }
-export interface TopLevelAutomapping {
-}
+export interface TopLevelAutomapping {}
 export interface TransformsCreateBlockRequest {
   jobSpecRid: string;
 }
@@ -23034,10 +22763,8 @@ export interface TransportVersionedMarketplaceMetadata {
   metadata: StoreMetadata;
   version: MarketplaceMetadataVersion;
 }
-export interface TsVideoContainerFormat {
-}
-export interface TxtFormat {
-}
+export interface TsVideoContainerFormat {}
+export interface TxtFormat {}
 /**
  * This is a weakly typed error item, which is used by integrating services to surface information to users.
  */
@@ -23161,8 +22888,7 @@ export interface UninstallResponseFailure {
     ResolvedOutputShape
   >;
 }
-export interface UninstallResponseSuccess {
-}
+export interface UninstallResponseSuccess {}
 export interface UnknownMarketplaceCreateBlockVersionError {
   unsafeMessage: string;
 }
@@ -23191,8 +22917,7 @@ export interface UnresolvedProductGroupMember {
  * output function shapes, mostly  to allow for more complex types to be used in the future without breaking
  * existing stored shapes.
  */
-export interface UnspecifiedParameterType {
-}
+export interface UnspecifiedParameterType {}
 export interface UnusedShapeStatusEntry {
   resolvedOutputShape: ResolvedBlockSetOutputShape;
 }
@@ -23205,16 +22930,14 @@ export type UpdateAboutRequest = UpdateAboutRequest_set;
 export interface UpdateBlockSetMetadataRequest {
   mavenProductId: MavenProductId;
 }
-export interface UpdateBlockSetMetadataResponse {
-}
+export interface UpdateBlockSetMetadataResponse {}
 /**
  * Request to update the changelog of a block set version.
  */
 export interface UpdateBlockSetVersionChangelogRequest {
   changelog: Changelog;
 }
-export interface UpdateBlockSetVersionChangelogResponse {
-}
+export interface UpdateBlockSetVersionChangelogResponse {}
 /**
  * Request to update the documentation of a block set version. Only fields which are specified in the request
  * will be updated, all other fields will be left untouched.
@@ -23231,8 +22954,7 @@ export interface UpdateBlockSetVersionDocumentationRequest {
   removeThumbnail?: boolean | null | undefined;
   thumbnail?: AttachmentId | null | undefined;
 }
-export interface UpdateBlockSetVersionDocumentationResponse {
-}
+export interface UpdateBlockSetVersionDocumentationResponse {}
 /**
  * The last time the job was updated up to the end of reconcile. This is to ensure consistency as builds and
  * indexing are included in the duration of installations.
@@ -23286,8 +23008,7 @@ export interface UpdateKeyRequest {
   mavenCoordinates: MavenCoordinates;
   publicKey: SigningPublicKey;
 }
-export interface UpdateKeyResponse {
-}
+export interface UpdateKeyResponse {}
 export interface UpdateMarketplaceMetadataVersionRequest_set {
   type: "set";
   set: MarketplaceMetadataVersion;
@@ -23346,10 +23067,8 @@ export interface UpdatePendingBlockSetVersionMetadataRequestV3 {
   typedTags?: UpdateTypedTagsRequest | null | undefined;
   versionIncrement?: UpdateVersionIncrementRequest | null | undefined;
 }
-export interface UpdatePendingBlockSetVersionMetadataResponse {
-}
-export interface UpdatePendingBlockSetVersionMetadataResponseV3 {
-}
+export interface UpdatePendingBlockSetVersionMetadataResponse {}
+export interface UpdatePendingBlockSetVersionMetadataResponseV3 {}
 /**
  * Request to update the output specs of a pending block set version.
  */
@@ -23427,8 +23146,7 @@ export interface UpdateRecommendationMetadataRequest {
   targetMarketplaceRid: MarketplaceRid;
   upstreamBlockSet: BlockSetId;
 }
-export interface UpdateRecommendationMetadataResponse {
-}
+export interface UpdateRecommendationMetadataResponse {}
 export interface UpdateTagsV2Request_set {
   type: "set";
   set: BlockSetCategorizedTags;
@@ -23559,8 +23277,7 @@ export type ValidateMarketplaceMavenGroupResponse =
   | ValidateMarketplaceMavenGroupResponse_success
   | ValidateMarketplaceMavenGroupResponse_failure;
 
-export interface ValidateMarketplaceMavenGroupSuccess {
-}
+export interface ValidateMarketplaceMavenGroupSuccess {}
 /**
  * Request to validate a product group.
  */
@@ -23576,8 +23293,7 @@ export interface ValidateProductsResponse {
   memberVersions: Array<SnapshotMemberVersion>;
   status: ProductGroupValidationStatus;
 }
-export interface ValidProductGroupValidationStatus {
-}
+export interface ValidProductGroupValidationStatus {}
 /**
  * A string representing a value type's api name. Used as a stable, cross-stack identifier for service managed value types.
  */
@@ -23708,8 +23424,7 @@ export interface VersionedObjectSetEntityIdentifier {
  * The version packaged for that Versioned Object Set does not correspond to its latest version.
  * Only packaging latest is currently supported.
  */
-export interface VersionedObjectSetNotLatestError {
-}
+export interface VersionedObjectSetNotLatestError {}
 export type VersionedObjectSetRid = string;
 export interface VersionedObjectSetShape {
   about: LocalizedTitleAndDescription;
@@ -23812,16 +23527,13 @@ export interface VirtualTableLocatorIdentifier {
   branch?: string | null | undefined;
   rid: string;
 }
-export interface Void {
-}
+export interface Void {}
 /**
  * Represents a function that does not return a value. This is typically used for functions
  * that perform side effects (such as actions or ontology edits) without producing an output.
  */
-export interface VoidOutputType {
-}
-export interface VorbisFormat {
-}
+export interface VoidOutputType {}
+export interface VorbisFormat {}
 export interface VortexCreateBlockRequest {
   rid: string;
 }
@@ -23855,10 +23567,8 @@ export type WarehouseId = string;
  * ID internal to a warehouse for managing marketplaces
  */
 export type WarehouseInternalId = string;
-export interface WarnProductGroupValidationStatus {
-}
-export interface WavFormat {
-}
+export interface WarnProductGroupValidationStatus {}
+export interface WavFormat {}
 export interface WebhookEntityIdentifier {
   version: WebhookVersion;
   webhookRid: WebhookRid;
@@ -23884,8 +23594,7 @@ export interface WebmStreamingFormat {
   videoCodec: WebmVideoCodec;
 }
 export type WebmVideoCodec = "VP8" | "VP9";
-export interface WebpFormat {
-}
+export interface WebpFormat {}
 export interface WidgetIdentifier_ridAndVersion {
   type: "ridAndVersion";
   ridAndVersion: WidgetRidAndVersionIdentifier;
@@ -24029,8 +23738,7 @@ export type WorkshopRid = string;
 export interface WritebackCreateBlockRequest {
   rid: string;
 }
-export interface XlsxFormat {
-}
+export interface XlsxFormat {}
 /**
  * ZoneId should be formattable by the java.time.ZoneId.of(String)
  * Examples "America/New_York", "UTC", "UTC+5"

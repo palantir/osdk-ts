@@ -15,6 +15,7 @@
  */
 
 import type { InterfaceMetadata, ObjectMetadata } from "@osdk/api";
+
 import type { DerivedPropertyRuntimeMetadata } from "../../derivedProperties/derivedPropertyRuntimeMetadata.js";
 import { extractNamespace } from "../../internal/conversions/extractNamespace.js";
 import {
@@ -63,7 +64,7 @@ export interface PropertyTypeSource {
 export function resolvePropertyType(
   holder: PropertyTypeSource | undefined,
   key: string,
-  derivedPropertyMetadata: DerivedPropertyRuntimeMetadata = {},
+  derivedPropertyMetadata: DerivedPropertyRuntimeMetadata = {}
 ): string | undefined {
   const objectType = holder?.[ObjectDefRef]?.properties?.[key]?.type;
   if (typeof objectType === "string") {
@@ -71,13 +72,13 @@ export function resolvePropertyType(
   }
   const interfaceType = resolveInterfacePropertyType(
     holder?.[InterfaceDefRef],
-    key,
+    key
   );
   if (typeof interfaceType === "string") {
     return interfaceType;
   }
-  const selectedType = derivedPropertyMetadata[key]
-    ?.selectedOrCollectedPropertyType?.type;
+  const selectedType =
+    derivedPropertyMetadata[key]?.selectedOrCollectedPropertyType?.type;
   return typeof selectedType === "string" ? selectedType : undefined;
 }
 
@@ -91,7 +92,7 @@ export function resolvePropertyType(
  */
 function resolveInterfacePropertyType(
   interfaceDef: InterfaceMetadata | undefined,
-  key: string,
+  key: string
 ): string | undefined {
   if (interfaceDef == null) {
     return undefined;

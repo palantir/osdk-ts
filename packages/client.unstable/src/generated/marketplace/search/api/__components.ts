@@ -21,8 +21,7 @@ import type {
   BlockSetTagCategory as _api_BlockSetTagCategory,
   BlockSetVersionId as _api_BlockSetVersionId,
   CreationTimestamp as _api_CreationTimestamp,
-  MarketplaceFoundrySearchSecurityRid
-    as _api_MarketplaceFoundrySearchSecurityRid,
+  MarketplaceFoundrySearchSecurityRid as _api_MarketplaceFoundrySearchSecurityRid,
   MarketplaceRid as _api_MarketplaceRid,
   MultipassUserId as _api_MultipassUserId,
   ProductDisplayVersion as _api_ProductDisplayVersion,

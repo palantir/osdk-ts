@@ -38,6 +38,9 @@ const OXC_NESTED_CONFIG_PACKAGES = {
   "react-components-storybook":
     "packages/react-components-storybook/oxlint.config.ts",
   "react-components": "packages/react-components/oxlint.config.ts",
+  "client.unstable": "packages/client.unstable/oxlint.config.ts",
+  "client.unstable.tpsa": "packages/client.unstable.tpsa/oxlint.config.ts",
+  "client": "packages/client/oxlint.config.ts",
 };
 
 // All oxc packages (root-config + nested-config) are excluded from the ESLint +

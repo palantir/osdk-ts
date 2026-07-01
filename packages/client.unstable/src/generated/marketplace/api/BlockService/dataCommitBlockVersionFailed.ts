@@ -15,10 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BlockVersionId as _api_BlockVersionId,
-  DataCommitBlockVersionFailedRequest
-    as _api_DataCommitBlockVersionFailedRequest,
+  DataCommitBlockVersionFailedRequest as _api_DataCommitBlockVersionFailedRequest,
 } from "../__components.js";
 
 /**
@@ -32,12 +32,12 @@ import type {
 export async function dataCommitBlockVersionFailed(
   ctx: ConjureContext,
   blockVersionId: _api_BlockVersionId,
-  request: _api_DataCommitBlockVersionFailedRequest,
+  request: _api_DataCommitBlockVersionFailedRequest
 ): Promise<void> {
   return conjureFetch(
     ctx,
     `/blocks/versions/${blockVersionId}/data-upload-failed`,
     "POST",
-    request,
+    request
   );
 }

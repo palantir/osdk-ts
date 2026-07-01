@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   MonitorRid as _api_MonitorRid,
   MonitorVersion as _api_MonitorVersion,
@@ -34,12 +35,12 @@ export async function publishMonitorVersion(
   ctx: ConjureContext,
   monitorRid: _api_MonitorRid,
   monitorVersion: _api_MonitorVersion,
-  request: _api_registry_PublishMonitorVersionRequest,
+  request: _api_registry_PublishMonitorVersionRequest
 ): Promise<_api_registry_PublishMonitorVersionResponse> {
   return conjureFetch(
     ctx,
     `/registry/v0/monitors/${monitorRid}/versions/${monitorVersion}/publish`,
     "POST",
-    request,
+    request
   );
 }

@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { ListSdkGeneratorVersionsResponse } from "../ListSdkGeneratorVersionsResponse.js";
 import type { PageSize } from "../PageSize.js";
 import type { SdkGeneratorType } from "../SdkGeneratorType.js";
@@ -30,13 +31,13 @@ export async function listSdkGeneratorVersions(
   sdkGeneratorType: SdkGeneratorType,
   includeRecalled: boolean | undefined,
   pageSize: PageSize | undefined,
-  pageToken: SdkGeneratorVersionPageToken | undefined,
+  pageToken: SdkGeneratorVersionPageToken | undefined
 ): Promise<ListSdkGeneratorVersionsResponse> {
   return conjureFetch(
     ctx,
     `/sdk-discovery/generator/${sdkGeneratorType}/versions`,
     "GET",
     undefined,
-    { includeRecalled, pageSize, pageToken },
+    { includeRecalled, pageSize, pageToken }
   );
 }

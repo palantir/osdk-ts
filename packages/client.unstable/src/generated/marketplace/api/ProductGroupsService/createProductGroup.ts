@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   CreateProductGroupRequest as _api_CreateProductGroupRequest,
   CreateProductGroupResponse as _api_CreateProductGroupResponse,
@@ -25,7 +26,7 @@ import type {
  */
 export async function createProductGroup(
   ctx: ConjureContext,
-  request: _api_CreateProductGroupRequest,
+  request: _api_CreateProductGroupRequest
 ): Promise<_api_CreateProductGroupResponse> {
   return conjureFetch(ctx, `/product-groups`, "POST", request);
 }

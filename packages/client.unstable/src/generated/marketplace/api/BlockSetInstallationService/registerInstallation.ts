@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   RegisterInstallationRequest as _api_RegisterInstallationRequest,
   RegisterInstallationResponse as _api_RegisterInstallationResponse,
@@ -34,7 +35,7 @@ import type {
  */
 export async function registerInstallation(
   ctx: ConjureContext,
-  request: _api_RegisterInstallationRequest,
+  request: _api_RegisterInstallationRequest
 ): Promise<_api_RegisterInstallationResponse> {
   return conjureFetch(ctx, `/block-set-installation/register`, "POST", request);
 }

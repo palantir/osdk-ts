@@ -72,8 +72,7 @@ export interface ApolloUniversalInstallationConfigurationV0 {
 }
 export interface SecretResolvedBlockSetInputShape_edgePipelineMagritteSource {
   type: "edgePipelineMagritteSource";
-  edgePipelineMagritteSource:
-    SecretResolvedEdgePipelineMagritteSourceInputShape;
+  edgePipelineMagritteSource: SecretResolvedEdgePipelineMagritteSourceInputShape;
 }
 
 export interface SecretResolvedBlockSetInputShape_markings {

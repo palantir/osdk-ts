@@ -26,6 +26,7 @@ import type {
 import { Employee, FooInterface, Todo } from "@osdk/client.test.ontology";
 import type { SearchJsonQueryV2 } from "@osdk/foundry.ontologies";
 import { describe, expect, expectTypeOf, it } from "vitest";
+
 import { createMinimalClient } from "../createMinimalClient.js";
 import {
   buildSelectV2,
@@ -55,131 +56,109 @@ describe(fetchPage, () => {
         L extends SelectArgToKeys<T, A>,
         R extends A["$includeRid"] extends true ? true : false,
       >() {
-        return fetchPage<
-          T,
-          L & PropertyKeys<T>,
-          R,
-          "drop",
-          false
-        >({} as any, {} as any, {} as any);
+        return fetchPage<T, L & PropertyKeys<T>, R, "drop", false>(
+          {} as any,
+          {} as any,
+          {} as any
+        );
       }
     }
 
-    expectTypeOf<Awaited<ReturnType<Helper<TodoDef, {}>["fetchPage"]>>>()
-      .branded
-      .toEqualTypeOf<PageResult<Osdk<TodoDef, "$all">>>();
+    expectTypeOf<
+      Awaited<ReturnType<Helper<TodoDef, {}>["fetchPage"]>>
+    >().branded.toEqualTypeOf<PageResult<Osdk<TodoDef, "$all">>>();
 
     // e.g. fetchPage({ select: [] });
     expectTypeOf<
       Awaited<ReturnType<Helper<TodoDef, { $select: [] }>["fetchPage"]>>
-    >()
-      .branded
-      .toEqualTypeOf<PageResult<Osdk<TodoDef, "$all">>>();
+    >().branded.toEqualTypeOf<PageResult<Osdk<TodoDef, "$all">>>();
 
     // e.g. fetchPage()
     expectTypeOf<
-      Awaited<
-        ReturnType<
-          Helper<TodoDef, FetchPageArgs<TodoDef>>["fetchPage"]
-        >
-      >
-    >()
-      .branded
-      .toEqualTypeOf<PageResult<Osdk<TodoDef, "$all">>>();
+      Awaited<ReturnType<Helper<TodoDef, FetchPageArgs<TodoDef>>["fetchPage"]>>
+    >().branded.toEqualTypeOf<PageResult<Osdk<TodoDef, "$all">>>();
 
     // e.g. fetchPage({ $select: ["text"]}
     expectTypeOf<
-      Awaited<
-        ReturnType<Helper<TodoDef, { $select: ["text"] }>["fetchPage"]>
-      >
-    >()
-      .branded
-      .toEqualTypeOf<PageResult<Osdk<TodoDef, "text">>>();
+      Awaited<ReturnType<Helper<TodoDef, { $select: ["text"] }>["fetchPage"]>>
+    >().branded.toEqualTypeOf<PageResult<Osdk<TodoDef, "text">>>();
   });
 
   it("converts interface objectsets to search properly", () => {
-    expect(objectSetToSearchJsonV2(
-      {
-        type: "filter",
-        objectSet: {
+    expect(
+      objectSetToSearchJsonV2(
+        {
           type: "filter",
           objectSet: {
-            type: "base",
-            objectType: "Todo",
+            type: "filter",
+            objectSet: {
+              type: "base",
+              objectType: "Todo",
+            },
+            where: {
+              type: "eq",
+              field: "text",
+              value: "hello",
+            },
           },
+
           where: {
-            type: "eq",
-            field: "text",
-            value: "hello",
+            type: "gt",
+            field: "id",
+            value: 2,
           },
         },
-
-        where: {
+        "Todo",
+        undefined
+      )
+    ).toEqual({
+      type: "and",
+      value: [
+        {
           type: "gt",
           field: "id",
           value: 2,
         },
-      },
-      "Todo",
-      undefined,
-    )).toEqual(
-      {
-        type: "and",
-        value: [
-          {
-            type: "gt",
-            field: "id",
-            value: 2,
-          },
-          {
-            type: "eq",
-            field: "text",
-            value: "hello",
-          },
-        ],
-      } satisfies SearchJsonQueryV2,
-    );
+        {
+          type: "eq",
+          field: "text",
+          value: "hello",
+        },
+      ],
+    } satisfies SearchJsonQueryV2);
   });
 
   it("converts interface objectsets to search properly part 2", () => {
-    const client = createMinimalClient(
-      metadata,
-      "https://foo",
-      async () => "",
-    );
-    const objectSet = createObjectSet(Todo, client).where({
-      text: "hello",
-    }).where({
-      id: { $gt: 2 },
-    });
+    const client = createMinimalClient(metadata, "https://foo", async () => "");
+    const objectSet = createObjectSet(Todo, client)
+      .where({
+        text: "hello",
+      })
+      .where({
+        id: { $gt: 2 },
+      });
 
     const wireObjectSet = getWireObjectSet(objectSet);
 
-    expect(objectSetToSearchJsonV2(wireObjectSet, "Todo", undefined)).toEqual(
-      {
-        type: "and",
-        value: [
-          {
-            type: "gt",
-            field: "id",
-            value: 2,
-          },
-          {
-            type: "eq",
-            field: "text",
-            value: "hello",
-          },
-        ],
-      } satisfies SearchJsonQueryV2,
-    );
+    expect(objectSetToSearchJsonV2(wireObjectSet, "Todo", undefined)).toEqual({
+      type: "and",
+      value: [
+        {
+          type: "gt",
+          field: "id",
+          value: 2,
+        },
+        {
+          type: "eq",
+          field: "text",
+          value: "hello",
+        },
+      ],
+    } satisfies SearchJsonQueryV2);
   });
 
   it("converts interface object set for new API correctly", () => {
-    const client = createMinimalClient(
-      metadata,
-      "https://foo",
-      async () => "",
-    );
+    const client = createMinimalClient(metadata, "https://foo", async () => "");
     const objectSet = createObjectSet(FooInterface, client).where({
       fooSpt: "hello",
     });
@@ -189,65 +168,55 @@ describe(fetchPage, () => {
     expect(
       resolveInterfaceObjectSet(wireObjectSet, "FooInterface", {
         $includeAllBaseObjectProperties: true,
-      }),
-    ).toEqual(
-      {
-        type: "intersect",
-        objectSets: [
-          {
-            type: "filter",
-            where: {
-              type: "eq",
-              field: "fooSpt",
-              value: "hello",
-            },
-            objectSet: { interfaceType: "FooInterface", type: "interfaceBase" },
+      })
+    ).toEqual({
+      type: "intersect",
+      objectSets: [
+        {
+          type: "filter",
+          where: {
+            type: "eq",
+            field: "fooSpt",
+            value: "hello",
           },
-          {
-            type: "interfaceBase",
-            interfaceType: "FooInterface",
-            includeAllBaseObjectProperties: true,
-          },
-        ],
-      },
-    );
+          objectSet: { interfaceType: "FooInterface", type: "interfaceBase" },
+        },
+        {
+          type: "interfaceBase",
+          interfaceType: "FooInterface",
+          includeAllBaseObjectProperties: true,
+        },
+      ],
+    });
 
     expect(
-      resolveInterfaceObjectSet(wireObjectSet, "FooInterface", {}),
-    ).toEqual(
-      {
-        type: "filter",
-        where: {
-          type: "eq",
-          field: "fooSpt",
-          value: "hello",
-        },
-        objectSet: { interfaceType: "FooInterface", type: "interfaceBase" },
+      resolveInterfaceObjectSet(wireObjectSet, "FooInterface", {})
+    ).toEqual({
+      type: "filter",
+      where: {
+        type: "eq",
+        field: "fooSpt",
+        value: "hello",
       },
-    );
+      objectSet: { interfaceType: "FooInterface", type: "interfaceBase" },
+    });
     expect(
       resolveInterfaceObjectSet(wireObjectSet, "FooInterface", {
         $includeAllBaseObjectProperties: false,
-      }),
-    ).toEqual(
-      {
-        type: "filter",
-        where: {
-          type: "eq",
-          field: "fooSpt",
-          value: "hello",
-        },
-        objectSet: { interfaceType: "FooInterface", type: "interfaceBase" },
+      })
+    ).toEqual({
+      type: "filter",
+      where: {
+        type: "eq",
+        field: "fooSpt",
+        value: "hello",
       },
-    );
+      objectSet: { interfaceType: "FooInterface", type: "interfaceBase" },
+    });
   });
 
   it("where clause keys correctly typed", () => {
-    const client = createMinimalClient(
-      metadata,
-      "https://foo",
-      async () => "",
-    );
+    const client = createMinimalClient(metadata, "https://foo", async () => "");
     const objectSet = createObjectSet(Todo, client);
     const objectSetWithSpecialPropertyTypes = createObjectSet(Employee, client);
 
@@ -289,11 +258,7 @@ describe(fetchPage, () => {
   });
 
   it("supports string comparison filters (gt, gte, lt, lte) on string properties", () => {
-    const client = createMinimalClient(
-      metadata,
-      "https://foo",
-      async () => "",
-    );
+    const client = createMinimalClient(metadata, "https://foo", async () => "");
     const objectSet = createObjectSet(Todo, client);
 
     // String properties should support all comparison operators
@@ -323,11 +288,7 @@ describe(fetchPage, () => {
   });
 
   it("does not expose string comparison filters on non-string properties", () => {
-    const client = createMinimalClient(
-      metadata,
-      "https://foo",
-      async () => "",
-    );
+    const client = createMinimalClient(metadata, "https://foo", async () => "");
     const objectSetWithSpecialPropertyTypes = createObjectSet(Employee, client);
 
     // geotimeSeriesReference should NOT support string comparison operators
@@ -363,53 +324,45 @@ describe(fetchPage, () => {
     it("properly returns the correct string for includeRid", () => {
       expectTypeOf<
         Awaited<FetchPageResult<TodoDef, "text", false, "throw", false>>
-      >()
-        .toEqualTypeOf<{
-          data: Osdk<TodoDef, "text">[];
-          nextPageToken: string | undefined;
-          totalCount: string;
-        }>();
+      >().toEqualTypeOf<{
+        data: Osdk<TodoDef, "text">[];
+        nextPageToken: string | undefined;
+        totalCount: string;
+      }>();
 
       expectTypeOf<
         Awaited<FetchPageResult<TodoDef, "text", true, false, false>>
-      >()
-        .branded
-        .toEqualTypeOf<{
-          data: Osdk<TodoDef, "text" | "$rid" | "$notStrict">[];
-          nextPageToken: string | undefined;
-          totalCount: string;
-        }>();
+      >().branded.toEqualTypeOf<{
+        data: Osdk<TodoDef, "text" | "$rid" | "$notStrict">[];
+        nextPageToken: string | undefined;
+        totalCount: string;
+      }>();
     });
 
     it("works with $all", () => {
       expectTypeOf<
         Awaited<FetchPageResult<TodoDef, "text" | "id", false, "drop", false>>
-      >().branded
-        .toEqualTypeOf<{
-          data: Osdk<TodoDef>[];
-          nextPageToken: string | undefined;
-          totalCount: string;
-        }>();
+      >().branded.toEqualTypeOf<{
+        data: Osdk<TodoDef>[];
+        nextPageToken: string | undefined;
+        totalCount: string;
+      }>();
 
       expectTypeOf<
         Awaited<FetchPageResult<TodoDef, "text" | "id", true, "drop", false>>
-      >()
-        .branded
-        .toEqualTypeOf<{
-          data: Osdk<TodoDef, "$all" | "$rid">[];
-          nextPageToken: string | undefined;
-          totalCount: string;
-        }>();
+      >().branded.toEqualTypeOf<{
+        data: Osdk<TodoDef, "$all" | "$rid">[];
+        nextPageToken: string | undefined;
+        totalCount: string;
+      }>();
 
       expectTypeOf<
         Awaited<FetchPageResult<TodoDef, "text" | "id", true, "drop", false>>
-      >()
-        .branded
-        .toEqualTypeOf<{
-          data: Osdk<TodoDef, "$all" | "$rid">[];
-          nextPageToken: string | undefined;
-          totalCount: string;
-        }>();
+      >().branded.toEqualTypeOf<{
+        data: Osdk<TodoDef, "$all" | "$rid">[];
+        nextPageToken: string | undefined;
+        totalCount: string;
+      }>();
 
       expectTypeOf<
         Awaited<
@@ -421,13 +374,11 @@ describe(fetchPage, () => {
             false
           >
         >
-      >()
-        .branded
-        .toEqualTypeOf<{
-          data: Osdk<FooInterface, "$all" | "$rid">[];
-          nextPageToken: string | undefined;
-          totalCount: string;
-        }>();
+      >().branded.toEqualTypeOf<{
+        data: Osdk<FooInterface, "$all" | "$rid">[];
+        nextPageToken: string | undefined;
+        totalCount: string;
+      }>();
 
       expectTypeOf<
         Awaited<
@@ -439,13 +390,11 @@ describe(fetchPage, () => {
             false
           >
         >
-      >()
-        .branded
-        .toEqualTypeOf<{
-          data: Osdk<FooInterface, "$all" | "$rid">[];
-          nextPageToken: string | undefined;
-          totalCount: string;
-        }>();
+      >().branded.toEqualTypeOf<{
+        data: Osdk<FooInterface, "$all" | "$rid">[];
+        nextPageToken: string | undefined;
+        totalCount: string;
+      }>();
     });
   });
 
@@ -456,19 +405,13 @@ describe(fetchPage, () => {
         apiName: "SimpleObject",
       };
 
-      const result = remapPropertyNames(
-        objectType,
-        ["firstName", "lastName"],
-      );
+      const result = remapPropertyNames(objectType, ["firstName", "lastName"]);
 
       expect(result).toEqual(["firstName", "lastName"]);
     });
 
     it("returns original names when objectOrInterface is undefined", () => {
-      const result = remapPropertyNames(
-        undefined,
-        ["firstName", "lastName"],
-      );
+      const result = remapPropertyNames(undefined, ["firstName", "lastName"]);
 
       expect(result).toEqual(["firstName", "lastName"]);
     });
@@ -479,10 +422,11 @@ describe(fetchPage, () => {
         apiName: "com.example.namespace.MyInterface",
       };
 
-      const result = remapPropertyNames(
-        interfaceType,
-        ["firstName", "lastName", "age"],
-      );
+      const result = remapPropertyNames(interfaceType, [
+        "firstName",
+        "lastName",
+        "age",
+      ]);
 
       expect(result).toEqual([
         "com.example.namespace.firstName",
@@ -497,10 +441,10 @@ describe(fetchPage, () => {
         apiName: "com.example.namespace.MyInterface",
       };
 
-      const result = remapPropertyNames(
-        interfaceType,
-        ["com.example.namespace.firstName", "lastName"],
-      );
+      const result = remapPropertyNames(interfaceType, [
+        "com.example.namespace.firstName",
+        "lastName",
+      ]);
 
       expect(result).toEqual([
         "com.example.namespace.firstName",
@@ -514,10 +458,10 @@ describe(fetchPage, () => {
         apiName: "MyInterface",
       };
 
-      const result = remapPropertyNames(
-        interfaceType,
-        ["firstName", "lastName"],
-      );
+      const result = remapPropertyNames(interfaceType, [
+        "firstName",
+        "lastName",
+      ]);
 
       expect(result).toEqual(["firstName", "lastName"]);
     });
@@ -538,7 +482,7 @@ describe(fetchPage, () => {
       const result = buildSelectV2(
         ["firstName", "lastName"],
         undefined,
-        undefined,
+        undefined
       );
       expect(result).toEqual([
         { type: "property", apiName: "firstName" },
@@ -547,46 +491,68 @@ describe(fetchPage, () => {
     });
 
     it("builds selectV2 entry for applyMainValue modifier", () => {
-      const result = buildSelectV2(["myStruct"], {
-        myStruct: "applyMainValue",
-      }, undefined);
+      const result = buildSelectV2(
+        ["myStruct"],
+        {
+          myStruct: "applyMainValue",
+        },
+        undefined
+      );
 
-      expect(result).toEqual([{
-        type: "propertyWithLoadLevel",
-        propertyIdentifier: { type: "property", apiName: "myStruct" },
-        loadLevel: { type: "extractMainValue" },
-      }]);
+      expect(result).toEqual([
+        {
+          type: "propertyWithLoadLevel",
+          propertyIdentifier: { type: "property", apiName: "myStruct" },
+          loadLevel: { type: "extractMainValue" },
+        },
+      ]);
     });
 
     it("builds selectV2 entry for applyReducers modifier", () => {
-      const result = buildSelectV2(["scores"], {
-        scores: "applyReducers",
-      }, undefined);
+      const result = buildSelectV2(
+        ["scores"],
+        {
+          scores: "applyReducers",
+        },
+        undefined
+      );
 
-      expect(result).toEqual([{
-        type: "propertyWithLoadLevel",
-        propertyIdentifier: { type: "property", apiName: "scores" },
-        loadLevel: { type: "applyReducers" },
-      }]);
+      expect(result).toEqual([
+        {
+          type: "propertyWithLoadLevel",
+          propertyIdentifier: { type: "property", apiName: "scores" },
+          loadLevel: { type: "applyReducers" },
+        },
+      ]);
     });
 
     it("builds selectV2 entry for applyReducersAndExtractMainValue modifier", () => {
-      const result = buildSelectV2(["items"], {
-        items: "applyReducersAndExtractMainValue",
-      }, undefined);
+      const result = buildSelectV2(
+        ["items"],
+        {
+          items: "applyReducersAndExtractMainValue",
+        },
+        undefined
+      );
 
-      expect(result).toEqual([{
-        type: "propertyWithLoadLevel",
-        propertyIdentifier: { type: "property", apiName: "items" },
-        loadLevel: { type: "applyReducersAndExtractMainValue" },
-      }]);
+      expect(result).toEqual([
+        {
+          type: "propertyWithLoadLevel",
+          propertyIdentifier: { type: "property", apiName: "items" },
+          loadLevel: { type: "applyReducersAndExtractMainValue" },
+        },
+      ]);
     });
 
     it("combines select and modifiers correctly", () => {
-      const result = buildSelectV2(["firstName", "myStruct", "scores"], {
-        myStruct: "applyMainValue",
-        scores: "applyReducers",
-      }, undefined);
+      const result = buildSelectV2(
+        ["firstName", "myStruct", "scores"],
+        {
+          myStruct: "applyMainValue",
+          scores: "applyReducers",
+        },
+        undefined
+      );
 
       expect(result).toHaveLength(3);
       expect(result).toContainEqual({ type: "property", apiName: "firstName" });
@@ -603,9 +569,13 @@ describe(fetchPage, () => {
     });
 
     it("uses allProperties when select is not provided but modifiers are", () => {
-      const result = buildSelectV2(undefined, {
-        myStruct: "applyMainValue",
-      }, ["id", "firstName", "lastName", "myStruct"]);
+      const result = buildSelectV2(
+        undefined,
+        {
+          myStruct: "applyMainValue",
+        },
+        ["id", "firstName", "lastName", "myStruct"]
+      );
 
       expect(result).toHaveLength(4);
       expect(result).toContainEqual({ type: "property", apiName: "id" });

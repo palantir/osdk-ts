@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { BlockSetInstallationJobRid as _api_BlockSetInstallationJobRid } from "../__components.js";
 
 /**
@@ -22,11 +23,11 @@ import type { BlockSetInstallationJobRid as _api_BlockSetInstallationJobRid } fr
  */
 export async function cancelBlockSetInstallationJob(
   ctx: ConjureContext,
-  jobRid: _api_BlockSetInstallationJobRid,
+  jobRid: _api_BlockSetInstallationJobRid
 ): Promise<void> {
   return conjureFetch(
     ctx,
     `/block-set-installation/cancel-jobs/${jobRid}`,
-    "POST",
+    "POST"
   );
 }

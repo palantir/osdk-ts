@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BlockSetVersionId as _api_BlockSetVersionId,
   BlockSetVersionStatusResponse as _api_BlockSetVersionStatusResponse,
@@ -28,11 +29,11 @@ import type {
  */
 export async function getBlockSetVersionStatusV2(
   ctx: ConjureContext,
-  blockSetVersionId: _api_BlockSetVersionId,
+  blockSetVersionId: _api_BlockSetVersionId
 ): Promise<_api_BlockSetVersionStatusResponse> {
   return conjureFetch(
     ctx,
     `/block-sets/v2/version/${blockSetVersionId}/status`,
-    "GET",
+    "GET"
   );
 }

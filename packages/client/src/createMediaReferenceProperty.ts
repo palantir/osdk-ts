@@ -23,6 +23,7 @@ import type {
 import type { MediaReference as CoreMediaReference } from "@osdk/foundry.core";
 import { MediaSets } from "@osdk/foundry.mediasets";
 import * as MediaReferenceProperties from "@osdk/foundry.ontologies/MediaReferenceProperty";
+
 import type { MinimalClient } from "./MinimalClientContext.js";
 import { validateMediaItemMetadata } from "./object/validateMediaItemMetadata.js";
 
@@ -38,13 +39,8 @@ export class MediaReferencePropertyImpl implements Media {
     propertyName: string;
     mediaReference: CoreMediaReference;
   }) {
-    const {
-      client,
-      objectApiName,
-      primaryKey,
-      propertyName,
-      mediaReference,
-    } = args;
+    const { client, objectApiName, primaryKey, propertyName, mediaReference } =
+      args;
     this.#client = client;
     this.#triplet = [objectApiName, primaryKey, propertyName];
     this.#mediaReference = mediaReference;
@@ -57,7 +53,7 @@ export class MediaReferencePropertyImpl implements Media {
       ...this.#triplet,
       {
         preview: true, // TODO: Can turn this back off when backend is no longer in beta.
-      },
+      }
     );
   }
 
@@ -68,7 +64,7 @@ export class MediaReferencePropertyImpl implements Media {
       ...this.#triplet,
       {
         preview: true, // TODO: Can turn this back off when backend is no longer in beta.
-      },
+      }
     );
     return {
       path: r.path as string,
@@ -90,7 +86,7 @@ export class MediaReferencePropertyImpl implements Media {
       mediaSetRid,
       mediaItemRid,
       { preview: true },
-      token ? { ReadToken: token } : undefined,
+      token ? { ReadToken: token } : undefined
     );
     return { itemMetadata: validateMediaItemMetadata(raw) };
   }

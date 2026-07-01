@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { ArtifactsRepositoryRid } from "../ArtifactsRepositoryRid.js";
 import type { PackageName } from "../PackageName.js";
 import type { SdkPackageRid } from "../SdkPackageRid.js";
@@ -31,7 +32,7 @@ import type { SdkPackageRid } from "../SdkPackageRid.js";
 export async function getSdkPackageRid(
   ctx: ConjureContext,
   repositoryRid: ArtifactsRepositoryRid,
-  packageName: PackageName,
+  packageName: PackageName
 ): Promise<SdkPackageRid | undefined> {
   return conjureFetch(ctx, `/sdks/${repositoryRid}/${packageName}/rid`, "GET");
 }

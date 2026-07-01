@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   ListBlockSetsPageToken as _api_ListBlockSetsPageToken,
   ListBlockSetsResponse as _api_ListBlockSetsResponse,
@@ -28,13 +29,13 @@ export async function listBlockSets(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
   pageToken: _api_ListBlockSetsPageToken | null | undefined,
-  limit: number | null | undefined,
+  limit: number | null | undefined
 ): Promise<_api_ListBlockSetsResponse> {
   return conjureFetch(
     ctx,
     `/block-sets/${marketplaceRid}/list`,
     "POST",
     pageToken,
-    { limit },
+    { limit }
   );
 }
