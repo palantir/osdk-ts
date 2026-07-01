@@ -16,6 +16,7 @@
 
 import { exec } from "@actions/exec";
 import { consola } from "consola";
+
 import type { GithubContext } from "./runVersion.js";
 import { getExistingPr } from "./runVersion.js";
 
@@ -24,13 +25,13 @@ export async function createOrUpdatePr(
   title: string,
   body: string,
   base: string,
-  head: string,
+  head: string
 ): Promise<void> {
   const pullRequest = await getExistingPr(
     `${context.repo.owner}/${context.repo.repo}`,
     head,
     context.branch,
-    context.octokit,
+    context.octokit
   );
 
   if (!pullRequest) {

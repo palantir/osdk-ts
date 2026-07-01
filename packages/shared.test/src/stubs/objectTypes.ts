@@ -32,7 +32,7 @@ export const employeeObjectType: ObjectType = {
     },
     office: {
       description:
-        "The unique \"ID\" of the employee's \\\"primary\\\" assigned office.\n This is some more text.",
+        'The unique "ID" of the employee\'s \\"primary\\" assigned office.\n This is some more text.',
       baseType: "String",
     },
     startDate: {

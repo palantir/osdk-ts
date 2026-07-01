@@ -19,9 +19,10 @@
 
 // Example: loadAllInterfacesReference
 
+import type { Osdk } from "@osdk/client";
+
 import { HasAddress } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
-import type { Osdk } from "@osdk/client";
 import { client } from "./client.js";
 
 const interfaces: Osdk<HasAddress>[] = [];

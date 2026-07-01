@@ -23,12 +23,18 @@ import { Office } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
 import { client } from "./client.js";
 
-const OfficeObjectSet = client(Office)
-  .where({
-    entrance: {
-      $intersects: {
-        type: "Polygon",
-        coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [10.0, 40.0]]],
-      },
+const OfficeObjectSet = client(Office).where({
+  entrance: {
+    $intersects: {
+      type: "Polygon",
+      coordinates: [
+        [
+          [10.0, 40.0],
+          [20.0, 50.0],
+          [20.0, 30.0],
+          [10.0, 40.0],
+        ],
+      ],
     },
-  });
+  },
+});

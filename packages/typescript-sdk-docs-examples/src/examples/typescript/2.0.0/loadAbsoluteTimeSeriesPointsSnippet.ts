@@ -20,6 +20,7 @@
 // Example: loadAbsoluteTimeSeriesPointsSnippet
 
 import { type Osdk } from "@osdk/client";
+
 import { type Employee } from "../../../generatedNoCheck/index.js";
 
 async function getAbsoluteTimeSeriesPoints(obj: Osdk.Instance<Employee>) {

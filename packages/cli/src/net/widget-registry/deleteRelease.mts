@@ -21,19 +21,16 @@ import type { WidgetSetRid } from "../WidgetSetRid.js";
 export async function deleteRelease(
   ctx: InternalClientContext,
   widgetSetRid: WidgetSetRid,
-  releaseVersion: string,
+  releaseVersion: string
 ): Promise<void> {
   const fetch = createFetch(ctx.tokenProvider);
   const urlObj = new URL(
     `api/v2/widgets/widgetSets/${widgetSetRid}/releases/${releaseVersion}`,
-    ctx.foundryUrl,
+    ctx.foundryUrl
   );
   urlObj.searchParams.set("preview", "true");
   const url = urlObj.toString();
-  await fetch(
-    url,
-    {
-      method: "DELETE",
-    },
-  );
+  await fetch(url, {
+    method: "DELETE",
+  });
 }

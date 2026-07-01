@@ -19,32 +19,29 @@ import { TEMPLATES } from "../generatedNoCheck/templates.js";
 import { green } from "../highlight.js";
 import type { Template } from "../templates.js";
 
-export async function promptTemplate(
-  parsed: { template?: string; beta?: boolean },
-): Promise<Template> {
+export async function promptTemplate(parsed: {
+  template?: string;
+  beta?: boolean;
+}): Promise<Template> {
   const useBeta = parsed.beta ?? false;
-  let template = TEMPLATES.find((t) =>
-    t.id === parsed.template || t.id === `template-${parsed.template}`
+  let template = TEMPLATES.find(
+    (t) => t.id === parsed.template || t.id === `template-${parsed.template}`
   );
   if (template == null) {
     const availableTemplates = getAvailableTemplatesOrThrow(useBeta);
     const templateId = await consola.prompt(
       parsed.template != null
-        ? `The provided template ${
-          green(
-            parsed.template,
-          )
-        } is invalid please select a framework:`
+        ? `The provided template ${green(
+            parsed.template
+          )} is invalid please select a framework:`
         : "Select a framework:",
       {
         type: "select",
-        options: availableTemplates.map((
-          template,
-        ) => ({
+        options: availableTemplates.map((template) => ({
           value: template.id,
           label: template.label,
         })),
-      },
+      }
     );
 
     template = TEMPLATES.find((t) => t.id === templateId);
@@ -58,12 +55,13 @@ export async function promptTemplate(
 
 /** Exported for testing only */
 export function getAvailableTemplatesOrThrow(useBeta: boolean): Template[] {
-  const availableTemplates = TEMPLATES.filter(template =>
-    !template.hidden
-    && (useBeta
-      ? template.isBeta === true
-      // isBeta could be null
-      : !template.isBeta)
+  const availableTemplates = TEMPLATES.filter(
+    (template) =>
+      !template.hidden &&
+      (useBeta
+        ? template.isBeta === true
+        : // isBeta could be null
+          !template.isBeta)
   );
 
   if (availableTemplates.length === 0) {

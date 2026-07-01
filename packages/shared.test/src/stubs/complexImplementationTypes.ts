@@ -217,8 +217,8 @@ export const ComplexImplementationInterface: InterfaceType = {
   },
 };
 
-export const complexImplementationObjectTypeWithLinkTypes:
-  ObjectTypeFullMetadata = {
+export const complexImplementationObjectTypeWithLinkTypes: ObjectTypeFullMetadata =
+  {
     objectType: complexImplementationObjectType,
     linkTypes: [],
     implementsInterfaces: ["ComplexImplementationInterface"],

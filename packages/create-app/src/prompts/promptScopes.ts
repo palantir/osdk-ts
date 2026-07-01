@@ -18,12 +18,16 @@ import { consola } from "../consola.js";
 
 const scopeNameRegex = /^[a-zA-Z-_:]+$/;
 
-export async function promptScopes(
-  { scopes }: { scopes?: string[] },
-): Promise<string[] | undefined> {
+export async function promptScopes({
+  scopes,
+}: {
+  scopes?: string[];
+}): Promise<string[] | undefined> {
   while (true) {
     if (scopes != null) {
-      const invalidScopes = scopes.filter(scope => !scopeNameRegex.test(scope));
+      const invalidScopes = scopes.filter(
+        (scope) => !scopeNameRegex.test(scope)
+      );
       const allValidScopes = invalidScopes.length === 0;
       if (allValidScopes) {
         break;
@@ -31,7 +35,7 @@ export async function promptScopes(
 
       const joinedInvalidScopes = invalidScopes.join(", ");
       consola.fail(
-        `Scopes [ ${joinedInvalidScopes} ] are invalid. Scope names can only contain letters, hyphens, underscores, and colons`,
+        `Scopes [ ${joinedInvalidScopes} ] are invalid. Scope names can only contain letters, hyphens, underscores, and colons`
       );
     }
     const stringScopes = await consola.prompt(
@@ -42,7 +46,7 @@ export async function promptScopes(
           "api:read-data api:write-data api:use-ontologies-read api:use-ontologies-write",
         default:
           "api:read-data api:write-data api:use-ontologies-read api:use-ontologies-write",
-      },
+      }
     );
     scopes = stringScopes.split(" ");
   }

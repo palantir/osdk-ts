@@ -17,7 +17,7 @@ export function OfficesListContent({
 
   return (
     <ul className="list-none mb-8">
-      {offices.map(office => {
+      {offices.map((office) => {
         const isSelected = selectedOffice?.$primaryKey === office.$primaryKey;
         return (
           <li
@@ -27,9 +27,7 @@ export function OfficesListContent({
             }`}
             onClick={() => onSelectOffice(office)}
           >
-            <div className="font-medium">
-              {office.name ?? "<name-missing>"}
-            </div>
+            <div className="font-medium">{office.name ?? "<name-missing>"}</div>
             <div className="text-sm text-gray-600">
               ID: {office.$primaryKey}
             </div>

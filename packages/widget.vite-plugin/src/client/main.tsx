@@ -16,8 +16,8 @@
 
 import "@blueprintjs/core/lib/css/blueprint.css";
 import "./main.css";
-
 import { createRoot } from "react-dom/client";
+
 import { App } from "./app.js";
 
 const root = document.getElementById("root")!;

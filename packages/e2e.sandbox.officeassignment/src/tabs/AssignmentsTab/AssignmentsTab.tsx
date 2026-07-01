@@ -15,6 +15,7 @@
  */
 
 import React from "react";
+
 import { AssignmentDrawer } from "../../components/AssignmentDrawer/AssignmentDrawer.js";
 import { ErrorBanner } from "../../components/common/index.js";
 import { LatestStatusFilter } from "../../components/LatestStatusFilter/LatestStatusFilter.js";
@@ -24,6 +25,7 @@ import { useAssignmentMetrics } from "../../hooks/useAssignmentMetrics.js";
 import { AssignmentsFilters } from "../../tables/AssignmentsTable/AssignmentsFilters.js";
 import { AssignmentsTable } from "../../tables/AssignmentsTable/AssignmentsTable.js";
 import type { AssignmentInstance } from "../../types/table.js";
+
 import styles from "./AssignmentsTab.module.css";
 
 export function AssignmentsTab(): React.JSX.Element {
@@ -53,16 +55,13 @@ export function AssignmentsTab(): React.JSX.Element {
     string | undefined
   >(undefined);
 
-  const handleRowClick = React.useCallback(
-    (assignment: AssignmentInstance) => {
-      setSelectedAssignmentId(assignment.$primaryKey);
-    },
-    [],
-  );
+  const handleRowClick = React.useCallback((assignment: AssignmentInstance) => {
+    setSelectedAssignmentId(assignment.$primaryKey);
+  }, []);
 
   const closeDrawer = React.useCallback(
     () => setSelectedAssignmentId(undefined),
-    [],
+    []
   );
 
   return (

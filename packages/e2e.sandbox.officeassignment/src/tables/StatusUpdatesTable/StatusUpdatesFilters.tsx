@@ -21,6 +21,7 @@ import type {
 } from "@osdk/react-components/experimental/filter-list";
 import { FilterList } from "@osdk/react-components/experimental/filter-list";
 import React from "react";
+
 import { StatusUpdate } from "../../generatedNoCheck2/index.js";
 import type { IdentifiedFilterDef } from "../../types/filters.js";
 
@@ -31,10 +32,10 @@ interface StatusUpdatesFiltersProps {
   onFilterClauseChanged: (clause: WhereClause<StatusUpdate>) => void;
   onFilterStateChanged?: (
     definition: FilterDefinitionUnion<StatusUpdate>,
-    newState: FilterState,
+    newState: FilterState
   ) => void;
   onFilterVisibilityChange?: (
-    newStates: Array<{ filterKey: string; isVisible: boolean }>,
+    newStates: Array<{ filterKey: string; isVisible: boolean }>
   ) => void;
   onReset?: () => void;
   initialFilterStates?: Map<string, FilterState>;
@@ -79,5 +80,5 @@ export const StatusUpdatesFilters = React.memo<StatusUpdatesFiltersProps>(
         addFilterMode="uncontrolled"
       />
     );
-  },
+  }
 );

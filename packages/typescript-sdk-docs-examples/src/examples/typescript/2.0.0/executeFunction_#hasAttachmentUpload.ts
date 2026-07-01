@@ -19,10 +19,11 @@
 
 // Example: executeFunction (Variation: #hasAttachmentUpload)
 
-// Edit this import if your client location differs
 import type { AttachmentUpload } from "@osdk/api";
 import { createAttachmentUpload } from "@osdk/client";
+
 import { calculateTotal } from "../../../generatedNoCheck/index.js";
+// Edit this import if your client location differs
 import { client } from "./client.js";
 
 async function callFunctionWithAttachmentUpload() {

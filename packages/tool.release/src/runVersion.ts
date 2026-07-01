@@ -22,6 +22,9 @@
  * Below is a modified version of the MIT license.
  */
 
+import * as fs from "node:fs";
+import path from "node:path";
+
 /*
 MIT License
 
@@ -59,9 +62,8 @@ import {
 import type { ComprehensiveRelease, Config } from "@changesets/types";
 import { getPackages } from "@manypkg/get-packages";
 import { consola } from "consola";
-import * as fs from "node:fs";
-import path from "node:path";
 import type { Octokit } from "octokit";
+
 import { createOrUpdatePr } from "./createOrUpdatePr.js";
 import { FailedWithUserMessage } from "./FailedWithUserMessage.js";
 import * as gitUtils from "./gitUtils.js";
@@ -108,21 +110,22 @@ export async function runVersion({
 
   if (branch.startsWith("changeset-release/")) {
     throw new FailedWithUserMessage(
-      "This branch is already a version branch, aborting",
+      "This branch is already a version branch, aborting"
     );
   }
 
   const isMainBranch =
     (process.env.PRETEND_BRANCH ?? context.branch) === "main";
 
-  const isReleaseBranch = (process.env.PRETEND_BRANCH ?? context.branch)
-    .startsWith("release/");
+  const isReleaseBranch = (
+    process.env.PRETEND_BRANCH ?? context.branch
+  ).startsWith("release/");
 
   const runGitCommands = !process.env.PRETEND_BRANCH;
 
   if (!isMainBranch && !isReleaseBranch) {
     throw new FailedWithUserMessage(
-      "You must use a main or release branch.\n\n(You can fake it by setting the env variable PRETEND_BRANCH",
+      "You must use a main or release branch.\n\n(You can fake it by setting the env variable PRETEND_BRANCH"
     );
   }
 
@@ -163,12 +166,12 @@ export async function runVersion({
     preState,
     snapshot
       ? {
-        tag: snapshot === true ? undefined : snapshot,
-        commit: config.snapshot.prereleaseTemplate?.includes("{commit}")
-          ? await getCurrentCommitId({ cwd })
-          : undefined,
-      }
-      : undefined,
+          tag: snapshot === true ? undefined : snapshot,
+          commit: config.snapshot.prereleaseTemplate?.includes("{commit}")
+            ? await getCurrentCommitId({ cwd })
+            : undefined,
+        }
+      : undefined
   );
 
   mutateReleasePlan(cwd, releasePlan, isMainBranch ? "main" : "release branch");
@@ -177,7 +180,7 @@ export async function runVersion({
     const versions = await packageVersionsOrEmptySet(release.name);
     if (versions.has(release.newVersion) && release.type !== "none") {
       throw new FailedWithUserMessage(
-        `The version ${release.newVersion} of ${release.name} is already published on npm`,
+        `The version ${release.newVersion} of ${release.name} is already published on npm`
       );
     }
   }
@@ -186,20 +189,18 @@ export async function runVersion({
     releasePlan,
     packages,
     releaseConfig,
-    snapshot,
+    snapshot
   );
 
   if (touchedFiles.length === 0) {
-    throw new FailedWithUserMessage(
-      "No changesets to apply, aborting",
-    );
+    throw new FailedWithUserMessage("No changesets to apply, aborting");
   }
 
   await exec("pnpm", ["run", "postVersionCmd"], { cwd });
 
   const changedPackagesInfo = await getSortedChangedPackagesInfo(
     cwd,
-    originalVersionsByDirectory,
+    originalVersionsByDirectory
   );
 
   const mainPackageVersion = getMainPackageVersion(releasePlan.releases);
@@ -237,30 +238,30 @@ export async function runVersion({
       finalPrTitle,
       prBody,
       branch,
-      versionBranch,
+      versionBranch
     );
   }
 }
 
 async function getSortedChangedPackagesInfo(
   cwd: string,
-  oldVersionsByDirectory: Map<string, string>,
+  oldVersionsByDirectory: Map<string, string>
 ) {
   const changedPackages = await getChangedPackages(cwd, oldVersionsByDirectory);
   const changedPackagesInfo = await Promise.all(
     changedPackages.map(async (pkg) => {
       const changelogContents = await fs.promises.readFile(
         path.join(pkg.dir, "CHANGELOG.md"),
-        "utf8",
+        "utf8"
       );
 
       const entry = getChangelogEntry(
         changelogContents,
-        pkg.packageJson.version,
+        pkg.packageJson.version
       );
       if (!entry) {
         throw new Error(
-          "Some how we bumped versions without the version matching",
+          "Some how we bumped versions without the version matching"
         );
       }
       return {
@@ -269,23 +270,19 @@ async function getSortedChangedPackagesInfo(
         content: entry.content,
         header: `## ${pkg.packageJson.name}@${pkg.packageJson.version}`,
       };
-    }),
+    })
   );
 
-  return changedPackagesInfo
-    .filter((x) => x)
-    .sort(sortChangelogEntries);
+  return changedPackagesInfo.filter((x) => x).sort(sortChangelogEntries);
 }
 
 const MAIN_PACKAGES = ["@osdk/client", "@osdk/api"] as const;
 
 function getMainPackageVersion(
-  releases: ReadonlyArray<ComprehensiveRelease>,
+  releases: ReadonlyArray<ComprehensiveRelease>
 ): string | undefined {
   for (const name of MAIN_PACKAGES) {
-    const release = releases.find(
-      (r) => r.name === name && r.type !== "none",
-    );
+    const release = releases.find((r) => r.name === name && r.type !== "none");
     if (release) {
       return release.newVersion;
     }
@@ -297,18 +294,16 @@ export async function getExistingPr(
   repo: string,
   versionBranch: string,
   branch: string,
-  octokit: Octokit,
+  octokit: Octokit
 ): Promise<
   Awaited<
     ReturnType<Octokit["rest"]["search"]["issuesAndPullRequests"]>
   >["data"]["items"][0]
 > {
   // eslint-disable-next-line @typescript-eslint/no-deprecated
-  const { data } = await octokit.rest.search.issuesAndPullRequests(
-    {
-      q: `repo:${repo}+state:open+head:${versionBranch}+base:${branch}+is:pull-request`,
-    },
-  );
+  const { data } = await octokit.rest.search.issuesAndPullRequests({
+    q: `repo:${repo}+state:open+head:${versionBranch}+base:${branch}+is:pull-request`,
+  });
 
   return data.items[0];
 }

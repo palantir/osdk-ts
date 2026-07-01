@@ -20,6 +20,7 @@
 // Example: loadRelativeTimeSeriesPointsSnippet
 
 import type { Osdk } from "@osdk/client";
+
 import { type Employee } from "../../../generatedNoCheck/index.js";
 
 // Only supports ranges in the past
