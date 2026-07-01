@@ -239,6 +239,7 @@ Storybook runs on `http://localhost:6006`.
   The `beta` tag (and resulting tag badge) is injected automatically by the indexer in `.storybook/main.ts` for any title starting with `Beta/` — do **not** add `tags: ["beta"]` manually.
 
   This produces URLs like `beta-myname--default`, matching the existing pattern (`beta-baseform--default`, `beta-objecttable-building-blocks-basetable--default`)
+
 - Include stories that demonstrate the component's key states: default, loading, error, empty, and edge cases
 - **OSDK-aware components must accept mocked data via props in stories** — Storybook runs without a Foundry stack. Either expose a `data` / `objects` / `value` prop the story can populate, or render the `Base<Name>` component (not the OSDK wrapper) in the story. Use the MSW addon for stories that exercise hook-level fetch paths against a fake server
 
@@ -273,6 +274,7 @@ Every PR that changes published package code needs **exactly one changeset** per
 
 1. Create a file in `.changeset/` with a descriptive name (e.g., `.changeset/add-date-column.md`).
 2. Use YAML front matter to list affected packages and semver bump type:
+
    ```md
    ---
    "@osdk/react-components":minor
@@ -280,6 +282,7 @@ Every PR that changes published package code needs **exactly one changeset** per
 
    Add date column rendering support to ObjectTable
    ```
+
 3. Write a specific summary ("add drag-and-drop reordering to filter list", not "update filter list").
 4. Check `.changeset/` before creating — do not create duplicate changesets on the same branch.
 5. CI will fail if a changeset is missing for changed packages.

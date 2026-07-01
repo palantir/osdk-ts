@@ -28,12 +28,12 @@ export default defineConfig({
     "**/*.json",
     "**/*.jsonc",
     "**/*.json5",
-    // Markdown is dprint's domain (it has a markdown plugin); oxfmt would only
-    // reformat embedded code fences. Leave docs/README to their authors so the
-    // tooling migration touches only .ts/.tsx. `.mdx` is excluded too: oxfmt
-    // would reflow it as markdown and corrupt the embedded JSX expressions
-    // (e.g. the `{/* license */}` block), breaking Storybook's mdx indexer.
-    "**/*.md",
+    // `.md` IS formatted by oxfmt (parity with dprint, which formatted markdown
+    // via its markdown plugin before the migration): oxfmt normalizes markdown
+    // structure and reformats embedded code fences the same way it formats source.
+    // `.mdx` stays excluded: oxfmt would reflow it as markdown and corrupt the
+    // embedded JSX expressions (e.g. the `{/* license */}` block), breaking
+    // Storybook's mdx indexer.
     "**/*.mdx",
     // CSS / SCSS are not formatted by dprint either (no css plugin); component
     // packages hand-maintain these stylesheets (e.g. @osdk/cbac-components and,

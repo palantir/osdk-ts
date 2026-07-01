@@ -308,7 +308,7 @@ Displays header and cell with the provided custom renderers.
 ```typescript
 {
   type: "custom",
-  id: "columnName" 
+  id: "columnName"
 }
 ```
 
@@ -1237,7 +1237,7 @@ function EmployeesTable() {
       "data-status": employee.status,
       "data-overdue": employee.daysOverdue > 0 ? "true" : undefined,
     }),
-    [],
+    []
   );
 
   return (
@@ -1579,7 +1579,7 @@ Use the `data-editable` attribute that the table sets on every editable `<td>` t
   columnDefinitions={editableColumns}
   editMode="manual"
   className="my-table"
-/>;
+/>
 ```
 
 ```css
@@ -1601,7 +1601,7 @@ const getRowAttributes = useCallback(
     "data-status": employee.status,
     "data-overdue": employee.daysOverdue > 0 ? "true" : undefined,
   }),
-  [],
+  []
 );
 
 <ObjectTable
@@ -1640,7 +1640,7 @@ See [Row Attributes and Conditional Row Styling](#row-attributes-and-conditional
 #### Scoped overrides for a specific table
 
 ```tsx
-<ObjectTable objectType={Employee} className="custom-employee-table" />;
+<ObjectTable objectType={Employee} className="custom-employee-table" />
 ```
 
 ```css
@@ -1654,7 +1654,7 @@ See [Row Attributes and Conditional Row Styling](#row-attributes-and-conditional
 #### Compact density
 
 ```tsx
-<ObjectTable objectType={Employee} className="compact-table" rowHeight={32} />;
+<ObjectTable objectType={Employee} className="compact-table" rowHeight={32} />
 ```
 
 ```css
