@@ -53,7 +53,11 @@ export const MetricStat: React.FC<MetricStatProps> = ({
     <div className={styles.metricStat}>
       <div className={styles.metricStatHead}>
         <span className={styles.metricStatLabel}>{label}</span>
-        <Tooltip content={explain} className={styles.metricStatInfo}>
+        <Tooltip
+          content={explain}
+          className={styles.metricStatInfo}
+          portalClassName="osdk-devtools-portal"
+        >
           <Icon icon="info-sign" size={11} />
         </Tooltip>
       </div>
