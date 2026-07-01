@@ -17,6 +17,7 @@
 import type {
   ActionEditResponse,
   InterfaceDefinition,
+  ObjectMetadata,
   ObjectTypeDefinition,
 } from "@osdk/api";
 import type {
@@ -100,6 +101,32 @@ interface MockActionEdits {
 interface ExperimentalStore {
   invalidateObject?(objectType: string, primaryKey: string): Promise<void>;
   invalidateObjectType?(objectType: string): Promise<void>;
+}
+
+/**
+ * Minimal structural view of the underlying `@osdk/client` client, reached
+ * through `ObservableClient.__experimentalStore.client`. We only need
+ * `fetchMetadata` to look up an object type's properties and links for the
+ * ontology graph.
+ */
+interface RawOntologyClient {
+  fetchMetadata: (definition: ObjectTypeDefinition) => Promise<ObjectMetadata>;
+}
+
+function getRawOntologyClient(
+  client: ObservableClient
+): RawOntologyClient | undefined {
+  const store = (client as { __experimentalStore?: { client?: unknown } })
+    .__experimentalStore;
+  const rawClient = store?.client;
+  if (
+    rawClient != null &&
+    typeof (rawClient as { fetchMetadata?: unknown }).fetchMetadata ===
+      "function"
+  ) {
+    return rawClient as RawOntologyClient;
+  }
+  return undefined;
 }
 
 function getDebugMetadata(value: unknown): ObservableDebugMetadata | undefined {
@@ -1203,6 +1230,23 @@ export class ObservableClientMonitor {
       );
     }
     return ext.getCacheSnapshot();
+  }
+
+  /**
+   * Fetches an object type's full metadata (properties + links) by apiName.
+   * Delegates to the underlying client's `fetchMetadata`, which caches results.
+   * Only `type` and `apiName` are read, so an apiName-only stub is sufficient
+   * to resolve any known object type.
+   */
+  fetchObjectMetadata(apiName: string): Promise<ObjectMetadata> {
+    if (!this.wrappedClient) {
+      return Promise.reject(new Error("No wrapped client available"));
+    }
+    const rawClient = getRawOntologyClient(this.wrappedClient);
+    if (!rawClient) {
+      return Promise.reject(new Error("fetchMetadata not available on client"));
+    }
+    return rawClient.fetchMetadata({ type: "object", apiName });
   }
 
   invalidateObjects(objects: unknown): Promise<void> {

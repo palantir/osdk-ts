@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Logger } from "@osdk/api";
+import type { Logger, ObjectMetadata } from "@osdk/api";
 import { type Client, createClient } from "@osdk/client";
 import {
   type CacheEntry,
@@ -313,6 +313,17 @@ export class MonitorStore {
     this.prototypeOverrideStore.clearAll();
     this.monitor?.dispose();
     this.monitor = null;
+  }
+
+  /**
+   * Fetches an object type's full metadata (properties + links) by apiName,
+   * used by the Ontology Graph tab. Results are cached by the underlying client.
+   */
+  fetchObjectMetadata(apiName: string): Promise<ObjectMetadata> {
+    if (!this.monitor) {
+      return Promise.reject(new Error("No monitored client available"));
+    }
+    return this.monitor.fetchObjectMetadata(apiName);
   }
 
   async loadCacheEntries(): Promise<CacheEntry[]> {

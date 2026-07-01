@@ -175,6 +175,7 @@ async function main() {
   const blueprintIconsCss = await readPackageCss(
     "@blueprintjs/icons/lib/css/blueprint-icons.css"
   );
+  const reactFlowCss = await readPackageCss("@xyflow/react/dist/style.css");
 
   const combinedCss = [
     "/* @osdk/react-devtools - Combined styles */",
@@ -182,6 +183,8 @@ async function main() {
     blueprintCoreCss,
     "/* @blueprintjs/icons */",
     blueprintIconsCss,
+    "/* @xyflow/react */",
+    reactFlowCss,
     combinedModuleCss,
   ].join("\n\n");
 

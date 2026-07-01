@@ -31,6 +31,7 @@ import { ComputeTab } from "./ComputeTab.js";
 import { DebuggingTab } from "./DebuggingTab.js";
 import { InterceptTab } from "./InterceptTab.js";
 import { MonitorErrorBoundary } from "./MonitorErrorBoundary.js";
+import { OntologyGraphTab } from "./OntologyGraphTab.js";
 import { PerformanceTab } from "./PerformanceTab.js";
 
 import styles from "./MonitoringPanel.module.scss";
@@ -101,7 +102,7 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
   const computeStore = monitorStore.getComputeStore();
   const fiberCapabilities = useFiberCapabilities();
   const [activeTab, setActiveTab] = useState<
-    "performance" | "compute" | "intercept" | "debugging"
+    "performance" | "compute" | "intercept" | "debugging" | "ontology"
   >("performance");
   const [position, setPosition] = usePersistedState<PanelPosition>(
     "osdk-monitor-position",
@@ -528,23 +529,29 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
       </div>
 
       <div className={styles.tabs} role="tablist" aria-label="Devtools tabs">
-        {(["performance", "compute", "intercept", "debugging"] as const).map(
-          (tab) => (
-            <button
-              key={tab}
-              type="button"
-              role="tab"
-              aria-selected={activeTab === tab}
-              className={classNames(
-                styles.tabButton,
-                activeTab === tab && styles.tabButtonActive
-              )}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab.charAt(0).toUpperCase() + tab.slice(1)}
-            </button>
-          )
-        )}
+        {(
+          [
+            "performance",
+            "compute",
+            "intercept",
+            "debugging",
+            "ontology",
+          ] as const
+        ).map((tab) => (
+          <button
+            key={tab}
+            type="button"
+            role="tab"
+            aria-selected={activeTab === tab}
+            className={classNames(
+              styles.tabButton,
+              activeTab === tab && styles.tabButtonActive
+            )}
+            onClick={() => setActiveTab(tab)}
+          >
+            {tab.charAt(0).toUpperCase() + tab.slice(1)}
+          </button>
+        ))}
       </div>
 
       <div className={styles.content}>
@@ -591,6 +598,15 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
           }
         >
           <DebuggingTab monitorStore={monitorStore} />
+        </div>
+        <div
+          className={
+            activeTab === "ontology"
+              ? styles.tabContentVisible
+              : styles.tabContentHidden
+          }
+        >
+          <OntologyGraphTab monitorStore={monitorStore} theme={resolvedTheme} />
         </div>
       </div>
     </div>,
