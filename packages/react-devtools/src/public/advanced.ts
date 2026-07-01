@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { interceptTab } from "./plugins/intercept/interceptTab.js";
+export { interceptTab } from "../plugins/intercept/interceptTab.js";
