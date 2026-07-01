@@ -1,0 +1,153 @@
+.panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 260px;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px 12px;
+  overflow-y: auto;
+  background: var(--dt-bg-elevated);
+  border-left: 1px solid var(--dt-border-default);
+  box-shadow: var(--dt-shadow-card);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
+  color: var(--dt-text-primary);
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.titleGroup {
+  min-width: 0;
+}
+
+.displayName {
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.apiName {
+  font-family: "JetBrains Mono", "SF Mono", "Monaco", "Menlo", "Consolas",
+    monospace;
+  font-size: 10px;
+  color: var(--dt-text-tertiary);
+}
+
+.metaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.metaChip {
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: var(--dt-bg-hover);
+  color: var(--dt-text-secondary);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sectionTitle {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--dt-text-tertiary);
+  margin-bottom: 2px;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--dt-text-secondary);
+}
+
+.empty {
+  font-size: 11px;
+  color: var(--dt-text-tertiary);
+  font-style: italic;
+}
+
+.errorText {
+  font-size: 11px;
+  color: var(--dt-red);
+}
+
+.propRow,
+.linkRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 2px 0;
+  border-bottom: 1px solid var(--dt-border-subtle);
+}
+
+.propName {
+  font-family: "JetBrains Mono", "SF Mono", "Monaco", "Menlo", "Consolas",
+    monospace;
+  font-size: 11px;
+  color: var(--dt-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.propType,
+.linkTarget {
+  font-family: "JetBrains Mono", "SF Mono", "Monaco", "Menlo", "Consolas",
+    monospace;
+  font-size: 10px;
+  color: var(--dt-text-secondary);
+  flex: 0 0 auto;
+}
+
+.compRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+  padding: 3px 0;
+  border-bottom: 1px solid var(--dt-border-subtle);
+}
+
+.compName {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--dt-text-primary);
+}
+
+.compHook {
+  font-size: 10px;
+  color: var(--dt-blue);
+}
+
+.compFile {
+  font-family: "JetBrains Mono", "SF Mono", "Monaco", "Menlo", "Consolas",
+    monospace;
+  font-size: 9px;
+  color: var(--dt-text-tertiary);
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

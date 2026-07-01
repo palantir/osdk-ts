@@ -55,6 +55,7 @@
     "@blueprintjs/core": "^6.10.0",
     "@blueprintjs/icons": "^6.7.0",
     "@codemirror/lang-json": "^6.0.2",
+    "@dagrejs/dagre": "^1.1.1",
     "@uiw/react-codemirror": "^4.25.4",
     "@visx/axis": "^3.12.0",
     "@visx/glyph": "^3.12.0",
@@ -62,6 +63,7 @@
     "@visx/responsive": "^3.12.0",
     "@visx/scale": "^3.12.0",
     "@visx/text": "^3.12.0",
+    "@xyflow/react": "^12.4.3",
     "classnames": "2.3.2",
     "zustand": "^4.5.5"
   },

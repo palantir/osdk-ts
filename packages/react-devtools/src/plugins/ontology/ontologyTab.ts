@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import React, { type FC } from "react";
+import { OntologyGraphTab } from "../../components/OntologyGraphTab.js";
+import type { DevToolsPlugin } from "../types.js";
 
-import { CacheInspectorTab } from "../../components/CacheInspectorTab.js";
-import type { DevToolsPanelProps } from "../types.js";
-
-export const CachePanel: FC<DevToolsPanelProps> = ({ monitorStore }) => {
-  return <CacheInspectorTab monitorStore={monitorStore} />;
+export const ontologyTab: DevToolsPlugin = {
+  id: "ontology",
+  label: "Ontology",
+  icon: "graph",
+  panel: OntologyGraphTab,
 };

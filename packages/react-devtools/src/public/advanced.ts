@@ -15,6 +15,7 @@
  */
 
 // Opt-in advanced plugin tabs. Import a tab and register it via registerDevToolsPlugin.
-export { cacheTab } from "./plugins/cache/cacheTab.js";
-export { computeTab } from "./plugins/compute/computeTab.js";
-export { interceptTab } from "./plugins/intercept/interceptTab.js";
+export { cacheTab } from "../plugins/cache/cacheTab.js";
+export { computeTab } from "../plugins/compute/computeTab.js";
+export { interceptTab } from "../plugins/intercept/interceptTab.js";
+export { ontologyTab } from "../plugins/ontology/ontologyTab.js";
