@@ -16,9 +16,11 @@
 
 import classnames from "classnames";
 import React, { useCallback, useMemo } from "react";
+
 import type { OutlineItem, SidebarMode } from "../types.js";
-import styles from "./PdfViewerOutlineSidebar.module.css";
 import { PdfViewerSidebarHeader } from "./PdfViewerSidebarHeader.js";
+
+import styles from "./PdfViewerOutlineSidebar.module.css";
 
 const INDENT_PER_DEPTH = 16;
 
@@ -51,9 +53,7 @@ export function PdfViewerOutlineSidebar({
           onSidebarModeChange={onSidebarModeChange}
         />
         <div className={styles.emptyState}>
-          <div className={styles.emptyStateText}>
-            No outline available
-          </div>
+          <div className={styles.emptyStateText}>No outline available</div>
         </div>
       </div>
     );
@@ -104,14 +104,14 @@ function PdfViewerOutlineItem({
         onClick(item.pageNumber);
       }
     },
-    [onClick, item.pageNumber],
+    [onClick, item.pageNumber]
   );
 
   const itemClassName = classnames(
     styles.outlineItem,
     isActive && styles.outlineItemActive,
     item.bold && styles.outlineItemBold,
-    item.italic && styles.outlineItemItalic,
+    item.italic && styles.outlineItemItalic
   );
 
   const paddingLeft = INDENT_PER_DEPTH * item.depth + 12;
@@ -137,10 +137,7 @@ function PdfViewerOutlineItem({
   );
 }
 
-function computeActiveIndex(
-  items: OutlineItem[],
-  currentPage: number,
-): number {
-  const idx = items.findIndex(item => item.pageNumber > currentPage);
+function computeActiveIndex(items: OutlineItem[], currentPage: number): number {
+  const idx = items.findIndex((item) => item.pageNumber > currentPage);
   return idx === -1 ? items.length - 1 : idx - 1;
 }

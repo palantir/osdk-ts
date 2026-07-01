@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  GetActionTypesForInterfaceTypeRequest
-    as _api_GetActionTypesForInterfaceTypeRequest,
-  GetActionTypesForInterfaceTypeResponse
-    as _api_GetActionTypesForInterfaceTypeResponse,
+  GetActionTypesForInterfaceTypeRequest as _api_GetActionTypesForInterfaceTypeRequest,
+  GetActionTypesForInterfaceTypeResponse as _api_GetActionTypesForInterfaceTypeResponse,
 } from "../__components.js";
 
 /**
@@ -31,12 +30,12 @@ import type {
  */
 export async function getActionTypesForInterfaceType(
   ctx: ConjureContext,
-  request: _api_GetActionTypesForInterfaceTypeRequest,
+  request: _api_GetActionTypesForInterfaceTypeRequest
 ): Promise<_api_GetActionTypesForInterfaceTypeResponse> {
   return conjureFetch(
     ctx,
     `/ontology/ontology/actionTypesForInterfaceType`,
     "PUT",
-    request,
+    request
   );
 }

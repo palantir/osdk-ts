@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   CompassProjectRid as _api_CompassProjectRid,
   ProjectMutabilityCapabilities as _api_ProjectMutabilityCapabilities,
@@ -30,11 +31,11 @@ import type {
  */
 export async function getProjectMutabilityCapabilities(
   ctx: ConjureContext,
-  projectRid: _api_CompassProjectRid,
+  projectRid: _api_CompassProjectRid
 ): Promise<_api_ProjectMutabilityCapabilities> {
   return conjureFetch(
     ctx,
     `/block-installation/v2/projects/${projectRid}/mutability-capabilities`,
-    "GET",
+    "GET"
   );
 }

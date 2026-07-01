@@ -15,12 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   MarketplaceRid as _api_MarketplaceRid,
-  ValidateMarketplaceMavenGroupRequest
-    as _api_ValidateMarketplaceMavenGroupRequest,
-  ValidateMarketplaceMavenGroupResponse
-    as _api_ValidateMarketplaceMavenGroupResponse,
+  ValidateMarketplaceMavenGroupRequest as _api_ValidateMarketplaceMavenGroupRequest,
+  ValidateMarketplaceMavenGroupResponse as _api_ValidateMarketplaceMavenGroupResponse,
 } from "../__components.js";
 
 /**
@@ -30,12 +29,12 @@ import type {
 export async function validateMarketplaceMavenGroup(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
-  request: _api_ValidateMarketplaceMavenGroupRequest,
+  request: _api_ValidateMarketplaceMavenGroupRequest
 ): Promise<_api_ValidateMarketplaceMavenGroupResponse> {
   return conjureFetch(
     ctx,
     `/marketplace-maven-group/${marketplaceRid}/maven-group/validate`,
     "POST",
-    request,
+    request
   );
 }

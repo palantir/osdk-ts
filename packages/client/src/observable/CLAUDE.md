@@ -10,9 +10,9 @@ So if you see something like this:
 
 ```ts
 if (process.env.NODE_ENV !== "production") {
-  this.logger?.child({ methodName: "maybeUpdateAndRevalidate" }).debug(
-    "example debug message",
-  );
+  this.logger
+    ?.child({ methodName: "maybeUpdateAndRevalidate" })
+    .debug("example debug message");
 }
 ```
 

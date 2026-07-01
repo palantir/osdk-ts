@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { CompassProjectRid as _api_CompassProjectRid } from "../../../api/__components.js";
 import type {
   ListReleasesPageToken as _release_api_ListReleasesPageToken,
@@ -30,13 +31,13 @@ export async function listReleasesForProject(
   ctx: ConjureContext,
   pageToken: _release_api_ListReleasesPageToken | null | undefined,
   limit: number | null | undefined,
-  compassProject: _api_CompassProjectRid,
+  compassProject: _api_CompassProjectRid
 ): Promise<_release_api_ListReleasesResponse> {
   return conjureFetch(
     ctx,
     `/releases/releases-for-project/${compassProject}`,
     "POST",
     pageToken,
-    { limit },
+    { limit }
   );
 }

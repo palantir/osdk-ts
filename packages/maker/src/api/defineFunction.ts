@@ -23,11 +23,11 @@ export interface FunctionIrBlockData {
 }
 
 // Type definitions for optional function discovery dependencies
-type IFunctionDiscoverer = new(
+type IFunctionDiscoverer = new (
   program: ts.Program,
   entryPointPath: string,
   fullFilePath: string,
-  entityMappings?: IEntityMetadataMapping,
+  entityMappings?: IEntityMetadataMapping
 ) => {
   discover(): {
     discoveredFunctions: IDiscoveredFunction[];
@@ -75,19 +75,19 @@ async function loadFunctionDiscoverer(): Promise<IFunctionDiscoverer | null> {
   } catch (e: unknown) {
     consola.warn(
       "Failed to load @foundry/functions-typescript-osdk-discovery:",
-      e instanceof Error ? e.message : e,
+      e instanceof Error ? e.message : e
     );
     return null;
   }
 }
 
 function extractFunctionEntries(
-  discoveredFunctions: IDiscoveredFunction[],
+  discoveredFunctions: IDiscoveredFunction[]
 ): Array<[string, IDiscoveredFunction]> {
   return discoveredFunctions.map((fn: IDiscoveredFunction) => {
     if (fn.locator.type !== "typescript") {
       throw new Error(
-        `OAC functions must be TypeScript, got type: ${fn.locator.type}`,
+        `OAC functions must be TypeScript, got type: ${fn.locator.type}`
       );
     }
     const locator = fn.locator as {
@@ -100,35 +100,35 @@ function extractFunctionEntries(
 export async function generateFunctionsIr(
   rootDir: string,
   configPath?: string,
-  entityMappings?: IEntityMetadataMapping,
+  entityMappings?: IEntityMetadataMapping
 ): Promise<FunctionIrBlockData> {
   const functionsDiscoverer = await loadFunctionDiscoverer();
   if (!functionsDiscoverer) {
     throw new Error(
-      "Function discovery requires @foundry/functions-typescript-osdk-discovery to be installed",
+      "Function discovery requires @foundry/functions-typescript-osdk-discovery to be installed"
     );
   }
 
   // Normalize to forward slashes to match TypeScript's internal path format
   const normalizedRootDir = rootDir.replace(/\\/g, "/");
-  const tsConfigPath = configPath?.replace(/\\/g, "/")
-    ?? (normalizedRootDir + "/tsconfig.json");
+  const tsConfigPath =
+    configPath?.replace(/\\/g, "/") ?? normalizedRootDir + "/tsconfig.json";
   const program = OntologyIrToFullMetadataConverter.createProgram(
     tsConfigPath,
-    normalizedRootDir,
+    normalizedRootDir
   );
   const functionsDir = normalizedRootDir + "/functions";
   const fd = new functionsDiscoverer(
     program,
     normalizedRootDir,
     functionsDir,
-    entityMappings,
+    entityMappings
   );
   const functions = fd.discover();
 
   return {
     functionsBlockDataV1: Object.fromEntries(
-      extractFunctionEntries(functions.discoveredFunctions),
+      extractFunctionEntries(functions.discoveredFunctions)
     ),
   };
 }

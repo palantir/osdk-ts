@@ -25,13 +25,15 @@ describe("OsdkObjectPropertyType", () => {
     } satisfies ObjectMetadata.Property;
 
     it("is `| undefined` for `false`", () => {
-      expectTypeOf<OsdkObjectPropertyType<typeof nonNullDef, false>>()
-        .toEqualTypeOf<string | undefined>();
+      expectTypeOf<
+        OsdkObjectPropertyType<typeof nonNullDef, false>
+      >().toEqualTypeOf<string | undefined>();
     });
 
     it("is not `| undefined` for `true`", () => {
-      expectTypeOf<OsdkObjectPropertyType<typeof nonNullDef, true>>()
-        .toEqualTypeOf<string>();
+      expectTypeOf<
+        OsdkObjectPropertyType<typeof nonNullDef, true>
+      >().toEqualTypeOf<string>();
     });
   });
 
@@ -42,13 +44,15 @@ describe("OsdkObjectPropertyType", () => {
     } satisfies ObjectMetadata.Property;
 
     it("is | undefined for `false`", () => {
-      expectTypeOf<OsdkObjectPropertyType<typeof nullableDef, false>>()
-        .toEqualTypeOf<string | undefined>();
+      expectTypeOf<
+        OsdkObjectPropertyType<typeof nullableDef, false>
+      >().toEqualTypeOf<string | undefined>();
     });
 
     it("is `| undefined` for `true`", () => {
-      expectTypeOf<OsdkObjectPropertyType<typeof nullableDef, true>>()
-        .toEqualTypeOf<string | undefined>();
+      expectTypeOf<
+        OsdkObjectPropertyType<typeof nullableDef, true>
+      >().toEqualTypeOf<string | undefined>();
     });
   });
 });

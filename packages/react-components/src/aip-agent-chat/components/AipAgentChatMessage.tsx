@@ -17,6 +17,7 @@
 import { getUIMessageText, type UIMessage } from "@osdk/aip-core";
 import classNames from "classnames";
 import * as React from "react";
+
 import styles from "../AipAgentChat.module.css";
 
 export interface AipAgentChatMessageProps {
@@ -29,9 +30,9 @@ export interface AipAgentChatMessageProps {
  * left-aligned with a secondary background; system messages render
  * centered in muted style.
  */
-export function AipAgentChatMessage(
-  { message }: AipAgentChatMessageProps,
-): React.ReactElement {
+export function AipAgentChatMessage({
+  message,
+}: AipAgentChatMessageProps): React.ReactElement {
   const text = getUIMessageText(message);
   const role = message.role;
   const styling = ROLE_STYLING[role];
@@ -43,9 +44,11 @@ export function AipAgentChatMessage(
       role="group"
     >
       <div className={classNames(styles.bubble, styling.bubble)}>
-        {text.length > 0
-          ? text
-          : <span className={styles.streamingPlaceholder}>…</span>}
+        {text.length > 0 ? (
+          text
+        ) : (
+          <span className={styles.streamingPlaceholder}>…</span>
+        )}
       </div>
     </div>
   );

@@ -16,6 +16,7 @@
 
 import { Input } from "@base-ui/react/input";
 import React, { useCallback, useMemo, useState } from "react";
+
 import styles from "./TimePicker.module.css";
 
 export interface TimePickerProps {
@@ -34,8 +35,8 @@ const SEGMENT_LIMITS: Record<TimeSegment, { min: number; max: number }> = {
   minutes: { min: 0, max: 59 },
 } as const;
 
-export const TimePicker: React.NamedExoticComponent<TimePickerProps> = React
-  .memo(function TimePickerFn({
+export const TimePicker: React.NamedExoticComponent<TimePickerProps> =
+  React.memo(function TimePickerFn({
     value,
     onChange,
     label = "Time",
@@ -43,7 +44,7 @@ export const TimePicker: React.NamedExoticComponent<TimePickerProps> = React
     const valueTimestamp = value?.getTime() ?? null;
     const valueSegments = useMemo(
       () => segmentsFromTimestamp(valueTimestamp),
-      [valueTimestamp],
+      [valueTimestamp]
     );
     // draftSegments always holds the displayed text. It is reset to
     // valueSegments whenever the controlled value changes, so the parent
@@ -51,8 +52,8 @@ export const TimePicker: React.NamedExoticComponent<TimePickerProps> = React
     const [draftSegments, setDraftSegments] = useState(valueSegments);
     const [prevSegments, setPrevSegments] = useState(valueSegments);
     if (
-      prevSegments.hours !== valueSegments.hours
-      || prevSegments.minutes !== valueSegments.minutes
+      prevSegments.hours !== valueSegments.hours ||
+      prevSegments.minutes !== valueSegments.minutes
     ) {
       setPrevSegments(valueSegments);
       setDraftSegments(valueSegments);
@@ -69,7 +70,7 @@ export const TimePicker: React.NamedExoticComponent<TimePickerProps> = React
           replaceSegmentText(prev, { segment, nextText })
         );
       },
-      [],
+      []
     );
 
     const emitChange = useCallback(
@@ -78,7 +79,7 @@ export const TimePicker: React.NamedExoticComponent<TimePickerProps> = React
         nextDate.setHours(hours, minutes, 0, 0);
         onChange?.(nextDate);
       },
-      [onChange, value],
+      [onChange, value]
     );
 
     const handleSegmentBlur = useCallback(
@@ -102,31 +103,30 @@ export const TimePicker: React.NamedExoticComponent<TimePickerProps> = React
         const currentHours = Number(valueSegments.hours);
         const currentMinutes = Number(valueSegments.minutes);
         const nextHours = segment === "hours" ? clampedSegment : currentHours;
-        const nextMinutes = segment === "minutes"
-          ? clampedSegment
-          : currentMinutes;
+        const nextMinutes =
+          segment === "minutes" ? clampedSegment : currentMinutes;
         if (nextHours !== currentHours || nextMinutes !== currentMinutes) {
           emitChange(nextHours, nextMinutes);
         }
       },
-      [emitChange, valueSegments],
+      [emitChange, valueSegments]
     );
 
     const handleHourChange = useCallback(
       (nextText: string) => handleSegmentChange("hours", nextText),
-      [handleSegmentChange],
+      [handleSegmentChange]
     );
     const handleMinuteChange = useCallback(
       (nextText: string) => handleSegmentChange("minutes", nextText),
-      [handleSegmentChange],
+      [handleSegmentChange]
     );
     const handleHourBlur = useCallback(
       () => handleSegmentBlur("hours", hourText),
-      [handleSegmentBlur, hourText],
+      [handleSegmentBlur, hourText]
     );
     const handleMinuteBlur = useCallback(
       () => handleSegmentBlur("minutes", minuteText),
-      [handleSegmentBlur, minuteText],
+      [handleSegmentBlur, minuteText]
     );
 
     return (
@@ -172,7 +172,7 @@ function replaceSegmentText(
   }: {
     segment: TimeSegment;
     nextText: string;
-  },
+  }
 ): TimeSegments {
   return {
     ...segments,

@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import { toPropertyDataValue } from "./toPropertyDataValue.js";
 
 describe(toPropertyDataValue, () => {
@@ -40,7 +41,14 @@ describe(toPropertyDataValue, () => {
     };
     const polygon: GeoJSON.Polygon = {
       type: "Polygon",
-      coordinates: [[[0, 0], [1, 0], [1, 1], [0, 0]]],
+      coordinates: [
+        [
+          [0, 0],
+          [1, 0],
+          [1, 1],
+          [0, 0],
+        ],
+      ],
     };
 
     expect(toPropertyDataValue(point)).toEqual(point);

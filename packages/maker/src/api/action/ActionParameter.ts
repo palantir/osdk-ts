@@ -19,6 +19,7 @@ import type {
   ParameterId,
   ParameterRenderHint,
 } from "@osdk/client.unstable";
+
 import type { TypeClass } from "../common/TypeClass.js";
 import type { ActionParameterConfiguration } from "./ActionParameterConfiguration.js";
 import type { ActionParameterType } from "./ActionParameterType.js";

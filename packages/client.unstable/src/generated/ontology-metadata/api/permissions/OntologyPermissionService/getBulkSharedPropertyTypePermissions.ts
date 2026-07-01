@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  GetBulkSharedPropertyTypePermissionsRequest
-    as _api_permissions_GetBulkSharedPropertyTypePermissionsRequest,
-  GetBulkSharedPropertyTypePermissionsResponse
-    as _api_permissions_GetBulkSharedPropertyTypePermissionsResponse,
+  GetBulkSharedPropertyTypePermissionsRequest as _api_permissions_GetBulkSharedPropertyTypePermissionsRequest,
+  GetBulkSharedPropertyTypePermissionsResponse as _api_permissions_GetBulkSharedPropertyTypePermissionsResponse,
 } from "../__components.js";
 
 /**
@@ -28,7 +27,7 @@ import type {
  */
 export async function getBulkSharedPropertyTypePermissions(
   ctx: ConjureContext,
-  request: _api_permissions_GetBulkSharedPropertyTypePermissionsRequest,
+  request: _api_permissions_GetBulkSharedPropertyTypePermissionsRequest
 ): Promise<_api_permissions_GetBulkSharedPropertyTypePermissionsResponse> {
   return conjureFetch(ctx, `/permissions/sharedPropertyTypes`, "PUT", request);
 }

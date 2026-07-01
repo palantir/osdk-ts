@@ -30,24 +30,22 @@ export interface SimpleCache<K, V> {
 
 export function createSimpleCache<K, V>(
   map: Map<K, V> | (K extends object ? WeakMap<K, V> : never),
-  fn: (k: K) => V,
+  fn: (k: K) => V
 ): SimpleCache<K, V>;
 /**
  * Create a new cache without a factory function.
  */
 export function createSimpleCache<K, V>(
-  map?: Map<K, V> | (K extends object ? WeakMap<K, V> : never),
-): SimpleCache<
-  K,
-  V | undefined
->;
+  map?: Map<K, V> | (K extends object ? WeakMap<K, V> : never)
+): SimpleCache<K, V | undefined>;
 export function createSimpleCache<K, V>(
-  map: Map<K, V> | (K extends object ? WeakMap<K, V> : never) =
-    new Map() as any,
-  fn?: undefined | ((k: K) => V),
-): typeof fn extends undefined ? SimpleCache<K, V | undefined>
-  : SimpleCache<K, V>
-{
+  map:
+    | Map<K, V>
+    | (K extends object ? WeakMap<K, V> : never) = new Map() as any,
+  fn?: undefined | ((k: K) => V)
+): typeof fn extends undefined
+  ? SimpleCache<K, V | undefined>
+  : SimpleCache<K, V> {
   function get(key: K) {
     const r = (map as Map<K, V>).get(key as any);
     if (r === undefined && fn !== undefined) {
@@ -83,10 +81,7 @@ export interface WeakAsyncCache<K, V> {
    * @param value the value or a promise to the value
    * @returns a new promise to the resolved value
    */
-  set: (
-    key: K,
-    value: V | Promise<V>,
-  ) => Promise<V>;
+  set: (key: K, value: V | Promise<V>) => Promise<V>;
 }
 /**
  * Create a new cache with an async factory function.
@@ -97,13 +92,13 @@ export interface WeakAsyncCache<K, V> {
 export function createSimpleAsyncCache<K, V>(
   type: "weak" | "strong",
   fn: (key: K) => Promise<V>,
-  createCacheLocal: typeof createSimpleCache = createSimpleCache,
+  createCacheLocal: typeof createSimpleCache = createSimpleCache
 ): WeakAsyncCache<K, V> {
   const cache = createCacheLocal<K, V>(
-    (type === "weak" ? new WeakMap() : new Map()) as Map<K, V>,
+    (type === "weak" ? new WeakMap() : new Map()) as Map<K, V>
   );
   const inProgress = createCacheLocal<K, Promise<V> | V>(
-    (type === "weak" ? new WeakMap() : new Map()) as Map<K, V>,
+    (type === "weak" ? new WeakMap() : new Map()) as Map<K, V>
   );
 
   const ret = {
@@ -112,8 +107,7 @@ export function createSimpleAsyncCache<K, V>(
     },
 
     get: async function get(key: K) {
-      return cache.get(key) ?? inProgress.get(key)
-        ?? ret.set(key, fn(key));
+      return cache.get(key) ?? inProgress.get(key) ?? ret.set(key, fn(key));
     },
 
     set: async function set(k: K, v: V | Promise<V>) {

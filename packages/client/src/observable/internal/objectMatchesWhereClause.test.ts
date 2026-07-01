@@ -17,6 +17,7 @@
 import type { Osdk, WhereClause } from "@osdk/api";
 import type { objectTypeWithAllPropertyTypes } from "@osdk/client.test.ontology";
 import { describe, expect, expectTypeOf, it } from "vitest";
+
 import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import { objectSortaMatchesWhereClause } from "./objectMatchesWhereClause.js";
 
@@ -56,9 +57,7 @@ const fauxObject: Osdk.Instance<objectTypeWithAllPropertyTypes> = {
   string: "Hi there",
   stringArray: [],
   vector: [],
-} satisfies objectTypeWithAllPropertyTypes.Props as unknown as Osdk.Instance<
-  objectTypeWithAllPropertyTypes
->;
+} satisfies objectTypeWithAllPropertyTypes.Props as unknown as Osdk.Instance<objectTypeWithAllPropertyTypes>;
 
 // The matcher reads `$primaryKey` / `$title` straight off the holder, so these
 // variants carry those identifier keys (the base fauxObject only has props).
@@ -147,29 +146,26 @@ const whereClauses = {
   whereStrictOrNot: {
     $or: [] as WhereClause<objectTypeWithAllPropertyTypes>[],
   },
-} satisfies Record<
-  string,
-  WhereClause<objectTypeWithAllPropertyTypes>
->;
+} satisfies Record<string, WhereClause<objectTypeWithAllPropertyTypes>>;
 
 whereClauses.stringStartsWithHiAndBye.$and.push(
   whereClauses.stringStartsWithHi,
-  whereClauses.stringStartsWithBye,
+  whereClauses.stringStartsWithBye
 );
 
 whereClauses.stringStartsWithHiOrBye.$or.push(
   whereClauses.stringStartsWithHi,
-  whereClauses.stringStartsWithBye,
+  whereClauses.stringStartsWithBye
 );
 
 whereClauses.whereStrictAndNot.$and.push(
   whereClauses.stringStartsWithHi,
-  whereClauses.geopointIntersects,
+  whereClauses.geopointIntersects
 );
 
 whereClauses.whereStrictOrNot.$or.push(
   whereClauses.stringStartsWithHi,
-  whereClauses.geopointIntersects,
+  whereClauses.geopointIntersects
 );
 
 const cases = [
@@ -196,30 +192,31 @@ const cases = [
   [keyof typeof objects, keyof typeof whereClauses, boolean, boolean]
 >;
 
-type usedWhereClauses = typeof cases[number][1];
+type usedWhereClauses = (typeof cases)[number][1];
 type unusedWhereClauses = Exclude<keyof typeof whereClauses, usedWhereClauses>;
 expectTypeOf<never>().toEqualTypeOf<unusedWhereClauses>;
 
 describe(objectSortaMatchesWhereClause, () => {
   it.each<[keyof typeof objects, keyof typeof whereClauses, boolean, boolean]>(
-    cases,
+    cases
   )(
     "%s | %s ==> { strict: %s, loose: %s }",
     (instanceName, whereClauseName, strictExpected, nonStrictExpected) => {
       const instance = objects[instanceName] as unknown as ObjectHolder<
-        typeof objects[typeof instanceName]
+        (typeof objects)[typeof instanceName]
       >;
-      const whereClause = whereClauses[whereClauseName] as WhereClause<
-        objectTypeWithAllPropertyTypes
-      >;
+      const whereClause = whereClauses[
+        whereClauseName
+      ] as WhereClause<objectTypeWithAllPropertyTypes>;
       expect(instance).toBeDefined();
       expect(whereClause).toBeDefined();
       expect(objectSortaMatchesWhereClause(instance, whereClause, true)).toBe(
-        strictExpected,
+        strictExpected
       );
 
-      expect(objectSortaMatchesWhereClause(instance, whereClause, false))
-        .toBe(nonStrictExpected);
-    },
+      expect(objectSortaMatchesWhereClause(instance, whereClause, false)).toBe(
+        nonStrictExpected
+      );
+    }
   );
 });

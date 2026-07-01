@@ -15,12 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   OrganizationRid as _api_OrganizationRid,
-  SetManagedStoreSettingsForOrgRequest
-    as _api_SetManagedStoreSettingsForOrgRequest,
-  SetManagedStoreSettingsForOrgResponse
-    as _api_SetManagedStoreSettingsForOrgResponse,
+  SetManagedStoreSettingsForOrgRequest as _api_SetManagedStoreSettingsForOrgRequest,
+  SetManagedStoreSettingsForOrgResponse as _api_SetManagedStoreSettingsForOrgResponse,
 } from "../__components.js";
 
 /**
@@ -33,13 +32,12 @@ import type {
 export async function setManagedStoreSettingsForOrg(
   ctx: ConjureContext,
   organizationRid: _api_OrganizationRid,
-  setManagedStoreSettingsForOrgRequest:
-    _api_SetManagedStoreSettingsForOrgRequest,
+  setManagedStoreSettingsForOrgRequest: _api_SetManagedStoreSettingsForOrgRequest
 ): Promise<_api_SetManagedStoreSettingsForOrgResponse> {
   return conjureFetch(
     ctx,
     `/marketplaces/managedStoresSettings/${organizationRid}`,
     "POST",
-    setManagedStoreSettingsForOrgRequest,
+    setManagedStoreSettingsForOrgRequest
   );
 }

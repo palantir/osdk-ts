@@ -17,6 +17,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { Select } from "../Select.js";
 
 interface User {
@@ -58,7 +59,7 @@ describe("Select", () => {
               </Select.Popup>
             </Select.Positioner>
           </Select.Portal>
-        </Select.Root>,
+        </Select.Root>
       );
 
       const trigger = screen.getByTestId("trigger");
@@ -88,7 +89,7 @@ describe("Select", () => {
               </Select.Popup>
             </Select.Positioner>
           </Select.Portal>
-        </Select.Root>,
+        </Select.Root>
       );
 
       expect(screen.getByTestId("trigger").textContent).toContain("Bob");
@@ -115,7 +116,7 @@ describe("Select", () => {
               </Select.Popup>
             </Select.Positioner>
           </Select.Portal>
-        </Select.Root>,
+        </Select.Root>
       );
 
       expect(screen.getByTestId("trigger").textContent).toContain("Alice");
@@ -132,7 +133,7 @@ describe("Select", () => {
               </Select.Popup>
             </Select.Positioner>
           </Select.Portal>
-        </Select.Root>,
+        </Select.Root>
       );
 
       expect(screen.getByTestId("trigger").textContent).toContain("hello");
@@ -156,7 +157,7 @@ describe("Select", () => {
               </Select.Popup>
             </Select.Positioner>
           </Select.Portal>
-        </Select.Root>,
+        </Select.Root>
       );
 
       const trigger = screen.getByTestId("trigger");
@@ -184,7 +185,7 @@ describe("Select", () => {
               </Select.Popup>
             </Select.Positioner>
           </Select.Portal>
-        </Select.Root>,
+        </Select.Root>
       );
 
       const trigger = screen.getByTestId("trigger");

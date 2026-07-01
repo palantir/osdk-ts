@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   CreateJobDraftRequest as _api_CreateJobDraftRequest,
   CreateJobDraftResponse as _api_CreateJobDraftResponse,
@@ -32,7 +33,7 @@ import type {
  */
 export async function createJobDraft(
   ctx: ConjureContext,
-  request: _api_CreateJobDraftRequest,
+  request: _api_CreateJobDraftRequest
 ): Promise<_api_CreateJobDraftResponse> {
   return conjureFetch(ctx, `/installation-job-draft`, "POST", request);
 }

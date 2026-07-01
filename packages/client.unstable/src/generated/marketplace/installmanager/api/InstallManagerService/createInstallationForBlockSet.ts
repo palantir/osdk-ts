@@ -15,9 +15,9 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  CreateInstallationForBlockSetRequest
-    as _installmanager_api_CreateInstallationForBlockSetRequest,
+  CreateInstallationForBlockSetRequest as _installmanager_api_CreateInstallationForBlockSetRequest,
   CreateInstallationResponse as _installmanager_api_CreateInstallationResponse,
 } from "../__components.js";
 
@@ -26,12 +26,12 @@ import type {
  */
 export async function createInstallationForBlockSet(
   ctx: ConjureContext,
-  request: _installmanager_api_CreateInstallationForBlockSetRequest,
+  request: _installmanager_api_CreateInstallationForBlockSetRequest
 ): Promise<_installmanager_api_CreateInstallationResponse> {
   return conjureFetch(
     ctx,
     `/install-manager/installations/create/block-set`,
     "POST",
-    request,
+    request
   );
 }

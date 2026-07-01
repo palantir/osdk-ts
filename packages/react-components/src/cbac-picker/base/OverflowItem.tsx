@@ -18,14 +18,16 @@ import { Button } from "@base-ui/react/button";
 import { Tooltip } from "@base-ui/react/tooltip";
 import classnames from "classnames";
 import React from "react";
+
 import type { MarkingSelectionState } from "../types.js";
-import styles from "./OverflowItem.module.css";
 import {
   getDisplayLabel,
   getTooltipText,
   isDisallowed,
   isImplied,
 } from "./selectionStateHelpers.js";
+
+import styles from "./OverflowItem.module.css";
 
 export interface OverflowItemProps {
   id: string;
@@ -64,7 +66,7 @@ export const OverflowItem: React.MemoExoticComponent<
       className={classnames(
         styles.overflowItem,
         (isSelected || implied) && styles.overflowItemSelected,
-        disallowed && styles.overflowItemDisabled,
+        disallowed && styles.overflowItemDisabled
       )}
       onClick={isItemDisabled ? undefined : handleClick}
       disabled={showTooltip ? undefined : isItemDisabled}

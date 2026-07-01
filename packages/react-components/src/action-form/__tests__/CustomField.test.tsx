@@ -17,6 +17,7 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import type React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { CustomField } from "../fields/CustomField.js";
 import type { BaseFormFieldProps } from "../FormFieldApi.js";
 
@@ -30,7 +31,7 @@ describe("CustomField", () => {
           value="test"
           onChange={vi.fn()}
           customRenderer={() => <div data-testid="custom">Custom content</div>}
-        />,
+        />
       );
       expect(screen.getByTestId("custom")).toBeDefined();
       expect(screen.getByText("Custom content")).toBeDefined();
@@ -44,7 +45,7 @@ describe("CustomField", () => {
           customRenderer={(props) => (
             <div data-testid="value">{String(props.value)}</div>
           )}
-        />,
+        />
       );
       expect(screen.getByTestId("value").textContent).toBe("hello");
     });
@@ -56,7 +57,7 @@ describe("CustomField", () => {
           value={null}
           onChange={vi.fn()}
           customRenderer={(props) => <div data-testid="id">{props.id}</div>}
-        />,
+        />
       );
       expect(screen.getByTestId("id").textContent).toBe("my-field");
     });
@@ -69,7 +70,7 @@ describe("CustomField", () => {
           customRenderer={(props) => (
             <div data-testid="value">{String(props.value)}</div>
           )}
-        />,
+        />
       );
       expect(screen.getByTestId("value").textContent).toBe("null");
     });
@@ -81,7 +82,7 @@ describe("CustomField", () => {
           onChange={vi.fn()}
           disabled={true}
           customRenderer={renderDisabledProp}
-        />,
+        />
       );
 
       expect(screen.getByTestId("disabled").textContent).toBe("true");
@@ -103,7 +104,7 @@ describe("CustomField", () => {
               onChange={(e) => props.onChange?.(e.target.value)}
             />
           )}
-        />,
+        />
       );
 
       fireEvent.change(screen.getByTestId("custom-input"), {
@@ -115,7 +116,7 @@ describe("CustomField", () => {
 });
 
 function renderDisabledProp(
-  props: BaseFormFieldProps<unknown>,
+  props: BaseFormFieldProps<unknown>
 ): React.ReactNode {
   return <div data-testid="disabled">{String(props.disabled)}</div>;
 }

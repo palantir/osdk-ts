@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   CreateBlockSetVersionRequest as _api_CreateBlockSetVersionRequest,
   CreateBlockSetVersionResponse as _api_CreateBlockSetVersionResponse,
@@ -33,12 +34,12 @@ import type {
 export async function createBlockSetVersionV2(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
-  request: _api_CreateBlockSetVersionRequest,
+  request: _api_CreateBlockSetVersionRequest
 ): Promise<_api_CreateBlockSetVersionResponse> {
   return conjureFetch(
     ctx,
     `/block-sets/v2/${marketplaceRid}/version`,
     "POST",
-    request,
+    request
   );
 }

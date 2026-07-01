@@ -18,11 +18,12 @@ import { getUIMessageText, type UIMessage } from "@osdk/aip-core";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import * as React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { BaseAipAgentChat } from "../BaseAipAgentChat.js";
 
 function makeMessage(
   role: "user" | "assistant" | "system",
-  text: string,
+  text: string
 ): UIMessage {
   return {
     id: `${role}-${Math.random()}`,
@@ -46,12 +47,12 @@ describe("BaseAipAgentChat", () => {
         onSendMessage={vi.fn()}
         onStop={vi.fn()}
         onClearError={vi.fn()}
-      />,
+      />
     );
 
     expect(screen.getByText("Start a conversation")).toBeDefined();
     expect(
-      screen.getByText("Type a message below to chat with the assistant."),
+      screen.getByText("Type a message below to chat with the assistant.")
     ).toBeDefined();
   });
 
@@ -67,7 +68,7 @@ describe("BaseAipAgentChat", () => {
         onSendMessage={vi.fn()}
         onStop={vi.fn()}
         onClearError={vi.fn()}
-      />,
+      />
     );
 
     const userGroup = screen.getByLabelText("User message");
@@ -75,7 +76,7 @@ describe("BaseAipAgentChat", () => {
 
     expect(userGroup.textContent).toContain(getUIMessageText(userMsg));
     expect(assistantGroup.textContent).toContain(
-      getUIMessageText(assistantMsg),
+      getUIMessageText(assistantMsg)
     );
   });
 
@@ -88,7 +89,7 @@ describe("BaseAipAgentChat", () => {
         onSendMessage={vi.fn()}
         onStop={vi.fn()}
         onClearError={vi.fn()}
-      />,
+      />
     );
 
     const sendButton = screen.getByRole("button", { name: /send/i });
@@ -104,7 +105,7 @@ describe("BaseAipAgentChat", () => {
         onSendMessage={vi.fn()}
         onStop={vi.fn()}
         onClearError={vi.fn()}
-      />,
+      />
     );
 
     const textarea = screen.getByLabelText("Message input");
@@ -125,7 +126,7 @@ describe("BaseAipAgentChat", () => {
         onSendMessage={onSendMessage}
         onStop={vi.fn()}
         onClearError={vi.fn()}
-      />,
+      />
     );
 
     const textarea = screen.getByLabelText("Message input");
@@ -144,7 +145,7 @@ describe("BaseAipAgentChat", () => {
         onSendMessage={vi.fn()}
         onStop={vi.fn()}
         onClearError={vi.fn()}
-      />,
+      />
     );
 
     expect(screen.queryByRole("button", { name: /send/i })).toBeNull();
@@ -162,7 +163,7 @@ describe("BaseAipAgentChat", () => {
         onSendMessage={vi.fn()}
         onStop={onStop}
         onClearError={vi.fn()}
-      />,
+      />
     );
 
     fireEvent.click(screen.getByRole("button", { name: /stop/i }));
@@ -181,7 +182,7 @@ describe("BaseAipAgentChat", () => {
         onSendMessage={vi.fn()}
         onStop={vi.fn()}
         onClearError={vi.fn()}
-      />,
+      />
     );
 
     const banner = screen.getByRole("alert");
@@ -199,7 +200,7 @@ describe("BaseAipAgentChat", () => {
         onSendMessage={vi.fn()}
         onStop={vi.fn()}
         onClearError={onClearError}
-      />,
+      />
     );
 
     fireEvent.click(screen.getByRole("button", { name: /dismiss/i }));
@@ -219,7 +220,7 @@ describe("BaseAipAgentChat", () => {
         onSendMessage={vi.fn()}
         onStop={vi.fn()}
         onClearError={vi.fn()}
-      />,
+      />
     );
 
     const slot = screen.getByTestId("actions-slot");
@@ -238,7 +239,7 @@ describe("BaseAipAgentChat", () => {
         onSendMessage={vi.fn()}
         onStop={vi.fn()}
         onClearError={vi.fn()}
-      />,
+      />
     );
 
     const slot = screen.getByTestId("above-slot");
@@ -255,7 +256,7 @@ describe("BaseAipAgentChat", () => {
         onSendMessage={vi.fn()}
         onStop={vi.fn()}
         onClearError={vi.fn()}
-      />,
+      />
     );
 
     const slot = screen.getByTestId("below-slot");
@@ -276,7 +277,7 @@ describe("BaseAipAgentChat", () => {
         onSendMessage={vi.fn()}
         onStop={vi.fn()}
         onClearError={vi.fn()}
-      />,
+      />
     );
 
     expect(renderEmptyState).toHaveBeenCalled();
@@ -303,15 +304,15 @@ describe("BaseAipAgentChat", () => {
         onSendMessage={vi.fn()}
         onStop={vi.fn()}
         onClearError={vi.fn()}
-      />,
+      />
     );
 
     expect(renderMessage).toHaveBeenCalledTimes(2);
     expect(screen.getByTestId(`custom-${userMsg.id}`).textContent).toBe(
-      "[user] first",
+      "[user] first"
     );
     expect(screen.getByTestId(`custom-${assistantMsg.id}`).textContent).toBe(
-      "[assistant] second",
+      "[assistant] second"
     );
     // The default bubble (with aria-label="User message") must NOT render.
     expect(screen.queryByLabelText("User message")).toBeNull();

@@ -84,9 +84,11 @@ const tagsProperty = defineSharedPropertyType({
   displayName: "Tags",
   description: "List of tags",
   // optionally add a reducer
-  reducers: [{
-    direction: "descending",
-  }],
+  reducers: [
+    {
+      direction: "descending",
+    },
+  ],
 });
 ```
 
@@ -193,12 +195,14 @@ defineValueType({
   displayName: "Email Address",
   type: {
     type: "string",
-    constraints: [{
-      constraint: {
-        regex: "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$",
+    constraints: [
+      {
+        constraint: {
+          regex: "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$",
+        },
+        failureMessage: "Must be a valid email address",
       },
-      failureMessage: "Must be a valid email address",
-    }],
+    ],
   },
   version: "1.0.0",
 });
@@ -209,11 +213,13 @@ defineValueType({
   displayName: "True/False Value",
   type: {
     type: "boolean",
-    constraints: [{
-      constraint: {
-        allowedValues: ["TRUE_VALUE"],
+    constraints: [
+      {
+        constraint: {
+          allowedValues: ["TRUE_VALUE"],
+        },
       },
-    }],
+    ],
   },
   version: "0.1.0",
 });
@@ -369,10 +375,10 @@ const personObject = defineObject({
   titlePropertyApiName: "name", // Property to use as the title
   primaryKeyPropertyApiName: "id", // Property to use as the primary key
   properties: {
-    "id": { type: "string", displayName: "ID" },
-    "name": { type: "string" },
-    "email": { type: "string" },
-    "age": { type: "integer" },
+    id: { type: "string", displayName: "ID" },
+    name: { type: "string" },
+    email: { type: "string" },
+    age: { type: "integer" },
   },
 });
 ```
@@ -388,12 +394,12 @@ const employeeObject = defineObject({
   titlePropertyApiName: "name",
   primaryKeyPropertyApiName: "id",
   properties: {
-    "id": { type: "string", displayName: "ID" },
-    "name": { type: "string" },
-    "email": { type: "string" },
-    "department": { type: "string" },
-    "hireDate": { type: "date", displayName: "Hire Date" },
-    "isActive": { type: "boolean" },
+    id: { type: "string", displayName: "ID" },
+    name: { type: "string" },
+    email: { type: "string" },
+    department: { type: "string" },
+    hireDate: { type: "date", displayName: "Hire Date" },
+    isActive: { type: "boolean" },
   },
   implementsInterfaces: [
     {
@@ -421,9 +427,9 @@ const customerObject = defineObject({
   titlePropertyApiName: "name",
   primaryKeyPropertyApiName: "id",
   properties: {
-    "id": { type: "string", displayName: "ID" },
-    "name": { type: "string" },
-    "address": {
+    id: { type: "string", displayName: "ID" },
+    name: { type: "string" },
+    address: {
       type: {
         type: "struct",
         structDefinition: {
@@ -456,14 +462,16 @@ const eventObject = defineObject({
   titlePropertyApiName: "eventName",
   primaryKeyPropertyApiName: "eventId",
   properties: {
-    "eventId": { type: "string", displayName: "Event ID" },
-    "eventName": { type: "string", displayName: "Event Name" },
-    "timestamp": { type: "timestamp" },
+    eventId: { type: "string", displayName: "Event ID" },
+    eventName: { type: "string", displayName: "Event Name" },
+    timestamp: { type: "timestamp" },
   },
-  datasources: [{
-    type: "stream",
-    retentionPeriod: "P90D", // 90 days retention (ISO 8601 duration format)
-  }],
+  datasources: [
+    {
+      type: "stream",
+      retentionPeriod: "P90D", // 90 days retention (ISO 8601 duration format)
+    },
+  ],
 });
 ```
 
@@ -477,9 +485,9 @@ const object = defineObject({
   titlePropertyApiName: "name",
   primaryKeyPropertyApiName: "name",
   properties: {
-    "name": { type: "string", displayName: "Name" },
-    "protectedProperty": { type: "string", displayName: "Event Name" },
-    "markingProperty": {
+    name: { type: "string", displayName: "Name" },
+    protectedProperty: { type: "string", displayName: "Event Name" },
+    markingProperty: {
       type: {
         type: "marking",
         markingType: "MANDATORY",
@@ -487,35 +495,37 @@ const object = defineObject({
       },
     },
   },
-  datasources: [{
-    type: "dataset",
-    // you can optionally define an objectSecurityPolicy here as well
-    propertySecurityGroups: [
-      {
-        name: "myPsg",
-        properties: ["protectedProperty"],
-        granularPolicy: {
-          type: "and",
-          conditions: [
-            {
-              type: "markingProperty",
-              property: "markingProperty",
-            },
-            {
-              type: "group",
-              name: "myInputGroup",
-            },
-          ],
+  datasources: [
+    {
+      type: "dataset",
+      // you can optionally define an objectSecurityPolicy here as well
+      propertySecurityGroups: [
+        {
+          name: "myPsg",
+          properties: ["protectedProperty"],
+          granularPolicy: {
+            type: "and",
+            conditions: [
+              {
+                type: "markingProperty",
+                property: "markingProperty",
+              },
+              {
+                type: "group",
+                name: "myInputGroup",
+              },
+            ],
+          },
+          appliedMarkings: {
+            myCbacMarking: "CBAC",
+          },
+          assumedMarkings: {
+            myMandatoryMarking: "MANDATORY",
+          },
         },
-        appliedMarkings: {
-          "myCbacMarking": "CBAC",
-        },
-        assumedMarkings: {
-          "myMandatoryMarking": "MANDATORY",
-        },
-      },
-    ],
-  }],
+      ],
+    },
+  ],
 });
 ```
 
@@ -687,7 +697,7 @@ const createPersonAction = defineCreateInterfaceObjectAction({
 // Define an action for a specific object type that implements an interface
 const createEmployeePersonAction = defineCreateInterfaceObjectAction(
   personInterface,
-  employeeObject,
+  employeeObject
 );
 
 // Define an action to modify objects implementing an interface
@@ -724,10 +734,10 @@ const employeeObject = defineObject({
   titlePropertyApiName: "id",
   primaryKeyPropertyApiName: "id",
   properties: {
-    "id": { type: "string", displayName: "ID" },
-    "team": { type: "string" },
-    "numDeals": { type: "integer" },
-    "experience": { type: "integer" },
+    id: { type: "string", displayName: "ID" },
+    team: { type: "string" },
+    numDeals: { type: "integer" },
+    experience: { type: "integer" },
   },
 });
 
@@ -757,30 +767,23 @@ const makeDealsVisible: ActionParameterConditionalOverride = {
   type: "visibility",
   condition: {
     type: "and",
-    conditions: [
-      mustBeInTeamCondition,
-      teamEqualsSalesParameterCondition,
-    ],
+    conditions: [mustBeInTeamCondition, teamEqualsSalesParameterCondition],
   },
 };
 
-const modifyObjectActionType = defineModifyObjectAction(
-  {
-    objectType: employeeObject,
-    actionLevelValidation: {
-      condition: mustBeManagerCondition,
-    },
-    parameterConfiguration: {
-      "numDeals": {
-        defaultVisibility: "hidden",
-        conditionalOverrides: [
-          makeDealsVisible,
-        ],
-      },
-    },
-    excludedProperties: ["experience"],
+const modifyObjectActionType = defineModifyObjectAction({
+  objectType: employeeObject,
+  actionLevelValidation: {
+    condition: mustBeManagerCondition,
   },
-);
+  parameterConfiguration: {
+    numDeals: {
+      defaultVisibility: "hidden",
+      conditionalOverrides: [makeDealsVisible],
+    },
+  },
+  excludedProperties: ["experience"],
+});
 ```
 
 ### Derived Properties
@@ -846,9 +849,11 @@ const flight = defineObject({
     {
       type: "derived",
       // multi-hop link traversals are also supported, just extend this list!
-      linkDefinition: [{
-        linkType: flightToPassengers,
-      }],
+      linkDefinition: [
+        {
+          linkType: flightToPassengers,
+        },
+      ],
       propertyMapping: {
         passengersList: {
           type: "collectList",

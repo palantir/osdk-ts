@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  BatchGetApolloBlockSetVersionPublishingStatusRequest
-    as _api_BatchGetApolloBlockSetVersionPublishingStatusRequest,
-  BatchGetApolloBlockSetVersionPublishingStatusResponse
-    as _api_BatchGetApolloBlockSetVersionPublishingStatusResponse,
+  BatchGetApolloBlockSetVersionPublishingStatusRequest as _api_BatchGetApolloBlockSetVersionPublishingStatusRequest,
+  BatchGetApolloBlockSetVersionPublishingStatusResponse as _api_BatchGetApolloBlockSetVersionPublishingStatusResponse,
   MarketplaceRid as _api_MarketplaceRid,
 } from "../__components.js";
 
@@ -30,12 +29,12 @@ import type {
 export async function batchGetApolloBlockSetVersionPublishingStatus(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
-  request: _api_BatchGetApolloBlockSetVersionPublishingStatusRequest,
+  request: _api_BatchGetApolloBlockSetVersionPublishingStatusRequest
 ): Promise<_api_BatchGetApolloBlockSetVersionPublishingStatusResponse> {
   return conjureFetch(
     ctx,
     `/apollo-publisher/${marketplaceRid}/batch/block-set-publishing-status`,
     "POST",
-    request,
+    request
   );
 }

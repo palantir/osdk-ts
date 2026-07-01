@@ -254,7 +254,7 @@ These pure functions handle marking selection logic without any React or OSDK de
 function toggleMarking(
   markingId: string,
   currentSelection: string[],
-  categories: CategoryMarkingGroup[],
+  categories: CategoryMarkingGroup[]
 ): string[];
 ```
 
@@ -269,7 +269,7 @@ Toggles a marking in the selection, respecting category type:
 function computeMarkingStates(
   selectedIds: string[],
   impliedIds: string[],
-  disallowedIds: string[],
+  disallowedIds: string[]
 ): Map<string, MarkingSelectionState>;
 ```
 
@@ -280,7 +280,7 @@ Computes the display state for each marking based on the current selection, impl
 ```typescript
 function groupMarkingsByCategory(
   markings: PickerMarking[],
-  categories: PickerMarkingCategory[],
+  categories: PickerMarkingCategory[]
 ): CategoryMarkingGroup[];
 ```
 

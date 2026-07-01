@@ -16,6 +16,7 @@
 
 import { addOne } from "@osdk/client.test.ontology";
 import { describe, expect, it } from "vitest";
+
 import { createMockClient } from "../../mock/createMockClient.js";
 import { basicQuery } from "./basicQuery.js";
 

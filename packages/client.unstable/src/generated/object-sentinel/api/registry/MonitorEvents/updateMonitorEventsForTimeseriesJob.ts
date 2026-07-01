@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   UpdateExistingEventsRequest as _api_registry_UpdateExistingEventsRequest,
   UpdateExistingEventsResponse as _api_registry_UpdateExistingEventsResponse,
@@ -27,12 +28,12 @@ import type {
  */
 export async function updateMonitorEventsForTimeseriesJob(
   ctx: ConjureContext,
-  request: _api_registry_UpdateExistingEventsRequest,
+  request: _api_registry_UpdateExistingEventsRequest
 ): Promise<_api_registry_UpdateExistingEventsResponse> {
   return conjureFetch(
     ctx,
     `/registry/v0/monitors/update-timeseries-job-events`,
     "POST",
-    request,
+    request
   );
 }

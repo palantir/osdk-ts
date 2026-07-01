@@ -18,7 +18,7 @@ import type { PDFDocumentProxy } from "pdfjs-dist";
 import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
 const pdfWorkerUrl = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
-  import.meta.url,
+  import.meta.url
 );
 import { useEffect, useState } from "react";
 
@@ -38,49 +38,50 @@ interface UsePdfDocumentResult {
 }
 
 export function usePdfDocument(
-  src: string | ArrayBuffer,
+  src: string | ArrayBuffer
 ): UsePdfDocumentResult {
   const [document, setDocument] = useState<PDFDocumentProxy | undefined>(
-    undefined,
+    undefined
   );
   const [numPages, setNumPages] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | undefined>(undefined);
 
-  useEffect(function loadPdfDocument() {
-    pdfWorker.ensureWorker();
-    setLoading(true);
-    setError(undefined);
+  useEffect(
+    function loadPdfDocument() {
+      pdfWorker.ensureWorker();
+      setLoading(true);
+      setError(undefined);
 
-    const loadingTask = getDocument(
-      typeof src === "string" ? { url: src } : { data: src },
-    );
+      const loadingTask = getDocument(
+        typeof src === "string" ? { url: src } : { data: src }
+      );
 
-    let cancelled = false;
+      let cancelled = false;
 
-    loadingTask.promise.then(
-      (pdf) => {
-        if (!cancelled) {
-          setDocument(pdf);
-          setNumPages(pdf.numPages);
-          setLoading(false);
+      loadingTask.promise.then(
+        (pdf) => {
+          if (!cancelled) {
+            setDocument(pdf);
+            setNumPages(pdf.numPages);
+            setLoading(false);
+          }
+        },
+        (err: unknown) => {
+          if (!cancelled) {
+            setError(err instanceof Error ? err : new Error(String(err)));
+            setLoading(false);
+          }
         }
-      },
-      (err: unknown) => {
-        if (!cancelled) {
-          setError(
-            err instanceof Error ? err : new Error(String(err)),
-          );
-          setLoading(false);
-        }
-      },
-    );
+      );
 
-    return () => {
-      cancelled = true;
-      void loadingTask.destroy();
-    };
-  }, [src]);
+      return () => {
+        cancelled = true;
+        void loadingTask.destroy();
+      };
+    },
+    [src]
+  );
 
   return { document, numPages, loading, error };
 }

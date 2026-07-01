@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   UpdateEntityRolesRequest as _api_permissions_UpdateEntityRolesRequest,
   UpdateEntityRolesResponse as _api_permissions_UpdateEntityRolesResponse,
@@ -28,12 +29,12 @@ import type {
  */
 export async function updateEntityRoles(
   ctx: ConjureContext,
-  updateRequest: _api_permissions_UpdateEntityRolesRequest,
+  updateRequest: _api_permissions_UpdateEntityRolesRequest
 ): Promise<_api_permissions_UpdateEntityRolesResponse> {
   return conjureFetch(
     ctx,
     `/permissions/updateEntityRoles`,
     "POST",
-    updateRequest,
+    updateRequest
   );
 }

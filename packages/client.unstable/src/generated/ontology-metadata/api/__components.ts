@@ -21,22 +21,17 @@ import type {
   GeotimeSeriesIntegrationName as _api_blockdata_GeotimeSeriesIntegrationName,
   MarkingGroupName as _api_blockdata_MarkingGroupName,
   MediaSetViewName as _api_blockdata_MediaSetViewName,
-  OntologyIrPropertyToColumnMapping
-    as _api_blockdata_OntologyIrPropertyToColumnMapping,
-  OntologyIrPropertyToPropertyMapping
-    as _api_blockdata_OntologyIrPropertyToPropertyMapping,
-  OntologyIrValueTypeReferenceWithMetadata
-    as _api_blockdata_OntologyIrValueTypeReferenceWithMetadata,
+  OntologyIrPropertyToColumnMapping as _api_blockdata_OntologyIrPropertyToColumnMapping,
+  OntologyIrPropertyToPropertyMapping as _api_blockdata_OntologyIrPropertyToPropertyMapping,
+  OntologyIrValueTypeReferenceWithMetadata as _api_blockdata_OntologyIrValueTypeReferenceWithMetadata,
   RestrictedViewName as _api_blockdata_RestrictedViewName,
   StreamName as _api_blockdata_StreamName,
   TimeSeriesSyncName as _api_blockdata_TimeSeriesSyncName,
   ValidationRuleIndex as _api_blockdata_ValidationRuleIndex,
 } from "./blockdata/__components.js";
 import type {
-  DerivedPropertiesDefinition
-    as _api_derivedproperties_DerivedPropertiesDefinition,
-  OntologyIrDerivedPropertiesDefinition
-    as _api_derivedproperties_OntologyIrDerivedPropertiesDefinition,
+  DerivedPropertiesDefinition as _api_derivedproperties_DerivedPropertiesDefinition,
+  OntologyIrDerivedPropertiesDefinition as _api_derivedproperties_OntologyIrDerivedPropertiesDefinition,
 } from "./derivedproperties/__components.js";
 import type {
   Alias as _api_entitymetadata_Alias,
@@ -47,8 +42,7 @@ import type {
 import type {
   ActionTypeProvenance as _api_entitymetadata_provenance_ActionTypeProvenance,
   EntityProvenance as _api_entitymetadata_provenance_EntityProvenance,
-  MarketplaceEntityProvenance
-    as _api_entitymetadata_provenance_MarketplaceEntityProvenance,
+  MarketplaceEntityProvenance as _api_entitymetadata_provenance_MarketplaceEntityProvenance,
 } from "./entitymetadata/provenance/__components.js";
 import type {
   ObjectSetFilter as _api_objectset_ObjectSetFilter,
@@ -66,8 +60,7 @@ import type {
   MediaMetadataType as _api_types_MediaMetadataType,
   NowValue as _api_types_NowValue,
   ObjectLocator as _api_types_ObjectLocator,
-  OntologyIrBaseParameterConstraintType
-    as _api_types_OntologyIrBaseParameterConstraintType,
+  OntologyIrBaseParameterConstraintType as _api_types_OntologyIrBaseParameterConstraintType,
   OntologyIrBaseParameterType as _api_types_OntologyIrBaseParameterType,
   OntologyIrDataValue as _api_types_OntologyIrDataValue,
   OntologyIrObjectLocator as _api_types_OntologyIrObjectLocator,
@@ -184,8 +177,7 @@ export type ActionEditsValidationConditionSubject =
   | ActionEditsValidationConditionSubject_objectType
   | ActionEditsValidationConditionSubject_allEdits;
 
-export interface ActionEditsValidationConditionSubjectAllEdits {
-}
+export interface ActionEditsValidationConditionSubjectAllEdits {}
 export interface ActionEditsValidationCreationCondition {
   requireEdit: boolean;
   subject: ActionEditsValidationConditionSubject;
@@ -359,8 +351,7 @@ export interface ActionLogStructFieldValueModification_objectParameterStructFiel
 
 export interface ActionLogStructFieldValueModification_objectParameterStructListFieldValue {
   type: "objectParameterStructListFieldValue";
-  objectParameterStructListFieldValue:
-    ObjectParameterStructListFieldValueModification;
+  objectParameterStructListFieldValue: ObjectParameterStructListFieldValueModification;
 }
 /**
  * Values that can be mapped to struct fields in action log rules for incoming requests.
@@ -523,8 +514,7 @@ export interface ActionLogValueModification_interfaceParameterPropertyValue {
 
 export interface ActionLogValueModification_interfaceParameterPropertyValueV2 {
   type: "interfaceParameterPropertyValueV2";
-  interfaceParameterPropertyValueV2:
-    InterfaceParameterPropertyValueModificationV2;
+  interfaceParameterPropertyValueV2: InterfaceParameterPropertyValueModificationV2;
 }
 
 export interface ActionLogValueModification_editedObjects {
@@ -783,8 +773,7 @@ export interface ActionSubmissionConfiguration {
 export type ActionsVersion = string;
 export interface ActionTableSubmissionMode_submitValidEntriesInOrderUntilFirstFailure {
   type: "submitValidEntriesInOrderUntilFirstFailure";
-  submitValidEntriesInOrderUntilFirstFailure:
-    SubmitValidEntriesInOrderUntilFirstFailureMode;
+  submitValidEntriesInOrderUntilFirstFailure: SubmitValidEntriesInOrderUntilFirstFailureMode;
 }
 
 export interface ActionTableSubmissionMode_submitAllValidOrNothingThrowing {
@@ -819,14 +808,12 @@ export interface ActionType {
 export type ActionTypeApiName = string;
 export interface ActionTypeBranchFunctionsWithExternalCallsMode_allowFunctionsWithExternalCallsOnBranches {
   type: "allowFunctionsWithExternalCallsOnBranches";
-  allowFunctionsWithExternalCallsOnBranches:
-    AllowFunctionsWithExternalCallsOnBranches;
+  allowFunctionsWithExternalCallsOnBranches: AllowFunctionsWithExternalCallsOnBranches;
 }
 
 export interface ActionTypeBranchFunctionsWithExternalCallsMode_disableFunctionsWithExternalCallsOnBranches {
   type: "disableFunctionsWithExternalCallsOnBranches";
-  disableFunctionsWithExternalCallsOnBranches:
-    DisableFunctionsWithExternalCallsOnBranches;
+  disableFunctionsWithExternalCallsOnBranches: DisableFunctionsWithExternalCallsOnBranches;
 }
 export type ActionTypeBranchFunctionsWithExternalCallsMode =
   | ActionTypeBranchFunctionsWithExternalCallsMode_allowFunctionsWithExternalCallsOnBranches
@@ -846,8 +833,7 @@ export type ActionTypeBranchNotificationsMode =
   | ActionTypeBranchNotificationsMode_disableNotificationsOnBranches;
 
 export interface ActionTypeBranchSettings {
-  functionsWithExternalCallsMode:
-    ActionTypeBranchFunctionsWithExternalCallsMode;
+  functionsWithExternalCallsMode: ActionTypeBranchFunctionsWithExternalCallsMode;
   notificationsMode: ActionTypeBranchNotificationsMode;
   webhooksMode: ActionTypeBranchWebhooksMode;
 }
@@ -1000,14 +986,12 @@ export interface ActionTypeError_actionTypesAlreadyExist {
 
 export interface ActionTypeError_inlineActionTypeCannotBeReferencedByMultipleObjectTypes {
   type: "inlineActionTypeCannotBeReferencedByMultipleObjectTypes";
-  inlineActionTypeCannotBeReferencedByMultipleObjectTypes:
-    InlineActionTypeCannotBeReferencedByMultipleObjectTypesError;
+  inlineActionTypeCannotBeReferencedByMultipleObjectTypes: InlineActionTypeCannotBeReferencedByMultipleObjectTypesError;
 }
 
 export interface ActionTypeError_actionTypeDoesNotHaveActionTypeLevelValidation {
   type: "actionTypeDoesNotHaveActionTypeLevelValidation";
-  actionTypeDoesNotHaveActionTypeLevelValidation:
-    ActionTypeDoesNotHaveActionTypeLevelValidationError;
+  actionTypeDoesNotHaveActionTypeLevelValidation: ActionTypeDoesNotHaveActionTypeLevelValidationError;
 }
 
 export interface ActionTypeError_parameterValidationNotFound {
@@ -1017,20 +1001,17 @@ export interface ActionTypeError_parameterValidationNotFound {
 
 export interface ActionTypeError_parameterValidationReferencesLaterParameters {
   type: "parameterValidationReferencesLaterParameters";
-  parameterValidationReferencesLaterParameters:
-    ParameterValidationReferencesLaterParametersError;
+  parameterValidationReferencesLaterParameters: ParameterValidationReferencesLaterParametersError;
 }
 
 export interface ActionTypeError_parametersDoNotMatchParameterOrdering {
   type: "parametersDoNotMatchParameterOrdering";
-  parametersDoNotMatchParameterOrdering:
-    ParametersDoNotMatchParameterOrderingError;
+  parametersDoNotMatchParameterOrdering: ParametersDoNotMatchParameterOrderingError;
 }
 
 export interface ActionTypeError_nonExistentParametersUsedInParameterPrefill {
   type: "nonExistentParametersUsedInParameterPrefill";
-  nonExistentParametersUsedInParameterPrefill:
-    NonExistentParametersUsedInParameterPrefillError;
+  nonExistentParametersUsedInParameterPrefill: NonExistentParametersUsedInParameterPrefillError;
 }
 
 export interface ActionTypeError_deletingAndEditingTheSameActionType {
@@ -1040,8 +1021,7 @@ export interface ActionTypeError_deletingAndEditingTheSameActionType {
 
 export interface ActionTypeError_actionTypeEditingNonEditablePropertyType {
   type: "actionTypeEditingNonEditablePropertyType";
-  actionTypeEditingNonEditablePropertyType:
-    ActionTypeEditingNonEditablePropertyTypeError;
+  actionTypeEditingNonEditablePropertyType: ActionTypeEditingNonEditablePropertyTypeError;
 }
 export type ActionTypeError =
   | ActionTypeError_versionedActionTypesNotFound
@@ -1114,8 +1094,7 @@ export interface ActionTypeLevelValidation {
  * Request to batch load ActionTypes. If any of the requested ActionTypes are not available in the specified
  * ActionsVersion (or latest if not specified), they will not be present in the response.
  */
-export interface ActionTypeLoadAllRequest {
-}
+export interface ActionTypeLoadAllRequest {}
 /**
  * Request to batch load ActionTypes.
  */
@@ -1475,9 +1454,7 @@ export interface ActionWebhooks {
  * ActionWebhooks contains the definition for webhooks that are executed as part of running an Action.
  */
 export interface ActionWebhooksModification {
-  asynchronousPostWritebackWebhooks: Array<
-    AsynchronousPostWritebackWebhookModification
-  >;
+  asynchronousPostWritebackWebhooks: Array<AsynchronousPostWritebackWebhookModification>;
   synchronousPreWritebackWebhook?:
     | SynchronousPreWritebackWebhookModification
     | null
@@ -1486,29 +1463,24 @@ export interface ActionWebhooksModification {
 /**
  * This status indicates that the ActionType will not change on short notice and should thus be safe to use in user facing workflows. They will not be removed without first being deprecated.
  */
-export interface ActiveActionTypeStatus {
-}
+export interface ActiveActionTypeStatus {}
 /**
  * This status indicates that breaking changes should not be made to the interface and it should be safe to use
  * in user facing workflows. The interface will not be removed without first being deprecated.
  */
-export interface ActiveInterfaceTypeStatus {
-}
+export interface ActiveInterfaceTypeStatus {}
 /**
  * This status indicates that the LinkType will not change on short notice and should thus be safe to use in user facing workflows. They will not be removed without first being deprecated.
  */
-export interface ActiveLinkTypeStatus {
-}
+export interface ActiveLinkTypeStatus {}
 /**
  * This status indicates that the ObjectType will not change on short notice and should thus be safe to use in user facing workflows. They will not be removed without first being deprecated.
  */
-export interface ActiveObjectTypeStatus {
-}
+export interface ActiveObjectTypeStatus {}
 /**
  * This status indicates that the PropertyType will not change on short notice and should thus be safe to use in user facing workflows. They will not be removed without first being deprecated.
  */
-export interface ActivePropertyTypeStatus {
-}
+export interface ActivePropertyTypeStatus {}
 export interface AddInterfaceLinkRule {
   interfaceLinkTypeRid: InterfaceLinkTypeRid;
   interfaceTypeRid: InterfaceTypeRid;
@@ -1548,18 +1520,12 @@ export interface AddInterfaceRule {
   >;
 }
 export interface AddInterfaceRuleModification {
-  interfacePropertyTypeLogicRuleValueModifications: Array<
-    InterfacePropertyTypeLogicRuleValueModification
-  >;
+  interfacePropertyTypeLogicRuleValueModifications: Array<InterfacePropertyTypeLogicRuleValueModification>;
   interfaceTypeRidOrIdInRequest: InterfaceTypeRidOrIdInRequest;
   logicRuleIdentifier?: LogicRuleIdentifier | null | undefined;
   objectType: ParameterId;
-  sharedPropertyTypeLogicRuleValueModifications: Array<
-    SharedPropertyTypeLogicRuleValueModification
-  >;
-  sharedPropertyTypeStructFieldLogicRuleValueModifications: Array<
-    SharedPropertyTypeStructFieldLogicRuleValueModification
-  >;
+  sharedPropertyTypeLogicRuleValueModifications: Array<SharedPropertyTypeLogicRuleValueModification>;
+  sharedPropertyTypeStructFieldLogicRuleValueModifications: Array<SharedPropertyTypeStructFieldLogicRuleValueModification>;
 }
 export interface AdditionOperation {
   leftOperand: ParameterTransformPrefillValue;
@@ -1657,13 +1623,11 @@ export interface AllEditedObjectsFieldMapping {
  * Convert any Foundry supported Resource Identifiers to human-readable format (e.g dataset name).
  * Only to be used for users working in Workspace. E.g. an alert inbox to triage dataset-based data alerts.
  */
-export interface AllFoundryRids {
-}
+export interface AllFoundryRids {}
 /**
  * Specifies that notifications to all recipients must render before Action can be executed
  */
-export interface AllNotificationRenderingMustSucceed {
-}
+export interface AllNotificationRenderingMustSucceed {}
 export interface AllowedParameterValues_oneOf {
   type: "oneOf";
   oneOf: ParameterValueOneOfOrEmpty;
@@ -2291,10 +2255,8 @@ export interface AllowedValuesOverrideRequest {
 /**
  * When set, the action can only be executed within a Scenario context and not directly on the main ontology.
  */
-export interface AllowExecutionOnlyOnScenario {
-}
-export interface AllowFunctionsWithExternalCallsOnBranches {
-}
+export interface AllowExecutionOnlyOnScenario {}
+export interface AllowFunctionsWithExternalCallsOnBranches {}
 export interface AllowNotificationsOnBranches {
   branchRecipients: AllowNotificationsOnBranchesBranchRecipients;
 }
@@ -2311,8 +2273,7 @@ export type AllowNotificationsOnBranchesBranchRecipients =
   | AllowNotificationsOnBranchesBranchRecipients_branchRecipientsBranchOwner
   | AllowNotificationsOnBranchesBranchRecipients_branchRecipientsSameAsMain;
 
-export interface AllowWebhooksOnBranches {
-}
+export interface AllowWebhooksOnBranches {}
 export interface Analyzer_notAnalyzed {
   type: "notAnalyzed";
   notAnalyzed: NotAnalyzedAnalyzer;
@@ -2359,8 +2320,7 @@ export interface AndConditionModification {
 /**
  * Specifies that Action will be executed even if notifications fail to render for some/all recipients
  */
-export interface AnyNotificationRenderingCanFail {
-}
+export interface AnyNotificationRenderingCanFail {}
 export interface ArrayPropertyType {
   reducers: Array<ArrayPropertyTypeReducer>;
   subtype: Type;
@@ -2385,8 +2345,7 @@ export type ArrayTypeSizeConstraint = RangeSizeConstraint;
  * Convert Artifact GIDs into human-readable format. Displays the artifact icon and
  * title as opposed to its GID.
  */
-export interface ArtifactGidFormatter {
-}
+export interface ArtifactGidFormatter {}
 export interface AsynchronousPostWritebackWebhook_staticDirectInput {
   type: "staticDirectInput";
   staticDirectInput: StaticWebhookWithDirectInput;
@@ -2421,8 +2380,7 @@ export type AsynchronousPostWritebackWebhookModification =
   | AsynchronousPostWritebackWebhookModification_staticDirectInput
   | AsynchronousPostWritebackWebhookModification_staticFunctionInput;
 
-export interface AttachmentPropertyType {
-}
+export interface AttachmentPropertyType {}
 /**
  * Attribution information for an Ontology modification.
  */
@@ -2595,8 +2553,7 @@ export interface BidirectionalRelation {
 export interface BidirectionalRelationCreateRequest {
   bidirectionalRelation: BidirectionalRelationWithoutRid;
 }
-export interface BidirectionalRelationDeleteRequest {
-}
+export interface BidirectionalRelationDeleteRequest {}
 export interface BidirectionalRelationModifyRequest_create {
   type: "create";
   create: BidirectionalRelationCreateRequest;
@@ -2637,8 +2594,7 @@ export interface BooleanFormatter {
   valueIfNull?: string | null | undefined;
   valueIfTrue: string;
 }
-export interface BooleanPropertyType {
-}
+export interface BooleanPropertyType {}
 export interface BooleanTypeDataConstraints {
   allowedValues: Array<BooleanTypeDataConstraintValue>;
 }
@@ -2705,10 +2661,8 @@ export interface BranchObjectTypeResetEvent {
   ontologyRid: OntologyRid;
   ontologyVersion: OntologyVersion;
 }
-export interface BranchRecipientsBranchOwner {
-}
-export interface BranchRecipientsSameAsMain {
-}
+export interface BranchRecipientsBranchOwner {}
+export interface BranchRecipientsSameAsMain {}
 export type BuilderPipelineRid = string;
 export interface BulkExecutionModeConfig {
   bulkFunctionInputName: FunctionInputName;
@@ -2717,8 +2671,7 @@ export interface ButtonDisplayMetadata {
   intent: _api_types_Intent;
   text: string;
 }
-export interface BytePropertyType {
-}
+export interface BytePropertyType {}
 /**
  * Specifies the unit of the input byte size value, ensuring that the formatter correctly interprets the number.
  * All units use binary (base-1024) representation.
@@ -3048,8 +3001,7 @@ export interface ConditionValueModification_interfaceParameterPropertyValue {
 
 export interface ConditionValueModification_interfaceParameterPropertyValueV2 {
   type: "interfaceParameterPropertyValueV2";
-  interfaceParameterPropertyValueV2:
-    InterfaceParameterPropertyValueModificationV2;
+  interfaceParameterPropertyValueV2: InterfaceParameterPropertyValueModificationV2;
 }
 
 export interface ConditionValueModification_userProperty {
@@ -3103,13 +3055,11 @@ export interface CreatedInterfaceObjectReferenceByUniqueIdentifier {
 /**
  * The time that the user submits the Action will be used for this value.
  */
-export interface CurrentTime {
-}
+export interface CurrentTime {}
 /**
  * The user executing the Action will be used for this value.
  */
-export interface CurrentUser {
-}
+export interface CurrentUser {}
 export interface DataConstraints {
   nullability?: DataNullability | null | undefined;
   nullabilityV2?: DataNullabilityV2 | null | undefined;
@@ -3430,13 +3380,11 @@ export interface DateBetweenOperation {
   rightDate: ParameterTransformPrefillValue;
   unit: DateUnit;
 }
-export interface DateCurrentOperation {
-}
+export interface DateCurrentOperation {}
 export interface DateFormatter {
   format: DatetimeFormat;
 }
-export interface DatePropertyType {
-}
+export interface DatePropertyType {}
 export interface DateRangeValue_fixed {
   type: "fixed";
   fixed: ConditionValue;
@@ -3583,20 +3531,13 @@ export type DateTimeUnit =
   | DateTimeUnit_months
   | DateTimeUnit_years;
 
-export interface DateTimeUnitDays {
-}
-export interface DateTimeUnitHours {
-}
-export interface DateTimeUnitMinutes {
-}
-export interface DateTimeUnitMonths {
-}
-export interface DateTimeUnitSeconds {
-}
-export interface DateTimeUnitWeeks {
-}
-export interface DateTimeUnitYears {
-}
+export interface DateTimeUnitDays {}
+export interface DateTimeUnitHours {}
+export interface DateTimeUnitMinutes {}
+export interface DateTimeUnitMonths {}
+export interface DateTimeUnitSeconds {}
+export interface DateTimeUnitWeeks {}
+export interface DateTimeUnitYears {}
 export interface DateTypeDataConstraints {
   range: DateTypeRangeConstraint;
 }
@@ -3655,8 +3596,7 @@ export interface DecimalTypeRangeConstraint {
   max?: DecimalTypeDataValue | null | undefined;
   min?: DecimalTypeDataValue | null | undefined;
 }
-export interface DelegateToAllowedStructFieldValues {
-}
+export interface DelegateToAllowedStructFieldValues {}
 /**
  * The request to modify the ontology deletes LinkTypes that are still in use.
  */
@@ -3800,12 +3740,9 @@ export type DerivedPropertiesSourceRid = string;
  * A rid specifying a direct write datasource, such as an edge pipeline.
  */
 export type DirectSourceRid = string;
-export interface DisableFunctionsWithExternalCallsOnBranches {
-}
-export interface DisableNotificationsOnBranches {
-}
-export interface DisableWebhooksOnBranches {
-}
+export interface DisableFunctionsWithExternalCallsOnBranches {}
+export interface DisableNotificationsOnBranches {}
+export interface DisableWebhooksOnBranches {}
 /**
  * Default layout that should be shown when interacting with action inline widget
  */
@@ -3821,8 +3758,7 @@ export interface DivisionOperation {
   leftOperand: ParameterTransformPrefillValue;
   rightOperand: ParameterTransformPrefillValue;
 }
-export interface DoublePropertyType {
-}
+export interface DoublePropertyType {}
 export interface DoubleTypeDataConstraints_range {
   type: "range";
   range: DoubleTypeRangeConstraint;
@@ -3954,8 +3890,7 @@ export interface EditActionTypeRequest {
 /**
  * A property type without a backing dataset column. It can only be populated via Actions.
  */
-export interface EditOnlyPropertyType {
-}
+export interface EditOnlyPropertyType {}
 /**
  * Request to edit an existing parameter
  *
@@ -4051,13 +3986,11 @@ export interface EmbeddingModel_multimodal {
 }
 export type EmbeddingModel = EmbeddingModel_text | EmbeddingModel_multimodal;
 
-export interface Empty {
-}
+export interface Empty {}
 /**
  * This status indicates that the ObjectType is endorsed as a part of "core" ontology by ontology-level owners and provides even better guarantees than the Active status.
  */
-export interface EndorsedObjectTypeStatus {
-}
+export interface EndorsedObjectTypeStatus {}
 export interface EnrichedActionTypeEntities {
   linkTypes: Record<LinkTypeId, LinkTypeRid>;
   objectTypes: Record<ObjectTypeId, ObjectTypeRid>;
@@ -4115,34 +4048,28 @@ export interface EventMetadata {
  * ResourceIdentifier for events topics.
  */
 export type EventsTopicRid = string;
-export interface EveryoneTrustedRedactionOverride {
-}
+export interface EveryoneTrustedRedactionOverride {}
 /**
  * This status indicates that the ActionType is an example. It is backed by notional data that should not be used for actual workflows, but can be used to test those workflows.
  */
-export interface ExampleActionTypeStatus {
-}
+export interface ExampleActionTypeStatus {}
 /**
  * This status indicates that the interface is an example.
  * It is backed by notional data that should not be used for actual workflows, but can be used to test those workflows.
  */
-export interface ExampleInterfaceTypeStatus {
-}
+export interface ExampleInterfaceTypeStatus {}
 /**
  * This status indicates that the LinkType is an example. It is backed by notional data that should not be used for actual workflows, but can be used to test those workflows.
  */
-export interface ExampleLinkTypeStatus {
-}
+export interface ExampleLinkTypeStatus {}
 /**
  * This status indicates that the ObjectType is an example. It is backed by notional data that should not be used for actual workflows, but can be used to test those workflows.
  */
-export interface ExampleObjectTypeStatus {
-}
+export interface ExampleObjectTypeStatus {}
 /**
  * This status indicates that the PropertyType is an example. It is backed by notional data that should not be used for actual workflows, but can be used to test those workflows.
  */
-export interface ExamplePropertyTypeStatus {
-}
+export interface ExamplePropertyTypeStatus {}
 export interface ExecutionContext_scenario {
   type: "scenario";
   scenario: ScenarioExecutionContext;
@@ -4162,8 +4089,7 @@ export interface ExecutionContextCondition {
 /**
  * This status indicates that the ActionType is in development. Please refrain from using it in critical workflows as it may change/disappear at any time.
  */
-export interface ExperimentalActionTypeStatus {
-}
+export interface ExperimentalActionTypeStatus {}
 export interface ExperimentalDeclarativeEditInformation {
   objectSetRidParameter: FunctionInputName;
 }
@@ -4171,23 +4097,19 @@ export interface ExperimentalDeclarativeEditInformation {
  * This status indicates that the interface is in development. Please refrain from using it in critical workflows
  * as breaking changes can be made at anytime.
  */
-export interface ExperimentalInterfaceTypeStatus {
-}
+export interface ExperimentalInterfaceTypeStatus {}
 /**
  * This status indicates that the LinkType is in development. Please refrain from using it in critical workflows as it may change/disappear at any time.
  */
-export interface ExperimentalLinkTypeStatus {
-}
+export interface ExperimentalLinkTypeStatus {}
 /**
  * This status indicates that the ObjectType is in development. Please refrain from using it in critical workflows as it may change/disappear at any time.
  */
-export interface ExperimentalObjectTypeStatus {
-}
+export interface ExperimentalObjectTypeStatus {}
 /**
  * This status indicates that the PropertyType is in development. Please refrain from using it in critical workflows as it may change/disappear at any time.
  */
-export interface ExperimentalPropertyTypeStatus {
-}
+export interface ExperimentalPropertyTypeStatus {}
 /**
  * Note this is experimental, should not be used without consulting the product team and format can
  * change/break without notice.
@@ -4213,8 +4135,7 @@ export interface FieldMetadata {
   metadata: Record<string, any | null | undefined>;
   typeclasses: Array<TypeClass>;
 }
-export interface FloatPropertyType {
-}
+export interface FloatPropertyType {}
 export interface FloatTypeDataConstraints_range {
   type: "range";
   range: FloatTypeRangeConstraint;
@@ -4236,8 +4157,7 @@ export interface FloatTypeRangeConstraint {
 /**
  * Convert Multipass Ids into usernames.
  */
-export interface FormatterUserId {
-}
+export interface FormatterUserId {}
 export interface FormContent_parameterId {
   type: "parameterId";
   parameterId: ParameterId;
@@ -4405,8 +4325,7 @@ export interface GenericOntologyMetadataError {
   safeArgs: Array<SafeArg>;
   unsafeArgs: Array<UnsafeArg>;
 }
-export interface GeohashPropertyType {
-}
+export interface GeohashPropertyType {}
 /**
  * The geo_shape data type facilitates the indexing of and searching with arbitrary geo shapes such as rectangles
  * and polygons.
@@ -4422,8 +4341,7 @@ export interface GeohashPropertyType {
  * Note: we do not support the GeoJSON types Feature and FeatureCollection
  * The underlying foundry type must be a string.
  */
-export interface GeoshapePropertyType {
-}
+export interface GeoshapePropertyType {}
 /**
  * A rid identifying a Geotime integration, which parents one or more Geotime series. This rid is a randomly
  * generated identifier and is safe to log.
@@ -4433,8 +4351,7 @@ export type GeotimeSeriesIntegrationRid = string;
 /**
  * Type for properties containing references to a Geotime series.
  */
-export interface GeotimeSeriesReferencePropertyType {
-}
+export interface GeotimeSeriesReferencePropertyType {}
 /**
  * A paging token used to fetch subsequent pages. Clients should not make any assumptions about the contents of
  * the token and it should not be parsed/modified.
@@ -4678,8 +4595,7 @@ export type HandlebarsInputName = string;
 /**
  * Permanent deletion; data is wiped.
  */
-export interface HardDeletion {
-}
+export interface HardDeletion {}
 export interface HumanReadableFormat {
   showFullUnits?: boolean | null | undefined;
 }
@@ -4694,8 +4610,7 @@ export interface IconReference {
   locator: string;
   source: string;
 }
-export interface ImageModality {
-}
+export interface ImageModality {}
 export interface ImplementingActionType {
   actionTypeRid: ActionTypeRid;
   parameters: Record<InterfaceParameterConstraintRid, ParameterRid>;
@@ -4723,8 +4638,7 @@ export interface InlineActionTypeCannotBeReferencedByMultipleObjectTypesError {
   actionTypeRid: ActionTypeIdentifier;
   objectTypesWhichReferenceThisActionTypeAsInline: Array<ObjectTypeId>;
 }
-export interface IntegerPropertyType {
-}
+export interface IntegerPropertyType {}
 export interface IntegerTypeDataConstraints_range {
   type: "range";
   range: IntegerTypeRangeConstraint;
@@ -4997,8 +4911,7 @@ export type InterfacePropertyTypeImplementation =
   | InterfacePropertyTypeImplementation_reducedProperty;
 
 export interface InterfacePropertyTypeLogicRuleValueModification {
-  interfacePropertyLogicRuleModification:
-    PrimitiveOrStructLogicRuleModification;
+  interfacePropertyLogicRuleModification: PrimitiveOrStructLogicRuleModification;
   interfacePropertyTypeRidOrIdInRequest: InterfacePropertyTypeRidOrIdInRequest;
 }
 /**
@@ -5248,8 +5161,7 @@ export interface InterfaceTypeError_interfaceTypesAlreadyExist {
 
 export interface InterfaceTypeError_interfaceTypeSchemaMigrationOnBranch {
   type: "interfaceTypeSchemaMigrationOnBranch";
-  interfaceTypeSchemaMigrationOnBranch:
-    InterfaceTypeSchemaMigrationOnBranchError;
+  interfaceTypeSchemaMigrationOnBranch: InterfaceTypeSchemaMigrationOnBranchError;
 }
 export type InterfaceTypeError =
   | InterfaceTypeError_interfaceTypesNotFound
@@ -5492,8 +5404,7 @@ export interface LinkedObjectReference_createdInterfaceObjectReferenceByPk {
 
 export interface LinkedObjectReference_createdInterfaceObjectReferenceByUniqueIdentifier {
   type: "createdInterfaceObjectReferenceByUniqueIdentifier";
-  createdInterfaceObjectReferenceByUniqueIdentifier:
-    CreatedInterfaceObjectReferenceByUniqueIdentifier;
+  createdInterfaceObjectReferenceByUniqueIdentifier: CreatedInterfaceObjectReferenceByUniqueIdentifier;
 }
 /**
  * References to object(s) that will be linked.
@@ -5521,8 +5432,7 @@ export interface LinkedObjectReferenceModification_createdInterfaceObjectReferen
 
 export interface LinkedObjectReferenceModification_createdInterfaceObjectReferenceByUniqueIdentifier {
   type: "createdInterfaceObjectReferenceByUniqueIdentifier";
-  createdInterfaceObjectReferenceByUniqueIdentifier:
-    CreatedInterfaceObjectReferenceByUniqueIdentifier;
+  createdInterfaceObjectReferenceByUniqueIdentifier: CreatedInterfaceObjectReferenceByUniqueIdentifier;
 }
 /**
  * References to object(s) that will be linked.
@@ -6281,8 +6191,7 @@ export interface LogicRuleValueModification_interfaceParameterPropertyValue {
 
 export interface LogicRuleValueModification_interfaceParameterPropertyValueV2 {
   type: "interfaceParameterPropertyValueV2";
-  interfaceParameterPropertyValueV2:
-    InterfaceParameterPropertyValueModificationV2;
+  interfaceParameterPropertyValueV2: InterfaceParameterPropertyValueModificationV2;
 }
 
 export interface LogicRuleValueModification_mediaReferenceParameterPropertyValue {
@@ -6331,8 +6240,7 @@ export type LogicRuleValueModification =
   | LogicRuleValueModification_synchronousWebhookOutput
   | LogicRuleValueModification_scheduleRunRid;
 
-export interface LongPropertyType {
-}
+export interface LongPropertyType {}
 export interface LongTypeDataConstraints_range {
   type: "range";
   range: LongTypeRangeConstraint;
@@ -6519,8 +6427,7 @@ export interface MediaReferenceParameterPropertyValue {
 /**
  * This follows com.palantir.media.MediaReference
  */
-export interface MediaReferencePropertyType {
-}
+export interface MediaReferencePropertyType {}
 /**
  * An rid identifying a media set branch. This rid is a randomly generated identifier and is safe to log.
  */
@@ -6566,8 +6473,7 @@ export interface MissingAffectedObjectTypesForFunctionRule {
   missingAffectedLinkTypes: Array<LinkTypeRid>;
   missingAffectedObjectTypes: Array<ObjectTypeRid>;
 }
-export interface MissingParameterValueType {
-}
+export interface MissingParameterValueType {}
 export interface Modality_text {
   type: "text";
   text: TextModality;
@@ -6602,15 +6508,9 @@ export interface ModifyInterfaceRule {
 }
 export interface ModifyInterfaceRuleModification {
   interfaceObjectToModify: ParameterId;
-  interfacePropertyTypeLogicRuleValueModifications: Array<
-    InterfacePropertyTypeLogicRuleValueModification
-  >;
-  sharedPropertyTypeLogicRuleValueModifications: Array<
-    SharedPropertyTypeLogicRuleValueModification
-  >;
-  sharedPropertyTypeStructFieldLogicRuleValueModifications: Array<
-    SharedPropertyTypeStructFieldLogicRuleValueModification
-  >;
+  interfacePropertyTypeLogicRuleValueModifications: Array<InterfacePropertyTypeLogicRuleValueModification>;
+  sharedPropertyTypeLogicRuleValueModifications: Array<SharedPropertyTypeLogicRuleValueModification>;
+  sharedPropertyTypeStructFieldLogicRuleValueModifications: Array<SharedPropertyTypeStructFieldLogicRuleValueModification>;
 }
 export interface ModifyObjectRule {
   objectToModify: ParameterId;
@@ -6667,8 +6567,7 @@ export interface MultiplicationOperation {
   leftOperand: ParameterTransformPrefillValue;
   rightOperand: ParameterTransformPrefillValue;
 }
-export interface MustBeEmpty {
-}
+export interface MustBeEmpty {}
 export interface NestedInterfacePropertyTypeImplementation_propertyTypeRid {
   type: "propertyTypeRid";
   propertyTypeRid: PropertyTypeRid;
@@ -6701,8 +6600,7 @@ export interface NestedStructFieldApiNameMapping {
  * without datasourceRids, i.e. newly created edits-only datasources. There should be at most one edits-only
  * datasource per object type.
  */
-export interface NewEditsOnlyDatasource {
-}
+export interface NewEditsOnlyDatasource {}
 /**
  * A URL target for a newly created object.
  */
@@ -6720,15 +6618,12 @@ export interface NewObjectUrlTargetModification {
 /**
  * When set, no restriction is applied and the action can be executed both on the main ontology and within Scenarios.
  */
-export interface NoExecutionRestriction {
-}
+export interface NoExecutionRestriction {}
 /**
  * This part of the action type is not configured
  */
-export interface None {
-}
-export interface NoneEntityProvenance {
-}
+export interface None {}
+export interface NoneEntityProvenance {}
 /**
  * Some ParameterPrefill(s) are referencing ParameterId(s) that do not exist on the ActionType.
  */
@@ -6749,8 +6644,7 @@ export type NonNumericInternalInterpolation =
  * Configuration for non-numeric series.
  */
 export interface NonNumericSeriesValueMetadata {
-  defaultInternalInterpolation:
-    PropertyTypeReferenceOrNonNumericInternalInterpolation;
+  defaultInternalInterpolation: PropertyTypeReferenceOrNonNumericInternalInterpolation;
 }
 /**
  * The unit to accompany the non-numeric value of a Time Dependent property. Can be provided by a property or a
@@ -6762,14 +6656,12 @@ export interface NonNumericSeriesValueUnit {
 /**
  * All data will be retained.
  */
-export interface NoRetentionPolicy {
-}
+export interface NoRetentionPolicy {}
 /**
  * This indicates that the StringPropertyType should not be analyzed for full text search. Only
  * exact match queries can be made on such StringPropertyType(s).
  */
-export interface NotAnalyzedAnalyzer {
-}
+export interface NotAnalyzedAnalyzer {}
 export interface NotCondition {
   condition: Condition;
   displayMetadata?: ConditionDisplayMetadata | null | undefined;
@@ -6789,8 +6681,7 @@ export type NotepadRid = string;
 /**
  * The representation of a notification's recipient.
  */
-export interface NotificationRecipient {
-}
+export interface NotificationRecipient {}
 export interface NotificationResultTypeLink {
   message: string;
   url: UrlTarget;
@@ -7077,8 +6968,7 @@ export type NumericInternalInterpolation =
  * Configuration for a sensor time series property that can contain either numeric or non-numeric data at the
  * sensor level.
  */
-export interface NumericOrNonNumericSeriesValueMetadata {
-}
+export interface NumericOrNonNumericSeriesValueMetadata {}
 /**
  * Configuration for a time series property that can contain either numeric or non-numeric data. A boolean property
  * reference is required to determine if the series is numeric or non-numeric.
@@ -7090,8 +6980,7 @@ export interface NumericOrNonNumericSeriesValueMetadataV2 {
  * Configuration for numeric series.
  */
 export interface NumericSeriesValueMetadata {
-  defaultInternalInterpolation:
-    PropertyTypeReferenceOrNumericInternalInterpolation;
+  defaultInternalInterpolation: PropertyTypeReferenceOrNumericInternalInterpolation;
 }
 export interface NumericSeriesValueUnit_standardUnit {
   type: "standardUnit";
@@ -7129,8 +7018,7 @@ export interface ObjectDisplayMetadata {
   pluralDisplayName?: string | null | undefined;
   visibility?: Visibility | null | undefined;
 }
-export interface ObjectMonitoringFrontendConsumer {
-}
+export interface ObjectMonitoringFrontendConsumer {}
 /**
  * A rid that is either an ObjectType rid or LinkType rid.
  */
@@ -7242,8 +7130,7 @@ export type ObjectSetTransform =
  * human-readable format (e.g object set name). This ensures objects/carbon-only users are not
  * accidentally sent to workspace.
  */
-export interface ObjectsPlatformRids {
-}
+export interface ObjectsPlatformRids {}
 /**
  * An ObjectType is a model that represents a real world concept. For example, there could be
  * an Employees ObjectType to represent the employees in a business organization.
@@ -7504,20 +7391,17 @@ export interface ObjectTypeError_objectTypeRidsNotFound {
 
 export interface ObjectTypeError_patchBackupInitializationConfigurationSourceDoesNotExist {
   type: "patchBackupInitializationConfigurationSourceDoesNotExist";
-  patchBackupInitializationConfigurationSourceDoesNotExist:
-    PatchBackupInitializationConfigurationSourceDoesNotExistError;
+  patchBackupInitializationConfigurationSourceDoesNotExist: PatchBackupInitializationConfigurationSourceDoesNotExistError;
 }
 
 export interface ObjectTypeError_reducerStructFieldApiNamesNotFound {
   type: "reducerStructFieldApiNamesNotFound";
-  reducerStructFieldApiNamesNotFound:
-    ObjectTypeReducerStructFieldApiNamesNotFoundError;
+  reducerStructFieldApiNamesNotFound: ObjectTypeReducerStructFieldApiNamesNotFoundError;
 }
 
 export interface ObjectTypeError_mainValueStructFieldApiNamesNotFound {
   type: "mainValueStructFieldApiNamesNotFound";
-  mainValueStructFieldApiNamesNotFound:
-    ObjectTypeMainValueStructFieldApiNamesNotFoundError;
+  mainValueStructFieldApiNamesNotFound: ObjectTypeMainValueStructFieldApiNamesNotFoundError;
 }
 export type ObjectTypeError =
   | ObjectTypeError_objectTypesAlreadyExist
@@ -8182,8 +8066,7 @@ export interface OntologyIrActionLogStructFieldValue_objectParameterStructFieldV
 
 export interface OntologyIrActionLogStructFieldValue_objectParameterStructListFieldValue {
   type: "objectParameterStructListFieldValue";
-  objectParameterStructListFieldValue:
-    OntologyIrObjectParameterStructListFieldValue;
+  objectParameterStructListFieldValue: OntologyIrObjectParameterStructListFieldValue;
 }
 /**
  * Values that can be mapped to struct fields in action log rules.
@@ -8212,8 +8095,7 @@ export interface OntologyIrActionLogValue_interfaceParameterPropertyValue {
 
 export interface OntologyIrActionLogValue_interfaceParameterPropertyValueV2 {
   type: "interfaceParameterPropertyValueV2";
-  interfaceParameterPropertyValueV2:
-    OntologyIrInterfaceParameterPropertyValueV2;
+  interfaceParameterPropertyValueV2: OntologyIrInterfaceParameterPropertyValueV2;
 }
 
 export interface OntologyIrActionLogValue_editedObjects {
@@ -8462,9 +8344,7 @@ export interface OntologyIrActionValidation {
  * ActionWebhooks contains the definition for webhooks that are executed as part of running an Action.
  */
 export interface OntologyIrActionWebhooks {
-  asynchronousPostWritebackWebhooks: Array<
-    OntologyIrAsynchronousPostWritebackWebhook
-  >;
+  asynchronousPostWritebackWebhooks: Array<OntologyIrAsynchronousPostWritebackWebhook>;
   synchronousPreWritebackWebhook?:
     | OntologyIrSynchronousPreWritebackWebhook
     | null
@@ -9394,8 +9274,7 @@ export interface OntologyIrInterfacePropertyTypeType_string {
 
 export interface OntologyIrInterfacePropertyTypeType_experimentalTimeDependentV1 {
   type: "experimentalTimeDependentV1";
-  experimentalTimeDependentV1:
-    OntologyIrExperimentalTimeDependentPropertyTypeV1;
+  experimentalTimeDependentV1: OntologyIrExperimentalTimeDependentPropertyTypeV1;
 }
 
 export interface OntologyIrInterfacePropertyTypeType_timestamp {
@@ -9725,13 +9604,9 @@ export interface OntologyIrMandatoryMarkingConstraint {
   markingGroupName: _api_blockdata_MarkingGroupName;
 }
 export interface OntologyIrManyToManyLinkDefinition {
-  objectTypeAPrimaryKeyPropertyMapping: Array<
-    _api_blockdata_OntologyIrPropertyToPropertyMapping
-  >;
+  objectTypeAPrimaryKeyPropertyMapping: Array<_api_blockdata_OntologyIrPropertyToPropertyMapping>;
   objectTypeAToBLinkMetadata: LinkTypeMetadata;
-  objectTypeBPrimaryKeyPropertyMapping: Array<
-    _api_blockdata_OntologyIrPropertyToPropertyMapping
-  >;
+  objectTypeBPrimaryKeyPropertyMapping: Array<_api_blockdata_OntologyIrPropertyToPropertyMapping>;
   objectTypeBToALinkMetadata: LinkTypeMetadata;
   objectTypeRidA: ObjectTypeApiName;
   objectTypeRidB: ObjectTypeApiName;
@@ -9743,12 +9618,8 @@ export interface OntologyIrManyToManyLinkDefinition {
  */
 export interface OntologyIrManyToManyLinkTypeDatasetDatasource {
   datasetRid: _api_blockdata_DataSetName;
-  objectTypeAPrimaryKeyMapping: Array<
-    _api_blockdata_OntologyIrPropertyToColumnMapping
-  >;
-  objectTypeBPrimaryKeyMapping: Array<
-    _api_blockdata_OntologyIrPropertyToColumnMapping
-  >;
+  objectTypeAPrimaryKeyMapping: Array<_api_blockdata_OntologyIrPropertyToColumnMapping>;
+  objectTypeBPrimaryKeyMapping: Array<_api_blockdata_OntologyIrPropertyToColumnMapping>;
   writebackDatasetRid?: _api_blockdata_DataSetName | null | undefined;
 }
 export interface OntologyIrManyToManyLinkTypeDatasource {
@@ -9869,8 +9740,7 @@ export interface OntologyIrNewObjectUrlTarget {
  * Configuration for non-numeric series.
  */
 export interface OntologyIrNonNumericSeriesValueMetadata {
-  defaultInternalInterpolation:
-    OntologyIrPropertyTypeReferenceOrNonNumericInternalInterpolation;
+  defaultInternalInterpolation: OntologyIrPropertyTypeReferenceOrNonNumericInternalInterpolation;
 }
 /**
  * The unit to accompany the non-numeric value of a Time Dependent property. Can be provided by a property or a
@@ -10039,8 +9909,7 @@ export interface OntologyIrNumericOrNonNumericSeriesValueMetadataV2 {
  * Configuration for numeric series.
  */
 export interface OntologyIrNumericSeriesValueMetadata {
-  defaultInternalInterpolation:
-    OntologyIrPropertyTypeReferenceOrNumericInternalInterpolation;
+  defaultInternalInterpolation: OntologyIrPropertyTypeReferenceOrNumericInternalInterpolation;
 }
 export interface OntologyIrNumericSeriesValueUnit_standardUnit {
   type: "standardUnit";
@@ -10478,9 +10347,7 @@ export interface OntologyIrOneToManyLinkDefinition {
   manyToOneLinkMetadata: LinkTypeMetadata;
   objectTypeRidManySide: ObjectTypeApiName;
   objectTypeRidOneSide: ObjectTypeApiName;
-  oneSidePrimaryKeyToManySidePropertyMapping: Array<
-    _api_blockdata_OntologyIrPropertyToPropertyMapping
-  >;
+  oneSidePrimaryKeyToManySidePropertyMapping: Array<_api_blockdata_OntologyIrPropertyToPropertyMapping>;
   oneToManyLinkMetadata: LinkTypeMetadata;
 }
 export interface OntologyIrOrCondition {
@@ -11321,9 +11188,7 @@ export interface OntologyIrStringConcatOperation {
 }
 export interface OntologyIrStructFieldConditionalOverride {
   condition: OntologyIrCondition;
-  structFieldBlockOverrides: Array<
-    OntologyIrStructFieldValidationBlockOverride
-  >;
+  structFieldBlockOverrides: Array<OntologyIrStructFieldValidationBlockOverride>;
 }
 export interface OntologyIrStructFieldConditionalValidationBlock {
   conditionalOverrides: Array<OntologyIrStructFieldConditionalOverride>;
@@ -11343,20 +11208,17 @@ export interface OntologyIrStructFieldPrefill_objectParameterStructFieldValue {
 
 export interface OntologyIrStructFieldPrefill_objectParameterStructListFieldValue {
   type: "objectParameterStructListFieldValue";
-  objectParameterStructListFieldValue:
-    OntologyIrObjectParameterStructListFieldValue;
+  objectParameterStructListFieldValue: OntologyIrObjectParameterStructListFieldValue;
 }
 
 export interface OntologyIrStructFieldPrefill_interfaceObjectParameterStructFieldValue {
   type: "interfaceObjectParameterStructFieldValue";
-  interfaceObjectParameterStructFieldValue:
-    OntologyIrInterfaceObjectParameterStructFieldValue;
+  interfaceObjectParameterStructFieldValue: OntologyIrInterfaceObjectParameterStructFieldValue;
 }
 
 export interface OntologyIrStructFieldPrefill_interfaceObjectParameterStructListFieldValue {
   type: "interfaceObjectParameterStructListFieldValue";
-  interfaceObjectParameterStructListFieldValue:
-    OntologyIrInterfaceObjectParameterStructListFieldValue;
+  interfaceObjectParameterStructListFieldValue: OntologyIrInterfaceObjectParameterStructListFieldValue;
 }
 /**
  * StructFieldPrefill specifies what should initially suggested to users for a struct parameter's field.
@@ -11509,8 +11371,7 @@ export interface OntologyIrTimeDependentFormatter {
  * Configuration for non-numeric series.
  */
 export interface OntologyIrTimeDependentNonNumericSeriesFormat {
-  defaultInternalInterpolation:
-    OntologyIrPropertyTypeReferenceOrNonNumericInternalInterpolation;
+  defaultInternalInterpolation: OntologyIrPropertyTypeReferenceOrNonNumericInternalInterpolation;
   unit?: OntologyIrNonNumericSeriesValueUnit | null | undefined;
 }
 /**
@@ -11535,8 +11396,7 @@ export interface OntologyIrTimeDependentNumericOrNonNumericSeriesFormatV2 {
  * Configuration for numeric series.
  */
 export interface OntologyIrTimeDependentNumericSeriesFormat {
-  defaultInternalInterpolation:
-    OntologyIrPropertyTypeReferenceOrNumericInternalInterpolation;
+  defaultInternalInterpolation: OntologyIrPropertyTypeReferenceOrNumericInternalInterpolation;
   unit?: OntologyIrNumericSeriesValueUnit | null | undefined;
 }
 export interface OntologyIrTimeDependentSeriesFormat_numeric {
@@ -11556,8 +11416,7 @@ export interface OntologyIrTimeDependentSeriesFormat_numericOrNonNumeric {
 
 export interface OntologyIrTimeDependentSeriesFormat_numericOrNonNumericV2 {
   type: "numericOrNonNumericV2";
-  numericOrNonNumericV2:
-    OntologyIrTimeDependentNumericOrNonNumericSeriesFormatV2;
+  numericOrNonNumericV2: OntologyIrTimeDependentNumericOrNonNumericSeriesFormatV2;
 }
 export type OntologyIrTimeDependentSeriesFormat =
   | OntologyIrTimeDependentSeriesFormat_numeric
@@ -11644,8 +11503,7 @@ export interface OntologyIrType_string {
 
 export interface OntologyIrType_experimentalTimeDependentV1 {
   type: "experimentalTimeDependentV1";
-  experimentalTimeDependentV1:
-    OntologyIrExperimentalTimeDependentPropertyTypeV1;
+  experimentalTimeDependentV1: OntologyIrExperimentalTimeDependentPropertyTypeV1;
 }
 
 export interface OntologyIrType_timestamp {
@@ -12020,8 +11878,7 @@ export interface OntologyModifyRequest {
   expectedOntologyVersion?: OntologyVersion | null | undefined;
   partialObjectTypes: Record<ObjectTypeId, PartialObjectTypeModifyRequest>;
 }
-export interface OntologyModifyResponse {
-}
+export interface OntologyModifyResponse {}
 /**
  * ResourceIdentifier for an Ontology Package.
  */
@@ -12209,8 +12066,7 @@ export type ParameterAttachmentOrEmpty =
   | ParameterAttachmentOrEmpty_empty
   | ParameterAttachmentOrEmpty_attachment;
 
-export interface ParameterBoolean {
-}
+export interface ParameterBoolean {}
 export interface ParameterBooleanOrEmpty_empty {
   type: "empty";
   empty: MustBeEmpty;
@@ -12349,8 +12205,7 @@ export type ParameterFreeTextOrEmpty =
   | ParameterFreeTextOrEmpty_empty
   | ParameterFreeTextOrEmpty_text;
 
-export interface ParameterGeohash {
-}
+export interface ParameterGeohash {}
 export interface ParameterGeohashOrEmpty_empty {
   type: "empty";
   empty: MustBeEmpty;
@@ -12364,8 +12219,7 @@ export type ParameterGeohashOrEmpty =
   | ParameterGeohashOrEmpty_empty
   | ParameterGeohashOrEmpty_geohash;
 
-export interface ParameterGeoshape {
-}
+export interface ParameterGeoshape {}
 export interface ParameterGeoshapeOrEmpty_empty {
   type: "empty";
   empty: MustBeEmpty;
@@ -12379,8 +12233,7 @@ export type ParameterGeoshapeOrEmpty =
   | ParameterGeoshapeOrEmpty_empty
   | ParameterGeoshapeOrEmpty_geoshape;
 
-export interface ParameterGeotimeSeriesReference {
-}
+export interface ParameterGeotimeSeriesReference {}
 export interface ParameterGeotimeSeriesReferenceOrEmpty_empty {
   type: "empty";
   empty: MustBeEmpty;
@@ -12403,14 +12256,12 @@ export type ParameterId = string;
  * This is a WIP and will be extended to only allow objects in a dynamic interface object set once interfaces
  * are supported in OSS.
  */
-export interface ParameterInterfaceObjectQuery {
-}
+export interface ParameterInterfaceObjectQuery {}
 /**
  * This is a WIP and will be extended to only allow objects in a dynamic interface object set once interfaces
  * are supported in OSS.
  */
-export interface ParameterInterfaceObjectQueryModification {
-}
+export interface ParameterInterfaceObjectQueryModification {}
 export interface ParameterInterfaceObjectQueryOrEmpty_empty {
   type: "empty";
   empty: MustBeEmpty;
@@ -12488,8 +12339,7 @@ export interface ParameterLength_parameterId {
  */
 export type ParameterLength = ParameterLength_parameterId;
 
-export interface ParameterMandatoryMarking {
-}
+export interface ParameterMandatoryMarking {}
 export interface ParameterMandatoryMarkingOrEmpty_empty {
   type: "empty";
   empty: MustBeEmpty;
@@ -12520,8 +12370,7 @@ export type ParameterMarkdownOrEmpty =
   | ParameterMarkdownOrEmpty_empty
   | ParameterMarkdownOrEmpty_markdown;
 
-export interface ParameterMediaReference {
-}
+export interface ParameterMediaReference {}
 export interface ParameterMediaReferenceOrEmpty_empty {
   type: "empty";
   empty: MustBeEmpty;
@@ -12535,8 +12384,7 @@ export type ParameterMediaReferenceOrEmpty =
   | ParameterMediaReferenceOrEmpty_empty
   | ParameterMediaReferenceOrEmpty_mediaReference;
 
-export interface ParameterMultipassGroup {
-}
+export interface ParameterMultipassGroup {}
 export interface ParameterMultipassGroupOrEmpty_empty {
   type: "empty";
   empty: MustBeEmpty;
@@ -12582,8 +12430,7 @@ export type ParameterMultipassUserOrEmptyModification =
   | ParameterMultipassUserOrEmptyModification_empty
   | ParameterMultipassUserOrEmptyModification_user;
 
-export interface ParameterObjectList {
-}
+export interface ParameterObjectList {}
 export interface ParameterObjectListOrEmpty_empty {
   type: "empty";
   empty: MustBeEmpty;
@@ -12694,8 +12541,7 @@ export type ParameterObjectQueryOrEmptyModification =
 /**
  * In future ObjectSetRid validations may be added.
  */
-export interface ParameterObjectSetRid {
-}
+export interface ParameterObjectSetRid {}
 export interface ParameterObjectSetRidOrEmpty_empty {
   type: "empty";
   empty: MustBeEmpty;
@@ -12844,8 +12690,7 @@ export interface ParameterPrefillModification_interfaceParameterPropertyValue {
 
 export interface ParameterPrefillModification_interfaceParameterPropertyValueV2 {
   type: "interfaceParameterPropertyValueV2";
-  interfaceParameterPropertyValueV2:
-    InterfaceParameterPropertyValueModificationV2;
+  interfaceParameterPropertyValueV2: InterfaceParameterPropertyValueModificationV2;
 }
 
 export interface ParameterPrefillModification_objectQueryPrefill {
@@ -12943,8 +12788,7 @@ export interface ParameterRequiredOverride {
  * The rid for a Parameter, autogenerated by Ontology-Metadata-Service and used for permissioning and logging.
  */
 export type ParameterRid = string;
-export interface ParameterScenarioReference {
-}
+export interface ParameterScenarioReference {}
 export interface ParameterScenarioReferenceOrEmpty_empty {
   type: "empty";
   empty: MustBeEmpty;
@@ -12965,8 +12809,7 @@ export interface ParametersDoNotMatchParameterOrderingError {
   actionTypeIdentifier: ActionTypeIdentifier;
   mismatchedParameterIds: Array<ParameterId>;
 }
-export interface ParameterSidcIcon {
-}
+export interface ParameterSidcIcon {}
 export interface ParameterSidcIconOrEmpty_empty {
   type: "empty";
   empty: MustBeEmpty;
@@ -13001,8 +12844,7 @@ export interface ParameterTextRegex {
   failureMessage: string;
   regex: string;
 }
-export interface ParameterTimeSeriesReference {
-}
+export interface ParameterTimeSeriesReference {}
 export interface ParameterTimeSeriesReferenceOrEmpty_empty {
   type: "empty";
   empty: MustBeEmpty;
@@ -13310,8 +13152,7 @@ export interface PartialObjectType {
 export interface PartialObjectTypeCreateRequest {
   partialObjectType: PartialObjectTypeWithoutRids;
 }
-export interface PartialObjectTypeDeleteRequest {
-}
+export interface PartialObjectTypeDeleteRequest {}
 export interface PartialObjectTypeModifyRequest_create {
   type: "create";
   create: PartialObjectTypeCreateRequest;
@@ -13363,8 +13204,7 @@ export type PrimaryKeyConstraint =
   | "MUST_BE_PK"
   | "CANNOT_BE_PK"
   | "NO_RESTRICTION";
-export interface PrimaryKeyPropertySecurityGroupType {
-}
+export interface PrimaryKeyPropertySecurityGroupType {}
 export interface PrimitiveOrStructLogicRuleModification_logicRuleValueModification {
   type: "logicRuleValueModification";
   logicRuleValueModification: LogicRuleValueModification;
@@ -13372,9 +13212,7 @@ export interface PrimitiveOrStructLogicRuleModification_logicRuleValueModificati
 
 export interface PrimitiveOrStructLogicRuleModification_structLogicRuleValueModification {
   type: "structLogicRuleValueModification";
-  structLogicRuleValueModification: Array<
-    StructFieldLogicRuleValueMappingModification
-  >;
+  structLogicRuleValueModification: Array<StructFieldLogicRuleValueMappingModification>;
 }
 export type PrimitiveOrStructLogicRuleModification =
   | PrimitiveOrStructLogicRuleModification_logicRuleValueModification
@@ -13979,8 +13817,7 @@ export interface RangeSizeConstraint {
 /**
  * The user does not have permission to view this part of the Action Type.
  */
-export interface Redacted {
-}
+export interface Redacted {}
 export interface RedactionOverrideOptions_everyoneTrusted {
   type: "everyoneTrusted";
   everyoneTrusted: EveryoneTrustedRedactionOverride;
@@ -14356,8 +14193,7 @@ export type SafeDatasourceIdentifier =
 /**
  * An execution within a Scenario.
  */
-export interface ScenarioExecutionContext {
-}
+export interface ScenarioExecutionContext {}
 /**
  * The rid for a Scenario V2 instance defined in actions.
  */
@@ -14399,8 +14235,7 @@ export type ScheduleRid = string;
 /**
  * The resulting schedule run RID of a synchronous RunScheduleDeploymentEffect on the Action type.
  */
-export interface ScheduleRunRidValue {
-}
+export interface ScheduleRunRidValue {}
 /**
  * Identifier for an ObjectType schema migration.
  */
@@ -14841,13 +14676,11 @@ export type SecurityGroupSecurityDefinitionModification =
 /**
  * Always evaluates to true.
  */
-export interface SecurityGroupTrueCondition {
-}
+export interface SecurityGroupTrueCondition {}
 /**
  * Always evaluates to true.
  */
-export interface SecurityGroupTrueConditionModification {
-}
+export interface SecurityGroupTrueConditionModification {}
 /**
  * The user's attributes.
  */
@@ -14857,8 +14690,7 @@ export interface SecurityGroupUserAttributesUserProperty {
 /**
  * Specifies a comparison against the user's multipass userId.
  */
-export interface SecurityGroupUserIdUserProperty {
-}
+export interface SecurityGroupUserIdUserProperty {}
 /**
  * The user's username
  */
@@ -14964,14 +14796,12 @@ export interface SharedPropertyTypeError_sharedPropertyTypesAlreadyExist {
 
 export interface SharedPropertyTypeError_reducerStructFieldApiNamesNotFound {
   type: "reducerStructFieldApiNamesNotFound";
-  reducerStructFieldApiNamesNotFound:
-    SharedPropertyTypeReducerStructFieldApiNamesNotFoundError;
+  reducerStructFieldApiNamesNotFound: SharedPropertyTypeReducerStructFieldApiNamesNotFoundError;
 }
 
 export interface SharedPropertyTypeError_mainValueStructFieldApiNamesNotFound {
   type: "mainValueStructFieldApiNamesNotFound";
-  mainValueStructFieldApiNamesNotFound:
-    SharedPropertyTypeMainValueStructFieldApiNamesNotFoundError;
+  mainValueStructFieldApiNamesNotFound: SharedPropertyTypeMainValueStructFieldApiNamesNotFoundError;
 }
 export type SharedPropertyTypeError =
   | SharedPropertyTypeError_sharedPropertyTypesNotFound
@@ -15096,8 +14926,7 @@ export interface ShortBodyModification_basic {
  */
 export type ShortBodyModification = ShortBodyModification_basic;
 
-export interface ShortPropertyType {
-}
+export interface ShortPropertyType {}
 export interface ShortTypeDataConstraints_range {
   type: "range";
   range: ShortTypeRangeConstraint;
@@ -15121,14 +14950,12 @@ export interface ShortTypeRangeConstraint {
  * A SIDC is a standardized way to encode military symbols, representing information about a
  * symbol through a series of characters.
  */
-export interface SidcFormatter {
-}
+export interface SidcFormatter {}
 /**
  * The simple analyzer breaks text into terms whenever it encounters a character which is not a letter
  * and also lower cases it.
  */
-export interface SimpleAnalyzer {
-}
+export interface SimpleAnalyzer {}
 export interface SingleKeyJoinDefinition {
   foreignKeyObjectTypeId: ObjectTypeId;
   foreignKeyPropertyId: PropertyId;
@@ -15137,8 +14964,7 @@ export interface SingleKeyJoinDefinition {
 /**
  * Non-recoverable deletion that does not wipe data, for entities trashing does not support (e.g. non-Compass entities, OSv1 OTs, etc.).
  */
-export interface SoftDeletion {
-}
+export interface SoftDeletion {}
 /**
  * A mapping from a property of the given ObjectType to the property of another.
  */
@@ -15160,8 +14986,7 @@ export type SoftLinkType = SoftLinkType_sharedPropertyType;
  * This is the default analyzer which is used when no analyzerOverride is specified. It tokenizes the
  * text based on grammar and also lower cases it. This is expected to work well for most purposes.
  */
-export interface StandardAnalyzer {
-}
+export interface StandardAnalyzer {}
 /**
  * StaticObjectPrefill specifies the Object that should be suggested to the user for a parameter.
  */
@@ -15300,10 +15125,8 @@ export type StringTypeDataConstraints =
   | StringTypeDataConstraints_isRid;
 
 export type StringTypeDataValue = string;
-export interface StringTypeIsRidConstraint {
-}
-export interface StringTypeIsUuidConstraint {
-}
+export interface StringTypeIsRidConstraint {}
+export interface StringTypeIsUuidConstraint {}
 export type StringTypeLengthConstraint = RangeSizeConstraint;
 export type StructFieldAlias = _api_entitymetadata_Alias;
 
@@ -15335,9 +15158,7 @@ export interface StructFieldConditionalOverride {
 }
 export interface StructFieldConditionalOverrideModification {
   condition: ConditionModification;
-  structFieldBlockOverrides: Array<
-    StructFieldValidationBlockOverrideModification
-  >;
+  structFieldBlockOverrides: Array<StructFieldValidationBlockOverrideModification>;
 }
 export interface StructFieldConditionalValidationBlock {
   conditionalOverrides: Array<StructFieldConditionalOverride>;
@@ -15410,14 +15231,12 @@ export interface StructFieldPrefill_objectParameterStructListFieldValue {
 
 export interface StructFieldPrefill_interfaceObjectParameterStructFieldValue {
   type: "interfaceObjectParameterStructFieldValue";
-  interfaceObjectParameterStructFieldValue:
-    InterfaceObjectParameterStructFieldValue;
+  interfaceObjectParameterStructFieldValue: InterfaceObjectParameterStructFieldValue;
 }
 
 export interface StructFieldPrefill_interfaceObjectParameterStructListFieldValue {
   type: "interfaceObjectParameterStructListFieldValue";
-  interfaceObjectParameterStructListFieldValue:
-    InterfaceObjectParameterStructListFieldValue;
+  interfaceObjectParameterStructListFieldValue: InterfaceObjectParameterStructListFieldValue;
 }
 /**
  * StructFieldPrefill specifies what should initially suggested to users for a struct parameter's field.
@@ -15435,20 +15254,17 @@ export interface StructFieldPrefillModification_objectParameterStructFieldValue 
 
 export interface StructFieldPrefillModification_objectParameterStructListFieldValue {
   type: "objectParameterStructListFieldValue";
-  objectParameterStructListFieldValue:
-    ObjectParameterStructListFieldValueModification;
+  objectParameterStructListFieldValue: ObjectParameterStructListFieldValueModification;
 }
 
 export interface StructFieldPrefillModification_interfaceObjectParameterStructFieldValue {
   type: "interfaceObjectParameterStructFieldValue";
-  interfaceObjectParameterStructFieldValue:
-    InterfaceObjectParameterStructFieldValueModification;
+  interfaceObjectParameterStructFieldValue: InterfaceObjectParameterStructFieldValueModification;
 }
 
 export interface StructFieldPrefillModification_interfaceObjectParameterStructListFieldValue {
   type: "interfaceObjectParameterStructListFieldValue";
-  interfaceObjectParameterStructListFieldValue:
-    InterfaceObjectParameterStructListFieldValueModification;
+  interfaceObjectParameterStructListFieldValue: InterfaceObjectParameterStructListFieldValueModification;
 }
 /**
  * StructFieldPrefillModification specifies what should initially suggested to users for a struct parameter's field.
@@ -15712,16 +15528,14 @@ export interface StructuredShortBodyModification {
  * submission to go through. In other words, this mode respects the atomicity property, i.e. actions are applied
  * either completely, or none at all. It also mirrors the V1 endpoint behaviour.
  */
-export interface SubmitAllValidOrNothingThrowingMode {
-}
+export interface SubmitAllValidOrNothingThrowingMode {}
 /**
  * Submits the set of all valid apply action requests defined in the parent request order until the first invalid
  * apply action request or the first request which makes the overall parent request container invalid, e.g.
  * duplicate conflicting edits on the same object. Subsequent requests will not be processed and returned
  * as unattempted.
  */
-export interface SubmitValidEntriesInOrderUntilFirstFailureMode {
-}
+export interface SubmitValidEntriesInOrderUntilFirstFailureMode {}
 export interface SubtractionOperation {
   leftOperand: ParameterTransformPrefillValue;
   rightOperand: ParameterTransformPrefillValue;
@@ -15861,8 +15675,7 @@ export type TextEmbeddingModel =
   | TextEmbeddingModel_foundryLiveDeployment
   | TextEmbeddingModel_functionBacked;
 
-export interface TextModality {
-}
+export interface TextModality {}
 /**
  * Time-based retention configuration for direct datasources. Objects older than the retention window will be
  * permanently deleted. The duration should be specified in ISO8601 format, such as `P30D` (30 days) or
@@ -15882,10 +15695,8 @@ export interface TimeBetweenOperation {
   rightTime: ParameterTransformPrefillValue;
   unit: DateTimeUnit;
 }
-export interface TimeCodeFormat {
-}
-export interface TimeCurrentOperation {
-}
+export interface TimeCodeFormat {}
+export interface TimeCurrentOperation {}
 /**
  * Formatter applied to TIME DEPENDENT properties.
  */
@@ -15896,8 +15707,7 @@ export interface TimeDependentFormatter {
  * Configuration for non-numeric series.
  */
 export interface TimeDependentNonNumericSeriesFormat {
-  defaultInternalInterpolation:
-    PropertyTypeReferenceOrNonNumericInternalInterpolation;
+  defaultInternalInterpolation: PropertyTypeReferenceOrNonNumericInternalInterpolation;
   unit?: NonNumericSeriesValueUnit | null | undefined;
 }
 /**
@@ -15922,8 +15732,7 @@ export interface TimeDependentNumericOrNonNumericSeriesFormatV2 {
  * Configuration for numeric series.
  */
 export interface TimeDependentNumericSeriesFormat {
-  defaultInternalInterpolation:
-    PropertyTypeReferenceOrNumericInternalInterpolation;
+  defaultInternalInterpolation: PropertyTypeReferenceOrNumericInternalInterpolation;
   unit?: NumericSeriesValueUnit | null | undefined;
 }
 export interface TimeDependentSeriesFormat_numeric {
@@ -15972,8 +15781,7 @@ export interface TimestampFormatter {
   displayTimezone: DatetimeTimezone;
   format: DatetimeFormat;
 }
-export interface TimestampPropertyType {
-}
+export interface TimestampPropertyType {}
 export interface TimestampTypeDataConstraints {
   range: TimestampTypeRangeConstraint;
 }
@@ -16312,8 +16120,7 @@ export interface UnresolvedOntologySparkInputProperties {
 /**
  * This is a temporary type and will only be supported for a short time until interfaces are available in OSS.
  */
-export interface UnrestrictedParameterInterfacePropertyValue {
-}
+export interface UnrestrictedParameterInterfacePropertyValue {}
 export interface UnsafeArg {
   name: string;
   value: string;
@@ -16459,8 +16266,7 @@ export type UserPropertyValue =
   | UserPropertyValue_userAttributes
   | UserPropertyValue_organizationMarkingIds;
 
-export interface UserTimezone {
-}
+export interface UserTimezone {}
 /**
  * A value related to a user.
  */
@@ -16625,8 +16431,7 @@ export type WebhookVersion = number;
  * The whitespace analyzer breaks the text into terms whenever it encounters a whitespace character.
  * Please note that it does not change the casing of the text.
  */
-export interface WhitespaceAnalyzer {
-}
+export interface WhitespaceAnalyzer {}
 export interface WorkflowError_workflowsNotFound {
   type: "workflowsNotFound";
   workflowsNotFound: WorkflowsNotFoundError;
@@ -16639,26 +16444,22 @@ export interface WorkflowError_workflowsAlreadyExist {
 
 export interface WorkflowError_referencedObjectTypesInWorkflowNotFound {
   type: "referencedObjectTypesInWorkflowNotFound";
-  referencedObjectTypesInWorkflowNotFound:
-    ReferencedObjectTypesInWorkflowNotFoundError;
+  referencedObjectTypesInWorkflowNotFound: ReferencedObjectTypesInWorkflowNotFoundError;
 }
 
 export interface WorkflowError_referencedLinkTypesInWorkflowNotFound {
   type: "referencedLinkTypesInWorkflowNotFound";
-  referencedLinkTypesInWorkflowNotFound:
-    ReferencedLinkTypesInWorkflowNotFoundError;
+  referencedLinkTypesInWorkflowNotFound: ReferencedLinkTypesInWorkflowNotFoundError;
 }
 
 export interface WorkflowError_deletedObjectTypesStillInUseInWorkflow {
   type: "deletedObjectTypesStillInUseInWorkflow";
-  deletedObjectTypesStillInUseInWorkflow:
-    DeletedObjectTypesStillInUseInWorkflowError;
+  deletedObjectTypesStillInUseInWorkflow: DeletedObjectTypesStillInUseInWorkflowError;
 }
 
 export interface WorkflowError_deletedLinkTypesStillInUseInWorkflow {
   type: "deletedLinkTypesStillInUseInWorkflow";
-  deletedLinkTypesStillInUseInWorkflow:
-    DeletedLinkTypesStillInUseInWorkflowError;
+  deletedLinkTypesStillInUseInWorkflow: DeletedLinkTypesStillInUseInWorkflowError;
 }
 export type WorkflowError =
   | WorkflowError_workflowsNotFound

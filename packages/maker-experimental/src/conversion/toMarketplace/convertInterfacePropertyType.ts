@@ -17,6 +17,7 @@
 import type { MarketplaceInterfacePropertyType } from "@osdk/client.unstable";
 import type { InterfacePropertyType } from "@osdk/maker";
 import { isInterfaceSharedPropertyType } from "@osdk/maker";
+
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { convertNullabilityToDataConstraint } from "./convertNullabilityToDataConstraint.js";
 import { convertSpt } from "./convertSpt.js";
@@ -26,7 +27,7 @@ export function convertInterfaceProperty(
   prop: InterfacePropertyType,
   apiName: string,
   interfaceApiName: string,
-  ridGenerator: OntologyRidGenerator,
+  ridGenerator: OntologyRidGenerator
 ): [string, MarketplaceInterfacePropertyType] {
   if (isInterfaceSharedPropertyType(prop)) {
     const convertedSpt = convertSpt(prop.sharedPropertyType, ridGenerator);
@@ -54,20 +55,20 @@ export function convertInterfaceProperty(
           },
           type: prop.array
             ? {
-              type: "array" as const,
-              array: {
-                subtype: propertyTypeTypeToOntologyIrInterfaceType(
-                  prop.type,
-                  apiName,
-                  ridGenerator,
-                ),
-              },
-            }
+                type: "array" as const,
+                array: {
+                  subtype: propertyTypeTypeToOntologyIrInterfaceType(
+                    prop.type,
+                    apiName,
+                    ridGenerator
+                  ),
+                },
+              }
             : propertyTypeTypeToOntologyIrInterfaceType(
-              prop.type,
-              apiName,
-              ridGenerator,
-            ),
+                prop.type,
+                apiName,
+                ridGenerator
+              ),
           constraints: {
             primaryKeyConstraint: prop.primaryKeyConstraint ?? "NO_RESTRICTION",
             requireImplementation: prop.required ?? true,
@@ -79,14 +80,14 @@ export function convertInterfaceProperty(
             }),
             valueType: prop.valueType
               ? ridGenerator.generateRidForValueType(
-                prop.valueType.apiName,
-                prop.valueType.version,
-              )
+                  prop.valueType.apiName,
+                  prop.valueType.version
+                )
               : undefined,
           },
           rid: ridGenerator.generateInterfacePropertyTypeRid(
             apiName,
-            interfaceApiName,
+            interfaceApiName
           ),
         },
       },

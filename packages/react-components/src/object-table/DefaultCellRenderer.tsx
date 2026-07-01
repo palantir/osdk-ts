@@ -16,16 +16,18 @@
 
 import type { CellContext, RowData } from "@tanstack/react-table";
 import React from "react";
+
 import { AsyncValueCell } from "./components/AsyncValueCell.js";
 import { CbacMarkingCell } from "./components/CbacMarkingCell.js";
 import { MandatoryMarkingCell } from "./components/MandatoryMarkingCell.js";
 import { EditableCell } from "./EditableCell.js";
-import styles from "./EditableCell.module.css";
 import { isAsyncCellData } from "./utils/AsyncCellData.js";
 import { isCellEditable } from "./utils/editableUtils.js";
 import { getCellId } from "./utils/getCellId.js";
 import { shouldShowEditableCell } from "./utils/shouldShowEditableCell.js";
 import type { CellEditInfo } from "./utils/types.js";
+
+import styles from "./EditableCell.module.css";
 
 function toDisplayValue(value: unknown): React.ReactNode {
   if (typeof value === "boolean") {
@@ -40,7 +42,7 @@ function toDisplayValue(value: unknown): React.ReactNode {
 // edits change elsewhere in the table.
 function filterCellEditsToRow<TData extends RowData>(
   cellEdits: Record<string, CellEditInfo<TData, unknown>> | undefined,
-  rowId: string,
+  rowId: string
 ): Record<string, CellEditInfo<TData, unknown>> | undefined {
   if (!cellEdits) return undefined;
   let result: Record<string, CellEditInfo<TData, unknown>> | undefined;
@@ -54,16 +56,14 @@ function filterCellEditsToRow<TData extends RowData>(
 }
 
 export function renderDefaultCell<TData extends RowData>(
-  cellContext: CellContext<TData, unknown>,
+  cellContext: CellContext<TData, unknown>
 ): React.ReactNode {
   const meta = cellContext.table.options.meta;
   const columnMeta = cellContext.column.columnDef.meta;
 
   const cellValue = cellContext.getValue();
 
-  const asyncCellData = isAsyncCellData(cellValue)
-    ? cellValue
-    : undefined;
+  const asyncCellData = isAsyncCellData(cellValue) ? cellValue : undefined;
 
   // Function-backed columns are read-only: the value is server-computed
   // and cannot be edited in the table. Return the async cell directly.
@@ -83,12 +83,8 @@ export function renderDefaultCell<TData extends RowData>(
   const isEditable = isCellEditable(columnMeta?.editable, rowData);
 
   if (
-    !meta?.onCellEdit // Type guard
-    || !shouldShowEditableCell(
-      isEditable,
-      meta?.onCellEdit,
-      meta?.isInEditMode,
-    )
+    !meta?.onCellEdit || // Type guard
+    !shouldShowEditableCell(isEditable, meta?.onCellEdit, meta?.isInEditMode)
   ) {
     // Align non editable cells with the editable cells
     if (meta?.isInEditMode) {
@@ -109,9 +105,8 @@ export function renderDefaultCell<TData extends RowData>(
   const cellEdits = meta.cellEdits;
   const editedValue = cellEdits?.[cellId];
   // If newValue is explicitly set to null, treat it as null. Otherwise, fall back to the original cell value.
-  const currentValue = editedValue?.newValue === undefined
-    ? cellValue
-    : editedValue?.newValue;
+  const currentValue =
+    editedValue?.newValue === undefined ? cellValue : editedValue?.newValue;
   const validationError = meta.validationErrors?.get(cellId);
   const isRowFocused = meta.focusedRowId === rowId;
   const rowCellEdits = filterCellEditsToRow(cellEdits, rowId);

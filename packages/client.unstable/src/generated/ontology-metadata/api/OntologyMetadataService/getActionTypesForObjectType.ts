@@ -15,10 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   GetActionTypesForObjectTypeRequest as _api_GetActionTypesForObjectTypeRequest,
-  GetActionTypesForObjectTypeResponse
-    as _api_GetActionTypesForObjectTypeResponse,
+  GetActionTypesForObjectTypeResponse as _api_GetActionTypesForObjectTypeResponse,
 } from "../__components.js";
 
 /**
@@ -30,12 +30,12 @@ import type {
  */
 export async function getActionTypesForObjectType(
   ctx: ConjureContext,
-  request: _api_GetActionTypesForObjectTypeRequest,
+  request: _api_GetActionTypesForObjectTypeRequest
 ): Promise<_api_GetActionTypesForObjectTypeResponse> {
   return conjureFetch(
     ctx,
     `/ontology/ontology/actionTypesForObjectType`,
     "PUT",
-    request,
+    request
   );
 }

@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  GetEntityProjectsMigrationStatusRequest
-    as _api_permissions_GetEntityProjectsMigrationStatusRequest,
-  GetEntityProjectsMigrationStatusResponse
-    as _api_permissions_GetEntityProjectsMigrationStatusResponse,
+  GetEntityProjectsMigrationStatusRequest as _api_permissions_GetEntityProjectsMigrationStatusRequest,
+  GetEntityProjectsMigrationStatusResponse as _api_permissions_GetEntityProjectsMigrationStatusResponse,
 } from "../__components.js";
 
 /**
@@ -28,12 +27,12 @@ import type {
  */
 export async function getEntityProjectsMigrationStatus(
   ctx: ConjureContext,
-  request: _api_permissions_GetEntityProjectsMigrationStatusRequest,
+  request: _api_permissions_GetEntityProjectsMigrationStatusRequest
 ): Promise<_api_permissions_GetEntityProjectsMigrationStatusResponse> {
   return conjureFetch(
     ctx,
     `/permissions/entityProjectsMigrationStatus`,
     "PUT",
-    request,
+    request
   );
 }

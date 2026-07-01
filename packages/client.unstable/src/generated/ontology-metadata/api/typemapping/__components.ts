@@ -67,18 +67,15 @@ export interface ClientTranslationEligibilityResult {
 /**
  * This expected base type for a property type that represents a Gotham Lat+Long Intrinsic.
  */
-export interface ExpectedGeoHashBaseType {
-}
+export interface ExpectedGeoHashBaseType {}
 /**
  * This expected base type for a property type that represents a Gotham MGRS Intrinsic.
  */
-export interface ExpectedStringBaseType {
-}
+export interface ExpectedStringBaseType {}
 /**
  * This expected base type for a property type that represents a Gotham Start Date Intrinsic.
  */
-export interface ExpectedTimestampBaseType {
-}
+export interface ExpectedTimestampBaseType {}
 export interface ExternalMappingConfiguration_gotham {
   type: "gotham";
   gotham: GothamMappingConfiguration;
@@ -101,9 +98,7 @@ export interface GetGothamObjectTypesResponse {
  * Contains Gotham property types available and unavailable to be imported as SharedPropertyTypes.
  */
 export interface GetGothamPropertyTypesResponse {
-  gothamPropertyTypesAvailable: Array<
-    _api_modification_SharedPropertyTypeModification
-  >;
+  gothamPropertyTypesAvailable: Array<_api_modification_SharedPropertyTypeModification>;
   gothamPropertyTypesAvailable2: Array<GothamPropertyTypeAvailable>;
   gothamPropertyTypesUnavailableForImport: Array<GothamPropertyTypeUnavailable>;
 }
@@ -148,8 +143,7 @@ export type GothamIntrinsic =
 /**
  * This property represents a Gotham End Date Intrinsic. This should be mapped from a Timestamp property.
  */
-export interface GothamIntrinsicEndDate {
-}
+export interface GothamIntrinsicEndDate {}
 export interface GothamIntrinsicExpectedBaseType_timestamp {
   type: "timestamp";
   timestamp: ExpectedTimestampBaseType;
@@ -172,18 +166,15 @@ export type GothamIntrinsicExpectedBaseType =
 /**
  * This property represents a Gotham Lat/Long Intrinsic. This should be mapped from a GeoHash property.
  */
-export interface GothamIntrinsicLatLong {
-}
+export interface GothamIntrinsicLatLong {}
 /**
  * This property represents a Gotham MGRS Intrinsic. This should be mapped from a String property.
  */
-export interface GothamIntrinsicMgrs {
-}
+export interface GothamIntrinsicMgrs {}
 /**
  * This property represents a Gotham Start Date Intrinsic. This should be mapped from a Timestamp property.
  */
-export interface GothamIntrinsicStartDate {
-}
+export interface GothamIntrinsicStartDate {}
 export type GothamIntrinsicV2 =
   | "GOTHAM_INTRINSIC_START_DATE"
   | "GOTHAM_INTRINSIC_END_DATE"
@@ -222,29 +213,24 @@ export interface GothamObjectTypeUnavailable {
 /**
  * Gotham Object types unavailable because they have non label property title generators.
  */
-export interface GothamObjectTypeUnavailableHasNonLabelPropertyTitleGenerators {
-}
+export interface GothamObjectTypeUnavailableHasNonLabelPropertyTitleGenerators {}
 /**
  * Gotham Object types unavailable because they belong to type groups, which are not supported yet in Foundry.
  */
-export interface GothamObjectTypeUnavailableHasTypeGroups {
-}
+export interface GothamObjectTypeUnavailableHasTypeGroups {}
 /**
  * Gotham Object Type currently in the middle of a transfer between fragments cannot be imported into Foundry.
  * To import this type, the transfer needs to be completed by removing the type from its original fragment.
  */
-export interface GothamObjectTypeUnavailableInTransfer {
-}
+export interface GothamObjectTypeUnavailableInTransfer {}
 /**
  * Gotham Object Type unavailable because they are core ontology types.
  */
-export interface GothamObjectTypeUnavailableIsCoreType {
-}
+export interface GothamObjectTypeUnavailableIsCoreType {}
 /**
  * Gotham Object types unavailable because their usage restriction isn't set to unrestricted.
  */
-export interface GothamObjectTypeUnavailableIsNotUnrestricted {
-}
+export interface GothamObjectTypeUnavailableIsNotUnrestricted {}
 /**
  * Gotham Object Type unavailable because their label Property cannot be imported
  */
@@ -263,8 +249,7 @@ export interface GothamObjectTypeUnavailableMissingSharedPropertyType {
  * Gotham Object types unavailable because their label property type URI does not correspond to an existing
  * property type on the ontology.
  */
-export interface GothamObjectTypeUnavailableSpecifiedLabelPropertyTypeNotFound {
-}
+export interface GothamObjectTypeUnavailableSpecifiedLabelPropertyTypeNotFound {}
 export type GothamObjectTypeUri = string;
 
 /**
@@ -322,8 +307,7 @@ export interface GothamPropertyIntrinsicMappingV3 {
  * Represents a Gotham property type that is available to be imported.
  */
 export interface GothamPropertyTypeAvailable {
-  sharedPropertyTypeModification:
-    _api_modification_SharedPropertyTypeModification;
+  sharedPropertyTypeModification: _api_modification_SharedPropertyTypeModification;
   valueTypesToCreate?: GothamPropertyValueTypesToCreate | null | undefined;
   valueTypeToCreate?: any | null | undefined;
 }
@@ -332,9 +316,7 @@ export interface GothamPropertyTypeAvailable {
  * it cannot be imported.
  */
 export interface GothamPropertyTypeUnavailable {
-  unavailableGothamPropertyTypeCauses: Array<
-    UnavailableGothamPropertyTypeCause
-  >;
+  unavailableGothamPropertyTypeCauses: Array<UnavailableGothamPropertyTypeCause>;
   unavailableGothamPropertyTypeDescription: string;
   unavailableGothamPropertyTypeDisplayName: string;
   unavailableGothamPropertyTypeUri: GothamPropertyTypeUri;
@@ -342,55 +324,45 @@ export interface GothamPropertyTypeUnavailable {
 /**
  * Gotham property type cannot be imported into Foundry because the type could not be converted in Gotham.
  */
-export interface GothamPropertyTypeUnavailableConverterError {
-}
+export interface GothamPropertyTypeUnavailableConverterError {}
 /**
  * Deprecated Gotham property types cannot be imported into Foundry.
  */
-export interface GothamPropertyTypeUnavailableDeprecated {
-}
+export interface GothamPropertyTypeUnavailableDeprecated {}
 /**
  * Gotham property types with custom makers (parsers) cannot currently be imported into Foundry.
  */
-export interface GothamPropertyTypeUnavailableHasCustomMakers {
-}
+export interface GothamPropertyTypeUnavailableHasCustomMakers {}
 /**
  * Gotham Property Types currently in the middle of a transfer between fragments cannot be imported into Foundry.
  * To import this type, the transfer needs to be completed by removing the type from its original fragment.
  */
-export interface GothamPropertyTypeUnavailableInTransfer {
-}
+export interface GothamPropertyTypeUnavailableInTransfer {}
 /**
  * Gotham Composite types cannot currently be imported into Foundry.
  */
-export interface GothamPropertyTypeUnavailableIsComposite {
-}
+export interface GothamPropertyTypeUnavailableIsComposite {}
 /**
  * Non-indexed Gotham property types cannot currently be imported into Foundry.
  */
-export interface GothamPropertyTypeUnavailableNonIndexedProperty {
-}
+export interface GothamPropertyTypeUnavailableNonIndexedProperty {}
 /**
  * Gotham system property types cannot currently be imported into Foundry.
  */
-export interface GothamPropertyTypeUnavailableSystemProperty {
-}
+export interface GothamPropertyTypeUnavailableSystemProperty {}
 /**
  * Gotham property type cannot be imported into Foundry because of an unknown reason, most likely because of a
  * conversion error to a fragment property type.
  */
-export interface GothamPropertyTypeUnavailableUnknown {
-}
+export interface GothamPropertyTypeUnavailableUnknown {}
 /**
  * Gotham property types with empty or non-default approxes cannot currently be imported into Foundry.
  */
-export interface GothamPropertyTypeUnavailableUnsupportedBaseValidators {
-}
+export interface GothamPropertyTypeUnavailableUnsupportedBaseValidators {}
 /**
  * Gotham property types with a non-default Max Value Length cannot currently be imported into Foundry.
  */
-export interface GothamPropertyTypeUnavailableUnsupportedMaxValueLength {
-}
+export interface GothamPropertyTypeUnavailableUnsupportedMaxValueLength {}
 export type GothamPropertyTypeUri = string;
 export interface GothamPropertyValueTypesToCreate {
   additionalValueTypesToCreate: Record<_api_ValueTypeIdInRequest, any>;
@@ -425,28 +397,23 @@ export interface GothamTypeInstallFailedStatus {
 /**
  * The type has been successfully installed to the runtime ontology.
  */
-export interface GothamTypeInstallInstalledStatus {
-}
+export interface GothamTypeInstallInstalledStatus {}
 /**
  * The type is currently being installed by Gotham.
  */
-export interface GothamTypeInstallInstallingStatus {
-}
+export interface GothamTypeInstallInstallingStatus {}
 /**
  * The type has not been received by Gotham. It may or may not get received later.
  */
-export interface GothamTypeInstallNotFoundStatus {
-}
+export interface GothamTypeInstallNotFoundStatus {}
 /**
  * The type has been received by Gotham and is awaiting installation.
  */
-export interface GothamTypeInstallQueuedStatus {
-}
+export interface GothamTypeInstallQueuedStatus {}
 /**
  * The type has been successfully staged and will be promoted to runtime after the next ontology reindex.
  */
-export interface GothamTypeInstallStagedStatus {
-}
+export interface GothamTypeInstallStagedStatus {}
 export interface GothamTypeInstallStatus_notFound {
   type: "notFound";
   notFound: GothamTypeInstallNotFoundStatus;
@@ -703,8 +670,7 @@ export interface SharedPropertyTypeGothamMappingModification {
 /**
  * The requested Delegate can be translated to a simple policy
  */
-export interface TranslatableDatasource {
-}
+export interface TranslatableDatasource {}
 export interface TranslationEligibility_translatableDatasource {
   type: "translatableDatasource";
   translatableDatasource: TranslatableDatasource;
@@ -720,8 +686,7 @@ export type TranslationEligibility =
 
 export interface UnavailableGothamObjectTypeCause_objectTypeHasUnavailableRepresentativePropertyTypes {
   type: "objectTypeHasUnavailableRepresentativePropertyTypes";
-  objectTypeHasUnavailableRepresentativePropertyTypes:
-    ObjectTypeHasUnavailableRepresentativePropertyTypes;
+  objectTypeHasUnavailableRepresentativePropertyTypes: ObjectTypeHasUnavailableRepresentativePropertyTypes;
 }
 
 export interface UnavailableGothamObjectTypeCause_objectTypeUnavailableInTransfer {
@@ -736,20 +701,17 @@ export interface UnavailableGothamObjectTypeCause_objectTypeUnavailableIsCoreTyp
 
 export interface UnavailableGothamObjectTypeCause_objectTypeUnavailableLabelPropertyCannotBeImported {
   type: "objectTypeUnavailableLabelPropertyCannotBeImported";
-  objectTypeUnavailableLabelPropertyCannotBeImported:
-    GothamObjectTypeUnavailableLabelPropertyCannotBeImported;
+  objectTypeUnavailableLabelPropertyCannotBeImported: GothamObjectTypeUnavailableLabelPropertyCannotBeImported;
 }
 
 export interface UnavailableGothamObjectTypeCause_objectTypeUnavailableSpecifiedLabelPropertyTypeNotFound {
   type: "objectTypeUnavailableSpecifiedLabelPropertyTypeNotFound";
-  objectTypeUnavailableSpecifiedLabelPropertyTypeNotFound:
-    GothamObjectTypeUnavailableSpecifiedLabelPropertyTypeNotFound;
+  objectTypeUnavailableSpecifiedLabelPropertyTypeNotFound: GothamObjectTypeUnavailableSpecifiedLabelPropertyTypeNotFound;
 }
 
 export interface UnavailableGothamObjectTypeCause_objectTypeUnavailableHasNonLabelPropertyTitleGenerators {
   type: "objectTypeUnavailableHasNonLabelPropertyTitleGenerators";
-  objectTypeUnavailableHasNonLabelPropertyTitleGenerators:
-    GothamObjectTypeUnavailableHasNonLabelPropertyTitleGenerators;
+  objectTypeUnavailableHasNonLabelPropertyTitleGenerators: GothamObjectTypeUnavailableHasNonLabelPropertyTitleGenerators;
 }
 
 export interface UnavailableGothamObjectTypeCause_objectTypeUnavailableHasTypeGroups {
@@ -759,14 +721,12 @@ export interface UnavailableGothamObjectTypeCause_objectTypeUnavailableHasTypeGr
 
 export interface UnavailableGothamObjectTypeCause_objectTypeUnavailableIsNotUnrestricted {
   type: "objectTypeUnavailableIsNotUnrestricted";
-  objectTypeUnavailableIsNotUnrestricted:
-    GothamObjectTypeUnavailableIsNotUnrestricted;
+  objectTypeUnavailableIsNotUnrestricted: GothamObjectTypeUnavailableIsNotUnrestricted;
 }
 
 export interface UnavailableGothamObjectTypeCause_objectTypeUnavailableMissingSharedPropertyType {
   type: "objectTypeUnavailableMissingSharedPropertyType";
-  objectTypeUnavailableMissingSharedPropertyType:
-    GothamObjectTypeUnavailableMissingSharedPropertyType;
+  objectTypeUnavailableMissingSharedPropertyType: GothamObjectTypeUnavailableMissingSharedPropertyType;
 }
 export type UnavailableGothamObjectTypeCause =
   | UnavailableGothamObjectTypeCause_objectTypeHasUnavailableRepresentativePropertyTypes
@@ -781,56 +741,47 @@ export type UnavailableGothamObjectTypeCause =
 
 export interface UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailableIsComposite {
   type: "gothamPropertyTypeUnavailableIsComposite";
-  gothamPropertyTypeUnavailableIsComposite:
-    GothamPropertyTypeUnavailableIsComposite;
+  gothamPropertyTypeUnavailableIsComposite: GothamPropertyTypeUnavailableIsComposite;
 }
 
 export interface UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailableInTransfer {
   type: "gothamPropertyTypeUnavailableInTransfer";
-  gothamPropertyTypeUnavailableInTransfer:
-    GothamPropertyTypeUnavailableInTransfer;
+  gothamPropertyTypeUnavailableInTransfer: GothamPropertyTypeUnavailableInTransfer;
 }
 
 export interface UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailableConverterError {
   type: "gothamPropertyTypeUnavailableConverterError";
-  gothamPropertyTypeUnavailableConverterError:
-    GothamPropertyTypeUnavailableConverterError;
+  gothamPropertyTypeUnavailableConverterError: GothamPropertyTypeUnavailableConverterError;
 }
 
 export interface UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailableDeprecated {
   type: "gothamPropertyTypeUnavailableDeprecated";
-  gothamPropertyTypeUnavailableDeprecated:
-    GothamPropertyTypeUnavailableDeprecated;
+  gothamPropertyTypeUnavailableDeprecated: GothamPropertyTypeUnavailableDeprecated;
 }
 
 export interface UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailableSystemProperty {
   type: "gothamPropertyTypeUnavailableSystemProperty";
-  gothamPropertyTypeUnavailableSystemProperty:
-    GothamPropertyTypeUnavailableSystemProperty;
+  gothamPropertyTypeUnavailableSystemProperty: GothamPropertyTypeUnavailableSystemProperty;
 }
 
 export interface UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailableNonIndexedProperty {
   type: "gothamPropertyTypeUnavailableNonIndexedProperty";
-  gothamPropertyTypeUnavailableNonIndexedProperty:
-    GothamPropertyTypeUnavailableNonIndexedProperty;
+  gothamPropertyTypeUnavailableNonIndexedProperty: GothamPropertyTypeUnavailableNonIndexedProperty;
 }
 
 export interface UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailableUnsupportedBaseValidators {
   type: "gothamPropertyTypeUnavailableUnsupportedBaseValidators";
-  gothamPropertyTypeUnavailableUnsupportedBaseValidators:
-    GothamPropertyTypeUnavailableUnsupportedBaseValidators;
+  gothamPropertyTypeUnavailableUnsupportedBaseValidators: GothamPropertyTypeUnavailableUnsupportedBaseValidators;
 }
 
 export interface UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailableUnsupportedMaxValueLength {
   type: "gothamPropertyTypeUnavailableUnsupportedMaxValueLength";
-  gothamPropertyTypeUnavailableUnsupportedMaxValueLength:
-    GothamPropertyTypeUnavailableUnsupportedMaxValueLength;
+  gothamPropertyTypeUnavailableUnsupportedMaxValueLength: GothamPropertyTypeUnavailableUnsupportedMaxValueLength;
 }
 
 export interface UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailableHasCustomMakers {
   type: "gothamPropertyTypeUnavailableHasCustomMakers";
-  gothamPropertyTypeUnavailableHasCustomMakers:
-    GothamPropertyTypeUnavailableHasCustomMakers;
+  gothamPropertyTypeUnavailableHasCustomMakers: GothamPropertyTypeUnavailableHasCustomMakers;
 }
 
 export interface UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailableUnknown {

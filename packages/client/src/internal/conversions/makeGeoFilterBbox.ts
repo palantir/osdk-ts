@@ -24,12 +24,11 @@ export function makeGeoFilterBbox(
   bbox: BBox,
   filterType: "$within" | "$intersects",
   propertyIdentifier?: PropertyIdentifier,
-  field?: string,
+  field?: string
 ): SearchJsonQueryV2 {
   return {
-    type: filterType === "$within"
-      ? "withinBoundingBox"
-      : "intersectsBoundingBox",
+    type:
+      filterType === "$within" ? "withinBoundingBox" : "intersectsBoundingBox",
     /**
      * This is a bit ugly, but did this so that propertyIdentifier only shows up in the return object if its defined,
      * this makes it so we don't need to go update our entire test bed either to include a field which may change in near future.

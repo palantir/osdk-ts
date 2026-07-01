@@ -18,6 +18,7 @@ import { BarInterface } from "@osdk/client.test.ontology";
 import type { LoadObjectSetV2MultipleObjectTypesResponse } from "@osdk/foundry.ontologies";
 import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import type { Client } from "../Client.js";
 import { createClient, createClientWithTransaction } from "../createClient.js";
 import { mockFetchResponse } from "../createClient.test.js";
@@ -35,7 +36,7 @@ describe("withScenario", () => {
       ontologyRid,
       async () => "Token",
       undefined,
-      fetchFunction,
+      fetchFunction
     );
   });
 
@@ -60,10 +61,10 @@ describe("withScenario", () => {
     expect(fetchFunction).toHaveBeenCalledTimes(1);
     const url = new URL(
       fetchFunction.mock.calls[0][0] as string,
-      "https://mock.com",
+      "https://mock.com"
     );
     expect(url.searchParams.get("scenarioRid")).toBe(
-      "ri.actions..scenario.abc",
+      "ri.actions..scenario.abc"
     );
   });
 
@@ -76,12 +77,10 @@ describe("withScenario", () => {
       ontologyRid,
       async () => "Token",
       {},
-      fetchFunction,
+      fetchFunction
     );
     const scenario = withScenario(txClient, "ri.actions..scenario.abc");
-    expect(warnSpy).toHaveBeenCalledWith(
-      expect.stringMatching(/transaction/),
-    );
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringMatching(/transaction/));
     expect(scenario.getScenarioReference()).toBe("ri.actions..scenario.abc");
     warnSpy.mockRestore();
   });
@@ -89,7 +88,7 @@ describe("withScenario", () => {
   it("rejects a client already scoped to a scenario at runtime", () => {
     const scenario = withScenario(client, "ri.actions..scenario.abc");
     expect(() => withScenario(scenario, "ri.actions..scenario.def")).toThrow(
-      /scenario/,
+      /scenario/
     );
   });
 });

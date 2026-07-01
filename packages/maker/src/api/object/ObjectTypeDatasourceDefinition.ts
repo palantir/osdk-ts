@@ -19,6 +19,7 @@ import type {
   MarkingType,
   ObjectTypeFieldApiName,
 } from "@osdk/client.unstable";
+
 import type { LinkType } from "../links/LinkType.js";
 import type { SecurityConditionDefinition } from "./SecurityCondition.js";
 

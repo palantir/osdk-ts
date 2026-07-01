@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   CreateDraftGroupRequest as _api_CreateDraftGroupRequest,
   DraftGroup as _api_DraftGroup,
@@ -27,7 +28,7 @@ import type {
  */
 export async function createDraftGroup(
   ctx: ConjureContext,
-  request: _api_CreateDraftGroupRequest,
+  request: _api_CreateDraftGroupRequest
 ): Promise<_api_DraftGroup> {
   return conjureFetch(ctx, `/draft-groups`, "POST", request);
 }

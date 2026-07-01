@@ -15,6 +15,7 @@
  */
 
 import type { RegisterOptions } from "react-hook-form";
+
 import type {
   RendererFieldDefinition,
   ValidationError,
@@ -31,7 +32,7 @@ type RhfRules = RegisterOptions<Record<string, unknown>, string>;
  * custom messages into the RHF rules object.
  */
 export function extractValidationRules(
-  fieldDef: RendererFieldDefinition,
+  fieldDef: RendererFieldDefinition
 ): RhfRules {
   const rules: RhfRules = {};
 
@@ -81,16 +82,12 @@ export function extractValidationRules(
       if (min != null) {
         const msg = getMessage(fieldDef, { type: "min", min });
         validateFns.min = (value) =>
-          value instanceof Date && value.getTime() < min.getTime()
-            ? msg
-            : true;
+          value instanceof Date && value.getTime() < min.getTime() ? msg : true;
       }
       if (max != null) {
         const msg = getMessage(fieldDef, { type: "max", max });
         validateFns.max = (value) =>
-          value instanceof Date && value.getTime() > max.getTime()
-            ? msg
-            : true;
+          value instanceof Date && value.getTime() > max.getTime() ? msg : true;
       }
       break;
     }
@@ -104,7 +101,7 @@ export function extractValidationRules(
           }
           if (Array.isArray(value)) {
             const oversized = value.some(
-              (f: unknown) => f instanceof File && f.size > maxSize,
+              (f: unknown) => f instanceof File && f.size > maxSize
             );
             return oversized ? msg : true;
           }
@@ -138,7 +135,7 @@ export function extractValidationRules(
 
 function getMessage(
   fieldDef: RendererFieldDefinition,
-  error: ValidationError,
+  error: ValidationError
 ): string {
   return fieldDef.onValidationError?.(error) ?? getDefaultMessage(error);
 }

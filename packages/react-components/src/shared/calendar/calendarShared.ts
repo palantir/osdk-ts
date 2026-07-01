@@ -32,7 +32,7 @@ export const DEFAULT_TO_YEAR: number = new Date().getFullYear() + 10;
  */
 export function buildDisabledMatchers(
   min: Date | undefined,
-  max: Date | undefined,
+  max: Date | undefined
 ): Matcher[] {
   const matchers: Matcher[] = [];
   if (min != null) {
@@ -56,8 +56,8 @@ export const stopPropagation: (e: React.MouseEvent) => void = (e) => {
   // Base UI chains its trigger handler after this click handler. When focus or
   // pointer-down already opened the popover, suppress that handler so the same
   // click does not immediately toggle the popover closed again.
-  const preventBaseUIHandler =
-    (e as React.MouseEvent & { preventBaseUIHandler?: () => void })
-      .preventBaseUIHandler;
+  const preventBaseUIHandler = (
+    e as React.MouseEvent & { preventBaseUIHandler?: () => void }
+  ).preventBaseUIHandler;
   preventBaseUIHandler?.();
 };

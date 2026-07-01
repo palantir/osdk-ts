@@ -18,6 +18,7 @@ import type { QueryDataTypeDefinition } from "@osdk/api";
 import { MediaSets } from "@osdk/foundry.mediasets";
 import { type DataValue } from "@osdk/foundry.ontologies";
 import * as Attachments from "@osdk/foundry.ontologies/Attachment";
+
 import type { MinimalClient } from "../MinimalClientContext.js";
 import {
   isAttachmentFile,
@@ -46,7 +47,7 @@ import { isWireObjectSet } from "./WireObjectSet.js";
 export async function toDataValueQueries(
   value: unknown,
   client: MinimalClient,
-  desiredType: QueryDataTypeDefinition,
+  desiredType: QueryDataTypeDefinition
 ): Promise<DataValue> {
   if (value == null) {
     return value;
@@ -55,8 +56,9 @@ export async function toDataValueQueries(
   if (Array.isArray(value) && desiredType.type === "array") {
     const values = Array.from(value);
     if (
-      values.some((dataValue) =>
-        isAttachmentUpload(dataValue) || isAttachmentFile(dataValue)
+      values.some(
+        (dataValue) =>
+          isAttachmentUpload(dataValue) || isAttachmentFile(dataValue)
       )
     ) {
       const converted = [];
@@ -68,7 +70,7 @@ export async function toDataValueQueries(
     const promiseArray = Array.from(
       value,
       async (innerValue) =>
-        await toDataValueQueries(innerValue, client, desiredType.array),
+        await toDataValueQueries(innerValue, client, desiredType.array)
     );
     return Promise.all(promiseArray);
   }
@@ -76,26 +78,16 @@ export async function toDataValueQueries(
   switch (desiredType.type) {
     case "attachment": {
       if (isAttachmentUpload(value)) {
-        const attachment = await Attachments.upload(
-          client,
-          value.data,
-          {
-            filename: value.name,
-          },
-        );
+        const attachment = await Attachments.upload(client, value.data, {
+          filename: value.name,
+        });
         return attachment.rid;
       }
 
-      if (
-        isAttachmentFile(value)
-      ) {
-        const attachment = await Attachments.upload(
-          client,
-          value,
-          {
-            filename: value.name as string,
-          },
-        );
+      if (isAttachmentFile(value)) {
+        const attachment = await Attachments.upload(client, value, {
+          filename: value.name as string,
+        });
         return attachment.rid;
       }
 
@@ -115,14 +107,10 @@ export async function toDataValueQueries(
 
     case "mediaReference": {
       if (isMediaUpload(value)) {
-        const mediaRef = await MediaSets.uploadMedia(
-          client,
-          value.data,
-          {
-            filename: value.fileName,
-            preview: true,
-          },
-        );
+        const mediaRef = await MediaSets.uploadMedia(client, value.data, {
+          filename: value.fileName,
+          preview: true,
+        });
         return mediaRef;
       }
 
@@ -135,7 +123,7 @@ export async function toDataValueQueries(
       }
 
       throw new Error(
-        "Expected media reference type but got value that is not a MediaReference or MediaUpload",
+        "Expected media reference type but got value that is not a MediaReference or MediaUpload"
       );
     }
 
@@ -144,7 +132,7 @@ export async function toDataValueQueries(
         const promiseArray = Array.from(
           value,
           async (innerValue) =>
-            await toDataValueQueries(innerValue, client, desiredType.set),
+            await toDataValueQueries(innerValue, client, desiredType.set)
         );
         return Promise.all(promiseArray);
       }
@@ -181,17 +169,14 @@ export async function toDataValueQueries(
         const entrySet: Array<{ key: any; value: any }> = [];
         for (const [key, mapValue] of Object.entries(value)) {
           entrySet.push({
-            key: desiredType.keyType.type === "object"
-              ? extractPrimaryKeyFromObjectSpecifier(key as any)
-              : await toDataValueQueries(
-                key,
-                client,
-                desiredType.keyType,
-              ),
+            key:
+              desiredType.keyType.type === "object"
+                ? extractPrimaryKeyFromObjectSpecifier(key as any)
+                : await toDataValueQueries(key, client, desiredType.keyType),
             value: await toDataValueQueries(
               mapValue,
               client,
-              desiredType.valueType,
+              desiredType.valueType
             ),
           });
         }
@@ -207,7 +192,7 @@ export async function toDataValueQueries(
           structMap[key] = await toDataValueQueries(
             structValue,
             client,
-            desiredType.struct[key],
+            desiredType.struct[key]
           );
         }
         return structMap;

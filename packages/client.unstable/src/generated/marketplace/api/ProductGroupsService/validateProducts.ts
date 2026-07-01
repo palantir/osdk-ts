@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   ValidateProductsRequest as _api_ValidateProductsRequest,
   ValidateProductsResponse as _api_ValidateProductsResponse,
@@ -31,7 +32,7 @@ import type {
  */
 export async function validateProducts(
   ctx: ConjureContext,
-  request: _api_ValidateProductsRequest,
+  request: _api_ValidateProductsRequest
 ): Promise<_api_ValidateProductsResponse> {
   return conjureFetch(ctx, `/product-groups/validate`, "POST", request);
 }

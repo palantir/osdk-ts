@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import { evaluateFilter } from "./evaluateFilter.js";
 
 describe("evaluateFilter", () => {
@@ -22,16 +23,15 @@ describe("evaluateFilter", () => {
     it("returns true when value is in the array", () => {
       expect(evaluateFilter("$in", 5, [1, 5, 10], true)).toBe(true);
       expect(evaluateFilter("$in", "active", ["active", "pending"], true)).toBe(
-        true,
+        true
       );
     });
 
     it("returns false when value is not in the array", () => {
       expect(evaluateFilter("$in", 7, [1, 5, 10], true)).toBe(false);
-      expect(evaluateFilter("$in", "deleted", ["active", "pending"], true))
-        .toBe(
-          false,
-        );
+      expect(
+        evaluateFilter("$in", "deleted", ["active", "pending"], true)
+      ).toBe(false);
     });
 
     it("handles empty arrays", () => {
@@ -91,10 +91,10 @@ describe("evaluateFilter", () => {
   describe("string filters", () => {
     it("$startsWith returns true when string starts with prefix", () => {
       expect(evaluateFilter("$startsWith", "hello world", "hello", true)).toBe(
-        true,
+        true
       );
       expect(evaluateFilter("$startsWith", "hello world", "world", true)).toBe(
-        false,
+        false
       );
     });
 
@@ -102,12 +102,12 @@ describe("evaluateFilter", () => {
       // $title is `string | undefined`, so filtering by `$title` can reach a
       // null value here — it must not throw on the `.startsWith` call.
       expect(evaluateFilter("$startsWith", undefined, "hello", true)).toBe(
-        false,
+        false
       );
       expect(evaluateFilter("$startsWith", null, "hello", true)).toBe(false);
       // A missing value definitively cannot match, so loose mode is false too.
       expect(evaluateFilter("$startsWith", undefined, "hello", false)).toBe(
-        false,
+        false
       );
       expect(evaluateFilter("$startsWith", null, "hello", false)).toBe(false);
     });
@@ -132,13 +132,13 @@ describe("evaluateFilter", () => {
   describe("strict vs loose mode", () => {
     it("$contains returns false in strict mode", () => {
       expect(evaluateFilter("$contains", "hello world", "world", true)).toBe(
-        false,
+        false
       );
     });
 
     it("$contains returns true in loose mode", () => {
       expect(evaluateFilter("$contains", "hello world", "world", false)).toBe(
-        true,
+        true
       );
     });
 

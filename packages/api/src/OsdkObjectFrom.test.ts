@@ -15,6 +15,7 @@
  */
 
 import { describe, expectTypeOf, it } from "vitest";
+
 import type { NullabilityAdherence } from "./object/FetchPageArgs.js";
 import { createMockObjectSet } from "./objectSet/ObjectSet.test.js";
 import type { PropertyKeys } from "./ontology/ObjectOrInterface.js";
@@ -36,52 +37,52 @@ import type { ReducerInterfaceApiTest } from "./test/ReducerInterfaceApiTest.js"
 describe("ExtractOptions", () => {
   describe("NullabilityAdherence Generic", () => {
     it("does not add $notStrict for any", () => {
-      expectTypeOf<ExtractOptions<any, any>>()
-        .toEqualTypeOf<never>();
+      expectTypeOf<ExtractOptions<any, any>>().toEqualTypeOf<never>();
     });
 
     it("does not add $notStrict for never", () => {
-      expectTypeOf<ExtractOptions<any, never>>()
-        .toEqualTypeOf<never>();
+      expectTypeOf<ExtractOptions<any, never>>().toEqualTypeOf<never>();
     });
 
     it("does not add $notStrict for false", () => {
-      expectTypeOf<ExtractOptions<any, false>>()
-        .toEqualTypeOf<never>();
+      expectTypeOf<ExtractOptions<any, false>>().toEqualTypeOf<never>();
     });
 
     it("does not add $notStrict for throw", () => {
-      expectTypeOf<ExtractOptions<any, "throw">>()
-        .toEqualTypeOf<never>();
+      expectTypeOf<ExtractOptions<any, "throw">>().toEqualTypeOf<never>();
     });
 
     it("does not add $notStrict for drop", () => {
-      expectTypeOf<ExtractOptions<any, "drop">>()
-        .toEqualTypeOf<never>();
+      expectTypeOf<ExtractOptions<any, "drop">>().toEqualTypeOf<never>();
     });
 
     it("does not add $notStrict for drop | throw", () => {
-      expectTypeOf<ExtractOptions<any, "drop" | "throw">>()
-        .toEqualTypeOf<never>();
+      expectTypeOf<
+        ExtractOptions<any, "drop" | "throw">
+      >().toEqualTypeOf<never>();
     });
 
     it("does not add $notStrict for drop | false", () => {
-      expectTypeOf<ExtractOptions<any, "drop" | false>>()
-        .toEqualTypeOf<never>();
+      expectTypeOf<
+        ExtractOptions<any, "drop" | false>
+      >().toEqualTypeOf<never>();
     });
     it("does not add $notStrict for false | throw", () => {
-      expectTypeOf<ExtractOptions<any, false | "throw">>()
-        .toEqualTypeOf<never>();
+      expectTypeOf<
+        ExtractOptions<any, false | "throw">
+      >().toEqualTypeOf<never>();
     });
 
     it("does not add $notStrict for drop | throw | false", () => {
-      expectTypeOf<ExtractOptions<any, "drop" | "throw" | false>>()
-        .toEqualTypeOf<never>();
+      expectTypeOf<
+        ExtractOptions<any, "drop" | "throw" | false>
+      >().toEqualTypeOf<never>();
     });
 
     it("does not add $notStrict for NullabilityAdherence", () => {
-      expectTypeOf<ExtractOptions<any, NullabilityAdherence>>()
-        .toEqualTypeOf<never>();
+      expectTypeOf<
+        ExtractOptions<any, NullabilityAdherence>
+      >().toEqualTypeOf<never>();
     });
   });
 
@@ -178,9 +179,9 @@ describe("ExtractOptions", () => {
       };
       inverseInterfaceMap: {
         "com.my.obscure.namespace.FooBarInterface": {
-          "foo": "com.my.obscure.namespace.fooInterface";
-          "name": "com.my.obscure.namespace.id";
-          "birthday": "com.my.even.more.obscure.namespace.originDate";
+          foo: "com.my.obscure.namespace.fooInterface";
+          name: "com.my.obscure.namespace.id";
+          birthday: "com.my.even.more.obscure.namespace.originDate";
         };
       };
       links: {};
@@ -294,7 +295,8 @@ describe("ExtractOptions", () => {
       // @ts-expect-error
       type toCheck = Osdk.Instance<quickAndDirty, "$notStrict">;
 
-      expectTypeOf<toCheck>().branded
+      expectTypeOf<toCheck>()
+        .branded
         // @ts-expect-error
         .toEqualTypeOf<Osdk.Instance<quickAndDirty, "$notStrict">>();
       // ensure its not the strict type
@@ -304,24 +306,25 @@ describe("ExtractOptions", () => {
     });
 
     it("defaults to last argument all props if never", () => {
-      expectTypeOf<Osdk.Instance<quickAndDirty, never, never>>().branded
-        .toEqualTypeOf<
-          Osdk.Instance<quickAndDirty, never, "name" | "foo">
-        >();
+      expectTypeOf<
+        Osdk.Instance<quickAndDirty, never, never>
+      >().branded.toEqualTypeOf<
+        Osdk.Instance<quickAndDirty, never, "name" | "foo">
+      >();
     });
 
     it("defaults to last argument all props if any", () => {
-      expectTypeOf<Osdk.Instance<quickAndDirty, never, any>>().branded
-        .toEqualTypeOf<
-          Osdk.Instance<quickAndDirty, never, "foo" | "name">
-        >();
+      expectTypeOf<
+        Osdk.Instance<quickAndDirty, never, any>
+      >().branded.toEqualTypeOf<
+        Osdk.Instance<quickAndDirty, never, "foo" | "name">
+      >();
     });
 
     it("defaults to last argument exactly if specified", () => {
-      expectTypeOf<Osdk.Instance<quickAndDirty, never, "name">>().branded
-        .toEqualTypeOf<
-          Osdk.Instance<quickAndDirty, never, "name">
-        >();
+      expectTypeOf<
+        Osdk.Instance<quickAndDirty, never, "name">
+      >().branded.toEqualTypeOf<Osdk.Instance<quickAndDirty, never, "name">>();
     });
 
     it("Is assignable to Record<string, unknown>", () => {
@@ -437,8 +440,9 @@ describe("ExtractOptions", () => {
 
     it("Does not use $notStrict if requested with old type", () => {
       type toCheck = Osdk<quickAndDirty, "$notStrict">;
-      expectTypeOf<toCheck>().branded
-        .toEqualTypeOf<Osdk.Instance<quickAndDirty, never>>();
+      expectTypeOf<toCheck>().branded.toEqualTypeOf<
+        Osdk.Instance<quickAndDirty, never>
+      >();
       // ensure its not the strict type
       expectTypeOf<Pick<toCheck, "name" | "foo">>().toEqualTypeOf<
         quickAndDirty["__DefinitionMetadata"]["props"]
@@ -449,24 +453,21 @@ describe("ExtractOptions", () => {
     });
 
     it("defaults to last argument all props if never", () => {
-      expectTypeOf<Osdk<quickAndDirty, never, never>>().branded
-        .toEqualTypeOf<
-          Osdk.Instance<quickAndDirty, never, "name" | "foo">
-        >();
+      expectTypeOf<Osdk<quickAndDirty, never, never>>().branded.toEqualTypeOf<
+        Osdk.Instance<quickAndDirty, never, "name" | "foo">
+      >();
     });
 
     it("defaults to last argument all props if any", () => {
-      expectTypeOf<Osdk<quickAndDirty, never, any>>().branded
-        .toEqualTypeOf<
-          Osdk.Instance<quickAndDirty, never, "name" | "foo">
-        >();
+      expectTypeOf<Osdk<quickAndDirty, never, any>>().branded.toEqualTypeOf<
+        Osdk.Instance<quickAndDirty, never, "name" | "foo">
+      >();
     });
 
     it("defaults to last argument exactly if specified", () => {
-      expectTypeOf<Osdk<quickAndDirty, never, "name">>()
-        .toEqualTypeOf<
-          Osdk.Instance<quickAndDirty, never, "name">
-        >();
+      expectTypeOf<Osdk<quickAndDirty, never, "name">>().toEqualTypeOf<
+        Osdk.Instance<quickAndDirty, never, "name">
+      >();
     });
   });
 
@@ -476,10 +477,9 @@ describe("ExtractOptions", () => {
     it("is not $notStrict", async () => {
       const page = await fauxObjectSet.fetchPage();
 
-      expectTypeOf<typeof page["data"]>().branded
-        .toEqualTypeOf<
-          Osdk.Instance<quickAndDirty>[]
-        >();
+      expectTypeOf<(typeof page)["data"]>().branded.toEqualTypeOf<
+        Osdk.Instance<quickAndDirty>[]
+      >();
     });
   });
 
@@ -509,19 +509,18 @@ describe("ExtractOptions", () => {
           PropertyKeys<quickerAndDirtierInterface>,
           {}
         >
-      >()
-        .toExtend<
-          Osdk.Instance<
+      >().toExtend<
+        Osdk.Instance<
+          quickerAndDirtierInterface,
+          never,
+          ConvertProps<
+            quickerAndDirtier,
             quickerAndDirtierInterface,
-            never,
-            ConvertProps<
-              quickerAndDirtier,
-              quickerAndDirtierInterface,
-              PropertyKeys<quickerAndDirtier>,
-              never
-            >
+            PropertyKeys<quickerAndDirtier>,
+            never
           >
-        >();
+        >
+      >();
     });
   });
 
@@ -550,9 +549,9 @@ describe("ExtractOptions", () => {
           EmployeeApiTest["__DefinitionMetadata"]
         >["properties"]["bonusHistory"];
         // Main value field is ["amount"] (single), so wire returns the scalar value
-        expectTypeOf<MainValueTypeOf<BonusHistoryDef>>().toEqualTypeOf<
-          number
-        >();
+        expectTypeOf<
+          MainValueTypeOf<BonusHistoryDef>
+        >().toEqualTypeOf<number>();
       });
     });
 
@@ -775,7 +774,7 @@ describe("ExtractOptions", () => {
 
         const result = await objectSet.fetchPage({
           $applyModifiers: {
-            "addressStruct": "applyMainValue",
+            addressStruct: "applyMainValue",
           },
         });
 
@@ -816,7 +815,7 @@ describe("ExtractOptions", () => {
         const result = await objectSet.fetchPage({
           $select: ["addressStruct"],
           $applyModifiers: {
-            "addressStruct": "applyMainValue",
+            addressStruct: "applyMainValue",
           },
         });
 
@@ -859,16 +858,18 @@ describe("ExtractOptions", () => {
 
   describe("$as from interface to OT", () => {
     it("all localProperty implementations is always allowed and yields the plain OT type", async () => {
-      const ifaceObj = (await createMockObjectSet<FooInterfaceApiTest>()
-        .fetchPage()).data[0];
+      const ifaceObj = (
+        await createMockObjectSet<FooInterfaceApiTest>().fetchPage()
+      ).data[0];
 
       const result = ifaceObj.$as({} as EmployeeApiTest);
       expectTypeOf(result.fullName).toEqualTypeOf<string | undefined>();
     });
 
     it("interface → OT: any non-local impl rejects the cast", async () => {
-      const ifaceObj = (await createMockObjectSet<ReducerInterfaceApiTest>()
-        .fetchPage()).data[0];
+      const ifaceObj = (
+        await createMockObjectSet<ReducerInterfaceApiTest>().fetchPage()
+      ).data[0];
 
       // @ts-expect-error — ReducerInterface has structField / reduced
       // implementations on Employee.

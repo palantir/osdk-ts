@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BlockSetInstallationJobRid as _api_BlockSetInstallationJobRid,
   InstallBlockSetsResponse as _api_InstallBlockSetsResponse,
@@ -36,11 +37,11 @@ import type {
 export async function retryJob(
   ctx: ConjureContext,
   jobRid: _api_BlockSetInstallationJobRid,
-  onBehalfOf: string | null | undefined,
+  onBehalfOf: string | null | undefined
 ): Promise<_api_InstallBlockSetsResponse> {
   return conjureFetch(
     ctx,
     `/block-set-installation/jobs/${jobRid}/retry`,
-    "POST",
+    "POST"
   );
 }

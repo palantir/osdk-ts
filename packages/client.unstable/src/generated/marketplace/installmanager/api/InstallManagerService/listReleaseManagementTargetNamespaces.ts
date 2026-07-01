@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  ListReleaseManagementTargetNamespacesRequest
-    as _installmanager_api_ListReleaseManagementTargetNamespacesRequest,
-  ListReleaseManagementTargetNamespacesResponse
-    as _installmanager_api_ListReleaseManagementTargetNamespacesResponse,
+  ListReleaseManagementTargetNamespacesRequest as _installmanager_api_ListReleaseManagementTargetNamespacesRequest,
+  ListReleaseManagementTargetNamespacesResponse as _installmanager_api_ListReleaseManagementTargetNamespacesResponse,
 } from "../__components.js";
 
 /**
@@ -37,12 +36,12 @@ import type {
  */
 export async function listReleaseManagementTargetNamespaces(
   ctx: ConjureContext,
-  request: _installmanager_api_ListReleaseManagementTargetNamespacesRequest,
+  request: _installmanager_api_ListReleaseManagementTargetNamespacesRequest
 ): Promise<_installmanager_api_ListReleaseManagementTargetNamespacesResponse> {
   return conjureFetch(
     ctx,
     `/install-manager/namespaces/release-management`,
     "POST",
-    request,
+    request
   );
 }

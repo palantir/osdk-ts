@@ -78,15 +78,14 @@ export namespace EmployeeApiTest {
     // Array with reducers for modifier tests
     readonly salaryHistory: number[] | undefined;
     // Array of structs with both mainValue and reducers for modifier tests
-    readonly bonusHistory:
-      | Array<{ year: number; amount: number }>
-      | undefined;
+    readonly bonusHistory: Array<{ year: number; amount: number }> | undefined;
   }
   export type StrictProps = Props;
 
-  export interface ObjectSet
-    extends $ObjectSet<EmployeeApiTest, EmployeeApiTest.ObjectSet>
-  {}
+  export interface ObjectSet extends $ObjectSet<
+    EmployeeApiTest,
+    EmployeeApiTest.ObjectSet
+  > {}
 }
 
 export interface EmployeeApiTest extends $ObjectTypeDefinition {

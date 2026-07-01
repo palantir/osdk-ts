@@ -17,6 +17,7 @@
 import type { ObjectMetadata } from "@osdk/api";
 import type { DerivedPropertyDefinition } from "@osdk/foundry.ontologies";
 import { describe, expect, it } from "vitest";
+
 import type { DerivedPropertyRuntimeMetadata } from "../../../derivedProperties/derivedPropertyRuntimeMetadata.js";
 import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
 import {
@@ -99,12 +100,9 @@ describe("createOrderBySortFns", () => {
     );
     const md = derivedMetadata({ maxScore: { type: "long" } });
 
-    expect(sort({ maxScore: "asc" }, holders, md).map((h) => h.maxScore))
-      .toEqual([
-        "9",
-        "10",
-        "100",
-      ]);
+    expect(
+      sort({ maxScore: "asc" }, holders, md).map((h) => h.maxScore)
+    ).toEqual(["9", "10", "100"]);
   });
 
   it("sorts untyped derived properties lexicographically and deterministically", () => {
@@ -138,10 +136,7 @@ describe("createOrderBySortFns", () => {
     );
 
     expect(sort({ value: "asc" }, holders).map((h) => h.value)).toEqual([
-      2,
-      9,
-      10,
-      100,
+      2, 9, 10, 100,
     ]);
   });
 
@@ -219,13 +214,13 @@ describe("createOrderBySortFns", () => {
  */
 function objectHolder(
   values: Record<string, unknown>,
-  propertyTypes: Record<string, string> = {},
+  propertyTypes: Record<string, string> = {}
 ): ObjectHolder {
   const holder: { [k: string]: unknown } & { [ObjectDefRef]?: unknown } = {
     ...values,
     [ObjectDefRef]: {
       properties: Object.fromEntries(
-        Object.entries(propertyTypes).map(([name, type]) => [name, { type }]),
+        Object.entries(propertyTypes).map(([name, type]) => [name, { type }])
       ),
     },
   };
@@ -241,16 +236,17 @@ function objectHolder(
 function interfaceHolder(
   values: Record<string, unknown>,
   interfaceProperties: Record<string, string>,
-  apiName: string = "IFoo",
+  apiName: string = "IFoo"
 ): InterfaceHolder {
   const holder: { [k: string]: unknown } & { [InterfaceDefRef]?: unknown } = {
     ...values,
     [InterfaceDefRef]: {
       apiName,
       properties: Object.fromEntries(
-        Object.entries(interfaceProperties).map((
-          [name, type],
-        ) => [name, { type }]),
+        Object.entries(interfaceProperties).map(([name, type]) => [
+          name,
+          { type },
+        ])
       ),
     },
   };
@@ -263,7 +259,7 @@ function interfaceHolder(
  * aggregation, which is delivered as a JS number anyway).
  */
 function derivedMetadata(
-  types: Record<string, ObjectMetadata.Property | undefined>,
+  types: Record<string, ObjectMetadata.Property | undefined>
 ): DerivedPropertyRuntimeMetadata {
   return Object.fromEntries(
     Object.entries(types).map(([name, selectedOrCollectedPropertyType]) => [
@@ -272,17 +268,17 @@ function derivedMetadata(
         selectedOrCollectedPropertyType,
         definition: { type: "selection" } as DerivedPropertyDefinition,
       },
-    ]),
+    ])
   );
 }
 
 function sort(
   orderBy: Record<string, "asc" | "desc">,
   holders: Holder[],
-  derivedPropertyMetadata: DerivedPropertyRuntimeMetadata = {},
+  derivedPropertyMetadata: DerivedPropertyRuntimeMetadata = {}
 ): Holder[] {
   const sortFns = createOrderBySortFns(
-    orderBy as Canonical<Record<string, "asc" | "desc" | undefined>>,
+    orderBy as Canonical<Record<string, "asc" | "desc" | undefined>>
   );
   return [...holders].sort((a, b) => {
     for (const fn of sortFns) {

@@ -17,7 +17,9 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
+
 import { describe, expect, expectTypeOf, it } from "vitest";
+
 import type { ObjectSet } from "../objectSet/ObjectSet.js";
 import type { EmployeeApiTest } from "../test/EmployeeApiTest.js";
 import { renderQuickInfoProbes } from "./testUtils.probe.js";
@@ -31,7 +33,9 @@ const probesDir = path.resolve(here, "testUtils.probes");
 // the test will pick it up on the next run. All probe files share one TS
 // program. The `testUtils.` prefix keeps these files out of the build output
 // via `isTestFile` in monorepo.tool.transpile.
-const probesFiles = fs.readdirSync(probesDir).filter((f) => f.endsWith(".ts"))
+const probesFiles = fs
+  .readdirSync(probesDir)
+  .filter((f) => f.endsWith(".ts"))
   .sort();
 const allProbes = renderQuickInfoProbes({
   probesPaths: probesFiles.map((f) => path.join(probesDir, f)),
@@ -42,8 +46,9 @@ describe("quickinfo snapshots", () => {
   for (const probesFile of probesFiles) {
     const surface = probesFile.replace(/\.ts$/, "");
     it(surface, async () => {
-      await expect(allProbes[path.join(probesDir, probesFile)])
-        .toMatchFileSnapshot(`./__snapshots__/${surface}.snap`);
+      await expect(
+        allProbes[path.join(probesDir, probesFile)]
+      ).toMatchFileSnapshot(`./__snapshots__/${surface}.snap`);
     });
   }
 });
@@ -78,7 +83,8 @@ type KnownObjectSetMethods = ProbedObjectSetMethods | SkippedObjectSetMethods;
 
 describe("ObjectSet method coverage", () => {
   it("KnownObjectSetMethods covers all ObjectSet members", () => {
-    expectTypeOf<keyof ObjectSet<EmployeeApiTest>>()
-      .toEqualTypeOf<KnownObjectSetMethods>();
+    expectTypeOf<
+      keyof ObjectSet<EmployeeApiTest>
+    >().toEqualTypeOf<KnownObjectSetMethods>();
   });
 });

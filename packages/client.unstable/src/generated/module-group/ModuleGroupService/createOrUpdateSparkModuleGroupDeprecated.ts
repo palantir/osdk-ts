@@ -15,10 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   ModuleGroupName as _ModuleGroupName,
-  SparkModuleGroupCreationOrUpdateRequest
-    as _SparkModuleGroupCreationOrUpdateRequest,
+  SparkModuleGroupCreationOrUpdateRequest as _SparkModuleGroupCreationOrUpdateRequest,
 } from "../__components.js";
 
 /**
@@ -32,12 +32,12 @@ import type {
 export async function createOrUpdateSparkModuleGroupDeprecated(
   ctx: ConjureContext,
   moduleGroupName: _ModuleGroupName,
-  moduleGroupCreationOrUpdateRequest: _SparkModuleGroupCreationOrUpdateRequest,
+  moduleGroupCreationOrUpdateRequest: _SparkModuleGroupCreationOrUpdateRequest
 ): Promise<void> {
   return conjureFetch(
     ctx,
     `/module-group/${moduleGroupName}`,
     "POST",
-    moduleGroupCreationOrUpdateRequest,
+    moduleGroupCreationOrUpdateRequest
   );
 }

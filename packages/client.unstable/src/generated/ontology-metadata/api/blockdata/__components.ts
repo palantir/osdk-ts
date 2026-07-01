@@ -21,8 +21,7 @@ import type {
   ActionSubmissionConfiguration as _api_ActionSubmissionConfiguration,
   ActionTypeApiName as _api_ActionTypeApiName,
   ActionTypeBranchSettings as _api_ActionTypeBranchSettings,
-  ActionTypeDisplayMetadataConfiguration
-    as _api_ActionTypeDisplayMetadataConfiguration,
+  ActionTypeDisplayMetadataConfiguration as _api_ActionTypeDisplayMetadataConfiguration,
   ActionTypeEntities as _api_ActionTypeEntities,
   ActionTypeLogic as _api_ActionTypeLogic,
   ActionTypeRichTextComponent as _api_ActionTypeRichTextComponent,
@@ -43,17 +42,14 @@ import type {
   GroupId as _api_GroupId,
   Icon as _api_Icon,
   InterfaceActionTypeConstraint as _api_InterfaceActionTypeConstraint,
-  InterfaceActionTypeConstraintApiName
-    as _api_InterfaceActionTypeConstraintApiName,
+  InterfaceActionTypeConstraintApiName as _api_InterfaceActionTypeConstraintApiName,
   InterfaceActionTypeConstraintRid as _api_InterfaceActionTypeConstraintRid,
   InterfaceLinkTypeApiName as _api_InterfaceLinkTypeApiName,
   InterfaceLinkTypeRid as _api_InterfaceLinkTypeRid,
-  InterfaceParameterConstraintApiName
-    as _api_InterfaceParameterConstraintApiName,
+  InterfaceParameterConstraintApiName as _api_InterfaceParameterConstraintApiName,
   InterfaceParameterConstraintRid as _api_InterfaceParameterConstraintRid,
   InterfacePropertyTypeApiName as _api_InterfacePropertyTypeApiName,
-  InterfacePropertyTypeDisplayMetadata
-    as _api_InterfacePropertyTypeDisplayMetadata,
+  InterfacePropertyTypeDisplayMetadata as _api_InterfacePropertyTypeDisplayMetadata,
   InterfacePropertyTypeRid as _api_InterfacePropertyTypeRid,
   InterfacePropertyTypeType as _api_InterfacePropertyTypeType,
   InterfaceSharedPropertyType as _api_InterfaceSharedPropertyType,
@@ -75,21 +71,16 @@ import type {
   ObjectTypeRid as _api_ObjectTypeRid,
   OntologyIrActionTypeEntities as _api_OntologyIrActionTypeEntities,
   OntologyIrActionTypeLogic as _api_OntologyIrActionTypeLogic,
-  OntologyIrActionTypeRichTextComponent
-    as _api_OntologyIrActionTypeRichTextComponent,
+  OntologyIrActionTypeRichTextComponent as _api_OntologyIrActionTypeRichTextComponent,
   OntologyIrActionTypeStatus as _api_OntologyIrActionTypeStatus,
   OntologyIrBaseFormatter as _api_OntologyIrBaseFormatter,
   OntologyIrFormContent as _api_OntologyIrFormContent,
-  OntologyIrInterfaceActionTypeConstraint
-    as _api_OntologyIrInterfaceActionTypeConstraint,
-  OntologyIrInterfacePropertyTypeType
-    as _api_OntologyIrInterfacePropertyTypeType,
-  OntologyIrInterfaceSharedPropertyType
-    as _api_OntologyIrInterfaceSharedPropertyType,
+  OntologyIrInterfaceActionTypeConstraint as _api_OntologyIrInterfaceActionTypeConstraint,
+  OntologyIrInterfacePropertyTypeType as _api_OntologyIrInterfacePropertyTypeType,
+  OntologyIrInterfaceSharedPropertyType as _api_OntologyIrInterfaceSharedPropertyType,
   OntologyIrLinkedEntityTypeId as _api_OntologyIrLinkedEntityTypeId,
   OntologyIrLinkType as _api_OntologyIrLinkType,
-  OntologyIrManyToManyLinkTypeDatasource
-    as _api_OntologyIrManyToManyLinkTypeDatasource,
+  OntologyIrManyToManyLinkTypeDatasource as _api_OntologyIrManyToManyLinkTypeDatasource,
   OntologyIrObjectType as _api_OntologyIrObjectType,
   OntologyIrObjectTypeDatasource as _api_OntologyIrObjectTypeDatasource,
   OntologyIrParameter as _api_OntologyIrParameter,
@@ -117,8 +108,7 @@ import type {
   WebhookRid as _api_WebhookRid,
 } from "../__components.js";
 import type {
-  ActionLogRequirednessMetadata
-    as _api_entitymetadata_ActionLogRequirednessMetadata,
+  ActionLogRequirednessMetadata as _api_entitymetadata_ActionLogRequirednessMetadata,
   EditsHistory as _api_entitymetadata_EditsHistory,
   EditsResolutionStrategies as _api_entitymetadata_EditsResolutionStrategies,
   EntityConfig as _api_entitymetadata_EntityConfig,
@@ -126,8 +116,7 @@ import type {
   LinkTypeEntityMetadata as _api_entitymetadata_LinkTypeEntityMetadata,
   ObjectTypeAlias as _api_entitymetadata_ObjectTypeAlias,
   OntologyIrEditsHistory as _api_entitymetadata_OntologyIrEditsHistory,
-  OntologyIrLinkTypeEntityMetadata
-    as _api_entitymetadata_OntologyIrLinkTypeEntityMetadata,
+  OntologyIrLinkTypeEntityMetadata as _api_entitymetadata_OntologyIrLinkTypeEntityMetadata,
   PatchApplicationStrategy as _api_entitymetadata_PatchApplicationStrategy,
   StorageBackend as _api_entitymetadata_StorageBackend,
 } from "../entitymetadata/__components.js";
@@ -137,8 +126,7 @@ import type {
 } from "../entitymetadata/provenance/__components.js";
 import type { RuleSet as _api_formatting_RuleSet } from "../formatting/__components.js";
 import type {
-  OntologyIrSchemaTransition
-    as _api_schemamigrations_OntologyIrSchemaTransition,
+  OntologyIrSchemaTransition as _api_schemamigrations_OntologyIrSchemaTransition,
   SchemaTransition as _api_schemamigrations_SchemaTransition,
 } from "../schemamigrations/__components.js";
 import type { ObjectTypeGothamMapping as _api_typemapping_ObjectTypeGothamMapping } from "../typemapping/__components.js";
@@ -236,8 +224,7 @@ export interface InterfaceTypeRestrictionStatus {
  * with an export dataset, or a restricted view datasource with an export restricted view). In the case of exporting
  * an RV datasource as a dataset, use DatasourcePredicate#hasRid instead.
  */
-export interface IsOnlyDatasource {
-}
+export interface IsOnlyDatasource {}
 export interface KnownMarketplaceIdentifiers {
   actionParameterIds: Record<
     _api_ActionTypeRid,
@@ -362,8 +349,7 @@ export interface MarketplaceActionTypeMetadata {
     | undefined;
   version: _api_ActionTypeVersion;
 }
-export interface MarketplaceActiveInterfaceTypeStatus {
-}
+export interface MarketplaceActiveInterfaceTypeStatus {}
 export interface MarketplaceDataConstraints {
   nullability?: _api_DataNullability | null | undefined;
   nullabilityV2?: _api_DataNullabilityV2 | null | undefined;
@@ -373,10 +359,8 @@ export interface MarketplaceDeprecatedInterfaceTypeStatus {
   message: string;
   replacedBy?: _api_InterfaceTypeRid | null | undefined;
 }
-export interface MarketplaceExampleInterfaceTypeStatus {
-}
-export interface MarketplaceExperimentalInterfaceTypeStatus {
-}
+export interface MarketplaceExampleInterfaceTypeStatus {}
+export interface MarketplaceExperimentalInterfaceTypeStatus {}
 export interface MarketplaceInterfaceDefinedPropertyType {
   apiName: _api_InterfacePropertyTypeApiName;
   baseFormatter?: _api_BaseFormatter | null | undefined;
@@ -705,14 +689,12 @@ export interface OntologyIrMarketplaceInterfaceLinkType {
 }
 export interface OntologyIrMarketplaceInterfacePropertyType_sharedPropertyBasedPropertyType {
   type: "sharedPropertyBasedPropertyType";
-  sharedPropertyBasedPropertyType:
-    OntologyIrMarketplaceSharedPropertyBasedPropertyType;
+  sharedPropertyBasedPropertyType: OntologyIrMarketplaceSharedPropertyBasedPropertyType;
 }
 
 export interface OntologyIrMarketplaceInterfacePropertyType_interfaceDefinedPropertyType {
   type: "interfaceDefinedPropertyType";
-  interfaceDefinedPropertyType:
-    OntologyIrMarketplaceInterfaceDefinedPropertyType;
+  interfaceDefinedPropertyType: OntologyIrMarketplaceInterfaceDefinedPropertyType;
 }
 export type OntologyIrMarketplaceInterfacePropertyType =
   | OntologyIrMarketplaceInterfacePropertyType_sharedPropertyBasedPropertyType
@@ -862,8 +844,7 @@ export interface PatchesConfiguration {
 export interface PostOntologyBlockDataRequest {
   ontologyBlockDataV2: OntologyBlockDataV2;
 }
-export interface PostOntologyBlockDataResponse {
-}
+export interface PostOntologyBlockDataResponse {}
 export interface PropertyPredicate_and {
   type: "and";
   and: Array<PropertyPredicate>;
@@ -900,13 +881,11 @@ export type PropertyRid = string;
 /**
  * This is the old approach to PSG packaging. It will still be kept around for existing installations.
  */
-export interface PropertySecurityGroupPackagingV1 {
-}
+export interface PropertySecurityGroupPackagingV1 {}
 /**
  * This is the new approach to PSG packaging. See this quip for more details - https://palantir.quip.com/Ros7ABfTeLSH
  */
-export interface PropertySecurityGroupPackagingV2 {
-}
+export interface PropertySecurityGroupPackagingV2 {}
 export interface PropertySecurityGroupPackagingVersion_v1 {
   type: "v1";
   v1: PropertySecurityGroupPackagingV1;

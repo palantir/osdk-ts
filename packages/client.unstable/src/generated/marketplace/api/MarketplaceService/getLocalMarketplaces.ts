@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   MarketplaceBulkResult as _api_MarketplaceBulkResult,
   MarketplaceRid as _api_MarketplaceRid,
@@ -27,7 +28,7 @@ import type {
  */
 export async function getLocalMarketplaces(
   ctx: ConjureContext,
-  marketplaceBulkRequest: Array<_api_MarketplaceRid>,
+  marketplaceBulkRequest: Array<_api_MarketplaceRid>
 ): Promise<_api_MarketplaceBulkResult> {
   return conjureFetch(ctx, `/marketplaces/bulk`, "GET", undefined, {
     marketplaceBulkRequest,

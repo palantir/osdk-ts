@@ -24,19 +24,14 @@ import type {
 export interface InterfaceMetadata extends ObjectInterfaceBaseMetadata {
   type: "interface";
   implementedBy?: ReadonlyArray<string>;
-  links: Record<
-    string,
-    InterfaceMetadata.Link<any, any>
-  >;
+  links: Record<string, InterfaceMetadata.Link<any, any>>;
 }
 
 export interface InterfaceDefinition {
   type: "interface";
   apiName: string;
   osdkMetadata?: OsdkMetadata;
-  __DefinitionMetadata?:
-    & InterfaceMetadata
-    & ObjectInterfaceCompileDefinition;
+  __DefinitionMetadata?: InterfaceMetadata & ObjectInterfaceCompileDefinition;
 }
 
 export namespace InterfaceMetadata {

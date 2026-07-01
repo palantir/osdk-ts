@@ -81,18 +81,6 @@ const archetypeRules = archetypes(
   },
 )
   .addArchetype(
-    "checkApiPackages",
-    [
-      "@osdk/api",
-      "@osdk/functions",
-      "@osdk/unit-testing",
-    ],
-    {
-      ...LIBRARY_RULES,
-      checkApi: true,
-    },
-  )
-  .addArchetype(
     "clientPackage",
     [
       "@osdk/client",
@@ -101,6 +89,11 @@ const archetypeRules = archetypes(
       ...LIBRARY_RULES,
       checkApi: true,
       typecheckProject: "tsconfig.typecheck.json",
+      // Migrated to the oxc toolchain (oxlint + oxfmt). Carries a nested oxlint
+      // config (oxcConfig) holding behavior-preserving carve-outs for the
+      // error-level Ultracite rules this hand-written package first surfaces.
+      oxc: true,
+      oxcConfig: "./oxlint.config.ts",
     },
   )
   .addArchetype(
@@ -139,9 +132,6 @@ const archetypeRules = archetypes(
       "@osdk/generator-converters.preview",
       "@osdk/generator-utils",
       "@osdk/generator",
-      "@osdk/maker",
-      "@osdk/maker-experimental",
-      "@osdk/maker-import",
       "@osdk/seed-compiler",
       "@osdk/seed-helpers",
       "@osdk/oauth",
@@ -190,17 +180,6 @@ const archetypeRules = archetypes(
     },
   )
   .addArchetype(
-    "forceBundle",
-    [
-      "@osdk/client.unstable",
-      "@osdk/client.unstable.tpsa",
-    ],
-    {
-      ...LIBRARY_RULES,
-      output: OUTPUT_BUNDLE_ALL,
-    },
-  )
-  .addArchetype(
     "internal clis",
     [
       "@osdk/create-app.template-packager",
@@ -235,6 +214,11 @@ const archetypeRules = archetypes(
   // Packages migrated to the oxc toolchain (oxlint + oxfmt). As more packages
   // are migrated, add them here (taking care not to capture generated
   // namespace-prefix children via monorepolint's archetype matching).
+  //
+  // TODO: these "oxc migrated ..." archetypes are transitional. Once every
+  // package is on the oxc toolchain (the final flip in #3031), oxc becomes the
+  // default and the "migrated" distinction disappears — collapse these back into
+  // the base library archetypes and drop the `oxc: true` / `oxcConfig` plumbing.
   .addArchetype(
     "oxc migrated libraries",
     [
@@ -251,6 +235,46 @@ const archetypeRules = archetypes(
     {
       ...LIBRARY_RULES,
       oxc: true,
+    },
+  )
+  // Same as "oxc migrated libraries" but with a nested oxlint config (oxcConfig)
+  // holding behavior-preserving carve-outs. The maker family is hand-written and
+  // first surfaces a set of error-level Ultracite rules the prior ESLint config
+  // did not enforce; each package's oxlint.config.ts `extends` the root and turns
+  // them off so the migration is a reformat, not a rewrite.
+  .addArchetype(
+    "oxc migrated libraries with carve-outs",
+    [
+      "@osdk/maker",
+      "@osdk/maker-experimental",
+      "@osdk/maker-import",
+    ],
+    {
+      ...LIBRARY_RULES,
+      oxc: true,
+      oxcConfig: "./oxlint.config.ts",
+    },
+  )
+  // Same as "oxc migrated libraries with carve-outs" but additionally carries
+  // checkApi (API Extractor reports). These are the core published API-surface
+  // packages (@osdk/api is the core SDK type surface) that previously lived in
+  // the checkApiPackages archetype before being migrated to the oxc toolchain.
+  // Each is hand-written and first surfaces error-level Ultracite rules the
+  // prior ESLint config did not enforce, so each carries a nested oxlint config
+  // (oxcConfig) turning them off to keep the migration a reformat, not a
+  // rewrite.
+  .addArchetype(
+    "oxc migrated libraries with check-api",
+    [
+      "@osdk/api",
+      "@osdk/functions",
+      "@osdk/unit-testing",
+    ],
+    {
+      ...LIBRARY_RULES,
+      oxc: true,
+      checkApi: true,
+      oxcConfig: "./oxlint.config.ts",
     },
   )
   // React packages migrated to the oxc toolchain. Same as "oxc migrated
@@ -335,6 +359,30 @@ const archetypeRules = archetypes(
       minimalChangesOnly: true,
       private: true,
       oxc: true,
+    },
+  )
+  // Force-bundle libraries migrated to the oxc toolchain. Same as "oxc migrated
+  // libraries" but carry OUTPUT_BUNDLE_ALL (bundled cjs/esm/browser), which is
+  // what the former forceBundle archetype provided (now removed; both its members
+  // live here). @osdk/client.unstable and @osdk/client.unstable.tpsa are both
+  // almost entirely conjure-generated code under src/generated; this repo treats
+  // that as first-class checked-in source (ESLint + dprint processed it before
+  // the migration), so each carries a nested oxlint config (oxcConfig) that
+  // re-includes the generated tree and turns off the few error-level rules it
+  // surfaces, keeping the migration behavior-preserving. The generated tree is
+  // also oxfmt-formatted via the root oxfmt.config.ts (which no longer ignores
+  // `**/generated`).
+  .addArchetype(
+    "oxc migrated force-bundle libraries with carve-outs",
+    [
+      "@osdk/client.unstable",
+      "@osdk/client.unstable.tpsa",
+    ],
+    {
+      ...LIBRARY_RULES,
+      output: OUTPUT_BUNDLE_ALL,
+      oxc: true,
+      oxcConfig: "./oxlint.config.ts",
     },
   )
   .addArchetype(
@@ -442,14 +490,23 @@ const archetypeRules = archetypes(
       extraPublishFiles: ["build/site"],
     },
   )
+  // The 221-tsx component-library giant migrated to the oxc toolchain. Same
+  // options as the former "reactComponentsLibrary" archetype (react + cssExport
+  // + extraPublishFiles + the full experimental/* attw exclude list + the test
+  // setup/env/pool) plus `oxc: true`. Its package-specific carve-outs live in a
+  // nested oxlint config (packages/react-components/oxlint.config.ts, which
+  // `extends` the root), so `oxcConfig` points lint/fix-lint at that file rather
+  // than the root config.
   .addArchetype(
-    "reactComponentsLibrary",
+    "oxc migrated react components library",
     [
       "@osdk/react-components",
     ],
     {
       ...LIBRARY_RULES,
       react: true,
+      oxc: true,
+      oxcConfig: "./oxlint.config.ts",
       cssExport: ["styles.css"],
       extraPublishFiles: ["AGENTS.md", "docs"],
       attwExcludeEntrypoints: [
@@ -1007,6 +1064,7 @@ function minimalPackageRules(shared, options) {
  * @property { boolean } [checkApi]
  * @property { boolean } [minimalChangesOnly]
  * @property { boolean } [oxc]
+ * @property { string } [oxcConfig]
  * @property { "vite" | undefined } [framework]
  * @property { import("typescript").CompilerOptions} [extraTsConfigCompilerOptions]
  * @property { string[] } [cssExport]
@@ -1144,10 +1202,14 @@ function standardPackageRules(shared, options) {
             ? "monorepo.tool.check-bundle"
             : DELETE_SCRIPT_ENTRY,
           lint: options.oxc
-            ? "oxlint -c ../../oxlint.config.ts . && oxfmt -c ../../oxfmt.config.ts --check ."
+            ? `oxlint -c ${
+              options.oxcConfig ?? "../../oxlint.config.ts"
+            } . && oxfmt -c ../../oxfmt.config.ts --check .`
             : "eslint . && dprint check",
           "fix-lint": options.oxc
-            ? "oxlint -c ../../oxlint.config.ts --fix . && oxfmt -c ../../oxfmt.config.ts ."
+            ? `oxlint -c ${
+              options.oxcConfig ?? "../../oxlint.config.ts"
+            } --fix . && oxfmt -c ../../oxfmt.config.ts .`
             : "eslint . --fix && dprint fmt",
           transpile: DELETE_SCRIPT_ENTRY,
           transpileEsm: getTranspileEsmScript(),

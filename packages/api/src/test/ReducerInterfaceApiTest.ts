@@ -24,28 +24,21 @@ import type {
 export type OsdkObjectLinks$ReducerInterfaceApiTest = {};
 
 export namespace ReducerInterfaceApiTest {
-  export type PropertyKeys =
-    | "ifaceAddress"
-    | "ifaceSalary"
-    | "ifaceBonus";
+  export type PropertyKeys = "ifaceAddress" | "ifaceSalary" | "ifaceBonus";
 
   export interface Props {
     readonly ifaceAddress:
       | { street: string; city: string; zipCode: string }
       | undefined;
     readonly ifaceSalary: number[] | undefined;
-    readonly ifaceBonus:
-      | Array<{ year: number; amount: number }>
-      | undefined;
+    readonly ifaceBonus: Array<{ year: number; amount: number }> | undefined;
   }
   export type StrictProps = Props;
 
-  export interface ObjectSet extends
-    $ObjectSet<
-      ReducerInterfaceApiTest,
-      ReducerInterfaceApiTest.ObjectSet
-    >
-  {}
+  export interface ObjectSet extends $ObjectSet<
+    ReducerInterfaceApiTest,
+    ReducerInterfaceApiTest.ObjectSet
+  > {}
 
   export type OsdkInstance<
     OPTIONS extends never | "$rid" = never,
@@ -64,8 +57,7 @@ export interface ReducerInterfaceApiTest extends $InterfaceDefinition {
     linksType: OsdkObjectLinks$ReducerInterfaceApiTest;
     strictProps: ReducerInterfaceApiTest.StrictProps;
     apiName: "ReducerInterface";
-    description:
-      "Interface whose properties map to modifier-capable object properties";
+    description: "Interface whose properties map to modifier-capable object properties";
     displayName: "Reducer Interface";
     links: {};
     properties: {

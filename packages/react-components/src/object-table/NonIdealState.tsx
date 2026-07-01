@@ -15,20 +15,19 @@
  */
 
 import React from "react";
+
 import styles from "./NonIdealState.module.css";
 
 interface NonIdealStateProps {
   message: string;
 }
 
-export function NonIdealState(
-  { message }: NonIdealStateProps,
-): React.ReactElement {
+export function NonIdealState({
+  message,
+}: NonIdealStateProps): React.ReactElement {
   return (
     <div className={styles.container}>
-      <div className={styles.message}>
-        {message}
-      </div>
+      <div className={styles.message}>{message}</div>
     </div>
   );
 }

@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   ListDraftGroupsPageToken as _api_ListDraftGroupsPageToken,
   ListDraftGroupsResponse as _api_ListDraftGroupsResponse,
@@ -35,7 +36,7 @@ export async function listDraftGroupsForUser(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
   pageToken: _api_ListDraftGroupsPageToken | null | undefined,
-  limit: number | null | undefined,
+  limit: number | null | undefined
 ): Promise<_api_ListDraftGroupsResponse> {
   return conjureFetch(ctx, `/draft-groups`, "GET", undefined, {
     marketplaceRid,

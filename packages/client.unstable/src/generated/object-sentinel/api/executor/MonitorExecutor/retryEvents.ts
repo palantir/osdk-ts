@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   RetryRequest as _api_executor_RetryRequest,
   RetryResponse as _api_executor_RetryResponse,
@@ -25,12 +26,12 @@ import type {
  */
 export async function retryEvents(
   ctx: ConjureContext,
-  request: _api_executor_RetryRequest,
+  request: _api_executor_RetryRequest
 ): Promise<_api_executor_RetryResponse> {
   return conjureFetch(
     ctx,
     `/executor/v0/monitors/retryEvents`,
     "POST",
-    request,
+    request
   );
 }

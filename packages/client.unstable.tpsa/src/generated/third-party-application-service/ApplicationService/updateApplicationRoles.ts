@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { ApplicationRid } from "../ApplicationRid.js";
 import type { UpdateApplicationRolesRequest } from "../UpdateApplicationRolesRequest.js";
 
@@ -26,12 +27,12 @@ import type { UpdateApplicationRolesRequest } from "../UpdateApplicationRolesReq
 export async function updateApplicationRoles(
   ctx: ConjureContext,
   applicationRid: ApplicationRid,
-  request: UpdateApplicationRolesRequest,
+  request: UpdateApplicationRolesRequest
 ): Promise<void> {
   return conjureFetch(
     ctx,
     `/applications/${applicationRid}/roles`,
     "PUT",
-    request,
+    request
   );
 }

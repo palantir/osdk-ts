@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BlockSetId as _api_BlockSetId,
   CancelRecallRequest as _api_CancelRecallRequest,
@@ -30,12 +31,12 @@ export async function cancelRecall(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
   blockSetId: _api_BlockSetId,
-  request: _api_CancelRecallRequest,
+  request: _api_CancelRecallRequest
 ): Promise<_api_CancelRecallResponse> {
   return conjureFetch(
     ctx,
     `/automation/product/${marketplaceRid}/${blockSetId}/release/clearRecall`,
     "POST",
-    request,
+    request
   );
 }

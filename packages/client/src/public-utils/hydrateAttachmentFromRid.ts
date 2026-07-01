@@ -16,6 +16,7 @@
 
 import type { Attachment } from "@osdk/api";
 import * as Attachments from "@osdk/foundry.ontologies/Attachment";
+
 import { additionalContext, type Client } from "../Client.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 
@@ -27,7 +28,7 @@ import type { MinimalClient } from "../MinimalClientContext.js";
  */
 export function hydrateAttachmentFromRid(
   client: Client,
-  rid: string,
+  rid: string
 ): Attachment {
   return hydrateAttachmentFromRidInternal(client[additionalContext], rid);
 }
@@ -35,7 +36,7 @@ export function hydrateAttachmentFromRid(
 /** @internal */
 export function hydrateAttachmentFromRidInternal(
   client: MinimalClient,
-  rid: string,
+  rid: string
 ): Attachment {
   return {
     rid,

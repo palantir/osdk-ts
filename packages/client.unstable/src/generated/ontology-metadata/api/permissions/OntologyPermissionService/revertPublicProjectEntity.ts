@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  RevertPublicProjectEntityRequest
-    as _api_permissions_RevertPublicProjectEntityRequest,
-  RevertPublicProjectEntityResponse
-    as _api_permissions_RevertPublicProjectEntityResponse,
+  RevertPublicProjectEntityRequest as _api_permissions_RevertPublicProjectEntityRequest,
+  RevertPublicProjectEntityResponse as _api_permissions_RevertPublicProjectEntityResponse,
 } from "../__components.js";
 
 /**
@@ -32,12 +31,12 @@ import type {
  */
 export async function revertPublicProjectEntity(
   ctx: ConjureContext,
-  request: _api_permissions_RevertPublicProjectEntityRequest,
+  request: _api_permissions_RevertPublicProjectEntityRequest
 ): Promise<_api_permissions_RevertPublicProjectEntityResponse> {
   return conjureFetch(
     ctx,
     `/permissions/revertPublicProjectEntity`,
     "POST",
-    request,
+    request
   );
 }

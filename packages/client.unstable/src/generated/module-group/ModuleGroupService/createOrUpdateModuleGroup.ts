@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   ModuleGroupCreationOrUpdateRequest as _ModuleGroupCreationOrUpdateRequest,
   ModuleGroupName as _ModuleGroupName,
@@ -31,12 +32,12 @@ import type {
 export async function createOrUpdateModuleGroup(
   ctx: ConjureContext,
   moduleGroupName: _ModuleGroupName,
-  moduleGroupCreationOrUpdateRequest: _ModuleGroupCreationOrUpdateRequest,
+  moduleGroupCreationOrUpdateRequest: _ModuleGroupCreationOrUpdateRequest
 ): Promise<void> {
   return conjureFetch(
     ctx,
     `/module-group/${moduleGroupName}/v2`,
     "POST",
-    moduleGroupCreationOrUpdateRequest,
+    moduleGroupCreationOrUpdateRequest
   );
 }

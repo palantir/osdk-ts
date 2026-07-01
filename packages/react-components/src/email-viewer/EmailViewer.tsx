@@ -17,21 +17,24 @@
 import { Error as ErrorIcon, Spin } from "@blueprintjs/icons";
 import classnames from "classnames";
 import React from "react";
+
 import { useMediaContents } from "../shared/hooks/useMediaContents.js";
 import { BaseEmailViewer } from "./BaseEmailViewer.js";
-import styles from "./BaseEmailViewer.module.css";
 import type { EmailViewerMediaProps, ParsedEmail } from "./EmailViewerApi.js";
 import { parseEmailFromResponse } from "./parseEmail.js";
+
+import styles from "./BaseEmailViewer.module.css";
 
 export function EmailViewer({
   media,
   className,
   ...emailViewerProps
 }: EmailViewerMediaProps): React.ReactElement {
-  const { data: email, loading, error } = useMediaContents<ParsedEmail>(
-    media,
-    parseEmailFromResponse,
-  );
+  const {
+    data: email,
+    loading,
+    error,
+  } = useMediaContents<ParsedEmail>(media, parseEmailFromResponse);
 
   const rootClassName = classnames(styles.container, className);
 

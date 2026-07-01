@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BranchRid as _api_BranchRid,
   MonitorRid as _api_MonitorRid,
@@ -26,13 +27,13 @@ import type {
 export async function takeAutomationOwnership(
   ctx: ConjureContext,
   monitorRid: _api_MonitorRid,
-  branchRid: _api_BranchRid | null | undefined,
+  branchRid: _api_BranchRid | null | undefined
 ): Promise<void> {
   return conjureFetch(
     ctx,
     `/registry/v0/take-ownership/${monitorRid}`,
     "POST",
     undefined,
-    { branchRid },
+    { branchRid }
   );
 }

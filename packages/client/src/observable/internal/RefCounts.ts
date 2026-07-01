@@ -24,9 +24,8 @@ export class RefCounts<T extends {}> {
   constructor(
     private keepAlive: number,
     private cleanup: (key: T) => void,
-    private debug: boolean = false,
-  ) {
-  }
+    private debug: boolean = false
+  ) {}
 
   register<X extends T>(key: X): X {
     if (!this.refCounts.has(key)) {
@@ -76,13 +75,15 @@ export class RefCounts<T extends {}> {
 
     for (const [key, deathTime] of this.gcMap) {
       if (
-        process.env.NODE_ENV !== "production" && this.debug && deathTime >= now
+        process.env.NODE_ENV !== "production" &&
+        this.debug &&
+        deathTime >= now
       ) {
         // eslint-disable-next-line no-console
         console.debug(
           "RefCounts.gc() - ttl ",
           JSON.stringify(key),
-          deathTime - now,
+          deathTime - now
         );
       }
 
@@ -91,7 +92,7 @@ export class RefCounts<T extends {}> {
           // eslint-disable-next-line no-console
           console.debug(
             "RefCounts.gc() - registering cleaning up",
-            JSON.stringify(key),
+            JSON.stringify(key)
           );
         }
         this.gcMap.delete(key);

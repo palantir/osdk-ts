@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   OntologyBranchRid as _api_OntologyBranchRid,
   OntologyRid as _api_OntologyRid,
@@ -36,12 +37,12 @@ export async function discardChangesOnBranch(
   ctx: ConjureContext,
   ontologyRid: _api_OntologyRid,
   ontologyBranchRid: _api_OntologyBranchRid,
-  request: _branch_api_DiscardChangesRequest,
+  request: _branch_api_DiscardChangesRequest
 ): Promise<_branch_api_DiscardChangesResponse> {
   return conjureFetch(
     ctx,
     `/ontology/branch/${ontologyRid}/${ontologyBranchRid}/discardChanges`,
     "POST",
-    request,
+    request
   );
 }

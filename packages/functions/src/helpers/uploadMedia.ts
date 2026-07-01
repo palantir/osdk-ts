@@ -20,7 +20,7 @@ import { MediaSets } from "@osdk/foundry.mediasets";
 
 export async function uploadMedia(
   client: Client,
-  mediaUpload: MediaUpload,
+  mediaUpload: MediaUpload
 ): Promise<Media> {
   const gatewayMediaRef = await MediaSets.uploadMedia(
     client,
@@ -28,7 +28,7 @@ export async function uploadMedia(
     {
       filename: mediaUpload.fileName,
       preview: true,
-    },
+    }
   );
 
   return createMediaFromReference(client, {

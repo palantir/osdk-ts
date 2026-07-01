@@ -15,10 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   CompassRid as _constraints_CompassRid,
-  ConfiguredResourceConstraintsPage
-    as _constraints_ConfiguredResourceConstraintsPage,
+  ConfiguredResourceConstraintsPage as _constraints_ConfiguredResourceConstraintsPage,
   ModuleGroupProducer as _constraints_ModuleGroupProducer,
 } from "../__components.js";
 
@@ -28,13 +28,13 @@ import type {
 export async function getAllConfiguredConstraints(
   ctx: ConjureContext,
   moduleGroupProducer: _constraints_ModuleGroupProducer,
-  pageToken: _constraints_CompassRid | null | undefined,
+  pageToken: _constraints_CompassRid | null | undefined
 ): Promise<_constraints_ConfiguredResourceConstraintsPage> {
   return conjureFetch(
     ctx,
     `/resource-constraints/${moduleGroupProducer}`,
     "GET",
     undefined,
-    { pageToken },
+    { pageToken }
   );
 }

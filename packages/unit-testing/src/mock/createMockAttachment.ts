@@ -20,23 +20,23 @@ import invariant from "tiny-invariant";
 export function createMockAttachment(
   rid: string,
   blob?: Blob,
-  metadata?: AttachmentMetadata,
+  metadata?: AttachmentMetadata
 ): Attachment {
   return {
     rid,
     fetchContents() {
       invariant(
         blob != null,
-        `fetchContents was called on mock attachment "${rid}" but no blob was provided. `
-          + `Pass a Blob as the second argument to createMockAttachment to stub fetchContents.`,
+        `fetchContents was called on mock attachment "${rid}" but no blob was provided. ` +
+          `Pass a Blob as the second argument to createMockAttachment to stub fetchContents.`
       );
       return Promise.resolve(new Response(blob));
     },
     fetchMetadata() {
       invariant(
         metadata != null,
-        `fetchMetadata was called on mock attachment "${rid}" but no metadata was provided. `
-          + `Pass AttachmentMetadata as the third argument to createMockAttachment to stub fetchMetadata.`,
+        `fetchMetadata was called on mock attachment "${rid}" but no metadata was provided. ` +
+          `Pass AttachmentMetadata as the third argument to createMockAttachment to stub fetchMetadata.`
       );
       return Promise.resolve(metadata);
     },

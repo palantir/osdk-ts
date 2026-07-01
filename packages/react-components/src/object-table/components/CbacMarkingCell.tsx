@@ -15,6 +15,7 @@
  */
 
 import React from "react";
+
 import { CbacBanner } from "../../cbac-picker/CbacBanner.js";
 import { toMarkingIdArray } from "../utils/markingValue.js";
 

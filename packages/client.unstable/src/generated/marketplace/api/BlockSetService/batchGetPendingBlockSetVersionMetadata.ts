@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  BatchGetPendingBlockSetVersionMetadataRequest
-    as _api_BatchGetPendingBlockSetVersionMetadataRequest,
-  BatchGetPendingBlockSetVersionMetadataResponse
-    as _api_BatchGetPendingBlockSetVersionMetadataResponse,
+  BatchGetPendingBlockSetVersionMetadataRequest as _api_BatchGetPendingBlockSetVersionMetadataRequest,
+  BatchGetPendingBlockSetVersionMetadataResponse as _api_BatchGetPendingBlockSetVersionMetadataResponse,
 } from "../__components.js";
 
 /**
@@ -31,12 +30,12 @@ import type {
  */
 export async function batchGetPendingBlockSetVersionMetadata(
   ctx: ConjureContext,
-  request: _api_BatchGetPendingBlockSetVersionMetadataRequest,
+  request: _api_BatchGetPendingBlockSetVersionMetadataRequest
 ): Promise<_api_BatchGetPendingBlockSetVersionMetadataResponse> {
   return conjureFetch(
     ctx,
     `/block-sets/v2/pending/version/metadata/batchGet`,
     "POST",
-    request,
+    request
   );
 }

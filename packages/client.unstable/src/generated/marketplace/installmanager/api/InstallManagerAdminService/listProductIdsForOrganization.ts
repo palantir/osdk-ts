@@ -15,12 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { OrganizationRid as _api_OrganizationRid } from "../../../api/__components.js";
 import type {
-  ListProductIdsForOrganizationRequest
-    as _installmanager_api_ListProductIdsForOrganizationRequest,
-  ListProductIdsForOrganizationResponse
-    as _installmanager_api_ListProductIdsForOrganizationResponse,
+  ListProductIdsForOrganizationRequest as _installmanager_api_ListProductIdsForOrganizationRequest,
+  ListProductIdsForOrganizationResponse as _installmanager_api_ListProductIdsForOrganizationResponse,
 } from "../__components.js";
 
 /**
@@ -33,12 +32,12 @@ import type {
 export async function listProductIdsForOrganization(
   ctx: ConjureContext,
   organizationRid: _api_OrganizationRid,
-  request: _installmanager_api_ListProductIdsForOrganizationRequest,
+  request: _installmanager_api_ListProductIdsForOrganizationRequest
 ): Promise<_installmanager_api_ListProductIdsForOrganizationResponse> {
   return conjureFetch(
     ctx,
     `/install-manager-admin/organization/${organizationRid}/product-ids/list`,
     "POST",
-    request,
+    request
   );
 }

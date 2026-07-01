@@ -15,6 +15,7 @@
  */
 
 import React, { memo, useCallback, useMemo } from "react";
+
 import { MultiDateInput } from "../base/inputs/MultiDateInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
 
@@ -34,7 +35,7 @@ function MultiDateFilterInputInner({
       filterState?.type === "SELECT"
         ? filterState.selectedValues.filter((v): v is Date => v instanceof Date)
         : [],
-    [filterState],
+    [filterState]
   );
   const isExcluding = filterState?.isExcluding ?? false;
 
@@ -46,7 +47,7 @@ function MultiDateFilterInputInner({
         isExcluding,
       });
     },
-    [onFilterStateChanged, isExcluding],
+    [onFilterStateChanged, isExcluding]
   );
 
   return (

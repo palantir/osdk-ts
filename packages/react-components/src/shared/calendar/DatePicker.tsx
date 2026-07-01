@@ -18,6 +18,7 @@ import { Input } from "@base-ui/react/input";
 import { Popover } from "@base-ui/react/popover";
 import classnames from "classnames";
 import React, { useCallback, useId, useRef, useState } from "react";
+
 import {
   formatDateForInput,
   formatDatetimeForInput,
@@ -30,10 +31,11 @@ import {
   PortalDismissLayer,
 } from "../PortalDismissLayer.js";
 import { stopPropagation } from "./calendarShared.js";
-import styles from "./DatePicker.module.css";
-import commonStyles from "./DatePickerCommon.module.css";
 import { LazyDateCalendar } from "./LazyDateCalendar.js";
 import { useDateEditState } from "./useDateEditState.js";
+
+import styles from "./DatePicker.module.css";
+import commonStyles from "./DatePickerCommon.module.css";
 
 /**
  * Props for the shared DatePicker. Used directly by filter-list and
@@ -130,8 +132,8 @@ export interface DatePickerProps {
   modal?: "trap-focus" | false;
 }
 
-export const DatePicker: React.NamedExoticComponent<DatePickerProps> = React
-  .memo(function DatePicker({
+export const DatePicker: React.NamedExoticComponent<DatePickerProps> =
+  React.memo(function DatePicker({
     id,
     value,
     onChange,
@@ -176,10 +178,10 @@ export const DatePicker: React.NamedExoticComponent<DatePickerProps> = React
     // displayFormatFn produces the idle string. Defaults stay deterministic so
     // users in different browser locales see the same date in form inputs.
     const editFormatFn = showTime ? formatDatetimeForInput : formatDateForInput;
-    const displayFormatFn = formatDate
-      ?? (showTime ? formatDatetimeForInput : formatDateForInput);
-    const parseFn = parseDate
-      ?? (showTime ? parseDatetimeFromInput : parseDateFromInput);
+    const displayFormatFn =
+      formatDate ?? (showTime ? formatDatetimeForInput : formatDateForInput);
+    const parseFn =
+      parseDate ?? (showTime ? parseDatetimeFromInput : parseDateFromInput);
 
     // Single normalization gate: when the time picker is hidden, strip
     // hours/minutes/seconds so consumers receive a pure calendar date (local
@@ -194,14 +196,14 @@ export const DatePicker: React.NamedExoticComponent<DatePickerProps> = React
           const dateOnly = new Date(
             date.getFullYear(),
             date.getMonth(),
-            date.getDate(),
+            date.getDate()
           );
           onChange(dateOnly);
         } else {
           onChange(date);
         }
       },
-      [onChange, showTime],
+      [onChange, showTime]
     );
 
     const {
@@ -224,9 +226,8 @@ export const DatePicker: React.NamedExoticComponent<DatePickerProps> = React
       onChange: handleChange,
     });
 
-    const activeDateValue = isEditing && inputError == null
-      ? dateValue
-      : (value ?? undefined);
+    const activeDateValue =
+      isEditing && inputError == null ? dateValue : (value ?? undefined);
 
     // --- Input event handlers ---
 
@@ -256,7 +257,7 @@ export const DatePicker: React.NamedExoticComponent<DatePickerProps> = React
           setVisibleCalendarMonth(parsedDate);
         }
       },
-      [max, min, parseFn, setInputValue],
+      [max, min, parseFn, setInputValue]
     );
 
     const handleBlur = useCallback(
@@ -271,7 +272,7 @@ export const DatePicker: React.NamedExoticComponent<DatePickerProps> = React
         }
         commitAndStopEditing();
       },
-      [commitAndStopEditing],
+      [commitAndStopEditing]
     );
 
     // Shared close sequence: dismiss the popover, reset editing state, and
@@ -300,9 +301,8 @@ export const DatePicker: React.NamedExoticComponent<DatePickerProps> = React
           // so Tab manually bridges focus to the first interactive calendar element.
           // Only meaningful when the popover traps focus; when non-modal we let
           // the browser advance focus naturally to the next document element.
-          const firstFocusable = popoverRef.current?.querySelector<HTMLElement>(
-            "button, select",
-          );
+          const firstFocusable =
+            popoverRef.current?.querySelector<HTMLElement>("button, select");
           if (firstFocusable != null) {
             e.preventDefault();
             firstFocusable.focus();
@@ -311,7 +311,7 @@ export const DatePicker: React.NamedExoticComponent<DatePickerProps> = React
           setIsOpen(false);
         }
       },
-      [commitAndStopEditing, closePopover, isOpen, isModal],
+      [commitAndStopEditing, closePopover, isOpen, isModal]
     );
 
     // --- Popover handlers ---
@@ -325,7 +325,7 @@ export const DatePicker: React.NamedExoticComponent<DatePickerProps> = React
           closePopover();
         }
       },
-      [closePopover],
+      [closePopover]
     );
 
     // --- Calendar handlers ---
@@ -353,7 +353,7 @@ export const DatePicker: React.NamedExoticComponent<DatePickerProps> = React
         setDateValue,
         setInputValue,
         closePopover,
-      ],
+      ]
     );
 
     const handleTimeChange = useCallback(
@@ -361,7 +361,7 @@ export const DatePicker: React.NamedExoticComponent<DatePickerProps> = React
         handleChange(time);
         setDateValue(time);
       },
-      [handleChange, setDateValue],
+      [handleChange, setDateValue]
     );
 
     const handleCalendarClear = useCallback(() => {
@@ -390,20 +390,19 @@ export const DatePicker: React.NamedExoticComponent<DatePickerProps> = React
           stopEditing();
           inputRef.current?.focus();
         } else {
-          const buttons = popoverRef.current?.querySelectorAll<HTMLElement>(
-            "button, select",
-          );
+          const buttons =
+            popoverRef.current?.querySelectorAll<HTMLElement>("button, select");
           const lastButton = buttons?.[buttons.length - 1];
           lastButton?.focus();
         }
       },
-      [stopEditing],
+      [stopEditing]
     );
 
     const wrapperClassName = classnames(
       commonStyles.osdkDatePickerInputWrapper,
       styles.osdkDatetimeInputWrapper,
-      inputError != null && commonStyles.osdkDatePickerInputWrapperError,
+      inputError != null && commonStyles.osdkDatePickerInputWrapperError
     );
     const isPopoverOpen = !disabled && isOpen;
 

@@ -16,6 +16,7 @@
 
 import { Employee } from "@osdk/client.test.ontology";
 import { describe, expect, it } from "vitest";
+
 import { createMockClient } from "../../mock/createMockClient.js";
 import { createMockObjectSet } from "../../mock/createMockObjectSet.js";
 import { createMockOsdkObject } from "../../mock/createMockOsdkObject.js";
@@ -35,7 +36,8 @@ describe("objectSetAsInput", () => {
         fullName: "Bob",
       });
 
-      mockClient.whenObjectSet(empSet, (os) => os.fetchPage())
+      mockClient
+        .whenObjectSet(empSet, (os) => os.fetchPage())
         .thenReturnObjects([emp1, emp2]);
 
       const names = await getEmployeeNames(empSet);
@@ -48,7 +50,8 @@ describe("objectSetAsInput", () => {
       const empSet = createMockObjectSet(Employee);
       const emp = createMockOsdkObject(Employee, { employeeId: 1 });
 
-      mockClient.whenObjectSet(empSet, (os) => os.fetchPage())
+      mockClient
+        .whenObjectSet(empSet, (os) => os.fetchPage())
         .thenReturnObjects([emp]);
 
       const names = await getEmployeeNames(empSet);
@@ -63,9 +66,8 @@ describe("objectSetAsInput", () => {
       const empSet = createMockObjectSet(Employee);
 
       mockClient
-        .whenObjectSet(
-          empSet,
-          (os) => os.aggregate({ $select: { $count: "unordered" } }),
+        .whenObjectSet(empSet, (os) =>
+          os.aggregate({ $select: { $count: "unordered" } })
         )
         .thenReturnAggregation({ $count: 42 });
 

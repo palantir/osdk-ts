@@ -17,6 +17,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { createPropertyFilterDef } from "../../__tests__/testUtils.js";
 import type { FilterDefinitionUnion } from "../../FilterListApi.js";
 import type { FilterState } from "../../FilterListItemApi.js";
@@ -37,11 +38,10 @@ const stubRenderInput: RenderFilterInput<TestDef> = ({ filterState }) => (
 describe("FilterListContent", () => {
   describe("getEmptyDisplayState fallback", () => {
     it("uses stored filter state when present rather than the empty fallback", () => {
-      const def = createPropertyFilterDef(
-        "dept",
-        "MULTI_SELECT",
-        { type: "SELECT", selectedValues: [] },
-      );
+      const def = createPropertyFilterDef("dept", "MULTI_SELECT", {
+        type: "SELECT",
+        selectedValues: [],
+      });
       const storedState: FilterState = {
         type: "SELECT",
         selectedValues: ["Engineering"],
@@ -59,21 +59,20 @@ describe("FilterListContent", () => {
           getFilterKey={getFilterKey}
           getFilterLabel={getFilterLabel}
           getEmptyDisplayState={getEmptyDisplayState}
-        />,
+        />
       );
 
       // The stored selectedValues should reach renderInput, not the empty fallback.
       expect(screen.getByTestId("filter-input").textContent).toContain(
-        "Engineering",
+        "Engineering"
       );
     });
 
     it("passes the empty fallback state to renderInput when no state is stored", () => {
-      const def = createPropertyFilterDef(
-        "dept",
-        "MULTI_SELECT",
-        { type: "SELECT", selectedValues: [] },
-      );
+      const def = createPropertyFilterDef("dept", "MULTI_SELECT", {
+        type: "SELECT",
+        selectedValues: [],
+      });
 
       render(
         <FilterListContent
@@ -84,21 +83,20 @@ describe("FilterListContent", () => {
           getFilterKey={getFilterKey}
           getFilterLabel={getFilterLabel}
           getEmptyDisplayState={getEmptyDisplayState}
-        />,
+        />
       );
 
       // The fallback for MULTI_SELECT is { type: "SELECT", selectedValues: [] }.
       expect(screen.getByTestId("filter-input").textContent).toEqual(
-        JSON.stringify({ type: "SELECT", selectedValues: [] }),
+        JSON.stringify({ type: "SELECT", selectedValues: [] })
       );
     });
 
     it("renders the more-action … toggle for an empty MULTI_SELECT via the fallback", () => {
-      const def = createPropertyFilterDef(
-        "dept",
-        "MULTI_SELECT",
-        { type: "SELECT", selectedValues: [] },
-      );
+      const def = createPropertyFilterDef("dept", "MULTI_SELECT", {
+        type: "SELECT",
+        selectedValues: [],
+      });
 
       render(
         <FilterListContent
@@ -109,20 +107,19 @@ describe("FilterListContent", () => {
           getFilterKey={getFilterKey}
           getFilterLabel={getFilterLabel}
           getEmptyDisplayState={getEmptyDisplayState}
-        />,
+        />
       );
 
       expect(
-        screen.getByRole("button", { name: /more actions/i }),
+        screen.getByRole("button", { name: /more actions/i })
       ).toBeDefined();
     });
 
     it("does not render the more-action toggle when getEmptyDisplayState is omitted", () => {
-      const def = createPropertyFilterDef(
-        "dept",
-        "MULTI_SELECT",
-        { type: "SELECT", selectedValues: [] },
-      );
+      const def = createPropertyFilterDef("dept", "MULTI_SELECT", {
+        type: "SELECT",
+        selectedValues: [],
+      });
 
       render(
         <FilterListContent
@@ -132,21 +129,21 @@ describe("FilterListContent", () => {
           renderInput={stubRenderInput}
           getFilterKey={getFilterKey}
           getFilterLabel={getFilterLabel}
-        />,
+        />
       );
 
       // No stored state + no fallback → no capability-driven controls.
       expect(
-        screen.queryByRole("button", { name: /more actions/i }),
+        screen.queryByRole("button", { name: /more actions/i })
       ).toBeNull();
     });
 
     it("passes undefined to renderInput for filter components without a fallback (e.g. NUMBER_RANGE)", () => {
-      const def = createPropertyFilterDef(
-        "age",
-        "NUMBER_RANGE",
-        { type: "NUMBER_RANGE", minValue: undefined, maxValue: undefined },
-      );
+      const def = createPropertyFilterDef("age", "NUMBER_RANGE", {
+        type: "NUMBER_RANGE",
+        minValue: undefined,
+        maxValue: undefined,
+      });
 
       render(
         <FilterListContent
@@ -157,7 +154,7 @@ describe("FilterListContent", () => {
           getFilterKey={getFilterKey}
           getFilterLabel={getFilterLabel}
           getEmptyDisplayState={getEmptyDisplayState}
-        />,
+        />
       );
 
       // NUMBER_RANGE has no more-action controls — fallback returns undefined.
@@ -165,11 +162,10 @@ describe("FilterListContent", () => {
     });
 
     it("applies the fallback in the sortable branch too", () => {
-      const def = createPropertyFilterDef(
-        "dept",
-        "MULTI_SELECT",
-        { type: "SELECT", selectedValues: [] },
-      );
+      const def = createPropertyFilterDef("dept", "MULTI_SELECT", {
+        type: "SELECT",
+        selectedValues: [],
+      });
 
       render(
         <FilterListContent
@@ -181,15 +177,15 @@ describe("FilterListContent", () => {
           getFilterLabel={getFilterLabel}
           getEmptyDisplayState={getEmptyDisplayState}
           enableSorting={true}
-        />,
+        />
       );
 
       // Sortable branch should also pass the empty fallback state through.
       expect(screen.getByTestId("filter-input").textContent).toEqual(
-        JSON.stringify({ type: "SELECT", selectedValues: [] }),
+        JSON.stringify({ type: "SELECT", selectedValues: [] })
       );
       expect(
-        screen.getByRole("button", { name: /more actions/i }),
+        screen.getByRole("button", { name: /more actions/i })
       ).toBeDefined();
     });
   });

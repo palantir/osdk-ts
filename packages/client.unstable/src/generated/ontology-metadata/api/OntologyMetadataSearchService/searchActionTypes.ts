@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   ActionTypeSearchRequest as _api_search_ActionTypeSearchRequest,
   ActionTypeSearchResponse as _api_search_ActionTypeSearchResponse,
@@ -30,12 +31,12 @@ import type {
  */
 export async function searchActionTypes(
   ctx: ConjureContext,
-  request: _api_search_ActionTypeSearchRequest,
+  request: _api_search_ActionTypeSearchRequest
 ): Promise<_api_search_ActionTypeSearchResponse> {
   return conjureFetch(
     ctx,
     `/ontology/search/v0/searchActionTypes`,
     "POST",
-    request,
+    request
   );
 }

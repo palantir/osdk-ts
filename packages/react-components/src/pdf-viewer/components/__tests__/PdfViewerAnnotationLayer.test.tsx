@@ -16,6 +16,7 @@
 
 import { cleanup, fireEvent, render } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import type { PdfAnnotation } from "../../types.js";
 import { PdfViewerAnnotationLayer } from "../PdfViewerAnnotationLayer.js";
 
@@ -24,7 +25,7 @@ afterEach(() => {
 });
 
 function createAnnotation(
-  overrides: Record<string, unknown> = {},
+  overrides: Record<string, unknown> = {}
 ): PdfAnnotation {
   return {
     id: "ann-1",
@@ -55,7 +56,7 @@ describe("PdfViewerAnnotationLayer", () => {
         pageHeight={792}
         scale={1.0}
         transform={pageTransform(1.0, 792)}
-      />,
+      />
     );
 
     const items = container.querySelectorAll("[data-annotation-id]");
@@ -72,7 +73,7 @@ describe("PdfViewerAnnotationLayer", () => {
         pageHeight={792}
         scale={1.0}
         transform={pageTransform(1.0, 792)}
-      />,
+      />
     );
 
     const items = container.querySelectorAll("[data-annotation-id]");
@@ -90,12 +91,10 @@ describe("PdfViewerAnnotationLayer", () => {
         pageHeight={792}
         scale={1.0}
         transform={pageTransform(1.0, 792)}
-      />,
+      />
     );
 
-    const item = container.querySelector(
-      "[data-annotation-id]",
-    ) as HTMLElement;
+    const item = container.querySelector("[data-annotation-id]") as HTMLElement;
     // top = (pageHeight - y - height) * scale = (792 - 500 - 20) * 1.0 = 272
     expect(item.style.top).toBe("272px");
     expect(item.style.left).toBe("100px");
@@ -118,12 +117,10 @@ describe("PdfViewerAnnotationLayer", () => {
         pageHeight={pageHeight}
         scale={scale}
         transform={rotatedTransform}
-      />,
+      />
     );
 
-    const item = container.querySelector(
-      "[data-annotation-id]",
-    ) as HTMLElement;
+    const item = container.querySelector("[data-annotation-id]") as HTMLElement;
     expect(item.style.left).toBe("92px");
     expect(item.style.top).toBe("100px");
     expect(item.style.width).toBe("20px");
@@ -141,12 +138,10 @@ describe("PdfViewerAnnotationLayer", () => {
         pageHeight={792}
         scale={2.0}
         transform={pageTransform(2.0, 792)}
-      />,
+      />
     );
 
-    const item = container.querySelector(
-      "[data-annotation-id]",
-    ) as HTMLElement;
+    const item = container.querySelector("[data-annotation-id]") as HTMLElement;
     // top = (792 - 500 - 20) * 2.0 = 544
     expect(item.style.top).toBe("544px");
     expect(item.style.left).toBe("200px");
@@ -165,11 +160,11 @@ describe("PdfViewerAnnotationLayer", () => {
         scale={1.0}
         transform={pageTransform(1.0, 792)}
         onAnnotationClick={onClick}
-      />,
+      />
     );
 
     const item = container.querySelector(
-      "[data-annotation-id='click-me']",
+      "[data-annotation-id='click-me']"
     ) as HTMLElement;
     fireEvent.click(item);
 
@@ -188,11 +183,11 @@ describe("PdfViewerAnnotationLayer", () => {
         scale={1.0}
         transform={pageTransform(1.0, 792)}
         onAnnotationClick={onClick}
-      />,
+      />
     );
 
     const item = container.querySelector(
-      "[data-annotation-id='key-me']",
+      "[data-annotation-id='key-me']"
     ) as HTMLElement;
     fireEvent.keyDown(item, { key: "Enter" });
 
@@ -211,12 +206,10 @@ describe("PdfViewerAnnotationLayer", () => {
         scale={1.0}
         transform={pageTransform(1.0, 792)}
         onAnnotationClick={onClick}
-      />,
+      />
     );
 
-    const item = container.querySelector(
-      "[data-annotation-id]",
-    ) as HTMLElement;
+    const item = container.querySelector("[data-annotation-id]") as HTMLElement;
     fireEvent.keyDown(item, { key: "Tab" });
 
     expect(onClick).not.toHaveBeenCalled();
@@ -231,12 +224,10 @@ describe("PdfViewerAnnotationLayer", () => {
         pageHeight={792}
         scale={1.0}
         transform={pageTransform(1.0, 792)}
-      />,
+      />
     );
 
-    const item = container.querySelector(
-      "[data-annotation-id]",
-    ) as HTMLElement;
+    const item = container.querySelector("[data-annotation-id]") as HTMLElement;
     expect(item.title).toBe("My Note");
   });
 
@@ -249,14 +240,12 @@ describe("PdfViewerAnnotationLayer", () => {
         pageHeight={792}
         scale={1.0}
         transform={pageTransform(1.0, 792)}
-      />,
+      />
     );
 
-    const item = container.querySelector(
-      "[data-annotation-id]",
-    ) as HTMLElement;
+    const item = container.querySelector("[data-annotation-id]") as HTMLElement;
     expect(item.style.getPropertyValue("--osdk-pdf-annotation-color")).toBe(
-      "#ff0000",
+      "#ff0000"
     );
   });
 
@@ -269,12 +258,10 @@ describe("PdfViewerAnnotationLayer", () => {
         pageHeight={792}
         scale={1.0}
         transform={pageTransform(1.0, 792)}
-      />,
+      />
     );
 
-    const item = container.querySelector(
-      "[data-annotation-id]",
-    ) as HTMLElement;
+    const item = container.querySelector("[data-annotation-id]") as HTMLElement;
     expect(item.style.getPropertyValue("--osdk-pdf-annotation-color")).toBe("");
   });
 
@@ -287,12 +274,10 @@ describe("PdfViewerAnnotationLayer", () => {
         pageHeight={792}
         scale={1.0}
         transform={pageTransform(1.0, 792)}
-      />,
+      />
     );
 
-    const item = container.querySelector(
-      "[data-annotation-id]",
-    ) as HTMLElement;
+    const item = container.querySelector("[data-annotation-id]") as HTMLElement;
     expect(item.getAttribute("role")).toBe("button");
     expect(item.getAttribute("tabindex")).toBe("0");
   });
@@ -306,12 +291,10 @@ describe("PdfViewerAnnotationLayer", () => {
         pageHeight={792}
         scale={1.0}
         transform={pageTransform(1.0, 792)}
-      />,
+      />
     );
 
-    const item = container.querySelector(
-      "[data-annotation-id]",
-    ) as HTMLElement;
+    const item = container.querySelector("[data-annotation-id]") as HTMLElement;
     // Should not throw
     fireEvent.click(item);
     fireEvent.keyDown(item, { key: "Enter" });
@@ -319,14 +302,14 @@ describe("PdfViewerAnnotationLayer", () => {
 
   it("should render custom annotation with render function", () => {
     const renderFn = vi.fn(
-      (
-        { scale }: {
-          annotation: PdfAnnotation;
-          scale: number;
-          pageHeight: number;
-          transform: number[];
-        },
-      ) => <span data-testid="custom-content">Scaled: {scale}</span>,
+      ({
+        scale,
+      }: {
+        annotation: PdfAnnotation;
+        scale: number;
+        pageHeight: number;
+        transform: number[];
+      }) => <span data-testid="custom-content">Scaled: {scale}</span>
     );
     const annotation = createAnnotation({
       id: "custom-1",
@@ -341,7 +324,7 @@ describe("PdfViewerAnnotationLayer", () => {
         pageHeight={792}
         scale={1.5}
         transform={transform}
-      />,
+      />
     );
 
     expect(renderFn).toHaveBeenCalledWith({
@@ -351,7 +334,7 @@ describe("PdfViewerAnnotationLayer", () => {
       transform,
     });
     const customContent = container.querySelector(
-      "[data-testid='custom-content']",
+      "[data-testid='custom-content']"
     );
     expect(customContent).not.toBeNull();
     expect(customContent?.textContent).toBe("Scaled: 1.5");
@@ -371,11 +354,11 @@ describe("PdfViewerAnnotationLayer", () => {
         pageHeight={792}
         scale={1.0}
         transform={pageTransform(1.0, 792)}
-      />,
+      />
     );
 
     const item = container.querySelector(
-      "[data-annotation-id='custom-pos']",
+      "[data-annotation-id='custom-pos']"
     ) as HTMLElement;
     expect(item.style.top).toBe("272px");
     expect(item.style.left).toBe("100px");
@@ -396,11 +379,11 @@ describe("PdfViewerAnnotationLayer", () => {
         scale={1.0}
         transform={pageTransform(1.0, 792)}
         onAnnotationClick={onClick}
-      />,
+      />
     );
 
     const item = container.querySelector(
-      "[data-annotation-id='custom-click']",
+      "[data-annotation-id='custom-click']"
     ) as HTMLElement;
     fireEvent.click(item);
 

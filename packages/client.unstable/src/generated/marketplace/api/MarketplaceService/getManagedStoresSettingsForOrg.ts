@@ -15,9 +15,9 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  GetManagedStoresSettingsForOrgResponse
-    as _api_GetManagedStoresSettingsForOrgResponse,
+  GetManagedStoresSettingsForOrgResponse as _api_GetManagedStoresSettingsForOrgResponse,
   OrganizationRid as _api_OrganizationRid,
 } from "../__components.js";
 
@@ -28,11 +28,11 @@ import type {
  */
 export async function getManagedStoresSettingsForOrg(
   ctx: ConjureContext,
-  organizationRid: _api_OrganizationRid,
+  organizationRid: _api_OrganizationRid
 ): Promise<_api_GetManagedStoresSettingsForOrgResponse> {
   return conjureFetch(
     ctx,
     `/marketplaces/managedStoresSettings/${organizationRid}`,
-    "GET",
+    "GET"
   );
 }

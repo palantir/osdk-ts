@@ -16,6 +16,7 @@
 
 import classnames from "classnames";
 import React, { memo } from "react";
+
 import styles from "./NoValueLabel.module.css";
 
 interface NoValueLabelProps {
@@ -31,13 +32,11 @@ interface NoValueLabelProps {
  * `--osdk-filter-no-value-font-style`, and `--osdk-filter-no-value-font-size`
  * CSS variables.
  */
-function NoValueLabelInner(
-  { className }: NoValueLabelProps,
-): React.ReactElement {
+function NoValueLabelInner({
+  className,
+}: NoValueLabelProps): React.ReactElement {
   return (
-    <span className={classnames(styles.noValue, className)}>
-      No value
-    </span>
+    <span className={classnames(styles.noValue, className)}>No value</span>
   );
 }
 

@@ -39,7 +39,7 @@ export function applyShapeTransformations<
   S extends ShapeDefinition<ObjectOrInterfaceDefinition>,
 >(
   shape: S,
-  rawObject: Osdk.Instance<ShapeBaseType<S>> | undefined,
+  rawObject: Osdk.Instance<ShapeBaseType<S>> | undefined
 ): ShapeTransformResult<S> {
   if (rawObject === undefined) {
     return {
@@ -96,11 +96,13 @@ export function applyShapeTransformations<
           return {
             data: undefined,
             dropped: false,
-            violations: [{
-              property: prop,
-              primaryKey,
-              constraint: "transformError",
-            }],
+            violations: [
+              {
+                property: prop,
+                primaryKey,
+                constraint: "transformError",
+              },
+            ],
           };
         }
         break;
@@ -119,13 +121,14 @@ export function applyShapeTransformations<
   }
 
   // Clone the object with transformed properties if any were modified
-  const clonedObject = Object.keys(transformedProps).length > 0
-    ? rawObject.$clone(
-      transformedProps as Partial<
-        CompileTimeMetadata<ShapeBaseType<S>>["props"]
-      >,
-    )
-    : rawObject;
+  const clonedObject =
+    Object.keys(transformedProps).length > 0
+      ? rawObject.$clone(
+          transformedProps as Partial<
+            CompileTimeMetadata<ShapeBaseType<S>>["props"]
+          >
+        )
+      : rawObject;
 
   // Phase 4: check require constraints on the transformed object.
   // This allows withDefault + require to work together correctly.
@@ -160,7 +163,7 @@ export function applyShapeTransformationsToArray<
   S extends ShapeDefinition<ObjectOrInterfaceDefinition>,
 >(
   shape: S,
-  rawObjects: Osdk.Instance<ShapeBaseType<S>>[],
+  rawObjects: Osdk.Instance<ShapeBaseType<S>>[]
 ): {
   data: ShapeInstance<S>[];
   droppedCount: number;

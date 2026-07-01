@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BlockSetInstallationResolvedShapes as _api_BlockSetInstallationResolvedShapes,
   BlockSetInstallationRid as _api_BlockSetInstallationRid,
@@ -35,11 +36,11 @@ import type {
  */
 export async function getBlockSetInstallationResolvedShapes(
   ctx: ConjureContext,
-  blockSetInstallationRid: _api_BlockSetInstallationRid,
+  blockSetInstallationRid: _api_BlockSetInstallationRid
 ): Promise<_api_BlockSetInstallationResolvedShapes> {
   return conjureFetch(
     ctx,
     `/block-set-installation/${blockSetInstallationRid}/resolved-shapes`,
-    "GET",
+    "GET"
   );
 }

@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  UpdateRecommendationMetadataRequest
-    as _api_UpdateRecommendationMetadataRequest,
-  UpdateRecommendationMetadataResponse
-    as _api_UpdateRecommendationMetadataResponse,
+  UpdateRecommendationMetadataRequest as _api_UpdateRecommendationMetadataRequest,
+  UpdateRecommendationMetadataResponse as _api_UpdateRecommendationMetadataResponse,
 } from "../__components.js";
 
 /**
@@ -40,12 +39,12 @@ import type {
  */
 export async function updateRecommendationMetadata(
   ctx: ConjureContext,
-  request: _api_UpdateRecommendationMetadataRequest,
+  request: _api_UpdateRecommendationMetadataRequest
 ): Promise<_api_UpdateRecommendationMetadataResponse> {
   return conjureFetch(
     ctx,
     `/recommendations-v2/update-metadata`,
     "POST",
-    request,
+    request
   );
 }

@@ -16,6 +16,7 @@
 
 import { Trie } from "@wry/trie";
 import deepEqual from "fast-deep-equal";
+
 import type { Canonical } from "./Canonical.js";
 import { CachingCanonicalizer } from "./Canonicalizer.js";
 
@@ -31,10 +32,10 @@ export class GenericCanonicalizer extends CachingCanonicalizer<object, object> {
 
   canonicalize<T extends object>(input: T): Canonical<T>;
   canonicalize<T extends object>(
-    input: T | undefined,
+    input: T | undefined
   ): Canonical<T> | undefined;
   canonicalize<T extends object>(
-    input: T | undefined,
+    input: T | undefined
   ): Canonical<T> | undefined {
     return super.canonicalize(input as object) as Canonical<T> | undefined;
   }
@@ -42,8 +43,9 @@ export class GenericCanonicalizer extends CachingCanonicalizer<object, object> {
   protected lookupOrCreate(input: object): Canonical<object> {
     const structuralKey = this.#collectSortedKeys(input);
     const cacheKey = this.#trie.lookupArray(structuralKey);
-    const entry = this.#existingValues.get(cacheKey)
-      ?? { values: [] as WeakRef<Canonical<object>>[] };
+    const entry = this.#existingValues.get(cacheKey) ?? {
+      values: [] as WeakRef<Canonical<object>>[],
+    };
     this.#existingValues.set(cacheKey, entry);
 
     for (let i = entry.values.length - 1; i >= 0; i--) {

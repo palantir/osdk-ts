@@ -18,6 +18,7 @@ import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { FilterInput } from "../FilterInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { createHasLinkFilterDef, MockObjectType } from "./testUtils.js";
@@ -54,7 +55,7 @@ function renderHasLinkInput({
       onFilterStateChanged={onFilterStateChanged}
       whereClause={EMPTY_WHERE}
       excludeRowOpen={excludeRowOpen}
-    />,
+    />
   );
 }
 

@@ -17,6 +17,7 @@
 import type { InterfaceMetadata, ObjectMetadata } from "@osdk/api";
 import type { DerivedPropertyDefinition } from "@osdk/foundry.ontologies";
 import { describe, expect, it } from "vitest";
+
 import type { DerivedPropertyRuntimeMetadata } from "../../derivedProperties/derivedPropertyRuntimeMetadata.js";
 import {
   InterfaceDefRef,
@@ -35,7 +36,7 @@ import {
  */
 function rdpMetadata(
   key: string,
-  selectedOrCollectedPropertyType: ObjectMetadata.Property | undefined,
+  selectedOrCollectedPropertyType: ObjectMetadata.Property | undefined
 ): DerivedPropertyRuntimeMetadata {
   return {
     [key]: {
@@ -114,8 +115,8 @@ describe(resolvePropertyType, () => {
       resolvePropertyType(
         {},
         "total",
-        rdpMetadata("total", { type: "decimal" }),
-      ),
+        rdpMetadata("total", { type: "decimal" })
+      )
     ).toBe("decimal");
   });
 
@@ -126,14 +127,14 @@ describe(resolvePropertyType, () => {
       resolvePropertyType(
         undefined,
         "total",
-        rdpMetadata("total", { type: "long" }),
-      ),
+        rdpMetadata("total", { type: "long" })
+      )
     ).toBe("long");
   });
 
   it("returns undefined for a derived property without a resolvable type", () => {
     expect(
-      resolvePropertyType({}, "avg", rdpMetadata("avg", undefined)),
+      resolvePropertyType({}, "avg", rdpMetadata("avg", undefined))
     ).toBeUndefined();
   });
 

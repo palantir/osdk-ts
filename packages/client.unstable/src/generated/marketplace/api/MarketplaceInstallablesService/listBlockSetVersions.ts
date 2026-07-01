@@ -15,12 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BlockSetId as _api_BlockSetId,
-  ListInstallableBlockSetVersionsRequest
-    as _api_ListInstallableBlockSetVersionsRequest,
-  ListInstallableBlockSetVersionsResponse
-    as _api_ListInstallableBlockSetVersionsResponse,
+  ListInstallableBlockSetVersionsRequest as _api_ListInstallableBlockSetVersionsRequest,
+  ListInstallableBlockSetVersionsResponse as _api_ListInstallableBlockSetVersionsResponse,
   MarketplaceRid as _api_MarketplaceRid,
 } from "../__components.js";
 
@@ -32,13 +31,13 @@ export async function listBlockSetVersions(
   marketplaceRid: _api_MarketplaceRid,
   limit: number | null | undefined,
   blockSetId: _api_BlockSetId,
-  request: _api_ListInstallableBlockSetVersionsRequest,
+  request: _api_ListInstallableBlockSetVersionsRequest
 ): Promise<_api_ListInstallableBlockSetVersionsResponse> {
   return conjureFetch(
     ctx,
     `/installation-app-service/${marketplaceRid}/blockSet/${blockSetId}`,
     "POST",
     request,
-    { limit },
+    { limit }
   );
 }

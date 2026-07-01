@@ -16,6 +16,7 @@
 
 import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import React, { memo, useCallback } from "react";
+
 import { FilterInputExcludeRow } from "./base/FilterInputExcludeRow.js";
 import { ContainsTextInput } from "./base/inputs/ContainsTextInput.js";
 import type { MultiSelectInputLayout } from "./base/inputs/MultiSelectInput.js";
@@ -108,9 +109,8 @@ function FilterInputInner<Q extends ObjectTypeDefinition>({
           <div data-unsupported="true">Custom filter missing renderInput</div>
         );
       }
-      const customFilterState = filterState?.type === "custom"
-        ? filterState
-        : definition.filterState;
+      const customFilterState =
+        filterState?.type === "custom" ? filterState : definition.filterState;
       return (
         <>
           {definition.renderInput({
@@ -170,18 +170,17 @@ const HasLinkInput = memo(function HasLinkInput({
   onFilterStateChanged,
   excludeRowOpen,
 }: HasLinkInputProps): React.ReactElement {
-  const hasLink = filterState?.type === "hasLink"
-    ? filterState.hasLink
-    : false;
-  const isExcluding = filterState?.type === "hasLink"
-    ? filterState.isExcluding ?? false
-    : false;
+  const hasLink = filterState?.type === "hasLink" ? filterState.hasLink : false;
+  const isExcluding =
+    filterState?.type === "hasLink"
+      ? (filterState.isExcluding ?? false)
+      : false;
 
   const handleChange = useCallback(
     (hasLink: boolean) => {
       onFilterStateChanged({ type: "hasLink", hasLink, isExcluding });
     },
-    [onFilterStateChanged, isExcluding],
+    [onFilterStateChanged, isExcluding]
   );
 
   const handleClearAll = useCallback(() => {
@@ -211,12 +210,10 @@ const KeywordSearchInput = memo(function KeywordSearchInput({
   onFilterStateChanged,
   placeholder,
 }: KeywordSearchInputProps): React.ReactElement {
-  const searchTerm = filterState?.type === "keywordSearch"
-    ? filterState.searchTerm
-    : undefined;
-  const operator = filterState?.type === "keywordSearch"
-    ? filterState.operator
-    : "AND";
+  const searchTerm =
+    filterState?.type === "keywordSearch" ? filterState.searchTerm : undefined;
+  const operator =
+    filterState?.type === "keywordSearch" ? filterState.operator : "AND";
 
   const handleChange = useCallback(
     (newSearchTerm: string | undefined) => {
@@ -226,7 +223,7 @@ const KeywordSearchInput = memo(function KeywordSearchInput({
         operator,
       });
     },
-    [onFilterStateChanged, operator],
+    [onFilterStateChanged, operator]
   );
 
   return (

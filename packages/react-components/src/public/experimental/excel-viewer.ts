@@ -28,5 +28,5 @@ import { ExcelViewer as _ExcelViewer } from "../../excel-viewer/ExcelViewer.js";
 import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
 export const ExcelViewer: typeof _ExcelViewer = withOsdkMetrics(
   _ExcelViewer,
-  "ExcelViewer",
+  "ExcelViewer"
 );
