@@ -23,6 +23,7 @@ import { createMockMonitorStore } from "../../components/testHelpers.js";
 const { CacheInspectorTab } =
   await import("../../components/CacheInspectorTab.js");
 const { CachePanel } = await import("./CachePanel.js");
+const { CacheSplitView } = await import("./CacheSplitView.js");
 const { cacheTab } = await import("./cacheTab.js");
 
 describe("CacheInspectorTab", () => {
@@ -79,6 +80,22 @@ describe("CachePanel", () => {
     );
 
     expect(container.firstChild).not.toBeNull();
+  });
+});
+
+describe("CacheSplitView", () => {
+  afterEach(() => {
+    cleanup();
+  });
+
+  it("renders the cache inspector and the hit/miss list", () => {
+    const store = createMockMonitorStore();
+
+    render(<CacheSplitView monitorStore={store} />);
+
+    expect(store.getMetricsStore).toHaveBeenCalled();
+    expect(store.loadCacheEntries).toHaveBeenCalled();
+    expect(screen.getByText("No cache hits or misses yet")).not.toBeNull();
   });
 });
 

@@ -15,5 +15,5 @@
  */
 
 // Entry point for the advanced plugin tabs (cache, compute, intercept).
-export { cacheTab } from "./plugins/cache/cacheTab.js";
-export { registerDevToolsPlugin } from "./plugins/registry.js";
+export { cacheTab } from "../plugins/cache/cacheTab.js";
+export { registerDevToolsPlugin } from "../plugins/registry.js";
