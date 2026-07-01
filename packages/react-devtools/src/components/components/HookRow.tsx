@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Button, Icon, Tag, Tooltip } from "@blueprintjs/core";
+import { Button, Icon, type IconName, Tag, Tooltip } from "@blueprintjs/core";
 import React, { useMemo } from "react";
 
 import { useSharedTick } from "../../hooks/useSharedTick.js";
@@ -24,7 +24,7 @@ import { formatRelativeTime } from "../../utils/format.js";
 import { formatHookSignature } from "../queryParamsFormat.js";
 import styles from "./ComponentsPanel.module.scss";
 
-function getHookIcon(hookType: string): string {
+function getHookIcon(hookType: string): IconName {
   switch (hookType) {
     case "useOsdkObject": {
       return "document";
