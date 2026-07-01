@@ -16,6 +16,7 @@
 
 import { Employee } from "@osdk/client.test.ontology";
 import { describe, expect, it } from "vitest";
+
 import { createMockOsdkObject } from "../../mock/createMockOsdkObject.js";
 import { objectAsInput } from "./objectAsInput.js";
 

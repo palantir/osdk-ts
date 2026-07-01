@@ -19,7 +19,7 @@ import { queryTypeReturnsArray } from "@osdk/client.test.ontology";
 
 export async function queryWithArrayParams(
   client: Client,
-  people: readonly string[],
+  people: readonly string[]
 ): Promise<string[]> {
   const result = await client(queryTypeReturnsArray).executeFunction({
     people,

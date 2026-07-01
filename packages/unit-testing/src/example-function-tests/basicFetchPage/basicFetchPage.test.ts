@@ -16,6 +16,7 @@
 
 import { Employee } from "@osdk/client.test.ontology";
 import { describe, expect, it } from "vitest";
+
 import { createMockClient } from "../../mock/createMockClient.js";
 import { createMockOsdkObject } from "../../mock/createMockOsdkObject.js";
 import { basicFetchPage } from "./basicFetchPage.js";
@@ -27,10 +28,9 @@ describe("basicFetchPage", () => {
       employeeId: 1,
       fullName: "John",
     });
-    mockClient.when((stub) => stub(Employee).fetchPage())
-      .thenReturnObjects(
-        [mockObject],
-      );
+    mockClient
+      .when((stub) => stub(Employee).fetchPage())
+      .thenReturnObjects([mockObject]);
     const actual = await basicFetchPage(mockClient);
     expect(actual).toEqual(mockObject);
   });

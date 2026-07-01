@@ -15,6 +15,7 @@
  */
 
 import { describe, expectTypeOf, it, vi } from "vitest";
+
 import type { EmployeeApiTest } from "../test/EmployeeApiTest.js";
 import type { FooInterfaceApiTest } from "../test/FooInterfaceApiTest.js";
 import type { ObjectSpecifier } from "./ObjectSpecifier.js";
@@ -35,24 +36,18 @@ describe("ObjectSpecifier", () => {
 
     const specifier: EmployeeObjectSpecifier = EmployeeApiTest.$objectSpecifier;
 
-    expectTypeOf(specifier).toMatchTypeOf<
-      string & { __apiName: "Employee" }
-    >();
+    expectTypeOf(specifier).toMatchTypeOf<string & { __apiName: "Employee" }>();
 
-    type NonEmployeeObjectSpecifier = ObjectSpecifier<
-      {
-        apiName: "NotEmployee";
-        osdkMetadata: any;
-        type: "object";
-        primaryKeyApiName: "id";
-        primaryKeyType: "string";
-      }
-    >;
+    type NonEmployeeObjectSpecifier = ObjectSpecifier<{
+      apiName: "NotEmployee";
+      osdkMetadata: any;
+      type: "object";
+      primaryKeyApiName: "id";
+      primaryKeyType: "string";
+    }>;
 
-    expectTypeOf<NonEmployeeObjectSpecifier>().toMatchTypeOf<
-      // @ts-expect-error
-      EmployeeObjectId
-    >();
+    expectTypeOf<NonEmployeeObjectSpecifier>().toMatchTypeOf<// @ts-expect-error
+    EmployeeObjectId>();
   });
 
   describe("interfaces", () => {
@@ -85,8 +80,8 @@ describe("ObjectSpecifier", () => {
         string & { __apiName: "Employee" }
       >();
 
-      const FooInterfaceApiTest =
-        (await fauxInterfaceObjectSet.fetchPage()).data[0];
+      const FooInterfaceApiTest = (await fauxInterfaceObjectSet.fetchPage())
+        .data[0];
 
       const fooInterfaceObjectSpecifier = FooInterfaceApiTest.$objectSpecifier;
 
@@ -94,18 +89,17 @@ describe("ObjectSpecifier", () => {
         typeof fooInterfaceObjectSpecifier
       >();
 
-      type NonEmployeeObjectSpecifier = ObjectSpecifier<
-        {
-          apiName: "NotEmployee";
-          osdkMetadata: any;
-          type: "object";
-          primaryKeyApiName: "id";
-          primaryKeyType: "string";
-        }
-      >;
+      type NonEmployeeObjectSpecifier = ObjectSpecifier<{
+        apiName: "NotEmployee";
+        osdkMetadata: any;
+        type: "object";
+        primaryKeyApiName: "id";
+        primaryKeyType: "string";
+      }>;
 
-      expectTypeOf<NonEmployeeObjectSpecifier>().toMatchTypeOf // @ts-expect-error
-      <typeof fooInterfaceObjectSpecifier>();
+      expectTypeOf<NonEmployeeObjectSpecifier>()
+        .toMatchTypeOf // @ts-expect-error
+        <typeof fooInterfaceObjectSpecifier>();
     });
   });
 });

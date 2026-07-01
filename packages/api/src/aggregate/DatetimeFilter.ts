@@ -18,10 +18,10 @@ import type { BaseFilterOptions, CatchThemAll } from "./BaseFilter.js";
 import type { Just } from "./Just.js";
 
 export interface DatetimeFilterOptions extends BaseFilterOptions<string> {
-  "$gt": string;
-  "$gte": string;
-  "$lt": string;
-  "$lte": string;
+  $gt: string;
+  $gte: string;
+  $lt: string;
+  $lte: string;
 }
 
 export namespace DatetimeFilter {

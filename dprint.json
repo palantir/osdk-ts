@@ -44,7 +44,10 @@
     "packages/client/",
     "packages/maker/",
     "packages/maker-experimental/",
-    "packages/maker-import/"
+    "packages/maker-import/",
+    "packages/api/",
+    "packages/functions/",
+    "packages/unit-testing/"
   ],
   "plugins": [
     "https://plugins.dprint.dev/typescript-0.90.4.wasm",

@@ -95,7 +95,7 @@ export type StubBuilderFor<T> = T extends Promise<infer R> ? StubBuilderFor<R> :
 } ? FetchPageStubBuilder<U> : T extends {
     	value: infer U
     	error?: never
-} ? (IsOsdkObject<U> extends true ? FetchOneStubBuilder<U> : AggregateStubBuilder<U>) : T extends {
+} ? IsOsdkObject<U> extends true ? FetchOneStubBuilder<U> : AggregateStubBuilder<U> : T extends {
     	error: Error
     	value?: never
 } ? never : IsOsdkObject<T> extends true ? FetchOneStubBuilder<T> : AggregateStubBuilder<T>;
