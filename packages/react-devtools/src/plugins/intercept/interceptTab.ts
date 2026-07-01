@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-import { componentsTab } from "../components/components/componentsTab.js";
-import { consoleTab } from "../components/console/consoleTab.js";
-import { overviewTab } from "../components/overview/overviewTab.js";
-import { performanceTab } from "../components/performance/performanceTab.js";
+import type { DevToolsPlugin } from "../types.js";
+import { InterceptPanel } from "./InterceptPanel.js";
 
-export const BASE_TABS = [overviewTab, componentsTab, performanceTab, consoleTab];
+export const interceptTab: DevToolsPlugin = {
+  id: "intercept",
+  label: "Intercept",
+  icon: "exchange",
+  panel: InterceptPanel,
+};

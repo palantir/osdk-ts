@@ -28,7 +28,10 @@ import {
 import React from "react";
 
 import type { MockResponse } from "../mocking/MockManager.js";
-import type { InterceptAction, MockConfiguration } from "./InterceptTab.js";
+import type {
+  InterceptAction,
+  MockConfiguration,
+} from "../plugins/intercept/types.js";
 import type { SelectedPrimitive } from "./PrimitiveSelectionPanel.js";
 
 import styles from "./InterceptTab.module.scss";

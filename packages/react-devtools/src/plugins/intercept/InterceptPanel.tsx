@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-import { componentsTab } from "../components/components/componentsTab.js";
-import { consoleTab } from "../components/console/consoleTab.js";
-import { overviewTab } from "../components/overview/overviewTab.js";
-import { performanceTab } from "../components/performance/performanceTab.js";
+import React from "react";
 
-export const BASE_TABS = [overviewTab, componentsTab, performanceTab, consoleTab];
+import { InterceptTab } from "../../components/InterceptTab.js";
+import type { DevToolsPanelProps } from "../types.js";
+
+export const InterceptPanel: React.FC<DevToolsPanelProps> = ({
+  monitorStore,
+  theme,
+}) => {
+  return <InterceptTab monitorStore={monitorStore} theme={theme} />;
+};

@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-import { componentsTab } from "../components/components/componentsTab.js";
-import { consoleTab } from "../components/console/consoleTab.js";
-import { overviewTab } from "../components/overview/overviewTab.js";
-import { performanceTab } from "../components/performance/performanceTab.js";
+import type { DevToolsPlugin } from "../../plugins/types.js";
+import { OverviewPanel } from "./OverviewPanel.js";
 
-export const BASE_TABS = [overviewTab, componentsTab, performanceTab, consoleTab];
+export const overviewTab: DevToolsPlugin = {
+  id: "overview",
+  label: "Overview",
+  icon: "home",
+  panel: OverviewPanel,
+};

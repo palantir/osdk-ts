@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-import { componentsTab } from "../components/components/componentsTab.js";
-import { consoleTab } from "../components/console/consoleTab.js";
-import { overviewTab } from "../components/overview/overviewTab.js";
-import { performanceTab } from "../components/performance/performanceTab.js";
+import React from "react";
 
-export const BASE_TABS = [overviewTab, componentsTab, performanceTab, consoleTab];
+import { ComputeTab } from "../../components/ComputeTab.js";
+import type { DevToolsPanelProps } from "../types.js";
+
+export const ComputePanel: React.FC<DevToolsPanelProps> = ({
+  monitorStore,
+}) => {
+  return <ComputeTab computeStore={monitorStore.getComputeStore()} />;
+};
