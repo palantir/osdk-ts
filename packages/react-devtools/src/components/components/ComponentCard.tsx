@@ -19,10 +19,13 @@ import React, { useState } from "react";
 
 import type { MonitorStore } from "../../store/MonitorStore.js";
 import type { UnusedProperty, WastedRender } from "../../types/index.js";
-import type { ComponentHookBinding } from "../../utils/ComponentQueryRegistry.js";
+import type {
+  ComponentHookBinding,
+  QueryParams,
+} from "../../utils/ComponentQueryRegistry.js";
+import { formatQueryParams } from "../queryParamsFormat.js";
 import { resolveComponentName } from "../resolveComponentName.js";
 import styles from "./ComponentsPanel.module.scss";
-import { HookRow } from "./HookRow.js";
 
 interface ComponentCardProps {
   componentId: string;
@@ -32,12 +35,43 @@ interface ComponentCardProps {
   unused?: UnusedProperty[];
 }
 
+/** The object type a query reads from, or null for actions (shown by name). */
+function objectTypeOf(params: QueryParams): string | null {
+  switch (params.type) {
+    case "object":
+    case "list":
+    case "aggregation": {
+      return params.objectType;
+    }
+    case "links": {
+      return params.sourceObject;
+    }
+    case "objectSet": {
+      return params.baseObjectSet;
+    }
+    default: {
+      return null;
+    }
+  }
+}
+
+function fileLabel(binding: ComponentHookBinding): string | null {
+  if (binding.filePath === undefined) {
+    return null;
+  }
+  const name = binding.filePath.split("/").pop() ?? binding.filePath;
+  return binding.lineNumber !== undefined
+    ? `${name}:${binding.lineNumber}`
+    : name;
+}
+
 /**
- * A live component with the OSDK hooks it uses. No "health" badge — instead it
- * surfaces concrete signals: hook count, wasted renders, and over-fetched
- * properties, with the per-hook detail available on expand.
+ * A live component shown by what it does with OSDK: the object types it reads
+ * and the queries powering it. Render count and over-fetch are secondary
+ * signals; the per-query detail is available on expand.
  */
 export const ComponentCard: React.FC<ComponentCardProps> = ({
+  componentId,
   bindings,
   monitorStore,
   wasted,
@@ -52,6 +86,18 @@ export const ComponentCard: React.FC<ComponentCardProps> = ({
   const componentName = resolveComponentName(bindings);
   const totalRenders = bindings.reduce((sum, b) => sum + b.renderCount, 0);
   const overFetch = unused ?? [];
+  const props = monitorStore.getComponentRegistry().getComponentProps(
+    componentId,
+  );
+  const propEntries = props ? Object.entries(props) : [];
+
+  const objectTypes = [
+    ...new Set(
+      bindings
+        .map((b) => objectTypeOf(b.queryParams))
+        .filter((t): t is string => t !== null && t !== "Unknown"),
+    ),
+  ];
 
   return (
     <div className={styles.componentCard}>
@@ -62,14 +108,19 @@ export const ComponentCard: React.FC<ComponentCardProps> = ({
         <div className={styles.cardHeaderLeft}>
           <Icon icon={expanded ? "chevron-down" : "chevron-right"} size={14} />
           <span className={styles.componentName}>{componentName}</span>
+          <div className={styles.objTypeTags}>
+            {objectTypes.map((type) => (
+              <Tag key={type} minimal intent="primary">{type}</Tag>
+            ))}
+          </div>
         </div>
         <div className={styles.cardHeaderRight}>
-          <Tooltip content={`${bindings.length} OSDK hooks`}>
-            <Tag minimal intent="primary">{bindings.length}</Tag>
-          </Tooltip>
           {wasted !== undefined
             ? (
-              <Tooltip content={`${wasted.count} renders changed no read property`}>
+              <Tooltip
+                content={`${wasted.count} renders changed no read property`}
+                portalClassName="osdk-devtools-portal"
+              >
                 <Tag minimal intent="warning" icon="refresh">
                   {wasted.count} wasted
                 </Tag>
@@ -78,7 +129,10 @@ export const ComponentCard: React.FC<ComponentCardProps> = ({
             : null}
           {overFetch.length > 0
             ? (
-              <Tooltip content={`${overFetch.length} fetched properties go mostly unused`}>
+              <Tooltip
+                content={`${overFetch.length} fetched properties go mostly unused`}
+                portalClassName="osdk-devtools-portal"
+              >
                 <Tag minimal intent="warning" icon="download">
                   over-fetch {overFetch.length}
                 </Tag>
@@ -87,7 +141,10 @@ export const ComponentCard: React.FC<ComponentCardProps> = ({
             : null}
           {totalRenders > 0
             ? (
-              <Tooltip content={`${totalRenders} total renders`}>
+              <Tooltip
+                content={`${totalRenders} total renders`}
+                portalClassName="osdk-devtools-portal"
+              >
                 <span className={styles.renders}>
                   <Icon icon="time" size={10} /> {totalRenders}
                 </span>
@@ -100,13 +157,39 @@ export const ComponentCard: React.FC<ComponentCardProps> = ({
       {expanded
         ? (
           <div className={styles.cardBody}>
-            {bindings.map((binding, index) => (
-              <HookRow
-                key={`${binding.subscriptionId}-${index}`}
-                binding={binding}
-                monitorStore={monitorStore}
-              />
-            ))}
+            <div className={styles.queryGroupTitle}>Queries</div>
+            {bindings.map((binding, index) => {
+              const file = fileLabel(binding);
+              return (
+                <div
+                  key={`${binding.subscriptionId}-${index}`}
+                  className={styles.queryRow}
+                >
+                  <Tag minimal className={styles.hookTag}>
+                    {binding.hookType}
+                  </Tag>
+                  <span className={styles.queryText}>
+                    {formatQueryParams(binding.queryParams)}
+                  </span>
+                  {file !== null
+                    ? <span className={styles.queryMeta}>{file}</span>
+                    : null}
+                </div>
+              );
+            })}
+            {propEntries.length > 0
+              ? (
+                <div className={styles.propsSection}>
+                  <div className={styles.queryGroupTitle}>Props</div>
+                  {propEntries.map(([key, value]) => (
+                    <div key={key} className={styles.propRow}>
+                      <span className={styles.propKey}>{key}</span>
+                      <span className={styles.propValue}>{value}</span>
+                    </div>
+                  ))}
+                </div>
+              )
+              : null}
             {overFetch.length > 0
               ? (
                 <div className={styles.overFetch}>
