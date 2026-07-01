@@ -32,16 +32,16 @@ export interface AipAgentChatContextLoaderProps {
    */
   onLoaded: (
     apiName: string,
-    objects: ReadonlyArray<unknown> | undefined,
+    objects: ReadonlyArray<unknown> | undefined
   ) => void;
 }
 
 /**
  * Headless loader rendered once per selected object type. Calls
- * `useOsdkObjects` unconditionally (so React's rules of hooks hold) and
- * lifts the fetched objects to its parent. Renders nothing; the parent
- * mounts one of these only while a type is selected, so deselecting a
- * type unmounts its loader and clears its contribution to the prompt.
+ * `useOsdkObjects` and lifts the fetched objects to its parent.
+ * Renders nothing; the parent mounts one of these only while a type
+ * is selected, so deselecting a type unmounts its loader and
+ * clears its contribution to the prompt.
  */
 export function AipAgentChatContextLoader({
   objectType,

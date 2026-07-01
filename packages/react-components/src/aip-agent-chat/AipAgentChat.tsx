@@ -17,6 +17,7 @@
 import { foundryModel } from "@osdk/aip-core";
 import { useChat } from "@osdk/react/experimental/aip";
 import * as React from "react";
+
 import type { AipAgentChatProps } from "./AipAgentChatApi.js";
 import { BaseAipAgentChat } from "./BaseAipAgentChat.js";
 import {
@@ -32,7 +33,7 @@ export type { AipAgentChatProps } from "./AipAgentChatApi.js";
 
 const FALLBACK_MODEL_API_NAME = "gpt-4o";
 const EMPTY_SELECTION: ReadonlyArray<string> = [];
-const EMPTY_LOADED: Readonly<Record<string, ReadonlyArray<unknown>>> = {};
+const EMPTY_LOADED: ReadonlyMap<string, ReadonlyArray<unknown>> = new Map();
 
 /**
  * OSDK-aware chat surface backed by Foundry's Language Model Service.
@@ -64,10 +65,10 @@ export function AipAgentChat({
   // → first entry of `availableModels` → `FALLBACK_MODEL_API_NAME`.
   const [internalModel, setInternalModel] = React.useState<string>(
     () =>
-      controlledModel
-        ?? defaultModel
-        ?? availableModels?.[0]
-        ?? FALLBACK_MODEL_API_NAME,
+      controlledModel ??
+      defaultModel ??
+      availableModels?.[0] ??
+      FALLBACK_MODEL_API_NAME
   );
 
   const isControlled = controlledModel != null;
@@ -80,21 +81,18 @@ export function AipAgentChat({
       }
       onModelChange?.(next);
     },
-    [isControlled, onModelChange],
+    [isControlled, onModelChange]
   );
 
   const model = React.useMemo(
     () => foundryModel({ client, model: activeModel }),
-    [client, activeModel],
+    [client, activeModel]
   );
 
   // Map api name -> object type definition, plus the list of api names the
   // picker offers. Both are stable for a given `objectTypes` array.
   const objectTypeByApiName = React.useMemo(() => {
-    const map = new Map<
-      string,
-      NonNullable<typeof objectTypes>[number]
-    >();
+    const map = new Map<string, NonNullable<typeof objectTypes>[number]>();
     for (const objectType of objectTypes ?? []) {
       map.set(objectType.apiName, objectType);
     }
@@ -103,18 +101,17 @@ export function AipAgentChat({
 
   const availableObjectTypeApiNames = React.useMemo(
     () => Array.from(objectTypeByApiName.keys()),
-    [objectTypeByApiName],
+    [objectTypeByApiName]
   );
 
   // Selection is uncontrolled: seed from `defaultSelectedObjectTypes`,
   // dropping any api names not present in `objectTypes`.
   const [selectedObjectTypes, setSelectedObjectTypes] = React.useState<
     ReadonlyArray<string>
-  >(
-    () =>
-      (defaultSelectedObjectTypes ?? EMPTY_SELECTION).filter((apiName) =>
-        objectTypeByApiName.has(apiName)
-      ),
+  >(() =>
+    (defaultSelectedObjectTypes ?? EMPTY_SELECTION).filter((apiName) =>
+      objectTypeByApiName.has(apiName)
+    )
   );
 
   const handleSelectedObjectTypesChange = React.useCallback(
@@ -122,38 +119,39 @@ export function AipAgentChat({
       setSelectedObjectTypes(next);
       onSelectedObjectTypesChanged?.(next);
     },
-    [onSelectedObjectTypesChanged],
+    [onSelectedObjectTypesChanged]
   );
 
   // Objects loaded per selected type, lifted from the per-type loaders.
-  const [loadedByType, setLoadedByType] = React.useState<
-    Readonly<Record<string, ReadonlyArray<unknown>>>
-  >(EMPTY_LOADED);
+  const [loadedByType, setLoadedByType] =
+    React.useState<ReadonlyMap<string, ReadonlyArray<unknown>>>(EMPTY_LOADED);
 
   const handleObjectsLoaded = React.useCallback(
     (apiName: string, objects: ReadonlyArray<unknown> | undefined) => {
       setLoadedByType((prev) => {
         if (objects == null) {
-          if (!(apiName in prev)) {
+          if (!prev.has(apiName)) {
             return prev;
           }
-          const next = { ...prev };
-          delete next[apiName];
+          const next = new Map(prev);
+          next.delete(apiName);
           return next;
         }
-        if (prev[apiName] === objects) {
+        if (prev.get(apiName) === objects) {
           return prev;
         }
-        return { ...prev, [apiName]: objects };
+        const next = new Map(prev);
+        next.set(apiName, objects);
+        return next;
       });
     },
-    [],
+    []
   );
 
   const objectContext = React.useMemo(() => {
     const loaded: Array<LoadedObjectContext> = [];
     for (const apiName of selectedObjectTypes) {
-      const objects = loadedByType[apiName];
+      const objects = loadedByType.get(apiName);
       if (objects != null) {
         loaded.push({ apiName, objects });
       }
@@ -163,17 +161,10 @@ export function AipAgentChat({
 
   const augmentedSystem = React.useMemo(
     () => combineSystemPrompt(system, objectContext),
-    [system, objectContext],
+    [system, objectContext]
   );
 
-  const {
-    messages,
-    status,
-    error,
-    sendMessage,
-    stop,
-    clearError,
-  } = useChat({
+  const { messages, status, error, sendMessage, stop, clearError } = useChat({
     model,
     system: augmentedSystem,
     messages: initialMessages,
@@ -185,7 +176,9 @@ export function AipAgentChat({
   // current selection isn't in `availableModels` (e.g. on first async resolve).
   React.useEffect(() => {
     if (
-      isControlled || availableModels == null || availableModels.length === 0
+      isControlled ||
+      availableModels == null ||
+      availableModels.length === 0
     ) {
       return;
     }
@@ -198,7 +191,7 @@ export function AipAgentChat({
     (text: string) => {
       return sendMessage({ text });
     },
-    [sendMessage],
+    [sendMessage]
   );
 
   const isInFlight = status === "submitted" || status === "streaming";
@@ -206,34 +199,26 @@ export function AipAgentChat({
   const hasModelPicker = availableModels != null && availableModels.length > 0;
   const hasContextPicker = availableObjectTypeApiNames.length > 0;
 
-  const composerActions = hasContextPicker
-    ? (
-      <AipAgentChatContextPicker
-        objectTypes={availableObjectTypeApiNames}
-        selected={selectedObjectTypes}
-        onChange={handleSelectedObjectTypesChange}
-        disabled={isInFlight}
-      />
-    )
-    : undefined;
+  const composerActions = hasContextPicker ? (
+    <AipAgentChatContextPicker
+      objectTypes={availableObjectTypeApiNames}
+      selected={selectedObjectTypes}
+      onChange={handleSelectedObjectTypesChange}
+      disabled={isInFlight}
+    />
+  ) : undefined;
 
-  const belowComposer = hasModelPicker
-    ? (
-      <AipAgentChatModelPicker
-        activeModel={activeModel}
-        models={availableModels}
-        onModelChange={handleModelChange}
-        disabled={isInFlight}
-      />
-    )
-    : undefined;
+  const belowComposer = hasModelPicker ? (
+    <AipAgentChatModelPicker
+      activeModel={activeModel}
+      models={availableModels}
+      onModelChange={handleModelChange}
+      disabled={isInFlight}
+    />
+  ) : undefined;
 
   return (
     <>
-      {
-        /* One headless loader per selected type; mounting/unmounting is what
-          gates fetching, keeping the rules of hooks satisfied. */
-      }
       {selectedObjectTypes.map((apiName) => {
         const objectType = objectTypeByApiName.get(apiName);
         if (objectType == null) {
