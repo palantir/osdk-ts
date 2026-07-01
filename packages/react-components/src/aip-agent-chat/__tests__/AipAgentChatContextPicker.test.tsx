@@ -40,7 +40,7 @@ describe("AipAgentChatContextPicker", () => {
     expect(container.firstChild).toBeNull();
   });
 
-  it("shows the 'Add object context' placeholder when nothing is selected", () => {
+  it("shows the 'Add context' placeholder when nothing is selected", () => {
     render(
       <AipAgentChatContextPicker
         objectTypes={OBJECT_TYPES}
@@ -50,7 +50,7 @@ describe("AipAgentChatContextPicker", () => {
     );
 
     const trigger = screen.getByRole("combobox");
-    expect(trigger.textContent).toContain("Add object context");
+    expect(trigger.textContent).toContain("Add context");
   });
 
   it("renders the selected object type names in the trigger", () => {

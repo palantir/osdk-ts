@@ -32,7 +32,7 @@ export interface AipAgentChatContextPickerProps {
   disabled?: boolean;
 }
 
-const PLACEHOLDER = "+ Add object context";
+const PLACEHOLDER = "+ Add context";
 
 function identity(apiName: string): string {
   return apiName;

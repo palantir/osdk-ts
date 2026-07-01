@@ -53,25 +53,39 @@ const SAMPLE_CONVERSATION: UIMessage[] = [
   ),
 ];
 
+const SAMPLE_OBJECT_TYPES = ["Employee", "Office", "Project"];
+const SAMPLE_MODELS = ["gpt-4o", "gpt-4o-mini"];
+
+function noopModelChange(): void {}
+
+interface InteractiveChatProps extends Omit<
+  BaseAipAgentChatProps,
+  | "messages"
+  | "status"
+  | "error"
+  | "onSendMessage"
+  | "onStop"
+  | "onClearError"
+  | "composerActions"
+  | "belowComposer"
+> {
+  initialMessages?: UIMessage[];
+  simulateError?: boolean;
+  enableModelPicker?: boolean;
+  enableContextPicker?: boolean;
+}
+
 /**
  * Interactive wrapper that manages message state and simulates streaming
  * responses so the story behaves like a real chat.
  */
-function InteractiveChat(
-  props: Omit<
-    BaseAipAgentChatProps,
-    | "messages"
-    | "status"
-    | "error"
-    | "onSendMessage"
-    | "onStop"
-    | "onClearError"
-  > & {
-    initialMessages?: UIMessage[];
-    simulateError?: boolean;
-  }
-): JSX.Element {
-  const { initialMessages = [], simulateError = false, ...rest } = props;
+function InteractiveChat({
+  initialMessages = [],
+  simulateError = false,
+  enableModelPicker = true,
+  enableContextPicker = false,
+  ...rest
+}: InteractiveChatProps): JSX.Element {
   const [messages, setMessages] = React.useState<UIMessage[]>(initialMessages);
   const [status, setStatus] = React.useState<
     "ready" | "submitted" | "streaming"
@@ -81,6 +95,9 @@ function InteractiveChat(
       ? new Error("Connection timed out. Please try again.")
       : undefined
   );
+  const [selectedObjectTypes, setSelectedObjectTypes] = React.useState<
+    ReadonlyArray<string>
+  >([]);
   const abortRef = React.useRef(false);
 
   const onSendMessage = React.useCallback(async (text: string) => {
@@ -134,28 +151,40 @@ function InteractiveChat(
   return (
     <BaseAipAgentChat
       {...rest}
+      belowComposer={
+        enableModelPicker ? (
+          <AipAgentChatModelPicker
+            activeModel={SAMPLE_MODELS[0]!}
+            models={SAMPLE_MODELS}
+            onModelChange={noopModelChange}
+          />
+        ) : undefined
+      }
+      composerActions={
+        enableContextPicker ? (
+          <AipAgentChatContextPicker
+            objectTypes={SAMPLE_OBJECT_TYPES}
+            selected={selectedObjectTypes}
+            onChange={setSelectedObjectTypes}
+          />
+        ) : undefined
+      }
       error={error}
       messages={messages}
       onClearError={onClearError}
       onSendMessage={onSendMessage}
       onStop={onStop}
       status={status}
-      belowComposer={
-        <AipAgentChatModelPicker
-          activeModel={"model-1"}
-          models={["model-1", "model-2"]}
-          onModelChange={() => {}}
-        />
-      }
     />
   );
 }
 
 const meta: Meta<typeof InteractiveChat> = {
-  title: "Beta/AipAgentChat",
+  title: "Components/AipAgentChat",
   component: InteractiveChat,
+  tags: ["beta"],
   render: (args) => (
-    <div style={{ height: "600px", maxWidth: "700px" }}>
+    <div style={{ height: "800px" }}>
       <InteractiveChat {...args} />
     </div>
   ),
@@ -193,37 +222,13 @@ export const CustomPlaceholder: Story = {
   },
 };
 
-const SAMPLE_OBJECT_TYPES = ["Employee", "Office", "Project"];
-
-function ContextPickerDemo(): JSX.Element {
-  const [selected, setSelected] = React.useState<ReadonlyArray<string>>([]);
-  return (
-    <BaseAipAgentChat
-      messages={[]}
-      status="ready"
-      error={undefined}
-      onSendMessage={async () => {}}
-      onStop={() => {}}
-      onClearError={() => {}}
-      aboveComposer={
-        <AipAgentChatContextPicker
-          objectTypes={SAMPLE_OBJECT_TYPES}
-          selected={selected}
-          onChange={setSelected}
-        />
-      }
-    />
-  );
-}
-
 /**
- * Chat with the object-type context multi-select in the composer footer.
- * Pick one or more object types to load their objects as context.
+ * Chat with the object-type context multi-select rendered in the composer
+ * footer inline with the Send button. Pick one or more object types to load
+ * their objects as context.
  */
 export const WithObjectContextPicker: Story = {
-  render: () => (
-    <div style={{ height: "600px", maxWidth: "700px" }}>
-      <ContextPickerDemo />
-    </div>
-  ),
+  args: {
+    enableContextPicker: true,
+  },
 };
