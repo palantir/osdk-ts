@@ -30,6 +30,20 @@ export type { OsdkAppErrorBoundaryProps } from "./components/OsdkAppErrorBoundar
 export { OsdkDevTools } from "./components/OsdkDevTools.js";
 
 export {
+  registerDevToolsPlugin,
+} from "./plugins/registry.js";
+export type {
+  DevToolsPanelComponent,
+  DevToolsPanelProps,
+  DevToolsPlugin,
+} from "./plugins/types.js";
+
+export {
+  buildCopyAllPrompt,
+  buildCopyPrompt,
+} from "./recommendations/copyPrompt.js";
+
+export {
   useComputeMetrics,
   useComputeRecording,
   useComputeRequests,
