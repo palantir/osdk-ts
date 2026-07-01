@@ -64,23 +64,23 @@ export function getCanonicalMetrics(
   snapshot: MetricsSnapshot
 ): CanonicalMetrics {
   const a = snapshot.aggregates;
-  const H = a.cacheHits;
-  const M = a.cacheMisses;
-  const R = a.revalidations;
-  const D = a.deduplications;
-  const A = a.actionCount;
-  const OA = a.optimisticActionCount;
-  const RB = a.rollbackActionCount;
+  const hits = a.cacheHits;
+  const misses = a.cacheMisses;
+  const revals = a.revalidations;
+  const dedups = a.deduplications;
+  const actions = a.actionCount;
+  const optimisticActions = a.optimisticActionCount;
+  const rollbacks = a.rollbackActionCount;
 
-  const requestTotal = H + M + R;
+  const requestTotal = hits + misses + revals;
 
   const cacheHitRate = metric(
-    requestTotal > 0 ? (H + R) / requestTotal : 0,
+    requestTotal > 0 ? (hits + revals) / requestTotal : 0,
     requestTotal,
     "cacheHitRate"
   );
 
-  const requestsSavedCount = H + R + D;
+  const requestsSavedCount = hits + revals + dedups;
   const requestsSaved = metric(
     requestsSavedCount,
     requestsSavedCount,
@@ -89,8 +89,8 @@ export function getCanonicalMetrics(
   );
 
   const avgNetworkMs = metric(
-    a.networkResponseTime / Math.max(M, 1),
-    M,
+    a.networkResponseTime / Math.max(misses, 1),
+    misses,
     "latency",
     "ms"
   );
@@ -110,26 +110,30 @@ export function getCanonicalMetrics(
   );
 
   const avgCachedMs = metric(
-    a.cachedResponseTime / Math.max(H, 1),
-    H,
+    a.cachedResponseTime / Math.max(hits, 1),
+    hits,
     "latency",
     "ms"
   );
 
   const optimisticCoverage = metric(
-    A > 0 ? OA / A : 0,
-    A,
+    actions > 0 ? optimisticActions / actions : 0,
+    actions,
     "optimisticCoverage"
   );
 
   const avgPerceivedSpeedupMs = metric(
-    a.totalPerceivedSpeedup / Math.max(OA, 1),
-    OA,
+    a.totalPerceivedSpeedup / Math.max(optimisticActions, 1),
+    optimisticActions,
     "latency",
     "ms"
   );
 
-  const rollbackRate = metric(A > 0 ? RB / A : 0, A, "rollbackRate");
+  const rollbackRate = metric(
+    actions > 0 ? rollbacks / actions : 0,
+    actions,
+    "rollbackRate"
+  );
 
   return {
     cacheHitRate,

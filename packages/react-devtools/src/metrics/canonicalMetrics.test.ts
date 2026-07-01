@@ -264,14 +264,4 @@ describe("getCanonicalMetrics", () => {
       expect(metrics[key].ready).toBe(false);
     }
   });
-
-  it("guards divisions on a freshly constructed MetricsStore snapshot", () => {
-    const metrics = getCanonicalMetrics(store.getSnapshot());
-
-    for (const key of CANONICAL_KEYS) {
-      expect(Number.isFinite(metrics[key].value)).toBe(true);
-      expect(metrics[key].value).toBe(0);
-      expect(metrics[key].ready).toBe(false);
-    }
-  });
 });
