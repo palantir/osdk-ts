@@ -312,7 +312,7 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
   },
   {
     role: "font-size-xsmall",
-    label: "Size X-Small",
+    label: "Font Size X-Small",
     category: "typography",
     inputType: "px",
     designMdKey: "fontSize-xs",
@@ -324,7 +324,7 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
   },
   {
     role: "font-size-small",
-    label: "Size Small",
+    label: "Font Size Small",
     category: "typography",
     inputType: "px",
     designMdKey: "fontSize-sm",
@@ -336,7 +336,7 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
   },
   {
     role: "font-size-medium",
-    label: "Size Medium",
+    label: "Font Size Medium",
     category: "typography",
     inputType: "px",
     designMdKey: "fontSize",
@@ -348,7 +348,7 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
   },
   {
     role: "font-size-large",
-    label: "Size Large",
+    label: "Font Size Large",
     category: "typography",
     inputType: "px",
     designMdKey: "fontSize-lg",
@@ -360,7 +360,7 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
   },
   {
     role: "font-weight-default",
-    label: "Weight Default",
+    label: "Font Weight Default",
     category: "typography",
     inputType: "number",
     designMdKey: "fontWeight",
@@ -372,7 +372,7 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
   },
   {
     role: "font-weight-bold",
-    label: "Weight Bold",
+    label: "Font Weight Bold",
     category: "typography",
     inputType: "number",
     designMdKey: "fontWeight-bold",
@@ -384,7 +384,7 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
   },
   {
     role: "line-height",
-    label: "Line Height",
+    label: "Font Line Height",
     category: "typography",
     inputType: "number",
     designMdKey: "lineHeight",
