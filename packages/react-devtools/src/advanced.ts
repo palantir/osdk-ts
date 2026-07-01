@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
-// Entry point for the advanced plugin tabs (cache, compute, intercept). Populated when those tabs are added.
-// eslint-disable-next-line unicorn/require-module-specifiers -- placeholder empty module until advanced plugins land
-export {};
+// Opt-in advanced plugin tabs. Import a tab and register it via registerDevToolsPlugin.
+export { cacheTab } from "./plugins/cache/cacheTab.js";
+export { computeTab } from "./plugins/compute/computeTab.js";
+export { interceptTab } from "./plugins/intercept/interceptTab.js";
