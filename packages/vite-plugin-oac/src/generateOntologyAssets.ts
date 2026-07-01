@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
+import * as fs from "node:fs";
+import * as path from "node:path";
+import { inspect } from "node:util";
+
 import {
   type OntologyIrOntologyBlockDataV2,
   OntologyIrToFullMetadataConverter,
 } from "@osdk/generator-converters.ontologyir";
 import { execa } from "execa";
-import * as fs from "node:fs";
-import * as path from "node:path";
-import { inspect } from "node:util";
+
 import type { Logger } from "./Logger.js";
 import type { OacContext } from "./OacContext.js";
 import { syncDirectories } from "./syncDirectories.js";
@@ -31,9 +33,7 @@ import { syncDirectories } from "./syncDirectories.js";
  * This function contains the core generation logic extracted from watchOntologyAsCode
  * so it can be used both in dev mode (via file watching) and build mode.
  */
-export async function generateOntologyAssets(
-  opts: OacContext,
-): Promise<void> {
+export async function generateOntologyAssets(opts: OacContext): Promise<void> {
   const { ontologyDir, logger } = opts;
   await fs.promises.mkdir(opts.workDir, { recursive: true });
 
@@ -60,9 +60,11 @@ export function ontologyFullMetadataPath(workDir: string): string {
 /**
  * Convert ontology.mjs to IR format using the maker tool
  */
-async function ontologyJsToIr(
-  { logger, ontologyDir, workDir }: OacContext,
-): Promise<void> {
+async function ontologyJsToIr({
+  logger,
+  ontologyDir,
+  workDir,
+}: OacContext): Promise<void> {
   logger.debug("Generating Ontology IR");
 
   const { stdout, stderr, exitCode } = await execa("pnpm", [
@@ -91,9 +93,10 @@ async function ontologyJsToIr(
 /**
  * Convert IR to full metadata format
  */
-async function ontologyIrToFullMetadata(
-  { logger, workDir }: OacContext,
-): Promise<void> {
+async function ontologyIrToFullMetadata({
+  logger,
+  workDir,
+}: OacContext): Promise<void> {
   logger.debug("Converting IR to Full metadata");
 
   try {
@@ -103,20 +106,17 @@ async function ontologyIrToFullMetadata(
     const blockData = JSON.parse(irContent)
       .blockData as OntologyIrOntologyBlockDataV2;
 
-    const fullMeta = OntologyIrToFullMetadataConverter.getFullMetadataFromIr(
-      blockData,
-    );
+    const fullMeta =
+      OntologyIrToFullMetadataConverter.getFullMetadataFromIr(blockData);
 
     await fs.promises.writeFile(
       ontologyFullMetadataPath(workDir),
-      JSON.stringify(fullMeta, null, 2),
+      JSON.stringify(fullMeta, null, 2)
     );
 
     logger.debug("Successfully converted IR to full metadata");
   } catch (error) {
-    logger.error(
-      `Failed to convert IR to full metadata: ${inspect(error)}`,
-    );
+    logger.error(`Failed to convert IR to full metadata: ${inspect(error)}`);
     throw error;
   }
 }
@@ -124,17 +124,14 @@ async function ontologyIrToFullMetadata(
 /**
  * Generate OSDK from full metadata
  */
-async function fullMetadataToOsdk(
-  { logger, workDir }: OacContext,
-): Promise<void> {
+async function fullMetadataToOsdk({
+  logger,
+  workDir,
+}: OacContext): Promise<void> {
   logger.debug("Generating OSDK from full metadata");
 
   // First create a clean temporary directory to generate the SDK into
-  const tempDir = path.join(
-    workDir,
-    ".osdkGenerationTmp",
-    "src",
-  );
+  const tempDir = path.join(workDir, ".osdkGenerationTmp", "src");
   await fs.promises.rm(tempDir, { recursive: true, force: true });
   await fs.promises.mkdir(tempDir, { recursive: true });
 
@@ -143,7 +140,7 @@ async function fullMetadataToOsdk(
   await fs.promises.writeFile(
     path.join(tempDir, "..", "package.json"),
     JSON.stringify({}, null, 2),
-    { encoding: "utf-8" },
+    { encoding: "utf-8" }
   );
 
   try {
@@ -179,14 +176,14 @@ async function fullMetadataToOsdk(
       const targetDir = ".osdk/src";
       try {
         logger.debug(
-          "OSDK generation successful, synchronizing with target directory",
+          "OSDK generation successful, synchronizing with target directory"
         );
 
         // Use granular synchronization instead of wholesale replacement
         await syncDirectories(tempSrcDir, targetDir, logger);
 
         logger.debug(
-          `Successfully synchronized ${targetDir} with newly generated code`,
+          `Successfully synchronized ${targetDir} with newly generated code`
         );
 
         await compileOsdk(logger);
@@ -195,7 +192,7 @@ async function fullMetadataToOsdk(
         await fs.promises.rm(tempDir, { recursive: true, force: true });
       } catch (error) {
         logger.error(
-          `Failed to synchronize ${targetDir} directory: ${inspect(error)}`,
+          `Failed to synchronize ${targetDir} directory: ${inspect(error)}`
         );
         logger.error(`Temporary files left at: ${tempDir}`);
         throw error;
@@ -211,7 +208,7 @@ async function fullMetadataToOsdk(
       await fs.promises.rm(tempDir, { recursive: true, force: true });
     } catch (cleanupError) {
       logger.warn(
-        `Failed to clean up temporary directory: ${inspect(cleanupError)}`,
+        `Failed to clean up temporary directory: ${inspect(cleanupError)}`
       );
     }
     throw error;
@@ -219,10 +216,7 @@ async function fullMetadataToOsdk(
 }
 
 async function compileOsdk(logger: Logger) {
-  const { stdout, stderr, exitCode } = await execa("pnpm", [
-    "exec",
-    "tsc",
-  ], {
+  const { stdout, stderr, exitCode } = await execa("pnpm", ["exec", "tsc"], {
     cwd: ".osdk",
   });
 

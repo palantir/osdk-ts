@@ -49,11 +49,7 @@ SOFTWARE.
 import { exec, getExecOutput } from "@actions/exec";
 
 export const setupUser = async (): Promise<void> => {
-  await exec("git", [
-    "config",
-    "user.name",
-    `"github-actions[bot]"`,
-  ]);
+  await exec("git", ["config", "user.name", `"github-actions[bot]"`]);
   await exec("git", [
     "config",
     "user.email",
@@ -67,13 +63,13 @@ export const pullBranch = async (branch: string): Promise<void> => {
 
 export const push = async (
   branch: string,
-  { force }: { force?: boolean } = {},
+  { force }: { force?: boolean } = {}
 ): Promise<void> => {
   await exec(
     "git",
     ["push", "origin", `HEAD:${branch}`, force && "--force"].filter<string>(
-      Boolean as any,
-    ),
+      Boolean as any
+    )
   );
 };
 
@@ -82,14 +78,14 @@ export const pushTags = async (): Promise<void> => {
 };
 
 export const switchToMaybeExistingBranch = async (
-  branch: string,
+  branch: string
 ): Promise<void> => {
   const { stderr } = await getExecOutput("git", ["checkout", branch], {
     ignoreReturnCode: true,
   });
   const isCreatingBranch =
-    !stderr.includes(`Switched to a new branch '${branch}'`)
-    && !stderr.includes(`Switched to branch '${branch}'`);
+    !stderr.includes(`Switched to a new branch '${branch}'`) &&
+    !stderr.includes(`Switched to branch '${branch}'`);
   // eslint-disable-next-line no-console
   console.log("stderr: " + stderr);
   if (isCreatingBranch) {
@@ -99,7 +95,7 @@ export const switchToMaybeExistingBranch = async (
 
 export const reset = async (
   pathSpec: string,
-  mode: "hard" | "soft" | "mixed" = "hard",
+  mode: "hard" | "soft" | "mixed" = "hard"
 ): Promise<void> => {
   await exec("git", ["reset", `--${mode}`, pathSpec]);
 };

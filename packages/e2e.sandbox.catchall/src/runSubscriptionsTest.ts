@@ -22,6 +22,7 @@ import {
   OsdkTestInterface,
   OsdkTestObject,
 } from "@osdk/e2e.generated.catchall";
+
 import { client, dsClient } from "./client.js";
 
 export async function runSubscriptionsTest(): Promise<void> {
@@ -33,48 +34,47 @@ export async function runSubscriptionsTest(): Promise<void> {
 
 function normalSubscription() {
   let counter = 0;
-  const subscription = client(OsdkTestObject)
-    .subscribe(
-      {
-        onChange(object) {
-          console.log(
-            "Object with primaryKey ",
-            object.object.$primaryKey,
-            " changed stringProperty to ",
-            object.object.stringProperty,
-          );
-          if (++counter >= 3) {
-            console.log("Unsubscribing");
-            subscription.unsubscribe();
-          }
-        },
-        onError(err) {
-          console.error("Error in subscription: ", err);
-        },
-        onOutOfDate() {
-          console.log("Out of date");
-        },
-        async onSuccessfulSubscription() {
-          await client($Actions.createOsdkTestObject).applyAction({
-            description: "test",
-            osdk_object_name: "OsdkTestObject",
-            string_property: "test",
-          });
-
-          const objectArray = await client(OsdkTestObject).fetchPage();
-
-          await client($Actions.editOsdkTestObject).applyAction({
-            OsdkTestObject: objectArray.data[0],
-            string_property: "a",
-          });
-
-          await client($Actions.deleteOsdkTestObject).applyAction({
-            OsdkTestObject: objectArray.data[0],
-          });
-        },
+  const subscription = client(OsdkTestObject).subscribe(
+    {
+      onChange(object) {
+        console.log(
+          "Object with primaryKey ",
+          object.object.$primaryKey,
+          " changed stringProperty to ",
+          object.object.stringProperty
+        );
+        if (++counter >= 3) {
+          console.log("Unsubscribing");
+          subscription.unsubscribe();
+        }
       },
-      { properties: ["stringProperty"], includeRid: true },
-    );
+      onError(err) {
+        console.error("Error in subscription: ", err);
+      },
+      onOutOfDate() {
+        console.log("Out of date");
+      },
+      async onSuccessfulSubscription() {
+        await client($Actions.createOsdkTestObject).applyAction({
+          description: "test",
+          osdk_object_name: "OsdkTestObject",
+          string_property: "test",
+        });
+
+        const objectArray = await client(OsdkTestObject).fetchPage();
+
+        await client($Actions.editOsdkTestObject).applyAction({
+          OsdkTestObject: objectArray.data[0],
+          string_property: "a",
+        });
+
+        await client($Actions.deleteOsdkTestObject).applyAction({
+          OsdkTestObject: objectArray.data[0],
+        });
+      },
+    },
+    { properties: ["stringProperty"], includeRid: true }
+  );
 }
 
 function interfaceSubscription() {
@@ -84,7 +84,7 @@ function interfaceSubscription() {
         "Interface with primaryKey ",
         object.object.$primaryKey,
         " changed objectDescription to ",
-        object.object.objectDescription,
+        object.object.objectDescription
       );
     },
     async onSuccessfulSubscription() {
@@ -102,50 +102,46 @@ function interfaceSubscription() {
 }
 
 function referenceUpdateSubscription() {
-  const mtaBusSubscription = dsClient(
-    MtaBus,
-  ).subscribe(
-    {
-      onChange(object) {
-        if (object.object.positionId != null) {
-          console.log(
-            "Bus with positionId ",
-            object.object.vehicleId,
-            " changed location to ",
-            object.object.positionId.lastFetchedValue?.value,
-          );
-        } else {
-          console.log(
-            "Bus with vehicleId ",
-            object.object.vehicleId,
-            " changed nextStop to ",
-            object.object.nextStopId,
-          );
-        }
-      },
-      onError(err) {
-        console.error("Error in subscription: ", err);
-      },
-      onOutOfDate() {
-        console.log("Out of date");
-      },
-      onSuccessfulSubscription() {
-        setTimeout(() => {
-          console.log("Unsubscribing from MtaBus");
-          mtaBusSubscription.unsubscribe();
-        }, 10000);
-      },
+  const mtaBusSubscription = dsClient(MtaBus).subscribe({
+    onChange(object) {
+      if (object.object.positionId != null) {
+        console.log(
+          "Bus with positionId ",
+          object.object.vehicleId,
+          " changed location to ",
+          object.object.positionId.lastFetchedValue?.value
+        );
+      } else {
+        console.log(
+          "Bus with vehicleId ",
+          object.object.vehicleId,
+          " changed nextStop to ",
+          object.object.nextStopId
+        );
+      }
     },
-  );
+    onError(err) {
+      console.error("Error in subscription: ", err);
+    },
+    onOutOfDate() {
+      console.log("Out of date");
+    },
+    onSuccessfulSubscription() {
+      setTimeout(() => {
+        console.log("Unsubscribing from MtaBus");
+        mtaBusSubscription.unsubscribe();
+      }, 10000);
+    },
+  });
 }
 
 async function noTypeObjectSetSubscription() {
   const objectSetRid = await createAndFetchTempObjectSetRid(
     client,
-    client(OsdkTestObject),
+    client(OsdkTestObject)
   );
   const subscription = client(
-    __EXPERIMENTAL__NOT_SUPPORTED_YET__subscribeToNoTypeObjectSet,
+    __EXPERIMENTAL__NOT_SUPPORTED_YET__subscribeToNoTypeObjectSet
   ).subscribeToNoTypeObjectSet(
     objectSetRid,
     {
@@ -154,7 +150,7 @@ async function noTypeObjectSetSubscription() {
           "No-type object set change for $apiName ",
           object.object.$apiName,
           " $rid ",
-          object.object.$rid,
+          object.object.$rid
         );
       },
       onError(err) {
@@ -171,7 +167,7 @@ async function noTypeObjectSetSubscription() {
         }, 10000);
       },
     },
-    { includeRid: true },
+    { includeRid: true }
   );
 }
 

@@ -20,6 +20,7 @@ import type {
   InterfacePropertyTypeRid,
   InterfaceType,
 } from "@osdk/foundry.ontologies";
+
 import { fooSpt } from "./spts.js";
 
 const idp: InterfaceDefinedPropertyType = {
@@ -45,7 +46,7 @@ export const BarInterface: InterfaceType = {
   propertiesV2: {},
   allPropertiesV2: {},
   links: {
-    "toFoo": {
+    toFoo: {
       rid: "ri.interface.link.main.1",
       apiName: "toFoo",
       linkedEntityApiName: {
@@ -60,7 +61,7 @@ export const BarInterface: InterfaceType = {
   implementedByObjectTypes: [],
   allExtendsInterfaces: [],
   allLinks: {
-    "toFoo": {
+    toFoo: {
       rid: "ri.interface.link.main.1",
       apiName: "toFoo",
       linkedEntityApiName: {
@@ -98,7 +99,7 @@ export const FooInterface: InterfaceType = {
     },
   },
   links: {
-    "toBar": {
+    toBar: {
       rid: "ri.interface.link.main.2",
       apiName: "toBar",
       linkedEntityApiName: {
@@ -130,7 +131,7 @@ export const FooInterface: InterfaceType = {
   },
   allExtendsInterfaces: [],
   allLinks: {
-    "toBar": {
+    toBar: {
       rid: "ri.interface.link.main.2",
       apiName: "toBar",
       linkedEntityApiName: {

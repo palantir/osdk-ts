@@ -25,16 +25,16 @@ export async function promptTemplate(parsed: {
 }): Promise<Template> {
   const useBeta = parsed.beta ?? false;
   let template = TEMPLATES.find(
-    (t) => t.id === parsed.template || t.id === `template-${parsed.template}`,
+    (t) => t.id === parsed.template || t.id === `template-${parsed.template}`
   );
   if (template == null) {
     const availableTemplates = TEMPLATES.filter(
       (template) =>
-        !template.hidden
-        && (useBeta
+        !template.hidden &&
+        (useBeta
           ? template.isBeta === true
-          // isBeta could be null
-          : !template.isBeta),
+          : // isBeta could be null
+            !template.isBeta)
     );
 
     if (availableTemplates.length === 0) {
@@ -42,11 +42,9 @@ export async function promptTemplate(parsed: {
     }
     const templateId = await consola.prompt(
       parsed.template != null
-        ? `The provided template ${
-          green(
-            parsed.template,
-          )
-        } is invalid please select a framework:`
+        ? `The provided template ${green(
+            parsed.template
+          )} is invalid please select a framework:`
         : "Select a framework:",
       {
         type: "select",
@@ -54,7 +52,7 @@ export async function promptTemplate(parsed: {
           value: template.id,
           label: template.label,
         })),
-      },
+      }
     );
 
     template = TEMPLATES.find((t) => t.id === templateId);

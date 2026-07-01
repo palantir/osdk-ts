@@ -17,8 +17,10 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+
 import type { ProxyOptions, UserConfig } from "vite";
 import { afterEach, beforeEach, expect, it } from "vitest";
+
 import { smartClientPlugin } from "./index.js";
 import { DISCOVERY_DIR } from "./public/discovery.js";
 
@@ -34,13 +36,13 @@ afterEach(() => {
 it("installs ontology proxy prefixes from a live discovery file", () => {
   fs.writeFileSync(
     path.join(workDir, "foundry.yml"),
-    "minCliVersion: \"0.0.0\"\n",
+    'minCliVersion: "0.0.0"\n'
   );
   const dir = path.join(workDir, DISCOVERY_DIR);
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(
     path.join(dir, ".ontology-discovery.json"),
-    JSON.stringify({ pid: process.pid, url: "https://127.0.0.1:51000" }),
+    JSON.stringify({ pid: process.pid, url: "https://127.0.0.1:51000" })
   );
 
   const userConfig: UserConfig = { root: workDir };
@@ -48,10 +50,12 @@ it("installs ontology proxy prefixes from a live discovery file", () => {
   const hook = plugin.config;
   const fn = typeof hook === "function" ? hook : hook?.handler;
   if (!fn) throw new Error("smartClientPlugin must declare a `config` hook");
-  (fn as unknown as (
-    cfg: UserConfig,
-    env: { command: "serve" | "build"; mode: string },
-  ) => unknown)(userConfig, { command: "serve", mode: "development" });
+  (
+    fn as unknown as (
+      cfg: UserConfig,
+      env: { command: "serve" | "build"; mode: string }
+    ) => unknown
+  )(userConfig, { command: "serve", mode: "development" });
 
   const proxy = userConfig.server?.proxy as Record<string, ProxyOptions>;
   for (const prefix of ["/ontology-metadata", "/object-set-service"]) {
@@ -64,17 +68,17 @@ it("installs ontology proxy prefixes from a live discovery file", () => {
 it("prefixes proxy contexts with `base` and strips it on rewrite", () => {
   fs.writeFileSync(
     path.join(workDir, "foundry.yml"),
-    "minCliVersion: \"0.0.0\"\n",
+    'minCliVersion: "0.0.0"\n'
   );
   const dir = path.join(workDir, DISCOVERY_DIR);
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(
     path.join(dir, ".ontology-discovery.json"),
-    JSON.stringify({ pid: process.pid, url: "https://127.0.0.1:51000" }),
+    JSON.stringify({ pid: process.pid, url: "https://127.0.0.1:51000" })
   );
   fs.writeFileSync(
     path.join(dir, ".typescript-functions-discovery.json"),
-    JSON.stringify({ pid: process.pid, url: "https://127.0.0.1:51001" }),
+    JSON.stringify({ pid: process.pid, url: "https://127.0.0.1:51001" })
   );
 
   const base =
@@ -84,10 +88,12 @@ it("prefixes proxy contexts with `base` and strips it on rewrite", () => {
   const hook = plugin.config;
   const fn = typeof hook === "function" ? hook : hook?.handler;
   if (!fn) throw new Error("smartClientPlugin must declare a `config` hook");
-  (fn as unknown as (
-    cfg: UserConfig,
-    env: { command: "serve" | "build"; mode: string },
-  ) => unknown)(userConfig, { command: "serve", mode: "development" });
+  (
+    fn as unknown as (
+      cfg: UserConfig,
+      env: { command: "serve" | "build"; mode: string }
+    ) => unknown
+  )(userConfig, { command: "serve", mode: "development" });
 
   const prefix = base.slice(0, -1); // base without the trailing slash
   const proxy = userConfig.server?.proxy as Record<string, ProxyOptions>;
@@ -99,8 +105,9 @@ it("prefixes proxy contexts with `base` and strips it on rewrite", () => {
   // leaving the route prefix for the backend.
   const ontology = proxy[`${prefix}/ontology-metadata`];
   expect(ontology.target).toBe("https://127.0.0.1:51000");
-  expect(ontology.rewrite?.(`${prefix}/ontology-metadata/foo`))
-    .toBe("/ontology-metadata/foo");
+  expect(ontology.rewrite?.(`${prefix}/ontology-metadata/foo`)).toBe(
+    "/ontology-metadata/foo"
+  );
 
   // Rewrite route: strips both the base and the route prefix.
   const fns = proxy[`${prefix}/local-functions`];

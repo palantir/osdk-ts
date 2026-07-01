@@ -298,9 +298,6 @@ export default defineConfig({
 
   ignorePatterns: [
     ...(core.ignorePatterns ?? []),
-    "**/*.js",
-    "**/*.mjs",
-    "**/*.cjs",
     "**/tsup.config.bundled_*",
     // vitest.config.mts is generated/owned by monorepolint (formatted with dprint);
     // don't let oxlint --fix reorder it or //#check-mrl will fail.
@@ -315,6 +312,8 @@ export default defineConfig({
     "examples/**/*",
     "packages/monorepo.*/**",
     "google-font-mocked-response.js",
+    // Generated mock service worker; not hand-written source.
+    "**/mockServiceWorker.js",
     "tests/",
   ],
 
@@ -328,6 +327,39 @@ export default defineConfig({
       ],
       rules: {
         "palantir-header/header": "off",
+      },
+    },
+    {
+      // The repo's .js/.mjs/.cjs are build scripts, bin shims, and config files.
+      // The prior ESLint config's ruleset targeted .ts/.tsx/.mts/.cts, so these
+      // were only lightly linted (base rules + the license header). Bring them
+      // under oxlint but turn off the error-level rules their existing code first
+      // surfaces, keeping this a behavior-preserving reformat rather than a
+      // rewrite (the license-header rule stays on for parity).
+      //
+      // TODO(#3031 follow-up): each rule below is disabled ONLY because existing
+      // JS build-scripts/configs violate it — not because it's inappropriate for
+      // JS. In a dedicated follow-up PR, re-enable them one by one (fixing the
+      // offending .js/.mjs/.cjs) so JS is held to the same full ruleset as .ts,
+      // then delete this override.
+      files: ["**/*.js", "**/*.mjs", "**/*.cjs"],
+      rules: {
+        "jsdoc/require-property-description": "off",
+        "unicorn/text-encoding-identifier-case": "off",
+        "unicorn/prefer-node-protocol": "off",
+        "unicorn/prefer-import-meta-properties": "off",
+        "unicorn/prefer-optional-catch-binding": "off",
+        "unicorn/prefer-string-replace-all": "off",
+        "unicorn/no-useless-fallback-in-spread": "off",
+        "import/newline-after-import": "off",
+        "prefer-template": "off",
+        "prefer-const": "off",
+        "preserve-caught-error": "off",
+        "no-throw-literal": "off",
+        "no-constant-binary-expression": "off",
+        "func-names": "off",
+        // Build-config files (tsup/vite/postcss) export an anonymous default object.
+        "unicorn/no-anonymous-default-export": "off",
       },
     },
     {

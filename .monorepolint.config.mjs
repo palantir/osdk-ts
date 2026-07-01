@@ -111,7 +111,8 @@ const archetypeRules = archetypes(
   .addArchetype(
     "minimal packages",
     [
-      "@osdk/e2e.generated.1.1.x",
+      // @osdk/e2e.generated.1.1.x migrated to the oxc toolchain (it joins "oxc
+      // migrated minimal packages" below).
       "@osdk/examples.*",
       "@psdk/examples.*",
       "@osdk/monorepo.*",
@@ -125,14 +126,14 @@ const archetypeRules = archetypes(
   .addArchetype(
     "standardLibraries",
     [
+      // The generator packages stay on ESLint (generators are excluded from the oxc
+      // migration). The vite-plugin-* packages migrated to the oxc toolchain (they
+      // join "oxc migrated libraries with carve-outs" below).
       "@osdk/generator-converters",
       "@osdk/generator-converters.ontologyir",
       "@osdk/generator-converters.preview",
       "@osdk/generator-utils",
       "@osdk/generator",
-      "@osdk/vite-plugin-oac",
-      "@osdk/vite-plugin-superrepo",
-      "@osdk/vite-plugin-status-reporter",
     ],
     {
       ...LIBRARY_RULES,
@@ -141,9 +142,9 @@ const archetypeRules = archetypes(
   .addArchetype(
     "consumerCliPackages",
     [
-      "@osdk/cli",
-      "@osdk/create-app",
-      "@osdk/create-widget",
+      // @osdk/cli, @osdk/create-app, and @osdk/create-widget migrated to the oxc
+      // toolchain (see "oxc migrated consumer clis" below); @osdk/foundry-sdk-generator
+      // is a generator package and stays on ESLint.
       "@osdk/foundry-sdk-generator",
     ],
     {
@@ -170,16 +171,21 @@ const archetypeRules = archetypes(
       },
       fixedDepsOnly: true,
       extraPublishFiles: ["build/site"],
+      // Migrated to the oxc toolchain; carries a nested oxlint config for the
+      // error-level Ultracite rules its source first surfaces.
+      oxc: true,
+      oxcConfig: "./oxlint.config.ts",
     },
   )
   .addArchetype(
     "internal clis",
     [
-      "@osdk/create-app.template-packager",
+      // @osdk/create-app.template-packager, @osdk/tool.*, and @osdk/version-updater
+      // migrated to the oxc toolchain (see "oxc migrated internal clis" below); the
+      // *-generator packages stay on ESLint (generators are excluded from the oxc
+      // migration).
       "@osdk/example-generator",
-      "@osdk/tool.*",
       "@osdk/typescript-docs-example-generator",
-      "@osdk/version-updater",
       "@osdk/osdk-docs-context-generator",
     ],
     {
@@ -187,21 +193,75 @@ const archetypeRules = archetypes(
       skipTypes: true,
     },
   )
+  // Internal libraries / templates migrated to the oxc toolchain. Split by whether
+  // the package's source first surfaces error-level Ultracite rules the prior
+  // ESLint config did not enforce: those that do carry a nested oxlint config
+  // (oxcConfig) turning them off; those that do not lint against the root config.
   .addArchetype(
-    "internal libraries / templates",
+    "oxc migrated internal libraries / templates with carve-outs",
     [
       "@osdk/cli.*",
-      "@osdk/client.test.ontology",
-      "@osdk/create-app.template.*",
-      "@osdk/create-widget.template.*",
-      // @osdk/shared.test and its companion @osdk/shared.test.intellisense are
-      // intentionally left on ESLint/dprint in this increment (deferred from the
-      // oxc migration); they move to oxc when linting goes global.
       "@osdk/shared.test",
       "@osdk/shared.test.intellisense",
     ],
     {
       ...INTERNAL_LIBRARY_RULES,
+      oxc: true,
+      oxcConfig: "./oxlint.config.ts",
+    },
+  )
+  .addArchetype(
+    "oxc migrated internal libraries / templates",
+    [
+      "@osdk/client.test.ontology",
+      // These are the create-app / create-widget template *packages* (their own
+      // 1-file src). The shipped scaffolding under each package's templates/ dir is
+      // ignored by oxlint + oxfmt and migrates separately.
+      "@osdk/create-app.template.*",
+      "@osdk/create-widget.template.*",
+    ],
+    {
+      ...INTERNAL_LIBRARY_RULES,
+      oxc: true,
+    },
+  )
+  // Consumer CLIs migrated to the oxc toolchain (from consumerCliPackages; same
+  // esm-bundle output + fixedDepsOnly options). Each surfaces error-level Ultracite
+  // rules the prior ESLint config did not enforce, so each carries a nested config.
+  .addArchetype(
+    "oxc migrated consumer clis",
+    [
+      "@osdk/cli",
+      "@osdk/create-app",
+      "@osdk/create-widget",
+    ],
+    {
+      ...LIBRARY_RULES,
+      output: {
+        browser: undefined,
+        cjs: undefined,
+        esm: "bundle",
+      },
+      fixedDepsOnly: true,
+      oxc: true,
+      oxcConfig: "./oxlint.config.ts",
+    },
+  )
+  // Internal CLIs migrated to the oxc toolchain (from internal clis; same
+  // INTERNAL_LIBRARY_RULES + skipTypes options). Each surfaces error-level Ultracite
+  // rules the prior ESLint config did not enforce, so each carries a nested config.
+  .addArchetype(
+    "oxc migrated internal clis",
+    [
+      "@osdk/create-app.template-packager",
+      "@osdk/tool.*",
+      "@osdk/version-updater",
+    ],
+    {
+      ...INTERNAL_LIBRARY_RULES,
+      skipTypes: true,
+      oxc: true,
+      oxcConfig: "./oxlint.config.ts",
     },
   )
   // Packages migrated to the oxc toolchain (oxlint + oxfmt). As more packages
@@ -248,6 +308,12 @@ const archetypeRules = archetypes(
       "@osdk/oauth",
       "@osdk/faux",
       "@osdk/osdk-docs-context",
+      // vite-plugin-* packages (migrated from standardLibraries): plain
+      // LIBRARY_RULES like the standard libraries, each surfacing error-level rules
+      // the prior ESLint config did not enforce, so each carries a nested config.
+      "@osdk/vite-plugin-oac",
+      "@osdk/vite-plugin-superrepo",
+      "@osdk/vite-plugin-status-reporter",
     ],
     {
       ...LIBRARY_RULES,
@@ -353,6 +419,10 @@ const archetypeRules = archetypes(
     "oxc migrated minimal packages",
     [
       "@osdk/react-components-storybook",
+      // e2e.generated.1.1.x (migrated from "minimal packages"): a generated SDK
+      // fixture; its one hand-written index surfaces no error-level rules, so it
+      // lints against the root config (its scripts are hand-set, see below).
+      "@osdk/e2e.generated.1.1.x",
     ],
     {
       ...LIBRARY_RULES,
@@ -395,6 +465,15 @@ const archetypeRules = archetypes(
       extraTsConfigCompilerOptions: {
         "lib": ["ES2023", "DOM", "ESNEXT.Array"],
       },
+      // NOT migrated to the oxc toolchain in this increment. Its `codegen` step
+      // reformats freshly-generated documentation examples via `pnpm run format`,
+      // and that step runs on every CI test-matrix leg (Node 18-24) because a
+      // generator package, @osdk/osdk-docs-context-generator, depends on this
+      // package's codegen output. oxfmt cannot load the repo's TypeScript
+      // oxfmt.config.ts on Node < 22.18, so the format step must stay on dprint
+      // (which is Node-version-independent). Migrate this package once codegen is
+      // restored from the Node-24 build cache on the matrix (see #3031 follow-up)
+      // rather than re-executed per leg.
     },
   )
   .addArchetype("publishedSandboxes", [
@@ -405,10 +484,19 @@ const archetypeRules = archetypes(
     private: false,
     extraFiles: ["src/"],
     skipBuildInFiles: true,
+    // Migrated to the oxc toolchain; carries a nested oxlint config for the
+    // error-level Ultracite rules its source first surfaces.
+    oxc: true,
+    oxcConfig: "./oxlint.config.ts",
   })
   .addArchetype("publishedGeneratedSdks", ["@osdk/e2e.generated.catchall"], {
     ...LIBRARY_RULES,
     skipAttw: true,
+    // Migrated to the oxc toolchain; carries a nested oxlint config (its
+    // src/index.ts barrel re-exports the generated ontology, tripping
+    // oxc/no-barrel-file once the module graph is resolvable).
+    oxc: true,
+    oxcConfig: "./oxlint.config.ts",
   })
   .addArchetype(
     "currentlyGeneratedSdks",
@@ -419,6 +507,11 @@ const archetypeRules = archetypes(
       ...LIBRARY_RULES,
       skipAttw: true,
       private: true,
+      // Migrated to the oxc toolchain; carries a nested oxlint config (one member's
+      // hand-written index surfaces an error-level rule the prior ESLint did not
+      // enforce).
+      oxc: true,
+      oxcConfig: "./oxlint.config.ts",
     },
   )
   .addArchetype(
@@ -438,6 +531,11 @@ const archetypeRules = archetypes(
       extraTsConfigCompilerOptions: {
         "isolatedDeclarations": false,
       },
+      // Migrated to the oxc toolchain; each carries a nested oxlint config for the
+      // error-level Ultracite rules its source first surfaces (including the
+      // license-header carve-out the prior ESLint config applied to e2e.sandbox.*).
+      oxc: true,
+      oxcConfig: "./oxlint.config.ts",
     },
   )
   .addArchetype(
@@ -455,6 +553,11 @@ const archetypeRules = archetypes(
         "rootDirs": ["./src", "./build/scss-types"],
         "allowArbitraryExtensions": true,
       },
+      // Migrated to the oxc toolchain; carries a nested oxlint config for the
+      // error-level Ultracite rules its source first surfaces. Its .scss/.css are
+      // left to their authors (oxfmt ignores them).
+      oxc: true,
+      oxcConfig: "./oxlint.config.ts",
     },
   )
   .addArchetype(
@@ -465,6 +568,9 @@ const archetypeRules = archetypes(
     {
       ...INTERNAL_LIBRARY_RULES,
       skipTypes: true,
+      // Migrated to the oxc toolchain; surfaces no error-level rules, so it lints
+      // against the root config.
+      oxc: true,
     },
   )
   .addArchetype(
@@ -476,6 +582,10 @@ const archetypeRules = archetypes(
       ...INTERNAL_LIBRARY_RULES,
       output: OUTPUT_NORMAL,
       skipTypes: true,
+      // Migrated to the oxc toolchain; carries a nested oxlint config for the
+      // error-level Ultracite rules its source first surfaces.
+      oxc: true,
+      oxcConfig: "./oxlint.config.ts",
     },
   )
   .addArchetype(
@@ -488,6 +598,11 @@ const archetypeRules = archetypes(
       react: true,
       output: OUTPUT_ESM_ONLY,
       extraPublishFiles: ["build/site"],
+      // Migrated to the oxc toolchain (deferred from the widget batch for churn);
+      // carries a nested oxlint config for the error-level Ultracite rules its
+      // source first surfaces.
+      oxc: true,
+      oxcConfig: "./oxlint.config.ts",
     },
   )
   // The 221-tsx component-library giant migrated to the oxc toolchain. Same

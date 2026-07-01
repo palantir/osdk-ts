@@ -15,8 +15,10 @@
  */
 
 import React from "react";
-import styles from "./MetricsHeader.module.css";
+
 import { MetricTag } from "./MetricTag.js";
+
+import styles from "./MetricsHeader.module.css";
 
 export interface MetricsHeaderProps {
   title: string;
@@ -34,16 +36,16 @@ export function MetricsHeader(props: MetricsHeaderProps): React.JSX.Element {
       <span className={styles.title}>{title}</span>
       <div className={styles.tags}>
         <MetricTag label="shown" value={shownCount} />
-        {totalCount != null
-          ? <MetricTag label="active permanent" value={totalCount} />
-          : null}
-        {isFiltered
-          ? <span className={styles.filteredFlag}>filtered</span>
-          : null}
+        {totalCount != null ? (
+          <MetricTag label="active permanent" value={totalCount} />
+        ) : null}
+        {isFiltered ? (
+          <span className={styles.filteredFlag}>filtered</span>
+        ) : null}
       </div>
-      {rightSlot != null
-        ? <div className={styles.right}>{rightSlot}</div>
-        : null}
+      {rightSlot != null ? (
+        <div className={styles.right}>{rightSlot}</div>
+      ) : null}
     </div>
   );
 }

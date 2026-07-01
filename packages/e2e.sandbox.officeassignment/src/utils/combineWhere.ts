@@ -22,7 +22,7 @@ import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
  * use this to coerce empty clauses to `undefined`.
  */
 export function isNonEmptyWhere<Q extends ObjectTypeDefinition>(
-  clause: WhereClause<Q> | undefined,
+  clause: WhereClause<Q> | undefined
 ): clause is WhereClause<Q> {
   return clause != null && Object.keys(clause).length > 0;
 }
@@ -32,7 +32,7 @@ export function isNonEmptyWhere<Q extends ObjectTypeDefinition>(
  * nothing is left to filter by.
  */
 export function combineWhere<Q extends ObjectTypeDefinition>(
-  clauses: Array<WhereClause<Q> | undefined>,
+  clauses: Array<WhereClause<Q> | undefined>
 ): WhereClause<Q> | undefined {
   const nonEmpty: Array<WhereClause<Q>> = clauses.filter(isNonEmptyWhere);
   if (nonEmpty.length === 0) {

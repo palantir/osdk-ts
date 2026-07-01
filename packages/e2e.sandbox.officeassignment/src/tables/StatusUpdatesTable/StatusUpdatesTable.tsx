@@ -17,6 +17,7 @@
 import type { ObjectSet, WhereClause } from "@osdk/api";
 import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import React from "react";
+
 import { StatusUpdate } from "../../generatedNoCheck2/index.js";
 import {
   type OrderByEntry,
@@ -26,13 +27,12 @@ import {
   createStatusUpdateColumnDefinitions,
   type StatusUpdateColumnRdps,
 } from "./StatusUpdateColumnDefinitions.js";
+
 import styles from "./StatusUpdatesTable.module.css";
 
 const DEFAULT_ORDER_BY: Array<
   OrderByEntry<StatusUpdate, StatusUpdateColumnRdps>
-> = [
-  { property: "timestampEpochMs", direction: "desc" },
-];
+> = [{ property: "timestampEpochMs", direction: "desc" }];
 
 // Static column definitions — no runtime inputs, so hoisted out of the component.
 const BASE_COLUMN_DEFS = createStatusUpdateColumnDefinitions();
@@ -53,7 +53,7 @@ export const StatusUpdatesTable = React.memo<StatusUpdatesTableProps>(
       handleColumnsPinnedChanged,
     } = useObjectTableState<StatusUpdate, StatusUpdateColumnRdps>(
       BASE_COLUMN_DEFS,
-      DEFAULT_ORDER_BY,
+      DEFAULT_ORDER_BY
     );
 
     return (
@@ -72,5 +72,5 @@ export const StatusUpdatesTable = React.memo<StatusUpdatesTableProps>(
         selectionMode="none"
       />
     );
-  },
+  }
 );
