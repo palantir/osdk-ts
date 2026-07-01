@@ -208,11 +208,11 @@ describe("BaseAipAgentChat", () => {
     expect(onClearError).toHaveBeenCalled();
   });
 
-  it("renders composerFooter content inside the composer footer", () => {
+  it("renders composerActions content in the composer action row", () => {
     render(
       <BaseAipAgentChat
-        composerFooter={
-          <span data-testid="footer-slot">model-picker-stub</span>
+        composerActions={
+          <span data-testid="actions-slot">context-picker-stub</span>
         }
         messages={[]}
         status="ready"
@@ -223,7 +223,43 @@ describe("BaseAipAgentChat", () => {
       />
     );
 
-    const slot = screen.getByTestId("footer-slot");
+    const slot = screen.getByTestId("actions-slot");
+    expect(slot.textContent).toBe("context-picker-stub");
+  });
+
+  it("renders aboveComposer content above the composer box", () => {
+    render(
+      <BaseAipAgentChat
+        aboveComposer={
+          <span data-testid="above-slot">context-picker-stub</span>
+        }
+        messages={[]}
+        status="ready"
+        error={undefined}
+        onSendMessage={vi.fn()}
+        onStop={vi.fn()}
+        onClearError={vi.fn()}
+      />
+    );
+
+    const slot = screen.getByTestId("above-slot");
+    expect(slot.textContent).toBe("context-picker-stub");
+  });
+
+  it("renders belowComposer content below the composer box", () => {
+    render(
+      <BaseAipAgentChat
+        belowComposer={<span data-testid="below-slot">model-picker-stub</span>}
+        messages={[]}
+        status="ready"
+        error={undefined}
+        onSendMessage={vi.fn()}
+        onStop={vi.fn()}
+        onClearError={vi.fn()}
+      />
+    );
+
+    const slot = screen.getByTestId("below-slot");
     expect(slot.textContent).toBe("model-picker-stub");
   });
 

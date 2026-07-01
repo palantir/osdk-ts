@@ -74,6 +74,36 @@ function MyChat() {
 The component manages model state internally; `onModelChange` is a
 non-controlling listener (analytics, persistence, etc.).
 
+### With object-type context
+
+Let users ground the conversation in their data. Pass `objectTypes`
+(the same OSDK object definitions `ObjectTable` accepts) and a
+multi-select picker appears in the composer footer. When the user
+selects a type, its objects are fetched via `useOsdkObjects` and a
+serialized snapshot is appended to the system prompt, so the model can
+answer questions about that data.
+
+```tsx
+import { Employee, Office } from "./generatedNoCheck2/index.js";
+
+<AipAgentChat
+  client={platformClient}
+  objectTypes={[Employee, Office]}
+  defaultSelectedObjectTypes={["Employee"]} // optional initial selection
+  onSelectedObjectTypesChanged={(apiNames) => analytics.track({ apiNames })}
+/>;
+```
+
+Requirements and behavior:
+
+- The app must be wrapped in `OsdkProvider` (same as `ObjectTable`),
+  since `useOsdkObjects` reads the OSDK client from React context. The
+  `client` prop is only the `PlatformClient` used for the LMS.
+- Fetching is lazy — nothing loads until a type is selected, and
+  deselecting a type drops it from the prompt.
+- Selection is uncontrolled: seed it with `defaultSelectedObjectTypes`
+  and observe changes via `onSelectedObjectTypesChanged`.
+
 ### Custom render
 
 ```tsx
@@ -192,6 +222,11 @@ optional props:
 
 - `availableModels` + `onModelChange` — render a model picker in the
   composer footer.
+- `objectTypes` + `defaultSelectedObjectTypes` +
+  `onSelectedObjectTypesChanged` — render an object-type context picker
+  in the composer footer; selected types are fetched via
+  `useOsdkObjects` and folded into the system prompt. Requires
+  `OsdkProvider`.
 - `system` — system prompt prepended to every request.
 - `initialMessages` — seed conversation snapshot.
 - `enableAutoScroll` (default `true`) — auto-pin to the bottom of the

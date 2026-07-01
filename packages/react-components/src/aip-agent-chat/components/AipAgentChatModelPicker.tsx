@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import { CaretDown } from "@blueprintjs/icons";
 import classNames from "classnames";
 import * as React from "react";
-
 import styles from "../AipAgentChat.module.css";
 
 export interface AipAgentChatModelPickerProps {
@@ -27,13 +27,6 @@ export interface AipAgentChatModelPickerProps {
   className?: string;
 }
 
-/**
- * Native-select model picker rendered in the composer footer when the
- * OSDK wrapper is given an `availableModels` list. Operates on Foundry
- * LMS model API names. Renders a read-only label when exactly one model
- * is available so the active model stays visible without offering a
- * dropdown the user can't act on; renders nothing when the list is empty.
- */
 export function AipAgentChatModelPicker({
   models,
   activeModel,
@@ -45,7 +38,7 @@ export function AipAgentChatModelPicker({
     (event: React.ChangeEvent<HTMLSelectElement>) => {
       onModelChange(event.target.value);
     },
-    [onModelChange]
+    [onModelChange],
   );
 
   if (models.length === 0) {
@@ -54,25 +47,33 @@ export function AipAgentChatModelPicker({
 
   if (models.length === 1) {
     return (
-      <span className={classNames(styles.modelPickerLabel, className)}>
-        Model: {activeModel}
+      <span className={classNames(styles.modelPicker, className)}>
+        <span className={styles.modelPickerPrefix}>Model:</span>
+        <span className={styles.modelPickerValue}>{activeModel}</span>
       </span>
     );
   }
 
   return (
-    <select
-      aria-label="Active model"
-      className={classNames(styles.modelPicker, className)}
-      disabled={disabled}
-      onChange={handleChange}
-      value={activeModel}
-    >
-      {models.map((modelName) => (
-        <option key={modelName} value={modelName}>
-          {modelName}
-        </option>
-      ))}
-    </select>
+    <span className={classNames(styles.modelPicker, className)}>
+      <span className={styles.modelPickerPrefix}>Model:</span>
+      <span className={styles.modelPickerControl}>
+        <span className={styles.modelPickerValue}>{activeModel}</span>
+        <CaretDown className={styles.modelPickerCaret} size={14} />
+        <select
+          aria-label="Active model"
+          className={styles.modelPickerNativeSelect}
+          disabled={disabled}
+          onChange={handleChange}
+          value={activeModel}
+        >
+          {models.map(modelName => (
+            <option key={modelName} value={modelName}>
+              {modelName}
+            </option>
+          ))}
+        </select>
+      </span>
+    </span>
   );
 }

@@ -20,11 +20,20 @@ import * as React from "react";
 
 import type { AipAgentChatProps } from "./AipAgentChatApi.js";
 import { BaseAipAgentChat } from "./BaseAipAgentChat.js";
+import {
+  buildObjectContext,
+  combineSystemPrompt,
+  type LoadedObjectContext,
+} from "./buildObjectContext.js";
+import { AipAgentChatContextLoader } from "./components/AipAgentChatContextLoader.js";
+import { AipAgentChatContextPicker } from "./components/AipAgentChatContextPicker.js";
 import { AipAgentChatModelPicker } from "./components/AipAgentChatModelPicker.js";
 
 export type { AipAgentChatProps } from "./AipAgentChatApi.js";
 
 const FALLBACK_MODEL_API_NAME = "gpt-4o";
+const EMPTY_SELECTION: ReadonlyArray<string> = [];
+const EMPTY_LOADED: ReadonlyMap<string, ReadonlyArray<unknown>> = new Map();
 
 /**
  * OSDK-aware chat surface backed by Foundry's Language Model Service.
@@ -39,6 +48,9 @@ export function AipAgentChat({
   availableModels,
   onModelChange,
   system,
+  objectTypes,
+  defaultSelectedObjectTypes,
+  onSelectedObjectTypesChanged,
   initialMessages,
   className,
   placeholder,
@@ -77,9 +89,84 @@ export function AipAgentChat({
     [client, activeModel]
   );
 
+  // Map api name -> object type definition, plus the list of api names the
+  // picker offers. Both are stable for a given `objectTypes` array.
+  const objectTypeByApiName = React.useMemo(() => {
+    const map = new Map<string, NonNullable<typeof objectTypes>[number]>();
+    for (const objectType of objectTypes ?? []) {
+      map.set(objectType.apiName, objectType);
+    }
+    return map;
+  }, [objectTypes]);
+
+  const availableObjectTypeApiNames = React.useMemo(
+    () => Array.from(objectTypeByApiName.keys()),
+    [objectTypeByApiName]
+  );
+
+  // Selection is uncontrolled: seed from `defaultSelectedObjectTypes`,
+  // dropping any api names not present in `objectTypes`.
+  const [selectedObjectTypes, setSelectedObjectTypes] = React.useState<
+    ReadonlyArray<string>
+  >(() =>
+    (defaultSelectedObjectTypes ?? EMPTY_SELECTION).filter((apiName) =>
+      objectTypeByApiName.has(apiName)
+    )
+  );
+
+  const handleSelectedObjectTypesChange = React.useCallback(
+    (next: ReadonlyArray<string>) => {
+      setSelectedObjectTypes(next);
+      onSelectedObjectTypesChanged?.(next);
+    },
+    [onSelectedObjectTypesChanged]
+  );
+
+  // Objects loaded per selected type, lifted from the per-type loaders.
+  const [loadedByType, setLoadedByType] =
+    React.useState<ReadonlyMap<string, ReadonlyArray<unknown>>>(EMPTY_LOADED);
+
+  const handleObjectsLoaded = React.useCallback(
+    (apiName: string, objects: ReadonlyArray<unknown> | undefined) => {
+      setLoadedByType((prev) => {
+        if (objects == null) {
+          if (!prev.has(apiName)) {
+            return prev;
+          }
+          const next = new Map(prev);
+          next.delete(apiName);
+          return next;
+        }
+        if (prev.get(apiName) === objects) {
+          return prev;
+        }
+        const next = new Map(prev);
+        next.set(apiName, objects);
+        return next;
+      });
+    },
+    []
+  );
+
+  const objectContext = React.useMemo(() => {
+    const loaded: Array<LoadedObjectContext> = [];
+    for (const apiName of selectedObjectTypes) {
+      const objects = loadedByType.get(apiName);
+      if (objects != null) {
+        loaded.push({ apiName, objects });
+      }
+    }
+    return buildObjectContext(loaded);
+  }, [selectedObjectTypes, loadedByType]);
+
+  const augmentedSystem = React.useMemo(
+    () => combineSystemPrompt(system, objectContext),
+    [system, objectContext]
+  );
+
   const { messages, status, error, sendMessage, stop, clearError } = useChat({
     model,
-    system,
+    system: augmentedSystem,
     messages: initialMessages,
     onError,
     onFinish,
@@ -109,30 +196,57 @@ export function AipAgentChat({
 
   const isInFlight = status === "submitted" || status === "streaming";
 
-  const composerFooter =
-    availableModels != null && availableModels.length > 0 ? (
-      <AipAgentChatModelPicker
-        activeModel={activeModel}
-        models={availableModels}
-        onModelChange={handleModelChange}
-        disabled={isInFlight}
-      />
-    ) : undefined;
+  const hasModelPicker = availableModels != null && availableModels.length > 0;
+  const hasContextPicker = availableObjectTypeApiNames.length > 0;
+
+  const composerActions = hasContextPicker ? (
+    <AipAgentChatContextPicker
+      objectTypes={availableObjectTypeApiNames}
+      selected={selectedObjectTypes}
+      onChange={handleSelectedObjectTypesChange}
+      disabled={isInFlight}
+    />
+  ) : undefined;
+
+  const belowComposer = hasModelPicker ? (
+    <AipAgentChatModelPicker
+      activeModel={activeModel}
+      models={availableModels}
+      onModelChange={handleModelChange}
+      disabled={isInFlight}
+    />
+  ) : undefined;
 
   return (
-    <BaseAipAgentChat
-      className={className}
-      composerFooter={composerFooter}
-      enableAutoScroll={enableAutoScroll}
-      messages={messages}
-      status={status}
-      error={error}
-      onClearError={clearError}
-      onSendMessage={handleSendMessage}
-      onStop={stop}
-      placeholder={placeholder}
-      renderEmptyState={renderEmptyState}
-      renderMessage={renderMessage}
-    />
+    <>
+      {selectedObjectTypes.map((apiName) => {
+        const objectType = objectTypeByApiName.get(apiName);
+        if (objectType == null) {
+          return null;
+        }
+        return (
+          <AipAgentChatContextLoader
+            key={apiName}
+            objectType={objectType}
+            onLoaded={handleObjectsLoaded}
+          />
+        );
+      })}
+      <BaseAipAgentChat
+        composerActions={composerActions}
+        belowComposer={belowComposer}
+        className={className}
+        enableAutoScroll={enableAutoScroll}
+        messages={messages}
+        status={status}
+        error={error}
+        onClearError={clearError}
+        onSendMessage={handleSendMessage}
+        onStop={stop}
+        placeholder={placeholder}
+        renderEmptyState={renderEmptyState}
+        renderMessage={renderMessage}
+      />
+    </>
   );
 }

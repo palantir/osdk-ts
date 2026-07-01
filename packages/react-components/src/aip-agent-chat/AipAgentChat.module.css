@@ -146,43 +146,96 @@
 .inputActions {
   align-items: center;
   display: flex;
-  justify-content: flex-end;
+  gap: var(--osdk-aip-agent-chat-section-gap);
   padding: 0 var(--osdk-aip-agent-chat-section-gap)
     var(--osdk-aip-agent-chat-section-gap);
 }
 
-.composerFooterLeft {
+.inputActionsLeft {
   align-items: center;
   display: flex;
-  flex: 1 1 auto;
+  gap: var(--osdk-surface-spacing);
+  min-width: 0;
+}
+
+/* Pushes the send/stop button to the right edge of the action row so the
+   left-hand actions ("+" picker) stay left-aligned. */
+.inputActionsEnd {
+  align-items: center;
+  display: flex;
+  margin-left: auto;
+}
+
+/* Row rendered below the composer box (e.g. the model picker), left-aligned
+   under the input. */
+.belowComposer {
+  align-items: center;
+  display: flex;
   gap: var(--osdk-aip-agent-chat-section-gap);
   min-width: 0;
 }
 
 .modelPicker {
-  background: var(--osdk-background-primary);
-  border: 1px solid var(--osdk-surface-border-color-default);
-  border-radius: var(--osdk-aip-agent-chat-border-radius);
+  align-items: center;
   color: var(--osdk-typography-color-default-rest);
+  display: inline-flex;
   font-family: inherit;
   font-size: var(--osdk-typography-size-body-small);
-  outline: none;
-  padding: calc(var(--osdk-surface-spacing) * 1)
-    calc(var(--osdk-surface-spacing) * 2);
+  gap: var(--osdk-surface-spacing);
 }
 
-.modelPicker:focus {
-  border-color: var(--osdk-emphasis-focus-color);
+.modelPickerPrefix {
+  color: var(--osdk-typography-color-muted);
 }
 
-.modelPicker:disabled {
+.modelPickerValue {
+  color: var(--osdk-typography-color-default-rest);
+  font-weight: var(--osdk-typography-weight-bold);
+}
+
+.modelPickerControl {
+  align-items: center;
+  cursor: pointer;
+  display: inline-flex;
+  gap: calc(var(--osdk-surface-spacing) * 0.5);
+  position: relative;
+}
+
+.modelPickerCaret {
+  color: var(--osdk-typography-color-muted);
+  flex: 0 0 auto;
+}
+
+/* Transparent native select overlaid on the styled label so the whole
+   "Model: <name> ^" area is clickable while native dropdown behavior and
+   accessibility are preserved. */
+.modelPickerNativeSelect {
+  cursor: pointer;
+  inset: 0;
+  opacity: 0;
+  position: absolute;
+}
+
+.modelPickerControl:has(.modelPickerNativeSelect:disabled) {
   cursor: not-allowed;
   opacity: 0.6;
 }
 
-.modelPickerLabel {
-  color: var(--osdk-typography-color-muted);
-  font-size: var(--osdk-typography-size-body-small);
+/* Row rendered above the composer box (e.g. the object-context picker),
+   left-aligned above the input. */
+.aboveComposer {
+  align-items: center;
+  display: flex;
+  gap: var(--osdk-aip-agent-chat-section-gap);
+  min-width: 0;
+}
+
+/* Constrains DropdownField (which stretches to 100%) so the trigger sits at
+   its content width, left-aligned in the aboveComposer row. */
+.contextPickerWrapper {
+  align-self: flex-start;
+  display: inline-flex;
+  width: fit-content;
 }
 
 .loader {

@@ -17,9 +17,7 @@
 import { Input } from "@base-ui/react/input";
 import classNames from "classnames";
 import * as React from "react";
-
 import { ActionButton } from "../../base-components/action-button/ActionButton.js";
-
 import styles from "../AipAgentChat.module.css";
 
 export interface AipAgentChatComposerProps {
@@ -29,10 +27,20 @@ export interface AipAgentChatComposerProps {
   placeholder?: string;
   className?: string;
   /**
-   * Optional content rendered to the left of the send button (e.g. the
-   * model picker passed in by the OSDK wrapper).
+   * Optional content rendered in the composer's action row, to the left of
+   * the send button.
    */
-  footerLeft?: React.ReactNode;
+  actionsLeft?: React.ReactNode;
+  /**
+   * Optional content rendered above the composer box (e.g. the object-context
+   * dropdown button).
+   */
+  aboveComposer?: React.ReactNode;
+  /**
+   * Optional content rendered below the composer box (e.g. the model
+   * picker).
+   */
+  belowComposer?: React.ReactNode;
 }
 
 /**
@@ -46,7 +54,9 @@ export function AipAgentChatComposer({
   onStop,
   placeholder,
   className,
-  footerLeft,
+  actionsLeft,
+  aboveComposer,
+  belowComposer,
 }: AipAgentChatComposerProps): React.ReactElement {
   const [draft, setDraft] = React.useState("");
 
@@ -79,7 +89,7 @@ export function AipAgentChatComposer({
         }
       }
     },
-    [handleSend, isInFlight]
+    [handleSend, isInFlight],
   );
 
   // Attach the keydown handler in the `render` prop so it can be typed against
@@ -88,11 +98,14 @@ export function AipAgentChatComposer({
     (props: React.ComponentPropsWithRef<"textarea">) => (
       <textarea {...props} onKeyDown={handleKeyDown} rows={3} />
     ),
-    [handleKeyDown]
+    [handleKeyDown],
   );
 
   return (
     <div className={classNames(styles.composer, className)}>
+      {aboveComposer != null && (
+        <div className={styles.aboveComposer}>{aboveComposer}</div>
+      )}
       <div className={styles.inputWrapper}>
         <Input
           aria-label="Message input"
@@ -103,24 +116,31 @@ export function AipAgentChatComposer({
           render={renderTextarea}
         />
         <div className={styles.inputActions}>
-          {isInFlight && onStop != null ? (
-            <ActionButton onClick={onStop} type="button">
-              Stop
-            </ActionButton>
-          ) : (
-            <ActionButton
-              disabled={!canSend}
-              onClick={handleSend}
-              type="button"
-              variant="primary"
-            >
-              Send
-            </ActionButton>
+          {actionsLeft != null && (
+            <div className={styles.inputActionsLeft}>{actionsLeft}</div>
           )}
+          <div className={styles.inputActionsEnd}>
+            {isInFlight && onStop != null
+              ? (
+                <ActionButton onClick={onStop} type="button">
+                  Stop
+                </ActionButton>
+              )
+              : (
+                <ActionButton
+                  disabled={!canSend}
+                  onClick={handleSend}
+                  type="button"
+                  variant="primary"
+                >
+                  Send
+                </ActionButton>
+              )}
+          </div>
         </div>
       </div>
-      {footerLeft != null && (
-        <div className={styles.composerFooterLeft}>{footerLeft}</div>
+      {belowComposer != null && (
+        <div className={styles.belowComposer}>{belowComposer}</div>
       )}
     </div>
   );

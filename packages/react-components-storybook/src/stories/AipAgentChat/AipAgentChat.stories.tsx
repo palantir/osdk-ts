@@ -18,9 +18,14 @@ import type {
   BaseAipAgentChatProps,
   UIMessage,
 } from "@osdk/react-components/experimental/aip-agent-chat";
-import { BaseAipAgentChat } from "@osdk/react-components/experimental/aip-agent-chat";
+import {
+  AipAgentChatContextPicker,
+  AipAgentChatModelPicker,
+  BaseAipAgentChat,
+} from "@osdk/react-components/experimental/aip-agent-chat";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import * as React from "react";
+import type { JSX } from "react/jsx-runtime";
 
 let nextId = 1;
 function makeId(): string {
@@ -48,25 +53,39 @@ const SAMPLE_CONVERSATION: UIMessage[] = [
   ),
 ];
 
+const SAMPLE_OBJECT_TYPES = ["Employee", "Office", "Project"];
+const SAMPLE_MODELS = ["gpt-4o", "gpt-4o-mini"];
+
+function noopModelChange(): void {}
+
+interface InteractiveChatProps extends Omit<
+  BaseAipAgentChatProps,
+  | "messages"
+  | "status"
+  | "error"
+  | "onSendMessage"
+  | "onStop"
+  | "onClearError"
+  | "composerActions"
+  | "belowComposer"
+> {
+  initialMessages?: UIMessage[];
+  simulateError?: boolean;
+  enableModelPicker?: boolean;
+  enableContextPicker?: boolean;
+}
+
 /**
  * Interactive wrapper that manages message state and simulates streaming
  * responses so the story behaves like a real chat.
  */
-function InteractiveChat(
-  props: Omit<
-    BaseAipAgentChatProps,
-    | "messages"
-    | "status"
-    | "error"
-    | "onSendMessage"
-    | "onStop"
-    | "onClearError"
-  > & {
-    initialMessages?: UIMessage[];
-    simulateError?: boolean;
-  }
-) {
-  const { initialMessages = [], simulateError = false, ...rest } = props;
+function InteractiveChat({
+  initialMessages = [],
+  simulateError = false,
+  enableModelPicker = true,
+  enableContextPicker = false,
+  ...rest
+}: InteractiveChatProps): JSX.Element {
   const [messages, setMessages] = React.useState<UIMessage[]>(initialMessages);
   const [status, setStatus] = React.useState<
     "ready" | "submitted" | "streaming"
@@ -76,6 +95,9 @@ function InteractiveChat(
       ? new Error("Connection timed out. Please try again.")
       : undefined
   );
+  const [selectedObjectTypes, setSelectedObjectTypes] = React.useState<
+    ReadonlyArray<string>
+  >([]);
   const abortRef = React.useRef(false);
 
   const onSendMessage = React.useCallback(async (text: string) => {
@@ -129,6 +151,24 @@ function InteractiveChat(
   return (
     <BaseAipAgentChat
       {...rest}
+      belowComposer={
+        enableModelPicker ? (
+          <AipAgentChatModelPicker
+            activeModel={SAMPLE_MODELS[0]!}
+            models={SAMPLE_MODELS}
+            onModelChange={noopModelChange}
+          />
+        ) : undefined
+      }
+      composerActions={
+        enableContextPicker ? (
+          <AipAgentChatContextPicker
+            objectTypes={SAMPLE_OBJECT_TYPES}
+            selected={selectedObjectTypes}
+            onChange={setSelectedObjectTypes}
+          />
+        ) : undefined
+      }
       error={error}
       messages={messages}
       onClearError={onClearError}
@@ -140,10 +180,11 @@ function InteractiveChat(
 }
 
 const meta: Meta<typeof InteractiveChat> = {
-  title: "Beta/AipAgentChat",
+  title: "Components/AipAgentChat",
   component: InteractiveChat,
+  tags: ["beta"],
   render: (args) => (
-    <div style={{ height: "600px", maxWidth: "700px" }}>
+    <div style={{ height: "800px" }}>
       <InteractiveChat {...args} />
     </div>
   ),
@@ -153,6 +194,7 @@ const meta: Meta<typeof InteractiveChat> = {
 };
 
 export default meta;
+
 type Story = StoryObj<typeof meta>;
 
 /** Empty chat with the default welcome state. Type a message to start a simulated conversation. */
@@ -177,5 +219,16 @@ export const WithError: Story = {
 export const CustomPlaceholder: Story = {
   args: {
     placeholder: "Ask me anything about your data...",
+  },
+};
+
+/**
+ * Chat with the object-type context multi-select rendered in the composer
+ * footer inline with the Send button. Pick one or more object types to load
+ * their objects as context.
+ */
+export const WithObjectContextPicker: Story = {
+  args: {
+    enableContextPicker: true,
   },
 };
