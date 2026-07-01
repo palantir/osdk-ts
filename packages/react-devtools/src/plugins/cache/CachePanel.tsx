@@ -16,9 +16,9 @@
 
 import React, { type FC } from "react";
 
-import { CacheInspectorTab } from "../../components/CacheInspectorTab.js";
 import type { DevToolsPanelProps } from "../types.js";
+import { CacheSplitView } from "./CacheSplitView.js";
 
 export const CachePanel: FC<DevToolsPanelProps> = ({ monitorStore }) => {
-  return <CacheInspectorTab monitorStore={monitorStore} />;
+  return <CacheSplitView monitorStore={monitorStore} />;
 };

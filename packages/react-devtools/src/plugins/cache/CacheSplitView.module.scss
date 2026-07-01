@@ -1,0 +1,33 @@
+@use '../../components/tokens' as t;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.topPane {
+  flex: 0 0 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.divider {
+  flex: 0 0 6px;
+  cursor: ns-resize;
+  background: t.$border-default;
+  transition: background t.$transition-fast;
+
+  &:hover {
+    background: var(--dt-blue-resize-hover);
+  }
+}
+
+.bottomPane {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
