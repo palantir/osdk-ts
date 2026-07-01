@@ -226,6 +226,11 @@ const archetypeRules = archetypes(
   // Packages migrated to the oxc toolchain (oxlint + oxfmt). As more packages
   // are migrated, add them here (taking care not to capture generated
   // namespace-prefix children via monorepolint's archetype matching).
+  //
+  // TODO: these "oxc migrated ..." archetypes are transitional. Once every
+  // package is on the oxc toolchain (the final flip in #3031), oxc becomes the
+  // default and the "migrated" distinction disappears — collapse these back into
+  // the base library archetypes and drop the `oxc: true` / `oxcConfig` plumbing.
   .addArchetype(
     "oxc migrated libraries",
     [
