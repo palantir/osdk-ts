@@ -19,55 +19,60 @@ const projects: MockProject[] = [
   {
     $apiName: "MockProject",
     $primaryKey: "1",
+    description: "This is a mock description",
     id: "1",
     name: "Mock project",
-    description: "This is a mock description",
     tasks: [
       {
         $apiName: "MockTask",
         $primaryKey: "1",
+        description: "task description 1",
         id: "1",
         title: "Try to",
-        description: "task description 1",
       },
       {
         $apiName: "MockTask",
         $primaryKey: "2",
+        description: "task description 2",
         id: "2",
         title: "Implement this",
-        description: "task description 2",
       },
       {
         $apiName: "MockTask",
         $primaryKey: "3",
+        description: "task description 3",
         id: "3",
         title: "With the Ontology SDK!",
-        description: "task description 3",
       },
     ],
   },
   {
     $apiName: "MockProject",
     $primaryKey: "2",
+    description: "This is another mock description",
     id: "2",
     name: "Yet another mock project",
-    description: "This is another mock description",
     tasks: [
       {
         $apiName: "MockTask",
         $primaryKey: "4",
+        description: "More task description",
         id: "4",
         title: "More tasks here",
-        description: "More task description",
       },
     ],
   },
 ];
 
-async function delay(): Promise<void> {
-  return new Promise((resolve) =>
-    setTimeout(() => resolve(), 500 + Math.random() * 1000)
-  );
+export function sleep(ms: number): Promise<void> {
+  // oxlint-disable-next-line promise/avoid-new -- a timer-based delay legitimately needs a new Promise
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+function delay(): Promise<void> {
+  return sleep(500 + Math.random() * 1000);
 }
 
 // Good enough random id for mocks
@@ -94,27 +99,29 @@ async function createProject({
   projects.push({
     $apiName: "MockProject",
     $primaryKey: id,
+    description,
     id,
     name,
-    description,
     tasks: [],
   });
   return id;
 }
 
 async function getRecommendedProjectDescription(
-  project: MockProject,
+  project: MockProject
 ): Promise<string> {
   await delay();
-  if (project.tasks != null && project.tasks.length === 0) {
+  if (
+    project.tasks !== undefined &&
+    project.tasks !== null &&
+    project.tasks.length === 0
+  ) {
     throw new Error("Project description recommendation requires tasks");
   }
   return `AIP Logic mock description for project`;
 }
 
-async function updateProjectDescription(
-  project: MockProject,
-): Promise<void> {
+async function updateProjectDescription(project: MockProject): Promise<void> {
   await delay();
   project.description = await getRecommendedProjectDescription(project);
 }
@@ -138,22 +145,22 @@ async function createTask({
 }): Promise<MockTask["$primaryKey"]> {
   await delay();
   const project = projects.find((p) => p.id === projectId);
-  if (project == null) {
+  if (project === undefined || project === null) {
     throw new Error(`Project ${projectId} not found!`);
   }
   const id = randomId();
   project.tasks.unshift({
     $apiName: "MockTask",
     $primaryKey: id,
+    description,
     id,
     title,
-    description,
   });
   return id;
 }
 
 async function getRecommendedTaskDescription(
-  taskName: string,
+  taskName: string
 ): Promise<string> {
   await delay();
   if (taskName.length === 0) {
@@ -173,12 +180,12 @@ async function deleteTask(id: string): Promise<void> {
 }
 
 const Mocks = {
-  getProjects,
   createProject,
-  getRecommendedProjectDescription,
-  deleteProject,
   createTask,
+  deleteProject,
   deleteTask,
+  getProjects,
+  getRecommendedProjectDescription,
   getRecommendedTaskDescription,
   updateProjectDescription,
 };

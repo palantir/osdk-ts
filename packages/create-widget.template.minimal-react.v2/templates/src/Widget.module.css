@@ -1,23 +1,23 @@
 .container {
-    background-color: var(--white);
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
+  background-color: var(--white);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
 }
 
 @media (prefers-color-scheme: dark) {
-    .container {
-        background-color: var(--dark-gray3);
-    }
+  .container {
+    background-color: var(--dark-gray3);
+  }
 }
 
 .card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    width: 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 150px;
 }

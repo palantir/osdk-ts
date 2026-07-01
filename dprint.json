@@ -16,6 +16,11 @@
     "**/.turbo",
     "**/src/generatedNoCheck/",
     "**/src/generatedNoCheck2/",
+    // create-app/create-widget scaffold content is shipped to generated
+    // projects and formatted for those projects (oxfmt via the templates'
+    // own oxfmt.config.ts), so it must not be reformatted by the monorepo's
+    // dprint. The generated examples exercise this content under oxfmt/oxlint.
+    "**/templates/",
     "pnpm-lock.yaml",
     ".vscode/settings.json",
     "examples/",

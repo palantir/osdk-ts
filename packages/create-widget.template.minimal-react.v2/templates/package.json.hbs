@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
+    "check": "ultracite check",
+    "fix": "ultracite fix",
+    "format": "oxfmt .",
+    "lint": "oxlint",
     "test": "vitest run --passWithNoTests",
     "preview": "vite preview"
   },
@@ -16,6 +19,9 @@
     "@osdk/widget.client": "^3.26.0"
   },
   "devDependencies": {
-    "@osdk/widget.vite-plugin": "^3.26.0"
+    "@osdk/widget.vite-plugin": "^3.26.0",
+    "oxfmt": "^0.52.0",
+    "oxlint": "^1.67.0",
+    "ultracite": "^7.8.0"
   }
 }
