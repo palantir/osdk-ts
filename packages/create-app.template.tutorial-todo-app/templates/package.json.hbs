@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
+    "check": "ultracite check",
+    "fix": "ultracite fix",
+    "format": "oxfmt .",
+    "lint": "oxlint",
     "test": "vitest run",
     "preview": "vite preview"
   },
@@ -14,5 +17,8 @@
     "{{osdkPackage}}": "latest"
   },
   "devDependencies": {
+    "oxfmt": "^0.52.0",
+    "oxlint": "^1.67.0",
+    "ultracite": "^7.8.0"
   }
 }

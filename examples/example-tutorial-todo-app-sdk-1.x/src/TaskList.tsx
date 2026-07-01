@@ -1,7 +1,8 @@
-import { MockProject } from "./mocks";
-import css from "./TaskList.module.css";
+import type { MockProject } from "./mocks";
 import TaskListItem from "./TaskListItem";
 import { useProjectTasks } from "./useProjectTasks";
+
+import css from "./TaskList.module.css";
 
 interface TaskListProps {
   project: MockProject;

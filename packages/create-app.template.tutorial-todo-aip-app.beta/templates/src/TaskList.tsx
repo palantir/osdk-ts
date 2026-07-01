@@ -1,7 +1,8 @@
-import css from "./TaskList.module.css";
 import TaskListItem from "./TaskListItem";
-import { IProject } from "./useProjects";
+import type { IProject } from "./useProjects";
 import { useProjectTasks } from "./useProjectTasks";
+
+import css from "./TaskList.module.css";
 
 interface TaskListProps {
   project: IProject;

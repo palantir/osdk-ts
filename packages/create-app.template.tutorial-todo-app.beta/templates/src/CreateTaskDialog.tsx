@@ -1,6 +1,8 @@
-import { ChangeEvent, useCallback, useEffect, useState } from "react";
+import type { ChangeEvent } from "react";
+import { useCallback, useEffect, useState } from "react";
+
 import Dialog from "./Dialog";
-import { IProject } from "./useProjects";
+import type { IProject } from "./useProjects";
 import { useProjectTasks } from "./useProjectTasks";
 
 interface CreateTaskDialogProps {
@@ -15,7 +17,7 @@ function CreateTaskDialog({ project, isOpen, onClose }: CreateTaskDialogProps) {
   const [name, setName] = useState<string>("New task");
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => setName(e.target.value),
-    [],
+    []
   );
 
   useEffect(() => setName("New task"), [isOpen]);
@@ -44,7 +46,13 @@ function CreateTaskDialog({ project, isOpen, onClose }: CreateTaskDialogProps) {
       ]}
     >
       <label>
-        Task name: <input type="text" value={name} onChange={handleChange} />
+        Task name:{" "}
+        <input
+          type="text"
+          value={name}
+          onChange={handleChange}
+          aria-label="Task name"
+        />
       </label>
     </Dialog>
   );
