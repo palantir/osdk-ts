@@ -2,6 +2,13 @@
 @use 'mixins' as m;
 @use 'theme' as theme;
 
+// Blueprint tooltip/popover portals mount at document.body with a low default
+// z-index, which leaves them behind the floating panel and makes the info
+// tooltips unreadable. Lift devtools overlays above the panel.
+:global(.osdk-devtools-portal) {
+  z-index: t.$z-modal;
+}
+
 .panel {
   @include theme.dt-dark-theme;
 
@@ -195,7 +202,9 @@
 
 .content {
   flex: 1;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   pointer-events: auto;
@@ -214,14 +223,6 @@
 
 .tabButtonActive {
   @include m.dt-tab-active;
-}
-
-.tabContentVisible {
-  display: contents;
-}
-
-.tabContentHidden {
-  display: none;
 }
 
 .metricsGrid {
@@ -309,8 +310,6 @@
 
 .operationsList {
   flex: 1;
-  overflow: auto;
-  @include m.dt-scrollbar;
 }
 
 .operationItem {
