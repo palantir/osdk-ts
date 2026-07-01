@@ -17,11 +17,15 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { styled } from "storybook/theming";
 
-interface ExportDropdownProps {
+interface ExportItem {
   label: string;
   content: string;
   filename: string;
   mime: string;
+}
+
+interface ExportDropdownProps {
+  items: ExportItem[];
 }
 
 const DropdownWrapper = styled.div({
@@ -30,67 +34,103 @@ const DropdownWrapper = styled.div({
 });
 
 const DropdownButton = styled.button(({ theme }) => ({
-  fontSize: 11,
-  fontWeight: 500,
-  padding: "4px 8px",
-  border: `1px solid ${theme.appBorderColor}`,
-  borderRadius: 4,
-  background: theme.background.content,
-  color: theme.color.defaultText,
+  alignItems: "center",
+  background: theme.color.secondary,
+  border: `1px solid ${theme.color.secondary}`,
+  borderRadius: 6,
+  boxShadow: "0 1px 4px rgba(0,0,0,0.18)",
+  color: "#ffffff",
   cursor: "pointer",
   display: "flex",
-  alignItems: "center",
-  gap: 4,
-  transition: "background 150ms ease, border-color 150ms ease",
+  fontSize: 12,
+  fontWeight: 700,
+  gap: 6,
+  minHeight: 30,
+  padding: "6px 12px",
+  transition:
+    "background 150ms ease, border-color 150ms ease, box-shadow 150ms ease",
   "&:hover": {
-    background: theme.background.hoverable,
-    borderColor: theme.color.medium,
+    background: theme.color.secondary,
+    borderColor: theme.color.secondary,
+    boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
   },
 }));
 
-const Chevron = styled.span({
-  fontSize: 8,
-  lineHeight: 1,
-});
-
 const Menu = styled.div(({ theme }) => ({
   position: "absolute" as const,
-  top: "calc(100% + 4px)",
+  top: "calc(100% + 6px)",
   right: 0,
-  minWidth: 140,
+  minWidth: 320,
   background: theme.background.content,
   border: `1px solid ${theme.appBorderColor}`,
-  borderRadius: 4,
-  boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
+  borderRadius: 6,
+  boxShadow: "0 6px 18px rgba(0,0,0,0.16)",
   zIndex: 10,
   overflow: "hidden",
 }));
 
-const MenuItem = styled.button(({ theme }) => ({
-  display: "block",
-  width: "100%",
-  padding: "8px 12px",
-  fontSize: 12,
-  fontWeight: 400,
-  border: "none",
-  background: "transparent",
-  color: theme.color.defaultText,
-  cursor: "pointer",
-  textAlign: "left" as const,
-  transition: "background 100ms ease",
-  "&:hover": {
-    background: theme.background.hoverable,
+const ExportRow = styled.div(({ theme }) => ({
+  alignItems: "center",
+  borderBottom: `1px solid ${theme.appBorderColor}`,
+  display: "flex",
+  gap: 12,
+  justifyContent: "space-between",
+  padding: "10px 12px",
+  "&:last-child": {
+    borderBottomWidth: 0,
   },
 }));
 
+const FormatLabel = styled.span(({ theme }) => ({
+  color: theme.color.defaultText,
+  fontSize: 13,
+  fontWeight: 600,
+}));
+
+const RowActions = styled.div({
+  alignItems: "center",
+  display: "flex",
+  gap: 6,
+});
+
+const ActionButton = styled.button<{ intent: "copy" | "download" }>(
+  ({ intent, theme }) => {
+    const primary = intent === "download";
+    return {
+      background: primary ? theme.background.content : "transparent",
+      border: `1px solid ${primary ? theme.appBorderColor : "transparent"}`,
+      borderRadius: 4,
+      color: theme.color.defaultText,
+      cursor: "pointer",
+      fontSize: 12,
+      fontWeight: primary ? 600 : 500,
+      minWidth: primary ? 78 : 48,
+      padding: "5px 8px",
+      textAlign: "center" as const,
+      transition:
+        "background 100ms ease, border-color 100ms ease, box-shadow 100ms ease",
+      "&:focus-visible": {
+        borderColor: theme.color.medium,
+        boxShadow: `0 0 0 1px ${theme.color.medium}`,
+        outline: "none",
+      },
+      "&:hover": {
+        background: "rgba(0,0,0,0.04)",
+      },
+    };
+  }
+);
+
+const Chevron = styled.span({
+  fontSize: 9,
+  lineHeight: 1,
+});
+
 export function ExportDropdown({
-  label,
-  content,
-  filename,
-  mime,
+  items,
 }: ExportDropdownProps): React.ReactElement {
   const [open, setOpen] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const [copiedLabel, setCopiedLabel] = useState<string | undefined>();
   const wrapperRef = useRef<HTMLDivElement>(null);
   const copiedTimerRef = useRef<number | undefined>();
 
@@ -113,38 +153,64 @@ export function ExportDropdown({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [open]);
 
-  const handleCopy = useCallback(async () => {
+  const handleCopy = useCallback(async (item: ExportItem) => {
     try {
       if (navigator.clipboard) {
-        await navigator.clipboard.writeText(content);
+        await navigator.clipboard.writeText(item.content);
       } else {
-        copyWithTextAreaFallback(content);
+        copyWithTextAreaFallback(item.content);
       }
-      setCopied(true);
+      setCopiedLabel(item.label);
+      window.clearTimeout(copiedTimerRef.current);
+      copiedTimerRef.current = window.setTimeout(
+        () => setCopiedLabel(undefined),
+        2000
+      );
     } catch {
       // ignore
-    } finally {
-      setOpen(false);
-      window.clearTimeout(copiedTimerRef.current);
-      copiedTimerRef.current = window.setTimeout(() => setCopied(false), 2000);
     }
-  }, [content]);
+  }, []);
 
-  const handleDownload = useCallback(() => {
-    downloadFile(content, filename, mime);
+  const handleDownload = useCallback((item: ExportItem) => {
+    downloadFile(item.content, item.filename, item.mime);
     setOpen(false);
-  }, [content, filename, mime]);
+  }, []);
 
   return (
     <DropdownWrapper ref={wrapperRef}>
-      <DropdownButton onClick={() => setOpen(!open)}>
-        {copied ? "Copied!" : label}
+      <DropdownButton
+        onClick={() => setOpen(!open)}
+        aria-expanded={open}
+        aria-haspopup="menu"
+      >
+        Export
         <Chevron>{open ? "\u25B4" : "\u25BE"}</Chevron>
       </DropdownButton>
       {open && (
-        <Menu>
-          <MenuItem onClick={handleDownload}>Download</MenuItem>
-          <MenuItem onClick={handleCopy}>Copy to clipboard</MenuItem>
+        <Menu role="menu" aria-label="Export theme">
+          {items.map((item) => (
+            <ExportRow key={item.filename}>
+              <FormatLabel>{item.label}</FormatLabel>
+              <RowActions>
+                <ActionButton
+                  type="button"
+                  intent="copy"
+                  onClick={() => handleCopy(item)}
+                  aria-label={`Copy ${item.label}`}
+                >
+                  {copiedLabel === item.label ? "Copied" : "Copy"}
+                </ActionButton>
+                <ActionButton
+                  type="button"
+                  intent="download"
+                  onClick={() => handleDownload(item)}
+                  aria-label={`Download ${item.label}`}
+                >
+                  Download
+                </ActionButton>
+              </RowActions>
+            </ExportRow>
+          ))}
         </Menu>
       )}
     </DropdownWrapper>

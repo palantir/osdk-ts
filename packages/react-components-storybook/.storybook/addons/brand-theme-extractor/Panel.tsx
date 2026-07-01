@@ -29,19 +29,6 @@ import {
 import { TokenMappingTable } from "./TokenMappingTable.js";
 import type { BrandThemeGlobals, TokenAssignment } from "./types.js";
 
-interface StylePreset {
-  label: string;
-  radius: string;
-  spacing: string;
-}
-
-const STYLE_PRESETS: StylePreset[] = [
-  { label: "Sharp", radius: "2", spacing: "2" },
-  { label: "Default", radius: "4", spacing: "4" },
-  { label: "Rounded", radius: "8", spacing: "5" },
-  { label: "Pill", radius: "16", spacing: "6" },
-];
-
 interface PanelProps {
   active: boolean;
 }
@@ -58,14 +45,16 @@ const HeaderRow = styled.div({
   display: "flex",
   alignItems: "center",
   gap: 8,
-  marginBottom: 8,
+  marginBottom: 12,
+  flexWrap: "wrap",
 });
 
 const HeaderRight = styled.div({
   display: "flex",
   alignItems: "center",
-  gap: 6,
+  gap: 8,
   marginLeft: "auto",
+  flexWrap: "wrap",
 });
 
 const Title = styled.span(({ theme }) => ({
@@ -74,40 +63,9 @@ const Title = styled.span(({ theme }) => ({
   color: theme.color.defaultText,
 }));
 
-const InputRow = styled.div({
-  display: "flex",
-  gap: 8,
-  alignItems: "center",
-  padding: "4px 0",
-  flexWrap: "wrap",
-});
-
-const PresetLabel = styled.div(({ theme }) => ({
-  fontSize: 11,
-  fontWeight: 600,
-  color: theme.color.mediumdark,
-  padding: "8px 0 4px",
-}));
-
-const PresetButton = styled.button<{ radius: string }>(({ theme, radius }) => ({
-  fontSize: 11,
-  padding: "4px 12px",
-  border: `1px solid ${theme.appBorderColor}`,
-  borderRadius: `${radius}px`,
-  background: theme.background.content,
-  color: theme.color.defaultText,
-  cursor: "pointer",
-  fontWeight: 500,
-  transition: "background 150ms ease, border-radius 150ms ease",
-  "&:hover": {
-    background: theme.background.hoverable,
-    borderColor: theme.color.medium,
-  },
-}));
-
 const SectionDivider = styled.div(({ theme }) => ({
   borderBottom: `1px solid ${theme.appBorderColor}`,
-  margin: "4px 0",
+  margin: "0 0 8px",
 }));
 
 // ── Components ────────────────────────────────────────────
@@ -181,24 +139,6 @@ function PanelContent(): React.ReactElement {
     [updateState]
   );
 
-  const applyPreset = useCallback(
-    (preset: StylePreset) => {
-      const current = stateRef.current;
-      const updated = current.assignments.filter(
-        (a) => a.role !== "border-radius" && a.role !== "spacing"
-      );
-      updated.push(
-        { role: "border-radius", colorIndex: -1, customValue: preset.radius },
-        { role: "spacing", colorIndex: -1, customValue: preset.spacing }
-      );
-      updateState({
-        assignments: updated,
-        selectedPresetId: findMatchingPreset(updated, current.colorMode),
-      });
-    },
-    [updateState]
-  );
-
   return (
     <PanelWrapper>
       <HeaderRow>
@@ -206,37 +146,24 @@ function PanelContent(): React.ReactElement {
         {state.assignments.length > 0 && (
           <HeaderRight>
             <ExportDropdown
-              label="CSS"
-              content={css}
-              filename="tokens.css"
-              mime="text/css"
-            />
-            <ExportDropdown
-              label="Design.md"
-              content={md}
-              filename="design.md"
-              mime="text/markdown"
+              items={[
+                {
+                  label: "CSS",
+                  content: css,
+                  filename: "tokens.css",
+                  mime: "text/css",
+                },
+                {
+                  label: "Design.md",
+                  content: md,
+                  filename: "design.md",
+                  mime: "text/markdown",
+                },
+              ]}
             />
           </HeaderRight>
         )}
       </HeaderRow>
-
-      {/* Border style presets — quick way to set radius/spacing */}
-      <div>
-        <PresetLabel>Border Style</PresetLabel>
-        <InputRow>
-          {STYLE_PRESETS.map((preset) => (
-            <PresetButton
-              key={preset.label}
-              radius={preset.radius}
-              onClick={() => applyPreset(preset)}
-              title={`Radius: ${preset.radius}px, Spacing: ${preset.spacing}px`}
-            >
-              {preset.label}
-            </PresetButton>
-          ))}
-        </InputRow>
-      </div>
 
       <SectionDivider />
 
