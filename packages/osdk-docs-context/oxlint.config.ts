@@ -27,12 +27,21 @@ import root from "../../oxlint.config.ts";
 // package is reformatted, not rewritten, and `oxlint --fix` applies no source
 // rewrites (the diff is pure oxfmt).
 //
+// This repo treats src/generated/ as first-class checked-in source (only
+// src/generatedNoCheck{,2}/ are excluded, and ESLint linted src/generated before
+// the oxc migration), so this config re-includes it: the inherited Ultracite
+// preset ignores `**/generated`, which is removed from `ignorePatterns` below so
+// the generated tree (src/generated/inlinedExamples.ts) is linted and
+// oxfmt-formatted just as ESLint + dprint did before. (cf. the same pattern in
+// packages/client.unstable/oxlint.config.ts.)
+//
 // `extends` only carries `rules`/`plugins`/`overrides`, so the root's
-// `ignorePatterns` are re-applied explicitly (otherwise generated/ignored files
-// would start being linted).
+// `ignorePatterns` are re-applied explicitly (minus `**/generated`).
 export default defineConfig({
   extends: [root],
-  ignorePatterns: root.ignorePatterns,
+  ignorePatterns: (root.ignorePatterns ?? []).filter(
+    (p) => p !== "**/generated"
+  ),
 
   rules: {
     // --- typescript ---
