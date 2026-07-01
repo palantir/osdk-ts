@@ -195,6 +195,16 @@ async function runTest(
     expect(packageJson.dependencies["@osdk/client"]).toBe(
       `^${createAppVersion}`,
     );
+
+    // The React template pins @osdk/react to the same clientVersion as
+    // @osdk/client (they publish in lockstep via the same fixed changeset
+    // group). Other 2.x templates either don't ship @osdk/react or pin it
+    // independently, so this assertion is scoped to template-react.
+    if (template.id === "template-react") {
+      expect(packageJson.dependencies["@osdk/react"]).toBe(
+        `^${createAppVersion}`,
+      );
+    }
   } else {
     expect(packageJson.dependencies["@osdk/client"]).toBe(
       undefined,
