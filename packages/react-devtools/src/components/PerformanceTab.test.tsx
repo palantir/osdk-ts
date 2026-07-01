@@ -33,7 +33,7 @@ describe("PerformanceTab", () => {
 
     render(<PerformanceTab metricsStore={metricsStore} monitorStore={store} />);
 
-    expect(screen.queryAllByText("Cache Hit Rate").length).toBeGreaterThan(0);
+    expect(screen.queryAllByText("Cache hit rate").length).toBeGreaterThan(0);
   });
 
   it("renders filter buttons", () => {

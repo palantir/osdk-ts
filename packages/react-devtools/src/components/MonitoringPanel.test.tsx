@@ -63,6 +63,6 @@ describe("MonitoringPanel", () => {
     const store = createMockMonitorStore();
     render(<MonitoringPanel monitorStore={store} />);
 
-    expect(screen.queryAllByText("Cache Hit Rate").length).toBeGreaterThan(0);
+    expect(screen.queryAllByText("Cache hit rate").length).toBeGreaterThan(0);
   });
 });
