@@ -144,9 +144,6 @@ const archetypeRules = archetypes(
       "@osdk/generator-converters.preview",
       "@osdk/generator-utils",
       "@osdk/generator",
-      "@osdk/maker",
-      "@osdk/maker-experimental",
-      "@osdk/maker-import",
       "@osdk/seed-compiler",
       "@osdk/seed-helpers",
       "@osdk/oauth",
@@ -229,6 +226,11 @@ const archetypeRules = archetypes(
   // Packages migrated to the oxc toolchain (oxlint + oxfmt). As more packages
   // are migrated, add them here (taking care not to capture generated
   // namespace-prefix children via monorepolint's archetype matching).
+  //
+  // TODO: these "oxc migrated ..." archetypes are transitional. Once every
+  // package is on the oxc toolchain (the final flip in #3031), oxc becomes the
+  // default and the "migrated" distinction disappears — collapse these back into
+  // the base library archetypes and drop the `oxc: true` / `oxcConfig` plumbing.
   .addArchetype(
     "oxc migrated libraries",
     [
@@ -245,6 +247,24 @@ const archetypeRules = archetypes(
     {
       ...LIBRARY_RULES,
       oxc: true,
+    },
+  )
+  // Same as "oxc migrated libraries" but with a nested oxlint config (oxcConfig)
+  // holding behavior-preserving carve-outs. The maker family is hand-written and
+  // first surfaces a set of error-level Ultracite rules the prior ESLint config
+  // did not enforce; each package's oxlint.config.ts `extends` the root and turns
+  // them off so the migration is a reformat, not a rewrite.
+  .addArchetype(
+    "oxc migrated libraries with carve-outs",
+    [
+      "@osdk/maker",
+      "@osdk/maker-experimental",
+      "@osdk/maker-import",
+    ],
+    {
+      ...LIBRARY_RULES,
+      oxc: true,
+      oxcConfig: "./oxlint.config.ts",
     },
   )
   // React packages migrated to the oxc toolchain. Same as "oxc migrated

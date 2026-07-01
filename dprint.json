@@ -41,7 +41,10 @@
     "packages/react-components/",
     "packages/client.unstable/",
     "packages/client.unstable.tpsa/",
-    "packages/client/"
+    "packages/client/",
+    "packages/maker/",
+    "packages/maker-experimental/",
+    "packages/maker-import/"
   ],
   "plugins": [
     "https://plugins.dprint.dev/typescript-0.90.4.wasm",

@@ -41,7 +41,7 @@ import { platformClient } from "./foundryClient.js";
   client={platformClient}
   model="gpt-4o"
   system="You are a concise assistant. Keep answers short."
-/>;
+/>
 ```
 
 ### With model picker (controlled)
@@ -68,7 +68,7 @@ function MyChat() {
   defaultModel="gpt-4o"
   availableModels={["gpt-4o", "AnthropicClaude_4_6_Sonnet"]}
   onModelChange={(modelName) => analytics.track({ modelName })}
-/>;
+/>
 ```
 
 The component manages model state internally; `onModelChange` is a
@@ -162,7 +162,7 @@ import { useChat } from "@osdk/react/experimental/aip";
 function MyChat() {
   const lmsModel = useMemo(
     () => foundryModel({ client: platformClient, model: "gpt-4o" }),
-    [],
+    []
   );
   const { messages, status, error, sendMessage, stop, clearError } = useChat({
     model: lmsModel,

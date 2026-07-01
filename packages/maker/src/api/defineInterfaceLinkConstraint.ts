@@ -15,6 +15,7 @@
  */
 
 import invariant from "tiny-invariant";
+
 import { cloneDefinition } from "./cloneDefinition.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import {
@@ -55,22 +56,24 @@ type One = {
 };
 
 export function defineInterfaceLinkConstraint(
-  linkDefInput: One | Many,
+  linkDefInput: One | Many
 ): InterfaceLinkConstraint {
   const linkDef = cloneDefinition(linkDefInput);
 
   invariant(
-    importedTypes[OntologyEntityTypeEnum.INTERFACE_TYPE][linkDef.from.apiName]
-      == null,
-    `Cannot define a link constraint from imported interface ${linkDef.from.apiName}. The "from" side must be a locally defined interface.`,
+    importedTypes[OntologyEntityTypeEnum.INTERFACE_TYPE][
+      linkDef.from.apiName
+    ] == null,
+    `Cannot define a link constraint from imported interface ${linkDef.from.apiName}. The "from" side must be a locally defined interface.`
   );
 
   const fromLinkMeta = getLinkMeta(linkDef);
 
   invariant(
-    linkDef.from.links.find(a => a.metadata.apiName === fromLinkMeta.apiName)
-      == null,
-    `Link with apiName ${fromLinkMeta.apiName} already exists on ${linkDef.apiName}`,
+    linkDef.from.links.find(
+      (a) => a.metadata.apiName === fromLinkMeta.apiName
+    ) == null,
+    `Link with apiName ${fromLinkMeta.apiName} already exists on ${linkDef.apiName}`
   );
 
   const cardinality = linkDef.toMany ? "MANY" : "SINGLE";

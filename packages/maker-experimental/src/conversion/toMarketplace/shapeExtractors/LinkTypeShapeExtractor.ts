@@ -34,6 +34,7 @@ import type {
   TabularDatasourceType,
   Void,
 } from "@osdk/client.unstable/api";
+
 import type {
   BlockShapes,
   OntologyRidGenerator,
@@ -45,7 +46,7 @@ import type {
  */
 function createLocalizedAbout(
   fallbackTitle: string,
-  fallbackDescription: string = "",
+  fallbackDescription: string = ""
 ): LocalizedTitleAndDescription {
   return {
     fallbackTitle,
@@ -65,7 +66,7 @@ export class LinkTypeShapeExtractor {
   extract(
     linkReadableId: ReadableId,
     link: LinkTypeBlockDataV2,
-    ridGenerator: OntologyRidGenerator,
+    ridGenerator: OntologyRidGenerator
   ): BlockShapes {
     const editsEnabled = link.entityMetadata?.arePatchesEnabled ?? false;
 
@@ -76,7 +77,7 @@ export class LinkTypeShapeExtractor {
         return this.extractIntermediary(
           linkReadableId,
           definition.intermediary,
-          ridGenerator,
+          ridGenerator
         );
       case "manyToMany":
         return this.extractManyToMany(
@@ -84,17 +85,17 @@ export class LinkTypeShapeExtractor {
           definition.manyToMany,
           ridGenerator,
           link.datasources,
-          editsEnabled,
+          editsEnabled
         );
       case "oneToMany":
         return this.extractOneToMany(
           linkReadableId,
           definition.oneToMany,
-          ridGenerator,
+          ridGenerator
         );
       default:
         throw new Error(
-          `Unknown link definition type: ${(definition as any).type}`,
+          `Unknown link definition type: ${(definition as any).type}`
         );
     }
   }
@@ -105,40 +106,46 @@ export class LinkTypeShapeExtractor {
   private extractOneToMany(
     linkReadableId: ReadableId,
     linkDefinition: any,
-    ridGenerator: OntologyRidGenerator,
+    ridGenerator: OntologyRidGenerator
   ): BlockShapes {
     const outputShape: LinkTypeOneToManyShape = {
       about: createLocalizedAbout(
-        linkDefinition.oneToManyLinkMetadata.displayMetadata.displayName,
+        linkDefinition.oneToManyLinkMetadata.displayMetadata.displayName
       ),
       objectTypeShapeIdOneSide: this.getObjectTypeShapeId(
         ridGenerator,
-        linkDefinition.objectTypeRidOneSide,
+        linkDefinition.objectTypeRidOneSide
       ),
       objectTypeShapeIdManySide: this.getObjectTypeShapeId(
         ridGenerator,
-        linkDefinition.objectTypeRidManySide,
+        linkDefinition.objectTypeRidManySide
       ),
       manyToOneLinkMetadata: createLocalizedAbout(
-        linkDefinition.manyToOneLinkMetadata.displayMetadata.displayName,
+        linkDefinition.manyToOneLinkMetadata.displayMetadata.displayName
       ),
       oneToManyLinkMetadata: createLocalizedAbout(
-        linkDefinition.oneToManyLinkMetadata.displayMetadata.displayName,
+        linkDefinition.oneToManyLinkMetadata.displayMetadata.displayName
       ),
-      cardinalityHint: linkDefinition.cardinalityHint === "ONE_TO_ONE"
-        ? "ONE_TO_ONE"
-        : "ONE_TO_MANY",
+      cardinalityHint:
+        linkDefinition.cardinalityHint === "ONE_TO_ONE"
+          ? "ONE_TO_ONE"
+          : "ONE_TO_MANY",
     };
 
     return {
       inputShapes: new Map(),
-      outputShapes: new Map([[linkReadableId, {
-        type: "linkType",
-        linkType: {
-          type: "oneToMany",
-          oneToMany: outputShape,
-        } as LinkTypeOutputShape,
-      }]]),
+      outputShapes: new Map([
+        [
+          linkReadableId,
+          {
+            type: "linkType",
+            linkType: {
+              type: "oneToMany",
+              oneToMany: outputShape,
+            } as LinkTypeOutputShape,
+          },
+        ],
+      ]),
       inputShapeMetadata: new Map(),
       inputMappings: [],
     };
@@ -152,7 +159,7 @@ export class LinkTypeShapeExtractor {
     linkDefinition: ManyToManyLinkDefinition,
     ridGenerator: OntologyRidGenerator,
     dataSources: any[],
-    editsEnabled: boolean,
+    editsEnabled: boolean
   ): BlockShapes {
     const linkTypeName =
       linkDefinition.objectTypeAToBLinkMetadata.displayMetadata.displayName;
@@ -160,18 +167,18 @@ export class LinkTypeShapeExtractor {
     const outputShape: LinkTypeManyToManyOutputShape = {
       about: createLocalizedAbout(linkTypeName),
       objectTypeAToBLinkMetadata: createLocalizedAbout(
-        linkDefinition.objectTypeAToBLinkMetadata.displayMetadata.displayName,
+        linkDefinition.objectTypeAToBLinkMetadata.displayMetadata.displayName
       ),
       objectTypeBToALinkMetadata: createLocalizedAbout(
-        linkDefinition.objectTypeBToALinkMetadata.displayMetadata.displayName,
+        linkDefinition.objectTypeBToALinkMetadata.displayMetadata.displayName
       ),
       objectTypeShapeIdA: this.getObjectTypeShapeId(
         ridGenerator,
-        linkDefinition.objectTypeRidA,
+        linkDefinition.objectTypeRidA
       ),
       objectTypeShapeIdB: this.getObjectTypeShapeId(
         ridGenerator,
-        linkDefinition.objectTypeRidB,
+        linkDefinition.objectTypeRidB
       ),
       editsSupport: editsEnabled ? "EDITS_ENABLED" : "EDITS_DISABLED",
       objectsBackendVersion: "V2",
@@ -195,10 +202,10 @@ export class LinkTypeShapeExtractor {
         };
         columns = new Set([
           ...Object.values(
-            datasourceDefinition.dataset.objectTypeAPrimaryKeyMapping,
+            datasourceDefinition.dataset.objectTypeAPrimaryKeyMapping
           ).map(String),
           ...Object.values(
-            datasourceDefinition.dataset.objectTypeBPrimaryKeyMapping,
+            datasourceDefinition.dataset.objectTypeBPrimaryKeyMapping
           ).map(String),
         ]);
         datasourceType = "DATASET";
@@ -212,10 +219,10 @@ export class LinkTypeShapeExtractor {
         };
         columns = new Set([
           ...Object.values(
-            datasourceDefinition.stream.objectTypeAPrimaryKeyMapping,
+            datasourceDefinition.stream.objectTypeAPrimaryKeyMapping
           ).map(String),
           ...Object.values(
-            datasourceDefinition.stream.objectTypeBPrimaryKeyMapping,
+            datasourceDefinition.stream.objectTypeBPrimaryKeyMapping
           ).map(String),
         ]);
         datasourceType = "STREAM";
@@ -225,10 +232,7 @@ export class LinkTypeShapeExtractor {
 
       // Find datasource readable ID
       let datasourceReadableId: ReadableId | undefined;
-      for (
-        const [id, loc] of ridGenerator.getDatasourceLocators()
-          .entries()
-      ) {
+      for (const [id, loc] of ridGenerator.getDatasourceLocators().entries()) {
         if (this.datasourceLocatorsMatch(loc, datasourceLocator)) {
           datasourceReadableId = id;
           break;
@@ -242,7 +246,7 @@ export class LinkTypeShapeExtractor {
         ridGenerator,
         columns,
         datasourceLocator,
-        datasourceReadableId,
+        datasourceReadableId
       );
 
       for (const [id, shape] of columnShapes.entries()) {
@@ -255,7 +259,7 @@ export class LinkTypeShapeExtractor {
         linkTypeName,
         columns,
         datasourceLocator,
-        datasourceType,
+        datasourceType
       );
 
       datasetShapes.set(datasourceReadableId, datasourceShape);
@@ -263,13 +267,18 @@ export class LinkTypeShapeExtractor {
 
     return {
       inputShapes: datasetShapes,
-      outputShapes: new Map([[linkReadableId, {
-        type: "linkType",
-        linkType: {
-          type: "manyToMany",
-          manyToMany: outputShape,
-        } as LinkTypeOutputShape,
-      }]]),
+      outputShapes: new Map([
+        [
+          linkReadableId,
+          {
+            type: "linkType",
+            linkType: {
+              type: "manyToMany",
+              manyToMany: outputShape,
+            } as LinkTypeOutputShape,
+          },
+        ],
+      ]),
       inputShapeMetadata: new Map(),
       inputMappings: [],
     };
@@ -281,49 +290,54 @@ export class LinkTypeShapeExtractor {
   private extractIntermediary(
     linkReadableId: ReadableId,
     linkDefinition: IntermediaryLinkDefinition,
-    ridGenerator: OntologyRidGenerator,
+    ridGenerator: OntologyRidGenerator
   ): BlockShapes {
     const outputShape: LinkTypeIntermediaryShape = {
       about: createLocalizedAbout(
-        linkDefinition.objectTypeAToBLinkMetadata.displayMetadata.displayName,
+        linkDefinition.objectTypeAToBLinkMetadata.displayMetadata.displayName
       ),
       objectTypeAToBLinkMetadata: createLocalizedAbout(
-        linkDefinition.objectTypeAToBLinkMetadata.displayMetadata.displayName,
+        linkDefinition.objectTypeAToBLinkMetadata.displayMetadata.displayName
       ),
       objectTypeBToALinkMetadata: createLocalizedAbout(
-        linkDefinition.objectTypeBToALinkMetadata.displayMetadata.displayName,
+        linkDefinition.objectTypeBToALinkMetadata.displayMetadata.displayName
       ),
       objectTypeAShapeId: this.getObjectTypeShapeId(
         ridGenerator,
-        linkDefinition.objectTypeRidA,
+        linkDefinition.objectTypeRidA
       ),
       objectTypeBShapeId: this.getObjectTypeShapeId(
         ridGenerator,
-        linkDefinition.objectTypeRidB,
+        linkDefinition.objectTypeRidB
       ),
       intermediaryObjectTypeShapeId: this.getObjectTypeShapeId(
         ridGenerator,
-        linkDefinition.intermediaryObjectTypeRid,
+        linkDefinition.intermediaryObjectTypeRid
       ),
       aToIntermediaryLinkTypeShapeId: this.getLinkTypeShapeId(
         ridGenerator,
-        linkDefinition.aToIntermediaryLinkTypeRid,
+        linkDefinition.aToIntermediaryLinkTypeRid
       ),
       intermediaryToBLinkTypeShapeId: this.getLinkTypeShapeId(
         ridGenerator,
-        linkDefinition.intermediaryToBLinkTypeRid,
+        linkDefinition.intermediaryToBLinkTypeRid
       ),
     };
 
     return {
       inputShapes: new Map(),
-      outputShapes: new Map([[linkReadableId, {
-        type: "linkType",
-        linkType: {
-          type: "intermediary",
-          intermediary: outputShape,
-        } as LinkTypeOutputShape,
-      }]]),
+      outputShapes: new Map([
+        [
+          linkReadableId,
+          {
+            type: "linkType",
+            linkType: {
+              type: "intermediary",
+              intermediary: outputShape,
+            } as LinkTypeOutputShape,
+          },
+        ],
+      ]),
       inputShapeMetadata: new Map(),
       inputMappings: [],
     };
@@ -334,11 +348,12 @@ export class LinkTypeShapeExtractor {
    */
   private getObjectTypeShapeId(
     ridGenerator: OntologyRidGenerator,
-    objectTypeRid: ObjectTypeRid,
+    objectTypeRid: ObjectTypeRid
   ): string {
-    const readableId = ridGenerator.getObjectTypeRids().inverse().get(
-      objectTypeRid,
-    );
+    const readableId = ridGenerator
+      .getObjectTypeRids()
+      .inverse()
+      .get(objectTypeRid);
     if (!readableId) {
       throw new Error(`Object type RID not found: ${objectTypeRid}`);
     }
@@ -350,11 +365,12 @@ export class LinkTypeShapeExtractor {
    */
   private getLinkTypeShapeId(
     ridGenerator: OntologyRidGenerator,
-    linkTypeRid: LinkTypeRid,
+    linkTypeRid: LinkTypeRid
   ): string {
-    const readableId = ridGenerator.getLinkTypeRids().inverse().get(
-      linkTypeRid,
-    );
+    const readableId = ridGenerator
+      .getLinkTypeRids()
+      .inverse()
+      .get(linkTypeRid);
     if (!readableId) {
       throw new Error(`Object type RID not found: ${linkTypeRid}`);
     }
@@ -369,17 +385,15 @@ export class LinkTypeShapeExtractor {
     linkTypeName: string,
     columns: Set<string>,
     datasourceLocator: DatasourceLocator,
-    datasourceType: TabularDatasourceType,
+    datasourceType: TabularDatasourceType
   ): InputShape {
     const columnReferences: string[] = [];
 
     for (const column of columns) {
-      for (
-        const [id, shape] of ridGenerator.getColumnShapes().entries()
-      ) {
+      for (const [id, shape] of ridGenerator.getColumnShapes().entries()) {
         if (
-          this.datasourceLocatorsMatch(shape.datasource, datasourceLocator)
-          && shape.name === column
+          this.datasourceLocatorsMatch(shape.datasource, datasourceLocator) &&
+          shape.name === column
         ) {
           columnReferences.push(ridGenerator.toBlockInternalId(id));
           break;
@@ -406,17 +420,15 @@ export class LinkTypeShapeExtractor {
     ridGenerator: OntologyRidGenerator,
     columns: Set<string>,
     datasourceLocator: DatasourceLocator,
-    datasourceReadableId: ReadableId,
+    datasourceReadableId: ReadableId
   ): Map<ReadableId, InputShape> {
     const columnShapes = new Map<ReadableId, InputShape>();
 
     for (const column of columns) {
-      for (
-        const [id, shape] of ridGenerator.getColumnShapes().entries()
-      ) {
+      for (const [id, shape] of ridGenerator.getColumnShapes().entries()) {
         if (
-          this.datasourceLocatorsMatch(shape.datasource, datasourceLocator)
-          && shape.name === column
+          this.datasourceLocatorsMatch(shape.datasource, datasourceLocator) &&
+          shape.name === column
         ) {
           const columnShape: DatasourceColumnShape = {
             about: createLocalizedAbout(column),
@@ -445,18 +457,20 @@ export class LinkTypeShapeExtractor {
    */
   private datasourceLocatorsMatch(
     a: DatasourceLocator,
-    b: DatasourceLocator,
+    b: DatasourceLocator
   ): boolean {
     if (a.type !== b.type) return false;
 
     if (a.type === "dataset" && b.type === "dataset") {
-      return a.dataset.rid === b.dataset.rid
-        && a.dataset.branch === b.dataset.branch;
+      return (
+        a.dataset.rid === b.dataset.rid && a.dataset.branch === b.dataset.branch
+      );
     }
 
     if (a.type === "stream" && b.type === "stream") {
-      return a.stream.rid === b.stream.rid
-        && a.stream.branch === b.stream.branch;
+      return (
+        a.stream.rid === b.stream.rid && a.stream.branch === b.stream.branch
+      );
     }
 
     if (a.type === "restrictedView" && b.type === "restrictedView") {

@@ -44,18 +44,12 @@ The `WhereClauseCanonicalizer` has the important job of both returning the exact
 ```ts
 // First
 {
-  $and: [
-    { hello: "world" },
-    { value: { $gt: 5 } },
-  ];
+  $and: [{ hello: "world" }, { value: { $gt: 5 } }];
 }
 
 // Second
 {
-  $and: [
-    { hello: { $eq: "world" } },
-    { value: { $gt: 5 } },
-  ];
+  $and: [{ hello: { $eq: "world" } }, { value: { $gt: 5 } }];
 }
 ```
 

@@ -19,6 +19,7 @@ import type {
   SharedPropertyType as SharedPropertyTypeWire,
 } from "@osdk/client.unstable";
 import type { SharedPropertyType } from "@osdk/maker";
+
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { convertNullabilityToDataConstraint } from "./convertNullabilityToDataConstraint.js";
 import { propertyTypeTypeToOntologyIrType } from "./propertyTypeTypeToOntologyIrType.js";
@@ -38,7 +39,7 @@ export function convertSpt(
     nullability,
     baseFormatter,
   }: SharedPropertyType,
-  ridGenerator: OntologyRidGenerator,
+  ridGenerator: OntologyRidGenerator
 ): SharedPropertyTypeWire {
   const dataConstraint:
     | OntologyIrSharedPropertyType["dataConstraints"]
@@ -54,17 +55,17 @@ export function convertSpt(
     },
     type: array
       ? {
-        type: "array" as const,
-        array: {
-          subtype: propertyTypeTypeToOntologyIrType(
-            type,
-            ridGenerator,
-            apiName,
-            true,
-          ),
-          reducers: [],
-        },
-      }
+          type: "array" as const,
+          array: {
+            subtype: propertyTypeTypeToOntologyIrType(
+              type,
+              ridGenerator,
+              apiName,
+              true
+            ),
+            reducers: [],
+          },
+        }
       : propertyTypeTypeToOntologyIrType(type, ridGenerator, apiName, true),
     aliases: aliases ?? [],
     baseFormatter,
@@ -72,11 +73,12 @@ export function convertSpt(
     gothamMapping,
     indexedForSearch: true,
     typeClasses: typeClasses ?? [],
-    valueType: valueType === undefined
-      ? undefined
-      : ridGenerator.generateRidForValueType(
-        valueType.apiName,
-        valueType.version,
-      ),
+    valueType:
+      valueType === undefined
+        ? undefined
+        : ridGenerator.generateRidForValueType(
+            valueType.apiName,
+            valueType.version
+          ),
   };
 }
