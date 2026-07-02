@@ -60,15 +60,34 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
       // Semantic backgrounds
       "--osdk-background-secondary",
       "--osdk-background-tertiary",
-      // Surface hover/active (needed for filter list, select, combobox states)
-      "--osdk-surface-background-color-default-hover",
-      "--bp-surface-background-color-default-hover",
-      "--osdk-surface-background-color-default-active",
-      "--bp-surface-background-color-default-active",
       // Table header
       "--osdk-table-header-bg",
+    ],
+  },
+  {
+    role: "surface-hover",
+    label: "Surface Hover",
+    category: "color",
+    inputType: "color",
+    designMdKey: "surface-hover",
+    designMdSection: "colors",
+    cssProperties: [
+      "--osdk-surface-background-color-default-hover",
+      "--bp-surface-background-color-default-hover",
       // Checkbox hover background
       "--osdk-checkbox-bg-hover",
+    ],
+  },
+  {
+    role: "surface-active",
+    label: "Surface Active",
+    category: "color",
+    inputType: "color",
+    designMdKey: "surface-active",
+    designMdSection: "colors",
+    cssProperties: [
+      "--osdk-surface-background-color-default-active",
+      "--bp-surface-background-color-default-active",
     ],
   },
   {

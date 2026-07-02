@@ -34,6 +34,8 @@ export interface BrandThemeGlobals {
 export type ColorTokenRole =
   | "background"
   | "surface"
+  | "surface-hover"
+  | "surface-active"
   | "text"
   | "text-muted"
   | "text-subtle"

@@ -220,6 +220,10 @@ export function autoMapFromPalette(
 
   const backgroundHex = isDark ? tint(12, 0.35) : tint(98, 0.5);
   const surfaceHex = isDark ? tint(17, 0.4) : tint(96, 0.6);
+  // Surface hover/active: darker than surface in light mode, lighter in dark
+  // mode — the standard "press into" visual progression.
+  const surfaceHoverHex = isDark ? tint(24, 0.4) : tint(90, 0.6);
+  const surfaceActiveHex = isDark ? tint(28, 0.4) : tint(86, 0.6);
   const inputBgHex = isDark ? tint(15, 0.35) : "#ffffff";
   const borderHex = isDark ? tint(30, 0.45) : tint(86, 0.7);
   const textHex = isDark ? tint(95, 0.14) : tint(15, 0.5);
@@ -280,6 +284,8 @@ export function autoMapFromPalette(
   const colorAssignments: TokenAssignment[] = [
     valueAssignment("background", backgroundHex),
     valueAssignment("surface", surfaceHex),
+    valueAssignment("surface-hover", surfaceHoverHex),
+    valueAssignment("surface-active", surfaceActiveHex),
     valueAssignment("input-bg", inputBgHex),
     valueAssignment(
       "overlay",
