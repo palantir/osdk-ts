@@ -515,6 +515,7 @@ const meta: Meta = {
   parameters: {
     layout: "fullscreen",
     controls: { disable: true },
+    docs: { source: { code: null } },
     msw: {
       handlers: [
         ...fauxFoundry.handlers,
