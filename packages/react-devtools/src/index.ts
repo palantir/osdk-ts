@@ -29,15 +29,34 @@ export { OsdkAppErrorBoundary } from "./components/OsdkAppErrorBoundary.js";
 export type { OsdkAppErrorBoundaryProps } from "./components/OsdkAppErrorBoundary.js";
 export { OsdkDevTools } from "./components/OsdkDevTools.js";
 
+export { registerDevToolsPlugin } from "./plugins/registry.js";
+export type {
+  DevToolsPanelComponent,
+  DevToolsPanelProps,
+  DevToolsPlugin,
+} from "./plugins/types.js";
+
+export {
+  buildCopyAllPrompt,
+  buildCopyPrompt,
+} from "./recommendations/copyPrompt.js";
+
 export {
   useComputeMetrics,
   useComputeRecording,
   useComputeRequests,
 } from "./hooks/useComputeSelectors.js";
+export { useCanonicalMetrics } from "./hooks/useCanonicalMetrics.js";
 export { useMetrics } from "./hooks/useMetrics.js";
 export { usePersistedState } from "./hooks/usePersistedState.js";
 
-export type { Fiber } from "./fiber/types.js";
+export {
+  getCanonicalMetrics,
+  MIN_SAMPLES,
+} from "./metrics/canonicalMetrics.js";
+export type { CanonicalMetrics, Metric } from "./metrics/canonicalMetrics.js";
+
+export type { Fiber } from "@osdk/react-inspect/fiber";
 export { ComputeStore } from "./store/ComputeStore.js";
 export { MonitorStore } from "./store/MonitorStore.js";
 export { componentContextCapture } from "./utils/ComponentContextCapture.js";

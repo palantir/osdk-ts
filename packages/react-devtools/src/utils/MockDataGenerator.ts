@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-import type { SelectedPrimitive } from "../components/PrimitiveSelectionPanel.js";
 import type {
   DiscoveredAction,
   DiscoveredLink,
   DiscoveredObject,
   DiscoveredObjectSet,
   DiscoveredQuery,
-} from "./ComponentPrimitiveDiscovery.js";
+} from "@osdk/react-inspect";
+
+import type { SelectedPrimitive } from "../components/PrimitiveSelectionPanel.js";
 
 export class MockDataGenerator {
   static generatePayload(primitive: SelectedPrimitive): string {

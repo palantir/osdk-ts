@@ -195,7 +195,9 @@
 
 .content {
   flex: 1;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   pointer-events: auto;
@@ -214,14 +216,6 @@
 
 .tabButtonActive {
   @include m.dt-tab-active;
-}
-
-.tabContentVisible {
-  display: contents;
-}
-
-.tabContentHidden {
-  display: none;
 }
 
 .metricsGrid {
@@ -309,8 +303,6 @@
 
 .operationsList {
   flex: 1;
-  overflow: auto;
-  @include m.dt-scrollbar;
 }
 
 .operationItem {

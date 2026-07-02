@@ -15,11 +15,11 @@
  */
 
 import {
+  type Fiber,
   getComponentId,
   getComponentName,
   getSourceLocation,
-} from "../fiber/FiberInspection.js";
-import type { Fiber } from "../fiber/types.js";
+} from "@osdk/react-inspect/fiber";
 
 export interface ComponentContext {
   id: string;

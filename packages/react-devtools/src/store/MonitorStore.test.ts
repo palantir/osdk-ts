@@ -16,13 +16,17 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("../fiber/DevtoolsHook.js", () => ({
+vi.mock("@osdk/react-inspect/fiber", () => ({
   onCommitFiberRoot: vi.fn(() => vi.fn()),
 }));
 
-vi.mock("../fiber/HookStateInspector.js", () => ({
-  discoverOsdkComponentsFromRoot: vi.fn(() => new Map()),
-}));
+vi.mock("@osdk/react-inspect", async (importOriginal) => {
+  const actual = (await importOriginal()) as Record<string, unknown>;
+  return {
+    ...actual,
+    discoverOsdkComponentsFromRoot: vi.fn(() => new Map()),
+  };
+});
 
 vi.mock("@osdk/client", () => ({
   createClient: vi.fn(() => ({})),

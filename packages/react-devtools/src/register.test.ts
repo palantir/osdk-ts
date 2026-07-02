@@ -28,7 +28,7 @@ vi.mock("@osdk/react/devtools-registry", () => ({
 vi.mock("@blueprintjs/core/lib/css/blueprint.css", () => ({}));
 vi.mock("@blueprintjs/icons/lib/css/blueprint-icons.css", () => ({}));
 
-vi.mock("./fiber/DevtoolsHook.js", () => ({
+vi.mock("@osdk/react-inspect/fiber", () => ({
   safelyInstallDevToolsHook: vi.fn(),
   onCommitFiberRoot: vi.fn().mockReturnValue(vi.fn()),
   onCommitFiberUnmount: vi.fn().mockReturnValue(vi.fn()),

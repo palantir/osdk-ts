@@ -15,8 +15,6 @@
  */
 
 import { Button, Collapse, Icon } from "@blueprintjs/core";
-import React, { useState } from "react";
-
 import type {
   DiscoveredAction,
   DiscoveredAggregation,
@@ -25,7 +23,8 @@ import type {
   DiscoveredObjectSet,
   DiscoveredPrimitives,
   DiscoveredQuery,
-} from "../utils/ComponentPrimitiveDiscovery.js";
+} from "@osdk/react-inspect";
+import React, { useState } from "react";
 
 import styles from "./PrimitiveSelectionPanel.module.scss";
 

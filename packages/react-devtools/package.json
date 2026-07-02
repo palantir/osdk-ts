@@ -15,6 +15,13 @@
       },
       "default": "./build/esm/index.js"
     },
+    "./advanced": {
+      "import": {
+        "types": "./build/types/public/advanced.d.ts",
+        "default": "./build/esm/public/advanced.js"
+      },
+      "default": "./build/esm/public/advanced.js"
+    },
     "./vite": {
       "import": {
         "types": "./build/types/public/vite.d.ts",
@@ -48,6 +55,7 @@
     "@blueprintjs/core": "^6.10.0",
     "@blueprintjs/icons": "^6.7.0",
     "@codemirror/lang-json": "^6.0.2",
+    "@osdk/react-inspect": "workspace:~",
     "@uiw/react-codemirror": "^4.25.4",
     "@visx/axis": "^3.12.0",
     "@visx/glyph": "^3.12.0",
