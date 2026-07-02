@@ -1,1 +1,0 @@
-import{c as s}from"./index-DvSw4Y8y.js";import{R as o}from"./iframe-6DWpb4n8.js";const l={skeletonBar:"SkeletonBar-module__skeletonBar___puu23UdW"};function c({width:e,height:t,maxWidth:a,className:r}){return o.createElement("div",{"aria-hidden":"true",className:s(l.skeletonBar,r),style:{width:e,height:t,maxWidth:a}})}export{c as S};
