@@ -15,6 +15,7 @@
  */
 
 import { Vibrant } from "node-vibrant/browser";
+
 import { baseDefaults, valueAssignment } from "./presets.js";
 import type { ThemeColorMode, TokenAssignment } from "./types.js";
 
@@ -38,7 +39,7 @@ export async function extractPalette(file: File): Promise<ExtractedPalette> {
   const palette = await Vibrant.from(dataUrl).getPalette();
 
   function toSwatch(
-    swatch: { hex: string; rgb: [number, number, number] } | null,
+    swatch: { hex: string; rgb: [number, number, number] } | null
   ): PaletteSwatch | null {
     if (!swatch) return null;
     return { hex: swatch.hex, rgb: swatch.rgb };
@@ -60,45 +61,42 @@ export async function extractPalette(file: File): Promise<ExtractedPalette> {
  */
 export function autoMapFromPalette(
   palette: ExtractedPalette,
-  colorMode: ThemeColorMode,
+  colorMode: ThemeColorMode
 ): TokenAssignment[] {
   const isDark = colorMode === "dark";
 
   const background = pick(
     isDark ? palette.darkMuted : palette.lightMuted,
     isDark ? palette.darkVibrant : palette.lightVibrant,
-    palette.muted,
+    palette.muted
   );
   const surface = pick(
     isDark ? palette.darkVibrant : palette.lightVibrant,
     isDark ? palette.darkMuted : palette.lightMuted,
-    palette.muted,
+    palette.muted
   );
   const text = pick(
     isDark ? palette.lightMuted : palette.darkMuted,
-    isDark ? palette.lightVibrant : palette.darkVibrant,
+    isDark ? palette.lightVibrant : palette.darkVibrant
   );
   const textMuted = pick(
     palette.muted,
-    isDark ? palette.lightMuted : palette.darkMuted,
+    isDark ? palette.lightMuted : palette.darkMuted
   );
   const primary = pick(
     palette.vibrant,
-    isDark ? palette.lightVibrant : palette.darkVibrant,
+    isDark ? palette.lightVibrant : palette.darkVibrant
   );
   const primaryFg = pick(
     isDark ? palette.darkMuted : palette.lightMuted,
-    background,
+    background
   );
-  const secondary = pick(
-    surface,
-    palette.muted,
-  );
+  const secondary = pick(surface, palette.muted);
   const secondaryFg = pick(text, textMuted);
   const iconColor = pick(textMuted, palette.muted);
   const border = pick(
     palette.muted,
-    isDark ? palette.darkVibrant : palette.lightVibrant,
+    isDark ? palette.darkVibrant : palette.lightVibrant
   );
 
   const shadow = isDark
@@ -124,10 +122,7 @@ export function autoMapFromPalette(
   addColor("icon-color", iconColor);
   addColor("border", border);
 
-  return [
-    ...colorAssignments,
-    ...baseDefaults({ shadow }),
-  ];
+  return [...colorAssignments, ...baseDefaults({ shadow })];
 }
 
 /** Pick the first non-null swatch. */
@@ -143,8 +138,10 @@ function pick(
 function readFileAsDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = () => reject(new Error("Failed to read file"));
+    reader.addEventListener("load", () => resolve(reader.result as string));
+    reader.addEventListener("error", () =>
+      reject(new Error("Failed to read file"))
+    );
     reader.readAsDataURL(file);
   });
 }

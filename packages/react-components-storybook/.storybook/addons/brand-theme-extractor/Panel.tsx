@@ -117,10 +117,12 @@ const ActionButton = styled.button<{ disabled?: boolean }>(
     fontWeight: 500,
     opacity: disabled ? 0.5 : 1,
     transition: "background 150ms ease",
-    "&:hover": disabled ? {} : {
-      background: theme.background.hoverable,
-    },
-  }),
+    "&:hover": disabled
+      ? {}
+      : {
+          background: theme.background.hoverable,
+        },
+  })
 );
 
 const ErrorMessage = styled.div(({ theme }) => ({
@@ -181,7 +183,7 @@ function PanelContent(): React.ReactElement {
   // Store the full state as a JSON string to preserve structure.
   const state: BrandThemeGlobals = useMemo(
     () => parseBrandThemeState(rawState),
-    [rawState],
+    [rawState]
   );
 
   // Keep a ref so callbacks read current state without re-creating.
@@ -203,17 +205,17 @@ function PanelContent(): React.ReactElement {
 
   const preset = useMemo(
     () => findThemePreset(state.selectedPresetId),
-    [state.selectedPresetId],
+    [state.selectedPresetId]
   );
   const themeName = preset?.label ?? "OSDK-brand-theme";
 
   const css = useMemo(
     () => generateCss(exportAssignments),
-    [exportAssignments],
+    [exportAssignments]
   );
   const md = useMemo(
     () => generateMarkdown(exportAssignments, themeName),
-    [exportAssignments, themeName],
+    [exportAssignments, themeName]
   );
 
   // Stable: reads state via ref, only depends on updateGlobals (stable from useGlobals).
@@ -222,7 +224,7 @@ function PanelContent(): React.ReactElement {
       const newState = { ...stateRef.current, ...partial };
       updateGlobals({ [GLOBALS_KEY]: stringifyBrandThemeState(newState) });
     },
-    [updateGlobals],
+    [updateGlobals]
   );
 
   const handleFileUpload = useCallback(
@@ -244,7 +246,7 @@ function PanelContent(): React.ReactElement {
         });
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : "Failed to extract colors",
+          err instanceof Error ? err.message : "Failed to extract colors"
         );
       } finally {
         setLoading(false);
@@ -254,7 +256,7 @@ function PanelContent(): React.ReactElement {
         }
       }
     },
-    [updateState],
+    [updateState]
   );
 
   const handleAssignmentChange = useCallback(
@@ -273,7 +275,7 @@ function PanelContent(): React.ReactElement {
         selectedPresetId: findMatchingPreset(newAssignments, current.colorMode),
       });
     },
-    [updateState],
+    [updateState]
   );
 
   const handleReset = useCallback(
@@ -285,7 +287,7 @@ function PanelContent(): React.ReactElement {
         selectedPresetId: findMatchingPreset(newAssignments, current.colorMode),
       });
     },
-    [updateState],
+    [updateState]
   );
 
   return (
@@ -357,9 +359,11 @@ function PanelContent(): React.ReactElement {
   );
 }
 
-function PaletteSwatches(
-  { palette }: { palette: ExtractedPalette },
-): React.ReactElement {
+function PaletteSwatches({
+  palette,
+}: {
+  palette: ExtractedPalette;
+}): React.ReactElement {
   return (
     <SwatchRow>
       {SWATCH_LABELS.map(({ key, label }) => {
