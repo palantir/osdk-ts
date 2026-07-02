@@ -17,6 +17,7 @@
 import { renderHook } from "@testing-library/react";
 import * as React from "react";
 import { beforeEach, describe, expect, it, vitest } from "vitest";
+
 import { usePlatformQuery } from "../src/utils/usePlatformQuery.js";
 
 describe("usePlatformQuery enabled option", () => {
@@ -43,7 +44,7 @@ describe("usePlatformQuery enabled option", () => {
         }),
       {
         wrapper,
-      },
+      }
     );
 
     expect(mockQueryFn).not.toHaveBeenCalled();
@@ -62,7 +63,7 @@ describe("usePlatformQuery enabled option", () => {
       {
         wrapper,
         initialProps: { enabled: false },
-      },
+      }
     );
 
     expect(mockQueryFn).not.toHaveBeenCalled();

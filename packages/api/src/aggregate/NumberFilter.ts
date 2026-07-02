@@ -18,10 +18,10 @@ import type { BaseFilterOptions, CatchThemAll } from "./BaseFilter.js";
 import type { Just } from "./Just.js";
 
 interface NumberFilterOptions extends BaseFilterOptions<number> {
-  "$gt": number;
-  "$gte": number;
-  "$lt": number;
-  "$lte": number;
+  $gt: number;
+  $gte: number;
+  $lt: number;
+  $lte: number;
 }
 
 export namespace NumberFilter {

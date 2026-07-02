@@ -24,10 +24,11 @@ import type {
 import { useOsdkAggregation } from "@osdk/react";
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
+
 import { assertUnreachable } from "../../shared/assertUnreachable.js";
+import { FilterInputExcludeRow } from "../base/FilterInputExcludeRow.js";
 import { ContainsTextInput } from "../base/inputs/ContainsTextInput.js";
 import { DateRangeHistogramInput } from "../base/inputs/DateRangeHistogramInput.js";
-import styles from "../base/inputs/LinkedPropertyInput.module.css";
 import { ListogramInput } from "../base/inputs/ListogramInput.js";
 import { MultiDateInput } from "../base/inputs/MultiDateInput.js";
 import {
@@ -58,7 +59,10 @@ import {
   coerceToString,
   coerceToStringArray,
 } from "../utils/coerceFilterValue.js";
+import { clearFilterState } from "../utils/filterValues.js";
 import { narrowObjectSet } from "../utils/narrowObjectSet.js";
+
+import styles from "../base/inputs/LinkedPropertyInput.module.css";
 
 interface LinkedPropertyInputProps<
   Q extends ObjectTypeDefinition,
@@ -77,6 +81,7 @@ interface LinkedPropertyInputProps<
   onFilterStateChanged: (state: FilterState) => void;
   showFilteredOutValues?: boolean;
   searchQuery?: string;
+  excludeRowOpen?: boolean;
   className?: string;
   style?: React.CSSProperties;
   layout?: MultiSelectInputLayout;
@@ -94,17 +99,18 @@ function LinkedPropertyInputInner<
   onFilterStateChanged,
   showFilteredOutValues,
   searchQuery,
+  excludeRowOpen,
   className,
   style,
   layout,
 }: LinkedPropertyInputProps<Q, L>): React.ReactElement {
   const scoped = useMemo(
     () => narrowObjectSet(objectSet, whereClause, linkedFilters),
-    [objectSet, whereClause, linkedFilters],
+    [objectSet, whereClause, linkedFilters]
   );
   const linkedObjectSet = useMemo(
     () => scoped.pivotTo(definition.linkName),
-    [scoped, definition.linkName],
+    [scoped, definition.linkName]
   );
   // Filtered-out rows on a linked facet compare against the raw source so
   // direct filters surface as count=0 entries on the linked side.
@@ -113,7 +119,7 @@ function LinkedPropertyInputInner<
       showFilteredOutValues
         ? objectSet.pivotTo(definition.linkName)
         : undefined,
-    [showFilteredOutValues, objectSet, definition.linkName],
+    [showFilteredOutValues, objectSet, definition.linkName]
   );
 
   const linkedObjectType = linkedObjectSet.$objectSetInternals.def;
@@ -122,9 +128,10 @@ function LinkedPropertyInputInner<
     typeof linkedObjectType
   >;
 
-  const innerState = filterState?.type === "linkedProperty"
-    ? filterState.linkedFilterState
-    : undefined;
+  const innerState =
+    filterState?.type === "linkedProperty"
+      ? filterState.linkedFilterState
+      : undefined;
 
   const isExcluding = innerState?.isExcluding ?? false;
   const includeNull = innerState?.includeNull;
@@ -136,8 +143,15 @@ function LinkedPropertyInputInner<
         linkedFilterState: innerFilterState,
       });
     },
-    [onFilterStateChanged],
+    [onFilterStateChanged]
   );
+
+  const handleClearAll = useCallback(() => {
+    const cleared = clearFilterState(filterState);
+    if (cleared != null) {
+      onFilterStateChanged(cleared);
+    }
+  }, [filterState, onFilterStateChanged]);
 
   const onSelectChange = useCallback(
     (selectedValues: string[]) => {
@@ -147,7 +161,7 @@ function LinkedPropertyInputInner<
         isExcluding,
       });
     },
-    [wrappedOnChange, isExcluding],
+    [wrappedOnChange, isExcluding]
   );
 
   const onSingleSelectChange = useCallback(
@@ -158,21 +172,21 @@ function LinkedPropertyInputInner<
         isExcluding,
       });
     },
-    [wrappedOnChange, isExcluding],
+    [wrappedOnChange, isExcluding]
   );
 
   const onContainsTextChange = useCallback(
     (value: string | undefined) => {
       wrappedOnChange({ type: "CONTAINS_TEXT", value });
     },
-    [wrappedOnChange],
+    [wrappedOnChange]
   );
 
   const onToggleChange = useCallback(
     (enabled: boolean) => {
       wrappedOnChange({ type: "TOGGLE", enabled });
     },
-    [wrappedOnChange],
+    [wrappedOnChange]
   );
 
   const onNumberRangeChange = useCallback(
@@ -184,7 +198,7 @@ function LinkedPropertyInputInner<
         includeNull,
       });
     },
-    [wrappedOnChange, includeNull],
+    [wrappedOnChange, includeNull]
   );
 
   const onDateRangeChange = useCallback(
@@ -196,7 +210,7 @@ function LinkedPropertyInputInner<
         includeNull,
       });
     },
-    [wrappedOnChange, includeNull],
+    [wrappedOnChange, includeNull]
   );
 
   const onExactMatchChange = useCallback(
@@ -207,7 +221,7 @@ function LinkedPropertyInputInner<
         isExcluding,
       });
     },
-    [wrappedOnChange, isExcluding],
+    [wrappedOnChange, isExcluding]
   );
 
   const onDateSelectChange = useCallback(
@@ -218,7 +232,7 @@ function LinkedPropertyInputInner<
         isExcluding,
       });
     },
-    [wrappedOnChange, isExcluding],
+    [wrappedOnChange, isExcluding]
   );
 
   const onMultiDateChange = useCallback(
@@ -228,7 +242,7 @@ function LinkedPropertyInputInner<
         selectedValues: dates,
       });
     },
-    [wrappedOnChange],
+    [wrappedOnChange]
   );
 
   const onTimelineChange = useCallback(
@@ -240,7 +254,7 @@ function LinkedPropertyInputInner<
         isExcluding,
       });
     },
-    [wrappedOnChange, isExcluding],
+    [wrappedOnChange, isExcluding]
   );
 
   const onNullChange = useCallback(
@@ -258,15 +272,16 @@ function LinkedPropertyInputInner<
         });
       }
     },
-    [wrappedOnChange, innerState],
+    [wrappedOnChange, innerState]
   );
 
   const content = (() => {
     switch (definition.linkedFilterComponent) {
       case "MULTI_SELECT": {
-        const values = innerState?.type === "SELECT"
-          ? coerceToStringArray(innerState.selectedValues)
-          : [];
+        const values =
+          innerState?.type === "SELECT"
+            ? coerceToStringArray(innerState.selectedValues)
+            : [];
         return (
           <LinkedMultiSelectInput
             objectType={linkedObjectType}
@@ -283,9 +298,10 @@ function LinkedPropertyInputInner<
       }
 
       case "SINGLE_SELECT": {
-        const value = innerState?.type === "SELECT"
-          ? coerceToString(innerState.selectedValues[0])
-          : undefined;
+        const value =
+          innerState?.type === "SELECT"
+            ? coerceToString(innerState.selectedValues[0])
+            : undefined;
         return (
           <LinkedSingleSelectInput
             objectType={linkedObjectType}
@@ -301,9 +317,8 @@ function LinkedPropertyInputInner<
       }
 
       case "CONTAINS_TEXT": {
-        const value = innerState?.type === "CONTAINS_TEXT"
-          ? innerState.value
-          : undefined;
+        const value =
+          innerState?.type === "CONTAINS_TEXT" ? innerState.value : undefined;
         return (
           <ContainsTextInput
             value={value}
@@ -314,15 +329,9 @@ function LinkedPropertyInputInner<
       }
 
       case "TOGGLE": {
-        const enabled = innerState?.type === "TOGGLE"
-          ? innerState.enabled
-          : false;
-        return (
-          <ToggleInput
-            enabled={enabled}
-            onChange={onToggleChange}
-          />
-        );
+        const enabled =
+          innerState?.type === "TOGGLE" ? innerState.enabled : false;
+        return <ToggleInput enabled={enabled} onChange={onToggleChange} />;
       }
 
       case "NUMBER_RANGE": {
@@ -358,9 +367,8 @@ function LinkedPropertyInputInner<
       }
 
       case "LISTOGRAM": {
-        const exactState = innerState?.type === "EXACT_MATCH"
-          ? innerState
-          : undefined;
+        const exactState =
+          innerState?.type === "EXACT_MATCH" ? innerState : undefined;
         const selectedValues = exactState
           ? coerceToStringArray(exactState.values)
           : [];
@@ -380,9 +388,8 @@ function LinkedPropertyInputInner<
       }
 
       case "TEXT_TAGS": {
-        const exactState = innerState?.type === "EXACT_MATCH"
-          ? innerState
-          : undefined;
+        const exactState =
+          innerState?.type === "EXACT_MATCH" ? innerState : undefined;
         const tags = exactState ? coerceToStringArray(exactState.values) : [];
         return (
           <LinkedTextTagsInput
@@ -396,11 +403,12 @@ function LinkedPropertyInputInner<
       }
 
       case "SINGLE_DATE": {
-        const selectedDate = innerState?.type === "SELECT"
-          ? (innerState.selectedValues[0] instanceof Date
-            ? innerState.selectedValues[0]
-            : undefined)
-          : undefined;
+        const selectedDate =
+          innerState?.type === "SELECT"
+            ? innerState.selectedValues[0] instanceof Date
+              ? innerState.selectedValues[0]
+              : undefined
+            : undefined;
         return (
           <SingleDateInput
             selectedDate={selectedDate}
@@ -411,11 +419,12 @@ function LinkedPropertyInputInner<
       }
 
       case "MULTI_DATE": {
-        const selectedDates = innerState?.type === "SELECT"
-          ? innerState.selectedValues.filter(
-            (v): v is Date => v instanceof Date,
-          )
-          : [];
+        const selectedDates =
+          innerState?.type === "SELECT"
+            ? innerState.selectedValues.filter(
+                (v): v is Date => v instanceof Date
+              )
+            : [];
         return (
           <MultiDateInput
             selectedDates={selectedDates}
@@ -442,14 +451,24 @@ function LinkedPropertyInputInner<
   })();
 
   return (
-    <div className={classnames(styles.linkedProperty, className)} style={style}>
-      {content}
-    </div>
+    <FilterInputExcludeRow
+      excludeRowOpen={excludeRowOpen}
+      filterState={filterState}
+      onFilterStateChanged={onFilterStateChanged}
+      onClearAll={handleClearAll}
+    >
+      <div
+        className={classnames(styles.linkedProperty, className)}
+        style={style}
+      >
+        {content}
+      </div>
+    </FilterInputExcludeRow>
   );
 }
 
 export const LinkedPropertyInput: typeof LinkedPropertyInputInner = memo(
-  LinkedPropertyInputInner,
+  LinkedPropertyInputInner
 ) as typeof LinkedPropertyInputInner;
 
 interface LinkedAggregationInputProps<Q extends ObjectTypeDefinition> {
@@ -459,9 +478,9 @@ interface LinkedAggregationInputProps<Q extends ObjectTypeDefinition> {
   propertyKey: PropertyKeys<Q>;
 }
 
-interface LinkedMultiSelectInputProps<Q extends ObjectTypeDefinition>
-  extends LinkedAggregationInputProps<Q>
-{
+interface LinkedMultiSelectInputProps<
+  Q extends ObjectTypeDefinition,
+> extends LinkedAggregationInputProps<Q> {
   selectedValues: string[];
   onChange: (values: string[]) => void;
   showCount?: boolean;
@@ -485,7 +504,7 @@ function LinkedMultiSelectInput<Q extends ObjectTypeDefinition>({
     propertyKey,
     objectSet,
     emptySourceObjectSet,
-    { selectedValues },
+    { selectedValues }
   );
 
   return (
@@ -502,9 +521,9 @@ function LinkedMultiSelectInput<Q extends ObjectTypeDefinition>({
   );
 }
 
-interface LinkedSingleSelectInputProps<Q extends ObjectTypeDefinition>
-  extends LinkedAggregationInputProps<Q>
-{
+interface LinkedSingleSelectInputProps<
+  Q extends ObjectTypeDefinition,
+> extends LinkedAggregationInputProps<Q> {
   selectedValue: string | undefined;
   onChange: (value: string | undefined) => void;
   showCount?: boolean;
@@ -522,15 +541,15 @@ function LinkedSingleSelectInput<Q extends ObjectTypeDefinition>({
   renderValue,
 }: LinkedSingleSelectInputProps<Q>): React.ReactElement {
   const selectedValues = useMemo(
-    () => selectedValue != null ? [selectedValue] : [],
-    [selectedValue],
+    () => (selectedValue != null ? [selectedValue] : []),
+    [selectedValue]
   );
   const { data, isLoading, error } = useDualScopeAggregation(
     objectType,
     propertyKey,
     objectSet,
     emptySourceObjectSet,
-    { selectedValues },
+    { selectedValues }
   );
 
   return (
@@ -547,9 +566,9 @@ function LinkedSingleSelectInput<Q extends ObjectTypeDefinition>({
   );
 }
 
-interface LinkedListogramInputProps<Q extends ObjectTypeDefinition>
-  extends LinkedAggregationInputProps<Q>
-{
+interface LinkedListogramInputProps<
+  Q extends ObjectTypeDefinition,
+> extends LinkedAggregationInputProps<Q> {
   selectedValues: string[];
   onChange: (values: string[]) => void;
   searchQuery?: string;
@@ -573,7 +592,7 @@ function LinkedListogramInput<Q extends ObjectTypeDefinition>({
     propertyKey,
     objectSet,
     emptySourceObjectSet,
-    { selectedValues },
+    { selectedValues }
   );
 
   return (
@@ -591,9 +610,9 @@ function LinkedListogramInput<Q extends ObjectTypeDefinition>({
   );
 }
 
-interface LinkedTextTagsInputProps<Q extends ObjectTypeDefinition>
-  extends LinkedAggregationInputProps<Q>
-{
+interface LinkedTextTagsInputProps<
+  Q extends ObjectTypeDefinition,
+> extends LinkedAggregationInputProps<Q> {
   tags: string[];
   onChange: (values: string[]) => void;
 }
@@ -611,7 +630,7 @@ function LinkedTextTagsInput<Q extends ObjectTypeDefinition>({
     objectType,
     propertyKey,
     objectSet,
-    TEXT_TAGS_OPTIONS,
+    TEXT_TAGS_OPTIONS
   );
   return (
     <TextTagsInput
@@ -625,9 +644,9 @@ function LinkedTextTagsInput<Q extends ObjectTypeDefinition>({
   );
 }
 
-interface LinkedRangeInputProps<Q extends ObjectTypeDefinition>
-  extends LinkedAggregationInputProps<Q>
-{
+interface LinkedRangeInputProps<
+  Q extends ObjectTypeDefinition,
+> extends LinkedAggregationInputProps<Q> {
   includeNull?: boolean;
   onNullChange: (include: boolean) => void;
 }
@@ -635,30 +654,30 @@ interface LinkedRangeInputProps<Q extends ObjectTypeDefinition>
 function useLinkedRangeData<Q extends ObjectTypeDefinition>(
   objectType: Q,
   propertyKey: PropertyKeys<Q>,
-  objectSet: ObjectSet<Q>,
+  objectSet: ObjectSet<Q>
 ) {
   const aggregateOptions = useMemo(
     () => createGroupByAggregateOptions<Q>(propertyKey as string),
-    [propertyKey],
+    [propertyKey]
   );
 
   const histogramArgs = useMemo(
     () => ({ aggregate: aggregateOptions, objectSet }),
-    [aggregateOptions, objectSet],
+    [aggregateOptions, objectSet]
   );
   const { data: aggregateData, isLoading: histLoading } = useOsdkAggregation(
     objectType,
-    histogramArgs,
+    histogramArgs
   );
 
   const nullCountAggregateOptions = useMemo(
     () => createNullCountAggregateOptions<Q>(),
-    [],
+    []
   );
 
   const nullWhereClause = useMemo(
     () => createNullWhereClause<Q>(propertyKey as string),
-    [propertyKey],
+    [propertyKey]
   );
 
   const nullCountArgs = useMemo(
@@ -667,11 +686,11 @@ function useLinkedRangeData<Q extends ObjectTypeDefinition>(
       aggregate: nullCountAggregateOptions,
       objectSet,
     }),
-    [nullWhereClause, nullCountAggregateOptions, objectSet],
+    [nullWhereClause, nullCountAggregateOptions, objectSet]
   );
   const { data: nullCountData, isLoading: nullLoading } = useOsdkAggregation(
     objectType,
-    nullCountArgs,
+    nullCountArgs
   );
 
   const nullCount = useMemo(() => {
@@ -686,9 +705,9 @@ function useLinkedRangeData<Q extends ObjectTypeDefinition>(
   return { aggregateData, histLoading, nullCount, nullLoading };
 }
 
-interface LinkedNumberRangeInputProps<Q extends ObjectTypeDefinition>
-  extends LinkedRangeInputProps<Q>
-{
+interface LinkedNumberRangeInputProps<
+  Q extends ObjectTypeDefinition,
+> extends LinkedRangeInputProps<Q> {
   minValue: number | undefined;
   maxValue: number | undefined;
   onChange: (min: number | undefined, max: number | undefined) => void;
@@ -707,27 +726,26 @@ function LinkedNumberRangeInput<Q extends ObjectTypeDefinition>({
   const { aggregateData, histLoading, nullCount, nullLoading } =
     useLinkedRangeData(objectType, propertyKey, objectSet);
 
-  const valueCountPairs = useMemo<Array<{ value: number; count: number }>>(
-    () => {
-      if (!aggregateData) return [];
-      const dataArray = aggregateData as Iterable<{
-        $group: Record<string, unknown>;
-        $count?: number;
-      }>;
-      const pairs: Array<{ value: number; count: number }> = [];
-      for (const item of dataArray) {
-        const rawValue = item.$group[propertyKey as string];
-        if (rawValue != null) {
-          const parsed = parseFloat(String(rawValue));
-          if (!isNaN(parsed)) {
-            pairs.push({ value: parsed, count: item.$count ?? 0 });
-          }
+  const valueCountPairs = useMemo<
+    Array<{ value: number; count: number }>
+  >(() => {
+    if (!aggregateData) return [];
+    const dataArray = aggregateData as Iterable<{
+      $group: Record<string, unknown>;
+      $count?: number;
+    }>;
+    const pairs: Array<{ value: number; count: number }> = [];
+    for (const item of dataArray) {
+      const rawValue = item.$group[propertyKey as string];
+      if (rawValue != null) {
+        const parsed = parseFloat(String(rawValue));
+        if (!isNaN(parsed)) {
+          pairs.push({ value: parsed, count: item.$count ?? 0 });
         }
       }
-      return pairs;
-    },
-    [aggregateData, propertyKey],
-  );
+    }
+    return pairs;
+  }, [aggregateData, propertyKey]);
 
   return (
     <NullValueWrapper
@@ -747,9 +765,9 @@ function LinkedNumberRangeInput<Q extends ObjectTypeDefinition>({
   );
 }
 
-interface LinkedDateRangeInputProps<Q extends ObjectTypeDefinition>
-  extends LinkedRangeInputProps<Q>
-{
+interface LinkedDateRangeInputProps<
+  Q extends ObjectTypeDefinition,
+> extends LinkedRangeInputProps<Q> {
   minValue: Date | undefined;
   maxValue: Date | undefined;
   onChange: (min: Date | undefined, max: Date | undefined) => void;

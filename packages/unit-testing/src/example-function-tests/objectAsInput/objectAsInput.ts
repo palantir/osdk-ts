@@ -18,16 +18,16 @@ import type { Osdk } from "@osdk/api";
 import type { Employee } from "@osdk/client.test.ontology";
 
 export function objectAsInput(
-  object: Osdk.Instance<Employee>,
+  object: Osdk.Instance<Employee>
 ): Osdk.Instance<Employee> {
   if (object.$apiName !== "Employee") {
     throw new Error(
-      `Expected object of type Employee, but got ${object.$apiName}`,
+      `Expected object of type Employee, but got ${object.$apiName}`
     );
   }
   if (object.employeeId == null) {
     throw new Error(
-      `Expected object to have employeeId property, but it was missing`,
+      `Expected object to have employeeId property, but it was missing`
     );
   }
   return object;

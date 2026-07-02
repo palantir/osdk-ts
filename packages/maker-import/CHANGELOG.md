@@ -1,5 +1,66 @@
 # @osdk/maker-import
 
+## 0.17.0
+
+### Patch Changes
+
+- @osdk/maker@0.44.0
+- @osdk/client.unstable@2.41.0
+
+## 0.16.0
+
+### Patch Changes
+
+- Updated dependencies [fcde4c0]
+  - @osdk/maker@0.43.0
+  - @osdk/client.unstable@2.40.0
+
+## 0.15.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.38.0
+- @osdk/maker@0.41.0
+
+## 0.14.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.37.0
+- @osdk/maker@0.40.0
+
+## 0.13.0
+
+### Patch Changes
+
+- Updated dependencies [59115b1]
+  - @osdk/maker@0.39.0
+  - @osdk/client.unstable@2.35.0
+
+## 0.12.0
+
+### Patch Changes
+
+- Updated dependencies [07eaaff]
+  - @osdk/maker@0.37.0
+  - @osdk/client.unstable@2.34.0
+
+## 0.11.0
+
+### Patch Changes
+
+- Updated dependencies [b5d0a61]
+- Updated dependencies [833f47a]
+  - @osdk/client.unstable@2.32.0
+  - @osdk/maker@0.35.0
+
+## 0.10.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.31.0
+- @osdk/maker@0.34.0
+
 ## 0.9.0
 
 ### Minor Changes

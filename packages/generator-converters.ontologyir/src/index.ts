@@ -17,6 +17,8 @@
 export type { OntologyIrOntologyBlockDataV2 } from "@osdk/client.unstable";
 export type {
   IFunctionCustomDataType,
+  IInterfaceDataType,
+  IInterfaceObjectSetDataType,
   IListDataType,
   IObjectDataType,
   IObjectSetDataType,

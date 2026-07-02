@@ -120,8 +120,7 @@ export const Default: StoryObj<XmlViewerMediaProps> = {
   parameters: {
     docs: {
       source: {
-        code:
-          `import { XmlViewer } from "@osdk/react-components/experimental/xml-viewer";
+        code: `import { XmlViewer } from "@osdk/react-components/experimental/xml-viewer";
 
 <XmlViewer media={myOsdkMedia} />`,
       },
@@ -133,8 +132,7 @@ export const WithContent: Story = {
   parameters: {
     docs: {
       source: {
-        code:
-          `import { BaseXmlViewer } from "@osdk/react-components/experimental/xml-viewer";
+        code: `import { BaseXmlViewer } from "@osdk/react-components/experimental/xml-viewer";
 
 <BaseXmlViewer content={xmlString} />`,
       },

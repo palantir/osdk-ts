@@ -15,6 +15,7 @@
  */
 
 import { beforeEach, describe, expect, it } from "vitest";
+
 import { defineCreateObjectAction } from "../defineCreateObjectAction.js";
 import { defineInterface } from "../defineInterface.js";
 import { defineObject } from "../defineObject.js";
@@ -37,7 +38,7 @@ describe("SPTs", () => {
         type: "string",
       });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Shared property type com.palantir.foo already exists]`,
+      `[Error: Invariant failed: Shared property type com.palantir.foo already exists]`
     );
   });
 
@@ -69,6 +70,7 @@ describe("SPTs", () => {
         "interfaceTypes": {
           "com.palantir.FooInterface": {
             "interfaceType": {
+              "actionTypeConstraints": [],
               "apiName": "com.palantir.FooInterface",
               "displayMetadata": {
                 "description": "Foo Interface",
@@ -83,6 +85,7 @@ describe("SPTs", () => {
               },
               "extendsInterfaces": [],
               "extendsInterfacesMetadata": [],
+              "linkedInterfaces": [],
               "links": [],
               "permission": undefined,
               "properties": [],
@@ -225,8 +228,8 @@ describe("SPTs", () => {
       type: {
         type: "struct",
         structDefinition: {
-          "simpleProperty": "boolean",
-          "complexProperty": {
+          simpleProperty: "boolean",
+          complexProperty: {
             fieldType: "date",
             displayMetadata: {
               displayName: "complex property",
@@ -336,6 +339,7 @@ describe("SPTs", () => {
         "interfaceTypes": {
           "com.palantir.interface": {
             "interfaceType": {
+              "actionTypeConstraints": [],
               "apiName": "com.palantir.interface",
               "displayMetadata": {
                 "description": "interface",
@@ -350,6 +354,7 @@ describe("SPTs", () => {
               },
               "extendsInterfaces": [],
               "extendsInterfacesMetadata": [],
+              "linkedInterfaces": [],
               "links": [],
               "permission": undefined,
               "properties": [],
@@ -604,7 +609,7 @@ describe("SPTs", () => {
       },
     });
     const action = defineCreateObjectAction({ objectType: obj });
-    const priceParam = action.parameters?.find(p => p.id === "price");
+    const priceParam = action.parameters?.find((p) => p.id === "price");
     expect(priceParam?.type).toBe("decimal");
   });
   it("Number formatting works", () => {
@@ -766,21 +771,25 @@ describe("SPTs", () => {
   });
 
   it("serializes publicProject permission on shared property type", async () => {
-    await defineOntology("com.palantir.", () => {
-      defineSharedPropertyType({
-        apiName: "mySpt",
-        type: "string",
-        permission: "publicProject",
-      });
+    await defineOntology(
+      "com.palantir.",
+      () => {
+        defineSharedPropertyType({
+          apiName: "mySpt",
+          type: "string",
+          permission: "publicProject",
+        });
 
-      const bpi = dumpOntologyFullMetadata().ontology
-        .blockPermissionInformation!;
-      const sptPerms = Object.values(bpi.sharedPropertyTypes);
-      expect(sptPerms).toHaveLength(1);
-      expect(sptPerms[0].restrictionStatus).toEqual({
-        publicProject: true,
-        ontologyPackageRid: null,
-      });
-    }, "/tmp/");
+        const bpi =
+          dumpOntologyFullMetadata().ontology.blockPermissionInformation!;
+        const sptPerms = Object.values(bpi.sharedPropertyTypes);
+        expect(sptPerms).toHaveLength(1);
+        expect(sptPerms[0].restrictionStatus).toEqual({
+          publicProject: true,
+          ontologyPackageRid: null,
+        });
+      },
+      "/tmp/"
+    );
   });
 });

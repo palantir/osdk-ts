@@ -17,9 +17,7 @@
 import type { Client } from "@osdk/client";
 import { Users } from "@osdk/foundry.admin";
 
-export async function requireAdminUser(
-  client: Client,
-): Promise<string> {
+export async function requireAdminUser(client: Client): Promise<string> {
   const user = await Users.getCurrent(client);
   if (!user.username.endsWith("@admin")) {
     throw new Error(`User ${user.username} is not an admin`);

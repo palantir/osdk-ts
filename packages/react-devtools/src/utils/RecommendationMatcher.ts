@@ -20,7 +20,7 @@ import type { Recommendation } from "./PerformanceRecommendationEngine.js";
 export type RecommendationMap = Map<string, Recommendation[]>;
 
 export function buildRecommendationMap(
-  recommendations: Recommendation[],
+  recommendations: Recommendation[]
 ): RecommendationMap {
   const map = new Map<string, Recommendation[]>();
 
@@ -62,7 +62,7 @@ function extractMatchingKeys(rec: Recommendation): string[] {
 
 export function getRecommendationsForOperation(
   operation: Operation,
-  recommendationMap: RecommendationMap,
+  recommendationMap: RecommendationMap
 ): Recommendation[] {
   return recommendationMap.get(operation.signature) ?? [];
 }

@@ -31,6 +31,7 @@ import type {
 import type { DataValue } from "@osdk/foundry.ontologies";
 import * as Queries from "@osdk/foundry.ontologies/Query";
 import invariant from "tiny-invariant";
+
 import { createMediaFromReferenceInternal } from "../createMediaFromReference.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { createObjectSet } from "../objectSet/createObjectSet.js";
@@ -50,14 +51,12 @@ export async function applyQuery<
 >(
   client: MinimalClient,
   query: QD,
-  params?: P,
-): Promise<
-  QueryReturnType<CompileTimeMetadata<QD>["output"]>
-> {
+  params?: P
+): Promise<QueryReturnType<CompileTimeMetadata<QD>["output"]>> {
   // We fire and forget so if a function has no parameters we don't unnecessarily load all metadata
   const qd: Promise<QueryMetadata> = client.ontologyProvider.getQueryDefinition(
     query.apiName,
-    query.isFixedVersion ? query.version : undefined,
+    query.isFixedVersion ? query.version : undefined
   );
 
   if (client.flushEdits != null) {
@@ -66,18 +65,18 @@ export async function applyQuery<
 
   const response = await Queries.execute(
     addUserAgentAndRequestContextHeaders(
-      augmentRequestContext(client, _ => ({ finalMethodCall: "applyQuery" })),
-      query,
+      augmentRequestContext(client, (_) => ({ finalMethodCall: "applyQuery" })),
+      query
     ),
     await client.ontologyRid,
     query.apiName,
     {
       parameters: params
         ? await remapQueryParams(
-          params as { [parameterId: string]: any },
-          client,
-          (await qd).parameters,
-        )
+            params as { [parameterId: string]: any },
+            client,
+            (await qd).parameters
+          )
         : {},
     },
     {
@@ -85,18 +84,18 @@ export async function applyQuery<
       transactionId: client.transactionId,
       scenarioRid: client.scenarioRid,
       branch: client.branch,
-    },
+    }
   );
 
   const objectOutputDefs = await getRequiredDefinitions(
     (await qd).output,
-    client,
+    client
   );
   const remappedResponse = await remapQueryResponse(
     client,
     (await qd).output,
     response.value,
-    objectOutputDefs,
+    objectOutputDefs
   );
   return remappedResponse as QueryReturnType<CompileTimeMetadata<QD>["output"]>;
 }
@@ -104,14 +103,14 @@ export async function applyQuery<
 export async function remapQueryParams(
   params: { [parameterId: string]: any },
   client: MinimalClient,
-  paramTypes: Record<string, QueryParameterDefinition<any>>,
+  paramTypes: Record<string, QueryParameterDefinition<any>>
 ): Promise<{ [parameterId: string]: any }> {
   const parameterMap: { [parameterName: string]: unknown } = {};
   for (const [key, value] of Object.entries(params)) {
     parameterMap[key] = await toDataValueQueries(
       value,
       client,
-      paramTypes[key],
+      paramTypes[key]
     );
   }
   return parameterMap;
@@ -124,7 +123,7 @@ export async function remapQueryResponse<
   client: MinimalClient,
   responseDataType: T,
   responseValue: DataValue,
-  definitions: Map<string, ObjectOrInterfaceDefinition>,
+  definitions: Map<string, ObjectOrInterfaceDefinition>
 ): Promise<QueryReturnType<T>> {
   // handle null responses
   if (responseValue == null) {
@@ -146,7 +145,7 @@ export async function remapQueryResponse<
           client,
           responseDataType.array,
           responseValue[i],
-          definitions,
+          definitions
         );
       }
 
@@ -159,7 +158,7 @@ export async function remapQueryResponse<
           client,
           responseDataType.set,
           responseValue[i],
-          definitions,
+          definitions
         );
       }
 
@@ -169,32 +168,23 @@ export async function remapQueryResponse<
     case "attachment": {
       return hydrateAttachmentFromRidInternal(
         client,
-        responseValue,
-      ) as QueryReturnType<
-        typeof responseDataType
-      >;
+        responseValue
+      ) as QueryReturnType<typeof responseDataType>;
     }
 
     case "mediaReference": {
       return createMediaFromReferenceInternal(
         client,
-        responseValue,
-      ) as unknown as QueryReturnType<
-        typeof responseDataType
-      >;
+        responseValue
+      ) as unknown as QueryReturnType<typeof responseDataType>;
     }
 
     case "object": {
       const def = definitions.get(responseDataType.object);
       if (!def || def.type !== "object") {
-        throw new Error(
-          `Missing definition for ${responseDataType.object}`,
-        );
+        throw new Error(`Missing definition for ${responseDataType.object}`);
       }
-      return createQueryObjectResponse(
-        responseValue,
-        def,
-      ) as QueryReturnType<
+      return createQueryObjectResponse(responseValue, def) as QueryReturnType<
         typeof responseDataType
       >;
     }
@@ -202,25 +192,19 @@ export async function remapQueryResponse<
     case "interface": {
       const def = definitions.get(responseDataType.interface);
       if (!def || def.type !== "interface") {
-        throw new Error(
-          `Missing definition for ${responseDataType.interface}`,
-        );
+        throw new Error(`Missing definition for ${responseDataType.interface}`);
       }
 
       return createQueryInterfaceResponse(
         responseValue,
-        def,
-      ) as QueryReturnType<
-        typeof responseDataType
-      >;
+        def
+      ) as QueryReturnType<typeof responseDataType>;
     }
 
     case "objectSet": {
       const def = definitions.get(responseDataType.objectSet);
       if (!def) {
-        throw new Error(
-          `Missing definition for ${responseDataType.objectSet}`,
-        );
+        throw new Error(`Missing definition for ${responseDataType.objectSet}`);
       }
       if (typeof responseValue === "string") {
         return createObjectSet(def, client, {
@@ -232,11 +216,7 @@ export async function remapQueryResponse<
         }) as QueryReturnType<typeof responseDataType>;
       }
 
-      return createObjectSet(
-        def,
-        client,
-        responseValue,
-      ) as QueryReturnType<
+      return createObjectSet(def, client, responseValue) as QueryReturnType<
         typeof responseDataType
       >;
     }
@@ -249,7 +229,7 @@ export async function remapQueryResponse<
             client,
             subtype,
             responseValue[key],
-            definitions,
+            definitions
           );
         }
       }
@@ -265,20 +245,21 @@ export async function remapQueryResponse<
         invariant(entry.key != null, "Expected key");
         invariant(
           responseDataType.valueType.nullable || entry.value != null,
-          "Expected value",
+          "Expected value"
         );
-        const key = responseDataType.keyType.type === "object"
-          ? getObjectSpecifier(
-            entry.key,
-            responseDataType.keyType.object,
-            definitions,
-          )
-          : entry.key;
+        const key =
+          responseDataType.keyType.type === "object"
+            ? getObjectSpecifier(
+                entry.key,
+                responseDataType.keyType.object,
+                definitions
+              )
+            : entry.key;
         const value = await remapQueryResponse(
           client,
           responseDataType.valueType,
           entry.value,
-          definitions,
+          definitions
         );
         map[key] = value;
       }
@@ -317,27 +298,27 @@ export async function remapQueryResponse<
 
 export async function getRequiredDefinitions(
   dataType: QueryDataTypeDefinition,
-  client: MinimalClient,
+  client: MinimalClient
 ): Promise<Map<string, ObjectOrInterfaceDefinition>> {
   const result = new Map<string, ObjectOrInterfaceDefinition>();
   switch (dataType.type) {
     case "objectSet": {
       const objectDef = await client.ontologyProvider.getObjectDefinition(
-        dataType.objectSet,
+        dataType.objectSet
       );
       result.set(dataType.objectSet, objectDef);
       break;
     }
     case "interfaceObjectSet": {
       const interfaceDef = await client.ontologyProvider.getInterfaceDefinition(
-        dataType.objectSet,
+        dataType.objectSet
       );
       result.set(dataType.objectSet, interfaceDef);
       break;
     }
     case "object": {
       const objectDef = await client.ontologyProvider.getObjectDefinition(
-        dataType.object,
+        dataType.object
       );
       result.set(dataType.object, objectDef);
       break;
@@ -345,7 +326,7 @@ export async function getRequiredDefinitions(
 
     case "interface": {
       const interfaceDef = await client.ontologyProvider.getInterfaceDefinition(
-        dataType.interface,
+        dataType.interface
       );
       result.set(dataType.interface, interfaceDef);
       break;
@@ -362,7 +343,7 @@ export async function getRequiredDefinitions(
       const types = [dataType.keyType, dataType.valueType];
 
       const allDefs = await Promise.all(
-        types.map(value => getRequiredDefinitions(value, client)),
+        types.map((value) => getRequiredDefinitions(value, client))
       );
 
       for (const defs of allDefs) {
@@ -377,7 +358,7 @@ export async function getRequiredDefinitions(
       const structValues = Object.values(dataType.struct);
 
       const allDefs = await Promise.all(
-        structValues.map(value => getRequiredDefinitions(value, client)),
+        structValues.map((value) => getRequiredDefinitions(value, client))
       );
 
       for (const defs of allDefs) {
@@ -447,25 +428,18 @@ function requiresConversion(dataType: QueryDataTypeDefinition) {
 function getObjectSpecifier(
   primaryKey: any,
   objectTypeApiName: string,
-  definitions: Map<string, ObjectOrInterfaceDefinition>,
+  definitions: Map<string, ObjectOrInterfaceDefinition>
 ): string {
   const def = definitions.get(objectTypeApiName);
   if (!def || def.type !== "object") {
-    throw new Error(
-      `Missing definition for ${objectTypeApiName}`,
-    );
+    throw new Error(`Missing definition for ${objectTypeApiName}`);
   }
-  return createObjectSpecifierFromPrimaryKey(
-    def,
-    primaryKey,
-  );
+  return createObjectSpecifierFromPrimaryKey(def, primaryKey);
 }
 
-export function createQueryObjectResponse<
-  Q extends ObjectTypeDefinition,
->(
+export function createQueryObjectResponse<Q extends ObjectTypeDefinition>(
   primaryKey: PrimaryKeyType<Q>,
-  objectDef: Q,
+  objectDef: Q
 ): OsdkBase<Q> {
   return {
     $apiName: objectDef.apiName,
@@ -474,19 +448,17 @@ export function createQueryObjectResponse<
     $primaryKey: primaryKey,
     $objectSpecifier: createObjectSpecifierFromPrimaryKey(
       objectDef,
-      primaryKey,
+      primaryKey
     ),
   };
 }
 
-export function createQueryInterfaceResponse<
-  Q extends InterfaceDefinition,
->(
+export function createQueryInterfaceResponse<Q extends InterfaceDefinition>(
   interfaceSpecifier: {
     objectTypeApiName: string;
     primaryKeyValue: PrimaryKeyType<Q>;
   },
-  interfaceDef: Q,
+  interfaceDef: Q
 ): OsdkBase<Q> {
   return {
     $apiName: interfaceDef.apiName,
@@ -495,7 +467,7 @@ export function createQueryInterfaceResponse<
     $primaryKey: interfaceSpecifier.primaryKeyValue,
     $objectSpecifier: createObjectSpecifierFromInterfaceSpecifier(
       interfaceDef,
-      interfaceSpecifier,
+      interfaceSpecifier
     ),
   };
 }

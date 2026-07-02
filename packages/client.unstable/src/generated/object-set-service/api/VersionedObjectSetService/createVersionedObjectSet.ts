@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   CreateVersionedObjectSetRequest as _api_CreateVersionedObjectSetRequest,
   CreateVersionedObjectSetResponse as _api_CreateVersionedObjectSetResponse,
@@ -25,7 +26,7 @@ import type {
  */
 export async function createVersionedObjectSet(
   ctx: ConjureContext,
-  request: _api_CreateVersionedObjectSetRequest,
+  request: _api_CreateVersionedObjectSetRequest
 ): Promise<_api_CreateVersionedObjectSetResponse> {
   return conjureFetch(ctx, `/versionedObjectSets`, "POST", request);
 }

@@ -1,5 +1,36 @@
 # @osdk/client.unstable
 
+## 2.41.0
+
+## 2.40.0
+
+## 2.39.0
+
+### Minor Changes
+
+- 397ce96: support interface action type constraint in maker experimental
+
+## 2.38.0
+
+## 2.37.0
+
+## 2.36.0
+
+## 2.35.0
+
+## 2.34.0
+
+## 2.33.0
+
+## 2.32.0
+
+### Minor Changes
+
+- b5d0a61: transitive OAC imports
+- 833f47a: add support for interface action type constraint in ontology as code
+
+## 2.31.0
+
 ## 2.30.0
 
 ## 2.29.0

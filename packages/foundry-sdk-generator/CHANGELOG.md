@@ -1,5 +1,161 @@
 # @osdk/foundry-sdk-generator
 
+## 2.41.0
+
+### Minor Changes
+
+- 15a35f2: Add CipherText support for codegen and implement decryption interface
+
+### Patch Changes
+
+- Updated dependencies [9b150d7]
+- Updated dependencies [15a35f2]
+  - @osdk/client@2.41.0
+  - @osdk/api@2.41.0
+  - @osdk/generator-converters@2.41.0
+  - @osdk/generator@2.41.0
+  - @osdk/client.unstable@2.41.0
+  - @osdk/generator-utils@2.41.0
+
+## 2.40.0
+
+### Minor Changes
+
+- 3e915ee: Array Reducers and Struct Main Value support
+
+### Patch Changes
+
+- Updated dependencies [3e915ee]
+- Updated dependencies [742fe69]
+- Updated dependencies [ac0303b]
+  - @osdk/generator-converters@2.40.0
+  - @osdk/generator@2.40.0
+  - @osdk/client@2.40.0
+  - @osdk/api@2.40.0
+  - @osdk/client.unstable@2.40.0
+  - @osdk/generator-utils@2.40.0
+
+## 2.39.0
+
+### Patch Changes
+
+- Updated dependencies [397ce96]
+  - @osdk/client.unstable@2.39.0
+  - @osdk/client@2.39.0
+  - @osdk/api@2.39.0
+  - @osdk/generator-converters@2.39.0
+  - @osdk/generator-utils@2.39.0
+  - @osdk/generator@2.39.0
+
+## 2.38.0
+
+### Patch Changes
+
+- Updated dependencies [11c7eb8]
+- Updated dependencies [bbb89ce]
+  - @osdk/client@2.38.0
+  - @osdk/api@2.38.0
+  - @osdk/client.unstable@2.38.0
+  - @osdk/generator-converters@2.38.0
+  - @osdk/generator-utils@2.38.0
+  - @osdk/generator@2.38.0
+
+## 2.37.0
+
+### Patch Changes
+
+- Updated dependencies [b174a28]
+- Updated dependencies [75a5c26]
+- Updated dependencies [915d245]
+- Updated dependencies [ff11b06]
+- Updated dependencies [01bea93]
+  - @osdk/client@2.37.0
+  - @osdk/shared.client.impl@1.13.0
+  - @osdk/api@2.37.0
+  - @osdk/client.unstable@2.37.0
+  - @osdk/generator-converters@2.37.0
+  - @osdk/generator-utils@2.37.0
+  - @osdk/generator@2.37.0
+
+## 2.36.0
+
+### Patch Changes
+
+- Updated dependencies [83d2603]
+  - @osdk/client@2.36.0
+  - @osdk/api@2.36.0
+  - @osdk/client.unstable@2.36.0
+  - @osdk/generator-converters@2.36.0
+  - @osdk/generator-utils@2.36.0
+  - @osdk/generator@2.36.0
+
+## 2.35.0
+
+### Patch Changes
+
+- Updated dependencies [54dc175]
+  - @osdk/generator@2.35.0
+  - @osdk/api@2.35.0
+  - @osdk/client.unstable@2.35.0
+  - @osdk/client@2.35.0
+  - @osdk/generator-converters@2.35.0
+  - @osdk/generator-utils@2.35.0
+
+## 2.34.0
+
+### Minor Changes
+
+- db028a0: Add optional struct param support for actions.
+
+### Patch Changes
+
+- Updated dependencies [db028a0]
+- Updated dependencies [ab19740]
+  - @osdk/generator-converters@2.34.0
+  - @osdk/client@2.34.0
+  - @osdk/api@2.34.0
+  - @osdk/generator@2.34.0
+  - @osdk/client.unstable@2.34.0
+  - @osdk/generator-utils@2.34.0
+
+## 2.33.0
+
+### Patch Changes
+
+- @osdk/api@2.33.0
+- @osdk/client.unstable@2.33.0
+- @osdk/client@2.33.0
+- @osdk/generator-converters@2.33.0
+- @osdk/generator-utils@2.33.0
+- @osdk/generator@2.33.0
+
+## 2.32.0
+
+### Patch Changes
+
+- Updated dependencies [b5d0a61]
+- Updated dependencies [06adca1]
+- Updated dependencies [833f47a]
+- Updated dependencies [79f8a6e]
+  - @osdk/client.unstable@2.32.0
+  - @osdk/client@2.32.0
+  - @osdk/api@2.32.0
+  - @osdk/generator@2.32.0
+  - @osdk/generator-converters@2.32.0
+  - @osdk/generator-utils@2.32.0
+
+## 2.31.0
+
+### Patch Changes
+
+- Updated dependencies [57cbc6d]
+  - @osdk/api@2.31.0
+  - @osdk/client@2.31.0
+  - @osdk/client.unstable@2.31.0
+  - @osdk/generator-converters@2.31.0
+  - @osdk/generator-utils@2.31.0
+  - @osdk/generator@2.31.0
+
 ## 2.30.0
 
 ### Patch Changes

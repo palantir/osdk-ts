@@ -15,11 +15,12 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import { aggregateObjects } from "./aggregateObjects.js";
 import type { BaseServerObject } from "./BaseServerObject.js";
 
 function createTestObject(
-  props: Record<string, unknown> & { id: string },
+  props: Record<string, unknown> & { id: string }
 ): BaseServerObject {
   return {
     __apiName: "TestObject",
@@ -42,7 +43,7 @@ describe("aggregateObjects", () => {
       const result = aggregateObjects(
         objects,
         [{ type: "count", name: "count" }],
-        [],
+        []
       );
 
       expect(result.data).toHaveLength(1);
@@ -62,52 +63,60 @@ describe("aggregateObjects", () => {
       const result = aggregateObjects(
         objects,
         [{ type: "min", field: "value", name: "value.min" }],
-        [],
+        []
       );
 
-      expect(result.data[0].metrics).toEqual([{
-        name: "value.min",
-        value: 10,
-      }]);
+      expect(result.data[0].metrics).toEqual([
+        {
+          name: "value.min",
+          value: 10,
+        },
+      ]);
     });
 
     it("computes max", () => {
       const result = aggregateObjects(
         objects,
         [{ type: "max", field: "value", name: "value.max" }],
-        [],
+        []
       );
 
-      expect(result.data[0].metrics).toEqual([{
-        name: "value.max",
-        value: 30,
-      }]);
+      expect(result.data[0].metrics).toEqual([
+        {
+          name: "value.max",
+          value: 30,
+        },
+      ]);
     });
 
     it("computes sum", () => {
       const result = aggregateObjects(
         objects,
         [{ type: "sum", field: "value", name: "value.sum" }],
-        [],
+        []
       );
 
-      expect(result.data[0].metrics).toEqual([{
-        name: "value.sum",
-        value: 60,
-      }]);
+      expect(result.data[0].metrics).toEqual([
+        {
+          name: "value.sum",
+          value: 60,
+        },
+      ]);
     });
 
     it("computes avg", () => {
       const result = aggregateObjects(
         objects,
         [{ type: "avg", field: "value", name: "value.avg" }],
-        [],
+        []
       );
 
-      expect(result.data[0].metrics).toEqual([{
-        name: "value.avg",
-        value: 20,
-      }]);
+      expect(result.data[0].metrics).toEqual([
+        {
+          name: "value.avg",
+          value: 20,
+        },
+      ]);
     });
 
     it("returns undefined for empty set on min/max/avg", () => {
@@ -118,7 +127,7 @@ describe("aggregateObjects", () => {
           { type: "max", field: "value", name: "value.max" },
           { type: "avg", field: "value", name: "value.avg" },
         ],
-        [],
+        []
       );
 
       expect(result.data[0].metrics).toEqual([
@@ -132,7 +141,7 @@ describe("aggregateObjects", () => {
       const result = aggregateObjects(
         [],
         [{ type: "sum", field: "value", name: "value.sum" }],
-        [],
+        []
       );
 
       expect(result.data[0].metrics).toEqual([{ name: "value.sum", value: 0 }]);
@@ -151,12 +160,14 @@ describe("aggregateObjects", () => {
     it("computes approximateDistinct", () => {
       const result = aggregateObjects(
         objects,
-        [{
-          type: "approximateDistinct",
-          field: "category",
-          name: "category.approximateDistinct",
-        }],
-        [],
+        [
+          {
+            type: "approximateDistinct",
+            field: "category",
+            name: "category.approximateDistinct",
+          },
+        ],
+        []
       );
 
       expect(result.data[0].metrics).toEqual([
@@ -167,12 +178,14 @@ describe("aggregateObjects", () => {
     it("computes exactDistinct", () => {
       const result = aggregateObjects(
         objects,
-        [{
-          type: "exactDistinct",
-          field: "category",
-          name: "category.exactDistinct",
-        }],
-        [],
+        [
+          {
+            type: "exactDistinct",
+            field: "category",
+            name: "category.exactDistinct",
+          },
+        ],
+        []
       );
 
       expect(result.data[0].metrics).toEqual([
@@ -192,13 +205,13 @@ describe("aggregateObjects", () => {
       const result = aggregateObjects(
         objects,
         [{ type: "count", name: "count" }],
-        [{ type: "exact", field: "category" }],
+        [{ type: "exact", field: "category" }]
       );
 
       expect(result.data).toHaveLength(2);
 
-      const groupA = result.data.find(d => d.group.category === "A");
-      const groupB = result.data.find(d => d.group.category === "B");
+      const groupA = result.data.find((d) => d.group.category === "A");
+      const groupB = result.data.find((d) => d.group.category === "B");
 
       expect(groupA?.metrics).toEqual([{ name: "count", value: 2 }]);
       expect(groupB?.metrics).toEqual([{ name: "count", value: 1 }]);
@@ -213,7 +226,7 @@ describe("aggregateObjects", () => {
       const result = aggregateObjects(
         objectsWithNull,
         [{ type: "count", name: "count" }],
-        [{ type: "exact", field: "category" }],
+        [{ type: "exact", field: "category" }]
       );
 
       expect(result.data).toHaveLength(2);
@@ -228,12 +241,12 @@ describe("aggregateObjects", () => {
       const result = aggregateObjects(
         objectsWithNull,
         [{ type: "count", name: "count" }],
-        [{ type: "exact", field: "category", includeNullValues: true }],
+        [{ type: "exact", field: "category", includeNullValues: true }]
       );
 
       expect(result.data).toHaveLength(3);
 
-      const groupNull = result.data.find(d => d.group.category == null);
+      const groupNull = result.data.find((d) => d.group.category == null);
       expect(groupNull?.metrics).toEqual([{ name: "count", value: 1 }]);
     });
 
@@ -246,13 +259,13 @@ describe("aggregateObjects", () => {
       const result = aggregateObjects(
         objectsWithNull,
         [{ type: "count", name: "count" }],
-        [{ type: "exact", field: "category", defaultValue: "unknown" }],
+        [{ type: "exact", field: "category", defaultValue: "unknown" }]
       );
 
       expect(result.data).toHaveLength(3); // A, B, unknown
 
-      const groupDefault = result.data.find(d =>
-        d.group.category === "unknown"
+      const groupDefault = result.data.find(
+        (d) => d.group.category === "unknown"
       );
       expect(groupDefault?.metrics).toEqual([{ name: "count", value: 1 }]);
     });
@@ -269,7 +282,7 @@ describe("aggregateObjects", () => {
       const result = aggregateObjects(
         manyObjects,
         [{ type: "count", name: "count" }],
-        [{ type: "exact", field: "category", maxGroupCount: 3 }],
+        [{ type: "exact", field: "category", maxGroupCount: 3 }]
       );
 
       expect(result.data).toHaveLength(3);
@@ -288,14 +301,14 @@ describe("aggregateObjects", () => {
       const result = aggregateObjects(
         objects,
         [{ type: "count", name: "count" }],
-        [{ type: "fixedWidth", field: "score", fixedWidth: 10 }],
+        [{ type: "fixedWidth", field: "score", fixedWidth: 10 }]
       );
 
       expect(result.data).toHaveLength(3);
 
-      const bucket0 = result.data.find(d => d.group.score === 0);
-      const bucket10 = result.data.find(d => d.group.score === 10);
-      const bucket20 = result.data.find(d => d.group.score === 20);
+      const bucket0 = result.data.find((d) => d.group.score === 0);
+      const bucket10 = result.data.find((d) => d.group.score === 10);
+      const bucket20 = result.data.find((d) => d.group.score === 20);
 
       expect(bucket0?.metrics).toEqual([{ name: "count", value: 1 }]); // score 5
       expect(bucket10?.metrics).toEqual([{ name: "count", value: 2 }]); // score 15, 12
@@ -316,27 +329,29 @@ describe("aggregateObjects", () => {
       const result = aggregateObjects(
         objects,
         [{ type: "count", name: "count" }],
-        [{
-          type: "ranges",
-          field: "age",
-          ranges: [
-            { startValue: 0, endValue: 20 },
-            { startValue: 20, endValue: 40 },
-            { startValue: 40, endValue: 60 },
-          ],
-        }],
+        [
+          {
+            type: "ranges",
+            field: "age",
+            ranges: [
+              { startValue: 0, endValue: 20 },
+              { startValue: 20, endValue: 40 },
+              { startValue: 40, endValue: 60 },
+            ],
+          },
+        ]
       );
 
       expect(result.data).toHaveLength(3);
 
       const range0_20 = result.data.find(
-        d => d.group.age?.startValue === 0 && d.group.age?.endValue === 20,
+        (d) => d.group.age?.startValue === 0 && d.group.age?.endValue === 20
       );
       const range20_40 = result.data.find(
-        d => d.group.age?.startValue === 20 && d.group.age?.endValue === 40,
+        (d) => d.group.age?.startValue === 20 && d.group.age?.endValue === 40
       );
       const range40_60 = result.data.find(
-        d => d.group.age?.startValue === 40 && d.group.age?.endValue === 60,
+        (d) => d.group.age?.startValue === 40 && d.group.age?.endValue === 60
       );
 
       expect(range0_20?.metrics).toEqual([{ name: "count", value: 1 }]); // age 15
@@ -348,13 +363,13 @@ describe("aggregateObjects", () => {
       const result = aggregateObjects(
         objects,
         [{ type: "count", name: "count" }],
-        [{
-          type: "ranges",
-          field: "age",
-          ranges: [
-            { startValue: 20, endValue: 40 },
-          ],
-        }],
+        [
+          {
+            type: "ranges",
+            field: "age",
+            ranges: [{ startValue: 20, endValue: 40 }],
+          },
+        ]
       );
 
       expect(result.data).toHaveLength(1);
@@ -382,19 +397,19 @@ describe("aggregateObjects", () => {
         [
           { type: "exact", field: "category" },
           { type: "exact", field: "status" },
-        ],
+        ]
       );
 
       expect(result.data).toHaveLength(3);
 
       const groupAActive = result.data.find(
-        d => d.group.category === "A" && d.group.status === "active",
+        (d) => d.group.category === "A" && d.group.status === "active"
       );
       const groupAInactive = result.data.find(
-        d => d.group.category === "A" && d.group.status === "inactive",
+        (d) => d.group.category === "A" && d.group.status === "inactive"
       );
       const groupBActive = result.data.find(
-        d => d.group.category === "B" && d.group.status === "active",
+        (d) => d.group.category === "B" && d.group.status === "active"
       );
 
       expect(groupAActive?.metrics).toEqual([{ name: "count", value: 2 }]);
@@ -412,11 +427,11 @@ describe("aggregateObjects", () => {
         [
           { type: "exact", field: "category" },
           { type: "exact", field: "status" },
-        ],
+        ]
       );
 
       const groupAActive = result.data.find(
-        d => d.group.category === "A" && d.group.status === "active",
+        (d) => d.group.category === "A" && d.group.status === "active"
       );
 
       expect(groupAActive?.metrics).toEqual([
@@ -443,7 +458,7 @@ describe("aggregateObjects", () => {
           { type: "sum", field: "value", name: "value.sum" },
           { type: "avg", field: "value", name: "value.avg" },
         ],
-        [],
+        []
       );
 
       expect(result.data[0].metrics).toEqual([
@@ -468,7 +483,7 @@ describe("aggregateObjects", () => {
       const result = aggregateObjects(
         objects,
         [{ type: "count", name: "count" }],
-        [{ type: "duration", field: "timestamp", value: 1, unit: "DAYS" }],
+        [{ type: "duration", field: "timestamp", value: 1, unit: "DAYS" }]
       );
 
       expect(result.data).toHaveLength(3);
@@ -478,15 +493,15 @@ describe("aggregateObjects", () => {
       const result = aggregateObjects(
         objects,
         [{ type: "count", name: "count" }],
-        [{ type: "duration", field: "timestamp", value: 1, unit: "MONTHS" }],
+        [{ type: "duration", field: "timestamp", value: 1, unit: "MONTHS" }]
       );
 
       expect(result.data).toHaveLength(2);
 
-      const januaryGroup = result.data.find(d =>
+      const januaryGroup = result.data.find((d) =>
         d.group.timestamp?.includes("2024-01")
       );
-      const februaryGroup = result.data.find(d =>
+      const februaryGroup = result.data.find((d) =>
         d.group.timestamp?.includes("2024-02")
       );
 

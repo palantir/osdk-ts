@@ -16,6 +16,7 @@
 
 import classNames from "classnames";
 import React, { useCallback } from "react";
+
 import styles from "./PortalDismissLayer.module.css";
 
 /**
@@ -33,28 +34,27 @@ interface PortalDismissLayerProps {
   onDismiss: () => void;
 }
 
-export const PortalDismissLayer: React.NamedExoticComponent<
-  PortalDismissLayerProps
-> = React.memo(function PortalDismissLayer({
-  className,
-  onDismiss,
-}: PortalDismissLayerProps) {
-  const handlePointerDown = useCallback(
-    (event: React.PointerEvent<HTMLDivElement>) => {
-      // The layer exists only to close the popup; prevent label-triggered
-      // focus/click behavior from immediately reopening it.
-      event.preventDefault();
-      onDismiss();
-    },
-    [onDismiss],
-  );
+export const PortalDismissLayer: React.NamedExoticComponent<PortalDismissLayerProps> =
+  React.memo(function PortalDismissLayer({
+    className,
+    onDismiss,
+  }: PortalDismissLayerProps) {
+    const handlePointerDown = useCallback(
+      (event: React.PointerEvent<HTMLDivElement>) => {
+        // The layer exists only to close the popup; prevent label-triggered
+        // focus/click behavior from immediately reopening it.
+        event.preventDefault();
+        onDismiss();
+      },
+      [onDismiss]
+    );
 
-  return (
-    <div
-      aria-hidden="true"
-      className={classNames(styles.osdkPortalDismissLayer, className)}
-      data-osdk-portal-dismiss-layer=""
-      onPointerDown={handlePointerDown}
-    />
-  );
-});
+    return (
+      <div
+        aria-hidden="true"
+        className={classNames(styles.osdkPortalDismissLayer, className)}
+        data-osdk-portal-dismiss-layer=""
+        onPointerDown={handlePointerDown}
+      />
+    );
+  });

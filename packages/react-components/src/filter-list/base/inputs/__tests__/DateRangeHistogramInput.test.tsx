@@ -17,6 +17,7 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { DateRangeHistogramInput } from "../DateRangeHistogramInput.js";
 
 // Replace the lazy single-date calendar with a synchronous import so the
@@ -37,12 +38,13 @@ const buckets = [
 ];
 
 const slashFormat = (d: Date): string =>
-  `${String(d.getMonth() + 1).padStart(2, "0")}/${
-    String(d.getDate()).padStart(2, "0")
-  }/${d.getFullYear()}`;
+  `${String(d.getMonth() + 1).padStart(2, "0")}/${String(d.getDate()).padStart(
+    2,
+    "0"
+  )}/${d.getFullYear()}`;
 
 function renderInput(
-  props: Partial<React.ComponentProps<typeof DateRangeHistogramInput>> = {},
+  props: Partial<React.ComponentProps<typeof DateRangeHistogramInput>> = {}
 ) {
   return render(
     <DateRangeHistogramInput
@@ -52,7 +54,7 @@ function renderInput(
       maxValue={undefined}
       onChange={vi.fn()}
       {...props}
-    />,
+    />
   );
 }
 
@@ -172,12 +174,10 @@ describe("DateRangeHistogramInput", () => {
       const { container } = renderInput({ formatDate: slashFormat });
       // The histogram bar tooltip is portaled to document.body when a bar
       // is hovered, so we query there rather than the local container.
-      const rects = container.querySelectorAll(
-        "rect[class*=\"histogramBar\"]",
-      );
+      const rects = container.querySelectorAll('rect[class*="histogramBar"]');
       expect(rects.length).toBeGreaterThan(0);
       fireEvent.pointerMove(rects[0], { pointerId: 1 });
-      const tooltip = document.body.querySelector("div[class*=\"tooltip\"]");
+      const tooltip = document.body.querySelector('div[class*="tooltip"]');
       expect(tooltip).not.toBeNull();
       expect(tooltip?.textContent ?? "").toMatch(/\d{2}\/\d{2}\/\d{4}/);
     });
@@ -191,12 +191,10 @@ describe("DateRangeHistogramInput", () => {
 
     it("uses the default tooltip format when formatDate is omitted", () => {
       const { container } = renderInput();
-      const rects = container.querySelectorAll(
-        "rect[class*=\"histogramBar\"]",
-      );
+      const rects = container.querySelectorAll('rect[class*="histogramBar"]');
       expect(rects.length).toBeGreaterThan(0);
       fireEvent.pointerMove(rects[0], { pointerId: 1 });
-      const tooltip = document.body.querySelector("div[class*=\"tooltip\"]");
+      const tooltip = document.body.querySelector('div[class*="tooltip"]');
       expect(tooltip).not.toBeNull();
       // ISO format when formatDate is omitted.
       expect(tooltip?.textContent ?? "").toMatch(/^\d{4}-\d{2}-\d{2}/);

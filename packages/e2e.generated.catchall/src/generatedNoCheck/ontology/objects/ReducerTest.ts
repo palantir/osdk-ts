@@ -115,6 +115,47 @@ export interface ReducerTest extends $ObjectTypeDefinition {
       name: 'cube';
     };
     implements: ['ReducerTestInterface'];
+    interfaceImplementations: {
+      ReducerTestInterface: {
+        stringFromNonMainValueOfStruct: {
+          type: 'structField';
+          propertyApiName: 'struct';
+          structFieldApiName: 'string';
+        };
+        stringFromReducedMainValueStructArray: {
+          type: 'structField';
+          propertyApiName: 'struct';
+          structFieldApiName: 'integer';
+        };
+        stringFromArrayFromAlreadyReduced: {
+          type: 'localProperty';
+          propertyApiName: 'stringArray';
+        };
+        stringFromSingleMainValue: {
+          type: 'reduced';
+          implementation: {
+            type: 'structField';
+            propertyApiName: 'structArray';
+            structFieldApiName: 'integer';
+          };
+        };
+        structFromMultipleMainValue: {
+          type: 'struct';
+          mapping: {
+            string: {
+              type: 'structFieldOfProperty';
+              propertyApiName: 'structWithMultipleMain';
+              structFieldApiName: 'string1';
+            };
+            integer: {
+              type: 'structFieldOfProperty';
+              propertyApiName: 'structWithMultipleMain';
+              structFieldApiName: 'integer2';
+            };
+          };
+        };
+      };
+    };
     interfaceMap: {
       ReducerTestInterface: {
         stringFromArrayFromAlreadyReduced: 'stringArray';

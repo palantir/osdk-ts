@@ -45,6 +45,7 @@ export namespace Employee {
     | 'preferredNameFirst'
     | 'preferredNameLast'
     | 'primaryOfficeId'
+    | 'stockOptions'
     | 'team'
     | 'workerType';
 
@@ -279,6 +280,14 @@ export namespace Employee {
      *   display name: 'Primary Office ID'
      */
     readonly primaryOfficeId: $PropType['string'] | undefined;
+    /**
+     * @experimental
+     *
+     *   property status: experimental
+     *
+     *   display name: 'Stock Options'
+     */
+    readonly stockOptions: $PropType['long'] | undefined;
     /**
      * @experimental
      *
@@ -565,6 +574,14 @@ export interface Employee extends $ObjectTypeDefinition {
        *   display name: 'Primary Office ID'
        */
       primaryOfficeId: $PropertyDef<'string', 'nullable', 'single'>;
+      /**
+       * @experimental
+       *
+       *   property status: experimental
+       *
+       *   display name: 'Stock Options'
+       */
+      stockOptions: $PropertyDef<'long', 'nullable', 'single'>;
       /**
        * @experimental
        *

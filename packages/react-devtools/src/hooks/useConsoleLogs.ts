@@ -15,6 +15,7 @@
  */
 
 import React from "react";
+
 import type { ConsoleLogEntry } from "../store/ConsoleLogStore.js";
 import type { MonitorStore } from "../store/MonitorStore.js";
 
@@ -32,7 +33,7 @@ export function useConsoleLogs(monitorStore: MonitorStore): {
 
   const subscribe = React.useCallback(
     (callback: () => void) => store.subscribe(callback),
-    [store],
+    [store]
   );
 
   const cachedRef = React.useRef<ConsoleLogSnapshot>({
@@ -40,19 +41,16 @@ export function useConsoleLogs(monitorStore: MonitorStore): {
     count: store.getSize(),
   });
 
-  const getSnapshot = React.useCallback(
-    (): ConsoleLogSnapshot => {
-      const entries = store.getEntries();
-      const count = store.getSize();
-      const prev = cachedRef.current;
-      if (prev.entries === entries && prev.count === count) {
-        return prev;
-      }
-      cachedRef.current = { entries, count };
-      return cachedRef.current;
-    },
-    [store],
-  );
+  const getSnapshot = React.useCallback((): ConsoleLogSnapshot => {
+    const entries = store.getEntries();
+    const count = store.getSize();
+    const prev = cachedRef.current;
+    if (prev.entries === entries && prev.count === count) {
+      return prev;
+    }
+    cachedRef.current = { entries, count };
+    return cachedRef.current;
+  }, [store]);
 
   const snapshot = React.useSyncExternalStore(subscribe, getSnapshot);
 

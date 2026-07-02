@@ -50,17 +50,11 @@ export interface EditableConfig<
   CellValue = unknown,
 > {
   cellEdits: Record<string, CellEditInfo<TData, CellValue>>;
-  onCellEdit: (
-    cellId: string,
-    info: CellEditInfo<TData, CellValue>,
-  ) => void;
+  onCellEdit: (cellId: string, info: CellEditInfo<TData, CellValue>) => void;
   onSubmitEdits?: () => Promise<boolean>;
   clearEdits: () => void;
   editModeState: EditModeState;
-  onCellValidationError: (
-    cellId: string,
-    error: string,
-  ) => void;
+  onCellValidationError: (cellId: string, error: string) => void;
   validationErrors: Map<string, string>;
   clearCellValidationError: (cellId: string) => void;
 }
@@ -185,7 +179,7 @@ export type EditFieldConfig<TData = unknown> = {
     fieldComponent: K;
     getFieldComponentProps: (
       object: TData,
-      edits?: Record<string, CellEditInfo<TData, unknown>>,
+      edits?: Record<string, CellEditInfo<TData, unknown>>
     ) => EditFieldPropsByType[K];
   };
 }[EditFieldComponent];

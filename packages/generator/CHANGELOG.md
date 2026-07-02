@@ -1,5 +1,97 @@
 # @osdk/generator
 
+## 2.41.0
+
+### Patch Changes
+
+- Updated dependencies [9b150d7]
+- Updated dependencies [15a35f2]
+  - @osdk/api@2.41.0
+  - @osdk/generator-converters@2.41.0
+
+## 2.40.0
+
+### Minor Changes
+
+- 3e915ee: Array Reducers and Struct Main Value support
+
+### Patch Changes
+
+- Updated dependencies [3e915ee]
+  - @osdk/generator-converters@2.40.0
+  - @osdk/api@2.40.0
+
+## 2.39.0
+
+### Patch Changes
+
+- @osdk/api@2.39.0
+- @osdk/generator-converters@2.39.0
+
+## 2.38.0
+
+### Patch Changes
+
+- @osdk/api@2.38.0
+- @osdk/generator-converters@2.38.0
+
+## 2.37.0
+
+### Patch Changes
+
+- @osdk/api@2.37.0
+- @osdk/generator-converters@2.37.0
+
+## 2.36.0
+
+### Patch Changes
+
+- @osdk/api@2.36.0
+- @osdk/generator-converters@2.36.0
+
+## 2.35.0
+
+### Minor Changes
+
+- 54dc175: Always export `$branch` from the generated SDK root.
+
+### Patch Changes
+
+- @osdk/api@2.35.0
+- @osdk/generator-converters@2.35.0
+
+## 2.34.0
+
+### Patch Changes
+
+- Updated dependencies [db028a0]
+- Updated dependencies [ab19740]
+  - @osdk/generator-converters@2.34.0
+  - @osdk/api@2.34.0
+
+## 2.33.0
+
+### Patch Changes
+
+- @osdk/api@2.33.0
+- @osdk/generator-converters@2.33.0
+
+## 2.32.0
+
+### Patch Changes
+
+- Updated dependencies [06adca1]
+  - @osdk/api@2.32.0
+  - @osdk/generator-converters@2.32.0
+
+## 2.31.0
+
+### Patch Changes
+
+- Updated dependencies [57cbc6d]
+  - @osdk/api@2.31.0
+  - @osdk/generator-converters@2.31.0
+
 ## 2.30.0
 
 ### Patch Changes

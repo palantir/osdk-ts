@@ -1,5 +1,80 @@
 # @osdk/shared.test
 
+## 2.30.0
+
+### Minor Changes
+
+- 15a35f2: Add CipherText support for codegen and implement decryption interface
+
+### Patch Changes
+
+- Updated dependencies [9b150d7]
+- Updated dependencies [15a35f2]
+  - @osdk/api@2.41.0
+  - @osdk/generator-converters@2.41.0
+
+## 2.29.0
+
+### Minor Changes
+
+- 3e915ee: Array Reducers and Struct Main Value support
+
+### Patch Changes
+
+- Updated dependencies [3e915ee]
+  - @osdk/generator-converters@2.40.0
+  - @osdk/api@2.40.0
+
+## 2.28.0
+
+### Patch Changes
+
+- @osdk/api@2.38.0
+- @osdk/generator-converters@2.38.0
+
+## 2.27.0
+
+### Patch Changes
+
+- @osdk/api@2.37.0
+- @osdk/generator-converters@2.37.0
+
+## 2.26.0
+
+### Patch Changes
+
+- @osdk/api@2.35.0
+- @osdk/generator-converters@2.35.0
+
+## 2.25.0
+
+### Minor Changes
+
+- db028a0: Add optional struct param support for actions.
+
+### Patch Changes
+
+- Updated dependencies [db028a0]
+- Updated dependencies [ab19740]
+  - @osdk/generator-converters@2.34.0
+  - @osdk/api@2.34.0
+
+## 2.24.0
+
+### Patch Changes
+
+- Updated dependencies [06adca1]
+  - @osdk/api@2.32.0
+  - @osdk/generator-converters@2.32.0
+
+## 2.23.0
+
+### Patch Changes
+
+- Updated dependencies [57cbc6d]
+  - @osdk/api@2.31.0
+  - @osdk/generator-converters@2.31.0
+
 ## 2.22.0
 
 ### Minor Changes

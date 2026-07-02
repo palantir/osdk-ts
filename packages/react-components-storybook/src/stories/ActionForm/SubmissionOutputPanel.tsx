@@ -44,11 +44,7 @@ const SUBMISSION_PRE_STYLE = {
   maxHeight: 560,
 } as const;
 
-export type StorySubmissionStatus =
-  | "idle"
-  | "submitting"
-  | "success"
-  | "error";
+export type StorySubmissionStatus = "idle" | "submitting" | "success" | "error";
 
 export interface StorySubmissionSnapshot {
   status: StorySubmissionStatus;
@@ -83,9 +79,10 @@ export function SubmissionOutputPanel({
   idleMessage,
   snapshot,
 }: SubmissionOutputPanelProps): React.ReactElement {
-  const responseJson = snapshot.status === "idle"
-    ? "(no submission yet)"
-    : stringifyStoryValue(buildSubmissionJson(snapshot));
+  const responseJson =
+    snapshot.status === "idle"
+      ? "(no submission yet)"
+      : stringifyStoryValue(buildSubmissionJson(snapshot));
   const isError = snapshot.status === "error";
 
   return (
@@ -107,7 +104,7 @@ export function SubmissionOutputPanel({
 
 function getSubmissionStatusText(
   status: StorySubmissionStatus,
-  idleMessage: string,
+  idleMessage: string
 ): string {
   switch (status) {
     case "idle":

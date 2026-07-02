@@ -21,6 +21,7 @@ import type {
 } from "@osdk/foundry.ontologies";
 import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import type { Client } from "../Client.js";
 import { createClient, createClientWithTransaction } from "../createClient.js";
 import { mockFetchResponse } from "../createClient.test.js";
@@ -39,7 +40,7 @@ describe("createScenario", () => {
       ontologyRid,
       async () => "Token",
       undefined,
-      fetchFunction,
+      fetchFunction
     );
   });
 
@@ -55,7 +56,7 @@ describe("createScenario", () => {
     expect(fetchFunction).toHaveBeenCalledTimes(1);
     const createUrl = new URL(
       fetchFunction.mock.calls[0][0] as string,
-      "https://mock.com",
+      "https://mock.com"
     );
     expect(createUrl.pathname).toMatch(/\/scenarios\/create$/);
 
@@ -69,12 +70,13 @@ describe("createScenario", () => {
     await scenario(BarInterface).fetchPage();
     const url = new URL(
       fetchFunction.mock.calls[1][0] as string,
-      "https://mock.com",
+      "https://mock.com"
     );
     expect(url.searchParams.get("scenarioRid")).toBe(newScenarioRid);
   });
 
-  it("rejects a client with an active transaction at runtime", async () => {
+  it("warns and ignores an active transaction, scoping to the new scenario", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
     const txClient = createClientWithTransaction(
       "ri.transactions..transaction.xyz",
       async () => {},
@@ -82,9 +84,19 @@ describe("createScenario", () => {
       ontologyRid,
       async () => "Token",
       {},
-      fetchFunction,
+      fetchFunction
     );
-    await expect(createScenario(txClient)).rejects.toThrow(/transaction/);
+    const newScenarioRid = "ri.actions..scenario.new";
+    const createResponse: CreateOntologyScenarioResponse = {
+      scenarioRid: newScenarioRid,
+    };
+    mockFetchResponse(fetchFunction, createResponse);
+
+    const scenario = await createScenario(txClient);
+
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringMatching(/transaction/));
+    expect(scenario.getScenarioReference()).toBe(newScenarioRid);
+    warnSpy.mockRestore();
   });
 
   it("rejects a client already scoped to a scenario at runtime", async () => {

@@ -7,7 +7,7 @@ export type HierarchyLevel =
   | "ic";
 
 export function getHierarchyLevel(
-  jobTitle: string | undefined,
+  jobTitle: string | undefined
 ): HierarchyLevel {
   const title = (jobTitle ?? "").toLowerCase();
   if (title.includes("chief") || title === "ceo") return "ceo";

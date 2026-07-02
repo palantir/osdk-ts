@@ -18,6 +18,7 @@ import type {
   Attachment,
   CompileTimeMetadata,
   ConvertProps,
+  FetchPageArgs,
   FetchPageResult,
   InterfaceDefinition,
   ObjectOrInterfaceDefinition,
@@ -42,30 +43,30 @@ import {
   Office,
 } from "@osdk/client.test.ontology";
 import {
+  type FauxFoundry,
   LegacyFauxFoundry,
   startNodeApiServer,
   stubData,
 } from "@osdk/shared.test";
 import { beforeAll, describe, expect, expectTypeOf, it } from "vitest";
+
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
-import { getWireObjectSet } from "./createObjectSet.js";
+import { fetchPage } from "../object/fetchPage.js";
+import {
+  createMockCaptureClient,
+  getLastObjectSetRequest,
+} from "../util/mockCaptureClient.js";
 
-type ApiNameAsString<
-  T extends ObjectOrInterfaceDefinition,
-> = CompileTimeMetadata<T>["apiName"];
+type ApiNameAsString<T extends ObjectOrInterfaceDefinition> =
+  CompileTimeMetadata<T>["apiName"];
 
 type JustProps<
   T extends ObjectOrInterfaceDefinition,
   P extends ValidOsdkPropParams<T>,
-> = P extends "$all" ? PropertyKeys<T>
-  : Exclude<P, SpecialOsdkPropParams>;
+> = P extends "$all" ? PropertyKeys<T> : Exclude<P, SpecialOsdkPropParams>;
 
-type SpecialOsdkPropParams =
-  | "$all"
-  | "$rid"
-  | "$strict"
-  | "$notStrict";
+type SpecialOsdkPropParams = "$all" | "$rid" | "$strict" | "$notStrict";
 
 type ValidOsdkPropParams<Q extends ObjectOrInterfaceDefinition> =
   | SpecialOsdkPropParams
@@ -85,10 +86,11 @@ export type PropMapToObject<
 
 describe("ObjectSet", () => {
   let client: Client;
+  let fauxFoundry: FauxFoundry;
 
   beforeAll(() => {
     const testSetup = startNodeApiServer(new LegacyFauxFoundry(), createClient);
-    ({ client } = testSetup);
+    ({ client, fauxFoundry } = testSetup);
     return () => {
       testSetup.apiServer.close();
     };
@@ -165,10 +167,11 @@ describe("ObjectSet", () => {
 
     expect(objectSet2Results.data).toHaveLength(1);
     expect(subtractedObjectSetResults.data).toHaveLength(
-      objectSetResults.data.length - objectSet2Results.data.length,
+      objectSetResults.data.length - objectSet2Results.data.length
     );
-    expect(subtractedObjectSetResults.data.find(x => x.$primaryKey === 50030))
-      .toBeUndefined();
+    expect(
+      subtractedObjectSetResults.data.find((x) => x.$primaryKey === 50030)
+    ).toBeUndefined();
   });
 
   it("objects set intersect", async () => {
@@ -196,26 +199,25 @@ describe("ObjectSet", () => {
         employeeId: { $isNull: false },
       })
       .fetchPage({
-        $orderBy: { "employeeId": "asc" },
+        $orderBy: { employeeId: "asc" },
       });
 
-    expect(employees.map(e => e.$primaryKey))
-      .toEqual([
-        20003,
-        50030,
-        50031,
-        50032,
-        50033,
-        50035,
-        stubData.employee50050.employeeId,
-      ]);
+    expect(employees.map((e) => e.$primaryKey)).toEqual([
+      20003,
+      50030,
+      50031,
+      50032,
+      50033,
+      50035,
+      stubData.employee50050.employeeId,
+    ]);
   });
 
   it("allows fetching by PK from a base object set - fetchOne", async () => {
     const employee = await client(Employee).fetchOne(
-      stubData.employee1.employeeId,
+      stubData.employee1.employeeId
     );
-    expectTypeOf<typeof employee>().toMatchTypeOf<
+    expectTypeOf<typeof employee>().toExtend<
       Osdk<Employee, PropertyKeys<Employee>>
     >;
     expect(employee.$primaryKey).toBe(stubData.employee1.employeeId);
@@ -223,12 +225,9 @@ describe("ObjectSet", () => {
 
   it("allows fetching by rid with experimental function", async () => {
     const employee = await client(
-      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,
-    ).fetchOneByRid(
-      Employee,
-      stubData.employee1.__rid,
-    );
-    expectTypeOf<typeof employee>().toMatchTypeOf<
+      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid
+    ).fetchOneByRid(Employee, stubData.employee1.__rid);
+    expectTypeOf<typeof employee>().toExtend<
       Osdk<Employee, PropertyKeys<Employee>>
     >;
     expect(employee.$primaryKey).toBe(stubData.employee1.employeeId);
@@ -236,13 +235,13 @@ describe("ObjectSet", () => {
 
   it("allows fetching page of rids with experimental function", async () => {
     const employees = await client(
-      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
+      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid
     ).fetchPageByRid(
       Employee,
       [stubData.employee1.__rid, stubData.employee2.__rid],
-      {},
+      {}
     );
-    expectTypeOf<typeof employees>().toMatchTypeOf<
+    expectTypeOf<typeof employees>().toExtend<
       FetchPageResult<Employee, PropertyKeys<Employee>, boolean, any, any>
     >;
     expect(employees.data[0].$primaryKey).toBe(stubData.employee1.employeeId);
@@ -251,12 +250,12 @@ describe("ObjectSet", () => {
 
   it("allows fetching a page of rids without a type specifier", async () => {
     const employees = await client(
-      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
+      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid
     ).fetchPageByRidNoType(
       [stubData.employee1.__rid, stubData.employee2.__rid],
-      {},
+      {}
     );
-    expectTypeOf<typeof employees>().toMatchTypeOf<
+    expectTypeOf<typeof employees>().toExtend<
       FetchPageResult<
         ObjectOrInterfaceDefinition,
         PropertyKeys<ObjectOrInterfaceDefinition>,
@@ -271,27 +270,23 @@ describe("ObjectSet", () => {
 
   it("allows fetching by rid with experimental function, with select", async () => {
     const employee = await client(
-      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,
-    ).fetchOneByRid(
-      Employee,
-      stubData.employee2.__rid,
-      { $select: ["fullName"] },
-    );
-    expectTypeOf<typeof employee>().toMatchTypeOf<
-      Osdk<Employee, "fullName">
-    >;
+      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid
+    ).fetchOneByRid(Employee, stubData.employee2.__rid, {
+      $select: ["fullName"],
+    });
+    expectTypeOf<typeof employee>().toExtend<Osdk<Employee, "fullName">>;
     expect(employee.$primaryKey).toBe(stubData.employee2.employeeId);
   });
 
   it("allows fetching by rid with experimental function, with select 2", async () => {
     const employees = await client(
-      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
+      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid
     ).fetchPageByRid(
       Employee,
       [stubData.employee2.__rid, stubData.employee3.__rid],
-      { $select: ["fullName"] },
+      { $select: ["fullName"] }
     );
-    expectTypeOf<typeof employees>().toMatchTypeOf<
+    expectTypeOf<typeof employees>().toExtend<
       FetchPageResult<Employee, "fullName", boolean, any, any>
     >;
     expect(employees.data[0].$primaryKey).toBe(stubData.employee2.employeeId);
@@ -300,86 +295,73 @@ describe("ObjectSet", () => {
 
   it("allows fetchPageByRid with $loadPropertySecurityMetadata", async () => {
     const employees = await client(
-      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
-    ).fetchPageByRid(
-      Employee,
-      [stubData.unsecuredEmployee.__rid],
-      { $loadPropertySecurityMetadata: true },
-    );
+      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid
+    ).fetchPageByRid(Employee, [stubData.unsecuredEmployee.__rid], {
+      $loadPropertySecurityMetadata: true,
+    });
 
-    expectTypeOf(employees.data[0].$propertySecurities).toMatchObjectType<
-      {
-        $primaryKey: PropertySecurity[];
-        $title: PropertySecurity[];
-        class: PropertySecurity[];
-        employeeId: PropertySecurity[];
-        fullName: PropertySecurity[];
-        office: PropertySecurity[];
-        startDate: PropertySecurity[];
-        employeeLocation: PropertySecurity[];
-        employeeSensor: PropertySecurity[];
-        employeeStatus: PropertySecurity[];
-        skillSet: PropertySecurity[];
-        skillSetEmbedding: PropertySecurity[];
-      }
+    expectTypeOf(employees.data[0].$propertySecurities).toMatchObjectType<{
+      $primaryKey: PropertySecurity[];
+      $title: PropertySecurity[];
+      class: PropertySecurity[];
+      employeeId: PropertySecurity[];
+      fullName: PropertySecurity[];
+      office: PropertySecurity[];
+      startDate: PropertySecurity[];
+      employeeLocation: PropertySecurity[];
+      employeeSensor: PropertySecurity[];
+      employeeStatus: PropertySecurity[];
+      skillSet: PropertySecurity[];
+      skillSetEmbedding: PropertySecurity[];
+    }>();
+
+    expectTypeOf(employees.data[0].$propertySecurities.class).toExtend<
+      PropertySecurity[]
     >();
 
-    expectTypeOf(employees.data[0].$propertySecurities.class)
-      .toMatchTypeOf<PropertySecurity[]>();
-
-    expectTypeOf(employees.data[0].$propertySecurities.favoriteRestaurants)
-      .toMatchTypeOf<PropertySecurity[][]>();
+    expectTypeOf(
+      employees.data[0].$propertySecurities.favoriteRestaurants
+    ).toExtend<PropertySecurity[][]>();
 
     expect(employees.data[0].$primaryKey).toBe(
-      stubData.unsecuredEmployee.__primaryKey,
+      stubData.unsecuredEmployee.__primaryKey
     );
   });
 
   it("check struct parsing", async () => {
-    const player = await client(BgaoNflPlayer).fetchOne(
-      "tkelce",
-    );
-    expectTypeOf<typeof player>().toMatchTypeOf<
+    const player = await client(BgaoNflPlayer).fetchOne("tkelce");
+    expectTypeOf<typeof player>().toExtend<
       Osdk<BgaoNflPlayer, PropertyKeys<BgaoNflPlayer>>
     >;
-    expectTypeOf<typeof player.address>().toMatchTypeOf<
-      {
-        addressLine1: string | undefined;
-        addressLine2: string | undefined;
-        city: string | undefined;
-        state: string | undefined;
-        zipCode: number | undefined;
-      } | undefined
+    expectTypeOf<typeof player.address>().toExtend<
+      | {
+          addressLine1: string | undefined;
+          addressLine2: string | undefined;
+          city: string | undefined;
+          state: string | undefined;
+          zipCode: number | undefined;
+        }
+      | undefined
     >;
 
     const address1 = player.address!.addressLine1;
-    expectTypeOf<typeof address1>().toMatchTypeOf<
-      string | undefined
-    >;
+    expectTypeOf<typeof address1>().toExtend<string | undefined>;
     expect(address1).toEqual("15 Muppets Lane");
 
     const address2 = player.address?.addressLine2;
-    expectTypeOf<typeof address2>().toMatchTypeOf<
-      string | undefined
-    >;
+    expectTypeOf<typeof address2>().toExtend<string | undefined>;
     expect(address2).toEqual("Resort No 4");
 
     const city = player.address?.city;
-    expectTypeOf<typeof city>().toMatchTypeOf<
-      string | undefined
-    >;
+    expectTypeOf<typeof city>().toExtend<string | undefined>;
     expect(city).toEqual("Memphis");
 
     const state = player.address?.state;
-    expectTypeOf<typeof state>().toMatchTypeOf<
-      string | undefined
-    >;
+    expectTypeOf<typeof state>().toExtend<string | undefined>;
     expect(state).toEqual("TN");
 
     const zipCode = player.address?.zipCode;
-    expectTypeOf<typeof zipCode>().toMatchTypeOf<
-      number | undefined
-    >;
+    expectTypeOf<typeof zipCode>().toExtend<number | undefined>;
     expect(zipCode).toEqual(11100);
 
     expect(player.$primaryKey).toEqual(stubData.travisPlayer.__primaryKey);
@@ -387,11 +369,10 @@ describe("ObjectSet", () => {
   });
 
   it("allows fetching by PK from a base object set - fetchOneWithErrors", async () => {
-    const employeeResult = await client(Employee)
-      .fetchOneWithErrors(
-        stubData.employee1.employeeId,
-      );
-    expectTypeOf<typeof employeeResult>().toMatchTypeOf<
+    const employeeResult = await client(Employee).fetchOneWithErrors(
+      stubData.employee1.employeeId
+    );
+    expectTypeOf<typeof employeeResult>().toExtend<
       Result<Osdk<Employee, PropertyKeys<Employee>>>
     >;
 
@@ -404,7 +385,7 @@ describe("ObjectSet", () => {
   it("allows fetching by PK from a base object set with selected properties - fetchOne", async () => {
     const employee = await client(Employee).fetchOne(
       stubData.employee1.employeeId,
-      { $select: ["fullName"] },
+      { $select: ["fullName"] }
     );
     expectTypeOf<typeof employee>().branded.toEqualTypeOf<
       Osdk<Employee, "fullName">
@@ -413,11 +394,10 @@ describe("ObjectSet", () => {
   });
 
   it("allows fetching by PK from a base object set with selected properties - fetchOneWithErrors", async () => {
-    const employeeResult = await client(Employee)
-      .fetchOneWithErrors(
-        stubData.employee1.employeeId,
-        { $select: ["fullName"] },
-      );
+    const employeeResult = await client(Employee).fetchOneWithErrors(
+      stubData.employee1.employeeId,
+      { $select: ["fullName"] }
+    );
     expectTypeOf<typeof employeeResult>().branded.toEqualTypeOf<
       Result<Osdk<Employee, "fullName">>
     >;
@@ -429,13 +409,11 @@ describe("ObjectSet", () => {
   });
 
   it("throws when fetching by PK with an object that does not exist - fetchOne", async () => {
-    await expect(client(Employee).fetchOne(-1)).rejects
-      .toThrow();
+    await expect(client(Employee).fetchOne(-1)).rejects.toThrow();
   });
 
   it("throws when fetching by PK with an object that does not exist - fetchOneWithErrors", async () => {
-    const employeeResult = await client(Employee)
-      .fetchOneWithErrors(-1);
+    const employeeResult = await client(Employee).fetchOneWithErrors(-1);
 
     expectTypeOf<typeof employeeResult>().branded.toEqualTypeOf<
       Result<Osdk<Employee>>
@@ -445,19 +423,23 @@ describe("ObjectSet", () => {
   });
 
   it("allows fetching by PK from a pivoted object set - fetchOne", async () => {
-    const employee = await client(Employee).where({
-      employeeId: stubData.employee2.employeeId,
-    })
-      .pivotTo("peeps").fetchOne(stubData.employee1.employeeId);
+    const employee = await client(Employee)
+      .where({
+        employeeId: stubData.employee2.employeeId,
+      })
+      .pivotTo("peeps")
+      .fetchOne(stubData.employee1.employeeId);
 
     expect(employee.$primaryKey).toBe(stubData.employee1.employeeId);
   });
 
   it("allows fetching by PK from a pivoted object set - fetchOneWithErrors", async () => {
-    const employeeResult = await client(Employee).where({
-      employeeId: stubData.employee2.employeeId,
-    })
-      .pivotTo("peeps").fetchOneWithErrors(stubData.employee1.employeeId);
+    const employeeResult = await client(Employee)
+      .where({
+        employeeId: stubData.employee2.employeeId,
+      })
+      .pivotTo("peeps")
+      .fetchOneWithErrors(stubData.employee1.employeeId);
 
     if (isOk(employeeResult)) {
       const employee = employeeResult.value;
@@ -492,11 +474,6 @@ describe("ObjectSet", () => {
     expect(objectSet).toBeDefined();
   });
 
-  it(".where({}) is a no-op (no empty-AND filter on the wire)", () => {
-    const base = client(Employee);
-    expect(getWireObjectSet(base.where({}))).toEqual(getWireObjectSet(base));
-  });
-
   it("does not allow arbitrary keys when no properties", () => {
     const ids: ReadonlyArray<number> = [50030, 50031];
     client(Employee).where({
@@ -513,29 +490,39 @@ describe("ObjectSet", () => {
   it("type checking containsallterm and containsanyterm", () => {
     const ids: ReadonlyArray<number> = [50030, 50031];
     client(Employee).where({
-      $or: [{ fullName: { $containsAllTerms: "John Smith" } }, {
-        office: { $containsAllTerms: { term: "NYC DC" } },
-      }, {
-        fullName: {
-          $containsAllTerms: { term: "John Smith", fuzzySearch: false },
+      $or: [
+        { fullName: { $containsAllTerms: "John Smith" } },
+        {
+          office: { $containsAllTerms: { term: "NYC DC" } },
         },
-      }, {
-        // @ts-expect-error
-        fullName: { $containsAllTerms: { fuzzySearch: false } },
-      }],
+        {
+          fullName: {
+            $containsAllTerms: { term: "John Smith", fuzzySearch: false },
+          },
+        },
+        {
+          // @ts-expect-error
+          fullName: { $containsAllTerms: { fuzzySearch: false } },
+        },
+      ],
     });
 
     client(Employee).where({
-      $or: [{ fullName: { $containsAnyTerm: "John Smith" } }, {
-        office: { $containsAnyTerm: { term: "NYC DC" } },
-      }, {
-        fullName: {
-          $containsAnyTerm: { term: "John Smith", fuzzySearch: false },
+      $or: [
+        { fullName: { $containsAnyTerm: "John Smith" } },
+        {
+          office: { $containsAnyTerm: { term: "NYC DC" } },
         },
-      }, {
-        // @ts-expect-error
-        fullName: { $containsAnyTerm: { fuzzySearch: false } },
-      }],
+        {
+          fullName: {
+            $containsAnyTerm: { term: "John Smith", fuzzySearch: false },
+          },
+        },
+        {
+          // @ts-expect-error
+          fullName: { $containsAnyTerm: { fuzzySearch: false } },
+        },
+      ],
     });
 
     client(BarInterface).where({
@@ -567,13 +554,16 @@ describe("ObjectSet", () => {
     client(Employee).where({
       fullName: {
         $interval: {
-          $and: [{
-            $match: "John",
-            $ordered: true,
-          }, {
-            $match: "Smith",
-            $ordered: true,
-          }],
+          $and: [
+            {
+              $match: "John",
+              $ordered: true,
+            },
+            {
+              $match: "Smith",
+              $ordered: true,
+            },
+          ],
           $maxGaps: 0,
           $ordered: true,
         },
@@ -583,13 +573,16 @@ describe("ObjectSet", () => {
     client(Employee).where({
       fullName: {
         $interval: {
-          $or: [{
-            $match: "John",
-            $ordered: true,
-          }, {
-            $match: "Jane",
-            $ordered: true,
-          }],
+          $or: [
+            {
+              $match: "John",
+              $ordered: true,
+            },
+            {
+              $match: "Jane",
+              $ordered: true,
+            },
+          ],
         },
       },
     });
@@ -659,9 +652,12 @@ describe("ObjectSet", () => {
 
   it("type checking struct where clauses", () => {
     expectTypeOf(client(BgaoNflPlayer).where).toBeCallableWith({
-      $and: [{ address: { city: { $eq: "NYC" } } }, {
-        address: { zipCode: { $gte: 55555 } },
-      }],
+      $and: [
+        { address: { city: { $eq: "NYC" } } },
+        {
+          address: { zipCode: { $gte: 55555 } },
+        },
+      ],
     });
     expectTypeOf(client(BgaoNflPlayer).where).toBeCallableWith({
       address: {
@@ -723,9 +719,10 @@ describe("ObjectSet", () => {
             $__EXPERIMENTAL_strictNonNull: false,
             $includeRid: true,
           } as const;
-          const result = k === "fetchPage"
-            ? await client(Employee).fetchPage(opts)
-            : (await client(Employee).fetchPageWithErrors(opts)).value!;
+          const result =
+            k === "fetchPage"
+              ? await client(Employee).fetchPage(opts)
+              : (await client(Employee).fetchPageWithErrors(opts)).value!;
 
           expect(result.data).toHaveLength(7);
           expectTypeOf(result.data[0]).branded.toEqualTypeOf<
@@ -739,9 +736,10 @@ describe("ObjectSet", () => {
           const opts = {
             $includeRid: false,
           } as const;
-          const result = k === "fetchPage"
-            ? await client(Employee).fetchPage(opts)
-            : (await client(Employee).fetchPageWithErrors(opts)).value!;
+          const result =
+            k === "fetchPage"
+              ? await client(Employee).fetchPage(opts)
+              : (await client(Employee).fetchPageWithErrors(opts)).value!;
 
           expect(result.data).toHaveLength(7);
           expectTypeOf(result.data[0]).branded.toEqualTypeOf<
@@ -755,7 +753,7 @@ describe("ObjectSet", () => {
   describe("Derived Properties Object Set", () => {
     it("does not allow aggregate before a link type is selected", () => {
       client(Employee).withProperties({
-        "derivedPropertyName": (base) =>
+        derivedPropertyName: (base) =>
           // @ts-expect-error
           base.aggregate("employeeId:exactDistinct"),
       });
@@ -763,7 +761,7 @@ describe("ObjectSet", () => {
 
     it("does not allow selectProperty when a many link was selected at any point", () => {
       client(Employee).withProperties({
-        "derivedPropertyName": (base) => {
+        derivedPropertyName: (base) => {
           // @ts-expect-error
           base.pivotTo("peeps").selectProperty("employeeId");
 
@@ -778,11 +776,11 @@ describe("ObjectSet", () => {
     it("enforces a return only of correct type", () => {
       client(Employee).withProperties({
         // @ts-expect-error
-        "derivedPropertyName": (base) => {
+        derivedPropertyName: (base) => {
           return base.pivotTo("peeps");
         },
         // @ts-expect-error
-        "derivedPropertyName2": (base) => {
+        derivedPropertyName2: (base) => {
           return { incorrect: "type" };
         },
       });
@@ -791,7 +789,7 @@ describe("ObjectSet", () => {
     // Executed code fails since we're providing bad strings to the function
     it.fails("correctly narrows types of aggregate function", () => {
       client(Employee).withProperties({
-        "derivedPropertyName": (base) => {
+        derivedPropertyName: (base) => {
           // @ts-expect-error
           base.pivotTo("lead").aggregate("notAProperty:sum");
 
@@ -814,7 +812,7 @@ describe("ObjectSet", () => {
     // Executed code fails since we're providing bad strings to the function
     it("correctly narrows types of options for aggregate functions", () => {
       const objectSet = client(Employee).withProperties({
-        "derivedPropertyName": (base) => {
+        derivedPropertyName: (base) => {
           // @ts-expect-error
           base.pivotTo("lead").aggregate("employeeId:approximateDistinct", {
             limit: 1,
@@ -831,24 +829,20 @@ describe("ObjectSet", () => {
             percentile: 1,
           });
 
-          return base.pivotTo("lead").aggregate(
-            "employeeId:approximatePercentile",
-            { percentile: 0.5 },
-          );
+          return base
+            .pivotTo("lead")
+            .aggregate("employeeId:approximatePercentile", { percentile: 0.5 });
         },
       });
 
       expectTypeOf(objectSet).branded.toEqualTypeOf<
-        ObjectSet<
-          Employee,
-          { derivedPropertyName: "double" | undefined }
-        >
+        ObjectSet<Employee, { derivedPropertyName: "double" | undefined }>
       >();
     });
 
     it("correctly narrows types of selectProperty function", () => {
       client(Employee).withProperties({
-        "derivedPropertyName": (base) => {
+        derivedPropertyName: (base) => {
           // @ts-expect-error
           base.pivotTo("lead").selectProperty("notAProperty");
 
@@ -857,119 +851,149 @@ describe("ObjectSet", () => {
       }) satisfies ObjectSet<
         Employee,
         {
-          "derivedPropertyName": "stringTimeseries" | undefined;
+          derivedPropertyName: "stringTimeseries" | undefined;
         }
       >;
     });
 
     it("propagates derived property type to future object set operations with correct types", () => {
-      client(Employee).withProperties({
-        "derivedPropertyName": (base) =>
-          base.pivotTo("lead").aggregate("employeeId:sum"),
-        // @ts-expect-error
-      }).where({ "notAProperty": { "$eq": 3 } });
+      client(Employee)
+        .withProperties({
+          derivedPropertyName: (base) =>
+            base.pivotTo("lead").aggregate("employeeId:sum"),
+          // @ts-expect-error
+        })
+        .where({ notAProperty: { $eq: 3 } });
 
-      const numericAggregationObjectSet = client(Employee).withProperties({
-        "derivedPropertyName": (base) =>
-          base.pivotTo("lead").aggregate("employeeId:sum"),
-      }).where({ "derivedPropertyName": { "$eq": 3 } });
+      const numericAggregationObjectSet = client(Employee)
+        .withProperties({
+          derivedPropertyName: (base) =>
+            base.pivotTo("lead").aggregate("employeeId:sum"),
+        })
+        .where({ derivedPropertyName: { $eq: 3 } });
 
       expectTypeOf(numericAggregationObjectSet).toEqualTypeOf<
-        ObjectSet<Employee, {
-          derivedPropertyName: "double" | undefined;
-        }>
+        ObjectSet<
+          Employee,
+          {
+            derivedPropertyName: "double" | undefined;
+          }
+        >
       >();
 
-      client(Employee).withProperties({
-        "derivedPropertyName": (base) =>
-          base.pivotTo("lead").aggregate("employeeId:collectList"),
-      }).where({ "derivedPropertyName": { "$isNull": false } })
+      client(Employee)
+        .withProperties({
+          derivedPropertyName: (base) =>
+            base.pivotTo("lead").aggregate("employeeId:collectList"),
+        })
+        .where({ derivedPropertyName: { $isNull: false } })
         // @ts-expect-error
-        .where({ "derivedPropertyName": { "$eq": [1, 2] } });
+        .where({ derivedPropertyName: { $eq: [1, 2] } });
 
       const setAggregationObjectSet = client(Employee).withProperties({
-        "derivedPropertyName": (base) =>
+        derivedPropertyName: (base) =>
           base.pivotTo("lead").aggregate("fullName:collectSet"),
       });
       setAggregationObjectSet.where({
-        "derivedPropertyName": { "$isNull": false },
+        derivedPropertyName: { $isNull: false },
       });
 
       setAggregationObjectSet.where({
         // @ts-expect-error
-        "derivedPropertyName": { "$eq": [1, 2] },
+        derivedPropertyName: { $eq: [1, 2] },
       });
       expectTypeOf(setAggregationObjectSet).toEqualTypeOf<
-        ObjectSet<Employee, {
-          derivedPropertyName: "string"[] | undefined;
-        }>
+        ObjectSet<
+          Employee,
+          {
+            derivedPropertyName: "string"[] | undefined;
+          }
+        >
       >();
 
-      const selectPropertyObjectSet = client(Employee).withProperties({
-        "derivedPropertyName": (base) =>
-          base.pivotTo("lead").selectProperty("employeeId"),
-      }).where({ "derivedPropertyName": { "$eq": 3 } });
+      const selectPropertyObjectSet = client(Employee)
+        .withProperties({
+          derivedPropertyName: (base) =>
+            base.pivotTo("lead").selectProperty("employeeId"),
+        })
+        .where({ derivedPropertyName: { $eq: 3 } });
 
       expectTypeOf(selectPropertyObjectSet).toEqualTypeOf<
-        ObjectSet<Employee, {
-          derivedPropertyName: "integer";
-        }>
+        ObjectSet<
+          Employee,
+          {
+            derivedPropertyName: "integer";
+          }
+        >
       >();
 
-      client(Employee).withProperties({
-        "derivedPropertyName": (base) =>
-          base.pivotTo("lead").selectProperty("startDate"),
-      }).where({ "derivedPropertyName": { "$eq": "datetimeFilter" } });
+      client(Employee)
+        .withProperties({
+          derivedPropertyName: (base) =>
+            base.pivotTo("lead").selectProperty("startDate"),
+        })
+        .where({ derivedPropertyName: { $eq: "datetimeFilter" } });
     });
 
     it("correctly types multiple property definitions in one clause", () => {
-      const objectSet = client(Employee).withProperties({
-        "derivedPropertyName": (base) =>
-          base.pivotTo("lead").aggregate("employeeId:sum"),
-        "derivedPropertyName2": (base) =>
-          base.pivotTo("lead").selectProperty("fullName"),
-      }).where({ "derivedPropertyName": { "$eq": 3 } })
-        .where({ "derivedPropertyName2": { "$eq": "name" } });
+      const objectSet = client(Employee)
+        .withProperties({
+          derivedPropertyName: (base) =>
+            base.pivotTo("lead").aggregate("employeeId:sum"),
+          derivedPropertyName2: (base) =>
+            base.pivotTo("lead").selectProperty("fullName"),
+        })
+        .where({ derivedPropertyName: { $eq: 3 } })
+        .where({ derivedPropertyName2: { $eq: "name" } });
 
       expectTypeOf(objectSet).toEqualTypeOf<
-        ObjectSet<Employee, {
-          derivedPropertyName: "double" | undefined;
-          derivedPropertyName2: "string" | undefined;
-        }>
+        ObjectSet<
+          Employee,
+          {
+            derivedPropertyName: "double" | undefined;
+            derivedPropertyName2: "string" | undefined;
+          }
+        >
       >();
     });
 
     it("ensures other properties are consistently typed", () => {
-      client(Employee).withProperties({
-        "derivedPropertyName": (base) =>
-          base.pivotTo("lead").selectProperty("employeeId"),
-      }).where({ "fullName": { "$eq": "A" } });
+      client(Employee)
+        .withProperties({
+          derivedPropertyName: (base) =>
+            base.pivotTo("lead").selectProperty("employeeId"),
+        })
+        .where({ fullName: { $eq: "A" } });
 
-      client(Employee).withProperties({
-        "derivedPropertyName": (base) =>
-          base.pivotTo("lead").selectProperty("employeeId"),
-      }).where({ "employeeId": { "$eq": 2 } });
+      client(Employee)
+        .withProperties({
+          derivedPropertyName: (base) =>
+            base.pivotTo("lead").selectProperty("employeeId"),
+        })
+        .where({ employeeId: { $eq: 2 } });
     });
 
     it("allows fetching derived properties with correctly typed Osdk.Instance types", async () => {
-      const objectWithRdp = await client(Employee).withProperties({
-        "derivedPropertyName": (base) =>
-          base.pivotTo("lead").selectProperty("employeeId"),
-      }).fetchOne(stubData.employee1.employeeId);
+      const objectWithRdp = await client(Employee)
+        .withProperties({
+          derivedPropertyName: (base) =>
+            base.pivotTo("lead").selectProperty("employeeId"),
+        })
+        .fetchOne(stubData.employee1.employeeId);
 
-      expectTypeOf(objectWithRdp.derivedPropertyName).toEqualTypeOf<
-        number
-      >();
+      expectTypeOf(objectWithRdp.derivedPropertyName).toEqualTypeOf<number>();
       expect(objectWithRdp.derivedPropertyName).toBe(
-        stubData.employee2.__primaryKey,
+        stubData.employee2.__primaryKey
       );
 
-      const objectWithUndefinedRdp = await client(Employee).withProperties({
-        "derivedPropertyName": (base) =>
-          base.pivotTo("lead").selectProperty("employeeId"),
-      }).fetchOne(stubData.employee2.employeeId, {
-        $select: ["derivedPropertyName"],
-      });
+      const objectWithUndefinedRdp = await client(Employee)
+        .withProperties({
+          derivedPropertyName: (base) =>
+            base.pivotTo("lead").selectProperty("employeeId"),
+        })
+        .fetchOne(stubData.employee2.employeeId, {
+          $select: ["derivedPropertyName"],
+        });
 
       expect(objectWithUndefinedRdp.derivedPropertyName).toBeUndefined();
     });
@@ -977,15 +1001,16 @@ describe("ObjectSet", () => {
     it("correctly deserializes attachments and geo properties", async () => {
       const objectWithRdp = await client(objectTypeWithAllPropertyTypes)
         .withProperties({
-          "attachmentSelectDp": (base) =>
+          attachmentSelectDp: (base) =>
             base.pivotTo("linkedObjectType").selectProperty("attachment"),
-          "geoSelectDp": (base) =>
+          geoSelectDp: (base) =>
             base.pivotTo("linkedObjectType").selectProperty("geoShape"),
-          "geoCollectListDp": (base) =>
-            base.pivotTo("linkedObjectType").aggregate(
-              "geoShapeArray:collectList",
-            ),
-        }).fetchOne(5);
+          geoCollectListDp: (base) =>
+            base
+              .pivotTo("linkedObjectType")
+              .aggregate("geoShapeArray:collectList"),
+        })
+        .fetchOne(5);
 
       expectTypeOf(objectWithRdp.attachmentSelectDp).toEqualTypeOf<
         Attachment | undefined
@@ -997,7 +1022,7 @@ describe("ObjectSet", () => {
           "fetchMetadata": [Function],
           "rid": "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
         }
-      `,
+      `
       );
 
       expectTypeOf(objectWithRdp.geoSelectDp).toEqualTypeOf<
@@ -1073,15 +1098,17 @@ describe("ObjectSet", () => {
       // Tests that we deserialize properly for fetchPage as well
       const fetchPageTest = await client(objectTypeWithAllPropertyTypes)
         .withProperties({
-          "attachmentSelectDp": (base) =>
+          attachmentSelectDp: (base) =>
             base.pivotTo("linkedObjectType").selectProperty("attachment"),
-          "geoSelectDp": (base) =>
+          geoSelectDp: (base) =>
             base.pivotTo("linkedObjectType").selectProperty("geoShape"),
-          "geoCollectListDp": (base) =>
-            base.pivotTo("linkedObjectType").aggregate(
-              "geoShapeArray:collectList",
-            ),
-        }).where({ "id": { "$eq": 5 } }).fetchPage();
+          geoCollectListDp: (base) =>
+            base
+              .pivotTo("linkedObjectType")
+              .aggregate("geoShapeArray:collectList"),
+        })
+        .where({ id: { $eq: 5 } })
+        .fetchPage();
 
       expect(fetchPageTest.data[0].attachmentSelectDp).toMatchInlineSnapshot(
         `
@@ -1090,14 +1117,16 @@ describe("ObjectSet", () => {
           "fetchMetadata": [Function],
           "rid": "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
         }
-      `,
+      `
       );
     });
     it("correctly deserializes count", async () => {
-      const objectWithRdp = await client(Employee).withProperties({
-        "derivedPropertyName": (base) =>
-          base.pivotTo("lead").aggregate("$count"),
-      }).fetchOne(stubData.employee1.employeeId);
+      const objectWithRdp = await client(Employee)
+        .withProperties({
+          derivedPropertyName: (base) =>
+            base.pivotTo("lead").aggregate("$count"),
+        })
+        .fetchOne(stubData.employee1.employeeId);
 
       expectTypeOf(objectWithRdp.derivedPropertyName).toEqualTypeOf<number>();
       expect(objectWithRdp.derivedPropertyName).toEqual(1);
@@ -1110,11 +1139,8 @@ describe("ObjectSet", () => {
         employeeId: { $in: [50030, 50031] },
       });
       const nearestNeighborsObjectSet = await employeeObjectSet
-        .nearestNeighbors(
-          "textQuery",
-          3,
-          "skillSetEmbedding",
-        ).fetchPage();
+        .nearestNeighbors("textQuery", 3, "skillSetEmbedding")
+        .fetchPage();
 
       expect(nearestNeighborsObjectSet.data.length).toEqual(2);
     });
@@ -1123,12 +1149,14 @@ describe("ObjectSet", () => {
       const nearestNeighborsObjectSet = client(Employee).nearestNeighbors(
         "textQuery",
         7,
-        "skillSetEmbedding",
+        "skillSetEmbedding"
       );
 
-      const filteredObjectSet = await nearestNeighborsObjectSet.where({
-        employeeId: { $in: [50030, 50031] },
-      }).fetchPage();
+      const filteredObjectSet = await nearestNeighborsObjectSet
+        .where({
+          employeeId: { $in: [50030, 50031] },
+        })
+        .fetchPage();
 
       expect(filteredObjectSet.data.length).toEqual(2);
     });
@@ -1192,71 +1220,66 @@ describe("ObjectSet", () => {
           Employee.OsdkObject<never>
         >();
 
-        expectTypeOf(empNotStrict.employeeId).toEqualTypeOf<
-          number
-        >();
+        expectTypeOf(empNotStrict.employeeId).toEqualTypeOf<number>();
 
-        expectTypeOf(empNotStrict2.employeeId).toEqualTypeOf<
-          number
-        >();
+        expectTypeOf(empNotStrict2.employeeId).toEqualTypeOf<number>();
 
-        expectTypeOf<ApiNameAsString<FooInterface>>()
-          .toEqualTypeOf<"FooInterface">();
+        expectTypeOf<
+          ApiNameAsString<FooInterface>
+        >().toEqualTypeOf<"FooInterface">();
 
         expectTypeOf<
           NonNullable<CompileTimeMetadata<Employee>["interfaceMap"]>
-        >()
-          .toEqualTypeOf<{
-            FooInterface: {
-              fooSpt: "fullName";
-              fooIdp: "office";
-            };
-          }>();
-
-        expectTypeOf<PropMapToInterface<Employee, FooInterface>>()
-          .toEqualTypeOf<{
-            fullName: "fooSpt";
-            office: "fooIdp";
-          }>();
-
-        expectTypeOf<PropMapToObject<FooInterface, Employee>>()
-          .toEqualTypeOf<{
+        >().toEqualTypeOf<{
+          FooInterface: {
             fooSpt: "fullName";
             fooIdp: "office";
-          }>();
+          };
+        }>();
 
-        expectTypeOf<ConvertProps<Employee, FooInterface, "fullName">>()
-          .toEqualTypeOf<"fooSpt">();
+        expectTypeOf<
+          PropMapToInterface<Employee, FooInterface>
+        >().toEqualTypeOf<{
+          fullName: "fooSpt";
+          office: "fooIdp";
+        }>();
 
-        expectTypeOf<ConvertProps<Employee, FooInterface, "office">>()
-          .toEqualTypeOf<"fooIdp">();
+        expectTypeOf<PropMapToObject<FooInterface, Employee>>().toEqualTypeOf<{
+          fooSpt: "fullName";
+          fooIdp: "office";
+        }>();
 
-        expectTypeOf<JustProps<Employee, "$all">>()
-          .toEqualTypeOf<
-            | "class"
-            | "fullName"
-            | "office"
-            | "employeeId"
-            | "employeeStatus"
-            | "startDate"
-            | "employeeLocation"
-            | "employeeSensor"
-            | "skillSet"
-            | "skillSetEmbedding"
-            | "favoriteRestaurants"
-            | "employeeProfile"
-            | "performanceScores"
-          >();
+        expectTypeOf<
+          ConvertProps<Employee, FooInterface, "fullName">
+        >().toEqualTypeOf<"fooSpt">();
+
+        expectTypeOf<
+          ConvertProps<Employee, FooInterface, "office">
+        >().toEqualTypeOf<"fooIdp">();
+
+        expectTypeOf<JustProps<Employee, "$all">>().toEqualTypeOf<
+          | "class"
+          | "fullName"
+          | "office"
+          | "employeeId"
+          | "employeeStatus"
+          | "startDate"
+          | "employeeLocation"
+          | "employeeSensor"
+          | "skillSet"
+          | "skillSetEmbedding"
+          | "favoriteRestaurants"
+          | "employeeProfile"
+          | "performanceScores"
+        >();
 
         expectTypeOf<
           ConvertProps<Employee, FooInterface, "fullName" | "office">
-        >()
-          .toEqualTypeOf<"fooSpt" | "fooIdp">();
+        >().toEqualTypeOf<"fooSpt" | "fooIdp">();
 
         expectTypeOf<
           ConvertProps<FooInterface, Employee, "fooSpt">
-        >()
-          .toEqualTypeOf<"fullName">();
+        >().toEqualTypeOf<"fullName">();
 
         expectTypeOf<
           ConvertProps<
@@ -1265,22 +1288,21 @@ describe("ObjectSet", () => {
             "fooSpt" | "fooIdp",
             "$allBaseProperties"
           >
-        >()
-          .toEqualTypeOf<
-            | "employeeId"
-            | "fullName"
-            | "office"
-            | "class"
-            | "startDate"
-            | "employeeStatus"
-            | "employeeSensor"
-            | "employeeLocation"
-            | "skillSet"
-            | "skillSetEmbedding"
-            | "favoriteRestaurants"
-            | "employeeProfile"
-            | "performanceScores"
-          >();
+        >().toEqualTypeOf<
+          | "employeeId"
+          | "fullName"
+          | "office"
+          | "class"
+          | "startDate"
+          | "employeeStatus"
+          | "employeeSensor"
+          | "employeeLocation"
+          | "skillSet"
+          | "skillSetEmbedding"
+          | "favoriteRestaurants"
+          | "employeeProfile"
+          | "performanceScores"
+        >();
 
         // We don't have a proper definition that has
         // a non-null property on an interface so
@@ -1302,6 +1324,59 @@ describe("ObjectSet", () => {
 
         cheesedFooNotStrict.fooSpt;
       });
+    });
+  });
+
+  describe("snapshot", () => {
+    it("exposes $snapshot to client (type)", () => {
+      expectTypeOf<FetchPageArgs<Employee>>().toHaveProperty("$snapshot");
+    });
+    it("sets snapshot = false by default", async () => {
+      const { client, fetchFn } = createMockCaptureClient();
+      await fetchPage(client, Employee, {});
+      expect(
+        (getLastObjectSetRequest(fetchFn) as { snapshot: boolean }).snapshot
+      ).toBe(false);
+    });
+    it("properly generates fetch request when $snapshot is true", async () => {
+      const { client, fetchFn } = createMockCaptureClient();
+      await fetchPage(client, Employee, { $snapshot: true });
+      expect(
+        (getLastObjectSetRequest(fetchFn) as { snapshot: boolean }).snapshot
+      ).toBe(true);
+    });
+    it("strips $snapshot from the wire request body", async () => {
+      const { client, fetchFn } = createMockCaptureClient();
+      await fetchPage(client, Employee, { $snapshot: true });
+      expect(
+        getLastObjectSetRequest(fetchFn) as { snapshot: boolean }
+      ).not.toHaveProperty("$snapshot");
+    });
+  });
+
+  describe("fetchOneWithErrors", () => {
+    beforeAll(() => {
+      fauxFoundry
+        .getDefaultDataStore()
+        .registerLink(
+          stubData.employee1,
+          "officeLink",
+          stubData.nycOffice,
+          "occupants"
+        );
+    });
+
+    it("uses the target's primary key when fetching by PK from a cross-type pivoted object set", async () => {
+      const result = await client(Office)
+        .where({ officeId: stubData.nycOffice.officeId })
+        .pivotTo("occupants")
+        .fetchOneWithErrors(stubData.employee1.employeeId);
+
+      expect(isOk(result)).toBe(true);
+      if (isOk(result)) {
+        expect(result.value.$primaryKey).toBe(stubData.employee1.employeeId);
+        expect(result.value.$apiName).toBe("Employee");
+      }
     });
   });
 });

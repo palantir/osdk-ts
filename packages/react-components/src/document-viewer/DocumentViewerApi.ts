@@ -15,6 +15,7 @@
  */
 
 import type { Media } from "@osdk/api";
+
 import type { BaseEmailViewerProps } from "../email-viewer/EmailViewerApi.js";
 import type { BaseExcelViewerProps } from "../excel-viewer/ExcelViewerApi.js";
 import type { BaseImageViewerProps } from "../images/image-viewer/ImageViewerApi.js";
@@ -72,9 +73,7 @@ export interface DocumentViewerProps {
   emailViewerProps?: Partial<Omit<BaseEmailViewerProps, "email" | "className">>;
   /** Props forwarded to BaseXmlViewer when rendering XML
    * @default undefined */
-  xmlViewerProps?: Partial<
-    Omit<BaseXmlViewerProps, "content" | "className">
-  >;
+  xmlViewerProps?: Partial<Omit<BaseXmlViewerProps, "content" | "className">>;
   /** File name hint for MIME type detection (e.g. "scan.tif"). Used to detect
    *  TIFF files when the MIME type is ambiguous (e.g. application/octet-stream).
    * @default undefined */

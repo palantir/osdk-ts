@@ -24,11 +24,11 @@ import type {
 } from "@osdk/api";
 
 type LinkStubs<Q extends ObjectTypeDefinition> = {
-  [LINK_NAME in LinkNames<Q>]?:
-    CompileTimeMetadata<Q>["links"][LINK_NAME]["multiplicity"] extends true ?
+  [LINK_NAME in LinkNames<Q>]?: CompileTimeMetadata<Q>["links"][LINK_NAME]["multiplicity"] extends true
+    ?
         | Array<Osdk.Instance<LinkedType<Q, LINK_NAME>>>
         | ObjectSet<LinkedType<Q, LINK_NAME>>
-      : Osdk.Instance<LinkedType<Q, LINK_NAME>> | Error;
+    : Osdk.Instance<LinkedType<Q, LINK_NAME>> | Error;
 };
 
 /**

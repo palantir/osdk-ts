@@ -15,6 +15,7 @@
  */
 
 import type { LinkedType, LinkNames, ObjectTypeDefinition } from "@osdk/api";
+
 import type { SeedLinkEntry, SeedOutput, SeedProps, SeedRef } from "./types.js";
 
 /** Internal representation of a resolved link before validation. */
@@ -28,10 +29,12 @@ interface ResolvedLink {
 
 /** Checks whether a value is a {@link SeedRef} returned by `SeedBuilder.add()`. */
 function isSeedRef(value: unknown): value is SeedRef {
-  return typeof value === "object"
-    && value != null
-    && "__objectTypeApiName" in value
-    && "__primaryKey" in value;
+  return (
+    typeof value === "object" &&
+    value != null &&
+    "__objectTypeApiName" in value &&
+    "__primaryKey" in value
+  );
 }
 
 /**
@@ -41,7 +44,7 @@ function isSeedRef(value: unknown): value is SeedRef {
 function resolveFromRefs(
   src: SeedRef,
   srcLinkName: string,
-  dst: SeedRef,
+  dst: SeedRef
 ): ResolvedLink {
   return {
     sourceObjectType: src.__objectTypeApiName,
@@ -61,7 +64,7 @@ function resolveFromTypes(
   srcPk: string | number,
   srcLinkName: string,
   dstType: ObjectTypeDefinition,
-  dstPk: string | number,
+  dstPk: string | number
 ): ResolvedLink {
   return {
     sourceObjectType: srcType.apiName,
@@ -99,7 +102,7 @@ export class SeedBuilder {
    */
   add<Q extends ObjectTypeDefinition>(
     type: Q,
-    props: SeedProps<Q>,
+    props: SeedProps<Q>
   ): SeedRef<Q> {
     // Runtime guards for callers who bypass the type system with `as any`.
     // Properly-typed ObjectTypeDefinition values can't reach these.
@@ -118,7 +121,7 @@ export class SeedBuilder {
 
     if (pkValue == null) {
       throw new Error(
-        `[${apiName}] Primary key '${pkApiName}' is null or undefined`,
+        `[${apiName}] Primary key '${pkApiName}' is null or undefined`
       );
     }
 
@@ -163,7 +166,7 @@ export class SeedBuilder {
     src: SeedRef<S>,
     srcLinkName: SL,
     dst: SeedRef<D>,
-    dstLinkName: DL,
+    dstLinkName: DL
   ): void;
   link<
     S extends ObjectTypeDefinition,
@@ -177,7 +180,7 @@ export class SeedBuilder {
     srcLinkName: SL,
     dstType: D,
     dstPk: string | number,
-    dstLinkName: DL,
+    dstLinkName: DL
   ): void;
   link(
     name: string,
@@ -186,33 +189,33 @@ export class SeedBuilder {
     dstOrLinkName: SeedRef | ObjectTypeDefinition | string,
     typeOrLinkName?: ObjectTypeDefinition | string,
     dstPk?: string | number,
-    _dstLinkName?: string,
+    _dstLinkName?: string
   ): void {
     const resolved = isSeedRef(srcOrType)
       ? resolveFromRefs(
-        srcOrType,
-        linkNameOrPk as string,
-        dstOrLinkName as SeedRef,
-      )
+          srcOrType,
+          linkNameOrPk as string,
+          dstOrLinkName as SeedRef
+        )
       : resolveFromTypes(
-        srcOrType,
-        linkNameOrPk,
-        dstOrLinkName as string,
-        typeOrLinkName as ObjectTypeDefinition,
-        dstPk!,
-      );
+          srcOrType,
+          linkNameOrPk,
+          dstOrLinkName as string,
+          typeOrLinkName as ObjectTypeDefinition,
+          dstPk!
+        );
 
     this.#assertRegistered(
       resolved.sourceObjectType,
       resolved.sourceKey,
       "Source",
-      name,
+      name
     );
     this.#assertRegistered(
       resolved.targetObjectType,
       resolved.targetKey,
       "Target",
-      name,
+      name
     );
 
     this.#links.push({ name, ...resolved });
@@ -226,13 +229,11 @@ export class SeedBuilder {
     objectType: string,
     key: string,
     role: "Source" | "Target",
-    linkName: string,
+    linkName: string
   ): void {
     const ref = `${objectType}:${key}`;
     if (!this.#refs.has(ref)) {
-      throw new Error(
-        `${role} '${ref}' not registered (link '${linkName}')`,
-      );
+      throw new Error(`${role} '${ref}' not registered (link '${linkName}')`);
     }
   }
 

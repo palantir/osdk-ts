@@ -20,6 +20,7 @@ import {
   useMarkings,
 } from "@osdk/react/platform-apis";
 import React from "react";
+
 import { BaseCbacBannerPopover } from "./base/BaseCbacBannerPopover.js";
 import { CbacPickerDialog } from "./CbacPickerDialog.js";
 import type { MaxClassificationConstraint } from "./types.js";
@@ -74,23 +75,27 @@ export function CbacBannerPopover({
 
   const appliedMarkings = React.useMemo(
     () => groupMarkingsByCategory(markingIds, categories, markings),
-    [markingIds, categories, markings],
+    [markingIds, categories, markings]
   );
 
   const resolved = resolveBannerDisplay(banner);
 
-  const description = markingIds.length === 0
-    ? "This data has no classification restrictions."
-    : `This data is classified as: ${resolved.classificationString}`;
+  const description =
+    markingIds.length === 0
+      ? "This data has no classification restrictions."
+      : `This data is classified as: ${resolved.classificationString}`;
 
   const handleEditClick = React.useCallback(() => {
     setIsDialogOpen(true);
   }, []);
 
-  const handleConfirm = React.useCallback((newMarkingIds: string[]) => {
-    onChange(newMarkingIds);
-    setIsDialogOpen(false);
-  }, [onChange]);
+  const handleConfirm = React.useCallback(
+    (newMarkingIds: string[]) => {
+      onChange(newMarkingIds);
+      setIsDialogOpen(false);
+    },
+    [onChange]
+  );
 
   return (
     <>

@@ -17,6 +17,7 @@
 import type {
   DatasetRid as _api_DatasetRid,
   DirectSourceRid as _api_DirectSourceRid,
+  MarkingType as _api_MarkingType,
   ObjectRid as _api_ObjectRid,
   ObjectTypeRid as _api_ObjectTypeRid,
   OntologyBranchRid as _api_OntologyBranchRid,
@@ -24,8 +25,7 @@ import type {
   PropertySecurityGroupType as _api_PropertySecurityGroupType,
   PropertyTypeId as _api_PropertyTypeId,
   SecurityGroupComparisonConstant as _api_SecurityGroupComparisonConstant,
-  SecurityGroupSecurityDefinitionModification
-    as _api_SecurityGroupSecurityDefinitionModification,
+  SecurityGroupSecurityDefinitionModification as _api_SecurityGroupSecurityDefinitionModification,
   StreamLocatorRid as _api_StreamLocatorRid,
   TableRid as _api_TableRid,
   UserId as _api_UserId,
@@ -49,6 +49,11 @@ export interface BackingResourceRid_tableRid {
   type: "tableRid";
   tableRid: _api_TableRid;
 }
+
+export interface BackingResourceRid_editsOnlyNoRid {
+  type: "editsOnlyNoRid";
+  editsOnlyNoRid: EditsOnlyNoRid;
+}
 /**
  * The resource identifier of the backing resource for the object type's datasource. This is restricted to
  * backing resources that support PSGs.
@@ -57,10 +62,14 @@ export type BackingResourceRid =
   | BackingResourceRid_datasetRid
   | BackingResourceRid_streamLocatorRid
   | BackingResourceRid_directSourceRid
-  | BackingResourceRid_tableRid;
+  | BackingResourceRid_tableRid
+  | BackingResourceRid_editsOnlyNoRid;
 
-export interface CannotViewObjectTypeError {
-}
+export interface CannotViewObjectTypeError {}
+/**
+ * The object type is an edits-only object type and does not have a backing resource.
+ */
+export interface EditsOnlyNoRid {}
 /**
  * Request to evaluate Property Security Group (PSG) visibility for object instances
  * against a given hypothetical PSG configuration. This enables previewing how PSG changes affect visibility
@@ -69,6 +78,7 @@ export interface CannotViewObjectTypeError {
 export interface EvaluatePsgForObjectInstancesRequest {
   backingResource: BackingResourceRid;
   derivedPropertyIds: Array<_api_PropertyTypeId>;
+  markingPropertyMarkingTypes: Record<_api_PropertyTypeId, _api_MarkingType>;
   objectInstances: Array<ObjectInstance>;
   objectTypeRid: _api_ObjectTypeRid;
   ontologyBranchRid: _api_OntologyBranchRid;
@@ -81,10 +91,8 @@ export interface EvaluatePsgForObjectInstancesRequest {
 export interface EvaluatePsgForObjectInstancesResponse {
   results: Array<ObjectInstanceVisibilityResult>;
 }
-export interface GranularPolicyNotPassedError {
-}
-export interface MandatoryPolicyNotPassedError {
-}
+export interface GranularPolicyNotPassedError {}
+export interface MandatoryPolicyNotPassedError {}
 /**
  * Identifier for a hypothetical object instance simulated with custom property values that does not have an
  * object RID. This is used in the request to identify instances that are being evaluated with custom property
@@ -107,8 +115,7 @@ export interface ObjectInstanceVisibilityResult {
   overallPropertyVisibilityMap: Record<_api_PropertyTypeId, PropertyVisibility>;
   psgEvaluationResults: Array<PropertySecurityGroupEvaluationResults>;
 }
-export interface ObjectPolicyNotSatisfiedError {
-}
+export interface ObjectPolicyNotSatisfiedError {}
 export interface ObjectRidOrIdInRequest_objectRid {
   type: "objectRid";
   objectRid: _api_ObjectRid;
@@ -166,8 +173,7 @@ export type PropertySecurityGroupEvaluationFailureError =
  * This can happen when the tester does not have permissions to view a property value needed for evaluation,
  * and does not provide a custom value for that property in the request.
  */
-export interface PropertySecurityGroupEvaluationIndeterminate {
-}
+export interface PropertySecurityGroupEvaluationIndeterminate {}
 export interface PropertySecurityGroupEvaluationResult_success {
   type: "success";
   success: PropertySecurityGroupEvaluationSuccess;
@@ -200,8 +206,7 @@ export interface PropertySecurityGroupEvaluationResults {
 /**
  * The PSG was successfully evaluated and the testee has visibility to the properties in this group.
  */
-export interface PropertySecurityGroupEvaluationSuccess {
-}
+export interface PropertySecurityGroupEvaluationSuccess {}
 /**
  * Identifier for an unsaved property security group that does not yet have a PropertySecurityGroupRid.
  */
@@ -257,13 +262,11 @@ export type SecurityGroupPropertyValue =
  * (e.g. structs that cannot trivially be represented as a single constant value but also is disallowed to be
  * used in the granular policy for evaluation.
  */
-export interface SecurityGroupPropertyValueUnusableInGps {
-}
+export interface SecurityGroupPropertyValueUnusableInGps {}
 /**
  * Represents a property value that is not viewable to the caller.
  */
-export interface SecurityGroupPropertyValueUnviewable {
-}
+export interface SecurityGroupPropertyValueUnviewable {}
 export interface SecurityGroupPropertyValueViewable_propertyValueUnusableInGps {
   type: "propertyValueUnusableInGps";
   propertyValueUnusableInGps: SecurityGroupPropertyValueUnusableInGps;

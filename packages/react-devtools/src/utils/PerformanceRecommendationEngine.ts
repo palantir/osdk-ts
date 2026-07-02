@@ -15,6 +15,7 @@
  */
 
 import type { CacheSnapshot } from "@osdk/client/observable";
+
 import type { MetricsStore } from "../store/MetricsStore.js";
 import { CacheEfficiencyAnalyzer } from "./CacheEfficiencyAnalyzer.js";
 import type { ComponentQueryRegistry } from "./ComponentQueryRegistry.js";
@@ -74,7 +75,7 @@ export class PerformanceRecommendationEngine {
   constructor(
     private metricsStore: MetricsStore,
     private registry: ComponentQueryRegistry,
-    private timeline: EventTimeline,
+    private timeline: EventTimeline
   ) {
     this.cacheAnalyzer = new CacheEfficiencyAnalyzer(metricsStore);
     this.fieldAnalyzer = new UnusedFieldAnalyzer(registry, undefined);
@@ -123,11 +124,10 @@ export class PerformanceRecommendationEngine {
         level: offender.wastedBytes > 50000 ? "high" : "medium",
         category: "Bandwidth",
         title: `${offender.componentName} fetches unused data`,
-        description:
-          `This component fetches ${offender.fetched.length} properties but only uses ${offender.accessed.length}`,
-        impact: `Save ${
-          (offender.wastedBytes / 1024).toFixed(1)
-        }KB bandwidth per load`,
+        description: `This component fetches ${offender.fetched.length} properties but only uses ${offender.accessed.length}`,
+        impact: `Save ${(offender.wastedBytes / 1024).toFixed(
+          1
+        )}KB bandwidth per load`,
         effort: "Low",
         suggestion: "Use $select to only fetch used properties",
         code: offender.suggestion,
@@ -175,21 +175,19 @@ export class PerformanceRecommendationEngine {
     const cacheMetrics = this.cacheAnalyzer.analyze(cacheSnapshot);
 
     const cacheScore = Math.round(cacheMetrics.score);
-    const queryScore = Math.round(
-      100 - Math.min(waterfalls.length * 5, 50),
-    );
+    const queryScore = Math.round(100 - Math.min(waterfalls.length * 5, 50));
     const bandwidthScore = Math.round(
-      100 - Math.min((fieldReport.totalWastedBytes / 1024 / 100) * 10, 40),
+      100 - Math.min((fieldReport.totalWastedBytes / 1024 / 100) * 10, 40)
     );
     const codeQualityScore = Math.round(
-      100 - Math.min((1 - fieldReport.averageEfficiency) * 30, 50),
+      100 - Math.min((1 - fieldReport.averageEfficiency) * 30, 50)
     );
 
     const overall = Math.round(
-      cacheScore * 0.3
-        + queryScore * 0.3
-        + bandwidthScore * 0.2
-        + codeQualityScore * 0.2,
+      cacheScore * 0.3 +
+        queryScore * 0.3 +
+        bandwidthScore * 0.2 +
+        codeQualityScore * 0.2
     );
 
     const breakdown = {
@@ -255,42 +253,46 @@ export class PerformanceRecommendationEngine {
     estimatedImprovement: string;
   } {
     const recommendations = this.generateRecommendations(cacheSnapshot);
-    const criticalCount =
-      recommendations.filter(r => r.level === "critical").length;
+    const criticalCount = recommendations.filter(
+      (r) => r.level === "critical"
+    ).length;
 
-    const lowEffortCount =
-      recommendations.filter(r => r.effort === "Low").length;
-    const mediumEffortCount =
-      recommendations.filter(r => r.effort === "Medium").length;
-    const highEffortCount =
-      recommendations.filter(r => r.effort === "High").length;
+    const lowEffortCount = recommendations.filter(
+      (r) => r.effort === "Low"
+    ).length;
+    const mediumEffortCount = recommendations.filter(
+      (r) => r.effort === "Medium"
+    ).length;
+    const highEffortCount = recommendations.filter(
+      (r) => r.effort === "High"
+    ).length;
 
-    const minutesToFix = lowEffortCount * 5 + mediumEffortCount * 20
-      + highEffortCount * 60;
-    const timeToFix = minutesToFix < 60
-      ? `${minutesToFix} minutes`
-      : `${Math.round(minutesToFix / 60)} hours`;
+    const minutesToFix =
+      lowEffortCount * 5 + mediumEffortCount * 20 + highEffortCount * 60;
+    const timeToFix =
+      minutesToFix < 60
+        ? `${minutesToFix} minutes`
+        : `${Math.round(minutesToFix / 60)} hours`;
 
     const totalImpact = recommendations.reduce((sum, r) => {
       if (r.impact.includes("Save")) {
         const match = r.impact.match(/(\d+)(ms|KB|s)/);
         if (match) {
-          const value = parseInt(match[1]);
+          const value = Number.parseInt(match[1]);
           const unit = match[2];
-          return sum
-            + (unit === "ms"
-              ? value
-              : unit === "KB"
-              ? value / 100
-              : value * 1000);
+          return (
+            sum +
+            (unit === "ms" ? value : unit === "KB" ? value / 100 : value * 1000)
+          );
         }
       }
       return sum;
     }, 0);
 
-    const estimatedImprovement = totalImpact > 1000
-      ? `~${(totalImpact / 1000).toFixed(1)}s improvement`
-      : `~${Math.round(totalImpact)}ms improvement`;
+    const estimatedImprovement =
+      totalImpact > 1000
+        ? `~${(totalImpact / 1000).toFixed(1)}s improvement`
+        : `~${Math.round(totalImpact)}ms improvement`;
 
     return {
       issueCount: recommendations.length,

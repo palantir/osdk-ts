@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import { consola } from "consola";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import { pathToFileURL } from "node:url";
+
+import { consola } from "consola";
 import invariant from "tiny-invariant";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
+
 import { defineOntology } from "../api/defineOntology.js";
 
 const apiNamespaceRegex = /^[a-z0-9-]+(\.[a-z0-9-]+)*\.$/;
@@ -28,7 +30,7 @@ const uuidRegex =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
 export default async function main(
-  args: string[] = process.argv,
+  args: string[] = process.argv
 ): Promise<void> {
   const commandLineOpts: {
     input: string;
@@ -116,31 +118,32 @@ export default async function main(
     .parseAsync();
   let apiNamespace = "";
   if (commandLineOpts.apiNamespace.length !== 0) {
-    apiNamespace = (commandLineOpts.apiNamespace.slice(-1) !== ".")
-      ? commandLineOpts.apiNamespace + "."
-      : commandLineOpts.apiNamespace;
+    apiNamespace =
+      commandLineOpts.apiNamespace.slice(-1) !== "."
+        ? commandLineOpts.apiNamespace + "."
+        : commandLineOpts.apiNamespace;
     invariant(apiNamespace.length < 1024, "API namespace is too long.");
     invariant(
       apiNamespaceRegex.test(apiNamespace),
-      "API namespace is invalid! It is expected to conform to ^[a-z0-9-]+(\.[a-z0-9-]+)*\.$",
+      "API namespace is invalid! It is expected to conform to ^[a-z0-9-]+(\.[a-z0-9-]+)*\.$"
     );
   }
   consola.info(`Loading ontology from ${commandLineOpts.input}`);
 
   if (
-    !commandLineOpts.generateCodeSnippets
-    && (commandLineOpts.codeSnippetPackageName !== ""
-      || commandLineOpts.codeSnippetDir !== path.resolve("./"))
+    !commandLineOpts.generateCodeSnippets &&
+    (commandLineOpts.codeSnippetPackageName !== "" ||
+      commandLineOpts.codeSnippetDir !== path.resolve("./"))
   ) {
     consola.info(
-      "Package name and/or directory supplied for code snippets, but code snippet generation is false.",
+      "Package name and/or directory supplied for code snippets, but code snippet generation is false."
     );
   }
 
   if (commandLineOpts.randomnessKey !== undefined) {
     invariant(
       uuidRegex.test(commandLineOpts.randomnessKey),
-      "Supplied randomness key is not a uuid and shouldn't be used as a uniqueness guarantee",
+      "Supplied randomness key is not a uuid and shouldn't be used as a uniqueness guarantee"
     );
   }
 
@@ -152,7 +155,7 @@ export default async function main(
     commandLineOpts.generateCodeSnippets,
     commandLineOpts.codeSnippetPackageName,
     commandLineOpts.codeSnippetDir,
-    commandLineOpts.randomnessKey,
+    commandLineOpts.randomnessKey
   );
 
   consola.info(`Saving ontology to ${commandLineOpts.output}`);
@@ -160,22 +163,18 @@ export default async function main(
     commandLineOpts.output,
     JSON.stringify(
       ontologyIr,
-      null,
-      2,
-    ),
+      (key, value) => (key === "linkedInterfaces" ? undefined : value),
+      2
+    )
   );
   // No point in generating block if there aren't any value types
   if (
-    ontologyIr.valueTypes.valueTypes.length > 0
-    || ontologyIr.importedValueTypes.valueTypes.length > 0
+    ontologyIr.valueTypes.valueTypes.length > 0 ||
+    ontologyIr.importedValueTypes.valueTypes.length > 0
   ) {
     await fs.writeFile(
       commandLineOpts.valueTypesOutput,
-      JSON.stringify(
-        ontologyIr.valueTypes,
-        null,
-        2,
-      ),
+      JSON.stringify(ontologyIr.valueTypes, null, 2)
     );
   }
 }
@@ -188,7 +187,7 @@ async function loadOntology(
   generateCodeSnippets: boolean,
   snippetPackageName: string,
   codeSnippetDir: string,
-  randomnessKey?: string,
+  randomnessKey?: string
 ) {
   const q = await defineOntology(
     apiNamespace,
@@ -198,7 +197,7 @@ async function loadOntology(
     generateCodeSnippets,
     snippetPackageName,
     codeSnippetDir,
-    randomnessKey,
+    randomnessKey
   );
   return q;
 }

@@ -49,6 +49,7 @@ SOFTWARE.
 import { getExecOutput } from "@actions/exec";
 import type { Package } from "@manypkg/get-packages";
 import { getPackages } from "@manypkg/get-packages";
+
 import { createRelease } from "./createRelease.js";
 import * as gitUtils from "./gitUtils.js";
 import type { GithubContext } from "./runVersion.js";
@@ -64,12 +65,12 @@ type PublishedPackage = { name: string; version: string };
 
 export type PublishResult =
   | {
-    published: true;
-    publishedPackages: PublishedPackage[];
-  }
+      published: true;
+      publishedPackages: PublishedPackage[];
+    }
   | {
-    published: false;
-  };
+      published: false;
+    };
 
 export async function runPublish({
   script,
@@ -82,7 +83,7 @@ export async function runPublish({
   const changesetPublishOutput = await getExecOutput(
     publishCommand,
     publishArgs,
-    { cwd },
+    { cwd }
   );
 
   await gitUtils.pushTags();
@@ -93,7 +94,7 @@ export async function runPublish({
   if (tool !== "root") {
     const newTagRegex = /New tag:\s+(@[^/]+\/[^@]+|[^/]+)@([^\s]+)/;
     const packagesByName = new Map(
-      packages.map((x) => [x.packageJson.name, x]),
+      packages.map((x) => [x.packageJson.name, x])
     );
 
     for (const line of changesetPublishOutput.stdout.split("\n")) {
@@ -105,8 +106,8 @@ export async function runPublish({
       const pkg = packagesByName.get(pkgName);
       if (pkg === undefined) {
         throw new Error(
-          `Package "${pkgName}" not found.`
-            + "This is probably a bug in the action, please open an issue",
+          `Package "${pkgName}" not found.` +
+            "This is probably a bug in the action, please open an issue"
         );
       }
       releasedPackages.push(pkg);
@@ -119,14 +120,14 @@ export async function runPublish({
             pkg,
             tagName: `${pkg.packageJson.name}@${pkg.packageJson.version}`,
           })
-        ),
+        )
       );
     }
   } else {
     if (packages.length === 0) {
       throw new Error(
-        `No package found.`
-          + "This is probably a bug in the action, please open an issue",
+        `No package found.` +
+          "This is probably a bug in the action, please open an issue"
       );
     }
     const pkg = packages[0];

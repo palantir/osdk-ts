@@ -148,7 +148,7 @@ import client from "./client";
 function UpdateEmployeeForm() {
   const marketingEmployees = useMemo(
     () => client(Employee).where({ department: "Marketing" }),
-    [],
+    []
   );
 
   const fields = [
@@ -228,7 +228,7 @@ const [formState, setFormState] = useState({
     await applyAction(formState);
     showToast("Employee updated");
   }}
-/>;
+/>
 ```
 
 ## Styling
@@ -247,7 +247,7 @@ const [formState, setFormState] = useState({
 ```tsx
 <div className="employeeForm">
   <ActionForm actionDefinition={updateEmployee} />
-</div>;
+</div>
 ```
 
 Use `--osdk-form-content-padding-inline` to apply shared horizontal padding to the header, fields, and footer. Use `--osdk-form-content-padding-block` to control vertical padding for the form fields section. For card-style outer spacing, apply margin, border, background, and border radius to the wrapper rather than the form itself.

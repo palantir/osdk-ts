@@ -52,7 +52,7 @@ export function wrapError(err: unknown): Error {
 
 export function createCachingNotifier<T>(
   subscribers: Set<() => void>,
-  cache: ReturnType<typeof createVersionedCache<T>>,
+  cache: ReturnType<typeof createVersionedCache<T>>
 ): () => void {
   return function notify(): void {
     cache.invalidate();
@@ -65,9 +65,9 @@ export function createCachingNotifier<T>(
 export function createStoreSubscribe(
   subscribers: Set<() => void>,
   onInit: () => void,
-  onCleanup: () => void,
+  onCleanup: () => void
 ): (notifyUpdate: () => void) => () => void {
-  return (notifyUpdate: () => void): () => void => {
+  return (notifyUpdate: () => void): (() => void) => {
     const shouldInit = subscribers.size === 0;
     subscribers.add(notifyUpdate);
 

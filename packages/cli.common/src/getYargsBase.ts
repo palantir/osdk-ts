@@ -19,6 +19,7 @@ import { colorize } from "consola/utils";
 import type { Argv } from "yargs";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
+
 import type { CliCommonArgs } from "./CliCommonArgs.js";
 import { ExitProcessError } from "./ExitProcessError.js";
 import { logLevelMiddleware } from "./yargs/logLevelMiddleware.js";
@@ -29,15 +30,12 @@ export function getYargsBase(args: string[]): Argv<CliCommonArgs> {
     .wrap(Math.min(150, yargs().terminalWidth()))
     .env("OSDK")
     .version(false)
-    .option(
-      "verbose",
-      {
-        alias: "v",
-        type: "boolean",
-        description: "Enable verbose logging",
-        count: true,
-      },
-    )
+    .option("verbose", {
+      alias: "v",
+      type: "boolean",
+      description: "Enable verbose logging",
+      count: true,
+    })
     .demandCommand()
     .middleware(logLevelMiddleware, true)
     .strict()

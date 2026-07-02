@@ -18,6 +18,7 @@ import type { ObjectTypeDefinition } from "@osdk/api";
 import { act, renderHook } from "@testing-library/react";
 import * as React from "react";
 import { beforeEach, describe, expect, it, vitest } from "vitest";
+
 import { OsdkContext } from "../src/new/OsdkContext.js";
 import { useOsdkObject } from "../src/new/useOsdkObject.js";
 
@@ -67,12 +68,12 @@ describe("useOsdkObject", () => {
         (_typeOrName, _pk, _opts, observer) => {
           capturedObserver = observer;
           return { unsubscribe: vitest.fn() };
-        },
+        }
       );
 
       const { result } = renderHook(
         () => useOsdkObject(MockObjectType, "non-existent-pk"),
-        { wrapper },
+        { wrapper }
       );
 
       // Initial state: loading.
@@ -111,12 +112,12 @@ describe("useOsdkObject", () => {
         (_typeOrName, _pk, _opts, observer) => {
           capturedObserver = observer;
           return { unsubscribe: vitest.fn() };
-        },
+        }
       );
 
       const { result } = renderHook(
         () => useOsdkObject(MockObjectType, "non-existent-pk"),
-        { wrapper },
+        { wrapper }
       );
 
       expect(result.current.isLoading).toBe(true);

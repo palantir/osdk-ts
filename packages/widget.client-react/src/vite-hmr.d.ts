@@ -20,7 +20,7 @@ interface ImportMetaHot {
   on?: (event: "vite:beforeFullReload", cb: (payload: unknown) => void) => void;
   off?: (
     event: "vite:beforeFullReload",
-    cb: (payload: unknown) => void,
+    cb: (payload: unknown) => void
   ) => void;
 }
 

@@ -15,6 +15,7 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { ComponentQueryRegistry } from "./ComponentQueryRegistry.js";
 import type { QueryParams } from "./ComponentQueryRegistry.js";
 

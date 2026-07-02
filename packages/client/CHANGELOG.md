@@ -1,5 +1,158 @@
 # @osdk/client
 
+## 2.41.0
+
+### Minor Changes
+
+- 9b150d7: Add nullity check for decrypt
+- 15a35f2: Add CipherText support for codegen and implement decryption interface
+
+### Patch Changes
+
+- Updated dependencies [9b150d7]
+- Updated dependencies [15a35f2]
+  - @osdk/api@2.41.0
+  - @osdk/generator-converters@2.41.0
+  - @osdk/shared.test@2.30.0
+  - @osdk/client.unstable@2.41.0
+
+## 2.40.0
+
+### Minor Changes
+
+- 3e915ee: Array Reducers and Struct Main Value support
+- 742fe69: Add dev-mode observable client debugging knobs. `devMode.logLevel` raises the client's log level so its `debug` tracing is visible, and `devMode.debug.refCounts` / `devMode.debug.cacheKeys` turn on cache-internals logging. They are exposed through `createObservableClient`'s `devMode` option and the `OsdkProvider` `devMode` prop, and are stripped from production builds.
+- ac0303b: Add `createClientWithSubscribe` (unstable) to allow overriding `objectSet.subscribe` behavior with a custom `subscribeFn`.
+
+### Patch Changes
+
+- Updated dependencies [3e915ee]
+  - @osdk/generator-converters@2.40.0
+  - @osdk/shared.test@2.29.0
+  - @osdk/api@2.40.0
+  - @osdk/client.unstable@2.40.0
+
+## 2.39.0
+
+### Patch Changes
+
+- Updated dependencies [397ce96]
+  - @osdk/client.unstable@2.39.0
+  - @osdk/api@2.39.0
+  - @osdk/generator-converters@2.39.0
+
+## 2.38.0
+
+### Minor Changes
+
+- 11c7eb8: Revert the empty-where-clause runtime checks added in #3348. `modernToLegacyWhereClause` no longer throws on an empty clause, and `.where({})` no longer short-circuits to a no-op, restoring the pre-#3348 behavior where an empty clause lowers to an empty AND. Note: this reintroduces the original behavior where a `.where({})` (including no-filter `useOsdkObjects`/`useOsdkAggregation` queries via the observable layer) emits an empty AND on the wire, which some object-storage backends reject on the aggregate path.
+- bbb89ce: Fix `SyntaxError: The requested module 'big.js' does not provide an export named 'Big'`
+
+### Patch Changes
+
+- @osdk/api@2.38.0
+- @osdk/client.unstable@2.38.0
+- @osdk/generator-converters@2.38.0
+- @osdk/shared.test@2.28.0
+
+## 2.37.0
+
+### Minor Changes
+
+- b174a28: Make the dev-mode action delay smart, configurable, and discoverable. The delay now only applies to actions with an optimistic update (function-backed actions stay fast), is tunable via `OsdkProvider`'s `devMode={{ actionDelayMs }}` prop and the `createObservableClient` `devMode.actionDelayMs` option (0 disables), and logs a one-time message explaining it.
+- 75a5c26: Add test for fetchOneWithErrors with cross-type pivot to validate correct primary key usage
+- 915d245: Sort decimal and long properties numerically in observable client orderBy, including derived (RDP) get and min/max properties, instead of lexicographically
+- 01bea93: Fix runtime-derived-property (RDP) cache merges dropping or stale-serving derived values. A write now declares the derived fields it actually computed, so: a derived value that becomes null clears instead of retaining the stale cached value; a derived field shared by two queries with overlapping rdp sets is no longer dropped when one propagates to the other; a query using both `$select` and a derived property keeps the derived field on a partial write; and a subscription update, which carries base props only, preserves the cached derived values instead of clearing them on every tick.
+
+### Patch Changes
+
+- Updated dependencies [ff11b06]
+  - @osdk/shared.net.errors@2.11.0
+  - @osdk/shared.client.impl@1.13.0
+  - @osdk/shared.net.fetch@1.11.0
+  - @osdk/api@2.37.0
+  - @osdk/client.unstable@2.37.0
+  - @osdk/generator-converters@2.37.0
+  - @osdk/shared.test@2.27.0
+
+## 2.36.0
+
+### Minor Changes
+
+- 83d2603: withScenario / createScenario now ignore an active transaction on the supplied client (logging a console.warn and scoping to the scenario) instead of throwing.
+
+### Patch Changes
+
+- @osdk/api@2.36.0
+- @osdk/client.unstable@2.36.0
+- @osdk/generator-converters@2.36.0
+
+## 2.35.0
+
+### Patch Changes
+
+- @osdk/api@2.35.0
+- @osdk/client.unstable@2.35.0
+- @osdk/generator-converters@2.35.0
+- @osdk/shared.test@2.26.0
+
+## 2.34.0
+
+### Minor Changes
+
+- db028a0: Add optional struct param support for actions.
+- ab19740: Add `Media.fetchFullMetadata()` returning a `MediaFullMetadata` wrapper around the type-specific `MediaItemMetadata` discriminated union (parity with python-osdk's `get_media_full_metadata`).
+
+### Patch Changes
+
+- Updated dependencies [db028a0]
+- Updated dependencies [ab19740]
+  - @osdk/generator-converters@2.34.0
+  - @osdk/shared.test@2.25.0
+  - @osdk/api@2.34.0
+  - @osdk/client.unstable@2.34.0
+
+## 2.33.0
+
+### Patch Changes
+
+- @osdk/api@2.33.0
+- @osdk/client.unstable@2.33.0
+- @osdk/generator-converters@2.33.0
+
+## 2.32.0
+
+### Minor Changes
+
+- 06adca1: add $snapshot option to fetchPage
+- 79f8a6e: Stop serializing GeoJSON `Point` geometries into a `"lat,lon"` string when sending object property/parameter values. This broke geoshape values that are Points (the transaction edits and action endpoints rejected `"lat,lon"` with `InvalidTransactionEditPropertyValue` / invalid parameter for `GeoShape`). GeoJSON values are now passed through as objects, which the server accepts for both geoshape and geopoint/geohash targets. The FauxFoundry geohash action-parameter validator now also accepts GeoJSON objects, matching the real server.
+
+### Patch Changes
+
+- Updated dependencies [b5d0a61]
+- Updated dependencies [06adca1]
+- Updated dependencies [833f47a]
+  - @osdk/client.unstable@2.32.0
+  - @osdk/api@2.32.0
+  - @osdk/generator-converters@2.32.0
+  - @osdk/shared.test@2.24.0
+
+## 2.31.0
+
+### Minor Changes
+
+- 57cbc6d: Stop shipping Node-only test infrastructure in the browser builds of `@osdk/api` and `@osdk/client`.
+  - `@osdk/api`: the `__quickinfo_snapshot__/` test harness (formerly `probeUtils.ts` + `probes/*.ts`) is renamed under the existing `testUtils.` prefix convention so the transpile tool drops it from every build target. Pure test infrastructure; no runtime surface change.
+  - `@osdk/client`: the `./internal-node` subpath export is removed. The TypeScript-language-server harness it pointed at (`tsserver.ts`) has moved to a new private workspace package, `@osdk/shared.test.intellisense`, which both `@osdk/client` and `@osdk/react` consume as a dev dependency. This eliminates the `node:events` / `node:fs/promises` / `node:path` imports from the browser build and removes the project-internal subpath from the published client API.
+
+### Patch Changes
+
+- Updated dependencies [57cbc6d]
+  - @osdk/api@2.31.0
+  - @osdk/client.unstable@2.31.0
+  - @osdk/generator-converters@2.31.0
+  - @osdk/shared.test@2.23.0
+
 ## 2.30.0
 
 ### Minor Changes

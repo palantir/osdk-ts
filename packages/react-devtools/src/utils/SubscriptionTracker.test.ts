@@ -15,6 +15,7 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { SubscriptionTracker } from "./SubscriptionTracker.js";
 
 describe("SubscriptionTracker", () => {

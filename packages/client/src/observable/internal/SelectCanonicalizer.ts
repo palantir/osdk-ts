@@ -22,10 +22,10 @@ export class SelectCanonicalizer {
   canonicalize(select: undefined): undefined;
   canonicalize(select: readonly string[]): Canonical<readonly string[]>;
   canonicalize(
-    select: readonly string[] | undefined,
+    select: readonly string[] | undefined
   ): Canonical<readonly string[]> | undefined;
   canonicalize(
-    select: readonly string[] | undefined,
+    select: readonly string[] | undefined
   ): Canonical<readonly string[]> | undefined {
     if (select == null) {
       return undefined;

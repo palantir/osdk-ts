@@ -21,6 +21,7 @@ import type {
   InstallationMode,
   LocalizedTitleAndDescription,
 } from "@osdk/client.unstable/api";
+
 import type { CodeBlockSpec } from "./CodeBlockSpec.js";
 import type { SemverVersion } from "./semver.js";
 

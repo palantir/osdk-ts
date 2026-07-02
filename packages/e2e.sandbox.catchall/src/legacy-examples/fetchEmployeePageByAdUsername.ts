@@ -22,11 +22,13 @@ import { Employee } from "@osdk/e2e.generated.catchall";
  */
 export async function fetchEmployeePageByAdUsername(
   client: Client,
-  adUsername: string,
+  adUsername: string
 ): Promise<void> {
-  const result = await client(Employee).where({
-    $and: [{ adUsername }, { employeeNumber: { $ne: 5 } }],
-  }).fetchPage();
+  const result = await client(Employee)
+    .where({
+      $and: [{ adUsername }, { employeeNumber: { $ne: 5 } }],
+    })
+    .fetchPage();
   // for await (const e of client.objects.Employee.asyncIter()) {
   //   e.$apiName;
   // }
@@ -37,7 +39,7 @@ export async function fetchEmployeePageByAdUsername(
       adUsername,
       businessTitle,
       employeeNumber,
-    })),
+    }))
   );
   console.log();
 }

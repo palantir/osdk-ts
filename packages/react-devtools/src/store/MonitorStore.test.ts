@@ -34,6 +34,7 @@ vi.mock("@osdk/client/observable", () => ({
 
 import { createClient } from "@osdk/client";
 import { createObservableClient } from "@osdk/client/observable";
+
 import { getMonitorStore, MonitorStore } from "./MonitorStore.js";
 
 function createMockObservableClient() {
@@ -55,13 +56,16 @@ describe("MonitorStore", () => {
     vi.useFakeTimers();
     savedFetch = globalThis.fetch;
 
-    if (typeof globalThis.requestIdleCallback === "undefined") {
+    if (globalThis.requestIdleCallback === undefined) {
       globalThis.requestIdleCallback = ((cb: IdleRequestCallback) => {
-        return setTimeout(() =>
-          cb({
-            didTimeout: false,
-            timeRemaining: () => 50,
-          }), 0) as unknown as number;
+        return setTimeout(
+          () =>
+            cb({
+              didTimeout: false,
+              timeRemaining: () => 50,
+            }),
+          0
+        ) as unknown as number;
       }) as typeof globalThis.requestIdleCallback;
       globalThis.cancelIdleCallback = ((id: number) => {
         clearTimeout(id);
@@ -154,7 +158,7 @@ describe("MonitorStore", () => {
         type: "object",
         objectType: "Employee",
         data: { pk: "123" },
-      }),
+      })
     ).resolves.toBeUndefined();
   });
 

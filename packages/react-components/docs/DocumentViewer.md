@@ -32,16 +32,13 @@ import { DocumentViewer } from "@osdk/react-components/experimental/document-vie
   imageViewerProps={{
     alt: "Product photo",
   }}
-/>;
+/>
 ```
 
 ### With MIME type override
 
 ```tsx
-<DocumentViewer
-  media={myMedia}
-  mimeTypeOverride="application/pdf"
-/>;
+<DocumentViewer media={myMedia} mimeTypeOverride="application/pdf" />
 ```
 
 ## Props

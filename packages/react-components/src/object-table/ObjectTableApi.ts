@@ -28,6 +28,7 @@ import type {
 } from "@osdk/api";
 import type { QueryParameterType } from "@osdk/client/observable";
 import type * as React from "react";
+
 import type { CellEditInfo, EditFieldConfig } from "./utils/types.js";
 
 export type { EditFieldConfig } from "./utils/types.js";
@@ -84,7 +85,7 @@ interface SharedColumnDefinition<
    */
   renderCell?: (
     object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
-    locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>,
+    locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>
   ) => React.ReactNode;
 
   /**
@@ -120,8 +121,8 @@ interface EditableColumnDefinition<
   editable:
     | true
     | ((
-      object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
-    ) => boolean);
+        object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
+      ) => boolean);
 
   /**
    * Configuration for the cell editor component.
@@ -144,9 +145,7 @@ interface EditableColumnDefinition<
    * @param value the current cell value
    * @returns a promise that resolves to an error message string if validation fails, or undefined if validation succeeds
    */
-  validateEdit?: (
-    value: unknown,
-  ) => Promise<string | undefined>;
+  validateEdit?: (value: unknown) => Promise<string | undefined>;
 }
 
 /**
@@ -164,11 +163,10 @@ interface ReadonlyColumnDefinition<
   editable?: false;
 }
 
-export type ExtractQueryParameters<
-  Q extends QueryDefinition,
-> = CompileTimeMetadata<Q>["parameters"] extends Record<string, never>
-  ? undefined
-  : QueryParameterType<CompileTimeMetadata<Q>["parameters"]>;
+export type ExtractQueryParameters<Q extends QueryDefinition> =
+  CompileTimeMetadata<Q>["parameters"] extends Record<string, never>
+    ? undefined
+    : QueryParameterType<CompileTimeMetadata<Q>["parameters"]>;
 
 export interface PropertyColumnLocator<Q extends ObjectOrInterfaceDefinition> {
   type: "property";
@@ -199,7 +197,7 @@ interface FunctionColumnLocatorForKey<
    * @returns - The function's input parameters including the object set.
    */
   getFunctionParams: (
-    objectSet: ObjectSet<Q, RDPs>,
+    objectSet: ObjectSet<Q, RDPs>
   ) => ExtractQueryParameters<FunctionColumns[K]>;
 
   /**
@@ -208,7 +206,7 @@ interface FunctionColumnLocatorForKey<
    * @returns - The key to use for looking up this object's result in the FunctionsMap
    */
   getKey: (
-    object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+    object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
   ) => string;
 
   /**
@@ -251,7 +249,7 @@ export type FunctionColumnLocator<
 > = keyof FunctionColumns extends infer K
   ? K extends keyof FunctionColumns
     ? FunctionColumnLocatorForKey<Q, RDPs, FunctionColumns, K>
-  : never
+    : never
   : never;
 
 export interface RdpColumnLocator<
@@ -297,7 +295,12 @@ export interface ObjectTableProps<
 
   /**
    * The set of objects to show in the table.
-   * If provided and the objectType is not an interface, the table will use objectSet to fetch objects instead of fetching based on objectType.
+   * If provided, the table fetches through this object set instead of fetching based on
+   * objectType. Supported for both object and interface types.
+   *
+   * For an interface object set, rows expose the interface's declared properties (plus any
+   * `withProperties` derived from `rdp` column locators); the underlying concrete object's
+   * non-interface properties are not loaded. Use objectType-based fetching if you need those.
    */
   objectSet?: ObjectSet<Q>;
 
@@ -439,7 +442,7 @@ export interface ObjectTableProps<
     newOrderBy: Array<{
       property: PropertyKeys<Q> | keyof RDPs;
       direction: "asc" | "desc";
-    }>,
+    }>
   ) => void;
 
   /**
@@ -452,7 +455,7 @@ export interface ObjectTableProps<
     info: CellEditInfo<
       Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
       unknown
-    >,
+    >
   ) => void;
 
   /**
@@ -462,10 +465,12 @@ export interface ObjectTableProps<
    * including the rowId, columnId, new and old values, and the row data before the edit
    * @return a promise that resolves to true if the edits were successfully submitted
    */
-  onSubmitEdits?: (edits: CellEditInfo<
-    Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
-    unknown
-  >[]) => Promise<boolean>;
+  onSubmitEdits?: (
+    edits: CellEditInfo<
+      Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+      unknown
+    >[]
+  ) => Promise<boolean>;
 
   /**
    * Called when the column visibility or ordering changed.
@@ -478,7 +483,7 @@ export interface ObjectTableProps<
     newStates: Array<{
       columnId: PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns;
       isVisible: boolean;
-    }>,
+    }>
   ) => void;
 
   /**
@@ -492,7 +497,7 @@ export interface ObjectTableProps<
     newStates: Array<{
       columnId: PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns;
       pinned: "left" | "right" | "none";
-    }>,
+    }>
   ) => void;
 
   /**
@@ -503,7 +508,7 @@ export interface ObjectTableProps<
    */
   onColumnResize?: (
     columnId: PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns,
-    newWidth: number | null,
+    newWidth: number | null
   ) => void;
 
   /**
@@ -512,7 +517,7 @@ export interface ObjectTableProps<
    * @param object The object representing the clicked row
    */
   onRowClick?: (
-    object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+    object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
   ) => void;
 
   /**
@@ -536,9 +541,7 @@ export interface ObjectTableProps<
    * cleared
    */
   onFocusedRowChanged?: (
-    row:
-      | Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
-      | null,
+    row: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs> | null
   ) => void;
 
   /**
@@ -551,7 +554,7 @@ export interface ObjectTableProps<
    * @param columnId The id of the clicked column
    */
   onColumnHeaderClick?: (
-    columnId: PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns,
+    columnId: PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns
   ) => void;
 
   /**
@@ -589,7 +592,7 @@ export interface ObjectTableProps<
    */
   onRowSelection?: (
     selectedRowIds: PrimaryKeyType<Q>[],
-    isSelectAll?: boolean,
+    isSelectAll?: boolean
   ) => void;
 
   /**
@@ -598,15 +601,13 @@ export interface ObjectTableProps<
    *
    * @param change The new selection state. See {@link RowSelectionChange}.
    */
-  onRowSelectionChanged?: (
-    change: RowSelectionChange<Q, RDPs>,
-  ) => void;
+  onRowSelectionChanged?: (change: RowSelectionChange<Q, RDPs>) => void;
   /**
    * If provided, will render this context menu when right clicking on a cell
    */
   renderCellContextMenu?: (
     row: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
-    cellValue: unknown,
+    cellValue: unknown
   ) => React.ReactNode;
 
   /**
@@ -628,7 +629,7 @@ export interface ObjectTableProps<
    * row element. Use this to drive conditional row styling
    */
   getRowAttributes?: (
-    object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+    object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
   ) => Record<string, string | undefined>;
 
   /**
@@ -673,7 +674,7 @@ export interface ObjectTableHandle<
    * @param options See {@link ObjectTableSnapshotOptions}.
    */
   getSnapshot: (
-    options?: ObjectTableSnapshotOptions,
+    options?: ObjectTableSnapshotOptions
   ) => Promise<ObjectTableSnapshot<Q, RDPs>>;
 }
 
@@ -782,9 +783,7 @@ export interface RowSelectionChange<
   objectSet: ObjectSet<Q, RDPs> | undefined;
 }
 
-export interface ObjectSetOptions<
-  Q extends ObjectOrInterfaceDefinition,
-> {
+export interface ObjectSetOptions<Q extends ObjectOrInterfaceDefinition> {
   /**
    * Object sets to union with
    */

@@ -79,11 +79,11 @@ export interface UseShapeListResult<
   linkStatus: Partial<{ [K in keyof ShapeDerivedLinks<S>]: LinkStatus }>;
   loadDeferred: (
     primaryKey: string | number,
-    linkName: keyof ShapeDerivedLinks<S>,
+    linkName: keyof ShapeDerivedLinks<S>
   ) => void;
   retry: (
     primaryKey?: string | number,
-    linkName?: keyof ShapeDerivedLinks<S>,
+    linkName?: keyof ShapeDerivedLinks<S>
   ) => void;
   invalidate: (linkName?: keyof ShapeDerivedLinks<S>) => void;
 }
@@ -96,16 +96,13 @@ export function useShapeSingle<
   _options?: {
     enabled?: boolean;
     links?: Partial<{ [K in keyof ShapeDerivedLinks<S>]: LinkLoadConfig }>;
-  },
+  }
 ): UseShapeResult<S> {
   throw new Error("useShapeSingle is not implemented yet");
 }
 
 export function useShapeList<
   S extends ShapeDefinition<ObjectOrInterfaceDefinition>,
->(
-  _shape: S,
-  _options: UseShapeListOptions<S>,
-): UseShapeListResult<S> {
+>(_shape: S, _options: UseShapeListOptions<S>): UseShapeListResult<S> {
   throw new Error("useShapeList is not implemented yet");
 }

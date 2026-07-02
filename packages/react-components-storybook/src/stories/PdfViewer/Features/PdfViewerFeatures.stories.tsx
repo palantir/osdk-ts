@@ -30,8 +30,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { delay, http } from "msw";
 import { fn } from "storybook/test";
 
-const SAMPLE_PDF_URL =
-  `${import.meta.env.BASE_URL}compressed.tracemonkey-pldi-09.pdf`;
+const SAMPLE_PDF_URL = `${import.meta.env.BASE_URL}compressed.tracemonkey-pldi-09.pdf`;
 
 const BOOKMARKED_PDF_URL = `${import.meta.env.BASE_URL}nested_outline.pdf`;
 
@@ -60,11 +59,11 @@ function createMockMedia(url: string, filename: string): Media {
 
 const mockMedia = createMockMedia(
   SAMPLE_PDF_URL,
-  "compressed.tracemonkey-pldi-09.pdf",
+  "compressed.tracemonkey-pldi-09.pdf"
 );
 const mockBookmarkedMedia = createMockMedia(
   BOOKMARKED_PDF_URL,
-  "pdf-example-bookmarks.pdf",
+  "pdf-example-bookmarks.pdf"
 );
 
 const meta: Meta<PdfViewerMediaProps> = {
@@ -122,7 +121,7 @@ const meta: Meta<PdfViewerMediaProps> = {
       description: "Which sidebar panel to show when the sidebar is open",
       control: "radio",
       options: ["thumbnails", "outline"],
-      table: { defaultValue: { summary: "\"thumbnails\"" } },
+      table: { defaultValue: { summary: '"thumbnails"' } },
     },
     outlineIcons: {
       description:
@@ -151,8 +150,7 @@ export const WithPdfUrl: StoryObj<PdfViewerProps> = {
   parameters: {
     docs: {
       source: {
-        code:
-          `import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
+        code: `import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 
 <BasePdfViewer src="/compressed.tracemonkey-pldi-09.pdf" />`,
       },
@@ -196,8 +194,7 @@ export const WithAnnotations: Story = {
   parameters: {
     docs: {
       source: {
-        code:
-          `import { PdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
+        code: `import { PdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 
 <PdfViewer
   media={myMediaObject}
@@ -221,8 +218,7 @@ export const WithSidebar: Story = {
   parameters: {
     docs: {
       source: {
-        code:
-          `import { PdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
+        code: `import { PdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 
 <PdfViewer media={myMediaObject} initialSidebarOpen />`,
       },
@@ -237,8 +233,7 @@ export const CustomScale: Story = {
   parameters: {
     docs: {
       source: {
-        code:
-          `import { PdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
+        code: `import { PdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 
 <PdfViewer media={myMediaObject} initialScale={1.5} />`,
       },
@@ -253,8 +248,7 @@ export const WithAutoSize: Story = {
   parameters: {
     docs: {
       source: {
-        code:
-          `import { PdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
+        code: `import { PdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 
 <PdfViewer media={myMediaObject} initialAutoSize />`,
       },
@@ -269,8 +263,7 @@ export const WithDownload: Story = {
   parameters: {
     docs: {
       source: {
-        code:
-          `import { PdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
+        code: `import { PdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 
 <PdfViewer media={myMediaObject} enableDownload />`,
       },
@@ -286,8 +279,7 @@ export const WithOutlineSidebar: Story = {
   parameters: {
     docs: {
       source: {
-        code:
-          `import { PdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
+        code: `import { PdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 
 <PdfViewer media={myMediaObject} initialSidebarOpen sidebarMode="outline" />`,
       },
@@ -432,8 +424,7 @@ export const InteractiveForm: StoryObj<PdfViewerProps> = {
   parameters: {
     docs: {
       source: {
-        code:
-          `import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
+        code: `import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 
 <BasePdfViewer
   src="https://example.com/interactive-form.pdf"

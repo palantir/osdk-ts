@@ -1,5 +1,125 @@
 # @osdk/maker
 
+## 0.44.0
+
+### Patch Changes
+
+- Updated dependencies [9b150d7]
+- Updated dependencies [15a35f2]
+  - @osdk/api@2.41.0
+  - @osdk/generator-converters.ontologyir@2.41.0
+
+## 0.43.0
+
+### Minor Changes
+
+- fcde4c0: Add `defineDeleteInterfaceLinkAction`.
+
+### Patch Changes
+
+- Updated dependencies [3e915ee]
+  - @osdk/api@2.40.0
+  - @osdk/generator-converters.ontologyir@2.40.0
+
+## 0.42.0
+
+### Minor Changes
+
+- 1796140: Fix list-type action parameters being generated with a scalar required/notRequired configuration.
+
+### Patch Changes
+
+- @osdk/api@2.39.0
+- @osdk/generator-converters.ontologyir@2.39.0
+
+## 0.41.0
+
+### Patch Changes
+
+- Updated dependencies [58b3367]
+  - @osdk/typescript-sdk-docs@0.15.0
+  - @osdk/api@2.38.0
+  - @osdk/generator-converters.ontologyir@2.38.0
+
+## 0.40.0
+
+### Patch Changes
+
+- Updated dependencies [0bd4a2e]
+  - @osdk/typescript-sdk-docs@0.14.0
+  - @osdk/api@2.37.0
+  - @osdk/generator-converters.ontologyir@2.37.0
+
+## 0.39.0
+
+### Minor Changes
+
+- 59115b1: Add `defineCreateInterfaceLinkAction`
+
+### Patch Changes
+
+- @osdk/api@2.35.0
+- @osdk/generator-converters.ontologyir@2.35.0
+
+## 0.38.0
+
+### Minor Changes
+
+- 90c415f: Support interface link actions
+
+## 0.37.0
+
+### Minor Changes
+
+- 07eaaff: Fix function backed actions with interfaces
+
+### Patch Changes
+
+- Updated dependencies [07eaaff]
+- Updated dependencies [4a25731]
+- Updated dependencies [db028a0]
+- Updated dependencies [48eb46e]
+- Updated dependencies [ab19740]
+  - @osdk/generator-converters.ontologyir@2.34.0
+  - @osdk/api@2.34.0
+
+## 0.36.0
+
+### Minor Changes
+
+- cae84bd: Fix optional inputs for OAC FBA
+- 9e602f2: allow require implementation for interface action type constraint
+- 0032d94: fix cyclical interfaces on all internal types
+
+### Patch Changes
+
+- Updated dependencies [a9de941]
+  - @osdk/generator-converters.ontologyir@2.33.0
+  - @osdk/api@2.33.0
+
+## 0.35.0
+
+### Minor Changes
+
+- b5d0a61: transitive OAC imports
+- 833f47a: add support for interface action type constraint in ontology as code
+
+### Patch Changes
+
+- Updated dependencies [b5d0a61]
+- Updated dependencies [06adca1]
+- Updated dependencies [833f47a]
+  - @osdk/generator-converters.ontologyir@2.32.0
+  - @osdk/api@2.32.0
+
+## 0.34.0
+
+### Patch Changes
+
+- Updated dependencies [57cbc6d]
+  - @osdk/api@2.31.0
+  - @osdk/generator-converters.ontologyir@2.31.0
+
 ## 0.33.0
 
 ### Patch Changes

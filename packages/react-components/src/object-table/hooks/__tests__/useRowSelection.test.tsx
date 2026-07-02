@@ -17,6 +17,7 @@
 import type { ObjectTypeDefinition, Osdk, PrimaryKeyType } from "@osdk/api";
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+
 import { useRowSelection } from "../useRowSelection.js";
 
 const TestObjectType = {
@@ -28,21 +29,25 @@ type TestObject = typeof TestObjectType;
 
 // Helper to create mock data
 function createMockData(
-  count: number,
+  count: number
 ): Array<
   Osdk.Instance<TestObject, "$allBaseProperties", never, Record<string, never>>
 > {
-  return Array.from({ length: count }, (_, i) => ({
-    $primaryKey: `item-${i}` as PrimaryKeyType<TestObject>,
-    $objectType: "TestObject",
-    $apiName: "TestObject",
-    $title: `Item ${i}`,
-  } as Osdk.Instance<
-    TestObject,
-    "$allBaseProperties",
-    never,
-    Record<string, never>
-  >));
+  return Array.from(
+    { length: count },
+    (_, i) =>
+      ({
+        $primaryKey: `item-${i}` as PrimaryKeyType<TestObject>,
+        $objectType: "TestObject",
+        $apiName: "TestObject",
+        $title: `Item ${i}`,
+      }) as Osdk.Instance<
+        TestObject,
+        "$allBaseProperties",
+        never,
+        Record<string, never>
+      >
+  );
 }
 
 describe("useRowSelection", () => {
@@ -109,7 +114,7 @@ describe("useRowSelection", () => {
         expect(result.current.hasSelection).toBe(true);
         expect(onRowSelection).toHaveBeenCalledWith(
           [data[0].$primaryKey],
-          false,
+          false
         );
       });
 
@@ -186,8 +191,8 @@ describe("useRowSelection", () => {
         });
         expect(result.current.isAllSelected).toBe(true);
         expect(onRowSelection).toHaveBeenCalledWith(
-          data.map(item => item.$primaryKey),
-          true,
+          data.map((item) => item.$primaryKey),
+          true
         );
 
         // Toggling all again deselects
@@ -249,10 +254,10 @@ describe("useRowSelection", () => {
           "item-2": true,
         });
         expect(result.current.isAllSelected).toBe(false);
-        expect(onRowSelection).toHaveBeenLastCalledWith([
-          data[0].$primaryKey,
-          data[2].$primaryKey,
-        ], false);
+        expect(onRowSelection).toHaveBeenLastCalledWith(
+          [data[0].$primaryKey, data[2].$primaryKey],
+          false
+        );
       });
 
       it("deselects individual rows", () => {
@@ -311,11 +316,10 @@ describe("useRowSelection", () => {
           "item-2": true,
           "item-3": true,
         });
-        expect(onRowSelection).toHaveBeenLastCalledWith([
-          data[1].$primaryKey,
-          data[2].$primaryKey,
-          data[3].$primaryKey,
-        ], false);
+        expect(onRowSelection).toHaveBeenLastCalledWith(
+          [data[1].$primaryKey, data[2].$primaryKey, data[3].$primaryKey],
+          false
+        );
       });
 
       it("selects range in reverse order (shift-click up)", () => {
@@ -494,11 +498,10 @@ describe("useRowSelection", () => {
           "item-2": true,
         });
         expect(result.current.isAllSelected).toBe(true);
-        expect(onRowSelection).toHaveBeenCalledWith([
-          data[0].$primaryKey,
-          data[1].$primaryKey,
-          data[2].$primaryKey,
-        ], true);
+        expect(onRowSelection).toHaveBeenCalledWith(
+          [data[0].$primaryKey, data[1].$primaryKey, data[2].$primaryKey],
+          true
+        );
 
         // Deselect all
         act(() => {
@@ -548,7 +551,7 @@ describe("useRowSelection", () => {
 
         expect(onRowSelection).toHaveBeenLastCalledWith(
           [data[1].$primaryKey, data[2].$primaryKey, data[3].$primaryKey],
-          false,
+          false
         );
       });
     });
@@ -621,7 +624,7 @@ describe("useRowSelection", () => {
               onRowSelection,
               data,
             }),
-          { initialProps: { data: initialData } },
+          { initialProps: { data: initialData } }
         );
 
         // User clicks "select all"
@@ -653,8 +656,8 @@ describe("useRowSelection", () => {
 
         // onRowSelection refires with the expanded id list so callers stay in sync
         expect(onRowSelection).toHaveBeenLastCalledWith(
-          moreData.map(item => item.$primaryKey),
-          true,
+          moreData.map((item) => item.$primaryKey),
+          true
         );
       });
 
@@ -686,7 +689,7 @@ describe("useRowSelection", () => {
         });
         expect(onRowSelection).toHaveBeenLastCalledWith(
           [initialData[0].$primaryKey, initialData[2].$primaryKey],
-          false,
+          false
         );
       });
 
@@ -700,7 +703,7 @@ describe("useRowSelection", () => {
               onRowSelection,
               data,
             }),
-          { initialProps: { data: initialData } },
+          { initialProps: { data: initialData } }
         );
 
         act(() => {
@@ -727,16 +730,16 @@ describe("useRowSelection", () => {
             initialProps: {
               data: undefined as
                 | Array<
-                  Osdk.Instance<
-                    TestObject,
-                    "$allBaseProperties",
-                    never,
-                    Record<string, never>
+                    Osdk.Instance<
+                      TestObject,
+                      "$allBaseProperties",
+                      never,
+                      Record<string, never>
+                    >
                   >
-                >
                 | undefined,
             },
-          },
+          }
         );
 
         rerender({ data: createMockData(3) });
@@ -754,7 +757,7 @@ describe("useRowSelection", () => {
               onRowSelection,
               data,
             }),
-          { initialProps: { data: createMockData(3) } },
+          { initialProps: { data: createMockData(3) } }
         );
 
         // Select all, then deselect all.
@@ -805,7 +808,7 @@ describe("useRowSelection", () => {
             }),
           {
             initialProps: { selectedRows: [] as PrimaryKeyType<TestObject>[] },
-          },
+          }
         );
 
         expect(result.current.rowSelection).toEqual({});
@@ -818,7 +821,7 @@ describe("useRowSelection", () => {
         // Callback is called
         expect(onRowSelection).toHaveBeenCalledWith(
           [data[0].$primaryKey],
-          false,
+          false
         );
 
         // State doesn't change (controlled)
@@ -866,10 +869,10 @@ describe("useRowSelection", () => {
           result.current.onToggleRow("item-2", 2);
         });
 
-        expect(onRowSelection).toHaveBeenCalledWith([
-          data[0].$primaryKey,
-          data[2].$primaryKey,
-        ], false);
+        expect(onRowSelection).toHaveBeenCalledWith(
+          [data[0].$primaryKey, data[2].$primaryKey],
+          false
+        );
 
         // Remove selection from selectedRows
         act(() => {
@@ -901,11 +904,10 @@ describe("useRowSelection", () => {
           result.current.onToggleRow("item-3", 3, true);
         });
 
-        expect(onRowSelection).toHaveBeenLastCalledWith([
-          data[1].$primaryKey,
-          data[2].$primaryKey,
-          data[3].$primaryKey,
-        ], false);
+        expect(onRowSelection).toHaveBeenLastCalledWith(
+          [data[1].$primaryKey, data[2].$primaryKey, data[3].$primaryKey],
+          false
+        );
       });
 
       it("shift-click range merges with updated controlled selectedRows", () => {
@@ -923,7 +925,7 @@ describe("useRowSelection", () => {
             initialProps: {
               selectedRows: [] as PrimaryKeyType<TestObject>[],
             },
-          },
+          }
         );
 
         // First click on row 1
@@ -941,7 +943,7 @@ describe("useRowSelection", () => {
 
         expect(onRowSelection).toHaveBeenLastCalledWith(
           [data[1].$primaryKey, data[2].$primaryKey, data[3].$primaryKey],
-          false,
+          false
         );
       });
 
@@ -961,11 +963,10 @@ describe("useRowSelection", () => {
           result.current.onToggleAll();
         });
 
-        expect(onRowSelection).toHaveBeenCalledWith([
-          data[0].$primaryKey,
-          data[1].$primaryKey,
-          data[2].$primaryKey,
-        ], true);
+        expect(onRowSelection).toHaveBeenCalledWith(
+          [data[0].$primaryKey, data[1].$primaryKey, data[2].$primaryKey],
+          true
+        );
       });
 
       it("updates when selectedRows prop changes", () => {
@@ -979,11 +980,11 @@ describe("useRowSelection", () => {
             }),
           {
             initialProps: {
-              selectedRows: [data[0].$primaryKey] as PrimaryKeyType<
-                TestObject
-              >[],
+              selectedRows: [
+                data[0].$primaryKey,
+              ] as PrimaryKeyType<TestObject>[],
             },
-          },
+          }
         );
 
         expect(result.current.rowSelection).toEqual({ "item-0": true });
@@ -1016,8 +1017,8 @@ describe("useRowSelection", () => {
         });
 
         expect(onRowSelection).toHaveBeenCalledWith(
-          data.map(item => item.$primaryKey),
-          true,
+          data.map((item) => item.$primaryKey),
+          true
         );
 
         // Toggle individual row - should pass isSelectAll=false
@@ -1027,7 +1028,7 @@ describe("useRowSelection", () => {
 
         expect(onRowSelection).toHaveBeenLastCalledWith(
           [data[1].$primaryKey],
-          false,
+          false
         );
       });
 
@@ -1043,7 +1044,7 @@ describe("useRowSelection", () => {
               onRowSelection,
               data,
             }),
-          { initialProps: { data: initialData } },
+          { initialProps: { data: initialData } }
         );
 
         rerender({ data: createMockData(5) });
@@ -1067,7 +1068,7 @@ describe("useRowSelection", () => {
               data: initialData,
               isAllSelected: true,
             },
-          },
+          }
         );
 
         // Initially, all 3 rows should be selected
@@ -1101,7 +1102,7 @@ describe("useRowSelection", () => {
         const { result } = renderHook(() =>
           useRowSelection({
             selectionMode: "multiple",
-            selectedRows: data.map(item => item.$primaryKey),
+            selectedRows: data.map((item) => item.$primaryKey),
             isAllSelected: true,
             onRowSelection,
             data,
@@ -1138,7 +1139,7 @@ describe("useRowSelection", () => {
               ] as PrimaryKeyType<TestObject>[],
               isAllSelected: false,
             },
-          },
+          }
         );
 
         // Initially shows selectedRows with isAllSelected false
@@ -1399,7 +1400,7 @@ describe("useRowSelection", () => {
             onRowSelectionChanged,
             data,
           }),
-        { initialProps: { data: initialData } },
+        { initialProps: { data: initialData } }
       );
 
       act(() => {
@@ -1432,10 +1433,7 @@ describe("useRowSelection", () => {
         result.current.onToggleRow("item-0", 0);
       });
 
-      expect(onRowSelection).toHaveBeenCalledWith(
-        [data[0].$primaryKey],
-        false,
-      );
+      expect(onRowSelection).toHaveBeenCalledWith([data[0].$primaryKey], false);
       expect(onRowSelectionChanged).toHaveBeenCalledWith({
         selectedRows: [data[0]],
         isSelectAll: false,

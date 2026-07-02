@@ -18,7 +18,6 @@ import type {
   NullabilityAdherence,
   SelectArg,
 } from "../object/FetchPageArgs.js";
-
 import type {
   ObjectOrInterfaceDefinition,
   PropertyKeys,
@@ -34,7 +33,7 @@ type fetchOneByRidFn = <
 >(
   objectType: Q,
   rid: string,
-  options?: SelectArg<Q, L, R, S>,
+  options?: SelectArg<Q, L, R, S>
 ) => Promise<Osdk.Instance<Q, ExtractOptions<R, S>, L>>;
 
 export const __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid: Experiment<

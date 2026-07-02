@@ -31,7 +31,8 @@ import type {
 } from "@osdk/react-components/experimental/object-table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useState } from "react";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, waitFor, within } from "storybook/test";
+
 import { fauxFoundry } from "../../mocks/fauxFoundry.js";
 import { Employee } from "../../types/Employee.js";
 import { WorkerInterface } from "../../types/WorkerInterface.js";
@@ -495,9 +496,9 @@ export const WithInterfaceType: Story = {
     docs: {
       description: {
         story:
-          "Pass an interface type instead of an object type. The table shows the interface's "
-          + "properties (email, name, employeeNumber) and any object implementing the interface "
-          + "will be displayed.",
+          "Pass an interface type instead of an object type. The table shows the interface's " +
+          "properties (email, name, employeeNumber) and any object implementing the interface " +
+          "will be displayed.",
       },
       source: {
         code: `import { WorkerInterface } from "./types/WorkerInterface";
@@ -556,8 +557,8 @@ export const WithDerivedPropertyOrderingAndFilter: Story = {
     docs: {
       description: {
         story:
-          "Combines derived property columns with `defaultOrderBy` and `filter`. "
-          + "Demonstrates sorting by an RDP (managerName) and filtering the derived property.",
+          "Combines derived property columns with `defaultOrderBy` and `filter`. " +
+          "Demonstrates sorting by an RDP (managerName) and filtering the derived property.",
       },
       source: {
         code: `type RDPs = { managerName: "string" };
@@ -623,9 +624,9 @@ export const WithFunctionColumn: Story = {
     docs: {
       description: {
         story:
-          "Use function-backed columns to display computed values from a Foundry query. "
-          + "The 'Seniority' column calls `getEmployeeSeniority` with the current object set "
-          + "and maps each result back to the corresponding row.",
+          "Use function-backed columns to display computed values from a Foundry query. " +
+          "The 'Seniority' column calls `getEmployeeSeniority` with the current object set " +
+          "and maps each result back to the corresponding row.",
       },
       source: {
         code: `import { getEmployeeSeniority } from "./ontology/queries";
@@ -700,6 +701,57 @@ export const MultipleSelection: Story = {
       <ObjectTable {...args} />
     </div>
   ),
+  // Storybook "Interactions" test: the play function drives the rendered
+  // component with simulated user input and asserts on the result. It runs
+  // automatically in the Interactions panel and as part of the test runner.
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+
+    // Re-query fresh each time: toggling the header re-renders the rows, so
+    // checkbox refs captured earlier could go stale.
+    const rowCheckboxes = () =>
+      canvas.findAllByRole("checkbox", { name: /select row/i });
+    const deselectAllCheckbox = () =>
+      canvas.findByRole("checkbox", { name: /deselect all rows/i });
+
+    // Wait for the (MSW-mocked) rows to load, then grab the per-row checkboxes.
+    const [firstRow, secondRow] = await rowCheckboxes();
+
+    // Selecting one row checks it and notifies the consumer.
+    await userEvent.click(firstRow);
+    await expect(firstRow).toBeChecked();
+    await waitFor(() => expect(args.onRowSelectionChanged).toHaveBeenCalled());
+
+    // In "multiple" mode a second row can be selected without clearing the
+    // first — both stay checked.
+    await userEvent.click(secondRow);
+    await expect(firstRow).toBeChecked();
+    await expect(secondRow).toBeChecked();
+
+    // The header checkbox toggles every row. Once rows are selected its label
+    // flips to "Deselect all rows", so clicking it clears the selection.
+    await userEvent.click(await deselectAllCheckbox());
+    for (const rowCheckbox of await rowCheckboxes()) {
+      await expect(rowCheckbox).not.toBeChecked();
+    }
+
+    // With nothing selected the header label flips back to "Select all rows"
+    // (exact-string match so it doesn't also match "Deselect all rows").
+    // Clicking it now selects every row.
+    await userEvent.click(
+      await canvas.findByRole("checkbox", { name: "Select all rows" })
+    );
+    for (const rowCheckbox of await rowCheckboxes()) {
+      await expect(rowCheckbox).toBeChecked();
+    }
+
+    // Everything is selected, so the header label is "Deselect all rows" again.
+    // Clicking it clears the entire selection.
+    await userEvent.click(await deselectAllCheckbox());
+    for (const rowCheckbox of await rowCheckboxes()) {
+      await expect(rowCheckbox).not.toBeChecked();
+    }
+  },
 };
 
 export const WithContextMenu: Story = {
@@ -791,10 +843,12 @@ export const WithDefaultSorting: Story = {
   args: {
     objectType: Employee,
     columnDefinitions: defaultEmployeeColumns,
-    defaultOrderBy: [{
-      property: "fullName",
-      direction: "desc",
-    }],
+    defaultOrderBy: [
+      {
+        property: "fullName",
+        direction: "desc",
+      },
+    ],
   },
   parameters: {
     docs: {
@@ -1025,34 +1079,40 @@ export const EventListeners: Story = {
     const [clickedColumn, setClickedColumn] = useState<string | null>(null);
     const [selectedRows, setSelectedRows] = useState<any[]>([]);
     const [isSelectAll, setIsSelectAll] = useState<boolean>(false);
-    const [orderBy, setOrderBy] = useState<any>([{
-      property: "fullName",
-      direction: "asc",
-    }]);
+    const [orderBy, setOrderBy] = useState<any>([
+      {
+        property: "fullName",
+        direction: "asc",
+      },
+    ]);
     const [lastEvent, setLastEvent] = useState<string>("");
 
-    const handleRowClick = useCallback((employee: any) => {
-      args.onRowClick?.(employee);
-      setClickedRow(employee);
-      setLastEvent("onRowClick");
-    }, [args]);
+    const handleRowClick = useCallback(
+      (employee: any) => {
+        args.onRowClick?.(employee);
+        setClickedRow(employee);
+        setLastEvent("onRowClick");
+      },
+      [args]
+    );
 
-    const handleColumnHeaderClick = useCallback((columnId: string) => {
-      args.onColumnHeaderClick?.(columnId);
-      setClickedColumn(columnId);
-      setLastEvent("onColumnHeaderClick");
-    }, [args]);
+    const handleColumnHeaderClick = useCallback(
+      (columnId: string) => {
+        args.onColumnHeaderClick?.(columnId);
+        setClickedColumn(columnId);
+        setLastEvent("onColumnHeaderClick");
+      },
+      [args]
+    );
 
     const handleRowSelectionChanged = useCallback(
       (change: any) => {
         args.onRowSelectionChanged?.(change);
-        setSelectedRows(
-          change.selectedRows.map((r: any) => r.$primaryKey),
-        );
+        setSelectedRows(change.selectedRows.map((r: any) => r.$primaryKey));
         setIsSelectAll(change.isSelectAll);
         setLastEvent("onRowSelectionChanged");
       },
-      [args],
+      [args]
     );
 
     const handleOrderByChanged = useCallback(
@@ -1061,7 +1121,7 @@ export const EventListeners: Story = {
         setOrderBy(newOrderBy);
         setLastEvent("onOrderByChanged");
       },
-      [args],
+      [args]
     );
 
     const handleColumnVisibilityChanged = useCallback(
@@ -1069,7 +1129,7 @@ export const EventListeners: Story = {
         args.onColumnVisibilityChanged?.(visibilityState);
         setLastEvent("onColumnVisibilityChanged");
       },
-      [args],
+      [args]
     );
 
     const handleColumnsPinnedChanged = useCallback(
@@ -1077,7 +1137,7 @@ export const EventListeners: Story = {
         args.onColumnsPinnedChanged?.(pinnedState);
         setLastEvent("onColumnsPinnedChanged");
       },
-      [args],
+      [args]
     );
 
     const handleColumnResize = useCallback(
@@ -1085,7 +1145,7 @@ export const EventListeners: Story = {
         args.onColumnResize?.(columnId, newWidth);
         setLastEvent(`onColumnResize (${columnId})`);
       },
-      [args],
+      [args]
     );
 
     return (
@@ -1118,7 +1178,8 @@ export const EventListeners: Story = {
             {isSelectAll ? "All employees" : `${selectedRows.length} employees`}
           </div>
           <div style={{ fontSize: "12px" }}>
-            <strong>Current sort:</strong> {orderBy?.[0]
+            <strong>Current sort:</strong>{" "}
+            {orderBy?.[0]
               ? `${orderBy[0].property} (${orderBy[0].direction})`
               : "None"}
           </div>
@@ -1168,14 +1229,15 @@ return (
   },
   render: (args) => {
     const [orderBy, setOrderBy] = useState<any>(
-      args.orderBy ?? [
-        { property: "fullName", direction: "asc" },
-      ],
+      args.orderBy ?? [{ property: "fullName", direction: "asc" }]
     );
-    const handleOrderByChanged = useCallback((newOrderBy: any) => {
-      args.onOrderByChanged?.(newOrderBy);
-      setOrderBy(newOrderBy);
-    }, [args]);
+    const handleOrderByChanged = useCallback(
+      (newOrderBy: any) => {
+        args.onOrderByChanged?.(newOrderBy);
+        setOrderBy(newOrderBy);
+      },
+      [args]
+    );
 
     return (
       <div>
@@ -1183,8 +1245,7 @@ return (
           <strong>Current Sort:</strong>{" "}
           {orderBy.map((o: any, i: number) => (
             <span key={i}>
-              {o.property} ({o.direction})
-              {i < orderBy.length - 1 && ", "}
+              {o.property} ({o.direction}){i < orderBy.length - 1 && ", "}
             </span>
           ))}
         </div>
@@ -1231,21 +1292,19 @@ return (
   },
   render: (args) => {
     const [selectedRows, setSelectedRows] = useState<any[]>(
-      args.selectedRows ?? [],
+      args.selectedRows ?? []
     );
     const [isSelectAll, setIsSelectAll] = useState<boolean>(false);
     const handleRowSelectionChanged = useCallback(
-      (
-        change: {
-          selectedRows: Array<{ $primaryKey: any }>;
-          isSelectAll: boolean;
-        },
-      ) => {
+      (change: {
+        selectedRows: Array<{ $primaryKey: any }>;
+        isSelectAll: boolean;
+      }) => {
         args.onRowSelectionChanged?.(change as any);
         setSelectedRows(change.selectedRows.map((r) => r.$primaryKey));
         setIsSelectAll(change.isSelectAll);
       },
-      [args],
+      [args]
     );
 
     return (
@@ -1296,13 +1355,12 @@ export const ControlledFocusedRow: Story = {
     docs: {
       description: {
         story:
-          "Demonstrates the `focusedRow` / `onFocusedRowChanged` API. Click any row to focus it; "
-          + "the focused employee is shown in the banner above and persists until cleared by the caller. "
-          + "Because focus is controlled, outside clicks no longer auto-clear — the caller owns clearing.",
+          "Demonstrates the `focusedRow` / `onFocusedRowChanged` API. Click any row to focus it; " +
+          "the focused employee is shown in the banner above and persists until cleared by the caller. " +
+          "Because focus is controlled, outside clicks no longer auto-clear — the caller owns clearing.",
       },
       source: {
-        code:
-          `const [focusedRow, setFocusedRow] = useState<Osdk.Instance<Employee> | null>(null);
+        code: `const [focusedRow, setFocusedRow] = useState<Osdk.Instance<Employee> | null>(null);
 
 return (
   <>
@@ -1339,7 +1397,7 @@ return (
         args.onFocusedRowChanged?.(row);
         setFocusedRow(row);
       },
-      [args],
+      [args]
     );
 
     return (
@@ -1357,7 +1415,8 @@ return (
           }}
         >
           <span>
-            <strong>Focused employee:</strong> {focusedRow == null
+            <strong>Focused employee:</strong>{" "}
+            {focusedRow == null
               ? "none"
               : `${focusedRow.fullName} (#${focusedRow.employeeNumber})`}
           </span>
@@ -1427,8 +1486,8 @@ export const HeaderMenuInsideBlueprintDrawer: Story = {
     docs: {
       description: {
         story:
-          "Scenario for the header menu dropdown when ObjectTable is rendered inside a Blueprint Drawer. "
-          + "Open the drawer and click any column header chevron; the menu should appear above the drawer.",
+          "Scenario for the header menu dropdown when ObjectTable is rendered inside a Blueprint Drawer. " +
+          "Open the drawer and click any column header chevron; the menu should appear above the drawer.",
       },
       source: {
         code: `<Drawer isOpen={true} title="ObjectTable in Blueprint Drawer">
@@ -1449,8 +1508,8 @@ export const HeaderMenuInsideBlueprintDialog: Story = {
     docs: {
       description: {
         story:
-          "Scenario for the header menu dropdown when ObjectTable is rendered inside a Blueprint Dialog. "
-          + "Open the dialog and click any column header chevron; the menu should appear above the dialog.",
+          "Scenario for the header menu dropdown when ObjectTable is rendered inside a Blueprint Dialog. " +
+          "Open the dialog and click any column header chevron; the menu should appear above the dialog.",
       },
       source: {
         code: `<Dialog isOpen={true} title="ObjectTable in Blueprint Dialog">
@@ -1471,12 +1530,11 @@ export const HeaderMenuInsideBaseUIDialog: Story = {
     docs: {
       description: {
         story:
-          "Scenario for the header menu dropdown when ObjectTable is rendered inside the OSDK Base UI Dialog primitive. "
-          + "Open the dialog and click any column header chevron; the menu should appear above the dialog.",
+          "Scenario for the header menu dropdown when ObjectTable is rendered inside the OSDK Base UI Dialog primitive. " +
+          "Open the dialog and click any column header chevron; the menu should appear above the dialog.",
       },
       source: {
-        code:
-          `<Dialog isOpen={true} title="ObjectTable in Base UI Dialog" onOpenChange={setIsOpen}>
+        code: `<Dialog isOpen={true} title="ObjectTable in Base UI Dialog" onOpenChange={setIsOpen}>
   <ObjectTable objectType={Employee} columnDefinitions={defaultEmployeeColumns} />
 </Dialog>`,
       },
@@ -1726,7 +1784,7 @@ return (
         args.onCellValueChanged?.(editInfo as any);
         setLastEdit(editInfo);
       },
-      [args],
+      [args]
     );
 
     return (
@@ -1754,17 +1812,12 @@ return (
               fontSize: "13px",
             }}
           >
-            <strong>Last cell edit:</strong>{" "}
-            Column "{lastEdit.columnId}" changed from "{String(
-              lastEdit.oldValue,
-            )}" to "
+            <strong>Last cell edit:</strong> Column "{lastEdit.columnId}"
+            changed from "{String(lastEdit.oldValue)}" to "
             {String(lastEdit.newValue)}"
           </div>
         )}
-        <ObjectTable
-          {...args}
-          onCellValueChanged={handleCellValueChanged}
-        />
+        <ObjectTable {...args} onCellValueChanged={handleCellValueChanged} />
       </div>
     );
   },
@@ -1777,9 +1830,9 @@ export const WithSubmitEditsButton: Story = {
     editMode: "manual",
     onSubmitEdits: fn(
       async (edits: CellEditInfo<Osdk.Instance<Employee>>[]) => {
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         return true;
-      },
+      }
     ),
   } as any,
   parameters: {
@@ -2001,7 +2054,7 @@ export const EditableWithValidation: Story = {
     onSubmitEdits: fn(
       async (edits: CellEditInfo<Osdk.Instance<Employee>>[]) => {
         return true;
-      },
+      }
     ),
   },
   parameters: {
@@ -2019,7 +2072,7 @@ export const EditableWithValidation: Story = {
     locator: { type: "property", id: "emailPrimaryWork" },
     editable: true,
     validateEdit: async (value: string) => {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const emailRegex = /^[^s@]+@[^s@]+.[^s@]+$/;
       return emailRegex.test(value) ? undefined : "Please enter a valid email address";
     },
   },
@@ -2127,17 +2180,10 @@ export const PerRowEditableAndFieldConfig: Story = {
         editFieldConfig: {
           fieldComponent: "DROPDOWN",
           getFieldComponentProps: (employee: Osdk.Instance<Employee>) => ({
-            items: employee.department === "Operations"
-              ? [
-                "Sales",
-                "Marketing",
-              ]
-              : [
-                "Sales",
-                "Marketing",
-                "Finance",
-                "Human Resources",
-              ],
+            items:
+              employee.department === "Operations"
+                ? ["Sales", "Marketing"]
+                : ["Sales", "Marketing", "Finance", "Human Resources"],
           }),
         },
       },
@@ -2149,8 +2195,8 @@ export const PerRowEditableAndFieldConfig: Story = {
     docs: {
       description: {
         story:
-          "Demonstrates per-row configuration with `editable` as a predicate function and dynamic `getFieldComponentProps` that computes dropdown items from the row's data. "
-          + "jobTitle is only editable for 'Senior Product Manager' rows. Department uses a dropdown that shows only 2 options for Operations rows",
+          "Demonstrates per-row configuration with `editable` as a predicate function and dynamic `getFieldComponentProps` that computes dropdown items from the row's data. " +
+          "jobTitle is only editable for 'Senior Product Manager' rows. Department uses a dropdown that shows only 2 options for Operations rows",
       },
       source: {
         code: `const columnDefinitions = [
@@ -2220,8 +2266,8 @@ export const RowAttributesForStyling: Story = {
     docs: {
       description: {
         story:
-          "Demonstrates using `getRowAttributes` to set data attributes on rows and a `className` on the table to scope CSS overrides via the data attribute selector. "
-          + "New York employees get a light blue background through the `[data-highlight-row=\"true\"]` CSS selector scoped under the table's className.",
+          "Demonstrates using `getRowAttributes` to set data attributes on rows and a `className` on the table to scope CSS overrides via the data attribute selector. " +
+          'New York employees get a light blue background through the `[data-highlight-row="true"]` CSS selector scoped under the table\'s className.',
       },
       source: {
         code: `/* CSS (imported stylesheet):
@@ -2252,11 +2298,10 @@ return (
   render: (args) => {
     const getRowAttributes = useCallback(
       (rowData: Osdk.Instance<typeof Employee>) => ({
-        "data-highlight-row": rowData.locationCity === "New York"
-          ? "true"
-          : undefined,
+        "data-highlight-row":
+          rowData.locationCity === "New York" ? "true" : undefined,
       }),
-      [],
+      []
     );
 
     return (
@@ -2269,8 +2314,8 @@ return (
             borderRadius: "4px",
           }}
         >
-          <strong>Row attributes + className for CSS override:</strong>{" "}
-          New York employees have a light blue background via{" "}
+          <strong>Row attributes + className for CSS override:</strong> New York
+          employees have a light blue background via{" "}
           <code>tr[data-highlight-row="true"]</code> scoped under{" "}
           <code>.customTableStyling</code>.
         </div>
@@ -2289,10 +2334,7 @@ export const CustomEmptyState: Story = {
     objectType: Employee,
     columnDefinitions: defaultEmployeeColumns,
     renderEmptyState: () => (
-      <NonIdealState
-        icon="folder-close"
-        title="No saved views found."
-      />
+      <NonIdealState icon="folder-close" title="No saved views found." />
     ),
   },
   parameters: {
@@ -2333,10 +2375,7 @@ return (
 
     return (
       <div className="object-table-container" style={{ height: "600px" }}>
-        <ObjectTable
-          {...args}
-          objectSet={emptyObjectSet}
-        />
+        <ObjectTable {...args} objectSet={emptyObjectSet} />
       </div>
     );
   },

@@ -15,6 +15,7 @@
  */
 
 import { getOpenAiBaseUrl } from "@osdk/language-models";
+
 import {
   _getFoundryInternal,
   type LanguageModel,
@@ -110,7 +111,7 @@ export function mapFinishReason(reason: string): FinishReason {
 
 export function convertMessage(
   m: ModelMessage,
-  warnings: Array<Warning>,
+  warnings: Array<Warning>
 ): Array<OpenAiMessage> {
   switch (m.role) {
     case "system":
@@ -159,17 +160,18 @@ export function convertMessage(
           case "file":
             warnings.push({
               type: "other",
-              message:
-                `Unsupported assistant content part "${p.type}": ignored in v0`,
+              message: `Unsupported assistant content part "${p.type}": ignored in v0`,
             });
             break;
         }
       }
-      return [{
-        role: "assistant",
-        content: text.length > 0 ? text : null,
-        tool_calls: toolCalls.length > 0 ? toolCalls : undefined,
-      }];
+      return [
+        {
+          role: "assistant",
+          content: text.length > 0 ? text : null,
+          tool_calls: toolCalls.length > 0 ? toolCalls : undefined,
+        },
+      ];
     }
 
     case "tool":
@@ -183,7 +185,7 @@ export function convertMessage(
 
 function stringifyToolResult(
   part: ToolResultPart,
-  warnings: Array<Warning>,
+  warnings: Array<Warning>
 ): string {
   switch (part.output.type) {
     case "text":
@@ -211,16 +213,15 @@ function stringifyToolResult(
 
 export function convertTools<TOOLS extends ToolSet>(
   tools: TOOLS,
-  warnings: Array<Warning>,
+  warnings: Array<Warning>
 ): Array<OpenAiTool> {
   return Object.entries(tools).map(([name, tool]) => {
     const parameters = isJsonSchemaLike(tool.inputSchema)
       ? tool.inputSchema
       : (warnings.push({
-        type: "unsupported-tool",
-        details:
-          `Tool "${name}" inputSchema is not a JSON Schema; v0 only supports plain JSON Schema objects. Defaulting to {} parameters.`,
-      }),
+          type: "unsupported-tool",
+          details: `Tool "${name}" inputSchema is not a JSON Schema; v0 only supports plain JSON Schema objects. Defaulting to {} parameters.`,
+        }),
         { type: "object", properties: {} });
     return {
       type: "function" as const,
@@ -234,7 +235,7 @@ export function convertTools<TOOLS extends ToolSet>(
 }
 
 export function convertToolChoice<TOOLS extends ToolSet>(
-  choice: ToolChoice<TOOLS> | undefined,
+  choice: ToolChoice<TOOLS> | undefined
 ): OpenAiToolChoice | undefined {
   if (choice == null) {
     return undefined;
@@ -247,22 +248,20 @@ export function convertToolChoice<TOOLS extends ToolSet>(
 
 function isJsonSchemaLike(value: unknown): boolean {
   return (
-    typeof value === "object"
-    && value != null
-    && (
-      "type" in value
-      || "properties" in value
-      || "$ref" in value
-      || "oneOf" in value
-      || "anyOf" in value
-      || "allOf" in value
-    )
+    typeof value === "object" &&
+    value != null &&
+    ("type" in value ||
+      "properties" in value ||
+      "$ref" in value ||
+      "oneOf" in value ||
+      "anyOf" in value ||
+      "allOf" in value)
   );
 }
 
 export function parseToolArguments(
   args: string,
-  warnings: Array<Warning>,
+  warnings: Array<Warning>
 ): unknown {
   if (args === "") {
     return {};
@@ -272,8 +271,7 @@ export function parseToolArguments(
   } catch {
     warnings.push({
       type: "other",
-      message:
-        `Tool call arguments were not valid JSON; passing through as a raw string`,
+      message: `Tool call arguments were not valid JSON; passing through as a raw string`,
     });
     return args;
   }
@@ -319,15 +317,15 @@ export type OpenAiChatRequestStreaming = OpenAiChatRequestCommon & {
 
 export function buildOpenAiRequestBody<TOOLS extends ToolSet>(
   args: BuildRequestBodyArgs<TOOLS>,
-  streaming: false,
+  streaming: false
 ): OpenAiChatRequestNonStreaming;
 export function buildOpenAiRequestBody<TOOLS extends ToolSet>(
   args: BuildRequestBodyArgs<TOOLS>,
-  streaming: true,
+  streaming: true
 ): OpenAiChatRequestStreaming;
 export function buildOpenAiRequestBody<TOOLS extends ToolSet>(
   args: BuildRequestBodyArgs<TOOLS>,
-  streaming: boolean,
+  streaming: boolean
 ): OpenAiChatRequestNonStreaming | OpenAiChatRequestStreaming {
   const common: OpenAiChatRequestCommon = {
     model: args.apiName,
@@ -339,9 +337,8 @@ export function buildOpenAiRequestBody<TOOLS extends ToolSet>(
     seed: args.seed,
     presence_penalty: args.presencePenalty,
     frequency_penalty: args.frequencyPenalty,
-    tools: args.tools != null
-      ? convertTools(args.tools, args.warnings)
-      : undefined,
+    tools:
+      args.tools != null ? convertTools(args.tools, args.warnings) : undefined,
     tool_choice: convertToolChoice(args.toolChoice),
   };
   if (streaming) {
@@ -352,18 +349,19 @@ export function buildOpenAiRequestBody<TOOLS extends ToolSet>(
 
 export function buildAssistantContent(
   text: string,
-  toolCalls: ReadonlyArray<ToolCall>,
+  toolCalls: ReadonlyArray<ToolCall>
 ): AssistantModelMessage["content"] {
   if (toolCalls.length === 0) {
     return text;
   }
   const parts: Array<
-    { type: "text"; text: string } | {
-      type: "tool-call";
-      toolCallId: string;
-      toolName: string;
-      input: unknown;
-    }
+    | { type: "text"; text: string }
+    | {
+        type: "tool-call";
+        toolCallId: string;
+        toolName: string;
+        input: unknown;
+      }
   > = [];
   if (text.length > 0) {
     parts.push({ type: "text", text });
@@ -380,7 +378,7 @@ export function buildAssistantContent(
 }
 
 export function filterHeaders(
-  input: Record<string, string | undefined>,
+  input: Record<string, string | undefined>
 ): Record<string, string> {
   const out: Record<string, string> = {};
   for (const [k, v] of Object.entries(input)) {
@@ -391,9 +389,7 @@ export function filterHeaders(
   return out;
 }
 
-export async function safeReadText(
-  res: Response,
-): Promise<string | undefined> {
+export async function safeReadText(res: Response): Promise<string | undefined> {
   try {
     return await res.text();
   } catch {
@@ -414,7 +410,7 @@ export interface PostChatCompletionsArgs {
  * the raw response. Throws on a non-2xx response.
  */
 export async function postChatCompletions(
-  args: PostChatCompletionsArgs,
+  args: PostChatCompletionsArgs
 ): Promise<Response> {
   const handle = _getFoundryInternal(args.model);
   const baseUrl = getOpenAiBaseUrl(handle.client);
@@ -434,8 +430,8 @@ export async function postChatCompletions(
   if (!res.ok) {
     const errBody = await safeReadText(res);
     throw new Error(
-      `LMS chat/completions request failed: ${res.status} ${res.statusText}`
-        + (errBody ? `: ${errBody}` : ""),
+      `LMS chat/completions request failed: ${res.status} ${res.statusText}` +
+        (errBody ? `: ${errBody}` : "")
     );
   }
 

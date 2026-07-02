@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-import type { ValueTypeBlockData } from "@osdk/client.unstable";
-import type { InputShape } from "@osdk/client.unstable/api";
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
+
+import type { ValueTypeBlockData } from "@osdk/client.unstable";
+import type { InputShape } from "@osdk/client.unstable/api";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+
 import { ReadableIdGenerator } from "../util/generateRid.js";
 import {
   generateValueTypeBlockResults,
   getValueTypeInternalMappings,
 } from "./generateValueTypeBlockResults.js";
 
-function makeEntry(
-  apiName: string,
-  versions: string[],
-): ValueTypeBlockData {
+function makeEntry(apiName: string, versions: string[]): ValueTypeBlockData {
   return {
     metadata: {
       apiName,
@@ -40,7 +39,7 @@ function makeEntry(
       status: { type: "active", active: {} },
       baseType: { type: "integer", integer: {} },
     },
-    versions: versions.map(v => ({
+    versions: versions.map((v) => ({
       version: v,
       baseType: { type: "string", string: {} },
       constraints: [],
@@ -61,10 +60,7 @@ describe("generateValueTypeBlockResults", () => {
   });
 
   it("returns empty array for empty value types", async () => {
-    const results = await generateValueTypeBlockResults(
-      [],
-      buildDir,
-    );
+    const results = await generateValueTypeBlockResults([], buildDir);
     expect(results).toEqual([]);
   });
 
@@ -92,10 +88,10 @@ describe("generateValueTypeBlockResults", () => {
     const outputKeys = Object.keys(outputs);
     expect(outputKeys).toHaveLength(2);
     expect(outputKeys).toContain(
-      ReadableIdGenerator.getForProducedValueType("enumerated", "0.0.1"),
+      ReadableIdGenerator.getForProducedValueType("enumerated", "0.0.1")
     );
     expect(outputKeys).toContain(
-      ReadableIdGenerator.getForProducedValueType("enumerated", "0.0.2"),
+      ReadableIdGenerator.getForProducedValueType("enumerated", "0.0.2")
     );
 
     const shape = Object.values(outputs)[0];
@@ -117,14 +113,11 @@ describe("generateValueTypeBlockResults", () => {
     const entry = makeEntry("enumerated", ["0.0.1", "0.0.2"]);
     entry.versions[1].baseType = { type: "integer", integer: {} };
 
-    const results = await generateValueTypeBlockResults(
-      [entry],
-      buildDir,
-    );
+    const results = await generateValueTypeBlockResults([entry], buildDir);
 
     const blockDataPath = path.join(
       results[0].block_data_directory,
-      "value-types.json",
+      "value-types.json"
     );
     const written = JSON.parse(fs.readFileSync(blockDataPath, "utf-8"));
     expect(written.metadata.baseType).toEqual({
@@ -137,17 +130,14 @@ describe("generateValueTypeBlockResults", () => {
 
 describe("getValueTypeInternalMappings", () => {
   it("returns empty for no produced value types", () => {
-    const mappings = getValueTypeInternalMappings(
-      [],
-      new Map(),
-    );
+    const mappings = getValueTypeInternalMappings([], new Map());
     expect(mappings).toEqual([]);
   });
 
   it("returns empty when produced value type is not consumed", () => {
     const mappings = getValueTypeInternalMappings(
       [makeEntry("enumerated", ["0.0.1"])],
-      new Map(),
+      new Map()
     );
     expect(mappings).toEqual([]);
   });
@@ -156,7 +146,7 @@ describe("getValueTypeInternalMappings", () => {
     const inputShapes = new Map<string, InputShape>();
     const consumedId = ReadableIdGenerator.getForConsumedValueType(
       "enumerated",
-      "0.0.1",
+      "0.0.1"
     );
     inputShapes.set(consumedId, {
       type: "valueType",
@@ -176,13 +166,13 @@ describe("getValueTypeInternalMappings", () => {
 
     const mappings = getValueTypeInternalMappings(
       [makeEntry("enumerated", ["0.0.1"])],
-      inputShapes,
+      inputShapes
     );
 
     expect(mappings).toHaveLength(1);
     expect(mappings[0].input).toBe(consumedId);
     expect(mappings[0].output).toBe(
-      ReadableIdGenerator.getForProducedValueType("enumerated", "0.0.1"),
+      ReadableIdGenerator.getForProducedValueType("enumerated", "0.0.1")
     );
   });
 
@@ -205,13 +195,13 @@ describe("getValueTypeInternalMappings", () => {
               primitive: { type: "string", string: {} as any },
             },
           },
-        },
+        }
       );
     }
 
     const mappings = getValueTypeInternalMappings(
       [makeEntry("enumerated", ["0.0.1", "0.0.2"])],
-      inputShapes,
+      inputShapes
     );
 
     expect(mappings).toHaveLength(2);

@@ -17,6 +17,7 @@
 import { act, cleanup, render, screen } from "@testing-library/react";
 import type { IFD } from "utif";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { TiffRenderer } from "../TiffRenderer.js";
 
 vi.mock("utif", () => ({

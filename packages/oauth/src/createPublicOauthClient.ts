@@ -25,6 +25,7 @@ import {
   refreshTokenGrantRequest,
   validateAuthResponse,
 } from "oauth4webapi";
+
 import {
   common,
   createAuthorizationServer,
@@ -123,7 +124,7 @@ export function createPublicOauthClient(
   clientId: string,
   url: string,
   redirectUrl: string,
-  options?: PublicOauthClientOptions,
+  options?: PublicOauthClientOptions
 ): PublicOauthClient;
 
 /**
@@ -149,7 +150,7 @@ export function createPublicOauthClient(
   postLoginPage?: string,
   scopes?: string[],
   fetchFn?: typeof globalThis.fetch,
-  ctxPath?: string,
+  ctxPath?: string
 ): PublicOauthClient;
 export function createPublicOauthClient(
   client_id: string,
@@ -160,7 +161,7 @@ export function createPublicOauthClient(
   postLoginPage?: string,
   scopes?: string[],
   fetchFn?: typeof globalThis.fetch,
-  ctxPath?: string,
+  ctxPath?: string
 ): PublicOauthClient {
   let refreshTokenMarker: string | undefined;
   let joinedScopes: string;
@@ -184,7 +185,7 @@ export function createPublicOauthClient(
     postLoginPage,
     scopes,
     fetchFn,
-    ctxPath,
+    ctxPath
   ));
 
   const client: Client = {
@@ -204,7 +205,7 @@ export function createPublicOauthClient(
     maybeRefresh.bind(globalThis, true),
     refreshTokenMarker,
     joinedScopes,
-    storage,
+    storage
   );
 
   // as an arrow function, `useHistory` is known to be a boolean
@@ -219,7 +220,7 @@ export function createPublicOauthClient(
   };
 
   async function maybeRefresh(
-    expectRefreshToken?: boolean,
+    expectRefreshToken?: boolean
   ): Promise<Token | undefined> {
     if (tokenStorage === "none") {
       if (expectRefreshToken) throw new Error("No refresh token found");
@@ -232,12 +233,13 @@ export function createPublicOauthClient(
       requestedScopes: initialRequestedScopes,
     } = readLocal(client, storage);
 
-    const areScopesEqual = initialRequestedScopes != null
-      && joinedScopes === initialRequestedScopes;
+    const areScopesEqual =
+      initialRequestedScopes != null && joinedScopes === initialRequestedScopes;
 
     if (
-      !refresh_token || lastRefreshTokenMarker !== refreshTokenMarker
-      || !areScopesEqual
+      !refresh_token ||
+      lastRefreshTokenMarker !== refreshTokenMarker ||
+      !areScopesEqual
     ) {
       if (expectRefreshToken) throw new Error("No refresh token found");
       return;
@@ -255,15 +257,16 @@ export function createPublicOauthClient(
               authServer,
               client,
               refresh_token,
-              oauthHttpOptions,
-            ),
-          ),
+              oauthHttpOptions
+            )
+          )
         ),
-        "refresh",
+        "refresh"
       );
 
       if (
-        result && window.location.pathname === new URL(redirect_uri).pathname
+        result &&
+        window.location.pathname === new URL(redirect_uri).pathname
       ) {
         const { oldUrl } = readSession(client);
         // don't block on the redirect
@@ -274,7 +277,7 @@ export function createPublicOauthClient(
       if (process.env.NODE_ENV !== "production") {
         logger?.warn(
           "Failed to get OAuth2 refresh token. Removing refresh token",
-          e,
+          e
         );
       }
       removeLocal(client, storage);
@@ -302,16 +305,16 @@ export function createPublicOauthClient(
                   authServer,
                   client,
                   new URL(window.location.href),
-                  state,
-                ),
+                  state
+                )
               ),
               redirect_uri,
               codeVerifier,
-              oauthHttpOptions,
-            ),
-          ),
+              oauthHttpOptions
+            )
+          )
         ),
-        "signIn",
+        "signIn"
       );
 
       void go(oldUrl);
@@ -320,7 +323,7 @@ export function createPublicOauthClient(
       if (process.env.NODE_ENV !== "production") {
         logger?.warn(
           "Failed to get OAuth2 token using PKCE, removing PKCE and starting a new auth flow",
-          e,
+          e
         );
       }
       removeLocal(client, storage);
@@ -332,9 +335,9 @@ export function createPublicOauthClient(
   // As an arrow function, `scopes` and `postLoginPage` are known at compile time
   const initiateLoginRedirect = async (): Promise<void> => {
     if (
-      loginPage
-      && window.location.href !== loginPage
-      && window.location.pathname !== loginPage
+      loginPage &&
+      window.location.href !== loginPage &&
+      window.location.pathname !== loginPage
     ) {
       saveLocal(client, {}, storage);
       saveSession(client, { oldUrl: postLoginPage });
@@ -349,20 +352,20 @@ export function createPublicOauthClient(
     saveSession(client, { codeVerifier, state, oldUrl });
 
     // Only request offline_access (refresh tokens) if we're going to store them
-    const scopeString = tokenStorage === "none"
-      ? joinedScopes
-      : `offline_access ${joinedScopes}`;
+    const scopeString =
+      tokenStorage === "none" ? joinedScopes : `offline_access ${joinedScopes}`;
 
-    window.location.assign(`${authServer
-      .authorization_endpoint!}?${new URLSearchParams({
-      client_id,
-      response_type: "code",
-      state,
-      redirect_uri,
-      code_challenge: await calculatePKCECodeChallenge(codeVerifier),
-      code_challenge_method: "S256",
-      scope: scopeString,
-    })}`);
+    window.location.assign(
+      `${authServer.authorization_endpoint!}?${new URLSearchParams({
+        client_id,
+        response_type: "code",
+        state,
+        redirect_uri,
+        code_challenge: await calculatePKCECodeChallenge(codeVerifier),
+        code_challenge_method: "S256",
+        scope: scopeString,
+      })}`
+    );
 
     // Give time for redirect to happen
     await delay(1000);
@@ -372,11 +375,13 @@ export function createPublicOauthClient(
   /** Will throw if there is no token! */
   async function _signIn() {
     // 1. Check if we have a refresh token in local storage
-    return await maybeRefresh()
+    return (
+      (await maybeRefresh()) ??
       // 2. If there is no refresh token we are likely trying to perform the callback
-      ?? await maybeHandleAuthReturn()
+      (await maybeHandleAuthReturn()) ??
       // 3. If we haven't been able to load the token from one of the two above ways, we need to make the initial auth request
-      ?? await initiateLoginRedirect() as unknown as Token;
+      ((await initiateLoginRedirect()) as unknown as Token)
+    );
   }
 
   return getToken;

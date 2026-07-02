@@ -1,5 +1,47 @@
 # @osdkkit/react
 
+## 2.41.0
+
+### Minor Changes
+
+- d24cc61: Pin the `@osdk/aip-core` peerDependency range to `>=0.5.0 <1.0.0` instead of `workspace:^` so a minor bump of `@osdk/aip-core` (e.g. 0.5.0 -> 0.6.0) no longer falls out of the caret range and triggers a major-bump cascade across the release plan.
+- afc63a7: Restore the AIP chat entry points (`@osdk/react/experimental/aip` and `@osdk/react-components/experimental/aip-agent-chat`) and publish `@osdk/aip-core` so the optional peer dependency resolves from the registry.
+
+## 2.40.0
+
+### Minor Changes
+
+- 70839ec: add an `enabled` option to `useOsdkAggregation` to conditionally defer the aggregation
+- 742fe69: Add dev-mode observable client debugging knobs. `devMode.logLevel` raises the client's log level so its `debug` tracing is visible, and `devMode.debug.refCounts` / `devMode.debug.cacheKeys` turn on cache-internals logging. They are exposed through `createObservableClient`'s `devMode` option and the `OsdkProvider` `devMode` prop, and are stripped from production builds.
+
+## 2.39.0
+
+## 2.38.0
+
+## 2.37.0
+
+### Minor Changes
+
+- b174a28: Make the dev-mode action delay smart, configurable, and discoverable. The delay now only applies to actions with an optimistic update (function-backed actions stay fast), is tunable via `OsdkProvider`'s `devMode={{ actionDelayMs }}` prop and the `createObservableClient` `devMode.actionDelayMs` option (0 disables), and logs a one-time message explaining it.
+
+## 2.36.0
+
+## 2.35.0
+
+## 2.34.0
+
+## 2.33.0
+
+## 2.32.0
+
+## 2.31.0
+
+### Minor Changes
+
+- 57cbc6d: Stop shipping Node-only test infrastructure in the browser builds of `@osdk/api` and `@osdk/client`.
+  - `@osdk/api`: the `__quickinfo_snapshot__/` test harness (formerly `probeUtils.ts` + `probes/*.ts`) is renamed under the existing `testUtils.` prefix convention so the transpile tool drops it from every build target. Pure test infrastructure; no runtime surface change.
+  - `@osdk/client`: the `./internal-node` subpath export is removed. The TypeScript-language-server harness it pointed at (`tsserver.ts`) has moved to a new private workspace package, `@osdk/shared.test.intellisense`, which both `@osdk/client` and `@osdk/react` consume as a dev dependency. This eliminates the `node:events` / `node:fs/promises` / `node:path` imports from the browser build and removes the project-internal subpath from the published client API.
+
 ## 2.30.0
 
 ## 2.29.0

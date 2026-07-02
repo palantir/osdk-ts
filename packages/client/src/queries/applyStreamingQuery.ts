@@ -20,6 +20,7 @@ import type {
   QueryMetadata,
 } from "@osdk/api";
 import * as Functions from "@osdk/foundry.functions/Query";
+
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import { augmentRequestContext } from "../util/augmentRequestContext.js";
@@ -40,7 +41,7 @@ export async function* applyStreamingQuery<
 >(
   client: MinimalClient,
   query: QD,
-  params?: P,
+  params?: P
 ): AsyncGenerator<
   QueryReturnType<CompileTimeMetadata<QD>["output"]>,
   void,
@@ -48,7 +49,7 @@ export async function* applyStreamingQuery<
 > {
   const qd: QueryMetadata = await client.ontologyProvider.getQueryDefinition(
     query.apiName,
-    query.isFixedVersion ? query.version : undefined,
+    query.isFixedVersion ? query.version : undefined
   );
 
   if (client.flushEdits != null) {
@@ -57,20 +58,20 @@ export async function* applyStreamingQuery<
 
   const response = await Functions.streamingExecute(
     addUserAgentAndRequestContextHeaders(
-      augmentRequestContext(client, _ => ({
+      augmentRequestContext(client, (_) => ({
         finalMethodCall: "applyStreamingQuery",
       })),
-      query,
+      query
     ),
     query.apiName,
     {
       ontology: await client.ontologyRid,
       parameters: params
         ? await remapQueryParams(
-          params as { [parameterId: string]: any },
-          client,
-          qd.parameters,
-        )
+            params as { [parameterId: string]: any },
+            client,
+            qd.parameters
+          )
         : {},
       version: query.isFixedVersion ? query.version : undefined,
       branch: client.branch,
@@ -78,7 +79,7 @@ export async function* applyStreamingQuery<
     {
       transactionId: client.transactionId,
       preview: true,
-    },
+    }
   );
 
   if (response.body == null) {
@@ -87,14 +88,12 @@ export async function* applyStreamingQuery<
 
   const definitions = await getRequiredDefinitions(qd.output, client);
   const reader = response.body.getReader();
-  for await (
-    const line of parseNdjsonStream(iterateReadableStream(reader))
-  ) {
+  for await (const line of parseNdjsonStream(iterateReadableStream(reader))) {
     if (line.type === "error") {
       const err = new Error(
         `${line.errorName} (${line.errorCode}) [${line.errorInstanceId}]: ${
           line.errorDescription ?? ""
-        }`,
+        }`
       );
       Object.assign(err, line);
       throw err;
@@ -103,7 +102,7 @@ export async function* applyStreamingQuery<
       client,
       qd.output,
       line.value,
-      definitions,
+      definitions
     );
     if (qd.output.type === "array" && Array.isArray(remapped)) {
       for (const item of remapped) {

@@ -1,5 +1,75 @@
 # @osdk/cli
 
+## 0.65.0
+
+### Patch Changes
+
+- Updated dependencies [2f91c0e]
+  - @osdk/widget.api@3.38.0
+
+## 0.64.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.37.0
+
+## 0.63.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.36.0
+
+## 0.62.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.35.0
+
+## 0.61.0
+
+### Patch Changes
+
+- Updated dependencies [ff11b06]
+  - @osdk/shared.net.errors@2.11.0
+  - @osdk/shared.net.fetch@1.11.0
+  - @osdk/widget.api@3.34.0
+
+## 0.60.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.33.0
+
+## 0.59.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.32.0
+
+## 0.58.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.31.0
+
+## 0.57.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.30.0
+
+## 0.56.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.29.0
+
+## 0.55.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.28.0
+
 ## 0.54.0
 
 ### Patch Changes

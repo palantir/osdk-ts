@@ -47,17 +47,31 @@ export interface IObjectDataType extends IDataType {
   object: { objectTypeId: string };
 }
 
+export interface IInterfaceObjectSetDataType extends IDataType {
+  type: "interfaceObjectSet";
+  interfaceObjectSet: { interfaceTypeRid: string };
+}
+
+export interface IInterfaceDataType extends IDataType {
+  type: "interface";
+  interface: { interfaceTypeRid: string };
+}
+
 export function convertDataType(
   dataType: IDataType,
   customTypes: Record<string, unknown>,
+  interfaceRidToApiName: Record<string, string>,
   required?: boolean,
 ): Ontologies.QueryDataType {
   if (required === false && dataType.type !== "optionalType") {
     return {
       type: "union",
-      unionTypes: [convertDataType(dataType, customTypes), {
-        type: "null",
-      }],
+      unionTypes: [
+        convertDataType(dataType, customTypes, interfaceRidToApiName),
+        {
+          type: "null",
+        },
+      ],
     };
   }
   switch (dataType.type) {
@@ -87,6 +101,7 @@ export function convertDataType(
           convertDataType(
             optionalData.optionalType.wrappedType,
             customTypes,
+            interfaceRidToApiName,
           ),
           { type: "null" },
         ],
@@ -96,7 +111,11 @@ export function convertDataType(
       const setData = dataType as ISetDataType;
       return {
         type: "set",
-        subType: convertDataType(setData.set.elementsType, customTypes),
+        subType: convertDataType(
+          setData.set.elementsType,
+          customTypes,
+          interfaceRidToApiName,
+        ),
       };
     }
     case "objectSet": {
@@ -114,6 +133,7 @@ export function convertDataType(
         subType: convertDataType(
           listData.list.elementsType,
           customTypes,
+          interfaceRidToApiName,
         ),
       };
     }
@@ -130,6 +150,23 @@ export function convertDataType(
         type: "object",
         objectApiName: objectData.object.objectTypeId,
         objectTypeApiName: objectData.object.objectTypeId,
+      };
+    }
+    case "interface": {
+      const interfaceData = dataType as IInterfaceDataType;
+      return {
+        type: "interfaceObject",
+        interfaceTypeApiName:
+          interfaceRidToApiName[interfaceData.interface.interfaceTypeRid],
+      };
+    }
+    case "interfaceObjectSet": {
+      const interfaceData = dataType as IInterfaceObjectSetDataType;
+      return {
+        type: "interfaceObjectSet",
+        interfaceTypeApiName: interfaceRidToApiName[
+          interfaceData.interfaceObjectSet.interfaceTypeRid
+        ],
       };
     }
     case "client":
@@ -182,6 +219,7 @@ function convertFunctionCustomType(
       fieldType: convertDataType(
         fields[key],
         customTypes,
+        {},
         fieldMetadata[key].required ?? true,
       ),
     };

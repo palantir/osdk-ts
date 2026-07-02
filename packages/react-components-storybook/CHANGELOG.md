@@ -1,5 +1,73 @@
 # @osdk/react-components-storybook
 
+## 0.33.0
+
+### Minor Changes
+
+- 0ed0b5c: Restyle AipAgentChat to match Threads 2.0 design with light gray user bubbles, plain-text assistant messages, rounded inlined composer, centered max-width layout, and no composer divider. Add reusable Callout base component with intent-tinted backgrounds and dark mode support. Add AipAgentChat storybook stories.
+
+### Patch Changes
+
+- Updated dependencies [15a35f2]
+  - @osdk/faux@0.32.0
+
+## 0.32.0
+
+### Patch Changes
+
+- Updated dependencies [3e915ee]
+  - @osdk/faux@0.31.0
+
+## 0.31.0
+
+### Patch Changes
+
+- @osdk/faux@0.30.0
+
+## 0.30.0
+
+### Minor Changes
+
+- c24b0cf: Align OSDK component tokens with Blueprint styling: use box-shadow instead of border for inputs, buttons, and selects; add proper dark mode token overrides; group Storybook theme presets into built-in and custom categories
+
+### Patch Changes
+
+- @osdk/faux@0.29.0
+
+## 0.29.0
+
+### Patch Changes
+
+- @osdk/faux@0.28.0
+
+## 0.28.0
+
+### Minor Changes
+
+- b237ef9: Run Storybook interaction (play-function) tests in CI via @storybook/addon-vitest, add a MultipleSelection play function, disable MSW per-request console logging, and bump @vitest/browser to the patched 3.2.5+.
+
+### Patch Changes
+
+- Updated dependencies [ab19740]
+  - @osdk/faux@0.27.0
+
+## 0.27.0
+
+### Patch Changes
+
+- Updated dependencies [79f8a6e]
+  - @osdk/faux@0.26.0
+
+## 0.26.0
+
+### Minor Changes
+
+- 65c742b: Add theme preset switcher toolbar to Storybook with Workshop Light, Workshop Dark, and other built-in presets
+
+### Patch Changes
+
+- @osdk/faux@0.25.0
+
 ## 0.25.0
 
 ### Minor Changes

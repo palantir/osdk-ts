@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { BatchCreateValueTypesRequest } from "../BatchCreateValueTypesRequest.js";
 import type { BatchCreateValueTypesResponse } from "../BatchCreateValueTypesResponse.js";
 
@@ -23,12 +24,12 @@ import type { BatchCreateValueTypesResponse } from "../BatchCreateValueTypesResp
  */
 export async function batchCreateValueTypes(
   ctx: ConjureContext,
-  request: BatchCreateValueTypesRequest,
+  request: BatchCreateValueTypesRequest
 ): Promise<BatchCreateValueTypesResponse> {
   return conjureFetch(
     ctx,
     `/type-registry/value-types/batch-create-value-types`,
     "POST",
-    request,
+    request
   );
 }

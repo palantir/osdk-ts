@@ -15,13 +15,14 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import type { UIMessage } from "../uiMessage.js";
 import { uiMessagesToModelMessages } from "./uiMessageBridge.js";
 
 function uiMsg(
   role: UIMessage["role"],
   text: string,
-  id: string = `m-${role}-${text.slice(0, 6)}`,
+  id: string = `m-${role}-${text.slice(0, 6)}`
 ): UIMessage {
   return {
     id,
@@ -95,10 +96,7 @@ describe("uiMessagesToModelMessages", () => {
   });
 
   it("drops UI system messages when `system` prop is provided (no double-prepend)", () => {
-    const messages = [
-      uiMsg("system", "from UI"),
-      uiMsg("user", "hello"),
-    ];
+    const messages = [uiMsg("system", "from UI"), uiMsg("user", "hello")];
     expect(uiMessagesToModelMessages(messages, "from transport")).toEqual([
       { role: "system", content: "from transport" },
       { role: "user", content: "hello" },

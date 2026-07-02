@@ -17,11 +17,13 @@
 import { Error } from "@blueprintjs/icons";
 import classNames from "classnames";
 import React, { useCallback, useMemo } from "react";
+
 import { DatePicker } from "../../shared/calendar/index.js";
 import { formatDateForInput } from "../../shared/dateUtils.js";
-import styles from "../EditableCell.module.css";
 import { useRegisterPortal } from "../utils/PortalTracker.js";
 import type { DatePickerEditConfig } from "../utils/types.js";
+
+import styles from "../EditableCell.module.css";
 
 interface DatePickerCellFieldProps {
   fieldComponentProps?: DatePickerEditConfig;
@@ -54,30 +56,27 @@ function DatePickerCellFieldInner({
   const portalRef = useRegisterPortal();
 
   const dateValue = useMemo(() => parseDateValue(inputValue), [inputValue]);
-  const showTime = fieldComponentProps?.showTime
-    ?? dataType === "timestamp";
+  const showTime = fieldComponentProps?.showTime ?? dataType === "timestamp";
 
-  const handleChange = useCallback((newValue: Date | null) => {
-    if (newValue == null) {
-      onChange(null);
-      return;
-    }
-    onChange(
-      showTime
-        ? newValue.toISOString()
-        : formatDateForInput(newValue),
-    );
-  }, [onChange, showTime]);
+  const handleChange = useCallback(
+    (newValue: Date | null) => {
+      if (newValue == null) {
+        onChange(null);
+        return;
+      }
+      onChange(
+        showTime ? newValue.toISOString() : formatDateForInput(newValue)
+      );
+    },
+    [onChange, showTime]
+  );
 
   return (
     <div
-      className={classNames(
-        styles.osdkEditableCellDatePicker,
-        {
-          [styles.error]: hasValidationError,
-          [styles.osdkEditedInput]: isEdited,
-        },
-      )}
+      className={classNames(styles.osdkEditableCellDatePicker, {
+        [styles.error]: hasValidationError,
+        [styles.osdkEditedInput]: isEdited,
+      })}
     >
       <DatePicker
         {...fieldComponentProps}

@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import * as fs from "node:fs";
+import * as path from "node:path";
+
 import type {
   LinkTypeBlockDataV2,
   ObjectTypeBlockDataV2,
@@ -26,11 +29,8 @@ import type {
   InputShapeMetadata,
   OutputShape,
 } from "@osdk/client.unstable/api";
-import * as fs from "node:fs";
-import * as path from "node:path";
-import {
-  typeToConcreteDataType,
-} from "../conversion/toMarketplace/typeVisitors.js";
+
+import { typeToConcreteDataType } from "../conversion/toMarketplace/typeVisitors.js";
 import type { ReadableId } from "../util/generateRid.js";
 import { ReadableIdGenerator } from "../util/generateRid.js";
 import type { BlockGeneratorResult } from "./marketplaceSerialization/BlockGeneratorResult.js";
@@ -40,7 +40,7 @@ import { toBlockShapeId } from "./marketplaceSerialization/CodeBlockSpec.js";
  * Map from maker property type to Foundry schema field type
  */
 export function propertyTypeToSchemaType(
-  propType: string | { type: string },
+  propType: string | { type: string }
 ): string {
   const typeStr = typeof propType === "string" ? propType : propType.type;
   switch (typeStr) {
@@ -64,19 +64,68 @@ export function propertyTypeToSchemaType(
       return "DATE";
     case "timestamp":
       return "TIMESTAMP";
+    case "array":
+      return "ARRAY";
+    case "decimal":
+      return "DECIMAL";
+    case "struct":
+      return "STRUCT";
     default:
       throw new Error(
-        `Unsupported property type "${typeStr}" for empty backing datasource. `
-          + `If using a property type that doesn't support empty backing datasources please make the property an edit only property.`,
+        `Unsupported property type "${typeStr}" for empty backing datasource. ` +
+          `If using a property type that doesn't support empty backing datasources please make the property an edit only property.`
       );
   }
+}
+
+/**
+ * A single field entry in a Foundry dataset schema.json `fieldSchemaList`.
+ */
+interface FieldSchema {
+  type: string;
+  name: string | null;
+  nullable: boolean | null;
+  userDefinedTypeClass: string | null;
+  customMetadata: Record<string, unknown>;
+  arraySubtype: FieldSchema | null;
+  precision: number | null;
+  scale: number | null;
+  mapKeyType: FieldSchema | null;
+  mapValueType: FieldSchema | null;
+  subSchemas: FieldSchema[] | null;
+}
+
+/**
+ * Build a Foundry schema field object for a column type.
+ */
+export function typeToFieldSchema(type: Type, name?: string): FieldSchema {
+  return {
+    type: propertyTypeToSchemaType(type),
+    name: name ?? null,
+    nullable: null,
+    userDefinedTypeClass: null,
+    customMetadata: {},
+    arraySubtype:
+      type.type === "array" ? typeToFieldSchema(type.array.subtype) : null,
+    precision:
+      type.type === "decimal" ? (type.decimal.precision ?? null) : null,
+    scale: type.type === "decimal" ? (type.decimal.scale ?? null) : null,
+    mapKeyType: null,
+    mapValueType: null,
+    subSchemas:
+      type.type === "struct"
+        ? type.struct.structFields.map((f) =>
+            typeToFieldSchema(f.fieldType, f.apiName)
+          )
+        : null,
+  };
 }
 
 /**
  * Extract the set of edit-only property RIDs from the wire format datasources.
  */
 function getEditOnlyPropertyRids(
-  datasources: ObjectTypeBlockDataV2["datasources"],
+  datasources: ObjectTypeBlockDataV2["datasources"]
 ): Set<string> {
   const editOnlyRids = new Set<string>();
   for (const ds of datasources) {
@@ -102,11 +151,9 @@ function getEditOnlyPropertyRids(
  * Extract non-edit-only properties from ObjectTypeBlockDataV2.
  */
 export function getNonEditOnlyProperties(
-  objectTypeBlockData: ObjectTypeBlockDataV2,
+  objectTypeBlockData: ObjectTypeBlockDataV2
 ): PropertyType[] {
-  const editOnlyRids = getEditOnlyPropertyRids(
-    objectTypeBlockData.datasources,
-  );
+  const editOnlyRids = getEditOnlyPropertyRids(objectTypeBlockData.datasources);
   return Object.entries(objectTypeBlockData.objectType.propertyTypes)
     .filter(([rid]) => !editOnlyRids.has(rid))
     .map(([_, prop]) => prop);
@@ -127,7 +174,7 @@ async function generateBackingDatasetBlock(
   dirSuffix: string,
   columns: BackingDatasetColumn[],
   buildDir: string,
-  randomnessKey?: string,
+  randomnessKey?: string
 ): Promise<BlockGeneratorResult> {
   // Build output shapes
   const outputs: Record<ReadableId, OutputShape> = {} as Record<
@@ -135,16 +182,15 @@ async function generateBackingDatasetBlock(
     OutputShape
   >;
 
-  const datasourceReadableId = ReadableIdGenerator.getForDatasetOutput(
-    datasetName,
-  );
-  const columnReadableIds: ReadableId[] = columns.map(col =>
+  const datasourceReadableId =
+    ReadableIdGenerator.getForDatasetOutput(datasetName);
+  const columnReadableIds: ReadableId[] = columns.map((col) =>
     ReadableIdGenerator.getForDatasetColumnOutput(datasetName, col.name)
   );
 
   const datasourceBlockInternalId = toBlockShapeId(
     datasourceReadableId,
-    randomnessKey,
+    randomnessKey
   );
 
   // tabularDatasource output shape
@@ -191,25 +237,19 @@ async function generateBackingDatasetBlock(
   // These are distinct from the block shape IDs that appear in the manifest outputs.
   // The add-on maps these internal IDs -> block shape IDs.
   const columnInternalIds = columns.map((col) =>
-    toBlockShapeId(
-      `column-internal-${datasetName}-${col.name}`,
-      randomnessKey,
-    )
+    toBlockShapeId(`column-internal-${datasetName}-${col.name}`, randomnessKey)
   );
 
   const compassReadableId = `${blockIdentifier}-compass-resource` as ReadableId;
-  const compassBlockShapeId = toBlockShapeId(
-    compassReadableId,
-    randomnessKey,
-  );
+  const compassBlockShapeId = toBlockShapeId(compassReadableId, randomnessKey);
 
   const datasourceInternalId = toBlockShapeId(
     `datasource-internal-${datasetName}`,
-    randomnessKey,
+    randomnessKey
   );
   const locationInternalId = toBlockShapeId(
     `location-internal-${datasetName}`,
-    randomnessKey,
+    randomnessKey
   );
 
   const addOnOverride: Record<string, unknown> = {
@@ -221,7 +261,7 @@ async function generateBackingDatasetBlock(
         columnInternalIds.map((internalId, i) => [
           internalId,
           toBlockShapeId(columnReadableIds[i], randomnessKey),
-        ]),
+        ])
       ),
     },
     idToInputGroupId: {},
@@ -236,19 +276,9 @@ async function generateBackingDatasetBlock(
 
   // Write schema.json
   const schemaJson = {
-    fieldSchemaList: columns.map((col) => ({
-      type: propertyTypeToSchemaType(col.type),
-      name: col.name,
-      nullable: null,
-      userDefinedTypeClass: null,
-      customMetadata: {},
-      arraySubtype: null,
-      precision: null,
-      scale: null,
-      mapKeyType: null,
-      mapValueType: null,
-      subSchemas: null,
-    })),
+    fieldSchemaList: columns.map((col) =>
+      typeToFieldSchema(col.type, col.name)
+    ),
     primaryKey: null,
     dataFrameReaderClass:
       "com.palantir.foundry.spark.input.ParquetDataFrameReader",
@@ -259,7 +289,7 @@ async function generateBackingDatasetBlock(
   };
   await fs.promises.writeFile(
     path.join(dsBlockDataDir, "schema.json"),
-    JSON.stringify(schemaJson, null, 2),
+    JSON.stringify(schemaJson, null, 2)
   );
 
   // Write block-data.json — column keys are the internal IDs mapped in the add-on
@@ -267,52 +297,26 @@ async function generateBackingDatasetBlock(
     type: "v1",
     v1: {
       columns: Object.fromEntries(
-        columns.map((col, i) => [columnInternalIds[i], col.name]),
+        columns.map((col, i) => [columnInternalIds[i], col.name])
       ),
       hasSchema: true,
     },
   };
   await fs.promises.writeFile(
     path.join(dsBlockDataDir, "block-data.json"),
-    JSON.stringify(blockDataJson, null, 2),
+    JSON.stringify(blockDataJson, null, 2)
   );
 
   // Write VERSION
-  await fs.promises.writeFile(
-    path.join(dsBlockDataDir, "VERSION"),
-    "\"1\"",
-  );
+  await fs.promises.writeFile(path.join(dsBlockDataDir, "VERSION"), '"1"');
 
   // Write empty files.zip
   // An empty zip file is just the end-of-central-directory record (22 bytes)
   const emptyZip = Buffer.from([
-    0x50,
-    0x4b,
-    0x05,
-    0x06,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
+    0x50, 0x4b, 0x05, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   ]);
-  await fs.promises.writeFile(
-    path.join(dsBlockDataDir, "files.zip"),
-    emptyZip,
-  );
+  await fs.promises.writeFile(path.join(dsBlockDataDir, "files.zip"), emptyZip);
 
   // Build inputs (compassResource for install location)
   const inputs: Record<ReadableId, InputShape> = {} as Record<
@@ -320,10 +324,7 @@ async function generateBackingDatasetBlock(
     InputShape
   >;
   const input_shape_metadata: Record<ReadableId, InputShapeMetadata> =
-    {} as Record<
-      ReadableId,
-      InputShapeMetadata
-    >;
+    {} as Record<ReadableId, InputShapeMetadata>;
   inputs[compassReadableId] = {
     type: "compassResource",
     compassResource: {
@@ -371,12 +372,12 @@ async function generateBackingDatasetBlock(
 export async function generateBackingDatasetBlockResult(
   objectTypeBlockData: ObjectTypeBlockDataV2,
   buildDir: string,
-  randomnessKey?: string,
+  randomnessKey?: string
 ): Promise<BlockGeneratorResult> {
   const apiName = objectTypeBlockData.objectType.apiName!;
   const nonEditOnlyProps = getNonEditOnlyProperties(objectTypeBlockData);
 
-  const columns: BackingDatasetColumn[] = nonEditOnlyProps.map(prop => ({
+  const columns: BackingDatasetColumn[] = nonEditOnlyProps.map((prop) => ({
     name: prop.apiName!,
     type: prop.type,
   }));
@@ -387,7 +388,7 @@ export async function generateBackingDatasetBlockResult(
     `${apiName}_backing_ds`,
     columns,
     buildDir,
-    randomnessKey,
+    randomnessKey
   );
 }
 
@@ -399,12 +400,12 @@ export async function generateBackingDatasetBlockResultForLink(
   linkApiName: string,
   objectTypes: Record<string, ObjectTypeBlockDataV2>,
   buildDir: string,
-  randomnessKey?: string,
+  randomnessKey?: string
 ): Promise<BlockGeneratorResult> {
   const definition = linkTypeBlockData.linkType.definition;
   if (definition.type !== "manyToMany") {
     throw new Error(
-      `Link type "${linkApiName}" is not a many-to-many link type`,
+      `Link type "${linkApiName}" is not a many-to-many link type`
     );
   }
 
@@ -412,7 +413,7 @@ export async function generateBackingDatasetBlockResultForLink(
   const datasource = linkTypeBlockData.datasources[0]?.datasource;
   if (!datasource || datasource.type !== "dataset") {
     throw new Error(
-      `Link type "${linkApiName}" does not have a dataset datasource`,
+      `Link type "${linkApiName}" does not have a dataset datasource`
     );
   }
   const ds = datasource.dataset;
@@ -427,15 +428,13 @@ export async function generateBackingDatasetBlockResultForLink(
   const objectTypeA = objectTypes[m2m.objectTypeRidA];
   const objectTypeB = objectTypes[m2m.objectTypeRidB];
   if (!objectTypeA || !objectTypeB) {
-    throw new Error(
-      `Could not find object types for link "${linkApiName}"`,
-    );
+    throw new Error(`Could not find object types for link "${linkApiName}"`);
   }
   const propTypeA = objectTypeA.objectType.propertyTypes[pkRidA]?.type;
   const propTypeB = objectTypeB.objectType.propertyTypes[pkRidB]?.type;
   if (!propTypeA || !propTypeB) {
     throw new Error(
-      `Could not find primary key property types for link "${linkApiName}"`,
+      `Could not find primary key property types for link "${linkApiName}"`
     );
   }
 
@@ -449,6 +448,6 @@ export async function generateBackingDatasetBlockResultForLink(
       { name: columnB, type: propTypeB },
     ],
     buildDir,
-    randomnessKey,
+    randomnessKey
   );
 }

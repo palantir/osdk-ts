@@ -18,21 +18,21 @@ import type { Osdk } from "@osdk/api";
 import type { Employee } from "@osdk/client.test.ontology";
 
 export async function getEmployeeOfficeName(
-  employee: Osdk.Instance<Employee>,
+  employee: Osdk.Instance<Employee>
 ): Promise<string | undefined> {
   const office = await employee.$link.officeLink.fetchOne();
   return office.name;
 }
 
 export async function getEmployeePeepNames(
-  employee: Osdk.Instance<Employee>,
+  employee: Osdk.Instance<Employee>
 ): Promise<string[]> {
   const page = await employee.$link.peeps.fetchPage();
   return page.data.map((peep) => peep.fullName ?? "Unknown");
 }
 
 export async function countEmployeePeeps(
-  employee: Osdk.Instance<Employee>,
+  employee: Osdk.Instance<Employee>
 ): Promise<number> {
   let count = 0;
   for await (const _peep of employee.$link.peeps.asyncIter()) {
@@ -43,13 +43,13 @@ export async function countEmployeePeeps(
 
 export async function getSpecificPeep(
   employee: Osdk.Instance<Employee>,
-  peepId: number,
+  peepId: number
 ): Promise<Osdk.Instance<Employee>> {
   return employee.$link.peeps.fetchOne(peepId);
 }
 
 export async function countPeepsViaAggregate(
-  employee: Osdk.Instance<Employee>,
+  employee: Osdk.Instance<Employee>
 ): Promise<number> {
   const result = await employee.$link.peeps.aggregate({
     $select: { $count: "unordered" },

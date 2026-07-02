@@ -15,7 +15,9 @@
  */
 
 import React from "react";
+
 import { SkeletonBar } from "../../../base-components/skeleton/SkeletonBar.js";
+
 import styles from "./ListogramSkeleton.module.css";
 
 const SKELETON_ROWS = [

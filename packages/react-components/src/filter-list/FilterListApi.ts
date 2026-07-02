@@ -22,6 +22,7 @@ import type {
 } from "@osdk/api";
 import type React from "react";
 import type { ReactNode } from "react";
+
 import type {
   FilterState as FilterStateType,
   PropertyFilterDefinition,
@@ -57,9 +58,11 @@ export type FilterDefinitionUnion<Q extends ObjectTypeDefinition> =
 /**
  * Extract the key from a filter definition union
  */
-type ExtractFilterKey<D> = D extends { key: infer K } ? K
-  : D extends { linkName: infer L } ? L
-  : never;
+type ExtractFilterKey<D> = D extends { key: infer K }
+  ? K
+  : D extends { linkName: infer L }
+    ? L
+    : never;
 
 export type FilterKey<Q extends ObjectTypeDefinition> = ExtractFilterKey<
   FilterDefinitionUnion<Q>
@@ -135,7 +138,7 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    */
   onFilterStateChanged?: (
     definition: FilterDefinitionUnion<Q>,
-    newState: FilterStateType,
+    newState: FilterStateType
   ) => void;
 
   /**
@@ -180,7 +183,7 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    */
   onFilterAdded?: (
     filterKey: FilterKey<Q>,
-    newDefinitions: Array<FilterDefinitionUnion<Q>>,
+    newDefinitions: Array<FilterDefinitionUnion<Q>>
   ) => void;
 
   /**
@@ -204,7 +207,7 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
     newStates: Array<{
       filterKey: FilterKey<Q>;
       isVisible: boolean;
-    }>,
+    }>
   ) => void;
 
   /**

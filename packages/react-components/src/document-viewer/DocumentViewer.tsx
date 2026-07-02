@@ -19,6 +19,7 @@
 import { Document as DocumentIcon } from "@blueprintjs/icons";
 import classnames from "classnames";
 import React, { useMemo } from "react";
+
 import { EmailViewer } from "../email-viewer/EmailViewer.js";
 import { ExcelViewer } from "../excel-viewer/ExcelViewer.js";
 import { ImageViewer } from "../images/image-viewer/ImageViewer.js";
@@ -28,10 +29,11 @@ import { PdfViewer } from "../pdf-viewer/PdfRenderer.js";
 import { assertUnreachable } from "../shared/assertUnreachable.js";
 import { VideoViewer } from "../video-viewer/VideoViewer.js";
 import { XmlViewer } from "../xml-viewer/XmlViewer.js";
-import styles from "./DocumentViewer.module.css";
 import type { DocumentViewerProps } from "./DocumentViewerApi.js";
 import { ViewerType } from "./DocumentViewerApi.js";
 import { TiffDocumentViewer } from "./TiffDocumentViewer.js";
+
+import styles from "./DocumentViewer.module.css";
 
 const IMAGE_MIME_TYPES = new Set([
   "image/png",
@@ -42,31 +44,23 @@ const IMAGE_MIME_TYPES = new Set([
   "image/bmp",
 ]);
 
-const MARKDOWN_MIME_TYPES = new Set([
-  "text/markdown",
-  "text/x-markdown",
-]);
+const MARKDOWN_MIME_TYPES = new Set(["text/markdown", "text/x-markdown"]);
 
-const XML_MIME_TYPES = new Set([
-  "application/xml",
-  "text/xml",
-]);
+const XML_MIME_TYPES = new Set(["application/xml", "text/xml"]);
 
-function isTiffFile(
-  mimeType: string,
-  fileName: string | undefined,
-): boolean {
+function isTiffFile(mimeType: string, fileName: string | undefined): boolean {
   if (mimeType === "image/tiff") {
     return true;
   }
   const lowered = fileName?.toLowerCase();
-  return lowered?.endsWith(".tif") === true
-    || lowered?.endsWith(".tiff") === true;
+  return (
+    lowered?.endsWith(".tif") === true || lowered?.endsWith(".tiff") === true
+  );
 }
 
 function getViewerType(
   mimeType: string,
-  fileName: string | undefined,
+  fileName: string | undefined
 ): ViewerType {
   if (mimeType === "application/pdf") {
     return ViewerType.Pdf;
@@ -84,8 +78,8 @@ function getViewerType(
     return ViewerType.Markdown;
   }
   if (
-    mimeType
-      === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    mimeType ===
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
   ) {
     return ViewerType.Excel;
   }
@@ -116,7 +110,7 @@ export function DocumentViewer({
   const mimeType = mimeTypeOverride ?? media.getMediaReference().mimeType;
   const viewerType = useMemo(
     () => getViewerType(mimeType, fileName),
-    [mimeType, fileName],
+    [mimeType, fileName]
   );
   const rootClassName = classnames(styles.container, className);
 

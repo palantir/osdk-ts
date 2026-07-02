@@ -1,5 +1,17 @@
 # @osdk/typescript-sdk-docs
 
+## 0.15.0
+
+### Minor Changes
+
+- 58b3367: Migrate @osdk/language-models, @osdk/react-sdk-docs, and @osdk/typescript-sdk-docs to lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint (second increment of the repo-wide oxc migration)
+
+## 0.14.0
+
+### Minor Changes
+
+- 0bd4a2e: Document array element-subtype filters via $contains
+
 ## 0.13.0
 
 ### Minor Changes

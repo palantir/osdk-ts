@@ -15,6 +15,7 @@
  */
 
 import type React from "react";
+
 import type {
   FilterDefinitionControls,
   FilterState,
@@ -36,6 +37,12 @@ export interface BaseFilterListProps<D extends FilterDefinitionControls> {
   renderInput: RenderFilterInput<D>;
   getFilterKey: (definition: D) => string;
   getFilterLabel: (definition: D) => string;
+  /**
+   * Display-only fallback state for a filter that has no stored state, used so
+   * capability-driven header controls (overflow … menu, search) render for
+   * empty/just-added filters. Never written into the filter-state map.
+   */
+  getEmptyDisplayState?: (definition: D) => FilterState | undefined;
   activeFilterCount: number;
   onReset?: () => void;
   onFilterAdded?: () => void;

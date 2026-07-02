@@ -17,6 +17,7 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { createMockMonitorStore } from "./testHelpers.js";
 
 const { OsdkAppErrorBoundary } = await import("./OsdkAppErrorBoundary.js");
@@ -36,7 +37,7 @@ describe("OsdkAppErrorBoundary", () => {
     render(
       <OsdkAppErrorBoundary monitorStore={store}>
         <div>healthy</div>
-      </OsdkAppErrorBoundary>,
+      </OsdkAppErrorBoundary>
     );
     expect(screen.getByText("healthy")).toBeDefined();
   });
@@ -50,7 +51,7 @@ describe("OsdkAppErrorBoundary", () => {
     render(
       <OsdkAppErrorBoundary monitorStore={store}>
         <Thrower message="render-explode" />
-      </OsdkAppErrorBoundary>,
+      </OsdkAppErrorBoundary>
     );
 
     expect(recordError).toHaveBeenCalledTimes(1);
@@ -65,7 +66,7 @@ describe("OsdkAppErrorBoundary", () => {
     render(
       <OsdkAppErrorBoundary monitorStore={store}>
         <Thrower message="visible-error" />
-      </OsdkAppErrorBoundary>,
+      </OsdkAppErrorBoundary>
     );
 
     expect(screen.getByRole("alert")).toBeDefined();
@@ -82,12 +83,14 @@ describe("OsdkAppErrorBoundary", () => {
         fallback={(err, reset) => (
           <div>
             <span>custom-{err.message}</span>
-            <button type="button" onClick={reset}>retry</button>
+            <button type="button" onClick={reset}>
+              retry
+            </button>
           </div>
         )}
       >
         <Thrower message="x" />
-      </OsdkAppErrorBoundary>,
+      </OsdkAppErrorBoundary>
     );
 
     expect(screen.getByText("custom-x")).toBeDefined();
@@ -104,7 +107,7 @@ describe("OsdkAppErrorBoundary", () => {
         fallback={<div>static-fallback</div>}
       >
         <Thrower message="x" />
-      </OsdkAppErrorBoundary>,
+      </OsdkAppErrorBoundary>
     );
 
     expect(screen.getByText("static-fallback")).toBeDefined();
@@ -125,7 +128,7 @@ describe("OsdkAppErrorBoundary", () => {
     render(
       <OsdkAppErrorBoundary monitorStore={store}>
         <Toggle />
-      </OsdkAppErrorBoundary>,
+      </OsdkAppErrorBoundary>
     );
 
     expect(screen.getByText("once")).toBeDefined();

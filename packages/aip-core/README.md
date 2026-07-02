@@ -63,9 +63,7 @@ console.log(result.usage); // { inputTokens, outputTokens, totalTokens, ... }
 const result = await generateText({
   model,
   system: "You are a helpful assistant that responds concisely.",
-  messages: [
-    { role: "user", content: "What is TypeScript?" },
-  ],
+  messages: [{ role: "user", content: "What is TypeScript?" }],
 });
 ```
 

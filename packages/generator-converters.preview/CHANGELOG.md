@@ -1,5 +1,76 @@
 # @osdk/generator-converters.preview
 
+## 0.26.0
+
+### Patch Changes
+
+- @osdk/generator@2.41.0
+- @osdk/client.unstable@2.41.0
+- @osdk/generator-converters.ontologyir@2.41.0
+
+## 0.25.0
+
+### Patch Changes
+
+- Updated dependencies [3e915ee]
+  - @osdk/generator@2.40.0
+  - @osdk/client.unstable@2.40.0
+  - @osdk/generator-converters.ontologyir@2.40.0
+
+## 0.24.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.38.0
+- @osdk/generator-converters.ontologyir@2.38.0
+- @osdk/generator@2.38.0
+
+## 0.23.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.37.0
+- @osdk/generator-converters.ontologyir@2.37.0
+- @osdk/generator@2.37.0
+
+## 0.22.0
+
+### Patch Changes
+
+- Updated dependencies [54dc175]
+  - @osdk/generator@2.35.0
+  - @osdk/client.unstable@2.35.0
+  - @osdk/generator-converters.ontologyir@2.35.0
+
+## 0.21.0
+
+### Patch Changes
+
+- Updated dependencies [07eaaff]
+- Updated dependencies [4a25731]
+- Updated dependencies [48eb46e]
+  - @osdk/generator-converters.ontologyir@2.34.0
+  - @osdk/generator@2.34.0
+  - @osdk/client.unstable@2.34.0
+
+## 0.20.0
+
+### Patch Changes
+
+- Updated dependencies [b5d0a61]
+- Updated dependencies [833f47a]
+  - @osdk/generator-converters.ontologyir@2.32.0
+  - @osdk/client.unstable@2.32.0
+  - @osdk/generator@2.32.0
+
+## 0.19.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.31.0
+- @osdk/generator-converters.ontologyir@2.31.0
+- @osdk/generator@2.31.0
+
 ## 0.18.0
 
 ### Minor Changes

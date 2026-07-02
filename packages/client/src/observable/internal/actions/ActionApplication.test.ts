@@ -39,6 +39,7 @@ import {
   it,
   vi,
 } from "vitest";
+
 import type { Client } from "../../../Client.js";
 import { createClient } from "../../../createClient.js";
 import type { FunctionPayload } from "../../FunctionPayload.js";
@@ -60,7 +61,7 @@ function mockFunctionSubCallback(): MockedObject<
 
 async function waitForCall(
   mock: MockedObject<Observer<FunctionPayload | undefined>>,
-  count = 1,
+  count = 1
 ) {
   await vi.waitFor(() => {
     expect(mock.next).toHaveBeenCalledTimes(count);
@@ -95,7 +96,7 @@ async function hasSettled(promise: Promise<unknown>): Promise<boolean> {
     },
     () => {
       settled = true;
-    },
+    }
   );
 
   // Let already-settled promises run their queued continuation without waiting
@@ -114,7 +115,7 @@ describe("ActionApplication invalidation", () => {
   beforeAll(() => {
     const testSetup = startNodeApiServer(
       new FauxFoundry("https://stack.palantir.com/"),
-      createClient,
+      createClient
     );
     ({ client, fauxFoundry } = testSetup);
 
@@ -126,13 +127,13 @@ describe("ActionApplication invalidation", () => {
       (b, payload) => {
         const { id, ...other } = payload.parameters;
         b.modifyObject<typeof Todo>(Todo.apiName, id, { ...other });
-      },
+      }
     );
     fauxOntology.registerActionType(stubData.MoveOffice, (b, payload) => {
       b.modifyObject<typeof Office>(
         Office.apiName,
         payload.parameters.officeId as string,
-        { capacity: payload.parameters.newCapacity as number },
+        { capacity: payload.parameters.newCapacity as number }
       );
     });
     stubData.registerLazyQueries(fauxOntology);
@@ -186,12 +187,12 @@ describe("ActionApplication invalidation", () => {
         dependsOn: [Todo.apiName],
         dedupeInterval: 0,
       },
-      subFn,
+      subFn
     );
 
     await waitForCall(subFn, 2);
     expect(subFn.next).toHaveBeenLastCalledWith(
-      expect.objectContaining({ status: "loaded", result: 3 }),
+      expect.objectContaining({ status: "loaded", result: 3 })
     );
 
     subFn.next.mockClear();
@@ -215,12 +216,12 @@ describe("ActionApplication invalidation", () => {
         dependsOnObjects: [{ $apiName: Todo.apiName, $primaryKey: 0 }],
         dedupeInterval: 0,
       },
-      subFn,
+      subFn
     );
 
     await waitForCall(subFn, 2);
     expect(subFn.next).toHaveBeenLastCalledWith(
-      expect.objectContaining({ status: "loaded", result: 3 }),
+      expect.objectContaining({ status: "loaded", result: 3 })
     );
 
     subFn.next.mockClear();
@@ -244,7 +245,7 @@ describe("ActionApplication invalidation", () => {
         dependsOn: [Employee.apiName],
         dedupeInterval: 0,
       },
-      subFn,
+      subFn
     );
 
     await waitForCall(subFn, 2);
@@ -267,7 +268,7 @@ describe("ActionApplication invalidation", () => {
         dependsOn: [Todo.apiName],
         dedupeInterval: 0,
       },
-      subFn,
+      subFn
     );
 
     await waitForCall(subFn, 2);
@@ -295,13 +296,13 @@ describe("ActionApplication invalidation", () => {
         dependsOn: [Todo.apiName],
         dedupeInterval: 0,
       },
-      subFn,
+      subFn
     );
 
     await waitForCall(subFn, 2);
 
     const functionQueryEntry = Array.from(store.queries.map.entries()).find(
-      ([cacheKey]) => cacheKey.type === "function",
+      ([cacheKey]) => cacheKey.type === "function"
     );
     if (functionQueryEntry == null) {
       throw new Error("Expected a function query to be registered");
@@ -325,7 +326,7 @@ describe("ActionApplication invalidation", () => {
     await vi.waitFor(() => {
       expect(invalidateObjectType).toHaveBeenCalledWith(
         Todo.apiName,
-        undefined,
+        undefined
       );
     });
 
@@ -349,7 +350,7 @@ describe("ActionApplication invalidation", () => {
     };
     const subscription = store.lists.observe(
       { type: Employee, withProperties, dedupeInterval: 0 },
-      subFn,
+      subFn
     );
 
     // Wait for initial loaded emission.
@@ -389,7 +390,7 @@ describe("ActionApplication invalidation", () => {
           withProperties,
           dedupeInterval: 0,
         },
-        subFn,
+        subFn
       );
 
       // Wait for initial loaded emission with the original capacity.
@@ -398,7 +399,7 @@ describe("ActionApplication invalidation", () => {
         expect(last?.status).toBe("loaded");
         expect(
           (last?.resolvedList?.[0] as { officeCapacity?: number } | undefined)
-            ?.officeCapacity,
+            ?.officeCapacity
         ).toBe(INITIAL_OFFICE_CAPACITY);
       });
 
@@ -414,7 +415,7 @@ describe("ActionApplication invalidation", () => {
         const last = subFn.next.mock.lastCall?.[0];
         expect(
           (last?.resolvedList?.[0] as { officeCapacity?: number } | undefined)
-            ?.officeCapacity,
+            ?.officeCapacity
         ).toBe(99);
       });
 
@@ -432,7 +433,7 @@ describe("ActionApplication invalidation", () => {
         dependsOn: [Todo.apiName],
         dedupeInterval: 0,
       },
-      subFn,
+      subFn
     );
 
     await waitForCall(subFn, 2);
@@ -441,7 +442,7 @@ describe("ActionApplication invalidation", () => {
     // PK 999 does not exist; FauxDataStoreBatch.modifyObject throws via
     // getObjectOrThrow, the server returns an error, and applyAction rejects.
     await expect(
-      store.applyAction(editTodo, { id: 999, text: "fail" }),
+      store.applyAction(editTodo, { id: 999, text: "fail" })
     ).rejects.toBeDefined();
 
     // No actionResults were assigned, so #invalidatePerTypeEdits is
@@ -449,5 +450,97 @@ describe("ActionApplication invalidation", () => {
     expect(subFn.next).not.toHaveBeenCalled();
 
     subscription.unsubscribe();
+  });
+
+  describe("dev-mode action delay", () => {
+    const noopOptimistic = () => {};
+
+    it("defaults the resolved delay to 1000ms", () => {
+      expect(new Store(client).devModeActionDelayMs).toBe(1000);
+    });
+
+    it("resolves a configured delay from options", () => {
+      expect(
+        new Store(client, { devMode: { actionDelayMs: 0 } })
+          .devModeActionDelayMs
+      ).toBe(0);
+      expect(
+        new Store(client, { devMode: { actionDelayMs: 250 } })
+          .devModeActionDelayMs
+      ).toBe(250);
+    });
+
+    it("skips the delay when no optimistic update is provided", async () => {
+      const warnSpy = vi.spyOn(store, "maybeWarnDevModeDelayApplied");
+
+      await store.applyAction(editTodo, { id: 0, text: "no-optimistic" });
+
+      expect(warnSpy).not.toHaveBeenCalled();
+    });
+
+    it("applies the delay when an optimistic update is provided", async () => {
+      const fastStore = new Store(client, { devMode: { actionDelayMs: 20 } });
+      const warnSpy = vi.spyOn(fastStore, "maybeWarnDevModeDelayApplied");
+      const setTimeoutSpy = vi.spyOn(globalThis, "setTimeout");
+
+      await fastStore.applyAction(
+        editTodo,
+        { id: 0, text: "optimistic" },
+        {
+          optimisticUpdate: noopOptimistic,
+        }
+      );
+
+      expect(warnSpy).toHaveBeenCalledTimes(1);
+      expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 20);
+
+      setTimeoutSpy.mockRestore();
+    });
+
+    it("does not delay when the configured delay is 0", async () => {
+      const noDelayStore = new Store(client, {
+        devMode: { actionDelayMs: 0 },
+      });
+      const warnSpy = vi.spyOn(noDelayStore, "maybeWarnDevModeDelayApplied");
+
+      await noDelayStore.applyAction(
+        editTodo,
+        { id: 0, text: "instant" },
+        {
+          optimisticUpdate: noopOptimistic,
+        }
+      );
+
+      expect(warnSpy).not.toHaveBeenCalled();
+    });
+
+    it("warns at most once per store", async () => {
+      const fastStore = new Store(client, { devMode: { actionDelayMs: 20 } });
+      const consoleWarnSpy = vi
+        .spyOn(console, "warn")
+        .mockImplementation(() => {});
+
+      await fastStore.applyAction(
+        editTodo,
+        { id: 0, text: "first" },
+        {
+          optimisticUpdate: noopOptimistic,
+        }
+      );
+      await fastStore.applyAction(
+        editTodo,
+        { id: 0, text: "second" },
+        {
+          optimisticUpdate: noopOptimistic,
+        }
+      );
+
+      const devModeWarnings = consoleWarnSpy.mock.calls.filter(
+        ([first]) => typeof first === "string" && first.includes("dev-mode")
+      );
+      expect(devModeWarnings).toHaveLength(1);
+
+      consoleWarnSpy.mockRestore();
+    });
   });
 });

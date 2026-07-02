@@ -23,6 +23,7 @@ import {
   scenarioOsdkTestAction,
   ScenarioTestOsdk,
 } from "@osdk/e2e.generated.catchall";
+
 import { client } from "./client.js";
 import { logger } from "./logger.js";
 
@@ -48,12 +49,15 @@ export async function runScenariosTest(): Promise<void> {
       count: editedEntities.data.length,
       sample: editedEntities.data.slice(0, 3),
     },
-    "scenario edited ScenarioTestOsdk entities",
+    "scenario edited ScenarioTestOsdk entities"
   );
 
-  const res = await client(scenarioOsdkTestAction).applyAction({ scenario }, {
-    $returnEdits: true,
-  });
+  const res = await client(scenarioOsdkTestAction).applyAction(
+    { scenario },
+    {
+      $returnEdits: true,
+    }
+  );
   logger.info(res);
 }
 

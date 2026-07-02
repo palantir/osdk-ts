@@ -16,8 +16,10 @@
 
 import classnames from "classnames";
 import React, { useCallback, useMemo, useState } from "react";
-import styles from "./BaseExcelViewer.module.css";
+
 import type { BaseExcelViewerProps, SheetData } from "./ExcelViewerApi.js";
+
+import styles from "./BaseExcelViewer.module.css";
 
 /**
  * Converts a 0-based column index to a spreadsheet column letter (0=A, 1=B, ..., 25=Z, 26=AA).
@@ -37,7 +39,7 @@ const SheetTable: React.FunctionComponent<{ sheet: SheetData }> = React.memo(
   ({ sheet }) => {
     const maxCols = useMemo(
       () => sheet.rows.reduce((max, row) => Math.max(max, row.length), 0),
-      [sheet.rows],
+      [sheet.rows]
     );
 
     if (sheet.rows.length === 0) {
@@ -50,35 +52,29 @@ const SheetTable: React.FunctionComponent<{ sheet: SheetData }> = React.memo(
           <thead>
             <tr>
               <th className={styles.cornerCell} />
-              {Array.from(
-                { length: maxCols },
-                (_, i) => (
-                  <th key={i} className={styles.columnHeader}>
-                    {columnIndexToLetter(i)}
-                  </th>
-                ),
-              )}
+              {Array.from({ length: maxCols }, (_, i) => (
+                <th key={i} className={styles.columnHeader}>
+                  {columnIndexToLetter(i)}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
             {sheet.rows.map((row, rowIndex) => (
               <tr key={rowIndex}>
                 <td className={styles.rowHeader}>{rowIndex + 1}</td>
-                {Array.from(
-                  { length: maxCols },
-                  (_, cellIndex) => (
-                    <td key={cellIndex} className={styles.cell}>
-                      {row[cellIndex] ?? ""}
-                    </td>
-                  ),
-                )}
+                {Array.from({ length: maxCols }, (_, cellIndex) => (
+                  <td key={cellIndex} className={styles.cell}>
+                    {row[cellIndex] ?? ""}
+                  </td>
+                ))}
               </tr>
             ))}
           </tbody>
         </table>
       </div>
     );
-  },
+  }
 );
 SheetTable.displayName = "SheetTable";
 
@@ -91,11 +87,11 @@ export function BaseExcelViewer({
 
   const safeIndex = Math.min(
     activeSheetIndex,
-    Math.max(0, spreadsheet.sheets.length - 1),
+    Math.max(0, spreadsheet.sheets.length - 1)
   );
   const activeSheet = useMemo(
     () => spreadsheet.sheets[safeIndex],
-    [spreadsheet.sheets, safeIndex],
+    [spreadsheet.sheets, safeIndex]
   );
 
   const handleTabClick = useCallback((index: number) => {
@@ -104,9 +100,11 @@ export function BaseExcelViewer({
 
   return (
     <div className={rootClassName}>
-      {activeSheet != null
-        ? <SheetTable sheet={activeSheet} />
-        : <div className={styles.emptySheet}>No sheets</div>}
+      {activeSheet != null ? (
+        <SheetTable sheet={activeSheet} />
+      ) : (
+        <div className={styles.emptySheet}>No sheets</div>
+      )}
       {spreadsheet.sheets.length > 1 && (
         <div className={styles.tabBar}>
           {spreadsheet.sheets.map((sheet, index) => (

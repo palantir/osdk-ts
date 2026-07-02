@@ -60,6 +60,7 @@ import {
   expectTypeOf,
   it,
 } from "vitest";
+
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 
@@ -106,9 +107,7 @@ describe("queries", () => {
     });
 
     it("Works when using an existing object", async () => {
-      const employee = await client(Employee).fetchOne(
-        50030,
-      );
+      const employee = await client(Employee).fetchOne(50030);
       const result = await client(queryAcceptsObject).executeFunction({
         object: employee,
       });
@@ -154,28 +153,21 @@ describe("queries", () => {
       });
     });
     it("Works when passing in interfaces", async () => {
-      const clientBoundQueryFunction =
-        client(queryAcceptsInterface).executeFunction;
-      type InferredParamType = Parameters<
-        typeof clientBoundQueryFunction
-      >[0];
+      const clientBoundQueryFunction = client(
+        queryAcceptsInterface
+      ).executeFunction;
+      type InferredParamType = Parameters<typeof clientBoundQueryFunction>[0];
 
-      expectTypeOf<
-        {
-          interfaceObject: {
-            $objectType: "Employee" | "Person";
-            $primaryKey: string | number;
-          };
-        }
-      >()
-        .toMatchTypeOf<InferredParamType>();
+      expectTypeOf<{
+        interfaceObject: {
+          $objectType: "Employee" | "Person";
+          $primaryKey: string | number;
+        };
+      }>().toMatchTypeOf<InferredParamType>();
 
-      expectTypeOf<
-        {
-          interfaceObject: Osdk.Instance<FooInterface>;
-        }
-      >()
-        .toMatchTypeOf<InferredParamType>();
+      expectTypeOf<{
+        interfaceObject: Osdk.Instance<FooInterface>;
+      }>().toMatchTypeOf<InferredParamType>();
 
       const result = await client(queryAcceptsInterface).executeFunction({
         interfaceObject: { $objectType: "Employee", $primaryKey: 50030 },
@@ -192,10 +184,11 @@ describe("queries", () => {
 
     it("Works when passing in interface object sets", async () => {
       const os = client(FooInterface);
-      const result = await client(queryAcceptsInterfaceObjectSet)
-        .executeFunction({
-          interfaceObjectSet: os,
-        });
+      const result = await client(
+        queryAcceptsInterfaceObjectSet
+      ).executeFunction({
+        interfaceObjectSet: os,
+      });
 
       expect(result).toEqual(50030);
     });
@@ -214,21 +207,23 @@ describe("queries", () => {
     const result = await client(queryTypeReturnsArrayOfObjects).executeFunction(
       {
         people: ["Brad", "George", "Ryan"],
-      },
+      }
     );
 
-    expect(result).toEqual([{
-      $apiName: "Employee",
-      $objectSpecifier: "Employee:50030",
-      $objectType: "Employee",
-      $primaryKey: 50030,
-      $title: undefined,
-    }]);
+    expect(result).toEqual([
+      {
+        $apiName: "Employee",
+        $objectSpecifier: "Employee:50030",
+        $objectType: "Employee",
+        $primaryKey: 50030,
+        $title: undefined,
+      },
+    ]);
   });
 
   it("no params work", async () => {
-    const resultWithTimestamp = await client(returnsTimestamp)
-      .executeFunction();
+    const resultWithTimestamp =
+      await client(returnsTimestamp).executeFunction();
     expect(resultWithTimestamp).toBe("2019-01-01T00:00:00.000Z");
 
     const resultWithDate = await client(returnsDate).executeFunction();
@@ -258,9 +253,7 @@ describe("queries", () => {
   });
 
   it("returns and accepts complex structs property", async () => {
-    const employee = await client(Employee).fetchOne(
-      50030,
-    );
+    const employee = await client(Employee).fetchOne(50030);
     const result = await client(incrementPersonAgeComplex).executeFunction({
       person: { firstName: "John", lastName: "Doe", age: 42, object: employee },
     });
@@ -278,53 +271,62 @@ describe("queries", () => {
   });
 
   it("two dimensional aggregation response works", async () => {
-    const result = await client(twoDimensionalAggregationFunction)
-      .executeFunction();
+    const result = await client(
+      twoDimensionalAggregationFunction
+    ).executeFunction();
     expectTypeOf<typeof result>().toEqualTypeOf<
       { key: string; value: number }[]
     >;
-    expect(result).toEqual([{ key: "Q-AFN", value: 1 }, {
-      key: "Q-AFO",
-      value: 2,
-    }]);
+    expect(result).toEqual([
+      { key: "Q-AFN", value: 1 },
+      {
+        key: "Q-AFO",
+        value: 2,
+      },
+    ]);
   });
 
   it("two dimensional aggregation request/response works", async () => {
-    const clientBoundQueryFunction =
-      client(acceptsTwoDimensionalAggregationFunction).executeFunction;
-    type InferredParamType = Parameters<
-      typeof clientBoundQueryFunction
-    >[0];
+    const clientBoundQueryFunction = client(
+      acceptsTwoDimensionalAggregationFunction
+    ).executeFunction;
+    type InferredParamType = Parameters<typeof clientBoundQueryFunction>[0];
 
-    expectTypeOf<{ aggFunction: { key: string; value: number }[] }>()
-      .toMatchTypeOf<InferredParamType>();
+    expectTypeOf<{
+      aggFunction: { key: string; value: number }[];
+    }>().toMatchTypeOf<InferredParamType>();
 
-    const result = await client(acceptsTwoDimensionalAggregationFunction)
-      .executeFunction({
-        aggFunction: [
-          {
-            key: "testKey1",
-            value: 1,
-          },
-          {
-            key: "testKey2",
-            value: 2,
-          },
-        ],
-      });
+    const result = await client(
+      acceptsTwoDimensionalAggregationFunction
+    ).executeFunction({
+      aggFunction: [
+        {
+          key: "testKey1",
+          value: 1,
+        },
+        {
+          key: "testKey2",
+          value: 2,
+        },
+      ],
+    });
     expectTypeOf<typeof result>().toEqualTypeOf<
       { key: string; value: number }[]
     >;
 
-    expect(result).toEqual([{ key: "responseKey1", value: 3 }, {
-      key: "responseKey2",
-      value: 4,
-    }]);
+    expect(result).toEqual([
+      { key: "responseKey1", value: 3 },
+      {
+        key: "responseKey2",
+        value: 4,
+      },
+    ]);
   });
 
   it("three dimensional aggregation response works", async () => {
-    const result = await client(threeDimensionalAggregationFunction)
-      .executeFunction();
+    const result = await client(
+      threeDimensionalAggregationFunction
+    ).executeFunction();
 
     expectTypeOf<typeof result>().toEqualTypeOf<
       {
@@ -335,16 +337,21 @@ describe("queries", () => {
         }[];
       }[]
     >;
-    expect(result).toEqual([{
-      key: "Q-AFN",
-      groups: [{
-        key: {
-          startValue: "2010-10-01T00:00:00Z",
-          endValue: "2010-10-02T00:00:00Z",
-        },
-        value: 65.0,
-      }],
-    }, { key: "Q-AFO", groups: [] }]);
+    expect(result).toEqual([
+      {
+        key: "Q-AFN",
+        groups: [
+          {
+            key: {
+              startValue: "2010-10-01T00:00:00Z",
+              endValue: "2010-10-02T00:00:00Z",
+            },
+            value: 65.0,
+          },
+        ],
+      },
+      { key: "Q-AFO", groups: [] },
+    ]);
   });
 
   it("throws when response is null and response is non-nullable", async () => {
@@ -353,17 +360,16 @@ describe("queries", () => {
       expect.fail("Should not reach here");
     } catch (e) {
       expect((e as Error).message).toMatch(
-        `Got null response when nullable was not allowed`,
+        `Got null response when nullable was not allowed`
       );
     }
   });
 
   it("three dimensional aggregation request/response works", async () => {
-    const clientBoundQueryFunction =
-      client(acceptsThreeDimensionalAggregationFunction).executeFunction;
-    type InferredParamType = Parameters<
-      typeof clientBoundQueryFunction
-    >[0];
+    const clientBoundQueryFunction = client(
+      acceptsThreeDimensionalAggregationFunction
+    ).executeFunction;
+    type InferredParamType = Parameters<typeof clientBoundQueryFunction>[0];
 
     expectTypeOf<{
       aggFunction: {
@@ -373,30 +379,30 @@ describe("queries", () => {
           value: number;
         }[];
       }[];
-    }>()
-      .toMatchTypeOf<InferredParamType>();
+    }>().toMatchTypeOf<InferredParamType>();
 
-    const result = await client(acceptsThreeDimensionalAggregationFunction)
-      .executeFunction({
-        aggFunction: [
-          {
-            key: "testKey1",
-            groups: [
-              {
-                key: {
-                  startValue: "2010-10-01T00:00:00Z",
-                  endValue: "2010-10-02T00:00:00Z",
-                },
-                value: 65.0,
+    const result = await client(
+      acceptsThreeDimensionalAggregationFunction
+    ).executeFunction({
+      aggFunction: [
+        {
+          key: "testKey1",
+          groups: [
+            {
+              key: {
+                startValue: "2010-10-01T00:00:00Z",
+                endValue: "2010-10-02T00:00:00Z",
               },
-            ],
-          },
-          {
-            key: "testKey2",
-            groups: [],
-          },
-        ],
-      });
+              value: 65.0,
+            },
+          ],
+        },
+        {
+          key: "testKey2",
+          groups: [],
+        },
+      ],
+    });
 
     expect(result).toEqual([
       {
@@ -421,14 +427,11 @@ describe("queries", () => {
   it("map type request and response works", async () => {
     const clientBoundQueryFunction =
       client(queryTypeReturnsMap).executeFunction;
-    type InferredParamType = Parameters<
-      typeof clientBoundQueryFunction
-    >[0];
+    type InferredParamType = Parameters<typeof clientBoundQueryFunction>[0];
 
-    expectTypeOf<InferredParamType>()
-      .toMatchTypeOf<
-        { peopleMap: Partial<Record<ObjectSpecifier<Employee>, string>> }
-      >();
+    expectTypeOf<InferredParamType>().toMatchTypeOf<{
+      peopleMap: Partial<Record<ObjectSpecifier<Employee>, string>>;
+    }>();
 
     const myMap: Record<ObjectSpecifier<Employee>, string> = {
       ["Employee:person1" as any]: "hi",
@@ -490,7 +493,7 @@ describe("queries", () => {
 
   it("queries work with arrays", async () => {
     const result = await client($Queries.queryTypeReturnsArray).executeFunction(
-      { people: ["Brad", "George", "Ryan"] },
+      { people: ["Brad", "George", "Ryan"] }
     );
     expect(result).toEqual(["Pitt", "Clooney", "Reynolds"]);
   });
@@ -501,10 +504,12 @@ describe("queries", () => {
     });
     expect(result).toEqual(3);
 
-    const result2 = await client({ ...$Queries.addOne, version: "0.0.1" })
-      .executeFunction({
-        n: 6,
-      });
+    const result2 = await client({
+      ...$Queries.addOne,
+      version: "0.0.1",
+    }).executeFunction({
+      n: 6,
+    });
     expect(result2).toEqual(7);
   });
 
@@ -515,10 +520,9 @@ describe("queries", () => {
       ...$Queries.addOne,
       version: "0.0.5",
       isFixedVersion: false,
-    })
-      .executeFunction({
-        n: 2,
-      });
+    }).executeFunction({
+      n: 2,
+    });
     expect(result2).toEqual(3);
   });
 
@@ -536,7 +540,7 @@ describe("queries", () => {
       expect(mediaRef.mimeType).toBe("image/png");
       expect(mediaRef.reference.type).toBe("mediaSetViewItem");
       expect(mediaRef.reference.mediaSetViewItem.mediaItemRid).toBe(
-        "ri.mio.main.media-item.test-item-rid",
+        "ri.mio.main.media-item.test-item-rid"
       );
     });
 
@@ -595,13 +599,14 @@ describe("queries", () => {
     });
 
     it("query parameter type accepts Media, MediaReference, or MediaUpload", () => {
-      const clientBoundQueryFunction =
-        client(queryAcceptsMediaReference).executeFunction;
+      const clientBoundQueryFunction = client(
+        queryAcceptsMediaReference
+      ).executeFunction;
       type InferredParamType = Parameters<typeof clientBoundQueryFunction>[0];
 
-      expectTypeOf<{ media: MediaReference }>().toMatchTypeOf<
-        InferredParamType
-      >();
+      expectTypeOf<{
+        media: MediaReference;
+      }>().toMatchTypeOf<InferredParamType>();
 
       expectTypeOf<{ media: Media }>().toMatchTypeOf<InferredParamType>();
 
@@ -636,16 +641,14 @@ describe("queries", () => {
       apiServer.use(
         msw.http.post(
           `${STREAMING_URL_BASE}/${addOne.apiName}/streamingExecute`,
-          () => ndjsonResponse([{ type: "data", value: 3 }]),
-        ),
+          () => ndjsonResponse([{ type: "data", value: 3 }])
+        )
       );
 
       const items: number[] = [];
-      for await (
-        const item of client(
-          __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction,
-        ).executeStreamingFunction(addOne, { n: 2 })
-      ) {
+      for await (const item of client(
+        __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction
+      ).executeStreamingFunction(addOne, { n: 2 })) {
         items.push(item);
       }
       expect(items).toEqual([3]);
@@ -659,19 +662,16 @@ describe("queries", () => {
             ndjsonResponse([
               { type: "data", value: [50030, 50031] },
               { type: "data", value: [50032] },
-            ]),
-        ),
+            ])
+        )
       );
 
       const items: Array<OsdkBase<Employee>> = [];
-      for await (
-        const item of client(
-          __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction,
-        ).executeStreamingFunction(
-          queryTypeReturnsArrayOfObjects,
-          { people: ["Brad", "George", "Ryan"] },
-        )
-      ) {
+      for await (const item of client(
+        __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction
+      ).executeStreamingFunction(queryTypeReturnsArrayOfObjects, {
+        people: ["Brad", "George", "Ryan"],
+      })) {
         items.push(item);
       }
       expect(items).toEqual([
@@ -713,17 +713,15 @@ describe("queries", () => {
                 errorDescription: "Division by zero",
                 parameters: {},
               },
-            ]),
-        ),
+            ])
+        )
       );
 
       let caught: any;
       try {
-        for await (
-          const _ of client(
-            __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction,
-          ).executeStreamingFunction(addOne, { n: 2 })
-        ) {
+        for await (const _ of client(
+          __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction
+        ).executeStreamingFunction(addOne, { n: 2 })) {
           // unreachable
         }
         expect.fail("expected stream to throw");
@@ -740,11 +738,10 @@ describe("queries", () => {
 
     it("yields elements of an array-returning query as the element type", () => {
       const stream = client(
-        __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction,
-      ).executeStreamingFunction(
-        queryTypeReturnsArrayOfObjects,
-        { people: [] },
-      );
+        __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction
+      ).executeStreamingFunction(queryTypeReturnsArrayOfObjects, {
+        people: [],
+      });
       expectTypeOf<typeof stream>().toMatchTypeOf<
         AsyncIterable<OsdkBase<Employee>>
       >();
@@ -752,7 +749,7 @@ describe("queries", () => {
 
     it("yields the scalar value for a non-array query", () => {
       const stream = client(
-        __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction,
+        __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction
       ).executeStreamingFunction(addOne, { n: 1 });
       expectTypeOf<typeof stream>().toMatchTypeOf<AsyncIterable<number>>();
     });

@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  SetOntologyBranchOrganizationMarkingsRequest
-    as _branch_api_SetOntologyBranchOrganizationMarkingsRequest,
-  SetOntologyBranchOrganizationMarkingsResponse
-    as _branch_api_SetOntologyBranchOrganizationMarkingsResponse,
+  SetOntologyBranchOrganizationMarkingsRequest as _branch_api_SetOntologyBranchOrganizationMarkingsRequest,
+  SetOntologyBranchOrganizationMarkingsResponse as _branch_api_SetOntologyBranchOrganizationMarkingsResponse,
 } from "../__components.js";
 
 /**
@@ -28,12 +27,12 @@ import type {
  */
 export async function setOntologyBranchOrganizationMarkings(
   ctx: ConjureContext,
-  request: _branch_api_SetOntologyBranchOrganizationMarkingsRequest,
+  request: _branch_api_SetOntologyBranchOrganizationMarkingsRequest
 ): Promise<_branch_api_SetOntologyBranchOrganizationMarkingsResponse> {
   return conjureFetch(
     ctx,
     `/ontology/branch/setBranchOrganizationMarkings`,
     "PUT",
-    request,
+    request
   );
 }

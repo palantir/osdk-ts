@@ -15,9 +15,9 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  GetObjectLocatorsInitialScrollRequest
-    as _api_GetObjectLocatorsInitialScrollRequest,
+  GetObjectLocatorsInitialScrollRequest as _api_GetObjectLocatorsInitialScrollRequest,
   GetObjectLocatorsScrollResponse as _api_GetObjectLocatorsScrollResponse,
 } from "../__components.js";
 
@@ -28,7 +28,7 @@ import type {
  */
 export async function getObjectLocatorsInitialScroll(
   ctx: ConjureContext,
-  request: _api_GetObjectLocatorsInitialScrollRequest,
+  request: _api_GetObjectLocatorsInitialScrollRequest
 ): Promise<_api_GetObjectLocatorsScrollResponse> {
   return conjureFetch(ctx, `/scroll/locators/initial`, "POST", request);
 }

@@ -24,9 +24,10 @@ export interface BaseXmlViewerProps {
   className?: string;
 }
 
-export interface XmlViewerMediaProps
-  extends Omit<BaseXmlViewerProps, "content">
-{
+export interface XmlViewerMediaProps extends Omit<
+  BaseXmlViewerProps,
+  "content"
+> {
   /** The Media object to fetch XML contents from */
   media: Media;
 }

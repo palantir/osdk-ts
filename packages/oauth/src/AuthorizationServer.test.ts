@@ -22,7 +22,7 @@ describe("Create authorization server", () => {
   it("works with old multipass ctx path", () => {
     const authServer = createAuthorizationServer(
       "/multipass",
-      "https://stack.palantir.com",
+      "https://stack.palantir.com"
     );
     expect(authServer).toEqual({
       token_endpoint: "https://stack.palantir.com/multipass/api/oauth2/token",
@@ -37,7 +37,7 @@ describe("Create authorization server", () => {
   it("works with new multipass ctx path", () => {
     const authServer = createAuthorizationServer(
       "multipass",
-      "https://stack.palantir.com",
+      "https://stack.palantir.com"
     );
     expect(authServer).toEqual({
       token_endpoint: "https://stack.palantir.com/multipass/api/oauth2/token",
@@ -50,7 +50,7 @@ describe("Create authorization server", () => {
 
     const authServerCustom = createAuthorizationServer(
       "multipass",
-      "https://stack.palantir.com/foo/first/someStuff",
+      "https://stack.palantir.com/foo/first/someStuff"
     );
     expect(authServerCustom).toEqual({
       token_endpoint:
@@ -63,7 +63,7 @@ describe("Create authorization server", () => {
     });
     const authServerCustomWithTrailingSlash = createAuthorizationServer(
       "multipass",
-      "https://stack.palantir.com/foo/first/someStuff/",
+      "https://stack.palantir.com/foo/first/someStuff/"
     );
     expect(authServerCustomWithTrailingSlash).toEqual({
       token_endpoint:

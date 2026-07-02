@@ -21,6 +21,7 @@ import {
   type WidgetMessage,
 } from "@osdk/widget.api";
 import invariant from "tiny-invariant";
+
 import { FoundryHostEventTarget } from "./host.js";
 
 export interface FoundryWidgetClient<C extends WidgetConfig<C["parameters"]>> {
@@ -47,10 +48,7 @@ export interface FoundryWidgetClient<C extends WidgetConfig<C["parameters"]>> {
     ID extends M["payload"]["eventId"],
   >(
     eventId: ID,
-    payload: Omit<
-      ExtractEmitEventPayload<M, ID>,
-      "eventId"
-    >,
+    payload: Omit<ExtractEmitEventPayload<M, ID>, "eventId">
   ) => void;
 
   /**
@@ -78,10 +76,7 @@ export interface FoundryWidgetClient<C extends WidgetConfig<C["parameters"]>> {
 type ExtractEmitEventPayload<
   M extends WidgetMessage.EmitEvent<any>,
   ID extends M["payload"]["eventId"],
-> = Extract<
-  M["payload"],
-  { eventId: ID }
->;
+> = Extract<M["payload"], { eventId: ID }>;
 
 interface PalantirWidgetApiEvents<C extends WidgetConfig<C["parameters"]>> {
   message: CustomEvent<HostMessage<C>>;
@@ -92,12 +87,12 @@ interface PalantirWidgetApi<C extends WidgetConfig<C["parameters"]>> {
   addEventListener<K extends keyof PalantirWidgetApiEvents<C>>(
     type: K,
     listener: (ev: PalantirWidgetApiEvents<C>[K]) => any,
-    options?: boolean | AddEventListenerOptions,
+    options?: boolean | AddEventListenerOptions
   ): void;
   removeEventListener<K extends keyof PalantirWidgetApiEvents<C>>(
     type: K,
     listener: (ev: PalantirWidgetApiEvents<C>[K]) => any,
-    options?: boolean | EventListenerOptions,
+    options?: boolean | EventListenerOptions
   ): void;
 }
 
@@ -106,7 +101,7 @@ export function createFoundryWidgetClient<
 >(): FoundryWidgetClient<C> {
   invariant(
     "__PALANTIR_WIDGET_API__" in window,
-    "[FoundryWidgetClient] Missing __PALANTIR_WIDGET_API__ in window",
+    "[FoundryWidgetClient] Missing __PALANTIR_WIDGET_API__ in window"
   );
   const widgetApi = window.__PALANTIR_WIDGET_API__ as PalantirWidgetApi<C>;
   const hostEventTarget = new FoundryHostEventTarget<C>();

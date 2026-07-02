@@ -15,6 +15,7 @@
  */
 
 import { readFileSync } from "fs";
+
 import { parse as parseYaml } from "yaml";
 
 const FOUNDRY_SERVICE_DISCOVERY_V2_ENV_VAR =
@@ -31,10 +32,12 @@ interface ServiceDiscoveryConfig {
  * Type guard to check if config is an object with uris property
  */
 function hasUrisProperty(config: ServiceConfig): config is { uris: string[] } {
-  return !Array.isArray(config)
-    && "uris" in config
-    && Array.isArray(config.uris)
-    && config.uris.every((uri) => typeof uri === "string");
+  return (
+    !Array.isArray(config) &&
+    "uris" in config &&
+    Array.isArray(config.uris) &&
+    config.uris.every((uri) => typeof uri === "string")
+  );
 }
 
 /**
@@ -64,7 +67,7 @@ export function getApiGatewayBaseUrl(): string {
 
   if (!filePath) {
     throw new Error(
-      `${FOUNDRY_SERVICE_DISCOVERY_V2_ENV_VAR} environment variable is not set`,
+      `${FOUNDRY_SERVICE_DISCOVERY_V2_ENV_VAR} environment variable is not set`
     );
   }
 
@@ -74,7 +77,7 @@ export function getApiGatewayBaseUrl(): string {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(
-      `Failed to read service discovery file at ${filePath}: ${errorMessage}`,
+      `Failed to read service discovery file at ${filePath}: ${errorMessage}`
     );
   }
 
@@ -84,7 +87,7 @@ export function getApiGatewayBaseUrl(): string {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(
-      `Failed to parse service discovery YAML file at ${filePath}: ${errorMessage}`,
+      `Failed to parse service discovery YAML file at ${filePath}: ${errorMessage}`
     );
   }
 
@@ -92,7 +95,7 @@ export function getApiGatewayBaseUrl(): string {
 
   if (!apiGatewayConfig) {
     throw new Error(
-      `${API_GATEWAY_SERVICE} service not found in service discovery file`,
+      `${API_GATEWAY_SERVICE} service not found in service discovery file`
     );
   }
 
@@ -100,7 +103,7 @@ export function getApiGatewayBaseUrl(): string {
 
   if (uris.length === 0) {
     throw new Error(
-      `No URIs found for ${API_GATEWAY_SERVICE} service in service discovery file`,
+      `No URIs found for ${API_GATEWAY_SERVICE} service in service discovery file`
     );
   }
 

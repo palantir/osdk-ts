@@ -16,6 +16,7 @@
 
 import classnames from "classnames";
 import React from "react";
+
 import styles from "./SkeletonBar.module.css";
 
 export interface SkeletonBarProps {

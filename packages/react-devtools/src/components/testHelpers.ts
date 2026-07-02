@@ -15,6 +15,7 @@
  */
 
 import { vi } from "vitest";
+
 import type { MonitorStore } from "../store/MonitorStore.js";
 
 const emptyAggregates = {

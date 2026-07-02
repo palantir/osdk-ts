@@ -1,9 +1,11 @@
 import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import { useState } from "react";
+
 import { Section } from "../../components/Section.js";
 import { Office } from "../../generatedNoCheck2/index.js";
 import { OfficeDetails } from "./OfficeDetails.js";
 import { OfficesList } from "./OfficesList.js";
+
 import styles from "./OfficeTable.module.css";
 
 export function OfficesPage() {

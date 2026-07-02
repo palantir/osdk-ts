@@ -65,14 +65,14 @@ export function findSuperrepoRoot(startDir: string): string | undefined {
 /** Absolute path of the discovery file for `service` under `superrepoRoot`. */
 export function discoveryPath(
   superrepoRoot: string,
-  service: DiscoveryService,
+  service: DiscoveryService
 ): string {
   return path.join(superrepoRoot, DISCOVERY_DIR, `.${service}-discovery.json`);
 }
 
 export function inspectDiscovery(
   superrepoRoot: string,
-  service: DiscoveryService,
+  service: DiscoveryService
 ): DiscoveryRead {
   const file = discoveryPath(superrepoRoot, service);
   let raw: string;
@@ -109,7 +109,7 @@ export function inspectDiscovery(
  */
 export function readDiscovery(
   superrepoRoot: string,
-  service: DiscoveryService,
+  service: DiscoveryService
 ): DiscoveryEntry | undefined {
   const r = inspectDiscovery(superrepoRoot, service);
   return r.kind === "ok" ? r.entry : undefined;
@@ -136,11 +136,11 @@ function isDiscoveryEntry(value: unknown): value is DiscoveryEntry {
   if (typeof value !== "object" || value == null) return false;
   const v = value as Record<string, unknown>;
   return (
-    typeof v.pid === "number"
-    && Number.isInteger(v.pid)
-    && v.pid > 0
-    && typeof v.url === "string"
-    && v.url.length > 0
-    && (v.caCertPath === undefined || typeof v.caCertPath === "string")
+    typeof v.pid === "number" &&
+    Number.isInteger(v.pid) &&
+    v.pid > 0 &&
+    typeof v.url === "string" &&
+    v.url.length > 0 &&
+    (v.caCertPath === undefined || typeof v.caCertPath === "string")
   );
 }

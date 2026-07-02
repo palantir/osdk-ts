@@ -15,13 +15,11 @@
  */
 
 import type { CommandModule } from "yargs";
+
 import type { CommonSiteArgs } from "../../CommonSiteArgs.js";
 import type { VersionDeleteArgs } from "./VersionDeleteArgs.js";
 
-const command: CommandModule<
-  CommonSiteArgs,
-  VersionDeleteArgs
-> = {
+const command: CommandModule<CommonSiteArgs, VersionDeleteArgs> = {
   command: "delete <version>",
   describe: "Delete site version",
   builder: (argv) => {

@@ -22,7 +22,7 @@ interface PinningStyles {
 }
 
 export function getColumnPinningStyles<TData>(
-  column: Column<TData, unknown>,
+  column: Column<TData, unknown>
 ): PinningStyles {
   const isPinned = column.getIsPinned();
 

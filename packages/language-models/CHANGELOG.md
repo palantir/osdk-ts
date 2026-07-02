@@ -1,5 +1,28 @@
 # @osdk/language-models
 
+## 0.8.0
+
+### Minor Changes
+
+- 58b3367: Migrate @osdk/language-models, @osdk/react-sdk-docs, and @osdk/typescript-sdk-docs to lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint (second increment of the repo-wide oxc migration)
+
+### Patch Changes
+
+- Updated dependencies [11c7eb8]
+- Updated dependencies [bbb89ce]
+  - @osdk/client@2.38.0
+
+## 0.7.0
+
+### Minor Changes
+
+- 1aeba37: `getOpenAiBaseUrl`/`getAnthropicBaseUrl`/`getGoogleBaseUrl`/`getFoundryToken`/`createFetch` now accept an OSDK `Client` in addition to a `PlatformClient`, resolving the underlying client context internally.
+
+### Patch Changes
+
+- Updated dependencies [57cbc6d]
+  - @osdk/client@2.31.0
+
 ## 0.6.0
 
 ### Minor Changes

@@ -24,12 +24,20 @@ export namespace modifyEmployee {
       nullable: true;
       type: 'string';
     };
+    stockOptions: {
+      description: undefined;
+      multiplicity: false;
+      nullable: true;
+      type: 'long';
+    };
   };
 
   export interface Params {
     readonly employee: ActionParam.ObjectType<Employee>;
 
     readonly primary_office_id?: ActionParam.PrimitiveType<'string'> | null;
+
+    readonly stockOptions?: ActionParam.PrimitiveType<'long'> | null;
   }
 
   // Represents a fqn of the action
@@ -49,6 +57,7 @@ export namespace modifyEmployee {
 /**
  * @param {ActionParam.ObjectType<Employee>} employee
  * @param {ActionParam.PrimitiveType<"string">} [primary_office_id]
+ * @param {ActionParam.PrimitiveType<"long">} [stockOptions]
  */
 export interface modifyEmployee extends ActionDefinition<modifyEmployee.Signatures> {
   __DefinitionMetadata?: {

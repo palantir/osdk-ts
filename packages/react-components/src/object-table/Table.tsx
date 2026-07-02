@@ -23,11 +23,11 @@ import React, {
   useRef,
   useState,
 } from "react";
+
 import { PortalContainerProvider } from "../shared/PortalContainerContext.js";
 import { useFocusedRow } from "./hooks/useFocusedRow.js";
 import { LoadingStateTable } from "./LoadingStateTable.js";
 import { NonIdealState } from "./NonIdealState.js";
-import styles from "./Table.module.css";
 import { TableBody } from "./TableBody.js";
 import { TableEditContainer } from "./TableEditContainer.js";
 import { TableHeader } from "./TableHeader.js";
@@ -43,6 +43,8 @@ import type {
   EditableConfig,
   EditFieldConfig,
 } from "./utils/types.js";
+
+import styles from "./Table.module.css";
 
 declare module "@tanstack/react-table" {
   interface ColumnMeta<TData extends RowData = unknown, TValue = unknown> {
@@ -63,14 +65,8 @@ declare module "@tanstack/react-table" {
     validateEdit?: (value: unknown) => Promise<string | undefined>;
   }
   interface TableMeta<TData extends RowData = unknown> {
-    onCellEdit?: (
-      cellId: string,
-      info: CellEditInfo<TData, unknown>,
-    ) => void;
-    onCellValidationError?: (
-      cellId: string,
-      error: string,
-    ) => void;
+    onCellEdit?: (cellId: string, info: CellEditInfo<TData, unknown>) => void;
+    onCellValidationError?: (cellId: string, error: string) => void;
     clearCellValidationError?: (cellId: string) => void;
     cellEdits?: Record<string, CellEditInfo<TData, unknown>>;
     isInEditMode?: boolean;
@@ -79,9 +75,7 @@ declare module "@tanstack/react-table" {
   }
 }
 
-export interface BaseTableProps<
-  TData extends RowData,
-> {
+export interface BaseTableProps<TData extends RowData> {
   table: Table<TData>;
   isLoading?: boolean;
   fetchNextPage?: () => Promise<void>;
@@ -90,15 +84,13 @@ export interface BaseTableProps<
   rowHeight?: number;
   renderCellContextMenu?: (
     row: TData,
-    cell: Cell<TData, unknown>,
+    cell: Cell<TData, unknown>
   ) => React.ReactNode;
   className?: string;
   error?: Error;
   headerMenuFeatureFlags?: HeaderMenuFeatureFlags;
   editableConfig?: EditableConfig<TData, unknown>;
-  getRowAttributes?: (
-    object: TData,
-  ) => Record<string, string | undefined>;
+  getRowAttributes?: (object: TData) => Record<string, string | undefined>;
   /**
    * Whether to render the bottom edit footer. Defaults to `true`; the
    * footer is only rendered when the table has at least one editable
@@ -122,9 +114,9 @@ export interface BaseTableProps<
   onFocusedRowChanged?: (row: TData | null) => void;
 }
 
-export function BaseTable<
-  TData extends RowData,
->(props: BaseTableProps<TData>): ReactElement {
+export function BaseTable<TData extends RowData>(
+  props: BaseTableProps<TData>
+): ReactElement {
   return (
     <PortalTrackerProvider>
       <BaseTableInner {...props} />
@@ -132,28 +124,24 @@ export function BaseTable<
   );
 }
 
-function BaseTableInner<
-  TData extends RowData,
->(
-  {
-    table,
-    isLoading,
-    fetchNextPage,
-    onRowClick,
-    onColumnHeaderClick,
-    rowHeight,
-    renderCellContextMenu,
-    className,
-    error,
-    headerMenuFeatureFlags,
-    editableConfig,
-    getRowAttributes,
-    showEditFooter = true,
-    renderEmptyState,
-    focusedRowId: focusedRowIdProp,
-    onFocusedRowChanged,
-  }: BaseTableProps<TData>,
-): ReactElement {
+function BaseTableInner<TData extends RowData>({
+  table,
+  isLoading,
+  fetchNextPage,
+  onRowClick,
+  onColumnHeaderClick,
+  rowHeight,
+  renderCellContextMenu,
+  className,
+  error,
+  headerMenuFeatureFlags,
+  editableConfig,
+  getRowAttributes,
+  showEditFooter = true,
+  renderEmptyState,
+  focusedRowId: focusedRowIdProp,
+  onFocusedRowChanged,
+}: BaseTableProps<TData>): ReactElement {
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const objectTablePortalRef = useRef<HTMLDivElement>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -169,13 +157,10 @@ function BaseTableInner<
         return null;
       }
     },
-    [table],
+    [table]
   );
 
-  const {
-    focusedRowId,
-    setFocusedRowId,
-  } = useFocusedRow<TData>({
+  const { focusedRowId, setFocusedRowId } = useFocusedRow<TData>({
     focusedRowId: focusedRowIdProp,
     onFocusedRowChanged,
     getRowById,
@@ -205,8 +190,9 @@ function BaseTableInner<
       if (containerRefElement && !fetchingRef.current && !isLoadingMore) {
         const { scrollHeight, scrollTop, clientHeight } = containerRefElement;
         if (
-          scrollHeight - scrollTop - clientHeight < SCROLL_FETCH_THRESHOLD
-          && !isLoading && fetchNextPage != null
+          scrollHeight - scrollTop - clientHeight < SCROLL_FETCH_THRESHOLD &&
+          !isLoading &&
+          fetchNextPage != null
         ) {
           fetchingRef.current = true;
           setIsLoadingMore(true);
@@ -218,14 +204,14 @@ function BaseTableInner<
         }
       }
     },
-    [fetchNextPage, isLoading, isLoadingMore],
+    [fetchNextPage, isLoading, isLoadingMore]
   );
 
   const handleScroll = useCallback(
     async (e: React.UIEvent<HTMLDivElement>) => {
       await fetchMoreOnEndReached(e.currentTarget);
     },
-    [fetchMoreOnEndReached],
+    [fetchMoreOnEndReached]
   );
 
   const rows = table.getRowModel().rows;
@@ -249,9 +235,9 @@ function BaseTableInner<
     const handleClickOutside = (event: PointerEvent) => {
       const target = event.target as Node;
       if (
-        tableContainerRef.current
-        && !tableContainerRef.current.contains(target)
-        && !portalTracker?.containsElement(target)
+        tableContainerRef.current &&
+        !tableContainerRef.current.contains(target) &&
+        !portalTracker?.containsElement(target)
       ) {
         setFocusedRowId(null);
       }
@@ -275,43 +261,43 @@ function BaseTableInner<
           onScroll={handleScroll}
         >
           <table>
-            {isLoading && !hasData
-              ? (
-                <LoadingStateTable
+            {isLoading && !hasData ? (
+              <LoadingStateTable
+                table={table}
+                headerGroups={headerGroups}
+                rowHeight={rowHeight}
+                tableContainerRef={tableContainerRef}
+              />
+            ) : (
+              <>
+                <TableHeader
                   table={table}
-                  headerGroups={headerGroups}
-                  rowHeight={rowHeight}
-                  tableContainerRef={tableContainerRef}
+                  headerMenuFeatureFlags={headerMenuFeatureFlags}
+                  onColumnHeaderClick={onColumnHeaderClick}
                 />
-              )
-              : (
-                <>
-                  <TableHeader
-                    table={table}
-                    headerMenuFeatureFlags={headerMenuFeatureFlags}
-                    onColumnHeaderClick={onColumnHeaderClick}
-                  />
-                  <TableBody
-                    rows={rows}
-                    tableContainerRef={tableContainerRef}
-                    onRowClick={onRowClick}
-                    rowHeight={rowHeight}
-                    renderCellContextMenu={renderCellContextMenu}
-                    isLoadingMore={isLoadingMore}
-                    headerGroups={headerGroups}
-                    focusedRowId={focusedRowId}
-                    setFocusedRowId={setFocusedRowId}
-                    isInEditMode={editableConfig?.editModeState.isActive}
-                    getRowAttributes={getRowAttributes}
-                  />
-                </>
-              )}
+                <TableBody
+                  rows={rows}
+                  tableContainerRef={tableContainerRef}
+                  onRowClick={onRowClick}
+                  rowHeight={rowHeight}
+                  renderCellContextMenu={renderCellContextMenu}
+                  isLoadingMore={isLoadingMore}
+                  headerGroups={headerGroups}
+                  focusedRowId={focusedRowId}
+                  setFocusedRowId={setFocusedRowId}
+                  isInEditMode={editableConfig?.editModeState.isActive}
+                  getRowAttributes={getRowAttributes}
+                />
+              </>
+            )}
           </table>
-          {!hasData && error == null && (
-            renderEmptyState != null
-              ? renderEmptyState()
-              : <NonIdealState message={"No Data"} />
-          )}
+          {!hasData &&
+            error == null &&
+            (renderEmptyState != null ? (
+              renderEmptyState()
+            ) : (
+              <NonIdealState message={"No Data"} />
+            ))}
           {error != null && (
             <NonIdealState message={`Error Loading Data: ${error.message}`} />
           )}

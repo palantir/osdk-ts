@@ -16,21 +16,21 @@
 
 import type { InterfaceMetadata } from "@osdk/api";
 import * as OntologyInterfaces from "@osdk/foundry.ontologies/OntologyInterface";
+
 import type { MinimalClient } from "../MinimalClientContext.js";
 
 export async function loadInterfaceMetadata(
   client: MinimalClient,
-  objectType: string,
+  objectType: string
 ): Promise<InterfaceMetadata> {
   const r = await OntologyInterfaces.get(
     client,
     await client.ontologyRid,
     objectType,
-    { preview: true, branch: client.branch },
+    { preview: true, branch: client.branch }
   );
 
-  const { wireInterfaceTypeV2ToSdkObjectDefinition } = await import(
-    "@osdk/generator-converters"
-  );
+  const { wireInterfaceTypeV2ToSdkObjectDefinition } =
+    await import("@osdk/generator-converters");
   return wireInterfaceTypeV2ToSdkObjectDefinition(r, true);
 }

@@ -17,6 +17,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it } from "vitest";
+
 import { createMockMonitorStore } from "./testHelpers.js";
 
 const { InterceptTab } = await import("./InterceptTab.js");
@@ -29,9 +30,7 @@ describe("InterceptTab", () => {
   it("renders without crashing", () => {
     const store = createMockMonitorStore();
 
-    const { container } = render(
-      <InterceptTab monitorStore={store} />,
-    );
+    const { container } = render(<InterceptTab monitorStore={store} />);
 
     expect(container.firstChild).not.toBeNull();
   });

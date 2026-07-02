@@ -1,5 +1,56 @@
 # @osdk/react-components
 
+## 0.34.0
+
+### Minor Changes
+
+- 0ed0b5c: Restyle AipAgentChat to match Threads 2.0 design with light gray user bubbles, plain-text assistant messages, rounded inlined composer, centered max-width layout, and no composer divider. Add reusable Callout base component with intent-tinted backgrounds and dark mode support. Add AipAgentChat storybook stories.
+- d24cc61: Pin the `@osdk/aip-core` peerDependency range to `>=0.5.0 <1.0.0` instead of `workspace:^` so a minor bump of `@osdk/aip-core` (e.g. 0.5.0 -> 0.6.0) no longer falls out of the caret range and triggers a major-bump cascade across the release plan.
+- afc63a7: Restore the AIP chat entry points (`@osdk/react/experimental/aip` and `@osdk/react-components/experimental/aip-agent-chat`) and publish `@osdk/aip-core` so the optional peer dependency resolves from the registry.
+
+## 0.33.0
+
+### Minor Changes
+
+- bcf7007: Style number input stepper buttons with button appearance instead of input styling
+
+## 0.32.0
+
+### Minor Changes
+
+- 137978c: ObjectTable now honors a caller-supplied `objectSet` for interface types (previously it was ignored for interfaces and the table fell back to fetching by type, leaving only a property `where` to filter). This lets an interface-backed table be driven by a composed/filtered object set, e.g. a pivot-derived set. For an interface object set, rows expose the interface's declared properties (plus any `withProperties`); concrete-only properties are not loaded.
+
+## 0.31.0
+
+### Minor Changes
+
+- c24b0cf: Align OSDK component tokens with Blueprint styling: use box-shadow instead of border for inputs, buttons, and selects; add proper dark mode token overrides; group Storybook theme presets into built-in and custom categories
+
+## 0.30.0
+
+### Minor Changes
+
+- 083b82e: Fix filter list focus outline clipping by switching overflow from hidden to clip
+- a225595: Align ActionForm input-like controls with Blueprint-style shadows, focus rings, and button hover behavior.
+
+  Migration: remove overrides for the legacy input focus width, color, and offset CSS variables, plus the removed file picker trigger, date picker, and time picker border/border-color/focus/error border color variables (e.g. `--osdk-datetime-input-border-color`, `--osdk-datetime-input-border-color-focus`, `--osdk-datetime-input-error-border-color`, `--osdk-time-picker-input-border-color-focus`). Use `--osdk-input-focus-outline`, `--osdk-input-focus-shadow`, and the matching date picker, file picker, or time picker focus shadow tokens instead.
+
+## 0.29.0
+
+### Minor Changes
+
+- ee3bce8: Fix PDF viewer toolbar download saving an invalid filename.
+- ee3bce8: Add `downloadFileName` prop to set the PDF download name.
+- e553390: Fix inaccurate docs: drop stale `@beta` install pins (now older than `latest`) so all setup pages agree on untagged installs, soften the "every `--osdk-*` token maps to a `--bp-*` token" claim (some hold raw values), simplify the Layers section to user-facing setup, and remove `@osdk/cbac-components` install/style references now that CBAC components are merged into `@osdk/react-components`.
+
+## 0.28.0
+
+### Minor Changes
+
+- c00ec4a: Add edit-component agent skill for contribution
+- 4fcf89e: Add include/exclude and clear-all controls to FilterList linked-property and has-link filters. The overflow (…) menu now surfaces from the filter's component type, so the controls appear for empty and just-added filters without pre-filling any state, and the open overflow (…) button shows an active state. For has-link filters, "Excluding" filters to objects that do not have the link.
+- 37344db: Render CBAC and MANDATORY marking property columns in `ObjectTable`. Columns backed by marking properties whose `typeMetadata.markingType` is `"CBAC"` now render via the `CbacBanner`, and `"MANDATORY"` marking columns render one pill per marking on the row. Columns whose marking subtype isn't surfaced by the platform fall back to the previous default rendering.
+
 ## 0.27.0
 
 ### Minor Changes

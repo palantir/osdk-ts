@@ -18,6 +18,7 @@ import { createClient } from "@osdk/client";
 import { OsdkProvider } from "@osdk/react";
 import type { Preview } from "@storybook/react-vite";
 import { initialize, mswLoader } from "msw-storybook-addon";
+
 import { fauxFoundry, setupFauxFoundry } from "../src/mocks/fauxFoundry.js";
 import { GLOBALS_KEY } from "./addons/brand-theme-extractor/constants.js";
 import { BrandThemeDecorator } from "./addons/brand-theme-extractor/decorator.js";
@@ -25,6 +26,7 @@ import {
   getDefaultBrandThemeState,
   stringifyBrandThemeState,
 } from "./addons/brand-theme-extractor/state.js";
+
 import "./styles.css";
 
 // Initialize MSW with proper options
@@ -37,6 +39,11 @@ const serviceWorkerUrl = `${basePath}${
 
 initialize({
   onUnhandledRequest: "warn",
+  // Disable MSW's per-request console logging. In a browser it goes to
+  // devtools (collapsed), but under Vitest browser mode it is forwarded to the
+  // terminal, dumping full request/response payloads (including multi-MB PDFs)
+  // for every intercepted call.
+  quiet: true,
   serviceWorker: {
     url: serviceWorkerUrl,
   },
@@ -48,7 +55,7 @@ const fauxFoundryReady = setupFauxFoundry();
 const mockClient = createClient(
   fauxFoundry.baseUrl,
   fauxFoundry.defaultOntologyRid,
-  () => Promise.resolve("myAccessToken"),
+  () => Promise.resolve("myAccessToken")
 );
 
 const preview: Preview = {
@@ -79,7 +86,6 @@ const preview: Preview = {
             "Docs/Changelog",
             "Docs/Guides/Getting Started",
             "Docs/Guides/Usage with OSDK",
-            "Docs/Styling/Overview",
             "Docs/Tokens/Colors",
             "Docs/Tokens/Typography",
             "Docs/Tokens/Spacing",
@@ -91,14 +97,18 @@ const preview: Preview = {
           if (ao !== bo) return ao - bo;
         }
 
-        // Within "Components" — same component folder: "Docs" entry first
-        if (
-          aParts[0] === "Components" && bParts[0] === "Components"
-          && aParts[1] === bParts[1]
-        ) {
-          const aIsDoc = aParts[2] === "Docs";
-          const bIsDoc = bParts[2] === "Docs";
-          if (aIsDoc !== bIsDoc) return aIsDoc ? -1 : 1;
+        // Within "Components" — "Overview" always first
+        if (aParts[0] === "Components" && bParts[0] === "Components") {
+          const aIsOverview = aParts[1] === "Overview";
+          const bIsOverview = bParts[1] === "Overview";
+          if (aIsOverview !== bIsOverview) return aIsOverview ? -1 : 1;
+
+          // Same component folder: "Docs" entry first
+          if (aParts[1] === bParts[1]) {
+            const aIsDoc = aParts[2] === "Docs";
+            const bIsDoc = bParts[2] === "Docs";
+            if (aIsDoc !== bIsDoc) return aIsDoc ? -1 : 1;
+          }
         }
 
         // Default: alphabetical
@@ -122,9 +132,12 @@ const preview: Preview = {
       handlers: fauxFoundry.handlers,
     },
   },
-  loaders: [async () => {
-    await fauxFoundryReady;
-  }, mswLoader],
+  loaders: [
+    async () => {
+      await fauxFoundryReady;
+    },
+    mswLoader,
+  ],
   decorators: [
     (Story) => (
       <div className="root">

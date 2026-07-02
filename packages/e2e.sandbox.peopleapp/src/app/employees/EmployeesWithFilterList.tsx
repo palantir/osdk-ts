@@ -15,12 +15,13 @@
  */
 
 import type { WhereClause } from "@osdk/api";
+import { useOsdkObjects } from "@osdk/react";
+
+import "@osdk/react-components/styles.css";
 import {
   type FilterDefinitionUnion,
   FilterList,
 } from "@osdk/react-components/experimental/filter-list";
-import "@osdk/react-components/styles.css";
-import { useOsdkObjects } from "@osdk/react";
 import { useState } from "react";
 
 import { List } from "../../components/List.js";
@@ -125,7 +126,7 @@ export function EmployeesWithFilterList(props: EmployeesWithFilterListProps) {
               {employees.fetchMore && " (more available)"}
             </div>
             <pre style={{ fontSize: 10, marginTop: 8 }}>
-            Where: {JSON.stringify(whereClause, null, 2)}
+              Where: {JSON.stringify(whereClause, null, 2)}
             </pre>
           </div>
 

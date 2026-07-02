@@ -1,5 +1,75 @@
 # @osdk/create-app
 
+## 2.41.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.41.0
+
+## 2.40.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.40.0
+
+## 2.39.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.39.0
+
+## 2.38.0
+
+### Minor Changes
+
+- aabc439: Add a hidden "TypeScript Library" template (`template-typescript-library`) usable programmatically by id but kept out of the interactive template menu.
+
+### Patch Changes
+
+- @osdk/generator-utils@2.38.0
+
+## 2.37.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.37.0
+
+## 2.36.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.36.0
+
+## 2.35.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.35.0
+
+## 2.34.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.34.0
+
+## 2.33.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.33.0
+
+## 2.32.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.32.0
+
+## 2.31.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.31.0
+
 ## 2.30.0
 
 ### Patch Changes

@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { GetValueTypesInScopeRequest } from "../GetValueTypesInScopeRequest.js";
 import type { GetValueTypesInScopeResponse } from "../GetValueTypesInScopeResponse.js";
 
@@ -23,12 +24,12 @@ import type { GetValueTypesInScopeResponse } from "../GetValueTypesInScopeRespon
  */
 export async function getValueTypesInScope(
   ctx: ConjureContext,
-  request: GetValueTypesInScopeRequest,
+  request: GetValueTypesInScopeRequest
 ): Promise<GetValueTypesInScopeResponse> {
   return conjureFetch(
     ctx,
     `/type-registry/value-types/get-value-types-in-scope`,
     "POST",
-    request,
+    request
   );
 }

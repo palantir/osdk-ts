@@ -34,7 +34,7 @@ export interface UseMediaContentsResult<T> {
 export function useMediaContents<T>(
   media: Media,
   transform: (response: Response) => Promise<T>,
-  cleanup?: (data: T) => void,
+  cleanup?: (data: T) => void
 ): UseMediaContentsResult<T> {
   const [data, setData] = useState<T | undefined>(undefined);
   const [loading, setLoading] = useState(true);
@@ -78,7 +78,7 @@ export function useMediaContents<T>(
         cancelled = true;
       };
     },
-    [media, transform],
+    [media, transform]
   );
 
   useEffect(() => {

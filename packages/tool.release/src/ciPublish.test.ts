@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import { determineTag, findGreatestVersion } from "./ciPublish.js";
 
 describe("findGreatestVersion", () => {

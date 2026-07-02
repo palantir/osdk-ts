@@ -20,7 +20,7 @@ import type { Rollup } from "vite";
  * Get a standardize list of entrypoints from the possible Vite config formats.
  */
 export function getInputHtmlEntrypoints(
-  options: Rollup.NormalizedInputOptions,
+  options: Rollup.NormalizedInputOptions
 ): string[] {
   if (Array.isArray(options.input)) {
     return options.input;
@@ -29,6 +29,6 @@ export function getInputHtmlEntrypoints(
     return Object.values(options.input);
   }
   throw new Error(
-    "Widget entrypoints were not found in the expected Vite config format",
+    "Widget entrypoints were not found in the expected Vite config format"
   );
 }

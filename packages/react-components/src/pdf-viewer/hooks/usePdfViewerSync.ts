@@ -18,6 +18,7 @@ import type { PDFDocumentProxy } from "pdfjs-dist";
 import type { EventBus, PDFViewer } from "pdfjs-dist/web/pdf_viewer.mjs";
 import type { RefObject } from "react";
 import { useCallback, useEffect, useRef } from "react";
+
 import {
   PAGE_CHANGING_EVENT,
   PAGE_WIDTH_SCALE_VALUE,
@@ -51,88 +52,100 @@ export function usePdfViewerSync({
   const lastScaleRef = useRef(scale);
 
   // Sync React scale → PDFViewer (only when not in auto-size mode)
-  useEffect(function syncScaleToViewer() {
-    const pdfViewer = pdfViewerRef.current;
-    if (pdfViewer == null || autoSize) {
-      return;
-    }
-    if (Math.abs(lastScaleRef.current - scale) > 0.001) {
-      lastScaleRef.current = scale;
-      pdfViewer.currentScale = scale;
-    }
-  }, [pdfViewerRef, scale, autoSize]);
+  useEffect(
+    function syncScaleToViewer() {
+      const pdfViewer = pdfViewerRef.current;
+      if (pdfViewer == null || autoSize) {
+        return;
+      }
+      if (Math.abs(lastScaleRef.current - scale) > 0.001) {
+        lastScaleRef.current = scale;
+        pdfViewer.currentScale = scale;
+      }
+    },
+    [pdfViewerRef, scale, autoSize]
+  );
 
   // Apply page-width scale when auto-size is enabled.
   // On initial load, pagesloaded fires after usePdfViewer sets the initial
   // numeric scale, so we must listen for that event to apply page-width last.
   // When toggled on later (pagesLoaded already fired), apply immediately.
-  useEffect(function syncAutoSizeToViewer() {
-    const pdfViewer = pdfViewerRef.current;
-    const eventBus = eventBusRef.current;
-    if (pdfViewer == null || !autoSize) {
-      return;
-    }
+  useEffect(
+    function syncAutoSizeToViewer() {
+      const pdfViewer = pdfViewerRef.current;
+      const eventBus = eventBusRef.current;
+      if (pdfViewer == null || !autoSize) {
+        return;
+      }
 
-    const applyPageWidth = () => {
-      pdfViewer.currentScaleValue = PAGE_WIDTH_SCALE_VALUE;
-    };
-
-    // If pages are already rendered (pagesCount > 0), apply immediately.
-    // Otherwise wait for the pagesloaded event.
-    if (pdfViewer.pagesCount > 0) {
-      applyPageWidth();
-    }
-
-    if (eventBus != null) {
-      eventBus.on(PAGES_LOADED_EVENT, applyPageWidth);
-      return () => {
-        eventBus.off(PAGES_LOADED_EVENT, applyPageWidth);
+      const applyPageWidth = () => {
+        pdfViewer.currentScaleValue = PAGE_WIDTH_SCALE_VALUE;
       };
-    }
-  }, [pdfViewerRef, eventBusRef, autoSize, document]);
+
+      // If pages are already rendered (pagesCount > 0), apply immediately.
+      // Otherwise wait for the pagesloaded event.
+      if (pdfViewer.pagesCount > 0) {
+        applyPageWidth();
+      }
+
+      if (eventBus != null) {
+        eventBus.on(PAGES_LOADED_EVENT, applyPageWidth);
+        return () => {
+          eventBus.off(PAGES_LOADED_EVENT, applyPageWidth);
+        };
+      }
+    },
+    [pdfViewerRef, eventBusRef, autoSize, document]
+  );
 
   // ResizeObserver: re-apply page-width on container resize when auto-size is active
-  useEffect(function observeContainerResize() {
-    const container = containerRef.current;
-    const pdfViewer = pdfViewerRef.current;
-    if (container == null || pdfViewer == null || !autoSize) {
-      return;
-    }
+  useEffect(
+    function observeContainerResize() {
+      const container = containerRef.current;
+      const pdfViewer = pdfViewerRef.current;
+      if (container == null || pdfViewer == null || !autoSize) {
+        return;
+      }
 
-    const observer = new ResizeObserver(() => {
-      pdfViewer.currentScaleValue = PAGE_WIDTH_SCALE_VALUE;
-    });
-    observer.observe(container);
+      const observer = new ResizeObserver(() => {
+        pdfViewer.currentScaleValue = PAGE_WIDTH_SCALE_VALUE;
+      });
+      observer.observe(container);
 
-    return () => {
-      observer.disconnect();
-    };
-  }, [containerRef, pdfViewerRef, autoSize, document]);
+      return () => {
+        observer.disconnect();
+      };
+    },
+    [containerRef, pdfViewerRef, autoSize, document]
+  );
 
   // Listen to PDFViewer events → React state
-  useEffect(function subscribeViewerEvents() {
-    const eventBus = eventBusRef.current;
-    if (eventBus == null) {
-      return;
-    }
+  useEffect(
+    function subscribeViewerEvents() {
+      const eventBus = eventBusRef.current;
+      if (eventBus == null) {
+        return;
+      }
 
-    const handlePageChanging = (evt: { pageNumber: number }) => {
-      onPageChange(evt.pageNumber);
-    };
+      const handlePageChanging = (evt: { pageNumber: number }) => {
+        onPageChange(evt.pageNumber);
+      };
 
-    const handleScaleChanging = (evt: { scale: number }) => {
-      lastScaleRef.current = evt.scale;
-      onScaleChange(evt.scale);
-    };
+      const handleScaleChanging = (evt: { scale: number }) => {
+        lastScaleRef.current = evt.scale;
+        onScaleChange(evt.scale);
+      };
 
-    eventBus.on(PAGE_CHANGING_EVENT, handlePageChanging);
-    eventBus.on(SCALE_CHANGING_EVENT, handleScaleChanging);
+      eventBus.on(PAGE_CHANGING_EVENT, handlePageChanging);
+      eventBus.on(SCALE_CHANGING_EVENT, handleScaleChanging);
 
-    return () => {
-      eventBus.off(PAGE_CHANGING_EVENT, handlePageChanging);
-      eventBus.off(SCALE_CHANGING_EVENT, handleScaleChanging);
-    };
-  }, [eventBusRef, document, onPageChange, onScaleChange]);
+      return () => {
+        eventBus.off(PAGE_CHANGING_EVENT, handlePageChanging);
+        eventBus.off(SCALE_CHANGING_EVENT, handleScaleChanging);
+      };
+    },
+    [eventBusRef, document, onPageChange, onScaleChange]
+  );
 
   const scrollToPage = useCallback(
     (page: number) => {
@@ -141,7 +154,7 @@ export function usePdfViewerSync({
         pdfViewer.currentPageNumber = page;
       }
     },
-    [pdfViewerRef],
+    [pdfViewerRef]
   );
 
   return { scrollToPage };

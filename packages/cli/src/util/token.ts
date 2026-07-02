@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { ExitProcessError } from "@osdk/cli.common";
-import { consola } from "consola";
 import { promises as fsPromises } from "node:fs";
 import path from "node:path";
+
+import { ExitProcessError } from "@osdk/cli.common";
+import { consola } from "consola";
 
 const TOKEN_ENV_VARS = ["FOUNDRY_TOKEN", "FOUNDRY_SDK_AUTH_TOKEN"] as const;
 
@@ -30,7 +31,7 @@ const TOKEN_ENV_VARS = ["FOUNDRY_TOKEN", "FOUNDRY_SDK_AUTH_TOKEN"] as const;
  */
 export async function loadToken(
   token?: string,
-  tokenFile?: string,
+  tokenFile?: string
 ): Promise<string> {
   if (token) {
     consola.debug(`Using token from --token option`);
@@ -41,7 +42,7 @@ export async function loadToken(
   if (tokenFile) {
     const loadedToken = await loadTokenFile(tokenFile);
     consola.debug(
-      `Using token from --tokenFile=${loadedToken.filePath} option`,
+      `Using token from --tokenFile=${loadedToken.filePath} option`
     );
     validate(loadedToken.token);
     return loadedToken.token;
@@ -54,7 +55,7 @@ export async function loadToken(
       validate(environmentToken);
       if (envVar === "FOUNDRY_SDK_AUTH_TOKEN") {
         consola.warn(
-          `Using FOUNDRY_SDK_AUTH_TOKEN environment variable is deprecated. Please use FOUNDRY_TOKEN instead.`,
+          `Using FOUNDRY_SDK_AUTH_TOKEN environment variable is deprecated. Please use FOUNDRY_TOKEN instead.`
         );
       }
       return environmentToken;
@@ -66,7 +67,7 @@ export async function loadToken(
     `No token found.`,
     `You can supply a --token or --token-file option, or set the ${
       TOKEN_ENV_VARS[0]
-    } environment variable`,
+    } environment variable`
   );
 }
 
@@ -90,7 +91,7 @@ export async function loadTokenFile(filePath: string): Promise<LoadedToken> {
   } catch (error) {
     throw new ExitProcessError(
       2,
-      `Unable to read token file "${filePath}": ${error}`,
+      `Unable to read token file "${filePath}": ${error}`
     );
   }
 

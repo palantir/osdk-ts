@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BranchRid as _api_BranchRid,
   MonitorRid as _api_MonitorRid,
@@ -34,13 +35,13 @@ export async function getMonitorEvents(
   ctx: ConjureContext,
   monitorRid: _api_MonitorRid,
   pageToken: _api_registry_PageToken | null | undefined,
-  branchRid: _api_BranchRid | null | undefined,
+  branchRid: _api_BranchRid | null | undefined
 ): Promise<_api_registry_GetMonitorEventsResponse> {
   return conjureFetch(
     ctx,
     `/registry/v0/monitors/${monitorRid}/events`,
     "GET",
     undefined,
-    { pageToken, branchRid },
+    { pageToken, branchRid }
   );
 }

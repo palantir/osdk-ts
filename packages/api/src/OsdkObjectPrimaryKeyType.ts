@@ -22,12 +22,10 @@ import type {
 } from "./ontology/ObjectTypeDefinition.js";
 import type { PrimaryKeyTypes } from "./ontology/PrimaryKeyTypes.js";
 
-export type OsdkObjectPrimaryKeyType<
-  Q extends ObjectOrInterfaceDefinition,
-> =
-  & (Q extends ObjectTypeDefinition
+export type OsdkObjectPrimaryKeyType<Q extends ObjectOrInterfaceDefinition> =
+  (Q extends ObjectTypeDefinition
     ? PropertyValueWireToClient[CompileTimeMetadata<Q>["primaryKeyType"]]
-    : unknown)
-  // if the type is `unknown` then the next line will
-  // restrict it down to all valid primary key types
-  & PropertyValueWireToClient[PrimaryKeyTypes];
+    : unknown) &
+    // if the type is `unknown` then the next line will
+    // restrict it down to all valid primary key types
+    PropertyValueWireToClient[PrimaryKeyTypes];

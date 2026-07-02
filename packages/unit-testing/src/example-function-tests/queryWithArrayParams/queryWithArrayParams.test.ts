@@ -16,6 +16,7 @@
 
 import { queryTypeReturnsArray } from "@osdk/client.test.ontology";
 import { describe, expect, it } from "vitest";
+
 import { createMockClient } from "../../mock/createMockClient.js";
 import { queryWithArrayParams } from "./queryWithArrayParams.js";
 

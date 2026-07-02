@@ -13,3 +13,4 @@ export { NihalbCastingInterfaceB } from './interfaces/NihalbCastingInterfaceB.js
 export { NihalbCastingInterfaceTypeA } from './interfaces/NihalbCastingInterfaceTypeA.js';
 export { NihalbCastingLinkedInterfaceTypeA } from './interfaces/NihalbCastingLinkedInterfaceTypeA.js';
 export { OsdkTestInterface } from './interfaces/OsdkTestInterface.js';
+export { ReducerTestInterface } from './interfaces/ReducerTestInterface.js';

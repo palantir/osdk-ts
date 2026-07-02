@@ -19,7 +19,7 @@ import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
 import { formatTs } from "../util/test/formatTs.js";
 
 // BEGIN: THIS IS GENERATED CODE. DO NOT EDIT.
-const ExpectedOsdkVersion = "2.30.0";
+const ExpectedOsdkVersion = "2.41.0";
 // END: THIS IS GENERATED CODE. DO NOT EDIT.
 
 export async function generateOntologyMetadataFile(
@@ -36,13 +36,15 @@ export async function generateOntologyMetadataFile(
         ontologyApiNamespace == null
           ? `
         export const $ontologyRid = "${ontology.ontology.rid}";
-        `
-          : ""
-      }
-       ${
-        ontology.raw.branch != null
-          ? `
-        export const $branch = "${ontology.raw.branch.rid}";
+        /**
+         * The RID of the Foundry branch this SDK was generated against, or
+         * \`undefined\` if it was generated against the main branch.
+         */
+        export const $branch: string | undefined = ${
+            ontology.raw.branch != null
+              ? `"${ontology.raw.branch.rid}"`
+              : "undefined"
+          };
         `
           : ""
       }

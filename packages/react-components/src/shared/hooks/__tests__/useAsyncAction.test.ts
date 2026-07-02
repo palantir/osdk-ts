@@ -16,6 +16,7 @@
 
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+
 import { useAsyncAction } from "../useAsyncAction.js";
 
 describe("useAsyncAction", () => {
@@ -33,7 +34,7 @@ describe("useAsyncAction", () => {
       () =>
         new Promise<void>((r) => {
           resolve = r;
-        }),
+        })
     );
 
     const { result } = renderHook(() => useAsyncAction(action));
@@ -55,7 +56,7 @@ describe("useAsyncAction", () => {
 
   it("forwards arguments to the action", async () => {
     const action = vi.fn(
-      (_a: string, _b: number): Promise<void> => Promise.resolve(),
+      (_a: string, _b: number): Promise<void> => Promise.resolve()
     );
 
     const { result } = renderHook(() => useAsyncAction(action));
@@ -82,7 +83,8 @@ describe("useAsyncAction", () => {
   });
 
   it("clears previous error on next execute", async () => {
-    const action = vi.fn()
+    const action = vi
+      .fn()
       .mockRejectedValueOnce(new Error("first"))
       .mockResolvedValueOnce(undefined);
 
@@ -121,7 +123,7 @@ describe("useAsyncAction", () => {
       () =>
         new Promise<void>((r) => {
           resolve = r;
-        }),
+        })
     );
 
     const { result, unmount } = renderHook(() => useAsyncAction(action));
@@ -151,7 +153,7 @@ describe("useAsyncAction", () => {
       () =>
         new Promise<void>((_resolve, rej) => {
           reject = rej;
-        }),
+        })
     );
 
     const { result, unmount } = renderHook(() => useAsyncAction(action));

@@ -17,6 +17,7 @@
 import { renderHook, waitFor } from "@testing-library/react";
 import pDefer from "p-defer";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { usePdfDocument } from "../usePdfDocument.js";
 
 vi.mock("pdfjs-dist", () => ({
@@ -140,7 +141,7 @@ describe("usePdfDocument", () => {
 
     const { result, rerender } = renderHook(
       ({ src }: { src: string }) => usePdfDocument(src),
-      { initialProps: { src: "first.pdf" } },
+      { initialProps: { src: "first.pdf" } }
     );
 
     await waitFor(() => {

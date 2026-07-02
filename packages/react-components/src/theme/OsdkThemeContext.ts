@@ -15,6 +15,7 @@
  */
 
 import { type Context, createContext } from "react";
+
 import type { OsdkThemeContextValue } from "./types.js";
 
 export const OsdkThemeContext: Context<OsdkThemeContextValue | null> =

@@ -48,13 +48,8 @@ export function niceTicks(max: number, desiredCount = 5): number[] {
   const rough = max / desiredCount;
   const exponent = Math.floor(Math.log10(rough));
   const fraction = rough / Math.pow(10, exponent);
-  const niceFraction = fraction <= 1
-    ? 1
-    : fraction <= 2
-    ? 2
-    : fraction <= 5
-    ? 5
-    : 10;
+  const niceFraction =
+    fraction <= 1 ? 1 : fraction <= 2 ? 2 : fraction <= 5 ? 5 : 10;
   const step = niceFraction * Math.pow(10, exponent);
   const ticks: number[] = [];
   for (let v = 0; v <= max + step / 2; v += step) {
@@ -72,7 +67,7 @@ export function createHistogramBuckets<T>(
   pairs: Array<ValueCountPair<T>>,
   range: { min: T; max: T },
   toNumber: (value: T) => number,
-  fromNumber: (value: number) => T,
+  fromNumber: (value: number) => T
 ): Array<HistogramBucket<T>> {
   if (pairs.length === 0) {
     return [];
@@ -95,7 +90,7 @@ export function createHistogramBuckets<T>(
   for (const { value, count } of pairs) {
     const bucketIndex = Math.min(
       Math.floor((toNumber(value) - minNum) / bucketSize),
-      HISTOGRAM_BUCKETS - 1,
+      HISTOGRAM_BUCKETS - 1
     );
     bucketCounts[bucketIndex] += count;
   }
@@ -108,7 +103,7 @@ export function createHistogramBuckets<T>(
 }
 
 export function getMaxBucketCount<T>(
-  buckets: Array<HistogramBucket<T>>,
+  buckets: Array<HistogramBucket<T>>
 ): number {
   return Math.max(...buckets.map((b) => b.count), 1);
 }

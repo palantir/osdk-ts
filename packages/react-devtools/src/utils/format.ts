@@ -60,7 +60,7 @@ export function formatRelativeTime(timestamp: number): string {
 
 export const formatMilliseconds = (
   value: number,
-  includeSpace: boolean,
+  includeSpace: boolean
 ): string => {
   const space = includeSpace ? " " : "";
   if (value < 1000) {

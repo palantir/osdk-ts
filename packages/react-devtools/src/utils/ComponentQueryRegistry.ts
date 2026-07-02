@@ -49,21 +49,21 @@ export interface ComponentHookBinding {
 export type QueryParams =
   | { type: "object"; objectType: string; primaryKey: string }
   | {
-    type: "list";
-    objectType: string;
-    where?: unknown;
-    orderBy?: unknown;
-    pageSize?: number;
-  }
+      type: "list";
+      objectType: string;
+      where?: unknown;
+      orderBy?: unknown;
+      pageSize?: number;
+    }
   | { type: "action"; actionName: string }
   | { type: "links"; sourceObject: string; linkName: string }
   | { type: "objectSet"; baseObjectSet: string; operations: unknown[] }
   | {
-    type: "aggregation";
-    objectType: string;
-    where?: unknown;
-    aggregate?: unknown;
-  };
+      type: "aggregation";
+      objectType: string;
+      where?: unknown;
+      aggregate?: unknown;
+    };
 
 const INTERNAL_FRAME_PATTERNS = [
   /node_modules/,
@@ -130,10 +130,10 @@ export class ComponentQueryRegistry {
       for (const existingId of existingBindings) {
         const existing = this.bindings.get(existingId);
         if (
-          existing
-          && existing.hookType === options.hookType
-          && existing.querySignature === options.querySignature
-          && !existing.unmountedAt
+          existing &&
+          existing.hookType === options.hookType &&
+          existing.querySignature === options.querySignature &&
+          !existing.unmountedAt
         ) {
           return existingId;
         }
@@ -218,8 +218,8 @@ export class ComponentQueryRegistry {
         binding.renderCount++;
         binding.lastRenderDuration = duration;
         binding.avgRenderDuration =
-          (binding.avgRenderDuration * (binding.renderCount - 1) + duration)
-          / binding.renderCount;
+          (binding.avgRenderDuration * (binding.renderCount - 1) + duration) /
+          binding.renderCount;
       }
     }
   }
@@ -228,7 +228,7 @@ export class ComponentQueryRegistry {
     const bindingIds = this.componentToBindings.get(componentId);
     if (!bindingIds) return [];
 
-    return Array.from(bindingIds)
+    return [...bindingIds]
       .map((id) => this.bindings.get(id))
       .filter((b): b is ComponentHookBinding => b !== undefined);
   }
@@ -237,14 +237,14 @@ export class ComponentQueryRegistry {
     const bindingIds = this.queryToBindings.get(querySignature);
     if (!bindingIds) return [];
 
-    return Array.from(bindingIds)
+    return [...bindingIds]
       .map((id) => this.bindings.get(id))
       .filter((b): b is ComponentHookBinding => b !== undefined)
       .filter((b) => !b.unmountedAt);
   }
 
   getBindingBySubscription(
-    subscriptionId: string,
+    subscriptionId: string
   ): ComponentHookBinding | undefined {
     const bindingId = this.subscriptionToBinding.get(subscriptionId);
     return bindingId ? this.bindings.get(bindingId) : undefined;
@@ -254,10 +254,10 @@ export class ComponentQueryRegistry {
     const result = new Map<string, ComponentHookBinding[]>();
 
     for (const [componentId, bindingIds] of this.componentToBindings) {
-      const bindings = Array.from(bindingIds)
+      const bindings = [...bindingIds]
         .map((id) => this.bindings.get(id))
         .filter(
-          (b): b is ComponentHookBinding => b !== undefined && !b.unmountedAt,
+          (b): b is ComponentHookBinding => b !== undefined && !b.unmountedAt
         );
 
       if (bindings.length > 0) {
@@ -268,9 +268,11 @@ export class ComponentQueryRegistry {
     return result;
   }
 
-  private parseStackTrace(
-    stack: string,
-  ): { file?: string; line?: number; column?: number } {
+  private parseStackTrace(stack: string): {
+    file?: string;
+    line?: number;
+    column?: number;
+  } {
     const lines = stack.split("\n");
 
     for (let i = 3; i < Math.min(lines.length, 25); i++) {
@@ -282,8 +284,8 @@ export class ComponentQueryRegistry {
         if (!isInternalFrame(filePath)) {
           return {
             file: filePath,
-            line: parseInt(chromeMatch[2], 10),
-            column: parseInt(chromeMatch[3], 10),
+            line: Number.parseInt(chromeMatch[2], 10),
+            column: Number.parseInt(chromeMatch[3], 10),
           };
         }
         continue;
@@ -295,8 +297,8 @@ export class ComponentQueryRegistry {
         if (!isInternalFrame(filePath)) {
           return {
             file: filePath,
-            line: parseInt(firefoxMatch[2], 10),
-            column: parseInt(firefoxMatch[3], 10),
+            line: Number.parseInt(firefoxMatch[2], 10),
+            column: Number.parseInt(firefoxMatch[3], 10),
           };
         }
         continue;
@@ -306,9 +308,7 @@ export class ComponentQueryRegistry {
     return {};
   }
 
-  updateFromFiberDiscovery(
-    discovered: Map<string, DiscoveredComponent>,
-  ): void {
+  updateFromFiberDiscovery(discovered: Map<string, DiscoveredComponent>): void {
     const seenComponentIds = new Set<string>();
 
     for (const [componentId, component] of discovered) {
@@ -355,15 +355,15 @@ export class ComponentQueryRegistry {
   }
 
   private buildQuerySignature(
-    hookMeta: DiscoveredComponent["hooks"][0],
+    hookMeta: DiscoveredComponent["hooks"][0]
   ): string {
     switch (hookMeta.hookType) {
       case "useOsdkObject":
         return `object:${hookMeta.objectType}:${hookMeta.primaryKey}`;
       case "useOsdkObjects":
-        return `useOsdkObjects:${hookMeta.objectType}:${
-          JSON.stringify(hookMeta.where)
-        }:${JSON.stringify(hookMeta.orderBy)}`;
+        return `useOsdkObjects:${hookMeta.objectType}:${JSON.stringify(
+          hookMeta.where
+        )}:${JSON.stringify(hookMeta.orderBy)}`;
       case "useOsdkAction":
         return `action:${hookMeta.actionName}`;
       case "useLinks":
@@ -371,16 +371,16 @@ export class ComponentQueryRegistry {
           hookMeta.linkName || "unknown"
         }`;
       case "useOsdkAggregation":
-        return `aggregation:${hookMeta.objectType}:${
-          JSON.stringify(hookMeta.aggregate)
-        }`;
+        return `aggregation:${hookMeta.objectType}:${JSON.stringify(
+          hookMeta.aggregate
+        )}`;
       default:
         return `unknown:${JSON.stringify(hookMeta)}`;
     }
   }
 
   private mapHookType(
-    hookType: DiscoveredComponent["hooks"][0]["hookType"],
+    hookType: DiscoveredComponent["hooks"][0]["hookType"]
   ): ComponentHookBinding["hookType"] {
     switch (hookType) {
       case "useOsdkObject":
@@ -399,7 +399,7 @@ export class ComponentQueryRegistry {
   }
 
   private buildQueryParams(
-    hookMeta: DiscoveredComponent["hooks"][0],
+    hookMeta: DiscoveredComponent["hooks"][0]
   ): QueryParams {
     switch (hookMeta.hookType) {
       case "useOsdkObject":
@@ -448,10 +448,7 @@ export class ComponentQueryRegistry {
     let cleanedCount = 0;
 
     for (const [bindingId, binding] of this.bindings.entries()) {
-      if (
-        binding.unmountedAt
-        && now - binding.unmountedAt > maxAgeMs
-      ) {
+      if (binding.unmountedAt && now - binding.unmountedAt > maxAgeMs) {
         this.bindings.delete(bindingId);
 
         this.componentToBindings.get(binding.componentId)?.delete(bindingId);
@@ -502,6 +499,6 @@ export class ComponentQueryRegistry {
   }
 
   getAllBindings(): ComponentHookBinding[] {
-    return Array.from(this.bindings.values());
+    return [...this.bindings.values()];
   }
 }

@@ -1,5 +1,84 @@
 # @osdk/shared.test
 
+## 0.32.0
+
+### Minor Changes
+
+- 15a35f2: Add CipherText support for codegen and implement decryption interface
+
+### Patch Changes
+
+- Updated dependencies [9b150d7]
+- Updated dependencies [15a35f2]
+  - @osdk/api@2.41.0
+  - @osdk/generator-converters@2.41.0
+
+## 0.31.0
+
+### Minor Changes
+
+- 3e915ee: Array Reducers and Struct Main Value support
+
+### Patch Changes
+
+- Updated dependencies [3e915ee]
+  - @osdk/generator-converters@2.40.0
+  - @osdk/api@2.40.0
+
+## 0.30.0
+
+### Patch Changes
+
+- @osdk/api@2.38.0
+- @osdk/generator-converters@2.38.0
+
+## 0.29.0
+
+### Patch Changes
+
+- @osdk/api@2.37.0
+- @osdk/generator-converters@2.37.0
+
+## 0.28.0
+
+### Patch Changes
+
+- @osdk/api@2.35.0
+- @osdk/generator-converters@2.35.0
+
+## 0.27.0
+
+### Minor Changes
+
+- ab19740: Add `Media.fetchFullMetadata()` returning a `MediaFullMetadata` wrapper around the type-specific `MediaItemMetadata` discriminated union (parity with python-osdk's `get_media_full_metadata`).
+
+### Patch Changes
+
+- Updated dependencies [db028a0]
+- Updated dependencies [ab19740]
+  - @osdk/generator-converters@2.34.0
+  - @osdk/api@2.34.0
+
+## 0.26.0
+
+### Minor Changes
+
+- 79f8a6e: Stop serializing GeoJSON `Point` geometries into a `"lat,lon"` string when sending object property/parameter values. This broke geoshape values that are Points (the transaction edits and action endpoints rejected `"lat,lon"` with `InvalidTransactionEditPropertyValue` / invalid parameter for `GeoShape`). GeoJSON values are now passed through as objects, which the server accepts for both geoshape and geopoint/geohash targets. The FauxFoundry geohash action-parameter validator now also accepts GeoJSON objects, matching the real server.
+
+### Patch Changes
+
+- Updated dependencies [06adca1]
+  - @osdk/api@2.32.0
+  - @osdk/generator-converters@2.32.0
+
+## 0.25.0
+
+### Patch Changes
+
+- Updated dependencies [57cbc6d]
+  - @osdk/api@2.31.0
+  - @osdk/generator-converters@2.31.0
+
 ## 0.24.0
 
 ### Minor Changes

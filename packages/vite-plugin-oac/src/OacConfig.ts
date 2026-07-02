@@ -15,6 +15,7 @@
  */
 
 import type { FauxOntology } from "@osdk/faux";
+
 import type { Level } from "./Logger.js";
 
 export interface OacConfig {

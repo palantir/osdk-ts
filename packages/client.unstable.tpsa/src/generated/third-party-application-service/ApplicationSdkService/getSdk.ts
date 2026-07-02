@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { ApplicationRid } from "../ApplicationRid.js";
 import type { ApplicationSdk } from "../ApplicationSdk.js";
 import type { SdkVersion } from "../SdkVersion.js";
@@ -27,11 +28,11 @@ import type { SdkVersion } from "../SdkVersion.js";
 export async function getSdk(
   ctx: ConjureContext,
   applicationRid: ApplicationRid,
-  sdkVersion: SdkVersion,
+  sdkVersion: SdkVersion
 ): Promise<ApplicationSdk> {
   return conjureFetch(
     ctx,
     `/application-sdks/${applicationRid}/${sdkVersion}`,
-    "GET",
+    "GET"
   );
 }

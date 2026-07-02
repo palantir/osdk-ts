@@ -103,8 +103,7 @@ export interface ModifyOntologyBranchRequest {
 /**
  * A type to represent an OntologyBranch modification response.
  */
-export interface ModifyOntologyBranchResponse {
-}
+export interface ModifyOntologyBranchResponse {}
 /**
  * A type to represent a change request from the OntologyBranch.
  */

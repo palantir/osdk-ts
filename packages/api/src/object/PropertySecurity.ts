@@ -24,14 +24,14 @@
  */
 export type PropertySecurity =
   | ({
-    type: "propertyMarkings";
-  } & PropertyMarkings)
-  | ({
-    type: "unsupportedPolicy";
-  })
-  | ({
-    type: "errorComputingSecurity";
-  });
+      type: "propertyMarkings";
+    } & PropertyMarkings)
+  | {
+      type: "unsupportedPolicy";
+    }
+  | {
+      type: "errorComputingSecurity";
+    };
 
 /**
  * All marking requirements applicable to a property value.

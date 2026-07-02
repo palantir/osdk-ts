@@ -16,11 +16,11 @@
 
 export function createFetchHeaderMutator(
   fetchFn: typeof fetch | undefined = fetch,
-  mutator: (headers: Headers) => Promise<Headers> | Headers,
+  mutator: (headers: Headers) => Promise<Headers> | Headers
 ): typeof fetch {
   return async function headerMutatedFetch(
     url: RequestInfo | URL,
-    requestInit?: RequestInit,
+    requestInit?: RequestInit
   ) {
     if (!requestInit) {
       return fetchFn(url, { headers: await mutator(new Headers()) });

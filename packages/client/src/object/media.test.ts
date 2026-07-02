@@ -24,17 +24,17 @@ import {
   stubData,
 } from "@osdk/shared.test";
 import { beforeAll, describe, expect, it } from "vitest";
+
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
+import { createMediaFromReference } from "../createMediaFromReference.js";
+import type { MinimalClient } from "../MinimalClientContext.js";
 
 describe("media", () => {
   let client: Client;
 
   beforeAll(() => {
-    const testSetup = startNodeApiServer(
-      new LegacyFauxFoundry(),
-      createClient,
-    );
+    const testSetup = startNodeApiServer(new LegacyFauxFoundry(), createClient);
 
     ({ client } = testSetup);
 
@@ -43,13 +43,11 @@ describe("media", () => {
       .registerMedia(
         objectTypeWithAllPropertyTypes.apiName,
         "mediaReference",
-        new TextEncoder().encode(
-          JSON.stringify({ content: "Hello World" }),
-        ),
+        new TextEncoder().encode(JSON.stringify({ content: "Hello World" })),
         "application/json",
         "file1.txt",
         stubData.objectWithAllPropertyTypes1.mediaReference.reference
-          .mediaSetViewItem.mediaItemRid,
+          .mediaSetViewItem.mediaItemRid
       );
 
     return () => {
@@ -58,10 +56,9 @@ describe("media", () => {
   });
 
   it("reads media metadata successfully", async () => {
-    const result = await client(
-      objectTypeWithAllPropertyTypes,
-    )
-      .where({ id: stubData.objectWithAllPropertyTypes1.id }).fetchPage();
+    const result = await client(objectTypeWithAllPropertyTypes)
+      .where({ id: stubData.objectWithAllPropertyTypes1.id })
+      .fetchPage();
 
     const object1 = result.data[0];
     expect(object1.mediaReference).toBeDefined();
@@ -73,9 +70,44 @@ describe("media", () => {
     });
   });
 
+  it("reads full media metadata successfully", async () => {
+    const result = await client(objectTypeWithAllPropertyTypes)
+      .where({ id: stubData.objectWithAllPropertyTypes1.id })
+      .fetchPage();
+
+    const object1 = result.data[0];
+    expect(object1.mediaReference?.fetchFullMetadata).toBeDefined();
+    const fullMetadata = await object1.mediaReference?.fetchFullMetadata?.();
+    expect(fullMetadata).toEqual({
+      itemMetadata: {
+        type: "untyped",
+        sizeBytes: 25,
+      },
+    });
+  });
+
+  it("reads full media metadata via createMediaFromReference", async () => {
+    // Covers the non-ontology Media path (used by query results and the functions runtime).
+    // Routes through MediaSets.metadata, same as the ontology-backed path above.
+    const reference = stubData.objectWithAllPropertyTypes1.mediaReference;
+    const media = createMediaFromReference(
+      client as unknown as MinimalClient,
+      reference
+    );
+
+    const fullMetadata = await media.fetchFullMetadata?.();
+    expect(fullMetadata).toEqual({
+      itemMetadata: {
+        type: "untyped",
+        sizeBytes: 25,
+      },
+    });
+  });
+
   it("reads media content successfully", async () => {
     const result = await client(objectTypeWithAllPropertyTypes)
-      .where({ id: stubData.objectWithAllPropertyTypes1.id }).fetchPage();
+      .where({ id: stubData.objectWithAllPropertyTypes1.id })
+      .fetchPage();
 
     const object1 = result.data[0];
     expect(object1.mediaReference).toBeDefined();
@@ -87,7 +119,8 @@ describe("media", () => {
 
   it("gets media reference successfully", async () => {
     const result = await client(objectTypeWithAllPropertyTypes)
-      .where({ id: stubData.objectWithAllPropertyTypes1.id }).fetchPage();
+      .where({ id: stubData.objectWithAllPropertyTypes1.id })
+      .fetchPage();
 
     const object1 = result.data[0];
     expect(object1.mediaReference).toBeDefined();

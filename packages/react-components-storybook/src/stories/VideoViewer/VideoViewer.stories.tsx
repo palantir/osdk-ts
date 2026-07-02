@@ -63,9 +63,7 @@ const meta: Meta<VideoViewerMediaProps> = {
   parameters: {
     controls: { expanded: true },
     msw: {
-      handlers: [
-        http.get("*/example.mp4", () => passthrough()),
-      ],
+      handlers: [http.get("*/example.mp4", () => passthrough())],
     },
   },
   argTypes: {
@@ -92,8 +90,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code:
-          `import { VideoViewer } from "@osdk/react-components/experimental/video-viewer";
+        code: `import { VideoViewer } from "@osdk/react-components/experimental/video-viewer";
 
 <VideoViewer media={myOsdkMedia} />`,
       },

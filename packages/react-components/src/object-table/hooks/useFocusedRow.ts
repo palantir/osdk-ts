@@ -15,6 +15,7 @@
  */
 
 import { useCallback, useState } from "react";
+
 import { useEventCallback } from "../../shared/hooks/useEventCallback.js";
 
 export interface UseFocusedRowProps<TData> {
@@ -67,7 +68,7 @@ export function useFocusedRow<TData>({
   >(null);
 
   const effectiveId = isControlled
-    ? focusedRowId ?? null
+    ? (focusedRowId ?? null)
     : internalFocusedRowId;
 
   const fireChanged = useEventCallback((id: string | null) => {
@@ -83,7 +84,7 @@ export function useFocusedRow<TData>({
       }
       fireChanged(id);
     },
-    [effectiveId, isControlled, fireChanged],
+    [effectiveId, isControlled, fireChanged]
   );
 
   return {

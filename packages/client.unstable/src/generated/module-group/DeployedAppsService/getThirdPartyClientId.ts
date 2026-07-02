@@ -17,7 +17,7 @@
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 export async function getThirdPartyClientId(
   ctx: ConjureContext,
-  deployedAppRid: string,
+  deployedAppRid: string
 ): Promise<string | null | undefined> {
   return conjureFetch(ctx, `/deployed-apps/${deployedAppRid}/client-id`, "GET");
 }

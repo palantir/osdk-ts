@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import type { ObjectTypeDefinition } from "../ontology/ObjectTypeDefinition.js";
 import { configToShapeDefinition } from "./configToShapeDefinition.js";
 import type {
@@ -69,7 +70,7 @@ describe("configToShapeDefinition", () => {
         require: ["name"] as any,
         select: ["name"] as any,
       })
-    ).toThrow("Property \"name\" appears in multiple config arrays");
+    ).toThrow('Property "name" appears in multiple config arrays');
   });
 
   it("throws on non-function transform", () => {
@@ -77,7 +78,7 @@ describe("configToShapeDefinition", () => {
       configToShapeDefinition(MockEmployee, {
         transforms: { name: "not a function" } as any,
       })
-    ).toThrow("transforms[\"name\"] must be a function");
+    ).toThrow('transforms["name"] must be a function');
   });
 
   it("wires link via traversal and target shape", () => {

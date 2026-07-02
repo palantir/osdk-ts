@@ -22,6 +22,7 @@ import type {
 } from "pdfjs-dist/web/pdf_viewer.mjs";
 import type { RefObject } from "react";
 import { useCallback, useMemo, useRef, useState } from "react";
+
 import type { AnnotationPortalTarget } from "./usePdfAnnotationPortals.js";
 import { usePdfAnnotationPortals } from "./usePdfAnnotationPortals.js";
 import { usePdfDocument } from "./usePdfDocument.js";
@@ -98,7 +99,7 @@ export function usePdfViewerCore({
     viewerRef,
     document,
     initialScale,
-    initialPage,
+    initialPage
   );
 
   const handleScaleChange = useCallback((newScale: number) => {
@@ -125,43 +126,46 @@ export function usePdfViewerCore({
       setCurrentPage(page);
       syncScrollToPage(page);
     },
-    [syncScrollToPage],
+    [syncScrollToPage]
   );
 
   const portalTargets = usePdfAnnotationPortals(
     pdfViewerRef,
     eventBusRef,
-    document,
+    document
   );
 
-  return useMemo((): UsePdfViewerCoreResult => ({
-    document,
-    numPages,
-    loading,
-    error,
-    containerRef,
-    viewerRef,
-    currentPage,
-    scrollToPage,
-    scale,
-    setScale,
-    autoSize,
-    setAutoSize,
-    portalTargets,
-    pdfViewerRef,
-    eventBusRef,
-    findControllerRef,
-  }), [
-    document,
-    numPages,
-    loading,
-    error,
-    currentPage,
-    scrollToPage,
-    scale,
-    setScale,
-    autoSize,
-    setAutoSize,
-    portalTargets,
-  ]);
+  return useMemo(
+    (): UsePdfViewerCoreResult => ({
+      document,
+      numPages,
+      loading,
+      error,
+      containerRef,
+      viewerRef,
+      currentPage,
+      scrollToPage,
+      scale,
+      setScale,
+      autoSize,
+      setAutoSize,
+      portalTargets,
+      pdfViewerRef,
+      eventBusRef,
+      findControllerRef,
+    }),
+    [
+      document,
+      numPages,
+      loading,
+      error,
+      currentPage,
+      scrollToPage,
+      scale,
+      setScale,
+      autoSize,
+      setAutoSize,
+      portalTargets,
+    ]
+  );
 }

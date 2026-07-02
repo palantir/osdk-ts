@@ -24,7 +24,7 @@ export function traverseFiber(
   fiber: Fiber | null,
   selector: (node: Fiber) => boolean | void,
   ascending?: boolean,
-  maxDepth: number = DEFAULT_MAX_DEPTH,
+  maxDepth: number = DEFAULT_MAX_DEPTH
 ): Fiber | null {
   if (!fiber) {
     return null;
@@ -61,7 +61,7 @@ export function traverseAllFibers(
   selector: (node: Fiber) => boolean | void,
   ascending?: boolean,
   maxResults?: number,
-  maxDepth: number = DEFAULT_MAX_DEPTH,
+  maxDepth: number = DEFAULT_MAX_DEPTH
 ): Fiber[] {
   const results: Fiber[] = [];
 
@@ -107,11 +107,9 @@ export function traverseAllFibers(
 export function walkFiberTree(
   fiber: Fiber,
   visitor: (fiber: Fiber) => void,
-  maxDepth: number = DEFAULT_MAX_DEPTH,
+  maxDepth: number = DEFAULT_MAX_DEPTH
 ): void {
-  const stack: Array<{ fiber: Fiber; depth: number }> = [
-    { fiber, depth: 0 },
-  ];
+  const stack: Array<{ fiber: Fiber; depth: number }> = [{ fiber, depth: 0 }];
 
   while (stack.length > 0) {
     const entry = stack.pop();
@@ -157,6 +155,6 @@ export function findParentComponent(fiber: Fiber): Fiber | null {
 
       return null;
     },
-    { fallback: null, feature: "component-inspection" },
+    { fallback: null, feature: "component-inspection" }
   );
 }

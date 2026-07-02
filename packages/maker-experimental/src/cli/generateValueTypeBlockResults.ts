@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import type { ValueTypeBlockData } from "@osdk/client.unstable";
-import type { InputShape, OutputShape } from "@osdk/client.unstable/api";
 import * as fs from "node:fs";
 import * as path from "node:path";
+
+import type { ValueTypeBlockData } from "@osdk/client.unstable";
+import type { InputShape, OutputShape } from "@osdk/client.unstable/api";
+
 import { ReadableIdGenerator } from "../util/generateRid.js";
 import type { BlockGeneratorResult } from "./marketplaceSerialization/BlockGeneratorResult.js";
 import type { InputMappingEntry } from "./marketplaceSerialization/supportingTypes.js";
@@ -28,7 +30,7 @@ import type { InputMappingEntry } from "./marketplaceSerialization/supportingTyp
  */
 export async function generateValueTypeBlockResults(
   bulkValueTypeBlockData: ValueTypeBlockData[],
-  buildDir: string,
+  buildDir: string
 ): Promise<BlockGeneratorResult[]> {
   const results: BlockGeneratorResult[] = [];
 
@@ -42,7 +44,7 @@ export async function generateValueTypeBlockResults(
 
     await fs.promises.writeFile(
       path.join(outputDir, "value-types.json"),
-      JSON.stringify(entry, null, 2),
+      JSON.stringify(entry, null, 2)
     );
 
     const outputs = buildOutputShapes(entry);
@@ -66,14 +68,14 @@ export async function generateValueTypeBlockResults(
 }
 
 function buildOutputShapes(
-  entry: ValueTypeBlockData,
+  entry: ValueTypeBlockData
 ): Map<string, OutputShape> {
   const outputs = new Map<string, OutputShape>();
 
   for (const version of entry.versions) {
     const readableId = ReadableIdGenerator.getForProducedValueType(
       entry.metadata.apiName,
-      version.version,
+      version.version
     );
     outputs.set(readableId, {
       type: "valueType",
@@ -97,19 +99,19 @@ function buildOutputShapes(
  */
 export function getValueTypeInternalMappings(
   producedValueTypes: ValueTypeBlockData[],
-  inputShapes: Map<string, InputShape>,
+  inputShapes: Map<string, InputShape>
 ): InputMappingEntry[] {
   const mappings: InputMappingEntry[] = [];
   for (const entry of producedValueTypes) {
     for (const version of entry.versions) {
       const consumedId = ReadableIdGenerator.getForConsumedValueType(
         entry.metadata.apiName,
-        version.version,
+        version.version
       );
       if (inputShapes.has(consumedId)) {
         const producedId = ReadableIdGenerator.getForProducedValueType(
           entry.metadata.apiName,
-          version.version,
+          version.version
         );
         mappings.push({ input: consumedId, output: producedId });
       }

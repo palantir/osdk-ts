@@ -16,6 +16,7 @@
 
 import type { ObjectSet, ObjectTypeDefinition, PropertyKeys } from "@osdk/api";
 import { useMemo } from "react";
+
 import {
   usePropertyAggregation,
   type UsePropertyAggregationResult,
@@ -58,7 +59,7 @@ export function useDualScopeAggregation<
   propertyKey: K,
   scopedObjectSet: ObjectSet<Q> | undefined,
   emptySourceObjectSet: ObjectSet<Q> | undefined,
-  options: UseDualScopeAggregationOptions = {},
+  options: UseDualScopeAggregationOptions = {}
 ): UsePropertyAggregationResult {
   const { sortBy, selectedValues = EMPTY_VALUES, limit } = options;
   const isDualScope = emptySourceObjectSet !== undefined;
@@ -66,7 +67,7 @@ export function useDualScopeAggregation<
   const emptySourceAggregation = usePropertyAggregation(
     objectType,
     propertyKey,
-    emptySourceObjectSet,
+    emptySourceObjectSet
   );
 
   const activeValues = useMemo(() => {
@@ -88,14 +89,14 @@ export function useDualScopeAggregation<
     objectType,
     propertyKey,
     scopedObjectSet,
-    { sortBy, activeValues, limit },
+    { sortBy, activeValues, limit }
   );
 
   return {
     data: primary.data,
     maxCount: primary.maxCount,
-    isLoading: primary.isLoading
-      || (isDualScope && emptySourceAggregation.isLoading),
+    isLoading:
+      primary.isLoading || (isDualScope && emptySourceAggregation.isLoading),
     error: primary.error,
   };
 }

@@ -15,6 +15,7 @@
  */
 
 import React, { useCallback, useMemo, useRef } from "react";
+
 import type { SourceLocation } from "../../fiber/types.js";
 import type { InspectorOverlayProps, OverlayBounds } from "../types.js";
 import { ComponentLabel } from "./ComponentLabel.js";
@@ -27,9 +28,10 @@ interface GrabbedFlashProps {
   trigger: boolean;
 }
 
-function GrabbedFlash(
-  { bounds, trigger }: GrabbedFlashProps,
-): React.ReactElement | null {
+function GrabbedFlash({
+  bounds,
+  trigger,
+}: GrabbedFlashProps): React.ReactElement | null {
   const previousTriggerRef = useRef(trigger);
   const flashStateRef = useRef<{
     isVisible: boolean;
@@ -38,48 +40,51 @@ function GrabbedFlash(
     hideTimer: ReturnType<typeof setTimeout> | null;
   }>({ isVisible: false, opacity: 0, fadeTimer: null, hideTimer: null });
 
-  const subscribe = useCallback((onStoreChange: () => void) => {
-    const state = flashStateRef.current;
+  const subscribe = useCallback(
+    (onStoreChange: () => void) => {
+      const state = flashStateRef.current;
 
-    if (trigger && !previousTriggerRef.current) {
-      if (state.fadeTimer) {
-        clearTimeout(state.fadeTimer);
-      }
-      if (state.hideTimer) {
-        clearTimeout(state.hideTimer);
-      }
+      if (trigger && !previousTriggerRef.current) {
+        if (state.fadeTimer) {
+          clearTimeout(state.fadeTimer);
+        }
+        if (state.hideTimer) {
+          clearTimeout(state.hideTimer);
+        }
 
-      state.isVisible = true;
-      state.opacity = 1;
+        state.isVisible = true;
+        state.opacity = 1;
 
-      state.fadeTimer = setTimeout(() => {
-        state.opacity = 0;
-        state.fadeTimer = null;
+        state.fadeTimer = setTimeout(() => {
+          state.opacity = 0;
+          state.fadeTimer = null;
+          onStoreChange();
+        }, 50);
+
+        state.hideTimer = setTimeout(() => {
+          state.isVisible = false;
+          state.hideTimer = null;
+          onStoreChange();
+        }, FLASH_DURATION_MS);
+
         onStoreChange();
-      }, 50);
-
-      state.hideTimer = setTimeout(() => {
-        state.isVisible = false;
-        state.hideTimer = null;
-        onStoreChange();
-      }, FLASH_DURATION_MS);
-
-      onStoreChange();
-    }
-
-    previousTriggerRef.current = trigger;
-
-    return () => {
-      if (state.fadeTimer) {
-        clearTimeout(state.fadeTimer);
-        state.fadeTimer = null;
       }
-      if (state.hideTimer) {
-        clearTimeout(state.hideTimer);
-        state.hideTimer = null;
-      }
-    };
-  }, [trigger]);
+
+      previousTriggerRef.current = trigger;
+
+      return () => {
+        if (state.fadeTimer) {
+          clearTimeout(state.fadeTimer);
+          state.fadeTimer = null;
+        }
+        if (state.hideTimer) {
+          clearTimeout(state.hideTimer);
+          state.hideTimer = null;
+        }
+      };
+    },
+    [trigger]
+  );
 
   const getSnapshot = useCallback(() => {
     return flashStateRef.current;
@@ -147,7 +152,7 @@ export function InspectorOverlay({
     (sourceLocation: SourceLocation) => {
       eventHandlers?.onOpenSource?.(sourceLocation);
     },
-    [eventHandlers],
+    [eventHandlers]
   );
 
   const containerStyle = useMemo(
@@ -155,7 +160,7 @@ export function InspectorOverlay({
       ...overlayContainerStyles,
       zIndex: effectiveZIndex,
     }),
-    [effectiveZIndex],
+    [effectiveZIndex]
   );
 
   if (!isActive) {

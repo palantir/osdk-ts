@@ -41,8 +41,7 @@ declare const withProperties_builder_pivotTo: Builder["pivotTo"];
 declare const withProperties_builder_selectProperty: Builder["selectProperty"];
 
 /** aggregateBuilder.aggregate — terminal step on the constrained branch. */
-declare const withProperties_aggregateBuilder_aggregate:
-  AggregateBuilder["aggregate"];
+declare const withProperties_aggregateBuilder_aggregate: AggregateBuilder["aggregate"];
 
 /** aggregateBuilder.where — same narrowing surface, but returns an AggregateBuilder. */
 declare const withProperties_aggregateBuilder_where: AggregateBuilder["where"];

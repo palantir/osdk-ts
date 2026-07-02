@@ -1,6 +1,7 @@
 import type { Osdk, PropertyKeys } from "@osdk/api";
 import { useOsdkObjects } from "@osdk/react";
 import { useState } from "react";
+
 import { List } from "../../components/List.js";
 import { ListItem } from "../../components/ListItem.js";
 import { Employee } from "../../generatedNoCheck2/index.js";
@@ -23,9 +24,11 @@ interface EmployeeListItemProps {
   onSelect: (employee: Employee.OsdkInstance) => void;
 }
 
-function EmployeeListItem(
-  { item, isSelected, onSelect }: EmployeeListItemProps,
-) {
+function EmployeeListItem({
+  item,
+  isSelected,
+  onSelect,
+}: EmployeeListItemProps) {
   return (
     <ListItem
       isSelected={isSelected}
@@ -186,9 +189,8 @@ export function EmployeesListEnhanced(props: EmployeesListEnhancedProps) {
               setShowPivotedData(false);
             }}
             style={{
-              fontWeight: filterMode === "basic" && !showPivotedData
-                ? "bold"
-                : "normal",
+              fontWeight:
+                filterMode === "basic" && !showPivotedData ? "bold" : "normal",
             }}
           >
             All Employees
@@ -199,9 +201,10 @@ export function EmployeesListEnhanced(props: EmployeesListEnhancedProps) {
               setShowPivotedData(false);
             }}
             style={{
-              fontWeight: filterMode === "managers" && !showPivotedData
-                ? "bold"
-                : "normal",
+              fontWeight:
+                filterMode === "managers" && !showPivotedData
+                  ? "bold"
+                  : "normal",
             }}
           >
             Managers Only (RDP Filter)
@@ -212,9 +215,10 @@ export function EmployeesListEnhanced(props: EmployeesListEnhancedProps) {
               setShowPivotedData(false);
             }}
             style={{
-              fontWeight: filterMode === "highPerformers" && !showPivotedData
-                ? "bold"
-                : "normal",
+              fontWeight:
+                filterMode === "highPerformers" && !showPivotedData
+                  ? "bold"
+                  : "normal",
             }}
           >
             Location Filter
@@ -225,9 +229,10 @@ export function EmployeesListEnhanced(props: EmployeesListEnhancedProps) {
               setShowPivotedData(false);
             }}
             style={{
-              fontWeight: filterMode === "intersection" && !showPivotedData
-                ? "bold"
-                : "normal",
+              fontWeight:
+                filterMode === "intersection" && !showPivotedData
+                  ? "bold"
+                  : "normal",
             }}
           >
             Intersection (Dept + Business + JobTitle)

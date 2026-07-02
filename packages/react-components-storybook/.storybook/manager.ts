@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
+import React from "react";
 import type { TagBadgeParameters } from "storybook-addon-tag-badges/manager-helpers";
 import type { API } from "storybook/manager-api";
 import { addons, types } from "storybook/manager-api";
-import { ADDON_ID } from "./addons/brand-theme-extractor/constants.js";
+
+import {
+  ADDON_ID,
+  PANEL_ID,
+} from "./addons/brand-theme-extractor/constants.js";
+import { Panel } from "./addons/brand-theme-extractor/Panel.js";
 import { ThemeToolbar } from "./addons/brand-theme-extractor/ThemeToolbar.js";
 
 addons.setConfig({
@@ -56,19 +62,16 @@ function redirectToWelcomeIfNoStorySelected() {
 }
 
 // Redirect to the Welcome docs page if we're at the root
-addons.register(
-  "redirect-to-first-story",
-  (api: Pick<API, "on">) => {
-    api.on("STORY_RENDERED", () => {
-      redirectToWelcomeIfNoStorySelected();
-    });
+addons.register("redirect-to-first-story", (api: Pick<API, "on">) => {
+  api.on("STORY_RENDERED", () => {
+    redirectToWelcomeIfNoStorySelected();
+  });
 
-    // Allow Storybook's initial render cycle to complete
-    setTimeout(() => {
-      redirectToWelcomeIfNoStorySelected();
-    }, 100);
-  },
-);
+  // Allow Storybook's initial render cycle to complete
+  setTimeout(() => {
+    redirectToWelcomeIfNoStorySelected();
+  }, 100);
+});
 
 // Brand Theme Extractor toolbar
 addons.register(ADDON_ID, () => {
@@ -78,5 +81,11 @@ addons.register(ADDON_ID, () => {
     match: ({ viewMode, tabId }) =>
       Boolean(viewMode?.match(/^(story|docs)$/)) && !tabId,
     render: ThemeToolbar,
+  });
+
+  addons.add(PANEL_ID, {
+    type: types.PANEL,
+    title: "Brand Theme",
+    render: ({ active }) => React.createElement(Panel, { active: !!active }),
   });
 });

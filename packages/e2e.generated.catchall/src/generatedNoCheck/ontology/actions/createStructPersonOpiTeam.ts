@@ -15,7 +15,11 @@ export namespace createStructPersonOpiTeam {
       description: undefined;
       multiplicity: false;
       nullable: true;
-      type: ActionMetadata.DataType.Struct<{ city: 'string'; state: 'string'; zipcode: 'integer' }>;
+      type: ActionMetadata.DataType.Struct<{
+        city: { type: 'string'; nullable: false };
+        state: { type: 'string'; nullable: false };
+        zipcode: { type: 'integer'; nullable: true };
+      }>;
     };
     age: {
       description: undefined;
@@ -35,7 +39,11 @@ export namespace createStructPersonOpiTeam {
    * Create a struct person on the OPI team
    */
   export interface Params {
-    readonly address?: ActionParam.StructType<{ city: 'string'; state: 'string'; zipcode: 'integer' }> | null;
+    readonly address?: ActionParam.StructType<{
+      city: { type: 'string'; nullable: false };
+      state: { type: 'string'; nullable: false };
+      zipcode: { type: 'integer'; nullable: true };
+    }> | null;
 
     readonly age: ActionParam.PrimitiveType<'integer'>;
 
@@ -66,7 +74,7 @@ export namespace createStructPersonOpiTeam {
  * can change the behavior of the applied action. If prefills are configured, null prevents them
  * from being applied. If a parameter modifies an object's property, null will clear the data from
  * the object, whereas undefined would not modify that property._
- * @param {ActionParam.StructType<{"city":"string","state":"string","zipcode":"integer"}>} [address]
+ * @param {ActionParam.StructType<{"city":{"type":"string","nullable":false},"state":{"type":"string","nullable":false},"zipcode":{"type":"integer","nullable":true}}>} [address]
  * @param {ActionParam.PrimitiveType<"integer">} age
  * @param {ActionParam.PrimitiveType<"string">} id
  */

@@ -17,6 +17,7 @@
 import type { ActionDefinition } from "@osdk/api";
 import { useOsdkAction, useOsdkMetadata } from "@osdk/react";
 import React, { useCallback, useEffect, useMemo } from "react";
+
 import { typedReactMemo } from "../shared/typedMemo.js";
 import type {
   ActionFormProps,
@@ -32,7 +33,7 @@ const EMPTY_FIELD_DEFINITIONS: ReadonlyArray<RendererFieldDefinition> = [];
 const EMPTY_FORM_CONTENT: ReadonlyArray<FormContentItem> = [];
 
 export const ActionForm: <Q extends ActionDefinition<unknown>>(
-  props: ActionFormProps<Q>,
+  props: ActionFormProps<Q>
 ) => React.ReactElement = typedReactMemo(function ActionFormFn<
   Q extends ActionDefinition<unknown>,
 >({
@@ -48,9 +49,8 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
   onSuccess,
   onError,
 }: ActionFormProps<Q>): React.ReactElement {
-  const { applyAction: osdkApplyAction, isPending } = useOsdkAction(
-    actionDefinition,
-  );
+  const { applyAction: osdkApplyAction, isPending } =
+    useOsdkAction(actionDefinition);
   const {
     metadata,
     loading: metadataLoading,
@@ -63,7 +63,7 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
         onError?.({ type: "unknown", error: metadataError });
       }
     },
-    [metadataError, onError],
+    [metadataError, onError]
   );
 
   const parameters = metadata?.parameters;
@@ -82,20 +82,21 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
           ...fieldDefinition,
           fieldKey: String(def.fieldKey),
           fieldType: parameters?.[String(def.fieldKey)]?.type,
-          fieldComponentProps: defaultValue === undefined
-            ? def.fieldComponentProps
-            : { ...def.fieldComponentProps, defaultValue },
+          fieldComponentProps:
+            defaultValue === undefined
+              ? def.fieldComponentProps
+              : { ...def.fieldComponentProps, defaultValue },
         } as RendererFieldDefinition;
       });
     }, [formFieldDefinitions, parameters]);
 
   const rendererFieldDefinitions = useMemo(
     () =>
-      customFieldDefinitions
-        ?? (metadata != null
-          ? getDefaultFieldDefinitions(metadata)
-          : EMPTY_FIELD_DEFINITIONS),
-    [customFieldDefinitions, metadata],
+      customFieldDefinitions ??
+      (metadata != null
+        ? getDefaultFieldDefinitions(metadata)
+        : EMPTY_FIELD_DEFINITIONS),
+    [customFieldDefinitions, metadata]
   );
 
   const formContent = useMemo(
@@ -103,9 +104,9 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
       rendererFieldDefinitions.length === 0
         ? EMPTY_FORM_CONTENT
         : rendererFieldDefinitions.map(
-          (def): FormContentItem => ({ type: "field", definition: def }),
-        ),
-    [rendererFieldDefinitions],
+            (def): FormContentItem => ({ type: "field", definition: def })
+          ),
+    [rendererFieldDefinitions]
   );
 
   const coerceFormState = useCallback(
@@ -116,7 +117,7 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
       }
       return coerced;
     },
-    [parameters],
+    [parameters]
   );
 
   const handleSubmit = useCallback(
@@ -133,7 +134,7 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
         onError?.({ type: "submission", error: e });
       }
     },
-    [coerceFormState, onSubmit, osdkApplyAction, onSuccess, onError],
+    [coerceFormState, onSubmit, osdkApplyAction, onSuccess, onError]
   );
 
   const handleFieldValueChange = useCallback(
@@ -143,10 +144,10 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
           ({
             ...prev,
             [fieldKey]: value,
-          }) as FormState<Q>,
+          }) as FormState<Q>
       );
     },
-    [onFormStateChange],
+    [onFormStateChange]
   );
 
   const resolvedTitle = showFormTitle

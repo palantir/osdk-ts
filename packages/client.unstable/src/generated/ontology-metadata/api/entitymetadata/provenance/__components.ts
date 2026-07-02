@@ -39,6 +39,12 @@ export interface ActionTypeProvenanceSource_marketplace {
 export type ActionTypeProvenanceSource = ActionTypeProvenanceSource_marketplace;
 
 /**
+ * Owning direct writer originating from a Builder pipeline.
+ */
+export interface BuilderDirectWriter {
+  pipelineRid: _api_BuilderPipelineRid;
+}
+/**
  * Provenance of an entity originating from Builder pipeline.
  */
 export interface BuilderEntityProvenance {
@@ -129,5 +135,12 @@ export type OntologyIrEntityProvenanceSource =
 /**
  * Provenance of an entity originating from ontology metadata application (OMA).
  */
-export interface OntologyMetadataAppEntityProvenance {
+export interface OntologyMetadataAppEntityProvenance {}
+export interface OwningDirectWriter_builder {
+  type: "builder";
+  builder: BuilderDirectWriter;
 }
+/**
+ * Information describing the owning direct writer for a direct datasource, modeled as an extensible union.
+ */
+export type OwningDirectWriter = OwningDirectWriter_builder;

@@ -17,6 +17,7 @@
 @import "./tokens/pdf-viewer.css";
 @import "./tokens/tiff-viewer.css";
 @import "./tokens/markdown-renderer.css";
+@import "./tokens/number-input.css";
 @import "./tokens/object-set.css";
 @import "./tokens/radio.css";
 @import "./tokens/file-picker.css";

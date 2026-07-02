@@ -57,7 +57,7 @@ export function getOsdkConfig(ontologyRid: string): OsdkConfig {
     clientId: getConfigValue("osdk-clientId", "VITE_FOUNDRY_CLIENT_ID"),
     redirectUrl: getConfigValue(
       "osdk-redirectUrl",
-      "VITE_FOUNDRY_REDIRECT_URL",
+      "VITE_FOUNDRY_REDIRECT_URL"
     ),
     foundryUrl: getConfigValue("osdk-foundryUrl", "VITE_FOUNDRY_API_URL"),
     ontologyRid: getOntologyRid(ontologyRid),

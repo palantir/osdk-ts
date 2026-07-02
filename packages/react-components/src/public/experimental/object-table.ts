@@ -19,7 +19,7 @@ import { ObjectTable as _ObjectTable } from "../../object-table/ObjectTable.js";
 import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
 export const ObjectTable: typeof _ObjectTable = withOsdkMetrics(
   _ObjectTable,
-  "ObjectTable",
+  "ObjectTable"
 );
 export type {
   ColumnDefinition,

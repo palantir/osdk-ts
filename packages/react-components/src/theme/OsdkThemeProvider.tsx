@@ -15,6 +15,7 @@
  */
 
 import React from "react";
+
 import { OsdkThemeContext } from "./OsdkThemeContext.js";
 import type {
   OsdkThemeContextValue,
@@ -78,19 +79,18 @@ export function OsdkThemeProvider({
   target,
   children,
 }: OsdkThemeProviderProps): React.ReactElement {
-  const [internalTheme, setInternalTheme] = React.useState<OsdkThemeMode>(
-    defaultTheme,
-  );
+  const [internalTheme, setInternalTheme] =
+    React.useState<OsdkThemeMode>(defaultTheme);
   const theme = controlledTheme ?? internalTheme;
 
   const systemTheme = useSystemTheme();
-  const resolvedTheme: ResolvedOsdkTheme = theme === "system"
-    ? systemTheme
-    : theme;
+  const resolvedTheme: ResolvedOsdkTheme =
+    theme === "system" ? systemTheme : theme;
 
   React.useLayoutEffect(() => {
-    const element = target
-      ?? (typeof document !== "undefined" ? document.documentElement : null);
+    const element =
+      target ??
+      (typeof document !== "undefined" ? document.documentElement : null);
     if (element == null) return;
 
     const previous = element.getAttribute(DATA_THEME_ATTR);
@@ -111,12 +111,12 @@ export function OsdkThemeProvider({
       }
       onThemeChanged?.(next);
     },
-    [controlledTheme, onThemeChanged],
+    [controlledTheme, onThemeChanged]
   );
 
   const value = React.useMemo<OsdkThemeContextValue>(
     () => ({ theme, resolvedTheme, setTheme }),
-    [theme, resolvedTheme, setTheme],
+    [theme, resolvedTheme, setTheme]
   );
 
   return (

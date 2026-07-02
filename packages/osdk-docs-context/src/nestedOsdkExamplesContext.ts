@@ -15,6 +15,7 @@
  */
 
 import semver from "semver";
+
 import {
   type NestedExampleEntry,
   type NestedExampleMetadata,
@@ -41,7 +42,7 @@ export class NestedOsdkExamplesContext {
     }
 
     // Find all versions <= target version using semver
-    const compatible = availableVersions.filter(v => {
+    const compatible = availableVersions.filter((v) => {
       return semver.valid(v) && semver.lte(v, targetVersion);
     });
 
@@ -52,9 +53,9 @@ export class NestedOsdkExamplesContext {
   /**
    * Merge examples from multiple compatible versions
    */
-  private static mergeVersionExamples(
-    versions: string[],
-  ): { [exampleName: string]: NestedExampleEntry } {
+  private static mergeVersionExamples(versions: string[]): {
+    [exampleName: string]: NestedExampleEntry;
+  } {
     const merged: { [exampleName: string]: NestedExampleEntry } = {};
 
     // Process versions in reverse order (oldest first) so newer versions override
@@ -103,18 +104,22 @@ export class NestedOsdkExamplesContext {
    */
   static getExample(
     version: string,
-    examplePath: string[],
+    examplePath: string[]
   ): ExampleMetadata | undefined {
     const compatibleVersions = this.getCompatibleVersions(version);
     const mergedExamples = this.mergeVersionExamples(compatibleVersions);
 
-    let current: NestedExampleEntry | {
-      [exampleName: string]: NestedExampleEntry;
-    } = mergedExamples;
+    let current:
+      | NestedExampleEntry
+      | {
+          [exampleName: string]: NestedExampleEntry;
+        } = mergedExamples;
 
     for (const pathSegment of examplePath) {
       if (
-        typeof current === "object" && current != null && !("code" in current)
+        typeof current === "object" &&
+        current != null &&
+        !("code" in current)
       ) {
         current = current[pathSegment];
         if (!current) return undefined;
@@ -137,7 +142,7 @@ export class NestedOsdkExamplesContext {
    */
   static getVariations(
     version: string,
-    baseName: string,
+    baseName: string
   ): { [variationKey: string]: ExampleMetadata } | undefined {
     const compatibleVersions = this.getCompatibleVersions(version);
     const mergedExamples = this.mergeVersionExamples(compatibleVersions);
@@ -146,7 +151,9 @@ export class NestedOsdkExamplesContext {
 
     // Check if this is a nested structure (not a direct ExampleMetadata)
     if (
-      baseExample && typeof baseExample === "object" && !("code" in baseExample)
+      baseExample &&
+      typeof baseExample === "object" &&
+      !("code" in baseExample)
     ) {
       return baseExample as { [variationKey: string]: ExampleMetadata };
     }
@@ -174,7 +181,7 @@ export class NestedOsdkExamplesContext {
 
     return Object.entries(mergedExamples).map(([name, example]) => {
       // Find which versions contain this example
-      const availableInVersions = compatibleVersions.filter(v => {
+      const availableInVersions = compatibleVersions.filter((v) => {
         const versionData = TYPESCRIPT_OSDK_CONTEXT.versions[v];
         return versionData && versionData[name];
       });
@@ -214,11 +221,9 @@ export class NestedOsdkExamplesContext {
       versions: {},
     };
 
-    for (
-      const [version, versionData] of Object.entries(
-        TYPESCRIPT_OSDK_CONTEXT.versions,
-      )
-    ) {
+    for (const [version, versionData] of Object.entries(
+      TYPESCRIPT_OSDK_CONTEXT.versions
+    )) {
       result.versions[version] = { examples: {} };
       const flatExamples = result.versions[version].examples;
 
@@ -228,11 +233,9 @@ export class NestedOsdkExamplesContext {
           flatExamples[baseName] = entry as ExampleMetadata;
         } else {
           // Nested variations
-          for (
-            const [variationKey, metadata] of Object.entries(
-              entry as { [key: string]: ExampleMetadata },
-            )
-          ) {
+          for (const [variationKey, metadata] of Object.entries(
+            entry as { [key: string]: ExampleMetadata }
+          )) {
             flatExamples[`${baseName}_${variationKey}`] = metadata;
           }
         }
@@ -246,7 +249,10 @@ export class NestedOsdkExamplesContext {
    * Search examples by pattern, including nested variations
    * When searching within a specific version, includes results from compatible versions
    */
-  static searchExamples(pattern: string, targetVersion?: string): Array<{
+  static searchExamples(
+    pattern: string,
+    targetVersion?: string
+  ): Array<{
     version: string;
     baseName: string;
     variationKey?: string;
@@ -286,15 +292,14 @@ export class NestedOsdkExamplesContext {
             }
           } else {
             // Nested variations
-            for (
-              const [variationKey, metadata] of Object.entries(
-                entry as { [key: string]: ExampleMetadata },
-              )
-            ) {
+            for (const [variationKey, metadata] of Object.entries(
+              entry as { [key: string]: ExampleMetadata }
+            )) {
               const fullName = `${baseName}_${variationKey}`;
               if (
-                regex.test(fullName) || regex.test(baseName)
-                || regex.test(variationKey)
+                regex.test(fullName) ||
+                regex.test(baseName) ||
+                regex.test(variationKey)
               ) {
                 results.push({
                   version: targetVersion,
@@ -311,11 +316,9 @@ export class NestedOsdkExamplesContext {
       }
     } else {
       // Search across all versions
-      for (
-        const [version, versionData] of Object.entries(
-          TYPESCRIPT_OSDK_CONTEXT.versions,
-        )
-      ) {
+      for (const [version, versionData] of Object.entries(
+        TYPESCRIPT_OSDK_CONTEXT.versions
+      )) {
         for (const [baseName, entry] of Object.entries(versionData)) {
           if ("code" in entry) {
             // Direct example
@@ -330,15 +333,14 @@ export class NestedOsdkExamplesContext {
             }
           } else {
             // Nested variations
-            for (
-              const [variationKey, metadata] of Object.entries(
-                entry as { [key: string]: ExampleMetadata },
-              )
-            ) {
+            for (const [variationKey, metadata] of Object.entries(
+              entry as { [key: string]: ExampleMetadata }
+            )) {
               const fullName = `${baseName}_${variationKey}`;
               if (
-                regex.test(fullName) || regex.test(baseName)
-                || regex.test(variationKey)
+                regex.test(fullName) ||
+                regex.test(baseName) ||
+                regex.test(variationKey)
               ) {
                 results.push({
                   version,

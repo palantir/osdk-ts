@@ -17,51 +17,46 @@
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { ObjectSet } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
+
 import type { MinimalClient } from "../MinimalClientContext.js";
 
 /* @internal
-* Returns the resultant interface or object type of the object set
-*/
+ * Returns the resultant interface or object type of the object set
+ */
 export async function extractObjectOrInterfaceType(
   clientCtx: MinimalClient,
-  objectSet: ObjectSet,
-): Promise<
-  ObjectOrInterfaceDefinition | undefined
-> {
+  objectSet: ObjectSet
+): Promise<ObjectOrInterfaceDefinition | undefined> {
   switch (objectSet.type) {
     case "searchAround": {
       const def = await extractObjectOrInterfaceType(
         clientCtx,
-        objectSet.objectSet,
+        objectSet.objectSet
       );
       if (def === undefined) {
         return undefined;
       }
-      const objOrInterfaceDef = def.type === "object"
-        ? await clientCtx.ontologyProvider.getObjectDefinition(
-          def.apiName,
-        )
-        : await clientCtx.ontologyProvider.getInterfaceDefinition(
-          def.apiName,
-        );
+      const objOrInterfaceDef =
+        def.type === "object"
+          ? await clientCtx.ontologyProvider.getObjectDefinition(def.apiName)
+          : await clientCtx.ontologyProvider.getInterfaceDefinition(
+              def.apiName
+            );
       const linkDef = objOrInterfaceDef.links[objectSet.link];
       invariant(linkDef, `Missing link definition for '${objectSet.link}'`);
 
       return objOrInterfaceDef.type === "object"
         ? {
-          apiName: objOrInterfaceDef.links[objectSet.link].targetType,
-          type: "object",
-        }
+            apiName: objOrInterfaceDef.links[objectSet.link].targetType,
+            type: "object",
+          }
         : {
-          apiName: objOrInterfaceDef.links[objectSet.link].targetTypeApiName,
-          type: objOrInterfaceDef.links[objectSet.link].targetType,
-        };
+            apiName: objOrInterfaceDef.links[objectSet.link].targetTypeApiName,
+            type: objOrInterfaceDef.links[objectSet.link].targetType,
+          };
     }
     case "withProperties": {
-      return extractObjectOrInterfaceType(
-        clientCtx,
-        objectSet.objectSet,
-      );
+      return extractObjectOrInterfaceType(clientCtx, objectSet.objectSet);
     }
     case "methodInput":
       return undefined;
@@ -72,35 +67,28 @@ export async function extractObjectOrInterfaceType(
     case "filter":
     case "asBaseObjectTypes":
     case "nearestNeighbors":
-      return extractObjectOrInterfaceType(
-        clientCtx,
-        objectSet.objectSet,
-      );
+      return extractObjectOrInterfaceType(clientCtx, objectSet.objectSet);
     case "asType":
       return {
-        type:
-          clientCtx.narrowTypeInterfaceOrObjectMapping[objectSet.entityType],
+        type: clientCtx.narrowTypeInterfaceOrObjectMapping[
+          objectSet.entityType
+        ],
         apiName: objectSet.entityType,
       };
     case "intersect": {
       const objectSets = objectSet.objectSets;
       const objectSetTypes = await Promise.all(
-        objectSets.map((os) =>
-          extractObjectOrInterfaceType(
-            clientCtx,
-            os,
-          )
-        ),
+        objectSets.map((os) => extractObjectOrInterfaceType(clientCtx, os))
       );
 
       const filteredObjectTypes = objectSetTypes.filter(Boolean);
-      const firstInterfaceType = filteredObjectTypes.find(val =>
-        val?.type === "interface"
+      const firstInterfaceType = filteredObjectTypes.find(
+        (val) => val?.type === "interface"
       );
 
       invariant(
         firstInterfaceType,
-        `Missing interface type in intersect objectset scope'`,
+        `Missing interface type in intersect objectset scope'`
       );
       return firstInterfaceType;
     }
@@ -108,22 +96,19 @@ export async function extractObjectOrInterfaceType(
     case "union":
       const objectSets = objectSet.objectSets;
       const objectSetTypes = await Promise.all(
-        objectSets.map((os) =>
-          extractObjectOrInterfaceType(
-            clientCtx,
-            os,
-          )
-        ),
+        objectSets.map((os) => extractObjectOrInterfaceType(clientCtx, os))
       );
 
       const filteredObjectTypes = objectSetTypes.filter(Boolean);
       const firstObjectType = filteredObjectTypes[0];
       invariant(
-        filteredObjectTypes.every(val => {
-          return val?.apiName === firstObjectType?.apiName
-            && val?.type === firstObjectType?.type;
+        filteredObjectTypes.every((val) => {
+          return (
+            val?.apiName === firstObjectType?.apiName &&
+            val?.type === firstObjectType?.type
+          );
         }),
-        "Can only have one object type when doing subtract, union",
+        "Can only have one object type when doing subtract, union"
       );
 
       return filteredObjectTypes[0];
@@ -134,39 +119,40 @@ export async function extractObjectOrInterfaceType(
     case "interfaceLinkSearchAround":
       const def = await extractObjectOrInterfaceType(
         clientCtx,
-        objectSet.objectSet,
+        objectSet.objectSet
       );
       if (def === undefined) {
         return undefined;
       }
-      const objOrInterfaceDef = def.type === "object"
-        ? await clientCtx.ontologyProvider.getObjectDefinition(
-          def.apiName,
-        )
-        : await clientCtx.ontologyProvider.getInterfaceDefinition(
-          def.apiName,
-        );
+      const objOrInterfaceDef =
+        def.type === "object"
+          ? await clientCtx.ontologyProvider.getObjectDefinition(def.apiName)
+          : await clientCtx.ontologyProvider.getInterfaceDefinition(
+              def.apiName
+            );
       const linkDef = objOrInterfaceDef.links[objectSet.interfaceLink];
       invariant(
         linkDef,
-        `Missing link definition for '${objectSet.interfaceLink}'`,
+        `Missing link definition for '${objectSet.interfaceLink}'`
       );
       return objOrInterfaceDef.type === "object"
         ? {
-          apiName: objOrInterfaceDef.links[objectSet.interfaceLink].targetType,
-          type: "object",
-        }
+            apiName:
+              objOrInterfaceDef.links[objectSet.interfaceLink].targetType,
+            type: "object",
+          }
         : {
-          apiName:
-            objOrInterfaceDef.links[objectSet.interfaceLink].targetTypeApiName,
-          type: objOrInterfaceDef.links[objectSet.interfaceLink].targetType,
-        };
+            apiName:
+              objOrInterfaceDef.links[objectSet.interfaceLink]
+                .targetTypeApiName,
+            type: objOrInterfaceDef.links[objectSet.interfaceLink].targetType,
+          };
     // We don't have to worry about new object sets being added and doing a runtime break and breaking people since the OSDK is always constructing these.
     default:
       const _: never = objectSet;
       invariant(
         false,
-        `Unsupported object set type for deriving object or interface type,`,
+        `Unsupported object set type for deriving object or interface type,`
       );
   }
 }

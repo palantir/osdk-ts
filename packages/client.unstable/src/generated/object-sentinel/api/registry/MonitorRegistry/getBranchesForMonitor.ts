@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { MonitorRid as _api_MonitorRid } from "../../__components.js";
 import type { GetBranchesForMonitorResponse as _api_registry_GetBranchesForMonitorResponse } from "../__components.js";
 
@@ -23,7 +24,7 @@ import type { GetBranchesForMonitorResponse as _api_registry_GetBranchesForMonit
  */
 export async function getBranchesForMonitor(
   ctx: ConjureContext,
-  monitorRid: _api_MonitorRid,
+  monitorRid: _api_MonitorRid
 ): Promise<_api_registry_GetBranchesForMonitorResponse> {
   return conjureFetch(ctx, `/registry/v0/all-branches/${monitorRid}`, "GET");
 }

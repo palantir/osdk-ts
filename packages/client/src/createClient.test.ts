@@ -18,6 +18,7 @@ import { BarInterface } from "@osdk/client.test.ontology";
 import * as SharedClientContext from "@osdk/shared.client.impl";
 import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { metadataCacheClient } from "./__unstable/ConjureSupport.js";
 import type { Client } from "./Client.js";
 import { createClient, createClientWithTransaction } from "./createClient.js";
@@ -26,7 +27,7 @@ import { USER_AGENT } from "./util/UserAgent.js";
 
 export function mockFetchResponse(
   fetch: MockedFunction<typeof globalThis.fetch>,
-  response: any,
+  response: any
 ): void {
   fetch.mockResolvedValueOnce({
     json: () => Promise.resolve(response),
@@ -54,7 +55,7 @@ describe(createClient, () => {
       ontologyRid,
       async () => "Token",
       undefined,
-      fetchFunction,
+      fetchFunction
     );
 
     mockFetchResponse(fetchFunction, { data: [] });
@@ -62,10 +63,9 @@ describe(createClient, () => {
 
   describe("user agent passing", () => {
     function getUserAgentPartsFromMockedFetch() {
-      const userAgent = (fetchFunction.mock.calls[0][1]?.headers as Headers)
-        .get(
-          "Fetch-User-Agent",
-        );
+      const userAgent = (
+        fetchFunction.mock.calls[0][1]?.headers as Headers
+      ).get("Fetch-User-Agent");
       const parts = userAgent?.split(" ") ?? [];
       return parts;
     }
@@ -76,9 +76,7 @@ describe(createClient, () => {
 
       const parts = getUserAgentPartsFromMockedFetch();
       expect(parts).toEqual([
-        ...BarInterface.osdkMetadata!
-          .extraUserAgent
-          .split(" "),
+        ...BarInterface.osdkMetadata!.extraUserAgent.split(" "),
         USER_AGENT,
       ]);
     });
@@ -92,20 +90,18 @@ describe(createClient, () => {
         ontologyRid,
         async () => "Token",
         { headers: { "Fetch-User-Agent": "my-app/1.0" } },
-        customFetch,
+        customFetch
       );
 
       await clientWithHeaders(BarInterface).fetchPage();
       expect(customFetch).toHaveBeenCalledTimes(1);
 
       const userAgent = (customFetch.mock.calls[0][1]?.headers as Headers).get(
-        "Fetch-User-Agent",
+        "Fetch-User-Agent"
       );
       const parts = userAgent?.split(" ") ?? [];
       expect(parts).toEqual([
-        ...BarInterface.osdkMetadata!
-          .extraUserAgent
-          .split(" "),
+        ...BarInterface.osdkMetadata!.extraUserAgent.split(" "),
         USER_AGENT,
         "my-app/1.0",
       ]);
@@ -120,7 +116,7 @@ describe(createClient, () => {
         ontologyRid,
         async () => "Token",
         undefined,
-        fetchFunction,
+        fetchFunction
       );
       expect(spy.mock.results[0].value.baseUrl).toBe("https://mock.com/");
 
@@ -129,7 +125,7 @@ describe(createClient, () => {
         ontologyRid,
         async () => "Token",
         undefined,
-        fetchFunction,
+        fetchFunction
       );
       expect(spy.mock.results[1].value.baseUrl).toBe("https://mock1.com/");
 
@@ -138,10 +134,10 @@ describe(createClient, () => {
         ontologyRid,
         async () => "Token",
         undefined,
-        fetchFunction,
+        fetchFunction
       );
       expect(spy.mock.results[2].value.baseUrl).toBe(
-        "https://mock2.com/stuff/first/foo/",
+        "https://mock2.com/stuff/first/foo/"
       );
 
       createClient(
@@ -149,27 +145,25 @@ describe(createClient, () => {
         ontologyRid,
         async () => "Token",
         undefined,
-        fetchFunction,
+        fetchFunction
       );
       expect(spy.mock.results[3].value.baseUrl).toBe(
-        "https://mock3.com/stuff/first/foo/",
+        "https://mock3.com/stuff/first/foo/"
       );
 
       const conjureContextSpy = vi.spyOn(
         MakeConjureContext,
-        "makeConjureContext",
+        "makeConjureContext"
       );
 
-      void metadataCacheClient(
-        {
-          baseUrl: "https://mock4.com/",
-          ontologyProvider: { getObjectDefinition: async () => ({}) },
-        } as any,
-      );
+      void metadataCacheClient({
+        baseUrl: "https://mock4.com/",
+        ontologyProvider: { getObjectDefinition: async () => ({}) },
+      } as any);
 
       expect(
-        conjureContextSpy.mock.results[0].value.baseUrl
-          + conjureContextSpy.mock.results[0].value.servicePath,
+        conjureContextSpy.mock.results[0].value.baseUrl +
+          conjureContextSpy.mock.results[0].value.servicePath
       ).toBe("https://mock4.com/ontology-metadata/api");
     });
   });
@@ -184,7 +178,7 @@ describe(createClient, () => {
         ontologyRid,
         async () => "Token",
         {},
-        fetchFunction,
+        fetchFunction
       );
 
       mockFetchResponse(fetchFunction, { data: [] });
