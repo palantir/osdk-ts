@@ -25,7 +25,7 @@ type edits =
   | Edits.Interface<$Interfaces.FooInterface>;
 export function ontologyEdits(
   client: Client,
-  object: Osdk.Instance<Employee>,
+  object: Osdk.Instance<Employee>
 ): edits[] {
   const editBatch = createEditBatch<edits>(client);
   editBatch.create(Employee, { employeeId: 1, fullName: "John Doe" });

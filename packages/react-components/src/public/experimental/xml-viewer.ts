@@ -26,5 +26,5 @@ import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
 import { XmlViewer as _XmlViewer } from "../../xml-viewer/XmlViewer.js";
 export const XmlViewer: typeof _XmlViewer = withOsdkMetrics(
   _XmlViewer,
-  "XmlViewer",
+  "XmlViewer"
 );

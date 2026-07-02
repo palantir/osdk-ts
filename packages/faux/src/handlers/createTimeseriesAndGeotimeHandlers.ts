@@ -23,7 +23,7 @@ import { OpenApiCallError } from "./util/handleOpenApiCall.js";
 
 export const createTimeseriesAndGeotimeHandlers: FauxFoundryHandlersFactory = (
   baseUrl,
-  fauxFoundry,
+  fauxFoundry
 ) => [
   /**
    * Load firstPoint
@@ -31,16 +31,14 @@ export const createTimeseriesAndGeotimeHandlers: FauxFoundryHandlersFactory = (
 
   OntologiesV2.TimeSeriesPropertiesV2.getFirstPoint(
     baseUrl,
-    async (
-      { params: { objectType, ontologyApiName, primaryKey, propertyName } },
-    ) => {
-      return fauxFoundry.getDataStore(ontologyApiName)
-        .getTimeSeriesData(
-          objectType,
-          primaryKey,
-          propertyName,
-        ).at(0);
-    },
+    async ({
+      params: { objectType, ontologyApiName, primaryKey, propertyName },
+    }) => {
+      return fauxFoundry
+        .getDataStore(ontologyApiName)
+        .getTimeSeriesData(objectType, primaryKey, propertyName)
+        .at(0);
+    }
   ),
 
   /**
@@ -48,16 +46,14 @@ export const createTimeseriesAndGeotimeHandlers: FauxFoundryHandlersFactory = (
    */
   OntologiesV2.TimeSeriesPropertiesV2.getLastPoint(
     baseUrl,
-    async (
-      { params: { objectType, ontologyApiName, primaryKey, propertyName } },
-    ) => {
-      return fauxFoundry.getDataStore(ontologyApiName)
-        .getTimeSeriesData(
-          objectType,
-          primaryKey,
-          propertyName,
-        ).at(-1);
-    },
+    async ({
+      params: { objectType, ontologyApiName, primaryKey, propertyName },
+    }) => {
+      return fauxFoundry
+        .getDataStore(ontologyApiName)
+        .getTimeSeriesData(objectType, primaryKey, propertyName)
+        .at(-1);
+    }
   ),
 
   /**
@@ -65,22 +61,21 @@ export const createTimeseriesAndGeotimeHandlers: FauxFoundryHandlersFactory = (
    */
   OntologiesV2.TimeSeriesPropertiesV2.streamPoints(
     baseUrl,
-    async (
-      {
-        request,
-        params: { objectType, ontologyApiName, primaryKey, propertyName },
-      },
-    ) => {
+    async ({
+      request,
+      params: { objectType, ontologyApiName, primaryKey, propertyName },
+    }) => {
       return Response.json(
-        fauxFoundry.getDataStore(ontologyApiName)
+        fauxFoundry
+          .getDataStore(ontologyApiName)
           .getTimeSeriesData(
             objectType,
             primaryKey,
             propertyName,
-            await request.json(),
-          ),
+            await request.json()
+          )
       );
-    },
+    }
   ),
 
   /**
@@ -88,22 +83,20 @@ export const createTimeseriesAndGeotimeHandlers: FauxFoundryHandlersFactory = (
    */
   OntologiesV2.TimeSeriesValueBankProperties.getLatestValue(
     baseUrl,
-    async (
-      { params: { objectType, ontologyApiName, primaryKey, propertyName } },
-    ) => {
-      const ret = fauxFoundry.getDataStore(ontologyApiName)
-        .getTimeSeriesData(
-          objectType,
-          primaryKey,
-          propertyName,
-        ).at(-1);
+    async ({
+      params: { objectType, ontologyApiName, primaryKey, propertyName },
+    }) => {
+      const ret = fauxFoundry
+        .getDataStore(ontologyApiName)
+        .getTimeSeriesData(objectType, primaryKey, propertyName)
+        .at(-1);
 
       if (!ret) {
         throw new OpenApiCallError(400, InvalidRequest("Invalid request"));
       }
 
       return ret;
-    },
+    }
   ),
 
   /**
@@ -111,21 +104,20 @@ export const createTimeseriesAndGeotimeHandlers: FauxFoundryHandlersFactory = (
    */
   OntologiesV2.TimeSeriesValueBankProperties.streamValues(
     baseUrl,
-    async (
-      {
-        request,
-        params: { objectType, ontologyApiName, primaryKey, propertyName },
-      },
-    ) => {
+    async ({
+      request,
+      params: { objectType, ontologyApiName, primaryKey, propertyName },
+    }) => {
       return Response.json(
-        fauxFoundry.getDataStore(ontologyApiName)
+        fauxFoundry
+          .getDataStore(ontologyApiName)
           .getTimeSeriesData(
             objectType,
             primaryKey,
             propertyName,
-            await request.json(),
-          ),
+            await request.json()
+          )
       );
-    },
+    }
   ),
 ];

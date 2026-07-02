@@ -16,6 +16,7 @@
 
 import type { Row, RowData } from "@tanstack/react-table";
 import React, { useCallback } from "react";
+
 import { Checkbox } from "../base-components/checkbox/Checkbox.js";
 
 interface SelectionHeaderCellProps {
@@ -57,7 +58,7 @@ export function SelectionCell<TData extends RowData>({
       const isShiftClick = event.shiftKey;
       onToggleRow(row.id, row.index, isShiftClick);
     },
-    [onToggleRow, row.id, row.index],
+    [onToggleRow, row.id, row.index]
   );
 
   const handleKeyDown = useCallback(
@@ -69,7 +70,7 @@ export function SelectionCell<TData extends RowData>({
         onToggleRow(row.id, row.index, isShiftClick);
       }
     },
-    [onToggleRow, row.id, row.index],
+    [onToggleRow, row.id, row.index]
   );
 
   return (

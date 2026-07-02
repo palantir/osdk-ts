@@ -14,129 +14,231 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { styled } from "storybook/theming";
-import { generateCss, generateMarkdown } from "./export.js";
-import type { TokenAssignment } from "./types.js";
 
-interface ExportButtonsProps {
-  assignments: TokenAssignment[];
+interface ExportItem {
+  label: string;
+  content: string;
+  filename: string;
+  mime: string;
 }
 
-const ButtonRow = styled.div({
-  display: "flex",
-  flexWrap: "wrap",
-  gap: 8,
-  padding: "0.5em 0",
+interface ExportDropdownProps {
+  items: ExportItem[];
+  disabled?: boolean;
+}
+
+const DropdownWrapper = styled.div({
+  position: "relative" as const,
+  display: "inline-block",
 });
 
-const PrimaryExportButton = styled.button(({ theme }) => ({
-  fontSize: 12,
-  fontWeight: 600,
-  padding: "8px 16px",
-  border: "none",
-  borderRadius: 4,
-  background: theme.color.secondary,
-  color: "#fff",
-  cursor: "pointer",
-  transition: "background 150ms ease, opacity 150ms ease",
-  "&:hover": {
-    opacity: 0.9,
-  },
-  "&:active": {
-    opacity: 0.8,
-  },
-}));
+const DropdownButton = styled.button<{ disabled?: boolean }>(
+  ({ disabled, theme }) => ({
+    alignItems: "center",
+    background: disabled ? theme.background.content : theme.color.secondary,
+    border: `1px solid ${
+      disabled ? theme.appBorderColor : theme.color.secondary
+    }`,
+    borderRadius: 6,
+    boxShadow: disabled ? "none" : "0 1px 4px rgba(0,0,0,0.18)",
+    color: disabled ? theme.color.mediumdark : "#ffffff",
+    cursor: disabled ? "not-allowed" : "pointer",
+    display: "flex",
+    fontSize: 12,
+    fontWeight: 700,
+    gap: 6,
+    minHeight: 30,
+    padding: "6px 12px",
+    transition:
+      "background 150ms ease, border-color 150ms ease, box-shadow 150ms ease",
+    "&:hover": {
+      background: disabled ? theme.background.content : theme.color.secondary,
+      borderColor: disabled ? theme.appBorderColor : theme.color.secondary,
+      boxShadow: disabled ? "none" : "0 2px 8px rgba(0,0,0,0.2)",
+    },
+  })
+);
 
-const SecondaryExportButton = styled.button(({ theme }) => ({
-  fontSize: 11,
-  fontWeight: 500,
-  padding: "6px 12px",
-  border: `1px solid ${theme.appBorderColor}`,
-  borderRadius: 4,
+const Menu = styled.div(({ theme }) => ({
+  position: "absolute" as const,
+  top: "calc(100% + 6px)",
+  right: 0,
+  minWidth: 320,
   background: theme.background.content,
-  color: theme.color.defaultText,
-  cursor: "pointer",
-  transition: "background 150ms ease, border-color 150ms ease",
-  "&:hover": {
-    background: theme.background.hoverable,
-    borderColor: theme.color.medium,
-  },
-  "&:active": {
-    background: theme.background.hoverable,
+  border: `1px solid ${theme.appBorderColor}`,
+  borderRadius: 6,
+  boxShadow: "0 6px 18px rgba(0,0,0,0.16)",
+  zIndex: 10,
+  overflow: "hidden",
+}));
+
+const ExportRow = styled.div(({ theme }) => ({
+  alignItems: "center",
+  borderBottom: `1px solid ${theme.appBorderColor}`,
+  display: "flex",
+  gap: 12,
+  justifyContent: "space-between",
+  padding: "10px 12px",
+  "&:last-child": {
+    borderBottomWidth: 0,
   },
 }));
 
-export function ExportButtons({
-  assignments,
-}: ExportButtonsProps): React.ReactElement {
-  const [copied, setCopied] = useState<string | null>(null);
+const FormatLabel = styled.span(({ theme }) => ({
+  color: theme.color.defaultText,
+  fontSize: 13,
+  fontWeight: 600,
+}));
 
-  const copyToClipboard = useCallback(
-    async (content: string, label: string) => {
-      try {
-        if (navigator.clipboard) {
-          await navigator.clipboard.writeText(content);
-        } else {
-          copyWithTextAreaFallback(content);
-        }
-        setCopied(label);
-      } catch {
-        setCopied("Failed");
-      } finally {
-        window.setTimeout(() => setCopied(null), 2000);
+const RowActions = styled.div({
+  alignItems: "center",
+  display: "flex",
+  gap: 6,
+});
+
+const ActionButton = styled.button<{ intent: "copy" | "download" }>(
+  ({ intent, theme }) => {
+    const primary = intent === "download";
+    return {
+      background: primary ? theme.background.content : "transparent",
+      border: `1px solid ${primary ? theme.appBorderColor : "transparent"}`,
+      borderRadius: 4,
+      color: theme.color.defaultText,
+      cursor: "pointer",
+      fontSize: 12,
+      fontWeight: primary ? 600 : 500,
+      minWidth: primary ? 78 : 48,
+      padding: "5px 8px",
+      textAlign: "center" as const,
+      transition:
+        "background 100ms ease, border-color 100ms ease, box-shadow 100ms ease",
+      "&:focus-visible": {
+        borderColor: theme.color.medium,
+        boxShadow: `0 0 0 1px ${theme.color.medium}`,
+        outline: "none",
+      },
+      "&:hover": {
+        background: "rgba(0,0,0,0.04)",
+      },
+    };
+  }
+);
+
+const Chevron = styled.span({
+  fontSize: 9,
+  lineHeight: 1,
+});
+
+export function ExportDropdown({
+  disabled = false,
+  items,
+}: ExportDropdownProps): React.ReactElement {
+  const [open, setOpen] = useState(false);
+  const [copiedLabel, setCopiedLabel] = useState<string | undefined>();
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const copiedTimerRef = useRef<number | undefined>();
+  const menuOpen = open && !disabled;
+
+  useEffect(() => {
+    return () => window.clearTimeout(copiedTimerRef.current);
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    function handleClickOutside(e: MouseEvent) {
+      if (
+        wrapperRef.current &&
+        e.target instanceof Node &&
+        !wrapperRef.current.contains(e.target)
+      ) {
+        setOpen(false);
       }
-    },
-    [],
-  );
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [open]);
 
-  const download = useCallback(
-    (content: string, filename: string, mime: string) => {
-      const blob = new Blob([content], { type: mime });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = filename;
-      a.rel = "noopener";
-      // Some browsers ignore programmatic downloads unless the anchor is in the
-      // document. Keep it attached until after the click has been processed.
-      document.body.appendChild(a);
-      a.click();
-      window.setTimeout(() => {
-        a.remove();
-        URL.revokeObjectURL(url);
-      }, 0);
-    },
-    [],
-  );
+  const handleCopy = useCallback(async (item: ExportItem) => {
+    try {
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(item.content);
+      } else {
+        copyWithTextAreaFallback(item.content);
+      }
+      setCopiedLabel(item.label);
+      window.clearTimeout(copiedTimerRef.current);
+      copiedTimerRef.current = window.setTimeout(
+        () => setCopiedLabel(undefined),
+        2000
+      );
+    } catch {
+      // ignore
+    }
+  }, []);
 
-  const css = useMemo(() => generateCss(assignments), [assignments]);
-  const md = useMemo(() => generateMarkdown(assignments), [assignments]);
+  const handleDownload = useCallback((item: ExportItem) => {
+    downloadFile(item.content, item.filename, item.mime);
+    setOpen(false);
+  }, []);
 
   return (
-    <ButtonRow>
-      <PrimaryExportButton
-        onClick={() => download(css, "tokens.css", "text/css")}
+    <DropdownWrapper ref={wrapperRef}>
+      <DropdownButton
+        disabled={disabled}
+        onClick={() => setOpen((currentOpen) => !currentOpen)}
+        aria-expanded={menuOpen}
+        aria-haspopup="menu"
+        title={disabled ? "Add a theme override before exporting" : undefined}
       >
-        Download tokens.css
-      </PrimaryExportButton>
-      <PrimaryExportButton
-        onClick={() => download(md, "design.md", "text/markdown")}
-      >
-        Download design.md
-      </PrimaryExportButton>
-      <SecondaryExportButton
-        onClick={() => copyToClipboard(css, "CSS")}
-      >
-        {copied === "CSS" ? "Copied!" : "Copy CSS"}
-      </SecondaryExportButton>
-      <SecondaryExportButton
-        onClick={() => copyToClipboard(md, "Markdown")}
-      >
-        {copied === "Markdown" ? "Copied!" : "Copy Markdown"}
-      </SecondaryExportButton>
-    </ButtonRow>
+        Export
+        <Chevron>{menuOpen ? "\u25B4" : "\u25BE"}</Chevron>
+      </DropdownButton>
+      {menuOpen && (
+        <Menu role="menu" aria-label="Export theme">
+          {items.map((item) => (
+            <ExportRow key={item.filename}>
+              <FormatLabel>{item.label}</FormatLabel>
+              <RowActions>
+                <ActionButton
+                  type="button"
+                  intent="copy"
+                  onClick={() => handleCopy(item)}
+                  aria-label={`Copy ${item.label}`}
+                >
+                  {copiedLabel === item.label ? "Copied" : "Copy"}
+                </ActionButton>
+                <ActionButton
+                  type="button"
+                  intent="download"
+                  onClick={() => handleDownload(item)}
+                  aria-label={`Download ${item.label}`}
+                >
+                  Download
+                </ActionButton>
+              </RowActions>
+            </ExportRow>
+          ))}
+        </Menu>
+      )}
+    </DropdownWrapper>
   );
+}
+
+function downloadFile(content: string, filename: string, mime: string): void {
+  const blob = new Blob([content], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.rel = "noopener";
+  document.body.appendChild(a);
+  a.click();
+  window.setTimeout(() => {
+    a.remove();
+    URL.revokeObjectURL(url);
+  }, 0);
 }
 
 function copyWithTextAreaFallback(content: string): void {

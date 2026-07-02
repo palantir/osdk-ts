@@ -18,12 +18,13 @@
 
 import type { SeedOutput } from "@osdk/seed-helpers";
 import { describe, expect, it } from "vitest";
+
 import { mergeSeedOutputs, validateSeedOutput } from "./compileSeedData.js";
 import type { SchemaMap } from "./schema.js";
 
 const makeOutput = (
   objects: SeedOutput["objects"],
-  links: SeedOutput["links"] = [],
+  links: SeedOutput["links"] = []
 ): SeedOutput => ({ objects, links });
 
 /** Builds a minimal SchemaMap fixture with Employee and Department. */
@@ -40,10 +41,13 @@ function fixtureSchema(): SchemaMap {
     ["name", "string"],
   ]);
   return new Map([
-    ["Employee", {
-      properties: employeeProps,
-      primaryKeyApiName: "employeeId",
-    }],
+    [
+      "Employee",
+      {
+        properties: employeeProps,
+        primaryKeyApiName: "employeeId",
+      },
+    ],
     [
       "Department",
       { properties: departmentProps, primaryKeyApiName: "departmentId" },
@@ -92,27 +96,31 @@ describe("mergeSeedOutputs", () => {
       Employee: [{ employeeId: "emp-001", firstName: "Alice" }],
     });
     expect(() => mergeSeedOutputs([output1, output2], schema)).toThrow(
-      /Duplicate primary key 'emp-001' for 'Employee'/,
+      /Duplicate primary key 'emp-001' for 'Employee'/
     );
   });
 
   it("should merge links additively", () => {
-    const output1 = makeOutput({}, [{
-      name: "link-1",
-      linkType: "department",
-      sourceObjectType: "Employee",
-      sourceKey: "emp-001",
-      targetObjectType: "Department",
-      targetKey: "dept-001",
-    }]);
-    const output2 = makeOutput({}, [{
-      name: "link-2",
-      linkType: "department",
-      sourceObjectType: "Employee",
-      sourceKey: "emp-002",
-      targetObjectType: "Department",
-      targetKey: "dept-001",
-    }]);
+    const output1 = makeOutput({}, [
+      {
+        name: "link-1",
+        linkType: "department",
+        sourceObjectType: "Employee",
+        sourceKey: "emp-001",
+        targetObjectType: "Department",
+        targetKey: "dept-001",
+      },
+    ]);
+    const output2 = makeOutput({}, [
+      {
+        name: "link-2",
+        linkType: "department",
+        sourceObjectType: "Employee",
+        sourceKey: "emp-002",
+        targetObjectType: "Department",
+        targetKey: "dept-001",
+      },
+    ]);
     const result = mergeSeedOutputs([output1, output2], schema);
     expect(result.links).toHaveLength(2);
   });
@@ -133,10 +141,7 @@ describe("mergeSeedOutputs", () => {
   });
 
   it("should handle empty outputs", () => {
-    const result = mergeSeedOutputs(
-      [makeOutput({}), makeOutput({})],
-      schema,
-    );
+    const result = mergeSeedOutputs([makeOutput({}), makeOutput({})], schema);
     expect(result.objects).toEqual({});
     expect(result.links).toEqual([]);
   });
@@ -155,7 +160,7 @@ describe("validateSeedOutput", () => {
   it("should throw on unknown object types", () => {
     const output = makeOutput({ Ghost: [{ id: "1" }] });
     expect(() => validateSeedOutput(output, schema)).toThrow(
-      /Object type 'Ghost' in seed data is not defined in the ontology/,
+      /Object type 'Ghost' in seed data is not defined in the ontology/
     );
   });
 
@@ -164,7 +169,7 @@ describe("validateSeedOutput", () => {
       Employee: [{ employeeId: "emp-001", badProp: "x" }],
     });
     expect(() => validateSeedOutput(output, schema)).toThrow(
-      /Property 'badProp' on 'Employee' object \(index 0\) is not defined in the ontology/,
+      /Property 'badProp' on 'Employee' object \(index 0\) is not defined in the ontology/
     );
   });
 
@@ -173,7 +178,7 @@ describe("validateSeedOutput", () => {
       Employee: [{ employeeId: "emp-001", firstName: null }],
     });
     expect(() => validateSeedOutput(output, schema)).toThrow(
-      /Property 'firstName' on 'Employee' object \(index 0\) is null or undefined/,
+      /Property 'firstName' on 'Employee' object \(index 0\) is null or undefined/
     );
   });
 
@@ -193,7 +198,7 @@ describe("validateSeedOutput", () => {
       Employee: [{ employeeId: "emp-001", createdAt: 12345 }],
     });
     expect(() => validateSeedOutput(output, schema)).toThrow(
-      /Property 'createdAt' on 'Employee' object \(index 0\) expects timestamp \(a string\) but got number/,
+      /Property 'createdAt' on 'Employee' object \(index 0\) expects timestamp \(a string\) but got number/
     );
   });
 
@@ -203,7 +208,7 @@ describe("validateSeedOutput", () => {
       Employee: [{ employeeId: "emp-001", age: "30" }],
     });
     expect(() => validateSeedOutput(output, schema)).toThrow(
-      /Property 'age' on 'Employee' object \(index 0\) expects integer \(a number\) but got string/,
+      /Property 'age' on 'Employee' object \(index 0\) expects integer \(a number\) but got string/
     );
   });
 
@@ -212,7 +217,7 @@ describe("validateSeedOutput", () => {
       Employee: [{ employeeId: "emp-001", createdAt: "qdeqd" }],
     });
     expect(() => validateSeedOutput(output, schema)).toThrow(
-      /property 'createdAt' has invalid timestamp format: 'qdeqd'/,
+      /property 'createdAt' has invalid timestamp format: 'qdeqd'/
     );
   });
 
@@ -228,7 +233,7 @@ describe("validateSeedOutput", () => {
       Employee: [{ employeeId: "emp-001", score: "not-a-number" }],
     });
     expect(() => validateSeedOutput(output, schema)).toThrow(
-      /property 'score' has invalid long format/,
+      /property 'score' has invalid long format/
     );
   });
 

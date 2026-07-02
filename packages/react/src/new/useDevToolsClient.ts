@@ -17,6 +17,7 @@
 import type { ObservableClient } from "@osdk/client/observable";
 import type React from "react";
 import { useMemo, useRef } from "react";
+
 import {
   type DevToolsRegistry,
   getRegisteredDevTools,
@@ -24,18 +25,16 @@ import {
 
 export function useDevToolsClient(
   baseClient: ObservableClient,
-  enabled: boolean,
+  enabled: boolean
 ): {
   client: ObservableClient;
   wrapChildren: ((children: React.ReactNode) => React.ReactNode) | null;
 } {
-  const stateRef = useRef<
-    {
-      base: ObservableClient;
-      monitored: ObservableClient;
-      devTools: DevToolsRegistry;
-    } | null
-  >(null);
+  const stateRef = useRef<{
+    base: ObservableClient;
+    monitored: ObservableClient;
+    devTools: DevToolsRegistry;
+  } | null>(null);
 
   const prev = stateRef.current;
 
@@ -49,7 +48,9 @@ export function useDevToolsClient(
       stateRef.current = null;
       wrappedClient = baseClient;
     } else if (
-      prev != null && prev.base === baseClient && prev.devTools === devTools
+      prev != null &&
+      prev.base === baseClient &&
+      prev.devTools === devTools
     ) {
       wrappedClient = prev.monitored;
     } else {
@@ -64,9 +65,9 @@ export function useDevToolsClient(
     () =>
       currentState != null
         ? (children: React.ReactNode): React.ReactNode =>
-          currentState.devTools.wrapChildren(children, currentState.monitored)
+            currentState.devTools.wrapChildren(children, currentState.monitored)
         : null,
-    [currentState],
+    [currentState]
   );
 
   return { client: wrappedClient, wrapChildren };

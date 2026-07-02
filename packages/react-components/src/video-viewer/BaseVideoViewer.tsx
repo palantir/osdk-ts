@@ -16,8 +16,10 @@
 
 import classnames from "classnames";
 import React from "react";
-import styles from "./BaseVideoViewer.module.css";
+
 import type { BaseVideoViewerProps } from "./VideoViewerApi.js";
+
+import styles from "./BaseVideoViewer.module.css";
 
 export function BaseVideoViewer({
   src,

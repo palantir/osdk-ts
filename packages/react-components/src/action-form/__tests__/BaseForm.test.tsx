@@ -24,6 +24,7 @@ import {
 } from "@testing-library/react";
 import React, { useCallback, useState } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import type { FormContentItem } from "../ActionFormApi.js";
 import { BaseForm } from "../BaseForm.js";
 import type { RendererFieldDefinition } from "../FormFieldApi.js";
@@ -32,7 +33,7 @@ function makeDef(
   fieldKey: string,
   overrides?: Partial<
     Extract<RendererFieldDefinition, { fieldComponent: "TEXT_INPUT" }>
-  >,
+  >
 ): RendererFieldDefinition {
   return {
     fieldKey,
@@ -53,7 +54,7 @@ describe("BaseForm", () => {
   describe("form title", () => {
     it("does not render a form title when formTitle is omitted", () => {
       render(
-        <BaseForm formContent={[field(makeDef("name"))]} onSubmit={vi.fn()} />,
+        <BaseForm formContent={[field(makeDef("name"))]} onSubmit={vi.fn()} />
       );
 
       expect(screen.queryByRole("heading")).toBeNull();
@@ -65,7 +66,7 @@ describe("BaseForm", () => {
           formTitle="Create employee"
           formContent={[field(makeDef("name"))]}
           onSubmit={vi.fn()}
-        />,
+        />
       );
 
       expect(screen.getByRole("heading").textContent).toBe("Create employee");
@@ -75,7 +76,7 @@ describe("BaseForm", () => {
   describe("uncontrolled mode", () => {
     it("keeps edited state after a blank field is restored", async () => {
       render(
-        <BaseForm formContent={[field(makeDef("name"))]} onSubmit={vi.fn()} />,
+        <BaseForm formContent={[field(makeDef("name"))]} onSubmit={vi.fn()} />
       );
 
       expect(screen.queryByText("Edited")).toBeNull();
@@ -102,7 +103,7 @@ describe("BaseForm", () => {
         <BaseForm
           formContent={[field(makeDef("name")), field(makeDef("email"))]}
           onSubmit={onSubmit}
-        />,
+        />
       );
 
       const nameInput = screen.getByRole("textbox", { name: /name/ });
@@ -112,7 +113,7 @@ describe("BaseForm", () => {
 
       await vi.waitFor(() => {
         expect(onSubmit).toHaveBeenCalledWith(
-          expect.objectContaining({ name: "Alice" }),
+          expect.objectContaining({ name: "Alice" })
         );
       });
     });
@@ -121,7 +122,7 @@ describe("BaseForm", () => {
       const onSubmit = vi.fn();
 
       render(
-        <BaseForm formContent={[field(makeDef("name"))]} onSubmit={onSubmit} />,
+        <BaseForm formContent={[field(makeDef("name"))]} onSubmit={onSubmit} />
       );
 
       const form = document.querySelector("form");
@@ -144,14 +145,14 @@ describe("BaseForm", () => {
         <BaseForm
           formContent={[field(makeDef("name")), field(makeDef("email"))]}
           onSubmit={onSubmit}
-        />,
+        />
       );
 
       fireEvent.click(screen.getByRole("button", { name: /submit/i }));
 
       await vi.waitFor(() => {
         expect(onSubmit).toHaveBeenCalledWith(
-          expect.objectContaining({ name: undefined, email: undefined }),
+          expect.objectContaining({ name: undefined, email: undefined })
         );
       });
     });
@@ -165,16 +166,16 @@ describe("BaseForm", () => {
             field(
               makeDef("name", {
                 fieldComponentProps: { defaultValue: "Default Name" },
-              }),
+              })
             ),
             field(
               makeDef("email", {
                 fieldComponentProps: { defaultValue: "default@test.com" },
-              }),
+              })
             ),
           ]}
           onSubmit={onSubmit}
-        />,
+        />
       );
 
       const nameInput = screen.getByRole("textbox", { name: /name/ });
@@ -187,7 +188,7 @@ describe("BaseForm", () => {
           expect.objectContaining({
             name: "Typed",
             email: "default@test.com",
-          }),
+          })
         );
       });
     });
@@ -201,16 +202,16 @@ describe("BaseForm", () => {
             field(
               makeDef("name", {
                 fieldComponentProps: { defaultValue: "Bob" },
-              }),
+              })
             ),
             field(
               makeDef("email", {
                 fieldComponentProps: { defaultValue: "bob@test.com" },
-              }),
+              })
             ),
           ]}
           onSubmit={onSubmit}
-        />,
+        />
       );
 
       fireEvent.click(screen.getByRole("button", { name: /submit/i }));
@@ -220,7 +221,7 @@ describe("BaseForm", () => {
           expect.objectContaining({
             name: "Bob",
             email: "bob@test.com",
-          }),
+          })
         );
       });
     });
@@ -242,7 +243,7 @@ describe("BaseForm", () => {
             }),
           ]}
           onSubmit={vi.fn()}
-        />,
+        />
       );
 
       expect(screen.getByRole("combobox")).toBeDefined();
@@ -262,7 +263,7 @@ describe("BaseForm", () => {
             }),
           ]}
           onSubmit={vi.fn()}
-        />,
+        />
       );
 
       fireEvent.click(screen.getByRole("combobox"));
@@ -270,7 +271,7 @@ describe("BaseForm", () => {
       const form = document.querySelector("form");
       await waitFor(() => {
         expect(
-          within(form!).getByRole("option", { name: "Red" }),
+          within(form!).getByRole("option", { name: "Red" })
         ).toBeDefined();
       });
     });
@@ -285,11 +286,11 @@ describe("BaseForm", () => {
               makeDef("name", {
                 helperText: "Enter your full name",
                 helperTextPlacement: "bottom",
-              }),
+              })
             ),
           ]}
           onSubmit={vi.fn()}
-        />,
+        />
       );
 
       expect(screen.getByText("Enter your full name")).toBeDefined();
@@ -303,11 +304,11 @@ describe("BaseForm", () => {
               makeDef("name", {
                 helperText: "Enter your full name",
                 helperTextPlacement: "tooltip",
-              }),
+              })
             ),
           ]}
           onSubmit={vi.fn()}
-        />,
+        />
       );
 
       expect(screen.getByLabelText("Info about name")).toBeDefined();
@@ -321,11 +322,11 @@ describe("BaseForm", () => {
             field(
               makeDef("name", {
                 helperText: "Enter your full name",
-              }),
+              })
             ),
           ]}
           onSubmit={vi.fn()}
-        />,
+        />
       );
 
       expect(screen.getByLabelText("Info about name")).toBeDefined();
@@ -334,7 +335,7 @@ describe("BaseForm", () => {
 
     it("does not render helper text or icon when helperText is absent", () => {
       render(
-        <BaseForm formContent={[field(makeDef("name"))]} onSubmit={vi.fn()} />,
+        <BaseForm formContent={[field(makeDef("name"))]} onSubmit={vi.fn()} />
       );
 
       expect(screen.queryByLabelText("Info about name")).toBeNull();
@@ -354,7 +355,7 @@ describe("BaseForm", () => {
           (fieldKey: string, value: unknown) => {
             setFormState((prev) => ({ ...prev, [fieldKey]: value }));
           },
-          [],
+          []
         );
 
         return (
@@ -395,7 +396,7 @@ describe("BaseForm", () => {
           formState={{ name: "Initial", email: "initial@test.com" }}
           onFieldValueChange={onFieldValueChange}
           onSubmit={vi.fn()}
-        />,
+        />
       );
 
       const nameInput = screen.getByRole("textbox", { name: /name/ });
@@ -413,7 +414,7 @@ describe("BaseForm", () => {
           formState={{ name: "Alice", email: "alice@test.com" }}
           onFieldValueChange={vi.fn()}
           onSubmit={onSubmit}
-        />,
+        />
       );
 
       fireEvent.click(screen.getByRole("button", { name: /submit/i }));
@@ -423,7 +424,7 @@ describe("BaseForm", () => {
           expect.objectContaining({
             name: "Alice",
             email: "alice@test.com",
-          }),
+          })
         );
       });
     });
@@ -466,7 +467,7 @@ describe("BaseForm", () => {
           expect.objectContaining({
             name: "Updated",
             email: "initial@test.com",
-          }),
+          })
         );
       });
     });
@@ -480,7 +481,7 @@ describe("BaseForm", () => {
           formState={{ name: "Parent", email: "parent@test.com" }}
           onFieldValueChange={vi.fn()}
           onSubmit={onSubmit}
-        />,
+        />
       );
 
       const nameInput = screen.getByRole("textbox", { name: /name/ });
@@ -490,7 +491,7 @@ describe("BaseForm", () => {
 
       await vi.waitFor(() => {
         expect(onSubmit).toHaveBeenCalledWith(
-          expect.objectContaining({ name: "Parent" }),
+          expect.objectContaining({ name: "Parent" })
         );
       });
     });
@@ -502,7 +503,7 @@ describe("BaseForm", () => {
         <BaseForm
           formContent={[field(makeDef("name", { isRequired: true }))]}
           onSubmit={vi.fn()}
-        />,
+        />
       );
 
       const input = screen.getByRole("textbox", { name: /name/ });
@@ -512,7 +513,7 @@ describe("BaseForm", () => {
       await waitFor(() => {
         expect(screen.getByRole("alert")).toBeDefined();
         expect(screen.getByRole("alert").textContent).toBe(
-          "This field is required",
+          "This field is required"
         );
       });
     });
@@ -524,11 +525,11 @@ describe("BaseForm", () => {
             field(
               makeDef("name", {
                 fieldComponentProps: { minLength: 3 },
-              }),
+              })
             ),
           ]}
           onSubmit={vi.fn()}
-        />,
+        />
       );
 
       const input = screen.getByRole("textbox", { name: /name/ });
@@ -537,7 +538,7 @@ describe("BaseForm", () => {
 
       await waitFor(() => {
         expect(screen.getByRole("alert").textContent).toBe(
-          "Must be at least 3 characters",
+          "Must be at least 3 characters"
         );
       });
     });
@@ -547,7 +548,7 @@ describe("BaseForm", () => {
         <BaseForm
           formContent={[field(makeDef("name", { isRequired: true }))]}
           onSubmit={vi.fn()}
-        />,
+        />
       );
 
       const input = screen.getByRole("textbox", { name: /name/ });
@@ -571,7 +572,7 @@ describe("BaseForm", () => {
         <BaseForm
           formContent={[field(makeDef("name", { isRequired: true }))]}
           onSubmit={onSubmit}
-        />,
+        />
       );
 
       fireEvent.click(screen.getByRole("button", { name: /submit/i }));
@@ -588,7 +589,7 @@ describe("BaseForm", () => {
         <BaseForm
           formContent={[field(makeDef("name", { isRequired: true }))]}
           onSubmit={vi.fn()}
-        />,
+        />
       );
 
       const getSubmitButton = () =>
@@ -608,7 +609,7 @@ describe("BaseForm", () => {
         <BaseForm
           formContent={[field(makeDef("name", { isRequired: true }))]}
           onSubmit={vi.fn()}
-        />,
+        />
       );
 
       const getSubmitButton = () =>
@@ -643,7 +644,7 @@ describe("BaseForm", () => {
     it("shows submission error on button when onSubmit rejects", async () => {
       const onSubmit = vi.fn().mockRejectedValue(new Error("Server error"));
       render(
-        <BaseForm formContent={[field(makeDef("name"))]} onSubmit={onSubmit} />,
+        <BaseForm formContent={[field(makeDef("name"))]} onSubmit={onSubmit} />
       );
 
       fireEvent.click(screen.getByRole("button", { name: /submit/i }));
@@ -656,7 +657,7 @@ describe("BaseForm", () => {
     it("clears submission error when a field is edited", async () => {
       const onSubmit = vi.fn().mockRejectedValue(new Error("Server error"));
       render(
-        <BaseForm formContent={[field(makeDef("name"))]} onSubmit={onSubmit} />,
+        <BaseForm formContent={[field(makeDef("name"))]} onSubmit={onSubmit} />
       );
 
       fireEvent.click(screen.getByRole("button", { name: /submit/i }));
@@ -678,7 +679,7 @@ describe("BaseForm", () => {
         <BaseForm
           formContent={[field(makeDef("name", { isRequired: true }))]}
           onSubmit={vi.fn()}
-        />,
+        />
       );
 
       fireEvent.click(screen.getByRole("button", { name: /submit/i }));
@@ -694,17 +695,17 @@ describe("BaseForm", () => {
         () =>
           new Promise<void>((resolve) => {
             resolveSubmit = resolve;
-          }),
+          })
       );
       render(
-        <BaseForm formContent={[field(makeDef("name"))]} onSubmit={onSubmit} />,
+        <BaseForm formContent={[field(makeDef("name"))]} onSubmit={onSubmit} />
       );
 
       fireEvent.click(screen.getByRole("button", { name: /submit/i }));
 
       await waitFor(() => {
         expect(
-          screen.getByRole("button", { name: /submitting/i }),
+          screen.getByRole("button", { name: /submitting/i })
         ).toBeDefined();
       });
 
@@ -721,7 +722,7 @@ describe("BaseForm", () => {
         <BaseForm
           formContent={[field(makeDef("name")), field(makeDef("email"))]}
           onSubmit={onSubmit}
-        />,
+        />
       );
 
       fireEvent.click(screen.getByRole("button", { name: /submit/i }));
@@ -749,7 +750,7 @@ describe("BaseForm", () => {
             },
           ]}
           onSubmit={vi.fn()}
-        />,
+        />
       );
 
       const sectionTitle = screen.getByText("Personal Info");
@@ -776,7 +777,7 @@ describe("BaseForm", () => {
             },
           ]}
           onSubmit={vi.fn()}
-        />,
+        />
       );
 
       fireEvent.click(screen.getByRole("button", { name: /submit/i }));
@@ -792,7 +793,7 @@ describe("BaseForm", () => {
           formContent={[field(makeDef("name"))]}
           onSubmit={vi.fn()}
           submitButtonText="Save"
-        />,
+        />
       );
 
       expect(screen.getByRole("button", { name: "Save" })).toBeDefined();
@@ -800,7 +801,7 @@ describe("BaseForm", () => {
 
     it("defaults to Submit when no custom text is provided", () => {
       render(
-        <BaseForm formContent={[field(makeDef("name"))]} onSubmit={vi.fn()} />,
+        <BaseForm formContent={[field(makeDef("name"))]} onSubmit={vi.fn()} />
       );
 
       expect(screen.getByRole("button", { name: /^submit$/i })).toBeDefined();
@@ -823,7 +824,7 @@ describe("BaseForm", () => {
             },
           ]}
           onSubmit={onSubmit}
-        />,
+        />
       );
 
       const nameInput = screen.getByRole("textbox", { name: /name/ });
@@ -833,7 +834,7 @@ describe("BaseForm", () => {
 
       await vi.waitFor(() => {
         expect(onSubmit).toHaveBeenCalledWith(
-          expect.objectContaining({ name: "Alice" }),
+          expect.objectContaining({ name: "Alice" })
         );
       });
     });
@@ -852,13 +853,13 @@ describe("BaseForm", () => {
             }),
           ]}
           onSubmit={vi.fn()}
-        />,
+        />
       );
 
       const input = screen.getByRole("textbox", { name: "Unsupported" });
       expect(input).toHaveProperty(
         "value",
-        "Unsupported field type. Use a CUSTOM field instead",
+        "Unsupported field type. Use a CUSTOM field instead"
       );
       expect(input).toHaveProperty("disabled", true);
     });
@@ -878,14 +879,14 @@ describe("BaseForm", () => {
             }),
           ]}
           onSubmit={onSubmit}
-        />,
+        />
       );
 
       fireEvent.click(screen.getByRole("button", { name: /submit/i }));
 
       await waitFor(() => {
         expect(screen.getByRole("alert").textContent).toBe(
-          "This field is required",
+          "This field is required"
         );
       });
       expect(onSubmit).not.toHaveBeenCalled();
@@ -908,15 +909,15 @@ describe("BaseForm", () => {
           formState={{ unsupported: "sensitive value" }}
           onFieldValueChange={vi.fn()}
           onSubmit={onSubmit}
-        />,
+        />
       );
 
       expect(screen.queryByDisplayValue("sensitive value")).toBeNull();
       expect(
-        screen.getByRole("textbox", { name: /Unsupported/ }),
+        screen.getByRole("textbox", { name: /Unsupported/ })
       ).toHaveProperty(
         "value",
-        "Unsupported field type. Use a CUSTOM field instead",
+        "Unsupported field type. Use a CUSTOM field instead"
       );
 
       fireEvent.click(screen.getByRole("button", { name: /submit/i }));

@@ -47,11 +47,13 @@ type CapabilitiesListener = (capabilities: FiberCapabilities) => void;
 export class FiberCapabilitiesManager {
   private capabilities: FiberCapabilities;
   private cachedSnapshot: Readonly<FiberCapabilities> | null = null;
-  private listeners: Set<CapabilitiesListener> = new Set();
-  private featureErrorCounts: Map<FiberFeature, number> = new Map();
-  private featureLastError: Map<FiberFeature, number> = new Map();
-  private recoveryTimers: Map<FiberFeature, ReturnType<typeof setTimeout>> =
-    new Map();
+  private listeners = new Set<CapabilitiesListener>();
+  private featureErrorCounts = new Map<FiberFeature, number>();
+  private featureLastError = new Map<FiberFeature, number>();
+  private recoveryTimers = new Map<
+    FiberFeature,
+    ReturnType<typeof setTimeout>
+  >();
   private config: DegradationConfig;
 
   constructor(config: Partial<DegradationConfig> = {}) {
@@ -87,7 +89,7 @@ export class FiberCapabilitiesManager {
 
   setCapability<K extends keyof FiberCapabilities>(
     key: K,
-    value: FiberCapabilities[K],
+    value: FiberCapabilities[K]
   ): void {
     const oldValue = this.capabilities[key];
     if (oldValue === value) {
@@ -125,7 +127,7 @@ export class FiberCapabilitiesManager {
       // eslint-disable-next-line no-console
       console.warn(
         `[OSDK DevTools] Fiber feature "${feature}" error (${newCount}/${this.config.errorThreshold}):`,
-        error,
+        error
       );
     }
   }
@@ -189,7 +191,7 @@ export class FiberCapabilitiesManager {
     if (process.env.NODE_ENV !== "production") {
       // eslint-disable-next-line no-console
       console.warn(
-        `[OSDK DevTools] Fiber feature "${feature}" has been disabled due to repeated errors`,
+        `[OSDK DevTools] Fiber feature "${feature}" has been disabled due to repeated errors`
       );
     }
   }
@@ -208,7 +210,7 @@ export class FiberCapabilitiesManager {
         if (process.env.NODE_ENV !== "production") {
           // eslint-disable-next-line no-console
           console.info(
-            `[OSDK DevTools] Fiber feature "${feature}" re-enabled after recovery timeout`,
+            `[OSDK DevTools] Fiber feature "${feature}" re-enabled after recovery timeout`
           );
         }
       }

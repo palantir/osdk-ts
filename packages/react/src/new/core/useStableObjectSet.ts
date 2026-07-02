@@ -20,6 +20,7 @@ import type {
   SimplePropertyDef,
 } from "@osdk/api";
 import { useMemo } from "react";
+
 import { stableSerialize } from "./stableSerialize.js";
 
 /**
@@ -31,9 +32,7 @@ import { stableSerialize } from "./stableSerialize.js";
 export function useStableObjectSet<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
->(
-  objectSet: ObjectSet<Q, RDPs> | undefined,
-): ObjectSet<Q, RDPs> | undefined {
+>(objectSet: ObjectSet<Q, RDPs> | undefined): ObjectSet<Q, RDPs> | undefined {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   return useMemo(() => objectSet, [stableSerialize(objectSet)]);
 }

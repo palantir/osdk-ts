@@ -17,10 +17,12 @@
 import { Error as ErrorIcon, Spin } from "@blueprintjs/icons";
 import classnames from "classnames";
 import React from "react";
+
 import { useMediaContents } from "../../shared/hooks/useMediaContents.js";
 import { BaseImageViewer } from "./BaseImageViewer.js";
-import styles from "./BaseImageViewer.module.css";
 import type { ImageViewerMediaProps } from "./ImageViewerApi.js";
+
+import styles from "./BaseImageViewer.module.css";
 
 const transformToObjectUrl = async (response: Response): Promise<string> => {
   const blob = await response.blob();
@@ -36,11 +38,11 @@ export function ImageViewer({
   className,
   ...imageViewerProps
 }: ImageViewerMediaProps): React.ReactElement {
-  const { data: src, loading, error } = useMediaContents(
-    media,
-    transformToObjectUrl,
-    cleanupObjectUrl,
-  );
+  const {
+    data: src,
+    loading,
+    error,
+  } = useMediaContents(media, transformToObjectUrl, cleanupObjectUrl);
 
   const rootClassName = classnames(styles.container, className);
 

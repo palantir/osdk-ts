@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   LoadAllTypeGroupsPageRequest as _api_LoadAllTypeGroupsPageRequest,
   LoadAllTypeGroupsPageResponse as _api_LoadAllTypeGroupsPageResponse,
@@ -30,12 +31,12 @@ export async function loadAllTypeGroupsFromOntology(
   ctx: ConjureContext,
   ontologyRid: _api_OntologyRid,
   ontologyVersion: _api_OntologyVersion,
-  request: _api_LoadAllTypeGroupsPageRequest,
+  request: _api_LoadAllTypeGroupsPageRequest
 ): Promise<_api_LoadAllTypeGroupsPageResponse> {
   return conjureFetch(
     ctx,
     `/ontology/ontology/load/${ontologyRid}/${ontologyVersion}/loadAllTypeGroups`,
     "PUT",
-    request,
+    request
   );
 }

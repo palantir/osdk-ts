@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BlockSetVersionId as _api_BlockSetVersionId,
   MarketplaceRid as _api_MarketplaceRid,
@@ -42,12 +43,12 @@ export async function resolvePresets(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
   blockSetVersionId: _api_BlockSetVersionId,
-  request: _api_ResolvePresetsRequest,
+  request: _api_ResolvePresetsRequest
 ): Promise<_api_ResolvePresetsResponse> {
   return conjureFetch(
     ctx,
     `/installation-app-service/installable/v2/${marketplaceRid}/blockSet/version/${blockSetVersionId}/resolve-presets`,
     "POST",
-    request,
+    request
   );
 }

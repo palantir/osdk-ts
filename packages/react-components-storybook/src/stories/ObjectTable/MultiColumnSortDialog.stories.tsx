@@ -85,8 +85,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code:
-          `import { MultiColumnSortDialog } from "@osdk/react-components/experimental/object-table";
+        code: `import { MultiColumnSortDialog } from "@osdk/react-components/experimental/object-table";
 
 const [isOpen, setIsOpen] = useState(false);
 

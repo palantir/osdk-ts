@@ -15,8 +15,10 @@
  */
 
 import { setFlagsFromString } from "v8";
-import { describe, expect, it, vi } from "vitest";
 import { runInNewContext } from "vm";
+
+import { describe, expect, it, vi } from "vitest";
+
 import { OrderByCanonicalizer } from "./OrderByCanonicalizer.js";
 
 describe(OrderByCanonicalizer, () => {

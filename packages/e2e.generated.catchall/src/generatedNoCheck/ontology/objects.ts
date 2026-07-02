@@ -1,6 +1,7 @@
 export { BgaoNflPlayer } from './objects/BgaoNflPlayer.js';
 export { BoundariesUsState } from './objects/BoundariesUsState.js';
 export { BuilderDeploymentState } from './objects/BuilderDeploymentState.js';
+export { CipherTextTest } from './objects/CipherTextTest.js';
 export { Country_1 } from './objects/Country_1.js';
 export { DherlihyComplexObject } from './objects/DherlihyComplexObject.js';
 export { Employee } from './objects/Employee.js';

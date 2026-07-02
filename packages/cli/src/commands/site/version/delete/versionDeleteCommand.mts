@@ -14,23 +14,30 @@
  * limitations under the License.
  */
 
-import { createInternalClientContext, thirdPartyApplications } from "#net";
 import { consola } from "consola";
 import { colorize } from "consola/utils";
+
+import { createInternalClientContext, thirdPartyApplications } from "#net";
+
 import { handlePromptCancel } from "../../../../consola/handlePromptCancel.js";
 import { loadToken } from "../../../../util/token.js";
 import type { VersionDeleteArgs } from "./VersionDeleteArgs.js";
 
-export default async function versionDeleteCommand(
-  { version, yes, application, foundryUrl, token, tokenFile }:
-    VersionDeleteArgs,
-): Promise<void> {
+export default async function versionDeleteCommand({
+  version,
+  yes,
+  application,
+  foundryUrl,
+  token,
+  tokenFile,
+}: VersionDeleteArgs): Promise<void> {
   if (!yes) {
     const confirmed = await consola.prompt(
-      `Are you sure you want to delete the version ${version}?\n${
-        colorize("bold", "This action cannot be undone.")
-      }`,
-      { type: "confirm", cancel: "symbol" },
+      `Are you sure you want to delete the version ${version}?\n${colorize(
+        "bold",
+        "This action cannot be undone."
+      )}`,
+      { type: "confirm", cancel: "symbol" }
     );
     handlePromptCancel(confirmed);
   }
@@ -39,12 +46,6 @@ export default async function versionDeleteCommand(
   const loadedToken = await loadToken(token, tokenFile);
   const tokenProvider = () => loadedToken;
   const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
-  await thirdPartyApplications.deleteVersion(
-    clientCtx,
-    application,
-    version,
-  );
-  consola.success(
-    `Deleted version ${version}`,
-  );
+  await thirdPartyApplications.deleteVersion(clientCtx, application, version);
+  consola.success(`Deleted version ${version}`);
 }

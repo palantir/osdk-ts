@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
-import { consola } from "consola";
 import * as fs from "node:fs";
 import * as path from "node:path";
+
+import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
+import { consola } from "consola";
 import invariant from "tiny-invariant";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
+
 import { compileSeedData } from "../compileSeedData.js";
 import { schemaFromMetadata } from "../schema.js";
 
 export default async function main(
-  args: string[] = process.argv,
+  args: string[] = process.argv
 ): Promise<void> {
   const opts: {
     metadata: string;
@@ -39,16 +41,16 @@ export default async function main(
     .options({
       metadata: {
         describe:
-          "Path to the ontology-metadata.json file written by the SDK generator. "
-          + "Provides primary-key field names and property wire types.",
+          "Path to the ontology-metadata.json file written by the SDK generator. " +
+          "Provides primary-key field names and property wire types.",
         type: "string" as const,
         demandOption: true,
         coerce: path.resolve,
       },
       seedDir: {
         describe:
-          "Directory containing seed data .mts files. All top-level .mts "
-          + "files are compiled (sorted by filename for deterministic output).",
+          "Directory containing seed data .mts files. All top-level .mts " +
+          "files are compiled (sorted by filename for deterministic output).",
         type: "string" as const,
         demandOption: true,
         coerce: path.resolve,
@@ -66,18 +68,19 @@ export default async function main(
   const metadataStat = fs.statSync(opts.metadata);
   invariant(
     metadataStat.isFile(),
-    `--metadata '${opts.metadata}' is not a file`,
+    `--metadata '${opts.metadata}' is not a file`
   );
   const metadata = JSON.parse(
-    fs.readFileSync(opts.metadata, "utf-8"),
+    fs.readFileSync(opts.metadata, "utf-8")
   ) as OntologyFullMetadata;
 
   const seedDirStat = fs.statSync(opts.seedDir);
   invariant(
     seedDirStat.isDirectory(),
-    `--seed-dir '${opts.seedDir}' is not a directory`,
+    `--seed-dir '${opts.seedDir}' is not a directory`
   );
-  const seedFiles = fs.readdirSync(opts.seedDir)
+  const seedFiles = fs
+    .readdirSync(opts.seedDir)
     .filter((f) => f.endsWith(".mts"))
     .sort()
     .map((f) => path.join(opts.seedDir, f));

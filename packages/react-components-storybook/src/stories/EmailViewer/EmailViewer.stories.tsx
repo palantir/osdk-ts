@@ -58,8 +58,7 @@ const SAMPLE_TEXT_EMAIL: ParsedEmail = {
   cc: [],
   date: "2026-03-16T09:00:00Z",
   html: undefined,
-  text:
-    "Hi Alice,\n\nHere are the meeting notes from today:\n\n1. Discussed budget allocation\n2. Reviewed timeline\n3. Assigned action items\n\nThanks,\nBob",
+  text: "Hi Alice,\n\nHere are the meeting notes from today:\n\n1. Discussed budget allocation\n2. Reviewed timeline\n3. Assigned action items\n\nThanks,\nBob",
 };
 
 const SAMPLE_EML_CONTENT = `From: Alice Johnson <alice@example.com>
@@ -137,8 +136,7 @@ export const Default: StoryObj<EmailViewerMediaProps> = {
   parameters: {
     docs: {
       source: {
-        code:
-          `import { EmailViewer } from "@osdk/react-components/experimental/email-viewer";
+        code: `import { EmailViewer } from "@osdk/react-components/experimental/email-viewer";
 
 <EmailViewer media={myOsdkMedia} />`,
       },
@@ -150,8 +148,7 @@ export const HtmlEmail: Story = {
   parameters: {
     docs: {
       source: {
-        code:
-          `import { BaseEmailViewer } from "@osdk/react-components/experimental/email-viewer";
+        code: `import { BaseEmailViewer } from "@osdk/react-components/experimental/email-viewer";
 
 <BaseEmailViewer email={parsedEmail} />`,
       },

@@ -1,5 +1,20 @@
 # @osdk/api
 
+## 2.41.0
+
+### Minor Changes
+
+- 9b150d7: Add nullity check for decrypt
+- 15a35f2: Add CipherText support for codegen and implement decryption interface
+
+## 2.40.0
+
+### Minor Changes
+
+- 3e915ee: Array Reducers and Struct Main Value support
+
+## 2.39.0
+
 ## 2.38.0
 
 ## 2.37.0

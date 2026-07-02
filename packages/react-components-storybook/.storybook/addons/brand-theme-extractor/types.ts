@@ -36,18 +36,24 @@ export type ColorTokenRole =
   | "surface"
   | "text"
   | "text-muted"
+  | "text-subtle"
   | "primary"
+  | "primary-hover"
   | "primary-foreground"
   | "secondary"
   | "secondary-foreground"
   | "icon-color"
   | "border"
+  | "input-bg"
+  | "overlay"
   | "danger"
   | "success"
   | "warning";
 
 export type TypographyTokenRole =
   | "font-family"
+  | "font-family-mono"
+  | "font-size-xsmall"
   | "font-size-small"
   | "font-size-medium"
   | "font-size-large"
@@ -81,4 +87,8 @@ export interface TokenRoleDefinition {
   cssProperties: string[];
   inputType: "color" | "text" | "px" | "number" | "ms" | "shadow" | "font";
   defaultValue?: string;
+  /** Semantic key used in DESIGN.md YAML frontmatter (e.g. "canvas", "ink", "primary") */
+  designMdKey: string;
+  /** DESIGN.md section this token belongs to (e.g. "colors", "typography", "rounded") */
+  designMdSection: string;
 }

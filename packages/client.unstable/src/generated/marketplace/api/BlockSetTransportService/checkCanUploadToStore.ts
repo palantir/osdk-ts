@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   CheckCanUploadToStoreResponse as _api_CheckCanUploadToStoreResponse,
   MarketplaceRid as _api_MarketplaceRid,
@@ -26,11 +27,11 @@ import type {
  */
 export async function checkCanUploadToStore(
   ctx: ConjureContext,
-  marketplaceRid: _api_MarketplaceRid,
+  marketplaceRid: _api_MarketplaceRid
 ): Promise<_api_CheckCanUploadToStoreResponse> {
   return conjureFetch(
     ctx,
     `/block-set-transport/${marketplaceRid}/permission`,
-    "POST",
+    "POST"
   );
 }

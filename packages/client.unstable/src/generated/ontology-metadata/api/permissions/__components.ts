@@ -73,13 +73,11 @@ export interface BulkUpdateEntityRolesRequest {
 /**
  * Response to BulkUpdateEntityRolesRequest. Intentionally left empty for future extensibility.
  */
-export interface BulkUpdateEntityRolesResponse {
-}
+export interface BulkUpdateEntityRolesResponse {}
 /**
  * The roles permission model is used by none of the entities in the enrollment.
  */
-export interface DatasourceDerived {
-}
+export interface DatasourceDerived {}
 /**
  * Permissions to edit the entity are primarily controlled by datasource access.
  *
@@ -87,8 +85,7 @@ export interface DatasourceDerived {
  * access to a datasource *and* Ontology Editor or Ontology Owner role on the ontology. Only users with the
  * appropriate permissions can view or edit the entity.
  */
-export interface EditRestrictedByDatasourcesPermissionModel {
-}
+export interface EditRestrictedByDatasourcesPermissionModel {}
 export interface EntityAndGrantPatches {
   entity: PermissionsOntologyEntity;
   grantPatches: Array<RoleGrantPatch>;
@@ -111,8 +108,7 @@ export interface EntityMigrationInProgress {
  * The entity has no public-project migration record. This means that the entity is either not migrating at
  * the moment: they were either successfully migrated, or not migrated at all.
  */
-export interface EntityMigrationNotMigrating {
-}
+export interface EntityMigrationNotMigrating {}
 export interface EntityParent_package {
   type: "package";
   package: PackageParent;
@@ -128,8 +124,7 @@ export type EntityParent = EntityParent_package | EntityParent_project;
  * Principal that represents all users that can see the project. Intentionally left empty for future
  * extensibility.
  */
-export interface EveryPrincipal {
-}
+export interface EveryPrincipal {}
 /**
  * The operations the user has on the provided ActionType
  */
@@ -606,8 +601,7 @@ export type MigrateEntitiesToProjectsResult =
 /**
  * Indicates all entities migrated to the targetFolder and successfully updated any markings.
  */
-export interface MigrateEntitiesToProjectsSuccess {
-}
+export interface MigrateEntitiesToProjectsSuccess {}
 export interface MigrateEntityToProjectRequest {
   markings: Array<_api_MarkingId>;
   rid: _api_ProjectEntityRid;
@@ -651,8 +645,7 @@ export type ObjectTypePermissionModel =
   | ObjectTypePermissionModel_package
   | ObjectTypePermissionModel_publicProject;
 
-export interface OntologyParent {
-}
+export interface OntologyParent {}
 export interface OntologyRidAndMaybeBranch {
   branchRid?: _api_OntologyBranchRid | null | undefined;
   ontologyRid: _api_OntologyRid;
@@ -762,8 +755,7 @@ export type PermissionsOntologyEntity =
  *
  * Note: This model is deprecated.
  */
-export interface PreRolesPermissionModel {
-}
+export interface PreRolesPermissionModel {}
 export interface Principal_everyone {
   type: "everyone";
   everyone: EveryPrincipal;
@@ -800,7 +792,56 @@ export interface PropertySecurityGroupPermissions {
  * This is the modern approach for organizing and securing ontology entities. Entities are managed within Compass
  * projects, and permissions are determined by the user's access to those projects.
  */
-export interface PublicProjectPermissionModel {
+export interface PublicProjectPermissionModel {}
+export interface RevertPublicProjectActionTypeRequest {
+  actionTypeRid: _api_ActionTypeRid;
+  revertToRoles: boolean;
+}
+export interface RevertPublicProjectEntityRequest_objectType {
+  type: "objectType";
+  objectType: RevertPublicProjectObjectTypeRequest;
+}
+
+export interface RevertPublicProjectEntityRequest_linkType {
+  type: "linkType";
+  linkType: RevertPublicProjectLinkTypeRequest;
+}
+
+export interface RevertPublicProjectEntityRequest_actionType {
+  type: "actionType";
+  actionType: RevertPublicProjectActionTypeRequest;
+}
+
+export interface RevertPublicProjectEntityRequest_sharedPropertyType {
+  type: "sharedPropertyType";
+  sharedPropertyType: RevertPublicProjectSharedPropertyTypeRequest;
+}
+
+export interface RevertPublicProjectEntityRequest_interfaceType {
+  type: "interfaceType";
+  interfaceType: RevertPublicProjectInterfaceTypeRequest;
+}
+export type RevertPublicProjectEntityRequest =
+  | RevertPublicProjectEntityRequest_objectType
+  | RevertPublicProjectEntityRequest_linkType
+  | RevertPublicProjectEntityRequest_actionType
+  | RevertPublicProjectEntityRequest_sharedPropertyType
+  | RevertPublicProjectEntityRequest_interfaceType;
+
+export interface RevertPublicProjectEntityResponse {}
+export interface RevertPublicProjectInterfaceTypeRequest {
+  interfaceTypeRid: _api_InterfaceTypeRid;
+}
+export interface RevertPublicProjectLinkTypeRequest {
+  linkTypeRid: _api_LinkTypeRid;
+  revertToRoles: boolean;
+}
+export interface RevertPublicProjectObjectTypeRequest {
+  objectTypeRid: _api_ObjectTypeRid;
+  revertToRoles: boolean;
+}
+export interface RevertPublicProjectSharedPropertyTypeRequest {
+  sharedPropertyTypeRid: _api_SharedPropertyTypeRid;
 }
 /**
  * The role to add/remove and to which principal
@@ -819,13 +860,11 @@ export interface RoleGrantPatch {
 /**
  * The roles permission model is used by some of the entities in the enrollment.
  */
-export interface RolesEnabled {
-}
+export interface RolesEnabled {}
 /**
  * The roles permission model is used by all of the entities in the enrollment.
  */
-export interface RolesEnforced {
-}
+export interface RolesEnforced {}
 /**
  * Secured by role-based access control.
  *
@@ -834,8 +873,7 @@ export interface RolesEnforced {
  * for entities where access is controlled through explicit role grants to users or groups. The entity is not
  * restricted by datasource permissions.
  */
-export interface RolesPermissionModel {
-}
+export interface RolesPermissionModel {}
 export interface SharedPropertyTypePermissionModel_roles {
   type: "roles";
   roles: RolesPermissionModel;
@@ -872,8 +910,7 @@ export interface UpdateEntitiesInPackageRequest {
 /**
  * Response to UpdateEntitiesInPackageRequest. Intentionally left empty for future extensibility.
  */
-export interface UpdateEntitiesInPackageResponse {
-}
+export interface UpdateEntitiesInPackageResponse {}
 /**
  * Request to update the roles on an ontology entity.
  * - The RoleSet of the ontology project must be in the Ontology context.
@@ -889,8 +926,7 @@ export interface UpdateEntityRolesRequest {
 /**
  * Response to UpdateEntityRolesRequest. Intentionally left empty for future extensibility.
  */
-export interface UpdateEntityRolesResponse {
-}
+export interface UpdateEntityRolesResponse {}
 /**
  * Updates the roles on the package.
  */
@@ -900,8 +936,7 @@ export interface UpdatePackageRolesRequest {
 /**
  * Response to UpdatePackageRolesRequest. Intentionally left empty for future extensibility.
  */
-export interface UpdatePackageRolesResponse {
-}
+export interface UpdatePackageRolesResponse {}
 /**
  * Principal that represents a user. Identified by the user id.
  */
@@ -915,5 +950,4 @@ export interface UserPrincipal {
  * a datasource *and* Ontology Editor or Ontology Owner role on the ontology. Only users with the appropriate
  * permissions can view or edit the entity.
  */
-export interface ViewRestrictedByDatasourcesPermissionModel {
-}
+export interface ViewRestrictedByDatasourcesPermissionModel {}

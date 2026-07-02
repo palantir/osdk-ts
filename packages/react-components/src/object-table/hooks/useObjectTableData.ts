@@ -30,6 +30,7 @@ import {
 } from "@osdk/react";
 import type { SortingState } from "@tanstack/react-table";
 import { useMemo } from "react";
+
 import type { ColumnDefinition, ObjectSetOptions } from "../ObjectTableApi.js";
 import type { AsyncCellData } from "../utils/AsyncCellData.js";
 import {
@@ -40,10 +41,7 @@ import { useFunctionColumnsData } from "./useFunctionColumnsData.js";
 
 type WithProperties<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<
-    string,
-    never
-  >,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 > = {
   [K in keyof RDPs]: DerivedProperty.Creator<Q, RDPs[K]>;
 };
@@ -60,10 +58,7 @@ interface UseObjectTableDataResult<
  */
 export function useObjectTableData<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<
-    string,
-    never
-  >,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -77,7 +72,7 @@ export function useObjectTableData<
   objectSetOptions?: ObjectSetOptions<Q>,
   dedupeIntervalMs: number = DEFAULT_OBJECT_TABLE_DEDUPE_INTERVAL_MS,
   pageSize: number = DEFAULT_PAGE_SIZE,
-  streamUpdates?: boolean,
+  streamUpdates?: boolean
 ): UseObjectTableDataResult<Q, RDPs> {
   const orderBy = useMemo(() => {
     if (!sorting || sorting.length === 0) {
@@ -89,7 +84,7 @@ export function useObjectTableData<
         acc[sort.id as PropertyKeys<Q>] = sort.desc ? "desc" : "asc";
         return acc;
       },
-      {},
+      {}
     );
   }, [sorting]);
 
@@ -99,11 +94,11 @@ export function useObjectTableData<
       return;
     }
 
-    const rdpColumns = columnDefinitions.map(colDef => colDef.locator).filter(
-      (colLocator) => {
+    const rdpColumns = columnDefinitions
+      .map((colDef) => colDef.locator)
+      .filter((colLocator) => {
         return colLocator.type === "rdp";
-      },
-    );
+      });
 
     if (!rdpColumns.length) {
       return;
@@ -116,7 +111,7 @@ export function useObjectTableData<
           [cur.id]: cur.creator,
         };
       },
-      {} as WithProperties<Q, RDPs>,
+      {} as WithProperties<Q, RDPs>
     );
   }, [columnDefinitions]);
 
@@ -126,37 +121,28 @@ export function useObjectTableData<
   const shouldUseObjectSet = !!objectSet;
 
   const objectSetResult = useObjectSet(
-    shouldUseObjectSet ? objectSet as ObjectSet<Q, RDPs> : undefined as any,
+    shouldUseObjectSet ? (objectSet as ObjectSet<Q, RDPs>) : (undefined as any),
     {
       ...(objectSetOptions as ObjectSetOptions<Q>),
-      withProperties: withProperties as WithProperties<
-        Q,
-        RDPs
-      >,
+      withProperties: withProperties as WithProperties<Q, RDPs>,
       where: filter,
       orderBy,
       pageSize,
       enabled: shouldUseObjectSet,
       dedupeIntervalMs,
       streamUpdates,
-    },
+    }
   );
 
-  const osdkObjectsResult = useOsdkObjects<
-    Q,
-    RDPs
-  >(
-    objectOrInterfaceType,
-    {
-      withProperties,
-      pageSize,
-      where: filter,
-      orderBy,
-      enabled: !shouldUseObjectSet,
-      dedupeIntervalMs,
-      streamUpdates,
-    },
-  );
+  const osdkObjectsResult = useOsdkObjects<Q, RDPs>(objectOrInterfaceType, {
+    withProperties,
+    pageSize,
+    where: filter,
+    orderBy,
+    enabled: !shouldUseObjectSet,
+    dedupeIntervalMs,
+    streamUpdates,
+  });
 
   // Get the result from the appropriate hook
   const baseResult = shouldUseObjectSet ? objectSetResult : osdkObjectsResult;
@@ -173,7 +159,7 @@ export function useObjectTableData<
   const mergedData = useMemo(() => {
     if (!baseResult.data) return baseResult.data;
 
-    return baseResult.data.map(obj => {
+    return baseResult.data.map((obj) => {
       const objKey = String(obj.$primaryKey);
       const functionData: Record<string, AsyncCellData> = {};
 

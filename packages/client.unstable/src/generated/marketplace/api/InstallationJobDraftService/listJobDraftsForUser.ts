@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BlockSetId as _api_BlockSetId,
   BlockSetInstallationRid as _api_BlockSetInstallationRid,
@@ -38,7 +39,7 @@ export async function listJobDraftsForUser(
   blockSetId: _api_BlockSetId | null | undefined,
   installationRid: _api_BlockSetInstallationRid | null | undefined,
   pageToken: _api_ListJobDraftsPageToken | null | undefined,
-  limit: _api_PageSizeLimitHint | null | undefined,
+  limit: _api_PageSizeLimitHint | null | undefined
 ): Promise<_api_ListJobDraftsForUserResponse> {
   return conjureFetch(ctx, `/installation-job-draft/list`, "GET", undefined, {
     blockSetId,

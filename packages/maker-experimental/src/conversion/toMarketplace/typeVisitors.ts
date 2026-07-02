@@ -42,16 +42,16 @@ const DEFAULT_DECIMAL_SCALE = 0;
  * TypeScript port of TypeToMarketplaceShapeObjectPropertyTypeVisitor
  */
 export function typeToMarketplaceObjectPropertyType(
-  type: Type | InterfacePropertyTypeType,
+  type: Type | InterfacePropertyTypeType
 ): ObjectPropertyType {
   switch (type.type) {
     case "array":
       const arraySubtype = typeToMarketplaceObjectPropertyType(
-        type.array.subtype,
+        type.array.subtype
       );
       if (arraySubtype.type === "array") {
         throw new Error(
-          "Nested array property types are not supported in marketplace",
+          "Nested array property types are not supported in marketplace"
         );
       }
       if (arraySubtype.type !== "primitive") {
@@ -162,11 +162,11 @@ export function typeToMarketplaceObjectPropertyType(
 
     case "cipherText": {
       const plainTextType = typeToMarketplaceObjectPropertyType(
-        type.cipherText.plainTextType,
+        type.cipherText.plainTextType
       );
       if (plainTextType.type === "array") {
         throw new Error(
-          "Nested array property types are not supported in marketplace",
+          "Nested array property types are not supported in marketplace"
         );
       }
       if (plainTextType.type !== "primitive") {
@@ -194,18 +194,21 @@ export function typeToMarketplaceObjectPropertyType(
           type: "vectorType",
           vectorType: {
             dimension: type.vector.dimension,
-            supportsSearchWith: type.vector.supportsSearchWith?.map(fn => {
-              switch (fn) {
-                case "COSINE_SIMILARITY":
-                  return "COSINE_SIMILARITY";
-                case "DOT_PRODUCT":
-                  return "DOT_PRODUCT";
-                case "EUCLIDEAN_DISTANCE":
-                  return "EUCLIDEAN_DISTANCE";
-                default:
-                  throw new Error(`Unknown vector similarity function: ${fn}`);
-              }
-            }) ?? [],
+            supportsSearchWith:
+              type.vector.supportsSearchWith?.map((fn) => {
+                switch (fn) {
+                  case "COSINE_SIMILARITY":
+                    return "COSINE_SIMILARITY";
+                  case "DOT_PRODUCT":
+                    return "DOT_PRODUCT";
+                  case "EUCLIDEAN_DISTANCE":
+                    return "EUCLIDEAN_DISTANCE";
+                  default:
+                    throw new Error(
+                      `Unknown vector similarity function: ${fn}`
+                    );
+                }
+              }) ?? [],
           },
         },
       };
@@ -220,7 +223,7 @@ export function typeToMarketplaceObjectPropertyType(
       };
 
     case "struct": {
-      const structFieldTypes = type.struct.structFields.map(field =>
+      const structFieldTypes = type.struct.structFields.map((field) =>
         typeToMarketplaceObjectPropertyType(field.fieldType)
       );
       return {
@@ -383,10 +386,13 @@ export function typeToConcreteDataType(type: Type): ConcreteDataType {
       };
 
     case "struct": {
-      const fields = type.struct.structFields.map(field => ({
-        name: field.apiName,
-        type: typeToConcreteDataType(field.fieldType),
-      } as ConcreteStructElement));
+      const fields = type.struct.structFields.map(
+        (field) =>
+          ({
+            name: field.apiName,
+            type: typeToConcreteDataType(field.fieldType),
+          }) as ConcreteStructElement
+      );
       return {
         type: "struct",
         struct: { fields },
@@ -410,7 +416,7 @@ export function typeToMarketplaceBaseType(type: Type | IrBaseType): BaseType {
       const itemBaseType = typeToMarketplaceBaseType(subItem);
       if (itemBaseType.type === "array") {
         throw new Error(
-          "Nested array property types are not supported in marketplace",
+          "Nested array property types are not supported in marketplace"
         );
       }
       if (itemBaseType.type === "structV2") {
@@ -559,7 +565,7 @@ export function typeToMarketplaceBaseType(type: Type | IrBaseType): BaseType {
       return {
         type: "structV2",
         structV2: {
-          structFieldTypes: sv2.structV2.fields.map(field =>
+          structFieldTypes: sv2.structV2.fields.map((field) =>
             typeToMarketplaceBaseType(field.baseType)
           ),
         },

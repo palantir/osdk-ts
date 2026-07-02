@@ -15,42 +15,41 @@
  */
 
 import { expectTypeOf, test } from "vitest";
+
 import type { WidgetSetManifestV1 } from "./manifest.js";
 
 const EXAMPLE_WIDGET_SET_MANIFEST: WidgetSetManifestV1 = {
-  "manifestVersion": "1.0.0" as const,
-  "widgetSet": {
-    "rid": "ri.widgetregistry..widget-set.placeholder",
-    "version": "0.1.0",
-    "widgets": {
-      "widget1": {
-        "id": "widget1",
-        "name": "My name",
-        "description": "My description",
-        "type": "workshopWidgetV1",
-        "entrypointJs": [
+  manifestVersion: "1.0.0" as const,
+  widgetSet: {
+    rid: "ri.widgetregistry..widget-set.placeholder",
+    version: "0.1.0",
+    widgets: {
+      widget1: {
+        id: "widget1",
+        name: "My name",
+        description: "My description",
+        type: "workshopWidgetV1",
+        entrypointJs: [
           {
-            "path": "app.js",
-            "type": "module",
+            path: "app.js",
+            type: "module",
           },
         ],
-        "entrypointCss": [
+        entrypointCss: [
           {
-            "path": "app.css",
+            path: "app.css",
           },
         ],
-        "parameters": {
-          "myString": {
-            "displayName": "My String",
-            "type": "string",
+        parameters: {
+          myString: {
+            displayName: "My String",
+            type: "string",
           },
         },
-        "events": {
-          "event1": {
-            "displayName": "Event 1",
-            "parameterUpdateIds": [
-              "myString",
-            ],
+        events: {
+          event1: {
+            displayName: "Event 1",
+            parameterUpdateIds: ["myString"],
           },
         },
       },
@@ -60,7 +59,7 @@ const EXAMPLE_WIDGET_SET_MANIFEST: WidgetSetManifestV1 = {
 
 // These tests don't actually need executing, as compilation is enough to verify the types are correct
 test("WidgetSetManifestV1", () => {
-  expectTypeOf(EXAMPLE_WIDGET_SET_MANIFEST).toEqualTypeOf<
-    WidgetSetManifestV1
-  >();
+  expectTypeOf(
+    EXAMPLE_WIDGET_SET_MANIFEST
+  ).toEqualTypeOf<WidgetSetManifestV1>();
 });

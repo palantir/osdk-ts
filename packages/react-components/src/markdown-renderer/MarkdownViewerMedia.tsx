@@ -18,14 +18,17 @@ import { Error as ErrorIcon, Spin } from "@blueprintjs/icons";
 import type { Media } from "@osdk/api";
 import classnames from "classnames";
 import React from "react";
+
 import { useMediaContents } from "../shared/hooks/useMediaContents.js";
 import { MarkdownRenderer } from "./MarkdownRenderer.js";
 import type { MarkdownRendererProps } from "./MarkdownRenderer.js";
+
 import styles from "./MarkdownRenderer.module.css";
 
-export interface MarkdownViewerMediaProps
-  extends Omit<MarkdownRendererProps, "content">
-{
+export interface MarkdownViewerMediaProps extends Omit<
+  MarkdownRendererProps,
+  "content"
+> {
   /** The Media object to fetch markdown contents from */
   media: Media;
 }
@@ -38,14 +41,15 @@ export function MarkdownViewerMedia({
   media,
   ...markdownRendererProps
 }: MarkdownViewerMediaProps): React.ReactElement {
-  const { data: content, loading, error } = useMediaContents(
-    media,
-    transformToText,
-  );
+  const {
+    data: content,
+    loading,
+    error,
+  } = useMediaContents(media, transformToText);
 
   const rootClassName = classnames(
     styles.container,
-    markdownRendererProps.className,
+    markdownRendererProps.className
   );
 
   return (

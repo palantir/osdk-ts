@@ -17,8 +17,10 @@
 import { Menu } from "@base-ui/react/menu";
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo, useState } from "react";
+
 import { usePortalContainer } from "../../shared/PortalContainerContext.js";
 import { SearchBar } from "../search-bar/SearchBar.js";
+
 import styles from "./SearchableMenu.module.css";
 
 export interface SearchableMenuItem {
@@ -62,7 +64,7 @@ function SearchableMenuInner({
     (event: React.ChangeEvent<HTMLInputElement>) => {
       setSearchQuery(event.target.value);
     },
-    [],
+    []
   );
 
   const handleMenuOpenChange = useCallback((open: boolean) => {
@@ -75,15 +77,12 @@ function SearchableMenuInner({
     (event: React.KeyboardEvent<HTMLInputElement>) => {
       event.stopPropagation();
     },
-    [],
+    []
   );
 
   return (
     <Menu.Root onOpenChange={handleMenuOpenChange}>
-      <Menu.Trigger
-        className={triggerClassName}
-        disabled={disabled}
-      >
+      <Menu.Trigger className={triggerClassName} disabled={disabled}>
         {trigger}
       </Menu.Trigger>
       <Menu.Portal container={portalContainer}>
@@ -109,9 +108,7 @@ function SearchableMenuInner({
               />
             ))}
             {filteredItems.length === 0 && (
-              <div className={styles.emptyState}>
-                {emptyMessage}
-              </div>
+              <div className={styles.emptyState}>{emptyMessage}</div>
             )}
           </Menu.Popup>
         </Menu.Positioner>
@@ -124,22 +121,20 @@ export const SearchableMenu: React.MemoExoticComponent<
   typeof SearchableMenuInner
 > = memo(SearchableMenuInner);
 
-function SearchableMenuItemRowInner(
-  { item, onItemSelected }: {
-    item: SearchableMenuItem;
-    onItemSelected: (key: string) => void;
-  },
-): React.ReactElement {
+function SearchableMenuItemRowInner({
+  item,
+  onItemSelected,
+}: {
+  item: SearchableMenuItem;
+  onItemSelected: (key: string) => void;
+}): React.ReactElement {
   const handleClick = useCallback(
     () => onItemSelected(item.key),
-    [onItemSelected, item.key],
+    [onItemSelected, item.key]
   );
 
   return (
-    <Menu.Item
-      className={styles.menuItem}
-      onClick={handleClick}
-    >
+    <Menu.Item className={styles.menuItem} onClick={handleClick}>
       {item.label}
     </Menu.Item>
   );

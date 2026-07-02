@@ -24,9 +24,9 @@ import type {
 } from "@tanstack/react-table";
 import classNames from "classnames";
 import React, { useCallback, useMemo, useState } from "react";
+
 import { type ColumnConfig, ColumnConfigDialog } from "./ColumnConfigDialog.js";
 import { MultiColumnSortDialog } from "./MultiColumnSortDialog.js";
-import styles from "./TableHeader.module.css";
 import { TableHeaderContent } from "./TableHeaderContent.js";
 import {
   type HeaderMenuFeatureFlags,
@@ -36,9 +36,9 @@ import { SELECTION_COLUMN_ID } from "./utils/constants.js";
 import { getColumnPinningStyles } from "./utils/getColumnPinningStyles.js";
 import type { ColumnOption } from "./utils/types.js";
 
-interface TableHeaderProps<
-  TData extends RowData,
-> {
+import styles from "./TableHeader.module.css";
+
+interface TableHeaderProps<TData extends RowData> {
   table: Table<TData>;
   headerMenuFeatureFlags?: HeaderMenuFeatureFlags;
   onColumnHeaderClick?: (columnId: string) => void;
@@ -46,10 +46,10 @@ interface TableHeaderProps<
 
 const getHeaderName = <TData,>(
   column: Column<TData, unknown>,
-  allHeaders: Header<TData, unknown>[],
+  allHeaders: Header<TData, unknown>[]
 ) => {
   const { id, columnDef } = column;
-  const header = allHeaders.find(header => header.id === id);
+  const header = allHeaders.find((header) => header.id === id);
   const headerDef = columnDef.header;
 
   if (headerDef) {
@@ -67,20 +67,14 @@ const getHeaderName = <TData,>(
   return meta?.columnName ?? id;
 };
 
-export function TableHeader<
-  TData extends RowData,
->({
+export function TableHeader<TData extends RowData>({
   table,
   headerMenuFeatureFlags,
   onColumnHeaderClick,
 }: TableHeaderProps<TData>): React.ReactElement {
   // TODO: If value is number type, right align header
 
-  const {
-    setColumnOrder,
-    setColumnVisibility,
-    setSorting,
-  } = table;
+  const { setColumnOrder, setColumnVisibility, setSorting } = table;
 
   const currentSorting = table.getState().sorting;
   const currentVisibility = table.getState().columnVisibility;
@@ -112,7 +106,7 @@ export function TableHeader<
       setMultiSortDialogOpen(false);
       setSorting?.(sortColumns);
     },
-    [setSorting],
+    [setSorting]
   );
 
   const handleApplyColumnConfig = useCallback(
@@ -122,16 +116,16 @@ export function TableHeader<
         newVisibilityState[update.columnId] = update.isVisible;
       }
 
-      setColumnOrder(updates.map(col => col.columnId));
+      setColumnOrder(updates.map((col) => col.columnId));
       setColumnVisibility(newVisibilityState);
     },
-    [setColumnOrder, setColumnVisibility],
+    [setColumnOrder, setColumnVisibility]
   );
 
   const columnOptions: ColumnOption[] = useMemo(() => {
-    const allHeaders = table.getHeaderGroups().flatMap(headerGroup =>
-      headerGroup.headers
-    );
+    const allHeaders = table
+      .getHeaderGroups()
+      .flatMap((headerGroup) => headerGroup.headers);
 
     return table
       .getAllColumns()
@@ -149,10 +143,7 @@ export function TableHeader<
     <>
       <thead className={styles.osdkTableHeader} data-resizing={isResizing}>
         {table.getHeaderGroups().map((headerGroup) => (
-          <tr
-            key={headerGroup.id}
-            className={styles.osdkTableHeaderRow}
-          >
+          <tr key={headerGroup.id} className={styles.osdkTableHeaderRow}>
             {headerGroup.headers.map((header) => {
               const { columnStyles } = getColumnPinningStyles(header.column);
               const isColumnPinned = header.column.getIsPinned();
@@ -166,31 +157,29 @@ export function TableHeader<
                   })}
                   style={columnStyles}
                 >
-                  {header.isPlaceholder
-                    ? null
-                    : isSelectColumn
-                    ? <TableHeaderContent header={header} />
-                    : (
-                      <TableHeaderWithPopover
-                        table={table}
-                        header={header}
-                        isColumnPinned={isColumnPinned}
-                        columnOptions={columnOptions}
-                        featureFlags={headerMenuFeatureFlags}
-                        onOpenColumnConfig={handleOpenColumnConfig}
-                        onOpenMultiSort={handleOpenMultiSort}
-                        onColumnHeaderClick={onColumnHeaderClick}
-                      />
-                    )}
-                  {header.column.getCanResize()
-                    && headerMenuFeatureFlags?.showResizeItem !== false && (
-                    <div
-                      className={styles.osdkTableHeaderResizer}
-                      onDoubleClick={() => header.column.resetSize()}
-                      onMouseDown={header.getResizeHandler()}
-                      onTouchStart={header.getResizeHandler()}
+                  {header.isPlaceholder ? null : isSelectColumn ? (
+                    <TableHeaderContent header={header} />
+                  ) : (
+                    <TableHeaderWithPopover
+                      table={table}
+                      header={header}
+                      isColumnPinned={isColumnPinned}
+                      columnOptions={columnOptions}
+                      featureFlags={headerMenuFeatureFlags}
+                      onOpenColumnConfig={handleOpenColumnConfig}
+                      onOpenMultiSort={handleOpenMultiSort}
+                      onColumnHeaderClick={onColumnHeaderClick}
                     />
                   )}
+                  {header.column.getCanResize() &&
+                    headerMenuFeatureFlags?.showResizeItem !== false && (
+                      <div
+                        className={styles.osdkTableHeaderResizer}
+                        onDoubleClick={() => header.column.resetSize()}
+                        onMouseDown={header.getResizeHandler()}
+                        onTouchStart={header.getResizeHandler()}
+                      />
+                    )}
                 </th>
               );
             })}
@@ -207,7 +196,7 @@ export function TableHeader<
           onApply={handleApplyColumnConfig}
         />
       )}
-      {columnOptions?.some(col => col.canSort) && (
+      {columnOptions?.some((col) => col.canSort) && (
         <MultiColumnSortDialog
           isOpen={multiSortDialogOpen}
           onClose={handleCloseMultiSort}

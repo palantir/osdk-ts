@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { SubmitJobToDeployedAppRequest as _SubmitJobToDeployedAppRequest } from "../__components.js";
 
 /**
@@ -24,7 +25,7 @@ import type { SubmitJobToDeployedAppRequest as _SubmitJobToDeployedAppRequest } 
  */
 export async function executeOnDeployedApp(
   ctx: ConjureContext,
-  request: _SubmitJobToDeployedAppRequest,
+  request: _SubmitJobToDeployedAppRequest
 ): Promise<string> {
   return conjureFetch(
     ctx,
@@ -33,6 +34,6 @@ export async function executeOnDeployedApp(
     request,
     undefined,
     undefined,
-    "application/octet-stream",
+    "application/octet-stream"
   );
 }

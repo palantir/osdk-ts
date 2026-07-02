@@ -23,10 +23,7 @@ import type {
 } from "@osdk/api";
 
 export namespace WorkerInterface {
-  export type PropertyKeys =
-    | "email"
-    | "name"
-    | "employeeNumber";
+  export type PropertyKeys = "email" | "name" | "employeeNumber";
 
   export interface Props {
     readonly email: $PropType["string"] | undefined;
@@ -40,9 +37,10 @@ export namespace WorkerInterface {
     readonly employeeNumber: $PropType["integer"] | undefined;
   }
 
-  export interface ObjectSet
-    extends $ObjectSet<WorkerInterface, WorkerInterface.ObjectSet>
-  {}
+  export interface ObjectSet extends $ObjectSet<
+    WorkerInterface,
+    WorkerInterface.ObjectSet
+  > {}
 
   export type OsdkInstance<
     OPTIONS extends never | "$rid" = never,

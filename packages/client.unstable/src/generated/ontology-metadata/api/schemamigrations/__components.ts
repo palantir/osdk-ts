@@ -18,6 +18,7 @@ import type {
   DatasourceMigrationTarget as _api_DatasourceMigrationTarget,
   DatasourceRid as _api_DatasourceRid,
   InterfacePropertyTypeRid as _api_InterfacePropertyTypeRid,
+  InterfacePropertyTypeRidOrIdInRequest as _api_InterfacePropertyTypeRidOrIdInRequest,
   InterfaceTypeRid as _api_InterfaceTypeRid,
   InterfaceTypeSchemaMigrationRid as _api_InterfaceTypeSchemaMigrationRid,
   ObjectTypeApiName as _api_ObjectTypeApiName,
@@ -87,6 +88,12 @@ export interface CastStructFieldMigrationModification {
   target: _api_StructPropertyFieldType;
 }
 /**
+ * Delete existing InterfaceType transition from given source schema version.
+ */
+export interface DeleteInterfaceTypeTransitionModification {
+  source: _api_SchemaVersion;
+}
+/**
  * Delete existing transition from given source schema version.
  */
 export interface DeleteTransitionModification {
@@ -95,8 +102,7 @@ export interface DeleteTransitionModification {
 /**
  * Migration to drop all patches applied to the ObjectType.
  */
-export interface DropAllPatchesMigration {
-}
+export interface DropAllPatchesMigration {}
 /**
  * Migration to drop the given datasource.
  */
@@ -177,6 +183,12 @@ export interface InterfaceTypeAddRequiredPropertyMigration {
   propertyTypeRid: _api_InterfacePropertyTypeRid;
 }
 /**
+ * Migration to add a required property to an interface
+ */
+export interface InterfaceTypeAddRequiredPropertyMigrationModification {
+  property: _api_InterfacePropertyTypeRidOrIdInRequest;
+}
+/**
  * An InterfaceTypeSchemaMigrationInstruction with a unique identifier.
  */
 export interface InterfaceTypeSchemaMigration {
@@ -193,6 +205,19 @@ export interface InterfaceTypeSchemaMigrationInstruction_addRequiredProperty {
 export type InterfaceTypeSchemaMigrationInstruction =
   InterfaceTypeSchemaMigrationInstruction_addRequiredProperty;
 
+export interface InterfaceTypeSchemaMigrationInstructionModification_addRequiredProperty {
+  type: "addRequiredProperty";
+  addRequiredProperty: InterfaceTypeAddRequiredPropertyMigrationModification;
+}
+/**
+ * Instruction on how to transition from one InterfaceType version to another.
+ */
+export type InterfaceTypeSchemaMigrationInstructionModification =
+  InterfaceTypeSchemaMigrationInstructionModification_addRequiredProperty;
+
+export interface InterfaceTypeSchemaMigrationModification {
+  transitions: Array<InterfaceTypeSchemaTransitionModification>;
+}
 /**
  * Instructions on how to transition from one InterfaceType schema version to another.
  */
@@ -204,6 +229,24 @@ export interface InterfaceTypeSchemaTransition {
   target: _api_SchemaVersion;
   title?: string | null | undefined;
 }
+export interface InterfaceTypeSchemaTransitionModification_newVersion {
+  type: "newVersion";
+  newVersion: NewVersionInterfaceTypeSchemaTransitionModification;
+}
+
+export interface InterfaceTypeSchemaTransitionModification_delete {
+  type: "delete";
+  delete: DeleteInterfaceTypeTransitionModification;
+}
+/**
+ * Type to represent an InterfaceType schema transition modification. Either to delete or create a new SchemaTransition where
+ * the target version is either the schema version that will be created as a result of the current modification,
+ * or a past schema version.
+ */
+export type InterfaceTypeSchemaTransitionModification =
+  | InterfaceTypeSchemaTransitionModification_newVersion
+  | InterfaceTypeSchemaTransitionModification_delete;
+
 /**
  * The transitions for a given InterfaceType defined up to the requested ontology version.
  */
@@ -216,8 +259,7 @@ export interface InterfaceTypeSchemaTransitions {
 /**
  * Type that represents the latest schema version
  */
-export interface LatestSchemaVersion {
-}
+export interface LatestSchemaVersion {}
 /**
  * Update the edits resolution strategy of an object type from latest timestamp to edits always win.
  */
@@ -244,6 +286,16 @@ export interface LoadObjectTypeSchemaMigrationsResponse {
 }
 export type LoadSchemaMigrationsPagingToken = string;
 
+/**
+ * Instructions on how to transition from one InterfaceType schema version to the version that will be created.
+ */
+export interface NewVersionInterfaceTypeSchemaTransitionModification {
+  description?: string | null | undefined;
+  gracePeriod?: GracePeriod | null | undefined;
+  migrations: Array<InterfaceTypeSchemaMigrationInstructionModification>;
+  source: SourceSchemaVersion;
+  title?: string | null | undefined;
+}
 /**
  * Instructions on how to transition from one schema version to the version that will be created.
  */
@@ -477,8 +529,7 @@ export interface OntologyIrSchemaMigrationInstruction_nonRevertible {
 
 export interface OntologyIrSchemaMigrationInstruction_updateEditsResolutionStrategy {
   type: "updateEditsResolutionStrategy";
-  updateEditsResolutionStrategy:
-    OntologyIrUpdateEditsResolutionStrategyMigration;
+  updateEditsResolutionStrategy: OntologyIrUpdateEditsResolutionStrategyMigration;
 }
 /**
  * One out of potentially many instructions on how to transition from one ObjectType version to another.
@@ -545,13 +596,11 @@ export interface PatchBackup {
 /**
  * A migration that will permanently delete patches applied on an object type. This is a required migration to be present if changing or modifying the primary key of an object type that has received edits.
  */
-export interface PermanentlyDeletePatchesMigration {
-}
+export interface PermanentlyDeletePatchesMigration {}
 /**
  * Migration that can be used to hard delete patches on an object type.
  */
-export interface PermanentlyDeletePatchesMigrationModification {
-}
+export interface PermanentlyDeletePatchesMigrationModification {}
 export interface PrimaryKeyRenames_objectType {
   type: "objectType";
   objectType: ObjectTypePrimaryKeyRename;
@@ -609,8 +658,7 @@ export interface RenameStructFieldMigrationModification {
   sourceStructField: _api_StructFieldRid;
   targetStructField: _api_StructFieldApiNameOrRid;
 }
-export interface ResetSchemaMigrationsAndDropEditParameters {
-}
+export interface ResetSchemaMigrationsAndDropEditParameters {}
 /**
  * Revert a previous migration.
  */

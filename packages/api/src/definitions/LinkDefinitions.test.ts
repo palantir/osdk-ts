@@ -15,6 +15,7 @@
  */
 
 import { describe, expectTypeOf, it } from "vitest";
+
 import type { DefaultToFalse } from "./LinkDefinitions.js";
 
 describe("DefaultToFalse", () => {

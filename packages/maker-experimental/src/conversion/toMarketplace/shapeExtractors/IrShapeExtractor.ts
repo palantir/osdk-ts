@@ -44,6 +44,7 @@ import type {
   SharedPropertyTypeInputShape,
   SharedPropertyTypeOutputShape,
 } from "@osdk/client.unstable/api";
+
 import type { FunctionsIr } from "../../../api/defineOntologyV2.js";
 import {
   type BlockShapes,
@@ -73,7 +74,7 @@ const SPT_INPUT_SHAPE_METADATA: InputShapeMetadata = {
  */
 function createLocalizedAbout(
   fallbackTitle: string,
-  fallbackDescription: string,
+  fallbackDescription: string
 ): LocalizedTitleAndDescription {
   return {
     fallbackTitle,
@@ -90,7 +91,7 @@ export async function getShapes(
   ontologyBlockDataV2: OntologyBlockDataV2,
   ridGenerator: OntologyRidGenerator,
   functionsIr?: FunctionsIr,
-  randomnessKey?: string,
+  randomnessKey?: string
 ): Promise<BlockShapes> {
   const allBlockShapes: BlockShapes = {
     inputShapes: new Map(),
@@ -100,19 +101,17 @@ export async function getShapes(
   };
 
   const outputSharedPropertyTypeRids = new Set(
-    Object.keys(ontologyBlockDataV2.sharedPropertyTypes),
+    Object.keys(ontologyBlockDataV2.sharedPropertyTypes)
   );
 
   const multiInterfaceSptApiNames = getMultiInterfaceSptApiNames(
-    ontologyBlockDataV2.interfaceTypes,
+    ontologyBlockDataV2.interfaceTypes
   );
 
   // Interfaces
-  for (
-    const [_rid, interfaceType] of Object.entries(
-      ontologyBlockDataV2.interfaceTypes,
-    )
-  ) {
+  for (const [_rid, interfaceType] of Object.entries(
+    ontologyBlockDataV2.interfaceTypes
+  )) {
     extractInterfaceType(
       allBlockShapes.outputShapes,
       allBlockShapes.inputShapes,
@@ -121,34 +120,32 @@ export async function getShapes(
       outputSharedPropertyTypeRids,
       multiInterfaceSptApiNames,
       interfaceType.interfaceType,
-      ridGenerator,
+      ridGenerator
     );
   }
   // Shared Property Types
-  for (
-    const [_rid, sharedPropertyTypeBlock] of Object.entries(
-      ontologyBlockDataV2.sharedPropertyTypes,
-    )
-  ) {
+  for (const [_rid, sharedPropertyTypeBlock] of Object.entries(
+    ontologyBlockDataV2.sharedPropertyTypes
+  )) {
     extractSharedPropertyType(
       allBlockShapes,
       sharedPropertyTypeBlock.sharedPropertyType,
-      ridGenerator,
+      ridGenerator
     );
   }
 
   // Objects
   const objectReadableIds = ridGenerator.getObjectTypeRids().inverse();
-  for (
-    const [rid, objectType] of Object.entries(ontologyBlockDataV2.objectTypes)
-  ) {
+  for (const [rid, objectType] of Object.entries(
+    ontologyBlockDataV2.objectTypes
+  )) {
     const readableId = objectReadableIds.get(rid as ObjectTypeRid);
     if (readableId) {
       const objectExtractor = new ObjectTypeShapeExtractor(randomnessKey);
       const objectShapes = objectExtractor.extract(
         readableId,
         objectType,
-        ridGenerator,
+        ridGenerator
       );
       consumeBlockShapes(allBlockShapes, objectShapes);
     }
@@ -167,27 +164,24 @@ export async function getShapes(
       const linkShapes = linkExtractor.extract(
         readableId,
         linkType,
-        ridGenerator,
+        ridGenerator
       );
       consumeBlockShapes(allBlockShapes, linkShapes);
     }
   }
 
   // Actions
-  const { ActionTypeShapeExtractor } = await import(
-    "./ActionTypeShapeExtractor.js"
-  );
-  for (
-    const [_rid, actionType] of Object.entries(
-      ontologyBlockDataV2.actionTypes || {},
-    )
-  ) {
+  const { ActionTypeShapeExtractor } =
+    await import("./ActionTypeShapeExtractor.js");
+  for (const [_rid, actionType] of Object.entries(
+    ontologyBlockDataV2.actionTypes || {}
+  )) {
     const actionExtractor = new ActionTypeShapeExtractor();
     const actionShapes = actionExtractor.extract(
       actionType,
       ridGenerator,
       ontologyBlockDataV2.knownIdentifiers,
-      functionsIr,
+      functionsIr
     );
     consumeBlockShapes(allBlockShapes, actionShapes);
   }
@@ -216,14 +210,14 @@ function extractInterfaceType(
   outputSharedPropertyTypeRids: Set<string>,
   multiInterfaceSptApiNames: Set<string>,
   interfaceType: MarketplaceInterfaceType,
-  ridGenerator: OntologyRidGenerator,
+  ridGenerator: OntologyRidGenerator
 ): void {
   const interfaceReadableId = getReadableIdForInterface(interfaceType.apiName);
   // Build propertiesV2 from propertiesV3 entries using knownMarketplaceIdentifiers
   const propertiesV2: string[] = [];
   for (const iptRid of Object.keys(interfaceType.propertiesV3 ?? {})) {
-    const blockInternalId = knownMarketplaceIdentifiers.interfacePropertyTypes
-      ?.[iptRid];
+    const blockInternalId =
+      knownMarketplaceIdentifiers.interfacePropertyTypes?.[iptRid];
     if (blockInternalId) {
       propertiesV2.push(blockInternalId);
     }
@@ -233,7 +227,7 @@ function extractInterfaceType(
   const interfaceTypeOutputShape: InterfaceTypeOutputShape = {
     about: createLocalizedAbout(
       interfaceType.displayMetadata.displayName,
-      interfaceType.displayMetadata.description ?? "",
+      interfaceType.displayMetadata.description ?? ""
     ),
     properties: (interfaceType.properties ?? []).map((spt: any) => {
       const sptId = knownMarketplaceIdentifiers.sharedPropertyTypes?.[spt.rid];
@@ -248,16 +242,17 @@ function extractInterfaceType(
       (it: string) => {
         const itId = knownMarketplaceIdentifiers.interfaceTypes?.[it];
         return itId ?? it;
-      },
+      }
     ),
-    actionTypeConstraints: (interfaceType.actionTypeConstraints ?? [])
-      .map(
-        (constraint) => {
-          const constraintId = knownMarketplaceIdentifiers
-            .interfaceActionTypeConstraints?.[constraint.rid];
-          return constraintId ?? constraint.rid;
-        },
-      ),
+    actionTypeConstraints: (interfaceType.actionTypeConstraints ?? []).map(
+      (constraint) => {
+        const constraintId =
+          knownMarketplaceIdentifiers.interfaceActionTypeConstraints?.[
+            constraint.rid
+          ];
+        return constraintId ?? constraint.rid;
+      }
+    ),
   };
 
   // Add shared property type input shapes for properties not in output,
@@ -268,16 +263,13 @@ function extractInterfaceType(
     inputShapeMetadata: inputShapeMetadataMap,
     inputMappings: [],
   };
-  for (
-    const [_propertyRid, property] of Object.entries(
-      interfaceType.propertiesV3,
-    )
-      ?? []
-  ) {
+  for (const [_propertyRid, property] of Object.entries(
+    interfaceType.propertiesV3
+  ) ?? []) {
     if (
-      property.type === "sharedPropertyBasedPropertyType"
-      && !outputSharedPropertyTypeRids.has(
-        property.sharedPropertyBasedPropertyType.sharedPropertyType.rid,
+      property.type === "sharedPropertyBasedPropertyType" &&
+      !outputSharedPropertyTypeRids.has(
+        property.sharedPropertyBasedPropertyType.sharedPropertyType.rid
       )
     ) {
       const spt = property.sharedPropertyBasedPropertyType.sharedPropertyType;
@@ -289,13 +281,10 @@ function extractInterfaceType(
           objectPropertyType: typeToMarketplaceObjectPropertyType(spt.type),
         },
       };
-      inputShapeMap.set(
-        sptReadableId,
-        {
-          type: "sharedPropertyType",
-          sharedPropertyType: sharedPropInputShape,
-        },
-      );
+      inputShapeMap.set(sptReadableId, {
+        type: "sharedPropertyType",
+        sharedPropertyType: sharedPropInputShape,
+      });
       inputShapeMetadataMap.set(sptReadableId, SPT_INPUT_SHAPE_METADATA);
     } else if (property.type === "interfaceDefinedPropertyType") {
       // TODO: once we have published output shapes for a while, add IPT input shapes
@@ -305,7 +294,7 @@ function extractInterfaceType(
         idp.displayMetadata.displayName,
         idp.type as unknown as Type,
         blockShapesRef,
-        ridGenerator,
+        ridGenerator
       );
     }
   }
@@ -314,19 +303,16 @@ function extractInterfaceType(
   // IDPs can only be defined on a single interface so they are guaranteed to only be added once here.
   // SPT-backed properties may be added multiple times here with the latest winning out, however,
   // this is not an issue as the only thing that will change is the interfaceTypeReference which is unused
-  for (
-    const [_propertyRid, property] of Object.entries(
-      interfaceType.propertiesV3,
-    )
-      ?? []
-  ) {
+  for (const [_propertyRid, property] of Object.entries(
+    interfaceType.propertiesV3
+  ) ?? []) {
     const outputShapeEntry = getInterfacePropertyTypeOutputShape(
       knownMarketplaceIdentifiers,
       interfaceType,
       multiInterfaceSptApiNames,
       property,
       interfaceReadableId,
-      ridGenerator,
+      ridGenerator
     );
     outputShapeMap.set(outputShapeEntry.id, outputShapeEntry.outputShape);
   }
@@ -337,38 +323,34 @@ function extractInterfaceType(
       knownMarketplaceIdentifiers,
       interfaceType,
       interfaceLinkType,
-      ridGenerator,
+      ridGenerator
     );
     outputShapeMap.set(outputShape.id, outputShape.outputShape);
   }
 
   // Add action type constraint and parameter constraint output shapes
-  for (
-    const actionTypeConstraint of interfaceType.actionTypeConstraints
-      ?? []
-  ) {
+  for (const actionTypeConstraint of interfaceType.actionTypeConstraints ??
+    []) {
     const constraintOutputShape = getInterfaceActionTypeConstraintOutputShape(
       knownMarketplaceIdentifiers,
       interfaceType,
       actionTypeConstraint,
-      ridGenerator,
+      ridGenerator
     );
     outputShapeMap.set(
       constraintOutputShape.id,
-      constraintOutputShape.outputShape,
+      constraintOutputShape.outputShape
     );
 
-    for (
-      const [paramRid, paramConstraint] of Object.entries(
-        actionTypeConstraint.parameters ?? {},
-      )
-    ) {
+    for (const [paramRid, paramConstraint] of Object.entries(
+      actionTypeConstraint.parameters ?? {}
+    )) {
       const paramOutputShape = getInterfaceParameterConstraintOutputShape(
         knownMarketplaceIdentifiers,
         actionTypeConstraint,
         paramRid,
         paramConstraint,
-        ridGenerator,
+        ridGenerator
       );
       outputShapeMap.set(paramOutputShape.id, paramOutputShape.outputShape);
     }
@@ -390,7 +372,7 @@ function getInterfacePropertyTypeOutputShape(
   multiInterfaceSptApiNames: Set<string>,
   property: MarketplaceInterfaceType["propertiesV3"][string],
   interfaceReadableId: ReadableId,
-  ridGenerator: OntologyRidGenerator,
+  ridGenerator: OntologyRidGenerator
 ): { id: ReadableId; outputShape: OutputShape } {
   const interfaceTypeRef = ridGenerator.toBlockInternalId(interfaceReadableId);
 
@@ -398,12 +380,12 @@ function getInterfacePropertyTypeOutputShape(
     const idp = property.interfaceDefinedPropertyType;
     const readableId = ReadableIdGenerator.getForInterfaceProperty(
       interfaceType.apiName,
-      idp.apiName,
+      idp.apiName
     );
     const shape: InterfacePropertyTypeOutputShape = {
       about: createLocalizedAbout(
         idp.displayMetadata.displayName,
-        idp.displayMetadata.description ?? idp.displayMetadata.displayName,
+        idp.displayMetadata.description ?? idp.displayMetadata.displayName
       ),
       interfaceType: interfaceTypeRef,
       type: typeToMarketplaceObjectPropertyType(idp.type),
@@ -423,12 +405,12 @@ function getInterfacePropertyTypeOutputShape(
     const readableId = multiInterfaceSptApiNames.has(sptApiName)
       ? ReadableIdGenerator.getForSptBackedInterfaceProperty(sptApiName)
       : ReadableIdGenerator.getForSptBackedInterfaceProperty(
-        interfaceType.apiName,
-        sptApiName,
-      );
+          interfaceType.apiName,
+          sptApiName
+        );
 
-    const sptBlockInternalId = knownMarketplaceIdentifiers.sharedPropertyTypes
-      ?.[spt.rid];
+    const sptBlockInternalId =
+      knownMarketplaceIdentifiers.sharedPropertyTypes?.[spt.rid];
     const shape: InterfacePropertyTypeOutputShape = {
       about: getTitleAndDescriptionForSharedPropertyType(spt),
       interfaceType: interfaceTypeRef,
@@ -452,16 +434,14 @@ function getInterfacePropertyTypeOutputShape(
  * For these SPTs, the shape ID must not include the interface api name to avoid RID collisions.
  */
 export function getMultiInterfaceSptApiNames(
-  interfaces: Record<string, InterfaceTypeBlockDataV2>,
+  interfaces: Record<string, InterfaceTypeBlockDataV2>
 ): Set<string> {
   const seen = new Set<string>();
   const shared = new Set<string>();
   for (const interfaceBlock of Object.values(interfaces)) {
-    for (
-      const property of Object.values(
-        interfaceBlock.interfaceType.propertiesV3 ?? {},
-      )
-    ) {
+    for (const property of Object.values(
+      interfaceBlock.interfaceType.propertiesV3 ?? {}
+    )) {
       if (property.type === "sharedPropertyBasedPropertyType") {
         const apiName =
           property.sharedPropertyBasedPropertyType.sharedPropertyType.apiName;
@@ -482,7 +462,7 @@ function getInterfaceLinkTypeOutputShape(
   knownMarketplaceIdentifiers: KnownMarketplaceIdentifiers,
   interfaceType: MarketplaceInterfaceType,
   interfaceLinkType: MarketplaceInterfaceLinkType,
-  ridGenerator: OntologyRidGenerator,
+  ridGenerator: OntologyRidGenerator
 ): { id: ReadableId; outputShape: OutputShape } {
   // Build linked entity type reference
   const interfaceRidOrUndefined =
@@ -495,22 +475,21 @@ function getInterfaceLinkTypeOutputShape(
   }
 
   const linkedEntityTypeRef = ridGenerator.toBlockInternalId(
-    ridGenerator.getInterfaceRids().inverse().get(interfaceRidOrUndefined)!,
+    ridGenerator.getInterfaceRids().inverse().get(interfaceRidOrUndefined)!
   );
 
   // Map cardinality
-  const cardinality = interfaceLinkType.cardinality === "SINGLE"
-    ? "SINGLE"
-    : "MANY";
+  const cardinality =
+    interfaceLinkType.cardinality === "SINGLE" ? "SINGLE" : "MANY";
 
   const shape: InterfaceLinkTypeOutputShape = {
     about: createLocalizedAbout(
       interfaceLinkType.metadata.displayName,
-      interfaceLinkType.metadata.description,
+      interfaceLinkType.metadata.description
     ),
     interfaceType:
-      knownMarketplaceIdentifiers.interfaceTypes?.[interfaceType.rid]
-        ?? interfaceType.rid,
+      knownMarketplaceIdentifiers.interfaceTypes?.[interfaceType.rid] ??
+      interfaceType.rid,
     linkedEntityType: {
       type: "interfaceType",
       interfaceType: linkedEntityTypeRef,
@@ -521,7 +500,7 @@ function getInterfaceLinkTypeOutputShape(
 
   const readableId = getReadableIdForInterfaceLink(
     interfaceType.apiName,
-    interfaceLinkType.metadata.apiName,
+    interfaceLinkType.metadata.apiName
   );
 
   return {
@@ -540,25 +519,24 @@ function getInterfaceActionTypeConstraintOutputShape(
   knownMarketplaceIdentifiers: KnownMarketplaceIdentifiers,
   interfaceType: MarketplaceInterfaceType,
   actionTypeConstraint: InterfaceActionTypeConstraint,
-  ridGenerator: OntologyRidGenerator,
+  ridGenerator: OntologyRidGenerator
 ): { id: ReadableId; outputShape: OutputShape } {
   const interfaceReadableId = getReadableIdForInterface(interfaceType.apiName);
   const interfaceTypeRef = ridGenerator.toBlockInternalId(interfaceReadableId);
 
   const parameterConstraintRefs: string[] = Object.keys(
-    actionTypeConstraint.parameters ?? {},
+    actionTypeConstraint.parameters ?? {}
   ).map((paramRid: string) => {
-    const paramId = knownMarketplaceIdentifiers
-      .interfaceParameterConstraints
-      ?.[paramRid];
+    const paramId =
+      knownMarketplaceIdentifiers.interfaceParameterConstraints?.[paramRid];
     return paramId ?? paramRid;
   });
 
   const shape: InterfaceActionTypeConstraintShape = {
     about: createLocalizedAbout(
       actionTypeConstraint.metadata.displayName,
-      actionTypeConstraint.metadata.description
-        ?? actionTypeConstraint.metadata.displayName,
+      actionTypeConstraint.metadata.description ??
+        actionTypeConstraint.metadata.displayName
     ),
     interfaceType: interfaceTypeRef,
     parameterConstraints: parameterConstraintRefs,
@@ -567,7 +545,7 @@ function getInterfaceActionTypeConstraintOutputShape(
 
   const readableId = ReadableIdGenerator.getForInterfaceActionTypeConstraint(
     interfaceType.apiName,
-    actionTypeConstraint.metadata.apiName,
+    actionTypeConstraint.metadata.apiName
   );
 
   return {
@@ -587,18 +565,19 @@ function getInterfaceParameterConstraintOutputShape(
   actionTypeConstraint: InterfaceActionTypeConstraint,
   paramRid: string,
   paramConstraint: InterfaceParameterConstraint,
-  ridGenerator: OntologyRidGenerator,
+  ridGenerator: OntologyRidGenerator
 ): { id: ReadableId; outputShape: OutputShape } {
-  const actionTypeConstraintId = knownMarketplaceIdentifiers
-    .interfaceActionTypeConstraints
-    ?.[actionTypeConstraint.rid];
-  const actionTypeConstraintRef = actionTypeConstraintId
-    ?? actionTypeConstraint.rid;
+  const actionTypeConstraintId =
+    knownMarketplaceIdentifiers.interfaceActionTypeConstraints?.[
+      actionTypeConstraint.rid
+    ];
+  const actionTypeConstraintRef =
+    actionTypeConstraintId ?? actionTypeConstraint.rid;
 
   const shape: InterfaceParameterConstraintShape = {
     about: createLocalizedAbout(
       paramConstraint.displayMetadata.displayName,
-      paramConstraint.displayMetadata.displayName,
+      paramConstraint.displayMetadata.displayName
     ),
     actionTypeConstraint: actionTypeConstraintRef,
     requireImplementation: paramConstraint.requireImplementation,
@@ -606,10 +585,12 @@ function getInterfaceParameterConstraintOutputShape(
   };
 
   const paramReadableId = ridGenerator
-    .getInterfaceParameterConstraintRids().inverse().get(paramRid);
+    .getInterfaceParameterConstraintRids()
+    .inverse()
+    .get(paramRid);
   if (!paramReadableId) {
     throw new Error(
-      `Missing readable ID for interface parameter constraint RID ${paramRid}`,
+      `Missing readable ID for interface parameter constraint RID ${paramRid}`
     );
   }
 
@@ -628,11 +609,11 @@ function getInterfaceParameterConstraintOutputShape(
 function extractSharedPropertyType(
   blockShapes: BlockShapes,
   sharedPropertyType: SharedPropertyType,
-  ridGenerator: OntologyRidGenerator,
+  ridGenerator: OntologyRidGenerator
 ): void {
   const readableId = getReadableIdForSpt(sharedPropertyType.apiName);
   const propertyType = typeToMarketplaceObjectPropertyType(
-    sharedPropertyType.type,
+    sharedPropertyType.type
   );
 
   const outputShape: SharedPropertyTypeOutputShape = {
@@ -650,7 +631,7 @@ function extractSharedPropertyType(
     sharedPropertyType.displayMetadata.displayName,
     sharedPropertyType.type,
     blockShapes,
-    ridGenerator,
+    ridGenerator
   );
 }
 
@@ -662,7 +643,7 @@ export function extractValueTypeInputShapeIfPresent(
   displayName: string,
   type: Type,
   blockShapes: BlockShapes,
-  ridGenerator: OntologyRidGenerator,
+  ridGenerator: OntologyRidGenerator
 ): void {
   if (!maybeValueTypeReference) return;
 
@@ -675,7 +656,7 @@ export function extractValueTypeInputShapeIfPresent(
   };
 
   const mappingEntry = ridGenerator.valueTypeMappingForReference(
-    maybeValueTypeReference,
+    maybeValueTypeReference
   );
   blockShapes.inputShapes.set(mappingEntry.input, valueTypeInput);
 }
@@ -684,12 +665,12 @@ export function extractValueTypeInputShapeIfPresent(
  * Get title and description for shared property type
  */
 function getTitleAndDescriptionForSharedPropertyType(
-  sharedPropertyType: SharedPropertyType | any,
+  sharedPropertyType: SharedPropertyType | any
 ): LocalizedTitleAndDescription {
   return createLocalizedAbout(
     sharedPropertyType.displayMetadata.displayName,
-    sharedPropertyType.displayMetadata.description
-      ?? sharedPropertyType.displayMetadata.displayName,
+    sharedPropertyType.displayMetadata.description ??
+      sharedPropertyType.displayMetadata.displayName
   );
 }
 
@@ -698,17 +679,22 @@ function getTitleAndDescriptionForSharedPropertyType(
  */
 function extractMultipassGroup(
   groupId: GroupId,
-  readableId: ReadableId,
+  readableId: ReadableId
 ): BlockShapes {
   const multipassGroup: MultipassGroupShape = {
     about: createLocalizedAbout(`Group ${groupId}`, ""),
   };
 
   return {
-    inputShapes: new Map([[readableId, {
-      type: "multipassGroup",
-      multipassGroup,
-    }]]),
+    inputShapes: new Map([
+      [
+        readableId,
+        {
+          type: "multipassGroup",
+          multipassGroup,
+        },
+      ],
+    ]),
     outputShapes: new Map(),
     inputShapeMetadata: new Map(),
     inputMappings: [],
@@ -722,77 +708,100 @@ function getMigrationShape(): BlockShapes {
   const migrationShape: AllowOntologySchemaMigrationsShape = {
     about: createLocalizedAbout(
       "Allow Ontology schema migrations",
-      "Required user acknowledgement for any breaking schema change that requires an Ontology schema migration.",
+      "Required user acknowledgement for any breaking schema change that requires an Ontology schema migration."
     ),
   };
 
   return {
-    inputShapes: new Map([[MIGRATION_SHAPE_READABLE_ID, {
-      type: "allowOntologySchemaMigrations",
-      allowOntologySchemaMigrations: migrationShape,
-    }]]),
+    inputShapes: new Map([
+      [
+        MIGRATION_SHAPE_READABLE_ID,
+        {
+          type: "allowOntologySchemaMigrations",
+          allowOntologySchemaMigrations: migrationShape,
+        },
+      ],
+    ]),
     outputShapes: new Map(),
-    inputShapeMetadata: new Map([[MIGRATION_SHAPE_READABLE_ID, {
-      isOptional: true,
-      isAccessedInReconcile: false,
-    }]]),
+    inputShapeMetadata: new Map([
+      [
+        MIGRATION_SHAPE_READABLE_ID,
+        {
+          isOptional: true,
+          isAccessedInReconcile: false,
+        },
+      ],
+    ]),
     inputMappings: [],
   };
 }
 
 const MAX_CLASS_DESC =
-  "The maximum classification for data under mandatory control property types and/or the max classification"
-  + " allowed on an action type classification parameter.";
+  "The maximum classification for data under mandatory control property types and/or the max classification" +
+  " allowed on an action type classification parameter.";
 
 /**
  * Get properties for a datasource definition (keys of propertyMapping).
  */
-function getPropertiesForDatasource(
-  datasourceDef: { type: string; [key: string]: unknown },
-): Set<string> {
+function getPropertiesForDatasource(datasourceDef: {
+  type: string;
+  [key: string]: unknown;
+}): Set<string> {
   const dsType = datasourceDef.type;
   let propertyMapping: Record<string, unknown> | undefined;
 
   switch (dsType) {
     case "dataset":
-      propertyMapping =
-        (datasourceDef.dataset as { propertyMapping?: Record<string, unknown> })
-          ?.propertyMapping;
+      propertyMapping = (
+        datasourceDef.dataset as { propertyMapping?: Record<string, unknown> }
+      )?.propertyMapping;
       break;
     case "datasetV2":
-      propertyMapping = (datasourceDef.datasetV2 as {
-        propertyMapping?: Record<string, unknown>;
-      })?.propertyMapping;
+      propertyMapping = (
+        datasourceDef.datasetV2 as {
+          propertyMapping?: Record<string, unknown>;
+        }
+      )?.propertyMapping;
       break;
     case "datasetV3":
-      propertyMapping = (datasourceDef.datasetV3 as {
-        propertyMapping?: Record<string, unknown>;
-      })?.propertyMapping;
+      propertyMapping = (
+        datasourceDef.datasetV3 as {
+          propertyMapping?: Record<string, unknown>;
+        }
+      )?.propertyMapping;
       break;
     case "restrictedView":
-      propertyMapping = (datasourceDef.restrictedView as {
-        propertyMapping?: Record<string, unknown>;
-      })?.propertyMapping;
+      propertyMapping = (
+        datasourceDef.restrictedView as {
+          propertyMapping?: Record<string, unknown>;
+        }
+      )?.propertyMapping;
       break;
     case "restrictedViewV2":
-      propertyMapping = (datasourceDef.restrictedViewV2 as {
-        propertyMapping?: Record<string, unknown>;
-      })?.propertyMapping;
+      propertyMapping = (
+        datasourceDef.restrictedViewV2 as {
+          propertyMapping?: Record<string, unknown>;
+        }
+      )?.propertyMapping;
       break;
     case "stream":
-      propertyMapping =
-        (datasourceDef.stream as { propertyMapping?: Record<string, unknown> })
-          ?.propertyMapping;
+      propertyMapping = (
+        datasourceDef.stream as { propertyMapping?: Record<string, unknown> }
+      )?.propertyMapping;
       break;
     case "streamV2":
-      propertyMapping = (datasourceDef.streamV2 as {
-        propertyMapping?: Record<string, unknown>;
-      })?.propertyMapping;
+      propertyMapping = (
+        datasourceDef.streamV2 as {
+          propertyMapping?: Record<string, unknown>;
+        }
+      )?.propertyMapping;
       break;
     case "streamV3":
-      propertyMapping = (datasourceDef.streamV3 as {
-        propertyMapping?: Record<string, unknown>;
-      })?.propertyMapping;
+      propertyMapping = (
+        datasourceDef.streamV3 as {
+          propertyMapping?: Record<string, unknown>;
+        }
+      )?.propertyMapping;
       break;
     default:
       return new Set();
@@ -807,7 +816,7 @@ function getPropertiesForDatasource(
  */
 function getMarkingShapes(
   ontologyBlockDataV2: OntologyBlockDataV2,
-  ridGenerator: OntologyRidGenerator,
+  ridGenerator: OntologyRidGenerator
 ): BlockShapes {
   // Collect CBAC and mandatory marking constraints across all object types
   const cbacMarkingsAndAffectedProps = new Map<string, Set<ReadableId>>();
@@ -825,21 +834,20 @@ function getMarkingShapes(
     const cbacReadableIdsByRid = new Map<string, ReadableId>();
     const mandatoryReadableIdsByRid = new Map<string, ReadableId>();
 
-    for (
-      const [propertyRid, propertyType] of Object.entries(
-        objectType.objectType.propertyTypes,
-      )
-    ) {
+    for (const [propertyRid, propertyType] of Object.entries(
+      objectType.objectType.propertyTypes
+    )) {
       if (propertyType.type.type === "marking") {
-        const markingData =
-          (propertyType.type as { marking?: { markingType?: string } }).marking;
+        const markingData = (
+          propertyType.type as { marking?: { markingType?: string } }
+        ).marking;
         const markingType = markingData?.markingType;
-        const propertyApiName = propertyType.apiName
-          ?? propertyType.displayMetadata?.displayName;
+        const propertyApiName =
+          propertyType.apiName ?? propertyType.displayMetadata?.displayName;
         if (propertyApiName) {
           const readableId = ReadableIdGenerator.getForObjectProperty(
             objectApiName,
-            propertyApiName,
+            propertyApiName
           );
           if (markingType === "CBAC") {
             cbacReadableIdsByRid.set(propertyRid, readableId);
@@ -853,7 +861,7 @@ function getMarkingShapes(
     // For each datasource, extract marking constraints
     for (const ds of objectType.datasources) {
       const propertiesForDs = getPropertiesForDatasource(
-        ds.datasource as unknown as { type: string; [key: string]: unknown },
+        ds.datasource as unknown as { type: string; [key: string]: unknown }
       );
 
       // Find CBAC and mandatory props affected by this datasource
@@ -882,8 +890,8 @@ function getMarkingShapes(
         const markings = dataSecurity.classificationConstraint.markings ?? [];
         const markingId = markings[0];
         if (markingId) {
-          const existing = cbacMarkingsAndAffectedProps.get(markingId)
-            ?? new Set();
+          const existing =
+            cbacMarkingsAndAffectedProps.get(markingId) ?? new Set();
           for (const rid of cbacPropsAffected) {
             const readableId = cbacReadableIdsByRid.get(rid);
             if (readableId) existing.add(readableId);
@@ -896,8 +904,8 @@ function getMarkingShapes(
         const markingIds = dataSecurity.markingConstraint.markingIds ?? [];
         const markingId = markingIds[0];
         if (markingId) {
-          const existing = mandatoryMarkingsAndAffectedProps.get(markingId)
-            ?? new Set();
+          const existing =
+            mandatoryMarkingsAndAffectedProps.get(markingId) ?? new Set();
           for (const rid of mandatoryPropsAffected) {
             const readableId = mandatoryReadableIdsByRid.get(rid);
             if (readableId) existing.add(readableId);
@@ -911,40 +919,44 @@ function getMarkingShapes(
         type: string;
         [key: string]: unknown;
       };
-      const innerDef = dsDef[dsDef.type] as {
-        propertySecurityGroups?: {
-          groups?: Array<{
-            properties?: string[];
-            security?: {
-              granular?: {
-                viewPolicy?: { additionalMandatory?: { markings?: string[] } };
-              };
+      const innerDef = dsDef[dsDef.type] as
+        | {
+            propertySecurityGroups?: {
+              groups?: Array<{
+                properties?: string[];
+                security?: {
+                  granular?: {
+                    viewPolicy?: {
+                      additionalMandatory?: { markings?: string[] };
+                    };
+                  };
+                };
+              }>;
             };
-          }>;
-        };
-      } | undefined;
+          }
+        | undefined;
       const groups = innerDef?.propertySecurityGroups?.groups ?? [];
       for (const group of groups) {
         const additionalMarkings =
-          group.security?.granular?.viewPolicy?.additionalMandatory?.markings
-            ?? [];
+          group.security?.granular?.viewPolicy?.additionalMandatory?.markings ??
+          [];
         if (additionalMarkings.length === 0) continue;
         const groupPropertyRids = group.properties ?? [];
         for (const markingId of additionalMarkings) {
-          const existing = additionalCbacMarkingsAndAffectedProps.get(markingId)
-            ?? new Set();
+          const existing =
+            additionalCbacMarkingsAndAffectedProps.get(markingId) ?? new Set();
           for (const propRid of groupPropertyRids) {
             // Look up the property apiName from the object type's propertyTypes
             const propType = objectType.objectType.propertyTypes[propRid];
             if (propType) {
-              const propApiName = propType.apiName
-                ?? propType.displayMetadata?.displayName;
+              const propApiName =
+                propType.apiName ?? propType.displayMetadata?.displayName;
               if (propApiName) {
                 existing.add(
                   ReadableIdGenerator.getForObjectProperty(
                     objectApiName,
-                    propApiName,
-                  ),
+                    propApiName
+                  )
                 );
               }
             }
@@ -963,10 +975,10 @@ function getMarkingShapes(
     const shape: MarkingsShape = {
       about: createLocalizedAbout(
         `Max Classification ${markingId}`,
-        MAX_CLASS_DESC,
+        MAX_CLASS_DESC
       ),
       operation: "USE",
-      affectedShapes: Array.from(props).map(p =>
+      affectedShapes: Array.from(props).map((p) =>
         ridGenerator.toBlockInternalId(p)
       ),
       supportedMarkingsType: "CBAC",
@@ -978,12 +990,9 @@ function getMarkingShapes(
   for (const [markingId, props] of additionalCbacMarkingsAndAffectedProps) {
     const readableId = ReadableIdGenerator.getForMarking(markingId, "CBAC");
     const shape: MarkingsShape = {
-      about: createLocalizedAbout(
-        `Marking ${markingId}`,
-        "Marking",
-      ),
+      about: createLocalizedAbout(`Marking ${markingId}`, "Marking"),
       operation: "USE",
-      affectedShapes: Array.from(props).map(p =>
+      affectedShapes: Array.from(props).map((p) =>
         ridGenerator.toBlockInternalId(p)
       ),
       supportedMarkingsType: "CBAC",
@@ -995,15 +1004,12 @@ function getMarkingShapes(
   for (const [markingId, props] of mandatoryMarkingsAndAffectedProps) {
     const readableId = ReadableIdGenerator.getForMarking(
       markingId,
-      "MANDATORY",
+      "MANDATORY"
     );
     const shape: MarkingsShape = {
-      about: createLocalizedAbout(
-        `Max Marking ${markingId}`,
-        "Max Marking",
-      ),
+      about: createLocalizedAbout(`Max Marking ${markingId}`, "Max Marking"),
       operation: "USE",
-      affectedShapes: Array.from(props).map(p =>
+      affectedShapes: Array.from(props).map((p) =>
         ridGenerator.toBlockInternalId(p)
       ),
       supportedMarkingsType: "MANDATORY",
@@ -1051,10 +1057,10 @@ function getReadableIdForInterface(apiName: string): ReadableId {
 
 function getReadableIdForInterfaceLink(
   interfaceApiName: string,
-  linkApiName: string,
+  linkApiName: string
 ): ReadableId {
   return ReadableIdGenerator.getForInterfaceLinkType(
     interfaceApiName,
-    linkApiName,
+    linkApiName
   );
 }

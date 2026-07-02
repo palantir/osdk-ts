@@ -15,6 +15,7 @@
  */
 
 import type * as OntologiesV2 from "@osdk/foundry.ontologies";
+
 import type { FauxAttachmentStore } from "./FauxAttachmentStore.js";
 import type { FauxDataStoreBatch } from "./FauxDataStoreBatch.js";
 import type { TH_ApplyActionRequestV2 } from "./typeHelpers/TH_ApplyActionRequestV2.js";
@@ -27,5 +28,5 @@ export type FauxActionImpl<
   ctx: {
     def: Q;
     attachments: FauxAttachmentStore;
-  },
+  }
 ) => unknown;

@@ -23,6 +23,7 @@ import {
 } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { FilterPopover } from "../FilterPopover.js";
 
 afterEach(cleanup);
@@ -32,7 +33,7 @@ describe("FilterPopover", () => {
     render(
       <FilterPopover label="Sites" summary="3 selected" isActive={true}>
         <div>popup body</div>
-      </FilterPopover>,
+      </FilterPopover>
     );
     expect(screen.getByText("Sites")).toBeDefined();
     expect(screen.getByText("3 selected")).toBeDefined();
@@ -47,7 +48,7 @@ describe("FilterPopover", () => {
         placeholder="Search…"
       >
         <div>popup body</div>
-      </FilterPopover>,
+      </FilterPopover>
     );
     expect(screen.getByText("Search…")).toBeDefined();
   });
@@ -56,7 +57,7 @@ describe("FilterPopover", () => {
     render(
       <FilterPopover label="Sites" summary="" isActive={false}>
         <div>popup body</div>
-      </FilterPopover>,
+      </FilterPopover>
     );
     expect(screen.getByText("Any")).toBeDefined();
   });
@@ -65,7 +66,7 @@ describe("FilterPopover", () => {
     const { rerender } = render(
       <FilterPopover label="Sites" summary="" isActive={false}>
         <div>popup body</div>
-      </FilterPopover>,
+      </FilterPopover>
     );
     const trigger = screen.getByRole("button", { name: /Any/i });
     expect(trigger.getAttribute("data-active")).toBeNull();
@@ -73,10 +74,10 @@ describe("FilterPopover", () => {
     rerender(
       <FilterPopover label="Sites" summary="X" isActive={true}>
         <div>popup body</div>
-      </FilterPopover>,
+      </FilterPopover>
     );
     expect(
-      screen.getByRole("button", { name: /X/i }).getAttribute("data-active"),
+      screen.getByRole("button", { name: /X/i }).getAttribute("data-active")
     ).toBe("true");
   });
 
@@ -84,7 +85,7 @@ describe("FilterPopover", () => {
     render(
       <FilterPopover label="Sites" summary="" isActive={false}>
         <div data-testid="popup-body">popup body</div>
-      </FilterPopover>,
+      </FilterPopover>
     );
     expect(screen.queryByTestId("popup-body")).toBeNull();
 
@@ -96,7 +97,7 @@ describe("FilterPopover", () => {
     render(
       <FilterPopover label="Sites" summary="" isActive={false}>
         <div data-testid="popup-body">popup body</div>
-      </FilterPopover>,
+      </FilterPopover>
     );
     const trigger = screen.getByRole("button", { name: /Any/i });
     fireEvent.click(trigger);
@@ -113,10 +114,11 @@ describe("FilterPopover", () => {
     const { rerender } = render(
       <FilterPopover label="Sites" summary="" isActive={false}>
         <div>popup body</div>
-      </FilterPopover>,
+      </FilterPopover>
     );
-    expect(screen.queryByRole("button", { name: /Remove Sites filter/i }))
-      .toBeNull();
+    expect(
+      screen.queryByRole("button", { name: /Remove Sites filter/i })
+    ).toBeNull();
 
     rerender(
       <FilterPopover
@@ -126,7 +128,7 @@ describe("FilterPopover", () => {
         onRemove={onRemove}
       >
         <div>popup body</div>
-      </FilterPopover>,
+      </FilterPopover>
     );
     const removeButton = screen.getByRole("button", {
       name: /Remove Sites filter/i,
@@ -144,7 +146,7 @@ describe("FilterPopover", () => {
         labelPlacement="top"
       >
         <div>popup body</div>
-      </FilterPopover>,
+      </FilterPopover>
     );
     const wrapper = container.firstElementChild;
     expect(wrapper?.className).toMatch(/fieldGroupTop/);
@@ -154,7 +156,7 @@ describe("FilterPopover", () => {
     const { container } = render(
       <FilterPopover label="Sites" summary="" isActive={false}>
         <div>popup body</div>
-      </FilterPopover>,
+      </FilterPopover>
     );
     const wrapper = container.firstElementChild;
     expect(wrapper?.className).not.toMatch(/fieldGroupTop/);
@@ -169,7 +171,7 @@ describe("FilterPopover", () => {
         className="custom-wrapper"
       >
         <div>popup body</div>
-      </FilterPopover>,
+      </FilterPopover>
     );
     const wrapper = container.querySelector(".custom-wrapper");
     expect(wrapper).not.toBeNull();

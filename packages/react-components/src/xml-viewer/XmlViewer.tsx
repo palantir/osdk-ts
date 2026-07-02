@@ -17,10 +17,12 @@
 import { Error as ErrorIcon, Spin } from "@blueprintjs/icons";
 import classnames from "classnames";
 import React from "react";
+
 import { useMediaContents } from "../shared/hooks/useMediaContents.js";
 import { BaseXmlViewer } from "./BaseXmlViewer.js";
-import styles from "./BaseXmlViewer.module.css";
 import type { XmlViewerMediaProps } from "./XmlViewerApi.js";
+
+import styles from "./BaseXmlViewer.module.css";
 
 const transformToText = async (response: Response): Promise<string> => {
   return response.text();
@@ -31,10 +33,11 @@ export function XmlViewer({
   className,
   ...xmlViewerProps
 }: XmlViewerMediaProps): React.ReactElement {
-  const { data: content, loading, error } = useMediaContents(
-    media,
-    transformToText,
-  );
+  const {
+    data: content,
+    loading,
+    error,
+  } = useMediaContents(media, transformToText);
 
   const rootClassName = classnames(styles.container, className);
 

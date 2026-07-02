@@ -34,12 +34,14 @@ export {
   NihalbCastingInterfaceTypeA,
   NihalbCastingLinkedInterfaceTypeA,
   OsdkTestInterface,
+  ReducerTestInterface,
 } from './ontology/interfaces.js';
 export * as $Interfaces from './ontology/interfaces.js';
 export {
   BgaoNflPlayer,
   BoundariesUsState,
   BuilderDeploymentState,
+  CipherTextTest,
   Country_1,
   DherlihyComplexObject,
   Employee,

@@ -14,29 +14,12 @@
  * limitations under the License.
  */
 
-import * as typescriptEslintParser from "@typescript-eslint/parser";
-import reactHooks from "eslint-plugin-react-hooks";
-import * as tseslint from "typescript-eslint";
-import rootConfig from "../../eslint.config.mjs";
+export type { ChatStatus } from "../../aip/chatStore.js";
+export { useChat } from "../../aip/useChat.js";
+export type {
+  SendMessageInput,
+  UseChatOptions,
+  UseChatReturn,
+} from "../../aip/useChat.js";
 
-export default tseslint.config(
-  ...rootConfig,
-  {
-    plugins: {
-      "react-hooks": reactHooks,
-    },
-    rules: {
-      "react-hooks/exhaustive-deps": "warn",
-    },
-  },
-  {
-    files: ["src/**/*"],
-    languageOptions: {
-      parser: typescriptEslintParser,
-      parserOptions: {
-        projectService: true,
-        tsconfigRootDir: import.meta.dirname,
-      },
-    },
-  },
-);
+export type { UIMessage, UIMessageChunk } from "@osdk/aip-core";

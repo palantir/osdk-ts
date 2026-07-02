@@ -20,10 +20,11 @@ import type {
   ObjectMetadata,
   QueryMetadata,
 } from "@osdk/api";
+
 import type { MinimalClient } from "../MinimalClientContext.js";
 
 export const InterfaceDefinitions: unique symbol = Symbol(
-  process.env.MODE !== "production" ? "InterfaceDefinitions" : undefined,
+  process.env.MODE !== "production" ? "InterfaceDefinitions" : undefined
 );
 
 export interface FetchedObjectTypeDefinition extends ObjectMetadata {
@@ -42,7 +43,7 @@ export interface OntologyProvider {
    * @returns
    */
   getObjectDefinition: (
-    apiName: string,
+    apiName: string
   ) => Promise<FetchedObjectTypeDefinition>;
 
   /**
@@ -52,13 +53,11 @@ export interface OntologyProvider {
    * @param apiName
    * @returns
    */
-  getInterfaceDefinition: (
-    apiName: string,
-  ) => Promise<InterfaceMetadata>;
+  getInterfaceDefinition: (apiName: string) => Promise<InterfaceMetadata>;
 
   getQueryDefinition: (
     apiName: string,
-    version: string | undefined,
+    version: string | undefined
   ) => Promise<QueryMetadata>;
 
   getActionDefinition: (apiName: string) => Promise<ActionMetadata>;
@@ -66,6 +65,4 @@ export interface OntologyProvider {
 
 export type OntologyProviderFactory<
   T extends OntologyProvider = OntologyProvider,
-> = (
-  client: MinimalClient,
-) => T;
+> = (client: MinimalClient) => T;

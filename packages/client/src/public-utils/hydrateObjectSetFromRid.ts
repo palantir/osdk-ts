@@ -15,6 +15,7 @@
  */
 
 import type { ObjectOrInterfaceDefinition, ObjectSet } from "@osdk/api";
+
 import type { Client } from "../Client.js";
 import { additionalContext } from "../Client.js";
 import { createObjectSet } from "../objectSet/createObjectSet.js";
@@ -29,25 +30,21 @@ import { createObjectSet } from "../objectSet/createObjectSet.js";
 export function hydrateObjectSetFromRid<T extends ObjectOrInterfaceDefinition>(
   client: Client,
   definition: T,
-  rid: string,
+  rid: string
 ): ObjectSet<T> {
-  return createObjectSet(
-    definition,
-    client[additionalContext],
-    {
-      type: "intersect",
-      objectSets: [
-        definition.type === "interface"
-          ? { type: "interfaceBase", interfaceType: definition.apiName }
-          : {
+  return createObjectSet(definition, client[additionalContext], {
+    type: "intersect",
+    objectSets: [
+      definition.type === "interface"
+        ? { type: "interfaceBase", interfaceType: definition.apiName }
+        : {
             type: "base",
             objectType: definition.apiName,
           },
-        {
-          type: "reference",
-          reference: rid,
-        },
-      ],
-    },
-  );
+      {
+        type: "reference",
+        reference: rid,
+      },
+    ],
+  });
 }

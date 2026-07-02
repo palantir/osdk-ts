@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  LoadAllSharedPropertyTypesPageRequest
-    as _api_LoadAllSharedPropertyTypesPageRequest,
-  LoadAllSharedPropertyTypesPageResponse
-    as _api_LoadAllSharedPropertyTypesPageResponse,
+  LoadAllSharedPropertyTypesPageRequest as _api_LoadAllSharedPropertyTypesPageRequest,
+  LoadAllSharedPropertyTypesPageResponse as _api_LoadAllSharedPropertyTypesPageResponse,
   OntologyRid as _api_OntologyRid,
   OntologyVersion as _api_OntologyVersion,
 } from "../__components.js";
@@ -32,12 +31,12 @@ export async function loadAllSharedPropertyTypesFromOntology(
   ctx: ConjureContext,
   ontologyRid: _api_OntologyRid,
   ontologyVersion: _api_OntologyVersion,
-  request: _api_LoadAllSharedPropertyTypesPageRequest,
+  request: _api_LoadAllSharedPropertyTypesPageRequest
 ): Promise<_api_LoadAllSharedPropertyTypesPageResponse> {
   return conjureFetch(
     ctx,
     `/ontology/ontology/load/${ontologyRid}/${ontologyVersion}/loadAllSharedPropertyTypes`,
     "PUT",
-    request,
+    request
   );
 }

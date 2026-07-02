@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  ListAllInstallationsRequest
-    as _installmanager_api_ListAllInstallationsRequest,
-  ListAllInstallationsResponse
-    as _installmanager_api_ListAllInstallationsResponse,
+  ListAllInstallationsRequest as _installmanager_api_ListAllInstallationsRequest,
+  ListAllInstallationsResponse as _installmanager_api_ListAllInstallationsResponse,
 } from "../__components.js";
 
 /**
@@ -27,12 +26,12 @@ import type {
  */
 export async function listAllInstallations(
   ctx: ConjureContext,
-  request: _installmanager_api_ListAllInstallationsRequest,
+  request: _installmanager_api_ListAllInstallationsRequest
 ): Promise<_installmanager_api_ListAllInstallationsResponse> {
   return conjureFetch(
     ctx,
     `/install-manager/installations/list`,
     "POST",
-    request,
+    request
   );
 }

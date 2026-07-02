@@ -124,7 +124,7 @@ export namespace ActionParam {
     export type InterfaceType<T extends InterfaceDefinition> = {
         		$objectType: CompileTimeMetadata<T> extends {
             			implementedBy: infer U
-            		} ? (U extends ReadonlyArray<never> ? string : U extends ReadonlyArray<string> ? U[number] : string) : string
+            		} ? U extends ReadonlyArray<never> ? string : U extends ReadonlyArray<string> ? U[number] : string : string
         		$primaryKey: string | number
         	};
     	// Warning: (ae-forgotten-export) The symbol "NULL_VALUE" needs to be exported by the entry point index.d.ts
@@ -210,10 +210,10 @@ export type AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<
 > = ContainsExactMatchWithNull<AO["$groupBy"]> extends true ? {
     	$groupBy: AO["$groupBy"]
     	$select: UnorderedAggregationClause<Q>
-} : SingleKeyObject<AO["$groupBy"]> extends never ? (AO["$select"] extends UnorderedAggregationClause<Q> ? AggregateOptsThatErrors<Q, AO> : {} extends AO["$groupBy"] ? AggregateOptsThatErrors<Q, AO> : {
+} : SingleKeyObject<AO["$groupBy"]> extends never ? AO["$select"] extends UnorderedAggregationClause<Q> ? AggregateOptsThatErrors<Q, AO> : {} extends AO["$groupBy"] ? AggregateOptsThatErrors<Q, AO> : {
     	$groupBy: AO["$groupBy"]
     	$select: UnorderedAggregationClause<Q>
-}) : AggregateOptsThatErrors<Q, AO>;
+} : AggregateOptsThatErrors<Q, AO>;
 
 // @public (undocumented)
 export type AggregationClause<Q extends ObjectOrInterfaceDefinition> = UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>;
@@ -387,7 +387,12 @@ export interface BaseObjectSet<Q extends ObjectOrInterfaceDefinition> {
 }
 
 // @public (undocumented)
-export type BaseWirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "mediaReference" | "numericTimeseries" | "stringTimeseries" | "sensorTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference" | "vector";
+export type BaseWirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "cipherText" | "mediaReference" | "numericTimeseries" | "stringTimeseries" | "sensorTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference" | "vector";
+
+// @public
+export interface CipherText {
+    	decrypt(): Promise<string>;
+}
 
 // @public (undocumented)
 export type ColorInterpretation = "UNDEFINED" | "GRAY" | "PALETTE_INDEX" | "RED" | "GREEN" | "BLUE" | "ALPHA" | "HUE" | "SATURATION" | "LIGHTNESS" | "CYAN" | "MAGENTA" | "YELLOW" | "BLACK" | "Y_CB_CR_SPACE_Y" | "Y_CB_CR_SPACE_CB" | "Y_CB_CR_SPACE_CR";
@@ -429,7 +434,7 @@ export type ConvertProps<
 	TO extends ValidToFrom<FROM>,
 	P extends ValidOsdkPropParams<FROM>,
 	OPTIONS extends never | "$rid" | "$allBaseProperties" | "$propertySecurities" = never
-> = TO extends FROM ? P : TO extends ObjectTypeDefinition ? (UnionIfTrue<MapPropNamesToObjectType<FROM, TO, P, OPTIONS>, P extends "$rid" ? true : false, "$rid">) : TO extends InterfaceDefinition ? FROM extends ObjectTypeDefinition ? (UnionIfTrue<MapPropNamesToInterface<FROM, TO, P>, P extends "$rid" ? true : false, "$rid">) : never : never;
+> = TO extends FROM ? P : TO extends ObjectTypeDefinition ? UnionIfTrue<MapPropNamesToObjectType<FROM, TO, P, OPTIONS>, P extends "$rid" ? true : false, "$rid"> : TO extends InterfaceDefinition ? FROM extends ObjectTypeDefinition ? UnionIfTrue<MapPropNamesToInterface<FROM, TO, P>, P extends "$rid" ? true : false, "$rid"> : never : never;
 
 // @public (undocumented)
 export interface CoordinateReferenceSystem {
@@ -443,9 +448,9 @@ export type DataType = "UNDEFINED" | "BYTE" | "UINT16" | "INT16" | "UINT32" | "I
 // @public
 export interface DataValueClientToWire {
     	// (undocumented)
-    attachment: string | AttachmentUpload | Blob & {
+    attachment: string | AttachmentUpload | (Blob & {
         		readonly name: string
-        	};
+        	});
     	// (undocumented)
     boolean: boolean;
     	// (undocumented)
@@ -881,7 +886,7 @@ export interface GcpList {
 
 // @public (undocumented)
 export type GeoFilter_Intersects = {
-    	"$intersects": {
+    	$intersects: {
         		$bbox: BBox
         		$polygon?: never
         	} | BBox | {
@@ -892,7 +897,7 @@ export type GeoFilter_Intersects = {
 
 // @public (undocumented)
 export type GeoFilter_Within = {
-    	"$within": {
+    	$within: {
         		$distance: [number, keyof typeof DistanceUnitMapping]
         		$of: [number, number] | Readonly<Point>
         		$bbox?: never
@@ -913,7 +918,7 @@ export type GeoFilter_Within = {
 // @public (undocumented)
 export interface GeoFilterOptions {
     	// (undocumented)
-    "$intersects": {
+    $intersects: {
         		$bbox: BBox
         		$polygon?: never
         	} | BBox | {
@@ -921,9 +926,9 @@ export interface GeoFilterOptions {
         		$bbox?: never
         	} | Polygon;
     	// (undocumented)
-    "$isNull": boolean;
+    $isNull: boolean;
     	// (undocumented)
-    "$within": {
+    $within: {
         		$distance: [number, keyof typeof DistanceUnitMapping]
         		$of: [number, number] | Readonly<Point>
         		$bbox?: never
@@ -1492,6 +1497,8 @@ export interface ObjectMetadata extends ObjectInterfaceBaseMetadata {
     // (undocumented)
     icon: Icon | undefined;
     	// (undocumented)
+    interfaceImplementations?: Record<string, Record<string, ObjectMetadata.InterfacePropertyImplementation>>;
+    	// (undocumented)
     interfaceMap: Record<string, Record<string, string>>;
     	// (undocumented)
     inverseInterfaceMap: Record<string, Record<string, string>>;
@@ -1517,6 +1524,45 @@ export interface ObjectMetadata extends ObjectInterfaceBaseMetadata {
 
 // @public (undocumented)
 export namespace ObjectMetadata {
+    	// (undocumented)
+    export type InterfacePropertyImplementation = InterfacePropertyLocalImplementation | InterfacePropertyStructFieldImplementation | InterfacePropertyStructImplementation | InterfacePropertyReducedImplementation;
+    	// (undocumented)
+    export interface InterfacePropertyLocalImplementation {
+        		// (undocumented)
+        propertyApiName: string;
+        		// (undocumented)
+        type: "localProperty";
+        	}
+    	// (undocumented)
+    export interface InterfacePropertyReducedImplementation {
+        		// (undocumented)
+        implementation: InterfacePropertyLocalImplementation | InterfacePropertyStructFieldImplementation | InterfacePropertyStructImplementation;
+        		// (undocumented)
+        type: "reduced";
+        	}
+    	// (undocumented)
+    export interface InterfacePropertyStructFieldImplementation {
+        		// (undocumented)
+        propertyApiName: string;
+        		// (undocumented)
+        structFieldApiName: string;
+        		// (undocumented)
+        type: "structField";
+        	}
+    	// (undocumented)
+    export interface InterfacePropertyStructImplementation {
+        		// (undocumented)
+        mapping: Record<string, {
+            			type: "property"
+            			propertyApiName: string
+            		} | {
+            			type: "structFieldOfProperty"
+            			propertyApiName: string
+            			structFieldApiName: string
+            		}>;
+        		// (undocumented)
+        type: "struct";
+        	}
     	// (undocumented)
     export interface Link<
     		Q extends ObjectTypeDefinition,
@@ -1727,7 +1773,7 @@ export type Osdk<
 	Q extends ObjectOrInterfaceDefinition,
 	OPTIONS extends string = never,
 	P extends PropertyKeys<Q> = PropertyKeys<Q>
-> = IsNever<OPTIONS> extends true ? Osdk.Instance<Q, never, P> : IsAny<OPTIONS> extends true ? Osdk.Instance<Q, never, P> : (IsNever<Exclude<OPTIONS, "$rid">>) extends true ? Osdk.Instance<Q, OPTIONS & "$rid", P> : Osdk.Instance<Q, ("$rid" extends OPTIONS ? "$rid" : never), ExtractPropsKeysFromOldPropsStyle<Q, OPTIONS>>;
+> = IsNever<OPTIONS> extends true ? Osdk.Instance<Q, never, P> : IsAny<OPTIONS> extends true ? Osdk.Instance<Q, never, P> : IsNever<Exclude<OPTIONS, "$rid">> extends true ? Osdk.Instance<Q, OPTIONS & "$rid", P> : Osdk.Instance<Q, "$rid" extends OPTIONS ? "$rid" : never, ExtractPropsKeysFromOldPropsStyle<Q, OPTIONS>>;
 
 // @public (undocumented)
 export namespace Osdk {
@@ -1748,7 +1794,7 @@ export namespace Osdk {
         		readonly $link: Q extends {
             			linksType?: any
             		} ? Q["linksType"] : Q extends ObjectOrInterfaceDefinition ? OsdkObjectLinksObject<Q> : never
-        		readonly $as: <NEW_Q extends ValidToFrom<Q>>(type: NEW_Q | string) => Osdk.Instance<NEW_Q, OPTIONS, ConvertProps<Q, NEW_Q, P, OPTIONS>>
+        		readonly $as: <NEW_Q extends HasModifiers<P> extends true ? ValidToFrom<Q> & ObjectTypeDefinition : ValidToFrom<Q>>(type: Q extends InterfaceDefinition ? NEW_Q extends ObjectTypeDefinition ? OtHasNonLocalInterfaceImpl<Q, NEW_Q> extends true ? never : NEW_Q | string : NEW_Q | string : NEW_Q | string) => Osdk.Instance<NEW_Q, OPTIONS, ConvertProps<Q, NEW_Q, P, OPTIONS>>
         		readonly $clone: <NEW_PROPS extends PropertyKeys<Q>>(updatedObject?: Osdk.Instance<Q, any, NEW_PROPS> | { [K in NEW_PROPS]? : CompileTimeMetadata<Q>["props"][K] }) => Osdk.Instance<Q, OPTIONS, P | NEW_PROPS>
         		readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: Q extends ObjectTypeDefinition ? {
             			ObjectMetadata: ObjectMetadata
@@ -1868,7 +1914,7 @@ export interface PropertyDef<
 }
 
 // @public (undocumented)
-export type PropertyKeys<O extends ObjectOrInterfaceDefinition> = (keyof CompileTimeMetadata<O>["properties"]) & string;
+export type PropertyKeys<O extends ObjectOrInterfaceDefinition> = keyof CompileTimeMetadata<O>["properties"] & string;
 
 // @public (undocumented)
 export namespace PropertyKeys {
@@ -1914,11 +1960,11 @@ export type PropertyNumberFormattingRuleType = NumberFormatStandard | NumberForm
 // @public
 export type PropertySecurity = ({
     	type: "propertyMarkings"
-} & PropertyMarkings) | ({
+} & PropertyMarkings) | {
     	type: "unsupportedPolicy"
-}) | ({
+} | {
     	type: "errorComputingSecurity"
-});
+};
 
 // @public (undocumented)
 export interface PropertyTimestampFormattingRule {
@@ -1952,6 +1998,8 @@ export interface PropertyValueWireToClient {
     boolean: boolean;
     	// (undocumented)
     byte: number;
+    	// (undocumented)
+    cipherText: CipherText;
     	// (undocumented)
     datetime: string;
     	// (undocumented)
@@ -2050,7 +2098,7 @@ export namespace QueryParam {
     export type InterfaceType<T extends InterfaceDefinition> = {
         		$objectType: CompileTimeMetadata<T> extends {
             			implementedBy: infer U
-            		} ? (U extends ReadonlyArray<never> ? string : U extends ReadonlyArray<string> ? U[number] : string) : string
+            		} ? U extends ReadonlyArray<never> ? string : U extends ReadonlyArray<string> ? U[number] : string : string
         		$primaryKey: string | number
         		$apiName?: never
         	} | {
@@ -2421,15 +2469,16 @@ export type WirePropertyTypes = BaseWirePropertyTypes | Record<string, BaseWireP
 
 // Warnings were encountered during analysis:
 //
-// src/OsdkObjectFrom.ts:315:49 - (ae-forgotten-export) The symbol "ObjectPropertySecurities" needs to be exported by the entry point index.d.ts
+// src/OsdkObjectFrom.ts:312:35 - (ae-forgotten-export) The symbol "OtHasNonLocalInterfaceImpl" needs to be exported by the entry point index.d.ts
+// src/OsdkObjectFrom.ts:357:13 - (ae-forgotten-export) The symbol "ObjectPropertySecurities" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "UnorderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "OrderedAggregationClause" needs to be exported by the entry point index.d.ts
-// src/aggregate/AggregationResultsWithGroups.ts:36:5 - (ae-forgotten-export) The symbol "MaybeNullable_2" needs to be exported by the entry point index.d.ts
-// src/aggregate/AggregationResultsWithGroups.ts:36:5 - (ae-forgotten-export) The symbol "OsdkObjectPropertyTypeNotUndefined" needs to be exported by the entry point index.d.ts
+// src/aggregate/AggregationResultsWithGroups.ts:35:3 - (ae-forgotten-export) The symbol "MaybeNullable_2" needs to be exported by the entry point index.d.ts
+// src/aggregate/AggregationResultsWithGroups.ts:35:3 - (ae-forgotten-export) The symbol "OsdkObjectPropertyTypeNotUndefined" needs to be exported by the entry point index.d.ts
 // src/objectSet/ObjectSetLinks.ts:36:3 - (ae-forgotten-export) The symbol "LinkedObjectType" needs to be exported by the entry point index.d.ts
-// src/ontology/PropertyModifiers.ts:76:9 - (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
-// src/ontology/PropertyModifiers.ts:77:8 - (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
-// src/ontology/PropertyModifiers.ts:78:27 - (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
+// src/ontology/PropertyModifiers.ts:81:9 - (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
+// src/ontology/PropertyModifiers.ts:82:8 - (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
+// src/ontology/PropertyModifiers.ts:83:27 - (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
 
 // (No @packageDocumentation comment for this package)
 

@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import {
   hashPayload,
   stringifyPayload,
@@ -23,7 +24,7 @@ import {
 
 describe("stringifyPayload", () => {
   it("stringifies objects to JSON", () => {
-    expect(stringifyPayload({ a: 1 })).toBe("{\"a\":1}");
+    expect(stringifyPayload({ a: 1 })).toBe('{"a":1}');
   });
 
   it("stringifies arrays", () => {
@@ -31,7 +32,7 @@ describe("stringifyPayload", () => {
   });
 
   it("stringifies primitives", () => {
-    expect(stringifyPayload("hello")).toBe("\"hello\"");
+    expect(stringifyPayload("hello")).toBe('"hello"');
     expect(stringifyPayload(42)).toBe("42");
     expect(stringifyPayload(null)).toBe("null");
     expect(stringifyPayload(true)).toBe("true");

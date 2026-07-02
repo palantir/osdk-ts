@@ -15,12 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BlockSetInstallationRid as _api_BlockSetInstallationRid,
-  ListBlockSetInstallationJobsPageToken
-    as _api_ListBlockSetInstallationJobsPageToken,
-  ListBlockSetInstallationJobsResponse
-    as _api_ListBlockSetInstallationJobsResponse,
+  ListBlockSetInstallationJobsPageToken as _api_ListBlockSetInstallationJobsPageToken,
+  ListBlockSetInstallationJobsResponse as _api_ListBlockSetInstallationJobsResponse,
   MarketplaceRid as _api_MarketplaceRid,
   PageSizeLimitHint as _api_PageSizeLimitHint,
 } from "../__components.js";
@@ -36,7 +35,7 @@ export async function listBlockSetInstallationJobs(
   marketplaceRid: _api_MarketplaceRid,
   blockSetInstallationRid: _api_BlockSetInstallationRid | null | undefined,
   pageToken: _api_ListBlockSetInstallationJobsPageToken | null | undefined,
-  limit: _api_PageSizeLimitHint | null | undefined,
+  limit: _api_PageSizeLimitHint | null | undefined
 ): Promise<_api_ListBlockSetInstallationJobsResponse> {
   return conjureFetch(ctx, `/block-set-installation/jobs`, "GET", undefined, {
     marketplaceRid,

@@ -18,7 +18,7 @@ import type { InternalClientContext } from "./internalClientContext.mjs";
 
 export function createInternalClientContext(
   foundryUrl: string,
-  tokenProvider: () => string,
+  tokenProvider: () => string
 ): InternalClientContext {
   return {
     tokenProvider,

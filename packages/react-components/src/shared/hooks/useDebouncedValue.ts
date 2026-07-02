@@ -23,14 +23,17 @@ import { useEffect, useState } from "react";
 export function useDebouncedValue<T>(value: T, debounceMs: number): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
 
-  useEffect(function debounceValue() {
-    const timer = setTimeout(() => {
-      setDebouncedValue(value);
-    }, debounceMs);
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [value, debounceMs]);
+  useEffect(
+    function debounceValue() {
+      const timer = setTimeout(() => {
+        setDebouncedValue(value);
+      }, debounceMs);
+      return () => {
+        clearTimeout(timer);
+      };
+    },
+    [value, debounceMs]
+  );
 
   return debouncedValue;
 }

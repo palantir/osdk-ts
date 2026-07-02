@@ -15,6 +15,7 @@
  */
 
 import type { WirePropertyTypes } from "@osdk/api";
+
 import type { InterfaceHolder } from "../object/convertWireToOsdkObjects/InterfaceHolder.js";
 import type { ObjectHolder } from "../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { ObserveObjectsCallbackArgs } from "./ObservableClient.js";

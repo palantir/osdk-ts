@@ -22,8 +22,7 @@ import type {
 import type * as OntologiesV2 from "@osdk/foundry.ontologies";
 
 interface TypeHelper_Property<Q extends ObjectMetadata.Property>
-  extends OntologiesV2.PropertyV2
-{
+  extends OntologiesV2.PropertyV2 {
   dataType: OntologiesV2.ObjectPropertyType & { type: Q["type"] };
 }
 
@@ -34,8 +33,7 @@ type TypeHelper_Properties<Q extends ObjectTypeDefinition> = {
 };
 
 interface TypeHelper_ObjectType<Q extends ObjectTypeDefinition>
-  extends OntologiesV2.ObjectTypeV2
-{
+  extends OntologiesV2.ObjectTypeV2 {
   apiName: Q["apiName"];
   primaryKey: CompileTimeMetadata<Q>["primaryKeyApiName"];
   titleProperty: CompileTimeMetadata<Q>["titleProperty"];
@@ -43,7 +41,6 @@ interface TypeHelper_ObjectType<Q extends ObjectTypeDefinition>
 }
 
 export interface TH_ObjectTypeFullMetadata<Q extends ObjectTypeDefinition>
-  extends OntologiesV2.ObjectTypeFullMetadata
-{
+  extends OntologiesV2.ObjectTypeFullMetadata {
   objectType: TypeHelper_ObjectType<Q>;
 }

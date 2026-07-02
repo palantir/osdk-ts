@@ -125,19 +125,20 @@ Add `isolation: isolate` to your app's root element. This is required for Base U
 
 The components that this package will provide are:
 
-| Component        | Description                                                                         | Documentation                                                                                           |
-| ---------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| `ObjectTable`    | Displays an Object Set as a sortable, paginated table with inline editing support   | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/ObjectTable.md)    |
-| `PdfViewer`      | Renders PDF documents with annotations, search, sidebar navigation, and zoom        | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/PdfViewer.md)      |
-| `FilterList`     | Visualize a high-level summary of objects data to allow users to filter that data.  | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/FilterList.md)     |
-| `ActionForm`     | Auto-generated form for executing Ontology Actions                                  | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/ActionForm.md)     |
-| `DocumentViewer` | Unified media viewer that auto-detects file type and renders the appropriate viewer | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/DocumentViewer.md) |
-| `EmailViewer`    | Parses and renders EML files with headers and sandboxed HTML body                   | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/EmailViewer.md)    |
-| `ExcelViewer`    | Renders Excel spreadsheets with sheet tabs and column/row headers                   | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/ExcelViewer.md)    |
-| `ImageViewer`    | Renders images (PNG, JPEG, GIF, SVG, WebP, BMP)                                     | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/ImageViewer.md)    |
-| `VideoViewer`    | Renders video with native browser controls                                          | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/VideoViewer.md)    |
-| `XmlViewer`      | Renders XML content with syntax preservation                                        | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/XmlViewer.md)      |
-| `CbacPicker`     | Picker for classification-based access control (CBAC) markings with banner display  | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/CbacPicker.md)     |
+| Component        | Description                                                                                     | Documentation                                                                                           |
+| ---------------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `ObjectTable`    | Displays an Object Set as a sortable, paginated table with inline editing support               | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/ObjectTable.md)    |
+| `PdfViewer`      | Renders PDF documents with annotations, search, sidebar navigation, and zoom                    | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/PdfViewer.md)      |
+| `FilterList`     | Visualize a high-level summary of objects data to allow users to filter that data.              | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/FilterList.md)     |
+| `ActionForm`     | Auto-generated form for executing Ontology Actions                                              | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/ActionForm.md)     |
+| `AipAgentChat`   | Chat surface backed by Foundry LMS via `useChat` — takes a `PlatformClient` and model API name. | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/AipAgentChat.md)   |
+| `DocumentViewer` | Unified media viewer that auto-detects file type and renders the appropriate viewer             | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/DocumentViewer.md) |
+| `EmailViewer`    | Parses and renders EML files with headers and sandboxed HTML body                               | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/EmailViewer.md)    |
+| `ExcelViewer`    | Renders Excel spreadsheets with sheet tabs and column/row headers                               | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/ExcelViewer.md)    |
+| `ImageViewer`    | Renders images (PNG, JPEG, GIF, SVG, WebP, BMP)                                                 | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/ImageViewer.md)    |
+| `VideoViewer`    | Renders video with native browser controls                                                      | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/VideoViewer.md)    |
+| `XmlViewer`      | Renders XML content with syntax preservation                                                    | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/XmlViewer.md)      |
+| `CbacPicker`     | Picker for classification-based access control (CBAC) markings with banner display              | [Guide](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/CbacPicker.md)     |
 
 ## Component Architecture
 
@@ -259,7 +260,7 @@ import { MyComponent as _MyComponent } from "../../my-component/MyComponent.js";
 import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
 export const MyComponent: typeof _MyComponent = withOsdkMetrics(
   _MyComponent,
-  "MyComponent",
+  "MyComponent"
 );
 ```
 

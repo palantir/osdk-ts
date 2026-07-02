@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import { NestedOsdkExamplesContext } from "./nestedOsdkExamplesContext.js";
 
 describe("NestedOsdkExamplesContext", () => {
@@ -36,21 +37,18 @@ describe("NestedOsdkExamplesContext", () => {
 
   describe("getBaseExamplesForVersion", () => {
     it("returns examples for version 2.0.0", () => {
-      const examples = NestedOsdkExamplesContext.getBaseExamplesForVersion(
-        "2.0.0",
-      );
+      const examples =
+        NestedOsdkExamplesContext.getBaseExamplesForVersion("2.0.0");
       expect(examples).toContain("loadSingleObjectGuide");
       expect(examples).toContain("aggregationTemplate");
       expect(examples.length).toBeGreaterThan(50);
     });
 
     it("returns more examples for version 2.4.0 due to fallback", () => {
-      const examples200 = NestedOsdkExamplesContext.getBaseExamplesForVersion(
-        "2.0.0",
-      );
-      const examples240 = NestedOsdkExamplesContext.getBaseExamplesForVersion(
-        "2.4.0",
-      );
+      const examples200 =
+        NestedOsdkExamplesContext.getBaseExamplesForVersion("2.0.0");
+      const examples240 =
+        NestedOsdkExamplesContext.getBaseExamplesForVersion("2.4.0");
 
       expect(examples240.length).toBeGreaterThan(examples200.length);
       expect(examples240).toContain("loadSingleObjectGuide"); // from 2.0.0
@@ -59,9 +57,8 @@ describe("NestedOsdkExamplesContext", () => {
     });
 
     it("returns empty array for non-existent version", () => {
-      const examples = NestedOsdkExamplesContext.getBaseExamplesForVersion(
-        "1.0.0",
-      );
+      const examples =
+        NestedOsdkExamplesContext.getBaseExamplesForVersion("1.0.0");
       expect(examples).toEqual([]);
     });
   });
@@ -124,7 +121,7 @@ describe("NestedOsdkExamplesContext", () => {
     it("returns variations for a nested example", () => {
       const variations = NestedOsdkExamplesContext.getVariations(
         "2.4.0",
-        "derivedPropertyNumericExpression",
+        "derivedPropertyNumericExpression"
       );
       expect(variations).toBeDefined();
       expect(Object.keys(variations!)).toContain("#isUnary");
@@ -133,7 +130,7 @@ describe("NestedOsdkExamplesContext", () => {
       expect(variations!["#isUnary"].code).toBeTruthy();
       expect(variations!["^isUnary"].code).toBeTruthy();
       expect(variations!["#isUnary"].code).not.toEqual(
-        variations!["^isUnary"].code,
+        variations!["^isUnary"].code
       );
       // Check for structure rather than specific method names
       expect(variations!["#isUnary"].code).toMatch(/selectProperty|aggregate/);
@@ -143,7 +140,7 @@ describe("NestedOsdkExamplesContext", () => {
     it("returns undefined for simple examples without variations", () => {
       const variations = NestedOsdkExamplesContext.getVariations(
         "2.0.0",
-        "loadSingleObjectGuide",
+        "loadSingleObjectGuide"
       );
       expect(variations).toBeUndefined();
     });
@@ -152,7 +149,7 @@ describe("NestedOsdkExamplesContext", () => {
       // Check that variations from 2.0.0 are accessible in 2.4.0
       const variations = NestedOsdkExamplesContext.getVariations(
         "2.4.0",
-        "applyAction",
+        "applyAction"
       );
       expect(variations).toBeDefined();
       if (variations) {
@@ -163,7 +160,7 @@ describe("NestedOsdkExamplesContext", () => {
     it("returns undefined for non-existent examples", () => {
       const variations = NestedOsdkExamplesContext.getVariations(
         "2.0.0",
-        "nonExistentExample",
+        "nonExistentExample"
       );
       expect(variations).toBeUndefined();
     });
@@ -173,7 +170,7 @@ describe("NestedOsdkExamplesContext", () => {
     it("returns true for examples with variations", () => {
       const hasVariations = NestedOsdkExamplesContext.hasVariations(
         "2.4.0",
-        "derivedPropertyNumericExpression",
+        "derivedPropertyNumericExpression"
       );
       expect(hasVariations).toBe(true);
     });
@@ -181,7 +178,7 @@ describe("NestedOsdkExamplesContext", () => {
     it("returns false for simple examples", () => {
       const hasVariations = NestedOsdkExamplesContext.hasVariations(
         "2.0.0",
-        "loadSingleObjectGuide",
+        "loadSingleObjectGuide"
       );
       expect(hasVariations).toBe(false);
     });
@@ -189,7 +186,7 @@ describe("NestedOsdkExamplesContext", () => {
     it("returns false for non-existent examples", () => {
       const hasVariations = NestedOsdkExamplesContext.hasVariations(
         "2.0.0",
-        "nonExistentExample",
+        "nonExistentExample"
       );
       expect(hasVariations).toBe(false);
     });
@@ -197,36 +194,34 @@ describe("NestedOsdkExamplesContext", () => {
 
   describe("getExamplesWithVersionInfo", () => {
     it("returns examples with version information", () => {
-      const examples = NestedOsdkExamplesContext.getExamplesWithVersionInfo(
-        "2.4.0",
-      );
+      const examples =
+        NestedOsdkExamplesContext.getExamplesWithVersionInfo("2.4.0");
       expect(examples.length).toBeGreaterThan(0);
 
-      const aggregationExample = examples.find(e =>
-        e.name === "aggregationTemplate"
+      const aggregationExample = examples.find(
+        (e) => e.name === "aggregationTemplate"
       );
       expect(aggregationExample).toBeDefined();
       expect(aggregationExample?.availableInVersions).toContain("2.0.0");
     });
 
     it("shows version availability correctly", () => {
-      const examples = NestedOsdkExamplesContext.getExamplesWithVersionInfo(
-        "2.4.0",
-      );
+      const examples =
+        NestedOsdkExamplesContext.getExamplesWithVersionInfo("2.4.0");
 
       // Should return examples with version info
       expect(examples.length).toBeGreaterThan(0);
 
       // Find an example that should exist only in newer versions
-      const newerExample = examples.find(e =>
-        e.name === "derivedPropertyNumericExpression"
+      const newerExample = examples.find(
+        (e) => e.name === "derivedPropertyNumericExpression"
       );
       expect(newerExample).toBeDefined();
       expect(newerExample?.availableInVersions).toContain("2.4.0");
 
       // Check that some examples show version info
-      const exampleWithVersions = examples.find(e =>
-        e.availableInVersions.length > 0
+      const exampleWithVersions = examples.find(
+        (e) => e.availableInVersions.length > 0
       );
       expect(exampleWithVersions).toBeDefined();
     });
@@ -237,13 +232,13 @@ describe("NestedOsdkExamplesContext", () => {
       const results = NestedOsdkExamplesContext.searchExamples("aggregation");
       expect(results.length).toBeGreaterThan(0);
 
-      const versions = [...new Set(results.map(r => r.version))];
+      const versions = [...new Set(results.map((r) => r.version))];
       expect(versions.length).toBeGreaterThanOrEqual(1); // At least one version
 
       // Verify we get results from the available versions
-      const availableVersions = NestedOsdkExamplesContext
-        .getAvailableVersions();
-      versions.forEach(version => {
+      const availableVersions =
+        NestedOsdkExamplesContext.getAvailableVersions();
+      versions.forEach((version) => {
         expect(availableVersions).toContain(version);
       });
     });
@@ -251,12 +246,12 @@ describe("NestedOsdkExamplesContext", () => {
     it("searches within compatible versions when version specified", () => {
       const results = NestedOsdkExamplesContext.searchExamples(
         "aggregation",
-        "2.4.0",
+        "2.4.0"
       );
       expect(results.length).toBeGreaterThan(0);
 
       // All results should have the target version
-      results.forEach(result => {
+      results.forEach((result) => {
         expect(result.version).toBe("2.4.0");
       });
     });
@@ -264,11 +259,11 @@ describe("NestedOsdkExamplesContext", () => {
     it("finds nested variations", () => {
       const results = NestedOsdkExamplesContext.searchExamples(
         "isUnary",
-        "2.4.0",
+        "2.4.0"
       );
       expect(results.length).toBeGreaterThan(0);
 
-      const unaryResult = results.find(r => r.variationKey === "#isUnary");
+      const unaryResult = results.find((r) => r.variationKey === "#isUnary");
       expect(unaryResult).toBeDefined();
       expect(unaryResult?.baseName).toBe("derivedPropertyNumericExpression");
     });
@@ -276,7 +271,7 @@ describe("NestedOsdkExamplesContext", () => {
     it("includes source version information", () => {
       const results = NestedOsdkExamplesContext.searchExamples(
         "loadSingleObjectGuide",
-        "2.4.0",
+        "2.4.0"
       );
       expect(results.length).toBe(1);
       expect(results[0].version).toBe("2.4.0"); // target version
@@ -284,9 +279,8 @@ describe("NestedOsdkExamplesContext", () => {
     });
 
     it("returns empty array for no matches", () => {
-      const results = NestedOsdkExamplesContext.searchExamples(
-        "nonExistentPattern",
-      );
+      const results =
+        NestedOsdkExamplesContext.searchExamples("nonExistentPattern");
       expect(results).toEqual([]);
     });
 
@@ -295,9 +289,8 @@ describe("NestedOsdkExamplesContext", () => {
       expect(results.length).toBeGreaterThan(0);
 
       // Should match the same results as lowercase
-      const lowerResults = NestedOsdkExamplesContext.searchExamples(
-        "aggregation",
-      );
+      const lowerResults =
+        NestedOsdkExamplesContext.searchExamples("aggregation");
       expect(results.length).toBe(lowerResults.length);
     });
   });
@@ -314,7 +307,7 @@ describe("NestedOsdkExamplesContext", () => {
       expect(version200.examples).toBeDefined();
       expect(version200.examples["loadSingleObjectGuide"]).toBeDefined();
       expect(version200.examples["loadSingleObjectGuide"].code).toContain(
-        "fetchOne",
+        "fetchOne"
       );
     });
 
@@ -322,10 +315,12 @@ describe("NestedOsdkExamplesContext", () => {
       const flattened = NestedOsdkExamplesContext.flatten();
       const version240 = flattened.versions["2.4.0"];
 
-      expect(version240.examples["derivedPropertyNumericExpression_#isUnary"])
-        .toBeDefined();
-      expect(version240.examples["derivedPropertyNumericExpression_^isUnary"])
-        .toBeDefined();
+      expect(
+        version240.examples["derivedPropertyNumericExpression_#isUnary"]
+      ).toBeDefined();
+      expect(
+        version240.examples["derivedPropertyNumericExpression_^isUnary"]
+      ).toBeDefined();
     });
 
     it("preserves simple examples without modifications", () => {
@@ -340,19 +335,16 @@ describe("NestedOsdkExamplesContext", () => {
   describe("version fallback logic", () => {
     it("follows semantic versioning rules", () => {
       // 2.4.0 should include 2.0.0, 2.1.0, and 2.4.0
-      const examples240 = NestedOsdkExamplesContext.getBaseExamplesForVersion(
-        "2.4.0",
-      );
+      const examples240 =
+        NestedOsdkExamplesContext.getBaseExamplesForVersion("2.4.0");
 
       // 2.1.0 should include 2.0.0 and 2.1.0 (but not 2.4.0)
-      const examples210 = NestedOsdkExamplesContext.getBaseExamplesForVersion(
-        "2.1.0",
-      );
+      const examples210 =
+        NestedOsdkExamplesContext.getBaseExamplesForVersion("2.1.0");
 
       // 2.0.0 should only include 2.0.0
-      const examples200 = NestedOsdkExamplesContext.getBaseExamplesForVersion(
-        "2.0.0",
-      );
+      const examples200 =
+        NestedOsdkExamplesContext.getBaseExamplesForVersion("2.0.0");
 
       expect(examples240.length).toBeGreaterThan(examples210.length);
       expect(examples210.length).toBeGreaterThan(examples200.length);
@@ -373,9 +365,8 @@ describe("NestedOsdkExamplesContext", () => {
       const versions = NestedOsdkExamplesContext.getAvailableVersions();
 
       for (const version of versions) {
-        const examples = NestedOsdkExamplesContext.getBaseExamplesForVersion(
-          version,
-        );
+        const examples =
+          NestedOsdkExamplesContext.getBaseExamplesForVersion(version);
 
         for (const exampleName of examples) {
           const example = NestedOsdkExamplesContext.getExample(version, [
@@ -389,7 +380,7 @@ describe("NestedOsdkExamplesContext", () => {
             // If it's not a direct example, check if it has variations
             const variations = NestedOsdkExamplesContext.getVariations(
               version,
-              exampleName,
+              exampleName
             );
             expect(variations).toBeDefined();
 

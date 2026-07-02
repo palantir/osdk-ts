@@ -17,6 +17,7 @@
 /// <reference types="vite/client" />
 
 import { createClient as __real } from "@osdk/client";
+
 import { smartClient } from "./smartClient.js";
 
 // Re-export every named binding from `@osdk/client` so this module is a
@@ -45,12 +46,14 @@ export const createClient: typeof __real = (
   ontologyRid,
   tokenProvider,
   options,
-  fetchFn,
+  fetchFn
 ) =>
-  smartClient(__real(
-    new URL(import.meta.env.BASE_URL, window.location.origin).href,
-    ontologyRid,
-    tokenProvider,
-    options,
-    fetchFn,
-  ));
+  smartClient(
+    __real(
+      new URL(import.meta.env.BASE_URL, window.location.origin).href,
+      ontologyRid,
+      tokenProvider,
+      options,
+      fetchFn
+    )
+  );

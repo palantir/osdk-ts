@@ -1,5 +1,23 @@
 # @osdk/create-app
 
+## 2.41.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.41.0
+
+## 2.40.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.40.0
+
+## 2.39.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.39.0
+
 ## 2.38.0
 
 ### Minor Changes

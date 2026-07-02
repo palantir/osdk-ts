@@ -1,5 +1,23 @@
 # @osdk/react-components-storybook
 
+## 0.33.0
+
+### Minor Changes
+
+- 0ed0b5c: Restyle AipAgentChat to match Threads 2.0 design with light gray user bubbles, plain-text assistant messages, rounded inlined composer, centered max-width layout, and no composer divider. Add reusable Callout base component with intent-tinted backgrounds and dark mode support. Add AipAgentChat storybook stories.
+
+### Patch Changes
+
+- Updated dependencies [15a35f2]
+  - @osdk/faux@0.32.0
+
+## 0.32.0
+
+### Patch Changes
+
+- Updated dependencies [3e915ee]
+  - @osdk/faux@0.31.0
+
 ## 0.31.0
 
 ### Patch Changes

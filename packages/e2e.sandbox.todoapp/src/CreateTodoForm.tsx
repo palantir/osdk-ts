@@ -1,5 +1,6 @@
 import { useOsdkAction } from "@osdk/react";
 import React from "react";
+
 import { Button } from "./Button.js";
 import { $Actions, Todo } from "./generatedNoCheck2/index.js";
 import { H2 } from "./H2.js";
@@ -38,22 +39,20 @@ export default function CreateTodoForm() {
       // reset the form if we succeeded
       formRef.current.reset();
     },
-    [formRef.current, inputRef.current, applyAction],
+    [inputRef.current, applyAction]
   );
 
   return (
     <>
       <H2>
-        Create Todo<InlineSpinner isLoading={isPending} />
+        Create Todo
+        <InlineSpinner isLoading={isPending} />
       </H2>
 
       <div className="flex grow">
-        <form
-          ref={formRef}
-          onSubmit={onSubmit}
-        >
+        <form ref={formRef} onSubmit={onSubmit}>
           <div className="error">
-            <pre>{JSON.stringify(error, null,2)}</pre>
+            <pre>{JSON.stringify(error, null, 2)}</pre>
           </div>
           <input
             type="text"
@@ -70,9 +69,7 @@ export default function CreateTodoForm() {
 
            "
           />
-          <Button disabled={isPending}>
-            Create Todo
-          </Button>
+          <Button disabled={isPending}>Create Todo</Button>
         </form>
       </div>
     </>

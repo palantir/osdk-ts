@@ -14,20 +14,17 @@
  * limitations under the License.
  */
 
-import * as typescriptEslintParser from "@typescript-eslint/parser";
-import * as tseslint from "typescript-eslint";
-import rootConfig from "../../eslint.config.mjs";
+import { CipherTextProperties } from "@osdk/foundry.ontologies";
 
-export default tseslint.config(
-  ...rootConfig,
-  {
-    files: ["src/**/*"],
-    languageOptions: {
-      parser: typescriptEslintParser,
-      parserOptions: {
-        projectService: true,
-        tsconfigRootDir: import.meta.dirname,
-      },
-    },
-  },
-);
+import type { CallFactory } from "../../handlers/util/handleOpenApiCall.js";
+import { handleOpenApiCall } from "../../handlers/util/handleOpenApiCall.js";
+
+export const decrypt: CallFactory<
+  "ontologyApiName" | "objectType" | "primaryKey" | "propertyName",
+  typeof CipherTextProperties.decrypt
+> = handleOpenApiCall(CipherTextProperties.decrypt, [
+  "ontologyApiName",
+  "objectType",
+  "primaryKey",
+  "propertyName",
+]);

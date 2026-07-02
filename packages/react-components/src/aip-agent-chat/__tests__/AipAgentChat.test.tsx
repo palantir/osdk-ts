@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-import storybook from "eslint-plugin-storybook";
-import baseConfig from "../../eslint.config.mjs";
+import { describe, it } from "vitest";
 
-export default [
-  ...baseConfig,
-  {
-    ignores: ["build/**", "storybook-static/**", "public/**"],
-  },
-  {
-    files: ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.mjs"],
-    rules: {
-      "header/header": "off",
-    },
-  },
-  ...storybook.configs["flat/recommended"],
-];
+/**
+ * The OSDK wrapper {@link AipAgentChat} delegates its rendering to
+ * {@link BaseAipAgentChat} (covered by `BaseAipAgentChat.test.tsx`) and wires
+ * it to `useChat` from `@osdk/react/experimental/aip`. The behaviors below
+ * are scaffolded as `it.todo` until a full mock harness for `useChat` lands.
+ */
+describe("AipAgentChat (OSDK wrapper)", () => {
+  it.todo("calls useChat with the configured model");
+  it.todo("wires sendMessage from useChat into BaseAipAgentChat");
+  it.todo(
+    "wraps activeModel and availableModels into a model picker rendered in composer footer"
+  );
+});

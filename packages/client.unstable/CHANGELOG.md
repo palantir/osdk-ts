@@ -1,5 +1,15 @@
 # @osdk/client.unstable
 
+## 2.41.0
+
+## 2.40.0
+
+## 2.39.0
+
+### Minor Changes
+
+- 397ce96: support interface action type constraint in maker experimental
+
 ## 2.38.0
 
 ## 2.37.0

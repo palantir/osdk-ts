@@ -17,6 +17,7 @@
 import { InfoSign } from "@blueprintjs/icons";
 import classnames from "classnames";
 import React from "react";
+
 import styles from "./InfoBanner.module.css";
 
 export interface InfoBannerProps {

@@ -19,6 +19,7 @@ import type {
   ExecuteQueryRequest,
   ExecuteQueryResponse,
 } from "@osdk/foundry.ontologies";
+
 import { createLazyQueryImpl } from "../createLazyQueryImpl.js";
 import { employee1, employee2 } from "./objects.js";
 import {
@@ -99,8 +100,8 @@ export const queryTypeReturnsStructRequestReturnNull: ExecuteQueryRequest = {
   },
 };
 
-export const queryTypeReturnsStructRequestReturnNullResponse:
-  ExecuteQueryResponse = {
+export const queryTypeReturnsStructRequestReturnNullResponse: ExecuteQueryResponse =
+  {
     value: {
       firstName: "Joe",
       lastName: "Joseph",
@@ -152,7 +153,7 @@ export const queryTypeAcceptsInterfaceRequest: ExecuteQueryRequest = {
   parameters: {
     interfaceObject: {
       objectTypeApiName: "Employee",
-      "primaryKeyValue": employee1.__primaryKey,
+      primaryKeyValue: employee1.__primaryKey,
     },
   },
 };
@@ -160,7 +161,7 @@ export const queryTypeAcceptsInterfaceRequest: ExecuteQueryRequest = {
 export const queryTypeAcceptsInterfaceResponse: ExecuteQueryResponse = {
   value: {
     objectTypeApiName: "Employee",
-    "primaryKeyValue": employee2.__primaryKey,
+    primaryKeyValue: employee2.__primaryKey,
   },
 };
 
@@ -206,8 +207,8 @@ export const queryTypeAcceptsObjectSetResponse: ExecuteQueryResponse = {
   },
 };
 
-export const queryTypeThreeDimensionalAggregationResponse:
-  ExecuteQueryResponse = {
+export const queryTypeThreeDimensionalAggregationResponse: ExecuteQueryResponse =
+  {
     value: {
       groups: [
         {
@@ -246,8 +247,8 @@ export const queryTypeTwoDimensionalAggregationResponse: ExecuteQueryResponse =
     },
   };
 
-export const queryTypeAcceptsTwoDimensionalAggregationRequest:
-  ExecuteQueryRequest = {
+export const queryTypeAcceptsTwoDimensionalAggregationRequest: ExecuteQueryRequest =
+  {
     parameters: {
       aggFunction: {
         groups: [
@@ -264,8 +265,8 @@ export const queryTypeAcceptsTwoDimensionalAggregationRequest:
     },
   };
 
-export const queryTypeAcceptsTwoDimensionalAggregationResponse:
-  ExecuteQueryResponse = {
+export const queryTypeAcceptsTwoDimensionalAggregationResponse: ExecuteQueryResponse =
+  {
     value: {
       groups: [
         {
@@ -280,8 +281,8 @@ export const queryTypeAcceptsTwoDimensionalAggregationResponse:
     },
   };
 
-export const queryTypeAcceptsThreeDimensionalAggregationRequest:
-  ExecuteQueryRequest = {
+export const queryTypeAcceptsThreeDimensionalAggregationRequest: ExecuteQueryRequest =
+  {
     parameters: {
       aggFunction: {
         groups: [
@@ -306,8 +307,8 @@ export const queryTypeAcceptsThreeDimensionalAggregationRequest:
     },
   };
 
-export const queryTypeAcceptsThreeDimensionalAggregationResponse:
-  ExecuteQueryResponse = {
+export const queryTypeAcceptsThreeDimensionalAggregationResponse: ExecuteQueryResponse =
+  {
     value: {
       groups: [
         {
@@ -351,9 +352,7 @@ export const queryTypeReturnsMapResponse: ExecuteQueryResponse = {
 };
 
 export const queryTypeReturnsArrayOfObjectsResponse: ExecuteQueryResponse = {
-  value: [
-    employee1.__primaryKey,
-  ],
+  value: [employee1.__primaryKey],
 };
 
 export const emptyBody: string = JSON.stringify({
@@ -545,13 +544,13 @@ export function registerLazyQueries(fauxOntology: FauxOntology): void {
       queryRequestHandlers[queryType.apiName][queryType.version];
     if (!lazyHandlerMap) {
       throw new Error(
-        `Query type ${queryType.apiName} is not registered in queryRequestHandlers`,
+        `Query type ${queryType.apiName} is not registered in queryRequestHandlers`
       );
     }
 
     fauxOntology.registerQueryType(
       queryType,
-      createLazyQueryImpl(lazyHandlerMap),
+      createLazyQueryImpl(lazyHandlerMap)
     );
   }
 }

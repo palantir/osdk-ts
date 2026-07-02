@@ -16,6 +16,7 @@
 
 import React, { useCallback, useMemo } from "react";
 import { styled } from "storybook/theming";
+
 import {
   contrastRatio,
   luminanceFromHex,
@@ -79,7 +80,7 @@ interface TokenMappingTableProps {
   assignments: TokenAssignment[];
   onAssignmentChange: (
     role: string,
-    assignment: Partial<TokenAssignment>,
+    assignment: Partial<TokenAssignment>
   ) => void;
   onReset: (role: string) => void;
 }
@@ -256,7 +257,7 @@ interface ContrastInfo {
 /** Returns the worst (lowest ratio) contrast pair for a given role */
 function getContrastInfo(
   role: string,
-  assignments: TokenAssignment[],
+  assignments: TokenAssignment[]
 ): ContrastInfo | undefined {
   let worst: ContrastInfo | undefined;
 
@@ -276,8 +277,9 @@ function getContrastInfo(
 
     // Show the worst failing pair, or the worst passing pair if all pass
     if (
-      !worst || (!pass && worst.pass)
-      || (pass === worst.pass && ratio < worst.ratio)
+      !worst ||
+      (!pass && worst.pass) ||
+      (pass === worst.pass && ratio < worst.ratio)
     ) {
       worst = { ratio, required: minRatio, pass, against: bgRole };
     }
@@ -325,7 +327,7 @@ interface TokenRowProps {
   assignment: TokenAssignment | undefined;
   onAssignmentChange: (
     role: string,
-    assignment: Partial<TokenAssignment>,
+    assignment: Partial<TokenAssignment>
   ) => void;
   onReset: (role: string) => void;
 }
@@ -344,7 +346,7 @@ function TokenRow({
       roleDef.inputType === "color"
         ? getContrastInfo(roleDef.role, assignments)
         : undefined,
-    [roleDef.role, roleDef.inputType, assignments],
+    [roleDef.role, roleDef.inputType, assignments]
   );
 
   const handleValueChange = useCallback(
@@ -354,12 +356,12 @@ function TokenRow({
         customValue: e.target.value,
       });
     },
-    [roleDef.role, onAssignmentChange],
+    [roleDef.role, onAssignmentChange]
   );
 
   const handleReset = useCallback(
     () => onReset(roleDef.role),
-    [roleDef.role, onReset],
+    [roleDef.role, onReset]
   );
 
   return (
@@ -367,127 +369,117 @@ function TokenRow({
       <LabelWrapper>
         <LabelText>
           {roleDef.label}
-          {contrast && (
-            contrast.pass
-              ? (
-                <ContrastPass
-                  title={`${
-                    contrast.ratio.toFixed(1)
-                  }:1 vs ${contrast.against} (needs ${contrast.required}:1)`}
-                >
-                  {contrast.ratio.toFixed(1)}:1
-                </ContrastPass>
-              )
-              : (
-                <ContrastWarning
-                  title={`${
-                    contrast.ratio.toFixed(1)
-                  }:1 vs ${contrast.against} (needs ${contrast.required}:1)`}
-                >
-                  {contrast.ratio.toFixed(1)}:1
-                </ContrastWarning>
-              )
-          )}
+          {contrast &&
+            (contrast.pass ? (
+              <ContrastPass
+                title={`${contrast.ratio.toFixed(
+                  1
+                )}:1 vs ${contrast.against} (needs ${contrast.required}:1)`}
+              >
+                {contrast.ratio.toFixed(1)}:1
+              </ContrastPass>
+            ) : (
+              <ContrastWarning
+                title={`${contrast.ratio.toFixed(
+                  1
+                )}:1 vs ${contrast.against} (needs ${contrast.required}:1)`}
+              >
+                {contrast.ratio.toFixed(1)}:1
+              </ContrastWarning>
+            ))}
         </LabelText>
-        <Tooltip>
-          {`Maps to:\n${roleDef.cssProperties.join("\n")}`}
-        </Tooltip>
+        <Tooltip>{`Maps to:\n${roleDef.cssProperties.join("\n")}`}</Tooltip>
       </LabelWrapper>
       <Controls>
-        {roleDef.inputType === "color"
-          ? (
-            <>
-              {currentValue
-                ? (
-                  <input
-                    type="color"
-                    value={currentValue}
-                    onChange={handleValueChange}
-                    style={{
-                      width: 28,
-                      height: 28,
-                      padding: 0,
-                      border: "none",
-                      cursor: "pointer",
-                      borderRadius: 4,
-                    }}
-                  />
-                )
-                : (
-                  <EmptySwatch
-                    onClick={() =>
-                      onAssignmentChange(roleDef.role, {
-                        colorIndex: -1,
-                        customValue: "#808080",
-                      })}
-                    title="Click to set a color"
-                  />
-                )}
-              <TextInput
-                type="text"
-                value={currentValue || ""}
+        {roleDef.inputType === "color" ? (
+          <>
+            {currentValue ? (
+              <input
+                type="color"
+                value={currentValue}
                 onChange={handleValueChange}
-                placeholder="theme default"
-                style={{ width: 90 }}
+                style={{
+                  width: 28,
+                  height: 28,
+                  padding: 0,
+                  border: "none",
+                  cursor: "pointer",
+                  borderRadius: 4,
+                }}
               />
-            </>
-          )
-          : roleDef.inputType === "font"
-          ? (
-            <SelectInput
-              value={currentValue || ""}
-              onChange={(e) =>
-                onAssignmentChange(roleDef.role, {
-                  colorIndex: -1,
-                  customValue: e.target.value,
-                })}
-              style={{ minWidth: 130, fontFamily: currentValue || "inherit" }}
-            >
-              <option value="">theme default</option>
-              {FONT_PRESETS.map((f) => (
-                <option
-                  key={f.label}
-                  value={f.value}
-                  style={{ fontFamily: f.value }}
-                >
-                  {f.label}
-                </option>
-              ))}
-            </SelectInput>
-          )
-          : roleDef.inputType === "shadow"
-          ? (
-            <SelectInput
-              value={currentValue || ""}
-              onChange={(e) =>
-                onAssignmentChange(roleDef.role, {
-                  colorIndex: -1,
-                  customValue: e.target.value,
-                })}
-              style={{ minWidth: 100 }}
-            >
-              <option value="">theme default</option>
-              {SHADOW_PRESETS.map((s) => (
-                <option key={s.label} value={s.value}>
-                  {s.label}
-                </option>
-              ))}
-            </SelectInput>
-          )
-          : (
-            <>
-              <TextInput
-                type="text"
-                value={currentValue || ""}
-                onChange={handleValueChange}
-                placeholder="theme default"
-                style={{ width: roleDef.inputType === "text" ? 140 : 55 }}
+            ) : (
+              <EmptySwatch
+                onClick={() =>
+                  onAssignmentChange(roleDef.role, {
+                    colorIndex: -1,
+                    customValue: "#808080",
+                  })
+                }
+                title="Click to set a color"
               />
-              {(roleDef.inputType === "px" || roleDef.inputType === "ms") && (
-                <UnitSuffix>{roleDef.inputType}</UnitSuffix>
-              )}
-            </>
-          )}
+            )}
+            <TextInput
+              type="text"
+              value={currentValue || ""}
+              onChange={handleValueChange}
+              placeholder="Default"
+              style={{ width: 90 }}
+            />
+          </>
+        ) : roleDef.inputType === "font" ? (
+          <SelectInput
+            value={currentValue || ""}
+            onChange={(e) =>
+              onAssignmentChange(roleDef.role, {
+                colorIndex: -1,
+                customValue: e.target.value,
+              })
+            }
+            style={{ minWidth: 130, fontFamily: currentValue || "inherit" }}
+          >
+            <option value="">Default</option>
+            {FONT_PRESETS.map((f) => (
+              <option
+                key={f.label}
+                value={f.value}
+                style={{ fontFamily: f.value }}
+              >
+                {f.label}
+              </option>
+            ))}
+          </SelectInput>
+        ) : roleDef.inputType === "shadow" ? (
+          <SelectInput
+            value={currentValue || ""}
+            onChange={(e) =>
+              onAssignmentChange(roleDef.role, {
+                colorIndex: -1,
+                customValue: e.target.value,
+              })
+            }
+            style={{ minWidth: 100 }}
+          >
+            <option value="">Default</option>
+            {SHADOW_PRESETS.map((s) => (
+              <option key={s.label} value={s.value}>
+                {s.label}
+              </option>
+            ))}
+          </SelectInput>
+        ) : (
+          <>
+            <TextInput
+              type="text"
+              value={currentValue || ""}
+              onChange={handleValueChange}
+              placeholder="Default"
+              style={{ width: roleDef.inputType === "text" ? 140 : 55 }}
+            />
+            {(roleDef.inputType === "px" || roleDef.inputType === "ms") && (
+              <UnitSuffix>{roleDef.inputType}</UnitSuffix>
+            )}
+          </>
+        )}
         <ResetBtn onClick={handleReset} title="Reset to default">
           ↺
         </ResetBtn>

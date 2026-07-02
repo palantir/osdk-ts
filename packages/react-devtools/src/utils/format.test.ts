@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import { formatMilliseconds } from "./format.js";
 
 describe("formatMilliseconds", () => {

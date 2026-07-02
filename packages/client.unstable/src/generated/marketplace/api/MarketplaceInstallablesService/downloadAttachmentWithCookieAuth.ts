@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   AttachmentId as _api_AttachmentId,
   BlockSetVersionId as _api_BlockSetVersionId,
@@ -29,7 +30,7 @@ export async function downloadAttachmentWithCookieAuth(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
   blockSetVersionId: _api_BlockSetVersionId,
-  attachmentId: _api_AttachmentId,
+  attachmentId: _api_AttachmentId
 ): Promise<string> {
   return conjureFetch(
     ctx,
@@ -38,6 +39,6 @@ export async function downloadAttachmentWithCookieAuth(
     undefined,
     undefined,
     undefined,
-    "application/octet-stream",
+    "application/octet-stream"
   );
 }

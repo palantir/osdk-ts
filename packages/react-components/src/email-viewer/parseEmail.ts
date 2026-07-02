@@ -16,10 +16,11 @@
 
 import type { Address } from "postal-mime";
 import PostalMime from "postal-mime";
+
 import type { EmailAddress, ParsedEmail } from "./EmailViewerApi.js";
 
 function extractAddresses(
-  addresses: Address[] | undefined,
+  addresses: Address[] | undefined
 ): readonly EmailAddress[] {
   if (addresses == null) {
     return [];
@@ -38,7 +39,7 @@ function extractAddresses(
 }
 
 function extractSingleAddress(
-  address: Address | undefined,
+  address: Address | undefined
 ): EmailAddress | undefined {
   if (address == null) {
     return undefined;
@@ -50,7 +51,7 @@ function extractSingleAddress(
 }
 
 export async function parseEmailFromResponse(
-  response: Response,
+  response: Response
 ): Promise<ParsedEmail> {
   const buffer = await response.arrayBuffer();
   const email = await PostalMime.parse(buffer);

@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import type { ObjectTypeDefinition } from "../ontology/ObjectTypeDefinition.js";
 import { createShapeBuilder, createShapeLinkBuilder } from "./ShapeBuilder.js";
 import type { ShapePropertyConfig } from "./ShapeDefinition.js";
@@ -84,8 +85,12 @@ describe("createShapeBuilder", () => {
   });
 
   it("produces deterministic shapeId", () => {
-    const a = createShapeBuilder(MockEmployee).select("name" as never).build();
-    const b = createShapeBuilder(MockEmployee).select("name" as never).build();
+    const a = createShapeBuilder(MockEmployee)
+      .select("name" as never)
+      .build();
+    const b = createShapeBuilder(MockEmployee)
+      .select("name" as never)
+      .build();
     expect(a.__shapeId).toBe(b.__shapeId);
   });
 

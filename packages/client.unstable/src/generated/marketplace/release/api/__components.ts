@@ -62,8 +62,7 @@ export interface BlockSetVersionCreationFailed {
   blockSetVersionId: _api_BlockSetVersionId;
   marketplaceRid: _api_MarketplaceRid;
 }
-export interface CondaOsdkBuildOptions {
-}
+export interface CondaOsdkBuildOptions {}
 export interface CreateReleaseOptions {
   marketplace?: MarketplaceCreateReleaseOptions | null | undefined;
   osdk?: OsdkCreateReleaseOptions | null | undefined;
@@ -91,16 +90,14 @@ export interface DeclaredEdgePipeline {
   edgePipelineRid: _api_EddieEdgePipelineRid;
   mavenProductId: _api_MavenProductId;
 }
-export interface DeleteDraftRequest {
-}
+export interface DeleteDraftRequest {}
 export interface DeleteDraftResponse_success {
   type: "success";
   success: DeleteDraftSuccessResult;
 }
 export type DeleteDraftResponse = DeleteDraftResponse_success;
 
-export interface DeleteDraftSuccessResult {
-}
+export interface DeleteDraftSuccessResult {}
 export interface DeleteReleaseMetadataForBlockSetResponse_success {
   type: "success";
   success: DeleteReleaseMetadataForBlockSetSuccessResult;
@@ -108,12 +105,9 @@ export interface DeleteReleaseMetadataForBlockSetResponse_success {
 export type DeleteReleaseMetadataForBlockSetResponse =
   DeleteReleaseMetadataForBlockSetResponse_success;
 
-export interface DeleteReleaseMetadataForBlockSetSuccessResult {
-}
-export interface DraftState {
-}
-export interface DraftTargetState {
-}
+export interface DeleteReleaseMetadataForBlockSetSuccessResult {}
+export interface DraftState {}
+export interface DraftTargetState {}
 export interface FailedState {
   error: any;
   errors: Array<ReleaseCreationError>;
@@ -138,12 +132,9 @@ export interface FailingOutputSpecResult {
 export interface FailingResourcesInProject {
   failedResults: Array<FailingOutputSpecResult>;
 }
-export interface FinishedState {
-}
-export interface FinishedTargetState {
-}
-export interface GeneratingState {
-}
+export interface FinishedState {}
+export interface FinishedTargetState {}
+export interface GeneratingState {}
 /**
  * Location of the helm chart artifact.
  * The service expects the helm chart OCI to already be in Foundry Artifacts as a file artifact.
@@ -173,10 +164,8 @@ export interface MarketplaceRelease {
   options: MarketplaceCreateReleaseOptions;
   status: ReleaseCreationStatus;
 }
-export interface MavenOsdkBuildOptions {
-}
-export interface NpmOsdkBuildOptions {
-}
+export interface MavenOsdkBuildOptions {}
+export interface NpmOsdkBuildOptions {}
 export interface OsdkCreateReleaseOptions {
   conda?: CondaOsdkBuildOptions | null | undefined;
   maven?: MavenOsdkBuildOptions | null | undefined;
@@ -204,8 +193,7 @@ export interface PreviewReleaseResponse {
   options?: CreateReleaseOptions | null | undefined;
   version: _api_SlsVersion;
 }
-export interface PypiOsdkBuildOptions {
-}
+export interface PypiOsdkBuildOptions {}
 export interface Release {
   createdAt: string;
   createdByUser: _api_MultipassUserId;

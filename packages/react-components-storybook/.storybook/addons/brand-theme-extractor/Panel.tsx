@@ -17,34 +17,29 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { useGlobals } from "storybook/manager-api";
 import { styled } from "storybook/theming";
+
 import { GLOBALS_KEY } from "./constants.js";
-import { ExportButtons } from "./ExportButtons.js";
+import { generateCss, generateMarkdown } from "./export.js";
+import { ExportDropdown } from "./ExportButtons.js";
 import {
   autoMapFromPalette,
   type ExtractedPalette,
   extractPalette,
   type PaletteSwatch,
 } from "./palette-extractor.js";
+import { getBuiltInDefaults } from "./presets.js";
 import {
   findMatchingPreset,
+  findThemePreset,
   parseBrandThemeState,
   stringifyBrandThemeState,
 } from "./state.js";
 import { TokenMappingTable } from "./TokenMappingTable.js";
 import type { BrandThemeGlobals, TokenAssignment } from "./types.js";
 
-interface StylePreset {
-  label: string;
-  radius: string;
-  spacing: string;
+interface PanelProps {
+  active: boolean;
 }
-
-const STYLE_PRESETS: StylePreset[] = [
-  { label: "Sharp", radius: "2", spacing: "2" },
-  { label: "Default", radius: "4", spacing: "4" },
-  { label: "Rounded", radius: "8", spacing: "5" },
-  { label: "Pill", radius: "16", spacing: "6" },
-];
 
 const SWATCH_LABELS: Array<{ key: keyof ExtractedPalette; label: string }> = [
   { key: "vibrant", label: "Vibrant" },
@@ -54,10 +49,6 @@ const SWATCH_LABELS: Array<{ key: keyof ExtractedPalette; label: string }> = [
   { key: "darkMuted", label: "Dark Muted" },
   { key: "lightMuted", label: "Light Muted" },
 ];
-
-interface PanelProps {
-  active: boolean;
-}
 
 // ── Styled Components ─────────────────────────────────────
 
@@ -69,49 +60,24 @@ const PanelWrapper = styled.div({
 
 const HeaderRow = styled.div({
   display: "flex",
-  justifyContent: "space-between",
   alignItems: "center",
-  marginBottom: 8,
+  gap: 8,
+  marginBottom: 12,
+  flexWrap: "wrap",
+});
+
+const HeaderRight = styled.div({
+  display: "flex",
+  alignItems: "center",
+  gap: 8,
+  marginLeft: "auto",
+  flexWrap: "wrap",
 });
 
 const Title = styled.span(({ theme }) => ({
   fontWeight: 600,
   fontSize: 14,
   color: theme.color.defaultText,
-}));
-
-const ToggleRow = styled.div({
-  display: "flex",
-  alignItems: "center",
-  gap: 8,
-  cursor: "pointer",
-});
-
-const ToggleStatusLabel = styled.span(({ theme }) => ({
-  fontSize: 11,
-  color: theme.color.mediumdark,
-}));
-
-const ToggleTrack = styled.div<{ on: boolean }>(({ theme, on }) => ({
-  width: 32,
-  height: 18,
-  borderRadius: 9,
-  backgroundColor: on ? theme.color.secondary : theme.color.medium,
-  position: "relative" as const,
-  transition: "background-color 150ms ease",
-  flexShrink: 0,
-}));
-
-const ToggleThumb = styled.div<{ on: boolean }>(({ on }) => ({
-  width: 14,
-  height: 14,
-  borderRadius: "50%",
-  backgroundColor: "#fff",
-  position: "absolute" as const,
-  top: 2,
-  left: on ? 16 : 2,
-  transition: "left 150ms ease",
-  boxShadow: "0 1px 2px rgba(0,0,0,0.2)",
 }));
 
 const SectionToggle = styled.div<{ open: boolean }>(({ theme, open }) => ({
@@ -163,34 +129,9 @@ const ErrorMessage = styled.div(({ theme }) => ({
   padding: "4px 0",
 }));
 
-const PresetLabel = styled.div(({ theme }) => ({
-  fontSize: 11,
-  fontWeight: 600,
-  color: theme.color.mediumdark,
-  padding: "8px 0 4px",
-}));
-
-const PresetButton = styled.button<{ radius: string }>(
-  ({ theme, radius }) => ({
-    fontSize: 11,
-    padding: "4px 12px",
-    border: `1px solid ${theme.appBorderColor}`,
-    borderRadius: `${radius}px`,
-    background: theme.background.content,
-    color: theme.color.defaultText,
-    cursor: "pointer",
-    fontWeight: 500,
-    transition: "background 150ms ease, border-radius 150ms ease",
-    "&:hover": {
-      background: theme.background.hoverable,
-      borderColor: theme.color.medium,
-    },
-  }),
-);
-
 const SectionDivider = styled.div(({ theme }) => ({
   borderBottom: `1px solid ${theme.appBorderColor}`,
-  margin: "4px 0",
+  margin: "0 0 8px",
 }));
 
 const SwatchRow = styled.div({
@@ -234,34 +175,54 @@ export function Panel({ active }: PanelProps): React.ReactElement | null {
 
 function PanelContent(): React.ReactElement {
   const [globals, updateGlobals] = useGlobals();
+  const rawState = globals[GLOBALS_KEY];
 
   // Storybook globals can lose nested object fields during serialization.
   // Store the full state as a JSON string to preserve structure.
   const state: BrandThemeGlobals = useMemo(
-    () => parseBrandThemeState(globals[GLOBALS_KEY]),
-    [globals],
+    () => parseBrandThemeState(rawState),
+    [rawState],
   );
 
+  // Keep a ref so callbacks read current state without re-creating.
+  const stateRef = useRef(state);
+  stateRef.current = state;
+
   const [extractionOpen, setExtractionOpen] = useState(true);
-  const [exportOpen, setExportOpen] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [palette, setPalette] = useState<ExtractedPalette | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const updateState = useCallback(
-    (partial: Partial<BrandThemeGlobals>) => {
-      const newState = { ...state, ...partial };
-      updateGlobals({ [GLOBALS_KEY]: stringifyBrandThemeState(newState) });
-    },
-    [state, updateGlobals],
+  // For built-in themes with no overrides, use the default Blueprint tokens
+  // so users can always export a meaningful DESIGN.md and CSS.
+  const exportAssignments = useMemo(() => {
+    if (state.assignments.length > 0) return state.assignments;
+    return getBuiltInDefaults(state.colorMode);
+  }, [state.assignments, state.colorMode]);
+
+  const preset = useMemo(
+    () => findThemePreset(state.selectedPresetId),
+    [state.selectedPresetId],
+  );
+  const themeName = preset?.label ?? "OSDK-brand-theme";
+
+  const css = useMemo(
+    () => generateCss(exportAssignments),
+    [exportAssignments],
+  );
+  const md = useMemo(
+    () => generateMarkdown(exportAssignments, themeName),
+    [exportAssignments, themeName],
   );
 
-  const resolvePresetId = useCallback(
-    (assignments: TokenAssignment[]): string => {
-      return findMatchingPreset(assignments, state.colorMode);
+  // Stable: reads state via ref, only depends on updateGlobals (stable from useGlobals).
+  const updateState = useCallback(
+    (partial: Partial<BrandThemeGlobals>) => {
+      const newState = { ...stateRef.current, ...partial };
+      updateGlobals({ [GLOBALS_KEY]: stringifyBrandThemeState(newState) });
     },
-    [state.colorMode],
+    [updateGlobals],
   );
 
   const handleFileUpload = useCallback(
@@ -272,13 +233,14 @@ function PanelContent(): React.ReactElement {
       setLoading(true);
       setError(null);
       try {
+        const colorMode = stateRef.current.colorMode;
         const extracted = await extractPalette(file);
         setPalette(extracted);
-        const assignments = autoMapFromPalette(extracted, state.colorMode);
+        const assignments = autoMapFromPalette(extracted, colorMode);
         updateState({
           assignments,
           active: true,
-          selectedPresetId: "custom",
+          selectedPresetId: findMatchingPreset(assignments, colorMode),
         });
       } catch (err) {
         setError(
@@ -292,73 +254,65 @@ function PanelContent(): React.ReactElement {
         }
       }
     },
-    [state.colorMode, updateState],
+    [updateState],
   );
 
   const handleAssignmentChange = useCallback(
     (role: string, partial: Partial<TokenAssignment>) => {
-      const existing = state.assignments.filter((a) => a.role !== role);
-      const current = state.assignments.find((a) => a.role === role);
+      const current = stateRef.current;
+      const existing = current.assignments.filter((a) => a.role !== role);
+      const prev = current.assignments.find((a) => a.role === role);
       const updated: TokenAssignment = {
         role,
-        colorIndex: partial.colorIndex ?? current?.colorIndex ?? -1,
-        customValue: partial.customValue ?? current?.customValue,
+        colorIndex: partial.colorIndex ?? prev?.colorIndex ?? -1,
+        customValue: partial.customValue ?? prev?.customValue,
       };
       const newAssignments = [...existing, updated];
       updateState({
         assignments: newAssignments,
-        selectedPresetId: resolvePresetId(newAssignments),
+        selectedPresetId: findMatchingPreset(newAssignments, current.colorMode),
       });
     },
-    [state.assignments, updateState, resolvePresetId],
+    [updateState],
   );
 
   const handleReset = useCallback(
     (role: string) => {
-      const newAssignments = state.assignments.filter((a) => a.role !== role);
+      const current = stateRef.current;
+      const newAssignments = current.assignments.filter((a) => a.role !== role);
       updateState({
         assignments: newAssignments,
-        selectedPresetId: resolvePresetId(newAssignments),
+        selectedPresetId: findMatchingPreset(newAssignments, current.colorMode),
       });
     },
-    [state.assignments, updateState, resolvePresetId],
-  );
-
-  const handleToggle = useCallback(() => {
-    updateState({ active: !state.active });
-  }, [state.active, updateState]);
-
-  const applyPreset = useCallback(
-    (preset: StylePreset) => {
-      const updated = state.assignments.filter(
-        (a) => a.role !== "border-radius" && a.role !== "spacing",
-      );
-      updated.push(
-        { role: "border-radius", colorIndex: -1, customValue: preset.radius },
-        { role: "spacing", colorIndex: -1, customValue: preset.spacing },
-      );
-      updateState({
-        assignments: updated,
-        selectedPresetId: resolvePresetId(updated),
-      });
-    },
-    [state.assignments, updateState, resolvePresetId],
+    [updateState],
   );
 
   return (
     <PanelWrapper>
-      {/* Header with on/off toggle */}
       <HeaderRow>
         <Title>Brand Theme</Title>
-        <ToggleRow onClick={handleToggle}>
-          <ToggleStatusLabel>
-            {state.active ? "Override" : "Off"}
-          </ToggleStatusLabel>
-          <ToggleTrack on={state.active}>
-            <ToggleThumb on={state.active} />
-          </ToggleTrack>
-        </ToggleRow>
+        <HeaderRight>
+          <ExportDropdown
+            items={[
+              {
+                label: "CSS",
+                content: css,
+                filename: "tokens.css",
+                mime: "text/css",
+              },
+              {
+                label: "Design.md",
+                content: md,
+                filename: "design.md",
+                mime: "text/markdown",
+              },
+            ]}
+          />
+        </HeaderRight>
       </HeaderRow>
+
+      <SectionDivider />
 
       {/* Collapsible extraction section */}
       <SectionToggle
@@ -393,51 +347,12 @@ function PanelContent(): React.ReactElement {
 
       <SectionDivider />
 
-      {/* Style presets — quick way to set radius/spacing */}
-      <div>
-        <PresetLabel>Style</PresetLabel>
-        <InputRow>
-          {STYLE_PRESETS.map((preset) => (
-            <PresetButton
-              key={preset.label}
-              radius={preset.radius}
-              onClick={() => applyPreset(preset)}
-              title={`Radius: ${preset.radius}px, Spacing: ${preset.spacing}px`}
-            >
-              {preset.label}
-            </PresetButton>
-          ))}
-        </InputRow>
-      </div>
-
-      <SectionDivider />
-
       {/* Token editor */}
       <TokenMappingTable
         assignments={state.assignments}
         onAssignmentChange={handleAssignmentChange}
         onReset={handleReset}
       />
-
-      {/* Collapsible export section */}
-      {state.assignments.length > 0 && (
-        <>
-          <SectionDivider />
-          <SectionToggle
-            open={exportOpen}
-            onClick={() => setExportOpen(!exportOpen)}
-          >
-            <span>&#x25BE;</span>
-            <span>Export</span>
-          </SectionToggle>
-
-          {exportOpen && (
-            <ExportButtons
-              assignments={state.assignments}
-            />
-          )}
-        </>
-      )}
     </PanelWrapper>
   );
 }

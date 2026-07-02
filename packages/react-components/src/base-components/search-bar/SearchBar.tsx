@@ -18,6 +18,7 @@ import { Input } from "@base-ui/react/input";
 import { Search } from "@blueprintjs/icons";
 import classNames from "classnames";
 import React from "react";
+
 import styles from "./SearchBar.module.css";
 
 interface SearchBarProps {

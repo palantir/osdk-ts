@@ -19,9 +19,7 @@ export function Section({ title, description, children }: SectionProps) {
           </p>
         )}
       </div>
-      <div className="p-4">
-        {children}
-      </div>
+      <div className="p-4">{children}</div>
     </div>
   );
 }

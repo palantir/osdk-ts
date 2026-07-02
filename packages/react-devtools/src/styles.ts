@@ -18,5 +18,3 @@
 // build/esm/styles.js with a runtime-injection module that adds devtools
 // styles (including Blueprint) to document.head when the package is
 // imported.
-
-export {};

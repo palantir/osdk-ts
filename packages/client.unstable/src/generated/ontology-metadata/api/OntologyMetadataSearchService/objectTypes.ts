@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   ObjectTypeSearchRequest as _api_search_ObjectTypeSearchRequest,
   ObjectTypeSearchResponse as _api_search_ObjectTypeSearchResponse,
@@ -33,7 +34,7 @@ import type {
  */
 export async function objectTypes(
   ctx: ConjureContext,
-  request: _api_search_ObjectTypeSearchRequest,
+  request: _api_search_ObjectTypeSearchRequest
 ): Promise<_api_search_ObjectTypeSearchResponse> {
   return conjureFetch(ctx, `/ontology/search/v0/objectTypes`, "POST", request);
 }

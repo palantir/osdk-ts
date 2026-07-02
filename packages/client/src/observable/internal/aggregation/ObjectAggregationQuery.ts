@@ -15,6 +15,7 @@
  */
 
 import type { DerivedProperty, ObjectTypeDefinition } from "@osdk/api";
+
 import { additionalContext } from "../../../Client.js";
 import { createObjectSet } from "../../../objectSet/createObjectSet.js";
 import {
@@ -40,7 +41,7 @@ export class ObjectAggregationQuery extends AggregationQuery {
       objectSet = createObjectSet(
         objectTypeDef,
         this.store.client[additionalContext],
-        this.parsedWireObjectSet,
+        this.parsedWireObjectSet
       );
     } else {
       objectSet = this.store.client(objectTypeDef);
@@ -48,19 +49,19 @@ export class ObjectAggregationQuery extends AggregationQuery {
 
     if (this.rdpConfig) {
       objectSet = objectSet.withProperties(
-        this.rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
+        this.rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>
       );
     }
 
     objectSet = objectSet.where(this.canonicalWhere);
 
     if (intersectWith != null && intersectWith.length > 0) {
-      const intersectSets = intersectWith.map(whereClause => {
+      const intersectSets = intersectWith.map((whereClause) => {
         let intersectSet = this.store.client(objectTypeDef);
 
         if (this.rdpConfig) {
           intersectSet = intersectSet.withProperties(
-            this.rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
+            this.rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>
           );
         }
 
@@ -71,7 +72,7 @@ export class ObjectAggregationQuery extends AggregationQuery {
     }
 
     return await objectSet.aggregate(
-      this.canonicalAggregate as Parameters<typeof objectSet.aggregate>[0],
+      this.canonicalAggregate as Parameters<typeof objectSet.aggregate>[0]
     );
   }
 }

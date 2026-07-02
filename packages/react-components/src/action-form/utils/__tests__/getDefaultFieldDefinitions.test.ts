@@ -16,11 +16,10 @@
 
 import type { ActionMetadata } from "@osdk/api";
 import { describe, expect, it } from "vitest";
+
 import { getDefaultFieldDefinitions } from "../getDefaultFieldDefinitions.js";
 
-function makeMetadata(
-  parameter: ActionMetadata.Parameter,
-): ActionMetadata {
+function makeMetadata(parameter: ActionMetadata.Parameter): ActionMetadata {
   return {
     type: "action",
     apiName: "TestAction",
@@ -32,34 +31,36 @@ function makeMetadata(
 }
 
 describe("getDefaultFieldDefinitions", () => {
-  it.each(
-    [
-      "marking",
-      "geohash",
-      "geoshape",
-      "objectType",
-    ] satisfies ReadonlyArray<ActionMetadata.DataType.BaseActionParameterTypes>,
-  )(
+  it.each([
+    "marking",
+    "geohash",
+    "geoshape",
+    "objectType",
+  ] satisfies ReadonlyArray<ActionMetadata.DataType.BaseActionParameterTypes>)(
     "renders unsupported primitive parameter type %s as unsupported",
     (parameterType) => {
-      const [fieldDefinition] = getDefaultFieldDefinitions(makeMetadata({
-        type: parameterType,
-        nullable: false,
-      }));
+      const [fieldDefinition] = getDefaultFieldDefinitions(
+        makeMetadata({
+          type: parameterType,
+          nullable: false,
+        })
+      );
 
       expect(fieldDefinition).toMatchObject({
         fieldKey: "tags",
         fieldComponent: "UNSUPPORTED",
         fieldComponentProps: {},
       });
-    },
+    }
   );
 
   it("renders interface parameters as unsupported", () => {
-    const [fieldDefinition] = getDefaultFieldDefinitions(makeMetadata({
-      type: { type: "interface", interface: "Employee" },
-      nullable: false,
-    }));
+    const [fieldDefinition] = getDefaultFieldDefinitions(
+      makeMetadata({
+        type: { type: "interface", interface: "Employee" },
+        nullable: false,
+      })
+    );
 
     expect(fieldDefinition).toMatchObject({
       fieldKey: "tags",
@@ -69,10 +70,12 @@ describe("getDefaultFieldDefinitions", () => {
   });
 
   it("renders struct parameters as unsupported", () => {
-    const [fieldDefinition] = getDefaultFieldDefinitions(makeMetadata({
-      type: { type: "struct", struct: { name: "string" } },
-      nullable: false,
-    }));
+    const [fieldDefinition] = getDefaultFieldDefinitions(
+      makeMetadata({
+        type: { type: "struct", struct: { name: "string" } },
+        nullable: false,
+      })
+    );
 
     expect(fieldDefinition).toMatchObject({
       fieldKey: "tags",

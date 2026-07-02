@@ -15,6 +15,7 @@
  */
 
 import { beforeEach, describe, expect, it } from "vitest";
+
 import { defineInterface } from "../defineInterface.js";
 import { defineInterfaceActionTypeConstraint } from "../defineInterfaceActionTypeConstraint.js";
 import { defineObject } from "../defineObject.js";
@@ -31,7 +32,7 @@ describe("Interfaces", () => {
     expect(() => {
       defineInterface({ apiName: "Foo" });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Interface com.palantir.Foo already exists]`,
+      `[Error: Invariant failed: Interface com.palantir.Foo already exists]`
     );
   });
 
@@ -149,7 +150,7 @@ describe("Interfaces", () => {
         apiName: "bar",
         displayName: "Bar",
         properties: {
-          "foo": { type: "boolean" },
+          foo: { type: "boolean" },
           spt,
         },
       });
@@ -553,7 +554,7 @@ describe("Interfaces", () => {
         apiName: "bar",
         displayName: "Bar",
         properties: {
-          "struct": {
+          struct: {
             type: {
               type: "struct",
               structDefinition: {
@@ -1279,22 +1280,26 @@ describe("Interfaces", () => {
   });
 
   it("serializes publicProject permission on interface type", async () => {
-    await defineOntology("com.palantir.", () => {
-      defineInterface({
-        apiName: "myInterface",
-        displayName: "My Interface",
-        permission: "publicProject",
-      });
+    await defineOntology(
+      "com.palantir.",
+      () => {
+        defineInterface({
+          apiName: "myInterface",
+          displayName: "My Interface",
+          permission: "publicProject",
+        });
 
-      const bpi = dumpOntologyFullMetadata().ontology
-        .blockPermissionInformation!;
-      const itPerms = Object.values(bpi.interfaceTypes);
-      expect(itPerms).toHaveLength(1);
-      expect(itPerms[0].restrictionStatus).toEqual({
-        publicProject: true,
-        ontologyPackageRid: null,
-      });
-    }, "/tmp/");
+        const bpi =
+          dumpOntologyFullMetadata().ontology.blockPermissionInformation!;
+        const itPerms = Object.values(bpi.interfaceTypes);
+        expect(itPerms).toHaveLength(1);
+        expect(itPerms[0].restrictionStatus).toEqual({
+          publicProject: true,
+          ontologyPackageRid: null,
+        });
+      },
+      "/tmp/"
+    );
   });
 
   describe("Action Type Constraints", () => {
@@ -1319,9 +1324,7 @@ describe("Interfaces", () => {
 
       expect(iface.actionTypeConstraints).toHaveLength(1);
       const constraint = iface.actionTypeConstraints[0];
-      expect(constraint.metadata.apiName).toBe(
-        "com.palantir.myConstraint",
-      );
+      expect(constraint.metadata.apiName).toBe("com.palantir.myConstraint");
       expect(constraint.metadata.displayName).toBe("My Constraint");
       expect(constraint.metadata.description).toBe("A test constraint");
       expect(constraint.requireImplementation).toBe(false);
@@ -1358,7 +1361,7 @@ describe("Interfaces", () => {
           parameters: [],
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Action type constraint with apiName com.palantir.myConstraint already exists on interface com.palantir.MyInterface]`,
+        `[Error: Invariant failed: Action type constraint with apiName com.palantir.myConstraint already exists on interface com.palantir.MyInterface]`
       );
     });
 
@@ -1415,7 +1418,7 @@ describe("Interfaces", () => {
           ],
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Duplicate parameter constraint apiName "paramA" in action type constraint com.palantir.myConstraint]`,
+        `[Error: Invariant failed: Duplicate parameter constraint apiName "paramA" in action type constraint com.palantir.myConstraint]`
       );
     });
 
@@ -1446,36 +1449,42 @@ describe("Interfaces", () => {
 
     it("throws when object implements interface with required constraint", async () => {
       await expect(
-        defineOntology("com.palantir.", () => {
-          const iface = defineInterface({ apiName: "MyInterface" });
+        defineOntology(
+          "com.palantir.",
+          () => {
+            const iface = defineInterface({ apiName: "MyInterface" });
 
-          defineInterfaceActionTypeConstraint({
-            interfaceType: iface,
-            apiName: "myConstraint",
-            displayName: "My Constraint",
-            description: "A test constraint",
-            requireImplementation: true,
-            parameters: [],
-          });
+            defineInterfaceActionTypeConstraint({
+              interfaceType: iface,
+              apiName: "myConstraint",
+              displayName: "My Constraint",
+              description: "A test constraint",
+              requireImplementation: true,
+              parameters: [],
+            });
 
-          defineObject({
-            apiName: "myObject",
-            displayName: "My Object",
-            pluralDisplayName: "My Objects",
-            titlePropertyApiName: "name",
-            primaryKeyPropertyApiName: "id",
-            properties: {
-              "id": { type: "string", displayName: "ID" },
-              "name": { type: "string", displayName: "Name" },
-            },
-            implementsInterfaces: [{
-              implements: iface,
-              propertyMapping: [],
-            }],
-          });
-        }, undefined),
+            defineObject({
+              apiName: "myObject",
+              displayName: "My Object",
+              pluralDisplayName: "My Objects",
+              titlePropertyApiName: "name",
+              primaryKeyPropertyApiName: "id",
+              properties: {
+                id: { type: "string", displayName: "ID" },
+                name: { type: "string", displayName: "Name" },
+              },
+              implementsInterfaces: [
+                {
+                  implements: iface,
+                  propertyMapping: [],
+                },
+              ],
+            });
+          },
+          undefined
+        )
       ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Object "com.palantir.myObject" implements interface "com.palantir.MyInterface" which has required action type constraints: com.palantir.myConstraint. Action type constraint implementation is not yet supported in OAC. Set requireImplementation to false and manually implement the constraint after installation.]`,
+        `[Error: Invariant failed: Object "com.palantir.myObject" implements interface "com.palantir.MyInterface" which has required action type constraints: com.palantir.myConstraint. Action type constraint implementation is not yet supported in OAC. Set requireImplementation to false and manually implement the constraint after installation.]`
       );
     });
 
@@ -1498,13 +1507,15 @@ describe("Interfaces", () => {
         titlePropertyApiName: "name",
         primaryKeyPropertyApiName: "id",
         properties: {
-          "id": { type: "string", displayName: "ID" },
-          "name": { type: "string", displayName: "Name" },
+          id: { type: "string", displayName: "ID" },
+          name: { type: "string", displayName: "Name" },
         },
-        implementsInterfaces: [{
-          implements: iface,
-          propertyMapping: [],
-        }],
+        implementsInterfaces: [
+          {
+            implements: iface,
+            propertyMapping: [],
+          },
+        ],
       });
 
       expect(obj).toBeDefined();

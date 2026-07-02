@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 
-import { createInternalClientContext, thirdPartyApplications } from "#net";
 import { consola } from "consola";
+
+import { createInternalClientContext, thirdPartyApplications } from "#net";
+
 import { loadToken } from "../../../../util/token.js";
 import type { VersionGetArgs } from "./VersionGetArgs.js";
 
-export default async function versionGetCommand(
-  { foundryUrl, application, token, tokenFile }: VersionGetArgs,
-): Promise<void> {
+export default async function versionGetCommand({
+  foundryUrl,
+  application,
+  token,
+  tokenFile,
+}: VersionGetArgs): Promise<void> {
   const loadedToken = await loadToken(token, tokenFile);
   const tokenProvider = () => loadedToken;
   const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
@@ -29,7 +34,7 @@ export default async function versionGetCommand(
 
   const website = await thirdPartyApplications.getWebsite(
     clientCtx,
-    application,
+    application
   );
   const deployedVersion = website?.deployedVersion;
 

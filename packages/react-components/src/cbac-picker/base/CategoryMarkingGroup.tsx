@@ -17,11 +17,13 @@
 import { Tooltip } from "@base-ui/react/tooltip";
 import { InfoSign } from "@blueprintjs/icons";
 import React from "react";
+
 import type { MarkingSelectionState } from "../types.js";
-import styles from "./CategoryMarkingGroup.module.css";
 import { MarkingButton } from "./MarkingButton.js";
 import { OverflowButton } from "./OverflowButton.js";
 import { isImplied } from "./selectionStateHelpers.js";
+
+import styles from "./CategoryMarkingGroup.module.css";
 
 const GRID_COLUMNS = 4;
 const VISIBLE_ROWS = 3;
@@ -57,7 +59,7 @@ export const CategoryMarkingGroup: React.MemoExoticComponent<
         selectionState: markingStates.get(marking.id) ?? DEFAULT_MARKING_STATE,
         disabled: readOnly,
       })),
-    [markings, markingStates, readOnly],
+    [markings, markingStates, readOnly]
   );
 
   const maxVisible = GRID_COLUMNS * VISIBLE_ROWS;
@@ -72,11 +74,11 @@ export const CategoryMarkingGroup: React.MemoExoticComponent<
   const gridItemCount = hasOverflow
     ? visibleMarkings.length + 1
     : visibleMarkings.length;
-  const emptyCellCount = (GRID_COLUMNS - (gridItemCount % GRID_COLUMNS))
-    % GRID_COLUMNS;
+  const emptyCellCount =
+    (GRID_COLUMNS - (gridItemCount % GRID_COLUMNS)) % GRID_COLUMNS;
 
   const hasActiveOverflow = overflowMarkings.some(
-    (m) => m.selectionState === "SELECTED" || isImplied(m.selectionState),
+    (m) => m.selectionState === "SELECTED" || isImplied(m.selectionState)
   );
 
   return (
@@ -86,7 +88,9 @@ export const CategoryMarkingGroup: React.MemoExoticComponent<
       aria-labelledby={headingId}
     >
       <div className={styles.categoryHeader}>
-        <h3 id={headingId} className={styles.categoryName}>{categoryName}</h3>
+        <h3 id={headingId} className={styles.categoryName}>
+          {categoryName}
+        </h3>
         {categoryDescription != null && categoryDescription.length > 0 && (
           <Tooltip.Root>
             <Tooltip.Trigger
@@ -129,10 +133,7 @@ export const CategoryMarkingGroup: React.MemoExoticComponent<
           />
         )}
         {Array.from({ length: emptyCellCount }, (_, i) => (
-          <div
-            key={`empty-${i}`}
-            className={styles.emptyCell}
-          />
+          <div key={`empty-${i}`} className={styles.emptyCell} />
         ))}
       </div>
     </div>

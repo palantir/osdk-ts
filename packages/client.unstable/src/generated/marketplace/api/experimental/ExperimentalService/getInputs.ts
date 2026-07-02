@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   GetInputsRequest as _api_experimental_GetInputsRequest,
   GetInputsResponse as _api_experimental_GetInputsResponse,
@@ -26,12 +27,12 @@ import type {
  */
 export async function getInputs(
   ctx: ConjureContext,
-  request: _api_experimental_GetInputsRequest,
+  request: _api_experimental_GetInputsRequest
 ): Promise<_api_experimental_GetInputsResponse> {
   return conjureFetch(
     ctx,
     `/experimental/installations/get-inputs`,
     "POST",
-    request,
+    request
   );
 }

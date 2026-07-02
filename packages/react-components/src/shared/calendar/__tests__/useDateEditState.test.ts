@@ -16,6 +16,7 @@
 
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+
 import {
   formatDateForDisplay,
   formatDateForInput,
@@ -25,7 +26,7 @@ import type { UseDateEditStateConfig } from "../useDateEditState.js";
 import { useDateEditState } from "../useDateEditState.js";
 
 function makeConfig(
-  overrides: Partial<UseDateEditStateConfig> = {},
+  overrides: Partial<UseDateEditStateConfig> = {}
 ): UseDateEditStateConfig {
   return {
     value: null,
@@ -49,9 +50,7 @@ describe("useDateEditState", () => {
 
     it("displays formatted value when not editing", () => {
       const { result } = renderHook(() =>
-        useDateEditState(
-          makeConfig({ value: new Date(2024, 0, 15) }),
-        )
+        useDateEditState(makeConfig({ value: new Date(2024, 0, 15) }))
       );
 
       expect(result.current.isEditing).toBe(false);
@@ -64,7 +63,7 @@ describe("useDateEditState", () => {
           makeConfig({
             value: new Date(2024, 0, 15),
             displayFormatFn: () => "custom display",
-          }),
+          })
         )
       );
 
@@ -80,7 +79,7 @@ describe("useDateEditState", () => {
             value: new Date(2024, 0, 15),
             displayFormatFn: formatDateForDisplay, // "Jan 15, 2024"
             editFormatFn: formatDateForInput, // "2024-01-15"
-          }),
+          })
         )
       );
 
@@ -128,7 +127,7 @@ describe("useDateEditState", () => {
           makeConfig({
             value: new Date(2024, 0, 15),
             displayFormatFn: formatDateForDisplay,
-          }),
+          })
         )
       );
 
@@ -150,9 +149,7 @@ describe("useDateEditState", () => {
     it("does not call onChange", () => {
       const onChange = vi.fn();
       const { result } = renderHook(() =>
-        useDateEditState(
-          makeConfig({ value: new Date(2024, 0, 15), onChange }),
-        )
+        useDateEditState(makeConfig({ value: new Date(2024, 0, 15), onChange }))
       );
 
       act(() => {
@@ -194,9 +191,7 @@ describe("useDateEditState", () => {
     it("calls onChange with null for empty input", () => {
       const onChange = vi.fn();
       const { result } = renderHook(() =>
-        useDateEditState(
-          makeConfig({ value: new Date(2024, 0, 15), onChange }),
-        )
+        useDateEditState(makeConfig({ value: new Date(2024, 0, 15), onChange }))
       );
 
       act(() => {
@@ -272,7 +267,7 @@ describe("useDateEditState", () => {
           makeConfig({
             value: null,
             editFormatFn: formatDateForInput,
-          }),
+          })
         )
       );
 
@@ -322,7 +317,7 @@ describe("useDateEditState", () => {
           makeConfig({
             min: new Date(2024, 0, 1),
             max: new Date(2024, 11, 31),
-          }),
+          })
         )
       );
 
@@ -342,7 +337,7 @@ describe("useDateEditState", () => {
           makeConfig({
             min: new Date(2024, 0, 1),
             max: new Date(2024, 11, 31),
-          }),
+          })
         )
       );
 
@@ -407,7 +402,7 @@ describe("useDateEditState", () => {
             displayFormatFn: formatDateForDisplay, // custom display format
             editFormatFn: formatDateForInput,
           }),
-        },
+        }
       );
 
       expect(result.current.displayedValue).toBe("Jan 15, 2024");
@@ -417,7 +412,7 @@ describe("useDateEditState", () => {
           value: new Date(2024, 6, 20),
           displayFormatFn: formatDateForDisplay,
           editFormatFn: formatDateForInput,
-        }),
+        })
       );
 
       expect(result.current.displayedValue).toBe("Jul 20, 2024");
@@ -426,7 +421,7 @@ describe("useDateEditState", () => {
     it("does not overwrite user edits when external value changes during editing", () => {
       const { result, rerender } = renderHook(
         (config: UseDateEditStateConfig) => useDateEditState(config),
-        { initialProps: makeConfig({ value: new Date(2024, 0, 15) }) },
+        { initialProps: makeConfig({ value: new Date(2024, 0, 15) }) }
       );
 
       act(() => {

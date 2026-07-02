@@ -21,13 +21,11 @@ import type { CompileTimeMetadata, ObjectTypeDefinition } from "@osdk/api";
  * `{ id: string; title: string | undefined }` becomes `{ id: string; title?: string }`.
  * This ensures required fields like primary keys must always be provided.
  */
-type PartialForOptionalProperties<T> =
-  & {
-    [K in keyof T as undefined extends T[K] ? K : never]?: NonNullable<T[K]>;
-  }
-  & {
-    [K in keyof T as undefined extends T[K] ? never : K]-?: T[K];
-  };
+type PartialForOptionalProperties<T> = {
+  [K in keyof T as undefined extends T[K] ? K : never]?: NonNullable<T[K]>;
+} & {
+  [K in keyof T as undefined extends T[K] ? never : K]-?: T[K];
+};
 
 /**
  * Derives the property types for seed data from the generated SDK type.
@@ -36,9 +34,7 @@ type PartialForOptionalProperties<T> =
  * primary key are required; nullable properties are optional.
  */
 export type SeedProps<T extends ObjectTypeDefinition> =
-  PartialForOptionalProperties<
-    CompileTimeMetadata<T>["props"]
-  >;
+  PartialForOptionalProperties<CompileTimeMetadata<T>["props"]>;
 
 /**
  * Unique symbol used to brand {@link SeedRef} instances. A branded type prevents

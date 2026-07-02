@@ -31,7 +31,9 @@ import {
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import classnames from "classnames";
 import React, { useCallback } from "react";
+
 import { Employee } from "../../../types/Employee.js";
+
 import styles from "./HorizontalToolbar.module.css";
 
 const sitesFilter: FilterDefinitionUnion<Employee> = {
@@ -141,7 +143,7 @@ function InlineFilterField({
 }: FilterToolbarItemProps): React.ReactElement {
   const handleStateChange = useCallback(
     (state: FilterState) => setFilterState(filterKey, state),
-    [filterKey, setFilterState],
+    [filterKey, setFilterState]
   );
   return (
     <span className={styles.inlineFieldGroup}>
@@ -170,11 +172,11 @@ function PopoverFilterField({
 }: FilterToolbarItemProps): React.ReactElement {
   const handleStateChange = useCallback(
     (state: FilterState) => setFilterState(filterKey, state),
-    [filterKey, setFilterState],
+    [filterKey, setFilterState]
   );
   const handleRemove = useCallback(
     () => clearFilterState(filterKey),
-    [filterKey, clearFilterState],
+    [filterKey, clearFilterState]
   );
   return (
     <FilterPopover
@@ -198,11 +200,14 @@ function PopoverFilterField({
 
 function FilterToolbarItem(props: FilterToolbarItemProps): React.ReactElement {
   const { definition } = props;
-  const isInline = definition.type === "PROPERTY"
-    && definition.filterComponent === "CONTAINS_TEXT";
-  return isInline
-    ? <InlineFilterField {...props} />
-    : <PopoverFilterField {...props} />;
+  const isInline =
+    definition.type === "PROPERTY" &&
+    definition.filterComponent === "CONTAINS_TEXT";
+  return isInline ? (
+    <InlineFilterField {...props} />
+  ) : (
+    <PopoverFilterField {...props} />
+  );
 }
 
 interface HorizontalFilterToolbarProps {
@@ -210,9 +215,10 @@ interface HorizontalFilterToolbarProps {
   filterDefinitions: FilterDefinitionUnion<Employee>[];
 }
 
-function HorizontalFilterToolbar(
-  { objectType, filterDefinitions }: HorizontalFilterToolbarProps,
-): React.ReactElement {
+function HorizontalFilterToolbar({
+  objectType,
+  filterDefinitions,
+}: HorizontalFilterToolbarProps): React.ReactElement {
   const {
     filterStates,
     setFilterState,
@@ -266,13 +272,14 @@ export const HorizontalToolbar: Story = {
   parameters: {
     docs: {
       description: {
-        story: "Composes `useFilterListState`, `FilterPopover`, and "
-          + "`FilterInput` into a custom inline toolbar. Each filter renders "
-          + "as a label + popover trigger; the popup opens the standard input "
-          + "UI for that filter type. The trailing utility buttons (settings, "
-          + "history, layers) are owned entirely by the consumer — `FilterList`"
-          + " never sees them. Replace the SVG icons with your own and swap "
-          + "the wrapper styles to match your design system.",
+        story:
+          "Composes `useFilterListState`, `FilterPopover`, and " +
+          "`FilterInput` into a custom inline toolbar. Each filter renders " +
+          "as a label + popover trigger; the popup opens the standard input " +
+          "UI for that filter type. The trailing utility buttons (settings, " +
+          "history, layers) are owned entirely by the consumer — `FilterList`" +
+          " never sees them. Replace the SVG icons with your own and swap " +
+          "the wrapper styles to match your design system.",
       },
     },
   },

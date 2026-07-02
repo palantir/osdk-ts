@@ -18,6 +18,7 @@ import type { Client } from "@osdk/client";
 import type { ObservableClientOptions } from "@osdk/client/observable";
 import { createObservableClient } from "@osdk/client/observable";
 import React, { useCallback, useMemo, useRef } from "react";
+
 import { getRegisteredDevTools } from "../public/devtools-registry.js";
 import { REACT_USER_AGENT } from "../util/UserAgent.js";
 import { OsdkContext } from "./OsdkContext.js";
@@ -25,8 +26,8 @@ import { useDevToolsClient } from "./useDevToolsClient.js";
 import { UserAgentContext } from "./UserAgentContext.js";
 
 declare const process: { env: { NODE_ENV: string } };
-const __DEV__ = typeof process === "undefined"
-  || process.env.NODE_ENV !== "production";
+const __DEV__ =
+  typeof process === "undefined" || process.env.NODE_ENV !== "production";
 
 interface OsdkProviderOptions {
   children: React.ReactNode;
@@ -35,7 +36,10 @@ interface OsdkProviderOptions {
   /**
    * Dev-only behaviors of the underlying observable client. Has no effect in
    * production builds. Use `devMode={{ actionDelayMs: 0 }}` to disable the
-   * artificial action delay that makes optimistic updates visible in dev.
+   * artificial action delay that makes optimistic updates visible in dev,
+   * `devMode={{ logLevel: "debug" }}` to surface the observable client's debug
+   * tracing, or `devMode={{ debug: { refCounts: true } }}` to log cache
+   * internals.
    */
   devMode?: ObservableClientOptions["devMode"];
 }
@@ -46,8 +50,8 @@ export function OsdkProvider({
   enableDevTools,
   devMode,
 }: OsdkProviderOptions): React.JSX.Element {
-  const devtoolsEnabled = __DEV__
-    && (enableDevTools ?? getRegisteredDevTools() != null);
+  const devtoolsEnabled =
+    __DEV__ && (enableDevTools ?? getRegisteredDevTools() != null);
 
   const userAgentsRef = useRef(new Set<string>([REACT_USER_AGENT]));
 
@@ -59,33 +63,36 @@ export function OsdkProvider({
   }, []);
 
   const actionDelayMs = devMode?.actionDelayMs;
+  const logLevel = devMode?.logLevel;
+  const debugRefCounts = devMode?.debug?.refCounts;
+  const debugCacheKeys = devMode?.debug?.cacheKeys;
   const baseObservableClient = useMemo(
     () =>
-      createObservableClient(
-        client,
-        () => [...userAgentsRef.current],
-        { devMode: { actionDelayMs } },
-      ),
-    [client, actionDelayMs],
+      createObservableClient(client, () => [...userAgentsRef.current], {
+        devMode: {
+          actionDelayMs,
+          logLevel,
+          debug: { refCounts: debugRefCounts, cacheKeys: debugCacheKeys },
+        },
+      }),
+    [client, actionDelayMs, logLevel, debugRefCounts, debugCacheKeys]
   );
 
   const { client: devToolsClient, wrapChildren } = useDevToolsClient(
     baseObservableClient,
-    devtoolsEnabled,
+    devtoolsEnabled
   );
 
   const content = wrapChildren?.(children) ?? children;
 
   const contextValue = useMemo(
     () => ({ client, observableClient: devToolsClient, devtoolsEnabled }),
-    [client, devToolsClient, devtoolsEnabled],
+    [client, devToolsClient, devtoolsEnabled]
   );
 
   return (
     <UserAgentContext.Provider value={addUserAgent}>
-      <OsdkContext.Provider
-        value={contextValue}
-      >
+      <OsdkContext.Provider value={contextValue}>
         {content}
       </OsdkContext.Provider>
     </UserAgentContext.Provider>

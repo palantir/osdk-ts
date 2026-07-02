@@ -16,7 +16,7 @@
 
 export function combineApiNamespaceIfMissing(
   namespace: string,
-  apiName: string,
+  apiName: string
 ): string {
   return apiName.includes(".") ? apiName : namespace + apiName;
 }

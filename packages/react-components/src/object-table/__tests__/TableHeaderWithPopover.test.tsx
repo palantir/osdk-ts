@@ -18,6 +18,7 @@ import type { Header, Table } from "@tanstack/react-table";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import React, { createRef } from "react";
 import { describe, expect, it, vi } from "vitest";
+
 import { PortalContainerProvider } from "../../shared/PortalContainerContext.js";
 import { TableHeaderWithPopover } from "../TableHeaderWithPopover.js";
 
@@ -40,13 +41,13 @@ describe(TableHeaderWithPopover, () => {
           }}
         />
         <div data-testid="header-menu-portal" ref={portalContainerRef} />
-      </PortalContainerProvider>,
+      </PortalContainerProvider>
     );
 
     fireEvent.click(
       screen.getByRole("button", {
         name: "Open header menu for column with id=name",
-      }),
+      })
     );
 
     await waitFor(() => {
@@ -56,8 +57,8 @@ describe(TableHeaderWithPopover, () => {
     const portalContainer = screen.getByTestId("header-menu-portal");
     expect(
       portalContainer.contains(
-        screen.getByRole("menuitem", { name: "Pin column" }),
-      ),
+        screen.getByRole("menuitem", { name: "Pin column" })
+      )
     ).toBe(true);
   });
 });

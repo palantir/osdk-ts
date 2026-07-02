@@ -18,7 +18,9 @@ import { Collapsible } from "@base-ui/react/collapsible";
 import { CaretDown } from "@blueprintjs/icons";
 import classNames from "classnames";
 import React, { memo } from "react";
+
 import type { FormSectionDefinition } from "./ActionFormApi.js";
+
 import styles from "./FormSection.module.css";
 
 export interface FormSectionProps {
@@ -56,7 +58,7 @@ export const FormSection: React.NamedExoticComponent<FormSectionProps> = memo(
       columnCount === 2
         ? styles.osdkFormSectionGrid
         : styles.osdkFormSectionContent,
-      styles.osdkFormSectionDivider,
+      styles.osdkFormSectionDivider
     );
 
     if (!showTitleBar) {
@@ -102,7 +104,7 @@ export const FormSection: React.NamedExoticComponent<FormSectionProps> = memo(
         </Collapsible.Panel>
       </Collapsible.Root>
     );
-  },
+  }
 );
 
 interface MinimalSectionProps {

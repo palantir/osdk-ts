@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   ManagedInstallationName as _api_ManagedInstallationName,
   NamespaceRid as _api_NamespaceRid,
@@ -29,11 +30,11 @@ export async function getInstallation(
   ctx: ConjureContext,
   organizationRid: _api_OrganizationRid,
   namespaceRid: _api_NamespaceRid,
-  installationName: _api_ManagedInstallationName,
+  installationName: _api_ManagedInstallationName
 ): Promise<_installmanager_api_GetInstallationResponse> {
   return conjureFetch(
     ctx,
     `/install-manager-admin/organization/${organizationRid}/namespace/${namespaceRid}/installation/${installationName}`,
-    "GET",
+    "GET"
   );
 }

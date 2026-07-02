@@ -26,5 +26,5 @@ import { ImageViewer as _ImageViewer } from "../../images/image-viewer/ImageView
 import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
 export const ImageViewer: typeof _ImageViewer = withOsdkMetrics(
   _ImageViewer,
-  "ImageViewer",
+  "ImageViewer"
 );

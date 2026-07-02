@@ -21,6 +21,7 @@ import type { ObservableClient } from "@osdk/client/observable";
 import { act, renderHook } from "@testing-library/react";
 import React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import { OsdkContext } from "../OsdkContext.js";
 import { useOsdkObject } from "../useOsdkObject.js";
 
@@ -54,11 +55,11 @@ function createMockObservableClient(): {
           type: unknown,
           primaryKey: unknown,
           options: ObserveObjectCall["options"],
-          observer: Observer,
+          observer: Observer
         ) => {
           calls.push({ type, primaryKey, options, observer });
           return { unsubscribe: vi.fn() };
-        },
+        }
       ),
   } as unknown as ObservableClient;
   return { client, calls };

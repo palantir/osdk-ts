@@ -14,29 +14,16 @@
  * limitations under the License.
  */
 
-import * as typescriptEslintParser from "@typescript-eslint/parser";
-import reactHooks from "eslint-plugin-react-hooks";
-import * as tseslint from "typescript-eslint";
-import rootConfig from "../../eslint.config.mjs";
+// TODO: Add osdk metrics
+// This component uses platformClient, maybe we want to add userAgent header to the platformClient instead
+export { AipAgentChat } from "../../aip-agent-chat/AipAgentChat.js";
 
-export default tseslint.config(
-  ...rootConfig,
-  {
-    plugins: {
-      "react-hooks": reactHooks,
-    },
-    rules: {
-      "react-hooks/exhaustive-deps": "warn",
-    },
-  },
-  {
-    files: ["src/**/*"],
-    languageOptions: {
-      parser: typescriptEslintParser,
-      parserOptions: {
-        projectService: true,
-        tsconfigRootDir: import.meta.dirname,
-      },
-    },
-  },
-);
+export type { AipAgentChatProps } from "../../aip-agent-chat/AipAgentChatApi.js";
+
+export { BaseAipAgentChat } from "../../aip-agent-chat/BaseAipAgentChat.js";
+export type { BaseAipAgentChatProps } from "../../aip-agent-chat/BaseAipAgentChat.js";
+
+export type { UIMessage, UIMessageRole } from "@osdk/aip-core";
+export { getUIMessageText } from "@osdk/aip-core";
+
+export type { ChatStatus } from "@osdk/react/experimental/aip";

@@ -17,6 +17,7 @@
 import { type User, Users } from "@osdk/foundry.admin";
 import type { UserStatus } from "@osdk/foundry.core";
 import React from "react";
+
 import { usePlatformQuery } from "../../../utils/usePlatformQuery.js";
 import { OsdkContext } from "../../OsdkContext.js";
 
@@ -60,7 +61,7 @@ export interface UseFoundryUserResult {
  */
 export function useFoundryUser(
   userId: string,
-  { enabled = true, status = "ACTIVE" }: UseFoundryUserOptions = {},
+  { enabled = true, status = "ACTIVE" }: UseFoundryUserOptions = {}
 ): UseFoundryUserResult {
   const { client } = React.useContext(OsdkContext);
 

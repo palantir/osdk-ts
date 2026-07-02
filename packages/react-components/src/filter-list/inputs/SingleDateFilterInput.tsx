@@ -15,6 +15,7 @@
  */
 
 import React, { memo, useCallback, useMemo } from "react";
+
 import { SingleDateInput } from "../base/inputs/SingleDateInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
 
@@ -37,11 +38,11 @@ function SingleDateFilterInputInner({
   const selectedDate = useMemo(
     () =>
       filterState?.type === "SELECT"
-        ? (filterState.selectedValues[0] instanceof Date
+        ? filterState.selectedValues[0] instanceof Date
           ? filterState.selectedValues[0]
-          : undefined)
+          : undefined
         : undefined,
-    [filterState],
+    [filterState]
   );
   const isExcluding = filterState?.isExcluding ?? false;
 
@@ -53,7 +54,7 @@ function SingleDateFilterInputInner({
         isExcluding,
       });
     },
-    [onFilterStateChanged, isExcluding],
+    [onFilterStateChanged, isExcluding]
   );
 
   return (

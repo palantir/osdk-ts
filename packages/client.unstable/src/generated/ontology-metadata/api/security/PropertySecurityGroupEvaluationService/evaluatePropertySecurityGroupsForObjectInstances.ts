@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  EvaluatePsgForObjectInstancesRequest
-    as _api_security_EvaluatePsgForObjectInstancesRequest,
-  EvaluatePsgForObjectInstancesResponse
-    as _api_security_EvaluatePsgForObjectInstancesResponse,
+  EvaluatePsgForObjectInstancesRequest as _api_security_EvaluatePsgForObjectInstancesRequest,
+  EvaluatePsgForObjectInstancesResponse as _api_security_EvaluatePsgForObjectInstancesResponse,
 } from "../__components.js";
 
 /**
@@ -31,7 +30,7 @@ import type {
  */
 export async function evaluatePropertySecurityGroupsForObjectInstances(
   ctx: ConjureContext,
-  request: _api_security_EvaluatePsgForObjectInstancesRequest,
+  request: _api_security_EvaluatePsgForObjectInstancesRequest
 ): Promise<_api_security_EvaluatePsgForObjectInstancesResponse> {
   return conjureFetch(ctx, `/psg-evaluation/eval`, "POST", request);
 }

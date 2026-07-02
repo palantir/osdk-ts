@@ -75,7 +75,7 @@ function useIcon(icon: IconName, size: IconSize): IconPaths | undefined {
         isMounted = false;
       };
     },
-    [icon, size],
+    [icon, size]
   );
 
   return iconPaths;

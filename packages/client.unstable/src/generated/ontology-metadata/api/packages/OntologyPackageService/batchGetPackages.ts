@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BatchGetPackagesRequest as _api_packages_BatchGetPackagesRequest,
   BatchGetPackagesResponse as _api_packages_BatchGetPackagesResponse,
@@ -27,12 +28,12 @@ import type {
  */
 export async function batchGetPackages(
   ctx: ConjureContext,
-  request: _api_packages_BatchGetPackagesRequest,
+  request: _api_packages_BatchGetPackagesRequest
 ): Promise<_api_packages_BatchGetPackagesResponse> {
   return conjureFetch(
     ctx,
     `/ontology/packages/batchGetPackages`,
     "POST",
-    request,
+    request
   );
 }

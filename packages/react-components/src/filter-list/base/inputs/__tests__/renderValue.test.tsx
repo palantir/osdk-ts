@@ -24,6 +24,7 @@ import { useOsdkAggregation } from "@osdk/react";
 import { cleanup, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { LinkedPropertyInput } from "../../../inputs/LinkedPropertyInput.js";
 import type { PropertyAggregationValue } from "../../../types/AggregationTypes.js";
 import type { LinkedPropertyFilterDefinition } from "../../../types/LinkedFilterTypes.js";
@@ -62,7 +63,7 @@ describe("ListogramInput renderValue", () => {
         selectedValues={[]}
         onChange={vi.fn()}
         renderValue={mockRenderValue}
-      />,
+      />
     );
 
     expect(screen.getByText("Alice Smith")).toBeDefined();
@@ -78,7 +79,7 @@ describe("ListogramInput renderValue", () => {
         error={null}
         selectedValues={[]}
         onChange={vi.fn()}
-      />,
+      />
     );
 
     expect(screen.getByText("abc-123")).toBeDefined();
@@ -100,7 +101,7 @@ describe("ListogramInput renderValue", () => {
         selectedValues={[]}
         onChange={vi.fn()}
         renderValue={mockRenderValue}
-      />,
+      />
     );
 
     expect(screen.getByText("No value")).toBeDefined();
@@ -123,7 +124,7 @@ describe("ListogramInput renderValue", () => {
         selectedValues={[]}
         onChange={vi.fn()}
         renderValue={mockRenderValue}
-      />,
+      />
     );
 
     expect(screen.getByText("No value")).toBeDefined();
@@ -142,7 +143,7 @@ describe("ListogramInput renderValue", () => {
         onChange={vi.fn()}
         renderValue={mockRenderValue}
         searchQuery="Alice"
-      />,
+      />
     );
 
     expect(screen.getByText("Alice Smith")).toBeDefined();
@@ -159,7 +160,7 @@ describe("ListogramInput renderValue", () => {
         selectedValues={[]}
         onChange={vi.fn()}
         searchQuery="abc"
-      />,
+      />
     );
 
     expect(screen.getByText("abc-123")).toBeDefined();
@@ -177,7 +178,7 @@ describe("MultiSelectInput renderValue", () => {
         selectedValues={["abc-123"]}
         onChange={vi.fn()}
         renderValue={mockRenderValue}
-      />,
+      />
     );
 
     expect(screen.getByText("Alice Smith")).toBeDefined();
@@ -191,7 +192,7 @@ describe("MultiSelectInput renderValue", () => {
         error={null}
         selectedValues={["abc-123"]}
         onChange={vi.fn()}
-      />,
+      />
     );
 
     expect(screen.queryByText("Alice Smith")).toBeNull();
@@ -215,7 +216,7 @@ describe("ListogramInput renderValue (ReactNode)", () => {
         selectedValues={[]}
         onChange={vi.fn()}
         renderValue={renderValueAsNode}
-      />,
+      />
     );
 
     expect(screen.getByTestId("anchor-abc-123")).toBeDefined();
@@ -233,7 +234,7 @@ describe("ListogramInput renderValue (ReactNode)", () => {
         onChange={vi.fn()}
         renderValue={renderValueAsNode}
         searchQuery="abc"
-      />,
+      />
     );
 
     expect(screen.getByTestId("anchor-abc-123")).toBeDefined();
@@ -257,7 +258,7 @@ describe("MultiSelectInput renderValue (ReactNode)", () => {
         selectedValues={["abc-123"]}
         onChange={vi.fn()}
         renderValue={renderValueAsNode}
-      />,
+      />
     );
 
     expect(screen.getByTestId("chip-anchor-abc-123")).toBeDefined();
@@ -271,18 +272,16 @@ describe("createRenderValueFilter", () => {
   // portal that jsdom can't mount, so the filter is tested directly.
 
   it("matches against the rendered string when renderValue returns a string", () => {
-    const filter = createRenderValueFilter(
-      (value) => LABELS[value] ?? value,
-    );
+    const filter = createRenderValueFilter((value) => LABELS[value] ?? value);
 
     expect(filter("abc-123", "alice")).toBe(true);
     expect(filter("def-456", "alice")).toBe(false);
   });
 
   it("falls back to the raw value when renderValue returns JSX", () => {
-    const filter = createRenderValueFilter(
-      (value) => <a href={`/user/${value}`}>{LABELS[value] ?? value}</a>,
-    );
+    const filter = createRenderValueFilter((value) => (
+      <a href={`/user/${value}`}>{LABELS[value] ?? value}</a>
+    ));
 
     expect(filter("abc-123", "abc")).toBe(true);
     expect(filter("abc-123", "alice")).toBe(false);
@@ -306,7 +305,7 @@ describe("SingleSelectInput renderValue", () => {
         selectedValue={undefined}
         onChange={vi.fn()}
         renderValue={mockRenderValue}
-      />,
+      />
     );
 
     expect(container.querySelector("input")).toBeDefined();
@@ -320,7 +319,7 @@ describe("SingleSelectInput renderValue", () => {
         error={null}
         selectedValue={undefined}
         onChange={vi.fn()}
-      />,
+      />
     );
 
     expect(screen.queryByText("Alice Smith")).toBeNull();
@@ -360,16 +359,17 @@ function createMockLinkedObjectSet(): ObjectSet<ObjectTypeDefinition> {
 
 function createLinkedDefinition(
   linkedFilterComponent: "MULTI_SELECT" | "LISTOGRAM" | "SINGLE_SELECT",
-  renderValue?: (value: string) => React.ReactNode,
+  renderValue?: (value: string) => React.ReactNode
 ): LinkedPropertyFilterDefinition<
   ObjectTypeDefinition,
   string,
   ObjectTypeDefinition,
   PropertyKeys<ObjectTypeDefinition>
 > {
-  const innerStateType = linkedFilterComponent === "LISTOGRAM"
-    ? { type: "EXACT_MATCH" as const, values: [] }
-    : { type: "SELECT" as const, selectedValues: [] };
+  const innerStateType =
+    linkedFilterComponent === "LISTOGRAM"
+      ? { type: "EXACT_MATCH" as const, values: [] }
+      : { type: "SELECT" as const, selectedValues: [] };
 
   return {
     type: "LINKED_PROPERTY",
@@ -392,7 +392,7 @@ function createLinkedDefinition(
 }
 
 function mockLinkedAggregationData(
-  groups: Array<{ name: string; count: number }>,
+  groups: Array<{ name: string; count: number }>
 ): void {
   vi.mocked(useOsdkAggregation).mockReturnValue({
     data: groups.map((g) => ({
@@ -431,7 +431,7 @@ describe("LinkedPropertyInput renderValue", () => {
           },
         }}
         onFilterStateChanged={vi.fn()}
-      />,
+      />
     );
 
     expect(screen.getByTestId("linked-anchor-abc-123")).toBeDefined();
@@ -457,7 +457,7 @@ describe("LinkedPropertyInput renderValue", () => {
           },
         }}
         onFilterStateChanged={vi.fn()}
-      />,
+      />
     );
 
     expect(screen.getByTestId("linked-anchor-abc-123")).toBeDefined();
@@ -484,7 +484,7 @@ describe("LinkedPropertyInput renderValue", () => {
         }}
         onFilterStateChanged={vi.fn()}
         searchQuery="abc"
-      />,
+      />
     );
 
     expect(screen.getByTestId("linked-anchor-abc-123")).toBeDefined();
@@ -514,7 +514,7 @@ describe("LinkedPropertyInput renderValue", () => {
           },
         }}
         onFilterStateChanged={vi.fn()}
-      />,
+      />
     );
 
     expect(container.querySelector("input")).toBeDefined();

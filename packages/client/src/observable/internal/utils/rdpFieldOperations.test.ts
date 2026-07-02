@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import type { MinimalClient } from "../../../MinimalClientContext.js";
 import { createOsdkObject } from "../../../object/convertWireToOsdkObjects/createOsdkObject.js";
 import {
@@ -59,9 +60,7 @@ const employeeObjectDef = {
   },
 } satisfies FetchedObjectTypeDefinition;
 
-function createTestObject(
-  props: Partial<SimpleOsdkProperties>,
-): ObjectHolder {
+function createTestObject(props: Partial<SimpleOsdkProperties>): ObjectHolder {
   const defaultProps: SimpleOsdkProperties = {
     $apiName: "Employee",
     $objectType: "Employee",
@@ -115,7 +114,7 @@ describe("rdpFieldOperations", () => {
       source,
       new Set(["rdpField1", "rdpField2"]),
       new Set(),
-      undefined,
+      undefined
     );
 
     assertValidObjectHolder(result);
@@ -152,7 +151,7 @@ describe("rdpFieldOperations", () => {
       source,
       new Set(["rdpField1", "rdpField2", "rdpField3"]),
       new Set(["rdpField1"]),
-      undefined,
+      undefined
     );
 
     assertValidObjectHolder(result);
@@ -180,7 +179,7 @@ describe("rdpFieldOperations", () => {
       source,
       new Set(["rdpField1"]),
       new Set(["rdpField1", "rdpField2"]),
-      target,
+      target
     );
 
     assertValidObjectHolder(result);
@@ -208,7 +207,7 @@ describe("rdpFieldOperations", () => {
       source,
       new Set(["rdpField1"]),
       new Set(["rdpField1", "rdpField2"]),
-      target,
+      target
     );
 
     assertValidObjectHolder(result);
@@ -235,7 +234,7 @@ describe("rdpFieldOperations", () => {
       source,
       new Set(["rdpField1"]),
       new Set(["rdpField1", "rdpField2"]),
-      target,
+      target
     );
 
     assertValidObjectHolder(result);
@@ -261,7 +260,7 @@ describe("rdpFieldOperations", () => {
       source,
       new Set(["rdpField1"]),
       new Set(["rdpField1", "rdpField2"]),
-      target,
+      target
     );
 
     assertValidObjectHolder(result);
@@ -281,7 +280,7 @@ describe("rdpFieldOperations", () => {
       source,
       new Set(["rdpField1"]),
       new Set(["rdpField1", "rdpField2"]),
-      undefined,
+      undefined
     );
 
     assertValidObjectHolder(result);
@@ -331,7 +330,7 @@ describe("mergeSelectFields", () => {
       source,
       new Set(["fullName"]),
       existing,
-      new Set(["computedScore"]),
+      new Set(["computedScore"])
     );
 
     assertValidObjectHolder(result);

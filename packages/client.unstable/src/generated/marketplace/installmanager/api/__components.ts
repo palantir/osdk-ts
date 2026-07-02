@@ -20,8 +20,7 @@ import type {
   ApolloFoundrySpaceIdentifier as _api_ApolloFoundrySpaceIdentifier,
   ApolloSpaceId as _api_ApolloSpaceId,
   BlockSetId as _api_BlockSetId,
-  BlockSetInstallationDisplayMetadata
-    as _api_BlockSetInstallationDisplayMetadata,
+  BlockSetInstallationDisplayMetadata as _api_BlockSetInstallationDisplayMetadata,
   BlockSetInstallationJobRid as _api_BlockSetInstallationJobRid,
   BlockSetInstallationRid as _api_BlockSetInstallationRid,
   BlockSetVersionId as _api_BlockSetVersionId,
@@ -104,8 +103,7 @@ export interface CreateInstallationSuccessResult {
 export interface DeleteInstallationFailureResult {
   failure: _api_UninstallResponseFailure;
 }
-export interface DeleteInstallationRequest {
-}
+export interface DeleteInstallationRequest {}
 export interface DeleteInstallationResponse_success {
   type: "success";
   success: DeleteInstallationSuccessResult;
@@ -119,8 +117,7 @@ export type DeleteInstallationResponse =
   | DeleteInstallationResponse_success
   | DeleteInstallationResponse_failure;
 
-export interface DeleteInstallationSuccessResult {
-}
+export interface DeleteInstallationSuccessResult {}
 /**
  * An installation request (i.e. CreateInstallationForBlockSetRequest) that has failed before
  * a managed installation was created, either due to a validation error or job submission error.
@@ -192,18 +189,15 @@ export interface ListManagedInstallationsForProductInOrganizationResponse {
   failedInstallationCreationRequests: Array<FailedInstallationCreationRequest>;
   installations: Array<ManagedInstallation>;
 }
-export interface ListManagedNamespacesRequest {
-}
+export interface ListManagedNamespacesRequest {}
 export interface ListManagedNamespacesResponse {
   managedNamespaces: Array<_api_NamespaceRid>;
 }
-export interface ListProductIdsForOrganizationRequest {
-}
+export interface ListProductIdsForOrganizationRequest {}
 export interface ListProductIdsForOrganizationResponse {
   productIds: Array<_api_MavenProductId>;
 }
-export interface ListReleaseManagementTargetNamespacesRequest {
-}
+export interface ListReleaseManagementTargetNamespacesRequest {}
 export interface ListReleaseManagementTargetNamespacesResponse {
   namespaces: Array<InstallManagerNamespace>;
 }

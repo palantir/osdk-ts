@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { GetSigningKeyResponse as _api_GetSigningKeyResponse } from "../__components.js";
 
 /**
@@ -27,7 +28,7 @@ import type { GetSigningKeyResponse as _api_GetSigningKeyResponse } from "../__c
  * ```
  */
 export async function getSigningKey(
-  ctx: ConjureContext,
+  ctx: ConjureContext
 ): Promise<_api_GetSigningKeyResponse> {
   return conjureFetch(ctx, `/block-set-transport/signing-key`, "GET");
 }

@@ -15,7 +15,9 @@
  */
 
 import * as fs from "fs";
+
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import { custom } from "./custom.js";
 import {
   ALIASES_JSON_FILE_ENV_VAR,
@@ -31,13 +33,10 @@ import { AliasEnvironment } from "./types.js";
 const { testAliasesData, testResourcesData } = vi.hoisted(() => {
   const nodeFs = require("node:fs");
   const nodePath = require("node:path");
-  const aliasesPath = nodePath.resolve(
-    __dirname,
-    "./test-data/aliases.json",
-  );
+  const aliasesPath = nodePath.resolve(__dirname, "./test-data/aliases.json");
   const resourcesPath = nodePath.resolve(
     __dirname,
-    "./test-data/resources.json",
+    "./test-data/resources.json"
   );
   return {
     testAliasesData: nodeFs.readFileSync(aliasesPath, "utf-8") as string,
@@ -71,15 +70,11 @@ describe("environment detection", () => {
   it("throws when both env vars are set", () => {
     process.env[ALIASES_JSON_FILE_ENV_VAR] = "/some/path/aliases.json";
     process.env[RESOURCES_JSON_FILE_ENV_VAR] = "/some/path/resources.json";
-    expect(() => detectEnvironment()).toThrow(
-      "Ambiguous alias configuration",
-    );
+    expect(() => detectEnvironment()).toThrow("Ambiguous alias configuration");
   });
 
   it("throws when neither env var is set", () => {
-    expect(() => detectEnvironment()).toThrow(
-      "Unknown alias environment",
-    );
+    expect(() => detectEnvironment()).toThrow("Unknown alias environment");
   });
 });
 
@@ -106,7 +101,7 @@ describe("published mode aliases", () => {
 
     it("throws on nonexistent alias", () => {
       expect(() => custom("nonexistent")).toThrow(
-        "Custom alias 'nonexistent' not found. Available aliases: [myCustomAlias, anotherCustomAlias]",
+        "Custom alias 'nonexistent' not found. Available aliases: [myCustomAlias, anotherCustomAlias]"
       );
     });
 
@@ -126,7 +121,7 @@ describe("published mode aliases", () => {
 
     it("throws on nonexistent alias", () => {
       expect(() => model("nonexistent")).toThrow(
-        "Model alias 'nonexistent' not found. Available aliases: [myModelAlias, anotherModelAlias]",
+        "Model alias 'nonexistent' not found. Available aliases: [myModelAlias, anotherModelAlias]"
       );
     });
 
@@ -134,10 +129,10 @@ describe("published mode aliases", () => {
       const result1 = model("myModelAlias");
       const result2 = model("anotherModelAlias");
       expect(result1.rid).toBe(
-        "ri.foundry-ml.main.model.11111111-1111-1111-1111-111111111111",
+        "ri.foundry-ml.main.model.11111111-1111-1111-1111-111111111111"
       );
       expect(result2.rid).toBe(
-        "ri.foundry-ml.main.model.22222222-2222-2222-2222-222222222222",
+        "ri.foundry-ml.main.model.22222222-2222-2222-2222-222222222222"
       );
     });
   });
@@ -152,7 +147,7 @@ describe("published mode aliases", () => {
 
     it("throws on nonexistent alias", () => {
       expect(() => source("nonexistent")).toThrow(
-        "Source alias 'nonexistent' not found. Available aliases: [mySourceAlias, anotherSourceAlias]",
+        "Source alias 'nonexistent' not found. Available aliases: [mySourceAlias, anotherSourceAlias]"
       );
     });
 
@@ -160,10 +155,10 @@ describe("published mode aliases", () => {
       const result1 = source("mySourceAlias");
       const result2 = source("anotherSourceAlias");
       expect(result1.rid).toBe(
-        "ri.magritte..source.11111111-1111-1111-1111-111111111111",
+        "ri.magritte..source.11111111-1111-1111-1111-111111111111"
       );
       expect(result2.rid).toBe(
-        "ri.magritte..source.22222222-2222-2222-2222-222222222222",
+        "ri.magritte..source.22222222-2222-2222-2222-222222222222"
       );
     });
   });
@@ -192,9 +187,7 @@ describe("published mode aliases", () => {
     it("throws when aliases file does not exist", () => {
       vi.mocked(fs.existsSync).mockReturnValue(false);
 
-      expect(() => custom("any-alias")).toThrow(
-        "Aliases file not found at",
-      );
+      expect(() => custom("any-alias")).toThrow("Aliases file not found at");
     });
   });
 });
@@ -221,7 +214,7 @@ describe("live preview mode aliases", () => {
 
     it("throws on nonexistent alias", () => {
       expect(() => custom("nonexistent")).toThrow(
-        "Custom alias 'nonexistent' not found. Available aliases: [previewCustomAlias, anotherPreviewCustom]",
+        "Custom alias 'nonexistent' not found. Available aliases: [previewCustomAlias, anotherPreviewCustom]"
       );
     });
 
@@ -241,7 +234,7 @@ describe("live preview mode aliases", () => {
 
     it("throws on nonexistent alias", () => {
       expect(() => model("nonexistent")).toThrow(
-        "Model alias 'nonexistent' not found. Available aliases: [previewModelAlias, anotherPreviewModel]",
+        "Model alias 'nonexistent' not found. Available aliases: [previewModelAlias, anotherPreviewModel]"
       );
     });
 
@@ -249,16 +242,16 @@ describe("live preview mode aliases", () => {
       const result1 = model("previewModelAlias");
       const result2 = model("anotherPreviewModel");
       expect(result1.rid).toBe(
-        "ri.foundry-ml.main.model.aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+        "ri.foundry-ml.main.model.aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
       );
       expect(result2.rid).toBe(
-        "ri.foundry-ml.main.model.bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+        "ri.foundry-ml.main.model.bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
       );
     });
 
     it("excludes models with null or missing alias", () => {
       expect(() => model("some-random-lookup")).toThrow(
-        "Available aliases: [previewModelAlias, anotherPreviewModel]",
+        "Available aliases: [previewModelAlias, anotherPreviewModel]"
       );
     });
   });
@@ -273,7 +266,7 @@ describe("live preview mode aliases", () => {
 
     it("throws on nonexistent alias", () => {
       expect(() => source("nonexistent")).toThrow(
-        "Source alias 'nonexistent' not found. Available aliases: [previewSourceAlias, anotherPreviewSource]",
+        "Source alias 'nonexistent' not found. Available aliases: [previewSourceAlias, anotherPreviewSource]"
       );
     });
 
@@ -281,16 +274,16 @@ describe("live preview mode aliases", () => {
       const result1 = source("previewSourceAlias");
       const result2 = source("anotherPreviewSource");
       expect(result1.rid).toBe(
-        "ri.magritte..source.aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+        "ri.magritte..source.aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
       );
       expect(result2.rid).toBe(
-        "ri.magritte..source.bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+        "ri.magritte..source.bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
       );
     });
 
     it("excludes sources with null or missing alias", () => {
       expect(() => source("some-random-lookup")).toThrow(
-        "Available aliases: [previewSourceAlias, anotherPreviewSource]",
+        "Available aliases: [previewSourceAlias, anotherPreviewSource]"
       );
     });
   });
@@ -309,9 +302,7 @@ describe("live preview mode aliases", () => {
     it("throws when resources file does not exist", () => {
       vi.mocked(fs.existsSync).mockReturnValue(false);
 
-      expect(() => custom("any-alias")).toThrow(
-        "Resources file not found at",
-      );
+      expect(() => custom("any-alias")).toThrow("Resources file not found at");
     });
   });
 });

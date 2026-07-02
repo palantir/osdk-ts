@@ -17,6 +17,7 @@
 import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { ObjectSetField } from "../fields/ObjectSetField.js";
 
 vi.mock("@osdk/react", () => ({
@@ -69,7 +70,7 @@ describe("ObjectSetField", () => {
       });
 
       const { container } = render(
-        <ObjectSetField value={createMockObjectSet()} />,
+        <ObjectSetField value={createMockObjectSet()} />
       );
       const skeletons = container.querySelectorAll("[aria-hidden='true']");
       expect(skeletons.length).toBeGreaterThan(0);
@@ -205,7 +206,7 @@ describe("ObjectSetField", () => {
       });
 
       const { container } = render(
-        <ObjectSetField value={createMockObjectSet()} />,
+        <ObjectSetField value={createMockObjectSet()} />
       );
       const skeletons = container.querySelectorAll("[aria-hidden='true']");
       expect(skeletons.length).toBeGreaterThan(0);

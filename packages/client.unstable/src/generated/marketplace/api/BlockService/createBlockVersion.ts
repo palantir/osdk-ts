@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BlockId as _api_BlockId,
   CreateBlockVersionRequest as _api_CreateBlockVersionRequest,
@@ -50,12 +51,12 @@ import type {
 export async function createBlockVersion(
   ctx: ConjureContext,
   blockId: _api_BlockId,
-  createBlockVersionRequest: _api_CreateBlockVersionRequest,
+  createBlockVersionRequest: _api_CreateBlockVersionRequest
 ): Promise<_api_CreateBlockVersionResponse> {
   return conjureFetch(
     ctx,
     `/blocks/${blockId}`,
     "POST",
-    createBlockVersionRequest,
+    createBlockVersionRequest
   );
 }

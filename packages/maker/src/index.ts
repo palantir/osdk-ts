@@ -19,18 +19,14 @@ export type {
   ActionParameter,
   ActionParameterValidation,
 } from "./api/action/ActionParameter.js";
-export type {
-  ActionParameterAllowedValues,
-} from "./api/action/ActionParameterAllowedValues.js";
+export type { ActionParameterAllowedValues } from "./api/action/ActionParameterAllowedValues.js";
 export type { ActionParameterConditionalOverride } from "./api/action/ActionParameterConditionalOverride.js";
 export type {
   ActionParameterConfiguration,
   ActionParameterRequirementConstraint,
 } from "./api/action/ActionParameterConfiguration.js";
 export type { ActionParameterType } from "./api/action/ActionParameterType.js";
-export {
-  isActionParameterTypePrimitive,
-} from "./api/action/ActionParameterType.js";
+export { isActionParameterTypePrimitive } from "./api/action/ActionParameterType.js";
 export type { ActionSection } from "./api/action/ActionSection.js";
 export type { ActionStatus } from "./api/action/ActionStatus.js";
 export type { ActionType } from "./api/action/ActionType.js";
@@ -65,6 +61,7 @@ export { defineCreateInterfaceLinkAction } from "./api/defineCreateInterfaceLink
 export { defineCreateInterfaceObjectAction } from "./api/defineCreateInterfaceObjectAction.js";
 export { defineCreateObjectAction } from "./api/defineCreateObjectAction.js";
 export { defineCreateOrModifyObjectAction } from "./api/defineCreateOrModifyObjectAction.js";
+export { defineDeleteInterfaceLinkAction } from "./api/defineDeleteInterfaceLinkAction.js";
 export { defineDeleteInterfaceObjectAction } from "./api/defineDeleteInterfaceObjectAction.js";
 export { defineDeleteObjectAction } from "./api/defineDeleteObjectAction.js";
 export { defineInterface } from "./api/defineInterface.js";

@@ -117,6 +117,7 @@ export function wirePropertyV2ToSdkPropertyDefinition(
     case "timeseries":
     case "geotimeSeriesReference":
     case "vector":
+    case "cipherText":
       return {
         displayName: input.displayName,
         multiplicity: false,
@@ -171,14 +172,6 @@ export function wirePropertyV2ToSdkPropertyDefinition(
         ...extractTypeMetadata(input.dataType),
       };
     }
-    case "cipherText": {
-      log?.info(
-        `${JSON.stringify(input.dataType.type)} is not a supported dataType`,
-      );
-
-      return undefined;
-    }
-
     default:
       const _: never = input.dataType;
       log?.info(
@@ -211,6 +204,7 @@ function objectPropertyTypeToSdkPropertyDefinition(
     case "geotimeSeriesReference":
     case "mediaReference":
     case "vector":
+    case "cipherText":
       return propertyType.type;
     case "date":
       return "datetime";
@@ -233,13 +227,6 @@ function objectPropertyTypeToSdkPropertyDefinition(
         },
         {},
       );
-    }
-    case "cipherText": {
-      log?.info(
-        `${JSON.stringify(propertyType.type)} is not a supported propertyType`,
-      );
-
-      return undefined;
     }
     default: {
       const _: never = propertyType;

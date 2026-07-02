@@ -21,6 +21,7 @@
 
 import type { InterfaceDefinition, Osdk } from "@osdk/api";
 import { FooInterface } from "@osdk/client.test.ontology";
+
 import type { Client } from "../Client.js";
 
 declare const client: Client;

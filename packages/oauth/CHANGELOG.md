@@ -1,5 +1,11 @@
 # @osdk/oauth
 
+## 1.11.0
+
+### Minor Changes
+
+- e681893: Add Supported Client for Public Apps
+
 ## 1.10.0
 
 ### Minor Changes

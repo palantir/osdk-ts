@@ -63,14 +63,13 @@ export type {
   DataValueClientToWire,
   DataValueWireToClient,
 } from "./mapping/DataValueMapping.js";
-export type {
-  PropertyValueWireToClient,
-} from "./mapping/PropertyValueMapping.js";
+export type { PropertyValueWireToClient } from "./mapping/PropertyValueMapping.js";
 export type {
   Attachment,
   AttachmentMetadata,
   AttachmentUpload,
 } from "./object/Attachment.js";
+export type { CipherText } from "./object/CipherText.js";
 export type {
   AsyncIterArgs,
   Augment,

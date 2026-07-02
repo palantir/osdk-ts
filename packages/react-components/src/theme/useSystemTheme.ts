@@ -15,13 +15,15 @@
  */
 
 import { useSyncExternalStore } from "react";
+
 import type { ResolvedOsdkTheme } from "./types.js";
 
 const DARK_QUERY = "(prefers-color-scheme: dark)";
 
 function subscribe(callback: () => void): () => void {
   if (
-    typeof window === "undefined" || typeof window.matchMedia !== "function"
+    typeof window === "undefined" ||
+    typeof window.matchMedia !== "function"
   ) {
     return () => {};
   }
@@ -32,7 +34,8 @@ function subscribe(callback: () => void): () => void {
 
 function getSnapshot(): ResolvedOsdkTheme {
   if (
-    typeof window === "undefined" || typeof window.matchMedia !== "function"
+    typeof window === "undefined" ||
+    typeof window.matchMedia !== "function"
   ) {
     return "light";
   }

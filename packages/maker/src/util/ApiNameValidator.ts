@@ -29,11 +29,15 @@ export const OBJECT_API_NAME_PATTERN: RegExp = /^[a-zA-Z][a-zA-Z0-9]{0,99}$/;
 export const API_NAME_PATTERN: RegExp = /^[a-zA-Z][a-zA-Z0-9_]{0,99}$/;
 
 export function isValidApiName(apiName: string): boolean {
-  return API_NAME_PATTERN.test(apiName)
-    && !RESERVED_KEYWORDS.has(apiName.toLowerCase());
+  return (
+    API_NAME_PATTERN.test(apiName) &&
+    !RESERVED_KEYWORDS.has(apiName.toLowerCase())
+  );
 }
 
 export function isValidObjectApiName(apiName: string): boolean {
-  return OBJECT_API_NAME_PATTERN.test(apiName)
-    && !RESERVED_KEYWORDS.has(apiName.toLowerCase());
+  return (
+    OBJECT_API_NAME_PATTERN.test(apiName) &&
+    !RESERVED_KEYWORDS.has(apiName.toLowerCase())
+  );
 }

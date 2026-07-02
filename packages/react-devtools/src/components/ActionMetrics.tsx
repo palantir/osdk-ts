@@ -16,8 +16,10 @@
 
 import classNames from "classnames";
 import React from "react";
+
 import type { MetricsSnapshot } from "../types/index.js";
 import { formatNumber, formatTime } from "../utils/format.js";
+
 import styles from "./MonitoringPanel.module.scss";
 
 const ROLLBACK_EXCELLENT = 0.1;
@@ -32,39 +34,37 @@ export const ActionMetrics: React.FC<ActionMetricsProps> = ({ metrics }) => {
   const configuredActions = metrics.aggregates.configuredOptimisticActionCount;
   const observedOptimisticActions = metrics.aggregates.optimisticActionCount;
   const totalTimeSaved = metrics.aggregates.totalPerceivedSpeedup;
-  const avgTimeSaved = observedOptimisticActions > 0
-    ? totalTimeSaved / observedOptimisticActions
-    : 0;
+  const avgTimeSaved =
+    observedOptimisticActions > 0
+      ? totalTimeSaved / observedOptimisticActions
+      : 0;
   const adoptionRate = metrics.rates.configuredOptimisticActionRate;
-  const effectiveness = configuredActions > 0
-    ? observedOptimisticActions / configuredActions
-    : 0;
+  const effectiveness =
+    configuredActions > 0 ? observedOptimisticActions / configuredActions : 0;
   const avgServerLatency = metrics.rates.averageServerRoundTripTime;
   const avgOptimisticLatency = metrics.rates.averageOptimisticRenderTime;
   const rollbackRate = metrics.rates.rollbackRate;
   const validations = metrics.aggregates.validationCount;
   const avgValidationTime = metrics.rates.averageValidationTime;
   const validationSavings = metrics.rates.validationTimeSaved;
-  const waitingForOptimism = configuredActions > 0
-    && observedOptimisticActions === 0;
+  const waitingForOptimism =
+    configuredActions > 0 && observedOptimisticActions === 0;
 
   return (
     <>
       <div className={styles.metric}>
         <span className={styles.metricLabel}>Time Saved (Optimistic)</span>
         <span className={styles.metricValue}>
-          {observedOptimisticActions > 0
-            ? formatTime(avgTimeSaved)
-            : "\u2014"}
+          {observedOptimisticActions > 0 ? formatTime(avgTimeSaved) : "\u2014"}
         </span>
         <span className={styles.metricSubtext}>
           {observedOptimisticActions > 0
-            ? `Total ${formatTime(totalTimeSaved)} across ${
-              formatNumber(observedOptimisticActions)
-            } actions`
+            ? `Total ${formatTime(totalTimeSaved)} across ${formatNumber(
+                observedOptimisticActions
+              )} actions`
             : waitingForOptimism
-            ? "Optimistic handlers have not emitted yet"
-            : "No optimistic handlers observed"}
+              ? "Optimistic handlers have not emitted yet"
+              : "No optimistic handlers observed"}
         </span>
       </div>
 
@@ -99,7 +99,8 @@ export const ActionMetrics: React.FC<ActionMetricsProps> = ({ metrics }) => {
           {formatTime(avgServerLatency)}
         </span>
         <span className={styles.metricSubtext}>
-          Optimistic {observedOptimisticActions > 0
+          Optimistic{" "}
+          {observedOptimisticActions > 0
             ? formatTime(avgOptimisticLatency)
             : "\u2014"}
         </span>
@@ -113,13 +114,11 @@ export const ActionMetrics: React.FC<ActionMetricsProps> = ({ metrics }) => {
             rollbackRate <= ROLLBACK_EXCELLENT
               ? styles.success
               : rollbackRate <= ROLLBACK_ACCEPTABLE
-              ? styles.warning
-              : styles.danger,
+                ? styles.warning
+                : styles.danger
           )}
         >
-          {totalActions > 0
-            ? `${(rollbackRate * 100).toFixed(0)}%`
-            : "\u2014"}
+          {totalActions > 0 ? `${(rollbackRate * 100).toFixed(0)}%` : "\u2014"}
         </span>
         <span className={styles.metricSubtext}>
           {formatNumber(metrics.aggregates.rollbackActionCount)} rollbacks
@@ -133,9 +132,9 @@ export const ActionMetrics: React.FC<ActionMetricsProps> = ({ metrics }) => {
         </span>
         <span className={styles.metricSubtext}>
           {validations > 0
-            ? `${formatNumber(validations)} validations \u00b7 saved ${
-              formatTime(validationSavings)
-            }`
+            ? `${formatNumber(validations)} validations \u00B7 saved ${formatTime(
+                validationSavings
+              )}`
             : "No validations run"}
         </span>
       </div>

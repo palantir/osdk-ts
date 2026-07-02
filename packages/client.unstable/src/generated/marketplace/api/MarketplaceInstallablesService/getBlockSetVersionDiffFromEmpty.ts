@@ -15,10 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BlockSetVersionDiff as _api_BlockSetVersionDiff,
-  BlockSetVersionDiffFromEmptyRequest
-    as _api_BlockSetVersionDiffFromEmptyRequest,
+  BlockSetVersionDiffFromEmptyRequest as _api_BlockSetVersionDiffFromEmptyRequest,
 } from "../__components.js";
 
 /**
@@ -27,12 +27,12 @@ import type {
  */
 export async function getBlockSetVersionDiffFromEmpty(
   ctx: ConjureContext,
-  request: _api_BlockSetVersionDiffFromEmptyRequest,
+  request: _api_BlockSetVersionDiffFromEmptyRequest
 ): Promise<_api_BlockSetVersionDiff> {
   return conjureFetch(
     ctx,
     `/installation-app-service/block-set-diff-from-empty`,
     "POST",
-    request,
+    request
   );
 }

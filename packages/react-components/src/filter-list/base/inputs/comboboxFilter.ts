@@ -22,7 +22,7 @@ import type { ReactNode } from "react";
  * non-string JSX. Comparison is case-insensitive.
  */
 export function createRenderValueFilter(
-  renderValue: (value: string) => ReactNode,
+  renderValue: (value: string) => ReactNode
 ): (itemValue: string, query: string) => boolean {
   return (itemValue, query) => {
     const rendered = renderValue(itemValue);

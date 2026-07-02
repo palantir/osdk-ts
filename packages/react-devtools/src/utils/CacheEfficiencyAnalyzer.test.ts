@@ -15,6 +15,7 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { MetricsStore } from "../store/MetricsStore.js";
 import { CacheEfficiencyAnalyzer } from "./CacheEfficiencyAnalyzer.js";
 
@@ -82,7 +83,7 @@ describe("CacheEfficiencyAnalyzer", () => {
     const result = analyzer.analyze({ entries } as never);
     expect(result.hotEntries).toHaveLength(10);
     expect(result.hotEntries[0].metadata.hitCount ?? 0).toBeGreaterThanOrEqual(
-      result.hotEntries[1].metadata.hitCount ?? 0,
+      result.hotEntries[1].metadata.hitCount ?? 0
     );
   });
 
@@ -96,8 +97,8 @@ describe("CacheEfficiencyAnalyzer", () => {
     flushMetrics();
 
     const result = analyzer.analyze({ entries: [] } as never);
-    const lowHitRateRec = result.recommendations.find(
-      (r) => r.title.toLowerCase().includes("low cache hit rate"),
+    const lowHitRateRec = result.recommendations.find((r) =>
+      r.title.toLowerCase().includes("low cache hit rate")
     );
     expect(lowHitRateRec).toBeDefined();
   });
@@ -109,8 +110,8 @@ describe("CacheEfficiencyAnalyzer", () => {
     flushMetrics();
 
     const result = analyzer.analyze({ entries: [] } as never);
-    const dedupRec = result.recommendations.find(
-      (r) => r.title.toLowerCase().includes("deduplication"),
+    const dedupRec = result.recommendations.find((r) =>
+      r.title.toLowerCase().includes("deduplication")
     );
     if (dedupRec == null) throw new Error("expected dedupRec to be defined");
     expect(dedupRec.level).toBe("success");

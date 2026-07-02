@@ -15,6 +15,7 @@
  */
 
 import type { BBox, Point, Polygon } from "geojson";
+
 import type {
   DerivedObjectOrInterfaceDefinition,
   ObjectOrInterfaceDefinition,
@@ -78,25 +79,25 @@ export const DistanceUnitMapping: {
   nauticalMile: "NAUTICAL_MILES";
   "nautical miles": "NAUTICAL_MILES";
 } = {
-  "centimeter": "CENTIMETERS",
-  "centimeters": "CENTIMETERS",
-  "cm": "CENTIMETERS",
-  "meter": "METERS",
-  "meters": "METERS",
-  "m": "METERS",
-  "kilometer": "KILOMETERS",
-  "kilometers": "KILOMETERS",
-  "km": "KILOMETERS",
-  "inch": "INCHES",
-  "inches": "INCHES",
-  "foot": "FEET",
-  "feet": "FEET",
-  "yard": "YARDS",
-  "yards": "YARDS",
-  "mile": "MILES",
-  "miles": "MILES",
-  "nautical_mile": "NAUTICAL_MILES",
-  "nauticalMile": "NAUTICAL_MILES",
+  centimeter: "CENTIMETERS",
+  centimeters: "CENTIMETERS",
+  cm: "CENTIMETERS",
+  meter: "METERS",
+  meters: "METERS",
+  m: "METERS",
+  kilometer: "KILOMETERS",
+  kilometers: "KILOMETERS",
+  km: "KILOMETERS",
+  inch: "INCHES",
+  inches: "INCHES",
+  foot: "FEET",
+  feet: "FEET",
+  yard: "YARDS",
+  yards: "YARDS",
+  mile: "MILES",
+  miles: "MILES",
+  nautical_mile: "NAUTICAL_MILES",
+  nauticalMile: "NAUTICAL_MILES",
   "nautical miles": "NAUTICAL_MILES",
 } satisfies Record<
   string,
@@ -111,60 +112,67 @@ export const DistanceUnitMapping: {
 >;
 
 export type GeoFilter_Within = {
-  "$within":
+  $within:
     | {
-      $distance: [number, keyof typeof DistanceUnitMapping];
-      $of: [number, number] | Readonly<Point>;
-      $bbox?: never;
-      $polygon?: never;
-    }
+        $distance: [number, keyof typeof DistanceUnitMapping];
+        $of: [number, number] | Readonly<Point>;
+        $bbox?: never;
+        $polygon?: never;
+      }
     | {
-      $bbox: BBox;
-      $distance?: never;
-      $of?: never;
-      $polygon?: never;
-    }
+        $bbox: BBox;
+        $distance?: never;
+        $of?: never;
+        $polygon?: never;
+      }
     | BBox
     | {
-      $polygon: Polygon["coordinates"];
-      $bbox?: never;
-      $distance?: never;
-      $of?: never;
-    }
+        $polygon: Polygon["coordinates"];
+        $bbox?: never;
+        $distance?: never;
+        $of?: never;
+      }
     | Polygon;
 };
 
 export type GeoFilter_Intersects = {
-  "$intersects":
+  $intersects:
     | {
-      $bbox: BBox;
-      $polygon?: never;
-    }
+        $bbox: BBox;
+        $polygon?: never;
+      }
     | BBox
     | {
-      $polygon: Polygon["coordinates"];
-      $bbox?: never;
-    }
+        $polygon: Polygon["coordinates"];
+        $bbox?: never;
+      }
     | Polygon;
 };
 
-type BaseFilterFor<T> = T extends Record<string, BaseWirePropertyTypes>
-  ? StructFilterOpts<T>
-  : T extends "string" ? StringFilter
-  : T extends "geopoint" | "geoshape" ? GeoFilter
-  : T extends "datetime" | "timestamp" ? DatetimeFilter
-  : T extends "boolean" ? BooleanFilter
-  : T extends WhereClauseNumberPropertyTypes ? NumberFilter
-  : BaseFilter<string>; // Fallback for unknown types
+type BaseFilterFor<T> =
+  T extends Record<string, BaseWirePropertyTypes>
+    ? StructFilterOpts<T>
+    : T extends "string"
+      ? StringFilter
+      : T extends "geopoint" | "geoshape"
+        ? GeoFilter
+        : T extends "datetime" | "timestamp"
+          ? DatetimeFilter
+          : T extends "boolean"
+            ? BooleanFilter
+            : T extends WhereClauseNumberPropertyTypes
+              ? NumberFilter
+              : BaseFilter<string>; // Fallback for unknown types
 
-type FilterFor<PD extends ObjectMetadata.Property> = PD["multiplicity"] extends
-  true ? ArrayFilter<BaseFilterFor<PD["type"]>>
-  : PD["type"] extends Record<string, BaseWirePropertyTypes>
-    ? StructFilter<PD["type"]> | BaseFilter.$isNull<string>
-  : BaseFilterFor<PD["type"]>;
+type FilterFor<PD extends ObjectMetadata.Property> =
+  PD["multiplicity"] extends true
+    ? ArrayFilter<BaseFilterFor<PD["type"]>>
+    : PD["type"] extends Record<string, BaseWirePropertyTypes>
+      ? StructFilter<PD["type"]> | BaseFilter.$isNull<string>
+      : BaseFilterFor<PD["type"]>;
 
 type StructFilterOpts<ST extends Record<string, BaseWirePropertyTypes>> = {
-  [K in keyof ST]?: FilterFor<{ "type": ST[K] }>;
+  [K in keyof ST]?: FilterFor<{ type: ST[K] }>;
 };
 type StructFilter<ST extends Record<string, BaseWirePropertyTypes>> = {
   [K in keyof ST]: Just<K, StructFilterOpts<ST>>;
@@ -178,10 +186,7 @@ type WhereClauseNumberPropertyTypes =
   | "decimal"
   | "byte";
 
-type SpecialPropertyFilter =
-  | StringFilter
-  | NumberFilter
-  | DatetimeFilter;
+type SpecialPropertyFilter = StringFilter | NumberFilter | DatetimeFilter;
 
 type PrimaryKeyFilterFor<T extends ObjectOrInterfaceDefinition> =
   CompileTimeMetadata<T> extends { primaryKeyType: infer PKT extends string }
@@ -226,8 +231,8 @@ type MergedPropertyWhereClause<
   RDPs extends Record<string, SimplePropertyDef> = {},
 > =
   | PropertyWhereClause<
-    DerivedObjectOrInterfaceDefinition.WithDerivedProperties<T, RDPs>
-  >
+      DerivedObjectOrInterfaceDefinition.WithDerivedProperties<T, RDPs>
+    >
   | SpecialPropertyWhereClause<T>;
 
 export type WhereClause<
@@ -238,5 +243,5 @@ export type WhereClause<
   | AndWhereClause<T, RDPs>
   | NotWhereClause<T, RDPs>
   | (IsNever<keyof CompileTimeMetadata<T>["properties"]> extends true
-    ? Record<string, never>
-    : MergedPropertyWhereClause<T, RDPs>);
+      ? Record<string, never>
+      : MergedPropertyWhereClause<T, RDPs>);

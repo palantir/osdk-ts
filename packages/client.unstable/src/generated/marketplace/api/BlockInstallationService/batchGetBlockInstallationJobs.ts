@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  BatchGetBlockInstallationJobsRequest
-    as _api_BatchGetBlockInstallationJobsRequest,
-  BatchGetBlockInstallationJobsResponse
-    as _api_BatchGetBlockInstallationJobsResponse,
+  BatchGetBlockInstallationJobsRequest as _api_BatchGetBlockInstallationJobsRequest,
+  BatchGetBlockInstallationJobsResponse as _api_BatchGetBlockInstallationJobsResponse,
 } from "../__components.js";
 
 /**
@@ -30,12 +29,12 @@ import type {
  */
 export async function batchGetBlockInstallationJobs(
   ctx: ConjureContext,
-  request: _api_BatchGetBlockInstallationJobsRequest,
+  request: _api_BatchGetBlockInstallationJobsRequest
 ): Promise<_api_BatchGetBlockInstallationJobsResponse> {
   return conjureFetch(
     ctx,
     `/block-installation/v2/jobs/batchGet`,
     "POST",
-    request,
+    request
   );
 }

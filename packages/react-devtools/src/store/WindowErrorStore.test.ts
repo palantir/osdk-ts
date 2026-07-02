@@ -15,6 +15,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+
 import { WindowErrorStore } from "./WindowErrorStore.js";
 
 function flushMicrotasks(): Promise<void> {

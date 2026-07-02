@@ -21,6 +21,7 @@ import type {
   Visibility,
 } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
+
 import { cloneDefinition } from "./cloneDefinition.js";
 import type { EntityPermission } from "./common/EntityPermission.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
@@ -58,22 +59,22 @@ export interface SharedPropertyTypeDefinition {
 }
 
 export function defineSharedPropertyType(
-  sptDefInput: SharedPropertyTypeDefinition,
+  sptDefInput: SharedPropertyTypeDefinition
 ): SharedPropertyType {
   const sptDef = cloneDefinition(sptDefInput);
   const apiName = namespace + sptDef.apiName;
   invariant(
-    ontologyDefinition[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE][apiName]
-      === undefined,
-    `Shared property type ${apiName} already exists`,
+    ontologyDefinition[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE][apiName] ===
+      undefined,
+    `Shared property type ${apiName} already exists`
   );
 
   invariant(
-    !shouldNotHaveRenderHints(sptDef.type)
-      || !hasRenderHints(sptDef.typeClasses),
-    `Shared property type ${apiName} of type '${
-      getPropertyTypeName(sptDef.type)
-    }' should not have render hints`,
+    !shouldNotHaveRenderHints(sptDef.type) ||
+      !hasRenderHints(sptDef.typeClasses),
+    `Shared property type ${apiName} of type '${getPropertyTypeName(
+      sptDef.type
+    )}' should not have render hints`
   );
 
   const fullSpt: SharedPropertyType = {
@@ -81,8 +82,9 @@ export function defineSharedPropertyType(
     apiName,
     nonNameSpacedApiName: sptDef.apiName,
     displayName: sptDef.displayName ?? sptDef.apiName, // This way the non-namespaced api name is the display name (maybe not ideal)
-    typeClasses: sptDef.typeClasses
-      ?? (shouldNotHaveRenderHints(sptDef.type) ? [] : defaultTypeClasses),
+    typeClasses:
+      sptDef.typeClasses ??
+      (shouldNotHaveRenderHints(sptDef.type) ? [] : defaultTypeClasses),
     __type: OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE,
   };
   updateOntology(fullSpt);

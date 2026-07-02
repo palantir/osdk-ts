@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   DraftGroup as _api_DraftGroup,
   DraftGroupRid as _api_DraftGroupRid,
@@ -28,7 +29,7 @@ import type {
  */
 export async function getDraftGroup(
   ctx: ConjureContext,
-  draftGroupRid: _api_DraftGroupRid,
+  draftGroupRid: _api_DraftGroupRid
 ): Promise<_api_DraftGroup> {
   return conjureFetch(ctx, `/draft-groups/${draftGroupRid}`, "GET");
 }

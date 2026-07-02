@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { findUp } from "find-up";
 import { readFile } from "fs/promises";
 import * as path from "node:path";
+
+import { findUp } from "find-up";
 
 /**
  * @param {import('tsup').Options} options
@@ -26,17 +27,13 @@ import * as path from "node:path";
 export default async (options, ourOptions) => {
   const babel = (await import("esbuild-plugin-babel")).default;
 
-  const packageJson = await readFile("package.json", "utf-8").then(f =>
+  const packageJson = await readFile("package.json", "utf-8").then((f) =>
     JSON.parse(f)
   );
 
   /** @type {import("tsup").Options} */
   const baseConfig = {
-    entry: [
-      "src/index.ts",
-      "src/public/*.ts",
-      "src/public/*.mts",
-    ],
+    entry: ["src/index.ts", "src/public/*.ts", "src/public/*.mts"],
     outExtension: ({ format }) => {
       return {
         js: ".js",
@@ -65,12 +62,14 @@ export default async (options, ourOptions) => {
     target: "es2022",
 
     esbuildPlugins: [
-      /** @type {any} */ (babel({
-        config: {
-          presets: ["@babel/preset-typescript"],
-          plugins: ["babel-plugin-dev-expression"],
-        },
-      })),
+      /** @type {any} */ (
+        babel({
+          config: {
+            presets: ["@babel/preset-typescript"],
+            plugins: ["babel-plugin-dev-expression"],
+          },
+        })
+      ),
     ],
   };
 
@@ -113,6 +112,8 @@ async function readPackageVersion(k) {
   const workspaceFile = await findUp("pnpm-workspace.yaml");
   if (!workspaceFile) throw "couldn't find workspace file";
   const workspaceRoot = path.dirname(workspaceFile);
-  return await readFile(path.join(workspaceRoot, k, "package.json"), "utf-8")
-    .then(f => JSON.parse(f).version);
+  return await readFile(
+    path.join(workspaceRoot, k, "package.json"),
+    "utf-8"
+  ).then((f) => JSON.parse(f).version);
 }

@@ -15,12 +15,12 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BlockSetId as _api_BlockSetId,
   BlockSetVersionId as _api_BlockSetVersionId,
   MarketplaceRid as _api_MarketplaceRid,
-  SetReleaseChannelsForBlockSetVersionRequest
-    as _api_SetReleaseChannelsForBlockSetVersionRequest,
+  SetReleaseChannelsForBlockSetVersionRequest as _api_SetReleaseChannelsForBlockSetVersionRequest,
 } from "../__components.js";
 
 /**
@@ -32,12 +32,12 @@ export async function setReleaseChannelsForBlockSetVersion(
   marketplaceRid: _api_MarketplaceRid,
   blockSetId: _api_BlockSetId,
   blockSetVersionId: _api_BlockSetVersionId,
-  request: _api_SetReleaseChannelsForBlockSetVersionRequest,
+  request: _api_SetReleaseChannelsForBlockSetVersionRequest
 ): Promise<void> {
   return conjureFetch(
     ctx,
     `/automation/product/${marketplaceRid}/${blockSetId}/release/channels/${blockSetVersionId}`,
     "POST",
-    request,
+    request
   );
 }

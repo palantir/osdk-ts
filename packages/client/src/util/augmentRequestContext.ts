@@ -47,7 +47,7 @@ augmentRequestContext(
 */
 export const augmentRequestContext = (
   client: MinimalClient,
-  augment: (ctx: RequestContext) => Partial<RequestContext>,
+  augment: (ctx: RequestContext) => Partial<RequestContext>
 ): MinimalClient => ({
   ...client,
   requestContext: {

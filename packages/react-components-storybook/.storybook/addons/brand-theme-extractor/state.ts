@@ -36,9 +36,10 @@ export function getDefaultBrandThemeState(): BrandThemeGlobals {
   });
 }
 
-export function createThemeStateForMode(
-  { presetId, colorMode }: CreateThemeStateParams,
-): BrandThemeGlobals {
+export function createThemeStateForMode({
+  presetId,
+  colorMode,
+}: CreateThemeStateParams): BrandThemeGlobals {
   const preset = findThemePreset(presetId) ?? THEME_PRESETS[0];
   if (!preset) {
     return {
@@ -75,7 +76,7 @@ export function parseBrandThemeState(raw: unknown): BrandThemeGlobals {
     colorMode: getThemeColorMode(parsed.colorMode),
     selectedPresetId: getString(
       parsed.selectedPresetId,
-      defaults.selectedPresetId,
+      defaults.selectedPresetId
     ),
     assignments: getTokenAssignments(parsed.assignments),
   };
@@ -95,7 +96,7 @@ export function findThemePreset(presetId: string): ThemePreset | undefined {
  */
 export function findMatchingPreset(
   assignments: TokenAssignment[],
-  colorMode: ThemeColorMode,
+  colorMode: ThemeColorMode
 ): string {
   for (const preset of THEME_PRESETS) {
     if (preset.colorMode != null && preset.colorMode !== colorMode) continue;
@@ -106,10 +107,7 @@ export function findMatchingPreset(
   return "custom";
 }
 
-function assignmentsMatch(
-  a: TokenAssignment[],
-  b: TokenAssignment[],
-): boolean {
+function assignmentsMatch(a: TokenAssignment[], b: TokenAssignment[]): boolean {
   if (a.length !== b.length) return false;
 
   const mapA = new Map(a.map((x) => [x.role, x.customValue ?? ""]));
@@ -166,10 +164,9 @@ function isTokenAssignment(value: unknown): value is TokenAssignment {
     return false;
   }
 
-  return typeof value.role === "string"
-    && typeof value.colorIndex === "number"
-    && (
-      value.customValue === undefined
-      || typeof value.customValue === "string"
-    );
+  return (
+    typeof value.role === "string" &&
+    typeof value.colorIndex === "number" &&
+    (value.customValue === undefined || typeof value.customValue === "string")
+  );
 }

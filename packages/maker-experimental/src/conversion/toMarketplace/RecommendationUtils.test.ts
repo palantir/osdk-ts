@@ -23,19 +23,20 @@ import {
   OntologyEntityTypeEnum,
 } from "@osdk/maker";
 import { beforeEach, describe, expect, it } from "vitest";
+
 import { defineOntologyV2 } from "../../api/defineOntologyV2.js";
 import { defineImportObject } from "../../api/importObjectType.js";
 import { ReadableIdGenerator } from "../../util/generateRid.js";
 import { getExternalRecommendations } from "./RecommendationUtils.js";
 
 function callGetExternalRecommendations(
-  result: Awaited<ReturnType<typeof defineOntologyV2>>,
+  result: Awaited<ReturnType<typeof defineOntologyV2>>
 ) {
   return getExternalRecommendations(
     result.ontologyIr.importedOntology,
     result.ontologyIr.valueTypes,
     result.ontologyIr.importedValueTypes,
-    result.shapes.inputShapes,
+    result.shapes.inputShapes
   );
 }
 
@@ -79,10 +80,10 @@ describe("RecommendationUtils", () => {
     });
 
     const recs = callGetExternalRecommendations(result);
-    const allMappings = recs.flatMap(r => r.mappings);
+    const allMappings = recs.flatMap((r) => r.mappings);
 
     const sptReadableId = ReadableIdGenerator.getForSpt(
-      "com.external.pkg.externalId",
+      "com.external.pkg.externalId"
     );
     expect(allMappings).toContainEqual({
       targetInputReadableId: sptReadableId,
@@ -111,7 +112,7 @@ describe("RecommendationUtils", () => {
     });
 
     const recs = callGetExternalRecommendations(result);
-    const allMappings = recs.flatMap(r => r.mappings);
+    const allMappings = recs.flatMap((r) => r.mappings);
 
     // Object type external rec
     const objReadableId = ReadableIdGenerator.getForObjectType("ImportedObj");
@@ -123,7 +124,7 @@ describe("RecommendationUtils", () => {
     // Property external recs
     const propReadableId = ReadableIdGenerator.getForObjectProperty(
       "ImportedObj",
-      "id",
+      "id"
     );
     expect(allMappings).toContainEqual({
       targetInputReadableId: propReadableId,
@@ -161,11 +162,10 @@ describe("RecommendationUtils", () => {
     });
 
     const recs = callGetExternalRecommendations(result);
-    const allMappings = recs.flatMap(r => r.mappings);
+    const allMappings = recs.flatMap((r) => r.mappings);
 
-    const ifaceReadableId = ReadableIdGenerator.getForInterface(
-      "ImportedIface",
-    );
+    const ifaceReadableId =
+      ReadableIdGenerator.getForInterface("ImportedIface");
     expect(allMappings).toContainEqual({
       targetInputReadableId: ifaceReadableId,
       upstreamOutputReadableId: ifaceReadableId,
@@ -194,11 +194,10 @@ describe("RecommendationUtils", () => {
     });
 
     const recs = callGetExternalRecommendations(result);
-    const allMappings = recs.flatMap(r => r.mappings);
+    const allMappings = recs.flatMap((r) => r.mappings);
 
-    const actionReadableId = ReadableIdGenerator.getForActionType(
-      "importedAction",
-    );
+    const actionReadableId =
+      ReadableIdGenerator.getForActionType("importedAction");
     expect(allMappings).toContainEqual({
       targetInputReadableId: actionReadableId,
       upstreamOutputReadableId: actionReadableId,
@@ -236,12 +235,12 @@ describe("RecommendationUtils", () => {
     const recs = callGetExternalRecommendations(result);
 
     // SPTs from "ext.pkg" should be grouped together
-    const extPkgRec = recs.find(r => r.upstreamPackageName === "ext.pkg");
+    const extPkgRec = recs.find((r) => r.upstreamPackageName === "ext.pkg");
     expect(extPkgRec).toBeDefined();
     expect(extPkgRec!.mappings).toHaveLength(2);
 
     // SPT from "other.pkg" should be in its own group
-    const otherPkgRec = recs.find(r => r.upstreamPackageName === "other.pkg");
+    const otherPkgRec = recs.find((r) => r.upstreamPackageName === "other.pkg");
     expect(otherPkgRec).toBeDefined();
     expect(otherPkgRec!.mappings).toHaveLength(1);
   });

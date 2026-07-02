@@ -20,6 +20,7 @@ import type { PDFDocumentProxy } from "pdfjs-dist";
 import type { EventBus, PDFViewer } from "pdfjs-dist/web/pdf_viewer.mjs";
 import type { RefObject } from "react";
 import { describe, expect, it, vi } from "vitest";
+
 import { usePdfViewerSync } from "../usePdfViewerSync.js";
 
 type Listener = (...args: unknown[]) => void;
@@ -89,7 +90,7 @@ describe("usePdfViewerSync", () => {
           onScaleChange,
           onPageChange,
         }),
-      { initialProps: { scale: initialScale } },
+      { initialProps: { scale: initialScale } }
     );
 
     return {
@@ -199,7 +200,7 @@ describe("usePdfViewerSync", () => {
           onScaleChange: vi.fn(),
           onPageChange: vi.fn(),
         }),
-      { initialProps: { scale: 1.0 } },
+      { initialProps: { scale: 1.0 } }
     );
 
     rerender({ scale: 2.0 });

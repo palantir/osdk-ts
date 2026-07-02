@@ -47,19 +47,19 @@ export type UIMessageChunk =
   | { type: "reasoning-delta"; id: string; delta: string }
   | { type: "reasoning-end"; id: string }
   | {
-    type: "tool-input-available";
-    toolCallId: string;
-    toolName: string;
-    input: unknown;
-  }
+      type: "tool-input-available";
+      toolCallId: string;
+      toolName: string;
+      input: unknown;
+    }
   | { type: "finish-step" }
   | {
-    type: "finish";
-    messageMetadata?: {
-      finishReason?: FinishReason;
-      usage?: LanguageModelUsage;
-    };
-  }
+      type: "finish";
+      messageMetadata?: {
+        finishReason?: FinishReason;
+        usage?: LanguageModelUsage;
+      };
+    }
   | { type: "error"; errorText: string };
 
 export type ChatTransportTrigger = "submit-message" | "regenerate-message";
@@ -79,11 +79,11 @@ export interface ChatTransportReconnectArgs {
 
 export interface ChatTransport<MSG extends UIMessage = UIMessage> {
   sendMessages(
-    args: ChatTransportSendMessagesArgs<MSG>,
+    args: ChatTransportSendMessagesArgs<MSG>
   ): Promise<ReadableStream<UIMessageChunk>>;
 
   reconnectToStream(
-    args: ChatTransportReconnectArgs,
+    args: ChatTransportReconnectArgs
   ): Promise<ReadableStream<UIMessageChunk> | null>;
 }
 

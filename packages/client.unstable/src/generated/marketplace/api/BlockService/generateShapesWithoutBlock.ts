@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   GenerateShapesResponse as _api_GenerateShapesResponse,
   GenerateShapesWithoutBlockRequest as _api_GenerateShapesWithoutBlockRequest,
@@ -25,12 +26,12 @@ import type {
  */
 export async function generateShapesWithoutBlock(
   ctx: ConjureContext,
-  request: _api_GenerateShapesWithoutBlockRequest,
+  request: _api_GenerateShapesWithoutBlockRequest
 ): Promise<_api_GenerateShapesResponse> {
   return conjureFetch(
     ctx,
     `/blocks/generate-shapes-without-block`,
     "POST",
-    request,
+    request
   );
 }

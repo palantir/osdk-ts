@@ -31,10 +31,7 @@ export function stableSerialize(value: unknown): string | undefined {
  * `{ __objectSet: ... }`, so composed operations (`.where`, `.union`,
  * `.intersect`, ...) participate in the key.
  */
-export function stableSerializeReplacer(
-  _key: string,
-  value: unknown,
-): unknown {
+export function stableSerializeReplacer(_key: string, value: unknown): unknown {
   if (value != null && typeof value === "object" && isObjectSet(value)) {
     return { __objectSet: getWireObjectSet(value) };
   }

@@ -21,6 +21,7 @@ import type {
   FilterState,
 } from "@osdk/react-components/experimental/filter-list";
 import React from "react";
+
 import { ASSIGNMENT_BASE_WHERE } from "../constants/baseFilter.js";
 import { Assignment } from "../generatedNoCheck2/index.js";
 import { ASSIGNMENT_FILTER_DEFS } from "../tables/AssignmentsTable/AssignmentsFilterDefs.js";
@@ -46,10 +47,10 @@ export interface UseAssignmentFiltersResult {
   readonly orderedFilterDefs: Array<IdentifiedFilterDef<Assignment>>;
   readonly handleFilterStateChanged: (
     def: FilterDefinitionUnion<Assignment>,
-    newState: FilterState,
+    newState: FilterState
   ) => void;
   readonly handleFilterVisibilityChange: (
-    newStates: Array<{ filterKey: string; isVisible: boolean }>,
+    newStates: Array<{ filterKey: string; isVisible: boolean }>
   ) => void;
   /** Bumped on reset so the FilterList can be remounted to clear internal state. */
   readonly resetKey: number;
@@ -83,11 +84,14 @@ export function useAssignmentFilters(): UseAssignmentFiltersResult {
 
   const baseObjectSet = React.useMemo(
     () => client(Assignment).where(ASSIGNMENT_BASE_WHERE),
-    [client],
+    [client]
   );
 
-  const { matchedKeys, isLoading: isMatching, error: matchError } =
-    useMatchedAssignmentKeys(latestSelections, composeAcrossTypes);
+  const {
+    matchedKeys,
+    isLoading: isMatching,
+    error: matchError,
+  } = useMatchedAssignmentKeys(latestSelections, composeAcrossTypes);
 
   // Narrow the object set by the latest-status matched keys.
   const narrowedObjectSet = React.useMemo(
@@ -95,7 +99,7 @@ export function useAssignmentFilters(): UseAssignmentFiltersResult {
       matchedKeys != null
         ? baseObjectSet.where({ $primaryKey: { $in: matchedKeys } })
         : baseObjectSet,
-    [baseObjectSet, matchedKeys],
+    [baseObjectSet, matchedKeys]
   );
 
   // FilterList may emit an empty `{}` clause; the OSDK rejects `.where({})`, so coerce to undefined.
@@ -103,7 +107,7 @@ export function useAssignmentFilters(): UseAssignmentFiltersResult {
     (clause: WhereClause<Assignment>) => {
       setFilterClauseRaw(isNonEmptyWhere(clause) ? clause : undefined);
     },
-    [],
+    []
   );
 
   const orderedFilterDefs = React.useMemo(
@@ -111,9 +115,9 @@ export function useAssignmentFilters(): UseAssignmentFiltersResult {
       applyVisibilityState(
         ASSIGNMENT_FILTER_DEFS,
         filterVisibility,
-        (def) => def.id,
+        (def) => def.id
       ),
-    [filterVisibility],
+    [filterVisibility]
   );
 
   const handleFilterStateChanged = React.useCallback(
@@ -127,7 +131,7 @@ export function useAssignmentFilters(): UseAssignmentFiltersResult {
         });
       }
     },
-    [],
+    []
   );
 
   const handleFilterVisibilityChange = React.useCallback(
@@ -136,10 +140,10 @@ export function useAssignmentFilters(): UseAssignmentFiltersResult {
         newStates.map(({ filterKey, isVisible }) => ({
           id: filterKey,
           isVisible,
-        })),
+        }))
       );
     },
-    [],
+    []
   );
 
   const handleReset = React.useCallback(() => {
@@ -157,11 +161,11 @@ export function useAssignmentFilters(): UseAssignmentFiltersResult {
         filterClause,
         matchedKeys != null ? { $primaryKey: { $in: matchedKeys } } : undefined,
       ]),
-    [filterClause, matchedKeys],
+    [filterClause, matchedKeys]
   );
 
-  const hasActiveFilters = latestSelections.length > 0
-    || isNonEmptyWhere(filterClause);
+  const hasActiveFilters =
+    latestSelections.length > 0 || isNonEmptyWhere(filterClause);
 
   return {
     narrowedObjectSet,

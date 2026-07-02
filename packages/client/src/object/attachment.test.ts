@@ -22,6 +22,7 @@ import {
 } from "@osdk/shared.test";
 import { type SetupServer } from "@osdk/shared.test";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 
@@ -33,16 +34,15 @@ describe("attachments", () => {
   beforeAll(async () => {
     ({ client, apiServer, fauxFoundry } = startNodeApiServer(
       new LegacyFauxFoundry(),
-      createClient,
+      createClient
     ));
 
     fauxFoundry.attachments.registerAttachment({
       filename: "file1.txt",
       mediaType: "application/json",
-      rid:
-        "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
+      rid: "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
       buffer: new TextEncoder().encode(
-        JSON.stringify({ name: "Hello World" }, null, 2),
+        JSON.stringify({ name: "Hello World" }, null, 2)
       ),
     });
   });
@@ -52,10 +52,9 @@ describe("attachments", () => {
   });
 
   it("reads attachment metadata successfully", async () => {
-    const result = await client(
-      objectTypeWithAllPropertyTypes,
-    )
-      .where({ id: stubData.objectWithAllPropertyTypes1.id }).fetchPage();
+    const result = await client(objectTypeWithAllPropertyTypes)
+      .where({ id: stubData.objectWithAllPropertyTypes1.id })
+      .fetchPage();
 
     const object1 = result.data[0];
     expect(object1.attachment).toBeDefined();
@@ -65,13 +64,14 @@ describe("attachments", () => {
     expect(attachmentMetadata?.mediaType).toEqual("application/json");
     expect(attachmentMetadata?.sizeBytes).toEqual(27);
     expect(attachmentMetadata?.rid).toEqual(
-      stubData.objectWithAllPropertyTypes1.attachment.rid,
+      stubData.objectWithAllPropertyTypes1.attachment.rid
     );
   });
 
   it("reads attachment successfully", async () => {
     const result = await client(objectTypeWithAllPropertyTypes)
-      .where({ id: stubData.objectWithAllPropertyTypes1.id }).fetchPage();
+      .where({ id: stubData.objectWithAllPropertyTypes1.id })
+      .fetchPage();
 
     const object1 = result.data[0];
     expect(object1.attachment).toBeDefined();

@@ -17,6 +17,7 @@
 import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import type { ObjectTableProps } from "@osdk/react-components/experimental/object-table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
+
 import { fauxFoundry } from "../../mocks/fauxFoundry.js";
 import { Employee } from "../../types/Employee.js";
 

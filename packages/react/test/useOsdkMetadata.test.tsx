@@ -19,6 +19,7 @@ import { renderHook, waitFor } from "@testing-library/react";
 import pDefer from "p-defer";
 import * as React from "react";
 import { describe, expect, it, vitest } from "vitest";
+
 import {
   fakeObservableClient,
   TestOsdkProvider,
@@ -47,7 +48,7 @@ describe(useOsdkMetadata, () => {
 
     const { result, rerender } = renderHook(
       () => useOsdkMetadata(FooObjectDef),
-      { wrapper },
+      { wrapper }
     );
 
     expect(result.current).toEqual({ loading: true });

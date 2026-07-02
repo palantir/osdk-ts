@@ -18,6 +18,7 @@ import type { PropertyKeys } from "@osdk/api";
 import { useOsdkAggregation } from "@osdk/react";
 import { renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+
 import { MockObjectType } from "../../__tests__/testUtils.js";
 import { NO_VALUE } from "../../utils/filterValues.js";
 import { usePropertyAggregation } from "../usePropertyAggregation.js";
@@ -28,7 +29,7 @@ vi.mock("@osdk/react", () => ({
 }));
 
 function mockAggregationData(
-  groups: Array<{ name: string; count: number }>,
+  groups: Array<{ name: string; count: number }>
 ): void {
   vi.mocked(useOsdkAggregation).mockReturnValue({
     data: groups.map((g) => ({ $group: { name: g.name }, $count: g.count })),
@@ -47,7 +48,7 @@ describe("usePropertyAggregation activeValues", () => {
         MockObjectType,
         "name" as PropertyKeys<typeof MockObjectType>,
         undefined,
-        { activeValues: ["Marketing", "Research"] },
+        { activeValues: ["Marketing", "Research"] }
       )
     );
 
@@ -69,7 +70,7 @@ describe("usePropertyAggregation activeValues", () => {
         MockObjectType,
         "name" as PropertyKeys<typeof MockObjectType>,
         undefined,
-        { sortBy: "value", activeValues: ["Bravo"] },
+        { sortBy: "value", activeValues: ["Bravo"] }
       )
     );
 
@@ -91,7 +92,7 @@ describe("usePropertyAggregation activeValues", () => {
         MockObjectType,
         "name" as PropertyKeys<typeof MockObjectType>,
         undefined,
-        { sortBy: "count", activeValues: ["Bravo"] },
+        { sortBy: "count", activeValues: ["Bravo"] }
       )
     );
 
@@ -115,7 +116,7 @@ describe("usePropertyAggregation activeValues", () => {
         MockObjectType,
         "name" as PropertyKeys<typeof MockObjectType>,
         undefined,
-        { activeValues: ["Marketing"] },
+        { activeValues: ["Marketing"] }
       )
     );
 
@@ -145,21 +146,21 @@ describe("usePropertyAggregation activeValues", () => {
       usePropertyAggregation(
         MockObjectType,
         "name" as PropertyKeys<typeof MockObjectType>,
-        undefined,
+        undefined
       )
     );
 
     // The No-value bucket merges only null + undefined (3 + 2 = 5).
-    const noValueEntries = result.current.data.filter((d) =>
-      d.value === NO_VALUE
+    const noValueEntries = result.current.data.filter(
+      (d) => d.value === NO_VALUE
     );
     expect(noValueEntries).toHaveLength(1);
     expect(noValueEntries[0].isNull).toBe(true);
     expect(noValueEntries[0].count).toBe(5);
 
     // The empty string is its own non-null row with its own count.
-    const emptyStringEntries = result.current.data.filter((d) =>
-      d.value === ""
+    const emptyStringEntries = result.current.data.filter(
+      (d) => d.value === ""
     );
     expect(emptyStringEntries).toHaveLength(1);
     expect(emptyStringEntries[0].isNull).toBeUndefined();
@@ -174,12 +175,10 @@ describe("usePropertyAggregation activeValues", () => {
         MockObjectType,
         "name" as PropertyKeys<typeof MockObjectType>,
         undefined,
-        { activeValues: [] },
+        { activeValues: [] }
       )
     );
 
-    expect(result.current.data).toEqual([
-      { value: "Marketing", count: 5 },
-    ]);
+    expect(result.current.data).toEqual([{ value: "Marketing", count: 5 }]);
   });
 });

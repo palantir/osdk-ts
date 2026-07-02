@@ -27,7 +27,7 @@ const meta: Meta<PdfViewerToolbarProps> = {
   args: {
     currentPage: 1,
     numPages: 14,
-    scale: 1.0,
+    scale: 1,
     autoSize: false,
     sidebarOpen: false,
     enableDownload: false,

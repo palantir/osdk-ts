@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  ListManagedNamespacesRequest
-    as _installmanager_api_ListManagedNamespacesRequest,
-  ListManagedNamespacesResponse
-    as _installmanager_api_ListManagedNamespacesResponse,
+  ListManagedNamespacesRequest as _installmanager_api_ListManagedNamespacesRequest,
+  ListManagedNamespacesResponse as _installmanager_api_ListManagedNamespacesResponse,
 } from "../__components.js";
 
 /**
@@ -28,12 +27,12 @@ import type {
  */
 export async function listManagedNamespaces(
   ctx: ConjureContext,
-  request: _installmanager_api_ListManagedNamespacesRequest,
+  request: _installmanager_api_ListManagedNamespacesRequest
 ): Promise<_installmanager_api_ListManagedNamespacesResponse> {
   return conjureFetch(
     ctx,
     `/install-manager/managed-namespaces`,
     "POST",
-    request,
+    request
   );
 }

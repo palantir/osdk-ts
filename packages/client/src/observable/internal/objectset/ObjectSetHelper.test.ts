@@ -18,6 +18,7 @@ import type { DerivedProperty, ObjectSet } from "@osdk/api";
 import { Employee } from "@osdk/client.test.ontology";
 import { FauxFoundry, ontologies, startNodeApiServer } from "@osdk/shared.test";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
+
 import type { Client } from "../../../Client.js";
 import { createClient } from "../../../createClient.js";
 import { Store } from "../Store.js";
@@ -29,7 +30,7 @@ describe("ObjectSetHelper RDP canonicalization", () => {
   beforeAll(() => {
     const testSetup = startNodeApiServer(
       new FauxFoundry("https://stack.palantir.com/"),
-      createClient,
+      createClient
     );
     client = testSetup.client;
 

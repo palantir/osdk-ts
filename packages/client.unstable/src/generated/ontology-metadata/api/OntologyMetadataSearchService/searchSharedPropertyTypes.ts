@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  SharedPropertyTypeSearchRequest
-    as _api_search_SharedPropertyTypeSearchRequest,
-  SharedPropertyTypeSearchResponse
-    as _api_search_SharedPropertyTypeSearchResponse,
+  SharedPropertyTypeSearchRequest as _api_search_SharedPropertyTypeSearchRequest,
+  SharedPropertyTypeSearchResponse as _api_search_SharedPropertyTypeSearchResponse,
 } from "../search/__components.js";
 
 /**
@@ -33,12 +32,12 @@ import type {
  */
 export async function searchSharedPropertyTypes(
   ctx: ConjureContext,
-  request: _api_search_SharedPropertyTypeSearchRequest,
+  request: _api_search_SharedPropertyTypeSearchRequest
 ): Promise<_api_search_SharedPropertyTypeSearchResponse> {
   return conjureFetch(
     ctx,
     `/ontology/search/v0/searchSharedPropertyTypes`,
     "POST",
-    request,
+    request
   );
 }

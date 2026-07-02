@@ -16,6 +16,7 @@
 
 import { Button } from "@base-ui/react/button";
 import React, { Component, type ReactNode } from "react";
+
 import styles from "./ErrorBoundary.module.css";
 
 interface ErrorBoundaryProps {
@@ -44,10 +45,7 @@ export class ErrorBoundary extends Component<
     // eslint-disable-next-line no-console
     console.error("[ErrorBoundary]", error);
     // eslint-disable-next-line no-console
-    console.error(
-      "[ErrorBoundary] Component stack:",
-      errorInfo.componentStack,
-    );
+    console.error("[ErrorBoundary] Component stack:", errorInfo.componentStack);
     this.props.onError?.(error);
   }
 

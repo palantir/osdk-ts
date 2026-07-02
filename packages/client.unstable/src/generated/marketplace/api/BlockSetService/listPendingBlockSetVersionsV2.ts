@@ -15,13 +15,12 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BlockSetId as _api_BlockSetId,
   GroupFilter as _api_GroupFilter,
-  ListPendingBlockSetVersionsPageToken
-    as _api_ListPendingBlockSetVersionsPageToken,
-  ListPendingBlockSetVersionsResponse
-    as _api_ListPendingBlockSetVersionsResponse,
+  ListPendingBlockSetVersionsPageToken as _api_ListPendingBlockSetVersionsPageToken,
+  ListPendingBlockSetVersionsResponse as _api_ListPendingBlockSetVersionsResponse,
   MarketplaceRid as _api_MarketplaceRid,
   PageSizeLimitHint as _api_PageSizeLimitHint,
 } from "../__components.js";
@@ -39,7 +38,7 @@ export async function listPendingBlockSetVersionsV2(
   pageToken: _api_ListPendingBlockSetVersionsPageToken | null | undefined,
   limit: _api_PageSizeLimitHint | null | undefined,
   createdByCurrentUser: boolean,
-  groupFilter: _api_GroupFilter | null | undefined,
+  groupFilter: _api_GroupFilter | null | undefined
 ): Promise<_api_ListPendingBlockSetVersionsResponse> {
   return conjureFetch(ctx, `/block-sets/v2/pending/list`, "GET", undefined, {
     marketplaceRid,

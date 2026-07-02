@@ -1,5 +1,4 @@
 ---
-"@osdk/react-components": patch
 "@osdk/react-components-storybook": patch
 ---
 

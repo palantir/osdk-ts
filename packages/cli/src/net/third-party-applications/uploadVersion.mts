@@ -23,27 +23,24 @@ export async function uploadVersion(
   ctx: InternalClientContext,
   thirdPartyAppRid: ThirdPartyAppRid,
   version: string,
-  zipFile: ReadableStream | Blob | BufferSource,
+  zipFile: ReadableStream | Blob | BufferSource
 ): Promise<Version> {
   const fetch = createFetch(ctx.tokenProvider);
   const urlObj = new URL(
     `api/v2/thirdPartyApplications/${thirdPartyAppRid}/website/versions/upload`,
-    ctx.foundryUrl,
+    ctx.foundryUrl
   );
   urlObj.searchParams.set("version", version);
   urlObj.searchParams.set("preview", "true");
   const url = urlObj.toString();
 
-  const result = await fetch(
-    url,
-    {
-      method: "POST",
-      body: zipFile,
-      headers: {
-        "Content-Type": "application/octet-stream",
-      },
-      duplex: "half", // Node hates me
-    } satisfies RequestInit & { duplex: "half" } as any,
-  );
+  const result = await fetch(url, {
+    method: "POST",
+    body: zipFile,
+    headers: {
+      "Content-Type": "application/octet-stream",
+    },
+    duplex: "half", // Node hates me
+  } satisfies RequestInit & { duplex: "half" } as any);
   return result.json();
 }

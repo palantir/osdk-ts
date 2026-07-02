@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BlockVersionId as _api_BlockVersionId,
   GetOwnedBlockVersionResponse as _api_GetOwnedBlockVersionResponse,
@@ -30,7 +31,7 @@ import type {
  */
 export async function getOwnedBlockVersion(
   ctx: ConjureContext,
-  blockVersionId: _api_BlockVersionId,
+  blockVersionId: _api_BlockVersionId
 ): Promise<_api_GetOwnedBlockVersionResponse> {
   return conjureFetch(ctx, `/blocks/versions/${blockVersionId}/owned`, "GET");
 }

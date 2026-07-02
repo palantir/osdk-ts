@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BlockSetVersionId as _api_BlockSetVersionId,
   GetRecommendationsResponse as _api_GetRecommendationsResponse,
@@ -39,11 +40,11 @@ export async function getRecommendationsBetweenBlockSets(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
   upstreamBlockSetVersionId: _api_BlockSetVersionId,
-  targetBlockSetVersionId: _api_BlockSetVersionId,
+  targetBlockSetVersionId: _api_BlockSetVersionId
 ): Promise<_api_GetRecommendationsResponse> {
   return conjureFetch(
     ctx,
     `/recommendations-v2/${marketplaceRid}/${targetBlockSetVersionId}/fulfilled-by/${upstreamBlockSetVersionId}`,
-    "GET",
+    "GET"
   );
 }

@@ -20,21 +20,25 @@ import {
   type HttpResponseResolver,
   type PathParams,
 } from "msw";
+
 import { OpenApiCallError } from "./util/handleOpenApiCall.js";
 
 export function authHandlerMiddleware<
   TReqBody extends DefaultBodyType = DefaultBodyType,
   TPathParams extends PathParams<string> = PathParams<string>,
 >(
-  handler: HttpResponseResolver<TPathParams, TReqBody>,
+  handler: HttpResponseResolver<TPathParams, TReqBody>
 ): HttpResponseResolver<TPathParams, TReqBody> {
   return async (info) => {
     const authHeader = info.request.headers.get("authorization");
 
     if (!authHeader || authHeader !== `Bearer myAccessToken`) {
-      return HttpResponse.json({ message: "Missing Authorization header" }, {
-        status: 401,
-      });
+      return HttpResponse.json(
+        { message: "Missing Authorization header" },
+        {
+          status: 401,
+        }
+      );
     }
 
     try {

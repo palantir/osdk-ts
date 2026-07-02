@@ -36,9 +36,10 @@ export interface BaseExcelViewerProps {
   className?: string;
 }
 
-export interface ExcelViewerMediaProps
-  extends Omit<BaseExcelViewerProps, "spreadsheet">
-{
+export interface ExcelViewerMediaProps extends Omit<
+  BaseExcelViewerProps,
+  "spreadsheet"
+> {
   /** The Media object to fetch Excel contents from */
   media: Media;
 }

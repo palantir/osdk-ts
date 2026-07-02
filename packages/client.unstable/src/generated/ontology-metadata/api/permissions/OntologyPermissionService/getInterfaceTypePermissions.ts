@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { InterfaceTypeRid as _api_InterfaceTypeRid } from "../../__components.js";
 import type { GetInterfaceTypePermissionsResponse as _api_permissions_GetInterfaceTypePermissionsResponse } from "../__components.js";
 
@@ -23,11 +24,11 @@ import type { GetInterfaceTypePermissionsResponse as _api_permissions_GetInterfa
  */
 export async function getInterfaceTypePermissions(
   ctx: ConjureContext,
-  interfaceTypeRid: _api_InterfaceTypeRid,
+  interfaceTypeRid: _api_InterfaceTypeRid
 ): Promise<_api_permissions_GetInterfaceTypePermissionsResponse> {
   return conjureFetch(
     ctx,
     `/permissions/interfaceType/${interfaceTypeRid}`,
-    "GET",
+    "GET"
   );
 }

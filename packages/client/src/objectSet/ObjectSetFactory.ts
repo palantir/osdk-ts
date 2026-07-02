@@ -16,14 +16,11 @@
 
 import type { ObjectOrInterfaceDefinition, ObjectSet } from "@osdk/api";
 import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
+
 import type { MinimalClient } from "../MinimalClientContext.js";
 
 /** @internal */
 export type ObjectSetFactory<
   Q extends ObjectOrInterfaceDefinition,
   R extends ObjectSet<Q>,
-> = (
-  type: Q,
-  clientCtx: MinimalClient,
-  objectSet?: WireObjectSet,
-) => R;
+> = (type: Q, clientCtx: MinimalClient, objectSet?: WireObjectSet) => R;
