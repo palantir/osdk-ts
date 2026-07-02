@@ -16,10 +16,15 @@
 
 import { foundryModel } from "@osdk/aip-core";
 import type * as AipCore from "@osdk/aip-core";
-import type { PlatformClient } from "@osdk/client";
-import { useOsdkObjects } from "@osdk/react";
+import type { Client, PlatformClient } from "@osdk/client";
 import { useChat } from "@osdk/react/experimental/aip";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { AipAgentChat } from "../AipAgentChat.js";
@@ -35,8 +40,10 @@ vi.mock("@osdk/aip-core", async () => {
   };
 });
 
+let mockClient: Client;
+
 vi.mock("@osdk/react", () => ({
-  useOsdkObjects: vi.fn(),
+  useOsdkClient: (): Client => mockClient,
 }));
 
 vi.mock("@osdk/react/experimental/aip", () => ({
@@ -44,7 +51,6 @@ vi.mock("@osdk/react/experimental/aip", () => ({
 }));
 
 const mockFoundryModel = vi.mocked(foundryModel);
-const mockUseOsdkObjects = vi.mocked(useOsdkObjects);
 const mockUseChat = vi.mocked(useChat);
 
 const EMPLOYEE_TYPE = { type: "object" as const, apiName: "Employee" };
@@ -86,27 +92,28 @@ function mockUseChatDefaults(): MockUseChatState {
   return { sendMessage, stop, clearError };
 }
 
-function mockUseOsdkObjectsData(
-  data: ReadonlyArray<unknown> | undefined = []
-): void {
-  mockUseOsdkObjects.mockReturnValue({
-    data,
-    isLoading: false,
-    isOptimistic: false,
-    hasMore: false,
-    error: undefined,
-    fetchMore: undefined,
-    refetch: vi.fn(),
-    objectSet: undefined,
-  } as never);
+function installMockClient(
+  objectsByApiName: Record<string, ReadonlyArray<unknown>> = {}
+): { clientFn: ReturnType<typeof vi.fn> } {
+  const clientFn = vi.fn((type: { apiName: string }) => {
+    const objects = objectsByApiName[type.apiName] ?? [];
+    return {
+      async *asyncIter() {
+        for (const object of objects) {
+          yield Promise.resolve(object);
+        }
+      },
+    };
+  });
+  mockClient = clientFn as unknown as Client;
+  return { clientFn };
 }
 
 describe("AipAgentChat", () => {
   beforeEach(() => {
     mockFoundryModel.mockClear();
-    mockUseOsdkObjects.mockReset();
     mockUseChat.mockReset();
-    mockUseOsdkObjectsData([]);
+    installMockClient();
   });
 
   afterEach(() => {
@@ -206,7 +213,7 @@ describe("AipAgentChat", () => {
 
   it("mounts a context loader per selected object-type item and none for unselected items", () => {
     mockUseChatDefaults();
-    mockUseOsdkObjectsData([]);
+    const { clientFn } = installMockClient();
 
     render(
       <AipAgentChat
@@ -217,18 +224,20 @@ describe("AipAgentChat", () => {
       />
     );
 
-    // Only the selected type mounts a loader.
-    const calls = mockUseOsdkObjects.mock.calls;
-    const apiNames = calls.map((call) => call[0]?.apiName);
+    // Only the selected type mounts a loader, which invokes the client with
+    // that type to build an object set.
+    const apiNames = clientFn.mock.calls.map(
+      (call) => (call[0] as { apiName: string }).apiName
+    );
     expect(apiNames).toContain("Employee");
     expect(apiNames).not.toContain("Office");
   });
 
-  it("appends loaded objects to the system prompt passed to useChat", () => {
+  it("appends loaded objects to the system prompt passed to useChat", async () => {
     mockUseChatDefaults();
-    mockUseOsdkObjectsData([
-      { $primaryKey: 1, $title: "Alice", name: "Alice" },
-    ]);
+    installMockClient({
+      Employee: [{ $primaryKey: 1, $title: "Alice", name: "Alice" }],
+    });
 
     render(
       <AipAgentChat
@@ -240,18 +249,26 @@ describe("AipAgentChat", () => {
       />
     );
 
-    // The last useChat call after the loader effect fires must include the
-    // serialized Employee snapshot appended to the base system prompt.
+    // The loader iterates asynchronously; wait for the effect to drain the
+    // fake object set and re-render useChat with the augmented prompt.
+    await waitFor(() => {
+      const lastCall = mockUseChat.mock.calls.at(-1);
+      expect(lastCall?.[0].system).toContain(
+        '<objects api-name="Employee" count="1">'
+      );
+    });
+
     const lastCall = mockUseChat.mock.calls.at(-1);
     const system = lastCall?.[0].system;
     expect(system).toContain("You are helpful.");
-    expect(system).toContain('<objects api-name="Employee" count="1">');
     expect(system).toContain('"$title": "Alice"');
   });
 
   it("leaves the system prompt untouched when nothing is selected", () => {
     mockUseChatDefaults();
-    mockUseOsdkObjectsData([{ $primaryKey: 1, $title: "Alice" }]);
+    installMockClient({
+      Employee: [{ $primaryKey: 1, $title: "Alice" }],
+    });
 
     render(
       <AipAgentChat
