@@ -67,6 +67,70 @@ function baseDefaults(overrides?: {
   ];
 }
 
+/**
+ * Blueprint default color tokens for the light color mode.
+ * Snapshot of Blueprint 5.x defaults — verify if upgrading Blueprint.
+ */
+function workshopLightColors(): TokenAssignment[] {
+  return [
+    valueAssignment("background", "#ffffff"),
+    valueAssignment("surface", "#f6f7f9"),
+    valueAssignment("text", "#1c2127"),
+    valueAssignment("text-muted", "#5f6b7c"),
+    valueAssignment("text-subtle", "#abb3bf"),
+    valueAssignment("primary", "#2d72d2"),
+    valueAssignment("primary-foreground", "#ffffff"),
+    valueAssignment("secondary", "#edeff2"),
+    valueAssignment("secondary-foreground", "#1c2127"),
+    valueAssignment("icon-color", "#5f6b7c"),
+    valueAssignment("border", "#d3d8de"),
+    valueAssignment("input-bg", "#ffffff"),
+    valueAssignment("overlay", "rgba(16, 22, 26, 0.7)"),
+    valueAssignment("danger", "#cd4246"),
+    valueAssignment("success", "#238551"),
+    valueAssignment("warning", "#c87619"),
+    valueAssignment("primary-hover", "#215db0"),
+  ];
+}
+
+/**
+ * Blueprint default color tokens for the dark color mode.
+ * Snapshot of Blueprint 5.x defaults — verify if upgrading Blueprint.
+ */
+function workshopDarkColors(): TokenAssignment[] {
+  return [
+    valueAssignment("background", "#111418"),
+    valueAssignment("surface", "#1c2127"),
+    valueAssignment("text", "#f6f7f9"),
+    valueAssignment("text-muted", "#abb3bf"),
+    valueAssignment("text-subtle", "#5f6b7c"),
+    valueAssignment("primary", "#2d72d2"),
+    valueAssignment("primary-foreground", "#ffffff"),
+    valueAssignment("secondary", "#2f343c"),
+    valueAssignment("secondary-foreground", "#f6f7f9"),
+    valueAssignment("icon-color", "#abb3bf"),
+    valueAssignment("border", "#404854"),
+    valueAssignment("input-bg", "#1c2127"),
+    valueAssignment("overlay", "rgba(16, 22, 26, 0.85)"),
+    valueAssignment("danger", "#e76a6e"),
+    valueAssignment("success", "#32a467"),
+    valueAssignment("warning", "#ec9a3c"),
+    valueAssignment("primary-hover", "#4c90f0"),
+  ];
+}
+
+/**
+ * Returns the full set of default token assignments for a built-in theme.
+ * Used for export when the user hasn't added custom overrides.
+ */
+export function getBuiltInDefaults(
+  colorMode: ThemeColorMode
+): TokenAssignment[] {
+  const colors =
+    colorMode === "dark" ? workshopDarkColors() : workshopLightColors();
+  return [...colors, ...baseDefaults()];
+}
+
 export const THEME_PRESETS: ThemePreset[] = [
   {
     id: "workshop-light",
