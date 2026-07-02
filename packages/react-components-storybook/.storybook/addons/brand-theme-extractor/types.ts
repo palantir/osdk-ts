@@ -39,6 +39,7 @@ export type ColorTokenRole =
   | "text-subtle"
   | "primary"
   | "primary-hover"
+  | "primary-active"
   | "primary-foreground"
   | "secondary"
   | "secondary-foreground"

@@ -62,7 +62,8 @@ const TriggerButton = styled.button(({ theme }) => ({
   padding: "6px 12px",
   transition: "background 150ms ease, border-color 150ms ease",
   "&:hover": {
-    background: theme.background.hoverable,
+    background:
+      theme.base === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.05)",
     borderColor: theme.color.medium,
   },
 }));

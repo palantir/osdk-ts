@@ -151,6 +151,18 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     ],
   },
   {
+    role: "primary-active",
+    label: "Primary Active",
+    category: "color",
+    inputType: "color",
+    designMdKey: "primary-active",
+    designMdSection: "colors",
+    cssProperties: [
+      "--osdk-intent-primary-active",
+      "--bp-intent-primary-active",
+    ],
+  },
+  {
     role: "primary-foreground",
     label: "Primary Foreground",
     category: "color",

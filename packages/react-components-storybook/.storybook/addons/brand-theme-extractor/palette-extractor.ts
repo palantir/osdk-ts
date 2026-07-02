@@ -250,6 +250,11 @@ export function autoMapFromPalette(
     primaryHsl.s,
     clamp(primaryHsl.l + (isDark ? 8 : -8), 4, 96)
   );
+  const primaryActiveHex = hslToHex(
+    primaryHsl.h,
+    primaryHsl.s,
+    clamp(primaryHsl.l + (isDark ? 14 : -14), 4, 96)
+  );
   const primaryFgHex = bestForeground(primaryHex);
 
   // Semantic status colors keep their canonical hues (red / green / amber) but
@@ -286,6 +291,7 @@ export function autoMapFromPalette(
     valueAssignment("text-subtle", textSubtleHex),
     valueAssignment("primary", primaryHex),
     valueAssignment("primary-hover", primaryHoverHex),
+    valueAssignment("primary-active", primaryActiveHex),
     valueAssignment("primary-foreground", primaryFgHex),
     valueAssignment("secondary", secondaryHex),
     valueAssignment("secondary-foreground", secondaryFgHex),

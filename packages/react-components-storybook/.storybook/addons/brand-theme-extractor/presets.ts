@@ -90,6 +90,7 @@ function workshopLightColors(): TokenAssignment[] {
     valueAssignment("success", "#238551"),
     valueAssignment("warning", "#c87619"),
     valueAssignment("primary-hover", "#215db0"),
+    valueAssignment("primary-active", "#184a90"),
   ];
 }
 
@@ -116,6 +117,7 @@ function workshopDarkColors(): TokenAssignment[] {
     valueAssignment("success", "#32a467"),
     valueAssignment("warning", "#ec9a3c"),
     valueAssignment("primary-hover", "#4c90f0"),
+    valueAssignment("primary-active", "#5ea3ff"),
   ];
 }
 
