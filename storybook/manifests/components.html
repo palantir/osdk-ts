@@ -509,7 +509,7 @@
 <header>
   <div class="wrap">
     <h1>Components Manifest</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">31/31 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">31/31 infos</a><a class="filter-pill err" data-k="story-errors" href="#filter-story-errors">12/186 story errors</a></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">32/32 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">32/32 infos</a><a class="filter-pill err" data-k="story-errors" href="#filter-story-errors">13/187 story errors</a></div>
   </div>
 </header>
 <main>
@@ -6333,6 +6333,620 @@ export const WithValidation: Story = {
   class="card 
   has-error 
   has-info 
+  has-story-error"
+  role="listitem"
+  aria-label="ComponentOverview">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-err"></span> ComponentOverview</h2>
+      <div class="badges">
+        <label for="c-9-components-overview-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-9-components-overview-info" class="badge info as-toggle">1 info</label>
+        <label for="c-9-components-overview-stories" class="badge err as-toggle">1/1 story errors</label>
+      </div>
+    </div>
+    <div class="meta" title="./src/stories/Overview/Overview.stories.tsx">components-overview · ./src/stories/Overview/Overview.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  <input id="c-9-components-overview-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-9-components-overview-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-9-components-overview-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+
+  <div class="panels">
+    
+        <div class="panel panel-err">
+          
+    <div class="note err">
+      <div class="note-title">Prop type error</div>
+      <div class="note-body"><pre><code>No component file found for the &quot;ComponentOverview&quot; component.
+  509 | }
+  510 |
+&gt; 511 | const meta: Meta = {
+      | ^
+  512 |   title: &quot;Components/Overview&quot;,
+  513 |   component: ComponentOverview,
+  514 |   tags: [&quot;beta&quot;],
+
+./src/stories/Overview/Overview.stories.tsx:
+/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import type { Media, WhereClause } from &quot;@osdk/api&quot;;
+import { useOsdkObject } from &quot;@osdk/react&quot;;
+import {
+  ActionForm,
+  type ActionFormProps,
+  type FormState,
+} from &quot;@osdk/react-components/experimental&quot;;
+import { DocumentViewer } from &quot;@osdk/react-components/experimental/document-viewer&quot;;
+import type { FilterDefinitionUnion } from &quot;@osdk/react-components/experimental/filter-list&quot;;
+import { FilterList } from &quot;@osdk/react-components/experimental/filter-list&quot;;
+import { ObjectTable } from &quot;@osdk/react-components/experimental/object-table&quot;;
+import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
+import { http, passthrough } from &quot;msw&quot;;
+import React, { type CSSProperties, useCallback, useState } from &quot;react&quot;;
+import { utils, write } from &quot;xlsx-republish&quot;;
+
+import {
+  fauxFoundry,
+  MEDIA_EMPLOYEE_PK,
+  updateEmployeeStoryAction,
+} from &quot;../../mocks/fauxFoundry.js&quot;;
+import { Employee } from &quot;../../types/Employee.js&quot;;
+
+/* cspell:words officedocument openxmlformats pldi spreadsheetml tracemonkey */
+
+// ── Types ─────────────────────────────────────────────────
+
+type TabId = &quot;data&quot; | &quot;viewers&quot; | &quot;forms&quot;;
+
+type CSSWithCustomProps = CSSProperties &amp; { [key: `--${string}`]: string };
+
+type ViewerTypeId =
+  | &quot;pdf&quot;
+  | &quot;image&quot;
+  | &quot;markdown&quot;
+  | &quot;video&quot;
+  | &quot;email&quot;
+  | &quot;excel&quot;
+  | &quot;xml&quot;
+  | &quot;tiff&quot;
+  | &quot;unsupported&quot;;
+
+interface ViewerOption {
+  id: ViewerTypeId;
+  label: string;
+}
+
+interface MockViewerMedia {
+  fileName: string;
+  media: Media;
+}
+
+// ── Constants ─────────────────────────────────────────────
+
+const TABS: Array&lt;{ id: TabId; label: string }&gt; = [
+  { id: &quot;data&quot;, label: &quot;Data&quot; },
+  { id: &quot;viewers&quot;, label: &quot;Viewers&quot; },
+  { id: &quot;forms&quot;, label: &quot;Forms&quot; },
+];
+
+const VIEWER_OPTIONS: Array&lt;ViewerOption&gt; = [
+  { id: &quot;pdf&quot;, label: &quot;PDF&quot; },
+  { id: &quot;image&quot;, label: &quot;Image&quot; },
+  { id: &quot;markdown&quot;, label: &quot;Markdown&quot; },
+  { id: &quot;video&quot;, label: &quot;Video&quot; },
+  { id: &quot;email&quot;, label: &quot;Email&quot; },
+  { id: &quot;excel&quot;, label: &quot;Excel&quot; },
+  { id: &quot;xml&quot;, label: &quot;XML&quot; },
+  { id: &quot;tiff&quot;, label: &quot;TIFF&quot; },
+  { id: &quot;unsupported&quot;, label: &quot;Unsupported&quot; },
+];
+
+const FILTER_DEFINITIONS: Array&lt;FilterDefinitionUnion&lt;Employee&gt;&gt; = [
+  {
+    type: &quot;PROPERTY&quot;,
+    id: &quot;department&quot;,
+    key: &quot;department&quot;,
+    label: &quot;Department&quot;,
+    filterComponent: &quot;LISTOGRAM&quot;,
+    filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
+  },
+  {
+    type: &quot;PROPERTY&quot;,
+    id: &quot;team&quot;,
+    key: &quot;team&quot;,
+    label: &quot;Team&quot;,
+    filterComponent: &quot;LISTOGRAM&quot;,
+    filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
+  },
+  {
+    type: &quot;PROPERTY&quot;,
+    id: &quot;fullName&quot;,
+    key: &quot;fullName&quot;,
+    label: &quot;Full Name&quot;,
+    filterComponent: &quot;CONTAINS_TEXT&quot;,
+    filterState: { type: &quot;CONTAINS_TEXT&quot; },
+  },
+];
+
+const FILTER_WRAPPER_STYLE: CSSWithCustomProps = {
+  flexShrink: 0,
+  overflow: &quot;auto&quot;,
+  &quot;--osdk-filter-list-border-radius&quot;: &quot;0px&quot;,
+};
+
+const SAMPLE_VIDEO_URL = `${import.meta.env.BASE_URL}example.mp4`;
+
+const SAMPLE_TIFF_URL = `${import.meta.env.BASE_URL}multi-page-tiff.tiff`;
+
+const SAMPLE_MARKDOWN = `# Document Viewer
+
+This markdown file is rendered through the overview selector.
+
+- PDF uses the employee media field
+- Other types use small local Storybook samples
+`;
+
+const SAMPLE_EMAIL = `From: Ada &lt;ada@example.com&gt;
+To: Storybook &lt;storybook@example.com&gt;
+Subject: Document Viewer Overview
+Date: Wed, 01 Jul 2026 10:00:00 +0000
+Content-Type: text/html; charset=utf-8
+
+&lt;html&gt;&lt;body&gt;&lt;p&gt;The overview is showing the email renderer.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
+`;
+
+const SAMPLE_XML = `&lt;?xml version=&quot;1.0&quot;?&gt;
+&lt;document&gt;
+  &lt;title&gt;Document Viewer Overview&lt;/title&gt;
+  &lt;status&gt;Rendered through the XML viewer&lt;/status&gt;
+&lt;/document&gt;`;
+
+function createSampleImageDataUrl(): string {
+  const canvas = document.createElement(&quot;canvas&quot;);
+  canvas.width = 480;
+  canvas.height = 320;
+  const ctx = canvas.getContext(&quot;2d&quot;)!;
+  const gradient = ctx.createLinearGradient(0, 0, 480, 320);
+  gradient.addColorStop(0, &quot;#2d72d2&quot;);
+  gradient.addColorStop(0.55, &quot;#10b981&quot;);
+  gradient.addColorStop(1, &quot;#f59e0b&quot;);
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, 480, 320);
+
+  ctx.fillStyle = &quot;rgba(255, 255, 255, 0.92)&quot;;
+  ctx.fillRect(64, 56, 352, 208);
+  ctx.fillStyle = &quot;#1f2937&quot;;
+  ctx.font = &quot;700 36px Arial, sans-serif&quot;;
+  ctx.textAlign = &quot;center&quot;;
+  ctx.textBaseline = &quot;middle&quot;;
+  ctx.fillText(&quot;Image Viewer&quot;, 240, 136);
+  ctx.font = &quot;500 20px Arial, sans-serif&quot;;
+  ctx.fillText(&quot;Overview sample&quot;, 240, 184);
+
+  return canvas.toDataURL(&quot;image/png&quot;);
+}
+
+const SAMPLE_IMAGE_DATA_URL = createSampleImageDataUrl();
+
+function createMockMedia(
+  mimeType: string,
+  fetchFn: () =&gt; Promise&lt;Response&gt;,
+  fileName: string
+): Media {
+  return {
+    fetchContents: fetchFn,
+    fetchMetadata: () =&gt;
+      Promise.resolve({
+        mediaType: mimeType,
+        path: fileName,
+        sizeBytes: 1024,
+      }),
+    getMediaReference: () =&gt; ({
+      mimeType,
+      reference: {
+        type: &quot;mediaSetViewItem&quot; as const,
+        mediaSetViewItem: {
+          mediaItemRid: `ri.mio.main.media-item.${fileName}`,
+          mediaSetRid: &quot;ri.mio.main.media-set.storybook-overview&quot;,
+          mediaSetViewRid: &quot;ri.mio.main.media-set-view.storybook-overview&quot;,
+        },
+      },
+    }),
+  };
+}
+
+function createExcelMedia(): Media {
+  const worksheet = utils.aoa_to_sheet([
+    [&quot;Name&quot;, &quot;Department&quot;, &quot;Location&quot;],
+    [&quot;Ada Lovelace&quot;, &quot;Engineering&quot;, &quot;London&quot;],
+    [&quot;Grace Hopper&quot;, &quot;Platform&quot;, &quot;New York&quot;],
+  ]);
+  const workbook = utils.book_new();
+  utils.book_append_sheet(workbook, worksheet, &quot;Employees&quot;);
+  const buffer = write(workbook, { type: &quot;array&quot;, bookType: &quot;xlsx&quot; });
+
+  return createMockMedia(
+    &quot;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet&quot;,
+    () =&gt; Promise.resolve(new Response(buffer)),
+    &quot;employees.xlsx&quot;
+  );
+}
+
+const MOCK_VIEWER_MEDIA_BY_TYPE: Partial&lt;
+  Record&lt;ViewerTypeId, MockViewerMedia&gt;
+&gt; = {
+  image: {
+    fileName: &quot;overview.png&quot;,
+    media: createMockMedia(
+      &quot;image/png&quot;,
+      () =&gt; fetch(SAMPLE_IMAGE_DATA_URL),
+      &quot;overview.png&quot;
+    ),
+  },
+  markdown: {
+    fileName: &quot;overview.md&quot;,
+    media: createMockMedia(
+      &quot;text/markdown&quot;,
+      () =&gt; Promise.resolve(new Response(SAMPLE_MARKDOWN)),
+      &quot;overview.md&quot;
+    ),
+  },
+  video: {
+    fileName: &quot;example.mp4&quot;,
+    media: createMockMedia(
+      &quot;video/mp4&quot;,
+      () =&gt; fetch(SAMPLE_VIDEO_URL),
+      &quot;example.mp4&quot;
+    ),
+  },
+  email: {
+    fileName: &quot;overview.eml&quot;,
+    media: createMockMedia(
+      &quot;message/rfc822&quot;,
+      () =&gt; Promise.resolve(new Response(SAMPLE_EMAIL)),
+      &quot;overview.eml&quot;
+    ),
+  },
+  excel: {
+    fileName: &quot;employees.xlsx&quot;,
+    media: createExcelMedia(),
+  },
+  xml: {
+    fileName: &quot;overview.xml&quot;,
+    media: createMockMedia(
+      &quot;application/xml&quot;,
+      () =&gt; Promise.resolve(new Response(SAMPLE_XML)),
+      &quot;overview.xml&quot;
+    ),
+  },
+  tiff: {
+    fileName: &quot;multi-page-tiff.tiff&quot;,
+    media: createMockMedia(
+      &quot;image/tiff&quot;,
+      () =&gt; fetch(SAMPLE_TIFF_URL),
+      &quot;multi-page-tiff.tiff&quot;
+    ),
+  },
+  unsupported: {
+    fileName: &quot;overview.bin&quot;,
+    media: createMockMedia(
+      &quot;application/octet-stream&quot;,
+      () =&gt; Promise.resolve(new Response(&quot;Unsupported sample&quot;)),
+      &quot;overview.bin&quot;
+    ),
+  },
+};
+
+const actionDefinition = updateEmployeeStoryAction.actionDefinition;
+
+type OverviewApplyAction = Parameters&lt;
+  NonNullable&lt;ActionFormProps&lt;typeof actionDefinition&gt;[&quot;onSubmit&quot;]&gt;
+&gt;[1];
+
+function applyOverviewAction(
+  formState: FormState&lt;typeof actionDefinition&gt;,
+  applyAction: OverviewApplyAction
+): ReturnType&lt;OverviewApplyAction&gt; {
+  return applyAction(
+    formState as unknown as Parameters&lt;OverviewApplyAction&gt;[0]
+  );
+}
+
+// ── Tab: Data ─────────────────────────────────────────────
+
+function DataTab(): React.ReactElement {
+  const [filterClause, setFilterClause] = useState&lt;
+    WhereClause&lt;Employee&gt; | undefined
+  &gt;(undefined);
+  const [collapsed, setCollapsed] = useState(false);
+
+  return (
+    &lt;div style={{ display: &quot;flex&quot;, height: 500 }}&gt;
+      &lt;div
+        style={{
+          ...FILTER_WRAPPER_STYLE,
+          width: collapsed ? &quot;auto&quot; : 280,
+        }}
+      &gt;
+        &lt;FilterList
+          objectType={Employee}
+          filterDefinitions={FILTER_DEFINITIONS}
+          filterClause={filterClause}
+          onFilterClauseChanged={setFilterClause}
+          title=&quot;Employee Filters&quot;
+          collapsed={collapsed}
+          onCollapsedChange={setCollapsed}
+          showActiveFilterCount={true}
+        /&gt;
+      &lt;/div&gt;
+      &lt;div style={{ flex: 1, minWidth: 0 }}&gt;
+        &lt;ObjectTable objectType={Employee} filter={filterClause} /&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}
+
+// ── Tab: Viewers ──────────────────────────────────────────
+
+interface ViewersTabProps {
+  selectedViewerType: ViewerTypeId;
+}
+
+function ViewersTab({
+  selectedViewerType,
+}: ViewersTabProps): React.ReactElement {
+  const { object: employee, isLoading } = useOsdkObject(
+    Employee,
+    MEDIA_EMPLOYEE_PK
+  );
+
+  const selectedMockMedia = MOCK_VIEWER_MEDIA_BY_TYPE[selectedViewerType];
+  const selectedMedia =
+    selectedViewerType === &quot;pdf&quot;
+      ? employee?.employeeDocuments
+      : selectedMockMedia?.media;
+  const selectedFileName =
+    selectedViewerType === &quot;pdf&quot;
+      ? &quot;compressed.tracemonkey-pldi-09.pdf&quot;
+      : selectedMockMedia?.fileName;
+  const hasMedia = selectedMedia != null;
+  const loadingMessage = isLoading ? &quot;Loading document...&quot; : &quot;No media found.&quot;;
+
+  return (
+    &lt;div style={{ height: 400, position: &quot;relative&quot; }}&gt;
+      {hasMedia &amp;&amp; (
+        &lt;DocumentViewer
+          key={selectedViewerType}
+          media={selectedMedia}
+          fileName={selectedFileName}
+        /&gt;
+      )}
+      {!hasMedia &amp;&amp; (
+        &lt;div
+          style={{
+            position: &quot;absolute&quot;,
+            inset: 0,
+            display: &quot;flex&quot;,
+            alignItems: &quot;center&quot;,
+            justifyContent: &quot;center&quot;,
+            color: &quot;var(--osdk-typography-color-muted, #666)&quot;,
+          }}
+        &gt;
+          {loadingMessage}
+        &lt;/div&gt;
+      )}
+    &lt;/div&gt;
+  );
+}
+
+// ── Tab: Forms ────────────────────────────────────────────
+
+function FormsTab(): React.ReactElement {
+  const handleSubmit = useCallback(
+    (
+      formState: FormState&lt;typeof actionDefinition&gt;,
+      applyAction: OverviewApplyAction
+    ) =&gt; {
+      return applyOverviewAction(formState, applyAction);
+    },
+    []
+  );
+
+  return (
+    &lt;div className=&quot;osdkFormCard&quot;&gt;
+      &lt;ActionForm actionDefinition={actionDefinition} onSubmit={handleSubmit} /&gt;
+    &lt;/div&gt;
+  );
+}
+
+// ── Main component ────────────────────────────────────────
+
+function ComponentOverview(): React.ReactElement {
+  const [activeTab, setActiveTab] = useState&lt;TabId&gt;(&quot;data&quot;);
+  const [selectedViewerType, setSelectedViewerType] =
+    useState&lt;ViewerTypeId&gt;(&quot;pdf&quot;);
+
+  const handleTabChange = useCallback(
+    (event: React.MouseEvent&lt;HTMLButtonElement&gt;) =&gt; {
+      const tab = event.currentTarget.dataset.tab as TabId;
+      setActiveTab(tab);
+    },
+    []
+  );
+
+  const handleViewerTypeChange = useCallback(
+    (event: React.ChangeEvent&lt;HTMLSelectElement&gt;) =&gt; {
+      setSelectedViewerType(event.currentTarget.value as ViewerTypeId);
+    },
+    []
+  );
+
+  return (
+    &lt;div&gt;
+      &lt;div
+        style={{
+          display: &quot;flex&quot;,
+          alignItems: &quot;center&quot;,
+          borderBottom:
+            &quot;1px solid var(--osdk-surface-border-color-default, #d1d5db)&quot;,
+        }}
+      &gt;
+        {TABS.map((tab) =&gt; (
+          &lt;button
+            key={tab.id}
+            type=&quot;button&quot;
+            data-tab={tab.id}
+            onClick={handleTabChange}
+            style={{
+              padding: &quot;10px 20px&quot;,
+              fontWeight: activeTab === tab.id ? 600 : 400,
+              color:
+                activeTab === tab.id
+                  ? &quot;var(--osdk-intent-primary-rest, #2d72d2)&quot;
+                  : &quot;var(--osdk-typography-color-muted, #666)&quot;,
+              backgroundColor: &quot;transparent&quot;,
+              border: &quot;none&quot;,
+              borderBottom:
+                activeTab === tab.id
+                  ? &quot;2px solid var(--osdk-intent-primary-rest, #2d72d2)&quot;
+                  : &quot;2px solid transparent&quot;,
+              cursor: &quot;pointer&quot;,
+            }}
+          &gt;
+            {tab.label}
+          &lt;/button&gt;
+        ))}
+        {activeTab === &quot;viewers&quot; &amp;&amp; (
+          &lt;label
+            style={{
+              display: &quot;flex&quot;,
+              alignItems: &quot;center&quot;,
+              gap: 8,
+              marginLeft: &quot;auto&quot;,
+              marginRight: 16,
+              color: &quot;var(--osdk-typography-color-muted, #666)&quot;,
+              fontSize: 13,
+            }}
+          &gt;
+            Viewer type
+            &lt;select
+              value={selectedViewerType}
+              onChange={handleViewerTypeChange}
+              style={{
+                height: 32,
+                minWidth: 140,
+                border:
+                  &quot;1px solid var(--osdk-surface-border-color-default, #d1d5db)&quot;,
+                borderRadius: 4,
+                background:
+                  &quot;var(--osdk-surface-background-color-default, #fff)&quot;,
+                color: &quot;var(--osdk-typography-color-default, #111827)&quot;,
+                padding: &quot;0 8px&quot;,
+              }}
+            &gt;
+              {VIEWER_OPTIONS.map((option) =&gt; (
+                &lt;option key={option.id} value={option.id}&gt;
+                  {option.label}
+                &lt;/option&gt;
+              ))}
+            &lt;/select&gt;
+          &lt;/label&gt;
+        )}
+      &lt;/div&gt;
+
+      {activeTab === &quot;data&quot; &amp;&amp; &lt;DataTab /&gt;}
+      {activeTab === &quot;viewers&quot; &amp;&amp; (
+        &lt;ViewersTab selectedViewerType={selectedViewerType} /&gt;
+      )}
+      {activeTab === &quot;forms&quot; &amp;&amp; &lt;FormsTab /&gt;}
+    &lt;/div&gt;
+  );
+}
+
+const meta: Meta = {
+  title: &quot;Components/Overview&quot;,
+  component: ComponentOverview,
+  tags: [&quot;beta&quot;],
+  parameters: {
+    layout: &quot;fullscreen&quot;,
+    controls: { disable: true },
+    msw: {
+      handlers: [
+        ...fauxFoundry.handlers,
+        http.get(&quot;*/example.mp4&quot;, () =&gt; passthrough()),
+        http.get(&quot;*/multi-page-tiff.tiff&quot;, () =&gt; passthrough()),
+      ],
+    },
+  },
+};
+
+export default meta;
+
+type Story = StoryObj&lt;typeof meta&gt;;
+
+export const Default: Story = {};
+</code></pre></div>
+    </div>
+        </div>
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+    
+        <div class="panel panel-stories">
+          
+            <div class="note err">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge err">story error</span>
+              </div>
+              
+              
+              
+              <pre><code>Could not generate snippet without component name.</code></pre>
+            </div>
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { ActionForm, DocumentViewer, FilterList, ObjectTable } from "@osdk/react-components-storybook";</code></pre>
+              </div>
+          
+          
+        </div>
+  </div>
+</article>
+<article
+  class="card 
+  has-error 
+  has-info 
   no-story-error"
   role="listitem"
   aria-label="DocumentViewer">
@@ -6340,9 +6954,9 @@ export const WithValidation: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> DocumentViewer</h2>
       <div class="badges">
-        <label for="c-9-components-documentviewer-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-9-components-documentviewer-info" class="badge info as-toggle">1 info</label>
-        <label for="c-9-components-documentviewer-stories" class="badge ok as-toggle">12 stories</label>
+        <label for="c-10-components-documentviewer-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-10-components-documentviewer-info" class="badge info as-toggle">1 info</label>
+        <label for="c-10-components-documentviewer-stories" class="badge ok as-toggle">12 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/DocumentViewer/DocumentViewer.stories.tsx">components-documentviewer · ./src/stories/DocumentViewer/DocumentViewer.stories.tsx</div>
@@ -6352,9 +6966,9 @@ export const WithValidation: Story = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-9-components-documentviewer-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-9-components-documentviewer-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-9-components-documentviewer-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-10-components-documentviewer-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-10-components-documentviewer-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-10-components-documentviewer-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -6948,9 +7562,9 @@ export const WithPdfViewerProps: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> FilterList</h2>
       <div class="badges">
-        <label for="c-10-components-filterlist-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-10-components-filterlist-info" class="badge info as-toggle">1 info</label>
-        <label for="c-10-components-filterlist-stories" class="badge ok as-toggle">27 stories</label>
+        <label for="c-11-components-filterlist-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-11-components-filterlist-info" class="badge info as-toggle">1 info</label>
+        <label for="c-11-components-filterlist-stories" class="badge ok as-toggle">27 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/FilterList/FilterList.stories.tsx">components-filterlist · ./src/stories/FilterList/FilterList.stories.tsx</div>
@@ -6960,9 +7574,9 @@ export const WithPdfViewerProps: Story = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-10-components-filterlist-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-10-components-filterlist-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-10-components-filterlist-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-11-components-filterlist-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-11-components-filterlist-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-11-components-filterlist-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -10212,9 +10826,9 @@ export const WithResetButtonNonEmptyInitial: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> HorizontalFilterToolbar</h2>
       <div class="badges">
-        <label for="c-11-components-filterlist-recipes-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-11-components-filterlist-recipes-info" class="badge info as-toggle">1 info</label>
-        <label for="c-11-components-filterlist-recipes-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-12-components-filterlist-recipes-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-12-components-filterlist-recipes-info" class="badge info as-toggle">1 info</label>
+        <label for="c-12-components-filterlist-recipes-stories" class="badge ok as-toggle">1 story</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/FilterList/Recipes/HorizontalToolbar.stories.tsx">components-filterlist-recipes · ./src/stories/FilterList/Recipes/HorizontalToolbar.stories.tsx</div>
@@ -10224,9 +10838,9 @@ export const WithResetButtonNonEmptyInitial: Story = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-11-components-filterlist-recipes-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-11-components-filterlist-recipes-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-11-components-filterlist-recipes-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-12-components-filterlist-recipes-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-12-components-filterlist-recipes-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-12-components-filterlist-recipes-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -10590,9 +11204,9 @@ export const HorizontalToolbar: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> ImageViewer</h2>
       <div class="badges">
-        <label for="c-12-components-documentviewer-renderers-imageviewer-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-12-components-documentviewer-renderers-imageviewer-info" class="badge info as-toggle">1 info</label>
-        <label for="c-12-components-documentviewer-renderers-imageviewer-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-13-components-documentviewer-renderers-imageviewer-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-13-components-documentviewer-renderers-imageviewer-info" class="badge info as-toggle">1 info</label>
+        <label for="c-13-components-documentviewer-renderers-imageviewer-stories" class="badge ok as-toggle">1 story</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/ImageViewer/ImageViewer.stories.tsx">components-documentviewer-renderers-imageviewer · ./src/stories/ImageViewer/ImageViewer.stories.tsx</div>
@@ -10602,9 +11216,9 @@ export const HorizontalToolbar: Story = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-12-components-documentviewer-renderers-imageviewer-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-12-components-documentviewer-renderers-imageviewer-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-12-components-documentviewer-renderers-imageviewer-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-13-components-documentviewer-renderers-imageviewer-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-13-components-documentviewer-renderers-imageviewer-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-13-components-documentviewer-renderers-imageviewer-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -10797,9 +11411,9 @@ export const Default: StoryObj&lt;ImageViewerMediaProps&gt; = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> InteractiveChat</h2>
       <div class="badges">
-        <label for="c-13-beta-aipagentchat-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-13-beta-aipagentchat-info" class="badge info as-toggle">1 info</label>
-        <label for="c-13-beta-aipagentchat-stories" class="badge ok as-toggle">4 stories</label>
+        <label for="c-14-beta-aipagentchat-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-14-beta-aipagentchat-info" class="badge info as-toggle">1 info</label>
+        <label for="c-14-beta-aipagentchat-stories" class="badge ok as-toggle">4 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/AipAgentChat/AipAgentChat.stories.tsx">beta-aipagentchat · ./src/stories/AipAgentChat/AipAgentChat.stories.tsx</div>
@@ -10809,9 +11423,9 @@ export const Default: StoryObj&lt;ImageViewerMediaProps&gt; = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-13-beta-aipagentchat-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-13-beta-aipagentchat-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-13-beta-aipagentchat-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-14-beta-aipagentchat-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-14-beta-aipagentchat-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-14-beta-aipagentchat-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -11094,9 +11708,9 @@ export const CustomPlaceholder: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> LoadingCell</h2>
       <div class="badges">
-        <label for="c-14-components-objecttable-building-blocks-loadingcell-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-14-components-objecttable-building-blocks-loadingcell-info" class="badge info as-toggle">1 info</label>
-        <label for="c-14-components-objecttable-building-blocks-loadingcell-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-15-components-objecttable-building-blocks-loadingcell-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-15-components-objecttable-building-blocks-loadingcell-info" class="badge info as-toggle">1 info</label>
+        <label for="c-15-components-objecttable-building-blocks-loadingcell-stories" class="badge ok as-toggle">1 story</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/ObjectTable/LoadingCell.stories.tsx">components-objecttable-building-blocks-loadingcell · ./src/stories/ObjectTable/LoadingCell.stories.tsx</div>
@@ -11106,9 +11720,9 @@ export const CustomPlaceholder: Story = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-14-components-objecttable-building-blocks-loadingcell-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-14-components-objecttable-building-blocks-loadingcell-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-14-components-objecttable-building-blocks-loadingcell-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-15-components-objecttable-building-blocks-loadingcell-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-15-components-objecttable-building-blocks-loadingcell-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-15-components-objecttable-building-blocks-loadingcell-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -11248,9 +11862,9 @@ export const Default: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> LoadingCellContent</h2>
       <div class="badges">
-        <label for="c-15-components-objecttable-building-blocks-loadingcellcontent-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-15-components-objecttable-building-blocks-loadingcellcontent-info" class="badge info as-toggle">1 info</label>
-        <label for="c-15-components-objecttable-building-blocks-loadingcellcontent-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-16-components-objecttable-building-blocks-loadingcellcontent-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-16-components-objecttable-building-blocks-loadingcellcontent-info" class="badge info as-toggle">1 info</label>
+        <label for="c-16-components-objecttable-building-blocks-loadingcellcontent-stories" class="badge ok as-toggle">1 story</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/ObjectTable/LoadingCellContent.stories.tsx">components-objecttable-building-blocks-loadingcellcontent · ./src/stories/ObjectTable/LoadingCellContent.stories.tsx</div>
@@ -11260,9 +11874,9 @@ export const Default: Story = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-15-components-objecttable-building-blocks-loadingcellcontent-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-15-components-objecttable-building-blocks-loadingcellcontent-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-15-components-objecttable-building-blocks-loadingcellcontent-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-16-components-objecttable-building-blocks-loadingcellcontent-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-16-components-objecttable-building-blocks-loadingcellcontent-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-16-components-objecttable-building-blocks-loadingcellcontent-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -11385,9 +11999,9 @@ export const Default: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> MarkdownRenderer</h2>
       <div class="badges">
-        <label for="c-16-components-documentviewer-renderers-markdownrenderer-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-16-components-documentviewer-renderers-markdownrenderer-info" class="badge info as-toggle">1 info</label>
-        <label for="c-16-components-documentviewer-renderers-markdownrenderer-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-17-components-documentviewer-renderers-markdownrenderer-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-17-components-documentviewer-renderers-markdownrenderer-info" class="badge info as-toggle">1 info</label>
+        <label for="c-17-components-documentviewer-renderers-markdownrenderer-stories" class="badge ok as-toggle">2 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/MarkdownRenderer/MarkdownRenderer.stories.tsx">components-documentviewer-renderers-markdownrenderer · ./src/stories/MarkdownRenderer/MarkdownRenderer.stories.tsx</div>
@@ -11397,9 +12011,9 @@ export const Default: Story = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-16-components-documentviewer-renderers-markdownrenderer-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-16-components-documentviewer-renderers-markdownrenderer-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-16-components-documentviewer-renderers-markdownrenderer-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-17-components-documentviewer-renderers-markdownrenderer-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-17-components-documentviewer-renderers-markdownrenderer-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-17-components-documentviewer-renderers-markdownrenderer-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -11631,9 +12245,9 @@ export const MinimalContent: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> MultiColumnSortDialog</h2>
       <div class="badges">
-        <label for="c-17-components-objecttable-building-blocks-multicolumnsortdialog-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-17-components-objecttable-building-blocks-multicolumnsortdialog-info" class="badge info as-toggle">1 info</label>
-        <label for="c-17-components-objecttable-building-blocks-multicolumnsortdialog-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-18-components-objecttable-building-blocks-multicolumnsortdialog-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-18-components-objecttable-building-blocks-multicolumnsortdialog-info" class="badge info as-toggle">1 info</label>
+        <label for="c-18-components-objecttable-building-blocks-multicolumnsortdialog-stories" class="badge ok as-toggle">1 story</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/ObjectTable/MultiColumnSortDialog.stories.tsx">components-objecttable-building-blocks-multicolumnsortdialog · ./src/stories/ObjectTable/MultiColumnSortDialog.stories.tsx</div>
@@ -11643,9 +12257,9 @@ export const MinimalContent: Story = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-17-components-objecttable-building-blocks-multicolumnsortdialog-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-17-components-objecttable-building-blocks-multicolumnsortdialog-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-17-components-objecttable-building-blocks-multicolumnsortdialog-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-18-components-objecttable-building-blocks-multicolumnsortdialog-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-18-components-objecttable-building-blocks-multicolumnsortdialog-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-18-components-objecttable-building-blocks-multicolumnsortdialog-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -11829,9 +12443,9 @@ const [isOpen, setIsOpen] = useState(false);
     <div class="title">
       <h2><span class="status-dot dot-err"></span> ObjectTable</h2>
       <div class="badges">
-        <label for="c-18-components-objecttable-features-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-18-components-objecttable-features-info" class="badge info as-toggle">1 info</label>
-        <label for="c-18-components-objecttable-features-stories" class="badge ok as-toggle">28 stories</label>
+        <label for="c-19-components-objecttable-features-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-19-components-objecttable-features-info" class="badge info as-toggle">1 info</label>
+        <label for="c-19-components-objecttable-features-stories" class="badge ok as-toggle">28 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/ObjectTable/ObjectTable.stories.tsx">components-objecttable-features · ./src/stories/ObjectTable/ObjectTable.stories.tsx</div>
@@ -11841,9 +12455,9 @@ const [isOpen, setIsOpen] = useState(false);
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-18-components-objecttable-features-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-18-components-objecttable-features-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-18-components-objecttable-features-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-19-components-objecttable-features-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-19-components-objecttable-features-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-19-components-objecttable-features-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -15273,9 +15887,9 @@ import {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> ObjectTable</h2>
       <div class="badges">
-        <label for="c-19-components-objecttable-recipes-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-19-components-objecttable-recipes-info" class="badge info as-toggle">1 info</label>
-        <label for="c-19-components-objecttable-recipes-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-20-components-objecttable-recipes-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-20-components-objecttable-recipes-info" class="badge info as-toggle">1 info</label>
+        <label for="c-20-components-objecttable-recipes-stories" class="badge ok as-toggle">1 story</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/ObjectTable/Recipes/WithConfigureColumnsButton.stories.tsx">components-objecttable-recipes · ./src/stories/ObjectTable/Recipes/WithConfigureColumnsButton.stories.tsx</div>
@@ -15285,9 +15899,9 @@ import {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-19-components-objecttable-recipes-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-19-components-objecttable-recipes-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-19-components-objecttable-recipes-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-20-components-objecttable-recipes-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-20-components-objecttable-recipes-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-20-components-objecttable-recipes-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -15657,9 +16271,9 @@ return (
     <div class="title">
       <h2><span class="status-dot dot-err"></span> PdfViewer</h2>
       <div class="badges">
-        <label for="c-20-components-documentviewer-renderers-pdfviewer-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-20-components-documentviewer-renderers-pdfviewer-info" class="badge info as-toggle">1 info</label>
-        <label for="c-20-components-documentviewer-renderers-pdfviewer-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-21-components-documentviewer-renderers-pdfviewer-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-21-components-documentviewer-renderers-pdfviewer-info" class="badge info as-toggle">1 info</label>
+        <label for="c-21-components-documentviewer-renderers-pdfviewer-stories" class="badge ok as-toggle">1 story</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/PdfViewer/PdfViewer.stories.tsx">components-documentviewer-renderers-pdfviewer · ./src/stories/PdfViewer/PdfViewer.stories.tsx</div>
@@ -15669,9 +16283,9 @@ return (
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-20-components-documentviewer-renderers-pdfviewer-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-20-components-documentviewer-renderers-pdfviewer-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-20-components-documentviewer-renderers-pdfviewer-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-21-components-documentviewer-renderers-pdfviewer-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-21-components-documentviewer-renderers-pdfviewer-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-21-components-documentviewer-renderers-pdfviewer-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -15818,9 +16432,9 @@ const employee = useOsdkObject(Employee, employeePk);
     <div class="title">
       <h2><span class="status-dot dot-err"></span> PdfViewer</h2>
       <div class="badges">
-        <label for="c-21-components-documentviewer-renderers-pdfviewer-features-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-21-components-documentviewer-renderers-pdfviewer-features-info" class="badge info as-toggle">1 info</label>
-        <label for="c-21-components-documentviewer-renderers-pdfviewer-features-stories" class="badge ok as-toggle">12 stories</label>
+        <label for="c-22-components-documentviewer-renderers-pdfviewer-features-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-22-components-documentviewer-renderers-pdfviewer-features-info" class="badge info as-toggle">1 info</label>
+        <label for="c-22-components-documentviewer-renderers-pdfviewer-features-stories" class="badge ok as-toggle">12 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/PdfViewer/Features/PdfViewerFeatures.stories.tsx">components-documentviewer-renderers-pdfviewer-features · ./src/stories/PdfViewer/Features/PdfViewerFeatures.stories.tsx</div>
@@ -15830,9 +16444,9 @@ const employee = useOsdkObject(Employee, employeePk);
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-21-components-documentviewer-renderers-pdfviewer-features-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-21-components-documentviewer-renderers-pdfviewer-features-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-21-components-documentviewer-renderers-pdfviewer-features-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-22-components-documentviewer-renderers-pdfviewer-features-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-22-components-documentviewer-renderers-pdfviewer-features-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-22-components-documentviewer-renderers-pdfviewer-features-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -16492,9 +17106,9 @@ export const InteractiveForm: StoryObj&lt;PdfViewerProps&gt; = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> PdfViewerAnnotationLayer</h2>
       <div class="badges">
-        <label for="c-22-components-documentviewer-renderers-pdfviewer-building-blocks-annotationlayer-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-22-components-documentviewer-renderers-pdfviewer-building-blocks-annotationlayer-info" class="badge info as-toggle">1 info</label>
-        <label for="c-22-components-documentviewer-renderers-pdfviewer-building-blocks-annotationlayer-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-23-components-documentviewer-renderers-pdfviewer-building-blocks-annotationlayer-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-23-components-documentviewer-renderers-pdfviewer-building-blocks-annotationlayer-info" class="badge info as-toggle">1 info</label>
+        <label for="c-23-components-documentviewer-renderers-pdfviewer-building-blocks-annotationlayer-stories" class="badge ok as-toggle">3 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/PdfViewer/AnnotationLayer.stories.tsx">components-documentviewer-renderers-pdfviewer-building-blocks-annotationlayer · ./src/stories/PdfViewer/AnnotationLayer.stories.tsx</div>
@@ -16504,9 +17118,9 @@ export const InteractiveForm: StoryObj&lt;PdfViewerProps&gt; = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-22-components-documentviewer-renderers-pdfviewer-building-blocks-annotationlayer-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-22-components-documentviewer-renderers-pdfviewer-building-blocks-annotationlayer-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-22-components-documentviewer-renderers-pdfviewer-building-blocks-annotationlayer-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-23-components-documentviewer-renderers-pdfviewer-building-blocks-annotationlayer-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-23-components-documentviewer-renderers-pdfviewer-building-blocks-annotationlayer-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-23-components-documentviewer-renderers-pdfviewer-building-blocks-annotationlayer-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -16825,9 +17439,9 @@ export const ZoomedIn: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> PdfViewerContent</h2>
       <div class="badges">
-        <label for="c-23-components-documentviewer-renderers-pdfviewer-building-blocks-content-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-23-components-documentviewer-renderers-pdfviewer-building-blocks-content-info" class="badge info as-toggle">1 info</label>
-        <label for="c-23-components-documentviewer-renderers-pdfviewer-building-blocks-content-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-24-components-documentviewer-renderers-pdfviewer-building-blocks-content-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-24-components-documentviewer-renderers-pdfviewer-building-blocks-content-info" class="badge info as-toggle">1 info</label>
+        <label for="c-24-components-documentviewer-renderers-pdfviewer-building-blocks-content-stories" class="badge ok as-toggle">3 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/PdfViewer/Content.stories.tsx">components-documentviewer-renderers-pdfviewer-building-blocks-content · ./src/stories/PdfViewer/Content.stories.tsx</div>
@@ -16837,9 +17451,9 @@ export const ZoomedIn: Story = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-23-components-documentviewer-renderers-pdfviewer-building-blocks-content-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-23-components-documentviewer-renderers-pdfviewer-building-blocks-content-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-23-components-documentviewer-renderers-pdfviewer-building-blocks-content-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-24-components-documentviewer-renderers-pdfviewer-building-blocks-content-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-24-components-documentviewer-renderers-pdfviewer-building-blocks-content-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-24-components-documentviewer-renderers-pdfviewer-building-blocks-content-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -17010,9 +17624,9 @@ export const StartOnPage5: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> PdfViewerOutlineSidebar</h2>
       <div class="badges">
-        <label for="c-24-components-documentviewer-renderers-pdfviewer-building-blocks-outlinesidebar-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-24-components-documentviewer-renderers-pdfviewer-building-blocks-outlinesidebar-info" class="badge info as-toggle">1 info</label>
-        <label for="c-24-components-documentviewer-renderers-pdfviewer-building-blocks-outlinesidebar-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-25-components-documentviewer-renderers-pdfviewer-building-blocks-outlinesidebar-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-25-components-documentviewer-renderers-pdfviewer-building-blocks-outlinesidebar-info" class="badge info as-toggle">1 info</label>
+        <label for="c-25-components-documentviewer-renderers-pdfviewer-building-blocks-outlinesidebar-stories" class="badge ok as-toggle">3 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/PdfViewer/OutlineSidebar.stories.tsx">components-documentviewer-renderers-pdfviewer-building-blocks-outlinesidebar · ./src/stories/PdfViewer/OutlineSidebar.stories.tsx</div>
@@ -17022,9 +17636,9 @@ export const StartOnPage5: Story = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-24-components-documentviewer-renderers-pdfviewer-building-blocks-outlinesidebar-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-24-components-documentviewer-renderers-pdfviewer-building-blocks-outlinesidebar-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-24-components-documentviewer-renderers-pdfviewer-building-blocks-outlinesidebar-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-25-components-documentviewer-renderers-pdfviewer-building-blocks-outlinesidebar-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-25-components-documentviewer-renderers-pdfviewer-building-blocks-outlinesidebar-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-25-components-documentviewer-renderers-pdfviewer-building-blocks-outlinesidebar-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -17254,9 +17868,9 @@ export const Empty: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> PdfViewerSearchBar</h2>
       <div class="badges">
-        <label for="c-25-components-documentviewer-renderers-pdfviewer-building-blocks-searchbar-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-25-components-documentviewer-renderers-pdfviewer-building-blocks-searchbar-info" class="badge info as-toggle">1 info</label>
-        <label for="c-25-components-documentviewer-renderers-pdfviewer-building-blocks-searchbar-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-26-components-documentviewer-renderers-pdfviewer-building-blocks-searchbar-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-26-components-documentviewer-renderers-pdfviewer-building-blocks-searchbar-info" class="badge info as-toggle">1 info</label>
+        <label for="c-26-components-documentviewer-renderers-pdfviewer-building-blocks-searchbar-stories" class="badge ok as-toggle">3 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/PdfViewer/SearchBar.stories.tsx">components-documentviewer-renderers-pdfviewer-building-blocks-searchbar · ./src/stories/PdfViewer/SearchBar.stories.tsx</div>
@@ -17266,9 +17880,9 @@ export const Empty: Story = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-25-components-documentviewer-renderers-pdfviewer-building-blocks-searchbar-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-25-components-documentviewer-renderers-pdfviewer-building-blocks-searchbar-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-25-components-documentviewer-renderers-pdfviewer-building-blocks-searchbar-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-26-components-documentviewer-renderers-pdfviewer-building-blocks-searchbar-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-26-components-documentviewer-renderers-pdfviewer-building-blocks-searchbar-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-26-components-documentviewer-renderers-pdfviewer-building-blocks-searchbar-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -17446,9 +18060,9 @@ export const NoResults: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> PdfViewerToolbar</h2>
       <div class="badges">
-        <label for="c-26-components-documentviewer-renderers-pdfviewer-building-blocks-toolbar-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-26-components-documentviewer-renderers-pdfviewer-building-blocks-toolbar-info" class="badge info as-toggle">1 info</label>
-        <label for="c-26-components-documentviewer-renderers-pdfviewer-building-blocks-toolbar-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-27-components-documentviewer-renderers-pdfviewer-building-blocks-toolbar-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-27-components-documentviewer-renderers-pdfviewer-building-blocks-toolbar-info" class="badge info as-toggle">1 info</label>
+        <label for="c-27-components-documentviewer-renderers-pdfviewer-building-blocks-toolbar-stories" class="badge ok as-toggle">3 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/PdfViewer/Toolbar.stories.tsx">components-documentviewer-renderers-pdfviewer-building-blocks-toolbar · ./src/stories/PdfViewer/Toolbar.stories.tsx</div>
@@ -17458,9 +18072,9 @@ export const NoResults: Story = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-26-components-documentviewer-renderers-pdfviewer-building-blocks-toolbar-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-26-components-documentviewer-renderers-pdfviewer-building-blocks-toolbar-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-26-components-documentviewer-renderers-pdfviewer-building-blocks-toolbar-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-27-components-documentviewer-renderers-pdfviewer-building-blocks-toolbar-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-27-components-documentviewer-renderers-pdfviewer-building-blocks-toolbar-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-27-components-documentviewer-renderers-pdfviewer-building-blocks-toolbar-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -17676,9 +18290,9 @@ export const MidDocument: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> ThumbnailSidebarWrapper</h2>
       <div class="badges">
-        <label for="c-27-components-documentviewer-renderers-pdfviewer-building-blocks-thumbnailsidebar-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-27-components-documentviewer-renderers-pdfviewer-building-blocks-thumbnailsidebar-info" class="badge info as-toggle">1 info</label>
-        <label for="c-27-components-documentviewer-renderers-pdfviewer-building-blocks-thumbnailsidebar-stories" class="badge err as-toggle">2/2 story errors</label>
+        <label for="c-28-components-documentviewer-renderers-pdfviewer-building-blocks-thumbnailsidebar-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-28-components-documentviewer-renderers-pdfviewer-building-blocks-thumbnailsidebar-info" class="badge info as-toggle">1 info</label>
+        <label for="c-28-components-documentviewer-renderers-pdfviewer-building-blocks-thumbnailsidebar-stories" class="badge err as-toggle">2/2 story errors</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/PdfViewer/ThumbnailSidebar.stories.tsx">components-documentviewer-renderers-pdfviewer-building-blocks-thumbnailsidebar · ./src/stories/PdfViewer/ThumbnailSidebar.stories.tsx</div>
@@ -17688,9 +18302,9 @@ export const MidDocument: Story = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-27-components-documentviewer-renderers-pdfviewer-building-blocks-thumbnailsidebar-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-27-components-documentviewer-renderers-pdfviewer-building-blocks-thumbnailsidebar-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-27-components-documentviewer-renderers-pdfviewer-building-blocks-thumbnailsidebar-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-28-components-documentviewer-renderers-pdfviewer-building-blocks-thumbnailsidebar-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-28-components-documentviewer-renderers-pdfviewer-building-blocks-thumbnailsidebar-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-28-components-documentviewer-renderers-pdfviewer-building-blocks-thumbnailsidebar-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -17863,9 +18477,9 @@ export const ActivePage: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> TiffRenderer</h2>
       <div class="badges">
-        <label for="c-28-components-documentviewer-renderers-tiffrenderer-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-28-components-documentviewer-renderers-tiffrenderer-info" class="badge info as-toggle">1 info</label>
-        <label for="c-28-components-documentviewer-renderers-tiffrenderer-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-29-components-documentviewer-renderers-tiffrenderer-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-29-components-documentviewer-renderers-tiffrenderer-info" class="badge info as-toggle">1 info</label>
+        <label for="c-29-components-documentviewer-renderers-tiffrenderer-stories" class="badge ok as-toggle">2 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/TiffRenderer/TiffRendererFeatures.stories.tsx">components-documentviewer-renderers-tiffrenderer · ./src/stories/TiffRenderer/TiffRendererFeatures.stories.tsx</div>
@@ -17875,9 +18489,9 @@ export const ActivePage: Story = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-28-components-documentviewer-renderers-tiffrenderer-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-28-components-documentviewer-renderers-tiffrenderer-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-28-components-documentviewer-renderers-tiffrenderer-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-29-components-documentviewer-renderers-tiffrenderer-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-29-components-documentviewer-renderers-tiffrenderer-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-29-components-documentviewer-renderers-tiffrenderer-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -18114,9 +18728,9 @@ export const WithErrorCallback: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> UpdateEmployeeActionFormStory</h2>
       <div class="badges">
-        <label for="c-29-components-actionform-usage-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-29-components-actionform-usage-info" class="badge info as-toggle">1 info</label>
-        <label for="c-29-components-actionform-usage-stories" class="badge err as-toggle">10/13 story errors</label>
+        <label for="c-30-components-actionform-usage-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-30-components-actionform-usage-info" class="badge info as-toggle">1 info</label>
+        <label for="c-30-components-actionform-usage-stories" class="badge err as-toggle">10/13 story errors</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/ActionForm/ActionForm.stories.tsx">components-actionform-usage · ./src/stories/ActionForm/ActionForm.stories.tsx</div>
@@ -18126,9 +18740,9 @@ export const WithErrorCallback: Story = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-29-components-actionform-usage-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-29-components-actionform-usage-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-29-components-actionform-usage-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-30-components-actionform-usage-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-30-components-actionform-usage-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-30-components-actionform-usage-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -19251,9 +19865,9 @@ function ControlledActionFormStory(): React.ReactElement {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> VideoViewer</h2>
       <div class="badges">
-        <label for="c-30-components-documentviewer-renderers-videoviewer-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-30-components-documentviewer-renderers-videoviewer-info" class="badge info as-toggle">1 info</label>
-        <label for="c-30-components-documentviewer-renderers-videoviewer-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-31-components-documentviewer-renderers-videoviewer-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-31-components-documentviewer-renderers-videoviewer-info" class="badge info as-toggle">1 info</label>
+        <label for="c-31-components-documentviewer-renderers-videoviewer-stories" class="badge ok as-toggle">2 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/VideoViewer/VideoViewer.stories.tsx">components-documentviewer-renderers-videoviewer · ./src/stories/VideoViewer/VideoViewer.stories.tsx</div>
@@ -19263,9 +19877,9 @@ function ControlledActionFormStory(): React.ReactElement {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-30-components-documentviewer-renderers-videoviewer-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-30-components-documentviewer-renderers-videoviewer-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-30-components-documentviewer-renderers-videoviewer-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-31-components-documentviewer-renderers-videoviewer-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-31-components-documentviewer-renderers-videoviewer-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-31-components-documentviewer-renderers-videoviewer-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -19487,7 +20101,7 @@ export const WithErrorCallback: Story = {
           <label for="no-component-import-found-toggle" class="group-header">
             <span class="caret">▸</span>
             <span class="group-title">No component import found</span>
-            <span class="group-count">31</span>
+            <span class="group-count">32</span>
           </label>
           <div class="group-cards">
 <article
@@ -25307,6 +25921,620 @@ export const WithValidation: Story = {
   class="card 
   has-error 
   has-info 
+  has-story-error"
+  role="listitem"
+  aria-label="ComponentOverview">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-err"></span> ComponentOverview</h2>
+      <div class="badges">
+        <label for="c-error-9-components-overview-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-9-components-overview-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-9-components-overview-stories" class="badge err as-toggle">1/1 story errors</label>
+      </div>
+    </div>
+    <div class="meta" title="./src/stories/Overview/Overview.stories.tsx">components-overview · ./src/stories/Overview/Overview.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  <input id="c-error-9-components-overview-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-9-components-overview-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-9-components-overview-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+
+  <div class="panels">
+    
+        <div class="panel panel-err">
+          
+    <div class="note err">
+      <div class="note-title">Prop type error</div>
+      <div class="note-body"><pre><code>No component file found for the &quot;ComponentOverview&quot; component.
+  509 | }
+  510 |
+&gt; 511 | const meta: Meta = {
+      | ^
+  512 |   title: &quot;Components/Overview&quot;,
+  513 |   component: ComponentOverview,
+  514 |   tags: [&quot;beta&quot;],
+
+./src/stories/Overview/Overview.stories.tsx:
+/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import type { Media, WhereClause } from &quot;@osdk/api&quot;;
+import { useOsdkObject } from &quot;@osdk/react&quot;;
+import {
+  ActionForm,
+  type ActionFormProps,
+  type FormState,
+} from &quot;@osdk/react-components/experimental&quot;;
+import { DocumentViewer } from &quot;@osdk/react-components/experimental/document-viewer&quot;;
+import type { FilterDefinitionUnion } from &quot;@osdk/react-components/experimental/filter-list&quot;;
+import { FilterList } from &quot;@osdk/react-components/experimental/filter-list&quot;;
+import { ObjectTable } from &quot;@osdk/react-components/experimental/object-table&quot;;
+import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
+import { http, passthrough } from &quot;msw&quot;;
+import React, { type CSSProperties, useCallback, useState } from &quot;react&quot;;
+import { utils, write } from &quot;xlsx-republish&quot;;
+
+import {
+  fauxFoundry,
+  MEDIA_EMPLOYEE_PK,
+  updateEmployeeStoryAction,
+} from &quot;../../mocks/fauxFoundry.js&quot;;
+import { Employee } from &quot;../../types/Employee.js&quot;;
+
+/* cspell:words officedocument openxmlformats pldi spreadsheetml tracemonkey */
+
+// ── Types ─────────────────────────────────────────────────
+
+type TabId = &quot;data&quot; | &quot;viewers&quot; | &quot;forms&quot;;
+
+type CSSWithCustomProps = CSSProperties &amp; { [key: `--${string}`]: string };
+
+type ViewerTypeId =
+  | &quot;pdf&quot;
+  | &quot;image&quot;
+  | &quot;markdown&quot;
+  | &quot;video&quot;
+  | &quot;email&quot;
+  | &quot;excel&quot;
+  | &quot;xml&quot;
+  | &quot;tiff&quot;
+  | &quot;unsupported&quot;;
+
+interface ViewerOption {
+  id: ViewerTypeId;
+  label: string;
+}
+
+interface MockViewerMedia {
+  fileName: string;
+  media: Media;
+}
+
+// ── Constants ─────────────────────────────────────────────
+
+const TABS: Array&lt;{ id: TabId; label: string }&gt; = [
+  { id: &quot;data&quot;, label: &quot;Data&quot; },
+  { id: &quot;viewers&quot;, label: &quot;Viewers&quot; },
+  { id: &quot;forms&quot;, label: &quot;Forms&quot; },
+];
+
+const VIEWER_OPTIONS: Array&lt;ViewerOption&gt; = [
+  { id: &quot;pdf&quot;, label: &quot;PDF&quot; },
+  { id: &quot;image&quot;, label: &quot;Image&quot; },
+  { id: &quot;markdown&quot;, label: &quot;Markdown&quot; },
+  { id: &quot;video&quot;, label: &quot;Video&quot; },
+  { id: &quot;email&quot;, label: &quot;Email&quot; },
+  { id: &quot;excel&quot;, label: &quot;Excel&quot; },
+  { id: &quot;xml&quot;, label: &quot;XML&quot; },
+  { id: &quot;tiff&quot;, label: &quot;TIFF&quot; },
+  { id: &quot;unsupported&quot;, label: &quot;Unsupported&quot; },
+];
+
+const FILTER_DEFINITIONS: Array&lt;FilterDefinitionUnion&lt;Employee&gt;&gt; = [
+  {
+    type: &quot;PROPERTY&quot;,
+    id: &quot;department&quot;,
+    key: &quot;department&quot;,
+    label: &quot;Department&quot;,
+    filterComponent: &quot;LISTOGRAM&quot;,
+    filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
+  },
+  {
+    type: &quot;PROPERTY&quot;,
+    id: &quot;team&quot;,
+    key: &quot;team&quot;,
+    label: &quot;Team&quot;,
+    filterComponent: &quot;LISTOGRAM&quot;,
+    filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
+  },
+  {
+    type: &quot;PROPERTY&quot;,
+    id: &quot;fullName&quot;,
+    key: &quot;fullName&quot;,
+    label: &quot;Full Name&quot;,
+    filterComponent: &quot;CONTAINS_TEXT&quot;,
+    filterState: { type: &quot;CONTAINS_TEXT&quot; },
+  },
+];
+
+const FILTER_WRAPPER_STYLE: CSSWithCustomProps = {
+  flexShrink: 0,
+  overflow: &quot;auto&quot;,
+  &quot;--osdk-filter-list-border-radius&quot;: &quot;0px&quot;,
+};
+
+const SAMPLE_VIDEO_URL = `${import.meta.env.BASE_URL}example.mp4`;
+
+const SAMPLE_TIFF_URL = `${import.meta.env.BASE_URL}multi-page-tiff.tiff`;
+
+const SAMPLE_MARKDOWN = `# Document Viewer
+
+This markdown file is rendered through the overview selector.
+
+- PDF uses the employee media field
+- Other types use small local Storybook samples
+`;
+
+const SAMPLE_EMAIL = `From: Ada &lt;ada@example.com&gt;
+To: Storybook &lt;storybook@example.com&gt;
+Subject: Document Viewer Overview
+Date: Wed, 01 Jul 2026 10:00:00 +0000
+Content-Type: text/html; charset=utf-8
+
+&lt;html&gt;&lt;body&gt;&lt;p&gt;The overview is showing the email renderer.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
+`;
+
+const SAMPLE_XML = `&lt;?xml version=&quot;1.0&quot;?&gt;
+&lt;document&gt;
+  &lt;title&gt;Document Viewer Overview&lt;/title&gt;
+  &lt;status&gt;Rendered through the XML viewer&lt;/status&gt;
+&lt;/document&gt;`;
+
+function createSampleImageDataUrl(): string {
+  const canvas = document.createElement(&quot;canvas&quot;);
+  canvas.width = 480;
+  canvas.height = 320;
+  const ctx = canvas.getContext(&quot;2d&quot;)!;
+  const gradient = ctx.createLinearGradient(0, 0, 480, 320);
+  gradient.addColorStop(0, &quot;#2d72d2&quot;);
+  gradient.addColorStop(0.55, &quot;#10b981&quot;);
+  gradient.addColorStop(1, &quot;#f59e0b&quot;);
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, 480, 320);
+
+  ctx.fillStyle = &quot;rgba(255, 255, 255, 0.92)&quot;;
+  ctx.fillRect(64, 56, 352, 208);
+  ctx.fillStyle = &quot;#1f2937&quot;;
+  ctx.font = &quot;700 36px Arial, sans-serif&quot;;
+  ctx.textAlign = &quot;center&quot;;
+  ctx.textBaseline = &quot;middle&quot;;
+  ctx.fillText(&quot;Image Viewer&quot;, 240, 136);
+  ctx.font = &quot;500 20px Arial, sans-serif&quot;;
+  ctx.fillText(&quot;Overview sample&quot;, 240, 184);
+
+  return canvas.toDataURL(&quot;image/png&quot;);
+}
+
+const SAMPLE_IMAGE_DATA_URL = createSampleImageDataUrl();
+
+function createMockMedia(
+  mimeType: string,
+  fetchFn: () =&gt; Promise&lt;Response&gt;,
+  fileName: string
+): Media {
+  return {
+    fetchContents: fetchFn,
+    fetchMetadata: () =&gt;
+      Promise.resolve({
+        mediaType: mimeType,
+        path: fileName,
+        sizeBytes: 1024,
+      }),
+    getMediaReference: () =&gt; ({
+      mimeType,
+      reference: {
+        type: &quot;mediaSetViewItem&quot; as const,
+        mediaSetViewItem: {
+          mediaItemRid: `ri.mio.main.media-item.${fileName}`,
+          mediaSetRid: &quot;ri.mio.main.media-set.storybook-overview&quot;,
+          mediaSetViewRid: &quot;ri.mio.main.media-set-view.storybook-overview&quot;,
+        },
+      },
+    }),
+  };
+}
+
+function createExcelMedia(): Media {
+  const worksheet = utils.aoa_to_sheet([
+    [&quot;Name&quot;, &quot;Department&quot;, &quot;Location&quot;],
+    [&quot;Ada Lovelace&quot;, &quot;Engineering&quot;, &quot;London&quot;],
+    [&quot;Grace Hopper&quot;, &quot;Platform&quot;, &quot;New York&quot;],
+  ]);
+  const workbook = utils.book_new();
+  utils.book_append_sheet(workbook, worksheet, &quot;Employees&quot;);
+  const buffer = write(workbook, { type: &quot;array&quot;, bookType: &quot;xlsx&quot; });
+
+  return createMockMedia(
+    &quot;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet&quot;,
+    () =&gt; Promise.resolve(new Response(buffer)),
+    &quot;employees.xlsx&quot;
+  );
+}
+
+const MOCK_VIEWER_MEDIA_BY_TYPE: Partial&lt;
+  Record&lt;ViewerTypeId, MockViewerMedia&gt;
+&gt; = {
+  image: {
+    fileName: &quot;overview.png&quot;,
+    media: createMockMedia(
+      &quot;image/png&quot;,
+      () =&gt; fetch(SAMPLE_IMAGE_DATA_URL),
+      &quot;overview.png&quot;
+    ),
+  },
+  markdown: {
+    fileName: &quot;overview.md&quot;,
+    media: createMockMedia(
+      &quot;text/markdown&quot;,
+      () =&gt; Promise.resolve(new Response(SAMPLE_MARKDOWN)),
+      &quot;overview.md&quot;
+    ),
+  },
+  video: {
+    fileName: &quot;example.mp4&quot;,
+    media: createMockMedia(
+      &quot;video/mp4&quot;,
+      () =&gt; fetch(SAMPLE_VIDEO_URL),
+      &quot;example.mp4&quot;
+    ),
+  },
+  email: {
+    fileName: &quot;overview.eml&quot;,
+    media: createMockMedia(
+      &quot;message/rfc822&quot;,
+      () =&gt; Promise.resolve(new Response(SAMPLE_EMAIL)),
+      &quot;overview.eml&quot;
+    ),
+  },
+  excel: {
+    fileName: &quot;employees.xlsx&quot;,
+    media: createExcelMedia(),
+  },
+  xml: {
+    fileName: &quot;overview.xml&quot;,
+    media: createMockMedia(
+      &quot;application/xml&quot;,
+      () =&gt; Promise.resolve(new Response(SAMPLE_XML)),
+      &quot;overview.xml&quot;
+    ),
+  },
+  tiff: {
+    fileName: &quot;multi-page-tiff.tiff&quot;,
+    media: createMockMedia(
+      &quot;image/tiff&quot;,
+      () =&gt; fetch(SAMPLE_TIFF_URL),
+      &quot;multi-page-tiff.tiff&quot;
+    ),
+  },
+  unsupported: {
+    fileName: &quot;overview.bin&quot;,
+    media: createMockMedia(
+      &quot;application/octet-stream&quot;,
+      () =&gt; Promise.resolve(new Response(&quot;Unsupported sample&quot;)),
+      &quot;overview.bin&quot;
+    ),
+  },
+};
+
+const actionDefinition = updateEmployeeStoryAction.actionDefinition;
+
+type OverviewApplyAction = Parameters&lt;
+  NonNullable&lt;ActionFormProps&lt;typeof actionDefinition&gt;[&quot;onSubmit&quot;]&gt;
+&gt;[1];
+
+function applyOverviewAction(
+  formState: FormState&lt;typeof actionDefinition&gt;,
+  applyAction: OverviewApplyAction
+): ReturnType&lt;OverviewApplyAction&gt; {
+  return applyAction(
+    formState as unknown as Parameters&lt;OverviewApplyAction&gt;[0]
+  );
+}
+
+// ── Tab: Data ─────────────────────────────────────────────
+
+function DataTab(): React.ReactElement {
+  const [filterClause, setFilterClause] = useState&lt;
+    WhereClause&lt;Employee&gt; | undefined
+  &gt;(undefined);
+  const [collapsed, setCollapsed] = useState(false);
+
+  return (
+    &lt;div style={{ display: &quot;flex&quot;, height: 500 }}&gt;
+      &lt;div
+        style={{
+          ...FILTER_WRAPPER_STYLE,
+          width: collapsed ? &quot;auto&quot; : 280,
+        }}
+      &gt;
+        &lt;FilterList
+          objectType={Employee}
+          filterDefinitions={FILTER_DEFINITIONS}
+          filterClause={filterClause}
+          onFilterClauseChanged={setFilterClause}
+          title=&quot;Employee Filters&quot;
+          collapsed={collapsed}
+          onCollapsedChange={setCollapsed}
+          showActiveFilterCount={true}
+        /&gt;
+      &lt;/div&gt;
+      &lt;div style={{ flex: 1, minWidth: 0 }}&gt;
+        &lt;ObjectTable objectType={Employee} filter={filterClause} /&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}
+
+// ── Tab: Viewers ──────────────────────────────────────────
+
+interface ViewersTabProps {
+  selectedViewerType: ViewerTypeId;
+}
+
+function ViewersTab({
+  selectedViewerType,
+}: ViewersTabProps): React.ReactElement {
+  const { object: employee, isLoading } = useOsdkObject(
+    Employee,
+    MEDIA_EMPLOYEE_PK
+  );
+
+  const selectedMockMedia = MOCK_VIEWER_MEDIA_BY_TYPE[selectedViewerType];
+  const selectedMedia =
+    selectedViewerType === &quot;pdf&quot;
+      ? employee?.employeeDocuments
+      : selectedMockMedia?.media;
+  const selectedFileName =
+    selectedViewerType === &quot;pdf&quot;
+      ? &quot;compressed.tracemonkey-pldi-09.pdf&quot;
+      : selectedMockMedia?.fileName;
+  const hasMedia = selectedMedia != null;
+  const loadingMessage = isLoading ? &quot;Loading document...&quot; : &quot;No media found.&quot;;
+
+  return (
+    &lt;div style={{ height: 400, position: &quot;relative&quot; }}&gt;
+      {hasMedia &amp;&amp; (
+        &lt;DocumentViewer
+          key={selectedViewerType}
+          media={selectedMedia}
+          fileName={selectedFileName}
+        /&gt;
+      )}
+      {!hasMedia &amp;&amp; (
+        &lt;div
+          style={{
+            position: &quot;absolute&quot;,
+            inset: 0,
+            display: &quot;flex&quot;,
+            alignItems: &quot;center&quot;,
+            justifyContent: &quot;center&quot;,
+            color: &quot;var(--osdk-typography-color-muted, #666)&quot;,
+          }}
+        &gt;
+          {loadingMessage}
+        &lt;/div&gt;
+      )}
+    &lt;/div&gt;
+  );
+}
+
+// ── Tab: Forms ────────────────────────────────────────────
+
+function FormsTab(): React.ReactElement {
+  const handleSubmit = useCallback(
+    (
+      formState: FormState&lt;typeof actionDefinition&gt;,
+      applyAction: OverviewApplyAction
+    ) =&gt; {
+      return applyOverviewAction(formState, applyAction);
+    },
+    []
+  );
+
+  return (
+    &lt;div className=&quot;osdkFormCard&quot;&gt;
+      &lt;ActionForm actionDefinition={actionDefinition} onSubmit={handleSubmit} /&gt;
+    &lt;/div&gt;
+  );
+}
+
+// ── Main component ────────────────────────────────────────
+
+function ComponentOverview(): React.ReactElement {
+  const [activeTab, setActiveTab] = useState&lt;TabId&gt;(&quot;data&quot;);
+  const [selectedViewerType, setSelectedViewerType] =
+    useState&lt;ViewerTypeId&gt;(&quot;pdf&quot;);
+
+  const handleTabChange = useCallback(
+    (event: React.MouseEvent&lt;HTMLButtonElement&gt;) =&gt; {
+      const tab = event.currentTarget.dataset.tab as TabId;
+      setActiveTab(tab);
+    },
+    []
+  );
+
+  const handleViewerTypeChange = useCallback(
+    (event: React.ChangeEvent&lt;HTMLSelectElement&gt;) =&gt; {
+      setSelectedViewerType(event.currentTarget.value as ViewerTypeId);
+    },
+    []
+  );
+
+  return (
+    &lt;div&gt;
+      &lt;div
+        style={{
+          display: &quot;flex&quot;,
+          alignItems: &quot;center&quot;,
+          borderBottom:
+            &quot;1px solid var(--osdk-surface-border-color-default, #d1d5db)&quot;,
+        }}
+      &gt;
+        {TABS.map((tab) =&gt; (
+          &lt;button
+            key={tab.id}
+            type=&quot;button&quot;
+            data-tab={tab.id}
+            onClick={handleTabChange}
+            style={{
+              padding: &quot;10px 20px&quot;,
+              fontWeight: activeTab === tab.id ? 600 : 400,
+              color:
+                activeTab === tab.id
+                  ? &quot;var(--osdk-intent-primary-rest, #2d72d2)&quot;
+                  : &quot;var(--osdk-typography-color-muted, #666)&quot;,
+              backgroundColor: &quot;transparent&quot;,
+              border: &quot;none&quot;,
+              borderBottom:
+                activeTab === tab.id
+                  ? &quot;2px solid var(--osdk-intent-primary-rest, #2d72d2)&quot;
+                  : &quot;2px solid transparent&quot;,
+              cursor: &quot;pointer&quot;,
+            }}
+          &gt;
+            {tab.label}
+          &lt;/button&gt;
+        ))}
+        {activeTab === &quot;viewers&quot; &amp;&amp; (
+          &lt;label
+            style={{
+              display: &quot;flex&quot;,
+              alignItems: &quot;center&quot;,
+              gap: 8,
+              marginLeft: &quot;auto&quot;,
+              marginRight: 16,
+              color: &quot;var(--osdk-typography-color-muted, #666)&quot;,
+              fontSize: 13,
+            }}
+          &gt;
+            Viewer type
+            &lt;select
+              value={selectedViewerType}
+              onChange={handleViewerTypeChange}
+              style={{
+                height: 32,
+                minWidth: 140,
+                border:
+                  &quot;1px solid var(--osdk-surface-border-color-default, #d1d5db)&quot;,
+                borderRadius: 4,
+                background:
+                  &quot;var(--osdk-surface-background-color-default, #fff)&quot;,
+                color: &quot;var(--osdk-typography-color-default, #111827)&quot;,
+                padding: &quot;0 8px&quot;,
+              }}
+            &gt;
+              {VIEWER_OPTIONS.map((option) =&gt; (
+                &lt;option key={option.id} value={option.id}&gt;
+                  {option.label}
+                &lt;/option&gt;
+              ))}
+            &lt;/select&gt;
+          &lt;/label&gt;
+        )}
+      &lt;/div&gt;
+
+      {activeTab === &quot;data&quot; &amp;&amp; &lt;DataTab /&gt;}
+      {activeTab === &quot;viewers&quot; &amp;&amp; (
+        &lt;ViewersTab selectedViewerType={selectedViewerType} /&gt;
+      )}
+      {activeTab === &quot;forms&quot; &amp;&amp; &lt;FormsTab /&gt;}
+    &lt;/div&gt;
+  );
+}
+
+const meta: Meta = {
+  title: &quot;Components/Overview&quot;,
+  component: ComponentOverview,
+  tags: [&quot;beta&quot;],
+  parameters: {
+    layout: &quot;fullscreen&quot;,
+    controls: { disable: true },
+    msw: {
+      handlers: [
+        ...fauxFoundry.handlers,
+        http.get(&quot;*/example.mp4&quot;, () =&gt; passthrough()),
+        http.get(&quot;*/multi-page-tiff.tiff&quot;, () =&gt; passthrough()),
+      ],
+    },
+  },
+};
+
+export default meta;
+
+type Story = StoryObj&lt;typeof meta&gt;;
+
+export const Default: Story = {};
+</code></pre></div>
+    </div>
+        </div>
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+    
+        <div class="panel panel-stories">
+          
+            <div class="note err">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge err">story error</span>
+              </div>
+              
+              
+              
+              <pre><code>Could not generate snippet without component name.</code></pre>
+            </div>
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { ActionForm, DocumentViewer, FilterList, ObjectTable } from "@osdk/react-components-storybook";</code></pre>
+              </div>
+          
+          
+        </div>
+  </div>
+</article>
+<article
+  class="card 
+  has-error 
+  has-info 
   no-story-error"
   role="listitem"
   aria-label="DocumentViewer">
@@ -25314,9 +26542,9 @@ export const WithValidation: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> DocumentViewer</h2>
       <div class="badges">
-        <label for="c-error-9-components-documentviewer-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-9-components-documentviewer-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-9-components-documentviewer-stories" class="badge ok as-toggle">12 stories</label>
+        <label for="c-error-10-components-documentviewer-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-10-components-documentviewer-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-10-components-documentviewer-stories" class="badge ok as-toggle">12 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/DocumentViewer/DocumentViewer.stories.tsx">components-documentviewer · ./src/stories/DocumentViewer/DocumentViewer.stories.tsx</div>
@@ -25326,9 +26554,9 @@ export const WithValidation: Story = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-9-components-documentviewer-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-9-components-documentviewer-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-9-components-documentviewer-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-10-components-documentviewer-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-10-components-documentviewer-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-10-components-documentviewer-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -25922,9 +27150,9 @@ export const WithPdfViewerProps: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> FilterList</h2>
       <div class="badges">
-        <label for="c-error-10-components-filterlist-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-10-components-filterlist-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-10-components-filterlist-stories" class="badge ok as-toggle">27 stories</label>
+        <label for="c-error-11-components-filterlist-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-11-components-filterlist-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-11-components-filterlist-stories" class="badge ok as-toggle">27 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/FilterList/FilterList.stories.tsx">components-filterlist · ./src/stories/FilterList/FilterList.stories.tsx</div>
@@ -25934,9 +27162,9 @@ export const WithPdfViewerProps: Story = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-10-components-filterlist-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-10-components-filterlist-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-10-components-filterlist-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-11-components-filterlist-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-11-components-filterlist-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-11-components-filterlist-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -29186,9 +30414,9 @@ export const WithResetButtonNonEmptyInitial: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> HorizontalFilterToolbar</h2>
       <div class="badges">
-        <label for="c-error-11-components-filterlist-recipes-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-11-components-filterlist-recipes-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-11-components-filterlist-recipes-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-error-12-components-filterlist-recipes-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-12-components-filterlist-recipes-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-12-components-filterlist-recipes-stories" class="badge ok as-toggle">1 story</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/FilterList/Recipes/HorizontalToolbar.stories.tsx">components-filterlist-recipes · ./src/stories/FilterList/Recipes/HorizontalToolbar.stories.tsx</div>
@@ -29198,9 +30426,9 @@ export const WithResetButtonNonEmptyInitial: Story = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-11-components-filterlist-recipes-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-11-components-filterlist-recipes-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-11-components-filterlist-recipes-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-12-components-filterlist-recipes-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-12-components-filterlist-recipes-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-12-components-filterlist-recipes-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -29564,9 +30792,9 @@ export const HorizontalToolbar: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> ImageViewer</h2>
       <div class="badges">
-        <label for="c-error-12-components-documentviewer-renderers-imageviewer-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-12-components-documentviewer-renderers-imageviewer-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-12-components-documentviewer-renderers-imageviewer-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-error-13-components-documentviewer-renderers-imageviewer-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-13-components-documentviewer-renderers-imageviewer-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-13-components-documentviewer-renderers-imageviewer-stories" class="badge ok as-toggle">1 story</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/ImageViewer/ImageViewer.stories.tsx">components-documentviewer-renderers-imageviewer · ./src/stories/ImageViewer/ImageViewer.stories.tsx</div>
@@ -29576,9 +30804,9 @@ export const HorizontalToolbar: Story = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-12-components-documentviewer-renderers-imageviewer-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-12-components-documentviewer-renderers-imageviewer-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-12-components-documentviewer-renderers-imageviewer-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-13-components-documentviewer-renderers-imageviewer-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-13-components-documentviewer-renderers-imageviewer-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-13-components-documentviewer-renderers-imageviewer-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -29771,9 +30999,9 @@ export const Default: StoryObj&lt;ImageViewerMediaProps&gt; = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> InteractiveChat</h2>
       <div class="badges">
-        <label for="c-error-13-beta-aipagentchat-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-13-beta-aipagentchat-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-13-beta-aipagentchat-stories" class="badge ok as-toggle">4 stories</label>
+        <label for="c-error-14-beta-aipagentchat-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-14-beta-aipagentchat-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-14-beta-aipagentchat-stories" class="badge ok as-toggle">4 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/AipAgentChat/AipAgentChat.stories.tsx">beta-aipagentchat · ./src/stories/AipAgentChat/AipAgentChat.stories.tsx</div>
@@ -29783,9 +31011,9 @@ export const Default: StoryObj&lt;ImageViewerMediaProps&gt; = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-13-beta-aipagentchat-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-13-beta-aipagentchat-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-13-beta-aipagentchat-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-14-beta-aipagentchat-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-14-beta-aipagentchat-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-14-beta-aipagentchat-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -30068,9 +31296,9 @@ export const CustomPlaceholder: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> LoadingCell</h2>
       <div class="badges">
-        <label for="c-error-14-components-objecttable-building-blocks-loadingcell-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-14-components-objecttable-building-blocks-loadingcell-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-14-components-objecttable-building-blocks-loadingcell-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-error-15-components-objecttable-building-blocks-loadingcell-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-15-components-objecttable-building-blocks-loadingcell-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-15-components-objecttable-building-blocks-loadingcell-stories" class="badge ok as-toggle">1 story</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/ObjectTable/LoadingCell.stories.tsx">components-objecttable-building-blocks-loadingcell · ./src/stories/ObjectTable/LoadingCell.stories.tsx</div>
@@ -30080,9 +31308,9 @@ export const CustomPlaceholder: Story = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-14-components-objecttable-building-blocks-loadingcell-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-14-components-objecttable-building-blocks-loadingcell-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-14-components-objecttable-building-blocks-loadingcell-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-15-components-objecttable-building-blocks-loadingcell-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-15-components-objecttable-building-blocks-loadingcell-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-15-components-objecttable-building-blocks-loadingcell-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -30222,9 +31450,9 @@ export const Default: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> LoadingCellContent</h2>
       <div class="badges">
-        <label for="c-error-15-components-objecttable-building-blocks-loadingcellcontent-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-15-components-objecttable-building-blocks-loadingcellcontent-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-15-components-objecttable-building-blocks-loadingcellcontent-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-error-16-components-objecttable-building-blocks-loadingcellcontent-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-16-components-objecttable-building-blocks-loadingcellcontent-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-16-components-objecttable-building-blocks-loadingcellcontent-stories" class="badge ok as-toggle">1 story</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/ObjectTable/LoadingCellContent.stories.tsx">components-objecttable-building-blocks-loadingcellcontent · ./src/stories/ObjectTable/LoadingCellContent.stories.tsx</div>
@@ -30234,9 +31462,9 @@ export const Default: Story = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-15-components-objecttable-building-blocks-loadingcellcontent-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-15-components-objecttable-building-blocks-loadingcellcontent-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-15-components-objecttable-building-blocks-loadingcellcontent-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-16-components-objecttable-building-blocks-loadingcellcontent-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-16-components-objecttable-building-blocks-loadingcellcontent-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-16-components-objecttable-building-blocks-loadingcellcontent-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -30359,9 +31587,9 @@ export const Default: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> MarkdownRenderer</h2>
       <div class="badges">
-        <label for="c-error-16-components-documentviewer-renderers-markdownrenderer-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-16-components-documentviewer-renderers-markdownrenderer-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-16-components-documentviewer-renderers-markdownrenderer-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-error-17-components-documentviewer-renderers-markdownrenderer-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-17-components-documentviewer-renderers-markdownrenderer-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-17-components-documentviewer-renderers-markdownrenderer-stories" class="badge ok as-toggle">2 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/MarkdownRenderer/MarkdownRenderer.stories.tsx">components-documentviewer-renderers-markdownrenderer · ./src/stories/MarkdownRenderer/MarkdownRenderer.stories.tsx</div>
@@ -30371,9 +31599,9 @@ export const Default: Story = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-16-components-documentviewer-renderers-markdownrenderer-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-16-components-documentviewer-renderers-markdownrenderer-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-16-components-documentviewer-renderers-markdownrenderer-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-17-components-documentviewer-renderers-markdownrenderer-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-17-components-documentviewer-renderers-markdownrenderer-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-17-components-documentviewer-renderers-markdownrenderer-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -30605,9 +31833,9 @@ export const MinimalContent: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> MultiColumnSortDialog</h2>
       <div class="badges">
-        <label for="c-error-17-components-objecttable-building-blocks-multicolumnsortdialog-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-17-components-objecttable-building-blocks-multicolumnsortdialog-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-17-components-objecttable-building-blocks-multicolumnsortdialog-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-error-18-components-objecttable-building-blocks-multicolumnsortdialog-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-18-components-objecttable-building-blocks-multicolumnsortdialog-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-18-components-objecttable-building-blocks-multicolumnsortdialog-stories" class="badge ok as-toggle">1 story</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/ObjectTable/MultiColumnSortDialog.stories.tsx">components-objecttable-building-blocks-multicolumnsortdialog · ./src/stories/ObjectTable/MultiColumnSortDialog.stories.tsx</div>
@@ -30617,9 +31845,9 @@ export const MinimalContent: Story = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-17-components-objecttable-building-blocks-multicolumnsortdialog-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-17-components-objecttable-building-blocks-multicolumnsortdialog-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-17-components-objecttable-building-blocks-multicolumnsortdialog-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-18-components-objecttable-building-blocks-multicolumnsortdialog-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-18-components-objecttable-building-blocks-multicolumnsortdialog-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-18-components-objecttable-building-blocks-multicolumnsortdialog-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -30803,9 +32031,9 @@ const [isOpen, setIsOpen] = useState(false);
     <div class="title">
       <h2><span class="status-dot dot-err"></span> ObjectTable</h2>
       <div class="badges">
-        <label for="c-error-18-components-objecttable-features-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-18-components-objecttable-features-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-18-components-objecttable-features-stories" class="badge ok as-toggle">28 stories</label>
+        <label for="c-error-19-components-objecttable-features-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-19-components-objecttable-features-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-19-components-objecttable-features-stories" class="badge ok as-toggle">28 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/ObjectTable/ObjectTable.stories.tsx">components-objecttable-features · ./src/stories/ObjectTable/ObjectTable.stories.tsx</div>
@@ -30815,9 +32043,9 @@ const [isOpen, setIsOpen] = useState(false);
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-18-components-objecttable-features-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-18-components-objecttable-features-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-18-components-objecttable-features-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-19-components-objecttable-features-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-19-components-objecttable-features-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-19-components-objecttable-features-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -34247,9 +35475,9 @@ import {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> ObjectTable</h2>
       <div class="badges">
-        <label for="c-error-19-components-objecttable-recipes-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-19-components-objecttable-recipes-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-19-components-objecttable-recipes-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-error-20-components-objecttable-recipes-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-20-components-objecttable-recipes-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-20-components-objecttable-recipes-stories" class="badge ok as-toggle">1 story</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/ObjectTable/Recipes/WithConfigureColumnsButton.stories.tsx">components-objecttable-recipes · ./src/stories/ObjectTable/Recipes/WithConfigureColumnsButton.stories.tsx</div>
@@ -34259,9 +35487,9 @@ import {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-19-components-objecttable-recipes-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-19-components-objecttable-recipes-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-19-components-objecttable-recipes-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-20-components-objecttable-recipes-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-20-components-objecttable-recipes-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-20-components-objecttable-recipes-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -34631,9 +35859,9 @@ return (
     <div class="title">
       <h2><span class="status-dot dot-err"></span> PdfViewer</h2>
       <div class="badges">
-        <label for="c-error-20-components-documentviewer-renderers-pdfviewer-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-20-components-documentviewer-renderers-pdfviewer-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-20-components-documentviewer-renderers-pdfviewer-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-error-21-components-documentviewer-renderers-pdfviewer-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-21-components-documentviewer-renderers-pdfviewer-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-21-components-documentviewer-renderers-pdfviewer-stories" class="badge ok as-toggle">1 story</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/PdfViewer/PdfViewer.stories.tsx">components-documentviewer-renderers-pdfviewer · ./src/stories/PdfViewer/PdfViewer.stories.tsx</div>
@@ -34643,9 +35871,9 @@ return (
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-20-components-documentviewer-renderers-pdfviewer-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-20-components-documentviewer-renderers-pdfviewer-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-20-components-documentviewer-renderers-pdfviewer-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-21-components-documentviewer-renderers-pdfviewer-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-21-components-documentviewer-renderers-pdfviewer-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-21-components-documentviewer-renderers-pdfviewer-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -34792,9 +36020,9 @@ const employee = useOsdkObject(Employee, employeePk);
     <div class="title">
       <h2><span class="status-dot dot-err"></span> PdfViewer</h2>
       <div class="badges">
-        <label for="c-error-21-components-documentviewer-renderers-pdfviewer-features-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-21-components-documentviewer-renderers-pdfviewer-features-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-21-components-documentviewer-renderers-pdfviewer-features-stories" class="badge ok as-toggle">12 stories</label>
+        <label for="c-error-22-components-documentviewer-renderers-pdfviewer-features-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-22-components-documentviewer-renderers-pdfviewer-features-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-22-components-documentviewer-renderers-pdfviewer-features-stories" class="badge ok as-toggle">12 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/PdfViewer/Features/PdfViewerFeatures.stories.tsx">components-documentviewer-renderers-pdfviewer-features · ./src/stories/PdfViewer/Features/PdfViewerFeatures.stories.tsx</div>
@@ -34804,9 +36032,9 @@ const employee = useOsdkObject(Employee, employeePk);
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-21-components-documentviewer-renderers-pdfviewer-features-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-21-components-documentviewer-renderers-pdfviewer-features-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-21-components-documentviewer-renderers-pdfviewer-features-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-22-components-documentviewer-renderers-pdfviewer-features-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-22-components-documentviewer-renderers-pdfviewer-features-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-22-components-documentviewer-renderers-pdfviewer-features-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -35466,9 +36694,9 @@ export const InteractiveForm: StoryObj&lt;PdfViewerProps&gt; = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> PdfViewerAnnotationLayer</h2>
       <div class="badges">
-        <label for="c-error-22-components-documentviewer-renderers-pdfviewer-building-blocks-annotationlayer-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-22-components-documentviewer-renderers-pdfviewer-building-blocks-annotationlayer-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-22-components-documentviewer-renderers-pdfviewer-building-blocks-annotationlayer-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-error-23-components-documentviewer-renderers-pdfviewer-building-blocks-annotationlayer-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-23-components-documentviewer-renderers-pdfviewer-building-blocks-annotationlayer-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-23-components-documentviewer-renderers-pdfviewer-building-blocks-annotationlayer-stories" class="badge ok as-toggle">3 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/PdfViewer/AnnotationLayer.stories.tsx">components-documentviewer-renderers-pdfviewer-building-blocks-annotationlayer · ./src/stories/PdfViewer/AnnotationLayer.stories.tsx</div>
@@ -35478,9 +36706,9 @@ export const InteractiveForm: StoryObj&lt;PdfViewerProps&gt; = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-22-components-documentviewer-renderers-pdfviewer-building-blocks-annotationlayer-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-22-components-documentviewer-renderers-pdfviewer-building-blocks-annotationlayer-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-22-components-documentviewer-renderers-pdfviewer-building-blocks-annotationlayer-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-23-components-documentviewer-renderers-pdfviewer-building-blocks-annotationlayer-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-23-components-documentviewer-renderers-pdfviewer-building-blocks-annotationlayer-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-23-components-documentviewer-renderers-pdfviewer-building-blocks-annotationlayer-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -35799,9 +37027,9 @@ export const ZoomedIn: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> PdfViewerContent</h2>
       <div class="badges">
-        <label for="c-error-23-components-documentviewer-renderers-pdfviewer-building-blocks-content-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-23-components-documentviewer-renderers-pdfviewer-building-blocks-content-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-23-components-documentviewer-renderers-pdfviewer-building-blocks-content-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-error-24-components-documentviewer-renderers-pdfviewer-building-blocks-content-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-24-components-documentviewer-renderers-pdfviewer-building-blocks-content-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-24-components-documentviewer-renderers-pdfviewer-building-blocks-content-stories" class="badge ok as-toggle">3 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/PdfViewer/Content.stories.tsx">components-documentviewer-renderers-pdfviewer-building-blocks-content · ./src/stories/PdfViewer/Content.stories.tsx</div>
@@ -35811,9 +37039,9 @@ export const ZoomedIn: Story = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-23-components-documentviewer-renderers-pdfviewer-building-blocks-content-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-23-components-documentviewer-renderers-pdfviewer-building-blocks-content-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-23-components-documentviewer-renderers-pdfviewer-building-blocks-content-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-24-components-documentviewer-renderers-pdfviewer-building-blocks-content-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-24-components-documentviewer-renderers-pdfviewer-building-blocks-content-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-24-components-documentviewer-renderers-pdfviewer-building-blocks-content-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -35984,9 +37212,9 @@ export const StartOnPage5: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> PdfViewerOutlineSidebar</h2>
       <div class="badges">
-        <label for="c-error-24-components-documentviewer-renderers-pdfviewer-building-blocks-outlinesidebar-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-24-components-documentviewer-renderers-pdfviewer-building-blocks-outlinesidebar-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-24-components-documentviewer-renderers-pdfviewer-building-blocks-outlinesidebar-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-error-25-components-documentviewer-renderers-pdfviewer-building-blocks-outlinesidebar-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-25-components-documentviewer-renderers-pdfviewer-building-blocks-outlinesidebar-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-25-components-documentviewer-renderers-pdfviewer-building-blocks-outlinesidebar-stories" class="badge ok as-toggle">3 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/PdfViewer/OutlineSidebar.stories.tsx">components-documentviewer-renderers-pdfviewer-building-blocks-outlinesidebar · ./src/stories/PdfViewer/OutlineSidebar.stories.tsx</div>
@@ -35996,9 +37224,9 @@ export const StartOnPage5: Story = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-24-components-documentviewer-renderers-pdfviewer-building-blocks-outlinesidebar-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-24-components-documentviewer-renderers-pdfviewer-building-blocks-outlinesidebar-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-24-components-documentviewer-renderers-pdfviewer-building-blocks-outlinesidebar-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-25-components-documentviewer-renderers-pdfviewer-building-blocks-outlinesidebar-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-25-components-documentviewer-renderers-pdfviewer-building-blocks-outlinesidebar-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-25-components-documentviewer-renderers-pdfviewer-building-blocks-outlinesidebar-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -36228,9 +37456,9 @@ export const Empty: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> PdfViewerSearchBar</h2>
       <div class="badges">
-        <label for="c-error-25-components-documentviewer-renderers-pdfviewer-building-blocks-searchbar-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-25-components-documentviewer-renderers-pdfviewer-building-blocks-searchbar-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-25-components-documentviewer-renderers-pdfviewer-building-blocks-searchbar-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-error-26-components-documentviewer-renderers-pdfviewer-building-blocks-searchbar-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-26-components-documentviewer-renderers-pdfviewer-building-blocks-searchbar-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-26-components-documentviewer-renderers-pdfviewer-building-blocks-searchbar-stories" class="badge ok as-toggle">3 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/PdfViewer/SearchBar.stories.tsx">components-documentviewer-renderers-pdfviewer-building-blocks-searchbar · ./src/stories/PdfViewer/SearchBar.stories.tsx</div>
@@ -36240,9 +37468,9 @@ export const Empty: Story = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-25-components-documentviewer-renderers-pdfviewer-building-blocks-searchbar-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-25-components-documentviewer-renderers-pdfviewer-building-blocks-searchbar-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-25-components-documentviewer-renderers-pdfviewer-building-blocks-searchbar-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-26-components-documentviewer-renderers-pdfviewer-building-blocks-searchbar-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-26-components-documentviewer-renderers-pdfviewer-building-blocks-searchbar-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-26-components-documentviewer-renderers-pdfviewer-building-blocks-searchbar-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -36420,9 +37648,9 @@ export const NoResults: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> PdfViewerToolbar</h2>
       <div class="badges">
-        <label for="c-error-26-components-documentviewer-renderers-pdfviewer-building-blocks-toolbar-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-26-components-documentviewer-renderers-pdfviewer-building-blocks-toolbar-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-26-components-documentviewer-renderers-pdfviewer-building-blocks-toolbar-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-error-27-components-documentviewer-renderers-pdfviewer-building-blocks-toolbar-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-27-components-documentviewer-renderers-pdfviewer-building-blocks-toolbar-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-27-components-documentviewer-renderers-pdfviewer-building-blocks-toolbar-stories" class="badge ok as-toggle">3 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/PdfViewer/Toolbar.stories.tsx">components-documentviewer-renderers-pdfviewer-building-blocks-toolbar · ./src/stories/PdfViewer/Toolbar.stories.tsx</div>
@@ -36432,9 +37660,9 @@ export const NoResults: Story = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-26-components-documentviewer-renderers-pdfviewer-building-blocks-toolbar-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-26-components-documentviewer-renderers-pdfviewer-building-blocks-toolbar-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-26-components-documentviewer-renderers-pdfviewer-building-blocks-toolbar-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-27-components-documentviewer-renderers-pdfviewer-building-blocks-toolbar-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-27-components-documentviewer-renderers-pdfviewer-building-blocks-toolbar-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-27-components-documentviewer-renderers-pdfviewer-building-blocks-toolbar-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -36650,9 +37878,9 @@ export const MidDocument: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> ThumbnailSidebarWrapper</h2>
       <div class="badges">
-        <label for="c-error-27-components-documentviewer-renderers-pdfviewer-building-blocks-thumbnailsidebar-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-27-components-documentviewer-renderers-pdfviewer-building-blocks-thumbnailsidebar-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-27-components-documentviewer-renderers-pdfviewer-building-blocks-thumbnailsidebar-stories" class="badge err as-toggle">2/2 story errors</label>
+        <label for="c-error-28-components-documentviewer-renderers-pdfviewer-building-blocks-thumbnailsidebar-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-28-components-documentviewer-renderers-pdfviewer-building-blocks-thumbnailsidebar-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-28-components-documentviewer-renderers-pdfviewer-building-blocks-thumbnailsidebar-stories" class="badge err as-toggle">2/2 story errors</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/PdfViewer/ThumbnailSidebar.stories.tsx">components-documentviewer-renderers-pdfviewer-building-blocks-thumbnailsidebar · ./src/stories/PdfViewer/ThumbnailSidebar.stories.tsx</div>
@@ -36662,9 +37890,9 @@ export const MidDocument: Story = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-27-components-documentviewer-renderers-pdfviewer-building-blocks-thumbnailsidebar-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-27-components-documentviewer-renderers-pdfviewer-building-blocks-thumbnailsidebar-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-27-components-documentviewer-renderers-pdfviewer-building-blocks-thumbnailsidebar-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-28-components-documentviewer-renderers-pdfviewer-building-blocks-thumbnailsidebar-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-28-components-documentviewer-renderers-pdfviewer-building-blocks-thumbnailsidebar-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-28-components-documentviewer-renderers-pdfviewer-building-blocks-thumbnailsidebar-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -36837,9 +38065,9 @@ export const ActivePage: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> TiffRenderer</h2>
       <div class="badges">
-        <label for="c-error-28-components-documentviewer-renderers-tiffrenderer-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-28-components-documentviewer-renderers-tiffrenderer-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-28-components-documentviewer-renderers-tiffrenderer-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-error-29-components-documentviewer-renderers-tiffrenderer-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-29-components-documentviewer-renderers-tiffrenderer-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-29-components-documentviewer-renderers-tiffrenderer-stories" class="badge ok as-toggle">2 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/TiffRenderer/TiffRendererFeatures.stories.tsx">components-documentviewer-renderers-tiffrenderer · ./src/stories/TiffRenderer/TiffRendererFeatures.stories.tsx</div>
@@ -36849,9 +38077,9 @@ export const ActivePage: Story = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-28-components-documentviewer-renderers-tiffrenderer-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-28-components-documentviewer-renderers-tiffrenderer-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-28-components-documentviewer-renderers-tiffrenderer-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-29-components-documentviewer-renderers-tiffrenderer-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-29-components-documentviewer-renderers-tiffrenderer-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-29-components-documentviewer-renderers-tiffrenderer-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -37088,9 +38316,9 @@ export const WithErrorCallback: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> UpdateEmployeeActionFormStory</h2>
       <div class="badges">
-        <label for="c-error-29-components-actionform-usage-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-29-components-actionform-usage-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-29-components-actionform-usage-stories" class="badge err as-toggle">10/13 story errors</label>
+        <label for="c-error-30-components-actionform-usage-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-30-components-actionform-usage-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-30-components-actionform-usage-stories" class="badge err as-toggle">10/13 story errors</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/ActionForm/ActionForm.stories.tsx">components-actionform-usage · ./src/stories/ActionForm/ActionForm.stories.tsx</div>
@@ -37100,9 +38328,9 @@ export const WithErrorCallback: Story = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-29-components-actionform-usage-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-29-components-actionform-usage-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-29-components-actionform-usage-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-30-components-actionform-usage-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-30-components-actionform-usage-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-30-components-actionform-usage-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -38225,9 +39453,9 @@ function ControlledActionFormStory(): React.ReactElement {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> VideoViewer</h2>
       <div class="badges">
-        <label for="c-error-30-components-documentviewer-renderers-videoviewer-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-30-components-documentviewer-renderers-videoviewer-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-30-components-documentviewer-renderers-videoviewer-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-error-31-components-documentviewer-renderers-videoviewer-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-31-components-documentviewer-renderers-videoviewer-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-31-components-documentviewer-renderers-videoviewer-stories" class="badge ok as-toggle">2 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/VideoViewer/VideoViewer.stories.tsx">components-documentviewer-renderers-videoviewer · ./src/stories/VideoViewer/VideoViewer.stories.tsx</div>
@@ -38237,9 +39465,9 @@ function ControlledActionFormStory(): React.ReactElement {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-30-components-documentviewer-renderers-videoviewer-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-30-components-documentviewer-renderers-videoviewer-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-30-components-documentviewer-renderers-videoviewer-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-31-components-documentviewer-renderers-videoviewer-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-31-components-documentviewer-renderers-videoviewer-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-31-components-documentviewer-renderers-videoviewer-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
