@@ -24,6 +24,10 @@ import { fileURLToPath } from "node:url";
 import postcss from "postcss";
 import postcssModules from "postcss-modules";
 
+// import.meta.dirname (the rule's suggested replacement) needs Node >=20.11,
+// but this build script must run on the repo's Node 18 floor (engines
+// >=18.19.0), so keep the fileURLToPath form.
+// oxlint-disable-next-line unicorn/prefer-import-meta-properties
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const buildDir = path.join(__dirname, "..", "build", "browser");
 

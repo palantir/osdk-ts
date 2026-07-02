@@ -26,6 +26,10 @@ import postcss from "postcss";
 import postcssModules from "postcss-modules";
 import * as sass from "sass-embedded";
 
+// import.meta.dirname (the rule's suggested replacement) needs Node >=20.11,
+// but this build script must run on the repo's Node 18 floor (engines
+// >=18.19.0), so keep the fileURLToPath form.
+// oxlint-disable-next-line unicorn/prefer-import-meta-properties
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const packageRoot = path.resolve(__dirname, "..");
 const srcDir = path.join(packageRoot, "src");

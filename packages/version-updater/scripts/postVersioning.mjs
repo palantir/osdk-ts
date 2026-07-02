@@ -155,6 +155,10 @@ function updateConstVariable(filePath, variableName, value) {
 
 function getWorkspaceDirPath() {
   const pnpmWorkspaceYamlPath = findUpSync("pnpm-workspace.yaml", {
+    // import.meta.dirname (the rule's suggested replacement) needs Node >=20.11,
+    // but this script must run on the repo's Node 18 floor (engines >=18.19.0),
+    // so keep the fileURLToPath form.
+    // oxlint-disable-next-line unicorn/prefer-import-meta-properties
     cwd: path.dirname(fileURLToPath(import.meta.url)),
   });
   if (!pnpmWorkspaceYamlPath) {
