@@ -496,6 +496,7 @@ export class ObjectSetQuery extends BaseListQuery<
     );
   }
 
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   invalidateObjectType = async (
     objectType: string,
     changes: Changes | undefined

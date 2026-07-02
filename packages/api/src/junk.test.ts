@@ -17,7 +17,7 @@
 import { describe, expect, it } from "vitest";
 
 describe("anything", () => {
-  it("does", async () => {
+  it("does", () => {
     expect(1).toBe(1);
   });
 });

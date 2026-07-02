@@ -41,6 +41,7 @@ export async function countEmployeePeeps(
   return count;
 }
 
+// oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
 export async function getSpecificPeep(
   employee: Osdk.Instance<Employee>,
   peepId: number

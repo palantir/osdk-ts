@@ -369,6 +369,7 @@ async function generateBackingDatasetBlock(
 /**
  * Generate a backing datasource BlockGeneratorResult for an object type.
  */
+// oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
 export async function generateBackingDatasetBlockResult(
   objectTypeBlockData: ObjectTypeBlockDataV2,
   buildDir: string,
@@ -395,6 +396,7 @@ export async function generateBackingDatasetBlockResult(
 /**
  * Generate a backing datasource BlockGeneratorResult for a many-to-many link type.
  */
+// oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
 export async function generateBackingDatasetBlockResultForLink(
   linkTypeBlockData: LinkTypeBlockDataV2,
   linkApiName: string,

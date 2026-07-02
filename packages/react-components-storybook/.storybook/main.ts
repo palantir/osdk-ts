@@ -49,6 +49,7 @@ const config: StorybookConfig = {
   // it does not override an explicit empty tags array.
   // MDX files are skipped because wrapping their index entries breaks
   // attached-docs sidebar placement in Storybook 10.
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   experimental_indexers: async (existingIndexers) =>
     (existingIndexers ?? []).map((indexer) => ({
       ...indexer,
@@ -62,6 +63,7 @@ const config: StorybookConfig = {
         );
       },
     })),
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   async viteFinal(config) {
     // Set base path for GitHub Pages deployment. PR previews are published
     // under /storybook/pr-<number>/, so CI can override the default path.

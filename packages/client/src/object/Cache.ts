@@ -125,6 +125,7 @@ export function createAsyncClientCache<K, V extends {}>(
       return cache.get(client, key);
     },
 
+    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
     get: async function get(client: MinimalClient, key: K) {
       return (
         cache.get(client, key) ??

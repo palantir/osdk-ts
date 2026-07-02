@@ -63,6 +63,7 @@ export class LmsChatTransport implements ChatTransport<UIMessage> {
     this.opts = opts;
   }
 
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   sendMessages = async (
     args: SendMessagesArgs
   ): Promise<ReadableStream<UIMessageChunk>> => {
@@ -185,6 +186,7 @@ export class LmsChatTransport implements ChatTransport<UIMessage> {
     );
   };
 
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   reconnectToStream = async (
     _args: ChatTransportReconnectArgs
   ): Promise<ReadableStream<UIMessageChunk> | null> => {

@@ -51,7 +51,7 @@ describe("Timeseries", () => {
     ],
   };
 
-  beforeAll(async () => {
+  beforeAll(() => {
     const testSetup = startNodeApiServer(new LegacyFauxFoundry(), createClient);
     ({ client } = testSetup);
 

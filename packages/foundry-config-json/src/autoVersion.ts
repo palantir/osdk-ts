@@ -39,6 +39,7 @@ export class AutoVersionError extends Error {
  * @returns A promise that resolves to the version string.
  * @throws An error if the version string is not SemVer compliant or if the version cannot be determined.
  */
+// oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
 export async function autoVersion(config: AutoVersionConfig): Promise<string> {
   switch (config.type) {
     case "git-describe":

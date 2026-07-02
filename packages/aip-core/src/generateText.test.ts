@@ -35,6 +35,7 @@ function createMockClient(options: MockClientOptions = {}): {
   client: PlatformClient;
   fetch: ReturnType<typeof vi.fn>;
 } {
+  // oxlint-disable-next-line require-await -- intentionally async: assigned to a Promise-returning callback/mock type; no await needed
   const fetchMock = vi.fn<typeof globalThis.fetch>(async (_input, _init) => {
     const body = options.responseBody ?? defaultResponse();
     return new Response(JSON.stringify(body), {

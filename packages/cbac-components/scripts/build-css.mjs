@@ -30,6 +30,7 @@ const buildDir = path.join(__dirname, "..", "build", "browser");
 async function findCssModules(dir) {
   const entries = await fs.readdir(dir, { withFileTypes: true });
   const files = await Promise.all(
+    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
     entries.map(async (entry) => {
       const fullPath = path.join(dir, entry.name);
       if (entry.isDirectory()) {
@@ -46,6 +47,7 @@ async function findCssModules(dir) {
 async function findJsFiles(dir) {
   const entries = await fs.readdir(dir, { withFileTypes: true });
   const files = await Promise.all(
+    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
     entries.map(async (entry) => {
       const fullPath = path.join(dir, entry.name);
       if (entry.isDirectory()) {

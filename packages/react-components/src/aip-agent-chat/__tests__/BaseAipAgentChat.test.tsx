@@ -115,7 +115,7 @@ describe("BaseAipAgentChat", () => {
     expect(sendButton.matches(":disabled")).toBe(false);
   });
 
-  it("calls onSendMessage when Send button is clicked", async () => {
+  it("calls onSendMessage when Send button is clicked", () => {
     const onSendMessage = vi.fn(() => Promise.resolve());
 
     render(

@@ -41,6 +41,7 @@ export function createMockCaptureClient(
   const client = createMinimalClient(
     metadata,
     "https://foo",
+    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
     async () => "",
     {},
     fetchFn

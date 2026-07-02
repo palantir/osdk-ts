@@ -17,6 +17,7 @@
 import { consola } from "../consola.js";
 import { italic } from "../highlight.js";
 
+// oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
 export async function promptCorsProxy({
   corsProxy,
 }: {

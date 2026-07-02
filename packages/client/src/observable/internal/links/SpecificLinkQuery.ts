@@ -330,6 +330,7 @@ export class SpecificLinkQuery extends BaseListQuery<
   /**
    * Implements Query.maybeUpdateAndRevalidate to handle cache invalidation
    */
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   maybeUpdateAndRevalidate = async (
     changes: Changes,
     _optimisticId: OptimisticId | undefined

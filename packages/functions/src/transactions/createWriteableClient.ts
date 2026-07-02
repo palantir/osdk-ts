@@ -124,6 +124,7 @@ export function createWriteableClient<X extends AnyEdit = never>(
       },
     },
     create: {
+      // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
       async value<OTD extends CreatableObjectOrInterfaceTypes<X>>(
         obj: OTD,
         properties: CreatableObjectOrInterfaceTypeProperties<X, OTD>

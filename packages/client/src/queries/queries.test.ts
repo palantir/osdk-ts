@@ -465,7 +465,7 @@ describe("queries", () => {
 
     expectTypeOf<ObjectSet<Employee>>().toMatchTypeOf<typeof result>();
   });
-  it("queries are enumerable", async () => {
+  it("queries are enumerable", () => {
     const queries = Object.keys($Queries);
     expect(queries).toStrictEqual([
       "acceptsThreeDimensionalAggregationFunction",
@@ -581,8 +581,8 @@ describe("queries", () => {
       };
 
       const mockMedia: Media = {
-        fetchContents: async () => new Response(),
-        fetchMetadata: async () => ({
+        fetchContents: () => new Response(),
+        fetchMetadata: () => ({
           path: "/test.png",
           sizeBytes: 1000,
           mediaType: "image/png",

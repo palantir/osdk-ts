@@ -103,6 +103,7 @@ export class MetadataClient {
     getLinkMapping: () => Promise<ObjectLinkMapping>;
     getRid: () => string;
     getApiName: () => Promise<string | null | undefined>;
+    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   }> = strongMemoAsync(async (rid: string) => {
     return Promise.resolve({
       getPropertyMapping: this.#objectPropertyMapping.bind(this, rid),

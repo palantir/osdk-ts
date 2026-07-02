@@ -71,6 +71,7 @@ export const createStandardOntologyProviderFactory: (
       return deepFreeze(await loadInterfaceMetadata(client, key));
     }
 
+    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
     async function loadQuery(client: MinimalClient, key: string) {
       return loadQueryMetadata(client, key);
     }

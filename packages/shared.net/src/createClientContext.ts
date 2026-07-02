@@ -32,6 +32,7 @@ export function createClientContext(
 ): SharedClientContext {
   return createSharedClientContext(
     baseUrl,
+    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
     async () => tokenProvider(),
     [userAgent].filter((x) => x && x?.length > 0).join(" "),
     fetchFn

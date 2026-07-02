@@ -481,6 +481,7 @@ export async function fetchPageWithErrorsInternal<
  * @returns
  * @internal
  */
+// oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
 export async function fetchPage<
   Q extends ObjectOrInterfaceDefinition,
   L extends PropertyKeys<Q>,
@@ -498,6 +499,7 @@ export async function fetchPage<
 }
 
 /** @internal */
+// oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
 export async function fetchPageWithErrors<
   Q extends ObjectOrInterfaceDefinition,
   L extends PropertyKeys<Q>,
@@ -613,6 +615,7 @@ export function remapPropertyNames(
   return propertyNames;
 }
 
+// oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
 async function applyFetchArgs<
   Q extends ObjectOrInterfaceDefinition,
   L extends PropertyKeys<Q>,

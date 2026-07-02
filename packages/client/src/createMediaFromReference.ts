@@ -46,6 +46,7 @@ export function createMediaFromReferenceInternal(
     mediaReference.reference.mediaSetViewItem;
   const token = mediaReference.reference.mediaSetViewItem.token;
   return {
+    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
     async fetchContents(): Promise<Response> {
       return MediaSets.read(
         client,

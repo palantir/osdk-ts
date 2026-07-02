@@ -215,11 +215,11 @@ describe("convertWireToOsdkObjects", () => {
     const clientCtx = createMinimalClient(
       { ontologyRid: $ontologyRid },
       "https://stack.palantir.com",
-      async () => "myAccessToken"
+      () => "myAccessToken"
     );
     createSharedClientContext(
       "https://stack.palantir.com",
-      async () => "myAccessToken",
+      () => "myAccessToken",
       "userAgent"
     );
 
@@ -247,7 +247,7 @@ describe("convertWireToOsdkObjects", () => {
     const clientCtx = createMinimalClient(
       { ontologyRid: $ontologyRid },
       "https://stack.palantir.com",
-      async () => "myAccessToken"
+      () => "myAccessToken"
     );
 
     const objectFromWire = {
@@ -304,7 +304,7 @@ describe("convertWireToOsdkObjects", () => {
     const clientCtx = createMinimalClient(
       { ontologyRid: $ontologyRid },
       "https://stack.palantir.com",
-      async () => "myAccessToken"
+      () => "myAccessToken"
     );
 
     const objectFromWire = {
@@ -362,7 +362,7 @@ describe("convertWireToOsdkObjects", () => {
     const clientCtx = createMinimalClient(
       { ontologyRid: $ontologyRid },
       "https://stack.palantir.com",
-      async () => "myAccessToken"
+      () => "myAccessToken"
     );
 
     const objectFromWire = {
@@ -426,7 +426,7 @@ describe("convertWireToOsdkObjects", () => {
     const clientCtx = createMinimalClient(
       { ontologyRid: $ontologyRid },
       "https://stack.palantir.com",
-      async () => "myAccessToken"
+      () => "myAccessToken"
     );
 
     const objectFromWire = {

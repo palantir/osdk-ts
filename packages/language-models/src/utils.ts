@@ -67,6 +67,7 @@ export function createFetch(
  * const token = await getFoundryToken(platformClient);
  * ```
  */
+// oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
 export async function getFoundryToken(
   client: Client | PlatformClient
 ): Promise<string> {

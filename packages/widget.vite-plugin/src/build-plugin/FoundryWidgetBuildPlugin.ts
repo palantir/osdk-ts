@@ -120,6 +120,7 @@ async function createModuleEvaluationServer(
   });
 }
 
+// oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
 async function computeWidgetSetVersion(
   foundryConfig: LoadedFoundryConfig<"widgetSet">
 ): Promise<string> {

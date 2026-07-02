@@ -121,6 +121,7 @@ export function useEditableTable<
     setValidationErrors(new Map());
   }, []);
 
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   const handleSubmitEdits = useCallback(async () => {
     const edits = Object.values(cellEdits);
     return onSubmitEdits ? onSubmitEdits(edits) : false;
