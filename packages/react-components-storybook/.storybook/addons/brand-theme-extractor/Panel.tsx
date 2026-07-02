@@ -21,8 +21,10 @@ import { styled } from "storybook/theming";
 import { GLOBALS_KEY } from "./constants.js";
 import { generateCss, generateMarkdown } from "./export.js";
 import { ExportDropdown } from "./ExportButtons.js";
+import { getBuiltInDefaults } from "./presets.js";
 import {
   findMatchingPreset,
+  findThemePreset,
   parseBrandThemeState,
   stringifyBrandThemeState,
 } from "./state.js";
@@ -90,13 +92,26 @@ function PanelContent(): React.ReactElement {
   const stateRef = useRef(state);
   stateRef.current = state;
 
+  // For built-in themes with no overrides, use the default Blueprint tokens
+  // so users can always export a meaningful DESIGN.md and CSS.
+  const exportAssignments = useMemo(() => {
+    if (state.assignments.length > 0) return state.assignments;
+    return getBuiltInDefaults(state.colorMode);
+  }, [state.assignments, state.colorMode]);
+
+  const preset = useMemo(
+    () => findThemePreset(state.selectedPresetId),
+    [state.selectedPresetId]
+  );
+  const themeName = preset?.label ?? "OSDK-brand-theme";
+
   const css = useMemo(
-    () => generateCss(state.assignments),
-    [state.assignments]
+    () => generateCss(exportAssignments),
+    [exportAssignments]
   );
   const md = useMemo(
-    () => generateMarkdown(state.assignments),
-    [state.assignments]
+    () => generateMarkdown(exportAssignments, themeName),
+    [exportAssignments, themeName]
   );
 
   // Stable: reads state via ref, only depends on updateGlobals (stable from useGlobals).
@@ -145,7 +160,6 @@ function PanelContent(): React.ReactElement {
         <Title>Brand Theme</Title>
         <HeaderRight>
           <ExportDropdown
-            disabled={state.assignments.length === 0}
             items={[
               {
                 label: "CSS",
