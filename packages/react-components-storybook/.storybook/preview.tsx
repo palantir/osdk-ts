@@ -86,7 +86,6 @@ const preview: Preview = {
             "Docs/Changelog",
             "Docs/Guides/Getting Started",
             "Docs/Guides/Usage with OSDK",
-            "Docs/Styling/Overview",
             "Docs/Tokens/Colors",
             "Docs/Tokens/Typography",
             "Docs/Tokens/Spacing",
@@ -98,15 +97,18 @@ const preview: Preview = {
           if (ao !== bo) return ao - bo;
         }
 
-        // Within "Components" — same component folder: "Docs" entry first
-        if (
-          aParts[0] === "Components" &&
-          bParts[0] === "Components" &&
-          aParts[1] === bParts[1]
-        ) {
-          const aIsDoc = aParts[2] === "Docs";
-          const bIsDoc = bParts[2] === "Docs";
-          if (aIsDoc !== bIsDoc) return aIsDoc ? -1 : 1;
+        // Within "Components" — "Overview" always first
+        if (aParts[0] === "Components" && bParts[0] === "Components") {
+          const aIsOverview = aParts[1] === "Overview";
+          const bIsOverview = bParts[1] === "Overview";
+          if (aIsOverview !== bIsOverview) return aIsOverview ? -1 : 1;
+
+          // Same component folder: "Docs" entry first
+          if (aParts[1] === bParts[1]) {
+            const aIsDoc = aParts[2] === "Docs";
+            const bIsDoc = bParts[2] === "Docs";
+            if (aIsDoc !== bIsDoc) return aIsDoc ? -1 : 1;
+          }
         }
 
         // Default: alphabetical
