@@ -1,0 +1,45 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@use '../src/components/theme' as theme;
+@use '../src/components/tokens' as t;
+
+.page {
+  min-height: 100vh;
+  margin: 0;
+  padding: 48px;
+  background: #0b0e12;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  box-sizing: border-box;
+}
+
+// Mirrors the devtools panel surface so the Components tab renders with its
+// real theme tokens (this harness renders only the tab, not the full chrome).
+.panel {
+  @include theme.dt-dark-theme;
+
+  width: 440px;
+  height: 700px;
+  overflow-y: auto;
+  background: t.$bg-surface;
+  color: t.$text-primary;
+  font-family: t.$font-sans;
+  border: 1px solid t.$border-default;
+  border-radius: t.$radius-md;
+  box-shadow: t.$shadow-panel;
+}

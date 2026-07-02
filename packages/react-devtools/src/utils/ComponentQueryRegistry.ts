@@ -93,6 +93,7 @@ export class ComponentQueryRegistry {
   private bindings = new Map<string, ComponentHookBinding>();
   private componentToBindings = new Map<string, Set<string>>();
   private queryToBindings = new Map<string, Set<string>>();
+  private componentProps = new Map<string, Record<string, string>>();
   private subscriptionToBinding = new Map<string, string>();
 
   private bindingIdCounter = 0;
@@ -314,6 +315,10 @@ export class ComponentQueryRegistry {
     for (const [componentId, component] of discovered) {
       seenComponentIds.add(componentId);
 
+      if (component.props !== undefined) {
+        this.componentProps.set(componentId, component.props);
+      }
+
       const existingBindingIds = this.componentToBindings.get(componentId);
 
       if (existingBindingIds && existingBindingIds.size > 0) {
@@ -344,6 +349,7 @@ export class ComponentQueryRegistry {
     const now = Date.now();
     for (const [componentId, bindingIds] of this.componentToBindings) {
       if (!seenComponentIds.has(componentId)) {
+        this.componentProps.delete(componentId);
         for (const bindingId of bindingIds) {
           const binding = this.bindings.get(bindingId);
           if (binding && !binding.unmountedAt) {
@@ -352,6 +358,10 @@ export class ComponentQueryRegistry {
         }
       }
     }
+  }
+
+  getComponentProps(componentId: string): Record<string, string> | undefined {
+    return this.componentProps.get(componentId);
   }
 
   private buildQuerySignature(
