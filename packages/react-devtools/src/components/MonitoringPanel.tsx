@@ -15,23 +15,20 @@
  */
 
 import { Button, Classes, Tooltip } from "@blueprintjs/core";
+import { validateFiberAccess } from "@osdk/react-inspect/fiber";
 import classNames from "classnames";
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useMemo, useRef } from "react";
 import { createPortal } from "react-dom";
 
 import {
   DegradationNotice,
   useFiberCapabilities,
 } from "../fiber/DegradationNotice.js";
-import { validateFiberAccess } from "../fiber/validation.js";
 import { usePersistedState } from "../hooks/usePersistedState.js";
+import { useDevToolsTabs } from "../plugins/useDevToolsTabs.js";
 import type { MonitorStore } from "../store/MonitorStore.js";
 import type { PanelPosition } from "../types/index.js";
-import { ComputeTab } from "./ComputeTab.js";
-import { DebuggingTab } from "./DebuggingTab.js";
-import { InterceptTab } from "./InterceptTab.js";
 import { MonitorErrorBoundary } from "./MonitorErrorBoundary.js";
-import { PerformanceTab } from "./PerformanceTab.js";
 
 import styles from "./MonitoringPanel.module.scss";
 
@@ -78,6 +75,7 @@ const UI_CONSTANTS = {
   DEFAULT_PANEL_HEIGHT: 600,
   DEFAULT_PANEL_RIGHT_OFFSET: 420,
   DEFAULT_PANEL_TOP_OFFSET: 20,
+  DEFAULT_PANEL_MARGIN: 16,
   MIN_PANEL_WIDTH: 320,
   MIN_PANEL_HEIGHT: 200,
   TOOLTIP_HOVER_DELAY: 500,
@@ -98,19 +96,30 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
   monitorStore,
 }) => {
   const metricsStore = monitorStore.getMetricsStore();
-  const computeStore = monitorStore.getComputeStore();
   const fiberCapabilities = useFiberCapabilities();
-  const [activeTab, setActiveTab] = useState<
-    "performance" | "compute" | "intercept" | "debugging"
-  >("performance");
+  const tabs = useDevToolsTabs();
+  const [activeTabId, setActiveTabId] = usePersistedState<string>(
+    "osdk-devtools-active-tab",
+    "overview"
+  );
+  const [openedBefore, setOpenedBefore] = usePersistedState(
+    "osdk-devtools-opened-before",
+    false
+  );
   const [position, setPosition] = usePersistedState<PanelPosition>(
-    "osdk-monitor-position",
+    "osdk-monitor-position-v2",
     {
-      x: window.innerWidth - UI_CONSTANTS.DEFAULT_PANEL_RIGHT_OFFSET,
-      y: UI_CONSTANTS.DEFAULT_PANEL_TOP_OFFSET,
+      x:
+        window.innerWidth -
+        UI_CONSTANTS.DEFAULT_PANEL_WIDTH -
+        UI_CONSTANTS.DEFAULT_PANEL_MARGIN,
+      y:
+        window.innerHeight -
+        UI_CONSTANTS.DEFAULT_PANEL_HEIGHT -
+        UI_CONSTANTS.DEFAULT_PANEL_MARGIN,
       width: UI_CONSTANTS.DEFAULT_PANEL_WIDTH,
       height: UI_CONSTANTS.DEFAULT_PANEL_HEIGHT,
-      collapsed: false,
+      collapsed: true,
       dockMode: "floating",
     }
   );
@@ -392,7 +401,14 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
     return position;
   }, [position, windowSize]);
 
-  if (position.collapsed) {
+  const activePlugin = useMemo(
+    () => tabs.find((tab) => tab.id === activeTabId) ?? tabs[0],
+    [tabs, activeTabId]
+  );
+
+  const collapsed = openedBefore ? position.collapsed : false;
+
+  if (collapsed) {
     return createPortal(
       <Tooltip
         content="View OSDK Devtools"
@@ -402,7 +418,10 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
         <div
           className={styles.minimized}
           data-dt-theme={resolvedTheme}
-          onClick={() => setPosition((prev) => ({ ...prev, collapsed: false }))}
+          onClick={() => {
+            setOpenedBefore(true);
+            setPosition((prev) => ({ ...prev, collapsed: false }));
+          }}
         >
           <span className={styles.minimizedIcon}>&lt;/&gt;</span>
         </div>
@@ -518,9 +537,10 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
             variant="minimal"
             size="small"
             icon="minimize"
-            onClick={() =>
-              setPosition((prev) => ({ ...prev, collapsed: true }))
-            }
+            onClick={() => {
+              setOpenedBefore(true);
+              setPosition((prev) => ({ ...prev, collapsed: true }));
+            }}
             title="Minimize"
             aria-label="Minimize devtools panel"
           />
@@ -528,23 +548,21 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
       </div>
 
       <div className={styles.tabs} role="tablist" aria-label="Devtools tabs">
-        {(["performance", "compute", "intercept", "debugging"] as const).map(
-          (tab) => (
-            <button
-              key={tab}
-              type="button"
-              role="tab"
-              aria-selected={activeTab === tab}
-              className={classNames(
-                styles.tabButton,
-                activeTab === tab && styles.tabButtonActive
-              )}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab.charAt(0).toUpperCase() + tab.slice(1)}
-            </button>
-          )
-        )}
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            role="tab"
+            aria-selected={activePlugin?.id === tab.id}
+            className={classNames(
+              styles.tabButton,
+              activePlugin?.id === tab.id && styles.tabButtonActive
+            )}
+            onClick={() => setActiveTabId(tab.id)}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
 
       <div className={styles.content}>
@@ -553,45 +571,14 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
           <DegradationNotice onRetry={() => validateFiberAccess()} />
         )}
 
-        <div
-          className={
-            activeTab === "performance"
-              ? styles.tabContentVisible
-              : styles.tabContentHidden
-          }
-        >
-          <PerformanceTab
-            metricsStore={metricsStore}
+        {activePlugin ? (
+          <activePlugin.panel
             monitorStore={monitorStore}
+            theme={resolvedTheme}
           />
-        </div>
-        <div
-          className={
-            activeTab === "compute"
-              ? styles.tabContentVisible
-              : styles.tabContentHidden
-          }
-        >
-          <ComputeTab computeStore={computeStore} />
-        </div>
-        <div
-          className={
-            activeTab === "intercept"
-              ? styles.tabContentVisible
-              : styles.tabContentHidden
-          }
-        >
-          <InterceptTab monitorStore={monitorStore} theme={resolvedTheme} />
-        </div>
-        <div
-          className={
-            activeTab === "debugging"
-              ? styles.tabContentVisible
-              : styles.tabContentHidden
-          }
-        >
-          <DebuggingTab monitorStore={monitorStore} />
-        </div>
+        ) : (
+          <div className={styles.emptyState}>No devtools tabs registered.</div>
+        )}
       </div>
     </div>,
     document.body

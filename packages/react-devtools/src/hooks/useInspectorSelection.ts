@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import type { DiscoveredPrimitives } from "@osdk/react-inspect";
 import React from "react";
 
 import type { MonitorStore } from "../store/MonitorStore.js";
-import type { DiscoveredPrimitives } from "../utils/ComponentPrimitiveDiscovery.js";
 
 export interface InspectorSelectionState {
   isSelectionActive: boolean;

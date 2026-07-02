@@ -311,6 +311,7 @@ const archetypeRules = archetypes(
     "oxc migrated esm react libraries with css",
     [
       "@osdk/react-devtools",
+      "@osdk/react-inspect",
     ],
     {
       ...LIBRARY_RULES,
