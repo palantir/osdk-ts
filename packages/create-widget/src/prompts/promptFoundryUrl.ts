@@ -27,12 +27,10 @@ export async function promptFoundryUrl({
       consola.fail("Please enter a valid Foundry URL");
     }
     foundryUrl = await consola.prompt(
-      `Enter the URL for your Foundry stack:\n${
-        italic(
-          "(Example: https://example.palantirfoundry.com)",
-        )
-      }`,
-      { type: "text" },
+      `Enter the URL for your Foundry stack:\n${italic(
+        "(Example: https://example.palantirfoundry.com)"
+      )}`,
+      { type: "text" }
     );
   }
   return foundryUrl.replace(/\/$/, "");

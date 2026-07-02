@@ -29,7 +29,7 @@ export function applyVisibilityState<T extends { isVisible?: boolean }>(
   baseDefs: readonly T[],
   savedState: ReadonlyArray<{ id: string; isVisible: boolean }> | undefined,
   getId: (def: T) => string,
-  applyOverrides?: (def: T) => T,
+  applyOverrides?: (def: T) => T
 ): Array<T & { isVisible: boolean }> {
   const apply = (def: T): T =>
     applyOverrides != null ? applyOverrides(def) : def;

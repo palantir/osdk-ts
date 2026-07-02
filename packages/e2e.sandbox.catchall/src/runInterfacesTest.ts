@@ -23,6 +23,7 @@ import {
 import invariant from "tiny-invariant";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
+
 import { client } from "./client.js";
 
 export async function runInterfacesTest(): Promise<void> {
@@ -68,7 +69,7 @@ export async function runInterfacesTest(): Promise<void> {
     const int2 = testObject.$as(FooInterface);
     expectType<TypeOf<Osdk.Instance<FooInterface>, typeof int2>>(false);
     expectType<TypeOf<Osdk.Instance<FooInterface, never, "name">, typeof int2>>(
-      true,
+      true
     );
 
     console.log("int2:", int2.name, int2);

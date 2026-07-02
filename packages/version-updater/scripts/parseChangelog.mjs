@@ -45,7 +45,7 @@ export function parseChangelog(content, peerPackageNames) {
       for (const peerName of peerPackageNames) {
         const escaped = peerName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
         const match = block.match(
-          new RegExp(`${escaped}@(\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9.]+)?)`),
+          new RegExp(`${escaped}@(\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9.]+)?)`)
         );
         if (match) {
           peerVersions[peerName] = match[1];
@@ -63,6 +63,6 @@ export function parseChangelog(content, peerPackageNames) {
     })
     .filter(
       /** @returns {m is VersionMapping} */
-      (m) => m != null,
+      (m) => m != null
     );
 }

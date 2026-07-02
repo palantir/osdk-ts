@@ -37,7 +37,7 @@ describe("foundry-sdk-generator", () => {
           --help     Show help                                                 [boolean]
           --version  Show version number                                       [boolean]"
       `);
-    },
+    }
   );
 });
 //

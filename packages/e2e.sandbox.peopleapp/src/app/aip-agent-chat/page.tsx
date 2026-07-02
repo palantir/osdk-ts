@@ -1,4 +1,5 @@
 import { AipAgentChat } from "@osdk/react-components/experimental/aip-agent-chat";
+
 import { platformClient } from "../../foundryClient.js";
 
 const AVAILABLE_MODELS = ["gpt-4o", "gpt-5.4", "non-existent-model"];

@@ -21,6 +21,7 @@ import type {
   WidgetSetInputSpec,
 } from "@osdk/widget.api";
 import { describe, expect, test } from "vitest";
+
 import {
   buildWidgetManifestConfig,
   buildWidgetSetManifest,
@@ -45,17 +46,19 @@ const MOCK_WIDGET_CONFIG: WidgetConfig<ParameterConfig> = {
 };
 
 describe("buildWidgetManifestConfig", () => {
-  const ENTRYPOINT_JS = [{
-    path: "scripts/widget.js",
-    type: "module" as const,
-  }];
+  const ENTRYPOINT_JS = [
+    {
+      path: "scripts/widget.js",
+      type: "module" as const,
+    },
+  ];
   const ENTRYPOINT_CSS = [{ path: "styles/widget.css" }];
 
   test("maps config fields to manifest format", () => {
     const result = buildWidgetManifestConfig(
       MOCK_WIDGET_CONFIG,
       ENTRYPOINT_JS,
-      ENTRYPOINT_CSS,
+      ENTRYPOINT_CSS
     );
 
     expect(result).toEqual({
@@ -82,7 +85,7 @@ describe("buildWidgetManifestConfig", () => {
     const result = buildWidgetManifestConfig(
       { ...MOCK_WIDGET_CONFIG, description: undefined },
       ENTRYPOINT_JS,
-      ENTRYPOINT_CSS,
+      ENTRYPOINT_CSS
     );
 
     expect(result.description).toBeUndefined();
@@ -107,7 +110,7 @@ describe("buildWidgetManifestConfig", () => {
         },
       },
       ENTRYPOINT_JS,
-      ENTRYPOINT_CSS,
+      ENTRYPOINT_CSS
     );
 
     expect(result.parameters.objectSetParam).toEqual({
@@ -137,7 +140,7 @@ describe("buildWidgetManifestConfig", () => {
         },
       },
       ENTRYPOINT_JS,
-      ENTRYPOINT_CSS,
+      ENTRYPOINT_CSS
     );
 
     expect(result.parameters.interfaceSetParam).toEqual({
@@ -153,7 +156,7 @@ describe("buildWidgetManifestConfig", () => {
       MOCK_WIDGET_CONFIG,
       ENTRYPOINT_JS,
       ENTRYPOINT_CSS,
-      { defaults: { refreshHostDataOnAction: true } },
+      { defaults: { refreshHostDataOnAction: true } }
     );
 
     expect(result.refreshHostDataOnAction).toBe(true);
@@ -164,7 +167,7 @@ describe("buildWidgetManifestConfig", () => {
       { ...MOCK_WIDGET_CONFIG, refreshHostDataOnAction: false },
       ENTRYPOINT_JS,
       ENTRYPOINT_CSS,
-      { defaults: { refreshHostDataOnAction: true } },
+      { defaults: { refreshHostDataOnAction: true } }
     );
 
     expect(result.refreshHostDataOnAction).toBe(false);
@@ -186,7 +189,7 @@ describe("buildWidgetSetManifest", () => {
       WIDGET_SET_RID,
       WIDGET_SET_VERSION,
       [createMockWidgetBuild("widgetOne"), createMockWidgetBuild("widgetTwo")],
-      widgetSetInputSpec,
+      widgetSetInputSpec
     );
 
     expect(manifest.manifestVersion).toBe("1.0.0");
@@ -203,17 +206,22 @@ describe("buildWidgetSetManifest", () => {
     const manifest = buildWidgetSetManifest(
       WIDGET_SET_RID,
       WIDGET_SET_VERSION,
-      [createMockWidgetBuild("widget", undefined, ["/scripts/widget.js"], [
-        "/styles/widget.css",
-      ])],
-      {},
+      [
+        createMockWidgetBuild(
+          "widget",
+          undefined,
+          ["/scripts/widget.js"],
+          ["/styles/widget.css"]
+        ),
+      ],
+      {}
     );
 
     expect(manifest.widgetSet.widgets.widget.entrypointJs[0].path).toBe(
-      "scripts/widget.js",
+      "scripts/widget.js"
     );
     expect(manifest.widgetSet.widgets.widget.entrypointCss![0].path).toBe(
-      "styles/widget.css",
+      "styles/widget.css"
     );
   });
 
@@ -221,17 +229,22 @@ describe("buildWidgetSetManifest", () => {
     const manifest = buildWidgetSetManifest(
       WIDGET_SET_RID,
       WIDGET_SET_VERSION,
-      [createMockWidgetBuild("widget", undefined, ["scripts/widget.js"], [
-        "styles/widget.css",
-      ])],
-      {},
+      [
+        createMockWidgetBuild(
+          "widget",
+          undefined,
+          ["scripts/widget.js"],
+          ["styles/widget.css"]
+        ),
+      ],
+      {}
     );
 
     expect(manifest.widgetSet.widgets.widget.entrypointJs[0].path).toBe(
-      "scripts/widget.js",
+      "scripts/widget.js"
     );
     expect(manifest.widgetSet.widgets.widget.entrypointCss![0].path).toBe(
-      "styles/widget.css",
+      "styles/widget.css"
     );
   });
 });
@@ -245,21 +258,20 @@ function createMockWidgetBuild(
     },
   },
   scripts?: string[],
-  stylesheets?: string[],
+  stylesheets?: string[]
 ): WidgetBuildOutputs {
   return {
-    scripts: scripts?.map(src => ({
+    scripts: scripts?.map((src) => ({
       type: "script" as const,
       scriptType: "module" as const,
       src,
-    }))
-      ?? [
-        {
-          type: "script",
-          scriptType: "module",
-          src: `/scripts/${id}.js`,
-        },
-      ],
+    })) ?? [
+      {
+        type: "script",
+        scriptType: "module",
+        src: `/scripts/${id}.js`,
+      },
+    ],
     stylesheets: stylesheets ?? [`/styles/${id}.css`],
     widgetConfig: {
       id,

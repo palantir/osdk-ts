@@ -14,22 +14,30 @@
  * limitations under the License.
  */
 
-import { createInternalClientContext, widgetRegistry } from "#net";
 import { consola } from "consola";
 import { colorize } from "consola/utils";
+
+import { createInternalClientContext, widgetRegistry } from "#net";
+
 import { handlePromptCancel } from "../../../../consola/handlePromptCancel.js";
 import { loadToken } from "../../../../util/token.js";
 import type { VersionDeleteArgs } from "./VersionDeleteArgs.js";
 
-export default async function versionDeleteCommand(
-  { version, yes, widgetSet, foundryUrl, token, tokenFile }: VersionDeleteArgs,
-): Promise<void> {
+export default async function versionDeleteCommand({
+  version,
+  yes,
+  widgetSet,
+  foundryUrl,
+  token,
+  tokenFile,
+}: VersionDeleteArgs): Promise<void> {
   if (!yes) {
     const confirmed = await consola.prompt(
-      `Are you sure you want to delete the version ${version}?\n${
-        colorize("bold", "This action cannot be undone.")
-      }`,
-      { type: "confirm", cancel: "symbol" },
+      `Are you sure you want to delete the version ${version}?\n${colorize(
+        "bold",
+        "This action cannot be undone."
+      )}`,
+      { type: "confirm", cancel: "symbol" }
     );
     handlePromptCancel(confirmed);
   }

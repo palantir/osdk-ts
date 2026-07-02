@@ -15,7 +15,9 @@
  */
 
 import fs from "fs";
+
 import { expect, test, vi } from "vitest";
+
 import { extractBuildOutputs } from "../extractBuildOutputs.js";
 
 vi.mock("fs");
@@ -68,7 +70,7 @@ test("extractBuildOutputs throws error for inline scripts", () => {
     </html>
   `);
   expect(() => extractBuildOutputs("dummy/path.html")).toThrow(
-    "Unexpected inline content found in Vite HTML output",
+    "Unexpected inline content found in Vite HTML output"
   );
 });
 
@@ -81,7 +83,7 @@ test("extractBuildOutputs throws error for invalid script type", () => {
     </html>
   `);
   expect(() => extractBuildOutputs("dummy/path.html")).toThrow(
-    "Invalid script type attribute found in Vite HTML output: text/unknown",
+    "Invalid script type attribute found in Vite HTML output: text/unknown"
   );
 });
 
@@ -94,7 +96,7 @@ test("extractBuildOutputs throws error for unexpected script attributes", () => 
     </html>
   `);
   expect(() => extractBuildOutputs("dummy/path.html")).toThrow(
-    "Unexpected async attribute found in Vite HTML output",
+    "Unexpected async attribute found in Vite HTML output"
   );
 });
 
@@ -107,7 +109,7 @@ test("extractBuildOutputs throws error for stylesheet without href", () => {
     </html>
   `);
   expect(() => extractBuildOutputs("dummy/path.html")).toThrow(
-    "Missing href attribute in Vite HTML output",
+    "Missing href attribute in Vite HTML output"
   );
 });
 
@@ -136,6 +138,6 @@ test("extractBuildOutputs throws error for unexpected link attributes", () => {
     </html>
   `);
   expect(() => extractBuildOutputs("dummy/path.html")).toThrow(
-    "Unexpected async attribute found in Vite HTML output",
+    "Unexpected async attribute found in Vite HTML output"
   );
 });

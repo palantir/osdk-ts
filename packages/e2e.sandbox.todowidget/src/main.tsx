@@ -1,10 +1,10 @@
 import "@radix-ui/themes/styles.css";
 import "./main.css";
-
 import { FoundryWidget } from "@osdk/widget.client-react";
 import { Theme } from "@radix-ui/themes";
 import React from "react";
 import { createRoot } from "react-dom/client";
+
 import { App } from "./app.js";
 import MainConfig from "./main.config.js";
 
@@ -15,5 +15,5 @@ createRoot(root).render(
     <FoundryWidget config={MainConfig}>
       <App />
     </FoundryWidget>
-  </Theme>,
+  </Theme>
 );

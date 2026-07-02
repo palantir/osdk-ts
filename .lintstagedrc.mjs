@@ -24,6 +24,23 @@ const OXC_PACKAGES = [
   "cbac-components",
   "react",
   "react-devtools",
+  // oxc increment 12 (low-risk tail) — packages whose source surfaces no
+  // error-level rules, so they lint against the root config.
+  "client.test.ontology",
+  "e2e.sandbox.oauth",
+  "e2e.generated.1.1.x",
+  "create-app.template.expo.v2",
+  "create-app.template.react",
+  "create-app.template.react.beta",
+  "create-app.template.tutorial-todo-aip-app",
+  "create-app.template.tutorial-todo-aip-app.beta",
+  "create-app.template.tutorial-todo-app",
+  "create-app.template.tutorial-todo-app.beta",
+  "create-app.template.typescript-library.beta",
+  "create-app.template.vue",
+  "create-app.template.vue.v2",
+  "create-widget.template.minimal-react.v2",
+  "create-widget.template.react.v2",
 ];
 const OXC_PACKAGE_GLOB = `packages/{${
   OXC_PACKAGES.join(",")
@@ -54,6 +71,48 @@ const OXC_NESTED_CONFIG_PACKAGES = {
   "oauth": "packages/oauth/oxlint.config.ts",
   "faux": "packages/faux/oxlint.config.ts",
   "osdk-docs-context": "packages/osdk-docs-context/oxlint.config.ts",
+  // oxc increment 12 (low-risk tail) — packages whose source surfaces
+  // error-level rules the prior ESLint config did not enforce; each nested config
+  // extends the root and turns them off.
+  "cli": "packages/cli/oxlint.config.ts",
+  "cli.common": "packages/cli.common/oxlint.config.ts",
+  "cli.cmd.typescript": "packages/cli.cmd.typescript/oxlint.config.ts",
+  "create-app": "packages/create-app/oxlint.config.ts",
+  "create-widget": "packages/create-widget/oxlint.config.ts",
+  "create-app.template-packager":
+    "packages/create-app.template-packager/oxlint.config.ts",
+  "tool.release": "packages/tool.release/oxlint.config.ts",
+  "tool.generate-with-mock-ontology":
+    "packages/tool.generate-with-mock-ontology/oxlint.config.ts",
+  "version-updater": "packages/version-updater/oxlint.config.ts",
+  "vite-plugin-oac": "packages/vite-plugin-oac/oxlint.config.ts",
+  "vite-plugin-superrepo": "packages/vite-plugin-superrepo/oxlint.config.ts",
+  "vite-plugin-status-reporter":
+    "packages/vite-plugin-status-reporter/oxlint.config.ts",
+  "widget.vite-plugin": "packages/widget.vite-plugin/oxlint.config.ts",
+  "ontology-explorer-app": "packages/ontology-explorer-app/oxlint.config.ts",
+  "ontology-explorer-server":
+    "packages/ontology-explorer-server/oxlint.config.ts",
+  "shared.test": "packages/shared.test/oxlint.config.ts",
+  "shared.test.intellisense":
+    "packages/shared.test.intellisense/oxlint.config.ts",
+  "e2e.test.foundry-sdk-generator":
+    "packages/e2e.test.foundry-sdk-generator/oxlint.config.ts",
+  "e2e.generated.api-namespace.dep":
+    "packages/e2e.generated.api-namespace.dep/oxlint.config.ts",
+  "e2e.generated.api-namespace.local":
+    "packages/e2e.generated.api-namespace.local/oxlint.config.ts",
+  "e2e.generated.catchall": "packages/e2e.generated.catchall/oxlint.config.ts",
+  "e2e.sandbox.catchall": "packages/e2e.sandbox.catchall/oxlint.config.ts",
+  "e2e.sandbox.oauth.public.react-router":
+    "packages/e2e.sandbox.oauth.public.react-router/oxlint.config.ts",
+  "e2e.sandbox.officeassignment":
+    "packages/e2e.sandbox.officeassignment/oxlint.config.ts",
+  "e2e.sandbox.officenetwork":
+    "packages/e2e.sandbox.officenetwork/oxlint.config.ts",
+  "e2e.sandbox.peopleapp": "packages/e2e.sandbox.peopleapp/oxlint.config.ts",
+  "e2e.sandbox.todoapp": "packages/e2e.sandbox.todoapp/oxlint.config.ts",
+  "e2e.sandbox.todowidget": "packages/e2e.sandbox.todowidget/oxlint.config.ts",
 };
 
 // All oxc packages (root-config + nested-config) are excluded from the ESLint +

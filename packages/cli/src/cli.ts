@@ -19,16 +19,15 @@ import type { CliCommonArgs } from "@osdk/cli.common";
 import { ExitProcessError, getYargsBase } from "@osdk/cli.common";
 import { consola } from "consola";
 import type { Argv } from "yargs";
+
 import auth from "./commands/auth/index.js";
 import site from "./commands/site/index.js";
 import widgetSet from "./commands/widgetset/index.js";
 
-export async function cli(args: string[] = process.argv): Promise<
-  Record<string, unknown> | undefined
-> {
-  consola.info(
-    `Palantir OSDK CLI ${process.env.PACKAGE_VERSION}\n`,
-  );
+export async function cli(
+  args: string[] = process.argv
+): Promise<Record<string, unknown> | undefined> {
+  consola.info(`Palantir OSDK CLI ${process.env.PACKAGE_VERSION}\n`);
 
   const base: Argv<CliCommonArgs> = getYargsBase(args);
 
@@ -42,13 +41,11 @@ export async function cli(args: string[] = process.argv): Promise<
         aliases: ["experimental"],
         describe: "Unstable commands",
         builder: (argv) => {
-          return argv
-            .command(typescript)
-            .command(auth)
-            .demandCommand();
+          return argv.command(typescript).command(auth).demandCommand();
         },
         handler: (_args) => {},
-      }).parseAsync();
+      })
+      .parseAsync();
   } catch (err) {
     if (err instanceof ExitProcessError) {
       consola.error(err);
