@@ -195,33 +195,33 @@
 
 .content {
   flex: 1;
-  overflow: auto;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   pointer-events: auto;
 }
 
 .tabs {
-  @include m.dt-tabs;
-  padding: 0 12px;
-  flex-shrink: 0;
-  pointer-events: auto;
-}
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 
-.tabButton {
-  @include m.dt-tab-button;
-}
+  :global {
+    .bp6-tab-list {
+      flex-shrink: 0;
+      padding: 4px 12px 0;
+      border-bottom: 1px solid t.$border-default;
+    }
 
-.tabButtonActive {
-  @include m.dt-tab-active;
-}
-
-.tabContentVisible {
-  display: contents;
-}
-
-.tabContentHidden {
-  display: none;
+    .bp6-tab-panel {
+      flex: 1;
+      min-height: 0;
+      margin-top: 0;
+      overflow: auto;
+      @include m.dt-scrollbar;
+    }
+  }
 }
 
 .metricsGrid {

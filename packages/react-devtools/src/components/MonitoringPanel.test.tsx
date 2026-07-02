@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -39,17 +39,16 @@ const { MonitoringPanel } = await import("./MonitoringPanel.js");
 describe("MonitoringPanel", () => {
   afterEach(() => {
     cleanup();
+    // usePersistedState writes to localStorage; clear it so tab/collapse state
+    // from one test does not leak into the next.
+    localStorage.clear();
   });
 
-  it("renders the panel with title and tabs", () => {
+  it("renders the panel title", () => {
     const store = createMockMonitorStore();
     render(<MonitoringPanel monitorStore={store} />);
 
     expect(screen.queryByText("OSDK Devtools")).not.toBeNull();
-    expect(screen.queryByText("Performance")).not.toBeNull();
-    expect(screen.queryByText("Compute")).not.toBeNull();
-    expect(screen.queryByText("Intercept")).not.toBeNull();
-    expect(screen.queryByText("Debugging")).not.toBeNull();
   });
 
   it("renders the beta badge", () => {
@@ -59,10 +58,81 @@ describe("MonitoringPanel", () => {
     expect(screen.queryAllByText("Beta").length).toBeGreaterThan(0);
   });
 
-  it("defaults to the performance tab", () => {
+  it("renders a tablist with the four devtools tabs in order", () => {
     const store = createMockMonitorStore();
     render(<MonitoringPanel monitorStore={store} />);
 
-    expect(screen.queryAllByText("Cache Hit Rate").length).toBeGreaterThan(0);
+    expect(screen.queryByRole("tablist")).not.toBeNull();
+    const tabNames = screen.getAllByRole("tab").map((tab) => tab.textContent);
+    expect(tabNames).toEqual([
+      "Performance",
+      "Compute",
+      "Intercept",
+      "Debugging",
+    ]);
+  });
+
+  it("selects the Performance tab by default", () => {
+    const store = createMockMonitorStore();
+    render(<MonitoringPanel monitorStore={store} />);
+
+    expect(
+      screen.getByRole("tab", { name: "Performance", selected: true })
+    ).not.toBeNull();
+    expect(
+      screen.queryByRole("tab", { name: "Compute", selected: true })
+    ).toBeNull();
+  });
+
+  it("selects a tab and surfaces its panel when activated", () => {
+    const store = createMockMonitorStore();
+    render(<MonitoringPanel monitorStore={store} />);
+
+    fireEvent.click(screen.getByRole("tab", { name: "Compute" }));
+
+    expect(
+      screen.getByRole("tab", { name: "Compute", selected: true })
+    ).not.toBeNull();
+    expect(
+      screen.queryByRole("tab", { name: "Performance", selected: true })
+    ).toBeNull();
+    // The single visible tabpanel is the one owned by the Compute tab.
+    expect(
+      screen.getByRole("tabpanel").getAttribute("aria-labelledby")
+    ).toContain("compute");
+  });
+
+  it("keeps all four tab panels mounted across a tab switch", () => {
+    const store = createMockMonitorStore();
+    render(<MonitoringPanel monitorStore={store} />);
+
+    // hidden: true includes the aria-hidden inactive panels that stay mounted.
+    expect(screen.getAllByRole("tabpanel", { hidden: true })).toHaveLength(4);
+
+    fireEvent.click(screen.getByRole("tab", { name: "Debugging" }));
+
+    expect(screen.getAllByRole("tabpanel", { hidden: true })).toHaveLength(4);
+  });
+
+  it("preserves the selected tab across a minimize and reopen cycle", () => {
+    const store = createMockMonitorStore();
+    render(<MonitoringPanel monitorStore={store} />);
+
+    fireEvent.click(screen.getByRole("tab", { name: "Compute" }));
+    expect(
+      screen.getByRole("tab", { name: "Compute", selected: true })
+    ).not.toBeNull();
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Minimize devtools panel" })
+    );
+    expect(screen.queryByRole("tablist")).toBeNull();
+
+    // Reopen via the minimized "</>" affordance.
+    fireEvent.click(screen.getByText("</>"));
+
+    expect(
+      screen.getByRole("tab", { name: "Compute", selected: true })
+    ).not.toBeNull();
   });
 });
