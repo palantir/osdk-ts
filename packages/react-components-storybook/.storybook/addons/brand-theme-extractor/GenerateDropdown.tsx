@@ -43,7 +43,7 @@ const PREVIEW_ROLES: Array<{ role: string; label: string }> = [
 ];
 
 const Wrapper = styled.div({
-  position: "relative" as const,
+  position: "relative",
   display: "inline-block",
 });
 
@@ -73,7 +73,7 @@ const Chevron = styled.span({
 });
 
 const Menu = styled.div(({ theme }) => ({
-  position: "absolute" as const,
+  position: "absolute",
   top: "calc(100% + 6px)",
   right: 0,
   width: 288,
@@ -166,7 +166,7 @@ const GoButton = styled.button<{ disabled?: boolean }>(
     fontSize: 12,
     fontWeight: 600,
     padding: "6px 12px",
-    whiteSpace: "nowrap" as const,
+    whiteSpace: "nowrap",
   })
 );
 
@@ -235,13 +235,16 @@ export function GenerateDropdown({
       setError(null);
       try {
         const { palette, averageLuminance } = await extract();
-        // A vastly dark source should start from a dark theme, not a light one.
+        // Infer the color mode from the source image itself — a dark source
+        // gets a dark theme, a light source gets a light theme — so each
+        // extraction stands on its own rather than inheriting whatever mode
+        // a previous extraction left behind.
         const nextMode: ThemeColorMode = isPredominantlyDark(
           palette,
           averageLuminance
         )
           ? "dark"
-          : colorMode;
+          : "light";
         const assignments = autoMapFromPalette(palette, nextMode);
         setApplied(assignments);
         onApply(assignments, nextMode);
@@ -251,7 +254,7 @@ export function GenerateDropdown({
         setLoading(false);
       }
     },
-    [colorMode, onApply]
+    [onApply]
   );
 
   const handleFile = useCallback(
@@ -274,21 +277,20 @@ export function GenerateDropdown({
       <TriggerButton
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        aria-haspopup="menu"
+        aria-haspopup="dialog"
       >
         Generate
         <Chevron>{open ? "▴" : "▾"}</Chevron>
       </TriggerButton>
       {open && (
-        <Menu role="menu" aria-label="Generate theme source">
+        <Menu role="dialog" aria-label="Generate theme source">
           <Body>
-            <Segmented role="tablist">
+            <Segmented role="group" aria-label="Source type">
               <Segment
                 active={mode === "image"}
                 onClick={() => setMode("image")}
                 type="button"
-                role="tab"
-                aria-selected={mode === "image"}
+                aria-pressed={mode === "image"}
               >
                 From Image
               </Segment>
@@ -296,8 +298,7 @@ export function GenerateDropdown({
                 active={mode === "website"}
                 onClick={() => setMode("website")}
                 type="button"
-                role="tab"
-                aria-selected={mode === "website"}
+                aria-pressed={mode === "website"}
               >
                 From Website
               </Segment>

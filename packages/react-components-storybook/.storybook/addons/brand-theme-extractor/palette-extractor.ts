@@ -53,13 +53,6 @@ export async function extractPalette(file: File): Promise<ExtractionResult> {
   return { palette, averageLuminance };
 }
 
-/** Extract a palette from a direct image URL (data: or remote). */
-export async function extractPaletteFromImageUrl(
-  url: string
-): Promise<ExtractedPalette> {
-  return paletteFromSource(url);
-}
-
 /**
  * Mean perceptual luminance of an image (0 = black, 1 = white). Draws the image
  * to a small canvas and averages pixel luma. Returns null if the canvas can't
@@ -160,11 +153,13 @@ async function paletteFromSource(source: string): Promise<ExtractedPalette> {
  */
 export function isPredominantlyDark(
   palette: ExtractedPalette,
-  averageLuminance?: number | null
+  averageLuminance: number | null
 ): boolean {
   // Prefer the measured image brightness when available — it reliably catches
   // a mostly-black source that node-vibrant returns few/no swatches for.
-  if (averageLuminance != null) return averageLuminance < 0.4;
+  // Use a conservative threshold (0.18 ≈ perceptual "very dark") so we only
+  // auto-switch to dark mode for genuinely dark sources, not medium-toned ones.
+  if (averageLuminance != null) return averageLuminance < 0.18;
 
   const swatches = [
     palette.vibrant,
@@ -184,8 +179,9 @@ export function isPredominantlyDark(
     (palette.lightVibrant == null ? 1 : 0) +
     (palette.lightMuted == null ? 1 : 0);
 
-  // Clearly dark on average, or dark-ish with the light swatches dropped out.
-  return meanLum < 0.2 || (meanLum < 0.32 && missingLightSwatches >= 1);
+  // Only flip to dark for genuinely dark sources: very low mean luminance, or
+  // moderately dark with both light swatches absent (strong signal from vibrant).
+  return meanLum < 0.1 || (meanLum < 0.18 && missingLightSwatches >= 2);
 }
 
 /**
@@ -236,11 +232,11 @@ export function autoMapFromPalette(
   const secondaryHex = isDark ? tint(26, 0.35) : tint(92, 0.45);
   const secondaryFgHex = textHex;
 
-  // Primary: preserve the brand's character (hue + a vivid-enough saturation)
-  // but land it in a lightness band that reads as an actionable accent, then
-  // guarantee it stands out from the surface behind it.
-  const primarySat = clamp(Math.max(brandSat, 45), 0, 100);
-  const primaryL = clamp(brand.l, isDark ? 48 : 38, isDark ? 68 : 54);
+  // Primary: a tinted button background that belongs to the same neutral family
+  // as the surface — noticeable as interactive but not a vivid accent. Cap
+  // saturation low so it reads as "muted brand tint", not "call to action".
+  const primarySat = clamp(Math.min(brandSat, 32), 0, 40);
+  const primaryL = clamp(brand.l, isDark ? 38 : 44, isDark ? 52 : 58);
   const surfaceLum = luminanceFromHex(surfaceHex) ?? (isDark ? 0 : 1);
   const primaryHsl = ensureContrast(
     { h: hue, s: primarySat, l: primaryL },
@@ -475,7 +471,13 @@ function clamp(n: number, min: number, max: number): number {
 function readFileAsDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.addEventListener("load", () => resolve(reader.result as string));
+    reader.addEventListener("load", () => {
+      if (typeof reader.result === "string") {
+        resolve(reader.result);
+      } else {
+        reject(new Error("FileReader produced non-string result"));
+      }
+    });
     reader.addEventListener("error", () =>
       reject(new Error("Failed to read file"))
     );
