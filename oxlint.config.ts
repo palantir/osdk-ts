@@ -344,11 +344,6 @@ export default defineConfig({
       // then delete this override.
       files: ["**/*.js", "**/*.mjs", "**/*.cjs"],
       rules: {
-        "jsdoc/require-property-description": "off",
-        "preserve-caught-error": "off",
-        "no-throw-literal": "off",
-        "no-constant-binary-expression": "off",
-        "func-names": "off",
         // Build-config files (tsup/vite/postcss) export an anonymous default object.
         "unicorn/no-anonymous-default-export": "off",
       },

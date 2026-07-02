@@ -18,8 +18,9 @@
 
 /**
  * @typedef {Object} VersionMapping
- * @property {string} packageVersion
- * @property {Record<string, string>} peerVersions
+ * @property {string} packageVersion The package's own version for this entry.
+ * @property {Record<string, string>} peerVersions Map of peer package name to
+ *   the version it was published against at that package version.
  */
 
 /**
