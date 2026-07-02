@@ -39,6 +39,7 @@ export class AutoVersionError extends Error {
  * @returns A promise that resolves to the version string.
  * @throws An error if the version string is not SemVer compliant or if the version cannot be determined.
  */
+// TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
 // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
 export async function autoVersion(config: AutoVersionConfig): Promise<string> {
   switch (config.type) {

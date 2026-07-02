@@ -46,6 +46,7 @@ export function createMediaFromReferenceInternal(
     mediaReference.reference.mediaSetViewItem;
   const token = mediaReference.reference.mediaSetViewItem.token;
   return {
+    // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
     // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
     async fetchContents(): Promise<Response> {
       return MediaSets.read(

@@ -672,6 +672,7 @@ export class Store {
     return Promise.allSettled(promises).then(() => void 0);
   }
 
+  // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
   // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   public async invalidateAll(): Promise<void> {
     const promises: Array<Promise<unknown>> = [];
@@ -685,6 +686,7 @@ export class Store {
     return Promise.allSettled(promises).then(() => void 0);
   }
 
+  // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
   // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   public async invalidateObjects(
     objects:
@@ -702,6 +704,7 @@ export class Store {
     return Promise.allSettled(promises).then(() => void 0);
   }
 
+  // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
   // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   public async invalidateFunction(
     apiName: string | QueryDefinition<unknown>,
@@ -710,6 +713,7 @@ export class Store {
     return this.functions.invalidateFunction(apiName, params);
   }
 
+  // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
   // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   public async invalidateFunctionsByObject(
     apiName: string,

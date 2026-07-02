@@ -106,6 +106,7 @@ export function createSimpleAsyncCache<K, V>(
       return cache.get(key);
     },
 
+    // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
     // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
     get: async function get(key: K) {
       return cache.get(key) ?? inProgress.get(key) ?? ret.set(key, fn(key));
