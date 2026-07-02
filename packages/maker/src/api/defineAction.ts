@@ -143,7 +143,7 @@ export function defineAction(actionDefInput: ActionTypeDefinition): ActionType {
     );
   }
   invariant(
-    /^[a-z0-9]+(-[a-z0-9]+)*$/.test(actionDef.apiName),
+    /^[a-z0-9]+(-[a-z0-9]+)*$/u.test(actionDef.apiName),
     `Action type apiName "${actionDef.apiName}" must be alphanumeric, lowercase, and kebab-case`
   );
 
@@ -923,9 +923,9 @@ function maybeAddList(
 
 export function kebab(s: string): string {
   return s
-    .replace(/([a-z])([A-Z])/g, "$1-$2")
-    .replace(/([A-Z])([A-Z][a-z])/g, "$1-$2")
-    .replace(/\./g, "-")
+    .replace(/([a-z])([A-Z])/gu, "$1-$2")
+    .replace(/([A-Z])([A-Z][a-z])/gu, "$1-$2")
+    .replace(/\./gu, "-")
     .toLowerCase();
 }
 

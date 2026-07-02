@@ -88,7 +88,7 @@ function formatCellValue(cell: unknown): string {
 }
 
 function escapeCsvCell(value: string): string {
-  if (!/[",\n\r]/.test(value)) {
+  if (!/[",\n\r]/u.test(value)) {
     return value;
   }
   return `"${value.replaceAll('"', '""')}"`;

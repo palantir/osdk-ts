@@ -265,7 +265,7 @@ export function smartClientPlugin(): Plugin {
       // calls are routed to the local function runtimes. `@osdk/oauth`
       // and any other imports are untouched.
       return code.replace(
-        /from\s+(["'])@osdk\/client\1/,
+        /from\s+(["'])@osdk\/client\1/u,
         `from "@osdk/vite-plugin-superrepo/osdkClient"`
       );
     },
@@ -299,6 +299,7 @@ function buildProxyOptions(
     : basePrefix;
   if (stripPrefix) {
     options.rewrite = (p) =>
+      // oxlint-disable-next-line require-unicode-regexp -- dynamic pattern; adding the u flag could change matching or throw on patterns that are valid without it
       p.replace(new RegExp(`^${escapeRegExp(stripPrefix)}`), "");
   }
   if (isHttps) {
@@ -319,7 +320,7 @@ function buildProxyOptions(
 }
 
 function escapeRegExp(s: string): string {
-  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return s.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
 }
 
 /**

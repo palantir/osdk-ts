@@ -16923,7 +16923,7 @@ describe("Action Types", () => {
           },
         ],
       })
-    ).toThrow(/referenced but not defined/);
+    ).toThrow(/referenced but not defined/u);
   });
 
   it("Interface link action with unknown ILC throws", () => {
@@ -16993,7 +16993,7 @@ describe("Action Types", () => {
           },
         ],
       })
-    ).toThrow(/Interface link type .* does not exist on interface/);
+    ).toThrow(/Interface link type .* does not exist on interface/u);
   });
 
   it("serializes publicProject permission on action type", async () => {

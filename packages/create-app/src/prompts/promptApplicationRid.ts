@@ -24,7 +24,7 @@ export async function promptApplicationRid({
 }): Promise<string> {
   while (
     application == null ||
-    !/^ri\.third-party-applications\.[^.]+\.application\.[^.]+$/.test(
+    !/^ri\.third-party-applications\.[^.]+\.application\.[^.]+$/u.test(
       application
     )
   ) {

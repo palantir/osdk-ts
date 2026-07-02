@@ -106,7 +106,7 @@ export async function run({
       }
 
       if (file.endsWith("/_gitignore")) {
-        fs.renameSync(file, file.replace(/\/_gitignore$/, "/.gitignore"));
+        fs.renameSync(file, file.replace(/\/_gitignore$/u, "/.gitignore"));
         return;
       }
 
@@ -116,7 +116,7 @@ export async function run({
       const templated = Handlebars.compile(fs.readFileSync(file, "utf-8"))(
         templateContext
       );
-      fs.writeFileSync(file.replace(/.hbs$/, ""), templated);
+      fs.writeFileSync(file.replace(/.hbs$/u, ""), templated);
       fs.rmSync(file);
     });
   };

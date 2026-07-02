@@ -25,9 +25,9 @@ import { CONFIG_FILE_SUFFIX } from "./constants.js";
  * Additionally, replaces Windows-style backslashes with forward slashes for path consistency.
  */
 export function standardizePathAndFileExtension(file: string): string {
-  const normalizedPath = file.replace(/\\/g, "/");
+  const normalizedPath = file.replace(/\\/gu, "/");
   if (normalizedPath.endsWith(CONFIG_FILE_SUFFIX)) {
     return normalizedPath + ".js";
   }
-  return normalizedPath.replace(/\.[jt]sx?$/, ".js");
+  return normalizedPath.replace(/\.[jt]sx?$/u, ".js");
 }

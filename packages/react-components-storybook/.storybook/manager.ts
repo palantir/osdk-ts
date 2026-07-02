@@ -79,7 +79,7 @@ addons.register(ADDON_ID, () => {
     type: types.TOOL,
     title: "Theme",
     match: ({ viewMode, tabId }) =>
-      Boolean(viewMode?.match(/^(story|docs)$/)) && !tabId,
+      Boolean(viewMode?.match(/^(story|docs)$/u)) && !tabId,
     render: ThemeToolbar,
   });
 

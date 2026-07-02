@@ -43,7 +43,7 @@ describe("Object Status", () => {
               },
             })
           ).toThrowError(
-            /Object "validationTest" has "experimental" status, but the following properties have a different status: bar/
+            /Object "validationTest" has "experimental" status, but the following properties have a different status: bar/u
           );
         },
         "/tmp/"
@@ -95,7 +95,7 @@ describe("Object Status", () => {
               },
             })
           ).toThrowError(
-            /Object "exampleActiveProp" has "example" status, but the following properties have a different status: bar/
+            /Object "exampleActiveProp" has "example" status, but the following properties have a different status: bar/u
           );
         },
         "/tmp/"
@@ -126,7 +126,7 @@ describe("Object Status", () => {
               },
             })
           ).toThrowError(
-            /Object "deprecatedActiveProp" has "deprecated" status, but the following properties have a different status: bar/
+            /Object "deprecatedActiveProp" has "deprecated" status, but the following properties have a different status: bar/u
           );
         },
         "/tmp/"

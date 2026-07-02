@@ -143,12 +143,12 @@ function probeDescription(
       `probe \`${name}\` is missing a JSDoc — add a /** ... */ block above its declaration`
     );
   }
-  return text.replace(/\s+/g, " ").trim();
+  return text.replace(/\s+/gu, " ").trim();
 }
 
 // Strip absolute import paths so the snapshot is identical across machines.
 function scrub(s: string): string {
-  return s.replace(/import\("[^"]+"\)\./g, "");
+  return s.replace(/import\("[^"]+"\)\./gu, "");
 }
 
 // Pretty-print one probes file's worth of probes as TS-flavored snapshot

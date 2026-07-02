@@ -41,7 +41,7 @@ export function convertInterface(
           ...status,
           deprecated: {
             ...status.deprecated,
-            deadline: status.deprecated.deadline?.replace(/\.000Z$/, "Z"),
+            deadline: status.deprecated.deadline?.replace(/\.000Z$/u, "Z"),
           },
         }
       : status;

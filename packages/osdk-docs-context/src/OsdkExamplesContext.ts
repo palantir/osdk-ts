@@ -99,6 +99,7 @@ export class OsdkExamplesContext {
    */
   static searchExamples(pattern: string): Array<ExampleSearchResult> {
     const results: Array<ExampleSearchResult> = [];
+    // oxlint-disable-next-line require-unicode-regexp -- dynamic pattern; adding the u flag could change matching or throw on patterns that are valid without it
     const regex = new RegExp(pattern, "i");
 
     for (const [version, versionData] of Object.entries(
@@ -127,6 +128,7 @@ export class OsdkExamplesContext {
     pattern: string
   ): Array<ExampleSearchResult> {
     const results: Array<ExampleSearchResult> = [];
+    // oxlint-disable-next-line require-unicode-regexp -- dynamic pattern; adding the u flag could change matching or throw on patterns that are valid without it
     const regex = new RegExp(pattern, "i");
 
     for (const [version, versionData] of Object.entries(

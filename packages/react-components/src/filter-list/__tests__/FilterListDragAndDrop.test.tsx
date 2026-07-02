@@ -81,7 +81,7 @@ describe("FilterList drag and drop", () => {
       />
     );
 
-    const dragHandles = screen.queryAllByLabelText(/Reorder/);
+    const dragHandles = screen.queryAllByLabelText(/Reorder/u);
     expect(dragHandles).toHaveLength(0);
   });
 
@@ -101,7 +101,7 @@ describe("FilterList drag and drop", () => {
       />
     );
 
-    const dragHandles = await screen.findAllByLabelText(/Reorder/);
+    const dragHandles = await screen.findAllByLabelText(/Reorder/u);
     expect(dragHandles).toHaveLength(3);
   });
 
@@ -121,7 +121,7 @@ describe("FilterList drag and drop", () => {
       />
     );
 
-    const dragHandles = await screen.findAllByLabelText(/Reorder/);
+    const dragHandles = await screen.findAllByLabelText(/Reorder/u);
     expect(dragHandles).toHaveLength(3);
   });
 
@@ -175,7 +175,7 @@ describe("FilterList drag and drop", () => {
       />
     );
 
-    await screen.findAllByLabelText(/Reorder/);
+    await screen.findAllByLabelText(/Reorder/u);
 
     expect(filterStates.get(getFilterKey(definitions[0]))).toBe(stateRef);
   });
@@ -193,7 +193,7 @@ describe("FilterList drag and drop", () => {
       />
     );
 
-    const dragHandles = screen.queryAllByLabelText(/Reorder/);
+    const dragHandles = screen.queryAllByLabelText(/Reorder/u);
     expect(dragHandles).toHaveLength(0);
   });
 
@@ -215,7 +215,7 @@ describe("FilterList drag and drop", () => {
       />
     );
 
-    await screen.findAllByLabelText(/Reorder/);
+    await screen.findAllByLabelText(/Reorder/u);
 
     expect(onOrderChange).not.toHaveBeenCalled();
   });

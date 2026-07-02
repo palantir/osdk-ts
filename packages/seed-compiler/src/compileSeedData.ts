@@ -81,28 +81,29 @@ const EXPECTED_JS_TYPE: Record<string, "string" | "number" | "boolean"> = {
  */
 const WIRE_TYPE_FORMAT: Record<string, { pattern: RegExp; example: string }> = {
   timestamp: {
-    pattern: /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})$/,
+    pattern:
+      /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})$/u,
     example: "2025-01-01T00:00:00Z",
   },
   date: {
-    pattern: /^\d{4}-\d{2}-\d{2}$/,
+    pattern: /^\d{4}-\d{2}-\d{2}$/u,
     example: "2025-01-01",
   },
   datetime: {
     pattern:
-      /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})?)?$/,
+      /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})?)?$/u,
     example: "2025-01-01T12:00:00Z",
   },
   long: {
     // Strict decimal integer — matches Rust's str::parse::<i64>().
     // No scientific notation, no decimal point, no whitespace.
-    pattern: /^-?\d+$/,
+    pattern: /^-?\d+$/u,
     example: "9007199254740993",
   },
   decimal: {
     // Numeric string with optional decimal point. Anchored.
     // Rust stores any string (no validation), but we reject obviously invalid values.
-    pattern: /^-?\d+(\.\d+)?$/,
+    pattern: /^-?\d+(\.\d+)?$/u,
     example: "123.45",
   },
 };

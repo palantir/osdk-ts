@@ -128,7 +128,7 @@ async function updateChangelog(
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
-    const versionMatch = line.match(/^## ([\d.]+(?:-beta\.\d+)?)$/);
+    const versionMatch = line.match(/^## ([\d.]+(?:-beta\.\d+)?)$/u);
 
     if (versionMatch) {
       const entryVersion = versionMatch[1];
@@ -139,7 +139,7 @@ async function updateChangelog(
     }
   }
 
-  entry.content = entry.content.replace(/\n$/, "");
+  entry.content = entry.content.replace(/\n$/u, "");
   lines.splice(insertAt, 0, `\n## ${targetVersion}\n\n${entry.content}`);
 
   const updatedContent = lines.join("\n");

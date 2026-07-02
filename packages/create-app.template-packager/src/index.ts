@@ -112,7 +112,7 @@ export async function cli(): Promise<void> {
 
 function safeRaw(q: string): string {
   return `{ type: "raw",  body: \`${q
-    .replace(/\\/g, "\\\\")
-    .replace(/`/g, "\\`")
-    .replace(/\$/g, "\\$")}\`}`;
+    .replace(/\\/gu, "\\\\")
+    .replace(/`/gu, "\\`")
+    .replace(/\$/gu, "\\$")}\`}`;
 }
