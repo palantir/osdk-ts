@@ -25,81 +25,125 @@ import React, {
 import type { DevToolsPanelProps } from "../../plugins/types.js";
 import { resolveComponentName } from "../resolveComponentName.js";
 import { ComponentCard } from "./ComponentCard.js";
-import styles from "./ComponentsPanel.module.scss";
+import { ComponentsHeader } from "./ComponentsHeader.js";
+import {
+  type ComponentOntology,
+  deriveComponentOntology,
+} from "./deriveComponentOntology.js";
 import { useComponentInsights } from "./useComponentInsights.js";
 
+import styles from "./ComponentsPanel.module.scss";
+
+interface ComponentEntry {
+  componentId: string;
+  name: string;
+  ontology: ComponentOntology;
+  /** Lowercased searchable text: name + object types + actions + properties. */
+  haystack: string;
+}
+
 /**
- * The component inspector: every mounted OSDK component, what it queries, how
- * fresh its data is, and where it over-fetches or wastes renders. Filterable by
- * component or query.
+ * The component inspector: every mounted OSDK component shown as an ontology
+ * tree of the object types, actions, and properties it uses. Filterable by any
+ * of those names through the search box.
  */
 export const ComponentsPanel: React.FC<DevToolsPanelProps> = ({
   monitorStore,
 }) => {
   const registry = monitorStore.getComponentRegistry();
+  const tracker = monitorStore.getPropertyAccessTracker();
   const subscribe = useCallback(
     (cb: () => void) => registry.subscribe(cb),
-    [registry],
+    [registry]
   );
   const getVersion = useCallback(() => registry.getVersion(), [registry]);
   const version = useSyncExternalStore(subscribe, getVersion, getVersion);
   const insights = useComponentInsights(monitorStore);
   const [search, setSearch] = useState("");
 
-  const components = useMemo(() => {
-    const list = [...registry.getActiveComponents().entries()].map(
-      ([componentId, bindings]) => ({
-        componentId,
-        bindings,
-        name: resolveComponentName(bindings),
-      }),
+  const entries = useMemo<ComponentEntry[]>(() => {
+    return [...registry.getActiveComponents().entries()].map(
+      ([componentId, bindings]) => {
+        const ontology = deriveComponentOntology(
+          bindings,
+          tracker.getAccessesByComponent(componentId),
+          registry.getComponentProps(componentId),
+          {
+            wasted: insights.wastedByComponent.get(componentId),
+            unused: insights.unusedByComponent.get(componentId),
+          }
+        );
+        const name = resolveComponentName(bindings);
+        const haystack = [
+          name,
+          ...ontology.objectTypes.map((t) => t.name),
+          ...ontology.objectTypes.flatMap((t) => t.instances),
+          ...ontology.actions,
+          ...ontology.properties.flatMap((p) => [p.objectType, ...p.names]),
+        ]
+          .join(" ")
+          .toLowerCase();
+        return { componentId, name, ontology, haystack };
+      }
     );
-    const query = search.trim().toLowerCase();
-    if (query.length === 0) {
-      return list;
+    // version + insights drive the recompute as the registry and tracker change.
+  }, [registry, tracker, version, insights]);
+
+  const stats = useMemo(() => {
+    const objectTypes = new Set<string>();
+    const actions = new Set<string>();
+    for (const entry of entries) {
+      for (const objectType of entry.ontology.objectTypes) {
+        objectTypes.add(objectType.name);
+      }
+      for (const action of entry.ontology.actions) {
+        actions.add(action);
+      }
     }
-    return list.filter(
-      (component) =>
-        component.name.toLowerCase().includes(query)
-        || component.bindings.some((binding) =>
-          binding.querySignature.toLowerCase().includes(query)
-        ),
-    );
-    // version makes the memo recompute when the registry changes.
-  }, [registry, version, search]);
+    return {
+      objectTypeCount: objectTypes.size,
+      actionTypeCount: actions.size,
+    };
+  }, [entries]);
+
+  const query = search.trim().toLowerCase();
+  const visible =
+    query.length === 0
+      ? entries
+      : entries.filter((entry) => entry.haystack.includes(query));
 
   return (
     <div className={styles.panel}>
       <div className={styles.toolbar}>
         <InputGroup
           leftIcon="search"
-          placeholder="Filter components…"
+          placeholder="Search ontology"
           value={search}
           onChange={(event) => setSearch(event.currentTarget.value)}
         />
       </div>
-      {components.length === 0
-        ? (
-          <div className={styles.empty}>
-            {search.length > 0
-              ? "No components match your filter."
-              : "No OSDK components are mounted yet."}
-          </div>
-        )
-        : (
-          <div className={styles.list}>
-            {components.map((component) => (
-              <ComponentCard
-                key={component.componentId}
-                componentId={component.componentId}
-                bindings={component.bindings}
-                monitorStore={monitorStore}
-                wasted={insights.wastedByComponent.get(component.componentId)}
-                unused={insights.unusedByComponent.get(component.componentId)}
-              />
-            ))}
-          </div>
-        )}
+      <ComponentsHeader
+        componentCount={entries.length}
+        objectTypeCount={stats.objectTypeCount}
+        actionTypeCount={stats.actionTypeCount}
+      />
+      {visible.length === 0 ? (
+        <div className={styles.empty}>
+          {entries.length > 0
+            ? "No components match your search."
+            : "No OSDK components are mounted yet."}
+        </div>
+      ) : (
+        <div className={styles.list}>
+          {visible.map((entry) => (
+            <ComponentCard
+              key={entry.componentId}
+              name={entry.name}
+              ontology={entry.ontology}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

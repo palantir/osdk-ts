@@ -14,204 +14,162 @@
  * limitations under the License.
  */
 
-import { Icon, Tag, Tooltip } from "@blueprintjs/core";
-import React, { useState } from "react";
+import classNames from "classnames";
+import React from "react";
 
-import type { MonitorStore } from "../../store/MonitorStore.js";
-import type { UnusedProperty, WastedRender } from "../../types/index.js";
-import type {
-  ComponentHookBinding,
-  QueryParams,
-} from "../../utils/ComponentQueryRegistry.js";
-import { formatQueryParams } from "../queryParamsFormat.js";
-import { resolveComponentName } from "../resolveComponentName.js";
+import type { ComponentOntology } from "./deriveComponentOntology.js";
+import { TreeRow } from "./TreeRow.js";
+
 import styles from "./ComponentsPanel.module.scss";
 
 interface ComponentCardProps {
-  componentId: string;
-  bindings: ComponentHookBinding[];
-  monitorStore: MonitorStore;
-  wasted?: WastedRender;
-  unused?: UnusedProperty[];
+  name: string;
+  ontology: ComponentOntology;
 }
 
-/** The object type a query reads from, or null for actions (shown by name). */
-function objectTypeOf(params: QueryParams): string | null {
-  switch (params.type) {
-    case "object":
-    case "list":
-    case "aggregation": {
-      return params.objectType;
-    }
-    case "links": {
-      return params.sourceObject;
-    }
-    case "objectSet": {
-      return params.baseObjectSet;
-    }
-    default: {
-      return null;
-    }
-  }
-}
+/** How many leaf rows to show before collapsing the rest into "+N more". */
+const VISIBLE_LEAVES = 5;
 
-function fileLabel(binding: ComponentHookBinding): string | null {
-  if (binding.filePath === undefined) {
+/** A muted, non-interactive "+N more" leaf row. */
+function moreRow(depth: number, hidden: number): React.ReactNode {
+  if (hidden <= 0) {
     return null;
   }
-  const name = binding.filePath.split("/").pop() ?? binding.filePath;
-  return binding.lineNumber !== undefined
-    ? `${name}:${binding.lineNumber}`
-    : name;
+  return <TreeRow depth={depth} leaf label={`+ ${hidden} more`} />;
 }
 
 /**
- * A live component shown by what it does with OSDK: the object types it reads
- * and the queries powering it. Render count and over-fetch are secondary
- * signals; the per-query detail is available on expand.
+ * One live component rendered as an ontology tree: the object types and actions
+ * it uses (inferred from hook usage) plus the instances and properties it read
+ * and its React props. Health is summarized in the header badge; the per-object
+ * detail is available on expand.
  */
 export const ComponentCard: React.FC<ComponentCardProps> = ({
-  componentId,
-  bindings,
-  monitorStore,
-  wasted,
-  unused,
+  name,
+  ontology,
 }) => {
-  const [expanded, setExpanded] = useState(false);
-
-  if (bindings.length === 0) {
-    return null;
-  }
-
-  const componentName = resolveComponentName(bindings);
-  const totalRenders = bindings.reduce((sum, b) => sum + b.renderCount, 0);
-  const overFetch = unused ?? [];
-  const props = monitorStore.getComponentRegistry().getComponentProps(
-    componentId,
+  const badge = (
+    <span
+      className={classNames(
+        styles.healthBadge,
+        ontology.healthy ? styles.healthy : styles.unhealthy
+      )}
+    >
+      {ontology.healthy ? "Healthy" : ontology.warning}
+    </span>
   );
-  const propEntries = props ? Object.entries(props) : [];
-
-  const objectTypes = [
-    ...new Set(
-      bindings
-        .map((b) => objectTypeOf(b.queryParams))
-        .filter((t): t is string => t !== null && t !== "Unknown"),
-    ),
-  ];
 
   return (
     <div className={styles.componentCard}>
-      <div
-        className={styles.cardHeader}
-        onClick={() => setExpanded(!expanded)}
-      >
-        <div className={styles.cardHeaderLeft}>
-          <Icon icon={expanded ? "chevron-down" : "chevron-right"} size={14} />
-          <span className={styles.componentName}>{componentName}</span>
-          <div className={styles.objTypeTags}>
-            {objectTypes.map((type) => (
-              <Tag key={type} minimal intent="primary">{type}</Tag>
-            ))}
-          </div>
-        </div>
-        <div className={styles.cardHeaderRight}>
-          {wasted !== undefined
-            ? (
-              <Tooltip
-                content={`${wasted.count} renders changed no read property`}
-                portalClassName="osdk-devtools-portal"
-              >
-                <Tag minimal intent="warning" icon="refresh">
-                  {wasted.count} wasted
-                </Tag>
-              </Tooltip>
-            )
-            : null}
-          {overFetch.length > 0
-            ? (
-              <Tooltip
-                content={`${overFetch.length} fetched properties go mostly unused`}
-                portalClassName="osdk-devtools-portal"
-              >
-                <Tag minimal intent="warning" icon="download">
-                  over-fetch {overFetch.length}
-                </Tag>
-              </Tooltip>
-            )
-            : null}
-          {totalRenders > 0
-            ? (
-              <Tooltip
-                content={`${totalRenders} total renders`}
-                portalClassName="osdk-devtools-portal"
-              >
-                <span className={styles.renders}>
-                  <Icon icon="time" size={10} /> {totalRenders}
-                </span>
-              </Tooltip>
-            )
-            : null}
-        </div>
-      </div>
-
-      {expanded
-        ? (
-          <div className={styles.cardBody}>
-            <div className={styles.queryGroupTitle}>Queries</div>
-            {bindings.map((binding, index) => {
-              const file = fileLabel(binding);
+      <TreeRow depth={0} icon="widget" label={name} badge={badge}>
+        {ontology.objectTypes.length > 0 ? (
+          <TreeRow
+            depth={1}
+            label="Related objects"
+            count={ontology.objectTypes.length}
+            defaultOpen
+          >
+            {ontology.objectTypes.map((objectType) => {
+              const visible = objectType.instances.slice(0, VISIBLE_LEAVES);
+              const hidden = objectType.instances.length - visible.length;
               return (
-                <div
-                  key={`${binding.subscriptionId}-${index}`}
-                  className={styles.queryRow}
+                <TreeRow
+                  key={objectType.name}
+                  depth={2}
+                  icon="cube"
+                  label={objectType.name}
+                  count={
+                    objectType.instances.length > 0
+                      ? objectType.instances.length
+                      : undefined
+                  }
                 >
-                  <Tag minimal className={styles.hookTag}>
-                    {binding.hookType}
-                  </Tag>
-                  <span className={styles.queryText}>
-                    {formatQueryParams(binding.queryParams)}
-                  </span>
-                  {file !== null
-                    ? <span className={styles.queryMeta}>{file}</span>
-                    : null}
-                </div>
+                  {visible.map((primaryKey) => (
+                    <TreeRow
+                      key={primaryKey}
+                      depth={3}
+                      icon="cube"
+                      leaf
+                      label={primaryKey}
+                    />
+                  ))}
+                  {moreRow(3, hidden)}
+                </TreeRow>
               );
             })}
-            {propEntries.length > 0
-              ? (
-                <div className={styles.propsSection}>
-                  <div className={styles.queryGroupTitle}>Props</div>
-                  {propEntries.map(([key, value]) => (
-                    <div key={key} className={styles.propRow}>
-                      <span className={styles.propKey}>{key}</span>
-                      <span className={styles.propValue}>{value}</span>
-                    </div>
+          </TreeRow>
+        ) : null}
+
+        {ontology.actions.length > 0 ? (
+          <TreeRow
+            depth={1}
+            label="Related actions"
+            count={ontology.actions.length}
+            defaultOpen
+          >
+            {ontology.actions.slice(0, VISIBLE_LEAVES).map((action) => (
+              <TreeRow key={action} depth={2} icon="key" leaf label={action} />
+            ))}
+            {moreRow(2, ontology.actions.length - VISIBLE_LEAVES)}
+          </TreeRow>
+        ) : null}
+
+        {ontology.properties.length > 0 ? (
+          <TreeRow
+            depth={1}
+            label="Related properties"
+            count={ontology.properties.length}
+            defaultOpen
+          >
+            {ontology.properties.map((group) => {
+              const visible = group.names.slice(0, VISIBLE_LEAVES);
+              const hidden = group.names.length - visible.length;
+              return (
+                <TreeRow
+                  key={group.objectType}
+                  depth={2}
+                  icon="cube"
+                  label={group.objectType}
+                  count={group.names.length}
+                >
+                  {visible.map((propertyName) => (
+                    <TreeRow
+                      key={propertyName}
+                      depth={3}
+                      icon="property"
+                      leaf
+                      label={propertyName}
+                    />
                   ))}
-                </div>
-              )
-              : null}
-            {overFetch.length > 0
-              ? (
-                <div className={styles.overFetch}>
-                  <div className={styles.overFetchTitle}>
-                    Mostly-unused properties
-                  </div>
-                  {overFetch.map((prop) => (
-                    <div key={prop.propertyName} className={styles.overFetchRow}>
-                      <span className={styles.usageName}>
-                        {prop.propertyName}
-                      </span>
-                      <span className={styles.overFetchMeta}>
-                        read in {prop.accessCount}/{prop.totalRenders} renders
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )
-              : null}
-          </div>
-        )
-        : null}
+                  {moreRow(3, hidden)}
+                </TreeRow>
+              );
+            })}
+          </TreeRow>
+        ) : null}
+
+        {ontology.reactProps.length > 0 ? (
+          <TreeRow
+            depth={1}
+            label="React props"
+            count={ontology.reactProps.length}
+          >
+            {ontology.reactProps.map(([key, value]) => (
+              <TreeRow
+                key={key}
+                depth={2}
+                leaf
+                label={
+                  <span className={styles.propRow}>
+                    <span className={styles.propKey}>{key}</span>
+                    <span className={styles.propValue}>{value}</span>
+                  </span>
+                }
+              />
+            ))}
+          </TreeRow>
+        ) : null}
+      </TreeRow>
     </div>
   );
 };

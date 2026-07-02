@@ -14,201 +14,226 @@
  * limitations under the License.
  */
 
+@use '../tokens' as t;
+@use '../mixins' as m;
+
 .panel {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 8px 12px;
 }
 
 .toolbar {
   position: sticky;
   top: 0;
-  padding-bottom: 4px;
+  z-index: t.$z-sticky;
+  padding: 8px 12px;
+  background: t.$bg-surface;
+  border-bottom: 1px solid t.$border-subtle;
+}
+
+// Summary line: "N components • M object types • K action types" + filter glyph.
+.summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 12px;
+  border-bottom: 1px solid t.$border-default;
+}
+
+.summaryText {
+  font-size: t.$font-size-sm;
+  color: t.$text-secondary;
+}
+
+.summaryStrong {
+  color: t.$text-primary;
+  font-weight: t.$font-weight-semi;
+}
+
+.summaryDot {
+  margin: 0 6px;
+  color: t.$text-tertiary;
+}
+
+.summaryFilter {
+  color: t.$text-tertiary;
+  flex-shrink: 0;
 }
 
 .list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
 }
 
 .empty {
-  font-size: 12px;
-  opacity: 0.6;
-  padding: 12px 4px;
+  font-size: t.$font-size-base;
+  color: t.$text-tertiary;
+  padding: 16px 12px;
 }
 
 .componentCard {
-  border: 1px solid rgba(138, 155, 168, 0.2);
-  border-radius: 3px;
+  border-bottom: 1px solid t.$border-subtle;
 }
 
-.cardHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 6px 8px;
-  cursor: pointer;
-}
+// --- Tree ---------------------------------------------------------------
 
-.cardHeaderLeft {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+.treeNode {
   min-width: 0;
 }
 
-.cardHeaderRight {
+.treeRow {
   display: flex;
   align-items: center;
   gap: 6px;
-  flex-shrink: 0;
+  min-height: 26px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  padding-right: 10px;
+  color: t.$text-secondary;
+  font-size: t.$font-size-sm;
+  border-left: 2px solid transparent;
+  transition: background-color t.$transition-fast, border-left-color t.$transition-fast;
 }
 
-.componentName {
-  font-weight: 600;
-  font-size: 13px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.treeRowInteractive {
+  cursor: pointer;
+
+  &:hover {
+    background: t.$bg-hover;
+    border-left-color: t.$text-tertiary;
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-left-color: t.$blue;
+    background: t.$bg-hover;
+  }
 }
 
-.renders {
+.treeRowLeaf {
+  .treeLabel {
+    color: t.$text-tertiary;
+    font-family: t.$font-mono;
+    font-size: t.$font-size-xs;
+  }
+}
+
+// Depth 0 is the component header: raised, bolder, primary text.
+.depth0 {
+  padding-left: 8px;
+  background: t.$bg-raised;
+
+  .treeLabel {
+    color: t.$text-primary;
+    font-size: t.$font-size-md;
+    font-weight: t.$font-weight-semi;
+  }
+}
+
+.depth1 {
+  padding-left: 26px;
+
+  .treeLabel {
+    color: t.$text-primary;
+    font-weight: t.$font-weight-medium;
+  }
+}
+
+.depth2 {
+  padding-left: 44px;
+}
+
+.depth3 {
+  padding-left: 62px;
+}
+
+.depth4 {
+  padding-left: 80px;
+}
+
+.treeChevron {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  font-size: 11px;
-  opacity: 0.7;
+  justify-content: center;
+  width: 14px;
+  flex-shrink: 0;
+  color: t.$text-tertiary;
 }
 
-.objTypeTags {
-  display: flex;
-  gap: 4px;
-  flex-wrap: wrap;
-  min-width: 0;
+.treeIcon {
+  flex-shrink: 0;
+  color: t.$blue;
 }
 
-.cardBody {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 6px 8px 8px;
-  border-top: 1px solid rgba(138, 155, 168, 0.15);
-}
-
-.queryGroupTitle {
-  font-size: 11px;
-  font-weight: 600;
-  opacity: 0.6;
-}
-
-.queryRow {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  min-width: 0;
-}
-
-.queryText {
+.treeLabel {
   flex: 1;
   min-width: 0;
-  font-family: monospace;
-  font-size: 11px;
-  overflow-x: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.queryMeta {
-  flex: none;
-  font-family: monospace;
-  font-size: 11px;
-  opacity: 0.6;
+.treeCount {
+  flex-shrink: 0;
+  padding: 1px 7px;
+  background: t.$bg-elevated;
+  color: t.$text-secondary;
+  border-radius: t.$radius-sm;
+  font-family: t.$font-mono;
+  font-size: t.$font-size-xs;
+  font-variant-numeric: tabular-nums;
 }
 
-.propsSection {
-  margin-top: 4px;
-  padding-top: 6px;
-  border-top: 1px dashed rgba(138, 155, 168, 0.2);
+.treeChildren {
+  min-width: 0;
 }
+
+// --- Health badge -------------------------------------------------------
+
+.healthBadge {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 1px 8px;
+  border-radius: t.$radius-sm;
+  font-size: t.$font-size-xs;
+  font-weight: t.$font-weight-semi;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.healthy {
+  background: t.$green-bg;
+  color: t.$green;
+}
+
+.unhealthy {
+  background: t.$orange-bg;
+  color: t.$orange;
+}
+
+// --- React prop key/value leaf ------------------------------------------
 
 .propRow {
   display: flex;
   gap: 8px;
-  font-size: 11px;
-  padding: 1px 0;
   min-width: 0;
+  width: 100%;
 }
 
 .propKey {
   flex: none;
-  font-family: monospace;
-  opacity: 0.7;
+  font-family: t.$font-mono;
+  color: t.$text-tertiary;
 }
 
 .propValue {
   flex: 1;
   min-width: 0;
-  font-family: monospace;
+  font-family: t.$font-mono;
+  color: t.$text-secondary;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.hookRow {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-}
-
-.hookTag {
-  flex-shrink: 0;
-}
-
-.statusBadge {
-  flex-shrink: 0;
-}
-
-.signature {
-  flex: 1;
-  min-width: 0;
-  font-family: monospace;
-  font-size: 11px;
-  overflow-x: auto;
-  white-space: nowrap;
-}
-
-.locationButton {
-  flex-shrink: 0;
-}
-
-.overFetch {
-  margin-top: 4px;
-  padding-top: 6px;
-  border-top: 1px dashed rgba(138, 155, 168, 0.2);
-}
-
-.overFetchTitle {
-  font-size: 11px;
-  font-weight: 600;
-  opacity: 0.6;
-  margin-bottom: 2px;
-}
-
-.overFetchRow {
-  display: flex;
-  justify-content: space-between;
-  font-size: 11px;
-  padding: 1px 0;
-}
-
-.usageName {
-  font-family: monospace;
-}
-
-.overFetchMeta {
-  opacity: 0.6;
 }
