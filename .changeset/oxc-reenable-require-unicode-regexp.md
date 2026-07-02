@@ -1,5 +1,6 @@
 ---
 "@osdk/foundry-config-json": patch
+"@osdk/widget.vite-plugin": patch
 "@osdk/vite-plugin-superrepo": patch
 "@osdk/osdk-docs-context": patch
 "@osdk/maker-experimental": patch
