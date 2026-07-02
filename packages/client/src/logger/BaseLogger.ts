@@ -41,7 +41,7 @@ export abstract class BaseLogger implements Logger {
 
   constructor(
     bindings: Record<string, any>,
-    options: { level?: string; msgPrefix?: string } = {},
+    options: { level?: string; msgPrefix?: string },
     factory: LoggerConstructor
   ) {
     this.bindings = bindings;

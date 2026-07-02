@@ -28,6 +28,7 @@ export class AutoVersionError extends Error {
     public readonly tip?: string
   ) {
     super(msg);
+    this.name = "AutoVersionError";
   }
 }
 

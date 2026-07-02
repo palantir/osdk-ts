@@ -34,6 +34,7 @@ class ResponseError extends Error {
 
   constructor(message: string, response: string) {
     super(message);
+    this.name = "ResponseError";
     try {
       const parsed = JSON.parse(response);
       this.#response = JSON.stringify(parsed, null, 4);

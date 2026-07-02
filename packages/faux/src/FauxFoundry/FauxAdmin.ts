@@ -102,6 +102,10 @@ export class FauxAdmin {
   }
 
   listUsers(
+    // Reordering these params to satisfy default-param-last would change this
+    // exported method's signature; the `pageSize` default mirrors the API's
+    // "return all" behavior and is only reached when a caller passes `undefined`.
+    // oxlint-disable-next-line default-param-last
     pageSize: number | undefined = this.#users.length,
     pageToken: string | undefined,
     status: UserStatus | undefined
