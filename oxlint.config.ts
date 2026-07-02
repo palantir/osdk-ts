@@ -330,25 +330,6 @@ export default defineConfig({
       },
     },
     {
-      // The repo's .js/.mjs/.cjs are build scripts, bin shims, and config files.
-      // The prior ESLint config's ruleset targeted .ts/.tsx/.mts/.cts, so these
-      // were only lightly linted (base rules + the license header). Bring them
-      // under oxlint but turn off the error-level rules their existing code first
-      // surfaces, keeping this a behavior-preserving reformat rather than a
-      // rewrite (the license-header rule stays on for parity).
-      //
-      // TODO(#3031 follow-up): each rule below is disabled ONLY because existing
-      // JS build-scripts/configs violate it — not because it's inappropriate for
-      // JS. In a dedicated follow-up PR, re-enable them one by one (fixing the
-      // offending .js/.mjs/.cjs) so JS is held to the same full ruleset as .ts,
-      // then delete this override.
-      files: ["**/*.js", "**/*.mjs", "**/*.cjs"],
-      rules: {
-        // Build-config files (tsup/vite/postcss) export an anonymous default object.
-        "unicorn/no-anonymous-default-export": "off",
-      },
-    },
-    {
       files: [
         "**/*.test.ts",
         "**/test/*",
