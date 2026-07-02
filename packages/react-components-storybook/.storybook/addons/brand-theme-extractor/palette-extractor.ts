@@ -23,6 +23,8 @@ import type { ThemeColorMode, TokenAssignment } from "./types.js";
 export interface PaletteSwatch {
   hex: string;
   rgb: [number, number, number];
+  /** How many source pixels fall in this swatch — higher means more dominant. */
+  population: number;
 }
 
 export interface ExtractedPalette {
@@ -34,10 +36,21 @@ export interface ExtractedPalette {
   lightMuted: PaletteSwatch | null;
 }
 
-/** Extract a 6-swatch palette from an image file using node-vibrant. */
-export async function extractPalette(file: File): Promise<ExtractedPalette> {
+export interface ExtractionResult {
+  palette: ExtractedPalette;
+  /** Mean perceptual luminance of the source image, 0 (black) - 1 (white),
+   * or null when the pixels can't be read (e.g. a CORS-tainted canvas). */
+  averageLuminance: number | null;
+}
+
+/** Extract a palette + overall brightness from an image file. */
+export async function extractPalette(file: File): Promise<ExtractionResult> {
   const dataUrl = await readFileAsDataUrl(file);
-  return paletteFromSource(dataUrl);
+  const [palette, averageLuminance] = await Promise.all([
+    paletteFromSource(dataUrl),
+    imageAverageLuminance(dataUrl),
+  ]);
+  return { palette, averageLuminance };
 }
 
 /** Extract a palette from a direct image URL (data: or remote). */
@@ -45,6 +58,49 @@ export async function extractPaletteFromImageUrl(
   url: string
 ): Promise<ExtractedPalette> {
   return paletteFromSource(url);
+}
+
+/**
+ * Mean perceptual luminance of an image (0 = black, 1 = white). Draws the image
+ * to a small canvas and averages pixel luma. Returns null if the canvas can't
+ * be read (cross-origin taint) so callers can fall back to palette heuristics.
+ */
+function imageAverageLuminance(source: string): Promise<number | null> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.addEventListener("load", () => {
+      try {
+        const size = 48;
+        const canvas = document.createElement("canvas");
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          resolve(null);
+          return;
+        }
+        ctx.drawImage(img, 0, 0, size, size);
+        const { data } = ctx.getImageData(0, 0, size, size);
+        let sum = 0;
+        let weight = 0;
+        for (let i = 0; i < data.length; i += 4) {
+          const alpha = data[i + 3] / 255;
+          if (alpha === 0) continue;
+          const r = data[i] / 255;
+          const g = data[i + 1] / 255;
+          const b = data[i + 2] / 255;
+          sum += (0.2126 * r + 0.7152 * g + 0.0722 * b) * alpha;
+          weight += alpha;
+        }
+        resolve(weight > 0 ? sum / weight : null);
+      } catch {
+        resolve(null); // tainted canvas / read blocked
+      }
+    });
+    img.addEventListener("error", () => resolve(null));
+    img.src = source;
+  });
 }
 
 /**
@@ -63,20 +119,27 @@ export function websiteScreenshotUrl(rawUrl: string): string {
 
 export async function extractPaletteFromWebsite(
   rawUrl: string
-): Promise<{ palette: ExtractedPalette; screenshotUrl: string }> {
+): Promise<ExtractionResult & { screenshotUrl: string }> {
   const screenshotUrl = websiteScreenshotUrl(rawUrl);
-  const palette = await paletteFromSource(screenshotUrl);
-  return { palette, screenshotUrl };
+  const [palette, averageLuminance] = await Promise.all([
+    paletteFromSource(screenshotUrl),
+    imageAverageLuminance(screenshotUrl),
+  ]);
+  return { palette, screenshotUrl, averageLuminance };
 }
 
 async function paletteFromSource(source: string): Promise<ExtractedPalette> {
   const palette = await Vibrant.from(source).getPalette();
 
   function toSwatch(
-    swatch: { hex: string; rgb: [number, number, number] } | null
+    swatch: {
+      hex: string;
+      rgb: [number, number, number];
+      population: number;
+    } | null
   ): PaletteSwatch | null {
     if (!swatch) return null;
-    return { hex: swatch.hex, rgb: swatch.rgb };
+    return { hex: swatch.hex, rgb: swatch.rgb, population: swatch.population };
   }
 
   return {
@@ -87,6 +150,42 @@ async function paletteFromSource(source: string): Promise<ExtractedPalette> {
     darkMuted: toSwatch(palette.DarkMuted),
     lightMuted: toSwatch(palette.LightMuted),
   };
+}
+
+/**
+ * Decide whether a source image is dark enough that a dark theme is the right
+ * starting point. Averages the luminance of the extracted swatches and treats
+ * missing light swatches (which node-vibrant omits for very dark images) as
+ * additional evidence of darkness.
+ */
+export function isPredominantlyDark(
+  palette: ExtractedPalette,
+  averageLuminance?: number | null
+): boolean {
+  // Prefer the measured image brightness when available — it reliably catches
+  // a mostly-black source that node-vibrant returns few/no swatches for.
+  if (averageLuminance != null) return averageLuminance < 0.4;
+
+  const swatches = [
+    palette.vibrant,
+    palette.darkVibrant,
+    palette.lightVibrant,
+    palette.muted,
+    palette.darkMuted,
+    palette.lightMuted,
+  ];
+  const present = swatches.filter((s): s is PaletteSwatch => s != null);
+  if (present.length === 0) return false;
+
+  const meanLum =
+    present.reduce((sum, s) => sum + (luminanceFromHex(s.hex) ?? 0), 0) /
+    present.length;
+  const missingLightSwatches =
+    (palette.lightVibrant == null ? 1 : 0) +
+    (palette.lightMuted == null ? 1 : 0);
+
+  // Clearly dark on average, or dark-ish with the light swatches dropped out.
+  return meanLum < 0.2 || (meanLum < 0.32 && missingLightSwatches >= 1);
 }
 
 /**
@@ -115,9 +214,13 @@ export function autoMapFromPalette(
   const hue = brand.h;
   const brandSat = brand.s;
 
-  // A tinted neutral: brand hue, a capped fraction of its saturation, fixed L.
+  // Anchor the surfaces/background on the image's own dark tone (dark mode) or
+  // light tone (light mode) so, e.g., a dark logo yields a dark surface with
+  // white text — not a generic near-black. Text sits at the opposite end of
+  // the lightness scale, guaranteeing contrast regardless of the anchor color.
+  const neutral = rgbToHsl(pickNeutralAnchorRgb(palette, isDark));
   const tint = (lightness: number, satFraction: number): string =>
-    hslToHex(hue, clamp(brandSat * satFraction, 0, 32), lightness);
+    hslToHex(neutral.h, clamp(neutral.s * satFraction, 0, 32), lightness);
 
   const backgroundHex = isDark ? tint(12, 0.35) : tint(98, 0.5);
   const surfaceHex = isDark ? tint(17, 0.4) : tint(96, 0.6);
@@ -126,7 +229,12 @@ export function autoMapFromPalette(
   const textHex = isDark ? tint(95, 0.14) : tint(15, 0.5);
   const textMutedHex = isDark ? tint(70, 0.16) : tint(40, 0.4);
   const textSubtleHex = isDark ? tint(52, 0.18) : tint(58, 0.3);
-  const secondaryHex = isDark ? tint(24, 0.45) : tint(93, 0.7);
+
+  // Secondary is the neutral surface for secondary buttons / minimal controls:
+  // a step brighter than the surface in dark mode, a step grayer (darker, less
+  // tinted) than the surface in light mode — never the accent color.
+  const secondaryHex = isDark ? tint(26, 0.35) : tint(92, 0.45);
+  const secondaryFgHex = textHex;
 
   // Primary: preserve the brand's character (hue + a vivid-enough saturation)
   // but land it in a lightness band that reads as an actionable accent, then
@@ -148,6 +256,22 @@ export function autoMapFromPalette(
   );
   const primaryFgHex = bestForeground(primaryHex);
 
+  // Semantic status colors keep their canonical hues (red / green / amber) but
+  // adopt the theme's vibrancy and are nudged to stay legible on the background.
+  const bgLum = luminanceFromHex(backgroundHex) ?? (isDark ? 0 : 1);
+  const semantic = (statusHue: number): string => {
+    const hsl = ensureContrast(
+      { h: statusHue, s: isDark ? 68 : 70, l: isDark ? 62 : 46 },
+      bgLum,
+      3,
+      isDark ? "lighter" : "darker"
+    );
+    return hslToHex(hsl.h, hsl.s, hsl.l);
+  };
+  const dangerHex = semantic(2);
+  const successHex = semantic(145);
+  const warningHex = semantic(38);
+
   const shadow = isDark
     ? "0 1px 3px oklch(0 0 0 / 0.4), 0 1px 2px oklch(0 0 0 / 0.3)"
     : "0 1px 3px oklch(0 0 0 / 0.12), 0 1px 2px oklch(0 0 0 / 0.08)";
@@ -168,14 +292,67 @@ export function autoMapFromPalette(
     valueAssignment("primary-hover", primaryHoverHex),
     valueAssignment("primary-foreground", primaryFgHex),
     valueAssignment("secondary", secondaryHex),
-    valueAssignment("secondary-foreground", textHex),
+    valueAssignment("secondary-foreground", secondaryFgHex),
     valueAssignment("icon-color", textMutedHex),
+    valueAssignment("danger", dangerHex),
+    valueAssignment("success", successHex),
+    valueAssignment("warning", warningHex),
   ];
 
-  return [...colorAssignments, ...baseDefaults({ shadow })];
+  // baseDefaults covers most non-color tokens; add the two it omits so every
+  // role in the theme is populated by extraction.
+  const remainingDefaults: TokenAssignment[] = [
+    valueAssignment(
+      "font-family-mono",
+      "ui-monospace, SFMono-Regular, Menlo, monospace"
+    ),
+    valueAssignment("font-size-xsmall", "11"),
+  ];
+
+  return [
+    ...colorAssignments,
+    ...remainingDefaults,
+    ...baseDefaults({ shadow }),
+  ];
 }
 
-/** Choose the most saturated swatch as the brand color (falls back to a blue). */
+/**
+ * Choose the swatch that anchors the neutral surfaces: the darkest swatch for a
+ * dark theme, the lightest for a light theme, so the theme's background carries
+ * the image's own dark/light tone. Falls back to the brand color.
+ */
+function pickNeutralAnchorRgb(
+  palette: ExtractedPalette,
+  isDark: boolean
+): [number, number, number] {
+  const candidates = [
+    palette.vibrant,
+    palette.darkVibrant,
+    palette.lightVibrant,
+    palette.muted,
+    palette.darkMuted,
+    palette.lightMuted,
+  ].filter((s): s is PaletteSwatch => s != null);
+
+  if (candidates.length === 0) return pickBrandRgb(palette);
+
+  let best = candidates[0];
+  let bestLum = luminanceFromHex(best.hex) ?? 0.5;
+  for (const candidate of candidates) {
+    const lum = luminanceFromHex(candidate.hex) ?? 0.5;
+    if (isDark ? lum < bestLum : lum > bestLum) {
+      bestLum = lum;
+      best = candidate;
+    }
+  }
+  return best.rgb;
+}
+
+/**
+ * Choose the brand color: the most common (highest-population) swatch that is
+ * an actual color — i.e. not near-white, near-black, or a flat grey. Falls back
+ * to the most common swatch overall, then to a default blue.
+ */
 function pickBrandRgb(palette: ExtractedPalette): [number, number, number] {
   const candidates = [
     palette.vibrant,
@@ -188,14 +365,16 @@ function pickBrandRgb(palette: ExtractedPalette): [number, number, number] {
 
   if (candidates.length === 0) return [45, 114, 210];
 
-  let best = candidates[0];
-  let bestSat = -1;
-  for (const candidate of candidates) {
-    const sat = rgbToHsl(candidate.rgb).s;
-    if (sat > bestSat) {
-      bestSat = sat;
-      best = candidate;
-    }
+  // Prefer real colors: exclude near-white / near-black and unsaturated greys.
+  const colorful = candidates.filter((s) => {
+    const lum = luminanceFromHex(s.hex) ?? 0.5;
+    return lum > 0.05 && lum < 0.92 && rgbToHsl(s.rgb).s >= 12;
+  });
+  const pool = colorful.length > 0 ? colorful : candidates;
+
+  let best = pool[0];
+  for (const candidate of pool) {
+    if (candidate.population > best.population) best = candidate;
   }
   return best.rgb;
 }
