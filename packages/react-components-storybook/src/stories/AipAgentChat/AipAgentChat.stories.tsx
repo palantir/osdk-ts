@@ -184,7 +184,7 @@ const meta: Meta<typeof InteractiveChat> = {
   component: InteractiveChat,
   tags: ["beta"],
   render: (args) => (
-    <div style={{ height: "800px" }}>
+    <div style={{ height: "100vh" }}>
       <InteractiveChat {...args} />
     </div>
   ),
@@ -197,38 +197,115 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** Empty chat with the default welcome state. Type a message to start a simulated conversation. */
-export const Default: Story = {};
+export const Default: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `import { AipAgentChat } from "@osdk/react-components/experimental/aip-agent-chat";
+import { createPlatformClient } from "@osdk/client";
 
-/** Chat pre-populated with an existing conversation. */
+const client = createPlatformClient({ /* ... */ });
+
+<AipAgentChat
+  client={client}
+  availableModels={["gpt-4o", "gpt-4o-mini"]}
+/>`,
+      },
+    },
+  },
+};
+
 export const WithConversation: Story = {
   args: {
     initialMessages: SAMPLE_CONVERSATION,
   },
+  parameters: {
+    docs: {
+      source: {
+        code: `import { AipAgentChat } from "@osdk/react-components/experimental/aip-agent-chat";
+import type { UIMessage } from "@osdk/react-components/experimental/aip-agent-chat";
+
+const initialMessages: UIMessage[] = [
+  { id: "1", role: "user", parts: [{ type: "text", text: "..." }] },
+  { id: "2", role: "assistant", parts: [{ type: "text", text: "..." }] },
+];
+
+<AipAgentChat
+  client={client}
+  availableModels={["gpt-4o", "gpt-4o-mini"]}
+  initialMessages={initialMessages}
+/>`,
+      },
+    },
+  },
 };
 
-/** Chat displaying an error banner with a dismiss button. */
 export const WithError: Story = {
   args: {
     simulateError: true,
     initialMessages: SAMPLE_CONVERSATION.slice(0, 2),
   },
+  parameters: {
+    docs: {
+      source: {
+        code: `import { AipAgentChat } from "@osdk/react-components/experimental/aip-agent-chat";
+
+// Errors from the underlying LMS stream surface via onError and render
+// as a dismissible banner above the composer.
+<AipAgentChat
+  client={client}
+  availableModels={["gpt-4o", "gpt-4o-mini"]}
+  onError={(error) => console.error(error)}
+/>`,
+      },
+    },
+  },
 };
 
-/** Custom placeholder text in the composer. */
 export const CustomPlaceholder: Story = {
   args: {
     placeholder: "Ask me anything about your data...",
   },
+  parameters: {
+    docs: {
+      source: {
+        code: `import { AipAgentChat } from "@osdk/react-components/experimental/aip-agent-chat";
+
+<AipAgentChat
+  client={client}
+  availableModels={["gpt-4o", "gpt-4o-mini"]}
+  placeholder="Ask me anything about your data..."
+/>`,
+      },
+    },
+  },
 };
 
-/**
- * Chat with the object-type context multi-select rendered in the composer
- * footer inline with the Send button. Pick one or more object types to load
- * their objects as context.
- */
-export const WithObjectContextPicker: Story = {
+export const WithContextItems: Story = {
   args: {
     enableContextPicker: true,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `import { AipAgentChat } from "@osdk/react-components/experimental/aip-agent-chat";
+import { Employee, Office, Project } from "@my-app/osdk";
+
+// Selecting an object type in the picker lazily loads its objects and
+// appends a serialized snapshot to the system prompt.
+<AipAgentChat
+  client={client}
+  availableModels={["gpt-4o", "gpt-4o-mini"]}
+  contextItems={[
+    { type: "objectType", objectType: Employee },
+    { type: "objectType", objectType: Office },
+    { type: "objectType", objectType: Project },
+  ]}
+  onSelectedContextItemsChanged={(items) => {
+    console.log("selected", items);
+  }}
+/>`,
+      },
+    },
   },
 };
