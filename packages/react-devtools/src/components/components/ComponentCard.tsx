@@ -21,8 +21,9 @@ import type { MonitorStore } from "../../store/MonitorStore.js";
 import type { UnusedProperty, WastedRender } from "../../types/index.js";
 import type { ComponentHookBinding } from "../../utils/ComponentQueryRegistry.js";
 import { resolveComponentName } from "../resolveComponentName.js";
-import styles from "./ComponentsPanel.module.scss";
 import { HookRow } from "./HookRow.js";
+
+import styles from "./ComponentsPanel.module.scss";
 
 interface ComponentCardProps {
   componentId: string;
@@ -55,80 +56,71 @@ export const ComponentCard: React.FC<ComponentCardProps> = ({
 
   return (
     <div className={styles.componentCard}>
-      <div
-        className={styles.cardHeader}
-        onClick={() => setExpanded(!expanded)}
-      >
+      <div className={styles.cardHeader} onClick={() => setExpanded(!expanded)}>
         <div className={styles.cardHeaderLeft}>
           <Icon icon={expanded ? "chevron-down" : "chevron-right"} size={14} />
           <span className={styles.componentName}>{componentName}</span>
         </div>
         <div className={styles.cardHeaderRight}>
           <Tooltip content={`${bindings.length} OSDK hooks`}>
-            <Tag minimal intent="primary">{bindings.length}</Tag>
+            <Tag minimal intent="primary">
+              {bindings.length}
+            </Tag>
           </Tooltip>
-          {wasted !== undefined
-            ? (
-              <Tooltip content={`${wasted.count} renders changed no read property`}>
-                <Tag minimal intent="warning" icon="refresh">
-                  {wasted.count} wasted
-                </Tag>
-              </Tooltip>
-            )
-            : null}
-          {overFetch.length > 0
-            ? (
-              <Tooltip content={`${overFetch.length} fetched properties go mostly unused`}>
-                <Tag minimal intent="warning" icon="download">
-                  over-fetch {overFetch.length}
-                </Tag>
-              </Tooltip>
-            )
-            : null}
-          {totalRenders > 0
-            ? (
-              <Tooltip content={`${totalRenders} total renders`}>
-                <span className={styles.renders}>
-                  <Icon icon="time" size={10} /> {totalRenders}
-                </span>
-              </Tooltip>
-            )
-            : null}
+          {wasted !== undefined ? (
+            <Tooltip
+              content={`${wasted.count} renders changed no read property`}
+            >
+              <Tag minimal intent="warning" icon="refresh">
+                {wasted.count} wasted
+              </Tag>
+            </Tooltip>
+          ) : null}
+          {overFetch.length > 0 ? (
+            <Tooltip
+              content={`${overFetch.length} fetched properties go mostly unused`}
+            >
+              <Tag minimal intent="warning" icon="download">
+                over-fetch {overFetch.length}
+              </Tag>
+            </Tooltip>
+          ) : null}
+          {totalRenders > 0 ? (
+            <Tooltip content={`${totalRenders} total renders`}>
+              <span className={styles.renders}>
+                <Icon icon="time" size={10} /> {totalRenders}
+              </span>
+            </Tooltip>
+          ) : null}
         </div>
       </div>
 
-      {expanded
-        ? (
-          <div className={styles.cardBody}>
-            {bindings.map((binding, index) => (
-              <HookRow
-                key={`${binding.subscriptionId}-${index}`}
-                binding={binding}
-                monitorStore={monitorStore}
-              />
-            ))}
-            {overFetch.length > 0
-              ? (
-                <div className={styles.overFetch}>
-                  <div className={styles.overFetchTitle}>
-                    Mostly-unused properties
-                  </div>
-                  {overFetch.map((prop) => (
-                    <div key={prop.propertyName} className={styles.overFetchRow}>
-                      <span className={styles.usageName}>
-                        {prop.propertyName}
-                      </span>
-                      <span className={styles.overFetchMeta}>
-                        read in {prop.accessCount}/{prop.totalRenders} renders
-                      </span>
-                    </div>
-                  ))}
+      {expanded ? (
+        <div className={styles.cardBody}>
+          {bindings.map((binding, index) => (
+            <HookRow
+              key={`${binding.subscriptionId}-${index}`}
+              binding={binding}
+              monitorStore={monitorStore}
+            />
+          ))}
+          {overFetch.length > 0 ? (
+            <div className={styles.overFetch}>
+              <div className={styles.overFetchTitle}>
+                Mostly-unused properties
+              </div>
+              {overFetch.map((prop) => (
+                <div key={prop.propertyName} className={styles.overFetchRow}>
+                  <span className={styles.usageName}>{prop.propertyName}</span>
+                  <span className={styles.overFetchMeta}>
+                    read in {prop.accessCount}/{prop.totalRenders} renders
+                  </span>
                 </div>
-              )
-              : null}
-          </div>
-        )
-        : null}
+              ))}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   );
 };

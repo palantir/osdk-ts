@@ -25,8 +25,9 @@ import React, {
 import type { DevToolsPanelProps } from "../../plugins/types.js";
 import { resolveComponentName } from "../resolveComponentName.js";
 import { ComponentCard } from "./ComponentCard.js";
-import styles from "./ComponentsPanel.module.scss";
 import { useComponentInsights } from "./useComponentInsights.js";
+
+import styles from "./ComponentsPanel.module.scss";
 
 /**
  * The component inspector: every mounted OSDK component, what it queries, how
@@ -39,7 +40,7 @@ export const ComponentsPanel: React.FC<DevToolsPanelProps> = ({
   const registry = monitorStore.getComponentRegistry();
   const subscribe = useCallback(
     (cb: () => void) => registry.subscribe(cb),
-    [registry],
+    [registry]
   );
   const getVersion = useCallback(() => registry.getVersion(), [registry]);
   const version = useSyncExternalStore(subscribe, getVersion, getVersion);
@@ -52,7 +53,7 @@ export const ComponentsPanel: React.FC<DevToolsPanelProps> = ({
         componentId,
         bindings,
         name: resolveComponentName(bindings),
-      }),
+      })
     );
     const query = search.trim().toLowerCase();
     if (query.length === 0) {
@@ -60,10 +61,10 @@ export const ComponentsPanel: React.FC<DevToolsPanelProps> = ({
     }
     return list.filter(
       (component) =>
-        component.name.toLowerCase().includes(query)
-        || component.bindings.some((binding) =>
+        component.name.toLowerCase().includes(query) ||
+        component.bindings.some((binding) =>
           binding.querySignature.toLowerCase().includes(query)
-        ),
+        )
     );
     // version makes the memo recompute when the registry changes.
   }, [registry, version, search]);
@@ -78,28 +79,26 @@ export const ComponentsPanel: React.FC<DevToolsPanelProps> = ({
           onChange={(event) => setSearch(event.currentTarget.value)}
         />
       </div>
-      {components.length === 0
-        ? (
-          <div className={styles.empty}>
-            {search.length > 0
-              ? "No components match your filter."
-              : "No OSDK components are mounted yet."}
-          </div>
-        )
-        : (
-          <div className={styles.list}>
-            {components.map((component) => (
-              <ComponentCard
-                key={component.componentId}
-                componentId={component.componentId}
-                bindings={component.bindings}
-                monitorStore={monitorStore}
-                wasted={insights.wastedByComponent.get(component.componentId)}
-                unused={insights.unusedByComponent.get(component.componentId)}
-              />
-            ))}
-          </div>
-        )}
+      {components.length === 0 ? (
+        <div className={styles.empty}>
+          {search.length > 0
+            ? "No components match your filter."
+            : "No OSDK components are mounted yet."}
+        </div>
+      ) : (
+        <div className={styles.list}>
+          {components.map((component) => (
+            <ComponentCard
+              key={component.componentId}
+              componentId={component.componentId}
+              bindings={component.bindings}
+              monitorStore={monitorStore}
+              wasted={insights.wastedByComponent.get(component.componentId)}
+              unused={insights.unusedByComponent.get(component.componentId)}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

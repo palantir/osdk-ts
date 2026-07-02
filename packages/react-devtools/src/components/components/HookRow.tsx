@@ -22,6 +22,7 @@ import type { MonitorStore } from "../../store/MonitorStore.js";
 import type { ComponentHookBinding } from "../../utils/ComponentQueryRegistry.js";
 import { formatRelativeTime } from "../../utils/format.js";
 import { formatHookSignature } from "../queryParamsFormat.js";
+
 import styles from "./ComponentsPanel.module.scss";
 
 function getHookIcon(hookType: string): string {
@@ -55,19 +56,24 @@ interface HookStatus {
 function renderStatus(status: HookStatus): React.ReactNode {
   if (status.state === "loading") {
     return (
-      <Tag minimal intent="primary" icon="refresh" className={styles.statusBadge}>
+      <Tag
+        minimal
+        intent="primary"
+        icon="refresh"
+        className={styles.statusBadge}
+      >
         Loading
       </Tag>
     );
   }
-  if (status.state === "success" && status.lastUpdate !== null) {
+  if (status.state === "success" && status.lastUpdate != null) {
     return (
       <Tag minimal intent="success" icon="tick" className={styles.statusBadge}>
         {formatRelativeTime(status.lastUpdate)}
       </Tag>
     );
   }
-  if (status.state === "stale" && status.lastUpdate !== null) {
+  if (status.state === "stale" && status.lastUpdate != null) {
     return (
       <Tag minimal intent="warning" icon="time" className={styles.statusBadge}>
         stale
@@ -116,7 +122,11 @@ export const HookRow: React.FC<HookRowProps> = ({ binding, monitorStore }) => {
   return (
     <div className={styles.hookRow}>
       <Tooltip content={binding.hookType}>
-        <Tag minimal icon={getHookIcon(binding.hookType)} className={styles.hookTag}>
+        <Tag
+          minimal
+          icon={getHookIcon(binding.hookType)}
+          className={styles.hookTag}
+        >
           {binding.hookType}
         </Tag>
       </Tooltip>
@@ -124,35 +134,31 @@ export const HookRow: React.FC<HookRowProps> = ({ binding, monitorStore }) => {
       <Tooltip content={binding.querySignature}>
         <div className={styles.signature}>{formatHookSignature(binding)}</div>
       </Tooltip>
-      {binding.filePath !== undefined
-        ? (
-          <Tooltip content={`${binding.filePath}:${binding.lineNumber ?? ""}`}>
-            <Button
-              variant="minimal"
-              size="small"
-              icon="document-open"
-              className={styles.locationButton}
-              onClick={openLocation}
-              text={`${binding.filePath.split("/").pop()}:${
-                binding.lineNumber ?? ""
-              }`}
-            />
-          </Tooltip>
-        )
-        : null}
-      {binding.renderCount > 0
-        ? (
-          <Tooltip
-            content={`${binding.renderCount} renders, avg ${
-              binding.avgRenderDuration.toFixed(1)
-            }ms`}
-          >
-            <span className={styles.renders}>
-              <Icon icon="refresh" size={10} /> {binding.renderCount}
-            </span>
-          </Tooltip>
-        )
-        : null}
+      {binding.filePath !== undefined ? (
+        <Tooltip content={`${binding.filePath}:${binding.lineNumber ?? ""}`}>
+          <Button
+            variant="minimal"
+            size="small"
+            icon="document-open"
+            className={styles.locationButton}
+            onClick={openLocation}
+            text={`${binding.filePath.split("/").pop()}:${
+              binding.lineNumber ?? ""
+            }`}
+          />
+        </Tooltip>
+      ) : null}
+      {binding.renderCount > 0 ? (
+        <Tooltip
+          content={`${binding.renderCount} renders, avg ${binding.avgRenderDuration.toFixed(
+            1
+          )}ms`}
+        >
+          <span className={styles.renders}>
+            <Icon icon="refresh" size={10} /> {binding.renderCount}
+          </span>
+        </Tooltip>
+      ) : null}
     </div>
   );
 };

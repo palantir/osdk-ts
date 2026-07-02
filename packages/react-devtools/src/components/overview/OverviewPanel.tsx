@@ -18,9 +18,10 @@ import React from "react";
 
 import type { DevToolsPanelProps } from "../../plugins/types.js";
 import { HeadlineMetrics } from "./HeadlineMetrics.js";
-import styles from "./OverviewPanel.module.scss";
 import { TopRecommendations } from "./TopRecommendations.js";
 import { UsageSummary } from "./UsageSummary.js";
+
+import styles from "./OverviewPanel.module.scss";
 
 /**
  * The at-a-glance landing tab: headline metrics, what the app is using, and the

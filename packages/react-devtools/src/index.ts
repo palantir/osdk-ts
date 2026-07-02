@@ -29,9 +29,7 @@ export { OsdkAppErrorBoundary } from "./components/OsdkAppErrorBoundary.js";
 export type { OsdkAppErrorBoundaryProps } from "./components/OsdkAppErrorBoundary.js";
 export { OsdkDevTools } from "./components/OsdkDevTools.js";
 
-export {
-  registerDevToolsPlugin,
-} from "./plugins/registry.js";
+export { registerDevToolsPlugin } from "./plugins/registry.js";
 export type {
   DevToolsPanelComponent,
   DevToolsPanelProps,

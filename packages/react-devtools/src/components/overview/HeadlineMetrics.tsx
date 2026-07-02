@@ -20,6 +20,7 @@ import React from "react";
 import { useCanonicalMetrics } from "../../hooks/useCanonicalMetrics.js";
 import type { Metric } from "../../metrics/canonicalMetrics.js";
 import type { MonitorStore } from "../../store/MonitorStore.js";
+
 import styles from "./OverviewPanel.module.scss";
 
 function formatMetric(m: Metric): string {
@@ -58,7 +59,9 @@ export const HeadlineMetrics: React.FC<HeadlineMetricsProps> = ({
       {stats.map((stat) => (
         <Card key={stat.label} className={styles.statCard}>
           <div
-            className={stat.metric.ready ? styles.statValue : styles.statPending}
+            className={
+              stat.metric.ready ? styles.statValue : styles.statPending
+            }
           >
             {formatMetric(stat.metric)}
           </div>

@@ -18,6 +18,7 @@ import { Icon, Tooltip } from "@blueprintjs/core";
 import React from "react";
 
 import type { Metric } from "../../metrics/canonicalMetrics.js";
+
 import styles from "./PerformancePanel.module.scss";
 
 function formatMetricValue(metric: Metric): string {
@@ -58,9 +59,9 @@ export const MetricStat: React.FC<MetricStatProps> = ({
         </Tooltip>
       </div>
       <div
-        className={metric.ready
-          ? styles.metricStatValue
-          : styles.metricStatPending}
+        className={
+          metric.ready ? styles.metricStatValue : styles.metricStatPending
+        }
       >
         {formatMetricValue(metric)}
       </div>

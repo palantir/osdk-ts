@@ -114,15 +114,15 @@ interface RawOntologyClient {
 }
 
 function getRawOntologyClient(
-  client: ObservableClient,
+  client: ObservableClient
 ): RawOntologyClient | undefined {
   const store = (client as { __experimentalStore?: { client?: unknown } })
     .__experimentalStore;
   const rawClient = store?.client;
   if (
-    rawClient != null
-    && typeof (rawClient as { fetchMetadata?: unknown }).fetchMetadata
-      === "function"
+    rawClient != null &&
+    typeof (rawClient as { fetchMetadata?: unknown }).fetchMetadata ===
+      "function"
   ) {
     return rawClient as RawOntologyClient;
   }

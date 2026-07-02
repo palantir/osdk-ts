@@ -20,8 +20,9 @@ import { useCanonicalMetrics } from "../../hooks/useCanonicalMetrics.js";
 import type { DevToolsPanelProps } from "../../plugins/types.js";
 import { MetricStat } from "./MetricStat.js";
 import { OperationsList } from "./OperationsList.js";
-import styles from "./PerformancePanel.module.scss";
 import { RecommendationsList } from "./RecommendationsList.js";
+
+import styles from "./PerformancePanel.module.scss";
 
 const EXPLAIN = {
   cacheHitRate:

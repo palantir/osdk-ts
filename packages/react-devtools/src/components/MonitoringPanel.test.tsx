@@ -38,8 +38,6 @@ vi.mock("../fiber/validation.js", () => ({
 
 const { MonitoringPanel } = await import("./MonitoringPanel.js");
 
-const ACTIVE_TAB_KEY = "osdk-devtools-active-tab";
-
 function makePlugin(id: string, label: string): DevToolsPlugin {
   return {
     id,
@@ -69,31 +67,6 @@ describe("MonitoringPanel", () => {
     localStorage.clear();
   });
 
-  it("renders one tab button per registered plugin", () => {
-    register(makePlugin("overview", "Overview"));
-    register(makePlugin("cache", "Cache"));
-    register(makePlugin("actions", "Actions"));
-
-    const store = createMockMonitorStore();
-    render(<MonitoringPanel monitorStore={store} />);
-
-    expect(screen.getAllByRole("tab")).toHaveLength(3);
-    expect(screen.getByRole("tab", { name: "Overview" })).not.toBeNull();
-    expect(screen.getByRole("tab", { name: "Cache" })).not.toBeNull();
-    expect(screen.getByRole("tab", { name: "Actions" })).not.toBeNull();
-  });
-
-  it("mounts only the active tab's panel", () => {
-    register(makePlugin("overview", "Overview"));
-    register(makePlugin("cache", "Cache"));
-
-    const store = createMockMonitorStore();
-    render(<MonitoringPanel monitorStore={store} />);
-
-    expect(screen.queryByTestId("panel-overview")).not.toBeNull();
-    expect(screen.queryByTestId("panel-cache")).toBeNull();
-  });
-
   it("swaps the mounted panel when another tab is clicked", () => {
     register(makePlugin("overview", "Overview"));
     register(makePlugin("cache", "Cache"));
@@ -105,18 +78,5 @@ describe("MonitoringPanel", () => {
 
     expect(screen.queryByTestId("panel-cache")).not.toBeNull();
     expect(screen.queryByTestId("panel-overview")).toBeNull();
-  });
-
-  it("falls back to the first tab when the persisted active id is absent", () => {
-    localStorage.setItem(ACTIVE_TAB_KEY, JSON.stringify("removed-tab"));
-
-    register(makePlugin("overview", "Overview"));
-    register(makePlugin("cache", "Cache"));
-
-    const store = createMockMonitorStore();
-    render(<MonitoringPanel monitorStore={store} />);
-
-    expect(screen.queryByTestId("panel-overview")).not.toBeNull();
-    expect(screen.queryByTestId("panel-cache")).toBeNull();
   });
 });

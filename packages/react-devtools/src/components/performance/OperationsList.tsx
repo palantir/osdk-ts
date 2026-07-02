@@ -21,6 +21,7 @@ import { useMetrics } from "../../hooks/useMetrics.js";
 import type { MonitorStore } from "../../store/MonitorStore.js";
 import type { Operation } from "../../types/index.js";
 import { formatTime } from "../../utils/format.js";
+
 import styles from "./PerformancePanel.module.scss";
 
 const MAX_RECENT = 25;
@@ -32,7 +33,10 @@ const CACHE_TYPES = new Set<Operation["type"]>([
   "deduplication",
   "optimistic-update",
 ]);
-const ACTION_TYPES = new Set<Operation["type"]>(["action", "action-validation"]);
+const ACTION_TYPES = new Set<Operation["type"]>([
+  "action",
+  "action-validation",
+]);
 
 type OperationFilter = "all" | "cache" | "actions";
 
@@ -99,25 +103,23 @@ export const OperationsList: React.FC<OperationsListProps> = ({
           </Button>
         </ButtonGroup>
       </div>
-      {operations.length === 0
-        ? <div className={styles.empty}>No recent operations.</div>
-        : (
-          <div className={styles.opList}>
-            {operations.map((op) => (
-              <div key={op.id} className={styles.opRow}>
-                <span className={styles.opType}>{op.type}</span>
-                <span className={styles.opSignature}>{operationLabel(op)}</span>
-                {op.responseTime != null
-                  ? (
-                    <span className={styles.opTime}>
-                      {formatTime(op.responseTime)}
-                    </span>
-                  )
-                  : null}
-              </div>
-            ))}
-          </div>
-        )}
+      {operations.length === 0 ? (
+        <div className={styles.empty}>No recent operations.</div>
+      ) : (
+        <div className={styles.opList}>
+          {operations.map((op) => (
+            <div key={op.id} className={styles.opRow}>
+              <span className={styles.opType}>{op.type}</span>
+              <span className={styles.opSignature}>{operationLabel(op)}</span>
+              {op.responseTime != null ? (
+                <span className={styles.opTime}>
+                  {formatTime(op.responseTime)}
+                </span>
+              ) : null}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

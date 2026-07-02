@@ -18,6 +18,7 @@ import { cleanup, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it } from "vitest";
 
+import type { MonitorStore } from "../../store/MonitorStore.js";
 import type { MetricsSnapshot } from "../../types/index.js";
 import type { ComponentHookBinding } from "../../utils/ComponentQueryRegistry.js";
 import { OverviewPanel } from "./OverviewPanel.js";
@@ -38,9 +39,7 @@ function emptyAggregates(): MetricsSnapshot["aggregates"] {
   } as MetricsSnapshot["aggregates"];
 }
 
-function makeStore(
-  bindings: ComponentHookBinding[],
-): import("../../store/MonitorStore.js").MonitorStore {
+function makeStore(bindings: ComponentHookBinding[]): MonitorStore {
   const snapshot = { aggregates: emptyAggregates() } as MetricsSnapshot;
   const active = new Map<string, ComponentHookBinding[]>();
   if (bindings.length > 0) {
@@ -65,7 +64,7 @@ function makeStore(
       generateRecommendations: () => [],
     }),
   };
-  return stub as unknown as import("../../store/MonitorStore.js").MonitorStore;
+  return stub as unknown as MonitorStore;
 }
 
 afterEach(() => {

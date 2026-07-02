@@ -18,6 +18,7 @@ import React, { useCallback, useMemo, useSyncExternalStore } from "react";
 
 import type { MonitorStore } from "../../store/MonitorStore.js";
 import type { QueryParams } from "../../utils/ComponentQueryRegistry.js";
+
 import styles from "./OverviewPanel.module.scss";
 
 type UsageKind = "Object types" | "Actions" | "Links";
@@ -74,7 +75,7 @@ export const UsageSummary: React.FC<UsageSummaryProps> = ({ monitorStore }) => {
   const registry = monitorStore.getComponentRegistry();
   const subscribe = useCallback(
     (cb: () => void) => registry.subscribe(cb),
-    [registry],
+    [registry]
   );
   const getVersion = useCallback(() => registry.getVersion(), [registry]);
   const version = useSyncExternalStore(subscribe, getVersion, getVersion);
@@ -97,8 +98,8 @@ export const UsageSummary: React.FC<UsageSummaryProps> = ({ monitorStore }) => {
       const names = byKind.get(kind);
       const entries: UsageEntry[] = names
         ? [...names.entries()]
-          .map(([name, count]) => ({ name, count }))
-          .sort((a, b) => b.count - a.count)
+            .map(([name, count]) => ({ name, count }))
+            .sort((a, b) => b.count - a.count)
         : [];
       return { kind, entries };
     }).filter((group) => group.entries.length > 0);
@@ -109,9 +110,7 @@ export const UsageSummary: React.FC<UsageSummaryProps> = ({ monitorStore }) => {
     return (
       <div className={styles.section}>
         <div className={styles.sectionTitle}>In use</div>
-        <div className={styles.empty}>
-          No OSDK hooks have rendered yet.
-        </div>
+        <div className={styles.empty}>No OSDK hooks have rendered yet.</div>
       </div>
     );
   }

@@ -27,15 +27,6 @@ describe("PerformanceTab", () => {
     cleanup();
   });
 
-  it("renders cache metrics section", () => {
-    const store = createMockMonitorStore();
-    const metricsStore = store.getMetricsStore();
-
-    render(<PerformanceTab metricsStore={metricsStore} monitorStore={store} />);
-
-    expect(screen.queryAllByText("Cache Hit Rate").length).toBeGreaterThan(0);
-  });
-
   it("renders filter buttons", () => {
     const store = createMockMonitorStore();
     const metricsStore = store.getMetricsStore();

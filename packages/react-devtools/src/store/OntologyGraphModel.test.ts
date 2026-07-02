@@ -80,7 +80,7 @@ function officeMetadata(): ObjectMetadata {
 function registerObjectsHook(
   registry: ComponentQueryRegistry,
   componentId: string,
-  objectType: string,
+  objectType: string
 ): void {
   registry.registerBinding({
     componentId,
@@ -94,7 +94,7 @@ function registerObjectsHook(
 
 function makeDeps(
   registry: ComponentQueryRegistry,
-  metadata: Record<string, ObjectMetadata>,
+  metadata: Record<string, ObjectMetadata>
 ): OntologyGraphModelDeps {
   return {
     getComponentRegistry: () => registry,
@@ -112,7 +112,7 @@ describe("OntologyGraphModel", () => {
     const registry = new ComponentQueryRegistry();
     registerObjectsHook(registry, "c1", "Employee");
     const model = new OntologyGraphModel(
-      makeDeps(registry, { Employee: employeeMetadata() }),
+      makeDeps(registry, { Employee: employeeMetadata() })
     );
 
     model.start();
@@ -138,7 +138,7 @@ describe("OntologyGraphModel", () => {
     const registry = new ComponentQueryRegistry();
     registerObjectsHook(registry, "c1", "Employee");
     const model = new OntologyGraphModel(
-      makeDeps(registry, { Employee: employeeMetadata() }),
+      makeDeps(registry, { Employee: employeeMetadata() })
     );
 
     model.start();
@@ -158,7 +158,7 @@ describe("OntologyGraphModel", () => {
       makeDeps(registry, {
         Employee: employeeMetadata(),
         Office: officeMetadata(),
-      }),
+      })
     );
 
     model.start();
@@ -182,14 +182,16 @@ describe("OntologyGraphModel", () => {
     await vi.waitFor(() => {
       expect(model.getType("Missing")?.loadState).toBe("error");
     });
-    expect(model.getType("Missing")?.error).toContain("no metadata for Missing");
+    expect(model.getType("Missing")?.error).toContain(
+      "no metadata for Missing"
+    );
   });
 
   it("notifies subscribers and bumps version as types load", async () => {
     const registry = new ComponentQueryRegistry();
     registerObjectsHook(registry, "c1", "Employee");
     const model = new OntologyGraphModel(
-      makeDeps(registry, { Employee: employeeMetadata() }),
+      makeDeps(registry, { Employee: employeeMetadata() })
     );
 
     const listener = vi.fn();

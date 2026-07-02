@@ -81,6 +81,18 @@ const config: StorybookConfig = {
         "@docs": new URL("../../react-components/docs", import.meta.url)
           .pathname,
         "@rc-root": new URL("../../react-components", import.meta.url).pathname,
+        // Resolve the devtools package to its built output so the runtime CSS
+        // injector (build/esm/styles.js, produced by scripts/build-css.mjs)
+        // loads — src/styles.ts is only a placeholder. The "/advanced" entry
+        // must precede the bare one so vite matches it exactly.
+        "@osdk/react-devtools/advanced": new URL(
+          "../../react-devtools/build/esm/public/advanced.js",
+          import.meta.url,
+        ).pathname,
+        "@osdk/react-devtools": new URL(
+          "../../react-devtools/build/esm/index.js",
+          import.meta.url,
+        ).pathname,
         // Polyfill Node.js modules for browser
         // This is necessary because MSW (Mock Service Worker) and other dependencies
         // use Node.js built-in modules like crypto.randomUUID() which aren't available

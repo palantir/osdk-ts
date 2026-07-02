@@ -23,6 +23,7 @@ import type {
   RecommendationLevel,
 } from "../../utils/PerformanceRecommendationEngine.js";
 import { CopyPromptButton } from "../CopyPromptButton.js";
+
 import styles from "./OverviewPanel.module.scss";
 
 const POLL_MS = 2000;
@@ -52,7 +53,7 @@ function getState(store: MonitorStore): RecommendationsState {
 
 async function refresh(
   store: MonitorStore,
-  state: RecommendationsState,
+  state: RecommendationsState
 ): Promise<void> {
   try {
     const snapshot = await store.getCacheSnapshot();
@@ -83,7 +84,7 @@ function useRecommendations(monitorStore: MonitorStore): Recommendation[] {
         void refresh(monitorStore, state);
         state.timer = setInterval(
           () => void refresh(monitorStore, state),
-          POLL_MS,
+          POLL_MS
         );
       }
       return () => {
@@ -95,11 +96,11 @@ function useRecommendations(monitorStore: MonitorStore): Recommendation[] {
         }
       };
     },
-    [monitorStore],
+    [monitorStore]
   );
   const getSnapshot = useCallback(
     () => getState(monitorStore).recommendations,
-    [monitorStore],
+    [monitorStore]
   );
   return useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 }
@@ -139,32 +140,30 @@ export const TopRecommendations: React.FC<TopRecommendationsProps> = ({
     <div className={styles.section}>
       <div className={styles.recHeader}>
         <span className={styles.sectionTitle}>Top recommendations</span>
-        {recommendations.length > 0
-          ? (
-            <CopyPromptButton
-              recommendations={recommendations}
-              label="Copy all"
-            />
-          )
-          : null}
+        {recommendations.length > 0 ? (
+          <CopyPromptButton
+            recommendations={recommendations}
+            label="Copy all"
+          />
+        ) : null}
       </div>
-      {top.length === 0
-        ? <div className={styles.empty}>No recommendations right now.</div>
-        : (
-          top.map((rec) => (
-            <Callout
-              key={rec.id}
-              className={styles.recItem}
-              intent={levelToIntent(rec.level)}
-              title={rec.title}
-            >
-              <div className={styles.recBody}>{rec.description}</div>
-              <div className={styles.recActions}>
-                <CopyPromptButton recommendation={rec} />
-              </div>
-            </Callout>
-          ))
-        )}
+      {top.length === 0 ? (
+        <div className={styles.empty}>No recommendations right now.</div>
+      ) : (
+        top.map((rec) => (
+          <Callout
+            key={rec.id}
+            className={styles.recItem}
+            intent={levelToIntent(rec.level)}
+            title={rec.title}
+          >
+            <div className={styles.recBody}>{rec.description}</div>
+            <div className={styles.recActions}>
+              <CopyPromptButton recommendation={rec} />
+            </div>
+          </Callout>
+        ))
+      )}
     </div>
   );
 };

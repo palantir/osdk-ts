@@ -31,7 +31,7 @@ export interface ComponentInsights {
  * the shared polling tick the rest of the inspector already uses.
  */
 export function useComponentInsights(
-  monitorStore: MonitorStore,
+  monitorStore: MonitorStore
 ): ComponentInsights {
   const tick = useSharedTick();
   return useMemo(() => {

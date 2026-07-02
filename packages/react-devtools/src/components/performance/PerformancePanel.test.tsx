@@ -18,6 +18,7 @@ import { cleanup, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it } from "vitest";
 
+import type { MonitorStore } from "../../store/MonitorStore.js";
 import type { MetricsSnapshot } from "../../types/index.js";
 import { PerformancePanel } from "./PerformancePanel.js";
 
@@ -41,7 +42,7 @@ function makeSnapshot(): MetricsSnapshot {
   } as unknown as MetricsSnapshot;
 }
 
-function makeStore(): import("../../store/MonitorStore.js").MonitorStore {
+function makeStore(): MonitorStore {
   const snapshot = makeSnapshot();
   const metricsStore = {
     subscribe: () => () => {},
@@ -61,7 +62,7 @@ function makeStore(): import("../../store/MonitorStore.js").MonitorStore {
       getLastEmission: () => null,
     }),
   };
-  return stub as unknown as import("../../store/MonitorStore.js").MonitorStore;
+  return stub as unknown as MonitorStore;
 }
 
 afterEach(() => {

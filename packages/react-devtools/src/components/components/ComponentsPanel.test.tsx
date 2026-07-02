@@ -18,6 +18,7 @@ import { cleanup, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it } from "vitest";
 
+import type { MonitorStore } from "../../store/MonitorStore.js";
 import type { ComponentHookBinding } from "../../utils/ComponentQueryRegistry.js";
 import { ComponentsPanel } from "./ComponentsPanel.js";
 
@@ -38,9 +39,7 @@ function makeBinding(): ComponentHookBinding {
   } as ComponentHookBinding;
 }
 
-function makeStore(
-  active: Map<string, ComponentHookBinding[]>,
-): import("../../store/MonitorStore.js").MonitorStore {
+function makeStore(active: Map<string, ComponentHookBinding[]>): MonitorStore {
   const stub = {
     getComponentRegistry: () => ({
       subscribe: () => () => {},
@@ -52,7 +51,7 @@ function makeStore(
       getUnusedProperties: () => [],
     }),
   };
-  return stub as unknown as import("../../store/MonitorStore.js").MonitorStore;
+  return stub as unknown as MonitorStore;
 }
 
 afterEach(() => {
@@ -68,9 +67,11 @@ describe("ComponentsPanel", () => {
   });
 
   it("shows an empty state when nothing is mounted", () => {
-    render(<ComponentsPanel monitorStore={makeStore(new Map())} theme="light" />);
+    render(
+      <ComponentsPanel monitorStore={makeStore(new Map())} theme="light" />
+    );
     expect(
-      screen.getByText("No OSDK components are mounted yet."),
+      screen.getByText("No OSDK components are mounted yet.")
     ).not.toBeNull();
   });
 });

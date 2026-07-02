@@ -21,6 +21,7 @@ import { useRecommendations } from "../../hooks/useRecommendations.js";
 import type { MonitorStore } from "../../store/MonitorStore.js";
 import type { RecommendationLevel } from "../../utils/PerformanceRecommendationEngine.js";
 import { CopyPromptButton } from "../CopyPromptButton.js";
+
 import styles from "./PerformancePanel.module.scss";
 
 function levelToIntent(level: RecommendationLevel): Intent {
@@ -57,32 +58,30 @@ export const RecommendationsList: React.FC<RecommendationsListProps> = ({
     <div className={styles.section}>
       <div className={styles.sectionHead}>
         <span className={styles.sectionTitle}>Recommendations</span>
-        {recommendations.length > 0
-          ? (
-            <CopyPromptButton
-              recommendations={recommendations}
-              label="Copy all"
-            />
-          )
-          : null}
+        {recommendations.length > 0 ? (
+          <CopyPromptButton
+            recommendations={recommendations}
+            label="Copy all"
+          />
+        ) : null}
       </div>
-      {recommendations.length === 0
-        ? <div className={styles.empty}>No recommendations right now.</div>
-        : (
-          recommendations.map((rec) => (
-            <Callout
-              key={rec.id}
-              className={styles.recItem}
-              intent={levelToIntent(rec.level)}
-              title={rec.title}
-            >
-              <div className={styles.recBody}>{rec.description}</div>
-              <div className={styles.recActions}>
-                <CopyPromptButton recommendation={rec} />
-              </div>
-            </Callout>
-          ))
-        )}
+      {recommendations.length === 0 ? (
+        <div className={styles.empty}>No recommendations right now.</div>
+      ) : (
+        recommendations.map((rec) => (
+          <Callout
+            key={rec.id}
+            className={styles.recItem}
+            intent={levelToIntent(rec.level)}
+            title={rec.title}
+          >
+            <div className={styles.recBody}>{rec.description}</div>
+            <div className={styles.recActions}>
+              <CopyPromptButton recommendation={rec} />
+            </div>
+          </Callout>
+        ))
+      )}
     </div>
   );
 };
