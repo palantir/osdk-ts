@@ -18,7 +18,10 @@ import { foundryModel } from "@osdk/aip-core";
 import { useChat } from "@osdk/react/experimental/aip";
 import * as React from "react";
 
-import type { AipAgentChatProps } from "./AipAgentChatApi.js";
+import type {
+  AipAgentChatContextItem,
+  AipAgentChatProps,
+} from "./AipAgentChatApi.js";
 import { BaseAipAgentChat } from "./BaseAipAgentChat.js";
 import {
   buildObjectContext,
@@ -29,11 +32,22 @@ import { AipAgentChatContextLoader } from "./components/AipAgentChatContextLoade
 import { AipAgentChatContextPicker } from "./components/AipAgentChatContextPicker.js";
 import { AipAgentChatModelPicker } from "./components/AipAgentChatModelPicker.js";
 
-export type { AipAgentChatProps } from "./AipAgentChatApi.js";
+export type {
+  AipAgentChatContextItem,
+  AipAgentChatObjectTypeContextItem,
+  AipAgentChatProps,
+} from "./AipAgentChatApi.js";
 
 const FALLBACK_MODEL_API_NAME = "gpt-4o";
-const EMPTY_SELECTION: ReadonlyArray<string> = [];
+const EMPTY_SELECTION: ReadonlyArray<AipAgentChatContextItem> = [];
 const EMPTY_LOADED: ReadonlyMap<string, ReadonlyArray<unknown>> = new Map();
+
+function getContextItemId(item: AipAgentChatContextItem): string {
+  switch (item.type) {
+    case "objectType":
+      return item.objectType.apiName;
+  }
+}
 
 /**
  * OSDK-aware chat surface backed by Foundry's Language Model Service.
@@ -48,9 +62,9 @@ export function AipAgentChat({
   availableModels,
   onModelChange,
   system,
-  objectTypes,
-  defaultSelectedObjectTypes,
-  onSelectedObjectTypesChanged,
+  contextItems,
+  defaultSelectedContextItems,
+  onSelectedContextItemsChanged,
   initialMessages,
   className,
   placeholder,
@@ -89,37 +103,43 @@ export function AipAgentChat({
     [client, activeModel]
   );
 
-  // Map api name -> object type definition, plus the list of api names the
-  // picker offers. Both are stable for a given `objectTypes` array.
-  const objectTypeByApiName = React.useMemo(() => {
-    const map = new Map<string, NonNullable<typeof objectTypes>[number]>();
-    for (const objectType of objectTypes ?? []) {
-      map.set(objectType.apiName, objectType);
+  const contextItemById = React.useMemo(() => {
+    const map = new Map<string, AipAgentChatContextItem>();
+    for (const item of contextItems ?? []) {
+      map.set(getContextItemId(item), item);
     }
     return map;
-  }, [objectTypes]);
+  }, [contextItems]);
 
-  const availableObjectTypeApiNames = React.useMemo(
-    () => Array.from(objectTypeByApiName.keys()),
-    [objectTypeByApiName]
+  const availableContextItemIds = React.useMemo(
+    () => Array.from(contextItemById.keys()),
+    [contextItemById]
   );
 
-  // Selection is uncontrolled: seed from `defaultSelectedObjectTypes`,
-  // dropping any api names not present in `objectTypes`.
-  const [selectedObjectTypes, setSelectedObjectTypes] = React.useState<
+  const [selectedContextItemIds, setSelectedContextItemIds] = React.useState<
     ReadonlyArray<string>
   >(() =>
-    (defaultSelectedObjectTypes ?? EMPTY_SELECTION).filter((apiName) =>
-      objectTypeByApiName.has(apiName)
-    )
+    (defaultSelectedContextItems ?? EMPTY_SELECTION)
+      .map(getContextItemId)
+      .filter((id) => contextItemById.has(id))
   );
 
-  const handleSelectedObjectTypesChange = React.useCallback(
-    (next: ReadonlyArray<string>) => {
-      setSelectedObjectTypes(next);
-      onSelectedObjectTypesChanged?.(next);
+  const handleSelectedContextItemsChange = React.useCallback(
+    (nextIds: ReadonlyArray<string>) => {
+      setSelectedContextItemIds(nextIds);
+      if (onSelectedContextItemsChanged == null) {
+        return;
+      }
+      const nextItems: Array<AipAgentChatContextItem> = [];
+      for (const id of nextIds) {
+        const item = contextItemById.get(id);
+        if (item != null) {
+          nextItems.push(item);
+        }
+      }
+      onSelectedContextItemsChanged(nextItems);
     },
-    [onSelectedObjectTypesChanged]
+    [contextItemById, onSelectedContextItemsChanged]
   );
 
   // Objects loaded per selected type, lifted from the per-type loaders.
@@ -137,9 +157,6 @@ export function AipAgentChat({
           next.delete(apiName);
           return next;
         }
-        if (prev.get(apiName) === objects) {
-          return prev;
-        }
         const next = new Map(prev);
         next.set(apiName, objects);
         return next;
@@ -150,14 +167,19 @@ export function AipAgentChat({
 
   const objectContext = React.useMemo(() => {
     const loaded: Array<LoadedObjectContext> = [];
-    for (const apiName of selectedObjectTypes) {
-      const objects = loadedByType.get(apiName);
+    for (const id of selectedContextItemIds) {
+      const item = contextItemById.get(id);
+      if (item?.type !== "objectType") {
+        // TODO: Handle other context item types as they are added
+        continue;
+      }
+      const objects = loadedByType.get(id);
       if (objects != null) {
-        loaded.push({ apiName, objects });
+        loaded.push({ apiName: item.objectType.apiName, objects });
       }
     }
     return buildObjectContext(loaded);
-  }, [selectedObjectTypes, loadedByType]);
+  }, [selectedContextItemIds, contextItemById, loadedByType]);
 
   const augmentedSystem = React.useMemo(
     () => combineSystemPrompt(system, objectContext),
@@ -197,13 +219,13 @@ export function AipAgentChat({
   const isInFlight = status === "submitted" || status === "streaming";
 
   const hasModelPicker = availableModels != null && availableModels.length > 0;
-  const hasContextPicker = availableObjectTypeApiNames.length > 0;
+  const hasContextPicker = availableContextItemIds.length > 0;
 
   const composerActions = hasContextPicker ? (
     <AipAgentChatContextPicker
-      objectTypes={availableObjectTypeApiNames}
-      selected={selectedObjectTypes}
-      onChange={handleSelectedObjectTypesChange}
+      contextItemIds={availableContextItemIds}
+      selected={selectedContextItemIds}
+      onChange={handleSelectedContextItemsChange}
       disabled={isInFlight}
     />
   ) : undefined;
@@ -219,15 +241,15 @@ export function AipAgentChat({
 
   return (
     <>
-      {selectedObjectTypes.map((apiName) => {
-        const objectType = objectTypeByApiName.get(apiName);
-        if (objectType == null) {
+      {selectedContextItemIds.map((id) => {
+        const item = contextItemById.get(id);
+        if (item?.type !== "objectType") {
           return null;
         }
         return (
           <AipAgentChatContextLoader
-            key={apiName}
-            objectType={objectType}
+            key={id}
+            objectType={item.objectType}
             onLoaded={handleObjectsLoaded}
           />
         );

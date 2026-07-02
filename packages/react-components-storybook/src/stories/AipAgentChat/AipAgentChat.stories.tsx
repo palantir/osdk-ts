@@ -53,7 +53,7 @@ const SAMPLE_CONVERSATION: UIMessage[] = [
   ),
 ];
 
-const SAMPLE_OBJECT_TYPES = ["Employee", "Office", "Project"];
+const SAMPLE_CONTEXT_ITEM_IDS = ["Employee", "Office", "Project"];
 const SAMPLE_MODELS = ["gpt-4o", "gpt-4o-mini"];
 
 function noopModelChange(): void {}
@@ -95,7 +95,7 @@ function InteractiveChat({
       ? new Error("Connection timed out. Please try again.")
       : undefined
   );
-  const [selectedObjectTypes, setSelectedObjectTypes] = React.useState<
+  const [selectedContextItemIds, setSelectedContextItemIds] = React.useState<
     ReadonlyArray<string>
   >([]);
   const abortRef = React.useRef(false);
@@ -163,9 +163,9 @@ function InteractiveChat({
       composerActions={
         enableContextPicker ? (
           <AipAgentChatContextPicker
-            objectTypes={SAMPLE_OBJECT_TYPES}
-            selected={selectedObjectTypes}
-            onChange={setSelectedObjectTypes}
+            contextItemIds={SAMPLE_CONTEXT_ITEM_IDS}
+            selected={selectedContextItemIds}
+            onChange={setSelectedContextItemIds}
           />
         ) : undefined
       }

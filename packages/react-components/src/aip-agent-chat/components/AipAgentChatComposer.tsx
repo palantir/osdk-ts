@@ -17,7 +17,9 @@
 import { Input } from "@base-ui/react/input";
 import classNames from "classnames";
 import * as React from "react";
+
 import { ActionButton } from "../../base-components/action-button/ActionButton.js";
+
 import styles from "../AipAgentChat.module.css";
 
 export interface AipAgentChatComposerProps {
@@ -89,7 +91,7 @@ export function AipAgentChatComposer({
         }
       }
     },
-    [handleSend, isInFlight],
+    [handleSend, isInFlight]
   );
 
   // Attach the keydown handler in the `render` prop so it can be typed against
@@ -98,7 +100,7 @@ export function AipAgentChatComposer({
     (props: React.ComponentPropsWithRef<"textarea">) => (
       <textarea {...props} onKeyDown={handleKeyDown} rows={3} />
     ),
-    [handleKeyDown],
+    [handleKeyDown]
   );
 
   return (
@@ -120,22 +122,20 @@ export function AipAgentChatComposer({
             <div className={styles.inputActionsLeft}>{actionsLeft}</div>
           )}
           <div className={styles.inputActionsEnd}>
-            {isInFlight && onStop != null
-              ? (
-                <ActionButton onClick={onStop} type="button">
-                  Stop
-                </ActionButton>
-              )
-              : (
-                <ActionButton
-                  disabled={!canSend}
-                  onClick={handleSend}
-                  type="button"
-                  variant="primary"
-                >
-                  Send
-                </ActionButton>
-              )}
+            {isInFlight && onStop != null ? (
+              <ActionButton onClick={onStop} type="button">
+                Stop
+              </ActionButton>
+            ) : (
+              <ActionButton
+                disabled={!canSend}
+                onClick={handleSend}
+                type="button"
+                variant="primary"
+              >
+                Send
+              </ActionButton>
+            )}
           </div>
         </div>
       </div>

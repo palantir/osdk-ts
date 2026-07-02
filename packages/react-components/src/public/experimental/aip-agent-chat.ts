@@ -18,7 +18,11 @@
 // This component uses platformClient, maybe we want to add userAgent header to the platformClient instead
 export { AipAgentChat } from "../../aip-agent-chat/AipAgentChat.js";
 
-export type { AipAgentChatProps } from "../../aip-agent-chat/AipAgentChatApi.js";
+export type {
+  AipAgentChatContextItem,
+  AipAgentChatObjectTypeContextItem,
+  AipAgentChatProps,
+} from "../../aip-agent-chat/AipAgentChatApi.js";
 
 export { BaseAipAgentChat } from "../../aip-agent-chat/BaseAipAgentChat.js";
 export type { BaseAipAgentChatProps } from "../../aip-agent-chat/BaseAipAgentChat.js";

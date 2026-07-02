@@ -32,7 +32,7 @@ export interface LoadedObjectContext {
  * prompt untouched.
  */
 export function buildObjectContext(
-  loaded: ReadonlyArray<LoadedObjectContext>,
+  loaded: ReadonlyArray<LoadedObjectContext>
 ): string {
   const sections = loaded
     .filter((entry) => entry.objects.length > 0)
@@ -45,12 +45,20 @@ export function buildObjectContext(
         // keeping only the data fields plus the identifiers a model would
         // cite (`$primaryKey`, `$title`).
         serialized = JSON.stringify(entry.objects, stripInternalMeta, 2);
+        // Escape `<` inside the JSON body so an object field value cannot
+        // synthesize a closing `</objects>` tag and break out of the
+        // container. `<` is valid JSON and renders identically to `<`
+        // when the model parses the string, so no fidelity is lost.
+        serialized = serialized.replaceAll("<", "\\u003c");
       } catch {
         serialized = "[]";
       }
-      const count = entry.objects.length;
-      return `## ${entry.apiName} (${count} object${count === 1 ? "" : "s"})\n`
-        + serialized;
+      const apiName = escapeXmlAttribute(entry.apiName);
+      return (
+        `<objects api-name="${apiName}" count="${entry.objects.length}">\n` +
+        serialized +
+        `\n</objects>`
+      );
     });
 
   if (sections.length === 0) {
@@ -58,10 +66,19 @@ export function buildObjectContext(
   }
 
   return [
-    "You have access to the following Foundry objects. Use them as the "
-    + "source of truth when answering questions about this data.",
-    ...sections,
+    "You have access to the following Foundry objects. Use them as the " +
+      "source of truth when answering questions about this data.",
+    `<foundry-objects>\n${sections.join("\n")}\n</foundry-objects>`,
   ].join("\n\n");
+}
+
+/** Escapes the characters that would break out of an XML double-quoted attribute. */
+function escapeXmlAttribute(value: string): string {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
 }
 
 /** Identifiers kept from the `$`-prefixed OSDK metadata when serializing. */
@@ -85,7 +102,7 @@ function stripInternalMeta(key: string, value: unknown): unknown {
  */
 export function combineSystemPrompt(
   base: string | undefined,
-  context: string,
+  context: string
 ): string | undefined {
   if (context.length === 0) {
     return base;

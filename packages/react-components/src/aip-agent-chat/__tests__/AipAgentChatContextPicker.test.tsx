@@ -15,11 +15,11 @@
  */
 
 import { cleanup, render, screen } from "@testing-library/react";
-import * as React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { AipAgentChatContextPicker } from "../components/AipAgentChatContextPicker.js";
 
-const OBJECT_TYPES = ["Employee", "Office"];
+const CONTEXT_ITEM_IDS = ["Employee", "Office"];
 const NONE: ReadonlyArray<string> = [];
 
 describe("AipAgentChatContextPicker", () => {
@@ -28,13 +28,13 @@ describe("AipAgentChatContextPicker", () => {
     vi.clearAllMocks();
   });
 
-  it("renders nothing when there are no object types", () => {
+  it("renders nothing when there are no context items", () => {
     const { container } = render(
       <AipAgentChatContextPicker
-        objectTypes={NONE}
+        contextItemIds={NONE}
         selected={NONE}
         onChange={vi.fn()}
-      />,
+      />
     );
 
     expect(container.firstChild).toBeNull();
@@ -43,36 +43,36 @@ describe("AipAgentChatContextPicker", () => {
   it("shows the 'Add context' placeholder when nothing is selected", () => {
     render(
       <AipAgentChatContextPicker
-        objectTypes={OBJECT_TYPES}
+        contextItemIds={CONTEXT_ITEM_IDS}
         selected={NONE}
         onChange={vi.fn()}
-      />,
+      />
     );
 
     const trigger = screen.getByRole("combobox");
     expect(trigger.textContent).toContain("Add context");
   });
 
-  it("renders the selected object type names in the trigger", () => {
+  it("renders the selected context item ids in the trigger", () => {
     render(
       <AipAgentChatContextPicker
-        objectTypes={OBJECT_TYPES}
+        contextItemIds={CONTEXT_ITEM_IDS}
         selected={["Employee"]}
         onChange={vi.fn()}
-      />,
+      />
     );
 
     const trigger = screen.getByRole("combobox");
     expect(trigger.textContent).toContain("Employee");
   });
 
-  it("renders every selected type when multiple are selected", () => {
+  it("renders every selected item when multiple are selected", () => {
     render(
       <AipAgentChatContextPicker
-        objectTypes={OBJECT_TYPES}
+        contextItemIds={CONTEXT_ITEM_IDS}
         selected={["Employee", "Office"]}
         onChange={vi.fn()}
-      />,
+      />
     );
 
     const trigger = screen.getByRole("combobox");
@@ -83,11 +83,11 @@ describe("AipAgentChatContextPicker", () => {
   it("disables the trigger when disabled", () => {
     render(
       <AipAgentChatContextPicker
-        objectTypes={OBJECT_TYPES}
+        contextItemIds={CONTEXT_ITEM_IDS}
         selected={NONE}
         onChange={vi.fn()}
         disabled={true}
-      />,
+      />
     );
 
     const trigger = screen.getByRole("combobox");

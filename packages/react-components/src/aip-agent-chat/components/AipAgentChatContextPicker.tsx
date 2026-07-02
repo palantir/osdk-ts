@@ -15,17 +15,19 @@
  */
 
 import * as React from "react";
+
 import { DropdownField } from "../../action-form/fields/DropdownField.js";
+
 import styles from "../AipAgentChat.module.css";
 
 export interface AipAgentChatContextPickerProps {
-  /** API names of the object types available to select. */
-  objectTypes: ReadonlyArray<string>;
+  /** Ids of the context items available to select. */
+  contextItemIds: ReadonlyArray<string>;
 
-  /** Currently selected object type API names. */
+  /** Currently selected context item ids. */
   selected: ReadonlyArray<string>;
 
-  /** Fires with the next selection whenever the user toggles a type. */
+  /** Fires with the next selection whenever the user toggles an item. */
   onChange: (next: ReadonlyArray<string>) => void;
 
   /** Disables interaction (e.g. while a request is in flight). */
@@ -34,33 +36,23 @@ export interface AipAgentChatContextPickerProps {
 
 const PLACEHOLDER = "+ Add context";
 
-function identity(apiName: string): string {
-  return apiName;
-}
-
-/**
- * Multi-select dropdown rendered above the composer that lets the user
- * choose which object types to load into the conversation as context.
- * Presentational only — operates on object type API names and reports
- * selection changes upward; the OSDK wrapper handles fetching.
- */
 export function AipAgentChatContextPicker({
-  objectTypes,
+  contextItemIds,
   selected,
   onChange,
   disabled,
 }: AipAgentChatContextPickerProps): React.ReactElement | null {
-  const items = React.useMemo(() => [...objectTypes], [objectTypes]);
+  const items = React.useMemo(() => [...contextItemIds], [contextItemIds]);
   const value = React.useMemo(() => [...selected], [selected]);
 
   const handleChange = React.useCallback(
     (next: Array<string> | null) => {
       onChange(next ?? []);
     },
-    [onChange],
+    [onChange]
   );
 
-  if (objectTypes.length === 0) {
+  if (contextItemIds.length === 0) {
     return null;
   }
 
@@ -72,8 +64,6 @@ export function AipAgentChatContextPicker({
         onChange={handleChange}
         isMultiple={true}
         isSearchable={true}
-        itemToStringLabel={identity}
-        itemToKey={identity}
         placeholder={PLACEHOLDER}
         disabled={disabled}
       />

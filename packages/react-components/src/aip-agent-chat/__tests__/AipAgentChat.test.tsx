@@ -20,7 +20,6 @@ import type { PlatformClient } from "@osdk/client";
 import { useOsdkObjects } from "@osdk/react";
 import { useChat } from "@osdk/react/experimental/aip";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import * as React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { AipAgentChat } from "../AipAgentChat.js";
@@ -50,6 +49,15 @@ const mockUseChat = vi.mocked(useChat);
 
 const EMPLOYEE_TYPE = { type: "object" as const, apiName: "Employee" };
 const OFFICE_TYPE = { type: "object" as const, apiName: "Office" };
+
+const EMPLOYEE_CONTEXT = {
+  type: "objectType" as const,
+  objectType: EMPLOYEE_TYPE,
+};
+const OFFICE_CONTEXT = {
+  type: "objectType" as const,
+  objectType: OFFICE_TYPE,
+};
 
 const MOCK_CLIENT = {} as PlatformClient;
 
@@ -173,14 +181,14 @@ describe("AipAgentChat", () => {
     );
   });
 
-  it("renders the object-type context picker when objectTypes is provided", () => {
+  it("renders the context picker when contextItems is provided", () => {
     mockUseChatDefaults();
 
     render(
       <AipAgentChat
         client={MOCK_CLIENT}
         model="gpt-4o"
-        objectTypes={[EMPLOYEE_TYPE, OFFICE_TYPE]}
+        contextItems={[EMPLOYEE_CONTEXT, OFFICE_CONTEXT]}
       />
     );
 
@@ -188,7 +196,7 @@ describe("AipAgentChat", () => {
     expect(trigger.textContent).toContain("Add context");
   });
 
-  it("does not render the context picker when objectTypes is omitted", () => {
+  it("does not render the context picker when contextItems is omitted", () => {
     mockUseChatDefaults();
 
     render(<AipAgentChat client={MOCK_CLIENT} model="gpt-4o" />);
@@ -196,7 +204,7 @@ describe("AipAgentChat", () => {
     expect(screen.queryByRole("combobox")).toBeNull();
   });
 
-  it("mounts a context loader per selected object type and none for unselected types", () => {
+  it("mounts a context loader per selected object-type item and none for unselected items", () => {
     mockUseChatDefaults();
     mockUseOsdkObjectsData([]);
 
@@ -204,8 +212,8 @@ describe("AipAgentChat", () => {
       <AipAgentChat
         client={MOCK_CLIENT}
         model="gpt-4o"
-        objectTypes={[EMPLOYEE_TYPE, OFFICE_TYPE]}
-        defaultSelectedObjectTypes={["Employee"]}
+        contextItems={[EMPLOYEE_CONTEXT, OFFICE_CONTEXT]}
+        defaultSelectedContextItems={[EMPLOYEE_CONTEXT]}
       />
     );
 
@@ -227,8 +235,8 @@ describe("AipAgentChat", () => {
         client={MOCK_CLIENT}
         model="gpt-4o"
         system="You are helpful."
-        objectTypes={[EMPLOYEE_TYPE]}
-        defaultSelectedObjectTypes={["Employee"]}
+        contextItems={[EMPLOYEE_CONTEXT]}
+        defaultSelectedContextItems={[EMPLOYEE_CONTEXT]}
       />
     );
 
@@ -237,7 +245,7 @@ describe("AipAgentChat", () => {
     const lastCall = mockUseChat.mock.calls.at(-1);
     const system = lastCall?.[0].system;
     expect(system).toContain("You are helpful.");
-    expect(system).toContain("## Employee (1 object)");
+    expect(system).toContain('<objects api-name="Employee" count="1">');
     expect(system).toContain('"$title": "Alice"');
   });
 
@@ -250,7 +258,7 @@ describe("AipAgentChat", () => {
         client={MOCK_CLIENT}
         model="gpt-4o"
         system="You are helpful."
-        objectTypes={[EMPLOYEE_TYPE]}
+        contextItems={[EMPLOYEE_CONTEXT]}
       />
     );
 

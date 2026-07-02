@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import { useOsdkObjects } from "@osdk/react";
+import type {
+  ObjectOrInterfaceDefinition,
+  ObjectTypeDefinition,
+} from "@osdk/api";
+import { useOsdkClient } from "@osdk/react";
 import * as React from "react";
 
 export interface AipAgentChatContextLoaderProps {
@@ -36,27 +39,38 @@ export interface AipAgentChatContextLoaderProps {
   ) => void;
 }
 
-/**
- * Headless loader rendered once per selected object type. Calls
- * `useOsdkObjects` and lifts the fetched objects to its parent.
- * Renders nothing; the parent mounts one of these only while a type
- * is selected, so deselecting a type unmounts its loader and
- * clears its contribution to the prompt.
- */
 export function AipAgentChatContextLoader({
   objectType,
   onLoaded,
 }: AipAgentChatContextLoaderProps): null {
-  const { data } = useOsdkObjects(objectType);
-  const apiName = objectType.apiName;
+  const client = useOsdkClient();
 
   React.useEffect(() => {
-    onLoaded(apiName, data);
-  }, [apiName, data, onLoaded]);
+    let cancelled = false;
 
-  React.useEffect(() => {
-    return () => onLoaded(apiName, undefined);
-  }, [apiName, onLoaded]);
+    // Cast to the object-type overload so TS picks a single overload;
+    // both object and interface object sets expose `asyncIter()` via
+    // `MinimalObjectSet`, so this is safe at runtime.
+    const iterator = client(objectType as ObjectTypeDefinition).asyncIter();
+
+    void (async () => {
+      const data: unknown[] = [];
+      for await (const object of iterator) {
+        if (cancelled) {
+          return;
+        }
+        data.push(object);
+      }
+      if (!cancelled) {
+        onLoaded(objectType.apiName, data);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      onLoaded(objectType.apiName, undefined);
+    };
+  }, [client, objectType, onLoaded]);
 
   return null;
 }

@@ -74,35 +74,49 @@ function MyChat() {
 The component manages model state internally; `onModelChange` is a
 non-controlling listener (analytics, persistence, etc.).
 
-### With object-type context
+### With context items
 
-Let users ground the conversation in their data. Pass `objectTypes`
-(the same OSDK object definitions `ObjectTable` accepts) and a
-multi-select picker appears in the composer footer. When the user
-selects a type, its objects are fetched via `useOsdkObjects` and a
-serialized snapshot is appended to the system prompt, so the model can
-answer questions about that data.
+Let users ground the conversation in their data. Pass `contextItems`
+— each a discriminated `AipAgentChatContextItem` — and a multi-select
+picker appears in the composer footer. When the user selects an item,
+its underlying data is fetched lazily and a serialized snapshot is
+appended to the system prompt, so the model can answer questions
+about that data.
+
+Today only the `objectType` variant is supported. Future variants
+(datasets, saved queries, files, …) will land under the same prop.
 
 ```tsx
 import { Employee, Office } from "./generatedNoCheck2/index.js";
 
+const EMPLOYEE_CONTEXT = { type: "objectType", objectType: Employee } as const;
+const OFFICE_CONTEXT = { type: "objectType", objectType: Office } as const;
+
 <AipAgentChat
   client={platformClient}
-  objectTypes={[Employee, Office]}
-  defaultSelectedObjectTypes={["Employee"]} // optional initial selection
-  onSelectedObjectTypesChanged={(apiNames) => analytics.track({ apiNames })}
+  contextItems={[EMPLOYEE_CONTEXT, OFFICE_CONTEXT]}
+  defaultSelectedContextItems={[EMPLOYEE_CONTEXT]} // optional initial selection
+  onSelectedContextItemsChanged={(items) =>
+    analytics.track({ selected: items.map((item) => item.objectType.apiName) })
+  }
 />;
 ```
 
 Requirements and behavior:
 
-- The app must be wrapped in `OsdkProvider` (same as `ObjectTable`),
-  since `useOsdkObjects` reads the OSDK client from React context. The
-  `client` prop is only the `PlatformClient` used for the LMS.
-- Fetching is lazy — nothing loads until a type is selected, and
-  deselecting a type drops it from the prompt.
-- Selection is uncontrolled: seed it with `defaultSelectedObjectTypes`
-  and observe changes via `onSelectedObjectTypesChanged`.
+- `defaultSelectedContextItems` and `onSelectedContextItemsChanged` both
+  traffic in the same `AipAgentChatContextItem` values you pass to
+  `contextItems`. Seeded items whose identifier isn't present in
+  `contextItems` at mount are dropped. Identity is derived per-variant:
+  for the `objectType` variant it's `objectType.apiName`.
+- The `objectType` variant requires the app to be wrapped in
+  `OsdkProvider` (same as `ObjectTable`), since `useOsdkObjects` reads
+  the OSDK client from React context. The `client` prop is only the
+  `PlatformClient` used for the LMS.
+- Fetching is lazy — nothing loads until an item is selected, and
+  deselecting an item drops it from the prompt.
+- Selection is uncontrolled: seed it with `defaultSelectedContextItems`
+  and observe changes via `onSelectedContextItemsChanged`.
 
 ### Custom render
 
@@ -222,11 +236,10 @@ optional props:
 
 - `availableModels` + `onModelChange` — render a model picker in the
   composer footer.
-- `objectTypes` + `defaultSelectedObjectTypes` +
-  `onSelectedObjectTypesChanged` — render an object-type context picker
-  in the composer footer; selected types are fetched via
-  `useOsdkObjects` and folded into the system prompt. Requires
-  `OsdkProvider`.
+- `contextItems` + `defaultSelectedContextItems` +
+  `onSelectedContextItemsChanged` — render a context picker in the
+  composer footer; selected items are fetched lazily and folded into
+  the system prompt. The `objectType` variant requires `OsdkProvider`.
 - `system` — system prompt prepended to every request.
 - `initialMessages` — seed conversation snapshot.
 - `enableAutoScroll` (default `true`) — auto-pin to the bottom of the

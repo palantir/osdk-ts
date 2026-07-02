@@ -18,11 +18,13 @@ import type { UIMessage } from "@osdk/aip-core";
 import type { ChatStatus } from "@osdk/react/experimental/aip";
 import classNames from "classnames";
 import * as React from "react";
+
 import { ActionButton } from "../base-components/action-button/ActionButton.js";
 import { Callout } from "../base-components/callout/Callout.js";
-import styles from "./AipAgentChat.module.css";
 import { AipAgentChatComposer } from "./components/AipAgentChatComposer.js";
 import { AipAgentChatMessageList } from "./components/AipAgentChatMessageList.js";
+
+import styles from "./AipAgentChat.module.css";
 
 export interface BaseAipAgentChatProps {
   /**
@@ -97,59 +99,58 @@ export interface BaseAipAgentChatProps {
  * and error display internally; the consumer provides the current state
  * and callbacks for sending messages and managing state.
  */
-export const BaseAipAgentChat: React.NamedExoticComponent<
-  BaseAipAgentChatProps
-> = React.memo(function BaseAipAgentChat({
-  messages,
-  status,
-  error,
-  onSendMessage,
-  onStop,
-  onClearError,
-  composerActions,
-  aboveComposer,
-  belowComposer,
-  className,
-  placeholder = "Type a message...",
-  enableAutoScroll = true,
-  renderEmptyState,
-  renderMessage,
-}) {
-  const isInFlight = status === "submitted" || status === "streaming";
+export const BaseAipAgentChat: React.NamedExoticComponent<BaseAipAgentChatProps> =
+  React.memo(function BaseAipAgentChat({
+    messages,
+    status,
+    error,
+    onSendMessage,
+    onStop,
+    onClearError,
+    composerActions,
+    aboveComposer,
+    belowComposer,
+    className,
+    placeholder = "Type a message...",
+    enableAutoScroll = true,
+    renderEmptyState,
+    renderMessage,
+  }) {
+    const isInFlight = status === "submitted" || status === "streaming";
 
-  return (
-    <div className={classNames(styles.chat, className)}>
-      {error != null && (
-        <Callout
-          actions={
-            <ActionButton onClick={onClearError} type="button">
-              Dismiss
-            </ActionButton>
-          }
-          intent="error"
-          title="Something went wrong"
-        >
-          {error.message.length > 0
-            ? error.message
-            : "An unknown error occurred. Try again, or dismiss to keep the conversation."}
-        </Callout>
-      )}
-      <AipAgentChatMessageList
-        enableAutoScroll={enableAutoScroll}
-        isStreaming={isInFlight}
-        messages={messages}
-        renderEmptyState={renderEmptyState}
-        renderMessage={renderMessage}
-      />
-      <AipAgentChatComposer
-        actionsLeft={composerActions}
-        aboveComposer={aboveComposer}
-        belowComposer={belowComposer}
-        isInFlight={isInFlight}
-        onSendMessage={onSendMessage}
-        onStop={onStop}
-        placeholder={placeholder}
-      />
-    </div>
-  );
-});
+    return (
+      <div className={classNames(styles.chat, className)}>
+        {error != null && (
+          <Callout
+            actions={
+              <ActionButton onClick={onClearError} type="button">
+                Dismiss
+              </ActionButton>
+            }
+            intent="error"
+            title="Something went wrong"
+          >
+            {error.message.length > 0
+              ? error.message
+              : "An unknown error occurred. Try again, or dismiss to keep the conversation."}
+          </Callout>
+        )}
+        <AipAgentChatMessageList
+          enableAutoScroll={enableAutoScroll}
+          isStreaming={isInFlight}
+          messages={messages}
+          renderEmptyState={renderEmptyState}
+          renderMessage={renderMessage}
+        />
+        <AipAgentChatComposer
+          actionsLeft={composerActions}
+          aboveComposer={aboveComposer}
+          belowComposer={belowComposer}
+          isInFlight={isInFlight}
+          onSendMessage={onSendMessage}
+          onStop={onStop}
+          placeholder={placeholder}
+        />
+      </div>
+    );
+  });
