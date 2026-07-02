@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { DiscoveredComponent } from "../fiber/HookStateInspector.js";
+import type { DiscoveredComponent } from "@osdk/react-inspect";
 
 export interface ComponentHookBinding {
   componentId: string;

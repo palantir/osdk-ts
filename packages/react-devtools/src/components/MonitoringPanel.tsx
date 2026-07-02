@@ -15,6 +15,7 @@
  */
 
 import { Button, Classes, Tooltip } from "@blueprintjs/core";
+import { validateFiberAccess } from "@osdk/react-inspect/fiber";
 import classNames from "classnames";
 import React, { useCallback, useMemo, useRef } from "react";
 import { createPortal } from "react-dom";
@@ -23,7 +24,6 @@ import {
   DegradationNotice,
   useFiberCapabilities,
 } from "../fiber/DegradationNotice.js";
-import { validateFiberAccess } from "../fiber/validation.js";
 import { usePersistedState } from "../hooks/usePersistedState.js";
 import { useDevToolsTabs } from "../plugins/useDevToolsTabs.js";
 import type { MonitorStore } from "../store/MonitorStore.js";

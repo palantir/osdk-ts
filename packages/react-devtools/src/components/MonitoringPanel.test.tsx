@@ -32,9 +32,13 @@ vi.mock("../fiber/DegradationNotice.js", () => ({
   }),
 }));
 
-vi.mock("../fiber/validation.js", () => ({
-  validateFiberAccess: vi.fn(),
-}));
+vi.mock("@osdk/react-inspect/fiber", async (importOriginal) => {
+  const actual = (await importOriginal()) as Record<string, unknown>;
+  return {
+    ...actual,
+    validateFiberAccess: vi.fn(),
+  };
+});
 
 const { MonitoringPanel } = await import("./MonitoringPanel.js");
 

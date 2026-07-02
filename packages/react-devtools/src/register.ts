@@ -15,12 +15,12 @@
  */
 
 import type { ObservableClient } from "@osdk/client/observable";
+import { safelyInstallDevToolsHook } from "@osdk/react-inspect/fiber";
 import { registerDevTools } from "@osdk/react/devtools-registry";
 import React from "react";
 
 import { SafeMonitoringPanel } from "./components/MonitoringPanel.js";
 import { DevToolsContext } from "./DevToolsContext.js";
-import { safelyInstallDevToolsHook } from "./fiber/DevtoolsHook.js";
 import { MonitorStore } from "./store/MonitorStore.js";
 
 const isDev =

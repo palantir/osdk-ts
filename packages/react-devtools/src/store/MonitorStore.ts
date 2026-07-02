@@ -33,10 +33,14 @@ interface ClientConfig {
   logger?: Logger;
   branch?: string;
 }
-import { onCommitFiberRoot } from "../fiber/DevtoolsHook.js";
-import { discoverOsdkComponentsFromRoot } from "../fiber/HookStateInspector.js";
-import type { ClickToInspectSystem } from "../inspector/ClickToInspectSystem.js";
-import { createClickToInspect } from "../inspector/createClickToInspect.js";
+import {
+  type ClickToInspectSystem,
+  ComponentPrimitiveDiscovery,
+  createClickToInspect,
+  discoverOsdkComponentsFromRoot,
+} from "@osdk/react-inspect";
+import { onCommitFiberRoot } from "@osdk/react-inspect/fiber";
+
 import { MockManager } from "../mocking/MockManager.js";
 import { PrototypeOverrideStore } from "../prototyping/PrototypeOverrideStore.js";
 import {
@@ -44,7 +48,6 @@ import {
   type MonitoringConfig,
 } from "../types/index.js";
 import { componentContextCapture } from "../utils/ComponentContextCapture.js";
-import { ComponentPrimitiveDiscovery } from "../utils/ComponentPrimitiveDiscovery.js";
 import { ComponentQueryRegistry } from "../utils/ComponentQueryRegistry.js";
 import { ComputeMonitor } from "../utils/ComputeMonitor.js";
 import { EventTimeline } from "../utils/EventTimeline.js";
@@ -104,10 +107,12 @@ export class MonitorStore {
       undefined,
       this.eventTimeline
     );
-    this.primitiveDiscovery = new ComponentPrimitiveDiscovery(
-      this.componentRegistry
-    );
+    this.primitiveDiscovery = new ComponentPrimitiveDiscovery();
     this.clickToInspect = createClickToInspect({
+      mode: "ontology",
+      banner: {
+        message: "Click on a component to inspect its OSDK hooks",
+      },
       onSelect: (component) => {
         const fiber = component.fiber.deref();
         if (!fiber) {

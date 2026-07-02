@@ -15,15 +15,14 @@
  */
 
 import { Button, Callout, Intent, Tag } from "@blueprintjs/core";
-import React from "react";
-
 import {
   type FiberCapabilities,
   type FiberFeature,
   getCapabilitiesManager,
-} from "./capabilities.js";
-import { onReactDetected } from "./DevtoolsHook.js";
-import { validateFiberAccess } from "./validation.js";
+  onReactDetected,
+  validateFiberAccess,
+} from "@osdk/react-inspect/fiber";
+import React from "react";
 
 const FEATURE_LABELS: Record<FiberFeature, string> = {
   "component-inspection": "Component Inspection",
