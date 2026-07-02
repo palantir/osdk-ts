@@ -43,7 +43,7 @@ export function parseChangelog(content, peerPackageNames) {
       /** @type {Record<string, string>} */
       const peerVersions = {};
       for (const peerName of peerPackageNames) {
-        const escaped = peerName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const escaped = peerName.replaceAll(/[.*+?^${}()|[\]\\]/g, "\\$&");
         const match = block.match(
           new RegExp(`${escaped}@(\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9.]+)?)`)
         );
