@@ -54,6 +54,7 @@ export function baseDefaults(overrides?: {
     valueAssignment("font-weight-bold", "600"),
     valueAssignment("line-height", "1.5"),
     valueAssignment("border-radius", overrides?.radius ?? "4"),
+    valueAssignment("button-border-radius", overrides?.radius ?? "4"),
     valueAssignment("spacing", overrides?.spacing ?? "4"),
     valueAssignment("border-width", "1"),
     valueAssignment(

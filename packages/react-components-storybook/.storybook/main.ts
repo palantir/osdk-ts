@@ -15,8 +15,80 @@
  */
 
 import type { StorybookConfig } from "@storybook/react-vite";
+import type { IncomingMessage, ServerResponse } from "node:http";
+import type { Plugin } from "vite";
 
 const storybookBasePath = process.env.STORYBOOK_BASE_PATH;
+
+/** How long the server-side fetch waits before giving up on a slow site. */
+const BRAND_THEME_FETCH_TIMEOUT_MS = 15_000;
+
+/**
+ * Server-side fetch for the Brand Theme extractor. The addon runs in the
+ * browser, where it can't fetch arbitrary cross-origin pages (CORS) and where
+ * public CORS proxies are often blocked on filtered/corporate networks. This
+ * dev-server endpoint fetches the target URL in Node instead — no CORS, no
+ * third-party proxy — following redirects (so bare-domain → www. is handled)
+ * and returning the raw HTML/CSS. The client detects our marker header to know
+ * it reached this endpoint (a static build has no server, so requests fall back
+ * to public proxies there).
+ */
+async function handleBrandThemeFetch(
+  req: IncomingMessage,
+  res: ServerResponse,
+): Promise<void> {
+  const controller = new AbortController();
+  const timer = setTimeout(
+    () => controller.abort(),
+    BRAND_THEME_FETCH_TIMEOUT_MS,
+  );
+  try {
+    // req.url is the path after the mounted route, e.g. "/?url=https%3A%2F%2F…".
+    const target = new URL(req.url ?? "", "http://localhost").searchParams.get(
+      "url",
+    );
+    if (target == null || !/^https?:\/\//i.test(target)) {
+      res.statusCode = 400;
+      res.end("Missing or invalid url parameter");
+      return;
+    }
+    const upstream = await fetch(target, {
+      redirect: "follow",
+      signal: controller.signal,
+      headers: {
+        // A real desktop-Chrome UA: some sites (e.g. getbootstrap.com) serve a
+        // blocked/minimal page to bot-ish agents, which would make CSS
+        // extraction come up empty and fall back to the screenshot pipeline.
+        "user-agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        accept:
+          "text/html,application/xhtml+xml,application/xml;q=0.9,text/css,*/*;q=0.8",
+      },
+    });
+    const body = await upstream.text();
+    res.statusCode = 200;
+    res.setHeader("content-type", "text/plain; charset=utf-8");
+    res.setHeader("access-control-allow-origin", "*");
+    // Marker + post-redirect URL so the client can (a) confirm it hit this
+    // endpoint and (b) resolve relative stylesheet hrefs correctly.
+    res.setHeader("x-brand-theme-final-url", upstream.url || target);
+    res.end(body);
+  } catch (err) {
+    res.statusCode = 502;
+    res.end(err instanceof Error ? err.message : "Upstream fetch failed");
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+const brandThemeFetchPlugin: Plugin = {
+  name: "brand-theme-extractor-fetch",
+  configureServer(server) {
+    server.middlewares.use("/__brand-theme-fetch", (req, res) => {
+      void handleBrandThemeFetch(req, res);
+    });
+  },
+};
 
 const config: StorybookConfig = {
   stories: ["../src/**/*.stories.@(js|jsx|ts|tsx|mdx)", "../src/**/*.mdx"],
@@ -115,6 +187,9 @@ const config: StorybookConfig = {
         transformMixedEsModules: true,
       },
     };
+
+    // Server-side fetch endpoint for the Brand Theme extractor (dev only).
+    config.plugins = [...(config.plugins ?? []), brandThemeFetchPlugin];
 
     return config;
   },

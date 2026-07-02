@@ -15,8 +15,10 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { styled } from "storybook/theming";
 
+import { extractTokensFromWebsite } from "./css-extractor.js";
 import {
   autoMapFromPalette,
   type ExtractionResult,
@@ -73,16 +75,15 @@ const Chevron = styled.span({
   lineHeight: 1,
 });
 
+// Rendered through a portal to document.body with fixed positioning so it can't
+// be clipped by the addon panel when it's docked in the narrow right sidebar.
 const Menu = styled.div(({ theme }) => ({
-  position: "absolute",
-  top: "calc(100% + 6px)",
-  right: 0,
-  width: 288,
+  position: "fixed",
   background: theme.background.content,
   border: `1px solid ${theme.appBorderColor}`,
   borderRadius: 8,
   boxShadow: "0 6px 18px rgba(0,0,0,0.14)",
-  zIndex: 10,
+  zIndex: 2147483000,
   overflow: "hidden",
 }));
 
@@ -212,23 +213,76 @@ export function GenerateDropdown({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [applied, setApplied] = useState<TokenAssignment[] | null>(null);
+  const [note, setNote] = useState<string | null>(null);
+  const [menuPos, setMenuPos] = useState<
+    { top: number; left: number; width: number } | null
+  >(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!open) return;
     function handleClickOutside(e: MouseEvent) {
-      if (
-        wrapperRef.current &&
-        e.target instanceof Node &&
-        !wrapperRef.current.contains(e.target)
-      ) {
-        setOpen(false);
-      }
+      const target = e.target;
+      if (!(target instanceof Node)) return;
+      // The menu is portaled out of the wrapper, so check it separately.
+      if (wrapperRef.current?.contains(target)) return;
+      if (menuRef.current?.contains(target)) return;
+      setOpen(false);
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [open]);
+
+  // Position the portaled menu under the trigger, right-aligned to it but
+  // clamped to the viewport so it's never clipped or pushed off-screen.
+  useEffect(() => {
+    if (!open) {
+      setMenuPos(null);
+      return;
+    }
+    function place() {
+      const trigger = triggerRef.current;
+      if (!trigger) return;
+      const rect = trigger.getBoundingClientRect();
+      const width = Math.min(288, window.innerWidth - 16);
+      const left = Math.max(
+        8,
+        Math.min(rect.right - width, window.innerWidth - width - 8)
+      );
+      setMenuPos({ top: rect.bottom + 6, left, width });
+    }
+    place();
+    // Close on scroll (of anything but the menu's own content) rather than
+    // trying to track the trigger — repositioning a fixed popover while the
+    // panel scrolls looks like it's floating away.
+    function handleScroll(e: Event) {
+      if (
+        menuRef.current
+        && e.target instanceof Node
+        && menuRef.current.contains(e.target)
+      ) {
+        return;
+      }
+      setOpen(false);
+    }
+    window.addEventListener("resize", place);
+    window.addEventListener("scroll", handleScroll, true);
+    return () => {
+      window.removeEventListener("resize", place);
+      window.removeEventListener("scroll", handleScroll, true);
+    };
+  }, [open]);
+
+  const finish = useCallback(
+    (assignments: TokenAssignment[], mode: ThemeColorMode) => {
+      setApplied(assignments);
+      onApply(assignments, mode);
+    },
+    [onApply]
+  );
 
   const runExtraction = useCallback(
     async (extract: () => Promise<ExtractionResult>) => {
@@ -246,16 +300,15 @@ export function GenerateDropdown({
         )
           ? "dark"
           : "light";
-        const assignments = autoMapFromPalette(palette, nextMode);
-        setApplied(assignments);
-        onApply(assignments, nextMode);
+        finish(autoMapFromPalette(palette, nextMode), nextMode);
+        setNote("Colors extracted from image; other tokens use defaults.");
       } catch {
         setError("Couldn't read colors from that source.");
       } finally {
         setLoading(false);
       }
     },
-    [onApply]
+    [finish]
   );
 
   const handleFile = useCallback(
@@ -269,13 +322,62 @@ export function GenerateDropdown({
   );
 
   const handleWebsite = useCallback(() => {
-    if (!url.trim()) return;
-    void runExtraction(() => extractPaletteFromWebsite(url.trim()));
-  }, [runExtraction, url]);
+    const target = url.trim();
+    if (!target) return;
+    setLoading(true);
+    setError(null);
+    void (async () => {
+      try {
+        // Prefer real design tokens scraped from the site's own CSS.
+        let extracted: {
+          assignments: TokenAssignment[];
+          mode: ThemeColorMode;
+          note: string;
+        } | null = null;
+        try {
+          const css = await extractTokensFromWebsite(target);
+          if (css.directMappedCount >= 1) {
+            extracted = {
+              assignments: css.assignments,
+              mode: css.colorMode,
+              note: `Mapped ${css.directMappedCount} real tokens from the site's CSS`
+                + `${css.fetchSource === "proxy" ? " (via proxy)" : ""}.`,
+            };
+          }
+        } catch {
+          // CSS scrape failed (proxy/network) — fall through to the screenshot.
+        }
+        // Fall back to the screenshot + node-vibrant pipeline when the CSS
+        // scrape found nothing usable.
+        if (!extracted) {
+          const { palette, averageLuminance } =
+            await extractPaletteFromWebsite(target);
+          const mode: ThemeColorMode = isPredominantlyDark(
+            palette,
+            averageLuminance
+          )
+            ? "dark"
+            : "light";
+          extracted = {
+            assignments: autoMapFromPalette(palette, mode),
+            mode,
+            note: "Couldn't read the site's CSS — used screenshot colors only.",
+          };
+        }
+        finish(extracted.assignments, extracted.mode);
+        setNote(extracted.note);
+      } catch {
+        setError("Couldn't read colors from that source.");
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [finish, url]);
 
   return (
     <Wrapper ref={wrapperRef}>
       <TriggerButton
+        ref={triggerRef}
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-haspopup="dialog"
@@ -283,8 +385,17 @@ export function GenerateDropdown({
         Generate
         <Chevron>{open ? "▴" : "▾"}</Chevron>
       </TriggerButton>
-      {open && (
-        <Menu role="dialog" aria-label="Generate theme source">
+      {open && menuPos && createPortal(
+        <Menu
+          ref={menuRef}
+          role="dialog"
+          aria-label="Generate theme source"
+          style={{
+            top: menuPos.top,
+            left: menuPos.left,
+            width: menuPos.width,
+          }}
+        >
           <Body>
             <Segmented role="group" aria-label="Source type">
               <Segment
@@ -355,11 +466,13 @@ export function GenerateDropdown({
                     );
                   })}
                 </Preview>
+                {note && <Hint>{note}</Hint>}
                 <Hint>Applied — adjust any token below to refine.</Hint>
               </>
             )}
           </Body>
-        </Menu>
+        </Menu>,
+        document.body
       )}
     </Wrapper>
   );

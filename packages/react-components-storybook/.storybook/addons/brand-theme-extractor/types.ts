@@ -66,6 +66,7 @@ export type TypographyTokenRole =
 
 export type SurfaceTokenRole =
   | "border-radius"
+  | "button-border-radius"
   | "spacing"
   | "border-width"
   | "shadow";

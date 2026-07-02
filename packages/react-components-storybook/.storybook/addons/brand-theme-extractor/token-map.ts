@@ -440,6 +440,15 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     ],
   },
   {
+    role: "button-border-radius",
+    label: "Button Radius",
+    category: "surface",
+    inputType: "px",
+    designMdKey: "button",
+    designMdSection: "rounded",
+    cssProperties: ["--osdk-button-border-radius"],
+  },
+  {
     role: "spacing",
     label: "Spacing",
     category: "surface",
