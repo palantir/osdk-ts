@@ -345,7 +345,6 @@ export default defineConfig({
       files: ["**/*.js", "**/*.mjs", "**/*.cjs"],
       rules: {
         "jsdoc/require-property-description": "off",
-        "unicorn/prefer-node-protocol": "off",
         "unicorn/prefer-import-meta-properties": "off",
         "preserve-caught-error": "off",
         "no-throw-literal": "off",
