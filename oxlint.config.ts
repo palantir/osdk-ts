@@ -294,6 +294,12 @@ export default defineConfig({
     // breaks typechecking at the use site (e.g. spreading the result into a
     // non-optional object type). Leave index access as authored.
     "unicorn/prefer-at": "off",
+    // The rule's suggested replacements (`import.meta.dirname` / `filename`)
+    // require Node >=20.11, but the repo still supports Node 18 (engines
+    // >=18.19.0, and the CI test matrix runs transpile/codegen on Node 18).
+    // Enabling it would nudge contributors toward an API that throws on our
+    // supported floor. Keep it off until Node 18 is dropped, then re-enable.
+    "unicorn/prefer-import-meta-properties": "off",
   },
 
   ignorePatterns: [
