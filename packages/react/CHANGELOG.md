@@ -1,5 +1,11 @@
 # @osdkkit/react
 
+## 2.42.0
+
+### Minor Changes
+
+- 6600566: Migrate @osdk/react, @osdk/react-devtools, and @osdk/react-components-storybook to lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint (sixth increment of the repo-wide oxc migration; the React family ahead of @osdk/react-components)
+
 ## 2.41.0
 
 ### Minor Changes
