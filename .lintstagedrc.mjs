@@ -122,12 +122,12 @@ const OXC_PACKAGE_EXCLUDES = [
   ...Object.keys(OXC_NESTED_CONFIG_PACKAGES),
 ].map((p) => `**/packages/${p}/**`);
 
-// Files that live inside oxc packages but must never be linted/formatted:
-// generated SDK output and copied templates. The oxc configs already ignore
-// these via their `ignorePatterns`, so handing them to `oxlint` matches 0 files
-// and exits non-zero ("No files found to lint"). Filter them out here, mirroring
-// the ESLint path's exclusions below.
-const OXC_IGNORED_FILE_GLOBS = [
+// Files that must never be linted/formatted regardless of toolchain: generated
+// SDK output and copied templates. Both the oxc and ESLint paths below exclude
+// these. For oxc it is load-bearing: the oxc configs already ignore these via
+// their `ignorePatterns`, so handing such a file to `oxlint` matches 0 files and
+// exits non-zero ("No files found to lint"), which fails the commit.
+const IGNORED_FILE_GLOBS = [
   "**/templates/**/*",
   "**/generatedNoCheck/**/*",
   "**/generatedNoCheck2/**/*",
@@ -150,7 +150,7 @@ export default {
   ],
   "*.md": [CSPELL_CMD],
   [OXC_PACKAGE_GLOB]: (files) => {
-    const match = micromatch.not(files, OXC_IGNORED_FILE_GLOBS);
+    const match = micromatch.not(files, IGNORED_FILE_GLOBS);
     if (match.length === 0) return [];
     // oxlint --fix first (its fixes can affect whitespace), then oxfmt last so
     // the final result is always formatted. Mirrors the package fix-lint script.
@@ -167,7 +167,7 @@ export default {
     Object.entries(OXC_NESTED_CONFIG_PACKAGES).map(([pkg, config]) => [
       `packages/${pkg}/**/*.{js,jsx,ts,tsx,mjs,cjs}`,
       (files) => {
-        const match = micromatch.not(files, OXC_IGNORED_FILE_GLOBS);
+        const match = micromatch.not(files, IGNORED_FILE_GLOBS);
         if (match.length === 0) return [];
         return [
           `oxlint -c ${config} --fix ${match.join(" ")}`,
@@ -183,10 +183,7 @@ export default {
     const match = micromatch.not(
       files,
       [
-        "**/templates/**/*",
-        "**/generatedNoCheck/**/*",
-        "**/generatedNoCheck2/**/*",
-        "**/examples/**/*",
+        ...IGNORED_FILE_GLOBS,
         ...OXC_PACKAGE_EXCLUDES,
       ],
     );
