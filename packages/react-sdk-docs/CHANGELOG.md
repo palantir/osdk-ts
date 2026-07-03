@@ -1,5 +1,11 @@
 # @osdk/react-sdk-docs
 
+## 0.11.0
+
+### Minor Changes
+
+- cbcdce1: Re-enable the oxlint rules the `**/*.{js,mjs,cjs}` override had disabled and delete the override, so JS build scripts, bin shims, and config files are held to the same ruleset as TypeScript. Changes are behavior-preserving (lint/format fixes to build tooling only).
+
 ## 0.10.0
 
 ### Minor Changes
