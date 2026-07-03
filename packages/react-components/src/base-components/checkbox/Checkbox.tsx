@@ -54,13 +54,15 @@ export function Checkbox({
           indicatorProps?.className
         )}
       >
-        {/* Color is used as the "fill" attribute on the svg  */}
+        {/* Color is used as the "fill" attribute on the svg. Icon size is
+            driven by the --osdk-checkbox-icon-size token via CSS, not the
+            Blueprint `size` prop. */}
         {indeterminate ? (
-          <SmallMinus size={16} />
+          <SmallMinus />
         ) : isExcluding ? (
-          <SmallCross size={16} />
+          <SmallCross />
         ) : (
-          <SmallTick size={16} />
+          <SmallTick />
         )}
       </BaseUICheckbox.Indicator>
     </BaseUICheckbox.Root>

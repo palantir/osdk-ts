@@ -81,6 +81,11 @@
   width: var(--osdk-checkbox-icon-size);
   height: var(--osdk-checkbox-icon-size);
 
+  & svg {
+    width: var(--osdk-checkbox-icon-size);
+    height: var(--osdk-checkbox-icon-size);
+  }
+
   &[data-unchecked] {
     display: none;
   }
