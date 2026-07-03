@@ -201,6 +201,14 @@
   pointer-events: auto;
 }
 
+.notice {
+  // Blueprint's Callout is width: 100%; combined with its inline margin that
+  // overflows the panel on the right. Let it size to the padded width instead.
+  :global(.bp6-callout) {
+    width: auto;
+  }
+}
+
 .tabs {
   flex: 1;
   min-height: 0;

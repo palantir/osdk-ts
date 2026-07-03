@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { TabId } from "@blueprintjs/core";
 import { Button, Classes, Tab, Tabs, Tooltip } from "@blueprintjs/core";
 import classNames from "classnames";
 import React, { useCallback, useMemo, useRef, useState } from "react";
@@ -110,6 +111,11 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
   const computeStore = monitorStore.getComputeStore();
   const fiberCapabilities = useFiberCapabilities();
   const [activeTab, setActiveTab] = useState<DevtoolsTabId>("performance");
+  const onActiveTabChange = useCallback((newTabId: TabId) => {
+    if (isDevtoolsTabId(newTabId)) {
+      setActiveTab(newTabId);
+    }
+  }, []);
   const [position, setPosition] = usePersistedState<PanelPosition>(
     "osdk-monitor-position",
     {
@@ -420,8 +426,7 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
 
   const panelClassName = classNames(
     styles.panel,
-    // Scope Blueprint's focus-outline suppression to the panel (an ancestor of
-    // the tabs and header buttons) rather than the host page's <html>.
+    // Class needed to remove the useless outline added on tabs/buttons
     Classes.FOCUS_DISABLED,
     resolvedTheme === "dark" ? Classes.DARK : undefined,
     {
@@ -544,14 +549,9 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
         )}
 
         <Tabs
-          id="osdk-devtools-tabs"
           className={styles.tabs}
           selectedTabId={activeTab}
-          onChange={(newTabId) => {
-            if (isDevtoolsTabId(newTabId)) {
-              setActiveTab(newTabId);
-            }
-          }}
+          onChange={onActiveTabChange}
         >
           <Tab
             id="performance"
