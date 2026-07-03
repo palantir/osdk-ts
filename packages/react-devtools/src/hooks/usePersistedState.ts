@@ -118,3 +118,11 @@ export function usePersistedState<T>(
 
   return [value, setPersistedValue];
 }
+
+/**
+ * Function exported for testing.
+ * We don't want tests to use localStorage directly since the storage layer could change
+ */
+export function clearPersistedState(): void {
+  localStorage.clear();
+}

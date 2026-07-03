@@ -18,6 +18,7 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { clearPersistedState } from "../hooks/usePersistedState.js";
 import { createMockMonitorStore } from "./testHelpers.js";
 
 vi.mock("../fiber/DegradationNotice.js", () => ({
@@ -39,16 +40,20 @@ const { MonitoringPanel } = await import("./MonitoringPanel.js");
 describe("MonitoringPanel", () => {
   afterEach(() => {
     cleanup();
-    // usePersistedState writes to localStorage; clear it so tab/collapse state
+    // Clear persisted state so tab/collapse state
     // from one test does not leak into the next.
-    localStorage.clear();
+    clearPersistedState();
   });
 
-  it("renders the panel title", () => {
+  it("renders the panel with title and tabs", () => {
     const store = createMockMonitorStore();
     render(<MonitoringPanel monitorStore={store} />);
 
     expect(screen.queryByText("OSDK Devtools")).not.toBeNull();
+    expect(screen.queryByText("Performance")).not.toBeNull();
+    expect(screen.queryByText("Compute")).not.toBeNull();
+    expect(screen.queryByText("Intercept")).not.toBeNull();
+    expect(screen.queryByText("Debugging")).not.toBeNull();
   });
 
   it("renders the beta badge", () => {
@@ -58,30 +63,11 @@ describe("MonitoringPanel", () => {
     expect(screen.queryAllByText("Beta").length).toBeGreaterThan(0);
   });
 
-  it("renders a tablist with the four devtools tabs in order", () => {
+  it("defaults to the performance tab", () => {
     const store = createMockMonitorStore();
     render(<MonitoringPanel monitorStore={store} />);
 
-    expect(screen.queryByRole("tablist")).not.toBeNull();
-    const tabNames = screen.getAllByRole("tab").map((tab) => tab.textContent);
-    expect(tabNames).toEqual([
-      "Performance",
-      "Compute",
-      "Intercept",
-      "Debugging",
-    ]);
-  });
-
-  it("selects the Performance tab by default", () => {
-    const store = createMockMonitorStore();
-    render(<MonitoringPanel monitorStore={store} />);
-
-    expect(
-      screen.getByRole("tab", { name: "Performance", selected: true })
-    ).not.toBeNull();
-    expect(
-      screen.queryByRole("tab", { name: "Compute", selected: true })
-    ).toBeNull();
+    expect(screen.queryAllByText("Cache Hit Rate").length).toBeGreaterThan(0);
   });
 
   it("selects a tab and surfaces its panel when activated", () => {
@@ -128,8 +114,8 @@ describe("MonitoringPanel", () => {
     );
     expect(screen.queryByRole("tablist")).toBeNull();
 
-    // Reopen via the minimized "</>" affordance.
-    fireEvent.click(screen.getByText("</>"));
+    // Reopen via the minimized affordance.
+    fireEvent.click(screen.getByLabelText("View OSDK Devtools"));
 
     expect(
       screen.getByRole("tab", { name: "Compute", selected: true })

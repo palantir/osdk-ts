@@ -415,6 +415,7 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
         <div
           className={styles.minimized}
           data-dt-theme={resolvedTheme}
+          aria-label="View OSDK Devtools"
           onClick={() => setPosition((prev) => ({ ...prev, collapsed: false }))}
         >
           <span className={styles.minimizedIcon}>&lt;/&gt;</span>
