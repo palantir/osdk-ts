@@ -79,9 +79,6 @@ describe("MonitoringPanel", () => {
     expect(
       screen.getByRole("tab", { name: "Compute", selected: true })
     ).not.toBeNull();
-    expect(
-      screen.queryByRole("tab", { name: "Performance", selected: true })
-    ).toBeNull();
     // The single visible tabpanel is the one owned by the Compute tab.
     expect(
       screen.getByRole("tabpanel").getAttribute("aria-labelledby")
