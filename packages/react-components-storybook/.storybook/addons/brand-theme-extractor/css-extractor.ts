@@ -1155,10 +1155,10 @@ export function extractTokensFromCssText(
 /**
  * Turn a recovered {@link CssTokenMap} into a complete theme: synthesize a
  * harmonized palette around the real anchors, overlay derived scales and the
- * real values, then clamp to the data-dense ceilings. Shared by the website
- * and uploaded-CSS entry points.
+ * real values, then clamp to the data-dense ceilings. Shared by the website,
+ * uploaded-CSS, and uploaded-DESIGN.md entry points.
  */
-function buildCssExtractionResult(
+export function buildCssExtractionResult(
   map: CssTokenMap,
   fetchSource: FetchSource
 ): CssExtractionResult {

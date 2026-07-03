@@ -23,6 +23,7 @@ import {
   extractTokensFromCssText,
   extractTokensFromWebsite,
 } from "./css-extractor.js";
+import { extractTokensFromDesignMarkdown } from "./design-md-extractor.js";
 import type { ThemeColorMode, TokenAssignment } from "./types.js";
 
 interface ImportDropdownProps {
@@ -199,20 +200,25 @@ function roleValue(
   return assignments.find((a) => a.role === role)?.customValue;
 }
 
-function successNote(result: CssExtractionResult): string {
-  const source = result.fetchSource === "file"
-    ? "the uploaded CSS"
-    : result.fetchSource === "proxy"
-    ? "the site's CSS (via proxy)"
-    : "the site's CSS";
-  return `Mapped ${result.directMappedCount} real tokens from ${source}.`;
+function websiteNote(result: CssExtractionResult): string {
+  const via = result.fetchSource === "proxy" ? " (via proxy)" : "";
+  return `Mapped ${result.directMappedCount} real tokens from the site's CSS${via}.`;
+}
+
+/** Detect a DESIGN.md by filename first, then by its YAML frontmatter. */
+function isDesignMarkdown(fileName: string, text: string): boolean {
+  if (/\.(md|markdown)$/i.test(fileName)) return true;
+  if (/\.css$/i.test(fileName)) return false;
+  return /^﻿?---\s*\n[\s\S]*\n(colors|typography|rounded|spacing)\s*:/m.test(
+    text,
+  );
 }
 
 /**
- * Imports a brand theme from real CSS — either a stylesheet the user uploads or
- * one scraped from a live site. Both paths run the same CSS token parser; if a
- * source yields no usable design tokens we surface an error rather than guessing
- * a theme from screenshots or images.
+ * Imports a brand theme from real design tokens — an uploaded stylesheet
+ * (`.css`) or DESIGN.md, or the CSS scraped from a live site. Every path feeds
+ * the same synthesis pipeline; if a source yields no usable tokens we surface an
+ * error rather than guessing a theme from screenshots or images.
  */
 export function ImportDropdown({
   onApply,
@@ -287,9 +293,9 @@ export function ImportDropdown({
   }, [open]);
 
   const finish = useCallback(
-    (result: CssExtractionResult) => {
+    (result: CssExtractionResult, noteText: string) => {
       setApplied(result.assignments);
-      setNote(successNote(result));
+      setNote(noteText);
       onApply(result.assignments, result.colorMode);
     },
     [onApply],
@@ -304,15 +310,27 @@ export function ImportDropdown({
       setError(null);
       void (async () => {
         try {
-          const cssText = await file.text();
-          const result = extractTokensFromCssText(cssText);
+          const text = await file.text();
+          const isMarkdown = isDesignMarkdown(file.name, text);
+          const result = isMarkdown
+            ? extractTokensFromDesignMarkdown(text)
+            : extractTokensFromCssText(text);
           if (result.directMappedCount < 1) {
-            setError("No usable design tokens found in that CSS file.");
+            setError(
+              isMarkdown
+                ? "No usable tokens found in that DESIGN.md file."
+                : "No usable design tokens found in that CSS file.",
+            );
             return;
           }
-          finish(result);
+          finish(
+            result,
+            `Mapped ${result.directMappedCount} tokens from ${
+              isMarkdown ? "DESIGN.md" : "the uploaded CSS"
+            }.`,
+          );
         } catch {
-          setError("Couldn't read that CSS file.");
+          setError("Couldn't read that file.");
         } finally {
           setLoading(false);
         }
@@ -333,7 +351,7 @@ export function ImportDropdown({
           setError("Couldn't find usable design tokens in that site's CSS.");
           return;
         }
-        finish(result);
+        finish(result, websiteNote(result));
       } catch {
         setError("Couldn't read the site's CSS.");
       } finally {
@@ -357,7 +375,7 @@ export function ImportDropdown({
         <Menu
           ref={menuRef}
           role="dialog"
-          aria-label="Import theme from CSS"
+          aria-label="Import theme from CSS or DESIGN.md"
           style={{
             top: menuPos.top,
             left: menuPos.left,
@@ -372,7 +390,7 @@ export function ImportDropdown({
                 type="button"
                 aria-pressed={mode === "upload"}
               >
-                Upload CSS
+                Upload file
               </Segment>
               <Segment
                 active={mode === "website"}
@@ -388,7 +406,7 @@ export function ImportDropdown({
                 <input
                   ref={fileInputRef}
                   type="file"
-                  accept=".css,text/css"
+                  accept=".css,.md,.markdown,text/css,text/markdown"
                   onChange={handleFile}
                   style={{ display: "none" }}
                 />
@@ -396,11 +414,11 @@ export function ImportDropdown({
                   onClick={() => fileInputRef.current?.click()}
                   disabled={loading}
                 >
-                  {loading ? "Reading…" : "Choose a CSS file"}
+                  {loading ? "Reading…" : "Choose a CSS or DESIGN.md file"}
                 </ChooseButton>
                 <Hint>
-                  Upload a stylesheet (e.g. your app's tokens.css) to pull real
-                  colors, fonts, and radii into a theme.
+                  Upload a stylesheet (e.g. your app's tokens.css) or a DESIGN.md
+                  to pull real colors, fonts, and radii into a theme.
                 </Hint>
               </>
             ) : (
