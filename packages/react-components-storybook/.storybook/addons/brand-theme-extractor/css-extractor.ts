@@ -35,9 +35,9 @@ import type {
  */
 export type CssTokenMap = Partial<Record<TokenRole, string>>;
 
-/** How the CSS was obtained: from the dev server, a public proxy, or an
- * uploaded file (no network fetch at all). */
-export type FetchSource = "server" | "proxy" | "file";
+/** How the CSS was obtained. Only uploaded files are supported today, but the
+ * field is kept so the result shape can describe other sources later. */
+export type FetchSource = "file";
 
 export interface CssExtractionResult {
   /** Complete set of token assignments — real values where found, synthesized
@@ -54,7 +54,7 @@ export interface CssExtractionResult {
   mappedRoles: TokenRole[];
   /** Inferred color mode based on background luminance. */
   colorMode: ThemeColorMode;
-  /** Whether the page came from the dev server or a public proxy. */
+  /** How the source CSS was obtained. */
   fetchSource: FetchSource;
 }
 
@@ -73,19 +73,12 @@ const COLOR_ROLES: ColorTokenRole[] = [
 ];
 
 // ---------------------------------------------------------------------------
-// Networking
-//
-// Fetch order: the same-origin dev-server endpoint first (reliable, no CORS),
-// then public CORS proxies as a fallback (for the deployed static Storybook).
-// Bare-domain and www. variants are both tried so a site served only from
-// www. still resolves.
+// Limits — ceilings the extraction clamps to so a roomy marketing source can't
+// blow out these data-dense components.
 // ---------------------------------------------------------------------------
 
-const FETCH_TIMEOUT_MS = 16_000;
 /** Cap per-file work so a pathological stylesheet can't stall the regex scans. */
 const MAX_CSS_CHARS = 800_000;
-/** Only chase a handful of linked stylesheets — the first few carry the tokens. */
-const MAX_STYLESHEETS = 6;
 /**
  * Upper bound (px) on the extracted base spacing unit. These components are
  * data-dense, so a roomy marketing-site base (Apple's ~16-22px) would blow up
@@ -114,172 +107,6 @@ const MAX_BORDER_RADIUS_PX = 8;
 /** Buttons may be rounder than inputs/cards, so they get a higher ceiling. */
 const MAX_BUTTON_RADIUS_PX = 20;
 
-interface FetchedPage {
-  html: string;
-  /** Post-redirect URL, used as the base for resolving relative stylesheets. */
-  finalUrl: string;
-  fetchSource: FetchSource;
-}
-
-function normalizeUrl(raw: string): string {
-  const trimmed = raw.trim();
-  return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
-}
-
-/**
- * The URL forms worth trying, in preference order. For an apex domain typed
- * without www (e.g. "stripe.com"), prefer the `www.` host first: sites commonly
- * serve their canonical, fully-styled page from www and only a redirect or
- * localized stub from the apex, so the two hosts can yield very different
- * extractions. The bare host stays as a fallback for apex-only sites. This also
- * makes "stripe.com" and "www.stripe.com" converge on the same result.
- */
-function urlCandidates(raw: string): string[] {
-  const normalized = normalizeUrl(raw);
-  try {
-    const parsed = new URL(normalized);
-    if (
-      !parsed.hostname.startsWith("www.")
-      && parsed.hostname.split(".").length === 2
-    ) {
-      const bare = parsed.href;
-      parsed.hostname = `www.${parsed.hostname}`;
-      return [parsed.href, bare];
-    }
-  } catch {
-    // ignore an unparseable URL — the single normalized form is our best effort
-  }
-  return [normalized];
-}
-
-async function fetchWithTimeout(url: string): Promise<Response> {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
-  try {
-    return await fetch(url, { signal: controller.signal });
-  } finally {
-    clearTimeout(timer);
-  }
-}
-
-/**
- * Try the same-origin dev-server endpoint. Returns null (rather than throwing)
- * on any failure, including the static-build case where the endpoint doesn't
- * exist — detected by the absence of our marker header.
- */
-async function tryDevServer(
-  url: string
-): Promise<{ html: string; finalUrl: string } | null> {
-  try {
-    const res = await fetchWithTimeout(
-      `/__brand-theme-fetch?url=${encodeURIComponent(url)}`
-    );
-    if (!res.ok) return null;
-    const finalUrl = res.headers.get("x-brand-theme-final-url");
-    // No marker header means this wasn't our endpoint (e.g. a static host
-    // returning index.html), so don't trust the body.
-    if (finalUrl == null) return null;
-    const html = await res.text();
-    return html.length > 0 ? { html, finalUrl } : null;
-  } catch {
-    return null;
-  }
-}
-
-/** Try public CORS proxies. Returns null on failure rather than throwing. */
-async function tryProxies(
-  url: string
-): Promise<{ html: string; finalUrl: string } | null> {
-  try {
-    const res = await fetchWithTimeout(
-      `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`
-    );
-    if (res.ok) {
-      const json = (await res.json()) as { contents?: unknown };
-      if (typeof json.contents === "string" && json.contents.length > 0) {
-        return { html: json.contents, finalUrl: url };
-      }
-    }
-  } catch {
-    // fall through to the secondary proxy
-  }
-  try {
-    const res = await fetchWithTimeout(
-      `https://corsproxy.io/?url=${encodeURIComponent(url)}`
-    );
-    if (res.ok) {
-      const text = await res.text();
-      if (text.length > 0) return { html: text, finalUrl: url };
-    }
-  } catch {
-    // both proxies exhausted
-  }
-  return null;
-}
-
-/**
- * Fetch a page's HTML, trying the dev server for every URL candidate before
- * falling back to public proxies. Returns the post-redirect URL for base
- * resolution and which transport succeeded.
- */
-export async function fetchPage(rawUrl: string): Promise<FetchedPage> {
-  const candidates = urlCandidates(rawUrl);
-  for (const candidate of candidates) {
-    const viaServer = await tryDevServer(candidate);
-    if (viaServer) return { ...viaServer, fetchSource: "server" };
-  }
-  for (const candidate of candidates) {
-    const viaProxy = await tryProxies(candidate);
-    if (viaProxy) return { ...viaProxy, fetchSource: "proxy" };
-  }
-  throw new Error("Unable to fetch page via dev server or proxies");
-}
-
-/** Fetch arbitrary text (a stylesheet), server first then proxy; "" on failure. */
-async function fetchText(url: string): Promise<string> {
-  const viaServer = await tryDevServer(url);
-  if (viaServer && viaServer.html.length > 0) return viaServer.html;
-  const viaProxy = await tryProxies(url);
-  return viaProxy?.html ?? "";
-}
-
-/**
- * Pull every scrap of CSS out of a fetched HTML document: inline `<style>` tags
- * plus up to {@link MAX_STYLESHEETS} linked stylesheets (resolved against the
- * page's final URL and fetched through the same transport chain). Stylesheets
- * that fail to load are skipped rather than aborting the whole extraction.
- */
-export async function extractCssFromHtml(
-  html: string,
-  baseUrl: string
-): Promise<string[]> {
-  const doc = new DOMParser().parseFromString(html, "text/html");
-  const cssTexts: string[] = [];
-
-  doc.querySelectorAll("style").forEach((styleEl) => {
-    const text = styleEl.textContent;
-    if (text && text.trim().length > 0) cssTexts.push(text);
-  });
-
-  const hrefs: string[] = [];
-  doc.querySelectorAll('link[rel~="stylesheet"]').forEach((linkEl) => {
-    const href = linkEl.getAttribute("href");
-    if (href && hrefs.length < MAX_STYLESHEETS) {
-      try {
-        hrefs.push(new URL(href, baseUrl).href);
-      } catch {
-        // ignore hrefs that don't resolve to a valid absolute URL
-      }
-    }
-  });
-
-  const fetched = await Promise.all(hrefs.map((href) => fetchText(href)));
-  for (const css of fetched) {
-    if (css.trim().length > 0) cssTexts.push(css);
-  }
-
-  return cssTexts;
-}
 
 // ---------------------------------------------------------------------------
 // CSS parsing — recover a partial role→value map through four escalating
@@ -391,22 +218,6 @@ function resolveVars(vars: Record<string, string>): Record<string, string> {
   return resolved;
 }
 
-/**
- * The site's declared brand color from `<meta name="theme-color">`, but only
- * when it's an actual saturated color — a white/black bar color (e.g.
- * YouTube's) is not a brand primary, so it's ignored.
- */
-function themeColorFromHtml(html: string): string | null {
-  for (const tag of html.matchAll(/<meta[^>]+name=["']theme-color["'][^>]*>/gi)) {
-    const content = /content=["']([^"']+)["']/i.exec(tag[0]);
-    const hex = content ? parseColorToHex(content[1]) : null;
-    const c = hex != null ? hslFromHex(hex) : null;
-    if (hex != null && c != null && c.s >= 20 && c.l >= 12 && c.l <= 85) {
-      return hex;
-    }
-  }
-  return null;
-}
 
 /** Substitute `var(--x[, fallback])` references in a single value one level deep
  * using the resolved custom-property map. */
@@ -1126,24 +937,10 @@ function reconcile(map: CssTokenMap): void {
 // ---------------------------------------------------------------------------
 
 /**
- * Fetch a site, recover real design tokens from its CSS, and assemble a full set
- * of token assignments — real values where we found them, synthesized (and
- * harmonized) values everywhere else.
- */
-export async function extractTokensFromWebsite(
-  url: string
-): Promise<CssExtractionResult> {
-  const { html, finalUrl, fetchSource } = await fetchPage(url);
-  const cssTexts = await extractCssFromHtml(html, finalUrl);
-  const map = parseCssTokens(cssTexts, themeColorFromHtml(html));
-  return buildCssExtractionResult(map, fetchSource);
-}
-
-/**
  * Extract theme tokens from a raw CSS string — e.g. a stylesheet the user
- * uploads directly. Runs the same parse + synthesis pipeline as
- * {@link extractTokensFromWebsite} but skips all networking, so it works
- * offline and never depends on the dev-server proxy.
+ * uploads directly — recovering real design tokens from the CSS and assembling
+ * a full set of token assignments: real values where we found them, synthesized
+ * (and harmonized) values everywhere else.
  */
 export function extractTokensFromCssText(
   cssText: string

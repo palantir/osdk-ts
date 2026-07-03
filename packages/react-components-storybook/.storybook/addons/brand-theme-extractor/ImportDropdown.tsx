@@ -21,7 +21,6 @@ import { styled } from "storybook/theming";
 import {
   type CssExtractionResult,
   extractTokensFromCssText,
-  extractTokensFromWebsite,
 } from "./css-extractor.js";
 import { extractTokensFromDesignMarkdown } from "./design-md-extractor.js";
 import type { ThemeColorMode, TokenAssignment } from "./types.js";
@@ -29,8 +28,6 @@ import type { ThemeColorMode, TokenAssignment } from "./types.js";
 interface ImportDropdownProps {
   onApply: (assignments: TokenAssignment[], colorMode: ThemeColorMode) => void;
 }
-
-type Mode = "upload" | "website";
 
 // The resulting theme roles worth previewing, in reading order.
 const PREVIEW_ROLES: Array<{ role: string; label: string }> = [
@@ -91,35 +88,6 @@ const Body = styled.div({
   gap: 8,
 });
 
-const Segmented = styled.div(({ theme }) => ({
-  display: "flex",
-  gap: 2,
-  padding: 3,
-  background: theme.background.app,
-  border: `1px solid ${theme.appBorderColor}`,
-  borderRadius: 8,
-}));
-
-const Segment = styled.button<{ active: boolean }>(({ active, theme }) => ({
-  flex: 1,
-  background: active ? theme.background.content : "transparent",
-  border: "none",
-  borderRadius: 6,
-  boxShadow: active ? "0 1px 2px rgba(0,0,0,0.12)" : "none",
-  color: active ? theme.color.defaultText : theme.color.mediumdark,
-  cursor: "pointer",
-  fontSize: 12,
-  fontWeight: 600,
-  padding: "6px 10px",
-  transition: "background 120ms ease, color 120ms ease",
-}));
-
-const Row = styled.div({
-  display: "flex",
-  gap: 6,
-  alignItems: "center",
-});
-
 const ChooseButton = styled.button<{ disabled?: boolean }>(
   ({ disabled, theme }) => ({
     width: "100%",
@@ -138,34 +106,6 @@ const ChooseButton = styled.button<{ disabled?: boolean }>(
         background: theme.background.hoverable,
         borderColor: theme.color.medium,
       },
-  }),
-);
-
-const UrlInput = styled.input(({ theme }) => ({
-  flex: 1,
-  background: theme.background.app,
-  border: `1px solid ${theme.appBorderColor}`,
-  borderRadius: 4,
-  color: theme.color.defaultText,
-  fontSize: 12,
-  padding: "6px 8px",
-  "&:focus": {
-    borderColor: theme.color.secondary,
-    outline: "none",
-  },
-}));
-
-const GoButton = styled.button<{ disabled?: boolean }>(
-  ({ disabled, theme }) => ({
-    background: disabled ? theme.background.app : theme.color.secondary,
-    border: "none",
-    borderRadius: 4,
-    color: disabled ? theme.color.mediumdark : "#ffffff",
-    cursor: disabled ? "not-allowed" : "pointer",
-    fontSize: 12,
-    fontWeight: 600,
-    padding: "6px 12px",
-    whiteSpace: "nowrap",
   }),
 );
 
@@ -200,11 +140,6 @@ function roleValue(
   return assignments.find((a) => a.role === role)?.customValue;
 }
 
-function websiteNote(result: CssExtractionResult): string {
-  const via = result.fetchSource === "proxy" ? " (via proxy)" : "";
-  return `Mapped ${result.directMappedCount} real tokens from the site's CSS${via}.`;
-}
-
 /** Detect a DESIGN.md by filename first, then by its YAML frontmatter. */
 function isDesignMarkdown(fileName: string, text: string): boolean {
   if (/\.(md|markdown)$/i.test(fileName)) return true;
@@ -215,17 +150,15 @@ function isDesignMarkdown(fileName: string, text: string): boolean {
 }
 
 /**
- * Imports a brand theme from real design tokens — an uploaded stylesheet
- * (`.css`) or DESIGN.md, or the CSS scraped from a live site. Every path feeds
- * the same synthesis pipeline; if a source yields no usable tokens we surface an
- * error rather than guessing a theme from screenshots or images.
+ * Imports a brand theme from real design tokens in an uploaded file — a
+ * stylesheet (`.css`) or a DESIGN.md. Both feed the same synthesis pipeline; if
+ * a file yields no usable tokens we surface an error rather than guessing a
+ * theme from screenshots or images.
  */
 export function ImportDropdown({
   onApply,
 }: ImportDropdownProps): React.ReactElement {
   const [open, setOpen] = useState(false);
-  const [mode, setMode] = useState<Mode>("upload");
-  const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [applied, setApplied] = useState<TokenAssignment[] | null>(null);
@@ -339,27 +272,6 @@ export function ImportDropdown({
     [finish],
   );
 
-  const handleWebsite = useCallback(() => {
-    const target = url.trim();
-    if (!target) return;
-    setLoading(true);
-    setError(null);
-    void (async () => {
-      try {
-        const result = await extractTokensFromWebsite(target);
-        if (result.directMappedCount < 1) {
-          setError("Couldn't find usable design tokens in that site's CSS.");
-          return;
-        }
-        finish(result, websiteNote(result));
-      } catch {
-        setError("Couldn't read the site's CSS.");
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [finish, url]);
-
   return (
     <Wrapper ref={wrapperRef}>
       <TriggerButton
@@ -383,66 +295,23 @@ export function ImportDropdown({
           }}
         >
           <Body>
-            <Segmented role="group" aria-label="Source type">
-              <Segment
-                active={mode === "upload"}
-                onClick={() => setMode("upload")}
-                type="button"
-                aria-pressed={mode === "upload"}
-              >
-                Upload file
-              </Segment>
-              <Segment
-                active={mode === "website"}
-                onClick={() => setMode("website")}
-                type="button"
-                aria-pressed={mode === "website"}
-              >
-                From Website
-              </Segment>
-            </Segmented>
-            {mode === "upload" ? (
-              <>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept=".css,.md,.markdown,text/css,text/markdown"
-                  onChange={handleFile}
-                  style={{ display: "none" }}
-                />
-                <ChooseButton
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={loading}
-                >
-                  {loading ? "Reading…" : "Choose a CSS or DESIGN.md file"}
-                </ChooseButton>
-                <Hint>
-                  Upload a stylesheet (e.g. your app's tokens.css) or a DESIGN.md
-                  to pull real colors, fonts, and radii into a theme.
-                </Hint>
-              </>
-            ) : (
-              <>
-                <Row>
-                  <UrlInput
-                    type="url"
-                    placeholder="example.com"
-                    value={url}
-                    onChange={(e) => setUrl(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") handleWebsite();
-                    }}
-                  />
-                  <GoButton
-                    onClick={handleWebsite}
-                    disabled={loading || !url.trim()}
-                  >
-                    {loading ? "…" : "Import"}
-                  </GoButton>
-                </Row>
-                <Hint>Scrapes the site's own CSS for its design tokens.</Hint>
-              </>
-            )}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".css,.md,.markdown,text/css,text/markdown"
+              onChange={handleFile}
+              style={{ display: "none" }}
+            />
+            <ChooseButton
+              onClick={() => fileInputRef.current?.click()}
+              disabled={loading}
+            >
+              {loading ? "Reading…" : "Choose a CSS or DESIGN.md file"}
+            </ChooseButton>
+            <Hint>
+              Upload a stylesheet (e.g. your app's tokens.css) or a DESIGN.md to
+              pull real colors, fonts, and radii into a theme.
+            </Hint>
             {error && <ErrorText>{error}</ErrorText>}
             {applied && (
               <>
