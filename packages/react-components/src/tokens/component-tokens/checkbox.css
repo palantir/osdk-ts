@@ -1,5 +1,5 @@
 :root {
-  --osdk-checkbox-icon-size: 16px;
+  --osdk-checkbox-icon-size: var(--osdk-iconography-size-small);
   --osdk-checkbox-padding: 0px;
   --osdk-checkbox-border: var(--osdk-surface-border);
   --osdk-checkbox-bg: transparent;
