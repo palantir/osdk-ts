@@ -46,10 +46,19 @@ describe("MonitoringPanel", () => {
     render(<MonitoringPanel monitorStore={store} />);
 
     expect(screen.queryByText("OSDK Devtools")).not.toBeNull();
+    expect(screen.queryByText("Overview")).not.toBeNull();
     expect(screen.queryByText("Performance")).not.toBeNull();
     expect(screen.queryByText("Compute")).not.toBeNull();
     expect(screen.queryByText("Intercept")).not.toBeNull();
     expect(screen.queryByText("Debugging")).not.toBeNull();
+  });
+
+  it("renders the Overview tab first in the tab order", () => {
+    const store = createMockMonitorStore();
+    render(<MonitoringPanel monitorStore={store} />);
+
+    const tabs = screen.getAllByRole("tab");
+    expect(tabs[0].textContent).toBe("Overview");
   });
 
   it("renders the beta badge", () => {
@@ -59,10 +68,15 @@ describe("MonitoringPanel", () => {
     expect(screen.queryAllByText("Beta").length).toBeGreaterThan(0);
   });
 
-  it("defaults to the performance tab", () => {
+  it("selects the Overview tab by default", () => {
     const store = createMockMonitorStore();
     render(<MonitoringPanel monitorStore={store} />);
 
-    expect(screen.queryAllByText("Cache Hit Rate").length).toBeGreaterThan(0);
+    const overviewTab = screen
+      .getAllByRole("tab")
+      .find((tab) => tab.textContent === "Overview");
+    expect(overviewTab?.getAttribute("aria-selected")).toBe("true");
+    // Empty registry → the Overview lands on the "No ontology" empty state.
+    expect(screen.queryByText("No ontology linked")).not.toBeNull();
   });
 });

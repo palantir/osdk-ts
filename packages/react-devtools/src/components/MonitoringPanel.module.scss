@@ -224,6 +224,14 @@
   display: none;
 }
 
+.overviewTab {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px;
+  background: t.$bg-base;
+}
+
 .metricsGrid {
   display: flex;
   flex-direction: column;

@@ -31,6 +31,7 @@ import { ComputeTab } from "./ComputeTab.js";
 import { DebuggingTab } from "./DebuggingTab.js";
 import { InterceptTab } from "./InterceptTab.js";
 import { MonitorErrorBoundary } from "./MonitorErrorBoundary.js";
+import { OverviewTab } from "./OverviewTab.js";
 import { PerformanceTab } from "./PerformanceTab.js";
 
 import styles from "./MonitoringPanel.module.scss";
@@ -89,6 +90,14 @@ const UI_CONSTANTS = {
   MAX_DOCKED_RIGHT_WIDTH: 800,
 };
 
+/** The selectable tabs in the monitoring panel, in display order. */
+export type MonitoringTab =
+  | "overview"
+  | "performance"
+  | "compute"
+  | "intercept"
+  | "debugging";
+
 export interface MonitoringPanelProps {
   /** The MonitorStore instance that provides all metrics, compute, and component tracking data. */
   monitorStore: MonitorStore;
@@ -100,9 +109,7 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
   const metricsStore = monitorStore.getMetricsStore();
   const computeStore = monitorStore.getComputeStore();
   const fiberCapabilities = useFiberCapabilities();
-  const [activeTab, setActiveTab] = useState<
-    "performance" | "compute" | "intercept" | "debugging"
-  >("performance");
+  const [activeTab, setActiveTab] = useState<MonitoringTab>("overview");
   const [position, setPosition] = usePersistedState<PanelPosition>(
     "osdk-monitor-position",
     {
@@ -528,23 +535,29 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
       </div>
 
       <div className={styles.tabs} role="tablist" aria-label="Devtools tabs">
-        {(["performance", "compute", "intercept", "debugging"] as const).map(
-          (tab) => (
-            <button
-              key={tab}
-              type="button"
-              role="tab"
-              aria-selected={activeTab === tab}
-              className={classNames(
-                styles.tabButton,
-                activeTab === tab && styles.tabButtonActive
-              )}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab.charAt(0).toUpperCase() + tab.slice(1)}
-            </button>
-          )
-        )}
+        {(
+          [
+            "overview",
+            "performance",
+            "compute",
+            "intercept",
+            "debugging",
+          ] as const
+        ).map((tab) => (
+          <button
+            key={tab}
+            type="button"
+            role="tab"
+            aria-selected={activeTab === tab}
+            className={classNames(
+              styles.tabButton,
+              activeTab === tab && styles.tabButtonActive
+            )}
+            onClick={() => setActiveTab(tab)}
+          >
+            {tab.charAt(0).toUpperCase() + tab.slice(1)}
+          </button>
+        ))}
       </div>
 
       <div className={styles.content}>
@@ -553,6 +566,18 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
           <DegradationNotice onRetry={() => validateFiberAccess()} />
         )}
 
+        <div
+          className={
+            activeTab === "overview"
+              ? styles.tabContentVisible
+              : styles.tabContentHidden
+          }
+        >
+          <OverviewTab
+            monitorStore={monitorStore}
+            setActiveTab={setActiveTab}
+          />
+        </div>
         <div
           className={
             activeTab === "performance"
