@@ -4,6 +4,10 @@
   --osdk-button-min-height: calc(var(--osdk-surface-spacing) * 7.5);
   --osdk-button-border-color: color-mix(in oklch, var(--bp-palette-black) 20%, transparent);
   --osdk-button-border: none;
+  /* Button corner radius. Defaults to the shared surface radius so it's
+     unchanged out of the box, but is a separate token so a theme can give
+     buttons their own (e.g. rounder) radius independently of inputs/cards. */
+  --osdk-button-border-radius: var(--osdk-surface-border-radius);
   --osdk-button-drop-shadow-color: color-mix(in oklch, var(--bp-palette-black) 10%, transparent);
   --osdk-button-shadow:
     inset 0 0 0 1px var(--osdk-button-border-color),
@@ -15,6 +19,11 @@
   --osdk-button-primary-bg-hover: var(--osdk-intent-primary-hover);
   --osdk-button-primary-bg-active: var(--osdk-intent-primary-active);
   --osdk-button-primary-border-color: var(--osdk-intent-primary-rest);
+  /* Shadow for the filled primary button. Defaults to the shared button shadow
+     so it's unchanged out of the box, but is a separate token so a theme can
+     make the primary button flat (no inset border/stroke) without affecting
+     secondary buttons. */
+  --osdk-button-primary-shadow: var(--osdk-button-shadow);
 
   /* Secondary / None Button */
   --osdk-button-secondary-color: var(--osdk-typography-color-default-rest);
