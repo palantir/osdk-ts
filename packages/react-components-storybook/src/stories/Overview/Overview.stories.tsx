@@ -306,7 +306,7 @@ function DataTab(): React.ReactElement {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <div style={{ display: "flex", height: 500 }}>
+    <div style={{ display: "flex", height: "100%", minHeight: 0 }}>
       <div
         style={{
           ...FILTER_WRAPPER_STYLE,
@@ -324,7 +324,7 @@ function DataTab(): React.ReactElement {
           showActiveFilterCount={true}
         />
       </div>
-      <div style={{ flex: 1, minWidth: 0 }}>
+      <div style={{ flex: 1, minHeight: 0, minWidth: 0 }}>
         <ObjectTable objectType={Employee} filter={filterClause} />
       </div>
     </div>
@@ -358,7 +358,7 @@ function ViewersTab({
   const loadingMessage = isLoading ? "Loading document..." : "No media found.";
 
   return (
-    <div style={{ height: 400, position: "relative" }}>
+    <div style={{ height: "100%", minHeight: 0, position: "relative" }}>
       {hasMedia && (
         <DocumentViewer
           key={selectedViewerType}
@@ -427,11 +427,19 @@ function ComponentOverview(): React.ReactElement {
   );
 
   return (
-    <div>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100vh",
+        minHeight: 0,
+      }}
+    >
       <div
         style={{
           display: "flex",
           alignItems: "center",
+          flexShrink: 0,
           borderBottom:
             "1px solid var(--osdk-surface-border-color-default, #d1d5db)",
         }}
@@ -499,11 +507,13 @@ function ComponentOverview(): React.ReactElement {
         )}
       </div>
 
-      {activeTab === "data" && <DataTab />}
-      {activeTab === "viewers" && (
-        <ViewersTab selectedViewerType={selectedViewerType} />
-      )}
-      {activeTab === "forms" && <FormsTab />}
+      <div style={{ flex: 1, minHeight: 0, overflow: "auto" }}>
+        {activeTab === "data" && <DataTab />}
+        {activeTab === "viewers" && (
+          <ViewersTab selectedViewerType={selectedViewerType} />
+        )}
+        {activeTab === "forms" && <FormsTab />}
+      </div>
     </div>
   );
 }
