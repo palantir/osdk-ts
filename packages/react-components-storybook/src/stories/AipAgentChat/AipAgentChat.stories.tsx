@@ -140,10 +140,11 @@ function InteractiveChat(
 }
 
 const meta: Meta<typeof InteractiveChat> = {
-  title: "Beta/AipAgentChat",
+  title: "Components/AipAgentChat",
   component: InteractiveChat,
+  tags: ["beta"],
   render: (args) => (
-    <div style={{ height: "600px", maxWidth: "700px" }}>
+    <div style={{ height: "100vh" }}>
       <InteractiveChat {...args} />
     </div>
   ),
@@ -153,15 +154,51 @@ const meta: Meta<typeof InteractiveChat> = {
 };
 
 export default meta;
+
 type Story = StoryObj<typeof meta>;
 
 /** Empty chat with the default welcome state. Type a message to start a simulated conversation. */
-export const Default: Story = {};
+export const Default: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `import { AipAgentChat } from "@osdk/react-components/experimental/aip-agent-chat";
+import { createPlatformClient } from "@osdk/client";
+
+const client = createPlatformClient({ /* ... */ });
+
+<AipAgentChat
+  client={client}
+  availableModels={["gpt-4o", "gpt-4o-mini"]}
+/>`,
+      },
+    },
+  },
+};
 
 /** Chat pre-populated with an existing conversation. */
 export const WithConversation: Story = {
   args: {
     initialMessages: SAMPLE_CONVERSATION,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `import { AipAgentChat } from "@osdk/react-components/experimental/aip-agent-chat";
+import type { UIMessage } from "@osdk/react-components/experimental/aip-agent-chat";
+
+const initialMessages: UIMessage[] = [
+  { id: "1", role: "user", parts: [{ type: "text", text: "..." }] },
+  { id: "2", role: "assistant", parts: [{ type: "text", text: "..." }] },
+];
+
+<AipAgentChat
+  client={client}
+  availableModels={["gpt-4o", "gpt-4o-mini"]}
+  initialMessages={initialMessages}
+/>`,
+      },
+    },
   },
 };
 
@@ -171,11 +208,39 @@ export const WithError: Story = {
     simulateError: true,
     initialMessages: SAMPLE_CONVERSATION.slice(0, 2),
   },
+  parameters: {
+    docs: {
+      source: {
+        code: `import { AipAgentChat } from "@osdk/react-components/experimental/aip-agent-chat";
+
+// Errors from the underlying LMS stream surface via onError and render
+// as a dismissible banner above the composer.
+<AipAgentChat
+  client={client}
+  availableModels={["gpt-4o", "gpt-4o-mini"]}
+  onError={(error) => console.error(error)}
+/>`,
+      },
+    },
+  },
 };
 
 /** Custom placeholder text in the composer. */
 export const CustomPlaceholder: Story = {
   args: {
     placeholder: "Ask me anything about your data...",
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `import { AipAgentChat } from "@osdk/react-components/experimental/aip-agent-chat";
+
+<AipAgentChat
+  client={client}
+  availableModels={["gpt-4o", "gpt-4o-mini"]}
+  placeholder="Ask me anything about your data..."
+/>`,
+      },
+    },
   },
 };
