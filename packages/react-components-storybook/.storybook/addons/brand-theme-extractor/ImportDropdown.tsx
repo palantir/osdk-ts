@@ -103,10 +103,10 @@ const ChooseButton = styled.button<{ disabled?: boolean }>(
     "&:hover": disabled
       ? {}
       : {
-        background: theme.background.hoverable,
-        borderColor: theme.color.medium,
-      },
-  }),
+          background: theme.background.hoverable,
+          borderColor: theme.color.medium,
+        },
+  })
 );
 
 const Hint = styled.div(({ theme }) => ({
@@ -135,7 +135,7 @@ const Chip = styled.div<{ color: string }>(({ color, theme }) => ({
 
 function roleValue(
   assignments: TokenAssignment[],
-  role: string,
+  role: string
 ): string | undefined {
   return assignments.find((a) => a.role === role)?.customValue;
 }
@@ -145,7 +145,7 @@ function isDesignMarkdown(fileName: string, text: string): boolean {
   if (/\.(md|markdown)$/i.test(fileName)) return true;
   if (/\.css$/i.test(fileName)) return false;
   return /^﻿?---\s*\n[\s\S]*\n(colors|typography|rounded|spacing)\s*:/m.test(
-    text,
+    text
   );
 }
 
@@ -163,9 +163,11 @@ export function ImportDropdown({
   const [error, setError] = useState<string | null>(null);
   const [applied, setApplied] = useState<TokenAssignment[] | null>(null);
   const [note, setNote] = useState<string | null>(null);
-  const [menuPos, setMenuPos] = useState<
-    { top: number; left: number; width: number } | null
-  >(null);
+  const [menuPos, setMenuPos] = useState<{
+    top: number;
+    left: number;
+    width: number;
+  } | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -199,7 +201,7 @@ export function ImportDropdown({
       const width = Math.min(288, window.innerWidth - 16);
       const left = Math.max(
         8,
-        Math.min(rect.right - width, window.innerWidth - width - 8),
+        Math.min(rect.right - width, window.innerWidth - width - 8)
       );
       setMenuPos({ top: rect.bottom + 6, left, width });
     }
@@ -209,9 +211,9 @@ export function ImportDropdown({
     // panel scrolls looks like it's floating away.
     function handleScroll(e: Event) {
       if (
-        menuRef.current
-        && e.target instanceof Node
-        && menuRef.current.contains(e.target)
+        menuRef.current &&
+        e.target instanceof Node &&
+        menuRef.current.contains(e.target)
       ) {
         return;
       }
@@ -231,7 +233,7 @@ export function ImportDropdown({
       setNote(noteText);
       onApply(result.assignments, result.colorMode);
     },
-    [onApply],
+    [onApply]
   );
 
   const handleFile = useCallback(
@@ -252,7 +254,7 @@ export function ImportDropdown({
             setError(
               isMarkdown
                 ? "No usable tokens found in that DESIGN.md file."
-                : "No usable design tokens found in that CSS file.",
+                : "No usable design tokens found in that CSS file."
             );
             return;
           }
@@ -260,7 +262,7 @@ export function ImportDropdown({
             result,
             `Mapped ${result.directMappedCount} tokens from ${
               isMarkdown ? "DESIGN.md" : "the uploaded CSS"
-            }.`,
+            }.`
           );
         } catch {
           setError("Couldn't read that file.");
@@ -269,7 +271,7 @@ export function ImportDropdown({
         }
       })();
     },
-    [finish],
+    [finish]
   );
 
   return (
@@ -283,59 +285,61 @@ export function ImportDropdown({
         Import
         <Chevron>{open ? "▴" : "▾"}</Chevron>
       </TriggerButton>
-      {open && menuPos && createPortal(
-        <Menu
-          ref={menuRef}
-          role="dialog"
-          aria-label="Import theme from CSS or DESIGN.md"
-          style={{
-            top: menuPos.top,
-            left: menuPos.left,
-            width: menuPos.width,
-          }}
-        >
-          <Body>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".css,.md,.markdown,text/css,text/markdown"
-              onChange={handleFile}
-              style={{ display: "none" }}
-            />
-            <ChooseButton
-              onClick={() => fileInputRef.current?.click()}
-              disabled={loading}
-            >
-              {loading ? "Reading…" : "Choose a CSS or DESIGN.md file"}
-            </ChooseButton>
-            <Hint>
-              Upload a stylesheet (e.g. your app's tokens.css) or a DESIGN.md to
-              pull real colors, fonts, and radii into a theme.
-            </Hint>
-            {error && <ErrorText>{error}</ErrorText>}
-            {applied && (
-              <>
-                <Preview>
-                  {PREVIEW_ROLES.map(({ role, label }) => {
-                    const value = roleValue(applied, role);
-                    if (!value) return null;
-                    return (
-                      <Chip
-                        key={role}
-                        color={value}
-                        title={`${label}: ${value}`}
-                      />
-                    );
-                  })}
-                </Preview>
-                {note && <Hint>{note}</Hint>}
-                <Hint>Applied — adjust any token below to refine.</Hint>
-              </>
-            )}
-          </Body>
-        </Menu>,
-        document.body,
-      )}
+      {open &&
+        menuPos &&
+        createPortal(
+          <Menu
+            ref={menuRef}
+            role="dialog"
+            aria-label="Import theme from CSS or DESIGN.md"
+            style={{
+              top: menuPos.top,
+              left: menuPos.left,
+              width: menuPos.width,
+            }}
+          >
+            <Body>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".css,.md,.markdown,text/css,text/markdown"
+                onChange={handleFile}
+                style={{ display: "none" }}
+              />
+              <ChooseButton
+                onClick={() => fileInputRef.current?.click()}
+                disabled={loading}
+              >
+                {loading ? "Reading…" : "Choose a CSS or DESIGN.md file"}
+              </ChooseButton>
+              <Hint>
+                Upload a stylesheet (e.g. your app's tokens.css) or a DESIGN.md
+                to pull real colors, fonts, and radii into a theme.
+              </Hint>
+              {error && <ErrorText>{error}</ErrorText>}
+              {applied && (
+                <>
+                  <Preview>
+                    {PREVIEW_ROLES.map(({ role, label }) => {
+                      const value = roleValue(applied, role);
+                      if (!value) return null;
+                      return (
+                        <Chip
+                          key={role}
+                          color={value}
+                          title={`${label}: ${value}`}
+                        />
+                      );
+                    })}
+                  </Preview>
+                  {note && <Hint>{note}</Hint>}
+                  <Hint>Applied — adjust any token below to refine.</Hint>
+                </>
+              )}
+            </Body>
+          </Menu>,
+          document.body
+        )}
     </Wrapper>
   );
 }

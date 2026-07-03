@@ -51,10 +51,12 @@ function googleFamilyToken(stack: string, withWeights: boolean): string | null {
  */
 function googleFontsHref(assignments: TokenAssignment[] | undefined): string {
   if (!assignments) return "";
-  const bodyStack = assignments.find((a) => a.role === "font-family")
-    ?.customValue;
-  const monoStack = assignments.find((a) => a.role === "font-family-mono")
-    ?.customValue;
+  const bodyStack = assignments.find(
+    (a) => a.role === "font-family"
+  )?.customValue;
+  const monoStack = assignments.find(
+    (a) => a.role === "font-family-mono"
+  )?.customValue;
   const body = bodyStack ? googleFamilyToken(bodyStack, true) : null;
   const mono = monoStack ? googleFamilyToken(monoStack, false) : null;
 
@@ -65,9 +67,9 @@ function googleFontsHref(assignments: TokenAssignment[] | undefined): string {
     families.push(mono);
   }
   if (families.length === 0) return "";
-  return `https://fonts.googleapis.com/css2?${
-    families.map((f) => `family=${f}`).join("&")
-  }&display=swap`;
+  return `https://fonts.googleapis.com/css2?${families
+    .map((f) => `family=${f}`)
+    .join("&")}&display=swap`;
 }
 
 /**

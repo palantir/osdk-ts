@@ -82,7 +82,13 @@ interface ParsedDesign {
 }
 
 function emptyParsed(): ParsedDesign {
-  return { colors: {}, rounded: {}, spacing: {}, typography: {}, components: {} };
+  return {
+    colors: {},
+    rounded: {},
+    spacing: {},
+    typography: {},
+    components: {},
+  };
 }
 
 /** Pull the text between the leading `---` fences, or null if there isn't one. */
@@ -133,9 +139,8 @@ function parseFrontmatter(front: string): ParsedDesign {
     }
 
     if (NESTED_SECTIONS.has(section)) {
-      const bucket = section === "typography"
-        ? parsed.typography
-        : parsed.components;
+      const bucket =
+        section === "typography" ? parsed.typography : parsed.components;
       if (indent <= 2) {
         subKey = key;
         if (bucket[subKey] == null) bucket[subKey] = {};
@@ -152,7 +157,7 @@ function stripQuotes(value: string): string {
   if (value.length >= 2) {
     const first = value[0];
     const last = value[value.length - 1];
-    if ((first === "\"" || first === "'") && first === last) {
+    if ((first === '"' || first === "'") && first === last) {
       return value.slice(1, -1);
     }
   }
@@ -169,10 +174,25 @@ function stripQuotes(value: string): string {
  */
 const COLOR_ALIASES: Partial<Record<TokenRole, string[]>> = {
   background: ["canvas", "background", "bg", "base", "canvas-default"],
-  surface: ["surface", "canvas-soft", "canvas-subtle", "card", "panel", "elevated"],
+  surface: [
+    "surface",
+    "canvas-soft",
+    "canvas-subtle",
+    "card",
+    "panel",
+    "elevated",
+  ],
   "surface-hover": ["surface-hover", "canvas-hover"],
   "surface-active": ["surface-active", "canvas-active"],
-  text: ["ink", "text", "foreground", "fg", "content", "ink-primary", "text-primary"],
+  text: [
+    "ink",
+    "text",
+    "foreground",
+    "fg",
+    "content",
+    "ink-primary",
+    "text-primary",
+  ],
   "text-muted": [
     "ink-muted",
     "ink-mute",
@@ -191,7 +211,12 @@ const COLOR_ALIASES: Partial<Record<TokenRole, string[]>> = {
     "placeholder",
   ],
   primary: ["primary", "brand", "accent"],
-  "primary-hover": ["primary-hover", "primary-soft", "primary-light", "brand-hover"],
+  "primary-hover": [
+    "primary-hover",
+    "primary-soft",
+    "primary-light",
+    "brand-hover",
+  ],
   "primary-active": [
     "primary-active",
     "primary-press",
@@ -248,17 +273,19 @@ function tokenMapFromParsed(parsed: ParsedDesign): CssTokenMap {
   if (mono != null) map["font-family-mono"] = mono;
 
   // Corner radius — prefer the mid step; the builder clamps to its ceiling.
-  const radius = firstPx(parsed.rounded["md"] ?? parsed.rounded["sm"])
-    ?? firstNumericValue(parsed.rounded);
+  const radius =
+    firstPx(parsed.rounded["md"] ?? parsed.rounded["sm"]) ??
+    firstNumericValue(parsed.rounded);
   if (radius != null) map["border-radius"] = String(radius);
 
   const buttonRadius = buttonRadiusFromComponents(parsed);
   if (buttonRadius != null) map["button-border-radius"] = String(buttonRadius);
 
   // Spacing — take the smallest defined step, clamped to the dense ceiling.
-  const spacing = firstPx(
-    parsed.spacing["xs"] ?? parsed.spacing["sm"] ?? parsed.spacing["md"]
-  ) ?? firstNumericValue(parsed.spacing);
+  const spacing =
+    firstPx(
+      parsed.spacing["xs"] ?? parsed.spacing["sm"] ?? parsed.spacing["md"]
+    ) ?? firstNumericValue(parsed.spacing);
   if (spacing != null) {
     map.spacing = String(Math.min(spacing, MAX_SPACING_PX));
   }
@@ -335,14 +362,13 @@ function normalizeColor(raw: string): string | null {
   const value = raw.trim().toLowerCase();
 
   const short = value.match(/^#([0-9a-f])([0-9a-f])([0-9a-f])$/);
-  if (short) return `#${short[1]}${short[1]}${short[2]}${short[2]}${short[3]}${short[3]}`;
+  if (short)
+    return `#${short[1]}${short[1]}${short[2]}${short[2]}${short[3]}${short[3]}`;
 
   const long = value.match(/^#([0-9a-f]{6})(?:[0-9a-f]{2})?$/);
   if (long) return `#${long[1]}`;
 
-  const rgb = value.match(
-    /^rgba?\(\s*(\d+)\s*[, ]\s*(\d+)\s*[, ]\s*(\d+)/
-  );
+  const rgb = value.match(/^rgba?\(\s*(\d+)\s*[, ]\s*(\d+)\s*[, ]\s*(\d+)/);
   if (rgb) {
     const [r, g, b] = [rgb[1], rgb[2], rgb[3]].map((n) =>
       Math.min(255, Number(n)).toString(16).padStart(2, "0")
@@ -370,7 +396,9 @@ interface ColorMention {
  * saturation/luminance to disambiguate (the brand color is the saturated one;
  * backgrounds/text are the near-neutral extremes).
  */
-function parseColorsFromProse(markdown: string): Partial<Record<TokenRole, string>> {
+function parseColorsFromProse(
+  markdown: string
+): Partial<Record<TokenRole, string>> {
   const mentions = collectColorMentions(markdown);
   if (mentions.length === 0) return {};
 
@@ -386,35 +414,73 @@ function parseColorsFromProse(markdown: string): Partial<Record<TokenRole, strin
 
   // Primary: the most saturated color under a brand/primary/accent heading,
   // else the most saturated color overall.
-  const brandPool = mentions.filter((m) =>
-    /primary|brand|accent/.test(m.heading) && !/background|surface|text/.test(m.heading)
+  const brandPool = mentions.filter(
+    (m) =>
+      /primary|brand|accent/.test(m.heading) &&
+      !/background|surface|text/.test(m.heading)
   );
   const primary = mostSaturated(brandPool.length > 0 ? brandPool : mentions);
   take("primary", primary?.hex);
 
   // Background: prefer a color explicitly called out as page/background/canvas,
   // otherwise the most extreme neutral (lightest for light UIs, darkest for dark).
-  const bgMention = firstMatch(mentions, [
-    "background",
-    "canvas",
-    "deepest",
-    "page background",
-    "base surface",
-  ], used) ?? extremeNeutral(mentions, used);
+  const bgMention =
+    firstMatch(
+      mentions,
+      ["background", "canvas", "deepest", "page background", "base surface"],
+      used
+    ) ?? extremeNeutral(mentions, used);
   take("background", bgMention?.hex);
 
-  const bgLum = out.background != null
-    ? luminanceFromHex(out.background) ?? 0.5
-    : 0.5;
+  const bgLum =
+    out.background != null ? (luminanceFromHex(out.background) ?? 0.5) : 0.5;
   const isDark = bgLum < 0.4;
 
-  take("surface", firstMatch(mentions, ["card", "surface", "container", "elevated", "panel"], used)?.hex);
-  take("text", firstMatch(mentions, ["primary text", "body text", "default", "text-base", "heading", "ink"], used)?.hex);
-  take("text-muted", firstMatch(mentions, ["secondary", "muted", "tertiary", "silver", "subdued"], used)?.hex);
-  take("border", firstMatch(mentions, ["border", "divider", "separator", "hairline", "outline"], used)?.hex);
-  take("danger", firstMatch(mentions, ["negative", "error", "danger", "destructive"], used)?.hex);
-  take("success", firstMatch(mentions, ["success", "positive", "confirm"], used)?.hex);
-  take("warning", firstMatch(mentions, ["warning", "caution", "alert"], used)?.hex);
+  take(
+    "surface",
+    firstMatch(
+      mentions,
+      ["card", "surface", "container", "elevated", "panel"],
+      used
+    )?.hex
+  );
+  take(
+    "text",
+    firstMatch(
+      mentions,
+      ["primary text", "body text", "default", "text-base", "heading", "ink"],
+      used
+    )?.hex
+  );
+  take(
+    "text-muted",
+    firstMatch(
+      mentions,
+      ["secondary", "muted", "tertiary", "silver", "subdued"],
+      used
+    )?.hex
+  );
+  take(
+    "border",
+    firstMatch(
+      mentions,
+      ["border", "divider", "separator", "hairline", "outline"],
+      used
+    )?.hex
+  );
+  take(
+    "danger",
+    firstMatch(mentions, ["negative", "error", "danger", "destructive"], used)
+      ?.hex
+  );
+  take(
+    "success",
+    firstMatch(mentions, ["success", "positive", "confirm"], used)?.hex
+  );
+  take(
+    "warning",
+    firstMatch(mentions, ["warning", "caution", "alert"], used)?.hex
+  );
 
   // Fall back for text: the neutral at the opposite end from the background, so
   // there's always a legible body color even when nothing was labelled "text".
@@ -447,7 +513,8 @@ function collectColorMentions(markdown: string): ColorMention[] {
     if (!hexes) continue;
     for (const raw of hexes) {
       const hex = normalizeColor(raw);
-      if (hex != null) mentions.push({ hex, line: line.toLowerCase(), heading });
+      if (hex != null)
+        mentions.push({ hex, line: line.toLowerCase(), heading });
     }
   }
   return mentions;
@@ -460,8 +527,8 @@ function firstMatch(
 ): ColorMention | undefined {
   return mentions.find(
     (m) =>
-      !used.has(m.hex)
-      && keywords.some((k) => m.line.includes(k) || m.heading.includes(k))
+      !used.has(m.hex) &&
+      keywords.some((k) => m.line.includes(k) || m.heading.includes(k))
   );
 }
 

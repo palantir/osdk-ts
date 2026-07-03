@@ -107,7 +107,6 @@ const MAX_BORDER_RADIUS_PX = 8;
 /** Buttons may be rounder than inputs/cards, so they get a higher ceiling. */
 const MAX_BUTTON_RADIUS_PX = 20;
 
-
 // ---------------------------------------------------------------------------
 // CSS parsing — recover a partial role→value map through four escalating
 // phases (custom properties → keyword match → property context → value
@@ -144,7 +143,8 @@ export function parseCssTokens(
   // (Bootstrap's docs purple) from a framework default on demo buttons (its
   // blue). Apply it over the button/keyword guess when it's a real color.
   if (
-    brandHint != null && scoreColor("primary", brandHint, map, "") !== REJECT
+    brandHint != null &&
+    scoreColor("primary", brandHint, map, "") !== REJECT
   ) {
     map.primary = brandHint;
   }
@@ -218,7 +218,6 @@ function resolveVars(vars: Record<string, string>): Record<string, string> {
   return resolved;
 }
 
-
 /** Substitute `var(--x[, fallback])` references in a single value one level deep
  * using the resolved custom-property map. */
 function substituteVars(value: string, vars: Record<string, string>): string {
@@ -264,7 +263,11 @@ function primaryFromButton(
       // Skip interaction states so we get the resting brand color, not its
       // hover/active shade (which reads a step darker/lighter).
       const selectorText = match[0].slice(0, match[0].indexOf("{"));
-      if (/:(hover|active|focus|focus-visible|focus-within|disabled|visited)/i.test(selectorText)) {
+      if (
+        /:(hover|active|focus|focus-visible|focus-within|disabled|visited)/i.test(
+          selectorText
+        )
+      ) {
         continue;
       }
       const body = match[1];
@@ -272,14 +275,17 @@ function primaryFromButton(
       // Prefer the fill (a solid brand button). When it's the primary, the
       // button's own text color is the truest primary-foreground.
       const fill = readProp(body, ["background-color", "background"]);
-      const fillHex = fill != null
-        ? firstColorInValue(substituteVars(fill, vars))
-        : null;
-      if (fillHex != null && scoreColor("primary", fillHex, map, "") !== REJECT) {
+      const fillHex =
+        fill != null ? firstColorInValue(substituteVars(fill, vars)) : null;
+      if (
+        fillHex != null &&
+        scoreColor("primary", fillHex, map, "") !== REJECT
+      ) {
         map.primary = fillHex;
-        const fg = textColor != null
-          ? firstColorInValue(substituteVars(textColor, vars))
-          : null;
+        const fg =
+          textColor != null
+            ? firstColorInValue(substituteVars(textColor, vars))
+            : null;
         if (fg != null) map["primary-foreground"] = fg;
         return;
       }
@@ -287,11 +293,11 @@ function primaryFromButton(
       // text color equals the stroke (transparent fill), so it isn't a valid
       // foreground for our filled primary — leave that to be computed.
       const stroke = readProp(body, ["border-color", "border"]);
-      const strokeHex = stroke != null
-        ? firstColorInValue(substituteVars(stroke, vars))
-        : null;
+      const strokeHex =
+        stroke != null ? firstColorInValue(substituteVars(stroke, vars)) : null;
       if (
-        strokeHex != null && scoreColor("primary", strokeHex, map, "") !== REJECT
+        strokeHex != null &&
+        scoreColor("primary", strokeHex, map, "") !== REJECT
       ) {
         map.primary = strokeHex;
         return;
@@ -320,7 +326,11 @@ function buttonRadiusFromCss(
     let match: RegExpExecArray | null;
     while ((match = selector.exec(css)) != null) {
       const selectorText = match[0].slice(0, match[0].indexOf("{"));
-      if (/:(hover|active|focus|focus-visible|disabled|visited)/i.test(selectorText)) {
+      if (
+        /:(hover|active|focus|focus-visible|disabled|visited)/i.test(
+          selectorText
+        )
+      ) {
         continue;
       }
       const raw = readProp(match[1], ["border-radius"]);
@@ -370,7 +380,14 @@ const KEYWORD_RULES: KeywordRule[] = [
   { role: "primary", keywords: ["primary", "brand", "accent"], kind: "color" },
   {
     role: "background",
-    keywords: ["background", "bg-page", "bg-base", "bg-body", "page-bg", "canvas"],
+    keywords: [
+      "background",
+      "bg-page",
+      "bg-base",
+      "bg-body",
+      "page-bg",
+      "canvas",
+    ],
     kind: "color",
   },
   {
@@ -380,12 +397,26 @@ const KEYWORD_RULES: KeywordRule[] = [
   },
   {
     role: "surface",
-    keywords: ["surface", "card", "panel", "bg-secondary", "bg-subtle", "elevated"],
+    keywords: [
+      "surface",
+      "card",
+      "panel",
+      "bg-secondary",
+      "bg-subtle",
+      "elevated",
+    ],
     kind: "color",
   },
   {
     role: "text-muted",
-    keywords: ["text-muted", "muted", "subtle", "text-secondary", "secondary-text", "text-tertiary"],
+    keywords: [
+      "text-muted",
+      "muted",
+      "subtle",
+      "text-secondary",
+      "secondary-text",
+      "text-tertiary",
+    ],
     kind: "color",
   },
   {
@@ -398,7 +429,11 @@ const KEYWORD_RULES: KeywordRule[] = [
     keywords: ["danger", "error", "destructive", "critical", "red"],
     kind: "color",
   },
-  { role: "success", keywords: ["success", "positive", "green"], kind: "color" },
+  {
+    role: "success",
+    keywords: ["success", "positive", "green"],
+    kind: "color",
+  },
   {
     role: "warning",
     keywords: ["warning", "caution", "amber", "yellow"],
@@ -412,37 +447,83 @@ const KEYWORD_RULES: KeywordRule[] = [
   },
   {
     role: "font-family",
-    keywords: ["font-family", "font-sans", "font-base", "typeface", "font-body", "body-font"],
+    keywords: [
+      "font-family",
+      "font-sans",
+      "font-base",
+      "typeface",
+      "font-body",
+      "body-font",
+    ],
     kind: "font",
   },
   {
     role: "font-weight-bold",
-    keywords: ["font-weight-bold", "weight-bold", "font-bold", "font-weight-semibold", "font-semibold", "weight-semibold"],
+    keywords: [
+      "font-weight-bold",
+      "weight-bold",
+      "font-bold",
+      "font-weight-semibold",
+      "font-semibold",
+      "weight-semibold",
+    ],
     kind: "weight",
   },
   {
     role: "font-weight-default",
-    keywords: ["font-weight-normal", "font-weight-regular", "weight-normal", "font-normal", "font-weight-base", "font-weight"],
+    keywords: [
+      "font-weight-normal",
+      "font-weight-regular",
+      "weight-normal",
+      "font-normal",
+      "font-weight-base",
+      "font-weight",
+    ],
     kind: "weight",
   },
   {
     role: "font-size-large",
-    keywords: ["font-size-lg", "text-lg", "font-size-large", "size-lg", "fs-lg"],
+    keywords: [
+      "font-size-lg",
+      "text-lg",
+      "font-size-large",
+      "size-lg",
+      "fs-lg",
+    ],
     kind: "fontsize",
   },
   {
     role: "font-size-small",
-    keywords: ["font-size-sm", "text-sm", "font-size-small", "size-sm", "fs-sm"],
+    keywords: [
+      "font-size-sm",
+      "text-sm",
+      "font-size-small",
+      "size-sm",
+      "fs-sm",
+    ],
     kind: "fontsize",
   },
   {
     role: "font-size-xsmall",
-    keywords: ["font-size-xs", "text-xs", "font-size-xsmall", "size-xs", "fs-xs"],
+    keywords: [
+      "font-size-xs",
+      "text-xs",
+      "font-size-xsmall",
+      "size-xs",
+      "fs-xs",
+    ],
     kind: "fontsize",
   },
   {
     role: "font-size-medium",
-    keywords: ["font-size-base", "text-base", "font-size-md", "font-size", "body-font-size", "size-base"],
+    keywords: [
+      "font-size-base",
+      "text-base",
+      "font-size-md",
+      "font-size",
+      "body-font-size",
+      "size-base",
+    ],
     kind: "fontsize",
   },
   {
@@ -474,7 +555,12 @@ const KEYWORD_RULES: KeywordRule[] = [
   // Emphasis
   {
     role: "transition-duration",
-    keywords: ["transition-duration", "duration", "transition", "animation-duration"],
+    keywords: [
+      "transition-duration",
+      "duration",
+      "transition",
+      "animation-duration",
+    ],
     kind: "ms",
   },
   {
@@ -595,8 +681,9 @@ function scoreColor(
       // what made the applied primary read a shade off. Then prefer a lightness
       // suited to the mode (brand buttons sit a touch brighter in dark themes).
       const isVariant =
-        /(hover|active|focus|pressed|visited|darker|lighter|emphasis|strong|vivid|intense|deep|subtle|muted|soft|pale|disabled|gradient|ring|shadow)/
-          .test(name);
+        /(hover|active|focus|pressed|visited|darker|lighter|emphasis|strong|vivid|intense|deep|subtle|muted|soft|pale|disabled|gradient|ring|shadow)/.test(
+          name
+        );
       const idealL = bg != null && bg.l < 50 ? 62 : 52;
       return -(isVariant ? 200 : 0) - Math.abs(c.l - idealL) + c.s * 0.02;
     }
@@ -608,7 +695,7 @@ function scoreColor(
       // Near-neutral and on the same light/dark side as the background.
       if (c.s > 30) return REJECT;
       if (bg) {
-        return (c.l >= 50) === (bg.l >= 50) ? 100 - Math.abs(c.l - bg.l) : REJECT;
+        return c.l >= 50 === bg.l >= 50 ? 100 - Math.abs(c.l - bg.l) : REJECT;
       }
       return c.l > 30 && c.l < 70 ? REJECT : Math.max(c.l, 100 - c.l);
     case "text":
@@ -643,8 +730,10 @@ function scoreColor(
     // Semantic colors: correct hue, saturated, and a mid lightness — so we take
     // the solid `danger`, not its pale `danger-subtle` border variant.
     case "danger":
-      return (isHue(c.h, 0, 20) || isHue(c.h, 335, 360))
-          && c.s >= 35 && c.l >= 25 && c.l <= 70
+      return (isHue(c.h, 0, 20) || isHue(c.h, 335, 360)) &&
+        c.s >= 35 &&
+        c.l >= 25 &&
+        c.l <= 70
         ? c.s
         : REJECT;
     case "success":
@@ -701,10 +790,11 @@ function validateValue(raw: string, kind: RoleKind): string | null {
 function isFontStack(value: string): boolean {
   if (parseColorToHex(value) != null || !/[a-z]/i.test(value)) return false;
   return (
-    value.includes(",")
-    || /["']/.test(value)
-    || /\b(serif|sans-serif|monospace|system-ui|ui-sans-serif|ui-monospace|ui-serif|cursive|fantasy|-apple-system|blinkmacsystemfont)\b/i
-      .test(value)
+    value.includes(",") ||
+    /["']/.test(value) ||
+    /\b(serif|sans-serif|monospace|system-ui|ui-sans-serif|ui-monospace|ui-serif|cursive|fantasy|-apple-system|blinkmacsystemfont)\b/i.test(
+      value
+    )
   );
 }
 
@@ -747,7 +837,12 @@ const SELECTOR_READS: SelectorRead[] = [
   {
     selector: /(?:^|[{}])\s*(?:html|body)\b[^{}]*\{([^{}]*)\}/gi,
     reads: [
-      { role: "background", props: ["background-color", "background"], kind: "color", color: true },
+      {
+        role: "background",
+        props: ["background-color", "background"],
+        kind: "color",
+        color: true,
+      },
       { role: "text", props: ["color"], kind: "color" },
       { role: "font-family", props: ["font-family"], kind: "font" },
       { role: "font-size-medium", props: ["font-size"], kind: "fontsize" },
@@ -757,33 +852,63 @@ const SELECTOR_READS: SelectorRead[] = [
   },
   {
     selector: /(?:^|[{}])\s*(?:code|pre|kbd|samp)\b[^{}]*\{([^{}]*)\}/gi,
-    reads: [
-      { role: "font-family-mono", props: ["font-family"], kind: "font" },
-    ],
+    reads: [{ role: "font-family-mono", props: ["font-family"], kind: "font" }],
   },
   {
     selector: /(?:^|[{}])\s*(?:button|\.btn|\.button)\b[^{}]*\{([^{}]*)\}/gi,
     reads: [
-      { role: "primary", props: ["background-color", "background"], kind: "color", color: true },
-      { role: "border-radius", props: ["border-radius"], kind: "radius", length: true },
+      {
+        role: "primary",
+        props: ["background-color", "background"],
+        kind: "color",
+        color: true,
+      },
+      {
+        role: "border-radius",
+        props: ["border-radius"],
+        kind: "radius",
+        length: true,
+      },
       { role: "shadow", props: ["box-shadow"], kind: "shadow" },
-      { role: "transition-duration", props: ["transition-duration", "transition"], kind: "ms" },
+      {
+        role: "transition-duration",
+        props: ["transition-duration", "transition"],
+        kind: "ms",
+      },
       { role: "spacing", props: ["padding"], kind: "space", length: true },
     ],
   },
   {
     selector: /(?:^|[{}])\s*a\b[^{}]*\{([^{}]*)\}/gi,
-    reads: [
-      { role: "primary", props: ["color"], kind: "color", color: true },
-    ],
+    reads: [{ role: "primary", props: ["color"], kind: "color", color: true }],
   },
   {
     selector: /(?:^|[{}])\s*(?:input|textarea|select)\b[^{}]*\{([^{}]*)\}/gi,
     reads: [
-      { role: "input-bg", props: ["background-color", "background"], kind: "color", color: true },
-      { role: "border", props: ["border-color", "border"], kind: "color", color: true },
-      { role: "border-radius", props: ["border-radius"], kind: "radius", length: true },
-      { role: "border-width", props: ["border-width", "border"], kind: "width", length: true },
+      {
+        role: "input-bg",
+        props: ["background-color", "background"],
+        kind: "color",
+        color: true,
+      },
+      {
+        role: "border",
+        props: ["border-color", "border"],
+        kind: "color",
+        color: true,
+      },
+      {
+        role: "border-radius",
+        props: ["border-radius"],
+        kind: "radius",
+        length: true,
+      },
+      {
+        role: "border-width",
+        props: ["border-width", "border"],
+        kind: "width",
+        length: true,
+      },
     ],
   },
   {
@@ -816,12 +941,18 @@ function propertyContext(css: string, map: CssTokenMap): void {
         const value = read.color
           ? firstColorInValue(raw)
           : read.length
-          ? clampLength(firstLengthToken(raw) ?? raw, ...kindBounds(read.kind))
-          : validateValue(raw, read.kind);
+            ? clampLength(
+                firstLengthToken(raw) ?? raw,
+                ...kindBounds(read.kind)
+              )
+            : validateValue(raw, read.kind);
         // Apply the same semantic gate as Phase B so a real-but-wrong value
         // (a white border, a 9px "base" size) doesn't lock the role. The empty
         // name means a property-context read is never treated as a "variant".
-        if (value != null && scoreForRole(read.role, read.kind, value, map, "") !== REJECT) {
+        if (
+          value != null &&
+          scoreForRole(read.role, read.kind, value, map, "") !== REJECT
+        ) {
           map[read.role] = value;
         }
       }
@@ -942,9 +1073,7 @@ function reconcile(map: CssTokenMap): void {
  * a full set of token assignments: real values where we found them, synthesized
  * (and harmonized) values everywhere else.
  */
-export function extractTokensFromCssText(
-  cssText: string
-): CssExtractionResult {
+export function extractTokensFromCssText(cssText: string): CssExtractionResult {
   const map = parseCssTokens([cssText], null);
   return buildCssExtractionResult(map, "file");
 }
@@ -1041,7 +1170,8 @@ export function buildCssExtractionResult(
 
 /** Infer light vs dark from the recovered background (or text) luminance. */
 function inferColorMode(map: CssTokenMap): ThemeColorMode {
-  const bgLum = map.background != null ? luminanceFromHex(map.background) : null;
+  const bgLum =
+    map.background != null ? luminanceFromHex(map.background) : null;
   if (bgLum != null) return bgLum < 0.45 ? "dark" : "light";
   const textLum = map.text != null ? luminanceFromHex(map.text) : null;
   if (textLum != null) return textLum > 0.6 ? "dark" : "light";
@@ -1054,18 +1184,23 @@ function inferColorMode(map: CssTokenMap): ThemeColorMode {
  */
 function deriveScale(map: CssTokenMap): Record<string, string> {
   const derived: Record<string, string> = {};
-  const medium = map["font-size-medium"] != null
-    ? parseInt(map["font-size-medium"], 10)
-    : null;
+  const medium =
+    map["font-size-medium"] != null
+      ? parseInt(map["font-size-medium"], 10)
+      : null;
   if (medium != null && !Number.isNaN(medium)) {
     if (map["font-size-small"] == null) {
-      derived["font-size-small"] = String(Math.max(10, Math.round(medium * 0.86)));
+      derived["font-size-small"] = String(
+        Math.max(10, Math.round(medium * 0.86))
+      );
     }
     if (map["font-size-large"] == null) {
       derived["font-size-large"] = String(Math.round(medium * 1.15));
     }
     if (map["font-size-xsmall"] == null) {
-      derived["font-size-xsmall"] = String(Math.max(9, Math.round(medium * 0.79)));
+      derived["font-size-xsmall"] = String(
+        Math.max(9, Math.round(medium * 0.79))
+      );
     }
   }
   return derived;
@@ -1186,13 +1321,13 @@ function firstColorInValue(value: string): string | null {
 function parseColorToHex(input: string): string | null {
   const value = input.trim().toLowerCase();
   if (
-    value === ""
-    || value === "inherit"
-    || value === "initial"
-    || value === "unset"
-    || value === "none"
-    || value === "transparent"
-    || value === "currentcolor"
+    value === "" ||
+    value === "inherit" ||
+    value === "initial" ||
+    value === "unset" ||
+    value === "none" ||
+    value === "transparent" ||
+    value === "currentcolor"
   ) {
     return null;
   }
@@ -1215,12 +1350,14 @@ function parseColorToHex(input: string): string | null {
     const parts = rgb[1].split(/[\s,/]+/).filter((p) => p.length > 0);
     if (parts.length >= 3) {
       const channel = (p: string): number => {
-        const n = p.endsWith("%")
-          ? (parseFloat(p) / 100) * 255
-          : parseFloat(p);
+        const n = p.endsWith("%") ? (parseFloat(p) / 100) * 255 : parseFloat(p);
         return clampByte(n);
       };
-      return rgbToHex([channel(parts[0]), channel(parts[1]), channel(parts[2])]);
+      return rgbToHex([
+        channel(parts[0]),
+        channel(parts[1]),
+        channel(parts[2]),
+      ]);
     }
     return null;
   }
@@ -1366,7 +1503,9 @@ function bestForeground(hex: string): string {
   const darkContrast = contrastRatio(luminanceFromHex(NEAR_BLACK) ?? 0, bgLum);
   // White if it's at least reasonably legible (WCAG AA for large/UI text), or
   // if it simply beats dark; dark only on light primaries where white fails.
-  return whiteContrast >= 3 || whiteContrast >= darkContrast ? WHITE : NEAR_BLACK;
+  return whiteContrast >= 3 || whiteContrast >= darkContrast
+    ? WHITE
+    : NEAR_BLACK;
 }
 
 function clampByte(n: number): number {
