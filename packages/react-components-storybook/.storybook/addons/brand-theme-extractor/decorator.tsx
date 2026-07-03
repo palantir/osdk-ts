@@ -20,8 +20,55 @@ import { useEffect, useMemo } from "react";
 import { GLOBALS_KEY } from "./constants.js";
 import { parseBrandThemeState } from "./state.js";
 import { getTokenRole } from "./token-map.js";
+import type { TokenAssignment } from "./types.js";
 
 const STYLE_ID = "brand-theme-overrides";
+const FONTS_LINK_ID = "brand-theme-fonts";
+
+/**
+ * First families that are system/preinstalled or proprietary — never on Google
+ * Fonts, so we don't try to load them (the font stack's fallbacks handle them).
+ */
+const NON_GOOGLE_FONT =
+  /^(system-ui|-apple-system|blinkmacsystemfont|ui-(?:sans-serif|serif|monospace)|sans-serif|serif|monospace|cursive|fantasy|segoe ui|helvetica(?: neue)?|arial|sf ?(?:pro|mono).*|apple.*|.*emoji.*|.*fallback.*|inherit|initial|unset)$/i;
+
+/** Turn a font stack into a Google Fonts `family=` token from its first family
+ * (e.g. `"inter", …` → `Inter:wght@…`), or null when it isn't a Google font. */
+function googleFamilyToken(stack: string, withWeights: boolean): string | null {
+  const first = stack.split(",")[0]?.replaceAll(/["']/g, "").trim();
+  if (!first || NON_GOOGLE_FONT.test(first)) return null;
+  const family = first
+    .split(/\s+/)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join("+");
+  return withWeights ? `${family}:wght@400;500;600;700` : family;
+}
+
+/**
+ * Build a Google Fonts stylesheet URL for the extracted body + mono families, so
+ * the preview renders in the site's actual typeface. Returns "" when neither
+ * family is a Google font.
+ */
+function googleFontsHref(assignments: TokenAssignment[] | undefined): string {
+  if (!assignments) return "";
+  const bodyStack = assignments.find((a) => a.role === "font-family")
+    ?.customValue;
+  const monoStack = assignments.find((a) => a.role === "font-family-mono")
+    ?.customValue;
+  const body = bodyStack ? googleFamilyToken(bodyStack, true) : null;
+  const mono = monoStack ? googleFamilyToken(monoStack, false) : null;
+
+  const families: string[] = [];
+  if (body) families.push(body);
+  // Skip the mono family if it's the same base as the body family.
+  if (mono && mono.split(":")[0] !== (body ? body.split(":")[0] : "")) {
+    families.push(mono);
+  }
+  if (families.length === 0) return "";
+  return `https://fonts.googleapis.com/css2?${
+    families.map((f) => `family=${f}`).join("&")
+  }&display=swap`;
+}
 
 /**
  * Preview-side decorator that reads brand theme globals and injects
@@ -70,6 +117,11 @@ export const BrandThemeDecorator: Decorator = (Story, context) => {
 
     // Re-assert compound tokens so custom themes use the themed surface
     // border instead of the Blueprint palette-based box-shadow defaults.
+    // We intentionally do NOT re-assert --osdk-button-shadow (the shared,
+    // secondary-button border). Instead we flatten only the *primary* button via
+    // its own --osdk-button-primary-shadow: a subtle drop shadow with no inset
+    // border, so filled brand buttons (e.g. Apple's) don't get a grey stroke
+    // while secondary buttons keep their edge.
     overrides.push(
       "  --osdk-input-focus-outline: 1px solid var(--osdk-intent-primary-rest);",
       "  --osdk-surface-border: var(--osdk-surface-border-width) solid var(--osdk-surface-border-color-default);",
@@ -77,12 +129,17 @@ export const BrandThemeDecorator: Decorator = (Story, context) => {
       "  --osdk-input-shadow-error: inset 0 0 0 var(--osdk-surface-border-width) var(--osdk-intent-danger-rest);",
       "  --osdk-input-focus-shadow: inset 0 0 0 var(--osdk-surface-border-width) var(--osdk-surface-border-color-default);",
       "  --osdk-input-focus-shadow-error: inset 0 0 0 var(--osdk-surface-border-width) var(--osdk-intent-danger-rest);",
-      "  --osdk-button-shadow: inset 0 0 0 var(--osdk-surface-border-width) var(--osdk-surface-border-color-default);"
+      "  --osdk-button-primary-shadow: 0 1px 2px var(--osdk-button-drop-shadow-color);"
     );
 
     // Use :root:root (doubled specificity) to override theme layers.
     return `:root:root {\n${overrides.join("\n")}\n}`;
   }, [brandTheme.assignments]);
+
+  const fontsHref = useMemo(
+    () => googleFontsHref(brandTheme.assignments),
+    [brandTheme.assignments]
+  );
 
   useEffect(
     function syncBrandThemeOverrideStyle() {
@@ -104,6 +161,31 @@ export const BrandThemeDecorator: Decorator = (Story, context) => {
       };
     },
     [cssText]
+  );
+
+  useEffect(
+    function syncBrandThemeFontLink() {
+      let linkEl = document.getElementById(FONTS_LINK_ID);
+
+      if (fontsHref) {
+        if (!linkEl) {
+          linkEl = document.createElement("link");
+          linkEl.id = FONTS_LINK_ID;
+          linkEl.setAttribute("rel", "stylesheet");
+          document.head.appendChild(linkEl);
+        }
+        if (linkEl.getAttribute("href") !== fontsHref) {
+          linkEl.setAttribute("href", fontsHref);
+        }
+      } else if (linkEl) {
+        linkEl.remove();
+      }
+
+      return () => {
+        if (linkEl) linkEl.remove();
+      };
+    },
+    [fontsHref]
   );
 
   useEffect(

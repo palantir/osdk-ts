@@ -32,12 +32,12 @@ export interface ThemePreset {
   assignments: TokenAssignment[];
 }
 
-function valueAssignment(role: string, value: string): TokenAssignment {
+export function valueAssignment(role: string, value: string): TokenAssignment {
   return { role, colorIndex: -1, customValue: value };
 }
 
 /** Shared non-color defaults used across most presets */
-function baseDefaults(overrides?: {
+export function baseDefaults(overrides?: {
   radius?: string;
   spacing?: string;
   shadow?: string;
@@ -54,6 +54,7 @@ function baseDefaults(overrides?: {
     valueAssignment("font-weight-bold", "600"),
     valueAssignment("line-height", "1.5"),
     valueAssignment("border-radius", overrides?.radius ?? "4"),
+    valueAssignment("button-border-radius", overrides?.radius ?? "4"),
     valueAssignment("spacing", overrides?.spacing ?? "4"),
     valueAssignment("border-width", "1"),
     valueAssignment(
@@ -75,6 +76,8 @@ function workshopLightColors(): TokenAssignment[] {
   return [
     valueAssignment("background", "#ffffff"),
     valueAssignment("surface", "#f6f7f9"),
+    valueAssignment("surface-hover", "#ebecef"),
+    valueAssignment("surface-active", "#dce0e5"),
     valueAssignment("text", "#1c2127"),
     valueAssignment("text-muted", "#5f6b7c"),
     valueAssignment("text-subtle", "#abb3bf"),
@@ -90,6 +93,7 @@ function workshopLightColors(): TokenAssignment[] {
     valueAssignment("success", "#238551"),
     valueAssignment("warning", "#c87619"),
     valueAssignment("primary-hover", "#215db0"),
+    valueAssignment("primary-active", "#184a90"),
   ];
 }
 
@@ -101,6 +105,8 @@ function workshopDarkColors(): TokenAssignment[] {
   return [
     valueAssignment("background", "#111418"),
     valueAssignment("surface", "#1c2127"),
+    valueAssignment("surface-hover", "#252a31"),
+    valueAssignment("surface-active", "#2f343c"),
     valueAssignment("text", "#f6f7f9"),
     valueAssignment("text-muted", "#abb3bf"),
     valueAssignment("text-subtle", "#5f6b7c"),
@@ -116,6 +122,7 @@ function workshopDarkColors(): TokenAssignment[] {
     valueAssignment("success", "#32a467"),
     valueAssignment("warning", "#ec9a3c"),
     valueAssignment("primary-hover", "#4c90f0"),
+    valueAssignment("primary-active", "#5ea3ff"),
   ];
 }
 
@@ -161,6 +168,8 @@ export const THEME_PRESETS: ThemePreset[] = [
     assignments: [
       valueAssignment("background", "#0a0a0a"),
       valueAssignment("surface", "#111111"),
+      valueAssignment("surface-hover", "#1a1a1a"),
+      valueAssignment("surface-active", "#222222"),
       valueAssignment("text", "#86efac"),
       valueAssignment("text-muted", "#16a34a"),
       valueAssignment("primary", "#16a34a"),
@@ -187,6 +196,8 @@ export const THEME_PRESETS: ThemePreset[] = [
     assignments: [
       valueAssignment("background", "#0f172a"),
       valueAssignment("surface", "#1e293b"),
+      valueAssignment("surface-hover", "#283548"),
+      valueAssignment("surface-active", "#334155"),
       valueAssignment("text", "#e2e8f0"),
       valueAssignment("text-muted", "#94a3b8"),
       valueAssignment("primary", "#2563eb"),
@@ -213,6 +224,8 @@ export const THEME_PRESETS: ThemePreset[] = [
     assignments: [
       valueAssignment("background", "#faf8f5"),
       valueAssignment("surface", "#f5f0eb"),
+      valueAssignment("surface-hover", "#ebe5de"),
+      valueAssignment("surface-active", "#ddd6cd"),
       valueAssignment("text", "#1c1917"),
       valueAssignment("text-muted", "#78716c"),
       valueAssignment("primary", "#c2410c"),
@@ -237,6 +250,8 @@ export const THEME_PRESETS: ThemePreset[] = [
     assignments: [
       valueAssignment("background", "#1a1025"),
       valueAssignment("surface", "#2d1b4e"),
+      valueAssignment("surface-hover", "#3b2563"),
+      valueAssignment("surface-active", "#4c1d95"),
       valueAssignment("text", "#e9d5ff"),
       valueAssignment("text-muted", "#a78bfa"),
       valueAssignment("primary", "#9333ea"),
