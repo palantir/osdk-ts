@@ -22,5 +22,6 @@ export class ExitProcessError extends Error {
     public readonly originalError?: Error | undefined
   ) {
     super(msg);
+    this.name = "ExitProcessError";
   }
 }

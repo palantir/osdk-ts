@@ -51,8 +51,8 @@ export default defineConfig({
     "typescript/no-explicit-any": "warn",
     "eqeqeq": ["error", "always", { "null": "never" }],
     "no-eq-null": "off",
-    "unicorn/custom-error-definition": "off",
-    "default-param-last": "off",
+    "unicorn/custom-error-definition": "error",
+    "default-param-last": "error",
     "require-await": "off",
     "typescript/require-await": "off",
     // Adding the `u` flag to an existing regex can change its matching semantics;

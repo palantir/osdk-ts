@@ -41,6 +41,7 @@ export class OpenApiCallError extends Error {
         json.parameters
       )}`
     );
+    this.name = "OpenApiCallError";
   }
 }
 
