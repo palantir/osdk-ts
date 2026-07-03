@@ -117,10 +117,22 @@ const OXC_NESTED_CONFIG_PACKAGES = {
 
 // All oxc packages (root-config + nested-config) are excluded from the ESLint +
 // dprint path below.
-const OXC_PACKAGE_EXCLUDES = [
+const ALL_OXC_PACKAGES = [
   ...OXC_PACKAGES,
   ...Object.keys(OXC_NESTED_CONFIG_PACKAGES),
-].map((p) => `**/packages/${p}/**`);
+];
+const OXC_PACKAGE_EXCLUDES = ALL_OXC_PACKAGES.map((p) => `**/packages/${p}/**`);
+
+/*
+ * css / scss / html inside oxc packages are formatted by oxfmt (the root config
+ * covers these types). They run oxfmt ONLY: oxlint is a JS/TS linter and does
+ * not process stylesheets or html, so handing it these files would match 0 files
+ * and exit non-zero. dprint never formatted these types either, so packages
+ * still on the eslint/dprint path get no handler for them.
+ */
+const OXC_STYLE_GLOB = `packages/{${
+  ALL_OXC_PACKAGES.join(",")
+}}/**/*.{css,scss,html}`;
 
 // Files that must never be linted/formatted regardless of toolchain: generated
 // SDK output and copied templates. Both the oxc and ESLint paths below exclude
@@ -189,6 +201,12 @@ export default {
       },
     ]),
   ),
+  [OXC_STYLE_GLOB]: (files) => {
+    const match = micromatch.not(files, IGNORED_FILE_GLOBS, MICROMATCH_OPTS);
+    if (match.length === 0) return [];
+    // oxfmt only — oxlint does not handle css/scss/html (see OXC_STYLE_GLOB).
+    return [`oxfmt -c oxfmt.config.ts ${match.join(" ")}`];
+  },
   "packages/**/*.{js,jsx,ts,tsx,mjs,cjs}": (
     files,
   ) => {
