@@ -122,6 +122,18 @@ const OXC_PACKAGE_EXCLUDES = [
   ...Object.keys(OXC_NESTED_CONFIG_PACKAGES),
 ].map((p) => `**/packages/${p}/**`);
 
+// Files that live inside oxc packages but must never be linted/formatted:
+// generated SDK output and copied templates. The oxc configs already ignore
+// these via their `ignorePatterns`, so handing them to `oxlint` matches 0 files
+// and exits non-zero ("No files found to lint"). Filter them out here, mirroring
+// the ESLint path's exclusions below.
+const OXC_IGNORED_FILE_GLOBS = [
+  "**/templates/**/*",
+  "**/generatedNoCheck/**/*",
+  "**/generatedNoCheck2/**/*",
+  "**/examples/**/*",
+];
+
 /*
  * Overview:
  *  - Fixes lint rules and formatting for code
@@ -138,13 +150,14 @@ export default {
   ],
   "*.md": [CSPELL_CMD],
   [OXC_PACKAGE_GLOB]: (files) => {
-    if (files.length === 0) return [];
+    const match = micromatch.not(files, OXC_IGNORED_FILE_GLOBS);
+    if (match.length === 0) return [];
     // oxlint --fix first (its fixes can affect whitespace), then oxfmt last so
     // the final result is always formatted. Mirrors the package fix-lint script.
     return [
-      `oxlint -c oxlint.config.ts --fix ${files.join(" ")}`,
-      `oxfmt -c oxfmt.config.ts ${files.join(" ")}`,
-      `${CSPELL_CMD} ${files.join(" ")}`,
+      `oxlint -c oxlint.config.ts --fix ${match.join(" ")}`,
+      `oxfmt -c oxfmt.config.ts ${match.join(" ")}`,
+      `${CSPELL_CMD} ${match.join(" ")}`,
     ];
   },
   // Same as the OXC_PACKAGE_GLOB handler above, but `-c` points at each
@@ -154,11 +167,12 @@ export default {
     Object.entries(OXC_NESTED_CONFIG_PACKAGES).map(([pkg, config]) => [
       `packages/${pkg}/**/*.{js,jsx,ts,tsx,mjs,cjs}`,
       (files) => {
-        if (files.length === 0) return [];
+        const match = micromatch.not(files, OXC_IGNORED_FILE_GLOBS);
+        if (match.length === 0) return [];
         return [
-          `oxlint -c ${config} --fix ${files.join(" ")}`,
-          `oxfmt -c oxfmt.config.ts ${files.join(" ")}`,
-          `${CSPELL_CMD} ${files.join(" ")}`,
+          `oxlint -c ${config} --fix ${match.join(" ")}`,
+          `oxfmt -c oxfmt.config.ts ${match.join(" ")}`,
+          `${CSPELL_CMD} ${match.join(" ")}`,
         ];
       },
     ]),
