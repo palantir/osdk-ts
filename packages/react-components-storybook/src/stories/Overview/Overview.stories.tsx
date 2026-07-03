@@ -432,7 +432,6 @@ function ComponentOverview(): React.ReactElement {
         display: "flex",
         flexDirection: "column",
         height: "100vh",
-        minHeight: 0,
       }}
     >
       <div
