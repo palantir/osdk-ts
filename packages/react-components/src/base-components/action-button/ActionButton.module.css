@@ -53,7 +53,6 @@
   background-color: var(--osdk-button-primary-bg);
   border-color: var(--osdk-button-primary-border-color);
   color: var(--osdk-button-primary-color);
-  box-shadow: var(--osdk-button-primary-shadow);
 
   &:hover:not(:disabled) {
     background-color: var(--osdk-button-primary-bg-hover);

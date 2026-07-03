@@ -318,7 +318,6 @@ Styling for button components. Buttons use `border: none` with `box-shadow` for 
 | `--osdk-button-primary-bg`        | `var(--osdk-intent-primary-rest)`       | Primary button background                                                                                                                       |
 | `--osdk-button-primary-bg-hover`  | `var(--osdk-intent-primary-hover)`      | Primary button hover background                                                                                                                 |
 | `--osdk-button-primary-bg-active` | `var(--osdk-intent-primary-active)`     | Primary button active background                                                                                                                |
-| `--osdk-button-primary-shadow`    | `var(--osdk-button-shadow)`             | Primary button box-shadow. Override to flatten the filled primary button (e.g. drop shadow with no inset border) independently of other buttons |
 
 #### Secondary Button
 

@@ -16,7 +16,6 @@
   --osdk-button-primary-bg-hover: var(--osdk-intent-primary-hover);
   --osdk-button-primary-bg-active: var(--osdk-intent-primary-active);
   --osdk-button-primary-border-color: var(--osdk-intent-primary-rest);
-  --osdk-button-primary-shadow: var(--osdk-button-shadow);
 
   /* Secondary / None Button */
   --osdk-button-secondary-color: var(--osdk-typography-color-default-rest);
