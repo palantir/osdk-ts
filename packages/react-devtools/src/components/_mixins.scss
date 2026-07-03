@@ -1,4 +1,4 @@
-@use 'tokens' as t;
+@use "tokens" as t;
 
 // Uppercase muted section label
 @mixin dt-label {
@@ -95,7 +95,9 @@
   padding: 6px 12px;
   border-bottom: 1px solid t.$border-subtle;
   border-left: 2px solid transparent;
-  transition: background-color t.$transition-fast, border-left-color t.$transition-fast;
+  transition:
+    background-color t.$transition-fast,
+    border-left-color t.$transition-fast;
 
   &:hover {
     background: t.$bg-hover;
@@ -142,8 +144,12 @@
 }
 
 @keyframes dt-shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 // Staggered entrance animation for card lists
@@ -167,7 +173,13 @@
 
 @media (prefers-reduced-motion: reduce) {
   @keyframes dt-fade-up {
-    from { opacity: 1; transform: none; }
-    to { opacity: 1; transform: none; }
+    from {
+      opacity: 1;
+      transform: none;
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
   }
 }

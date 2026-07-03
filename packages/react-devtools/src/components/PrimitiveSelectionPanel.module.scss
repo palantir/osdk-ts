@@ -1,5 +1,5 @@
-@use 'tokens' as t;
-@use 'mixins' as m;
+@use "tokens" as t;
+@use "mixins" as m;
 
 .panel {
   display: flex;
@@ -108,7 +108,9 @@
   cursor: pointer;
   text-align: left;
   margin-bottom: 0;
-  transition: background-color t.$transition-fast, border-left-color t.$transition-fast;
+  transition:
+    background-color t.$transition-fast,
+    border-left-color t.$transition-fast;
 
   &:hover {
     background: t.$bg-hover;

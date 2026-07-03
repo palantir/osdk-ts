@@ -1,5 +1,5 @@
-@use 'tokens' as t;
-@use 'mixins' as m;
+@use "tokens" as t;
+@use "mixins" as m;
 
 // A single `Metric` cell — borderless; the enclosing `Metrics` grid draws the
 // dividers around it.
@@ -36,7 +36,6 @@
 
 .metricValue {
   @include m.dt-metric-value;
-
 
   // No data yet — muted, so it reads as absent rather than a real measurement.
   &.na {

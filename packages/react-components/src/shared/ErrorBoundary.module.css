@@ -21,18 +21,25 @@
   gap: var(--osdk-error-boundary-gap, 8px);
   padding: var(--osdk-error-boundary-padding, 8px);
   border-radius: var(--osdk-error-boundary-border-radius, 4px);
-  background-color: var(--osdk-error-boundary-bg, color-mix(in srgb, var(--osdk-intent-danger-rest, #c23030) 5%, transparent));
+  background-color: var(
+    --osdk-error-boundary-bg,
+    color-mix(in srgb, var(--osdk-intent-danger-rest, #c23030) 5%, transparent)
+  );
 }
 
 .errorMessage {
   margin: 0;
   font-size: var(--osdk-error-boundary-font-size, 13px);
-  color: var(--osdk-error-boundary-text-color, var(--osdk-intent-danger-rest, #c23030));
+  color: var(
+    --osdk-error-boundary-text-color,
+    var(--osdk-intent-danger-rest, #c23030)
+  );
 }
 
 .retryButton {
   padding: var(--osdk-error-boundary-button-padding, 4px 8px);
-  border: var(--osdk-surface-border-width, 1px) solid var(--osdk-error-boundary-button-border-color, currentColor);
+  border: var(--osdk-surface-border-width, 1px) solid
+    var(--osdk-error-boundary-button-border-color, currentColor);
   border-radius: var(--osdk-error-boundary-button-border-radius, 3px);
   background: transparent;
   font-size: var(--osdk-error-boundary-button-font-size, 12px);
@@ -41,11 +48,15 @@
   transition: background-color var(--osdk-filter-input-transition, 150ms ease);
 
   &:hover {
-    background-color: var(--osdk-error-boundary-button-hover-bg, color-mix(in srgb, currentColor 5%, transparent));
+    background-color: var(
+      --osdk-error-boundary-button-hover-bg,
+      color-mix(in srgb, currentColor 5%, transparent)
+    );
   }
 
   &:focus-visible {
-    outline: var(--osdk-filter-input-focus-outline-width, 2px) solid var(--osdk-filter-input-focus-outline-color, rgba(45, 114, 210, 0.6));
+    outline: var(--osdk-filter-input-focus-outline-width, 2px) solid
+      var(--osdk-filter-input-focus-outline-color, rgba(45, 114, 210, 0.6));
     outline-offset: var(--osdk-filter-input-focus-outline-offset, 2px);
   }
 

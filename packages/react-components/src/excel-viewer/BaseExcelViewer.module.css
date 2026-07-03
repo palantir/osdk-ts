@@ -83,14 +83,16 @@
   background-color: var(--osdk-excel-viewer-tab-bg);
   flex-shrink: 0;
   overflow-x: auto;
-  padding: var(--osdk-excel-viewer-tab-bar-padding) var(--osdk-excel-viewer-tab-bar-padding) 0;
+  padding: var(--osdk-excel-viewer-tab-bar-padding)
+    var(--osdk-excel-viewer-tab-bar-padding) 0;
 }
 
 .tab {
   padding: var(--osdk-excel-viewer-tab-padding);
   border: var(--osdk-excel-viewer-tab-border);
   border-bottom: none;
-  border-radius: var(--osdk-excel-viewer-tab-border-radius) var(--osdk-excel-viewer-tab-border-radius) 0 0;
+  border-radius: var(--osdk-excel-viewer-tab-border-radius)
+    var(--osdk-excel-viewer-tab-border-radius) 0 0;
   background-color: var(--osdk-excel-viewer-tab-bg);
   font-family: var(--osdk-typography-family-default);
   font-size: var(--osdk-typography-size-body-x-small);

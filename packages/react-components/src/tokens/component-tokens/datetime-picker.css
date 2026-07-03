@@ -120,7 +120,9 @@
     --osdk-input-focus-shadow-error
   );
 
-  --osdk-datetime-input-transition-duration: var(--osdk-input-transition-duration);
+  --osdk-datetime-input-transition-duration: var(
+    --osdk-input-transition-duration
+  );
   --osdk-datetime-input-transition-ease: var(--osdk-input-transition-ease);
 
   /* Calendar fallback / loading */
