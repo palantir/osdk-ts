@@ -19,7 +19,7 @@
 import { rmSync } from "node:fs";
 import { mkdir, readdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
-import { fileURLToPath } from "url";
+import { fileURLToPath } from "node:url";
 
 import { generateClientSdkVersionTwoPointZero } from "@osdk/generator";
 import { LegacyFauxFoundry } from "@osdk/shared.test";
@@ -29,7 +29,7 @@ const outDir = join(__dirname, "src", "generatedNoCheck");
 
 try {
   rmSync(outDir, { recursive: true, force: true });
-} catch (e) {
+} catch {
   // ignored, only needed for regeneration
 }
 
