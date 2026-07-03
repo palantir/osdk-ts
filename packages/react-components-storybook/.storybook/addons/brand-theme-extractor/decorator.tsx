@@ -119,11 +119,6 @@ export const BrandThemeDecorator: Decorator = (Story, context) => {
 
     // Re-assert compound tokens so custom themes use the themed surface
     // border instead of the Blueprint palette-based box-shadow defaults.
-    // We intentionally do NOT re-assert --osdk-button-shadow (the shared,
-    // secondary-button border). Instead we flatten only the *primary* button via
-    // its own --osdk-button-primary-shadow: a subtle drop shadow with no inset
-    // border, so filled brand buttons (e.g. Apple's) don't get a grey stroke
-    // while secondary buttons keep their edge.
     overrides.push(
       "  --osdk-input-focus-outline: 1px solid var(--osdk-intent-primary-rest);",
       "  --osdk-surface-border: var(--osdk-surface-border-width) solid var(--osdk-surface-border-color-default);",
@@ -131,7 +126,7 @@ export const BrandThemeDecorator: Decorator = (Story, context) => {
       "  --osdk-input-shadow-error: inset 0 0 0 var(--osdk-surface-border-width) var(--osdk-intent-danger-rest);",
       "  --osdk-input-focus-shadow: inset 0 0 0 var(--osdk-surface-border-width) var(--osdk-surface-border-color-default);",
       "  --osdk-input-focus-shadow-error: inset 0 0 0 var(--osdk-surface-border-width) var(--osdk-intent-danger-rest);",
-      "  --osdk-button-primary-shadow: 0 1px 2px var(--osdk-button-drop-shadow-color);"
+      "  --osdk-button-shadow: inset 0 0 0 var(--osdk-surface-border-width) var(--osdk-surface-border-color-default);"
     );
 
     // Use :root:root (doubled specificity) to override theme layers.
