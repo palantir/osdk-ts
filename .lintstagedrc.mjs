@@ -134,6 +134,14 @@ const IGNORED_FILE_GLOBS = [
   "**/examples/**/*",
 ];
 
+// lint-staged passes absolute paths to these matchers, so a repo checked out
+// under a hidden directory (e.g. `/…/.codex/osdk-ts/…`) has a dot-segment in
+// the path. micromatch's `**` does not cross dot-directories unless `dot: true`
+// is set, so without it the excludes above silently fail to match: a file gets
+// routed to a formatter/linter that then matches 0 files and exits non-zero
+// ("No files found to format"/"No files found to lint"), failing the commit.
+const MICROMATCH_OPTS = { dot: true };
+
 /*
  * Overview:
  *  - Fixes lint rules and formatting for code
@@ -150,7 +158,7 @@ export default {
   ],
   "*.md": [CSPELL_CMD],
   [OXC_PACKAGE_GLOB]: (files) => {
-    const match = micromatch.not(files, IGNORED_FILE_GLOBS);
+    const match = micromatch.not(files, IGNORED_FILE_GLOBS, MICROMATCH_OPTS);
     if (match.length === 0) return [];
     // oxlint --fix first (its fixes can affect whitespace), then oxfmt last so
     // the final result is always formatted. Mirrors the package fix-lint script.
@@ -167,7 +175,11 @@ export default {
     Object.entries(OXC_NESTED_CONFIG_PACKAGES).map(([pkg, config]) => [
       `packages/${pkg}/**/*.{js,jsx,ts,tsx,mjs,cjs}`,
       (files) => {
-        const match = micromatch.not(files, IGNORED_FILE_GLOBS);
+        const match = micromatch.not(
+          files,
+          IGNORED_FILE_GLOBS,
+          MICROMATCH_OPTS,
+        );
         if (match.length === 0) return [];
         return [
           `oxlint -c ${config} --fix ${match.join(" ")}`,
@@ -186,6 +198,7 @@ export default {
         ...IGNORED_FILE_GLOBS,
         ...OXC_PACKAGE_EXCLUDES,
       ],
+      MICROMATCH_OPTS,
     );
     if (match.length === 0) return [];
     return [
@@ -204,7 +217,7 @@ export default {
       // "**/package.json",
       "tsconfig.json",
       "**/tsconfig.json",
-    ], {});
+    ], MICROMATCH_OPTS);
 
     const mrlCommands = mrlFiles.length > 0
       ? [
