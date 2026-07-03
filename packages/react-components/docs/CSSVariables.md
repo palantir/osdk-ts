@@ -312,12 +312,12 @@ Styling for button components. Buttons use `border: none` with `box-shadow` for 
 
 #### Primary Button
 
-| Variable                          | Default Value                           | Description                                                                                                                                     |
-| --------------------------------- | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--osdk-button-primary-color`     | `var(--osdk-intent-primary-foreground)` | Primary button text color                                                                                                                       |
-| `--osdk-button-primary-bg`        | `var(--osdk-intent-primary-rest)`       | Primary button background                                                                                                                       |
-| `--osdk-button-primary-bg-hover`  | `var(--osdk-intent-primary-hover)`      | Primary button hover background                                                                                                                 |
-| `--osdk-button-primary-bg-active` | `var(--osdk-intent-primary-active)`     | Primary button active background                                                                                                                |
+| Variable                          | Default Value                           | Description                      |
+| --------------------------------- | --------------------------------------- | -------------------------------- |
+| `--osdk-button-primary-color`     | `var(--osdk-intent-primary-foreground)` | Primary button text color        |
+| `--osdk-button-primary-bg`        | `var(--osdk-intent-primary-rest)`       | Primary button background        |
+| `--osdk-button-primary-bg-hover`  | `var(--osdk-intent-primary-hover)`      | Primary button hover background  |
+| `--osdk-button-primary-bg-active` | `var(--osdk-intent-primary-active)`     | Primary button active background |
 
 #### Secondary Button
 
