@@ -14,11 +14,45 @@
  * limitations under the License.
  */
 
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import type {
+  ComponentHookBinding,
+  QueryParams,
+} from "../utils/ComponentQueryRegistry.js";
 import { createMockMonitorStore } from "./testHelpers.js";
+
+function binding(
+  overrides: Partial<ComponentHookBinding> & {
+    hookType: ComponentHookBinding["hookType"];
+    queryParams: QueryParams;
+  }
+): ComponentHookBinding {
+  return {
+    componentId: "comp",
+    componentName: "Comp",
+    hookIndex: 0,
+    subscriptionId: "sub",
+    querySignature: "sig",
+    stackTrace: "",
+    mountedAt: 0,
+    renderCount: 0,
+    lastRenderDuration: 0,
+    avgRenderDuration: 0,
+    ...overrides,
+  };
+}
+
+function populateRegistry(
+  store: ReturnType<typeof createMockMonitorStore>,
+  components: ReadonlyArray<readonly [string, ComponentHookBinding[]]>
+): void {
+  vi.mocked(store.getComponentRegistry().getActiveComponents).mockReturnValue(
+    new Map(components)
+  );
+}
 
 const { OverviewTab } = await import("./OverviewTab.js");
 
@@ -55,5 +89,142 @@ describe("OverviewTab", () => {
     render(<OverviewTab monitorStore={store} setActiveTab={vi.fn()} />);
 
     expect(screen.queryByText("No ontology linked")).toBeNull();
+  });
+
+  it("shows distinct object-type and action-type counts for a populated registry", () => {
+    const store = createMockMonitorStore();
+    populateRegistry(store, [
+      [
+        "c1",
+        [
+          binding({
+            hookType: "useOsdkObject",
+            queryParams: {
+              type: "object",
+              objectType: "Employee",
+              primaryKey: "1",
+              entityKind: "object",
+            },
+          }),
+          // Same object type in another component → still counts once.
+          binding({
+            hookType: "useOsdkObject",
+            queryParams: {
+              type: "object",
+              objectType: "Employee",
+              primaryKey: "2",
+              entityKind: "object",
+            },
+          }),
+          binding({
+            hookType: "useOsdkAction",
+            queryParams: { type: "action", actionName: "createEmployee" },
+          }),
+        ],
+      ],
+      [
+        "c2",
+        [
+          binding({
+            hookType: "useOsdkObjects",
+            queryParams: {
+              type: "list",
+              objectType: "Office",
+              entityKind: "object",
+            },
+          }),
+        ],
+      ],
+    ]);
+
+    render(<OverviewTab monitorStore={store} setActiveTab={vi.fn()} />);
+
+    expect(
+      screen.getByRole("button", { name: /object types/i }).textContent
+    ).toContain("2");
+    expect(
+      screen.getByRole("button", { name: /action types/i }).textContent
+    ).toContain("1");
+  });
+
+  it("excludes interface-kind bindings from the object-type count", () => {
+    const store = createMockMonitorStore();
+    populateRegistry(store, [
+      [
+        "c1",
+        [
+          binding({
+            hookType: "useOsdkObject",
+            queryParams: {
+              type: "object",
+              objectType: "Employee",
+              primaryKey: "1",
+              entityKind: "object",
+            },
+          }),
+          binding({
+            hookType: "useOsdkObjects",
+            queryParams: {
+              type: "list",
+              objectType: "Named",
+              entityKind: "interface",
+            },
+          }),
+        ],
+      ],
+    ]);
+
+    render(<OverviewTab monitorStore={store} setActiveTab={vi.fn()} />);
+
+    expect(
+      screen.getByRole("button", { name: /object types/i }).textContent
+    ).toContain("1");
+  });
+
+  it("switches to the Debugging tab when the object-types count is clicked", () => {
+    const store = createMockMonitorStore();
+    const setActiveTab = vi.fn();
+    populateRegistry(store, [
+      [
+        "c1",
+        [
+          binding({
+            hookType: "useOsdkObject",
+            queryParams: {
+              type: "object",
+              objectType: "Employee",
+              primaryKey: "1",
+              entityKind: "object",
+            },
+          }),
+        ],
+      ],
+    ]);
+
+    render(<OverviewTab monitorStore={store} setActiveTab={setActiveTab} />);
+    fireEvent.click(screen.getByRole("button", { name: /object types/i }));
+
+    expect(setActiveTab).toHaveBeenCalledWith("debugging");
+  });
+
+  it("switches to the Debugging tab when the action-types count is clicked", () => {
+    const store = createMockMonitorStore();
+    const setActiveTab = vi.fn();
+    populateRegistry(store, [
+      [
+        "c1",
+        [
+          binding({
+            hookType: "useOsdkAction",
+            queryParams: { type: "action", actionName: "createEmployee" },
+          }),
+        ],
+      ],
+    ]);
+
+    render(<OverviewTab monitorStore={store} setActiveTab={setActiveTab} />);
+    fireEvent.click(screen.getByRole("button", { name: /action types/i }));
+
+    expect(setActiveTab).toHaveBeenCalledWith("debugging");
   });
 });

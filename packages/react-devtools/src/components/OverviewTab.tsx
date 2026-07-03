@@ -17,9 +17,10 @@
 import { NonIdealState, Tag } from "@blueprintjs/core";
 import React from "react";
 
-import { useActiveComponents } from "../hooks/useActiveComponents.js";
+import { useOntologyUsage } from "../hooks/useOntologyUsage.js";
 import type { MonitorStore } from "../store/MonitorStore.js";
 import type { MonitoringTab } from "./MonitoringPanel.js";
+import { OntologyCount } from "./OntologyCount.js";
 
 import styles from "./MonitoringPanel.module.scss";
 
@@ -31,25 +32,26 @@ export interface OverviewTabProps {
   /**
    * Switches the panel's active tab. Passed from `MonitoringPanel` so the
    * Overview's counts and metric cards can navigate to the view that explains
-   * them. Not yet consumed in the skeleton slice.
+   * them.
    */
   setActiveTab: (tab: MonitoringTab) => void;
 }
 
 /**
  * The Overview tab — an at-a-glance summary of the monitored client's ontology
- * usage and health metrics. This skeleton slice renders only the "no ontology"
- * empty state; the ontology counts and metric cards are added in later slices.
+ * usage and health metrics. Shows the "no ontology" empty state when the
+ * registry is empty; otherwise renders the ontology counts. Metric cards are
+ * added in later slices.
  */
 export function OverviewTab({
   monitorStore,
+  setActiveTab,
 }: OverviewTabProps): React.JSX.Element {
-  const activeComponents = useActiveComponents(monitorStore);
-  const hasOntology = activeComponents.size > 0;
+  const usage = useOntologyUsage(monitorStore);
 
   return (
     <div className={styles.overviewTab}>
-      {hasOntology ? null : (
+      {usage.isEmpty ? (
         <NonIdealState
           icon="cube"
           title="No ontology linked"
@@ -64,6 +66,22 @@ export function OverviewTab({
           }
           action={<Tag intent="danger">No ontology found</Tag>}
         />
+      ) : (
+        <section className={styles.metricGroup}>
+          <h3 className={styles.metricGroupTitle}>Ontology</h3>
+          <div className={styles.metricGroupContent}>
+            <OntologyCount
+              label="Object types"
+              count={usage.objectTypeCount}
+              onClick={() => setActiveTab("debugging")}
+            />
+            <OntologyCount
+              label="Action types"
+              count={usage.actionTypeCount}
+              onClick={() => setActiveTab("debugging")}
+            />
+          </div>
+        </section>
       )}
     </div>
   );

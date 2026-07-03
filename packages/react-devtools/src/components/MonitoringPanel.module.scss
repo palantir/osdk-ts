@@ -232,6 +232,25 @@
   background: t.$bg-base;
 }
 
+.ontologyCount {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px;
+  background: t.$bg-surface;
+  border: 1px solid t.$border-subtle;
+  border-radius: t.$radius-md;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover {
+    background: t.$bg-raised;
+    border-color: t.$border-default;
+  }
+}
+
 .metricsGrid {
   display: flex;
   flex-direction: column;
