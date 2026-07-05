@@ -227,4 +227,72 @@ describe("OverviewTab", () => {
 
     expect(setActiveTab).toHaveBeenCalledWith("debugging");
   });
+
+  it("shows a distinct interface count for interface-kind bindings", () => {
+    const store = createMockMonitorStore();
+    populateRegistry(store, [
+      [
+        "c1",
+        [
+          binding({
+            hookType: "useOsdkObjects",
+            queryParams: {
+              type: "list",
+              objectType: "Named",
+              entityKind: "interface",
+            },
+          }),
+          // Same interface elsewhere → counts once.
+          binding({
+            hookType: "useOsdkObject",
+            queryParams: {
+              type: "object",
+              objectType: "Named",
+              primaryKey: "1",
+              entityKind: "interface",
+            },
+          }),
+          binding({
+            hookType: "useOsdkObjects",
+            queryParams: {
+              type: "list",
+              objectType: "Located",
+              entityKind: "interface",
+            },
+          }),
+        ],
+      ],
+    ]);
+
+    render(<OverviewTab monitorStore={store} setActiveTab={vi.fn()} />);
+
+    expect(
+      screen.getByRole("button", { name: /interfaces/i }).textContent
+    ).toContain("2");
+  });
+
+  it("switches to the Debugging tab when the interfaces count is clicked", () => {
+    const store = createMockMonitorStore();
+    const setActiveTab = vi.fn();
+    populateRegistry(store, [
+      [
+        "c1",
+        [
+          binding({
+            hookType: "useOsdkObjects",
+            queryParams: {
+              type: "list",
+              objectType: "Named",
+              entityKind: "interface",
+            },
+          }),
+        ],
+      ],
+    ]);
+
+    render(<OverviewTab monitorStore={store} setActiveTab={setActiveTab} />);
+    fireEvent.click(screen.getByRole("button", { name: /interfaces/i }));
+
+    expect(setActiveTab).toHaveBeenCalledWith("debugging");
+  });
 });

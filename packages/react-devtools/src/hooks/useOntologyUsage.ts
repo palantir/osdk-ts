@@ -20,6 +20,8 @@ import { useActiveComponents } from "./useActiveComponents.js";
 export interface OntologyUsage {
   /** Distinct object-type api-names in active bindings whose entity kind is not `interface`. */
   objectTypeCount: number;
+  /** Distinct interface api-names in active bindings whose entity kind is `interface`. */
+  interfaceCount: number;
   /** Distinct action names across `useOsdkAction` bindings. */
   actionTypeCount: number;
   /** True when the registry has no active components (drives the "no ontology" empty state). */
@@ -29,14 +31,15 @@ export interface OntologyUsage {
 /**
  * Derives the Overview's ontology-in-use counts from the component query
  * registry's active bindings — the same source the Debugging/Components view
- * reads, so the two cannot diverge. Interfaces are counted separately in a later
- * slice; here interface-kind bindings are simply excluded from the object-type
- * count.
+ * reads, so the two cannot diverge. Interface-kind bindings are counted as
+ * interfaces; every other object/list/aggregation binding counts as an object
+ * type.
  */
 export function useOntologyUsage(monitorStore: MonitorStore): OntologyUsage {
   const activeComponents = useActiveComponents(monitorStore);
 
   const objectTypes = new Set<string>();
+  const interfaceTypes = new Set<string>();
   const actionTypes = new Set<string>();
 
   for (const bindings of activeComponents.values()) {
@@ -45,18 +48,22 @@ export function useOntologyUsage(monitorStore: MonitorStore): OntologyUsage {
       if (params.type === "action") {
         actionTypes.add(params.actionName);
       } else if (
-        (params.type === "object" ||
-          params.type === "list" ||
-          params.type === "aggregation") &&
-        params.entityKind !== "interface"
+        params.type === "object" ||
+        params.type === "list" ||
+        params.type === "aggregation"
       ) {
-        objectTypes.add(params.objectType);
+        if (params.entityKind === "interface") {
+          interfaceTypes.add(params.objectType);
+        } else {
+          objectTypes.add(params.objectType);
+        }
       }
     }
   }
 
   return {
     objectTypeCount: objectTypes.size,
+    interfaceCount: interfaceTypes.size,
     actionTypeCount: actionTypes.size,
     isEmpty: activeComponents.size === 0,
   };

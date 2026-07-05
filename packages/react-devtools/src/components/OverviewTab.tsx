@@ -76,6 +76,11 @@ export function OverviewTab({
               onClick={() => setActiveTab("debugging")}
             />
             <OntologyCount
+              label="Interfaces"
+              count={usage.interfaceCount}
+              onClick={() => setActiveTab("debugging")}
+            />
+            <OntologyCount
               label="Action types"
               count={usage.actionTypeCount}
               onClick={() => setActiveTab("debugging")}
