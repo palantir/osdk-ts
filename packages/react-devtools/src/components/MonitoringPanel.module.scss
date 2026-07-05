@@ -244,9 +244,43 @@
 .overviewTab {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  padding: 12px;
+  gap: 0px;
+  padding: 0;
   background: t.$bg-base;
+}
+
+// Blueprint `Section` provides the collapsible header + card chrome and is
+// dark-themed via the panel's `Classes.DARK`; these classes only tune edges and
+// inner padding — no `.bp6-*` overrides.
+.overviewSection {
+  border-radius: 0;
+  border-inline: none;
+  // A real top border as the section divider (matches the 1px divider used
+  // elsewhere). Blueprint's elevation box-shadow outline is cleared under
+  // `.overviewTab` below.
+  border-top: 1px solid t.$border-default;
+
+  // Nested so these out-specify Blueprint's single-class `.bp6-section-card`
+  // rules (0,2,0 > 0,1,0) without any `:global` override.
+  .overviewSectionCard {
+    padding: 12px;
+    // Give the body a surface fill so the section stands out from the darker
+    // panel base instead of blending into it.
+    background: t.$bg-surface;
+
+    // Tiles sit edge-to-edge in the Overview (scoped so PerformanceTab's grid,
+    // which reuses .metricGroupContent, keeps its gap).
+    .metricGroupContent {
+      gap: 0;
+    }
+  }
+}
+
+// Clear Blueprint's `.bp6-elevation-0` box-shadow outline; the section uses a
+// real `border-top` instead. Scoped under `.overviewTab` (0,2,0) so it beats
+// the elevation class (0,1,0) with no `:global` override.
+.overviewTab .overviewSection {
+  box-shadow: none;
 }
 
 .ontologyCount {

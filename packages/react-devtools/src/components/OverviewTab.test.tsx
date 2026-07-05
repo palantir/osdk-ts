@@ -466,6 +466,25 @@ describe("OverviewTab", () => {
     expect(setActiveTab).toHaveBeenCalledWith("debugging");
   });
 
+  it("renders each ontology/metrics section collapsed-toggle and collapses on click", () => {
+    const store = createMockMonitorStore();
+    populateOneObject(store);
+
+    render(<OverviewTab monitorStore={store} setActiveTab={vi.fn()} />);
+
+    // Ontology + Metrics both render as expanded collapsible sections.
+    const collapseToggles = screen.getAllByRole("button", {
+      name: "collapse section",
+    });
+    expect(collapseToggles.length).toBe(2);
+
+    // Collapsing one flips its toggle to the "expand section" affordance.
+    fireEvent.click(collapseToggles[0]);
+    expect(
+      screen.getAllByRole("button", { name: "expand section" }).length
+    ).toBe(1);
+  });
+
   describe("performance tiles", () => {
     it("renders all four performance tiles even when every metric is zero", () => {
       const store = createMockMonitorStore();

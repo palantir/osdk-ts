@@ -25,6 +25,7 @@ import { formatNumber, formatTime } from "../utils/format.js";
 import { MetricTile } from "./MetricTile.js";
 import type { MonitoringTab } from "./MonitoringPanel.js";
 import { OntologyCount } from "./OntologyCount.js";
+import { OverviewSection } from "./OverviewSection.js";
 
 import styles from "./MonitoringPanel.module.scss";
 
@@ -73,8 +74,7 @@ export function OverviewTab({
           action={<Tag intent="danger">No ontology found</Tag>}
         />
       ) : (
-        <section className={styles.metricGroup}>
-          <h3 className={styles.metricGroupTitle}>Ontology</h3>
+        <OverviewSection title="Ontology">
           <div className={styles.metricGroupContent}>
             <OntologyCount
               label="Object types"
@@ -97,11 +97,10 @@ export function OverviewTab({
               onClick={() => setActiveTab("debugging")}
             />
           </div>
-        </section>
+        </OverviewSection>
       )}
       {!usage.isEmpty && (
-        <section className={styles.metricGroup}>
-          <h3 className={styles.metricGroupTitle}>Metrics</h3>
+        <OverviewSection title="Metrics">
           <div className={styles.metricGroupContent}>
             <MetricTile
               label="Cache hit rate"
@@ -134,7 +133,7 @@ export function OverviewTab({
               onClick={() => setActiveTab("debugging")}
             />
           </div>
-        </section>
+        </OverviewSection>
       )}
     </div>
   );
