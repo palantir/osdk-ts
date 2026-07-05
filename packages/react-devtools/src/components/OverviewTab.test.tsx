@@ -18,11 +18,12 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import type { AggregateMetrics, MetricRates } from "../types/index.js";
 import type {
   ComponentHookBinding,
   QueryParams,
 } from "../utils/ComponentQueryRegistry.js";
-import { createMockMonitorStore } from "./testHelpers.js";
+import { createMockMonitorStore, emptyMetricsSnapshot } from "./testHelpers.js";
 
 function binding(
   overrides: Partial<ComponentHookBinding> & {
@@ -52,6 +53,42 @@ function populateRegistry(
   vi.mocked(store.getComponentRegistry().getActiveComponents).mockReturnValue(
     new Map(components)
   );
+}
+
+function setMetrics(
+  store: ReturnType<typeof createMockMonitorStore>,
+  overrides: {
+    aggregates?: Partial<AggregateMetrics>;
+    rates?: Partial<MetricRates>;
+  }
+): void {
+  vi.mocked(store.getMetricsStore().getSnapshot).mockReturnValue({
+    ...emptyMetricsSnapshot,
+    aggregates: { ...emptyMetricsSnapshot.aggregates, ...overrides.aggregates },
+    rates: { ...emptyMetricsSnapshot.rates, ...overrides.rates },
+  });
+}
+
+/** A minimal non-empty registry so the populated Overview (with its Metrics grid) renders. */
+function populateOneObject(
+  store: ReturnType<typeof createMockMonitorStore>
+): void {
+  populateRegistry(store, [
+    [
+      "c1",
+      [
+        binding({
+          hookType: "useOsdkObject",
+          queryParams: {
+            type: "object",
+            objectType: "Employee",
+            primaryKey: "1",
+            entityKind: "object",
+          },
+        }),
+      ],
+    ],
+  ]);
 }
 
 const { OverviewTab } = await import("./OverviewTab.js");
@@ -294,5 +331,91 @@ describe("OverviewTab", () => {
     fireEvent.click(screen.getByRole("button", { name: /interfaces/i }));
 
     expect(setActiveTab).toHaveBeenCalledWith("debugging");
+  });
+
+  describe("performance tiles", () => {
+    it("renders all four performance tiles even when every metric is zero", () => {
+      const store = createMockMonitorStore();
+      populateOneObject(store);
+
+      render(<OverviewTab monitorStore={store} setActiveTab={vi.fn()} />);
+
+      expect(
+        screen.getByRole("button", { name: /cache hit rate/i })
+      ).not.toBeNull();
+      expect(
+        screen.getByRole("button", { name: /network requests/i })
+      ).not.toBeNull();
+      expect(
+        screen.getByRole("button", { name: /avg response/i })
+      ).not.toBeNull();
+      expect(
+        screen.getByRole("button", { name: /duplicate requests/i })
+      ).not.toBeNull();
+    });
+
+    it("renders the cache hit rate as a percentage from snapshot rates", () => {
+      const store = createMockMonitorStore();
+      populateOneObject(store);
+      setMetrics(store, { rates: { cacheHitRate: 0.75 } });
+
+      render(<OverviewTab monitorStore={store} setActiveTab={vi.fn()} />);
+
+      expect(
+        screen.getByRole("button", { name: /cache hit rate/i }).textContent
+      ).toContain("75%");
+    });
+
+    it("shows network requests as cache misses plus revalidations", () => {
+      const store = createMockMonitorStore();
+      populateOneObject(store);
+      setMetrics(store, { aggregates: { cacheMisses: 3, revalidations: 2 } });
+
+      render(<OverviewTab monitorStore={store} setActiveTab={vi.fn()} />);
+
+      expect(
+        screen.getByRole("button", { name: /network requests/i }).textContent
+      ).toContain("5");
+    });
+
+    it("labels average response time 'avg', never a percentile", () => {
+      const store = createMockMonitorStore();
+      populateOneObject(store);
+      setMetrics(store, { rates: { averageResponseTime: 120 } });
+
+      render(<OverviewTab monitorStore={store} setActiveTab={vi.fn()} />);
+
+      const tile = screen.getByRole("button", { name: /avg response/i });
+      expect(tile.textContent).toContain("120ms");
+      expect(tile.textContent).not.toMatch(/p95|percentile/i);
+    });
+
+    it("shows duplicate requests from snapshot deduplications", () => {
+      const store = createMockMonitorStore();
+      populateOneObject(store);
+      setMetrics(store, { aggregates: { deduplications: 4 } });
+
+      render(<OverviewTab monitorStore={store} setActiveTab={vi.fn()} />);
+
+      expect(
+        screen.getByRole("button", { name: /duplicate requests/i }).textContent
+      ).toContain("4");
+    });
+
+    it.each([
+      /cache hit rate/i,
+      /network requests/i,
+      /avg response/i,
+      /duplicate requests/i,
+    ])("switches to the Performance tab when %s is clicked", (name) => {
+      const store = createMockMonitorStore();
+      const setActiveTab = vi.fn();
+      populateOneObject(store);
+
+      render(<OverviewTab monitorStore={store} setActiveTab={setActiveTab} />);
+      fireEvent.click(screen.getByRole("button", { name }));
+
+      expect(setActiveTab).toHaveBeenCalledWith("performance");
+    });
   });
 });

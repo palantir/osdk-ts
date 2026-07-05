@@ -18,7 +18,10 @@ import { NonIdealState, Tag } from "@blueprintjs/core";
 import React from "react";
 
 import { useOntologyUsage } from "../hooks/useOntologyUsage.js";
+import { usePerformanceTiles } from "../hooks/usePerformanceTiles.js";
 import type { MonitorStore } from "../store/MonitorStore.js";
+import { formatNumber, formatTime } from "../utils/format.js";
+import { MetricTile } from "./MetricTile.js";
 import type { MonitoringTab } from "./MonitoringPanel.js";
 import { OntologyCount } from "./OntologyCount.js";
 
@@ -40,14 +43,15 @@ export interface OverviewTabProps {
 /**
  * The Overview tab — an at-a-glance summary of the monitored client's ontology
  * usage and health metrics. Shows the "no ontology" empty state when the
- * registry is empty; otherwise renders the ontology counts. Metric cards are
- * added in later slices.
+ * registry is empty; otherwise renders the ontology counts and the performance
+ * metrics grid.
  */
 export function OverviewTab({
   monitorStore,
   setActiveTab,
 }: OverviewTabProps): React.JSX.Element {
   const usage = useOntologyUsage(monitorStore);
+  const performance = usePerformanceTiles(monitorStore);
 
   return (
     <div className={styles.overviewTab}>
@@ -84,6 +88,33 @@ export function OverviewTab({
               label="Action types"
               count={usage.actionTypeCount}
               onClick={() => setActiveTab("debugging")}
+            />
+          </div>
+        </section>
+      )}
+      {!usage.isEmpty && (
+        <section className={styles.metricGroup}>
+          <h3 className={styles.metricGroupTitle}>Metrics</h3>
+          <div className={styles.metricGroupContent}>
+            <MetricTile
+              label="Cache hit rate"
+              value={`${Math.round(performance.cacheHitRate * 100)}%`}
+              onClick={() => setActiveTab("performance")}
+            />
+            <MetricTile
+              label="Network requests"
+              value={formatNumber(performance.networkRequests)}
+              onClick={() => setActiveTab("performance")}
+            />
+            <MetricTile
+              label="Avg response time"
+              value={formatTime(performance.averageResponseTime)}
+              onClick={() => setActiveTab("performance")}
+            />
+            <MetricTile
+              label="Duplicate requests"
+              value={formatNumber(performance.duplicateRequests)}
+              onClick={() => setActiveTab("performance")}
             />
           </div>
         </section>

@@ -59,7 +59,7 @@ const emptyRates = {
   validationTimeSaved: 0,
 };
 
-const emptyMetricsSnapshot = {
+export const emptyMetricsSnapshot = {
   recent: [],
   aggregates: emptyAggregates,
   rates: emptyRates,
