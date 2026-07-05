@@ -17,6 +17,7 @@
 import { NonIdealState, Tag } from "@blueprintjs/core";
 import React from "react";
 
+import { useDebuggingTiles } from "../hooks/useDebuggingTiles.js";
 import { useOntologyUsage } from "../hooks/useOntologyUsage.js";
 import { usePerformanceTiles } from "../hooks/usePerformanceTiles.js";
 import type { MonitorStore } from "../store/MonitorStore.js";
@@ -52,6 +53,7 @@ export function OverviewTab({
 }: OverviewTabProps): React.JSX.Element {
   const usage = useOntologyUsage(monitorStore);
   const performance = usePerformanceTiles(monitorStore);
+  const debugging = useDebuggingTiles(monitorStore);
 
   return (
     <div className={styles.overviewTab}>
@@ -115,6 +117,16 @@ export function OverviewTab({
               label="Duplicate requests"
               value={formatNumber(performance.duplicateRequests)}
               onClick={() => setActiveTab("performance")}
+            />
+            <MetricTile
+              label="Overfetching"
+              value={formatNumber(debugging.overfetchingCount)}
+              onClick={() => setActiveTab("debugging")}
+            />
+            <MetricTile
+              label="Errors & warnings"
+              value={formatNumber(debugging.errorWarningCount)}
+              onClick={() => setActiveTab("debugging")}
             />
           </div>
         </section>

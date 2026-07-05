@@ -16,14 +16,29 @@
 
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { useUnusedFieldAnalysis } from "../hooks/useUnusedFieldAnalysis.js";
+import type {
+  ConsoleLogEntry,
+  ConsoleLogLevel,
+} from "../store/ConsoleLogStore.js";
+import type { WindowErrorEntry } from "../store/WindowErrorStore.js";
 import type { AggregateMetrics, MetricRates } from "../types/index.js";
 import type {
   ComponentHookBinding,
   QueryParams,
 } from "../utils/ComponentQueryRegistry.js";
+import type { UnusedFieldReport } from "../utils/UnusedFieldAnalyzer.js";
 import { createMockMonitorStore, emptyMetricsSnapshot } from "./testHelpers.js";
+
+vi.mock("../hooks/useUnusedFieldAnalysis.js", () => ({
+  useUnusedFieldAnalysis: vi.fn(() => ({
+    report: null,
+    isLoading: false,
+    error: null,
+  })),
+}));
 
 function binding(
   overrides: Partial<ComponentHookBinding> & {
@@ -91,9 +106,59 @@ function populateOneObject(
   ]);
 }
 
+function report(inefficientComponents: number): UnusedFieldReport {
+  return {
+    totalComponents: inefficientComponents,
+    inefficientComponents,
+    totalWastedBytes: 0,
+    topOffenders: [],
+    commonUnused: [],
+    averageEfficiency: 1,
+    recommendation: "",
+  };
+}
+
+function setOverfetching(inefficientComponents: number): void {
+  vi.mocked(useUnusedFieldAnalysis).mockReturnValue({
+    report: report(inefficientComponents),
+    isLoading: false,
+    error: null,
+  });
+}
+
+function consoleEntry(level: ConsoleLogLevel, i: number): ConsoleLogEntry {
+  return { id: `c-${i}`, level, args: [], timestamp: 0 };
+}
+
+function windowError(i: number): WindowErrorEntry {
+  return { id: `e-${i}`, kind: "error", message: "boom", timestamp: 0 };
+}
+
+function setConsoleEntries(
+  store: ReturnType<typeof createMockMonitorStore>,
+  entries: ConsoleLogEntry[]
+): void {
+  vi.mocked(store.getConsoleLogStore().getEntries).mockReturnValue(entries);
+}
+
+function setWindowErrors(
+  store: ReturnType<typeof createMockMonitorStore>,
+  entries: WindowErrorEntry[]
+): void {
+  vi.mocked(store.getWindowErrorStore().getEntries).mockReturnValue(entries);
+}
+
 const { OverviewTab } = await import("./OverviewTab.js");
 
 describe("OverviewTab", () => {
+  beforeEach(() => {
+    vi.mocked(useUnusedFieldAnalysis).mockReturnValue({
+      report: null,
+      isLoading: false,
+      error: null,
+    });
+  });
+
   afterEach(() => {
     cleanup();
     vi.restoreAllMocks();
@@ -416,6 +481,77 @@ describe("OverviewTab", () => {
       fireEvent.click(screen.getByRole("button", { name }));
 
       expect(setActiveTab).toHaveBeenCalledWith("performance");
+    });
+  });
+
+  describe("debugging tiles", () => {
+    it("renders both debugging tiles even at zero", () => {
+      const store = createMockMonitorStore();
+      populateOneObject(store);
+
+      render(<OverviewTab monitorStore={store} setActiveTab={vi.fn()} />);
+
+      expect(
+        screen.getByRole("button", { name: /overfetching/i })
+      ).not.toBeNull();
+      expect(
+        screen.getByRole("button", { name: /errors & warnings/i })
+      ).not.toBeNull();
+    });
+
+    it("shows the overfetching count from the unused-field report", () => {
+      const store = createMockMonitorStore();
+      populateOneObject(store);
+      setOverfetching(3);
+
+      render(<OverviewTab monitorStore={store} setActiveTab={vi.fn()} />);
+
+      expect(
+        screen.getByRole("button", { name: /overfetching/i }).textContent
+      ).toContain("3");
+    });
+
+    it("combines all window errors with error/warn console entries", () => {
+      const store = createMockMonitorStore();
+      populateOneObject(store);
+      setWindowErrors(store, [windowError(1), windowError(2)]);
+      setConsoleEntries(store, [
+        consoleEntry("error", 1),
+        consoleEntry("warn", 2),
+        consoleEntry("log", 3),
+        consoleEntry("info", 4),
+      ]);
+
+      render(<OverviewTab monitorStore={store} setActiveTab={vi.fn()} />);
+
+      // 2 window errors + 2 console (error + warn); log/info excluded → 4.
+      expect(
+        screen.getByRole("button", { name: /errors & warnings/i }).textContent
+      ).toContain("4");
+    });
+
+    it("switches to the Debugging tab when overfetching is clicked", () => {
+      const store = createMockMonitorStore();
+      const setActiveTab = vi.fn();
+      populateOneObject(store);
+
+      render(<OverviewTab monitorStore={store} setActiveTab={setActiveTab} />);
+      fireEvent.click(screen.getByRole("button", { name: /overfetching/i }));
+
+      expect(setActiveTab).toHaveBeenCalledWith("debugging");
+    });
+
+    it("switches to the Debugging tab when errors & warnings is clicked", () => {
+      const store = createMockMonitorStore();
+      const setActiveTab = vi.fn();
+      populateOneObject(store);
+
+      render(<OverviewTab monitorStore={store} setActiveTab={setActiveTab} />);
+      fireEvent.click(
+        screen.getByRole("button", { name: /errors & warnings/i })
+      );
+
+      expect(setActiveTab).toHaveBeenCalledWith("debugging");
     });
   });
 });
