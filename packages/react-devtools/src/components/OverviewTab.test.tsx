@@ -398,6 +398,74 @@ describe("OverviewTab", () => {
     expect(setActiveTab).toHaveBeenCalledWith("debugging");
   });
 
+  it("shows a distinct link count for useLinks bindings", () => {
+    const store = createMockMonitorStore();
+    populateRegistry(store, [
+      [
+        "c1",
+        [
+          binding({
+            hookType: "useLinks",
+            queryParams: {
+              type: "links",
+              sourceObject: "Employee",
+              linkName: "manager",
+            },
+          }),
+          // Same source + link elsewhere → counts once.
+          binding({
+            hookType: "useLinks",
+            queryParams: {
+              type: "links",
+              sourceObject: "Employee",
+              linkName: "manager",
+            },
+          }),
+          // Same link name on a different source object → distinct.
+          binding({
+            hookType: "useLinks",
+            queryParams: {
+              type: "links",
+              sourceObject: "Office",
+              linkName: "manager",
+            },
+          }),
+        ],
+      ],
+    ]);
+
+    render(<OverviewTab monitorStore={store} setActiveTab={vi.fn()} />);
+
+    expect(
+      screen.getByRole("button", { name: /links/i }).textContent
+    ).toContain("2");
+  });
+
+  it("switches to the Debugging tab when the links count is clicked", () => {
+    const store = createMockMonitorStore();
+    const setActiveTab = vi.fn();
+    populateRegistry(store, [
+      [
+        "c1",
+        [
+          binding({
+            hookType: "useLinks",
+            queryParams: {
+              type: "links",
+              sourceObject: "Employee",
+              linkName: "manager",
+            },
+          }),
+        ],
+      ],
+    ]);
+
+    render(<OverviewTab monitorStore={store} setActiveTab={setActiveTab} />);
+    fireEvent.click(screen.getByRole("button", { name: /links/i }));
+
+    expect(setActiveTab).toHaveBeenCalledWith("debugging");
+  });
+
   describe("performance tiles", () => {
     it("renders all four performance tiles even when every metric is zero", () => {
       const store = createMockMonitorStore();

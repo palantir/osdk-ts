@@ -91,6 +91,11 @@ export function OverviewTab({
               count={usage.actionTypeCount}
               onClick={() => setActiveTab("debugging")}
             />
+            <OntologyCount
+              label="Links"
+              count={usage.linkCount}
+              onClick={() => setActiveTab("debugging")}
+            />
           </div>
         </section>
       )}

@@ -24,6 +24,8 @@ export interface OntologyUsage {
   interfaceCount: number;
   /** Distinct action names across `useOsdkAction` bindings. */
   actionTypeCount: number;
+  /** Distinct `source-object:link-name` pairs across `useLinks` bindings. */
+  linkCount: number;
   /** True when the registry has no active components (drives the "no ontology" empty state). */
   isEmpty: boolean;
 }
@@ -33,7 +35,7 @@ export interface OntologyUsage {
  * registry's active bindings — the same source the Debugging/Components view
  * reads, so the two cannot diverge. Interface-kind bindings are counted as
  * interfaces; every other object/list/aggregation binding counts as an object
- * type.
+ * type. Links are counted per distinct source-object/link-name pair.
  */
 export function useOntologyUsage(monitorStore: MonitorStore): OntologyUsage {
   const activeComponents = useActiveComponents(monitorStore);
@@ -41,12 +43,15 @@ export function useOntologyUsage(monitorStore: MonitorStore): OntologyUsage {
   const objectTypes = new Set<string>();
   const interfaceTypes = new Set<string>();
   const actionTypes = new Set<string>();
+  const links = new Set<string>();
 
   for (const bindings of activeComponents.values()) {
     for (const b of bindings) {
       const params = b.queryParams;
       if (params.type === "action") {
         actionTypes.add(params.actionName);
+      } else if (params.type === "links") {
+        links.add(`${params.sourceObject}:${params.linkName}`);
       } else if (
         params.type === "object" ||
         params.type === "list" ||
@@ -65,6 +70,7 @@ export function useOntologyUsage(monitorStore: MonitorStore): OntologyUsage {
     objectTypeCount: objectTypes.size,
     interfaceCount: interfaceTypes.size,
     actionTypeCount: actionTypes.size,
+    linkCount: links.size,
     isEmpty: activeComponents.size === 0,
   };
 }
