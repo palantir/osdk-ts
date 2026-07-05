@@ -33,12 +33,12 @@ function isCipherTextSource(value: unknown): value is CipherTextInternal {
 
 /**
  * Normalizes a single edit property value to its backend wire shape. A reused
- * {@link CipherText} is reduced to its encrypted value (`{ ciphertext }`);
- * every other value is returned unchanged.
+ * {@link CipherText} is reduced to its encrypted value (`{ ciphertext }`).
+ * Structs are untouched since CipherText cannot be a struct field type as of today.
  */
-export function normalizeCipherTextEditValue(value: unknown): unknown {
+export function extractCipherTextValue(value: unknown): unknown {
   if (Array.isArray(value)) {
-    return value.map(normalizeCipherTextEditValue);
+    return value.map(extractCipherTextValue);
   }
   if (isCipherTextSource(value)) {
     return { ciphertext: value.getValue() };
@@ -55,7 +55,7 @@ export function toWireEditProperties(
 ): Record<string, unknown> {
   const result: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(properties)) {
-    result[key] = normalizeCipherTextEditValue(value);
+    result[key] = extractCipherTextValue(value);
   }
   return result;
 }
