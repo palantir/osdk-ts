@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Classes, Icon, Intent, NonIdealState, Tag } from "@blueprintjs/core";
+import { Classes, Icon, NonIdealState, Tag } from "@blueprintjs/core";
 import classNames from "classnames";
 import React from "react";
 
@@ -57,13 +57,6 @@ export function OverviewTab({
   const performance = usePerformanceTiles(monitorStore);
   const debugging = useDebuggingTiles(monitorStore);
 
-  const cacheHitIntent: Intent =
-    performance.cacheHitRate > 0.7
-      ? Intent.SUCCESS
-      : performance.cacheHitRate > 0.4
-        ? Intent.WARNING
-        : Intent.DANGER;
-
   return (
     <div className={styles.overviewTab}>
       {usage.isEmpty ? (
@@ -97,7 +90,13 @@ export function OverviewTab({
             <Metric
               title="Cache hit rate"
               value={`${Math.round(performance.cacheHitRate * 100)}%`}
-              intent={cacheHitIntent}
+              intent={
+                performance.cacheHitRate > 0.7
+                  ? "success"
+                  : performance.cacheHitRate > 0.4
+                    ? "warning"
+                    : "danger"
+              }
               footer={
                 <button
                   type="button"
@@ -140,16 +139,12 @@ export function OverviewTab({
             <Metric
               title="Duplicate requests"
               value={formatNumber(performance.duplicateRequests)}
-              intent={
-                performance.duplicateRequests > 0 ? Intent.DANGER : Intent.NONE
-              }
+              intent={performance.duplicateRequests > 0 ? "danger" : "none"}
             />
             <Metric
               title="Overfetching"
               value={formatNumber(debugging.overfetchingCount)}
-              intent={
-                debugging.overfetchingCount > 0 ? Intent.DANGER : Intent.NONE
-              }
+              intent={debugging.overfetchingCount > 0 ? "danger" : "none"}
               footer={
                 <button
                   type="button"
@@ -164,9 +159,7 @@ export function OverviewTab({
             <Metric
               title="Errors & warnings"
               value={formatNumber(debugging.errorWarningCount)}
-              intent={
-                debugging.errorWarningCount > 0 ? Intent.DANGER : Intent.NONE
-              }
+              intent={debugging.errorWarningCount > 0 ? "danger" : "none"}
               footer={
                 <button
                   type="button"

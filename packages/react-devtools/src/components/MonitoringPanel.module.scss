@@ -128,7 +128,7 @@
   justify-content: space-between;
   padding: 6px 12px;
   border-bottom: 1px solid t.$border-default;
-  background: t.$bg-raised;
+  background: var(--bp-palette-dark-gray-2);
   cursor: move;
   user-select: none;
   pointer-events: auto;
@@ -145,7 +145,6 @@
   gap: 8px;
   font-size: t.$font-size-base;
   font-weight: t.$font-weight-semi;
-  text-transform: uppercase;
   letter-spacing: 1px;
   color: t.$text-secondary;
   margin: 0;
@@ -215,6 +214,10 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
+  // Panel chrome surface (Blueprint dark-gray-2). The tab-list strip and tab
+  // panels are transparent, so this is the single source for the tabs-region
+  // background — no per-child overrides needed.
+  background: var(--bp-palette-dark-gray-2);
 
   :global {
     .bp6-tab-list {
@@ -246,7 +249,7 @@
   flex-direction: column;
   gap: 0px;
   padding: 0;
-  background: t.$bg-base;
+  // No background of its own — shows the `.tabs` chrome surface through it.
 }
 
 // Blueprint `Section` provides the collapsible header + card chrome and is
