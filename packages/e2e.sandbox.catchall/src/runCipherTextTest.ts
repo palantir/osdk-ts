@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
+import type {
+  CipherTextValue,
+  CreateCipherText,
+  UpdateCipherText,
+} from "@osdk/api";
 import { CipherChannelStrategy } from "@osdk/api";
 import { CipherTextTest } from "@osdk/e2e.generated.catchall";
 import type { Edits } from "@osdk/functions";
 import { createEditBatch } from "@osdk/functions";
+import type { CreateObject, UpdateObject } from "@osdk/functions/internal";
 import invariant from "tiny-invariant";
 import { cipherTextOntologyClient } from "./client.js";
 
@@ -66,6 +72,9 @@ export async function runCipherTextTest(): Promise<void> {
     cipherTextOntologyClient,
   );
 
+  const existingPk1 = nonNullFilterTestData[0]!.pk;
+  const existingPk2 = nullFilterTestData[0]!.pk;
+
   edits.create(CipherTextTest, {
     pk: "new-object-001",
     encrypted: {
@@ -73,18 +82,61 @@ export async function runCipherTextTest(): Promise<void> {
     },
   });
 
-  edits.update(result, {
+  edits.update({
+    $apiName: "CipherTextTest",
+    $primaryKey: existingPk1,
+  }, {
     encrypted: {
       plaintext: "new-value",
       strategy: CipherChannelStrategy.PREFER_DEFAULT,
     },
   });
 
-  edits.update(nonNullFilterTestData?.[0], {
+  edits.update({
+    $apiName: "CipherTextTest",
+    $primaryKey: existingPk2,
+  }, {
     encrypted: result.encrypted,
   });
 
-  console.log(JSON.stringify(edits.getEdits(), null, 4));
+  const editEntries = edits.getEdits();
+
+  const getEntryForPk = (pk: string) =>
+    editEntries.find(
+      v => (v.type === "createObject" && v.properties.pk === pk
+        || v.type === "updateObject" && v.obj.$primaryKey === pk
+        || v.type === "deleteObject" && v.obj.$primaryKey === pk),
+    );
+
+  const createEntry = getEntryForPk("new-object-001") as CreateObject<
+    CipherTextTest
+  >;
+  invariant(
+    (createEntry.properties.encrypted as CreateCipherText).plaintext === "test",
+    "Expected created object to have plaintext value 'test'",
+  );
+
+  const updatePlaintextEntry = getEntryForPk(existingPk1) as UpdateObject<
+    CipherTextTest
+  >;
+  invariant(
+    (updatePlaintextEntry.properties.encrypted as UpdateCipherText).plaintext
+        === "new-value"
+      && (updatePlaintextEntry.properties.encrypted as UpdateCipherText)
+          .strategy === CipherChannelStrategy.PREFER_DEFAULT,
+    "Expected updated object to have correct plaintext value and channel strategy",
+  );
+
+  const updateCipherTextEntry = getEntryForPk(
+    existingPk2,
+  ) as UpdateObject<
+    CipherTextTest
+  >;
+  invariant(
+    (updateCipherTextEntry.properties.encrypted as CipherTextValue).ciphertext
+      === (result.encrypted as any).getValue(),
+    "Expected updated object to contain same cipher text string",
+  );
 
   console.log("All tests passed!");
 }
