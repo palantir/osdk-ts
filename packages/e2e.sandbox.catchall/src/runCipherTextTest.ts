@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
+import { CipherChannelStrategy } from "@osdk/api";
 import { CipherTextTest } from "@osdk/e2e.generated.catchall";
+import type { Edits } from "@osdk/functions";
+import { createEditBatch } from "@osdk/functions";
 import invariant from "tiny-invariant";
 import { cipherTextOntologyClient } from "./client.js";
 
@@ -25,6 +28,7 @@ export async function runCipherTextTest(): Promise<void> {
   );
   const plaintextTruth = result.plaintext;
   const plaintext = await result.encrypted?.decrypt();
+
   invariant(
     plaintext === plaintextTruth,
     "Expected plaintext == plaintextTruth",
@@ -57,6 +61,30 @@ export async function runCipherTextTest(): Promise<void> {
     nonNullFilterTestData?.[0]?.pk === nonNullPk,
     "Expected non-null object to have same pk",
   );
+
+  const edits = createEditBatch<Edits.Object<CipherTextTest>>(
+    cipherTextOntologyClient,
+  );
+
+  edits.create(CipherTextTest, {
+    pk: "new-object-001",
+    encrypted: {
+      plaintext: "test",
+    },
+  });
+
+  edits.update(result, {
+    encrypted: {
+      plaintext: "new-value",
+      strategy: CipherChannelStrategy.PREFER_DEFAULT,
+    },
+  });
+
+  edits.update(nonNullFilterTestData?.[0], {
+    encrypted: result.encrypted,
+  });
+
+  console.log(JSON.stringify(edits.getEdits(), null, 4));
 
   console.log("All tests passed!");
 }
