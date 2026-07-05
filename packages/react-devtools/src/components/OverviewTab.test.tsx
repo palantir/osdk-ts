@@ -383,6 +383,40 @@ describe("OverviewTab", () => {
     ).toContain("2");
   });
 
+  it("renders a help affordance for each colored metric", () => {
+    const store = createMockMonitorStore();
+    populateOneObject(store);
+
+    render(<OverviewTab monitorStore={store} setActiveTab={vi.fn()} />);
+
+    // Each metric exposes an "About <title>" help icon carrying its definition.
+    for (const title of [
+      "Cache hit rate",
+      "Network requests",
+      "Overfetching",
+      "Errors & warnings",
+    ]) {
+      expect(screen.queryByLabelText(`About ${title}`)).not.toBeNull();
+    }
+  });
+
+  it("shows the per-metric color key inside the cache hit rate help tooltip", async () => {
+    const store = createMockMonitorStore();
+    populateOneObject(store);
+
+    render(<OverviewTab monitorStore={store} setActiveTab={vi.fn()} />);
+
+    fireEvent.mouseEnter(screen.getByLabelText("About Cache hit rate"));
+
+    // The tooltip carries the definition plus a row per color threshold.
+    expect(
+      await screen.findByText(/served from the normalized cache/i)
+    ).not.toBeNull();
+    for (const threshold of ["≥ 70%", "40–70%", "< 40%"]) {
+      expect(screen.getByText(threshold)).not.toBeNull();
+    }
+  });
+
   it("renders each ontology/metrics section collapsed-toggle and collapses on click", () => {
     const store = createMockMonitorStore();
     populateOneObject(store);

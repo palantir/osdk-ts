@@ -96,6 +96,41 @@ export function OverviewTab({
         <Metrics columns={2}>
           <Metric
             title="Cache hit rate"
+            help={
+              <>
+                Share of object reads served from the normalized cache instead
+                of the network.
+                <ul className={styles.metricLegend}>
+                  <li className={styles.legendRow}>
+                    <span
+                      className={classNames(
+                        styles.legendSwatch,
+                        styles.success
+                      )}
+                      aria-hidden
+                    />
+                    ≥ 70%
+                  </li>
+                  <li className={styles.legendRow}>
+                    <span
+                      className={classNames(
+                        styles.legendSwatch,
+                        styles.warning
+                      )}
+                      aria-hidden
+                    />
+                    40–70%
+                  </li>
+                  <li className={styles.legendRow}>
+                    <span
+                      className={classNames(styles.legendSwatch, styles.danger)}
+                      aria-hidden
+                    />
+                    {"< 40%"}
+                  </li>
+                </ul>
+              </>
+            }
             value={
               performance.cacheHitRate == null
                 ? null
@@ -123,6 +158,7 @@ export function OverviewTab({
           />
           <Metric
             title="Network requests"
+            help="Requests that went to the network — cache misses plus revalidations."
             value={
               performance.networkRequests == null
                 ? null
@@ -141,6 +177,7 @@ export function OverviewTab({
           />
           <Metric
             title="Avg response time"
+            help="Average response time across requests. Cache reads are typically under 1ms; network reads dominate."
             value={
               performance.averageResponseTime == null
                 ? null
@@ -159,6 +196,28 @@ export function OverviewTab({
           />
           <Metric
             title="Duplicate requests"
+            help={
+              <>
+                Requests for data an in-flight request already covered,
+                collapsed onto a single fetch by deduplication.
+                <ul className={styles.metricLegend}>
+                  <li className={styles.legendRow}>
+                    <span
+                      className={classNames(styles.legendSwatch, styles.danger)}
+                      aria-hidden
+                    />
+                    {"> 0"}
+                  </li>
+                  <li className={styles.legendRow}>
+                    <span
+                      className={classNames(styles.legendSwatch, styles.na)}
+                      aria-hidden
+                    />
+                    0 / no data
+                  </li>
+                </ul>
+              </>
+            }
             value={
               performance.duplicateRequests == null
                 ? null
@@ -173,6 +232,28 @@ export function OverviewTab({
           />
           <Metric
             title="Overfetching"
+            help={
+              <>
+                Components whose hooks fetch fields that no descendant ever
+                reads.
+                <ul className={styles.metricLegend}>
+                  <li className={styles.legendRow}>
+                    <span
+                      className={classNames(styles.legendSwatch, styles.danger)}
+                      aria-hidden
+                    />
+                    {"> 0"}
+                  </li>
+                  <li className={styles.legendRow}>
+                    <span
+                      className={classNames(styles.legendSwatch, styles.na)}
+                      aria-hidden
+                    />
+                    0 / no data
+                  </li>
+                </ul>
+              </>
+            }
             value={
               debugging.overfetchingCount == null
                 ? null
@@ -197,6 +278,28 @@ export function OverviewTab({
           />
           <Metric
             title="Errors & warnings"
+            help={
+              <>
+                Uncaught errors and console warnings captured from @osdk/react
+                hooks and your render tree this session.
+                <ul className={styles.metricLegend}>
+                  <li className={styles.legendRow}>
+                    <span
+                      className={classNames(styles.legendSwatch, styles.danger)}
+                      aria-hidden
+                    />
+                    {"> 0"}
+                  </li>
+                  <li className={styles.legendRow}>
+                    <span
+                      className={classNames(styles.legendSwatch, styles.na)}
+                      aria-hidden
+                    />
+                    0
+                  </li>
+                </ul>
+              </>
+            }
             value={formatNumber(debugging.errorWarningCount)}
             intent={debugging.errorWarningCount > 0 ? "danger" : "none"}
             footer={

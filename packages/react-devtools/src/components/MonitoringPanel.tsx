@@ -33,6 +33,7 @@ import { DebuggingTab } from "./DebuggingTab.js";
 import { InterceptTab } from "./InterceptTab.js";
 import { MonitorErrorBoundary } from "./MonitorErrorBoundary.js";
 import { OverviewTab } from "./OverviewTab.js";
+import { PanelContainerContext } from "./PanelContainerContext.js";
 import { PerformanceTab } from "./PerformanceTab.js";
 
 import styles from "./MonitoringPanel.module.scss";
@@ -150,7 +151,10 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
     [themePreference, systemPrefersDark]
   );
 
-  const panelRef = useRef<HTMLDivElement>(null);
+  // The panel element, held in state (not a ref) and published via context so
+  // descendants portal overlays into the panel — see PanelContainerContext.
+  // State so consumers re-render once the element mounts.
+  const [panelEl, setPanelEl] = useState<HTMLDivElement | null>(null);
   const isDragging = useRef(false);
   const isResizing = useRef<string | null>(null);
   const dragStart = useRef({ x: 0, y: 0, elemX: 0, elemY: 0 });
@@ -441,7 +445,7 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
   );
   return createPortal(
     <div
-      ref={panelRef}
+      ref={setPanelEl}
       className={panelClassName}
       data-dt-theme={resolvedTheme}
       style={{
@@ -459,143 +463,151 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
         bottom: effectivePosition.dockMode === "docked-bottom" ? 0 : undefined,
       }}
     >
-      {(position.dockMode === "floating"
-        ? [
-            { cls: [styles.horizontal, styles.top], handle: "top" },
-            { cls: [styles.horizontal, styles.bottom], handle: "bottom" },
-            { cls: [styles.vertical, styles.left], handle: "left" },
-            { cls: [styles.vertical, styles.right], handle: "right" },
-            { cls: [styles.corner, styles.topLeft], handle: "topLeft" },
-            { cls: [styles.corner, styles.topRight], handle: "topRight" },
-            { cls: [styles.corner, styles.bottomLeft], handle: "bottomLeft" },
-            { cls: [styles.corner, styles.bottomRight], handle: "bottomRight" },
-          ]
-        : position.dockMode === "docked-bottom"
-          ? [{ cls: [styles.horizontal, styles.top], handle: "top" }]
-          : position.dockMode === "docked-right"
-            ? [{ cls: [styles.vertical, styles.left], handle: "left" }]
-            : []
-      ).map(({ cls, handle }) => (
-        <div
-          key={handle}
-          className={classNames(styles.resizeHandle, ...cls)}
-          onMouseDown={(e) => handleResizeMouseDown(e, handle)}
-        />
-      ))}
+      <PanelContainerContext.Provider value={panelEl}>
+        {(position.dockMode === "floating"
+          ? [
+              { cls: [styles.horizontal, styles.top], handle: "top" },
+              { cls: [styles.horizontal, styles.bottom], handle: "bottom" },
+              { cls: [styles.vertical, styles.left], handle: "left" },
+              { cls: [styles.vertical, styles.right], handle: "right" },
+              { cls: [styles.corner, styles.topLeft], handle: "topLeft" },
+              { cls: [styles.corner, styles.topRight], handle: "topRight" },
+              { cls: [styles.corner, styles.bottomLeft], handle: "bottomLeft" },
+              {
+                cls: [styles.corner, styles.bottomRight],
+                handle: "bottomRight",
+              },
+            ]
+          : position.dockMode === "docked-bottom"
+            ? [{ cls: [styles.horizontal, styles.top], handle: "top" }]
+            : position.dockMode === "docked-right"
+              ? [{ cls: [styles.vertical, styles.left], handle: "left" }]
+              : []
+        ).map(({ cls, handle }) => (
+          <div
+            key={handle}
+            className={classNames(styles.resizeHandle, ...cls)}
+            onMouseDown={(e) => handleResizeMouseDown(e, handle)}
+          />
+        ))}
 
-      <div className={styles.header} onMouseDown={handleMouseDown}>
-        <h3 className={styles.title}>
-          OSDK Devtools
-          <span className={styles.badge}>Beta</span>
-        </h3>
-        <div className={styles.controls}>
-          <Button
-            variant="minimal"
-            size="small"
-            icon={
-              themePreference === "dark"
-                ? "moon"
-                : themePreference === "light"
-                  ? "flash"
-                  : "automatic-updates"
-            }
-            onClick={() =>
-              setThemePreference(
+        <div className={styles.header} onMouseDown={handleMouseDown}>
+          <h3 className={styles.title}>
+            OSDK Devtools
+            <span className={styles.badge}>Beta</span>
+          </h3>
+          <div className={styles.controls}>
+            <Button
+              variant="minimal"
+              size="small"
+              icon={
                 themePreference === "dark"
-                  ? "light"
+                  ? "moon"
                   : themePreference === "light"
-                    ? "auto"
-                    : "dark"
-              )
-            }
-            title={`Theme: ${themePreference} (click to cycle)`}
-            aria-label={`Theme: ${themePreference}. Click to cycle.`}
-          />
-          <Button
-            variant="minimal"
-            size="small"
-            icon={
-              position.dockMode === "floating"
-                ? "widget"
-                : position.dockMode === "docked-bottom"
-                  ? "layout-sorted-clusters"
-                  : "layout-hierarchy"
-            }
-            onClick={handleDockToggle}
-            title={`Dock mode: ${position.dockMode} (click to cycle)`}
-            aria-label={`Dock mode: ${position.dockMode}. Click to cycle.`}
-          />
-          <Button
-            variant="minimal"
-            size="small"
-            icon="reset"
-            onClick={() => metricsStore.reset()}
-            title="Reset metrics"
-            aria-label="Reset metrics"
-          />
-          <Button
-            variant="minimal"
-            size="small"
-            icon="minimize"
-            onClick={() =>
-              setPosition((prev) => ({ ...prev, collapsed: true }))
-            }
-            title="Minimize"
-            aria-label="Minimize devtools panel"
-          />
+                    ? "flash"
+                    : "automatic-updates"
+              }
+              onClick={() =>
+                setThemePreference(
+                  themePreference === "dark"
+                    ? "light"
+                    : themePreference === "light"
+                      ? "auto"
+                      : "dark"
+                )
+              }
+              title={`Theme: ${themePreference} (click to cycle)`}
+              aria-label={`Theme: ${themePreference}. Click to cycle.`}
+            />
+            <Button
+              variant="minimal"
+              size="small"
+              icon={
+                position.dockMode === "floating"
+                  ? "widget"
+                  : position.dockMode === "docked-bottom"
+                    ? "layout-sorted-clusters"
+                    : "layout-hierarchy"
+              }
+              onClick={handleDockToggle}
+              title={`Dock mode: ${position.dockMode} (click to cycle)`}
+              aria-label={`Dock mode: ${position.dockMode}. Click to cycle.`}
+            />
+            <Button
+              variant="minimal"
+              size="small"
+              icon="reset"
+              onClick={() => metricsStore.reset()}
+              title="Reset metrics"
+              aria-label="Reset metrics"
+            />
+            <Button
+              variant="minimal"
+              size="small"
+              icon="minimize"
+              onClick={() =>
+                setPosition((prev) => ({ ...prev, collapsed: true }))
+              }
+              title="Minimize"
+              aria-label="Minimize devtools panel"
+            />
+          </div>
         </div>
-      </div>
 
-      <div className={styles.content}>
-        {(!fiberCapabilities.hookInstalled ||
-          !fiberCapabilities.fiberAccessWorking) && (
-          <DegradationNotice onRetry={() => validateFiberAccess()} />
-        )}
+        <div className={styles.content}>
+          {(!fiberCapabilities.hookInstalled ||
+            !fiberCapabilities.fiberAccessWorking) && (
+            <DegradationNotice onRetry={() => validateFiberAccess()} />
+          )}
 
-        <Tabs
-          className={styles.tabs}
-          selectedTabId={activeTab}
-          onChange={onActiveTabChange}
-        >
-          <Tab
-            id="overview"
-            title="Overview"
-            panel={
-              <OverviewTab
-                monitorStore={monitorStore}
-                setActiveTab={setActiveTab}
-              />
-            }
-          />
-          <Tab
-            id="performance"
-            title="Performance"
-            panel={
-              <PerformanceTab
-                metricsStore={metricsStore}
-                monitorStore={monitorStore}
-              />
-            }
-          />
-          <Tab
-            id="compute"
-            title="Compute"
-            panel={<ComputeTab computeStore={computeStore} />}
-          />
-          <Tab
-            id="intercept"
-            title="Intercept"
-            panel={
-              <InterceptTab monitorStore={monitorStore} theme={resolvedTheme} />
-            }
-          />
-          <Tab
-            id="debugging"
-            title="Debugging"
-            panel={<DebuggingTab monitorStore={monitorStore} />}
-          />
-        </Tabs>
-      </div>
+          <Tabs
+            className={styles.tabs}
+            selectedTabId={activeTab}
+            onChange={onActiveTabChange}
+          >
+            <Tab
+              id="overview"
+              title="Overview"
+              panel={
+                <OverviewTab
+                  monitorStore={monitorStore}
+                  setActiveTab={setActiveTab}
+                />
+              }
+            />
+            <Tab
+              id="performance"
+              title="Performance"
+              panel={
+                <PerformanceTab
+                  metricsStore={metricsStore}
+                  monitorStore={monitorStore}
+                />
+              }
+            />
+            <Tab
+              id="compute"
+              title="Compute"
+              panel={<ComputeTab computeStore={computeStore} />}
+            />
+            <Tab
+              id="intercept"
+              title="Intercept"
+              panel={
+                <InterceptTab
+                  monitorStore={monitorStore}
+                  theme={resolvedTheme}
+                />
+              }
+            />
+            <Tab
+              id="debugging"
+              title="Debugging"
+              panel={<DebuggingTab monitorStore={monitorStore} />}
+            />
+          </Tabs>
+        </div>
+      </PanelContainerContext.Provider>
     </div>,
     document.body
   );

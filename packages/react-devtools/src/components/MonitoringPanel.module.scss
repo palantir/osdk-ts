@@ -292,6 +292,58 @@
   overflow: hidden;
 }
 
+// `Metric` help-tooltip body: the definition text plus, for colored metrics, a
+// color key — one row per value color with a swatch and the threshold that
+// triggers it. Swatch colors reuse the value `intent` classes so the key and
+// the values stay visually in sync.
+.metricHelpContent {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 220px;
+  line-height: 1.4;
+}
+
+.metricLegend {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.legendRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: t.$font-size-sm;
+  font-family: t.$font-mono;
+}
+
+.legendSwatch {
+  width: 10px;
+  height: 10px;
+  border-radius: t.$radius-sm;
+  flex-shrink: 0;
+
+  &.success {
+    background: t.$green;
+  }
+
+  &.warning {
+    background: t.$orange;
+  }
+
+  &.danger {
+    background: t.$red;
+  }
+
+  &.na {
+    background: t.$text-tertiary;
+  }
+}
+
 // A single `Metric` cell — borderless; the grid draws the dividers around it.
 .metricItem {
   display: flex;

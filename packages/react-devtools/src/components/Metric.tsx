@@ -19,6 +19,8 @@ import type { Intent } from "@blueprintjs/core";
 import classNames from "classnames";
 import React from "react";
 
+import { PanelContainerContext } from "./PanelContainerContext.js";
+
 import styles from "./MonitoringPanel.module.scss";
 
 export interface MetricProps {
@@ -35,8 +37,11 @@ export interface MetricProps {
    * Only `success`/`warning`/`danger` are colored. Ignored when `value` is empty.
    */
   intent?: Intent;
-  /** When set, renders a top-right "?" icon with this text as its tooltip. */
-  help?: string;
+  /**
+   * When set, renders a top-right "?" icon whose tooltip shows this content — the
+   * metric's definition and, where the value is colored, its color key.
+   */
+  help?: React.ReactNode;
   /** Optional content rendered below the value, e.g. a "View in …" link. */
   footer?: React.ReactNode;
 }
@@ -54,6 +59,10 @@ export function Metric({
   footer,
 }: MetricProps): React.JSX.Element {
   const isEmpty = value == null || value === "";
+  // Portal the help tooltip into the panel (not `document.body`) so it shares
+  // the panel's stacking context and `--dt-*` theme scope. Falls back to
+  // Blueprint's default when the panel element isn't mounted yet.
+  const panelContainer = React.useContext(PanelContainerContext);
   return (
     <section className={styles.metricItem} aria-label={title}>
       <div className={styles.metricItemHeader}>
@@ -63,10 +72,12 @@ export function Metric({
           {title}
         </span>
         {help != null && (
-          <Tooltip content={help}>
+          <Tooltip
+            content={<div className={styles.metricHelpContent}>{help}</div>}
+            portalContainer={panelContainer ?? undefined}
+          >
             <Icon
               icon="help"
-              size={12}
               className={styles.metricHelp}
               aria-label={`About ${title}`}
             />
