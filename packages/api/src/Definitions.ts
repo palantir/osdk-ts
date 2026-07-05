@@ -17,6 +17,9 @@
 import type {
   GetClientPropertyValueFromWire,
   GetCreatePropertyValueFromWire,
+  GetCreateWirePropertyValueFromWire,
+  GetUpdatePropertyValueFromWire,
+  GetUpdateWirePropertyValueFromWire,
 } from "./mapping/PropertyValueMapping.js";
 import type { ObjectMetadata } from "./ontology/ObjectTypeDefinition.js";
 
@@ -49,6 +52,8 @@ export type OsdkObjectPropertyTypeNotUndefined<
 > = MaybeArray<T, GetClientPropertyValueFromWire<T["type"]>>;
 
 /**
+ * The type accepted when creating an object property.
+ *
  * @param T - ObjectMetadata.Property in literal form
  * @param STRICTLY_ENFORCE_NULLABLE - S for strict. If false, always `|undefined`
  */
@@ -58,3 +63,48 @@ export type OsdkObjectCreatePropertyType<
 > = STRICTLY_ENFORCE_NULLABLE extends false
   ? MaybeArray<T, GetCreatePropertyValueFromWire<T["type"]>> | undefined
   : MaybeNullable<T, MaybeArray<T, GetCreatePropertyValueFromWire<T["type"]>>>;
+
+/**
+ * The type accepted when updating an object property.
+ *
+ * @param T - ObjectMetadata.Property in literal form
+ * @param STRICTLY_ENFORCE_NULLABLE - S for strict. If false, always `|undefined`
+ */
+export type OsdkObjectUpdatePropertyType<
+  T extends ObjectMetadata.Property,
+  STRICTLY_ENFORCE_NULLABLE extends boolean = true,
+> = STRICTLY_ENFORCE_NULLABLE extends false
+  ? MaybeArray<T, GetUpdatePropertyValueFromWire<T["type"]>> | undefined
+  : MaybeNullable<T, MaybeArray<T, GetUpdatePropertyValueFromWire<T["type"]>>>;
+
+/**
+ * The wire type emitted for a create object property edit.
+ *
+ * @param T - ObjectMetadata.Property in literal form
+ * @param STRICTLY_ENFORCE_NULLABLE - S for strict. If false, always `|undefined`
+ */
+export type OsdkObjectCreateWirePropertyType<
+  T extends ObjectMetadata.Property,
+  STRICTLY_ENFORCE_NULLABLE extends boolean = true,
+> = STRICTLY_ENFORCE_NULLABLE extends false
+  ? MaybeArray<T, GetCreateWirePropertyValueFromWire<T["type"]>> | undefined
+  : MaybeNullable<
+      T,
+      MaybeArray<T, GetCreateWirePropertyValueFromWire<T["type"]>>
+    >;
+
+/**
+ * The wire type emitted for an update object property edit.
+ *
+ * @param T - ObjectMetadata.Property in literal form
+ * @param STRICTLY_ENFORCE_NULLABLE - S for strict. If false, always `|undefined`
+ */
+export type OsdkObjectUpdateWirePropertyType<
+  T extends ObjectMetadata.Property,
+  STRICTLY_ENFORCE_NULLABLE extends boolean = true,
+> = STRICTLY_ENFORCE_NULLABLE extends false
+  ? MaybeArray<T, GetUpdateWirePropertyValueFromWire<T["type"]>> | undefined
+  : MaybeNullable<
+      T,
+      MaybeArray<T, GetUpdateWirePropertyValueFromWire<T["type"]>>
+    >;

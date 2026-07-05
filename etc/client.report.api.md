@@ -14,8 +14,11 @@ import { ApplyActionOptions } from '@osdk/api';
 import { ApplyBatchActionOptions } from '@osdk/api';
 import { Attachment } from '@osdk/api';
 import type { AttachmentUpload } from '@osdk/api';
+import { CipherChannelStrategy } from '@osdk/api';
 import { CipherText } from '@osdk/api';
+import { CipherTextValue } from '@osdk/api';
 import { CompileTimeMetadata } from '@osdk/api';
+import { CreateCipherText } from '@osdk/api';
 import type { DataValueClientToWire } from '@osdk/api';
 import type { DataValueWireToClient } from '@osdk/api';
 import { DerivedProperty } from '@osdk/api';
@@ -43,7 +46,10 @@ import { ObjectTypeDefinition } from '@osdk/api';
 import { Osdk } from '@osdk/api';
 import { OsdkObject } from '@osdk/api';
 import { OsdkObjectCreatePropertyType } from '@osdk/api';
+import { OsdkObjectCreateWirePropertyType } from '@osdk/api';
 import { OsdkObjectPropertyType } from '@osdk/api';
+import { OsdkObjectUpdatePropertyType } from '@osdk/api';
+import { OsdkObjectUpdateWirePropertyType } from '@osdk/api';
 import { PageResult } from '@osdk/api';
 import { PalantirApiError } from '@osdk/shared.net.errors';
 import type { PrimaryKeyType } from '@osdk/api';
@@ -64,6 +70,7 @@ import { SingleLinkAccessor } from '@osdk/api';
 import { ThreeDimensionalAggregation } from '@osdk/api';
 import { TwoDimensionalAggregation } from '@osdk/api';
 import { UnknownMediaItemMetadata } from '@osdk/api';
+import { UpdateCipherText } from '@osdk/api';
 import type { ValidateActionResponseV2 } from '@osdk/foundry.ontologies';
 import { VersionBound } from '@osdk/api';
 import { WhereClause } from '@osdk/api';
@@ -94,7 +101,11 @@ export { ApplyBatchActionOptions }
 
 export { Attachment }
 
+export { CipherChannelStrategy }
+
 export { CipherText }
+
+export { CipherTextValue }
 
 // Warning: (ae-forgotten-export) The symbol "OldSharedClient" needs to be exported by the entry point index.d.ts
 //
@@ -120,6 +131,8 @@ export { CompileTimeMetadata }
 
 // @public (undocumented)
 export function createAttachmentUpload(data: Blob, name: string): AttachmentUpload;
+
+export { CreateCipherText }
 
 // @public
 export const createClient: (baseUrl: string, ontologyRid: string | Promise<string>, tokenProvider: () => Promise<string>, options?: {
@@ -188,7 +201,13 @@ export { OsdkObject }
 
 export { OsdkObjectCreatePropertyType }
 
+export { OsdkObjectCreateWirePropertyType }
+
 export { OsdkObjectPropertyType }
+
+export { OsdkObjectUpdatePropertyType }
+
+export { OsdkObjectUpdateWirePropertyType }
 
 export { PageResult }
 
@@ -230,6 +249,8 @@ export { ThreeDimensionalAggregation }
 export { TwoDimensionalAggregation }
 
 export { UnknownMediaItemMetadata }
+
+export { UpdateCipherText }
 
 export { VersionBound }
 

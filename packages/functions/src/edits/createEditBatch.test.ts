@@ -15,6 +15,7 @@
  */
 
 import type { Attachment, Client, Osdk } from "@osdk/client";
+import { CipherChannelStrategy } from "@osdk/client";
 import type { Employee, Person } from "@osdk/client.test.ontology";
 import {
   FooInterface,
@@ -337,6 +338,87 @@ describe(createEditBatch, () => {
         target: { $apiName: "Person", $primaryKey: 2 },
       },
     ]);
+  });
+
+  it("transforms cipherText edits to their wire shape", () => {
+    const value = "CIPHER::ri.test::abc==::CIPHER";
+    // A fetched cipherText property behaves the same way (getValue returns the
+    // encrypted value); this minimal structural stub stands in for it.
+    const existingCipherText = {
+      decrypt: () => Promise.resolve("plaintext"),
+      getValue: () => value,
+    };
+
+    // create: reuse an existing CipherText -> { ciphertext }
+    editBatch.create(objectTypeWithAllPropertyTypes, {
+      id: 1,
+      cipherText: existingCipherText,
+    });
+    // create: from plaintext -> passthrough
+    editBatch.create(objectTypeWithAllPropertyTypes, {
+      id: 2,
+      cipherText: { plaintext: "secret" },
+    });
+    // update: reuse an existing CipherText -> { ciphertext }
+    editBatch.update(
+      { $apiName: "objectTypeWithAllPropertyTypes", $primaryKey: 1 },
+      { cipherText: existingCipherText }
+    );
+    // update: from plaintext with a channel strategy (update-only) -> passthrough
+    editBatch.update(
+      { $apiName: "objectTypeWithAllPropertyTypes", $primaryKey: 2 },
+      {
+        cipherText: {
+          plaintext: "secret",
+          strategy: CipherChannelStrategy.PREFER_EXISTING,
+        },
+      }
+    );
+
+    expect(editBatch.getEdits()).toEqual([
+      {
+        type: "createObject",
+        obj: objectTypeWithAllPropertyTypes,
+        properties: { id: 1, cipherText: { ciphertext: value } },
+      },
+      {
+        type: "createObject",
+        obj: objectTypeWithAllPropertyTypes,
+        properties: { id: 2, cipherText: { plaintext: "secret" } },
+      },
+      {
+        type: "updateObject",
+        obj: { $apiName: "objectTypeWithAllPropertyTypes", $primaryKey: 1 },
+        properties: { cipherText: { ciphertext: value } },
+      },
+      {
+        type: "updateObject",
+        obj: { $apiName: "objectTypeWithAllPropertyTypes", $primaryKey: 2 },
+        properties: {
+          cipherText: {
+            plaintext: "secret",
+            strategy: CipherChannelStrategy.PREFER_EXISTING,
+          },
+        },
+      },
+    ]);
+  });
+
+  it("prevents bad cipherText edits", () => {
+    editBatch.create(objectTypeWithAllPropertyTypes, {
+      id: 3,
+      // @ts-expect-error - the wire-only { ciphertext } shape is not a valid input
+      cipherText: { ciphertext: "CIPHER::x::CIPHER" },
+    });
+
+    editBatch.create(objectTypeWithAllPropertyTypes, {
+      id: 4,
+      cipherText: {
+        plaintext: "secret",
+        // @ts-expect-error - create does not accept a channel strategy (update-only)
+        strategy: CipherChannelStrategy.PREFER_EXISTING,
+      },
+    });
   });
 
   it("prevents bad link edits", () => {

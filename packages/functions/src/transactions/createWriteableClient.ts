@@ -30,6 +30,7 @@ import type {
   UpdatableObjectOrInterfaceLocatorProperties,
   UpdatableObjectOrInterfaceLocators,
 } from "../edits/EditBatch.js";
+import { toWireEditProperties } from "../edits/toWireEditProperties.js";
 import type { AnyEdit } from "../edits/types.js";
 import { EditRequestManager } from "./EditRequestManager.js";
 import { toPropertyDataValue } from "./toPropertyDataValue.js";
@@ -128,8 +129,9 @@ export function createWriteableClient<X extends AnyEdit = never>(
         obj: OTD,
         properties: CreatableObjectOrInterfaceTypeProperties<X, OTD>
       ): Promise<void> {
+        const wireProperties = toWireEditProperties(properties);
         const propertyMap: { [propertyName: string]: unknown } = {};
-        for (const [key, value] of Object.entries(properties)) {
+        for (const [key, value] of Object.entries(wireProperties)) {
           if (key.startsWith("$")) continue;
           propertyMap[key] = toPropertyDataValue(value);
         }
@@ -145,8 +147,9 @@ export function createWriteableClient<X extends AnyEdit = never>(
         SOL extends UpdatableObjectOrInterfaceLocators<X>,
         OTD extends UpdatableObjectOrInterfaceLocatorProperties<X, SOL>,
       >(locator: SOL, properties: OTD): Promise<void> {
+        const wireProperties = toWireEditProperties(properties);
         const propertyMap: { [propertyName: string]: unknown } = {};
-        for (const [key, value] of Object.entries(properties)) {
+        for (const [key, value] of Object.entries(wireProperties)) {
           if (key.startsWith("$")) continue;
           propertyMap[key] = toPropertyDataValue(value);
         }
