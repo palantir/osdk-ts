@@ -23,15 +23,19 @@ import type {
 import type {
   AddLink,
   AnyEdit,
+  CreateInterfaceInputProps,
   CreateObject,
   CreateObjectForInterface,
+  CreateObjectInputProps,
   DeleteObject,
   DeleteObjectForInterface,
   InterfaceLocator,
   ObjectLocator,
   RemoveLink,
+  UpdateInterfaceInputProps,
   UpdateObject,
   UpdateObjectForInterface,
+  UpdateObjectInputProps,
 } from "./types.js";
 
 // Helper type for literal "apiName" values without resorting to expensive type inference.
@@ -94,17 +98,20 @@ export type CreatableObjectOrInterfaceTypes<X extends AnyEdit> =
       ? ID
       : never;
 
+// Returns the friendly INPUT property type callers pass to `create`, computed
+// from the resolved definition. This is distinct from the edit's stored
+// `properties` (the wire type returned by `getEdits()`).
 export type CreatableObjectOrInterfaceTypeProperties<
   X extends AnyEdit,
   OI extends ObjectTypeDefinition | InterfaceDefinition,
 > =
   X extends CreateObject<infer OTD>
     ? OTD extends OI
-      ? X["properties"]
+      ? CreateObjectInputProps<OTD>
       : never
     : X extends CreateObjectForInterface<infer ID>
       ? ID extends OI
-        ? X["properties"]
+        ? CreateInterfaceInputProps<ID>
         : never
       : never;
 
@@ -124,18 +131,22 @@ export type UpdatableObjectOrInterfaceLocators<X extends AnyEdit> =
       ? InterfaceLocator<ID>
       : never;
 
+// Returns the friendly INPUT property type callers pass to `update`, computed
+// from the resolved definition (the outer conditional selects the edit member
+// addressed by the locator; the inner one recovers its concrete definition).
 export type UpdatableObjectOrInterfaceLocatorProperties<
   X extends AnyEdit,
   OL extends ObjectLocator<any>,
-> = X extends UpdateObject<any> | UpdateObjectForInterface<any>
-  ? OL["$apiName"] extends X["obj"]["$apiName"]
-    ? X["obj"] extends InterfaceLocator<any>
-      ? OL extends { $objectType: unknown }
-        ? X["properties"]
+> =
+  X extends UpdateObject<ObjectTypeDefinitionForLocator<OL>>
+    ? X extends UpdateObject<infer OTD>
+      ? UpdateObjectInputProps<OTD>
+      : never
+    : X extends UpdateObjectForInterface<InterfaceDefinitionForLocator<OL>>
+      ? X extends UpdateObjectForInterface<infer ID>
+        ? UpdateInterfaceInputProps<ID>
         : never
-      : X["properties"]
-    : never
-  : never;
+      : never;
 
 export interface EditBatch<X extends AnyEdit = never> {
   link: <SOL extends AddLinkSources<X>, A extends AddLinkApiNames<X, SOL>>(
